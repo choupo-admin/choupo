@@ -86,6 +86,7 @@ import { KnobSlider, PanelNote } from "./knobPanel.js";
 import type { ScalarOverride } from "../../case/methodRun.js";
 import { useMethodRun } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
+import { OriginMark } from "./origin.js";
 
 // ---- The closed forms (the authorized method geometry) ----------------------
 
@@ -362,6 +363,7 @@ export function EpsilonNtuTool(): JSX.Element {
       )}
       {source === "classroom" && (
         <>
+          <OriginMark of="assumption" note="the exchanger values you set" />
           {KNOB_SPECS.map((spec) => (
             <KnobSlider key={spec.id} knob={spec} value={knobs[spec.id]}
               onChange={(v) => setKnobs((k) => ({ ...k, [spec.id]: v }))} />
@@ -512,6 +514,7 @@ function SolvedView({ units, unit, onPick, kpis, match, profile, busy }: {
 
   return (
     <Stack gap="sm">
+      <OriginMark of={["engine", "page"]} note="the point, the profile, LMTD and Q: the witness solved in this browser (choupoSolve); the families and the cross-check: the closed forms evaluated on this page" />
       {/* The unit picker, the case's own three numbers, the cross-check chip. */}
       <Group gap="sm" wrap="wrap" align="center">
         <Group gap={4} wrap="nowrap" align="center">

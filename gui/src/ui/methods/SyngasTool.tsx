@@ -47,6 +47,7 @@ import {
   type BenchId, type CaseEdit, type ReadoutId, type RunData, type Stage, type SyngasMove, type SyngasPart,
 } from "./syngasExercise.js";
 import { SYNGAS_LIMITS, SYNGAS_STEPS } from "./syngasLesson.js";
+import { OriginMark } from "./origin.js";
 
 const step = lessonStepper(SYNGAS_STEPS);
 const BORDER = "var(--mantine-color-default-border)";
@@ -209,6 +210,7 @@ function Exercise({ part, title }: { part: SyngasPart; title: string }): JSX.Ele
   return (
     <Box p="sm" style={{ border: `1px solid ${BORDER}`, borderRadius: 6 }} data-syngas-exercise={part}>
       <Title order={5}>Exercise: {title}</Title>
+      <OriginMark of={["engine", "page", "assumption"]} note="the move is yours; the stage tables are the edited copy solved in this browser (choupoSolve); the ratios are computed on this page from its streams" />
       <Group gap={6} mt={8}>
         {moves.map((m) => (
           <Button key={m.id} size="compact-xs" variant={chosen === m.id ? "filled" : "default"}
@@ -270,6 +272,7 @@ function Benches(): JSX.Element {
   return (
     <Box p="sm" style={{ border: `1px solid ${BORDER}`, borderRadius: 6 }}>
       <Title order={5}>The benches, and what each copy changes</Title>
+      <OriginMark of="assumption" note="the edits each copy makes to its host tutorial" />
       <Text size="xs" c="dimmed" mt={4}>
         No case was written for this page.  Each exercise runs an in-browser copy of a
         bundled tutorial, edited as shown; the tutorial on disk is never changed, and you

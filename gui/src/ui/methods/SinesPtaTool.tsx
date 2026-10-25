@@ -64,6 +64,7 @@ import {
   type Status,
 } from "./sinesPta.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 const HUE_A = "#228be6";
 const HUE_B = "#e8590c";
@@ -245,6 +246,7 @@ function Appraiser(): JSX.Element {
   return (
     <Box data-testid="sines-appraisal">
       <Title order={5}>A simplified appraisal for teaching</Title>
+      <OriginMark of={["page", "assumption"]} note="this page's calculation on inputs that are assumptions; no engine run (the per-row words below are finer)" />
       <Paper withBorder p="xs" radius="sm" mt={6} data-testid="sines-results"
         style={{ borderLeft: "4px solid var(--mantine-color-orange-6)" }}>
         <Text size="sm" fw={600} data-testid="scenario-notice">{SCENARIO_NOTICE}</Text>
@@ -394,6 +396,7 @@ export function SinesPtaTool(): JSX.Element {
         {step(1)}
         {step(2)}
         {step(3)}
+        <OriginMark of="reference" note="each value is the cited document's, with its status word" />
 
         <PanTable>
           <Table.Thead>
@@ -421,6 +424,7 @@ export function SinesPtaTool(): JSX.Element {
         </Text>
 
         {step(4)}
+        <OriginMark of="reference" note="each value is the cited document's, with its status word" />
 
         <PanTable>
           <Table.Thead>
@@ -446,6 +450,7 @@ export function SinesPtaTool(): JSX.Element {
         <Appraiser />
 
         {step(7)}
+        <OriginMark of="reference" note="the published spreads, with their status words" />
         <PanTable>
           <Table.Thead>
             <Table.Tr>
@@ -478,12 +483,14 @@ export function SinesPtaTool(): JSX.Element {
         </Box>
 
         {step(8)}
+        <OriginMark of="reference" note="each risk quotes the documents it names" />
         <Box style={{ display: "grid", gap: 10,
           gridTemplateColumns: "repeat(auto-fit, minmax(min(420px, 100%), 1fr))" }}>
           {SINES_RISKS.map((c) => <RiskCardView key={c.n} c={c} />)}
         </Box>
 
         {step(9)}
+        <OriginMark of="reference" note="what the cited documents record, with their status words" />
         {periods.map((p) => {
           const rows = TIMELINE.filter((t) => t.period === p);
           if (rows.length === 0) return null;
@@ -513,6 +520,7 @@ export function SinesPtaTool(): JSX.Element {
         })}
 
         {step(10)}
+        <OriginMark of={["reference", "page"]} note="each row's status word says whether its value is the document's or this page's calculation" />
         <PanTable>
           <Table.Thead>
             <Table.Tr>

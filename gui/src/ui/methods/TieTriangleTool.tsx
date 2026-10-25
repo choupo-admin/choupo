@@ -102,6 +102,7 @@ import { HUNTER_NASH_LIMITS, HUNTER_NASH_STEPS }
 import {
   KnobField, KnobSlider, PanelNote,
 } from "./knobPanel.js";
+import { OriginMark } from "./origin.js";
 
 /** The engine's own stability advisory, raised by the LL flash on its OWN
  *  converged phases.  It is written to stderr, so the worker delivers it with
@@ -429,6 +430,7 @@ export function TieTriangleTool(): JSX.Element {
   // other EduTool's.
   const controls = (
     <>
+      <OriginMark of="assumption" note="the frame and the cascade values you set" />
       <KnobField label="frame">
         <SegmentedControl size="xs" value={zoom} fullWidth
           onChange={(v) => setZoom(v === "delta" ? "delta" : "triangle")}
@@ -561,6 +563,7 @@ export function TieTriangleTool(): JSX.Element {
         gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
         <Stack gap={8}>{controls}</Stack>
         <Box style={{ minWidth: 0 }}>
+      <OriginMark of={["engine", "page"]} note="the tie-lines and the cascade are the engine's runs in this browser; Δ, M and the residuals are this page's geometry on them" />
 
       <Group gap="sm" wrap="wrap" align="center" px={12} py={6} style={{ flexShrink: 0 }}>
         <Tooltip withArrow multiline w={460}

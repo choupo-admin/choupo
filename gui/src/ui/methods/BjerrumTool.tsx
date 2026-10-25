@@ -37,6 +37,7 @@ import { Alert, Box, Group, Slider, Stack, Text, Title } from "@mantine/core";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { KnobField } from "./knobPanel.js";
 import { BJERRUM_LIMITS, BJERRUM_STEPS } from "./bjerrumLesson.js";
+import { OriginMark } from "./origin.js";
 
 export const BJERRUM_WITNESS = "props/electrolyte/bjerrum01_carbonate_pH";
 export const BJERRUM_PROPS_DICT = "system/propsDict";
@@ -281,6 +282,7 @@ export function BjerrumTool(): JSX.Element {
         <Box style={{ display: "grid", gap: 14,
           gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
           <Stack gap={10}>
+            <OriginMark of="assumption" note="T and total carbonate you choose" />
             <KnobField label={`temperature = ${knobs.T.toFixed(2)} K`}>
               <Slider min={278.15} max={348.15} step={1} value={knobs.T}
                 onChange={(v) => setKnobs({ ...knobs, T: v })} label={null} />
@@ -304,11 +306,13 @@ export function BjerrumTool(): JSX.Element {
             </Stack>
           </Stack>
           <Box style={{ minWidth: 0 }}>
+            <OriginMark of="engine" note="every point is a speciation run in this browser (choupoProps)" />
             <BjerrumPlot pts={pts} />
           </Box>
         </Box>
 
         <Box>
+          <OriginMark of={["engine", "page"]} note="the crossings are interpolated on this page between the engine's points" />
           <Text size="sm">
             {pts.length > 0 ? (
               <>

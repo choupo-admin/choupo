@@ -54,6 +54,7 @@ License
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Anchor, Box, Code, Loader, Stack, Text, TextInput, Title } from "@mantine/core";
 import { guideUrl, openGuide } from "../../help/guideLinks.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 
@@ -154,6 +155,7 @@ export function RulesOfThumbTool(): JSX.Element
             )}
 
             {sections === null && failed === null && <Loader size="sm" />}
+            <OriginMark of="reference" note="no number is computed or quoted here: the index is the Design Guide's own chapter list, and every rule stays in the guide" />
 
             {sections !== null && (
                 <TextInput

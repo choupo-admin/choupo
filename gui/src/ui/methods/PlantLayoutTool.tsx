@@ -60,6 +60,7 @@ import {
   LAYOUT_SOURCES, PLANT_LAYOUT_LIMITS, PLANT_LAYOUT_STEPS,
 } from "./plantLayoutLesson.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 const BENCH_ID = "plant-layout-bench";
 
@@ -131,6 +132,7 @@ function LayoutBench(): JSX.Element {
     <Box id={BENCH_ID} p="sm"
       style={{ border: "1px solid var(--mantine-color-default-border)", borderRadius: 6 }}>
       <Title order={5}>The bench: the ammonia loop&apos;s plot plan, checked by the engine</Title>
+      <OriginMark of={["engine", "assumption"]} note="the placement and the separations are your declarations and the case's; the findings, the routes and the areas are the engine's layout check, run in this browser" />
       <Text size="xs" c="dimmed" mt={4}>
         Pick a guided move, or set the numbers yourself.  Every change re-runs the
         witness {LAYOUT_WITNESS} in your browser with these values written into its

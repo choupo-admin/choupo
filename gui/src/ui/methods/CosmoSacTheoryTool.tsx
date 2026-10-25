@@ -60,6 +60,7 @@ import { Alert, Box, Code, Group, Loader, Stack, Text, Title }
   from "@mantine/core";
 
 import { useMethodRun } from "../../case/methodRun.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -287,6 +288,7 @@ export function CosmoSacTheoryTool(): JSX.Element {
 
       <Box>
         <Title order={5}>The eight constants, with their units</Title>
+        <OriginMark of="reference" note="quoted from CosmoSac.cpp, where the engine declares them (Lin and Sandler 2002); not computed here" />
         <Box mt={6} style={{ overflowX: "auto" }}>
           <table style={{ borderCollapse: "collapse", width: "100%",
             fontSize: 13 }}>
@@ -345,6 +347,7 @@ export function CosmoSacTheoryTool(): JSX.Element {
 
       <Box>
         <Title order={5}>The worked example, run in this browser</Title>
+        <OriginMark of="engine" note="the witness run in this browser (choupoProps)" />
         <Text size="sm" mt={4}>
           The witness is{" "}
           <Code>tutorials/{COSMO_WITNESS}</Code>, at 298.15 K and 1 bar.  It

@@ -113,6 +113,7 @@ import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
 import { LANDSCAPE_LIMITS, LANDSCAPE_STEPS } from "./equilibriumLandscapesLesson.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -448,6 +449,7 @@ export function EquilibriumLandscapesTool(): JSX.Element {
 
   const controls = (
     <>
+      <OriginMark of="assumption" note="the witness and |ΔT| you choose" />
       <KnobSlider knob={LANDSCAPE_DT_KNOB} value={dT} onChange={setDT} showWhy />
       <PanelNote>
         Runs <code>tutorials/{w.witness}</code> in your browser on the WASM
@@ -538,6 +540,7 @@ export function EquilibriumLandscapesTool(): JSX.Element {
 
   const routeTable = (
     <Box mt={8} p="sm" style={{ border: `1px solid ${GRID}`, borderRadius: 6 }}>
+      <OriginMark of="engine" note="the fixation witness run in this browser (choupoProps)" />
       <Text size="sm" fw={600}>
         Three overall routes to fixed nitrogen, priced by <code>reactionGibbs</code> — read from the run, never typed
       </Text>
@@ -599,6 +602,7 @@ export function EquilibriumLandscapesTool(): JSX.Element {
 
   const contrast = (
     <Box mt={8} p="sm" style={{ border: `1px solid ${GRID}`, borderRadius: 6 }}>
+      <OriginMark of="engine" note="the anchor KPIs of two witness runs in this browser" />
       <Text size="sm" fw={600}>
         The industrial route on the landscape: the same Gibbs minimisation, three times — read from the runs, never typed
       </Text>
@@ -693,6 +697,7 @@ export function EquilibriumLandscapesTool(): JSX.Element {
           }}>
             <Stack gap={8}>{controls}</Stack>
             <Box style={{ minWidth: 0 }}>
+              <OriginMark of={["engine", "page"]} note="every point is a Gibbs solve run in this browser; the largest shift between the two runs is read on this page" />
               {busy && (
                 <Group gap="sm" wrap="nowrap" align="center" mb={6}>
                   <Loader size="xs" />

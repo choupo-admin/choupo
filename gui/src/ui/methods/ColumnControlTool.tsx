@@ -110,6 +110,7 @@ import {
   readHeuristicsCatalogue, stanceOn,
   type ControlLoop, type ControlStructure, type Heuristic,
 } from "./columnControlRecords.js";
+import { OriginMark } from "./origin.js";
 
 // ---- The engine surface this tool reads -------------------------------------
 // The COLUMN PAIR is the contract, never a unit or a case name: a distillation
@@ -971,6 +972,7 @@ export function ColumnControlTool(): JSX.Element {
 
   const controls = (
     <>
+      <OriginMark of="assumption" note="the structure, the handle and the column values you set" />
       {showToggle && (
         <SegmentedControl size="xs" value={src} fullWidth
           onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
@@ -1223,6 +1225,7 @@ export function ColumnControlTool(): JSX.Element {
           </Text>
         </Box>
 
+        <OriginMark of={["engine", "page", "reference"]} note="the tray temperatures are two runs of the witness in this browser (choupoSolve); the slopes and the run-to-run differences are taken on this page; the heuristics are their cited authors'" />
         {chips}
 
         <Box style={{ display: "grid", gap: 14,

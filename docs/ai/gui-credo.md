@@ -803,6 +803,30 @@ load-bearing: anything a tooltip says is a visible description in the panel.
 At 390 px the knobs panel starts folded by the measured default and opens as
 a sheet over the construction, saying so on the panel.
 
+**EVERY RESULT SAYS WHERE ITS NUMBERS CAME FROM (2026-10-25, DEV.md 4c
+C112, points 15 and 18).**  Four origins, one word each, and the list is
+closed: `engine` (Choupo's C++ engine -- a witness run in the browser, or a
+named case's recorded run), `page` (the page's own arithmetic, TypeScript or
+written out, on numbers it shows), `reference` (a cited source, not computed
+in Choupo), `assumption` (an input: a control the reader sets, or a value the
+example declares).  The ruling is a mark per value, or per PANEL where every
+value shares one -- never a per-value provenance sheet across sixty pages.
+One shared component, `gui/src/ui/methods/origin.tsx` (`OriginMark` at the
+head of each result panel, a dotted badge per origin plus a short note saying
+which witness or which source; the words and their meanings live once in
+`originKinds.ts`); the tool frame draws `OriginLegend` above every tool from
+the tool's own `origins` declaration in the registry, which the homepage
+prints on the tool's card through `methodTools.json`.  The mark is a WORD
+beside a colour (colour does not survive a greyscale print) and its meaning
+is visible text in the legend, not only a tooltip.  `tests/methodOrigins.
+test.ts` holds each declaration equal to the marks its page draws, both
+ways; it cannot see a panel left unmarked, so a new result panel takes its
+mark when it is written.  Where the `page` origin appears, the page is doing
+arithmetic in TypeScript; guard-rail 4 (above) still says ZERO physics in TS,
+and the pages that compute a design procedure on the page (bund, pool fire,
+the relief and letdown benches) are the places where the two are to be read
+together -- the mark makes the boundary visible; it does not move it.
+
 **Ratified naming (2026-08 ballot).**  The rail header is **CLASSICAL
 METHODS**; tool labels are operation-first with the method in parentheses —
 "Distillation (McCabe-Thiele)", "Absorption (Kremser)", "Batch still

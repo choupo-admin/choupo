@@ -174,6 +174,11 @@ async function main()
             label: t.label,
             discipline: t.discipline,
             teaches: t.teaches,
+            //  WHERE THE PAGE'S NUMBERS COME FROM (DEV.md 4c C112): the
+            //  registry's own declaration, which a vitest holds equal to the
+            //  origin marks the page draws.  The landing prints it on the
+            //  card, so its claim about what a tool computes is per tool.
+            origins: Array.isArray(t.origins) ? [...t.origins] : null,
             href: hrefFor(t.id),
         }));
 
@@ -197,6 +202,10 @@ async function main()
         //  Shelf order is the registry's, carried verbatim -- the landing
         //  groups by it and must not invent its own (owner, 2026-08-30).
         disciplines: mod.METHOD_DISCIPLINES,
+        //  The four origin words, in order, with what each means -- the same
+        //  home (originKinds.ts) the app's legend reads.
+        origins: (mod.ORIGIN_KINDS ?? []).map((k) => ({
+            word: k, meaning: mod.ORIGIN_MEANING?.[k] ?? null })),
         liveTools: tools.length,
         registryTools: all.length,
         tools,

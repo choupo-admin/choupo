@@ -45,6 +45,7 @@ import { useMethodRun } from "../../case/methodRun.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
 import { ENTHALPY_LIMITS, ENTHALPY_STEPS } from "./reactionEnthalpyLesson.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -171,6 +172,7 @@ export function ReactionEnthalpyTool(): JSX.Element {
             gridTemplateColumns: "minmax(200px, 250px) 1fr",
           }}>
             <Stack gap={8}>
+              <OriginMark of="assumption" note="the constant reaction heat capacity you set" />
               <KnobSlider
                 knob={{ id: "dcp",
                   label: "constant reaction heat capacity [J/(K·mol NH₃)]",
@@ -186,6 +188,7 @@ export function ReactionEnthalpyTool(): JSX.Element {
               </PanelNote>
             </Stack>
             <Box style={{ minWidth: 0 }}>
+              <OriginMark of={["engine", "page"]} note="blue and red: the witness run in this browser (choupoProps); orange: Kirchhoff with your constant heat capacity, on this page" />
               {run.busy && (
                 <Group gap="sm" mb={6}><Loader size="xs" />
                   <Text size="xs" c="dimmed">one property run — seconds</Text>

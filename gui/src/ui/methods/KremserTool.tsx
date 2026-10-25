@@ -87,6 +87,7 @@ import {
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import { KREMSER_LIMITS, KREMSER_STEPS } from "./kremserLesson.js";
+import { OriginMark } from "./origin.js";
 
 // ---- The Kremser closed form (the authorized method geometry) --------------
 
@@ -406,6 +407,7 @@ export function KremserTool(): JSX.Element {
      the classroom provenance.  The result chips stay beside the plot. */
   const setup = (
     <>
+      <OriginMark of="assumption" note="the column values you set" />
       {showSourceToggle && (
         <SegmentedControl size="xs" value={source} fullWidth
           onChange={(v) => setSource(v as Source)}
@@ -529,6 +531,7 @@ export function KremserTool(): JSX.Element {
           </Text>
         </Box>
 
+        <OriginMark of={["engine", "page"]} note="the stars, A, K and the stage profile: the absorber solved in this browser (choupoSolve); the Kremser curves and the deviation: the closed form evaluated on this page at the engine's A" />
         {chips}
 
       {source === "classroom" && classroom.err && (

@@ -109,6 +109,7 @@ import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
 import { VAN_HEERDEN_LIMITS, VAN_HEERDEN_STEPS } from "./vanHeerdenLesson.js";
+import { OriginMark } from "./origin.js";
 
 // ---- Detection: which engine surface feeds the tool -------------------------
 // The COLUMN PAIR is the contract, never a unit or a case name (the Merkel
@@ -764,6 +765,7 @@ export function VanHeerdenTool(): JSX.Element {
      the diagram. */
   const controls = (
     <>
+      <OriginMark of="assumption" note="the reactor values and the starting guess you set" />
       {sourceToggle}
       <Switch size="xs" checked={showPhi} label="phi = R − G"
         onChange={(e) => setShowPhi(e.currentTarget.checked)} />
@@ -993,6 +995,7 @@ export function VanHeerdenTool(): JSX.Element {
           </Text>
         </Box>
 
+        <OriginMark of={["engine", "page"]} note="both curves and the reported state are the engine's scan run in this browser (choupoSolve); the crossings between scan points are interpolated on this page" />
         {chips}
 
         <Box style={{ display: "grid", gap: 14,

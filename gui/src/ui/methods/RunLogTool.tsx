@@ -46,6 +46,7 @@ import {
 import { RUN_LOG_LIMITS, RUN_LOG_STEPS } from "./runLogLesson.js";
 import { useCaseFilesRun } from "../../case/methodRun.js";
 import { filesToCaseFiles } from "../../cases/tutorials.js";
+import { OriginMark } from "./origin.js";
 
 const GRID = "var(--mantine-color-default-border)";
 const ACCENT = "var(--mantine-color-accent-5)";
@@ -456,6 +457,7 @@ export function RunLogTool(): JSX.Element {
         </Box>
 
         <Stack gap={8}>
+          <OriginMark of={["engine", "page"]} note="every line is the engine's log of a run in this browser; the kind each line is filed under, and the counts, are this page's classification" />
           <Group gap={6} wrap="wrap">
             {RUNS.map((r) => (
               <Button key={r.id} size="compact-sm"
@@ -538,6 +540,7 @@ export function RunLogTool(): JSX.Element {
         )}
 
         <Box>
+          <OriginMark of="engine" note="line counts measured on runs of flash01, quoted" />
           <Text size="xs" c="dimmed" fw={700} tt="uppercase" mb={4}>
             what each verbosity adds — measured on flash01
           </Text>

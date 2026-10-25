@@ -84,6 +84,7 @@ import { useMethodRun } from "../../case/methodRun.js";
 import { KnobField } from "./knobPanel.js";
 import { Tex } from "./lessonStep.js";
 import { T_SUBJECT_K } from "./WhatIsTemperatureTool.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const TEXT = "var(--mantine-color-text)";
@@ -385,6 +386,7 @@ export function ThermometerTrustTool(): JSX.Element {
 
         <Box>
           <Title order={5}>1 · The bridge instrument, and where it breaks</Title>
+          <OriginMark of={["engine", "page", "assumption"]} note="Z along the isochore is the engine's run in this browser (choupoProps) at the state you set; the idealised reading's error is computed on this page from it" />
           <Text size="sm" mt={4}>
             Thermodynamic temperature was historically got at with a
             constant-volume gas thermometer.  In its simplest, idealised
@@ -504,6 +506,7 @@ export function ThermometerTrustTool(): JSX.Element {
             argument of the section below.):
           </Text>
           <Box mt={8} style={{ overflowX: "auto" }}>
+            <OriginMark of="reference" note="ITS-90's defining fixed points, as the scale's text gives them" />
             <table style={{ borderCollapse: "collapse", width: "100%",
               fontSize: 13 }}>
               <thead>

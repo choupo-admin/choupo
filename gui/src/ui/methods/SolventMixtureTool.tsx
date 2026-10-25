@@ -40,6 +40,7 @@ import {
 
 import { tutorialByName } from "../../cases/tutorials.js";
 import { useMethodRun } from "../../case/methodRun.js";
+import { OriginMark, type OriginKind } from "./origin.js";
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
 import { SOLVENT_LIMITS, SOLVENT_STEPS } from "./solventMixtureLesson.js";
 import {
@@ -270,10 +271,16 @@ function TeasTriangle({ table }: { table: BlendTable }): JSX.Element {
 
 // ---- small helpers ---------------------------------------------------------------------------
 
-function Panel({ title, children }: { title: string; children: ReactNode }): JSX.Element {
+/** A panel.  `origin` is REQUIRED (DEV.md 4c C112): every panel on this
+ *  page states where its numbers came from. */
+function Panel({ title, origin, originNote, children }: {
+  title: string; origin: OriginKind | readonly OriginKind[];
+  originNote?: string; children: ReactNode;
+}): JSX.Element {
   return (
     <Box px="sm" py="sm" style={{ border: `1px solid ${GRID}`, borderRadius: 6 }}>
-      <Text size="xs" c="dimmed" fw={700} tt="uppercase" mb={8}>{title}</Text>
+      <Text size="xs" c="dimmed" fw={700} tt="uppercase" mb={4}>{title}</Text>
+      <Box mb={8}><OriginMark of={origin} note={originNote} /></Box>
       <Stack gap={10}>{children}</Stack>
     </Box>
   );
@@ -335,7 +342,8 @@ function QuestionPage(): JSX.Element {
     <Stack gap="md">
       {step(1)}
       {step(2)}
-      <Panel title="the records this lesson runs on">
+      <Panel title="the records this lesson runs on" origin={["reference", "assumption"]}
+        originNote="the synthetic pair is invented for the arithmetic; Hansen's 1967 placements are transcribed from his thesis">
         <Text size="sm">
           Page 2 and 3 use a <b>synthetic</b> pair -- solventA (16, 2, 4), solventB (16, 10, 12)
           and a polymer P at (17, 6, 8) with R0 = 4, all MPa^1/2, all invented so the
@@ -358,7 +366,8 @@ function PredictPage({ guess, setGuess, committed, commit }: {
   return (
     <Stack gap="md">
       {step(3)}
-      <Panel title="your prediction -- before the curve">
+      <Panel title="your prediction -- before the curve" origin="assumption"
+        originNote="your guess, and the synthetic pair's declared parameters">
         <Text size="sm">
           solventA is (16, 2, 4), solventB is (16, 10, 12), the polymer is (17, 6, 8), all
           MPa^1/2.  At which <b>volume fraction of solventB</b> do you expect the blend to
@@ -393,7 +402,8 @@ function CurvePage({ table, guess, committed }: {
         </Alert>
       ) : (
         <>
-          <Panel title="Ra along the A/B line -- the engine's rows">
+          <Panel title="Ra along the A/B line -- the engine's rows" origin="engine"
+            originNote="the hansenMixture operation, run in this browser (choupoProps)">
             <RaPlot table={table} xLabel={table.solvents[1] ?? "B"} r0={r0} guess={guess} />
             {best && (
               <Text size="sm">
@@ -408,7 +418,8 @@ function CurvePage({ table, guess, committed }: {
             <EngineSource witness={SYNTHETIC_WITNESS} csv={SYNTHETIC_CSV} />
           </Panel>
           <Group align="flex-start" grow>
-            <Panel title="the same path on the Teas triangle">
+            <Panel title="the same path on the Teas triangle" origin="engine"
+              originNote="the engine's rows, drawn on the triangle">
               <TeasTriangle table={table} />
               <Text size="xs" c="dimmed">
                 The triangle normalises the magnitude away: it shows the character of the
@@ -463,7 +474,8 @@ function RealPage({ acetone, nitro, screen, observations }: {
   return (
     <Stack gap="md">
       {step(6)}
-      <Panel title="polystyrene against hexane + acetone, by volume">
+      <Panel title="polystyrene against hexane + acetone, by volume" origin={["engine", "reference"]}
+        originNote="the engine's rows on Hansen's own placements">
         <RaPlot table={acetone} xLabel={acetone.solvents[1] ?? "acetone"} r0={r0of(acetone)} />
         {bestA && (
           <Text size="sm">
@@ -476,7 +488,8 @@ function RealPage({ acetone, nitro, screen, observations }: {
         <EngineSource witness={REAL_WITNESS} csv={REAL_ACETONE_CSV} />
       </Panel>
       {step(7)}
-      <Panel title="polystyrene against hexane + nitromethane, by mole">
+      <Panel title="polystyrene against hexane + nitromethane, by mole" origin={["engine", "reference"]}
+        originNote="the engine's rows on Hansen's own placements">
         <RaPlot table={nitro} xLabel={nitro.solvents[1] ?? "nitromethane"} r0={r0of(nitro)} />
         {bestN && (
           <Text size="sm">
@@ -490,7 +503,8 @@ function RealPage({ acetone, nitro, screen, observations }: {
         <EngineSource witness={REAL_WITNESS} csv={REAL_NITRO_CSV} />
       </Panel>
       {step(8)}
-      <Panel title="thirteen pure solvents: predicted RED beside the thesis's rating">
+      <Panel title="thirteen pure solvents: predicted RED beside the thesis's rating" origin={["engine", "reference"]}
+        originNote="RED is the engine's; the ratings are the thesis's observations">
         <Box style={{ overflowX: "auto" }}>
           <Table fz="xs" striped withTableBorder>
             <Table.Thead>

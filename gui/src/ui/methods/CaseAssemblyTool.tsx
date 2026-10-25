@@ -53,6 +53,7 @@ import {
 } from "./caseAssemblyLesson.js";
 import { useCaseFilesRun, useMethodRun } from "../../case/methodRun.js";
 import { filesToCaseFiles, tutorialByName } from "../../cases/tutorials.js";
+import { OriginMark } from "./origin.js";
 
 const GRID = "var(--mantine-color-default-border)";
 const ACCENT = "var(--mantine-color-accent-5)";
@@ -264,6 +265,7 @@ export function CaseAssemblyTool(): JSX.Element {
         <Box id="case-assembly-files"
           style={{ borderLeft: `3px solid ${ACCENT}`, paddingLeft: 12 }}>
           <Title order={4}>The files of flash01</Title>
+          <OriginMark of="assumption" note="the witness case's files, exactly as its author declared them" />
           <Text size="sm" mt={4}>
             Click a file. You get what it says, the line of the engine that
             reads it and when, and the file itself exactly as it is on disk.
@@ -287,6 +289,7 @@ export function CaseAssemblyTool(): JSX.Element {
         {/* ---------------- THE ASSEMBLY ---------------- */}
         <Box style={{ borderLeft: `3px solid ${ACCENT}`, paddingLeft: 12 }}>
           <Title order={4}>The assembly, move by move</Title>
+          <OriginMark of="engine" note="the lines the engine printed when this page ran flash01 in this browser" />
           <Text size="sm" mt={4}>
             The numbered list is what happens between <Mono>runCase</Mono> and
             the files a run leaves behind, with the line that does each move;
@@ -351,6 +354,7 @@ export function CaseAssemblyTool(): JSX.Element {
         {/* ---------------- WHAT IT WROTE ---------------- */}
         <Box style={{ borderLeft: `3px solid ${ACCENT}`, paddingLeft: 12 }}>
           <Title order={4}>What this page's run wrote</Title>
+          <OriginMark of="engine" note="the files that run handed back" />
           <Text size="sm" mt={4}>
             The same run, read back: the files it handed back, by folder.
             Nothing here is listed by hand.
@@ -413,6 +417,7 @@ export function CaseAssemblyTool(): JSX.Element {
         {/* ---------------- THE BREAKS ---------------- */}
         <Box style={{ borderLeft: `3px solid ${REFUSED}`, paddingLeft: 12 }}>
           <Title order={4}>Break a copy of flash01</Title>
+          <OriginMark of="engine" note="the engine's own answer on the broken copy, run in this browser" />
           <Text size="sm" mt={4}>
             Pick one. The copy lives in this page&apos;s memory only; the case
             is never changed.

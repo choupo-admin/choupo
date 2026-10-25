@@ -93,6 +93,7 @@ import {
   lubFromTimes, readBreakthroughCsv, readLabColumn, scaleUp,
   stoichiometricTime,
 } from "./lubScaleupMath.js";
+import { OriginMark } from "./origin.js";
 
 // ---- The post-processing knobs ---------------------------------------------
 // These three never touch the engine: the criterion is a specification, the
@@ -253,6 +254,7 @@ export function LubScaleupTool(): JSX.Element {
   // ---- The setup panel: source, engine knobs, design knobs, provenance ----
   const controls = (
     <>
+      <OriginMark of="assumption" note="the bed and the design brief you set" />
       {hasAppTrajectory && (
         <SegmentedControl size="xs" value={src} fullWidth
           onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
@@ -479,6 +481,7 @@ export function LubScaleupTool(): JSX.Element {
         </Box>
 
         {refusal}
+        <OriginMark of="engine" note="the laboratory column integrated in this browser (choupoBatch); a measured curve, when the case ships one, is drawn as markers and labelled measured" />
 
         <Box style={{ display: "grid", gap: 14,
           gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
@@ -518,6 +521,7 @@ export function LubScaleupTool(): JSX.Element {
         </Stack>
 
         <Box style={{ overflowX: "auto" }}>
+          <OriginMark of={["engine", "page"]} note="times read off the curve on this page; the engine's KPIs on the rows that name them" />
           <Table withTableBorder withColumnBorders style={{ fontSize: 12 }} verticalSpacing={2}>
             {head}
             <Table.Tbody>
@@ -543,6 +547,7 @@ export function LubScaleupTool(): JSX.Element {
         {lessonStep(3)}
 
         <Box style={{ overflowX: "auto" }}>
+          <OriginMark of={["engine", "page"]} note="the balance on this page; the rows that name the engine are its KPIs" />
           <Table withTableBorder withColumnBorders style={{ fontSize: 12 }} verticalSpacing={2}>
             {head}
             <Table.Tbody>
@@ -559,6 +564,7 @@ export function LubScaleupTool(): JSX.Element {
         {lessonStep(4)}
 
         <Box style={{ overflowX: "auto" }}>
+          <OriginMark of={["page", "assumption"]} note="the LUB arithmetic on this page; L_lab is declared" />
           <Table withTableBorder withColumnBorders style={{ fontSize: 12 }} verticalSpacing={2}>
             {head}
             <Table.Tbody>
@@ -573,6 +579,7 @@ export function LubScaleupTool(): JSX.Element {
         {lessonStep(5)}
 
         <Box style={{ overflowX: "auto" }}>
+          <OriginMark of={["page", "assumption"]} note="the scale-up arithmetic on this page, from the design brief you set" />
           <Table withTableBorder withColumnBorders style={{ fontSize: 12 }} verticalSpacing={2}>
             {head}
             <Table.Tbody>

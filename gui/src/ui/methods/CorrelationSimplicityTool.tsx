@@ -50,6 +50,7 @@ import {
 } from "@mantine/core";
 
 import { useMethodRun } from "../../case/methodRun.js";
+import { OriginMark, type OriginKind } from "./origin.js";
 import { LessonLimits, Tex, lessonStepper } from "./lessonStep.js";
 import { SIMPLICITY_LIMITS, SIMPLICITY_STEPS } from "./correlationSimplicityLesson.js";
 import {
@@ -290,10 +291,16 @@ function CurvePlot({ series, xLog = true, yLog = true, xLabel, yLabel, yDomain, 
 
 // ---- small shared pieces ---------------------------------------------------------------
 
-function Panel({ title, children }: { title: string; children: ReactNode }): JSX.Element {
+/** A result panel.  `origin` is REQUIRED (DEV.md 4c C112): every panel on
+ *  this page states where its numbers came from. */
+function Panel({ title, origin, originNote, children }: {
+  title: string; origin: OriginKind | readonly OriginKind[];
+  originNote?: string; children: ReactNode;
+}): JSX.Element {
   return (
     <Box px="sm" py="sm" style={{ border: `1px solid ${GRID}`, borderRadius: 6 }}>
-      <Text size="xs" c="dimmed" fw={700} tt="uppercase" mb={8}>{title}</Text>
+      <Text size="xs" c="dimmed" fw={700} tt="uppercase" mb={4}>{title}</Text>
+      <Box mb={8}><OriginMark of={origin} note={originNote} /></Box>
       <Stack gap={10}>{children}</Stack>
     </Box>
   );
@@ -379,7 +386,8 @@ export function DimensionalPage(): JSX.Element {
     <Stack gap="md">
       {step(1)}
       {step(2)}
-      <Panel title="the dimensional matrix, live">
+      <Panel title="the dimensional matrix, live" origin={["page", "assumption"]}
+        originNote="the rank and the groups are computed on this page from the variables you tick">
         <SegmentedControl size="xs" value={pid} onChange={(v) => setPid(v as DimProblem["id"])}
           data={[{ value: "friction", label: PROBLEMS.friction.title },
             { value: "convection", label: PROBLEMS.convection.title }]} />
@@ -527,7 +535,8 @@ export function PiPage({ moody }: { moody: SweepTable }): JSX.Element {
     <Stack gap="md">
       {step(4)}
       {step(5)}
-      <Panel title="an invented law beside the engine's">
+      <Panel title="an invented law beside the engine's" origin={["engine", "page", "assumption"]}
+        originNote="Colebrook is the engine's sweep run in this browser; the ripple is this page's, at the amplitude and frequency you set">
         <RoughnessPicker keys={keys} value={e} onChange={setEps} />
         <LabeledSlider label={<>ripple amplitude <Tex src="a" mode="inline" /></>} value={a}
           min={0} max={0.3} step={0.01} onChange={setA} show={a.toFixed(2)} />
@@ -586,7 +595,8 @@ export function AsymptotesPage({ moody }: { moody: SweepTable }): JSX.Element {
       {step(6)}
       {step(7)}
       {step(8)}
-      <Panel title="the Moody plane, from the engine">
+      <Panel title="the Moody plane, from the engine" origin={["engine", "page"]}
+        originNote="the curves are the engine's sweep run in this browser; the local slopes are taken on this page">
         <CurvePlot xLabel="Re" yLabel="f (Darcy)" height={340} yDomain={[5e-3, 1]}
           bands={[{ x0: 2300, x1: 4000, label: "transition" }]}
           series={[
@@ -649,7 +659,8 @@ export function SlavePage(): JSX.Element {
     <Stack gap="md">
       {step(9)}
       {step(10)}
-      <Panel title="Haken's model: the full pair against the reduced equation">
+      <Panel title="Haken's model: the full pair against the reduced equation" origin={["page", "assumption"]}
+        originNote="both systems integrated on this page, at the ratio you set; no engine run">
         <LabeledSlider label={<>scale ratio <Tex src="\gamma/\varepsilon" mode="inline" /></>}
           value={lr} min={0} max={3} step={0.05} onChange={setLr} show={fmtSig(gamma / eps, 3)} />
         <Group gap={8} wrap="wrap">
@@ -769,7 +780,8 @@ export function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: S
   return (
     <Stack gap="md">
       {step(12)}
-      <Panel title="one decade, one power law">
+      <Panel title="one decade, one power law" origin={["engine", "page"]}
+        originNote="the engine's sweep, fitted on this page">
         <SegmentedControl size="xs" value={which}
           onChange={(v) => { setWhich(v as FitCurveId); setI0(null); }}
           data={[{ value: "colebrook", label: "Colebrook, smooth pipe" },
@@ -826,7 +838,8 @@ export function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: S
       </Panel>
 
       {step(13)}
-      <Panel title="Churchill's expression as a blend of its two asymptotes">
+      <Panel title="Churchill's expression as a blend of its two asymptotes" origin={["engine", "page", "assumption"]}
+        originNote="the asymptotes and f are the engine's; the blend at your n is this page's">
         <RoughnessPicker keys={keys} value={e} onChange={setEps} />
         <LabeledSlider label={<>blending exponent <Tex src="n" mode="inline" /></>} value={n}
           min={1} max={30} step={1} onChange={setN} show={String(n)} />
@@ -851,7 +864,8 @@ export function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: S
       </Panel>
 
       {step(14)}
-      <Panel title="where no mechanism dominates">
+      <Panel title="where no mechanism dominates" origin={["engine", "page"]}
+        originNote="the correlations are the engine's sweep; the spread is computed on this page">
         <RoughnessPicker keys={keys} value={eT} onChange={setEpsT} />
         <CurvePlot xLabel="Re" yLabel="spread s (0.1 = 10 %)" yLog={false} height={240}
           xDomain={[1e3, 1e5]} bands={[{ x0: 2300, x1: 4000, label: "transition" }]}

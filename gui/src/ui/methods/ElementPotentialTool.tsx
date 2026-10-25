@@ -54,6 +54,7 @@ import {
   readNewtonLog, routeEnd, stagesOf, type LogRecord,
 } from "./elementPotentialRun.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 function fmt(v: number | null | undefined, digits = 4): string {
   if (v === null || v === undefined) return "—";
@@ -271,6 +272,7 @@ export function ElementPotentialTool(): JSX.Element {
           <Box mt={8} style={{ display: "grid", gap: 14,
             gridTemplateColumns: "minmax(200px, 250px) 1fr" }}>
             <Stack gap={8}>
+              <OriginMark of="assumption" note="the shift reactor's T you choose" />
               <KnobSlider knob={SHIFT_T} value={shiftT} onChange={setShiftT} showWhy />
               <PanelNote>
                 Runs <code>tutorials/{EP_WITNESS}</code>; its <code>shift</code>{" "}
@@ -279,6 +281,7 @@ export function ElementPotentialTool(): JSX.Element {
               </PanelNote>
             </Stack>
             <Box style={{ minWidth: 0 }}>
+              <OriginMark of="engine" note="the Newton log the engine wrote when this page ran the witness in this browser" />
               <Missing why={shift.why} />
               {shift.recs && (
                 <NewtonTable recs={shift.recs} stage="leastSquaresSeed"
@@ -295,6 +298,7 @@ export function ElementPotentialTool(): JSX.Element {
         {step(4)}
         <Box>
           <Title order={5}>The liquid (gibbs07, 350 K) and the solid (the reformer, 1000 K)</Title>
+          <OriginMark of="engine" note="the Newton logs of two witness runs in this browser" />
           <Missing why={liquid.why} />
           {liquid.recs && (() => {
             const L = bisection(liquid.recs, "liquidBisection", "L", "r");
@@ -340,9 +344,11 @@ export function ElementPotentialTool(): JSX.Element {
           <Box mt={8} style={{ display: "grid", gap: 14,
             gridTemplateColumns: "minmax(200px, 250px) 1fr" }}>
             <Stack gap={8}>
+              <OriginMark of="assumption" note="the ammonia reactor's T you choose" />
               <KnobSlider knob={AMMONIA_T} value={ammoniaT} onChange={setAmmoniaT} showWhy />
             </Stack>
             <Box style={{ minWidth: 0 }}>
+              <OriginMark of="engine" note="the route the engine's log records" />
               <Missing why={ammonia.why} />
               {ammonia.recs && (() => {
                 const recs = ammonia.recs;

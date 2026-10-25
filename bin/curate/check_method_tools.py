@@ -25,7 +25,8 @@ WHAT IS CHECKED
   2.  Ids, BOTH DIRECTIONS: nothing in the published artefact that is not live
       in the registry, and nothing live in the registry that is missing from the
       artefact.
-  3.  Per tool, the label, the one-line `teaches` and the deep link are
+  3.  Per tool, the label, the one-line `teaches`, the `origins` (where the
+      page's numbers come from, DEV.md 4c C112) and the deep link are
       identical.  A stale caption is drift too, and it is the kind a reader
       believes.
   4.  Every published `href` is the app's existing contract,
@@ -177,7 +178,7 @@ def main():
                      "tool the app has.")
 
     for tid in sorted(set(pub_tools) & set(live_tools)):
-        for field in ("label", "teaches", "href"):
+        for field in ("label", "teaches", "origins", "href"):
             if pub_tools[tid].get(field) != live_tools[tid].get(field):
                 fails.append(
                     f"'{tid}': published {field} {pub_tools[tid].get(field)!r} "
@@ -240,7 +241,7 @@ def main():
     print(f"check_method_tools: the landing's EduTools list IS the live registry "
           f"-- {len(live_tools)} live tool(s) of {live.get('registryTools')} in "
           f"gui/src/ui/methods/registry.ts, re-derived by importing the module; "
-          f"same {len(pub_tools)} ids both ways, labels/blurbs/deep links "
+          f"same {len(pub_tools)} ids both ways, labels/blurbs/origins/deep links "
           f"identical, every href on the `?workspace=methods&tool=` contract; "
           f"site/index.html fetches the artefact, carries no tool id, label or "
           f"blurb of its own, and bin/buildSite publishes it.  BLIND SPOT: the "

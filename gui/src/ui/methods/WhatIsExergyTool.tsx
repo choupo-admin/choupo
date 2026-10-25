@@ -75,6 +75,7 @@ import { Alert, Box, Group, Loader, Slider, Stack, Text, Title }
 
 import { useMethodRun } from "../../case/methodRun.js";
 import { Tex } from "./lessonStep.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -266,6 +267,7 @@ function ReservoirKnob() {
   return (
     <Box my={8} px="sm" py={8} style={{ border: `1px solid ${GRID}`,
       borderRadius: 6 }}>
+      <OriginMark of={["page", "assumption"]} note="Q (1 - T0/T) on this page, at the reservoir temperature you move" />
       <Text size="xs" c={INK} fw={700} tt="uppercase">
         the same 100 kJ, from a reservoir you move
       </Text>
@@ -302,6 +304,7 @@ function ExergyTable({ lg }: { lg: ExergyLedger }) {
   );
   return (
     <Box my={8} style={{ border: `1px solid ${GRID}`, borderRadius: 6 }}>
+      <Box px="sm" pt={6}><OriginMark of={["engine", "page"]} note="the two legs are the engine's, from the witness run in this browser; their sum is this page's" /></Box>
       <Group justify="space-between" px="sm" py={6}
         style={{ borderBottom: `2px solid ${GRID}` }}>
         <Text size="xs" c={INK} fw={700} tt="uppercase">
@@ -344,6 +347,7 @@ function GouyStodolaKnob() {
   return (
     <Box my={8} px="sm" py={8} style={{ border: `1px solid ${GRID}`,
       borderRadius: 6 }}>
+      <OriginMark of={["engine", "page", "assumption"]} note="dS_gen is the recorded run (golden) of compressor01_air; T0 is yours; the product is this page's" />
       <Text size="xs" c={INK} fw={700} tt="uppercase">
         what this compressor’s dS_gen costs, under your finger
       </Text>

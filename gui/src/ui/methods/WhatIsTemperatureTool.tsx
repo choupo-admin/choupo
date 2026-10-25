@@ -96,6 +96,7 @@ License
 import { Box, Group, Stack, Text, Title } from "@mantine/core";
 
 import { Tex } from "./lessonStep.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -408,6 +409,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
           </Text>
           <Box mt={6} p={8} style={{ border: `1px solid ${GRID}`,
             borderRadius: 4, fontSize: 13 }}>
+            <OriginMark of={["page", "reference", "assumption"]} note="the reading is an example value; the Callendar-Van Dusen constants are IEC 60751's; the arithmetic is written out on this page" />
             signal 119.4 Ω → calibration → <M t="t" /> ≈ 50.01 °C →{" "}
             <strong>323.16 K</strong>
           </Box>
@@ -534,6 +536,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
 
         <Box>
           <Title order={5}>7 · What an assumed emissivity costs — a worked example</Title>
+          <OriginMark of={["page", "assumption"]} note="Wien's approximation evaluated on this page for an example furnace reading and an assumed emissivity error" />
           <Text size="sm" mt={4}>
             The pyrometer is the instrument where the bridge is most visible.
             It observes <strong>radiance</strong>, not temperature directly,

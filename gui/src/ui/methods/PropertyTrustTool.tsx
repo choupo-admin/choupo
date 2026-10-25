@@ -53,6 +53,7 @@ import { Fragment, useMemo } from "react";
 import { Alert, Box, Group, Loader, Stack, Text, Title } from "@mantine/core";
 
 import { useMethodRun } from "../../case/methodRun.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const TEXT = "var(--mantine-color-text)";
@@ -174,6 +175,7 @@ export function PropertyTrustTool(): JSX.Element {
 
         {ladder.length > 0 && (
           <Box style={{ overflowX: "auto" }}>
+            <OriginMark of={["engine", "page", "reference"]} note="P_sat at each record's own T_b is the engine's run in this browser; the records' T_b are their cited values; the departure from 101 325 Pa is computed on this page" />
             <table style={{ borderCollapse: "collapse", width: "100%",
               fontSize: 13 }}>
               <thead>

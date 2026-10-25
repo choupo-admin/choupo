@@ -127,6 +127,7 @@ import {
 } from "@mantine/core";
 import { IconBook, IconExternalLink, IconSearch } from "@tabler/icons-react";
 import { ChapterIndex } from "./methods/ChapterIndex.js";
+import { OriginLegend, OriginMark } from "./methods/origin.js";
 import { EduToolsFind, openEduToolsFind } from "./methods/EduToolsFind.js";
 
 import { resolveAdapter } from "../adapters/index.js";
@@ -479,6 +480,12 @@ export function MethodsWorkspace() {
           caption sits OUTSIDE that last child, which is the one control the
           other ten pages have always rested on (exposure.mjs: reach 1). */}
       <TeachesLine tool={active} pageRef={pageRef} />
+      {/* THE ORIGIN LEGEND (DEV.md 4c C112, points 15 and 18), drawn here
+          once for every tool: which of the four origins this page's numbers
+          have -- read from the tool's own registry entry -- and what each
+          word means.  Every result panel inside the tool carries its own
+          OriginMark; tests/methodOrigins.test.ts holds the two together. */}
+      <OriginLegend origins={active.origins} />
       {/* "Find in EduTools" -- drawn once here, opened from the Find button
           on the line above and from the tab's Tool menu (DEV.md 4c C113). */}
       <EduToolsFind />
@@ -1000,8 +1007,15 @@ function McCabeTool({ catalogue, localUnifac, componentFiles }: {
 
         <Box style={{ display: "grid", gap: 14,
           gridTemplateColumns: "minmax(210px, 250px) 1fr" }}>
-          <Stack gap={8}>{setupRail}</Stack>
-          <Box style={{ minWidth: 0 }}>{plotPane}</Box>
+          <Stack gap={8}>
+            <OriginMark of="assumption" note="the pair, P, R and q you choose" />
+            {setupRail}
+          </Stack>
+          <Box style={{ minWidth: 0 }}>
+            <OriginMark of={["engine", "page"]}
+              note="y*(x) is a choupoProps run in this browser; the operating lines, the staircase and its stage counts are the page's geometry on that curve" />
+            {plotPane}
+          </Box>
         </Box>
 
         {step(4)}
@@ -1199,8 +1213,15 @@ function PsychroTool({ catalogue, componentFiles }: {
 
         <Box style={{ display: "grid", gap: 14,
           gridTemplateColumns: "minmax(220px, 260px) 1fr" }}>
-          <Stack gap={8}>{setupRail}</Stack>
-          <Box style={{ minWidth: 0 }}>{plotPane}</Box>
+          <Stack gap={8}>
+            <OriginMark of="assumption" note="the pair, the T range and P you choose" />
+            {setupRail}
+          </Stack>
+          <Box style={{ minWidth: 0 }}>
+            <OriginMark of="engine"
+              note="every line of the chart, and Le, is a choupoProps run in this browser" />
+            {plotPane}
+          </Box>
         </Box>
 
         {step(4)}

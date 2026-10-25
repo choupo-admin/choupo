@@ -53,6 +53,7 @@ import { Alert, Box, Group, Loader, Stack, Text, Title }
   from "@mantine/core";
 
 import { useMethodRun } from "../../case/methodRun.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -260,6 +261,7 @@ export function PropertyOriginsTool(): JSX.Element {
 
         <Box>
           <Title order={5}>2 · Estimation, live — and what it costs</Title>
+          <OriginMark of={["engine", "page", "reference"]} note="the Joback estimates are the engine's run in this browser; the reference values are those the case cites; the % error is computed on this page" />
           <Text size="sm" mt={4}>
             The honest way to trust an estimation method is to aim it at a
             substance you already know.  Your browser has just asked the

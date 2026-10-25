@@ -102,6 +102,7 @@ import {
   KnobField, KnobNumber, PanelNote,
 } from "./knobPanel.js";
 import { PINCH_LIMITS, PINCH_STEPS } from "./pinchLesson.js";
+import { OriginMark } from "./origin.js";
 
 // ---- Where the engine's pinch artefacts live in the run result --------------
 // csvFiles keys are case-root-relative (solverWorker.js walks /case and strips
@@ -663,6 +664,7 @@ export function PinchCompositeTool(): JSX.Element {
      lesson is about. */
   const controls = (
     <>
+      <OriginMark of="assumption" note="ΔTmin and the streams you set" />
       {showSourceToggle && (
         <SegmentedControl size="xs" value={source} fullWidth
           onChange={(v) => setSource(v as Source)}
@@ -835,6 +837,7 @@ export function PinchCompositeTool(): JSX.Element {
           </Text>
         </Box>
 
+        <OriginMark of={["engine", "page"]} note="the targets, the composite curves and the candidate matches are the pinch pass run in this browser (choupoSolve); the grand composite and the cross-check are derived on this page from the engine's curves" />
         {chips}
 
         {source === "classroom" && method.err && (

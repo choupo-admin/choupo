@@ -65,6 +65,7 @@ import {
   readReconciliation, rowValue,
   type QPProblem,
 } from "./activeSetQpMath.js";
+import { OriginMark } from "./origin.js";
 
 const GRID = "var(--mantine-color-default-border)";
 const INK = "var(--mantine-color-dimmed)";
@@ -310,6 +311,7 @@ export function ActiveSetQpTool(): JSX.Element {
         <Box style={{ display: "grid", gap: 16,
           gridTemplateColumns: rail }}>
           <Stack gap={8}>
+            <OriginMark of="assumption" note="the two gradients, the budget and the start you choose" />
             <KnobSlider knob={G1} value={g1} showWhy onChange={setG1} />
             <KnobSlider knob={G2} value={g2} showWhy onChange={setG2} />
             <KnobSlider knob={BUDGET} value={budget} showWhy
@@ -339,6 +341,7 @@ export function ActiveSetQpTool(): JSX.Element {
           </Stack>
 
           <Stack gap={10}>
+            <OriginMark of="page" note="this page's TypeScript transcription of the engine's active-set QP, run on the problem drawn; the anchor compares it with the values the engine's own self-check asserts" />
             <QpPlot qp={qp} path={path} active={trace.active}
               answer={trace.d} />
             <Group gap="xs" wrap="wrap">
@@ -479,6 +482,7 @@ export function ActiveSetQpTool(): JSX.Element {
         <Box style={{ display: "grid", gap: 16,
           gridTemplateColumns: rail }}>
           <Stack gap={8}>
+            <OriginMark of="assumption" note="the alkalinity uncertainty you set" />
             <KnobSlider knob={SIGMA} value={sigmaPct} showWhy
               onChange={setSigmaPct} />
             {run.busy && (
@@ -496,6 +500,7 @@ export function ActiveSetQpTool(): JSX.Element {
           </Stack>
 
           <Stack gap={10}>
+            <OriginMark of="engine" note="the witness's reconciliation, run in this browser" />
             {run.err && (
               <Alert color="red" title="The run did not finish">
                 <Text size="sm">{run.err}</Text>

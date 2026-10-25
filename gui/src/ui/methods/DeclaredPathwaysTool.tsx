@@ -82,6 +82,7 @@ import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
 import { PATHWAYS_LIMITS, PATHWAYS_STEPS } from "./declaredPathwaysLesson.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 /** The bundled witness (no leading `tutorials/`). */
 export const PATHWAYS_WITNESS =
@@ -269,6 +270,7 @@ export function DeclaredPathwaysTool(): JSX.Element {
             gridTemplateColumns: "minmax(200px, 250px) 1fr",
           }}>
             <Stack gap={8}>
+              <OriginMark of="assumption" note="T and |ΔT| you choose" />
               <KnobSlider knob={T_KNOB} value={T} onChange={setT} showWhy />
               <KnobSlider knob={DT_KNOB} value={dT} onChange={setDT} showWhy />
               <PanelNote>
@@ -281,6 +283,7 @@ export function DeclaredPathwaysTool(): JSX.Element {
               </PanelNote>
             </Stack>
             <Box style={{ minWidth: 0 }}>
+              <OriginMark of="engine" note="the witness run in this browser (choupoSolve)" />
               {run.busy && (
                 <Group gap="sm" wrap="nowrap" align="center" mb={6}>
                   <Loader size="xs" />

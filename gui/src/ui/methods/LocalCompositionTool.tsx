@@ -49,6 +49,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Alert, Box, Code, Stack, Text, Title } from "@mantine/core";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -215,6 +216,7 @@ export function LocalCompositionTool(): JSX.Element {
 
       <Alert variant="light" color="orange"
         title="What happens when a pair has no parameters — and why no textbook tells you">
+        <OriginMark of="page" note="the two γ values are worked out by hand here from Wilson's equation" />
         <Text size="sm">
           Every model on this page needs numbers fitted to <em>your</em> pair.
           A textbook stops there.  An implementation cannot: it has to do

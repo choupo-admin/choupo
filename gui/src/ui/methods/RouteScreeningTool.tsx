@@ -61,6 +61,7 @@ import {
   SCREEN_LIMITS, SCREEN_SECTIONS, type ScreenSection,
 } from "./routeScreeningLesson.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -329,6 +330,7 @@ export function RouteScreeningTool(): JSX.Element {
               <Text size="sm">{run.err}</Text>
             </Alert>
           )}
+          <OriginMark of="assumption" note="T and P you choose" />
           <Box mt={10} style={{
             display: "grid", gap: 12,
             gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
@@ -344,6 +346,7 @@ export function RouteScreeningTool(): JSX.Element {
               </Text>
             </Group>
           )}
+          <OriginMark of={["engine", "page", "assumption"]} note="columns 3 to 5: the witness run in this browser (choupoSolve); columns 1 and 2: arithmetic on this page on the stoichiometry and your placeholder prices" />
           <Box mt={10}>{table}</Box>
           <Group gap="xs" mt={6}>
             <Badge variant="light" color="gray">T = {T} K · P = {P} bar</Badge>

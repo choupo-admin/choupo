@@ -57,6 +57,7 @@ import { LETDOWN_LIMITS, LETDOWN_SOURCES, LETDOWN_STEPS } from "./letdownLesson.
 import { KnobSlider, PanelNote } from "./knobPanel.js";
 import { LessonLimits, LessonStepView } from "./lessonStep.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 const step = (n: number) => {
   const s = LETDOWN_STEPS.find((q) => q.n === n);
@@ -162,6 +163,7 @@ function LetdownBench({ run, P2, setP2, D, setD }: {
   return (
     <Box>
       <Title order={5}>The letdown, run by the engine</Title>
+      <OriginMark of={["engine", "assumption"]} note="the witness solved in this browser (choupoSolve) at the P2 and D you set" />
       <Text size="sm" mt={4}>
         The green-ammonia separator liquid let down in two throttles, each
         followed by a drum.  Move the storage pressure -- the second
@@ -232,6 +234,7 @@ function GasBench({ run, props, xT, setXT }: {
   return (
     <Box>
       <Title order={5}>The purge letdown: how far past the choke</Title>
+      <OriginMark of={["engine", "page", "assumption"]} note="the fluid properties are the engine's props run; the IEC 60534-2-1 relations, as the fluids library implements them, are evaluated on this page; x_T is your declared assumption" />
       <Box mt={8} style={KNOB_GRID}>
         <KnobSlider knob={{ id: "xT", label: "x_T, the valve's choked pressure-drop ratio factor",
           min: 0.1, max: 0.95, step: 0.01 }} value={xT} onChange={setXT} />
@@ -301,6 +304,7 @@ function LiquidBench({ run, props, P2, setP2, FL, setFL }: {
   return (
     <Box>
       <Title order={5}>The second throttle: where the vena contracta sits</Title>
+      <OriginMark of={["engine", "page", "assumption"]} note="the engine's fluid properties; the vena-contracta relations evaluated on this page; F_L is your declared assumption" />
       <Box mt={8} style={KNOB_GRID}>
         <KnobSlider knob={{ id: "FL", label: "F_L, the valve's pressure recovery factor",
           min: 0.5, max: 0.99, step: 0.01 }} value={FL} onChange={setFL} />
@@ -372,6 +376,7 @@ function StagesBench({ run, props, P2, FL }: {
   return (
     <Box>
       <Title order={5}>The stages slider</Title>
+      <OriginMark of={["engine", "page", "assumption"]} note="the equal-ratio staging is this page's model of a staged trim, on the engine's fluid properties" />
       <Box mt={8} style={KNOB_GRID}>
         <KnobSlider knob={{ id: "n", label: "number of stages", min: 1, max: 8, step: 1 }}
           value={n} onChange={(v) => setN(Math.max(1, Math.min(8, Math.round(v))))} />
@@ -432,6 +437,7 @@ function RecoveryBench({ run, props }: { run: MethodRunState; props: MethodRunSt
   return (
     <Box>
       <Title order={5}>What a turbine would take back</Title>
+      <OriginMark of={["engine", "page"]} note="the engine's streams, an ideal turbine's work computed on this page" />
       <Box mt={8} style={KNOB_GRID}>
         <KnobSlider knob={{ id: "eta", label: "turbine efficiency η", min: 0.3, max: 0.95, step: 0.01 }}
           value={eta} onChange={setEta} />
@@ -490,6 +496,7 @@ function NoiseBench({ run, props }: { run: MethodRunState; props: MethodRunState
   return (
     <Box>
       <Title order={5}>The three valves, in decibels against each other</Title>
+      <OriginMark of={["engine", "page", "assumption"]} note="the noise relations, as the fluids library implements them, evaluated on this page on the engine's streams" />
       <PanTable>
         <Table.Thead>
           <Table.Tr><Table.Th>valve</Table.Th><Table.Th>mechanical power dissipated [kW]</Table.Th><Table.Th>dB against the first throttle, same fraction</Table.Th></Table.Tr>

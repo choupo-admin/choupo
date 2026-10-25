@@ -95,6 +95,7 @@ import {
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import { MERKEL_LIMITS, MERKEL_STEPS } from "./merkelLesson.js";
+import { OriginMark } from "./origin.js";
 
 // ---- Detection: which units feed the tool -----------------------------------
 
@@ -340,6 +341,7 @@ export function MerkelTool(): JSX.Element {
      inputs left, the engine's picture right. */
   const controls = (
     <Stack gap={8}>
+      <OriginMark of="assumption" note="the tower values you set" />
       {sourceToggle}
       {active && units.length > 1 && (
         <KnobField label="tower">
@@ -464,6 +466,7 @@ export function MerkelTool(): JSX.Element {
 
         {/* The published numbers: the KPI line and the hand-method
             cross-check.  They report on the run, so they sit with it. */}
+        <OriginMark of={["engine", "page"]} note="the KPIs and both curves are the tower solved in this browser (choupoSolve); the only thing computed here is the relative deviation between two engine numbers" />
         <Group gap="sm" wrap="wrap" align="center">
           {active && (
             <Text size="xs" c="dimmed">

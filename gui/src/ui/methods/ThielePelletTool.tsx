@@ -93,6 +93,7 @@ import {
   type SweepRead, type ThieleKnobValues,
 } from "../../case/thielePellet.js";
 import { KnobField, KnobSlider, PanelNote } from "./knobPanel.js";
+import { OriginMark } from "./origin.js";
 
 /*  THE LESSON, as data rather than as markup.
  *
@@ -850,6 +851,7 @@ export function ThielePelletTool(): JSX.Element {
         <Box style={{ display: "grid", gap: 14,
           gridTemplateColumns: "minmax(210px, 250px) 1fr" }}>
           <Stack gap={6}>
+            <OriginMark of="assumption" note="the pellet values you set" />
             {knobRail}
             {busy && (
               <Group gap={6} wrap="nowrap" align="center">
@@ -860,6 +862,7 @@ export function ThielePelletTool(): JSX.Element {
           </Stack>
 
           <Box style={{ minWidth: 0, position: "relative" }}>
+            <OriginMark of="engine" note="three shapes solved in this browser (choupoProps); the dashed closed forms are the operation's own columns too" />
             <Group gap="xs" wrap="wrap" align="center" mb={4}>
               <Tooltip withArrow multiline w={430}
                 label={"D_eff is not stored anywhere: the engine derives it as "

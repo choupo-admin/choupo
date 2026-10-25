@@ -56,6 +56,7 @@ import {
 } from "./poolFire.js";
 import { POOL_LIMITS, POOL_SOURCES, POOL_STEPS } from "./poolFireLesson.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 const HUE_POINT = PLOT_COLORS.series[0]!;
 const HUE_SOLID = PLOT_COLORS.series[1]!;
@@ -154,6 +155,7 @@ function CombustionTable({ cat, fuel, onFuel }: {
   return (
     <Box>
       <Title order={5}>The heat of combustion of your fuel, from its record</Title>
+      <OriginMark of={["page", "reference"]} note="the catalogue's cited records, with step 2's arithmetic on this page; no engine run" />
       <Box mt={8} style={KNOB_GRID}><FuelSelect value={fuel} onChange={onFuel} /></Box>
       <PanTable>
         <Table.Thead>
@@ -191,6 +193,7 @@ function BurningRateTable({ cat, fuel }: { cat: Catalogue; fuel: PoolFuel }): JS
   return (
     <Box>
       <Title order={5}>The burning rate of {fuel}: correlation, calibration, check</Title>
+      <OriginMark of={["page", "reference"]} note="the correlation calibrated on this page against the cited NIST measurements" />
       <PanTable>
         <Table.Thead>
           <Table.Tr><Table.Th>quantity</Table.Th><Table.Th>value</Table.Th><Table.Th>from</Table.Th></Table.Tr>
@@ -239,6 +242,7 @@ function FlameTable({ cat, fuel }: { cat: Catalogue; fuel: PoolFuel }): JSX.Elem
   return (
     <Box>
       <Title order={5}>Two flame heights against the measured ones ({fuel})</Title>
+      <OriginMark of={["page", "reference"]} note="the two correlations on this page against NIST's measured heights" />
       <PanTable>
         <Table.Thead>
           <Table.Tr><Table.Th>pan D [m]</Table.Th><Table.Th>ṁ″ [g/(m2 s)]</Table.Th><Table.Th>Q [kW]</Table.Th><Table.Th>Thomas L [m]</Table.Th><Table.Th>Heskestad L [m]</Table.Th><Table.Th>measured L ± spread [m]</Table.Th></Table.Tr>
@@ -364,6 +368,7 @@ function Bench({ cat, fuel, onFuel }: {
   return (
     <Box>
       <Title order={5}>The bench: your pool, your receiver, both models</Title>
+      <OriginMark of={["page", "reference", "assumption"]} note="this page's arithmetic on the catalogue's records and your pool, receiver and exposure; no engine run" />
       <Box mt={8} style={KNOB_GRID}>
         <FuelSelect value={fuel} onChange={(v) => { setKb(null); setChi(null); onFuel(v); }} />
         <KnobNumber label="pool diameter D [m]" value={D} min={0.3} max={60}

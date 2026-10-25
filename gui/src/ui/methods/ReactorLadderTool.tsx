@@ -67,6 +67,7 @@ import {
   LADDER_LIMITS, LADDER_SECTIONS, type LadderSection,
 } from "./reactorLadderLesson.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -397,6 +398,7 @@ export function ReactorLadderTool(): JSX.Element {
             gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
           }}>
             <Stack gap={8} style={{ maxWidth: 300 }}>
+              <OriginMark of="assumption" note="T, |ΔT| and X you choose" />
               <KnobSlider knob={T_KNOB} value={T} onChange={setT} showWhy />
               <KnobSlider knob={DT_KNOB} value={dT} onChange={setDT} showWhy />
               <KnobSlider knob={X_KNOB} value={X} onChange={setX} showWhy />
@@ -407,6 +409,7 @@ export function ReactorLadderTool(): JSX.Element {
               </PanelNote>
             </Stack>
             <Box style={{ minWidth: 0 }}>
+              <OriginMark of="engine" note="the witness's four reactors solved in this browser (choupoSolve)" />
               {run.busy && (
                 <Group gap="sm" wrap="nowrap" align="center" mb={6}>
                   <Loader size="xs" />

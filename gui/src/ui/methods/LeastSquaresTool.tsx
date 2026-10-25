@@ -80,6 +80,7 @@ import {
   readParity,
   type FitHistory, type ParityRow,
 } from "./leastSquaresRun.js";
+import { OriginMark } from "./origin.js";
 
 const GRID = "var(--mantine-color-default-border)";
 const INK = "var(--mantine-color-dimmed)";
@@ -363,6 +364,7 @@ export function LeastSquaresTool(): JSX.Element {
 
         <Box style={{ display: "grid", gap: 16, gridTemplateColumns: rail }}>
           <Stack gap={8}>
+            <OriginMark of="assumption" note="the search settings you choose" />
             <KnobSlider knob={LAMBDA} value={lamExp} showWhy
               onChange={setLamExp} />
             <KnobSlider knob={MAXITER} value={maxIter} showWhy
@@ -382,6 +384,7 @@ export function LeastSquaresTool(): JSX.Element {
           </Stack>
 
           <Stack gap={10}>
+            <OriginMark of="engine" note="the fit history the engine wrote when this page ran the witness in this browser" />
             {runFailed}
             {hist?.ok ? (
               <>
@@ -453,6 +456,7 @@ export function LeastSquaresTool(): JSX.Element {
 
         {parity?.ok && (
           <Stack gap={10}>
+            <OriginMark of={["engine", "reference"]} note="the fitted model's answers are the engine's; the measured points are the dataset the witness cites" />
             <ParityPlot rows={parity.read} />
             <Text size="sm">
               The eight points the fitter was handed, and where the finished
@@ -510,6 +514,7 @@ export function LeastSquaresTool(): JSX.Element {
 
         <Box style={{ display: "grid", gap: 16, gridTemplateColumns: rail }}>
           <Stack gap={8}>
+            <OriginMark of="assumption" note="the settings you choose" />
             <KnobSlider knob={BAND} value={bandPct} showWhy
               onChange={setBandPct} />
             {busyNote}
@@ -524,6 +529,7 @@ export function LeastSquaresTool(): JSX.Element {
           </Stack>
 
           <Stack gap={10}>
+            <OriginMark of="engine" note="the engine's run in this browser" />
             {cur ? (
               <>
                 <Group gap="xs" wrap="wrap">
@@ -609,6 +615,7 @@ export function LeastSquaresTool(): JSX.Element {
         {/* ---------------- IDENTIFIABILITY ---------------- */}
         {diag && paramRows.length > 0 && (
           <Stack gap={10}>
+            <OriginMark of="engine" note="the identifiability diagnostics the engine published" />
             <Group gap="xs" wrap="wrap">
               <Badge variant="filled"
                 color={(diag["identifiable"] ?? 0) > 0.5 ? "teal" : "orange"}>

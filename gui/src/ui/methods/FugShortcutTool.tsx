@@ -102,6 +102,7 @@ import {
   rigorousSeries, shortcutDivergences, shortcutSeries, stageWindow,
   type Crossing, type FugKnobValues, type LadderRung, type ShortcutAnswer,
 } from "../../case/fugShortcut.js";
+import { OriginMark } from "./origin.js";
 
 // ---- Knob descriptors -------------------------------------------------------
 
@@ -450,6 +451,7 @@ export function FugShortcutTool(): JSX.Element {
   // ---- The knobs ------------------------------------------------------------
   const setup = (
     <>
+      <OriginMark of="assumption" note="the separation and the windows you set" />
       <KnobField label="pane">
         <SegmentedControl size="xs" value={pane} fullWidth
           onChange={(v) => setPane(v as Pane)}
@@ -689,6 +691,7 @@ export function FugShortcutTool(): JSX.Element {
           </Text>
         </Box>
 
+        <OriginMark of="engine" note="every chip and every point: shortcut and MESH columns solved in this browser (choupoSolve), one run per point" />
         {chips}
         {alerts}
 

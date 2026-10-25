@@ -78,6 +78,7 @@ import { Alert, Box, Group, Loader, Slider, Stack, Text, Title }
 
 import { useMethodRun } from "../../case/methodRun.js";
 import { Tex } from "./lessonStep.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -308,6 +309,7 @@ function BlocksTable(): JSX.Element {
   );
   return (
     <Box my={8} style={{ border: `1px solid ${GRID}`, borderRadius: 6 }}>
+      <Box px="sm" pt={6}><OriginMark of={["page", "assumption"]} note="two example blocks, worked out on this page" /></Box>
       <Group justify="space-between" px="sm" py={6}
         style={{ borderBottom: `2px solid ${GRID}` }}>
         <Text size="xs" c={INK} fw={700} tt="uppercase">
@@ -338,6 +340,7 @@ function LedgerTable({ lg }: { lg: Ledger }) {
   );
   return (
     <Box my={8} style={{ border: `1px solid ${GRID}`, borderRadius: 6 }}>
+      <Box px="sm" pt={6}><OriginMark of={["engine", "page"]} note="each line is the engine's, from the witness run in this browser; the re-added total is this page's sum" /></Box>
       <Group justify="space-between" px="sm" py={6}
         style={{ borderBottom: `2px solid ${GRID}` }}>
         <Text size="xs" c={INK} fw={700} tt="uppercase">
@@ -376,6 +379,7 @@ function MixingKnob() {
   return (
     <Box my={8} px="sm" py={8} style={{ border: `1px solid ${GRID}`,
       borderRadius: 6 }}>
+      <OriginMark of={["page", "assumption"]} note="the mixing line and the work floor at the composition you set, on this page" />
       <Text size="xs" c={INK} fw={700} tt="uppercase">
         the mixing line, under your finger
       </Text>

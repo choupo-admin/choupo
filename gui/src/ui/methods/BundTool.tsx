@@ -49,6 +49,7 @@ import { BUND_LIMITS, BUND_SOURCES, BUND_STEPS, RULE_IS_AN_EXAMPLE } from "./bun
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
 import { LessonLimits, LessonStepView } from "./lessonStep.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 export const BUND_TITLE = "Secondary containment: designing a bund";
 
@@ -126,6 +127,7 @@ function DesignBench({ bund, onBund, ruleId, onRule, basis, onBasis, rain, onRai
   return (
     <Box data-testid="bund-design">
       <Title order={5}>The design check: geometric, net and useful, side by side</Title>
+      <OriginMark of={["page", "reference", "assumption"]} note="this page's arithmetic -- the rows marked Choupo's reproduce the engine's BundArithmetic.H, which is not run here; the rule and the HSG176 clearances are the cited guidance; the bund, the tanks and the rain are inputs" />
       <Box mt={8} style={KNOB_GRID}>
         <RuleSelect value={ruleId} onChange={onRule} />
         <KnobField label="the volume a tank counts">
@@ -246,6 +248,7 @@ function ScenarioBench({ bund }: { bund: Bund }): JSX.Element {
   return (
     <Box data-testid="bund-scenarios">
       <Title order={5}>The four scenarios, balanced to the cubic metre</Title>
+      <OriginMark of={["page", "assumption"]} note="a volume balance integrated on this page from the flows you declare; no engine run" />
       <Box mt={8} style={KNOB_GRID}>
         <KnobField label="scenario">
           <SegmentedControl size="xs" fullWidth value={id}
@@ -335,6 +338,7 @@ function GeometryTable(): JSX.Element {
   return (
     <Box>
       <Title order={5}>One volume, four walls</Title>
+      <OriginMark of={["page", "assumption"]} note="computed on this page for an author-set 22 m3 and density" />
       <PanTable>
         <Table.Thead>
           <Table.Tr><Table.Th>wall h_w [m]</Table.Th><Table.Th>floor area [m2]</Table.Th><Table.Th>side of a square [m]</Table.Th><Table.Th>pool surface [m2]</Table.Th><Table.Th>thrust F [kN/m]</Table.Th><Table.Th>moment M [kN m/m]</Table.Th></Table.Tr>
@@ -387,6 +391,7 @@ function ExerciseBench(): JSX.Element {
   return (
     <Box data-testid="bund-exercise">
       <Title order={5}>The exercise: 20, 15 and 10 m3 in one bund</Title>
+      <OriginMark of={["page", "reference", "assumption"]} note="this page's arithmetic on the exercise's tanks, the cited rule and an author-set rain" />
       <Box mt={8} style={KNOB_GRID}>
         <RuleSelect value={ruleId} onChange={setRuleId} />
         <KnobField label="exercise 2: rain first">

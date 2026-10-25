@@ -57,6 +57,7 @@ import {
   planAnnouncements, planFindings, withdrawTearOverrides,
   type StreamMark, type TeachGraph,
 } from "./tearMath.js";
+import { OriginMark } from "./origin.js";
 
 const GRID = "var(--mantine-color-default-border)";
 const INK = "var(--mantine-color-dimmed)";
@@ -386,6 +387,7 @@ export function TearStreamsTool(): JSX.Element {
         <Box style={{ display: "grid", gap: 16,
           gridTemplateColumns: rail }}>
           <Stack gap={6}>
+            <OriginMark of="assumption" note="the teaching graph and the order you choose" />
             <Text size="xs" fw={600} tt="uppercase" c="dimmed">
               declaration order
             </Text>
@@ -452,6 +454,7 @@ export function TearStreamsTool(): JSX.Element {
           </Stack>
 
           <Stack gap={10}>
+            <OriginMark of="page" note="this page's reasoning over the teaching graph (tearMath.ts); it reads no Choupo case -- the engine's own contract is run below" />
             {/*  THE ENGINE'S OWN SENTENCES, not a paraphrase of them.  This
                  block used to restate ONE of the seven refusals in friendlier
                  words; a reader who met the real thing would not recognise
@@ -584,6 +587,7 @@ export function TearStreamsTool(): JSX.Element {
         </Box>
 
         <Stack gap={10}>
+          <OriginMark of="engine" note="the witness run in this browser, with and without its tear declared; the lines are the engine's own" />
           <Group gap="md" wrap="wrap">
             <Switch size="sm" checked={withdrawn}
               label={`withdraw the tearStreams ( ${TEAR_DECLARED} ) declaration`}

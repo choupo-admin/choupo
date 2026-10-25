@@ -55,6 +55,7 @@ import {
 import { GMP_LAYOUT_LIMITS, GMP_LAYOUT_STEPS, GMP_SOURCES } from "./gmpLayoutLesson.js";
 import { LessonLimits, LessonStepView } from "./lessonStep.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 const step = (n: number) => {
   const s = GMP_LAYOUT_STEPS.find((q) => q.n === n);
@@ -177,6 +178,7 @@ function Exercise({ part, base, title }: {
     <Box p="sm" style={{ border: "1px solid var(--mantine-color-default-border)", borderRadius: 6 }}
       data-gmp-exercise={part}>
       <Title order={5}>Exercise: {title}</Title>
+      <OriginMark of={["engine", "assumption"]} note="the move is yours; the findings are the engine's check of the edited building, run in this browser" />
       <Group gap={6} mt={8}>
         {[AS_DESIGNED, ...moves].map((m) => (
           <Button key={m.id} size="compact-xs"
@@ -219,6 +221,7 @@ function TeachingBuilding({ base }: { base: MethodRunState }): JSX.Element {
   return (
     <Box p="sm" style={{ border: "1px solid var(--mantine-color-default-border)", borderRadius: 6 }}>
       <Title order={5}>The teaching building, as the engine checked it</Title>
+      <OriginMark of={["engine", "assumption"]} note="the rooms, grades and pressures are the building's declarations; the findings are the engine's check, run in this browser" />
       <Text size="xs" c="dimmed" mt={4}>
         A copy of the tutorial {GMP_HOST} (one sized spray dryer), run in your browser
         with the teaching building written in as its system/layoutDict.  The tutorial

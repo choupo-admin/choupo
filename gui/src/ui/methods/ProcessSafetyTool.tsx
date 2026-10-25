@@ -74,6 +74,7 @@ import {
   type Side,
 } from "./processSafety.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 /** The T_D24 the page starts from -- the temperature at which the adiabatic
  *  time to maximum rate of the secondary decomposition would be 24 h.  An
@@ -375,6 +376,7 @@ function CoolingFailureBench(
   return (
     <Box>
       <Title order={5}>The cooling-failure bench</Title>
+      <OriginMark of={["engine", "page", "assumption"]} note="the trajectories and the bubble points are the engine's runs in this browser; the adiabatic estimate and the class comparison are this page's arithmetic on them; T_D24 and the scenario are your assumptions" />
       <Text size="sm" mt={4}>
         Choose when the cooling fails in each reactor, what the feed does
         then, where the technical limit comes from, and the assumed T_D24.
@@ -622,6 +624,7 @@ function ClassTable(): JSX.Element {
   ];
   return (
     <Box style={{ overflowX: "auto" }}>
+      <OriginMark of="reference" note="the five criticality classes as the cited source defines them" />
       <Table striped withTableBorder withColumnBorders fz="xs">
         <Table.Thead>
           <Table.Tr>
@@ -701,6 +704,7 @@ function DosingVesselBench(
   return (
     <Box>
       <Title order={5}>The dosing vessel: what a feed failure can deliver</Title>
+      <OriginMark of={["engine", "page", "assumption"]} note="the semi-batch witnesses run in this browser; the accumulation estimate is this page's" />
       <Text size="sm" mt={4}>
         The cooling fails and, at the same instant, the WHOLE vessel connected
         to the reactor empties into it.  Left: the semi-batch witness, whose
@@ -822,6 +826,7 @@ function LoopComparison({ loops }: { loops: Loops }): JSX.Element {
   ];
   return (
     <Box>
+      <OriginMark of={["engine", "page"]} note="the two loop plants are solved in this browser (choupoSolve); the per-pass conversions and the ratios are computed here" />
       <Waiting runs={[r150, r50]} what="the engine is solving both loops" />
       {bad !== undefined && (
         <Alert color="red" variant="light" title="A loop could not be read">
@@ -888,6 +893,7 @@ function VolumetricFlow({ loops }: { loops: Loops }): JSX.Element {
   ];
   return (
     <Box>
+      <OriginMark of={["engine", "page"]} note="Z is the engine's at each feed's own state (choupoProps, in this browser); F Z R T / P and the ratio are computed here" />
       <Waiting runs={[run]} what="the engine is evaluating Z at each converter feed" />
       <Box style={{ overflowX: "auto" }}>
         <Table striped withTableBorder withColumnBorders fz="xs" mt={6}>

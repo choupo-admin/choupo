@@ -62,6 +62,7 @@ import { readHxy, deltaD, hAt, leverLV, vapourEnthalpyAt }
 import { PonchonPlot } from "../plotting/PonchonPlot.js";
 import { LessonStepView } from "./lessonStep.js";
 import { PONCHON_STEPS } from "./ponchonLesson.js";
+import { OriginMark } from "./origin.js";
 
 /** The op's output file, case-root-relative as csvFiles keys are. */
 export const PONCHON_CSV = "enthalpyConcentration.csv";
@@ -132,6 +133,7 @@ function ConstructionPane(): JSX.Element {
   return (
     <Box>
       <Title order={5}>The construction, on the engine's own curves</Title>
+      <OriginMark of={["engine", "page", "assumption"]} note="the H-x-y curves are the engine's run in this browser (choupoProps); the difference points and the stage steps are this page's geometry on them, at the x_D and R you set" />
       <Group gap={20} mt={8} align="flex-end" wrap="wrap">
         <Box style={{ minWidth: 210 }}>
           <Text size="xs" c={INK}>distillate composition x_D = {xD.toFixed(2)}</Text>

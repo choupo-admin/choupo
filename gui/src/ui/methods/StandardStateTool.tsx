@@ -54,6 +54,7 @@ import { LessonLimits, lessonStepper } from "./lessonStep.js";
 import {
   STANDARD_STATE_LIMITS, STANDARD_STATE_QUIZ, STANDARD_STATE_STEPS,
 } from "./standardStateLesson.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -310,6 +311,7 @@ export function StandardStateTool(): JSX.Element {
             gridTemplateColumns: "minmax(220px, 270px) 1fr",
           }}>
             <Stack gap={8}>
+              <OriginMark of="assumption" note="the states, the axis and the zero you choose" />
               <SegmentedControl size="xs" fullWidth value={axis} onChange={switchAxis}
                 data={[{ value: "T", label: "vary T, hold P" }, { value: "P", label: "vary P, hold T" }]} />
               <Select size="xs" label={axis === "T" ? "pressure held [bar]" : "temperature held [K]"}
@@ -337,6 +339,7 @@ export function StandardStateTool(): JSX.Element {
               </PanelNote>
             </Stack>
             <Box style={{ minWidth: 0 }}>
+              <OriginMark of={["engine", "page", "reference"]} note="filled points: SRK in the engine, run in this browser; hollow rings: the reference equation of state the witness ships; the zero shift and the differences: this page" />
               {run.busy && (
                 <Group gap="sm" mb={6}><Loader size="xs" />
                   <Text size="xs" c="dimmed">one property run — seconds</Text>
@@ -374,6 +377,7 @@ export function StandardStateTool(): JSX.Element {
 
         <Box>
           <Title order={5}>The process is at 150 bar — the converter&apos;s hydrogen</Title>
+          <OriginMark of={["engine", "page", "reference"]} note="the engine's SRK at the converter's state, beside the shipped reference; the percentage is computed on this page" />
           <Text size="sm" mt={4}>
             The witness evaluates hydrogen at the green-ammonia converter&apos;s state,
             {" "}{CONVERTER.T} K and {CONVERTER.P} bar, as the two halves of step 5.

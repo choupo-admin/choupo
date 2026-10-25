@@ -67,6 +67,7 @@ import {
   type DisplayUnits, type RecycleKnobs, type RecycleSolver, type SolveTrace,
   type ToyMap,
 } from "./wegsteinMath.js";
+import { OriginMark } from "./origin.js";
 
 /** The engine's own unit system, named once so no reader of this file has to
  *  know that it is the first entry of the list. */
@@ -420,6 +421,7 @@ export function WegsteinTool(): JSX.Element {
         <Box style={{ display: "grid", gap: 16,
           gridTemplateColumns: rail }}>
           <Stack gap={8}>
+            <OriginMark of="assumption" note="the loop, the bounds and the units you choose" />
             <KnobSlider knob={GAIN_F} value={map.a} showWhy
               onChange={(v) => setMap((m) => ({ ...m, a: v }))} />
             <KnobSlider knob={GAIN_T} value={map.b} showWhy
@@ -449,6 +451,7 @@ export function WegsteinTool(): JSX.Element {
           </Stack>
 
           <Stack gap={10}>
+            <OriginMark of="page" note="this page's TypeScript transcription of the engine's Wegstein update, run on the teaching loop" />
             {!contracting && (
               <Alert color="orange" title="This loop is no longer a contraction">
                 The larger eigenvalue of the map is {fmt(Math.max(Math.abs(e1),
@@ -501,6 +504,7 @@ export function WegsteinTool(): JSX.Element {
 
         <Box>
           <Title order={5}>
+            <OriginMark of="page" note="the same transcription, one row per variable per sweep" />
             One row per variable per sweep — and the two rows never meet
           </Title>
           <Text size="sm" mt={4} mb={8}>
@@ -530,6 +534,7 @@ export function WegsteinTool(): JSX.Element {
         {/* ---- The picture of the coefficient ---- */}
         <Box>
           <Title order={5}>
+            <OriginMark of="page" note="the secant drawn on this page from the rows above" />
             Where q lives: the secant crosses the diagonal at the next iterate
           </Title>
           <Text size="sm" mt={4} mb={8}>
@@ -629,6 +634,7 @@ export function WegsteinTool(): JSX.Element {
         <Box style={{ display: "grid", gap: 16,
           gridTemplateColumns: rail }}>
           <Stack gap={8}>
+            <OriginMark of="assumption" note="the settings you choose" />
             <Box>
               <Text size="xs" fw={600} mb={4}>recycleSolver</Text>
               <SegmentedControl size="xs" fullWidth value={knobs.solver}
@@ -655,6 +661,7 @@ export function WegsteinTool(): JSX.Element {
           </Stack>
 
           <Stack gap={10}>
+            <OriginMark of="engine" note="the recycle solved in this browser; every iterate is the engine's" />
             {run.err && (
               <Alert color="red" title="The run did not finish">
                 <Text size="sm">{run.err}</Text>

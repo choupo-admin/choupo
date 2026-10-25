@@ -65,6 +65,7 @@ import {
   type ReliefScenario,
 } from "./overpressure.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 /** The fire bench's other defaults: round numbers for the lesson. */
 export const DEFAULT_WETTED_M2 = 40;
@@ -185,6 +186,7 @@ function LadderBench(): JSX.Element {
   return (
     <Box>
       <Title order={5}>The ladder for your vessel</Title>
+      <OriginMark of={["page", "reference", "assumption"]} note="the arithmetic of step 6 on your numbers, with the Design Guide's rule of thumb; the MAWP is your assumption; no engine run" />
       <Box mt={8} style={KNOB_GRID}>
         <KnobNumber label="operating pressure [barg]" value={opBarg} min={0.1}
           max={300} step={0.5} decimals={2} onChange={setOpBarg} />
@@ -274,6 +276,7 @@ function LoopBench(): JSX.Element {
   return (
     <Box>
       <Title order={5}>The loop bench: a blocked outlet at 150 and at 50 bar</Title>
+      <OriginMark of={["engine", "page", "reference"]} note="the fluid properties at the relieving state are a choupoProps run in this browser; the API 520 area is computed on this page from them" />
       <Text size="sm" mt={4}>
         The converter feed of the two green-ammonia feasibility loops, which
         the Process-safety page compares, relieved through one valve each.
@@ -404,6 +407,7 @@ function FireBench({ mawpBarg, setMawp, onOutcome }: {
   return (
     <Box>
       <Title order={5}>The fire bench: an acetone drum</Title>
+      <OriginMark of={["engine", "page", "reference", "assumption"]} note="the boiling state and its properties are the engine's run in this browser; the API 521 heat input and the API 520 area are computed on this page; the MAWP and the wetted area are author-set round numbers" />
       <Text size="sm" mt={4}>
         A drum of acetone in a pool fire, relieving through a valve set at its
         MAWP with the fire allowance of 21 %.  Move the MAWP and the engine
@@ -495,6 +499,7 @@ function LiquidBench({ mawpBarg, onOutcome }: {
   return (
     <Box>
       <Title order={5}>The liquid equation, checked and used</Title>
+      <OriginMark of={["page", "reference", "assumption"]} note="the standard's own worked example, recomputed on this page; no engine run" />
       <Box mt={8} style={KNOB_GRID}>
         <KnobNumber label="pump flow into the full drum [L/min]" value={Q}
           min={10} max={10000} step={50} decimals={0} onChange={setQ} />
@@ -556,6 +561,7 @@ function GoverningBench({ fire, liquid, mawpBarg }: {
   return (
     <Box>
       <Title order={5}>Which cause governs the acetone drum?</Title>
+      <OriginMark of={["page", "engine"]} note="the areas of the two benches above, compared on this page" />
       <Text size="sm" mt={4}>
         The fire bench and the pump row above are two causes on ONE drum, at
         its assumed MAWP of {fx(mawpBarg, 2)} barg, each sized at its own
@@ -609,6 +615,7 @@ function TwoPhaseBench({ fire }: { fire: FireOutcome | null }): JSX.Element {
   return (
     <Box>
       <Title order={5}>The same heat, vented two-phase</Title>
+      <OriginMark of={["page", "engine"]} note="the fire bench's heat input and latent heat put through step 13's estimate on this page" />
       <Box mt={8} style={KNOB_GRID}>
         <KnobNumber label="vapour mass fraction x of what leaves" value={x}
           min={0.01} max={1} step={0.01} decimals={3} onChange={(v) => setX(Math.min(1, Math.max(0.01, v)))} />

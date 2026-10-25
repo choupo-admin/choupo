@@ -104,6 +104,7 @@ import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
 import { PUMP_LIMITS, PUMP_STEPS } from "./pumpSystemLesson.js";
+import { OriginMark } from "./origin.js";
 
 // ---- Detection: which sweep CSV feeds the tool ------------------------------
 
@@ -560,6 +561,7 @@ export function PumpSystemTool(): JSX.Element {
   // ---- The knob column: source, knobs, provenance --------------------------
   const controls = (
     <>
+      <OriginMark of="assumption" note="the pump and the pipe values you set" />
       {appSweep && (
         <SegmentedControl size="xs" value={source} fullWidth
           onChange={(v) =>
@@ -748,6 +750,7 @@ export function PumpSystemTool(): JSX.Element {
           </Text>
         </Box>
 
+        <OriginMark of={["engine", "page"]} note="both curves are the engine's sweep run in this browser (choupoSolve); the crossing between two sweep points is interpolated on this page" />
         {chips}
         {errorAlert}
 

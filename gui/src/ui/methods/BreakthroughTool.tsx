@@ -94,6 +94,7 @@ import { PLOT_COLORS } from "../plotting/plotly.js";
 import {
   BREAKTHROUGH_LIMITS, BREAKTHROUGH_STEPS,
 } from "./breakthroughLesson.js";
+import { OriginMark } from "./origin.js";
 
 /** Per-unit KPI block as the adapter delivers it (RunResult.kpis[unit]). */
 export type UnitKpis = { [key: string]: number };
@@ -469,6 +470,7 @@ export function BreakthroughTool(): JSX.Element {
   const hasThermalColumns = detection.thermalColumns.length > 0;
   const controls = (
     <>
+      <OriginMark of="assumption" note="the bed values you set" />
       {hasAppTrajectory && (
         <SegmentedControl size="xs" value={src} fullWidth
           onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
@@ -625,6 +627,7 @@ export function BreakthroughTool(): JSX.Element {
         {refusal}
 
         {/* Knobs beside the engine's curve + the KPI front construction. */}
+        <OriginMark of="engine" note="the bed integrated in this browser (choupoBatch); the ideal step is drawn at the engine's own t_st" />
         <Box style={{ display: "grid", gap: 14,
           gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
           <Stack gap={8}>{controls}</Stack>
@@ -659,6 +662,7 @@ export function BreakthroughTool(): JSX.Element {
         {/* The KPI table: one row per front component, each number verbatim
             from the engine with its one-line meaning. */}
         <Box style={{ overflowX: "auto" }}>
+          <OriginMark of="engine" note="verbatim KPIs of the run" />
           <Table withTableBorder withColumnBorders
             style={{ fontSize: 12 }} verticalSpacing={2}>
             <Table.Thead>

@@ -42,6 +42,7 @@ import {
 } from "../../case/binaryFlash.js";
 import { useMethodRun } from "../../case/methodRun.js";
 import { KnobField } from "./knobPanel.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const TEXT = "var(--mantine-color-text)";
@@ -333,6 +334,7 @@ export function FlashOperatingLineTool(): JSX.Element {
         <Box style={{ display: "grid", gap: 14,
           gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
           <Stack gap={10}>
+            <OriginMark of="assumption" note="z, V/F and P you choose" />
             <KnobField label={`feed z = ${z.toFixed(3)}`}>
               <Slider min={0.02} max={0.98} step={0.01} value={z}
                 onChange={setZ} label={null} />
@@ -373,6 +375,7 @@ export function FlashOperatingLineTool(): JSX.Element {
           </Stack>
 
           <Box style={{ minWidth: 0 }}>
+            <OriginMark of={["engine", "page"]} note="the T-x-y curve is a choupoProps run in this browser; the operating line and its intersection are this page's geometry on it" />
             {curve && sol
               ? <Diagram curve={curve} sol={sol} z={z} comp={curve.comp} />
               : (
@@ -403,6 +406,7 @@ export function FlashOperatingLineTool(): JSX.Element {
         {step(4)}
 
         <Alert variant="light" title="Does the drawing agree with the solver?">
+          <OriginMark of="engine" note="the recorded run of flash01_benzene_toluene, quoted" />
           <Text size="sm">
             The corpus carries the same pair flashed by the ENGINE — not by
             this construction — in{" "}

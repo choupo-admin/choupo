@@ -51,6 +51,7 @@ import {
   MATERIALS_LIMITS, MATERIALS_SOURCES, MATERIALS_STEPS, PARETO_ROWS,
 } from "./materialsLesson.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 const step = (n: number) => {
   const s = MATERIALS_STEPS.find((q) => q.n === n);
@@ -146,6 +147,7 @@ function MaterialsBench(): JSX.Element {
   return (
     <Box p="sm" style={{ border: BORDER, borderRadius: 6 }}>
       <Title order={5}>The bench: one vessel, every material the records carry</Title>
+      <OriginMark of={["engine", "assumption"]} note="the vessel and the material are your choice; the wall, the limits and the cost are the engine's sizing and costing passes, re-run in this browser on the catalogue's material records" />
       <Text size="xs" c="dimmed" mt={4}>
         Each choice re-runs {MATERIALS_WITNESS} in your browser with this vessel&apos;s
         `material` word in system/postDict changed, and keeps the engine&apos;s answer

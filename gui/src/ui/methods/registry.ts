@@ -54,6 +54,7 @@ License
 
 import { useSyncExternalStore } from "react";
 import { guideUrl } from "../../help/guideLinks.js";
+import type { OriginKind } from "./originKinds.js";
 
 export type MethodToolId =
   | "mccabe" | "fug" | "psychro" | "kremser" | "pinch-composite" | "entu"
@@ -183,6 +184,19 @@ export interface MethodTool {
   theory?: string;
   /** Planned entries: the engine output that will feed the tool. */
   fedBy?: string;
+  /** WHERE THIS PAGE'S NUMBERS COME FROM (DEV.md 4c C112, points 15 and 18):
+   *  the set of origins -- engine, page, reference, assumption (the four
+   *  words and their meanings: originKinds.ts) -- that the page's result
+   *  panels carry.  Every result panel draws its own OriginMark; this list
+   *  is their union, and tests/methodOrigins.test.ts holds the two equal in
+   *  both directions, so the legend the tool frame draws from it and the
+   *  homepage's tool list (methodTools.json) cannot claim an origin the
+   *  page does not draw, or miss one it does.
+   *
+   *  EMPTY is a statement, not an omission: the page computes and quotes
+   *  no result -- its symbols and constants are definitions, cited where
+   *  they are made -- and it draws no mark. */
+  origins: readonly OriginKind[];
   /** WHO REVIEWED THIS TOOL FOR CORRECTNESS, and answers for that review.
    *
    *  Vitor's ask, 2026-09-24: *"como isto tem grande potencial de expansao,
@@ -239,6 +253,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "what-is-temperature", label: "What is a temperature?",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
+    origins: ["page", "reference", "assumption"],
     teaches: "First, what a temperature IS: the property that decides the "
       + "direction of heat between two bodies in thermal contact, intensive, "
       + "and not an amount of energy; equal temperatures define thermal "
@@ -260,6 +275,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "what-is-entropy", label: "What is entropy?",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "The entropy BALANCE first -- variation, transfer (with heat "
       + "or matter, never with work) and generation (never negative), worked "
       + "on two blocks exchanging heat -- then that an entropy value in a "
@@ -282,6 +298,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "what-is-exergy", label: "What is exergy?",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "That energy is conserved but the capacity to produce work is "
       + "not: the same heat from two reservoirs, B_Q = Q(1 - T0/T), buys "
       + "different work.  Then PHYSICAL flow exergy prices a stream in work, "
@@ -303,6 +320,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "thermometer-trust", label: "How do we know a thermometer is right?",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
     teaches: "That a thermometer is never right by itself -- it is right the "
       + "way a witness is credible: agreeing with itself (Regnault's "
       + "comparability), agreeing with others (convergence), and being "
@@ -326,6 +344,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Where do properties come from? (estimation, Joback)",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
+    origins: ["engine", "page", "reference"],
     teaches: "That every number in a component's data file has a PROVENANCE "
       + "-- measured, fitted, or estimated -- and the reflex question to ask "
       + "of each: measured by whom, fitted over what window, estimated from "
@@ -342,6 +361,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "property-trust", label: "When a property database lies to you",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
+    origins: ["engine", "page", "reference"],
     teaches: "Never trust a thermophysical record merely because it exists: "
       + "test its internal consistency and read its declared validity.  "
       + "Thirteen records cross-examined against themselves, live -- water's "
@@ -366,6 +386,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Four ways to price a mixture (NRTL · UNIFAC · COSMO-SAC · PC-SAFT)",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
+    origins: ["engine", "reference"],
     teaches: "That every mixture model answers one question -- what did it "
       + "KNOW about this pair before it priced it: nothing (ideal), the "
       + "pair's own measured data (Wilson/NRTL), the groups (UNIFAC), the "
@@ -386,6 +407,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "COSMO-SAC, derived (σ-profiles → activity coefficient)",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
+    origins: ["engine", "reference"],
     teaches: "The full derivation of COSMO-SAC 2002 as the engine runs it: "
       + "the quantum charge surface, the σ-profile, the misfit and "
       + "hydrogen-bond exchange energy, the IMPLICIT segment activity "
@@ -418,6 +440,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Local composition, derived (Wilson · NRTL · UNIQUAC)",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
+    origins: ["page"],
     teaches: "That Wilson, NRTL and UNIQUAC are one idea carried three "
       + "distances -- a molecule's neighbourhood is not the bulk "
       + "composition -- and that each exists because of something the "
@@ -443,6 +466,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "UNIFAC, derived (a pair nobody has measured)",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
+    origins: [],
     teaches: "That UNIFAC is not a new theory but UNIQUAC's residual term "
       + "moved one level down, from molecules to their groups: r and q "
       + "assembled from group counts, a liquid treated as a solution OF "
@@ -462,6 +486,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "PC-SAFT, derived (chains, dispersion, association)",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
+    origins: ["engine"],
     teaches: "That PC-SAFT builds a residual HELMHOLTZ energy from named "
       + "contributions -- hard chain, dispersion, association -- so one "
       + "surface yields both phases and their densities (an activity model "
@@ -487,6 +512,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Ponchon-Savarit, derived (the enthalpy diagram)",
     discipline: "Separations & phase equilibria",
     kind: "notes", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "That putting ENTHALPY on the vertical axis turns the energy "
       + "balance into a point on the diagram: the difference point, whose "
       + "enthalpy is a net flow over a flow and belongs to no stream, and "
@@ -511,6 +537,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "The allotrope nobody declared (a Claus plant)",
     discipline: "Reaction engineering",
     kind: "notes", status: "live",
+    origins: ["engine"],
     teaches: "That a Claus stoichiometry CANNOT be written by hand, because "
       + "'3/x S_x' contains an unknown that is itself an equilibrium -- and "
       + "that the way out is to stop specifying reactions: declare the "
@@ -540,6 +567,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "The same sulfur, one unit earlier (sour water)",
     discipline: "Separations & phase equilibria",
     kind: "notes", status: "live",
+    origins: ["engine"],
     teaches: "That a dissolved acid gas is not one substance: H2S(aq), HS- "
       + "and S2- coexist and the pH decides the split, so a stream carries "
       + "BOTH bases -- the apparent components that close the mass balance "
@@ -569,6 +597,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Rules of thumb (what equipment do I even pick?)",
     discipline: "Heat transfer & energy",
     kind: "notes", status: "live",
+    origins: ["reference"],
     teaches: "Where to start when the problem stops being 'solve this flash' "
       + "and becomes 'what equipment do I even choose?' -- twenty-six "
       + "chapters of process-design heuristics, from flowsheet structure and "
@@ -590,6 +619,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "flash-operating-line", label: "Flash (operating line)",
     discipline: "Separations & phase equilibria",
     kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "The single equilibrium stage, and the two curves that decide "
       + "it: the material balance is a straight line that PIVOTS about the "
       + "feed on the diagonal with slope -L/V, and where it cuts the "
@@ -611,6 +641,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "bjerrum", label: "Speciation vs pH (Bjerrum)",
     discipline: "Thermodynamics",
     kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "That in this case the pH axis of a speciation diagram is a "
       + "RESULT, not a knob: 44 separate equilibrium calculations, each a "
       + "real neutral mixture, each landing wherever its own charge balance "
@@ -628,6 +659,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "mccabe", label: "Distillation (McCabe-Thiele)",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "Operating lines, the q-line and the staircase: how reflux R and feed quality q set the number of ideal stages.",
     theory: "ch:distillation",
   },
@@ -657,6 +689,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "fug", label: "Distillation shortcut (FUG)",
     discipline: "Separations & phase equilibria",
     kind: "construction", status: "live",
+    origins: ["engine", "assumption"],
     teaches: "Where the first number you type into a rigorous column comes "
       + "from: total reflux fixes N_min, minimum reflux fixes R_min, and "
       + "Gilliland — a fit, not a derivation — interpolates N(R) between those "
@@ -667,30 +700,35 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "psychro", label: "Psychrometric chart",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
+    origins: ["engine", "assumption"],
     teaches: "The humid-gas state map: saturation, relative-humidity and adiabatic-saturation / wet-bulb lines locate every drying and conditioning path.",
     theory: "ch:drying",
   },
   {
     id: "kremser", label: "Absorption (Kremser)",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight in the same basis — judged against the engine's stagewise absorber, which is itself a model (Henry's law, constant total flows), not a general rigorous absorber.",
     theory: "ch:absorber",
   },
   {
     id: "pinch-composite", label: "Pinch composite curves",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
     theory: "ch:pinch",
   },
   {
     id: "entu", label: "Heat exchanger (ε-NTU)",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "Effectiveness vs NTU at a capacity ratio: why counter-current wins and when extra area stops paying — the run's exchanger placed on its own curve.",
     theory: "ch:hx-entu",
   },
   {
     id: "pump-system", label: "Pump vs system curve",
     discipline: "Hydraulics & control", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "The operating point is an intersection: the pump model's rise falling with flow (a constant-power model, not a centrifugal pump's measured curve, and no basis for selecting one) against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
     theory: "ch:rotating",
   },
@@ -711,6 +749,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "correlation-simplicity",
     label: "Why engineering correlations are simple",
     discipline: "Modelling & scale-up", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "That the Buckingham Pi theorem only REDUCES the number of "
       + "variables -- f = Phi(Re, eps/D) is still an arbitrary function -- and "
       + "that the simplicity of a correlation comes from elsewhere: asymptotic "
@@ -748,6 +787,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Large pressure letdown: choked flow, cavitation, flashing and noise",
     discipline: "Hydraulics & control", kind: "construction",
     status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "What a valve taking a large pressure drop does to the "
       + "stream, and why its severity depends on the fluid's state, its "
       + "vapour pressure, the valve's F_L and x_T, its geometry and the "
@@ -767,18 +807,21 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "merkel", label: "Cooling tower (Merkel)",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "Merkel's one diagram: saturated-air enthalpy above, the operating line below, and the shaded gap between them is the driving force the packing must buy.",
     theory: "ch:coolingTower",
   },
   {
     id: "rayleigh", label: "Batch still (Rayleigh)",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "The graphical Rayleigh integration for a simple still: the area under 1/(y*−x) between the charge and the pot IS ln(W0/W) — drawn from the engine's own equilibrium curve, judged against the engine's time integration of the same still.",
     theory: "ch:rayleigh",
   },
   {
     id: "levenspiel", label: "Reactor sizing (Levenspiel)",
     discipline: "Reaction engineering", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
     theory: "ch:pfr",
   },
@@ -790,6 +833,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "reactor-ladder",
     label: "The reactor ladder (stoichiometry, limit, rate)",
     discipline: "Reaction engineering", kind: "notes", status: "live",
+    origins: ["engine", "assumption"],
     teaches: "That a design climbs from what the atoms allow to what "
       + "thermodynamics allows and only then to what the rate delivers, each "
       + "rung needing more information than the last; that a declared "
@@ -821,6 +865,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "approach-to-equilibrium",
     label: "Approach to equilibrium (Gibbs reactor)",
     discipline: "Reaction engineering", kind: "notes", status: "live",
+    origins: ["engine", "assumption"],
     teaches: "That a Gibbs reactor declares NO reactions — it minimises G "
       + "subject to the element balances, which is its power and its trap in "
       + "one sentence; that it sits early because nobody has the KINETICS "
@@ -840,6 +885,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "reaction-enthalpy",
     label: "Reaction enthalpy and temperature (Kirchhoff)",
     discipline: "Reaction engineering", kind: "notes", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "That the degree sign of a standard reaction enthalpy fixes the "
       + "standard STATE (1 bar, each species in its reference phase), not the "
       + "temperature, so there is a standard value at every temperature and "
@@ -859,6 +905,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "standard-state",
     label: "Enthalpy, standard state and equilibrium (what ° means)",
     discipline: "Thermodynamics", kind: "notes", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
     teaches: "That the enthalpy of real hydrogen rises 20.6 kJ/mol from 300 to "
       + "1000 K at 1 bar and 1.3 kJ/mol from 1 to 1000 bar at 300 K — small "
       + "against temperature, never zero; that the degree sign names a RULE OF "
@@ -881,6 +928,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "limiting-reactant",
     label: "Limiting reactant and feed ratio in a recycle loop",
     discipline: "Reaction engineering", kind: "notes", status: "live",
+    origins: ["page", "assumption"],
     teaches: "That a plant with a recycle has TWO ratios: the fresh-feed ratio, "
       + "which the steady-state plant balance ties to the stoichiometry, the "
       + "extent and the losses, and the reactor-inlet ratio, which the loop sets — a "
@@ -907,6 +955,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "equilibrium-landscapes",
     label: "Equilibrium landscapes (what an approach can reach)",
     discipline: "Reaction engineering", kind: "notes", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "That an ideal-gas equilibrium landscape is fixed by two signs "
       + "you can read off the reaction — the thermicity (van 't Hoff) and "
       + "the mole change (pressure) — and the engine draws the five cases "
@@ -939,6 +988,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "declared-pathways",
     label: "Declared pathways (equilibrium over the reactions you allow)",
     discipline: "Reaction engineering", kind: "notes", status: "live",
+    origins: ["engine", "assumption"],
     teaches: "That \"equilibrium\" answers two different questions: a "
       + "Gibbs reactor is told SPECIES and opens every pathway they permit, "
       + "an equilibrium reactor is told REACTIONS and moves only along them; "
@@ -968,6 +1018,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "syngas",
     label: "Synthesis gas: one gas, many products",
     discipline: "Reaction engineering", kind: "notes", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "That syngas is a PLATFORM -- carbon, hydrogen and oxygen handed "
       + "to a catalyst as CO and H2 -- and that two numbers decide what it is "
       + "good for: H2/CO and the module (H2 - CO2)/(CO + CO2); the four ways to "
@@ -986,18 +1037,21 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "vanheerden", label: "Ignition / extinction (Van Heerden)",
     discipline: "Reaction engineering", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "Heat generated against heat removed: a straight line can cut a sigmoid three times, so in this example the same reactor with the same feed has three steady states — and the middle one fails the open-loop slope test, a necessary condition only: the page computes no dynamics.",
     theory: "ch:cstr",
   },
   {
     id: "drying", label: "Drying curve (batch tray)",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
+    origins: ["engine", "assumption"],
     teaches: "The two classical drying plots: X against time, and the rate against moisture — where, for a material with a constant-rate period (not every material has one), the critical moisture is VISIBLE as the corner at which a flat rate starts to fall toward the isotherm's equilibrium.",
     theory: "ch:drying",
   },
   {
     id: "breakthrough", label: "Adsorption breakthrough",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "assumption"],
     teaches: "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
     theory: "ch:adsorption",
   },
@@ -1014,6 +1068,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "lub-scaleup", label: "Sizing a bed from a breakthrough curve (LUB)",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "How a laboratory breakthrough curve sizes a plant bed: t_b and t_st read off the data, the capacity they imply checked against the isotherm, LUB = L(1 − t_b/t_st) carried to full scale at the same velocity — L_full = L_es + LUB, the diameter from the design flow, and why a longer bed wastes a smaller fraction.",
     theory: "ch:adsorption",
   },
@@ -1032,6 +1087,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "batch-membrane", label: "Batch membrane filtration (UF/NF)",
     discipline: "Separations & phase equilibria", kind: "construction",
     status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
     curator: { name: "Mónica Faria",
                affiliation: "Departamento de Engenharia Química, "
                           + "Instituto Superior Técnico" },
@@ -1059,6 +1115,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "hunter-nash", label: "Extraction (Hunter-Nash)",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "One point rules the whole column: the difference point Δ = F − E₁ = R_j − E_{j+1} lies on every operating line, so the triangle alternates tie-lines with lines through Δ — and the rigorous cascade's own stages are laid on it as the test.",
     theory: "sec:hunter-nash",
     fedBy: "ui/methods/TieTriangleTool.tsx over "
@@ -1081,6 +1138,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "thiele", label: "Catalyst pellet (Thiele modulus)",
     discipline: "Reaction engineering", kind: "construction",
     status: "live",
+    origins: ["engine", "assumption"],
     teaches: "The concentration field INSIDE one pellet: turn the rate "
       + "constant and watch it go from nearly flat — the whole pellet working "
       + "— to a boundary layer hugging the surface over a dead core, with the "
@@ -1100,6 +1158,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "column-control", label: "Column control (structure & instruments)",
     discipline: "Hydraulics & control",
     kind: "selection", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
     teaches: "Five valves around a two-product column with a total condenser, three inventories, two left for composition: the cross-section shows which measurement drives which valve, the cited authorities disagree in the open, and the sensor tray is computed from the column's own profile — the slope criterion and the sensitivity criterion, which pick different trays.",
     theory: "sec:column-control",
   },
@@ -1123,6 +1182,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "bode", label: "Frequency response (Bode diagram)",
     discipline: "Hydraulics & control", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "Whether a loop will be stable BEFORE it is switched on, and how "
       + "much room is left, under the conditions the page states (a linear, "
       + "time-invariant, stable open loop whose phase crosses −180° once): the engine sweeps a real tank one frequency per "
@@ -1145,6 +1205,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "data-reconciliation",
     label: "Data reconciliation, and how Bayes helps",
     discipline: "Hydraulics & control", kind: "construction", status: "live",
+    origins: ["engine", "assumption"],
     teaches: "Why plant meters never close a mass balance, and what to "
       + "believe instead -- read through Bayes from the first page: a prior "
       + "(what was known, at least the exact balances), a likelihood (what "
@@ -1179,6 +1240,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "tear-streams", label: "Tear streams (where to cut a recycle)",
     discipline: "Flowsheeting & numerics", kind: "construction",
     status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "A recycle has no first unit, so one stream must be assumed -- "
       + "and WHICH one is decided by the order you declared the units in, "
       + "not by how many loops you can see.  Move a unit and watch the "
@@ -1192,6 +1254,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "wegstein", label: "Wegstein acceleration (closing a recycle)",
     discipline: "Flowsheeting & numerics", kind: "construction",
     status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "How one accelerator serves a tear vector holding a molar flow, "
       + "a set of mole fractions and a temperature at once: it never compares "
       + "them.  Each variable gets its OWN secant slope and its own "
@@ -1207,6 +1270,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Quadratic programming with constraints (active set)",
     discipline: "Flowsheeting & numerics", kind: "construction",
     status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "The hard part of a constrained quadratic is not the algebra -- "
       + "it is guessing which constraints the answer is pressed against.  "
       + "Watch the working set change: a constraint ADDED when a step runs "
@@ -1223,6 +1287,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Least squares: what a fitted parameter is worth",
     discipline: "Flowsheeting & numerics", kind: "construction",
     status: "live",
+    origins: ["engine", "reference", "assumption"],
     teaches: "That Levenberg-Marquardt is the easy half.  Watch the damping "
       + "being repriced up and down on a real NRTL fit -- and then meet the "
       + "apparatus that makes the answer worth quoting: three measurements "
@@ -1244,6 +1309,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "How a Gibbs reactor solves (element potentials)",
     discipline: "Flowsheeting & numerics", kind: "construction",
     status: "live",
+    origins: ["engine", "assumption"],
     teaches: "That a Gibbs reactor never solves for its amounts: it solves "
       + "for ONE potential per element and the log of the total, M + 1 "
       + "unknowns however many species, with every species' stationarity "
@@ -1268,6 +1334,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "How dictionaries assemble a case",
     discipline: "How Choupo works", kind: "notes",
     status: "live",
+    origins: ["engine", "assumption"],
     teaches: "What a Choupo case is on disk and how the engine puts it "
       + "together, on the real flash01 case: system/ says HOW, constant/ says "
       + "WITH WHAT, 0/ says FROM WHERE.  Click any file to see what it says "
@@ -1291,6 +1358,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "How to read a run's log",
     discipline: "How Choupo works", kind: "notes",
     status: "live",
+    origins: ["engine", "page"],
     teaches: "Where a run's log goes and how loud it is (verbosity 0 to 4, "
       + "measured), then the log itself, read on real runs in the browser: "
       + "the header and what was assembled, a unit's Newton iterations, a "
@@ -1316,6 +1384,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Front-End Loading: how industry stages a design",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
+    origins: ["page", "reference", "assumption"],
     teaches: "How an owner buys a process design in stages separated by "
       + "gates (Front-End Loading, FEL), with FEED / basic engineering as "
       + "the engineering work inside FEL-3, and why sources number the "
@@ -1343,6 +1412,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Process safety: remove the hazard before you add a layer",
     discipline: "Process safety", kind: "notes",
     status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
     teaches: "Why every protective layer is itself a system that can fail "
       + "(Gall, a paediatrician, beside Kletz, a chemist: 'what you don't "
       + "have, can't leak'), read through the Flixborough Court of Inquiry "
@@ -1378,6 +1448,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Designing for overpressure: scenarios, devices and relief sizing",
     discipline: "Process safety", kind: "construction",
     status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
     teaches: "Why a relief device is sized for the credible cause "
       + "(blocked outlet, external fire, cooling or reflux failure, runaway, "
       + "tube rupture, thermal expansion) that needs the largest required "
@@ -1413,6 +1484,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Pool-fire radiation and the distance it sets",
     discipline: "Process safety", kind: "construction",
     status: "live",
+    origins: ["page", "reference", "assumption"],
     teaches: "How far a pool fire's radiation reaches, built from the fuel "
       + "up: the heat of combustion from the catalogue's formation "
       + "enthalpies, the Burgess burning rate calibrated on one public-domain "
@@ -1445,6 +1517,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Secondary containment: designing a bund",
     discipline: "Process safety", kind: "construction",
     status: "live",
+    origins: ["page", "reference", "assumption"],
     teaches: "Why a chemical plant is designed to limit the consequences when "
       + "something goes wrong: the bund as a passive barrier and its place "
       + "among the layers of protection (it does not prevent the failure, it "
@@ -1481,6 +1554,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Plant layout: where each item stands, and why",
     discipline: "Process design & economics", kind: "construction",
     status: "live",
+    origins: ["engine", "assumption"],
     teaches: "That a plot plan is a set of decisions about distance -- "
       + "safety (the domino effect), pipe and access (a tube bundle must be "
       + "pulled out along its own axis); what a separation distance is, why it "
@@ -1511,6 +1585,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "The GMP interior of a tablet plant: rooms, air and the ways through them",
     discipline: "Process design & economics", kind: "construction",
     status: "live",
+    origins: ["engine", "assumption"],
     teaches: "That a pharmaceutical plant is laid out inside a building: the "
       + "cleanliness grades of EU GMP Annex 1 and how this example declares "
       + "its oral-solid-dose rooms grade D by analogy or controlled not "
@@ -1549,6 +1624,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Materials of construction, seals and gaskets: the Pareto, and how to choose",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
+    origins: ["engine", "assumption"],
     teaches: "Why the material of every wall decides a plant -- corrosion, "
       + "strength at temperature, toughness, cost; the Pareto of the materials "
       + "chemical plants are built from, as a teaching ordering: carbon steel "
@@ -1583,6 +1659,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Screening routes to a product (methanol)",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
+    origins: ["engine", "page", "assumption"],
     teaches: "That routes to a product are screened on paper in order of "
       + "cost, cheapest filter first: the stoichiometric gross margin, the "
       + "atom economy, the equilibrium limit at the catalyst's temperature, "
@@ -1610,6 +1687,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Economic appraisal and project risk: lessons from the Sines PTA plant",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
+    origins: ["page", "reference", "assumption"],
     teaches: "The importance of economic appraisal, contractual robustness and "
       + "downside analysis, read from risks and outcomes recorded in public "
       + "documents on a world-scale PTA plant: why the price of PTA, the "
@@ -1639,6 +1717,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "solvent-mixture",
     label: "Choosing a solvent, or a solvent mixture",
     discipline: "Thermodynamics", kind: "selection", status: "live",
+    origins: ["engine", "reference", "assumption"],
     teaches: "Which solvent, or which blend of two, for a given substance: "
       + "Hansen's three parameters with the temperature they were placed "
       + "at, the distance of a solvent from the solute's sphere and the "
@@ -1662,12 +1741,29 @@ export const METHOD_TOOLS: MethodTool[] = [
 export const EDUTOOLS_LABEL = "EduTools";
 
 /** The one-paragraph blurb: what this plane is, and where the OTHER half of
- *  the material lives.  Rendered in the dropdown's footer. */
+ *  the material lives.  Published to the homepage's EduTools section through
+ *  generated/methodTools.json (bin/curate/method_tools.mjs).
+ *
+ *  MADE TRUE, NOT AMBITIOUS (DEV.md 4c C112, point 15).  It used to say every
+ *  tool was "constructed over curves the engine computes -- the method's
+ *  answer beside the engine's".  Measured against the `origins` the pages
+ *  draw: most tools do run the engine, but several run none (a closed form on
+ *  the page, a cited source, a derivation with no result), and a few quote a
+ *  recorded run instead of making one.  So the sentence says what is true of
+ *  all of them, and points at the mark that says which is which. */
 export const EDUTOOLS_BLURB =
-  "Classical graphical methods, constructed over curves the engine computes — "
-  + "the method's answer beside the engine's.  Property surfaces (T-x-y, γ, Psat) "
-  + "live in Explore; the split criterion: method-construction → EduTools, "
-  + "property-surface → Explore.";
+  "Classical methods and the reasoning behind them, worked on examples.  Most "
+  + "tools run Choupo's C++ engine in your browser and set the method's answer "
+  + "beside the engine's; others work a closed form on the page, quote a cited "
+  + "source or a recorded run, or start from assumptions you set -- and every "
+  + "result says which.  Property surfaces (T-x-y, γ, Psat) live in Explore; "
+  + "the split criterion: method-construction → EduTools, property-surface → "
+  + "Explore.";
+
+/** The four origin words and their meanings, re-exported so the homepage's
+ *  tool list (bin/curate/method_tools.mjs imports this module) can print the
+ *  legend from the same home the app's legend reads. */
+export { ORIGIN_KINDS, ORIGIN_MEANING } from "./originKinds.js";
 
 /** The Theory Guide deep link for a tool's named destination.
  *

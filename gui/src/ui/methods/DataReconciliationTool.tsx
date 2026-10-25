@@ -74,6 +74,7 @@ import {
   type BalanceRow, type Covariance, type DrOp, type StreamRow, type StreamTable,
   type ThreeAnswers,
 } from "./dataReconciliationRun.js";
+import { OriginMark } from "./origin.js";
 
 const BORDER = "var(--mantine-color-default-border)";
 const INK = "var(--mantine-color-dimmed)";
@@ -999,6 +1000,7 @@ export function DataReconciliationTool(): JSX.Element {
           </Text>
         </Alert>
         <SegmentedControl fullWidth value={page} onChange={(v) => setPage(v as PageId)} data={PAGES} />
+        <OriginMark of={["engine", "assumption"]} note="every reconciled number, test and covariance is the witness run in this browser (choupoProps); the readings, their σ, the true flows, the planted error and the prior are invented for the exercise, and the knobs are yours; the bell curves are drawn from the engine's centres and widths" />
         {page === "why" && ready(honest, () => <WhyPage honest={honest} />)}
         {page === "bayes" && ready(honest, () => <BayesPage honest={honest} />)}
         {page === "gross" && (

@@ -52,6 +52,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Alert, Box, Code, Stack, Table, Text, Title } from "@mantine/core";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -328,6 +329,7 @@ export function ClausGibbsTool(): JSX.Element {
 
       <Box>
         <Title order={5}>The two answers, side by side</Title>
+        <OriginMark of="engine" note="the recorded run (golden) of claus01_thermal_stage, not re-run on this page" />
         <Text size="sm" mt={4} mb={8}>
           Same twelve species, same five elements, same method.  900 K apart.
         </Text>

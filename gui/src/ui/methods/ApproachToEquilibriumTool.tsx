@@ -108,6 +108,7 @@ import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
 import { APPROACH_LIMITS, APPROACH_STEPS } from "./approachToEquilibriumLesson.js";
 import { setActiveMethodTool } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -345,6 +346,7 @@ export function ApproachToEquilibriumTool(): JSX.Element {
 
   const controls = (
     <>
+      <OriginMark of="assumption" note="T and |ΔT| you choose" />
       <KnobSlider
         knob={{
           id: "T", label: "reactor temperature T — the PHYSICAL one",
@@ -505,6 +507,7 @@ export function ApproachToEquilibriumTool(): JSX.Element {
           }}>
             <Stack gap={8}>{controls}</Stack>
             <Box style={{ minWidth: 0 }}>
+              <OriginMark of="engine" note="two runs of the witness in this browser (choupoSolve)" />
               {busy && (
                 <Group gap="sm" wrap="nowrap" align="center" mb={6}>
                   <Loader size="xs" />

@@ -57,6 +57,7 @@ import { Alert, Box, Group, Loader, Stack, Text, Title }
 
 import { useMethodRun } from "../../case/methodRun.js";
 import type { AadRecord } from "../../adapters/SolverAdapter.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -292,6 +293,7 @@ export function FourWaysMixtureTool(): JSX.Element {
 
         <Box>
           <Title order={5}>3 · The score, live</Title>
+          <OriginMark of={["engine", "reference"]} note="the AAD is the engine's validation block, run in this browser, against measured points the witness cites" />
           <Text size="sm" mt={4}>
             Your browser has just asked the real engine to sweep all four
             activity models across the full composition range and grade

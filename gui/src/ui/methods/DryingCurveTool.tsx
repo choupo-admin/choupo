@@ -111,6 +111,7 @@ import { DRYING_LIMITS, DRYING_STEPS } from "./dryingLesson.js";
 // method tools) -- re-declaring it here would be a second copy of the same
 // arithmetic.
 import { axisDomain, type Domain } from "./VanHeerdenTool.js";
+import { OriginMark } from "./origin.js";
 
 /** Per-unit KPI block as the adapter delivers it (RunResult.kpis[unit]). */
 export type UnitKpis = { [key: string]: number };
@@ -949,6 +950,7 @@ export function DryingCurveTool(): JSX.Element {
   // ---- The controls: source, view, knobs, provenance -----------------------
   const controls = (
     <>
+      <OriginMark of="assumption" note="the tray and air values you set" />
       {hasAppTrajectory && (
         <SegmentedControl size="xs" value={src} fullWidth
           onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
@@ -1177,6 +1179,7 @@ export function DryingCurveTool(): JSX.Element {
           </Text>
         </Box>
 
+        <OriginMark of={["engine", "assumption"]} note="curves and KPIs: the tray integrated in this browser (choupoBatch); X_c is a declared input, said on its chip" />
         {chips}
 
         <Box style={{ display: "grid", gap: 14,

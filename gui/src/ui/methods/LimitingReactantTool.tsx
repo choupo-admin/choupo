@@ -44,6 +44,7 @@ import { Alert, Badge, Box, Group, Stack, Text, Title } from "@mantine/core";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
 import { LIMITING_LIMITS, LIMITING_STEPS } from "./limitingReactantLesson.js";
+import { OriginMark } from "./origin.js";
 
 /** The purge loop of step 3, per unit fresh feed of A.  Returns null when no
  *  steady state exists at this conversion (the fresh feed is so short of B
@@ -132,6 +133,7 @@ export function LimitingReactantTool(): JSX.Element {
             gridTemplateColumns: "minmax(200px, 260px) 1fr",
           }}>
             <Stack gap={8}>
+              <OriginMark of="assumption" note="X, the purge and the excess you set" />
               <KnobSlider
                 knob={{ id: "X", label: "per-pass conversion of A, X",
                   min: 0.05, max: 0.95, step: 0.005, unit: "",
@@ -158,6 +160,7 @@ export function LimitingReactantTool(): JSX.Element {
               </PanelNote>
             </Stack>
             <Box style={{ minWidth: 0 }}>
+              <OriginMark of="page" note="the closed form of step 3, evaluated on this page; no engine run" />
               <Group gap="xs" wrap="wrap" mb={8}>
                 <Badge variant="light" color="gray" tt="none">p = {fmt(p * 100, 3)} %</Badge>
                 <Badge variant="light" color="gray" tt="none">

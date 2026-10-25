@@ -78,6 +78,7 @@ import {
 import {
   METHOD_TOOLS, setActiveMethodTool, type MethodToolId,
 } from "./registry.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const TEXT = "var(--mantine-color-text)";
@@ -344,6 +345,7 @@ export function FrontEndLoadingTool(): JSX.Element {
 
         <Box>
           <Title order={5}>The stages, and the gates between them</Title>
+          <OriginMark of="reference" note="the stage tables of the cited sources, as the research record transcribes them" />
           <Text size="sm" mt={4}>
             Click a stage.  Each row of the table is the research record's
             stage table (§2.3), with what Choupo runs at that fidelity added.
@@ -378,6 +380,7 @@ export function FrontEndLoadingTool(): JSX.Element {
 
         <Box>
           <Title order={5}>Draw the range of ranges</Title>
+          <OriginMark of={["page", "reference", "assumption"]} note="your point estimate times the AACE class bands (cited), computed on this page" />
           <Text size="sm" mt={4}>
             Type a point estimate.  Each class draws both ends of its range of
             ranges around it.  Look for a pale bar of one class that is no
@@ -442,6 +445,7 @@ export function FrontEndLoadingTool(): JSX.Element {
         {step(5)}
 
         <Box style={{ overflowX: "auto" }}>
+        <OriginMark of="reference" note="the cited estimate-class definitions" />
         <Table striped withTableBorder withColumnBorders fz="xs">
           <Table.Thead>
             <Table.Tr>
@@ -468,6 +472,7 @@ export function FrontEndLoadingTool(): JSX.Element {
 
         <Box>
           <Title order={5}>Two options: a conservative separation of the bands</Title>
+          <OriginMark of={["page", "reference", "assumption"]} note="your two estimates times the cited class bands, compared on this page" />
           <Text size="sm" mt={4}>
             Give two options a point estimate each, for example two routes
             or two loop pressures.  Walk down the classes and watch where the
@@ -559,6 +564,7 @@ export function FrontEndLoadingTool(): JSX.Element {
         {step(8)}
 
         <Box style={{ overflowX: "auto" }}>
+        <OriginMark of="reference" note="the cited stage-to-class correspondence" />
         <Table striped withTableBorder withColumnBorders fz="xs">
           <Table.Thead>
             <Table.Tr>

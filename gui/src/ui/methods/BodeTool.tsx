@@ -67,6 +67,7 @@ import {
   readMeasuredPoint, toDeg,
   type ControllerMode, type LoopSpec, type MeasuredPoint, type Response,
 } from "./bodeMath.js";
+import { OriginMark } from "./origin.js";
 
 // ---- Drawing constants ------------------------------------------------------
 
@@ -489,6 +490,7 @@ export function BodeTool(): JSX.Element {
         <Box style={{ display: "grid", gap: 16,
           gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
           <Stack gap={8}>
+            <OriginMark of="assumption" note="the tank's τ you set" />
             <KnobSlider knob={TAU_KNOB} value={tauS} showWhy
               onChange={(v) => setTauS(v)} />
             {series.busy && (
@@ -526,6 +528,7 @@ export function BodeTool(): JSX.Element {
             </PanelNote>
           </Stack>
           <Box>
+            <OriginMark of={["engine", "page"]} note="points: the tank swept by the engine in this browser; curve: the first-order closed form on this page" />
             <MeasuredChart tauS={tauS} measured={measured} />
           </Box>
         </Box>
@@ -541,6 +544,7 @@ export function BodeTool(): JSX.Element {
         )}
 
         <Box>
+          <OriginMark of="page" note="the comparison of the engine's points with the closed form, computed on this page" />
           <Title order={5}>What the comparison says, as numbers</Title>
           {/*  NO RUNS IS NOT PERFECT AGREEMENT.  With nothing measured the
                three worst-case figures are all zero, and printing them would
@@ -612,6 +616,7 @@ export function BodeTool(): JSX.Element {
         <Box style={{ display: "grid", gap: 16,
           gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
           <Stack gap={8}>
+            <OriginMark of="assumption" note="the controller, the process K, τ, θ and the gains you set" />
             <Text size="xs" c="dimmed" fw={700} tt="uppercase">controller</Text>
             <SegmentedControl size="xs" fullWidth value={mode}
               onChange={(v) => setMode(v as ControllerMode)}
@@ -647,11 +652,13 @@ export function BodeTool(): JSX.Element {
             </PanelNote>
           </Stack>
           <Box>
+            <OriginMark of="page" note="the loop's transfer functions, evaluated on this page" />
             <LoopChart spec={spec} showElements={showElements} />
           </Box>
         </Box>
 
         <Box>
+          <OriginMark of="page" note="the margins read off the page's curves" />
           <Title order={5}>The two readings</Title>
           <Group gap={8} mt={6} wrap="wrap">
             <Badge variant="light" color={m.gain.found ? "grape" : "gray"}>

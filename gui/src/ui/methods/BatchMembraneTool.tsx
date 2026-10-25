@@ -114,6 +114,7 @@ import {
   productLoss, readSamples, readSolute, readVessel, scanWashOptimum,
   soluteVerdict, tb032Rows, trapezoid,
 } from "./batchMembraneMath.js";
+import { OriginMark } from "./origin.js";
 
 // ---- The two witnesses ------------------------------------------------------
 
@@ -361,6 +362,7 @@ export function BatchMembraneTool(): JSX.Element {
   // ---- The setup column ----------------------------------------------------
   const controls = (
     <>
+      <OriginMark of="assumption" note="the mode, the membrane twin and the rig values you set" />
       {hasAppTrajectory && (
         <SegmentedControl size="xs" value={src} fullWidth
           onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
@@ -680,6 +682,7 @@ export function BatchMembraneTool(): JSX.Element {
         </Box>
 
         {refusal}
+        <OriginMark of={["engine", "page"]} note="solid curves: the witness run in this browser (choupoBatch); dashed: this page's constant-R law at the run's own initial R" />
 
         <Box style={{ display: "grid", gap: 14,
           gridTemplateColumns: "minmax(200px, 250px) 1fr" }}>
@@ -707,6 +710,7 @@ export function BatchMembraneTool(): JSX.Element {
         {lessonStep(5)}
 
         <Box style={{ overflowX: "auto" }}>
+          <OriginMark of={["engine", "page"]} note="each row names whether the engine published it or this page recomputed it" />
           <Table withTableBorder withColumnBorders style={{ fontSize: 12 }}
             verticalSpacing={2}>
             {head}
@@ -746,6 +750,7 @@ export function BatchMembraneTool(): JSX.Element {
         </Box>
 
         <Box style={{ overflowX: "auto" }}>
+          <OriginMark of={["engine", "assumption"]} note="the run's published states; the vessel values are the case's declarations" />
           <Table withTableBorder withColumnBorders style={{ fontSize: 12 }}
             verticalSpacing={2}>
             <Table.Tbody>
@@ -818,6 +823,7 @@ export function BatchMembraneTool(): JSX.Element {
         {lessonStep(8)}
 
         <Box style={{ overflowX: "auto" }}>
+          <OriginMark of={["engine", "page"]} note="C and J_f from the run; their product, its maximum and the loss row computed on this page" />
           {view.scan === null ? (
             <Text size="sm" c="dimmed">
               The flux–concentration trade needs a run that SWEEPS the
@@ -958,6 +964,7 @@ export function BatchMembraneTool(): JSX.Element {
         {lessonStep(9)}
 
         <Box style={{ overflowX: "auto" }}>
+          <OriginMark of={["engine", "page", "reference"]} note="curves recomputed here from the closed form; the solid curve and the diamond use this run's R and G; the worked example's inputs are Millipore TB032's" />
           <Box style={{ minWidth: 0, height: 320 }}>
             <Plot
               data={lossTraces}

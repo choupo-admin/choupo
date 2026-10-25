@@ -54,6 +54,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Alert, Box, Code, Stack, Table, Text, Title } from "@mantine/core";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -276,6 +277,7 @@ export function SourWaterTool(): JSX.Element {
 
       <Box>
         <Title order={5}>Down the column</Title>
+        <OriginMark of="engine" note="the recorded run (golden) of stripper02_sour_water_h2s, not re-run on this page" />
         <Text size="sm" mt={4} mb={8}>
           Stages 1 (top), 2 (feed) and 8 (reboiler), off the run's own
           profile.  The top stage carries no sulfide at all, so the

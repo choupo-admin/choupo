@@ -98,6 +98,7 @@ import { LEVENSPIEL_LIMITS, LEVENSPIEL_STEPS } from "./levenspielLesson.js";
 // a shared geometry module is the right home the day a maintainer can move
 // both callers onto it.
 import { trapezoidAreaInView, type AreaPoint } from "./RayleighTool.js";
+import { OriginMark } from "./origin.js";
 
 /** Per-unit KPI block as the adapter delivers it (RunResult.kpis[unit]). */
 export type KpiRow = { [key: string]: number };
@@ -695,6 +696,7 @@ export function LevenspielTool(): JSX.Element {
   // ---- The setup panel's content: source, knobs, provenance ----------------
   const controls = (
     <>
+      <OriginMark of="assumption" note="T and the feed you set" />
       {(appServable || source === "current") && (
         <SegmentedControl size="xs" value={src} fullWidth
           onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
@@ -844,6 +846,7 @@ export function LevenspielTool(): JSX.Element {
         gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
         <Stack gap={8}>{controls}</Stack>
         <Box style={{ minWidth: 0 }}>
+      <OriginMark of={["engine", "page"]} note="the (X, -r) points are the two reactors solved in this browser (choupoSolve); the area, the rectangle and their ratio are this page's geometry on them" />
 
       {/* Chips: what each construction honestly claims. */}
       <Group gap="sm" wrap="wrap" align="center" px={12} py={6}

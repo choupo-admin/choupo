@@ -77,6 +77,7 @@ import type { ReactNode } from "react";
 import { Alert, Box, Code, Stack, Text, Title } from "@mantine/core";
 
 import { Tex } from "./lessonStep.js";
+import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -334,6 +335,7 @@ export function PcSaftTheoryTool(): JSX.Element {
 
       <Alert variant="light" color="orange"
         title="The association scheme is part of the FIT — paid for once, in this repository">
+        <OriginMark of="engine" note="K_water = 0.0044 is what the engine returned with the 4C curation, quoted from the repository's history" />
         <Text size="sm">
           A student meeting <Code>assocScheme</Code> naturally reads it as a
           structural fact: water has two lone pairs and two hydrogens, so
@@ -363,6 +365,7 @@ export function PcSaftTheoryTool(): JSX.Element {
 
       <Alert variant="light"
         title="k_ij = 0, and why this absence is milder than the others">
+        <OriginMark of="engine" note="V/F and the K-values are the recorded run (golden) of flash20_ethanol_water_pcsaft, quoted" />
         <Text size="sm">
           A binary with no <M t="k_{ij}" /> runs at zero, announced.  On the
           local-composition page you met NRTL running a pair at

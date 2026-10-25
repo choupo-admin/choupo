@@ -99,6 +99,7 @@ import { BatchStaircasePlot, type StaircaseInstant }
 import { RAYLEIGH_LIMITS, RAYLEIGH_STEPS } from "./rayleighLesson.js";
 import { KnobNumber, PanelNote } from "./knobPanel.js";
 import { TrajectoryPlot } from "../plotting/TrajectoryPlot.js";
+import { OriginMark } from "./origin.js";
 
 // ---- Activation -------------------------------------------------------------
 // A predicate over the trajectory: the classical Rayleigh construction needs a
@@ -775,6 +776,7 @@ export function RayleighTool(): JSX.Element {
   // ---- The setup panel's content: source, knobs, provenance ----------------
   const controls = (
     <>
+      <OriginMark of="assumption" note="the still's charge and the window you set" />
       {(appDetection.active || source === "current") && (
         <SegmentedControl size="xs" value={src} fullWidth
           onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
@@ -934,6 +936,7 @@ export function RayleighTool(): JSX.Element {
         gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
         <Stack gap={8}>{controls}</Stack>
         <Box style={{ minWidth: 0 }}>
+      <OriginMark of={["engine", "page"]} note="the pot trajectory and the equilibrium curve are the engine's runs in this browser (choupoBatch, choupoProps); the area under 1/(y*-x) is this page's trapezoid on them" />
 
       {/* Chips: the two sides of the identity + the window's far end. */}
       <Group gap="sm" wrap="wrap" align="center" px={12} py={6}
@@ -1049,6 +1052,7 @@ export function RayleighTool(): JSX.Element {
       {src === "classroom" && curve && (
         <Box>
           <Title order={5}>Drag the clock and watch the stages slide</Title>
+          <OriginMark of={["engine", "page"]} note="x_D, R and the pot at each instant are the rectifier campaign run in this browser; the staircase is this page's geometry on them" />
           {rect.busy && (
             <Group gap={6} wrap="nowrap" mt={6}>
               <Loader size="xs" />
