@@ -391,7 +391,7 @@ describe("the numbers the lesson quotes are the ones the engine prints", () => {
     const firstUnit = lines.find((l) => l.marker?.id === "unitBanner" && l.via === "marker")!;
     const conv = lines.find((l) => l.marker?.id === "recycleConverged")!;
     const pass = lines.find((l) => l.marker?.id === "finalPass")!;
-    expect(conv.text).toMatch(/^Recycle converged in 2 Newton iteration\(s\)/);
+    expect(conv.text).toMatch(/^Recycle converged in 3 Newton iteration\(s\)/);
     expect(conv.n).toBeLessThan(pass.n);
     expect(pass.n).toBeLessThan(firstUnit.n);
     //  The rule just above the loop belongs to the topology table it closes.

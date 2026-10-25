@@ -181,7 +181,7 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
       + "the topology table shows the tear's starting guess read from 0/ ("
       + at("tearGuesses") + "), and then comes the recycle loop: one row per "
       + "Newton iteration on the tear, with its relative residual ("
-      + at("recycleLoop") + "), and a verdict, \"Recycle converged in 2 "
+      + at("recycleLoop") + "), and a verdict, \"Recycle converged in 3 "
       + "Newton iteration(s)\" (" + at("recycleConverged") + "). No unit "
       + "says a word during those iterations: they run quietly ("
       + at("quietSweep") + ", " + at("quietVerbosity") + "). Only when the "
