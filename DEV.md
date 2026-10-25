@@ -2332,6 +2332,25 @@ accepts today, and that is a policy call.
 > posterior widths -- and the `yesterday` run is the informative one;
 > `drifted`/`driftedWithout` are the gross-error runs).
 > Order on Saturday: with C136, after the C124 validation (C131 note).
+> LANDED 2026-10-25 (`claude/c137-bayes-reconciliation`), placement and
+> emphasis only -- no engine source, no golden, no number computed by the
+> page: his sentence heads the tool in English ("Bayes is not merely a
+> different way of calculating the same result. It is a way of
+> representing, and updating, what we know about the state of a
+> process."), step 1 names prior / likelihood / posterior with p(x|m)
+> proportional to p(m|x) p(x) under the exact balances, page 2 draws the
+> posterior narrowing (F1 101.40 +- 2.00 -> 99.53 +- 1.18 t/h), the global
+> and measurement tests are called FREQUENTIST and told apart from a
+> Bayesian fault probability (named, not built), and a new page 5 sets
+> the three answers side by side (classical = the flat-prior flows, the
+> flat prior's posterior widths, yesterday's prior: 99.64 +- 0.82).  Point
+> (3), measured: the engine reads ONE sigma per prior flow
+> (`DataReconciliation.cpp:494`), so the 2 % stands for yesterday's own
+> uncertainty AND the overnight drift together; the page says so and
+> writes the widening s^2 = Sigma^y + q^2 as a Kalman prediction step the
+> engine does not have.  PROPOSALS for Vitor: an `evolution {}` term in a
+> prior file; a Bayesian fault-probability op.  Validated with C136 on
+> main + wave 2: `--gui` 35/0, check_data_reconciliation, reconcile01.
 
 > **C136. AN EDUTOOL ON SECONDARY CONTAINMENT -- BUND DESIGN IN A CHEMICAL
 > PLANT (Vitor, 2026-10-21, for SATURDAY: "Regista isto para fazer no
@@ -2402,6 +2421,31 @@ accepts today, and that is a policy call.
 > the validation owed by C124 (C131 note) and the site publish, before
 > anything new opens.  Status: commissioned, scope given by Vitor in
 > full; the brief carries file:line for every engine fact it uses.
+> LANDED 2026-10-25 (`claude/c136-bund-edutool`): EduTool `bund` on the
+> Process-safety shelf (16 steps, three benches -- design check, the four
+> scenarios integrated in time with every transfer conserved to 1e-14,
+> the 20/15/10 m3 exercise with rain; the section drawing with normal
+> operation and the accident apart, a time slider, the level against
+> time).  ONE procedure in two homes, the C62 way: C134's arithmetic left
+> PlantLayout.cpp verbatim for `src/postProcessing/layout/BundArithmetic.H`
+> (seven pure functions, every cited PlantLayout.cpp line kept in place)
+> and `gui/src/ui/methods/bund.ts` twins each one; gate
+> `check_bund_arithmetic` compiles 15 pinned examples against the header
+> to 1e-14, ties the green-ammonia tankFarm pins to that case's layoutDict
+> and golden, and refuses an inline copy (4 sabotages, one surviving by
+> design inside 1e-14).  Where the page teaches MORE than the engine it
+> says so: the engine deducts every enclosed footprint, the failing
+> tank's too; the page's useful capacity leaves that tank's own footprint
+> free (HSG176 para 157) and prints both -- the engine is on the safe side
+> by that footprint x wall height.  Sources READ: SI 2001/2954 (the
+> 110 % / 25 % rule, its scope -- a teaching example, never a universal
+> obligation) and HSE HSG176 (2015), paraphrased; CIRIA C736, Directive
+> 2012/18/EU, the storage BREF and DL 150/2015 cited by title only,
+> marked NOT READ; no Portuguese bund-capacity rule could be verified and
+> the page says so.  Not modelled, on the page: surge, evaporation, foam,
+> fire water, head-driven leak, drain hydraulics, structural design,
+> compliance.  Validated with C137: the five layout cases, the gates,
+> `--gui` 35/0.
 
 > **C135. A kij THAT VARIES WITH T, REGRESSED AND READ PER UNIT (Vitor,
 > 2026-10-21: "Nos conseguimos fazer melhor e arranjar kij que variem com
