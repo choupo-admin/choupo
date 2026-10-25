@@ -55,11 +55,13 @@ import { resolveAdapter, type AdapterKind } from "../adapters/index.js";
 import { withDisplayPrefs } from "../case/applyPrefs.js";
 import { withFrozenBoundaryState } from "../case/resultSlice.js";
 import { applyScratch } from "../case/scratch.js";
-import { runInputsOf } from "../case/staleness.js";
+import { declaredInputsOf, runInputsOf } from "../case/staleness.js";
 import { downloadFlowsheetDict } from "../case/saveCase.js";
 import { caseHasUserCode, USER_CODE_MSG } from "../case/userCode.js";
 import { TUTORIALS } from "../cases/tutorials.js";
 import { useStore, hasCaseOpen } from "../state/store.js";
+import { useCaseMode } from "../state/useCaseMode.js";
+import { binaryForMode, MODE_LABEL } from "../case/caseModes.js";
 import { UnitsMenu } from "./UnitsMenu.js";
 import { ColoursMenu } from "./ColoursMenu.js";
 import { ColorSchemeToggle } from "./ColorSchemeToggle.js";
@@ -117,6 +119,17 @@ export function TopBar({ onMinWidth }: {
   const finishRun = useStore((s) => s.finishRun);
   const markFlowsheetRun = useStore((s) => s.markFlowsheetRun);
   const failRun = useStore((s) => s.failRun);
+  const finishPropsRun = useStore((s) => s.finishPropsRun);
+  const carryRunWrites = useStore((s) => s.carryRunWrites);
+  const markPropsRun = useStore((s) => s.markPropsRun);
+  //  THE RUN FOLLOWS THE MODE ON SCREEN (DEV.md 4c C157).  A two-mode case
+  //  shown in Properties & data runs its propsDict (choupoProps) on every
+  //  door -- the screen's own button, Ctrl+Enter, the menu -- and one shown
+  //  in Process runs its flowsheet, by bin/runCase's rule
+  //  (case/caseModes.ts binaryForMode).  It ran the controlDict's
+  //  application whatever the screen showed, so Ctrl+Enter on the fit
+  //  screen solved the flowsheet.  A one-mode case keeps its application.
+  const caseMode = useCaseMode();
   const appendLog = useStore((s) => s.appendLog);
   const caseFiles = useStore((s) => s.caseFiles);
   const runResult = useStore((s) => s.runResult);
@@ -258,16 +271,49 @@ export function TopBar({ onMinWidth }: {
           });
         }
       }
+      const binary = caseMode.modes
+        ? binaryForMode(caseMode.mode, caseFiles.controlDict["application"]) : undefined;
+      if (caseMode.modes)
+        appendLog(`[gui] ${MODE_LABEL[caseMode.mode]} mode on screen -- running ${binary}\n`);
       const result = await resolved.adapter.run(filesForRun,
         appendLog,
         ctl.signal,
+        binary,
       );
+      //  Files the run wrote INTO the case (a fitted record) are carried
+      //  back into it and announced in the Log (case/caseWrites.ts).
+      const carried = carryRunWrites(result)
+        .filter((n) => n.change !== "unchanged");
+      //  A TWO-MODE case's Properties & data run keeps its own result slot:
+      //  the Process result (streams, KPIs) is not replaced by a fit.
+      if (caseMode.modes && caseMode.mode === "props") {
+        finishPropsRun(result, declaredInputsOf(useStore.getState().caseFiles, scratchEdits));
+        if (result.status === "done") markPropsRun();
+        notifications.show({
+          title: result.status === "done" ? "Properties & data run complete" : "Properties & data run failed",
+          message: result.status !== "done"
+            ? "choupoProps did not finish -- the Log has the engine's own message."
+            : carried.length > 0
+              ? `${carried.map((n) => n.path).join(", ")} ${carried.length === 1 ? "was" : "were"} written into the case `
+                + "(see the Log) -- Process mode now reads it."
+              : "See the results on this screen.",
+          color: result.status === "done" ? "teal" : "red",
+          icon: result.status === "done" ? <IconCircleCheck size={16} /> : <IconAlertTriangle size={16} />,
+          autoClose: result.status === "done" ? 6000 : 8000,
+        });
+        return;
+      }
       //  STAMP WHAT WAS RUN.  `tinkered` -- not `filesForRun` -- is the
       //  subject: the display preset and a drilled sector's frozen boundary
       //  state are added by the run, not declared by the student, and
       //  fingerprinting them would make every result read as stale.  See
       //  case/staleness.ts.
-      finishRun(result, runInputsOf(tinkered, scratchEdits));
+      //  A file the run itself wrote into the case is part of what this
+      //  result answers, so the stamp is taken on the case WITH it --
+      //  otherwise a fit's own record would make its result read as stale.
+      finishRun(result, carried.length > 0
+        ? declaredInputsOf(useStore.getState().caseFiles, scratchEdits)
+        : runInputsOf(tinkered, scratchEdits));
       // CURATION-PHASE: a composite case (sectors) whose streams are not wired
       // (children but empty connections) is still in curation -- choupoSolve
       // emits the curation message and there is NOTHING simulated.  The GUI must
@@ -352,6 +398,11 @@ export function TopBar({ onMinWidth }: {
     appendLog,
     finishRun,
     failRun,
+    finishPropsRun,
+    carryRunWrites,
+    markPropsRun,
+    caseMode.modes,
+    caseMode.mode,
   ]);
 
   const onStop = useCallback(() => {

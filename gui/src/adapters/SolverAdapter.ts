@@ -679,6 +679,12 @@ export interface RunResult {
    *  2026-06-02.dat").  The GUI previews them read-only and offers a download
    *  of the DATED file; promotion to the bare <name>.dat stays an off-GUI act. */
   proposals?: { [relPath: string]: string };
+  /** Files the run wrote INTO THE CASE at a path a props op declares it
+   *  writes (`x-choupo.writes`, kind `record` -- a fitted membrane record at
+   *  `output.record`), read back from MEMFS after the run.  The caller carries
+   *  them into the open case (case/caseWrites.ts); absent = nothing declared
+   *  or nothing written. */
+  caseWrites?: { [relPath: string]: string };
   /** Discounted-cash-flow appraisal (Perry / Turton Ch.10) from an economics
    *  postDict: the headline scalars (FCI / TCI / COM_d / revenue / NPV / IRR /
    *  payback + AACE accuracy band) AND the year-by-year DCF table.  Absent for

@@ -41,6 +41,8 @@ import type { ScratchEdit, ScratchEdits } from "../case/scratch.js";
 import type { RunInputs } from "../case/staleness.js";
 import type { JsonDict } from "../dict/json.js";
 import type { RunResult } from "../adapters/SolverAdapter.js";
+import { carryCaseWrites, caseWriteLogLines, declaredCaseWrites,
+         type CaseWriteNote } from "../case/caseWrites.js";
 import { applyDrillFeeds } from "../case/drillSeed.js";
 import { IDLE_RUN_PROGRESS, progressOnChunk, type RunProgress } from "../case/runProgress.js";
 // RESULT_WORKSPACES: the ONE list of workspaces that draw a run (ui/workspaces.ts).
@@ -281,6 +283,15 @@ interface AppState {
    *  stale, so a leftover stamp cannot mislead, and one write site is one
    *  home. */
   runInputs: RunInputs | null;
+  /** The last PROPERTIES & DATA run of a TWO-MODE case (DEV.md 4c C152,
+   *  C157), kept beside `runResult` -- which stays the Process run's -- so
+   *  switching modes shows each mode its own answer and a props run never
+   *  replaces the flowsheet's streams.  Cleared with `runResult`. */
+  propsRunResult: RunResult | null;
+  /** What `propsRunResult` was computed from (case/staleness.ts) -- its own
+   *  stamp, so the Properties & data screen says "stale" about ITS run and
+   *  not about the Process run's. */
+  propsRunInputs: RunInputs | null;
   // Iteration audit: monotonic stamps of the last props (choupoProps) run vs the
   // last flowsheet (choupoSolve) run.  flowsheetRunAt >= propsRunAt => the
   // simulation reflects the consolidated props; propsRunAt > flowsheetRunAt =>
@@ -392,6 +403,13 @@ interface AppState {
    *  Optional: a caller that does not stamp makes NO claim, and the result
    *  then never reads as stale -- absence must not manufacture a verdict. */
   finishRun: (result: RunResult, inputs?: RunInputs) => void;
+  /** A two-mode case's Properties & data run landed: its result goes to
+   *  `propsRunResult`, the run status ends, `runResult` is untouched. */
+  finishPropsRun: (result: RunResult, inputs?: RunInputs) => void;
+  /** Carry the files a run wrote INTO THE CASE (RunResult.caseWrites, read
+   *  off the op schemas -- case/caseWrites.ts) into the open case, and say
+   *  so in the Log.  Returns the notes it logged. */
+  carryRunWrites: (result: RunResult) => CaseWriteNote[];
   failRun: () => void;
   resetRun: () => void;
 
@@ -629,6 +647,8 @@ export const useStore = create<AppState>((set, get) => ({
   runProgress: IDLE_RUN_PROGRESS,
   runResult: initial.inherited ?? null,
   runInputs: null,
+  propsRunResult: null,
+  propsRunInputs: null,
   propsRunAt: 0,
   flowsheetRunAt: initial.inherited && initial.files.flowsheet ? 1 : 0,
   // The card's fold comes from the READER's key, not from the session — so a
@@ -681,7 +701,7 @@ export const useStore = create<AppState>((set, get) => ({
         navPos: s.navPos - 1,
         tutorialName: t.name, caseFiles: t.files, pristineCaseFiles: t.files,
         showIntro: false,
-        selectedNodeId: null, runStatus: "idle", runLog: "", runResult: null,
+        selectedNodeId: null, runStatus: "idle", runLog: "", runResult: null, propsRunResult: null, propsRunInputs: null,
       scratchEdits: {},
       };
     }),
@@ -694,7 +714,7 @@ export const useStore = create<AppState>((set, get) => ({
         navPos: s.navPos + 1,
         tutorialName: t.name, caseFiles: t.files, pristineCaseFiles: t.files,
         showIntro: false,
-        selectedNodeId: null, runStatus: "idle", runLog: "", runResult: null,
+        selectedNodeId: null, runStatus: "idle", runLog: "", runResult: null, propsRunResult: null, propsRunInputs: null,
       scratchEdits: {},
       };
     }),
@@ -703,7 +723,7 @@ export const useStore = create<AppState>((set, get) => ({
       tutorialName: BLANK_CASE.name, caseFiles: BLANK_CASE.files,
       pristineCaseFiles: BLANK_CASE.files,
       showIntro: false,
-      selectedNodeId: null, runStatus: "idle", runLog: "", runResult: null,
+      selectedNodeId: null, runStatus: "idle", runLog: "", runResult: null, propsRunResult: null, propsRunInputs: null,
       scratchEdits: {},
       activeWorkspace: null,
     })),
@@ -733,7 +753,7 @@ export const useStore = create<AppState>((set, get) => ({
         selectedNodeId: null,
         runStatus: "idle",
         runLog: "",
-        runResult: null,
+        runResult: null, propsRunResult: null, propsRunInputs: null,
         propsRunAt: 0,
         flowsheetRunAt: 0,
       };
@@ -753,7 +773,7 @@ export const useStore = create<AppState>((set, get) => ({
       selectedNodeId: null,
       runStatus: "idle",
       runLog: "",
-      runResult: null,
+      runResult: null, propsRunResult: null, propsRunInputs: null,
       propsRunAt: 0,
       flowsheetRunAt: 0,
     })),
@@ -768,7 +788,7 @@ export const useStore = create<AppState>((set, get) => ({
       selectedNodeId: null,
       runStatus: "idle",
       runLog: "",
-      runResult: null,
+      runResult: null, propsRunResult: null, propsRunInputs: null,
       propsRunAt: 0,
       flowsheetRunAt: 0,
     })),
@@ -942,8 +962,26 @@ export const useStore = create<AppState>((set, get) => ({
     set((s) => ({ propsRunAt: Math.max(s.propsRunAt, s.flowsheetRunAt) + 1 })),
   markFlowsheetRun: () =>
     set((s) => ({ flowsheetRunAt: Math.max(s.propsRunAt, s.flowsheetRunAt) + 1 })),
+  finishPropsRun: (result, inputs) => set({ runStatus: result.status, propsRunResult: result,
+                                             propsRunInputs: inputs ?? null,
+                                             runProgress: IDLE_RUN_PROGRESS }),
+  carryRunWrites: (result) => {
+    const s = get();
+    const declared = declaredCaseWrites(s.caseFiles.propsDict);
+    const { files, notes } = carryCaseWrites(s.caseFiles, declared, result.caseWrites);
+    const lines = caseWriteLogLines(notes);
+    //  A file the run wrote at a path no op declares is not carried, and is
+    //  NAMED rather than dropped in silence.
+    for (const p of Object.keys(result.caseWrites ?? {}))
+      if (!declared.some((w) => w.path === p))
+        lines.push(`[case] ${p}: written by the run at a path no operation declares -- NOT carried into the case`);
+    if (files !== s.caseFiles || lines.length > 0)
+      set((st) => ({ caseFiles: files,
+                     runLog: lines.length ? st.runLog + "\n" + lines.join("\n") + "\n" : st.runLog }));
+    return notes;
+  },
   failRun: () => set({ runStatus: "error", runProgress: IDLE_RUN_PROGRESS }),
-  resetRun: () => set({ runStatus: "idle", runLog: "", runResult: null,
+  resetRun: () => set({ runStatus: "idle", runLog: "", runResult: null, propsRunResult: null, propsRunInputs: null,
                         runProgress: IDLE_RUN_PROGRESS }),
 
   plotsViewHint: null,
@@ -1010,7 +1048,7 @@ if (typeof window !== "undefined" && !isolatedTab()) {
         // Restore the intro/flowsheet step recorded in this history entry, so
         // Back from the flowsheet returns to the tutorial's intro page.
         showIntro: (e.state as { intro?: boolean } | null)?.intro === true,
-        selectedNodeId: null, runStatus: "idle", runLog: "", runResult: null,
+        selectedNodeId: null, runStatus: "idle", runLog: "", runResult: null, propsRunResult: null, propsRunInputs: null,
       scratchEdits: {},
       });
     });
@@ -1087,7 +1125,7 @@ if (import.meta.hot) {
         selectedNodeId: null,
         runStatus: "idle",
         runLog: "",
-        runResult: null,
+        runResult: null, propsRunResult: null, propsRunInputs: null,
       });
     }
   });

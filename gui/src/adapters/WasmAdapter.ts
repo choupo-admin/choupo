@@ -62,6 +62,7 @@ import { shapeBatchPlan, type BatchPlan } from "./batchPlanPayload.js";
 import { readEdges } from "../case/toGraph.js";
 import { fromJson, serialize } from "../dict/index.js";
 import { parseDynamicInstants } from "../case/dynamicInstants.js";
+import { declaredCaseWrites } from "../case/caseWrites.js";
 import type { CaseFiles } from "../case/types.js";
 import type { JsonDict } from "../dict/index.js";
 import type { PairOrigin, ValidityDomain, PromotionOverride,
@@ -140,7 +141,8 @@ type WorkerMessage =
   | { type: "convergedFiles"; files: { [relPath: string]: string } }
   | { type: "designFiles"; files: { [relPath: string]: string } }
   | { type: "instants"; files: { [relPath: string]: string } }
-  | { type: "proposals"; files: { [relPath: string]: string } };
+  | { type: "proposals"; files: { [relPath: string]: string } }
+  | { type: "caseWrites"; files: { [relPath: string]: string } };
 
 export class WasmAdapter implements SolverAdapter {
   run(caseFiles: CaseFiles,
@@ -156,6 +158,7 @@ export class WasmAdapter implements SolverAdapter {
       let designFiles: { [relPath: string]: string } | null = null;
       let instantFiles: { [relPath: string]: string } | null = null;
       let proposals: { [relPath: string]: string } | null = null;
+      let caseWrites: { [relPath: string]: string } | null = null;
       const emit = (line: string) => {
         const chunk = line + "\n";
         log += chunk;
@@ -248,6 +251,9 @@ export class WasmAdapter implements SolverAdapter {
         if (proposals && Object.keys(proposals).length > 0) {
           result.proposals = proposals;
         }
+        if (caseWrites && Object.keys(caseWrites).length > 0) {
+          result.caseWrites = caseWrites;
+        }
         if (cancelled) noteRunSettled("cancelled", ledgerBinary);
         else if (status === "done") {
           const carried = (Object.keys(result) as (keyof RunResult)[])
@@ -294,6 +300,8 @@ export class WasmAdapter implements SolverAdapter {
           instantFiles = msg.files;
         } else if (msg.type === "proposals") {
           proposals = msg.files;
+        } else if (msg.type === "caseWrites") {
+          caseWrites = msg.files;
         } else if (msg.type === "done") {
           if (msg.rc !== 0) emit(`\n[wasm] exited with code ${msg.rc}`);
           settle(msg.rc === 0 ? "done" : "error");
@@ -315,11 +323,18 @@ export class WasmAdapter implements SolverAdapter {
       ledgerBinary = binary;
       emit(`[adapter] dispatching to ${binary} WASM`);
 
+      //  THE FILES THIS RUN WILL WRITE INTO THE CASE (case/caseWrites.ts):
+      //  read off the op schemas, so the worker reads back exactly these and
+      //  nothing it would have to guess.  Only a props run executes the ops.
+      const writes = binary === "choupoProps"
+        ? declaredCaseWrites(caseFiles.propsDict).map((w) => w.path) : [];
+
       countRunCase();
       worker.postMessage({
         type: "run",
         binary,
         files: serialiseCase(caseFiles),
+        caseWrites: writes,
       });
     });
   }

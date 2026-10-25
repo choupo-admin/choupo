@@ -146,7 +146,11 @@ describe("staleness: one home, and a class that actually dims", () => {
     //  the subject is the TINKERED case, never filesForRun -- the display
     //  preset and a drilled sector's frozen boundary state are added by the
     //  run, not declared by the student.
-    expect(topBar).toContain("finishRun(result, runInputsOf(tinkered, scratchEdits))");
+    //  A run that wrote a file INTO the case (a fitted record, DEV.md 4c
+    //  C157) is stamped on the case WITH that file -- its own output is part
+    //  of what it answers; every other run on the tinkered case.
+    expect(topBar).toMatch(/finishRun\(result, carried\.length > 0\s*\?\s*declaredInputsOf\(useStore\.getState\(\)\.caseFiles, scratchEdits\)\s*:\s*runInputsOf\(tinkered, scratchEdits\)\)/);
+    expect(topBar).not.toContain("runInputsOf(filesForRun");
     for (const f of ["../src/ui/FlowCanvas.tsx", "../src/ui/AppShell.tsx"])
       expect(readFileSync(resolve(__dirname, f), "utf8")).toContain("useStaleResult()");
   });

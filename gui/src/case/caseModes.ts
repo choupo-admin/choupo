@@ -66,6 +66,16 @@ export function caseModesOf(files: {
   return { modes: ["process", "props"], defaultMode: app === "choupoProps" ? "props" : "process" };
 }
 
+/** The binary a run of `mode` uses, by bin/runCase's own rule: Properties &
+ *  data runs choupoProps; Process runs the case's application, or choupoSolve
+ *  where the application (the default mode) is choupoProps.  The run control
+ *  follows the MODE ON SCREEN (DEV.md 4c C157), never the default alone. */
+export function binaryForMode(mode: CaseMode, application: unknown): string {
+  if (mode === "props") return "choupoProps";
+  const app = typeof application === "string" && application ? application : "choupoSolve";
+  return app === "choupoProps" ? "choupoSolve" : app;
+}
+
 const isDict = (v: unknown): v is JsonDict => !!v && typeof v === "object" && !Array.isArray(v);
 
 /** A record's name from the path an op writes it to. */

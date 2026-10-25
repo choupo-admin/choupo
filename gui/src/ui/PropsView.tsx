@@ -61,6 +61,10 @@ License
   Two run paths, chosen by what the case is:
     - props-only  -> the TopBar runs choupoProps (store.runResult); the Run
                      button here just dispatches the shared run event.
+    - two-mode    -> the same: the TopBar runs the mode ON SCREEN (DEV.md 4c
+                     C157), choupoProps here, into store.propsRunResult so the
+                     Process result is not replaced, and carries back what
+                     the run wrote into the case (case/caseWrites.ts).
     - flowsheet   -> THIS view runs choupoProps itself (binaryOverride), per
                      prop-bearing target (a composite plant fans out to one
                      run per sector), keeping its own results -- the store's
@@ -503,6 +507,7 @@ export function PropsView() {
   const controlDict = useStore((s) => s.caseFiles.controlDict);
   const thermoComponents = useStore((s) => s.caseFiles.thermoPackage?.["components"]);
   const storeRunResult = useStore((s) => s.runResult);
+  const storePropsRunResult = useStore((s) => s.propsRunResult);
   const runStatus = useStore((s) => s.runStatus);
   const runLog = useStore((s) => s.runLog);
   const setActiveWorkspace = useStore((s) => s.setActiveWorkspace);
@@ -600,13 +605,21 @@ export function PropsView() {
   // The effective result map this view reads from.  props-only -> the store's
   // single runResult under this case's name; flowsheet -> the local per-sector
   // runs.  Either way: caseName -> RunResult.
+  //  A TWO-MODE case (DEV.md 4c C157) is run by the TopBar, like a
+  //  props-only one -- the run control follows the mode on screen, so the
+  //  screen's button, Ctrl+Enter and the menu are one run, logged in the Log
+  //  and with what it writes into the case carried back -- into its own
+  //  result slot, `propsRunResult`, beside the Process run's.
+  const twoMode = caseMode.modes !== null;
   const runs = useMemo<Map<string, RunResult>>(() => {
+    if (twoMode)
+      return storePropsRunResult ? new Map([[tutorialName, storePropsRunResult]]) : new Map();
     if (hasFlowsheet) return localRuns;
     if (storeRunResult) return new Map([[tutorialName, storeRunResult]]);
     return new Map();
-  }, [hasFlowsheet, localRuns, storeRunResult, tutorialName]);
+  }, [twoMode, hasFlowsheet, localRuns, storeRunResult, storePropsRunResult, tutorialName]);
 
-  const running = hasFlowsheet ? localRunning : runStatus === "running";
+  const running = hasFlowsheet && !twoMode ? localRunning : runStatus === "running";
   // After a run the user must SEE what it produced ("see, then decide") -- a
   // completed run that leaves the view sitting on `thermo readiness` reads as
   // silence.  Arm a one-shot jump on Run; when the results land, focus the
@@ -614,9 +627,9 @@ export function PropsView() {
   const [jumpToResults, setJumpToResults] = useState(false);
   const onRun = useCallback(() => {
     setJumpToResults(true);
-    if (hasFlowsheet) void runPropsLocal();
+    if (hasFlowsheet && !twoMode) void runPropsLocal();
     else window.dispatchEvent(new CustomEvent("choupo:run"));
-  }, [hasFlowsheet, runPropsLocal]);
+  }, [hasFlowsheet, twoMode, runPropsLocal]);
 
   // Raw lab-data overlays toggle (default on when present).
   const [showLab, setShowLab] = useState(true);
@@ -897,9 +910,12 @@ export function PropsView() {
         )}
         <Group justify="flex-start" gap="md" wrap="nowrap">
           <Button size="xs" color="cyan" leftSection={<IconPlayerPlay size={14} />}
-            loading={running} disabled={!hasProps && hasFlowsheet} onClick={onRun}>
+            loading={running} disabled={!hasProps && hasFlowsheet} onClick={onRun}
+            title={twoMode ? "Runs this mode: system/propsDict with choupoProps (Ctrl+Enter does the same)."
+              + " A record a fit writes is carried into the case, for Process mode to read." : undefined}>
             {running ? "Running…"
               : isComposite ? `Run properties (${targets.length} sectors)`
+              : twoMode ? "Run Properties & data"
               : "Run properties"}
           </Button>
           <Button size="xs" variant="subtle" c="dimmed"

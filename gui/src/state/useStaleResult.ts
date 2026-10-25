@@ -39,12 +39,24 @@ import { useMemo } from "react";
 
 import { changedParts, declaredInputsOf, stalenessOf, type Staleness } from "../case/staleness.js";
 import { useStore } from "./store.js";
+import { useCaseMode } from "./useCaseMode.js";
+
+/** WHICH run the screen draws: a two-mode case shown in Properties & data
+ *  draws its props run (store.propsRunResult, DEV.md 4c C157), so its
+ *  staleness is that run's stamp against the case -- never the Process
+ *  run's, which a fit's own record would otherwise make read as stale. */
+function useDrawnRun(): { result: unknown; inputs: ReturnType<typeof useStore.getState>["runInputs"] } {
+  const { modes, propsView } = useCaseMode();
+  const props = modes !== null && propsView;
+  const runResult = useStore((s) => (props ? s.propsRunResult : s.runResult));
+  const runInputs = useStore((s) => (props ? s.propsRunInputs : s.runInputs));
+  return { result: runResult, inputs: runInputs };
+}
 
 export function useStaleResult(): Staleness {
   const caseFiles = useStore((s) => s.caseFiles);
   const scratchEdits = useStore((s) => s.scratchEdits);
-  const runResult = useStore((s) => s.runResult);
-  const runInputs = useStore((s) => s.runInputs);
+  const { result: runResult, inputs: runInputs } = useDrawnRun();
   return useMemo(
     () => stalenessOf(declaredInputsOf(caseFiles, scratchEdits), runInputs, !!runResult),
     [caseFiles, scratchEdits, runInputs, runResult],
@@ -58,8 +70,7 @@ export function useStaleResult(): Staleness {
 export function useStaleParts(): Staleness & { changed: string[] | null } {
   const caseFiles = useStore((s) => s.caseFiles);
   const scratchEdits = useStore((s) => s.scratchEdits);
-  const runResult = useStore((s) => s.runResult);
-  const runInputs = useStore((s) => s.runInputs);
+  const { result: runResult, inputs: runInputs } = useDrawnRun();
   return useMemo(() => {
     const now = declaredInputsOf(caseFiles, scratchEdits);
     return { ...stalenessOf(now, runInputs, !!runResult), changed: changedParts(now, runInputs) };

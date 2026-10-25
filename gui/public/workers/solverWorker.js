@@ -400,6 +400,34 @@ self.addEventListener("message", async (e) => {
             }
           }
 
+          //  THE FILES THE RUN WROTE INTO THE CASE (gui/src/case/caseWrites.ts).
+          //  The main thread names them, read off the op schemas
+          //  (`x-choupo.writes`); this reads exactly those back, whatever
+          //  the exit code -- on a native run the file is on the case's disk
+          //  the moment the op writes it, and a later op failing does not
+          //  unwrite it.  Only a file the run CHANGED (new, or not the bytes
+          //  it was handed) travels back: a declared file the run left alone
+          //  is still the case's own copy, and calling it "written" would be
+          //  false.
+          if (Array.isArray(msg.caseWrites) && msg.caseWrites.length > 0) {
+            const written = {};
+            for (const rel of msg.caseWrites) {
+              const path = "/case/" + rel;
+              try {
+                if (!Module.FS.analyzePath(path).exists) continue;
+                const body = Module.FS.readFile(path, { encoding: "utf8" });
+                if (msg.files[rel] !== body) written[rel] = body;
+              } catch (_) {
+                /* unreadable: left out, the caller reports nothing written */
+              }
+            }
+            const n = Object.keys(written).length;
+            log("[worker] the case declares " + msg.caseWrites.length
+                + " file(s) its operations write into it; " + n + " changed by this run"
+                + (n ? ": " + Object.keys(written).join(", ") : ""));
+            if (n > 0) self.postMessage({ type: "caseWrites", files: written });
+          }
+
           settle({ type: "done", rc });
         } catch (err) {
           const message = err && err.message ? err.message : String(err);
