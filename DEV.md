@@ -1501,6 +1501,24 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C150. A SECOND EXTERNAL REVIEW OF THE EDUTOOLS, R01-R28 (Vitor,
+> 2026-10-25, a review of 63 EduTools relayed for the commander to judge
+> and act on).**  It asks, per point, confirmed / partly / not confirmed,
+> the evidence, the correction, the verification and what is pending, and
+> to contest what does not hold.  Measured overlap with what is already
+> owed: R01-R05 are the overpressure points C112 G11 built and left
+> stranded (`claude/c112-overpressure-review`); R17 and R22 overlap G12
+> (`claude/c112-g12-pump-fel-ladder-ss-poolfire`).  Plan: wave 1 lands G11
+> + G12 and the safety and layout points (R01-R06, R26); wave 2 the engine
+> investigations, each with a test able to fail (R07 element-potential
+> with two condensable species, R08 PC-SAFT entropy and R ln Z, R14
+> epsilon-NTU across saturation, R15 the cooling tower's external energy
+> balance, R16 the pinch duty inventory, R27 the tear-streams contract);
+> wave 3 the wording points across the remaining tools (R09-R13, R17-R25,
+> R27, R28), "neste exemplo / neste modelo / nesta implementacao" rather
+> than universal claims, limitations placed beside the numbers.  The
+> review itself is kept out of the tree.
+
 > **C149. THE RESULTS A RESEARCHER RECEIVES: PLOTS FIRST, AND FITTING A
 > MEMBRANE TO HIS OWN DATA (Vitor, 2026-10-24, with screenshots of the live
 > app on polarisation01: "Tu achas que isto e um bom GUI para acompanhar os
