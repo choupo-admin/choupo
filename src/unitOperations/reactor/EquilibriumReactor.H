@@ -31,8 +31,11 @@ Description
     SIMULTANEOUS chemical equilibrium via each reaction's temperature-dependent
     equilibrium constant Kp_j(T), from the species' Gibbs-of-formation data
     (K = exp(-dG deg/RT)) -- NO kinetics, NO residence time.  The R extents are a
-    RESULT: the coupled gas-phase (ideal) equilibrium system
-        Kp_j = PROD_i (p_i/P deg)^nu_ij,   n_i = n_i0 + SUM_j nu_ij xi_j
+    RESULT: the coupled gas-phase equilibrium system
+        Kp_j = PROD_i (y_i phi_i P/P deg)^nu_ij,   n_i = n_i0 + SUM_j nu_ij xi_j
+    (phi_i = 1 on an ideal-gas package; under a real-gas one the package's
+    fugacity coefficients, folded in by successive substitution since
+    2026-10-25, as the gibbsReactor does)
     is solved by a Newton on x_i = ln n_i (analytic Jacobian), with the
     reaction subspace written as the invariants of the declared set, so a
     reaction that runs almost to completion leaves its limiting species at
@@ -62,7 +65,11 @@ Description
     `T_Kp_<name>` (where each Kp was evaluated).  The reactor stays
     ISOTHERMAL at T: outlet state and duty are at the physical T.  A negative
     magnitude REFUSES by name; absent the key the run is the one it always
-    was.  NOT here: an adiabatic mode, and any Kp beyond the ideal-gas rung.
+    was.  The duty is H_out - H_in on the package's own surface (the outlet
+    at its own equilibrium, both ends priced as the energy report prices
+    them -- 2026-10-25; it was the heat of reaction alone), and a gas-phase
+    answer that leaves a condensable supersaturated is REFUSED.  NOT here: an
+    adiabatic mode, and a liquid phase.
 
     A PURE SOLID (C14 slice 2, 2026-09-27).  A declared reaction may name a
     `referenceState pureSolid;` component (graphite in methane cracking or

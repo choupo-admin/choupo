@@ -113,6 +113,22 @@ public:
                                 const sVector&       nu,
                                 scalar               T);
 
+    // -- Detailed balance on a LIQUID-basis reactor, refused for sum(nu) != 0
+    //    (C131 reactors review, 2026-10-25).  `equilibriumKc` is the IDEAL-GAS
+    //    Kc = Kp (P°/R_u T)^Σν in kmol/m3.  The `cstr` and `pfr` form their
+    //    concentrations on a LIQUID basis, F_i / Q with Q = F Σ z_i Vliq_i, in
+    //    mol/m3.  For Σν = 0 the basis cancels and k_rev = k_fwd / Kp is exact
+    //    for an ideal-gas reaction; for Σν ≠ 0 it does not, twice over (a
+    //    factor 1000^Σν of units, and a gas standard concentration applied to
+    //    a liquid).  Measured: isobutene + methanol <-> MTBE at 343.15 K ran to
+    //    99.95 % where the units alone give 98.53 % and the ideal-solution
+    //    equilibrium on the same records (Kp, Antoine) 92.26 %.  `who` names
+    //    the caller in the refusal; `reaction` is the reaction's own dict.
+    static void refuseLiquidBasisDetailedBalance(const Dictionary& reaction,
+                                                 const sVector&    nu,
+                                                 const std::string& name,
+                                                 const std::string& who);
+
     // -- The same computation, broken out for a glass-box report ----------
     //    Kp (pressure basis), Σν, and Kc = Kp·(P°/(R_u T))^Σν; lnKp = −ΔG°/RT
     //    itself, for a caller that must not lose it to exp over/underflow.

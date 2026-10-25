@@ -2741,6 +2741,24 @@ PYEOF
         rm -f /tmp/c150.$$
     done
 
+    # C131 phase 2 (c), reactors (2026-10-25): seven places where a reactor
+    # ran to exit 0 on a premise its formulation does not satisfy -- liquid-
+    # basis detailed balance with sum(nu) != 0, an autocatalytic extent with
+    # several roots, a dropped Gibbs condensate, the equilibriumReactor's
+    # missing phi, duty and supersaturation check, and the dynamicCSTR's
+    # drain and dropped reverse leg.  Record docs/design/review-c131-reactors.md.
+    if "$ROOT/bin/curate/check_reactor_limits.py" > /tmp/rlim.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "check_reactor_limits" \
+            "$(gate_claim check_reactor_limits /tmp/rlim.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (a reactor ran past its own formulation)\n" \
+            "check_reactor_limits"
+        cat /tmp/rlim.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rlim.$$
+
     # Batch dryer (the drying curve): the GAB equilibrium moisture and the
     # air's water activity recomputed from the case's OWN records (Antoine
     # fit, molar masses, declared air), the constant-rate flux closing as

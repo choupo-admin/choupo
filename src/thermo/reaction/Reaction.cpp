@@ -101,9 +101,9 @@ scalar Reaction::falloffRate(scalar kLow, scalar kInf, scalar M, scalar T,
 
 // Concentration-basis correction.  Kp = exp(−dG/RT) is the standard-state
 // (1 bar) pressure-basis constant; the reverse rate k_rev = k_fwd/Kc needs the
-// CONCENTRATION-basis Kc.  For an ideal gas Kc = Kp·(P°/(R_u T))^{Σν}, where
-// c° = P°/(R_u T) is the standard concentration in kmol/m³ (R_u = 1000·R, so c°
-// matches the reactor concentrations c = n/V or F/Q in kmol/m³).  Σν = 0 → 1.
+// CONCENTRATION-basis Kc.  For an ideal gas Kc = Kp·(P°/(R_u T))^{Σν}, c° in kmol/m³
+// (R_u = 1000·R): the basis of batchReactor/dynamicCSTR's c = n/V.  The cstr/pfr's
+// F/Q is LIQUID mol/m³, so they refuse Σν ≠ 0 (refuseLiquidBasisDetailedBalance).  Σν = 0 → 1.
 static scalar concentrationFactor(scalar sumNu, scalar T)
 {
     if (sumNu == 0.0) return 1.0;          // byte-identical to the old Kp basis
@@ -147,6 +147,30 @@ Reaction::Equilibrium Reaction::equilibrium(const ThermoPackage& thermo,
         }
     const scalar Kp = std::exp(-dG / (constant::R * T));
     return { Kp, sumNu, Kp * concentrationFactor(sumNu, T), -dG / (constant::R * T) };
+}
+
+void Reaction::refuseLiquidBasisDetailedBalance(const Dictionary&  reaction,
+                                                const sVector&     nu,
+                                                const std::string& name,
+                                                const std::string& who)
+{
+    if (reaction.lookupWordOrDefault("reversible", "false") != "true") return;
+    scalar sumNu = 0.0;
+    for (auto v : nu) sumNu += v;
+    if (std::abs(sumNu) <= 1.0e-12) return;
+    throw std::runtime_error(
+        who + ": reaction '" + name + "' declares `reversible true;` (the reverse"
+        " rate from detailed balance, k_rev = k_fwd / Kc) and changes the number"
+        " of moles (sum of nu = " + std::to_string(sumNu) + ").\n"
+        "    The Kc this engine derives is the IDEAL-GAS one, Kp (P°/R T)^sum(nu)"
+        " in kmol/m3, from the species' ideal-gas Gibbs energies; this reactor's"
+        " concentrations are on a LIQUID basis (F_i / Q, Q = F sum z_i Vliq_i, in"
+        " mol/m3).  For sum(nu) = 0 the basis cancels; here it does not, and the"
+        " equilibrium the reverse leg would relax to is neither the gas's nor the"
+        " liquid's.\n"
+        "    REMEDY: give the reverse leg its own regressed `A_rev` / `Ea_rev`"
+        " (on the `reactions ( ... )` grammar), or compute the equilibrium with"
+        " an `equilibriumReactor` or a `gibbsReactor`, which price the phases.");
 }
 
 scalar Reaction::forwardOrder(const Dictionary&  entry,

@@ -113,7 +113,8 @@ WHAT THIS DOES NOT CHECK, said plainly:
     evaporator (its heat crosses as its own chest/condensate streams; joined
     2026-10-05), a distillationColumn (its reboiler and condenser cross the
     boundary whatever its feed count; joined 2026-10-05, C35), a
-    cstr/conversionReactor/gibbsReactor (the last since 2026-10-20, C112)
+    cstr/conversionReactor/gibbsReactor (since 2026-10-20, C112)/
+    equilibriumReactor (since 2026-10-25, the C131 reactors review)
     that published Q_kW, and (2026-10-17, DEV.md 4c
     C74) a mixer at a DECLARED outlet temperature that published Q_kW, and
     (2026-10-24) an ADIABATIC mixer, whose outlet is the state of equal
@@ -656,7 +657,16 @@ UNIT_MATERIAL_HEAT = {"evaporator"}
 #  energy and the whole of each plant's residual.  Both ends go through
 #  `flashState::priceState` now (`GibbsReactor::feedEnthalpy_W`).  Its
 #  ADIABATIC mode publishes no Q_kW and is not judged here.
-UNIT_DUTY_IS_DH = {"cstr", "conversionReactor", "gibbsReactor"}
+#  `equilibriumReactor` joined 2026-10-25 (C131 reactors review, W6): its
+#  Q_kW was SUM_j xi_j dH_rxn_j(T) on the ideal-gas rung -- the heat of
+#  reaction ALONE -- so a feed entering at another temperature left its
+#  sensible heat unattributed (equil01 fed at 700 K: 59.64 kW declared,
+#  80.43 kW by the report) and a cubic EoS its departure function (N2 + 3 H2
+#  at 200 bar, SRK: 102.78 %).  It publishes H_out - H_in through
+#  `flashState::priceState` now; every corpus golden holds (equil01's
+#  Q_kW is unchanged to 12 figures: its feed is at the reactor's T).
+UNIT_DUTY_IS_DH = {"cstr", "conversionReactor", "gibbsReactor",
+                   "equilibriumReactor"}
 #  `valve` joined 2026-10-11 (DEV.md 4c C65 item d): a throttle declares no
 #  heat and no work, so the report's remainder for it IS the enthalpy change
 #  across its own two streams -- and it must be zero now that it prices both
@@ -760,6 +770,9 @@ UNIT_WITNESSES = {
     ("tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash", "wgs"),
     ("tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin", "wgs"),
     ("tutorials/plant/greenAmmoniaPEQ_baseCase", "Converter"),
+    #  The equilibriumReactor (C131 reactors review): the two-reaction
+    #  reformer.
+    ("tutorials/steady/reactors/equil01_reforming", "reformer"),
 }
 UNIT_HEADER = re.compile(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = (\w+)\)")
 #  The header's next line names the unit's inlets and outlets (either side
@@ -1234,7 +1247,8 @@ def main() -> int:
           "distillationColumn, whose reboiler and condenser cross the "
           "boundary whatever its feed count; a valve, an isenthalpic "
           "throttle; a "
-          "cstr/conversionReactor/isothermal gibbsReactor "
+          "cstr/conversionReactor/isothermal gibbsReactor/"
+          "equilibriumReactor "
           "that published "
           "Q_kW; a mixer at a declared outlet T that published Q_kW; an "
           "ADIABATIC mixer, its outlet resolved at its own equilibrium) leave "

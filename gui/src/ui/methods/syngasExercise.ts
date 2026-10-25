@@ -469,11 +469,13 @@ const SHIFTED: SyngasMove = {
   id: "smr-shifted", label: "steam reforming, then shifted", bench: "shift", edits: [],
   expect: "The reformer at 1100 K leaves 0.6694 kmol/h of CO, H2/CO 4.97.  The hot stage "
     + "(K 15.51) leaves 0.1731, the cold one (K 204.37) 0.0187, and H2/CO climbs to "
-    + "212.98.  Both stages reject heat (-5.30 and -1.72 kW), and the module reads 3.000 "
-    + "at all three.",
+    + "212.98.  Both stages reject heat (-30.89 and -11.08 kW): each duty holds its "
+    + "stage at its own temperature, so it carries the cooling of the gas arriving "
+    + "hotter from the stage before as well as the shift's own heat.  The module "
+    + "reads 3.000 at all three.",
   quotes: [q(0, "CO_kmol_h", 0.6694), q(0, "H2_CO", 4.97), q(1, "Kp_wgs", 15.51),
     q(1, "CO_kmol_h", 0.1731), q(2, "Kp_wgs", 204.37), q(2, "CO_kmol_h", 0.0187),
-    q(2, "H2_CO", 212.98), q(1, "Q_kW", -5.3), q(2, "Q_kW", -1.72),
+    q(2, "H2_CO", 212.98), q(1, "Q_kW", -30.89), q(2, "Q_kW", -11.08),
     q(0, "M", 3), q(1, "M", 3), q(2, "M", 3)] };
 const RWGS: SyngasMove = {
   id: "rwgs", label: "CO2 + green H2, reverse shift", bench: "rwgs", edits: [],

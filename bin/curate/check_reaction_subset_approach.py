@@ -76,7 +76,8 @@ WHAT THIS GATE CHECKS.
       not a discriminator: the extent solver refused this set too, by the
       pivot of its Jacobian.
   (l) BEYOND A DOUBLE, SAID.  A built fixture (unsealed, catalogue records):
-      2 C16H34 + 49 O2 <-> 32 CO2 + 34 H2O at 300 K, ln Kp ~ 8243.  The
+      2 C16H34 + 49 O2 <-> 32 CO2 + 34 H2O at 300 K and 0.1 bar (where
+      the water it makes stays a gas), ln Kp ~ 8243.  The
       reactor must CONVERGE (it needs the step control on ln n: without it
       the first Newton step overshoots the products by orders of magnitude
       and the iteration ends on a singular Jacobian -- by-hand sabotage S4),
@@ -506,7 +507,7 @@ GIBBS_ONLY = """units
         name        gibbs;
         type        gibbsReactor;
         in          feed;
-        outputs     ( outGibbs );
+        outputs     ( outGibbs%s );
         operation
         {
             T          %s K;
@@ -547,7 +548,14 @@ def gibbs_only(td: str, name: str, T: float, P: float) -> Path:
         raise SystemExit("check_reaction_subset_approach: equil03's "
                          "flowsheetDict has no single `units (` block -- the "
                          "fixture is STALE")
-    fs.write_text(t[:t.index("units\n(")] + GIBBS_ONLY % (repr(T), repr(P)))
+    #  A point that condenses water (300 K) declares the condensate's outlet:
+    #  the reactor REFUSES a liquid with no pipe to leave by (C131 reactors
+    #  review, 2026-10-25) -- until then this fixture's 300 K points dropped
+    #  the condensate from the stream table while (u) read it off the KPIs.
+    cond = " condensate" if T <= 300.0 else ""
+    fs.write_text(t[:t.index("units\n(")] + GIBBS_ONLY % (cond, repr(T), repr(P)))
+    if cond:
+        shutil.copy(dst / "0" / "outGibbs", dst / "0" / "condensate")
     return dst
 
 
@@ -974,8 +982,13 @@ def main() -> int:
             "units ( { name burner; type equilibriumReactor; in feed;\n"
             "  outputs ( out ); operation { T 300 K; }\n"
             "  reactions ( burn ); } );\n")
+        #  At 0.1 bar, not 1: at 1 bar the 34 H2O the burn makes sit at
+        #  y P = 0.157 bar against Psat(300 K) = 0.035 bar -- a supersaturated
+        #  gas, which the equilibriumReactor REFUSES since 2026-10-25 (C131
+        #  reactors review, W7).  ln Kp does not depend on P, so the fixture's
+        #  subject (ln Kp ~ 8243, a species below the smallest double) holds.
         state = ("componentMolarFlows { nHexadecane 1.0 kmol/h; O2 30 kmol/h;"
-                 " N2 70 kmol/h; }\nT 300 K;\nP 1 bar;\nphase gas;\n")
+                 " N2 70 kmol/h; }\nT 300 K;\nP 0.1 bar;\nphase gas;\n")
         (cl / "0" / "feed").write_text(state)
         (cl / "0" / "out").write_text(state)
         rcl, outl, jsl = run(cl, catalogue=True)

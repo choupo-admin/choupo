@@ -41,6 +41,8 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <limits>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -209,6 +211,8 @@ int CSTR::solve(const DictPtr& dict,
     scalar k_rev = 0.0;
     if (reversible)
     {
+        Reaction::refuseLiquidBasisDetailedBalance(*rxnDict, nu,
+            rxnDict->name(), "CSTR");
         K_eq  = Reaction::equilibriumKc(thermo, nu, T_react);
         k_rev = k / K_eq;
     }
@@ -331,8 +335,10 @@ int CSTR::solve(const DictPtr& dict,
                   "extent Newton relies on g(xi) being monotone, which this "
                   "law does not guarantee, so it could report a wrong root "
                   "silently.  Declare the reaction under `reactions ( ... )` "
-                  "instead: the multi-reaction solver makes no monotonicity "
-                  "claim and handles this law.");
+                  "instead: the multi-reaction path solves it from the feed "
+                  "(xi = 0) and, for a one-reaction set, finds every root of "
+                  "the extent equation at the reported temperature and "
+                  "announces them with their stability.");
 
     auto g  = [&](scalar xi) { return xi - rate(xi) * V_R; };
     auto dg = [&](scalar xi)
@@ -530,6 +536,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         rname[j] = rxnList[j]->lookupWordOrDefault("name", "rxn" + std::to_string(j + 1));
         for (const auto& s : rxnList[j]->lookupDictList("stoichiometry"))
             nu[j][thermo.indexOf(s->lookupWord("component"))] = s->lookupScalar("nu");
+        Reaction::refuseLiquidBasisDetailedBalance(*rxnList[j], nu[j], rname[j], "CSTR");
         law.push_back(ReactionRate::New(rxnList[j], thermo,
                                         "CSTR: reaction '" + rname[j] + "'", offer));
     }
@@ -654,10 +661,18 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         return Fi;
     };
 
-    // The R design equations at a FIXED temperature.  At fixed T the residual is
-    // monotone in each extent (the rate falls as its reactant is consumed), so a
-    // Newton from xi = 0 lands on the one root.  All the difficulty of a
-    // non-isothermal CSTR lives in the temperature, not here.
+    // The R design equations at a FIXED temperature.  For a law whose rate
+    // falls as its reactants are consumed the residual is monotone in each
+    // extent, and a Newton from xi = 0 lands on the one root.  THAT IS A CLAIM
+    // ABOUT THE LAW, NOT ABOUT THE CSTR (C131 reactors review, 2026-10-25): an
+    // AUTOCATALYTIC law (an order on a product) or a negative order can hold
+    // several roots at one T -- A + B -> 2B fed no B holds xi = 0 (washout,
+    // unstable) and xi = F(1 - 1/Da); a cubic A + 2B -> 3B holds three.  The
+    // single-reaction path refuses such a law and sends it here, so here a
+    // one-reaction set is AUDITED at the temperature the run reports
+    // (`auditExtentRoots` below): every root on the feasible interval is
+    // found and announced with its stability, beside the one reported.  A
+    // set of several reactions is not audited (said there).
     auto extentsAt = [&](scalar Tk, bool& okOut)
     {
         auto res = [&](const sVector& xi) -> sVector
@@ -688,6 +703,97 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         return sl.x;
     };
 
+    //  THE EXTENT ROOTS OF A ONE-REACTION SET, at the reported temperature.
+    //  g(xi) = xi - r(xi) V_R on the interval where every flow is >= 0,
+    //  scanned on 400 intervals and bisected at each sign change (an exact
+    //  zero counts).  A root is STABLE when dg/dxi > 0 there (the isothermal
+    //  CSTR's own linear stability, d xi/dt ~ -g).  Several roots are
+    //  ANNOUNCED -- printed and logged -- naming each, its conversion of the
+    //  limiting reactant, its stability, and the one the run reports; the
+    //  reported root is not changed (which steady state a reactor holds is
+    //  its start-up's, and the Newton starts from the feed, xi = 0).  One
+    //  root says nothing; a set of several reactions is not scanned.
+    auto auditExtentRoots = [&](scalar Tk, scalar xiReported)
+    {
+        if (R != 1) return;
+        scalar xiHi = std::numeric_limits<scalar>::infinity();
+        scalar xiLo = -std::numeric_limits<scalar>::infinity();
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            if (nu[0][i] < 0.0) xiHi = std::min(xiHi, F_i_in[i] / (-nu[0][i]));
+            if (nu[0][i] > 0.0) xiLo = std::max(xiLo, -F_i_in[i] / nu[0][i]);
+        }
+        if (!std::isfinite(xiHi) || !std::isfinite(xiLo) || !(xiHi > xiLo)) return;
+        auto g1 = [&](scalar x)
+        {
+            const sVector Fi = flowsOf(sVector(1, x));
+            sVector conc(n, 0.0), xx(n, 0.0);
+            scalar Ftot = 0.0;
+            for (std::size_t i = 0; i < n; ++i) { conc[i] = Fi[i] / Q; Ftot += Fi[i]; }
+            if (Ftot > 0.0) for (std::size_t i = 0; i < n; ++i) xx[i] = Fi[i] / Ftot;
+            RateState rs;
+            rs.T = Tk; rs.P = P; rs.conc = &conc; rs.x = &xx;
+            rs.amountPerKmol = 1000.0;
+            return x - catFactor * law[0]->netRate(thermo, rs) * V_R;
+        };
+        const int    nGrid = 400;
+        const scalar span  = xiHi - xiLo;
+        std::vector<scalar> found;
+        scalar xa = xiLo, ga = g1(xa);
+        if (ga == 0.0) found.push_back(xa);
+        for (int k = 1; k <= nGrid; ++k)
+        {
+            const scalar xb = xiLo + span * scalar(k) / scalar(nGrid);
+            const scalar gb = g1(xb);
+            if (gb == 0.0) found.push_back(xb);
+            else if (ga != 0.0 && ga * gb < 0.0)
+            {
+                scalar a = xa, b = xb, fa = ga;
+                for (int it = 0; it < 200 && b - a > 1.0e-15 * span; ++it)
+                {
+                    const scalar m = 0.5 * (a + b), fm = g1(m);
+                    if (fa * fm <= 0.0) b = m; else { a = m; fa = fm; }
+                }
+                found.push_back(0.5 * (a + b));
+            }
+            xa = xb; ga = gb;
+        }
+        if (found.size() < 2) return;
+        const std::size_t iL = [&] {
+            std::size_t best = n;
+            for (std::size_t i = 0; i < n; ++i)
+                if (nu[0][i] < 0.0 && F_i_in[i] > 0.0
+                    && (best == n || F_i_in[i] / -nu[0][i] < F_i_in[best] / -nu[0][best]))
+                    best = i;
+            return best; }();
+        std::ostringstream m;
+        m << std::setprecision(6)
+          << "reaction '" << rname[0] << "': the extent equation xi = r(xi) V_R has "
+          << found.size() << " roots at T = " << Tk << " K -- the declared law is not"
+             " monotone in the extent (autocatalytic, or a negative order), and each"
+             " root is a steady state of this CSTR:";
+        for (const scalar r : found)
+        {
+            const scalar h  = 1.0e-7 * span;
+            const scalar dg = (g1(std::min(r + h, xiHi)) - g1(std::max(r - h, xiLo)))
+                            / (std::min(r + h, xiHi) - std::max(r - h, xiLo));
+            const scalar r0 = r + 0.0;   // never print -0
+            m << "  xi = " << r0 << " mol/s";
+            if (iL < n) m << " (X(" << thermo.comp(iL).name() << ") = "
+                          << (nu[0][iL] * -r0 / F_i_in[iL] + 0.0) << ")";
+            m << (dg > 0.0 ? " stable" : " UNSTABLE");
+            if (std::abs(r - xiReported) <= 1.0e-6 * std::max(span, 1.0e-30))
+                m << " [REPORTED]";
+            m << ";";
+        }
+        m << "  The run reports the root its Newton reached from the feed"
+             " (xi = 0); which steady state a real reactor holds is decided by"
+             " its start-up, not by this solve.";
+        std::cout << "  [cstr] MULTIPLE STEADY STATES IN THE EXTENT: " << m.str() << "\n";
+        AdvisoryLog::instance().add("model", "warning",
+            "cstr " + dict->lookupWordOrDefault("name", "(unnamed)"), m.str());
+    };
+
     sVector xi(R, 0.0);
     scalar  T_out = T;
     std::vector<scalar> roots;
@@ -699,6 +805,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         xi = extentsAt(T_iso, ok);
         converged = ok;
         recordResidual(lastRes);
+        auditExtentRoots(T_iso, xi[0]);
         if (!ok && verbosity >= 1)
             std::cout << "  [cstr] WARNING: the multi-reaction Newton did not converge "
                          "(residual " << lastRes << ")\n";
@@ -916,6 +1023,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         xi = extentsAt(T_out, ok);
         converged = ok && !roots.empty();
         recordResidual(lastRes);
+        auditExtentRoots(T_out, xi[0]);
 
         if (verbosity >= 2)
         {
