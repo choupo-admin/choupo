@@ -991,8 +991,11 @@ the two superseded architecture records under `docs/architecture/archive/`.
 * **Runnable tutorial cases** under `tutorials/{steady,unsteady,ctrl,batch,props,plant}/`;
   `bin/runTests` VERIFIES them via golden-master KPI + NaN/inf guard + the
   doctrine + release-inventory gates (0 FAIL, 0 KNOWN-BROKEN; deliberate EXPECTED-FAILs).
-* The standard catalogue carries components (incl. the combustion library —
-  GRI-Mech 3.0 + Burcat sulfur/chlorine/soot-PAH/low-T/NOx families), aqueous
+* The standard catalogue carries components (incl. combustion species whose
+  NASA thermo is read from NASA/TP-2002-211556, public domain -- GRI-Mech 3.0
+  is NOT used directly, it carries no redistribution grant and
+  `check_source_licence` refuses it as a value's origin, DEV.md 4c C164; the
+  records still citing Burcat are pinned NonCommercial debt), aqueous
   species/ions (one `recordType modelSpecies` file per species,
   `species/<name>.dat`), Henry's-law pairs, a small set of public
   binary-interaction pairs (NRTL/UNIQUAC — the bulk moved to `data/local` in
