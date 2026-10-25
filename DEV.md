@@ -1616,8 +1616,10 @@ accepts today, and that is a policy call.
 > SECOND AUDIT 2026-10-25 (Vitor: "reve se escapou mais alguma coisa e
 > acrescenta a lista"; every remote branch, every 4c entry and his own
 > messages in the session transcript were read).  STILL OPEN, in priority
-> order: (1) C147 + C149 -- one NanoFiltran case with its plots, then the
-> membrane fit for the outside researcher; (2) C150 wave 1 (G11 + G12,
+> order: (1) C147 + C149 -- one NanoFiltran case with its plots (LANDED
+> 2026-10-25: views in the propsDict, every op's defaults, the review
+> screen, `props/membrane/nanofiltran_geraldesAlves2008`), then the
+> membrane fit for the outside researcher (NEXT); (2) C150 wave 1 (G11 + G12,
 > R01-R06, R26), then waves 2-3 together with C131 phase 2 (a)-(g);
 > (3) C131 phase 1 + the compressor refusal + the adiabatic mixer
 > (`claude/c131-land`, validated) -- then the white paper's and the C&CE
@@ -1763,13 +1765,15 @@ accepts today, and that is a policy call.
 > solver with EXPERIMENT.  Known before dispatch: NanoFiltran's Davies
 > applies exp() to a log10 constant (C138), so the published Table 2 may
 > carry that factor; the case must say which Davies each number uses.
-> LANDED 2026-10-24: `props/membrane/nanofiltran02_paper_stiff_case`
+> LANDED 2026-10-24: the stiff-case comparison (since C147 part of
+> `props/membrane/nanofiltran_geraldesAlves2008`)
 > (Table 2 accounted for step by step: NanoFiltran AS RECEIVED reproduces
 > it, so Table 2 carries the Davies factor -- and the defect is in the
 > paper's printed Eqs. 12-13, the log10 constant used as ln gamma; Choupo,
 > with no option to reproduce it, agrees with the corrected NanoFiltran to
 > ~1e-7, 12 Newton iterations against 88) and
-> `nanofiltran03_bowen_mohammad_ca30` (the solved pore against MEASURED
+> the Bowen & Mohammad case (both merged by C147 into
+> `props/membrane/nanofiltran_geraldesAlves2008`; the solved pore against MEASURED
 > rejections: rms 0.077, NanoFiltran 0.078 on the same inputs, several of
 > them fitted to these data by Bowen & Mohammad -- said in the case).  The
 > engine gained: ions the pore excludes (lambda >= 1) live only in the
@@ -2034,7 +2038,8 @@ accepts today, and that is a policy call.
 > LAPACK modified BSD, held by `check_source_licence`
 > ACCEPTED_VENDORED_CODE; `regenerate.py` rebuilds and reruns it and
 > REFUSES without gfortran).  The golden
-> `tutorials/props/membrane/nanofiltran01_dspmde_reference` (the new
+> the NanoFiltran reference case (since C147 part of
+> `tutorials/props/membrane/nanofiltran_geraldesAlves2008`; the new
 > `poreTransport` props op: the DSPM-DE law at imposed J_v) pins 35
 > NanoFiltran permeates as anchors: the example, Born off, Davies, NaCl,
 > Na2SO4, a polarised mixture, J_v 1e-6..5e-5; the two programs' grid

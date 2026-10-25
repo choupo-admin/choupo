@@ -2790,7 +2790,7 @@ corpus pores, so the default stays uniform 101 nodes and a case needing
 1e-6 declares its nodes.  NanoFiltran is VENDORED as received
 in `bin/curate/nanofiltran/` (Vítor's leave; held by `check_source_licence`
 ACCEPTED_VENDORED_CODE) and only RUN by `regenerate.py` to produce the 35
-anchors of `props/membrane/nanofiltran01_dspmde_reference` (the
+anchors of `props/membrane/nanofiltran_geraldesAlves2008` (the
 `poreTransport` op: the law at imposed J_v); its own Davies applies exp() to
 a log10 constant, so the Davies anchors come from a copy with that ONE
 declared patch.  The 101-node goldens moved on C141 with the list shown to
