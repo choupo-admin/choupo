@@ -6596,6 +6596,21 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/reliefvalve.$$
 
+    # Bund-arithmetic gate (2026-10-25, DEV.md 4c C136): the layout check's
+    # bund capacity arithmetic (BundArithmetic.H) is the secondary-containment
+    # EduTool's (a probe reproduces every example its TypeScript test pins),
+    # the green-ammonia witness's tankFarm bund is those pins and its golden,
+    # and PlantLayout.cpp calls the header rather than a copy of it.
+    if "$ROOT/bin/curate/check_bund_arithmetic.py" > /tmp/bundarith.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "bund-arithmetic-gate" "$(gate_claim check_bund_arithmetic /tmp/bundarith.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_bund_arithmetic.py)\n" "bund-arithmetic-gate"
+        cat /tmp/bundarith.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/bundarith.$$
+
     # Converter-shell gate (2026-10-12, DEV.md 4c C69): the green-ammonia
     # basic design's CONVERTER sector is ONE pressure shell -- D the beds'
     # ONE declared diameter (each bed's height its V_R over it, the binding

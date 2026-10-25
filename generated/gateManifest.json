@@ -1270,6 +1270,11 @@
       "exit": 0,
       "claim": "check_fit_then_simulate: OK -- (a) zero-noise data the props bench generated at r_p 0.62 nm, X_d -25 are fitted back to 1e-5 (identifiable, chi2 < 1e-12, validated); (b) the witness membrane24 fits r_p 0.6748 nm, X_d -10.525 mol/m3 to Fernandez de Labastida & Yaroshchuk 2021 (verdict validated) and rewrites its record byte-identically at 6 figures; (c) Process mode reads it and names the fit; (d) a moved dataset, fit block, base record or hand-edited value refuses Process mode with the remedy, a comment does not, and the remedy works; (e) runCase runs both modes and refuses a missing one; (f) six grammar refusals fire.  NOT CHECKED: that NF270 is this pore (the held-out salts are of the same study), the other three laws on real data, and the thermophysical package, which is not fingerprinted",
       "seconds": 6.9
+    },
+    "check_bund_arithmetic": {
+      "exit": 0,
+      "claim": "check_bund_arithmetic: OK -- the C++ bund arithmetic (BundArithmetic.H) reproduces the 15 examples the secondary-containment EduTool's test pins (1e-14), every one of its 7 functions pinned and twinned in bund.ts; the green-ammonia witness's tankFarm bund (7480 m2 x 4 m, two declared tank footprints, its rule and rain) is the green_* pins and equals its golden's gross, displaced, net and required volumes (1e-9); PlantLayout.cpp calls the header and carries none of its arithmetic.  NOT CHECKED: the page's teaching beyond the engine (slope, freeboard, useful capacity, scenarios -- the EduTool's own test), whether a capacity rule is right, and that the layout check runs (check_plant_layout).",
+      "seconds": 0.3
     }
   }
 }
