@@ -218,7 +218,7 @@ export const BUND_STEPS: readonly LessonStep[] = [
       + "nothing in it knows that tanks stand in the box.  A floor is rarely "
       + "flat: it falls towards a low collection point (a sump) so that a "
       + "small spill or the rain runs to one place and not round the tanks "
-      + "(HSG176 paragraph 165).  If the wall height is measured at the sump "
+      + "(HSG176 paragraphs 164-165).  If the wall height is measured at the sump "
       + "and the floor rises away from it, the box holds less than A h by "
       + "half the fall times the area -- the page computes that "
       + "(bund.ts:226 (floorVolume)).  Choupo's layout check takes the floor "
@@ -278,7 +278,7 @@ export const BUND_STEPS: readonly LessonStep[] = [
     title: "Net volume and useful capacity: whose footprint counts",
     body: "Subtract every tank's displaced volume at the wall top from the "
       + "geometric capacity and you have the NET volume -- what Choupo's "
-      + "layout check publishes (src/postProcessing/layout/PlantLayout.cpp:3199) "
+      + "layout check publishes (src/postProcessing/layout/PlantLayout.cpp:3208) "
       + "and holds against the case's rule.  But think about the tank that "
       + "fails.  If its shell is torn away, its footprint is free; if it "
       + "leaks through a hole, the liquid inside falls until it stands at the "
@@ -424,7 +424,8 @@ export const BUND_STEPS: readonly LessonStep[] = [
       + "the square of its depth, the overturning moment as the cube; "
       + "bund.ts:528 (wallLoad)), turns the bund into a pit that can hold "
       + "vapour heavier than air and is harder to escape from (HSG176 "
-      + "paragraph 160 asks for a means of escape, and warns that a 225 mm "
+      + "paragraph 160 says a fixed means of escape may be necessary, and "
+      + "warns that a 225 mm "
       + "brick or block wall over 600 mm high is likely to collapse under a "
       + "major spill), and keeps fire-fighters further away.  A badly "
       + "conceived bund RAISES some risks: tanks standing in the pool that "
@@ -432,8 +433,9 @@ export const BUND_STEPS: readonly LessonStep[] = [
       + "tank (HSG176 paragraph 159 prefers individual bunds, or "
       + "intermediate lower walls); an empty tank in a flooded bund lifted "
       + "by the water (paragraph 87 names flotation); a wall too close to a "
-      + "tank for a jet from a high hole to fall inside it (paragraph 161 "
-      + "recommends 1 m for tanks up to 100 m3 and 2 m above); a drain "
+      + "tank (paragraph 161 recommends at least 1 m for tanks up to 100 m3 "
+      + "and 2 m above), or a low wall far from a tall one, which a jet from "
+      + "a hole high in the shell can clear; a drain "
       + "trusted to be closed.  The table after this step holds one volume "
       + "with three walls.",
     formula: String.raw`F = \frac{\rho\,g\,h_\mathrm{w}^2}{2}, \qquad M = \frac{\rho\,g\,h_\mathrm{w}^3}{6}`,
@@ -482,7 +484,7 @@ export const BUND_STEPS: readonly LessonStep[] = [
       + "the ammonia witnesses in Choupo's tutorials use impounding areas, "
       + "and the green-ammonia case's refrigerated tanks a bund.  Choupo's "
       + "layout check sizes an impounding area by its pit "
-      + "(src/postProcessing/layout/PlantLayout.cpp:3203) and announces a pit "
+      + "(src/postProcessing/layout/PlantLayout.cpp:3212) and announces a pit "
       + "inside its own catch area; this page draws a bund and does not size "
       + "a pit.",
   },

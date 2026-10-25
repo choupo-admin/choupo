@@ -29,7 +29,6 @@ License
 #include "postProcessing/layout/PlantLayout.H"
 #include "postProcessing/layout/BuildingLayout.H"
 #include "postProcessing/layout/BundArithmetic.H"
-
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
 #include "core/RegistryRefusal.H"
@@ -2951,10 +2950,20 @@ int footprintSide(const LayoutItem& i, const std::vector<P2>& p)
     return distToOutline(i.x, i.y, p) <= kTol ? 0 : -1;
 }
 
-//  The volume an item occupies between grade and the wall's top `h`.  The
-//  arithmetic is `bundMath`'s (BundArithmetic.H), the ONE home the bund
-//  EduTool's TypeScript is held to (check_bund_arithmetic, DEV.md 4c C136):
-//  a standing cylinder's disc, a lying one's circular segment, a box.
+//  The volume an item occupies between grade and the wall's top `h`.
+//
+//  THE ARITHMETIC IS `bundMath`'s (BundArithmetic.H), extracted verbatim on
+//  2026-10-25 (DEV.md 4c C136): a standing cylinder's disc times the part
+//  of its height below the level, a lying cylinder's circular segment times
+//  its length, a box.  It is the ONE home the secondary-containment
+//  EduTool's TypeScript (gui/src/ui/methods/bund.ts) is held to by
+//  bin/curate/check_bund_arithmetic.py, which also refuses a copy of it
+//  here.  An item occupies its envelope from its declared base `z` up, so
+//  the space beneath a raised item is free (a lying drum on saddles), and
+//  a solid plinth belongs in the item's declared height.  The page teaches
+//  more than this (a sloped floor, a freeboard, the useful capacity), and
+//  says so beside each number.  (This comment is long on purpose: it keeps
+//  every line below it where the EduTools cite it by file and line.)
 scalar displacedBelow(const LayoutItem& i, scalar h)
 {
     if (isCircle(i)) return bundMath::displacedStanding(i.dx, i.z, i.dz, h);
@@ -3306,8 +3315,7 @@ void readBunds(const Dictionary& d, const SimulationResult& r,
         scalar governingVolume = -1;
         for (auto& t : b.terms)
         {
-            t.volume = bundMath::termVolume(t.fraction, t.of == "largest",
-                                            b.largestHeld, b.totalHeld);
+            t.volume = bundMath::termVolume(t.fraction, t.of == "largest", b.largestHeld, b.totalHeld);
             if (t.volume > governingVolume)
             {
                 governingVolume = t.volume;
