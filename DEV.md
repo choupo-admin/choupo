@@ -1613,6 +1613,45 @@ accepts today, and that is a policy call.
 > C131 phase 1 validation of the unvalidated C124 merge; C136, C137 (for
 > Saturday); C127; C143 (built, awaiting Vitor's look); C145, C146 (in
 > flight).  Waves that wait on these: C110 wave 2, C112 wave B.
+> SECOND AUDIT 2026-10-25 (Vitor: "reve se escapou mais alguma coisa e
+> acrescenta a lista"; every remote branch, every 4c entry and his own
+> messages in the session transcript were read).  STILL OPEN, in priority
+> order: (1) C147 + C149 -- one NanoFiltran case with its plots, then the
+> membrane fit for the outside researcher; (2) C150 wave 1 (G11 + G12,
+> R01-R06, R26), then waves 2-3 together with C131 phase 2 (a)-(g);
+> (3) C131 phase 1 + the compressor refusal + the adiabatic mixer
+> (`claude/c131-land`, validated) -- then the white paper's and the C&CE
+> draft's benchmark D and cavett01 numbers re-read; (4) Saturday: C136
+> bunds EduTool, C137 Bayes, the C&CE major revision, the JOSS
+> three-reader revision; (5) owed to Vitor and never delivered: the
+> instructions to run the full suite on his 10-core PC (promised
+> 2026-10-24), the C112 final table, and the green-ammonia DEOXO question
+> (asked 2026-10-22, answered in chat with three options, never recorded:
+> deoxo + dryer, deoxo + moving the make-up point, or the electrolyser
+> package already covers it; the ~10 ppm oxygenate limit unverified --
+> his decision); (6) dropped work still MISSING: G4 debt financing
+> (`claude/c110-g4-debt-financing` 484b52f54), G9 fold long trains
+> (`backup/g-af5c1d01a52ae83b4`), G5 batch Gantt
+> (`backup/g-aa0b7a24502e7bf75`, re-base on G2's multiproduct JSON);
+> (7) queued: C112 wave B, C110 wave 2 (room data sheets + HVAC, RO+EDI,
+> utility tariffs, layout extensions -- the Atozet asks), C127 (the
+> student's own data / compounds in the Explorer), C133, C135, C129, the
+> scopes of C130 and C132, donepezil 5 mg, C118 stage 3, the C146/C142/
+> C138 open items, C124 item 2; (8) small defects: Blasius does not flag
+> 2300 <= Re < 4000; ethanol.dat lacks a Fuller diffusionVolume;
+> userOp03_case_rate_law at 133 % mass closure; lithiumBrinePlant's 70
+> unpinned KPI rows; apalutamide01's nine drifting rows; C123's
+> shortcutColumn products at the feed bubble point and the multi-reaction
+> pfr console (F_out 1000x small, tau 0.00 s); the named items of
+> C85-C97; (9) decisions owed by Vitor: 4b R1-R6 (check first whether
+> C38's "Faz tu!" covers them), the 2026-10-12 list of fourteen, C101
+> feedback, C107 drag-and-drop, C71 M1, the C115 outer-iteration
+> indicator, the upstream benchmark issue, the papers' authors / ORCIDs /
+> cited release, JOSS eligibility.  STALE STATUS LINES corrected by this
+> audit (the work did land): C118 stage 2, C128 slice 2, C126 GUI
+> figures, C119's shelf, C102/C102b/C103/C106/C107/C109 "pending merge",
+> C120 item 4, and the 2026-10-21 "site is not publishing" (it has
+> published every push since 2026-10-24).
 > PROGRESS 2026-10-24: LANDED -- C113 search, G16/C114 colour (with the
 > Streams-table solid double count fixed), and lane A: G14 letdown NH3
 > (12 rows), G13 gibbs07/08/09 + greenAmmonia + aceticAcid feed and
