@@ -36,9 +36,12 @@ Description
     Refuse-LOUDLY contract: an absent ion or an absent transport block throws
     with the curation remedy -- never a silent zero (the run would otherwise
     compute a meaningless conductivity / limiting current / hindrance factor).
-    Coverage: `radius` -- the HYDRATED radius of Nightingale (1959), the
-    convention DSPM-DE pores are fitted against -- for the eight master ions
-    only (Na K Ca Mg H OH Cl SO4); `D0` for those eight and, since DEV.md 4c
+    Coverage: `radius` -- the HYDRATED radius r_H of Nightingale (1959),
+    Table I, the convention DSPM-DE pores are fitted against -- for the
+    eight master ions (Na K Ca Mg H OH Cl SO4) and, since DEV.md 4c C161,
+    the eleven other ions that table lists and the catalogue carries (Li
+    Sr Ba FeII MnII CO3 NO3 F Br NH4 I; not PO4, HCO3 or the hydrogen
+    phosphates, which it does not list); `D0` for the eight and, since DEV.md 4c
     C157, for the water-treatment ions whose 25 C tracer diffusion
     coefficient the public-domain PHREEQC database phreeqc.dat carries (each
     record cites its line).  A Stokes radius from D0 is a different
@@ -79,11 +82,12 @@ inline scalar ionRadius(const SpeciesId& id)
     if (!row->found("radius"))
         throw std::runtime_error("ion-transport tier: ion '" + species
             + "' has no `radius` -- the tier's radius is the HYDRATED radius"
-              " of Nightingale (1959), curated for the eight master ions only"
-              " (a D0 alone does not supply it: a Stokes radius from D0 is a"
-              " different convention).  Add a `radius` row (raw SI metres,"
-              " primary-cited, the same convention) to the species record"
-              " before using '" + species + "' here.");
+              " r_H of Nightingale (1959), Table I, curated for every ion that"
+              " table lists and the catalogue carries, and this ion is not"
+              " one of them (a D0 alone does not supply it: a Stokes radius"
+              " from D0 is a different convention).  Add a `radius` row (raw"
+              " SI metres, primary-cited, the same convention) to the species"
+              " record before using '" + species + "' here.");
     return row->lookupScalar("radius");
 }
 

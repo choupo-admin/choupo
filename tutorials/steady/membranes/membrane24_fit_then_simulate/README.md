@@ -94,10 +94,11 @@ records in its own `constant/`.  A salt that is not already in
 `constant/components/` needs its component record there, and each of its
 ions its species record in `constant/species/` -- copy them from
 `data/standards/components/` and `data/standards/species/`.  DSPM-DE needs
-every ion's `radius` and `D0`: today the hydrated radius is curated for Na,
-K, Ca, Mg, H, OH, Cl and SO4 only, and D0 for those and for the common
-water-treatment ions (NO3, HCO3, CO3, F, Br, NH4, Li, Sr, Ba, the
-phosphates, FeII, MnII).  An ion without the datum is refused by name.
+every ion's `radius` and `D0`: the hydrated radius (Nightingale 1959,
+Table I) is curated for Na, K, Ca, Mg, H, OH, Cl, SO4, NO3, CO3, F, Br, I,
+NH4, Li, Sr, Ba, FeII and MnII, and D0 for all of those except I and also
+for HCO3 and the phosphates -- so HCO3, the phosphates and I are the ions
+DSPM-DE still cannot take.  An ion without the datum is refused by name.
 
 **3. Which series fit and which judge: `system/propsDict`, `evidence`.**
 Each dataset is listed with `role fit;` or `role validation;`.  Decide the

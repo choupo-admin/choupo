@@ -37,3 +37,24 @@ cpAvg298
     source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
 }
 }
+
+transport
+{
+    //  `radius` ONLY (DEV.md 4c C161): the HYDRATED radius r_H of
+    //  Nightingale, J. Phys. Chem. 63 (1959) 1381, Table I -- the
+    //  convention of the eight master ions and of every DSPM-DE pore fitted
+    //  against them.  No `D0`: no PHREEQC database carries one for I-
+    //  (DEV.md 4c C157), so DSPM-DE still refuses this ion by name, on D0.
+    radius { value 3.31e-10; unit m; }   // 3.31 A
+    provenance
+    {
+        radius
+        {
+            source        "E. R. Nightingale, Jr., Phenomenological Theory of Ion Solvation. Effective Radii of Hydrated Ions, J. Phys. Chem. 63 (1959) 1381-1387, doi:10.1021/j150579a011, Table I (p. 1383), row I-, column r_H at 25 C: 3.31 A";
+            origin        literature;
+            method        "read from the primary page (Table I, the effective hydrated radius r_H) and cross-checked against the scan's text layer, 2026-10-25 (DEV.md 4c C157/C161)";
+            reviewStatus  interim;
+            notes         "The tier's radius convention: Nightingale's hydrated radius, the one the eight master ions carry and DSPM-DE pores are fitted on -- not a Stokes radius from D0 (his r_s column is a different quantity).";
+        }
+    }
+}

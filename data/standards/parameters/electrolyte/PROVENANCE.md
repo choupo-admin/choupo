@@ -153,11 +153,34 @@ Cl, OH, SO4`) gained two fields in `ions.dat`:
   so the nm value is preserved in each row comment);
 * `D0` [m²/s] — the infinite-dilution (Nernst) diffusion coefficient, 25 °C.
 
-**Single primary source:** E. R. Nightingale, *Phenomenological Theory of Ion
-Solvation. Effective Radii of Hydrated Ions*, **J. Phys. Chem. 63 (1959)
-1381–1387** (doi:10.1021/j150579a011). Nightingale's Table III reports BOTH the
-effective hydrated radii AND the limiting ionic conductances `λ⁰`, so one clean
-primary supplies both columns. `D0` is **derived** from `λ⁰` by Nernst–Einstein:
+**Radius — primary source:** E. R. Nightingale, *Phenomenological Theory of
+Ion Solvation. Effective Radii of Hydrated Ions*, **J. Phys. Chem. 63 (1959)
+1381–1387** (doi:10.1021/j150579a011), **Table I** (p. 1383), column `r_H`,
+the effective hydrated radius at 25 °C.  The eight stored radii were READ BACK
+against that page on 2026-10-25 and match it to the digit.
+
+**CORRECTED 2026-10-25 (DEV.md 4c C157/C161) — the `λ⁰`, and so the eight
+`D0`, are NOT from this paper.**  This file said, from 2026-06-14, that
+"Nightingale's Table III reports BOTH the effective hydrated radii AND the
+limiting ionic conductances λ⁰, so one clean primary supplies both columns".
+The paper has ONE table (Table I: crystal, Stokes and hydrated radii) and
+prints no `λ⁰` anywhere.  The `λ⁰` below are the familiar textbook values;
+where they came from was not recorded and is not identified here.  What the
+paper DOES allow is a consistency check, not a source: its Eq. (1),
+`r_s = 0.820 z / (λ⁰ η⁰)` (Å; `λ⁰` per equivalent, η⁰ in poise; 0.008903 P
+taken for water at 25 °C, which the paper does not state), reproduces Table
+I's Stokes radii `r_s` from these `λ⁰` to the table's rounding for Na, K, Ca,
+Mg, Cl, OH and SO4 (all within 1.1 %), and NOT for H⁺ (0.263 Å against the
+table's parenthesised 0.28 Å, −6 %).  The eight `D0` are therefore UNSOURCED,
+not falsely sourced from here on.  Two remedies, Vítor's to choose: re-source
+them to the public-domain PHREEQC `phreeqc.dat` `-dw` line the fourteen
+C157 ions already cite (a value may move in its third figure, so goldens of
+the ED and DSPM-DE cases could move and the list goes to him first), or name
+the primary measurement of each `λ⁰`.  The Theory Guide's electrodialysis
+section repeats the false attribution (`docs/theoryGuide.tex`, "the ions.dat
+transport tier, Nightingale 1959"); it moves with that decision.
+
+`D0` is **derived** from `λ⁰` by Nernst–Einstein:
 
 ```
 D0 = R·T·λ⁰ / (z²·F²)     (λ⁰ in SI, S·m²/mol = (S·cm²/mol)·1e-4)
@@ -191,10 +214,11 @@ for s,(l,z) in lam.items():
 
 * **No no-grant table used.** CRC Handbook, Robinson & Stokes (*Electrolyte
   Solutions*) verbatim tables, DIPPR, Yaws and the NIST WebBook are all
-  no-grant / all-rights-reserved and were **not** consulted. Every stored value
-  traces to the single Nightingale 1959 primary (radii read; D0 derived from the
-  same paper's λ⁰). Where a value could ONLY come from a no-grant source it is
-  left as a documented gap (below), never copied.
+  no-grant / all-rights-reserved and were **not** consulted for the radii,
+  every one of which traces to Nightingale 1959, Table I.  The eight `λ⁰` are
+  UNSOURCED (the correction above): this sentence used to say they were the
+  same paper's, and that was false.  Where a value could ONLY come from a
+  no-grant source it is left as a documented gap (below), never copied.
 
 * **Grotthuss caveat (H⁺, OH⁻).** Their Nernst–Einstein `D0` is the
   conductance-equivalent value; physically their conductance is dominated by
@@ -202,13 +226,31 @@ for s,(l,z) in lam.items():
   derived `D0` is correct for migration / transport-number arithmetic (the
   electrodialysis use) but is not a hydrodynamic self-diffusivity (row comment).
 
-* **GAP — ions without the tier.** Ba, Sr, Fe, Mn, Li, Br, F, CO3, HCO3, HSO4,
-  B(OH)4 and the boron/silica complexes carry **no** `radius`/`D0`. Several are
-  in Nightingale 1959 but are not needed by electrochemistry v1 (NaCl / mixed-
-  monovalent ED); they are deliberately absent and the electrochem accessor
-  (`ionRadius` / `ionD0`) **refuses loudly** for any ion missing the tier — never
-  a silent zero. Adding one later is a one-row curation act against the same
-  primary.
+* **The eleven radii added 2026-10-25 (DEV.md 4c C161),** each read from
+  Table I's `r_H` column and cross-checked against the scan's text layer, each
+  record carrying its own `provenance { radius {} }` with `reviewStatus
+  interim` (their `D0` is PHREEQC's, C157):
+
+  | species | r_H (Å) | radius (m, stored) |
+  |---------|--------:|-------------------:|
+  | Li⁺     | 3.82 | 3.82e-10 |
+  | Sr²⁺    | 4.12 | 4.12e-10 |
+  | Ba²⁺    | 4.04 | 4.04e-10 |
+  | Fe²⁺ (FeII) | 4.28 | 4.28e-10 |
+  | Mn²⁺ (MnII) | 4.38 | 4.38e-10 |
+  | CO₃²⁻   | 3.94 | 3.94e-10 |
+  | NO₃⁻    | 3.35 | 3.35e-10 |
+  | F⁻      | 3.52 | 3.52e-10 |
+  | Br⁻     | 3.30 | 3.30e-10 |
+  | NH₄⁺    | 3.31 | 3.31e-10 |
+  | I⁻      | 3.31 | 3.31e-10 (no `D0`: none in any PHREEQC database) |
+
+* **GAP — ions without the tier.** Table I does NOT list HCO3, PO4, HPO4,
+  H2PO4, HSO4, B(OH)4 or the boron/silica complexes, so they carry no
+  `radius` (the four carbonate/phosphate ions carry a PHREEQC `D0`), and the
+  accessor (`ionRadius` / `ionD0`) **refuses loudly** for any ion missing the
+  tier — never a silent zero.  A Stokes radius from `D0` is a different
+  convention and is never written under `radius`.
 
 * **GAP — temperature dependence.** `D0` is the 25 °C value; a Stokes–Einstein
   T-correction (via the water-viscosity ratio) is deferred. v1 ED cases run at /

@@ -35,11 +35,15 @@ after the fit, naming what changed: a stale fit is never used in silence.
   ion: DSPM-DE needs every ion's hydrated **radius** and its free-solution
   diffusivity **D0** (25 C, corrected to the run temperature by
   Stokes-Einstein on the declared water viscosity); the multi-ionic
-  polarisation film needs D0.  The catalogue carries the radius for Na, K,
-  Ca, Mg, H, OH, Cl and SO4, and D0 for those plus NO3, HCO3, CO3, F, Br,
-  NH4, Li, Sr, Ba, H2PO4, HPO4, PO4, Fe(II) and Mn(II) -- the last fourteen
-  from the public-domain PHREEQC database, each record citing its line.  An
-  ion without the datum is refused by name, never given a default.
+  polarisation film needs D0.  The catalogue carries the hydrated radius
+  (Nightingale 1959, Table I) for Na, K, Ca, Mg, H, OH, Cl, SO4, NO3, CO3,
+  F, Br, I, NH4, Li, Sr, Ba, Fe(II) and Mn(II) -- NOT for HCO3, PO4, HPO4
+  or H2PO4, which that table does not list -- and D0 for the first eight
+  plus NO3, HCO3, CO3, F, Br, NH4, Li, Sr, Ba, H2PO4, HPO4, PO4, Fe(II)
+  and Mn(II), the last fourteen from the public-domain PHREEQC database,
+  each record citing its line (I has a radius and no D0).  So DSPM-DE runs
+  a feed of any of those ions except HCO3, the phosphates and I.  An ion
+  without the datum is refused by name, never given a default.
 * **The membrane's parameters**, in a membrane record (`constant/assets/`):
   the water permeability `A_w`; for DSPM-DE a `poreModel {}` (pore radius,
   porosity over thickness A_k/dx, volumetric charge density X_d, pore
