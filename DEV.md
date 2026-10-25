@@ -1528,6 +1528,62 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C166. NANOFILTRAN IN CHOUPO, EXPLAINED SO A PHD STUDENT CAN REIMPLEMENT
+> IT (Vitor, 2026-10-25, with two review notes from another session --
+> "Puxao de orelhas: o DSPM-DE esta mal explicado no Theory Guide" and
+> "Recomendacao -- caso nanofiltran_geraldesAlves2008" -- and: "Eu vou
+> dizer a um aluno de doutoramento que o Nanofiltran ja esta implementado
+> no Choupo.  Eu quero que ele va la e sinta tudo muito bem explicado e
+> facil de usar!").**  ACCEPTANCE (his words): a PhD student opens
+> nanofiltran_geraldesAlves2008 (or membrane10) in the GUI, presses F1 on
+> the DSPM-DE module, lands on the detailed model and from it on the
+> numerical method, and from that alone can REIMPLEMENT the pore solver
+> without opening the code or docs/design/a-stiff-pore-solved-at-once.md.
+> The notes' findings: Theory Guide 19 never writes the whole boundary
+> value problem (permeate face, its Donnan potential as an unknown, the
+> wall/film balance of Geraldes & Afonso 2007 with the suction
+> correction); the partition equation is written on c_b while the solver
+> uses c_wall; notation collides (j_i per pore area in x against N_i per
+> membrane area in xi, psi dimensional and not, xi the coordinate and xi'
+> the wall field); the method is reduced to sentences -- the per-node
+> unknown vector with its COPIES of the global unknowns (block 2Ni+4), why
+> the copy-row order matters (a singular pivot block: block-Thomas does
+> not pivot between blocks), row normalisation, convergence test, line
+> search, the local Donnan seed, J_v continuation from Pe 1e-4 -- with no
+> figure and no algorithm; the text is a changelog; no guidance on when
+> the pore is stiff (Pe per ion: study C Mg2+ ~30 with an interior
+> front, study B ~0.1, nearly linear) or how many nodes for which
+> quantity (study C, N = 10: Na+ rejection within 0.1 point, trace Na+
+> permeate +13 %, permeate psi -4.5 %); F1 resolves by unit TYPE only
+> (gui/src/help/helpMap.ts resolveHelp), so a spiralWoundModule with
+> `transport DSPM-DE;` opens ch:membrane (solution-diffusion: WRONG help),
+> poreTransport and batchDiafilter are absent from docs/help-index.json,
+> 19 has no subsection labels, no `algorithms` entry for the pore solver,
+> a HelpTarget has one destination (no seeAlso).  The case note asks for:
+> a gridStudy_profiles view (N10..N350 overlaid, Na+ zoom), per-dye-level
+> pore overlays, a STAIRCASE view bulk -> wall -> pore inlet -> pore
+> outlet -> permeate per ion including the dye (study B's physics is at
+> the wall: the dye, lambda = 1, controls the interface and gives
+> R_Cl = -2), the published Pe/stiffness per operation, the measured
+> N-table in the README, the Choupo-vs-NanoFiltran performance paragraph
+> (design doc 11.5: 20-40x, converges always, NanoFiltran ITMAX in 6 of
+> 26), and RECORDS a decision: no ML surrogate for DSPM-DE (a pore costs
+> ~1 ms; sweeps, fits and MCMC run on the physical model).  Scope, split
+> by files so two generals never touch one: (A) Theory Guide 19.1-19.3 and
+> the SDEM chapter's labels rewritten in the asked order (whole BVP;
+> nondimensionalisation and Pe; Scharfetter-Gummel derived; unknown vector
+> and block structure WITH a figure; Newton, analytic Jacobian,
+> normalisation, convergence; seed and continuation WITH pseudo-algorithm;
+> mesh and order; verification; practical N guidance), one notation end
+> to end, history out to the design doc; F1 model-aware (helpMap,
+> help-index, an `algorithms` entry, a seeAlso link, the CI anchor check
+> extended, a test that a DSPM-DE case never resolves to ch:membrane);
+> the Tutorials Guide card explaining the case; (B) after C165 phase 1
+> lands (it publishes the partition and potentials the staircase needs):
+> the case's views and README table.  C165 phase 1 keeps the engine facts,
+> schemas and modelDocs; the 19.1 "bisection" sentence moves to (A).
+> Status: recorded; (A) dispatched the same turn.
+
 > **C165. CAN A PHD STUDENT LEARN DSPM-DE FROM THE NANOFILTRAN CASE ON THE
 > SITE? (Vitor, 2026-10-25, forwarding a second opinion on
 > props/membrane/nanofiltran_geraldesAlves2008: "Podes ver o que esta a
