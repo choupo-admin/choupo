@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 181 records already exist
+## 1. Why an index, when 182 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 181 design records, **124 state a rejected alternative and 57 do not** —
+- Of 182 design records, **125 state a rejected alternative and 57 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -252,6 +252,7 @@ is this index failing its own purpose; they move below with their rulings.
 
 | record | kind | note |
 |---|---|---|
+| [`parity-with-an-open-reaction-library.md`](../design/parity-with-an-open-reaction-library.md) | STUDY | yes | **STUDY + PROPOSAL, AWAITING Vítor's scope ruling -- 2026-10-25 (DEV.md 4c C160, phase 0; no engine code).**  The inventory of Choupo's thermodynamics, kinetics, reactors and transport measured in the code with `file:line`, a parity matrix against the 3.2 documentation and the 68-example gallery of an open-source (BSD-3) reaction library used ONLY as a curation-time oracle, twelve confirmed gaps, a recommended scope, an architecture with no second home, nine landable phases, and oracle tolerances per problem class with the three error classes (implementation / numerical method / legitimate formulation difference) kept apart.  Headline finding: the CHEMKIN-style rate forms and the stiff integrator live ONLY inside `batchReactor` (constant volume, pressure never computed), so `cstr`/`pfr` cannot reach them -- phase 1 is that extraction.  Rejected: linking the library at run time, vendoring its or GRI-Mech's files, comparing against the library's own data, refitting Choupo polynomials for the comparison, a skip-when-absent oracle gate, 1-D flames.  RESERVED: the scope; the GRI-Mech 3.0 licence reading (its H/O subset ships verbatim in three tutorials) |
 | [`the-sines-pta-plant-appraisal-and-project-risk.md`](../design/the-sines-pta-plant-appraisal-and-project-risk.md) | STUDY | no | **RESEARCH RECORD, no decision -- 2026-10-24/25 (C143, 8279c166e).**  The sourced evidence the EduTool `sines-pta` (economic appraisal and project risk: lessons from the Sines PTA plant) is built from: confirmed facts only, persons not named, every statement about an institution sourced and attributed; what could not be confirmed is listed.  Changes no engine, corpus or contract |
 | [`solid-migration-witness-data.md`](../design/solid-migration-witness-data.md) | SCOPE | staged 2026-08-08, reviewStatus interim — the authorised migration's validation targets, transcribed from the two owner-provided primaries (Archer 1992: invariant points + dihydrate formation props; Marcilla 1995: LLE tie-lines + the LLS tie-triangles); locates anchors, curates nothing |
 | [`state-of-the-art-property-study-2026-07-17.md`](../design/state-of-the-art-property-study-2026-07-17.md) | STUDY | ordered after two AIs decided a day's architecture in a self-ratification loop without studying the field |
@@ -335,7 +336,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**57 of 181 records state no rejected alternative.**  For a FORUM or a STUDY
+**57 of 182 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
