@@ -1586,7 +1586,29 @@ accepts today, and that is a policy call.
 > leaves props cases; free CSV plots move into Results, collapsed); Case
 > stays, named Case, and every operation and view links to its block in
 > the propsDict.  Phase 2 (folders by discipline) waits on his look at
-> phase 1.
+> phase 1.  PHASE 1 LANDED 2026-10-25 (`claude/c151-props-structure`), with
+> C152's GUI half: every props op schema carries an `x-choupo` block
+> (discipline, activity, model keys, data read, records written -- one
+> home, a test fails on an op without one); Results = case tree (Overview,
+> Data, Models, Operations by discipline with their views, Records, Process
+> units, My plots) | calculation map (React Flow, read-only, derived from
+> the propsDict, left to right data -> models -> ops -> views -> units,
+> ops of one type grouped, studies framed: NanoFiltran in 13 blocks) |
+> details of the selection, one selection across the three; F1 / double
+> click opens the model's theory or the op's guide section (a new
+> `op:<type>` label for every op; check_guide_anchors holds 181 anchors);
+> menu File . Results . Log . Case . Literature . Help, Plots gone for a
+> props case ("+ New plot" under My plots); the Case tab opens at the
+> block.  Two modes: the Process | Properties & data switch appears only
+> for a case with both dicts (held to caseManifest over every case), the
+> map draws dataset -> fit -> record -> unit, a unit fed by a fitted record
+> links back to its fit, a stale fit shows a banner with the remedy.
+> Validated: `--gui` 35/0 on main 11c59908e, typecheck, the schema,
+> anchor, guide and generated-artefact checks.  Screenshots in the
+> commander's scratchpad.  NEXT, proposed by the general: one run control
+> per mode, ctrl17's trajectory wired as a dataset, studies labelled by
+> the propsDict, a taller map on wide screens.  Design record
+> `docs/design/a-props-case-drawn-as-its-calculation.md`.
 
 > **C150. A SECOND EXTERNAL REVIEW OF THE EDUTOOLS, R01-R28 (Vitor,
 > 2026-10-25, a review of 63 EduTools relayed for the commander to judge
