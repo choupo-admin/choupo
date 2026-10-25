@@ -1727,6 +1727,22 @@ accepts today, and that is a policy call.
 > figures, C119's shelf, C102/C102b/C103/C106/C107/C109 "pending merge",
 > C120 item 4, and the 2026-10-21 "site is not publishing" (it has
 > published every push since 2026-10-24).
+> ADDED 2026-10-25 (Vitor: "so quero ter a certeza de que nao te esqueceste
+> de nada daquilo que eu encomendei"; the commander decides WHEN): IN
+> FLIGHT -- C151 (props calculation map, tree, F1, one home for figures,
+> the tree + canvas + details layout) and C152 + C149 (one case, two
+> modes; the membrane fit for the outside researcher); C150 wave 1
+> validating.  SCHEDULED, in this order once those land: C150 waves 2-3
+> (R07, R08, R14, R15, R16, R27 in the engine; the wording points) with
+> C131 phase 2; the R01 design-pressure golden rows (285, 5 cases; the
+> rule choice is the Design Guide's); C136 and C137; the C&CE and JOSS
+> revisions (benchmark D and cavett01 numbers re-read); G4, G9, G5; C140
+> (the intellectual-property EduTool, with the turbine case and the
+> defensive-publication addendum) and C139 (the chemical-network
+> economics EduTool) -- each STARTS with a scope put to Vitor, because
+> the pedagogy is his; then the queued items (7)-(8) above.  This list
+> is the commander's memory: re-read at every session start, and an
+> item leaves it only when it lands or Vitor drops it.
 > PROGRESS 2026-10-24: LANDED -- C113 search, G16/C114 colour (with the
 > Streams-table solid double count fixed), and lane A: G14 letdown NH3
 > (12 rows), G13 gibbs07/08/09 + greenAmmonia + aceticAcid feed and
