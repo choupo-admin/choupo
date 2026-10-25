@@ -136,6 +136,29 @@ public:
         return m;
     }
 
+    // ---- A record a Properties-mode fit WROTE (DEV.md 4c C152) -------------
+    //
+    //  `fit { ... }` -- present only on a record `fitParameters` (residual kind
+    //  membrane) wrote into a case's constant/assets/.  It names the case and
+    //  the operation that fitted it, the inputs whose fingerprints it was
+    //  fitted from (every dataset, the operation's own block in
+    //  system/propsDict, the base record its fixed values came from), and the
+    //  held-out verdict.  The fingerprints are what a Process-mode run checks
+    //  before it uses the record (thermo/membrane/FittedRecord.H): a fit whose
+    //  inputs changed is STALE, and is refused rather than used in silence.
+    struct FitProvenance
+    {
+        struct Input { std::string role, path, sha256; };
+        bool        present = false;
+        std::string fittedInCase, operation, propsDict, method;
+        std::string fitBlockSha256;
+        std::string baseRecord, baseRecordSha256;
+        std::string recordSha256;           // the record's own values (FittedRecord.H)
+        std::vector<Input> datasets;
+        std::string verdict;
+    };
+    const FitProvenance& fit() const { return fit_; }
+
 private:
     std::string name_, kind_, manufacturer_;
     scalar      A_w_     = 0.0;
@@ -153,6 +176,8 @@ private:
     bool        hasXd_   = false;
     scalar      X_d_     = 0.0;   // fixed charge density [mol/m^3], signed
     scalar      eps_p_   = 0.0;   // pore dielectric constant [-]; 0 = absent
+
+    FitProvenance fit_;           // present only on a fitted record (C152)
 };
 
 } // namespace Choupo

@@ -32,6 +32,9 @@ License
 
 namespace Choupo {
 
+static void readFitProvenance(const DictPtr& d, Membrane::FitProvenance& f,
+                              const std::string& name);
+
 void Membrane::readFromDict(const DictPtr& d)
 {
     name_         = d->lookupWordOrDefault("name", "");
@@ -109,6 +112,50 @@ void Membrane::readFromDict(const DictPtr& d)
             throw std::runtime_error("Membrane '" + name_ + "' poreModel{}: "
                 "`poreDielectric` must be > 0 (it is a relative permittivity).");
     }
+
+    readFitProvenance(d, fit_, name_);
+}
+
+//  The `fit {}` block of a record a Properties-mode fit wrote (C152).  Only
+//  the identity of the inputs is read here -- the fitted VALUES are the
+//  record's ordinary fields above, read by the same lines as every other
+//  membrane, so a fitted record and a curated one are the same object to a
+//  transport law.  The block's `values {}` (per-value stderr / ci95) and
+//  `correlation {}` are for the reader and are not parsed.
+static void readFitProvenance(const DictPtr& d, Membrane::FitProvenance& f,
+                              const std::string& name)
+{
+    if (!d->found("fit")) return;
+    auto fb = d->subDict("fit");
+    const std::string where = "Membrane '" + name + "' fit {}";
+    auto need = [&](const char* k) -> std::string
+    {
+        if (!fb->found(k))
+            throw std::runtime_error(where + ": a fitted record must name `" + std::string(k)
+                + "` -- without it no run can check whether the fit is still the fit"
+                  " of its inputs.  Re-run the case in Properties mode, which writes"
+                  " the block whole.");
+        return fb->lookupWord(k);
+    };
+    f.present          = true;
+    f.fittedInCase     = need("fittedInCase");
+    f.operation        = need("operation");
+    f.propsDict        = need("propsDict");
+    f.fitBlockSha256   = need("fitBlockSha256");
+    f.baseRecord       = need("baseRecord");
+    f.baseRecordSha256 = need("baseRecordSha256");
+    f.recordSha256     = need("recordSha256");
+    f.method           = fb->lookupWordOrDefault("method", "");
+    f.verdict          = fb->lookupWordOrDefault("verdict", "");
+    if (!fb->found("datasets"))
+        throw std::runtime_error(where + ": a fitted record must list its `datasets ( ... )`"
+            " with their fingerprints.  Re-run the case in Properties mode.");
+    for (const auto& e : fb->lookupDictList("datasets"))
+        f.datasets.push_back({ e->lookupWord("role"), e->lookupWord("dataset"),
+                               e->lookupWord("sha256") });
+    if (f.datasets.empty())
+        throw std::runtime_error(where + ": `datasets ( )` is empty -- a fit with no"
+            " evidence is not a fit.");
 }
 
 scalar Membrane::B_s(const std::string& solute) const

@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "FitParameters.H"
+#include "FitAlgebra.H"
 #include "EvidencePartition.H"
 #include "CurationDossier.H"
 #include "FitWeighting.H"
@@ -299,7 +300,7 @@ sVector solveDamped(const std::vector<sVector>& J,
 } // anonymous
 
 int FitParameters::run(const DictPtr& dict,
-                       const ThermoPackage& /*initialThermo*/,
+                       const ThermoPackage& initialThermo,
                        int verbosity)
 {
     // Kind dispatch FIRST: the isotherm kind is pair-data regression --- it
@@ -307,6 +308,11 @@ int FitParameters::run(const DictPtr& dict,
     // apply to it.
     if (dict->subDict("residual")->lookupWord("kind") == "isotherm")
         return runIsothermFit(dict, verbosity);
+    // The membrane kind (DEV.md 4c C149/C152) fits a MEMBRANE RECORD's
+    // parameters against measured rejections and fluxes; the package is the
+    // case's as authored and is only read (FitParametersMembrane.cpp).
+    if (dict->subDict("residual")->lookupWord("kind") == "membrane")
+        return runMembraneFit(dict, initialThermo, verbosity);
 
     // The AUTHORED v2 grammar is the ONE fit source (named-path mutation,
     // rebuilt natively per iteration).
@@ -2269,6 +2275,19 @@ std::vector<IsoPoint> readIsoData(const DictPtr& resDict, bool& haveSigma,
 }
 
 } // anonymous namespace
+
+//  The small dense algebra of the fits, exported for the membrane residual
+//  (FitParametersMembrane.cpp) so it is not a second copy (FitAlgebra.H).
+namespace fitAlgebra {
+std::vector<sVector> invertGaussJordan(const std::vector<sVector>& A, bool& ok,
+                                       scalar& condEstimate)
+{ return ::Choupo::invertGaussJordan(A, ok, condEstimate); }
+scalar tCrit95(int dof) { return ::Choupo::tCrit95(dof); }
+sVector solveDamped(const std::vector<sVector>& J, const sVector& r, scalar lambda)
+{ return ::Choupo::solveDamped(J, r, lambda); }
+sVector jacobiEig(const std::vector<sVector>& A, std::vector<sVector>* V)
+{ return ::Choupo::jacobiEig(A, V); }
+} // namespace fitAlgebra
 
 int FitParameters::runIsothermFit(const DictPtr& dict, int verbosity)
 {

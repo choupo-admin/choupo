@@ -50,7 +50,26 @@ class MembraneRegistry
 public:
     static void loadFrom(const std::string& dataRoot);
 
+    //  A record a Properties-mode fit wrote (`fit {}`, DEV.md 4c C152) is
+    //  checked against its inputs the first time it is asked for, and a
+    //  STALE one refuses by name (thermo/membrane/FittedRecord.H) -- every
+    //  consumer reaches records through here, so no unit can read a stale
+    //  fit by accident.
     static const Membrane& byName(const std::string& name);
+
+    //  The record WITHOUT the freshness check: only for the fit that is
+    //  about to re-fit it from its own base (fitParameters' membrane
+    //  residual reading its BASE record), which is the remedy a stale
+    //  refusal names and so must not itself be refused.
+    static const Membrane& byNameUnverified(const std::string& name);
+
+    //  The file a record was read from (empty when unknown).
+    static std::string sourcePath(const std::string& name);
+
+    //  (Re)read ONE record file into the registry -- what a fit calls after
+    //  writing its record, so a later operation of the same run reads the
+    //  record it just wrote, and its freshness is checked afresh.
+    static void registerFile(const std::string& path);
 
     static std::vector<std::string> availableNames();
 };

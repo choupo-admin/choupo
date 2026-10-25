@@ -582,6 +582,38 @@ EvidencePartition::loadColumns(const EvidenceDataset& ds,
     return out;
 }
 
+EvidencePartition::Table
+EvidencePartition::loadTable(const EvidenceDataset& ds, const std::string& opLabel)
+{
+    const std::string where = opLabel + " dataset '" + ds.path + "'";
+    Table t;
+    t.file    = Dictionary::fromFile(ds.path);
+    auto cols = t.file->lookupDictList("columns");
+    auto grid = t.file->lookupList("data");
+    const std::size_t nc = cols.size();
+    if (nc < 1 || grid.empty() || grid.size() % nc != 0)
+        throw std::runtime_error(where + ": need >= 1 column and a data grid"
+            " whose length is a multiple of the column count.");
+    for (std::size_t j = 0; j < nc; ++j)
+    {
+        t.names.push_back(cols[j]->lookupWord("name"));
+        t.units.push_back(cols[j]->lookupWord("unit"));
+        for (std::size_t k = 0; k < j; ++k)
+            if (t.names[k] == t.names[j])
+                throw std::runtime_error(where + ": column '" + t.names[j]
+                    + "' is declared twice.");
+    }
+    const std::size_t N = grid.size() / nc;
+    for (std::size_t r = 0; r < N; ++r)
+    {
+        sVector row(nc);
+        for (std::size_t j = 0; j < nc; ++j)
+            row[j] = convUnit(grid[r * nc + j], t.units[j], where);
+        t.rows.push_back(std::move(row));
+    }
+    return t;
+}
+
 std::vector<EvidencePoint>
 EvidencePartition::loadAll(const std::vector<EvidenceDataset>& sets,
                            const std::vector<std::string>& xNames,

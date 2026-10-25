@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "MembraneRegistry.H"
+#include "FittedRecord.H"
 #include "core/Dictionary.H"
 #include "core/RegistryScan.H"
 #include "thermo/RecordResolver.H"
@@ -34,6 +35,7 @@ License
 #include <filesystem>
 #include <iostream>
 #include <map>
+#include <set>
 #include <stdexcept>
 
 namespace Choupo {
@@ -45,6 +47,19 @@ namespace {
 std::map<std::string, Membrane>& registry()
 {
     static std::map<std::string, Membrane> r;
+    return r;
+}
+
+std::map<std::string, std::string>& sources()
+{
+    static std::map<std::string, std::string> r;
+    return r;
+}
+
+//  The fitted records already checked in this process (C152).
+std::set<std::string>& verified()
+{
+    static std::set<std::string> r;
     return r;
 }
 
@@ -88,6 +103,7 @@ void MembraneRegistry::loadFrom(const std::string& dataRoot)
                 throw std::runtime_error("MembraneRegistry: file '"
                     + e.path().string() + "' has no `name` entry");
             guard.claim(m.name(), e.path().string());
+            sources()[m.name()] = e.path().string();
             registry()[m.name()] = std::move(m);
         }
     };
@@ -109,6 +125,42 @@ void MembraneRegistry::loadFrom(const std::string& dataRoot)
 }
 
 const Membrane& MembraneRegistry::byName(const std::string& name)
+{
+    const Membrane& m = byNameUnverified(name);
+    if (m.fit().present && verified().insert(name).second)
+    {
+        try
+        {
+            membraneFit::verifyFresh(m, sourcePath(name), sourcePath(m.fit().baseRecord));
+        }
+        catch (...)
+        {
+            verified().erase(name);
+            throw;
+        }
+    }
+    return m;
+}
+
+std::string MembraneRegistry::sourcePath(const std::string& name)
+{
+    auto it = sources().find(name);
+    return it == sources().end() ? std::string() : it->second;
+}
+
+void MembraneRegistry::registerFile(const std::string& path)
+{
+    auto d = Dictionary::fromFile(path);
+    Membrane m;
+    m.readFromDict(d);
+    if (m.name().empty())
+        throw std::runtime_error("MembraneRegistry: file '" + path + "' has no `name` entry");
+    sources()[m.name()] = path;
+    verified().erase(m.name());
+    registry()[m.name()] = std::move(m);
+}
+
+const Membrane& MembraneRegistry::byNameUnverified(const std::string& name)
 {
     // ONE home (Codex assets-audit 2026-07-18): a case-specific membrane is a
     // manifest-owned record in constant/assets/ (loadFrom scanned it OVER the

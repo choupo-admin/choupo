@@ -207,6 +207,16 @@ private:
     // in FitParameters.cpp beside the T_bubble engine.
     int runIsothermFit(const DictPtr& dict, int verbosity);
 
+    // residual.kind == membrane (DEV.md 4c C149/C152): a membrane record's
+    // transport parameters fitted to measured rejections / fluxes, one
+    // operating point per dataset row, the transport law evaluated per row
+    // exactly as the units evaluate it; FitParametersMembrane.cpp.
+    int runMembraneFit(const DictPtr& dict, const ThermoPackage& thermo, int verbosity);
+    std::vector<std::string> memQuantities_;   // the measured quantity of fitPoints' `quantity`
+    std::vector<std::string> memSets_;         // the dataset of fitPoints' `set`
+    std::vector<std::vector<std::size_t>> memSetQuantities_;   // per set: its quantities
+    std::map<std::string, std::string> memUnits_;  // fit.<p>.* units
+
     inline static const std::string type_ = "fitParameters";
     std::map<std::string, scalar>   diag_;
     std::map<std::string, std::string> curation_;

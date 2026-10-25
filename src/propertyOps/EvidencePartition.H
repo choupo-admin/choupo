@@ -308,6 +308,28 @@ public:
                 const std::string& opLabel,
                 const std::vector<std::string>& zNames = {});
 
+    //  EVERY column of a dataset, in canonical SI, for a residual whose one
+    //  datum is a whole OPERATING POINT rather than an (x, y) pair -- a
+    //  membrane experiment (feed, T, J_v or dP, and several measured
+    //  rejections; DEV.md 4c C149).  The SAME reader as loadColumns (the
+    //  same `columns` + `data` grammar, the same unit conversion), so a
+    //  dataset cannot be read two ways by two residuals.  `file` is the
+    //  parsed dataset, for its held-constant scalars.
+    struct Table
+    {
+        std::vector<std::string> names;
+        std::vector<std::string> units;
+        std::vector<sVector>     rows;    // rows[r][column], canonical SI
+        DictPtr                  file;
+        int column(const std::string& n) const
+        {
+            for (std::size_t j = 0; j < names.size(); ++j)
+                if (names[j] == n) return static_cast<int>(j);
+            return -1;
+        }
+    };
+    static Table loadTable(const EvidenceDataset& ds, const std::string& opLabel);
+
     //  Concatenate a role's datasets through loadColumns().
     static std::vector<EvidencePoint>
     loadAll(const std::vector<EvidenceDataset>& sets,
