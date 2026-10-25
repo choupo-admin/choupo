@@ -8630,6 +8630,49 @@ WHY BY SALTS. A salt is neutral, so one R per salt cannot charge the permeate. A
 \goldmore{57}
 \end{tutgolden}
 
+\clearpage
+\tutentry{membrane24\_fit\_then\_simulate}{tutorials/steady/membranes/membrane24\_fit\_then\_simulate}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Stage) at (0.0,-0.0) {\textbf{Stage}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(Stage.west)+(-1.05,0.00)$) -- ($(Stage.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(Stage.east)+(0,-0.17)$) -- ($(Stage.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {concentrate};
+  \draw[->] ($(Stage.east)+(0,0.17)$) -- ($(Stage.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{One case, two modes: NF270's DSPM-DE pore fitted to published intrinsic rejections (Properties mode), then the fitted membrane in a spiral-wound stage (Process mode)}
+\begin{tutnarrative}
+PROPERTIES \& DATA MODE of membrane24 (runCase <case> props): the DSPM-DE pore of NF270 FITTED to published measurements, and written as the membrane record the Process mode's spiral-wound stage reads.
+
+THE DATA. Fernandez de Labastida \& Yaroshchuk, "Nanofiltration of Multi-Ion Solutions: Quantitative Control of Concentration Polarization and Interpretation by Solution-Diffusion-Electro-Migration Model", Membranes 11 (2021) 272, doi:10.3390/membranes11040272 (CC BY 4.0): NF270 in a rotating-disk cell at 20 C, four dominant salts at 0.01 mol/L, INTRINSIC rejections (the authors corrected them for concentration polarisation) at seven permeate fluxes each, 6-56 um/s. The symbols of their Figures 1a-4a, digitised by bin/curate/digitise\_fdl2021.py and written as four datasets by bin/curate/export\_fdl2021\_rejections.py (constant/experimental/fdl2021\_<salt>.dat). The reading error is in each file's header; the authors publish no measurement uncertainty, so the fit is UNWEIGHTED (a rejection as a fraction). Not in the feeds: the 2e-4 mol/L NaNO3 + NH4Cl traces they added (2 \% of the dominant salt).
+
+THE PARTITION. Fitted: the two CHLORIDES, NaCl and MgCl2 -- one co-ion, a monovalent and a divalent counter-ion. HELD OUT, never seen by the fitter: the two SULFATES, Na2SO4 and MgSO4, whose divalent co-ion the fitted pore must exclude by its charge and its size alone. CHOSEN AFTER MEASURING THE ALTERNATIVES, and said here because it is what a reader must weigh: on these four series the identifiability of (r\_p, X\_d) depends on WHICH salts are fitted, and three partitions were run before this one -- fit NaCl + MgSO4 r\_p ran to its upper bound (3 nm, X\_d -404 mol/m3): a Donnan-only pore, the two not separable; held-out AAD 16 points (notValidated) fit NaCl + Na2SO4 correlation(r\_p, X\_d) = -1.0000: not identifiable fit NaCl + MgCl2 identifiable (this case) so the verdict below is that of a partition chosen for identifiability, not one fixed blind; and the held-out sulfates sit at R 0.977-0.997, where a tight pore of any charge predicts them closely -- it is a weak test of X\_d. A blind partition would be a separate study.
+
+THE MODEL. DSPM-DE (Bowen \& Welfoot 2002), its pore SOLVED across 101 nodes (the default since C141), the Dechadilok-Deen hindrance, ideal activities. The film is NanoFiltran's "no polarisation" (k\_film 10 m/s) because the data are intrinsic: R = 1 - c\_p/c\_wall is what the authors report and what `rejection intrinsic;` compares. FREE: the pore radius r\_p and the fixed charge X\_d (either sign); HELD at the base record NF270\_dspmde's values: the porosity over thickness A\_k/dx 5e6 1/m, the pore dielectric constant 35 (Born ON) and A\_w (not read at an imposed J\_v). Freeing A\_k/dx or eps\_p as well was measured and is not identifiable from these data (|correlation| >= 0.99). The ion radii and D0 are the species records' (hydrated radii, the convention NF270\_dspmde's own header states), corrected to 20 C by Stokes-Einstein on the declared liquid viscosity.
+
+THE RECORD. `output \{ record ...; \}` writes constant/assets/ NF270\_FdL2021.dat with the fitted values, their 95 \% half-widths, the verdict and the fingerprints of the four datasets, of this operation's block and of the base record. The Process mode (system/flowsheetDict) reads that record and REFUSES it when any fingerprint no longer matches.
+
+WHAT IS PINNED (expected.props). The fitted values and their uncertainties, the held-out AAD and the verdict: self-recorded rows -- they pin that the fit has not MOVED, not that NF270 is right. The held-out verdict is the validation claim, and it is the paper's data that decide it.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{concentrate}{F}{0.107699137018}
+\goldrow{stream}{concentrate}{T}{293.15}
+\goldrow{stream}{feed}{F}{0.184936666667}
+\goldrow{stream}{feed}{T}{293.15}
+\goldrow{stream}{permeate}{F}{0.0772375296488}
+\goldrow{stream}{permeate}{T}{293.15}
+\goldrow{kpi}{Stage}{Gamma\_MgCl2\_avg}{0}
+\goldrow{kpi}{Stage}{Gamma\_MgCl2\_elem1}{0}
+\goldrow{kpi}{Stage}{Gamma\_MgCl2\_elem2}{0}
+\goldrow{kpi}{Stage}{Gamma\_MgCl2\_elem3}{0}
+\goldrow{kpi}{Stage}{Gamma\_MgSO4\_avg}{0.448895665879}
+\goldrow{kpi}{Stage}{Gamma\_MgSO4\_elem1}{0.464530286351}
+\goldrow{kpi}{Stage}{Gamma\_MgSO4\_elem2}{0.443415485733}
+\goldrow{kpi}{Stage}{Gamma\_MgSO4\_elem3}{0.437177763507}
+\goldmore{46}
+\end{tutgolden}
+
 \subsection{optimisation}
 \grouptheory{optimisation}
 \clearpage

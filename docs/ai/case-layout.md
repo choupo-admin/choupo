@@ -285,6 +285,51 @@ multiplicative factor fits the formatter; temperatures print in `K`.
 These do NOT change what the solver computes; they change what the
 text output reads.
 
+## One case, two modes — `flowsheetDict` AND `propsDict` (DEV.md 4c C152)
+
+A case may carry BOTH `system/flowsheetDict` (Process mode: choupoSolve, or
+the flowsheet binary `application` names) and `system/propsDict`
+(Properties & data mode: choupoProps) over ONE shared `constant/`.  Write it
+this way when the case's data (a lab dataset, a fit) and the process that
+uses the result belong together — the experimental data and the fit stay
+self-contained in the process case.
+
+```
+case/
+├── case.cho
+├── system/
+│   ├── controlDict      application = the DEFAULT mode
+│   ├── flowsheetDict    Process mode: the units
+│   └── propsDict        Properties & data mode: the fit (and any bench op)
+├── constant/
+│   ├── thermoPhysPropDict          shared by both modes
+│   ├── experimental/<series>.dat   the datasets the fit reads
+│   └── assets/<fitted>.dat         WRITTEN by Properties mode, READ by Process mode
+├── 0/                              Process mode's state
+├── expected                        the default mode's golden
+└── expected.<mode>                 the other mode's golden (expected.props / expected.process)
+```
+
+* `runCase <case>` runs the default; `runCase <case> props` /
+  `runCase <case> process` runs the other.  A mode whose dict is absent
+  refuses by name.  `bin/runTests` checks BOTH modes, the default first,
+  each against its own golden; `--record` writes both.
+* Information flows ONE WAY: Properties mode writes records into
+  `constant/`, Process mode only reads them.  A record a fit wrote carries a
+  `fit {}` block of fingerprints (its datasets, its operation's block in the
+  propsDict, its base record, its own values); Process mode REFUSES it,
+  naming what moved, when any no longer matches — the remedy is always
+  "run the case in Properties mode".  Never hand-edit a fitted record: the
+  edit is refused, and the next Properties run overwrites it.
+* Order the work the way the data flow runs: author the datasets and the fit,
+  run `runCase <case> props` (it writes the record), then `bin/choupo-init0`
+  and `runCase <case>`.  Commit the written record — Process mode needs it,
+  and an unchanged case rewrites it byte-identically.
+* Witness: `tutorials/steady/membranes/membrane24_fit_then_simulate` (the
+  membrane fit, docs/ai/patterns.md §15); `tutorials/ctrl/ctrl17_step_reaction_curve`
+  is the same shape the other way round (the props half reads the trajectory
+  the choupoCtrl half wrote).
+
 ## Naming convention
 
 Choupo uses three case styles to make the **hierarchy visible to a

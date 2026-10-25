@@ -786,3 +786,76 @@ MW { value 44.009; unit g/mol;}
 
 And a props case has NO streams and NO `0/` directory -- the analysis lives
 in the op's own `totals`, and `choupoProps` never asks for a state tree.
+
+## 15. Fit a membrane to a lab dataset, then simulate the process with it  (membrane24_fit_then_simulate)
+
+ONE case, two modes (docs/ai/case-layout.md, "One case, two modes").  The
+researcher's measurements go in `constant/experimental/`, one file per
+series, one row per operating point:
+
+```
+provenance { source measured; reviewStatus ...; citation "..."; }
+T            293.15 K;                 // or a `T` column
+feed         { NaCl 10 mol/m3; }       // or c_<component> columns (mol/m3)
+columns ( { name Jv; unit m/s; } { name R_NaCl; unit -; } );   // Jv | dP imposed
+data    ( 8.239e-06 0.431136   1.2344e-05 0.533778 ... );
+```
+
+Measured columns: `R_<component>` (a feed component) or `R_<ion>` (an ion
+the law reports, e.g. DSPM-DE's `R_SO4`), `Jv_measured` (only beside `dP`),
+`sigma_<column>` for `weighting sigma;`.  Any other column REFUSES.  `Jv`
+imposes the flux (DSPM-DE only); `dP` imposes the pressure (every law, and
+A_w can then be fitted from `Jv_measured`).
+
+The fit, in `system/propsDict`:
+
+```
+{
+    name      fit_mymembrane;          // REQUIRED: the record names its operation
+    type      fitParameters;
+    parameters
+    (
+        { path poreModel.poreRadius;     initial 6.0e-10;  min 3.0e-10;  max 3.0e-9; }   // m
+        { path poreModel.chargeDensity;  initial -20;      min -3000;    max 3000;   }   // mol/m3
+    );
+    evidence ( { dataset "constant/experimental/a.dat"; role fit; }
+               { dataset "constant/experimental/b.dat"; role validation; } );
+    acceptance { maxAAD 10 percent; origin "declared before the fit, by ..."; }   // rejection POINTS
+    residual
+    {
+        kind membrane;  model DSPM-DE;  membrane NF270_dspmde;   // the BASE record
+        rejection intrinsic;           // or observed -- REQUIRED, no default
+        transportParameters { ... }    // the law's own block, as the units read it
+        k_film 10;                     // or massTransfer { ... }; 10 m/s = no polarisation
+        polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+    }
+    output { record "constant/assets/mymembrane_fitted.dat"; }
+}
+```
+
+* A parameter is a PATH into the base record (`poreModel.poreRadius`,
+  `poreModel.chargeDensity`, `poreModel.porosityOverThickness`,
+  `poreModel.poreDielectric`, `A_w`, `permeabilities.<solute>`) or
+  `transportParameters.<path>`; `initial/min/max` in the field's RAW
+  convention, NO unit (chargeDensity is mol/m3, not the engine's kmol/m3).
+  Everything not listed keeps the base record's value.
+* `model`: DSPM-DE (pore), SDEM (per-ion `permeabilities.<ion>`),
+  solutionDiffusion (`permeabilities.<salt>`, `A_w`), constantRejection
+  (`transportParameters.rejection.<solute>`; no record is written for it).
+* No free parameter = a PREDICTION of every row (nothing written).
+* READ the identifiability block before trusting a value: the run prints
+  the condition number, every correlation and each parameter's sensitivity,
+  and REFUSES the record when the fit did not converge, ended on a bound or
+  is not identifiable (|correlation| >= 0.999).  Which salts are fitted
+  decides what is identifiable: on NF270 the two chlorides identify
+  (r_p, X_d), NaCl + MgSO4 does not.
+* Then in `system/flowsheetDict` point the unit at the written record
+  (`membrane mymembrane_fitted;`), run `bin/choupo-init0`, `runCase <case>`.
+  The stage prints `[fitted] membrane '...' is a FITTED record: operation
+  ... wrote it, held-out verdict ...`.
+
+Pitfalls: the fitted record carries what the data determine and NOTHING
+else (an imposed-Jv dataset says nothing about A_w, so the stage's A_w is
+the base record's); a mixture feed in Process mode is an extrapolation of a
+fit to single salts; the thermophysical package (ion radii, D0) is NOT
+fingerprinted, so changing a species record does not stale the fit.

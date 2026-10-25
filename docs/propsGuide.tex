@@ -1366,6 +1366,75 @@ never a ``good fit'' badge --- and copy the proposal into the case's
 \code{constant/} when you trust it.
 
 % =====================================================================
+\section{Fitting a membrane to measured rejections --- one case, two modes}\label{ch:membrane-fit}
+% =====================================================================
+
+The same \code{fitParameters} discipline --- a frozen partition into fitted
+and held-out evidence, a band declared before the fit, identifiability, a
+verdict --- fits a \emph{membrane}: the DSPM-DE pore (pore radius $r_p$, fixed
+charge $X_d$, $A_k/\Delta x$, pore dielectric constant $\varepsilon_p$), an
+SDEM or solution-diffusion permeance, or a constant rejection, against a
+researcher's measured rejections and fluxes.  One dataset row is one
+operating point (feed, $T$, an imposed $J_v$ or $\Delta P$, the measured
+rejections), and the transport law is evaluated on it exactly as the
+membrane units evaluate it.
+
+\begin{lstlisting}[language=dict]
+residual
+{
+    kind        membrane;
+    model       DSPM-DE;          // | SDEM | solutionDiffusion | constantRejection
+    membrane    NF270_dspmde;     // the BASE record: the values held fixed
+    rejection   intrinsic;        // R = 1 - c_p/c_wall  (| observed: c_bulk)
+    transportParameters { ... }   // the law's own block
+    k_film      10;               // m/s: intrinsic data, no polarisation
+}
+\end{lstlisting}
+
+A free parameter is a \emph{path into the base record}
+(\code{poreModel.poreRadius}, \code{poreModel.chargeDensity}, \ldots); what is
+not listed keeps the record's value.  The held-out statistic is the mean
+$|R_\text{model}-R_\text{measured}|\times 100$, in \emph{points} of
+rejection: a relative error of a rejection near zero would mean nothing.
+
+\subsection{Which data identify which parameters}
+
+The fit prints the condition number of the relative-scaled Jacobian, every
+correlation and each parameter's sensitivity, and refuses to write a record
+when the parameters are not identifiable.  On the NF270 intrinsic rejections
+of Fern\'andez de Labastida \& Yaroshchuk (2021) --- the witness
+\file{tutorials/steady/membranes/membrane24\_fit\_then\_simulate} --- the two
+\emph{chlorides} identify $(r_p, X_d)$: $r_p = 0.675 \pm 0.034$\,nm, $X_d =
+-10.5 \pm 4.1$\,mol\,m$^{-3}$, correlation $-0.96$, and the two held-out
+sulfates are predicted within 0.93 points.  NaCl with MgSO4 does not: $r_p$
+runs to its bound and the charge alone explains the data; NaCl with Na2SO4
+gives a correlation of $-1.0000$.  The witness says so in its own header,
+because a partition chosen for identifiability is a weaker claim than one
+fixed blind --- and because the sulfates, near $R=1$, are predicted closely by
+almost any tight pore.
+
+\subsection{The record the fit writes, and the process that reads it}
+
+\code{output \{ record "constant/assets/<name>.dat"; \}} writes a membrane
+record in the catalogue's grammar --- the fitted values to six significant
+figures (the verdict taken \emph{at} those values), the 95\,\% half-widths,
+the correlations, the verdict --- and a \code{fit \{\}} block of
+\emph{fingerprints}: of every dataset, of the operation's own block in the
+propsDict, of the base record and of the record's own values, each the
+SHA-256 of the canonical parse (a comment does not count, a number does).
+
+The case that fitted the membrane can also \emph{use} it: it carries both a
+\file{system/propsDict} (Properties \& data mode) and a
+\file{system/flowsheetDict} (Process mode) over one \file{constant/}.
+\code{runCase <case> props} runs the fit and writes the record;
+\code{runCase <case>} runs the spiral-wound stage that reads it.  Before the
+stage uses the record it checks every fingerprint, and \emph{refuses} a
+stale one --- a moved data point, a changed band, an edited base record or a
+hand-edited fitted value --- naming what moved and the remedy: run the case
+in Properties mode.  A fresh record is announced with the operation that
+wrote it and its held-out verdict.  What is \emph{not} fingerprinted: the
+thermophysical package, so a changed ion radius moves the fit unseen.
+
 \section{Testing the data itself: consistency}\label{ch:consistency-props}
 % =====================================================================
 
