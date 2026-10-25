@@ -1935,6 +1935,23 @@ accepts today, and that is a policy call.
 > residual -549 319 -> +0.002 kW, the C&CE reviewer's central objection
 > (section 2) answered in the engine; 47 rows moved row by row.  OPEN:
 > userOp03_case_rate_law at 133.33 % mass closure (pre-existing).
+> PROGRESS 2026-10-25, later the same day (Vitor: "so quero que termines
+> tudo o que tens agendado"): LANDED on main -- C152 (one case, two modes,
+> the membrane fit), C150 waves 1, 2, 3 and R01 (C150 COMPLETE), C151 phase
+> 1, C136 bunds, C137 Bayes, G4 debt financing, the C&CE and JOSS
+> revisions, and G9 the long train folded (`claude/g9-fold-trains`: a
+> plant whose fit zoom in a 1280 x 720 window is below 0.5 and width-bound
+> folds into two rows at an exact minimum cut of the stream graph -- a
+> recycle loop is never split, the fewest cut wires among folds within
+> 90 % of the best zoom, accepted only if it adds no overlap, no wire
+> through a box and no crossing; 8 of 368 views fold (the four green-
+> ammonia plants 0.20-0.23 -> 0.33-0.41, aceticAcid02, proxy01,
+> combined01, economics03 drawn from its .cho), 2 more change by the
+> source-tree rule (apalutamide01 crossings 18 -> 10, donepezil01 16 -> 1),
+> 358 identical, the folded list pinned by a test; the 0.5 / 1.2
+> thresholds are the general's judgement, Vitor may move them; `--gui`
+> 36/0 on main).  IN FLIGHT: G5 (Gantt), C112 wave B, C131 phase 2 family
+> (a).  Owed to Vitor, unchanged: C139 and C140 start with their scope.
 
 > **THE FULL SUITE ON A 10-CORE PC (owed to Vitor since 2026-10-24;
 > written 2026-10-25).**  Ubuntu 24.04 or WSL2 Ubuntu:
