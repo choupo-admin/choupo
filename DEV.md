@@ -1568,6 +1568,21 @@ accepts today, and that is a policy call.
 > trial, not a physical validation.  Status: the Born text fixed;
 > the rest DISPATCHED after C153 lands (same files: PropsView,
 > PropsDetails), one general, the reviewer's walk as the acceptance test.
+> ADDED the same day (Vitor: "Sim, regista no C154"), after asking whether
+> such information diagrams are common in engineering software (they are:
+> project schematics that show how the work is assembled left to right,
+> pipeline browsers with a details pane, provenance graphs in scientific
+> workflow tools): every block on the calculation map shows its STATE --
+> run, failed, not run, or STALE because a file it reads changed since the
+> run -- drawn from the existing staleness home
+> (`gui/src/case/staleness.ts`, the case fingerprint stamped on the run)
+> and from the run's own per-operation outcome; the state one word in ink
+> AND colour (never colour alone), the map's legend naming the four.  The
+> fingerprint is case-wide (2026-09-06: it is not a dependency analysis),
+> so per-block staleness is claimed only where a block's own inputs are
+> known (an op's propsDict block and the files it names); otherwise the
+> whole map says "case changed since the run" once, never a per-block
+> guess.
 
 > **C153. THE PROPS SCREEN, SECOND PASS: A PANEL THAT RESIZES AND A BLOCK
 > THAT ANSWERS WHEN CLICKED (Vitor, 2026-10-25, on the NanoFiltran case
