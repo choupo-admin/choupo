@@ -49,7 +49,17 @@ namespace {
 
     scalar soave_m(scalar omega)
     {
-        // Soave (1972) — the classical correlation.
+        //  THE SLOPE IS GRABOSKI & DAUBERT's REFIT, NOT SOAVE's PRINTED ONE
+        //  (DEV.md 4c C131, family a -- an attribution correction; no number
+        //  changed).  Soave, Chem. Eng. Sci. 27 (1972) 1197, printed
+        //      m = 0.480 + 1.574 w - 0.176 w^2 ;
+        //  the coefficients below are Graboski & Daubert, Ind. Eng. Chem.
+        //  Process Des. Dev. 17 (1978) 443, refitted to API vapour pressures.
+        //  They differ by ~1e-3 in m over 0 <= w <= 0.6.  This comment used to
+        //  credit Soave 1972, and the Theory Guide's footnote calls Soave's
+        //  own form the "rounded" one, which inverts the history.  Whether to
+        //  run Soave's form (the one a kij regressed on the original SRK was
+        //  fitted with) is a model choice put to Vitor in the C131 report.
         return 0.48508 + 1.55171 * omega - 0.15613 * omega * omega;
     }
 

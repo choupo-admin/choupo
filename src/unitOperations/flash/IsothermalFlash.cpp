@@ -1612,7 +1612,31 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         if (compDelta < opts.compositionTol) break;
     }
 
-    if (!phaseTrivial && opts.verbosity >= 3)
+    //  AN EXHAUSTED OUTER LOOP IS NOT A CONVERGED FLASH (DEV.md 4c C131,
+    //  family a).  `sol.converged` above is the INNER Rachford-Rice verdict on
+    //  the LAST K-values; the equilibrium the flash claims is the OUTER loop's
+    //  fixed point, which is reached only when |dx| falls below the declared
+    //  compositionTol.  The loop used to fall out at maxOuterIter with the
+    //  inner verdict standing and print "converged after N iterations": on
+    //  flash02 with `maxOuterIter 1;` it published V/F 0.890 against the
+    //  converged 0.798, "Converged: yes", exit 0.
+    const bool outerExhausted = !phaseTrivial && !(compDelta < opts.compositionTol);
+    if (outerExhausted)
+    {
+        sol.converged = false;
+        std::ostringstream msg;
+        msg << "flash: the composition outer loop did NOT converge in "
+            << opts.maxOuterIter << " iteration(s) at T = " << in.T
+            << " K, P = " << in.P << " Pa (last |dx|2 = " << std::scientific
+            << std::setprecision(3) << compDelta << " against compositionTol "
+            << opts.compositionTol << "); the phase split published is the"
+               " last iterate, not an equilibrium";
+        AdvisoryLog::instance().add("solver", "warning",
+                                    "flash outer loop exhausted", msg.str());
+        if (opts.verbosity >= 1)
+            std::cout << "\n  [flash] " << msg.str() << ".\n";
+    }
+    else if (!phaseTrivial && opts.verbosity >= 3)
         std::cout << "\nComposition outer loop (gamma/K refresh) converged after " << (outerIt + 1)
                   << " composition iteration"
                   << ((outerIt + 1 == 1) ? "" : "s")

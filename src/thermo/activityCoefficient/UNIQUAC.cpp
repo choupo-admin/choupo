@@ -243,16 +243,15 @@ sVector UNIQUAC::gamma(scalar T, const sVector& x) const
         for (std::size_t j = 0; j < n_; ++j)
             tau[i*n_ + j] = std::exp(-(a(i,j) + b(i,j) * T + c(i,j) * T * T) / T);   // tau_ii = exp(0) = 1
 
-    // Segment (phi) and area (theta) fractions.
+    // Segment (phi) and area (theta) fractions.  The segment fraction enters
+    // the combinatorial below only through phi_i/x_i and theta_i/phi_i, so
+    // only theta is stored (the residual term needs it).
     scalar sumRx = 0.0, sumQx = 0.0;
     for (std::size_t i = 0; i < n_; ++i) { sumRx += r_[i] * x[i]; sumQx += q_[i] * x[i]; }
 
-    sVector phi(n_, 0.0), theta(n_, 0.0);
+    sVector theta(n_, 0.0);
     for (std::size_t i = 0; i < n_; ++i)
-    {
-        phi[i]   = (sumRx > 0.0) ? r_[i] * x[i] / sumRx : 0.0;
         theta[i] = (sumQx > 0.0) ? q_[i] * x[i] / sumQx : 0.0;
-    }
 
     // l_i = (z/2)(r_i - q_i) - (r_i - 1)
     sVector l(n_, 0.0);
@@ -273,14 +272,27 @@ sVector UNIQUAC::gamma(scalar T, const sVector& x) const
     sVector gam(n_, 1.0);
     for (std::size_t i = 0; i < n_; ++i)
     {
-        if (x[i] <= 0.0) { gam[i] = 1.0; continue; }
+        //  THE COMBINATORIAL IS WRITTEN IN THE RATIOS, so an ABSENT component
+        //  gets its INFINITE-DILUTION gamma (DEV.md 4c C131, family a).
+        //  phi_i/x_i = r_i / Sum_j r_j x_j and theta_i/phi_i =
+        //  (q_i/Sum q x)/(r_i/Sum r x) are finite at x_i = 0, and that limit is
+        //  the gamma_i^inf a K-value, a stability trial or a dilute end needs.
+        //  This branch used to return gamma = 1 for x_i <= 0, so ethanol in
+        //  water read 1 at x = 0 and 7.71 at x = 1e-9 (bubbleT02's pair, 350
+        //  K); UNIFAC.cpp, which shares this combinatorial, always used the
+        //  ratio form.  Wherever x_i > 0 the two forms are the same quantity
+        //  (they differ by floating-point rounding only).
+        if (!(sumRx > 0.0) || !(sumQx > 0.0) || !(r_[i] > 0.0) || !(q_[i] > 0.0))
+        { gam[i] = 1.0; continue; }
+        const scalar phiOverX     = r_[i] / sumRx;
+        const scalar thetaOverPhi = (q_[i] / sumQx) / (r_[i] / sumRx);
 
         // Combinatorial part.
         scalar lnGammaC =
-              std::log(phi[i] / x[i])
-            + (z_coord_ / 2.0) * q_[i] * std::log(theta[i] / phi[i])
+              std::log(phiOverX)
+            + (z_coord_ / 2.0) * q_[i] * std::log(thetaOverPhi)
             + l[i]
-            - (phi[i] / x[i]) * sum_xl;
+            - phiOverX * sum_xl;
 
         // Residual part.
         scalar sumThetaTau = 0.0;

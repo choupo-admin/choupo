@@ -1011,6 +1011,11 @@
       "claim": "check_thermal_bed: OK -- 3 positives (T1 anchors u_th/DT_ad bound, T1.5 hot-purge retire+declare, T2 wall NTU + Q_wall state row) and 9 refusals fire named (A3 pin, fixed stepping, missing/undocumented cp_s, adiabatic+wall contradiction, unknown word, wallCooled w/o block, zero h, feed.T while isothermal)",
       "seconds": 18.1
     },
+    "check_thermo_limits": {
+      "exit": 0,
+      "claim": "thermo-limits: OK -- (a) gamma_inf(ethanol/water, 350 K) = 7.7114 at x = 0, continuous to 1e-6; (b) flash02 capped at maxOuterIter 1 refuses naming the exhausted loop, uncapped converges; (c)/(d) flash09's phi-phi SRK liquid and vapour give TRIVIAL bubble/dew roots that are reported NOT converged, bubbleT01 stays converged; (e) flash09 publishes no T-x-y block and says why, flash01 keeps its.  NOT covered: the y = x pricing and the 200-700 K bracket themselves, a pure component on a liquid-only root, phi_sat in gamma-phi, the phi-phi liquid enthalpy.",
+      "seconds": 6.0
+    },
     "check_thermoml_index": {
       "exit": 0,
       "claim": "check_thermoml_index: OK -- both ThermoML dialects are detected off the root element and an unrecognised one is refused BY NAME; all four identifier kinds (name, CAS, InChI, InChIKey) resolve through the index; declared property types Choupo cannot read yet are LISTED rather than dropped; an empty cache refuses instead of reporting a clean empty archive; and a hand-placed cache announces that it carries no sync stamp.  NOT COVERED BY THIS GATE, and the distinction matters: whether the PUBLISHED reader matches the REAL archive cannot be checked here, because the archive is gitignored and absent from every clean checkout.  It is no longer UNSETTLED, though -- it was settled out of band on 2026-08-25, when 11 921 of the archive's 11 923 files parsed (the two refusals are malformed XML in the archive itself, listed with the parse error); the measurement is recorded in bin/choupo-thermoml's own docstring, which is where the reader lives.  Still genuinely unexercised: the v5 dialect at scale (one file), the download itself, and any numeric VALUE (this gate reads identity and property names only, plus the extraction arms A7-A9).",

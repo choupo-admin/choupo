@@ -38,7 +38,8 @@ Description
         a_c,i = 0.42747 · R² · Tc_i² / Pc_i
         b_i   = 0.08664 · R · Tc_i  / Pc_i
         α_i(T) = [ 1 + m_i · (1 − √(T/Tc_i)) ]²
-        m_i    = 0.48508 + 1.55171·ω_i − 0.15613·ω_i²
+        m_i    = 0.48508 + 1.55171·ω_i − 0.15613·ω_i²   (Graboski & Daubert
+                 1978; Soave 1972 printed 0.480 + 1.574 ω − 0.176 ω²)
         a_i(T) = a_c,i · α_i(T)
 
     Van der Waals one-fluid mixing rule:

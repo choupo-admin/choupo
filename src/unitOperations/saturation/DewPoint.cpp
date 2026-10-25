@@ -28,6 +28,7 @@ License
 
 #include "DewPoint.H"
 #include "solver/NewtonRaphson.H"
+#include "thermo/SaturationCurves.H"
 
 #include <cmath>
 #include <iomanip>
@@ -128,6 +129,15 @@ DewPoint::Result DewPoint::compute(const ThermoPackage& thermo,
     out.T = Tdew;
     out.x = x;
     out.outerIterations = outerIt + 1;
+    //  The outer loop on x is part of the answer: an exhausted one leaves a
+    //  dew T for a liquid composition that is not the incipient liquid, and
+    //  the last Newton's verdict says nothing about that (the flash's rule,
+    //  DEV.md 4c C131).  And a trivial root (every present K = 1) is not a
+    //  dew point at all (thermo/SaturationCurves.H, trivialSaturationK).
+    if (maxOuter > 1 && !(out.compDelta < compTol))
+        out.converged = false;
+    if (out.converged && trivialSaturationK(thermo.Kvec(Tdew, P, x, y), y))
+        out.converged = false;
     return out;
 }
 
@@ -244,6 +254,12 @@ int DewPoint::solve(const DictPtr& dict,
     totalNewtonIter = res.newtonIterations;
 
     auto K = thermo.Kvec(Tdew, P, x, y);
+    if (!converged && trivialSaturationK(K, y))
+        std::cout << "  [dewT] the root found is TRIVIAL: every present K = 1"
+                     " at T = " << std::fixed << std::setprecision(4) << Tdew
+                  << " K, so the liquid was priced as the vapour itself (one"
+                     " root of the cubic for both phases).  It is not a dew"
+                     " point and is reported as NOT converged.\n";
     std::cout << "\n=========================  Dew-T Result  ===========================\n"
               << "  T_dew:         " << std::fixed << std::setprecision(4) << Tdew
               << "  K  ( " << (Tdew - 273.15) << " °C )\n"
