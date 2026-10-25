@@ -227,7 +227,16 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
       + "the rate along the bed.  Its reverse term is built from the SAME "
       + "equilibrium constant, $k_r = k_f / K$ (PFR.cpp:178–182), so the net "
       + "rate vanishes exactly at the limit: the profile rises toward the "
-      + "rung-2 line and cannot cross it, however long the bed.  Read the "
+      + "rung-2 line and cannot cross it, however long the bed.  That "
+      + "closure holds HERE for two reasons worth naming: the law's orders "
+      + "are the stoichiometric coefficients (mass action), and the shift "
+      + "has Δν = 0, so K on a concentration basis is the same number as "
+      + "the dimensionless thermodynamic K.  For a reaction that changes "
+      + "the number of moles, the K in $k_r = k_f / K$ must be written on "
+      + "the same basis and standard state as the rate law (the engine "
+      + "converts for an ideal gas, Reaction.cpp:104–112), and a law whose "
+      + "orders are not the stoichiometric ones does not vanish at "
+      + "equilibrium through that ratio alone.  Read the "
       + "shape.  Most of the conversion arrives in the first part of the bed, "
       + "and the approach line is crossed early.  After that, most of the "
       + "remaining volume buys the last couple of per cent.  That tail is why "
@@ -269,8 +278,10 @@ k_f = A\,\exp\!\left(-\frac{E_a}{R\,T}\right)`,
     check: {
       q: "Could a longer bed ever beat the equilibrium reactor's number?",
       a: "No.  At the limit the forward and reverse terms are equal, because "
-        + "the reverse constant is k_f/K, so the rate there is zero.  Volume "
-        + "buys approach to the limit, never passage beyond it.",
+        + "the reverse constant is k_f/K on the same basis as the rate law "
+        + "(here Δν = 0, so the basis does not change K), so the rate there "
+        + "is zero.  Volume buys approach to the limit, never passage beyond "
+        + "it.",
     },
   },
   {

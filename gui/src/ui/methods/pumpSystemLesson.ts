@@ -354,7 +354,10 @@ export const PUMP_LIMITS: readonly { id: string; title: string; body: string }[]
     body: "Δp = η·W_shaft/Q is the constant-shaft-power characteristic of "
       + "Choupo's pump model. A real machine's H(Q) is measured on a test "
       + "rig and has its own shape; the two agree only in falling. Nothing "
-      + "here is fitted to, or checked against, a tested curve.",
+      + "here is fitted to, or checked against, a tested curve.  The model "
+      + "curve also DIVERGES as Q → 0: a constant-power hyperbola has no "
+      + "shut-off head, so its left end describes no machine at all.  Do "
+      + "not select a pump from this diagram.",
   },
   {
     id: "no-npsh",

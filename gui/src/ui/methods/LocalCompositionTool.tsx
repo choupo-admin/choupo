@@ -40,8 +40,10 @@ License
   Every equation is the one the engine runs, cited file:line.  Writing it
   meant reading Wilson.cpp, NRTL.cpp and UNIQUAC.cpp, which is where the
   ideal-fallback paragraph came from: a pair with no parameters does not
-  fail here, it runs at tau = 0, and THAT is a lesson no textbook teaches
-  because no textbook has an implementation to be honest about.
+  fail here, it runs on a SUBSTITUTED neutral value (tau = 0 in NRTL, but
+  Lambda = 1 set directly in Wilson -- not A = 0, which would leave the size
+  ratio), and that is a lesson a textbook has no implementation to be
+  honest about.
 
   ZERO PHYSICS IN TYPESCRIPT: nothing is computed on this page.
 \*---------------------------------------------------------------------------*/
@@ -60,10 +62,13 @@ export const LC_STEPS = [
     body: "Raoult's law assumes a molecule's neighbours are drawn at random "
       + "from the mixture, so a molecule of 1 in a 50/50 mixture is "
       + "surrounded by half 1 and half 2.  In a real liquid that is false "
-      + "whenever the molecules have preferences: ethanol and water deviate "
-      + "POSITIVELY from Raoult's law, each preferring its own kind, so an "
-      + "ethanol molecule sits in a neighbourhood richer in ethanol than the "
-      + "bulk is.  Call the "
+      + "whenever the molecules have preferences.  Ethanol and water deviate "
+      + "POSITIVELY from Raoult's law, and the local-composition picture "
+      + "READS that deviation as each molecule preferring its own kind, so "
+      + "that an ethanol molecule sits in a neighbourhood richer in ethanol "
+      + "than the bulk is.  That is the model's picture, not a measurement "
+      + "of the liquid's structure: a positive deviation alone does not "
+      + "prove such a preference at every composition.  Call the "
       + "LOCAL mole fraction x_ji — the fraction of the molecules around a "
       + "central molecule i that are of type j.  Every model on this page "
       + "is one answer to: how is x_ji related to the bulk x_j?",
@@ -213,14 +218,31 @@ export function LocalCompositionTool(): JSX.Element {
         <Text size="sm">
           Every model on this page needs numbers fitted to <em>your</em> pair.
           A textbook stops there.  An implementation cannot: it has to do
-          something when the pair is not in the catalogue, and what Choupo
-          does is run that pair with no interaction energy:{" "}
-          <Code>τ = 0</Code> in NRTL, <Code>Λ = 1</Code> in Wilson,{" "}
-          <Code>τ = 1</Code> in UNIQUAC.  In NRTL and Wilson that pair is
-          then <strong>exactly ideal</strong> — γ = 1, Raoult's law, as though
-          the molecules had no preference at all.  UNIQUAC is the exception:
-          its combinatorial (size-and-shape) term does not vanish, so the pair
-          is athermal, not ideal.
+          something when the pair is not in the catalogue, and what this
+          implementation does is <strong>substitute</strong> a neutral value
+          for that pair: <Code>τ = 0</Code> in NRTL and <Code>τ = 1</Code> in
+          UNIQUAC (both mean no interaction energy), and in Wilson{" "}
+          <Code>Λ = 1</Code>, set directly.
+        </Text>
+        <Text size="sm" mt={6}>
+          The Wilson substitution is not “zero energy”.  With{" "}
+          <Code>A_ij = 0</Code> the equation of step 3 still leaves{" "}
+          <Code>Λ_ij = V_j / V_i</Code>, a size term: for an equimolar binary
+          with <Code>V_2 = 2 V_1</Code> it gives{" "}
+          <Code>ln γ_1 = 1 − ln 1.5 − 1/1.5 = −0.0721</Code> (γ_1 ≈ 0.930) and
+          {" "}<Code>ln γ_2 = 1 − ln 0.75 − 2/1.5 = −0.0457</Code> (γ_2 ≈
+          0.955), not 1.  Λ = 1 is a separate choice the code makes
+          (<Code>Wilson.cpp:232</Code>), and it is that choice, not a zero
+          energy, that makes the pair neutral.
+        </Text>
+        <Text size="sm" mt={6}>
+          In NRTL and Wilson the substituted pair, as a BINARY on its own, is
+          then <strong>exactly ideal</strong> — γ = 1, Raoult's law.  Inside a
+          multicomponent mixture it is not: that pair contributes nothing,
+          but both of its molecules still meet the other components, whose
+          parameters remain, so their γ are not 1.  UNIQUAC is the exception
+          even for the binary: its combinatorial (size-and-shape) term does
+          not vanish, so the pair is athermal, not ideal.
         </Text>
         <Text size="sm" mt={6}>
           That is a defensible choice and a dangerous one, so it is neither
@@ -232,7 +254,8 @@ export function LocalCompositionTool(): JSX.Element {
         </Text>
         <Text size="xs" c={INK} mt={6}>
           <Code style={{ fontSize: 11 }}>NRTL.cpp:181, NRTL.cpp:222-248,
-          NRTL.cpp:307 · thermo/ApproximationAuthorisation</Code>
+          NRTL.cpp:307 · Wilson.cpp:232 · UNIQUAC.cpp:173 ·
+          thermo/ApproximationAuthorisation</Code>
         </Text>
       </Alert>
 
@@ -240,8 +263,11 @@ export function LocalCompositionTool(): JSX.Element {
         <Title order={5}>Which one, and the honest answer</Title>
         <Text size="sm" mt={4}>
           If the system stays one liquid phase and you have data for the
-          pair, all three will fit it and the choice barely matters.  If it
-          splits into two liquid phases, <strong>Wilson cannot</strong> and
+          pair, all three can usually represent it — but how well depends on
+          the data, on each functional form and on what you then ask the
+          model to predict (another temperature, a third component, the
+          heat of mixing); one liquid phase does not make them
+          equivalent.  If it splits into two liquid phases, <strong>Wilson cannot</strong> and
           the other two can.  If you have no data for the pair, none of the
           three can help you at all — and that absence, not a preference
           among them, is what sends you to UNIFAC, COSMO-SAC or PC-SAFT,

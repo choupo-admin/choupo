@@ -34,9 +34,11 @@ License
   WHY IT BELONGS BESIDE McCABE RATHER THAN INSTEAD OF IT.  McCabe-Thiele
   buys its straight operating lines with constant molar overflow.  That
   assumption is stated on the McCabe page and, until this one, could only be
-  BELIEVED: nothing in the tree let a reader see what it costs.  This
-  construction carries the enthalpy, so the same column is solved without
-  it, and the difference stops being a caveat and becomes a diagram.
+  BELIEVED: nothing in the tree let a reader see it.  This construction
+  carries the enthalpy, so the assumption stops being a caveat and becomes
+  a diagram.  What it COSTS in reflux or stages is not measured here: that
+  needs both models solved for the same specifications, and this page draws
+  one ray and no staircase (C150 R12).
 
   WHAT IS BUILT AND WHAT IS NOT, said here rather than discovered by a
   student: the ENGINE half exists (the enthalpyConcentration op publishes

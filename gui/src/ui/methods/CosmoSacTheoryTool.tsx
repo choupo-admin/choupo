@@ -106,7 +106,13 @@ export const COSMO_STEPS = [
       + "in a perfect conductor, which screens its charge exactly, and "
       + "reads off the screening charge density σ at every point of the "
       + "cavity surface.  Nothing about a mixture has been used yet: this "
-      + "is a property of ONE molecule, computed once, forever.",
+      + "is a property of ONE molecule.  It is not unique, though: it "
+      + "depends on the conformation chosen, the quantum method and basis, "
+      + "the cavity construction and how the profile was prepared — "
+      + "which is why a profile carries the name of the set it came from.  "
+      + "In this implementation it is computed elsewhere and then held "
+      + "FIXED: the run reads it from the component record and never "
+      + "recomputes it.",
     assumes: "The conductor screening is a good stand-in for a real "
       + "solvent, and the correction back to reality is the pairwise "
       + "energy of step 3.",

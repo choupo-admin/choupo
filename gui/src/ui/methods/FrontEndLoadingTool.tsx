@@ -467,7 +467,7 @@ export function FrontEndLoadingTool(): JSX.Element {
         {step(6)}
 
         <Box>
-          <Title order={5}>Two options: when does the estimate decide?</Title>
+          <Title order={5}>Two options: a conservative separation of the bands</Title>
           <Text size="sm" mt={4}>
             Give two options a point estimate each, for example two routes
             or two loop pressures.  Walk down the classes and watch where the

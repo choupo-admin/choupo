@@ -359,8 +359,20 @@ export const LUB_SCALEUP_LIMITS: readonly LessonLimit[] = [
     body: "The unused length is transferred, never scaled.  Change u and the "
       + "zone width changes with the rate of uptake; change the particle "
       + "size and both the LDF coefficient and the dispersion change; change "
-      + "T and the isotherm changes.  A plant bed at other conditions needs "
-      + "a curve measured at those conditions.",
+      + "T and the isotherm changes.  The same holds for the adsorbent "
+      + "material and batch, the feed composition, the pressure and the "
+      + "loading the bed starts from (a regenerated bed is rarely clean).  "
+      + "A plant bed at other conditions needs a curve measured at those "
+      + "conditions.",
+  },
+  {
+    id: "no-pressure-drop",
+    title: "No pressure drop: the design is checked on length, not on ΔP.",
+    body: "D is set by the flow and the velocity alone, and L_full by the "
+      + "service time.  The pressure drop across a bed that long, packed "
+      + "with that particle size, at that velocity, is not computed here, "
+      + "and it can rule the design out — a shorter, wider bed at a lower "
+      + "velocity is then the answer, with a LUB measured at THAT velocity.",
   },
   {
     id: "single-adsorbate",

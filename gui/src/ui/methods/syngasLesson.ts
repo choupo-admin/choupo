@@ -49,8 +49,8 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
     title: "One gas, many products",
     body: "Synthesis gas -- syngas -- is a mixture of carbon monoxide and "
       + "hydrogen, nearly always carrying some carbon dioxide, steam and "
-      + "unconverted methane with it.  It is not a product anybody buys for "
-      + "itself.  It is a PLATFORM: the form in which carbon, hydrogen and "
+      + "unconverted methane with it.  It is mostly made where it is used, "
+      + "and what matters here is its role: it is a PLATFORM: the form in which carbon, hydrogen and "
       + "oxygen are handed to a catalyst that reassembles them into something "
       + "else.  From the same two molecules come methanol, the hydrocarbon "
       + "chains of Fischer-Tropsch fuels and waxes, aldehydes by "
@@ -611,9 +611,12 @@ export const SYNGAS_LIMITS: readonly LessonLimit[] = [
       + "devolatilisation of the fuel and the behaviour of a real gasifier "
       + "are not modelled." },
   { id: "ideal", title: "An ideal gas at every pressure",
-    body: "The benches use ideal-gas thermodynamics; at tens of bar the "
-      + "fugacity corrections are small for these gases but not zero, and "
-      + "they are not applied." },
+    body: "The benches use ideal-gas thermodynamics, and no fugacity "
+      + "correction is applied.  How large that correction is at tens of "
+      + "bar depends on the composition and the temperature — modest for "
+      + "hot hydrogen and carbon monoxide, larger for a cooler gas rich in "
+      + "steam, carbon dioxide or methane — and it has not been measured "
+      + "against an equation of state on these benches." },
   { id: "cleaning", title: "No CO2 absorber, no sulfur guard bed",
     body: "CO2 removal by a solvent and sulfur removal are described, not "
       + "run.  The PSA is an equilibrium shortcut: no breakthrough, no cycle "

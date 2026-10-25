@@ -187,12 +187,26 @@ V H &= L h + D\, h_D - Q_C
           + "SHAPE of the two enthalpy curves — which the engine computes "
           + "from the same thermophysical system the rest of the case "
           + "declares.", eq: "" },
-      { step: "Constant molar overflow is exactly the statement that the two "
-          + "curves are PARALLEL STRAIGHT LINES.  Look at h(x) and H(y) for "
-          + "your system: how far they are from parallel and straight is how "
-          + "wrong McCabe-Thiele is for it.", eq: "" },
+      { step: "Two PARALLEL STRAIGHT LINES are enough for constant molar "
+          + "overflow, and the argument is short.  Write the liquid line as "
+          + "h = a + b·x and the vapour line as H = a + b·y + λ, the same "
+          + "slope and a constant gap λ.  Put both into a tray's energy "
+          + "balance: the a and b terms cancel against the tray's total and "
+          + "component balances, and what is left is λ times the vapour "
+          + "leaving equal to λ times the vapour entering — so V, and with "
+          + "it L, does not change from tray to tray.", eq: "" },
+      { step: "That is a SUFFICIENT condition, not a measure of error.  Look "
+          + "at h(x) and H(y) for your system: where they depart from "
+          + "parallel and straight, the internal flows CAN vary within a "
+          + "section.  How much that changes the reflux or the stage count "
+          + "is a different number, and it is obtained only by solving both "
+          + "models for the SAME specifications — same thermodynamics, "
+          + "pressure, feed, products and condenser and reboiler convention "
+          + "— where a departure that is small far from a pinch can matter "
+          + "a great deal near one.  This page does not make that "
+          + "comparison.", eq: "" },
       { step: "For ethanol/water the curves are visibly neither, which is "
-          + "why the witness uses that pair — and it is also the honest "
+          + "why the witness uses that pair — and it is also the usual "
           + "reason a shortcut method survives: for many hydrocarbon pairs "
           + "they are very nearly both.", eq: "" },
     ],

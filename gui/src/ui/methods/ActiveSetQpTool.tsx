@@ -275,9 +275,11 @@ export function ActiveSetQpTool(): JSX.Element {
             Constrained quadratic programming: the active-set method
           </Title>
           <Text size="sm" c="dimmed" mt={4}>
-            Minimise a quadratic subject to linear constraints. It is the one
-            non-trivial optimisation problem that finishes exactly, in finitely
-            many steps, and it is the inner problem of every SQP iteration. The
+            Minimise a quadratic subject to linear constraints. When it is
+            strictly convex, an active-set method finishes it in finitely many
+            steps in exact arithmetic (a floating-point solver still needs
+            tolerances, step 1), and it is the inner problem of every SQP
+            iteration. The
             hard part is not the algebra — it is guessing which constraints the
             answer will be pressed against, and the method is the search for
             that guess.

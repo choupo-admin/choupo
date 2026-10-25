@@ -48,8 +48,14 @@ export const DRYING_STEPS: readonly LessonStep[] = [
   {
     n: 1,
     title: "One curve, two completely different operations",
-    body: "Plot the moisture of a wet solid against time and you get a "
-      + "straight stretch that bends into a long tail.  That bend is not a "
+    body: "Plot the moisture of a wet solid against time and, for many "
+      + "materials — this witness's among them — you get a straight stretch "
+      + "that bends into a long tail.  Not for every material: a solid that "
+      + "starts below its critical moisture, or whose water is bound rather "
+      + "than free (many hygroscopic and biological materials), shows no "
+      + "straight stretch at all and dries in the falling regime from the "
+      + "start.  The two-period curve below is a MODEL of one class of "
+      + "materials.  Where it holds, the bend is not a "
       + "numerical artefact and it is not a smooth transition of one "
       + "mechanism: it is the point where the operation changes hands.  "
       + "Before it, the rate is set by the AIR.  After it, the rate is set by "

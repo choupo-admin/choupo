@@ -366,7 +366,8 @@ export function PcSaftTheoryTool(): JSX.Element {
         <Text size="sm">
           A binary with no <M t="k_{ij}" /> runs at zero, announced.  On the
           local-composition page you met NRTL running a pair at
-          {" "}<M t="\tau = 0" />, which for that pair is exactly ideal; on
+          {" "}<M t="\tau = 0" />, which makes that pair's BINARY exactly
+          ideal (inside a larger mixture the other pairs still act); on
           the UNIFAC page a missing group pair runs at
           {" "}<M t="\Psi = 1" />, which makes that one GROUP pair athermal
           while the combinatorial term and every other group pair stay.
@@ -384,7 +385,7 @@ export function PcSaftTheoryTool(): JSX.Element {
           this model.
         </Text>
         <Text size="sm" mt={6}>
-          How good a prediction is a separate, measured question, and
+          How good a prediction is a separate question, and
           {" "}<Code>flash20</Code> answers it for one state: at 358.15 K and
           1 atm its golden pins the predictive PC-SAFT flash at
           {" "}<M t="V/F = 0.649" /> against 0.512 for the fitted NRTL, and

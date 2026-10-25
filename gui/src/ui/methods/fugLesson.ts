@@ -350,6 +350,22 @@ export const FUG_LIMITS: readonly { id: string; title: string; body: string }[] 
       + "all.",
   },
   {
+    id: "one-near-ideal-witness",
+    title: "One near-ideal witness, and one stage convention.",
+    body: "The rigorous comparison on this page is made on benzene/toluene "
+      + "with ideal γ and an ideal-gas vapour, a pair whose α changes little "
+      + "over the column, so an α frozen at the feed bubble point is close "
+      + "to the column's own there.  The agreement it shows is a fact about "
+      + "THAT pair: it says nothing about how the shortcut fares on a "
+      + "strongly non-ideal mixture.  And when two stage counts are compared "
+      + "digit by digit, the counting convention matters: Fenske counts "
+      + "every equilibrium contact between the two product compositions, so "
+      + "with a total condenser the partial reboiler is one of them; the "
+      + "rigorous column here also counts its partial reboiler as its last "
+      + "stage and does not count a total condenser "
+      + "(DistillationColumn.H:40-47).",
+  },
+  {
     id: "constant-molar-overflow",
     title: "Constant molar overflow.",
     body: "Underwood's derivation assumes equal molar latent heats, so the "

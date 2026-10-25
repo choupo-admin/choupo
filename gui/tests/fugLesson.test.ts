@@ -224,9 +224,9 @@ describe("the limits survive", () => {
   it("keeps every limit id", () => {
     const ids = FUG_LIMITS.map((l) => l.id);
     for (const id of [
-      "constant-alpha", "constant-molar-overflow", "gilliland-is-a-fit",
-      "kirkbride-feed-stage", "stage-count-not-a-design", "equilibrium-stages",
-      "no-profiles",
+      "constant-alpha", "one-near-ideal-witness", "constant-molar-overflow",
+      "gilliland-is-a-fit", "kirkbride-feed-stage", "stage-count-not-a-design",
+      "equilibrium-stages", "no-profiles",
     ])
       expect(ids, `limit ${id} went missing`).toContain(id);
     expect(new Set(ids).size, "duplicate limit id").toBe(ids.length);
@@ -241,6 +241,9 @@ describe("the limits survive", () => {
       .toContain("Murphree");
     expect(prose(FUG_LIMITS.find((l) => l.id === "gilliland-is-a-fit")!.body))
       .toContain("scatter");
+    //  C150 R13: the comparison is scoped to its one near-ideal pair.
+    expect(prose(FUG_LIMITS.find((l) => l.id === "one-near-ideal-witness")!.body))
+      .toContain("says nothing about how the shortcut fares");
   });
 });
 

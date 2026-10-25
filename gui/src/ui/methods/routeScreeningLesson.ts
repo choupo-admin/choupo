@@ -83,8 +83,13 @@ export const SCREEN_SECTIONS: readonly ScreenSection[] = [
       + "hierarchical design procedure (Conceptual Design of Chemical "
       + "Processes, 1988).  It is an UPPER bound, because a real plant never "
       + "reaches complete conversion and full selectivity, and it pays for "
-      + "energy, equipment and people too.  A route with a negative margin "
-      + "here cannot be rescued downstream.  The prices on this page are "
+      + "energy, equipment and people too.  Within the boundary this margin "
+      + "draws — the one product and the raw materials named, no credit for "
+      + "a co-product, no fee for taking a feed, no income from a service — "
+      + "a route with a negative margin cannot be rescued downstream, "
+      + "because everything downstream only adds cost.  Move the boundary "
+      + "(sell a co-product, be paid to take a waste) and the test has to be "
+      + "redone on the new one.  The prices on this page are "
       + "yours to set.  Their starting values are round placeholders and not "
       + "market data, and moving them re-ranks the routes.  Try the price of "
       + "hydrogen.",
@@ -144,7 +149,10 @@ export const SCREEN_SECTIONS: readonly ScreenSection[] = [
       + "pressure helps all three; heat helps none, since all three are "
       + "exothermic.  A partial conversion is not a verdict.  It means a "
       + "recycle, and the recycle has a cost the next level of design will "
-      + "price.  A conversion of $10^{-6}$ would be a verdict.",
+      + "price — in flow, compression and separation.  With the unreacted "
+      + "feed recycled, the OVERALL yield is set by the selectivity and the "
+      + "losses rather than by the conversion per pass, so a low conversion "
+      + "per pass does not by itself mean much more raw material consumed.  A conversion of $10^{-6}$ would be a verdict.",
     eq: String.raw`K(T) = \exp\!\left(-\frac{\Delta G^\circ(T)}{R\,T}\right)
 = \prod_i \left(\frac{y_i\,P}{P^\circ}\right)^{\nu_i}`,
     where: [

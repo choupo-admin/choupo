@@ -43,8 +43,13 @@ export const BODE_STEPS: readonly LessonStep[] = [
       + "transient dies away, and what is left at the outlet is a sine wave "
       + "of THE SAME FREQUENCY — never a different one, never a distorted "
       + "shape.  Only two things about it have changed: how big the swing "
-      + "is, and how far behind the input it runs.  That is what LINEAR "
-      + "buys you, and it is the entire premise of the diagram.  Two "
+      + "is, and how far behind the input it runs.  That is what a LINEAR, "
+      + "TIME-INVARIANT and STABLE system buys you, and each word does work: "
+      + "linearity keeps the frequency and the shape, time invariance keeps "
+      + "the answer the same from one cycle to the next, and stability is "
+      + "what makes the start-up transient die away — an unstable system "
+      + "has no steady sinusoidal response to read.  That is the entire "
+      + "premise of the diagram.  Two "
       + "numbers per frequency; sweep the frequency and you have two "
       + "curves.  Those two curves ARE the Bode diagram.",
     derivation: [

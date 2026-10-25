@@ -83,8 +83,14 @@ export const FLASH_STEPS: readonly {
       + "the engine computes from the thermodynamics and which knows nothing "
       + "about how much feed you have.  The MATERIAL BALANCE says the feed "
       + "must be shared out: whatever leaves as liquid plus whatever leaves "
-      + "as vapour is what came in.  Neither alone gives an answer.  Both at "
-      + "once give exactly one.",
+      + "as vapour is what came in.  Neither alone gives an answer.  On "
+      + "this page — a binary at a fixed pressure and a fixed vapour "
+      + "fraction (the two sliders you set), with an equilibrium curve that "
+      + "rises monotonically — both at once give exactly one.  That is a "
+      + "property of this configuration, not a theorem about every flash: "
+      + "a non-ideal or multiphase mixture can have several states that "
+      + "satisfy both, which is why an engine also tests the stability of "
+      + "the phases it finds.",
     formula: "F·z = L·x + V·y",
   },
   {
@@ -105,7 +111,8 @@ export const FLASH_STEPS: readonly {
     n: 4,
     title: "Where they cross is the answer",
     body: "The intersection of the operating line with the equilibrium curve "
-      + "is the only state that satisfies both, so it IS the flash: read x "
+      + "is, on this monotone curve, the only state that satisfies both, so "
+      + "it IS the flash: read x "
       + "off the horizontal axis for the liquid, y off the vertical for the "
       + "vapour.  And the feed pivot splits the segment between them in the "
       + "ratio of the two products — the LEVER RULE, which is the material "

@@ -28,8 +28,10 @@
   This witness declines it: every op says `pH solve;`, so each point had to
   be a beaker somebody could weigh out and the pH came back from charge.
   A student who has understood that will never again think the pH of a
-  bicarbonate solution is something you choose -- nor that an engine which
-  lets you type one has therefore computed it.
+  bicarbonate solution OF GIVEN COMPOSITION is something you choose -- nor
+  that an engine which lets you type one has therefore computed it.  An
+  imposed-pH diagram is a different, valid specification (C150 R11): it
+  needs one total left free, an acid or base amount, to carry the charge.
 
   WHAT THE ENGINE ACTUALLY EMITS, checked against the witness before this
   prose was written: 44 `speciate` operations, each publishing pH, the
@@ -57,8 +59,12 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
 \end{aligned}`,
     where: [
       { sym: "K_1",
-        means: "the FIRST dissociation constant of carbonic acid: the loss of the "
-        + "first proton, from dissolved CO2 to bicarbonate" },
+        means: "the FIRST dissociation constant, written on DISSOLVED CO2: the "
+        + "loss of the first proton, from dissolved CO2 to bicarbonate.  In "
+        + "the convention of the PHREEQC data used here, CO2(aq) stands for "
+        + "ALL the dissolved CO2, the small amount of true carbonic acid "
+        + "H2CO3 included (often written H2CO3*); the constant of the H2CO3 "
+        + "molecule alone is a different, much larger number" },
       { sym: "K_2",
         means: "the SECOND: the loss of the proton from bicarbonate to carbonate" },
     ],
@@ -80,7 +86,13 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "drew describes a real beaker only if something you did not write "
       + "down carries the missing charge: the Na+ or Cl- of the base or acid "
       + "that set the pH, or a buffer.  The diagram is real; its counter-ion "
-      + "is untracked.  That mode is for "
+      + "is untracked.  An imposed-pH diagram is a VALID specification, not "
+      + "a forbidden one — it answers a different question, and it describes "
+      + "a real solution once it says what carries the charge: an amount of "
+      + "acid or base left free to hold the pH, which equilibrium codes such "
+      + "as PHREEQC let you name.  What no specification can do is fix every "
+      + "total, the pH AND neutrality at once.  In Choupo the given-pH mode "
+      + "is for "
       + "a MEASURED pH off a laboratory sheet, which is a datum somebody read "
       + "off an instrument.  This case declares `pH solve;` instead, so [H+] "
       + "joins the unknowns and CHARGE is what decides it: the solution must "
@@ -121,8 +133,8 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
   {
     n: 3,
     title: "Every point is a beaker",
-    body: "If the pH cannot be set, the only way to move along the diagram is "
-      + "to change what is in the solution.  The total carbonate is held at 1 "
+    body: "Because this case does not set the pH, the only way to move along "
+      + "its diagram is to change what is in the solution.  The total carbonate is held at 1 "
       + "mmol/kg throughout; what varies is how much strong acid or strong "
       + "base sits beside it.  Each of the 44 points is a real neutral "
       + "mixture — something you could weigh out and dissolve.",
@@ -160,10 +172,14 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
     body: "Read the diagram where two curves cross.  Below the first "
       + "crossover the solution is essentially dissolved CO2; between the two "
       + "it is bicarbonate; above the second it is carbonate.  The crossovers "
-      + "are where two forms are present in equal amounts — and that happens "
-      + "at the pH equal to the pK of the step that separates them.  Neither "
-      + "pK was an input to any of the 44 calculations.  They are constants "
-      + "inside the reaction network, and the titration simply ARRIVES there.",
+      + "are where two forms are present in equal amounts — and, if every "
+      + "activity coefficient were 1, that would happen at the pH equal to "
+      + "the pK of the step that separates them.  The K's ARE inputs — the "
+      + "chemistry records of step 1 — but no crossover was: nothing told "
+      + "the solver where to put one, and the titration simply ARRIVES "
+      + "there.  In activities the exact statement, for the first step, is "
+      + "pH = pK1 + log10(a_HCO3 / a_CO2): at equal molalities what is left "
+      + "is log10(γ_HCO3 / γ_CO2), not zero.",
     formula: String.raw`\begin{aligned}
 \ce{CO2(aq)} &= \ce{HCO3^-} &\quad& \text{at } \mathrm{pH}\ 6.341 &\quad& (\mathrm{p}K_1 = 6.352)\\
 \ce{HCO3^-} &= \ce{CO3^2-} &\quad& \text{at } \mathrm{pH}\ 10.262 &\quad& (\mathrm{p}K_2 = 10.329)
@@ -185,7 +201,7 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
         unit: "dimensionless" },
     ],
     note: "Both crossovers sit slightly BELOW the thermodynamic pK, and the "
-      + "gap is the activity coefficients: the engine works in activities, a "
+      + "gap is that quotient of activity coefficients: the engine works in activities, a "
       + "textbook diagram works in concentrations and takes every gamma as 1. "
       + " The first crossover is moved by the BICARBONATE's gamma alone — "
       + "about 0.975 there, the dissolved CO2 being neutral with gamma 1 — so "

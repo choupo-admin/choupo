@@ -65,8 +65,13 @@ export const RAYLEIGH_STEPS: readonly LessonStep[] = [
       + "ln(W₀/W) — the logarithm of the charge over what is left in the "
       + "pot.  The tool shades that area "
       + "over the engine's own equilibrium points and compares it with the "
-      + "engine's own holdups — two routes to one number, and the gap between "
-      + "them is the price of trapezoids.",
+      + "engine's own holdups — two routes to one number.  On this witness "
+      + "both routes model the same still (one stage, the vapour leaving at "
+      + "y*(x) of the pot, the same declared chemistry), so the gap between "
+      + "them is numerical: the trapezoid grid and the trajectory's write "
+      + "interval on the graphical side, the time integration on the "
+      + "engine's.  That is argued from what the two routes declare; no "
+      + "refinement study here separates the parts.",
   },
   {
     n: 3,
@@ -87,7 +92,12 @@ export const RAYLEIGH_STEPS: readonly LessonStep[] = [
     note: "There is no stripping section: the pot IS the reboiler and there "
       + "is nothing below it. So one operating line, anchored at the "
       + "distillate — and the walk down takes the trays plus ONE more step, "
-      + "because the pot is itself an equilibrium stage.",
+      + "because the pot is itself an equilibrium stage.  And the integral "
+      + "of step 2 does NOT carry over as written: with a column, what "
+      + "leaves the pot's envelope is the distillate x_D, not y*(x) of the "
+      + "pot, so the balance integrates 1/(x_D − x) instead — and only "
+      + "under the two assumptions listed below, a column holding no liquid "
+      + "and a column that follows the pot quasi-steadily.",
   },
   {
     n: 4,

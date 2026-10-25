@@ -80,7 +80,12 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
         + "component flows.", unit: "mol/s as a flow; a composition as plotted" },
     ],
     note: "That is the whole of the material balance in this diagram: a "
-      + "SUM lies between its parts, on the line joining them.",
+      + "SUM lies between its parts, on the line joining them.  On this page "
+      + "every flow is MOLAR and every point a mole fraction, so every lever "
+      + "arm is a molar balance.  A textbook triangle drawn in mass "
+      + "fractions is the same construction in mass flows; the lever rule "
+      + "holds in either basis, but only when the flows and the fractions "
+      + "share it.",
   },
   {
     n: 3,

@@ -44,7 +44,9 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
     title: "Count the valves before you draw a single loop",
     body: "Control structure looks like an open-ended design problem until "
       + "you count.  Around a two-product column with a total condenser there "
-      + "are five manipulable flows, and no more: the condenser duty (the "
+      + "are five manipulable flows, and in that configuration no more (a "
+      + "feed preheater, a side draw or a vapour distillate would each add "
+      + "one): the condenser duty (the "
       + "coolant valve), the distillate D, the reflux L, the boilup V (the "
       + "reboiler heat valve) and the bottoms B.  Against them stand things "
       + "that MUST be held whether you are interested in them or not.  "

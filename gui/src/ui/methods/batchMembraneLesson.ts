@@ -453,7 +453,13 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
       + "blocking law asserts a MECHANISM -- cake says a layer was deposited, "
       + "intermediate says pores were covered -- and nothing in the engine "
       + "can tell which describes your feed, the `fouling {}` block will not "
-      + "run without a written `reason` (BatchDiafilter.cpp:191-199).  Use "
+      + "run without a written `reason` (BatchDiafilter.cpp:191-199).  A "
+      + "good fit does not settle it either: more than one blocking law can "
+      + "follow the same flux decline over a limited range, so a law that "
+      + "fits a curve is a HYPOTHESIS about the mechanism, to be backed by "
+      + "other evidence (how the decline responds to pressure or crossflow, "
+      + "to cleaning, what the feed carries) over the range you operate "
+      + "in, never a diagnosis read off the fit.  Use "
       + "the tool's witness toggle to put the two shipped cases side by side: "
       + "diafilter01 and diafilter02 are the SAME charge, area, pressure and "
       + "horizon, and the only difference between them is the fouling block, "
@@ -475,13 +481,19 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
       + "concentrated one, so pre-concentrating before you wash shortens "
       + "every diavolume -- but it also raises the osmotic pressure and the "
       + "polarisation, which cuts the flux.  The two pull against each other, "
-      + "so there is a concentration at which the wash is cheapest, and the "
-      + "classical statement of it is that it is where the product of flux "
-      + "and concentration is largest.",
+      + "so there is a concentration at which the wash takes the least "
+      + "time, and the classical statement of it is that it is where the "
+      + "product of flux and concentration is largest.  Be exact about the "
+      + "objective: it is the TIME OF THE DIAFILTRATION STEP, at a fixed "
+      + "inventory, a fixed number of diavolumes and a fixed area.  That is "
+      + "not automatically the best CAMPAIGN, which also pays for the "
+      + "concentration and reconcentration steps, the product lost, the "
+      + "buffer used and the cleaning — a different objective can put the "
+      + "optimum somewhere else.",
     formula: String.raw`\begin{aligned}
 t_\mathrm{DF} &= \frac{N V}{A J_w} &\qquad& \text{the time } N \text{ diavolumes take}\\[4pt]
 V &\propto \frac{1}{c} \text{ at fixed inventory} &\Rightarrow\quad& t_\mathrm{DF} \propto \frac{1}{J_w c}\\[4pt]
-&\text{cheapest wash} &\Rightarrow\quad& J_w c \text{ at its maximum}
+&\text{shortest wash} &\Rightarrow\quad& J_w c \text{ at its maximum}
 \end{aligned}`,
     where: [
       { sym: "t_\\mathrm{DF}",
@@ -544,7 +556,8 @@ V &\propto \frac{1}{c} \text{ at fixed inventory} &\Rightarrow\quad& t_\mathrm{D
       { step: "At several concentrations spanning the range the process will "
           + "pass through, form the product of concentration and flux.  Step "
           + "7 showed the wash time is inversely proportional to it, so the "
-          + "largest value is the cheapest place to wash.",
+          + "largest value is the fastest place to wash — fastest, which is "
+          + "not the same as cheapest for the whole campaign.",
         eq: String.raw`\mathrm{DFOP}(C) = C\, J_f(C)`},
       { step: "Plot that product against concentration and read where it "
           + "turns over.  Each buffer curve gives its own maximum, and the "

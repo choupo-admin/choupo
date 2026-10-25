@@ -412,7 +412,9 @@ function PumpSystemChart({ sweep, op, flat, busy }: {
               strokeDasharray={flat ? "6 4" : undefined} />
           </svg>
           <Text size="xs" c="dimmed">
-            pump ΔP ({sweep.pumpUnit}){flat ? " — flat by specification" : ""}
+            pump ΔP ({sweep.pumpUnit}){flat
+              ? " — flat by specification"
+              : " — constant-power model, not a manufacturer's curve"}
           </Text>
         </Group>
         <Group gap={4} wrap="nowrap" align="center">
@@ -427,7 +429,8 @@ function PumpSystemChart({ sweep, op, flat, busy }: {
               <circle cx={6} cy={6} r={4} fill={POINT_COLOR} />
             </svg>
             <Text size="xs" c="dimmed">
-              operating point{onGridPoint ? " (on a sweep point)" : " (derived in view)"}
+              operating point of these two model curves
+              {onGridPoint ? " (on a sweep point)" : " (derived in view)"}
             </Text>
           </Group>
         )}
@@ -612,7 +615,9 @@ export function PumpSystemTool(): JSX.Element {
     <Box>
       <Title order={3}>The pump does not set the flow — two curves do</Title>
       <Text size="sm" c="dimmed" mt={4}>
-        A pump curve, a system curve, and the one flow where they agree.
+        A pump curve, a system curve, and the flow where they agree.  The
+        pump curve here is a MODEL — a constant shaft power spread over the
+        flow — not a centrifugal pump's measured characteristic.
       </Text>
     </Box>
   );

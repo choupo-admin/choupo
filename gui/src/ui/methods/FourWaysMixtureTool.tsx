@@ -38,11 +38,13 @@ License
   The live centre runs tutorials/props/compare/compare_vle_etoh_water in
   the reader's browser: four activity models priced against the SAME
   measured 1-atm dataset, and the AAD table below is the ENGINE's own
-  validation block -- this page computes nothing, so nothing can be
-  arranged.  The Herington row shows the data itself being cross-examined
+  validation block -- this page computes nothing.  That rules out page
+  arithmetic, not a choice that favours a model (the dataset, the property,
+  the metric), so those choices are NAMED under the table.  The Herington row shows the data itself being cross-examined
   before any model is graded against it.
 
-  Static numbers quoted from goldens (each re-verified by every runTests):
+  Static numbers quoted from goldens (each re-checked by every runTests --
+  that it has not MOVED, which is not that it is right):
   flash20's twin flash (PC-SAFT vs NRTL K-values at one (T,P)) and
   fitNRTL02's held-out lesson (a fit wins where its evidence was taken and
   loses where it was not).  COSMO-SAC's card carries the licence honesty:
@@ -115,8 +117,11 @@ export const MODEL_LADDER = [
       + "no groups",
     line: "γ from segment-charge statistics",
     cite: "src/thermo/activityCoefficient/CosmoSac.cpp · cosmoSAC01",
-    note: "The most predictive rung: two σ-profiles walk in, an activity "
-      + "coefficient walks out.  LICENCE HONESTY, said plainly: the "
+    note: "The rung that needs the least pair-specific input: two "
+      + "σ-profiles walk in, an activity coefficient walks out.  That is "
+      + "reach, not a rank: how well it predicts depends on whether the "
+      + "profiles and the model's constants cover your chemistry, and "
+      + "there is no universal ordering of the rungs by accuracy.  LICENCE HONESTY, said plainly: the "
       + "public tree ships SYNTHETIC teaching surrogates (the VT-2005 "
       + "profiles cannot be redistributed), so the shipped witness "
       + "demonstrates the MECHANISM, not validated numbers — your own "
@@ -191,8 +196,13 @@ function AadTable({ aad }: { aad: AadRecord[] }) {
       <Text size="xs" c={INK} px="sm" py={6}>
         Every number above is the engine’s own validation block — the AAD
         of each model’s 51-point curve against 12 measured points.  This
-        page computes nothing, so nothing can be arranged.  Note what the
-        table actually says: on a binary this well studied, the predictive
+        page computes nothing — which rules out arithmetic on the page, not
+        a choice that favours a model.  The choices that could are named
+        here: one dataset (12 T-x-y points at 1 atm), two properties
+        (T_bubble and y_ethanol), one metric (the average absolute
+        deviation).  Another dataset, property or metric could order the
+        models differently.  Note what the table actually says: on a binary
+        this well studied, the predictive
         UNIFAC sits close behind the fitted pair models — and the ideal
         baseline is off by an order of magnitude more than any of them.
       </Text>
@@ -256,8 +266,11 @@ export function FourWaysMixtureTool(): JSX.Element {
           <Text size="sm" mt={4}>
             Every mixture model is a position on one ladder: how much did
             it have to know?  Climbing down the ladder buys reach —
-            answers about pairs nobody measured — and pays in accuracy on
-            the pairs somebody did.
+            answers about pairs nobody measured — and, on a pair somebody
+            did measure, typically gives up some of the accuracy a fit to
+            that pair has.  It orders what each model needs, not how
+            accurate each one is: that depends on the chemistry, the data
+            and the property asked for.
           </Text>
           <Box my={8}>
             {MODEL_LADDER.map((m) => (

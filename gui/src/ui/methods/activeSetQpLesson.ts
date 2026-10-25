@@ -42,12 +42,19 @@ export const QP_STEPS: readonly LessonStep[] = [
     n: 1,
     title: "The problem, and why this shape is worth a method of its own",
     body: "A quadratic objective and linear constraints. It is worth a method "
-      + "of its own for two reasons. First, it is solvable exactly: unlike a "
-      + "general non-linear programme, a convex QP is finished in a finite "
-      + "number of steps, with no convergence tolerance on the answer — the "
-      + "only tolerances are floating-point deadbands (Choupo's solver "
-      + "carries three: a feasibility slack, a multiplier-sign band and a "
-      + "zero-step test, src/solver/ActiveSetQP.cpp:143-144 and :235). "
+      + "of its own for two reasons. First, in EXACT arithmetic it is "
+      + "solvable exactly: unlike a general non-linear programme, a strictly "
+      + "convex QP (B positive definite) is finished by an active-set method "
+      + "in a finite number of steps, barring degenerate steps (step 5), "
+      + "with no convergence tolerance on the answer.  That is a statement "
+      + "about the mathematics, not a guarantee from the code: a "
+      + "floating-point implementation still needs tolerances and "
+      + "safeguards against degeneracy, dependent constraints and poor "
+      + "conditioning — Choupo's solver carries three tolerances (a "
+      + "feasibility slack, a multiplier-sign band and a zero-step test, "
+      + "src/solver/ActiveSetQP.cpp:143-144 and :235) and an LICQ recovery "
+      + "— and an answer is checked by its residuals, not by the final "
+      + "working set alone. "
       + "Second, it is the "
       + "inner problem of the general case — an SQP method builds a quadratic "
       + "model of a hard non-linear problem at the current point and solves "
@@ -413,10 +420,14 @@ export const QP_LIMITS: readonly LessonLimit[] = [
   {
     id: "convex-only",
     title: "Convex only — and that is a real restriction",
-    body: "Everything above rests on B being positive definite: one minimum, "
-      + "finite termination, a local answer that is the global one. A "
-      + "quadratic with an indefinite Hessian has none of those properties "
-      + "and needs a different method entirely. Choupo's caller guarantees "
+    body: "Everything above rests on B being positive definite: one minimum "
+      + "on a non-empty feasible region, finite termination, a local answer "
+      + "that is the global one.  A positive SEMI-definite B is still "
+      + "convex, but its minimum need not be unique — a whole edge or face "
+      + "can tie.  An indefinite Hessian does not by itself rule out a "
+      + "constrained minimum, but it changes the problem: a local minimum "
+      + "need not be the global one, the termination argument of step 5 "
+      + "no longer holds, and it needs a different method. Choupo's caller guarantees "
       + "convexity rather than checking it, by building the Hessian with a "
       + "damped BFGS update that cannot lose it.",
   },

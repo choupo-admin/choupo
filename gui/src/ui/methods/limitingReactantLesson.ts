@@ -32,9 +32,11 @@ License
   THE QUESTION IT ANSWERS is the one Vitor asked: which heuristics fix the
   limiting reactant and the molar ratio of a gas-phase reactor, given that
   the choice "introduces many variables".  The answer is that it introduces
-  fewer than it seems: a steady-state plant balance FORCES the fresh-feed
-  ratio, the loop SETS the reactor-inlet ratio, and what is left to choose is
-  one variable, made by named reasons.
+  fewer than it seems: a steady-state plant balance TIES the fresh-feed
+  ratio to the conversion and the losses, the loop SETS the reactor-inlet
+  ratio, and what is left to choose is one variable, made by named reasons.
+  (C150 R18: the balance ties three choices together; it does not remove
+  one, because the losses can depend on the ratio itself.)
 
   EVERY OUTSIDE CLAIM CARRIES THE SOURCE IT WAS READ FROM, online, on
   2026-10-02: US 2,734,906 for the oxygen limit, EP 0 873 291 B1 for the
@@ -87,11 +89,18 @@ r_\mathrm{in} = \frac{F_B^\mathrm{in}}{F_A^\mathrm{in}}`,
       + "either reacts or leaves in a loss stream (a purge, a gas dissolved in "
       + "the product, a vent), and the same for B.  The reaction consumes them "
       + "in the stoichiometric proportion.  So the fresh-feed ratio is NOT a "
-      + "design variable: it is the stoichiometric coefficient ratio plus a "
-      + "correction for whatever leaves unreacted.  Feed the plant a ratio "
-      + "that does not satisfy this balance and there is no steady state — "
-      + "the reactant in surplus accumulates in the loop until a loss stream "
-      + "grows enough to carry it out.",
+      + "FREE design variable: the fresh ratio, the extent and the losses "
+      + "must satisfy this balance TOGETHER — the stoichiometric coefficient "
+      + "ratio plus a correction for whatever leaves unreacted, which tends "
+      + "to the stoichiometric ratio as the losses become negligible.  That "
+      + "does not take the choice away from the designer: the losses (a "
+      + "purge, what the separation lets through) can themselves depend on "
+      + "the ratio the plant runs at, so the identity ties the choices into "
+      + "one rather than removing one.  What it does rule out is a feed "
+      + "ratio that disagrees with the conversion and the losses ALREADY "
+      + "SPECIFIED: for those, there is no steady state — the reactant in "
+      + "surplus accumulates in the loop until a loss stream grows enough "
+      + "to carry it out, which is the plant moving to different losses.",
     formula: String.raw`\begin{aligned}
 F_A^\mathrm{f} &= \xi + L_A, \qquad F_B^\mathrm{f} = \nu\,\xi + L_B\\
 r_\mathrm{f} &= \frac{\nu\,\xi + L_B}{\xi + L_A}
@@ -232,8 +241,8 @@ r_\mathrm{in} &= \nu \left( 1 + \varepsilon\,\frac{D}{p} \right),
   {
     n: 6,
     title: "What is left is one variable, and it is optimised, not guessed",
-    body: "Put the pieces together.  The fresh-feed ratio is fixed by the plant "
-      + "balance (step 2).  The inlet ratio is the loop's response to the "
+    body: "Put the pieces together.  The fresh-feed ratio is tied by the plant "
+      + "balance to the extent and the losses (step 2).  The inlet ratio is the loop's response to the "
       + "fresh ratio and to the selectivity of the losses (steps 3 and 4), and "
       + "in practice it is held where it is wanted by trimming the make-up.  "
       + "Which reactant is limiting is decided by the first of the four "

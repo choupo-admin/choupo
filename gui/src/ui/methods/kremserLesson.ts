@@ -61,7 +61,13 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
       + "FRACTIONS at constant total L and V, so it makes the same "
       + "constant-flow assumption after all, and the A it publishes is a "
       + "total-flow ratio.  The ratio bookkeeping is here because it is how "
-      + "the method is taught and derived, not because it is what runs.",
+      + "the method is taught and derived, not because it is what runs.  "
+      + "And a straight OPERATING line is only half of what the closed form "
+      + "of step 3 needs: the EQUILIBRIUM must be straight in the same "
+      + "basis, Y = m·X in ratios.  y = K·x in fractions is a different "
+      + "line once drawn in ratios, and the two coincide only when the "
+      + "solution is dilute.  Everything below uses y = K·x, the engine's "
+      + "form.",
   },
   {
     n: 2,
@@ -125,7 +131,11 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
       + "both branches meet there, and the limit is the textbook N/(N+1).  "
       + "The engine's stagewise answer is plotted against this formula on the "
       + "same axes, so you can see where the assumption holds and where it "
-      + "starts to cost you.",
+      + "starts to cost you.  Note what that comparison is against: THIS "
+      + "absorber model — Henry's law, constant total flows, K varying with "
+      + "stage temperature only — not a general non-ideal absorber.  "
+      + "Agreement here does not validate the formula, or the column, "
+      + "beyond that model.",
   },
   {
     n: 4,
@@ -169,9 +179,10 @@ export const KREMSER_LIMITS: readonly { id: string; title: string; body: string 
   {
     id: "dilute",
     title: "Mole RATIOS, and the usual dilute-solution habits.",
-    body: "The construction is exact in ratios, but the carrier gas is taken "
-      + "as insoluble and the solvent as non-volatile — both moving through "
-      + "unchanged. A solvent that evaporates into the gas, or a carrier that "
+    body: "The ratio construction is exact only when the equilibrium is "
+      + "also linear in ratios (Y = m·X); with y = K·x that holds only for "
+      + "a dilute solute.  And the carrier gas is taken as insoluble and "
+      + "the solvent as non-volatile — both moving through unchanged. A solvent that evaporates into the gas, or a carrier that "
       + "dissolves, is not covered.",
   },
   {

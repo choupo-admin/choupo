@@ -589,6 +589,15 @@ export function LubScaleupTool(): JSX.Element {
             A dash means an input the case does not publish; the note under
             the capacity table names it and where it would come from.
           </Text>
+          <Text size="xs" c="dimmed" mt={4}>
+            <strong>Read these lengths with their conditions.</strong> They
+            hold only if the laboratory zone had settled into a constant
+            pattern, which one curve cannot show, and only for a plant bed
+            run with the same adsorbent, particle size, feed composition,
+            temperature, pressure, velocity and starting loading.  Nothing
+            here computes the bed&apos;s pressure drop, which can rule the
+            design out (the limits below).
+          </Text>
         </Box>
 
         {lessonStep(6)}

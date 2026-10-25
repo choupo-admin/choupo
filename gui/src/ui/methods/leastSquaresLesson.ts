@@ -94,7 +94,13 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "`chi2` diagnostic is the plain sum of squares (src/propertyOps/"
       + "FitParameters.cpp:131), while the Theory Guide's chapter writes it "
       + "with a factor of one half in front. The minimiser is the same point "
-      + "either way; only the number printed differs, by a factor of two.",
+      + "either way; only the number printed differs, by a factor of two.  "
+      + "And despite the name, this `chi2` is NOT the dimensionless "
+      + "chi-square of statistics: it is unweighted and carries K², so its "
+      + "size depends on the unit the temperatures are written in.  Only the "
+      + "weighted sum of step 2, each residual divided by its own σ_i, is "
+      + "dimensionless — and only when those σ_i are right can it be read "
+      + "against a chi-square distribution.",
   },
   {
     n: 2,

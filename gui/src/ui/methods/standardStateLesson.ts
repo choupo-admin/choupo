@@ -100,10 +100,15 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       { step: "For an ideal gas the molar volume is RT/P, so the second term is "
           + "T·(R/P) = v and the two cancel exactly: h depends on T alone.",
         eq: String.raw`v = \frac{R T}{P} \;\Rightarrow\; v - T\,\frac{R}{P} = 0` },
-      { step: "For a real gas the cancellation is not exact.  Hydrogen above "
-          + "about 200 K has a positive derivative (its molar volume grows faster "
-          + "than RT/P), which is why every isotherm on the chart climbs with "
-          + "pressure.  Integrating this derivative from the reference pressure to "
+      { step: "For a real gas the cancellation is not exact in general.  Write "
+          + "the thermal expansion coefficient α_P = (1/v)(∂v/∂T) at constant "
+          + "P, and the derivative is v(1 − T·α_P): positive where T·α_P < 1, "
+          + "negative where T·α_P > 1, and ZERO at the states in between — the "
+          + "Joule–Thomson inversion curve.  So zero is not unique to the "
+          + "ideal gas: the ideal gas is the case where it is zero "
+          + "IDENTICALLY, at every state.  Hydrogen above about 200 K has "
+          + "T·α_P < 1, a positive derivative, which is why every isotherm on "
+          + "the chart climbs with pressure.  Integrating this derivative from the reference pressure to "
           + "P gives the bracket of the identity above." },
     ],
   },
@@ -237,7 +242,11 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
         eq: String.raw`c_i = \sum_e n_{e,i}\, c_e \;\Rightarrow\; \sum_i \nu_i\, c_i = \sum_e c_e \sum_i \nu_i\, n_{e,i} = 0` },
       { step: "This is why the formation convention exists: setting every element "
           + "in its reference phase to zero at 298.15 K is a choice of zeros that "
-          + "no reaction can see.  Moving one species alone is not." },
+          + "no reaction can see.  Moving one species alone is not.  It is a "
+          + "convenient choice, not the only possible one: any shift built "
+          + "from quantities every reaction conserves leaves every reaction "
+          + "enthalpy unchanged, and a scheme outside that class can still "
+          + "work provided its reaction terms are carried consistently." },
     ],
   },
   {
@@ -363,8 +372,16 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       { step: "Substitute and multiply by −T (positive):",
         eq: String.raw`\Delta S_{\mathrm{total}} = \Delta S - \frac{\Delta H}{T} = -\frac{\Delta G}{T} \;\Rightarrow\; \Delta G \le 0` },
       { step: "Equality is equilibrium: no further change at fixed T and P can "
-          + "lower G.  G itself is whatever the datum makes it; what is zero is "
-          + "its CHANGE along any admissible displacement." },
+          + "lower G.  G itself is whatever the datum makes it.  What is zero, "
+          + "for a reaction whose species are all present and that can run "
+          + "either way, is its first-order change: ΔrG = 0.  At a BOUNDARY — "
+          + "a species or a phase absent — a displacement can go one way only "
+          + "(forming the absent one), and the minimum asks only that G not "
+          + "fall along it: ΔrG ≥ 0 for forming it, with either the amount "
+          + "zero or ΔrG = 0.  That is a stability test, not an equality, and "
+          + "the solid-carbon example on the Declared pathways page is one: "
+          + "graphite forms only where the gas would have a carbon activity "
+          + "above one." },
     ],
   },
   {
@@ -445,7 +462,9 @@ export const STANDARD_STATE_QUIZ: readonly QuizQuestion[] = [
       + "unchanged?",
     options: ["Yes", "No — it can change it"], correct: 1,
     feedback: "The isothermal derivative of h with respect to P is v − T(∂v/∂T) "
-      + "at constant P, zero only for an ideal gas.  For hydrogen from 1 to "
+      + "at constant P: identically zero for an ideal gas, and zero for a "
+      + "real fluid only at particular states (the Joule–Thomson inversion "
+      + "curve).  For hydrogen from 1 to "
       + "1000 bar at 300 K the engine prices +1.29 kJ/mol, the reference "
       + "equation +1.38 (steps 1 and 2).",
   },
@@ -465,8 +484,10 @@ export const STANDARD_STATE_QUIZ: readonly QuizQuestion[] = [
     options: ["Yes", "No"], correct: 1,
     feedback: "At fixed T and P the stable equilibrium is the MINIMUM of G "
       + "compatible with the constraints.  Its value is whatever the datum "
-      + "makes it; what vanishes is the CHANGE of G along any admissible "
-      + "displacement — ΔrG = 0, not G = 0 (steps 9 and 10).",
+      + "makes it; what vanishes, for a reaction whose species are all "
+      + "present and free to move either way, is the CHANGE of G — ΔrG = 0, "
+      + "not G = 0.  For a species or phase that is absent, the condition is "
+      + "an inequality instead (steps 9 and 10).",
   },
   {
     id: "298-in-700-balance",

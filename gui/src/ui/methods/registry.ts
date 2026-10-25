@@ -426,9 +426,11 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "UNIQUAC separates size from energy and opens the door UNIFAC "
       + "walks through.  Every equation cited to the engine line that runs "
       + "it, every assumption named where it is made -- including the one "
-      + "no textbook can teach, that a pair with no parameters does not "
-      + "fail but runs at tau = 0, exactly ideal, announced and refused "
-      + "unless the case authorised it.",
+      + "an implementation has to make, that a pair with no parameters "
+      + "does not fail but runs on a SUBSTITUTED neutral value (tau = 0 in "
+      + "NRTL, Lambda = 1 set directly in Wilson, which zero energy alone "
+      + "would not give), whose binary is then ideal -- announced and "
+      + "refused unless the case authorised it.",
     theory: "ch:activity",
   },
   {
@@ -491,10 +493,12 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "from which every operating line is a ray.  The lever rule then "
       + "reads the internal reflux off the page with a ruler, total reflux "
       + "is the difference point at infinity, and minimum reflux is a ray "
-      + "coinciding with a tie line.  Above all: constant molar overflow is "
-      + "exactly the claim that the two enthalpy curves are parallel "
-      + "straight lines, so how far they are from that IS how wrong "
-      + "McCabe-Thiele is for your system.",
+      + "coinciding with a tie line.  Above all: two parallel straight "
+      + "enthalpy curves are a sufficient condition for constant molar "
+      + "overflow, so a departure from them shows where the internal flows "
+      + "can vary -- how much that moves the reflux or the stage count "
+      + "needs both models solved for the same specifications, which this "
+      + "page (one ray, no staircase) does not do.",
     theory: "ch:ponchon",
   },
   {
@@ -607,14 +611,18 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "bjerrum", label: "Speciation vs pH (Bjerrum)",
     discipline: "Thermodynamics",
     kind: "construction", status: "live",
-    teaches: "That the pH axis of a speciation diagram is a RESULT, not a "
-      + "knob: 44 separate equilibrium calculations, each a real neutral "
-      + "mixture, each landing wherever its own charge balance puts it -- and "
-      + "the two crossovers arriving on the two pK's without either having "
-      + "been an input. Also the two things the hand-drawn version cannot "
-      + "show: the three fractions do not sum to one, because the titrant is "
-      + "not a spectator, and the crossovers sit below the thermodynamic pK "
-      + "because the engine works in activities.",
+    teaches: "That in this case the pH axis of a speciation diagram is a "
+      + "RESULT, not a knob: 44 separate equilibrium calculations, each a "
+      + "real neutral mixture, each landing wherever its own charge balance "
+      + "puts it -- and the two crossovers arriving near the two pK's "
+      + "without either crossover having been imposed (the K's are data the "
+      + "case reads).  An imposed-pH diagram is a different, valid "
+      + "specification that must say what carries the charge.  Also the two "
+      + "things the hand-drawn version cannot show: the three fractions of "
+      + "the total carbon do not sum to one, because the titrant is not a "
+      + "spectator (the plotted curves are renormalised onto the three and "
+      + "the shortfall is printed beneath them), and the crossovers sit "
+      + "below the thermodynamic pK because the engine works in activities.",
     theory: "ch:electrolytes",
   },
   {
@@ -665,7 +673,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "kremser", label: "Absorption (Kremser)",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
-    teaches: "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight — judged against the engine's stagewise recovery.",
+    teaches: "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight in the same basis — judged against the engine's stagewise absorber, which is itself a model (Henry's law, constant total flows), not a general rigorous absorber.",
     theory: "ch:absorber",
   },
   {
@@ -683,7 +691,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "pump-system", label: "Pump vs system curve",
     discipline: "Hydraulics & control", kind: "construction", status: "live",
-    teaches: "The operating point is an intersection: the pump model's rise falling with flow against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
+    teaches: "The operating point is an intersection: the pump model's rise falling with flow (a constant-power model, not a centrifugal pump's measured curve, and no basis for selecting one) against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
     theory: "ch:rotating",
   },
   //  COMMISSIONED 2026-10-20 (DEV.md 4c C119), Vitor: the Pi theorem only
@@ -765,7 +773,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "rayleigh", label: "Batch still (Rayleigh)",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
-    teaches: "The graphical Rayleigh integration: the area under 1/(y*−x) between the charge and the pot IS ln(W0/W) — drawn from the engine's own equilibrium curve, judged against the engine's rigorous still.",
+    teaches: "The graphical Rayleigh integration for a simple still: the area under 1/(y*−x) between the charge and the pot IS ln(W0/W) — drawn from the engine's own equilibrium curve, judged against the engine's time integration of the same still.",
     theory: "ch:rayleigh",
   },
   {
@@ -858,8 +866,9 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "temperature, so a standard property is a function of T; that a "
       + "process at 150 bar uses the standard property plus the equation of "
       + "state's residual, without assuming an ideal gas; that the zero of "
-      + "enthalpy is a third, separate choice, and only the elements datum "
-      + "makes species' zeros consistent across every reaction; and why "
+      + "enthalpy is a third, separate choice, and a datum built from "
+      + "conserved quantities (the elements, the usual one) makes species' "
+      + "zeros consistent across every reaction; and why "
       + "equilibrium is a minimum of G, not G = 0, with Kirchhoff, "
       + "Gibbs–Helmholtz and van 't Hoff kept apart.",
     theory: "sec:elements-reference",
@@ -873,8 +882,8 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Limiting reactant and feed ratio in a recycle loop",
     discipline: "Reaction engineering", kind: "notes", status: "live",
     teaches: "That a plant with a recycle has TWO ratios: the fresh-feed ratio, "
-      + "which the steady-state plant balance forces to the stoichiometry plus "
-      + "the losses, and the reactor-inlet ratio, which the loop sets — a "
+      + "which the steady-state plant balance ties to the stoichiometry, the "
+      + "extent and the losses, and the reactor-inlet ratio, which the loop sets — a "
       + "fresh-feed error divided by the purge fraction, so one part in ten "
       + "thousand moves the ammonia converter's H₂/N₂ visibly; that a "
       + "SELECTIVE loss (gas dissolved in the product) shifts it even with a "
@@ -977,13 +986,13 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "vanheerden", label: "Ignition / extinction (Van Heerden)",
     discipline: "Reaction engineering", kind: "construction", status: "live",
-    teaches: "Heat generated against heat removed: a straight line can cut a sigmoid three times, so the same reactor with the same feed has three steady states — and the middle one is the state no start-up procedure can hold.",
+    teaches: "Heat generated against heat removed: a straight line can cut a sigmoid three times, so in this example the same reactor with the same feed has three steady states — and the middle one fails the open-loop slope test, a necessary condition only: the page computes no dynamics.",
     theory: "ch:cstr",
   },
   {
     id: "drying", label: "Drying curve (batch tray)",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
-    teaches: "The two classical drying plots: X against time, and the rate against moisture — where the critical moisture is VISIBLE as the corner at which a flat rate starts to fall toward the isotherm's equilibrium.",
+    teaches: "The two classical drying plots: X against time, and the rate against moisture — where, for a material with a constant-rate period (not every material has one), the critical moisture is VISIBLE as the corner at which a flat rate starts to fall toward the isotherm's equilibrium.",
     theory: "ch:drying",
   },
   {
@@ -1091,7 +1100,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "column-control", label: "Column control (structure & instruments)",
     discipline: "Hydraulics & control",
     kind: "selection", status: "live",
-    teaches: "Five valves, five inventories, two left for composition: the cross-section shows which measurement drives which valve, the cited authorities disagree in the open, and the sensor tray is computed from the column's own profile — the slope criterion and the sensitivity criterion, which pick different trays.",
+    teaches: "Five valves around a two-product column with a total condenser, three inventories, two left for composition: the cross-section shows which measurement drives which valve, the cited authorities disagree in the open, and the sensor tray is computed from the column's own profile — the slope criterion and the sensitivity criterion, which pick different trays.",
     theory: "sec:column-control",
   },
   //  THE FREQUENCY-DOMAIN PAGE (2026-09-12, Vitor: "nas EduTools ficaria bem
@@ -1115,7 +1124,8 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "bode", label: "Frequency response (Bode diagram)",
     discipline: "Hydraulics & control", kind: "construction", status: "live",
     teaches: "Whether a loop will be stable BEFORE it is switched on, and how "
-      + "much room is left: the engine sweeps a real tank one frequency per "
+      + "much room is left, under the conditions the page states (a linear, "
+      + "time-invariant, stable open loop whose phase crosses −180° once): the engine sweeps a real tank one frequency per "
       + "run and publishes the measured amplitude ratio and phase lag, the "
       + "first-order closed form is laid over those points as the test, and "
       + "then gain, lag, integrator, dead time and the PID terms are stacked "

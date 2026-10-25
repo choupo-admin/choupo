@@ -271,4 +271,17 @@ export const MCCABE_LIMITS: readonly { id: string; title: string; body: string }
       + "tray between them — so its equilibrium curve is different at every "
       + "stage.",
   },
+  {
+    id: "stage-count",
+    title: "Which stages N counts, and where the construction stops.",
+    body: "With the default total condenser, the staircase walks from the "
+      + "distillate to the bottoms and every step is an equilibrium stage, "
+      + "the last one being the partial reboiler; the total condenser is "
+      + "not a stage.  Check that convention before comparing N with "
+      + "another count digit by digit.  The construction also has edges "
+      + "where it gives no finite N at all: at or below the minimum reflux "
+      + "the staircase pinches, and across an azeotrope between the two "
+      + "products it cannot step — the diagram then shows infinity rather "
+      + "than a number.",
+  },
 ];

@@ -781,8 +781,11 @@ export function WhatIsEntropyTool(): JSX.Element {
           <Text size="xs" c={INK} mt={6}>
             The full engine trace behind this page, with every claim at its
             file and line: docs/design/entropy-glass-box-trace.md.  What the
-            engine does NOT carry — wet-steam entropy, liquid excess
-            entropy, an entropy column on streams — is recorded there too.
+            engine does NOT carry on these routes — wet-steam entropy, the
+            EXCESS entropy of a liquid priced by an activity model (no
+            temperature derivative of γ is taken; a liquid priced by an
+            equation of state does carry its residual entropy), an entropy
+            column on streams — is recorded there too.
             Physical exergy IS carried now (the `exergy` op, and the page
             beside this one); what stays absent there is CHEMICAL exergy and
             any exergy balance over a flowsheet.
