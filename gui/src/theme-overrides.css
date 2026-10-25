@@ -184,3 +184,80 @@ License
   overflow-wrap: anywhere;
   line-height: 1.25;
 }
+
+/* ---------------------------------------------------------------------------
+   A SEGMENTED CONTROL ON A PHONE WRAPS INSTEAD OF HIDING ITS CHOICES (DEV.md
+   4c C112, point 19).  Mantine draws a horizontal SegmentedControl on one
+   row with `overflow: hidden` and ellipsised labels, so a control wider than
+   the screen loses choices off its right edge.  Measured at 390x844 on every
+   EduTool with Playwright, it was the one shared cause of what a phone could
+   not read: the page selectors of correlation-simplicity (701 px of choices
+   in 358), data-reconciliation (943 in 358) and solvent-mixture (608 in
+   358), the witness selector of equilibrium-landscapes, the bund's rule,
+   scenario and tank pickers, the batch-membrane mode, the plant-layout and
+   GMP selectors, McCabe's Construction / Sensitivity.  Below Mantine's `sm`
+   (the project's narrow posture, methodsChrome.NARROW_BREAKPOINT_EM) and
+   inside the EduTools body only, the segments may wrap onto further rows
+   and a label may wrap inside its segment.  The sliding indicator is
+   Mantine's FloatingIndicator, which places itself from the active
+   segment's own rectangle, so it follows a wrapped row.  The desk is not
+   touched. */
+@media (max-width: 47.99em) {
+  [data-method-tool] .mantine-SegmentedControl-root:not([data-orientation='vertical']) {
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+  [data-method-tool] .mantine-SegmentedControl-root:not([data-orientation='vertical'])
+    .mantine-SegmentedControl-control {
+    flex: 1 1 auto;
+  }
+  [data-method-tool] .mantine-SegmentedControl-label {
+    white-space: normal;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Two more shared phone causes, same measurement (C112 point 19): a case
+   path in <code> is one unbreakable word ("tutorials/steady/flash/
+   flash01_benzene_toluene") and pushed an Alert's text past its box on
+   flash-operating-line and data-reconciliation; and a Button label is one
+   ellipsised line, which cut syngas's "Open steady/gibbs/... in a new tab".
+   A path may break anywhere and a button may grow a line -- on a phone,
+   inside the EduTools body, nowhere else. */
+@media (max-width: 47.99em) {
+  [data-method-tool] code {
+    overflow-wrap: anywhere;
+  }
+  [data-method-tool] .mantine-Button-root {
+    height: auto;
+    min-height: var(--button-height);
+    max-width: 100%;
+  }
+  [data-method-tool] .mantine-Button-label {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: start;
+  }
+}
+
+/* THE SETUP | CONSTRUCTION GRID STACKS ON A PHONE (C112 point 19, the
+   largest of the shared causes).  Thirty EduTools sections, in 26 tools, lay their
+   knobs and their result side by side with an inline
+   `gridTemplateColumns: "minmax(200px, 240px) 1fr"`.  At 390 px the knob
+   column keeps its 200 px floor and the plot is left ~60 px: measured on the
+   absorption page, the Kremser fan drawn in a sliver.  Five tools already
+   answer this themselves (`narrow ? "minmax(0, 1fr)" : ...`, through
+   methodsChrome's useNarrowViewport -- ActiveSetQp, EpsilonNtu, LeastSquares,
+   TearStreams, Wegstein); this rule gives those thirty sections the same
+   answer, at the same breakpoint, without touching each page: any inline
+   grid inside the EduTools body whose columns are a FIXED px-floored rail
+   beside a 1fr is stacked to one column.  It matches on the inline style
+   text, so it is deliberately narrow: a rail written another way is not
+   caught, and a page that wants its own phone layout writes it (as the five
+   do), which this rule then does not touch. */
+@media (max-width: 47.99em) {
+  [data-method-tool] [style*="grid-template-columns: minmax("][style*="px) 1fr"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}

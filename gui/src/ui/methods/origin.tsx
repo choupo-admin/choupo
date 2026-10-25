@@ -92,7 +92,7 @@ export function OriginMark({ of, note }: {
       {note && (
         <Text size="xs" c="dimmed"
           style={{ whiteSpace: "normal", overflowWrap: "anywhere", lineHeight: 1.3,
-            minWidth: 0, flex: "1 1 180px" }}>
+            minWidth: 0, flex: "1 1 260px" }}>
           {note}
         </Text>
       )}

@@ -87,6 +87,7 @@ import {
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import { KREMSER_LIMITS, KREMSER_STEPS } from "./kremserLesson.js";
+import { useNarrowViewport } from "./methodsChrome.js";
 import { OriginMark } from "./origin.js";
 
 // ---- The Kremser closed form (the authorized method geometry) --------------
@@ -204,6 +205,7 @@ const KremserFanPlot = lazy(async () => {
   type PlotData = ComponentProps<typeof Plot>["data"];
 
   function FanPlot({ unit }: { unit: KremserUnit }) {
+    const narrow = useNarrowViewport();
     // Reference fan: the textbook A values, minus any that would overdraw a
     // component's ACTUAL A_i (the actual curve is the highlighted one).
     const actualA = unit.components.map((c) => c.A);
@@ -268,7 +270,14 @@ const KremserFanPlot = lazy(async () => {
             ...darkLayout.yaxis,
             title: { text: "solute recovery (fraction)" }, range: [0, 1.02],
           },
-          legend: { ...darkLayout.legend, x: 0.98, y: 0.02, xanchor: "right" as const },
+          //  ON A PHONE THE LEGEND GOES UNDER THE PLOT (DEV.md 4c C112, point
+          //  19): measured at 390 px, the in-plot legend's long trace names
+          //  reached x = 438, past the screen's edge.
+          legend: narrow
+            ? { ...darkLayout.legend, orientation: "h" as const, x: 0, y: -0.22,
+                xanchor: "left" as const, yanchor: "top" as const }
+            : { ...darkLayout.legend, x: 0.98, y: 0.02, xanchor: "right" as const },
+          ...(narrow ? { margin: { ...darkLayout.margin, b: 150 } } : {}),
           shapes: [{
             type: "line" as const, yref: "paper" as const,
             x0: unit.stages, x1: unit.stages, y0: 0, y1: 1,
