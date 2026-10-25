@@ -441,8 +441,19 @@ scalar PCSAFT::S_residual(scalar T_K, scalar P_Pa, const sVector& y) const
     const scalar hT = T_K * 1.0e-6;
     const scalar aR = aRes(T_K, rho, y);
     const scalar dadT = (aRes(T_K+hT, rho, y) - aRes(T_K-hT, rho, y)) / (2.0*hT);
-    // S^res/R = -T (dã/dT) - ã   (residual, constant V reference)
-    return constant::R * ( -T_K * dadT - aR );
+    //  THE (T, P) DEPARTURE, NOT THE (T, rho) RESIDUAL (2026-10-25, DEV.md
+    //  4c C150 R08).  -T (dã/dT)_rho - ã is the residual against the ideal
+    //  gas at the SAME DENSITY; ThermoPackage::S_real adds this value to
+    //  S_ig(T, P), the ideal gas at the same PRESSURE, so the conversion
+    //  s_dep(T, P) = s_res(T, rho) + R ln Z is required (P = Z rho R T: the
+    //  ideal gas at (T, P) has density rho Z, and its entropy differs by
+    //  R ln Z).  SRK and PR return the departure (Sandler eq. 6.4-31's
+    //  R ln(Z - B)); this line used to omit the term, which
+    //  docs/design/entropy-glass-box-trace.md §6 recorded as an open
+    //  divergence.  check_departure_convention holds all three to
+    //  (dH_R/dT)_P = T (dS_R/dT)_P and (dG_R/dP)_T = v - RT/P.
+    const scalar Zc = 1.0 + rho * daRes_dRho(T_K, rho, y);
+    return constant::R * ( -T_K * dadT - aR + std::log(Zc) );
 }
 
 scalar PCSAFT::verify(int verbosity) const

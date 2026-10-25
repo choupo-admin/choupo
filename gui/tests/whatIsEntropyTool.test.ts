@@ -240,11 +240,16 @@ describe("the honest absences and the marked divergence", () => {
     expect(SRC).not.toContain("ln Ω");
   });
 
-  it("the PC-SAFT convention divergence stays MARKED", () => {
-    //  The external review's explicit condition: documented, not silently
-    //  fixed and not silently dropped.
-    expect(prose(SRC)).toContain("(T,ρ) convention");
-    expect(prose(SRC)).toContain("recorded divergence");
+  it("the PC-SAFT convention is STATED, with the conversion that closed it", () => {
+    //  The first external review's condition was: documented, not silently
+    //  fixed and not silently dropped.  The second (C150 R08, 2026-10-25)
+    //  asked for the trace, which found the +R ln Z missing; it was fixed
+    //  OPENLY -- the page says what the residual is, how it is converted,
+    //  when the term was added and which gate holds it.
+    expect(prose(SRC)).toContain("PC-SAFT computes its residual at (T, ρ)");
+    expect(prose(SRC)).toContain("+R ln Z");
+    expect(prose(SRC)).toContain("until 2026-10-25");
+    expect(SRC).toContain("check_departure_convention");
   });
 
   it("points at the trace record and states what the engine does NOT carry", () => {

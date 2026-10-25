@@ -77,7 +77,8 @@ same vapour root).  Implemented by:
 * **PC-SAFT** (`PCSAFT.cpp:438-446`): S^res/R = −T(∂ã/∂T)_ρ − ã from the
   residual Helmholtz surface — **stated in-file to be the constant-V
   (T,ρ) residual, without the +R·ln Z conversion** to the (T,P)
-  convention SRK/PR use.  See §6 (owner flag).
+  convention SRK/PR use.  See §6 (owner flag) -- the conversion was added
+  on 2026-10-25, and §6 says how it is held.
 * **IF97** (`IF97.cpp:339, 390`): region-1/2 Gibbs-equation entropies,
   s = R(τγ_τ − γ), verified digit-for-digit against the release's
   verification tables by `IF97::verify()`.  Regions 3/5 (and therefore
@@ -161,6 +162,22 @@ machine on PC-SAFT.  Decision reserved: add the +R·ln Z conversion (a
 numeric change to a published surface, needs its witness), or document
 the convention divergence at the interface.  No change made in this
 slice.
+
+**CLOSED 2026-10-25 (DEV.md 4c C150 R08): the + R ln Z is added.**  A second
+external review asked for the trace this section describes, and it confirmed
+the omission.  `PCSAFT::S_residual` now returns
+s_res(T, rho) + R ln Z, the (T, P) departure `S_real` needs.  The witness is
+not a re-sum of the same parcels (which cannot see a convention) but two
+thermodynamic identities that tie the published entropy to two OTHER
+published quantities -- (dH_R/dT)_P = T (dS_R/dT)_P and
+(dG_R/dP)_T = v - RT/P -- held by `check_departure_convention` for PC-SAFT,
+SRK and Peng-Robinson on two dense vapours.  Before the term PC-SAFT missed
+them by 56-136 % while both cubics met them at 1e-6; after it, PC-SAFT meets
+them at the cubics' level.  The published S_R / S_real of the three
+`pcsaft0*` props cases move by exactly R ln Z of the root each reports (the
+CH4 cross-check of pcsaft02 goes from -1.248 to -2.013 J/(mol K), against
+SRK's -2.109); their goldens are NOT re-recorded by this slice -- the moved
+rows go to Vitor first.
 
 ## 7. What the page can now claim, truthfully
 

@@ -426,13 +426,14 @@ $S^{\mathrm{R}} = R\ln(Z-B) + (\mathrm{d}a/\mathrm{d}T / b)\,
 \ln\!\bigl((Z+B)/Z\bigr)$ (Sandler's eq.~6.4-31, cited in
 \file{SRK.cpp}), Peng--Robinson its generalised-cubic analogue, and
 IF97 water evaluates its own fundamental-equation entropy directly.
-One convention divergence is on record rather than hidden: PC-SAFT's
-\code{S\_residual} returns the constant-density $(T,\rho)$ residual
-\emph{without} the $+R\ln Z$ conversion to the $(T,P)$ departure the
-cubics use --- stated in its own source comment, flagged in
-\file{docs/design/entropy-glass-box-trace.md}, and open until a
-witnessed fix; no shipped tutorial prices an isentropic machine on
-PC-SAFT today.  The phase-crossing legs of the pure-component chain
+PC-SAFT computes its residual at constant density, $(T,\rho)$, and
+converts it to the $(T,P)$ departure the sum above needs with
+$+R\ln Z$ (from $P = Z\rho RT$); the term was missing until 2026-10-25,
+and \code{check\_departure\_convention} now holds all three equations of
+state to $(\partial H^{\mathrm{R}}/\partial T)_P =
+T\,(\partial S^{\mathrm{R}}/\partial T)_P$ and
+$(\partial G^{\mathrm{R}}/\partial P)_T = v - RT/P$
+(\file{docs/design/entropy-glass-box-trace.md}).  The phase-crossing legs of the pure-component chain
 --- and why the vaporisation step at the $298$~K datum is \emph{not}
 $\Delta H_{\mathrm{vap}}/T$ --- are derived in the Theory Guide's
 chapter on integral properties.

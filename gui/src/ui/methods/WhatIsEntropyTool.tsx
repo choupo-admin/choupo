@@ -228,8 +228,14 @@ export const LEDGER_META = [
       + "the fundamental equation replaces this whole ledger, and "
       + "explainProperty refuses such a state by name rather than "
       + "mislabelling the derivation.  Small at 2 bar, growing with "
-      + "pressure.  PC-SAFT's is stated in the (T,ρ) convention — an open, "
-      + "recorded divergence (docs/design/entropy-glass-box-trace.md §6).",
+      + "pressure.  Every one of them is the departure at the SAME (T, P) as "
+      + "the ideal-gas lines above it, which is what lets them be added: "
+      + "PC-SAFT computes its residual at (T, ρ) and converts it with "
+      + "+R ln Z (P = ZρRT) — a term it omitted until 2026-10-25 "
+      + "(docs/design/entropy-glass-box-trace.md §6); "
+      + "check_departure_convention now holds all three equations of state "
+      + "to "
+      + "(∂H^R/∂T)_P = T(∂s^R/∂T)_P and (∂G^R/∂P)_T = v − RT/P.",
   },
 ] as const;
 
