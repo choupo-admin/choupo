@@ -63,9 +63,15 @@ Description
 
     FRICTION-FACTOR sub-models (the `model` slot, like the cyclone's five):
 
-        model Churchill;   // DEFAULT.  One explicit correlation valid across
-                           //   laminar, transition AND turbulent Re, all ε/D.
-                           //   Churchill (1977).
+        model Churchill;   // DEFAULT.  One explicit expression for every Re
+                           //   and ε/D: the laminar law and a turbulent branch
+                           //   blended smoothly.  Churchill (1977).  In the
+                           //   transition band (2300 <= Re < 4000) its value
+                           //   is an INTERPOLATION, not a prediction: there
+                           //   the regime is not determined by Re (it depends
+                           //   on the disturbances the line meets) and no
+                           //   correlation predicts f.  A pipe in the band is
+                           //   ANNOUNCED once, into the caveat block.
         model Haaland;     // explicit turbulent approximation to Colebrook,
                            //   ~2 % of it; laminar branch 64/Re below 2300.
         model Colebrook;   // implicit Colebrook-White, solved by fixed-point
@@ -74,7 +80,8 @@ Description
 
     In the laminar regime (Re < 2300) every model returns the exact 64/Re;
     the choice only matters in the turbulent regime.  The regime is
-    ANNOUNCED in the report.
+    ANNOUNCED in the report, and a pipe in the transition band also raises a
+    `validity` advisory (DEV.md 4c C155): a design should move out of it.
 
     GAS / compressible flow is a documented FUTURE extension: for a
     compressible fluid ρ varies along the pipe and the integration is not a

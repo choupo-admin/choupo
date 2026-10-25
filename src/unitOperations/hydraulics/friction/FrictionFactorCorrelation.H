@@ -58,9 +58,13 @@ Description
         chart is drawn from.  It is what the others approximate.
       * Haaland (1983) is an explicit fit to Colebrook, published as being
         within about 2 % of it.
-      * Churchill (1977) is a single expression covering laminar, transition
-        AND turbulent flow, so it is the only one of the four that answers at
-        all below Re = 2300.
+      * Churchill (1977) is a single expression that blends the laminar law
+        and a turbulent branch smoothly, so it is the only one of the four
+        that answers at all below Re = 2300 without a substitution.  Through
+        the transition band its value is an INTERPOLATION that keeps a solver
+        continuous, not a prediction: there the regime is not determined by
+        Re (it depends on the disturbances the flow meets) and no
+        correlation predicts f (DEV.md 4c C155).
 
     A simulator that picks one and says nothing teaches that f is a fact.  It
     is a correlation, and which one you chose is part of your answer.

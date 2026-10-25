@@ -20,7 +20,12 @@
     * page 4: Haken's reduced equation tracks the full pair at a large scale
       ratio and not at a small one, and the roots turn complex below 8;
     * the lesson text: nothing quoted, every equation parses, and every
-      file:line it cites lands on the statement it claims.
+      file:line it cites lands on the statement it claims;
+    * the transition band (DEV.md 4c C155): Churchill's blend taught as an
+      interpolation, the band as a region of instability where Re does not
+      decide the regime, every friction plot shading it with that label, and
+      every historical figure of step 15 given by a source that says how it
+      was read.
 \*---------------------------------------------------------------------------*/
 
 import { readFileSync } from "node:fs";
@@ -31,7 +36,9 @@ import { describe, expect, it } from "vitest";
 
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 import { texParses } from "../src/ui/methods/lessonTex.js";
-import { SIMPLICITY_LIMITS, SIMPLICITY_STEPS } from "../src/ui/methods/correlationSimplicityLesson.js";
+import {
+  SIMPLICITY_LIMITS, SIMPLICITY_SOURCES, SIMPLICITY_STEPS,
+} from "../src/ui/methods/correlationSimplicityLesson.js";
 import {
   PROBLEMS, blend, curveOf, dimsOf, fitDecade, hakenEigenvalues, hakenRun, keysOf, localSlope,
   parseSweepCsv, piGroups, type DimProblem,
@@ -263,10 +270,58 @@ describe("correlation-simplicity: page 4, master and slave", () => {
 describe("correlation-simplicity: the lesson text", () => {
   const all = SIMPLICITY_STEPS.map((s) => [s.title, s.body, s.note ?? "",
     ...(s.derivation ?? []).map((d) => d.step)].join(" ")).join(" ");
-  it("has fourteen steps on five pages, and the page draws every one of them", () => {
-    expect(SIMPLICITY_STEPS.map((s) => s.n)).toEqual([...Array(14)].map((_, i) => i + 1));
+  it("has fifteen steps on five pages, and the page draws every one of them", () => {
+    expect(SIMPLICITY_STEPS.map((s) => s.n)).toEqual([...Array(15)].map((_, i) => i + 1));
     const src = tree(TOOL);
     for (const s of SIMPLICITY_STEPS) expect(src, `step ${s.n}`).toContain(`{step(${s.n})}`);
+  });
+
+  // ---- the transition band (DEV.md 4c C155) -----------------------------------------------
+  const stepText = (n: number) => {
+    const s = SIMPLICITY_STEPS.find((x) => x.n === n)!;
+    return [s.title, s.body, s.note ?? "", ...(s.where ?? []).map((w) => w.means)].join(" ");
+  };
+  it("Churchill's blend is taught as an interpolation, never as the physics of the band", () => {
+    const t13 = stepText(13);
+    expect(t13).toMatch(/INTERPOLATION/);
+    expect(t13).toMatch(/continuous in Re/);
+    expect(t13).toMatch(/not a model of the transition/);
+    expect(t13).not.toMatch(/for the whole range/);
+  });
+  it("the band is a region of instability: puffs, disturbances, hysteresis, Re does not decide", () => {
+    const t14 = stepText(14);
+    for (const w of [/linearly stable/, /puffs/, /hysteresis/, /not determined by Re/,
+      /vibration/, /no correlation\s+predicts f/, /interpolation that\s+keeps a solver continuous/,
+      /moved out of it/])
+      expect(t14, String(w)).toMatch(w);
+  });
+  it("every friction plot shades the band and labels it as undetermined by Re", () => {
+    const src = tree(TOOL);
+    expect(src).toMatch(/note: "regime not determined by Re"/);
+    expect(src).not.toContain('label: "transition" }');
+    //  the Moody plane, its slopes, the blend, and the spread: four plots
+    expect(src.match(/bands=\{\[TRANSITION_BAND\]\}/g)?.length).toBe(4);
+  });
+  it("every historical figure of step 15 is given by a source that says how it was read", () => {
+    const t15 = stepText(15);
+    const said = SIMPLICITY_SOURCES.map((s) => `${s.cite} ${s.used}`).join(" ");
+    //  2300 is the engine's own band (FrictionFactorCorrelation.cpp:52), not a
+    //  historical figure; every other number in the step is one.
+    const figures = [...t15.matchAll(/\b\d[\d ]*\d(?:\.\d+)?\b/g)].map((m) => m[0])
+      .filter((f) => f !== "2300");
+    expect(figures.length).toBeGreaterThan(6);
+    for (const f of figures) expect(said, `figure ${f} has no source`).toContain(f);
+    for (const id of ["reynolds-1883", "mukund-hof-2018", "avila-2011", "van-dyke-1982"])
+      expect(SIMPLICITY_SOURCES.map((s) => s.id)).toContain(id);
+    for (const s of SIMPLICITY_SOURCES) expect(s.used.length, s.id).toBeGreaterThan(80);
+    //  what was NOT read is said, not implied
+    expect(SIMPLICITY_SOURCES.find((s) => s.id === "avila-2011")!.used).toMatch(/full text was not/);
+    expect(SIMPLICITY_SOURCES.find((s) => s.id === "van-dyke-1982")!.used)
+      .toMatch(/online reproduction, not in the\s+printed book/);
+    expect(tree(TOOL)).toContain("SIMPLICITY_SOURCES.map");
+  });
+  it("the sources quote nothing either", () => {
+    for (const s of SIMPLICITY_SOURCES) expect(`${s.cite} ${s.used}`).not.toMatch(/["“”]/);
   });
   it("quotes nothing", () => {
     expect(all).not.toMatch(/["“”]/);
@@ -283,6 +338,7 @@ describe("correlation-simplicity: the lesson text", () => {
     const FILES: Record<string, string> = {
       "FrictionFactorCorrelation.cpp": "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
       "DittusBoelter.H": "src/unitOperations/heatTransfer/htc/DittusBoelter.H",
+      "Pipe.cpp": "src/unitOperations/hydraulics/Pipe.cpp",
     };
     const cited = new Set([...all.matchAll(/([A-Za-z]+\.(?:cpp|H)):(\d+)(?:-(\d+))?/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string | RegExp> = {
@@ -298,6 +354,8 @@ describe("correlation-simplicity: the lesson text", () => {
       "FrictionFactorCorrelation.cpp:356-359":
         /a\.fLaminar   = laminar\(c\.Re\);[\s\S]*a\.fTurbulent = 8\.0 \* std::pow\(A \+ B, -1\.0 \/ 8\.0\);/,
       "DittusBoelter.H:63": "r.Nu = 0.023 * std::pow(r.Re, 0.8) * std::pow(r.Pr, n);",
+      "Pipe.cpp:555-556":
+        /AdvisoryLog::instance\(\)\.addAnnouncedOnce\(\s*"pipeTransition:" \+ unitName, "validity"/,
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, want] of Object.entries(CLAIMS)) {

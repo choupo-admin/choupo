@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Pipe.H"
+#include "core/Advisory.H"                          // the transition-band announcement
 #include "core/Constants.H"
 #include "unitOperations/flash/IsothermalFlash.H"   // feed-flash for the gas-liquid split
 #include "unitOperations/flash/StreamEquilibrium.H" // the supercritical discard (one home)
@@ -47,9 +48,11 @@ namespace {
 // a founder-managed file we deliberately do not touch.
 constexpr scalar g_standard = 9.80665;
 
-// Laminar/turbulent regime boundary (classical pipe-flow convention).
-constexpr scalar Re_laminar = 2300.0;   // below: surely laminar
-constexpr scalar Re_turb    = 4000.0;   // above: surely turbulent
+// Laminar/turbulent regime boundary (classical pipe-flow CONVENTION, not a
+// law: a carefully undisturbed flow has stayed laminar far above 4000, and
+// sustained turbulence is possible from about 2040 -- DEV.md 4c C155).
+constexpr scalar Re_laminar = 2300.0;   // below: taken as laminar
+constexpr scalar Re_turb    = 4000.0;   // above: taken as turbulent
 
 //  THE FOUR FRICTION-FACTOR EXPRESSIONS THAT USED TO LIVE HERE -- the exact
 //  laminar law, Blasius, Haaland, Colebrook-White and Churchill -- moved on
@@ -484,7 +487,8 @@ int Pipe::solve(const DictPtr& dict,
         "model", operDict->lookupWordOrDefault("model", "Churchill"));
 
     // Regime classification (for the report + KPI; Churchill is smooth
-    // across it, the other two switch to 64/Re below 2300).
+    // across it, the other two switch to 64/Re below 2300).  A smooth f is
+    // not a determined regime: the transition band is announced below.
     int regimeCode;          // 0 laminar, 1 transition, 2 turbulent
     std::string regime;
     if (Re < Re_laminar)      { regimeCode = 0; regime = "laminar";    }
@@ -513,6 +517,45 @@ int Pipe::solve(const DictPtr& dict,
         fc.Re = Re;
         fc.relRough = relRough;
         f = corr->evaluate(fc).f;
+    }
+
+    //  THE TRANSITION BAND IS NOT A CURVE (DEV.md 4c C155).  Between
+    //  Re_laminar and Re_turb laminar pipe flow is linearly stable but a
+    //  large enough disturbance makes it turbulent, so whether this line runs
+    //  laminar, turbulent or intermittent depends on the disturbances it
+    //  meets (inlet, vibration, the wall) and NOT on Re alone; the friction
+    //  factor there is not a function of Re, and no correlation predicts it.
+    //  What the declared correlation returns is an interpolation (Churchill's
+    //  smooth blend of the two asymptotes) or a turbulent fit evaluated below
+    //  the Re it was fitted for (Colebrook, Haaland).  The number is kept --
+    //  a solver needs a continuous f, and no answer moves -- but it is SAID,
+    //  once per unit, into the caveat block.  Single-phase path only: the
+    //  two-phase branch above reads its own regime words.
+    if (regimeCode == 1)
+    {
+        const std::string unitName = dict->name();
+        const std::string locus =
+            "Pipe" + (unitName.empty() ? std::string() : " '" + unitName + "'");
+        std::ostringstream m;
+        m << "Re = " << std::fixed << std::setprecision(0) << Re
+          << " lies in the laminar-turbulent transition band ("
+          << Re_laminar << " <= Re < " << Re_turb << "), where the regime is"
+             " not determined by Re: laminar, turbulent or intermittent flow"
+             " depends on the disturbances the line meets (inlet, vibration,"
+             " the wall), and no correlation predicts f there.  f = "
+          << std::setprecision(5) << f << " is " << modelName
+          << (modelName == "Churchill"
+                  ? "'s smooth interpolation between the laminar and turbulent"
+                    " laws"
+                  : "'s turbulent fit evaluated below the Re it was fitted"
+                    " for")
+          << ", kept so the solve stays continuous -- an interpolation, not a"
+             " prediction.  A design should move the line out of the band"
+             " (change D or the flow).";
+        if (AdvisoryLog::instance().addAnnouncedOnce(
+                "pipeTransition:" + unitName, "validity", "warning", locus,
+                m.str()))
+            std::cerr << "[pipe] " << locus << ": " << m.str() << "\n";
     }
 
     // ---- Mechanical energy balance: the three ΔP contributions ----------

@@ -32,8 +32,16 @@
   tests/correlationSimplicityLesson.test.ts holds each citation to the source
   text it names.  Every number the page shows is either read from the
   witness's sweep CSVs (tutorials/props/hydraulics/moody02_correlation_sweeps)
-  or computed on the page by a formula written on it.  The primary sources
-  are named by TITLE only; no table is copied from any of them.
+  or computed on the page by a formula written on it -- except the historical
+  figures of step 15, each of which is given from a source in
+  SIMPLICITY_SOURCES with how that source was read.  The primary sources are
+  named by TITLE only; no table is copied from any of them.
+
+  THE TRANSITION IS NOT A CURVE (DEV.md 4c C155, Vitor 2026-10-25): steps
+  13-15 teach the band between the laminar and turbulent laws as a region of
+  instability where the regime is not determined by Re, and Churchill's blend
+  as an interpolation that keeps a solver continuous -- never as the physics
+  of the transition.
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
@@ -194,7 +202,8 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
   {
     n: 6,
     title: "Laminar flow: a group drops out, the other enters as a power",
-    body: "Below Re of about 2300 the flow is laminar and the momentum "
+    body: "Below Re of about 2300 -- the engine's laminar limit, a convention "
+      + "whose history is step 15 -- the flow is laminar and the momentum "
       + "equation can be solved exactly for a straight pipe (the "
       + "Hagen-Poiseuille profile).  The answer is f = 64/Re: the roughness "
       + "has vanished from the problem altogether, and the Reynolds number "
@@ -409,66 +418,185 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
   {
     n: 13,
     title: "Blending the asymptotes: Churchill and Usagi",
-    body: "If the simple laws live in the asymptotic regimes, a correlation "
-      + "for the whole range can be built by joining them.  Churchill and "
-      + "Usagi (A general expression for the correlation of rates of "
-      + "transfer and other phenomena) proposed one form for the join: raise "
-      + "each asymptote to a power n, add, and take the n-th root.  The "
-      + "larger asymptote wins far from the crossover, both count near it, "
-      + "and the exponent n sets how sharp the corner is.  The engine's "
-      + "Churchill friction factor (FrictionFactorCorrelation.cpp:315-317) "
-      + "is this form with n = 12, joining the laminar law to a turbulent "
-      + "branch; and the turbulent branch is itself a blend, with exponent "
-      + "16 on sqrt(8/f), of a turbulent term and a transition term "
-      + "(FrictionFactorCorrelation.cpp:288-290).  The witness publishes "
-      + "both pieces (FrictionFactorCorrelation.cpp:356-359), and the page "
-      + "recomputes the blend from them: at n = 12 it reproduces the "
+    body: "If the simple laws live in the asymptotic regimes, one expression "
+      + "that runs from one to the other can be built by joining them.  "
+      + "Churchill and Usagi (A general expression for the correlation of "
+      + "rates of transfer and other phenomena) proposed one form for the "
+      + "join: raise each asymptote to a power n, add, and take the n-th "
+      + "root.  The larger asymptote wins far from the crossover, both count "
+      + "near it, and the exponent n sets how sharp the corner is.  The join "
+      + "is an INTERPOLATION.  It makes the answer continuous in Re, which is "
+      + "what a solver needs when the Reynolds number of a line moves from "
+      + "one iteration to the next, and it says nothing about the physics "
+      + "between the asymptotes -- the next step is about why there is no "
+      + "single curve there for it to describe.  The engine's Churchill "
+      + "friction factor (FrictionFactorCorrelation.cpp:315-317) is this "
+      + "form with n = 12, joining the laminar law to a turbulent branch; and "
+      + "the turbulent branch is itself a blend, with exponent 16 on "
+      + "sqrt(8/f), of a turbulent term and a second term that only shapes "
+      + "the join (FrictionFactorCorrelation.cpp:288-290).  The witness "
+      + "publishes both pieces (FrictionFactorCorrelation.cpp:356-359), and "
+      + "the page recomputes the blend from them: at n = 12 it reproduces the "
       + "engine's f to round-off, which is the check that the reading of the "
-      + "equation is right.  Change n to see what the exponent does.",
+      + "equation is right.  Change n and watch the corner move inside the "
+      + "shaded band: every n gives a smooth curve there, and nothing in the "
+      + "physics prefers one of them.",
     formula: String.raw`y = \left(y_1^{\,n} + y_2^{\,n}\right)^{1/n}, \qquad f = \left[\left(\frac{64}{\mathrm{Re}}\right)^{12} + f_\mathrm{t}^{\,12}\right]^{1/12}, \qquad \sqrt{\frac{8}{f_\mathrm{t}}} = \left(a^{16} + b^{16}\right)^{1/16}`,
     where: [
       { sym: "y_1", means: "one asymptote (here the laminar law)", unit: "-" },
       { sym: "y_2", means: "the other asymptote (here the turbulent branch)", unit: "-" },
       { sym: "f_\\mathrm{t}", means: "Churchill's turbulent branch, 8 (A+B)^(-1/8) in the engine's own symbols", unit: "-" },
       { sym: "a", means: "the turbulent term, -2.457 ln[(7/Re)^0.9 + 0.27 eps/D]; the engine's A is a^16", unit: "-" },
-      { sym: "b", means: "the transition term, 37530/Re; the engine's B is b^16", unit: "-" },
+      { sym: "b", means: "the term that shapes the join, 37530/Re -- the engine's source calls it "
+        + "the transition term, and it is a fitted shape, not a model of the transition; "
+        + "the engine's B is b^16", unit: "-" },
       { sym: "n", means: "the blending exponent: large n, a sharp corner", unit: "-" },
     ],
   },
   {
     n: 14,
-    title: "The transition zone: where no mechanism dominates",
-    body: "Between Re of about 2300 and 4000 neither asymptote holds.  The "
-      + "flow is intermittent -- turbulent puffs travel through laminar "
-      + "flow -- and depends on how the pipe was entered and how disturbed "
-      + "the inlet is, so the friction factor is not even a single-valued "
-      + "function of Re there.  No regime is a master, there is no "
-      + "asymptote to stand on, and the correlations stop agreeing: below "
-      + "2300 three of them substitute the laminar law, between the two "
-      + "limits they are evaluated outside the band they were fitted to "
-      + "(the engine names that band at FrictionFactorCorrelation.cpp:52-53 "
-      + "and flags Colebrook's and Haaland's points in it; Blasius's are not "
-      + "flagged there, although the window it declares starts at 4000, and "
-      + "the table shows the flag exactly as the engine publishes it), and "
-      + "Churchill's blend draws a smooth "
-      + "line through a region where the physics offers none.  The Nusselt "
-      + "correlations behave the same way: Dittus-Boelter below 1e4 is "
-      + "outside its window, and there its gap to Gnielinski opens fastest -- "
-      + "from a few percent near Re = 1e4 to tens of percent at 2000, in less "
-      + "than a decade.  (They part again at high Re, more slowly: a fixed "
-      + "exponent 0.8 cannot follow a curve whose local slope drifts, which "
-      + "is the previous step's point.)  The plot and the table read the "
-      + "spread the engine's curves span at each point.  Where no mechanism "
-      + "dominates, no simple correlation is "
-      + "trustworthy, and a design that sits in the transition is one that "
-      + "should be moved out of it.",
+    title: "The transition band: a region of instability, not a curve",
+    body: "Between Re of about 2300 and 4000 -- the band the engine names at "
+      + "FrictionFactorCorrelation.cpp:52-53 -- neither asymptote holds, and "
+      + "what is missing there is not a better correlation.  Laminar flow in "
+      + "a straight pipe is linearly stable: a small enough disturbance dies "
+      + "away.  Above a Reynolds number of about 2000 a LARGE enough "
+      + "disturbance makes it turbulent instead, so whether a given pipe runs "
+      + "laminar or turbulent depends on the disturbances it meets -- how the "
+      + "fluid entered, how still the supply is, vibration reaching the line, "
+      + "the imperfections of the wall -- and is not determined by Re alone.  "
+      + "What appears is intermittent: turbulent puffs travelling through "
+      + "laminar flow, each of which may decay or split.  And the state "
+      + "reached depends on the path, a hysteresis: a flow brought up gently "
+      + "from rest can stay laminar far above the Re at which an already "
+      + "turbulent flow, slowed down, becomes laminar again.  So the friction "
+      + "factor in the band is not a function of Re.  At one Re the same pipe "
+      + "can carry laminar flow at 64/Re, turbulent flow at roughly twice "
+      + "that, or a mixture of the two that changes in time; no correlation "
+      + "predicts f there, because there is no single f to predict.  The "
+      + "correlations show it by disagreeing: below 2300 three of them "
+      + "substitute the laminar law, between the two limits Colebrook and "
+      + "Haaland are evaluated outside the band they were fitted to and the "
+      + "engine flags their points (Blasius's are not flagged there, although "
+      + "the window it declares starts at 4000, and the table shows the flag "
+      + "exactly as the engine publishes it), and Churchill's blend draws one "
+      + "smooth line through the band.  That line is an interpolation that "
+      + "keeps a solver continuous, not a prediction, and a pipe the engine "
+      + "finds in the band says so in the run's caveat block (Pipe.cpp:555-556).  "
+      + "The Nusselt correlations behave the same way: Dittus-Boelter below "
+      + "1e4 is outside its window, and there its gap to Gnielinski opens "
+      + "fastest -- from a few percent near Re = 1e4 to tens of percent at "
+      + "2000, in less than a decade.  (They part again at high Re, more "
+      + "slowly: a fixed exponent 0.8 cannot follow a curve whose local slope "
+      + "drifts, which is step 12's point.)  The plot and the table read the "
+      + "spread the engine's curves span at each point.  A design that sits "
+      + "in the transition is one that should be moved out of it: change the "
+      + "diameter or the flow until the line is clearly laminar or clearly "
+      + "turbulent.",
     formula: String.raw`s = \frac{y_\mathrm{max} - y_\mathrm{min}}{y_\mathrm{min}}`,
     where: [
       { sym: "s", means: "the spread of the correlations at one Re", unit: "-" },
       { sym: "y_\\mathrm{max}", means: "the largest of the correlations' answers there", unit: "-" },
       { sym: "y_\\mathrm{min}", means: "the smallest", unit: "-" },
     ],
+    note: "The spread measures how much the correlations disagree, not how "
+      + "uncertain the friction factor is.  In the band the uncertainty is "
+      + "the regime itself, which no spread of correlations can show.",
   },
+  {
+    n: 15,
+    title: "What Reynolds saw: two critical numbers, and why the upper one moves",
+    body: "Reynolds' 1883 paper (An experimental investigation of the "
+      + "circumstances which determine whether the motion of water shall be "
+      + "direct or sinuous, and of the law of resistance in parallel "
+      + "channels) found the transition twice.  Drawing water with a "
+      + "filament of dye from a large tank into glass tubes through a "
+      + "bell-mouth, and keeping the tank as still and as uniform in "
+      + "temperature as he could, he saw the steady motion hold up to a "
+      + "critical velocity and then break down suddenly, the eddies first "
+      + "appearing as intermittent flashes -- the puffs of the previous "
+      + "step.  With the greatest care the breakdown was postponed to a "
+      + "Reynolds number of about 13 000; a considerable disturbance in the "
+      + "tank brought it much earlier, and a coil of wire placed in the tube "
+      + "brought eddies in at less than half the previous critical velocity.  "
+      + "He read this as a flow unstable to a disturbance of a certain size "
+      + "and stable to smaller ones.  By a second method -- water admitted "
+      + "already disturbed, and the law of resistance measured far down the "
+      + "tube -- he found a second critical velocity, the one below which "
+      + "existing eddies die out, lower in the ratio 43.7 to 278: a Reynolds "
+      + "number close to 2000.  One critical value for steady motion turning "
+      + "into eddies and one for eddies turning back into steady motion is "
+      + "the hysteresis of the previous step, measured in 1883.  The upper "
+      + "value is not a property of water.  His apparatus survives at the "
+      + "University of Manchester, and when N. H. Johannesen and C. Lowe used "
+      + "it about a century later to photograph the experiment, the caption "
+      + "Van Dyke printed with their photographs (An Album of Fluid Motion) "
+      + "reports a critical number lower than Reynolds' 13 000 and attributes "
+      + "it to modern traffic in the streets of Manchester; it states no "
+      + "value.  The lower value is the physics.  Following turbulent puffs "
+      + "for very long times, Avila and co-authors (The onset of turbulence "
+      + "in pipe flow) found that puff decay and puff splitting balance near "
+      + "Re = 2040, and Mukund and Hof (The critical point of the transition "
+      + "to turbulence in pipe flow) that below 2020 every flow they followed "
+      + "returned to laminar while at 2060 and above turbulence persisted.  "
+      + "The 2300 of the textbooks, and of the engine's band, is a "
+      + "convention: by Mukund and Hof's account it goes back to Schiller's "
+      + "report, in 1921, of a jump in the friction factor near 2320.",
+    note: "Every figure in this step is taken from a source in the list at "
+      + "the foot of this page, read as that list says; the page computes "
+      + "none of them.",
+  },
+];
+
+/** The sources of step 15, each with how it was reached.  A historical figure
+ *  is given only from a source that was READ, and what was not read is said. */
+export interface SimplicitySource { id: string; cite: string; used: string }
+
+export const SIMPLICITY_SOURCES: readonly SimplicitySource[] = [
+  { id: "reynolds-1883",
+    cite: "O. Reynolds, An experimental investigation of the circumstances "
+      + "which determine whether the motion of water shall be direct or "
+      + "sinuous, and of the law of resistance in parallel channels, "
+      + "Philosophical Transactions of the Royal Society of London 174 (1883) "
+      + "935-982",
+    used: "read in full, from a scan of the journal pages: the stillness and "
+      + "uniform temperature of the tank, the sudden breakdown, the "
+      + "intermittent flashes, the coil of wire bringing eddies in at less "
+      + "than half the critical velocity, the two critical values and their "
+      + "ratio of 43.7 to 278 (articles 16, 23 and 24).  Reynolds states his "
+      + "critical velocities as formulas in metres and degrees centigrade, "
+      + "not as Reynolds numbers; the two numbers the step gives, about "
+      + "13 000 and close to 2000, are as the next source states them." },
+  { id: "mukund-hof-2018",
+    cite: "V. Mukund and B. Hof, The critical point of the transition to "
+      + "turbulence in pipe flow, Journal of Fluid Mechanics 839 (2018) 76-94 "
+      + "(preprint arXiv:1709.06372)",
+    used: "read, in the preprint: Reynolds' transition postponed from about "
+      + "2000 to about 13 000 depending on the care with which the pipe was "
+      + "set up, and his real critical value close to 2000; the linear "
+      + "stability of laminar pipe flow and the dependence of the natural "
+      + "transition point on finite disturbances; puffs; Schiller's 2320 of "
+      + "1921; the balance point 2040 attributed to Avila and co-authors; and "
+      + "their own result, laminar at 2020 and sustained turbulence at 2060 "
+      + "and above." },
+  { id: "avila-2011",
+    cite: "K. Avila, D. Moxey, A. de Lozar, M. Avila, D. Barkley and B. Hof, "
+      + "The onset of turbulence in pipe flow, Science 333 (2011) 192-196",
+    used: "the abstract was read: turbulence that is transient at low Re "
+      + "becomes sustained at a distinct critical point, decided by the "
+      + "spatial proliferation of chaotic domains.  The full text was not "
+      + "read; the value 2040 and the balance of decay and splitting are "
+      + "given as Mukund and Hof report them." },
+  { id: "van-dyke-1982",
+    cite: "M. Van Dyke, An Album of Fluid Motion, Parabolic Press (1982): the "
+      + "photographs by N. H. Johannesen and C. Lowe of Reynolds' dye "
+      + "experiment repeated with his original apparatus",
+    used: "the caption was read through an online reproduction, not in the "
+      + "printed book.  It says the apparatus survives at the University of "
+      + "Manchester, that it was used about a century after Reynolds, and "
+      + "that modern traffic in the streets of Manchester made the critical "
+      + "number lower than the 13 000 Reynolds found.  It gives neither the "
+      + "lower value nor the year, and the step does not supply them." },
 ];
 
 export const SIMPLICITY_LIMITS: readonly LessonLimit[] = [

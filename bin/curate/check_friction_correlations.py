@@ -63,6 +63,23 @@ WHAT THIS GATE CHECKS, on `tutorials/props/hydraulics/moody01_friction_correlati
       its own correlations and pipe02 as its witness); the source arm checks
       the refusal is gated on V/F reaching 1, not on any vapour.
 
+  (h) A PIPE IN THE TRANSITION BAND IS ANNOUNCED (DEV.md 4c C155,
+      2026-10-25).  Between Re = 2300 and 4000 the regime is not determined
+      by Re -- it depends on the disturbances the flow meets -- so the f a
+      correlation returns there is an interpolation (Churchill) or a
+      turbulent fit extrapolated (Colebrook, Haaland), never a prediction.
+      pipe01 is copied with its feed cut to 40 kmol/h (Re ~ 3000, checked to
+      land in the band): the run must print the announcement once, naming the
+      unit, the band, that Re does not decide the regime, that f is an
+      interpolation and the design remedy, and must carry it in the result's
+      advisories under `validity` (the channel the end-of-run caveat block
+      reads).  The NEGATIVES: pipe01 itself (Re ~ 1.5e5) and a copy at 20
+      kmol/h (Re ~ 1500, laminar, f exact) must stay silent -- an
+      announcement that fires everywhere is read nowhere.  A source arm
+      requires the raise to go through `addAnnouncedOnce` keyed on the unit.
+      FAILED on origin/main 6c1a22ce4 (no announcement existed) with every
+      needle and the source arm named; passes with the C155 Pipe.cpp.
+
 WHAT THIS GATE DOES **NOT** COVER, stated so its OK line cannot imply it:
 
   * It does not establish that any correlation is RIGHT.  Two of the four
@@ -73,8 +90,10 @@ WHAT THIS GATE DOES **NOT** COVER, stated so its OK line cannot imply it:
       Colebrook's fully-rough limit tests an iteration against a closed form.
       NONE of the four is checked against experimental data; the corpus holds
       no friction measurements at all.
-  * It says nothing about the transition band (2300 < Re < 4000), where the
-      physics is not single-valued and no correlation was regressed.
+  * It checks no friction factor INSIDE the transition band (2300 <= Re <
+      4000): there the regime is not a function of Re and there is no single
+      f to check.  Arm (h) checks only that a pipe there SAYS so.  The
+      two-phase path's regimes are not covered by arm (h).
   * Ergun (packed beds) and the two-phase multipliers are NOT part of this
       family yet; they remain unit-op-private.
 
@@ -153,6 +172,118 @@ BIN = ROOT / "choupoProps"
 
 MODELS = ["Blasius", "Churchill", "Colebrook", "Haaland"]
 fails = []
+
+
+#  The sentence the transition announcement must carry, piece by piece: what
+#  it is about, why, what the number is, and what to do.  Each is a fact the
+#  reader needs and a sabotage that drops one is caught by name.
+TRANSITION_NEEDS = (
+    ("Pipe 'P1'", "the unit"),
+    ("transition band", "that the band is the transition"),
+    ("not determined by Re", "that Re alone does not decide the regime"),
+    ("interpolation", "that the friction factor there is an interpolation"),
+    ("move the line out of the band", "the design remedy"),
+)
+
+
+def run_pipe_probe(pipe, solve, kmol_h, tag):
+    """pipe01 with its feed flow set to `kmol_h`, run in a temporary copy.
+
+    Returns (exit code, console, advisories in the result JSON) or a string
+    naming why the probe could not be built -- a probe that cannot run must
+    not pass."""
+    tmpd = Path(tempfile.mkdtemp(prefix=f"choupo-pipe-{tag}-"))
+    try:
+        probe = tmpd / f"pipe01_{tag}"
+        shutil.copytree(pipe, probe,
+                        ignore=shutil.ignore_patterns("converged", "log.*",
+                                                      "reports", "iterations"))
+        feed = probe / "0" / "feed"
+        ftxt = feed.read_text()
+        if kmol_h is not None:
+            ftxt2 = re.sub(r"^(\s*water\s+)2000(\s+kmol/h;)",
+                           rf"\g<1>{kmol_h}\g<2>", ftxt, count=1, flags=re.M)
+            if ftxt2 == ftxt:
+                return ("pipe01's feed line `water 2000 kmol/h;` moved, so the "
+                        f"{tag} probe could not be built")
+            feed.write_text(ftxt2)
+        env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+        p = subprocess.run([str(solve), "."], cwd=str(probe), env=env,
+                           capture_output=True, text=True, timeout=300)
+        out = p.stdout + p.stderr
+        adv = []
+        m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>",
+                      out, re.S)
+        if m:
+            try:
+                adv = json.loads(m.group(1)).get("advisories", [])
+            except json.JSONDecodeError:
+                pass
+        return p.returncode, out, adv
+    finally:
+        shutil.rmtree(tmpd, ignore_errors=True)
+
+
+def transition_arm(pipe, solve, src):
+    """Arm (h), DEV.md 4c C155.  Between Re = 2300 and 4000 the regime is not
+    determined by Re -- it depends on the disturbances the flow meets -- so the
+    friction factor there is the declared correlation's interpolation (or a
+    turbulent fit extrapolated), never a prediction.  pipe01 carries 2000
+    kmol/h of water at Re ~ 1.5e5; 40 kmol/h puts the same line at Re ~ 3000
+    and 20 kmol/h at Re ~ 1500.  The transition probe must ANNOUNCE, at its
+    site and in the result's advisories (the caveat block's channel); the
+    turbulent line and the laminar probe must not."""
+    def mentions(text):
+        return "transition band" in text and "not determined by Re" in text
+
+    r = run_pipe_probe(pipe, solve, 40, "transition")
+    if isinstance(r, str):
+        fails.append("arm (h) could not run: " + r)
+        return
+    code, out, adv = r
+    if code != 0:
+        fails.append(f"arm (h): the transition probe (pipe01 at 40 kmol/h) "
+                     f"exited {code}: {out[-400:]}")
+    else:
+        m = re.search(r"Re = ([0-9.]+)", out.split("Pipe Result", 1)[-1])
+        re_val = float(m.group(1)) if m else None
+        if re_val is None or not (2300.0 <= re_val < 4000.0):
+            fails.append(f"arm (h): the transition probe did not land in the "
+                         f"band (Re = {re_val}) -- the arm tests nothing")
+        for need, why in TRANSITION_NEEDS:
+            if need not in out:
+                fails.append(f"arm (h): a pipe at Re ~ 3000 is not announced "
+                             f"with {why} (`{need}`)")
+        hits = [a for a in adv if mentions(a.get("message", ""))]
+        if not hits:
+            fails.append("arm (h): the transition announcement is not in the "
+                         "result's advisories, so the end-of-run caveat block "
+                         "never shows it")
+        elif hits[0].get("category") != "validity":
+            fails.append("arm (h): the transition advisory is filed under "
+                         f"`{hits[0].get('category')}`, not `validity`")
+        elif hits[0].get("locus") != "Pipe 'P1'":
+            fails.append("arm (h): the transition advisory's locus is "
+                         f"`{hits[0].get('locus')}`, not the unit")
+        if out.count("[pipe] Pipe 'P1': Re =") != 1:
+            fails.append("arm (h): the transition line is not printed exactly "
+                         "once for the unit")
+    for kmol_h, tag in ((None, "turbulent"), (20, "laminar")):
+        r = run_pipe_probe(pipe, solve, kmol_h, tag)
+        if isinstance(r, str):
+            fails.append("arm (h) could not run: " + r)
+            continue
+        code, out, adv = r
+        if code != 0:
+            fails.append(f"arm (h): the {tag} probe exited {code}")
+        elif mentions(out) or any(mentions(a.get("message", "")) for a in adv):
+            fails.append(f"arm (h): the {tag} pipe announces the transition "
+                         "band -- an announcement that fires everywhere is "
+                         "read nowhere")
+    if not re.search(r"addAnnouncedOnce\(\s*\"pipeTransition:\"", src):
+        fails.append("arm (h): Pipe.cpp does not raise the transition "
+                     "announcement through AdvisoryLog::addAnnouncedOnce "
+                     "keyed on the unit")
 
 
 def main():
@@ -332,10 +463,14 @@ def main():
                      "`fs.converged && VF >= 1.0 - eps` -- a two-phase inlet "
                      "has its own correlations and must not be refused")
 
+    # ---- (h) a pipe in the transition band is ANNOUNCED -------------------
+    transition_arm(pipe, solve, src)
+
     if fails:
         print("check_friction_correlations: FAIL")
         for f in fails:
-            print("  - moody: " + f if not f.startswith(("Pipe.cpp", "pipe01"))
+            print("  - moody: " + f if not f.startswith(("Pipe.cpp", "pipe01",
+                                                          "arm ("))
                   else "  - " + f)
         return 1
 
@@ -351,11 +486,18 @@ def main():
           "golden is unmoved; pipe01 with an all-vapour feed (450 K, 5 bar) is "
           "REFUSED naming the unit, the inlet, its V/F and both remedies, and "
           "the refusal is gated on V/F reaching 1 so a two-phase line still "
-          "runs (arm g).  NOT CHECKED: that any correlation is RIGHT -- "
+          "runs (arm g); pipe01 at 40 kmol/h (Re ~ 3000) ANNOUNCES the "
+          "transition band once, into the result's `validity` advisories, "
+          "saying the regime is not determined by Re and f is an "
+          "interpolation, while pipe01 itself (turbulent) and at 20 kmol/h "
+          "(laminar) stay silent (arm h).  NOT CHECKED: that any correlation "
+          "is RIGHT -- "
           "two anchors are self-consistency by construction and Haaland's is "
           "agreement with Colebrook, which is the claim he published, not an "
           "independent measurement; the corpus holds no friction data at all. "
-          " Also not covered: the transition band, and Ergun/two-phase "
+          " Also not covered: any friction factor IN the transition band "
+          "(none exists to check -- the regime is not a function of Re "
+          "there), the two-phase path's own regimes, and Ergun/two-phase "
           "multipliers, which are still unit-op-private; and no "
           "compressible pipe exists to check.")
     return 0
