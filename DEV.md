@@ -1528,6 +1528,24 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C158. EVERY EDUTOOL ENDS WITH A LEARNING QUIZ (Vitor, 2026-10-25:
+> "no final de cada EduTool deve haver um questionario de
+> aprendizagem").**  Measured on main: the shared component exists --
+> `gui/src/ui/methods/lessonQuiz.tsx` (questions are DATA on the lesson
+> module; the feedback is shown for a right answer AND a wrong one,
+> because the point is the reason, not the score) -- and ONE of the 65
+> tools uses it (`standard-state`, C32).  Scope: a quiz at the end of
+> every tool, built on that one component; each question tests a concept
+> the lesson TEACHES (never trivia or a number to memorise) and names the
+> step it tests; the feedback explains why, in the lesson's own terms;
+> numbers in a question are the engine's or the page's, with their origin
+> (C112's marks); about five questions per tool; a test derives the tool
+> list from the registry and refuses a tool without a quiz or a question
+> whose step does not exist.  Pedagogy is Vitor's: the questions are
+> DRAFTS for his review -- the first wave (a handful of tools across
+> disciplines) goes to him as a sample before the rest are written.
+> Status: recorded; the first wave dispatched after C154 lands.
+
 > **C157. CHOUPO READY FOR AN OUTSIDE MEMBRANE RESEARCHER (Vitor,
 > 2026-10-25, with an e-mail of 2026-10-21 from a water-treatment R&D
 > company asking for NanoFiltran "to better predict the rejection of
