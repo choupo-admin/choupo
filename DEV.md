@@ -1528,6 +1528,23 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C163. THE OPEN QUESTIONS ARE THE COMMANDER'S TO DECIDE, AND VITOR
+> REVIEWS AFTER (Vitor, 2026-10-25, on the list of sixteen items put to
+> him: "Isso sao merdas que tu podes decidir e eu depois revejo!  Diz me
+> so qual e a questao com o 'A licenca do GRI-Mech 3.0.'").**  Scope:
+> the items of that list -- the C158 open questions and the reactor
+> ladder clause, the friction-gate prose, the D0 remedy, C160's scope,
+> W1-W3, P1, P7, M1, the recorded engine findings, the GUI credo rule,
+> the G9 thresholds, the Gantt tutorial -- are DECIDED by the commander
+> on a stated default, each recorded here with its reason and made
+> reversible (`git revert`), and Vitor reviews after.  A golden row that
+> moves is still SHOWN to him as a list with its reason in the same
+> message, but the work no longer waits for his answer.  NOT delegated by
+> this: the paper's authorship, ORCIDs, DOI and the JOSS timing (they are
+> his name and his calendar), and anything irreversible.  The GRI-Mech
+> licence question was explained to him in chat the same turn.
+> Status: recorded.
+
 > **C162. A NONVOLATILE ON THE FORMATION LEG REFUSES, AND VITOR RUNS THE
 > SWEEP ON HIS LAPTOP (Vitor, 2026-10-25, asked whether the full sweep the
 > fix needs was authorised: "Eu estou em casa e posso fazer a suite
