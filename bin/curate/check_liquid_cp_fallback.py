@@ -59,8 +59,26 @@ WHAT THIS GATE DOES **NOT** COVER, stated so its green line cannot imply it:
     ThermoPackage.cpp and NOT built.  What is checked is that the engine makes
     ONE approximation loudly instead of two silently disagreeing.
   * It does not measure the error that approximation carries in any case.
-  * It does not check the OTHER leg (speciesPhaseEnthalpy), which was already
-    correct and is not touched.
+  * It does not check the value the FORMATION leg (speciesPhaseEnthalpy)
+    returns for its own fallback -- only that it REFUSES a nonvolatile (A6).
+
+  (A6) THE FORMATION LEG REFUSES A NONVOLATILE TOO, through the SAME home.
+       This docstring used to call that leg "already correct" and leave it
+       out.  It was not: the formation leg announced the Watson-slope fallback
+       for a `role nonvolatile;` component and priced it through h_pure_ig --
+       the reference the doctrine forbids -- while the sensible leg refused,
+       so one decision had two homes again, and since DEV.md 4c C65 the
+       formation leg is the one the energy report and every
+       `flashState::priceState` unit price on (DEV.md 4c C162, 2026-10-25).
+       Both legs now call `Component::requireWatsonSlopeLiquidFallback`.  The
+       arm drives the formation leg with a `valve` (both ends on
+       `priceState`, Valve.cpp) and requires the refusal's own words AND the
+       leg it names -- `(Refused on the formation-datum liquid leg.)` -- and
+       requires that the fallback was NOT announced for the probe first: an
+       announcement of a fallback that is then refused describes a
+       computation that does not happen.  Naming the leg is what makes this
+       arm discriminating: without it, a valve that went back to the
+       sensible leg would satisfy A6 on A3's refusal.
 
 SABOTAGE-VERIFIED 2026-08-13, twice, and BOTH sabotages first came back
 GREEN against a gate that was measuring something adjacent to its subject.
@@ -129,7 +147,7 @@ def result_json(text):
     return json.loads(m.group(1)) if m else None
 
 
-def probe(tmp, record_text, comps):
+def probe(tmp, record_text, comps, unit="pump"):
     """A minimal STEADY case whose one unit reaches the SENSIBLE liquid leg.
 
     A `pump` is the exerciser, and the choice matters: on a package with no
@@ -166,8 +184,15 @@ def probe(tmp, record_text, comps):
                            comps[0] + ".dat"), "w") as fh:
         fh.write(record_text)
     with open(os.path.join(tmp, "system", "flowsheetDict"), "w") as fh:
-        fh.write("units ( { name p; type pump; in feed; outputs ( out );"
-                 " operation { dP 1.0 bar; eta 0.7; } } );\n")
+        if unit == "pump":
+            fh.write("units ( { name p; type pump; in feed; outputs ( out );"
+                     " operation { dP 1.0 bar; eta 0.7; } } );\n")
+        else:
+            #  A6's exerciser: a valve prices BOTH ends on
+            #  `flashState::priceState` (Valve.cpp, DEV.md 4c C65 item d),
+            #  which reaches the FORMATION leg (speciesPhaseEnthalpy).
+            fh.write("units ( { name p; type valve; in feed; outputs ( out );"
+                     " operation { P 4 bar; } } );\n")
     flows = "\n".join("    %s 1.0 kmol/h;" % c for c in comps)
     with open(os.path.join(tmp, "0", "feed"), "w") as fh:
         fh.write("componentMolarFlows\n{\n%s\n}\n\nT 330 K;\nP 5 bar;\n" % flows)
@@ -275,6 +300,30 @@ try:
                      " a reader cannot tell it apart from a plain missing-data"
                      " refusal and will add the wrong block")
 
+    # ---- A6: the FORMATION leg refuses a nonvolatile, through ONE home ---
+    d = os.path.join(tmp, "nonvolFormation")
+    rc, out = probe(d, BASE.format(name="probeSalt", role="role nonvolatile;",
+                                   cpig=CPIG), ["probeSalt", "water"],
+                    unit="valve")
+    if rc == 0:
+        fails.append("A6: a `role nonvolatile;` component with no"
+                     " liquidHeatCapacity was PRICED on the formation-datum"
+                     " leg (a valve, both ends on priceState) instead of"
+                     " refusing -- the ideal-gas reference is forbidden for a"
+                     " nonvolatile on EVERY leg (DEV.md 4c C162)")
+    elif not ("`role nonvolatile;`" in out
+              and "(Refused on the formation-datum liquid leg.)" in out):
+        fails.append("A6: the valve probe refused (exit %d) but not with the"
+                     " formation-datum leg's nonvolatile refusal -- the run"
+                     " either never reached that leg or refused for another"
+                     " reason, so the arm proves nothing" % rc)
+    if any(l.startswith("[thermo] probeSalt:") and "Watson-slope fallback" in l
+           for l in out.splitlines()):
+        fails.append("A6: the formation-datum leg ANNOUNCED the Watson-slope"
+                     " fallback for a nonvolatile -- the refusal must come"
+                     " before the announcement, or the log describes a"
+                     " computation that does not happen")
+
     # ---- A4: neither Cp -> still refuses, naming both blocks --------------
     d = os.path.join(tmp, "nocp")
     rc, out = probe(d, BASE.format(name="probeBare", role="", cpig=""),
@@ -303,7 +352,9 @@ print("check_liquid_cp_fallback: OK -- a missing liquid heat capacity now has"
       " once per component, not once per call.  BOTH refusals survive: a"
       " `role nonvolatile;` component still refuses NAMING the role (the"
       " ideal-gas reference is forbidden for it), and a component with"
-      " neither heat capacity still refuses naming both blocks."
+      " neither heat capacity still refuses naming both blocks, and the"
+      " FORMATION-datum leg refuses the nonvolatile too, through the same"
+      " home (a valve on priceState; the refusal names that leg)."
       "  NOT CHECKED: whether the fallback is physically right -- it prices a"
       " dissolved permanent gas at zero heat of solution, and the honest home"
       " is the dissolved-gas Henry rung, named in ThermoPackage.cpp and NOT"

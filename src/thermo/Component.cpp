@@ -1342,6 +1342,36 @@ scalar Component::Hvap_latent(scalar T) const
     return Hvap_Tb_ * std::pow(num / den, 0.38);
 }
 
+void Component::requireWatsonSlopeLiquidFallback(const char* leg) const
+{
+    //  THE ONE HOME of "may this component's LIQUID leg fall back to the
+    //  Watson-slope form h_ig - Hvap(T)?" (DEV.md 4c C162).  Both liquid legs
+    //  call it before they take the fallback: `Hliq_pure` below (the SENSIBLE
+    //  leg) and `ThermoPackage::speciesPhaseEnthalpy` (the FORMATION-DATUM
+    //  leg, which the energy report and every `flashState::priceState` unit
+    //  price on since DEV.md 4c C65).  Until 2026-10-25 only the sensible leg
+    //  refused; the formation leg announced the fallback for a nonvolatile
+    //  and went on -- one decision with two homes, the settled rule enforced
+    //  on the leg the main path does NOT use.  Why each refusal exists is
+    //  written at the call site in `Hliq_pure`.
+    if (isNonvolatile())
+        throw std::runtime_error("Component '" + name_ +
+            "': liquidHeatCapacity missing, and this component is declared"
+            " `role nonvolatile;` -- the ideal-gas fallback the engine uses"
+            " for a dissolved permanent gas is FORBIDDEN here (a"
+            " nonvolatile's enthalpy must not route through the ideal-gas"
+            " reference).  Give it a liquidHeatCapacity block, or price it"
+            " on the solid/aqueous rung.  (Refused on the " + leg +
+            " liquid leg.)");
+
+    if (!cpGas_)
+        throw std::runtime_error("Component '" + name_ +
+            "': liquidHeatCapacity missing — required for enthalpy, and"
+            " there is no idealGasHeatCapacity to fall back on either, so"
+            " no rung can be integrated.  Add one of the two blocks."
+            "  (Refused on the " + leg + " liquid leg.)");
+}
+
 scalar Component::Hliq_pure(scalar T, scalar Tref) const
 {
     if (!cpLiq_)
@@ -1375,20 +1405,10 @@ scalar Component::Hliq_pure(scalar T, scalar Tref) const
         //      hand it exactly the reference the doctrine forbids.
         //  (2) NO IDEAL-GAS Cp EITHER.  Then there is nothing to integrate on
         //      any rung, and the remedy is data, not a branch.
-        if (isNonvolatile())
-            throw std::runtime_error("Component '" + name_ +
-                "': liquidHeatCapacity missing, and this component is declared"
-                " `role nonvolatile;` -- the ideal-gas fallback the engine uses"
-                " for a dissolved permanent gas is FORBIDDEN here (a"
-                " nonvolatile's enthalpy must not route through the ideal-gas"
-                " reference).  Give it a liquidHeatCapacity block, or price it"
-                " on the solid/aqueous rung.");
-
-        if (!cpGas_)
-            throw std::runtime_error("Component '" + name_ +
-                "': liquidHeatCapacity missing — required for enthalpy, and"
-                " there is no idealGasHeatCapacity to fall back on either, so"
-                " no rung can be integrated.  Add one of the two blocks.");
+        //
+        //  Both refusals live in ONE home, `requireWatsonSlopeLiquidFallback`
+        //  above, which the formation-datum leg calls too (DEV.md 4c C162).
+        requireWatsonSlopeLiquidFallback("sensible");
 
         //  DEDUP THROUGH THE SINK, not through a flag on this object -- and
         //  the first version got that wrong in a way worth keeping.  A
