@@ -43,6 +43,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** A source, with what kind of authority it is -- a LEGAL requirement, a
  *  GUIDANCE document, or an EXAMPLE of practice -- what was taken from it,
@@ -590,4 +591,114 @@ export const BUND_LIMITS: readonly LessonLimit[] = [
     body: "No law, code or permit is checked.  The rules on the page are "
       + "examples with their origin; the one that binds a real bund is its "
       + "own country's, product's and permit's." },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it.  Like the steps, they
+ *  quote nothing. */
+export const BUND_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "layer", steps: [1, 2],
+    q: "Where does a bund stand among the layers of protection?",
+    options: [
+      "Prevention: it stops the tank from failing",
+      "Detection: it shows that a tank has leaked",
+      "Secondary containment: it limits the spread of a spill that has "
+        + "already happened",
+      "A layer that lets the overfill protection and the level alarms be relaxed",
+    ],
+    correct: 2,
+    feedback: "The tank and its pipes are the primary containment; the bund "
+      + "holds what has already escaped (step 1).  It does not prevent the "
+      + "initiating event — the tank has failed when the bund begins to "
+      + "work — so it is never a reason to neglect the layers before it, and "
+      + "the layers after it assume it holds (step 2).",
+  },
+  {
+    id: "whose-footprint", steps: [6],
+    q: "A tank in a bund fails.  Whose footprints reduce the room left for "
+      + "its contents?",
+    options: [
+      "Every tank's, the failing one included",
+      "Only the other tanks': the failing tank's own footprint is part of the pool",
+      "None: the geometric capacity, floor area times wall height, is what counts",
+    ],
+    correct: 1,
+    feedback: "Whether the shell is torn away or leaks until the levels meet, "
+      + "the liquid inside the failing tank and outside it are one pool, so "
+      + "its own footprint displaces nothing; only the other tanks take room "
+      + "(step 6).  The engine's net volume deducts the failing tank too and "
+      + "is on the safe side by that tank's footprint times the wall height.  "
+      + "Geometric, net and useful are three different numbers.",
+  },
+  {
+    id: "rule-origin", steps: [8],
+    q: "What is the rule of 110 % of the largest tank or 25 % of all the "
+      + "tanks, whichever is larger?",
+    options: [
+      "A law that binds every bund in every country",
+      "The rule Choupo's layout check applies to every case",
+      "A teaching example, from UK guidance on flammable liquids and an "
+        + "English regulation on oil stores, each with its own scope",
+    ],
+    correct: 2,
+    feedback: "HSG176 gives the figures as what is normally regarded as the "
+      + "minimum, and that guidance is not compulsory unless it says so; the "
+      + "Oil Storage Regulations 2001 make them law only for the stores they "
+      + "cover.  Choupo ships no rule: a layoutDict declares its own terms, "
+      + "each with its source, and the largest governs (step 8).",
+    origins: ["reference"],
+  },
+  {
+    id: "rain", steps: [7, 16],
+    q: "A bund holds the rupture of its largest tank on a dry day.  Is it "
+      + "still adequate after rain has stood in it?",
+    options: [
+      "Not necessarily: the rain has taken the floor area times its depth",
+      "Yes: the extra 10 % of the rule is there for the rain",
+      "Yes: the spill floats on the water, so the rain does not count",
+    ],
+    correct: 0,
+    feedback: "Rain does not leave a bund by itself, and until it is pumped "
+      + "out it takes capacity the spill will need (step 7).  The rain is a "
+      + "term of its own beside the rule, not hidden in its margin, and "
+      + "pumping it out is what an operator does and what a design must not "
+      + "assume has been done (step 16).",
+    origins: ["reference"],
+  },
+  {
+    id: "open-drain", steps: [10],
+    q: "The bund's drain valve has been left open when a tank fails.  What "
+      + "is the bund then?",
+    options: [
+      "Still a barrier, because the wall holds the volume",
+      "A problem only if the spill overtops the wall",
+      "Still there, and no longer a barrier: the spill leaves through the drain",
+    ],
+    correct: 2,
+    feedback: "Scenario D: the wall is intact and the liquid leaves anyway, "
+      + "at the rate the opening passes under the head of the pool.  That is "
+      + "why the guidance asks for a drain valve kept closed, preferably "
+      + "locked, and England's oil regulation forbids such an opening for the "
+      + "stores it covers (step 10).  A layer that exists on the drawing and "
+      + "not in the plant protects nobody.",
+  },
+  {
+    id: "low-or-high", steps: [11, 12],
+    q: "For a flammable liquid, compare a low wide bund with a high narrow "
+      + "one of the same volume.  Which statement is right?",
+    options: [
+      "They are equivalent, since they hold the same volume",
+      "The low wide one makes a larger pool — more vapour, a larger fire — "
+        + "but leaves the tanks ventilated and reachable",
+      "The low wide one is safer in every respect, because its wall is lower",
+      "The high narrow one is safer in every respect, because its pool is smaller",
+    ],
+    correct: 1,
+    feedback: "The pool's surface is the bund's free floor, and both the "
+      + "vapour and a pool fire grow with it (step 12).  A high wall keeps "
+      + "the pool small but loads the wall more, can hold heavy vapour like "
+      + "a pit, is harder to escape from and keeps fire-fighters further "
+      + "away (step 11).  The choice is a compromise, not neutral.",
+  },
 ];

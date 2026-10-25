@@ -41,6 +41,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const FEL_STEPS: readonly LessonStep[] = [
   {
@@ -297,5 +298,114 @@ export const FEL_LIMITS: readonly LessonLimit[] = [
       + "names, with its own gates and its own deliverables.  What is "
       + "universal is the shape: the definition matures, the estimate "
       + "narrows, and the model fidelity follows the definition.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const FEL_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "fel-and-feed", steps: [1],
+    q: "How are FEL and FEED related?",
+    options: [
+      "They are two names for the same thing, used by rival schools",
+      "FEED comes first; FEL is the detailed design that follows it",
+      "FEL is the owner's stage-gate governance of the early project; FEED "
+        + "is the engineering work done inside its last front-end stage",
+    ],
+    correct: 2,
+    feedback: "FEL is the frame — a stage of work, then a gate where the owner "
+      + "decides whether to spend more — and FEED, front-end engineering "
+      + "design or basic engineering, is the engineering inside its last "
+      + "front-end stage.  The two are not rivals (step 1).",
+  },
+  {
+    id: "which-numbering", steps: [2],
+    q: "A document says a study is at FEL 1.  What can you conclude?",
+    options: [
+      "It is a concept screen",
+      "Little, until you know which numbering the document uses",
+      "It is a feasibility study",
+      "It carries a Class 1 estimate",
+    ],
+    correct: 1,
+    feedback: "One family of sources counts FEL 0 to FEL 4, other owners "
+      + "count three front-end stages, so FEL 1 is a feasibility study in one "
+      + "company and a concept screen in another.  What both agree on is the "
+      + "anchor: FEL 3 is FEED (step 2).  The estimate class is AACE's scale, "
+      + "a different one again.",
+    origins: ["reference"],
+  },
+  {
+    id: "range-of-ranges", steps: [3, 4],
+    q: "What is the accuracy of a Class 4 estimate?",
+    options: [
+      "Exactly −30 % / +50 %",
+      "A range of ranges: a low side somewhere in −15 to −30 % and a high "
+        + "side somewhere in +20 to +50 %, placed by the project's own risk "
+        + "analysis",
+      "Better than any Class 5 estimate's, on any project",
+    ],
+    correct: 1,
+    feedback: "The standard gives each class a box, not a number, and where a "
+      + "project lands in it is a property of the project (step 4).  The "
+      + "boxes overlap: a Class 5 estimate for one project may be as accurate "
+      + "as a Class 3 for another.  Where a case declares no band, Choupo uses "
+      + "the class's pessimistic corner and says so.",
+    origins: ["reference"],
+  },
+  {
+    id: "overlapping-bands", steps: [6],
+    q: "The cost bands of two options overlap.  Does that make the two "
+      + "indistinguishable?",
+    options: [
+      "No: separated bands are sufficient to decide, not necessary",
+      "Yes: no decision can be taken until the bands separate",
+      "Yes, unless one option costs more than twice the other",
+    ],
+    correct: 0,
+    feedback: "A class range is not a distribution; two options estimated on "
+      + "the same basis share much of their error, which cancels in the "
+      + "DIFFERENCE (at a correlation of 0.9 the difference is known to "
+      + "0.45 σ, the page's arithmetic); and most real decisions rest on "
+      + "expected cost and risk.  Separated bands guarantee the answer for "
+      + "every value in both; they are not the only way to reach one (step 6).",
+    origins: ["page"],
+  },
+  {
+    id: "size-more-than-once", steps: [7],
+    q: "When is a reactor's volume decided?",
+    options: [
+      "Once, by the kinetic model, at the start of the project",
+      "Only in detailed design, by the vendor",
+      "Once, by the space velocity, and never revisited",
+      "More than once: from a space velocity, then from an integrated rate "
+        + "law, then by the licensor or catalyst supplier",
+    ],
+    correct: 3,
+    feedback: "At concept no item is sized at all; the first per-item size "
+      + "comes with the equipment-factored estimate of feasibility.  Choupo's "
+      + "ammonia ladder shows the first two: a converter sized from a "
+      + "declared space velocity, then a bed the kinetic model solves.  The "
+      + "kinetic model did not first size the reactor; it checked and refined "
+      + "a size already produced (step 7).",
+  },
+  {
+    id: "choupo-class", steps: [8],
+    q: "A Choupo case solves a kinetic bed and designs its exchangers tube by "
+      + "tube.  What class is the capital cost it prints?",
+    options: [
+      "Class 3, because the process work is FEED-level",
+      "Class 1, because the engine computed it",
+      "A study-type, Class 4 estimate: the cost is still factored from an "
+        + "equipment list",
+    ],
+    correct: 2,
+    feedback: "The class is set by the estimating method and the maturity of "
+      + "the definition, not by how rigorous the process model is.  Choupo's "
+      + "basic design is FEL-3 in its process fidelity and a study-type "
+      + "estimate in its cost, and a FEED package holds much no simulator "
+      + "produces (step 8).",
+    origins: ["reference"],
   },
 ];

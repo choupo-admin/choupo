@@ -428,7 +428,8 @@ export function StandardStateTool(): JSX.Element {
         {step(9)}
         {step(10)}
 
-        <LessonQuiz title="Six questions" questions={STANDARD_STATE_QUIZ} />
+        <LessonQuiz title="Six questions" questions={STANDARD_STATE_QUIZ}
+          lesson={STANDARD_STATE_STEPS} />
 
         <LessonLimits limits={STANDARD_STATE_LIMITS} />
       </Stack>

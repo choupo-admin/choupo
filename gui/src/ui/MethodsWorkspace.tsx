@@ -149,7 +149,8 @@ import { McCabePlot } from "./plotting/McCabePlot.js";
 import { PsychroPlot } from "./plotting/PsychroPlot.js";
 import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
 import { useCoarsePointer, useNarrowViewport } from "./methods/methodsChrome.js";
-import { MCCABE_LIMITS, MCCABE_STEPS } from "./methods/mccabeLesson.js";
+import { MCCABE_LIMITS, MCCABE_QUIZ, MCCABE_STEPS } from "./methods/mccabeLesson.js";
+import { LessonQuiz } from "./methods/lessonQuiz.js";
 import { PSYCHRO_LIMITS, PSYCHRO_STEPS } from "./methods/psychroLesson.js";
 import { KnobField, KnobNumber } from "./methods/knobPanel.js";
 import {
@@ -1026,6 +1027,9 @@ function McCabeTool({ catalogue, localUnifac, componentFiles }: {
 
         {step(4)}
         {step(5)}
+
+        <LessonQuiz title="Check your understanding" questions={MCCABE_QUIZ}
+          lesson={MCCABE_STEPS} />
 
         <Box>
           <Title order={5}>What this does not model</Title>

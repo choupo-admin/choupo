@@ -52,7 +52,10 @@ import {
 import { useMethodRun } from "../../case/methodRun.js";
 import { OriginMark, type OriginKind } from "./origin.js";
 import { LessonLimits, Tex, lessonStepper } from "./lessonStep.js";
-import { SIMPLICITY_LIMITS, SIMPLICITY_SOURCES, SIMPLICITY_STEPS } from "./correlationSimplicityLesson.js";
+import {
+  SIMPLICITY_LIMITS, SIMPLICITY_QUIZ, SIMPLICITY_SOURCES, SIMPLICITY_STEPS,
+} from "./correlationSimplicityLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import {
   BASE_DIMS, PROBLEMS, blend, curveOf, dimsOf, fitDecade, groupTex, hakenEigenvalues, hakenRun,
   keysOf, localSlope, parseSweepCsv, piGroups, q, reachWithin, rref, wiggle,
@@ -1012,6 +1015,8 @@ export function CorrelationSimplicityTool(): JSX.Element {
         {run.busy && page !== "dims" && page !== "slave" && ready && (
           <Text size="xs" c="dimmed">re-running…</Text>
         )}
+        <LessonQuiz title="Check your understanding (all five pages)"
+          questions={SIMPLICITY_QUIZ} lesson={SIMPLICITY_STEPS} />
         <LessonLimits limits={SIMPLICITY_LIMITS} />
       </Stack>
     </Box>

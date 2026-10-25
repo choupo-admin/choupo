@@ -438,7 +438,7 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
 
 export const STANDARD_STATE_QUIZ: readonly QuizQuestion[] = [
   {
-    id: "h0-at-700",
+    id: "h0-at-700", steps: [3, 4],
     q: "Can a standard enthalpy be evaluated at 700 K?",
     options: ["Yes", "No"], correct: 0,
     feedback: "The degree sign fixes the standard state — the standard pressure "
@@ -447,7 +447,7 @@ export const STANDARD_STATE_QUIZ: readonly QuizQuestion[] = [
       + "is one value of it (steps 3 and 4).",
   },
   {
-    id: "standard-at-150bar",
+    id: "standard-at-150bar", steps: [5],
     q: "Does using a standard property in a calculation at 150 bar oblige you "
       + "to assume an ideal gas?",
     options: ["Yes", "No"], correct: 1,
@@ -457,7 +457,7 @@ export const STANDARD_STATE_QUIZ: readonly QuizQuestion[] = [
       + "is 0.23 kJ/mol against a 12.7 kJ/mol sensible rise (step 5).",
   },
   {
-    id: "pressure-affects-h",
+    id: "pressure-affects-h", steps: [1, 2],
     q: "At constant temperature, does pressure leave the enthalpy of a real gas "
       + "unchanged?",
     options: ["Yes", "No — it can change it"], correct: 1,
@@ -469,7 +469,7 @@ export const STANDARD_STATE_QUIZ: readonly QuizQuestion[] = [
       + "equation +1.38 (steps 1 and 2).",
   },
   {
-    id: "zero-shift",
+    id: "zero-shift", steps: [6],
     q: "Does moving the zero of the enthalpy change the energy needed to take "
       + "a gas from one state to another?",
     options: ["Yes", "No"], correct: 1,
@@ -479,7 +479,7 @@ export const STANDARD_STATE_QUIZ: readonly QuizQuestion[] = [
       + "zeros are moved inconsistently.",
   },
   {
-    id: "g-zero",
+    id: "g-zero", steps: [9, 10],
     q: "At equilibrium, is G equal to zero?",
     options: ["Yes", "No"], correct: 1,
     feedback: "At fixed T and P the stable equilibrium is the MINIMUM of G "
@@ -490,7 +490,7 @@ export const STANDARD_STATE_QUIZ: readonly QuizQuestion[] = [
       + "an inequality instead (steps 9 and 10).",
   },
   {
-    id: "298-in-700-balance",
+    id: "298-in-700-balance", steps: [8],
     q: "Is using the standard reaction enthalpy at 298.15 K in a balance on a "
       + "reactor at 700 K necessarily wrong?",
     options: ["Yes", "No"], correct: 1,

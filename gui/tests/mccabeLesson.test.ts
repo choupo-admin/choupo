@@ -126,10 +126,12 @@ describe("the tool renders it as a scrolling lesson", () => {
     //  distillation steps must appear exactly once.
     //  Counted inside the FUNCTION, not the file: the import line names the
     //  constant too, and counting that made the first version of this test
-    //  fail on a page that was correct.
+    //  fail on a page that was correct.  And it is the STEPPER that is
+    //  counted: the end-of-lesson quiz (C158) names the same list to point
+    //  back to its steps.
     const i = WS.indexOf("function McCabeTool(");
     const fn = WS.slice(i, WS.indexOf("// ---- Psychrometric chart ---"));
-    expect((fn.match(/MCCABE_STEPS/g) ?? []).length).toBe(1);
+    expect((fn.match(/lessonStepper\(MCCABE_STEPS\)/g) ?? []).length).toBe(1);
     const p = WS.indexOf("function PsychroTool(");
     expect(WS.slice(p)).not.toContain("MCCABE_");
   });
