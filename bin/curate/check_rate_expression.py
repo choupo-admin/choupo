@@ -22,6 +22,16 @@ the same stream) and on throwaway copies of its expression half:
       closed-form CSTR solution of Michaelis-Menten kinetics (a quadratic in
       the conversion, solved here independently).
 
+  (a2) THE WITNESS CONSERVES MASS.  Each reactor's outlet carries the
+      mass its feed brought, read off the published streams' F_mass.  The
+      witness once reacted the catalogue's compA (MW 30) into compB (MW 50)
+      one-for-one and closed at 133.333 %: both routes agreed with each
+      other and with the closed form, which is a statement about MOLES, and
+      this gate passed while check_mass_closure failed the same case.  Its
+      species are now the case's own isomers (one molar mass); this arm is
+      what keeps a witness of a rate law from being a witness of a reaction
+      that creates matter.
+
   (b) THE FORMULA IS PRINTED BACK AS PARSED, with its dimensions -- the
       glass box.  The printed text is the PARSE, not the input string, so a
       reader sees the precedence the engine read.
@@ -76,6 +86,9 @@ predicted and is recorded as it happened.
       as P = 0, the law divided by it, and the run refused as NON-FINITE
       rather than by name.  CAUGHT by (d15), which is why the offer now
       treats P <= 0 as absent and the refusal names the feed.
+  S9  (2026-10-25, on the CASE, not the engine) isomerB's MW put back to
+      50 -- the old compA -> compB molar masses.  CAUGHT by (a2) on both
+      reactors at 133.333 %; (a) still passed, which is why (a2) exists.
   (S7, a table point interpolated rather than returned exactly, is
   `check_ammonia_rate`'s arm (f).)
 """
@@ -101,9 +114,9 @@ def witness_numbers():
     fs = (CASE / "system/flowsheetDict").read_text()
     vr = float(re.search(r"V_R\s+([0-9.eE+-]+);", fs).group(1))
     feed = (CASE / "0/feedExpr").read_text()
-    fa = float(re.search(r"compA\s+([0-9.eE+-]+)\s+kmol/h;", feed).group(1)) / 3600.0
+    fa = float(re.search(r"isomerA\s+([0-9.eE+-]+)\s+kmol/h;", feed).group(1)) / 3600.0
     vliq = float(re.search(r"^Vliq\s+([0-9.eE+-]+);",
-                           (CASE / "constant/components/compA.dat").read_text(),
+                           (CASE / "constant/components/isomerA.dat").read_text(),
                            re.M).group(1))           # m3/mol
     return vmax, km, vr, fa, vliq
 
@@ -189,8 +202,27 @@ def main() -> int:
         notes.append(f"the C++ law and the expression agree ({xe:.12g} mol/s) and "
                      "both equal the closed-form Michaelis-Menten CSTR")
 
+    # ---- (a2) the witness conserves mass ------------------------------
+    streams = js.get("streams", {})
+    closed = 0
+    for feed, prod in (("feedCode", "productCode"), ("feedExpr", "productExpr")):
+        mi = streams.get(feed, {}).get("F_mass")
+        mo = streams.get(prod, {}).get("F_mass")
+        if mi is None or mo is None:
+            fails.append(f"(a2) `{feed}` or `{prod}` publishes no F_mass -- the "
+                         "mass balance cannot be judged, and a check that cannot "
+                         "run must not pass")
+        elif abs(mo - mi) > 1e-9 * abs(mi):
+            fails.append(f"(a2) {feed} -> {prod} carries {mi!r} kg/s in and {mo!r} "
+                         f"kg/s out ({100.0 * mo / mi:.6f} %) -- the witness's "
+                         "reaction creates or destroys matter")
+        else:
+            closed += 1
+    if closed == 2:
+        notes.append("both reactors conserve mass (outlet F_mass = feed F_mass)")
+
     # ---- (b) the formula is printed back as parsed ---------------------
-    if "Vmax*c[compA]/(Km + c[compA])" not in out:
+    if "Vmax*c[isomerA]/(Km + c[isomerA])" not in out:
         fails.append("(b) the run log does not print the expression back as PARSED")
     if "[0 -3 -1 0 1]" not in out:
         fails.append("(b) the printed law does not carry its dimensions")
@@ -222,11 +254,11 @@ def main() -> int:
                                  f"`{expect}`.  Got: ...{outp[-300:]}")
                 return rcp, outp
 
-        RATE = 'rate    "Vmax * c[compA] / (Km + c[compA])";'
+        RATE = 'rate    "Vmax * c[isomerA] / (Km + c[isomerA])";'
         sub = lambda new: (lambda t: t.replace(RATE, new))
 
         # ---- (c) precedence and associativity, by value ----------------
-        rcp, outp = probe("(c)", sub('rate    "Vmax * c[compA] / (Km + c[compA]) * (2^3^2/512) * (8/4/2) * (-1^2 + 2)";'),
+        rcp, outp = probe("(c)", sub('rate    "Vmax * c[isomerA] / (Km + c[isomerA]) * (2^3^2/512) * (8/4/2) * (-1^2 + 2)";'),
                           "", must_run=True)
         xp = re.search(r'"xi_mm_expr_mol_per_s":\s*([0-9.eE+-]+)', outp)
         if rcp != 0 or not xp or float(xp.group(1)) != xb:
@@ -237,33 +269,33 @@ def main() -> int:
             notes.append("precedence held by value (2^3^2 = 512, 8/4/2 = 1, -1^2 = -1)")
 
         # ---- (d) every refusal, by name --------------------------------
-        probe("(d1) unknown symbol", sub('rate    "Vmax * c[compA] / (Km + cA)";'),
+        probe("(d1) unknown symbol", sub('rate    "Vmax * c[isomerA] / (Km + cA)";'),
               "unknown name `cA`")
-        probe("(d2) rate vs basis", sub('rate    "Vmax * c[compA]";'),
+        probe("(d2) rate vs basis", sub('rate    "Vmax * c[isomerA]";'),
               "basis reactorVolume")
-        probe("(d3) + across dimensions", sub('rate    "Vmax * c[compA] / (Km + 1)";'),
+        probe("(d3) + across dimensions", sub('rate    "Vmax * c[isomerA] / (Km + 1)";'),
               "`+` adds quantities of different dimensions")
         probe("(d4) parameter with no unit", lambda t: t.replace(
               "Km    5.0     kmol/m3;", "Km    5.0;"), "carries no unit")
-        probe("(d5) exp of a dimensional argument", sub('rate    "Vmax * exp(c[compA])";'),
+        probe("(d5) exp of a dimensional argument", sub('rate    "Vmax * exp(c[isomerA])";'),
               "takes a dimensionless argument")
         probe("(d6) unknown function", sub('rate    "Vmax * foo(1)";'),
               "unknown function `foo`")
         probe("(d7) definition cycle", lambda t: t.replace(RATE,
               'definitions { a "b"; b "a"; }\n        ' + RATE), "CYCLE")
         probe("(d8) non-finite value", sub(
-              'rate    "Vmax * c[compA] / (Km + c[compA]) * Km / (Km - Km)";'),
+              'rate    "Vmax * c[isomerA] / (Km + c[isomerA]) * Km / (Km - Km)";'),
               "non-finite")
         #  A DEFINITION that goes non-finite is a separate guard from the rate's
         #  own (S4 disabled it and survived the arm above): the refusal must
         #  name the definition, because that is what the reader goes to fix.
         probe("(d8b) a definition goes non-finite", lambda t: t.replace(RATE,
               'definitions { blowUp "Km / (Km - Km)"; }\n        '
-              'rate    "Vmax * c[compA] / (Km + c[compA]) * blowUp / blowUp";'),
+              'rate    "Vmax * c[isomerA] / (Km + c[isomerA]) * blowUp / blowUp";'),
               "definition `blowUp`")
         probe("(d9) table read outside its points", lambda t: t.replace(RATE,
               'tables { TT { x ( 300 340 ); xUnit K; f ( 1 1 ); yUnit -; } }\n        '
-              'rate    "Vmax * c[compA] / (Km + c[compA]) * f(T)";'),
+              'rate    "Vmax * c[isomerA] / (Km + c[isomerA]) * f(T)";'),
               "OUTSIDE its declared points")
         probe("(d10) validity declared refuse", lambda t: t.replace(RATE,
               RATE + '\n        validity { Km { max 1 kmol/m3; outside refuse; } }'),
@@ -273,10 +305,10 @@ def main() -> int:
               "Vmax  1.0e-2  kmol/m3/s;", "Vmax  1.0e-2  mol/g/s;").replace(
               "rateConstant { name Vmax;  unit kmol/m3/s; }", ""),
               "declares no `catalystLoading`")
-        probe("(d12) syntax error", sub('rate    "Vmax * (c[compA] / (Km + c[compA])";'),
+        probe("(d12) syntax error", sub('rate    "Vmax * (c[isomerA] / (Km + c[isomerA])";'),
               "expected `)`")
         probe("(d13) a power-law order", lambda t: t.replace(
-              "{ component compA;  nu -1; }", "{ component compA;  nu -1; order 1; }", 1),
+              "{ component isomerA;  nu -1; }", "{ component isomerA;  nu -1; order 1; }", 1),
               "declares `order`")
         probe("(d14) unknown kinetics type", lambda t: t.replace(
               "type    expression;", "type    expresion;"), "Registered")
@@ -289,7 +321,7 @@ def main() -> int:
             feed.write_text(re.sub(r"\nP\s+[^;]*;", "\n", feed.read_text()))
             rx = dst / "constant/reactions"
             rx.write_text(rx.read_text().replace(RATE,
-                'rate    "Vmax * c[compA] / (Km + c[compA]) * P / P";'))
+                'rate    "Vmax * c[isomerA] / (Km + c[isomerA]) * P / P";'))
             rcp, outp = run(dst)
             if rcp == 0:
                 fails.append("(d15) a law reading P on a feed with no P: ran to "
@@ -302,7 +334,7 @@ def main() -> int:
         # ---- (e) a table interpolates linearly and says so -------------
         rcp, outp = probe("(e)", lambda t: t.replace(RATE,
               'tables { TT { x ( 300 400 ); xUnit K; f ( 1 3 ); yUnit -; } }\n        '
-              'rate    "Vmax * c[compA] / (Km + c[compA]) * f(T)";'), "", must_run=True)
+              'rate    "Vmax * c[isomerA] / (Km + c[isomerA]) * f(T)";'), "", must_run=True)
         xt = re.search(r'"xi_mm_expr_mol_per_s":\s*([0-9.eE+-]+)', outp)
         if rcp != 0 or not xt:
             fails.append(f"(e) the in-span table probe did not run (exit {rcp})")

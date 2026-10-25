@@ -16,7 +16,7 @@
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
 
-components       ( compA  compB  compC );
+components       ( isomerA  isomerB );   // case-local synthetic isomers (constant/components/)
 
 equilibrium
 {

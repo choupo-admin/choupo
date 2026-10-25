@@ -7,8 +7,11 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  reactions -- A -> B on a SATURATING rate law, r = Vmax c_A / (Km + c_A):
-  first order in A at low concentration, zero order at high.  The form is
+  reactions -- the isomerisation isomerA -> isomerB on a SATURATING rate
+  law, r = Vmax c_A / (Km + c_A): first order in A at low concentration,
+  zero order at high.  The two species are this case's own synthetic
+  isomers (constant/components/), one molar mass between them, so nu -1/+1
+  conserves mass as well as moles.  The form is
   Michaelis & Menten's (Biochem. Z. 49 (1913) 333); the two numbers are
   AUTHOR-SET for this witness -- chosen so the reactor sits between the two
   limits (c_A about Km) -- and are not anybody's measurement.
@@ -23,13 +26,13 @@ mm_code
 {
     stoichiometry
     (
-        { component compA;  nu -1; }
-        { component compB;  nu  1; }
+        { component isomerA;  nu -1; }
+        { component isomerB;  nu  1; }
     );
     kinetics
     {
         type    michaelisMenten;           // registered from code/registerUserTypes.cpp
-        species compA;                     // the substrate
+        species isomerA;                   // the substrate
         Vmax    1.0e-2  kmol/m3/s;         // author-set
         Km      5.0     kmol/m3;           // author-set
     }
@@ -39,8 +42,8 @@ mm_expr
 {
     stoichiometry
     (
-        { component compA;  nu -1; }
-        { component compB;  nu  1; }
+        { component isomerA;  nu -1; }
+        { component isomerB;  nu  1; }
     );
     kinetics
     {
@@ -53,7 +56,7 @@ mm_expr
             Vmax  1.0e-2  kmol/m3/s;       // author-set
             Km    5.0     kmol/m3;         // author-set
         }
-        rate    "Vmax * c[compA] / (Km + c[compA])";
+        rate    "Vmax * c[isomerA] / (Km + c[isomerA])";
         rateConstant { name Vmax;  unit kmol/m3/s; }
     }
 }

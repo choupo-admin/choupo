@@ -12,7 +12,7 @@
 
 componentMolarFlows
 {
-    compA    1.0 kmol/h;
+    isomerA    1.0 kmol/h;
 }
 
 T               350 K;

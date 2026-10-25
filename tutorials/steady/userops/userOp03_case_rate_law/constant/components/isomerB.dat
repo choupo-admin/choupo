@@ -1,0 +1,59 @@
+/*---------------------------------------------------------------------------*\
+  Component: isomerB  -- SYNTHETIC witness species, carried by this case only
+  (userOp03_case_rate_law).  The PRODUCT of the isomerisation
+  isomerA -> isomerB that the case's Michaelis-Menten law drives.
+
+  NOT A REAL SUBSTANCE -- a stand-in for a kinetics witness (CAS 00-00-0),
+  declared so below (`provenance { source synthetic; }`).
+
+  An isomer of isomerA: the SAME formula, the SAME molar mass, so the
+  reaction conserves mass one-for-one; and, by choice, the same molar liquid
+  volume, so the CSTR's constant-volumetric-flow liquid basis is exact.  The
+  other values are those of the catalogue's compB, which this record
+  replaces in the witness (why: isomerA.dat's header).  None of them is
+  read by the rate law; they only let an ideal gamma-phi package resolve
+  the outlet's phase.
+
+  Sources: none -- author-set for this witness; no physical primary exists.
+\*---------------------------------------------------------------------------*/
+
+name        isomerB;
+formula     X;              // fictitious; the same formula as isomerA (isomers)
+CAS         00-00-0;
+
+MW          30.0;           // kg/kmol -- EQUAL to isomerA's
+Tc          550.0;
+Pc          40.0;
+omega       0.20;
+Tb          355.0;
+HvapTb      35000;
+Vliq        8.0e-5;         // m3/mol -- EQUAL to isomerA's
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.0   1700.0   -30.0);   // log10 P_bar = A - B/(T + C)
+    Trange        (300  400);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (80.0   0.0   0.0   0.0);
+    Trange        (200  500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (120.0);
+    Trange        (300  400);
+}
+
+provenance
+{
+    source      synthetic;
+    reason      "the product of the userOp03 isomerisation witness; no physical primary exists";
+}
+
+reviewStatus interim;       // author-set witness record, not read back by a curator
