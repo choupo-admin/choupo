@@ -422,7 +422,7 @@ export function buildFine(input: MapInput): { nodes: Map<string, Fine>; edges: F
           add({ id: iid, kind: "data", role: "inline", order, member: {
             id: iid, label: `${op.name}: ${s.label}`, detail: "inline, in system/propsDict",
             target: caseTarget(PROPS_DICT_PATH, opLines, `${op.name} in system/propsDict`) } });
-          edges.push({ from: iid, to: id, flow: "measured" });
+          edges.push({ from: iid, to: id, flow: s.flow ?? "measured" });
           continue;
         }
         if (s.kind === "record") {

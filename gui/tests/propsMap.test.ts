@@ -207,7 +207,9 @@ describe("isotherm02, polarisation01, estimate_acetone", () => {
     expect(model.title).toBe("Joback");
     expect(model.members[0]!.target).toMatchObject({ kind: "guide" });
     expect((model.members[0]!.target as { url: string }).url).toContain("joback");
-    expect(map.blocks.some((b) => b.role === "inline data")).toBe(true);
+    const inline = map.blocks.find((b) => b.role === "inline data")!;
+    //  cited reference values written inline are NOT measurements: their wire says so
+    expect(map.edges.find((e) => e.from === inline.id)!.flow).toBe("reference");
     expect(map.blocks.some((b) => b.role === "records written")).toBe(true);
   });
 });

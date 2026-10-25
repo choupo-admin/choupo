@@ -151,6 +151,9 @@ export interface OpDataSlot {
   file?: string;
   /** the value the engine takes when the key is absent */
   default?: string;
+  /** what inline numbers ARE when they are not measurements: `reference`
+   *  for published values written into the propsDict to compare against */
+  flow?: "measured" | "reference";
 }
 export interface OpMapMeta {
   discipline: PropsDiscipline;
