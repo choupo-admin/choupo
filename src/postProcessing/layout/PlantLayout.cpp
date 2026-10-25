@@ -28,6 +28,7 @@ License
 
 #include "postProcessing/layout/PlantLayout.H"
 #include "postProcessing/layout/BuildingLayout.H"
+#include "postProcessing/layout/BundArithmetic.H"
 
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
@@ -2950,27 +2951,17 @@ int footprintSide(const LayoutItem& i, const std::vector<P2>& p)
     return distToOutline(i.x, i.y, p) <= kTol ? 0 : -1;
 }
 
-//  The volume an item occupies between grade and the wall's top `h`.
+//  The volume an item occupies between grade and the wall's top `h`.  The
+//  arithmetic is `bundMath`'s (BundArithmetic.H), the ONE home the bund
+//  EduTool's TypeScript is held to (check_bund_arithmetic, DEV.md 4c C136):
+//  a standing cylinder's disc, a lying one's circular segment, a box.
 scalar displacedBelow(const LayoutItem& i, scalar h)
 {
-    const scalar lo = std::max(0.0, i.z), hi = std::min(h, i.z + i.dz);
-    if (hi <= lo) return 0.0;
-    if (isCircle(i)) return 0.25 * kPi * i.dx * i.dx * (hi - lo);
+    if (isCircle(i)) return bundMath::displacedStanding(i.dx, i.z, i.dz, h);
     if (i.shape == "cylinder")
-    {
-        //  A lying cylinder: the circular segment below the level, times its
-        //  length.  R its radius, its bottom at z.
-        const scalar D = i.dz, R = 0.5 * D;
-        const scalar Lax = i.orientation == "alongX" ? i.dx : i.dy;
-        auto seg = [&](scalar t)   // the circle's area below t above its bottom
-        {
-            t = std::max(0.0, std::min(D, t));
-            return R * R * std::acos((R - t) / R)
-                 - (R - t) * std::sqrt(std::max(0.0, 2.0 * R * t - t * t));
-        };
-        return Lax * (seg(hi - i.z) - seg(lo - i.z));
-    }
-    return i.dx * i.dy * (hi - lo);
+        return bundMath::displacedLying(i.dz,
+            i.orientation == "alongX" ? i.dx : i.dy, i.z, h);
+    return bundMath::displacedBox(i.dx, i.dy, i.z, i.dz, h);
 }
 
 //  The liquid an item holds by its sizing's inventory [m3]: the sum of its
@@ -3201,7 +3192,7 @@ void readBunds(const Dictionary& d, const SimulationResult& r,
         //  ---- what the containment holds --------------------------------
         if (b.kind == "bund")
         {
-            b.grossVolume = b.area * b.wallHeight;
+            b.grossVolume = bundMath::grossVolume(b.area, b.wallHeight);
             for (const auto& id : b.items)
                 if (std::find(unsized.begin(), unsized.end(), id) == unsized.end())
                     b.displacedVolume += displacedBelow(placedItem(rec, id), b.wallHeight);
@@ -3278,8 +3269,8 @@ void readBunds(const Dictionary& d, const SimulationResult& r,
                     al.depth = length(*a, "depth", wa);
                     //  Rain falls on the catch area, and on an impounding
                     //  area's open pit too.
-                    al.volume = al.depth * (b.area + (b.hasPit
-                                ? b.pitLength * b.pitWidth : 0.0));
+                    al.volume = bundMath::depthAllowance(al.depth, b.area
+                                + (b.hasPit ? b.pitLength * b.pitWidth : 0.0));
                 }
                 if (al.volume < 0)
                     refuse(wa + ": an allowance cannot be negative");
@@ -3315,7 +3306,8 @@ void readBunds(const Dictionary& d, const SimulationResult& r,
         scalar governingVolume = -1;
         for (auto& t : b.terms)
         {
-            t.volume = t.fraction * (t.of == "largest" ? b.largestHeld : b.totalHeld);
+            t.volume = bundMath::termVolume(t.fraction, t.of == "largest",
+                                            b.largestHeld, b.totalHeld);
             if (t.volume > governingVolume)
             {
                 governingVolume = t.volume;
@@ -3324,7 +3316,7 @@ void readBunds(const Dictionary& d, const SimulationResult& r,
         }
         scalar allow = 0;
         for (const auto& a : b.allowances) allow += a.volume;
-        b.requiredVolume = std::max(0.0, governingVolume) + allow;
+        b.requiredVolume = bundMath::requiredVolume(governingVolume, allow);
 
         if (!unsized.empty())
         {
