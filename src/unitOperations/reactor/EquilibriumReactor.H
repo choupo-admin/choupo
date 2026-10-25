@@ -68,7 +68,9 @@ Description
     was.  The duty is H_out - H_in on the package's own surface (the outlet
     at its own equilibrium, both ends priced as the energy report prices
     them -- 2026-10-25; it was the heat of reaction alone), and a gas-phase
-    answer that leaves a condensable supersaturated is REFUSED.  NOT here: an
+    answer that leaves a condensable supersaturated, or whose outlet the
+    package resolves with a liquid (a mixture above its dew point), is
+    REFUSED.  NOT here: an
     adiabatic mode, and a liquid phase.
 
     A PURE SOLID (C14 slice 2, 2026-09-27).  A declared reaction may name a

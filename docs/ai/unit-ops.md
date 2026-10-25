@@ -109,7 +109,9 @@ are liquid-basis, so the two meet only when Σν = 0 (C131 reactors review,
 `equilibriumReactor`/`gibbsReactor`.  An AUTOCATALYTIC (or negative-order) law
 on a one-reaction `reactions ( ... )` set has several steady states at one T;
 the run reports the one its Newton reaches from the feed and ANNOUNCES every
-root of the extent equation with its stability.
+root of the extent equation at the reported T -- with its stability when the
+reactor is isothermal; under an energy balance the other roots do not satisfy it at
+that T and are announced as NOT steady states.
 Example: `tutorials/steady/reactors/cstr03_series_selectivity` (A→B→C).
 
 **THE OUTLET IS ITS OWN EQUILIBRIUM (2026-10-17, DEV.md 4c C73)** -- for the
@@ -464,8 +466,9 @@ REFUSED by name.  The duty `Q_kW` is `H_out - H_in` on the package's own surface
 (the feed on its own state, the outlet at its own equilibrium, both priced as the
 energy report prices them; since 2026-10-25 -- it used to be the heat of reaction
 alone).  A gas-phase equilibrium that leaves a condensable SUPERSATURATED
-(`y_i P > Psat_i`, below its Tc) is REFUSED, naming the `gibbsReactor` that carries
-a liquid.  NOT here: an adiabatic mode, and a liquid phase.
+(`y_i P > Psat_i`, below its Tc), or whose outlet the package resolves with a
+liquid (the condensables together above their dew point), is REFUSED, naming the
+`gibbsReactor` that carries a liquid.  NOT here: an adiabatic mode, and a liquid phase.
 KPIs: `Kp_<name>` (the Kp actually used; withheld, and announced with its ln Kp, when a
 double cannot carry it), `extent_<name>_kmol_h`, `conversion_<name>`,
 `Q_kW`, `newtonResidual`; with an approach, `T_Kp_<name>` (where each Kp was evaluated)

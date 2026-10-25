@@ -155,6 +155,17 @@ void Reaction::refuseLiquidBasisDetailedBalance(const Dictionary&  reaction,
                                                 const std::string& who)
 {
     if (reaction.lookupWordOrDefault("reversible", "false") != "true") return;
+    //  Only the laws that READ `reversible` (RateLaw: Arrhenius, LHHW) derive
+    //  a reverse leg from Kc.  Any other law (`type expression`, a case's own)
+    //  refuses or reads the key itself, and must say so in its own words --
+    //  this remedy (`A_rev`/`Ea_rev`) is not its grammar (C131 reactors
+    //  refutation, 2026-10-25).
+    if (reaction.found("kinetics"))
+    {
+        const std::string ktype =
+            reaction.subDict("kinetics")->lookupWordOrDefault("type", "Arrhenius");
+        if (ktype != "Arrhenius" && ktype != "LHHW") return;
+    }
     scalar sumNu = 0.0;
     for (auto v : nu) sumNu += v;
     if (std::abs(sumNu) <= 1.0e-12) return;

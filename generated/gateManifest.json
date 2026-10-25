@@ -1303,7 +1303,7 @@
     },
     "check_reactor_limits": {
       "exit": 0,
-      "claim": "check_reactor_limits: OK -- R1 sum(nu) != 0 detailed balance refused on 4 paths; WGS (sum 0) runs; R2 autocatalytic cstr announces 2 roots (washout UNSTABLE, REPORTED), cubic 3; monotone cases silent; R3 a gibbs condensate with one outlet refused; gibbs09 runs; R4 SRK: equilibriumReactor y_NH3 0.3239 = gibbsReactor 0.3239; R5 equil01 fed at 700 K: Q = 80.43 kW = report dH; R6 supersaturated gas-phase equilibrium refused; equil01 runs; R7 dynamicCSTR announces sum(nu) != 0; reverse leg moves n_ethanol 1.11333560e-02 -> 1.28653936e-02 (NOT checked: several-reaction extent multiplicity, a liquid standard state for reversible liquid reactions)",
+      "claim": "check_reactor_limits: OK -- R1 sum(nu) != 0 detailed balance refused on 4 paths, an expression law keeps its own refusal; WGS (sum 0) runs; R2 autocatalytic cstr announces 2 roots (washout UNSTABLE, REPORTED), cubic 3; monotone cases silent; R3 a gibbs condensate with one outlet refused; gibbs09 runs; R4 SRK: equilibriumReactor y_NH3 0.3239 = gibbsReactor 0.3239; R5 equil01 fed at 700 K: Q = 80.43 kW = report dH; R6 supersaturated gas-phase equilibrium refused, by component and at the mixture's dew point; equil01 runs; R7 dynamicCSTR announces sum(nu) != 0; reverse leg moves n_ethanol 1.11333560e-02 -> 1.28653936e-02 (NOT checked: several-reaction extent multiplicity, a liquid standard state for reversible liquid reactions)",
       "seconds": 1.7
     }
   }
