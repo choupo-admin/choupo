@@ -2385,6 +2385,15 @@ checked: the floor's slope and its impermeability, the wall's strength
 and thickness, intermediate walls, the evaporation from the pool, and
 whether a declared margin or rainfall is the right one.
 
+The EduTool \emph{Secondary containment: designing a bund} teaches the
+same arithmetic --- its TypeScript is held to the engine's
+(\file{src/postProcessing/layout/BundArithmetic.H}) by
+\texttt{check\_bund\_arithmetic} --- and goes beyond it on the page: the
+useful capacity in which the failing tank's own footprint is free (the
+engine deducts every footprint, the safe side), a sloped floor, a
+freeboard, the level a spill reaches, and a rupture, a leak, rain and
+an open drain integrated in time until the bund overtops.
+
 \hypertarget{the-distillation-column-group}{%
 \subsection{The distillation column
 group}\label{the-distillation-column-group}}

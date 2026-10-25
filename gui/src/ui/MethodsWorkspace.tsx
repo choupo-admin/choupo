@@ -300,6 +300,9 @@ const OverpressureTool = lazy(() =>
 const PoolFireTool = lazy(() =>
   import("./methods/PoolFireTool.js")
     .then((m) => ({ default: m.PoolFireTool })));
+const BundTool = lazy(() =>
+  import("./methods/BundTool.js")
+    .then((m) => ({ default: m.BundTool })));
 const LetdownTool = lazy(() =>
   import("./methods/LetdownTool.js")
     .then((m) => ({ default: m.LetdownTool })));
@@ -556,6 +559,7 @@ export function MethodsWorkspace() {
             : tool === "process-safety" ? <ProcessSafetyTool />
             : tool === "overpressure" ? <OverpressureTool />
             : tool === "pool-fire" ? <PoolFireTool />
+            : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "plant-layout" ? <PlantLayoutTool />
             : tool === "gmp-layout" ? <GmpLayoutTool />

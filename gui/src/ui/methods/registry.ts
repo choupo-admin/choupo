@@ -71,7 +71,7 @@ export type MethodToolId =
   | "least-squares" | "element-potential" | "limiting-reactant"
   | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
   | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
-  | "plant-layout" | "gmp-layout" | "pool-fire" | "materials" | "syngas"
+  | "plant-layout" | "gmp-layout" | "pool-fire" | "bund" | "materials" | "syngas"
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
   | "sines-pta";
 
@@ -1414,6 +1414,44 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "the acetic-acid plant's layout declares -- a consequence for one "
       + "scenario, not a risk and not a certified siting distance.",
     theory: "ch:integrals",
+  },
+  //  COMMISSIONED 2026-10-21 (DEV.md 4c C136): "Regista isto para fazer no
+  //  Sabado porque e muito importante" -- secondary containment, the bund a
+  //  plant needs for the day the primary containment fails.  A CONSTRUCTION
+  //  with no engine run: the capacity arithmetic is bund.ts, whose engine
+  //  half is the twin of src/postProcessing/layout/BundArithmetic.H and is
+  //  held to it by check_bund_arithmetic (the C62 relief-valve precedent).
+  //  ON THIS SHELF beside the pool fire: the question is what happens when
+  //  something goes wrong; the plant-layout page, where a bund is declared,
+  //  is linked from it.  `theory` is the vessel-sizing section for the
+  //  plant-layout page's reason: a tank's D and H -- what it displaces in a
+  //  bund -- are what that section derives, and the Theory Guide has no
+  //  containment chapter (the Design Guide's section is linked from the
+  //  page).  First version, for Vitor's review.
+  {
+    id: "bund",
+    label: "Secondary containment: designing a bund",
+    discipline: "Process safety", kind: "construction",
+    status: "live",
+    teaches: "Why a chemical plant is designed to limit the consequences when "
+      + "something goes wrong: the bund as a passive barrier and its place "
+      + "among the layers of protection (it does not prevent the failure, it "
+      + "stops its propagation); every cubic metre of a spill accounted for "
+      + "-- in the tank, in the bund, over the wall, through the drain; the "
+      + "geometric capacity kept apart from the net volume Choupo's layout "
+      + "check computes and from the useful capacity, in which the failing "
+      + "tank's own footprint is free; the volume the tanks displace, a "
+      + "sloped floor, a freeboard and rain; the 110 % / 25 % rule as a "
+      + "teaching example traced to HSE guidance and an English regulation, "
+      + "with their limits, never as a universal obligation; a rupture, a "
+      + "leak, rain first and a drain left open, integrated in time and "
+      + "drawn in section until the bund overtops; low and wide against high "
+      + "and narrow, and how a badly conceived bund raises some risks; the "
+      + "pool a flammable liquid makes, qualitatively; local or remote "
+      + "containment; construction, linings and compatibility without an "
+      + "invented table; and an exercise on three tanks of 20, 15 and 10 m3, "
+      + "dry and after rain.",
+    theory: "ch:size-vessel",
   },
   //  COMMISSIONED 2026-10-17 (DEV.md 4c C75, slice 2): "Podes fazer um
   //  EduTool com isso, criar esse dicionario e criar uma tool para gerar o

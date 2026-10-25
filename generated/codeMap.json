@@ -4139,6 +4139,7 @@
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/postProcessing/layout/BuildingLayout.H",
+   "src/postProcessing/layout/BundArithmetic.H",
    "src/postProcessing/layout/PlantLayout.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -12559,6 +12560,9 @@
   "src/postProcessing/layout/BuildingLayout.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/postProcessing/layout/BuildingLayout.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp"
+  ],
+  "src/postProcessing/layout/BundArithmetic.H": [
    "src/postProcessing/layout/PlantLayout.cpp"
   ],
   "src/postProcessing/layout/PlantLayout.H": [

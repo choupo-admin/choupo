@@ -15,8 +15,8 @@
     "Process safety",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 64,
-  "registryTools": 64,
+  "liveTools": 65,
+  "registryTools": 65,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -423,6 +423,13 @@
       "discipline": "Process safety",
       "teaches": "How far a pool fire's radiation reaches, built from the fuel up: the heat of combustion from the catalogue's formation enthalpies, the Burgess burning rate calibrated on one public-domain NIST measurement and checked on another, the flame height by Thomas and by Heskestad against measured heights, the emissive power by energy and by Mudan and Croce's smoke correlation (and why it does not fit a methanol flame), the point-source and solid-flame models side by side -- apart near the fire, the same law far away -- and the still-air distance to four published thresholds, each with the receiver and exposure its source states, set beside the separation the acetic-acid plant's layout declares -- a consequence for one scenario, not a risk and not a certified siting distance.",
       "href": "/app/?workspace=methods&tool=pool-fire"
+    },
+    {
+      "id": "bund",
+      "label": "Secondary containment: designing a bund",
+      "discipline": "Process safety",
+      "teaches": "Why a chemical plant is designed to limit the consequences when something goes wrong: the bund as a passive barrier and its place among the layers of protection (it does not prevent the failure, it stops its propagation); every cubic metre of a spill accounted for -- in the tank, in the bund, over the wall, through the drain; the geometric capacity kept apart from the net volume Choupo's layout check computes and from the useful capacity, in which the failing tank's own footprint is free; the volume the tanks displace, a sloped floor, a freeboard and rain; the 110 % / 25 % rule as a teaching example traced to HSE guidance and an English regulation, with their limits, never as a universal obligation; a rupture, a leak, rain first and a drain left open, integrated in time and drawn in section until the bund overtops; low and wide against high and narrow, and how a badly conceived bund raises some risks; the pool a flammable liquid makes, qualitatively; local or remote containment; construction, linings and compatibility without an invented table; and an exercise on three tanks of 20, 15 and 10 m3, dry and after rain.",
+      "href": "/app/?workspace=methods&tool=bund"
     },
     {
       "id": "plant-layout",
