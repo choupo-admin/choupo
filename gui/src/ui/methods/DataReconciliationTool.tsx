@@ -40,27 +40,39 @@ License
   JSON carrying the tests.  Every number on every table is read from those;
   NO reconciliation is computed here.  Page 3's knobs plant the gross error
   on another meter by overriding two words and two numbers of the witness's
-  own propsDict, and the engine runs again.  The one curve drawn from a
-  formula is page 4's bell curves, each a Gaussian whose centre and width
-  are numbers the engine published.
+  own propsDict, and the engine runs again.  The only curves drawn from a
+  formula are the bell curves of pages 2, 4 and 5, each a Gaussian whose
+  centre and width are numbers the engine published; the interval charts
+  draw those same centres and widths as bars.
+
+  BAYES VISIBLE AND CENTRAL (DEV.md 4c C137).  The idea the page is built
+  on (CENTRAL_IDEA, Vitor's sentence in English) heads the tool beside the
+  three ingredients; page 2 draws the posterior NARROWING (one stream's
+  likelihood against its posterior, then all seven as intervals); page 5
+  sets three answers side by side -- classical, Bayes with a flat prior,
+  Bayes with yesterday's prior -- all three read from two operations the
+  witness already runs (threeAnswers in dataReconciliationRun.ts).
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
 import {
-  Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Table, Text, Title,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, SimpleGrid, Stack, Table, Text, Title,
 } from "@mantine/core";
 
 import { useMethodRun, type MethodRunState } from "../../case/methodRun.js";
 import type { OperationResult } from "../../adapters/SolverAdapter.js";
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
-import { DR_LIMITS, DR_STEPS } from "./dataReconciliationLesson.js";
+import {
+  CENTRAL_IDEA, DR_LIMITS, DR_STEPS, THREE_INGREDIENTS,
+} from "./dataReconciliationLesson.js";
 import { KnobSlider, type PanelKnob } from "./knobPanel.js";
 import {
   DRIFT_DEFAULT_METER, DRIFT_DEFAULT_SIZE, DRIFT_MAX, DRIFT_MIN, DR_UNIT, DR_WITNESS,
   DIAGRAM_EDGES, DIAGRAM_NODES, balancesCsv, covarianceCsv, driftOverrides, fmt, fmtSigned,
   readBalances,
-  readCovariance, readStreams, streamsCsv,
+  readCovariance, readStreams, streamsCsv, threeAnswers,
   type BalanceRow, type Covariance, type DrOp, type StreamRow, type StreamTable,
+  type ThreeAnswers,
 } from "./dataReconciliationRun.js";
 
 const BORDER = "var(--mantine-color-default-border)";
@@ -69,13 +81,18 @@ const TEXT = "var(--mantine-color-text)";
 const SURFACE = "var(--mantine-color-body)";
 const FLAG = "var(--mantine-color-red-6)";
 const ACCENT = "var(--mantine-color-blue-6)";
+/** The three kinds of curve, one colour each wherever they are drawn. */
+const C_READING = INK;
+const C_PRIOR = "var(--mantine-color-orange-6)";
+const C_POSTERIOR = "var(--mantine-color-teal-7)";
 
-type PageId = "why" | "bayes" | "gross" | "prior";
+type PageId = "why" | "bayes" | "gross" | "prior" | "three";
 const PAGES: { value: PageId; label: string }[] = [
   { value: "why", label: "1 · Why balances do not close" },
   { value: "bayes", label: "2 · Reconciliation = Bayes" },
   { value: "gross", label: "3 · Gross errors" },
   { value: "prior", label: "4 · Priors and precision" },
+  { value: "three", label: "5 · Three answers, side by side" },
 ];
 
 const step = lessonStepper(DR_STEPS);
@@ -248,9 +265,170 @@ function GlobalTest({ diag, title }: { diag: { [k: string]: number }; title: str
         {fmt(diag.zCritical, 3)} (Šidák level β = {fmt(diag.measurementTestLevel, 5)} over{" "}
         {fmt(diag.measurementTests, 0)} meters); {fmt(diag.flagged, 0)} flagged
       </Text>
+      <Text size="xs" c="dimmed" mt={4} fs="italic">
+        frequentist tests: p is how often noise alone, every meter healthy, would give a γ this
+        large — not the probability that a meter is faulty (step 14)
+      </Text>
     </Box>
   );
 }
+
+// ---- curves and intervals ----------------------------------------------------
+
+interface Curve { label: string; mu: number; s: number; color: string; dash?: string }
+interface Mark { label: string; at: number; color: string; dash?: string }
+
+/** Gaussian densities through centres and widths the engine published, plus
+ *  vertical marks (a point estimate, the synthetic truth).  `range` and
+ *  `peak` may be handed in so that several panels share one x axis and one
+ *  height scale -- which is what makes a narrower posterior LOOK taller. */
+function GaussianPlot({ curves, marks = [], axis, aria, range, peak, W = 640, H = 200 }: {
+  curves: Curve[]; marks?: Mark[]; axis: string; aria: string;
+  range?: [number, number]; peak?: number; W?: number; H?: number;
+}): JSX.Element {
+  const lo = range ? range[0]
+    : Math.min(...curves.map((c) => c.mu - 3.2 * c.s), ...marks.map((m) => m.at));
+  const hi = range ? range[1]
+    : Math.max(...curves.map((c) => c.mu + 3.2 * c.s), ...marks.map((m) => m.at));
+  const L = 16, R = 12, T = 10, B = 30;
+  const top = peak ?? Math.max(...curves.map((c) => 1 / c.s));
+  const X = (v: number) => L + ((v - lo) / (hi - lo)) * (W - L - R);
+  const Y = (p: number) => T + (1 - p / top) * (H - T - B);
+  const pts = (mu: number, s: number) => Array.from({ length: 161 }, (_, i) => {
+    const v = lo + (i / 160) * (hi - lo);
+    return `${X(v).toFixed(1)},${Y(Math.exp(-0.5 * ((v - mu) / s) ** 2) / s).toFixed(1)}`;
+  }).join(" ");
+  const ticks = Array.from({ length: 5 }, (_, i) => lo + (i / 4) * (hi - lo));
+  return (
+    <Box>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ maxWidth: 700, display: "block" }}
+        role="img" aria-label={aria}>
+        <line x1={L} y1={H - B} x2={W - R} y2={H - B} stroke={BORDER} />
+        {ticks.map((t) => (
+          <text key={t} x={X(t)} y={H - B + 14} fontSize={10} textAnchor="middle" fill={INK}>{t.toFixed(1)}</text>
+        ))}
+        <text x={(W + L) / 2} y={H - 2} fontSize={10} textAnchor="middle" fill={INK}>{axis}</text>
+        {marks.map((m) => (
+          <line key={m.label} x1={X(m.at)} x2={X(m.at)} y1={T} y2={H - B} stroke={m.color}
+            strokeWidth={1.6} strokeDasharray={m.dash || undefined} />
+        ))}
+        {curves.map((c) => (
+          <polyline key={c.label} points={pts(c.mu, c.s)} fill="none" stroke={c.color} strokeWidth={1.8}
+            strokeDasharray={c.dash || undefined} />
+        ))}
+      </svg>
+      <Group gap="md" mt={4} wrap="wrap">
+        {[...curves, ...marks].map((c) => (
+          <Text key={c.label} size="xs">
+            <Box component="span" display="inline-block" w={18} h={3} mr={6}
+              style={{ background: c.color, verticalAlign: "middle" }} />
+            {c.label}
+          </Text>
+        ))}
+      </Group>
+    </Box>
+  );
+}
+
+type Row = { stream: string; truth: number | null };
+interface Series<T extends Row> {
+  label: string; color: string;
+  /** centre and half-width of the bar; a null half-width draws a point only */
+  of: (r: T) => { c: number | null; h: number | null };
+}
+
+/** Every stream at once, as bars of plus or minus one standard deviation,
+ *  measured from the stream's TRUE flow (the plant is invented, so the
+ *  truth is known): the line at zero is the truth, a bar is what one source
+ *  of knowledge says, and its length is how much that source claims to
+ *  know.  The subtraction is presentation only. */
+function IntervalPlot<T extends Row>({ rows, series, aria }: {
+  rows: T[]; series: Series<T>[]; aria: string;
+}): JSX.Element {
+  const W = 640, L = 40, R = 14, T = 8, B = 34, band = 12 * series.length + 10;
+  const H = T + B + band * rows.length;
+  const spans: number[] = [];
+  for (const r of rows) for (const s of series) {
+    const { c, h } = s.of(r);
+    if (c === null || r.truth === null) continue;
+    spans.push(Math.abs(c - r.truth) + (h ?? 0));
+  }
+  const ext = Math.max(1, ...spans) * 1.1;
+  const X = (v: number) => L + ((v + ext) / (2 * ext)) * (W - L - R);
+  const ticks = Array.from({ length: 5 }, (_, i) => -ext + (i / 4) * 2 * ext);
+  return (
+    <Box>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ maxWidth: 700, display: "block" }}
+        role="img" aria-label={aria}>
+        <line x1={X(0)} x2={X(0)} y1={T} y2={H - B} stroke={TEXT} strokeWidth={1} strokeDasharray="2 3" />
+        <line x1={L} x2={W - R} y1={H - B} y2={H - B} stroke={BORDER} />
+        {ticks.map((t) => (
+          <text key={t} x={X(t)} y={H - B + 14} fontSize={10} textAnchor="middle" fill={INK}>
+            {fmtSigned(t, 1)}
+          </text>
+        ))}
+        <text x={(W + L) / 2} y={H - 4} fontSize={10} textAnchor="middle" fill={INK}>
+          minus the true flow (synthetic) [{DR_UNIT}] — the dotted line is the truth
+        </text>
+        {rows.map((r, i) => {
+          const y0 = T + i * band;
+          return (
+            <g key={r.stream}>
+              <text x={4} y={y0 + band / 2 + 4} fontSize={11} fill={TEXT} fontWeight={700}>{r.stream}</text>
+              {series.map((s, k) => {
+                const { c, h } = s.of(r);
+                if (c === null || r.truth === null) return null;
+                const y = y0 + 8 + k * 12, d = c - r.truth;
+                return (
+                  <g key={s.label}>
+                    {h !== null && (
+                      <>
+                        <line x1={X(d - h)} x2={X(d + h)} y1={y} y2={y} stroke={s.color} strokeWidth={3} />
+                        <line x1={X(d - h)} x2={X(d - h)} y1={y - 4} y2={y + 4} stroke={s.color} />
+                        <line x1={X(d + h)} x2={X(d + h)} y1={y - 4} y2={y + 4} stroke={s.color} />
+                      </>
+                    )}
+                    {h === null
+                      ? <path d={`M${X(d)},${y - 5} L${X(d) + 5},${y} L${X(d)},${y + 5} L${X(d) - 5},${y} z`}
+                          fill={s.color} />
+                      : <circle cx={X(d)} cy={y} r={2.5} fill={SURFACE} stroke={s.color} />}
+                  </g>
+                );
+              })}
+            </g>
+          );
+        })}
+      </svg>
+      <Group gap="md" mt={4} wrap="wrap">
+        {series.map((s) => (
+          <Text key={s.label} size="xs">
+            <Box component="span" display="inline-block" w={18} h={3} mr={6}
+              style={{ background: s.color, verticalAlign: "middle" }} />
+            {s.label}
+          </Text>
+        ))}
+      </Group>
+    </Box>
+  );
+}
+
+const L_READING = "reading m ± meter σ (the likelihood of one meter alone)";
+const L_FLAT = "posterior, flat prior: x̂ ± σ(x̂)";
+/** Page 2's two series, on the honest operation's own rows. */
+const PAGE2_SERIES: Series<StreamRow>[] = [
+  { label: L_READING, color: C_READING, of: (r) => ({ c: r.reading, h: r.sigma }) },
+  { label: L_FLAT, color: C_POSTERIOR, of: (r) => ({ c: r.reconciled, h: r.sigmaReconciled }) },
+];
+const C_INFORMATIVE = "var(--mantine-color-grape-6)";
+/** Page 5's four series: the reading, then the three answers. */
+const PAGE5_SERIES: Series<ThreeAnswers>[] = [
+  { label: L_READING, color: C_READING, of: (r) => ({ c: r.reading, h: r.sigma }) },
+  { label: "classical: x̂, a point (no width claimed)", color: TEXT,
+    of: (r) => ({ c: r.classical, h: null }) },
+  { label: L_FLAT, color: C_POSTERIOR, of: (r) => ({ c: r.flat, h: r.flatSigma }) },
+  { label: "posterior, yesterday's prior: x̂ ± σ(x̂)", color: C_INFORMATIVE,
+    of: (r) => ({ c: r.informative, h: r.informativeSigma }) },
+];
 
 // ---- page 1 ------------------------------------------------------------------
 
@@ -259,6 +437,7 @@ export function WhyPage({ honest }: { honest: OpResult }): JSX.Element {
   return (
     <Stack gap="md">
       {step(1)}
+      {step(2)}
       <PlantDiagram rows={rows} label={(r) => `${fmt(r.reading, 1)} ± ${fmt(r.sigma, 1)}`} />
       <Box style={{ overflowX: "auto" }}>
         <Table striped withTableBorder fz="xs" miw={480}>
@@ -287,8 +466,8 @@ export function WhyPage({ honest }: { honest: OpResult }): JSX.Element {
           </Table.Tbody>
         </Table>
       </Box>
-      {step(2)}
       {step(3)}
+      {step(4)}
       <BalanceTable rows={honest.balances!} />
     </Stack>
   );
@@ -344,13 +523,50 @@ function ReconciliationTable({ t, showTruth = true }: { t: StreamTable; showTrut
   );
 }
 
+/** Page 2's picture of the posterior narrowing, for one stream: the
+ *  likelihood of its meter alone against the posterior after the balances.
+ *  Both curves are numbers the engine wrote; the truth is the synthetic one. */
+export function PosteriorNarrowing({ rows, nBalances }: {
+  rows: StreamRow[]; nBalances: number;
+}): JSX.Element {
+  const [flow, setFlow] = useState("F1");
+  const r = rows.find((q) => q.stream === flow) ?? rows[0]!;
+  const curves: Curve[] = [];
+  if (r.reading !== null && r.sigma !== null)
+    curves.push({ label: `likelihood of the meter alone: ${fmt(r.reading, 2)} ± ${fmt(r.sigma, 2)}`,
+      mu: r.reading, s: r.sigma, color: C_READING, dash: "4 3" });
+  curves.push({ label: `posterior after the balances: ${fmt(r.reconciled, 2)} ± ${fmt(r.sigmaReconciled, 2)}`,
+    mu: r.reconciled, s: r.sigmaReconciled, color: C_POSTERIOR });
+  const marks: Mark[] = r.truth === null ? []
+    : [{ label: `true flow (synthetic) ${fmt(r.truth, 1)}`, at: r.truth, color: TEXT, dash: "2 3" }];
+  return (
+    <Stack gap="xs">
+      <Box>
+        <Text size="xs" mb={4}>stream</Text>
+        <SegmentedControl size="xs" value={r.stream} onChange={setFlow} data={rows.map((q) => q.stream)} />
+      </Box>
+      <GaussianPlot curves={curves} marks={marks} axis={`${r.stream} [${DR_UNIT}]`}
+        aria={`the likelihood of meter ${r.stream} alone and the posterior after the balances`} />
+      {r.reading !== null && r.sigma !== null && (
+        <Text size="sm">
+          {`${r.stream} was read `}<b>{`${fmt(r.reading, 2)} ± ${fmt(r.sigma, 2)} ${DR_UNIT}`}</b>
+          {"; reconciled it is "}<b>{`${fmt(r.reconciled, 2)} ± ${fmt(r.sigmaReconciled, 2)} ${DR_UNIT}`}</b>
+          {` (one standard deviation, ${rows.filter((q) => q.reading !== null).length} meters, `
+            + `${nBalances} exact balances).  The posterior is narrower than the meter because the `
+            + `other meters inform ${r.stream} through the balances.`}
+        </Text>
+      )}
+    </Stack>
+  );
+}
+
 export function BayesPage({ honest }: { honest: OpResult }): JSX.Element {
   const t = honest.streams!;
   const d = honest.diag;
   return (
     <Stack gap="md">
-      {step(4)}
       {step(5)}
+      {step(6)}
       <PlantDiagram rows={t.rows} label={(r) => `${fmt(r.reconciled, 2)}  (read ${fmt(r.reading, 1)})`} />
       <Text size="sm">
         The engine's answer on the honest snapshot: the objective at the answer is{" "}
@@ -359,9 +575,18 @@ export function BayesPage({ honest }: { honest: OpResult }): JSX.Element {
         balance caused; they add up to (x̂ − m)/σ on every row.
       </Text>
       <ReconciliationTable t={t} />
-      {step(6)}
-      <BalanceTable rows={honest.balances!} after />
       {step(7)}
+      <PosteriorNarrowing rows={t.rows} nBalances={t.balances.length} />
+      <IntervalPlot rows={t.rows} series={PAGE2_SERIES}
+        aria="every stream: the reading with its meter's sigma, and the posterior with its own" />
+      <Text size="xs" c="dimmed">
+        Each pair of bars is one stream, drawn against its true flow (the plant is invented, so the
+        truth is known): grey what the meter alone says, teal what is believed after the balances.
+        Every teal bar is the shorter of its pair.
+      </Text>
+      {step(8)}
+      <BalanceTable rows={honest.balances!} after />
+      {step(9)}
       <Text size="sm">
         On this snapshot: rms error of the readings <b>{fmt(d.rmsErrorReadingSigma, 3)}</b> meter
         sigmas, of the reconciled flows <b>{fmt(d.rmsErrorReconciledSigma, 3)}</b>.
@@ -386,7 +611,7 @@ export function GrossPage({ run, meter, size, setMeter, setSize }: {
   const without = opOf(run, "driftedWithout", "driftedWithout");
   return (
     <Stack gap="md">
-      {step(8)}
+      {step(10)}
       <Box px="sm" py={8} style={{ border: `1px solid ${BORDER}`, borderRadius: 4 }}>
         <Text size="xs" c="dimmed" fw={700} tt="uppercase" mb={6}>plant a gross error</Text>
         <Group align="flex-end" gap="lg" wrap="wrap">
@@ -415,13 +640,13 @@ export function GrossPage({ run, meter, size, setMeter, setSize }: {
             <PlantDiagram rows={kept.streams!.rows} flagged={flagged}
               label={(r) => `${fmt(r.reading, 1)}  z ${fmtSigned(r.measurementTest, 2)}`} />
             <BalanceTable rows={kept.balances!} />
-            {step(9)}
-            {step(10)}
+            {step(11)}
+            {step(12)}
             <Group gap="md" align="stretch" wrap="wrap">
               <GlobalTest diag={kept.diag} title={`${meter} left in`} />
               <GlobalTest diag={without.diag} title={`${meter} out of service`} />
             </Group>
-            {step(11)}
+            {step(13)}
             <Box style={{ overflowX: "auto" }}>
               <Table striped withTableBorder fz="xs" miw={640}>
                 <Table.Thead>
@@ -470,6 +695,7 @@ export function GrossPage({ run, meter, size, setMeter, setSize }: {
           </Stack>
         );
       }}</RunGate>
+      {step(14)}
     </Stack>
   );
 }
@@ -483,47 +709,15 @@ export function GrossPage({ run, meter, size, setMeter, setSize }: {
 function Bells({ r }: { r: StreamRow }): JSX.Element | null {
   if (r.reading === null || r.sigma === null || r.prior === null || r.priorSigma === null
     || r.combined === null || r.combinedSigma === null) return null;
-  const curves = [
-    { label: `reading ${fmt(r.reading, 1)} ± ${fmt(r.sigma, 2)}`, mu: r.reading, s: r.sigma, color: INK, dash: "4 3" },
-    { label: `prior ${fmt(r.prior, 1)} ± ${fmt(r.priorSigma, 2)}`, mu: r.prior, s: r.priorSigma, color: "var(--mantine-color-orange-6)", dash: "4 3" },
-    { label: `combined ${fmt(r.combined, 2)} ± ${fmt(r.combinedSigma, 2)}`, mu: r.combined, s: r.combinedSigma, color: ACCENT, dash: "" },
-    { label: `after the balances ${fmt(r.reconciled, 2)} ± ${fmt(r.sigmaReconciled, 2)}`, mu: r.reconciled, s: r.sigmaReconciled, color: "var(--mantine-color-teal-7)", dash: "" },
+  const curves: Curve[] = [
+    { label: `reading ${fmt(r.reading, 1)} ± ${fmt(r.sigma, 2)}`, mu: r.reading, s: r.sigma, color: C_READING, dash: "4 3" },
+    { label: `prior ${fmt(r.prior, 1)} ± ${fmt(r.priorSigma, 2)}`, mu: r.prior, s: r.priorSigma, color: C_PRIOR, dash: "4 3" },
+    { label: `combined ${fmt(r.combined, 2)} ± ${fmt(r.combinedSigma, 2)}`, mu: r.combined, s: r.combinedSigma, color: ACCENT },
+    { label: `after the balances ${fmt(r.reconciled, 2)} ± ${fmt(r.sigmaReconciled, 2)}`, mu: r.reconciled, s: r.sigmaReconciled, color: C_POSTERIOR },
   ];
-  const lo = Math.min(...curves.map((c) => c.mu - 3.2 * c.s));
-  const hi = Math.max(...curves.map((c) => c.mu + 3.2 * c.s));
-  const W = 640, H = 200, L = 36, R = 12, T = 10, B = 30;
-  const peak = Math.max(...curves.map((c) => 1 / c.s));
-  const X = (v: number) => L + ((v - lo) / (hi - lo)) * (W - L - R);
-  const Y = (p: number) => T + (1 - p / peak) * (H - T - B);
-  const pts = (mu: number, s: number) => Array.from({ length: 161 }, (_, i) => {
-    const v = lo + (i / 160) * (hi - lo);
-    return `${X(v).toFixed(1)},${Y(Math.exp(-0.5 * ((v - mu) / s) ** 2) / s).toFixed(1)}`;
-  }).join(" ");
-  const ticks = Array.from({ length: 6 }, (_, i) => lo + (i / 5) * (hi - lo));
   return (
-    <Box>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ maxWidth: 700, display: "block" }}
-        role="img" aria-label={`the reading, the prior and their combination for ${r.stream}`}>
-        <line x1={L} y1={H - B} x2={W - R} y2={H - B} stroke={BORDER} />
-        {ticks.map((t) => (
-          <text key={t} x={X(t)} y={H - B + 14} fontSize={10} textAnchor="middle" fill={INK}>{t.toFixed(1)}</text>
-        ))}
-        <text x={(W + L) / 2} y={H - 2} fontSize={10} textAnchor="middle" fill={INK}>{r.stream} [{DR_UNIT}]</text>
-        {curves.map((c) => (
-          <polyline key={c.label} points={pts(c.mu, c.s)} fill="none" stroke={c.color} strokeWidth={1.8}
-            strokeDasharray={c.dash || undefined} />
-        ))}
-      </svg>
-      <Group gap="md" mt={4} wrap="wrap">
-        {curves.map((c) => (
-          <Text key={c.label} size="xs">
-            <Box component="span" display="inline-block" w={18} h={3} mr={6}
-              style={{ background: c.color, verticalAlign: "middle" }} />
-            {c.label}
-          </Text>
-        ))}
-      </Group>
-    </Box>
+    <GaussianPlot curves={curves} axis={`${r.stream} [${DR_UNIT}]`}
+      aria={`the reading, the prior and their combination for ${r.stream}`} />
   );
 }
 
@@ -534,7 +728,7 @@ export function PriorPage({ honest, prior }: { honest: OpResult; prior: OpResult
   const rowP = p.find((r) => r.stream === flow)!;
   return (
     <Stack gap="md">
-      {step(12)}
+      {step(15)}
       <Box style={{ overflowX: "auto" }}>
         <Table striped withTableBorder fz="xs" miw={520}>
           <Table.Thead>
@@ -588,7 +782,7 @@ export function PriorPage({ honest, prior }: { honest: OpResult; prior: OpResult
           </Table.Tbody>
         </Table>
       </Box>
-      {step(13)}
+      {step(16)}
       <Box>
         <Text size="xs" mb={4}>flow</Text>
         <SegmentedControl size="xs" value={flow} onChange={setFlow} data={p.map((r) => r.stream)} />
@@ -600,7 +794,7 @@ export function PriorPage({ honest, prior }: { honest: OpResult; prior: OpResult
         balances have let the other six meters vouch for it.  The densities are drawn to their own
         heights: a narrower curve stands taller.
       </Text>
-      {step(14)}
+      {step(17)}
       <Group gap="md" align="stretch" wrap="wrap">
         <GlobalTest diag={prior.diag} title="with yesterday's prior" />
         <Box px="sm" py={6} style={{ border: `1px solid ${BORDER}`, borderRadius: 4, flex: 1, minWidth: 240 }}>
@@ -613,12 +807,152 @@ export function PriorPage({ honest, prior }: { honest: OpResult; prior: OpResult
         </Box>
       </Group>
       <ReconciliationTable t={prior.streams!} />
-      {step(15)}
+      {step(18)}
+      {step(19)}
+    </Stack>
+  );
+}
+
+// ---- page 5 ------------------------------------------------------------------
+
+/** One of the three answers, for one stream, on the axis and height scale
+ *  every panel shares: the same flow drawn three times, so that a narrower
+ *  belief stands visibly taller and a moved centre visibly moves. */
+function AnswerPanel({ title, sub, curves, marks, range, peak, stream }: {
+  title: string; sub: string; curves: Curve[]; marks: Mark[];
+  range: [number, number]; peak: number; stream: string;
+}): JSX.Element {
+  return (
+    <Box px="sm" py={6} style={{ border: `1px solid ${BORDER}`, borderRadius: 4 }}>
+      <Text size="xs" c="dimmed" fw={700} tt="uppercase">{title}</Text>
+      <Text size="sm" mt={2} mb={4}>{sub}</Text>
+      <GaussianPlot curves={curves} marks={marks} range={range} peak={peak} W={320} H={180}
+        axis={`${stream} [${DR_UNIT}]`} aria={`${title}, for ${stream}`} />
+    </Box>
+  );
+}
+
+export function ThreeAnswersPage({ honest, prior }: { honest: OpResult; prior: OpResult }): JSX.Element {
+  const [flow, setFlow] = useState("F1");
+  const joined = threeAnswers(honest.streams!, prior.streams!);
+  if (!joined.ok) {
+    return (
+      <Alert color="red" variant="light" title="the two runs cannot be set side by side">
+        <Text size="sm">{joined.why}</Text>
+      </Alert>
+    );
+  }
+  const rows = joined.read;
+  const r = rows.find((q) => q.stream === flow) ?? rows[0]!;
+  const reading: Curve[] = r.reading !== null && r.sigma !== null
+    ? [{ label: `reading ${fmt(r.reading, 2)} ± ${fmt(r.sigma, 2)}`, mu: r.reading, s: r.sigma,
+        color: C_READING, dash: "4 3" }] : [];
+  const priorCurve: Curve[] = r.prior !== null && r.priorSigma !== null
+    ? [{ label: `yesterday's prior ${fmt(r.prior, 2)} ± ${fmt(r.priorSigma, 2)}`, mu: r.prior,
+        s: r.priorSigma, color: C_PRIOR, dash: "4 3" }] : [];
+  const flatCurve: Curve = { label: `posterior ${fmt(r.flat, 2)} ± ${fmt(r.flatSigma, 2)}`,
+    mu: r.flat, s: r.flatSigma, color: C_POSTERIOR };
+  const infCurve: Curve = { label: `posterior ${fmt(r.informative, 2)} ± ${fmt(r.informativeSigma, 2)}`,
+    mu: r.informative, s: r.informativeSigma, color: C_INFORMATIVE };
+  const truth: Mark[] = r.truth === null ? []
+    : [{ label: `true flow (synthetic) ${fmt(r.truth, 1)}`, at: r.truth, color: INK, dash: "2 3" }];
+  //  One axis and one height for all three panels, from what the three draw.
+  const all = [...reading, ...priorCurve, flatCurve, infCurve];
+  const range: [number, number] = [
+    Math.min(...all.map((c) => c.mu - 3.2 * c.s)),
+    Math.max(...all.map((c) => c.mu + 3.2 * c.s)),
+  ];
+  const peak = Math.max(...all.map((c) => 1 / c.s));
+  return (
+    <Stack gap="md">
+      {step(20)}
+      <Box>
+        <Text size="xs" mb={4}>stream</Text>
+        <SegmentedControl size="xs" value={r.stream} onChange={setFlow} data={rows.map((q) => q.stream)} />
+      </Box>
+      <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="sm">
+        <AnswerPanel title="1 · Classical reconciliation" stream={r.stream} range={range} peak={peak}
+          sub={`x̂ = ${fmt(r.classical, 2)} ${DR_UNIT}: the flows that minimise the weighted squares`}
+          curves={reading}
+          marks={[{ label: `x̂ ${fmt(r.classical, 2)}`, at: r.classical, color: TEXT }, ...truth]} />
+        <AnswerPanel title="2 · Bayes, flat prior" stream={r.stream} range={range} peak={peak}
+          sub={`${fmt(r.flat, 2)} ± ${fmt(r.flatSigma, 2)} ${DR_UNIT}: the same flow, now with its posterior width`}
+          curves={[...reading, flatCurve]} marks={truth} />
+        <AnswerPanel title="3 · Bayes, yesterday's prior" stream={r.stream} range={range} peak={peak}
+          sub={`${fmt(r.informative, 2)} ± ${fmt(r.informativeSigma, 2)} ${DR_UNIT}: the flow and its width both move`}
+          curves={[...reading, ...priorCurve, infCurve]}
+          marks={[{ label: `flat-prior x̂ ${fmt(r.flat, 2)}`, at: r.flat, color: C_POSTERIOR, dash: "1 3" },
+            ...truth]} />
+      </SimpleGrid>
+      <Text size="xs" c="dimmed">
+        The three panels share one axis and one height scale, so a narrower belief stands taller.
+        The classical panel draws a point and claims no width; the second draws the same point with
+        its posterior; the third adds yesterday&apos;s prior (dashed orange) and moves both.
+      </Text>
+      <IntervalPlot rows={rows} series={PAGE5_SERIES}
+        aria="every stream: the reading, the classical point, and the two posteriors" />
+      <Box style={{ overflowX: "auto" }}>
+        <Table striped withTableBorder fz="xs" miw={720}>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>stream</Table.Th>
+              <Table.Th ta="right">reading m ± σ</Table.Th>
+              <Table.Th ta="right">1 · classical x̂</Table.Th>
+              <Table.Th ta="right">2 · flat prior x̂ ± σ(x̂)</Table.Th>
+              <Table.Th ta="right">yesterday&apos;s prior x₀ ± s</Table.Th>
+              <Table.Th ta="right">3 · with that prior x̂ ± σ(x̂)</Table.Th>
+              <Table.Th ta="right">true (synthetic)</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {rows.map((q) => (
+              <Table.Tr key={q.stream}>
+                <Table.Td>{q.stream}</Table.Td>
+                <Table.Td ta="right">{fmt(q.reading, 2)} ± {fmt(q.sigma, 2)}</Table.Td>
+                <Table.Td ta="right" fw={600}>{fmt(q.classical, 2)}</Table.Td>
+                <Table.Td ta="right" fw={600}>{fmt(q.flat, 2)} ± {fmt(q.flatSigma, 2)}</Table.Td>
+                <Table.Td ta="right">{fmt(q.prior, 2)} ± {fmt(q.priorSigma, 2)}</Table.Td>
+                <Table.Td ta="right" fw={600}>{fmt(q.informative, 2)} ± {fmt(q.informativeSigma, 2)}</Table.Td>
+                <Table.Td ta="right">{fmt(q.truth, 1)}</Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </Box>
+      <Text size="sm">
+        The frequentist checks of page 3, for the two runs behind the panels: the first two answers are
+        one run, the third is the other.
+      </Text>
+      <Group gap="md" align="stretch" wrap="wrap">
+        <GlobalTest diag={honest.diag} title="answers 1 and 2 (the honest run)" />
+        <GlobalTest diag={prior.diag} title="answer 3 (with yesterday's prior)" />
+      </Group>
     </Stack>
   );
 }
 
 // ---- the tool ----------------------------------------------------------------
+
+/** The idea the page is built on, and its three ingredients (DEV.md 4c C137). */
+export function CentralIdea(): JSX.Element {
+  return (
+    <Box px="sm" py={8} style={{ border: `1px solid ${BORDER}`, borderRadius: 4,
+      borderLeft: `3px solid ${C_POSTERIOR}` }}>
+      <Text size="xs" c="dimmed" fw={700} tt="uppercase">the idea this page is built on</Text>
+      <Text size="md" mt={4} fs="italic">{CENTRAL_IDEA}</Text>
+      <Group gap="lg" mt={6} wrap="wrap" align="flex-start">
+        {THREE_INGREDIENTS.map((g) => (
+          <Text key={g.word} size="xs" style={{ flex: 1, minWidth: 200 }}>
+            <b>{g.word}</b> — {g.means}
+          </Text>
+        ))}
+      </Group>
+      <Text size="xs" c="dimmed" mt={6}>
+        posterior ∝ likelihood × prior, always under the exact balances (page 1, step 1)
+      </Text>
+    </Box>
+  );
+}
 
 export function DataReconciliationTool(): JSX.Element {
   const [page, setPage] = useState<PageId>("why");
@@ -649,11 +983,13 @@ export function DataReconciliationTool(): JSX.Element {
           <Text size="sm" c="dimmed" mt={4}>
             Plant meters are noisy, so their readings never close the mass balances the true flows
             obey.  Reconciliation finds the flows that do, moving each reading as little as its
-            meter allows — and that answer is also the most probable true state, given Gaussian
-            meters and a flat prior.  Then: how to tell noise from a meter that lies, and what a
-            prior that is not flat adds.
+            meter allows — and read through Bayes, that answer is a distribution over the true
+            state: its most probable point and how well it is known.  Then: how to tell noise from
+            a meter that lies, what a prior that is not flat adds, and the three answers side by
+            side.
           </Text>
         </Box>
+        <CentralIdea />
         <Alert color="gray" variant="light" title="Synthetic data, said plainly">
           <Text size="sm">
             The plant, its true flows, the meter uncertainties, the noise, the planted gross error
@@ -670,6 +1006,8 @@ export function DataReconciliationTool(): JSX.Element {
             setMeter={setMeter} setSize={setSize} />
         )}
         {page === "prior" && ready(prior, () => <PriorPage honest={honest} prior={prior} />)}
+        {page === "three" && ready(honest.why ? honest : prior,
+          () => <ThreeAnswersPage honest={honest} prior={prior} />)}
         <LessonLimits limits={DR_LIMITS} />
       </Stack>
     </Box>

@@ -15,9 +15,17 @@
       test; the prior's pseudo-measurements are tighter than the readings;
     * a header that has drifted is refused, never read by position;
     * the page computes no reconciliation;
-    * the lesson text: fifteen steps, all drawn, nothing quoted, every
+    * the lesson text: twenty steps, all drawn, nothing quoted, every
       equation parses, and every file:line it cites lands on the statement
-      it claims.
+      it claims;
+    * Bayes visible and central (DEV.md 4c C137): the central idea heads the
+      tool; prior, likelihood and posterior are named in step 1, before any
+      other step; the three answers of page 5 are the engine's published
+      numbers, the flat-prior flows ARE the classical ones and satisfy the
+      weighted least squares' stationarity condition, the posterior is
+      narrower than the meter; the word frequentist stands where the
+      chi-square does; and the prior's width is one number per flow, as the
+      page says.
 \*---------------------------------------------------------------------------*/
 
 import { readFileSync } from "node:fs";
@@ -32,14 +40,16 @@ import { describe, expect, it } from "vitest";
 import { applyDictOverride } from "../src/case/methodRun.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 import { texParses } from "../src/ui/methods/lessonTex.js";
-import { DR_LIMITS, DR_STEPS } from "../src/ui/methods/dataReconciliationLesson.js";
+import {
+  CENTRAL_IDEA, DR_LIMITS, DR_STEPS, THREE_INGREDIENTS,
+} from "../src/ui/methods/dataReconciliationLesson.js";
 import {
   DIAGRAM_EDGES, DIAGRAM_NODES, DRIFT_DEFAULT_METER, DRIFT_DEFAULT_SIZE, DR_OPS, DR_UNIT, DR_WITNESS, balancesCsv,
-  covarianceCsv, driftOverrides, readBalances, readCovariance, readStreams, streamsCsv,
+  covarianceCsv, driftOverrides, readBalances, readCovariance, readStreams, streamsCsv, threeAnswers,
   type DrOp,
 } from "../src/ui/methods/dataReconciliationRun.js";
 import {
-  BayesPage, GrossPage, PriorPage, WhyPage, opOf,
+  BayesPage, CentralIdea, GrossPage, PriorPage, ThreeAnswersPage, WhyPage, opOf,
 } from "../src/ui/methods/DataReconciliationTool.js";
 import type { MethodRunState } from "../src/case/methodRun.js";
 import { witnessOutput } from "./witnessRead.js";
@@ -233,6 +243,140 @@ describe("data-reconciliation: every page renders from the engine's own CSVs", (
     expect(h).toContain("reconciled σ (with prior)");
     expect(h).toContain("polyline");
   });
+  it("page 2 draws F1 as a distribution: read 101.40 ± 2.00, believed 99.53 ± 1.18", () => {
+    const h = html(createElement(BayesPage, { honest }));
+    expect(h).toContain("101.40 ± 2.00");
+    expect(h).toContain("99.53 ± 1.18");
+    expect(h).toContain("7 meters, 4 exact balances");
+    expect(h).toContain("posterior after the balances");
+  });
+  it("page 3 says, beside the chi-square, that its tests are frequentist", () => {
+    const h = html(createElement(GrossPage,
+      { run, meter: "F3", size: 15, setMeter: () => {}, setSize: () => {} }));
+    expect(h).toContain("frequentist tests");
+    expect(h).toContain("Two different questions: the frequentist test and a Bayesian one");
+  });
+  it("page 5 draws the three answers side by side, with the engine's numbers", () => {
+    const h = html(createElement(ThreeAnswersPage, { honest, prior }));
+    for (const s of ["1 · Classical reconciliation", "2 · Bayes, flat prior",
+      "3 · Bayes, yesterday&#x27;s prior", "Three answers to one snapshot"])
+      expect(h).toContain(s);
+    expect(h).toContain("99.53 ± 1.18");       // the flat-prior posterior of F1
+    expect(h).toContain("99.64 ± 0.82");       // the posterior with yesterday's prior
+    expect(h).toContain("99.60 ± 2.00");       // yesterday's prior itself
+    expect((h.match(/<polyline/g) ?? []).length).toBeGreaterThanOrEqual(5);
+  });
+  it("the tool is headed by the idea it is built on", () => {
+    const h = html(createElement(CentralIdea));
+    expect(h).toContain("Bayes is not merely a different way of calculating the same result.");
+    expect(h).toContain("representing, and updating, what we know about the state of a process");
+    for (const g of THREE_INGREDIENTS) expect(h).toContain(g.word);
+  });
+});
+
+// ---- Bayes, visible and central (DEV.md 4c C137) ------------------------------------
+
+/** The witness's own golden: `diag <op> <key> <value> <tol>` rows. */
+const golden = (op: string, key: string): number => {
+  const row = tree(`${CASE}/expected`).split("\n")
+    .map((l) => l.trim().split(/\s+/))
+    .find((c) => c[0] === "diag" && c[1] === op && c[2] === key);
+  if (!row) throw new Error(`the witness pins no diag ${op} ${key}`);
+  return Number(row[3]);
+};
+
+describe("data-reconciliation: Bayes is visible and central (C137)", () => {
+  const honest = streams("honest");
+  const prior = streams("yesterday");
+  const bal = read(readBalances(witnessOutput(CASE, balancesCsv("honest"))));
+  const three = read(threeAnswers(honest, prior));
+
+  it("the three panels' numbers are the engine's published ones, for every stream", () => {
+    expect(three.map((r) => r.stream)).toEqual(["F1", "F2", "F3", "F4", "F5", "F6", "F7"]);
+    for (const r of three) {
+      expect(r.classical, r.stream).toBeCloseTo(golden("honest", `reconciled_${r.stream}`), 6);
+      expect(r.flatSigma, r.stream).toBeCloseTo(golden("honest", `sigmaReconciled_${r.stream}`), 6);
+      expect(r.informative, r.stream).toBeCloseTo(golden("yesterday", `reconciled_${r.stream}`), 6);
+      expect(r.informativeSigma, r.stream)
+        .toBeCloseTo(golden("yesterday", `sigmaReconciled_${r.stream}`), 6);
+    }
+    //  Vitor's example, as C137 records it from the same golden.
+    const f1 = three[0]!;
+    expect(f1.reading).toBe(101.4);
+    expect(f1.sigma).toBe(2);
+    expect(f1.flat).toBeCloseTo(99.5264184542, 6);
+    expect(f1.flatSigma).toBeCloseTo(1.17574378534, 6);
+  });
+
+  it("the flat-prior flows ARE the classical flows, and they solve the weighted least squares", () => {
+    //  The same cell, read twice -- and checked to be the minimiser rather
+    //  than assumed: x - m = -C A^T lambda with the published multipliers,
+    //  A taken from the network file the engine reconciled.
+    const nodes = new Map<string, { in: string[]; out: string[] }>();
+    for (const m of network.matchAll(/\b(\w+)\s*\{\s*in\s*\(([^)]*)\)\s*;\s*out\s*\(([^)]*)\)\s*;\s*\}/g))
+      nodes.set(m[1]!, { in: m[2]!.trim().split(/\s+/), out: m[3]!.trim().split(/\s+/) });
+    for (const r of three) {
+      expect(r.flat).toBe(r.classical);
+      const h = honest.rows.find((q) => q.stream === r.stream)!;
+      let atA = 0;
+      for (const b of bal) {
+        const n = nodes.get(b.balance)!;
+        const a = (n.in.includes(r.stream) ? 1 : 0) - (n.out.includes(r.stream) ? 1 : 0);
+        atA += a * b.multiplier;
+      }
+      expect(h.reconciled - h.reading!, r.stream).toBeCloseTo(-(h.sigma! ** 2) * atA, 6);
+    }
+  });
+
+  it("the posterior is narrower than the meter (F1 and every stream), and the prior narrows it again", () => {
+    const f1 = three.find((r) => r.stream === "F1")!;
+    expect(f1.flatSigma).toBeLessThan(f1.sigma!);
+    for (const r of three) {
+      expect(r.flatSigma, r.stream).toBeLessThan(r.sigma!);
+      expect(r.informativeSigma, r.stream).toBeLessThan(r.flatSigma);
+      expect(r.informative, `${r.stream} moves with the prior`).not.toBeCloseTo(r.flat, 6);
+    }
+  });
+
+  it("refuses to set the runs side by side when a stream is missing", () => {
+    const short = { balances: prior.balances, rows: prior.rows.slice(1) };
+    expect(threeAnswers(honest, short).ok).toBe(false);
+  });
+
+  it("names prior, likelihood and posterior in step 1, before any other step", () => {
+    const s1 = DR_STEPS.find((s) => s.n === 1)!;
+    for (const w of ["PRIOR", "LIKELIHOOD", "POSTERIOR", "DISTRIBUTION"]) expect(s1.body).toContain(w);
+    expect(s1.formula).toContain(String.raw`p(x \,|\, m) \;\propto\; p(m \,|\, x)\; p(x)`);
+    expect(s1.body).toContain("Bayes is not merely a different way of calculating the same result");
+    expect(CENTRAL_IDEA).toContain("It is a way of representing, and updating, what we know about the state of a process.");
+    expect(tree(TOOL)).toMatch(/\{step\(1\)\}\s*\{step\(2\)\}/);
+  });
+
+  it("the word frequentist stands wherever the chi-square does", () => {
+    const withChi = DR_STEPS.filter((s) => /chi-square/.test(s.body));
+    expect(withChi.map((s) => s.n)).toEqual([11, 17]);
+    for (const s of withChi) expect(s.body, `step ${s.n}`).toMatch(/frequentist/i);
+    const s11 = DR_STEPS.find((s) => s.n === 11)!;
+    expect(s11.title).toContain("global test");
+    expect(s11.body).toContain("FREQUENTIST");
+    expect(DR_STEPS.find((s) => s.n === 12)!.body).toContain("Frequentist");
+    expect(DR_STEPS.find((s) => s.n === 14)!.formula).toContain(String.raw`\mathrm{Pr}(H_j \,|\, m)`);
+  });
+
+  it("says exactly what yesterday's 2 % is: one width per flow, the prior's whole sigma", () => {
+    //  The witness's prior file: a value and a sigma per flow, nothing else.
+    const y = strip(tree(`${CASE}/constant/plant/yesterday`));
+    const entries = [...y.matchAll(/^\s*(F\d+)\s*\{([^}]*)\}/gm)];
+    expect(entries.length).toBe(7);
+    for (const e of entries)
+      expect([...e[2]!.matchAll(/(\w+)\s+[-0-9.]+/g)].map((m) => m[1])).toEqual(["value", "sigma"]);
+    //  The page says so, and says the engine has no evolution term.
+    expect(DR_STEPS.find((s) => s.n === 17)!.body).toContain("ONE number per flow");
+    const s18 = DR_STEPS.find((s) => s.n === 18)!;
+    expect(s18.body).toContain("the engine has no term for q of its own");
+    expect(s18.formula).toContain("q_j^2");
+    expect(DR_LIMITS.map((l) => l.id)).toContain("one-prior-width");
+  });
 });
 
 // ---- the page computes no reconciliation --------------------------------------------
@@ -252,8 +396,8 @@ describe("data-reconciliation: the page draws, the engine computes", () => {
 describe("data-reconciliation: the lesson text", () => {
   const all = DR_STEPS.map((s) => [s.title, s.body, s.note ?? "",
     ...(s.derivation ?? []).map((d) => d.step)].join(" ")).join(" ");
-  it("has fifteen steps on four pages, and the page draws every one of them", () => {
-    expect(DR_STEPS.map((s) => s.n)).toEqual([...Array(15)].map((_, i) => i + 1));
+  it("has twenty steps on five pages, and the page draws every one of them", () => {
+    expect(DR_STEPS.map((s) => s.n)).toEqual([...Array(20)].map((_, i) => i + 1));
     const src = tree(TOOL);
     for (const s of DR_STEPS) expect(src, `step ${s.n}`).toContain(`{step(${s.n})}`);
   });
@@ -279,6 +423,7 @@ describe("data-reconciliation: the lesson text", () => {
     };
     const cited = new Set([...all.matchAll(/([A-Za-z]+\.(?:cpp|H)):(\d+)(?:-(\d+))?/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string> = {
+      "DataReconciliation.cpp:494": "f.priorSigma = flowIn(e, \"sigma\", unit);",
       "DataReconciliation.cpp:524": "f.sStar = 1.0 / std::sqrt(w);",
       "DataReconciliation.cpp:673": "analysis::reconcileWeightedLeastSquares(req);",
       "DataReconciliation.cpp:701": "Sx[i][j] -= V[i][j];",
