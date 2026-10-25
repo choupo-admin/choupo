@@ -2711,8 +2711,12 @@ accepts today, and that is a policy call.
 
 > **THE FULL SUITE ON A 10-CORE PC (owed to Vitor since 2026-10-24;
 > written 2026-10-25).**  Ubuntu 24.04 or WSL2 Ubuntu:
-> `sudo apt install build-essential clang python3 nodejs npm git
-> poppler-utils texlive-latex-extra` (clang for check_wasm_dialect,
+> `sudo apt install build-essential clang python3 git poppler-utils
+> texlive-latex-extra`, and NODE 22 (Ubuntu 24.04's apt `nodejs` is 18,
+> below what gui/'s packages require -- measured on Vitor's laptop
+> 2026-10-25: `npm ci` warns EBADENGINE for commander, pdfjs-dist and
+> postcss-mixins): `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash`,
+> then `nvm install 22` (clang for check_wasm_dialect,
 > pdftotext for the guide-version gate, pdflatex only to rebuild guides;
 > no Python package beyond the standard library is needed by the suite);
 > `git clone https://github.com/choupo-admin/choupo.git && cd choupo`;
@@ -2722,7 +2726,9 @@ accepts today, and that is a policy call.
 > the log, the ten slowest items are printed after it and every item's
 > seconds land in `build/suiteTimings.csv`.  The case walk is SERIAL: the
 > ten cores shorten the build and the GUI tests (vitest's workers), not
-> the walk.  Do not edit the tree while it runs; after any `git pull` run
+> the walk.  With the log in a file, a progress line `[runTests] k/N
+> items (p%)` is written to the terminal (since cdef2cb4d).  Do not edit
+> the tree while it runs; after any `git pull` run
 > `make all` again first (check_build_fresh refuses a stale binary and
 > aborts the walk, by design).  A partial run on one folder:
 > `bin/runTests tutorials/steady/flash` (cases only, no gates).
