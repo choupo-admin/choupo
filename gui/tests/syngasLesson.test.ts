@@ -276,7 +276,7 @@ describe("syngas: the lesson text", () => {
       "EquilibriumReactor.cpp:103": 'auto rxnList = dict->lookupDictList("reactions");',
       "EquilibriumReactor.cpp:119": "pureSolidPhase::reactionEquilibrium(thermo, nu[j], T);   // Kp from dG°(T)",
       "EquilibriumReactor.cpp:198": "g_j = Sum_i nu_ij (x_i - ln n_tot + ln P/P0) - ln Kp_j  = 0",
-      "EquilibriumReactor.cpp:1042": 'if (haveDuty) kpis_["Q_kW"] = Q_W / 1000.0;',
+      "EquilibriumReactor.cpp:1058": 'if (haveDuty) kpis_["Q_kW"] = Q_W / 1000.0;',
       "PSA.cpp:196": "Dq[i] = std::max<scalar>(0.0, eta * (q_high[i] - q_low[i]));",
       "PSA.cpp:205-206": /capacity = Dq\[i\] \* w \* F_in;[\s\S]*S\[i\] = std::min\(capacity, avail\);/,
       "PSA.cpp:225": "const scalar G = gamma * F_in;",

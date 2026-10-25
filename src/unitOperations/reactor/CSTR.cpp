@@ -770,8 +770,23 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         m << std::setprecision(6)
           << "reaction '" << rname[0] << "': the extent equation xi = r(xi) V_R has "
           << found.size() << " roots at T = " << Tk << " K -- the declared law is not"
-             " monotone in the extent (autocatalytic, or a negative order), and each"
-             " root is a steady state of this CSTR:";
+             " monotone in the extent (autocatalytic, or a negative order)";
+        //  Under an ENERGY BALANCE (adiabatic, heatExchange) T is an unknown:
+        //  at the reported T only the reported extent satisfies the energy
+        //  balance, so the other roots are NOT steady states of this reactor,
+        //  and dg/dxi at fixed T is not its stability (T moves with the
+        //  extent).  C131 reactors refutation, 2026-10-25: the first text
+        //  called every root "a steady state of this CSTR" and labelled its
+        //  stability in every mode.
+        if (isoT)
+            m << ", and each root is a steady state of this CSTR:";
+        else
+            m << ".  This CSTR solves an energy balance (thermalMode " << tmode
+              << "), so at this T only the REPORTED extent satisfies it: the other"
+                 " roots are NOT steady states of this reactor, no stability is"
+                 " read off them, and the T-scan -- which solves the extent from"
+                 " the feed (xi = 0) at every T -- can miss a branch whose extent"
+                 " is not the feed's root:";
         for (const scalar r : found)
         {
             const scalar h  = 1.0e-7 * span;
@@ -781,7 +796,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
             m << "  xi = " << r0 << " mol/s";
             if (iL < n) m << " (X(" << thermo.comp(iL).name() << ") = "
                           << (nu[0][iL] * -r0 / F_i_in[iL] + 0.0) << ")";
-            m << (dg > 0.0 ? " stable" : " UNSTABLE");
+            if (isoT) m << (dg > 0.0 ? " stable" : " UNSTABLE");
             if (std::abs(r - xiReported) <= 1.0e-6 * std::max(span, 1.0e-30))
                 m << " [REPORTED]";
             m << ";";

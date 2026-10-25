@@ -16,13 +16,21 @@ WHAT IT CHECKS
       paths.  It used to run to 99.95 % against the 92.26 % ideal-solution
       equilibrium of the same records, the Kc being the ideal-gas one in
       kmol/m3 under concentrations in mol/m3.  NEGATIVE: cstr02 and pfr02
-      (the water-gas shift, sum(nu) = 0) still run.
+      (the water-gas shift, sum(nu) = 0) still run.  R1b (refutation,
+      2026-10-25): a law that does not read `reversible` (`type
+      expression`) keeps its OWN refusal -- the W1 text's remedy
+      (`A_rev`/`Ea_rev`) is not its grammar.
   R2  an AUTOCATALYTIC law on the multi-reaction `cstr` (cstr04's
       esterification with order 1 on the product, fed none) announces BOTH
       roots of its extent equation, the washout one UNSTABLE and REPORTED;
       a cubic law (order 2 on the product, a trace fed) announces THREE.
       It used to report the washout at X = 0 silently.  NEGATIVE: cstr03
       (monotone laws, two reactions) and cstr04 as shipped say nothing.
+      R2b (refutation): the same law under `thermalMode adiabatic` says the
+      other root is NOT a steady state of this reactor (at the reported T
+      only the reported extent satisfies the energy balance) and reads no
+      isothermal stability off it -- the first text called every root "a
+      steady state of this CSTR" in every mode.
   R3  a gibbsReactor whose equilibrium forms a LIQUID and that declares ONE
       outlet REFUSES (the condensate used to be dropped: mass closure
       0.254 %).  NEGATIVE: gibbs09 (two outlets) runs.
@@ -35,7 +43,11 @@ WHAT IT CHECKS
       R4's SRK fixture closes too.
   R6  the equilibriumReactor REFUSES a gas-phase equilibrium that leaves a
       condensable supersaturated (equil01 at 350 K, water at y P 0.75 bar
-      against Psat 0.42 bar).  NEGATIVE: equil01 as shipped runs.
+      against Psat 0.42 bar).  NEGATIVE: equil01 as shipped runs.  R6b
+      (refutation): TWO condensables each below its own Psat but together
+      above their dew point (water y P/Psat 0.70 and methanol 0.68 at 330 K,
+      1 bar; vf 0.81 on the package) are refused too -- the per-component
+      test alone published that outlet at exit 0.
   R7  the dynamicCSTR ANNOUNCES a mole-changing reaction, at its site and in
       the caveat block (its F_out = F_in drains the holdup: 1.24 -> 0.051
       kmol in 20 residence times; check_ctrl_balance runs such a vessel on
@@ -175,6 +187,18 @@ MTBE_RXN = """mtbe
     kinetics { type Arrhenius; A 1.0e-3; Ea 0.0; }
 }
 """
+MTBE_RXN_EXPR = """mtbeX
+{
+    reversible         true;
+    stoichiometry
+    (
+        { component isoButene;            nu -1; }
+        { component methanol;             nu -1; }
+        { component methylTertButylEther; nu  1; }
+    );
+    kinetics { type expression; rate "0"; }
+}
+"""
 MTBE_FEED = """componentMolarFlows { isoButene 1.0 kmol/h; methanol 1.0 kmol/h; }
 T 343.15 K;
 P 20 bar;
@@ -226,9 +250,21 @@ def main() -> int:
         for neg in ("cstr02_reversible_wgs", "pfr02_reversible_wgs"):
             ok &= expect_runs(f"R1 negative", probe(T / "steady/reactors" / neg,
                                                     td / ("r1n_" + neg))) is not None
+        #  R1b (refutation): a law that does not READ `reversible` (here
+        #  `type expression`) keeps its own refusal; the W1 text, whose remedy
+        #  is `A_rev`/`Ea_rev`, is not its grammar.
+        c = mtbe_case(td / "r1b_expression", unit("cstr", "V_R 5.0;", "reactions ( mtbeX );"))
+        (c / "constant/reactions").write_text(MTBE_RXN_EXPR)
+        rc, out = run(c)
+        if rc == 0 or "is not read by a `type expression` law" not in out \
+                or "sum of nu = -1" in out:
+            failures.append("R1b: an expression law declaring `reversible true;`"
+                            " did not get its own refusal (it got the W1 text,"
+                            " or ran)")
+            ok = False
         if ok:
-            oks.append("R1 sum(nu) != 0 detailed balance refused on 4 paths; "
-                       "WGS (sum 0) runs")
+            oks.append("R1 sum(nu) != 0 detailed balance refused on 4 paths, an"
+                       " expression law keeps its own refusal; WGS (sum 0) runs")
 
         # -- R2: autocatalysis on the multi-reaction cstr
         ok = True
@@ -267,6 +303,27 @@ def main() -> int:
                 if not m or m.group(1) != "3":
                     failures.append("R2: the cubic autocatalytic CSTR did not announce"
                                     " THREE extent roots")
+                    ok = False
+        #  R2b (refutation): the SAME autocatalytic law under `thermalMode
+        #  adiabatic`.  At the reported T only the reported extent satisfies
+        #  the energy balance, so the other root is NOT a steady state of this
+        #  reactor and no isothermal stability may be read off it.
+        ad = probe(c4, td / "r2_auto_adiabatic")
+        if (edit(ad / "constant/reactions",
+                 "{ component ethylAcetate;  nu  1;  order 0; }",
+                 "{ component ethylAcetate;  nu  1;  order 1; }", "R2b")
+                and edit(ad / "constant/reactions", "A      1.0e8;", "A      1.0e5;", "R2b")):
+            out = expect_runs("R2b (adiabatic)", ad)
+            if out is not None:
+                ln = next((l for l in out.splitlines()
+                           if "MULTIPLE STEADY STATES IN THE EXTENT" in l), "")
+                if not ln or "NOT steady states of this reactor" not in ln \
+                        or "each root is a steady state" in ln \
+                        or "UNSTABLE" in ln or " stable" in ln:
+                    failures.append("R2b: under thermalMode adiabatic the extent"
+                                    " roots at the reported T are announced as steady"
+                                    " states of the reactor (or with an isothermal"
+                                    " stability)")
                     ok = False
         for neg in ("cstr03_series_selectivity", "cstr04_adiabatic"):
             out = expect_runs("R2 negative", probe(T / "steady/reactors" / neg,
@@ -360,8 +417,29 @@ def main() -> int:
             ok = expect_refusal("R6", s, ["supersaturated", "water", "gibbsReactor"])
             ok &= expect_runs("R6 negative", probe(T / "steady/reactors/equil01_reforming",
                                                    td / "r6n")) is not None
+            #  R6b (refutation): TWO condensables each below its own Psat but
+            #  together above their dew point (water y P/Psat 0.70, methanol
+            #  0.68 at 330 K, 1 bar) -- the per-component test passes it, the
+            #  package's own resolution of the outlet finds 19 % liquid.
+            dw = td / "r6b_dew"
+            src = T / "steady/reactors/equil02_methanol_declared_pathways"
+            for sub in ("system", "0"):
+                (dw / sub).mkdir(parents=True)
+            shutil.copytree(src / "constant", dw / "constant",
+                            ignore=shutil.ignore_patterns("propertyManifest"))
+            (dw / "w.cho").write_text("")
+            (dw / "system/controlDict").write_text(CONTROL)
+            (dw / "system/flowsheetDict").write_text(
+                "units\n(\n    { name r; type equilibriumReactor; in feed; outputs ( out );"
+                " operation { T 330 K; } reactions ( waterGasShift ); }\n);\n")
+            st = ("componentMolarFlows { H2 0.19 kmol/h; CO2 0.19 kmol/h;"
+                  " water 0.12 kmol/h; methanol 0.5 kmol/h; }\nT 330 K;\nP 1 bar;\n")
+            (dw / "0/feed").write_text(st)
+            (dw / "0/out").write_text(st)
+            ok &= expect_refusal("R6b", dw, ["dew point", "gibbsReactor"])
             if ok:
-                oks.append("R6 supersaturated gas-phase equilibrium refused; equil01 runs")
+                oks.append("R6 supersaturated gas-phase equilibrium refused, by"
+                           " component and at the mixture's dew point; equil01 runs")
 
         # -- R7: the dynamicCSTR
         d = probe(T / "ctrl/ctrl11_esterification_jacket", td / "r7_mole")

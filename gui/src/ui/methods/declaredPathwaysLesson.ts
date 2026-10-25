@@ -209,7 +209,7 @@ n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ji}\,\ln\frac{y_i\,P}{P^{\circ}} = \l
       + "running forward, is taken above it: with 20 K the conversion falls "
       + "from 0.610 to 0.442.  The reactor itself stays at T; only each K "
       + "moves, and each reaction's evaluation temperature is published as "
-      + "`T_Kp_<name>` (EquilibriumReactor.cpp:1055).",
+      + "`T_Kp_<name>` (EquilibriumReactor.cpp:1071).",
     formula: String.raw`K_j \;\to\; K_j\!\left(T + s_j\,\lvert\Delta T\rvert\right),
 \qquad
 s_j = \begin{cases} +1 & \xi_j^{\,0}\,\Delta H_j < 0 \\ -1 & \xi_j^{\,0}\,\Delta H_j > 0 \end{cases}`,
@@ -316,7 +316,7 @@ export const PATHWAYS_LIMITS: readonly LessonLimit[] = [
       + "carbon LOWERS the Gibbs energy.  Now leave Boudouard and cracking OFF the "
       + "list, keeping reforming and the shift, and no graphite forms — but "
       + "the gas it leaves has a_C = 1.580, published as "
-      + "`activity_graphite` (EquilibriumReactor.cpp:969–1003).  Recompute it "
+      + "`activity_graphite` (EquilibriumReactor.cpp:985–1003).  Recompute it "
       + "by hand by either route the list excludes: a_C = K_crack · p_CH₄ / "
       + "p_H₂², or a_C = K_boud · p_CO² / p_CO₂, where each p is the "
       + "outlet mole fraction times P / 1 bar and each K is that reaction's "

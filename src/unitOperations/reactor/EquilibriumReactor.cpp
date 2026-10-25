@@ -853,43 +853,6 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     const std::string unitName = !dict->name().empty() ? dict->name()
         : dict->lookupWordOrDefault("name", "equilibriumReactor");
 
-    // ---- A LIQUID AT THE ANSWER IS OUTSIDE THIS UNIT (C131, 2026-10-25) ---
-    //  The equilibrium above is the GAS's: every ln Q_j is written on the
-    //  vapour's mole fractions.  A condensable left at y_i P > Psat_i(T)
-    //  (below its Tc) is supersaturated -- the gas cannot hold it, a liquid
-    //  forms, and the reaction equilibrium of the two phases is not this one.
-    //  It used to be published all the same, at vf = 1, at exit 0 (measured:
-    //  equil01's 1 CH4 : 3 H2O at 350 K, 1 bar, water at y P = 0.75 bar
-    //  against Psat 0.42 bar).  Refused, naming the reactor that carries a
-    //  liquid -- the gibbsReactor's 2026-10-25 R07 refusal, mirrored.
-    {
-        std::string super;
-        for (std::size_t i = 0; i < n; ++i)
-        {
-            if (isSolid[i] || !(zout[i] > 0.0)) continue;
-            const Component& c = thermo.comp(i);
-            if (!c.hasVaporPressure() || !(T < c.Tc())) continue;
-            const scalar Psat = thermo.Psat(i, T);
-            const scalar yP   = zout[i] * P;
-            if (yP > Psat * (1.0 + 1.0e-6))
-            {
-                std::ostringstream m;
-                m << std::setprecision(6) << c.name() << " (y P = " << yP
-                  << " Pa > Psat = " << Psat << " Pa)";
-                super += (super.empty() ? "" : ", ") + m.str();
-            }
-        }
-        if (!super.empty())
-            throw std::runtime_error("equilibriumReactor: at T = "
-                + std::to_string(T) + " K the gas-phase equilibrium leaves "
-                + super + " supersaturated -- a liquid forms there, and the"
-                " equilibrium of the declared reactions over a gas AND a liquid is"
-                " not the gas-only one this unit solves, so no answer is"
-                " published.  Use a `gibbsReactor` with `model directMin;` (a"
-                " multi-component liquid), or operate where the gas holds every"
-                " product.");
-    }
-
     // ---- The duty: H_out - H_in on the package's own surface ------------
     //  (C131 reactors review, 2026-10-25.)  It used to be SUM_j xi_j
     //  dH_rxn_j(T) on the ideal-gas rung: the heat of reaction at T ALONE.
@@ -909,6 +872,59 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
                                                  "equilibriumReactor inlet");
     const reactorOutlet::OutletState outSt = reactorOutlet::outletState(
         T, P, zout, pinned_in, vf_in, thermo, "equilibriumReactor", unitName);
+    // ---- A LIQUID AT THE ANSWER IS OUTSIDE THIS UNIT (C131, 2026-10-25) ---
+    //  The equilibrium above is the GAS's: every ln Q_j is written on the
+    //  vapour's mole fractions.  A condensable left at y_i P > Psat_i(T)
+    //  (below its Tc) is supersaturated -- the gas cannot hold it, a liquid
+    //  forms, and the reaction equilibrium of the two phases is not this one.
+    //  It used to be published all the same, at vf = 1, at exit 0 (measured:
+    //  equil01's 1 CH4 : 3 H2O at 350 K, 1 bar, water at y P = 0.75 bar
+    //  against Psat 0.42 bar).  Refused, naming the reactor that carries a
+    //  liquid -- the gibbsReactor's 2026-10-25 R07 refusal, mirrored.
+    //  A PER-COMPONENT test is sufficient, not necessary (C131 reactors
+    //  refutation, 2026-10-25): a mixture condenses at its DEW point, and two
+    //  condensables each below its own Psat can sit above it together
+    //  (measured: H2 + CO2 with 0.12 water and 0.5 methanol at 330 K, 1 bar --
+    //  y P/Psat 0.70 and 0.68 -- published at vf 0.81, a gas-phase reaction
+    //  equilibrium beside 19 % liquid, at exit 0).  So the outlet's OWN
+    //  resolution on the package (`outSt`, the state it is published and
+    //  priced at) finding a liquid refuses too.
+    {
+        std::string super;
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            if (isSolid[i] || !(zout[i] > 0.0)) continue;
+            const Component& c = thermo.comp(i);
+            if (!c.hasVaporPressure() || !(T < c.Tc())) continue;
+            const scalar Psat = thermo.Psat(i, T);
+            const scalar yP   = zout[i] * P;
+            if (yP > Psat * (1.0 + 1.0e-6))
+            {
+                std::ostringstream m;
+                m << std::setprecision(6) << c.name() << " (y P = " << yP
+                  << " Pa > Psat = " << Psat << " Pa)";
+                super += (super.empty() ? "" : ", ") + m.str();
+            }
+        }
+        if (super.empty() && outSt.resolved && outSt.vf < 1.0 - 1.0e-9)
+        {
+            std::ostringstream m;
+            m << std::setprecision(6) << "its condensables together above their"
+                 " dew point (the package resolves the outlet at vapour"
+                 " fraction " << outSt.vf << ")";
+            super = m.str();
+        }
+        if (!super.empty())
+            throw std::runtime_error("equilibriumReactor: at T = "
+                + std::to_string(T) + " K the gas-phase equilibrium leaves "
+                + super + " supersaturated -- a liquid forms there, and the"
+                " equilibrium of the declared reactions over a gas AND a liquid is"
+                " not the gas-only one this unit solves, so no answer is"
+                " published.  Use a `gibbsReactor` with `model directMin;` (a"
+                " multi-component liquid), or operate where the gas holds every"
+                " product.");
+    }
+
     scalar Q_W = 0.0;
     haveDuty = true;
     try

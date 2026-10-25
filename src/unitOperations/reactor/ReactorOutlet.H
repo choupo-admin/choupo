@@ -100,6 +100,8 @@ struct OutletState
 {
     scalar      vf = 0.0;
     std::string origin;      //  how `vf` was arrived at, for the log
+    bool        resolved = false;   //  `vf` IS the outlet's own equilibrium
+                                    //  (not carried, not a discarded root)
 };
 
 //  The outlet's phase state at (T, P, zout), in the unit's own thermo world.

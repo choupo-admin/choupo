@@ -118,7 +118,10 @@ OutletState outletState(scalar               T,
         return o;
     }
     if (r.route == Route::resolved)
-        o.origin = "resolved at its own (T, P, z)";
+    {
+        o.origin   = "resolved at its own (T, P, z)";
+        o.resolved = true;
+    }
     else if (r.route == Route::discarded)
         o.origin = "the one fluid phase above every present Tc"
                    " (a two-phase root was discarded)";
