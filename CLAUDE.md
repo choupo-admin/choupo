@@ -3746,6 +3746,20 @@ Corollaries, each paid for:
   and a PEDAGOGICAL scope (an EduTool, a lesson, what a student is told)
   is put to Vítor BEFORE it is dispatched -- the pedagogy is his, and the
   C10 scope went out without that conversation.
+* **DESIGN A SCREEN FROM THE USER'S TASK, NOT FROM THE ENGINE'S OUTPUT**
+  (Vitor, 2026-10-25, on a props case whose results were a flat list of
+  KPI keys: "Isto e AI SLOP!").  choupoProps was shown as what its
+  operations print, and nobody asked what the engineer who arrives with a
+  laboratory dataset needs to see: what he has, which model, what he
+  wants to decide, where the theory is.  Before building or reviewing a
+  surface, write that task in one sentence and check the screen answers
+  it first; a list of everything the engine publishes is an audit, never
+  the answer.
+* **A COMMISSION LEAVES THE OPEN-WORK REGISTER ONLY WHEN IT LANDS OR VITOR
+  DROPS IT** (2026-10-24/25: nine branches stranded by a machine failure
+  were found four days later, and a register summary omitted two
+  commissions that were recorded in full).  The register in DEV.md 4c is
+  re-read at every session start; a backup branch is an open item.
 * **EVERY GENERAL WORKS IN ITS OWN WORKTREE; THE PRIMARY CHECKOUT STAYS ON
   A CLEAN `main`** (2026-09-27).  The session's stop hook checks the
   primary checkout and asks for a commit and push whenever it holds
