@@ -1703,6 +1703,15 @@ accepts today, and that is a policy call.
 > navigation.  This REVERSES the forum's "never a canvas": a diagram one
 > looks at is not an editor.  It replaces the old calculation map.  Slice
 > 3b, after C168 slice 2 (the minimum label size it uses).
+> Same day, his addition ("um double click na caixa fazia abrir um tab com
+> tudo detalhado!  Naturalmente o que se ve logo agora iria aparecer noutro
+> menu equivalente ao que aparece no flowsheet"): a DOUBLE CLICK on a box
+> opens that step in its own TAB with everything in detail (results,
+> figures, parameters, verdict, reads and writes); the overview shown on
+> opening today (the studies with their figures and tables) moves to its
+> own menu entry, the way Streams and Reports sit beside the flowsheet --
+> named STUDIES (the case's own word in propsDict), the commander's choice,
+> open to his.  A single click keeps selecting (outline + inspector).
 
 > **C171. THE PROPS SCREEN REDESIGNED BEFORE A RESEARCHER SEES IT, AND A
 > PROPER WAY TO CITE (Vitor, 2026-10-26, on the live NanoFiltran case
