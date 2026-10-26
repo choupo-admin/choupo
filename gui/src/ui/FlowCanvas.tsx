@@ -87,6 +87,7 @@ import { FLOWSHEET_FIT, FLOWSHEET_FIT_ANIMATED, FLOWSHEET_MIN_ZOOM } from "./flo
 import { cardFoldOffset, CARD_BODY_W, CARD_HANDLE_W, CARD_MARGIN, selectionLeafLabel } from "./panelFold.js";
 import { PropertyPanel } from "./PropertyPanel.js";
 import { StreamTerminal } from "./StreamTerminal.js";
+import { RunSummaryStrip } from "./RunSummaryStrip.js";
 import { TearEdge } from "./TearEdge.js";
 import { WaypointEdge } from "./WaypointEdge.js";
 import { UnitNode } from "./UnitNode.js";
@@ -134,7 +135,13 @@ interface PhaseStyle {
   phase: PhaseKind;
   /** Total mass flow (fluid + solid) in kg/s --- drives line thickness. */
   totalFlow: number;
+  /** Before a run: the stream's 0/ file declares no phase, so none is drawn
+   *  ("?" on its terminal, a neutral wire) -- the run resolves it (C168). */
+  undeclared?: boolean;
 }
+
+/** The wire of a stream whose phase only the run will tell (C168). */
+const UNDECLARED_PHASE_COLOUR = "var(--mantine-color-gray-5)";
 
 const NODE_TYPES = {
   unitNode: UnitNode,
@@ -260,6 +267,9 @@ export function FlowCanvas({ scrubInstant }: { scrubInstant?: DynamicInstant } =
           )}
         </Box>
       )}
+      {/* RESULTS FIRST (DEV.md 4c C168): what the run concluded, persistent,
+          where the reader looks -- it replaces the post-run toast. */}
+      <RunSummaryStrip />
       <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
         <ReactFlowProvider>
           <CanvasInner flowsheet={flowsheet} scrubInstant={scrubInstant} />
@@ -799,7 +809,8 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       const lookup = (label: string): StreamResult | null =>
         findRunStream(runResult.streams, label, runResult.streamAliases) ?? null;
       return { list: runResult.streams, lookup,
-               mws: runResult.componentMolarMass, isRun: true as const };
+               mws: runResult.componentMolarMass, isRun: true as const,
+               undeclared: new Set<string>() };
     }
     // PRE-RUN.  The width basis is MASS (kg/s) from the 0/ molar flow x the
     // component MWs the case carries -- matching the post-run totalFlowOf so
@@ -807,14 +818,16 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     // with no MW the honest fallback is molar.
     const specs = graph.view.streams;
     const pseudo = new Map<string, StreamResult>();
+    const undeclared = new Set<string>();
     for (const [label, sp] of Object.entries(specs)) {
+      if (!sp.phaseDeclared) undeclared.add(label);
       const avg = meanMolarMass(sp.composition, mwMap);
       pseudo.set(label, { name: label, role: "feed", F: sp.F, T: sp.T, P: sp.P, vf: sp.vf,
                           composition: sp.composition,
                           ...(avg > 0 ? { F_mass: sp.F * avg } : {}) });
     }
     return { list: [...pseudo.values()], lookup: (l: string) => pseudo.get(l) ?? null,
-             mws: mwMap as { [c: string]: number } | undefined, isRun: false as const };
+             mws: mwMap as { [c: string]: number } | undefined, isRun: false as const, undeclared };
   }, [runResult, graph, mwMap]);
 
   //  The ONE shared per-component conversion (case/streamComposition.ts):
@@ -863,8 +876,10 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         if (tf > mx) mx = tf;
       } else {
         // Before a run the width basis may be molar (no MWs); the phase is
-        // read off the declared vf, exactly as the pre-run canvas always did.
-        if (st.F > 1e-15) present.add(classifyPhase({ vf: st.vf, F: st.F, F_mass: st.F }));
+        // read off the DECLARED phase only (C168) -- an undeclared one is
+        // the run's to resolve and enters no legend.
+        if (st.F > 1e-15 && !streamSource.undeclared.has(st.name))
+          present.add(classifyPhase({ vf: st.vf, F: st.F, F_mass: st.F }));
         const wf = st.F_mass ?? st.F;
         if (wf > mx) mx = wf;
       }
@@ -887,6 +902,12 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       const phase = streamSource.isRun
         ? classifyPhase(st) : classifyPhase({ vf: st.vf, F: st.F, F_mass: st.F });
       const totalFlow = streamSource.isRun ? totalFlowOf(st) : (st.F_mass ?? st.F);
+      //  NOTHING INVENTED (DEV.md 4c C168): before a run a phase is drawn
+      //  only where 0/ declares one.  classifyPhase reads an absent vf as
+      //  LIQUID, which drew "L" on a 300 K syngas and on a stream declaring
+      //  `phase gas;` (its word was never read).
+      if (!streamSource.isRun && phase !== "empty" && streamSource.undeclared.has(st.name))
+        return { color: UNDECLARED_PHASE_COLOUR, phase, totalFlow, undeclared: true };
       let color = phaseColorFor(phase, colorScheme);
       if (colourField && phase !== "empty")
         color = colourOfValue(valueOf(st, colourField), scale, colorMap);
@@ -1012,7 +1033,12 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         if (n.type === "streamTerminal" && n.id.startsWith("stream:") && phaseOf) {
           const label = n.id.slice("stream:".length);
           const ps = phaseOf(label);
-          if (ps) {
+          if (ps?.undeclared) {
+            //  "?" and a dashed border: the 0/ file declares no phase, so
+            //  the run resolves it -- never a letter the case did not say.
+            phaseGlyph = "?";
+            phaseLabel = "phase not declared in 0/ -- resolved by the run";
+          } else if (ps) {
             phaseColor = ps.color;
             phaseLabel = PHASE_LABEL[ps.phase];
             phaseGlyph = PHASE_GLYPH[ps.phase];
@@ -1137,6 +1163,11 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                   ...(stubRun ? { tier: stubRun.tier } : {}),
                   utilityCategory, resolved, dutyKW, dutyAlloc, dutyEurH,
                   feedDrivenTag, kpiTint,
+                  //  A SEED IS NOT A RESULT (DEV.md 4c C168): before a run a
+                  //  PRODUCT terminal shows its 0/ file, which for a stream a
+                  //  unit produces is the solver's starting value.
+                  seed: n.type === "streamTerminal" && !streamSource.isRun
+                    && (n.data as { role?: string }).role === "product",
                   showNumbers: show.numbers,
                   showDetails,
                   //  WHAT THE RUN WILL USE, not what is on disk.  A tinkered
@@ -1151,7 +1182,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                   onHandleReset },
         };
       }),
-    [nodes, selectedNodeId, drillableSub, phaseOf, utilityOf, resultStreamOf, show,
+    [nodes, selectedNodeId, drillableSub, phaseOf, streamSource.isRun, utilityOf, resultStreamOf, show,
      showDetails, scratchEdits,
      handlePos, onHandleMove, onHandleReset, commitHandles, runResult, numberOf,
      scrubOverlay, colorScheme, loops, dutyRun, unitColours, cc.unitKpi, cc.unitThreshold, streamDimmed],
@@ -1382,9 +1413,14 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     const box = wrapperRef.current?.getBoundingClientRect();
     if (!st || !box) { setProbe(null); return; }
     const rows = probeRows(st, perStream[st.name], displayPrefs);
-    setProbe({ name: streamSource.isRun ? st.name : `${label} (declared, before a run)`, rows,
+    //  Before a run a FEED's 0/ file is its declaration; any other stream's
+    //  is a seed -- the solver's starting value, never a result (C168).
+    const isFeed = graph.nodes.some((n) => n.id === `stream:${label}`
+      && (n.data as { role?: string }).role === "feed");
+    setProbe({ name: streamSource.isRun ? st.name
+                 : `${label} (${isFeed ? "declared" : "seed in 0/, not a result"}, before a run)`, rows,
                x: ev.clientX - box.left, y: ev.clientY - box.top, w: box.width, h: box.height });
-  }, [streamSource, perStream, displayPrefs]);
+  }, [streamSource, perStream, displayPrefs, graph.nodes]);
 
   //  EXPORT (C114 item 6): the coloured flowsheet with its legend, as a
   //  self-contained SVG or a PNG rasterised from it (ui/flowsheetExport.ts).

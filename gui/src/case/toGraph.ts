@@ -1259,7 +1259,13 @@ export function streamStateSpec(text: string | undefined): StreamSpec | null {
   const t = scalarToSI(d["T"]); if (Number.isFinite(t) && t > 0) spec.T = t;
   const p = scalarToSI(d["P"]); if (Number.isFinite(p) && p > 0) spec.P = p;
   const vf = scalarToSI(d["vaporFraction"] ?? d["vapourFraction"]);
-  if (Number.isFinite(vf)) spec.vf = vf;
+  if (Number.isFinite(vf)) { spec.vf = vf; spec.phaseDeclared = true; }
+  //  The `phase` word, read as the engine reads it (src/streams/
+  //  StreamStateIO.cpp: gas / vapor / vapour pin vf = 1, liquid pins 0; a
+  //  `solid` lives in the solids block, not here).
+  const ph = d["phase"];
+  if (ph === "gas" || ph === "vapor" || ph === "vapour") { spec.vf = 1; spec.phaseDeclared = true; }
+  else if (ph === "liquid") { spec.vf = 0; spec.phaseDeclared = true; }
   return spec;
 }
 

@@ -63,5 +63,13 @@ scalar evaluateProperty(const std::string& propKey,
                         scalar P_Pa,
                         const sVector& xLiquid);
 
+//  THE UNIT OF A CATALOGUE KEYWORD, beside the catalogue that computes it
+//  (DEV.md 4c C168): the SI unit evaluateProperty returns the keyword in,
+//  "-" for a pure number, empty for a keyword this catalogue does not know
+//  (a caller then publishes no unit -- never a guessed one).  A per-component
+//  keyword (`Psat_<comp>`) is matched by its prefix alone; whether the
+//  component exists is evaluateProperty's question, not this one's.
+std::string propertyUnit(const std::string& propKey);
+
 } // namespace propertyOps
 } // namespace Choupo

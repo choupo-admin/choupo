@@ -115,13 +115,17 @@ interface StreamTerminalData {
    *  for `steamLP`. */
   dutyAlloc?: DutyAllocationFacts;
   dutyEurH?: number;
+  /** Before a run, a PRODUCT terminal's values are its 0/ file -- the
+   *  solver's SEED for a stream a unit produces, not a result -- and are
+   *  marked as such (DEV.md 4c C168). */
+  seed?: boolean;
   [key: string]: unknown;
 }
 
 export function StreamTerminal({ data, selected }: NodeProps) {
   const { name, role, stream, phaseColor, phaseLabel, phaseGlyph, utilityCategory, resolved,
           streamNumber, showNumbers, streamOrigin, feedDrivenTag,
-          dutyPort, tier, dockSide, dutyKW, utilityName, dutyAlloc, dutyEurH } =
+          dutyPort, tier, dockSide, dutyKW, utilityName, dutyAlloc, dutyEurH, seed } =
     data as StreamTerminalData;
   const prefs = useStore((s) => s.displayPrefs);
 
@@ -271,7 +275,8 @@ export function StreamTerminal({ data, selected }: NodeProps) {
             </Text>
           ) : phaseGlyph ? (
             <Tooltip label={phaseLabel ?? ""} disabled={!phaseLabel} withArrow openDelay={200}>
-              <Text size="sm" fw={700} ff="monospace"
+              <Text size="sm" fw={700} ff="monospace" data-phase-glyph={phaseGlyph}
+                    aria-label={phaseLabel}
                     style={{ color: phaseColor ? onChip(phaseColor) : undefined, letterSpacing: 0.3, cursor: "default" }}>
                 {phaseGlyph}
               </Text>
@@ -292,8 +297,18 @@ export function StreamTerminal({ data, selected }: NodeProps) {
             nominal — driven
           </Text>
         )}
+        {seed && (stream || resolved) && (
+          <Tooltip withArrow multiline maw={300} openDelay={200}
+            label="The values below are this stream's 0/ file: the solver's starting value for a stream a unit produces, not a result.  Run the flowsheet to replace them.">
+            <Text size="10px" ff="monospace" fw={700} data-seed=""
+                  style={{ color: "var(--mantine-color-dimmed)", letterSpacing: 0.4, cursor: "help",
+                           textTransform: "uppercase" }}>
+              seed (0/), not a result
+            </Text>
+          </Tooltip>
+        )}
         {(stream || resolved) && (
-          <Text size="xs" c="dimmed" ff="monospace">
+          <Text size="xs" c="dimmed" ff="monospace" fs={seed ? "italic" : undefined}>
             {/* T AND P always, no F=/T=/P= prefixes (Vitor 2026-06-11): the
                 units already name each quantity -- kg/h is a flow, degC a
                 temperature, bar a pressure.  Just the state, clean. */}

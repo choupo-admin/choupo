@@ -1,9 +1,10 @@
 // Tests for the run-result "speak-up" surfaces of the WASM parse path:
 // solver advisories ([bound]/[rating]/[init]/[thermo]/[electrolyte]) and the
 // model-boundary audit (incl. REFUSED boundaries, which carry a reason and no
-// dH numbers).  These feed the StreamsSummary band and the run-complete toast
-// ("no silent crutch": a refused boundary must never vanish into a teal
-// "Run complete"), so the passthrough is pinned here.
+// dH numbers).  These feed the StreamsSummary band and the run-summary strip
+// above the canvas (ui/RunSummaryStrip.tsx, DEV.md 4c C168 -- it replaced the
+// run-complete toast; "no silent crutch": a refused boundary must never vanish
+// behind a "Run complete"), so the passthrough is pinned here.
 //
 // Same fixture style as adapters.test.ts: a JSON payload between the solver's
 // markers, parsed with extractStructured.

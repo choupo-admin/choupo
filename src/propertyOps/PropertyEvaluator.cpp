@@ -332,5 +332,37 @@ scalar evaluateProperty(const std::string& propKey,
       + "'.  See PropertyEvaluator.H for the catalogue.");
 }
 
+std::string propertyUnit(const std::string& k)
+{
+    //  ONE line per keyword family above, in the unit the branch returns.
+    auto perComp = [&](const char* prefix)
+    {
+        const std::string p = std::string(prefix) + "_";
+        return k.size() > p.size() && k.compare(0, p.size(), p) == 0;
+    };
+    if (perComp("Psat"))                                  return "Pa";
+    if (perComp("gamma") || perComp("y_eq"))              return "-";
+    if (perComp("Hvap") || perComp("h_ig"))               return "J/mol";
+    if (perComp("s_ig") || perComp("Cp_liquid"))          return "J/(mol*K)";
+    if (k == "T" || k == "T_bubble")                      return "K";
+    if (k == "P")                                         return "Pa";
+    if (k == "H_ig" || k == "H_R" || k == "H_real")       return "J/mol";
+    if (k == "S_ig" || k == "S_R" || k == "S_real" || k == "Cp_ig")
+                                                          return "J/(mol*K)";
+    if (k == "Z" || k == "gamma" || k == "liquid_stable") return "-";
+    if (k == "v_molar" || k == "molarVolume")             return "m3/mol";
+    if (k == "viscosity" || k == "viscosity_gas" || k == "mu"
+        || k == "viscosity_liquid" || k == "mu_L")        return "Pa*s";
+    if (k == "thermal_conductivity" || k == "thermalConductivity"
+        || k == "k_gas" || k == "k" || k == "thermal_conductivity_liquid"
+        || k == "k_liquid" || k == "k_L")                 return "W/(m*K)";
+    if (k == "diffusivity" || k == "D_gas" || k == "D"
+        || k == "diffusivity_liquid" || k == "D_liquid" || k == "D_L")
+                                                          return "m2/s";
+    if (k == "surface_tension" || k == "surfaceTension" || k == "sigma")
+                                                          return "N/m";
+    return {};
+}
+
 } // namespace propertyOps
 } // namespace Choupo

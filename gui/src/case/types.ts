@@ -71,6 +71,12 @@ export interface StreamSpec {
   /** Vapour fraction, when the state carries it (0/ files do) -- lets the
    *  pre-run canvas colour a feed by phase before a solve. */
   vf?: number;
+  /** True when the 0/ file DECLARES the phase: a `phase` word the engine
+   *  pins (gas / vapor / vapour / liquid) or a `vaporFraction`.  Absent, the
+   *  (T, P, z) state MEANS its own equilibrium and only the run resolves it
+   *  (CLAUDE.md §3, "A STREAM IS FIXED BY TWO VARIABLES"), so before a run
+   *  the canvas draws no phase for it (DEV.md 4c C168). */
+  phaseDeclared?: boolean;
 }
 
 /** Energy-wire producer port.  Declared on the producing unit.

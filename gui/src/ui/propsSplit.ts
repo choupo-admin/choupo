@@ -92,3 +92,22 @@ export function openDetailsCap(hostPx: number, shownMapPx: number, spec: SizeSpe
   const cap = Math.max(spec.min, Math.floor(hostPx - usable));
   return cap < shownMapPx ? cap : null;
 }
+
+/** RESULTS FIRST (DEV.md 4c C168).  After a SUCCESSFUL run the map folds to
+ *  its strip and the details pane -- the Overview, the results -- takes the
+ *  height: the map is the problem's picture, drawn before a run, and once
+ *  the run has answered, the answer is what the reader came for.  The fold
+ *  is per RUN, never written to the reader's stored preference: a reader who
+ *  opens the map again after a run keeps it open for that run, the next run
+ *  folds it again, and before any run the stored preference decides alone.
+ *  So nothing about the stored fold changes for a case that is never run. */
+export function mapFolded(o: {
+  /** the run on screen finished (`status === "done"`) */
+  ran: boolean;
+  /** the reader re-opened the map after THIS run */
+  openedAfterRun: boolean;
+  /** the reader's stored fold (state/prefs.ts, PANELS.propsMap) */
+  stored: boolean;
+}): boolean {
+  return o.ran ? !o.openedAfterRun : o.stored;
+}
