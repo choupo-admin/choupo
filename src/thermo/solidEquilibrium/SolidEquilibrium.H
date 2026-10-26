@@ -86,6 +86,10 @@ struct SolidCandidate
     std::function<scalar(scalar T)> lnSI;        // ln(IAP/K) at current state
     std::function<void(scalar dn)> remove;       // move dn mol INTO the solid
                                                  // (negative = redissolve)
+    //  OPTIONAL: how much more this candidate may take out of the solution
+    //  before the solution runs out of what the solid is made of (C173).
+    //  Absent, the step is bounded below only (n >= 0), as it always was.
+    std::function<scalar()> capacity;
     scalar n = 0.0;                              // moles formed so far
 };
 
@@ -196,6 +200,28 @@ inline int equilibrate(std::vector<SolidCandidate>& solids, scalar T,
             SolidCandidate& sj = solids[act[j]];
             scalar step = 0.5 * dn[j];
             if (sj.n + step < 0.0) step = -sj.n;
+            //  FRACTION TO THE BOUNDARY (2026-10-26, DEV.md 4c C173).  The
+            //  half step is bounded below by n >= 0 and was bounded ABOVE by
+            //  nothing: a dilute liquor far below its freezing curve has a
+            //  small d lnSI/dn, so the Newton step for ice asked for more
+            //  water than the liquid held (1.01 mol against 0.99 at 270.15 K,
+            //  1 mol% ethanol), the liquid went negative, and the flash read
+            //  that as total freezing and refused a feed whose answer is 68 %
+            //  ice.  Where the candidate states its capacity, a step may take
+            //  at most 90 % of what is left, and the solver says so -- an aid
+            //  that binds is announced, never silent.
+            if (sj.capacity && step > 0.0)
+            {
+                const scalar cap = sj.capacity();
+                if (step > 0.9 * cap)
+                {
+                    step = 0.9 * cap;
+                    note("step on solid '" + sj.name + "' limited to 90 % of"
+                         " what the solution still holds of it (fraction to"
+                         " the boundary; the full Newton step would have"
+                         " emptied the solution)");
+                }
+            }
             if (step == 0.0) continue;
             const bool wasPresent = sj.n > 0.0;
             sj.remove(step);

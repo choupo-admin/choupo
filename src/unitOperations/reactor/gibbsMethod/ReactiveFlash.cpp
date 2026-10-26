@@ -33,6 +33,7 @@ License
 #include "thermo/Component.H"
 
 #include <cmath>
+#include <iostream>
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
@@ -64,7 +65,28 @@ GibbsEquilibrium ReactiveFlash::equilibrium(const GibbsProblem& p, scalar T,
         const scalar y_i = eq.nGas[i] / eq.Ntotal_gas;
         if (y_i * P > Psat[i]) act.push_back(i);
     }
-    if (act.empty()) return eq;     // single gas phase is stable
+    //  NONE SUPERSATURATED ON ITS OWN, YET THE GAS MAY BE BELOW ITS DEW
+    //  POINT (C173): the mixed-liquid onset (supersaturatedCondensables,
+    //  the ONE test) then puts into the active set every condensable whose
+    //  y P/Psat is not negligible (>= 1e-8 of the sum) -- the liquid this
+    //  method exists to carry.  One left out is tested again at the answer.
+    bool mixedOnset = false;
+    if (act.empty())
+    {
+        if (supersaturatedCondensables(p, eq, T).empty()) return eq;
+        mixedOnset = true;
+        sVector ratio(N, 0.0);
+        scalar  sum = 0.0;
+        for (std::size_t i = 0; i < N; ++i)
+            if (p.condensable[i] && eq.nGas[i] > 0.0)
+            {
+                Psat[i]  = thermo.Psat(p.compIdx[i], T);
+                ratio[i] = eq.nGas[i] / eq.Ntotal_gas * P / Psat[i];
+                sum     += ratio[i];
+            }
+        for (std::size_t i = 0; i < N; ++i)
+            if (ratio[i] > 1.0e-8 * sum) act.push_back(i);
+    }
     const std::size_t K = act.size();
 
     // 3. Newton on x = ln(n_c^L) for the active condensables.  Residual is the
@@ -103,6 +125,43 @@ GibbsEquilibrium ReactiveFlash::equilibrium(const GibbsProblem& p, scalar T,
         scalar L_guess = eq.nGas[c] * (1.0 - Psat[c] / (y_c * P));
         if (L_guess <= 0.0) L_guess = 1.0e-4 * eq.Ntotal_gas;
         x0[a] = std::log(L_guess);
+    }
+    //  A MIXED onset has no supersaturation excess to seed from, and at a
+    //  tiny liquid the Newton's Jacobian is singular (only the liquid's
+    //  COMPOSITION moves the residual, not its amount).  The seed is then the
+    //  Rachford-Rice split of the gas-only answer on Raoult K = Psat/P (a
+    //  non-condensable, or an inactive one, stays in the gas: K -> infinity).
+    if (mixedOnset)
+    {
+        std::vector<bool> inAct(N, false);
+        for (auto c : act) inAct[c] = true;
+        auto rr = [&](scalar V) {
+            scalar s = 0.0;
+            for (std::size_t i = 0; i < N; ++i)
+            {
+                const scalar z = eq.nGas[i] / eq.Ntotal_gas;
+                if (!(z > 0.0)) continue;
+                if (!inAct[i]) { s += z / V; continue; }
+                const scalar Ki = Psat[i] / P;
+                s += z * (Ki - 1.0) / (1.0 + V * (Ki - 1.0));
+            }
+            return s;                 // decreasing in V on (0, 1]
+        };
+        scalar lo = 1.0e-12, hi = 1.0;
+        for (int it = 0; it < 200; ++it)
+        {
+            const scalar mid = 0.5 * (lo + hi);
+            (rr(mid) > 0.0 ? lo : hi) = mid;
+        }
+        const scalar V = 0.5 * (lo + hi);
+        for (std::size_t a = 0; a < K; ++a)
+        {
+            const std::size_t c = act[a];
+            const scalar z  = eq.nGas[c] / eq.Ntotal_gas;
+            const scalar Ki = Psat[c] / P;
+            const scalar L  = eq.Ntotal_gas * (1.0 - V) * z / (1.0 + V * (Ki - 1.0));
+            if (L > 0.0) x0[a] = std::log(L);
+        }
     }
 
     solver::NDOptions ndo;

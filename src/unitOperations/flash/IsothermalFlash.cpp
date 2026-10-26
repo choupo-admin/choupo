@@ -157,6 +157,9 @@ FlashSolution solveSLE(const FlashInput&    in,
             return std::log(fL / fS);
         };
         cd.remove = [&nLiq, c](scalar dn) { nLiq[c] -= dn; };
+        //  The liquid holds nLiq[c] of the crystal's component; the solver
+        //  keeps a step inside it (fraction to the boundary, C173).
+        cd.capacity = [&nLiq, c]() -> scalar { return nLiq[c]; };
         cands.push_back(std::move(cd));
         crystalOf.push_back(c);
     }
