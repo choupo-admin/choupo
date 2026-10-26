@@ -819,10 +819,10 @@ internal flows or the profile -- use
   CMO.  A two-phase feed enters each energy row at its own equilibrium
   (x, y), the same pricing the duty and the energy report use.  Same stage-1
   restriction.  Murphree efficiency is refused (Wang-Henke only).  With a
-  `reaction {}` block the full-MESH step is NOT run: the column keeps the
-  `simultaneous` CMO profile, and today it does not say so (measured on
-  column05 under `model fullMESH;`: every KPI equals the `simultaneous`
-  golden).  Use `model simultaneous;` for a reactive column.
+  `reaction {}` block the full MESH is not implemented and the three names
+  are REFUSED by name (since 2026-10-26, C169; until then it silently ran
+  the `simultaneous` CMO model).  Use `model simultaneous;` for a reactive
+  column.
 
 See theory: §Distillation (Wang-Henke) and §Rigorous MESH Newton.
 Reference: Wang & Henke, *Hydrocarbon Process.* 45 (1966) 155;

@@ -517,8 +517,12 @@ def probe_reactive_refusals(tmp):
             continue
         fd.write_text(s2)
         rc, d, log = run_case(dst)
-        named = (model in log and "simultaneous" in log
-                 and re.search(r"react", log, re.I) is not None)
+        #  The refusal must name the declared word AND the supported model
+        #  in ONE sentence about a reaction -- words scattered across a log
+        #  that echoes the case would satisfy a looser test.
+        named = any(("model " + model) in l and "model simultaneous" in l
+                    and re.search(r"react", l, re.I)
+                    for l in log.splitlines())
         verdict = ("ran to a converged answer -- the declared model was NOT"
                    " refused" if rc == 0 else
                    "refused, naming the model and `simultaneous`" if named

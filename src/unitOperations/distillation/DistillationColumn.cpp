@@ -1630,6 +1630,29 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                                           int verbosity)
 {
     auto operDict = dict->subDict("operation");
+    //  A FULL MESH OVER A REACTION IS NOT WIRED, AND A DECLARED MODEL THAT IS
+    //  NOT RUN IS REFUSED (DEV.md 4c C169, C131 M9).  The full-MESH refinement
+    //  below carries no extent unknowns and no reaction heat, so it ran only
+    //  `if (!reactive)`: a reactive column declaring `model fullMESH;` was
+    //  solved by the CMO MESH and published, at exit 0, a result
+    //  byte-identical to `model simultaneous;` -- the problem solved was not
+    //  the problem posed, and nothing said so.  Refused here, before any feed
+    //  is read or any stage priced, so the refusal costs no solve.
+    {
+        const std::string m = dict->lookupWordOrDefault(
+            "model", operDict->lookupWordOrDefault("method", "WangHenke"));
+        if (dict->found("reaction")
+            && (m == "fullMESH" || m == "MESH" || m == "NaphtaliSandholm"))
+            throw std::runtime_error("DistillationColumn '" + dict->name()
+                + "': `model " + m + ";` is declared on a REACTIVE column (it"
+                " carries a `reaction {}` block), and the full MESH is not"
+                " implemented with a reaction: its stage rows carry no reaction"
+                " extent and no heat of reaction.  The supported reactive model"
+                " is `model simultaneous;` -- the MESH under constant molar"
+                " overflow, with the extents (equilibrium or kinetic) as"
+                " unknowns of the stages declared in `reactiveStages`.  Declare"
+                " it, and read its duties as the CMO column's.");
+    }
     // Murphree efficiency is implemented on the Wang-Henke path only (folded into
     // an effective K, with the vapour from below lagged one outer pass).  The MESH
     // Newton has no outer pass to lag against: the relation would have to enter the
@@ -2440,7 +2463,9 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     // energy balance like any tray, the reflux R D entering it at its own
     // bubble point and V_1 = (R+1) D leaving it; PARTIAL -- the condenser
     // itself, V_1 = 0 and L_1 = R D, its duty free.  Reboiler: L_{N-1} = B.
-    // The free duties are computed post hoc.  Reactive full-MESH is not wired yet (keeps the CMO profile).
+    // The free duties are computed post hoc.  Reactive full-MESH is not wired:
+    // it is REFUSED at the top of this method (C169), so `!reactive` below is
+    // always true here and is kept only so the condition reads what it means.
     const std::string fmModel = dict->lookupWordOrDefault(
         "model", operDict->lookupWordOrDefault("method", "WangHenke"));
     if ((fmModel == "fullMESH" || fmModel == "MESH"
