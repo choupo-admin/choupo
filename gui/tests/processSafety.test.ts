@@ -399,10 +399,14 @@ describe("process-safety: the lesson text", () => {
       expect(SAFETY_QUOTES.some((s) => prose(s.text) === q),
         `unlisted quotation: "${q}"`).toBe(true);
   });
-  it("Gall is paraphrased and the page says so", () => {
-    expect(all).toMatch(/In paraphrase/);
-    for (const m of all.matchAll(/"([^"]+)"/g))
-      expect(/failing to fail|fails? by fail/i.test(m[1]!), m[1]).toBe(false);
+  it("Gall is quoted verbatim from the third edition, chapter by chapter", () => {
+    //  Read 2026-10-26 from Vitor's copy of The Systems Bible (2002); the
+    //  earlier page paraphrased because the book had not been read.
+    expect(all).not.toMatch(/In paraphrase|could not be checked/);
+    const gall = SAFETY_QUOTES.filter((q) => q.id.startsWith("gall-"));
+    expect(gall.map((q) => q.id).sort()).toEqual(
+      ["gall-ch11-law", "gall-ch14-failsafe", "gall-ch14-ways", "gall-ch4-kicks"]);
+    for (const q of gall) expect(q.cite, q.id).toMatch(/The Systems Bible .*ch\. \d+$/);
   });
   it("Gall is a paediatrician and Kletz a chemist", () => {
     const s1 = SAFETY_STEPS.find((s) => s.n === 1)!;

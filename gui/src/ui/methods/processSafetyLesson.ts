@@ -48,7 +48,12 @@
       correction, cited there to Stoessel 2008.
     * Who Gall and Kletz were (second review, point 7): John Gall
       (1925-2014) was an American paediatrician (his Wikipedia entry and
-      the author notes of Systemantics); Trevor Kletz (1922-2013)
+      the author notes of Systemantics); his four laws are quoted
+      VERBATIM, with their chapters, from J. Gall, The Systems Bible (the
+      third edition of Systemantics), General Systemantics Press, 2002,
+      read for this page on 2026-10-26 from Vitor's own copy (page numbers
+      are not cited: the copy read carries none that can be trusted);
+      Trevor Kletz (1922-2013)
       graduated in chemistry in 1944 and joined ICI as a research chemist,
       later managed plants, and in 1968 became ICI's first technical
       safety adviser (his Wikipedia entry; the IChemE and trade-press
@@ -57,8 +62,7 @@
       engineers".
 
   NOT read, and the page says so where it leans on them: Stoessel's book
-  itself; John Gall's Systemantics (his lines are PARAPHRASED -- the book
-  could not be read and its wording circulates in several forms); Kletz &
+  itself; Kletz &
   Amyotte's handbook (its five headings are named from the library record,
   the definitions are ours).  Kletz's "What you don't have, can't leak" is
   quoted as the TITLE of his 1978 paper, a bibliographic fact.
@@ -110,6 +114,19 @@ export const SAFETY_QUOTES: readonly SafetySource[] = [
     cite: "IChemE Lessons Learned Database, Bhopal incident summary, Rev. 2",
     text: "Failure to apply inherently safer design principles (eliminate "
       + "MIC storage, substitute stainless steel vent headers)" },
+  { id: "gall-ch14-ways",
+    cite: "J. Gall, The Systems Bible (3rd ed. of Systemantics, 2002), ch. 14",
+    text: "A SYSTEM CAN FAIL IN AN INFINITE NUMBER OF WAYS" },
+  { id: "gall-ch14-failsafe",
+    cite: "J. Gall, The Systems Bible (3rd ed. of Systemantics, 2002), ch. 14",
+    text: "WHEN A FAIL-SAFE SYSTEM FAILS, IT FAILS BY FAILING TO FAIL SAFE" },
+  { id: "gall-ch4-kicks",
+    cite: "J. Gall, The Systems Bible (3rd ed. of Systemantics, 2002), ch. 4",
+    text: "THE SYSTEM ALWAYS KICKS BACK" },
+  { id: "gall-ch11-law",
+    cite: "J. Gall, The Systems Bible (3rd ed. of Systemantics, 2002), ch. 11",
+    text: "A COMPLEX SYSTEM THAT WORKS IS INVARIABLY FOUND TO HAVE EVOLVED "
+      + "FROM A SIMPLE SYSTEM THAT WORKED." },
   { id: "kletz-1978",
     cite: "T. Kletz, Chemistry and Industry, 6 May 1978 (the paper's title)",
     text: "What you don't have, can't leak" },
@@ -125,15 +142,16 @@ export const SAFETY_STEPS: readonly LessonStep[] = [
   {
     n: 1,
     title: "A paediatrician and a chemist who said the same thing",
-    body: "John Gall was a paediatrician who wrote, in Systemantics (1975), "
-      + "a short book of laws about how systems behave.  In paraphrase -- "
-      + "the book could not be checked for this page, and its lines "
-      + "circulate in several wordings -- three of them: a system built to "
-      + "fail safely, when it fails, tends to fail by not failing safely; a "
-      + "complex system can fail in more ways than anyone can list; and a "
-      + "system pushes back against whoever tries to change it.  A fourth, "
-      + "usually called Gall's law: a complex system that works is found to "
-      + "have grown out of a simple system that worked.  Trevor Kletz was a "
+    body: "John Gall was a paediatrician who wrote Systemantics (first "
+      + "published 1975; its third edition is The Systems Bible, 2002), a "
+      + "short book of laws about how systems behave, set in his own "
+      + "capitals.  Three of them: \"A SYSTEM CAN FAIL IN AN INFINITE NUMBER "
+      + "OF WAYS\" and \"WHEN A FAIL-SAFE SYSTEM FAILS, IT FAILS BY FAILING "
+      + "TO FAIL SAFE\" (ch. 14), and \"THE SYSTEM ALWAYS KICKS BACK\" "
+      + "(ch. 4, which he calls Le Chatelier's Principle).  A fourth, usually "
+      + "called Gall's law (ch. 11): \"A COMPLEX SYSTEM THAT WORKS IS "
+      + "INVARIABLY FOUND TO HAVE EVOLVED FROM A SIMPLE SYSTEM THAT "
+      + "WORKED.\"  Trevor Kletz was a "
       + "chemist: he joined ICI as a research chemist in 1944, managed "
       + "plants, and from 1968 was its first technical safety adviser; his "
       + "autobiography is titled By Accident ... a Life Preventing Them in "
