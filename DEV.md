@@ -1689,6 +1689,20 @@ accepts today, and that is a policy call.
 > overview figures; the fitted membrane record states its own sha256
 > fingerprints but not the evidence-partition fingerprint the run
 > publishes (the pair proposal does); the status bar's 9 px badges.
+> VITOR'S RULING 2026-10-26, on the landed slice 3 ("Tal como o processo
+> comeca com a visao do flowsheet, isto nao devia de abrir com o workflow?
+> E cada box nao devia de ter uma caixa a mostrar o que esta la dentro?
+> Como no flowsheet?"): a properties case OPENS on the workflow DIAGRAM,
+> full width, the way a process case opens on its flowsheet.  One box per
+> step (A.1, B.2 ...) showing what is inside it without a click: the op
+> type, the model and its main options, the data it reads marked FIT or
+> HELD OUT, what it writes, its state and verdict; arrows are what one step
+> writes and a later one reads (the engine's file-traffic table); studies
+> are frames around their steps, as sectors are on the flowsheet; a click
+> opens the step's results and inspector; the outline stays as the
+> navigation.  This REVERSES the forum's "never a canvas": a diagram one
+> looks at is not an editor.  It replaces the old calculation map.  Slice
+> 3b, after C168 slice 2 (the minimum label size it uses).
 
 > **C171. THE PROPS SCREEN REDESIGNED BEFORE A RESEARCHER SEES IT, AND A
 > PROPER WAY TO CITE (Vitor, 2026-10-26, on the live NanoFiltran case
