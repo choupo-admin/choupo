@@ -72,12 +72,14 @@ import { SIMPLICITY_QUIZ, SIMPLICITY_STEPS } from "../src/ui/methods/correlation
 import { BUND_QUIZ, BUND_STEPS } from "../src/ui/methods/bundLesson.js";
 import { LADDER_QUIZ, LADDER_SECTIONS } from "../src/ui/methods/reactorLadderLesson.js";
 import { FEL_QUIZ, FEL_STEPS } from "../src/ui/methods/frontEndLoadingLesson.js";
+import { IP_QUIZ, IP_STEPS } from "../src/ui/methods/ipStrategyLesson.js";
 import { StandardStateTool } from "../src/ui/methods/StandardStateTool.js";
 import { DataReconciliationTool } from "../src/ui/methods/DataReconciliationTool.js";
 import { CorrelationSimplicityTool } from "../src/ui/methods/CorrelationSimplicityTool.js";
 import { BundTool } from "../src/ui/methods/BundTool.js";
 import { ReactorLadderTool } from "../src/ui/methods/ReactorLadderTool.js";
 import { FrontEndLoadingTool } from "../src/ui/methods/FrontEndLoadingTool.js";
+import { IpStrategyTool } from "../src/ui/methods/IpStrategyTool.js";
 
 const GUI = new URL("../", import.meta.url);
 const read = (rel: string): string => readFileSync(new URL(rel, GUI), "utf-8");
@@ -129,6 +131,10 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "front-end-loading": {
     quiz: FEL_QUIZ, quizName: "FEL_QUIZ", lesson: FEL_STEPS, lessonName: "FEL_STEPS",
     file: "src/ui/methods/FrontEndLoadingTool.tsx", tool: FrontEndLoadingTool,
+  },
+  "ip-strategy": {
+    quiz: IP_QUIZ, quizName: "IP_QUIZ", lesson: IP_STEPS, lessonName: "IP_STEPS",
+    file: "src/ui/methods/IpStrategyTool.tsx", tool: IpStrategyTool,
   },
 };
 
