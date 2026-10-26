@@ -22,6 +22,14 @@ MW          53.491;            // kg/kmol
 
 role        nonvolatile;       // condensed-phase regime (K = 0); see header note
 
+// APPARENT COMPONENT view -- the balance/representation map (apparent -> ions),
+// added 2026-10-26 (DEV.md 4c C161/C170) so the DSPM-DE pore, the multi-ionic
+// film and the electrodialysis units can decompose this salt into its ions,
+// whose transport data live on their own species records.  The van't Hoff
+// factor DERIVES from it (Component.cpp); no `dissociation` key beside it.
+// The map is identity, not thermochemistry: it adds no formation datum.
+dissociatesTo  { NH4 1; Cl 1; }   // ion stoichiometry (formula-like identity)
+
 solid
 {
     rho_p   1530.0;            // particle density [kg/m^3]
