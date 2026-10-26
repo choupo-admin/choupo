@@ -88,7 +88,7 @@ License
   unannounced behind it.
 \*---------------------------------------------------------------------------*/
 
-import { useEffect, useLayoutEffect, useMemo } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import {
   Anchor,
   Box,
@@ -125,7 +125,7 @@ import { DuplicateCaseModal } from "./DuplicateCaseModal.js";
 import { readCaseAt, importCase, slugifyCaseName } from "../cases/workspace.js";
 import { localCaseDir } from "../case/caseName.js";
 import { downloadCaseZip } from "../case/saveCase.js";
-import { loadEngineVersion } from "../case/engineVersion.js";
+import { engineVersionLabel, loadEngineVersion, type EngineVersion } from "../case/engineVersion.js";
 import { CitationPanel } from "./CitationPanel.js";
 import { openCaseZip, openCaseFolder, type OpenedCase } from "../cases/loadCase.js";
 import { canComputePinch, pinchDisabledReason } from "../case/pinch.js";
@@ -337,7 +337,10 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   const [citeOpen, citeCtl] = useDisclosure(false);
   //  Read the engine stamp once, so "Download case (.zip)" -- a click that
   //  cannot wait for a fetch -- names the engine in its CITATION.txt.
-  useEffect(() => { void loadEngineVersion(import.meta.env.BASE_URL); }, []);
+  const [engineStamp, setEngineStamp] = useState<EngineVersion | null>(null);
+  useEffect(() => {
+    void loadEngineVersion(import.meta.env.BASE_URL).then((v) => { if (v) setEngineStamp(v); });
+  }, []);
   const [openTutorialOpen, openTutorialCtl] = useDisclosure(false);
   const [newCaseOpen, newCaseCtl] = useDisclosure(false);
   const [dupOpen, dupCtl] = useDisclosure(false);
@@ -879,6 +882,11 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
         <Stack gap="sm">
           <Text fw={700} size="lg">
             Choupo — Open Chemical Process Simulator
+          </Text>
+          <Text size="sm" fw={600} data-about-version="">
+            {engineStamp
+              ? `Version ${engineVersionLabel(engineStamp)}`
+              : "Version: the engine's stamp (wasm/version.json) could not be read"}
           </Text>
           <Text size="sm" c="dimmed">
             Educational chemical-process simulator — a transparent
