@@ -3684,6 +3684,18 @@ accepts today, and that is a policy call.
 > number -- rejection, salt permeability, the "at least 5x" -- read from a
 > source, and a number the sources do not support is put to Vitor before a
 > word is written.  The lesson text is shown to him before it lands.
+> STATUS 2026-10-26: BUILT, NOT LANDED (branch claude/c140-cadotte),
+> lesson text with Vitor for review.  Steps 19-21, a table of the stated
+> numbers with their conditions, one quiz question, a limit, nine sources
+> (US 3,133,132 / 3,133,137 / 4,277,344, EP 0 015 149, 939 F.2d 1568,
+> 982 F.2d 1546, 67 F.3d 931, Cadotte 1985, the 2022 volume for its title)
+> read 2026-10-26.  Found: the Federal Circuit never ruled on validity or
+> infringement -- it reversed on TITLE (conceived at MRI under an OWRT
+> contract; title vested in the United States), and a third opinion
+> (67 F.3d 931, 1995) refused Hydranautics' sham and restitution claims.
+> The "at least 5x less permeable" factor is NOT written: on the sources'
+> own numbers the salt-transport coefficient B is not lower for FT-30;
+> the measured factors went to Vitor for a ruling.
 
 > **C139. AN EDUTOOL ON THE ECONOMICS OF THE CHEMICAL NETWORK: BASE
 > CHEMICALS, INTERMEDIATES, INDUSTRIAL PARKS AND INTERNATIONAL TRADE
