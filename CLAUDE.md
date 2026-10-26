@@ -1268,7 +1268,14 @@ bands reach ONE sentence — and REFUSES a contradicting `feedQuality` naming bo
 numbers and both remedies with their values filled in.  Thirteen cases refused;
 eleven had the stream right and lost the dict key, two had only ever said it in
 the dict and now say it in the stream.  Every distillation case in the corpus
-closes its first law at 0.000000 kW -- the last two,
+closes its first law at 0.000000 kW -- BY CONSTRUCTION on a CMO column, whose
+reboiler is the remainder (`Q_reb = dH - Q_cond`), so that zero is NOT evidence
+and a wrong condenser hid behind it on all 34 columns (C169); since C174 the
+plug is published as "closes by construction -- not verified", the full MESH's
+is checked against the reboiler's own envelope, and the CMO plug sits 1.7-23 %
+below that envelope on 28 of 31 columns (record:
+[`docs/design/no-closure-by-construction.md`](docs/design/no-closure-by-construction.md))
+-- the last two,
 `column04_multifeed_sidedraw` (-78.693876 kW) and
 `column08_radfrac_multidraw` (-891.980060 kW), both multi-feed, were not a
 column defect: each residual was exactly -(Q_reboiler + Q_condenser), because
