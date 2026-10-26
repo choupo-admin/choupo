@@ -421,7 +421,10 @@ export function BandBlock({ op, r }: { op: JsonDict | null; r: OperationResult |
       <Text size="11px" c="dimmed" tt="uppercase" fw={700} mb={2}>What it was held to, and what it did</Text>
       {cur["acceptanceMaxAADPct"] ? (
         <Text size="xs">band: {cur["acceptanceMaxAADPct"] === "none declared before the fit"
-          ? "none declared before the fit" : `AAD ≤ ${cur["acceptanceMaxAADPct"]}, declared before the fit`}
+          ? "none declared before the fit"
+          //  the band in the word it was DECLARED in, as the engine publishes
+          //  it (C172): `points` for a membrane fit, never a guessed unit
+          : `AAD ≤ ${cur["acceptanceMaxAADPct"]}${cur["acceptanceUnit"] ? ` ${cur["acceptanceUnit"]}` : ""}, declared before the fit`}
           {cur["acceptanceOrigin"] ? <Text span c="dimmed"> -- {cur["acceptanceOrigin"]}</Text> : null}</Text>
       ) : declared ? (
         <Text size="xs">band: AAD ≤ {declared}, declared before the fit (acceptance.maxAAD)</Text>

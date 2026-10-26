@@ -179,8 +179,9 @@ export interface OperationResult {
    *  `verdict` is one of validated / notValidated / heldOutPerformed /
    *  validationRefused / notClaimed, computed by the engine from a held-out
    *  pass against a band declared BEFORE the fit, plus the band itself
-   *  (`acceptanceMaxAADPct`, `acceptanceOrigin`) and the evidence partition's
-   *  `partitionFingerprint`.
+   *  (`acceptanceMaxAADPct`, its unit word `acceptanceUnit` -- `percent` or
+   *  `points`, the unit of the statistic it judges, DEV.md 4c C172 -- and
+   *  `acceptanceOrigin`) and the evidence partition's `partitionFingerprint`.
    *
    *  It is a DIFFERENT question from the identifiability verdict FitStatsPanel
    *  already draws, and the two must never be merged: identifiability asks

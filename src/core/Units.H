@@ -95,12 +95,28 @@ struct UnitSpec
     scalar     factor = 1.0;
     Dimensions dims;
     bool       affine = false;
+    //  WHAT IS MEASURED, where factor and dimensions cannot say it (DEV.md
+    //  4c C172).  Empty for every unit whose factor and dimensions already
+    //  identify it.  A percentage POINT is the difference of two percentages
+    //  (a rejection of 90 % against a measured 85 % is 5 points off) and a
+    //  per cent is a ratio (5 % of the measured value); both scale by 1e-2
+    //  and both are dimensionless, so only this word keeps them apart.
+    const char* measure = "";
 };
 
 // Returns the UnitSpec for a known unit alias (e.g. "bar", "kmol/h",
 // "degC"), or nullopt if the suffix is not recognised.  This is the
 // single source of truth for unit names + their dimensions.
 std::optional<UnitSpec> lookupUnit(const std::string& suffix);
+
+// Do two words name ONE unit?  True iff both are registered and agree on
+// factor, dimensions, affinity and measure: `percent` and `%` are one unit
+// spelled twice; `percent` and `points` are two units with one factor.  The
+// ONE place two unit words are compared -- a caller never compares the
+// strings itself, which would call `%` and `percent` different and would
+// call `points` and `percent` the same the day someone mapped one onto the
+// other by its factor.
+bool sameUnit(const std::string& a, const std::string& b);
 
 // =====================================================================
 //  Pressure  (canonical: Pa)

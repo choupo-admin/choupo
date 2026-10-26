@@ -112,8 +112,10 @@ predicts something it was not tuned to.
 `poreModel.porosityOverThickness`, `poreModel.poreDielectric`, `A_w`,
 `permeabilities.<solute>`) with an initial value and bounds in the field's
 own SI convention; everything not listed keeps the base record's value.
-`acceptance { maxAAD 10 percent; origin "..."; }` is the band the held-out
-series must meet, in points of rejection, declared before the fit.
+`acceptance { maxAAD 10 points; origin "..."; }` is the band the held-out
+series must meet, in points of rejection, declared before the fit.  The
+word is the statistic's own unit: `percent` (a RELATIVE deviation) is
+refused by name, because the statistic is an absolute one.
 
 **5. The base record and the record the fit writes.**  `residual {
 membrane NF270_dspmde; }` names the BASE record in `constant/assets/` --

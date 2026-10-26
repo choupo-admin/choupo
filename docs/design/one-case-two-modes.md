@@ -39,7 +39,7 @@ about where they came from.
         { dataset "constant/experimental/fdl2021_Na2SO4.dat"; role validation; }
         { dataset "constant/experimental/fdl2021_MgSO4.dat";  role validation; }
     );
-    acceptance { maxAAD 10 percent; origin "..."; }
+    acceptance { maxAAD 10 points; origin "..."; }
     residual
     {
         kind        membrane;
@@ -85,7 +85,10 @@ about where they came from.
 * **The statistic the band judges** is the mean over held-out terms of
   |R_model - R_measured| x 100 -- rejection PERCENTAGE POINTS -- and
   100 |dJ|/J for a flux term.  A relative error of a rejection near zero would
-  be meaningless; `maxAAD 10 percent;` reads "within 10 points".
+  be meaningless; the band is declared in that unit, `maxAAD 10 points;`
+  ("within 10 points").  (This line used to show `10 percent` read as
+  points; since DEV.md 4c C172 a band whose word is not its statistic's
+  unit is refused by name.)
 * **The discipline is fitParameters'**: the frozen evidence partition, the
   band declared before the fit, identifiability (condition number of the
   relative-scaled Jacobian, correlations, per-parameter sensitivity),

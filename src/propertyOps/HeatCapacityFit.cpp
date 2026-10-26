@@ -98,6 +98,9 @@ int HeatCapacityFit::run(const DictPtr& dict,
     // -- THE EVIDENCE PARTITION, frozen before a single point is fitted ----
     const std::string label = "heatCapacityFit" + (comp.empty() ? "" : " (" + comp + ")");
     const auto part = EvidencePartition::read(dict, label);
+    //  the band judges the RELATIVE held-out AAD; another unit is refused
+    //  before the fit (DEV.md 4c C172)
+    part.requireBandInUnitOf(HeldOutStatistic::relativeAAD(), label);
     part.announce(label, verbosity);
 
     const std::vector<std::string> xN{ "T", "temperature" };
@@ -240,6 +243,7 @@ int HeatCapacityFit::run(const DictPtr& dict,
             ab << part.acceptanceMaxAADPct();
             curation_["acceptanceMaxAADPct"] = ab.str();
             curation_["acceptanceOrigin"]    = part.acceptanceOrigin();
+            curation_["acceptanceUnit"]      = part.acceptanceUnit();   // the band's own word (C172)
         }
         else
             curation_["acceptanceMaxAADPct"] = "none declared before the fit";

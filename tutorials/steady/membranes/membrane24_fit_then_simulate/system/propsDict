@@ -92,7 +92,7 @@ operations
 
         acceptance
         {
-            maxAAD  10 percent;
+            maxAAD  10 points;
             origin  "declared before the fit, by this case: a pore model held at ONE fixed charge for four salts is asked to predict the held-out salts within 10 points of rejection on average -- an engineering criterion for a pedagogical characterisation, not a measurement uncertainty (the source publishes none)";
         }
 

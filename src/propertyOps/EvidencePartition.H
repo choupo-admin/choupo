@@ -208,6 +208,40 @@ struct EvidencePoint
     bool hasZ() const { return !std::isnan(z); }
 };
 
+//  THE STATISTIC AN ACCEPTANCE BAND JUDGES, AND ITS UNIT (DEV.md 4c C172).
+//
+//  A band is a number in a unit; so is the held-out statistic it is compared
+//  with; and the two are not always the same unit.  A bubble-point fit's
+//  held-out AAD is a RELATIVE deviation, 100 |model - measured| / measured,
+//  in per cent; a membrane fit's is an ABSOLUTE one on a rejection,
+//  100 |R_model - R_measured|, in percentage POINTS.  Both scale by 1e-2 and
+//  both are dimensionless, so nothing in the arithmetic notices a band
+//  declared in one judging a statistic in the other -- `maxAAD 10 percent`
+//  read against points says "within 10 % of the measured rejection" while
+//  the run checks "within 10 points of it".
+//
+//  So every op that judges a band DECLARES the statistic it judges, here,
+//  and the SAME declaration is what its `diagnosticUnit` publishes for that
+//  key: the unit a reader sees and the unit the band is held to have ONE
+//  home.  `unit` is a word core/Units.cpp registers, or "" when the
+//  statistic has no single unit (a mean that mixes points and per cents),
+//  in which case no band can be declared in its unit and one is refused.
+struct HeldOutStatistic
+{
+    std::string key;      // the diagnostics key it is published under
+    std::string unit;     // a registered unit word; "" = no single unit
+    //  The registered word a case WRITES its band in.  Usually `unit`
+    //  itself; `percent` for `%`, which the dictionary tokenizer cannot
+    //  carry (`maxAAD 0.1 %;` is a parse error), so a remedy naming `%`
+    //  would be a remedy nobody can type.
+    std::string bandWord;
+    std::string what;     // what it is, in words, for a refusal
+
+    //  100 |model - measured| / measured, averaged over the held-out points:
+    //  fitParameters(T_bubble | P_bubble), vaporPressureFit, heatCapacityFit.
+    static HeldOutStatistic relativeAAD();
+};
+
 class EvidencePartition
 {
 public:
@@ -238,7 +272,27 @@ public:
     //  because widening it after seeing the residuals is the same
     //  tuning-to-the-answer the partition itself exists to prevent.
     bool   hasAcceptance() const { return hasAcceptance_; }
+    //  The band's number in its DECLARED unit (`maxAAD 10 points;` -> 10).
+    //  The name predates the unit check and says "Pct"; the unit is
+    //  acceptanceUnit(), held to the statistic's by requireBandInUnitOf.
     scalar acceptanceMaxAADPct() const { return maxAADPct_; }
+    //  The registered unit word the band was written in ("" if none).
+    const std::string& acceptanceUnit() const { return acceptanceUnit_; }
+
+    //  THE BAND IS DECLARED IN ITS STATISTIC'S OWN UNIT, OR IT IS REFUSED
+    //  (DEV.md 4c C172).  Every op that judges a band calls this once it
+    //  knows its statistic -- at read time for an op whose statistic is
+    //  fixed, after the evidence is loaded for one whose statistic depends
+    //  on what was measured (the membrane fit) -- and always before the fit.
+    //  The refusal quotes the band as written, the statistic and its unit,
+    //  and the remedy.  Units are compared by `units::sameUnit`, never as
+    //  strings.  A partition with no band passes trivially.
+    void requireBandInUnitOf(const HeldOutStatistic& statistic,
+                             const std::string& opLabel) const;
+    //  True once requireBandInUnitOf has passed.  CurationDossier::verdictOf
+    //  refuses to judge a band that was never held to its statistic, so an
+    //  op that forgets the call cannot publish a verdict.
+    bool bandUnitChecked() const { return bandUnitChecked_; }
     //  The DECLARED provenance of the band -- mandatory when a band exists,
     //  because a limit with no stated origin cannot be distinguished from one
     //  chosen after the residuals were seen.
@@ -347,7 +401,9 @@ private:
     bool                         engaged_ = false;
     bool                         hasAcceptance_ = false;
     std::string                  acceptanceOrigin_;
+    std::string                  acceptanceUnit_;
     scalar                       maxAADPct_ = 0.0;
+    mutable bool                 bandUnitChecked_ = false;
     std::vector<EvidenceDataset> fit_;
     std::vector<EvidenceDataset> validation_;
     std::string                  fingerprint_;

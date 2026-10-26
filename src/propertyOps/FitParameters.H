@@ -217,6 +217,16 @@ private:
     std::vector<bool>        memSetHeldOut_;   // per set: held out of the fit (C172)
     std::vector<std::vector<std::size_t>> memSetQuantities_;   // per set: its quantities
     std::map<std::string, std::string> memUnits_;  // fit.<p>.* units
+    //  The unit of the membrane fit's held-out and in-sample AAD, from what
+    //  the scored terms ARE (DEV.md 4c C172): rejection terms alone are
+    //  points, flux terms alone per cent, a mixture has no unit ("").
+    std::string memHeldOutUnit_, memInSampleUnit_;
+
+    //  A bubble-point fit's parameter i, when it is a pair parameter of an
+    //  activity model: the unit THAT MODEL declares for its key
+    //  (ActivityModel::pairParameterUnit), "" when it declares none -- never
+    //  read off the parameter's name (DEV.md 4c C172).
+    std::vector<std::string> pairParamUnits_;
 
     inline static const std::string type_ = "fitParameters";
     std::map<std::string, scalar>   diag_;

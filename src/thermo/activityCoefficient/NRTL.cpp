@@ -109,6 +109,18 @@ fs::path locatePairFile(const std::string& pairName, const std::string& nodeBase
 
 } // anonymous
 
+//  tau_ij = a_ij + b_ij / T and G_ij = exp(-alpha_ij tau_ij) (gamma() below):
+//  tau is a pure number, so a is a pure number, b is in kelvin, and alpha is
+//  a pure number.
+const std::map<std::string, std::string>& NRTL::pairParameterUnits()
+{
+    static const std::map<std::string, std::string> u{
+        { "a_ij", "-" }, { "a_ji", "-" },
+        { "b_ij", "K" }, { "b_ji", "K" },
+        { "alpha", "-" } };
+    return u;
+}
+
 NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
 :   n_(names.size())
 {

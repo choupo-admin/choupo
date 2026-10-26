@@ -1726,6 +1726,24 @@ accepts today, and that is a policy call.
 > nothing reads what is not yet computed).  The workflow's arrows take the
 > flowsheet's visual grammar; each is labelled with what it carries (a
 > stream's state there, a file or record here).
+> THE TWO OWED FINDINGS BUILT 2026-10-26 (branch claude/fit-band-units,
+> engine; curate02's parity wiring NOT touched).  (1) A band is held to its
+> statistic's unit: the Dictionary now keeps a scalar's unit WORD as
+> written (`unitWordOf`), core/Units registers `points` (same factor as
+> `percent`, a different `measure`) and `units::sameUnit` is the one
+> comparison; every fit op names the statistic it judges
+> (`HeldOutStatistic`, EvidencePartition.H -- the same declaration its
+> diagnosticUnit publishes) and calls `requireBandInUnitOf`, which refuses a
+> mismatched band, a bare number and a band on a statistic with no single
+> unit (a membrane held-out set mixing rejections and fluxes); verdictOf
+> refuses to judge an unchecked band.  Corpus: 23 bands over 13 propsDicts,
+> ONE mismatch -- membrane24, re-declared `maxAAD 10 points;` (its own
+> origin already said "within 10 points"; the engine had always judged it
+> so, so verdict, record and goldens are unmoved).  (2) NRTL, UNIQUAC and
+> Wilson each declare their pair-parameter units beside their formula
+> (`pairParameterUnits()`, registered in ActivityModel::registerBuiltins);
+> a fitted `...binaryParameters.<i-j>.<key>` publishes the model's unit,
+> none when undeclared.  Gate: check_fit_verdict_channel arms (f), (g).
 
 > **C171. THE PROPS SCREEN REDESIGNED BEFORE A RESEARCHER SEES IT, AND A
 > PROPER WAY TO CITE (Vitor, 2026-10-26, on the live NanoFiltran case

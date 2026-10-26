@@ -43,7 +43,7 @@ Description
                 { dataset "constant/experimental/nacl.dat";  role fit; }
                 { dataset "constant/experimental/mgcl2.dat"; role validation; }
             );
-            acceptance { maxAAD 5 percent; origin "..."; }
+            acceptance { maxAAD 5 points; origin "..."; }
             residual
             {
                 kind       membrane;
@@ -99,9 +99,13 @@ Description
     fraction), a flux as (J_model - J_measured)/J_measured; under `weighting
     sigma;` each is divided by its sigma.  THE HELD-OUT STATISTIC the band
     judges is the mean over every held-out term of |R_model - R_measured| x
-    100 (rejection PERCENTAGE POINTS) and 100 |dJ|/J (per cent), so
-    `acceptance { maxAAD 5 percent; }` reads "within 5 points of rejection"
-    -- a relative error of a rejection near zero would be meaningless.
+    100 (rejection PERCENTAGE POINTS) or 100 |dJ|/J (per cent), so the band
+    is declared in POINTS, `acceptance { maxAAD 5 points; }` -- "within 5
+    points of rejection"; a relative error of a rejection near zero would be
+    meaningless.  The band's word must be the statistic's own unit (DEV.md 4c
+    C172): `percent` against points is REFUSED by name, flux-only evidence
+    is judged in `percent`, and evidence that mixes rejections and fluxes
+    has a statistic with no single unit, so a band on it is refused.
 
     THE DISCIPLINE is fitParameters': the evidence partition (fit / held-out,
     EvidencePartition), the band declared before the fit, identifiability
@@ -258,6 +262,7 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
     diag_.clear(); curation_.clear(); tables_.clear(); paramPaths_.clear();
     memQuantities_.clear(); memSets_.clear(); memSetQuantities_.clear(); memUnits_.clear();
     memSetHeldOut_.clear();
+    memHeldOutUnit_.clear(); memInSampleUnit_.clear();
     const std::string opName = dict->lookupWordOrDefault("name", "");
     const std::string site = "fitParameters(membrane) '" + opName + "'";
     if (opName.empty())
@@ -550,6 +555,36 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
             " fabrication; REFUSED by name.");
     if (part.engaged() && !part.validation().empty())
         part.requireNonEmptyValidation(nHeldTerms, opLabel);
+
+    //  THE UNIT OF THE STATISTIC, from what its terms ARE (DEV.md 4c C172).
+    //  A rejection term scores 100 |R_model - R_measured| -- percentage
+    //  POINTS; a flux term 100 |dJ|/J -- a per cent of the measured flux.  A
+    //  mean over rejections alone is in points, over fluxes alone in per
+    //  cent, and over both in no unit at all.  The band is held to the
+    //  held-out one here, before the fit; diagnosticUnit publishes both.
+    auto unitOver = [&](bool held) -> std::string
+    {
+        bool rej = false, flux = false;
+        for (const auto& r : rows)
+            if (r.heldOut == held)
+                for (const auto& m : r.meas) (m.isFlux ? flux : rej) = true;
+        if (rej && flux) return {};
+        return flux ? "%" : "points";
+    };
+    memHeldOutUnit_  = unitOver(true);
+    memInSampleUnit_ = unitOver(false);
+    part.requireBandInUnitOf(
+        { "heldOut_AAD_pct", memHeldOutUnit_,
+          memHeldOutUnit_ == "%" ? "percent" : memHeldOutUnit_,
+          memHeldOutUnit_ == "points"
+              ? "the mean over the held-out terms of 100 |R_model - R_measured|,"
+                " an ABSOLUTE deviation of a rejection"
+              : memHeldOutUnit_ == "%"
+              ? "the mean over the held-out terms of 100 |J_model - J_measured| /"
+                " J_measured, a RELATIVE deviation of a flux"
+              : "the mean over the held-out terms of 100 |R_model - R_measured|"
+                " (rejection points) AND 100 |dJ|/J (per cent of a flux)" },
+        opLabel);
 
     // ---- the film, the osmotic model ---------------------------------------
     std::unique_ptr<MassTransferModel> corr;
@@ -1007,6 +1042,7 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
             std::ostringstream b; b << part.acceptanceMaxAADPct();
             curation_["acceptanceMaxAADPct"] = b.str();
             curation_["acceptanceOrigin"]    = part.acceptanceOrigin();
+            curation_["acceptanceUnit"]      = part.acceptanceUnit();   // the band's own word (C172)
         }
         else
             curation_["acceptanceMaxAADPct"] = "none declared before the fit";
@@ -1063,13 +1099,19 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
         std::cout << "  HELD-OUT EVIDENCE\n";
         if (nH)
             std::cout << "    " << nH << " measurement(s); AAD " << std::fixed
-                      << std::setprecision(3) << aadHeld << " points of rejection"
-                         " (mean |R_model - R_measured| x 100)\n";
+                      << std::setprecision(3) << aadHeld << " "
+                      << (memHeldOutUnit_ == "points"
+                              ? "points of rejection (mean |R_model - R_measured| x 100)"
+                              : memHeldOutUnit_ == "%"
+                              ? "% of the measured flux (mean 100 |dJ|/J)"
+                              : "(no single unit: rejection points and flux per cent averaged together)")
+                      << "\n";
         else
             std::cout << "    none\n";
         if (part.hasAcceptance())
             std::cout << "  ACCEPTANCE (declared before the fit): maxAAD "
-                      << part.acceptanceMaxAADPct() << "  -- " << part.acceptanceOrigin() << "\n";
+                      << part.acceptanceMaxAADPct() << " " << part.acceptanceUnit()
+                      << "  -- " << part.acceptanceOrigin() << "\n";
         std::cout << "  VERDICT\n    " << verdict << "\n";
     }
 

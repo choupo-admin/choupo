@@ -169,6 +169,16 @@ public:
     Dimensions dimensionsOrDefault(const std::string& key,
                                    const Dimensions& def) const;
 
+    //  THE UNIT WORD AS WRITTEN (DEV.md 4c C172).  The parser converts
+    //  `maxAAD 10 percent;` to 0.1 and keeps the dimensions; the WORD is
+    //  then gone, and two words with one factor and one set of dimensions
+    //  (`percent` and `points`) become indistinguishable.  This returns the
+    //  registered word the entry was written with, "" when it was written
+    //  without one (raw SI, or the bracket form), following a `$reference`
+    //  to its variable like the dimension accessors above.  Compare two
+    //  words with `units::sameUnit`, never as strings.
+    std::string unitWordOf(const std::string& key) const;
+
     const std::string& name()       const { return name_;   }
     const std::string& sourceName() const { return source_; }
 
@@ -198,6 +208,7 @@ public:
     // `overlayOf` after a partial overlay has been deep-merged).  No-op if absent.
     void erase(const std::string& key);
     void setDimensions(const std::string& key, const Dimensions& dims);
+    void setUnitWord(const std::string& key, const std::string& word);
     void setSource(std::string s) { source_ = std::move(s); }
     void setName  (std::string s) { name_   = std::move(s); }
 
@@ -330,6 +341,7 @@ private:
     std::string source_;
     std::map<std::string, EntryValue> entries_;
     std::map<std::string, Dimensions> entryDims_;   // parallel; only for scalars with declared dims
+    std::map<std::string, std::string> entryUnitWord_;   // parallel; the named-unit word as written
     std::vector<std::string> order_;
     DictPtr                  varsDict_;             // see setVarsDict above
 };

@@ -93,7 +93,7 @@ export const LC_STEPS = [
     assumes: "The energy of a neighbourhood is the sum of independent "
       + "pairwise contributions, and the Boltzmann factor uses the same T "
       + "for all pairs.",
-    cites: "Wilson.cpp:233 · NRTL.cpp:363 · UNIQUAC.cpp:244 — each of the "
+    cites: "Wilson.cpp:242 · NRTL.cpp:375 · UNIQUAC.cpp:256 — each of the "
       + "three exponentials below is this factor, differently dressed",
   },
   {
@@ -114,7 +114,7 @@ export const LC_STEPS = [
     assumes: "Local volume fractions, not local mole fractions; and "
       + "complete miscibility, which is where the LLE limitation comes "
       + "from rather than from any parameter.",
-    cites: "Wilson.cpp:233 (Λ), Wilson.cpp:245-258 (γ)",
+    cites: "Wilson.cpp:242 (Λ), Wilson.cpp:254-267 (γ)",
   },
   {
     n: 4,
@@ -137,7 +137,7 @@ export const LC_STEPS = [
     assumes: "The non-randomness parameter α is a property of the PAIR and "
       + "is symmetric (α_ij = α_ji), which is a modelling convention, not "
       + "a derived result.",
-    cites: "NRTL.cpp:362-365 (τ, G), NRTL.cpp:387-400 (the two terms)",
+    cites: "NRTL.cpp:374-377 (τ, G), NRTL.cpp:399-412 (the two terms)",
   },
   {
     n: 5,
@@ -164,9 +164,9 @@ export const LC_STEPS = [
     assumes: "That the size and energy contributions are separable and "
       + "simply add — the same assumption the plus sign makes on the "
       + "COSMO-SAC page, and it is no better justified here.",
-    cites: "UNIQUAC.cpp:244 (τ), UNIQUAC.cpp:254 (θ), "
-      + "UNIQUAC.cpp:287-295 (φ/x and θ/φ, combinatorial), "
-      + "UNIQUAC.cpp:304 (residual)",
+    cites: "UNIQUAC.cpp:256 (τ), UNIQUAC.cpp:266 (θ), "
+      + "UNIQUAC.cpp:299-307 (φ/x and θ/φ, combinatorial), "
+      + "UNIQUAC.cpp:316 (residual)",
   },
 ] as const;
 
@@ -235,7 +235,7 @@ export function LocalCompositionTool(): JSX.Element {
           <Code>ln γ_1 = 1 − ln 1.5 − 1/1.5 = −0.0721</Code> (γ_1 ≈ 0.930) and
           {" "}<Code>ln γ_2 = 1 − ln 0.75 − 2/1.5 = −0.0457</Code> (γ_2 ≈
           0.955), not 1.  Λ = 1 is a separate choice the code makes
-          (<Code>Wilson.cpp:232</Code>), and it is that choice, not a zero
+          (<Code>Wilson.cpp:241</Code>), and it is that choice, not a zero
           energy, that makes the pair neutral.
         </Text>
         <Text size="sm" mt={6}>
@@ -256,8 +256,8 @@ export function LocalCompositionTool(): JSX.Element {
           and the reader is told so beside the number.
         </Text>
         <Text size="xs" c={INK} mt={6}>
-          <Code style={{ fontSize: 11 }}>NRTL.cpp:181, NRTL.cpp:222-248,
-          NRTL.cpp:307 · Wilson.cpp:232 · UNIQUAC.cpp:173 ·
+          <Code style={{ fontSize: 11 }}>NRTL.cpp:193, NRTL.cpp:234-260,
+          NRTL.cpp:319 · Wilson.cpp:241 · UNIQUAC.cpp:185 ·
           thermo/ApproximationAuthorisation</Code>
         </Text>
       </Alert>

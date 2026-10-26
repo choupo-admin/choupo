@@ -820,7 +820,7 @@ The fit, in `system/propsDict`:
     );
     evidence ( { dataset "constant/experimental/a.dat"; role fit; }
                { dataset "constant/experimental/b.dat"; role validation; } );
-    acceptance { maxAAD 10 percent; origin "declared before the fit, by ..."; }   // rejection POINTS
+    acceptance { maxAAD 10 points; origin "declared before the fit, by ..."; }   // rejection POINTS: `percent` here is REFUSED
     residual
     {
         kind membrane;  model DSPM-DE;  membrane NF270_dspmde;   // the BASE record

@@ -106,9 +106,15 @@ describe("the held-out statistic: two keys, two statistics, ONE reader", () => {
   });
 
   it("the engine publishes each statistic's unit (no reader infers it from a key)", () => {
+    //  ONE home since C172's band-unit slice: the statistic's unit is the
+    //  HeldOutStatistic its band is held to (EvidencePartition.cpp), and the
+    //  membrane fit's is computed from what its terms are (points / %).
     const src = readFileSync(resolve(__dirname, "../../src/propertyOps/FitParameters.cpp"), "utf8");
-    expect(src).toMatch(/key == "aad_heldout_pct"\) return "%"/);
-    expect(src).toMatch(/key == "heldOut_AAD_pct" \|\| key == "inSample_AAD_pct"\) return "points"/);
+    const ep = readFileSync(resolve(__dirname, "../../src/propertyOps/EvidencePartition.cpp"), "utf8");
+    expect(ep).toMatch(/return \{ "aad_heldout_pct", "%", "percent",/);
+    expect(src).toMatch(/return HeldOutStatistic::relativeAAD\(\)\.unit;/);
+    expect(src).toMatch(/key == "heldOut_AAD_pct"\)\s+return memHeldOutUnit_;/);
+    expect(src).toMatch(/key == "inSample_AAD_pct"\) return memInSampleUnit_;/);
   });
 });
 

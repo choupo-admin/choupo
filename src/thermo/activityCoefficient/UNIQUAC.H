@@ -80,6 +80,8 @@ Description
 #include "thermo/PairAudit.H"
 #include "thermo/ThermoPackage.H"
 
+#include <map>
+#include <string>
 #include <vector>
 
 namespace Choupo {
@@ -93,6 +95,13 @@ public:
     sVector gamma(scalar T_K, const sVector& x) const override;
 
     const std::string& modelName() const override { return name_; }
+
+    //  THE UNIT OF EACH PAIR PARAMETER THIS MODEL READS (DEV.md 4c C172),
+    //  declared once, beside the formula that gives it its unit (the .cpp).
+    //  A fit publishes it for a fitted pair parameter; a key absent here has
+    //  no declared unit and none is published.  Never read off the key's
+    //  spelling: `b_ij` is kelvin in NRTL and a pure number in UNIQUAC.
+    static const std::map<std::string, std::string>& pairParameterUnits();
 
 private:
     std::size_t n_;

@@ -283,6 +283,14 @@ const std::map<std::string, UnitSpec>& table()
         //  (`closureTolerance 0.5 percent;`); same factor, same dimensions,
         //  so the two can never mean different things.
         { "percent", UnitSpec{ 1.0e-2,      Dims::dimensionless } },
+        //  THE PERCENTAGE POINT (DEV.md 4c C172).  The unit of a difference
+        //  of two percentages: a membrane fit scores |R_model - R_measured|
+        //  x 100 in rejection POINTS, never a per cent of the measured R
+        //  (a relative error of a rejection near zero means nothing).  Same
+        //  factor as `percent`, a different measure -- see UnitSpec::measure;
+        //  `sameUnit` is what keeps a band declared in one from judging a
+        //  statistic published in the other.
+        { "points",  UnitSpec{ 1.0e-2,      Dims::dimensionless, false, "percentagePoint" } },
         { "kg/kg",   UnitSpec{ 1.0,         Dims::dimensionless } },   // mass ratio (e.g. dry resin per kg water)
         //  THE DEGREE OF ARC (2026-10-17, DEV.md 4c C75).  An angle is
         //  dimensionless and its canonical form is the radian, so `deg`
@@ -302,6 +310,16 @@ std::optional<UnitSpec> lookupUnit(const std::string& suffix)
     auto it = t.find(suffix);
     if (it == t.end()) return std::nullopt;
     return it->second;
+}
+
+bool sameUnit(const std::string& a, const std::string& b)
+{
+    const auto ua = lookupUnit(a);
+    const auto ub = lookupUnit(b);
+    if (!ua || !ub) return false;
+    return ua->factor == ub->factor && ua->dims == ub->dims
+        && ua->affine == ub->affine
+        && std::string(ua->measure) == std::string(ub->measure);
 }
 
 scalar affineToK(scalar value, const std::string& suffix)

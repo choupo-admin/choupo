@@ -89,6 +89,18 @@ fs::path locatePairFile(const std::string& pairName, const std::string& nodeBase
 
 } // anonymous
 
+//  tau_ij = exp(-(a_ij + b_ij T + c_ij T^2) / T) (gamma() below): the
+//  exponent is a pure number, so A_ij(T) is in kelvin -- a in K, b a pure
+//  number, c in 1/K.
+const std::map<std::string, std::string>& UNIQUAC::pairParameterUnits()
+{
+    static const std::map<std::string, std::string> u{
+        { "a_ij", "K" },   { "a_ji", "K" },
+        { "b_ij", "-" },   { "b_ji", "-" },
+        { "c_ij", "1/K" }, { "c_ji", "1/K" } };
+    return u;
+}
+
 UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
 :   n_(names.size())
 {

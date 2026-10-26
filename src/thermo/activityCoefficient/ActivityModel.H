@@ -123,8 +123,21 @@ public:
 
     static void registerBuiltins();
 
+    //  THE UNIT OF A PAIR PARAMETER, as the MODEL declares it (DEV.md 4c
+    //  C172).  Each model that reads pair parameters declares the unit of
+    //  each key beside its own formula (e.g. NRTL::pairParameterUnits) and
+    //  registerBuiltins registers that table under the model's name, next to
+    //  its factory.  Returns "" for a model or a key that declares no unit:
+    //  a caller publishes nothing then, never a unit guessed from the key.
+    static void registerPairParameterUnits(
+        const std::string& model,
+        const std::map<std::string, std::string>& units);
+    static std::string pairParameterUnit(const std::string& model,
+                                         const std::string& key);
+
 private:
     static std::map<std::string, Factory>& registry();
+    static std::map<std::string, std::map<std::string, std::string>>& pairUnits();
 };
 
 } // namespace Choupo

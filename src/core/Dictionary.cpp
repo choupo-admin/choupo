@@ -450,9 +450,11 @@ private:
                 // from silently passing through.
                 bool dimsKnown = false;
                 Dimensions dims;
+                std::string unitWord;
                 if (cur_.kind == TokKind::Word)
                 {
                     const std::string suffix = cur_.text;
+                    unitWord = suffix;
                     auto spec = units::lookupUnit(suffix);
                     if (!spec)
                         throw std::runtime_error(tk_.loc() +
@@ -470,6 +472,7 @@ private:
                 expect(TokKind::Semi, "';' after scalar value of '" + key + "'");
                 if (dimsKnown) dict.insert(key, v, dims);
                 else           dict.insert(key, v);
+                if (dimsKnown) dict.setUnitWord(key, unitWord);
                 cur_ = tk_.next();
             }
             else if (cur_.kind == TokKind::Word)
@@ -592,6 +595,19 @@ void Dictionary::insert(const std::string& key, scalar value, Dimensions dims)
 void Dictionary::setDimensions(const std::string& key, const Dimensions& dims)
 {
     entryDims_[key] = dims;
+}
+
+void Dictionary::setUnitWord(const std::string& key, const std::string& word)
+{
+    entryUnitWord_[key] = word;
+}
+
+std::string Dictionary::unitWordOf(const std::string& key) const
+{
+    std::string k;
+    const Dictionary* home = dimsHome_(key, k);
+    auto it = home->entryUnitWord_.find(k);
+    return (it == home->entryUnitWord_.end()) ? std::string() : it->second;
 }
 
 //  ONE place decides whether an entry is a `$reference` and, if so, which
@@ -1084,6 +1100,7 @@ DictPtr Dictionary::deepCopy() const
         auto out = std::make_shared<Dictionary>(src.name_);
         out->source_    = src.source_;
         out->entryDims_ = src.entryDims_;
+        out->entryUnitWord_ = src.entryUnitWord_;
         out->order_     = src.order_;
         for (const auto& [k, v] : src.entries_)
         {

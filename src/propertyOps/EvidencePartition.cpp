@@ -165,6 +165,60 @@ void EvidencePartition::readOwnProvenance(EvidenceDataset& d,
     }
 }
 
+HeldOutStatistic HeldOutStatistic::relativeAAD()
+{
+    return { "aad_heldout_pct", "%", "percent",
+             "the mean over the held-out points of 100 |model - measured|"
+             " / measured, a RELATIVE deviation" };
+}
+
+void EvidencePartition::requireBandInUnitOf(const HeldOutStatistic& stat,
+                                            const std::string& opLabel) const
+{
+    if (!hasAcceptance_) { bandUnitChecked_ = true; return; }
+
+    //  The band as the author wrote it: the number in its own word (a bare
+    //  number is held as a fraction, so it is quoted back as one).
+    std::ostringstream band;
+    band << "maxAAD " << std::setprecision(12)
+         << (acceptanceUnit_.empty() ? maxAADPct_ / 100.0 : maxAADPct_);
+    if (!acceptanceUnit_.empty()) band << " " << acceptanceUnit_;
+
+    //  "heldOut_AAD_pct (the mean ...)"
+    const std::string statistic = stat.key + " (" + stat.what + ")";
+
+    if (stat.unit.empty())
+        throw std::runtime_error(opLabel + ": the acceptance band `"
+            + band.str() + "` judges the statistic " + statistic + ", and"
+            " that statistic has NO single unit -- it averages terms measured"
+            " in different units, so no band can be declared in its unit and"
+            " a verdict on it would compare a number with a mixture.  Hold"
+            " out one kind of measured quantity, or delete the `acceptance"
+            " {}` block: the held-out residuals are still reported, and no"
+            " verdict is claimed.");
+
+    if (acceptanceUnit_.empty())
+        throw std::runtime_error(opLabel + ": the acceptance band `"
+            + band.str() + "` declares NO unit word, and the statistic it"
+            " judges, " + statistic + ", is published in `" + stat.unit
+            + "`.  A bare number is read as a fraction and cannot say which"
+            " statistic it was written for.  Declare the band in the"
+            " statistic's own unit: `maxAAD <x> " + stat.bandWord + ";`.");
+
+    if (!units::sameUnit(acceptanceUnit_, stat.unit))
+        throw std::runtime_error(opLabel + ": the acceptance band `"
+            + band.str() + "` is declared in `" + acceptanceUnit_ + "`, and"
+            " the statistic it judges, " + statistic + ", is published in `"
+            + stat.unit + "`.  A band in one unit compared with a statistic"
+            " in another decides nothing true, and the run would compare the"
+            " two numbers as if they were one.  Declare the band in the"
+            " statistic's own unit: `maxAAD <x> " + stat.bandWord + ";`, with <x>"
+            " chosen for that unit -- the number does not carry over from `"
+            + acceptanceUnit_ + "`.");
+
+    bandUnitChecked_ = true;
+}
+
 EvidencePartition EvidencePartition::read(const DictPtr& opDict,
                                           const std::string& opLabel)
 {
@@ -214,7 +268,9 @@ EvidencePartition EvidencePartition::read(const DictPtr& opDict,
         if (!acc->found("maxAAD"))
             throw std::runtime_error(opLabel + ": `acceptance {}` is declared"
                 " but carries no `maxAAD`.  A band with no number decides"
-                " nothing; either state `maxAAD <x> percent;` or delete the"
+                " nothing; either state `maxAAD <x> <unit>;` in the unit of the"
+                " held-out statistic it judges (`percent` for a relative"
+                " deviation, `points` for a membrane rejection) or delete the"
                 " block and let the run report the held-out residuals without"
                 " claiming a verdict.");
         //  WHERE THE CRITERION CAME FROM (Vitor, 2026-08-11).  A band with no
@@ -239,7 +295,11 @@ EvidencePartition EvidencePartition::read(const DictPtr& opDict,
             throw std::runtime_error(opLabel + ": `acceptance.origin` is"
                 " empty.  An empty provenance is not a provenance.");
         p.hasAcceptance_ = true;
-        p.maxAADPct_ = acc->lookupScalar("maxAAD") * 100.0;   // fraction -> %
+        //  The word is KEPT (DEV.md 4c C172): `percent` and `points` both
+        //  scale by 1e-2, so the number alone cannot say which statistic the
+        //  band was written for.  requireBandInUnitOf holds it to one.
+        p.acceptanceUnit_ = acc->unitWordOf("maxAAD");
+        p.maxAADPct_ = acc->lookupScalar("maxAAD") * 100.0;   // x 1e-2 -> the number as written
         if (p.maxAADPct_ <= 0.0)
             throw std::runtime_error(opLabel + ": `acceptance.maxAAD` must be"
                 " positive; a band of zero or less can never be met and would"

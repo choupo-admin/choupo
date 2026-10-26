@@ -253,6 +253,12 @@ const TABLE: Record<string, UnitSpec> = {
   //  one vocabulary is the arity sin; until they share a source, a spelling
   //  added to one belongs in the other in the same commit.
   percent: { factor: 1.0e-2, affine: false },
+  //  the percentage POINT (DEV.md 4c C172): the unit of a difference of two
+  //  percentages -- a membrane fit's band, `maxAAD 10 points;`.  Same factor
+  //  as `percent` and a different measure; the engine refuses a band whose
+  //  word is not its statistic's (core/Units.cpp `sameUnit`), the GUI only
+  //  has to be able to OPEN the case that declares it.
+  points: { factor: 1.0e-2, affine: false },
   // mass ratio (e.g. dry resin per kg water)
   "kg/kg": { factor: 1.0, affine: false },
   // the degree of arc -> radians (a layoutDict's wind bearing; DEV.md 4c C75)

@@ -54,6 +54,28 @@ void ActivityModel::registerModel(const std::string& name, Factory f)
     registry()[name] = std::move(f);
 }
 
+std::map<std::string, std::map<std::string, std::string>>&
+ActivityModel::pairUnits()
+{
+    static std::map<std::string, std::map<std::string, std::string>> u;
+    return u;
+}
+
+void ActivityModel::registerPairParameterUnits(
+    const std::string& model, const std::map<std::string, std::string>& units)
+{
+    pairUnits()[model] = units;
+}
+
+std::string ActivityModel::pairParameterUnit(const std::string& model,
+                                             const std::string& key)
+{
+    const auto m = pairUnits().find(model);
+    if (m == pairUnits().end()) return {};
+    const auto k = m->second.find(key);
+    return k == m->second.end() ? std::string() : k->second;
+}
+
 std::unique_ptr<ActivityModel>
 ActivityModel::New(const DictPtr& dict,
                      const std::vector<Component>& components)
@@ -88,11 +110,13 @@ void ActivityModel::registerBuiltins()
         [](const DictPtr& d, const std::vector<Component>& comps)
             -> std::unique_ptr<ActivityModel>
         { return std::make_unique<NRTL>(d, namesOf(comps)); });
+    registerPairParameterUnits("NRTL", NRTL::pairParameterUnits());
 
     registerModel("Wilson",
         [](const DictPtr& d, const std::vector<Component>& comps)
             -> std::unique_ptr<ActivityModel>
         { return std::make_unique<Wilson>(d, comps); });   // self-sets molar volumes
+    registerPairParameterUnits("Wilson", Wilson::pairParameterUnits());
 
     // Electrolyte activity (pitzer / eNRTL) is NO LONGER an activityModel option:
     // an electrolyte case SELECTS a propertyPackage and the ThermoPackageBuilder
@@ -109,6 +133,7 @@ void ActivityModel::registerBuiltins()
         [](const DictPtr& d, const std::vector<Component>& comps)
             -> std::unique_ptr<ActivityModel>
         { return std::make_unique<UNIQUAC>(d, namesOf(comps)); });
+    registerPairParameterUnits("UNIQUAC", UNIQUAC::pairParameterUnits());
 
     // COSMO-SAC 2002 (NIST benchmark variant); surface data per component's
     // `cosmo {}` block -- needs the full Component objects (like Wilson).

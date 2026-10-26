@@ -38,6 +38,7 @@ License
 #include "core/ThermoResolution.H"
 #include "core/Units.H"
 #include "thermo/Database.H"
+#include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/ThermoPackageBuilder.H"
 #include "unitOperations/saturation/BubblePoint.H"
@@ -307,6 +308,7 @@ int FitParameters::run(const DictPtr& dict,
     // never rebuilds a thermoPackage, so the thermoDict guard below does not
     // apply to it.
     memSets_.clear(); memQuantities_.clear(); memSetQuantities_.clear(); memUnits_.clear(); memSetHeldOut_.clear();
+    memHeldOutUnit_.clear(); memInSampleUnit_.clear(); pairParamUnits_.clear();
     if (dict->subDict("residual")->lookupWord("kind") == "isotherm")
         return runIsothermFit(dict, verbosity);
     // The membrane kind (DEV.md 4c C149/C152) fits a MEMBRANE RECORD's
@@ -365,6 +367,38 @@ int FitParameters::run(const DictPtr& dict,
         params.push_back(ps);
     }
     const std::size_t P = params.size();
+
+    //  THE UNIT OF EACH FITTED PAIR PARAMETER (DEV.md 4c C172).  A path
+    //  `<...>.activityModel.binaryParameters.<i-j>.<key>` names a pair
+    //  parameter of the model that block declares (`model NRTL;`), and THAT
+    //  MODEL declares the unit of <key> (ActivityModel::pairParameterUnit,
+    //  beside its formula).  Anything else -- a path that is not a pair
+    //  parameter, a model or key with no declared unit -- publishes nothing,
+    //  and the GUI says "unit not published".  Never read off the key name.
+    pairParamUnits_.assign(P, std::string());
+    for (std::size_t i = 0; i < P; ++i)
+    {
+        std::vector<std::string> seg;
+        {
+            std::string cur;
+            for (char c : params[i].path)
+                if (c == '.') { seg.push_back(cur); cur.clear(); }
+                else cur += c;
+            seg.push_back(cur);
+        }
+        if (seg.size() < 3 || seg[seg.size() - 3] != "binaryParameters") continue;
+        DictPtr block = fitSource;
+        for (std::size_t k = 0; block && k + 3 < seg.size(); ++k)
+        {
+            if (!block->found(seg[k])) { block = nullptr; break; }
+            const EntryValue& ev = block->entryValue(seg[k]);
+            block = std::holds_alternative<DictPtr>(ev) ? std::get<DictPtr>(ev)
+                                                        : nullptr;
+        }
+        if (block && block->found("model"))
+            pairParamUnits_[i] = ActivityModel::pairParameterUnit(
+                block->lookupWord("model"), seg.back());
+    }
 
     // -- residual block ----------------------------------------------------
     auto resDict = dict->subDict("residual");
@@ -499,6 +533,11 @@ int FitParameters::run(const DictPtr& dict,
         partPtr = std::make_unique<EvidencePartition>(
             EvidencePartition::read(dict, "fitParameters(" + kind + ")"));
         const EvidencePartition& part = *partPtr;
+        //  The band judges a RELATIVE held-out deviation (|dT|/T or |dP|/P),
+        //  and is refused here, before any point is fitted, when declared in
+        //  another unit (DEV.md 4c C172).
+        part.requireBandInUnitOf(HeldOutStatistic::relativeAAD(),
+                                 "fitParameters(" + kind + ")");
         //  The fitter is HANDED only the fit subset.  It is not forbidden to
         //  touch a validation point; it is never given one.
         std::size_t nWithP = 0;
@@ -1894,6 +1933,7 @@ int FitParameters::run(const DictPtr& dict,
             b << partPtr->acceptanceMaxAADPct();
             curation_["acceptanceMaxAADPct"] = b.str();
             curation_["acceptanceOrigin"]    = partPtr->acceptanceOrigin();
+            curation_["acceptanceUnit"]      = partPtr->acceptanceUnit();   // the band's own word (C172)
         }
         else
             //  NAMED, not omitted: "nobody said what would count as passing"
@@ -3009,15 +3049,40 @@ std::string FitParameters::diagnosticUnit(const std::string& key) const
             const auto it = memUnits_.find(key.substr(0, dot));
             if (it != memUnits_.end()) return it->second;
         }
-        if (key == "heldOut_AAD_pct" || key == "inSample_AAD_pct") return "points";
+        //  each in the unit of what it averages (DEV.md 4c C172): points over
+        //  rejections, % over fluxes, nothing over a mixture of the two
+        if (key == "heldOut_AAD_pct")  return memHeldOutUnit_;
+        if (key == "inSample_AAD_pct") return memInSampleUnit_;
         return {};
+    }
+    //  A fitted pair parameter in the unit its MODEL declares (C172):
+    //  fit.<i>.value / .stderr / .ci95, and the path-keyed readback.
+    if (!pairParamUnits_.empty())
+    {
+        if (starts("fit."))
+        {
+            const auto dot = key.find('.', 4);
+            if (dot != std::string::npos)
+            {
+                const std::string stat = key.substr(dot + 1);
+                std::size_t i = 0;
+                try { i = std::stoul(key.substr(4, dot - 4)); }
+                catch (const std::exception&) { i = pairParamUnits_.size(); }
+                if (i < pairParamUnits_.size()
+                    && (stat == "value" || stat == "stderr" || stat == "ci95"))
+                    return pairParamUnits_[i];
+            }
+        }
+        for (std::size_t i = 0; i < paramPaths_.size() && i < pairParamUnits_.size(); ++i)
+            if (key == paramPaths_[i]) return pairParamUnits_[i];
     }
     //  THE HELD-OUT STATISTIC IN ITS OWN UNIT (DEV.md 4c C172 item 6).  A
     //  bubble-point fit's held-out AAD is a RELATIVE deviation in per cent and
     //  its kelvin twin an absolute one; the membrane fit's (above) is in
     //  rejection POINTS.  The keys differ because the statistics do, so the
     //  unit is published rather than left for a reader to infer from a name.
-    if (key == "aad_heldout_pct") return "%";
+    if (key == HeldOutStatistic::relativeAAD().key)
+        return HeldOutStatistic::relativeAAD().unit;   // the unit its band is held to
     if (key == "aad_heldout_K")   return "K";
     if (isoTemperatures_.empty()) return {};
     if (starts("fit.q_max.")) return "mol/kg";

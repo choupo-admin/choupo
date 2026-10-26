@@ -81,6 +81,15 @@ fs::path locatePairFile(const std::string& pairName)
 
 } // anonymous
 
+//  Lambda_ij = (V_j / V_i) exp(-A_ij / (R T)) with R in J/(mol K) (gamma()
+//  below): A_ij is a molar energy, J/mol.
+const std::map<std::string, std::string>& Wilson::pairParameterUnits()
+{
+    static const std::map<std::string, std::string> u{
+        { "A_ij", "J/mol" }, { "A_ji", "J/mol" } };
+    return u;
+}
+
 Wilson::Wilson(const DictPtr& dict, const std::vector<Component>& comps)
 :   n_(comps.size())
 {

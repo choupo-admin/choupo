@@ -55,6 +55,7 @@ Description
 
 #pragma once
 
+#include "EvidencePartition.H"   // HeldOutStatistic: the unit its band is held to
 #include "PropertyOperation.H"
 
 #include <map>
@@ -78,9 +79,13 @@ public:
 
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
     //  the held-out AAD is a RELATIVE deviation in per cent (DEV.md 4c C172:
-    //  each fit's held-out statistic is published with its own unit)
+    //  each fit's held-out statistic is published with its own unit -- the
+    //  SAME declaration its acceptance band is held to)
     std::string diagnosticUnit(const std::string& key) const override
-    { return key == "aad_heldout_pct" ? "%" : std::string(); }
+    {
+        const HeldOutStatistic s = HeldOutStatistic::relativeAAD();
+        return key == s.key ? s.unit : std::string();
+    }
     //  The CURATION axis (maturity), as WORDS -- see
     //  PropertyOperation::curation().  NOT `validation`: that key
     //  already names this document's top-level overlay AAD table.

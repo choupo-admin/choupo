@@ -200,7 +200,9 @@ function OneFit({ fit, paths }: { fit: OperationResult; paths: string[] }) {
             <Text size="xs" c="dimmed" mt={4}>
               Criterion: {cur.acceptanceMaxAADPct === "none declared before the fit"
                 ? "none declared before the fit"
-                : `AAD ≤ ${cur.acceptanceMaxAADPct} %`}
+                //  the band in the word it was declared in (C172): `points`
+                //  for a membrane fit, never a "%" the engine did not publish
+                : `AAD ≤ ${cur.acceptanceMaxAADPct}${cur.acceptanceUnit ? ` ${cur.acceptanceUnit}` : ""}`}
               {cur.acceptanceOrigin ? ` — ${cur.acceptanceOrigin}` : ""}
             </Text>
           )}

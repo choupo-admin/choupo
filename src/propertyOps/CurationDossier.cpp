@@ -60,6 +60,15 @@ std::string CurationDossier::verdictOf(const EvidencePartition& part,
     if (part.validationRefused()) return "validationRefused";
     if (!heldOut)                 return "validationRefused";
     if (!part.hasAcceptance())    return "heldOutPerformed";
+    //  A band is judged only after it was held to its statistic's unit
+    //  (DEV.md 4c C172, EvidencePartition::requireBandInUnitOf).  An op that
+    //  never made the check cannot publish a verdict: the comparison below
+    //  would set a number in one unit against a number in another.
+    if (!part.bandUnitChecked())
+        throw std::logic_error("CurationDossier::verdictOf: the acceptance"
+            " band was never held to the unit of the statistic it judges --"
+            " the op must call EvidencePartition::requireBandInUnitOf before"
+            " its verdict (an engine defect, not a case error)");
     return (aadPct <= part.acceptanceMaxAADPct()) ? "validated" : "notValidated";
 }
 
