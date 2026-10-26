@@ -8,4 +8,11 @@
 \*-----------------------------------------------------------------------------*/
 application   choupoSolve;
 description   "SDEM on NF270: dominant NaCl 0.01 M + NaNO3/NH4Cl traces -- NO3- slips through, the field says why";
+//  The primary sources this case reproduces -- what Help > How to cite
+//  lists beside Choupo (DEV.md 4c C171 B).  One quoted citation each.
+citations
+(
+    "Fernandez de Labastida, M., & Yaroshchuk, A. (2021). Nanofiltration of multi-ion solutions: quantitative control of concentration polarization and interpretation by solution-diffusion-electro-migration model. Membranes, 11(4), 272. doi:10.3390/membranes11040272"
+    "Yaroshchuk, A., Bruening, M. L., & Licon Bernal, E. E. (2013). Solution-diffusion-electro-migration model and its uses for analysis of nanofiltration, pressure-retarded osmosis and forward osmosis in multi-ionic solutions. J. Membr. Sci., 447, 463-476. doi:10.1016/j.memsci.2013.07.047"
+);
 verbosity     3;

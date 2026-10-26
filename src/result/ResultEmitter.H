@@ -85,6 +85,13 @@ std::string jsonNumber(scalar v);
 // newline must never corrupt the machine stream.
 std::string jsonEscape(const std::string& s);
 
+//  THE `citation` BLOCK of every binary's result (DEV.md 4c C171 B), ONE
+//  emitter for both result streams: { "engineVersion", "commit" (absent
+//  when the build recorded none), "citations" (the controlDict's own
+//  list), "text" (core/Citation.H) }, no trailing comma or newline.  TEXT,
+//  deliberately read by no golden row kind: it carries the commit.
+std::string citationJson();
+
 //  THE OVERALL MASS FLOW of a stream [kg/s]: the fluid AND the solid, summed
 //  over the components the run carries a molar mass for.  ONE home, read by
 //  the stream table (`F_mass`), the layout's pipes and the batch plan

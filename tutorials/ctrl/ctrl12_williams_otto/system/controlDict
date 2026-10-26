@@ -45,6 +45,13 @@
 application   choupoCtrl;
 description   "Williams-Otto plant (arXiv:2004.07614 eqs. 3.6-3.11 verbatim) settling onto the published steady state x* = (3.27, 7.47, 1.12, 9.81, 1.69, 0.22) klb";
 
+//  The primary sources this case reproduces -- what Help > How to cite
+//  lists beside Choupo (DEV.md 4c C171 B).  One quoted citation each.
+citations
+(
+    "Schmid, Teichert, Chioua, Schindler, & Bortz (2020). Simulation and optimal control of the Williams-Otto process using Pyomo. arXiv:2004.07614v1"
+    "Williams, T. J., & Otto, R. E. (1961). AIEE Trans., 80, 458."
+);
 verbosity     3;
 
 startTime       0;         // s

@@ -30,6 +30,7 @@ License
 #include "result/BatchPlanJson.H"
 #include "result/BuildingJson.H"
 #include "thermo/SealCheck.H"
+#include "core/Citation.H"
 
 #include <cmath>
 #include <iomanip>
@@ -133,6 +134,10 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         }
         os << " },\n";
     }
+
+    //  ---- how to cite this run (DEV.md 4c C171 B) ------------------------
+    //  TEXT, read by no golden row kind: it carries the build's commit.
+    os << "  " << citationJson() << ",\n";
 
     // ---- components ------------------------------------------------------
     os << "  \"components\": [";
@@ -1907,6 +1912,19 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
 namespace Choupo
 {
 std::string jsonEscape(const std::string& s) { return esc(s); }
+
+std::string citationJson()
+{
+    const citation::EngineIdentity id = citation::engineIdentity();
+    std::string o = "\"citation\": { \"engineVersion\": " + esc(id.version);
+    if (!id.commit.empty()) o += ", \"commit\": " + esc(id.commit);
+    o += ", \"citations\": [";
+    const auto& cites = citation::caseCitations();
+    for (std::size_t i = 0; i < cites.size(); ++i)
+        o += (i ? ", " : "") + esc(cites[i]);
+    o += "], \"text\": " + esc(citation::text()) + " }";
+    return o;
+}
 
 std::string advisoriesJson(const std::vector<Advisory>& advs)
 {

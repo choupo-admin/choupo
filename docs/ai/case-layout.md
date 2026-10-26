@@ -219,6 +219,22 @@ reports
 }
 ```
 
+**Optional: the case's primary sources** -- what *How to cite* lists beside
+Choupo (Help menu, the case's About, a downloaded case's `CITATION.txt`, the
+result JSON's `citation` block).  One quoted citation per entry; absent, the
+citation says the case declares none.  A list that is not quoted text, or an
+empty entry, is refused by name, and so is the same list under the key
+`references` (in a propsDict that word means reference DATASETS -- one word,
+one meaning).  Choupo's own entry is generated from `CITATION.cff`, never
+written here.
+
+```
+citations
+(
+    "Geraldes, V., & Alves, A. M. B. (2008). Computer program for simulation of mass transport in nanofiltration membranes. J. Membr. Sci., 321, 172-182. doi:10.1016/j.memsci.2008.04.054"
+);
+```
+
 For `choupoBatch` / `choupoSemiContinuous` / `choupoCtrl` (time-dependent), add:
 
 ```

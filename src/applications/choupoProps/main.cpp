@@ -52,6 +52,7 @@ Description
 #include "propertyOps/CurationDossier.H"
 #include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
+#include "core/Citation.H"
 #include "core/DictAudit.H"
 #include "core/DictCanonical.H"
 #include "core/Dictionary.H"
@@ -495,6 +496,9 @@ try
                      " choupoSolve case.\n";
     const std::string description =
         controlDict->lookupWordOrDefault("description", "");
+    //  The case's primary sources, for the result's `citation` block (the ONE
+    //  reader, core/Citation.H; DEV.md 4c C171 B).  A malformed list refuses.
+    citation::readCaseCitations(*controlDict);
     if (verbosity >= 2 && !description.empty())
         std::cout << "Description:       " << description << "\n"
                   << std::string(56, '-') << "\n";
@@ -1032,6 +1036,9 @@ try
 
     std::cout << "\n<<<Choupo:result-begin>>>\n{\n";
     std::cout << "  \"binary\": \"choupoProps\",\n";
+    //  How to cite this run (DEV.md 4c C171 B): the ONE emitter both result
+    //  streams share.  TEXT, read by no golden row kind -- it carries the commit.
+    std::cout << "  " << citationJson() << ",\n";
     std::cout << "  \"caseDir\": \"" << caseDir.string() << "\",\n";
     std::cout << "  \"components\": [";
     for (std::size_t i = 0; i < thermo.n(); ++i)

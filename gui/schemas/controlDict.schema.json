@@ -10,6 +10,11 @@
       "minimum": 0,
       "maximum": 5,
       "description": "0 = silent; 3 = default; 5 = every iteration printed"
+    },
+    "citations": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "The case's primary sources, one quoted citation per entry: what Help > How to cite lists beside Choupo, and what a downloaded case's CITATION.txt and the result's citation block carry (DEV.md 4c C171 B).  Absent = the case declares none, and the citation says so."
     }
   },
   "additionalProperties": false

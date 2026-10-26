@@ -194,7 +194,7 @@ describe("OS junk by name", () => {
 });
 
 describe("round trip: Download case (.zip) opens back to the same files", () => {
-  it("every case file comes back byte-identical; only the teaching files are added", () => {
+  it("every case file comes back byte-identical; only the teaching files and CITATION.txt are added", () => {
     const opened0 = openedCaseFromZip(zipSync(under("", CASE)), "flash01_benzene_toluene.zip");
     const built = buildCaseZip(opened0.files, "flash01_benzene_toluene");
     expect(built).not.toBeNull();
@@ -204,7 +204,8 @@ describe("round trip: Download case (.zip) opens back to the same files", () => 
     expect(back.notices).toBeUndefined();
     const teaching = Object.keys(caseTeachingFiles());
     const extra = Object.keys(back.raw).filter((p) => !(p in CASE)).sort();
-    expect(extra).toEqual(teaching.filter((p) => !(p in CASE)).sort());
+    //  + the generated citation (DEV.md 4c C171 B; tests/citation.test.ts)
+    expect(extra).toEqual([...teaching.filter((p) => !(p in CASE)), "CITATION.txt"].sort());
     for (const [p, t] of Object.entries(CASE)) expect(back.raw[p]).toBe(t);
     // And the parsed case is the same case.
     expect(back.files.controlDict).toEqual(opened0.files.controlDict);

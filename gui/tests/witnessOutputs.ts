@@ -277,7 +277,7 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   {
     caseDir: "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     file: "log.choupoProps",
-    readBy: ["postProcessing.test.ts"],
+    readBy: ["postProcessing.test.ts", "citation.test.ts"],
     stdout: true,
   },
   //  The batch plan's Gantt chart (DEV.md 4c C99, C110 G5): apalutamide01's
@@ -293,7 +293,7 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   {
     caseDir: "tutorials/batch/plant/apalutamide01_tablets",
     file: "log.choupoSolve",
-    readBy: ["batchGantt.test.ts"],
+    readBy: ["batchGantt.test.ts", "citation.test.ts"],
     stdout: true,
   },
 ];

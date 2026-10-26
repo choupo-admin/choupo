@@ -603,6 +603,9 @@
   "EnergyWire": [
    "src/core/ResultRecords.H"
   ],
+  "EngineIdentity": [
+   "src/core/Citation.H"
+  ],
   "EnthalpyConcentration": [
    "src/propertyOps/EnthalpyConcentration.H"
   ],
@@ -3013,6 +3016,7 @@
    "src/core/Banner.H",
    "src/core/BatchPlanRecords.H",
    "src/core/BuildingRecords.H",
+   "src/core/Citation.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -3108,6 +3112,7 @@
    "src/core/Banner.H",
    "src/core/BatchPlanRecords.H",
    "src/core/BuildingRecords.H",
+   "src/core/Citation.H",
    "src/core/Constants.H",
    "src/core/DictAudit.H",
    "src/core/DictCanonical.H",
@@ -3179,6 +3184,7 @@
    "src/core/Banner.H",
    "src/core/BatchPlanRecords.H",
    "src/core/BuildingRecords.H",
+   "src/core/Citation.H",
    "src/core/Constants.H",
    "src/core/DictAudit.H",
    "src/core/Dictionary.H",
@@ -3354,6 +3360,14 @@
   "src/core/Banner.cpp": [
    "src/core/Banner.H"
   ],
+  "src/core/Citation.cpp": [
+   "src/core/Banner.H",
+   "src/core/Citation.H",
+   "src/core/CitationTemplate.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H"
+  ],
   "src/core/DictAudit.cpp": [
    "src/core/DictAudit.H",
    "src/core/Dictionary.H",
@@ -3473,6 +3487,7 @@
    "src/core/Banner.H",
    "src/core/BatchPlanRecords.H",
    "src/core/BuildingRecords.H",
+   "src/core/Citation.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -6344,6 +6359,7 @@
    "src/core/Advisory.H",
    "src/core/BatchPlanRecords.H",
    "src/core/BuildingRecords.H",
+   "src/core/Citation.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -10069,6 +10085,7 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/core/Banner.cpp",
+   "src/core/Citation.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/SolutionWriter.cpp",
    "src/propertyOps/FitParameters.cpp"
@@ -10226,6 +10243,17 @@
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
+  "src/core/Citation.H": [
+   "src/applications/choupoBatch/main.cpp",
+   "src/applications/choupoProps/main.cpp",
+   "src/applications/choupoSolve/main.cpp",
+   "src/core/Citation.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
+   "src/result/ResultEmitter.cpp"
+  ],
+  "src/core/CitationTemplate.H": [
+   "src/core/Citation.cpp"
+  ],
   "src/core/Constants.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoProps/main.cpp",
@@ -10342,6 +10370,7 @@
    "src/control/SignalController.cpp",
    "src/control/signal/Signal.cpp",
    "src/control/signal/Signals.cpp",
+   "src/core/Citation.cpp",
    "src/core/DictAudit.cpp",
    "src/core/DictCanonical.cpp",
    "src/core/Dictionary.cpp",
@@ -10683,6 +10712,7 @@
    "src/control/SignalController.cpp",
    "src/control/signal/Signal.cpp",
    "src/control/signal/Signals.cpp",
+   "src/core/Citation.cpp",
    "src/core/DictAudit.cpp",
    "src/core/DictCanonical.cpp",
    "src/core/Dictionary.cpp",
@@ -12049,6 +12079,7 @@
    "src/control/SignalController.cpp",
    "src/control/signal/Signal.cpp",
    "src/control/signal/Signals.cpp",
+   "src/core/Citation.cpp",
    "src/core/DictAudit.cpp",
    "src/core/DictCanonical.cpp",
    "src/core/Dictionary.cpp",

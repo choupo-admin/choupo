@@ -1330,6 +1330,11 @@
       "exit": 0,
       "claim": "check_column_thermo_consistency: OK -- 33 case(s) + 3 probe(s); every column's condenser, every full-MESH stage and reboiler on the streams' surface, fugacity equality at the published y, the reactive full-MESH refusal and the enthalpic CMO q [a 34/34, a2-reboiler 4/4, a2-recon 4/4, a2-stages 4/4, b 29/29, b-skip 5/5, c 3/3, d 1/1, skip 1/1]; NOT checked: feed stages, Kremser units, shortcutColumn",
       "seconds": 146.1
+    },
+    "check_citation": {
+      "exit": 0,
+      "claim": "check_citation: OK -- the citation is generated from CITATION.cff (probe: title, authors, repository, licence and a DOI all follow; no DOI is supplied), no hand copy of its title under src/ or gui/src/, ed04 publishes it with its declared citations and flash01 says it declares none, a malformed list or the old word `references` refuses by name, the no-case footer names no controlDict, no golden pins it.  NOT CHECKED: that a declared reference is correct, and the GUI's composer (gui/tests/citation.test.ts holds that)",
+      "seconds": 0.4
     }
   }
 }

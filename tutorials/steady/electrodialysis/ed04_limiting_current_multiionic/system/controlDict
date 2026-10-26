@@ -13,6 +13,12 @@
 application   choupoSolve;
 description   "Limiting current density, MgCl2 + MgSO4: engine against Geraldes & Afonso (2010) Table 4";
 
+//  The primary sources this case reproduces -- what Help > How to cite
+//  lists beside Choupo (DEV.md 4c C171 B).  One quoted citation each.
+citations
+(
+    "Geraldes, V., & Afonso, M. D. (2010). Limiting current density in the electrodialysis of multi-ionic solutions. J. Membr. Sci., 360, 499-508. doi:10.1016/j.memsci.2010.05.054"
+);
 verbosity     3;
 
 reports

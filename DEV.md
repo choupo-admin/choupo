@@ -1755,6 +1755,29 @@ accepts today, and that is a policy call.
 > the author list of record is his (C163 excluded authorship).
 > Status: recorded; (A) dispatched after the running C168 slice 1 lands
 > (same files); (B) built beside it; the DOI and authors put to Vitor.
+> (B) BUILT 2026-10-26 (branch claude/c171-cite): ONE text, its wording
+> GENERATED from CITATION.cff by bin/curate/gen_citation.py into
+> src/core/CitationTemplate.H and gui/src/help/citation.generated.ts
+> (reusing release_inventory.parse_cff), filled by core/Citation (engine)
+> and gui/src/case/citation.ts (GUI) with the case's new optional
+> controlDict `citations ( "..." );` and CHOUPO_VERSION + the build's
+> commit; shown in Help > How to cite, About Choupo, every case's About
+> (props drawer, flowsheet popover), a downloaded case's CITATION.txt and
+> the result JSON's `citation` block (both emitters).  It says plainly that
+> no DOI exists and cites the repository URL with version and commit;
+> no author added.  `citations` declared on six cases (NanoFiltran,
+> polarisation01, edwards02, membrane12, ed04, ctrl12; Cavett NOT -- its
+> primary citations are not in the tree and were not invented).  Gate
+> check_citation (6 by-hand sabotages, all caught); gui/tests/citation.test.ts
+> holds the GUI's text to a native run's.  The WASM build gains `-I.` and
+> an order-only `gitversion` so the browser engine names its commit too
+> (unverified here: no emscripten in this container).  Still Vitor's: the
+> DOI, the author list, any release tag.
+> Commander, same day: the key is `citations`, not `references` (a
+> propsDict's `references` are reference DATASETS; one word, one meaning),
+> and `references` in a controlDict is refused by name; with no case open
+> the footer names no controlDict.  The canonical citation URL (the cff's
+> `url` or `repository-code`; the site renders the first) is put to Vitor.
 
 > **C170. NOTHING SAID IS LOST: THE AUDIT OF EVERY REQUEST IN THE SESSION
 > (Vitor, 2026-10-26: "Ve se nao te esqueceste de mais nada que eu tenha

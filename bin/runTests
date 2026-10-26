@@ -4362,6 +4362,24 @@ PYEOF
     fi
     rm -f /tmp/propsorder.$$
 
+    # Citation gate (2026-10-26, DEV.md 4c C171 B): How to cite is GENERATED
+    # from CITATION.cff (bin/curate/gen_citation.py -> src/core/
+    # CitationTemplate.H + gui/src/help/citation.generated.ts, current; a
+    # probe cff's title, authors, repository, licence and DOI all follow;
+    # no DOI is supplied), no hand copy of the cff title under src/ or
+    # gui/src/, a run publishes the `citation` block with the case's
+    # declared `references`, a malformed list refuses by name, and no golden
+    # pins it (it carries the commit).  By-hand sabotages in its docstring.
+    if gate_exec "$ROOT/bin/curate/check_citation.py" > /tmp/citation.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "citation-gate" "$(grep -m1 '^check_citation: OK' /tmp/citation.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_citation.py)\n" "citation-gate"
+        cat /tmp/citation.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/citation.$$
+
     if gate_exec "$ROOT/bin/curate/check_membrane_modules.py" > /tmp/modules.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "membrane-modules-gate" "$(grep -m1 '^check_membrane_modules: OK' /tmp/modules.$$)"
         pass=$((pass+1))

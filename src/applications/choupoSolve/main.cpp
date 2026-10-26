@@ -51,6 +51,7 @@ Description
 
 #include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
+#include "core/Citation.H"
 #include "core/DictAudit.H"
 #include "core/Dictionary.H"
 #include "core/DisplayUnits.H"
@@ -840,6 +841,9 @@ try
         controlDict->lookupWordOrDefault("application", "choupoSolve");
     const std::string description =
         controlDict->lookupWordOrDefault("description", "");
+    //  The case's primary sources, for the result's `citation` block (the ONE
+    //  reader, core/Citation.H; DEV.md 4c C171 B).  A malformed list refuses.
+    citation::readCaseCitations(*controlDict);
 
     // Pull display-unit + precision preferences out of controlDict.
     DisplayUnits::instance().readFrom(controlDict);
