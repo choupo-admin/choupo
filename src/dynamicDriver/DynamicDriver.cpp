@@ -82,6 +82,7 @@ Description
 #include "core/ProblemDivergence.H"
 #include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
+#include "core/Citation.H"
 #include "core/Dictionary.H"
 #include "outerDriver/OuterDriver.H"
 #include "streams/StreamOverrides.H"
@@ -492,6 +493,9 @@ try
         controlDict->lookupWordOrDefault("application", cfg.binaryName);
     const std::string description =
         controlDict->lookupWordOrDefault("description", "");
+    //  The case's primary sources, for the result's `citation` block (the ONE
+    //  reader, core/Citation.H; DEV.md 4c C171 B).  A malformed list refuses.
+    citation::readCaseCitations(*controlDict);
 
     const scalar startTime     = controlDict->lookupScalarOrDefault("startTime", 0.0);
     const scalar endTime       = controlDict->lookupScalar("endTime");

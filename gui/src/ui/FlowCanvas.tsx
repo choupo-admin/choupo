@@ -116,6 +116,7 @@ import { useCanvasColour } from "../state/canvasColour.js";
 import { EXPORT_EVENT } from "./ColoursMenu.js";
 import { exportFlowsheetFigure } from "./flowsheetExport.js";
 import { LegendBox } from "./LegendBox.js";
+import { CitationPanel } from "./CitationPanel.js";
 import { notifications } from "@mantine/notifications";
 
 // Storage-key separator for per-handle overrides: a null char never appears
@@ -242,29 +243,33 @@ export function FlowCanvas({ scrubInstant }: { scrubInstant?: DynamicInstant } =
           >
             {description.lead}
           </Text>
-          {description.hasMore && (
-            //  The affordance is REQUIRED, never optional: a description cut
-            //  with nothing to open is worse than a long one, because the
-            //  reader cannot know what was taken.  `hasMore` is the module's
-            //  answer, so the button and the cut can never disagree.
-            <Popover width={520} position="bottom-start" withArrow shadow="md">
-              <Popover.Target>
-                <Button
-                  size="compact-xs" variant="subtle"
-                  style={{ flex: "0 0 auto" }}
-                >
-                  about this case
-                </Button>
-              </Popover.Target>
-              <Popover.Dropdown>
-                <ScrollArea.Autosize mah={320}>
-                  <Text size="sm" style={{ lineHeight: 1.45 }}>
-                    {description.full}
-                  </Text>
-                </ScrollArea.Autosize>
-              </Popover.Dropdown>
-            </Popover>
-          )}
+          {/*  The affordance is REQUIRED when the lead is cut: a description
+              cut with nothing to open is worse than a long one, because the
+              reader cannot know what was taken.  Since DEV.md 4c C171 B it is
+              there on EVERY case, because the About also says how to cite the
+              case -- so it is no longer only the answer to `hasMore`. */}
+          <Popover width={560} position="bottom-start" withArrow shadow="md">
+            <Popover.Target>
+              <Button
+                size="compact-xs" variant="subtle"
+                style={{ flex: "0 0 auto" }}
+              >
+                about this case
+              </Button>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <ScrollArea.Autosize mah={480}>
+                <Text size="sm" style={{ lineHeight: 1.45 }}>
+                  {description.full}
+                </Text>
+                <Text size="11px" c="dimmed" tt="uppercase" fw={700} mt="md" mb={4}
+                  style={{ letterSpacing: 0.5 }}>
+                  How to cite
+                </Text>
+                <CitationPanel controlDict={controlDict ?? null} />
+              </ScrollArea.Autosize>
+            </Popover.Dropdown>
+          </Popover>
         </Box>
       )}
       {/* RESULTS FIRST (DEV.md 4c C168): what the run concluded, persistent,

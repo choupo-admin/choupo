@@ -54,6 +54,7 @@ Description
 #include "core/DivergenceSummary.H"
 #include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
+#include "core/Citation.H"
 #include "core/Dictionary.H"
 #include "core/DisplayUnits.H"
 #include "materials/MaterialRegistry.H"
@@ -293,6 +294,9 @@ try
         controlDict->lookupWordOrDefault("application", "choupoBatch");
     const std::string description =
         controlDict->lookupWordOrDefault("description", "");
+    //  The case's primary sources, for the result's `citation` block (the ONE
+    //  reader, core/Citation.H; DEV.md 4c C171 B).  A malformed list refuses.
+    citation::readCaseCitations(*controlDict);
 
     // Time settings
     const scalar startTime     = controlDict->lookupScalarOrDefault("startTime",     0.0);

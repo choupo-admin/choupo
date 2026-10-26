@@ -8,4 +8,10 @@
 \*-----------------------------------------------------------------------------*/
 application   choupoProps;
 description   "Concentration polarisation of a Na+/Cl-/dye3- solution (Geraldes & Afonso 2007, Table 1): per-ion k, one interface field, Gamma per ion -- no film thickness";
+//  The primary sources this case reproduces -- what Help > How to cite
+//  lists beside Choupo (DEV.md 4c C171 B).  One quoted citation each.
+citations
+(
+    "Geraldes, V., & Afonso, M. D. (2007). Prediction of the concentration polarization in the nanofiltration/reverse osmosis of dilute multi-ionic solutions. J. Membr. Sci., 300, 20-27. doi:10.1016/j.memsci.2007.04.025"
+);
 verbosity     2;

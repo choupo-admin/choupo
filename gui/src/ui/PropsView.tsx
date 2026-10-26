@@ -120,6 +120,7 @@ import { ThermoView } from "./ThermoView.js";
 import { guideUrl, openGuide } from "../help/guideLinks.js";
 import { declaredStudies, dictStory, purposeWords } from "../case/propsStudies.js";
 import { Lesson } from "./Lesson.js";
+import { CitationPanel } from "./CitationPanel.js";
 import {
   parsePropertyPointReferences,
   type PointResult,
@@ -643,6 +644,14 @@ export function PropsView() {
             above is all it says about itself.
           </Text>
         )}
+        {/* HOW TO CITE (DEV.md 4c C171 B): Choupo from CITATION.cff, the
+            engine this page runs, and this case's declared primary sources. */}
+        <Box mt="md" data-about-cite="">
+          <Text size="11px" c="dimmed" tt="uppercase" fw={700} mb={4} style={{ letterSpacing: 0.5 }}>
+            How to cite
+          </Text>
+          <CitationPanel controlDict={controlDict ?? null} />
+        </Box>
         </Box>
         <Text size="xs" c="dimmed" mt="md">F1 opens the THEORY of what is selected; with nothing
           selected, the Props Workflow Guide.</Text>

@@ -47,7 +47,11 @@ else
 endif
 
 # Compile-time flags (per-object).  Exceptions MUST match the link.
-WASM_CXXFLAGS := -std=c++17 -fexceptions $(WASM_OPT) -Isrc -MMD -MP
+#  `-I.` as in the native build (make/compiler.mk): the project root on the
+#  include path so `generated/gitVersion.H` is found.  Without it the WASM
+#  engine named no commit -- in its banner, and in the result's `citation`
+#  block (DEV.md 4c C171 B), while wasm/version.json beside it did.
+WASM_CXXFLAGS := -std=c++17 -fexceptions $(WASM_OPT) -Isrc -I. -MMD -MP
 
 # Link-time flags.  See CLAUDE.md §13 for the load-bearing rationale of
 # each flag (Emscripten 3.1.6 quirks documented there).
@@ -192,7 +196,12 @@ $(WASM_LD_STAMP):
 	@touch $@
 
 # ---- per-object compilation (the incremental core) -------------------------
-$(WASM_OBJ)/%.o: %.cpp $(WASM_CXX_STAMP)
+#  `| gitversion` (order-only): the commit stamp is (re)written BEFORE any
+#  object compiles, content-compared, so an unchanged commit recompiles
+#  nothing and a new one recompiles only what includes it (the -MMD .d files
+#  carry that edge).  A `make wasm` with no native `make all` before it --
+#  the site's CI -- would otherwise compile against no stamp, or a stale one.
+$(WASM_OBJ)/%.o: %.cpp $(WASM_CXX_STAMP) | gitversion
 	@mkdir -p $(dir $@)
 	@printf "  EMXX  %s\n" $<
 	@$(EMXX) $(WASM_CXXFLAGS) -c $< -o $@

@@ -125,6 +125,8 @@ import { DuplicateCaseModal } from "./DuplicateCaseModal.js";
 import { readCaseAt, importCase, slugifyCaseName } from "../cases/workspace.js";
 import { localCaseDir } from "../case/caseName.js";
 import { downloadCaseZip } from "../case/saveCase.js";
+import { loadEngineVersion } from "../case/engineVersion.js";
+import { CitationPanel } from "./CitationPanel.js";
 import { openCaseZip, openCaseFolder, type OpenedCase } from "../cases/loadCase.js";
 import { canComputePinch, pinchDisabledReason } from "../case/pinch.js";
 import { collectControllerKnobs } from "../case/controllerKnobs.js";
@@ -330,6 +332,12 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   };
 
   const [aboutOpen, aboutCtl] = useDisclosure(false);
+  //  HOW TO CITE (DEV.md 4c C171 B): Help's item and About's link open ONE
+  //  modal; with a case open it lists the case's declared primary sources.
+  const [citeOpen, citeCtl] = useDisclosure(false);
+  //  Read the engine stamp once, so "Download case (.zip)" -- a click that
+  //  cannot wait for a fetch -- names the engine in its CITATION.txt.
+  useEffect(() => { void loadEngineVersion(import.meta.env.BASE_URL); }, []);
   const [openTutorialOpen, openTutorialCtl] = useDisclosure(false);
   const [newCaseOpen, newCaseCtl] = useDisclosure(false);
   const [dupOpen, dupCtl] = useDisclosure(false);
@@ -780,6 +788,9 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
             </Menu.Item>
           ))}
           <Menu.Divider />
+          <Menu.Item onClick={citeCtl.open} data-menu-cite="">
+            {hasCaseOpen(tutorialName) ? "How to cite this case…" : "How to cite Choupo…"}
+          </Menu.Item>
           <Menu.Item onClick={aboutCtl.open}>About Choupo…</Menu.Item>
           {/* The shortcut card advertises the FILE menu's own bindings (and
               the canvas's), so it rides the same flag they do: in a tool tab
@@ -893,10 +904,27 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
             </Anchor>
             .
           </Text>
+          <Text size="xs">
+            <Anchor component="button" type="button" size="xs"
+              onClick={() => { aboutCtl.close(); citeCtl.open(); }}>
+              How to cite Choupo
+            </Anchor>
+            {" "}— generated from CITATION.cff, with the exact engine version.
+          </Text>
           <Button variant="default" size="xs" onClick={aboutCtl.close} mt="sm">
             Close
           </Button>
         </Stack>
+      </Modal>
+
+      <Modal
+        opened={citeOpen}
+        onClose={citeCtl.close}
+        title={hasCaseOpen(tutorialName) ? "How to cite this case" : "How to cite Choupo"}
+        size="lg"
+        centered
+      >
+        <CitationPanel controlDict={hasCaseOpen(tutorialName) ? caseFiles.controlDict : null} />
       </Modal>
 
       {/* ONE TAB, ONE THING: the tutorials browser OPENS a case, so it opens a

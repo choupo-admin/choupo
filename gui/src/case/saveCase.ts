@@ -52,6 +52,8 @@ import { strToU8, zipSync } from "fflate";
 import { dictToText } from "../adapters/WasmAdapter.js";
 import { caseDisplayName } from "./caseName.js";
 import { caseTeachingFiles } from "./caseTeaching.js";
+import { caseCitations, citationText, CITATION_FILE } from "./citation.js";
+import { engineVersionSnapshot, type EngineVersion } from "./engineVersion.js";
 import type { CaseFiles } from "./types.js";
 
 /** Download the WHOLE case as a .zip, every file under its REAL path
@@ -62,7 +64,7 @@ import type { CaseFiles } from "./types.js";
  *  it.  Pure download (a Blob) -- works on every browser, the GUI never writes. */
 export function downloadCaseZip(caseFiles: CaseFiles, tutorialName: string,
   runOutputs?: { [relPath: string]: string }): void {
-  const built = buildCaseZip(caseFiles, tutorialName, runOutputs);
+  const built = buildCaseZip(caseFiles, tutorialName, runOutputs, engineVersionSnapshot());
   if (!built) return;
   // fflate returns a Uint8Array; copy into a fresh ArrayBuffer-backed view so
   // the Blob gets exactly these bytes (avoids a possible pooled-buffer offset).
@@ -84,6 +86,9 @@ export function buildCaseZip(caseFiles: CaseFiles, tutorialName: string,
    *  downloaded case (DEV.md 4c C172 item 6).  A path the case already
    *  carries keeps the case's own copy. */
   runOutputs?: { [relPath: string]: string },
+  /** The engine this page runs (wasm/version.json), named in CITATION.txt;
+   *  null = no stamp found, and the file says so. */
+  engine: EngineVersion | null = null,
 ): { fileName: string; bytes: Uint8Array } | null {
   const raw = caseFiles.rawFiles;
   if (!raw || Object.keys(raw).length === 0) return null;
@@ -108,6 +113,12 @@ export function buildCaseZip(caseFiles: CaseFiles, tutorialName: string,
   for (const [p, text] of Object.entries(caseTeachingFiles())) {
     if (raw[p] === undefined) files[`${base}/${p}`] = strToU8(text);
   }
+  // HOW TO CITE (DEV.md 4c C171 B): the case leaves with the citation of the
+  // engine that ran it and of its own declared primary sources, generated --
+  // never the case's own copy of the name, which a re-download would carry
+  // stale.  `CITATION.txt` at the case root is therefore the generator's.
+  files[`${base}/${CITATION_FILE}`] = strToU8(
+    citationText(caseCitations(caseFiles.controlDict).citations, engine));
   return { fileName: `${base}.zip`, bytes: zipSync(files, { level: 6 }) };
 }
 

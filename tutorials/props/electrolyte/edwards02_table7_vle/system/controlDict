@@ -8,4 +8,10 @@
 \*-----------------------------------------------------------------------------*/
 application   choupoProps;
 description   "Edwards (1978) Table 7 anchor: NH3-CO2-H2O VLE at 100 degC -- the paper's own predictions reproduced from its own equations, the experiment quoted as context.";
+//  The primary sources this case reproduces -- what Help > How to cite
+//  lists beside Choupo (DEV.md 4c C171 B).  One quoted citation each.
+citations
+(
+    "Edwards, T. J., Maurer, G., Newman, J., & Prausnitz, J. M. (1978). Vapor-liquid equilibria in multicomponent aqueous solutions of volatile weak electrolytes. AIChE J., 24(6), 966-976."
+);
 verbosity     3;

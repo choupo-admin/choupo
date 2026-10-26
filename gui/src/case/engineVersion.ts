@@ -56,6 +56,31 @@ export function engineVersionLabel(v: EngineVersion): string {
     : v.version;
 }
 
+/*  ONE READING PER PAGE for the citation (DEV.md 4c C171 B): the Help modal,
+ *  a case's About and the zip's CITATION.txt name the engine this page runs,
+ *  and the zip is built in a click handler that cannot wait for a fetch -- so
+ *  the first reader starts the fetch and later ones read what it found.  A
+ *  failed reading is retried (null is never cached as an answer). */
+let pending: Promise<EngineVersion | null> | null = null;
+let known: EngineVersion | null = null;
+
+export function loadEngineVersion(baseUrl: string): Promise<EngineVersion | null> {
+  if (known) return Promise.resolve(known);
+  if (!pending) {
+    pending = fetchEngineVersion(baseUrl).then((v) => {
+      known = v;
+      pending = null;
+      return v;
+    });
+  }
+  return pending;
+}
+
+/** What the last reading found, or null (not read yet, or no stamp). */
+export function engineVersionSnapshot(): EngineVersion | null {
+  return known;
+}
+
 /** Read the stamp beside the binaries.  Null on any failure -- never a
  *  plausible default. */
 export async function fetchEngineVersion(baseUrl: string): Promise<EngineVersion | null> {

@@ -1335,6 +1335,11 @@
       "exit": 0,
       "claim": "check_gibbs_real_gas: OK -- elementPotential, reactiveFlash and directMin publish the ammonia equilibrium the package's own fugacity condition gives (700 K, 200 bar, SRK; 2e-4 in y_NH3, against an ideal-gas answer 0.024 away), and a VLLE flash on an SRK vapour publishes y/x equal to the package's own K within 1 %.  NOT checked: the liquid's Poynting / phi_sat (absent from the package's K too), and the liquid-onset tests of the element-potential and reactive-flash routes, which read y_i P.",
       "seconds": 3.1
+    },
+    "check_citation": {
+      "exit": 0,
+      "claim": "check_citation: OK -- the citation is generated from CITATION.cff (probe: title, authors, repository, licence and a DOI all follow; no DOI is supplied), no hand copy of its title under src/ or gui/src/, ed04 publishes it with its declared citations and flash01 says it declares none, a malformed list or the old word `references` refuses by name, the no-case footer names no controlDict, no golden pins it.  NOT CHECKED: that a declared reference is correct, and the GUI's composer (gui/tests/citation.test.ts holds that)",
+      "seconds": 0.4
     }
   }
 }
