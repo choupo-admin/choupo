@@ -33,6 +33,7 @@ License
 #include "unitOperations/flash/IncipientPhase.H"      // the ONE incipient-vapour iteration
 #include "thermo/equationOfState/EquationOfState.H"  // isIdeal(): does phi depend on y?
 #include "unitOperations/saturation/BubblePoint.H"
+#include "unitOperations/saturation/DewPoint.H"
 #include "DistillationColumn.H"
 #include "TrayHydraulics.H"
 #include "solver/NewtonRaphson.H"
@@ -737,6 +738,179 @@ scalar feedEnthalpy(const FeedThermalState& st,
     return F * h.hQuality(st.vf, z, T);
 }
 
+//  THE CMO FEED QUALITY IS THE ENTHALPIC q (DEV.md 4c C169 item 4; the C131
+//  separations review's W4 and proposal P1, decided under C163).
+//
+//  WHAT WAS WRONG.  Both CMO models (Wang-Henke and `simultaneous`) took
+//  q = 1 - vf.  A single-phase liquid has vf = 0, so q = 1 at ANY
+//  temperature: column01 fed at 300 K published the same profile and the
+//  same V_strip as at 364 K, to nine figures, while its reboiler plug rose by
+//  the 260 kW of sensible heat the profile never saw -- a published traffic
+//  that contradicted the published duty.  And the textbook q (1.29 there)
+//  was REFUSED as a contradiction with the stream.
+//
+//  THE RULE.  Under constant molar overflow a feed's quality is the fraction
+//  of a mole of it that joins the liquid on the feed stage:
+//
+//      q = (H_V,sat - H_F) / (H_V,sat - H_L,sat)
+//
+//  (Wankat ch. 4; Seader, Henley & Roper, the q-line), with H_F the feed's
+//  enthalpy as the column prices it (`feedEnthalpy`), H_L,sat the feed's
+//  composition as a saturated liquid at its bubble point and H_V,sat as a
+//  saturated vapour at its dew point, all on the column's one surface
+//  (`ColumnEnthalpy`).  q > 1 is a subcooled liquid, which condenses vapour
+//  on the feed stage; q < 0 a superheated vapour, which evaporates liquid
+//  there.  A component that cannot vaporise (K = 0) stays liquid in H_V,sat
+//  and the dew point is its volatile part's.  A TWO-PHASE feed keeps
+//  q = 1 - vf, its resolved liquid fraction -- the exact value at
+//  saturation for a pure fluid and the one the CMO profile has always used.
+//
+//  WHEN IT CANNOT BE FORMED (a bubble or dew point that does not converge,
+//  a feed with nothing volatile, a surface that cannot price a saturated
+//  state) the column keeps 1 - vf and SAYS so, naming why -- never in
+//  silence.
+struct CmoFeedQuality
+{
+    scalar      q         = 1.0;
+    bool        enthalpic = false;   //  q came from the enthalpies
+    bool        fellBack  = false;   //  wanted the enthalpic q, could not form it
+    scalar      Tbubble   = 0.0;
+    scalar      Tdew      = 0.0;
+    std::string why;                 //  the fall-back's reason
+};
+
+CmoFeedQuality cmoFeedQuality(const FeedThermalState& st, scalar T, scalar P,
+                              const sVector& z, const ThermoPackage& thermo,
+                              const ColumnEnthalpy& h)
+{
+    CmoFeedQuality fq;
+    fq.q = 1.0 - st.vf;
+    if (st.split) return fq;                       // two-phase: its liquid fraction
+    try
+    {
+        //  A SPECIATING FEED'S SATURATION POINTS ARE THE REACTIVE FLASH'S.
+        //  Its bubble point on the apparent molecular K is not the
+        //  equilibrium the column solves (the sour-water feed of column13
+        //  read a bubble point BELOW its own 350 K and so q = 0.885 for a
+        //  subcooled liquid) -- the same reason `makeDistillate` does not
+        //  price a reactive distillate at its bubble point.  Kept at
+        //  1 - vf, and said.
+        if (thermo.hasReactiveEquilibrium())
+            throw std::runtime_error("the package resolves reactive"
+                " equilibrium, so this feed's bubble and dew points are the"
+                " reactive flash's, which the column does not compute");
+        const std::size_t n = z.size();
+        bool okb = false;
+        sVector yb;
+        const scalar Tb = bubbleTWithItsVapour(thermo, z, P, T, 1.0e-12, &okb, &yb);
+        const sVector Kb = thermo.Kvec(Tb, P, z, yb.empty() ? z : yb);
+        scalar S = 0.0;
+        for (std::size_t i = 0; i < n; ++i) S += Kb[i] * z[i];
+        if (!okb || !(std::abs(S - 1.0) <= 1.0e-8))
+            throw std::runtime_error("its bubble point did not converge");
+        //  The volatile part (K > 0) and the part that stays liquid.
+        sVector zV(n, 0.0), zN(n, 0.0);
+        scalar sV = 0.0, sN = 0.0;
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            if (z[i] <= 0.0) continue;
+            if (Kb[i] > 0.0) { zV[i] = z[i]; sV += z[i]; }
+            else             { zN[i] = z[i]; sN += z[i]; }
+        }
+        if (!(sV > 0.0)) throw std::runtime_error("nothing in it is volatile");
+        sVector zVn = zV;
+        for (auto& v : zVn) v /= sV;
+        const auto dew = DewPoint::compute(thermo, zVn, P, Tb);
+        if (!dew.converged || !(dew.T >= Tb - 1.0e-6))
+            throw std::runtime_error("its dew point did not converge");
+        const scalar HF = feedEnthalpy(st, 1.0, T, P, z, thermo, h);
+        const scalar HL = h.hL(z, Tb);
+        scalar HV = h.hV(zV, dew.T);                 // extensive: sV mol of vapour
+        if (sN > 0.0)
+        {
+            sVector zNn = zN;
+            for (auto& v : zNn) v /= sN;
+            HV += sN * h.hL(zNn, dew.T);             // what cannot vaporise, as liquid
+        }
+        if (!(HV - HL > 0.0))
+            throw std::runtime_error("its saturated vapour is not above its"
+                                     " saturated liquid on this surface");
+        fq.q         = (HV - HF) / (HV - HL);
+        fq.enthalpic = true;
+        fq.Tbubble   = Tb;
+        fq.Tdew      = dew.T;
+    }
+    catch (const std::exception& e)
+    {
+        fq.q        = 1.0 - st.vf;
+        fq.fellBack = true;
+        fq.why      = e.what();
+    }
+    return fq;
+}
+
+//  The words that say which q a feed got: the stream's resolved liquid
+//  fraction, or its enthalpy.  One sentence for the refusals and the banner.
+std::string feedQualityOrigin(const FeedThermalState& st, const CmoFeedQuality& fq)
+{
+    std::ostringstream os;
+    os.setf(std::ios::fixed);
+    if (fq.enthalpic)
+        os << std::setprecision(2) << "the enthalpic q = (H_V,sat - H_F)/"
+              "(H_V,sat - H_L,sat): saturated liquid at its bubble point "
+           << fq.Tbubble << " K, saturated vapour at its dew point "
+           << fq.Tdew << " K";
+    else if (st.split)
+        os << "its resolved liquid fraction, the feed being two-phase";
+    else
+        os << "1 - vf: the enthalpic q could not be formed (" << fq.why << ")";
+    return os.str();
+}
+
+//  Said once per column feed per process: a q that is not 1 - vf, and a
+//  fall-back to 1 - vf, are both facts the CMO profile is built on.
+void announceFeedQuality(const std::string& unit, const std::string& feed,
+                         const FeedThermalState& st, const CmoFeedQuality& fq,
+                         scalar T, int verbosity)
+{
+    static std::mutex lock;
+    static std::set<std::string> said;
+    const scalar q0 = 1.0 - st.vf;
+    const bool differs  = fq.enthalpic && std::abs(fq.q - q0) > 1.0e-4;
+    if (!differs && !fq.fellBack) return;
+    {
+        std::lock_guard<std::mutex> g(lock);
+        if (!said.insert(unit + "|" + feed).second) return;
+    }
+    std::ostringstream os;
+    os.setf(std::ios::fixed);
+    if (fq.fellBack)
+    {
+        os << "distillationColumn '" << unit << "' feed '" << feed << "': the"
+              " CMO feed quality is 1 - vf = " << std::setprecision(4) << q0
+           << " because the enthalpic q could not be formed (" << fq.why
+           << "); a single-phase feed away from saturation is then treated as"
+              " saturated by the CMO profile.";
+        AdvisoryLog::instance().add("model", "warning",
+                                    "distillationColumn feed quality", os.str());
+        if (verbosity >= 1) std::cout << "  [column] " << os.str() << "\n";
+        return;
+    }
+    if (verbosity < 1) return;
+    std::cout << "  [column] " << unit << " feed '" << feed << "': CMO q = "
+              << std::fixed << std::setprecision(4) << fq.q << " from its"
+                 " enthalpy at " << std::setprecision(2) << T << " K, "
+              << feedQualityOrigin(st, fq) << "; 1 - vf = "
+              << std::setprecision(4) << q0 << ".  "
+              << (fq.q > 1.0 ? "A subcooled liquid condenses vapour on the"
+                               " feed stage: V' = V + (q - 1) F."
+                             : fq.q < 0.0
+                               ? "A superheated vapour evaporates liquid on"
+                                 " the feed stage: L' = L + q F < L."
+                               : "Under CMO, L' = L + q F, V' = V - (1 - q) F.")
+              << std::defaultfloat << "\n";
+}
+
 //  The refusal.  A `feedQuality` that disagrees with the stream is not a
 //  parameter the engine may prefer one way or the other: the case says two
 //  things and only its author knows which is true.
@@ -749,13 +923,17 @@ scalar feedEnthalpy(const FeedThermalState& st,
 void refuseContradictoryFeedQuality(const DictPtr&     operDict,
                                     const DictPtr&     feedDict,
                                     const FeedThermalState& st,
+                                    const CmoFeedQuality&   fq,
                                     scalar             T,
                                     const std::string& unitName)
 {
     if (!operDict->found("feedQuality")) return;
 
+    //  THE q THE COLUMN USES (C169 item 4): the enthalpic q of a single-phase
+    //  feed, the liquid fraction of a two-phase one.  Compared against 1 - vf
+    //  this refusal called the textbook q of a subcooled feed a contradiction.
     const scalar qDecl = operDict->lookupScalar("feedQuality");
-    const scalar qRes  = 1.0 - st.vf;
+    const scalar qRes  = fq.q;
     if (std::abs(qDecl - qRes) <= 1.0e-3) return;
 
     const std::string sName =
@@ -766,7 +944,8 @@ void refuseContradictoryFeedQuality(const DictPtr&     operDict,
     os << "DistillationColumn '" << unitName << "': operation.feedQuality = "
        << qDecl << " contradicts the feed stream '" << sName << "', whose"
           " thermal state at T = " << T << " K is vapour fraction " << st.vf
-       << " (" << st.origin << ")  =>  q = " << qRes << ".\n"
+       << " (" << st.origin << ")  =>  q = " << qRes << " ("
+       << feedQualityOrigin(st, fq) << ").\n"
           "  A feed's thermal state lives in the STREAM, not in the column --"
           " so this case says two different things and the engine will not"
           " choose between them.  Pick the one that is TRUE of your feed:\n"
@@ -781,10 +960,17 @@ void refuseContradictoryFeedQuality(const DictPtr&     operDict,
     //  liquid or vapour feed is the `phase` pin; a two-phase quality is the
     //  (T, P) that gives it, which this engine does not solve from q.
     const scalar vfDecl = 1.0 - qDecl;
-    if (vfDecl <= 1.0e-9)
-        os << "`phase liquid;` (a declared saturated-liquid feed, R-E2)";
-    else if (vfDecl >= 1.0 - 1.0e-9)
-        os << "`phase gas;` (a declared vapour feed, R-E2)";
+    if (std::abs(qDecl - 1.0) <= 1.0e-9)
+        os << "`phase liquid;` (a declared saturated-liquid feed, R-E2) at its"
+              " bubble point -- q = 1 IS a saturated liquid; a colder one has"
+              " q > 1";
+    else if (std::abs(qDecl) <= 1.0e-9)
+        os << "`phase gas;` (a declared vapour feed, R-E2) at its dew point --"
+              " q = 0 IS a saturated vapour; a hotter one has q < 0";
+    else if (qDecl > 1.0 || qDecl < 0.0)
+        os << "a T at which its own enthalpy gives q = " << qDecl
+           << " (q > 1 a subcooled liquid, q < 0 a superheated vapour; the"
+              " engine does not solve T from a declared q)";
     else
         os << "a T and P at which its own equilibrium gives vapour fraction "
            << vfDecl << " (a mixture's (T, P) fix its split, so"
@@ -1051,8 +1237,15 @@ int DistillationColumn::solve(const DictPtr& dict,
     //  and agreeing, it is silent; present and disagreeing, it refuses.
     const FeedThermalState feedState =
         resolveFeedThermalState(feedDict, Tf, P, z, thermo, dict->name());
-    refuseContradictoryFeedQuality(operDict, feedDict, feedState, Tf, dict->name());
-    const scalar q        = 1.0 - feedState.vf;
+    //  The column's one enthalpy surface, and the CMO q read off it (C169).
+    const ColumnEnthalpy hs = columnEnthalpySurface(thermo, P, {{Tf, z}});
+    const CmoFeedQuality feedQ = cmoFeedQuality(feedState, Tf, P, z, thermo, hs);
+    announceFeedQuality(dict->name(),
+                        feedDict->lookupWordOrDefault("streamName", "the feed"),
+                        feedState, feedQ, Tf, verbosity);
+    refuseContradictoryFeedQuality(operDict, feedDict, feedState, feedQ, Tf,
+                                   dict->name());
+    const scalar q        = feedQ.q;
 
     // Strictly INSIDE the cascade: NF == N (feed onto the bottom stage)
     // walked the Wang-Henke arrays out of bounds and SEGFAULTED (found live
@@ -1085,6 +1278,12 @@ int DistillationColumn::solve(const DictPtr& dict,
     if (Vp <= 0.0)
         throw std::runtime_error(
             "DistillationColumn: vapour flow below feed is non-positive");
+    if (Lp <= 0.0)
+        throw std::runtime_error("DistillationColumn '" + dict->name()
+            + "': the liquid flow below the feed is non-positive (L' = L + q F"
+            " with q = " + std::to_string(q) + ", a superheated feed that"
+            " evaporates more liquid than the reflux brings down).  Raise the"
+            " reflux or feed the vapour lower.");
 
     // ---- Convergence config -------------------------------------------
     //  THE STOP IS DECIDED BY THE BALANCES, NOT BY THE STEP (2026-09-28,
@@ -1574,7 +1773,6 @@ int DistillationColumn::solve(const DictPtr& dict,
         //  ONE SURFACE (C169): the condenser, the products and the feed are
         //  priced by `columnEnthalpySurface`, the formation datum the streams
         //  carry, or the announced sensible fallback when a species has none.
-        const ColumnEnthalpy hs = columnEnthalpySurface(thermo, P, {{Tf, z}});
         const scalar Q_cond = condenserDuty(hs, condenser, top);
         auto H = [&](scalar Fx, scalar Tx, scalar vfx, const sVector& zx) {
             return Fx * hs.hQuality(vfx, zx, Tx);
@@ -1737,9 +1935,13 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
                                   : feedDict->lookupScalar("P", Dims::pressure);
     const FeedThermalState recoveryFeed =
         resolveFeedThermalState(feedDict, Tf0, Pf0, zFeed, thermo, dict->name());
-    refuseContradictoryFeedQuality(operDict, feedDict, recoveryFeed,
+    const ColumnEnthalpy recoveryH =
+        columnEnthalpySurface(thermo, Pf0, {{Tf0, zFeed}});
+    const CmoFeedQuality recoveryQ =
+        cmoFeedQuality(recoveryFeed, Tf0, Pf0, zFeed, thermo, recoveryH);
+    refuseContradictoryFeedQuality(operDict, feedDict, recoveryFeed, recoveryQ,
                                    Tf0, dict->name());
-    const scalar qF = 1.0 - recoveryFeed.vf;
+    const scalar qF = recoveryQ.q;
 
     const scalar feedOfComp = (zsum > 0.0) ? Ff * zc / zsum : 0.0;
     if (feedOfComp <= 0.0)
@@ -1976,6 +2178,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         scalar F = 0.0, q = 1.0, T = 0.0;
         sVector z;
         std::optional<FeedThermalState> state; // its resolution, when it is a stream
+        std::string           name = "the feed";
+        std::optional<scalar> qDeclared;       // operation.feeds.quality, cross-checked
     };
     std::vector<FeedRecord> feedRecords;
     auto addFeed = [&](std::size_t j, scalar Ff, scalar qf, scalar Tff, const sVector& zf,
@@ -1987,9 +2191,9 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         feedRecords.push_back(std::move(r));
     };
 
-    // Representative primary-feed scalars (initial-guess anchor, profile marker,
-    // the elem-datum probe).  The per-stage arrays above carry the real physics.
-    scalar       Tf = 0.0, q = 1.0;
+    // Representative primary-feed scalars (initial-guess anchor, profile
+    // marker).  The per-stage arrays above carry the real physics.
+    scalar       Tf = 0.0;
     std::size_t  NF = 0;
     sVector      z(n, 0.0);
 
@@ -2042,24 +2246,13 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             // liquid) -> REFUSE it loudly.
             const FeedThermalState fst =
                 resolveFeedThermalState(sd, Tfe, P, zf, thermo, dict->name());
-            const scalar vfStream = fst.vf;
-            const scalar qf = 1.0 - vfStream;
+            //  q is set below, from the feed's enthalpy (C169), and a declared
+            //  `quality` is cross-checked against THAT.
+            addFeed(st - 1, Ff, 1.0 - fst.vf, Tfe, zf, &fst);
+            feedRecords.back().name = sName;
             if (fe->found("quality"))
-            {
-                const scalar qDecl = fe->lookupScalar("quality");
-                if (std::abs(qDecl - qf) > 1.0e-3)
-                    throw std::runtime_error("DistillationColumn: feed '" + sName
-                        + "': operation.feeds.quality = " + std::to_string(qDecl)
-                        + " contradicts the feed STREAM (vapour fraction "
-                        + std::to_string(vfStream) + ", " + fst.origin
-                        + " => q = " + std::to_string(qf)
-                        + ").  A feed's thermal state lives in the stream, not the"
-                        " column -- delete the `quality` and set the stream's"
-                        " T and P (or its `phase gas|liquid;` pin) so the two"
-                        " can never disagree.");
-            }
-            addFeed(st - 1, Ff, qf, Tfe, zf, &fst);
-            if (first) { Tf = Tfe; NF = st; q = qf; z = zf; first = false; }
+                feedRecords.back().qDeclared = fe->lookupScalar("quality");
+            if (first) { Tf = Tfe; NF = st; z = zf; first = false; }
         }
     }
     else             // ---- legacy single feed{} block + feedStage ----------------
@@ -2078,11 +2271,11 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         //  is how one defect came to have two transcriptions.
         const FeedThermalState primaryFeedState =
             resolveFeedThermalState(feedDict, Tf, P, z, thermo, dict->name());
-        refuseContradictoryFeedQuality(operDict, feedDict, primaryFeedState,
-                                       Tf, dict->name());
-        q = 1.0 - primaryFeedState.vf;
-        addFeed(NF - 1, feedDict->lookupScalar("F", Dims::molarFlow), q, Tf, z,
-                &primaryFeedState);
+        //  Cross-checked below, against the q the column uses (C169).
+        addFeed(NF - 1, feedDict->lookupScalar("F", Dims::molarFlow),
+                1.0 - primaryFeedState.vf, Tf, z, &primaryFeedState);
+        feedRecords.back().name =
+            feedDict->lookupWordOrDefault("streamName", "the feed");
 
         // legacy INLINE extra feeds (a side channel -- NOT on the flowsheet graph,
         // so the plant-boundary balance misses them; prefer `inputs (...)` streams).
@@ -2132,6 +2325,45 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             else                                              Udraw[st - 1] += rate;
             ++nDraws;
         }
+
+    //  THE ONE ENTHALPY SURFACE of this column (C169): the CMO q below, the
+    //  full MESH's rows, its feeds, its energy scale and both duties read it.
+    std::vector<std::pair<scalar, sVector>> enteringStates;
+    for (const auto& r : feedRecords) enteringStates.emplace_back(r.T, r.z);
+    const ColumnEnthalpy hs = columnEnthalpySurface(thermo, P, enteringStates);
+
+    //  EVERY STREAM FEED'S CMO q FROM ITS ENTHALPY (C169 item 4), and every
+    //  declared quality cross-checked against the q the column USES -- the
+    //  rule of `cmoFeedQuality`, one home for both branches and Wang-Henke.
+    //  An inline `feeds` entry keeps its declared quality: it is a dict
+    //  declaration with no state to resolve.
+    feedLiq.assign(N, 0.0);
+    for (std::size_t k = 0; k < feedRecords.size(); ++k)
+    {
+        auto& r = feedRecords[k];
+        if (r.state)
+        {
+            const CmoFeedQuality fq =
+                cmoFeedQuality(*r.state, r.T, P, r.z, thermo, hs);
+            announceFeedQuality(dict->name(), r.name, *r.state, fq, r.T, verbosity);
+            if (!multiFeed && k == 0)
+                refuseContradictoryFeedQuality(operDict, feedDict, *r.state, fq,
+                                               r.T, dict->name());
+            if (r.qDeclared && std::abs(*r.qDeclared - fq.q) > 1.0e-3)
+                throw std::runtime_error("DistillationColumn: feed '" + r.name
+                    + "': operation.feeds.quality = " + std::to_string(*r.qDeclared)
+                    + " contradicts the feed STREAM (vapour fraction "
+                    + std::to_string(r.state->vf) + ", " + r.state->origin
+                    + " => q = " + std::to_string(fq.q) + ", "
+                    + feedQualityOrigin(*r.state, fq)
+                    + ").  A feed's thermal state lives in the stream, not the"
+                    " column -- delete the `quality` and set the stream's"
+                    " T and P (or its `phase gas|liquid;` pin) so the two"
+                    " can never disagree.");
+            r.q = fq.q;
+        }
+        feedLiq[r.j] += r.q * r.F;
+    }
 
     // resolve merged feed composition / quality per stage
     std::vector<scalar>  qfeed(N, 1.0), feedT(N, Tf);
@@ -2705,11 +2937,6 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     sVector T(N);
     for (std::size_t j = 0; j < N; ++j) unpack(res.x, j, x[j], T[j]);
 
-    //  THE ONE ENTHALPY SURFACE of this column (C169): the full MESH's rows,
-    //  its feeds, its energy scale and both duties below read it.
-    std::vector<std::pair<scalar, sVector>> enteringStates;
-    for (const auto& r : feedRecords) enteringStates.emplace_back(r.T, r.z);
-    const ColumnEnthalpy hs = columnEnthalpySurface(thermo, P, enteringStates);
 
     // ===== FULL-MESH refinement (Naphtali-Sandholm) =========================
     // `model fullMESH`: promote V_j, L_j to UNKNOWNS and add the per-stage TOTAL-

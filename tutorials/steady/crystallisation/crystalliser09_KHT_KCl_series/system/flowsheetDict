@@ -89,7 +89,9 @@ units
             feedStage        10;
             refluxRatio      2.0;
             distillateRate   85.0 kmol/h;        // ~ the ethanol fed (79.6) + azeotropic water
-            feedQuality      1.0;                // treat the 5 C liquor as saturated liquid
+            //  No `feedQuality` (C169): the 5 C liquor is SUBCOOLED, and the
+            //  column reads its thermal state off the stream -- once "treated
+            //  as saturated liquid" here, which a CMO q of 1 at 278 K is not.
             P                1.01325 bar;
         }
 

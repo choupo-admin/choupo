@@ -34,8 +34,8 @@ units
 
             feeds                          // map each input stream to a stage
             (
-                { stream feed;     stage 20;  quality 1.0; }
-                { stream acidFeed; stage 10;  quality 1.0; }
+                { stream feed;     stage 20; }
+                { stream acidFeed; stage 10; }
             );
         }
 

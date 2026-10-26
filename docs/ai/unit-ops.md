@@ -778,15 +778,25 @@ KPIs: `W_in`, `W_electric` (= η·W_in).  See [`energy.md`](energy.md).
 Rigorous multistage MESH column (Mass / Equilibrium / Summation / entHalpy)
 with three selectable `model`s.  `WangHenke` and `simultaneous` solve the
 *same* constant-molal-overflow (CMO) stage equations -- the flows `L`, `V` fixed
-section by section from `q = 1 - vf` of each feed, no stage energy balance --
+section by section from each feed's quality `q`, no stage energy balance --
 and differ only in the numerical strategy; `fullMESH` adds the energy
 balance.  (Wang & Henke's 1966 method updates `V_j` from the energy balance
 each pass; the `WangHenke` model here keeps the bubble-point loop and drops
-that step.)  Under CMO a subcooled liquid feed counts as saturated (`q = 1`)
-and a superheated vapour as saturated vapour (`q = 0`): the sensible heat
-reaches the reboiler duty (the plug that closes the column) but not the
-internal flows or the profile -- use
-`fullMESH` when that matters.
+that step.)  A single-phase feed's `q` is its ENTHALPIC quality,
+`q = (H_V,sat - H_F)/(H_V,sat - H_L,sat)` on the column's enthalpy surface
+(the saturated liquid at the feed's bubble point, the saturated vapour at
+its dew point): `q > 1` for a subcooled liquid, which condenses vapour on
+the feed stage, `q < 0` for a superheated vapour (since 2026-10-26, C169;
+until then `q = 1 - vf`, so a subcooled feed counted as saturated and its
+sensible heat reached only the reboiler plug).  It is announced whenever it
+differs from `1 - vf`.  A two-phase feed keeps `q = 1 - vf`, its resolved
+liquid fraction.  A package that resolves reactive equilibrium keeps
+`1 - vf` too, announced: its bubble and dew points are the reactive
+flash's.  A declared `feedQuality` / `feeds.quality` is a cross-check
+against the `q` the column uses and refuses when it disagrees.  Every
+enthalpy the column computes with -- duties, and the full MESH's stage
+rows -- is the one its streams are priced on (C169), and every stage's K
+is the package's at the vapour that stage sends up.
 
 - `WangHenke`     (**default**; sequential bubble-point).  Each outer pass
   solves the component balances by a tridiagonal (Thomas) sweep at frozen

@@ -33,8 +33,8 @@ units
 
             feeds
             (
-                { stream feed;  stage 5;   quality 1.0; }
-                { stream feed2; stage 11;  quality 1.0; }
+                { stream feed;  stage 5;  }
+                { stream feed2; stage 11; }
             );
 
             sideDraws

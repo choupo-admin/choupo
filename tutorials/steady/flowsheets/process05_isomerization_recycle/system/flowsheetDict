@@ -95,7 +95,8 @@ units
             feedStage      6;
             refluxRatio    2.0;
             distillateRate 0.31 kmol/h;    // ~ the per-pass unconverted neoP
-            feedQuality    1.0;            // saturated-vapour feed
+            // feedQuality deleted (C169): the CMO q is the stream's, from its
+            // enthalpy -- a declared 1.0 contradicted this subcooled feed.
             P              5.0 bar;
         }
 

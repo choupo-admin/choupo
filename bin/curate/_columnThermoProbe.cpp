@@ -39,6 +39,9 @@ Description
         HV T P z...       H_stream_formation(T, P, 1, z)   [J/mol]  a vapour
         K  T P x... y...  Kvec(T, P, x, y)                 the K-values at
                                                              the PUBLISHED y
+        SAT T P z...      bubble and dew temperatures of z at P, from the
+                          package-level routines BubblePoint::compute and
+                          DewPoint::compute (not the column's own helper)
 
     These are the functions the energy report prices a stream with and the
     package's equilibrium at its own vapour composition.  The probe never
@@ -75,6 +78,8 @@ Description
 #include "thermo/transport/ThermalConductivityModel.H"
 #include "thermo/transport/TransportModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
+#include "unitOperations/saturation/BubblePoint.H"
+#include "unitOperations/saturation/DewPoint.H"
 
 #include <cstdio>
 #include <cstdlib>
@@ -181,6 +186,16 @@ int main(int argc, char** argv)
                     out << "OK";
                     for (auto k : K) out << " " << k;
                     out << "\n";
+                }
+                else if (op == "SAT")
+                {
+                    const sVector z(v.begin(), v.begin() + n);
+                    const auto b = BubblePoint::compute(thermo, z, P, T);
+                    const auto d = DewPoint::compute(thermo, z, P, T);
+                    if (!b.converged || !d.converged)
+                        throw std::runtime_error("a saturation point did not"
+                                                 " converge");
+                    out << "OK " << b.T << " " << d.T << "\n";
                 }
                 else
                     out << "ERR unknown request '" << op << "'\n";

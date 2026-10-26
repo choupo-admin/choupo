@@ -68,6 +68,14 @@ typed: every flowsheetDict under tutorials/ that declares a
       by name, naming the word and the supported reactive model
       (`simultaneous`), and costs no solve: column05 copied three times.
 
+  (d) THE CMO q OF A SUBCOOLED FEED IS ITS ENTHALPIC q (C169 item 4, C131
+      W4): column01 under Wang-Henke with its feed moved to 300 K.  The q
+      the column USED is read off its published traffic,
+      q = 1 + (V_strip - V_rect) / F, and held to
+      (H_V,sat - H_F) / (H_V,sat - H_L,sat) formed here from the probe's
+      enthalpies at the package-level bubble and dew points (to 1e-6, and
+      q > 1.05: under q = 1 - vf it was exactly 1).
+
 TOLERANCES, sized to what a converged answer and a 12-significant-figure
 result JSON can carry, and far from what a defect produces:
   energy:   |r| <= 1e-5 kW + 1e-9 * sum|terms| (the terms are formation
@@ -534,6 +542,54 @@ def probe_srk_copy(tmp):
     return dst
 
 
+def probe_enthalpic_q(tmp):
+    """(d) the CMO q of a subcooled feed is its enthalpic q.
+
+    column01 (Wang-Henke) with its feed moved from 370 K (two-phase) to
+    300 K, a liquid 65 K below its bubble point.  The column publishes its
+    CMO traffic, so the q it USED is q = 1 + (V_strip - V_rect) / F; the
+    gate forms q = (H_V,sat - H_F) / (H_V,sat - H_L,sat) itself from the
+    probe's enthalpies at the package-level bubble and dew points."""
+    src = ROOT / "tutorials" / "steady" / "distillation" / "column01_benzene_toluene"
+    dst = Path(tmp) / "column01_subcooled_probe"
+    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+        "converged", "reports", "iterations", "design", "economics"))
+    f = dst / "0" / "feed"
+    s = f.read_text()
+    s2 = re.sub(r"\nT\s+370 K;", "\nT               300 K;", s)
+    if s2 == s:
+        return [("d", False, "column01's feed is no longer declared at 370 K"
+                 " -- the probe has nothing to move")]
+    f.write_text(s2)
+    rc, d, log = run_case(dst)
+    if rc != 0 or d is None:
+        return [("d", False, "column01 with a 300 K feed did not run (exit %d)"
+                 % rc)]
+    k = d["kpis"]["column01"]
+    feed = d["streams"]["feed"]
+    comps = d["components"]
+    z = [feed["composition"].get(c, 0.0) for c in comps]
+    T, P, F = feed["T"], feed["P"], feed["F"]
+    q_used = 1.0 + (k["V_strip"] - k["V_rect"]) / F
+    pr = Probe(dst, comps)
+    i_sat = pr.add("SAT", T + 60.0, P, z)
+    res = pr.run()
+    if isinstance(res[i_sat], str):
+        return [("d", False, "the probe refused the saturation points: "
+                 + res[i_sat][:200])]
+    Tb, Td = res[i_sat]
+    pr = Probe(dst, comps)
+    iF = pr.add("HL", T, P, z)
+    iL = pr.add("HL", Tb, P, z)
+    iV = pr.add("HV", Td, P, z)
+    r = pr.run()
+    q_gate = (r[iV] - r[iF]) / (r[iV] - r[iL])
+    ok = abs(q_used - q_gate) <= 1.0e-6 and q_gate > 1.05
+    return [("d", ok, "column01 fed at %.2f K (bubble %.2f K, dew %.2f K):"
+             " the CMO q the column used %.6f, the enthalpic q %.6f (1 - vf"
+             " would be 1)" % (T, Tb, Td, q_used, q_gate))]
+
+
 def probe_reactive_refusals(tmp):
     src = ROOT / "tutorials" / "steady" / "distillation" / \
         "column05_reactive_methylacetate"
@@ -606,6 +662,7 @@ def main(argv):
             results = list(ex.map(lambda a: check_case(*a), jobs))
         if not [a for a in argv if not a.startswith("-")]:
             results.append(("PROBE column05 reactive", probe_reactive_refusals(tmp)))
+            results.append(("PROBE column01 subcooled", probe_enthalpic_q(tmp)))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -625,10 +682,11 @@ def main(argv):
     if fails:
         print(LABEL + ": FAILED -- %d finding(s) [%s]" % (len(fails), summary))
         return 1
-    nprobes = 0 if [a for a in argv if not a.startswith("-")] else 2
+    nprobes = 0 if [a for a in argv if not a.startswith("-")] else 3
     print(LABEL + ": OK -- %d case(s) + %d probe(s); every column's condenser,"
-          " every full-MESH stage and reboiler on the streams' surface, and"
-          " fugacity equality at the published y [%s]; NOT checked: feed"
+          " every full-MESH stage and reboiler on the streams' surface,"
+          " fugacity equality at the published y, the reactive full-MESH"
+          " refusal and the enthalpic CMO q [%s]; NOT checked: feed"
           " stages, Kremser units, shortcutColumn" % (len(cases), nprobes,
                                                        summary))
     return 0

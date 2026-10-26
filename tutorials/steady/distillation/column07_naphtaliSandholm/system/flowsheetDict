@@ -28,7 +28,8 @@ units
             feedStage      10;
             refluxRatio    3.3223;
             distillateRate 300.0 kmol/h;   // D + condenser sidestream (combined)
-            feedQuality    1.0;            // liquid feed
+            // feedQuality deleted (C169): the CMO q is the stream's, from its
+            // enthalpy -- a declared 1.0 contradicted this subcooled feed.
             P              1.01325 bar;
         }
     }
