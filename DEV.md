@@ -1528,6 +1528,27 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C174. NO CLOSURE BY CONSTRUCTION COUNTS AS EVIDENCE (Vitor,
+> 2026-10-26: "Aquilo do balanco de energia bater certo porque fazias
+> calculos intermedios com base nisso foi muito mau!!!" -- then "Avanca!").**
+> The CMO column computed its reboiler as Q_reb = dH - Q_cond, a PLUG, so
+> its first law closed BY CONSTRUCTION and check_energy_closure read green
+> while the condenser was wrong on all 34 columns (C169).  A balance used to
+> COMPUTE a variable cannot then be the proof that the variable is right.
+> Scope: (1) enumerate every CLOSURE VARIABLE in the engine -- a duty, a
+> flow, a temperature or a stream computed FROM the balance that a gate or
+> a report then checks (reboilers, condensers, adiabatic temperatures,
+> purges and streams by difference, plug duties in any unit); (2) classify
+> each unit/variable: closure verified independently / closure by
+> construction, NOT verified / no closure; (3) check_energy_closure, the
+> mass and element balance reports and the GUI's balance surfaces stop
+> counting a closure-by-construction as CLOSED -- it is reported "not
+> verified", aloud, until an independent check exists (the column's
+> stage-by-stage and reboiler arms, C169, are the model); (4) for each
+> important closure variable, a check by ANOTHER route.  Status: a general
+> enumerates and builds (2)-(3) behind a gate that fails first; (4) per
+> variable, the list shown before any golden moves.
+
 > **C173. AN EXTERNAL AUDIT OF THE GIBBS AND PHASE ROUTES (Vitor,
 > 2026-10-26, forwarding a review by another model: "Auditoria CHOUPO Gibbs
 > Fases").**  Its four claims, as summarised (the full report with
