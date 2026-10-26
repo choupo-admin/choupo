@@ -38,6 +38,7 @@ License
 #include <cmath>
 #include <iostream>
 #include "thermo/activityCoefficient/ActivityModel.H"
+#include "thermo/equationOfState/EquationOfState.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
 namespace Choupo {
@@ -136,6 +137,33 @@ GibbsEquilibrium DirectMin::equilibrium(const GibbsProblem& p, scalar T,
     //  answered is counted and the run says so once below.
     const scalar PENALTY = 1.0e30;
     long nPenalised = 0;
+
+    //  THE VAPOUR IS THE PACKAGE'S, NOT AN IDEAL GAS (2026-10-26, DEV.md 4c
+    //  C173).  The objective is the Gibbs energy of the state, so the vapour
+    //  term carries ln phi_i(T, P, y) from the declared EoS:
+    //      mu_i^V/RT = g_i/RT + ln y_i + ln(P/P0) + ln phi_i
+    //  -- the same chemical potential `gibbsGasSolve` folds in for the seed
+    //  and the element-potential route solves.  This line used to stop at
+    //  ln(P/P0), so an SRK package was minimised as an ideal gas: ammonia at
+    //  700 K and 200 bar came out at the IDEAL 30.01 % NH3 while the
+    //  fugacity condition, solved independently from the package's own
+    //  ln phi, gives 32.39 % (check_gibbs_real_gas arm (a)).  Since
+    //  sum_i n_i ln phi_i = N g_res/RT (Euler), this is the exact real-gas
+    //  G, not a correction to it.  An ideal-gas package evaluates no phi and
+    //  sums exactly what it summed before.
+    const bool realGas = thermo.hasEos() && !thermo.eos().isIdeal();
+    sVector yFull(realGas ? thermo.n() : 0, 0.0);
+    auto lnPhiVapour = [&](const sVector& nV, scalar NV) -> sVector {
+        sVector lp(N, 0.0);
+        if (!realGas) return lp;
+        std::fill(yFull.begin(), yFull.end(), 0.0);
+        for (std::size_t i = 0; i < N; ++i) yFull[p.compIdx[i]] = nV[i] / NV;
+        const sVector phi = thermo.eos().phi(T, p.P, yFull);
+        for (std::size_t i = 0; i < N; ++i)
+            lp[i] = std::log(std::max(phi[p.compIdx[i]], 1.0e-300));
+        return lp;
+    };
+
     auto Gobj = [&](const sVector& x) -> scalar {
         sVector nV, nL;
         if (!unpack(x, nV, nL)) { ++nPenalised; return PENALTY; }
@@ -145,13 +173,14 @@ GibbsEquilibrium DirectMin::equilibrium(const GibbsProblem& p, scalar T,
         sVector x_liq(N, 0.0);
         if (NL > 0.0) for (std::size_t i = 0; i < N; ++i) x_liq[i] = nL[i] / NL;
         sVector gam = (NL > 0.0) ? thermo.activity().gamma(T, x_liq) : sVector(N, 1.0);
+        const sVector lnPhiV = lnPhiVapour(nV, NV);
         scalar G = 0.0;
         for (std::size_t i = 0; i < N; ++i)
         {
             if (nV[i] > 0.0)
             {
                 const scalar y = nV[i] / NV;
-                G += nV[i] * (g_over_RT[i] + std::log(y) + ln_P);
+                G += nV[i] * (g_over_RT[i] + std::log(y) + ln_P + lnPhiV[i]);
             }
             if (nL[i] > 0.0)
             {

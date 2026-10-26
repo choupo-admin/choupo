@@ -930,39 +930,114 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         if (liqs.size() < 2)
             throw std::runtime_error("VLLE flash needs >= 2 liquid phases "
                 "in the thermoPackage (got " + std::to_string(liqs.size()) + ")");
-        (void)vaps[0];   // vapor phase index not currently needed (γ unused; we use Psat directly)
         const std::size_t pAlpha = liqs[0];
         const std::size_t pBeta  = liqs[1];
 
         // -----------------------------------------------------------------
-        //  VLLE via direct Gibbs minimisation on the (2n)-dimensional
-        //  composition simplex.  Free variables:
+        //  VLLE via direct Gibbs minimisation on the composition simplex of
+        //  the PRESENT components.  Free variables (nA = present count):
         //
-        //      v[0]               =  β_V       in (0, 1)
-        //      v[1]               =  β_α       in (0, 1-β_V)
-        //      v[2..n]            =  y[0..n-2]      (n-1 entries)
-        //      v[n+1..2n-1]       =  x_α[0..n-2]    (n-1 entries)
+        //      v[0]                 =  β_V       in (0, 1)
+        //      v[1]                 =  β_α       in (0, 1-β_V)
+        //      v[2..nA]             =  y[act 0..nA-2]      (nA-1 entries)
+        //      v[nA+1..2nA-1]       =  x_α[act 0..nA-2]    (nA-1 entries)
         //
         //  Derived:
         //      β_β  = 1 - β_V - β_α            (penalty if ≤ 0)
-        //      y[n-1], x_α[n-1] from Σ x = 1   (penalty if ≤ 0)
+        //      y[last], x_α[last] from Σ x = 1 (penalty if ≤ 0)
         //      x_β  from overall mass balance per component
         //
         //  Objective (per mole feed, ÷ RT, reference = pure liquid):
         //
-        //      G = β_V Σ y_i [ln y_i + ln(P / Psat_i(T))]
+        //      G = β_V Σ y_i [ln y_i + ln(P φ_i(y) / Psat_i(T))]
         //        + β_α Σ x_α_i [ln x_α_i + ln γ_α_i(x_α)]
         //        + β_β Σ x_β_i [ln x_β_i + ln γ_β_i(x_β)]
         //
         //  Same logic as the 2-phase LL branch, with one extra phase
-        //  contribution.  Ideal-gas vapour assumed (φ_i = 1); the
-        //  ln(P/Psat_i) term encodes the vapour-vs-liquid stability
-        //  via Antoine.
+        //  contribution.  The ln(P φ/Psat_i) term is the vapour's chemical
+        //  potential against the pure-liquid reference in the package's own
+        //  gamma-phi convention (K = γ Psat/(φ P), the convention Kvec uses).
+        //
+        //  TWO DEFECTS THIS BLOCK USED TO CARRY (2026-10-26, DEV.md 4c C173,
+        //  gate check_vlle_fallback arms (f)-(h)):
+        //   * THE VAPOUR WAS AN IDEAL GAS WHATEVER THE PACKAGE DECLARED --
+        //     the term stopped at ln(P/Psat_i), so `fugacityModel SRK;` gave
+        //     an answer identical to idealGas to every printed digit, while
+        //     the K the package itself prints for that answer was 1.6-3.4 %
+        //     away from y/x.  A declared model silently ignored.  The φ is
+        //     evaluated only where the package's vapour is not ideal, so an
+        //     ideal-gas package sums exactly what it summed before.
+        //   * AN ABSENT COMPONENT MADE THE SEARCH INFEASIBLE.  The simplex
+        //     required every component positive in every phase, so a feed
+        //     with z_i = 0 had no admissible point at all; every start
+        //     returned the penalty and the block reported "single liquid"
+        //     with converged = true.  The search now runs on the PRESENT
+        //     components (inactive ones stay 0 in every phase -- mass
+        //     conserved exactly; the LL branch's rule), and a minimisation
+        //     that finds nothing below the feed no longer CONCLUDES that the
+        //     feed is one liquid: that is decided by the two stability tests
+        //     (below the starts) and, failing them, the answer is NOT
+        //     converged.
         // -----------------------------------------------------------------
+
+        const bool realVapour = thermo.hasEos() && !thermo.eos().isIdeal();
+        if (realVapour && opts.verbosity >= 2)
+            std::cout << "  [flash] VLLE: the vapour term carries ln phi_i"
+                         " from the declared "
+                      << thermo.eos().modelName() << " (not an ideal gas)\n";
+
+        std::vector<std::size_t> act;
+        for (std::size_t i = 0; i < n; ++i)
+            if (in.z[i] > 1.0e-10) act.push_back(i);
+        const std::size_t nA = act.size();
+
+        //  ln(P/Psat_i), formed exactly as before (one log of the ratio), so
+        //  an ideal-gas package's objective is the same number, bit for bit.
+        sVector lnPoverPsat(n, 0.0);
+        for (std::size_t i : act)
+            lnPoverPsat[i] = std::log(in.P
+                / std::max<scalar>(thermo.Psat(i, in.T), 1.0e-30));
+        auto lnPhiVap = [&](const sVector& y) -> sVector {
+            sVector lp(n, 0.0);
+            if (!realVapour) return lp;
+            const sVector phi = thermo.eos().phi(in.T, in.P, y);
+            for (std::size_t i : act)
+                lp[i] = std::log(std::max<scalar>(phi[i], 1.0e-300));
+            return lp;
+        };
+
+        //  ONE present component cannot split into two liquids; it is a pure
+        //  fluid, liquid or vapour by the sign of ln(P φ/Psat) (the vapour's
+        //  chemical potential against the pure-liquid reference).  Decided,
+        //  not searched -- the simplex has no interior here.
+        if (nA < 2)
+        {
+            sVector y1(n, 0.0);
+            if (nA == 1) y1[act[0]] = 1.0;
+            const scalar gV = (nA == 1)
+                ? lnPoverPsat[act[0]] + lnPhiVap(y1)[act[0]] : 0.0;
+            sol.converged = true;
+            sol.x = in.z;
+            sol.K.assign(n, 1.0);
+            if (nA == 1 && gV < 0.0)
+            {
+                sol.regime   = "single vapour (one component present, P phi < Psat)";
+                sol.V_over_F = 1.0;
+                sol.y        = in.z;
+                sol.x.assign(n, 0.0);
+            }
+            else
+            {
+                sol.regime   = "single liquid (one component present, P phi >= Psat)";
+                sol.V_over_F = 0.0;
+                sol.y.assign(n, 0.0);
+            }
+            return sol;
+        }
 
         const scalar INFEAS    = 1.0e8;
         const scalar EPS_VLLE  = 1.0e-9;
-        const std::size_t nVars = 2 * n;          // (β_V, β_α, y[0..n-2], x_α[0..n-2])
+        const std::size_t nVars = 2 * nA;         // (β_V, β_α, y[..], x_α[..])
 
         auto unpackVLLE = [&](const sVector& v,
                               scalar& bV, scalar& bA, scalar& bB,
@@ -977,20 +1052,22 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             y.assign(n, 0.0);
             xA.assign(n, 0.0);
             scalar sumY = 0.0, sumA = 0.0;
-            for (std::size_t i = 0; i < n - 1; ++i)
+            for (std::size_t a = 0; a < nA - 1; ++a)
             {
-                y [i] = v[2 + i];
-                xA[i] = v[2 + (n - 1) + i];
+                const std::size_t i = act[a];
+                y [i] = v[2 + a];
+                xA[i] = v[2 + (nA - 1) + a];
                 if (y[i] < EPS_VLLE || xA[i] < EPS_VLLE) return false;
                 sumY += y [i];
                 sumA += xA[i];
             }
-            y [n - 1] = 1.0 - sumY;
-            xA[n - 1] = 1.0 - sumA;
-            if (y[n - 1] < EPS_VLLE || xA[n - 1] < EPS_VLLE) return false;
+            const std::size_t last = act[nA - 1];
+            y [last] = 1.0 - sumY;
+            xA[last] = 1.0 - sumA;
+            if (y[last] < EPS_VLLE || xA[last] < EPS_VLLE) return false;
 
             xB.assign(n, 0.0);
-            for (std::size_t i = 0; i < n; ++i)
+            for (std::size_t i : act)
             {
                 xB[i] = (in.z[i] - bV * y[i] - bA * xA[i]) / bB;
                 if (xB[i] < EPS_VLLE) return false;
@@ -1010,13 +1087,12 @@ IsothermalFlash::solveCore(const FlashInput&    in,
 
             const auto gA = thermo.phase(pAlpha).activityCoefficients(in.T, xA);
             const auto gB = thermo.phase(pBeta ).activityCoefficients(in.T, xB);
+            const sVector lnPhi = lnPhiVap(y);
 
             scalar G = 0.0;
-            for (std::size_t i = 0; i < n; ++i)
+            for (std::size_t i : act)
             {
-                const scalar Psat =
-                    std::max<scalar>(thermo.Psat(i, in.T), 1.0e-30);
-                const scalar lnY = std::log(y [i]) + std::log(in.P / Psat);
+                const scalar lnY = std::log(y [i]) + lnPoverPsat[i] + lnPhi[i];
                 const scalar lnA = std::log(xA[i]) + std::log(std::max<scalar>(gA[i], 1.0e-30));
                 const scalar lnB = std::log(xB[i]) + std::log(std::max<scalar>(gB[i], 1.0e-30));
                 G += bV * y [i] * lnY
@@ -1031,14 +1107,14 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         {
             auto gZ = thermo.phase(pAlpha).activityCoefficients(in.T, in.z);
             gFeed = 0.0;
-            for (std::size_t i = 0; i < n; ++i)
+            for (std::size_t i : act)
                 gFeed += in.z[i] * (std::log(std::max<scalar>(in.z[i], 1.0e-30))
                                   + std::log(std::max<scalar>(gZ[i], 1.0e-30)));
         }
 
         // -----------------------------------------------------------------
-        //  Multi-start.  Five canonical configurations bracketing the
-        //  region where 3-phase coexistence can occur.
+        //  Multi-start.  Canonical configurations bracketing the region
+        //  where 3-phase coexistence can occur.
         // -----------------------------------------------------------------
         const std::size_t iA =
             (opts.llAlphaRichComp == static_cast<std::size_t>(-1))
@@ -1063,17 +1139,24 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             sVector s(nVars, 0.0);
             s[0] = bV;
             s[1] = bA;
-            for (std::size_t i = 0; i < n - 1; ++i)
+            for (std::size_t a = 0; a < nA - 1; ++a)
             {
-                s[2 + i]           = yFull[i];
-                s[2 + (n - 1) + i] = xAFull[i];
+                s[2 + a]            = yFull [act[a]];
+                s[2 + (nA - 1) + a] = xAFull[act[a]];
             }
             return s;
         };
 
+        //  A composition rich in `richIdx`, over the PRESENT components only
+        //  (an absent one stays exactly zero).  When every component is
+        //  present this is the pre-C173 vector, entry for entry.
         auto compRich = [&](scalar bias, std::size_t richIdx) {
-            sVector c(n, (1.0 - bias) / static_cast<scalar>(std::max<std::size_t>(n - 1, 1)));
-            c[richIdx] = bias;
+            sVector c(n, 0.0);
+            const bool richPresent = in.z[richIdx] > 1.0e-10;
+            const std::size_t others = richPresent ? nA - 1 : nA;
+            for (std::size_t i : act)
+                c[i] = (1.0 - bias) / static_cast<scalar>(std::max<std::size_t>(others, 1));
+            if (richPresent) c[richIdx] = bias;
             return c;
         };
 
@@ -1082,9 +1165,9 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                                     const sVector& xA, const sVector& xB) {
             const scalar bB = 1.0 - bV - bA;
             if (bV < 0.02 || bA < 0.02 || bB < 0.02) return;
-            sVector y(n);
+            sVector y(n, 0.0);
             scalar sumY = 0.0;
-            for (std::size_t i = 0; i < n; ++i)
+            for (std::size_t i : act)
             {
                 y[i] = (in.z[i] - bA * xA[i] - bB * xB[i]) / bV;
                 if (y[i] < 1.0e-4 || y[i] > 1.0 - 1.0e-4) return;
@@ -1108,9 +1191,6 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                                  compRich(0.99, iA), compRich(0.99, iB));
             }
         }
-        // Also seed the *binary* heteroazeotrope pattern (compositions
-        // mostly along the iA-iB axis, third component small), which
-        // covers binary cases as well.
         if (starts.empty())
         {
             // Last-ditch fallback: rich-iA in one liquid, rich-iB in the
@@ -1160,14 +1240,144 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                       << "  ΔG = G_split - G_z: " << (bestG - gFeed) << "\n\n";
         }
 
+        bool   tpdUnstable = false, vapourForms = false;
+        scalar tmMinFeed = 0.0, sumK = 0.0;
         if (!(bestG < gFeed - 1.0e-10))
         {
-            sol.regime    = "single liquid (Gibbs min finds no 3-phase improvement over feed)";
+            //  NOTHING BELOW THE FEED WAS FOUND -- WHICH IS NOT A PROOF THAT
+            //  THE FEED IS ONE LIQUID (C173).  Two tests decide it, each a
+            //  proof when it fires: Michelsen's TPD on the liquid (tm < 0 =>
+            //  a second liquid lowers G) and the incipient-vapour test
+            //  sum_i z_i γ_i Psat_i/(φ_i P) > 1 (the feed is above its bubble
+            //  point => a vapour lowers G; φ at the incipient vapour).  Only
+            //  when both are silent is "single liquid" the answer.  When
+            //  either fires, the minimisation has FAILED to find a state that
+            //  exists, and the answer is NOT converged -- the LL branch's
+            //  posture since C123.
+            const auto stab = solver::michelsenTPD(thermo.phase(pAlpha),
+                                                   in.T, in.P, in.z);
+            const auto gZ = thermo.phase(pAlpha).activityCoefficients(in.T, in.z);
+            sVector yInc(n, 0.0);
+            scalar sIdeal = 0.0;
+            for (std::size_t i : act)
+            {
+                yInc[i] = in.z[i] * gZ[i] * std::exp(-lnPoverPsat[i]);
+                sIdeal += yInc[i];
+            }
+            for (std::size_t i : act) yInc[i] /= sIdeal;
+            const sVector lpInc = lnPhiVap(yInc);
+            for (std::size_t i : act)
+                sumK += in.z[i] * gZ[i] * std::exp(-lnPoverPsat[i] - lpInc[i]);
+            vapourForms = sumK > 1.0 + 1.0e-8;
+            tpdUnstable = stab.unstable;
+            tmMinFeed   = stab.tmMin;
+            if (!tpdUnstable && !vapourForms)
+            {
+                sol.regime    = "single liquid (stable: the TPD finds no second"
+                                " liquid and the feed is below its bubble point)";
+                sol.V_over_F  = 0.0;
+                sol.x         = in.z;
+                sol.y.assign(n, 0.0);
+                sol.K.assign(n, 1.0);
+                sol.converged = true;
+                return sol;
+            }
+            //  ONE TEST FIRED: THE NARROWER QUESTION IS ASKED, AND ITS ANSWER
+            //  IS HELD TO THE OTHER TEST.  The three-phase simplex keeps every
+            //  composition above 1e-9 and its canonical starts above 1e-4, so a
+            //  feed carrying a trace component can have no admissible point
+            //  near its answer.  When only the TPD fires, the LL branch -- the
+            //  stability test, its incipient-phase route with no box, and the
+            //  equal-activity Newton -- solves the split, and the answer
+            //  stands only if no vapour is favourable over it.  When only the
+            //  vapour test fires, the VL branch solves the flash, and the
+            //  answer stands only if its liquid is TPD-stable.  Gibbs decided
+            //  that neither one liquid nor the searched three phases is the
+            //  answer; the narrower solve is ANNOUNCED, never silent.  When
+            //  BOTH fire, nothing narrower can be the answer, and the block
+            //  below refuses.
+            if (tpdUnstable != vapourForms)
+            {
+                FlashOptions sub = opts;
+                sub.phaseSet  = tpdUnstable ? PhaseSet::LL : PhaseSet::VL;
+                sub.verbosity = 0;
+                FlashSolution s2 = solveCore(in, thermo, sub);
+                bool holds = s2.converged;
+                if (holds && tpdUnstable)
+                {
+                    //  a vapour over the split?  At equal activities the test
+                    //  reads the same against either liquid; alpha is used.
+                    holds = s2.liquidLiquid;
+                    if (holds)
+                    {
+                        const auto gX = thermo.phase(pAlpha).activityCoefficients(in.T, s2.x);
+                        sVector yI(n, 0.0);
+                        scalar sI = 0.0;
+                        for (std::size_t i : act)
+                        { yI[i] = s2.x[i] * gX[i] * std::exp(-lnPoverPsat[i]); sI += yI[i]; }
+                        for (std::size_t i : act) yI[i] /= sI;
+                        const sVector lpI = lnPhiVap(yI);
+                        scalar sK = 0.0;
+                        for (std::size_t i : act)
+                            sK += s2.x[i] * gX[i] * std::exp(-lnPoverPsat[i] - lpI[i]);
+                        holds = !(sK > 1.0 + 1.0e-8);
+                    }
+                }
+                else if (holds)
+                {
+                    //  a second liquid under the vapour?  (A V/F of 1 has no
+                    //  liquid to test.)
+                    holds = !(s2.V_over_F < 1.0 - 1.0e-12)
+                         || !solver::michelsenTPD(thermo.phase(pAlpha),
+                                                  in.T, in.P, s2.x).unstable;
+                }
+                if (holds)
+                {
+                    const std::string what = tpdUnstable
+                        ? "a liquid-liquid split (the LL branch; no vapour is"
+                          " favourable over it)"
+                        : "a vapour-liquid flash (the VL branch; its liquid is"
+                          " TPD-stable)";
+                    if (opts.verbosity >= 1)
+                        std::cerr << "[flash] VLLE: the three-phase search found"
+                                     " nothing below the feed and the feed is not"
+                                     " one stable liquid; the answer is " << what
+                                  << " (announced).\n";
+                    AdvisoryLog::instance().add("solver", "info",
+                        "isothermalFlash VLLE",
+                        "the three-phase search found no state below the feed,"
+                        " which is not one stable liquid; the answer is " + what
+                        + ".");
+                    s2.regime = s2.regime + " -- VLLE: the three-phase search"
+                                " found nothing; the stability tests chose this"
+                                " narrower solve (announced)";
+                    return s2;
+                }
+            }
+        }
+        if (!(bestG < gFeed - 1.0e-10))
+        {
+            std::ostringstream m;
+            m << "VLLE flash: the Gibbs minimisation found no state below the"
+                 " feed's single-liquid Gibbs energy, yet the feed is NOT stable"
+                 " as one liquid (";
+            if (tpdUnstable)
+                m << "TPD tm = " << std::scientific << std::setprecision(3)
+                  << tmMinFeed << ": a second liquid lowers G";
+            if (tpdUnstable && vapourForms) m << "; ";
+            if (vapourForms)
+                m << "sum z gamma Psat/(phi P) = " << std::setprecision(6)
+                  << std::defaultfloat << sumK << " > 1: a vapour lowers G";
+            m << ") -- the search did not find the state that exists, so no"
+                 " answer is published as one.  phaseSet LL (no vapour) or VL"
+                 " (one liquid) asks a narrower question this feed may answer";
+            sol.regime    = m.str();
             sol.V_over_F  = 0.0;
             sol.x         = in.z;
             sol.y.assign(n, 0.0);
             sol.K.assign(n, 1.0);
-            sol.converged = true;
+            sol.converged = false;
+            if (opts.verbosity >= 1) std::cerr << "WARNING: " << m.str() << ".\n";
             return sol;
         }
 

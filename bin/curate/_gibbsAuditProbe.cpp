@@ -35,6 +35,8 @@ Description
 
         NAMES                         the package's component order
         LNPHI V|L T P y...            ln phi_i on the vapour / liquid root
+        K T P x... y...               the package's own VL K-values,
+                                      Kvec(T, P, x, y)
         GRES T P y...                 g_res/RT = H_res/RT - S_res/R on the
                                       vapour root -- the function whose
                                       mole-number derivative IS ln phi_i
@@ -173,6 +175,18 @@ int main(int argc, char** argv)
                         : thermo.eos().phi(T, P, y);
                     out << "OK";
                     for (auto v : phi) out << " " << std::log(v);
+                    out << "\n";
+                }
+                else if (op == "K")
+                {
+                    scalar T = 0.0, P = 0.0;
+                    ls >> T >> P;
+                    sVector x(n, 0.0), y(n, 0.0);
+                    for (auto& v : x) ls >> v;
+                    for (auto& v : y) ls >> v;
+                    const sVector K = thermo.Kvec(T, P, x, y);
+                    out << "OK";
+                    for (auto v : K) out << " " << v;
                     out << "\n";
                 }
                 else if (op == "GRES")
