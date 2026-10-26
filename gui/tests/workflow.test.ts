@@ -1,8 +1,7 @@
 /*---------------------------------------------------------------------------*\
   THE WORKFLOW (DEV.md 4c C172 slice 3; docs/design/one-app-two-homes.md
   item 3): a properties case's home -- the outline of its studies and their
-  numbered steps, the inspector of a step, the calculation map behind
-  View > Calculation map -- and the ONE home of what a step reads and writes,
+  numbered steps, the card of a step -- and the ONE home of what a step reads and writes,
   the engine's file-traffic table (gui/schemas/propsFileTraffic.json,
   generated from `choupoProps --file-traffic`; bin/curate/check_props_order.py
   arm (c) holds it to the engine).
@@ -16,7 +15,9 @@
         engine's table, defaults included, with the process run named where
         the step declares it (ctrl17); the schemas keep no copy of the writes;
     (3) the fingerprints a written record states are read off its text;
-    (4) the map is closed by default and View > Calculation map is its door.
+    (4) the calculation map is retired: the Workflow DIAGRAM replaced it as
+        the home (slice 3b, tests/workflowDiagram.test.ts), and the View menu
+        that held it is gone.
 \*---------------------------------------------------------------------------*/
 
 import { readFileSync, readdirSync } from "node:fs";
@@ -138,18 +139,12 @@ describe("(3) the fingerprints a written record states", () => {
   });
 });
 
-describe("(4) the calculation map is behind View > Calculation map, closed by default", () => {
-  it("the store opens on the steps, never on the map", () => {
-    expect(useStore.getState().propsMapOpen).toBe(false);
-    useStore.getState().setPropsMapOpen(true);
-    expect(useStore.getState().propsMapOpen).toBe(true);
-    useStore.getState().setPropsMapOpen(false);
-  });
-
-  it("the View menu is its door, offered only while the Workflow is on screen", () => {
-    const src = readFileSync(join(REPO, "gui/src/ui/MenuBar.tsx"), "utf8");
-    expect(src).toMatch(/workflowOnScreen && !shape\.collapsed && \(\s*<TopMenu label="View"/);
-    expect(src).toMatch(/Calculation map\s*<\/Menu\.Item>/);
-    expect(src).toContain("setPropsMapOpen(!propsMapOpen)");
+describe("(4) the calculation map is RETIRED: the Workflow diagram is the home, and there is no View menu", () => {
+  it("the store keeps no map fold, and the menu has no View entry (C172 slice 3b)", () => {
+    expect("propsMapOpen" in useStore.getState()).toBe(false);
+    const src = readFileSync(join(REPO, "gui/src/ui/MenuBar.tsx"), "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
+    expect(src).not.toMatch(/<TopMenu label="View"/);
+    expect(src).not.toMatch(/Calculation map/);
   });
 });

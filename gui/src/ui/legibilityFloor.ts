@@ -77,6 +77,11 @@ export function useLegibilityFloor(rootRef: React.RefObject<HTMLElement | null>)
     root.style.setProperty("--choupo-lg-min", `${MIN_TEXT_PX}px`);
     const states: Legibility[] = [];
     for (const el of textElements(vp)) {
+      //  A node that sizes its OWN text to the zoom (a workflow step's
+      //  compact face, ui/WorkflowDiagram.tsx) is held to the minimum by
+      //  itself: its declared size changes with the zoom, so a cached base
+      //  would be wrong, and growing it again would double the growth.
+      if (el.closest("[data-legible-self]")) continue;
       let px = base.current.get(el);
       if (px === undefined) {
         //  the DECLARED size: read with no grow applied

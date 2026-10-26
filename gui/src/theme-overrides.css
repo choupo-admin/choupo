@@ -95,6 +95,11 @@ License
   line-height: 1.15 !important;
   white-space: nowrap;
 }
+/* A name that may take a second line rather than be cut short (a workflow
+   terminal, DEV.md 4c C172 slice 3b) keeps wrapping when it is grown. */
+[data-lg="grow"][data-lg-wrap] {
+  white-space: normal;
+}
 
 /* Text for a screen reader only (a landmark's heading). */
 .choupo-sr-only {

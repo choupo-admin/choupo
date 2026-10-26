@@ -520,7 +520,7 @@ export function usePropsPanels(result: RunResult | undefined, showLab = true) {
   const datasets = useMemo(() => result?.experimentalDatasets ?? [], [result]);
   const ran = result?.status === "done";
   const ledgerRows = ran ? buildLedger(ops, pairs, datasets) : [];
-  const ledger = propsDict && ran ? <DecisionLedger ops={ops} pairs={pairs} datasets={datasets} /> : null;
+  const ledger = propsDict && ran && ledgerRows.length > 0 ? <DecisionLedger ops={ops} pairs={pairs} datasets={datasets} /> : null;
   return { opPanel: (op: string) => opPanels.get(op), comparisons, ledger, ledgerRows };
 }
 

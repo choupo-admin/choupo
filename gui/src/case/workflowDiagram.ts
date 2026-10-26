@@ -186,6 +186,11 @@ export interface DiagramEdge {
   wire: WireKind;
   /** what it carries, in a word or a file name */
   label: string;
+  /** its orthogonal route, in the gaps (drawing units), source to target;
+   *  absent: the canvas's own step path (an arrow between two studies) */
+  route?: { x: number; y: number }[];
+  /** where its word sits on the route */
+  labelAt?: { x: number; y: number };
 }
 
 export interface WorkflowDiagram {
@@ -206,17 +211,19 @@ export interface DiagramInput {
 
 /* ---- sizes (drawing units = CSS px at zoom 1) ----------------------------- */
 
-export const STEP_W = 270;
+export const STEP_W = 250;
 /** the number + name line (15 px bold) */
 export const STEP_HEAD_H = 28;
 /** one written line (13 px) */
 export const STEP_LINE_H = 18;
 export const STEP_PAD_Y = 10;
-export const TERM_W = 220;
-export const TERM_H = 48;
+/** a terminal: its name may take two lines (a name is never cut short) */
+export const TERM_W = 200;
+export const TERM_H = 62;
 const TERM_GAP = 8;
-const GAP_X = 64;
-const ROW_GAP = 18;
+const GAP_X = 56;
+/** the row gap is the channel an arrow runs along to reach another column */
+const ROW_GAP = 26;
 export const FRAME_PAD = 14;
 export const FRAME_HEAD = 34;
 const COL_GAP = 48;
@@ -466,7 +473,8 @@ export function workflowDiagram(input: DiagramInput): WorkflowDiagram {
       if (opts.length) push("options", `· ${listed(opts, 2)}`,
         m.options.map((o) => `${o.member.detail}: ${o.member.label}`).join("; "));
     } else if (m.pkg) {
-      push("model", `model: the case's thermo package`, `constant/thermoPhysPropDict: ${m.pkg.member.detail}`);
+      push("model", `model ${m.pkg.member.detail.split(" · ").filter(Boolean).join(" · ") || "the thermo package"}`,
+        `the case's thermo package, constant/thermoPhysPropDict: ${m.pkg.member.detail}`);
     }
     if (m.methods.length)
       push("options", `by ${m.methods.map((x) => x.member.label).join(", ")}`,
@@ -495,39 +503,30 @@ export function workflowDiagram(input: DiagramInput): WorkflowDiagram {
     return out;
   };
 
-  /* ---- layout of each study frame, in its own coordinates ---------------- */
-  const termX = FRAME_PAD;
-  const stepX = termX + TERM_W + GAP_X;
-  const prodX = stepX + STEP_W + GAP_X;
-  const frameW = prodX + TERM_W + FRAME_PAD;
-  interface Local { frame: DiagramFrame; steps: DiagramStep[]; terminals: DiagramTerminal[] }
-  const locals: Local[] = [];
+  /* ---- each study frame, in its own coordinates ----------------------------
+   *  feeds | a GRID of steps | products.  A study whose steps are
+   *  INDEPENDENT (no step of it reads what another of its steps writes) may
+   *  lay its steps in 1, 2 or 3 columns, read row by row (A.1 A.2 A.3 /
+   *  A.4 ...); one with an arrow between its steps keeps one column, so the
+   *  arrow runs down the page.  Which column count is the packing's choice
+   *  below: the one that lets the whole workflow fit the pane at the
+   *  largest zoom. */
   const edges: DiagramEdge[] = [];
   const nodeIdOfStep = (stepId: string) => `step:${stepId}`;
-  const productOf = new Map<string, string>();   // `${study}|${selectId}` -> node id
 
+  //  the edges and the terminals, once (positions come with the layout)
+  interface TermSpec { t: DiagramTerminal; firstStep: string }
+  const termsOf = new Map<string, TermSpec[]>();     // study id -> its terminals, in reading order
   for (const st of outline) {
-    const steps: DiagramStep[] = [];
-    const terminals: DiagramTerminal[] = [];
+    const terms: TermSpec[] = [];
     const feedNode = new Map<string, DiagramTerminal>();
-    let y = FRAME_HEAD;
-    const framed = st.declared || outline.length > 1;
+    const productOf = new Map<string, DiagramTerminal>();
     for (const step of st.steps) {
-      const lines = linesOf(step);
-      const h = stepHeight(lines.length);
-      const rowTop = y;
-      const node: DiagramStep = { kind: "step", id: nodeIdOfStep(step.id), stepId: step.id, studyId: st.id,
-        number: step.number, label: stepLabel(step), type: step.type, runs: step.ops.length, lines,
-        state: stepState(rows, step.ops),
-        verdicts: [...new Set(rows.filter((r) => step.ops.includes(r.name) && r.verdict).map((r) => r.verdict))],
-        x: stepX, y: rowTop, w: STEP_W, h };
-      steps.push(node);
-      //  the feeds this step reads first, stacked to its left
-      let fy = rowTop;
+      const sid = nodeIdOfStep(step.id);
       for (const r of readsOf.get(step.id) ?? []) {
         if (r.fromStep) {
           edges.push({ id: `e:${r.fromStep}->${step.id}:${r.value ?? r.selectId}`, from: nodeIdOfStep(r.fromStep),
-            to: node.id, wire: r.wire === "process" ? "process" : "file", label: base(r.value ?? r.label) });
+            to: sid, wire: r.wire === "process" ? "process" : "file", label: base(r.value ?? r.label) });
           continue;
         }
         const key = r.byProcess ? "wf:process" : r.selectId;
@@ -536,81 +535,195 @@ export function workflowDiagram(input: DiagramInput): WorkflowDiagram {
           t = r.byProcess
             ? { kind: "terminal", id: `t:${st.id}:wf:process`, side: "process", selectId: "wf:process",
                 label: "Flowsheet run", detail: "the process run writes it: run the Flowsheet first",
-                studyId: st.id, x: termX, y: fy, w: TERM_W, h: TERM_H }
+                studyId: st.id, x: 0, y: 0, w: TERM_W, h: TERM_H }
             : { kind: "terminal", id: `t:${st.id}:${r.selectId}`, side: "feed", selectId: r.selectId,
                 label: r.label, detail: r.detail, target: r.target, studyId: st.id,
-                x: termX, y: fy, w: TERM_W, h: TERM_H };
+                x: 0, y: 0, w: TERM_W, h: TERM_H };
           feedNode.set(key, t);
-          terminals.push(t);
-          fy += TERM_H + TERM_GAP;
+          terms.push({ t, firstStep: step.id });
         }
-        edges.push({ id: `e:${t.id}->${step.id}:${r.value ?? r.selectId}`, from: t.id, to: node.id, wire: r.wire,
+        edges.push({ id: `e:${t.id}->${step.id}:${r.value ?? r.selectId}`, from: t.id, to: sid, wire: r.wire,
           label: r.carries });
       }
-      //  what leaves: written and not read later, and the declared views
-      let py = rowTop;
       const later = consumed.get(step.id) ?? new Set<string>();
       for (const w of writesOf.get(step.id) ?? []) {
         if (!w.view && later.has(w.value)) continue;
-        const key = `${st.id}|${w.selectId}`;
-        let tid = productOf.get(key);
-        if (!tid) {
-          tid = `t:${st.id}:out:${w.selectId}`;
-          productOf.set(key, tid);
-          terminals.push({ kind: "terminal", id: tid, side: "product", selectId: w.selectId, label: w.label,
-            detail: w.detail, title: w.title, target: w.target, studyId: st.id, x: prodX, y: py, w: TERM_W, h: TERM_H });
-          py += TERM_H + TERM_GAP;
+        let t = productOf.get(w.selectId);
+        if (!t) {
+          t = { kind: "terminal", id: `t:${st.id}:out:${w.selectId}`, side: "product", selectId: w.selectId,
+            label: w.label, detail: w.detail, title: w.title, target: w.target, studyId: st.id,
+            x: 0, y: 0, w: TERM_W, h: TERM_H };
+          productOf.set(w.selectId, t);
+          terms.push({ t, firstStep: step.id });
         }
-        edges.push({ id: `e:${step.id}->${tid}`, from: node.id, to: tid, wire: w.wire, label: w.carries });
+        edges.push({ id: `e:${step.id}->${t.id}`, from: sid, to: t.id, wire: w.wire, label: w.carries });
       }
-      y = Math.max(rowTop + h, fy - TERM_GAP, py - TERM_GAP) + ROW_GAP;
     }
+    termsOf.set(st.id, terms);
+  }
+  //  a study is independent when no arrow joins two of its own steps
+  const independent = new Map(outline.map((st) => {
+    const mine = new Set(st.steps.map((s) => nodeIdOfStep(s.id)));
+    return [st.id, !edges.some((e) => mine.has(e.from) && mine.has(e.to))];
+  }));
+  const stepNodes = new Map<string, DiagramStep>();
+  for (const st of outline)
+    for (const step of st.steps) {
+      const lines = linesOf(step);
+      stepNodes.set(step.id, { kind: "step", id: nodeIdOfStep(step.id), stepId: step.id, studyId: st.id,
+        number: step.number, label: stepLabel(step), type: step.type, runs: step.ops.length, lines,
+        state: stepState(rows, step.ops),
+        verdicts: [...new Set(rows.filter((r) => step.ops.includes(r.name) && r.verdict).map((r) => r.verdict))],
+        x: 0, y: 0, w: STEP_W, h: stepHeight(lines.length) });
+    }
+
+  /** Where the routes run: the channel left and right of every node and
+   *  the row gap above it. */
+  interface Lane { chanLeft: number; chanRight: number; rowTop: number }
+  interface Local { frame: DiagramFrame; steps: DiagramStep[]; terminals: DiagramTerminal[]; lanes: Map<string, Lane> }
+  const layoutStudy = (st: WorkflowStudy, cols: number): Local => {
+    const c = Math.max(1, Math.min(cols, st.steps.length));
+    const termX = FRAME_PAD;
+    const colX = (j: number) => termX + TERM_W + GAP_X + j * (STEP_W + COL_GAP);
+    const prodX = colX(c - 1) + STEP_W + GAP_X;
+    const frameW = prodX + TERM_W + FRAME_PAD;
+    const steps: DiagramStep[] = [];
+    const terminals: DiagramTerminal[] = [];
+    const lanes = new Map<string, Lane>();
+    const terms = termsOf.get(st.id) ?? [];
+    let y = FRAME_HEAD;
+    for (let r = 0; r * c < st.steps.length; r++) {
+      const row = st.steps.slice(r * c, r * c + c);
+      const rowTop = y;
+      let rowH = 0;
+      row.forEach((step, j) => {
+        const n = { ...stepNodes.get(step.id)!, x: colX(j), y: rowTop };
+        steps.push(n);
+        lanes.set(n.id, { chanLeft: colX(j) - (j === 0 ? GAP_X : COL_GAP) / 2,
+          chanRight: colX(j) + STEP_W + (j === c - 1 ? GAP_X : COL_GAP) / 2, rowTop });
+        rowH = Math.max(rowH, n.h);
+      });
+      const inRow = new Set(row.map((s) => s.id));
+      let fy = rowTop, py = rowTop;
+      for (const { t, firstStep } of terms) {
+        if (!inRow.has(firstStep)) continue;
+        if (t.side === "product") {
+          terminals.push({ ...t, x: prodX, y: py });
+          lanes.set(t.id, { chanLeft: prodX - GAP_X / 2, chanRight: prodX + TERM_W, rowTop });
+          py += TERM_H + TERM_GAP;
+        } else {
+          terminals.push({ ...t, x: termX, y: fy });
+          lanes.set(t.id, { chanLeft: termX, chanRight: termX + TERM_W + GAP_X / 2, rowTop });
+          fy += TERM_H + TERM_GAP;
+        }
+      }
+      rowH = Math.max(rowH, fy - TERM_GAP - rowTop, py - TERM_GAP - rowTop);
+      y = rowTop + rowH + ROW_GAP;
+    }
+    const framed = st.declared || outline.length > 1;
     const frame: DiagramFrame = { kind: "frame", id: `frame:${st.id}`, studyId: st.id, letter: st.letter,
       title: st.title, declared: framed, x: 0, y: 0, w: frameW, h: y - ROW_GAP + FRAME_PAD };
-    locals.push({ frame, steps, terminals });
-  }
+    return { frame, steps, terminals, lanes };
+  };
 
-  /* ---- frames into columns: the packing with the largest fit zoom ------- */
-  const n = locals.length;
-  let best: number[][] = [locals.map((_, i) => i)];
-  let bestZoom = -1;
-  for (let k = 1; k <= Math.max(1, n); k++) {
-    const cols = balancedColumns(locals.map((l) => l.frame.h), k);
-    const w = cols.length * frameW + (cols.length - 1) * COL_GAP;
-    const h = Math.max(...cols.map((c) => c.reduce((a, i) => a + locals[i]!.frame.h, 0) + (c.length - 1) * FRAME_GAP));
-    const zoom = Math.min(PANE.w / w, PANE.h / h);
-    if (zoom > bestZoom + 1e-9) { bestZoom = zoom; best = cols; }
+  /* ---- the packing: column counts per study, frames in columns or rows,
+   *  the arrangement with the largest fit zoom (ties: the smaller area) ---- */
+  const choices = outline.map((st) => (independent.get(st.id) && st.steps.length >= 2
+    ? [1, 2, 3].filter((c) => c <= st.steps.length) : [1]));
+  const combos: number[][] = [];
+  const total = choices.reduce((a, c) => a * c.length, 1);
+  if (total <= 729) {
+    const walk = (i: number, acc: number[]) => {
+      if (i === choices.length) { combos.push(acc); return; }
+      for (const c of choices[i]!) walk(i + 1, [...acc, c]);
+    };
+    walk(0, []);
+  } else {
+    combos.push(outline.map((st) => (independent.get(st.id) && st.steps.length >= 5 ? 2 : 1)));
+  }
+  interface Placement { locals: Local[]; groups: number[][]; byRows: boolean; w: number; h: number; zoom: number }
+  let best: Placement | null = null;
+  for (const combo of combos) {
+    const locals = outline.map((st, i) => layoutStudy(st, combo[i]!));
+    const n = locals.length;
+    for (const byRows of [false, true]) {
+      for (let k = 1; k <= Math.max(1, n); k++) {
+        const sizes = locals.map((l) => (byRows ? l.frame.w : l.frame.h));
+        const groups = balancedGroups(sizes, k);
+        const along = (g: number[]) => g.reduce((a, i) => a + sizes[i]!, 0) + (g.length - 1) * FRAME_GAP;
+        const across = (g: number[]) => Math.max(...g.map((i) => (byRows ? locals[i]!.frame.h : locals[i]!.frame.w)));
+        const w = byRows ? Math.max(...groups.map(along))
+          : groups.reduce((a, g) => a + across(g), 0) + (groups.length - 1) * COL_GAP;
+        const h = byRows ? groups.reduce((a, g) => a + across(g), 0) + (groups.length - 1) * FRAME_GAP
+          : Math.max(...groups.map(along));
+        const zoom = Math.min(PANE.w / w, PANE.h / h);
+        if (!best || zoom > best.zoom + 1e-6 || (Math.abs(zoom - best.zoom) <= 1e-6 && w * h < best.w * best.h))
+          best = { locals, groups, byRows, w, h, zoom };
+      }
+    }
   }
   const frames: DiagramFrame[] = [];
   const steps: DiagramStep[] = [];
   const terminals: DiagramTerminal[] = [];
+  const lanes = new Map<string, Lane>();
   let width = 0, height = 0;
-  best.forEach((col, ci) => {
-    let oy = 0;
-    const ox = ci * (frameW + COL_GAP);
-    for (const i of col) {
-      const l = locals[i]!;
-      const shift = <T extends Box>(b: T): T => ({ ...b, x: b.x + ox, y: b.y + oy });
-      frames.push(shift(l.frame));
-      steps.push(...l.steps.map(shift));
-      terminals.push(...l.terminals.map(shift));
-      oy += l.frame.h + FRAME_GAP;
-      height = Math.max(height, oy - FRAME_GAP);
+  if (best) {
+    let o = 0;
+    for (const g of best.groups) {
+      let a = 0;
+      let across = 0;
+      for (const i of g) {
+        const l = best.locals[i]!;
+        const ox = best.byRows ? a : o;
+        const oy = best.byRows ? o : a;
+        const shift = <T extends Box>(b: T): T => ({ ...b, x: b.x + ox, y: b.y + oy });
+        frames.push(shift(l.frame));
+        steps.push(...l.steps.map(shift));
+        terminals.push(...l.terminals.map(shift));
+        for (const [id, ln] of l.lanes)
+          lanes.set(id, { chanLeft: ln.chanLeft + ox, chanRight: ln.chanRight + ox, rowTop: ln.rowTop + oy });
+        a += (best.byRows ? l.frame.w : l.frame.h) + FRAME_GAP;
+        across = Math.max(across, best.byRows ? l.frame.h : l.frame.w);
+        width = Math.max(width, ox + l.frame.w);
+        height = Math.max(height, oy + l.frame.h);
+      }
+      o += across + (best.byRows ? FRAME_GAP : COL_GAP);
     }
-    width = Math.max(width, ox + frameW);
-  });
+  }
+
+  /* ---- the routes: orthogonal, in the gaps, never across a box ------------
+   *  out of the source's right side into the channel beside it; where the
+   *  target sits in another channel, along the row gap ABOVE the target's
+   *  row; down the channel left of the target; into its left side.  An arrow
+   *  between two studies keeps the canvas's own step path. */
+  const boxes = new Map<string, Box & { studyId: string }>(
+    [...steps, ...terminals].map((b) => [b.id, b]));
+  for (const e of edges) {
+    const s = boxes.get(e.from), t = boxes.get(e.to);
+    const ls = lanes.get(e.from), lt = lanes.get(e.to);
+    if (!s || !t || !ls || !lt || s.studyId !== t.studyId) continue;
+    const sx = s.x + s.w, sy = s.y + s.h / 2, tx = t.x, ty = t.y + t.h / 2;
+    const cs = ls.chanRight, ct = lt.chanLeft;
+    if (Math.abs(cs - ct) < 1) {
+      e.route = [{ x: sx, y: sy }, { x: cs, y: sy }, { x: cs, y: ty }, { x: tx, y: ty }];
+      e.labelAt = { x: cs, y: Math.abs(ty - sy) > 24 ? (sy + ty) / 2 : ty };
+    } else {
+      const yc = lt.rowTop - ROW_GAP / 2;
+      e.route = [{ x: sx, y: sy }, { x: cs, y: sy }, { x: cs, y: yc }, { x: ct, y: yc }, { x: ct, y: ty }, { x: tx, y: ty }];
+      e.labelAt = { x: ct, y: Math.abs(ty - yc) > 24 ? (yc + ty) / 2 : yc };
+    }
+  }
   return { frames, steps, terminals, edges, width, height };
 }
 
-/** Consecutive groups of `heights` in `k` columns, the tallest column as
- *  short as it can be (reading order kept: column after column). */
-export function balancedColumns(heights: readonly number[], k: number): number[][] {
-  const n = heights.length;
+/** Consecutive groups of `sizes` in `k` groups, the largest group as small
+ *  as it can be (reading order kept: group after group). */
+export function balancedGroups(sizes: readonly number[], k: number): number[][] {
+  const n = sizes.length;
   if (n === 0) return [];
   const kk = Math.min(k, n);
-  //  dp over (frames used, columns used): the smallest tallest column
   const pre = [0];
-  for (const h of heights) pre.push(pre[pre.length - 1]! + h + FRAME_GAP);
+  for (const h of sizes) pre.push(pre[pre.length - 1]! + h + FRAME_GAP);
   const colH = (a: number, b: number) => pre[b]! - pre[a]! - FRAME_GAP;
   const INF = Number.POSITIVE_INFINITY;
   const dp: number[][] = Array.from({ length: kk + 1 }, () => Array(n + 1).fill(INF));

@@ -53,11 +53,11 @@ License
   case's declaration drawn, so it is the same for every reader.
 \*---------------------------------------------------------------------------*/
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   Controls, Handle, Panel, Position, ReactFlow, ReactFlowProvider,
   useNodesInitialized, useReactFlow, useStore as useFlowStore, useStoreApi,
-  type Edge, type Node, type NodeProps,
+  type Edge, type Node, type NodeChange, type NodeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Badge, Group, Text, useComputedColorScheme } from "@mantine/core";
@@ -68,6 +68,7 @@ import {
   type DiagramFrame, type DiagramStep, type DiagramTerminal, type WireKind,
 } from "../case/workflowDiagram.js";
 import { RUN_STATE_WORD } from "../case/reviewScreen.js";
+import { MIN_TEXT_PX } from "../case/legibility.js";
 import { useStore } from "../state/store.js";
 import { useLegibilityFloor } from "./legibilityFloor.js";
 import { FLOWSHEET_MIN_ZOOM, flowsheetFitFor } from "./flowsheetViewport.js";
@@ -96,8 +97,78 @@ const LINE_COLOUR: Partial<Record<string, string>> = {
   reads: "var(--mantine-color-text)", writes: "var(--mantine-color-text)",
 };
 
+/** The state line's words: the run's, or STALE (a part it reads changed
+ *  since the run, case/propsMapState.ts), which wins. */
+function stateWords(step: DiagramStep, stale: boolean): string {
+  const line = step.lines.find((l) => l.kind === "state")?.text ?? "";
+  return stale ? `⟳ stale (was: ${line})` : line;
+}
+const stateInk = (step: DiagramStep, stale: boolean) =>
+  stale ? "orange.8" : step.state === "failed" ? "red.7" : step.state === "done" ? "teal.8" : "dimmed";
+
+/** THE COMPACT FACE (the coordinator's ruling on the first overview: "a box
+ *  that looks unfilled reads as broken").  When the box's own 12 px lines
+ *  would render below the minimum, the box shows three lines it can hold at
+ *  the minimum size instead: its number and name, its type and model, its
+ *  state and verdict -- each sized to the zoom (MIN_TEXT_PX / zoom), so the
+ *  legibility floor leaves it alone (`data-legible-self`).  The full
+ *  contents return when the reader zooms in, and are always in the card and
+ *  the step's tab.  Lines that do not fit at the minimum are dropped from
+ *  the bottom up, the name last; a box too small for even that is a shape. */
+function CompactStep({ step, stale, zoom }: { step: DiagramStep; stale: boolean; zoom: number }) {
+  const f = MIN_TEXT_PX / Math.max(zoom, 1e-3);
+  const lh = f * 1.25;
+  const room = Math.floor((step.h - 2 * STEP_PAD_Y) / lh);
+  if (room < 1) return null;
+  //  in the order they are dropped LAST to FIRST: the name, the state, the
+  //  type, the model, what it reads, what it writes or feeds
+  const law = (step.lines.find((l) => l.kind === "model")?.text ?? "").replace(/^model /, "");
+  const typeWords = `${step.type}${step.runs > 1 ? ` ×${step.runs}` : ""}`;
+  const extra = [
+    law ? { key: "model", text: law } : null,
+    ...step.lines.filter((l) => l.kind === "reads").map((l) => ({ key: "reads", text: l.text })),
+    ...step.lines.filter((l) => l.kind === "writes" || l.kind === "feeds").map((l) => ({ key: l.kind, text: l.text })),
+  ].filter((x): x is { key: string; text: string } => !!x);
+  const headLines = room >= 4 ? 2 : 1;
+  const left = room - headLines - 1;                      // the state takes one
+  const showType = left >= 1;
+  const body = extra.slice(0, Math.max(0, left - 1));
+  const line = { fontSize: f, lineHeight: `${lh}px` } as const;
+  return (
+    <div data-legible-self="" data-step-compact="" style={{ display: "flex", flexDirection: "column" }}>
+      <Text fw={700} c="var(--mantine-color-text)" lineClamp={headLines} title={`${step.number} ${step.label}`}
+        style={{ ...line, overflowWrap: "anywhere" }}>
+        <span style={{ fontFamily: "var(--mantine-font-family-monospace)" }}>{step.number}</span> {step.label}
+      </Text>
+      {showType && <Text c="accent.8" fw={600} truncate title={typeWords} style={line}>{typeWords}</Text>}
+      {body.map((b) => (
+        <Text key={b.key + b.text} ff="monospace" c="dimmed" truncate title={b.text} style={line} data-step-line={b.key}>
+          {b.text}
+        </Text>
+      ))}
+      {room >= 2 && (
+        <Text ff="monospace" fw={600} truncate c={stateInk(step, stale)} style={line}
+          aria-label={`state: ${stale ? "stale" : RUN_STATE_WORD[step.state]}`}>{stateWords(step, stale)}</Text>
+      )}
+    </div>
+  );
+}
+
 function StepNode({ data, selected }: NodeProps) {
   const { step, stale } = data as StepData;
+  const zoom = useFlowStore((s) => s.transform[2]);
+  //  the box's own lines are 12 px: below the minimum, the compact face
+  const compact = 12 * zoom < MIN_TEXT_PX - 0.01;
+  if (compact)
+    return (
+      <div data-workflow-step={step.stepId} data-step-number={step.number} data-step-state={step.state}
+        style={{ ...nodeCardStyle(!!selected), width: step.w, height: step.h, boxSizing: "border-box",
+          padding: `${STEP_PAD_Y}px 14px`, overflow: "hidden" }}>
+        <Handle type="target" position={Position.Left} />
+        <CompactStep step={step} stale={stale} zoom={zoom} />
+        <Handle type="source" position={Position.Right} />
+      </div>
+    );
   const typeLine = step.lines.find((l) => l.kind === "type");
   const body = step.lines.filter((l) => l.kind !== "type" && l.kind !== "state");
   const stateLine = step.lines.find((l) => l.kind === "state");
@@ -137,10 +208,10 @@ function StepNode({ data, selected }: NodeProps) {
         //  since the run, case/propsMapState.ts) wins over what the run said
         <Text size="12px" ff="monospace" fw={600} truncate
           title={stale ? "stale: a part of the case this step reads changed since the run -- run it again" : stateLine.title}
-          c={stale ? "orange.8" : step.state === "failed" ? "red.7" : step.state === "done" ? "teal.8" : "dimmed"}
+          c={stateInk(step, stale)}
           aria-label={`state: ${stale ? "stale" : RUN_STATE_WORD[step.state]}`} data-step-stale={stale ? "" : undefined}
           style={{ lineHeight: `${STEP_LINE_H}px`, height: STEP_LINE_H }}>
-          {stale ? `⟳ stale (was: ${stateLine.text})` : stateLine.text}
+          {stateWords(step, stale)}
         </Text>
       )}
       <Handle type="source" position={Position.Right} />
@@ -165,9 +236,12 @@ function InfoTerminal({ data, selected }: NodeProps) {
       style={{ ...terminalCardStyle(!!selected, border, feed || ran), width: term.w, height: term.h,
         boxSizing: "border-box", padding: "5px 12px", minWidth: 0, overflow: "hidden" }}>
       {!feed && <Handle type="target" position={Position.Left} />}
-      <Group gap={5} wrap="nowrap" data-legible-primary="">
-        {term.side === "process" && <IconBuildingFactory2 size={14} style={{ flex: "0 0 auto" }} />}
-        <Text size="14px" fw={700} c="var(--mantine-color-text)" truncate style={{ minWidth: 0, lineHeight: "20px" }}>
+      {/*  A NAME IS NEVER CUT SHORT: it takes a second line, broken anywhere
+           an identifier allows (an underscore, a dot, a hyphen, a letter). */}
+      <Group gap={5} wrap="nowrap" align="flex-start" data-legible-primary="">
+        {term.side === "process" && <IconBuildingFactory2 size={14} style={{ flex: "0 0 auto", marginTop: 3 }} />}
+        <Text size="14px" fw={700} c="var(--mantine-color-text)" lineClamp={2} data-lg-wrap=""
+          style={{ minWidth: 0, lineHeight: 1.25, overflowWrap: "anywhere" }}>
           {term.label}
         </Text>
       </Group>
@@ -261,16 +335,33 @@ function DiagramInner({ model }: { model: WorkflowModel }) {
   const lit = useMemo(() => selectedNodes(model, selected), [model, selected]);
   const stepOrder = useMemo(() => model.outline.flatMap((st) => st.steps.map((s) => s.id)), [model.outline]);
 
+  /*  EVERY NODE CARRIES ITS MEASURED SIZE.  The nodes are derived afresh
+   *  whenever the selection changes, and a node object React Flow has not
+   *  measured is drawn invisible until it is: measured on a click, the box
+   *  under the pointer vanished for a frame and the second click of a double
+   *  click landed on the pane (traced, DEV.md 4c C172 slice 3b).  The flowsheet
+   *  keeps its measurements in its node state; this keeps them in a ref,
+   *  filled by React Flow's own dimension changes. */
+  const measuredRef = useRef(new Map<string, { width: number; height: number }>());
+  const onNodesChange = useCallback((changes: NodeChange[]) => {
+    for (const c of changes)
+      if (c.type === "dimensions" && c.dimensions) measuredRef.current.set(c.id, c.dimensions);
+  }, []);
+  const withSize = <T extends { id: string }>(n: T): T => {
+    const m = measuredRef.current.get(n.id);
+    return m ? { ...n, measured: m } : n;
+  };
   const nodes = useMemo<Node[]>(() => [
-    ...diagram.frames.map((f) => ({ id: f.id, type: "studyFrame", position: { x: f.x, y: f.y },
+    ...diagram.frames.map((f) => withSize({ id: f.id, type: "studyFrame", position: { x: f.x, y: f.y },
       data: { frame: f }, selectable: false, draggable: false, zIndex: -1, selected: lit.has(f.id),
       style: { pointerEvents: "none" as const } })),
-    ...diagram.steps.map((s) => ({ id: s.id, type: "workflowStep", position: { x: s.x, y: s.y },
+    ...diagram.steps.map((s) => withSize({ id: s.id, type: "workflowStep", position: { x: s.x, y: s.y },
       data: { step: s, stale: s.state !== "notRun" && step_ops(model, s.stepId).some((o) => model.staleOps.has(o)) },
       draggable: false, selected: lit.has(s.id) })),
-    ...diagram.terminals.map((t) => ({ id: t.id, type: "infoTerminal", position: { x: t.x, y: t.y },
+    ...diagram.terminals.map((t) => withSize({ id: t.id, type: "infoTerminal", position: { x: t.x, y: t.y },
       data: { term: t, ran: model.ran, scheme }, draggable: false, selected: lit.has(t.id) })),
-  ], [diagram, lit, model, scheme]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [diagram, lit, model.ran, model.staleOps, model.outline, scheme]);
 
   const edges = useMemo<Edge[]>(() => diagram.edges.map((e) => {
     const w = WIRES[e.wire];
@@ -278,7 +369,7 @@ function DiagramInner({ model }: { model: WorkflowModel }) {
     const touches = lit.has(e.from) || lit.has(e.to);
     return {
       id: e.id, source: e.from, target: e.to, type: "waypoint",
-      data: { carries: e.label, carriesMeaning: `${w.word} -- ${w.meaning}`,
+      data: { carries: e.label, carriesMeaning: `${w.word} -- ${w.meaning}`, route: e.route, labelAt: e.labelAt,
         //  a fit's evidence keeps its word at fit: which data the step was
         //  FITTED to and which it is JUDGED on is the one fact of the arrow
         //  a reader needs before zooming
@@ -309,6 +400,29 @@ function DiagramInner({ model }: { model: WorkflowModel }) {
     return f.declared ? f.studyId : "";
   }, []);
 
+  /*  A DOUBLE CLICK OPENS, measured here as well as heard.  A real double
+   *  click on a box whose first click selects it re-renders the box between
+   *  the two clicks, and the browser's `dblclick` then did not reach React
+   *  Flow's handler (measured: a dispatched dblclick opened the tab, a
+   *  pointer's did not).  So two clicks on one node within the platform's
+   *  usual double-click time open it too; `openOnce` keeps the two routes
+   *  from opening two tabs. */
+  const lastClick = useRef<{ id: string; t: number } | null>(null);
+  const lastOpen = useRef(0);
+  const openOnce = useCallback((n: Node) => {
+    const now = Date.now();
+    if (now - lastOpen.current < 700) return;
+    lastOpen.current = now;
+    open(n);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [model]);
+  const onNodeClick = useCallback((_: React.MouseEvent, n: Node) => {
+    const now = Date.now();
+    const prev = lastClick.current;
+    lastClick.current = { id: n.id, t: now };
+    if (prev && prev.id === n.id && now - prev.t < 450) { openOnce(n); return; }
+    select(selectOf(n));
+  }, [openOnce, select, selectOf]);
   const open = useCallback((n: Node) => {
     if (n.type === "workflowStep") openStepTab((n.data as StepData).step.stepId);
     else if (n.type === "infoTerminal") {
@@ -353,15 +467,19 @@ function DiagramInner({ model }: { model: WorkflowModel }) {
         edges={edges}
         nodeTypes={NODE_TYPES}
         edgeTypes={EDGE_TYPES}
-        onNodeClick={(_, n) => select(selectOf(n))}
-        onNodeDoubleClick={(_, n) => open(n)}
+        onNodeClick={onNodeClick}
+        onNodeDoubleClick={(_, n) => openOnce(n)}
         onPaneClick={() => select("")}
+        onNodesChange={onNodesChange}
         fitView
         fitViewOptions={fitOptions}
         minZoom={FLOWSHEET_MIN_ZOOM}
         proOptions={{ hideAttribution: true }}
         colorMode={scheme}
         nodesDraggable={false}
+        //  a double click OPENS (a step in its tab), never zooms: the
+        //  flowsheet's own convention for a unit
+        zoomOnDoubleClick={false}
         nodesConnectable={false}
         elementsSelectable
         aria-label="The workflow: its steps, the data they read and what they write"
@@ -383,7 +501,7 @@ function DiagramInner({ model }: { model: WorkflowModel }) {
           keys="F: fit view  ·  Esc: deselect  ·  ↑↓: steps  ·  ]: fold card  ·  Enter or double-click: open the step" />
         {selected && (
           <SelectionCard label={selectionWord(model, selected)} onClose={() => select("")} top={12}>
-            <PropertyPanel workflow={model} />
+            <Suspense fallback={<Text size="xs" p="md" c="dimmed">Loading…</Text>}><PropertyPanel workflow={model} /></Suspense>
           </SelectionCard>
         )}
       </ReactFlow>
