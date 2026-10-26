@@ -1571,6 +1571,40 @@ accepts today, and that is a policy call.
 > disagreement is named, not silently resolved.  Then the commander
 > decides the first slice under C163, Vitor reviewing after.
 > Status: recorded; the audit dispatched the same turn.
+> AUDIT DONE 2026-10-26 (live build 7c4f2e7c, three cases: pcsaft01, the
+> NanoFiltran case's study B, ammonia02 with its two tears; ~80
+> screenshots and ~30 script-checkable criteria in the session
+> scratchpad, not in the tree).  Ten findings at severity 3: results are
+> not the centre after a run on any case (pcsaft01's answer two clicks
+> away as unitless numbers; Fig. 3 722 px down a 220 px pane; the plant's
+> only signpost a toast); the plant and NanoFiltran maps illegible (labels
+> 3.9-7.7 px, refitting so they do NOT grow at 200 % zoom -- WCAG 1.4.4);
+> no visible focus on the flowsheet canvas; the flowsheet selection card
+> takes edits (the credo says read-only, DEV.md's tinkering rule says
+> otherwise -- Vitor's); the GUI draws what the engine did not say
+> (phase letters before a run, seeds drawn like results, pinch targets in
+> TypeScript); light-theme contrast (13-32 % of first-screen text below
+> AA, every wire below 3:1 on the light canvas); F1 on PC-SAFT opens an
+> options card; the models tree shows DSPM-DE's coupled parts as eight
+> sibling models; the NanoFiltran run freezes the page 33 s with no
+> progress.  Also measured: pcsaft01, titled a LIQUID molar volume,
+> publishes the VAPOUR root -- a case/engine finding, separate.  The second
+> opinion is wrong where the screen says so: one Run per case, the props
+> map already a semantic overview, a good NanoFiltran empty state.
+> DECIDED under C163, slice 1 "results first, nothing invented":
+> props cases fold the map after a successful run and lead with the
+> results, an operation with no table shows its numbers inline, and
+> propertyPoint gives its numbers units (the engine hook exists, unused);
+> the flowsheet replaces the toast by a persistent run summary announced
+> as a status (convergence, mass and energy closure, advisories, products
+> -- all already in the result JSON); before a run a phase letter only
+> where `0/` declares one, seeds marked as seeds.  pcsaft01's root
+> investigated beside it.  Slice 2: accessibility (focus >= 3:1, the light
+> palette against the canvas, ARIA states, landmarks, named plot
+> controls).  PUT TO VITOR: the selection card (read-only by the credo, or
+> the tinkering rule) and the four credo/heuristic conflicts the audit
+> names (a persistent left pane, one fixed place for Run, legible text
+> versus the whole flowsheet on screen, colour-only phase on wires).
 
 > **C167. THE SUITE USES EVERY CORE (Vitor, 2026-10-25, watching the
 > sweep on his 10-core laptop: "aquilo passa a maioria do tempo a usar so
