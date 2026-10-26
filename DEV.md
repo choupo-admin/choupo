@@ -3166,6 +3166,11 @@ accepts today, and that is a policy call.
 > Art. 31(l)).  Historical case: the Wright brothers' wing-warping patent
 > against Curtiss's ailerons, settled only by the 1917 US aircraft patent
 > pool; Watt's patent holding back high-pressure steam until 1800.
+> STATUS CORRECTED 2026-10-26: the "scope to agree" line above was STALE --
+> the scope IS Vitor's two messages and two addenda above, with the
+> commander's reading (1)-(4); he said so the day the audit of planned
+> EduTools listed C140 as waiting on him ("Eu tinha discutido todas as
+> coisas de que me lembrei").  DISPATCHED the same day under C163.
 
 > **C139. AN EDUTOOL ON THE ECONOMICS OF THE CHEMICAL NETWORK: BASE
 > CHEMICALS, INTERMEDIATES, INDUSTRIAL PARKS AND INTERNATIONAL TRADE
