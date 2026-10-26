@@ -40,7 +40,8 @@ with detail surfaced on demand (see §2.5).  It is not:
    convention.  Single click on any element → the floating top-right
    **selection card** updates.  Double click on a stream → new browser
    tab (pop-out).  Double click on a sector / unit that is itself a
-   case → drill into it as its own URL.
+   case → drill into it as its own URL.  Double click on a WORKFLOW STEP
+   → that step in its own tab, everything about it (C172 slice 3b).
 4. **Pop-out (new browser tab) beats modal.**  Long content (file
    text, streams table, plots, multi-phase / many-component
    streams) opens in a separate browser tab via Blob URL +
@@ -134,19 +135,42 @@ second doing little.  The layout of a flowsheet case is:
   ruling (1), "tinkering", 2026-10-26; see §4).
 - **PropsView (the Workflow).**  A `choupoProps` case (carries
   `propsDict`, no `flowsheet`) -- or a two-mode case shown in its
-  Workflow -- replaces the canvas centre with the Workflow (C172 slice 3):
-  on the left the OUTLINE, the case's declared studies with their
-  NUMBERED STEPS in the order the run takes them (a list, never a canvas;
-  a set of runs a declared view draws together is one step), then, folded,
-  the data, models and records; in the centre the RESULTS of what is
-  selected (the whole workflow, a study, a step); on the right the
-  INSPECTOR of a step -- what it reads (FIT / HELD OUT, the band), the
-  model with its options inside it, what it writes (the engine's own
-  file-traffic table, `gui/schemas/propsFileTraffic.json`, generated) and
-  the verdict with its identifiability.  The calculation map is behind
-  View > Calculation map, closed by default.  There is no Audit section:
-  an operation's own panel is in its step's results, the thermo readiness
-  and the decision ledger in the thermo package's details (C172).
+  Workflow -- OPENS ON ITS WORKFLOW DIAGRAM, full width, as a process case
+  opens on its flowsheet (C172 slice 3b, Vitor's ruling: "Em qualquer um
+  dos casos o que circula e so informacao!").  It is the SAME canvas, not a
+  look-alike: React Flow with the flowsheet's dot grid, controls, fit
+  (`flowsheetViewport.ts`), legibility floor, arrowheads, wire marks
+  (`WaypointEdge.tsx`), WIRES legend, key line and floating selection card
+  (`canvasChrome.tsx`), boxes and terminals in the unit's and the stream
+  terminal's card styles (`nodeCard.ts`).  ONE BOX PER NUMBERED STEP
+  (`case/workflowSteps.ts`; a set of runs a declared view draws together is
+  one step), each STUDY a frame, order read from position; a box SAYS WHAT
+  IS INSIDE IT -- type, runs, model and main options, FIT / HELD OUT reads,
+  writes, the views it feeds, state and verdict -- and at a fit too small
+  for its 12 px lines it shows a COMPACT FACE (number and name, type,
+  model, state) sized to the zoom, never an empty box.  ARROWS ARE
+  INFORMATION (`case/workflowDiagram.ts`): feeds on the left (datasets,
+  records), the "Flowsheet run" terminal for a file a step declares the
+  process run writes, products on the right (records, proposals, files no
+  later step reads, the case's declared views), step to step where a later
+  step reads what an earlier one writes (the engine's file-traffic table),
+  each labelled with what it carries and routed in the gaps.  A study of
+  independent steps may be laid in a grid when that fits the workflow at a
+  larger zoom.  SINGLE CLICK opens the flowsheet's own selection card with
+  the step in it (PropertyPanel's workflow branch, `workflowCard.tsx`: what
+  it reads, the model with its options, what it writes with fingerprints,
+  the verdict with identifiability, the main numbers); DOUBLE CLICK, Enter
+  or the card's Open opens the step in its OWN TAB (`?step=`, `StepTab.tsx`,
+  the counterpart of a unit's internals page).  The OUTLINE stays on the
+  left, collapsible, sharing the selection.  The case's STUDIES (each
+  study's figures, tables, numbers) and REPORTS (curation verdicts, records
+  and proposals written, the comparison with data, the decision ledger,
+  every file written, the thermo readiness, one .zip of all of it) are
+  menu entries beside the Workflow, as Streams and Reports sit beside the
+  Flowsheet; the props menu reads Workflow · Studies · Reports · Log ·
+  Case.  The calculation map and the View menu that held it are RETIRED:
+  the diagram replaced it (Vitor: "E o 'view' nao esta la a fazer nada!!!
+  Devia ficar em 'reports'!!!").
 
 **A FULL-VIEWPORT HEIGHT IS THE DYNAMIC VIEWPORT (2026-09-22).**  The shell
 is a full-viewport box with `overflow: hidden`, which is right for an
@@ -296,7 +320,7 @@ it is untouched.
   declared size.  The shared `<Plot>` wrapper floors every figure's fonts.
   A LOG axis is floored at 15 px, because Plotly draws its in-between digits
   at 0.75 of the tick font.
-- On a ZOOMED drawing (the flowsheet, the calculation map) a canvas
+- On a ZOOMED drawing (the flowsheet, a properties case's workflow diagram) a canvas
   fitting itself to its box would shrink every label with the box.  So each
   label is decided from the zoom (`ui/legibilityFloor.ts`, generic over
   every text node in the viewport):
@@ -325,9 +349,12 @@ second channel:
   sparse dashes (`case/edgeDashes.ts`, one table).  Two pairs used to share
   a stroke and differ by colour only (`4 4`, `6 3`), and `6 4` against
   `6 3` was a pixel apart.
-- **The calculation map's wire kinds** likewise.  "measured data" and
-  "results" were both solid, and "reference numbers" and "record written"
-  were both plain dashes.
+- **The workflow diagram's arrow kinds** likewise, each with a dash of its
+  own and its word in the legend (`WIRES` in `case/workflowDiagram.ts`, one
+  table).  The calculation map it replaced had "measured data" and
+  "results" both solid.  A step box too small for its lines at fit shows a
+  COMPACT FACE sized to the zoom (`data-legible-self`), which the floor
+  leaves alone.
 - **Series of one figure** that differ only by colour get a marker SHAPE
   (markers) or a DASH (lines), applied once in the `<Plot>` wrapper
   (`case/plotChannels.ts`).  A declared dash or fill is kept.
@@ -364,7 +391,7 @@ chemical-process simulation is not CFD; some adaptations are needed.
 
 | Where | ParaView | Choupo | Why |
 |---|---|---|---|
-| **Left panel** | Pipeline Browser: source + applied filters | **On a flowsheet case, none**: the canvas is full-screen and IS the navigation; case files live in the on-demand **Case** workspace.  **On a properties case, the Workflow's outline** -- the case's ONE navigation, collapsible (C168 ruling (a)) | An always-on left tree where clicking does little was "nojo" — a docked panel earns its pixels only if it is constantly useful.  The rule is "no SECOND tree": a pane that is the only way through the case's studies and steps is constantly useful, and it folds when the reader wants the width. |
+| **Left panel** | Pipeline Browser: source + applied filters | **On a flowsheet case, none**: the canvas is full-screen and IS the navigation; case files live in the on-demand **Case** workspace.  **On a properties case, the Workflow's outline** beside the Workflow DIAGRAM -- the case's navigation, collapsible (C168 ruling (a)), sharing the diagram's selection | An always-on left tree where clicking does little was "nojo" — a docked panel earns its pixels only if it is constantly useful.  The rule is "no SECOND tree": a pane that is the only way through the case's studies and steps is constantly useful, and it folds when the reader wants the width. |
 | **Right panel** | Properties of selected filter | **Floating selection card** (top-right): the selected node's hardware + run KPIs, or a stream's conditions.  Vanishes when nothing is selected | A docked Properties panel is mostly empty most of the time.  A card that appears on selection and gets out of the way otherwise keeps the canvas dominant. |
 | **View modes** | Render View / Spreadsheet / Plot / etc. swap on the central canvas | **On-demand workspaces** opened from the top menu (context-dependent lineup — see §2.5; `MenuBar.tsx` is the authority); each toggles over the canvas, Esc returns | Done in Fase A/B (2026-05-27).  The earlier bottom-tab strip was removed; workspaces are the canvas-view-mode pattern this row once flagged for "Layer 2". |
 | **Multi-view split** | Yes (4-up layout) | **No — pop-outs (new tab) instead** | Pop-outs let the user multi-monitor or window-tile, with the same outcome and far less code.  Browser tabs are persistent and survive a Choupo crash. |

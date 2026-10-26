@@ -179,7 +179,7 @@ export const CITES = {
     contains: "emitResultJson(std::cout, result);" },
   errorPrinted: { file: MAIN, line: 1528,
     contains: 'std::cerr << "\\nERROR: " << e.what()' },
-  guiCho: { file: "gui/src/ui/FlowCanvas.tsx", line: 502,
+  guiCho: { file: "gui/src/ui/FlowCanvas.tsx", line: 495,
     contains: 'k.endsWith(".cho")' },
   guiReadme: { file: "gui/src/cases/tutorials.ts", line: 486,
     contains: 'entry.readme = files["README.md"]' },

@@ -106,15 +106,21 @@ export const FIT_MARGIN_SHARE = 0.4;
 
 /** The fit for a pane `paneH` CSS px tall (the constants, shrunk on a short
  *  pane -- see FIT_MARGIN_SHARE). */
-export function flowsheetFitFor(paneH: number, animated = false): FitViewOptions {
-  const base = animated ? FLOWSHEET_FIT_ANIMATED : FLOWSHEET_FIT;
-  const top = parseFloat(FLOWSHEET_FIT_PADDING.top);
+export function flowsheetFitFor(paneH: number, animated = false,
+  /** the top margin, where the canvas floats less above its drawing than the
+   *  flowsheet's SHOW row and legend column (the workflow diagram: one
+   *  legend row, DEV.md 4c C172 slice 3b) */
+  topPx?: number): FitViewOptions {
+  const b0 = animated ? FLOWSHEET_FIT_ANIMATED : FLOWSHEET_FIT;
+  const base = topPx === undefined ? b0
+    : { ...b0, padding: { ...FLOWSHEET_FIT_PADDING, top: `${topPx}px` as const } };
+  const top = topPx ?? parseFloat(FLOWSHEET_FIT_PADDING.top);
   const bottom = parseFloat(FLOWSHEET_FIT_PADDING.bottom);
   if (!(paneH > 0) || top + bottom <= FIT_MARGIN_SHARE * paneH) return base;
   const k = (FIT_MARGIN_SHARE * paneH) / (top + bottom);
   return {
     ...base,
-    padding: { ...FLOWSHEET_FIT_PADDING, top: `${Math.round(top * k)}px`, bottom: `${Math.round(bottom * k)}px` },
+    padding: { ...(base.padding as object), top: `${Math.round(top * k)}px`, bottom: `${Math.round(bottom * k)}px` },
   };
 }
 

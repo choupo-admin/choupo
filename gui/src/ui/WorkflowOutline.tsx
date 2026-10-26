@@ -28,8 +28,10 @@ License
 
 /*---------------------------------------------------------------------------*\
   WorkflowOutline -- THE LEFT PANE OF THE WORKFLOW: THE CASE'S STUDIES AND
-  THEIR NUMBERED STEPS (DEV.md 4c C172 slice 3; docs/design/one-app-two-
-  homes.md item 3).
+  THEIR NUMBERED STEPS (DEV.md 4c C172 slices 3 and 3b; docs/design/one-app-
+  two-homes.md item 3).  Since slice 3b it sits beside the workflow DIAGRAM
+  (ui/WorkflowDiagram.tsx) and shares its selection: a step clicked here is
+  the step the diagram lights and the selection card describes.
 
   The ONE navigation of a properties case (the credo's ruling (a), C168: a
   left pane is allowed when it is the case's one primary navigation): the
@@ -37,8 +39,7 @@ License
   (case/workflowSteps.ts), each step with what the run said of it in a WORD
   and a glyph, never in colour alone -- then, folded, the case's data,
   models and records, the same tree the calculation map's ids select
-  (PropsTree, embedded).  A list, never a canvas: nothing here edits the
-  case.  Text is never drawn below 12 px here (the credo's legibility
+  (PropsTree, embedded).  Nothing here edits the case.  Text is never drawn below 12 px here (the credo's legibility
   ruling, C168 (c)); badges are 11 px.
 \*---------------------------------------------------------------------------*/
 
@@ -47,24 +48,16 @@ import { Box, Group, ScrollArea, Text, UnstyledButton } from "@mantine/core";
 
 import type { CaseTreeNode } from "../case/propsMap.js";
 import { purposeWords } from "../case/propsStudies.js";
-import { RUN_STATE_WORD, type RunState, type VerdictRow } from "../case/reviewScreen.js";
+import { RUN_STATE_WORD, type VerdictRow } from "../case/reviewScreen.js";
+import { STATE_GLYPH, stepState } from "../case/workflowDiagram.js";
 import { stepLabel, type WorkflowStudy } from "../case/workflowSteps.js";
 import { PropsTree } from "./PropsTree.js";
 
 const SELECTED_BG = "light-dark(var(--mantine-color-yellow-1), rgba(250,204,21,0.18))";
 
-/** The state of a step, as a glyph AND a word (no meaning in colour alone). */
-const STATE_GLYPH: Record<RunState, string> = { done: "✓", failed: "✗", noResult: "!", notRun: "" };
-
-/** A step's state over its runs: failed if any failed, no result if any
- *  published none, done when all ran. */
-export function stepState(rows: readonly VerdictRow[], ops: readonly string[]): RunState {
-  const mine = rows.filter((r) => ops.includes(r.name));
-  if (mine.length === 0 || mine.every((r) => r.runState === "notRun")) return "notRun";
-  if (mine.some((r) => r.runState === "failed")) return "failed";
-  if (mine.some((r) => r.runState === "noResult")) return "noResult";
-  return "done";
-}
+/** A step's state over its runs, and its glyph: ONE home, the diagram's
+ *  (case/workflowDiagram.ts), so the box and the outline cannot disagree. */
+export { stepState } from "../case/workflowDiagram.js";
 
 function Row({ id, selected, onSelect, indent, children, title, attrs }: {
   id: string; selected: string; onSelect: (id: string) => void; indent: number;
@@ -95,8 +88,8 @@ export function WorkflowOutline({ outline, rows, selected, onSelect, tree, onNew
     <ScrollArea h="100%" type="auto" data-workflow-outline="">
       <Box p={6} component="nav" aria-label="Workflow outline">
         <Row id="" selected={selected} onSelect={onSelect} indent={0} attrs={{ "data-tree-node": "root" }}>
-          <Text size="sm" fw={700}>Overview</Text>
-          <Text size="xs" c="dimmed">the whole workflow: what it asks, what it found</Text>
+          <Text size="sm" fw={700}>The whole workflow</Text>
+          <Text size="xs" c="dimmed">nothing selected: the diagram, every step</Text>
         </Row>
         {outline.map((st) => (
           <Box key={st.id} mt={8} data-outline-study={st.name}>

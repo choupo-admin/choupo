@@ -395,14 +395,6 @@ export const PANELS = {
     defaultCollapsed: true,
   }),
 
-  /** A props case's CALCULATION MAP (DEV.md 4c C153), a TOP panel docked
-   *  above the details of the selection on its Results screen.  It had a
-   *  height computed from the map and no way to change it (Vitor, on
-   *  NanoFiltran: "o painel que fica por baixo nao e ajustavel").  The size
-   *  is the reader's once he drags it; before that the screen draws the
-   *  map's own computed height (`hasPanelSize` tells the two apart), so a
-   *  reader who never touched it sees what C151 shipped.  Folding it is the
-   *  screen's "figures full height". */
   /** THE WORKFLOW'S OUTLINE (DEV.md 4c C168 slice 2, ruling (a)): the
    *  case's ONE navigation, on the left -- and allowed there only because it
    *  folds.  It was a fixed 248 px column (C172 slice 3) with no fold on a
@@ -411,12 +403,6 @@ export const PANELS = {
     sizeKey: "choupo.panel.workflowOutline.size",
     size: { min: 200, max: 460, default: 248 },
     collapsedKey: "choupo.panel.workflowOutline.collapsed",
-  }),
-
-  propsMap: panel("propsMap", {
-    sizeKey: "choupo.panel.propsMap.size",
-    size: { min: 200, max: 1600, default: 420 },
-    collapsedKey: "choupo.panel.propsMap.collapsed",
   }),
 
   methodKnobsRail: panel("methodKnobsRail", {

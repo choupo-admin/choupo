@@ -150,6 +150,10 @@ export const MODE_TABS: ModeTab[] = [
 export const WORKSPACES: WorkspaceEntry[] = [
   { label: "Flowsheet", key: null    },
   { label: "Workflow",  key: "props" },   // a properties case's home (C172)
+  //  a properties case's STUDIES: the figures and tables of each declared
+  //  study, beside the Workflow diagram as Streams sits beside the Flowsheet
+  //  (DEV.md 4c C172 slice 3b)
+  { label: "Studies",   key: "studies" },
   { label: "Streams",   key: "streams"   },
   { label: "Variables", key: "variables" },
   { label: "Control",   key: "control"   },  // PID tuning bench (choupoCtrl + a PID)
@@ -157,7 +161,9 @@ export const WORKSPACES: WorkspaceEntry[] = [
   { label: "Log",       key: "log"       },
   { label: "Case",      key: "case"      },
   { label: "Pinch",     key: "pinch"     },  // shown once a run yields heat duties
-  { label: "Reports",   key: "reports"   },  // utilities + global balances (post-run)
+  //  a process case: utilities + global balances; a properties case: the
+  //  curation verdicts, the records written, the files (C172 slice 3b)
+  { label: "Reports",   key: "reports"   },
   //  "Who measured this?" -- citations from the user's private ThermoML
   //  cache (bin/choupo-thermoml sync).  A reading list, never a value.
   { label: "Literature", key: "literature" },
@@ -176,7 +182,7 @@ export const WORKSPACES: WorkspaceEntry[] = [
  *  The FLOWSHEET is deliberately absent: it draws a run AND the declaration,
  *  so it dims only its result layer, inside FlowCanvas itself. */
 export const RESULT_WORKSPACES: readonly WorkspaceKey[] =
-  ["plots", "reports", "streams", "variables", "log", "pinch"] as const;
+  ["plots", "reports", "streams", "variables", "log", "pinch", "studies"] as const;
 
 export const VIEW_LABELS: ReadonlySet<string> =
   new Set(WORKSPACES.map((w) => w.label));
@@ -216,8 +222,8 @@ export interface WorkspaceContext {
  *                    on-ramp is the WelcomeScreen's own, not a menu of views
  *                    of a case that is not there.
  *    intro        -> nothing (the intro screen owns the window)
- *    choupoProps  -> Workflow · Log · Case            (no canvas/streams/
- *                    duties, and no Plots: the Workflow holds the figures)
+ *    choupoProps  -> Workflow · Studies · Reports · Log · Case (no canvas
+ *                    of units, no streams, no Plots: Studies holds the figures)
  *    choupoSolve  -> the full steady set              (streams, variables, pinch)
  *    choupoBatch/Ctrl -> Flowsheet · Plots · Log · Case
  *                        (no steady-only Streams/Variables/Pinch/Reports)
@@ -234,10 +240,12 @@ export function allowedWorkspaceLabels(ctx: WorkspaceContext): Set<string> {
   const literature = ctx.hasLiteratureMirror ? ["Literature"] : [];
   if (ctx.isPropsCase || ctx.application === "choupoProps") {
     //  NO `Plots` (DEV.md 4c C151, Vitor 2026-10-25: a "Plots" menu beside the
-    //  plots already on the main screen confuses).  In a props case that entry
-    //  drew the same PropsView a second time; the Workflow is the ONE home of
-    //  a props case's figures, the free CSV plots in its "Other plots".
-    return new Set(["Workflow", "Log", "Case", ...literature]);
+    //  plots already on the main screen confuses).  The figures of a props
+    //  case are under STUDIES; what its run wrote under REPORTS; its home is
+    //  the WORKFLOW diagram (C172 slice 3b, mirroring Flowsheet · Streams ·
+    //  Reports; the View menu, which held only the retired calculation map,
+    //  is gone -- "Devia ficar em 'reports'!").
+    return new Set(["Workflow", "Studies", "Reports", "Log", "Case", ...literature]);
   }
   if (ctx.application === "choupoBatch" || ctx.application === "choupoCtrl"
       || ctx.application === "choupoSemiContinuous") {
@@ -259,7 +267,16 @@ export function visibleWorkspacesFor(
   workspaces: readonly WorkspaceEntry[] = WORKSPACES,
 ): WorkspaceEntry[] {
   const allowed = allowedWorkspaceLabels(ctx);
-  return workspaces.filter((w) => allowed.has(w.label));
+  const shown = workspaces.filter((w) => allowed.has(w.label));
+  //  A PROPERTIES CASE READS ITS OWN ORDER: its home, then what the run
+  //  showed and produced, then the shared views -- Workflow · Studies ·
+  //  Reports · Log · Case, as the flowsheet reads Flowsheet · Streams · ...
+  //  (DEV.md 4c C172 slice 3b).  The declared order above is the process one.
+  if (ctx.isPropsCase || ctx.application === "choupoProps") {
+    const order = ["Workflow", "Studies", "Reports", "Log", "Case", "Literature"];
+    return [...shown].sort((a, b) => order.indexOf(a.label) - order.indexOf(b.label));
+  }
+  return shown;
 }
 
 /** What the menu shows for an entry. */

@@ -25,7 +25,7 @@
  * hidden, because the phase is the one fact the overview must still carry.
  */
 
-export function WirePhaseMark({ color, glyph, label, moved, hover }: {
+export function WirePhaseMark({ color, glyph, label, moved, hover, what = "phase", primary = true }: {
   color: string;
   /** the phase letter, or undefined for a wire with no phase to say */
   glyph?: string;
@@ -33,6 +33,12 @@ export function WirePhaseMark({ color, glyph, label, moved, hover }: {
   label?: string;
   moved: boolean;
   hover: boolean;
+  /** what the mark states: a stream's "phase" on the flowsheet, what an
+   *  arrow "carries" on the workflow diagram (DEV.md 4c C172 slice 3b) */
+  what?: string;
+  /** kept at the minimum size at fit (case/legibility.ts) -- a phase letter
+   *  is; a workflow arrow's word is, only where the reader needs it there */
+  primary?: boolean;
 }) {
   if (!glyph) {
     return (
@@ -51,10 +57,11 @@ export function WirePhaseMark({ color, glyph, label, moved, hover }: {
   }
   return (
     <div
-      data-wire-phase={glyph}
-      data-legible-primary=""
-      aria-label={label ? `phase: ${label}` : undefined}
-      title={label ? `phase: ${label}` : undefined}
+      data-wire-phase={what === "phase" ? glyph : undefined}
+      data-wire-carries={what === "phase" ? undefined : glyph}
+      data-legible-primary={primary ? "" : undefined}
+      aria-label={label ? `${what}: ${label}` : undefined}
+      title={label ? `${what}: ${label}` : undefined}
       style={{
         minWidth: 16,
         padding: "0 3px",

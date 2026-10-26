@@ -224,13 +224,14 @@ describe("allowedWorkspaceLabels", () => {
       "Flowsheet", "Streams", "Variables",
       "Plots", "Log", "Case", "Pinch", "Reports", "Literature",
     ]);
-    // props-only: no canvas, no streams, no duties -- and NO Plots (DEV.md
-    // 4c C151): the Workflow is the one home of a props case's figures
+    // props-only: no canvas of units, no streams, no duties -- and NO Plots
+    // (DEV.md 4c C151); its home is the Workflow, its figures under Studies,
+    // what its run wrote under Reports, in the props order (C172 slice 3b)
     expect(visibleWorkspacesFor({ ...PROPS, hasLiteratureMirror: true }).map((w) => w.label)).toEqual([
-      "Workflow", "Log", "Case", "Literature",
+      "Workflow", "Studies", "Reports", "Log", "Case", "Literature",
     ]);
     expect(visibleWorkspacesFor({ ...PROPS, isPropsCase: false, application: "choupoProps" })
-      .map(captionOf)).toEqual(["Workflow", "Log", "Case"]);
+      .map(captionOf)).toEqual(["Workflow", "Studies", "Reports", "Log", "Case"]);
     // time-dependent: no steady-only views; Control only with a declared PID
     expect(visibleWorkspacesFor({ ...CTRL_PID, hasLiteratureMirror: true }).map((w) => w.label)).toEqual([
       "Flowsheet", "Control", "Plots", "Log", "Case", "Literature",

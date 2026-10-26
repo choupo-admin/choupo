@@ -63,7 +63,43 @@ interface WaypointData {
   onReset?: (id: string) => void;
   /** Set by FlowCanvas when this stream is a model-boundary audit entry. */
   boundary?: BoundaryBadgeData;
+  /** A workflow arrow (DEV.md 4c C172 slice 3b): the word on its mark says
+   *  what it CARRIES rather than a phase, and its bend is the layout's (the
+   *  diagram is derived, so there is no arrangement to keep). */
+  carries?: string;
+  carriesMeaning?: string;
+  carriesPrimary?: boolean;
+  /** the arrow's orthogonal route, computed by the diagram's layout (it runs
+   *  in the gaps between boxes, case/workflowDiagram.ts); its first and last
+   *  points are moved onto the handles the canvas measured */
+  route?: { x: number; y: number }[];
+  labelAt?: { x: number; y: number };
   [k: string]: unknown;
+}
+
+/** An orthogonal polyline with rounded corners, its ends pinned to the
+ *  measured handles (the first and last segments are horizontal, so moving
+ *  an end moves its neighbour's y with it). */
+function orthoPath(route: { x: number; y: number }[], sx: number, sy: number, tx: number, ty: number): string {
+  const p = route.map((q) => ({ ...q }));
+  const n = p.length;
+  p[0] = { x: sx, y: sy };
+  if (n > 2) p[1] = { x: p[1]!.x, y: sy };
+  p[n - 1] = { x: tx, y: ty };
+  if (n > 2) p[n - 2] = { x: p[n - 2]!.x, y: ty };
+  const r = 8;
+  let d = `M ${p[0]!.x} ${p[0]!.y}`;
+  for (let i = 1; i < n - 1; i++) {
+    const a = p[i - 1]!, b = p[i]!, c = p[i + 1]!;
+    const l1 = Math.hypot(b.x - a.x, b.y - a.y), l2 = Math.hypot(c.x - b.x, c.y - b.y);
+    const k = Math.min(r, l1 / 2, l2 / 2);
+    if (k < 0.5) { d += ` L ${b.x} ${b.y}`; continue; }
+    const p1 = { x: b.x - ((b.x - a.x) / l1) * k, y: b.y - ((b.y - a.y) / l1) * k };
+    const p2 = { x: b.x + ((c.x - b.x) / l2) * k, y: b.y + ((c.y - b.y) / l2) * k };
+    d += ` L ${p1.x} ${p1.y} Q ${b.x} ${b.y} ${p2.x} ${p2.y}`;
+  }
+  d += ` L ${p[n - 1]!.x} ${p[n - 1]!.y}`;
+  return d;
 }
 
 export function WaypointEdge(props: EdgeProps) {
@@ -76,13 +112,18 @@ export function WaypointEdge(props: EdgeProps) {
   const dragging = useRef(false);
   const [hover, setHover] = useState(false);
 
-  const [path, labelX, labelY] = getSmoothStepPath({
+  const [stepPath, stepLX, stepLY] = getSmoothStepPath({
     sourceX, sourceY, sourcePosition,
     targetX, targetY, targetPosition,
     borderRadius: 8,
     centerX: data.center?.x,
     centerY: data.center?.y,
   });
+  const routed = data.route && data.route.length >= 2
+    ? orthoPath(data.route, sourceX, sourceY, targetX, targetY) : null;
+  const path = routed ?? stepPath;
+  const labelX = routed && data.labelAt ? data.labelAt.x : stepLX;
+  const labelY = routed && data.labelAt ? data.labelAt.y : stepLY;
 
   const moved = data.center !== undefined;
   //  never the accent cyan as a fallback: it reads as LIQUID (C168 slice 2)
@@ -125,8 +166,16 @@ export function WaypointEdge(props: EdgeProps) {
         <ModelBoundaryBadge x={labelX} y={labelY + 16} refused={data.boundary.refused} />
       )}
       <EdgeLabelRenderer>
-        {/* Transparent hit area (catches hover even when the dot is
-            hidden) with a small visible handle in the middle. */}
+        {data.carries !== undefined ? (
+          <div className="nodrag nopan" data-wire-label={data.carries}
+            style={{ position: "absolute", transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+              pointerEvents: "none" }}>
+            <WirePhaseMark color={color} glyph={data.carries} label={data.carriesMeaning ?? data.carries}
+              moved={false} hover={false} what="carries" primary={!!data.carriesPrimary} />
+          </div>
+        ) : (
+        /* Transparent hit area (catches hover even when the dot is
+            hidden) with a small visible handle in the middle. */
         <div
           // `nodrag nopan`: React Flow's pane listens for pointer-drag to
           // PAN the canvas; without these classes grabbing the handle pans
@@ -160,6 +209,7 @@ export function WaypointEdge(props: EdgeProps) {
           <WirePhaseMark color={color} glyph={data.phaseGlyph as string | undefined}
             label={data.phaseLabel as string | undefined} moved={moved} hover={hover} />
         </div>
+        )}
         {/* PFD stream number, just above the bend point (display-only, toggled
             by the SHOW "№ streams" chip). */}
         {data.showNumbers === true && typeof data.num === "number" && (

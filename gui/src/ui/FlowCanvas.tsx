@@ -37,10 +37,7 @@ License
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   applyNodeChanges,
-  Background,
-  BackgroundVariant,
   Controls,
-  MarkerType,
   Panel,
   ReactFlow,
   ReactFlowProvider,
@@ -53,10 +50,9 @@ import {
   type NodeChange,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { ActionIcon, Badge, Box, Button, Chip, Group, Popover, ScrollArea, Stack, Text, Tooltip, useComputedColorScheme } from "@mantine/core";
+import { Badge, Box, Button, Chip, Group, Popover, ScrollArea, Stack, Text, Tooltip, useComputedColorScheme } from "@mantine/core";
 import { IconRefresh } from "@tabler/icons-react";
-import { IconChevronLeft, IconChevronRight, IconX } from "@tabler/icons-react";
-import { useReducedMotion } from "@mantine/hooks";
+import { IconX } from "@tabler/icons-react";
 
 import { flowsheetToGraph } from "../case/toGraph.js";
 import { caseMolarMass, meanMolarMass } from "../case/caseMolarMass.js";
@@ -83,13 +79,12 @@ import {
   type UiScheme,
 } from "./plotting/palette.js";
 import { useLegibilityFloor } from "./legibilityFloor.js";
-import { MIN_TEXT_PX } from "../case/legibility.js";
 import {
   formatSig,
 } from "../state/displayUnits.js";
-import { ErrorBoundary } from "./ErrorBoundary.js";
+import { arrowMarker, CanvasBackground, CanvasKeyHint, CANVAS_BG, SelectionCard, WireLegend } from "./canvasChrome.js";
 import { FLOWSHEET_FIT_ANIMATED, FLOWSHEET_MIN_ZOOM, flowsheetFitFor } from "./flowsheetViewport.js";
-import { cardFoldOffset, CARD_BODY_W, CARD_HANDLE_W, CARD_MARGIN, selectionLeafLabel } from "./panelFold.js";
+import { selectionLeafLabel } from "./panelFold.js";
 import { PropertyPanel } from "./PropertyPanel.js";
 import { StreamTerminal } from "./StreamTerminal.js";
 import { RunSummaryStrip } from "./RunSummaryStrip.js";
@@ -300,11 +295,9 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   const rawFiles = useStore((s) => s.caseFiles.rawFiles);
   const selectNode = useStore((s) => s.selectNode);
   const selectedNodeId = useStore((s) => s.selectedNodeId);
-  // Selection-card fold (one-click slide-away): `panels.property` is the
-  // persisted expanded/folded flag -- see ui/panelFold.ts for the geometry.
-  const cardOpen = useStore((s) => s.panels.property);
+  // Selection-card fold (`]`): `panels.property` is the persisted flag; the
+  // card itself is ui/canvasChrome.tsx's SelectionCard.
   const togglePanel = useStore((s) => s.togglePanel);
-  const reduceMotion = useReducedMotion();
   const tutorialName = useStore((s) => s.tutorialName);
   const runResult = useStore((s) => s.runResult);
   const stale = useStaleResult();
@@ -1357,12 +1350,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           // thickness, so it stays proportional to the flow (thickness
           // ∝ √F).  Slimmer than before --- narrower base, a touch longer
           // --- so it reads as a slender pointer, not a fat triangle.
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-            color,
-            width: 10,
-            height: 12,
-          },
+          markerEnd: arrowMarker(color),
           style: {
             ...(e.style ?? {}),
             stroke: color,
@@ -1540,7 +1528,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       //  THE LIGHT CANVAS IS `gray-1` (C168 slice 2): it was `gray-6`, a mid
       //  grey no wire hue could hold 3:1 against (1.0-1.6:1, every wire on
       //  ammonia02).  The light palette (palette.ts) is tuned on this one.
-      style={{ position: "relative", width: "100%", height: "100%", background: "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-8))" }}>
+      style={{ position: "relative", width: "100%", height: "100%", background: CANVAS_BG }}>
       <ReactFlow
         nodes={styledNodes}
         edges={styledEdges}
@@ -1607,12 +1595,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         nodesConnectable={false}
         elementsSelectable
       >
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={20}
-          size={1}
-          color={uiScheme === "dark" ? "var(--mantine-color-dark-5)" : "var(--mantine-color-gray-2)"}
-        />
+        <CanvasBackground scheme={uiScheme} />
         <Controls showInteractive={false} />
         {/* What the canvas draws: the run badge and Reset.  The Run itself is
             the toolbar's (ui/RunButton.tsx, DEV.md 4c C172). */}
@@ -1667,28 +1650,10 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                  draws; both read case/runControl.ts, so they cannot disagree. */}
           </Group>
         </Panel>
-        {/* Keyboard-shortcut legend in the bottom-right corner. */}
-        <Box
-          style={{
-            position: "absolute",
-            right: 12,
-            bottom: 12,
-            zIndex: 5,
-            padding: "4px 8px",
-            borderRadius: 4,
-            background: "light-dark(rgba(255,255,255,0.9), rgba(0,0,0,0.45))",
-            pointerEvents: "none",
-          }}
-        >
-          {legibility === "overview" && (
-            <Text size="11px" ff="monospace" fw={600} data-legibility-hint="">
-              Overview: labels under {MIN_TEXT_PX} px are hidden -- zoom in (+, wheel) to read them
-            </Text>
-          )}
-          <Text size="11px" c="dimmed" ff="monospace">
-            F: fit view  ·  Esc: deselect  ·  ]: fold card  ·  double-click: drill in
-          </Text>
-        </Box>
+        {/* Keyboard-shortcut legend in the bottom-right corner (shared with
+            the workflow diagram, ui/canvasChrome.tsx). */}
+        <CanvasKeyHint legibility={legibility}
+          keys="F: fit view  ·  Esc: deselect  ·  ]: fold card  ·  double-click: drill in" />
         {/* Visualisation filters (top-left): show/hide stream classes so a
             busy plant declutters.  Process material is always shown. */}
         <Box
@@ -1821,43 +1786,11 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           )}
           {legends.map((lg) => <LegendBox key={lg.title} legend={lg} />)}
           {dashesPresent.length > 0 && (
-            <Box
-              style={{
-                padding: "6px 10px",
-                borderRadius: 4,
-                background: "light-dark(rgba(255,255,255,0.9), rgba(0,0,0,0.55))",
-                pointerEvents: "none",
-                display: "flex",
-                gap: 12,
-                alignItems: "center",
-                flexWrap: "wrap",
-                maxWidth: 520,
-              }}
-            >
-              <Text size="11px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
-                wires
-              </Text>
-              {dashesPresent.map((d) => (
-                <Box key={d.kind} style={{ display: "flex", gap: 5, alignItems: "center" }} title={d.meaning}>
-                  <svg width={34} height={6} aria-hidden>
-                    <line
-                      x1={0} y1={3} x2={34} y2={3}
-                      stroke={d.colour ? inkFor(d.colour, uiScheme) : "currentColor"}
-                      strokeWidth={2}
-                      strokeDasharray={d.dash ?? undefined}
-                      opacity={d.opacity}
-                    />
-                    {d.mark === "cut" && (
-                      <g stroke="currentColor" strokeWidth={1.5}>
-                        <line x1={8} y1={6} x2={11} y2={0} />
-                        <line x1={11} y1={6} x2={14} y2={0} />
-                      </g>
-                    )}
-                  </svg>
-                  <Text size="11px" c="dimmed">{d.label}</Text>
-                </Box>
-              ))}
-            </Box>
+            //  the WIRES legend, shared with the workflow diagram
+            //  (ui/canvasChrome.tsx)
+            <WireLegend items={dashesPresent.map((d) => ({
+              key: d.kind, dash: d.dash, label: d.label, meaning: d.meaning, opacity: d.opacity,
+              colour: d.colour ? inkFor(d.colour, uiScheme) : undefined, cut: d.mark === "cut" }))} />
           )}
         </Box>
         {/* THE PROBE (C114 item 6): every field the hovered stream publishes,
@@ -1892,163 +1825,16 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         )}
         {/* Selection card (top-right): the unit's "hardware" --- its
             operation block (schema-driven, in the chosen display units) plus
-            the latest-run KPIs.  Appears ONLY when something is selected, so
-            it respects the Fase-A "no permanent panels" layout; it floats
-            over the canvas (the flowsheet stays visible) instead of a modal,
-            per the credo's "pop-out beats modal" / "modals interrupt".  Esc
-            or a click on empty canvas clears the selection and dismisses it.
-            Starts at top: 52 --- BELOW the run-badge panel (top-right, ~45 px
-            tall incl. margin) --- so the badge and Reset stay visible while a
-            node is selected.
-
-            One-click slide-away: the container is [fold handle | body] and
-            translates right by body + margin (cardFoldOffset, panelFold.ts)
-            so the body parks off-screen while the handle stays flush at the
-            viewport edge --- the SELECTION IS KEPT (halo stays; X = deselect
-            as before, the handle = just tuck the card).  transform, not
-            width: the card is an overlay, the canvas div never resizes, so
-            React Flow needs no nudge.  The React Flow wrapper's
-            overflow:hidden clips the parked body.  Fold state persists via
-            panels.property, which is a READER PREFERENCE with its own key
-            (state/prefs.ts) rather than a field of this tab's session -- so
-            the tucked layout survives a reload, a new tab, and the next case. */}
+            the latest-run KPIs.  ONE card for both homes: the workflow
+            diagram draws the same one around a step (ui/canvasChrome.tsx,
+            which carries the card's own rationale). */}
         {selectedNodeId && (
-          <Box
-            style={{
-              position: "absolute",
-              right: CARD_MARGIN,
-              top: 52,
-              zIndex: 7,
-              width: CARD_HANDLE_W + CARD_BODY_W,
-              maxHeight: "calc(var(--choupo-vh) - 160px)",
-              // Clip to the rounded border so the inner ScrollArea is what
-              // scrolls -- without this, content taller than maxHeight paints
-              // PAST the card edge instead of scrolling (playground section).
-              overflow: "hidden",
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "stretch",
-              borderRadius: 8,
-              border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-              background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))",
-              boxShadow: "0 6px 24px rgba(0,0,0,0.25)",
-              transform: `translateX(${cardFoldOffset(!cardOpen)}px)`,
-              transition: reduceMotion ? "none" : "transform 200ms ease",
-            }}
-          >
-            <CardFoldHandle
-              open={cardOpen}
-              label={selectionLeafLabel(selectedNodeId)}
-              onToggle={() => togglePanel("property")}
-            />
-            <Box
-              style={{
-                position: "relative",
-                width: CARD_BODY_W,
-                flexShrink: 0,
-                display: "flex",
-                flexDirection: "column",
-                // Folded: hide the body AFTER the slide (200ms delay) so its
-                // X / links leave the tab order + a11y tree while parked
-                // off-screen; unfolding flips it visible immediately so the
-                // content is seen sliding back in.
-                visibility: cardOpen ? "visible" : "hidden",
-                transition:
-                  !cardOpen && !reduceMotion ? "visibility 0s linear 200ms" : "none",
-              }}
-            >
-              <ActionIcon
-                variant="subtle"
-                color="gray"
-                size="sm"
-                onClick={() => selectNode(null)}
-                aria-label="Close"
-                style={{ position: "absolute", right: 6, top: 6, zIndex: 1 }}
-              >
-                <IconX size={15} />
-              </ActionIcon>
-              <Box style={{ flex: 1, minHeight: 0 }}>
-                {/* Contained boundary: a render error in the selected node's
-                    details degrades to a small message INSIDE the card, never
-                    blanking the canvas + app (credo principle 5). */}
-                <ErrorBoundary scope="selection card">
-                  <PropertyPanel />
-                </ErrorBoundary>
-              </Box>
-            </Box>
-          </Box>
+          <SelectionCard label={selectionLeafLabel(selectedNodeId)} onClose={() => selectNode(null)}>
+            <PropertyPanel />
+          </SelectionCard>
         )}
       </ReactFlow>
     </div>
-  );
-}
-
-// The selection card's slim fold handle -- the always-visible strip on the
-// card's inner (left) edge.  One click slides the card away to the right /
-// pulls it back (the RailReopenTab idiom from the Property Explorer: whole
-// strip = the click target, chevron + a vertical micro-label saying WHAT is
-// tucked).  It travels WITH the card, so folded it peeks at the viewport edge.
-function CardFoldHandle({ open, label, onToggle }: {
-  open: boolean; label: string; onToggle: () => void;
-}) {
-  const [hover, setHover] = useState(false);
-  return (
-    <Tooltip
-      label={open ? "Tuck the card away ( ] )" : "Show the details card ( ] )"}
-      withArrow
-      position="left"
-    >
-      <Box
-        onClick={onToggle}
-        onPointerEnter={() => setHover(true)}
-        onPointerLeave={() => setHover(false)}
-        role="button"
-        aria-label={open ? "tuck details card away" : "show details card"}
-        aria-expanded={open}
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggle(); }
-        }}
-        style={{
-          width: CARD_HANDLE_W,
-          flexShrink: 0,
-          cursor: "pointer",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 8,
-          paddingTop: 10,
-          borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-          background: hover
-            ? "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6))"
-            : "transparent",
-          transition: "background 120ms",
-        }}
-      >
-        {open ? (
-          <IconChevronRight size={15} color="var(--mantine-color-dimmed)" />
-        ) : (
-          <>
-            <IconChevronLeft size={15} color="var(--mantine-color-dimmed)" />
-            <Text
-              size="xs"
-              fw={700}
-              c="dimmed"
-              style={{
-                writingMode: "vertical-rl",
-                letterSpacing: 0.5,
-                userSelect: "none",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                maxHeight: 200,
-              }}
-            >
-              {label}
-            </Text>
-          </>
-        )}
-      </Box>
-    </Tooltip>
   );
 }
 

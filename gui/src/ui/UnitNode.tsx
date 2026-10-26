@@ -50,6 +50,7 @@ import { COLUMN_TYPES, HEAT_DUTY_TYPES, PHASE_SPLIT_TYPES } from "../case/dutyTy
 import { DUTY_TIER_COLOUR, type DutyTier } from "../case/dutySign.js";
 import { useStore } from "../state/store.js";
 import { SolvingHalo } from "./SolvingHalo.js";
+import { NODE_BG, NODE_FONT, NODE_PADDING, NODE_RADIUS, nodeBorder, nodeShadow } from "./nodeCard.js";
 import {
   type DisplayPrefs,
   authoredScalarToPrefs,
@@ -189,16 +190,18 @@ export function UnitNode({ id, data, selected }: NodeProps) {
     <div
       ref={nodeRef}
       style={{
+        //  THE CARD IS SHARED WITH THE WORKFLOW'S STEPS (ui/nodeCard.ts, DEV.md
+        //  4c C172 slice 3b): one look for a calculation box in both homes.
         background: tinted
-          ? `color-mix(in srgb, ${tinted.colour} 22%, light-dark(var(--mantine-color-white), var(--mantine-color-dark-6)))`
-          : "light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))",
+          ? `color-mix(in srgb, ${tinted.colour} 22%, ${NODE_BG})`
+          : NODE_BG,
         border: tinted
           ? `3px solid ${tinted.colour}`
           : untinted
           ? "1.5px dashed var(--mantine-color-gray-5)"
-          : `1.5px solid ${selected ? "var(--mantine-color-accent-5)" : "light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-4))"}`,
-        borderRadius: 10,
-        padding: "10px 14px",
+          : nodeBorder(!!selected),
+        borderRadius: NODE_RADIUS,
+        padding: NODE_PADDING,
         minWidth: 190,
         //  A SHORT BOX CROWDS ITS OWN HANDLES.  Connection points are placed
         //  at a FRACTION of the border, so a unit with several inlets packs
@@ -212,11 +215,9 @@ export function UnitNode({ id, data, selected }: NodeProps) {
         //  A KPI-tinted box has spent its border on the colour, so the
         //  selection ring takes the accent outright -- otherwise a selected
         //  coloured unit looks exactly like an unselected one.
-        boxShadow: selected
-          ? (tinted ? "0 0 0 3px var(--mantine-color-accent-5)" : "0 0 0 3px rgba(38, 198, 218, 0.15)")
-        : "0 1px 3px rgba(0,0,0,0.4)",
+        boxShadow: selected && tinted ? "0 0 0 3px var(--mantine-color-accent-5)" : nodeShadow(!!selected),
         transition: "border-color 150ms ease, box-shadow 150ms ease",
-        fontFamily: "Inter, sans-serif",
+        fontFamily: NODE_FONT,
       }}
     >
       {/* DEV.md 4c C115: the unit being solved pulses on a slow run. */}

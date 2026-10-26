@@ -87,6 +87,14 @@ import { openGuide } from "../help/guideLinks.js";
 const PropsView = lazy(() =>
   import("./PropsView.js").then((m) => ({ default: m.PropsView })),
 );
+// A properties case's home is its WORKFLOW DIAGRAM, as a process case's is
+// the flowsheet; its STUDIES and REPORTS are menu entries beside it, and a
+// step's own tab (?step=, a double click on its box) is routed before the
+// shell, as a unit's internals tab is (DEV.md 4c C172 slice 3b).  The tab's
+// figures pull Plotly, so it is lazy like PropsView.
+const StepTab = lazy(() =>
+  import("./StepTab.js").then((m) => ({ default: m.StepTab })),
+);
 // Same reason for the other Plotly-pulling workspaces (each imports the
 // shared plotting kit): lazy-load them so Plotly stays in split chunks and
 // the index chunk holds only the always-on shell + canvas.
@@ -264,7 +272,8 @@ export function AppShell() {
       //  owns F1 there too (the selected map block or tree node, else the
       //  selected panel): answering here as well opened two tabs per press
       //  (found 2026-10-25, DEV.md 4c C151).
-      if ((s.activeWorkspace === null || s.activeWorkspace === "props") && s.caseFiles.propsDict
+      if ((s.activeWorkspace === null || s.activeWorkspace === "props" || s.activeWorkspace === "studies"
+           || s.activeWorkspace === "reports") && s.caseFiles.propsDict
           && (!s.caseFiles.flowsheet || s.caseModeFor[s.tutorialName] === "props"
               || (s.caseModeFor[s.tutorialName] === undefined
                   && s.caseFiles.controlDict?.["application"] === "choupoProps"))) return;
@@ -310,6 +319,19 @@ export function AppShell() {
     return (
       <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
         <InternalsView />
+      </Suspense>
+    );
+  }
+
+  // A step of a properties case in its own tab (?step=<key>&id=<step>, DEV.md
+  // 4c C172 slice 3b): the workflow's counterpart of a unit's internals page.
+  // It booted the store from its stash (state/store.ts bootCase) and refuses
+  // honestly when the stash is gone.
+  if (typeof window !== "undefined"
+      && new URLSearchParams(window.location.search).has("step")) {
+    return (
+      <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+        <StepTab />
       </Suspense>
     );
   }
@@ -501,8 +523,10 @@ export function AppShell() {
               <MethodsWorkspace />
             </Suspense>
           ) : (
+            //  the Workflow diagram (the home), or its Studies or Reports
             <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
-              <PropsView />
+              <PropsView view={activeWorkspace === "studies" ? "studies"
+                : activeWorkspace === "reports" ? "reports" : "workflow"} />
             </Suspense>
           )
         ) : activeWorkspace === "streams" ? (
