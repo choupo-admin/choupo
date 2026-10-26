@@ -1528,6 +1528,35 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C171. THE PROPS SCREEN REDESIGNED BEFORE A RESEARCHER SEES IT, AND A
+> PROPER WAY TO CITE (Vitor, 2026-10-26, on the live NanoFiltran case
+> before sending the reply to Tim: "aquilo esta uma confusao diabolica que
+> viola as boas praticas de GUI todas!" -- and, agreeing the e-mail waits:
+> "claro que espera!  E tem de haver uma forma adequada de ele me poder
+> citar!").**  THE E-MAIL TO TIM (C157) IS HELD until both land.  (A) The
+> props-case screen is redesigned, not patched, ahead of the rest of
+> C168: on opening, the case's question, ONE Run and the studies as
+> readable cards; after a run, the results and the measured comparisons
+> in the centre; the calculation map in a "how it is computed" section,
+> closed by default and legible when open; ONE navigation (today the tree,
+> the map and the details repeat the same objects); a model's options
+> shown inside the model (bulkOverPoreDavies is an option of DSPM-DE, not
+> a sibling model); no repeated "not run"/"evaluate" chips; held to the
+> C168 audit's script-checkable criteria (clicks to results, minimum label
+> size, contrast, keyboard) and shown to Vitor on screen BEFORE Tim.  (B)
+> CITATION: today CITATION.cff exists (version 2608, one author, NO DOI)
+> and the GUI shows it nowhere.  To build: a "How to cite" surface --
+> Help menu and every case's About -- generated from CITATION.cff (one
+> home) plus the case's own primary references (for this case Geraldes &
+> Alves 2008 and the transport papers it reproduces) plus the exact
+> version and commit of the run; the same text in a downloaded case
+> (CITATION.txt) and in the result JSON.  A DOI needs Vitor: an archived
+> release (Zenodo's GitHub integration on choupo-admin, or a DOI on the
+> JOSS paper) -- a release tag is immutable and his (RELEASING.md), and
+> the author list of record is his (C163 excluded authorship).
+> Status: recorded; (A) dispatched after the running C168 slice 1 lands
+> (same files); (B) built beside it; the DOI and authors put to Vitor.
+
 > **C170. NOTHING SAID IS LOST: THE AUDIT OF EVERY REQUEST IN THE SESSION
 > (Vitor, 2026-10-26: "Ve se nao te esqueceste de mais nada que eu tenha
 > dito!" and "Nao me deites trabalho para o lixo nem te esquecas
