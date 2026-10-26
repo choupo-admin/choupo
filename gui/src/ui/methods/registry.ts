@@ -1741,8 +1741,11 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "litigation, abuse of dominance, inequitable conduct, "
       + "misappropriation); worked cases on a process patent whose recipe "
       + "does not work, a turbine whose blades melt, Whittle's turbojet "
-      + "patent and the Wright and Watt patents; and an exercise against a "
-      + "rival who reads your filings.  Not legal advice.",
+      + "patent and the Wright and Watt patents; a case study of the "
+      + "reverse-osmosis membrane, from Loeb and Sourirajan's cellulose "
+      + "acetate to Cadotte's composite and the FilmTec litigation, told "
+      + "from the patents and the Federal Circuit opinions; and an exercise "
+      + "against a rival who reads your filings.  Not legal advice.",
     theory: "ch:economics",
   },
   //  WHICH SOLVENT, OR WHICH SOLVENT MIXTURE (2026-10-21, DEV.md 4c C128,

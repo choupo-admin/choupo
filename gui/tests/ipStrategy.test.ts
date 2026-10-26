@@ -43,7 +43,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   DEADLINES, EXERCISE, EXERCISE_COMPANY, IP_CHOICES, IP_LIMITS, IP_QUIZ,
-  IP_SOURCES, IP_STEPS, addMonths,
+  IP_SOURCES, IP_STEPS, MEMBRANE_RECORDS, addMonths,
 } from "../src/ui/methods/ipStrategyLesson.js";
 import { IpStrategyTool } from "../src/ui/methods/IpStrategyTool.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
@@ -166,5 +166,140 @@ describe("ip-strategy: the rendered page", () => {
   it("prints no NaN or undefined, and none of the unverified details", () => {
     expect(text).not.toMatch(/\bNaN\b|\bundefined\b/);
     expect(text).not.toMatch(/£\s?5|Air Ministry/);
+  });
+});
+
+/*  THE REVERSE-OSMOSIS CASE STUDY (C140, fourth addendum).  Every citation
+ *  the case makes is held to a source row that says it was read, every page
+ *  of a reported opinion to the span that row says was read, and every
+ *  number of the table to the place its row names -- and the numbers the
+ *  prose repeats must be the table's.  What this cannot prove: that a page
+ *  of an opinion SAYS what the sentence citing it says.  That was read by a
+ *  person on 2026-10-26 and is the author's responsibility. */
+describe("ip-strategy: the reverse-osmosis case study", () => {
+  const caseSteps = IP_STEPS.filter((s) => s.n >= 19 && s.n <= 21);
+  const caseProse = [
+    ...caseSteps.map((s) => s.body),
+    ...IP_QUIZ.filter((q) => q.steps.some((n) => n >= 19)).flatMap((q) => [q.q, q.feedback]),
+  ].join("\n");
+  const step = (n: number): string => IP_STEPS.find((s) => s.n === n)!.body;
+
+  it("is three steps, 19 to 21, and the quiz asks about it", () => {
+    expect(caseSteps.map((s) => s.n)).toEqual([19, 20, 21]);
+    expect(IP_QUIZ.find((q) => q.id === "cadotte-title")!.steps).toEqual([20, 21]);
+  });
+
+  it("cites every reported opinion at a page inside the span its source row read", () => {
+    const pins = [...caseProse.matchAll(/(\d+) (F\.[23]d) at ([0-9][0-9, -]*)/g)];
+    expect(pins.length).toBeGreaterThanOrEqual(25);
+    for (const m of pins) {
+      const row = IP_SOURCES.find((s) => s.short.startsWith(`${m[1]} ${m[2]} `));
+      expect(row, `${m[1]} ${m[2]} is cited but has no source row`).toBeTruthy();
+      const span = /pp\. (\d+)-(\d+)/.exec(row!.read);
+      expect(span, `${row!.short} does not say which pages were read`).toBeTruthy();
+      const [lo, hi] = [Number(span![1]), Number(span![2])];
+      for (const part of m[3]!.split(",").map((p) => p.trim()).filter(Boolean)) {
+        const [first, second] = part.split("-");
+        const pages = [Number(first)];
+        //  "1553-54" is shorthand for 1553 to 1554.
+        if (second) pages.push(Number(first!.slice(0, first!.length - second.length) + second));
+        for (const page of pages)
+          expect(page >= lo && page <= hi,
+            `${m[0]}: page ${page} is outside ${row!.short}'s pp. ${lo}-${hi}`).toBe(true);
+      }
+    }
+  });
+
+  it("cites every patent, the retrospective and the European filing by a source row", () => {
+    const shorts = new Set(IP_SOURCES.map((s) => s.short));
+    for (const m of caseProse.matchAll(/US (\d,\d{3},\d{3})/g))
+      expect(shorts.has(`US ${m[1]}`), `US ${m[1]} is cited but has no source row`).toBe(true);
+    for (const [inProse, short] of [["(Cadotte, 1985)", "Cadotte 1985"],
+      ["(Elsevier, 2022)", "Elsevier 2022"], ["EP 0 015 149", "EP 0 015 149"],
+      ["US 3,133,132", "US 3,133,132"], ["US 3,133,137", "US 3,133,137"],
+      ["US 4,277,344", "US 4,277,344"], ["939 F.2d", "939 F.2d 1568"],
+      ["982 F.2d", "982 F.2d 1546"], ["67 F.3d", "67 F.3d 931"]] as const) {
+      expect(caseProse, `${inProse} is never cited`).toContain(inProse);
+      expect(shorts.has(short), `no source row "${short}"`).toBe(true);
+    }
+  });
+
+  it("holds each table row to a source row and the place it names", () => {
+    expect(MEMBRANE_RECORDS.length).toBe(6);
+    for (const r of MEMBRANE_RECORDS) {
+      const row = IP_SOURCES.find((s) => s.short === r.source);
+      expect(row, `${r.id}: no source "${r.source}"`).toBeTruthy();
+      const at = /^at (\d+)$/.exec(r.where);
+      if (at) {
+        const span = /pp\. (\d+)-(\d+)/.exec(row!.read)!;
+        expect(Number(at[1])).toBeGreaterThanOrEqual(Number(span[1]));
+        expect(Number(at[1])).toBeLessThanOrEqual(Number(span[2]));
+      } else {
+        expect(row!.read, `${r.id}: "${r.where}" is not among what ${r.source} says was read`)
+          .toContain(r.where);
+      }
+    }
+  });
+
+  it("pins the stated numbers, and the prose repeats the table's", () => {
+    const rec = Object.fromEntries(MEMBRANE_RECORDS.map((r) => [r.id, r]));
+    //  US 3,133,132 col. 2 and Table I (1,500 psig; 5.25 % and 3.5 % NaCl).
+    expect(rec["ls-col2"]!.feed).toBe("5.25 % sodium chloride");
+    expect(rec["ls-col2"]!.salt).toContain("500 ppm");
+    expect(rec["ls-col2"]!.flux).toContain("8 gal");
+    expect(rec["ls-table1"]!.salt).toBe("0.043 to 0.42 % salt in the product water");
+    expect(rec["ls-table1"]!.flux).toBe("2.0 to 20 gal/ft²·day");
+    for (const id of ["ls-col2", "ls-table1"]) expect(rec[id]!.pressure).toBe("1,500 psig");
+    //  982 F.2d at 1549: the notebook results.
+    expect(rec["mri-1977"]!.flux).toBe("12.7 and 9.5 gfd");
+    expect(rec["mri-1977"]!.salt).toBe("95.0 and 88.5 % rejection");
+    expect(rec["mri-1977"]!.pressure).toBe("1,500 psi");
+    expect(rec["filmtec-1978"]!.flux).toBe("13.1 and 11.0 gfd");
+    expect(rec["filmtec-1978"]!.salt).toBe("98.0 % rejection");
+    //  US 4,277,344 cols. 11 and 17.
+    expect(rec["us344-col11"]!.salt).toBe("at least 99.3 % rejection");
+    expect(rec["us344-col11"]!.flux).toBe("more than 1,200 l/m²·d");
+    expect(rec["us344-ex1"]!.salt).toBe("99.5 % rejection");
+    expect(rec["us344-ex1"]!.flux).toBe("35.4 gfd (1,444 l/m²·d)");
+    expect(rec["us344-ex1"]!.pressure).toBe("1,000 psi (68.0 atm)");
+    //  The prose says the same numbers, not a second set.
+    expect(step(19)).toContain("5.25 % sodium chloride solution to about 500 parts per");
+    expect(step(19)).toContain("at least 99.3");
+    expect(step(19)).toContain("99.5 % at 35.4 gfd at 1,000 psi");
+    expect(step(20)).toContain("gave 12.7 and 9.5 gfd at 95.0 and 88.5 % rejection");
+    expect(step(20)).toContain("obtained 13.1 and 11.0 gfd at 98.0 %");
+  });
+
+  it("pins the dates and what each court decided", () => {
+    expect(step(19)).toContain("On 29 November 1960");
+    expect(step(19)).toContain("12 May 1964");
+    expect(step(19)).toContain("filed on 20 March 1962");
+    expect(step(20)).toContain("On 17 November 1977");
+    expect(step(20)).toContain("left MRI on 31 December 1977");
+    expect(step(20)).toContain("on 23 February 1978");
+    expect(step(20)).toContain("applied for the patent on 22 February 1979");
+    expect(step(20)).toMatch(/Federal Circuit vacated the injunction/);
+    expect(step(20)).toMatch(/reversed on title alone and vacated the holdings of validity and infringement/);
+    expect(step(20)).toMatch(/not a sham/);
+    expect(step(20)).toMatch(/restitution was refused/);
+    //  The European filing claimed the US date one day inside the priority
+    //  year -- the calculator of step 6 says where that year ends.
+    expect(addMonths("1979-02-22", 12)).toBe("1980-02-22");
+    expect(step(20)).toContain("21 February 1980");
+    expect(sourceRead("EP 0 015 149")).toContain("priority 22.02.1979 US 14164");
+  });
+
+  it("states no ratio between the two membranes, and says why", () => {
+    const all = [caseProse, ...MEMBRANE_RECORDS.flatMap((r) => Object.values(r))].join("\n");
+    expect(all).not.toMatch(/\b(5|five)\s?(x|×|times|-fold)|fivefold|\bfactor of\b/i);
+    expect(IP_LIMITS.find((l) => l.id === "membrane-numbers")!.body)
+      .toMatch(/computes no ratio/);
+  });
+
+  it("draws the table, every row", () => {
+    const html = renderToStaticMarkup(createElement(MantineProvider, null,
+      createElement(IpStrategyTool)));
+    for (const r of MEMBRANE_RECORDS) expect(html).toContain(`data-membrane-record="${r.id}"`);
+    expect(html).toContain("Case study: the reverse-osmosis membrane");
   });
 });
