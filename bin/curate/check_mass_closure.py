@@ -127,6 +127,7 @@ WHAT THIS DOES NOT CHECK, said plainly:
     this for as long as it did.  Those cases are LISTED by this gate, never
     silently skipped: an absence nobody counts is not a finding.
 """
+import json
 import re
 import subprocess
 import sys
@@ -451,6 +452,87 @@ def atom_scope_arm(ran):
     return out, seen, staleNote
 
 
+#  ---- CLOSURE BY CONSTRUCTION (DEV.md 4c C174, 2026-10-26) -----------------
+#  A material term a unit FILLS as the remainder of its own balance makes that
+#  balance close for any value of the unit's other terms, so the closure is
+#  not evidence about them.  The record is docs/design/no-closure-by-
+#  construction.md; this table is the gate's OWN copy of its (B) MATERIAL rows,
+#  keyed on what the run publishes (the unit type and its KPIs), never on the
+#  engine's word.  Today it has one row: the spiral-wound module fills each
+#  outlet with WATER to the declared density from a feed volume m_in / rho, so
+#  its total mass closes for ANY solute flows -- and the global closure this
+#  gate reads is a TOTAL mass.  Its second route is every solute balanced on
+#  its own (`solute_closure_rel`, refused above 1e-9).  The table and the
+#  engine must agree both ways, and a second route that must agree and does
+#  not FAILS; everything else is COUNTED on the claim line.
+UNIT_HEADER = re.compile(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = (\w+)\)")
+BY_CONSTRUCTION_MATERIAL = {
+    "spiralWoundModule": ("water in the retentate and the permeate",
+                          lambda k: "solute_closure_rel" in k),
+}
+BY_CONSTRUCTION_WITNESSES = {
+    ("tutorials/steady/membranes/membrane18_nf_feed_and_bleed", "NF"),
+}
+
+
+def json_block(txt: str, key: str):
+    """The value of a top-level `"key": <json>` in the engine's result JSON on
+    stdout, parsed by the JSON parser rather than by a pattern -- or None."""
+    at = txt.find('"%s": ' % key)
+    if at < 0:
+        return None
+    try:
+        return json.JSONDecoder().raw_decode(txt, at + len(key) + 4)[0]
+    except ValueError:
+        return None
+
+
+def judge_by_construction(rel, txt, seen, found, bad):
+    """The C174 arm on one case: `found` collects (rel, unit, status)."""
+    types = dict(UNIT_HEADER.findall(txt))
+    kpis = json_block(txt, "kpis") or {}
+    records = {}
+    for c in json_block(txt, "closuresByConstruction") or []:
+        if c.get("balance") == "material":
+            records.setdefault(c.get("unit"), []).append(c)
+    for unit, t in types.items():
+        spec = BY_CONSTRUCTION_MATERIAL.get(t)
+        if spec is None or not spec[1](kpis.get(unit, {})):
+            continue
+        seen.add((rel, unit))
+        recs = records.get(unit)
+        if not recs:
+            bad.append(
+                "%s: unit '%s' (%s) fills %s as the REMAINDER of its own "
+                "material balance (docs/design/no-closure-by-construction.md), "
+                "so its mass closes for any solute flows and is no evidence -- "
+                "and the engine published no material closure variable for "
+                "it, so the plant closure this gate holds counts that zero as "
+                "a closure.  Declare it in the unit's closureVariables()."
+                % (rel, unit, t, spec[0]))
+            continue
+        for c in recs:
+            found.append((rel, unit, c.get("status")))
+    for unit, recs in records.items():
+        t = types.get(unit)
+        if t not in BY_CONSTRUCTION_MATERIAL or not \
+                BY_CONSTRUCTION_MATERIAL[t][1](kpis.get(unit, {})):
+            bad.append(
+                "%s: unit '%s' (%s) declares a material closure variable (%s) "
+                "that this gate's table BY_CONSTRUCTION_MATERIAL does not "
+                "hold.  Add it to docs/design/no-closure-by-construction.md "
+                "and to the table in the same commit."
+                % (rel, unit, t, ", ".join(c.get("variable", "?")
+                                            for c in recs)))
+        for c in recs:
+            if c.get("mustAgree") and c.get("status") != "verified":
+                bad.append(
+                    "%s: unit '%s' fills %s by construction and its SECOND "
+                    "ROUTE, which must agree, does not: %s (gap %s %s)."
+                    % (rel, unit, c.get("variable"), c.get("note", ""),
+                       c.get("gap"), c.get("units", "")))
+
+
 def main() -> int:
     #  FOUR STATES, and the first version of this gate collapsed them into two
     #  and accused three honest cases.  Each is a different fact about the run:
@@ -470,6 +552,8 @@ def main() -> int:
     outOfScope = []
     processScope = 0        # cases whose closure was read on the PROCESS scope
     ranPlants = {}          # plant case -> its stdout, RUN IN THIS PASS
+    bcSeen, bcFound = set(), []   # C174: closures by construction (material)
+    ranClean = set()
     for case, declaresMB in steady_cases():
         rel = case.relative_to(ROOT).as_posix()
         txt, ranOk = output(case)
@@ -479,6 +563,8 @@ def main() -> int:
         if not ranOk:
             unrun.append(rel)
             continue
+        ranClean.add(rel)
+        judge_by_construction(rel, txt, bcSeen, bcFound, bad)
         #  A PLANT is a case under `tutorials/plant/` (continuous) or
         #  `tutorials/batch/plant/` (a plant run in lots, DEV.md 4c C106) --
         #  the folder is a discipline, so both are plants to this arm.
@@ -538,6 +624,13 @@ def main() -> int:
                  "subject reports PASS forever -- fix the discovery, do not "
                  "retire the check.\n"))
         return 1
+    for rel, unit in sorted(BY_CONSTRUCTION_WITNESSES):
+        if rel in ranClean and (rel, unit) not in bcSeen:
+            bad.append(
+                "%s: the closure-by-construction arm did not READ its witness "
+                "'%s' -- THIS IS A DEFECT IN THE GATE (or the witness was "
+                "renamed): an arm that reads nothing passes forever."
+                % (rel, unit))
     bad += refusal_arm()
     atomBad, atomSeen, atomNote = atom_scope_arm(ranPlants)
     atomNotJudged = atomNote if atomSeen == 0 else ""
@@ -577,13 +670,28 @@ def main() -> int:
           "looks like success (%s).  NOT CHECKED: whether those process figures "
           "are RIGHT (they are a derived view of streams the goldens already "
           "pin), energy closure, and PER-UNIT closure (two "
-          "units can cancel and this arm would not see it).%s%s"
+          "units can cancel and this arm would not see it).  CLOSURE BY "
+          "CONSTRUCTION (C174) -- NOT EVIDENCE: %d unit material closure(s) "
+          "hold because the unit FILLED a term from the balance (%s), in %d "
+          "case(s) whose closure above therefore says nothing about that "
+          "term; %d are verified by the unit's own second route (every "
+          "solute balanced on its own) and %d are NOT VERIFIED (%s); every "
+          "in-scope witness among %d was read.%s%s"
           % (checked, BAND, processScope, len(PROBES), len(noBoundary),
              len(announced), len(unrun), len(silent),
              ("NOT JUDGED in this scope" if atomNotJudged else
               "judged on %d plant(s) run in this pass that publish a process "
               "atom scope, each read through report files that pass says it "
               "wrote%s" % (atomSeen, atomNote)),
+             len(bcFound),
+             ", ".join("%s: %s" % (t, v) for t, (v, _f)
+                       in sorted(BY_CONSTRUCTION_MATERIAL.items())),
+             len({r for r, _u, _w in bcFound}),
+             sum(1 for _r, _u, w in bcFound if w == "verified"),
+             sum(1 for _r, _u, w in bcFound if w != "verified"),
+             "; ".join("%s:%s" % (r.split("/")[-1], u)
+                       for r, u, w in bcFound if w != "verified") or "none",
+             len(BY_CONSTRUCTION_WITNESSES),
              scope_sentence(checked + len(noBoundary) + len(announced)
                             + len(unrun) + len(silent), len(outOfScope)),
              atomNotJudged))

@@ -1679,6 +1679,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
             c.checkValue = 0.0;
             c.gap        = solute_closure_rel;
             c.tolerance  = 1.0e-9;
+            c.mustAgree  = true;
             c.verified   = solute_closure_rel <= 1.0e-9;
         }
         closures_.clear();

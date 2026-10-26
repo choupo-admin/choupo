@@ -657,6 +657,13 @@ export interface RunResult {
    *  readout; surfaced so the student SEES the inconsistency, never a silent
    *  T-nudge. */
   modelBoundaries?: ModelBoundary[];
+  /** CLOSURES BY CONSTRUCTION (DEV.md 4c C174, engine
+   *  `closuresByConstruction`): the terms a unit computed as the REMAINDER of
+   *  its own balance, so that balance's closure over the unit is not
+   *  evidence about them.  Drawn as the engine's word (`verified` |
+   *  `notVerified`); nothing here recomputes a gap.  Absent when no unit
+   *  declares one. */
+  closuresByConstruction?: ClosureByConstruction[];
   /** The loop each declared tear cuts -- its units and streams, qualified
    *  names, as the engine's sequential-plan validator FOUND them (DEV.md 4c
    *  C42).  The canvas highlights a loop from this and never re-detects one. */
@@ -1252,6 +1259,24 @@ export interface Advisory {
  *  readout; dH is the enthalpy the two models disagree about at the stream's
  *  (T,P,z).  `refused` = a speciation change (electrolyte<->molecular) where a
  *  single dH would lie, so no number is computed (only `reason`). */
+/** One closure by construction, field names the engine's
+ *  (src/result/ClosureVariable.H). */
+export interface ClosureByConstruction {
+  unit: string;
+  balance: "energy" | "material" | "element" | string;
+  variable: string;
+  status: "verified" | "notVerified" | string;
+  rule: string;
+  blindTo: string;
+  check: string;
+  checkValue?: number;
+  gap?: number;
+  tolerance?: number;
+  mustAgree?: boolean;
+  units: string;
+  note?: string;
+}
+
 export interface ModelBoundary {
   stream: string;
   producer: string;

@@ -775,6 +775,129 @@ UNIT_WITNESSES = {
     ("tutorials/steady/reactors/equil01_reforming", "reformer"),
 }
 UNIT_HEADER = re.compile(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = (\w+)\)")
+
+
+#  ---- CLOSURE BY CONSTRUCTION (DEV.md 4c C174, 2026-10-26) -----------------
+#
+#  A balance used to COMPUTE a term cannot be the evidence that the term is
+#  right.  The distillation column publishes Q_reboiler_kW = dH - Q_condenser,
+#  so its first law closed for ANY condenser duty, and this arm judged it and
+#  counted it among the units that "leave nothing unattributed" -- green, while
+#  the condenser was wrong on all 34 columns (C169).  The record is
+#  docs/design/no-closure-by-construction.md; this table is the gate's OWN
+#  copy of its (B) energy rows, keyed on what the run PUBLISHES (the unit type
+#  and its KPIs) and never on the engine's word, so the engine cannot pass the
+#  arm by forgetting to say it.  The two must agree in both directions:
+#
+#    * a unit this table names that the engine does NOT mark `byConstruction`
+#      FAILS -- its zero would be read as a closure (the arm that fails on the
+#      tree before C174, when no unit said anything);
+#    * a `byConstruction` row the table does NOT name FAILS -- the record and
+#      this table must grow together, and a closure variable nobody listed is
+#      a class nobody classified;
+#    * a record whose second route MUST agree (`mustAgree`: a full MESH's
+#      reboiler envelope, a reactor's declared heat) and does not FAILS --
+#      that is the independent check doing its job;
+#    * everything else is COUNTED on the claim line, apart from the units the
+#      arm counts as closed: a closure by construction is never evidence, and
+#      a `notVerified` one (a CMO column, whose gap is the approximation's own
+#      energy defect; the TSA's cooling duty, which has no second route) is
+#      said aloud and not judged.
+#
+#  The remainder of a (B) unit is STILL held to UNIT_TOL_KW: it is zero by
+#  construction only while the unit and the report price the same states, so
+#  a nonzero one is the C35 dropped-duty defect (U6) or a surface split, and
+#  that test keeps its teeth.  What changes is the count it lands in.
+BY_CONSTRUCTION_ENERGY = {
+    #  type: (the term, when the run publishes it as a remainder)
+    "distillationColumn": ("Q_reboiler_kW",
+                           lambda k: "Q_reboiler_kW" in k),
+    "tsaTwinBed":         ("Q_adsorption_cooling_kW",
+                           lambda k: "Q_adsorption_cooling_kW" in k),
+    #  Off the isothermal route only: an isothermal reactor's duty is the
+    #  one balance it has, with nothing else to absorb (the record's line).
+    #  `dT_rise` is published exactly on the non-isothermal routes.
+    "cstr":               ("Q_kW", lambda k: "Q_kW" in k and "dT_rise" in k),
+    "pfr":                ("Q_kW", lambda k: "Q_kW" in k and "dT_rise" in k),
+}
+#  The arm must READ these whenever their case is in scope: a CMO column (not
+#  verified), a full-MESH column (verified by its reboiler envelope), an
+#  adiabatic and a jacketed CSTR, an adiabatic and a cooled PFR, the TSA bed.
+BY_CONSTRUCTION_WITNESSES = {
+    ("tutorials/steady/distillation/column01_benzene_toluene", "column01"),
+    ("tutorials/steady/distillation/column06_fullMESH", "column06"),
+    ("tutorials/steady/reactors/cstr04_adiabatic", "reactor"),
+    ("tutorials/steady/reactors/cstr06_jacketed", "reactor"),
+    ("tutorials/steady/reactors/pfr04_adiabatic", "reactor"),
+    ("tutorials/steady/reactors/pfr05_cooled_multitubular", "reactor"),
+    ("tutorials/steady/separation/tsa01_co2_twin_bed", "co2tsa"),
+}
+
+
+def judge_by_construction(rel: str, txt: str, seen: set, stats: dict,
+                          bad: list):
+    """The C174 arm on one case's stdout.  Adds (rel, unit) to `seen` for every
+    by-construction unit it READ; fills stats["bc"] with (rel, unit, status)."""
+    types = dict(UNIT_HEADER.findall(txt))
+    closures = json_block(txt, "energyClosures")
+    if not isinstance(closures, list):
+        return
+    kpis = json_block(txt, "kpis") or {}
+    records = {}
+    for c in json_block(txt, "closuresByConstruction") or []:
+        if c.get("balance") == "energy":
+            records.setdefault(c.get("unit"), []).append(c)
+    rows = {r.get("unit"): r for r in closures}
+    for unit, t in types.items():
+        spec = BY_CONSTRUCTION_ENERGY.get(t)
+        if spec is None or unit not in rows:
+            continue
+        term, applies = spec
+        if not applies(kpis.get(unit, {})):
+            continue
+        seen.add((rel, unit))
+        row = rows[unit]
+        word = row.get("byConstruction")
+        if word is None:
+            bad.append(
+                "%s: unit '%s' (%s) publishes %s as the REMAINDER of its own "
+                "energy balance (docs/design/no-closure-by-construction.md), so "
+                "its closure holds for any value of its other terms and is no "
+                "evidence -- and the engine published no `byConstruction` "
+                "status for it, so this arm (and every reader of the per-unit "
+                "ledger) would count its zero as a closure.  Declare it in the "
+                "unit's closureVariables() (result/ClosureVariable.H)."
+                % (rel, unit, t, term))
+            continue
+        if term not in (row.get("closureVariable") or "").split(";"):
+            bad.append(
+                "%s: unit '%s' (%s) is marked byConstruction for '%s', but the "
+                "term this gate's table names for it is %s.  The record and "
+                "the table must name the same term."
+                % (rel, unit, t, row.get("closureVariable"), term))
+        stats["bc"].append((rel, unit, word))
+    for unit, recs in records.items():
+        t = types.get(unit)
+        if t not in BY_CONSTRUCTION_ENERGY or not \
+                BY_CONSTRUCTION_ENERGY[t][1](kpis.get(unit, {})):
+            bad.append(
+                "%s: unit '%s' (%s) declares an energy closure variable (%s) "
+                "that this gate's table BY_CONSTRUCTION_ENERGY does not hold.  "
+                "A closure variable nobody classified is a class nobody "
+                "checks: add it to docs/design/no-closure-by-construction.md "
+                "and to the table in the same commit."
+                % (rel, unit, t, ", ".join(c.get("variable", "?")
+                                            for c in recs)))
+        for c in recs:
+            if c.get("mustAgree") and c.get("status") != "verified":
+                bad.append(
+                    "%s: unit '%s' publishes %s by construction and its SECOND "
+                    "ROUTE, which must agree, does not: %s (gap %s %s, "
+                    "tolerance %s).  The closure over this unit cannot see "
+                    "this -- it is zero by construction -- so the gap is the "
+                    "only voice the defect has."
+                    % (rel, unit, c.get("variable"), c.get("note", ""),
+                       c.get("gap"), c.get("units", ""), c.get("tolerance")))
 #  The header's next line names the unit's inlets and outlets (either side
 #  of the arrow); read only for a declared-T mixer's material test.
 UNIT_PORTS = re.compile(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = \w+\)\s*\n"
@@ -883,7 +1006,13 @@ def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
             continue
         rem = float(row.get("remaining_kW", 0.0))
         seen.add((rel, unit))
-        stats["judged"] += 1
+        #  A CLOSURE BY CONSTRUCTION IS NOT EVIDENCE (C174): its remainder is
+        #  still held below, because a nonzero one is a pricing or reporting
+        #  defect, but it is never counted among the units that close.
+        if row.get("byConstruction"):
+            stats["bcHeld"] += 1
+        else:
+            stats["judged"] += 1
         if abs(rem) > UNIT_TOL_KW:
             bad.append(
                 "%s: unit '%s' (%s) leaves %+.4f kW of its energy balance "
@@ -1017,7 +1146,9 @@ def main() -> int:
     #  name a case the gate never read and nothing notices -- see the
     #  unanswered-pin arm below, which sabotage S7 exists to prove.
     discovered, bucket = set(), {}
-    unitSeen, unitStats = set(), {"judged": 0, "noLedger": 0, "tearFed": []}
+    unitSeen, unitStats = set(), {"judged": 0, "noLedger": 0, "tearFed": [],
+                                  "bcHeld": 0, "bc": []}
+    bcSeen = set()
     ranClean = set()
 
     for case in steady_cases():
@@ -1032,6 +1163,7 @@ def main() -> int:
             continue
         ranClean.add(rel)
         judge_units(rel, txt, unitSeen, unitStats, bad)
+        judge_by_construction(rel, txt, bcSeen, unitStats, bad)
         m = LINE.search(txt)
         if m is None:
             mk = LINE_KW.search(txt)
@@ -1170,6 +1302,15 @@ def main() -> int:
                 "A DEFECT IN THE GATE (or the witness was renamed): an arm "
                 "that reads nothing passes forever." % (rel, unit))
 
+    for rel, unit in sorted(BY_CONSTRUCTION_WITNESSES):
+        if rel in ranClean and (rel, unit) not in bcSeen:
+            bad.append(
+                "%s: the closure-by-construction arm did not READ its witness "
+                "'%s' -- the case ran clean, but no unit header of a type in "
+                "BY_CONSTRUCTION_ENERGY publishing its term reached the arm.  "
+                "THIS IS A DEFECT IN THE GATE (or the witness was renamed)."
+                % (rel, unit))
+
     if seed:
         where = ("under CHOUPO_SUITE_SCOPE (--fast)" if SCOPED
                  else "over the full steady corpus")
@@ -1241,18 +1382,19 @@ def main() -> int:
           "check.  NOT CHECKED: whether a pinned residual is acceptable (it is "
           "not); PER-UNIT closure in general, where a plant can close globally "
           "with two units cancelling -- EXCEPT the unit arm: %d unit(s) whose "
-          "energy balance is H_out = H_in by construction (adiabatic "
+          "energy balance is H_out = H_in (plus a duty its single balance "
+          "DEFINES) on the report's own surface (adiabatic "
           "sprayDryer/solidDryer/convectiveDryer; an evaporator, whose heat "
-          "crosses as its own chest and condensate streams; a "
-          "distillationColumn, whose reboiler and condenser cross the "
-          "boundary whatever its feed count; a valve, an isenthalpic "
-          "throttle; a "
-          "cstr/conversionReactor/isothermal gibbsReactor/"
+          "crosses as its own chest and condensate streams; a valve, an "
+          "isenthalpic throttle; an ISOTHERMAL "
+          "cstr/conversionReactor/gibbsReactor/"
           "equilibriumReactor "
           "that published "
           "Q_kW; a mixer at a declared outlet T that published Q_kW; an "
           "ADIABATIC mixer, its outlet resolved at its own equilibrium) leave "
-          "no more than %.0e kW unattributed in the report, "
+          "no more than %.0e kW unattributed in the report -- a "
+          "distillationColumn and a non-isothermal cstr/pfr are held to the "
+          "same tolerance but counted BELOW, as closures by construction, "
           "every in-scope witness among %d was read, and %d case(s) running "
           "such a unit published no per-unit ledger (the report did not run "
           "under an outer driver) and are unjudged.  NOT judged and NAMED: "
@@ -1263,7 +1405,16 @@ def main() -> int:
           "too%s.  The arm reads unit "
           "types from the console header, so a unit run at a verbosity that "
           "prints none is unjudged too, and the witnesses are what keep that "
-          "from going silent.%s"
+          "from going silent.  CLOSURE BY CONSTRUCTION (C174) -- NOT "
+          "EVIDENCE, and not counted above: %d unit energy closure(s) hold "
+          "because the unit computed a term FROM the balance (%s); %d of "
+          "them are verified by the unit's own second route (a full MESH's "
+          "reboiler envelope, a reactor's declared heat) and %d are NOT "
+          "VERIFIED (%s) -- they close by construction and nothing here says "
+          "they are right; %d plant first law(s) above include such a "
+          "not-verified term, so their closure is evidence about everything "
+          "except it.  Each (B) unit's remainder is still held to %.0e kW "
+          "(%d held), and every in-scope witness among %d was read.%s"
           % (ok, BAND, len(KNOWN_OPEN), okKW, BAND_KW, len(KNOWN_OPEN_KW),
              RATCHET, RATCHET_KW_ABS, 100.0 * RATCHET_KW_REL,
              len(refused), len(announced), len(noReport), noReportOuter,
@@ -1273,6 +1424,16 @@ def main() -> int:
              MATERIAL_GAP_REL,
              (": " + "; ".join(unitStats["tearFed"]))
              if unitStats["tearFed"] else "",
+             len(unitStats["bc"]),
+             ", ".join("%s %s" % (t, v) for t, (v, _f)
+                       in sorted(BY_CONSTRUCTION_ENERGY.items())),
+             sum(1 for _r, _u, w in unitStats["bc"] if w == "verified"),
+             sum(1 for _r, _u, w in unitStats["bc"] if w != "verified"),
+             "; ".join("%s:%s" % (r.split("/")[-1], u)
+                       for r, u, w in unitStats["bc"] if w != "verified")
+             or "none",
+             len({r for r, _u, w in unitStats["bc"] if w != "verified"}),
+             UNIT_TOL_KW, unitStats["bcHeld"], len(BY_CONSTRUCTION_WITNESSES),
              scope_sentence(len(measured) + len(measuredKW) + len(refused)
                             + len(noReport) + len(announced),
                             len(outOfScope))))

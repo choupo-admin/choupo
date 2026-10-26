@@ -1446,6 +1446,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
             c.checkValue = Qmarch_kW;
             c.gap        = gap_kW;
             c.tolerance  = tol_kW;
+            c.mustAgree  = true;
             c.verified   = std::abs(gap_kW) <= tol_kW;
             if (!c.verified)
                 c.note = "the published duty is not the heat the march "

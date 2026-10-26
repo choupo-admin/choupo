@@ -81,6 +81,13 @@ struct ClosureVariable
     scalar      gap        = 0.0;   // published - checkValue (same units)
     scalar      tolerance  = 0.0;   // the gap the check accepts
     bool        verified   = false; // hasCheck && |gap| <= tolerance
+    //  Whether the second route MUST agree when the model is solved: true
+    //  where both routes are the same model's equations (a full MESH's
+    //  reboiler envelope, a reactor's declared heat, a membrane's solutes),
+    //  false where the gap is the approximation's own content (a CMO
+    //  column's envelope).  A gate fails a `mustAgree` record that is not
+    //  verified; it reports the rest.
+    bool        mustAgree  = false;
     std::string units = "kW";
     std::string note;          // why NOT verified, in words ("" when verified)
 

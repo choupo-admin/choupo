@@ -701,7 +701,8 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             if (c.hasCheck)
                 os << ", \"checkValue\": " << num(c.checkValue)
                    << ", \"gap\": " << num(c.gap)
-                   << ", \"tolerance\": " << num(c.tolerance);
+                   << ", \"tolerance\": " << num(c.tolerance)
+                   << ", \"mustAgree\": " << (c.mustAgree ? "true" : "false");
             os << ", \"units\": " << esc(c.units);
             if (!c.note.empty()) os << ", \"note\": " << esc(c.note);
             os << " }";

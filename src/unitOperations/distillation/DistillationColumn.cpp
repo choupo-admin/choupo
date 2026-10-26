@@ -255,6 +255,7 @@ ClosureVariable reboilerClosure(scalar Q_plug, std::optional<scalar> Q_own,
         c.note = m.str();
         return c;
     }
+    c.mustAgree = true;
     c.verified = std::abs(c.gap) <= c.tolerance;
     if (!c.verified)
     {
