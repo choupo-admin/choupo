@@ -78,7 +78,7 @@ import { ColumnDatasheet } from "./ColumnDatasheet.js";
 import { caseThermo, thermoSentence,
   type ThermoReading } from "../case/caseThermo.js";
 import { theoryLink } from "../case/modelDocs.js";
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 
 import { boundaryForStream } from "../case/modelBoundary.js";
 import { streamCardSource } from "../case/streamCardState.js";
@@ -127,7 +127,11 @@ import {
 } from "../state/displayUnits.js";
 import { useStore } from "../state/store.js";
 import { recordFit } from "../case/caseModes.js";
-import { WorkflowSelection } from "./workflowCard.js";
+//  LAZY: the workflow card reaches the figure modules (Plotly), which a
+//  module importing this panel for its pure helpers (normaliseStreamSpec,
+//  tests/streamSpec.test.ts) must not load at import time
+const WorkflowSelection = lazy(() =>
+  import("./workflowCard.js").then((m) => ({ default: m.WorkflowSelection })));
 import type { WorkflowModel } from "./useWorkflowModel.js";
 
 // Normalise a raw flowsheetDict stream into the StreamSpec the panel reads --
@@ -184,9 +188,9 @@ function WorkflowPanel({ model }: { model: WorkflowModel }) {
           <IconInfoCircle size={16} />
           <Title order={5}>Properties</Title>
         </Group>
-        {WorkflowSelection({ model }) ?? (
-          <Text size="xs" c="dimmed">Nothing of this case is called {model.selected}.</Text>
-        )}
+        <Suspense fallback={<Text size="xs" c="dimmed">Loading the step...</Text>}>
+          <WorkflowSelection model={model} />
+        </Suspense>
         <Text size="xs" c="dimmed" mt="md" data-card-mode="read-only">
           Read-only.  Edit <code>system/propsDict</code> in your text editor and reload the case.
         </Text>

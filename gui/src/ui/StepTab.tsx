@@ -113,7 +113,7 @@ export function StepTab() {
         <Box style={{ flex: "0 0 360px", minHeight: 0, borderLeft: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
           background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-8))" }}>
           <ScrollArea h="100%" type="auto">
-            <Box p="md" data-step-tab-card="">{WorkflowSelection({ model })}</Box>
+            <Box p="md" data-step-tab-card=""><WorkflowSelection model={model} /></Box>
           </ScrollArea>
         </Box>
       </Box>

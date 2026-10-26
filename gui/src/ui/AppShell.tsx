@@ -44,13 +44,10 @@ License
   │                                                        │
   └────────────────────────────────────────────────────────┘
 
-  PropsView is the centre when the case is a properties case (carries
-  `propsDict`, no `flowsheet`, or a two-mode case shown in its Workflow): its
-  home is the WORKFLOW DIAGRAM, as a process case's is the flowsheet, and its
-  STUDIES and REPORTS are menu entries beside it (DEV.md 4c C172 slice 3b).
-  A process case has no Workflow (DEV.md 4c C172): a stale ?workspace=props on
-  one draws the flowsheet.  A step's own TAB (?step=, a double click on its
-  box) is routed before the shell, as a unit's internals tab is.  A thin status bar at the
+  PropsView (the Workflow) is the centre when the case is a properties case
+  (carries `propsDict`, no `flowsheet`, or a two-mode case shown in its
+  Workflow).  A process case has no Workflow (DEV.md 4c C172): a stale
+  ?workspace=props on one draws the flowsheet.  A thin status bar at the
   foot carries the engine version and the adapter that ran.
 \*---------------------------------------------------------------------------*/
 
@@ -91,8 +88,11 @@ import { openGuide } from "../help/guideLinks.js";
 const PropsView = lazy(() =>
   import("./PropsView.js").then((m) => ({ default: m.PropsView })),
 );
-// A step's own tab (?step=, DEV.md 4c C172 slice 3b): its figures pull
-// Plotly, so it is lazy like PropsView.
+// A properties case's home is its WORKFLOW DIAGRAM, as a process case's is
+// the flowsheet; its STUDIES and REPORTS are menu entries beside it, and a
+// step's own tab (?step=, a double click on its box) is routed before the
+// shell, as a unit's internals tab is (DEV.md 4c C172 slice 3b).  The tab's
+// figures pull Plotly, so it is lazy like PropsView.
 const StepTab = lazy(() =>
   import("./StepTab.js").then((m) => ({ default: m.StepTab })),
 );

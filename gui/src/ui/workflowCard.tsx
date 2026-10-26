@@ -510,5 +510,5 @@ export function WorkflowSelection({ model }: { model: WorkflowModel }) {
       </Stack>
     );
   }
-  return null;
+  return <Text size="xs" c="dimmed">Nothing of this case is called {selected}.</Text>;
 }
