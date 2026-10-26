@@ -57,7 +57,7 @@ level up.)
 <!-- AUTO-GENERATED below this line by bin/regen-llm-docs. -->
 <!-- Edit the .dat files in data/standards/components/, then re-run. -->
 
-## Components (601 entries)
+## Components (608 entries)
 
 ### Volatile (curated for VLE)
 
@@ -559,6 +559,7 @@ level up.)
 | `C5H5` | 65.095 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C6H5` | 77.106 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CaCl2` | 110.98 | nonvolatile | — | — | — | — | — | — | — | — | ν=3 |
+| `calciumNitrate` | 164.086 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `CH` | 13.019 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CH2` | 14.027 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CH2OH` | 31.034 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
@@ -584,13 +585,19 @@ level up.)
 | `HONO` | 47.013 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `HSO` | 49.067 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `HSO3` | 81.065 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `KBr` | 119.002 | nonvolatile | — | — | — | — | — | — | — | — |   |
+| `KNO3` | 101.102 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `LiCl` | 42.394 | nonvolatile | — | — | ✓ | — | — | — | — | — |   |
-| `MgSO4` | 120.37 | nonvolatile | — | — | — | — | — | — | — | — | ν=2 |
+| `MgCl2` | 95.205 | nonvolatile | — | — | — | — | — | — | — | — |   |
+| `MgSO4` | 120.37 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `N` | 14.007 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `N2H2` | 30.03 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `N2H3` | 31.038 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `N2H4` | 32.046 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
+| `NaBr` | 102.894 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `NaCl` | 58.44 | nonvolatile | — | — | — | — | — | ✓ | — | — | ν=2 |
+| `NaF` | 41.988 | nonvolatile | — | — | — | — | — | — | — | — |   |
+| `NaNO3` | 84.994 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `NaOH` | 39.997 | nonvolatile | — | — | — | — | — | ✓ | — | — | ν=2 |
 | `NCO` | 42.017 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `NH` | 15.0146 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
