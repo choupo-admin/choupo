@@ -1036,6 +1036,7 @@ OPEN-LOOP IDENTIFICATION off a trajectory somebody else recorded. Given a CSV wr
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `trajectory` |   | string | — | CSV written by a previous choupoCtrl run, relative to the case directory. Its first column is time; every other column is a signal named … |
+| `writtenBy` |   | object | — | `writtenBy { trajectory process; }` declares that the trajectory is WRITTEN BY THE CASE'S OWN PROCESS RUN (the Flowsheet beside this prop… |
 | `manipulated` | ✓ | string | — | Header name of the column that was STEPPED (e.g. `JacketStep.MV`). A `scheduleController` puts its own driven value into the trajectory a… |
 | `measured` | ✓ | string | — | Header name of the response (e.g. `reactor.T`, `reactor.n_compB`). WHICH COLUMN THIS IS, IS THE EXPERIMENT: the same trajectory read as a… |
 | `settling` |   | object | — | Decides whether a segment's response has stopped moving, and therefore whether K and tau are reported at all. Absent, tolerance 0.005 ove… |

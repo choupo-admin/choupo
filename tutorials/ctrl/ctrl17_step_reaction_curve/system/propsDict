@@ -13,6 +13,10 @@
       runCase     tutorials/ctrl/ctrl17_step_reaction_curve
       choupoProps tutorials/ctrl/ctrl17_step_reaction_curve
 
+  Each operation DECLARES that its trajectory is the process run's
+  (`writtenBy { trajectory process; }`), so the second command run alone, on
+  a fresh copy, refuses by name and says to run the first.
+
   TWO OPERATIONS OVER ONE EXPERIMENT, and the pair is the lesson.  Both read
   the SAME four steps of the SAME jacket temperature; they differ only in which
   response they call the controlled variable.
@@ -42,7 +46,14 @@ operations
         name        fopdt_jacket_to_composition;
         type        reactionCurve;
 
+        //  THE EXPERIMENT IS THE PROCESS RUN'S, and the bench says so: the
+        //  trajectory is written by this case's own Flowsheet (choupoCtrl),
+        //  not carried by the case as a recorded file.  Absent, the run
+        //  refuses before the first operation and names the remedy -- run
+        //  the Flowsheet first.  Delete the line and the same file is read
+        //  as one the case carries.
         trajectory  trajectory.csv;
+        writtenBy   { trajectory process; }
 
         manipulated JacketStep.MV;        // K       -- the jacket temperature
         measured    reactor.n_compB;      // kmol    -- product holdup (V is
@@ -96,6 +107,7 @@ operations
         type        reactionCurve;
 
         trajectory  trajectory.csv;
+        writtenBy   { trajectory process; }
 
         manipulated JacketStep.MV;        // K
         measured    reactor.T;            // K

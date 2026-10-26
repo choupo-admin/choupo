@@ -4250,6 +4250,25 @@ PYEOF
     fi
     rm -f /tmp/fitsim.$$
 
+    # Props-order gate (2026-10-26, DEV.md 4c C172 slice 2): the ORDER of a
+    # properties workflow is an engine fact.  choupoProps runs its operations
+    # in declared order, and propsPlan::validate refuses, before operation
+    # [0], a read of a file a LATER operation writes (by path, default path,
+    # membrane name, by construction) naming the remedy; ctrl17 declares its
+    # trajectory `writtenBy { trajectory process; }` and an absent one
+    # refuses naming the Flowsheet run.  The file-traffic table is complete,
+    # matches the ops' guarded writes and the GUI schemas' x-choupo, and the
+    # corpus is in order.  By-hand sabotages in the gate's docstring.
+    if gate_exec "$ROOT/bin/curate/check_props_order.py" > /tmp/propsorder.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "props-order-gate" "$(grep -m1 '^check_props_order: OK' /tmp/propsorder.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_props_order.py)\n" "props-order-gate"
+        cat /tmp/propsorder.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/propsorder.$$
+
     if gate_exec "$ROOT/bin/curate/check_membrane_modules.py" > /tmp/modules.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "membrane-modules-gate" "$(grep -m1 '^check_membrane_modules: OK' /tmp/modules.$$)"
         pass=$((pass+1))

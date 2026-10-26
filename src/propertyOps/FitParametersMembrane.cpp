@@ -137,6 +137,7 @@ Description
 #include "thermo/membrane/FittedRecord.H"
 #include "thermo/membrane/Membrane.H"
 #include "thermo/membrane/MembraneRegistry.H"
+#include "propertyOps/PropsPlan.H"
 #include "unitOperations/membrane/massTransfer/MassTransferModel.H"
 #include "unitOperations/membrane/massTransfer/Polarisation.H"
 #include "unitOperations/membrane/osmotic/OsmoticModel.H"
@@ -1082,7 +1083,9 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
             throw std::runtime_error(site + ": `record " + recPath + "` -- a fitted membrane"
                 " record is written to the case's constant/assets/<name>.dat, the one home the"
                 " membrane registry reads; anywhere else no unit could find it");
-        const std::string recName = out->lookupWordOrDefault("name", rp.stem().string());
+        //  The name the record registers under has ONE home, shared with the
+        //  order check that matches a by-name read against it (PropsPlan.H).
+        const std::string recName = propsPlan::fittedRecordName(out, recPath);
         if (predicting)
             throw std::runtime_error(site + ": `output { record ...; }` on an operation with no"
                 " free parameter -- a prediction fits nothing, so there is no fitted record");

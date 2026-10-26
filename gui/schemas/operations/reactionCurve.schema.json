@@ -11,6 +11,21 @@
       "title": "The recorded experiment",
       "description": "CSV written by a previous choupoCtrl run, relative to the case directory. Its first column is time; every other column is a signal named in the header. Defaults to `trajectory.csv`. The file must EXIST — this op records no experiment of its own."
     },
+    "writtenBy": {
+      "type": "object",
+      "title": "Which run writes an input",
+      "description": "`writtenBy { trajectory process; }` declares that the trajectory is WRITTEN BY THE CASE'S OWN PROCESS RUN (the Flowsheet beside this propsDict, e.g. choupoCtrl) rather than carried by the case as a recorded file. The declaration names the KEY, never the path again. Declared and absent, the run REFUSES before the first operation, naming the remedy: run the Flowsheet first (`runCase <case> process`). A key this op does not read a file through, a word other than `process`, a case with no system/flowsheetDict, and a file a Properties step also writes each refuse by name (DEV.md 4c C172; src/propertyOps/PropsPlan.H).",
+      "properties": {
+        "trajectory": {
+          "type": "string",
+          "enum": [
+            "process"
+          ],
+          "title": "Run that writes the trajectory"
+        }
+      },
+      "additionalProperties": false
+    },
     "manipulated": {
       "type": "string",
       "title": "The driven column",

@@ -116,7 +116,14 @@ pure-properties cases.
 ## Slices
 
 1. Content gaps (item 6) and the removals that serve any layout (item 5).
-2. The engine order validator, ctrl17, ppr78Kij (item 4).
+2. The engine order validator, ctrl17, ppr78Kij (item 4).  BUILT 2026-10-26:
+   `propsPlan::validate` (src/propertyOps/PropsPlan.{H,cpp}) refuses, before
+   operation [0], a read of a later write; the file-traffic table is the one
+   engine home of what each op type reads and writes
+   (`choupoProps --file-traffic`); ctrl17 declares
+   `writtenBy { trajectory process; }`; ppr78Kij's schema declares its
+   record; gate `check_props_order`.  Measured: 134 propsDicts, ~470
+   operations, ZERO reads of a later write, zero migrations.
 3. The Workflow: outline, centre, inspector; the map behind View (item 3).
 4. Chrome by case kind in one table; the home in the URL; cross links (1, 2).
 5. The Flowsheet findings (item 7).

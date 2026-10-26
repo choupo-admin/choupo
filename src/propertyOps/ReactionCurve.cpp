@@ -100,7 +100,10 @@ Trajectory readTrajectory(const std::string& path, const std::string& locus)
               " stops a second time loop being written beside the first."
               "  Run the dynamic experiment in this case directory first"
               " (`runCase <case>` or `choupoCtrl <case>`), then run"
-              " choupoProps on the same directory.");
+              " choupoProps on the same directory.  When the file IS the"
+              " case's own process run's, declare it -- `writtenBy {"
+              " trajectory process; }` -- and the order check refuses this"
+              " before any operation runs (DEV.md 4c C172).");
 
     std::ifstream f(path);
     if (!f)

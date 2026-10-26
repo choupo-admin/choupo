@@ -1320,6 +1320,11 @@
       "exit": 0,
       "claim": "check_pore_partition: OK -- over the 22 ops of the NanoFiltran paper's case: 146 face partitions equal Phi_S x Born x gamma ratio x Donnan (1e-9); 73 Donnan factor pairs equal the published jumps; at 29 points the three potential steps sum to dPsi_m (1e-12 V) and ||F|| is below the tolerance with electroneutrality, current and flux constancy at round-off; 54 drawn profile end points are the published pore face concentrations; lambda, Phi_S, K_d, K_c, the Born factor and Pe recomputed from the records for 54 (op, ion) pairs, 10 excluded ion(s) published as excluded; 73 activity ratios are the declared treatment's (ideal 1, bulkOverPoreDavies recomputed); every op draws its pore; no stream advisory in the bench; 35 schema point-table keys are published.  NOT CHECKED: whether DSPM-DE is right for a membrane, the wallDavies path (no op declares it), the profiles' interior, the GUI rendering.",
       "seconds": 0.9
+    },
+    "check_props_order": {
+      "exit": 0,
+      "claim": "check_props_order: OK -- 46 registered op types each carry a file-traffic row; 42 guarded writes in their sources match a write slot; 46 op schemas' x-choupo writes/data match the table; 134 corpus propsDicts in declared order (133 pass; 1 declaring a process-run input refuse, on a copy without run outputs, naming the Flowsheet run); a read of a later write, by path, default path, membrane name and by construction, refuses with the remedy and the right order passes; ctrl17's absent trajectory refuses before operation [0] naming the Flowsheet run, and four writtenBy misdeclarations refuse.  NOT checked: that the table lists every key an op reads (no single home for reads), computed paths, registry reads other than membranes, the package",
+      "seconds": 79.4
     }
   }
 }

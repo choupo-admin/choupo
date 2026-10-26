@@ -62,6 +62,7 @@ Description
 #include "curation/AqueousGraph.H"
 #include "propertyOps/CasePackage.H"
 #include "propertyOps/PropertyOperation.H"
+#include "propertyOps/PropsPlan.H"
 #include "propertyOps/ConstantEstimator.H"
 #include "thermo/Database.H"
 #include "thermo/SealCheck.H"
@@ -251,6 +252,10 @@ try
         "\n"
         "  --gap-report            assemble the thermo package, emit the\n"
         "                          pre-solve gap report, and exit without solving\n"
+        "  --plan                  check the declared ORDER of the propsDict's\n"
+        "                          operations (no read of a later write) and exit\n"
+        "  --file-traffic          print the keys each operation type reads and\n"
+        "                          writes a file through, and exit\n"
         "  --canonical-hash FILE   the computational seal's canonical hash\n"
         "  --canonical-dump FILE   the parsed content the hash is taken over\n"
         "  --aqueous-graph [OUT]   write the aqueous equilibrium graph as JSON\n"
@@ -268,9 +273,14 @@ try
         return 0;
     }
 
-    bool gapReport = false;
+    bool gapReport = false, planOnly = false, fileTraffic = false;
     for (int gi = 1; gi < argc; ++gi)
-        if (std::string(argv[gi]) == "--gap-report") gapReport = true;
+    {
+        const std::string a = argv[gi];
+        if (a == "--gap-report")   gapReport   = true;
+        if (a == "--plan")         planOnly    = true;
+        if (a == "--file-traffic") fileTraffic = true;
+    }
 
     // Catalogue-wide aqueous queries -- no case, no solver.  They read the
     // SAME records the engine reads (records::scanRecordDir, same precedence,
@@ -329,7 +339,7 @@ try
         }
     }
 
-    if (!gapReport) printBanner("  props");   // clean stdout for the JSON consumer
+    if (!gapReport && !fileTraffic) printBanner("  props");   // clean stdout for the JSON consumer
 
     //  Size distributions: tabular AND the continuous laws, explicit as
     //  every other model family here.
@@ -354,6 +364,39 @@ try
     ConstantEstimator ::registerBuiltins();   // estimateComponent's `model` slot
     registerUserTypes();          // case-local property ops (empty by default)
 
+    //  THE FILE-TRAFFIC TABLE, as the engine holds it (src/propertyOps/
+    //  PropsPlan.cpp): one line per slot, `type<TAB>read|write<TAB>key<TAB>
+    //  kind<TAB>default`, `type<TAB>none` for a row with no slot, and
+    //  `type<TAB>UNTABLED` for a registered type the table does not carry.
+    //  A tool that needs what an op reads or writes asks here instead of
+    //  keeping a second copy (bin/curate/check_props_order.py does).
+    if (fileTraffic)
+    {
+        auto kindWord = [](propsPlan::Traffic t) {
+            switch (t)
+            {
+                case propsPlan::Traffic::file:         return "file";
+                case propsPlan::Traffic::record:       return "record";
+                case propsPlan::Traffic::proposal:     return "proposal";
+                case propsPlan::Traffic::membraneName: return "membraneName";
+            }
+            return "?";
+        };
+        for (const auto& type : PropertyOperation::availableTypes())
+        {
+            const propsPlan::OpSlots* row = propsPlan::slotsFor(type);
+            if (!row) { std::cout << type << "\tUNTABLED\n"; continue; }
+            if (row->reads.empty() && row->writes.empty())
+                std::cout << type << "\tnone\n";
+            for (const auto* list : { &row->reads, &row->writes })
+                for (const auto& sl : *list)
+                    std::cout << type << "\t" << (list == &row->reads ? "read" : "write")
+                              << "\t" << sl.key << "\t" << kindWord(sl.kind) << "\t"
+                              << sl.fallback << "\n";
+        }
+        return 0;
+    }
+
     // Resolve argv[0] before any chdir.  Symlinks are fine; weakly_canonical
     // tolerates non-existent suffixes which fs::canonical does not.
     const fs::path argv0 = fs::weakly_canonical(fs::absolute(fs::path(argv[0])));
@@ -365,7 +408,7 @@ try
     for (int i = 1; i < argc; ++i)
     {
         const std::string a = argv[i];
-        if (a == "--gap-report") continue;
+        if (a == "--gap-report" || a == "--plan" || a == "--file-traffic") continue;
         //  A FLAG IS NOT A FILENAME.  This loop used to take the first
         //  non-`--gap-report` argument as the case directory, whatever it
         //  looked like, so a mistyped flag became a directory name and the
@@ -457,6 +500,39 @@ try
                   << std::string(56, '-') << "\n";
 
     auto propsDict = Dictionary::fromFile("system/propsDict");
+
+    //  THE ORDER IS AN ENGINE FACT (DEV.md 4c C172 slice 2): the operations
+    //  run in DECLARED order and are never re-sorted, so one that reads a
+    //  file a LATER one writes would read a previous run's leftovers.
+    //  Refused here, by name, before operation [0] spends anything -- the
+    //  properties analogue of Flowsheet::validateSequentialPlan.  The case's
+    //  other half (a Flowsheet beside this propsDict, C152) is the writer a
+    //  `writtenBy { <key> process; }` names; `runCase <case> process` runs
+    //  the application unless that is choupoProps, then choupoSolve.
+    if (!gapReport)
+    {
+        const auto ops = propsDict->lookupDictList("operations");
+        std::vector<std::string> names;
+        for (std::size_t k = 0; k < ops.size(); ++k)
+            names.push_back(ops[k]->lookupWordOrDefault("name",
+                ops[k]->lookupWord("type") + "_" + std::to_string(k)));
+        propsPlan::ProcessHalf process;
+        process.present = fs::exists("system/flowsheetDict");
+        const std::string app = controlDict->lookupWordOrDefault("application", "");
+        process.binary = (app.empty() || app == "choupoProps") ? "choupoSolve" : app;
+        const auto findings = propsPlan::validate(ops, names, process, verbosity);
+        if (!findings.empty())
+        {
+            std::string msg = "choupoProps: the operations in system/propsDict run"
+                " in DECLARED order, and an operation may read only a file the"
+                " case carries, one an EARLIER operation writes, or one it declares"
+                " the process run writes.  " + std::to_string(findings.size())
+                + " finding(s):";
+            for (const auto& f : findings) msg += "\n  - " + f;
+            throw std::runtime_error(msg);
+        }
+        if (planOnly) return 0;
+    }
     ThermoResolutionLog::instance().clear();
     AdvisoryLog::instance().clear();   // capture binary-pair provenance
     //  The divergence record is per-pass for the same reason: an outer
@@ -622,6 +698,7 @@ try
                       int rc = 0; };
     std::vector<OpResult> opResults;
     std::map<std::string, std::vector<std::string>> opBlocks;
+
 
     //  THE VIEWS (DEV.md 4c C147/C149): the propsDict's `views` and
     //  `references`, PARSED BEFORE THE OPERATIONS RUN -- what the dict alone

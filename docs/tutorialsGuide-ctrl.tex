@@ -593,6 +593,8 @@ THE IDENTIFICATION, run over the trajectory the choupoCtrl half of this case wro
 
 runCase tutorials/ctrl/ctrl17\_step\_reaction\_curve choupoProps tutorials/ctrl/ctrl17\_step\_reaction\_curve
 
+Each operation DECLARES that its trajectory is the process run's (`writtenBy \{ trajectory process; \}`), so the second command run alone, on a fresh copy, refuses by name and says to run the first.
+
 TWO OPERATIONS OVER ONE EXPERIMENT, and the pair is the lesson. Both read the SAME four steps of the SAME jacket temperature; they differ only in which response they call the controlled variable.
 
 [0] the COMPOSITION loop (jacket $\to$ product holdup). Two lags in series -- the jacket heats the liquid, and the warmer liquid reacts faster -- so the response is S-shaped and an FOPDT surrogate finds a real apparent dead time. All three tuning rules apply.

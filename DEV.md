@@ -1580,6 +1580,32 @@ accepts today, and that is a policy call.
 > docs/design/one-app-two-homes.md (the forum, the decision, the slices).
 > Slice 1 (content gaps + removals) goes out after Vitor has read the
 > decision page; GUI code lands slice by slice against the scripted test.
+> SLICE 2 BUILT 2026-10-26 (engine only, branch
+> claude/c172-slice2-props-order): `propsPlan::validate`
+> (src/propertyOps/PropsPlan.{H,cpp}) runs before operation [0] and refuses
+> by name a read of a file (or a membrane record, by name) a LATER
+> operation writes, with the remedy; declared order stays the order.  What
+> each op type reads/writes has ONE engine home, the file-traffic table
+> there (`choupoProps --file-traffic`; `--plan` runs only the check).
+> ctrl17 declares `writtenBy { trajectory process; }` and an absent
+> trajectory refuses naming "Run the Flowsheet (choupoCtrl) first";
+> ppr78Kij's schema declares the record it writes (the GUI had not carried
+> it back) and its group table.  Measured: 134 propsDicts, ~470 operations,
+> zero reads of a later write, zero migrations, no golden moved.  Gate
+> check_props_order.  FINDINGS, not fixed: ReactionCurve and ThielePellet
+> write their CSVs without `records::refuseStandardsWrite` (so a CSV path
+> under data/standards/ is not refused there); the GUI's x-choupo still
+> holds a second copy of the writes (held equal by the gate; slice 3 can
+> read `--file-traffic` instead); the table cannot be proven complete for
+> READS (no single read home, unlike writes).
+> SLICE 2 LANDED 2026-10-26, rebased on C140, C168 and C161b (props cases
+> 17/0, --gui 6516 passed, check_props_order over 135 propsDicts).  The
+> commander keeps `writtenBy` as a DECLARATION rather than deriving it from
+> controlDict.application: it states intent and lets a case carry a
+> measured trajectory.  FINDING, not fixed: check_guide_pdf_fresh judges a
+> PDF fresh by git ancestry, so a binary PDF taken whole in a rebase
+> conflict (one side's render) passes while missing the other side's
+> content -- caught here by reading the text, the PDF re-rendered.
 
 > **C171. THE PROPS SCREEN REDESIGNED BEFORE A RESEARCHER SEES IT, AND A
 > PROPER WAY TO CITE (Vitor, 2026-10-26, on the live NanoFiltran case

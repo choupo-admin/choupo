@@ -328,7 +328,18 @@ case/
 * Witness: `tutorials/steady/membranes/membrane24_fit_then_simulate` (the
   membrane fit, docs/ai/patterns.md §15); `tutorials/ctrl/ctrl17_step_reaction_curve`
   is the same shape the other way round (the props half reads the trajectory
-  the choupoCtrl half wrote).
+  the choupoCtrl half wrote) -- so "one way" above is the fit-then-simulate
+  shape, not a rule.
+* THE PROPERTIES SIDE RUNS IN DECLARED ORDER, AND THE ORDER IS CHECKED
+  (DEV.md 4c C172).  `operations ( ... )` run top to bottom and are never
+  re-sorted; an operation that reads a file a LATER operation writes is
+  REFUSED before the first one runs, naming both and the remedy (move the
+  writer earlier).  A file the PROCESS run writes is DECLARED at the step
+  that reads it -- `writtenBy { trajectory process; }` (the key, never the
+  path again) -- and, absent, refuses naming the remedy: run the Flowsheet
+  first.  `choupoProps --plan <case>` runs only this check;
+  `choupoProps --file-traffic` prints which key of each operation type
+  holds a path it reads or writes.
 
 ## Naming convention
 
