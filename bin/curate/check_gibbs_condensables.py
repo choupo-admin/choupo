@@ -34,6 +34,23 @@ read from the standard catalogue (the seal is dropped for the copy):
   (e) gibbs07 as shipped (one condensable): runs, two-phase -- the
       one-liquid path is untouched.
 
+  (f) A MIXED LIQUID (DEV.md 4c C173, the external audit's claim 4), on a
+      fixture built from gibbs10's skeleton: benzene + toluene 50/50 (+ H2,
+      the third species the element balance needs; the reaction it allows,
+      7 C6H6 + 3 H2 = 6 C7H8, leaves 4e-8 kmol/h of H2 from a feed carrying
+      none), 350 K, 0.6 bar, ideal gas and ideal liquid.  Neither species is
+      supersaturated on its own (y P/Psat = 0.328 and 0.862) and the gas is
+      below its dew point (sum 1.190).  Before: elementPotential and
+      reactiveFlash both published the gas, "single gas phase", exit 0.
+      Now: (f1) elementPotential REFUSES naming "a MIXED liquid" and
+      `model directMin;` -- it condenses one PURE liquid by design (the
+      route the element-potential lesson walks), so the honest fix is the
+      refusal, not a widening; (f2) reactiveFlash carries the mixed liquid:
+      exit 0, liquid fraction within 1e-4 of the Rachford-Rice answer on
+      Raoult K = Psat/P computed HERE from the Psat the run prints
+      (0.760567); (f3) directMin agrees within 1e-4 (its simplex
+      tolerance).
+
 NOT COVERED, said plainly: the gibbsMap op COUNTS such cells and announces
 them (`n_supersaturated_not_condensed`) instead of refusing, because a map
 keeps its other cells -- no witness map reaches one today; an adiabatic
@@ -152,6 +169,82 @@ def main() -> int:
         if rc != 0 or kpi(out, "twoPhase") != 1.0:
             failures.append(f"(e) gibbs07 as shipped: exit {rc}, twoPhase"
                             f" {kpi(out, 'twoPhase')} (expected 0 and 1)")
+        # ---- (f) a mixed liquid no species announces on its own -------
+        G10 = ROOT / "tutorials" / "steady" / "gibbs" / "gibbs10_ammonia_fugacity"
+
+        def mixed(tag, model, outputs):
+            case = tmp / tag
+            shutil.copytree(G10, case, ignore=shutil.ignore_patterns(
+                "expected", "log.*", "reports", "converged", "components",
+                "species", "chemistry", "propertyManifest"))
+            edit(case / "constant" / "thermoPhysPropDict",
+                 "components       ( N2  H2  NH3 );",
+                 "components       ( benzene  toluene  H2 );")
+            edit(case / "constant" / "thermoPhysPropDict",
+                 "fugacityModel SRK;", "fugacityModel idealGas;")
+            fd = case / "system" / "flowsheetDict"
+            edit(fd, "T 700.0 K; P 200.0 bar;", "T 350.0 K; P 60000 Pa;")
+            edit(fd, "elements ( N H );", "elements ( C H );")
+            edit(fd, "species ( { name N2; atoms ( 2 0 ); } { name H2; atoms"
+                     " ( 0 2 ); } { name NH3; atoms ( 1 3 ); } );",
+                 "species ( { name benzene; atoms ( 6 6 ); } { name toluene;"
+                 " atoms ( 7 8 ); } { name H2; atoms ( 0 2 ); } );")
+            edit(fd, "outputs    ( products );", "outputs    ( %s );"
+                 % " ".join(outputs))
+            edit(fd, "type       gibbsReactor;",
+                 "type       gibbsReactor;\n        model      %s;" % model)
+            for f in (case / "0").iterdir():
+                f.unlink()
+            body = ("componentMolarFlows\n{\n    benzene 0.5 kmol/h;\n"
+                    "    toluene 0.5 kmol/h;\n}\nT 350 K;\nP 60000 Pa;\n")
+            (case / "0" / "feed").write_text(body + "phase gas;\n")
+            for o in outputs:
+                (case / "0" / o).write_text(body)
+            return case
+
+        def liq_fraction(out):
+            m = re.search(r'"ammonia": \{[^{}]*"liquidFraction": ([-+0-9.eE]+)', out)
+            return float(m.group(1)) if m else None
+
+        rc, out = run(mixed("f1", "elementPotential", ["products"]))
+        if rc == 0:
+            failures.append("(f1) elementPotential published a gas below its"
+                            " dew point (benzene + toluene, 350 K, 0.6 bar)")
+        elif "a MIXED liquid of benzene" not in out or \
+                "model directMin;" not in out:
+            failures.append("(f1) elementPotential refused, but not naming"
+                            " the MIXED liquid and `model directMin;`")
+        #  Raoult K = Psat/P from the package itself (the audit probe, no
+        #  unit operation), so (f2)/(f3) do not depend on (f1)'s text.
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import gibbs_audit_probe as gap
+        err = gap.build()
+        r = {}
+        if err:
+            failures.append("(f) " + err)
+        else:
+            pc = mixed("fprobe", "directMin", ["products"])
+            names = gap.ask(pc, ["NAMES"], tmp)[0]
+            ps = gap.ask(pc, ["PSAT 350"], tmp)[0]
+            r = {k: v for k, v in zip(names, ps) if k in ("benzene", "toluene")}
+        if len(r) == 2:
+            K = {k: float(v) / 60000.0 for k, v in r.items()}
+            lo, hi = 0.0, 1.0
+            for _ in range(200):
+                V = 0.5 * (lo + hi)
+                g = sum(0.5 * (k - 1.0) / (1.0 + V * (k - 1.0)) for k in K.values())
+                (lo, hi) = (V, hi) if g > 0.0 else (lo, V)
+            L_ref = 1.0 - 0.5 * (lo + hi)
+            for tag, model in (("f2", "reactiveFlash"), ("f3", "directMin")):
+                rc, out = run(mixed(tag, model, ["vap", "liq"]))
+                L = liq_fraction(out)
+                if rc != 0 or L is None or abs(L - L_ref) > 1.0e-4:
+                    failures.append(
+                        "(%s) %s: exit %d, liquid fraction %s against the"
+                        " Rachford-Rice %.6f" % (tag, model, rc, L, L_ref))
+        else:
+            failures.append("(f) could not read Psat from the package")
+
     if failures:
         for x in failures:
             print("  FAIL " + x)
@@ -164,7 +257,13 @@ def main() -> int:
           " same 300 K miss, each naming y P, Psat and `model directMin;`;"
           " directMin returns a water + methanol liquid; gibbs07's one-liquid"
           " path is unchanged (gibbsMap counts such cells rather than"
-          " refusing; adiabatic trial temperatures are not refused)")
+          " refusing; adiabatic trial temperatures are not refused); and a"
+          " gas below its dew point with NO species supersaturated on its"
+          " own (benzene + toluene, 350 K, 0.6 bar) is refused by"
+          " elementPotential naming the MIXED liquid, and carried by"
+          " reactiveFlash and directMin to the Rachford-Rice split (1e-4).  NOT"
+          " checked: the mixed onset AFTER one pure liquid has condensed"
+          " (the test covers the species not condensed only).")
     return 0
 
 

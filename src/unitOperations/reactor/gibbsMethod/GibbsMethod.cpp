@@ -30,11 +30,11 @@ License
 #include "ElementPotential.H"
 #include "ReactiveFlash.H"
 #include "DirectMin.H"
-
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "solver/NewtonND.H"
 #include "thermo/Component.H"
+#include "thermo/activityCoefficient/ActivityModel.H"
 
 #include <cmath>
 #include <algorithm>
@@ -550,6 +550,65 @@ std::string supersaturatedCondensables(const GibbsProblem& p,
            + " (y P = " + std::to_string(yP) + " Pa > Psat = "
            + std::to_string(Psat) + " Pa)";
     }
+    if (!m.empty()) return m;
+
+    //  A MIXED LIQUID (2026-10-26, DEV.md 4c C173).  No condensable may be
+    //  supersaturated ON ITS OWN and the gas still lie below its dew point:
+    //  benzene + toluene 50/50 at 350 K and 0.6 bar has y P/Psat = 0.328 and
+    //  0.862 -- each below 1 -- and a sum of 1.190, so a liquid of BOTH lowers
+    //  G (directMin finds 76 % of it), while the per-species test passed the
+    //  gas as the equilibrium.  The test is Michelsen's for an incipient
+    //  liquid from this gas: W_i = y_i P / (gamma_i(w) Psat_i), w = W/sum W,
+    //  iterated; sum W > 1 is a proof that a liquid of composition w forms
+    //  (exactly sum y_i P/Psat_i for an ideal liquid).  Over the condensables
+    //  NOT already condensed, with the same y P reading of the gas fugacity as
+    //  the per-species test above.
+    std::vector<std::size_t> cand;
+    for (std::size_t i = 0; i < p.N(); ++i)
+        if (p.condensable[i] && !(i < condensed.size() && condensed[i])
+            && eq.nGas[i] > 0.0)
+            cand.push_back(i);
+    if (cand.size() < 2) return m;
+    sVector r(cand.size(), 0.0);       // y_i P / Psat_i
+    for (std::size_t a = 0; a < cand.size(); ++a)
+    {
+        const std::size_t i = cand[a];
+        r[a] = eq.nGas[i] / eq.Ntotal_gas * p.P / thermo.Psat(p.compIdx[i], T);
+    }
+    sVector W(r);
+    for (int it = 0; it < 100; ++it)
+    {
+        scalar sW = 0.0;
+        for (auto v : W) sW += v;
+        if (!(sW > 0.0)) break;
+        if (!thermo.hasActivity()) break;            // ideal liquid: done
+        sVector xFull(thermo.n(), 0.0);
+        for (std::size_t a = 0; a < cand.size(); ++a)
+            xFull[p.compIdx[cand[a]]] = W[a] / sW;
+        const sVector g = thermo.activity().gamma(T, xFull);
+        scalar d = 0.0;
+        for (std::size_t a = 0; a < cand.size(); ++a)
+        {
+            const scalar Wn = r[a] / std::max<scalar>(g[p.compIdx[cand[a]]], 1.0e-300);
+            d = std::max(d, std::abs(Wn - W[a]));
+            W[a] = Wn;
+        }
+        if (d < 1.0e-12) break;
+    }
+    scalar sW = 0.0;
+    for (auto v : W) sW += v;
+    if (!(sW > 1.0 + 1.0e-6)) return m;
+    m = "a MIXED liquid of ";
+    bool first = true;
+    for (std::size_t a = 0; a < cand.size(); ++a)
+    {
+        if (!(W[a] > 1.0e-8 * sW)) continue;        // a negligible share
+        m += (first ? "" : ", ") + thermo.comp(p.compIdx[cand[a]]).name()
+           + " (y P/Psat = " + std::to_string(r[a]) + ")";
+        first = false;
+    }
+    m += " -- each below its own Psat, but sum_i y_i P/(gamma_i Psat_i) = "
+       + std::to_string(sW) + " > 1: the gas is below its dew point";
     return m;
 }
 

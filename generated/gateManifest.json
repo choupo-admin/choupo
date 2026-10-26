@@ -548,8 +548,8 @@
     },
     "check_ice_freezing": {
       "exit": 0,
-      "claim": "check_ice_freezing: OK -- the pure crystal is a Phase and nothing else changed.  f_solid/f_liquid for pure water is 0.951777 / 0.999903 / 1.048601 at 268.15 / 273.15 / 278.15 K -- it crosses 1 AT the melting point, and the 1e-4 residual is EXACTLY the declared approximation (Tfus in the record is the TRIPLE point 273.16 K, so dG_fus(273.15) = 0.22 J/mol), not slop; each of the three K's is recomputed here from the record's own Hfus and Tfus, so the two phases are provably reaching Psat by the same call.  A non-crystallising component has fugacity exactly 0 (solute inclusion is not modelled, and the zero is a claim).  K_f = 1.860256 is now DERIVED from water's own triplePoint/MW/Hfus against its declared anchor 1.853 (0.39 % apart, two independent primaries, a finding and not an error), while a record with a K_f and no Hfus, one with an Hfus and no K_f, and ethanol (neither) all come back UNDERIVED and untouched.  Five refusals fire by name, each carrying a remedy, the sub-freezing Psat extrapolation is announced, and the crystal states that its dG_fus omits the liquid/solid heat-capacity term (quoting |T - Tfus|; an open-source peer disables the same term for a data reason).  The phase's case consumers are fpd01_nacl_freezing (the freezingPoint op, 2026-08-08) and the flash's SLE branch since S4b (flash21, whose identity is asserted by check_solid_service A10, not here); the solute side belongs to the activity model and is not gated; the no-vapour-pressure guard is unreachable from a parsed record (readFromDict refuses first) and is NOT exercised here.",
-      "seconds": 1.5
+      "claim": "check_ice_freezing: OK -- the pure crystal is a Phase and nothing else changed.  f_solid/f_liquid for pure water is 0.951777 / 0.999903 / 1.048601 at 268.15 / 273.15 / 278.15 K -- it crosses 1 AT the melting point, and the 1e-4 residual is EXACTLY the declared approximation (Tfus in the record is the TRIPLE point 273.16 K, so dG_fus(273.15) = 0.22 J/mol), not slop; each of the three K's is recomputed here from the record's own Hfus and Tfus, so the two phases are provably reaching Psat by the same call.  A non-crystallising component has fugacity exactly 0 (solute inclusion is not modelled, and the zero is a claim).  K_f = 1.860256 is now DERIVED from water's own triplePoint/MW/Hfus against its declared anchor 1.853 (0.39 % apart, two independent primaries, a finding and not an error), while a record with a K_f and no Hfus, one with an Hfus and no K_f, and ethanol (neither) all come back UNDERIVED and untouched.  Five refusals fire by name, each carrying a remedy, the sub-freezing Psat extrapolation is announced, and the crystal states that its dG_fus omits the liquid/solid heat-capacity term (quoting |T - Tfus|; an open-source peer disables the same term for a data reason).  The phase's case consumers are fpd01_nacl_freezing (the freezingPoint op, 2026-08-08) and the flash's SLE branch since S4b (flash21, whose identity is asserted by check_solid_service A10, not here); the solute side belongs to the activity model and is not gated; a 1 mol% ethanol liquor at 270.15, 268.15 and 258.15 K freezes to the closed-form a_water through the SLE flash, its Newton step held inside the liquid's inventory and the limit announced, while flash21 as shipped never binds it; the no-vapour-pressure guard is unreachable from a parsed record (readFromDict refuses first) and is NOT exercised here.",
+      "seconds": 1.7
     },
     "check_impossible_phase_pins": {
       "exit": 0,
@@ -703,8 +703,8 @@
     },
     "check_pcsaft_association": {
       "exit": 0,
-      "claim": "check_pcsaft_association: OK -- engine X^D/X^A equal the independent closed form (1e-6), densities on the per-set anchors (water: the 2-site fit's own published trade-off), partial trio + unknown scheme refuse by name, non-associating corpus numerically untouched (1e-10)",
-      "seconds": 0.1
+      "claim": "check_pcsaft_association: OK -- engine X^D/X^A equal the independent closed form (1e-6), densities on the per-set anchors (water: the 2-site fit's own published trade-off), partial trio + unknown scheme refuse by name, non-associating corpus numerically untouched (1e-10), and a TRACE component's ln phi is continuous into infinite dilution (nHexane in liquid propane 1e-5, ethanol in water 1e-4) and equals the derivative of the package's own g_res on the vapour root (1e-6).  NOT checked: trace ln phi against a measurement (no infinite-dilution data is curated)",
+      "seconds": 3.0
     },
     "check_pellet_announcement": {
       "exit": 0,
@@ -1123,8 +1123,8 @@
     },
     "check_vlle_fallback": {
       "exit": 0,
-      "claim": "check_vlle_fallback: OK -- a phaseSet VLLE flash whose search finds no vapour publishes TWO LIQUIDS (witness vlle04: vapour port F = 0, both liquid ports nonzero at vf = 0, LL vocabulary, plant first law within 0.05 kW), and the split's kind is read off the typed `liquidLiquid` field, never parsed from the regime string, in IsothermalFlash.cpp and the three propertyOps readers; and a THREE-PHASE answer (witness vlle03) publishes each phase flow equal to its port, the ports summing to the feed, V_over_F as the vapour's share, K ratios named by pair, and a duty the energy report closes to within 0.0001 kW (datum fixture), and an unpinned feed at the drum's own state means its THREE-phase equilibrium in the unit, the report and the stream table alike (Q = 0 and plant residual within 0.0001 kW, feed vf = the unit's beta_vapor); and a feed ANOTHER unit produced keeps its producer's answer (witness vlle05: a heater's vapour-liquid outlet read the heater's way by the report and the decanter, both rows and the plant within 0.0001 kW; the rule `consumerSearchApplies` in one home, called by the stamp and the unit, the three VLLE ports marked as published by a three-phase search).  NOT checked: whether the split is right (a structural witness), the VL fallback (no witness), the fallback's own material imbalance (the dropped sub-1 % vapour, inside the band), a VLLE port fed to a second VLLE unit (source only), and the ternary scan's VL / one-phase classification (still the string).",
-      "seconds": 0.5
+      "claim": "check_vlle_fallback: OK -- a phaseSet VLLE flash whose search finds no vapour publishes TWO LIQUIDS (witness vlle04: vapour port F = 0, both liquid ports nonzero at vf = 0, LL vocabulary, plant first law within 0.05 kW), and the split's kind is read off the typed `liquidLiquid` field, never parsed from the regime string, in IsothermalFlash.cpp and the three propertyOps readers; and a THREE-PHASE answer (witness vlle03) publishes each phase flow equal to its port, the ports summing to the feed, V_over_F as the vapour's share, K ratios named by pair, and a duty the energy report closes to within 0.0001 kW (datum fixture), and an unpinned feed at the drum's own state means its THREE-phase equilibrium in the unit, the report and the stream table alike (Q = 0 and plant residual within 0.0001 kW, feed vf = the unit's beta_vapor); and a feed ANOTHER unit produced keeps its producer's answer (witness vlle05: a heater's vapour-liquid outlet read the heater's way by the report and the decanter, both rows and the plant within 0.0001 kW; the rule `consumerSearchApplies` in one home, called by the stamp and the unit, the three VLLE ports marked as published by a three-phase search).  NOT checked: whether the split is right (a structural witness), the VL fallback (no witness), the fallback's own material imbalance (the dropped sub-1 % vapour, inside the band), a VLLE port fed to a second VLLE unit (source only), and the ternary scan's VL / one-phase classification (still the string).  AND (C173): a feed with an ABSENT component splits on the present ones (vlle03 z_C = 0: two liquids, x_A 0.99889), a TRACE one is decided by the stability tests and solved by the LL branch, announced (z_C = 1e-8), a stable feed stays one converged liquid, two liquidPhases on different activity models are refused by name, and phaseSet auto on a liquid-only package publishes one liquid.  NOT checked: a VLLE feed for which BOTH stability tests fire and the three-phase search still fails (it is refused, not solved; no witness).",
+      "seconds": 0.9
     },
     "check_volatility_declaration": {
       "exit": 0,
@@ -1278,8 +1278,8 @@
     },
     "check_gibbs_condensables": {
       "exit": 0,
-      "claim": "check_gibbs_condensables: OK -- with water and methanol both condensable, elementPotential refuses a gas-only answer that leaves both supersaturated (280 K) and a one-liquid answer that leaves methanol supersaturated (300 K), reactiveFlash refuses the same 300 K miss, each naming y P, Psat and `model directMin;`; directMin returns a water + methanol liquid; gibbs07's one-liquid path is unchanged (gibbsMap counts such cells rather than refusing; adiabatic trial temperatures are not refused)",
-      "seconds": 0.2
+      "claim": "check_gibbs_condensables: OK -- with water and methanol both condensable, elementPotential refuses a gas-only answer that leaves both supersaturated (280 K) and a one-liquid answer that leaves methanol supersaturated (300 K), reactiveFlash refuses the same 300 K miss, each naming y P, Psat and `model directMin;`; directMin returns a water + methanol liquid; gibbs07's one-liquid path is unchanged (gibbsMap counts such cells rather than refusing; adiabatic trial temperatures are not refused); and a gas below its dew point with NO species supersaturated on its own (benzene + toluene, 350 K, 0.6 bar) is refused by elementPotential naming the MIXED liquid, and carried by reactiveFlash and directMin to the Rachford-Rice split (1e-4).  NOT checked: the mixed onset AFTER one pure liquid has condensed (the test covers the species not condensed only).",
+      "seconds": 2.7
     },
     "check_departure_convention": {
       "exit": 0,
@@ -1330,6 +1330,11 @@
       "exit": 0,
       "claim": "check_column_thermo_consistency: OK -- 33 case(s) + 3 probe(s); every column's condenser, every full-MESH stage and reboiler on the streams' surface, fugacity equality at the published y, the reactive full-MESH refusal and the enthalpic CMO q [a 34/34, a2-reboiler 4/4, a2-recon 4/4, a2-stages 4/4, b 29/29, b-skip 5/5, c 3/3, d 1/1, skip 1/1]; NOT checked: feed stages, Kremser units, shortcutColumn",
       "seconds": 146.1
+    },
+    "check_gibbs_real_gas": {
+      "exit": 0,
+      "claim": "check_gibbs_real_gas: OK -- elementPotential, reactiveFlash and directMin publish the ammonia equilibrium the package's own fugacity condition gives (700 K, 200 bar, SRK; 2e-4 in y_NH3, against an ideal-gas answer 0.024 away), and a VLLE flash on an SRK vapour publishes y/x equal to the package's own K within 1 %.  NOT checked: the liquid's Poynting / phi_sat (absent from the package's K too), and the liquid-onset tests of the element-potential and reactive-flash routes, which read y_i P.",
+      "seconds": 3.1
     }
   }
 }

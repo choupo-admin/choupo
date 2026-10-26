@@ -38,8 +38,12 @@ Description
     liquid fraction f_c ∈ [0,1] for each condensable.  The objective is the
     total Gibbs energy
 
-        G/RT = Σ_i n_i^V (g_i°/RT + ln y_i + ln P)
-             + Σ_i n_i^L (g_i°/RT + ln Psat_i + ln(γ_i x_i))
+        G/RT = Σ_i n_i^V (g_i°/RT + ln y_i + ln(P/P0) + ln φ_i(y))
+             + Σ_i n_i^L (g_i°/RT + ln(Psat_i/P0) + ln(γ_i x_i))
+
+    with φ_i the declared EoS's vapour fugacity coefficient (1 for an
+    ideal-gas package; DEV.md 4c C173 -- the term used to be missing, so an
+    SRK package was minimised as an ideal gas).
 
     minimised directly (penalty for negative moles), seeded from the gas-only
     solve.  Carries a γ-model (NRTL / Wilson) like reactiveFlash, but reaches

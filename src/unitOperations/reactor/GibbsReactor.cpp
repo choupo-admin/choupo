@@ -842,7 +842,8 @@ int GibbsReactor::solve(const DictPtr& dict,
         throw std::runtime_error("GibbsReactor (" + modelName + "): at T = "
             + std::to_string(T_final) + " K the answer leaves "
             + eq.supersaturatedNotCondensed + " -- supersaturated in the gas"
-              " (y_i P > Psat_i), so it is not the equilibrium, and no answer"
+              " (y_i P > Psat_i, or for a mixed liquid sum_i y_i P/(gamma_i"
+              " Psat_i) > 1), so it is not the equilibrium, and no answer"
               " is published.  "
             + (modelName == "reactiveFlash"
                  ? std::string("`reactiveFlash` condenses the condensables"
@@ -851,7 +852,10 @@ int GibbsReactor::solve(const DictPtr& dict,
                      " have condensed (or a liquid its Newton could not"
                      " close) is outside it.")
                  : "The `" + modelName + "` method condenses ONE pure liquid"
-                     " and cannot carry a liquid of several condensables.")
+                     " and cannot carry a liquid of several condensables --"
+                     " by design: it is the route the element-potential lesson"
+                     " walks, so a mixed liquid is refused by name rather"
+                     " than widened into it (C173).")
             + "  Use `model directMin;` (a multi-component liquid by direct"
               " minimisation of G), or declare only the condensable the"
               " exercise is about.");

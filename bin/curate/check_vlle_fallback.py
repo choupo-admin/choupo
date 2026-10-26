@@ -88,6 +88,35 @@ WHAT THIS CHECKS:
            decanter's feed pricing both CALL it, and the three VLLE ports
            set `fromThreePhaseSearch = true` (comments stripped).
 
+  (g) AN ABSENT COMPONENT IS NOT AN INFEASIBLE SEARCH (DEV.md 4c C173, the
+      external audit's claim 1).  A copy of vlle03 with z = (0.5, 0.5, 0):
+      the three-phase simplex required every component positive in every
+      phase, so every start returned the penalty and the block published
+      "single liquid", converged, at exit 0 -- while the LL flash of the
+      same feed splits it (0.99889 / 0.00110).  The search now runs on the
+      PRESENT components: the run must exit 0 with BOTH liquid ports
+      carrying flow, alpha's compA within 1e-3 of 0.99889.
+  (h) A TRACE COMPONENT (z_C = 1e-8): the canonical starts keep every
+      composition above 1e-4, so no start is admissible; a minimisation
+      that finds nothing below the feed may no longer CONCLUDE one liquid --
+      the TPD and the incipient-vapour test decide, and when only the TPD
+      fires the LL branch solves the split, ANNOUNCED.  The run must exit 0
+      with two liquid ports, and say "[flash] VLLE: the three-phase search
+      found nothing".
+  (i) A FEED THAT IS ONE STABLE LIQUID stays one converged liquid (z_A =
+      0.99998): exit 0, the regime names the stability verdict, and the
+      beta port is empty -- the negative that keeps (g) and (h) honest.
+  (j) TWO LIQUID SURFACES, AND A LIQUID-ONLY `auto` (claim 6), on copies of
+      vlle01_waterButanol (320 K, 1.013 bar):
+      (j1) the two liquidPhases declaring DIFFERENT activity models (ideal
+           and NRTL, a_ij = a_ji = -2, alpha 0.2), phaseSet LL, water/
+           nButanol 50/50: refused by name ("DIFFERENT activity surfaces").
+           Before: "single liquid", converged, on whichever surface was
+           listed first (Gmix/RT ideal -0.6931, NRTL -1.8905).
+      (j2) phaseSet auto, a liquid-only package, feed 99.9/0.1 (stable as
+           one liquid): exit 0, one liquid.  Before: auto -> VL, then Kvec
+           refused the package ("declares NO vapour phase"), exit 2.
+
 WHAT THIS DOES NOT CHECK.  Whether the split is RIGHT: the witness's NRTL
 pair is Choupo's own case-local regression and predicts a second liquid its
 own evidence does not show (that is why the witness can reach the fallback at
@@ -443,6 +472,110 @@ def main() -> int:
                 fail.append(f"(f1) the witness's plant first law reads "
                             f"residual {r5} kW (tolerance {TOL_UNIT_KW} kW)")
 
+    # (g)-(j) C173: absent and trace components, stability decides one
+    # liquid, two surfaces refused, a liquid-only `auto` --------------------
+    def flows(path):
+        if not path.is_file():
+            return {}
+        blk = re.search(r"componentMolarFlows\s*\{(.*?)\}", path.read_text(),
+                        re.S)
+        return {k: float(v) for k, v in
+                re.findall(r"(\w+)\s+([0-9.eE+-]+)", blk.group(1))} if blk else {}
+
+    with tempfile.TemporaryDirectory() as td:
+        ignore = shutil.ignore_patterns("converged", "reports", "log.*",
+                                        "iterations", "expected")
+
+        def vlle03(tag, a, b, c):
+            case = pathlib.Path(td) / tag
+            shutil.copytree(ROOT / WITNESS3, case, ignore=ignore)
+            (case / "constant" / "propertyManifest").unlink()
+            f = case / "0" / "feed"
+            t = f.read_text()
+            for comp, val in (("compA", a), ("compB", b), ("compC", c)):
+                t, k = re.subn(r"%s\s+[0-9.]+ kmol/h" % comp,
+                               "%s    %s kmol/h" % (comp, val), t)
+                if k != 1:
+                    raise SystemExit("check_vlle_fallback: vlle03 feed moved")
+            f.write_text(t)
+            return case
+
+        for tag, feed, arm in (("g", (50, 50, 0), "(g)"),
+                               ("h", (50, 50, "1e-6"), "(h)")):
+            case = vlle03(tag, *feed)
+            rc, log = run(case)
+            fa = flows(case / "converged" / "liquidA")
+            fb = flows(case / "converged" / "liquidB")
+            if rc != 0 or not fa or not fb or sum(fb.values()) <= 0.0:
+                fail.append(f"{arm} vlle03 at z = {feed}: exit {rc}, liquidA "
+                            f"{fa}, liquidB {fb} -- the feed splits into two "
+                            "liquids (the LL flash of it does) and the VLLE "
+                            "block did not publish them")
+                continue
+            xa = fa.get("compA", 0.0) / sum(fa.values())
+            xb = fb.get("compA", 0.0) / sum(fb.values())
+            hi = max(xa, xb)
+            if abs(hi - 0.99889) > 1.0e-3:
+                fail.append(f"{arm} the compA-rich liquid holds x_A = {hi:.5f}; "
+                            "the LL split of the same feed is 0.99889")
+            if arm == "(h)" and "[flash] VLLE: the three-phase search found" \
+                    " nothing" not in log:
+                fail.append("(h) the narrower solve was not announced")
+
+        case = vlle03("i", "99.998", "1e-3", "1e-3")
+        rc, log = run(case)
+        fb = flows(case / "converged" / "liquidB")
+        if rc != 0 or sum(fb.values()) > 0.0 or \
+                "single liquid (stable" not in log:
+            fail.append(f"(i) a stable single-liquid feed: exit {rc}, liquidB "
+                        f"{fb} -- it must stay ONE converged liquid, named by "
+                        "its stability verdict")
+
+        def vlle01(tag, water, buoh, phase_set, surfaces=None):
+            case = pathlib.Path(td) / tag
+            shutil.copytree(ROOT / "tutorials/steady/flash/vlle01_waterButanol",
+                            case, ignore=ignore)
+            mp = case / "constant" / "propertyManifest"
+            if mp.exists():
+                mp.unlink()
+            f = case / "0" / "feed"
+            t = f.read_text()
+            t = re.sub(r"water\s+80 kmol/h", f"water    {water} kmol/h", t)
+            t = re.sub(r"nButanol\s+20 kmol/h", f"nButanol    {buoh} kmol/h", t)
+            f.write_text(t)
+            fd = case / "system" / "flowsheetDict"
+            fd.write_text(fd.read_text().replace("phaseSet   LL;",
+                                                 f"phaseSet   {phase_set};"))
+            if surfaces:
+                tp = case / "constant" / "thermoPhysPropDict"
+                t = tp.read_text()
+                old = ("        { name waterRich; }\n"
+                       "        { name butanolRich; }\n")
+                if old not in t:
+                    raise SystemExit("check_vlle_fallback: vlle01 phases moved")
+                tp.write_text(t.replace(old,
+                    "        { name waterRich; %s }\n"
+                    "        { name butanolRich; %s }\n" % surfaces))
+            return case
+
+        nrtl = ("activityModel { model NRTL; binaryParameters { water-nButanol"
+                " { i water; j nButanol; a_ij -2.0; b_ij 0.0; a_ji -2.0;"
+                " b_ji 0.0; alpha 0.2; } } }")
+        case = vlle01("j1", 50, 50, "LL",
+                      ("activityModel { model ideal; }", nrtl))
+        rc, log = run(case)
+        if rc == 0 or "DIFFERENT activity surfaces" not in log:
+            fail.append(f"(j1) two liquids on different activity models: exit "
+                        f"{rc} -- must be refused naming the two surfaces")
+        case = vlle01("j2", "99.9", "0.1", "auto")
+        rc, log = run(case)
+        fa = flows(case / "converged" / "waterRich")
+        fb = flows(case / "converged" / "butanolRich")
+        if rc != 0 or not fa or sum(fb.values()) > 0.0:
+            fail.append(f"(j2) phaseSet auto on a liquid-only package, a "
+                        f"stable feed: exit {rc}, waterRich {fa}, butanolRich "
+                        f"{fb} -- must publish ONE converged liquid")
+
     if fail:
         print("check_vlle_fallback: FAILED")
         for f in fail:
@@ -471,7 +604,16 @@ def main() -> int:
           "NOT checked: whether the split is right (a structural witness), "
           "the VL fallback (no witness), the fallback's own material imbalance (the dropped sub-1 % vapour, inside the band), a VLLE port "
           "fed to a second VLLE unit (source only), and the "
-          "ternary scan's VL / one-phase classification (still the string).")
+          "ternary scan's VL / one-phase classification (still the string).  "
+          "AND (C173): a feed with an ABSENT component splits on the present "
+          "ones (vlle03 z_C = 0: two liquids, x_A 0.99889), a TRACE one is "
+          "decided by the stability tests and solved by the LL branch, "
+          "announced (z_C = 1e-8), a stable feed stays one converged liquid, "
+          "two liquidPhases on different activity models are refused by "
+          "name, and phaseSet auto on a liquid-only package publishes one "
+          "liquid.  NOT checked: a VLLE feed for which BOTH stability tests "
+          "fire and the three-phase search still fails (it is refused, not "
+          "solved; no witness).")
     return 0
 
 

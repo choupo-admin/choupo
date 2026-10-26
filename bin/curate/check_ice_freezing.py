@@ -79,6 +79,22 @@ WHAT THIS GATE CHECKS.
       The gate reads the refusal TEXT, not merely that something threw: a
       refusal that fires for the wrong reason is not the refusal claimed.
 
+  (g) A DILUTE LIQUOR FAR BELOW ITS FREEZING CURVE IS NOT TOTAL FREEZING
+      (DEV.md 4c C173, the external audit's claim 7).  The SLE solver takes
+      half a Newton step bounded only by n_ice >= 0; at 1 mol% ethanol the
+      ice's d lnSI/dn is small, the step asked for 1.01 mol of water out of
+      0.99, and the flash read the negative liquid as "a pure feed below its
+      melting point freezes entirely" -- refusing a feed whose answer is
+      68 % ice.  On copies of flash21 (water 99, ethanol 1 kmol/h) at
+      270.15, 268.15 and 258.15 K the flash must converge, publish a_water
+      equal to the closed-form aEq_water (1e-8), publish a solid fraction
+      inside (0, 0.99) -- the auditor's independent bisection gives 0.67574
+      at 270.15 K; the engine 0.675735 -- and ANNOUNCE the fraction-to-the-boundary limit ("limited to 90 %").  The
+      control (flash21 as shipped, 10 mol% at 258.15 K) must NOT announce
+      it -- the aid binds only where the step would have emptied the liquid.
+      Sabotage by hand (2026-10-26): removing the capacity bound restores
+      the refusal at all three temperatures.
+
 WHAT THIS GATE DOES NOT CHECK, said plainly because a gate that implies more
 coverage than it has is worse than one that reports less:
 
@@ -438,6 +454,57 @@ def main() -> int:
             "project's own doctrine is that a declared approximation must be "
             "visible where it is used.")
 
+    # ---- (g) the SLE flash on a dilute liquor (C173) -------------------
+    import shutil
+    import tempfile
+    flash21 = ROOT / "tutorials" / "steady" / "flash" / "flash21_freeze_concentration"
+    solve = ROOT / "build" / "linux64Gcc" / "choupoSolve"
+    with tempfile.TemporaryDirectory() as td:
+        def sle(tag, water, eth, T):
+            case = Path(td) / tag
+            shutil.copytree(flash21, case, ignore=lambda d, names: [
+                x for x in names if x in ("expected", "converged", "reports")
+                or x.startswith("log.")])
+            if water is not None:
+                f = case / "0" / "feed"
+                t = f.read_text()
+                t2 = t.replace("water     90.0  kmol/h", f"water     {water}  kmol/h") \
+                      .replace("ethanol   10.0  kmol/h", f"ethanol   {eth}  kmol/h")
+                if t2 == t:
+                    raise SystemExit("check_ice_freezing: flash21 feed moved")
+                f.write_text(t2)
+                fd = case / "system" / "flowsheetDict"
+                fd.write_text(fd.read_text().replace("T 258.15 K;", f"T {T} K;"))
+            r = subprocess.run([str(solve), "."], cwd=case, capture_output=True,
+                               text=True, timeout=600,
+                               env=dict(os.environ, CHOUPO_HOME=str(ROOT)))
+            out = r.stdout + r.stderr
+            k = dict(re.findall(r'"(a_water|aEq_water|solidFraction)": ([-+0-9.eE]+)', out))
+            return r.returncode, out, {a: float(b) for a, b in k.items()}
+
+        for T in ("270.15", "268.15", "258.15"):
+            rc, out, k = sle("g" + T, "99.0", "1.0", T)
+            if rc != 0 or not k:
+                fail.append(f"(g) 1 mol% ethanol at {T} K: exit {rc} -- the SLE "
+                            "flash refused a liquor whose ice-liquid "
+                            "equilibrium exists (the half Newton step emptied "
+                            "the liquid)")
+                continue
+            if abs(k["a_water"] - k["aEq_water"]) > 1.0e-8:
+                fail.append(f"(g) {T} K: a_water {k['a_water']} != aEq "
+                            f"{k['aEq_water']}")
+            if not (0.0 < k["solidFraction"] < 0.99):
+                fail.append(f"(g) {T} K: solidFraction {k['solidFraction']} "
+                            "outside (0, 0.99)")
+            if "limited to 90 %" not in out:
+                fail.append(f"(g) {T} K: the fraction-to-the-boundary limit "
+                            "bound and was not announced")
+        rc, out, k = sle("gctl", None, None, None)
+        if rc != 0 or "limited to 90 %" in out:
+            fail.append(f"(g) control flash21 as shipped: exit {rc}, "
+                        "announcement present = %s (it must run, and the aid "
+                        "must not bind)" % ("limited to 90 %" in out))
+
     if fail:
         print("check_ice_freezing: FAILED")
         for f in fail:
@@ -472,7 +539,10 @@ def main() -> int:
         "and the flash's SLE branch since S4b (flash21, whose identity is "
         "asserted by check_solid_service A10, not here); the solute side "
         "belongs to the "
-        "activity model and is not gated; "
+        "activity model and is not gated; a 1 mol% ethanol liquor at 270.15, "
+        "268.15 and 258.15 K freezes to the closed-form a_water through the "
+        "SLE flash, its Newton step held inside the liquid's inventory and "
+        "the limit announced, while flash21 as shipped never binds it; "
         + ("; ".join(notes) if notes else "no further caveats") + ".")
     return 0
 

@@ -64,7 +64,7 @@ GibbsEquilibrium ElementPotential::equilibrium(const GibbsProblem& p, scalar T,
         if (log) { const std::string sp = thermo.comp(p.compIdx[i]).name();   // the test, as records
                    log({"liquidTest", 0, "yP_" + sp, y_i * P, "Pa"}); log({"liquidTest", 0, "Psat_" + sp, Psat, "Pa"}); }
     }
-    if (nSuper == 0) return eq;     // single gas phase is stable
+    if (nSuper == 0) { eq.supersaturatedNotCondensed = supersaturatedCondensables(p, eq, T); return eq; }   // no PURE liquid; a MIXED one, outside this method, is tested and marked (C173)
 
     // 3. Two-phase (V + L) for ONE condensable (a pure liquid).  SEVERAL supersaturated: the gas-only
     //    answer is returned MARKED, and the reactor refuses it by name (C150 R07); reactiveFlash / directMin do V+L.

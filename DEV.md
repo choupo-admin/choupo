@@ -1544,6 +1544,66 @@ accepts today, and that is a policy call.
 > independently in the engine (never taking the review's numbers), states
 > which hold, and fixes those that hold behind a gate that fails first;
 > the full report asked of Vitor.
+> THE FULL REPORT ARRIVED (pinned at c40318b72): SEVEN claims.  The general
+> reproduced each on 39d83a96d with its own probe (bin/curate/
+> _gibbsAuditProbe.cpp: the case's package, no unit operation -- ln phi, K,
+> Psat, g_res, and one reaction's fugacity condition by bisection).  ALL
+> SEVEN HOLD.  (1) VLLE with an absent component: vlle03 z = (0.5, 0.5, 0)
+> published one liquid, converged, while LL splits it (0.99889/0.00110);
+> also at z_C = 1e-8, and three nodes of ternary01's own scan near the B
+> corner.  (2) VLLE objective had no ln phi: SRK and idealGas identical; the
+> package's own K was 1.6-3.4 % off y/x.  (3) directMin had no ln phi:
+> ammonia 700 K / 200 bar on SRK 30.013 % NH3 = the ideal 30.012 %; the
+> fugacity condition solved independently gives 32.387 %, which
+> elementPotential and reactiveFlash publish.  (4) mixed-liquid onset:
+> benzene + toluene 50/50, 350 K, 0.6 bar (y P/Psat 0.328 and 0.862, sum
+> 1.190) published as gas by elementPotential and reactiveFlash; directMin
+> 76.06 % liquid (Rachford-Rice 76.057 %).  (5) PC-SAFT trace: nHexane in
+> liquid propane (300 K, 1 bar) phi 0.8555 at x = 1e-9 against 0.2309
+> (3.70x), 0.1448 at x = 0; ethanol at 1e-12 in water ln phi 6.26 against
+> 0.91; vapour root 4.8e-4 off the derivative of the package's own g_res.
+> (6) two liquid surfaces: ideal + NRTL answered one liquid on whichever was
+> listed first; and phaseSet auto on a liquid-only package went to VL and
+> Kvec refused it (exit 2).  (7) SLE: 1 mol% ethanol at 270.15/268.15/
+> 258.15 K refused as total freezing; the answer is 67.57 % ice at 270.15 K.
+> FIXED on branch claude/c173-gibbs-audit, gate first: directMin's vapour
+> term carries ln phi (DirectMin.cpp); the VLLE objective carries ln phi,
+> searches the PRESENT components, and a search that finds nothing below
+> the feed no longer concludes one liquid -- the TPD and an incipient-vapour
+> test decide, the narrower LL or VL solve is taken when only one fires
+> (announced), otherwise NOT converged (IsothermalFlash.cpp);
+> two liquid surfaces are REFUSED by name (a stated default -- extending the
+> LL machinery to two surfaces is an architecture call, Vitor's), and auto
+> on a liquid-only package goes to LL; supersaturatedCondensables also tests
+> the mixed onset (Michelsen's incipient liquid from the gas, gamma
+> included): elementPotential REFUSES it by name (one pure liquid by design,
+> the route the lesson walks), reactiveFlash carries it (seeded by
+> Rachford-Rice; GibbsMethod.cpp, ReactiveFlash.cpp); PC-SAFT steps a minor
+> component on 100 h_rel of the total, one-sided below it, and verify()
+> holds the trace limit (PCSAFT.cpp; majors bit for bit); the SLE step is
+> held to 90 % of the inventory, announced (SolidEquilibrium.H `capacity`).
+> Gates: new check_gibbs_real_gas; arms check_vlle_fallback (g)-(j),
+> check_pcsaft_association (d), check_gibbs_condensables (f),
+> check_ice_freezing (g) -- each FAILS on 39d83a96d (measured by restoring
+> the base sources and rebuilding).  ONE GOLDEN WOULD MOVE, NOT RECORDED
+> (the list for Vitor): ternary01_audit_vlle diag.lle.n_ll 29 -> 32,
+> n_onephase 13 -> 10, n_tielines 22 -> 23 -- the nodes (0.071, 0.786,
+> 0.143), (0.071, 0.857, 0.071), (0.143, 0.786, 0.071) were ONE_PHASE and
+> are two liquids (beta 0.077 / 0.074 / 0.152 of an A-rich liquid): the
+> A-B gap is wide (tau = 5) and the canonical starts had no admissible
+> point there.  NAMED, not fixed: the ElementPotential/ReactiveFlash liquid
+> tests read y P, not y phi P (the auditor lists it unestablished; no
+> witness built); the VLLE's own sub-1 % phase drop and its NM answer carry
+> no equal-fugacity polish (0.2-0.3 % in y/x); the electrolyte solids
+> service passes no `capacity` (no witness).
+> VALIDATED on the branch (2026-10-26): make all; the 71 cases whose dicts
+> reach a Gibbs reactor, a phaseSet, named liquid phases, a solid phase or
+> PC-SAFT -- 70 PASS, 1 FAIL = ternary01 above, unrecorded; --fast -j 2 76
+> PASS / 0 FAIL (5 expected-fail); --gui 38 PASS / 0 FAIL (6543 GUI tests;
+> the lesson citations into IsothermalFlash.cpp re-located, GibbsMethod.cpp
+> kept line for line); check_compile_clean, check_wasm_dialect, and every
+> gate reading a touched source.  PENDING: Vitor's word on the ternary01
+> rows, then the merge.
 
 > **C172. ONE GUI OR TWO: PROCESS SIMULATION AND PROPERTIES & DATA (Vitor,
 > 2026-10-26, after "Nos temos de por um pouco de ordem nas propriedades!

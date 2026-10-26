@@ -26,6 +26,30 @@ Probes, through the real choupoProps binary:
   NEGATIVE     pcsaft01_pure_nhexane runs with NO association output and
                its Z / v_molar agree with the pre-association golden at
                1e-10 -- the byte-identity half of the widened validation.
+  TRACE (d)    THE FUGACITY OF A TRACE COMPONENT IS THE DERIVATIVE OF THE
+               SAME a_res (DEV.md 4c C173, the external audit's claim 5).
+               ln phi_i is a numeric mole-number derivative; its step was
+               1e-6 n_i, i.e. 1e-15 at x_i = 1e-9, and a trace nHexane in
+               liquid propane (300 K, 1 bar) came out phi = 0.8555 against
+               0.2309 -- 3.70x -- and 0.1448 at x_i = 0.  Asked through the
+               case's own package (bin/curate/_gibbsAuditProbe.cpp, no unit
+               operation), each of these must hold:
+                 (d1) liquid root, nHexane/propane: ln phi_nHexane at x =
+                      1e-8, 1e-9, 1e-10, 1e-12 and 0 within 1e-5 of x = 1e-6
+                      (continuity into infinite dilution);
+                 (d2) liquid root, ethanol in water (flash20's associating
+                      package, 298.15 K): the same at 1e-4 -- the
+                      association fixed point's own noise at infinite
+                      dilution is ~1e-5;
+                 (d3) vapour root, nHexane/propane (300 K, 0.1 bar): ln phi
+                      at x = 1e-9 and 0 equal the composition derivative
+                      d(N g_res/RT)/dn_i of the package's own H_res and
+                      S_res (second-order forward difference, h = 1e-4)
+                      within 1e-6 -- an INDEPENDENT route to the same
+                      derivative.
+               By-hand sabotages (2026-10-26): restoring the old step
+               h = 1e-6 max(n_i, 1e-9) fails (d1) (0.8555 vs 0.2309) and
+               (d3); restoring it only for x_i = 0 fails (d1) at x = 0.
 
 Exit 1 listing failures."""
 import json
@@ -190,6 +214,74 @@ def main() -> int:
                 failures.append(f"negative: pcsaft01 {key} {val} !="
                                 f" golden {ref} (byte-identity broken)")
 
+    # ---- (d) TRACE: ln phi is the derivative of the same a_res ----------
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import gibbs_audit_probe as gap
+    err = gap.build()
+    if err:
+        failures.append("(d) " + err)
+    else:
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+
+            def mixture(tag, src, comps):
+                case = tmp / tag
+                shutil.copytree(src, case, ignore=shutil.ignore_patterns(
+                    "expected", "log.*", "converged", "reports"))
+                for x in ("propertyManifest",):
+                    if (case / "constant" / x).exists():
+                        (case / "constant" / x).unlink()
+                if (case / "constant" / "components").exists():
+                    shutil.rmtree(case / "constant" / "components")
+                tp = case / "constant" / "thermoPhysPropDict"
+                tp.write_text(re.sub(r"^components\s*\(.*?\);",
+                                     "components ( %s );" % " ".join(comps),
+                                     tp.read_text(), flags=re.M))
+                return case
+
+            def lnphi(case, root, T, P, xi, i, n):
+                x = [(1.0 - xi) / (n - 1)] * n
+                x[i] = xi
+                return ["LNPHI %s %r %r %s" % (root, T, P,
+                        " ".join(repr(v) for v in x))]
+
+            flash10 = ROOT / "tutorials/steady/flash/flash10_ch4propane_pcsaft"
+            flash20 = ROOT / "tutorials/steady/flash/flash20_ethanol_water_pcsaft"
+            hp = mixture("hexprop", flash10, ["nHexane", "propane"])
+            ew = mixture("ethwat", flash20, ["ethanol", "water"])
+            xs = [1e-6, 1e-8, 1e-9, 1e-10, 1e-12, 0.0]
+            try:
+                for tag, case, T, P, tol in (("d1", hp, 300.0, 1.0e5, 1.0e-5),
+                                             ("d2", ew, 298.15, 1.0e5, 1.0e-4)):
+                    lines = sum((lnphi(case, "L", T, P, xi, 0, 2) for xi in xs), [])
+                    vals = [r[0] for r in gap.ask(case, lines, tmp)]
+                    for xi, v in zip(xs[1:], vals[1:]):
+                        if abs(v - vals[0]) > tol:
+                            failures.append(
+                                "(%s) liquid ln phi of the trace component at"
+                                " x = %g is %.8f, at x = 1e-6 %.8f -- %.2e"
+                                " apart (> %g): the derivative collapses with"
+                                " x_i" % (tag, xi, v, vals[0], abs(v - vals[0]), tol))
+                # (d3) the vapour root against d(N g_res)/dn_i
+                T, P, h = 300.0, 1.0e4, 1.0e-4
+                for xi in (1e-9, 0.0):
+                    v = gap.ask(hp, lnphi(hp, "V", T, P, xi, 0, 2), tmp)[0][0]
+                    req = []
+                    for k in range(3):
+                        nn = [xi + k * h, 1.0 - xi]
+                        N = sum(nn)
+                        req.append("GRES %r %r %r %r" % (T, P, nn[0] / N, nn[1] / N))
+                    g = [r[0] for r in gap.ask(hp, req, tmp)]
+                    f = [(1.0 + k * h) * g[k] for k in range(3)]
+                    d = (-3.0 * f[0] + 4.0 * f[1] - f[2]) / (2.0 * h)
+                    if abs(v - d) > 1.0e-6:
+                        failures.append(
+                            "(d3) vapour ln phi of nHexane at x = %g is %.10f;"
+                            " the derivative of the package's own N g_res is"
+                            " %.10f (%.2e apart)" % (xi, v, d, abs(v - d)))
+            except RuntimeError as e:
+                failures.append("(d) " + str(e))
+
     if failures:
         print("check_pcsaft_association: FAIL")
         for f in failures:
@@ -199,7 +291,12 @@ def main() -> int:
           " independent closed form (1e-6), densities on the per-set"
           " anchors (water: the 2-site fit's own published trade-off),"
           " partial trio + unknown scheme refuse by name,"
-          " non-associating corpus numerically untouched (1e-10)")
+          " non-associating corpus numerically untouched (1e-10),"
+          " and a TRACE component's ln phi is continuous into infinite"
+          " dilution (nHexane in liquid propane 1e-5, ethanol in water"
+          " 1e-4) and equals the derivative of the package's own g_res on"
+          " the vapour root (1e-6).  NOT checked: trace ln phi against a"
+          " measurement (no infinite-dilution data is curated)")
     return 0
 
 

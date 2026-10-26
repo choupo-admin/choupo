@@ -395,13 +395,42 @@ sVector PCSAFT::lnPhiAt(scalar T, scalar /*P*/, scalar rho, const sVector& x,
         sVector xx(n_); for (std::size_t i=0;i<n_;++i) xx[i]=nn[i]/N;
         return N * aRes(T, N / V, xx);                     // rho' = N/V
     };
+    //  THE STEP IS A SHARE OF THE TOTAL, NOT OF THE COMPONENT (2026-10-26,
+    //  DEV.md 4c C173).  n*a_res carries no ln n_i term (the ideal part,
+    //  which does, is not differenced), so it is smooth in n_i on the scale
+    //  of the TOTAL N, and a step relative to n_i itself only shrinks the
+    //  difference of two O(1) energies toward round-off: at x_i = 1e-9 the
+    //  step was 1e-15 and ln phi of a trace nHexane in liquid propane came
+    //  out 3.7x off the derivative of this same a_res (and different again
+    //  at x_i = 0).  A MINOR component (n_i < 1 % of N) now steps
+    //  100 hRel N: the association fixed point converges each a_res to
+    //  ~1e-11, which a smaller step would amplify (measured: 1e-5 in ln phi
+    //  of ethanol at infinite dilution in water at 10 hRel N); the O(h^2)
+    //  truncation at 1e-4 is ~1e-8.  One whose own amount is below that
+    //  step takes the second-order FORWARD difference, so no mole number is
+    //  ever made negative.  A major component keeps hRel n_i, bit for bit,
+    //  so every answer that never carried a minor component is unchanged.
+    //  Gate: check_pcsaft_association arm (d).
     sVector n0(x);
     sVector out(n_);
+    scalar f0 = 0.0;
+    bool   haveF0 = false;
     for (std::size_t i = 0; i < n_; ++i)
     {
-        const scalar h = hRel * (n0[i] > 1.0e-9 ? n0[i] : 1.0e-9);
-        sVector np(n0), nm(n0); np[i]+=h; nm[i]-=h;
-        const scalar mu_res = (nAtilde(np) - nAtilde(nm)) / (2.0*h);
+        const scalar h = (n0[i] >= 1.0e-2 * ntot) ? hRel * n0[i]
+                                                  : 100.0 * hRel * ntot;
+        scalar mu_res;
+        if (n0[i] >= h)
+        {
+            sVector np(n0), nm(n0); np[i]+=h; nm[i]-=h;
+            mu_res = (nAtilde(np) - nAtilde(nm)) / (2.0*h);
+        }
+        else
+        {
+            if (!haveF0) { f0 = nAtilde(n0); haveF0 = true; }
+            sVector n1(n0), n2(n0); n1[i]+=h; n2[i]+=2.0*h;
+            mu_res = (-3.0*f0 + 4.0*nAtilde(n1) - nAtilde(n2)) / (2.0*h);
+        }
         out[i] = mu_res - std::log(Zc);
     }
     return out;
@@ -496,6 +525,49 @@ scalar PCSAFT::verify(int verbosity) const
                 std::max(std::abs(lp[i] - lpFine[i]),
                          std::abs(lp[i] - lpCoarse[i])));
         maxDev = std::max(maxDev, stepDev);
+
+        // (3b) THE TRACE LIMIT (C173): each component at x_i = 1e-10 and at
+        //      exactly 0 in the same liquid -- ln phi_i must be continuous
+        //      into infinite dilution, and agree with the step ten times
+        //      smaller.  (Not ten times LARGER: for a strongly associating
+        //      trace -- ethanol in water -- 1e-3 is already off the plateau.)
+        //      The equimolar test above cannot see a step that collapses with
+        //      x_i; this one is where it did.
+        if (n_ >= 2)
+            for (std::size_t i = 0; i < n_; ++i)
+            {
+                sVector xt(n_, 1.0 / static_cast<scalar>(n_ - 1));
+                xt[i] = 0.0;
+                sVector xs(xt);
+                xs[i] = 1.0e-10;
+                for (std::size_t k = 0; k < n_; ++k)
+                    if (k != i) xs[k] *= (1.0 - 1.0e-10);
+                try
+                {
+                    //  ONE density for both: the two compositions differ by
+                    //  1e-10, and a second density solve would add its own
+                    //  round-off to ln Z, which is not what is tested here.
+                    const scalar r0 = solveDensity(T, P, xt, true);
+                    const scalar rs = r0;
+                    const scalar l0 = lnPhiAt(T, P, r0, xt)[i];
+                    const scalar ls = lnPhiAt(T, P, rs, xs)[i];
+                    const scalar lf = lnPhiAt(T, P, rs, xs, 1.0e-7)[i];
+                    const scalar d  = std::max(std::abs(ls - l0),
+                                               std::abs(ls - lf));
+                    //  Held to 1e-4 in ln phi (0.01 % in phi): the
+                    //  association fixed point's own noise at infinite
+                    //  dilution sits below it, the step that collapsed
+                    //  with x_i was O(1) above it.  Scaled into maxDev's
+                    //  1e-6 by the factor 1e-2.
+                    maxDev = std::max(maxDev, 1.0e-2 * d);
+                    if (verbosity >= 4)      // not echoed by the constructor
+                        std::cout << "  [PCSAFT verify] trace component " << i
+                                  << ": ln phi at x = 1e-10 " << ls
+                                  << ", at x = 0 " << l0 << ", at h/10 " << lf
+                                  << "\n";
+                }
+                catch (const std::exception&) {}   // no liquid root there
+            }
         if (verbosity >= 3)
             std::cout << "  [PCSAFT verify] ideal-limit a_res=" << aIdeal
                       << "; Sum x_i lnphi vs g_res/RT rel dev " << dev

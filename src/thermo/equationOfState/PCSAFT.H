@@ -96,12 +96,17 @@ Description
     derivative of the ANALYTIC a_res at fixed (T, V) -- a deliberate, declared
     choice (the analytic GS Appendix A.3-A.11 derivative is a staged follow-up):
     the physics lives ONCE in a_res, and the derivative cannot disagree with it
-    by a transcription error.  The step is h_rel = 1e-6 on each mole number;
+    by a transcription error.  The step is h_rel = 1e-6 on each mole number
+    of a MAJOR component, and 100 h_rel of the TOTAL for a minor one (below
+    1 %; one-sided below the step, so a trace is never made negative --
+    C173: a step relative to a trace's own amount collapsed toward
+    round-off and put ln φ of a trace nHexane 3.7x off its own a_res);
     verify() MEASURES the step convergence at construction (lnφ recomputed at
     h/10 and 10h must agree -- the central-difference plateau, observed
     1e-8..4e-8 across the curated alkane mixes) alongside the ideal-gas limit and the
-    Σx·lnφ = g_res/RT (Gibbs-Duhem integral) identity, and the constructor
-    REFUSES a parameter set that fails any of the three.
+    Σx·lnφ = g_res/RT (Gibbs-Duhem integral) identity, and the trace limit
+    (each component at x = 1e-10 and at 0, held to 1e-4 in ln φ), and the
+    constructor REFUSES a parameter set that fails any of them.
 
     Per-component parameters live in the component's OWN record, one home:
 

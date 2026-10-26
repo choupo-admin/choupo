@@ -195,7 +195,9 @@ long writeGibbsLogCsv(const std::string& path,
 //  with both pressures -- the empty string when there is none.  The
 //  element-potential, reactive-flash and direct-minimisation methods call
 //  it on the answer they return, so none publishes a gas a condensable
-//  would leave as the equilibrium.
+//  would leave as the equilibrium.  When none is supersaturated on its own,
+//  it also tests the MIXED-liquid onset over the condensables not condensed
+//  (C173): Michelsen's incipient liquid from this gas, sum W > 1.
 std::string supersaturatedCondensables(const GibbsProblem& p,
                                        const GibbsEquilibrium& eq, scalar T,
                                        const std::vector<bool>& condensed = {});

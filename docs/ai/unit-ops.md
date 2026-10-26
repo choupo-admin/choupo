@@ -54,6 +54,16 @@ Outputs convention: `(liquid vapor )` for VL; `(vapor liquid_alpha liquid_beta )
 for VLLE (the absent phase carries F=0 so the contract stays fixed).
 LL: `(liquid_alpha liquid_beta )`.
 
+LL and VLLE need the two named liquids on ONE activity surface (one shared
+`equilibrium.liquid.activityModel`, or the same model in both `liquidPhases`
+entries): two different models are refused by name, because the stability
+test, the starts and the labelling assume one surface (C173).  The VLLE
+vapour carries the declared EoS's ln phi.  A VLLE search that finds nothing
+below the feed no longer publishes "single liquid" on that alone: the TPD and
+the incipient-vapour test decide, and when only one fires the narrower LL or
+VL solve is used, announced (C173).  `phaseSet auto` on a package with no
+vapour goes to LL (one stable liquid, or the split).
+
 **When the answer is SINGLE-PHASE** (the (T, P) sits outside the two-phase
 band), the flash does not refuse: it reports the regime (`Regime:
 superheated vapor` / `subcooled liquid`), the absent phase leaves with
@@ -505,10 +515,14 @@ rules, one home: `src/unitOperations/reactor/PureSolidPhase.H`.
 Equilibrium by direct Gibbs minimisation with atom-balance
 constraints.  Three selectable `model`s:
 - `elementPotential` (default; Lagrange multipliers; gas + 1 ideal
-  condensable; + a pure solid, see below).
-- `reactiveFlash`     (multi-condensable + NRTL).
+  condensable; + a pure solid, see below).  A gas below its dew point with
+  NO species supersaturated on its own -- a MIXED liquid -- is refused by
+  name (C173), naming `reactiveFlash` / `directMin`.
+- `reactiveFlash`     (multi-condensable + NRTL; carries a mixed-liquid
+  onset too).
 - `directMin`         (multi-start Nelder-Mead on the reaction-extent
-  null space).
+  null space; its vapour carries the declared EoS's ln phi, so an SRK
+  package is not minimised as an ideal gas -- C173).
 
 ```
 operation
