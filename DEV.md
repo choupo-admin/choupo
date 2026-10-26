@@ -5409,6 +5409,14 @@ accepts today, and that is a policy call.
 > after Vitor asked whether the Explorer already had the T/P excursion at
 > constant overall composition (it did not: the op is on main, the lens
 > was queued behind C116, now online).
+> **Vitor, 2026-10-26, after seeing the props Workflow home (C172 3b):
+> "Eu pensei por isso no explorer, mas agora ja vejo que fica melhor no
+> props".**  The excursion's home is a PROPS CASE (a `phaseSplitScan`
+> step drawn on the Workflow diagram, its figures under Studies, its CSV
+> under Reports), on the `phaseSplit01_freeze_water_ethanol` pattern; the
+> stage 3 excipient study (his freeze-concentration of an excipient, 0 to
+> -20 C, pH and precipitates) is built as such a case.  Whether the
+> Explorer lens (G35) stays beside it is Vitor's call, not yet asked.
 
 > **C117. THE CURATION WORKFLOW: AN LLM AUTHORS, THE EXPLORER SHOWS, THE
 > STUDENT DECIDES (Vitor, 2026-10-20: he had planned an interactive GUI for
