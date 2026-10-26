@@ -1528,6 +1528,33 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C172. ONE GUI OR TWO: PROCESS SIMULATION AND PROPERTIES & DATA (Vitor,
+> 2026-10-26, after "Nos temos de por um pouco de ordem nas propriedades!
+> Idealmente devem ser a estrategia de um simulador sequencial", "Chamar
+> 'Results' no menu aquilo tudo e uma merda!!! No simulador do processo ha
+> um 'flowsheet' ... E preciso aqui um nome equivalente", "nao sei se o
+> mesmo GUI deve ser usado para o simulador de processos ou para a
+> analise de dados!" and "Invoca um forum de generais e decide tu").**
+> The commander's own diagnosis, recorded because it is the lesson: the
+> props screen grew one slice per request (C147 views, C151 map, C152
+> two modes, C153 resizable panel, C154 block states, C157b record round
+> trip, C165 per-ion tables), each drawing the next engine fact, none
+> starting from what the person comes to do -- the rule the commander
+> wrote into CLAUDE.md on 2026-10-25 and broke the same day.  The
+> questions: (1) one application with two modes, or two applications
+> (Process / Properties & Data) on a shared layer (case, files, Log, help,
+> records); (2) the props case as a SEQUENTIAL procedure -- studies, then
+> numbered steps, each reading only declared data or EARLIER steps,
+> refused otherwise (the props analogue of validateSequentialPlan), its
+> name (Workflow, Worksheet, Study...) in place of "Results"; (3) what a
+> two-mode case (C152) becomes.  Method: a forum of generals with
+> distinct mandates (comparable software and practice; the case FOR one
+> app; the case FOR two; the cost in this code; the users' walks), read
+> only, each answering the others' strongest point; the commander
+> decides, writes the decision with its reasons here, and puts the page
+> to Vitor before any code.  No GUI code lands until then.
+> Status: recorded; forum convened the same turn.
+
 > **C171. THE PROPS SCREEN REDESIGNED BEFORE A RESEARCHER SEES IT, AND A
 > PROPER WAY TO CITE (Vitor, 2026-10-26, on the live NanoFiltran case
 > before sending the reply to Tim: "aquilo esta uma confusao diabolica que
