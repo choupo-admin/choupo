@@ -1562,6 +1562,24 @@ accepts today, and that is a policy call.
 > COMSOL-style), never a canvas to draw on, and the GUI stays a runner and
 > viewer.  "Results" keeps only its own meaning: what a run produced (each
 > step's output and the after-run summary).
+> DECIDED 2026-10-26 after the forum (A practice, B one app, C two apps --
+> withdrawn to one app after reading B, D cost, E three users walked at
+> 1366x768; the forwarded "radical simplification" opinion answered by
+> all): ONE application, one case store, TWO HOMES -- the Flowsheet and the
+> Workflow -- each case kind owning its home, menu, Run label and
+> vocabulary from ONE table; a two-dict case opens on controlDict.application
+> and crosses by explicit links, the home in the URL; the Workflow = studies
+> and numbered steps by position (never a canvas), the centre the selected
+> study's results, an inspector for the step (fit/held-out roles and band,
+> model with its options inside, writes with fingerprint, verdict with
+> identifiability), the map behind View; the ORDER enforced by the engine
+> (no read of a later write; ctrl17 declares its process-run input); Run's
+> four doors -> one; dead and empty surfaces removed; the content the engine
+> already publishes reaches the screen.  Acceptance: the decisive test,
+> scripted, all cells passing for the three users.  Record:
+> docs/design/one-app-two-homes.md (the forum, the decision, the slices).
+> Slice 1 (content gaps + removals) goes out after Vitor has read the
+> decision page; GUI code lands slice by slice against the scripted test.
 
 > **C171. THE PROPS SCREEN REDESIGNED BEFORE A RESEARCHER SEES IT, AND A
 > PROPER WAY TO CITE (Vitor, 2026-10-26, on the live NanoFiltran case
