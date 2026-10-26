@@ -38,7 +38,7 @@ import { LessonQuiz } from "./lessonQuiz.js";
 import {
   CONTRAST, DEADLINES, DECISION_QUESTIONS, EXERCISE, EXERCISE_COMPANY,
   IP_CHOICES, IP_LIMITS, IP_NOT_ADVICE, IP_QUIZ, IP_SOURCES, IP_STEPS,
-  addMonths, type IpChoice,
+  MEMBRANE_RECORDS, addMonths, type IpChoice,
 } from "./ipStrategyLesson.js";
 import { OriginMark } from "./origin.js";
 import { setActiveMethodTool } from "./registry.js";
@@ -152,6 +152,48 @@ function DeadlineCalculator(): JSX.Element {
   );
 }
 
+/** The case study's numbers, each as its source states it (steps 19-20).
+ *  No ratio is drawn: the rows were measured under different conditions. */
+function MembraneRecordTable(): JSX.Element {
+  return (
+    <Box>
+      <Title order={5}>The two membranes, as their sources state them</Title>
+      <OriginMark of="reference"
+        note="each row as the patent or the opinion states it, with its conditions" />
+      <PanTable>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>membrane</Table.Th>
+            <Table.Th>feed</Table.Th>
+            <Table.Th>pressure</Table.Th>
+            <Table.Th>water flux</Table.Th>
+            <Table.Th>salt</Table.Th>
+            <Table.Th>source</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {MEMBRANE_RECORDS.map((r) => (
+            <Table.Tr key={r.id} data-membrane-record={r.id}>
+              <Table.Td>{r.membrane}</Table.Td>
+              <Table.Td>{r.feed}</Table.Td>
+              <Table.Td>{r.pressure}</Table.Td>
+              <Table.Td>{r.flux}</Table.Td>
+              <Table.Td>{r.salt}</Table.Td>
+              <Table.Td>{r.source}, {r.where}</Table.Td>
+            </Table.Tr>
+          ))}
+        </Table.Tbody>
+      </PanTable>
+      <Text size="xs" c="dimmed" mt={4}>
+        Units as stated: gfd and gal/ft²·day are US gallons per square foot
+        per day, and 1 gfd = 40.8 l/m²·d (982 F.2d at 1552 n. 6).  The rows
+        differ in feed, pressure, test cell and date, so the page computes
+        no ratio between the two membranes.
+      </Text>
+    </Box>
+  );
+}
+
 function Exercise(): JSX.Element {
   const [picks, setPicks] = useState<Partial<Record<string, IpChoice>>>({});
   const [played, setPlayed] = useState(false);
@@ -249,8 +291,9 @@ export function IpStrategyTool(): JSX.Element {
             peace; where strategy becomes unlawful; and four cases worked
             through -- a process patent whose recipe does not work, a turbine
             whose blades melt, Whittle's turbojet, and the Wright and Watt
-            patents -- ending with an exercise against a rival who reads
-            your filings.
+            patents -- a case study of the reverse-osmosis membrane, from
+            Loeb and Sourirajan to Cadotte, FilmTec and Hydranautics, and an
+            exercise against a rival who reads your filings.
           </Text>
           <Alert mt="sm" color="yellow" variant="light" title="Not legal advice"
             data-not-legal-advice="">
@@ -283,6 +326,12 @@ export function IpStrategyTool(): JSX.Element {
         {step(16)}
         {step(17)}
         {step(18)}
+
+        <Title order={4}>Case study: the reverse-osmosis membrane</Title>
+        {step(19)}
+        <MembraneRecordTable />
+        {step(20)}
+        {step(21)}
 
         <Exercise />
 

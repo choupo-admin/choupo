@@ -633,6 +633,262 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "which side is right, but that 'a patent held back an industry' is "
       + "a claim about history that needs evidence like any other.",
   },
+  //  THE REVERSE-OSMOSIS MEMBRANE (DEV.md 4c C140, fourth addendum, Vitor
+  //  2026-10-26).  Told from the patents, the three Federal Circuit opinions
+  //  and the inventor's own retrospective, every one READ on 2026-10-26; the
+  //  numbers are in MEMBRANE_RECORDS below, each with its conditions.  NO
+  //  RATIO between the two membranes is stated on the page: the sources
+  //  measured them under different feeds, pressures and cells, and the
+  //  factor Vitor recalled ("at least 5x") was put to him with the measured
+  //  ones before any is written here (DEV.md 4c C140).
+  {
+    n: 19,
+    title: "Case study, part 1: the first membrane and the composite that followed",
+    body: "THE FIRST.  On 29 November 1960 Sidney Loeb and Srinivasa "
+      + "Sourirajan, of Los Angeles, applied for the patent that became US "
+      + "3,133,132, assigned to the Regents of the University of California "
+      + "and granted on 12 May 1964 (US 3,133,132, face).  The film is cast "
+      + "from a cellulose ester and an aqueous perchlorate salt solution in "
+      + "an organic solvent such as acetone; part of the solvent is "
+      + "evaporated, the film is immersed in water, and it is then heated "
+      + "in water, best at about 82 °C -- a treatment the patent calls "
+      + "'critical' (US 3,133,132, claims 1 and 13; col. 5).  'One side is "
+      + "useful whereas the other "
+      + "side is not', and the side away from the glass plate during "
+      + "casting is the one that must face the salt solution (US 3,133,132, "
+      + "col. 5): the film is asymmetric, 'a porous matrix having a thin "
+      + "dense skin on one surface' (Cadotte, 1985).  The patent states that "
+      + "its membranes "
+      + "reduced a 5.25 % sodium chloride solution to about 500 parts per "
+      + "million in a single pass, at a flow on the order of 8 gallons per "
+      + "square foot per day, under 1,500 psig (US 3,133,132, col. 2); its "
+      + "Table I lists eleven films tested on 3.5 % sodium chloride at "
+      + "1,500 psig.  A second patent, filed on 20 March 1962 as an "
+      + "improvement of the first, adds Dallas E. Weaver as an inventor and "
+      + "gives Sourirajan's address as Ottawa (US 3,133,137, face).  "
+      + "THE LINE THAT LED TO THE COMPOSITE.  In John Cadotte's own "
+      + "retrospective, the Loeb-Sourirajan membrane 'was used as a model to "
+      + "make a composite membrane at North Star Research Institute "
+      + "beginning in 1964': an ultrathin cellulose acetate barrier formed "
+      + "on a water surface and laminated onto a separate microporous film, "
+      + "so that the two layers could be studied separately; microporous "
+      + "supports of engineering plastics, polysulfone above all, followed "
+      + "in 1966; and in 1970 the polyethylenimine-based NS-100, optimised "
+      + "to over 99 % salt rejection in seawater tests (Cadotte, 1985).  "
+      + "Interfacial polyamides made on polysulfone in the late 1960s all "
+      + "appeared highly defective and were abandoned as 'inherently "
+      + "defective'; the support and the chemistry 'were available to us in "
+      + "the late 1960's', he wrote, but 'the rapid interfacial reactions "
+      + "tended to produce pinholes' (Cadotte, 1985).  "
+      + "THE COMPOSITE.  The answer was FT-30, developed in 1978 (Cadotte, "
+      + "1985).  In the patent's Example 1 a freshly cast polysulfone support "
+      + "is soaked in 2 % m-phenylenediamine in water, the excess is pressed "
+      + "or drained off, and the film is covered with 0.1 % trimesoyl "
+      + "chloride in a chlorofluorocarbon solvent; the reaction is "
+      + "substantially complete in less than a second and leaves an "
+      + "ultrathin, crosslinked aromatic polyamide on the support (US "
+      + "4,277,344, cols. 16-17).  Cadotte's explanation of why it worked: "
+      + "the first contact does make a film with pinholes, but this "
+      + "reaction, unlike the others tried, 'continued to close up "
+      + "essentially all the defects by building more membrane over the top "
+      + "of the pinholes' (Cadotte, 1985).  The patent states at least 99.3 "
+      + "% salt rejection and more than 1,200 l/m²·d in 3.5 % synthetic "
+      + "seawater at 68 atm and 25 °C (US 4,277,344, col. 11), and 99.5 % at "
+      + "35.4 gfd at 1,000 psi in Example 1 (US 4,277,344, col. 17).  It "
+      + "also says why the last percent matters: 'the difference between 99% "
+      + "and 98% salt rejection, viewed from the standpoint of the purity of "
+      + "the permeate, is not merely a percent but rather a halving of the "
+      + "total dissolved solids' (US 4,277,344, col. 9).  What reaches the "
+      + "user is the salt that PASSES, one minus the rejection.  The table "
+      + "below sets the stated numbers side by side, each with the "
+      + "conditions it was measured at.",
+  },
+  {
+    n: 20,
+    title: "Case study, part 2: FilmTec, Allied-Signal and Hydranautics in the Federal Circuit",
+    body: "THE CONTRACT AND THE SPIN-OFF.  In 1976 the Office of Water "
+      + "Research and Technology of the US Department of the Interior "
+      + "contracted the North Star Division of Midwest Research Institute "
+      + "(MRI) for 'research and development on in-situ formed condensation "
+      + "polymer membranes for seawater desalination by reverse osmosis' "
+      + "(982 F.2d at 1547); the contract ran from 15 July 1976 to 15 "
+      + "January 1978, and MRI hired Cadotte to carry out the research (982 "
+      + "F.2d at 1548).  It was let under the Saline Water Conversion Act of "
+      + "1971, whose section 6(d) required that patents resulting from such "
+      + "research be 'available to the general public', and title to its "
+      + "inventions was governed by section 9 of the Federal Non-nuclear "
+      + "Energy Research and Development Act of 1974 (FNERDA), under which "
+      + "title "
+      + "'shall vest in the United States' unless waived (982 F.2d at "
+      + "1548).  On 17 November 1977 Cadotte recorded in his MRI notebook "
+      + "three membranes made from trimesoyl chloride (TMC) and "
+      + "m-phenylenediamine (MPD); two, tested on seawater at 1,500 psi, "
+      + "gave 12.7 and 9.5 gfd at 95.0 and 88.5 % rejection (982 F.2d at "
+      + "1549).  From the summer of 1977 he and other MRI staff discussed "
+      + "forming FilmTec, whose research proposal of December 1977 called "
+      + "the company 'a spin-off of MRI'; he left MRI on 31 December 1977, "
+      + "and on 23 February 1978, in FilmTec's laboratory, repeated the "
+      + "reaction in the same proportions, changing only the drying "
+      + "temperature from 130 °C to 100 °C, and obtained 13.1 and 11.0 gfd "
+      + "at 98.0 % (982 F.2d at 1549).  He applied for the patent on 22 "
+      + "February 1979 and assigned it to FilmTec (US 4,277,344, face; 939 "
+      + "F.2d at 1569), and FilmTec filed a European application on 21 "
+      + "February 1980 claiming that US date -- one day inside the priority "
+      + "year of step 6 (EP 0 015 149).  "
+      + "WHAT EACH PATENT PROTECTED.  Every claim of Loeb and Sourirajan's "
+      + "two patents is a METHOD of preparing the membrane (US 3,133,132, "
+      + "claims 1-20; US 3,133,137, claims 1-6).  Cadotte's claims the "
+      + "membrane ITSELF -- a composite whose layer is the interfacial "
+      + "reaction product of an aromatic acyl halide carrying at least three "
+      + "acyl halide groups with an aromatic polyamine, with a stated minimum "
+      + "performance -- as well as its use and its preparation (US "
+      + "4,277,344, claims 1, 6, 9 and 10).  A claim drawn on the reactants "
+      + "reaches anyone who makes that layer by any route, and a membrane on "
+      + "the market can be bought and analysed (step 4).  FilmTec sued "
+      + "Allied-Signal and UOP in April 1988 and Hydranautics in May 1990 "
+      + "(67 F.3d at 934); the district court found Allied's TFCL membrane "
+      + "a literal infringement of claims 6 and 7 (939 F.2d at 1570), and "
+      + "Hydranautics' CPA-2 and HPM membranes were both made from TMC and "
+      + "MPD (982 F.2d at 1549).  In all three appeals FilmTec's counsel "
+      + "included lawyers of The Dow Chemical Company (939 F.2d at 1568; 982 "
+      + "F.2d at 1546; 67 F.3d at 931).  "
+      + "THE FIRST APPEAL, 1991.  The district court had enjoined Allied "
+      + "from making, using or selling TFCL under claim 7, holding that the "
+      + "Government could have no more than an equitable title, which an "
+      + "infringer could not raise as a defence (939 F.2d at 1569-70).  The "
+      + "Federal Circuit vacated the injunction: the contract had granted "
+      + "MRI's rights in future inventions to the Government, and if "
+      + "Cadotte's employment obliged him to assign to MRI and the invention "
+      + "was made there, 'Cadotte had nothing to give to FilmTec' (939 F.2d "
+      + "at 1572); with founders who had all worked at MRI, FilmTec 'may "
+      + "well be deemed to have had actual notice' (939 F.2d at 1574).  "
+      + "THE SECOND APPEAL, 1992.  After a bench trial the district court "
+      + "held that FilmTec owned the patent, that it was valid and that "
+      + "Hydranautics had willfully infringed it, and enjoined Hydranautics "
+      + "(982 F.2d at 1547; 67 F.3d at 934).  The Federal Circuit reversed "
+      + "on title alone and vacated the holdings of validity and "
+      + "infringement without reviewing them (982 F.2d at 1547, 1554).  The "
+      + "invention is a composition 'claimed by its structure, the key "
+      + "limitations of the claims being the chemical reactants'; the "
+      + "November membranes had that structure and 'actually worked to "
+      + "desalinize seawater' (982 F.2d at 1552), so Cadotte conceived the "
+      + "invention at MRI and title 'immediately vested in the United States "
+      + "by operation of law' (982 F.2d at 1553).  The November fluxes, "
+      + "converted to the claims' 70 atm, were below the claimed minimum "
+      + "(982 F.2d at 1552 n. 6) -- and it did not matter: to let 'narrow "
+      + "performance limitations in the claims' expel the invention from the "
+      + "contract 'would be defeating the intentions of the parties' (982 "
+      + "F.2d at 1553).  Hydranautics, a member of the general public to "
+      + "whom the Act made such inventions available, could not be excluded "
+      + "(982 F.2d at 1551).  "
+      + "THE THIRD APPEAL, 1995.  Hydranautics then sought to counterclaim "
+      + "that the suit had violated the antitrust laws, and to be repaid its "
+      + "losses under the injunction (67 F.3d at 935).  Both failed.  The "
+      + "suit was not 'objectively baseless' -- 'precisely what Cadotte "
+      + "invented, and when' were genuine issues -- so it was not a sham "
+      + "under the test of step 14 (67 F.3d at 936-38); and restitution was "
+      + "refused, although the court said that FilmTec 'never possessed any "
+      + "rights in the ’344 patent that were enforceable against "
+      + "Hydranautics' (67 F.3d at 939-40).  Allied and FilmTec had "
+      + "settled, and a claim concerning the foreign patents was settled "
+      + "too; the opinion does not give the terms (67 F.3d at 935).",
+  },
+  {
+    n: 21,
+    title: "Case study, part 3: why history remembers the first, and what a strategist learns",
+    body: "WHY HISTORY REMEMBERS THE FIRST -- this page's reading, offered "
+      + "for discussion, not the finding of any source.  The first membrane "
+      + "opened the field, gave it a name, and was published in two patents "
+      + "anyone could read from 1964 (US 3,133,132; US 3,133,137); the "
+      + "inventor of the composite began his own account from it (Cadotte, "
+      + "1985), and in 2022 an edited volume appeared under the title 60 "
+      + "Years of the Loeb-Sourirajan Membrane (Elsevier, 2022).  The "
+      + "composite came in 1978, some seventeen years after the first "
+      + "filing and after years in which interfacial films made from "
+      + "monomers were thought inherently defective (Cadotte, 1985); it came "
+      + "from a contract laboratory and a company of four founders (939 F.2d "
+      + "at 1570); and the most detailed public record of how and when it "
+      + "was made is a court opinion reading a laboratory notebook (982 F.2d "
+      + "at 1549).  A first is one event with a date and a name; a best is a "
+      + "sequence of improvements, each owned by someone with a reason to "
+      + "fight over it.  Ask the same of any technology you study.  "
+      + "WHAT A STRATEGIST TAKES FROM IT.  (1) TITLE COMES BEFORE VALIDITY.  "
+      + "The Federal Circuit never held the patent invalid; its owner could "
+      + "not enforce it, because the invention was conceived under a "
+      + "contract whose statute vested title in the Government (982 F.2d at "
+      + "1553-54).  Before you value a patent -- yours, a target's, a "
+      + "licensor's -- read its chain of title: who paid, under which "
+      + "contract and statute, and what the inventor's employment agreement "
+      + "said (step 13).  (2) YOUR OWN RECORDS ARE EVIDENCE, BOTH WAYS.  The "
+      + "dated notebook that step 8 recommends is what placed the conception "
+      + "inside the contract, and the company's own proposal called it a "
+      + "spin-off (982 F.2d at 1549).  (3) CLAIM DRAFTING DOES NOT MOVE A "
+      + "DATE.  Performance limits written into the claims did not make the "
+      + "November membranes a different invention (982 F.2d at 1553).  (4) A "
+      + "CLAIM ON THE PRODUCT'S CHEMISTRY IS THE ONE THAT BITES.  Methods of "
+      + "casting protect a route; a claim on the reactants reached "
+      + "competitors' membranes made from the same two monomers (US "
+      + "4,277,344, claims 1 and 6; 939 F.2d at 1570; 982 F.2d at 1549).  "
+      + "(5) AN INJUNCTION CAN END WITHOUT COMPENSATION.  Hydranautics was "
+      + "enjoined from August 1991 until the reversal of December 1992, its "
+      + "claim for restitution was refused, and it could not call the suit a "
+      + "sham because the suit had a genuine basis (67 F.3d at 934, 938-40).  "
+      + "(6) THE MARKET OUTCOME.  The court held that title had always been "
+      + "in the United States and that the Act made such inventions "
+      + "available to the general public, so FilmTec could not exclude "
+      + "Hydranautics (982 F.2d at 1551, 1553-54; 67 F.3d at 934); the "
+      + "patent's assignment record carries an assignment to the United "
+      + "States citing the decision, effective on the day of the judgment "
+      + "(US 4,277,344, legal events).  The exclusive position in the United "
+      + "States that the patent was meant to secure was never FilmTec's to "
+      + "hold against Hydranautics (67 F.3d at 939).",
+  },
+];
+
+/** The case study's numbers (steps 19-20), each AS ITS SOURCE STATES IT,
+ *  with the conditions it was measured at.  No ratio is computed from them:
+ *  the rows differ in feed, pressure, cell and date (IP_LIMITS
+ *  "membrane-numbers"). */
+export interface MembraneRecord {
+  id: string;
+  membrane: string;
+  feed: string;
+  pressure: string;
+  flux: string;
+  salt: string;
+  /** Where it was read: a source `short` of IP_SOURCES, then the place. */
+  source: string;
+  where: string;
+}
+
+export const MEMBRANE_RECORDS: readonly MembraneRecord[] = [
+  { id: "ls-col2", membrane: "Loeb-Sourirajan cellulose acetate",
+    feed: "5.25 % sodium chloride", pressure: "1,500 psig",
+    flux: "on the order of 8 gal/ft²·day",
+    salt: "about 500 ppm in the product water",
+    source: "US 3,133,132", where: "col. 2" },
+  { id: "ls-table1", membrane: "Loeb-Sourirajan, the eleven films of Table I",
+    feed: "3.5 % sodium chloride", pressure: "1,500 psig",
+    flux: "2.0 to 20 gal/ft²·day",
+    salt: "0.043 to 0.42 % salt in the product water",
+    source: "US 3,133,132", where: "Table I" },
+  { id: "mri-1977", membrane: "TMC/MPD at MRI, 17 November 1977 (two films)",
+    feed: "seawater", pressure: "1,500 psi",
+    flux: "12.7 and 9.5 gfd", salt: "95.0 and 88.5 % rejection",
+    source: "982 F.2d 1546", where: "at 1549" },
+  { id: "filmtec-1978", membrane: "TMC/MPD at FilmTec, 23 February 1978 (two films)",
+    feed: "not stated in the opinion", pressure: "not stated in the opinion",
+    flux: "13.1 and 11.0 gfd", salt: "98.0 % rejection",
+    source: "982 F.2d 1546", where: "at 1549" },
+  { id: "us344-col11", membrane: "Poly(phenylenediamine trimesamide) composite",
+    feed: "3.5 % synthetic seawater, 25 °C, 6- to 24-hour tests", pressure: "68 atm",
+    flux: "more than 1,200 l/m²·d", salt: "at least 99.3 % rejection",
+    source: "US 4,277,344", where: "col. 11" },
+  { id: "us344-ex1", membrane: "Example 1, pressed polysulfone support",
+    feed: "3.5 % synthetic seawater (Na, Mg, Ca; Cl, SO4, carbonate), 25 °C",
+    pressure: "1,000 psi (68.0 atm)",
+    flux: "35.4 gfd (1,444 l/m²·d)", salt: "99.5 % rejection",
+    source: "US 4,277,344", where: "col. 17" },
 ];
 
 /** The deciding questions of step 4, as data the page tabulates. */
@@ -879,7 +1135,20 @@ export const IP_LIMITS: readonly LessonLimit[] = [
     title: "The history is contested.",
     body: "The Wright and Watt stories are told with the scholarship that "
       + "disputes them.  Whittle's case is a question, not a verdict: no "
-      + "court ever ruled on it.",
+      + "court ever ruled on it.  Why history remembers Loeb and Sourirajan "
+      + "rather than Cadotte is the page's reading, offered for discussion; "
+      + "the court opinions decide title and nothing about merit.",
+  },
+  {
+    id: "membrane-numbers",
+    title: "The membrane numbers are not like for like.",
+    body: "The case study's table gives each number as its source states it.  "
+      + "The rows differ in feed (sodium chloride or synthetic seawater, 3.5 "
+      + "or 5.25 %), in pressure (1,000 or 1,500 psi), in test cell and in "
+      + "date, and the opinion does not state every condition of Cadotte's "
+      + "notebook tests, so the page computes no ratio between the two "
+      + "membranes.  A fair comparison needs both measured under one "
+      + "protocol; none of the sources the page read does that.",
   },
 ];
 
@@ -998,6 +1267,33 @@ export const IP_QUIZ: readonly QuizQuestion[] = [
       + "office was held an abuse of a dominant position in the EU "
       + "(T-321/05), and in the US withholding but-for material information "
       + "with intent to deceive makes a patent unenforceable (Therasense).",
+  },
+  {
+    id: "cadotte-title", steps: [20, 21],
+    q: "A district court held FilmTec's reverse-osmosis membrane patent "
+      + "valid and infringed by Hydranautics.  Why could FilmTec still not "
+      + "enforce it?",
+    options: [
+      "The Federal Circuit found the membrane obvious over Loeb and "
+        + "Sourirajan's cellulose acetate",
+      "The invention was conceived under a government contract, so title "
+        + "had vested in the United States and FilmTec had nothing to sue on",
+      "Hydranautics' membranes were made from different monomers",
+      "The patent had lapsed for an unpaid renewal fee",
+    ],
+    correct: 1,
+    feedback: "The Federal Circuit decided on title alone and vacated the "
+      + "holdings of validity and infringement without reviewing them (982 "
+      + "F.2d at 1547, 1554).  Cadotte had made TMC/MPD membranes at MRI in "
+      + "November 1977, within the contract's term; under the Saline Water "
+      + "Conversion Act and the FNERDA, title vested in the United States by "
+      + "operation of law, so his assignment to FilmTec carried nothing "
+      + "(982 F.2d at 1553).  That the November films fell below the flux "
+      + "the claims later recited did not matter: the invention is a "
+      + "composition 'claimed by its structure, the key limitations of the "
+      + "claims being the chemical reactants' (982 F.2d at 1552).  "
+      + "Hydranautics' membranes were made from TMC and MPD (982 F.2d at "
+      + "1549).",
   },
 ];
 
@@ -1200,4 +1496,98 @@ export const IP_SOURCES: readonly IpSource[] = [
     read: "Preface and contents: a course text whose chapters include "
       + "turbine cooling",
     url: "https://ntrs.nasa.gov/citations/19750016669" },
+  //  The reverse-osmosis case study (steps 19-21).  Patents, court opinions
+  //  and the inventor's retrospective: primary.  The 2022 volume is cited
+  //  for its TITLE only.
+  { short: "US 3,133,132", cite: "S. Loeb, S. Sourirajan, High flow porous "
+      + "membranes for separating water from saline solutions, US Patent "
+      + "3,133,132, filed 29 November 1960 (Ser. No. 72,439), patented 12 "
+      + "May 1964, assigned to The Regents of the University of California",
+    read: "Face; col. 2 (5.25 % NaCl to about 500 ppm, about 8 gal/ft²·day, "
+      + "1,500 psig); col. 5 (heating at 77-83 °C, optimum 82 °C, 'critical'; "
+      + "one side useful, the side away from the glass faces the salt); "
+      + "Table I (eleven films, 3.5 % NaCl, 1,500 psig); claims 1-20, all "
+      + "methods of preparing",
+    url: "https://patents.google.com/patent/US3133132A/en",
+    note: "Read in the patent's page images "
+      + "(patentimages.storage.googleapis.com/pdfs/US3133132.pdf)" },
+  { short: "US 3,133,137", cite: "S. Loeb, S. Sourirajan, D. E. Weaver, "
+      + "High flow porous membranes for separating water from saline "
+      + "solutions, US Patent 3,133,137, filed 20 March 1962 (Ser. No. "
+      + "181,013), patented 12 May 1964, assigned to The Regents of the "
+      + "University of California",
+    read: "Face (inventors and addresses, Sourirajan in Ottawa; 'an "
+      + "improvement of' application Ser. No. 72,439); Table I; claims 1-6, "
+      + "all methods of preparing",
+    url: "https://patents.google.com/patent/US3133137A/en",
+    note: "Read in the patent's page images "
+      + "(patentimages.storage.googleapis.com/pdfs/US3133137.pdf)" },
+  { short: "US 4,277,344", cite: "J. E. Cadotte, Interfacially synthesized "
+      + "reverse osmosis membrane, US Patent 4,277,344, filed 22 February "
+      + "1979 (Appl. No. 14,164), issued 7 July 1981, assignee FilmTec "
+      + "Corporation",
+    read: "Face; col. 7 (in-situ membranes rarely above 98 % in seawater); "
+      + "col. 9 (99 % against 98 % is a halving of the dissolved solids); "
+      + "col. 11 (at least 99.3 %, more than 1,200 l/m²·d, 3.5 % synthetic "
+      + "seawater, 68 atm, 25 °C); cols. 16-17 (Example 1, from its "
+      + "preparation in col. 16 to its results in col. 17); claims 1, "
+      + "6, 7, "
+      + "9, 10; the legal events (assignment to the United States citing "
+      + "FilmTec v. Hydranautics, effective 29 December 1992, recorded 22 "
+      + "February 1993, reel/frame 006622/0072)",
+    url: "https://patents.google.com/patent/US4277344A/en",
+    note: "Text read in the patent's page images "
+      + "(patentimages.storage.googleapis.com/pdfs/US4277344.pdf).  The "
+      + "assignment entries were read in Google Patents' legal-events table, "
+      + "not in the USPTO's assignment database, which refused the "
+      + "connection; the same table shows a later entry, a declaration by "
+      + "Cadotte in favour of FilmTec recorded 4 October 1993 (reel/frame "
+      + "006728/0868), whose content was not read" },
+  { short: "EP 0 015 149", cite: "FilmTec Corporation (inventor J. E. "
+      + "Cadotte), European patent application EP 0 015 149 A1, filed 21 "
+      + "February 1980, published 3 September 1980",
+    read: "Bibliographic page: priority 22.02.1979 US 14164; designated BE "
+      + "CH DE FR GB IT NL SE",
+    url: "https://data.epo.org/publication-server/rest/v1.2/patents/EP0015149NWA1/document.html" },
+  { short: "939 F.2d 1568", cite: "FilmTec Corp. v. Allied-Signal Inc., 939 "
+      + "F.2d 1568 (Fed. Cir. 1991), No. 90-1228, decided 22 July 1991",
+    read: "The whole opinion, pp. 1568-1574: the injunction on claim 7 and "
+      + "TFCL; the district court's findings; MRI and the founders; title, "
+      + "the equitable-title reasoning, notice; vacated and remanded",
+    url: "https://static.case.law/f2d/939/html/1568-01.html",
+    note: "Read in the Caselaw Access Project's text (Harvard Law School "
+      + "Library), with its page markers" },
+  { short: "982 F.2d 1546", cite: "FilmTec Corp. v. Hydranautics, 982 F.2d "
+      + "1546 (Fed. Cir. 1992), No. 92-1091, decided 29 December 1992, cert. "
+      + "denied 114 S. Ct. 85 (1993)",
+    read: "The whole opinion, pp. 1546-1554, and notes 1-9: the contract, "
+      + "the Saline Water Conversion Act s. 6(d) and FNERDA s. 9 as quoted; "
+      + "the November 1977 and February 1978 notebook results; conception; "
+      + "reversed",
+    url: "https://static.case.law/f2d/982/html/1546-01.html",
+    note: "Read in the Caselaw Access Project's text (Harvard Law School "
+      + "Library), with its page markers.  The opinion gives the filing date "
+      + "as 'February 29, 1979', a date that did not exist; the page uses the "
+      + "patent's own, 22 February 1979, which the 1991 opinion also gives.  "
+      + "The certiorari denial is as cited in 67 F.3d 931" },
+  { short: "67 F.3d 931", cite: "FilmTec Corp. v. Hydranautics, 67 F.3d 931 "
+      + "(Fed. Cir. 1995), No. 94-1034, decided 12 October 1995",
+    read: "The whole opinion, pp. 931-940, and the concurrence: the "
+      + "litigation history; the antitrust counterclaim and the sham test; "
+      + "restitution; the settlements",
+    url: "https://static.case.law/f3d/67/html/0931-01.html",
+    note: "Read in the Caselaw Access Project's text (Harvard Law School "
+      + "Library), with its page markers" },
+  { short: "Cadotte 1985", cite: "J. E. Cadotte, Development of composite "
+      + "reverse osmosis membranes in retrospect, Membrane (Membrane Society "
+      + "of Japan) 10(2) (1985) 117-118",
+    read: "Both pages: the Loeb-Sourirajan membrane as the model, North Star "
+      + "from 1964, polysulfone supports 1966, NS-100 1970, the abandoned "
+      + "interfacial attempts, FT-30 in 1978 and the closing of its pinholes",
+    url: "https://doi.org/10.5360/membrane.10.117" },
+  { short: "Elsevier 2022", cite: "60 Years of the Loeb-Sourirajan "
+      + "Membrane, Elsevier, 2022, ISBN 978-0-323-89977-2",
+    read: "The title and publisher record only (Crossref); a secondary work, "
+      + "cited for its title and for no number or holding",
+    url: "https://doi.org/10.1016/C2020-0-03303-7" },
 ];
