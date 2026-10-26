@@ -13060,8 +13060,9 @@ caller with the \code{streams \{\}} block.  When those closures return they
 return through the \file{0/} grammar, and the announcement obligation returns
 with them.  \textbf{A feed's thermal state lives in the
 STREAM, never duplicated on the consuming unit.}  A distillation column reads its
-feed quality $q = 1-\beta$ directly from the inlet stream
-(\S\ref{ch:mesh}); a redundant \code{operation.feeds.quality} that
+feed quality directly from the inlet stream (\S\ref{ch:mesh}): $q = 1-\beta$
+for a two-phase feed, the enthalpic $q$ of the constant-molar-overflow section
+for a single-phase one; a redundant \code{operation.feeds.quality} that
 \emph{disagrees} with the stream is refused at import, so the two can never drift
 apart (the silent ``feed declared liquid but flashing to vapour'' bug that broke
 an early multi-feed energy balance).
@@ -16839,6 +16840,24 @@ where $R$ is the reflux ratio and $D$ the distillate rate.
 For the stripping section, $L' = L + qF$, $V' = V - (1-q) F$ with $q$
 the feed quality. This is exact only for ideal-enthalpy mixtures, but
 remarkably forgiving even when it is wrong.
+
+The feed quality is the fraction of a mole of feed that joins the liquid on
+the feed stage,
+\begin{equation}
+   q = \frac{H_{V,\text{sat}} - H_F}{H_{V,\text{sat}} - H_{L,\text{sat}}},
+\end{equation}
+with $H_F$ the feed's enthalpy and $H_{L,\text{sat}}$, $H_{V,\text{sat}}$ its
+composition as a saturated liquid (at its bubble point) and a saturated vapour
+(at its dew point), all on the enthalpy surface the column's streams are
+priced on: $q > 1$ for a subcooled liquid, which condenses vapour on the feed
+stage, $q < 0$ for a superheated vapour.  The engine takes it so for every
+single-phase stream feed and announces it whenever it differs from
+$1 - \beta$; a two-phase feed keeps $q = 1 - \beta$, its resolved liquid
+fraction (and so does a feed whose package resolves reactive equilibrium,
+announced, because its saturation points are the reactive flash's).  The
+equilibrium $K_{n,i}$ of every stage is the package's at the vapour that
+stage sends up, $K_{n,i}(T_n, P_n, \xv_n, \yv_n)$: under a non-ideal vapour the
+fugacity coefficients belong to $\yv_n$, not to $\xv_n$.
 
 \subsection{Wang-Henke bubble-point method}
 
