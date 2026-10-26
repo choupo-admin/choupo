@@ -272,8 +272,9 @@ history.
 Vítor's contribution to the architecture, project direction, and initial
 release was made outside an exclusive-employment arrangement, on personal
 equipment and accounts, including a personally paid Claude Code subscription.
-The *Choupo* name and marks are separately held as a trademark by TalentGround
-Lda.; the GPL licence covers the software, not the brand.
+The *Choupo* name and marks are a registered trademark (CHOUPO®, INPI PT
+769805 MNA) of TalentGround Lda.; the GPL licence covers the software, not
+the brand.
 
 Bug reports and concrete improvement suggestions are welcome through the issue
 tracker. The project is maintainer-led and does not accept external code
