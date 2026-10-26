@@ -21,7 +21,14 @@ CAS            7487-88-9;
 
 MW             120.37;         // g/mol
 role        nonvolatile;
-dissociation   2;              // fully dissociated 1-1 (one Mg²⁺ + one SO₄²⁻)
+
+// APPARENT COMPONENT view -- the balance/representation map (apparent -> ions),
+// added 2026-10-26 (DEV.md 4c C161/C170) so the DSPM-DE pore, the multi-ionic
+// film and the electrodialysis units can decompose this salt into its ions,
+// whose transport data live on their own species records.  The van't Hoff
+// factor DERIVES from it (Component.cpp); no `dissociation` key beside it.
+// The map is identity, not thermochemistry: it adds no formation datum.
+dissociatesTo  { Mg 1; SO4 1; }   // ion stoichiometry (formula-like identity)
 
 // FORMATION DATUM -- NOT in this file by design (arity-2 electrolyte).
 // MgSO4 is a strong electrolyte: its thermodynamics live PER ION in the
