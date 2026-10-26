@@ -1870,6 +1870,16 @@ accepts today, and that is a policy call.
 > routines of reflux and condensate); (4) the enthalpic q.  Every moved
 > golden row listed with its reason (C163: shown, not waited on).
 > Status: recorded; dispatched the same turn.
+> LANDED 2026-10-26 (d8d6c1c8c), on Vitor's delegation ("Avanca da forma
+> que achares melhor naquilo que me pedes") after the 426 moved golden rows
+> were sent to him with their reasons: one enthalpy surface (Q_condenser
+> +1.9 % benzene/toluene, -3.9 % SRK C4; CMO reboiler moves by -dQ_cond),
+> K at the stage's own vapour, reactive fullMESH refused, the enthalpic CMO
+> q (column05 conversion 0.9605 -> 0.9581, process05 V_strip +32 %).
+> Commander's rulings: a two-phase feed and a reactive package keep
+> q = 1 - vf, announced.  OPEN: Kirchhoff vs Watson latent heat is a data
+> question; BubblePoint::compute still takes the vapour phi at y = x for 8
+> non-column callers.
 
 > **C168. A USABILITY AND ACCESSIBILITY AUDIT OF THE RESULTS GUI, BEFORE ANY
 > REDESIGN (Vitor, 2026-10-25, forwarding a second opinion written on the

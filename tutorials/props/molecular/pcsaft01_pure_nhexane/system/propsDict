@@ -27,6 +27,6 @@ operations
         name        liquid_298K_1bar;
         type        propertyPoint;
         state       { T 298.15 K;  P 1 bar;  composition { nHexane 1.0; } }
-        properties  ( Z  molarVolume );
+        properties  ( Z_liquid  v_molar_liq );
     }
 );
