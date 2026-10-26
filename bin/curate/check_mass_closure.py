@@ -110,6 +110,20 @@ over a copy of the pass's cache:
   how many it set aside: the dependence is visible in the claim, not in the
   exit code.
 
+CLOSURE BY CONSTRUCTION IS NOT EVIDENCE (2026-10-26, DEV.md 4c C174).  The
+global closure held here is a TOTAL mass, and the spiral-wound module fills
+both of its outlets with WATER to the declared density from a feed volume
+m_in / rho -- so its total mass closes for ANY solute flows, and a solute lost
+along the channel would be absorbed by the water and pass this gate.  The
+engine now publishes that term (`closuresByConstruction`, balance
+`material`) with its second route -- every solute balanced on its own,
+refused above 1e-9 -- and this gate holds its own table
+(BY_CONSTRUCTION_MATERIAL) against it both ways: a listed unit the engine
+does not mark FAILS (33 units on the tree before C174), a marked unit the
+table does not list FAILS, a second route that must agree and does not
+FAILS, and the claim line counts the rest.  Sabotaged by hand 2026-10-26
+(S6, S7 of docs/design/no-closure-by-construction.md section 7), both caught.
+
 WHAT THIS DOES NOT CHECK, said plainly:
   * ENERGY closure.  A different report, a different band, and the corpus
     carries known unattributed first-law residuals that are pinned elsewhere.

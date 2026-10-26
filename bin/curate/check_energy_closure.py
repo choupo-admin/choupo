@@ -112,7 +112,8 @@ WHAT THIS DOES NOT CHECK, said plainly:
     BY CONSTRUCTION -- an adiabatic sprayDryer/solidDryer/convectiveDryer, an
     evaporator (its heat crosses as its own chest/condensate streams; joined
     2026-10-05), a distillationColumn (its reboiler and condenser cross the
-    boundary whatever its feed count; joined 2026-10-05, C35), a
+    boundary whatever its feed count; joined 2026-10-05, C35 -- HELD here
+    but, since C174, never counted as closing: its reboiler is the plug), a
     cstr/conversionReactor/gibbsReactor (since 2026-10-20, C112)/
     equilibriumReactor (since 2026-10-25, the C131 reactors review)
     that published Q_kW, and (2026-10-17, DEV.md 4c
@@ -139,6 +140,34 @@ WHAT THIS DOES NOT CHECK, said plainly:
     itself, never the tear list: hda's, acetonePlant's and
     polycaprolactonePlant's mixers are tear-fed too, their recycles close
     to 1e-9, and they ARE judged.
+
+CLOSURE BY CONSTRUCTION IS NOT EVIDENCE (2026-10-26, DEV.md 4c C174).  The
+unit arm below used to count a distillationColumn among the units that
+"leave nothing unattributed" -- and its reboiler duty is dH - Q_condenser,
+so it left nothing unattributed for ANY condenser duty, while the condenser
+was wrong on all 34 columns (C169).  A balance used to COMPUTE a term cannot
+be the evidence that the term is right.  The engine now publishes every such
+term (`closuresByConstruction`, result/ClosureVariable.H) with the unit's
+SECOND ROUTE where it has one, and this gate:
+  * keeps its OWN table of them (BY_CONSTRUCTION_ENERGY, from
+    docs/design/no-closure-by-construction.md) and holds it against the
+    engine both ways -- a listed unit the engine does not mark FAILS (this is
+    the arm that failed on the tree before C174: 38 units), and a marked
+    unit the table does not list FAILS;
+  * never counts such a unit among the units that close (the remainder is
+    still held to UNIT_TOL_KW -- a nonzero one is a reporting or surface
+    defect -- and the two counts are checked disjoint);
+  * FAILS a second route that must agree (a full MESH's reboiler envelope, a
+    reactor's declared heat) and does not, or a status word that disagrees
+    with the gap and tolerance printed beside it;
+  * COUNTS the rest on its claim line, by name when not verified: a CMO
+    column (its second route measures the approximation's energy defect and
+    cannot agree) and the TSA bed (no second route at all).
+Sabotaged by hand 2026-10-26, eight ways, every one caught -- see section 7
+of docs/design/no-closure-by-construction.md.  The decisive one is S8: the
+full-MESH condenser priced 1 % high in the ENGINE left column06's and its
+plant's first law at 0.0000 kW, by construction, and only the reboiler
+envelope saw the 13.08 kW.
 
 THE UNIT ARM, SABOTAGE-VERIFIED 2026-09-27 by hand on a SCOPED run (a cache
 of seven cases: the flagship, sprayDryer01/05, solidDryer01, cstr07, cstr01,
@@ -889,6 +918,22 @@ def judge_by_construction(rel: str, txt: str, seen: set, stats: dict,
                 % (rel, unit, t, ", ".join(c.get("variable", "?")
                                             for c in recs)))
         for c in recs:
+            #  The WORD must be the engine's own arithmetic on the numbers it
+            #  published beside it: a status that disagrees with |gap| <=
+            #  tolerance is a label nobody computed.
+            if isinstance(c.get("gap"), (int, float)) \
+                    and isinstance(c.get("tolerance"), (int, float)) \
+                    and c.get("mustAgree"):
+                agrees = abs(c["gap"]) <= c["tolerance"]
+                if agrees != (c.get("status") == "verified"):
+                    bad.append(
+                        "%s: unit '%s' publishes %s with status '%s', but its "
+                        "own numbers say otherwise (|gap| %s %s against "
+                        "tolerance %s).  The word and the arithmetic beside it "
+                        "must be the same decision."
+                        % (rel, unit, c.get("variable"), c.get("status"),
+                           abs(c["gap"]), c.get("units", ""),
+                           c["tolerance"]))
             if c.get("mustAgree") and c.get("status") != "verified":
                 bad.append(
                     "%s: unit '%s' publishes %s by construction and its SECOND "
@@ -1013,6 +1058,7 @@ def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
             stats["bcHeld"] += 1
         else:
             stats["judged"] += 1
+            stats["judgedUnits"].add((rel, unit))
         if abs(rem) > UNIT_TOL_KW:
             bad.append(
                 "%s: unit '%s' (%s) leaves %+.4f kW of its energy balance "
@@ -1147,7 +1193,7 @@ def main() -> int:
     #  unanswered-pin arm below, which sabotage S7 exists to prove.
     discovered, bucket = set(), {}
     unitSeen, unitStats = set(), {"judged": 0, "noLedger": 0, "tearFed": [],
-                                  "bcHeld": 0, "bc": []}
+                                  "bcHeld": 0, "bc": [], "judgedUnits": set()}
     bcSeen = set()
     ranClean = set()
 
@@ -1302,6 +1348,17 @@ def main() -> int:
                 "A DEFECT IN THE GATE (or the witness was renamed): an arm "
                 "that reads nothing passes forever." % (rel, unit))
 
+    #  THE TWO COUNTS ARE DISJOINT, AND THE GATE CHECKS IT.  A closure by
+    #  construction counted among the units that CLOSE is the defect C174
+    #  exists to end, and it lives entirely in this file's arithmetic -- no
+    #  output arm would see a one-line regression that put it back.
+    for rel, unit in sorted(unitStats["judgedUnits"]
+                            & {(r, u) for r, u, _w in unitStats["bc"]}):
+        bad.append(
+            "%s: unit '%s' closes BY CONSTRUCTION and the unit arm counted it "
+            "among the units whose closure is evidence.  THIS IS A DEFECT IN "
+            "THE GATE: a closure the unit computed from the balance proves "
+            "nothing about the balance (DEV.md 4c C174)." % (rel, unit))
     for rel, unit in sorted(BY_CONSTRUCTION_WITNESSES):
         if rel in ranClean and (rel, unit) not in bcSeen:
             bad.append(
