@@ -248,7 +248,8 @@ export const PCSAFT_STEPS: readonly PcSaftStep[] = [
       + "not an equilibrium: which phases exist, and in what amounts, is "
       + "decided by the flash, which requires every component's fugacity to "
       + "be equal in the phases it keeps.  (Both derivatives are taken "
-      + "numerically, by central differences of the analytic $\\tilde a$, "
+      + "numerically, by central differences of the analytic $\\tilde a$ "
+      + "(one-sided for a trace component, on a step of the total), "
       + "and a verification step checks them against identities the exact "
       + "derivatives must satisfy.)",
     assumes: "That the root finder's scan is fine enough to see every sign "
@@ -256,7 +257,7 @@ export const PCSAFT_STEPS: readonly PcSaftStep[] = [
       + "$\\eta < 0.74$; a state with no root there is refused as outside "
       + "the model's domain.",
     cites: "PCSAFT.cpp:298 (∂ã/∂ρ), PCSAFT.cpp:311-346 (the root scan and "
-      + "which root is taken), PCSAFT.cpp:380-405 (ln φ from the "
+      + "which root is taken), PCSAFT.cpp:380-437 (ln φ from the "
       + "mole-number derivative at fixed V)",
   },
 ];

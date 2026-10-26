@@ -30,7 +30,6 @@ License
 #include "ElementPotential.H"
 #include "ReactiveFlash.H"
 #include "DirectMin.H"
-
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "solver/NewtonND.H"
