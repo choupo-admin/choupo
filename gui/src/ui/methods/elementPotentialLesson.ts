@@ -155,9 +155,9 @@ export const EP_STEPS: readonly LessonStep[] = [
     n: 2,
     title: "The Newton, iteration by iteration",
     body: "The engine solves F(x) = 0 with its general Newton (solver/"
-      + "NewtonND.cpp): a finite-difference Jacobian (NewtonND.cpp:414), one "
-      + "Gauss elimination for the step (:416), then a line search that "
-      + "halves the step until |F| falls (:428–449).  It stops when "
+      + "NewtonND.cpp): a finite-difference Jacobian (NewtonND.cpp:500), one "
+      + "Gauss elimination for the step (:502), then a line search that "
+      + "halves the step until |F| falls (:514–535).  It stops when "
       + "|F| < 10⁻⁸ mol/s, within 80 iterations (GibbsMethod.cpp:128–129).  "
       + "It starts from a least-squares fit of the potentials that pretends "
       + "the FEED is already the answer (GibbsMethod.cpp:100–124).  On the "
@@ -303,7 +303,7 @@ export const EP_STEPS: readonly LessonStep[] = [
       + "nitrogen), every column of the 4 × 4 Jacobian is dominated by the "
       + "same two directions, and the Gauss elimination meets a zero pivot "
       + "at iteration 0 — the Newton stops without taking a step "
-      + "(NewtonND.cpp:416–425).  The engine does not give up and does not "
+      + "(NewtonND.cpp:502–511).  The engine does not give up and does not "
       + "stay silent: it re-seeds (GibbsMethod.cpp:230–289) from a PRIMAL "
       + "Newton on ln n_i started from equal amounts of every species (the "
       + "reduced equations of Gordon & McBride, NASA RP-1311, "
