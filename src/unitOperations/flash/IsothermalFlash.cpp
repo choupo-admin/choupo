@@ -255,6 +255,57 @@ FlashSolution solveSLE(const FlashInput&    in,
     return sol;
 }
 
+//  ONE LIQUID GIBBS SURFACE, OR A REFUSAL (2026-10-26, DEV.md 4c C173).  The
+//  grammar lets each named liquid of a gammaGamma package carry its OWN
+//  activity model, and the LL / VLLE machinery of this unit assumes the two
+//  share one: the stability test measures the feed against ONE surface, the
+//  starts and the incipient-phase route draw both liquids on it, the hints
+//  relabel the two liquids by SWAPPING COMPOSITIONS (which moves a
+//  composition onto the other model), and the closing TPD tests beta on
+//  alpha's model.  On two different surfaces the answer was "one liquid on
+//  whichever surface is listed FIRST" -- ideal first and NRTL second
+//  (Gmix/RT -0.6931 against -1.8905) published one ideal liquid, at exit 0.
+//  Two surfaces are refused by name until the machinery carries them; the
+//  reactive second liquid already refuses the same thing (CLAUDE.md, THE
+//  SECOND LIQUID).  The test is the models' own answer: gamma at the feed,
+//  at the equimolar point and near each pure component -- two surfaces that
+//  agree everywhere this looks are the same surface for every purpose here.
+void refuseTwoLiquidSurfaces(const ThermoPackage& thermo, std::size_t pA,
+                             std::size_t pB, scalar T, const sVector& z)
+{
+    const std::size_t n = z.size();
+    std::vector<sVector> probes{ z, sVector(n, 1.0 / static_cast<scalar>(n)) };
+    for (std::size_t k = 0; k < n; ++k)
+    {
+        sVector c(n, 0.02 / static_cast<scalar>(std::max<std::size_t>(n - 1, 1)));
+        c[k] = (n > 1) ? 0.98 : 1.0;
+        probes.push_back(c);
+    }
+    for (const auto& x : probes)
+    {
+        const sVector gA = thermo.phase(pA).activityCoefficients(T, x);
+        const sVector gB = thermo.phase(pB).activityCoefficients(T, x);
+        for (std::size_t i = 0; i < n; ++i)
+            if (std::abs(gA[i] - gB[i]) > 1.0e-10 * std::max<scalar>(1.0, std::abs(gA[i])))
+            {
+                std::ostringstream m;
+                m << "isothermalFlash: the liquid phases '"
+                  << thermo.phase(pA).name() << "' and '"
+                  << thermo.phase(pB).name() << "' are on DIFFERENT activity"
+                     " surfaces (gamma_" << thermo.comp(i).name() << " = "
+                  << gA[i] << " against " << gB[i] << " at the same T and"
+                     " composition).  The liquid-liquid stability test, the"
+                     " multi-start and the labelling of the two liquids all"
+                     " assume ONE liquid Gibbs surface shared by both, so two"
+                     " surfaces are refused rather than answered on whichever"
+                     " liquid is listed first.  Declare one shared"
+                     " `equilibrium.liquid.activityModel` (or the same model in"
+                     " both liquidPhases entries).";
+                throw std::runtime_error(m.str());
+            }
+    }
+}
+
 } // anonymous namespace
 
 //  The VLLE port unpacking: its ONE home, declared in IsothermalFlash.H
@@ -518,6 +569,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                 "the thermoPackage (got " + std::to_string(liqs.size()) + ")");
         phaseAlpha = liqs[0];
         phaseBeta  = liqs[1];
+        refuseTwoLiquidSurfaces(thermo, phaseAlpha, phaseBeta, in.T, in.z);
 
         // -----------------------------------------------------------------
         //  LL flash via direct minimisation of the Gibbs energy of
@@ -932,6 +984,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                 "in the thermoPackage (got " + std::to_string(liqs.size()) + ")");
         const std::size_t pAlpha = liqs[0];
         const std::size_t pBeta  = liqs[1];
+        refuseTwoLiquidSurfaces(thermo, pAlpha, pBeta, in.T, in.z);
 
         // -----------------------------------------------------------------
         //  VLLE via direct Gibbs minimisation on the composition simplex of
@@ -1929,14 +1982,23 @@ FlashOptions IsothermalFlash::readOptions(const DictPtr&       dict,
             scalar tmMin   = 0.0;
             if (nLiq >= 2)
             {
+                refuseTwoLiquidSurfaces(thermo,
+                    thermo.phasesOfType("liquid")[0],
+                    thermo.phasesOfType("liquid")[1], in.T, in.z);
                 const auto st = solver::michelsenTPD(
                     thermo.phase(thermo.phasesOfType("liquid")[0]),
                     in.T, in.P, in.z);
                 llSplit = st.unstable;
                 tmMin   = st.tmMin;
             }
-            opts.phaseSet = !llSplit ? PhaseSet::VL
-                          : (nVap >= 1 ? PhaseSet::VLLE : PhaseSet::LL);
+            //  A package with NO vapour cannot be asked a vapour-liquid
+            //  question: a liquid-only package whose feed is one stable liquid
+            //  goes to LL, whose stability test publishes that single liquid
+            //  (C173 -- it used to go to VL, and Kvec then refused the case,
+            //  exit 2, over a feed whose answer is one converged liquid).
+            opts.phaseSet = !llSplit
+                ? ((nVap == 0 && nLiq >= 2) ? PhaseSet::LL : PhaseSet::VL)
+                : (nVap >= 1 ? PhaseSet::VLLE : PhaseSet::LL);
             if (verbosity >= 2)
             {
                 std::cout << "  [flash] phaseSet auto -> "
