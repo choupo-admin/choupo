@@ -49,7 +49,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Badge, Box, Button, Group, Paper, SimpleGrid, Stack, Text, Title } from "@mantine/core";
-import { IconArrowLeft, IconFolderCode, IconPlayerPlay, IconRobot, IconRoute, IconTerminal2 } from "@tabler/icons-react";
+import { IconArrowLeft, IconFolderCode, IconRobot, IconRoute, IconTerminal2 } from "@tabler/icons-react";
 
 import { useStore } from "../state/store.js";
 import { caseThermo } from "../case/caseThermo.js";
@@ -278,14 +278,13 @@ export function CaseIntro() {
   const trace = guide
     ? guide.trace
     : isProps
-    ? "Each property is evaluated and printed point by point —\nK-values, Psat, γ, Z — with the exact formula it used.\n\nPress “Open & run” to watch it."
+    ? "Each property is evaluated and printed point by point —\nK-values, Psat, γ, Z — with the exact formula it used.\n\nPress Run (top right) to watch it."
     : "Newton on F(x) = 0.  Every K-value, every iteration and its\nshrinking residual prints to the Log — live, as it solves.\n\nNothing is hidden behind a spinner.";
 
+  //  ONE RUN (DEV.md 4c C172 item 5): the intro's own "Open & run" was one
+  //  of the Run's four doors.  The intro OPENS the case; the case's Run is
+  //  the toolbar's (it opens the case too when pressed here) and Ctrl+Enter.
   const proceed = () => dismissIntro();
-  const proceedRun = () => {
-    dismissIntro();
-    setTimeout(() => window.dispatchEvent(new CustomEvent("choupo:run")), 60);
-  };
 
   return (
     <Box style={{
@@ -317,11 +316,11 @@ export function CaseIntro() {
             equations, and prints every Newton step.
           </Text>
           <Group gap="md" align="center" mt={6}>
-            <Button color="accent" size="md" leftSection={<IconPlayerPlay size={18} />} onClick={proceedRun}>
-              Open &amp; run — watch Newton converge
+            <Button color="accent" size="md" onClick={proceed}>
+              Open the case
             </Button>
-            <Text size="xs" c="dimmed" td="underline" style={{ cursor: "pointer" }} onClick={proceed}>
-              Just open the files
+            <Text size="xs" c="dimmed">
+              then <b>Run</b> (top right, or Ctrl+Enter) to watch it solve
             </Text>
           </Group>
         </Stack>
@@ -384,8 +383,8 @@ export function CaseIntro() {
           <Box style={PANEL}>{trace}</Box>
           <Text size="xs" c="dimmed">
             {guide
-              ? "A real excerpt of this case's log — press Open & run to watch it stream live."
-              : "This streams live in the Log when you press Open & run."}
+              ? "A real excerpt of this case's log — press Run to watch it stream live."
+              : "This streams live in the Log when you press Run."}
           </Text>
         </Stack>
 

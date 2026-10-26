@@ -51,15 +51,21 @@
   two meanings from one colour.  Grey already says "what you see is current",
   which is the whole of the good news.
 
-  WHAT THIS DOES NOT COVER, named rather than implied.  The Props workspace
-  and the Control workspace have Run buttons too, and a read of them shows
-  they are NOT this state wearing other hats: each drives a DIFFERENT binary
-  (`choupoProps`, the control loop) off its own local `running` / `busy` flag,
-  with no `runResult` and no staleness behind it.  What they share with this
-  one is a COLOUR LITERAL, not a state machine -- so folding them in here
-  would be forcing one vocabulary onto three different questions, which is the
-  opposite of one home per fact.  Their colour inconsistency (`cyan` in one,
-  `accent` in the other) is a real but separate and much smaller question.
+  ONE RUN, IN ONE PLACE, SAYING WHAT IT RUNS (DEV.md 4c C172 item 5).  The
+  case's Run used to have four doors -- the flowsheet canvas's own button,
+  the props screen's "Run properties", the intro's "Open & run" and
+  Ctrl+Enter -- each with its own label.  It is ONE control now, in the top
+  toolbar (ui/RunButton.tsx), plus Ctrl+Enter, and its label names WHAT it
+  runs: `subject` is the case's home ("flowsheet" for a process case,
+  "workflow" for a properties case, following the mode on screen) and
+  `binary` the engine it dispatches to, said in the title.  A Workflow run has
+  the same five states as a flowsheet run (it has a result and a staleness
+  too, case/staleness.ts), so it rides this one machine.
+
+  WHAT THIS DOES NOT COVER, named rather than implied.  The Control
+  workspace's live tuning bench has a Run of its own: it drives the control
+  loop off its own local `busy` flag, with no `runResult` and no staleness
+  behind it -- a different question, not this state wearing another hat.
 \*---------------------------------------------------------------------------*/
 
 /** The store's run lifecycle.  Mirrors `RunStatus` without importing the
@@ -93,13 +99,22 @@ export interface RunControlInputs {
   stale: boolean;
   /** How many scratch knobs differ from the ones the run was given. */
   pendingEdits: number;
+  /** WHAT the run runs, as the label says it: the case's home on screen
+   *  ("flowsheet" / "workflow").  Default "flowsheet". */
+  subject?: string;
+  /** The engine the run dispatches to, said in the title.  Default
+   *  choupoSolve. */
+  binary?: string;
 }
 
 export function runControl(i: RunControlInputs): RunControl {
+  const subject = i.subject ?? "flowsheet";
+  const what = `Run ${subject}`;
+  const runTitle = `Run the ${subject} (${i.binary ?? "choupoSolve"}) -- Ctrl+Enter does the same`;
   if (i.phase === "running")
     return {
       state: "running", color: "red", variant: "filled",
-      label: "Stop", title: "Stop the running simulation",
+      label: "Stop", title: `Stop the running ${subject}`,
       badge: null,
     };
 
@@ -124,8 +139,8 @@ export function runControl(i: RunControlInputs): RunControl {
   if (!i.haveResult)
     return {
       state: "idle", color: "accent", variant: "filled",
-      label: "Run flowsheet",
-      title: "Run the flowsheet simulation (choupoSolve)",
+      label: what,
+      title: runTitle,
       badge: null,
     };
 
@@ -137,8 +152,8 @@ export function runControl(i: RunControlInputs): RunControl {
       //  and `stale` true the case FILES moved under an unmoved overlay, and
       //  the control then says so rather than claiming a count it lacks.
       label: i.pendingEdits > 0
-        ? `Run flowsheet (${i.pendingEdits} pending edit${i.pendingEdits === 1 ? "" : "s"})`
-        : "Run flowsheet (case changed)",
+        ? `${what} (${i.pendingEdits} pending edit${i.pendingEdits === 1 ? "" : "s"})`
+        : `${what} (case changed)`,
       title: "The drawn result does not include what is declared now — run to "
         + "bring it up to date",
       badge: {
@@ -150,8 +165,8 @@ export function runControl(i: RunControlInputs): RunControl {
 
   return {
     state: "current", color: "accent", variant: "default",
-    label: "Run flowsheet",
-    title: "Run the flowsheet simulation (choupoSolve)",
+    label: what,
+    title: runTitle,
     badge: {
       color: "teal", text: "Latest run loaded",
       title: "This result was computed from the case as it is declared now",

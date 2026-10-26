@@ -48,22 +48,7 @@ import {
 } from "@mantine/core";
 import { IconBook2, IconSearch } from "@tabler/icons-react";
 import { useStore } from "../state/store.js";
-
-interface Citation {
-  file: string;
-  title: string;
-  authors: string[];
-  journal: string;
-  year: string;
-  doi: string;
-  compounds: string[];
-  properties: string[];
-}
-
-type MirrorState =
-  | { kind: "loading" }
-  | { kind: "absent" }
-  | { kind: "ready"; entries: Citation[] };
+import { useLiteratureMirror } from "../state/useLiteratureMirror.js";
 
 const SHOW_STEP = 25;
 
@@ -75,7 +60,7 @@ export function LiteratureWorkspace() {
     ? thermoComponents.filter((c): c is string => typeof c === "string")
     : [];
 
-  const [mirror, setMirror] = useState<MirrorState>({ kind: "loading" });
+  const mirror = useLiteratureMirror();
   //  SEEDED, not controlled: a link may arrive asking for a compound
     //  (?workspace=literature&compound=water), and after that the box is the
     //  reader's.  Read ONCE, in a lazy initialiser.
@@ -84,33 +69,11 @@ export function LiteratureWorkspace() {
       ? "" : literatureSeed(window.location.search)));
   const [showN, setShowN] = useState(SHOW_STEP);
 
-  useEffect(() => {
-    let dead = false;
-    //  ONE INDEX (2026-08-25).  This panel used to read a parallel
-    //  citations.jsonl built by a second toolchain over a second copy of the
-    //  cache; there is one index now, `bin/choupo-thermoml index`.  The dev
-    //  server PROJECTS it (70 MB of CAS/InChI down to the ~7 MB of citation
-    //  this panel shows) -- see thermomlIndexPlugin -- so what arrives here is
-    //  already the shape below.
-    //  BASE-relative, not root-absolute.  A frozen copy served from
-    //  /vYYMM/app/ sent this probe to the SITE ROOT -- the same class as the
-    //  engine paths fixed on 2026-09-02 (wasmModule.ts), harmless here only
-    //  because the dev-server middleware that answers it is absent on every
-    //  published copy anyway.  drive-app reports any request that leaves the
-    //  app's own prefix, and this was the one it found on its first run.
-    fetch(`${import.meta.env.BASE_URL}__thermoml/index.json`)
-      .then(async (r) => {
-        if (!r.ok) throw new Error(String(r.status));
-        const raw = (await r.json()) as { entries?: Citation[] };
-        if (!dead) setMirror({ kind: "ready", entries: raw.entries ?? [] });
-      })
-      .catch(() => {
-        if (!dead) setMirror({ kind: "absent" });
-      });
-    return () => {
-      dead = true;
-    };
-  }, []);
+  //  ONE INDEX (2026-08-25), ONE PROBE (DEV.md 4c C172): the dev server
+  //  PROJECTS `bin/choupo-thermoml index` down to the citation shape below
+  //  (thermomlIndexPlugin), and state/useLiteratureMirror.ts fetches it once
+  //  per page -- the menu reads the same outcome to decide whether this view
+  //  is offered at all.
 
   const terms = useMemo(
     () => query.toLowerCase().split(/\s+/).filter(Boolean),

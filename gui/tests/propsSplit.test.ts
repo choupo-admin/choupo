@@ -88,9 +88,11 @@ describe("the screen uses the split, and the affordance writes no preference", (
   const src = readFileSync(resolve(__dirname, "../src/ui/ReviewScreen.tsx"), "utf8")
     .replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
 
-  it("the map is the contract's panel with a seam, and 'figures full height' is its fold", () => {
+  it("the map is the contract's panel, with NO seam to drag (DEV.md 4c C172), and 'figures full height' is its fold", () => {
     expect(src).toContain("usePanel(PROPS_MAP_PANEL");
-    expect(src).toContain("<PanelResizeHandle panel={mapPanel} />");
+    expect(src).not.toContain("<PanelResizeHandle");
+    expect(src).not.toContain("savePanelSize");
+    expect(src).not.toContain("loadPanelSize");
     expect(src).toMatch(/data-review="figures-full-height"[\s\S]{0,200}onClick=\{mapPanel\.toggle\}/);
   });
 
@@ -99,7 +101,6 @@ describe("the screen uses the split, and the affordance writes no preference", (
     expect(eff).toContain("openDetailsCap(");
     expect(eff).toContain("setMapCap(");
     expect(eff).not.toContain("savePanelSize");
-    expect(eff).not.toContain("setMapPref");
   });
 
   it("no second copy of C151's map-height rule", () => {

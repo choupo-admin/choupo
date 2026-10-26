@@ -79,6 +79,7 @@ License
   not take a column away.
 \*---------------------------------------------------------------------------*/
 
+import { ThermoView } from "./ThermoView.js";
 import { useEffect, useMemo, useState } from "react";
 import { useReducedMotion } from "@mantine/hooks";
 import { ActionIcon, Anchor, Box, Group, ScrollArea, SegmentedControl, Stack, Text } from "@mantine/core";
@@ -272,6 +273,9 @@ export const CASE_PANES: { value: CasePane; label: string }[] = [
 ];
 
 // ---- Component -------------------------------------------------------------
+
+/** The case's thermophysical system: where its readiness is shown. */
+const THERMO_DICT = "constant/thermoPhysPropDict";
 
 export function CaseWorkspace() {
   const caseFiles = useStore((s) => s.caseFiles);
@@ -518,6 +522,25 @@ export function CaseWorkspace() {
                   )}
                 </Group>
               </Box>
+              {/* THE THERMO'S READINESS, WHERE THE THERMO IS DECLARED (DEV.md
+                  4c C172 item 5).  A process case's "Props" view existed only
+                  to show this table (no propsDict, nothing to run there); it
+                  left the menu, and its one piece of content moved here, to
+                  the file it qualifies.  A properties case shows the same
+                  table in its Workflow, under the thermo package. */}
+              {active === THERMO_DICT && !caseFiles.propsDict && (
+                <details open data-case-readiness=""
+                  style={{ margin: "10px 14px 0 14px", border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+                    borderRadius: 6, padding: "4px 8px" }}>
+                  <summary style={{ cursor: "pointer" }}>
+                    <Text span size="11px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.5 }}>
+                      Is this thermo ready?
+                    </Text>
+                    <Text span size="xs" c="dimmed"> -- each component's data and each phase's model, read from this file</Text>
+                  </summary>
+                  <Box style={{ position: "relative", height: "55vh", minHeight: 360 }}><ThermoView /></Box>
+                </details>
+              )}
               <Box style={{ padding: "10px 14px" }}>
                 {isLesson && <Lesson md={activeText} />}
                 {!isLesson && lines.map((html, i) => (

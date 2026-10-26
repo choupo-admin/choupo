@@ -60,8 +60,9 @@ import type { CaseFiles } from "./types.js";
  *  artefacts, logs, reports) are excluded -- they rebuild.  The case is
  *  self-contained: its components, pairs, reactions, and any code/ travel with
  *  it.  Pure download (a Blob) -- works on every browser, the GUI never writes. */
-export function downloadCaseZip(caseFiles: CaseFiles, tutorialName: string): void {
-  const built = buildCaseZip(caseFiles, tutorialName);
+export function downloadCaseZip(caseFiles: CaseFiles, tutorialName: string,
+  runOutputs?: { [relPath: string]: string }): void {
+  const built = buildCaseZip(caseFiles, tutorialName, runOutputs);
   if (!built) return;
   // fflate returns a Uint8Array; copy into a fresh ArrayBuffer-backed view so
   // the Blob gets exactly these bytes (avoids a possible pooled-buffer offset).
@@ -78,6 +79,11 @@ export function downloadCaseZip(caseFiles: CaseFiles, tutorialName: string): voi
  *  "File -> Open Case from .zip" reads this back to the same files (the
  *  round trip is a test, DEV.md 4c C107). */
 export function buildCaseZip(caseFiles: CaseFiles, tutorialName: string,
+  /** Files the last run wrote for a HUMAN to promote (RunResult.proposals,
+   *  case-relative): the promotable record a fit writes travels with the
+   *  downloaded case (DEV.md 4c C172 item 6).  A path the case already
+   *  carries keeps the case's own copy. */
+  runOutputs?: { [relPath: string]: string },
 ): { fileName: string; bytes: Uint8Array } | null {
   const raw = caseFiles.rawFiles;
   if (!raw || Object.keys(raw).length === 0) return null;
@@ -92,6 +98,10 @@ export function buildCaseZip(caseFiles: CaseFiles, tutorialName: string,
     files[`${base}/${p}`] = strToU8(text);
   }
   if (Object.keys(files).length === 0) return null;
+  for (const [p, text] of Object.entries(runOutputs ?? {})) {
+    if (raw[p] !== undefined || skip(p) || p.startsWith("/") || p.split("/").includes("..")) continue;
+    files[`${base}/${p}`] = strToU8(text);
+  }
   // Make the downloaded case "born taught" for the student's OWN local AI agent
   // (vendor-neutral, offline): add ai/choupo-authoring.md + AGENTS.md + CLAUDE.md
   // -- but only those the case does not already ship (keep any case-specific one).

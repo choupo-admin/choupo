@@ -1606,6 +1606,31 @@ accepts today, and that is a policy call.
 > PDF fresh by git ancestry, so a binary PDF taken whole in a rebase
 > conflict (one side's render) passes while missing the other side's
 > content -- caught here by reading the text, the PDF re-rendered.
+> SLICE 1 BUILT 2026-10-26 (branch claude/c172-slice1; items 5 and 6, no
+> Workflow outline and no chrome table): ONE Run in the toolbar
+> (ui/RunButton.tsx, "Run flowsheet" / "Run workflow", + Ctrl+Enter; the
+> canvas, Workflow and intro doors gone); no Workflow on a process case
+> (its readiness at the Case tab's constant/thermoPhysPropDict), "Results"
+> retired as a section name (the menu says Workflow), the Audit and its
+> five pills rehomed (an op's panel in its details, readiness + decision
+> ledger in the thermo package's, comparisons on the overview), the
+> per-sector props route and the map's drag seam removed, version +
+> adapter in a status bar, Variables/Pinch/Literature hidden when empty.
+> Content: a fit's details show the FIT / HELD OUT datasets, the band,
+> the held-out statistic in its own unit, the verdict WITH identifiability
+> (also in the strip), the parameters as symbols with units (r_p = 0.6748
+> nm, case/fitEvidence.ts); a held-out membrane set's line is "predicted",
+> and a fitPoints table with a heldOut column splits parity/residuals
+> (engine, src/propertyOps/FitParameters.cpp defaultViews,
+> src/postProcessing/views/Views.cpp); a fit's case-path proposal is read
+> back, shown, and carried by the zip; a record the run wrote is "updated
+> by run", not "edited".  NOT DONE, with the reason: the held-out key
+> rename -- `aad_heldout_pct` (relative %) and the membrane's
+> `heldOut_AAD_pct` (rejection POINTS) are two statistics, and renaming
+> moves three rows of membrane24's golden; the engine publishes each one's
+> unit instead and the GUI reads both in one place.  Validated: the 26
+> cases those edits reach PASS, --gui, the named gates; the forum-E walk,
+> before/after, in the report.
 
 > **C171. THE PROPS SCREEN REDESIGNED BEFORE A RESEARCHER SEES IT, AND A
 > PROPER WAY TO CITE (Vitor, 2026-10-26, on the live NanoFiltran case

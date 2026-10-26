@@ -1100,6 +1100,32 @@ static std::string genericDefaultViews(const Publication& pub)
             || tab.columnIndex("residual") < 0 || tab.columns.size() < 5)
             continue;
         const std::string abscissa = tab.columns[1].name;
+        //  A TABLE THAT MARKS ITS HELD-OUT ROWS draws them as what they are
+        //  (DEV.md 4c C172 item 6): the model PREDICTING evidence the fit never
+        //  saw, never "fitted".  Split only when both kinds of row exist (a
+        //  `select` that keeps no row refuses).
+        const int hi = tab.columnIndex("heldOut");
+        bool anyFit = false, anyHeld = false;
+        if (hi >= 0)
+            for (const auto& row : tab.rows)
+                (row[hi] > 0.5 ? anyHeld : anyFit) = true;
+        if (anyFit && anyHeld)
+        {
+            out += "{ name parity; type parity; title \"" + pub.name + ": the model against the measured"
+                   " -- fitted points, and held-out points it PREDICTED\";"
+                   " xAxis { label \"measured\"; } yAxis { label \"model\"; }"
+                   " series ( { name points; label \"fitted points\"; op " + pub.name
+                 + "; table fitPoints; select { heldOut 0; } x measured; y model; style markers; }"
+                   " { name heldOut; label \"held-out points (predicted)\"; op " + pub.name
+                 + "; table fitPoints; select { heldOut 1; } x measured; y model; style markers; } ); }\n";
+            out += "{ name residuals; type residuals; title \"" + pub.name + ": residual (model - measured)"
+                   " against " + abscissa + "\"; yAxis { label \"residual\"; }"
+                   " series ( { name residual; label \"fitted - measured\"; op " + pub.name
+                 + "; table fitPoints; select { heldOut 0; } x " + abscissa + "; y residual; style markers; }"
+                   " { name heldOutResidual; label \"predicted - measured (held out)\"; op " + pub.name
+                 + "; table fitPoints; select { heldOut 1; } x " + abscissa + "; y residual; style markers; } ); }\n";
+            continue;
+        }
         out += "{ name parity; type parity; title \"" + pub.name + ": fitted against measured\";"
                " xAxis { label \"measured\"; } yAxis { label \"fitted\"; }"
                " series ( { name points; label \"data against the fitted model\"; op " + pub.name

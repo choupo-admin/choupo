@@ -105,3 +105,72 @@ export function caseWriteLogLines(notes: readonly CaseWriteNote[]): string[] {
     : `[case] ${n.path}: written by operation '${n.op}' (${n.key}) -- ${n.change === "new" ? "ADDED to" : "UPDATED in"}`
       + " the open case (the next run and the next download carry it)");
 }
+
+/** WHICH CHANGES ARE THE READER'S, AND WHICH ARE THE RUN'S (DEV.md 4c C172
+ *  item 6).  A file an operation declares it writes into the case (above)
+ *  changes when the RUN writes it, never by an edit in this app -- so the top
+ *  bar must not call it "edited": that word asks the reader to save or
+ *  discard work they did not do.  Those paths are set aside here; what
+ *  differs from the case as loaded among the rest is the reader's own edit,
+ *  and the declared paths that differ are "updated by run". */
+export function editsBesideRunWrites(files: CaseFiles, pristine: CaseFiles): {
+  userEdited: boolean; runUpdated: string[];
+} {
+  const paths = declaredCaseWrites(files.propsDict).map((w) => w.path);
+  const strip = (f: CaseFiles): CaseFiles => {
+    if (paths.length === 0) return f;
+    const raw = { ...(f.rawFiles ?? {}) };
+    const extra = { ...(f.extraFiles ?? {}) };
+    for (const p of paths) { delete raw[p]; delete extra[p]; }
+    return { ...f, rawFiles: raw, extraFiles: extra };
+  };
+  const now = (f: CaseFiles, p: string) => f.extraFiles?.[p] ?? f.rawFiles?.[p];
+  const runUpdated = paths.filter((p) => now(files, p) !== now(pristine, p));
+  return {
+    userEdited: JSON.stringify(strip(files)) !== JSON.stringify(strip(pristine)),
+    runUpdated,
+  };
+}
+
+/** Every file a propsDict's ops declare as a PROPOSAL (`x-choupo.writes`,
+ *  kind `proposal`) at a path inside the case: a promotable record a fit
+ *  writes for a HUMAN to promote (DEV.md 4c C172 item 6).  It is not a case
+ *  write -- it is never carried into the run copy -- but the worker reads it
+ *  back like one, so the screen can show it and the downloaded case carries
+ *  it. */
+export function declaredProposals(propsDict: JsonDict | null | undefined): CaseWrite[] {
+  const out: CaseWrite[] = [];
+  const seen = new Set<string>();
+  for (const op of declaredOps(propsDict)) {
+    for (const s of op.meta?.writes ?? []) {
+      if (s.kind === "record") continue;
+      for (const v of valuesAt(op.dict, s.key)) {
+        if (!isCasePath(v) || seen.has(v) || !/\.dat$/.test(v)) continue;
+        seen.add(v);
+        out.push({ op: op.name, key: s.key, path: v });
+      }
+    }
+  }
+  return out;
+}
+
+/** The run's read-back files split by what they are: a PROPOSAL a fit
+ *  declares at a case path rides the case-writes channel (the worker reads
+ *  back every path it is handed) but is NOT a case write -- it joins the
+ *  run's proposals, shown on screen and carried by the downloaded case, and
+ *  is never handed to the next run (DEV.md 4c C172 item 6). */
+export function splitRunProposals(
+  proposals: { [p: string]: string } | null, caseWrites: { [p: string]: string } | null,
+  propsDict: JsonDict | null | undefined,
+): { proposals: { [p: string]: string } | null; caseWrites: { [p: string]: string } | null } {
+  if (!caseWrites) return { proposals, caseWrites };
+  const paths = new Set(declaredProposals(propsDict).map((w) => w.path));
+  const writes = { ...caseWrites };
+  let props = proposals;
+  for (const p of Object.keys(writes)) {
+    if (!paths.has(p)) continue;
+    props = { ...(props ?? {}), [p]: writes[p]! };
+    delete writes[p];
+  }
+  return { proposals: props, caseWrites: writes };
+}

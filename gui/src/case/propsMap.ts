@@ -444,7 +444,7 @@ export function buildFine(input: MapInput): { nodes: Map<string, Fine>; edges: F
           add({ id: oid, kind: "view", role: "proposal", order, member: {
             id: oid, label: v === "auto" ? `${op.name}: proposal` : `${v}`, detail: s.label,
             target: { kind: "guide", url: propsOpHelpLink(op.type),
-              label: `${s.label}: written by ${op.name} on a native run` },
+              label: `${s.label}: written by ${op.name} when the workflow runs` },
             source: caseTarget(PROPS_DICT_PATH, opLines, `${op.name} in system/propsDict`) } });
           edges.push({ from: id, to: oid, flow: "proposal" });
           continue;

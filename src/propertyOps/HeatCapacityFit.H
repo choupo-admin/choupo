@@ -77,6 +77,10 @@ public:
     { return { "R2", "Cp_at_Tmid" }; }
 
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
+    //  the held-out AAD is a RELATIVE deviation in per cent (DEV.md 4c C172:
+    //  each fit's held-out statistic is published with its own unit)
+    std::string diagnosticUnit(const std::string& key) const override
+    { return key == "aad_heldout_pct" ? "%" : std::string(); }
     //  The CURATION axis (maturity), as WORDS -- see
     //  PropertyOperation::curation().  NOT `validation`: that key
     //  already names this document's top-level overlay AAD table.

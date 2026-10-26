@@ -257,6 +257,7 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
     using namespace membrane;
     diag_.clear(); curation_.clear(); tables_.clear(); paramPaths_.clear();
     memQuantities_.clear(); memSets_.clear(); memSetQuantities_.clear(); memUnits_.clear();
+    memSetHeldOut_.clear();
     const std::string opName = dict->lookupWordOrDefault("name", "");
     const std::string site = "fitParameters(membrane) '" + opName + "'";
     if (opName.empty())
@@ -401,6 +402,7 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
         const std::string where = site + " dataset '" + ds.path + "'";
         const EvidencePartition::Table t = EvidencePartition::loadTable(ds, opLabel);
         memSets_.push_back(fs::path(ds.path).stem().string());
+        memSetHeldOut_.push_back(sets[si].heldOut);
         //  held constants
         scalar Tconst = NaN;
         if (t.file->found("T"))

@@ -36,17 +36,22 @@ License
             with its views), Records produced, My plots (PropsTree)
     CENTRE  the CALCULATION MAP -- the case drawn as a flowsheet of its
             calculation, read-only and derived (PropsMap, case/propsMap.ts)
-    BELOW   the DETAILS of what is selected in either (PropsDetails), under a
-            seam the reader drags (C153: the map is a TOP panel of the panel
-            contract, its height a reader preference; folding it is "figures
-            full height"; a selection made while this pane is too short to
-            show its summary opens it -- ui/propsSplit.ts); with nothing
-            selected, the OVERVIEW:
+    BELOW   the DETAILS of what is selected in either (PropsDetails).  The map
+            above them has a COMPUTED height and folds ("figures full
+            height"); there is no seam to drag (DEV.md 4c C172 item 5 removed
+            the draggable split C153 added -- one more control that moved
+            nothing a reader came for).  A selection made while the details
+            are too short to show their summary opens them (ui/propsSplit.ts).
+            With nothing selected, the OVERVIEW:
               1. what the run did -- one verdict row per operation
               2. (thermo readiness, where the case creates a component)
               3. figures, then parameters and tables -- every view
-              4. other plots -- every other CSV the run wrote, collapsed
-              5. audit, collapsed -- the raw panels this screen replaced
+              4. the comparisons of models with data, where the case has some
+              5. other plots -- every other CSV the run wrote, collapsed
+            The AUDIT that sat folded at its foot is gone (C172): each of its
+            panels now lives where it qualifies -- an operation's own panel in
+            that operation's details, the thermo readiness and the decision
+            ledger in the thermo package's.
 
   One selection: a click on the map, a node of the tree or an operation's row
   selects the same object everywhere.  F1 opens what it is about: a model's
@@ -67,7 +72,7 @@ License
   postProcessing.ts for the views, propsMap.ts for the map).
 \*---------------------------------------------------------------------------*/
 
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ActionIcon, Badge, Box, Button, Group, ScrollArea, Select, Stack, Table, Text, Tooltip } from "@mantine/core";
 import { useMediaQuery, useReducedMotion } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -76,7 +81,7 @@ import { IconChevronsDown, IconChevronsUp, IconFileCode } from "@tabler/icons-re
 import type { OperationResult, RunResult } from "../adapters/SolverAdapter.js";
 import type { JsonDict } from "../dict/index.js";
 import { viewGroups, type PostItem, type PostReference, type ViewGroup } from "../case/postProcessing.js";
-import { numbersOnlyOps, RUN_STATE_WORD, verdictRows, type RunState, type VerdictRow } from "../case/reviewScreen.js";
+import { numbersOnlyOps, RUN_STATE_WORD, verdictRows, type HeldOutStatistic, type RunState, type VerdictRow } from "../case/reviewScreen.js";
 import { declaredStudies, purposeWords, type Study } from "../case/propsStudies.js";
 import { mapStates } from "../case/propsMapState.js";
 import { useStaleParts } from "../state/useStaleResult.js";
@@ -95,11 +100,9 @@ import { PropsTree } from "./PropsTree.js";
 import { CaseLink, Diagnostics, FigureGrid, SelectionDetails } from "./PropsDetails.js";
 import { useCollapsedFlag, useMeasuredBoxHeight } from "./methods/methodsChrome.js";
 import {
-  PROPS_MAP_PANEL, PanelResizeHandle, panelBoxProps, shownTopPanelPx, usePanel, type PanelHandle,
+  PROPS_MAP_PANEL, panelBoxProps, shownTopPanelPx, usePanel,
 } from "./panelContract.js";
-import {
-  PANELS, clampSize, forgetPanelSize, hasPanelSize, loadPanelSize, savePanelSize,
-} from "../state/prefs.js";
+import { PANELS, clampSize } from "../state/prefs.js";
 import { autoMapPx, DETAILS_FLOOR_PX, mapFolded, openDetailsCap } from "./propsSplit.js";
 
 function SectionTitle({ children, hint }: { children: ReactNode; hint?: string }) {
@@ -113,6 +116,19 @@ function SectionTitle({ children, hint }: { children: ReactNode; hint?: string }
 
 function pct(v: number | null): string {
   return v === null ? "" : `${v.toPrecision(3)} %`;
+}
+
+/** A held-out statistic with the unit the engine published for it (a
+ *  relative % for a bubble-point fit, rejection points for a membrane fit --
+ *  case/reviewScreen.ts heldOutStatistic). */
+function HeldOutCell({ h }: { h: HeldOutStatistic }) {
+  const unit = h.unit === "%" ? " %" : h.published ? ` ${h.unit}` : "";
+  return (
+    <Tooltip withArrow multiline maw={300}
+      label={`${h.key} -- the fit's deviation on evidence it never saw${h.published ? "" : " (the engine published no unit for it)"}`}>
+      <span>{Number(h.value.toPrecision(3))}{unit}</span>
+    </Tooltip>
+  );
 }
 
 /** Rows shown before the strip folds: a case of twenty operations must not
@@ -213,15 +229,31 @@ function VerdictStrip({ rows, ran, selected, onSelect, linkOf }: {
                   {RUN_STATE_WORD[r.runState]}{r.rc !== null ? ` (rc ${r.rc})` : ""}
                 </Badge>
               </Table.Td>
-              <Table.Td data-evidence="">
-                {r.verdict ? (
-                  <Badge size="sm" variant="light" color={CURATION_COLOUR[r.verdict] ?? "gray"}
-                    style={{ textTransform: "none" }}>{r.verdict}</Badge>
-                ) : (
-                  <Text size="xs" c="dimmed">
-                    {r.runState === "done" ? "no acceptance test in this run" : "--"}
-                  </Text>
-                )}
+              <Table.Td data-evidence="" style={{ minWidth: 200 }}>
+                <Group gap={4} wrap="nowrap">
+                  {r.verdict ? (
+                    <Badge size="sm" variant="light" color={CURATION_COLOUR[r.verdict] ?? "gray"}
+                      style={{ textTransform: "none", overflow: "visible", flexShrink: 0 }}>{r.verdict}</Badge>
+                  ) : (
+                    <Text size="xs" c="dimmed">
+                      {r.runState === "done" ? "no acceptance test in this run" : "--"}
+                    </Text>
+                  )}
+                  {/* IDENTIFIABILITY BESIDE THE VERDICT (DEV.md 4c C172 item
+                      6): a different question -- are the parameters
+                      separately determined? -- never merged into it. */}
+                  {r.identifiable !== null && (
+                    <Tooltip withArrow multiline maw={320}
+                      label={r.identifiable
+                        ? "Identifiable: the data determine each fitted parameter separately (the fit's own `identifiable` diagnostic)."
+                        : "NOT identifiable: the data do not determine each fitted parameter separately -- some trade off against each other (the fit's own `identifiable` diagnostic).  A different question from the verdict beside it."}>
+                      <Badge size="sm" variant="outline" data-identifiable={r.identifiable ? "1" : "0"}
+                        color={r.identifiable ? "gray" : "red"} style={{ textTransform: "none", overflow: "visible", flexShrink: 0 }}>
+                        {r.identifiable ? "identifiable" : "not identifiable"}
+                      </Badge>
+                    </Tooltip>
+                  )}
+                </Group>
               </Table.Td>
               <Table.Td ta="right" ff="monospace">
                 {r.points && (
@@ -234,8 +266,8 @@ function VerdictStrip({ rows, ran, selected, onSelect, linkOf }: {
                 {r.aadApplicable ? pct(r.aadPct)
                   : <NotApplicable why="This operation type compares its answer with no dataset, so it publishes no AAD." />}
               </Table.Td>
-              <Table.Td ta="right" ff="monospace">
-                {r.heldOutApplicable ? pct(r.heldOutAadPct)
+              <Table.Td ta="right" ff="monospace" data-held-out={r.heldOut?.key ?? ""}>
+                {r.heldOutApplicable ? (r.heldOut ? <HeldOutCell h={r.heldOut} /> : "")
                   : <NotApplicable why="This operation type fits nothing, so no evidence is held out of a fit." />}
               </Table.Td>
             </Table.Tr>
@@ -327,27 +359,6 @@ function OtherPlots({ files, csvFiles }: { files: string[]; csvFiles: { [f: stri
           ))}
         </Stack>
       )}
-    </details>
-  );
-}
-
-/** The audit, folded: the panels this screen replaced as the landing. */
-function AuditBlock({ audit }: { audit: ReactNode }) {
-  return (
-    <details data-review="audit">
-      <summary style={{ cursor: "pointer" }}>
-        <Text span size="11px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.5 }}>
-          Audit
-        </Text>
-        <Text span size="xs" c="dimmed"> — the raw diagnostics, the decision ledger, the thermo
-          readiness and every operation&apos;s own panel</Text>
-      </summary>
-      <Box mt="xs" style={{ position: "relative", height: "78vh", minHeight: 480,
-        display: "flex", flexDirection: "column",
-        border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-        borderRadius: 6, overflow: "hidden" }}>
-        {audit}
-      </Box>
     </details>
   );
 }
@@ -457,13 +468,21 @@ function StudySection({ st, rows, map, strip, groups, csvFiles, linkOf, ran, ref
   );
 }
 
-export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo, rawFiles, caseKey, flowsheet }: {
+export function ReviewScreen({ ops, result, readiness, readinessProminent, ledger, opPanel, comparisons,
+  propsDict, thermo, rawFiles, caseKey, flowsheet }: {
   ops: JsonDict[];
   result: RunResult | undefined;
-  /** the thermo readiness, drawn here (a case that creates a component) */
+  /** the thermo readiness: in the thermo package's details always, and on
+   *  the overview where the case creates a component (`readinessProminent`) */
   readiness?: ReactNode;
-  /** the full surface the screen replaces as the landing, collapsed below it */
-  audit: ReactNode;
+  readinessProminent?: boolean;
+  /** the decisions the run took (pairs, datasets, sources): in the thermo
+   *  package's details */
+  ledger?: ReactNode;
+  /** an operation's own typed panel, shown in its details (DEV.md 4c C172) */
+  opPanel?: (op: string) => ReactNode | undefined;
+  /** the comparisons of models with measured data, on the overview */
+  comparisons?: ReactNode;
   propsDict?: JsonDict | null;
   thermo?: JsonDict | null;
   rawFiles?: Record<string, string>;
@@ -610,6 +629,14 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
   const opResults = useMemo(() => result?.operationResults ?? [], [result]);
   const numbersOnly = useMemo(() => (ran ? numbersOnlyOps(map, opResults) : []), [ran, map, opResults]);
   const isFolderOverview = selected.startsWith("folder:") && !selected.startsWith("folder:type:");
+  const comparisonsBlock = ran && comparisons ? (
+    <Box data-overview="comparisons">
+      <SectionTitle hint="Each model's curve against the measured points, and the engine's AAD of each: a COMPARISON, not a validation -- it does not say the data were independent of a fit.">
+        Models compared with the data
+      </SectionTitle>
+      <Stack gap="md">{comparisons}</Stack>
+    </Box>
+  ) : null;
 
   let details: ReactNode;
   if (selected === "myplot:new") {
@@ -619,7 +646,7 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
           New plot
         </SectionTitle>
         {Object.keys(csvFiles).length === 0
-          ? <Text size="sm" c="dimmed">Run properties first: a plot draws a file the run wrote.</Text>
+          ? <Text size="sm" c="dimmed">Run the workflow first: a plot draws a file the run wrote.</Text>
           : <Select data={Object.keys(csvFiles).sort()} placeholder="choose a CSV file" searchable
               maw={520} onChange={(v) => v && addPlot(v)} comboboxProps={{ withinPortal: true }} />}
       </Stack>
@@ -631,7 +658,7 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
       <Stack gap="xs" data-review="my-plot">
         <SectionTitle hint={p?.file}>{p?.title ?? "plot"}</SectionTitle>
         {csv ? <CsvAutoPlot csv={dropPointColumn(csv)} filename={p!.file} />
-          : <Text size="sm" c="dimmed">{ran ? `The run wrote no ${p?.file}.` : "Run properties to draw it."}</Text>}
+          : <Text size="sm" c="dimmed">{ran ? `The run wrote no ${p?.file}.` : "Run the workflow to draw it."}</Text>}
       </Stack>
     );
   } else if (selected.startsWith("study:")) {
@@ -644,7 +671,28 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
   } else if (selected && !isFolderOverview) {
     details = (
       <SelectionDetails id={selected} map={map} result={result} rows={rows} strip={strip}
-        onSelect={setSelected} onActivate={activate} folderOps={folderOps} />
+        onSelect={setSelected} onActivate={activate} folderOps={folderOps}
+        opPanel={opPanel} propsDict={propsDict} caseFiles={rawFiles}
+        packageDetails={(readiness || ledger) ? (
+          <>
+            {readiness && (
+              <Box data-review="thermo-readiness">
+                <Text size="10px" c="dimmed" tt="uppercase" fw={700} mb={4}>
+                  Is the thermo ready? -- every component's data, and each phase's model
+                </Text>
+                <Box style={{ position: "relative", height: "60vh", minHeight: 380 }}>{readiness}</Box>
+              </Box>
+            )}
+            {ledger && (
+              <Box data-review="decision-ledger">
+                <Text size="10px" c="dimmed" tt="uppercase" fw={700} mb={4}>
+                  The decisions this run took -- each pair, dataset and source
+                </Text>
+                {ledger}
+              </Box>
+            )}
+          </>
+        ) : undefined} />
     );
   } else if (studies.length > 0) {
     //  THE OVERVIEW BY STUDY: the case's own questions, in its order -- each
@@ -686,7 +734,7 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
             <FigureGrid items={looseViews} csvFiles={csvFiles} linkOf={figureLink} references={block?.references} />
           </Box>
         )}
-        {readiness && (
+        {readiness && readinessProminent && (
           <Box>
             <SectionTitle hint="This case creates or estimates a component: is the thermo ready for it?">
               Thermo readiness
@@ -694,8 +742,8 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
             <Box style={{ position: "relative", height: "70vh", minHeight: 420 }}>{readiness}</Box>
           </Box>
         )}
+        {comparisonsBlock}
         {ran && otherFiles.length > 0 && <OtherPlots files={otherFiles} csvFiles={csvFiles} />}
-        <AuditBlock audit={audit} />
       </Stack>
     );
   } else {
@@ -711,12 +759,12 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
         )}
         <Box>
           <SectionTitle hint={ran ? "Click an operation for its numbers and figures; the icon opens its block in system/propsDict."
-            : "Run properties: each operation reports here."}>
+            : "Run the workflow (the Run in the toolbar): each operation reports here."}>
             What the run did
           </SectionTitle>
           {strip(rows)}
         </Box>
-        {readiness && (
+        {readiness && readinessProminent && (
           <Box>
             <SectionTitle hint="This case creates or estimates a component: is the thermo ready for it?">
               Thermo readiness
@@ -738,8 +786,8 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
             ? <ViewGrid groups={groups} ops={ops} csvFiles={csvFiles} kind="table" linkOf={figureLink} />
             : <Text size="sm" c="dimmed">Not run yet.</Text>}
         </Box>
+        {comparisonsBlock}
         {ran && otherFiles.length > 0 && <OtherPlots files={otherFiles} csvFiles={csvFiles} />}
-        <AuditBlock audit={audit} />
       </Stack>
     );
   }
@@ -763,35 +811,23 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
     <PropsTree tree={tree} selected={selected || null} onSelect={(id) => { setSelected(id); setTreeOpen(false); }}
       onNewPlot={() => setSelected("myplot:new")} onRemovePlot={removePlot} />
   );
-  /*  THE SPLIT (DEV.md 4c C153).  The map is a TOP panel; its size is the
-   *  reader's once dragged and C151's computed height until then
-   *  (`autoMapPx`), so the contract runs CONTROLLED here: this component owns
-   *  the one value and writes it to the one key (PANELS.propsMap).  Reset
-   *  (double-click, Enter on the seam) forgets the drag and returns to the
-   *  computed height rather than to a fixed number. */
+  /*  THE MAP'S HEIGHT IS COMPUTED, NOT DRAGGED (DEV.md 4c C172 item 5).
+   *  C153 made it a reader preference behind a seam; the seam is gone, and
+   *  the map is drawn at C151's computed height (`autoMapPx`) fitted into
+   *  the split, then the affordance's render-only cap.  The contract still
+   *  owns the FOLD ("figures full height"), so it runs controlled with a
+   *  value nothing writes. */
   const reduceMotion = useReducedMotion();
   const split = useMeasuredBoxHeight<HTMLDivElement>();
   const mapSpec = PROPS_MAP_PANEL.prefs.size;
-  const [mapPref, setMapPref] = useState<number | null>(
-    () => (hasPanelSize(PANELS.propsMap) ? loadPanelSize(PANELS.propsMap) : null));
-  //  the affordance's cap on the map's DRAWN height: render-only, dropped the
-  //  moment the reader drags or resets (ui/propsSplit.ts)
+  //  the affordance's cap on the map's DRAWN height: render-only
+  //  (ui/propsSplit.ts)
   const [mapCap, setMapCap] = useState<number | null>(null);
-  const onMapPx = useCallback((px: number) => {
-    setMapPref(clampSize(px, PROPS_MAP_PANEL.prefs.size));
-    setMapCap(null);
-    savePanelSize(PANELS.propsMap, px);
-  }, []);
   const autoPx = autoMapPx(map.height, narrow);
-  //  What is DRAWN: the preference (or the computed height), fitted into the
-  //  split render-only, then the affordance's cap.  The contract is handed
-  //  THIS number, so a drag or an arrow key starts from the seam the reader
-  //  sees -- handed the stored size instead, a map fitted from 1485 px down to
-  //  689 px did not move until the pointer had travelled 800 px (measured).
-  const fittedMap = shownTopPanelPx(clampSize(mapPref ?? autoPx, mapSpec), 0, split.height,
+  const fittedMap = shownTopPanelPx(clampSize(autoPx, mapSpec), 0, split.height,
     DETAILS_FLOOR_PX, mapSpec);
   const shownMap = mapCap !== null ? Math.min(fittedMap, mapCap) : fittedMap;
-  const controlled = useMemo(() => ({ value: shownMap, onValue: onMapPx }), [shownMap, onMapPx]);
+  const controlled = useMemo(() => ({ value: shownMap, onValue: () => {} }), [shownMap]);
   //  RESULTS FIRST (DEV.md 4c C168, ui/propsSplit.ts mapFolded): a finished
   //  run folds the map for THAT run; the reader's stored fold is read (and
   //  written) only while no run is on screen.  The per-run memory is keyed
@@ -813,20 +849,7 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
       } else storedFold.toggle();
     },
   }), [folded, ran, result, storedFold]);
-  const contract = usePanel(PROPS_MAP_PANEL, { controlled, collapsedControl });
-  const resetMap = useCallback(() => {
-    forgetPanelSize(PANELS.propsMap);
-    setMapPref(null);
-    setMapCap(null);
-  }, []);
-  const mapPanel: PanelHandle = useMemo(() => ({
-    ...contract,
-    reset: resetMap,
-    onKeyDown: (e: ReactKeyboardEvent) => {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); resetMap(); return; }
-      contract.onKeyDown(e);
-    },
-  }), [contract, resetMap]);
+  const mapPanel = usePanel(PROPS_MAP_PANEL, { controlled, collapsedControl });
   const mapBox = panelBoxProps(mapPanel, !!reduceMotion, shownMap);
 
   //  a new selection is read from its top, never from where the last one
@@ -852,7 +875,7 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
       <Box px="md" pt="sm" style={{ flex: "0 0 auto" }}>
         <Group justify="space-between" mb={4} wrap="nowrap">
           <SectionTitle hint={narrow ? undefined : mapPanel.collapsed ? "Folded: the details and figures have the whole height."
-            : "Data, models, operations, views -- derived from system/propsDict.  Click to select, F1 or double-click to open; drag the seam under it to resize."}>
+            : "Data, models, operations, views -- derived from system/propsDict.  Click to select, F1 or double-click to open."}>
             Calculation map
           </SectionTitle>
           {states.caseWide && (
@@ -870,8 +893,8 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
               </Button>
             )}
             <Tooltip withArrow multiline maw={300} label={mapPanel.collapsed
-              ? "Show the calculation map again, at the height you left it"
-              : "Fold the calculation map away: the details and figures take the whole height (the map's size is kept)"}>
+              ? "Show the calculation map again"
+              : "Fold the calculation map away: the details and figures take the whole height"}>
               <Button size="compact-xs" variant="default" data-review="figures-full-height"
                 aria-expanded={!mapPanel.collapsed}
                 leftSection={mapPanel.collapsed ? <IconChevronsDown size={13} /> : <IconChevronsUp size={13} />}
@@ -895,7 +918,6 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
                 <PropsMapCanvas map={map} handlers={handlers} wide={!narrow} />
               </Box>
             </Box>
-            <PanelResizeHandle panel={mapPanel} />
           </>
         )}
         <Box data-review="details-pane"

@@ -45,6 +45,16 @@ License
   point and ion, with the op's own units -- and its raw diagnostics after it,
   folded; a lone figure takes the pane's whole width (`auto-fit`, never an
   empty track beside it).
+
+  DEV.md 4c C172 (item 6, content the engine published that no screen
+  showed beside the fit): a FIT's details open with what it was given and
+  what it was held to -- each dataset marked FIT or HELD OUT, the band
+  declared before the fit, the held-out statistic in its own unit, the
+  curation verdict WITH the identifiability beside it, and the fitted
+  parameters as symbols with units (case/fitEvidence.ts); an operation's own
+  typed panel (the Audit's, before C172) follows its numbers; the thermo
+  package's details carry the readiness and the decision ledger; and a
+  record or a proposal a run wrote is shown as the text it is.
 \*---------------------------------------------------------------------------*/
 
 import { useState, type ReactNode } from "react";
@@ -59,8 +69,11 @@ import {
   domIdOfView, neighbours, viewDomId, viewsOf,
   type MapNode, type MapTarget, type PropsMap,
 } from "../case/propsMap.js";
-import { unitCell, type VerdictRow } from "../case/reviewScreen.js";
+import { heldOutStatistic, inSampleStatistic, unitCell, type VerdictRow } from "../case/reviewScreen.js";
+import { fitEvidence, fittedParameters, readable, ROLE_WORD } from "../case/fitEvidence.js";
+import type { JsonDict } from "../dict/index.js";
 import { ViewFigure } from "./plotting/ViewFigure.js";
+import { CURATION_COLOUR } from "./FitStatsPanel.js";
 
 const KIND_WORD: Record<string, string> = {
   data: "DATA", model: "MODEL", operation: "OPERATION", view: "VIEW", unit: "PROCESS UNIT",
@@ -278,7 +291,121 @@ export function selectionIds(map: PropsMap, id: string, folderOps: (id: string) 
   return [id];
 }
 
-export function SelectionDetails({ id, map, result, rows, strip, onSelect, onActivate, folderOps }: {
+/** A FIT, as a reader judges it: what it saw, what it was held to, what it
+ *  found (DEV.md 4c C172 item 6; case/fitEvidence.ts). */
+export function FitEvidence({ op, r }: { op: JsonDict | null; r: OperationResult | undefined }) {
+  const ev = fitEvidence(op);
+  const params = fittedParameters(op, r);
+  const cur = r?.curation ?? {};
+  const held = r ? heldOutStatistic(r) : null;
+  const inS = r ? inSampleStatistic(r) : null;
+  const ident = r?.diagnostics?.["identifiable"];
+  const unitOf = (u: string, published: boolean) => (u === "%" ? " %" : published ? ` ${u}` : "");
+  return (
+    <Stack gap="xs" data-review="fit-evidence">
+      {r && (
+        <Group gap={6} wrap="wrap" data-fit-verdict="">
+          <Text size="10px" c="dimmed" tt="uppercase" fw={700}>verdict</Text>
+          {cur["verdict"]
+            ? <Badge color={CURATION_COLOUR[cur["verdict"]] ?? "gray"} variant="filled" style={{ textTransform: "none" }}
+                title="Did the model survive evidence it never saw, inside a band declared before the fit?">{cur["verdict"]}</Badge>
+            : <Text size="xs" c="dimmed">none published</Text>}
+          {typeof ident === "number" && (
+            <Badge color={ident > 0.5 ? "gray" : "red"} variant="outline" style={{ textTransform: "none" }}
+              data-identifiable={ident > 0.5 ? "1" : "0"}
+              title="A different question: are the fitted parameters separately determined by the data?">
+              {ident > 0.5 ? "identifiable" : "not identifiable"}
+            </Badge>
+          )}
+        </Group>
+      )}
+      {params.length > 0 && (
+        <Box data-review="fitted-parameters">
+          <Text size="10px" c="dimmed" tt="uppercase" fw={700} mb={2}>What it found -- the fitted parameters</Text>
+          <Stack gap={1}>
+            {params.map((p) => {
+              const v = readable(p.value, p.unit, p.ci95);
+              return (
+                <Text key={p.index} size="sm" ff="monospace" data-fitted-parameter={p.path} title={p.path}>
+                  <b>{p.symbol}</b>{p.qualifier ? <Text span c="dimmed" size="xs"> ({p.qualifier})</Text> : null}
+                  {" = "}{v.value}{v.ci ? ` ± ${v.ci}` : ""}{" "}
+                  {v.unit ? v.unit : <Text span c="dimmed" size="xs" fs="italic">unit not published</Text>}
+                  {p.title && <Text span c="dimmed" size="xs" ff="body">  {p.title}</Text>}
+                </Text>
+              );
+            })}
+          </Stack>
+          {params.some((p) => p.ci95 !== null) && (
+            <Text size="xs" c="dimmed">± is the half-width of the 95 % confidence interval the fit publishes.</Text>
+          )}
+        </Box>
+      )}
+      {ev.length > 0 && (
+        <Box>
+          <Text size="10px" c="dimmed" tt="uppercase" fw={700} mb={2}>
+            What it was given -- the evidence, partitioned before the fit
+          </Text>
+          <Table fz="xs" verticalSpacing={1} withTableBorder style={{ maxWidth: 640 }} data-review="evidence">
+            <Table.Tbody>
+              {ev.map((e) => (
+                <Table.Tr key={e.dataset} data-evidence-role={e.role}>
+                  <Table.Td ff="monospace">{e.dataset}</Table.Td>
+                  <Table.Td style={{ whiteSpace: "nowrap", width: 90 }}>
+                    <Badge size="xs" variant={e.role === "fit" ? "light" : "outline"}
+                      color={e.role === "fit" ? "gray" : "cyan"} style={{ textTransform: "none", overflow: "visible" }}>
+                      {ROLE_WORD[e.role]}
+                    </Badge>
+                  </Table.Td>
+                  <Table.Td c="dimmed">{e.role === "fit" ? "the parameters were fitted to it"
+                    : "never seen by the fit: what is drawn for it is a PREDICTION"}</Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+        </Box>
+      )}
+      {(cur["acceptanceMaxAADPct"] || held || inS) && (
+        <Box data-review="band">
+          <Text size="10px" c="dimmed" tt="uppercase" fw={700} mb={2}>What it was held to, and what it did</Text>
+          {cur["acceptanceMaxAADPct"] && (
+            <Text size="xs">band: {cur["acceptanceMaxAADPct"] === "none declared before the fit"
+              ? "none declared before the fit" : `AAD ≤ ${cur["acceptanceMaxAADPct"]}, declared before the fit`}
+              {cur["acceptanceOrigin"] ? <Text span c="dimmed"> -- {cur["acceptanceOrigin"]}</Text> : null}</Text>
+          )}
+          {held && (
+            <Text size="xs" data-held-out-statistic={held.key}>held out: <b>{Number(held.value.toPrecision(4))}{unitOf(held.unit, held.published)}</b>
+              <Text span c="dimmed"> ({held.key}{held.published ? "" : ", no unit published"})</Text></Text>
+          )}
+          {inS && (
+            <Text size="xs">in sample: {Number(inS.value.toPrecision(4))}{unitOf(inS.unit, inS.published)}
+              <Text span c="dimmed"> ({inS.key})</Text></Text>
+          )}
+          {cur["heldOutStatistic"] && <Text size="xs" c="dimmed">the statistic: {cur["heldOutStatistic"]}</Text>}
+          {cur["partitionFingerprint"] && (
+            <Text size="xs" c="dimmed">evidence partition frozen before the fit · fingerprint {cur["partitionFingerprint"]}</Text>
+          )}
+        </Box>
+      )}
+    </Stack>
+  );
+}
+
+/** A file a run wrote, shown as the text it is. */
+function WrittenFile({ path, text, why }: { path: string; text: string; why: string }) {
+  return (
+    <Box data-review="written-file" data-written={path}>
+      <Text size="10px" c="dimmed" tt="uppercase" fw={700} mb={2}>{why}</Text>
+      <Text size="xs" ff="monospace" mb={4}>{path}</Text>
+      <ScrollArea h={320} type="auto"
+        style={{ border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))", borderRadius: 6 }}>
+        <Text component="pre" size="xs" ff="monospace" p="xs" m={0} style={{ whiteSpace: "pre" }}>{text}</Text>
+      </ScrollArea>
+    </Box>
+  );
+}
+
+export function SelectionDetails({ id, map, result, rows, strip, onSelect, onActivate, folderOps,
+  opPanel, propsDict, packageDetails, caseFiles }: {
   id: string;
   map: PropsMap;
   result: RunResult | undefined;
@@ -288,6 +415,14 @@ export function SelectionDetails({ id, map, result, rows, strip, onSelect, onAct
   onSelect: (id: string) => void;
   onActivate: (t: MapTarget) => void;
   folderOps: (id: string) => string[];
+  /** an operation's own typed panel (DEV.md 4c C172) */
+  opPanel?: (op: string) => ReactNode | undefined;
+  /** the case's propsDict: a fit's declared evidence and parameters */
+  propsDict?: JsonDict | null;
+  /** what the THERMO PACKAGE's details carry: its readiness and the ledger */
+  packageDetails?: ReactNode;
+  /** the case's files, for a record a run wrote into it */
+  caseFiles?: Record<string, string>;
 }) {
   const ids = selectionIds(map, id, folderOps);
   const nodes = ids.map((i) => map.nodes.find((n) => n.id === i)).filter((n): n is MapNode => !!n);
@@ -309,17 +444,50 @@ export function SelectionDetails({ id, map, result, rows, strip, onSelect, onAct
   const viewIds = viewsOf(map, ids);
   const figures = viewIds.map((v) => items.get(domIdOfView(v))).filter((x): x is PostItem => !!x);
   const results = (result?.operationResults ?? []).filter((r) => opNames.includes(r.name));
+  const opDict = !many && kind === "operation"
+    ? (Array.isArray(propsDict?.["operations"]) ? propsDict!["operations"] as JsonDict[] : [])
+        .find((o) => o && typeof o === "object" && !Array.isArray(o) && o["name"] === first.member.label) ?? null
+    : null;
+  const isFit = !many && kind === "operation" && first.member.detail === "fitParameters";
+  const panel = !many && kind === "operation" ? opPanel?.(first.member.label) : undefined;
+  //  a record or a proposal the run wrote, by the path its node names
+  const writtenPath = kind === "view" && first.role === "record" ? (first.member.detail.split(": ").pop() ?? "")
+    : kind === "view" && first.role === "proposal" ? first.member.label : "";
+  const proposalText = writtenPath ? result?.proposals?.[writtenPath] : undefined;
+  const recordText = writtenPath && first.role === "record"
+    ? (result?.caseWrites?.[writtenPath] ?? caseFiles?.[writtenPath]) : undefined;
 
   return (
     <Stack gap="md" data-review="details" data-selected={id}>
       <Header kind={kind} title={title} detail={detail} onActivate={onActivate}
         help={first.member.target} source={many ? undefined : first.member.source} />
       {kind === "operation" && strip(rows.filter((r) => opNames.includes(r.name)))}
+      {isFit && <FitEvidence op={opDict} r={results[0]} />}
       {kind === "operation" && !many && results[0] && <PointTableViews r={results[0]} />}
       {kind === "operation" && !many && results[0] && (
         <Diagnostics r={results[0]} folded={!!operationMapMeta(results[0].type)?.pointTable} />
       )}
-      {kind === "operation" && !ran && <Text size="sm" c="dimmed">Run properties: its numbers and figures appear here.</Text>}
+      {kind === "operation" && !ran && <Text size="sm" c="dimmed">Run the workflow: its numbers and figures appear here.</Text>}
+      {panel && ran && (
+        <Box data-review="op-panel">
+          <Text size="10px" c="dimmed" tt="uppercase" fw={700} mb={4}>Its own panel</Text>
+          <Box style={{ position: "relative", height: "70vh", minHeight: 420,
+            border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))", borderRadius: 6,
+            overflow: "hidden" }}>{panel}</Box>
+        </Box>
+      )}
+      {first.id === "package" && packageDetails}
+      {proposalText !== undefined && (
+        <WrittenFile path={writtenPath} text={proposalText}
+          why="the proposal this run wrote -- a draft for a human to promote; File > Download case (.zip) carries it" />
+      )}
+      {recordText !== undefined && (
+        <WrittenFile path={writtenPath} text={recordText}
+          why="the record this run wrote into the case -- the flowsheet reads it" />
+      )}
+      {writtenPath && first.role === "proposal" && proposalText === undefined && ran && (
+        <Text size="sm" c="dimmed">This run published no {writtenPath}.</Text>
+      )}
       <NodeList title={kind === "view" ? "drawn from" : "reads"} ids={up} map={map} onSelect={onSelect} />
       <NodeList title={kind === "view" ? "" : "feeds"} ids={down.filter((d) => !d.startsWith("view:"))} map={map} onSelect={onSelect} />
       <Box>

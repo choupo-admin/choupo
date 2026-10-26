@@ -53,7 +53,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { ActionIcon, Badge, Box, Button, Chip, Group, Popover, ScrollArea, Stack, Text, Tooltip, useComputedColorScheme } from "@mantine/core";
-import { IconPlayerPlay, IconPlayerStop, IconRefresh } from "@tabler/icons-react";
+import { IconRefresh } from "@tabler/icons-react";
 import { IconChevronLeft, IconChevronRight, IconX } from "@tabler/icons-react";
 import { useReducedMotion } from "@mantine/hooks";
 
@@ -1562,9 +1562,8 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           color={uiScheme === "dark" ? "var(--mantine-color-dark-5)" : "var(--mantine-color-gray-2)"}
         />
         <Controls showInteractive={false} />
-        {/* The flowsheet's OWN Run (choupoSolve) -- each view owns its run.
-            Dispatches the choupo:run/stop events the TopBar orchestrator
-            listens for (no global toolbar Run anymore). */}
+        {/* What the canvas draws: the run badge and Reset.  The Run itself is
+            the toolbar's (ui/RunButton.tsx, DEV.md 4c C172). */}
         <Panel position="top-right">
           <Group gap={6}>
             {/*  ONE HOME (2026-09-14).  This condition was
@@ -1610,25 +1609,10 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                 Reset
               </Button>
             )}
-            {rc.state === "running" ? (
-              <Button size="xs" color={rc.color} variant={rc.variant}
-                leftSection={<IconPlayerStop size={14} />}
-                title={rc.title}
-                onClick={() => window.dispatchEvent(new CustomEvent("choupo:stop"))}>
-                {rc.label}
-              </Button>
-            ) : (
-              /*  THE BUTTON SAYS WHETHER PRESSING IT WOULD CHANGE WHAT YOU
-                  ARE LOOKING AT, and the five words it can say live in
-                  case/runControl.ts beside the badge's -- see that header for
-                  why `failed` outranks `stale` and why no state is green. */
-              <Button size="xs" color={rc.color} variant={rc.variant}
-                leftSection={<IconPlayerPlay size={14} />}
-                title={rc.title}
-                onClick={() => window.dispatchEvent(new CustomEvent("choupo:run"))}>
-                {rc.label}
-              </Button>
-            )}
+            {/*  THE RUN LEFT THIS PANEL (DEV.md 4c C172 item 5): the case has ONE
+                 Run, in the top toolbar (ui/RunButton.tsx), plus Ctrl+Enter.
+                 The badge stays here because it describes what THIS canvas
+                 draws; both read case/runControl.ts, so they cannot disagree. */}
           </Group>
         </Panel>
         {/* Keyboard-shortcut legend in the bottom-right corner. */}
@@ -1856,9 +1840,9 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             over the canvas (the flowsheet stays visible) instead of a modal,
             per the credo's "pop-out beats modal" / "modals interrupt".  Esc
             or a click on empty canvas clears the selection and dismisses it.
-            Starts at top: 52 --- BELOW the Run/Stop panel (top-right, ~45 px
-            tall incl. margin) --- so Run stays visible and clickable while a
-            node is selected (the card must never cover the view's own Run).
+            Starts at top: 52 --- BELOW the run-badge panel (top-right, ~45 px
+            tall incl. margin) --- so the badge and Reset stay visible while a
+            node is selected.
 
             One-click slide-away: the container is [fold handle | body] and
             translates right by body + margin (cardFoldOffset, panelFold.ts)

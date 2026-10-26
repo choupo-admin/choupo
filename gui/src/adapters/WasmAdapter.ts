@@ -62,7 +62,7 @@ import { shapeBatchPlan, type BatchPlan } from "./batchPlanPayload.js";
 import { readEdges } from "../case/toGraph.js";
 import { fromJson, serialize } from "../dict/index.js";
 import { parseDynamicInstants } from "../case/dynamicInstants.js";
-import { declaredCaseWrites } from "../case/caseWrites.js";
+import { declaredCaseWrites, declaredProposals, splitRunProposals } from "../case/caseWrites.js";
 import type { CaseFiles } from "../case/types.js";
 import type { JsonDict } from "../dict/index.js";
 import type { PairOrigin, ValidityDomain, PromotionOverride,
@@ -248,9 +248,9 @@ export class WasmAdapter implements SolverAdapter {
           const parsed = parseDynamicInstants(instantFiles);
           if (parsed) result.instants = parsed;
         }
-        if (proposals && Object.keys(proposals).length > 0) {
-          result.proposals = proposals;
-        }
+        //  a fit's case-path PROPOSAL rode the case-writes channel: it joins the proposals (C172)
+        ({ proposals, caseWrites } = splitRunProposals(proposals, caseWrites, caseFiles.propsDict));
+        if (proposals && Object.keys(proposals).length > 0) result.proposals = proposals;
         if (caseWrites && Object.keys(caseWrites).length > 0) {
           result.caseWrites = caseWrites;
         }
@@ -326,8 +326,8 @@ export class WasmAdapter implements SolverAdapter {
       //  THE FILES THIS RUN WILL WRITE INTO THE CASE (case/caseWrites.ts):
       //  read off the op schemas, so the worker reads back exactly these and
       //  nothing it would have to guess.  Only a props run executes the ops.
-      const writes = binary === "choupoProps"
-        ? declaredCaseWrites(caseFiles.propsDict).map((w) => w.path) : [];
+      const writes = binary === "choupoProps"   // + its fits' case-path proposals (C172)
+        ? [...declaredCaseWrites(caseFiles.propsDict), ...declaredProposals(caseFiles.propsDict)].map((w) => w.path) : [];
 
       countRunCase();
       worker.postMessage({

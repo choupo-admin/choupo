@@ -306,7 +306,7 @@ int FitParameters::run(const DictPtr& dict,
     // Kind dispatch FIRST: the isotherm kind is pair-data regression --- it
     // never rebuilds a thermoPackage, so the thermoDict guard below does not
     // apply to it.
-    memSets_.clear(); memQuantities_.clear(); memSetQuantities_.clear(); memUnits_.clear();
+    memSets_.clear(); memQuantities_.clear(); memSetQuantities_.clear(); memUnits_.clear(); memSetHeldOut_.clear();
     if (dict->subDict("residual")->lookupWord("kind") == "isotherm")
         return runIsothermFit(dict, verbosity);
     // The membrane kind (DEV.md 4c C149/C152) fits a MEMBRANE RECORD's
@@ -3012,6 +3012,13 @@ std::string FitParameters::diagnosticUnit(const std::string& key) const
         if (key == "heldOut_AAD_pct" || key == "inSample_AAD_pct") return "points";
         return {};
     }
+    //  THE HELD-OUT STATISTIC IN ITS OWN UNIT (DEV.md 4c C172 item 6).  A
+    //  bubble-point fit's held-out AAD is a RELATIVE deviation in per cent and
+    //  its kelvin twin an absolute one; the membrane fit's (above) is in
+    //  rejection POINTS.  The keys differ because the statistics do, so the
+    //  unit is published rather than left for a reader to infer from a name.
+    if (key == "aad_heldout_pct") return "%";
+    if (key == "aad_heldout_K")   return "K";
     if (isoTemperatures_.empty()) return {};
     if (starts("fit.q_max.")) return "mol/kg";
     if (starts("fit.b_ref.") || starts("fit.b_at_T.")) return "1/Pa";
@@ -3047,10 +3054,14 @@ std::string FitParameters::defaultViews(const std::string& op) const
     //  fitted law at the same points as a line, fit and held-out sets alike
     //  (the legend says which); parity, residuals and the parameter table
     //  come generically from fitPoints and fit.<i>.*.
+    //  A HELD-OUT SET'S LINE IS A PREDICTION, never "fitted" (DEV.md 4c C172
+    //  item 6): the fit never saw those points, so the legend says what the
+    //  line is -- the model, with the fitted parameters, predicting them.
     if (!memSets_.empty())
     {
         std::string s = "{ name rejections; type series; title \"" + op + ": measured (markers)"
-                        " and fitted (lines) against the permeate flux, every dataset\";"
+                        " and the model (lines: fitted on the fit sets, PREDICTED on the held-out"
+                        " sets) against the permeate flux, every dataset\";"
                         " xAxis { label \"permeate flux J_v\"; } yAxis { label \"rejection\"; }"
                         " series ( ";
         for (std::size_t k = 0; k < memSets_.size(); ++k)
@@ -3059,11 +3070,14 @@ std::string FitParameters::defaultViews(const std::string& op) const
                 const std::string g = "s" + std::to_string(k + 1) + "q" + std::to_string(q + 1);
                 const std::string sel = "select { set " + std::to_string(k + 1) + "; quantity "
                                       + std::to_string(q + 1) + "; }";
-                const std::string lab = memQuantities_[q] + ", " + memSets_[k];
+                const bool held = k < memSetHeldOut_.size() && memSetHeldOut_[k];
+                const std::string lab = memQuantities_[q] + ", " + memSets_[k]
+                                      + (held ? " (held out)" : "");
                 s += "{ name data" + g + "; label \"measured " + lab + "\"; op " + op
                    + "; table fitPoints; " + sel + " x Jv_mps; y measured; style markers; group "
                    + g + "; } ";
-                s += "{ name model" + g + "; label \"fitted " + lab + "\"; op " + op
+                s += "{ name model" + g + "; label \"" + (held ? "predicted " : "fitted ")
+                   + lab + "\"; op " + op
                    + "; table fitPoints; " + sel + " x Jv_mps; y model; style lines; group "
                    + g + "; } ";
             }

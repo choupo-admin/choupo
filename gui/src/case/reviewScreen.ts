@@ -85,6 +85,15 @@ export interface VerdictRow {
   aadPct: number | null;
   /** the op's held-out AAD (%), from evidence the fit never saw; null none */
   heldOutAadPct: number | null;
+  /** the op's held-out statistic IN ITS OWN UNIT (heldOutStatistic below):
+   *  a relative % for a bubble-point fit, rejection points for a membrane
+   *  fit; null none */
+  heldOut: HeldOutStatistic | null;
+  /** the fit's IDENTIFIABILITY (its `identifiable` diagnostic): are its
+   *  parameters separately determined by the data?  A different question
+   *  from the curation verdict, drawn BESIDE it; null = the op publishes no
+   *  such diagnostic */
+  identifiable: boolean | null;
   /** false when the op is declared but the run published nothing for it */
   ran: boolean;
   /** the RUN status, apart from the evidence (DEV.md 4c C154) */
@@ -152,6 +161,7 @@ export function verdictRows(ops: JsonDict[], results: OperationResult[],
     const d = r?.diagnostics ?? {};
     const key = POINT_KEYS.find((k) => typeof d[k] === "number" && Number.isFinite(d[k]));
     const held = d["aad_heldout_pct"];
+    const ident = d["identifiable"];
     const rc = typeof r?.rc === "number" && r.rc !== 0 ? r.rc : null;
     const runState: RunState = runStatus === undefined ? "notRun"
       : r === undefined ? (runStatus === "done" ? "noResult" : "failed")
@@ -166,6 +176,8 @@ export function verdictRows(ops: JsonDict[], results: OperationResult[],
       points: key ? { value: d[key]!, key } : null,
       aadPct: aadFor(name, validation),
       heldOutAadPct: typeof held === "number" && Number.isFinite(held) ? held : null,
+      heldOut: r ? heldOutStatistic(r) : null,
+      identifiable: typeof ident === "number" && Number.isFinite(ident) ? ident > 0.5 : null,
       ran: r !== undefined,
       runState, rc,
       purpose: st?.purpose ?? "",
@@ -208,4 +220,41 @@ export function unitCell(r: OperationResult, key: string): { text: string; publi
   const u = r.units?.[key];
   if (u === undefined || u === "") return { text: "unit not published", published: false };
   return { text: u === "-" ? "[-]" : u, published: true };
+}
+
+/** THE HELD-OUT STATISTIC, read in ONE place (DEV.md 4c C172 item 6).
+ *
+ *  The fits publish it under two keys, and they are NOT two spellings of one
+ *  number: a bubble-point, vapour-pressure or heat-capacity fit publishes
+ *  `aad_heldout_pct`, a RELATIVE deviation in per cent; the membrane fit
+ *  publishes `heldOut_AAD_pct`, the mean |R_model - R_measured| x 100 over
+ *  the rejection points -- an ABSOLUTE deviation in rejection POINTS (its
+ *  own `units` says so, and its curation block's `heldOutStatistic` spells
+ *  it out).  Renaming one to the other in the engine would make a membrane
+ *  run claim a relative per cent it did not compute, and would move the
+ *  pinned rows of membrane24's golden; so the engine keeps both and this is
+ *  the one reader, each value drawn with the unit the engine publishes for
+ *  it.  Absent a published unit the cell says so rather than guessing. */
+export interface HeldOutStatistic { key: string; value: number; unit: string; published: boolean }
+
+export const HELD_OUT_KEYS = ["aad_heldout_pct", "heldOut_AAD_pct"] as const;
+
+export function heldOutStatistic(r: OperationResult): HeldOutStatistic | null {
+  for (const key of HELD_OUT_KEYS) {
+    const v = r.diagnostics?.[key];
+    if (typeof v !== "number" || !Number.isFinite(v)) continue;
+    const u = unitCell(r, key);
+    return { key, value: v, unit: u.text, published: u.published };
+  }
+  return null;
+}
+
+/** The in-sample statistic beside it, by the same rule (the membrane fit
+ *  publishes `inSample_AAD_pct`; the bubble-point fit its `rms`). */
+export function inSampleStatistic(r: OperationResult): HeldOutStatistic | null {
+  const key = "inSample_AAD_pct";
+  const v = r.diagnostics?.[key];
+  if (typeof v !== "number" || !Number.isFinite(v)) return null;
+  const u = unitCell(r, key);
+  return { key, value: v, unit: u.text, published: u.published };
 }

@@ -214,6 +214,7 @@ private:
     int runMembraneFit(const DictPtr& dict, const ThermoPackage& thermo, int verbosity);
     std::vector<std::string> memQuantities_;   // the measured quantity of fitPoints' `quantity`
     std::vector<std::string> memSets_;         // the dataset of fitPoints' `set`
+    std::vector<bool>        memSetHeldOut_;   // per set: held out of the fit (C172)
     std::vector<std::vector<std::size_t>> memSetQuantities_;   // per set: its quantities
     std::map<std::string, std::string> memUnits_;  // fit.<p>.* units
 

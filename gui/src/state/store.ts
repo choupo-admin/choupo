@@ -418,6 +418,12 @@ interface AppState {
    *  instead of its usual profile/txy priority; consumed (cleared) by the
    *  workspace on first use.  Never set by parent-case surfaces. */
   plotsViewHint: "scanCsv" | null;
+  /** Which solver adapter answered the last run ("wasm" / "mock" / ...):
+   *  set by the TopBar's run orchestrator, drawn by the status bar (DEV.md
+   *  4c C172 item 5 -- implementation metadata out of the header).  null =
+   *  no run in this tab yet. */
+  adapterKind: string | null;
+  setAdapterKind: (k: string | null) => void;
   setPlotsViewHint: (h: "scanCsv" | null) => void;
 
   // ----- Case editing ---------------------------------------
@@ -985,6 +991,8 @@ export const useStore = create<AppState>((set, get) => ({
                         runProgress: IDLE_RUN_PROGRESS }),
 
   plotsViewHint: null,
+  adapterKind: null,
+  setAdapterKind: (k) => set({ adapterKind: k }),
   setPlotsViewHint: (h) => set({ plotsViewHint: h }),
 }));
 

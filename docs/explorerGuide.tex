@@ -270,18 +270,21 @@ $\to$ copy propsDict'' emits the dict for you to author on disk.
 % word must match a compound, 160; the open case's components as chips,
 % 168; hit = authors, year, title, journal, DOI link, measured properties,
 % 199-230; closing line 240), gui/src/ui/workspaces.ts (Literature is a
-% case-tab menu view, 135-137, offered for every case type and never
-% without a case, 174-190), gui/src/ui/AppShell.tsx:418-419, 443-444.
+% case-tab menu view, never without a case, and since DEV.md 4c C172
+% offered only when the mirror answers: `hasLiteratureMirror`, read from
+% gui/src/state/useLiteratureMirror.ts, the one probe the workspace shares).
 Provenance is the differentiator, and this workspace puts its question one
-click from the flowsheet.  With a case open, the tab's menu carries
-\textbf{Literature}: type compound names (every word must match a compound
+click from the flowsheet.  With a case open and your mirror installed, the
+tab's menu carries \textbf{Literature}: type compound names (every word must match a compound
 in the article) or click a chip for one of the case's own components, and
 read who measured that system --- authors, year, title, journal, a DOI
 link, and the properties measured.  It searches your \emph{private} mirror
 of the NIST/TRC ThermoML Archive, installed once with
 \code{bin/choupo-thermoml sync} on your own machine; the runtime never reads
-it and the public site has no mirror, so there it shows the install
-instructions instead.  That absence is a status, not an empty result:
+it and the public site has no mirror, so there the menu does not offer the
+view at all (an entry with nothing behind it is hidden), and a link to it
+shows the install instructions instead.  That absence is a status, not an
+empty result:
 \emph{``nobody measured this''} and \emph{``you have no mirror''} are
 different sentences.  It is a \emph{reading list, never a value}: no number
 is copied into a case or a record, and the only outbound action is opening

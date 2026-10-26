@@ -116,6 +116,18 @@ pure-properties cases.
 ## Slices
 
 1. Content gaps (item 6) and the removals that serve any layout (item 5).
+   BUILT 2026-10-26 (DEV.md 4c C172, slice 1): one Run in the toolbar
+   (`gui/src/ui/RunButton.tsx`); the menu says Workflow, a process case has
+   none (its readiness is at the Case tab's thermo dict); the Audit's
+   panels rehomed where they qualify; the drag seam, the per-sector props
+   route and the empty menu entries gone; version and adapter in a status
+   bar (`gui/src/ui/StatusBar.tsx`); a fit's evidence, band, held-out
+   statistic, identifiability and parameters (as symbols with units) in its
+   details (`gui/src/case/fitEvidence.ts`); held-out lines labelled
+   predictions; the promotable record shown and zipped; "updated by run".
+   The engine's two held-out keys were NOT merged: they are two statistics
+   (a relative % and rejection points), so the engine publishes each one's
+   unit and the GUI reads both in one place.
 2. The engine order validator, ctrl17, ppr78Kij (item 4).  BUILT 2026-10-26:
    `propsPlan::validate` (src/propertyOps/PropsPlan.{H,cpp}) refuses, before
    operation [0], a read of a later write; the file-traffic table is the one

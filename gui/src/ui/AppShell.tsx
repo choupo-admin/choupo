@@ -44,8 +44,11 @@ License
   │                                                        │
   └────────────────────────────────────────────────────────┘
 
-  PropsView remains the centre when the case is a `choupoProps` case
-  (carries `propsDict`, no `flowsheet`).
+  PropsView (the Workflow) is the centre when the case is a properties case
+  (carries `propsDict`, no `flowsheet`, or a two-mode case shown in its
+  Workflow).  A process case has no Workflow (DEV.md 4c C172): a stale
+  ?workspace=props on one draws the flowsheet.  A thin status bar at the
+  foot carries the engine version and the adapter that ran.
 \*---------------------------------------------------------------------------*/
 
 import { Box } from "@mantine/core";
@@ -76,6 +79,7 @@ import { ReportsWorkspace } from "./ReportsWorkspace.js";
 import { StreamsWorkspace } from "./StreamsWorkspace.js";
 import { VariablesWorkspace } from "./VariablesWorkspace.js";
 import { TopBar } from "./TopBar.js";
+import { StatusBar, STATUS_BAR_PX } from "./StatusBar.js";
 import { openGuide } from "../help/guideLinks.js";
 
 // PropsView lazy-loaded: it pulls in Plotly (~300 KB gz) via CsvAutoPlot, and
@@ -256,12 +260,12 @@ export function AppShell() {
       // handler resolves the section matching the ACTIVE PLOT, while this one
       // can only know the workspace.  Adding a workspace with its own F1
       // means adding it here.
-      if (s.activeWorkspace === "props" || s.activeWorkspace === "explore") return;
+      if (s.activeWorkspace === "explore") return;
       //  A PROPS case's centre IS PropsView with no workspace open, and it
       //  owns F1 there too (the selected map block or tree node, else the
       //  selected panel): answering here as well opened two tabs per press
       //  (found 2026-10-25, DEV.md 4c C151).
-      if (s.activeWorkspace === null && s.caseFiles.propsDict
+      if ((s.activeWorkspace === null || s.activeWorkspace === "props") && s.caseFiles.propsDict
           && (!s.caseFiles.flowsheet || s.caseModeFor[s.tutorialName] === "props"
               || (s.caseModeFor[s.tutorialName] === undefined
                   && s.caseFiles.controlDict?.["application"] === "choupoProps"))) return;
@@ -371,13 +375,15 @@ export function AppShell() {
       }}
       style={{
         display: "grid",
+        //  The status bar's row (DEV.md 4c C172): the engine version and the
+        //  adapter that ran, out of the header -- ui/StatusBar.tsx.
         gridTemplateRows: dockRow
-          ? `${headerRowPx}px 1fr ${agentRowPx(agentCollapsed, agentHeight)}px`
-          : `${headerRowPx}px 1fr`,
+          ? `${headerRowPx}px 1fr ${agentRowPx(agentCollapsed, agentHeight)}px ${STATUS_BAR_PX}px`
+          : `${headerRowPx}px 1fr ${STATUS_BAR_PX}px`,
         gridTemplateColumns: "1fr",
         gridTemplateAreas: dockRow
-          ? `"header" "center" "console"`
-          : `"header" "center"`,
+          ? `"header" "center" "console" "status"`
+          : `"header" "center" "status"`,
         transition: reduceMotion ? "none" : "grid-template-rows 200ms ease",
         //  The DYNAMIC viewport, not `100vh`.  On a phone `100vh` measures the
         //  window as if the browser's URL bar were retracted, so the shell is
@@ -504,10 +510,6 @@ export function AppShell() {
           <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
             <ControlWorkspace />
           </Suspense>
-        ) : activeWorkspace === "props" ? (
-          <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
-            <PropsView />
-          </Suspense>
         ) : activeWorkspace === "explore" ? (
           <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
             <ExploreWorkspace />
@@ -534,6 +536,8 @@ export function AppShell() {
           Only on localhost (where bin/runGui runs the bridge); on the hosted
           site there is no bridge, so it is not rendered at all (the 📋 clipboard
           bridge to claude.ai is the universal path there). */}
+      <Box style={{ gridArea: "status", minWidth: 0 }}><StatusBar /></Box>
+
       {consoleVisible && (typeof location !== "undefined"
         && (location.hostname === "localhost" || location.hostname === "127.0.0.1")) && (
         <AgentConsole />

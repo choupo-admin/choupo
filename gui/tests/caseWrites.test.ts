@@ -181,9 +181,15 @@ describe("(2) the run control follows the mode on screen", () => {
     expect(tb).toMatch(/binaryForMode\(caseMode\.mode, caseFiles\.controlDict\["application"\]\)/);
     expect(tb).toMatch(/ctl\.signal,\s*binary,\s*\)/);
     expect(tb).toMatch(/carryRunWrites\(result\)/);
-    const pv = readFileSync(join(REPO, "gui/src/ui/PropsView.tsx"), "utf8");
-    //  a two-mode case's props screen runs through the shared event, not its own run
-    expect(pv).toMatch(/if \(hasFlowsheet && !twoMode\) void runPropsLocal\(\);\s*else window\.dispatchEvent\(new CustomEvent\("choupo:run"\)\);/);
+    //  ONE door since DEV.md 4c C172: the props screen has no run of its own
+    //  (nor a local per-sector one); the toolbar's Run dispatches the shared
+    //  event the TopBar orchestrates, and it follows the mode on screen.
+    const pv = readFileSync(join(REPO, "gui/src/ui/PropsView.tsx"), "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
+    expect(pv).not.toMatch(/runPropsLocal|new CustomEvent\("choupo:run"\)|adapter\.run\(/);
+    const rb = readFileSync(join(REPO, "gui/src/ui/RunButton.tsx"), "utf8");
+    expect(rb).toMatch(/new CustomEvent\(running \? "choupo:stop" : "choupo:run"\)/);
+    expect(rb).toMatch(/binaryForMode\("process", application\)/);
   });
 });
 

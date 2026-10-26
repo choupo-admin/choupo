@@ -27,18 +27,22 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  Top toolbar.  Sits below the classic MenuBar and provides the primary
-  action surface: brand, case breadcrumb, adapter badge, and the
-  Run/Stop button.  Run/Stop are owned here because they hold the
-  AbortController for the in-flight solver; the MenuBar dispatches
-  `choupo:run` / `choupo:stop` DOM events that we listen for to keep
-  one source of truth.
+  Top toolbar.  Shares the header row with the MenuBar and provides the
+  primary action surface: brand, case breadcrumb, and THE case's Run
+  (ui/RunButton.tsx -- one Run in one fixed place, DEV.md 4c C172 item 5).
+  The run is ORCHESTRATED here because this holds the AbortController for
+  the in-flight solver; the button and the Ctrl+Enter hotkey dispatch
+  `choupo:run` / `choupo:stop` DOM events that we listen for, one source of
+  truth.  The engine version and the adapter that ran are implementation
+  metadata: they left this bar for the status bar (ui/StatusBar.tsx).
 \*---------------------------------------------------------------------------*/
 
 import { compositeMembers } from "../case/toGraph.js";
 import { readEdges } from "../case/toGraph.js";
 import { zeroStateText } from "../case/toGraph.js";
 import { ActionIcon, Badge, Group, Text, Tooltip } from "@mantine/core";
+import { RunButton } from "./RunButton.js";
+import { editsBesideRunWrites } from "../case/caseWrites.js";
 import { notifications } from "@mantine/notifications";
 import {
   IconAlertTriangle,
@@ -51,7 +55,7 @@ import {
 } from "@tabler/icons-react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
-import { resolveAdapter, type AdapterKind } from "../adapters/index.js";
+import { resolveAdapter } from "../adapters/index.js";
 import { withDisplayPrefs } from "../case/applyPrefs.js";
 import { withFrozenBoundaryState } from "../case/resultSlice.js";
 import { applyScratch } from "../case/scratch.js";
@@ -68,7 +72,6 @@ import { ColorSchemeToggle } from "./ColorSchemeToggle.js";
 import { ClipboardBridge } from "./ClipboardBridge.js";
 import { CaseSwitcher } from "./CaseSwitcher.js";
 import { tabChromeFor } from "./tabChrome.js";
-import { engineVersionLabel, fetchEngineVersion, type EngineVersion } from "../case/engineVersion.js";
 
 export function TopBar({ onMinWidth }: {
   /* THE WIDTH THIS BAR MUST KEEP, measured and handed to the shell.
@@ -91,29 +94,6 @@ export function TopBar({ onMinWidth }: {
    * nothing depends on it. */
   onMinWidth?: (px: number) => void;
 } = {}) {
-  // The version badge reads wasm/version.json -- written by the WASM build
-  // BESIDE the binaries this app loads (a user landing on /app/ must know
-  // what they are about to run).
-  //
-  // THIS COMMENT USED TO CLAIM the announced version and the running engine
-  // "can never disagree".  They can, and on 2026-08-26 they did: the stamp is
-  // written by a RECURSIVE make step that runs AFTER the binaries, so a build
-  // that dies part-way leaves fresh .wasm files beside the stamp of the last
-  // build that COMPLETED.  A browser announced Choupo-2607 -- months old --
-  // over binaries compiled minutes earlier.
-  //
-  // Nothing here can detect that: this component sees one file and has no way
-  // to date the engine against it.  `bin/runGui` refuses the mismatch instead,
-  // which is where the two are both on disk and comparable.  What this
-  // component owes the reader is the absence of a GUESS -- an unreadable or
-  // missing stamp shows NO badge rather than a plausible default.
-  const [engineVersion, setEngineVersion] = useState<EngineVersion | null>(null);
-  useEffect(() => {
-    //  Absent (odd deployment): show no badge, never a guess.
-    fetchEngineVersion(import.meta.env.BASE_URL)
-      .then((v) => { if (v) setEngineVersion(v); });
-  }, []);
-
   const status = useStore((s) => s.runStatus);
   const startRun = useStore((s) => s.startRun);
   const finishRun = useStore((s) => s.finishRun);
@@ -142,6 +122,9 @@ export function TopBar({ onMinWidth }: {
   const toggleAgent = useStore((s) => s.toggleAgent);
   const goHome = useStore((s) => s.goHome);
   const [clipOpen, setClipOpen] = useState(false);
+  const showIntro = useStore((s) => s.showIntro);
+  const dismissIntro = useStore((s) => s.dismissIntro);
+  const setAdapterKind = useStore((s) => s.setAdapterKind);
   /* THE IDENTITY SLOT BELONGS TO A TAB THAT IS ABOUT A CASE (2026-08-18,
    * ui/tabChrome.ts).  A tool tab has no case, so its "No case open" was
    * reporting the absence of something that is not that tab's business -- the
@@ -162,8 +145,13 @@ export function TopBar({ onMinWidth }: {
   // changes.  JSON-stringify is fine for the small edit surface today
   // (a few scalars in operation blocks); switch to a flag if it ever
   // shows up in profiling.
-  const hasEdits = useMemo(
-    () => JSON.stringify(caseFiles) !== JSON.stringify(pristineCaseFiles),
+  //  A FILE THE RUN WROTE INTO THE CASE IS NOT AN EDIT (DEV.md 4c C172
+  //  item 6): a fit that writes its record changes the open case, and the
+  //  bar called that "edited" -- asking the reader to save or discard work
+  //  they did not do.  The run's own writes are "updated by run"; only what
+  //  differs beside them is the reader's edit (case/caseWrites.ts).
+  const { userEdited: hasEdits, runUpdated } = useMemo(
+    () => editsBesideRunWrites(caseFiles, pristineCaseFiles),
     [caseFiles, pristineCaseFiles],
   );
   // Transient tinkering: numbers grabbed in the Properties box, applied at Run,
@@ -171,7 +159,6 @@ export function TopBar({ onMinWidth }: {
   const clearAllScratch = useStore((s) => s.clearAllScratch);
   const scratchCount = Object.keys(scratchEdits).length;
 
-  const [activeKind, setActiveKind] = useState<AdapterKind | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   const currentEntry = useMemo(
@@ -181,11 +168,15 @@ export function TopBar({ onMinWidth }: {
   // Nothing to run on a blank boot (no case) or a case with neither a
   // flowsheet nor a propsDict.
   const nothingToRun = !caseFiles.flowsheet && !caseFiles.propsDict;
-  const runDisabled =
-    status === "running" || nothingToRun || !!currentEntry?.unsupportedReason;
+  const cannotRun = nothingToRun || !!currentEntry?.unsupportedReason;
+  const runDisabled = status === "running" || cannotRun;
 
   const onRun = useCallback(async () => {
     if (runDisabled) return;
+    //  Run from the tutorial's intro screen: the intro's own "Open & run"
+    //  door left with the other three (C172), so the toolbar's Run, pressed
+    //  there, opens the case it runs.
+    if (showIntro) dismissIntro();
     // A case with its OWN C++ (code/) needs local compilation (buildCode); the
     // browser can't compile C++, so pre-empt with a clear message instead of a
     // raw "unknown type" failure from the prebuilt WASM.
@@ -201,7 +192,7 @@ export function TopBar({ onMinWidth }: {
     }
     startRun();
     const resolved = await resolveAdapter("wasm");
-    setActiveKind(resolved.kind);
+    setAdapterKind(resolved.kind);
 
     // Hosted build, WASM missing: REFUSE to run -- never fabricate numbers with
     // the mock.  Loud, blocking, no auto-close.
@@ -326,7 +317,8 @@ export function TopBar({ onMinWidth }: {
         notifications.show({
           title: "Property-curation phase — not simulated",
           message: "The sectors are not wired yet (the flowsheet has no connections). "
-            + "Curate the per-sector properties; add the connections to assemble + simulate the plant.",
+            + "Open a sector (double-click it) to curate its properties as its own case; "
+            + "add the connections to assemble + simulate the plant.",
           color: "yellow",
           icon: <IconAlertTriangle size={16} />,
           autoClose: 8000,
@@ -376,6 +368,9 @@ export function TopBar({ onMinWidth }: {
     markPropsRun,
     caseMode.modes,
     caseMode.mode,
+    showIntro,
+    dismissIntro,
+    setAdapterKind,
   ]);
 
   const onStop = useCallback(() => {
@@ -444,18 +439,6 @@ export function TopBar({ onMinWidth }: {
             <span style={{ color: "light-dark(var(--mantine-color-accent-7), var(--mantine-color-accent-4))" }}>C</span>HOUPO<sup style={{ fontSize: "0.55em", fontWeight: 600, verticalAlign: "super", letterSpacing: 0 }}>®</sup>
           </Text>
         </Group>
-        {engineVersion && (
-          <Tooltip withArrow multiline w={260}
-            label={engineVersion.version === "Choupo-dev"
-              ? "Development build (the continuously-updated latest, OpenFOAM-dev style) — no stability promises.  Stable releases: choupo.org/releases"
-              : "The engine version this app runs — releases, development line and citation at choupo.org/releases"}>
-            <Badge size="sm" radius="sm" variant="light"
-              color={engineVersion.version === "Choupo-dev" ? "orange" : "gray"}
-              styles={{ root: { textTransform: "none", cursor: "help" } }}>
-              {engineVersionLabel(engineVersion)}
-            </Badge>
-          </Tooltip>
-        )}
         {caseChrome && (
           <>
             {/* The separator belongs to the slot it separates: without the
@@ -472,16 +455,6 @@ export function TopBar({ onMinWidth }: {
             </Badge>
           </Tooltip>
         )}
-        {activeKind && (
-          <Badge
-            size="xs"
-            radius="sm"
-            variant="light"
-            color={activeKind === "wasm" ? "accent" : "yellow"}
-          >
-            {activeKind === "wasm" ? "WASM" : "MOCK"}
-          </Badge>
-        )}
         {hasEdits && (
           <Tooltip
             label="Case has unsaved edits.  Click the save icon to download the modified flowsheetDict; click the restore icon to discard."
@@ -489,6 +462,16 @@ export function TopBar({ onMinWidth }: {
           >
             <Badge size="xs" radius="sm" variant="filled" color="orange">
               ● edited
+            </Badge>
+          </Tooltip>
+        )}
+        {runUpdated.length > 0 && (
+          <Tooltip withArrow multiline w={320}
+            label={`Written into the open case by the last run: ${runUpdated.join(", ")}.  `
+              + "The next run reads it and File > Download case (.zip) carries it; the files on disk are unchanged."}>
+            <Badge size="xs" radius="sm" variant="light" color="teal" data-run-updated=""
+              styles={{ root: { textTransform: "none" } }}>
+              updated by run
             </Badge>
           </Tooltip>
         )}
@@ -506,6 +489,15 @@ export function TopBar({ onMinWidth }: {
       </Group>
 
       <Group ref={iconsRef} gap="xs" wrap="nowrap" style={{ flexShrink: 0 }}>
+        {/* THE case's Run (DEV.md 4c C172): one control, one place, its label
+            naming what it runs.  It belongs to a tab ABOUT a case, so a tool
+            tab has none.  Inside the measured minimum: a control that
+            disappears is not a control that works. */}
+        {caseChrome && hasCaseOpen(tutorialName) && (
+          <RunButton disabled={cannotRun}
+            disabledReason={currentEntry?.unsupportedReason
+              ?? (nothingToRun ? "This case declares neither a flowsheet nor a propsDict: nothing to run." : undefined)} />
+        )}
         {scratchCount > 0 && (
           <Tooltip label="Reset tinkering — drop all unsaved Properties-box edits and return to the file" withArrow>
             <ActionIcon
@@ -570,10 +562,6 @@ export function TopBar({ onMinWidth }: {
             </ActionIcon>
           </Tooltip>
         )}
-        {/* Run/Stop are no longer a global toolbar button -- each view owns its
-            own run (the flowsheet canvas runs choupoSolve, the Props view runs
-            choupoProps).  TopBar still ORCHESTRATES the flowsheet run, firing on
-            the choupo:run / choupo:stop events those buttons dispatch. */}
       </Group>
     </Group>
     <ClipboardBridge opened={clipOpen} onClose={() => setClipOpen(false)} />

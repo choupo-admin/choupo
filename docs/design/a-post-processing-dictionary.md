@@ -54,7 +54,7 @@ propsDict (the op's presentation kept with the op), and `outerDict`'s drivers
 
 | op | default views |
 |---|---|
-| any fit that publishes a `fitPoints` table and `fit.<p>.value` diagnostics (`fitParameters`, both its isotherm and its bubble-point branches) | `parity` (fitted against measured, one unit, the line fitted = measured), `residuals` (fitted − measured against the first abscissa), `parameters` (value, standard error, 95 % half-width; each row in its own unit, labelled by its path where the op keys it by index) |
+| any fit that publishes a `fitPoints` table and `fit.<p>.value` diagnostics (`fitParameters`, both its isotherm and its bubble-point branches) | `parity` (fitted against measured, one unit, the line fitted = measured; a `fitPoints` table that marks its held-out rows in a `heldOut` column draws them as a SECOND series, the held-out points the model PREDICTED, never "fitted" -- DEV.md 4c C172), `residuals` (fitted − measured against the first abscissa, split the same way), `parameters` (value, standard error, 95 % half-width; each row in its own unit, labelled by its path where the op keys it by index) |
 | `fitParameters`, isotherm | `isotherm` (the data of every temperature as markers, the fitted surface through them as lines) |
 | `poreTransport` | `rejection` (R_obs of every ion against J_v, where the op ran ≥ 2 points); `pore` and `potential` (the ions and ψ across the pore at its last point -- every op since DEV.md 4c C165, where until then only an op writing its `profile` CSV drew them) |
 | `polarisationIndex` | `gamma` (Γ of every ion row by row), `rejection` (observed 1 − C_p/C_b as markers, real 1 − C_p/C_m as lines), `rows` (the dataset with the model's wall) |

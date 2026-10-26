@@ -88,7 +88,7 @@ License
   unannounced behind it.
 \*---------------------------------------------------------------------------*/
 
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useMemo } from "react";
 import {
   Anchor,
   Box,
@@ -128,6 +128,8 @@ import { downloadCaseZip } from "../case/saveCase.js";
 import { openCaseZip, openCaseFolder, type OpenedCase } from "../cases/loadCase.js";
 import { canComputePinch, pinchDisabledReason } from "../case/pinch.js";
 import { collectControllerKnobs } from "../case/controllerKnobs.js";
+import { buildSpecTargets, buildVariableRows } from "../case/variables.js";
+import { useLiteratureMirror } from "../state/useLiteratureMirror.js";
 import { guideUrl, openGuide } from "../help/guideLinks.js";
 import { GUIDES } from "../help/guides.generated.js";
 import { caseTabSearch, openAppTab } from "./openInTab.js";
@@ -191,16 +193,24 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   // gains to tune, so the tab is not even shown.
   const hasPid = application === "choupoCtrl"
     && collectControllerKnobs(flowsheet).pid !== null;
+  //  WHAT HAS CONTENT ON THIS CASE (DEV.md 4c C172 item 5): Variables when
+  //  the case declares a $variable or a designSpec target, Pinch once a run
+  //  has published heat duties, Literature when the reader's mirror answers.
+  //  An entry with nothing behind it is not offered.
+  const hasVariables = useMemo(
+    () => buildVariableRows(caseFiles, null).length > 0 || buildSpecTargets(caseFiles, null).length > 0,
+    [caseFiles]);
+  const mirror = useLiteratureMirror();
   const visibleWorkspaces = visibleWorkspacesFor({
     hasCase: hasCaseOpen(tutorialName),
     showIntro,
     isPropsCase,
     application,
     hasPid,
-  }, WORKSPACES)
-    //  A two-mode case reaches its props screen through the MODE switch; a
-    //  second door to it in Process mode would be the duplicate C151 removed.
-    .filter((w) => !(caseMode.modes && caseMode.mode === "process" && w.key === "props"));
+    hasVariables,
+    pinchReady,
+    hasLiteratureMirror: mirror.kind === "ready",
+  }, WORKSPACES);
   /* Every visible workspace is a VIEW of this case now — the two modes left
    * the row for their own tabs (workspaces.ts).  The name is kept because the
    * narrow chooser is labelled `Views:` and reads from this. */
@@ -289,8 +299,8 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   const isWorkspaceActive = (w: WorkspaceEntry): boolean =>
     w.label === "Flowsheet"
       ? activeWorkspace === null                 // the canvas itself
-      : isPropsCase && w.label === "Props"
-      // In a props case the centre is PropsView by default, so "Props" is the
+      : isPropsCase && w.label === "Workflow"
+      // In a props case the centre is the Workflow by default, so it is the
       // home (active when no other workspace is open).
       ? activeWorkspace === null || activeWorkspace === "props"
       : w.key !== null && w.key === activeWorkspace;
@@ -307,17 +317,9 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
       setActiveWorkspace(null);   // close any workspace -> the flowsheet canvas
       return;
     }
-    if (key) {
-      toggleWorkspace(key);
-      return;
-    }
-    notifications.show({
-      title: `${label} workspace`,
-      message:
-        "Not implemented yet -- this menu entry is a placeholder.  Streams + Case are wired in Fase B; the rest follows.",
-      color: "cyan",
-      autoClose: 3500,
-    });
+    //  Every entry but the canvas carries a key: the old "Not implemented
+    //  yet" placeholder toast named views that no longer exist (C172).
+    if (key) toggleWorkspace(key);
   };
 
   const [aboutOpen, aboutCtl] = useDisclosure(false);
@@ -609,7 +611,12 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
           </Menu.Item>
           <Menu.Divider />
           <Menu.Item
-            onClick={() => downloadCaseZip(caseFiles, tutorialName)}
+            onClick={() => {
+              //  the promotable records the last runs wrote travel with it
+              const st = useStore.getState();
+              downloadCaseZip(caseFiles, tutorialName,
+                { ...(st.runResult?.proposals ?? {}), ...(st.propsRunResult?.proposals ?? {}) });
+            }}
             disabled={!canDownloadZip}
           >
             Download case (.zip)

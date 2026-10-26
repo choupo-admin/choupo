@@ -105,6 +105,10 @@ const SEMI: WorkspaceContext = {
   application: "choupoSemiContinuous", hasPid: false,
 };
 const INTRO: WorkspaceContext = { ...SOLVE, showIntro: true };
+/** A steady case on which every content-gated view HAS content (C172). */
+const SOLVE_FULL: WorkspaceContext = {
+  ...SOLVE, hasVariables: true, pinchReady: true, hasLiteratureMirror: true,
+};
 
 /** The modes, by the name a reader of the decision would use.
  *
@@ -215,27 +219,21 @@ describe("allowedWorkspaceLabels", () => {
   });
 
   it("keeps each case type's own view set, in declared order", () => {
-    // steady: the full set
-    expect(visibleWorkspacesFor(SOLVE).map((w) => w.label)).toEqual([
-      "Flowsheet", "Props", "Streams", "Variables",
+    // steady: the full set, when every view has content on the case
+    expect(visibleWorkspacesFor(SOLVE_FULL).map((w) => w.label)).toEqual([
+      "Flowsheet", "Streams", "Variables",
       "Plots", "Log", "Case", "Pinch", "Reports", "Literature",
     ]);
     // props-only: no canvas, no streams, no duties -- and NO Plots (DEV.md
-    // 4c C151): the Results screen is the one home of a props case's figures
-    expect(visibleWorkspacesFor(PROPS).map((w) => w.label)).toEqual([
-      "Props", "Log", "Case", "Literature",
-    ]);
-    // ...and its Props view is CAPTIONED Results there, nowhere else
-    expect(visibleWorkspacesFor(PROPS).map(captionOf)).toEqual([
-      "Results", "Log", "Case", "Literature",
+    // 4c C151): the Workflow is the one home of a props case's figures
+    expect(visibleWorkspacesFor({ ...PROPS, hasLiteratureMirror: true }).map((w) => w.label)).toEqual([
+      "Workflow", "Log", "Case", "Literature",
     ]);
     expect(visibleWorkspacesFor({ ...PROPS, isPropsCase: false, application: "choupoProps" })
-      .map(captionOf)).toEqual(["Results", "Log", "Case", "Literature"]);
-    expect(visibleWorkspacesFor(SOLVE).map(captionOf)).toContain("Props");
-    expect(visibleWorkspacesFor(SOLVE).map(captionOf)).not.toContain("Results");
+      .map(captionOf)).toEqual(["Workflow", "Log", "Case"]);
     // time-dependent: no steady-only views; Control only with a declared PID
-    expect(visibleWorkspacesFor(CTRL_PID).map((w) => w.label)).toEqual([
-      "Flowsheet", "Props", "Control", "Plots", "Log", "Case", "Literature",
+    expect(visibleWorkspacesFor({ ...CTRL_PID, hasLiteratureMirror: true }).map((w) => w.label)).toEqual([
+      "Flowsheet", "Control", "Plots", "Log", "Case", "Literature",
     ]);
     expect(visibleWorkspacesFor(CTRL_NO_PID).map((w) => w.label))
       .not.toContain("Control");
@@ -250,12 +248,35 @@ describe("allowedWorkspaceLabels", () => {
   });
 });
 
+describe("ONE word per home, and no entry with nothing behind it (DEV.md 4c C172)", () => {
+  it("\"Results\" is never a section name: the properties home is the Workflow", () => {
+    for (const ctx of [SOLVE_FULL, PROPS, CTRL_PID, SEMI])
+      expect(visibleWorkspacesFor({ ...ctx, hasLiteratureMirror: true }).map(captionOf)).not.toContain("Results");
+    expect(VIEW_LABELS.has("Workflow")).toBe(true);
+    expect(VIEW_LABELS.has("Props")).toBe(false);
+  });
+
+  it("a process case has no Workflow (its readiness lives at its thermo dict)", () => {
+    for (const ctx of [SOLVE_FULL, CTRL_PID, CTRL_NO_PID, SEMI])
+      expect(visibleWorkspacesFor(ctx).map((w) => w.label)).not.toContain("Workflow");
+  });
+
+  it("Variables, Pinch and Literature leave when they have nothing to show", () => {
+    const bare = visibleWorkspacesFor(SOLVE).map((w) => w.label);
+    for (const gone of ["Variables", "Pinch", "Literature"]) expect(bare).not.toContain(gone);
+    expect(visibleWorkspacesFor({ ...SOLVE, hasVariables: true }).map((w) => w.label)).toContain("Variables");
+    expect(visibleWorkspacesFor({ ...SOLVE, pinchReady: true }).map((w) => w.label)).toContain("Pinch");
+    expect(visibleWorkspacesFor({ ...SOLVE, hasLiteratureMirror: true }).map((w) => w.label)).toContain("Literature");
+    expect(visibleWorkspacesFor(PROPS).map((w) => w.label)).not.toContain("Literature");
+  });
+});
+
 describe("what the narrow posture renders", () => {
   it("the chooser holds ALL of it, because all of it is views", () => {
     // Before today the narrow row was [Views chooser] + the modes, and the
     // chooser deliberately excluded them.  There is nothing to exclude now.
-    const visible = visibleWorkspacesFor(SOLVE);
-    expect(visible.length).toBe(10);
+    const visible = visibleWorkspacesFor(SOLVE_FULL);
+    expect(visible.length).toBe(9);
     for (const w of visible) expect(VIEW_LABELS.has(w.label)).toBe(true);
   });
 

@@ -77,12 +77,18 @@ strip — all three were removed.  The layout is now:
 
 - **Header (32 px).**  Menu items on the left (`MenuBar`), brand /
   case name on the right (`TopBar`).
-- **Run is per-view, not a global toolbar button** (the `[▶ Run]` in the
-  sketch above is historical).  Each view owns its Run: the FlowCanvas
-  carries a "Run flowsheet" panel (top-right), PropsView its own run
-  action.  They dispatch `choupo:run` / `choupo:stop` DOM events; the
-  `TopBar` stays the orchestrator (it holds the AbortController and
-  shows the run toasts) but no longer renders the button.
+- **ONE Run, in the top bar, saying what it runs** (DEV.md 4c C168's
+  ruling (2b), built by C172 slice 1 -- "the run follows the view").  The
+  `[▶ Run]` in the sketch above is the case's one Run control
+  (`gui/src/ui/RunButton.tsx`) plus Ctrl+Enter; its label names the home
+  on screen -- "Run flowsheet" on a process case, "Run workflow" on a
+  properties case or a two-mode case shown in its Workflow -- and its
+  title the binary.  The canvas, the Workflow and the intro carry no Run
+  of their own (they had four doors between them).  The button dispatches
+  `choupo:run` / `choupo:stop`; the `TopBar` orchestrates (it holds the
+  AbortController).  The engine version and the adapter that ran sit in a
+  thin STATUS BAR at the foot (`gui/src/ui/StatusBar.tsx`), not in the
+  header: implementation metadata, read when wanted.
 - **Canvas (everything below).**  The flowsheet fills the viewport.
 - **Workspaces, opened on demand from the top menu.**  Each menu
   item is a **toggle** that swaps the canvas for that workspace;
@@ -97,20 +103,28 @@ strip — all three were removed.  The layout is now:
   placeholder long after it shipped utilities + global balances).  The
   rule: each case TYPE exposes only the workspaces that mean something
   for it, so a lit-but-dead button never shows — a props case gets the
-  props set, a batch/ctrl case gets the time set (plus the Control
-  Room only when a PID is actually declared), a steady case gets the
-  full set (incl. Variables, Pinch — greyed until a run yields duties
-  — and Reports), and a blank boot shows no tabs at all except the
-  standalone Explorer.  "Explore" is in every set because the explorer
-  synthesizes its own transient case.
+  props set (its home is the WORKFLOW, the word "Results" naming only
+  what a run produced), a batch/ctrl case gets the time set (plus the
+  Control Room only when a PID is actually declared), a steady case gets
+  the full set, and a blank boot shows no tabs at all.  And an entry with
+  NOTHING behind it on the open case is hidden, not greyed (C172):
+  Variables only when the case declares a $variable or a designSpec
+  target, Pinch only once a run has published heat duties, Literature
+  only when the reader's local mirror answers.  A process case has no
+  Workflow: its thermo readiness is shown where the thermo is declared
+  (the Case tab, at `constant/thermoPhysPropDict`).
 - **Selection card (floating, top-right).**  Appears only when
   something is selected; shows the selected unit's "hardware"
   parameters and its latest-run KPIs, or a stream's conditions.  It is
   a small overlay card, NOT a docked right panel, and it disappears
   when nothing is selected (it does not fall back to a ThermoSummary).
-- **PropsView.**  A `choupoProps` case (carries `propsDict`, no
-  `flowsheet`) replaces the canvas centre with the property-scan /
-  fit view instead.
+- **PropsView (the Workflow).**  A `choupoProps` case (carries
+  `propsDict`, no `flowsheet`) -- or a two-mode case shown in its
+  Workflow -- replaces the canvas centre with the Workflow: the case tree,
+  the calculation map (folded after a run, computed height, no seam to
+  drag), and the overview or the selection's details.  There is no Audit
+  section: an operation's own panel is in its details, the thermo
+  readiness and the decision ledger in the thermo package's (C172).
 
 **A FULL-VIEWPORT HEIGHT IS THE DYNAMIC VIEWPORT (2026-09-22).**  The shell
 is a full-viewport box with `overflow: hidden`, which is right for an
@@ -403,8 +417,9 @@ to x = 1187).  The desk is unchanged.
   own root case (sector drill-in).
 - **Click on the canvas pane** → `selectNode(null)`.  The selection
   card disappears (the canvas is the resting state — there is no
-  ThermoSummary fallback; the thermo summary lives as the ThermoView
-  TAB inside the Props workspace).
+  ThermoSummary fallback; the thermo readiness lives in the Case tab at
+  `constant/thermoPhysPropDict`, and in a properties case's Workflow under
+  its thermo package).
 
 ### Direct manipulation of the layout (view-only, persisted)
 The flowsheet is a layout the user can arrange; none of this writes
@@ -640,10 +655,10 @@ this Credo before proposing**.
   (IconExternalLink).
 - **Drill-in** — double-clicking a sector to open its sub-case as a
   root case in a new browser window.  URL: `?case=<plant>/<sector>`.
-- **Run** — pressing the green Run button to invoke the WASM solver
-  on the current case.  The button lives IN the view it runs (the
-  canvas's "Run flowsheet" panel, PropsView's run action), not in the
-  top toolbar — see §2.5 (per-view Run-panel pattern).
+- **Run** — pressing the Run button to invoke the WASM solver on the
+  current case.  ONE button, in the top toolbar, its label naming what it
+  runs ("Run flowsheet" / "Run workflow"), plus Ctrl+Enter — see §2.5
+  (DEV.md 4c C172; the per-view Run panels it replaced are gone).
 - **Pre-Run / Post-Run** — UI states distinguishing "no
   solver output yet" from "solver output available".
 
