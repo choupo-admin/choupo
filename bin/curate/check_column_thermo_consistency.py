@@ -72,7 +72,13 @@ TOLERANCES, sized to what a converged answer and a 12-significant-figure
 result JSON can carry, and far from what a defect produces:
   energy:   |r| <= 1e-5 kW + 1e-9 * sum|terms| (the terms are formation
             enthalpies; a 1e-9 Newton tolerance on rows scaled by the
-            feed's latent heat and 12 printed figures sit below it);
+            feed's latent heat and 12 printed figures sit below it), PLUS,
+            per envelope, the latent heat a common shift of L and V
+            carries, epsilon / sigma_min with epsilon the larger of the
+            envelope's residual and 1e-9 of the feed: on a near-pure stage
+            the published compositions determine V - L sharply and V + L
+            only to that much (column07's top trays: ~1e-3 kW), which is a
+            property of the answer and is printed with the verdict;
   fugacity: 1e-7 (a converged bubble point is good to 1e-9).
 
 WHAT THIS DOES NOT CHECK, stated plainly:
@@ -206,7 +212,11 @@ class Probe:
 
 
 def lsq2(rows):
-    """min sum (a u + b w - c)^2 over (u, w); returns u, w, max |residual|."""
+    """min sum (a u + b w - c)^2 over (u, w).
+
+    Returns u, w, the 2-norm of the residual, and the smallest singular value
+    of the 2-column matrix -- the conditioning that says how well the
+    published state DETERMINES (u, w)."""
     saa = sum(a * a for a, b, c in rows)
     sab = sum(a * b for a, b, c in rows)
     sbb = sum(b * b for a, b, c in rows)
@@ -215,7 +225,10 @@ def lsq2(rows):
     det = saa * sbb - sab * sab
     u = (sac * sbb - sab * sbc) / det
     w = (saa * sbc - sab * sac) / det
-    return u, w, max(abs(a * u + b * w - c) for a, b, c in rows)
+    rho = math.sqrt(sum((a * u + b * w - c) ** 2 for a, b, c in rows))
+    tr = saa + sbb
+    lmin = 0.5 * (tr - math.sqrt(max(tr * tr - 4.0 * det, 0.0)))
+    return u, w, rho, math.sqrt(max(lmin, 1e-300))
 
 
 def norm(v):
@@ -377,6 +390,14 @@ def check_column(case, name, block, d, info, log=""):
     V[1] = 0.0 if partial else (R + 1.0) * D
     L[N] = B
     worstRec = 0.0
+    #  HOW WELL THE PUBLISHED STATE DETERMINES THE FLOWS.  On a near-pure
+    #  stage y_{j+1} ~ x_j, so the component rows of the envelope are nearly
+    #  collinear and only V - L is sharp: a material imbalance the solver's
+    #  own tolerance allows (1e-9 of the feed) moves V and L TOGETHER by
+    #  epsilon / sigma_min.  That is a property of the answer, not of the
+    #  check, so it widens THAT stage's energy tolerance by the latent heat
+    #  that common shift carries -- and the tolerance used is printed.
+    delta = [0.0] * (N + 1)
     for j in range(1, N):
         rows = []
         for i in range(n):
@@ -391,8 +412,9 @@ def check_column(case, name, block, d, info, log=""):
         rhs = D + sum(F for st, ph, F in draws if st <= j) \
             - sum(F for st, F, z in feeds if st <= j)
         rows.append((1.0, -1.0, rhs))
-        V[j + 1], L[j], r = lsq2(rows)
-        worstRec = max(worstRec, r / totFeed)
+        V[j + 1], L[j], rho, smin = lsq2(rows)
+        worstRec = max(worstRec, rho / totFeed)
+        delta[j] = max(rho, 1.0e-9 * totFeed) / smin
     out.append(("a2-recon", worstRec <= RECON_TOL,
                 "%s: L, V reconstructed from the published compositions,"
                 " worst envelope residual %.2e of the feed" % (name, worstRec)))
@@ -402,7 +424,12 @@ def check_column(case, name, block, d, info, log=""):
     for st, ph, F in draws:
         (W if ph else U)[st] += F
 
+    def shift(j, hv, hl):
+        """The energy a common shift of envelope j's (L_j, V_{j+1}) carries."""
+        return delta[j] * abs(hv - hl) / math.sqrt(2.0) if 1 <= j < N else 0.0
+
     worst = (0.0, 0, 0.0)
+    largest = (0.0, 0)
     for j in range(1, N + 1):
         if j in feedStages:
             continue
@@ -413,10 +440,12 @@ def check_column(case, name, block, d, info, log=""):
                      W[N] * hV[N - 1], -L[N - 1] * hL[N - 2]]
             Qr = sum(terms)
             dq = Qr - k["Q_reboiler_kW"]
-            out.append(("a2-reboiler", abs(dq) <= etol(terms),
+            tol = etol(terms) + shift(N - 1, hV[N - 1], hL[N - 2])
+            out.append(("a2-reboiler", abs(dq) <= tol,
                         "%s: Q_reboiler published %.6f kW, the reboiler's own"
                         " balance on the streams' surface %.6f kW (difference"
-                        " %.6f kW)" % (name, k["Q_reboiler_kW"], Qr, dq)))
+                        " %.6f kW, tolerance %.1e kW)"
+                        % (name, k["Q_reboiler_kW"], Qr, dq, tol)))
             continue
         if j == 1:
             terms = [R * D * hLD, V[2] * hV[1], -L[1] * hL[0], -V[1] * hV[0]]
@@ -424,13 +453,18 @@ def check_column(case, name, block, d, info, log=""):
             terms = [L[j - 1] * hL[j - 2], V[j + 1] * hV[j],
                      -(L[j] + U[j]) * hL[j - 1], -(V[j] + W[j]) * hV[j - 1]]
         r = sum(terms)
-        tol = etol(terms)
+        tol = etol(terms) + shift(j, hV[j], hL[j - 1])
+        if j > 1:
+            tol += shift(j - 1, hV[j - 1], hL[j - 2])
         if abs(r) / tol > abs(worst[0]) / max(worst[2], 1e-300) or worst[1] == 0:
             worst = (r, j, tol)
+        if abs(r) >= abs(largest[0]):
+            largest = (r, j)
     out.append(("a2-stages", abs(worst[0]) <= worst[2],
-                "%s: worst stage energy residual on the streams' surface"
-                " %.6f kW at stage %d (tolerance %.1e kW)"
-                % (name, worst[0], worst[1], worst[2])))
+                "%s: stage energy on the streams' surface -- worst against its"
+                " tolerance %.6f kW at stage %d (tolerance %.1e kW); largest"
+                " %.6f kW at stage %d"
+                % (name, worst[0], worst[1], worst[2], largest[0], largest[1])))
     return out
 
 

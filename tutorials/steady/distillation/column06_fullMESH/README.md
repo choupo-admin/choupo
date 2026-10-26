@@ -29,6 +29,14 @@ the condenser, and its rows fix `V_1 = 0`, `L_1 = R·D` in place of an energy
 residual.  The reboiler fixes `L_N = B`.  `Q_cond` (the condenser's own
 envelope) and `Q_reb` (the reboiler's) are results.
 
+`h_L` and `h_V` are the enthalpies the column's STREAMS are priced on -- the
+formation datum, each phase at its own composition, the vapour with its
+equation-of-state departure -- so every stage balance, both duties and the
+stream table are one surface (since 2026-10-26, DEV.md C169; until then the
+rows used a sensible datum with a Watson latent heat, and a stage that
+closed on that surface left 3.94 kW open on the streams').
+`bin/curate/check_column_thermo_consistency.py` recomputes every stage.
+
 ## The CMO bootstraps the full-MESH (the robustness trick)
 
 The full-MESH is **seeded from the converged CMO profile** — the cheap model
@@ -39,8 +47,8 @@ that seed (it would be far harder from a cold start).
 
 | | CMO (`simultaneous`) | full-MESH |
 |---|---|---|
-| x_D (benzene) | 0.981 | **0.979** |
-| T_top / T_bottom (K) | 354.2 / 382.9 | **354.3 / 382.8** |
+| x_D (benzene) | 0.981 | **0.978** |
+| T_top / T_bottom (K) | 354.2 / 382.9 | **354.4 / 382.8** |
 
 Benzene (Δh_vap ≈ 30.8 kJ/mol) and toluene (≈ 33.2 kJ/mol) have **similar**
 latent heats, so CMO is a good approximation and the two answers nearly

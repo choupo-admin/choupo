@@ -6,8 +6,8 @@ stream  F1                     F                0.0202300416667  1e-4
 stream  acetoneProduct         F                0.00895833333333 1e-4
 kpi     C1                     B                0.0112717083333  1e-4
 kpi     C1                     D                0.00895833333333 1e-4
-kpi     C1                     Q_condenser_kW   -997.746586798   1e-4
-kpi     C1                     Q_reboiler_kW    1030.491458      1e-4
+kpi     C1                     Q_condenser_kW   -1008.41512564   1e-4
+kpi     C1                     Q_reboiler_kW    1041.15999682      1e-4
 kpi     C1                     R                2.78             1e-4
 kpi     C1                     T_bottom         353.606283382    1e-4
 kpi     C1                     T_top            329.375698025    1e-4
@@ -17,14 +17,14 @@ kpi     C1                     nSideDraws       0                1e-4
 kpi     C1                     nStages          66               1e-4
 kpi     C1                     x_B_HK           0.883650489877   1e-4
 kpi     C1                     x_D_LK           5.08121687919e-10 1e-4
-utility C1                     heating.steamLP.duty_kW 1030.491458      1e-4
+utility C1                     heating.steamLP.duty_kW 1041.15999682      1e-4
 utility C1                     heating.steamLP.T 353.606283382    1e-4
-utility C1                     heating.steamLP.kg_s 0.471405058555   1e-4
-utility C1                     heating.steamLP.eur_h 44.5172309856    1e-4
-utility C1                     cooling.coolingWater.duty_kW -997.746586798   1e-4
+utility C1                     heating.steamLP.kg_s 0.476285451425   1e-4
+utility C1                     heating.steamLP.eur_h 44.9781118624    1e-4
+utility C1                     cooling.coolingWater.duty_kW -1008.41512564   1e-4
 utility C1                     cooling.coolingWater.T 329.375698025    1e-4
-utility C1                     cooling.coolingWater.kg_s 23.8695355693    1e-4
-utility C1                     cooling.coolingWater.eur_h 1.43675508499    1e-4
+utility C1                     cooling.coolingWater.kg_s 24.1247637713    1e-4
+utility C1                     cooling.coolingWater.eur_h 1.45211778092    1e-4
 #
 # --- THE NUMBERS THIS CASE EXISTS FOR, added by hand -----------------------
 #

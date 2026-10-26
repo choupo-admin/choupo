@@ -23,8 +23,8 @@ A benzene / toluene / o-xylene split (light / intermediate / heavy):
 | **side draw** (stage 8) | 15 | toluene **0.728** (the intermediate cut) |
 | bottoms | 103 | o-xylene 0.467 / toluene 0.531 |
 
-Mass closes (100 + 60 = 42 + 15 + 103 = 160 kmol/h). Q_condenser = −1436 kW,
-Q_reboiler = +1527 kW. The side draw does exactly what it should — bleed the
+Mass closes (100 + 60 = 42 + 15 + 103 = 160 kmol/h). Q_condenser = −1469 kW,
+Q_reboiler = +1547 kW. The side draw does exactly what it should — bleed the
 intermediate component where it is most enriched on the trays.
 
 ## How it works (the solver)

@@ -8,7 +8,7 @@ kpi     column01               B                0.263888888889   1e-4
 kpi     column01               D                0.0138888888889  1e-4
 kpi     column01               L_rect           0.0208333333333  1e-4
 kpi     column01               L_strip          0.298611111111   1e-4
-kpi     column01               Q_condenser_kW   -1071.60063279   1e-4
+kpi     column01               Q_condenser_kW   -1090.84003574   1e-4
 kpi     column01               Q_reboiler_kW    1844.93950415    1e-4
 kpi     column01               R                1.5              1e-4
 kpi     column01               T_bottom         365.997911437    1e-4
@@ -21,12 +21,12 @@ kpi     column01               x_B_HK           0.524961631068   1e-4
 kpi     column01               x_D_LK           0.974271006447   1e-4
 kpi     preheater              F                0.277777777778   1e-4
 kpi     preheater              P                101325           1e-4
-kpi     preheater              Q                1071600.63279    1e-4
-kpi     preheater              Q_kW             1071.60063279    1e-4
-kpi     preheater              Q_per_mol        3857.76227804    1e-4
+kpi     preheater              Q                1090840.03574    1e-4
+kpi     preheater              Q_kW             1090.84003574    1e-4
+kpi     preheater              Q_per_mol        3927.02412866    1e-4
 kpi     preheater              T_in             320              1e-4
-kpi     preheater              T_out            346.386882887    1e-4
-kpi     preheater              dT               26.3868828868    1e-4
+kpi     preheater              T_out            346.860630155    1e-4
+kpi     preheater              dT               26.860630155    1e-4
 utility column01               heating.steamLP.duty_kW 1844.93950415    1e-4
 utility column01               heating.steamLP.T 365.997911437    1e-4
 utility column01               heating.steamLP.kg_s 0.843979645082   1e-4
@@ -34,7 +34,7 @@ utility column01               heating.steamLP.eur_h 79.7013865792    1e-4
 stream  bottoms                T                365.997911437    1e-4
 stream  coldFeed               T                320              1e-4
 stream  distillate             T                353.771511566    1e-4
-stream  warmFeed               T                346.386882887    1e-4
+stream  warmFeed               T                346.860630155    1e-4
 kpi     preheater              vf_out           0                1e-4
 utility column01               cooling.condenser.carried 1                1e-4
 utility preheater              heating.-.carried 1                1e-4

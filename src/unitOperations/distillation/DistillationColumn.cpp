@@ -203,14 +203,145 @@ struct CondenserTop
     sVector x1;            // partial: its composition
 };
 
-scalar condenserDuty(const ThermoPackage& thermo, CondenserType condenser,
+//  ONE ENTHALPY SURFACE FOR THE WHOLE COLUMN, AND IT IS THE STREAMS' ONE
+//  (DEV.md 4c C169, 2026-10-26).
+//
+//  WHAT WAS WRONG.  The full MESH solved every stage's energy balance, the
+//  condenser duty and the energy scale on `ThermoPackage::Hliquid` /
+//  `Hvapour` -- a sensible datum per component with the vapour built as
+//  Hliq_pure + a Watson latent heat -- while the streams the column
+//  publishes, the reboiler plug beside that duty and the energy report all
+//  price on the formation datum (`H_stream_formation`: h_ig - dHvap for a
+//  liquid, h_ig + the EoS departure for a vapour).  The two surfaces differ
+//  in their TEMPERATURE dependence, not by a per-component constant, so the
+//  difference does not cancel on a stage that conserves every component.
+//  Measured by an external audit and reproduced by
+//  `check_column_thermo_consistency`: an interior stage of column06 that
+//  closed to 2.5e-8 kW on the internal surface left 3.937574 kW on the
+//  streams', column08 left 124.000623 kW on one stage, and the published
+//  condenser duty differed from the streams' by 22.89 and 93.89 kW.  The
+//  column's GLOBAL first law closed by construction -- Q_reboiler is the
+//  plug dH - Q_condenser -- so no first-law gate could see any of it: the
+//  2026-09-12 family ("the state a unit computes with is not the state its
+//  streams carry"), on the one unit that family was thought closed on.
+//
+//  THE RULE.  Every enthalpy the column computes with -- the full MESH's
+//  stage rows, its feeds, the reflux, the energy scale, the condenser duty
+//  and the products in the reboiler plug -- is read off THIS object, which
+//  prices a stage liquid and a stage vapour each on its OWN composition by
+//  the function that prices the published streams.  So the stage balances,
+//  the duties and the stream table are one surface, and under the full MESH
+//  the reboiler plug equals the reboiler's own balance.
+//
+//  THE ONE OTHER SURFACE, DECLARED.  When a species in the feed carries no
+//  formation datum the formation surface cannot price the column at all,
+//  and the column falls back to the sensible datum (Hliquid / Hvapour) --
+//  the degraded datum, ANNOUNCED once by `columnEnthalpySurface` below in
+//  the words Flowsheet.cpp uses for the same decision.  Its results are
+//  never published as the package's: the announcement says which surface
+//  the duties are on, and the energy report (which needs the formation
+//  datum) is UNAVAILABLE for such a stream anyway.
+struct ColumnEnthalpy
+{
+    const ThermoPackage* thermo    = nullptr;
+    scalar               P         = 0.0;
+    bool                 formation = true;   // false: the announced sensible fallback
+
+    //  [J/mol] a liquid of composition x at T.
+    scalar hL(const sVector& x, scalar T) const
+    {
+        return formation ? thermo->H_stream_formation(T, P, 0.0, x)
+                         : thermo->Hliquid(T, x);
+    }
+    //  [J/mol of the amounts in y] a vapour.  A Newton trial's y = K x need
+    //  not sum to one, and the EoS departure is a per-mole quantity of a
+    //  NORMALISED composition, so the vapour is priced at y / sum(y) and
+    //  scaled back by sum(y) -- at a converged stage sum(y) = 1 and this is
+    //  exactly the published vapour's enthalpy.
+    scalar hV(const sVector& y, scalar T) const
+    {
+        if (!formation) return thermo->Hvapour(T, y);
+        scalar s = 0.0;
+        for (auto v : y) s += v;
+        if (!(s > 0.0)) return 0.0;
+        sVector yn(y);
+        for (auto& v : yn) v /= s;
+        return s * thermo->H_stream_formation(T, P, 1.0, yn);
+    }
+    //  [J/mol] a state at a DECLARED quality vf and one composition z -- a
+    //  quality blend, used only for a product of a single phase (vf 0 or 1,
+    //  where it is that phase's own enthalpy) and for an inline `feeds`
+    //  entry, which is a dict declaration with no state to resolve.
+    scalar hQuality(scalar vf, const sVector& z, scalar T) const
+    {
+        if (formation) return thermo->H_stream_formation(T, P, vf, z);
+        if (vf >= 1.0) return thermo->Hvapour(T, z);
+        if (vf <= 0.0) return thermo->Hliquid(T, z);
+        return (1.0 - vf) * thermo->Hliquid(T, z) + vf * thermo->Hvapour(T, z);
+    }
+};
+
+//  Which surface this column computes on, decided ONCE per solve from the
+//  compositions that enter it (every species the column can hold enters in
+//  a feed), and announced when it is the fallback.  Every column path calls
+//  this one function, so the downgrade cannot be worded -- or decided --
+//  two ways.
+ColumnEnthalpy columnEnthalpySurface(const ThermoPackage& thermo, scalar P,
+                                     const std::vector<std::pair<scalar, sVector>>& feeds)
+{
+    ColumnEnthalpy h;
+    h.thermo = &thermo;
+    h.P      = P;
+    try
+    {
+        for (const auto& f : feeds)
+        {
+            (void)thermo.H_stream_formation(f.first, P, 0.0, f.second);
+            (void)thermo.H_stream_formation(f.first, P, 1.0, f.second);
+        }
+    }
+    catch (const std::exception& e)
+    {
+        h.formation = false;
+        //  LOUD DOWNGRADE (AS3).  This catch used to be EMPTY, and on a
+        //  REACTIVE column that is not a lost decimal: the elements datum is
+        //  what carries the heat of reaction, so dropping to the sensible
+        //  datum DELETES it from the reboiler duty.  The column converged,
+        //  printed a duty, and exited 0.
+        //
+        //  Flowsheet.cpp answers the identical question correctly, and the
+        //  wording here is deliberately ITS wording -- same channel, same
+        //  once-per-cause suppression -- because the two are ONE decision
+        //  ("what does a missing formation datum mean?") and a reader must
+        //  not have to learn two vocabularies for it.  They still perform
+        //  DIFFERENT fallbacks (blend there, sensible here), so this is an
+        //  announcement made consistent, NOT a shared home; the shared home
+        //  is the open half of AS9 and is recorded rather than pretended.
+        if (AdvisoryLog::instance().add("thermo", "warning",
+                                        "enthalpy-gap", e.what()))
+            std::cerr << "[thermo] enthalpy GAP (formation datum): "
+                      << e.what()
+                      << "\n          -> the column's energy items fall back"
+                         " to the SENSIBLE datum -- its duties and, under a"
+                         " full MESH, its stage energy balances (Hliquid /"
+                         " Hvapour: a degraded datum, not the one its streams"
+                         " are priced on; it drifts from the canonical"
+                         " surface and never enters a closed balance).\n"
+                         "          -> IF THIS COLUMN REACTS, the heat of"
+                         " reaction is NOT in the reboiler duty reported"
+                         " below; fix the species data to close it.\n";
+    }
+    return h;
+}
+
+scalar condenserDuty(const ColumnEnthalpy& h, CondenserType condenser,
                      const CondenserTop& t)
 {
     if (condenser == CondenserType::partial)
-        return -( t.Vin * thermo.Hvapour(t.T2, t.y2)
-                - t.L1  * thermo.Hliquid(t.T1, t.x1)
-                - t.D   * thermo.Hvapour(t.T1, t.yD));
-    return -t.Vtop * (thermo.Hvapour(t.T1, t.yD) - thermo.Hliquid(t.Tcond, t.yD));
+        return -( t.Vin * h.hV(t.y2, t.T2)
+                - t.L1  * h.hL(t.x1, t.T1)
+                - t.D   * h.hV(t.yD, t.T1));
+    return -t.Vtop * (h.hV(t.yD, t.T1) - h.hL(t.yD, t.Tcond));
 }
 
 //  y = K x at a stage, normalised -- the composition a duty is priced at.
@@ -453,17 +584,33 @@ FeedThermalState resolveFeedThermalState(const DictPtr&       feedDict,
 //  state corrected: the blend says 1785.050057 kW where the equilibrium says
 //  1779.540826 kW, a 5.509232 kW phantom that would have been left behind by a
 //  fix that corrected only the vapour fraction.
+//
+//  ONE HOME FOR A FEED'S ENTHALPY, read by the duty block AND by the full
+//  MESH's stage energy rows (C169): the rows used to price a feed on
+//  Hliquid / Hvapour while the duty priced the same feed here, so the
+//  profile was solved against one feed enthalpy and the reboiler closed
+//  against another.  On the sensible fallback the split is still priced at
+//  its own phases (the old fallback priced every feed as a LIQUID at z,
+//  vapour or not; no corpus column reached it with a vapour feed).
 scalar feedEnthalpy(const FeedThermalState& st,
                     scalar                  F,
                     scalar                  T,
                     scalar                  P,
                     const sVector&          z,
                     const ThermoPackage&    thermo,
-                    bool                    elem)
+                    const ColumnEnthalpy&   h)
 {
-    if (!elem)    return F * thermo.Hliquid(T, z);
-    if (st.split) return F * flashState::hOfState(*st.split, T, P, z, thermo);
-    return F * thermo.H_stream_formation(T, P, st.vf, z);
+    if (h.formation)
+    {
+        if (st.split) return F * flashState::hOfState(*st.split, T, P, z, thermo);
+        return F * thermo.H_stream_formation(T, P, st.vf, z);
+    }
+    if (st.split && !st.split->liquidLiquid && !st.split->threePhase)
+    {
+        const scalar b = st.split->V_over_F;
+        return F * ((1.0 - b) * h.hL(st.split->x, T) + b * h.hV(st.split->y, T));
+    }
+    return F * h.hQuality(st.vf, z, T);
 }
 
 //  The refusal.  A `feedQuality` that disagrees with the stream is not a
@@ -1260,9 +1407,11 @@ int DistillationColumn::solve(const DictPtr& dict,
     // CLOSES the column energy balance, Q_reb = dH_streams - Q_cond, so the
     // two reconcile with the stream enthalpy change (this is how a column
     // duty is reported).  Signed as energy added to the process: condenser
-    // negative (removed), reboiler positive (supplied).  dH is
-    // datum-independent for a non-reacting unit, so the sensible datum here
-    // matches the report.
+    // negative (removed), reboiler positive (supplied).  Every term is on the
+    // surface the streams are priced on (`ColumnEnthalpy`, C169): the
+    // condenser used to be on Hliquid / Hvapour while the plug beside it was
+    // on the formation datum, so the SPLIT between the two duties was wrong
+    // by 0.15-347 kW across the corpus although their sum was right.
     {
         CondenserTop top;
         top.D = D;  top.yD = xD;  top.T1 = T[0];
@@ -1277,50 +1426,13 @@ int DistillationColumn::solve(const DictPtr& dict,
             top.L1  = Ll;
             top.x1  = x[0];
         }
-        const scalar Q_cond = condenserDuty(thermo, condenser, top);
-        // Stream enthalpies on the report's datum (elements first --- so dH
-        // matches the balance sheet; sensible fallback if Hf is missing).
-        bool elem = true;
-        try { thermo.H_stream_formation(Tf, P, 1.0 - q, z);
-              thermo.H_stream_formation(T[0], P, 0.0, xD);
-              thermo.H_stream_formation(T[N-1], P, 0.0, x[N-1]); }
-        catch (const std::exception& e)
-        {
-            elem = false;
-            //  LOUD DOWNGRADE (AS3).  This catch used to be EMPTY, and on a
-            //  REACTIVE column that is not a lost decimal: the elements datum
-            //  is what carries the heat of reaction, so dropping to the
-            //  sensible datum DELETES it from the reboiler duty.  The column
-            //  converged, printed a duty, and exited 0.
-            //
-            //  Flowsheet.cpp answers the identical question correctly, and the
-            //  wording here is deliberately ITS wording -- same channel, same
-            //  once-per-cause suppression -- because the two are ONE decision
-            //  ("what does a missing formation datum mean?") and a reader must
-            //  not have to learn two vocabularies for it.  They still perform
-            //  DIFFERENT fallbacks (blend there, sensible here), so this is an
-            //  announcement made consistent, NOT a shared home; the shared home
-            //  is the open half of AS9 and is recorded rather than pretended.
-            //
-            //  BOTH column paths carry this catch -- Wang-Henke and
-            //  simultaneous.  The audit named one; a fix applied to one would
-            //  have left the other silent and looked complete.
-            if (AdvisoryLog::instance().add("thermo", "warning",
-                                            "enthalpy-gap", e.what()))
-                std::cerr << "[thermo] enthalpy GAP (formation datum): "
-                          << e.what()
-                          << "\n          -> the column's energy items fall back"
-                             " to the SENSIBLE datum (a degraded datum: it"
-                             " drifts from the canonical surface and never"
-                             " enters a closed balance).\n"
-                             "          -> IF THIS COLUMN REACTS, the heat of"
-                             " reaction is NOT in the reboiler duty reported"
-                             " below; fix the species data to close it.\n";
-        }
+        //  ONE SURFACE (C169): the condenser, the products and the feed are
+        //  priced by `columnEnthalpySurface`, the formation datum the streams
+        //  carry, or the announced sensible fallback when a species has none.
+        const ColumnEnthalpy hs = columnEnthalpySurface(thermo, P, {{Tf, z}});
+        const scalar Q_cond = condenserDuty(hs, condenser, top);
         auto H = [&](scalar Fx, scalar Tx, scalar vfx, const sVector& zx) {
-            return elem ? Fx * thermo.H_stream_formation(Tx, P, vfx, zx)
-                      : Fx * (vfx >= 1.0 ? thermo.Hvapour(Tx, zx)
-                                         : thermo.Hliquid(Tx, zx));
+            return Fx * hs.hQuality(vfx, zx, Tx);
         };
         //  THE DUTY PRICES THE STATES THE STREAMS CARRY (2026-09-12).
         //  Two of these three terms used to price a state this unit does not
@@ -1336,7 +1448,7 @@ int DistillationColumn::solve(const DictPtr& dict,
         //  column actually hands downstream.  Nobody recomputes it here: a
         //  second bubble point would be a second home for the same answer.
         const scalar dH = (H(D, dStream.T, dStream.vf, xD) + H(B, T[N-1], 0.0, x[N-1]))
-                        -  feedEnthalpy(feedState, F, Tf, P, z, thermo, elem);
+                        -  feedEnthalpy(feedState, F, Tf, P, z, thermo, hs);
         kpis_["Q_condenser_kW"] = Q_cond;
         kpis_["Q_reboiler_kW"]  = dH - Q_cond;                          // closes the balance
     }
@@ -1711,19 +1823,14 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  block below prices the same feed at its equilibrium (x, y), so under
     //  `fullMESH` the profile was solved against one feed enthalpy and the
     //  reboiler duty closed against another.  Each feed is priced once, by
-    //  its own state, in `stageFeedEnthalpy` below.
+    //  its own state, in `stageFeedEnthalpy` below -- through `feedEnthalpy`,
+    //  the duty's own home, and on the duty's own surface (C169).
     struct FeedRecord
     {
         std::size_t j = 0;
         scalar F = 0.0, q = 1.0, T = 0.0;
         sVector z;
         std::optional<FeedThermalState> state; // its resolution, when it is a stream
-        //  A resolved two-phase VAPOUR-liquid split, or nothing.
-        const FlashSolution* vlSplit() const
-        {
-            return (state && state->split && !state->split->liquidLiquid
-                    && !state->split->threePhase) ? &*state->split : nullptr;
-        }
     };
     std::vector<FeedRecord> feedRecords;
     auto addFeed = [&](std::size_t j, scalar Ff, scalar qf, scalar Tff, const sVector& zf,
@@ -2453,6 +2560,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     sVector T(N);
     for (std::size_t j = 0; j < N; ++j) unpack(res.x, j, x[j], T[j]);
 
+    //  THE ONE ENTHALPY SURFACE of this column (C169): the full MESH's rows,
+    //  its feeds, its energy scale and both duties below read it.
+    std::vector<std::pair<scalar, sVector>> enteringStates;
+    for (const auto& r : feedRecords) enteringStates.emplace_back(r.T, r.z);
+    const ColumnEnthalpy hs = columnEnthalpySurface(thermo, P, enteringStates);
+
     // ===== FULL-MESH refinement (Naphtali-Sandholm) =========================
     // `model fullMESH`: promote V_j, L_j to UNKNOWNS and add the per-stage TOTAL-
     // mass + ENERGY balances, SEEDED from the converged CMO profile (the cheap
@@ -2497,7 +2610,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         //  before, every golden row unmoved.
         scalar lambdaMean = 0.0;
         for (std::size_t j = 0; j < N; ++j)
-            lambdaMean += std::abs(thermo.Hvapour(T[j], x[j]) - thermo.Hliquid(T[j], x[j]));
+            lambdaMean += std::abs(hs.hV(x[j], T[j]) - hs.hL(x[j], T[j]));
         lambdaMean /= static_cast<scalar>(N);
         if (!(lambdaMean > 0.0))
             throw std::runtime_error("DistillationColumn(fullMESH): the stage"
@@ -2505,25 +2618,19 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 + std::to_string(lambdaMean) + " kJ/kmol) -- the energy rows"
                 " have no scale to be measured against.");
         const scalar energyScale = balanceScale / lambdaMean;
-        //  Each stage's feed enthalpy [kW], on the SAME surface as the rows
-        //  (Hliquid / Hvapour), summed feed by feed: a resolved two-phase feed
-        //  at its equilibrium compositions, (1-beta) hL(x) + beta hV(y);
-        //  anything else at its own q, z and T (q is 0 or 1 for a resolved
-        //  single-phase stream, so that is the phase's own enthalpy).  See
-        //  `FeedRecord` above.  Fixed by the feeds, so computed once.
+        //  Each stage's feed enthalpy [kW], summed feed by feed, by the ONE
+        //  home the duty block prices the same feeds with (`feedEnthalpy`):
+        //  a feed resolved from its stream at its own resolution -- the
+        //  equilibrium phases (x, y) when it splits -- and an inline `feeds`
+        //  entry at its declared quality.  Until C169 the rows priced every
+        //  feed on Hliquid / Hvapour while the duty priced it here, so the
+        //  profile was solved against one feed enthalpy and the reboiler plug
+        //  closed against another.  Fixed by the feeds, so computed once.
         std::vector<scalar> stageFeedEnthalpy(N, 0.0);
         for (const auto& r : feedRecords)
-        {
-            if (const FlashSolution* sp = r.vlSplit())
-            {
-                const scalar b = sp->V_over_F;
-                stageFeedEnthalpy[r.j] += r.F * ((1.0 - b) * thermo.Hliquid(r.T, sp->x)
-                                                +        b  * thermo.Hvapour(r.T, sp->y));
-            }
-            else
-                stageFeedEnthalpy[r.j] += r.F * (r.q * thermo.Hliquid(r.T, r.z)
-                                                + (1.0 - r.q) * thermo.Hvapour(r.T, r.z));
-        }
+            stageFeedEnthalpy[r.j] += r.state
+                ? feedEnthalpy(*r.state, r.F, r.T, P, r.z, thermo, hs)
+                : r.F * hs.hQuality(1.0 - r.q, r.z, r.T);
         if (verbosity >= 2)
         {
             std::ostringstream f;
@@ -2543,8 +2650,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 ys[j].assign(n, 0.0);
                 for (std::size_t i = 0; i < n; ++i) ys[j][i] = Kj[i]*xs[j][i];
             }
-            auto hL = [&](const sVector& xx, scalar TT){ return thermo.Hliquid(TT, xx); };
-            auto hV = [&](const sVector& yy, scalar TT){ return thermo.Hvapour(TT, yy); };
+            auto hL = [&](const sVector& xx, scalar TT){ return hs.hL(xx, TT); };
+            auto hV = [&](const sVector& yy, scalar TT){ return hs.hV(yy, TT); };
             sVector g(mU, 0.0);
             for (std::size_t j = 0; j < N; ++j) {
                 for (std::size_t i = 0; i + 1 < n; ++i) {        // component balances
@@ -2789,48 +2896,9 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             top.L1  = L[0];
             top.x1  = x[0];
         }
-        const scalar Q_cond = condenserDuty(thermo, condenser, top);
-        bool elem = true;
-        try { thermo.H_stream_formation(Tf, P, 1.0 - q, z);
-              thermo.H_stream_formation(T[0], P, 0.0, xD);
-              thermo.H_stream_formation(T[N-1], P, 0.0, x[N-1]); }
-        catch (const std::exception& e)
-        {
-            elem = false;
-            //  LOUD DOWNGRADE (AS3).  This catch used to be EMPTY, and on a
-            //  REACTIVE column that is not a lost decimal: the elements datum
-            //  is what carries the heat of reaction, so dropping to the
-            //  sensible datum DELETES it from the reboiler duty.  The column
-            //  converged, printed a duty, and exited 0.
-            //
-            //  Flowsheet.cpp answers the identical question correctly, and the
-            //  wording here is deliberately ITS wording -- same channel, same
-            //  once-per-cause suppression -- because the two are ONE decision
-            //  ("what does a missing formation datum mean?") and a reader must
-            //  not have to learn two vocabularies for it.  They still perform
-            //  DIFFERENT fallbacks (blend there, sensible here), so this is an
-            //  announcement made consistent, NOT a shared home; the shared home
-            //  is the open half of AS9 and is recorded rather than pretended.
-            //
-            //  BOTH column paths carry this catch -- Wang-Henke and
-            //  simultaneous.  The audit named one; a fix applied to one would
-            //  have left the other silent and looked complete.
-            if (AdvisoryLog::instance().add("thermo", "warning",
-                                            "enthalpy-gap", e.what()))
-                std::cerr << "[thermo] enthalpy GAP (formation datum): "
-                          << e.what()
-                          << "\n          -> the column's energy items fall back"
-                             " to the SENSIBLE datum (a degraded datum: it"
-                             " drifts from the canonical surface and never"
-                             " enters a closed balance).\n"
-                             "          -> IF THIS COLUMN REACTS, the heat of"
-                             " reaction is NOT in the reboiler duty reported"
-                             " below; fix the species data to close it.\n";
-        }
+        const scalar Q_cond = condenserDuty(hs, condenser, top);
         auto H = [&](scalar Fx, scalar Tx, scalar vfx, const sVector& zx) {
-            return elem ? Fx * thermo.H_stream_formation(Tx, P, vfx, zx)
-                      : Fx * (vfx >= 1.0 ? thermo.Hvapour(Tx, zx)
-                                         : thermo.Hliquid(Tx, zx));
+            return Fx * hs.hQuality(vfx, zx, Tx);
         };
         // products out (distillate + bottoms + every side draw) minus feeds in.
         //  The DISTILLATE at the temperature this column PUBLISHES it at --
@@ -2862,7 +2930,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         {
             if (r.F <= 0.0) continue;
             if (r.state)
-                Hin += feedEnthalpy(*r.state, r.F, r.T, P, r.z, thermo, elem);
+                Hin += feedEnthalpy(*r.state, r.F, r.T, P, r.z, thermo, hs);
             else
                 Hin += H(r.F, r.T, 1.0 - r.q, r.z);
         }

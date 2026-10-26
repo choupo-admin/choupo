@@ -22,8 +22,8 @@
   iterations from that seed.
 
   Expected --- close to, but NOT equal to, column02 (the gap IS the
-  energy-balance correction the CMO drops): T_top ~ 354.3 K, T_bottom
-  ~ 382.8 K, x_D(benzene) ~ 0.979 (CMO: 0.981).  Benzene/toluene latent
+  energy-balance correction the CMO drops): T_top ~ 354.4 K, T_bottom
+  ~ 382.8 K, x_D(benzene) ~ 0.978 (CMO: 0.981).  Benzene/toluene latent
   heats are similar (30.8 vs 33.2 kJ/mol) so the gap is small here; on a
   wide-boiling column the full MESH earns its cost.
 \*---------------------------------------------------------------------------*/
