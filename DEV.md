@@ -1554,6 +1554,14 @@ accepts today, and that is a policy call.
 > decides, writes the decision with its reasons here, and puts the page
 > to Vitor before any code.  No GUI code lands until then.
 > Status: recorded; forum convened the same turn.
+> NAME RULED (Vitor, 2026-10-26: "Workflow"): the props home is the
+> WORKFLOW -- the counterpart of the Flowsheet.  The forum's caution is
+> kept as a constraint, not a reason to rename: in KNIME, Galaxy and JMP a
+> workflow is an AUTHORED canvas; Choupo's is not -- it is the case's
+> declared studies and their steps, shown by position (a numbered outline,
+> COMSOL-style), never a canvas to draw on, and the GUI stays a runner and
+> viewer.  "Results" keeps only its own meaning: what a run produced (each
+> step's output and the after-run summary).
 
 > **C171. THE PROPS SCREEN REDESIGNED BEFORE A RESEARCHER SEES IT, AND A
 > PROPER WAY TO CITE (Vitor, 2026-10-26, on the live NanoFiltran case
