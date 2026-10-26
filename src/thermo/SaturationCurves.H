@@ -66,11 +66,20 @@ namespace Choupo {
 /// caller that re-solves from its previous T (the Wang-Henke column, which
 /// passes 1e-12) must ask for more than its own outer test, or T stops
 /// moving once the per-pass change in x is small.
+///
+/// `yVapour`, when given, is the vapour composition the vapour's fugacity
+/// coefficients are evaluated at: K_i(T, x, y).  Absent, K is taken at
+/// y = x -- exact for an ideal vapour, whose fugacity does not depend on
+/// its composition, and an approximation for any other (DEV.md 4c C169:
+/// a column on SRK published states that did not satisfy the package's
+/// equilibrium by 9.4e-4 in ln K).  A caller with a non-ideal vapour
+/// passes the vapour its stage actually sends up.
 scalar bubbleT(const ThermoPackage& thermo,
                const sVector& x,
                scalar P,
                scalar Tguess,
-               scalar tolerance = 1.0e-8);
+               scalar tolerance = 1.0e-8,
+               const sVector* yVapour = nullptr);
 
 /// THE TRIVIAL SATURATION ROOT (DEV.md 4c C131, family a).  A bubble or dew
 /// residual sum K x - 1 (or sum y/K - 1) is satisfied IDENTICALLY when every

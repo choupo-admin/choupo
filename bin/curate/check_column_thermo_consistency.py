@@ -625,10 +625,12 @@ def main(argv):
     if fails:
         print(LABEL + ": FAILED -- %d finding(s) [%s]" % (len(fails), summary))
         return 1
-    print(LABEL + ": OK -- %d case(s) + 2 probes; every column's condenser,"
+    nprobes = 0 if [a for a in argv if not a.startswith("-")] else 2
+    print(LABEL + ": OK -- %d case(s) + %d probe(s); every column's condenser,"
           " every full-MESH stage and reboiler on the streams' surface, and"
           " fugacity equality at the published y [%s]; NOT checked: feed"
-          " stages, Kremser units, shortcutColumn" % (len(cases), summary))
+          " stages, Kremser units, shortcutColumn" % (len(cases), nprobes,
+                                                       summary))
     return 0
 
 

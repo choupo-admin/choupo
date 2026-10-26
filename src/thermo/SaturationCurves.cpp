@@ -55,11 +55,13 @@ scalar bubbleT(const ThermoPackage& thermo,
                const sVector& x,
                scalar P,
                scalar Tguess,
-               scalar tolerance)
+               scalar tolerance,
+               const sVector* yVapour)
 {
+    const sVector& y = yVapour ? *yVapour : x;
     auto f = [&](scalar T)
     {
-        auto K = thermo.Kvec(T, P, x, x);
+        auto K = thermo.Kvec(T, P, x, y);
         scalar s = 0.0;
         for (std::size_t i = 0; i < x.size(); ++i) s += K[i] * x[i];
         return s - 1.0;

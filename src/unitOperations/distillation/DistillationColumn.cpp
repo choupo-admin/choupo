@@ -30,6 +30,8 @@ License
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
 #include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
+#include "unitOperations/flash/IncipientPhase.H"      // the ONE incipient-vapour iteration
+#include "thermo/equationOfState/EquationOfState.H"  // isIdeal(): does phi depend on y?
 #include "unitOperations/saturation/BubblePoint.H"
 #include "DistillationColumn.H"
 #include "TrayHydraulics.H"
@@ -354,6 +356,109 @@ sVector normalisedVapour(const sVector& K, const sVector& x)
     return y;
 }
 
+//  THE VAPOUR'S FUGACITY IS EVALUATED AT THE VAPOUR (DEV.md 4c C169 item 2).
+//
+//  WHAT WAS WRONG.  Every column model asked `stageK(T, P, x, x, x)` -- the
+//  K-values with the LIQUID composition in the vapour's slot -- so a stage
+//  satisfied  y_i phi_i(T, P, x) P = x_i gamma_i Psat_i  instead of the
+//  package's equilibrium  y_i phi_i(T, P, y) P = x_i gamma_i Psat_i.  Under an
+//  ideal vapour phi = 1 and the two are the same equation, which is why the
+//  corpus never saw it; on SRK the published state missed the package's own
+//  equilibrium by max |ln(y / (x K(x, y)))| = 9.4e-4 (column15, 75 stages)
+//  while satisfying the equation implemented to 1e-11.
+//
+//  THE RULE.  The K a stage uses is the package's K at the vapour the stage
+//  sends up: the incipient vapour of its liquid, y <- K(x, y) x / sum(K x),
+//  iterated to 1e-13 by `incipientPhase::vapour` -- the ONE home of that
+//  iteration, already read by the bubble pressure and the flash's phase
+//  test -- and seeded from the stage's previous vapour where the caller has
+//  one.  At a converged stage sum(K x) = 1, so the published y = K x IS that
+//  vapour and the fugacities are equal.  A phi-phi package reads its two
+//  roots the same way, each phase at its own composition.
+//
+//  WHERE IT IS SKIPPED, and why that is not an approximation: a vapour whose
+//  fugacity coefficient does not depend on its composition (an ideal gas:
+//  phi = 1, so K(x, y) = K(x, x) exactly, and every such column is
+//  byte-identical), and a package that resolves reactive equilibrium, whose
+//  `stageK` is the stage's own reactive flash and reads neither slot.
+bool vapourFugacityDependsOnY(const ThermoPackage& thermo)
+{
+    return !thermo.hasReactiveEquilibrium() && thermo.hasEos()
+        && !thermo.eos().isIdeal();
+}
+
+sVector stageVapourK(const ThermoPackage& thermo, scalar T, scalar P,
+                     const sVector& x, const sVector* ySeed = nullptr,
+                     bool* converged = nullptr)
+{
+    if (converged) *converged = true;
+    if (!vapourFugacityDependsOnY(thermo))
+        return thermo.stageK(T, P, x, x, x);
+    //  A Newton trial may carry a slightly negative fraction; the vapour it
+    //  sends up is read off the physical liquid (negatives as absent).  At a
+    //  converged state every fraction is non-negative and this is x itself.
+    sVector xp(x.size(), 0.0);
+    for (std::size_t i = 0; i < x.size(); ++i) xp[i] = std::max(x[i], 0.0);
+    const sVector K0 = thermo.Kvec(T, P, xp, ySeed ? *ySeed : xp);
+    const auto r = incipientPhase::vapour(thermo, T, P, xp, K0);
+    if (converged) *converged = r.converged;
+    return r.K.empty() ? K0 : r.K;
+}
+
+//  The BUBBLE POINT of a liquid with its own incipient vapour -- the reflux
+//  and the distillate of a total condenser.  On a vapour whose fugacity does
+//  not depend on y this is `bubbleT` at y = x, unchanged.  Otherwise the
+//  temperature and the vapour are solved together: T at a fixed vapour
+//  (`bubbleT`'s Newton, one home), the vapour at that T (`incipientPhase`),
+//  repeated until the vapour stops moving.  `converged` is false when it
+//  does not, and the caller says so.
+scalar bubbleTWithItsVapour(const ThermoPackage& thermo, const sVector& x,
+                            scalar P, scalar Tguess, scalar tol,
+                            bool* converged = nullptr, sVector* yOut = nullptr)
+{
+    if (converged) *converged = true;
+    if (!vapourFugacityDependsOnY(thermo))
+        return bubbleT(thermo, x, P, Tguess, tol);
+    sVector y = normalisedVapour(thermo.Kvec(Tguess, P, x, x), x);
+    scalar T = Tguess;
+    bool ok = false;
+    for (int it = 0; it < 50 && !ok; ++it)
+    {
+        T = bubbleT(thermo, x, P, T, tol, &y);
+        const auto r = incipientPhase::vapour(thermo, T, P, x,
+                                              thermo.Kvec(T, P, x, y));
+        if (r.trial.empty()) break;
+        scalar dy = 0.0;
+        for (std::size_t i = 0; i < y.size(); ++i)
+            dy = std::max(dy, std::abs(r.trial[i] - y[i]));
+        y  = r.trial;
+        ok = dy < 1.0e-12;
+    }
+    if (ok) T = bubbleT(thermo, x, P, T, tol, &y);
+    if (converged) *converged = ok;
+    if (yOut) *yOut = y;
+    return T;
+}
+
+//  Announced once per column per process when a PUBLISHED stage's vapour
+//  iteration did not converge: that stage's K is then the last iterate's.
+void announceUnconvergedVapour(const std::string& unit)
+{
+    static std::mutex lock;
+    static std::set<std::string> said;
+    std::lock_guard<std::mutex> g(lock);
+    if (!said.insert(unit).second) return;
+    std::cout << "  [column] " << unit << ": WARNING -- the incipient-vapour"
+                 " iteration y <- K(x, y) x did not converge on at least one"
+                 " published stage, so that stage's K is the last iterate's"
+                 " and its fugacities are equal only to that iterate's"
+                 " precision.\n";
+    AdvisoryLog::instance().add("numerics", "warning",
+        "distillationColumn vapour",
+        "the incipient-vapour iteration did not converge on a published stage"
+        " of '" + unit + "'; its K-values are the last iterate's.");
+}
+
 //  THE DISTILLATE LEAVES AT ITS OWN BUBBLE POINT, not at the top tray's
 //  temperature -- and this lives in ONE function because the column has TWO
 //  solver paths (Wang-Henke and the simultaneous MESH) that each used to build
@@ -440,7 +545,26 @@ ProcessStream makeDistillate(const ThermoPackage& thermo,
 
     //  T_topTray is the initial guess, and a good one: it is the DEW point of
     //  this same composition, so the bubble point sits just below it.
-    const auto bub = BubblePoint::compute(thermo, xD, P, T_topTray);
+    //  On a vapour whose fugacity depends on its composition the bubble point
+    //  is solved WITH its own incipient vapour (C169 item 2; the reflux row
+    //  of the full MESH calls the same function, so the reflux and the
+    //  published distillate are one temperature); on an ideal vapour it is
+    //  `BubblePoint::compute`, unchanged.
+    BubblePoint::Result bub;
+    if (vapourFugacityDependsOnY(thermo))
+    {
+        bool ok = false;
+        sVector yInc;
+        bub.T = bubbleTWithItsVapour(thermo, xD, P, T_topTray, 1.0e-12, &ok, &yInc);
+        const sVector Kb = thermo.Kvec(bub.T, P, xD, yInc);
+        scalar S = 0.0;
+        for (std::size_t i = 0; i < xD.size(); ++i) S += Kb[i] * xD[i];
+        bub.residual  = S - 1.0;
+        bub.converged = ok && std::abs(S - 1.0) <= 1.0e-8
+                     && !trivialSaturationRoot(thermo, bub.T, P, xD, Kb);
+    }
+    else
+        bub = BubblePoint::compute(thermo, xD, P, T_topTray);
     if (bub.converged)
     {
         d.T = bub.T;
@@ -1104,6 +1228,15 @@ int DistillationColumn::solve(const DictPtr& dict,
     std::vector<sVector> yPrev(N, sVector(n, 0.0));
     bool haveY = false;
     std::vector<sVector> Keff(N, sVector(n, 1.0));
+    //  THE STAGES' EQUILIBRIUM K AT THEIR OWN VAPOURS (C169 item 2), kept out
+    //  of the loop so the published profile reads the K the stop was taken
+    //  on.  `yVap` is each stage's incipient vapour from the previous pass:
+    //  the warm seed of the next K, and the vapour the bubble-point update
+    //  prices phi at (lagged one pass -- at a fixed point it is the vapour).
+    const bool nonIdealVapour = vapourFugacityDependsOnY(thermo);
+    std::vector<sVector> Kst(N, sVector(n, 1.0));
+    std::vector<sVector> yVap;
+    bool vapourConverged = true;
 
     //  THE RESIDUALS OF THE STATE THE COLUMN WOULD PUBLISH, as fractions of
     //  the feed (see the convergence config above).  The CMO traffic of the
@@ -1156,10 +1289,21 @@ int DistillationColumn::solve(const DictPtr& dict,
 
     for (outerIt = 0; ; ++outerIt)
     {
-        // 1. K-matrix at current (T, x)
-        std::vector<sVector> K(N, sVector(n, 1.0));
+        // 1. K-matrix at current (T, x), each stage's at its own vapour
+        std::vector<sVector>& K = Kst;
+        vapourConverged = true;
         for (std::size_t j = 0; j < N; ++j)
-            K[j] = thermo.stageK(T[j], P, x[j], x[j], x[j]);
+        {
+            bool okj = true;
+            K[j] = stageVapourK(thermo, T[j], P, x[j],
+                                yVap.empty() ? nullptr : &yVap[j], &okj);
+            vapourConverged = vapourConverged && okj;
+        }
+        if (nonIdealVapour)
+        {
+            yVap.resize(N);
+            for (std::size_t j = 0; j < N; ++j) yVap[j] = normalisedVapour(K[j], x[j]);
+        }
 
         // 1b. Fold the tray efficiency into an EFFECTIVE K, so that y_j = Keff_j x_j
         //     carries the Murphree relation without changing a single equation below.
@@ -1267,7 +1411,8 @@ int DistillationColumn::solve(const DictPtr& dict,
 
         // 4. Update T at each stage via bubble-point
         for (std::size_t j = 0; j < N; ++j)
-            T[j] = bubbleT(thermo, x_new[j], P, T[j], bubbleSolveTol);
+            T[j] = bubbleT(thermo, x_new[j], P, T[j], bubbleSolveTol,
+                           nonIdealVapour ? &yVap[j] : nullptr);
 
         // 5. Convergence
         maxDx = 0.0;
@@ -1281,7 +1426,8 @@ int DistillationColumn::solve(const DictPtr& dict,
     // ---- Distillate composition: x_D = y_1, the vapour leaving the TOP TRAY.
     //  With E_MV < 1 that is Keff_1 x_1, not the equilibrium K_1 x_1: a real top
     //  tray hands the condenser a vapour it never fully equilibrated with.
-    auto K1 = (Emv != 1.0) ? Keff[0] : thermo.stageK(T[0], P, x[0], x[0], x[0]);
+    if (!vapourConverged) announceUnconvergedVapour(dict->name());
+    auto K1 = (Emv != 1.0) ? Keff[0] : Kst[0];
     sVector xD(n);
     for (std::size_t i = 0; i < n; ++i) xD[i] = K1[i] * x[0][i];
     {
@@ -1305,7 +1451,7 @@ int DistillationColumn::solve(const DictPtr& dict,
     }
     for (std::size_t j = 0; j < N; ++j)
     {
-        const auto Kj = (Emv != 1.0) ? Keff[j] : thermo.stageK(T[j], P, x[j], x[j], x[j]);
+        const auto Kj = (Emv != 1.0) ? Keff[j] : Kst[j];
         profile_.columns["stage"].push_back(static_cast<scalar>(j + 1));
         profile_.columns["T"].push_back(T[j]);
         for (std::size_t i = 0; i < n; ++i)
@@ -1420,8 +1566,7 @@ int DistillationColumn::solve(const DictPtr& dict,
         if (partialCond)
         {
             top.Vin = Vl;                       // NF >= 2 under a partial condenser
-            top.y2  = normalisedVapour((Emv != 1.0) ? Keff[1]
-                          : thermo.stageK(T[1], P, x[1], x[1], x[1]), x[1]);
+            top.y2  = normalisedVapour((Emv != 1.0) ? Keff[1] : Kst[1], x[1]);
             top.T2  = T[1];
             top.L1  = Ll;
             top.x1  = x[0];
@@ -1466,7 +1611,7 @@ int DistillationColumn::solve(const DictPtr& dict,
             const bool rect = (j + 1 < static_cast<std::size_t>(NFint));
             Vs[j] = rect ? Vl : Vp;
             Ls[j] = rect ? Ll : Lp;
-            const auto Kj = (Emv != 1.0) ? Keff[j] : thermo.stageK(T[j], P, x[j], x[j], x[j]);
+            const auto Kj = (Emv != 1.0) ? Keff[j] : Kst[j];
             scalar sy = 0.0;
             for (std::size_t i = 0; i < n; ++i) { yAll[j][i] = Kj[i] * x[j][i]; sy += yAll[j][i]; }
             if (sy > 0.0) for (auto& v : yAll[j]) v /= sy;
@@ -2265,7 +2410,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     std::mutex        trialRefusalLock;
     auto stageKOnTrial = [&](scalar Tj, const sVector& xj) -> sVector
     {
-        try { return thermo.stageK(Tj, P, xj, xj, xj); }
+        try { return stageVapourK(thermo, Tj, P, xj); }   // at its own vapour (C169)
         catch (const InfeasibleTrial&) { throw; }
         catch (const std::exception& e)
         {
@@ -2692,7 +2837,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                     sVector yD = ys[0];
                     { scalar sy0 = 0.0; for (auto v : yD) sy0 += v;
                       if (sy0 > 0.0) for (auto& v : yD) v /= sy0; }
-                    const scalar Treflux = bubbleT(thermo, yD, P, Ts[0], 1.0e-12);
+                    const scalar Treflux =
+                        bubbleTWithItsVapour(thermo, yD, P, Ts[0], 1.0e-12);
                     g[j*mv + n+1] = energyScale * (
                           R*D*hL(yD, Treflux) + Vs[1]*hV(ys[1], Ts[1])
                         - Ls[0]*hL(xs[0], Ts[0]) - Vs[0]*hV(ys[0], Ts[0]));
@@ -2739,7 +2885,21 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  fix's clothes.
     walk.close();
 
-    auto K0 = thermo.stageK(T[0], P, x[0], x[0], x[0]);
+    //  ONE K PER STAGE for everything published below -- the profile, the
+    //  distillate, the side draws, the duties and the hydraulics -- at the
+    //  stage's own vapour (C169 item 2).
+    std::vector<sVector> Kfin(N);
+    {
+        bool allOk = true;
+        for (std::size_t j = 0; j < N; ++j)
+        {
+            bool okj = true;
+            Kfin[j] = stageVapourK(thermo, T[j], P, x[j], nullptr, &okj);
+            allOk = allOk && okj;
+        }
+        if (!allOk) announceUnconvergedVapour(dict->name());
+    }
+    const auto& K0 = Kfin[0];
     sVector xD(n);
     { scalar s = 0.0;
       for (std::size_t i = 0; i < n; ++i) { xD[i] = K0[i]*x[0][i]; s += xD[i]; }
@@ -2749,7 +2909,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     profile_ = UnitProfile{};
     profile_.xAxis = "stage";
     for (std::size_t j = 0; j < N; ++j) {
-        const auto Kj = thermo.stageK(T[j], P, x[j], x[j], x[j]);
+        const auto& Kj = Kfin[j];
         profile_.columns["stage"].push_back(static_cast<scalar>(j + 1));
         profile_.columns["T"].push_back(T[j]);
         for (std::size_t i = 0; i < n; ++i) {
@@ -2774,7 +2934,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         std::cout << "\n";
         for (std::size_t j = 0; j < N; ++j)
         {
-            const auto Kj = thermo.stageK(T[j], P, x[j], x[j], x[j]);
+            const auto& Kj = Kfin[j];
             std::cout << "    " << std::setw(4) << (j+1) << "    "
                       << std::fixed << std::setprecision(2) << std::setw(8) << T[j] << "  ";
             for (std::size_t i = 0; i < n; ++i)
@@ -2815,7 +2975,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         }
         if (Wdraw[j] > 0.0)
         {
-            const auto Kj = thermo.stageK(T[j], P, x[j], x[j], x[j]);
+            const auto& Kj = Kfin[j];
             sVector yj(n, 0.0); scalar sy = 0.0;
             for (std::size_t i = 0; i < n; ++i) { yj[i] = Kj[i]*x[j][i]; sy += yj[i]; }
             if (sy > 0.0) for (auto& v : yj) v /= sy;
@@ -2891,7 +3051,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         if (partialCond)
         {
             top.Vin = V[1];
-            top.y2  = normalisedVapour(thermo.stageK(T[1], P, x[1], x[1], x[1]), x[1]);
+            top.y2  = normalisedVapour(Kfin[1], x[1]);
             top.T2  = T[1];
             top.L1  = L[0];
             top.x1  = x[0];
@@ -2912,7 +3072,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             if (Udraw[j] > 0.0) Hout += H(Udraw[j], T[j], 0.0, x[j]);
             if (Wdraw[j] > 0.0)
             {
-                const auto Kj = thermo.stageK(T[j], P, x[j], x[j], x[j]);
+                const auto& Kj = Kfin[j];
                 sVector yj(n, 0.0); scalar sy = 0.0;
                 for (std::size_t i = 0; i < n; ++i) { yj[i] = Kj[i]*x[j][i]; sy += yj[i]; }
                 if (sy > 0.0) for (auto& v : yj) v /= sy;
@@ -3043,7 +3203,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         std::vector<sVector> yAll(N, sVector(n, 0.0));
         for (std::size_t j = 0; j < N; ++j)
         {
-            const auto Kj = thermo.stageK(T[j], P, x[j], x[j], x[j]);
+            const auto& Kj = Kfin[j];
             scalar sy = 0.0;
             for (std::size_t i = 0; i < n; ++i) { yAll[j][i] = Kj[i] * x[j][i]; sy += yAll[j][i]; }
             if (sy > 0.0) for (auto& v : yAll[j]) v /= sy;
