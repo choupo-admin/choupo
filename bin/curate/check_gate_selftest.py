@@ -57,6 +57,7 @@ did not make.  After each revert the bytes are compared to the original, and a
 failed restore is a hard error naming the file, because leaving a corrupted
 record behind would be far worse than any missed check.
 """
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -298,8 +299,20 @@ def platform_dir():
     return c[0] if c else None
 
 
+def _ncpu():
+    """Every CPU this process may use (DEV.md 4c C167): the rebuild between
+    sabotages was `-j4` on any machine, so on ten cores the selftest held the
+    suite for minutes on four.  Only the build's width changes; the journal is
+    open across every rebuild exactly as before, and the gate still runs
+    alone (runTests runs it at its own site, never beside another gate)."""
+    try:
+        return max(1, len(os.sched_getaffinity(0)))
+    except (AttributeError, OSError):
+        return max(1, os.cpu_count() or 1)
+
+
 def rebuild():
-    p = subprocess.run(["make", "all", "-j4"], capture_output=True, text=True,
+    p = subprocess.run(["make", "all", f"-j{_ncpu()}"], capture_output=True, text=True,
                        cwd=ROOT, timeout=1800)
     return p.returncode == 0, (p.stdout + p.stderr)[-2000:]
 

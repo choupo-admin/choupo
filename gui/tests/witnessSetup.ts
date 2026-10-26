@@ -40,8 +40,9 @@
   the WASM build, which the GUI runs in the browser and which is separate.
 \*---------------------------------------------------------------------------*/
 
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { availableParallelism } from "node:os";
 import { join } from "node:path";
 
 import type { GlobalSetupContext } from "vitest/node";
@@ -76,30 +77,71 @@ function buildRefusal(): string | null {
     finding ?? "FAILED"})`;
 }
 
-export default function setup({ provide }: GlobalSetupContext): void {
+/** One witness run, as a promise: spawnSync's answer, asynchronously, so
+ *  several cases can run at once.  stdout and stderr are kept whole. */
+function runAsync(cmd: string, args: string[], env: NodeJS.ProcessEnv):
+    Promise<{ status: number | null; signal: string | null; stdout: string;
+              stderr: string; error?: Error }> {
+  return new Promise((resolve) => {
+    const out: Buffer[] = [], err: Buffer[] = [];
+    let child;
+    try {
+      child = spawn(cmd, args, { cwd: REPO, env });
+    } catch (e) {
+      resolve({ status: null, signal: null, stdout: "", stderr: "", error: e as Error });
+      return;
+    }
+    child.stdout.on("data", (b: Buffer) => out.push(b));
+    child.stderr.on("data", (b: Buffer) => err.push(b));
+    child.on("error", (e) => resolve({ status: null, signal: null,
+      stdout: "", stderr: "", error: e }));
+    child.on("close", (status, signal) => resolve({ status, signal,
+      stdout: Buffer.concat(out).toString("utf-8"),
+      stderr: Buffer.concat(err).toString("utf-8") }));
+  });
+}
+
+/*  THE WITNESSES RUN N-WIDE (2026-10-26, DEV.md 4c C167).  They were run one
+    after another, which on a ten-core laptop held the whole suite on one core
+    for minutes.  Now each CASE is one task -- its declared outputs still in
+    the order this list gives them, one run each, exactly as before, because
+    "the files on disk when the test reads them are the last run's" is a
+    promise about one case's own sequence -- and the cases run side by side,
+    at most CHOUPO_JOBS at a time (default: every CPU; `bin/runTests -j 1`
+    makes it 1, the old serial setup).  Each run gets CHOUPO_THREADS =
+    max(1, CPUs / width) unless the caller set one, so the engine's parallel
+    Jacobian does not oversubscribe the machine.  The log lines are printed
+    in the list's order once every case is done, so the log does not depend
+    on which run finished first. */
+export default async function setup({ provide }: GlobalSetupContext): Promise<void> {
   const status: WitnessStatusMap = {};
   const refused = buildRefusal();
+  const cpus = availableParallelism();
+  const jobsEnv = Number.parseInt(process.env.CHOUPO_JOBS ?? "", 10);
+  const width = Number.isFinite(jobsEnv) && jobsEnv >= 1 ? jobsEnv : cpus;
+  const env: NodeJS.ProcessEnv = { ...process.env };
+  if (width > 1 && !env.CHOUPO_THREADS)
+    env.CHOUPO_THREADS = String(Math.max(1, Math.floor(cpus / width)));
 
-  for (const w of WITNESS_OUTPUTS) {
+  //  one task per case, its entries in list order
+  const byCase = new Map<string, number[]>();
+  WITNESS_OUTPUTS.forEach((w, i) => {
+    const l = byCase.get(w.caseDir);
+    if (l) l.push(i); else byCase.set(w.caseDir, [i]);
+  });
+  const logs: string[] = new Array(WITNESS_OUTPUTS.length).fill("");
+
+  async function runEntry(i: number): Promise<void> {
+    const w = WITNESS_OUTPUTS[i];
+    if (!w) return;
     const key = witnessKey(w.caseDir, w.file);
     const caseAbs = join(REPO, w.caseDir);
     const out = join(caseAbs, w.file);
-    if (refused) {
-      status[key] = {
-        ok: false, why: refused,
-        remedy: "run `make all` at the repository root, then re-run"
-          + " (`bin/runTests --gui` or `cd gui && npm test`)",
-      };
-      continue;
-    }
     const app = applicationOf(caseAbs);
     rmSync(out, { force: true });
     const t0 = Date.now();
-    const r = spawnSync(join(REPO, app), [caseAbs],
-      { cwd: REPO, encoding: "utf-8", maxBuffer: 256 * 1024 * 1024 });
+    const r = await runAsync(join(REPO, app), [caseAbs], env);
     const seconds = (Date.now() - t0) / 1000;
-    //  A stdout witness: the run's own console IS the output (its result
-    //  block lives only there), written where the list says, on exit 0 only.
     if (w.stdout && !r.error && r.status === 0) writeFileSync(out, r.stdout ?? "");
     if (r.error || r.status !== 0 || !existsSync(out)) {
       const why = r.error ? `${app} could not start (${r.error.message})`
@@ -107,17 +149,35 @@ export default function setup({ provide }: GlobalSetupContext): void {
         : `${app} exited 0 but wrote no ${w.file}`;
       const tail = `${r.stdout ?? ""}${r.stderr ?? ""}`.trim().split("\n")
         .slice(-8).join("\n    ");
-      console.log(`${TAG} ${REFUSAL_MARKER}: ${key}: ${why}\n    ${tail}`);
+      logs[i] = `${TAG} ${REFUSAL_MARKER}: ${key}: ${why}\n    ${tail}`;
       status[key] = {
         ok: false, why,
         remedy: `run \`${app} ${w.caseDir}\` from the repository root and`
           + " read its log -- the witness itself is broken, not the GUI test",
       };
-      continue;
+      return;
     }
-    console.log(`${TAG} ran ${app} ${w.caseDir} -> ${w.file}`
-      + ` (${seconds.toFixed(1)} s; read by ${w.readBy.join(", ")})`);
+    logs[i] = `${TAG} ran ${app} ${w.caseDir} -> ${w.file}`
+      + ` (${seconds.toFixed(1)} s; read by ${w.readBy.join(", ")})`;
     status[key] = { ok: true, binary: app, seconds };
+  }
+
+  if (refused) {
+    for (const w of WITNESS_OUTPUTS) {
+      status[witnessKey(w.caseDir, w.file)] = {
+        ok: false, why: refused,
+        remedy: "run `make all` at the repository root, then re-run"
+          + " (`bin/runTests --gui` or `cd gui && npm test`)",
+      };
+    }
+  } else {
+    const queue = [...byCase.values()];
+    const worker = async (): Promise<void> => {
+      for (let entries = queue.shift(); entries; entries = queue.shift())
+        for (const i of entries) await runEntry(i);
+    };
+    await Promise.all(Array.from({ length: Math.min(width, queue.length) }, worker));
+    for (const l of logs) if (l) console.log(l);
   }
 
   if (refused)

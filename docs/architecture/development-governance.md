@@ -38,7 +38,8 @@ below follows from it.
 Parallel production multiplies the integration surface, which is exactly where
 this project breaks.  Seven correct slices that do not integrate are worth less
 than two that do, because integration debt compounds and the only instrument
-that detects it — the corpus — is serial.
+that detects it — the corpus — is ONE instrument: since DEV.md 4c C167 it
+runs N-wide on one machine, but every slice still queues on the same sweep.
 
 Verification has the opposite shape.  The highest-yield finding of the last
 month came from asking the **whole corpus one question**: *does every stream
@@ -61,9 +62,12 @@ failure mode and a fleet cannot check its own integration.
 
 These are measured properties of this project, not preferences.
 
-1. **The corpus is the bottleneck and it is serial.**  ~408 cases in one
-   thread.  Producers needing a green suite queue on it regardless of how many
-   there are.  **Never build while a suite runs** — doing so produced 36
+1. **The corpus is the bottleneck.**  It used to run in one thread; since
+   2026-10-25 (DEV.md 4c C167) `bin/runTests -j N` checks the cases and the
+   gates that write nothing N-wide, the default every CPU, with the report
+   unchanged.  It is still ONE sweep: producers needing a green suite queue
+   on it regardless of how many there are, and the gates that build, write
+   the tree or need the machine alone still run one at a time.  **Never build while a suite runs** — doing so produced 36
    spurious failures in one measured instance, because relinking the shared
    library under a running binary yields exit 127.
 2. **The working tree is not durable.**  The checkout has reverted to an older

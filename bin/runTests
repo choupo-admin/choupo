@@ -190,14 +190,21 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 #      case with code/ (bin/buildCode runs `make lib` on the shared build
 #      tree).  A case nested inside another case is checked in the SAME job,
 #      after it; a two-mode case (C152) keeps its two runs in one call.
-#    * THE GATES: bin/curate/suite_lanes.txt classifies every gate site.  A
-#      gate in a LANE is run before its section by the pool, its output and
-#      exit code kept, and REPLAYED by gate_exec at its own site, byte for
-#      byte; the gates of one lane run one after another in walk order.  A
-#      gate marked SERIAL -- or not listed at all, the safe default -- runs
-#      live at its own site, alone, exactly as before.  The pre-loop gates
-#      are prefetched before the pre-loop section and the cache-reading gates
-#      after the case loop, so no gate ever runs beside a case.
+#    * THE GATES: bin/curate/suite_lanes.txt marks PAR every gate MEASURED
+#      to write nothing in the tree; runTests cuts its own text into SEGMENTS
+#      at every other gate and every line that runs or changes something, and
+#      runs each segment's PAR gates N-wide when the walk reaches it, each
+#      site replaying its own gate's output (THE GATES, N-WIDE BETWEEN
+#      BARRIERS, below).  A SERIAL gate -- or an unlisted one, the safe
+#      default -- runs live at its own site, alone, exactly as before.  The
+#      gates still run before and after the cases, as before: no gate ever
+#      runs beside a case.  (Starting the cases first was measured and
+#      declined, 2026-10-26: the leading gates that cost time either touch the
+#      case directories or need the machine alone, so it would only have
+#      moved the serial half, and every gate would have seen this sweep's
+#      case outputs instead of the last one's.)
+#    * THE GUI'S WITNESSES: vitest's globalSetup (gui/tests/witnessSetup.ts)
+#      runs its witness cases CHOUPO_JOBS-wide too.
 #    * A CORE BUDGET, NOT N SLOTS: the engine's parallel Jacobian takes
 #      allowed CPUs - 2 threads by default (src/solver/NewtonND.cpp,
 #      jacobianThreads), so N column cases at once would oversubscribe the
@@ -239,10 +246,12 @@ secs_since() { awk -v a="$1" -v b="$EPOCHREALTIME" 'BEGIN{printf "%.3f\n", b-a}'
 #  seconds (measured in the pool), so build/suiteTimings.csv charges an item
 #  what it cost and not the near-zero gap of its replay; the stamp is taken
 #  before the item's result line, which bin/curate/suite_timings.py pairs it
-#  with.  Without a wrapper (CHOUPO_SUITE_TIMED unset) nothing is written.
+#  with.  The file is the wrapper's own (TIMING_REPLAY, taken out of the
+#  environment below so that no gate, nor a bin/runTests a gate starts, can
+#  write into it); without a wrapper nothing is written.
 timing_replay() {
-    [ -n "${CHOUPO_SUITE_TIMED:-}" ] && [ -f "$1" ] || return 0
-    printf '%s\t%s\n' "$EPOCHREALTIME" "$(cat "$1")" >> "$ROOT/build/suiteTimings.replay"
+    [ -n "$TIMING_REPLAY" ] && [ -f "$1" ] || return 0
+    printf '%s\t%s\n' "$EPOCHREALTIME" "$(cat "$1")" >> "$TIMING_REPLAY"
 }
 
 #  pool_run <fn> <id>... -- runs `<fn> <id>` for every id, at most $JOBS at a
@@ -261,7 +270,7 @@ pool_run() {
         | sort -t$'\t' -k1,1gr -s | cut -f2-)
     while IFS= read -r id; do
         [ -n "$id" ] || continue
-        ( export CHOUPO_THREADS="$JOB_THREADS"
+        ( [ -n "${POOL_NOTHREADS:-}" ] || export CHOUPO_THREADS="$JOB_THREADS"
           _t0=$EPOCHREALTIME
           "$fn" "$id"
           printf '%s:%s\t%s\n' "$fn" "$id" "$(secs_since "$_t0")" \
@@ -288,73 +297,111 @@ gate_key() {
     printf '%s' "${k//[^A-Za-z0-9._-]/_}"
 }
 
-#  gate_exec <argv...> -- run a gate, or replay the run the pool already made
-#  of this exact invocation in this section.  A replay prints the kept output
-#  (stdout and stderr were captured merged, as every site redirects them) and
-#  returns the kept exit code; anything not prefetched runs live.
+#  THE GATES, N-WIDE BETWEEN BARRIERS (2026-10-26, C167 slice 2).  A gate
+#  bin/curate/suite_lanes.txt marks PAR writes nothing in the tree (only
+#  unique names under /tmp), builds nothing and has no pool of its own --
+#  measured, the file's header says how -- so PAR gates cannot change what
+#  one another read, and any number of them may run at once.  What they may
+#  NOT do is run before something that changes the tree, so the sections are
+#  cut into SEGMENTS at every BARRIER, derived from this file's own text each
+#  run (gate_segments): a barrier is any gate site not marked PAR (it runs
+#  live, alone, exactly as before) and any other line that runs something or
+#  touches the tree (an engine binary, the GUI's tests, `rm -rf`, a loop of
+#  gates).  When the walk reaches the first PAR site of a segment, the whole
+#  segment's gates run N-wide; each site then replays its own gate's output
+#  and exit code, byte for byte, in its own order.  Nothing in a segment runs
+#  before the barrier ahead of it, nothing after the barrier behind it.  A
+#  gate added by hand is a barrier until it is classified -- the safe default.
+#  Under -j 1 none of this exists: every gate runs live at its site.
+declare -A GATE_SEG=()        # gate_key -> "<section>:<segment>"   (PAR sites)
+declare -A GATE_ARGV=()       # gate_key -> the site's argv text, for the pool
+declare -A SEG_KEYS=()        # "<section>:<segment>" -> the keys, one per line
+declare -A SEG_DONE=()        # a segment the pool has run
+GATE_PF=""
+
+#  gate_segments -- read the PAR list and cut both sections into segments.
+gate_segments() {
+    [ "$JOBS" -gt 1 ] || return 0
+    local lanes_file="$ROOT/bin/curate/suite_lanes.txt"
+    [ -f "$lanes_file" ] || return 0
+    declare -A par=()
+    local sec lane argv _r k
+    while IFS='|' read -r sec lane argv _r; do
+        sec="${sec// /}"; lane="${lane// /}"
+        case "$sec" in PRE|POST) ;; *) continue ;; esac
+        [ "$lane" = PAR ] || continue
+        argv="${argv#"${argv%%[![:space:]]*}"}"; argv="${argv%"${argv##*[![:space:]]}"}"
+        k=$(eval gate_key "\"\$ROOT/\"$argv")
+        par["$sec:$k"]=1
+    done < "$lanes_file"
+    #  The walk of this file: SITE <section> <argv text> | BARRIER <section>.
+    local kind text seg=0 cur=""
+    while IFS=$'\t' read -r kind sec text; do
+        if [ "$kind" = SITE ]; then
+            k=$(eval gate_key "$text")
+            if [ -n "${par[$sec:$k]:-}" ] && [ -z "${GATE_SEG[$k]:-}" ]; then
+                [ -n "$cur" ] || { seg=$((seg+1)); cur="$sec:$seg"; }
+                GATE_SEG["$k"]="$cur"; GATE_ARGV["$k"]="$text"
+                SEG_KEYS["$cur"]+="$k"$'\n'
+                continue
+            fi
+        fi
+        cur=""
+    done < <(awk '
+        /^# --- check mode/                           { sec = "PRE" }
+        /^for case_dir in "\$\{CASES\[@\]\}"; do/      { sec = "POST"; print "BARRIER\tPOST\t-"; next }
+        sec == "" || /^[ \t]*#/                      { next }
+        /gate_exec "\$ROOT\// {
+            t = $0; sub(/.*gate_exec /, "", t); sub(/[ \t]*>[ \t]*\/tmp\/.*/, "", t)
+            if (t ~ /\$[A-Za-z_{(]/ && t !~ /^"\$ROOT\/[^"$]*"( [^$]*)?$/) { print "BARRIER\t" sec "\t" t; next }
+            print "SITE\t" sec "\t" t; next }
+        /gate_claim/                                  { next }
+        /"\$ROOT\/|cd "\$ROOT|rm -rf|npm |npx |make |audit_catalogue|export |unset / { print "BARRIER\t" sec "\t-" }
+    ' "$0")
+}
+
+#  gate_seg_run <key> -- one pool job: one gate of a segment.
+gate_seg_run() {
+    local k="$1" t0
+    t0=$EPOCHREALTIME
+    eval "${GATE_ARGV[$k]}" > "$GATE_PF/$k.out" 2>&1
+    echo $? > "$GATE_PF/$k.rc"
+    secs_since "$t0" > "$GATE_PF/$k.sec"
+}
+
+#  gate_exec <argv...> -- run a gate, or, for a PAR gate, run its whole
+#  segment N-wide the first time one of its sites is reached and replay this
+#  site's run.  A replay prints the kept output (stdout and stderr were
+#  captured merged, as every site redirects them) and returns the kept exit
+#  code; anything else runs live, exactly as under -j 1.
 gate_exec() {
-    if [ -n "$GATE_PF" ]; then
-        local k; k=$(gate_key "$@")
-        if [ -f "$GATE_PF/$k.rc" ]; then
-            cat "$GATE_PF/$k.out"
-            : > "$GATE_PF/$k.used"
-            timing_replay "$GATE_PF/$k.sec"
-            return "$(cat "$GATE_PF/$k.rc")"
+    if [ "${#GATE_SEG[@]}" -gt 0 ]; then
+        local k s; k=$(gate_key "$@")
+        s="${GATE_SEG[$k]:-}"
+        if [ -n "$s" ]; then
+            if [ -z "${SEG_DONE[$s]:-}" ]; then
+                GATE_PF="$ROOT/build/suiteGates"; mkdir -p "$GATE_PF"
+                local -a ks=(); local x
+                while IFS= read -r x; do [ -n "$x" ] && ks+=("$x"); done <<< "${SEG_KEYS[$s]}"
+                if [ "${#ks[@]}" -gt 1 ]; then POOL_NOTHREADS=1; pool_run gate_seg_run "${ks[@]}"; POOL_NOTHREADS=""
+                else gate_seg_run "${ks[0]}"; fi
+                SEG_DONE["$s"]=1
+            fi
+            if [ -f "$GATE_PF/$k.rc" ]; then
+                cat "$GATE_PF/$k.out"
+                timing_replay "$GATE_PF/$k.sec"
+                local rc; rc=$(cat "$GATE_PF/$k.rc")
+                rm -f "$GATE_PF/$k.out" "$GATE_PF/$k.rc" "$GATE_PF/$k.sec"
+                return "$rc"
+            fi
         fi
     fi
     "$@"
 }
 
-#  gate_lane_job <lane> -- one pool job: the lane's gates in listed order.
-gate_lane_job() {
-    local lane="$1" sec argv k t0
-    while IFS=$'\t' read -r sec argv; do
-        k=$(eval gate_key "\"\$ROOT/\"$argv")
-        t0=$EPOCHREALTIME
-        eval "\"\$ROOT/\"$argv" > "$GATE_PF/$k.out" 2>&1
-        echo $? > "$GATE_PF/$k.rc"
-        secs_since "$t0" > "$GATE_PF/$k.sec"
-    done < "$GATE_PF/lane.$lane"
-}
-
-#  gate_prefetch <SECTION> -- run that section's laned gates N-wide.  The
-#  lanes file is read here and nowhere else; SERIAL and unlisted gates are
-#  left to their sites.  Under -j 1 it does nothing at all.
-gate_prefetch() {
-    local section="$1" lanes_file="$ROOT/bin/curate/suite_lanes.txt"
-    GATE_PF=""
-    [ "$JOBS" -gt 1 ] || return 0
-    [ -f "$lanes_file" ] || return 0
-    GATE_PF="$ROOT/build/suiteGates/$section"
-    rm -rf "$GATE_PF"; mkdir -p "$GATE_PF"
-    local sec lane argv _reason
-    local -a lanes=()
-    while IFS='|' read -r sec lane argv _reason; do
-        sec="${sec// /}"; lane="${lane// /}"
-        argv="${argv#"${argv%%[![:space:]]*}"}"; argv="${argv%"${argv##*[![:space:]]}"}"
-        case "$sec" in ''|\#*) continue ;; esac
-        [ "$sec" = "$section" ] || continue
-        [ "$lane" = SERIAL ] && continue
-        [ -f "$GATE_PF/lane.$lane" ] || lanes+=("$lane")
-        printf '%s\t%s\n' "$sec" "$argv" >> "$GATE_PF/lane.$lane"
-    done < "$lanes_file"
-    [ "${#lanes[@]}" -gt 0 ] || return 0
-    echo "[parallel] $section gates: ${#lanes[@]} lane(s) prefetched $JOBS-wide (CHOUPO_THREADS=$JOB_THREADS each); SERIAL and unlisted gates run live at their sites"
-    pool_run gate_lane_job "${lanes[@]}"
-}
-
-#  gate_prefetch_close -- after a section: a prefetched run its site never
-#  asked for is a lanes entry that names no site (a renamed gate, a changed
-#  argument).  Said once, to the log; it is not a result line.
-gate_prefetch_close() {
-    [ -n "$GATE_PF" ] || return 0
-    local rc
-    for rc in "$GATE_PF"/*.rc; do
-        [ -f "$rc" ] || continue
-        [ -f "${rc%.rc}.used" ] || echo "[parallel] NOTE: $(basename "${rc%.rc}") was prefetched but no site ran it -- bin/curate/suite_lanes.txt names an invocation runTests does not make"
-    done
-    GATE_PF=""
-}
+#  The two old hooks, kept as no-ops so the section boundaries stay marked.
+gate_prefetch() { :; }
+gate_prefetch_close() { :; }
 
 #  prepass_key <case_dir> -- the file-safe name of one case's default run.
 prepass_key() {
@@ -392,10 +439,20 @@ case_prepass() {
     rm -rf "$PREPASS_DIR"; mkdir -p "$PREPASS_DIR"
     #  A group is named by its outermost case (prepass_key), so its measured
     #  time survives the corpus gaining or losing a case.
+    #  A case bin/curate/suite_lanes.txt declares `CASE | SERIAL` writes
+    #  outside its own directory (measured), so it is checked live in the
+    #  walk, after the pool, where nothing runs beside it.
+    declare -A CASE_SERIAL=()
+    local _s _l _c _r
+    while IFS='|' read -r _s _l _c _r; do
+        _s="${_s// /}"; _l="${_l// /}"; _c="${_c// /}"
+        [ "$_s" = CASE ] && [ "$_l" = SERIAL ] && CASE_SERIAL["$_c"]=1
+    done < "$ROOT/bin/curate/suite_lanes.txt" 2>/dev/null
     local d g placed
     local -a roots=() ids=()
     for d in "${CASES[@]}"; do
         [ "$(binary_for "$d")" = BUILDCODE ] && continue     # live in the walk
+        _c="${d#"$ROOT"/}"; [ -n "${CASE_SERIAL[${_c#./}]:-}" ] && continue   # declared: live in the walk
         placed=""
         for g in "${!roots[@]}"; do
             case "$d/" in "${roots[$g]}/"*) placed="$g"; break ;; esac
@@ -504,7 +561,16 @@ if [ -z "${CHOUPO_SUITE_TIMED:-}" ]; then
         --record|--record-append|--gui|-h|--help) ;;
         *)
             mkdir -p "$ROOT/build"
-            _raw="$ROOT/build/suiteTimings.raw"; : > "$_raw"; : > "$ROOT/build/suiteTimings.replay"
+            #  THIS RUN'S OWN FILES (2026-10-26).  A gate that runs bin/runTests
+            #  with a clean environment (check_batch_plan, check_gmp_layout pass
+            #  only CHOUPO_HOME and PATH) starts a second wrapper, and while both
+            #  wrote build/suiteTimings.raw the inner one emptied the outer's
+            #  log mid-sweep -- Vitor's ten-core sweep ended with "suite_timings:
+            #  no result lines", its CSV and the next run's progress total lost.
+            #  So each wrapper stamps into files named by its own PID, and only
+            #  when it has finished does it leave them as build/suiteTimings.raw.
+            _raw="$ROOT/build/suiteTimings.$$.raw"; : > "$_raw"
+            export CHOUPO_TIMING_REPLAY="$ROOT/build/suiteTimings.$$.replay"; : > "$CHOUPO_TIMING_REPLAY"
             #  PROGRESS (Vitor, 2026-10-25: "devia de aparecer a % de casos
             #  que correram!").  A sweep run as `bin/runTests > log 2>&1`
             #  shows nothing on the terminal for half an hour, so when stdout
@@ -549,10 +615,14 @@ if [ -z "${CHOUPO_SUITE_TIMED:-}" ]; then
             done
             _rc=${PIPESTATUS[0]}
             "$ROOT/bin/curate/suite_timings.py" "$_raw" "$ROOT/build/suiteTimings.csv" || true
+            mv -f "$_raw" "$ROOT/build/suiteTimings.raw" 2>/dev/null
+            rm -f "$CHOUPO_TIMING_REPLAY"
             exit "$_rc"
             ;;
     esac
 fi
+
+TIMING_REPLAY="${CHOUPO_TIMING_REPLAY:-}"; unset CHOUPO_TIMING_REPLAY
 
 # --- PREFLIGHT: is the build a build OF this tree? ------------------------
 #
@@ -2339,6 +2409,7 @@ fi
 # --- check mode -----------------------------------------------------------
 pass=0; fail=0; known_broken=0; expected_fail=0
 KB_NAMES=(); EF_NAMES=()
+[ "$#" -eq 0 ] && gate_segments          # the gates' segments (THE GATES, above)
 
 # Catalogue identity + CAS audit runs once on the FULL sweep (it is a property
 # of the whole standard catalogue, not of any one case).
@@ -4376,7 +4447,7 @@ PYEOF
     # the tolerance, every op draws its pore, the bench raises no stream
     # advisory, and the schema's point tables name published keys.
     # By-hand sabotages in the C165 commit message.
-    if "$ROOT/bin/curate/check_pore_partition.py" > /tmp/porepartition.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_pore_partition.py" > /tmp/porepartition.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "pore-partition-gate" "$(grep -m1 '^check_pore_partition: OK' /tmp/porepartition.$$)"
         pass=$((pass+1))
     else
@@ -7381,7 +7452,7 @@ if [ -n "${FAST:-}" ] || [ -n "${SCOPE:-}" ]; then
     echo
     for fg in check_mass_closure check_energy_closure check_element_balance \
               check_closure_ledger_pinned check_energy_boundary_pinned; do
-        "$ROOT/bin/curate/$fg.py" > /tmp/fastgate.$$ 2>&1
+        gate_exec "$ROOT/bin/curate/$fg.py" > /tmp/fastgate.$$ 2>&1
         fgrc=$?
         if [ "$fgrc" -eq 3 ] && [ -n "${SCOPE:-}" ]; then
             printf "NOSUBJ %-40s  (%s)\n" "${fg#check_}" \
