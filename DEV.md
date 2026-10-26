@@ -1801,6 +1801,14 @@ accepts today, and that is a policy call.
 > colour alone: phase on wires and edge kinds carry a second channel (dash
 > pattern or a label).  All four go into slice 2 with the credo text.
 > (3) The paper's authors, ORCIDs, DOI and JOSS timing: later.
+> SLICE 1 LANDED 2026-10-26: results first (props: map folds after a
+> run, numbers with units, a status line; flowsheet: a persistent run
+> strip, phase letters only where 0/ declares one, seeds marked), rebased
+> on main with C140, --gui gui-tests 6516 passed.  Its props parts are
+> kept, not stripped: none contradicts C172, and the Workflow builds on
+> them.  Open with Vitor: pcsaft01 declares the vapour root under a
+> liquid name (proposed `properties ( Z_liquid v_molar_liq )`, one golden
+> row leaves).
 
 > **C167. THE SUITE USES EVERY CORE (Vitor, 2026-10-25, watching the
 > sweep on his 10-core laptop: "aquilo passa a maioria do tempo a usar so
@@ -3391,6 +3399,8 @@ accepts today, and that is a policy call.
 > false and "a decade of development" (undue burden) is the real attack;
 > pre-1977 UK law also had INUTILITY as a ground.  All to be verified on
 > primary sources; both handed to the C140 general.
+> LANDED 2026-10-26 (3fd4a4e1b): built by a general, --gui PASS 37 /
+> FAIL 0 (6505 tests); Vitor's content review still owed.
 
 > **C139. AN EDUTOOL ON THE ECONOMICS OF THE CHEMICAL NETWORK: BASE
 > CHEMICALS, INTERMEDIATES, INDUSTRIAL PARKS AND INTERNATIONAL TRADE

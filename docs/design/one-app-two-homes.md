@@ -17,12 +17,14 @@ a properties case is a sequence, and what replaces "Results".
 
 ## The forum (five generals, read only)
 
-* **A, practice.**  Aspen Plus keeps both activities in ONE application as two
-  strongly signalled *environments*; COMSOL keeps them in one Model Builder
-  tree whose *Study* holds ordered steps (parameter estimation is itself a
-  step) and keeps *Results* for outputs only; gPROMS references one Model from
-  a Process and an Estimation.  Separate products (ProSim, Multiflash, Aspen
-  Properties) exist to EMBED the property layer elsewhere, not for usability.
+* **A, practice.**  The leading commercial sequential-modular simulator keeps
+  both activities in ONE application as two strongly signalled
+  *environments*; a general multiphysics package keeps them in one model tree
+  whose *Study* holds ordered steps (parameter estimation is itself a step)
+  and keeps *Results* for outputs only; an equation-oriented process modelling
+  tool references one model from a process and from an estimation.  Separate
+  property products exist to EMBED the property layer elsewhere, not for
+  usability.
   The evidence condemns a *weakly signalled* mode, not two environments.
   Jupyter (out-of-order notebooks: 24 % ran, 4 % reproduced) justifies an
   enforced order -- in the engine, not a new screen.
