@@ -846,6 +846,9 @@
   "Heater": [
    "src/unitOperations/heatTransfer/Heater.H"
   ],
+  "HeldOutStatistic": [
+   "src/propertyOps/EvidencePartition.H"
+  ],
   "HeldPhase": [
    "src/core/ResultRecords.H"
   ],
@@ -4980,6 +4983,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/ThermoPackageBuilder.H",
+   "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
@@ -5401,6 +5405,7 @@
    "src/propertyOps/ElementCompositionOp.H",
    "src/propertyOps/EnthalpyConcentration.H",
    "src/propertyOps/EstimateComponent.H",
+   "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/Exchange.H",
    "src/propertyOps/Exergy.H",
    "src/propertyOps/ExplainProperty.H",
@@ -9316,6 +9321,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
@@ -9368,6 +9374,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/reaction/Reaction.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
@@ -12836,6 +12843,7 @@
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/PitzerActivity.cpp",
+   "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/VaporPressureFit.cpp"
   ],
   "src/propertyOps/Exchange.H": [
@@ -15055,6 +15063,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
+   "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -15079,6 +15088,7 @@
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
    "src/unitOperations/saturation/DewPoint.cpp"
   ],
@@ -15447,6 +15457,7 @@
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp"
   ],
   "src/thermo/equationOfState/IdealGas.H": [
