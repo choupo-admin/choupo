@@ -40,10 +40,17 @@ after the fit, naming what changed: a stale fit is never used in silence.
   F, Br, I, NH4, Li, Sr, Ba, Fe(II) and Mn(II) -- NOT for HCO3, PO4, HPO4
   or H2PO4, which that table does not list -- and D0 for the first eight
   plus NO3, HCO3, CO3, F, Br, NH4, Li, Sr, Ba, H2PO4, HPO4, PO4, Fe(II)
-  and Mn(II), the last fourteen from the public-domain PHREEQC database,
+  and Mn(II), all twenty-two from the public-domain PHREEQC database,
   each record citing its line (I has a radius and no D0).  So DSPM-DE runs
   a feed of any of those ions except HCO3, the phosphates and I.  An ion
   without the datum is refused by name, never given a default.
+* **The salts that carry them** are standard component records with an
+  ion map (`dissociatesTo`): NaCl, KCl, LiCl, CaCl2, MgCl2, NaOH, MgSO4,
+  Na2SO4, K2SO4, Na2CO3, NaHCO3, NH4Cl, NaNO3, KNO3, calciumNitrate
+  (Ca(NO3)2), NaF, NaBr and KBr.  A salt with no ion map is refused by
+  DSPM-DE by name.  `tutorials/props/membrane/dspmde01_water_treatment_salts`
+  runs a nitrate, fluoride, bromide, carbonate and ammonium water through
+  the pore from these records.
 * **The membrane's parameters**, in a membrane record (`constant/assets/`):
   the water permeability `A_w`; for DSPM-DE a `poreModel {}` (pore radius,
   porosity over thickness A_k/dx, volumetric charge density X_d, pore

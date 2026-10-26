@@ -1,0 +1,43 @@
+// [imported] origin "data/standards/components/MgCl2.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Magnesium chloride (anhydrous) (MgCl2, CAS 7786-30-3)
+
+  A non-volatile, fully dissociating salt (Mg2+ + 2 Cl-), added for the
+  water-treatment membrane path (DEV.md 4c C157/C161/C170): a real water's
+  ions each carry their transport data on their own species record
+  (species/Mg.dat, species/Cl.dat), and a salt
+  is how a case FEEDS them -- the DSPM-DE pore, the multi-ionic film and the
+  electrodialysis units decompose it through `dissociatesTo`.
+
+  IDENTITY ONLY.  The record carries the name, the formula, the CAS number,
+  the molar mass and the ion stoichiometry, and nothing it cannot cite: no
+  thermochemistry (a dissolved salt's formation enthalpy is ION-DERIVED,
+  never a component-level standardThermochemistry block -- CLAUDE.md 5), no
+  solubility, no crystal and no heat capacity: each is ABSENT, never a
+  zero, and curating them is a later act.
+    MW  95.205 g/mol = 24.305 + 2 x 35.45, the IUPAC abridged standard
+        atomic weights (Prohaska et al., Standard atomic weights of the
+        elements 2021 (IUPAC Technical Report), Pure Appl. Chem. 94 (2022)
+        573-600; the abridged values).
+\*---------------------------------------------------------------------------*/
+
+name           MgCl2;
+formula        MgCl2;
+CAS            7786-30-3;
+reviewStatus   interim;        // transcribed and self-checked; not yet read back by a curator
+
+MW             95.205;   // g/mol  (= kg/kmol)
+role           nonvolatile;    // a dissolved salt never enters the vapour (K = 0)
+
+// APPARENT COMPONENT view -- the balance/representation map (apparent -> ions).
+// The van't Hoff factor is DERIVED from it (Component.cpp), never stored twice.
+dissociatesTo  { Mg 1; Cl 2; }   // ion stoichiometry (formula-like identity)
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "summed from the IUPAC 2021 abridged standard atomic weights (Prohaska et al., Pure Appl. Chem. 94 (2022) 573): 24.305 + 2 x 35.45";
+    }
+}

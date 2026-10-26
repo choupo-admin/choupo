@@ -1,0 +1,77 @@
+// [imported] origin "data/standards/species/CO3.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/CO3.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    CO3;
+formula     "CO3-2";
+charge  -2;
+MW { value 60.01; unit g/mol;}
+aqueousThermo
+{
+//  These two carried NO citation of their own: the gate saw the
+//  Criss-Cobble source of the Cp block below and counted the record
+//  as sourced -- the same shape its own docstring records for a
+//  volumetric block.  The primary page was read 2026-08-24 and both
+//  values agree exactly, so the citation is now theirs.
+source "Wagman et al., The NBS Tables of Chemical Thermodynamic Properties, J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982), Table 23:C (CARBON), p. 2-83, row 'CO3= ao' -- PRIMARY PAGE READ 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md)";
+hfAq { value -677140; unit J/mol;}
+sAq  { value -56.9;  unit J/mol/K;}
+        // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+// T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+// cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+// 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+// only thing the engine consumes).
+cpAvg298
+{
+    model  crissCobble1964;
+    scale  crissCobbleAbsolute;
+    units  "cal/mol/K";
+    averageFrom298
+    (
+        { T 298.15; value -139; }
+        { T 333.15; value -121; }
+        { T 373.15; value -132; }
+        { T 423.15; value -127; }
+        { T 473.15; value -138; }
+    );
+    source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
+}
+}
+
+transport
+{
+    //  `radius` is the HYDRATED radius r_H of Nightingale, J. Phys. Chem. 63
+    //  (1959) 1381, Table I -- the convention of the eight master ions and
+    //  of every DSPM-DE pore fitted against them -- read from the primary
+    //  page on 2026-10-25 (DEV.md 4c C161; its own provenance below).
+    //  `D0` is from the PHREEQC database (DEV.md 4c C157), whose source line
+    //  is the record-level `source`.
+    radius { value 3.94e-10; unit m; }   // 3.94 A
+    D0 { value 9.55e-10; unit m2/s; }
+    provenance
+    {
+        source  "USGS PHREEQC database phreeqc.dat (usgs-coupled/phreeqc3, branch master, fetched 2026-10-25, sha256 5b80d45c989cd1db7aab485e198321ba550d5902be8097c8be26d85ba03da278), SOLUTION_SPECIES `CO3-2 = CO3-2` (line 138), `-dw` line 142: the 25 C tracer diffusion coefficient Dw is its first field; the further fields (temperature and ionic-strength dependence) are not used.  The database names no per-value reference on this line; its file-level references are Appelo, Parkhurst and Post, Geochim. Cosmochim. Acta 125 (2014) 49-67 (its ref. 1) and Appelo, Cem. Concr. Res. 101 (2017) 102-113 (its ref. 3)";
+        licence publicDomain;
+        radius
+        {
+            source        "E. R. Nightingale, Jr., Phenomenological Theory of Ion Solvation. Effective Radii of Hydrated Ions, J. Phys. Chem. 63 (1959) 1381-1387, doi:10.1021/j150579a011, Table I (p. 1383), row CO3-2, column r_H at 25 C: 3.94 A";
+            origin        literature;
+            method        "read from the primary page (Table I, the effective hydrated radius r_H) and cross-checked against the scan's text layer, 2026-10-25 (DEV.md 4c C157/C161)";
+            reviewStatus  interim;
+            notes         "The tier's radius convention: Nightingale's hydrated radius, the one the eight master ions carry and DSPM-DE pores are fitted on -- not a Stokes radius from D0 (his r_s column is a different quantity).  The source line above is the radius's; the record-level `source` is the D0's.";
+        }
+        D0
+        {
+            origin        literature;
+            method        "read from the cited database line by a parse that checks the species equation above it (Dw at 25 C, infinite dilution)";
+            reviewStatus  interim;
+            notes         "Transcribed by machine from the cited public-domain database, not read back against a primary measurement of this ion's limiting conductance; the Stokes-Einstein correction to the run temperature is applied by the consumer (thermo/transport/StokesEinstein.H).";
+        }
+    }
+}

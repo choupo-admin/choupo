@@ -1,0 +1,43 @@
+// [imported] origin "data/standards/components/NaBr.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Sodium bromide (NaBr, CAS 7647-15-6)
+
+  A non-volatile, fully dissociating salt (Na+ + Br-), added for the
+  water-treatment membrane path (DEV.md 4c C157/C161/C170): a real water's
+  ions each carry their transport data on their own species record
+  (species/Na.dat, species/Br.dat), and a salt
+  is how a case FEEDS them -- the DSPM-DE pore, the multi-ionic film and the
+  electrodialysis units decompose it through `dissociatesTo`.
+
+  IDENTITY ONLY.  The record carries the name, the formula, the CAS number,
+  the molar mass and the ion stoichiometry, and nothing it cannot cite: no
+  thermochemistry (a dissolved salt's formation enthalpy is ION-DERIVED,
+  never a component-level standardThermochemistry block -- CLAUDE.md 5), no
+  solubility, no crystal and no heat capacity: each is ABSENT, never a
+  zero, and curating them is a later act.
+    MW  102.894 g/mol = 22.99 + 79.904, the IUPAC abridged standard
+        atomic weights (Prohaska et al., Standard atomic weights of the
+        elements 2021 (IUPAC Technical Report), Pure Appl. Chem. 94 (2022)
+        573-600; the abridged values).
+\*---------------------------------------------------------------------------*/
+
+name           NaBr;
+formula        NaBr;
+CAS            7647-15-6;
+reviewStatus   interim;        // transcribed and self-checked; not yet read back by a curator
+
+MW             102.894;  // g/mol  (= kg/kmol)
+role           nonvolatile;    // a dissolved salt never enters the vapour (K = 0)
+
+// APPARENT COMPONENT view -- the balance/representation map (apparent -> ions).
+// The van't Hoff factor is DERIVED from it (Component.cpp), never stored twice.
+dissociatesTo  { Na 1; Br 1; }   // ion stoichiometry (formula-like identity)
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "summed from the IUPAC 2021 abridged standard atomic weights (Prohaska et al., Pure Appl. Chem. 94 (2022) 573): 22.99 + 79.904";
+    }
+}

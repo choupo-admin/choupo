@@ -1,0 +1,116 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  dspmde01_water_treatment_salts -- THE RESEARCHER'S PATH, PROVED: a water
+  that carries nitrate, fluoride, bromide, carbonate and ammonium, fed as
+  SALTS from the standard catalogue, through the DSPM-DE pore (DEV.md 4c
+  C157/C161/C170).
+
+  WHAT KIND OF CHECK THIS IS.  A STRUCTURAL witness, not a validation.  It
+  shows that every one of these salts decomposes into its ions and that
+  every ion finds a CITED hydrated radius (Nightingale 1959, Table I) and a
+  CITED D0 (USGS PHREEQC phreeqc.dat, `-dw`) on its species record, so the
+  pore can be solved.  No number here is a measurement.  The two pores are
+  NanoFiltran's worked example (constant/assets/NanoFiltranExample.dat,
+  which describes no real membrane) and the catalogue's NF270_dspmde (an
+  archetype whose pore is set, not fitted to this water): a researcher
+  replaces them with the record his own fit writes
+  (tutorials/steady/membranes/membrane24_fit_then_simulate is the
+  template).
+
+  WHAT IS NOT HERE, AND WHY.  Bicarbonate (HCO3-), phosphate and the
+  hydrogen phosphates have a PHREEQC D0 but NO hydrated radius: Nightingale's
+  Table I does not list them, and a Stokes radius from D0 is a different
+  convention that would shift every steric hindrance in silence -- so DSPM-DE
+  REFUSES them by name (DEV.md 4c C161).  NaHCO3 in this feed would stop the
+  run with that refusal.  The carbonate below is the CO3-- of Na2CO3 taken
+  fully dissociated: nothing here speciates it, so it stands for a high-pH
+  water; at a natural pH most of it would be bicarbonate.
+
+  THE THREE OPERATIONS, each a `poreTransport` bench at an IMPOSED J_v, ideal
+  activities, NanoFiltran's "no polarisation" film (k = 10 m/s), the solved
+  pore at 801 nodes:
+    monovalentWater  on NANOFILTRAN'S WORKED-EXAMPLE pore (X -30 mol/m3,
+                     r_p 0.40 nm, 2.5 um, eps_p 60): NaCl 5, NaNO3 1,
+                     NaF 0.5, KBr 0.5, NH4Cl 0.5 mol/m3 (Na K NH4 Cl NO3 F Br)
+    mixedWater       the same water plus Na2CO3 0.5 mol/m3 (+ CO3--), on the
+                     catalogue's NF270_dspmde pore (r_p 0.60 nm, X -5 mol/m3)
+    hardWater        Ca(NO3)2 2, KNO3 2, MgCl2 1, NaBr 1, MgSO4 1 mol/m3
+                     (Ca Mg K Na NO3 Cl Br SO4), on NF270_dspmde
+  WHY TWO PORES.  NanoFiltran's example pore was set against NanoFiltran's
+  own ion database, whose radii are STOKES radii (Na+ 1.84, Cl- 1.21,
+  SO4-- 2.31 A; nanofiltran_geraldesAlves2008/constant/species/).  Against
+  the catalogue's HYDRATED radii a 0.40 nm pore nearly closes to the
+  divalent ions: lambda = r/r_p is 0.985 for CO3--, 0.95 for SO4--, 1.03 for
+  Ca++ and 1.07 for Mg++.  Measured 2026-10-26: Na2CO3 (alone, or in this
+  water) and MgSO4 + NaCl do NOT converge there (the solved pore refuses,
+  naming the stalled continuation), and MgCl2 or Ca(NO3)2 alone are refused
+  because no cation enters the pore.  So the divalent waters run on
+  NF270_dspmde, whose 0.60 nm pore is the one its record states is
+  consistent with the hydrated-radius tier.  A pore and its ion radii are
+  ONE convention: a pore fitted on one cannot be read with the other.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      monovalentWater;
+        type      poreTransport;
+        T         298.15 K;
+        membrane  NanoFiltranExample;
+        transport DSPM-DE;
+        transportParameters
+        {
+            poreSolver { method finiteDifference; nodes 801; wallClosure porePermeate; }
+            hindrance  DechadilokDeen2006;
+            activity   ideal;
+            bulkDielectric 80;
+        }
+        feedMolPerM3 { NaCl 5; NaNO3 1; NaF 0.5; KBr 0.5; NH4Cl 0.5; }
+        J_v       ( 1e-6 5e-6 2e-5 );
+        k_film    10;                          // NanoFiltran's "no polarisation"
+        polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+    }
+    {
+        name      mixedWater;
+        type      poreTransport;
+        T         298.15 K;
+        membrane  NF270_dspmde;
+        transport DSPM-DE;
+        transportParameters
+        {
+            poreSolver { method finiteDifference; nodes 801; wallClosure porePermeate; }
+            hindrance  DechadilokDeen2006;
+            activity   ideal;
+            bulkDielectric 80;
+        }
+        feedMolPerM3 { NaCl 5; NaNO3 1; NaF 0.5; KBr 0.5; Na2CO3 0.5; NH4Cl 0.5; }
+        J_v       ( 1e-6 5e-6 2e-5 );
+        k_film    10;                          // NanoFiltran's "no polarisation"
+        polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+    }
+    {
+        name      hardWater;
+        type      poreTransport;
+        T         298.15 K;
+        membrane  NF270_dspmde;
+        transport DSPM-DE;
+        transportParameters
+        {
+            poreSolver { method finiteDifference; nodes 801; wallClosure porePermeate; }
+            hindrance  DechadilokDeen2006;
+            activity   ideal;
+            bulkDielectric 80;
+        }
+        feedMolPerM3 { calciumNitrate 2; KNO3 2; MgCl2 1; NaBr 1; MgSO4 1; }
+        J_v       ( 1e-6 5e-6 2e-5 );
+        k_film    10;                          // NanoFiltran's "no polarisation"
+        polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+    }
+);

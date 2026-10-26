@@ -3013,6 +3013,50 @@ Why the case exists: `kinetics1D` had NO case and no gate. Its sibling vaporPres
 \subsection{membrane}
 \grouptheory{membrane}
 \clearpage
+\tutentry{dspmde01\_water\_treatment\_salts}{tutorials/props/membrane/dspmde01\_water\_treatment\_salts}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{monovalentWater}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{mixedWater}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{hardWater}\\[-1pt]{\tiny poreTransport}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A water-treatment feed through the DSPM-DE pore: nitrate, fluoride, bromide, carbonate and ammonium salts from the standard catalogue, on NanoFiltran's worked-example pore and the catalogue's NF270 archetype -- every ion's radius and D0 cited on its species record}
+\begin{tutnarrative}
+THE RESEARCHER'S PATH, PROVED: a water that carries nitrate, fluoride, bromide, carbonate and ammonium, fed as SALTS from the standard catalogue, through the DSPM-DE pore (DEV.md 4c C157/C161/C170).
+
+WHAT KIND OF CHECK THIS IS. A STRUCTURAL witness, not a validation. It shows that every one of these salts decomposes into its ions and that every ion finds a CITED hydrated radius (Nightingale 1959, Table I) and a CITED D0 (USGS PHREEQC phreeqc.dat, `-dw`) on its species record, so the pore can be solved. No number here is a measurement. The two pores are NanoFiltran's worked example (constant/assets/NanoFiltranExample.dat, which describes no real membrane) and the catalogue's NF270\_dspmde (an archetype whose pore is set, not fitted to this water): a researcher replaces them with the record his own fit writes (tutorials/steady/membranes/membrane24\_fit\_then\_simulate is the template).
+
+WHAT IS NOT HERE, AND WHY. Bicarbonate (HCO3-), phosphate and the hydrogen phosphates have a PHREEQC D0 but NO hydrated radius: Nightingale's Table I does not list them, and a Stokes radius from D0 is a different convention that would shift every steric hindrance in silence -- so DSPM-DE REFUSES them by name (DEV.md 4c C161). NaHCO3 in this feed would stop the run with that refusal. The carbonate below is the CO3-- of Na2CO3 taken fully dissociated: nothing here speciates it, so it stands for a high-pH water; at a natural pH most of it would be bicarbonate.
+
+THE THREE OPERATIONS, each a `poreTransport` bench at an IMPOSED J\_v, ideal activities, NanoFiltran's "no polarisation" film (k = 10 m/s), the solved pore at 801 nodes: monovalentWater on NANOFILTRAN'S WORKED-EXAMPLE pore (X -30 mol/m3, r\_p 0.40 nm, 2.5 um, eps\_p 60): NaCl 5, NaNO3 1, NaF 0.5, KBr 0.5, NH4Cl 0.5 mol/m3 (Na K NH4 Cl NO3 F Br) mixedWater the same water plus Na2CO3 0.5 mol/m3 (+ CO3--), on the catalogue's NF270\_dspmde pore (r\_p 0.60 nm, X -5 mol/m3) hardWater Ca(NO3)2 2, KNO3 2, MgCl2 1, NaBr 1, MgSO4 1 mol/m3 (Ca Mg K Na NO3 Cl Br SO4), on NF270\_dspmde WHY TWO PORES. NanoFiltran's example pore was set against NanoFiltran's own ion database, whose radii are STOKES radii (Na+ 1.84, Cl- 1.21, SO4-- 2.31 A; nanofiltran\_geraldesAlves2008/constant/species/). Against the catalogue's HYDRATED radii a 0.40 nm pore nearly closes to the divalent ions: lambda = r/r\_p is 0.985 for CO3--, 0.95 for SO4--, 1.03 for Ca++ and 1.07 for Mg++. Measured 2026-10-26: Na2CO3 (alone, or in this water) and MgSO4 + NaCl do NOT converge there (the solved pore refuses, naming the stalled continuation), and MgCl2 or Ca(NO3)2 alone are refused because no cation enters the pore. So the divalent waters run on NF270\_dspmde, whose 0.60 nm pore is the one its record states is consistent with the hydrated-radius tier. A pore and its ion radii are ONE convention: a pore fitted on one cannot be read with the other.
+
+\end{tutnarrative}
+\tutreadme{A water-treatment feed carries more than sodium chloride: nitrate, fluoride, bromide, carbonate, ammonium, calcium, magnesium and sulfate. A case feeds them as salts --- each a component record with an ion map (dissociatesTo) --- and the DSPM-DE pore works ion by ion: every ion needs its hydrated radius (steric partition and hindrance) and its free-solution diffusivity D0 (diffusion and convection in the pore).}
+\tutreadme{This case proves that path end to end from the standard catalogue. Its salts are the standard records NaCl, NaNO3, NaF, KBr, Na2CO3, NH4Cl, calciumNitrate (Ca(NO3)2), KNO3, MgCl2, NaBr and MgSO4 (sealed into constant/components/ by bin/choupo-import, so the case is self-contained), and every ion resolves:}
+\tutreadme{$\ast$ its hydrated radius from Nightingale, J. Phys. Chem. 63 (1959) 1381, Table I (column r\_H, 25 $^\circ$C), read back against the primary page; $\ast$ its D0 from the public-domain USGS PHREEQC database phreeqc.dat, the 25 $^\circ$C Dw of its -dw line.}
+\tutreadme{Each species record (constant/species/<ion>.dat) cites its page, table, database line and file hash in its own transport \{ provenance \{\} \} block.}
+\tutreadme{Three operations, each a poreTransport bench at an IMPOSED permeate flux (J\_v = 1e-6, 5e-6, 2e-5 m/s), ideal activities, no polarisation:}
+\tutreadme{Each publishes, per J\_v and per ion, the bulk, wall and permeate concentrations and the observed and real rejections. At 2e-5 m/s, for example, mixedWater rejects CO3-- at 0.99985 and NO3- at 0.741, and hardWater rejects SO4-- at 0.99989 against Cl- at 0.778 and Br- at 0.767 -- the divalent co-ion held back by the negative pore, as NF does.}
+\begin{tutgolden}
+\goldrow{diag}{monovalentWater}{Jv\_p1}{1e-06}
+\goldrow{diag}{monovalentWater}{Jv\_p2}{5e-06}
+\goldrow{diag}{monovalentWater}{Jv\_p3}{2e-05}
+\goldrow{diag}{monovalentWater}{Kc\_Br}{1.19061896103}
+\goldrow{diag}{monovalentWater}{Kc\_Cl}{1.18629086518}
+\goldrow{diag}{monovalentWater}{Kc\_F}{1.13952821128}
+\goldrow{diag}{monovalentWater}{Kc\_K}{1.18846271114}
+\goldrow{diag}{monovalentWater}{Kc\_NH4}{1.18846271114}
+\goldrow{diag}{monovalentWater}{Kc\_NO3}{1.17968143659}
+\goldrow{diag}{monovalentWater}{Kc\_Na}{1.12423947195}
+\goldrow{diag}{monovalentWater}{Kd\_Br}{0.0143696929036}
+\goldrow{diag}{monovalentWater}{Kd\_Cl}{0.0133665877414}
+\goldrow{diag}{monovalentWater}{Kd\_F}{0.0054600222726}
+\goldrow{diag}{monovalentWater}{Kd\_K}{0.0138630195272}
+\goldmore{1202}
+\end{tutgolden}
+
+\clearpage
 \tutentry{nanofiltran\_geraldesAlves2008}{tutorials/props/membrane/nanofiltran\_geraldesAlves2008}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
