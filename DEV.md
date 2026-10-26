@@ -1528,6 +1528,23 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C173. AN EXTERNAL AUDIT OF THE GIBBS AND PHASE ROUTES (Vitor,
+> 2026-10-26, forwarding a review by another model: "Auditoria CHOUPO Gibbs
+> Fases").**  Its four claims, as summarised (the full report with
+> reproductions and line numbers was not reachable from the shared link):
+> (1) the VLLE flash and the gibbsReactor `directMin` route minimise a
+> Gibbs function whose vapour is ideal even with SRK declared; (2) phase
+> selection can lose a stable liquid, or return one liquid because the
+> search went infeasible; (3) PC-SAFT trace-component fugacity
+> coefficients disagree with the derivative of the same Helmholtz energy
+> (a factor of 3.71 in one trial); (4) the ice-liquid equilibrium can
+> refuse a valid solution after an excessive Newton step.  Headline:
+> ammonia at 700 K and 200 bar, directMin/SRK 30.01 % NH3 against
+> elementPotential/SRK 32.39 %.  Status: a general reproduces each claim
+> independently in the engine (never taking the review's numbers), states
+> which hold, and fixes those that hold behind a gate that fails first;
+> the full report asked of Vitor.
+
 > **C172. ONE GUI OR TWO: PROCESS SIMULATION AND PROPERTIES & DATA (Vitor,
 > 2026-10-26, after "Nos temos de por um pouco de ordem nas propriedades!
 > Idealmente devem ser a estrategia de um simulador sequencial", "Chamar
