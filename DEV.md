@@ -1631,6 +1631,15 @@ accepts today, and that is a policy call.
 > unit instead and the GUI reads both in one place.  Validated: the 26
 > cases those edits reach PASS, --gui, the named gates; the forum-E walk,
 > before/after, in the report.
+> COMMANDER on slice 1: agreed, the two held-out keys stay apart (the
+> decision page's "two spellings reconciled" corrected). OWED, recorded
+> not fixed: membrane24 declares its band `maxAAD 10 percent` and is judged
+> against rejection POINTS -- a band whose unit is not its statistic's
+> must refuse by name (engine grammar, a slice of its own); the engine
+> publishes no unit for pair parameters (NRTL b in K, UNIQUAC b
+> dimensionless) -- units per model, never inferred from a name;
+> curate02's held-out dataset is wired to a parity figure that draws only
+> the fit points.
 
 > **C171. THE PROPS SCREEN REDESIGNED BEFORE A RESEARCHER SEES IT, AND A
 > PROPER WAY TO CITE (Vitor, 2026-10-26, on the live NanoFiltran case

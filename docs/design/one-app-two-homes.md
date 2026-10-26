@@ -93,7 +93,9 @@ environments or an ordered list of steps are inventions.
    split; the version and adapter badges to a status bar; menu entries with
    no content on the case (Pinch, Variables, Literature without a mirror).
 6. **Content the engine already publishes reaches the screen** (whatever the
-   layout): the held-out AAD (the engine's two key spellings reconciled);
+   layout): the held-out AAD, each with its unit (the two keys are two
+   statistics -- a relative % and the membrane fit's absolute rejection
+   points -- so they stay apart and one GUI reader shows both);
    which datasets were fit and which held out, and the band; held-out curves
    labelled as predictions, never "fitted"; identifiability next to the
    verdict; the promotable record visible and in the downloaded zip; fitted
