@@ -1605,6 +1605,23 @@ accepts today, and that is a policy call.
 > the tinkering rule) and the four credo/heuristic conflicts the audit
 > names (a persistent left pane, one fixed place for Run, legible text
 > versus the whole flowsheet on screen, colour-only phase on wires).
+> RULED 2026-10-26 (Vitor: "1: tinkering.  2. decide tu  3. vemos
+> depois"): (1) the flowsheet selection card STAYS EDITABLE -- the
+> tinkering rule holds, and the credo and the panel's "Read-only" header
+> are corrected to say what the card does (a what-if edit of the open copy,
+> marked pending and announced, never written to disk).  (2) The four
+> conflicts, DECIDED by the commander: (a) a left navigation pane is
+> allowed when it is the case's ONE primary navigation and collapsible
+> (PropsTree already is; the credo's "no permanent left tree" becomes "no
+> second tree"); (b) ONE Run control in a fixed place (the top bar), its
+> label and scope following the mode on screen (binaryForMode, C157b) --
+> "Run is per view" becomes "the run follows the view"; (c) legibility
+> wins over fitting the whole flowsheet: map labels never render below a
+> minimum size and grow with browser zoom (WCAG 1.4.4), the overview at fit
+> is a simplified view and the full graph pans and zooms; (d) no meaning in
+> colour alone: phase on wires and edge kinds carry a second channel (dash
+> pattern or a label).  All four go into slice 2 with the credo text.
+> (3) The paper's authors, ORCIDs, DOI and JOSS timing: later.
 
 > **C167. THE SUITE USES EVERY CORE (Vitor, 2026-10-25, watching the
 > sweep on his 10-core laptop: "aquilo passa a maioria do tempo a usar so
