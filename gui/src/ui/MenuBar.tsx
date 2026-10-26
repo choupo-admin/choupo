@@ -186,13 +186,6 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   const caseMode = useCaseMode();
   const setCaseMode = useStore((s) => s.setCaseMode);
   const isPropsCase = caseMode.propsView;
-  //  the Workflow is on screen: a properties case (or a two-mode case shown
-  //  in its Workflow) with no other view open over it
-  const openView = useStore((s) => s.activeWorkspace);
-  const workflowOnScreen = isPropsCase && !!caseFiles.propsDict
-    && (openView === null || openView === "props");
-  const propsMapOpen = useStore((s) => s.propsMapOpen);
-  const setPropsMapOpen = useStore((s) => s.setPropsMapOpen);
   const application =
     typeof caseFiles.controlDict?.["application"] === "string"
       ? (caseFiles.controlDict["application"] as string)
@@ -708,29 +701,11 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
           );
         })}
 
-        {/* --- View (the Workflow's) -------------------------------------
-            DEV.md 4c C172 slice 3: the calculation map left the Workflow's
-            first screen and is drawn on request, CLOSED BY DEFAULT.  Only
-            while the Workflow is on screen (a menu entry with nothing behind
-            it is not offered, C172 item 5); in the collapsed posture the
-            Workflow carries its own "Calculation map" button instead, so the
-            390 px row is not widened (the width budget above). */}
-        {workflowOnScreen && !shape.collapsed && (
-          <TopMenu label="View" px={shape.padX}>
-            <Menu.Label>The Workflow</Menu.Label>
-            <Menu.Item
-              data-menu-item="calculation-map"
-              //  a toggle says its state (C168 slice 2): the check icon alone
-              //  was the only sign the map was open
-              role="menuitemcheckbox" aria-checked={propsMapOpen}
-              leftSection={propsMapOpen ? <IconCheck size={14} /> : <span style={{ display: "inline-block", width: 14 }} />}
-              onClick={() => setPropsMapOpen(!propsMapOpen)}
-              title="The whole graph of the calculation: data, models, operations, views, derived from system/propsDict"
-            >
-              Calculation map
-            </Menu.Item>
-          </TopMenu>
-        )}
+        {/* --- (no View menu) -------------------------------------------
+            DEV.md 4c C172 slice 3b (Vitor: "E o 'view' nao esta la a fazer
+            nada!!!  Devia ficar em 'reports'!!!"): the View menu held only
+            the calculation map, which the Workflow DIAGRAM replaced as a
+            properties case's home; what a run produced is under Reports. */}
 
         {/* --- Help ----------------------------------------------------- */}
         <TopMenu label="Help" px={shape.padX}>

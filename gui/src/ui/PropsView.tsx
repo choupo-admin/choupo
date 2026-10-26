@@ -40,16 +40,15 @@ License
       ┌──────────────────────────────────────────────────────────────┐
       │  (two-mode case) status of the properties · Open the Flowsheet│
       ├──────────────────────────────────────────────────────────────┤
-      │  one row: the case's question · About this case · Lab data    │
-      ├───────────────┬──────────────────────────────┬───────────────┤
-      │  OUTLINE      │  CENTRE: the results of the  │  INSPECTOR:   │
-      │  studies and  │  selection (overview, study, │  the selected │
-      │  numbered     │  step, or a dataset/model/   │  step: reads, │
-      │  steps        │  record)                     │  model, writes│
-      │               │                              │  verdict      │
-      └───────────────┴──────────────────────────────┴───────────────┘
-      (ReviewScreen; the calculation map is behind View > Calculation map,
-      closed by default -- DEV.md 4c C172 slice 3)
+      │  one row: the case's question · About this case               │
+      ├───────────────┬──────────────────────────────────────────────┤
+      │  OUTLINE      │  THE WORKFLOW DIAGRAM (the home): one box per │
+      │  studies and  │  step, studies as frames, arrows of           │
+      │  numbered     │  information; a click opens the selection     │
+      │  steps        │  card, a double click the step's own tab      │
+      └───────────────┴──────────────────────────────────────────────┘
+      Studies (the figures and tables of each study) and Reports (what the
+      run produced) are menu entries beside it -- DEV.md 4c C172 slice 3b.
 
   NO RUN BUTTON HERE: the case has ONE Run, in the top toolbar
   (ui/RunButton.tsx), plus Ctrl+Enter; the TopBar runs choupoProps for a
@@ -100,7 +99,6 @@ import type { ExperimentalOverlay } from "./plotting/CsvAutoPlot.js";
 import type { OperationResult, PairResolution, RunResult, ValidationBlock } from "../adapters/SolverAdapter.js";
 import { downloadComponentProposal } from "../case/saveCase.js";
 import { useStore } from "../state/store.js";
-import { useCaseMode } from "../state/useCaseMode.js";
 import type { JsonDict } from "../dict/index.js";
 import { DecisionLedger, buildLedger } from "./DecisionLedger.js";
 import { FitStatsPanel } from "./FitStatsPanel.js";
@@ -114,6 +112,9 @@ import {
 import { Plot, PLOT_CONFIG, PLOT_COLORS, darkLayout } from "./plotting/plotly.js";
 import { GibbsMapPanel } from "./GibbsMapPanel.js";
 import { ReviewScreen } from "./ReviewScreen.js";
+import { WorkflowHome } from "./WorkflowHome.js";
+import { PropsReports } from "./PropsReports.js";
+import { useWorkflowModel } from "./useWorkflowModel.js";
 import { readinessProminent } from "../case/reviewScreen.js";
 import { propsOpHelpLink } from "../case/modelDocs.js";
 import { ThermoView } from "./ThermoView.js";
@@ -221,11 +222,13 @@ function opOutputMap(propsDict: JsonDict | null): Map<string, string> {
  *  while compare_kinetics_order FITS k to the very series it is then compared
  *  against.  One panel serves both, so it must make the weaker claim; the
  *  caption below says which is which and points at where the case declares it. */
-function ValidationTable({ blocks }: { blocks: ValidationBlock[] }) {
+export function ValidationTable({ blocks, inline }: { blocks: ValidationBlock[];
+  /** drawn in the flow of a page (Studies, Reports), not filling a box */
+  inline?: boolean }) {
   const num = (x: number | null, digits = 4) =>
     typeof x === "number" && isFinite(x) ? String(Number(x.toPrecision(digits))) : "—";
   return (
-    <Box style={{ position: "absolute", inset: 0, padding: 16, overflow: "auto" }}>
+    <Box style={inline ? undefined : { position: "absolute", inset: 0, padding: 16, overflow: "auto" }}>
       <Stack gap="md">
         <Text size="xs" c="dimmed">
           Engine-computed average absolute deviation (AAD) of each model curve
@@ -387,7 +390,7 @@ function buildTargetItems(opts: {
   if (result?.validation && result.validation.length > 0) {
     out.push({ key: `${keyPrefix}cmp-aad`, group: "Comparison",
       label: `${labelPrefix}Comparison with data (AAD)`,
-      node: <ValidationTable blocks={result.validation} /> });
+      node: <ValidationTable blocks={result.validation} inline /> });
   }
 
   const opResults = result?.operationResults ?? [];
@@ -485,22 +488,68 @@ function buildTargetItems(opts: {
   return out;
 }
 
-export function PropsView() {
+/** WHAT EVERY VIEW OF A PROPERTIES CASE DERIVES FROM ITS RUN, in one place:
+ *  each operation's own typed panel (a fit's statistics, an estimate, a
+ *  consistency test, a Gibbs map, the property points), the comparisons of
+ *  models with measured data, and the decisions the run took.  The Studies
+ *  view, a step's tab and the Reports read it. */
+export function usePropsPanels(result: RunResult | undefined, showLab = true) {
+  const propsDict = useStore((s) => s.caseFiles.propsDict) ?? null;
+  const thermoComponents = useStore((s) => s.caseFiles.thermoPackage?.["components"]);
+  const targetItems = useMemo<PropsItem[]>(() => buildTargetItems({
+    result, propsDict, thermoComponents, showLab, labelPrefix: "", keyPrefix: "",
+  }), [result, propsDict, thermoComponents, showLab]);
+  const opPanels = useMemo(() => {
+    const m = new Map<string, React.ReactNode>();
+    for (const it of targetItems)
+      if (it.group === "Operations" && !it.generic)
+        for (const op of it.ops ?? []) m.set(op, it.node);
+    return m;
+  }, [targetItems]);
+  const comparisons = targetItems.filter((it) => it.group === "Comparison");
+  const ops = useMemo(() => result?.operationResults ?? [], [result]);
+  const pairs = useMemo<PairResolution[]>(() => {
+    const seen = new Set<string>();
+    const out: PairResolution[] = [];
+    for (const p of result?.thermoResolution ?? []) {
+      const k = `${p.i}|${p.j}|${p.model}`;
+      if (!seen.has(k)) { seen.add(k); out.push(p); }
+    }
+    return out;
+  }, [result]);
+  const datasets = useMemo(() => result?.experimentalDatasets ?? [], [result]);
+  const ran = result?.status === "done";
+  const ledgerRows = ran ? buildLedger(ops, pairs, datasets) : [];
+  const ledger = propsDict && ran ? <DecisionLedger ops={ops} pairs={pairs} datasets={datasets} /> : null;
+  return { opPanel: (op: string) => opPanels.get(op), comparisons, ledger, ledgerRows };
+}
+
+/** The comparisons, drawn: each model curve with the measured points, then
+ *  the engine's AAD of each. */
+function comparisonNodes(comparisons: PropsItem[]): React.ReactNode {
+  return comparisons.length > 0 ? comparisons.map((c) => (
+    <Box key={c.key} data-comparison={c.key}>
+      <Text size="xs" fw={600} mb={4}>{c.label}</Text>
+      <Box style={{ position: "relative", height: c.key.endsWith("aad") ? "auto" : "60vh",
+        minHeight: c.key.endsWith("aad") ? 0 : 380 }}>{c.node}</Box>
+    </Box>
+  )) : null;
+}
+
+/** A properties case's three views: its WORKFLOW (the home, the diagram), its
+ *  STUDIES (the figures and tables of each study) and its REPORTS (what the
+ *  run produced, to read and take away).  DEV.md 4c C172 slice 3b. */
+export type PropsViewKind = "workflow" | "studies" | "reports";
+
+export function PropsView({ view = "workflow" }: { view?: PropsViewKind }) {
   const caseFiles = useStore((s) => s.caseFiles);
   const tutorialName = useStore((s) => s.tutorialName);
   const controlDict = useStore((s) => s.caseFiles.controlDict);
-  const thermoComponents = useStore((s) => s.caseFiles.thermoPackage?.["components"]);
-  const storeRunResult = useStore((s) => s.runResult);
-  const storePropsRunResult = useStore((s) => s.propsRunResult);
   const propsRunAt = useStore((s) => s.propsRunAt);
   const flowsheetRunAt = useStore((s) => s.flowsheetRunAt);
 
   const hasFlowsheet = Boolean(caseFiles.flowsheet);
-  //  A two-mode case shown in its Workflow gets the props-case screen
-  //  (DEV.md 4c C152); its run lands in its own result slot.
-  const caseMode = useCaseMode();
   const setCaseMode = useStore((s) => s.setCaseMode);
-  const twoMode = caseMode.modes !== null;
   const inCuration = (() => {
     const fs = caseFiles.flowsheet;
     return Boolean(fs)
@@ -515,13 +564,11 @@ export function PropsView() {
     return typeof d === "string" && d.trim().length > 0 ? d.trim() : undefined;
   }, [controlDict]);
 
-  //  THE ONE TARGET: this case's own propsDict.  (A composite plant used to
-  //  fan out here to one run per sector; a sector with a propsDict now opens
-  //  as its own case -- DEV.md 4c C172.)
+  //  THE ONE TARGET: this case's own propsDict.
   const propsDict = caseFiles.propsDict ?? null;
   const hasProps = propsDict !== null;
-  const result: RunResult | undefined =
-    (twoMode ? storePropsRunResult : storeRunResult) ?? undefined;
+  const model = useWorkflowModel();
+  const result = model.result;
 
   // Raw lab-data overlays toggle (default on when present).
   const [showLab, setShowLab] = useState(true);
@@ -529,39 +576,9 @@ export function PropsView() {
     () => Object.keys(result?.csvFiles ?? {}).some((n) => n.startsWith("exp_")),
     [result],
   );
-
-  //  Every typed panel the operations of this case earn (buildTargetItems):
-  //  rehomed into the details of the operation they belong to, and the
-  //  comparisons into the overview.  The generic panels are NOT carried: an
-  //  operation's details already show its numbers and its figures.
-  const targetItems = useMemo<PropsItem[]>(() => buildTargetItems({
-    result, propsDict, thermoComponents, showLab, labelPrefix: "", keyPrefix: "",
-  }), [result, propsDict, thermoComponents, showLab]);
-  const opPanels = useMemo(() => {
-    const m = new Map<string, React.ReactNode>();
-    for (const it of targetItems)
-      if (it.group === "Operations" && !it.generic)
-        for (const op of it.ops ?? []) m.set(op, it.node);
-    return m;
-  }, [targetItems]);
-  const comparisons = targetItems.filter((it) => it.group === "Comparison");
-
-  // CONSOLIDATION ledger -- the decisions this run took, shown with the
-  // thermo package they qualify.
-  const aggOps = useMemo(() => result?.operationResults ?? [], [result]);
-  const aggPairs = useMemo<PairResolution[]>(() => {
-    const seen = new Set<string>();
-    const out: PairResolution[] = [];
-    for (const p of result?.thermoResolution ?? []) {
-      const k = `${p.i}|${p.j}|${p.model}`;
-      if (!seen.has(k)) { seen.add(k); out.push(p); }
-    }
-    return out;
-  }, [result]);
-  const aggData = useMemo(() => result?.experimentalDatasets ?? [], [result]);
+  const panels = usePropsPanels(result, showLab);
   const ran = result?.status === "done";
-  const ledgerRows = ran ? buildLedger(aggOps, aggPairs, aggData) : [];
-  const nUnjustified = ledgerRows.filter((r) => r.flag === "bad").length;
+  const nUnjustified = panels.ledgerRows.filter((r) => r.flag === "bad").length;
   const failed = result !== undefined && !ran;
   const consolidated = ran && nUnjustified === 0;
 
@@ -569,35 +586,43 @@ export function PropsView() {
   const simStale = flowsheetRunAt > 0 && propsRunAt > flowsheetRunAt;
   const simCurrent = flowsheetRunAt > 0 && propsRunAt > 0 && flowsheetRunAt >= propsRunAt;
 
-  //  F1 with NOTHING selected: the Props Workflow Guide (the ReviewScreen
+  //  F1 with NOTHING selected: the Props Workflow Guide (the workflow model
   //  answers first, in the capture phase, for whatever is selected).  The
   //  case's own story lives behind the visible "About this case" button --
   //  two questions, two doors.
   const [helpOpen, setHelpOpen] = useState(false);
   const rawFiles = useStore((s) => s.caseFiles.rawFiles);
-  //  THE CASE'S OWN INTRODUCTION (DEV.md 4c C154): its README.md where it
-  //  carries one (rendered as the lesson it is), else the first comment block
-  //  of its propsDict that is not the Choupo banner.  The studies it declares
-  //  are listed as doors.
   const caseReadme = rawFiles?.["README.md"];
   const caseStory = useMemo(
     () => (caseReadme ? null : dictStory(rawFiles?.["system/propsDict"])), [rawFiles, caseReadme]);
   const aboutStudies = useMemo(() => declaredStudies(propsDict), [propsDict]);
   const focusProps = useStore((s) => s.focusProps);
+  const selected = model.selected;
+  const targetOf = model.targetOf;
+  const activate = model.activate;
   useEffect(() => {
+    //  F1 with a selection opens what it is about (a step's operation
+    //  section, a model's theory, a file); with none, the Props Workflow
+    //  Guide.  Capture phase, so it answers before the shell's own F1.
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "F1") return;
       e.preventDefault();
-      openGuide(guideUrl("propsGuide"));
+      e.stopImmediatePropagation();
+      const t = view === "workflow" && selected ? targetOf(selected) : undefined;
+      if (t) activate(t);
+      else openGuide(guideUrl("propsGuide"));
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [view, selected, targetOf, activate]);
 
+  //  a selection asked for from outside (a unit's link to its fit, C152)
+  const propsFocus = useStore((s) => s.propsFocus);
+  const select = model.select;
+  useEffect(() => { if (propsFocus) select(propsFocus.id); }, [propsFocus, select]);
+
+  const readiness = <Box style={{ position: "absolute", inset: 0 }}><ThermoView /></Box>;
   const reviewOps = (propsDict?.["operations"] ?? []) as JsonDict[];
-  const ledger = hasProps && ran ? (
-    <DecisionLedger ops={aggOps} pairs={aggPairs} datasets={aggData} />
-  ) : null;
 
   return (
     <Box style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column",
@@ -618,7 +643,7 @@ export function PropsView() {
                 <Box key={st.name} style={{ borderLeft: "3px solid var(--mantine-color-cyan-6)", paddingLeft: 8 }}>
                   <Anchor component="button" type="button" size="sm" fw={700} data-about-study={st.name}
                     onClick={() => { setHelpOpen(false); focusProps(`study:${st.name}`); }}
-                    title="Show this study: its operations, figures and tables">
+                    title="Show this study on the Workflow">
                     {st.title}
                   </Anchor>
                   <Text size="xs" c="cyan.7">{purposeWords(st.purpose).label} -- {st.ops.length} operation(s)</Text>
@@ -675,12 +700,12 @@ export function PropsView() {
             ) : consolidated ? (
               <>
                 <IconCircleCheck size={15} color="var(--mantine-color-teal-4)" />
-                <Text size="xs" c="teal.4">Properties consolidated — {ledgerRows.length} decision{ledgerRows.length === 1 ? "" : "s"}, all sourced.</Text>
+                <Text size="xs" c="teal.4">Properties consolidated — {panels.ledgerRows.length} decision{panels.ledgerRows.length === 1 ? "" : "s"}, all sourced.</Text>
               </>
             ) : (
               <>
                 <IconAlertTriangle size={15} color="var(--mantine-color-yellow-4)" />
-                <Text size="xs" c="yellow.4">{nUnjustified} unjustified decision(s) — resolve before simulating (the thermo package's details list them).</Text>
+                <Text size="xs" c="yellow.4">{nUnjustified} unjustified decision(s) — resolve before simulating (Reports lists them).</Text>
               </>
             )}
             {!inCuration && simStale && (
@@ -705,21 +730,21 @@ export function PropsView() {
         </Group>
       )}
 
-      {/* Header strip: the case's question beside its introduction and the
-          lab-data toggle -- ONE row (DEV.md 4c C172 slice 3: every pixel above
-          the Workflow is a pixel its figures start lower). */}
+      {/* Header strip: the case's question beside its introduction (and, on
+          the Studies, the lab-data toggle) -- ONE row (DEV.md 4c C172 slice 3:
+          every pixel above the drawing is a pixel it is smaller). */}
       <Box style={{ flex: "0 0 auto", padding: "6px 16px",
         borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))", background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-8))" }}>
         <Group justify="flex-start" gap="md" wrap="nowrap" align="center">
           {description && (
-            <Text size="sm" c="var(--mantine-color-text)" fw={500} lineClamp={2} title={description}
+            <Text size="sm" c="var(--mantine-color-text)" fw={500} lineClamp={1} title={description}
               style={{ lineHeight: 1.3, flex: 1, minWidth: 0 }} data-case-question="">{description}</Text>
           )}
           <Button size="xs" variant="light" style={{ flex: "0 0 auto" }}
             onClick={() => setHelpOpen(true)}>
             About this case
           </Button>
-          {anyLabData && (
+          {view === "studies" && anyLabData && (
             <Checkbox size="xs" checked={showLab} onChange={(e) => setShowLab(e.currentTarget.checked)}
               label={
                 <Group gap={4} align="center">
@@ -739,19 +764,18 @@ export function PropsView() {
 
       {hasProps && (
         <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
-          <ReviewScreen ops={reviewOps} result={result}
-            propsDict={propsDict} thermo={caseFiles.thermoPackage}
-            rawFiles={caseFiles.rawFiles} caseKey={tutorialName} flowsheet={caseFiles.flowsheet}
-            readiness={<Box style={{ position: "absolute", inset: 0 }}><ThermoView /></Box>}
-            readinessProminent={readinessProminent(reviewOps)}
-            ledger={ledger}
-            opPanel={(op) => opPanels.get(op)}
-            comparisons={comparisons.length > 0 ? comparisons.map((c) => (
-              <Box key={c.key} data-comparison={c.key}>
-                <Text size="xs" fw={600} mb={4}>{c.label}</Text>
-                <Box style={{ position: "relative", height: "60vh", minHeight: 380 }}>{c.node}</Box>
-              </Box>
-            )) : null} />
+          {view === "workflow" ? (
+            <WorkflowHome model={model} />
+          ) : view === "studies" ? (
+            <ReviewScreen model={model} readiness={readiness}
+              readinessProminent={readinessProminent(reviewOps)}
+              opPanel={panels.opPanel}
+              comparisons={comparisonNodes(panels.comparisons)} />
+          ) : (
+            <PropsReports model={model} ledger={panels.ledger} readiness={readiness}
+              validation={result?.validation && result.validation.length > 0
+                ? <ValidationTable blocks={result.validation} inline /> : null} />
+          )}
         </Box>
       )}
     </Box>

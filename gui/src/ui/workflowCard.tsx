@@ -27,53 +27,59 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  WorkflowInspector -- THE RIGHT PANE OF THE WORKFLOW: THE SELECTED STEP
-  (DEV.md 4c C172 slice 3; docs/design/one-app-two-homes.md item 3).
+  workflowCard -- THE SELECTION CARD'S WORKFLOW BRANCH: what PropertyPanel
+  shows for a step, a study or a member of a properties case (DEV.md 4c C172
+  slice 3b; Vitor: "quando clicas num block do diagrama devia de ficar ao
+  lado a mesma coisa que fica na operacao unitaria do flowsheet!").
+
+  ONE CARD FOR BOTH HOMES.  A single click on a unit of the flowsheet opens
+  the floating selection card (ui/canvasChrome.tsx SelectionCard, body
+  ui/PropertyPanel.tsx); a single click on a step of the workflow diagram
+  opens THE SAME card, and this is what it says there.  It was the
+  Workflow's right-hand inspector (slice 3, ui/WorkflowInspector.tsx), moved
+  here whole so there is no third panel.
 
   For a STEP, four sections in this order, each read where the case or the
-  engine already says it -- nothing here computes a number:
+  engine already says it -- nothing here computes a number -- then the
+  step's main numbers after a run, and the door to its own tab:
 
     1. WHAT IT READS   a fit's datasets, each FIT or HELD OUT, and the band
-                       declared before the fit (case/fitEvidence.ts, the
-                       parts slice 1 built as a fit's details, re-homed);
-                       every file the engine's table says the op reads,
-                       resolved on its own dict (case/fileTraffic.ts) --
-                       with the process run named where the step DECLARES
-                       the Flowsheet writes it (`writtenBy`); the other data
-                       the calculation map wires into it (inline points,
-                       references, records read by name)
+                       declared before the fit (case/fitEvidence.ts); every
+                       file the engine's table says the op reads, resolved
+                       on its own dict (case/fileTraffic.ts) -- with the
+                       process run named where the step DECLARES the
+                       Flowsheet writes it (`writtenBy`); the other data the
+                       calculation map wires into it
     2. THE MODEL       the law the op applies and, INSIDE it, every declared
-                       choice (activity, hindrance, solver ...), the map's own
-                       model members in the order the op's schema lists its
-                       slots; or the case's thermo package with its models
+                       choice; or the case's thermo package with its models
     3. WHAT IT WRITES  every file and record the engine's table says it
-                       writes, and the fingerprint of the evidence partition
-                       its record carries
+                       writes, and the fingerprints its record states
     4. THE VERDICT     the run's word, the curation verdict WITH the
                        identifiability beside it, the AAD against data and
                        the held-out statistic in its own unit
 
-  For a STUDY: its purpose, its summary and its steps; for a dataset, a model
-  or a record selected in the outline or the map: which steps read, apply or
-  write it.  Text is never below 11 px here (C168's legibility ruling); a
-  state is a word and a glyph, never a colour alone.
+  For a STUDY: its purpose, its summary and its steps; for a dataset, a model,
+  a record or a figure: which steps read, apply, write or feed it.  Text is
+  never below 11 px here (C168's legibility ruling); a state is a word and a
+  glyph, never a colour alone.
 \*---------------------------------------------------------------------------*/
 
 import type { ReactNode } from "react";
-import { Badge, Box, Button, Group, ScrollArea, Stack, Text, UnstyledButton } from "@mantine/core";
-import { IconHelp } from "@tabler/icons-react";
+import { Badge, Box, Button, Group, Stack, Table, Text, UnstyledButton } from "@mantine/core";
+import { IconExternalLink, IconHelp } from "@tabler/icons-react";
 
 import type { OperationResult, RunResult } from "../adapters/SolverAdapter.js";
 import type { JsonDict } from "../dict/index.js";
 import { neighbours, type MapNode, type MapTarget, type PropsMap } from "../case/propsMap.js";
 import { purposeWords } from "../case/propsStudies.js";
-import { RUN_STATE_WORD, type VerdictRow } from "../case/reviewScreen.js";
+import { RUN_STATE_WORD, unitCell, type VerdictRow } from "../case/reviewScreen.js";
 import { fitEvidence } from "../case/fitEvidence.js";
-import { opFiles, writtenFingerprints, type StepFile } from "../case/fileTraffic.js";
+import { writtenFingerprints, type StepFile } from "../case/fileTraffic.js";
 import { stepLabel, stepOfOp, type WorkflowStep, type WorkflowStudy } from "../case/workflowSteps.js";
-import { BandBlock, CaseLink, EvidenceTable, FitVerdict } from "./PropsDetails.js";
-import { stepState } from "./WorkflowOutline.js";
-import { operationMapMeta } from "../case/operationSchemas.js";
+import { stepFiles, stepModel, stepState } from "../case/workflowDiagram.js";
+import { BandBlock, CaseLink, EvidenceTable, FittedParametersBlock, FitVerdict, WrittenFile } from "./PropsDetails.js";
+import { openStepTab } from "./stepTab.js";
+import { showFigureInStudies, type WorkflowModel } from "./useWorkflowModel.js";
 
 const isDict = (v: unknown): v is JsonDict => !!v && typeof v === "object" && !Array.isArray(v);
 
@@ -107,20 +113,6 @@ const opDictOf = (propsDict: JsonDict | null | undefined, name: string): JsonDic
   return (ops.find((o) => isDict(o) && o["name"] === name) as JsonDict | undefined) ?? null;
 };
 
-/** A step's files over its runs, one line per (direction, key, value). */
-function stepFiles(step: WorkflowStep, propsDict: JsonDict | null | undefined): StepFile[] {
-  const out: StepFile[] = [];
-  const seen = new Set<string>();
-  for (const name of step.ops) {
-    const op = opDictOf(propsDict, name);
-    if (!op) continue;
-    for (const f of opFiles(op, step.type)) {
-      const k = `${f.dir}|${f.key}|${f.value}`;
-      if (!seen.has(k)) { seen.add(k); out.push(f); }
-    }
-  }
-  return out;
-}
 
 const KIND_WORD: Record<string, string> = {
   file: "file", record: "record, into the case", proposal: "proposal, a draft for data/local/",
@@ -202,13 +194,7 @@ function StepInspector({ study, step, map, rows, result, propsDict, onSelect, on
   //  runs) is the op's own method, not a model it was given, so it is said
   //  under the model rather than standing in for it (curate02 fits the
   //  package's NRTL pair BY Levenberg-Marquardt).
-  const fixedRoles = new Set((operationMapMeta(step.type)?.models ?? []).filter((s) => s.fixed).map((s) => s.role));
-  const models = up.map(nodeOf).filter((n): n is MapNode => !!n && n.kind === "model");
-  const pkg = models.find((n) => n.id === "package");
-  const own = models.filter((n) => n.id !== "package" && !fixedRoles.has(n.role));
-  const methods = models.filter((n) => n.id !== "package" && fixedRoles.has(n.role));
-  const law = own[0];
-  const options = own.slice(1);
+  const { law, options, methods, pkg } = stepModel(step, map);
 
   const fp = results.map((r) => r.curation?.["partitionFingerprint"]).find((x) => !!x);
   const writtenText = (path: string) => result?.caseWrites?.[path] ?? result?.proposals?.[path];
@@ -227,6 +213,11 @@ function StepInspector({ study, step, map, rows, result, propsDict, onSelect, on
         <Text size="11px" c="dimmed" ff="monospace" mt={2} style={{ wordBreak: "break-word" }}>{step.ops.join(", ")}</Text>
       )}
       <Group gap="xs" mt={6}>
+        <Button size="compact-sm" variant="filled" leftSection={<IconExternalLink size={14} />}
+          data-open-step={step.id} onClick={() => openStepTab(step.id)}
+          title="Everything about this step in its own tab: results, figures, parameters, verdict, reads and writes (Enter, or double-click its box)">
+          Open
+        </Button>
         {firstNode && firstNode.member.target.kind === "guide" && (
           <Button size="compact-sm" variant="light" leftSection={<IconHelp size={14} />}
             onClick={() => onActivate(firstNode.member.target)} title={firstNode.member.target.label}>
@@ -352,7 +343,42 @@ function StepInspector({ study, step, map, rows, result, propsDict, onSelect, on
           </Stack>
         )}
       </Section>
+
+      {state !== "notRun" && (r0 || results.length > 0) && (
+        <Section n="numbers" title={step.ops.length > 1 ? `5 · Its main numbers (${first})` : "5 · Its main numbers"}>
+          <FittedParametersBlock op={opDict} r={r0} />
+          {r0 && <MainNumbers r={r0} />}
+          <Text size="11px" c="dimmed" mt={4}>
+            Every number{step.ops.length > 1 ? ", run by run," : ""} with its figures: Open (Enter).
+          </Text>
+        </Section>
+      )}
     </Stack>
+  );
+}
+
+/** The engine's own headline numbers of a run (its `headline` ranking, else
+ *  the first it publishes), each with the unit the engine publishes. */
+function MainNumbers({ r }: { r: OperationResult }) {
+  const keys = Object.keys(r.diagnostics);
+  const head = (r.headline ?? []).filter((k) => k in r.diagnostics);
+  const shown = (head.length ? head : keys).slice(0, 6);
+  if (shown.length === 0) return null;
+  return (
+    <Table fz="xs" verticalSpacing={1} data-main-numbers="" mt={4}>
+      <Table.Tbody>
+        {shown.map((k) => {
+          const u = unitCell(r, k);
+          return (
+            <Table.Tr key={k}>
+              <Table.Td ff="monospace" style={{ wordBreak: "break-all" }}>{k}</Table.Td>
+              <Table.Td ff="monospace" ta="right">{Number(r.diagnostics[k]).toPrecision(5)}</Table.Td>
+              <Table.Td ff="monospace" c="dimmed" fs={u.published ? undefined : "italic"}>{u.published ? u.text : "no unit"}</Table.Td>
+            </Table.Tr>
+          );
+        })}
+      </Table.Tbody>
+    </Table>
   );
 }
 
@@ -389,10 +415,16 @@ function StudyInspector({ study, rows, onSelect }: {
   );
 }
 
-function NodeInspector({ node, map, outline, onSelect, onActivate }: {
+function NodeInspector({ node, map, outline, onSelect, onActivate, result, rawFiles }: {
   node: MapNode; map: PropsMap; outline: WorkflowStudy[];
   onSelect: (id: string) => void; onActivate: (t: MapTarget) => void;
+  result: RunResult | undefined; rawFiles?: Record<string, string>;
 }) {
+  //  a record or a proposal the run wrote, by the path its node names
+  const writtenPath = node.kind === "view" && node.role === "record" ? (node.member.detail.split(": ").pop() ?? "")
+    : node.kind === "view" && node.role === "proposal" ? node.member.label : "";
+  const writtenText = writtenPath ? (result?.caseWrites?.[writtenPath] ?? result?.proposals?.[writtenPath]
+    ?? (node.role === "record" ? rawFiles?.[writtenPath] : undefined)) : undefined;
   const { up, down } = neighbours(map, node.id);
   const stepsOf = (ids: string[]) => {
     const out: { number: string; id: string; label: string }[] = [];
@@ -429,54 +461,54 @@ function NodeInspector({ node, map, outline, onSelect, onActivate }: {
           ))}
         </Section>
       )}
-      <Text size="11px" c="dimmed">Its details, and every figure it reaches, are in the centre.</Text>
+      {writtenText !== undefined && (
+        <WrittenFile path={writtenPath} text={writtenText}
+          why={node.role === "record" ? "the record this run wrote into the case" : "the proposal this run wrote -- a draft for a human to promote"} />
+      )}
+      {node.kind === "view" && node.member.target.kind === "view" && (
+        <Button size="compact-sm" variant="light" onClick={() => showFigureInStudies((node.member.target as { domId: string }).domId)}>
+          Show it in Studies
+        </Button>
+      )}
+      <Text size="11px" c="dimmed">Every figure and table of the case is under Studies; the run's records and files under Reports.</Text>
     </Stack>
   );
 }
 
-export function WorkflowInspector({ selected, outline, map, rows, result, propsDict, onSelect, onActivate, opLink }: {
-  selected: string;
-  outline: WorkflowStudy[];
-  map: PropsMap;
-  rows: VerdictRow[];
-  result: RunResult | undefined;
-  propsDict: JsonDict | null | undefined;
-  onSelect: (id: string) => void;
-  onActivate: (t: MapTarget) => void;
-  opLink: (op: string) => MapTarget | undefined;
-}) {
-  let body: ReactNode;
+/** What the selection card shows for a selection of the workflow (a step,
+ *  a study, a member of the map); null when the id names none of those. */
+export function WorkflowSelection({ model }: { model: WorkflowModel }) {
+  const { selected, outline, map, rows, result, propsDict } = model;
   const step = selected.startsWith("op:") ? stepOfOp(outline, selected.slice(3)) : null;
   const study = outline.find((s) => s.id === selected);
   const node = map.nodes.find((n) => n.id === selected);
-  if (step) {
-    body = <StepInspector study={step.study} step={step.step} map={map} rows={rows} result={result}
-      propsDict={propsDict} onSelect={onSelect} onActivate={onActivate} opLink={opLink} />;
-  } else if (study) {
-    body = <StudyInspector study={study} rows={rows} onSelect={onSelect} />;
-  } else if (node) {
-    body = <NodeInspector node={node} map={map} outline={outline} onSelect={onSelect} onActivate={onActivate} />;
-  } else {
-    const nSteps = outline.reduce((a, s) => a + s.steps.length, 0);
-    const declared = outline.filter((s) => s.declared).length;
-    body = (
-      <Stack gap={6} data-inspector="workflow">
-        <Text size="xs" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.5 }}>The workflow</Text>
-        <Text size="xs">
-          {declared > 0 ? `${declared} declared ${declared === 1 ? "study" : "studies"}, ` : ""}
-          {nSteps} {nSteps === 1 ? "step" : "steps"}, run in the order the outline numbers them -- the engine
-          refuses a step that reads what a later one writes.
-        </Text>
-        <Text size="xs" c="dimmed">
-          Select a step: this pane shows what it reads, the model it applies with its options, what it writes
-          and its verdict.  The whole graph of the calculation is behind View › Calculation map.
-        </Text>
+  if (step)
+    return <StepInspector study={step.study} step={step.step} map={map} rows={rows} result={result}
+      propsDict={propsDict} onSelect={model.select} onActivate={model.activate} opLink={model.opLink} />;
+  if (study) return <StudyInspector study={study} rows={rows} onSelect={model.select} />;
+  if (node)
+    return <NodeInspector node={node} map={map} outline={outline} onSelect={model.select} onActivate={model.activate}
+      result={result} rawFiles={model.rawFiles} />;
+  if (selected === "wf:process")
+    return (
+      <Stack gap={6} data-inspector="process">
+        <Text size="xs" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.5 }}>From the Flowsheet run</Text>
+        <Text size="sm">A step of this workflow DECLARES that the process run writes what it reads
+          (<code>writtenBy {"{ <key> process; }"}</code>): run the Flowsheet first, then this workflow.</Text>
+      </Stack>
+    );
+  if (selected.startsWith("wf:file:")) {
+    const path = selected.slice(8);
+    const csv = result?.csvFiles?.[path];
+    return (
+      <Stack gap={6} data-inspector="file">
+        <Text size="xs" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.5 }}>a file the run writes</Text>
+        <Text size="sm" fw={700} ff="monospace" style={{ wordBreak: "break-all" }}>{path}</Text>
+        <Text size="xs" c="dimmed">{csv !== undefined
+          ? `${csv.split("\n").filter(Boolean).length} lines -- every file the run wrote is under Reports, to read and download.`
+          : "Written when the workflow runs; it will be under Reports."}</Text>
       </Stack>
     );
   }
-  return (
-    <ScrollArea h="100%" type="auto">
-      <Box p="sm" component="aside" aria-label="Inspector">{body}</Box>
-    </ScrollArea>
-  );
+  return null;
 }

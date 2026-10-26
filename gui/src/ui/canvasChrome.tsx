@@ -107,6 +107,67 @@ export function CanvasKeyHint({ legibility, keys }: { legibility: "full" | "over
   );
 }
 
+/** One wire kind in the WIRES legend: its pattern, its colour where it has
+ *  one of its own (absent: the wire keeps the colour of what it carries),
+ *  its word and what it means. */
+export interface WireLegendItem {
+  key: string;
+  dash: string | null | undefined;
+  colour?: string;
+  width?: number;
+  opacity?: number;
+  /** the recycle tear's break mark, drawn ON the line */
+  cut?: boolean;
+  label: string;
+  meaning: string;
+}
+
+/** The WIRES legend (top-left): every wire kind on screen, by its pattern
+ *  AND its word -- the dash is the first channel, the colour the second
+ *  (C168 ruling (d)).  It carries its own surface over the canvas. */
+export function WireLegend({ items, title = "wires" }: { items: readonly WireLegendItem[]; title?: string }) {
+  return (
+    <Box
+      data-wire-legend=""
+      style={{
+        padding: "6px 10px",
+        borderRadius: 4,
+        background: "light-dark(rgba(255,255,255,0.9), rgba(0,0,0,0.55))",
+        pointerEvents: "none",
+        display: "flex",
+        gap: 12,
+        alignItems: "center",
+        flexWrap: "wrap",
+        maxWidth: 520,
+      }}
+    >
+      <Text size="11px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
+        {title}
+      </Text>
+      {items.map((d) => (
+        <Box key={d.key} style={{ display: "flex", gap: 5, alignItems: "center" }} title={d.meaning}>
+          <svg width={34} height={6} aria-hidden>
+            <line
+              x1={0} y1={3} x2={34} y2={3}
+              stroke={d.colour ?? "currentColor"}
+              strokeWidth={d.width ?? 2}
+              strokeDasharray={d.dash ?? undefined}
+              opacity={d.opacity ?? 1}
+            />
+            {d.cut && (
+              <g stroke="currentColor" strokeWidth={1.5}>
+                <line x1={8} y1={6} x2={11} y2={0} />
+                <line x1={11} y1={6} x2={14} y2={0} />
+              </g>
+            )}
+          </svg>
+          <Text size="11px" c="dimmed">{d.label}</Text>
+        </Box>
+      ))}
+    </Box>
+  );
+}
+
 /* Selection card (top-right): what is selected -- a unit's "hardware" and
    latest-run KPIs on the flowsheet, a step's reads, model, writes and
    verdict on the workflow.  Appears ONLY when something is selected, so it

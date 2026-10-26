@@ -63,6 +63,12 @@ interface WaypointData {
   onReset?: (id: string) => void;
   /** Set by FlowCanvas when this stream is a model-boundary audit entry. */
   boundary?: BoundaryBadgeData;
+  /** A workflow arrow (DEV.md 4c C172 slice 3b): the word on its mark says
+   *  what it CARRIES rather than a phase, and its bend is the layout's (the
+   *  diagram is derived, so there is no arrangement to keep). */
+  carries?: string;
+  carriesMeaning?: string;
+  carriesPrimary?: boolean;
   [k: string]: unknown;
 }
 
@@ -125,8 +131,16 @@ export function WaypointEdge(props: EdgeProps) {
         <ModelBoundaryBadge x={labelX} y={labelY + 16} refused={data.boundary.refused} />
       )}
       <EdgeLabelRenderer>
-        {/* Transparent hit area (catches hover even when the dot is
-            hidden) with a small visible handle in the middle. */}
+        {data.carries !== undefined ? (
+          <div className="nodrag nopan" data-wire-label={data.carries}
+            style={{ position: "absolute", transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+              pointerEvents: "none" }}>
+            <WirePhaseMark color={color} glyph={data.carries} label={data.carriesMeaning ?? data.carries}
+              moved={false} hover={false} what="carries" primary={!!data.carriesPrimary} />
+          </div>
+        ) : (
+        /* Transparent hit area (catches hover even when the dot is
+            hidden) with a small visible handle in the middle. */
         <div
           // `nodrag nopan`: React Flow's pane listens for pointer-drag to
           // PAN the canvas; without these classes grabbing the handle pans
@@ -160,6 +174,7 @@ export function WaypointEdge(props: EdgeProps) {
           <WirePhaseMark color={color} glyph={data.phaseGlyph as string | undefined}
             label={data.phaseLabel as string | undefined} moved={moved} hover={hover} />
         </div>
+        )}
         {/* PFD stream number, just above the bend point (display-only, toggled
             by the SHOW "№ streams" chip). */}
         {data.showNumbers === true && typeof data.num === "number" && (

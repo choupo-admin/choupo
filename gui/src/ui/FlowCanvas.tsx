@@ -82,7 +82,7 @@ import { useLegibilityFloor } from "./legibilityFloor.js";
 import {
   formatSig,
 } from "../state/displayUnits.js";
-import { arrowMarker, CanvasBackground, CanvasKeyHint, CANVAS_BG, SelectionCard } from "./canvasChrome.js";
+import { arrowMarker, CanvasBackground, CanvasKeyHint, CANVAS_BG, SelectionCard, WireLegend } from "./canvasChrome.js";
 import { FLOWSHEET_FIT_ANIMATED, FLOWSHEET_MIN_ZOOM, flowsheetFitFor } from "./flowsheetViewport.js";
 import { selectionLeafLabel } from "./panelFold.js";
 import { PropertyPanel } from "./PropertyPanel.js";
@@ -1786,43 +1786,11 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           )}
           {legends.map((lg) => <LegendBox key={lg.title} legend={lg} />)}
           {dashesPresent.length > 0 && (
-            <Box
-              style={{
-                padding: "6px 10px",
-                borderRadius: 4,
-                background: "light-dark(rgba(255,255,255,0.9), rgba(0,0,0,0.55))",
-                pointerEvents: "none",
-                display: "flex",
-                gap: 12,
-                alignItems: "center",
-                flexWrap: "wrap",
-                maxWidth: 520,
-              }}
-            >
-              <Text size="11px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
-                wires
-              </Text>
-              {dashesPresent.map((d) => (
-                <Box key={d.kind} style={{ display: "flex", gap: 5, alignItems: "center" }} title={d.meaning}>
-                  <svg width={34} height={6} aria-hidden>
-                    <line
-                      x1={0} y1={3} x2={34} y2={3}
-                      stroke={d.colour ? inkFor(d.colour, uiScheme) : "currentColor"}
-                      strokeWidth={2}
-                      strokeDasharray={d.dash ?? undefined}
-                      opacity={d.opacity}
-                    />
-                    {d.mark === "cut" && (
-                      <g stroke="currentColor" strokeWidth={1.5}>
-                        <line x1={8} y1={6} x2={11} y2={0} />
-                        <line x1={11} y1={6} x2={14} y2={0} />
-                      </g>
-                    )}
-                  </svg>
-                  <Text size="11px" c="dimmed">{d.label}</Text>
-                </Box>
-              ))}
-            </Box>
+            //  the WIRES legend, shared with the workflow diagram
+            //  (ui/canvasChrome.tsx)
+            <WireLegend items={dashesPresent.map((d) => ({
+              key: d.kind, dash: d.dash, label: d.label, meaning: d.meaning, opacity: d.opacity,
+              colour: d.colour ? inkFor(d.colour, uiScheme) : undefined, cut: d.mark === "cut" }))} />
           )}
         </Box>
         {/* THE PROBE (C114 item 6): every field the hovered stream publishes,

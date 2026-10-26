@@ -40,6 +40,7 @@ import { DUTY_TIER_COLOUR } from "../case/dutySign.js";
 import { scalarToSI } from "../dict/scalarSI.js";
 import { useStore } from "../state/store.js";
 import { inkFor, phaseColor as phaseColorFor } from "./plotting/palette.js";
+import { terminalCardStyle, TERMINAL_BORDER } from "./nodeCard.js";
 import {
   formatFlow,
   formatTemperature,
@@ -216,12 +217,9 @@ export function StreamTerminal({ data, selected }: NodeProps) {
   // Phase colour is SEMANTIC -- it never changes on selection.
   // Selection signals through a halo box-shadow ring in the project
   // accent; the phase-coloured border underneath stays put.
-  const borderColor = phaseColor
-    ? onChip(phaseColor)
-    : "light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3))";
+  const borderColor = phaseColor ? onChip(phaseColor) : TERMINAL_BORDER;
   // Solid border once we have a phase (post-run); dashed otherwise so
   // the pre-run terminal still reads as a boundary marker, not a unit.
-  const borderStyle = phaseColor ? "solid" : "dashed";
   // Two-phase: show the L/V fractions INLINE after the name (L then V, each in
   // its own phase colour); single-phase shows just the glyph.  vf is the engine
   // flash result (post-run); no repetition on the state line below.
@@ -231,20 +229,9 @@ export function StreamTerminal({ data, selected }: NodeProps) {
   const vapColor = onChip(phaseColorFor("vapour", prefs.colorScheme, ui));
 
   return (
-    <div
-      style={{
-        background: "light-dark(var(--mantine-color-white), transparent)",
-        border: `1.5px ${borderStyle} ${borderColor}`,
-        borderRadius: 18,
-        padding: "8px 12px",
-        minWidth: 110,
-        fontFamily: "Inter, sans-serif",
-        transition: "border-color 150ms ease, border-style 150ms ease, box-shadow 150ms ease",
-        boxShadow: selected
-          ? "0 0 0 2px var(--mantine-color-accent-3), 0 0 8px rgba(38, 198, 218, 0.4)"
-        : "var(--mantine-shadow-sm)",
-      }}
-    >
+    //  THE PILL IS SHARED WITH THE WORKFLOW'S FEEDS AND PRODUCTS
+    //  (ui/nodeCard.ts, DEV.md 4c C172 slice 3b).
+    <div style={terminalCardStyle(!!selected, borderColor, !!phaseColor)}>
       {isFeed ? null : <Handle type="target" position={Position.Left} />}
       <Stack gap={2}>
         {/* FEED / PRODUCT dropped -- redundant: the flowsheet's edge arrows + the

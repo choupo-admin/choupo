@@ -44,10 +44,13 @@ License
   │                                                        │
   └────────────────────────────────────────────────────────┘
 
-  PropsView (the Workflow) is the centre when the case is a properties case
-  (carries `propsDict`, no `flowsheet`, or a two-mode case shown in its
-  Workflow).  A process case has no Workflow (DEV.md 4c C172): a stale
-  ?workspace=props on one draws the flowsheet.  A thin status bar at the
+  PropsView is the centre when the case is a properties case (carries
+  `propsDict`, no `flowsheet`, or a two-mode case shown in its Workflow): its
+  home is the WORKFLOW DIAGRAM, as a process case's is the flowsheet, and its
+  STUDIES and REPORTS are menu entries beside it (DEV.md 4c C172 slice 3b).
+  A process case has no Workflow (DEV.md 4c C172): a stale ?workspace=props on
+  one draws the flowsheet.  A step's own TAB (?step=, a double click on its
+  box) is routed before the shell, as a unit's internals tab is.  A thin status bar at the
   foot carries the engine version and the adapter that ran.
 \*---------------------------------------------------------------------------*/
 
@@ -87,6 +90,11 @@ import { openGuide } from "../help/guideLinks.js";
 // of the main chunk.
 const PropsView = lazy(() =>
   import("./PropsView.js").then((m) => ({ default: m.PropsView })),
+);
+// A step's own tab (?step=, DEV.md 4c C172 slice 3b): its figures pull
+// Plotly, so it is lazy like PropsView.
+const StepTab = lazy(() =>
+  import("./StepTab.js").then((m) => ({ default: m.StepTab })),
 );
 // Same reason for the other Plotly-pulling workspaces (each imports the
 // shared plotting kit): lazy-load them so Plotly stays in split chunks and
@@ -265,7 +273,8 @@ export function AppShell() {
       //  owns F1 there too (the selected map block or tree node, else the
       //  selected panel): answering here as well opened two tabs per press
       //  (found 2026-10-25, DEV.md 4c C151).
-      if ((s.activeWorkspace === null || s.activeWorkspace === "props") && s.caseFiles.propsDict
+      if ((s.activeWorkspace === null || s.activeWorkspace === "props" || s.activeWorkspace === "studies"
+           || s.activeWorkspace === "reports") && s.caseFiles.propsDict
           && (!s.caseFiles.flowsheet || s.caseModeFor[s.tutorialName] === "props"
               || (s.caseModeFor[s.tutorialName] === undefined
                   && s.caseFiles.controlDict?.["application"] === "choupoProps"))) return;
@@ -311,6 +320,19 @@ export function AppShell() {
     return (
       <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
         <InternalsView />
+      </Suspense>
+    );
+  }
+
+  // A step of a properties case in its own tab (?step=<key>&id=<step>, DEV.md
+  // 4c C172 slice 3b): the workflow's counterpart of a unit's internals page.
+  // It booted the store from its stash (state/store.ts bootCase) and refuses
+  // honestly when the stash is gone.
+  if (typeof window !== "undefined"
+      && new URLSearchParams(window.location.search).has("step")) {
+    return (
+      <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+        <StepTab />
       </Suspense>
     );
   }
@@ -502,8 +524,10 @@ export function AppShell() {
               <MethodsWorkspace />
             </Suspense>
           ) : (
+            //  the Workflow diagram (the home), or its Studies or Reports
             <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
-              <PropsView />
+              <PropsView view={activeWorkspace === "studies" ? "studies"
+                : activeWorkspace === "reports" ? "reports" : "workflow"} />
             </Suspense>
           )
         ) : activeWorkspace === "streams" ? (

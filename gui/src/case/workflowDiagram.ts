@@ -212,7 +212,7 @@ export const STEP_HEAD_H = 28;
 /** one written line (13 px) */
 export const STEP_LINE_H = 18;
 export const STEP_PAD_Y = 10;
-export const TERM_W = 190;
+export const TERM_W = 220;
 export const TERM_H = 48;
 const TERM_GAP = 8;
 const GAP_X = 64;

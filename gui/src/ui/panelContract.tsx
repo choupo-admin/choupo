@@ -297,12 +297,6 @@ export const STREAMS_SUMMARY_PANEL: PanelChrome = {
   contentMin: 0,
 };
 
-/** A PROPS CASE'S CALCULATION MAP (DEV.md 4c C153), docked above the details
- *  of whatever is selected on the Results screen (ui/ReviewScreen.tsx).  A TOP
- *  panel like the balances band: the reader drags the seam under it, and
- *  folding it is the screen's "figures full height".  No shortcut (`[` is the
- *  case-files rail's, `]` the console's); `contentMin: 0`, the details pane
- *  below is reserved by the host when it fits the map (`shownTopPanelPx`). */
 /** The Workflow's outline of studies and steps (C168 slice 2, ruling (a)):
  *  a left rail like the others, `[` folds it to the 28 px strip. */
 export const WORKFLOW_OUTLINE_PANEL: PanelChrome = {
@@ -310,10 +304,6 @@ export const WORKFLOW_OUTLINE_PANEL: PanelChrome = {
   contentMin: RAIL_CONTENT_MIN, shortcut: "[",
 };
 
-export const PROPS_MAP_PANEL: PanelChrome = {
-  prefs: PANELS.propsMap, edge: "top", label: "calculation map",
-  contentMin: 0,
-};
 
 // ---- geometry (rule 1) ------------------------------------------------------
 

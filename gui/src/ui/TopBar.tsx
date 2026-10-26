@@ -339,9 +339,10 @@ export function TopBar({ onMinWidth }: {
         if (!caseFiles.flowsheet) {
           notifications.show({
             title: "Run complete",
-            //  The results lead the screen after a run (DEV.md 4c C168): the
-            //  toast no longer points elsewhere.
-            message: "Properties computed — the results lead this screen.",
+            //  Each step's box now says its state and verdict (DEV.md 4c C172
+            //  slice 3b); the figures are under Studies, what the run wrote
+            //  under Reports -- both entries of this menu.
+            message: "Every step's box shows its state and verdict; Studies has the figures, Reports what the run wrote.",
             color: "teal",
             icon: <IconCircleCheck size={16} />,
             autoClose: 4000,

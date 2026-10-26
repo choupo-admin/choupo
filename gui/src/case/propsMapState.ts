@@ -30,8 +30,9 @@ License
   propsMapState -- WHAT EACH BLOCK OF THE CALCULATION MAP DID IN THE LAST RUN
   (DEV.md 4c C154, Vitor's addition: "a state on every map block").
 
-  Four words, each in ink AND colour on the block (ui/PropsMap.tsx) and named
-  in the map's legend:
+  Four words, each in ink AND colour.  The calculation map that drew them on
+  its blocks is retired (DEV.md 4c C172 slice 3b); the Workflow diagram reads
+  the members' states to mark a STEP stale (ui/useWorkflowModel.ts):
 
     run      the last run used it (data, a model) or produced it (an
              operation that returned 0, a view the run published)

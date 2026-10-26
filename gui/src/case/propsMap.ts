@@ -88,7 +88,8 @@ export const THERMO_DICT_PATH = "constant/thermoPhysPropDict";
 
 export type BlockKind = "data" | "model" | "operation" | "view" | "unit";
 /** What a wire carries -- each its own colour AND dash, so colour is never
- *  the only cue (ui/PropsMap.tsx draws the legend). */
+ *  the only cue (the calculation map that drew them is retired; the
+ *  Workflow diagram's arrows carry their own, case/workflowDiagram.ts WIRES). */
 export type FlowKind = "measured" | "reference" | "record" | "model" | "result" | "proposal";
 
 /** What F1, a double click or the block's "?" does. */

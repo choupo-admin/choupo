@@ -127,6 +127,8 @@ import {
 } from "../state/displayUnits.js";
 import { useStore } from "../state/store.js";
 import { recordFit } from "../case/caseModes.js";
+import { WorkflowSelection } from "./workflowCard.js";
+import type { WorkflowModel } from "./useWorkflowModel.js";
 
 // Normalise a raw flowsheetDict stream into the StreamSpec the panel reads --
 // mirrors toGraph.readFlowsheet: composition from molarComposition /
@@ -162,7 +164,38 @@ export function normaliseStreamSpec(v: JsonDict): StreamSpec {
   } as StreamSpec;
 }
 
-export function PropertyPanel() {
+/** The selection card's body.  On the flowsheet it reads the store's
+ *  selection (a unit, a stream, a file); on a properties case's workflow
+ *  diagram it is handed the workflow (DEV.md 4c C172 slice 3b) and shows the
+ *  selected step, study or member -- the same card in both homes. */
+export function PropertyPanel({ workflow }: { workflow?: WorkflowModel } = {}) {
+  if (workflow) return <WorkflowPanel model={workflow} />;
+  return <ProcessPanel />;
+}
+
+/** The card on the workflow diagram: the step, the study or the member the
+ *  reader selected (ui/workflowCard.tsx).  Read-only: a properties case is
+ *  edited in system/propsDict. */
+function WorkflowPanel({ model }: { model: WorkflowModel }) {
+  return (
+    <ScrollArea h="100%" type="hover">
+      <Stack gap="sm" p="md" data-property-panel="workflow">
+        <Group gap="xs">
+          <IconInfoCircle size={16} />
+          <Title order={5}>Properties</Title>
+        </Group>
+        {WorkflowSelection({ model }) ?? (
+          <Text size="xs" c="dimmed">Nothing of this case is called {model.selected}.</Text>
+        )}
+        <Text size="xs" c="dimmed" mt="md" data-card-mode="read-only">
+          Read-only.  Edit <code>system/propsDict</code> in your text editor and reload the case.
+        </Text>
+      </Stack>
+    </ScrollArea>
+  );
+}
+
+function ProcessPanel() {
   const selectedId = useStore((s) => s.selectedNodeId);
   const flowsheet = useStore((s) => s.caseFiles.flowsheet);
   const propsDict = useStore((s) => s.caseFiles.propsDict);

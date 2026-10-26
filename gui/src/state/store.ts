@@ -154,7 +154,7 @@ interface LegacySessionPrefs {
 function isolatedTab(): boolean {
   if (typeof window === "undefined") return false;
   const q = new URLSearchParams(window.location.search);
-  return q.has("case") || q.has("focus") || q.has("internals") || q.has("layout");
+  return q.has("case") || q.has("focus") || q.has("internals") || q.has("layout") || q.has("step");
 }
 
 /** Public face of the isolated-tab test (gui-credo §4 "Tab citizenship"): a
@@ -246,6 +246,9 @@ export type WorkspaceKey =
   | "plots"
   | "log"
   | "props"
+  //  a properties case's STUDIES (DEV.md 4c C172 slice 3b): the overview of
+  //  its studies, figures and tables, beside its Workflow home
+  | "studies"
   //  Explore: ONE key for the catalogue and the property surfaces, two VIEWS
   //  of one tab (2026-10-21, DEV.md 4c C116).  The catalogue's own key
   //  `compounds` (2026-09-03) is retired; state/workspaceUrl.ts redirects it
@@ -326,12 +329,6 @@ interface AppState {
    *  lost on every tab switch).  This tab's business, never persisted. */
   propsViewFor: { [caseName: string]: { selected: string; expanded: string[] } };
   setPropsView: (caseName: string, v: { selected?: string; expanded?: string[] }) => void;
-  /** Whether the Workflow draws its CALCULATION MAP (View > Calculation map,
-   *  DEV.md 4c C172 slice 3): closed by default, this tab's business, never
-   *  persisted -- the map is the expert's view of the whole graph, and the
-   *  Workflow opens on the steps and their results. */
-  propsMapOpen: boolean;
-  setPropsMapOpen: (open: boolean) => void;
 
   // Assistant console (a real `claude -c` session via the local bridge) — the
   // BOTTOM DOCK of the shell.  Its SHAPE (dock / fold / height) is a reader
@@ -477,6 +474,21 @@ function bootCase(): {
     // localStorage by the parent tab (popOutUnitFocus) under the STABLE key
     // `choupo.focus.<unit>` (latest pop-out wins).  Deliberately NOT
     // consumed -- the tab is a real tab and must survive F5.
+    //  A STEP TAB (?step=<key>&id=<step>, DEV.md 4c C172 slice 3b): the case
+    //  and its properties run, stashed by the parent (ui/stepTab.ts), opened
+    //  as a finished run so the step's page draws without a re-run.  Gone ->
+    //  the tab's own refusal (ui/StepTab.tsx), never the welcome screen.
+    const stepStashKey = q.get("step");
+    if (stepStashKey) {
+      try {
+        const raw = window.localStorage.getItem(stepStashKey);
+        if (raw) {
+          const st = JSON.parse(raw) as { caseName: string; files: CaseFiles; result: RunResult | null };
+          return { name: st.caseName, files: st.files, ...(st.result ? { inherited: st.result } : {}) };
+        }
+      } catch { /* corrupt stash -> the tab refuses */ }
+      return { ...BLANK_CASE };
+    }
     const focusStashKey = q.get("focus");
     if (focusStashKey) {
       // GC the legacy one-shot keys (`choupo.focus.<unit>.<timestampMs>`)
@@ -910,8 +922,6 @@ export const useStore = create<AppState>((set, get) => ({
   caseModeFor: {},
   propsFocus: null,
   propsViewFor: {},
-  propsMapOpen: false,
-  setPropsMapOpen: (open) => set({ propsMapOpen: open }),
   setPropsView: (caseName, v) =>
     set((s) => {
       const cur = s.propsViewFor[caseName] ?? { selected: "", expanded: [] };

@@ -51,7 +51,7 @@ import {
   CONTROL_RAIL_PANEL, EXPLORE_SET_PANEL,
   HANDLE_HIT_PX, HANDLE_KEY_STEP_PX, HANDLE_SEAM_PX, LOG_JUMP_PANEL,
   METHOD_KNOBS_PANEL, PLOTS_NAV_PANEL, REPORTS_NAV_PANEL, STREAMS_NAV_PANEL,
-  STREAMS_SUMMARY_PANEL, PROPS_MAP_PANEL,
+  STREAMS_SUMMARY_PANEL,
   panelBoxStyle, shownTopPanelPx,
   LAYOUT_TABLES_PANEL,
   autoCollapseDefault, collapseTooltip, expandTooltip, nudgeSize, shortcutHint,
@@ -89,10 +89,9 @@ const ALL: [string, PanelChrome][] = [
   // C105): the first TOP panel, docked above the stream table it used to
   // squeeze into "a window at the bottom".
   ["streams balances band", STREAMS_SUMMARY_PANEL],
-  // A props case's calculation map joined on 2026-10-25 (DEV.md 4c C153): a
-  // TOP panel above the details of the selection, which had a computed height
-  // and no handle ("o painel que fica por baixo nao e ajustavel").
-  ["props calculation map", PROPS_MAP_PANEL],
+  // (A props case's calculation map was a TOP panel here from 2026-10-25,
+  // DEV.md 4c C153; retired 2026-10-26 with the map itself -- the Workflow
+  // diagram replaced it, C172 slice 3b.)
   // The Workflow's outline joined on 2026-10-26 (DEV.md 4c C168 slice 2,
   // ruling (a)): a left pane is allowed when it is the case's ONE navigation
   // AND it collapses -- so it folds like every other rail.
