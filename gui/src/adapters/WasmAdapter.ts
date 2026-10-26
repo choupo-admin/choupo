@@ -83,6 +83,7 @@ import type {
   ExperimentalDataset,
   ValidationBlock,
   ModelBoundary,
+  ClosureByConstruction,
   RecycleLoop,
   OperationResult,
   PairResolution,
@@ -186,7 +187,7 @@ export class WasmAdapter implements SolverAdapter {
         if (signal) signal.removeEventListener("abort", onAbort);
         worker.terminate();
         const { displayLog, streams, streamAliases, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, kpis,
-          utilityAllocation, globalEnergyBoundary, globalMassBoundary, computed, timeline, transfers, energyLedger, advisories, divergences, modelBoundaries, recycleLoops, operationResults, thermoResolution,
+          utilityAllocation, globalEnergyBoundary, globalMassBoundary, computed, timeline, transfers, energyLedger, advisories, divergences, modelBoundaries, closuresByConstruction, recycleLoops, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics, layout, building, phaseSplitScans,
           postProcessing, batchPlan, converged } =
           extractStructured(log, caseFiles);
@@ -214,6 +215,8 @@ export class WasmAdapter implements SolverAdapter {
         if (advisories && advisories.length > 0) result.advisories = advisories;
         if (divergences && divergences.length > 0) result.divergences = divergences;
         if (modelBoundaries && modelBoundaries.length > 0) result.modelBoundaries = modelBoundaries;
+        if (closuresByConstruction && closuresByConstruction.length > 0)
+          result.closuresByConstruction = closuresByConstruction;
         if (recycleLoops && recycleLoops.length > 0) result.recycleLoops = recycleLoops;
         if (operationResults && operationResults.length > 0) result.operationResults = operationResults;
         if (thermoResolution && thermoResolution.length > 0) result.thermoResolution = thermoResolution;
@@ -438,6 +441,8 @@ export function extractStructured(log: string,
   divergences?: Divergence[];
   /** Model-boundary audit findings (adjacent units on different thermo models). */
   modelBoundaries?: ModelBoundary[];
+  /** Closures by construction (engine `closuresByConstruction`, C174). */
+  closuresByConstruction?: ClosureByConstruction[];
   /** The loop each declared tear cuts (engine `recycleLoops`, C42). */
   recycleLoops?: RecycleLoop[];
   /** Per-operation diagnostics from a choupoProps run (fit stats). */
@@ -700,6 +705,9 @@ export function extractStructured(log: string,
     : {}),
 ...(parsed.modelBoundaries && parsed.modelBoundaries.length > 0
       ? { modelBoundaries: parsed.modelBoundaries }
+    : {}),
+...(parsed.closuresByConstruction && parsed.closuresByConstruction.length > 0
+      ? { closuresByConstruction: parsed.closuresByConstruction }
     : {}),
 ...(parsed.recycleLoops && parsed.recycleLoops.length > 0
       ? { recycleLoops: parsed.recycleLoops }
@@ -1231,6 +1239,7 @@ interface ResultPayload {
    *  advisories, carried under its JSON name here and renamed at the seam. */
   problemDivergence?: Divergence[];
   modelBoundaries?: ModelBoundary[];
+  closuresByConstruction?: ClosureByConstruction[];
   recycleLoops?: RecycleLoop[];
   convergence?: { [unitName: string]: number[] };
   profiles?: {

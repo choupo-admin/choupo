@@ -121,6 +121,8 @@ public:
         return kpis_;
     }
 
+    std::vector<ClosureVariable> closureVariables() const override { return closures_; }
+
     std::optional<UnitProfile> profile() const override
     {
         if (profile_.columns.empty()) return std::nullopt;
@@ -225,6 +227,11 @@ private:
     std::vector<ProcessStream>     produced_;
     std::map<std::string, scalar>  kpis_;
     UnitProfile                    profile_;
+    //  THE REBOILER IS THE REMAINDER OF THE FIRST LAW (DEV.md 4c C174):
+    //  `Q_reboiler_kW = dH - Q_condenser`, so the column's closure verifies
+    //  only the SUM of the two duties.  The record carries the reboiler's
+    //  OWN envelope beside it -- see `reboilerClosure` in the .cpp.
+    std::vector<ClosureVariable>   closures_;
 };
 
 } // namespace Choupo

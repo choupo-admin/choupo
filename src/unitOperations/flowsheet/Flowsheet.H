@@ -105,6 +105,20 @@ Dictionary form (topology only -- state in 0/):
 
 namespace Choupo {
 
+//  Record a unit's CLOSURE VARIABLES (DEV.md 4c C174, result/ClosureVariable.H)
+//  under its qualified name, right after its KPIs are captured.  Overwritten on
+//  every pass, like the KPIs, so a recycle publishes the final pass's; a unit
+//  that declares none leaves no entry, so absence keeps meaning "none".
+inline void recordClosureVariables(
+    std::map<std::string, std::vector<ClosureVariable>>& unitClosures,
+    const std::string& uname, const UnitOperation& unit)
+{
+    auto cv = unit.closureVariables();
+    for (auto& c : cv) c.unit = uname;
+    if (cv.empty()) unitClosures.erase(uname);
+    else            unitClosures[uname] = std::move(cv);
+}
+
 class Flowsheet : public UnitOperation
 {
 public:
@@ -261,6 +275,27 @@ public:
     const std::map<std::string, UnitProfile>& unitProfiles() const
     { return unitProfiles_; }
 
+    // The CLOSURE VARIABLES each unit declared on the last pass (DEV.md 4c
+    // C174, result/ClosureVariable.H): terms computed as the remainder of the
+    // unit's own balance.  Only units that declare one have an entry.
+    const std::map<std::string, std::vector<ClosureVariable>>& unitClosures() const
+    { return unitClosures_; }
+
+    //  The same records flattened in the TOPOLOGY's order -- the order the
+    //  flowsheet ran its units -- so the result JSON and every report list
+    //  them as the student reads the flowsheet.
+    std::vector<ClosureVariable> closuresInTopologyOrder() const
+    {
+        std::vector<ClosureVariable> out;
+        for (const auto& fu : topology_)
+        {
+            auto it = unitClosures_.find(fu.name);
+            if (it != unitClosures_.end())
+                out.insert(out.end(), it->second.begin(), it->second.end());
+        }
+        return out;
+    }
+
     // Flattened unit interface (name / type / resolved in / out stream
     // names) from the last solve(), in execution order.  Lets the per-unit
     // reports iterate the real equipment even for a composite plant (the
@@ -375,6 +410,8 @@ private:
     std::vector<scalar>                                    globalMassResiduals_;
     std::vector<scalar>                                    globalEnergyResiduals_;
     std::map<std::string, UnitProfile>                     unitProfiles_;
+    //  Closure variables per unit (DEV.md 4c C174), qualified name -> records.
+    std::map<std::string, std::vector<ClosureVariable>>    unitClosures_;
 
     //  WHAT THE CASE DECLARES ITS UNITS START FROM.  Read once out of `0/`
     //  at the flatten seam (where the sectors are stamped and the topology is

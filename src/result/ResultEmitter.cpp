@@ -669,6 +669,47 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"criterion\": " << esc(e.criterion);
             if (!e.detail.empty()) os << ", \"perStream\": " << esc(e.detail);
             if (!e.reason.empty()) os << ", \"reason\": " << esc(e.reason);
+            //  C174: a row whose unit computed one of its own energy terms as
+            //  this balance's remainder.  Flat words, never a nested object:
+            //  `bin/runTests`' closure reader splits the array on "}, {".
+            if (!e.closureVariable.empty())
+                os << ", \"byConstruction\": " << esc(e.constructionStatus)
+                   << ", \"closureVariable\": " << esc(e.closureVariable);
+            os << " }";
+        }
+        os << " ]";
+    }
+
+    // ---- closure variables (DEV.md 4c C174) ----------------------------
+    //   Every term a unit published that it computed AS THE REMAINDER of one
+    //   of its own balances (result/ClosureVariable.H), so that balance's
+    //   closure over the unit is not evidence about it.  `status` is the word
+    //   a reader sorts on: `verified` only when the unit's SECOND ROUTE to the
+    //   same term agrees; `notVerified` otherwise, with `note` saying why.
+    //   Absent when no unit declares one.  The GUI draws this; it computes
+    //   none of it.
+    if (!r.closuresByConstruction.empty())
+    {
+        os << ",\n  \"closuresByConstruction\": [";
+        bool firstC = true;
+        for (const auto& c : r.closuresByConstruction)
+        {
+            os << (firstC ? " " : ", ");
+            firstC = false;
+            os << "{ \"unit\": " << esc(c.unit)
+               << ", \"balance\": " << esc(c.balance)
+               << ", \"variable\": " << esc(c.variable)
+               << ", \"status\": " << esc(c.status())
+               << ", \"rule\": " << esc(c.rule)
+               << ", \"blindTo\": " << esc(c.blindTo)
+               << ", \"check\": " << esc(c.check);
+            if (c.hasCheck)
+                os << ", \"checkValue\": " << num(c.checkValue)
+                   << ", \"gap\": " << num(c.gap)
+                   << ", \"tolerance\": " << num(c.tolerance)
+                   << ", \"mustAgree\": " << (c.mustAgree ? "true" : "false");
+            os << ", \"units\": " << esc(c.units);
+            if (!c.note.empty()) os << ", \"note\": " << esc(c.note);
             os << " }";
         }
         os << " ]";

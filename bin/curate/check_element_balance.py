@@ -16,6 +16,17 @@ report is real physics, not a renamed mass balance.
    without ever entering.  The Cl row MUST appear (union of in/out
    elements), with in = 0 and a metric unmistakably far from 100 %.
 
+4. CLOSURE BY CONSTRUCTION (DEV.md 4c C174): a verdict this gate takes must
+   not rest on an element term a unit computed AS THE REMAINDER of the
+   element balance itself -- such a closure holds for any value of the unit's
+   other terms and is no evidence.  No unit in the tree declares one today
+   (an equilibrium reactor's element constraint is its MODEL EQUATION, solved
+   with the outlet, not a remainder filled after it; see
+   docs/design/no-closure-by-construction.md), so every run judged here must
+   publish NO element record in `closuresByConstruction`; one that appears
+   FAILS, naming the unit, until this gate is taught to set it apart.  The
+   count is on the claim line.
+
 Exit 1 listing failures."""
 import re
 import csv
@@ -55,6 +66,35 @@ def run_case(tmp, name, overlay=None, overlay_name="toluene.dat"):
     return case, r
 
 
+def element_constructions(stdout: str, who: str, bad: list) -> int:
+    """C174: the ELEMENT closure variables a judged run declares.  None is
+    expected (see the docstring, item 4); each one found FAILS by name."""
+    import json as _j
+    at = stdout.find('"closuresByConstruction": ')
+    if at < 0:
+        return 0
+    try:
+        recs = _j.JSONDecoder().raw_decode(
+            stdout, at + len('"closuresByConstruction": '))[0]
+    except ValueError:
+        bad.append(f"{who}: closuresByConstruction is not readable JSON")
+        return 0
+    n = 0
+    for c in recs:
+        if c.get("balance") != "element":
+            continue
+        n += 1
+        bad.append(f"{who}: unit '{c.get('unit')}' computes the element term "
+                   f"'{c.get('variable')}' as the remainder of the element "
+                   "balance this gate judges -- its closure holds by "
+                   "construction and must be set apart from the verdict "
+                   "(docs/design/no-closure-by-construction.md)")
+    return n
+
+
+ELEMENT_BC = {"judged": 0, "found": 0}
+
+
 def main():
     bad = []
     with tempfile.TemporaryDirectory(prefix="choupo-elembal-") as tmp:
@@ -63,6 +103,9 @@ def main():
         if r.returncode != 0:
             bad.append("reactive case failed to run")
         else:
+            ELEMENT_BC["judged"] += 1
+            ELEMENT_BC["found"] += element_constructions(r.stdout, "reactive",
+                                                         bad)
             rows = {}
             with open(case / "reports" / "balances" / "elementBalance.csv") as f:
                 for row in csv.DictReader(f):
@@ -216,6 +259,9 @@ def main():
         if r.returncode != 0:
             bad.append("plant: failed to run: " + (r.stdout + r.stderr)[-300:])
         else:
+            ELEMENT_BC["judged"] += 1
+            ELEMENT_BC["found"] += element_constructions(r.stdout, "plant",
+                                                         bad)
             ebs = sorted((plant / "postProcessing").rglob(
                 "elementBalance.csv"))
             if not ebs:
@@ -241,7 +287,11 @@ def main():
             print("  " + b)
         return 1
     print("element-balance gate: reactive boundary closes per atom;"
-          " an impossible formula refuses ONLY the elemental claim")
+          " an impossible formula refuses ONLY the elemental claim;"
+          " CLOSURE BY CONSTRUCTION (C174): %d element closure(s) computed"
+          " as the balance's own remainder among the %d run(s) whose verdict"
+          " is judged here, so no verdict above rests on one"
+          % (ELEMENT_BC["found"], ELEMENT_BC["judged"]))
     return 0
 
 

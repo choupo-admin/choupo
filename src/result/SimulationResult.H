@@ -68,6 +68,7 @@ Description
                                     //   PRODUCED, and leaving it there made
                                     //   `result` and `unitOperations` include
                                     //   each other (debt D2).
+#include "result/ClosureVariable.H"  // closure variables (C174) -- pure data
 
 #include <functional>
 #include <map>
@@ -352,6 +353,14 @@ struct SimulationResult
     // see reporting/ModelBoundaryLedger.H on why that duplication is
     // deliberate).  Emitted as `energyClosures` in the result JSON.
     std::vector<EnergyClosureRecord>                              energyClosures;
+    //  CLOSURE VARIABLES (DEV.md 4c C174, result/ClosureVariable.H): every
+    //  term a unit published that it computed AS THE REMAINDER of one of its
+    //  own balances, with the unit's second route where it has one.  Filled
+    //  by the binary from Flowsheet::unitClosures(); read by the balance
+    //  reports (which stamp their per-unit rows from it) and emitted as
+    //  `closuresByConstruction`.  Empty when no unit declares one -- an
+    //  absence that means "none", never "not asked".
+    std::vector<ClosureVariable>                                  closuresByConstruction;
     // THE PLANT-BOUNDARY FIRST LAW, as the energyBalance report decided it:
     //   Σ H(feeds) + Q_boundary = Σ H(products) + residual.
     // Stamped by the report (the ONE home of that arithmetic -- which

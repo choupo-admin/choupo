@@ -187,6 +187,29 @@ int TSATwinBed::solve(const DictPtr& dict,
     kpis_.clear();
     kpis_["Q_regeneration_kW"] = QregenKW;
     kpis_["Q_adsorption_cooling_kW"] = -QregenKW;
+    //  A CLOSURE VARIABLE (DEV.md 4c C174).  The cooling duty is the
+    //  regeneration duty with its sign changed -- the bed's own cyclic
+    //  balance: what heats it and desorbs it in one half of the cycle comes
+    //  back out in the other.  Both are energy items, so they cancel in the
+    //  report's closure over this unit and the closure says NOTHING about
+    //  either: a regeneration duty ten times too large closes exactly as
+    //  well.  No second route exists in this model (the purge gas leaves at
+    //  the adsorption temperature and carries no regeneration heat), so it
+    //  is published as not verified.
+    {
+        ClosureVariable c;
+        c.balance  = "energy";
+        c.variable = "Q_adsorption_cooling_kW";
+        c.rule     = "Q_adsorption_cooling = -Q_regeneration: the bed's cyclic"
+                     " balance over one cycle";
+        c.blindTo  = "the size of the regeneration duty -- the two items"
+                     " cancel in the closure for ANY Q_regeneration";
+        c.note     = "no second route: the model prices the regeneration duty"
+                     " from the bed (sensible heat + heat of adsorption per"
+                     " cycle) and nothing else in it carries that heat";
+        closures_.clear();
+        closures_.push_back(std::move(c));
+    }
     //  The temperatures the two duties cross at (DEV.md 4c C52): the
     //  utility allocation serves each at its own (reporting::heatDutyPorts),
     //  and a duty published without one could only be listed as

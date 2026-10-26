@@ -1085,6 +1085,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
 
     // ---- KPIs ---------------------------------------------------------
     kpis_.clear();
+    closures_.clear();
     kpis_["V_R"]            = V_R;
     kpis_["T"]              = T_out;
     kpis_["tau_s"]          = tau;
@@ -1132,9 +1133,39 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     {
         const scalar Qext_kW  = hx ? UA * (Tc - T_out) / 1000.0 : 0.0;
         const scalar gap_kW   = kpis_["Q_kW"] - Qext_kW;
-        if (std::abs(gap_kW) > 1.0e-6 * std::max(1.0, std::abs(H_in_W) / 1000.0))
+        const scalar tol_kW   = 1.0e-6 * std::max(1.0, std::abs(H_in_W) / 1000.0);
+        if (std::abs(gap_kW) > tol_kW)
             reactorOutlet::announceUnmatchedEnthalpy("cstr", unitNameOf(dict),
                 tmode, T_out, gap_kW);
+        //  A CLOSURE VARIABLE (DEV.md 4c C174).  Under an energy balance the
+        //  published Q_kW is H(out) - H(in) on the published streams, so the
+        //  report's closure over this unit is zero for ANY outlet temperature
+        //  -- a T-solve that missed would publish its miss as a duty and the
+        //  plant's first law would still close.  The model ALSO says what the
+        //  heat is (zero adiabatic, U A (T_c - T_out) jacketed): that is the
+        //  second route, and the record is `verified` only when they agree --
+        //  the very comparison the announcement above has always made.
+        ClosureVariable c;
+        c.balance    = "energy";
+        c.variable   = "Q_kW";
+        c.rule       = "Q_kW = H(outlet) - H(inlet) on the published streams";
+        c.blindTo    = "whether the outlet temperature satisfies the "
+                       + std::string(hx ? "jacket's" : "adiabatic")
+                       + " energy balance -- the closure holds for ANY T_out";
+        c.check      = hx ? "the jacket: U A (T_c - T_out)"
+                          : "adiabatic: no heat crosses";
+        c.hasCheck   = true;
+        c.checkValue = Qext_kW;
+        c.gap        = gap_kW;
+        c.tolerance  = tol_kW;
+        c.mustAgree  = true;
+        c.verified   = std::abs(gap_kW) <= tol_kW;
+        if (!c.verified)
+            c.note = "the published duty is not the heat the model says "
+                     "crossed: the outlet's enthalpy is one no temperature on "
+                     "the priced surface carries (a pure product on its "
+                     "saturation jump, reactorOutlet.H) -- announced above";
+        closures_.push_back(std::move(c));
     }
 
     if (verbosity >= 2) reactorOutlet::printOutletState(outSt);

@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 183 records already exist
+## 1. Why an index, when 184 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 183 design records, **125 state a rejected alternative and 58 do not** —
+- Of 184 design records, **126 state a rejected alternative and 58 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -285,6 +285,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`review-c131-reactors.md`](../design/review-c131-reactors.md) | EVIDENCE | no | **C131 phase 2 (c), 2026-10-25, the analyst's report** -- the reactors (conversion, cstr, pfr, Gibbs, equilibrium, batch, dynamic CSTR; rate laws, Kp/Kc, the heat of reaction, the temperature approach) read against Fogler, Levenspiel, Smith-Van Ness-Abbott ch. 13, Smith-Missen, Ergun 1952 and the open reference simulator by file and commit.  Both suspected defects CONFIRMED: detailed balance on the liquid-basis cstr/pfr with sum(nu) != 0 (the ideal-gas Kc in kmol/m3 under liquid concentrations in mol/m3; MTBE 99.95 % against the ideal-solution 92.26 %) REFUSED; an autocatalytic multi-reaction cstr reported its unstable washout silently, now every extent root ANNOUNCED with its stability.  Also FIXED: a dropped Gibbs condensate (0.254 % mass closure), the equilibriumReactor without fugacity coefficients (0.3001 vs 0.3239), with a duty of the heat of reaction alone (134.86 %; an EduTool quoted it) and publishing a supersaturated gas, and the dynamicCSTR dropping a declared reverse leg and draining under sum(nu) != 0 (announced); gate `check_reactor_limits`.  Proposals (decides nothing): a stationarity check on `directMin`, a liquid standard state, a constant-volume dynamic outflow, rank not count in the Gibbs element test, a normalised cstr stop, the units of a power-law A |
 | [`review-c131-separations.md`](../design/review-c131-separations.md) | EVIDENCE | no | **C131 phase 2 (b), 2026-10-25, the analyst's report** -- the separations (column, FUG, Kremser absorber/stripper, extractor, crystalliser, membrane balances) read against Seader, Wankat, Kister, Wang-Henke, Naphtali-Sandholm, Randolph-Larson and the open reference simulator by file and commit.  Six WRONG with witnesses: the Kremser stripper and absorber deleted material arriving in the stream its class did not expect (steam in the stripping gas, 91.807 %; an inert in the liquid; a package with no solvent, 60.926 %), FIXED with `check_kremser_inventory`; the CMO columns take q = 1 - vf, so a subcooled feed moves neither profile nor traffic (proposal, goldens move); the full MESH priced a two-phase feed as a blend in its rows and as a split in its duty, FIXED (`check_feed_thermal_state` (j), corpus unmoved); two manuals mislabel `MESH`/`NaphtaliSandholm`.  Eight MISSING and sixteen SAME/DIFFERENT, each cited.  Decides nothing: the proposals (q from enthalpies, an extractor duty, a normalised crystalliser stop, the CV basis, the Kirkbride convention) are Vítor's |
 | [`one-app-two-homes.md`](../design/one-app-two-homes.md) | ADR | yes | **DECIDED 2026-10-26, slices 1-3 SHIPPED** -- commission C172, after a forum of five generals (practice, one app, two apps, cost, three users walked at 1366x768): ONE application and one case store with TWO homes, the Flowsheet for a process case and the Workflow for a properties case, each kind's chrome decided in one table; the Workflow is the case's declared studies of numbered steps whose order the ENGINE enforces (`propsPlan::validate`, nothing reads what a later step writes); one Run; the word Results kept for what a run produced; the content the engine already publishes reaches the screen.  Vitor then ruled that a properties case OPENS on a workflow DIAGRAM (one box per step showing what is inside it, a double click opening the step in its own tab), because a flowsheet arrow is INFORMATION, not matter -- the two homes draw one structure.  REJECTED: two applications (they would share almost everything and duplicate it; the general who argued for them withdrew after reading the one-app case); a segmented mode switch in the menu row; the forum's "never a canvas" (reversed by Vitor: a diagram one looks at is not an editor) |
+| [`no-closure-by-construction.md`](../design/no-closure-by-construction.md) | ADR | yes | **SHIPPED 2026-10-26** (DEV.md 4c C174) -- a balance used to COMPUTE a term cannot be the evidence that the term is right: the CMO column's `Q_reboiler_kW = dH - Q_condenser` closed its first law for ANY condenser duty, and `check_energy_closure` read it green while the condenser was wrong on all 34 columns (C169).  ENUMERATED: five closure variables (the column's reboiler in three branches, non-isothermal cstr/pfr `Q_kW`, the TSA cooling duty, the membrane's water) and every other duty and outlet classified with its check named; the line is a DEFINITION (the unit's only balance, re-priced by the report) versus a PLUG (the model also states the term by another equation).  Units declare them (`UnitOperation::closureVariables`) with a SECOND ROUTE; the reports stamp and announce them; the energy/mass gates hold their own tables two-way, stop counting them as closing and fail a route that must agree.  REJECTED: gates recomputing the routes, failing every not-verified one (CMO would be red for ever), marking every by-difference outlet, a separate list beside an unchanged count.  No golden moved.  Gates `check_energy_closure`, `check_mass_closure`, `check_element_balance` |
 
 ### Historical
 
@@ -337,7 +338,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**58 of 183 records state no rejected alternative.**  For a FORUM or a STUDY
+**58 of 184 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

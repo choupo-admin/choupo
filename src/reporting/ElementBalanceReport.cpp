@@ -30,6 +30,7 @@ License
 
 #include "reporting/BalanceAlarm.H"
 #include "reporting/BalanceMath.H"
+#include "reporting/ClosureByConstruction.H"
 #include "streams/UtilityCircuit.H"
 #include "reporting/Topology.H"
 #include "thermo/ElementComposition.H"
@@ -215,6 +216,14 @@ void ElementBalanceReport::run(const DictPtr& /*dict*/,
             std::cout << "      PARTIAL " << nm << ": unaccounted "
                       << un << " kg/kg\n";
     }
+    //  CLOSURE BY CONSTRUCTION (DEV.md 4c C174): an element term a unit
+    //  computed as the remainder of this balance.  No unit in the tree
+    //  declares one today (an equilibrium reactor's element constraint is
+    //  its model equation, not a remainder -- see
+    //  docs/design/no-closure-by-construction.md), so this prints nothing;
+    //  it is here so the day one does, the report says so in the same words
+    //  the other two balances use.
+    reporting::byConstruction::announce(ctx.result, "element", "elementBalance");
 }
 
 } // namespace Choupo

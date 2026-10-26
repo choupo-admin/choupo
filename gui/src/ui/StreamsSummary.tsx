@@ -50,6 +50,7 @@ import { IconCircleCheck, IconAlertTriangle, IconArrowsSplit2 } from "@tabler/ic
 
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import { massBalance } from "../case/balances.js";
+import { closureLine, closureWordOf, closureWords } from "../case/closureByConstruction.js";
 import {
   flowBasis,
   formatFlow,
@@ -107,7 +108,9 @@ export function StreamsSummary({
   const u = massUnit(flow);
   const duties = columnDuties(result);
 
-  const massOk = mb.closureErr < MASS_TOL;
+  const massOk = mb.closureErr < MASS_TOL
+              && (result.closuresByConstruction ?? []).every(
+                   (c) => c.balance !== "material" || c.status === "verified");
   const closurePct = (mb.closureErr * 100).toFixed(mb.closureErr < 1e-4 ? 4 : 2);
   //  A PERCENTAGE THE ENGINE COULD NOT FORM IS NOT DRAWN.  `residual_pct` is
   //  null when the plant declares no duty and carries no boundary heat, so
@@ -118,8 +121,16 @@ export function StreamsSummary({
   const energyScaled = !!gb && gb.residual_pct !== null
                     && gb.residual_pct_available !== false;
   const energyErr = energyScaled ? Math.abs(gb!.residual_pct as number) / 100 : NaN;
+  //  CLOSURES BY CONSTRUCTION (DEV.md 4c C174): terms a unit computed FROM
+  //  its own balance, so that balance's closure is not evidence about them.
+  //  The engine names them and says whether a second route verified them;
+  //  a plant whose first law includes a NOT-verified one does not draw the
+  //  green check, whatever its residual -- the zero is partly by construction.
+  const ecw = closureWords(result.closuresByConstruction, "energy");
+  const mcw = closureWords(result.closuresByConstruction, "material");
   const energyOk = !!gb && gb.n_gap === 0
-                && (gb.noBoundary || (energyScaled && energyErr < ENERGY_TOL));
+                && (gb.noBoundary || (energyScaled && energyErr < ENERGY_TOL))
+                && ecw.notVerified.length === 0;
   const energyPct = energyScaled
     ? (energyErr * 100).toFixed(energyErr < 1e-4 ? 4 : 2)
     : "—";
@@ -288,6 +299,15 @@ export function StreamsSummary({
               {" "}({formatFlow(mb.utilitySum, u)} {u})
             </Text>
           )}
+          {mcw.summary && (
+            <Tooltip multiline w={340}
+              label={mcw.records.map(closureLine).join("\n")}>
+              <Text size="xs" ff="monospace" style={{ cursor: "help" }}
+                c={mcw.notVerified.length > 0 ? "yellow.5" : "dimmed"}>
+                {mcw.summary}
+              </Text>
+            </Tooltip>
+          )}
         </Stack>
 
         {/* Energy balance -- the FULL first law (streams + duties + work).  It
@@ -332,6 +352,16 @@ export function StreamsSummary({
             <Text size="xs" c={energyOk ? "teal.4" : "yellow.5"} ff="monospace">
               {gb.noBoundary ? "closed loop — first law vacuous over the boundary" : <>imbalance {energyPct} %</>}
             </Text>
+          )}
+          {ecw.summary && (
+            <Tooltip multiline w={340}
+              label={"A closure by construction is a term the unit computed FROM its own balance, so that balance closes whatever the term is: the closure is not evidence about it.  "
+                + ecw.records.map(closureLine).join("\n")}>
+              <Text size="xs" ff="monospace" style={{ cursor: "help" }}
+                c={ecw.notVerified.length > 0 ? "yellow.5" : "dimmed"}>
+                {ecw.summary}
+              </Text>
+            </Tooltip>
           )}
         </Stack>
 
@@ -382,6 +412,20 @@ export function StreamsSummary({
                       </Text>
                     </Table.Td>
                     <Table.Td ta="right"><Text size="xs" ff="monospace">{d.kW.toFixed(1)} kW</Text></Table.Td>
+                    <Table.Td>
+                      {(() => {
+                        //  The reboiler is the REMAINDER of the column's first
+                        //  law (C174): say so, with the engine's word.
+                        const w = d.port === "reboiler"
+                          ? closureWordOf(result.closuresByConstruction, d.unit, "Q_reboiler_kW")
+                          : undefined;
+                        return w
+                          ? <Text size="xs" ff="monospace" c={w === "verified" ? "dimmed" : "yellow.5"}>
+                              by construction · {w === "verified" ? "verified" : "not verified"}
+                            </Text>
+                          : null;
+                      })()}
+                    </Table.Td>
                     <Table.Td>
                       <Text size="xs" ff="monospace" c="dimmed">{d.utility ?? "—"}</Text>
                     </Table.Td>

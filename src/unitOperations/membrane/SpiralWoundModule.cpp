@@ -1648,10 +1648,43 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         kpis_["Re_max"]   = ReMax;
     }
     // Mass-closure residual |feed − (ret+perm)| / feed (the guard above also
-    // throws if it ever exceeds 1e-9): a permanent, visible witness that the
-    // module conserves mass.
+    // throws if it ever exceeds 1e-9).  IT IS NOT EVIDENCE ON ITS OWN, and
+    // this comment used to call it "a permanent, visible witness that the
+    // module conserves mass" (corrected 2026-10-26, DEV.md 4c C174): the feed
+    // volume is m_in / rho (BulkConversion.H) and both outlets are filled to
+    // that same rho with WATER, so total mass closes for ANY solute flows --
+    // the water is the remainder.  What sees a solute lost or created is
+    // `solute_closure_rel`, the second route, and the closure variable below
+    // says so on the result.
     if (!dry) kpis_["mass_closure_rel"] = mass_closure_rel;
     if (!dry) kpis_["solute_closure_rel"] = solute_closure_rel;
+    {
+        ClosureVariable c;
+        c.balance  = "material";
+        c.variable = "water in the retentate and the permeate";
+        c.rule     = "c_water = (rho - SUM c_s MW_s) / MW_water in each outlet,"
+                     " the feed volume being m_in / rho: total mass closes for"
+                     " any solute flows";
+        c.blindTo  = "a solute lost or created along the channel -- the water"
+                     " takes up the difference and total mass still closes";
+        c.check    = "every solute balanced on its own: retentate + permeate"
+                     " against the feed (refused above 1e-9 relative)";
+        c.units    = "relative";
+        if (dry)
+            c.note = "the channel ran dry and the march stopped mid-vessel:"
+                     " neither balance is asserted on this run";
+        else
+        {
+            c.hasCheck   = true;
+            c.checkValue = 0.0;
+            c.gap        = solute_closure_rel;
+            c.tolerance  = 1.0e-9;
+            c.mustAgree  = true;
+            c.verified   = solute_closure_rel <= 1.0e-9;
+        }
+        closures_.clear();
+        closures_.push_back(std::move(c));
+    }
     //  Membrane potential (SDEM only): the channel average of the per-node
     //  potential drop, the one number that says the field was there.
     if (cols.count("psi_mV") && !cols["psi_mV"].empty())

@@ -31,6 +31,7 @@ License
 #include "core/Advisory.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include "BalanceMath.H"
+#include "ClosureByConstruction.H"
 #include "ModelBoundaryLedger.H"
 #include "thermo/EnthalpyDatum.H"
 #include "Topology.H"
@@ -91,7 +92,14 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     //  quantities, never collapsed: see reporting/ModelBoundaryLedger.H.
     f << "unit,H_in_kW,H_out_kW,dH_kW,energy_items_kW,energy_closure_pct,"
          "reference,raw_imbalance_kW,boundary_step_kW,remaining_kW,"
-         "adjusted_closure_pct,boundary\n";
+         "adjusted_closure_pct,boundary,byConstruction\n";
+    //  `byConstruction` (DEV.md 4c C174): EMPTY unless the unit computed one
+    //  of its energy terms as the remainder of this balance, then the word
+    //  `verified` | `notVerified` -- see reporting/ClosureByConstruction.H.
+    //  The LAST column on purpose: readers that index the earlier ones by
+    //  position are untouched.
+    const auto constructionWord =
+        reporting::byConstruction::wordsFor(ctx.result, "energy");
 
     auto lookup = [&](const std::vector<std::string>& names) {
         std::vector<const ProcessStream*> v;
@@ -479,13 +487,13 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     for (const auto& r : rows)
     {
         if (r.kind == 1) { f << r.name << ",n/a,n/a,n/a,n/a,n/a,gap,"
-                                "n/a,n/a,n/a,n/a,n/a\n"; continue; }
+                                "n/a,n/a,n/a,n/a,n/a,\n"; continue; }
         if (r.kind == 2)
         {
             f << r.name << ",n/a,n/a,n/a,";
             if (r.nItems > 0)
                 f << std::fixed << std::setprecision(4) << r.sumExternal;
-            f << ",n/a,n/a,n/a,n/a,n/a,n/a,n/a\n";
+            f << ",n/a,n/a,n/a,n/a,n/a,n/a,n/a,\n";
             continue;
         }
 
@@ -670,9 +678,14 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
               << le->raw_kW << "," << le->step_kW << ","
               << le->remaining_kW << ",";
         if (le && r.hasClosure) f << std::setprecision(2) << adjClosure;
-        if (le) f << "," << le->status << "\n";
-        else
-            f << "n/a,n/a,n/a,n/a,n/a\n";
+        {
+            const auto cw = constructionWord.find(r.name);
+            const std::string word =
+                cw == constructionWord.end() ? "" : cw->second.status;
+            if (le) f << "," << le->status << "," << word << "\n";
+            else
+                f << "n/a,n/a,n/a,n/a,n/a," << word << "\n";
+        }
 
         // pass-12 (student): a ~1% first-law gap sat silently in the CSV while
         // every default announces aloud -- the ledger now SPEAKS when a unit's
@@ -785,6 +798,15 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     }
     //  Same three quantities into the result JSON, through the existing
     //  emitter path (result/ResultEmitter.cpp reads `energyClosures`).
+    //  C174: a row whose unit computed one of its energy terms as this
+    //  balance's remainder says so, with the second route's word.
+    for (auto& e : ledger)
+    {
+        const auto cw = constructionWord.find(e.unit);
+        if (cw == constructionWord.end()) continue;
+        e.closureVariable    = cw->second.variables;
+        e.constructionStatus = cw->second.status;
+    }
     ctx.result.energyClosures = ledger;
 
     // Breakdown: each unit's individual declared energy items.
@@ -1135,6 +1157,12 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             }
         }
     }
+
+    //  CLOSURE BY CONSTRUCTION (DEV.md 4c C174), said aloud whatever the
+    //  verbosity: a unit row above that closes because the unit computed one
+    //  of its terms FROM this balance is not evidence, and the reader must
+    //  not take its zero for one.
+    reporting::byConstruction::announce(ctx.result, "energy", "energyBalance");
 
     if (ctx.verbosity >= 2)
     {
