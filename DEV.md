@@ -3171,6 +3171,25 @@ accepts today, and that is a policy call.
 > commander's reading (1)-(4); he said so the day the audit of planned
 > EduTools listed C140 as waiting on him ("Eu tinha discutido todas as
 > coisas de que me lembrei").  DISPATCHED the same day under C163.
+> THE DISCUSSION IS MORE THAN THIS SUMMARY (Vitor, 2026-10-26, "Nao me
+> deites trabalho para o lixo nem te esquecas dele!").  The commander's
+> answers in chat on 2026-10-24 carried points the entry above holds
+> thinly or not at all, recorded here so they cannot be lost: defensive
+> publication does NOT prove who was first -- it destroys novelty for
+> everyone, which is why an obscure journal serves (it counts as a
+> disclosure and almost nobody reads it), and it ends the publisher's own
+> right to patent; the Portuguese CPI's own compulsory licence for a
+> dependent patent, beside TRIPS 31(l); in the turbine case the decisive
+> fact is that cooling gas-turbine blades is decades-old common general
+> knowledge, so the original patent PROBABLY SURVIVES an insufficiency
+> attack -- it falls only if making it work needs an invention of its own;
+> the attack routes are EPO opposition within nine months of grant or a
+> nullity action, with the burnt-blade tests as evidence; freedom-to-
+> operate searches as a counter-move; "your competitors read your filings
+> and you read theirs" is the tool's central idea.  Every point is to be
+> confirmed against the primary sources before it is taught.  The full
+> exchange was handed verbatim to the general building the tool, whose
+> report maps each point to where the tool teaches it.
 
 > **C139. AN EDUTOOL ON THE ECONOMICS OF THE CHEMICAL NETWORK: BASE
 > CHEMICALS, INTERMEDIATES, INDUSTRIAL PARKS AND INTERNATIONAL TRADE
