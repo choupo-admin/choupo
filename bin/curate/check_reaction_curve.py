@@ -611,7 +611,7 @@ def main() -> int:
         # ------------------------------------------ S4: missing trajectory
         s4 = stage(tmp, "s4")
         rc, out = run("choupoProps", s4)
-        if rc == 0 or "does not exist" not in out or "choupoCtrl" not in out:
+        if rc == 0 or "WRITTEN BY THE PROCESS RUN" not in out or "choupoCtrl" not in out:
             failures.append("S4 (no trajectory): expected a refusal naming the "
                             f"experiment as the remedy, got exit {rc}: "
                             f"{out[-400:]}")

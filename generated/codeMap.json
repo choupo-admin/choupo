@@ -5612,11 +5612,16 @@
    "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
    "src/core/PublishedTable.H",
    "src/core/Types.H",
    "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/ReactionCurve.H",
-   "src/solver/NelderMead.H"
+   "src/solver/NelderMead.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/RecordResolver.H"
   ],
   "src/propertyOps/ReactionGibbs.cpp": [
    "src/core/Advisory.H",
@@ -5746,6 +5751,7 @@
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/reactor/pellet/Catalyst.H",
    "src/unitOperations/reactor/pellet/CatalystRegistry.H",
@@ -8145,6 +8151,7 @@
   ],
   "src/unitOperations/distillation/DistillationColumn.cpp": [
    "src/core/Advisory.H",
+   "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -8164,14 +8171,17 @@
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/electrolyte/ReactiveVLE.H",
    "src/thermo/electrolyte/SpeciationSolver.H",
+   "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/distillation/DistillationColumn.H",
    "src/unitOperations/distillation/TrayHydraulics.H",
+   "src/unitOperations/flash/IncipientPhase.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
-   "src/unitOperations/saturation/BubblePoint.H"
+   "src/unitOperations/saturation/BubblePoint.H",
+   "src/unitOperations/saturation/DewPoint.H"
   ],
   "src/unitOperations/distillation/ShortcutColumn.cpp": [
    "src/core/Advisory.H",
@@ -10277,6 +10287,7 @@
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
@@ -11200,6 +11211,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
@@ -11480,6 +11492,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
@@ -14066,6 +14079,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
@@ -14282,6 +14296,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
@@ -14626,11 +14641,13 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/SteamTables.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VaporPressureFit.cpp",
    "src/propertyOps/VleConsistency.cpp",
    "src/reporting/SpreadsheetReport.cpp",
@@ -15425,6 +15442,7 @@
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/phase/Phase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
@@ -16156,6 +16174,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp"
   ],
   "src/unitOperations/flash/IncipientPhase.H": [
+   "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/saturation/BubblePoint.cpp"
   ],
@@ -16707,6 +16726,7 @@
   "src/unitOperations/saturation/DewPoint.H": [
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/saturation/DewPoint.cpp"
   ],
   "src/unitOperations/separation/Absorber.H": [
