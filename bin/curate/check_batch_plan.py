@@ -177,7 +177,10 @@ ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "choupoSolve"
 WITNESS = ROOT / "tutorials/batch/plant/apalutamide01_tablets"
 ECON = ROOT / "tutorials/steady/economics/economics01_esterification_dcf"
-ENV = {"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"}
+#  CHOUPO_SUITE_TIMED: the bin/runTests this gate starts must not start a
+#  timing wrapper of its own -- one that did emptied the OUTER sweep's
+#  build/suiteTimings.raw mid-run (DEV.md 4c C167).
+ENV = {"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin", "CHOUPO_SUITE_TIMED": "1"}
 REL = 1e-6
 
 fails = []
