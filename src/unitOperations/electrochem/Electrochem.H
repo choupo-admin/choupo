@@ -49,7 +49,9 @@ Description
 
     The ion-transport DATA (limiting diffusivity D0, hydrated radius) the
     electrodialysis unit needs lives in data/standards/species/<name>.dat
-    (per-value provenance: Nightingale 1959 -- PROVENANCE.md).  This header
+    (per-value provenance on each record: the radius Nightingale 1959,
+    Table I; D0 the public-domain PHREEQC phreeqc.dat `-dw` line -- see
+    parameters/electrolyte/PROVENANCE.md).  This header
     adds the refuse-LOUDLY accessors ionRadius() / ionD0() for that tier:
     a run needing an ion without the transport tier errors clearly, never a
     silent zero (the "no silent crutch" credo).
