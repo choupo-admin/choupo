@@ -1325,6 +1325,11 @@
       "exit": 0,
       "claim": "check_props_order: OK -- 46 registered op types each carry a file-traffic row; 42 guarded writes in their sources match a write slot; 46 op schemas' x-choupo writes/data match the table; 134 corpus propsDicts in declared order (133 pass; 1 declaring a process-run input refuse, on a copy without run outputs, naming the Flowsheet run); a read of a later write, by path, default path, membrane name and by construction, refuses with the remedy and the right order passes; ctrl17's absent trajectory refuses before operation [0] naming the Flowsheet run, and four writtenBy misdeclarations refuse.  NOT checked: that the table lists every key an op reads (no single home for reads), computed paths, registry reads other than membranes, the package",
       "seconds": 79.4
+    },
+    "check_column_thermo_consistency": {
+      "exit": 0,
+      "claim": "check_column_thermo_consistency: OK -- 33 case(s) + 3 probe(s); every column's condenser, every full-MESH stage and reboiler on the streams' surface, fugacity equality at the published y, the reactive full-MESH refusal and the enthalpic CMO q [a 34/34, a2-reboiler 4/4, a2-recon 4/4, a2-stages 4/4, b 29/29, b-skip 5/5, c 3/3, d 1/1, skip 1/1]; NOT checked: feed stages, Kremser units, shortcutColumn",
+      "seconds": 146.1
     }
   }
 }
