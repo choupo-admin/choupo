@@ -114,7 +114,19 @@ def main() -> int:
 
     # ---- P1: ancestry against a FRESHLY FETCHED origin -------------------
     degraded = None
-    if os.environ.get("CHOUPO_WT_OFFLINE"):
+    #  INHERITED PROOF (2026-10-26).  A suite proves the workspace ONCE, at its
+    #  start, and exports the HEAD it proved; a gate that launches a nested
+    #  bin/runTests inherits that proof when HEAD has not moved.  Without
+    #  this, a push to origin DURING a sweep made every nested run re-fetch,
+    #  find HEAD behind, and refuse -- five gates on Vitor's laptop reported
+    #  "COULD NOT RUN" for a tree that was exactly the one the sweep had
+    #  proven.  The claim is narrower and is said so: the tree is the one
+    #  proven at the sweep's start, not origin as it stands now.
+    inherited = os.environ.get("CHOUPO_WT_PROVEN_HEAD", "")
+    if inherited and inherited == head:
+        degraded = ("proven at the enclosing suite's start, HEAD unchanged"
+                    " since; not re-fetched")
+    elif os.environ.get("CHOUPO_WT_OFFLINE"):
         degraded = "CHOUPO_WT_OFFLINE set"
     else:
         rc, _, err = git("fetch", "--quiet", "origin", branch, timeout=45)

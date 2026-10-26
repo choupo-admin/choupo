@@ -582,6 +582,9 @@ if ! "$ROOT/bin/curate/check_workspace_truth.py"; then
     echo "ABORTED before running anything -- the WORKSPACE is not proven."
     exit 1
 fi
+#  Nested runs (gates that launch bin/runTests) inherit this proof while
+#  HEAD is unchanged -- see check_workspace_truth.py, INHERITED PROOF.
+[ -n "${CHOUPO_WT_PROVEN_HEAD:-}" ] || export CHOUPO_WT_PROVEN_HEAD="$(git -C "$ROOT" rev-parse HEAD)"
 
 if ! "$ROOT/bin/curate/check_build_fresh.py"; then
     printf "\nABORTED before running anything -- see above.\n"
