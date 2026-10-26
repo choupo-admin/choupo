@@ -90,7 +90,12 @@ describe("the screen uses the split, and the affordance writes no preference", (
 
   it("the map is the contract's panel, with NO seam to drag (DEV.md 4c C172), and its fold is View > Calculation map", () => {
     expect(src).toContain("usePanel(PROPS_MAP_PANEL");
-    expect(src).not.toContain("<PanelResizeHandle");
+    //  the MAP has no seam; the Workflow OUTLINE does (C168 slice 2, ruling
+    //  (a): the left pane folds and is the reader's width, the panel
+    //  contract's left rail)
+    expect(src).not.toMatch(/<PanelResizeHandle panel=\{mapPanel/);
+    expect(src).toContain("usePanel(WORKFLOW_OUTLINE_PANEL");
+    expect(src).toMatch(/<PanelResizeHandle panel=\{outlinePanel\}/);
     expect(src).not.toContain("savePanelSize");
     expect(src).not.toContain("loadPanelSize");
     //  slice 3: the fold is the store's propsMapOpen (closed by default), and

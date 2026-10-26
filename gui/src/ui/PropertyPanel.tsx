@@ -27,10 +27,15 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  Right-side property panel.  Read-only: in Choupo the dict files on
-  disk are the single source of truth.
-  Edit them with your text editor (Emacs/vim/VSCode), reload the case
-  from the menu, and the canvas + plots will reflect the change.
+  Right-side property panel -- the flowsheet's SELECTION CARD.  The dict
+  files on disk are the single source of truth: the case is edited in your
+  text editor (Emacs/vim/VSCode) and reloaded, and nothing here writes it.
+  A unit's continuous operation scalars ARE editable on the card (Vítor's
+  "tinkering", 2026-06-21, upheld by DEV.md 4c C168's ruling (1) on
+  2026-10-26): a WHAT-IF edit of the OPEN COPY -- marked pending beside the
+  field, announced, used by the next run, never written to disk.  This
+  header said "Read-only" for four months while the card took edits; the
+  C168 audit found it, and the words now say what the card does.
 
   Three blocks per unit, in this order:
 
@@ -275,19 +280,23 @@ export function PropertyPanel() {
           <ThermoSummaryInline />
         )}
         {content && (
-          // The card is read-only in EVERY case (Vítor's ruling 2026-06-12):
-          // the what-if lives in the unit's internals page, never here.
-          <Text size="xs" c="dimmed" mt="md">
+          //  WHAT THE CARD DOES, said on it (DEV.md 4c C168, ruling (1)): a
+          //  property operation is read-only; a flowsheet unit's continuous
+          //  scalars are a what-if of the open copy -- never written to disk.
+          <Text size="xs" c="dimmed" mt="md" data-card-mode={isProps ? "read-only" : "what-if"}>
             {isProps ? (
               <>Read-only.  Edit <code>system/propsDict</code> in your text
               editor and reload the case.</>
             ) : (
-              <>Read-only — double-click the unit for its internals +
-              what-if; the case itself is edited
-              in <code>system/flowsheetDict</code>.</>
+              <>What-if: a value you change here edits the OPEN COPY of the
+              case only -- marked ● beside the field with the value on disk,
+              used by the next run, and never written to disk.  The case
+              itself is edited in <code>system/flowsheetDict</code>;
+              double-click the unit for its internals and a sweep.</>
             )}
           </Text>
         )}
+        {content && !isProps && <PendingWhatIf />}
         {!content && (
           <Text size="xs" c="dimmed" mt="md">
             Click a unit / stream on the canvas, or a file in the case tree
@@ -1164,7 +1173,21 @@ function KpisSection({ kpis }: { kpis: { [k: string]: number } }) {
   );
 }
 
-// --- Transient tinkering ----------------------------------------------------
+/** The pending what-if edits, ANNOUNCED (a polite status region: a screen
+ *  reader hears it once, without the focus moving) -- the field's own
+ *  marker is visual, and the Run control's count is a label nobody hears
+ *  change.  C168 slice 2, ruling (1). */
+function PendingWhatIf() {
+  const n = useStore((s) => Object.keys(s.scratchEdits).length);
+  return (
+    <Text size="xs" role="status" aria-live="polite" data-what-if-pending={n}
+      c={n > 0 ? "light-dark(var(--mantine-color-yellow-9), var(--mantine-color-yellow-4))" : "dimmed"}>
+      {n > 0 ? `${n} what-if edit${n === 1 ? "" : "s"} pending in this open copy -- not on disk` : ""}
+    </Text>
+  );
+}
+
+// --- Transient tinkering (the WHAT-IF of the open copy, C168 ruling (1)) ---
 // A numeric scalar the student may grab and change directly in the Properties
 // box.  The edit is TRANSIENT (lives in the scratch overlay, applied at Run,
 // never written to disk) and LOUD (a yellow amber state + a from->to diff +
@@ -1213,6 +1236,9 @@ function ScratchField({
     <Group gap={6} wrap="nowrap" align="center">
       <NumberInput
         size="xs"
+        //  NAMED (the audit found these inputs unnamed): what the field is,
+        //  and that it edits the open copy only
+        aria-label={`${label}: what-if value, open copy only (on disk: ${from}${unit ? ` ${unit}` : ""})`}
         value={shown}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
@@ -1233,7 +1259,8 @@ function ScratchField({
       {edited && (
         <Group gap={2} wrap="nowrap" align="center">
           <Tooltip label={`on disk: ${from}${unit ? ` ${unit}` : ""} — tinkered, not saved`} withArrow>
-            <Text size="10px" c="yellow.6" ff="monospace" style={{ whiteSpace: "nowrap" }}>
+            <Text size="11px" ff="monospace" data-what-if-pending-field=""
+              style={{ whiteSpace: "nowrap", color: "light-dark(var(--mantine-color-yellow-9), var(--mantine-color-yellow-5))" }}>
               ● {from} →
             </Text>
           </Tooltip>

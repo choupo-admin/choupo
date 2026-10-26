@@ -31,7 +31,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Handle, Position, type NodeProps } from "@xyflow/react";
-import { Group, Stack, Text, Tooltip } from "@mantine/core";
+import { Group, Stack, Text, Tooltip, useComputedColorScheme } from "@mantine/core";
 import { IconBolt } from "@tabler/icons-react";
 
 import type { StreamSpec } from "../case/types.js";
@@ -39,7 +39,7 @@ import { dutyUtilityLabel, type DutyAllocationFacts } from "../case/dutyUtility.
 import { DUTY_TIER_COLOUR } from "../case/dutySign.js";
 import { scalarToSI } from "../dict/scalarSI.js";
 import { useStore } from "../state/store.js";
-import { phaseColor as phaseColorFor } from "./plotting/palette.js";
+import { inkFor, phaseColor as phaseColorFor } from "./plotting/palette.js";
 import {
   formatFlow,
   formatTemperature,
@@ -128,6 +128,7 @@ export function StreamTerminal({ data, selected }: NodeProps) {
           dutyPort, tier, dockSide, dutyKW, utilityName, dutyAlloc, dutyEurH, seed } =
     data as StreamTerminalData;
   const prefs = useStore((s) => s.displayPrefs);
+  const ui = useComputedColorScheme("light");
 
   // Distillation duty stub (reboiler / condenser): a compact tier-coloured
   // marker docked to the column's base / top, with its source handle
@@ -136,7 +137,9 @@ export function StreamTerminal({ data, selected }: NodeProps) {
     const isPower = tier === "power";
     const heating = tier === "heating";
     const unknown = tier === "unknown";
-    const color = isPower ? "#9775fa" : DUTY_TIER_COLOUR[heating ? "heating" : unknown ? "unknown" : "cooling"];
+    //  the scheme's own ink (palette.ts `inkFor`): the dark-canvas hues
+    //  measured 1.9-2.3:1 on the light canvas (C168 audit)
+    const color = inkFor(isPower ? "#9775fa" : DUTY_TIER_COLOUR[heating ? "heating" : unknown ? "unknown" : "cooling"], ui);
     const icon = isPower ? "⚡" : heating ? "♨" : unknown ? "±" : "❄";
     // Stub docks below the unit for heating + power + an unknown sign
     // (handle points up), above for cooling -- or wherever toGraph docked
@@ -148,7 +151,9 @@ export function StreamTerminal({ data, selected }: NodeProps) {
     return (
       <div
         style={{
-          background: "rgba(0,0,0,0.35)",
+          //  its OWN surface (an indicator over the canvas carries one,
+          //  gui-credo): a dark tint on the dark canvas, white on the light
+          background: "light-dark(var(--mantine-color-white), rgba(0,0,0,0.35))",
           border: `1.5px dashed ${color}`,
           borderRadius: 8,
           padding: "5px 9px",
@@ -161,8 +166,11 @@ export function StreamTerminal({ data, selected }: NodeProps) {
           position={handleTop ? Position.Top : Position.Bottom}
           style={{ background: color, width: 8, height: 8 }} />
         <Group gap={5} wrap="nowrap">
-          <Text size="13px">{icon}</Text>
-          <Text size="10px" fw={700} ff="monospace" tt="uppercase"
+          {/* PRIMARY for the legibility floor: the icon is the duty's SIGN
+              (heating, cooling, power) said without colour, so the overview
+              keeps it (C168 slice 2) */}
+          <Text size="13px" data-legible-primary="" aria-label={isPower ? "power" : heating ? "heating" : unknown ? "sign after run" : "cooling"}>{icon}</Text>
+          <Text size="11px" fw={700} ff="monospace" tt="uppercase"
                 style={{ color, letterSpacing: 0.4 }}>
             {dutyPort === "Q" ? "duty" : dutyPort}
           </Text>
@@ -172,7 +180,7 @@ export function StreamTerminal({ data, selected }: NodeProps) {
                TITLE, never the label -- the same rule D13 gave the case
                description.  */}
           {service && (
-            <Text size="10px" fw={600} ff="monospace" c="dimmed"
+            <Text size="11px" fw={600} ff="monospace" c="dimmed"
                   title={service.detail ?? undefined}
                   style={service.detail ? { cursor: "help",
                           textDecoration: "underline dotted",
@@ -200,8 +208,10 @@ export function StreamTerminal({ data, selected }: NodeProps) {
   // chip the bright cyan/orange wash out.  onChip darkens a phase colour for
   // light mode (color-mix toward black) while keeping the bright hue on dark,
   // so the glyph / L / V / border stay legible in BOTH themes.
-  const onChip = (c: string) =>
-    `light-dark(color-mix(in srgb, ${c} 58%, black), ${c})`;
+  //  The phase colours are resolved PER SCHEME now (palette.ts, C168 slice
+  //  2: the light set already holds 3.8:1 on white), so the chip takes them
+  //  as given; the 58 % darkening was the light scheme's old workaround.
+  const onChip = (c: string) => c;
 
   // Phase colour is SEMANTIC -- it never changes on selection.
   // Selection signals through a halo box-shadow ring in the project
@@ -217,8 +227,8 @@ export function StreamTerminal({ data, selected }: NodeProps) {
   // flash result (post-run); no repetition on the state line below.
   const vfVal = resolved?.vf;
   const isTwoPhase = vfVal !== undefined && vfVal > 0.001 && vfVal < 0.999;
-  const liqColor = onChip(phaseColorFor("liquid", prefs.colorScheme));
-  const vapColor = onChip(phaseColorFor("vapour", prefs.colorScheme));
+  const liqColor = onChip(phaseColorFor("liquid", prefs.colorScheme, ui));
+  const vapColor = onChip(phaseColorFor("vapour", prefs.colorScheme, ui));
 
   return (
     <div
@@ -243,8 +253,8 @@ export function StreamTerminal({ data, selected }: NodeProps) {
         {isUtility && (
           <Group gap={2} wrap="nowrap">
             <IconBolt size={11} color="var(--mantine-color-yellow-5)" />
-            <Text size="10px" fw={600} ff="monospace"
-                  style={{ color: "var(--mantine-color-yellow-3)", letterSpacing: 0.4 }}>
+            <Text size="11px" fw={600} ff="monospace"
+                  style={{ color: "light-dark(var(--mantine-color-yellow-9), var(--mantine-color-yellow-3))", letterSpacing: 0.4 }}>
               {utilityCategory}
             </Text>
           </Group>
@@ -262,7 +272,7 @@ export function StreamTerminal({ data, selected }: NodeProps) {
               background: "light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4))",
             }}>{streamNumber}</span>
           )}
-          <Text size="md" fw={700} c="var(--mantine-color-text)">
+          <Text size="md" fw={700} c="var(--mantine-color-text)" data-legible-primary="">
             {name}
           </Text>
           {isTwoPhase ? (
@@ -275,7 +285,7 @@ export function StreamTerminal({ data, selected }: NodeProps) {
             </Text>
           ) : phaseGlyph ? (
             <Tooltip label={phaseLabel ?? ""} disabled={!phaseLabel} withArrow openDelay={200}>
-              <Text size="sm" fw={700} ff="monospace" data-phase-glyph={phaseGlyph}
+              <Text size="sm" fw={700} ff="monospace" data-phase-glyph={phaseGlyph} data-legible-primary=""
                     aria-label={phaseLabel}
                     style={{ color: phaseColor ? onChip(phaseColor) : undefined, letterSpacing: 0.3, cursor: "default" }}>
                 {phaseGlyph}
@@ -287,20 +297,20 @@ export function StreamTerminal({ data, selected }: NodeProps) {
             visible (the dict name stays primary; this is the subordinate
             "where it came from" -- forum 2026-06-15, no silent crutch). */}
         {streamOrigin && (
-          <Text size="10px" c="dimmed" ff="monospace" style={{ letterSpacing: 0.2 }}>
+          <Text size="11px" c="dimmed" ff="monospace" style={{ letterSpacing: 0.2 }}>
             from {streamOrigin}
           </Text>
         )}
         {feedDrivenTag && (
-          <Text size="10px" ff="monospace"
-                style={{ color: "var(--mantine-color-yellow-4)", letterSpacing: 0.2 }}>
+          <Text size="11px" ff="monospace"
+                style={{ color: "light-dark(var(--mantine-color-yellow-9), var(--mantine-color-yellow-4))", letterSpacing: 0.2 }}>
             nominal — driven
           </Text>
         )}
         {seed && (stream || resolved) && (
           <Tooltip withArrow multiline maw={300} openDelay={200}
             label="The values below are this stream's 0/ file: the solver's starting value for a stream a unit produces, not a result.  Run the flowsheet to replace them.">
-            <Text size="10px" ff="monospace" fw={700} data-seed=""
+            <Text size="11px" ff="monospace" fw={700} data-seed=""
                   style={{ color: "var(--mantine-color-dimmed)", letterSpacing: 0.4, cursor: "help",
                            textTransform: "uppercase" }}>
               seed (0/), not a result

@@ -60,7 +60,7 @@ export function LegendBox({ legend }: { legend: ColourLegend }) {
         maxWidth: 560,
       }}
     >
-      <Text size="10px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
+      <Text size="11px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
         {legend.title}{legend.unit ? ` [${legend.unit}]` : ""}
         {legend.qualifiers.length ? ` · ${legend.qualifiers.join(" · ")}` : ""}
       </Text>
@@ -70,7 +70,7 @@ export function LegendBox({ legend }: { legend: ColourLegend }) {
                         background: `linear-gradient(to right, ${legend.stops.join(", ")})` }} />
           <Box style={{ display: "flex", justifyContent: "space-between", width: 160 }}>
             {legend.ticks.map((t, i) => (
-              <Text key={i} size="9px" c="dimmed" ff="monospace">{t}</Text>
+              <Text key={i} size="11px" c="dimmed" ff="monospace">{t}</Text>
             ))}
           </Box>
         </Box>
@@ -78,17 +78,17 @@ export function LegendBox({ legend }: { legend: ColourLegend }) {
       {!bar && legend.stops.length === 1 && (
         <Box style={{ display: "flex", gap: 5, alignItems: "center" }}>
           <Box style={{ width: 18, height: 3, borderRadius: 2, background: legend.stops[0] }} />
-          <Text size="10px" c="dimmed" ff="monospace">{legend.ticks[0]}</Text>
+          <Text size="11px" c="dimmed" ff="monospace">{legend.ticks[0]}</Text>
         </Box>
       )}
       {legend.extras.map((sw) => (
         <Box key={sw.label} style={{ display: "flex", gap: 5, alignItems: "center" }}>
           <Box style={{ width: 18, height: 3, borderRadius: 2, background: sw.colour }} />
-          <Text size="10px" c="dimmed" ff="monospace">{sw.label}</Text>
+          <Text size="11px" c="dimmed" ff="monospace">{sw.label}</Text>
         </Box>
       ))}
       {legend.notes.map((n) => (
-        <Text key={n} size="10px" c="dimmed" ff="monospace">· {n}</Text>
+        <Text key={n} size="11px" c="dimmed" ff="monospace">· {n}</Text>
       ))}
     </Box>
   );

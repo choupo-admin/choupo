@@ -39,20 +39,24 @@
  * it is anything else; a recycle cut is a recycle cut even when this run
  * happens to send nothing round it.
  *
- * TWO PATTERNS ARE AMBIGUOUS, and writing the table down is what found it.
- * The vocabulary is SIX facts, not four, and two pairs share a stroke:
+ * TWO PATTERNS WERE AMBIGUOUS, and writing the table down is what found it.
+ * The vocabulary is SIX facts, not four, and two pairs shared a stroke --
+ * empty pipe and recipe transfer (`4 4`), plant utility and utility duty
+ * (`6 3`) -- with only the COLOUR to separate them; and `energy` (`6 4`)
+ * was a pixel away from `utility`.  This module recorded the ambiguity and
+ * left the decision to Vítor.  It was TAKEN on 2026-10-26 (DEV.md 4c C168,
+ * ruling (d): "no meaning in colour alone -- the edge kinds carry a second
+ * channel"): every dashed kind now has a pattern of its OWN, told apart by
+ * the SHAPE of the dash, not by a gap a pixel longer --
  *
- *     4 4   empty pipe (phase colour, dimmed)   AND   recipe transfer (teal)
- *     6 3   plant utility (phase colour)        AND   utility duty (orange
- *                                                     heating / cyan cooling)
+ *     energy   9 3 2 3        dash-dot        a heat or work link
+ *     utility  7 4            long dash       a utility stream
+ *     duty     2 3            dots            a duty served to a unit
+ *     recipe   9 3 2 3 2 3    dash-dot-dot    a batch transfer
+ *     empty    3 6            sparse dashes   a pipe carrying nothing
  *
- * Within each pair the COLOUR separates them, so nothing on screen is
- * actually undecidable -- but the pattern alone is not the fact, and any
- * reader (or any future edit) that treats it as one will be wrong.  The
- * legend therefore shows the colour beside the pattern.  Whether the
- * patterns themselves should be made distinct is a DESIGN decision that
- * changes how every case in the corpus looks, and it is Vítor's, not this
- * module's: it is recorded here rather than taken.
+ * so a greyscale print or a colour-blind reader can read the wire, and the
+ * colour is a second channel rather than the only one.
  */
 
 /** The fact a dash pattern states.  `process` is the undashed default. */
@@ -93,7 +97,7 @@ export interface DashSpec {
 export const DASH_KINDS: readonly DashSpec[] = [
   {
     kind: "energy",
-    dash: "6 4",
+    dash: "9 3 2 3",
     opacity: 1,
     label: "energy",
     meaning: "a heat link, not a pipe: energy crosses here, matter does not",
@@ -114,7 +118,7 @@ export const DASH_KINDS: readonly DashSpec[] = [
   },
   {
     kind: "utility",
-    dash: "6 3",
+    dash: "7 4",
     opacity: 0.85,
     label: "utility",
     meaning:
@@ -123,30 +127,28 @@ export const DASH_KINDS: readonly DashSpec[] = [
   },
   {
     kind: "duty",
-    dash: "6 3",
+    dash: "2 3",
     opacity: 1,
-    //  SHARES `6 3` with `utility` and is told apart by colour: orange when
-    //  the duty heats, cyan when it cools (toGraph.ts).
+    //  Its own pattern (dots) since C168 slice 2; the colour adds the sign:
+    //  orange when the duty heats, blue when it cools (toGraph.ts).
     colour: "#e8590c",
     label: "duty",
     meaning:
-      "a utility DUTY served to a unit -- orange heating, cyan cooling;"
-      + " same dash as a utility stream, separated by colour",
+      "a utility DUTY served to a unit (dotted) -- orange heating, blue cooling",
   },
   {
     kind: "recipe",
-    dash: "4 4",
+    dash: "9 3 2 3 2 3",
     opacity: 1,
-    //  SHARES `4 4` with `empty`; teal is what separates them.
     colour: "#20c997",
     label: "recipe transfer",
     meaning:
       "a batch recipe moving material between vessels at a scheduled"
-      + " instant; same dash as an empty pipe, separated by colour",
+      + " instant (dash-dot-dot)",
   },
   {
     kind: "empty",
-    dash: "4 4",
+    dash: "3 6",
     opacity: 0.55,
     label: "empty",
     meaning: "this pipe carries no flow in the current run",

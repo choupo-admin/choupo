@@ -52,6 +52,7 @@ import { useRef, useState } from "react";
 
 import type { XY } from "../state/layout.js";
 import { ModelBoundaryBadge, type BoundaryBadgeData } from "./ModelBoundaryBadge.js";
+import { WirePhaseMark } from "./WirePhaseMark.js";
 
 //  One above the zIndex toGraph.ts gives every tear edge (1000).
 export const TEAR_HANDLE_Z = 1001;
@@ -251,17 +252,10 @@ export function TearEdge({
             cursor: "ns-resize",
           }}
         >
-          <div
-            style={{
-              width: hover ? 12 : 9,
-              height: hover ? 12 : 9,
-              borderRadius: "50%",
-              border: `2px solid ${strokeColor}`,
-              background: moved ? strokeColor : "light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))",
-              opacity: moved || hover ? 1 : 0.55,
-              transition: "opacity 120ms ease, width 120ms ease, height 120ms ease",
-            }}
-          />
+          <WirePhaseMark color={strokeColor}
+            glyph={(data as { phaseGlyph?: string } | undefined)?.phaseGlyph}
+            label={(data as { phaseLabel?: string } | undefined)?.phaseLabel}
+            moved={moved} hover={hover} />
         </div>
       </EdgeLabelRenderer>
       {/* Model-boundary audit chip, docked below the label on the underbus
