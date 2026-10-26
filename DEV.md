@@ -1528,6 +1528,19 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C177. A LABORATORY TEMPLATE FOR A DSPM-DE FIT (Vitor, 2026-10-26:
+> "um dataset do laboratorio e um metodo para estimar os parametros
+> daquela membrana que minimizam os desvios do dataset das rejeicoes ...
+> 3 concentracoes e varias pressoes ... Tudo preparado para que alguem va
+> para o laboratorio e possa pegar neste dicionario e preparar aquele
+> dataset para incluir.  E aquilo da o resultado.  Antes de fazer alguma
+> coisa, discute isso comigo").**  A small props case on the existing
+> fitParameters membrane residual (C149/C152, witness membrane24): flux
+> and rejection at 3 concentrations x 3 pressures, the model, the fitted
+> parameters and the fit plots, the dataset written as a template a lab
+> fills in.  UNDER DISCUSSION -- nothing built until Vitor settles the
+> questions put to him that day.
+
 > **C176. A MULTI-ION NF DATASET TO TEST DSPM-DE (Vitor, 2026-10-26:
 > "Sabes se ha algum artigo cientifico com imensos dados de rejeicao de
 > multiplos ioes que nos possamos usar para testar o modelo DSPM-DE?").**
