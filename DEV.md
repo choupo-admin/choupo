@@ -1596,6 +1596,14 @@ accepts today, and that is a policy call.
 > witness built); the VLLE's own sub-1 % phase drop and its NM answer carry
 > no equal-fugacity polish (0.2-0.3 % in y/x); the electrolyte solids
 > service passes no `capacity` (no witness).
+> VALIDATED on the branch (2026-10-26): make all; the 71 cases whose dicts
+> reach a Gibbs reactor, a phaseSet, named liquid phases, a solid phase or
+> PC-SAFT -- 70 PASS, 1 FAIL = ternary01 above, unrecorded; --fast -j 2 76
+> PASS / 0 FAIL (5 expected-fail); --gui 38 PASS / 0 FAIL (6543 GUI tests;
+> the lesson citations into IsothermalFlash.cpp re-located, GibbsMethod.cpp
+> kept line for line); check_compile_clean, check_wasm_dialect, and every
+> gate reading a touched source.  PENDING: Vitor's word on the ternary01
+> rows, then the merge.
 
 > **C172. ONE GUI OR TWO: PROCESS SIMULATION AND PROPERTIES & DATA (Vitor,
 > 2026-10-26, after "Nos temos de por um pouco de ordem nas propriedades!
