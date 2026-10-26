@@ -88,12 +88,16 @@ describe("the screen uses the split, and the affordance writes no preference", (
   const src = readFileSync(resolve(__dirname, "../src/ui/ReviewScreen.tsx"), "utf8")
     .replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
 
-  it("the map is the contract's panel, with NO seam to drag (DEV.md 4c C172), and 'figures full height' is its fold", () => {
+  it("the map is the contract's panel, with NO seam to drag (DEV.md 4c C172), and its fold is View > Calculation map", () => {
     expect(src).toContain("usePanel(PROPS_MAP_PANEL");
     expect(src).not.toContain("<PanelResizeHandle");
     expect(src).not.toContain("savePanelSize");
     expect(src).not.toContain("loadPanelSize");
-    expect(src).toMatch(/data-review="figures-full-height"[\s\S]{0,200}onClick=\{mapPanel\.toggle\}/);
+    //  slice 3: the fold is the store's propsMapOpen (closed by default), and
+    //  the button above an open map closes it through the contract's toggle
+    expect(src).toMatch(/collapsed: !mapOpen/);
+    expect(src).toMatch(/data-review="close-map"[\s\S]{0,200}onClick=\{mapPanel\.toggle\}/);
+    expect(src).not.toContain("figures-full-height");
   });
 
   it("the cap is render-only: the effect that opens the pane never saves a size", () => {

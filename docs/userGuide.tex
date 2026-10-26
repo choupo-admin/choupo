@@ -4129,6 +4129,49 @@ Stream colour encodes phase and comes straight from the solver ($vf$
 plus solid mass fraction); it never changes on hover or selection ---
 selection is signalled by a halo, not a recolour.
 
+\subsection{A properties case: the Workflow}\label{sec:gui-workflow}
+
+A process case opens on its \textbf{Flowsheet}; a properties case (one
+with a \file{system/propsDict}, \S\ref{sec:props}) opens on its
+\textbf{Workflow}, the same application with a different home.  A
+properties case is a \emph{sequence}: \code{choupoProps} runs the
+\code{operations} in the order they are declared and refuses, before the
+first one runs, an operation that reads what a later one writes.  The
+Workflow shows that sequence; it does not edit it.
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{Left: the outline.}  The case's declared \code{studies},
+        lettered A, B, C in their order, each with its \textbf{numbered
+        steps} (A.1, A.2, B.1, \dots) in the order the run takes them; a
+        case that declares no study is one list numbered 1, 2, 3.  A set of
+        runs that a declared view draws together as one series (the five
+        feed points of a measured curve, the node counts of a grid study)
+        is \emph{one} step with several runs.  Under the steps, folded,
+        the data, models and records the steps read and write.
+  \item \textbf{Centre: the results} of what is selected --- with nothing
+        selected, the whole workflow (before a run, what will run; after
+        it, each study's figures, tables and numbers); a study, its own
+        figures first; a step, the figures it feeds, what a fit found and
+        each run's numbers with the units the engine publishes.
+        ``Results'' names only what a run produced.
+  \item \textbf{Right: the inspector} of the selected step, in this order:
+        what it reads (a fit's datasets, each marked \textsc{fit} or
+        \textsc{held out}, and the band declared before the fit), the
+        model with its options inside it, what it writes (every file and
+        record, as the engine's own file-traffic table lists them, with the
+        fingerprints a written record states), and the verdict with its
+        identifiability beside it.
+\end{itemize}
+
+The \textbf{calculation map} --- the whole graph of data, models,
+operations and views --- is behind \textbf{View\,$\rightarrow$\,Calculation
+map}, closed by default.  The case's one \textbf{Run workflow} is in the
+top bar (and \code{Ctrl+Enter}); \textbf{F1} opens the theory of what is
+selected.  A case that carries both dicts (a fit, then a flowsheet that
+reads the fitted record) opens on its \code{controlDict.application} and
+switches home from the top bar; a step that reads a file the process run
+writes says so in its inspector (\emph{written by the Flowsheet run}).
+
 \begin{pitfall}
 \textbf{MOCK vs WASM.}  If the WASM solver has not been built
 (\code{make wasm-gui}), the GUI falls back to a \emph{mock} adapter

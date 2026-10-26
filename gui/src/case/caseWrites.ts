@@ -25,8 +25,9 @@
   next download still carried it.
 
   The rule, the same for every op: the paths a run will write into the case
-  are READ OFF THE OP SCHEMAS (`x-choupo.writes`, the slots of kind `record`,
-  at the keys they name -- case/operationSchemas.ts), never a list of op
+  are READ OFF THE ENGINE'S FILE-TRAFFIC TABLE (the write slots of kind
+  `record`, at the keys they name -- case/fileTraffic.ts, generated from
+  `choupoProps --file-traffic`; DEV.md 4c C172 slice 3), never a list of op
   types; the worker reads exactly those paths back after the run; and they
   are written into the open case's files (the run copy, `extraFiles`, and
   the viewer/download copy, `rawFiles`), each one ANNOUNCED in the Log.  A
@@ -41,7 +42,8 @@
 
 import type { JsonDict } from "../dict/index.js";
 import type { CaseFiles } from "./types.js";
-import { declaredOps, valuesAt } from "./propsMap.js";
+import { declaredOps } from "./propsMap.js";
+import { recordWriteSlots, valuesAt } from "./fileTraffic.js";
 
 export interface CaseWrite { op: string; key: string; path: string }
 
@@ -56,7 +58,7 @@ export function declaredCaseWrites(propsDict: JsonDict | null | undefined): Case
   const out: CaseWrite[] = [];
   const seen = new Set<string>();
   for (const op of declaredOps(propsDict)) {
-    for (const s of op.meta?.writes ?? []) {
+    for (const s of recordWriteSlots(op.type)) {
       if (s.kind !== "record") continue;
       for (const v of valuesAt(op.dict, s.key)) {
         if (!isCasePath(v) || seen.has(v)) continue;
@@ -132,7 +134,8 @@ export function editsBesideRunWrites(files: CaseFiles, pristine: CaseFiles): {
   };
 }
 
-/** Every file a propsDict's ops declare as a PROPOSAL (`x-choupo.writes`,
+/** Every file a propsDict's ops declare as a PROPOSAL (the engine's table,
+ *  case/fileTraffic.ts,
  *  kind `proposal`) at a path inside the case: a promotable record a fit
  *  writes for a HUMAN to promote (DEV.md 4c C172 item 6).  It is not a case
  *  write -- it is never carried into the run copy -- but the worker reads it
@@ -142,7 +145,7 @@ export function declaredProposals(propsDict: JsonDict | null | undefined): CaseW
   const out: CaseWrite[] = [];
   const seen = new Set<string>();
   for (const op of declaredOps(propsDict)) {
-    for (const s of op.meta?.writes ?? []) {
+    for (const s of recordWriteSlots(op.type)) {
       if (s.kind === "record") continue;
       for (const v of valuesAt(op.dict, s.key)) {
         if (!isCasePath(v) || seen.has(v) || !/\.dat$/.test(v)) continue;

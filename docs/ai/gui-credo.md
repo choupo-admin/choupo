@@ -120,11 +120,19 @@ strip — all three were removed.  The layout is now:
   when nothing is selected (it does not fall back to a ThermoSummary).
 - **PropsView (the Workflow).**  A `choupoProps` case (carries
   `propsDict`, no `flowsheet`) -- or a two-mode case shown in its
-  Workflow -- replaces the canvas centre with the Workflow: the case tree,
-  the calculation map (folded after a run, computed height, no seam to
-  drag), and the overview or the selection's details.  There is no Audit
-  section: an operation's own panel is in its details, the thermo
-  readiness and the decision ledger in the thermo package's (C172).
+  Workflow -- replaces the canvas centre with the Workflow (C172 slice 3):
+  on the left the OUTLINE, the case's declared studies with their
+  NUMBERED STEPS in the order the run takes them (a list, never a canvas;
+  a set of runs a declared view draws together is one step), then, folded,
+  the data, models and records; in the centre the RESULTS of what is
+  selected (the whole workflow, a study, a step); on the right the
+  INSPECTOR of a step -- what it reads (FIT / HELD OUT, the band), the
+  model with its options inside it, what it writes (the engine's own
+  file-traffic table, `gui/schemas/propsFileTraffic.json`, generated) and
+  the verdict with its identifiability.  The calculation map is behind
+  View > Calculation map, closed by default.  There is no Audit section:
+  an operation's own panel is in its step's results, the thermo readiness
+  and the decision ledger in the thermo package's details (C172).
 
 **A FULL-VIEWPORT HEIGHT IS THE DYNAMIC VIEWPORT (2026-09-22).**  The shell
 is a full-viewport box with `overflow: hidden`, which is right for an

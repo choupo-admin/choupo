@@ -26,20 +26,11 @@ import { derivePropsMap } from "../src/case/propsMap.js";
 import { numbersOnlyOps, unitCell } from "../src/case/reviewScreen.js";
 import { runSummary, runSummarySentence } from "../src/case/runSummary.js";
 import { streamStateSpec } from "../src/case/toGraph.js";
-import { mapFolded } from "../src/ui/propsSplit.js";
 import { REPO } from "./witnessOutputs.js";
 
-describe("1. the map folds after a successful run, for that run only", () => {
-  it("before a run the stored preference decides alone", () => {
-    expect(mapFolded({ ran: false, openedAfterRun: false, stored: false })).toBe(false);
-    expect(mapFolded({ ran: false, openedAfterRun: false, stored: true })).toBe(true);
-  });
-  it("after a run the map is folded, whatever is stored, until the reader opens it", () => {
-    expect(mapFolded({ ran: true, openedAfterRun: false, stored: false })).toBe(true);
-    expect(mapFolded({ ran: true, openedAfterRun: false, stored: true })).toBe(true);
-    expect(mapFolded({ ran: true, openedAfterRun: true, stored: true })).toBe(false);
-  });
-});
+//  1. (RETIRED, DEV.md 4c C172 slice 3) the map's fold after a run: the map
+//  is behind View > Calculation map, closed by default, so no run folds it --
+//  tests/workflow.test.ts holds the closed default and the one writer.
 
 /** pcsaft01's own files, as the case loader hands them. */
 function pcsaftMap() {

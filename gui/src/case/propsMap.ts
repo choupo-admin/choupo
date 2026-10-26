@@ -81,6 +81,7 @@ import { locatePropsBlocks, type BlockLines } from "./propsDictLocate.js";
 import { firstSentence } from "./reviewScreen.js";
 import { recordNameOfPath, unitsReadingRecord } from "./caseModes.js";
 import { declaredStudies, purposeWords } from "./propsStudies.js";
+import { recordWriteSlots, valuesAt, WRITE_KIND_LABEL } from "./fileTraffic.js";
 
 export const PROPS_DICT_PATH = "system/propsDict";
 export const THERMO_DICT_PATH = "constant/thermoPhysPropDict";
@@ -187,30 +188,9 @@ export interface MapInput {
 const isDict = (v: unknown): v is JsonDict =>
   !!v && typeof v === "object" && !Array.isArray(v);
 
-/** The values at a key path: dotted, `[]` walks a list of dicts.  Only
- *  scalars come back, as strings ("" = the op itself, by construction). */
-export function valuesAt(d: JsonDict, path: string): string[] {
-  if (path === "") return [""];
-  let cur: JsonValue[] = [d];
-  for (const seg of path.split(".")) {
-    const list = seg.endsWith("[]");
-    const k = list ? seg.slice(0, -2) : seg;
-    const next: JsonValue[] = [];
-    for (const c of cur) {
-      if (!isDict(c) || !(k in c)) continue;
-      const v = c[k]!;
-      if (list) { if (Array.isArray(v)) next.push(...v); }
-      else next.push(v);
-    }
-    cur = next;
-  }
-  const out: string[] = [];
-  for (const v of cur) {
-    if (typeof v === "string" || typeof v === "number") out.push(String(v));
-    else if (v !== null && (Array.isArray(v) || isDict(v))) out.push("(inline)");
-  }
-  return out;
-}
+/** The values at a key path -- one home, case/fileTraffic.ts (the engine's
+ *  key-path grammar). */
+export { valuesAt };
 
 /** An op's discipline, after its schema's `disciplineBy` (a fit's residual
  *  kind decides whether it is a thermodynamic or an adsorption fit). */
@@ -426,7 +406,7 @@ export function buildFine(input: MapInput): { nodes: Map<string, Fine>; edges: F
           add({ id: rid, kind: "view", role: "record", order, member: {
             id: rid, label: name, detail: `${s.label}: ${v}`,
             target: path ? caseTarget(path, undefined, `open ${path}`)
-              : { kind: "none", label: `${v}: written by ${op.name} in Properties mode; not in the case yet` } } });
+              : { kind: "none", label: `${v}: written by ${op.name} when the workflow runs; not in the case yet` } } });
           edges.push({ from: id, to: rid, flow: "proposal" });
           for (const u of unitsReadingRecord(input.flowsheet, name)) {
             const uid = `unit:${u}`;
@@ -481,7 +461,11 @@ export function buildFine(input: MapInput): { nodes: Map<string, Fine>; edges: F
       }
     };
     for (const s of meta.data ?? []) dataSlot(s, false);
-    for (const s of meta.writes ?? []) dataSlot(s, true);
+    //  WHAT IT WRITES is the engine's table (case/fileTraffic.ts, DEV.md 4c
+    //  C172 slice 3), never a second copy in the op's schema.
+    for (const s of recordWriteSlots(op.type))
+      dataSlot({ key: s.key, kind: s.kind === "record" ? "record" : "proposal",
+        label: WRITE_KIND_LABEL[s.kind], default: s.default || undefined }, true);
 
     //  models: the FIRST slot the op declares a value for is its law, the
     //  others the choices inside it -- one block per (op type, law).
@@ -526,7 +510,7 @@ export function buildFine(input: MapInput): { nodes: Map<string, Fine>; edges: F
       add({ id, kind: "view", role: "views", order: firstOp < 0 ? Number.MAX_SAFE_INTEGER : firstOp,
         declaredView: true, member: {
           id, label: name, detail: title || String(v["type"] ?? "view"),
-          target: { kind: "view", domId: dom, label: `the figure ${name} in Results` },
+          target: { kind: "view", domId: dom, label: `the figure ${name} in the Workflow` },
           source: caseTarget(PROPS_DICT_PATH, where.views.get(name), `${name} in system/propsDict`) } });
       for (const o of vo) if (opNames.has(o)) edges.push({ from: `op:${o}`, to: id, flow: "result" });
       for (const r of vr) {
@@ -542,7 +526,7 @@ export function buildFine(input: MapInput): { nodes: Map<string, Fine>; edges: F
     const id = `view:${dom}`;
     add({ id, kind: "view", role: "views", order: ops.findIndex((o) => o.name === it.op),
       member: { id, label: `${it.op} · ${it.name}`, detail: `default ${it.kind}: ${it.title}`,
-        target: { kind: "view", domId: dom, label: `the figure ${it.name} of ${it.op} in Results` } } });
+        target: { kind: "view", domId: dom, label: `the figure ${it.name} of ${it.op} in the Workflow` } } });
     edges.push({ from: `op:${it.op}`, to: id, flow: "result" });
   }
 

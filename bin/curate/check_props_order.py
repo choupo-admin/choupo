@@ -21,12 +21,18 @@ keeping a copy.  Arms:
       home of a write into a case -- is the leaf of a write slot of that op's
       row.  (The op's class is read off its `reg(...)` line; its files are
       src/propertyOps/<Class>*.cpp.)
-  (c) THE GUI'S SCHEMAS MATCH THE TABLE.  For every tabled type with an op
-      schema: its `x-choupo.writes` keys are EXACTLY the table's writes of
-      kind record/proposal (the files the GUI carries back into the case --
-      ppr78Kij declared none and the GUI dropped its record); every
-      `x-choupo.data` key of kind `experiment` is a file read of the row; and
-      every by-name membrane read of the row is a data key of kind `record`.
+  (c) THE GUI READS THE TABLE, AND KEEPS NO COPY OF ITS WRITES (C172 slice
+      3).  gui/schemas/propsFileTraffic.json -- what the Workflow's inspector,
+      the calculation map and the worker's read-back of the case's records
+      all read -- is EXACTLY the table the engine prints, built by the one
+      builder (bin/curate/gen_props_file_traffic.py `build`); a stale file
+      fails naming the command that regenerates it.  No op schema carries an
+      `x-choupo.writes` (the hand-written second copy slice 2 held equal to
+      the table is gone).  For every tabled type with an op schema: every
+      `x-choupo.data` key of kind `experiment` is a file read of the row, and
+      every by-name membrane read of the row is a data key of kind `record`
+      (the map's DATA labels stay in the schema: the table names files, not
+      what kind of evidence they hold).
   (d) THE CORPUS IS IN ORDER.  `choupoProps --plan` on every
       tutorials/**/system/propsDict exits 0 -- except a case that DECLARES a
       process-run input (`writtenBy`), planned on a COPY without run outputs
@@ -70,9 +76,11 @@ BY-HAND SABOTAGES (2026-10-26; each restored, the engine ones rebuilt with
       arm (e): "a membrane read by name before its fit (path stem)".
   S3  the engine default of a key (`trajectory` -> trajectory.csv) not
       applied -> arm (e): "the default trajectory path, normalised".
-  S4  ppr78Kij.schema.json's x-choupo `writes` removed (the state the brief
-      named) -> arm (c): "x-choupo.writes [] but the engine writes ...
-      ['output.record']".
+  S4  (slice 2, against the copy slice 3 removed) ppr78Kij.schema.json's
+      x-choupo `writes` removed -> arm (c).  Slice 3's arm (c), by hand: the
+      ppr78Kij write row deleted from gui/schemas/propsFileTraffic.json ->
+      "is not the engine's table"; an `x-choupo.writes` put back on
+      fitParameters.schema.json -> "carries x-choupo.writes".
   S5  the table's ppr78Kij write slot removed -> arms (b) (Ppr78Kij.cpp
       guards a write through 'output.record') AND (c).
   S6  the absent-file test of a `writtenBy process` input disabled -> arm
@@ -94,6 +102,7 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 ROOT = Path(__file__).resolve().parents[2]
 PROPS = ROOT / "choupoProps"
 SCHEMAS = ROOT / "gui" / "schemas" / "operations"
@@ -115,10 +124,13 @@ def run(args, timeout=300):
 
 
 def file_traffic():
-    rc, out = run(["--file-traffic"])
+    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+    r = subprocess.run([str(PROPS), "--file-traffic"], capture_output=True,
+                       text=True, env=env, timeout=300)
+    rc, out = r.returncode, r.stdout
     if rc != 0:
-        fail("a", f"choupoProps --file-traffic exited {rc}:\n{out[-2000:]}")
-        return {}, []
+        fail("a", f"choupoProps --file-traffic exited {rc}:\n{(r.stdout + r.stderr)[-2000:]}")
+        return {}, [], []
     rows, untabled = {}, []
     for line in out.splitlines():
         f = line.split("\t")
@@ -130,7 +142,7 @@ def file_traffic():
             rows.setdefault(f[0], []).append(
                 {"dir": f[1], "key": f[2], "kind": f[3],
                  "default": f[4] if len(f) > 4 else ""})
-    return rows, untabled
+    return rows, untabled, out.splitlines()
 
 
 def registered():
@@ -175,7 +187,17 @@ def arm_b(rows, reg):
     return checked
 
 
-def arm_c(rows):
+def arm_c(rows, lines):
+    import gen_props_file_traffic as gen
+    want = gen.render(gen.build(lines))
+    if not gen.OUT.exists() or gen.OUT.read_text() != want:
+        fail("c", f"{gen.OUT.relative_to(ROOT)} is not the engine's table "
+             f"(choupoProps --file-traffic): run bin/curate/gen_props_file_traffic.py")
+    for p in sorted(SCHEMAS.glob("*.schema.json")):
+        if "writes" in json.loads(p.read_text()).get("x-choupo", {}):
+            fail("c", f"{p.relative_to(ROOT)} carries x-choupo.writes: what an op writes "
+                 f"has one home, the engine's table, which the GUI reads from "
+                 f"{gen.OUT.relative_to(ROOT)}")
     n = 0
     for t, slots in sorted(rows.items()):
         p = SCHEMAS / f"{t}.schema.json"
@@ -183,12 +205,6 @@ def arm_c(rows):
             continue
         x = json.loads(p.read_text()).get("x-choupo", {})
         n += 1
-        sw = {s.get("key") for s in x.get("writes", [])}
-        tw = {s["key"] for s in slots if s["dir"] == "write"
-              and s["kind"] in ("record", "proposal")}
-        if sw != tw:
-            fail("c", f"{p.relative_to(ROOT)}: x-choupo.writes {sorted(sw)} but the "
-                 f"engine writes records/proposals through {sorted(tw)}")
         reads = {s["key"] for s in slots if s["dir"] == "read" and s["kind"] == "file"}
         for d in x.get("data", []):
             if d.get("kind") == "experiment" and d.get("key") not in reads:
@@ -351,13 +367,13 @@ def main():
     if not PROPS.exists():
         print(f"check_props_order: REFUSED -- {PROPS} not built (make all)")
         return 1
-    rows, untabled = file_traffic()
+    rows, untabled, lines = file_traffic()
     reg = registered()
     if not reg:
         fail("a", f"no reg(...) lines parsed from {REG.relative_to(ROOT)}")
     arm_a(rows, untabled, reg)
     nb = arm_b(rows, reg)
-    nc = arm_c(rows)
+    nc = arm_c(rows, lines)
     with tempfile.TemporaryDirectory() as tmp:
         nd, ok, refused = arm_d(tmp)
         arm_e(tmp)
@@ -369,7 +385,9 @@ def main():
         return 1
     print(f"check_props_order: OK -- {len(reg)} registered op types each carry a "
           f"file-traffic row; {nb} guarded writes in their sources match a write slot; "
-          f"{nc} op schemas' x-choupo writes/data match the table; {nd} corpus "
+          f"the GUI's published copy (gui/schemas/propsFileTraffic.json) is the "
+          f"engine's table and no op schema keeps its own writes; {nc} op schemas' "
+          f"x-choupo data match the table; {nd} corpus "
           f"propsDicts in declared order ({ok} pass; {refused} declaring a process-run "
           f"input refuse, on a copy without run outputs, naming the Flowsheet run); a read of a later write, by "
           f"path, default path, membrane name and by construction, refuses with the "

@@ -16,7 +16,8 @@
   THE TWO GUI DEFECTS OF THE C157 ROUND TRIP (DEV.md 4c C157).
 
   (1) A record a props run writes INTO the case is carried back into it:
-      the paths come off the op schemas (`x-choupo.writes`, kind record),
+      the paths come off the engine's file-traffic table (case/fileTraffic.ts,
+      generated from `choupoProps --file-traffic`; kind record),
       the adapter tells the worker exactly those, and the carried record
       reaches the next run's files and the next download -- on
       membrane24_fit_then_simulate, through the real zip round trip.
@@ -63,7 +64,7 @@ function m24Opened() {
 }
 
 describe("(1) the files a props run writes into the case", () => {
-  it("are read off the op schemas: membrane24's fit writes its record", () => {
+  it("are read off the engine's table: membrane24's fit writes its record", () => {
     const opened = m24Opened();
     expect(declaredCaseWrites(opened.files.propsDict)).toEqual([
       { op: expect.any(String), key: "output.record", path: RECORD },

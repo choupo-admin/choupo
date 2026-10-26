@@ -326,6 +326,12 @@ interface AppState {
    *  lost on every tab switch).  This tab's business, never persisted. */
   propsViewFor: { [caseName: string]: { selected: string; expanded: string[] } };
   setPropsView: (caseName: string, v: { selected?: string; expanded?: string[] }) => void;
+  /** Whether the Workflow draws its CALCULATION MAP (View > Calculation map,
+   *  DEV.md 4c C172 slice 3): closed by default, this tab's business, never
+   *  persisted -- the map is the expert's view of the whole graph, and the
+   *  Workflow opens on the steps and their results. */
+  propsMapOpen: boolean;
+  setPropsMapOpen: (open: boolean) => void;
 
   // Assistant console (a real `claude -c` session via the local bridge) — the
   // BOTTOM DOCK of the shell.  Its SHAPE (dock / fold / height) is a reader
@@ -904,6 +910,8 @@ export const useStore = create<AppState>((set, get) => ({
   caseModeFor: {},
   propsFocus: null,
   propsViewFor: {},
+  propsMapOpen: false,
+  setPropsMapOpen: (open) => set({ propsMapOpen: open }),
   setPropsView: (caseName, v) =>
     set((s) => {
       const cur = s.propsViewFor[caseName] ?? { selected: "", expanded: [] };

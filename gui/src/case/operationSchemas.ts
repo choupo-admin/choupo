@@ -172,7 +172,6 @@ export interface OpMapMeta {
   packageUnless?: { key: string; in: string[] };
   models?: OpModelSlot[];
   data?: OpDataSlot[];
-  writes?: OpDataSlot[];
   /** How the op's per-point numbers tabulate (case/opPointTable.ts, DEV.md
    *  4c C154): its keys with `{p}` / `{ion}` slots and their labels. */
   pointTable?: PointTableDecl;

@@ -27,46 +27,43 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  ReviewScreen -- A PROPS CASE'S RESULTS (DEV.md 4c C149, C151).
+  ReviewScreen -- THE WORKFLOW: A PROPERTIES CASE'S HOME (DEV.md 4c C149,
+  C151, C172 slice 3; docs/design/one-app-two-homes.md item 3).
 
-  Three panes, the pipeline-browser layout (ParaView) read through
-  "overview first, zoom and filter, details on demand" (Shneiderman 1996):
+  Three panes:
 
-    LEFT    the CASE TREE -- Data, Models, Operations by discipline (each op
-            with its views), Records produced, My plots (PropsTree)
-    CENTRE  the CALCULATION MAP -- the case drawn as a flowsheet of its
-            calculation, read-only and derived (PropsMap, case/propsMap.ts)
-    BELOW   the DETAILS of what is selected in either (PropsDetails).  The map
-            above them has a COMPUTED height and folds ("figures full
-            height"); there is no seam to drag (DEV.md 4c C172 item 5 removed
-            the draggable split C153 added -- one more control that moved
-            nothing a reader came for).  A selection made while the details
-            are too short to show their summary opens them (ui/propsSplit.ts).
-            With nothing selected, the OVERVIEW:
-              1. what the run did -- one verdict row per operation
-              2. (thermo readiness, where the case creates a component)
-              3. figures, then parameters and tables -- every view
-              4. the comparisons of models with data, where the case has some
-              5. other plots -- every other CSV the run wrote, collapsed
-            The AUDIT that sat folded at its foot is gone (C172): each of its
-            panels now lives where it qualifies -- an operation's own panel in
-            that operation's details, the thermo readiness and the decision
-            ledger in the thermo package's.
+    LEFT    the OUTLINE (ui/WorkflowOutline.tsx) -- the case's declared
+            studies, each with its NUMBERED STEPS in the order the run takes
+            them (case/workflowSteps.ts: a set of runs a declared view draws
+            together is one step), then, folded, the data, models and records
+            the steps read and write.  A list, never a canvas.
+    CENTRE  the RESULTS of what is selected: with nothing selected, the
+            OVERVIEW (each study's figures, tables and numbers, then what
+            ran); a study, ITS results, figures first; a step, ITS results
+            (its figures, what it found, its numbers and its own panel); a
+            dataset, a model or a record, its details (PropsDetails).
+            "Results" names only what a run produced.
+    RIGHT   the INSPECTOR (ui/WorkflowInspector.tsx) -- the selected step:
+            what it reads (datasets FIT or HELD OUT, the band declared before
+            the fit), the model with its options inside it, what it writes
+            (the engine's own file-traffic table, case/fileTraffic.ts) with
+            its fingerprint, and its verdict with its identifiability.
 
-  One selection: a click on the map, a node of the tree or an operation's row
-  selects the same object everywhere.  F1 opens what it is about: a model's
-  theory, an operation's section, a view's figure, a dataset's file.  Every
-  operation and every declared view links to its block in system/propsDict.
+  THE CALCULATION MAP is behind View > Calculation map (the store's
+  `propsMapOpen`), CLOSED BY DEFAULT: when open it is drawn above the centre
+  at C151's computed height (ui/propsSplit.ts), and the panel contract owns
+  it (no seam to drag, C172 item 5).
+
+  One selection: a step in the outline, a block of the map, a row of the
+  verdict strip, a dataset in the inspector select the same object
+  everywhere (a step's id is its first operation's map id).  F1 opens what it
+  is about: a step's operation section, a model's theory, a figure, a file.
 
   DEV.md 4c C154 (an external reviewer's walk through NanoFiltran): the
   strip keeps the RUN status apart from the status of the EVIDENCE and says
-  "not applicable" where an op type cannot publish an AAD; a case that
-  DECLARES its studies (case/propsStudies.ts) is read by them -- the
-  Overview in the case's own order, each study with its purpose, its
-  operations and its figures, the tree and the map's frames under its
-  titles; the selection and the expanded blocks survive a trip to another
-  tab (the store keeps them per case); and every block of the map shows its
-  STATE (case/propsMapState.ts).
+  "not applicable" where an op type cannot publish an AAD; the selection and
+  the expanded blocks survive a trip to another tab (the store keeps them per
+  case); every block of the map shows its STATE (case/propsMapState.ts).
 
   Nothing here computes a number (reviewScreen.ts for the strip,
   postProcessing.ts for the views, propsMap.ts for the map).
@@ -76,7 +73,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { ActionIcon, Badge, Box, Button, Group, ScrollArea, Select, Stack, Table, Text, Tooltip } from "@mantine/core";
 import { useMediaQuery, useReducedMotion } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconChevronsDown, IconChevronsUp, IconFileCode } from "@tabler/icons-react";
+import { IconFileCode, IconX } from "@tabler/icons-react";
 
 import type { OperationResult, RunResult } from "../adapters/SolverAdapter.js";
 import type { JsonDict } from "../dict/index.js";
@@ -87,7 +84,7 @@ import { mapStates } from "../case/propsMapState.js";
 import { useStaleParts } from "../state/useStaleResult.js";
 import { PROPS_DISCIPLINES } from "../case/operationSchemas.js";
 import {
-  caseTree, derivePropsMap, neighbours, PROPS_DICT_PATH, viewDomId,
+  caseTree, derivePropsMap, neighbours, PROPS_DICT_PATH, viewDomId, viewsOf,
   type CaseTreeNode, type MapTarget, type MyPlot, type PropsMap,
 } from "../case/propsMap.js";
 import { locatePropsBlocks } from "../case/propsDictLocate.js";
@@ -96,14 +93,19 @@ import { openGuide } from "../help/guideLinks.js";
 import { CURATION_COLOUR } from "./FitStatsPanel.js";
 import { CsvAutoPlot, dropPointColumn } from "./plotting/CsvAutoPlot.js";
 import { PropsMapCanvas } from "./PropsMap.js";
-import { PropsTree } from "./PropsTree.js";
-import { CaseLink, Diagnostics, FigureGrid, SelectionDetails } from "./PropsDetails.js";
-import { useCollapsedFlag, useMeasuredBoxHeight } from "./methods/methodsChrome.js";
+import {
+  CaseLink, Diagnostics, FigureGrid, FittedParametersBlock, PointTableViews, SelectionDetails,
+} from "./PropsDetails.js";
+import { useMeasuredBoxHeight } from "./methods/methodsChrome.js";
+import { WorkflowOutline } from "./WorkflowOutline.js";
+import { WorkflowInspector } from "./WorkflowInspector.js";
+import { stepLabel, stepOfOp, workflowOutline, type WorkflowStep, type WorkflowStudy } from "../case/workflowSteps.js";
+import { operationMapMeta } from "../case/operationSchemas.js";
 import {
   PROPS_MAP_PANEL, panelBoxProps, shownTopPanelPx, usePanel,
 } from "./panelContract.js";
-import { PANELS, clampSize } from "../state/prefs.js";
-import { autoMapPx, DETAILS_FLOOR_PX, mapFolded, openDetailsCap } from "./propsSplit.js";
+import { clampSize } from "../state/prefs.js";
+import { autoMapPx, DETAILS_FLOOR_PX, openDetailsCap } from "./propsSplit.js";
 
 function SectionTitle({ children, hint }: { children: ReactNode; hint?: string }) {
   return (
@@ -135,10 +137,6 @@ function HeldOutCell({ h }: { h: HeldOutStatistic }) {
  *  push its figures below the fold. */
 const STRIP_ROWS = 8;
 
-/** The runs after which the reader re-opened the map (ui/propsSplit.ts
- *  mapFolded): session memory keyed by the result object, never storage. */
-const MAP_OPENED_AFTER_RUN = new WeakSet<RunResult>();
-
 const RUN_COLOUR: Record<RunState, string> = { done: "teal", failed: "red", noResult: "orange", notRun: "gray" };
 
 /** What the two status columns mean, said once (DEV.md 4c C154). */
@@ -164,7 +162,9 @@ function VerdictStrip({ rows, ran, selected, onSelect, linkOf }: {
 }) {
   const [all, setAll] = useState(false);
   const shown = all ? rows : rows.slice(0, STRIP_ROWS);
-  const anyPurpose = rows.some((r) => r.purpose);
+  //  the purpose column only where it tells rows apart (inside one study
+  //  every row has the study's purpose, which its header already says)
+  const anyPurpose = new Set(rows.map((r) => r.purpose)).size > 1;
   return (
     <>
     <ScrollArea type="auto">
@@ -224,7 +224,7 @@ function VerdictStrip({ rows, ran, selected, onSelect, linkOf }: {
                 </Table.Td>
               )}
               <Table.Td data-run-state={r.runState} style={{ whiteSpace: "nowrap", minWidth: 74 }}>
-                <Badge size="sm" variant={r.runState === "done" ? "light" : "outline"} color={RUN_COLOUR[r.runState]}
+                <Badge size="md" variant={r.runState === "done" ? "light" : "outline"} color={RUN_COLOUR[r.runState]}
                   style={{ textTransform: "none", overflow: "visible" }}>
                   {RUN_STATE_WORD[r.runState]}{r.rc !== null ? ` (rc ${r.rc})` : ""}
                 </Badge>
@@ -232,7 +232,7 @@ function VerdictStrip({ rows, ran, selected, onSelect, linkOf }: {
               <Table.Td data-evidence="" style={{ minWidth: 200 }}>
                 <Group gap={4} wrap="nowrap">
                   {r.verdict ? (
-                    <Badge size="sm" variant="light" color={CURATION_COLOUR[r.verdict] ?? "gray"}
+                    <Badge size="md" variant="light" color={CURATION_COLOUR[r.verdict] ?? "gray"}
                       style={{ textTransform: "none", overflow: "visible", flexShrink: 0 }}>{r.verdict}</Badge>
                   ) : (
                     <Text size="xs" c="dimmed">
@@ -247,7 +247,7 @@ function VerdictStrip({ rows, ran, selected, onSelect, linkOf }: {
                       label={r.identifiable
                         ? "Identifiable: the data determine each fitted parameter separately (the fit's own `identifiable` diagnostic)."
                         : "NOT identifiable: the data do not determine each fitted parameter separately -- some trade off against each other (the fit's own `identifiable` diagnostic).  A different question from the verdict beside it."}>
-                      <Badge size="sm" variant="outline" data-identifiable={r.identifiable ? "1" : "0"}
+                      <Badge size="md" variant="outline" data-identifiable={r.identifiable ? "1" : "0"}
                         color={r.identifiable ? "gray" : "red"} style={{ textTransform: "none", overflow: "visible", flexShrink: 0 }}>
                         {r.identifiable ? "identifiable" : "not identifiable"}
                       </Badge>
@@ -403,10 +403,47 @@ function InlineNumbers({ results, linkOf, onSelect }: {
   );
 }
 
+/** WHAT WILL RUN (DEV.md 4c C172 slice 3): a study's numbered steps, each
+ *  with what its type does, before a run -- the verdict strip's columns are
+ *  all "not run" then, and say nothing a reader came for.  A row selects its
+ *  step. */
+function StepPlan({ steps, rows, onSelect }: {
+  steps: WorkflowStep[]; rows: VerdictRow[]; onSelect: (id: string) => void;
+}) {
+  if (steps.length === 0) return null;
+  return (
+    <Table withTableBorder fz="sm" verticalSpacing={3} data-review="step-plan">
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Th style={{ width: 52 }}>step</Table.Th>
+          <Table.Th>operation</Table.Th>
+          <Table.Th>what it does</Table.Th>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
+        {steps.map((s, i) => {
+          const did = rows.find((r) => r.name === s.ops[0])?.did ?? "";
+          const same = i > 0 && steps[i - 1]!.type === s.type;
+          return (
+            <Table.Tr key={s.id} data-plan-step={s.number} style={{ cursor: "pointer" }} onClick={() => onSelect(s.id)}>
+              <Table.Td ff="monospace" fw={700}>{s.number}</Table.Td>
+              <Table.Td>
+                <Text span size="sm" ff="monospace" style={{ textDecoration: "underline dotted" }}>{stepLabel(s)}</Text>
+                <Text size="xs" c="dimmed">{s.type}{s.ops.length > 1 ? ` · ${s.ops.length} runs, drawn together` : ""}</Text>
+              </Table.Td>
+              <Table.Td><Text size="xs" c="dimmed" lineClamp={2}>{same ? "as above" : did}</Text></Table.Td>
+            </Table.Tr>
+          );
+        })}
+      </Table.Tbody>
+    </Table>
+  );
+}
+
 /** One declared study: its question, what kind of check it is, its
  *  operations (the strip), then its figures and tables. */
 function StudySection({ st, rows, map, strip, groups, csvFiles, linkOf, ran, references, onOpen, link,
-  results, opLinkOf, onSelect }: {
+  results, opLinkOf, onSelect, steps }: {
   st: Study; rows: VerdictRow[]; map: PropsMap;
   /** the run's operation results, for the ones answered by numbers only */
   results: readonly OperationResult[];
@@ -418,6 +455,8 @@ function StudySection({ st, rows, map, strip, groups, csvFiles, linkOf, ran, ref
   ran: boolean; references?: PostReference[];
   onOpen: (t: MapTarget) => void;
   link?: MapTarget;
+  /** the study's numbered steps (case/workflowSteps.ts) */
+  steps: WorkflowStep[];
 }) {
   const pw = purposeWords(st.purpose);
   const items = studyViews(st, map, groups.flatMap((g) => g.items));
@@ -426,20 +465,24 @@ function StudySection({ st, rows, map, strip, groups, csvFiles, linkOf, ran, ref
   const numbers = numbersOnlyOps(map, results.filter((r) => st.ops.includes(r.name)));
   return (
     <Box data-study={st.name} style={{ borderLeft: "3px solid var(--mantine-color-cyan-6)", paddingLeft: 12 }}>
-      <Group gap={8} wrap="wrap" align="baseline">
-        <Text size="md" fw={700}>{st.title}</Text>
-        {link && <CaseLink t={link} onOpen={onOpen} />}
+      <Text size="md" fw={700}>{st.title}</Text>
+      {/* THE STUDY'S WORDS ARE ONE LINE HERE (DEV.md 4c C172 slice 3): its
+          purpose sentence and its summary are in the inspector, so the
+          figures start on the first screen (NanoFiltran's Fig. 3). */}
+      <Group gap={8} wrap="nowrap" mt={2} align="baseline">
+        {link && <Box style={{ flex: "0 0 auto" }}><CaseLink t={link} onOpen={onOpen} /></Box>}
+        <Tooltip label={[pw.sentence, st.summary].filter(Boolean).join("  ")} withArrow multiline maw={420}
+          disabled={!pw.sentence && !st.summary}>
+          <Text size="xs" c="dimmed" lineClamp={1} data-study-purpose={st.purpose} style={{ minWidth: 0 }}>
+            {pw.label}{st.summary ? ` -- ${st.summary}` : ""}
+          </Text>
+        </Tooltip>
       </Group>
-      <Group gap={6} mt={2} wrap="nowrap" align="flex-start">
-        <Badge size="sm" variant="light" color="cyan" style={{ textTransform: "none", flex: "0 0 auto" }}
-          data-study-purpose={st.purpose}>{pw.label}</Badge>
-        {pw.sentence && <Text size="xs" c="dimmed">{pw.sentence}</Text>}
-      </Group>
-      {st.summary && <Text size="sm" mt={6}>{st.summary}</Text>}
       {/* RESULTS FIRST (DEV.md 4c C168): once the run has answered, the
           study's figures come before the table of what ran; before a run
           the operations are the study's content and lead. */}
-      {!ran && <Box mt="sm">{strip(rows.filter((r) => st.ops.includes(r.name)))}</Box>}
+      {!ran && <Box mt="sm"><SectionTitle>What will run</SectionTitle>
+        <StepPlan steps={steps} rows={rows} onSelect={onSelect} /></Box>}
       <Box mt="md">
         <SectionTitle>Figures</SectionTitle>
         {!ran ? <Text size="sm" c="dimmed">Not run yet.</Text>
@@ -465,6 +508,95 @@ function StudySection({ st, rows, map, strip, groups, csvFiles, linkOf, ran, ref
         {strip(rows.filter((r) => st.ops.includes(r.name)))}
       </Box>}
     </Box>
+  );
+}
+
+/** ONE STEP'S RESULTS, in the centre (DEV.md 4c C172 slice 3): the figures
+ *  it feeds first, then what a fit found, then each run's numbers -- its
+ *  point table, its diagnostics with their units, its own panel -- and the
+ *  verdict row of each run last.  What it reads, the model, what it writes
+ *  and the verdict are the inspector's; the figures of its STUDY are one
+ *  click back.  Nothing is computed here: these are the parts an operation's
+ *  details carried since slice 1 (PropsDetails), re-homed. */
+function StepResults({ study, step, map, result, propsDict, rows, strip, linkOf, opLinkOf, onSelect, onActivate,
+  opPanel }: {
+  study: WorkflowStudy; step: WorkflowStep; map: PropsMap;
+  result: RunResult | undefined; propsDict: JsonDict | null | undefined;
+  rows: VerdictRow[]; strip: (rows: VerdictRow[]) => ReactNode;
+  linkOf: (it: PostItem) => MapTarget | undefined;
+  opLinkOf: (op: string) => MapTarget | undefined;
+  onSelect: (id: string) => void; onActivate: (t: MapTarget) => void;
+  opPanel?: (op: string) => ReactNode | undefined;
+}) {
+  const [run, setRun] = useState(step.ops[0]!);
+  useEffect(() => { setRun(step.ops[0]!); }, [step]);
+  const ran = result?.status === "done";
+  const ids = step.ops.map((o) => `op:${o}`);
+  const items = new Map((result?.postProcessing?.items ?? []).map((it) => [viewDomId(it.origin, it.op, it.name), it]));
+  const figures = viewsOf(map, ids).map((v) => items.get(v.replace(/^view:/, ""))).filter((x): x is PostItem => !!x);
+  const r = (result?.operationResults ?? []).find((x) => x.name === run);
+  const opDict = (Array.isArray(propsDict?.["operations"]) ? propsDict!["operations"] as JsonDict[] : [])
+    .find((o) => o && typeof o === "object" && !Array.isArray(o) && o["name"] === run) ?? null;
+  const panel = opPanel?.(run);
+  const link = opLinkOf(run);
+  return (
+    <Stack gap="md" data-review="step-results" data-step-results={step.id}>
+      <Box>
+        <Group gap={8} wrap="wrap" align="baseline">
+          <Text size="md" fw={700}>
+            Step {step.number} <Text span ff="monospace" fw={700}>{stepLabel(step)}</Text>
+          </Text>
+          <Text size="xs" c="dimmed">{step.type}{step.ops.length > 1 ? ` · ${step.ops.length} runs` : ""}</Text>
+          {study.declared && (
+            <Button size="compact-sm" variant="subtle" onClick={() => onSelect(study.id)}
+              title={study.title}>← study {study.letter}: all its figures</Button>
+          )}
+        </Group>
+      </Box>
+      {!ran ? (
+        <Text size="sm" c="dimmed">Not run yet: the toolbar's Run runs the whole workflow, and this step's
+          figures and numbers appear here.  What it reads, the model and what it writes are in the inspector.</Text>
+      ) : (
+        <>
+          <Box>
+            <SectionTitle>{figures.length === 1 ? "The figure it feeds" : `The figures it feeds (${figures.length})`}</SectionTitle>
+            {figures.length > 0
+              ? <FigureGrid items={figures} csvFiles={result?.csvFiles ?? {}} linkOf={linkOf}
+                  references={result?.postProcessing?.references} />
+              : <Text size="sm" c="dimmed">No figure draws from it: its answer is its numbers, below.</Text>}
+          </Box>
+          <FittedParametersBlock op={opDict} r={r} />
+          <Box data-review="step-run-numbers">
+            <Group gap={8} mb={4} wrap="wrap" align="center">
+              <SectionTitle>{step.ops.length > 1 ? "The numbers of one run" : "Its numbers"}</SectionTitle>
+              {step.ops.length > 1 && (
+                <Select size="xs" data={step.ops} value={run} onChange={(v) => v && setRun(v)} allowDeselect={false}
+                  aria-label="which run of the step" comboboxProps={{ withinPortal: true }} w={200} />
+              )}
+              {link && <CaseLink t={link} onOpen={onActivate} small />}
+            </Group>
+            {r ? (
+              <Stack gap="sm">
+                <PointTableViews r={r} />
+                <Diagnostics r={r} folded={!!operationMapMeta(r.type)?.pointTable} />
+              </Stack>
+            ) : <Text size="sm" c="dimmed">The run published nothing for {run}.</Text>}
+          </Box>
+          {panel && (
+            <Box data-review="op-panel">
+              <SectionTitle>Its own panel</SectionTitle>
+              <Box style={{ position: "relative", height: "70vh", minHeight: 420,
+                border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))", borderRadius: 6,
+                overflow: "hidden" }}>{panel}</Box>
+            </Box>
+          )}
+        </>
+      )}
+      <Box>
+        <SectionTitle>{step.ops.length > 1 ? "What ran, run by run" : "What ran"}</SectionTitle>
+        {strip(rows.filter((x) => step.ops.includes(x.name)))}
+      </Box>
+    </Stack>
   );
 }
 
@@ -519,6 +651,8 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
   const propsFocus = useStore((s) => s.propsFocus);
   useEffect(() => { if (propsFocus) setSelected(propsFocus.id); }, [propsFocus, setSelected]);
   const [treeOpen, setTreeOpen] = useState(false);
+  const outline = useMemo(() => workflowOutline(propsDict), [propsDict]);
+  const stepSel = selected.startsWith("op:") ? stepOfOp(outline, selected.slice(3)) : null;
   const [myPlots, setMyPlots] = useState<MyPlot[]>(() => loadPlots(key));
   useEffect(() => { setMyPlots(loadPlots(key)); }, [key]);
 
@@ -526,15 +660,11 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
     propsDict, thermo, rawFiles, post: block ?? null, results: result?.operationResults, expanded, flowsheet,
   }), [propsDict, thermo, rawFiles, block, result, expanded, flowsheet]);
   const verdicts = useMemo(() => new Map(rows.filter((r) => r.verdict).map((r) => [r.name, r.verdict])), [rows]);
-  const tree = useMemo(() => {
-    const t = caseTree(map, propsDict, PROPS_DISCIPLINES, myPlots, verdicts);
-    //  the case's own questions first, in its order (DEV.md 4c C154)
-    return studies.length === 0 ? t : [{
-      id: "folder:studies", label: "Studies", folder: true,
-      children: studies.map((st) => ({ id: `study:${st.name}`, label: st.title,
-        detail: purposeWords(st.purpose).label, children: [] })),
-    }, ...t];
-  }, [map, propsDict, myPlots, verdicts, studies]);
+  //  the outline's lower half: the data, models and records the steps read
+  //  and write -- the map's tree WITHOUT its operations, which ARE the steps
+  //  above it (DEV.md 4c C172 slice 3)
+  const tree = useMemo(() => caseTree(map, propsDict, PROPS_DISCIPLINES, myPlots, verdicts)
+    .filter((n) => n.id !== "folder:ops"), [map, propsDict, myPlots, verdicts]);
   const stale = useStaleParts();
   const states = useMemo(() => mapStates(map, result,
     { stale: stale.stale, changed: stale.changed }), [map, result, stale]);
@@ -661,14 +791,32 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
           : <Text size="sm" c="dimmed">{ran ? `The run wrote no ${p?.file}.` : "Run the workflow to draw it."}</Text>}
       </Stack>
     );
-  } else if (selected.startsWith("study:")) {
+  } else if (stepSel) {
+    details = <StepResults study={stepSel.study} step={stepSel.step} map={map} result={result}
+      propsDict={propsDict} rows={rows} strip={strip} linkOf={figureLink} opLinkOf={opLink}
+      onSelect={setSelected} onActivate={activate} opPanel={opPanel} />;
+  } else if (selected === "study:-") {
+    const loose = outline.find((s) => s.id === "study:-");
+    const looseRows = rows.filter((r) => loose?.steps.some((s) => s.ops.includes(r.name)));
+    details = (
+      <Stack gap="md" data-review="loose-steps">
+        <SectionTitle hint="Operations no declared study claims, in the order the run takes them.">
+          Steps in no declared study
+        </SectionTitle>
+        {ran && <InlineNumbers results={numbersOnlyOps(map, opResults.filter((r) => looseRows.some((l) => l.name === r.name)))}
+          linkOf={opLink} onSelect={setSelected} />}
+        {strip(looseRows)}
+      </Stack>
+    );
+  } else if (selected.startsWith("study:") && selected !== "study:") {
     const st = studies.find((x) => `study:${x.name}` === selected);
     details = st
       ? <StudySection st={st} rows={rows} map={map} strip={strip} groups={groups} csvFiles={csvFiles}
+          steps={outline.find((o) => o.id === selected)?.steps ?? []}
           linkOf={figureLink} ran={ran} references={block?.references} onOpen={activate}
           link={targetOf(selected)} results={opResults} opLinkOf={opLink} onSelect={setSelected} />
       : <Text size="sm" c="dimmed">This case declares no study {selected.slice(6)}.</Text>;
-  } else if (selected && !isFolderOverview) {
+  } else if (selected && selected !== "study:" && !isFolderOverview) {
     details = (
       <SelectionDetails id={selected} map={map} result={result} rows={rows} strip={strip}
         onSelect={setSelected} onActivate={activate} folderOps={folderOps}
@@ -677,7 +825,7 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
           <>
             {readiness && (
               <Box data-review="thermo-readiness">
-                <Text size="10px" c="dimmed" tt="uppercase" fw={700} mb={4}>
+                <Text size="11px" c="dimmed" tt="uppercase" fw={700} mb={4}>
                   Is the thermo ready? -- every component's data, and each phase's model
                 </Text>
                 <Box style={{ position: "relative", height: "60vh", minHeight: 380 }}>{readiness}</Box>
@@ -685,7 +833,7 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
             )}
             {ledger && (
               <Box data-review="decision-ledger">
-                <Text size="10px" c="dimmed" tt="uppercase" fw={700} mb={4}>
+                <Text size="11px" c="dimmed" tt="uppercase" fw={700} mb={4}>
                   The decisions this run took -- each pair, dataset and source
                 </Text>
                 {ledger}
@@ -713,6 +861,7 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
         </Text>
         {studies.map((st) => (
           <StudySection key={st.name} st={st} rows={rows} map={map} strip={strip} groups={groups}
+            steps={outline.find((o) => o.id === `study:${st.name}`)?.steps ?? []}
             csvFiles={csvFiles} linkOf={figureLink} ran={ran} references={block?.references}
             onOpen={activate} link={targetOf(`study:${st.name}`)}
             results={opResults} opLinkOf={opLink} onSelect={setSelected} />
@@ -759,10 +908,10 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
         )}
         <Box>
           <SectionTitle hint={ran ? "Click an operation for its numbers and figures; the icon opens its block in system/propsDict."
-            : "Run the workflow (the Run in the toolbar): each operation reports here."}>
-            What the run did
+            : "Run the workflow (the Run in the toolbar): the steps run in this order, and each reports here."}>
+            {ran ? "What the run did" : "What will run"}
           </SectionTitle>
-          {strip(rows)}
+          {ran ? strip(rows) : <StepPlan steps={outline.flatMap((s) => s.steps)} rows={rows} onSelect={setSelected} />}
         </Box>
         {readiness && readinessProminent && (
           <Box>
@@ -808,7 +957,8 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
   }), [mapSelected, activate, map, setSelected, setExpanded, states]);
 
   const treePane = (
-    <PropsTree tree={tree} selected={selected || null} onSelect={(id) => { setSelected(id); setTreeOpen(false); }}
+    <WorkflowOutline outline={outline} rows={rows} selected={selected} tree={tree}
+      onSelect={(id) => { setSelected(id); setTreeOpen(false); }}
       onNewPlot={() => setSelected("myplot:new")} onRemovePlot={removePlot} />
   );
   /*  THE MAP'S HEIGHT IS COMPUTED, NOT DRAGGED (DEV.md 4c C172 item 5).
@@ -828,27 +978,17 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
     DETAILS_FLOOR_PX, mapSpec);
   const shownMap = mapCap !== null ? Math.min(fittedMap, mapCap) : fittedMap;
   const controlled = useMemo(() => ({ value: shownMap, onValue: () => {} }), [shownMap]);
-  //  RESULTS FIRST (DEV.md 4c C168, ui/propsSplit.ts mapFolded): a finished
-  //  run folds the map for THAT run; the reader's stored fold is read (and
-  //  written) only while no run is on screen.  The per-run memory is keyed
-  //  by the result object, so a trip to another tab finds it as it was left.
-  //  The key is the registry's (PANELS.propsMap declares one, asserted in
-  //  tests/panelContract.test.ts) -- this is its one writer while a
-  //  controlled fold is handed to the contract, which then only reads it.
-  const storedFold = useCollapsedFlag(PANELS.propsMap.collapsedKey as string, false);
-  const [, bumpFold] = useState(0);
-  const openedAfterRun = !!result && MAP_OPENED_AFTER_RUN.has(result);
-  const folded = mapFolded({ ran, openedAfterRun, stored: storedFold.collapsed });
+  //  THE MAP IS BEHIND View > Calculation map, CLOSED BY DEFAULT (DEV.md 4c
+  //  C172 slice 3): the fold is the store's `propsMapOpen`, written by the
+  //  View menu and by the close button above the map, and read here; the
+  //  panel contract owns the drawing (C168's fold-after-a-run memory is
+  //  gone with it -- a map that never opens unasked has nothing to fold).
+  const mapOpen = useStore((s) => s.propsMapOpen);
+  const setMapOpen = useStore((s) => s.setPropsMapOpen);
   const collapsedControl = useMemo(() => ({
-    collapsed: folded,
-    toggle: () => {
-      if (ran && result) {
-        if (MAP_OPENED_AFTER_RUN.has(result)) MAP_OPENED_AFTER_RUN.delete(result);
-        else MAP_OPENED_AFTER_RUN.add(result);
-        bumpFold((n) => n + 1);
-      } else storedFold.toggle();
-    },
-  }), [folded, ran, result, storedFold]);
+    collapsed: !mapOpen,
+    toggle: () => setMapOpen(!mapOpen),
+  }), [mapOpen, setMapOpen]);
   const mapPanel = usePanel(PROPS_MAP_PANEL, { controlled, collapsedControl });
   const mapBox = panelBoxProps(mapPanel, !!reduceMotion, shownMap);
 
@@ -870,63 +1010,71 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
 
   const selLink = selected.startsWith("op:") ? opLink(selected.slice(3)) : undefined;
 
+  const selTitle = stepSel ? `Step ${stepSel.step.number}`
+    : selected.startsWith("study:") && selected !== "study:" ? (outline.find((s) => s.id === selected)?.letter
+      ? `Study ${outline.find((s) => s.id === selected)!.letter}` : "Study")
+    : selected && selected !== "study:" ? "Details" : "Overview";
+
+  const inspector = (
+    <WorkflowInspector selected={selected} outline={outline} map={map} rows={rows} result={result}
+      propsDict={propsDict} onSelect={setSelected} onActivate={activate} opLink={opLink} />
+  );
+
   const centre = (
-    <Box style={{ display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0, height: "100%" }}>
-      <Box px="md" pt="sm" style={{ flex: "0 0 auto" }}>
-        <Group justify="space-between" mb={4} wrap="nowrap">
-          <SectionTitle hint={narrow ? undefined : mapPanel.collapsed ? "Folded: the details and figures have the whole height."
-            : "Data, models, operations, views -- derived from system/propsDict.  Click to select, F1 or double-click to open."}>
-            Calculation map
-          </SectionTitle>
-          {states.caseWide && (
-            <Tooltip withArrow multiline maw={360} label={`What changed: ${(stale.changed ?? []).join(", ") || "the case (no per-part record)"}.  `
-              + "No block can be named for every change, so no block is marked: the whole map shows the last run."}>
-              <Badge color="orange" variant="outline" data-map-stale="case" style={{ textTransform: "none" }}>
-                stale: case changed since the run
-              </Badge>
-            </Tooltip>
-          )}
-          <Group gap={4} wrap="nowrap">
-            {narrow && (
-              <Button size="compact-xs" variant="default" onClick={() => setTreeOpen(!treeOpen)}>
-                {treeOpen ? "Hide the case tree" : "Case tree"}
-              </Button>
-            )}
-            <Tooltip withArrow multiline maw={300} label={mapPanel.collapsed
-              ? "Show the calculation map again"
-              : "Fold the calculation map away: the details and figures take the whole height"}>
-              <Button size="compact-xs" variant="default" data-review="figures-full-height"
-                aria-expanded={!mapPanel.collapsed}
-                leftSection={mapPanel.collapsed ? <IconChevronsDown size={13} /> : <IconChevronsUp size={13} />}
-                onClick={mapPanel.toggle}>
-                {mapPanel.collapsed ? "Show the map" : "Figures full height"}
-              </Button>
-            </Tooltip>
-          </Group>
+    <Box data-workflow-centre="" style={{ display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0, height: "100%" }}>
+      {narrow && (
+        <Group px="md" pt={6} gap={4} wrap="nowrap" style={{ flex: "0 0 auto" }}>
+          <Button size="compact-sm" variant="default" onClick={() => setTreeOpen(!treeOpen)}>
+            {treeOpen ? "Hide the outline" : "Outline"}
+          </Button>
+          <Button size="compact-sm" variant="default" aria-expanded={mapOpen} onClick={() => setMapOpen(!mapOpen)}>
+            {mapOpen ? "Close the calculation map" : "Calculation map"}
+          </Button>
         </Group>
-        {narrow && treeOpen && (
-          <Box style={{ height: 320, border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-            borderRadius: 6, marginBottom: 8 }}>{treePane}</Box>
-        )}
-      </Box>
+      )}
+      {narrow && treeOpen && (
+        <Box mx="md" mt={6} style={{ height: 320, flex: "0 0 auto", border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+          borderRadius: 6 }}>{treePane}</Box>
+      )}
       <Box ref={split.ref} data-review="split"
         style={{ flex: "1 1 0px", minHeight: 0, display: "flex", flexDirection: "column" }}>
         {!mapPanel.collapsed && (
-          <>
-            <Box data-panel={mapBox["data-panel"]} style={{ ...mapBox.style, flex: "0 0 auto" }}>
-              <Box px="md" pb={4} style={{ height: "100%", boxSizing: "border-box" }}>
+          <Box data-panel={mapBox["data-panel"]} data-review="calculation-map" style={{ ...mapBox.style, flex: "0 0 auto" }}>
+            <Box px="md" pt={4} pb={4} style={{ height: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column" }}>
+              <Group justify="space-between" mb={2} wrap="nowrap" style={{ flex: "0 0 auto" }}>
+                <SectionTitle hint={narrow ? undefined : "Data, models, operations, views -- derived from system/propsDict.  Click to select, F1 or double-click to open."}>
+                  Calculation map
+                </SectionTitle>
+                <Group gap={4} wrap="nowrap">
+                  {states.caseWide && (
+                    <Tooltip withArrow multiline maw={360} label={`What changed: ${(stale.changed ?? []).join(", ") || "the case (no per-part record)"}.  `
+                      + "No block can be named for every change, so no block is marked: the whole map shows the last run."}>
+                      <Badge color="orange" variant="outline" data-map-stale="case" style={{ textTransform: "none" }}>
+                        stale: case changed since the run
+                      </Badge>
+                    </Tooltip>
+                  )}
+                  <Button size="compact-sm" variant="default" data-review="close-map" aria-expanded={!mapPanel.collapsed}
+                    leftSection={<IconX size={13} />} onClick={mapPanel.toggle}
+                    title="Close the calculation map (View › Calculation map opens it again)">
+                    Close the map
+                  </Button>
+                </Group>
+              </Group>
+              <Box style={{ flex: 1, minHeight: 0 }}>
                 <PropsMapCanvas map={map} handlers={handlers} wide={!narrow} />
               </Box>
             </Box>
-          </>
+          </Box>
         )}
         <Box data-review="details-pane"
           style={{ flex: "1 1 0px", minHeight: 0, display: "flex", flexDirection: "column",
-            borderTop: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
+            borderTop: mapPanel.collapsed ? undefined : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
           <Group px="md" gap={8} wrap="nowrap"
             style={{ flex: `0 0 ${DETAILS_FLOOR_PX - 1}px`, minHeight: 0, overflow: "hidden" }}>
-            <Text size="11px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.5, whiteSpace: "nowrap" }}>
-              {selected ? "Details" : "Overview"}
+            <Text size="xs" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.5, whiteSpace: "nowrap" }}
+              data-centre-title="">
+              {selTitle}
             </Text>
             {/* A STATUS REGION (DEV.md 4c C168, WCAG 4.1.3): the run's end is
                 announced once, without moving focus. */}
@@ -937,14 +1085,15 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
                 : result?.status === "error" ? "Run failed — the Log has the engine's message."
                 : "Not run yet."}
             </Text>
-            {selected && (
+            {selected && selected !== "study:" && (
               <>
-                <Button size="compact-xs" variant="subtle" onClick={() => setSelected("")}>← overview</Button>
+                <Button size="compact-sm" variant="subtle" onClick={() => setSelected("")}>← overview</Button>
                 {selLink && <CaseLink t={selLink} onOpen={activate} />}
               </>
             )}
           </Group>
           <ScrollArea style={{ flex: 1, minHeight: 0 }} type="auto" viewportRef={detailsVp}>
+            {narrow && <Box px="md" pb="sm" data-inspector-inline="">{inspector}</Box>}
             <Box px="md" pb="sm" style={{ maxWidth: 1600 }}>{details}</Box>
           </ScrollArea>
         </Box>
@@ -954,7 +1103,7 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
 
   return (
     <Box data-review="screen" style={{ position: "absolute", inset: 0, display: "grid",
-      gridTemplateColumns: narrow ? "minmax(0, 1fr)" : "250px minmax(0, 1fr)" }}>
+      gridTemplateColumns: narrow ? "minmax(0, 1fr)" : "248px minmax(0, 1fr) 330px" }}>
       {!narrow && (
         <Box style={{ minHeight: 0, borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
           background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8))" }}>
@@ -962,6 +1111,12 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
         </Box>
       )}
       {centre}
+      {!narrow && (
+        <Box data-inspector-pane="" style={{ minHeight: 0, borderLeft: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+          background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-8))" }}>
+          {inspector}
+        </Box>
+      )}
     </Box>
   );
 }

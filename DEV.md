@@ -1640,6 +1640,38 @@ accepts today, and that is a policy call.
 > dimensionless) -- units per model, never inferred from a name;
 > curate02's held-out dataset is wired to a parity figure that draws only
 > the fit points.
+> SLICE 3 BUILT 2026-10-26 (branch claude/c172-slice3, GUI + one generated
+> file; no engine source touched, no golden moved): THE WORKFLOW.  Left,
+> the OUTLINE (ui/WorkflowOutline.tsx, case/workflowSteps.ts): the
+> declared studies lettered by position, each with its steps numbered in
+> declared order (A.1, B.2; a case with no study is 1, 2, 3); a SET OF
+> RUNS -- consecutive ops of one type a declared view draws together as
+> one `ops ( ... )` series -- is ONE step (NanoFiltran: 22 ops -> 9 steps,
+> B.1 the five dye-4 feeds, C.1 the six node counts); below it, folded,
+> the data, models and records.  Centre: the results of the selection
+> (overview, study figures-first, a step's figures, fitted parameters and
+> per-run numbers; before a run, "What will run").  Right, the INSPECTOR
+> (ui/WorkflowInspector.tsx): reads (FIT / HELD OUT, the band), the model
+> with its options inside it (a schema-`fixed` slot such as LM is said as
+> the op's own method, not as the model), writes with the fingerprints the
+> written record states, the verdict with identifiability -- slice 1's
+> fit details split into parts and re-homed (PropsDetails.tsx).  The map
+> is behind View > Calculation map (store `propsMapOpen`, closed by
+> default; C168's fold-after-run retired).  ONE HOME FOR FILE TRAFFIC:
+> the GUI reads gui/schemas/propsFileTraffic.json, GENERATED from
+> `choupoProps --file-traffic` (bin/curate/gen_props_file_traffic.py);
+> the three schemas' `x-choupo.writes` are deleted and check_props_order
+> arm (c) now refuses a stale table or a writes copy put back (2 by-hand
+> sabotages, both caught).  Walk at 1366x768 (5 users, replayed native
+> runs): every cell passes; NanoFiltran Fig. 3 plot at y = 364-744 of 768
+> in a 788 px pane after one click on study B (was 543-923, 225 px
+> showing); no Workflow text below 11 px (was min 9 px, 141 of 241 items
+> below 11 before a run).  FINDINGS, not fixed: the calculation map at fit
+> still draws labels at 4.7 px (zoom 0.52, before and after: owed to C168
+> slice 2's minimum-label ruling); Plotly legend/tick text at 9 px on some
+> overview figures; the fitted membrane record states its own sha256
+> fingerprints but not the evidence-partition fingerprint the run
+> publishes (the pair proposal does); the status bar's 9 px badges.
 
 > **C171. THE PROPS SCREEN REDESIGNED BEFORE A RESEARCHER SEES IT, AND A
 > PROPER WAY TO CITE (Vitor, 2026-10-26, on the live NanoFiltran case

@@ -40,11 +40,16 @@ License
       ┌──────────────────────────────────────────────────────────────┐
       │  (two-mode case) status of the properties · Open the Flowsheet│
       ├──────────────────────────────────────────────────────────────┤
-      │  header: description · About this case · Lab-data toggle      │
-      ├──────────────────────────────────────────────────────────────┤
-      │  ReviewScreen: case tree · calculation map · the overview or  │
-      │  the selection's details                                      │
-      └──────────────────────────────────────────────────────────────┘
+      │  one row: the case's question · About this case · Lab data    │
+      ├───────────────┬──────────────────────────────┬───────────────┤
+      │  OUTLINE      │  CENTRE: the results of the  │  INSPECTOR:   │
+      │  studies and  │  selection (overview, study, │  the selected │
+      │  numbered     │  step, or a dataset/model/   │  step: reads, │
+      │  steps        │  record)                     │  model, writes│
+      │               │                              │  verdict      │
+      └───────────────┴──────────────────────────────┴───────────────┘
+      (ReviewScreen; the calculation map is behind View > Calculation map,
+      closed by default -- DEV.md 4c C172 slice 3)
 
   NO RUN BUTTON HERE: the case has ONE Run, in the top toolbar
   (ui/RunButton.tsx), plus Ctrl+Enter; the TopBar runs choupoProps for a
@@ -691,14 +696,17 @@ export function PropsView() {
         </Group>
       )}
 
-      {/* Header strip: description + the case's introduction + lab-data toggle */}
-      <Box style={{ flex: "0 0 auto", padding: "8px 16px",
+      {/* Header strip: the case's question beside its introduction and the
+          lab-data toggle -- ONE row (DEV.md 4c C172 slice 3: every pixel above
+          the Workflow is a pixel its figures start lower). */}
+      <Box style={{ flex: "0 0 auto", padding: "6px 16px",
         borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))", background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-8))" }}>
-        {description && (
-          <Text size="sm" c="var(--mantine-color-text)" fw={500} mb={6} style={{ lineHeight: 1.3 }}>{description}</Text>
-        )}
-        <Group justify="flex-start" gap="md" wrap="nowrap">
-          <Button size="xs" variant="subtle" c="dimmed"
+        <Group justify="flex-start" gap="md" wrap="nowrap" align="center">
+          {description && (
+            <Text size="sm" c="var(--mantine-color-text)" fw={500} lineClamp={2} title={description}
+              style={{ lineHeight: 1.3, flex: 1, minWidth: 0 }} data-case-question="">{description}</Text>
+          )}
+          <Button size="xs" variant="light" style={{ flex: "0 0 auto" }}
             onClick={() => setHelpOpen(true)}>
             About this case
           </Button>

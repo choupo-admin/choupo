@@ -685,7 +685,7 @@ export interface RunResult {
    *  of the DATED file; promotion to the bare <name>.dat stays an off-GUI act. */
   proposals?: { [relPath: string]: string };
   /** Files the run wrote INTO THE CASE at a path a props op declares it
-   *  writes (`x-choupo.writes`, kind `record` -- a fitted membrane record at
+   *  writes (the engine's file-traffic table, kind `record` -- a fitted membrane record at
    *  `output.record`), read back from MEMFS after the run.  The caller carries
    *  them into the open case (case/caseWrites.ts); absent = nothing declared
    *  or nothing written. */

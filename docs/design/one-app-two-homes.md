@@ -139,5 +139,14 @@ pure-properties cases.
    record; gate `check_props_order`.  Measured: 134 propsDicts, ~470
    operations, ZERO reads of a later write, zero migrations.
 3. The Workflow: outline, centre, inspector; the map behind View (item 3).
+   BUILT 2026-10-26 (DEV.md 4c C172, slice 3): the outline of studies and
+   numbered steps (`gui/src/case/workflowSteps.ts`; a set of runs a
+   declared view draws as one series is one step), the centre the results
+   of the selection, the inspector of a step
+   (`gui/src/ui/WorkflowInspector.tsx`), the map behind View > Calculation
+   map, closed by default.  What a step reads and writes is the engine's
+   file-traffic table, published to the GUI as
+   `gui/schemas/propsFileTraffic.json` (generated); the schemas'
+   `x-choupo.writes` copy is gone.
 4. Chrome by case kind in one table; the home in the URL; cross links (1, 2).
 5. The Flowsheet findings (item 7).
