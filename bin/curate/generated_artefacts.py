@@ -138,6 +138,11 @@ ENTRIES = [
     _e("propsOpsReference", ["docs/propsGuide-operations.tex"],
        [PY, "bin/curate/props_ops_reference.py"],
        [PY, "bin/curate/props_ops_reference.py", "--check"], "pre"),
+    _e("propsFileTraffic", ["gui/schemas/propsFileTraffic.json"],
+       [PY, "bin/curate/gen_props_file_traffic.py"],
+       [PY, "bin/curate/gen_props_file_traffic.py", "--check"], "engine",
+       note="choupoProps --file-traffic, the engine's one table of what "
+            "each op reads and writes; check_props_order arm (c) holds it"),
     _e("guideVersion", ["docs/version.tex"],
        [PY, "bin/curate/guide_version.py"],
        [PY, "bin/curate/guide_version.py", "--check"], "pre"),
