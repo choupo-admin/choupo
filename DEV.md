@@ -1528,6 +1528,67 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C170. NOTHING SAID IS LOST: THE AUDIT OF EVERY REQUEST IN THE SESSION
+> (Vitor, 2026-10-26: "Ve se nao te esqueceste de mais nada que eu tenha
+> dito!" and "Nao me deites trabalho para o lixo nem te esquecas
+> dele!").**  An auditor read all 268 typed messages and the 33 sent
+> mid-turn (stored as `queued_command` attachments -- a filter on
+> type:user misses them), the uploaded notes and the compaction summaries,
+> against this file, CLAUDE.md and the git log.  ~80 % of ~95 requests
+> and rulings were recorded and true; every question sampled had been
+> answered.  THE GAPS, now recorded here or in the entry they belong to:
+> (1) C140's third addendum (the process patent, Whittle) -- in C140.
+> (2) C163's decisions -- in C163.  (3) TIM'S REPLY (C157): the draft
+> given in chat predates the ions and the spiral/batch point; its
+> blockers are the salt records (Na2CO3, NH4Cl lack `dissociatesTo`; no
+> nitrate, fluoride or bromide salt) and the eight D0 re-source (C163);
+> the reply is redrafted when both land, saying the model runs in
+> spiral-wound modules (a SPATIAL average) and in batch (a TIME average).
+> (4) VITOR'S LAPTOP SWEEP (2026-10-26, main bdceba213): PASS 752 / FAIL
+> 15; three real (code-map, tutorials guide, origin census -- fixed),
+> five nested runs refused by the workspace check after pushes made
+> mid-sweep (fixed, 248646285), the rest his environment (Node 18, git
+> tags, untracked files, private data).  PROMISED AND OWED: problem-
+> divergence and duplicate-keys must not judge `data/local/` (private
+> data is not the corpus); no gate may fail on an UNTRACKED file;
+> check_workspace_truth must not tell a laptop that "the container
+> recycler rewound this checkout" when it is simply behind (say "behind
+> origin: git pull"); the empty suiteTimings.raw (a nested wrapper
+> truncated it -- C167 slice 2).  The .cho markers on his laptop were his
+> own "Save to case" layouts (reverted by him) -- not a defect.  (5) C164's
+> engine findings: explicit colliders written `nu 0; order 1` left the
+> ignition on a false plateau at exit 0 -- REFUSE them; a latent NewtonND
+> line-search defect (an evaluable non-decreasing trial followed by
+> infeasible ones keeps the old F; NewtonND.cpp near the line search); the
+> records still citing "Burcat 2005/JANAF" (NC_COMPILATION debt).  (6)
+> The EduTools audit's promises: C127 dispatched; the stale status lines
+> of C10, C53, C54, C109, C128 and C166 (A) corrected; registry.ts's two
+> stale texts (batch-membrane's gel model, hunter-nash's host dispatch);
+> the design surveys' "nothing built" heads; the RTD EduTool (engine done,
+> ctrl18) queued.  (7) A STANDING RULE he gave on 2026-10-21 and nobody
+> wrote: "mete uma equipa de varios generais a fazer trabalho distribuido
+> e a discutir entre si" -- for a review or a design with real
+> alternatives, generals in pairs (analyst and refuter, as C131 did) or a
+> team, not one voice.  (8) C127 lost two of his points: the path starts
+> from a CONCRETE question, and the page shows where the result has
+> experimental support and where it extrapolates.  (9) C154's P2 items:
+> current documentation told apart from technical history (propsDict
+> comments still carry C141/C148 history); inactive properties marked.
+> (10) Owed tables: the C150 reply as a table (ID | confirmed / partial /
+> no | evidence | fix | verification | open, with commit) and C112's final
+> table.  (11) The JOSS paper is ~2 000 words against the 750-1 750 asked
+> (aim 1 500-1 650).  (12) Minor: C146's reference site
+> (centrivalab.com/simulator.html) noted there; C148's Rint per ion
+> (built per salt, per ion refused when charged) to be put to him once;
+> "Honest Open Source" DROPPED by him on 2026-10-21 ("vamos esquecer isso").
+> TRIGGERS ALREADY FIRED, so these are dispatched in turn: C133 (PFD and
+> spec-sheet PDFs), C159, the C160 phase-0 study's landing, C135 (kij(T)).
+> OWED BY VITOR, unhurried: reviews of C53/C54, C101, C143 and C58; the
+> paper's authors, ORCIDs, DOI and JOSS timing; C132's faults and course;
+> C130's first instruments.
+> Status: recorded 2026-10-26; work dispatched by priority, two to three
+> generals at a time (disk).
+
 > **C169. THE COLUMN SOLVES THE THERMODYNAMICS ITS STREAMS CARRY (Vitor,
 > 2026-10-26, forwarding an external audit of the distillation models run
 > on fd688e4ce: "detetou algumas coisas graves.  Podes ver?").**  Four
@@ -1829,6 +1890,45 @@ accepts today, and that is a policy call.
 > his name and his calendar), and anything irreversible.  The GRI-Mech
 > licence question was explained to him in chat the same turn.
 > Status: recorded.
+> THE DECISIONS, RECORDED (2026-10-26 -- the audit of Vitor's requests
+> found that C163 promised a line per item and none had been written; each
+> is a stated default, reversible, his to overrule):
+> - the eight master-ion D0 (unsourced, C161): RE-SOURCED to PHREEQC
+>   phreeqc.dat `-dw`, as the C157 ions; moved goldens listed to him.
+> - reactor ladder Q3: the general's added clause STAYS (both reactors
+>   read the same phi from one package, so pressure moves them together).
+> - check_friction_correlations prose: "the regime is not determined by Re
+>   alone in the transition band" -- the same rigour as C158 item 4.
+> - C158's four open questions: title "Check your understanding"; the quiz
+>   sits after the tool's last page; a paged tool gets ONE quiz whose
+>   questions name the step; a Yes/No question is allowed where the concept
+>   is binary, with the feedback explaining both answers.  The other 58
+>   tools proceed in waves.
+> - C160: the scope as proposed (thermodynamics, homogeneous gas kinetics,
+>   ideal reactors, sensitivities, narrow transport; NOT flames or plasma;
+>   microkinetics optional); GRI-Mech runs LOCAL only (C164); the
+>   programme text's item 4 ("external numerical libraries may be used")
+>   is NOT taken -- CLAUDE.md 10 "No external libs" is settled and argued;
+>   the reference library stays an external oracle in curation tools.  The
+>   phase-0 study (`claude/c160-parity-study`) lands now that the sweep ran.
+> - W1-W3, P7, M1 (C131 phase-2 thermodynamics and separations): decided
+>   by the review's own recommendation wherever its refuter agreed, the
+>   refuter's where it did not; moved goldens listed to him.
+> - diafilter01/02 (Euler under a "(fixed RK4)" header): the integrator
+>   becomes what the header says; rows move at 1e-3, listed.
+> - `fittedInCase case;` in browser fits: the case name is the case's own
+>   (its .cho marker / folder name handed by the GUI), never the worker's
+>   cwd.
+> - batchReactor never computing P, and the 1e5 slip; the dynamicCSTR
+>   outflow: fixed as defects, each with a gate arm.
+> - "zero physics in TypeScript": ADOPTED into gui-credo.md; gui's
+>   case/pinch.ts (targets computed in TS while the engine has a pinch
+>   pass) is its first debt.
+> - G9 fold thresholds: kept as built; revisited on a student's report.
+> - a multiproduct Gantt tutorial: yes, on the batch plan the engine
+>   already publishes (C98-C100), queued.
+> - the Cavett 2005 article: cited where cavett01 draws on it (the primary
+>   per value rule).
 
 > **C162. A NONVOLATILE ON THE FORMATION LEG REFUSES, AND VITOR RUNS THE
 > SWEEP ON HIS LAPTOP (Vitor, 2026-10-25, asked whether the full sweep the
@@ -3190,6 +3290,25 @@ accepts today, and that is a policy call.
 > confirmed against the primary sources before it is taught.  The full
 > exchange was handed verbatim to the general building the tool, whose
 > report maps each point to where the tool teaches it.
+> THIRD ADDENDUM (Vitor, 2026-10-26, in chat): "se uma patente proteger um
+> processo e eu seguir a receita e aquilo nao funcionar, tenho o direito a
+> pedir para invalidarem a patente?" -- the case the tool must answer:
+> insufficiency of disclosure (EPC Art. 83; 100(b) in opposition; 138(1)(b)
+> in national revocation; the CPI equivalent); who may act and when
+> (third-party observations before grant, Art. 115; EPO opposition by ANY
+> person within nine months of grant, Art. 99; national nullity or the UPC
+> after); the burden of proof (a reproducible report following the
+> teaching exactly; the skilled person with common general knowledge fills
+> gaps; the failure must concern what the CLAIMS require; plausibility of
+> the effect, EPO G 2/21; partial working -> limitation).  And the case he
+> had in mind behind "the turbine": FRANK WHITTLE's turbojet patent (GB
+> 347,206, filed January 1930, lapsed 1935 on an unpaid renewal fee) --
+> could it have been revoked because "the turbine would melt"?  Taught as a
+> CONTESTED case: sufficiency judged at the filing date; early jets ran
+> without cooled blades at limited inlet temperature, so "impossible" is
+> false and "a decade of development" (undue burden) is the real attack;
+> pre-1977 UK law also had INUTILITY as a ground.  All to be verified on
+> primary sources; both handed to the C140 general.
 
 > **C139. AN EDUTOOL ON THE ECONOMICS OF THE CHEMICAL NETWORK: BASE
 > CHEMICALS, INTERMEDIATES, INDUSTRIAL PARKS AND INTERNATIONAL TRADE
