@@ -3567,6 +3567,28 @@ PYEOF
     fi
     rm -f /tmp/feedstate.$$
 
+    # column thermodynamic-consistency gate (2026-10-26, DEV.md 4c C169).  An
+    # external audit measured, with the package's own functions, that the
+    # full MESH solved its stage energy on Hliquid/Hvapour while the streams
+    # price on the formation datum (3.94 kW on a column06 stage, 124.0 kW on
+    # column08, condenser duties 22.9 / 93.9 kW off), that every column model
+    # evaluated the vapour's fugacity at the LIQUID composition (9.4e-4 on
+    # column15, SRK), and that `model fullMESH;` on a reactive column ran
+    # CMO in silence.  The column's global first law closes by construction,
+    # so no first-law gate could see any of it.  This gate recomputes, through
+    # a probe that calls no unit operation, the condenser of every column,
+    # every stage and reboiler of every full MESH on the streams' surface,
+    # fugacity equality at the published y, and the reactive refusal.
+    if gate_exec "$ROOT/bin/curate/check_column_thermo_consistency.py" > /tmp/colthermo.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "column-thermo-consistency-gate" "$(gate_claim check_column_thermo_consistency /tmp/colthermo.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_column_thermo_consistency.py)\n" "column-thermo-consistency-gate"
+        cat /tmp/colthermo.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/colthermo.$$
+
     # over-specified stream gate (2026-10-03).  A stream of known component
     # flows is fixed by TWO intensive variables (Duhem); for a MIXTURE (T, P)
     # fix the split, so a `vaporFraction` beside them is refused by name --
