@@ -54,6 +54,7 @@ Description
 #include "core/Types.H"
 #include "streams/ProcessStream.H"
 #include "result/UnitProfile.H"
+#include "result/ClosureVariable.H"
 
 #include <functional>
 #include <map>
@@ -122,6 +123,16 @@ public:
     //    DistillationCol:  nStages, R, D, B, T_top, T_bottom
     //    Mixer / Splitter :  F_total, T_out
     virtual std::map<std::string, scalar> kpis() const { return {}; }
+
+    // ---- CLOSURE VARIABLES (DEV.md 4c C174) -------------------------------
+    // The terms this unit published that it computed AS THE REMAINDER of one
+    // of its own balances -- so that balance, closed over this unit, cannot
+    // be evidence that they are right (result/ClosureVariable.H draws the
+    // line between such a term and a duty a single balance merely DEFINES).
+    // Each record carries the unit's SECOND ROUTE to the same term when it
+    // has one.  Asked after solve(), so a record may depend on the branch
+    // the solve took (a CMO column vs a full MESH).  Default: none.
+    virtual std::vector<ClosureVariable> closureVariables() const { return {}; }
 
     // ---- Convergence history ---------------------------------------------
     // Per-iteration residual (or |dx|, whichever the unit's inner loop

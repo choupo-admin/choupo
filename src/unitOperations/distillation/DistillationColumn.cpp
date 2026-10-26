@@ -192,6 +192,83 @@ CondenserType readCondenserType(const DictPtr&     operDict,
 //             (the component flows balance across it, so the datum cancels).
 //
 //  Q_reboiler is then the plug that closes the column, as it always was.
+//
+//  AND THE PLUG IS NOT EVIDENCE (DEV.md 4c C174).  Because Q_reboiler is
+//  dH - Q_condenser, the column's first law over its boundary is zero for ANY
+//  condenser duty: the closure sees only the SUM of the two duties, which is
+//  how a condenser priced on the wrong surface on every column of the corpus
+//  went past a green `check_energy_closure` (C169).  So the column publishes
+//  the plug as a CLOSURE VARIABLE (result/ClosureVariable.H) and, beside it,
+//  the reboiler's OWN envelope -- the vapour V_N it boils up and the bottoms
+//  B leaving, against the liquid L_{N-1} falling into it and any feed on its
+//  stage -- on the same surface:
+//
+//      Q_own = V_N h_V(y_N, T_N) + B h_L(x_N, T_N) [+ draws]
+//            - L_{N-1} h_L(x_{N-1}, T_{N-1}) - H(feeds on N)
+//
+//  Q_plug - Q_own is the sum of every OTHER envelope's energy residual (the
+//  stages and the condenser; the condenser's is zero by its own definition).
+//  Under the FULL MESH every stage row is an energy balance solved to 1e-9,
+//  so the two must agree, and the record says `verified` only then.  Under
+//  CMO no stage carries an energy balance -- that is the approximation the
+//  model declares -- so the gap is the energy CMO does not conserve inside
+//  the column, all of it landing in the reboiler.  It is published, and it
+//  is never a verification.
+ClosureVariable reboilerClosure(scalar Q_plug, std::optional<scalar> Q_own,
+                                bool fullMesh, scalar termsMagnitude,
+                                const std::string& whyNoRoute)
+{
+    ClosureVariable c;
+    c.balance  = "energy";
+    c.variable = "Q_reboiler_kW";
+    c.rule     = "Q_reboiler = dH(streams) - Q_condenser: the column's whole"
+                 " first law, closed by the reboiler";
+    c.blindTo  = "the split between the condenser and the reboiler duties --"
+                 " the closure over the column holds for ANY Q_condenser";
+    if (!Q_own)
+    {
+        c.note = "no second route: " + whyNoRoute;
+        return c;
+    }
+    c.check      = "the reboiler's own envelope on the solver's stage traffic:"
+                   " V_N h_V + B h_L - L_(N-1) h_L - H(feeds on N)";
+    c.hasCheck   = true;
+    c.checkValue = *Q_own;
+    c.gap        = Q_plug - *Q_own;
+    //  The full MESH solves each energy row to 1e-9 of the feed times the
+    //  stages' mean latent heat, and the result JSON carries 12 figures of
+    //  formation enthalpies of order 1e5 kJ/kmol: 1e-5 kW plus 1e-9 of the
+    //  envelope's own terms (the sum of their magnitudes) sits above both and
+    //  four orders below the 3.9 kW the C169 audit found on one stage.
+    c.tolerance  = 1.0e-5 + 1.0e-9 * termsMagnitude;
+    if (!fullMesh)
+    {
+        std::ostringstream m;
+        m << std::scientific << std::setprecision(6)
+          << "CMO solves no stage energy balance (the approximation it"
+             " declares), so the reboiler's own envelope on the CMO traffic"
+             " is not a route that can agree: it reads " << *Q_own
+          << " kW against the plug's " << Q_plug << " kW, and the gap is the"
+             " energy the CMO approximation does not conserve inside the"
+             " column, all of it carried by the reboiler.  The condenser duty"
+             " is held by check_column_thermo_consistency arm (a)";
+        c.note = m.str();
+        return c;
+    }
+    c.verified = std::abs(c.gap) <= c.tolerance;
+    if (!c.verified)
+    {
+        std::ostringstream m;
+        m << std::scientific << std::setprecision(6)
+          << "the full MESH's reboiler envelope reads " << *Q_own
+          << " kW against the plug's " << Q_plug << " kW (gap " << c.gap
+          << " kW > " << c.tolerance << "): some envelope inside the column"
+             " does not close on the surface its streams are priced on";
+        c.note = m.str();
+    }
+    return c;
+}
+
 struct CondenserTop
 {
     scalar  D     = 0.0;   // distillate [kmol/s]
@@ -1794,6 +1871,29 @@ int DistillationColumn::solve(const DictPtr& dict,
                         -  feedEnthalpy(feedState, F, Tf, P, z, thermo, hs);
         kpis_["Q_condenser_kW"] = Q_cond;
         kpis_["Q_reboiler_kW"]  = dH - Q_cond;                          // closes the balance
+
+        //  THE PLUG IS NOT EVIDENCE (C174): publish the reboiler's own
+        //  envelope on the CMO traffic beside it -- see `reboilerClosure`.
+        //  Wang-Henke never puts the feed on the reboiler (NF < N, refused
+        //  above), so the envelope is the boil-up and the bottoms against the
+        //  stripping liquid from stage N-1.
+        std::optional<scalar> Q_own;
+        scalar terms = 0.0;
+        if (N >= 2)
+        {
+            const sVector yN = normalisedVapour((Emv != 1.0) ? Keff[N-1] : Kst[N-1],
+                                                x[N-1]);
+            const scalar hVN = Vp * hs.hV(yN, T[N-1]);
+            const scalar hBN = B  * hs.hL(x[N-1], T[N-1]);
+            const scalar hLN = Lp * hs.hL(x[N-2], T[N-2]);
+            Q_own = hVN + hBN - hLN;
+            terms = std::abs(hVN) + std::abs(hBN) + std::abs(hLN);
+        }
+        closures_.clear();
+        closures_.push_back(reboilerClosure(dH - Q_cond, Q_own,
+                                            /*fullMesh=*/false, terms,
+                                            "a column of fewer than two stages"));
+        if (Q_own) kpis_["Q_reboiler_ownEnvelope_kW"] = *Q_own;
     }
 
     // ---- Optional sieve-tray hydraulics ------------------------------
@@ -3324,6 +3424,43 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         const scalar dH = Hout - Hin;
         kpis_["Q_condenser_kW"] = Q_cond;
         kpis_["Q_reboiler_kW"]  = dH - Q_cond;
+
+        //  THE PLUG IS NOT EVIDENCE (C174): the reboiler's own envelope on
+        //  the solver's stage traffic, feed by feed on its stage priced by
+        //  the ONE home the stage rows and the duty use (`feedEnthalpy`).
+        //  Under the full MESH the bottoms row is L_N = B, so the envelope's
+        //  liquid out IS the bottoms; under CMO B is the overall balance's.
+        {
+            std::optional<scalar> Q_own;
+            scalar terms = 0.0;
+            if (N >= 2)
+            {
+                const std::size_t r = N - 1;
+                const sVector yN = normalisedVapour(Kfin[r], x[r]);
+                const scalar hVN = V[r]  * hs.hV(yN, T[r]);
+                const scalar hBN = Bf    * hs.hL(x[r], T[r]);
+                const scalar hLN = L[r-1] * hs.hL(x[r-1], T[r-1]);
+                scalar hDr = 0.0;
+                if (Udraw[r] > 0.0) hDr += Udraw[r] * hs.hL(x[r], T[r]);
+                if (Wdraw[r] > 0.0) hDr += Wdraw[r] * hs.hV(yN, T[r]);
+                scalar hFr = 0.0;
+                for (const auto& fr : feedRecords)
+                {
+                    if (fr.j != r || fr.F <= 0.0) continue;
+                    hFr += fr.state
+                        ? feedEnthalpy(*fr.state, fr.F, fr.T, P, fr.z, thermo, hs)
+                        : fr.F * hs.hQuality(1.0 - fr.q, fr.z, fr.T);
+                }
+                Q_own = hVN + hBN + hDr - hLN - hFr;
+                terms = std::abs(hVN) + std::abs(hBN) + std::abs(hDr)
+                      + std::abs(hLN) + std::abs(hFr);
+            }
+            closures_.clear();
+            closures_.push_back(reboilerClosure(dH - Q_cond, Q_own, fullMesh,
+                                                terms,
+                                                "a column of fewer than two stages"));
+            if (Q_own) kpis_["Q_reboiler_ownEnvelope_kW"] = *Q_own;
+        }
         kpis_["nFeeds"]         = static_cast<scalar>(
             std::count_if(Ffeed.begin(), Ffeed.end(), [](scalar v){ return v > 0.0; }));
         kpis_["nSideDraws"]     = static_cast<scalar>(nDraws);

@@ -1162,6 +1162,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
 
     // ---- KPIs ---------------------------------------------------------
     kpis_.clear();
+    closures_.clear();
     kpis_["V_R"]          = V_R;
     kpis_["T"]            = T;
     if (anyConcLaw) kpis_["tau_s"] = tau;        // liquid basis, as the single path
@@ -1418,6 +1419,41 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
             H_out_kW += flashState::priceState(s.T, P_out, s.z, s.F, false,
                 s.vf, thermo, "pfr outlet", nullptr);
         kpis_["Q_kW"] = H_out_kW - H_in_kW;   // ~0 for an adiabatic reactor
+
+        //  A CLOSURE VARIABLE (DEV.md 4c C174).  Off the isothermal route
+        //  the published Q_kW is H(out) - H(in) on the published streams, so
+        //  the report's closure over this bed is zero for ANY outlet
+        //  temperature.  The march says what the heat was by another route:
+        //  the wall heat it integrated into the enthalpy flow y[n] (zero
+        //  adiabatic; the coolant's or the declared wall's otherwise).  The
+        //  record is `verified` only when the two agree.
+        if (!isoT)
+        {
+            const scalar Qmarch_kW = (y[n] - y_in[n]) / 1000.0;   // W -> kW
+            const scalar gap_kW    = kpis_["Q_kW"] - Qmarch_kW;
+            const scalar tol_kW    = 1.0e-6 * std::max(1.0, std::abs(H_in_kW));
+            ClosureVariable c;
+            c.balance    = "energy";
+            c.variable   = "Q_kW";
+            c.rule       = "Q_kW = H(outlet) - H(inlet) on the published streams";
+            c.blindTo    = "whether the outlet temperature is the one the "
+                           "march's own energy equation reached -- the "
+                           "closure holds for ANY T_out";
+            c.check      = adiab ? "adiabatic: the march integrates no wall heat"
+                                 : "the wall heat the march integrated into the"
+                                   " bed's enthalpy flow";
+            c.hasCheck   = true;
+            c.checkValue = Qmarch_kW;
+            c.gap        = gap_kW;
+            c.tolerance  = tol_kW;
+            c.verified   = std::abs(gap_kW) <= tol_kW;
+            if (!c.verified)
+                c.note = "the published duty is not the heat the march "
+                         "integrated: the outlet's enthalpy is one no "
+                         "temperature on the priced surface carries "
+                         "(reactorOutlet.H) -- announced below";
+            closures_.push_back(std::move(c));
+        }
     }
     catch (const std::exception&) { /* a species lacks formation data */ }
     //  The march conserves H on the surface the duty is priced on (C77), so

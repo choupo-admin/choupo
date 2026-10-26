@@ -172,6 +172,7 @@ public:
     }
 
     std::map<std::string, scalar> kpis() const override { return kpis_; }
+    std::vector<ClosureVariable> closureVariables() const override { return closures_; }
 
 private:
     // MULTI-REACTION path (`reactions ( r1 r2 ... );`): the same RK4 march, but
@@ -262,6 +263,7 @@ private:
     std::vector<ProcessStream>     produced_;
     UnitProfile                    profile_;
     std::map<std::string, scalar>  kpis_;
+    std::vector<ClosureVariable>   closures_;   // DEV.md 4c C174
 };
 
 } // namespace Choupo

@@ -30,6 +30,7 @@ public:
 
     std::vector<ProcessStream> producedStreams() const override { return out_; }
     std::map<std::string, scalar> kpis() const override { return kpis_; }
+    std::vector<ClosureVariable> closureVariables() const override { return closures_; }
     std::optional<UnitProfile> profile() const override { return profile_; }
 
 private:
@@ -37,6 +38,7 @@ private:
 
     std::vector<ProcessStream> out_;
     std::map<std::string, scalar> kpis_;
+    std::vector<ClosureVariable>   closures_;   // DEV.md 4c C174
     std::optional<UnitProfile> profile_;
 };
 

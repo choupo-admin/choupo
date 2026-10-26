@@ -135,6 +135,8 @@ public:
         return kpis_;
     }
 
+    std::vector<ClosureVariable> closureVariables() const override { return closures_; }
+
     //  The Van Heerden diagram of a NON-ISOTHERMAL solve: heat generated and
     //  heat removed against temperature, over the very grid the steady-state
     //  scan already walks, with a marker at every root it finds.  Empty on the
@@ -159,6 +161,7 @@ private:
     inline static const std::string type_ = "cstr";
     std::vector<ProcessStream>     produced_;
     std::map<std::string, scalar>  kpis_;
+    std::vector<ClosureVariable>   closures_;   // DEV.md 4c C174
     std::optional<UnitProfile>     profile_;
 };
 

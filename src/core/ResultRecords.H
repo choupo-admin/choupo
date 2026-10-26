@@ -616,6 +616,15 @@ struct EnergyClosureRecord
     scalar      normResidual = 0.0;
     std::string criterion;
     std::string detail;              // per-stream steps, ';' separated
+
+    //  CLOSURE BY CONSTRUCTION (DEV.md 4c C174).  Set when the unit computed
+    //  one of its own energy terms AS THE REMAINDER of this very balance
+    //  (result/ClosureVariable.H): its `remaining_kW` is then zero for any
+    //  value of its other terms, and the row is NOT evidence.  Empty = no
+    //  closure variable.  `constructionStatus` is the second route's word:
+    //  `verified` (the unit's other equation agrees) or `notVerified`.
+    std::string closureVariable;
+    std::string constructionStatus;
 };
 
 // One row of the discounted-cash-flow (DCF) appraisal table -- the classic

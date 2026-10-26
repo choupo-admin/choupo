@@ -1052,7 +1052,7 @@ void runUnit(const DictPtr&                                          udict,
              std::map<std::string,ProcessStream>&                     streams,
              std::map<std::string,std::map<std::string,scalar>>&      unitKpis,
              std::map<std::string,std::vector<scalar>>&               unitResiduals,
-             std::map<std::string,UnitProfile>&                       unitProfiles,
+             std::map<std::string,UnitProfile>&                       unitProfiles, std::map<std::string,std::vector<ClosureVariable>>& unitClosures,
              const std::map<std::string,
                             std::map<std::string,UnitProfile>>&       declaredInteriors,
              const ThermoPackage&                                     thermo,
@@ -1414,7 +1414,7 @@ void runUnit(const DictPtr&                                          udict,
     }
 
     // Capture KPIs declared by this unit op (empty if it didn't override kpis()).
-    unitKpis[uname] = unit->kpis();
+    unitKpis[uname] = unit->kpis();  recordClosureVariables(unitClosures, uname, *unit);   // C174
 
     // Convergence history (per-iteration residuals).  Empty for algebraic
     // units; pushed by iterative ones via UnitOperation::recordResidual.
@@ -2082,7 +2082,7 @@ int Flowsheet::solve(const DictPtr& dict,
     unitResiduals_.clear();
     globalMassResiduals_.clear();
     globalEnergyResiduals_.clear();
-    unitProfiles_.clear();
+    unitProfiles_.clear();  unitClosures_.clear();
 
     // ---- Seed the stream registry --------------------------------------
     //  Inlet stream state comes from the case's 0/ directory (one file per
@@ -3035,7 +3035,7 @@ int Flowsheet::solve(const DictPtr& dict,
         {
             auto wires = resolveEnergyInputs(udict, units, unitKpis_);
             for (auto& w : wires) energyWires_.push_back(std::move(w));
-            runUnit(udict, streams_, unitKpis_, unitResiduals_, unitProfiles_,
+            runUnit(udict, streams_, unitKpis_, unitResiduals_, unitProfiles_, unitClosures_,
                     declaredInteriors_,
                     thermoFor(udict->lookupWord("name"), udict, thermo),
                     solverDict_, reactionsDict_, dryingKineticsDict_, crystallisationDict_,
@@ -3089,7 +3089,7 @@ int Flowsheet::solve(const DictPtr& dict,
             {
                 auto wires = resolveEnergyInputs(udict, units, unitKpis_);
                 for (auto& w : wires) energyWires_.push_back(std::move(w));
-                runUnit(udict, streams_, unitKpis_, unitResiduals_, unitProfiles_,
+                runUnit(udict, streams_, unitKpis_, unitResiduals_, unitProfiles_, unitClosures_,
                         declaredInteriors_,
                         thermoFor(udict->lookupWord("name"), udict, thermo),
                         solverDict_, reactionsDict_, dryingKineticsDict_, crystallisationDict_,

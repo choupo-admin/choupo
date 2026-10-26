@@ -307,7 +307,7 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
         r.convergence["Mass balance (global)"] = flowsheet.globalMassResiduals();
     if (!flowsheet.globalEnergyResiduals().empty())
         r.convergence["Energy balance (global)"] = flowsheet.globalEnergyResiduals();
-    r.profiles    = flowsheet.unitProfiles();
+    r.profiles    = flowsheet.unitProfiles();  r.closuresByConstruction = flowsheet.closuresInTopologyOrder();   // C174
     r.converged   = (rc == 0);
     r.advisories  = AdvisoryLog::instance().entries();   // drain this pass's advisories
     r.divergences = ProblemDivergence::instance().entries();   // separate channel

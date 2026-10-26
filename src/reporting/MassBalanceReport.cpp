@@ -29,6 +29,7 @@ License
 #include "core/Advisory.H"
 #include "MassBalanceReport.H"
 #include "BalanceMath.H"
+#include "ClosureByConstruction.H"
 #include "Topology.H"
 #include "streams/StreamMass.H"
 #include "streams/UtilityCircuit.H"
@@ -272,7 +273,13 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         std::ofstream f(path);
         if (!f.is_open())
             throw std::runtime_error("massBalance: cannot open " + path.string());
-        f << "unit,in_kg_per_h,out_kg_per_h,diff_kg_per_h,closure_pct\n";
+        f << "unit,in_kg_per_h,out_kg_per_h,diff_kg_per_h,closure_pct,"
+             "byConstruction\n";
+        //  `byConstruction` (DEV.md 4c C174): EMPTY unless the unit filled a
+        //  term of this balance as its remainder (a membrane's water), then
+        //  `verified` | `notVerified` -- reporting/ClosureByConstruction.H.
+        const auto constructionWord =
+            reporting::byConstruction::wordsFor(ctx.result, "material");
         const auto units = reporting::resolveUnits(topo, ctx.result);
         for (const auto& u : units)
         {
@@ -305,7 +312,12 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
             const scalar pct = closurePct(uin, uout);
             f << u.name << "," << std::fixed << std::setprecision(4)
               << uin << "," << uout << "," << (uout - uin)
-              << "," << std::setprecision(4) << pct << "\n";
+              << "," << std::setprecision(4) << pct << ",";
+            {
+                const auto cw = constructionWord.find(u.name);
+                if (cw != constructionWord.end()) f << cw->second.status;
+            }
+            f << "\n";
 
             //  A BALANCE THAT DOES NOT CLOSE MUST NOT FINISH QUIETLY.
             //  This row was written and nothing else happened: flash21's
@@ -330,6 +342,8 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
             }
         }
         f.close();
+        //  CLOSURE BY CONSTRUCTION (C174), said aloud whatever the verbosity.
+        reporting::byConstruction::announce(ctx.result, "material", "massBalance");
         if (ctx.verbosity >= 2)
         {
             const std::size_t nObs = topo.observerUnits.size();
