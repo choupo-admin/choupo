@@ -3693,6 +3693,20 @@ accepts today, and that is a policy call.
 > primary sources; both handed to the C140 general.
 > LANDED 2026-10-26 (3fd4a4e1b): built by a general, --gui PASS 37 /
 > FAIL 0 (6505 tests); Vitor's content review still owed.
+> FOURTH ADDENDUM (Vitor, 2026-10-26): "No capitulo das patentes eu
+> adoraria ter o case study do John Cadotte (que foi injusticado pela
+> historia porque fez um trabalho de engenharia fenomenal em arranjar
+> filmes finos com mais de 99% de rejeicao ao sal, pelo menos 5x menos
+> permeaveis ao sal que o heroi romantico do Sourirajan que perdeu a
+> corrida!) e da FilmTec e Hydranautics."  A case study in the patent
+> chapter: Loeb-Sourirajan's asymmetric cellulose acetate (the celebrated
+> first) against Cadotte's interfacially polymerised thin-film composite
+> (FT-30, the membrane the industry actually runs), FilmTec, and the
+> litigation with Hydranautics (and Allied-Signal).  PRIMARY SOURCES ONLY
+> (the patents, the Federal Circuit opinions, Cadotte's own papers); every
+> number -- rejection, salt permeability, the "at least 5x" -- read from a
+> source, and a number the sources do not support is put to Vitor before a
+> word is written.  The lesson text is shown to him before it lands.
 
 > **C139. AN EDUTOOL ON THE ECONOMICS OF THE CHEMICAL NETWORK: BASE
 > CHEMICALS, INTERMEDIATES, INDUSTRIAL PARKS AND INTERNATIONAL TRADE
