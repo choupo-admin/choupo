@@ -1807,6 +1807,43 @@ accepts today, and that is a policy call.
 > nothing reads what is not yet computed).  The workflow's arrows take the
 > flowsheet's visual grammar; each is labelled with what it carries (a
 > stream's state there, a file or record here).
+> SLICE 3B BUILT 2026-10-26 (branch claude/c172-slice3b, GUI only; no
+> engine source touched, no golden moved): THE WORKFLOW DIAGRAM IS THE
+> HOME.  A properties case opens on its workflow drawn on the flowsheet's
+> own canvas (React Flow, dot grid, controls, fit, legibility floor,
+> arrowheads, wire marks, legend, key line and selection card, now SHARED
+> in ui/canvasChrome.tsx and ui/nodeCard.ts and used by FlowCanvas too):
+> one box per numbered step, studies as frames, a study of independent
+> steps laid in a grid of up to three columns when that fits the whole
+> workflow at a larger zoom (NanoFiltran fits 1366x768 at zoom 0.58, study
+> A in three columns).  ARROWS ARE INFORMATION (case/workflowDiagram.ts,
+> from the engine's file-traffic table): feeds left (datasets FIT / HELD
+> OUT, records), the "Flowsheet run" terminal (ctrl17's trajectory), products
+> right (records, proposals, unread files, the case's declared views), step
+> to step where a later step reads an earlier write (none in today's
+> corpus); orthogonal routes in the gaps, a shared word said once.  A box
+> too small for its 12 px lines at fit shows a COMPACT FACE (number never
+> cut, name, type, model, state) sized to the zoom, never an empty box;
+> terminal names wrap to two lines.  SINGLE CLICK: the flowsheet's own
+> selection card with the step in PropertyPanel (the retired inspector's
+> content, ui/workflowCard.tsx, plus its main numbers); DOUBLE CLICK, Enter
+> or Open: the step in its own tab (`?step=`, ui/StepTab.tsx).  STUDIES is
+> its own menu entry (the old overview); the View menu and the calculation
+> map are RETIRED (Vitor: "E o 'view' nao esta la a fazer nada!!! Devia
+> ficar em 'reports'!!!"); REPORTS (ui/PropsReports.tsx,
+> case/propsReports.ts) holds what the run produced: curation verdicts
+> (CSV), records and proposals written (preview, download), the comparison
+> with measured data, the decision ledger, every file written (CSV, "Draw
+> it"), the thermo readiness, one .zip.  Props menu: File · Workflow ·
+> Studies · Reports · Log · Case · Help.  Walk at 1366x768, 100 % and
+> 200 % (flash01, ammonia02, NanoFiltran, curate02, membrane24 both homes,
+> ctrl17): every decisive cell passes; no label below 11 px at fit (at
+> 200 % NanoFiltran's fit draws shapes, step numbers and state glyphs, and
+> says so).  FINDINGS, not fixed: at 200 % the FLOWSHEET's own overlays
+> (SHOW / PHASE / WIRES panels) cover its units on a short pane
+> (pre-existing, FlowCanvas's overlay layout unchanged); a product
+> terminal's detail line ("record · read by the Flowsheet's ...") is cut
+> to one line with a tooltip.
 > THE TWO OWED FINDINGS BUILT 2026-10-26 (branch claude/fit-band-units,
 > engine; curate02's parity wiring NOT touched).  (1) A band is held to its
 > statistic's unit: the Dictionary now keeps a scalar's unit WORD as

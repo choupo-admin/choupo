@@ -166,6 +166,11 @@ describe("(2) ctrl17: what the process run writes enters from a 'Flowsheet run' 
       .toEqual([["process", "trajectory.csv"], ["process", "trajectory.csv"]]);
     expect(d.terminals.filter((t) => t.side === "feed")).toHaveLength(0);
   });
+  it("the shared word is said once, on the arrow with room for it", () => {
+    const p = d.terminals.find((t) => t.side === "process")!;
+    const out = d.edges.filter((e) => e.from === p.id);
+    expect(out.filter((e) => e.showLabel !== false)).toHaveLength(1);
+  });
   it("(4)", () => drawingHolds(d));
 });
 

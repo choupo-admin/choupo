@@ -4111,8 +4111,10 @@ left tree, no docked panels.  Auxiliary views (log, plots, stream
 table, thermo foundation) open on demand as workspaces.
 
 \begin{itemize}[leftmargin=*,nosep,topsep=2pt]
-  \item \textbf{Single-click} a node or edge --- raises a floating,
-        read-only selection card (labels, units, help tooltips).
+  \item \textbf{Single-click} a node or edge --- raises a floating
+        selection card (labels, units, help tooltips; a unit's continuous
+        operation values are a what-if of the open copy, never written
+        to disk).
   \item \textbf{Double-click} --- pops the unit out, or drills into a
         composite sector (the drilled sub-case is seeded from the
         parent's persisted \file{converged/} state).
@@ -4133,44 +4135,70 @@ selection is signalled by a halo, not a recolour.
 
 A process case opens on its \textbf{Flowsheet}; a properties case (one
 with a \file{system/propsDict}, \S\ref{sec:props}) opens on its
-\textbf{Workflow}, the same application with a different home.  A
-properties case is a \emph{sequence}: \code{choupoProps} runs the
-\code{operations} in the order they are declared and refuses, before the
-first one runs, an operation that reads what a later one writes.  The
-Workflow shows that sequence; it does not edit it.
+\textbf{Workflow}, the same application with a different home, drawn
+with the flowsheet's own grammar.  In both, what an arrow carries is
+\emph{information}: on a flowsheet, the state one unit computed and the
+next one reads; here, the data and the records one step reads and the
+results it gives.  A properties case is a \emph{sequence}:
+\code{choupoProps} runs the \code{operations} in the order they are
+declared and refuses, before the first one runs, an operation that reads
+what a later one writes.  The Workflow shows that sequence; it does not
+edit it.
 
 \begin{itemize}[leftmargin=*,nosep,topsep=2pt]
-  \item \textbf{Left: the outline.}  The case's declared \code{studies},
-        lettered A, B, C in their order, each with its \textbf{numbered
-        steps} (A.1, A.2, B.1, \dots) in the order the run takes them; a
-        case that declares no study is one list numbered 1, 2, 3.  A set of
-        runs that a declared view draws together as one series (the five
-        feed points of a measured curve, the node counts of a grid study)
-        is \emph{one} step with several runs.  Under the steps, folded,
-        the data, models and records the steps read and write.
-  \item \textbf{Centre: the results} of what is selected --- with nothing
-        selected, the whole workflow (before a run, what will run; after
-        it, each study's figures, tables and numbers); a study, its own
-        figures first; a step, the figures it feeds, what a fit found and
-        each run's numbers with the units the engine publishes.
-        ``Results'' names only what a run produced.
-  \item \textbf{Right: the inspector} of the selected step, in this order:
-        what it reads (a fit's datasets, each marked \textsc{fit} or
-        \textsc{held out}, and the band declared before the fit), the
-        model with its options inside it, what it writes (every file and
-        record, as the engine's own file-traffic table lists them, with the
-        fingerprints a written record states), and the verdict with its
-        identifiability beside it.
+  \item \textbf{The diagram (the home).}  One \textbf{box per numbered
+        step} (A.1, A.2, B.1, \dots, in the order the run takes them; a
+        set of runs a declared view draws together as one series --- the
+        five feed points of a measured curve --- is \emph{one} step).
+        Each study is a \textbf{frame} around its steps, lettered by
+        position.  A box says what is inside it without a click: the
+        operation's type and its number of runs, the model and its main
+        options, what it reads (\textsc{fit} / \textsc{held out} where it
+        fits), what it writes, the figures and tables it feeds, and its
+        state and verdict.  On the left of a step, its \textbf{feeds}: the
+        measured datasets and records it reads; a file the process run
+        writes enters from a \textbf{Flowsheet run} terminal.  On the
+        right, its \textbf{products}: the records, proposals and files it
+        writes, and the figures and tables the case declares from its
+        results.  An arrow from one step to another means the later one
+        reads what the earlier one wrote.  Each arrow is labelled with
+        what it carries, and each kind has its own dash.
+  \item \textbf{Single click} on a box opens the same floating card the
+        flowsheet opens for a unit: what the step reads (each dataset
+        \textsc{fit} or \textsc{held out}, and the band declared before
+        the fit), the model with its options inside it, what it writes
+        (as the engine's own file-traffic table lists them, with the
+        fingerprints a written record states), the verdict with its
+        identifiability beside it, and after a run its main numbers.
+  \item \textbf{Double click} (or \textbf{Enter}, or the card's
+        \textbf{Open}) opens the step in its own browser tab with
+        everything about it: its figures, what a fit found, each run's
+        numbers with their units, what ran run by run, and the card's
+        sections.
+  \item \textbf{The outline} on the left, folded with \code{[}, lists
+        the same studies and steps and shares the diagram's selection;
+        \code{$\uparrow$}/\code{$\downarrow$} walk the steps in order.
 \end{itemize}
 
-The \textbf{calculation map} --- the whole graph of data, models,
-operations and views --- is behind \textbf{View\,$\rightarrow$\,Calculation
-map}, closed by default.  The case's one \textbf{Run workflow} is in the
-top bar (and \code{Ctrl+Enter}); \textbf{F1} opens the theory of what is
-selected.  A case that carries both dicts (a fit, then a flowsheet that
-reads the fitted record) opens on its \code{controlDict.application} and
-switches home from the top bar; a step that reads a file the process run
-writes says so in its inspector (\emph{written by the Flowsheet run}).
+When the drawing is too large for its window at full size, the fit draws
+it as an \emph{overview}: every box keeps, at the 11-pixel minimum, its
+number and state and as much of its name, type and model as it has room
+for (on a very small window, the number and the state alone), and the
+canvas says that the smaller
+labels are hidden until you zoom in --- exactly as the flowsheet does.
+
+Beside the Workflow, the top menu carries \textbf{Studies} --- each
+declared study's figures, tables and numbers, one study at a time or all
+of them --- and \textbf{Reports}, what the run produced to read, check
+and take away: the curation verdicts, the records and proposals it wrote,
+the comparison with measured data, the decisions it took, every file it
+wrote (to download or draw), the thermo readiness, and one download of
+all of it.  The case's one \textbf{Run workflow} is in the top bar (and
+\code{Ctrl+Enter}); \textbf{F1} opens the theory of what is selected.  A
+case that carries both dicts (a fit, then a flowsheet that reads the
+fitted record) opens on its \code{controlDict.application} and switches
+home from the top bar; the record such a fit writes says which unit of
+the flowsheet reads it.
 
 \begin{pitfall}
 \textbf{MOCK vs WASM.}  If the WASM solver has not been built

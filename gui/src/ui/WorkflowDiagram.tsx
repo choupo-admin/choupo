@@ -64,7 +64,7 @@ import { Badge, Group, Text, useComputedColorScheme } from "@mantine/core";
 import { IconBuildingFactory2 } from "@tabler/icons-react";
 
 import {
-  STEP_HEAD_H, STEP_LINE_H, STEP_PAD_Y, WIRES,
+  STATE_GLYPH, STEP_HEAD_H, STEP_LINE_H, STEP_PAD_Y, WIRES,
   type DiagramFrame, type DiagramStep, type DiagramTerminal, type WireKind,
 } from "../case/workflowDiagram.js";
 import { RUN_STATE_WORD } from "../case/reviewScreen.js";
@@ -136,10 +136,23 @@ function CompactStep({ step, stale, zoom }: { step: DiagramStep; stale: boolean;
   const line = { fontSize: f, lineHeight: `${lh}px` } as const;
   return (
     <div data-legible-self="" data-step-compact="" style={{ display: "flex", flexDirection: "column" }}>
-      <Text fw={700} c="var(--mantine-color-text)" lineClamp={headLines} title={`${step.number} ${step.label}`}
-        style={{ ...line, overflowWrap: "anywhere" }}>
-        <span style={{ fontFamily: "var(--mantine-font-family-monospace)" }}>{step.number}</span> {step.label}
-      </Text>
+      {headLines === 2 ? (
+        <Text fw={700} c="var(--mantine-color-text)" lineClamp={2} title={`${step.number} ${step.label}`}
+          style={{ ...line, overflowWrap: "anywhere" }}>
+          <span style={{ fontFamily: "var(--mantine-font-family-monospace)" }}>{step.number}</span> {step.label}
+        </Text>
+      ) : (
+        //  ONE line: the NUMBER is never cut (it is what the outline and the
+        //  tab name the step by); the name takes what is left, and where the
+        //  state has no line of its own its glyph rides beside the number
+        <div title={`${step.number} ${step.label}`} style={{ display: "flex", gap: f * 0.35, minWidth: 0, ...line }}>
+          <Text fw={700} ff="monospace" c="var(--mantine-color-text)"
+            style={{ ...line, whiteSpace: "nowrap", flexShrink: 0 }}>
+            {step.number}{room < 2 ? ` ${stale ? "⟳" : STATE_GLYPH[step.state]}` : ""}
+          </Text>
+          <Text fw={700} c="var(--mantine-color-text)" truncate style={{ ...line, minWidth: 0 }}>{step.label}</Text>
+        </div>
+      )}
       {showType && <Text c="accent.8" fw={600} truncate title={typeWords} style={line}>{typeWords}</Text>}
       {body.map((b) => (
         <Text key={b.key + b.text} ff="monospace" c="dimmed" truncate title={b.text} style={line} data-step-line={b.key}>
@@ -369,7 +382,7 @@ function DiagramInner({ model }: { model: WorkflowModel }) {
     const touches = lit.has(e.from) || lit.has(e.to);
     return {
       id: e.id, source: e.from, target: e.to, type: "waypoint",
-      data: { carries: e.label, carriesMeaning: `${w.word} -- ${w.meaning}`, route: e.route, labelAt: e.labelAt,
+      data: { carries: e.showLabel === false ? undefined : e.label, carriesMeaning: `${w.word} -- ${w.meaning}`, route: e.route, labelAt: e.labelAt,
         //  a fit's evidence keeps its word at fit: which data the step was
         //  FITTED to and which it is JUDGED on is the one fact of the arrow
         //  a reader needs before zooming

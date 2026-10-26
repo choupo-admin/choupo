@@ -148,5 +148,24 @@ pure-properties cases.
    file-traffic table, published to the GUI as
    `gui/schemas/propsFileTraffic.json` (generated); the schemas'
    `x-choupo.writes` copy is gone.
+3b. The Workflow DIAGRAM as the home (Vitor's ruling on the landed slice 3,
+   which REVERSES the forum's "never a canvas": a diagram one looks at is
+   not an editor).  BUILT 2026-10-26 (DEV.md 4c C172, slice 3b): a
+   properties case opens on its workflow drawn on the flowsheet's own
+   canvas -- one box per numbered step, studies as frames, arrows as the
+   information that passes (feeds left, the "Flowsheet run" terminal,
+   products right, step to step where a later step reads an earlier write;
+   `gui/src/case/workflowDiagram.ts`, `gui/src/ui/WorkflowDiagram.tsx`).
+   The canvas chrome, card styles, wire marks, fit and legibility floor are
+   shared with the flowsheet (`canvasChrome.tsx`, `nodeCard.ts`,
+   `WaypointEdge.tsx`, `flowsheetViewport.ts`, `legibilityFloor.ts`).  A
+   single click opens the flowsheet's selection card with the step in
+   PropertyPanel (the inspector's content, `workflowCard.tsx`); a double
+   click, Enter or Open opens the step in its own tab (`?step=`,
+   `StepTab.tsx`).  The studies overview is its own menu entry, STUDIES; the
+   View menu and the calculation map are retired; REPORTS holds what the
+   run produced to read and take away (`PropsReports.tsx`,
+   `case/propsReports.ts`).  The props menu reads Workflow · Studies ·
+   Reports · Log · Case.
 4. Chrome by case kind in one table; the home in the URL; cross links (1, 2).
 5. The Flowsheet findings (item 7).

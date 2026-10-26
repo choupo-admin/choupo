@@ -196,7 +196,7 @@ export function PropsReports({ model, ledger, readiness, validation }: {
 
         <Section id="comparison" title="3 · Comparison with measured data"
           hint="The engine's AAD of each model curve against the measured points -- a COMPARISON, not a validation.">
-          {!ran ? notRun : validation ?? <Text size="sm" c="dimmed">This case compares no model with a measured dataset.</Text>}
+          {!ran ? notRun : validation ?? <Text size="sm" c="dimmed">The run published no AAD against a measured dataset. A figure that draws measured points beside a model (under Studies) is not scored here.</Text>}
         </Section>
 
         <Section id="decisions" title="4 · The decisions the run took"

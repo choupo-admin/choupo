@@ -191,6 +191,10 @@ export interface DiagramEdge {
   route?: { x: number; y: number }[];
   /** where its word sits on the route */
   labelAt?: { x: number; y: number };
+  /** false: a sibling arrow from the same source carries the same word and
+   *  says it where there is room (a word wider than its gap is drawn over
+   *  the box beside it, so it is said once) */
+  showLabel?: boolean;
 }
 
 export interface WorkflowDiagram {
@@ -712,6 +716,27 @@ export function workflowDiagram(input: DiagramInput): WorkflowDiagram {
       e.route = [{ x: sx, y: sy }, { x: cs, y: sy }, { x: cs, y: yc }, { x: ct, y: yc }, { x: ct, y: ty }, { x: tx, y: ty }];
       e.labelAt = { x: ct, y: Math.abs(ty - yc) > 24 ? (yc + ty) / 2 : yc };
     }
+  }
+  //  ONE WORD PER SOURCE AND WORD: arrows that leave one box carrying the
+  //  same thing share their first run, so the word is said once, on the
+  //  arrow with the longest vertical run (where it has room); a short run
+  //  would put a word wider than the gap over the box beside it.
+  const bySourceWord = new Map<string, DiagramEdge[]>();
+  for (const e of edges) {
+    if (!e.route) continue;
+    const k = `${e.from}\u0000${e.label}`;
+    bySourceWord.set(k, [...(bySourceWord.get(k) ?? []), e]);
+  }
+  const run = (e: DiagramEdge) => {
+    const r = e.route!;
+    let v = 0;
+    for (let i = 1; i < r.length; i++) v = Math.max(v, Math.abs(r[i]!.y - r[i - 1]!.y));
+    return v;
+  };
+  for (const group of bySourceWord.values()) {
+    if (group.length < 2) continue;
+    const keep = group.reduce((a, b) => (run(b) > run(a) ? b : a));
+    for (const e of group) e.showLabel = e === keep;
   }
   return { frames, steps, terminals, edges, width, height };
 }
