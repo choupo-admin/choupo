@@ -1528,6 +1528,42 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C169. THE COLUMN SOLVES THE THERMODYNAMICS ITS STREAMS CARRY (Vitor,
+> 2026-10-26, forwarding an external audit of the distillation models run
+> on fd688e4ce: "detetou algumas coisas graves.  Podes ver?").**  Four
+> findings, each MEASURED by the audit with the package's own functions:
+> (1) fullMESH solves each stage's energy on `ThermoPackage::Hliquid` /
+> `Hvapour` (the vapour as Hliq_pure + the Watson latent) while the
+> streams, the condenser KPI and the global report price on the
+> formation-datum surface; the two differ in their T dependence, not by a
+> constant, so an interior stage with no feed closes to 1e-8 kW on the
+> internal surface and leaves 3.94 kW (column06) and 124.0 kW (column08)
+> on the streams' surface, the published condenser duty differs from the
+> streams' by 22.9 and 93.9 kW, and the global first law closes BY
+> CONSTRUCTION (Q_reboiler = dH - Q_condenser), so no gate saw it -- the
+> 2026-09-12 family of CLAUDE.md 6 ("the state a unit computes with is
+> not the state its streams carry"), on the one unit that family was
+> thought closed on.  (2) the column calls stageK(T,P,x,x,x), so the
+> vapour's fugacity coefficients are evaluated at the LIQUID composition:
+> invisible under an ideal vapour, max |ln(y/(xK(x,y)))| 9.4e-4 on
+> column15 (75 stages, SRK) -- the published state satisfies the equation
+> implemented, not the package's equilibrium.  (3) `model fullMESH` on a
+> reactive column runs CMO and says nothing (identical JSON on column05;
+> C131 M9, still present).  (4) CMO takes q = 1 - vf, so a subcooled feed
+> (300 K vs 364 K) moves only Q_reboiler, not the profile (C131 W4) --
+> this is Vitor's pending physics decision P1, DECIDED under C163: q is
+> the enthalpic q on the CMO approximation's own surface, q = (H_V,sat -
+> H_F)/(H_V,sat - H_L,sat), announced.  Scope, one general, in order, each
+> its own commit: first the GATE that fails today (stage-local energy on
+> the streams' surface for every interior stage, the condenser and the
+> reboiler; fugacity equality on the final state with the package's own
+> Kvec(T,P,x,y)); then (3) the refusal; (1) ONE enthalpy surface in the
+> stage equations, feeds, reflux, products and duties; (2) y and K solved
+> self-consistently (Wang-Henke, simultaneous, fullMESH, the bubble-point
+> routines of reflux and condensate); (4) the enthalpic q.  Every moved
+> golden row listed with its reason (C163: shown, not waited on).
+> Status: recorded; dispatched the same turn.
+
 > **C168. A USABILITY AND ACCESSIBILITY AUDIT OF THE RESULTS GUI, BEFORE ANY
 > REDESIGN (Vitor, 2026-10-25, forwarding a second opinion written on the
 > Bowen study of the NanoFiltran case: "CHOUPO -- GUI UX Redesign Audit").**
