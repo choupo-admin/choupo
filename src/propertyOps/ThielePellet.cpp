@@ -31,6 +31,7 @@ License
 
 #include "core/Advisory.H"
 #include "core/Constants.H"
+#include "thermo/RecordResolver.H"
 #include "thermo/Database.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/reactor/pellet/Catalyst.H"
@@ -479,6 +480,9 @@ int ThielePellet::run(const DictPtr& dict,
         fieldCsv  = o->lookupWordOrDefault("field", "");
         sweepCsv  = o->lookupWordOrDefault("sweep", "");
         refineCsv = o->lookupWordOrDefault("refinement", "");
+        records::refuseStandardsWrite("thielePellet", "output.field", fieldCsv);
+        records::refuseStandardsWrite("thielePellet", "output.sweep", sweepCsv);
+        records::refuseStandardsWrite("thielePellet", "output.refinement", refineCsv);
     }
 
     if (!fieldCsv.empty())

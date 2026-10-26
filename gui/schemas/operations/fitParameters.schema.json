@@ -201,6 +201,16 @@
           "type": "string",
           "title": "CSV file name"
         },
+        "fit_log": {
+          "type": "string",
+          "title": "Iteration history CSV",
+          "description": "One row per Levenberg-Marquardt iteration: chi^2 and the parameter trajectory (fit mode only; refused in evaluate mode)."
+        },
+        "parity": {
+          "type": "string",
+          "title": "Parity CSV",
+          "description": "Measured against predicted for every evidence point at the optimum (fit mode) or at the package as it stands (evaluate mode)."
+        },
         "proposal": {
           "type": "string",
           "title": "Proposal record to write under data/local/"

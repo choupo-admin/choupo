@@ -30,6 +30,7 @@ License
 
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
+#include "thermo/RecordResolver.H"
 #include "solver/NelderMead.H"
 
 #include <algorithm>
@@ -971,6 +972,9 @@ int ReactionCurve::run(const DictPtr& dict,
         segCsv   = o->lookupWordOrDefault("segments", "");
         curveCsv = o->lookupWordOrDefault("curve",    "");
         tuneCsv  = o->lookupWordOrDefault("tuning",   "");
+        records::refuseStandardsWrite("reactionCurve", "output.segments", segCsv);
+        records::refuseStandardsWrite("reactionCurve", "output.curve", curveCsv);
+        records::refuseStandardsWrite("reactionCurve", "output.tuning", tuneCsv);
     }
 
     if (!segCsv.empty())
