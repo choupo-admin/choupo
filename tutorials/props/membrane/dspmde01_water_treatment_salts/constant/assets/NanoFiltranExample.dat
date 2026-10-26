@@ -1,0 +1,35 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: the NanoFiltran example membrane -- CASE-LOCAL, HYPOTHETICAL.
+
+  The pore parameters of the example shipped with NanoFiltran (Geraldes &
+  Alves, J. Membr. Sci. 321 (2008) 172-182; its INPUT.XLS, sections 3):
+    membrane charge         -30 mol/m3 (eq/m3)
+    pore radius             0.40 nm
+    active layer thickness  2.5 um   -> porosityOverThickness 1/2.5e-6
+    pore dielectric const.  60
+  They describe NO commercial membrane and were measured on none: they are
+  the program's worked example, used here so that two implementations of
+  one model can be compared on the same inputs.
+
+  NanoFiltran writes the ENP flux per unit PORE area with the thickness
+  delta: j = -K_d D dc/dx - ... + K_c J_v c, j = J_v c_p.  Choupo writes it
+  per unit MEMBRANE area with A_k/dx; the two are the same equations when
+  A_k/dx = 1/delta, which is what porosityOverThickness states.
+
+  A_w is not read by the props bench (it imposes J_v); a value is carried
+  because the record grammar requires one.
+\*---------------------------------------------------------------------------*/
+
+name           NanoFiltranExample;
+kind           NF;
+manufacturer   "none (NanoFiltran's worked example)";
+
+A_w            1.0e-5  m/s/bar;     // not read at an imposed J_v
+
+poreModel
+{
+    poreRadius             4.0e-10;   // m
+    porosityOverThickness  4.0e5;     // 1/m  (= 1/2.5e-6 m)
+    chargeDensity          -30;       // mol/m3, SIGNED
+    poreDielectric         60;        // [-]
+}

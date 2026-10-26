@@ -59,7 +59,7 @@ import {
   domIdOfView, neighbours, viewDomId, viewsOf,
   type MapNode, type MapTarget, type PropsMap,
 } from "../case/propsMap.js";
-import type { VerdictRow } from "../case/reviewScreen.js";
+import { unitCell, type VerdictRow } from "../case/reviewScreen.js";
 import { ViewFigure } from "./plotting/ViewFigure.js";
 
 const KIND_WORD: Record<string, string> = {
@@ -216,7 +216,7 @@ function PointTableView({ decl, r }: { decl: PointTableDecl | undefined; r: Oper
   );
 }
 
-function Diagnostics({ r, folded }: { r: OperationResult; folded?: boolean }) {
+export function Diagnostics({ r, folded }: { r: OperationResult; folded?: boolean }) {
   const [all, setAll] = useState(false);
   const keys = Object.keys(r.diagnostics);
   const head = (r.headline ?? []).filter((k) => k in r.diagnostics);
@@ -232,7 +232,13 @@ function Diagnostics({ r, folded }: { r: OperationResult; folded?: boolean }) {
               <Table.Tr key={k}>
                 <Table.Td ff="monospace" fw={head.includes(k) ? 700 : 400}>{k}</Table.Td>
                 <Table.Td ff="monospace" ta="right">{Number(r.diagnostics[k]).toPrecision(6)}</Table.Td>
-                <Table.Td ff="monospace" c="dimmed">{r.units?.[k] && r.units[k] !== "-" ? r.units[k] : ""}</Table.Td>
+                {(() => {
+                  const u = unitCell(r, k);
+                  return u.published
+                    ? <Table.Td ff="monospace" c="dimmed" data-unit={k}>{u.text}</Table.Td>
+                    : <Table.Td c="dimmed" fs="italic" fz="10px" data-unit={k} data-unit-missing=""
+                        title="The engine published no unit for this number.">{u.text}</Table.Td>;
+                })()}
               </Table.Tr>
             ))}
           </Table.Tbody>

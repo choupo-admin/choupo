@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- the salts of a water-treatment feed, every one
+  a STANDARD catalogue record (data/standards/components/) carrying its ion
+  stoichiometry `dissociatesTo`, which the DSPM-DE law decomposes; every
+  transport fact of an ion (charge, hydrated radius, D0) is read off its
+  species record.  No phase equilibrium is computed here.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( water NaCl NaNO3 NaF KBr Na2CO3 NH4Cl
+                   calciumNitrate KNO3 MgCl2 NaBr MgSO4 );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

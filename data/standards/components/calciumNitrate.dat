@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Calcium nitrate (anhydrous) (Ca(NO3)2, CAS 10124-37-5)
+
+  A non-volatile, fully dissociating salt (Ca2+ + 2 NO3-), added for the
+  water-treatment membrane path (DEV.md 4c C157/C161/C170): a real water's
+  ions each carry their transport data on their own species record
+  (species/Ca.dat, species/NO3.dat), and a salt
+  is how a case FEEDS them -- the DSPM-DE pore, the multi-ionic film and the
+  electrodialysis units decompose it through `dissociatesTo`.
+
+  IDENTITY ONLY.  The record carries the name, the formula, the CAS number,
+  the molar mass and the ion stoichiometry, and nothing it cannot cite: no
+  thermochemistry (a dissolved salt's formation enthalpy is ION-DERIVED,
+  never a component-level standardThermochemistry block -- CLAUDE.md 5), no
+  solubility, no crystal and no heat capacity: each is ABSENT, never a
+  zero, and curating them is a later act.
+    MW  164.086 g/mol = 40.078 + 2 x 14.007 + 6 x 15.999, the IUPAC abridged standard
+        atomic weights (Prohaska et al., Standard atomic weights of the
+        elements 2021 (IUPAC Technical Report), Pure Appl. Chem. 94 (2022)
+        573-600; the abridged values).
+\*---------------------------------------------------------------------------*/
+
+name           calciumNitrate;
+formula        "Ca(NO3)2";
+CAS            10124-37-5;
+reviewStatus   interim;        // transcribed and self-checked; not yet read back by a curator
+
+MW             164.086;  // g/mol  (= kg/kmol)
+role           nonvolatile;    // a dissolved salt never enters the vapour (K = 0)
+
+// APPARENT COMPONENT view -- the balance/representation map (apparent -> ions).
+// The van't Hoff factor is DERIVED from it (Component.cpp), never stored twice.
+dissociatesTo  { Ca 1; NO3 2; }   // ion stoichiometry (formula-like identity)
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "summed from the IUPAC 2021 abridged standard atomic weights (Prohaska et al., Pure Appl. Chem. 94 (2022) 573): 40.078 + 2 x 14.007 + 6 x 15.999";
+    }
+}

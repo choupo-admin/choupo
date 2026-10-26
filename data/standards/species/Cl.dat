@@ -39,8 +39,34 @@ cpAvg298
 }
 transport
 {
-radius { value 3.32e-10; unit m;}
-D0     { value 2.03e-09;     unit m2/s;}
+    //  `radius` is the HYDRATED radius r_H of Nightingale, J. Phys. Chem. 63
+    //  (1959) 1381, Table I -- the convention every DSPM-DE pore is fitted
+    //  against -- read back against the primary page on 2026-10-25 (DEV.md 4c
+    //  C161; its own provenance below).  `D0` is from the PHREEQC database
+    //  (DEV.md 4c C163, re-sourced 2026-10-26); its source line is the
+    //  record-level `source`.  Before: 2.03e-09 m2/s, unsourced.
+    radius { value 3.32e-10; unit m; }   // 3.32 A
+    D0 { value 2.033e-09; unit m2/s; }
+    provenance
+    {
+        source  "USGS PHREEQC database phreeqc.dat (usgs-coupled/phreeqc3, branch master, fetched 2026-10-25 and again 2026-10-26, sha256 5b80d45c989cd1db7aab485e198321ba550d5902be8097c8be26d85ba03da278), SOLUTION_SPECIES `Cl- = Cl-` (line 132), `-dw` line 137: the 25 C tracer diffusion coefficient Dw is its first field; the further fields (temperature and ionic-strength dependence) are not used.  The database names no per-value reference on this line; its file-level references are Appelo, Parkhurst and Post, Geochim. Cosmochim. Acta 125 (2014) 49-67 (its ref. 1) and Appelo, Cem. Concr. Res. 101 (2017) 102-113 (its ref. 3)";
+        licence publicDomain;
+        radius
+        {
+            source        "E. R. Nightingale, Jr., Phenomenological Theory of Ion Solvation. Effective Radii of Hydrated Ions, J. Phys. Chem. 63 (1959) 1381-1387, doi:10.1021/j150579a011, Table I (p. 1383), row Cl-, column r_H at 25 C: 3.32 A";
+            origin        literature;
+            method        "read back against the primary page (Table I, the effective hydrated radius r_H) on 2026-10-25 (DEV.md 4c C161): the stored value matches it to the digit";
+            reviewStatus  interim;
+            notes         "The tier's radius convention: Nightingale's hydrated radius, the one DSPM-DE pores are fitted on -- not a Stokes radius from D0 (his r_s column is a different quantity).";
+        }
+        D0
+        {
+            origin        literature;
+            method        "read from the cited database line by a parse that checks the species equation above it (Dw at 25 C, infinite dilution)";
+            reviewStatus  interim;
+            notes         "Transcribed by machine from the cited public-domain database, not read back against a primary measurement of this ion's limiting conductance; the Stokes-Einstein correction to the run temperature is applied by the consumer (thermo/transport/StokesEinstein.H).";
+        }
+    }
 }
 
 volumetric

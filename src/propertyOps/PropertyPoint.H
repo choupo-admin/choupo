@@ -87,9 +87,20 @@ public:
         return diag_;
     }
 
+    //  THE UNIT OF EACH NUMBER (DEV.md 4c C168): the catalogue's own
+    //  (propertyOps::propertyUnit), plus the two liquid-root keys only this
+    //  op publishes.  A key with no known unit publishes none.
+    std::string diagnosticUnit(const std::string& key) const override;
+
+    //  THE ANSWER IS WHAT THE CASE ASKED FOR: the declared `properties ( ... )`
+    //  list, in its order (every name in it is computed or refused by name,
+    //  so each is published).  Empty when the case declares none or `all`.
+    std::vector<std::string> headline() const override { return headline_; }
+
 private:
     inline static const std::string type_ = "propertyPoint";
     std::map<std::string, scalar>   diag_;
+    std::vector<std::string>        headline_;
 };
 
 } // namespace Choupo

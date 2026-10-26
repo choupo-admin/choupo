@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoProps;
+description   "A water-treatment feed through the DSPM-DE pore: nitrate, fluoride, bromide, carbonate and ammonium salts from the standard catalogue, on NanoFiltran's worked-example pore and the catalogue's NF270 archetype -- every ion's radius and D0 cited on its species record";
+verbosity     2;

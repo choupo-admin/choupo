@@ -20229,8 +20229,13 @@ $h$ and conductivity $\kappa$ is
 \end{equation}
 %
 where the equivalent ionic conductance $\lambda_i$ is built from the
-infinite-dilution diffusivity $D_i^0$ (the \file{ions.dat} transport
-tier, Nightingale 1959 \cite{Nightingale1959}) via the
+infinite-dilution diffusivity $D_i^0$ (the \code{transport} block of
+each species record: the 25\,\textdegree C tracer diffusion coefficient
+of the public-domain USGS PHREEQC database \file{phreeqc.dat}, its
+\code{-dw} line \cite{Parkhurst2013}, each record citing the line it
+was read from; the hydrated radius beside it is Nightingale's
+\cite{Nightingale1959}, a separate column that this equation does not
+read) via the
 \textbf{Nernst--Einstein} relation, and $c_i \approx m_i\rho_w$ in the
 dilute-carrier approximation ($\rho_w\approx 1000\ \mathrm{kg/m^3}$,
 announced).  The per-cell-pair resistance is the series sum\cite{Strathmann2004}
@@ -25462,9 +25467,10 @@ area-resistance values in the IEM \file{.dat}.
 \bibitem{Nightingale1959} Nightingale, E. R., ``Phenomenological Theory
 of Ion Solvation: Effective Radii of Hydrated Ions'', \emph{J.\ Phys.\
 Chem.}, 63(9), 1381--1387 (1959). Source of the per-ion
-infinite-dilution diffusivities $D_i^0$ (and hydrated radii) in
-\file{ions.dat}, from which the channel conductivity
-(Eq.~\ref{eq:ed-kappa}) is built via Nernst--Einstein.
+hydrated radii $r_H$ (its Table~I) on the species records' transport
+tier, the radii the DSPM-DE pore's steric and hindrance terms read.  It
+is NOT the source of the diffusivities $D_i^0$ (the paper prints no
+limiting conductance), which are PHREEQC's \cite{Parkhurst2013}.
 
 \bibitem{CowanBrown1959} Cowan, D. A., \& Brown, J. H., ``Effect of
 Turbulence on Limiting Current in Electrodialysis Cells'', \emph{Ind.\

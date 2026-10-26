@@ -1528,6 +1528,185 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C172. ONE GUI OR TWO: PROCESS SIMULATION AND PROPERTIES & DATA (Vitor,
+> 2026-10-26, after "Nos temos de por um pouco de ordem nas propriedades!
+> Idealmente devem ser a estrategia de um simulador sequencial", "Chamar
+> 'Results' no menu aquilo tudo e uma merda!!! No simulador do processo ha
+> um 'flowsheet' ... E preciso aqui um nome equivalente", "nao sei se o
+> mesmo GUI deve ser usado para o simulador de processos ou para a
+> analise de dados!" and "Invoca um forum de generais e decide tu").**
+> The commander's own diagnosis, recorded because it is the lesson: the
+> props screen grew one slice per request (C147 views, C151 map, C152
+> two modes, C153 resizable panel, C154 block states, C157b record round
+> trip, C165 per-ion tables), each drawing the next engine fact, none
+> starting from what the person comes to do -- the rule the commander
+> wrote into CLAUDE.md on 2026-10-25 and broke the same day.  The
+> questions: (1) one application with two modes, or two applications
+> (Process / Properties & Data) on a shared layer (case, files, Log, help,
+> records); (2) the props case as a SEQUENTIAL procedure -- studies, then
+> numbered steps, each reading only declared data or EARLIER steps,
+> refused otherwise (the props analogue of validateSequentialPlan), its
+> name (Workflow, Worksheet, Study...) in place of "Results"; (3) what a
+> two-mode case (C152) becomes.  Method: a forum of generals with
+> distinct mandates (comparable software and practice; the case FOR one
+> app; the case FOR two; the cost in this code; the users' walks), read
+> only, each answering the others' strongest point; the commander
+> decides, writes the decision with its reasons here, and puts the page
+> to Vitor before any code.  No GUI code lands until then.
+> Status: recorded; forum convened the same turn.
+> NAME RULED (Vitor, 2026-10-26: "Workflow"): the props home is the
+> WORKFLOW -- the counterpart of the Flowsheet.  The forum's caution is
+> kept as a constraint, not a reason to rename: in KNIME, Galaxy and JMP a
+> workflow is an AUTHORED canvas; Choupo's is not -- it is the case's
+> declared studies and their steps, shown by position (a numbered outline,
+> COMSOL-style), never a canvas to draw on, and the GUI stays a runner and
+> viewer.  "Results" keeps only its own meaning: what a run produced (each
+> step's output and the after-run summary).
+> DECIDED 2026-10-26 after the forum (A practice, B one app, C two apps --
+> withdrawn to one app after reading B, D cost, E three users walked at
+> 1366x768; the forwarded "radical simplification" opinion answered by
+> all): ONE application, one case store, TWO HOMES -- the Flowsheet and the
+> Workflow -- each case kind owning its home, menu, Run label and
+> vocabulary from ONE table; a two-dict case opens on controlDict.application
+> and crosses by explicit links, the home in the URL; the Workflow = studies
+> and numbered steps by position (never a canvas), the centre the selected
+> study's results, an inspector for the step (fit/held-out roles and band,
+> model with its options inside, writes with fingerprint, verdict with
+> identifiability), the map behind View; the ORDER enforced by the engine
+> (no read of a later write; ctrl17 declares its process-run input); Run's
+> four doors -> one; dead and empty surfaces removed; the content the engine
+> already publishes reaches the screen.  Acceptance: the decisive test,
+> scripted, all cells passing for the three users.  Record:
+> docs/design/one-app-two-homes.md (the forum, the decision, the slices).
+> Slice 1 (content gaps + removals) goes out after Vitor has read the
+> decision page; GUI code lands slice by slice against the scripted test.
+
+> **C171. THE PROPS SCREEN REDESIGNED BEFORE A RESEARCHER SEES IT, AND A
+> PROPER WAY TO CITE (Vitor, 2026-10-26, on the live NanoFiltran case
+> before sending the reply to Tim: "aquilo esta uma confusao diabolica que
+> viola as boas praticas de GUI todas!" -- and, agreeing the e-mail waits:
+> "claro que espera!  E tem de haver uma forma adequada de ele me poder
+> citar!").**  THE E-MAIL TO TIM (C157) IS HELD until both land.  (A) The
+> props-case screen is redesigned, not patched, ahead of the rest of
+> C168: on opening, the case's question, ONE Run and the studies as
+> readable cards; after a run, the results and the measured comparisons
+> in the centre; the calculation map in a "how it is computed" section,
+> closed by default and legible when open; ONE navigation (today the tree,
+> the map and the details repeat the same objects); a model's options
+> shown inside the model (bulkOverPoreDavies is an option of DSPM-DE, not
+> a sibling model); no repeated "not run"/"evaluate" chips; held to the
+> C168 audit's script-checkable criteria (clicks to results, minimum label
+> size, contrast, keyboard) and shown to Vitor on screen BEFORE Tim.  (B)
+> CITATION: today CITATION.cff exists (version 2608, one author, NO DOI)
+> and the GUI shows it nowhere.  To build: a "How to cite" surface --
+> Help menu and every case's About -- generated from CITATION.cff (one
+> home) plus the case's own primary references (for this case Geraldes &
+> Alves 2008 and the transport papers it reproduces) plus the exact
+> version and commit of the run; the same text in a downloaded case
+> (CITATION.txt) and in the result JSON.  A DOI needs Vitor: an archived
+> release (Zenodo's GitHub integration on choupo-admin, or a DOI on the
+> JOSS paper) -- a release tag is immutable and his (RELEASING.md), and
+> the author list of record is his (C163 excluded authorship).
+> Status: recorded; (A) dispatched after the running C168 slice 1 lands
+> (same files); (B) built beside it; the DOI and authors put to Vitor.
+
+> **C170. NOTHING SAID IS LOST: THE AUDIT OF EVERY REQUEST IN THE SESSION
+> (Vitor, 2026-10-26: "Ve se nao te esqueceste de mais nada que eu tenha
+> dito!" and "Nao me deites trabalho para o lixo nem te esquecas
+> dele!").**  An auditor read all 268 typed messages and the 33 sent
+> mid-turn (stored as `queued_command` attachments -- a filter on
+> type:user misses them), the uploaded notes and the compaction summaries,
+> against this file, CLAUDE.md and the git log.  ~80 % of ~95 requests
+> and rulings were recorded and true; every question sampled had been
+> answered.  THE GAPS, now recorded here or in the entry they belong to:
+> (1) C140's third addendum (the process patent, Whittle) -- in C140.
+> (2) C163's decisions -- in C163.  (3) TIM'S REPLY (C157): the draft
+> given in chat predates the ions and the spiral/batch point; its
+> blockers are the salt records (Na2CO3, NH4Cl lack `dissociatesTo`; no
+> nitrate, fluoride or bromide salt) and the eight D0 re-source (C163);
+> the reply is redrafted when both land, saying the model runs in
+> spiral-wound modules (a SPATIAL average) and in batch (a TIME average).
+> (4) VITOR'S LAPTOP SWEEP (2026-10-26, main bdceba213): PASS 752 / FAIL
+> 15; three real (code-map, tutorials guide, origin census -- fixed),
+> five nested runs refused by the workspace check after pushes made
+> mid-sweep (fixed, 248646285), the rest his environment (Node 18, git
+> tags, untracked files, private data).  PROMISED AND OWED: problem-
+> divergence and duplicate-keys must not judge `data/local/` (private
+> data is not the corpus); no gate may fail on an UNTRACKED file;
+> check_workspace_truth must not tell a laptop that "the container
+> recycler rewound this checkout" when it is simply behind (say "behind
+> origin: git pull"); the empty suiteTimings.raw (a nested wrapper
+> truncated it -- C167 slice 2).  The .cho markers on his laptop were his
+> own "Save to case" layouts (reverted by him) -- not a defect.  (5) C164's
+> engine findings: explicit colliders written `nu 0; order 1` left the
+> ignition on a false plateau at exit 0 -- REFUSE them; a latent NewtonND
+> line-search defect (an evaluable non-decreasing trial followed by
+> infeasible ones keeps the old F; NewtonND.cpp near the line search); the
+> records still citing "Burcat 2005/JANAF" (NC_COMPILATION debt).  (6)
+> The EduTools audit's promises: C127 dispatched; the stale status lines
+> of C10, C53, C54, C109, C128 and C166 (A) corrected; registry.ts's two
+> stale texts (batch-membrane's gel model, hunter-nash's host dispatch);
+> the design surveys' "nothing built" heads; the RTD EduTool (engine done,
+> ctrl18) queued.  (7) A STANDING RULE he gave on 2026-10-21 and nobody
+> wrote: "mete uma equipa de varios generais a fazer trabalho distribuido
+> e a discutir entre si" -- for a review or a design with real
+> alternatives, generals in pairs (analyst and refuter, as C131 did) or a
+> team, not one voice.  (8) C127 lost two of his points: the path starts
+> from a CONCRETE question, and the page shows where the result has
+> experimental support and where it extrapolates.  (9) C154's P2 items:
+> current documentation told apart from technical history (propsDict
+> comments still carry C141/C148 history); inactive properties marked.
+> (10) Owed tables: the C150 reply as a table (ID | confirmed / partial /
+> no | evidence | fix | verification | open, with commit) and C112's final
+> table.  (11) The JOSS paper is ~2 000 words against the 750-1 750 asked
+> (aim 1 500-1 650).  (12) Minor: C146's reference site
+> (centrivalab.com/simulator.html) noted there; C148's Rint per ion
+> (built per salt, per ion refused when charged) to be put to him once;
+> "Honest Open Source" DROPPED by him on 2026-10-21 ("vamos esquecer isso").
+> TRIGGERS ALREADY FIRED, so these are dispatched in turn: C133 (PFD and
+> spec-sheet PDFs), C159, the C160 phase-0 study's landing, C135 (kij(T)).
+> OWED BY VITOR, unhurried: reviews of C53/C54, C101, C143 and C58; the
+> paper's authors, ORCIDs, DOI and JOSS timing; C132's faults and course;
+> C130's first instruments.
+> Status: recorded 2026-10-26; work dispatched by priority, two to three
+> generals at a time (disk).
+
+> **C169. THE COLUMN SOLVES THE THERMODYNAMICS ITS STREAMS CARRY (Vitor,
+> 2026-10-26, forwarding an external audit of the distillation models run
+> on fd688e4ce: "detetou algumas coisas graves.  Podes ver?").**  Four
+> findings, each MEASURED by the audit with the package's own functions:
+> (1) fullMESH solves each stage's energy on `ThermoPackage::Hliquid` /
+> `Hvapour` (the vapour as Hliq_pure + the Watson latent) while the
+> streams, the condenser KPI and the global report price on the
+> formation-datum surface; the two differ in their T dependence, not by a
+> constant, so an interior stage with no feed closes to 1e-8 kW on the
+> internal surface and leaves 3.94 kW (column06) and 124.0 kW (column08)
+> on the streams' surface, the published condenser duty differs from the
+> streams' by 22.9 and 93.9 kW, and the global first law closes BY
+> CONSTRUCTION (Q_reboiler = dH - Q_condenser), so no gate saw it -- the
+> 2026-09-12 family of CLAUDE.md 6 ("the state a unit computes with is
+> not the state its streams carry"), on the one unit that family was
+> thought closed on.  (2) the column calls stageK(T,P,x,x,x), so the
+> vapour's fugacity coefficients are evaluated at the LIQUID composition:
+> invisible under an ideal vapour, max |ln(y/(xK(x,y)))| 9.4e-4 on
+> column15 (75 stages, SRK) -- the published state satisfies the equation
+> implemented, not the package's equilibrium.  (3) `model fullMESH` on a
+> reactive column runs CMO and says nothing (identical JSON on column05;
+> C131 M9, still present).  (4) CMO takes q = 1 - vf, so a subcooled feed
+> (300 K vs 364 K) moves only Q_reboiler, not the profile (C131 W4) --
+> this is Vitor's pending physics decision P1, DECIDED under C163: q is
+> the enthalpic q on the CMO approximation's own surface, q = (H_V,sat -
+> H_F)/(H_V,sat - H_L,sat), announced.  Scope, one general, in order, each
+> its own commit: first the GATE that fails today (stage-local energy on
+> the streams' surface for every interior stage, the condenser and the
+> reboiler; fugacity equality on the final state with the package's own
+> Kvec(T,P,x,y)); then (3) the refusal; (1) ONE enthalpy surface in the
+> stage equations, feeds, reflux, products and duties; (2) y and K solved
+> self-consistently (Wang-Henke, simultaneous, fullMESH, the bubble-point
+> routines of reflux and condensate); (4) the enthalpic q.  Every moved
+> golden row listed with its reason (C163: shown, not waited on).
+> Status: recorded; dispatched the same turn.
+
 > **C168. A USABILITY AND ACCESSIBILITY AUDIT OF THE RESULTS GUI, BEFORE ANY
 > REDESIGN (Vitor, 2026-10-25, forwarding a second opinion written on the
 > Bowen study of the NanoFiltran case: "CHOUPO -- GUI UX Redesign Audit").**
@@ -1571,6 +1750,65 @@ accepts today, and that is a policy call.
 > disagreement is named, not silently resolved.  Then the commander
 > decides the first slice under C163, Vitor reviewing after.
 > Status: recorded; the audit dispatched the same turn.
+> AUDIT DONE 2026-10-26 (live build 7c4f2e7c, three cases: pcsaft01, the
+> NanoFiltran case's study B, ammonia02 with its two tears; ~80
+> screenshots and ~30 script-checkable criteria in the session
+> scratchpad, not in the tree).  Ten findings at severity 3: results are
+> not the centre after a run on any case (pcsaft01's answer two clicks
+> away as unitless numbers; Fig. 3 722 px down a 220 px pane; the plant's
+> only signpost a toast); the plant and NanoFiltran maps illegible (labels
+> 3.9-7.7 px, refitting so they do NOT grow at 200 % zoom -- WCAG 1.4.4);
+> no visible focus on the flowsheet canvas; the flowsheet selection card
+> takes edits (the credo says read-only, DEV.md's tinkering rule says
+> otherwise -- Vitor's); the GUI draws what the engine did not say
+> (phase letters before a run, seeds drawn like results, pinch targets in
+> TypeScript); light-theme contrast (13-32 % of first-screen text below
+> AA, every wire below 3:1 on the light canvas); F1 on PC-SAFT opens an
+> options card; the models tree shows DSPM-DE's coupled parts as eight
+> sibling models; the NanoFiltran run freezes the page 33 s with no
+> progress.  Also measured: pcsaft01, titled a LIQUID molar volume,
+> publishes the VAPOUR root -- a case/engine finding, separate.  The second
+> opinion is wrong where the screen says so: one Run per case, the props
+> map already a semantic overview, a good NanoFiltran empty state.
+> DECIDED under C163, slice 1 "results first, nothing invented":
+> props cases fold the map after a successful run and lead with the
+> results, an operation with no table shows its numbers inline, and
+> propertyPoint gives its numbers units (the engine hook exists, unused);
+> the flowsheet replaces the toast by a persistent run summary announced
+> as a status (convergence, mass and energy closure, advisories, products
+> -- all already in the result JSON); before a run a phase letter only
+> where `0/` declares one, seeds marked as seeds.  pcsaft01's root
+> investigated beside it.  Slice 2: accessibility (focus >= 3:1, the light
+> palette against the canvas, ARIA states, landmarks, named plot
+> controls).  PUT TO VITOR: the selection card (read-only by the credo, or
+> the tinkering rule) and the four credo/heuristic conflicts the audit
+> names (a persistent left pane, one fixed place for Run, legible text
+> versus the whole flowsheet on screen, colour-only phase on wires).
+> RULED 2026-10-26 (Vitor: "1: tinkering.  2. decide tu  3. vemos
+> depois"): (1) the flowsheet selection card STAYS EDITABLE -- the
+> tinkering rule holds, and the credo and the panel's "Read-only" header
+> are corrected to say what the card does (a what-if edit of the open copy,
+> marked pending and announced, never written to disk).  (2) The four
+> conflicts, DECIDED by the commander: (a) a left navigation pane is
+> allowed when it is the case's ONE primary navigation and collapsible
+> (PropsTree already is; the credo's "no permanent left tree" becomes "no
+> second tree"); (b) ONE Run control in a fixed place (the top bar), its
+> label and scope following the mode on screen (binaryForMode, C157b) --
+> "Run is per view" becomes "the run follows the view"; (c) legibility
+> wins over fitting the whole flowsheet: map labels never render below a
+> minimum size and grow with browser zoom (WCAG 1.4.4), the overview at fit
+> is a simplified view and the full graph pans and zooms; (d) no meaning in
+> colour alone: phase on wires and edge kinds carry a second channel (dash
+> pattern or a label).  All four go into slice 2 with the credo text.
+> (3) The paper's authors, ORCIDs, DOI and JOSS timing: later.
+> SLICE 1 LANDED 2026-10-26: results first (props: map folds after a
+> run, numbers with units, a status line; flowsheet: a persistent run
+> strip, phase letters only where 0/ declares one, seeds marked), rebased
+> on main with C140, --gui gui-tests 6516 passed.  Its props parts are
+> kept, not stripped: none contradicts C172, and the Workflow builds on
+> them.  Open with Vitor: pcsaft01 declares the vapour root under a
+> liquid name (proposed `properties ( Z_liquid v_molar_liq )`, one golden
+> row leaves).
 
 > **C167. THE SUITE USES EVERY CORE (Vitor, 2026-10-25, watching the
 > sweep on his 10-core laptop: "aquilo passa a maioria do tempo a usar so
@@ -1742,6 +1980,45 @@ accepts today, and that is a policy call.
 > his name and his calendar), and anything irreversible.  The GRI-Mech
 > licence question was explained to him in chat the same turn.
 > Status: recorded.
+> THE DECISIONS, RECORDED (2026-10-26 -- the audit of Vitor's requests
+> found that C163 promised a line per item and none had been written; each
+> is a stated default, reversible, his to overrule):
+> - the eight master-ion D0 (unsourced, C161): RE-SOURCED to PHREEQC
+>   phreeqc.dat `-dw`, as the C157 ions; moved goldens listed to him.
+> - reactor ladder Q3: the general's added clause STAYS (both reactors
+>   read the same phi from one package, so pressure moves them together).
+> - check_friction_correlations prose: "the regime is not determined by Re
+>   alone in the transition band" -- the same rigour as C158 item 4.
+> - C158's four open questions: title "Check your understanding"; the quiz
+>   sits after the tool's last page; a paged tool gets ONE quiz whose
+>   questions name the step; a Yes/No question is allowed where the concept
+>   is binary, with the feedback explaining both answers.  The other 58
+>   tools proceed in waves.
+> - C160: the scope as proposed (thermodynamics, homogeneous gas kinetics,
+>   ideal reactors, sensitivities, narrow transport; NOT flames or plasma;
+>   microkinetics optional); GRI-Mech runs LOCAL only (C164); the
+>   programme text's item 4 ("external numerical libraries may be used")
+>   is NOT taken -- CLAUDE.md 10 "No external libs" is settled and argued;
+>   the reference library stays an external oracle in curation tools.  The
+>   phase-0 study (`claude/c160-parity-study`) lands now that the sweep ran.
+> - W1-W3, P7, M1 (C131 phase-2 thermodynamics and separations): decided
+>   by the review's own recommendation wherever its refuter agreed, the
+>   refuter's where it did not; moved goldens listed to him.
+> - diafilter01/02 (Euler under a "(fixed RK4)" header): the integrator
+>   becomes what the header says; rows move at 1e-3, listed.
+> - `fittedInCase case;` in browser fits: the case name is the case's own
+>   (its .cho marker / folder name handed by the GUI), never the worker's
+>   cwd.
+> - batchReactor never computing P, and the 1e5 slip; the dynamicCSTR
+>   outflow: fixed as defects, each with a gate arm.
+> - "zero physics in TypeScript": ADOPTED into gui-credo.md; gui's
+>   case/pinch.ts (targets computed in TS while the engine has a pinch
+>   pass) is its first debt.
+> - G9 fold thresholds: kept as built; revisited on a student's report.
+> - a multiproduct Gantt tutorial: yes, on the batch plan the engine
+>   already publishes (C98-C100), queued.
+> - the Cavett 2005 article: cited where cavett01 draws on it (the primary
+>   per value rule).
 
 > **C162. A NONVOLATILE ON THE FORMATION LEG REFUSES, AND VITOR RUNS THE
 > SWEEP ON HIS LAPTOP (Vitor, 2026-10-25, asked whether the full sweep the
@@ -3079,6 +3356,51 @@ accepts today, and that is a policy call.
 > Art. 31(l)).  Historical case: the Wright brothers' wing-warping patent
 > against Curtiss's ailerons, settled only by the 1917 US aircraft patent
 > pool; Watt's patent holding back high-pressure steam until 1800.
+> STATUS CORRECTED 2026-10-26: the "scope to agree" line above was STALE --
+> the scope IS Vitor's two messages and two addenda above, with the
+> commander's reading (1)-(4); he said so the day the audit of planned
+> EduTools listed C140 as waiting on him ("Eu tinha discutido todas as
+> coisas de que me lembrei").  DISPATCHED the same day under C163.
+> THE DISCUSSION IS MORE THAN THIS SUMMARY (Vitor, 2026-10-26, "Nao me
+> deites trabalho para o lixo nem te esquecas dele!").  The commander's
+> answers in chat on 2026-10-24 carried points the entry above holds
+> thinly or not at all, recorded here so they cannot be lost: defensive
+> publication does NOT prove who was first -- it destroys novelty for
+> everyone, which is why an obscure journal serves (it counts as a
+> disclosure and almost nobody reads it), and it ends the publisher's own
+> right to patent; the Portuguese CPI's own compulsory licence for a
+> dependent patent, beside TRIPS 31(l); in the turbine case the decisive
+> fact is that cooling gas-turbine blades is decades-old common general
+> knowledge, so the original patent PROBABLY SURVIVES an insufficiency
+> attack -- it falls only if making it work needs an invention of its own;
+> the attack routes are EPO opposition within nine months of grant or a
+> nullity action, with the burnt-blade tests as evidence; freedom-to-
+> operate searches as a counter-move; "your competitors read your filings
+> and you read theirs" is the tool's central idea.  Every point is to be
+> confirmed against the primary sources before it is taught.  The full
+> exchange was handed verbatim to the general building the tool, whose
+> report maps each point to where the tool teaches it.
+> THIRD ADDENDUM (Vitor, 2026-10-26, in chat): "se uma patente proteger um
+> processo e eu seguir a receita e aquilo nao funcionar, tenho o direito a
+> pedir para invalidarem a patente?" -- the case the tool must answer:
+> insufficiency of disclosure (EPC Art. 83; 100(b) in opposition; 138(1)(b)
+> in national revocation; the CPI equivalent); who may act and when
+> (third-party observations before grant, Art. 115; EPO opposition by ANY
+> person within nine months of grant, Art. 99; national nullity or the UPC
+> after); the burden of proof (a reproducible report following the
+> teaching exactly; the skilled person with common general knowledge fills
+> gaps; the failure must concern what the CLAIMS require; plausibility of
+> the effect, EPO G 2/21; partial working -> limitation).  And the case he
+> had in mind behind "the turbine": FRANK WHITTLE's turbojet patent (GB
+> 347,206, filed January 1930, lapsed 1935 on an unpaid renewal fee) --
+> could it have been revoked because "the turbine would melt"?  Taught as a
+> CONTESTED case: sufficiency judged at the filing date; early jets ran
+> without cooled blades at limited inlet temperature, so "impossible" is
+> false and "a decade of development" (undue burden) is the real attack;
+> pre-1977 UK law also had INUTILITY as a ground.  All to be verified on
+> primary sources; both handed to the C140 general.
+> LANDED 2026-10-26 (3fd4a4e1b): built by a general, --gui PASS 37 /
+> FAIL 0 (6505 tests); Vitor's content review still owed.
 
 > **C139. AN EDUTOOL ON THE ECONOMICS OF THE CHEMICAL NETWORK: BASE
 > CHEMICALS, INTERMEDIATES, INDUSTRIAL PARKS AND INTERNATIONAL TRADE

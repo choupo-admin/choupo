@@ -56,7 +56,7 @@ License
 import type { JsonDict } from "../dict/index.js";
 import type { OperationResult, ValidationBlock } from "../adapters/SolverAdapter.js";
 import { operationDescription, operationMapMeta } from "./operationSchemas.js";
-import { activityOf } from "./propsMap.js";
+import { activityOf, viewsOf, type PropsMap } from "./propsMap.js";
 import { declaredStudies, studyOfOp } from "./propsStudies.js";
 
 /** The run's own word for one operation. */
@@ -187,4 +187,25 @@ export const COMPONENT_CREATING = ["estimateComponent", "vaporPressureFit", "hea
 export function readinessProminent(ops: JsonDict[]): boolean {
   return ops.some((o) => o && typeof o === "object" && !Array.isArray(o)
     && (COMPONENT_CREATING as readonly string[]).includes(String(o["type"])));
+}
+
+/** RESULTS FIRST (DEV.md 4c C168): the operations whose answer is ONLY their
+ *  numbers -- they feed no figure and their type declares no point table --
+ *  so without this their answer sat one click away, behind "No table
+ *  published" (pcsaft01: the whole case).  Nothing is chosen here: an op is
+ *  in the list by what the engine published for it and what the map draws. */
+export function numbersOnlyOps(map: PropsMap, results: readonly OperationResult[]): OperationResult[] {
+  return results.filter((r) => Object.keys(r.diagnostics ?? {}).length > 0
+    && !operationMapMeta(r.type)?.pointTable
+    && viewsOf(map, [`op:${r.name}`]).length === 0);
+}
+
+/** A diagnostic's unit as the engine publishes it (`units`, the op's
+ *  diagnosticUnit): "-" is a pure number and reads "[-]"; NO published unit
+ *  is said as such, never left blank to read like a dimensionless value
+ *  (DEV.md 4c C168).  Nothing here infers a unit from a key. */
+export function unitCell(r: OperationResult, key: string): { text: string; published: boolean } {
+  const u = r.units?.[key];
+  if (u === undefined || u === "") return { text: "unit not published", published: false };
+  return { text: u === "-" ? "[-]" : u, published: true };
 }

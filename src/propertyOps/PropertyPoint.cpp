@@ -191,11 +191,15 @@ int PropertyPoint::run(const DictPtr& dict,
     //  change to make an operation obey a list nobody could rely on.  What
     //  the author gains is that a name they declare is either computed or
     //  REFUSED BY NAME -- never dropped.
+    headline_.clear();
     if (dict->found("properties"))
     {
         for (const auto& key : dict->lookupWordList("properties"))
         {
             if (key == "all") continue;          // the documented "everything"
+            bool seen = false;          // the headline names each key once
+            for (const auto& h : headline_) seen = seen || h == key;
+            if (!seen) headline_.push_back(key);
             if (diag_.count(key)) continue;      // already emitted above
             try
             {
@@ -215,6 +219,13 @@ int PropertyPoint::run(const DictPtr& dict,
     }
 
     return 0;
+}
+
+std::string PropertyPoint::diagnosticUnit(const std::string& key) const
+{
+    if (key == "Z_liquid")    return "-";
+    if (key == "v_molar_liq") return "m3/mol";
+    return propertyOps::propertyUnit(key);
 }
 
 } // namespace Choupo

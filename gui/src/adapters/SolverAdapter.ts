@@ -522,6 +522,11 @@ export interface RecycleLoop {
 export interface RunResult {
   status: "done" | "error";
   log: string;
+  /** THE ENGINE'S OWN VERDICT (`converged` in the result JSON): whether the
+   *  steady flowsheet -- every unit and every declared tear -- converged.
+   *  Absent where the binary publishes none; the run summary then says it
+   *  is not published rather than reading `status` in its place. */
+  converged?: boolean;
   /** ONE ENTRY PER PHYSICAL STREAM.  The engine's payload is keyed by every
    *  NAME a stream answers to, so the flagship plant arrived as 52 entries for
    *  25 pipes; the adapter keeps the identity and moves the other names into

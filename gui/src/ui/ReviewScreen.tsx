@@ -73,10 +73,10 @@ import { useMediaQuery, useReducedMotion } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconChevronsDown, IconChevronsUp, IconFileCode } from "@tabler/icons-react";
 
-import type { RunResult } from "../adapters/SolverAdapter.js";
+import type { OperationResult, RunResult } from "../adapters/SolverAdapter.js";
 import type { JsonDict } from "../dict/index.js";
 import { viewGroups, type PostItem, type PostReference, type ViewGroup } from "../case/postProcessing.js";
-import { RUN_STATE_WORD, verdictRows, type RunState, type VerdictRow } from "../case/reviewScreen.js";
+import { numbersOnlyOps, RUN_STATE_WORD, verdictRows, type RunState, type VerdictRow } from "../case/reviewScreen.js";
 import { declaredStudies, purposeWords, type Study } from "../case/propsStudies.js";
 import { mapStates } from "../case/propsMapState.js";
 import { useStaleParts } from "../state/useStaleResult.js";
@@ -92,15 +92,15 @@ import { CURATION_COLOUR } from "./FitStatsPanel.js";
 import { CsvAutoPlot, dropPointColumn } from "./plotting/CsvAutoPlot.js";
 import { PropsMapCanvas } from "./PropsMap.js";
 import { PropsTree } from "./PropsTree.js";
-import { CaseLink, FigureGrid, SelectionDetails } from "./PropsDetails.js";
-import { useMeasuredBoxHeight } from "./methods/methodsChrome.js";
+import { CaseLink, Diagnostics, FigureGrid, SelectionDetails } from "./PropsDetails.js";
+import { useCollapsedFlag, useMeasuredBoxHeight } from "./methods/methodsChrome.js";
 import {
   PROPS_MAP_PANEL, PanelResizeHandle, panelBoxProps, shownTopPanelPx, usePanel, type PanelHandle,
 } from "./panelContract.js";
 import {
   PANELS, clampSize, forgetPanelSize, hasPanelSize, loadPanelSize, savePanelSize,
 } from "../state/prefs.js";
-import { autoMapPx, DETAILS_FLOOR_PX, openDetailsCap } from "./propsSplit.js";
+import { autoMapPx, DETAILS_FLOOR_PX, mapFolded, openDetailsCap } from "./propsSplit.js";
 
 function SectionTitle({ children, hint }: { children: ReactNode; hint?: string }) {
   return (
@@ -118,6 +118,10 @@ function pct(v: number | null): string {
 /** Rows shown before the strip folds: a case of twenty operations must not
  *  push its figures below the fold. */
 const STRIP_ROWS = 8;
+
+/** The runs after which the reader re-opened the map (ui/propsSplit.ts
+ *  mapFolded): session memory keyed by the result object, never storage. */
+const MAP_OPENED_AFTER_RUN = new WeakSet<RunResult>();
 
 const RUN_COLOUR: Record<RunState, string> = { done: "teal", failed: "red", noResult: "orange", notRun: "gray" };
 
@@ -360,10 +364,43 @@ export function studyViews(st: Study, map: PropsMap, items: PostItem[]): PostIte
   });
 }
 
+/** Those operations' numbers, drawn inline with the units the engine
+ *  publishes (PropsDetails' table, the one home). */
+function InlineNumbers({ results, linkOf, onSelect }: {
+  results: OperationResult[];
+  linkOf: (op: string) => MapTarget | undefined;
+  onSelect: (id: string) => void;
+}) {
+  if (results.length === 0) return null;
+  return (
+    <Stack gap="md" data-review="inline-numbers">
+      {results.map((r) => {
+        const link = linkOf(r.name);
+        return (
+          <Box key={r.name} data-inline-op={r.name}>
+            <Group gap={6} mb={4} wrap="wrap" align="baseline">
+              <Text size="sm" fw={700} ff="monospace" style={{ cursor: "pointer", textDecoration: "underline dotted" }}
+                onClick={() => onSelect(`op:${r.name}`)}>{r.name}</Text>
+              <Text span size="xs" c="dimmed">· {r.type}</Text>
+              {link && <CaseLink t={link} small />}
+            </Group>
+            <Diagnostics r={r} />
+          </Box>
+        );
+      })}
+    </Stack>
+  );
+}
+
 /** One declared study: its question, what kind of check it is, its
  *  operations (the strip), then its figures and tables. */
-function StudySection({ st, rows, map, strip, groups, csvFiles, linkOf, ran, references, onOpen, link }: {
+function StudySection({ st, rows, map, strip, groups, csvFiles, linkOf, ran, references, onOpen, link,
+  results, opLinkOf, onSelect }: {
   st: Study; rows: VerdictRow[]; map: PropsMap;
+  /** the run's operation results, for the ones answered by numbers only */
+  results: readonly OperationResult[];
+  opLinkOf: (op: string) => MapTarget | undefined;
+  onSelect: (id: string) => void;
   strip: (rows: VerdictRow[]) => ReactNode;
   groups: ViewGroup[]; csvFiles: { [f: string]: string };
   linkOf: (it: PostItem) => MapTarget | undefined;
@@ -375,6 +412,7 @@ function StudySection({ st, rows, map, strip, groups, csvFiles, linkOf, ran, ref
   const items = studyViews(st, map, groups.flatMap((g) => g.items));
   const plots = items.filter((i) => i.kind === "plot");
   const tables = items.filter((i) => i.kind === "table");
+  const numbers = numbersOnlyOps(map, results.filter((r) => st.ops.includes(r.name)));
   return (
     <Box data-study={st.name} style={{ borderLeft: "3px solid var(--mantine-color-cyan-6)", paddingLeft: 12 }}>
       <Group gap={8} wrap="wrap" align="baseline">
@@ -387,7 +425,10 @@ function StudySection({ st, rows, map, strip, groups, csvFiles, linkOf, ran, ref
         {pw.sentence && <Text size="xs" c="dimmed">{pw.sentence}</Text>}
       </Group>
       {st.summary && <Text size="sm" mt={6}>{st.summary}</Text>}
-      <Box mt="sm">{strip(rows.filter((r) => st.ops.includes(r.name)))}</Box>
+      {/* RESULTS FIRST (DEV.md 4c C168): once the run has answered, the
+          study's figures come before the table of what ran; before a run
+          the operations are the study's content and lead. */}
+      {!ran && <Box mt="sm">{strip(rows.filter((r) => st.ops.includes(r.name)))}</Box>}
       <Box mt="md">
         <SectionTitle>Figures</SectionTitle>
         {!ran ? <Text size="sm" c="dimmed">Not run yet.</Text>
@@ -400,6 +441,18 @@ function StudySection({ st, rows, map, strip, groups, csvFiles, linkOf, ran, ref
           <FigureGrid items={tables} csvFiles={csvFiles} linkOf={linkOf} references={references} />
         </Box>
       )}
+      {ran && numbers.length > 0 && (
+        <Box mt="md">
+          <SectionTitle hint="Operations of this study that publish no table and feed no figure: their numbers, with the units the engine publishes.">
+            Numbers
+          </SectionTitle>
+          <InlineNumbers results={numbers} linkOf={opLinkOf} onSelect={onSelect} />
+        </Box>
+      )}
+      {ran && <Box mt="md">
+        <SectionTitle>What ran</SectionTitle>
+        {strip(rows.filter((r) => st.ops.includes(r.name)))}
+      </Box>}
     </Box>
   );
 }
@@ -426,6 +479,7 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
   const groups = block ? viewGroups(block) : [];
   const csvFiles = result?.csvFiles ?? {};
   const openCaseAt = useStore((s) => s.openCaseAt);
+  const runStatus = useStore((s) => s.runStatus);
   const setCaseMode = useStore((s) => s.setCaseMode);
   const selectNode = useStore((s) => s.selectNode);
   const narrow = useMediaQuery("(max-width: 900px)") ?? false;
@@ -553,6 +607,8 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
     <VerdictStrip rows={rs} ran={ran} selected={selected} onSelect={setSelected} linkOf={opLink} />;
 
   const otherFiles = otherCsvFiles(csvFiles);
+  const opResults = useMemo(() => result?.operationResults ?? [], [result]);
+  const numbersOnly = useMemo(() => (ran ? numbersOnlyOps(map, opResults) : []), [ran, map, opResults]);
   const isFolderOverview = selected.startsWith("folder:") && !selected.startsWith("folder:type:");
 
   let details: ReactNode;
@@ -583,7 +639,7 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
     details = st
       ? <StudySection st={st} rows={rows} map={map} strip={strip} groups={groups} csvFiles={csvFiles}
           linkOf={figureLink} ran={ran} references={block?.references} onOpen={activate}
-          link={targetOf(selected)} />
+          link={targetOf(selected)} results={opResults} opLinkOf={opLink} onSelect={setSelected} />
       : <Text size="sm" c="dimmed">This case declares no study {selected.slice(6)}.</Text>;
   } else if (selected && !isFolderOverview) {
     details = (
@@ -610,11 +666,15 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
         {studies.map((st) => (
           <StudySection key={st.name} st={st} rows={rows} map={map} strip={strip} groups={groups}
             csvFiles={csvFiles} linkOf={figureLink} ran={ran} references={block?.references}
-            onOpen={activate} link={targetOf(`study:${st.name}`)} />
+            onOpen={activate} link={targetOf(`study:${st.name}`)}
+            results={opResults} opLinkOf={opLink} onSelect={setSelected} />
         ))}
         {loose.length > 0 && (
           <Box>
             <SectionTitle>Operations in no declared study</SectionTitle>
+            {ran && <Box mb="sm"><InlineNumbers results={numbersOnlyOps(map,
+              opResults.filter((r) => loose.some((l) => l.name === r.name)))}
+              linkOf={opLink} onSelect={setSelected} /></Box>}
             {strip(loose)}
           </Box>
         )}
@@ -641,6 +701,14 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
   } else {
     details = (
       <Stack gap="lg" data-review="overview">
+        {ran && numbersOnly.length > 0 && (
+          <Box>
+            <SectionTitle hint="The operations that publish no table and feed no figure: their numbers, as the engine keys them, with the units it publishes.  The case's declared properties come first.">
+              Results
+            </SectionTitle>
+            <InlineNumbers results={numbersOnly} linkOf={opLink} onSelect={setSelected} />
+          </Box>
+        )}
         <Box>
           <SectionTitle hint={ran ? "Click an operation for its numbers and figures; the icon opens its block in system/propsDict."
             : "Run properties: each operation reports here."}>
@@ -724,7 +792,28 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
     DETAILS_FLOOR_PX, mapSpec);
   const shownMap = mapCap !== null ? Math.min(fittedMap, mapCap) : fittedMap;
   const controlled = useMemo(() => ({ value: shownMap, onValue: onMapPx }), [shownMap, onMapPx]);
-  const contract = usePanel(PROPS_MAP_PANEL, { controlled });
+  //  RESULTS FIRST (DEV.md 4c C168, ui/propsSplit.ts mapFolded): a finished
+  //  run folds the map for THAT run; the reader's stored fold is read (and
+  //  written) only while no run is on screen.  The per-run memory is keyed
+  //  by the result object, so a trip to another tab finds it as it was left.
+  //  The key is the registry's (PANELS.propsMap declares one, asserted in
+  //  tests/panelContract.test.ts) -- this is its one writer while a
+  //  controlled fold is handed to the contract, which then only reads it.
+  const storedFold = useCollapsedFlag(PANELS.propsMap.collapsedKey as string, false);
+  const [, bumpFold] = useState(0);
+  const openedAfterRun = !!result && MAP_OPENED_AFTER_RUN.has(result);
+  const folded = mapFolded({ ran, openedAfterRun, stored: storedFold.collapsed });
+  const collapsedControl = useMemo(() => ({
+    collapsed: folded,
+    toggle: () => {
+      if (ran && result) {
+        if (MAP_OPENED_AFTER_RUN.has(result)) MAP_OPENED_AFTER_RUN.delete(result);
+        else MAP_OPENED_AFTER_RUN.add(result);
+        bumpFold((n) => n + 1);
+      } else storedFold.toggle();
+    },
+  }), [folded, ran, result, storedFold]);
+  const contract = usePanel(PROPS_MAP_PANEL, { controlled, collapsedControl });
   const resetMap = useCallback(() => {
     forgetPanelSize(PANELS.propsMap);
     setMapPref(null);
@@ -816,6 +905,15 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
             style={{ flex: `0 0 ${DETAILS_FLOOR_PX - 1}px`, minHeight: 0, overflow: "hidden" }}>
             <Text size="11px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.5, whiteSpace: "nowrap" }}>
               {selected ? "Details" : "Overview"}
+            </Text>
+            {/* A STATUS REGION (DEV.md 4c C168, WCAG 4.1.3): the run's end is
+                announced once, without moving focus. */}
+            <Text size="xs" c="dimmed" role="status" aria-live="polite" data-run-status=""
+              style={{ whiteSpace: "nowrap" }}>
+              {runStatus === "running" ? "Running…"
+                : result?.status === "done" ? "Run complete."
+                : result?.status === "error" ? "Run failed — the Log has the engine's message."
+                : "Not run yet."}
             </Text>
             {selected && (
               <>

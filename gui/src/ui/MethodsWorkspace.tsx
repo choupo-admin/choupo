@@ -294,6 +294,9 @@ const FrontEndLoadingTool = lazy(() =>
 const SinesPtaTool = lazy(() =>
   import("./methods/SinesPtaTool.js")
     .then((m) => ({ default: m.SinesPtaTool })));
+const IpStrategyTool = lazy(() =>
+  import("./methods/IpStrategyTool.js")
+    .then((m) => ({ default: m.IpStrategyTool })));
 const ProcessSafetyTool = lazy(() =>
   import("./methods/ProcessSafetyTool.js")
     .then((m) => ({ default: m.ProcessSafetyTool })));
@@ -570,6 +573,7 @@ export function MethodsWorkspace() {
             : tool === "run-log" ? <RunLogTool />
             : tool === "front-end-loading" ? <FrontEndLoadingTool />
             : tool === "sines-pta" ? <SinesPtaTool />
+            : tool === "ip-strategy" ? <IpStrategyTool />
             : tool === "process-safety" ? <ProcessSafetyTool />
             : tool === "overpressure" ? <OverpressureTool />
             : tool === "pool-fire" ? <PoolFireTool />

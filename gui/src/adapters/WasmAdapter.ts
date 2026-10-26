@@ -188,9 +188,9 @@ export class WasmAdapter implements SolverAdapter {
         const { displayLog, streams, streamAliases, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, kpis,
           utilityAllocation, globalEnergyBoundary, globalMassBoundary, computed, timeline, transfers, energyLedger, advisories, divergences, modelBoundaries, recycleLoops, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics, layout, building, phaseSplitScans,
-          postProcessing, batchPlan } =
+          postProcessing, batchPlan, converged } =
           extractStructured(log, caseFiles);
-        const result: RunResult = { status, log: displayLog, streams, convergence };
+        const result: RunResult = { status, log: displayLog, streams, convergence, ...(converged !== undefined ? { converged } : {}) };
         if (streamAliases) result.streamAliases = streamAliases;
         if (Object.keys(kpis).length > 0) result.kpis = kpis;
         if (profiles && profiles.length > 0) result.profiles = profiles;
@@ -406,6 +406,8 @@ export function extractStructured(log: string,
   caseFiles: CaseFiles,
 ): {
   displayLog: string;
+  /** The engine's own verdict on the run (`converged`), when it published one. */
+  converged?: boolean;
   streams: StreamResult[];
   /** alias -> identity, for the names `streams` no longer carries a row for. */
   streamAliases?: { [alias: string]: string };
@@ -655,6 +657,7 @@ export function extractStructured(log: string,
 
   return {
     displayLog,
+    ...(typeof parsed.converged === "boolean" ? { converged: parsed.converged } : {}),
     streams,
     ...(streamAliases ? { streamAliases } : {}),
     convergence,

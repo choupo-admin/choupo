@@ -74,7 +74,7 @@ export type MethodToolId =
   | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
   | "plant-layout" | "gmp-layout" | "pool-fire" | "bund" | "materials" | "syngas"
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
-  | "sines-pta";
+  | "sines-pta" | "ip-strategy";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1706,6 +1706,43 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "condition recommended, what the documents record about the decision, "
       + "and later outcome; and ten loss and price figures, each defined, "
       + "that overlap and must not be added.",
+    theory: "ch:economics",
+  },
+  //  COMMISSIONED 2026-10-24 (DEV.md 4c C140), with two addenda and two
+  //  worked cases from Vitor; dispatched 2026-10-26.  A NOTES page on law and
+  //  history: every legal statement carries the article it was read against
+  //  (ipStrategyLesson.ts IP_SOURCES), every company outside a cited decision
+  //  is fictitious, and the page says it is not legal advice.  On this shelf
+  //  because whether to patent, keep secret or publish is a design-stage
+  //  decision with a price, beside Front-End Loading and the Sines appraisal.
+  //  `theory` is the discounted-cash-flow chapter, the nearest the Theory
+  //  Guide comes: it has no chapter on intellectual property, and an
+  //  exclusive period or a licence enters a project only through the
+  //  appraisal.
+  {
+    id: "ip-strategy",
+    label: "Intellectual property as competitive strategy",
+    discipline: "Process design & economics", kind: "notes",
+    status: "live",
+    origins: ["page", "reference", "assumption"],
+    teaches: "Patent or trade secret as a decision you take -- can it be "
+      + "reverse-engineered, can infringement be detected, how long it lasts "
+      + "against the 20-year term, what filing costs, whether the secret "
+      + "survives staff turnover -- and why a catalyst recipe and a new "
+      + "molecule land on opposite sides; the clock a filing starts "
+      + "(priority year, publication at 18 months, the PCT's 30 months, "
+      + "divisionals); intellectual property as a weapon (blocking and "
+      + "fencing, thickets, decoys, continuations, evergreening, utility "
+      + "models), defensive publication as the end of novelty for everyone, "
+      + "prior-user rights and dated deposits, and the counter-moves "
+      + "(freedom-to-operate searches, third-party observations, "
+      + "opposition); cross-licences, pools, standard-essential patents and "
+      + "assertion entities; employee inventions; the limits (sham "
+      + "litigation, abuse of dominance, inequitable conduct, "
+      + "misappropriation); worked cases on a process patent whose recipe "
+      + "does not work, a turbine whose blades melt, Whittle's turbojet "
+      + "patent and the Wright and Watt patents; and an exercise against a "
+      + "rival who reads your filings.  Not legal advice.",
     theory: "ch:economics",
   },
   //  WHICH SOLVENT, OR WHICH SOLVENT MIXTURE (2026-10-21, DEV.md 4c C128,

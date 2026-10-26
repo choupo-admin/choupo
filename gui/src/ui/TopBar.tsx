@@ -340,47 +340,20 @@ export function TopBar({ onMinWidth }: {
         if (!caseFiles.flowsheet) {
           notifications.show({
             title: "Run complete",
-            message: "Properties computed — see the Props view.",
+            //  The results lead the screen after a run (DEV.md 4c C168): the
+            //  toast no longer points elsewhere.
+            message: "Properties computed — the results lead this screen.",
             color: "teal",
             icon: <IconCircleCheck size={16} />,
             autoClose: 4000,
           });
-        } else {
-          const iters = result.convergence.reduce(
-            (m, c) => Math.max(m, c.residuals.length), 0);
-          const advisories = result.advisories ?? [];
-          const nAdv = advisories.length;
-          // Model-boundary audit findings count as flags too: a REFUSED
-          // boundary especially must never hide behind a teal "Run complete".
-          const boundaries = result.modelBoundaries ?? [];
-          const nMb = boundaries.length;
-          const nRefused = boundaries.filter((b) => b.refused).length;
-          const solved = iters > 0
-            ? `Solved in ${iters} iteration${iters === 1 ? "" : "s"}`
-            : "Solved";
-          // Category hint from the ACTUAL advisories present (bound / rating /
-          // init / thermo / electrolyte / ...), never a hardcoded pair.
-          const cats = [...new Set(advisories.map((a) => a.category))].join(" / ");
-          const flagged: string[] = [];
-          if (nAdv > 0)
-            flagged.push(`${nAdv} advisor${nAdv === 1 ? "y" : "ies"}${cats ? ` (${cats})` : ""}`);
-          if (nMb > 0)
-            flagged.push(`${nMb} model boundar${nMb === 1 ? "y" : "ies"}${nRefused > 0 ? ` (${nRefused} refused)` : ""}`);
-          const attention = flagged.length > 0;
-          notifications.show({
-            title: attention
-              ? `Run complete — check ${nAdv > 0 && nMb > 0
-                  ? "advisories + model boundaries"
-                : nAdv > 0 ? "advisories" : "model boundaries"}`
-              : "Run complete",
-            message: attention
-              ? `${solved} with ${flagged.join(", ")} — see Streams (details in the Log)`
-              : `${solved} — see Streams`,
-            color: attention ? "yellow" : "teal",
-            icon: attention ? <IconAlertTriangle size={16} /> : <IconCircleCheck size={16} />,
-            autoClose: attention ? 7000 : 4000,
-          });
         }
+        //  A FLOWSHEET RUN ENDS IN NO TOAST (DEV.md 4c C168): what it
+        //  concluded -- converged, the closures, the advisories, the products
+        //  -- is the persistent run-summary strip above the canvas
+        //  (ui/RunSummaryStrip.tsx), a status region read off the result.
+        //  The toast pointed elsewhere and was gone in four seconds, and it
+        //  counted "iterations" off the longest residual history in TS.
       }
     } catch (e) {
       appendLog(`\n[adapter] uncaught error: ${(e as Error).message}\n`);

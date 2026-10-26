@@ -146,85 +146,69 @@ The underlying ion-interaction model is **Pitzer**, *J. Phys. Chem.* **77**
 ## Ion-transport tier — `radius` and `D0` (electrochemistry v1, added 2026-06-14)
 
 The eight master ions an electrodialysis run can transport (`H, Na, K, Ca, Mg,
-Cl, OH, SO4`) gained two fields in `ions.dat`:
+Cl, OH, SO4`) gained two fields in `ions.dat` (today each ion's own
+`species/<ion>.dat`, block `transport {}`):
 
-* `radius` [m] — the effective (Stokes/hydrated) radius of the aqueous ion
-  (stored in raw SI metres; `nm` is **not** a parser unit alias in this build,
-  so the nm value is preserved in each row comment);
-* `D0` [m²/s] — the infinite-dilution (Nernst) diffusion coefficient, 25 °C.
+* `radius` [m] — the effective HYDRATED radius of the aqueous ion (stored in
+  raw SI metres; `nm` is **not** a parser unit alias in this build);
+* `D0` [m²/s] — the infinite-dilution (tracer) diffusion coefficient, 25 °C.
 
 **Radius — primary source:** E. R. Nightingale, *Phenomenological Theory of
 Ion Solvation. Effective Radii of Hydrated Ions*, **J. Phys. Chem. 63 (1959)
 1381–1387** (doi:10.1021/j150579a011), **Table I** (p. 1383), column `r_H`,
 the effective hydrated radius at 25 °C.  The eight stored radii were READ BACK
-against that page on 2026-10-25 and match it to the digit.
+against that page on 2026-10-25 and match it to the digit; since 2026-10-26
+each record carries that reading in its own `provenance { radius {} }`.
 
-**CORRECTED 2026-10-25 (DEV.md 4c C157/C161) — the `λ⁰`, and so the eight
-`D0`, are NOT from this paper.**  This file said, from 2026-06-14, that
-"Nightingale's Table III reports BOTH the effective hydrated radii AND the
-limiting ionic conductances λ⁰, so one clean primary supplies both columns".
-The paper has ONE table (Table I: crystal, Stokes and hydrated radii) and
-prints no `λ⁰` anywhere.  The `λ⁰` below are the familiar textbook values;
-where they came from was not recorded and is not identified here.  What the
-paper DOES allow is a consistency check, not a source: its Eq. (1),
-`r_s = 0.820 z / (λ⁰ η⁰)` (Å; `λ⁰` per equivalent, η⁰ in poise; 0.008903 P
-taken for water at 25 °C, which the paper does not state), reproduces Table
-I's Stokes radii `r_s` from these `λ⁰` to the table's rounding for Na, K, Ca,
-Mg, Cl, OH and SO4 (all within 1.1 %), and NOT for H⁺ (0.263 Å against the
-table's parenthesised 0.28 Å, −6 %).  The eight `D0` are therefore UNSOURCED,
-not falsely sourced from here on.  Two remedies, Vítor's to choose: re-source
-them to the public-domain PHREEQC `phreeqc.dat` `-dw` line the fourteen
-C157 ions already cite (a value may move in its third figure, so goldens of
-the ED and DSPM-DE cases could move and the list goes to him first), or name
-the primary measurement of each `λ⁰`.  The Theory Guide's electrodialysis
-section repeats the false attribution (`docs/theoryGuide.tex`, "the ions.dat
-transport tier, Nightingale 1959"); it moves with that decision.
+**D0 — primary source (since 2026-10-26, DEV.md 4c C163):** the public-domain
+USGS PHREEQC database `phreeqc.dat` (usgs-coupled/phreeqc3, branch master,
+sha256 `5b80d45c989cd1db7aab485e198321ba550d5902be8097c8be26d85ba03da278`, the
+same file the fourteen C157 ions cite), the first field of each species'
+`-dw` line (its 25 °C `Dw`), read by a parse that checks the species
+equation above the line.  Each record cites its equation line and its `-dw`
+line, says `licence publicDomain; origin literature; reviewStatus interim;`,
+and names the database's file-level references (Appelo, Parkhurst & Post,
+GCA 125 (2014) 49; Appelo, Cem. Concr. Res. 101 (2017) 102) because the
+lines themselves name none.
 
-`D0` is **derived** from `λ⁰` by Nernst–Einstein:
+| species | radius (m) | `-dw` line | D0 (m²/s) | before 2026-10-26 |
+|---------|-----------:|-----------:|----------:|------------------:|
+| H  (H⁺)    | 2.82e-10 |  65 | 9.31e-09  | 9.31e-09 |
+| Na (Na⁺)   | 3.58e-10 |  91 | 1.33e-09  | 1.33e-09 |
+| K  (K⁺)    | 3.31e-10 |  96 | 1.96e-09  | 1.96e-09 |
+| Ca (Ca²⁺)  | 4.12e-10 | 106 | 7.92e-10  | 7.92e-10 |
+| Mg (Mg²⁺)  | 4.28e-10 | 101 | 7.05e-10  | 7.06e-10 |
+| Cl (Cl⁻)   | 3.32e-10 | 137 | 2.033e-09 | 2.03e-09 |
+| OH (OH⁻)   | 3.00e-10 | 208 | 5.27e-09  | 5.27e-09 |
+| SO4 (SO₄²⁻)| 3.79e-10 | 147 | 1.07e-09  | 1.06e-09 |
 
-```
-D0 = R·T·λ⁰ / (z²·F²)     (λ⁰ in SI, S·m²/mol = (S·cm²/mol)·1e-4)
-R = 8.314462618 J/(mol·K)   T = 298.15 K   F = 96485.33212 C/mol
-```
+Three values moved in their third or fourth figure (Mg, Cl, SO4); five were
+already PHREEQC's to the digit.  The sealed tutorial cases carry their own
+copies (`constant/species/`) and run from them, so this change moves no
+golden until a case is re-imported; `check_seal_drift` reports the drift.
 
-For divalent ions, `λ⁰` is the MOLAR conductance (= per-equivalent × |z|).
-
-| species | r_eff (nm) | radius (m, stored) | λ⁰ (S·cm²/mol, molar) | D0 (m²/s) |
-|---------|-----------:|-------------------:|----------------------:|----------:|
-| H  (H⁺)   | 0.282 | 2.82e-10 | 349.8 | 9.31e-09 |
-| Na (Na⁺)  | 0.358 | 3.58e-10 |  50.1 | 1.33e-09 |
-| K  (K⁺)   | 0.331 | 3.31e-10 |  73.5 | 1.96e-09 |
-| Ca (Ca²⁺) | 0.412 | 4.12e-10 | 119.0 | 7.92e-10 |
-| Mg (Mg²⁺) | 0.428 | 4.28e-10 | 106.0 | 7.06e-10 |
-| Cl (Cl⁻)  | 0.332 | 3.32e-10 |  76.3 | 2.03e-09 |
-| OH (OH⁻)  | 0.300 | 3.00e-10 | 198.0 | 5.27e-09 |
-| SO4(SO₄²⁻)| 0.379 | 3.79e-10 | 160.0 | 1.06e-09 |
-
-Reproduce the derivation:
-
-```python
-R, T, F = 8.314462618, 298.15, 96485.33212
-lam = {"H":(349.8,1),"Na":(50.1,1),"K":(73.5,1),"Ca":(119.0,2),
-       "Mg":(106.0,2),"Cl":(76.3,1),"OH":(198.0,1),"SO4":(160.0,2)}
-for s,(l,z) in lam.items():
-    print(s, R*T*(l*1e-4)/(z*z*F*F))   # m^2/s
-```
+*History, one line:* from 2026-06-14 this file attributed the eight `D0` to
+"the same paper's λ⁰" (a Nightingale Table III that does not exist); C161
+(2026-10-25) recorded them as UNSOURCED; C163 re-sourced them here.  The
+Nernst–Einstein derivation from `λ⁰` that stood in this section is retired
+with the attribution.
 
 ### Licence-gate notes & FLAGGED GAPS
 
 * **No no-grant table used.** CRC Handbook, Robinson & Stokes (*Electrolyte
   Solutions*) verbatim tables, DIPPR, Yaws and the NIST WebBook are all
-  no-grant / all-rights-reserved and were **not** consulted for the radii,
-  every one of which traces to Nightingale 1959, Table I.  The eight `λ⁰` are
-  UNSOURCED (the correction above): this sentence used to say they were the
-  same paper's, and that was false.  Where a value could ONLY come from a
-  no-grant source it is left as a documented gap (below), never copied.
+  no-grant / all-rights-reserved and were **not** consulted: every radius
+  traces to Nightingale 1959, Table I, and every `D0` to the public-domain
+  PHREEQC `phreeqc.dat`.  Where a value could ONLY come from a no-grant
+  source it is left as a documented gap (below), never copied.
 
-* **Grotthuss caveat (H⁺, OH⁻).** Their Nernst–Einstein `D0` is the
-  conductance-equivalent value; physically their conductance is dominated by
-  proton-hopping (Grotthuss), not Stokes–Einstein hydrodynamic diffusion. The
-  derived `D0` is correct for migration / transport-number arithmetic (the
-  electrodialysis use) but is not a hydrodynamic self-diffusivity (row comment).
+* **Grotthuss caveat (H⁺, OH⁻).** Their `D0` is the conductance-equivalent
+  value; physically their conductance is dominated by proton-hopping
+  (Grotthuss), not Stokes–Einstein hydrodynamic diffusion.  It is correct for
+  migration / transport-number arithmetic (the electrodialysis use) but is not
+  a hydrodynamic self-diffusivity (each record's `D0` notes say so).
+  Nightingale PARENTHESISES both ions' entries in Table I (extrapolated from
+  his calibration curve), and each record's radius notes say so.
 
 * **The eleven radii added 2026-10-25 (DEV.md 4c C161),** each read from
   Table I's `r_H` column and cross-checked against the scan's text layer, each
@@ -252,9 +236,11 @@ for s,(l,z) in lam.items():
   tier — never a silent zero.  A Stokes radius from `D0` is a different
   convention and is never written under `radius`.
 
-* **GAP — temperature dependence.** `D0` is the 25 °C value; a Stokes–Einstein
-  T-correction (via the water-viscosity ratio) is deferred. v1 ED cases run at /
-  near 25 °C and the unit announces the constant-`D0` assumption.
+* **Temperature dependence.** `D0` is the 25 °C value; the consumer corrects
+  it to the run temperature by Stokes–Einstein on the package's own liquid
+  viscosity (`src/thermo/transport/StokesEinstein.H`, DEV.md 4c C145/C148; 1
+  exactly at 298.15 K, announced as 1 when no liquid-viscosity model is
+  declared).  PHREEQC's own `-dw` temperature fields are not used.
 
 ---
 
