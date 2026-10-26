@@ -172,14 +172,14 @@ three gates this slice changed:
 
 ## 6. What changed
 
-* `result/ClosureVariable.H`: the record.  `UnitOperation::closureVariables()`
+* `src/result/ClosureVariable.H`: the record.  `UnitOperation::closureVariables()`
   (default none); the column, `cstr`, `pfr`, `tsaTwinBed` and
   `spiralWoundModule` declare theirs.  The flowsheet collects them
   (`recordClosureVariables`, zero net lines in `Flowsheet.cpp`, whose lines
   the EduTools cite), the result carries `closuresByConstruction`, and each
   `energyClosures` row of such a unit says `byConstruction: verified |
   notVerified` with its `closureVariable`.
-* `reporting/ClosureByConstruction.H`: ONE home for how the three balance
+* `src/reporting/ClosureByConstruction.H`: ONE home for how the three balance
   reports speak -- a `byConstruction` column at the END of
   `energyBalance_byUnit.csv` and `massBalance_byUnit.csv`, one console line
   per term plus a count, and a `validity` advisory for each `notVerified`
@@ -190,7 +190,7 @@ three gates this slice changed:
   route that disagrees, or a status word that disagrees with its own gap,
   FAILS; the claim line counts them.  `check_mass_closure`: the same for M1.
   `check_element_balance`: the count, and a refusal of any element record.
-* The GUI's Streams band draws the engine's word (`case/closureByConstruction.ts`)
+* The GUI's Streams band draws the engine's word (`gui/src/case/closureByConstruction.ts`)
   under the mass and energy closures and beside each column's reboiler duty;
   a not-verified energy closure by construction withholds the green check.
 
@@ -199,7 +199,29 @@ No golden row moved: every steady case's KPIs (the new
 utility rows and report lines were compared before and after, 281 cases, 0
 differing.
 
-## 7. Sabotages (by hand, 2026-10-26)
+## 7. Rejected
+
+* **The gates recompute each closure variable's second route themselves.**
+  A second home for the unit's own model equation, free to drift from it;
+  the engine publishes the route and the gates hold its numbers to its word
+  (a status that disagrees with its own gap FAILS) -- the
+  `check_column_thermo_consistency` probe stays the INDEPENDENT recomputation
+  for the column, where one was already worth building.
+* **Failing every `notVerified` closure.**  A CMO column's reboiler cannot be
+  verified by any route, because the approximation it declares has no stage
+  energy balance: a gate that failed on it would be red for ever on a model
+  the course teaches on purpose.  It is counted, named and drawn instead;
+  only a route that MUST agree fails.
+* **Classifying every outlet computed by difference as (B).**  `L = F - V`
+  in a flash is the flash's only material envelope; what its closure cannot
+  see is the split, and the split is an equilibrium statement, not a mass
+  one.  Marking it would put "not verified" beside every separator in the
+  corpus and drown the five terms where a SAME-LAW sub-balance is hidden.
+* **Leaving the unit arm's count as it was and adding a separate list.**  The
+  count IS the claim a reader takes away ("N units leave nothing
+  unattributed"); a column inside it is the C174 defect restated.
+
+## 8. Sabotages (by hand, 2026-10-26)
 
 On a scoped copy of the corpus cache unless stated; each restored.
 

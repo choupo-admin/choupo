@@ -1548,6 +1548,26 @@ accepts today, and that is a policy call.
 > important closure variable, a check by ANOTHER route.  Status: a general
 > enumerates and builds (2)-(3) behind a gate that fails first; (4) per
 > variable, the list shown before any golden moves.
+> BUILT 2026-10-26 on `claude/c174-closure-by-construction`, record
+> `docs/design/no-closure-by-construction.md` (the enumeration: five
+> closure variables (B), the column's in three branches, every other duty
+> and outlet classified (A) or (C) with its check named).  A unit DECLARES its closure variables
+> (`UnitOperation::closureVariables`, `src/result/ClosureVariable.H`) with its
+> SECOND ROUTE: the column's reboiler (its own envelope -- verified on the
+> full MESH, NOT verified under CMO, where the gap is the approximation's
+> energy defect, 1.7-23 % low on 28 of 31 columns), non-isothermal
+> `cstr`/`pfr` `Q_kW` (the model's own heat, verified), the TSA cooling duty
+> (no route, not verified), the membrane's water (the per-solute balance,
+> verified).  The three balance reports stamp their rows and say it aloud;
+> `check_energy_closure`/`check_mass_closure` hold their own tables two-way,
+> stop counting them as closing and fail a route that must agree;
+> `check_element_balance` counts zero; the GUI's Streams band draws the
+> word.  Failed first on the pre-change tree (38 energy, 33 material units);
+> 8 by-hand sabotages caught.  No golden row moved (281 cases compared).
+> FINDINGS, not fixed: aceticAcid02's lights column, plug 118.3 kW against
+> its envelope's 38.6 kW -- the CMO traffic appears not to carry its 24 K
+> subcooled feed's enthalpic q (C169 item 4); 16 isothermalFlash rows leave
+> up to 0.87 kW, judged only in a plant sum (record section 4).
 
 > **C173. AN EXTERNAL AUDIT OF THE GIBBS AND PHASE ROUTES (Vitor,
 > 2026-10-26, forwarding a review by another model: "Auditoria CHOUPO Gibbs

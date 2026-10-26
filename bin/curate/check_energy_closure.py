@@ -163,7 +163,7 @@ SECOND ROUTE where it has one, and this gate:
   * COUNTS the rest on its claim line, by name when not verified: a CMO
     column (its second route measures the approximation's energy defect and
     cannot agree) and the TSA bed (no second route at all).
-Sabotaged by hand 2026-10-26, eight ways, every one caught -- see section 7
+Sabotaged by hand 2026-10-26, eight ways, every one caught -- see section 8
 of docs/design/no-closure-by-construction.md.  The decisive one is S8: the
 full-MESH condenser priced 1 % high in the ENGINE left column06's and its
 plant's first law at 0.0000 kW, by construction, and only the reboiler

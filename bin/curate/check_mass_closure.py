@@ -122,7 +122,7 @@ refused above 1e-9 -- and this gate holds its own table
 does not mark FAILS (33 units on the tree before C174), a marked unit the
 table does not list FAILS, a second route that must agree and does not
 FAILS, and the claim line counts the rest.  Sabotaged by hand 2026-10-26
-(S6, S7 of docs/design/no-closure-by-construction.md section 7), both caught.
+(S6, S7 of docs/design/no-closure-by-construction.md section 8), both caught.
 
 WHAT THIS DOES NOT CHECK, said plainly:
   * ENERGY closure.  A different report, a different band, and the corpus
