@@ -47,8 +47,8 @@ License
   PropsView (the Workflow) is the centre when the case is a properties case
   (carries `propsDict`, no `flowsheet`, or a two-mode case shown in its
   Workflow).  A process case has no Workflow (DEV.md 4c C172): a stale
-  ?workspace=props on one draws the flowsheet.  A thin status bar at the
-  foot carries the engine version and the adapter that ran.
+  ?workspace=props on one draws the flowsheet.  The engine version and the
+  adapter that ran are in Help > About Choupo (no status bar, Vitor 2026-10-26).
 \*---------------------------------------------------------------------------*/
 
 import { Box } from "@mantine/core";
@@ -79,7 +79,6 @@ import { ReportsWorkspace } from "./ReportsWorkspace.js";
 import { StreamsWorkspace } from "./StreamsWorkspace.js";
 import { VariablesWorkspace } from "./VariablesWorkspace.js";
 import { TopBar } from "./TopBar.js";
-import { StatusBar, STATUS_BAR_PX } from "./StatusBar.js";
 import { openGuide } from "../help/guideLinks.js";
 
 // PropsView lazy-loaded: it pulls in Plotly (~300 KB gz) via CsvAutoPlot, and
@@ -375,15 +374,15 @@ export function AppShell() {
       }}
       style={{
         display: "grid",
-        //  The status bar's row (DEV.md 4c C172): the engine version and the
-        //  adapter that ran, out of the header -- ui/StatusBar.tsx.
+        //  No status bar (Vitor, 2026-10-26): the engine version and the
+        //  adapter that ran are in Help > About Choupo.
         gridTemplateRows: dockRow
-          ? `${headerRowPx}px 1fr ${agentRowPx(agentCollapsed, agentHeight)}px ${STATUS_BAR_PX}px`
-          : `${headerRowPx}px 1fr ${STATUS_BAR_PX}px`,
+          ? `${headerRowPx}px 1fr ${agentRowPx(agentCollapsed, agentHeight)}px`
+          : `${headerRowPx}px 1fr`,
         gridTemplateColumns: "1fr",
         gridTemplateAreas: dockRow
-          ? `"header" "center" "console" "status"`
-          : `"header" "center" "status"`,
+          ? `"header" "center" "console"`
+          : `"header" "center"`,
         transition: reduceMotion ? "none" : "grid-template-rows 200ms ease",
         //  The DYNAMIC viewport, not `100vh`.  On a phone `100vh` measures the
         //  window as if the browser's URL bar were retracted, so the shell is
@@ -411,7 +410,7 @@ export function AppShell() {
       {/*  LANDMARKS (DEV.md 4c C168 slice 2; the audit found none, and no
            heading): a skip link first, the header a `banner`, the menu a
            `navigation` (MenuBar), the case a `main` with a heading a screen
-           reader can jump to, the status bar a `contentinfo`.  */}
+           reader can jump to.  */}
       <a href="#choupo-main" className="choupo-skip-link"
         onClick={(e) => { e.preventDefault(); document.getElementById("choupo-main")?.focus(); }}>
         Skip to the case
@@ -550,7 +549,6 @@ export function AppShell() {
           Only on localhost (where bin/runGui runs the bridge); on the hosted
           site there is no bridge, so it is not rendered at all (the 📋 clipboard
           bridge to claude.ai is the universal path there). */}
-      <Box style={{ gridArea: "status", minWidth: 0 }}><StatusBar /></Box>
 
       {consoleVisible && (typeof location !== "undefined"
         && (location.hostname === "localhost" || location.hostname === "127.0.0.1")) && (

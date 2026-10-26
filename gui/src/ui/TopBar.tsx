@@ -34,7 +34,7 @@ License
   the in-flight solver; the button and the Ctrl+Enter hotkey dispatch
   `choupo:run` / `choupo:stop` DOM events that we listen for, one source of
   truth.  The engine version and the adapter that ran are implementation
-  metadata: they left this bar for the status bar (ui/StatusBar.tsx).
+  metadata: they left this bar for Help > About Choupo.
 \*---------------------------------------------------------------------------*/
 
 import { compositeMembers } from "../case/toGraph.js";

@@ -338,6 +338,7 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   //  Read the engine stamp once, so "Download case (.zip)" -- a click that
   //  cannot wait for a fetch -- names the engine in its CITATION.txt.
   const [engineStamp, setEngineStamp] = useState<EngineVersion | null>(null);
+  const adapterKind = useStore((s) => s.adapterKind);
   useEffect(() => {
     void loadEngineVersion(import.meta.env.BASE_URL).then((v) => { if (v) setEngineStamp(v); });
   }, []);
@@ -888,6 +889,13 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
               ? `Version ${engineVersionLabel(engineStamp)}`
               : "Version: the engine's stamp (wasm/version.json) could not be read"}
           </Text>
+          {adapterKind && (
+            <Text size="xs" c={adapterKind === "wasm" ? "dimmed" : "red"} data-about-adapter="">
+              {adapterKind === "wasm"
+                ? "Last run in this tab: the real engine, compiled to WebAssembly, in this browser."
+                : `Last run in this tab: the ${adapterKind.toUpperCase()} solver -- its numbers are NOT real.`}
+            </Text>
+          )}
           <Text size="sm" c="dimmed">
             Educational chemical-process simulator — a transparent
             &ldquo;glass-box&rdquo; where every equation, Newton iteration,

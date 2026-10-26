@@ -96,9 +96,10 @@ second doing little.  The layout of a flowsheet case is:
   title the binary.  The canvas, the Workflow and the intro carry no Run
   of their own (they had four doors between them).  The button dispatches
   `choupo:run` / `choupo:stop`; the `TopBar` orchestrates (it holds the
-  AbortController).  The engine version and the adapter that ran sit in a
-  thin STATUS BAR at the foot (`gui/src/ui/StatusBar.tsx`), not in the
-  header: implementation metadata, read when wanted.
+  AbortController).  The engine version and the adapter that ran are in
+  Help > About Choupo, not in the header and not in a bar of their own
+  (Vitor, 2026-10-26: "uma barra so para mostrar o numero de versao e
+  disparate"): implementation metadata, read when wanted.
 - **Canvas (everything below).**  The flowsheet fills the viewport.
 - **Workspaces, opened on demand from the top menu.**  Each menu
   item is a **toggle** that swaps the canvas for that workspace;
@@ -349,8 +350,8 @@ NEUTRAL grey, never the accent cyan, which reads as liquid.
   2.74:1 on white and 1.21:1 on the old canvas.
 - A flowsheet node takes the ring on its box.  A wire takes an ink halo
   round its line.  A chip shows it on its label.
-- The shell has a skip link and landmarks: `banner`, `navigation`, `main`
-  with a heading, and `contentinfo`.
+- The shell has a skip link and landmarks: `banner`, `navigation`, and
+  `main` with a heading.
 - A wire's accessible name is its stream ("stream S3, recycle cut, phase
   liquid"), not "Edge from unit:A to unit:B".
 - A plot's mode-bar buttons carry their names.

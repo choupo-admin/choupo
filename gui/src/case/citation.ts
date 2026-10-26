@@ -38,7 +38,7 @@ License
       word is `citations` because a propsDict's `references` already means
       reference DATASETS: one word, one meaning);
     * the engine version and commit this page runs, the WASM build's
-      wasm/version.json stamp (./engineVersion.ts, the status bar's reading).
+      wasm/version.json stamp (./engineVersion.ts, the About dialog's reading).
 
   The substitution is the engine's (src/core/Citation.cpp compose), the same
   literal replacements in the same order; gui/tests/citation.test.ts holds

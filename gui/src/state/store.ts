@@ -425,8 +425,8 @@ interface AppState {
    *  workspace on first use.  Never set by parent-case surfaces. */
   plotsViewHint: "scanCsv" | null;
   /** Which solver adapter answered the last run ("wasm" / "mock" / ...):
-   *  set by the TopBar's run orchestrator, drawn by the status bar (DEV.md
-   *  4c C172 item 5 -- implementation metadata out of the header).  null =
+   *  set by the TopBar's run orchestrator, drawn in Help > About Choupo
+   *  (DEV.md 4c C172 item 5 -- implementation metadata out of the header).  null =
    *  no run in this tab yet. */
   adapterKind: string | null;
   setAdapterKind: (k: string | null) => void;
