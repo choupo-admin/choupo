@@ -1528,6 +1528,34 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C176. A MULTI-ION NF DATASET TO TEST DSPM-DE (Vitor, 2026-10-26:
+> "Sabes se ha algum artigo cientifico com imensos dados de rejeicao de
+> multiplos ioes que nos possamos usar para testar o modelo DSPM-DE?").**
+> Candidates named from memory, TO VERIFY: Labban, Liu, Chong & Lienhard,
+> J. Membr. Sci. 521 (2017) (NF270/NF90, Na/Mg/Ca/Cl/SO4, DSPM-DE -- the
+> first choice); Roy, Sharqawy & Lienhard (2015) (seawater NF, spiral);
+> Perez-Gonzalez, Ibanez, Yaroshchuk et al. (~2015, NF270 brines, trace
+> anions -- DSPM-DE against SDEM); Deon, Fievet et al. (dielectric
+> exclusion).  The case: fit r_p and X_d on single salts, PREDICT the
+> mixtures held out, band declared before the fit.  WAITS for credit and
+> for Vitor to supply the PDFs.
+
+> **C175. A REACTIVE FULL MESH (Vitor, 2026-10-26: "Nao vamos ter o
+> fullMESH reactivo?!" -- then "fica para depois de haver credito").**
+> Since C169 a fullMESH declared on a reactive column is REFUSED (it ran
+> CMO in silence); `model simultaneous;` solves reactive columns with CMO
+> energy.  To build: the reaction term on every stage's material balance,
+> the heat of reaction carried by the formation-datum surface C169 put the
+> whole column on, the reaction derivatives in the block-tridiagonal
+> Jacobian.  References, from memory, TO VERIFY: Taylor & Krishna, Chem.
+> Eng. Sci. 55 (2000) 5183 (the model); Huss, Chen, Malone & Doherty,
+> Comput. Chem. Eng. 27 (2003) 1855 (methyl acetate, validation); Popken,
+> Gotze & Gmehling, IECR 39 (2000) 2601 (kinetics); Agreda, Partin & Heise,
+> CEP 86(2) (1990) 40 (the Eastman process, history); Jacobs & Krishna,
+> IECR 32 (1993) 1706 (MTBE multiple steady states, the solver test).
+> Order when resumed: the aceticAcid02 CMO-q defect (C174 finding) first,
+> then this.  WAITS for credit.
+
 > **C174. NO CLOSURE BY CONSTRUCTION COUNTS AS EVIDENCE (Vitor,
 > 2026-10-26: "Aquilo do balanco de energia bater certo porque fazias
 > calculos intermedios com base nisso foi muito mau!!!" -- then "Avanca!").**
