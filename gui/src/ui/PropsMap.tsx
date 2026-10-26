@@ -48,7 +48,7 @@ License
   colour -- the word, never the colour alone -- and the legend names the four.
 \*---------------------------------------------------------------------------*/
 
-import { memo, useMemo, useState, type CSSProperties } from "react";
+import { memo, useMemo, useRef, useState, type CSSProperties } from "react";
 import {
   Background, Controls, Handle, MarkerType, MiniMap, Position, ReactFlow, ReactFlowProvider,
   type Edge, type Node, type NodeProps,
@@ -64,6 +64,8 @@ import {
   maxRows, type BlockKind, type FlowKind, type MapBlock, type MapMember, type MapTarget, type PropsMap,
 } from "../case/propsMap.js";
 import { BLOCK_STATE, type BlockState, type MapStates } from "../case/propsMapState.js";
+import { useLegibilityFloor } from "./legibilityFloor.js";
+import { MIN_TEXT_PX } from "../case/legibility.js";
 
 /** One look per block kind: the colour, the corner, the icon, the word. */
 const KIND: Record<BlockKind, { word: string; color: string; radius: number; Icon: typeof IconDatabase }> = {
@@ -74,15 +76,27 @@ const KIND: Record<BlockKind, { word: string; color: string; radius: number; Ico
   unit:      { word: "PROCESS",   color: "orange", radius: 4,  Icon: IconBuildingFactory2 },
 };
 
-/** One look per wire: what flows, its colour and its dash. */
-export const FLOW: Record<FlowKind, { word: string; stroke: string; dash?: string; width: number }> = {
-  measured:  { word: "measured data",      stroke: "#e03131", width: 2 },
-  reference: { word: "reference numbers",  stroke: "#f08c00", dash: "7 4", width: 2 },
-  record:    { word: "record (equipment, substance)", stroke: "#868e96", dash: "2 4", width: 1.8 },
-  model:     { word: "model",              stroke: "#7048e8", dash: "10 4 2 4", width: 2 },
-  result:    { word: "results",            stroke: "#0ca678", width: 2.6 },
-  proposal:  { word: "record written",    stroke: "#d6336c", dash: "4 3", width: 2 },
+/** One look per wire: what flows, its colour and its dash.
+ *
+ *  EVERY KIND HAS A DASH OF ITS OWN (DEV.md 4c C168 slice 2, ruling (d)):
+ *  the audit found "measured data" and "results" both SOLID (red against
+ *  green) and "reference numbers" and "record written" both plain dashes
+ *  (orange against crimson) -- two pairs told apart by colour alone.  The
+ *  patterns now differ in SHAPE (solid, long dash, dash-dot, dots,
+ *  dash-dot-dot, short even dash), and the colour is a second channel.
+ *  `stroke` is the dark-canvas ink and `light` the light-canvas one, each
+ *  >= 3:1 on its map background (white / dark-7). */
+export const FLOW: Record<FlowKind, { word: string; stroke: string; light: string; dash?: string; width: number }> = {
+  measured:  { word: "measured data",      stroke: "#ff6b6b", light: "#e03131", dash: "14 4", width: 2 },
+  reference: { word: "reference numbers",  stroke: "#f08c00", light: "#b35c00", dash: "8 3 2 3", width: 2 },
+  record:    { word: "record (equipment, substance)", stroke: "#adb5bd", light: "#6c757d", dash: "1.5 3.5", width: 1.8 },
+  model:     { word: "model",              stroke: "#9775fa", light: "#7048e8", dash: "10 3 2 3 2 3", width: 2 },
+  result:    { word: "results",            stroke: "#20c997", light: "#087f5b", width: 2.6 },
+  proposal:  { word: "record written",    stroke: "#f06595", light: "#c2255c", dash: "5 5", width: 2 },
 };
+
+/** The wire ink for the UI scheme. */
+const inkOf = (f: FlowKind, scheme: "light" | "dark") => (scheme === "dark" ? FLOW[f].stroke : FLOW[f].light);
 
 export interface PropsMapHandlers {
   selected: string | null;
@@ -100,9 +114,20 @@ function StateWord({ state, why }: { state: BlockState; why: string }) {
     <Tooltip label={`${s.word}: ${why}`} withArrow multiline maw={300}>
       <Badge size="xs" radius="sm" variant={state === "run" ? "light" : state === "notRun" ? "outline" : "filled"}
         color={s.color} data-block-state={state}
-        style={{ textTransform: "none", flex: "0 0 auto", paddingInline: 4 }}>{s.word}</Badge>
+        style={{ textTransform: "none", flex: "0 0 auto", paddingInline: 4, ...stateInk(state) }}>{s.word}</Badge>
     </Tooltip>
   );
+}
+
+/** The state badge at the one minimum size (11 px; Mantine's xs is 9), its
+ *  word in an ink that holds 4.5:1 on its own tint -- the light variant's
+ *  teal "run" measured 2.1:1 (C168 audit). */
+function stateInk(state: BlockState): CSSProperties {
+  const c = BLOCK_STATE[state].color;
+  const base: CSSProperties = { fontSize: 11, height: 18 };
+  if (state === "run" || state === "notRun")
+    return { ...base, color: `light-dark(var(--mantine-color-${c}-9), var(--mantine-color-${c}-2))` };
+  return base;
 }
 
 type BlockData = { block: MapBlock; h: PropsMapHandlers };
@@ -121,7 +146,7 @@ function Row({ m, active, h, blockId }: { m: MapMember; active: boolean; h: Prop
       }}
     >
       <Text span size="11px" ff="monospace" fw={600} style={{ whiteSpace: "nowrap" }}>{m.label}</Text>
-      <Text span size="10px" c="dimmed" truncate style={{ minWidth: 0 }}>{m.detail}</Text>
+      <Text span size="11px" c="dimmed" truncate style={{ minWidth: 0 }}>{m.detail}</Text>
     </Box>
   );
 }
@@ -154,10 +179,10 @@ const BlockNode = memo(function BlockNode({ data }: NodeProps<Node<BlockData>>) 
       <Group gap={4} wrap="nowrap" justify="space-between">
         <Group gap={4} wrap="nowrap" style={{ minWidth: 0 }}>
           <k.Icon size={13} color={`var(--mantine-color-${k.color}-6)`} />
-          <Text size="9px" fw={700} c={`${k.color}.7`} style={{ letterSpacing: 0.4, whiteSpace: "nowrap" }}>
+          <Text size="11px" fw={700} c={`${k.color}.9`} style={{ letterSpacing: 0.4, whiteSpace: "nowrap" }}>
             {k.word}
           </Text>
-          <Text size="9px" c="dimmed" truncate>· {b.role}</Text>
+          <Text size="11px" c="dimmed" truncate>· {b.role}</Text>
         </Group>
         <Group gap={0} wrap="nowrap">
           {h.states?.block.get(b.id) && (
@@ -181,13 +206,15 @@ const BlockNode = memo(function BlockNode({ data }: NodeProps<Node<BlockData>>) 
           )}
         </Group>
       </Group>
-      <Text size="12px" fw={700} ff="monospace" truncate mt={1}>{b.title}</Text>
-      <Text size="10px" c="dimmed" lineClamp={1} title={b.subtitle} style={{ lineHeight: 1.35 }}>{b.subtitle}</Text>
+      {/* PRIMARY for the legibility floor: at fit the title is kept at
+          the minimum while the rows and badges are hidden (case/legibility.ts) */}
+      <Text size="13px" fw={700} ff="monospace" truncate mt={1} data-legible-primary="">{b.title}</Text>
+      <Text size="11px" c="dimmed" lineClamp={1} title={b.subtitle} style={{ lineHeight: 1.35 }}>{b.subtitle}</Text>
       {shown.length > 0 && (
         <Box mt={3}>
           {shown.map((m) => <Row key={m.id} m={m} active={sel === m.id} h={h} blockId={b.id} />)}
           {more > 0 && (
-            <Text size="10px" c="accent.5" style={{ cursor: "pointer", padding: "1px 6px", height: 19 }}
+            <Text size="11px" c="accent.9" style={{ cursor: "pointer", padding: "1px 6px", height: 19 }}
               onClick={(e) => { e.stopPropagation(); h.onToggle(b.group); }}>
               + {more} more -- draw each
             </Text>
@@ -199,7 +226,7 @@ const BlockNode = memo(function BlockNode({ data }: NodeProps<Node<BlockData>>) 
           {b.badges.slice(0, 3).map((x) => (
             <Badge key={x} size="xs" variant="light" color={x === "validated" || x.startsWith("validated ") ? "teal"
               : x.startsWith("not") || x.includes("without") ? "orange" : "gray"}
-              style={{ textTransform: "none" }}>{x}</Badge>
+              style={{ textTransform: "none", fontSize: 11, height: 18 }}>{x}</Badge>
           ))}
         </Group>
       )}
@@ -215,7 +242,8 @@ const FrameNode = memo(function FrameNode({ data }: NodeProps<Node<FrameData>>) 
       border: "1.5px dashed light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3))",
       background: "light-dark(rgba(0,0,0,0.018), rgba(255,255,255,0.025))",
     }}>
-      <Text size="11px" fw={700} c="dimmed" px={10} py={4} truncate>{data.label}</Text>
+      {/* the study's name: PRIMARY for the legibility floor (C168 slice 2) */}
+      <Text size="12px" fw={700} c="dimmed" px={10} py={4} truncate data-legible-primary="">{data.label}</Text>
     </Box>
   );
 });
@@ -223,27 +251,28 @@ const FrameNode = memo(function FrameNode({ data }: NodeProps<Node<FrameData>>) 
 const NODE_TYPES = { block: BlockNode, frame: FrameNode };
 
 function Legend({ withStates }: { withStates: boolean }) {
+  const scheme = useComputedColorScheme("light");
   return (
     <Box style={{ padding: "3px 2px" }} data-map-legend="">
       {withStates && (
         <Group gap={10} wrap="wrap" mb={2} data-map-legend-states="">
-          <Text size="10px" c="dimmed">block state:</Text>
+          <Text size="11px" c="dimmed">block state:</Text>
           {(Object.keys(BLOCK_STATE) as BlockState[]).map((k) => (
             <Group key={k} gap={4} wrap="nowrap">
               <Badge size="xs" radius="sm" variant={k === "run" ? "light" : k === "notRun" ? "outline" : "filled"}
-                color={BLOCK_STATE[k].color} style={{ textTransform: "none", paddingInline: 4 }}>{BLOCK_STATE[k].word}</Badge>
-              <Text size="10px">{BLOCK_STATE[k].legend}</Text>
+                color={BLOCK_STATE[k].color} style={{ textTransform: "none", paddingInline: 4, ...stateInk(k) }}>{BLOCK_STATE[k].word}</Badge>
+              <Text size="11px">{BLOCK_STATE[k].legend}</Text>
             </Group>
           ))}
         </Group>
       )}
       <Group gap={12} wrap="wrap">
-        <Text size="10px" c="dimmed">wires:</Text>
+        <Text size="11px" c="dimmed">wires:</Text>
         {(Object.keys(FLOW) as FlowKind[]).map((f) => (
           <Group key={f} gap={4} wrap="nowrap">
-            <svg width={26} height={8} aria-hidden><line x1={1} y1={4} x2={25} y2={4}
-              stroke={FLOW[f].stroke} strokeWidth={FLOW[f].width} strokeDasharray={FLOW[f].dash} /></svg>
-            <Text size="10px">{FLOW[f].word}</Text>
+            <svg width={40} height={8} aria-hidden data-wire-kind={f}><line x1={1} y1={4} x2={39} y2={4}
+              stroke={inkOf(f, scheme)} strokeWidth={FLOW[f].width} strokeDasharray={FLOW[f].dash} /></svg>
+            <Text size="11px">{FLOW[f].word}</Text>
           </Group>
         ))}
       </Group>
@@ -252,6 +281,12 @@ function Legend({ withStates }: { withStates: boolean }) {
 }
 
 function Canvas({ map, h, wide }: { map: PropsMap; h: PropsMapHandlers; wide: boolean }) {
+  const scheme = useComputedColorScheme("light");
+  //  THE LEGIBILITY FLOOR (C168 slice 2, ruling (c)): the map at fit drew
+  //  every label at 4.7 px (zoom 0.52); now a label is drawn at the minimum
+  //  or not at all, block titles kept, and the full graph is one zoom away.
+  const rootRef = useRef<HTMLDivElement>(null);
+  const legibility = useLegibilityFloor(rootRef);
   const nodes = useMemo<Node[]>(() => [
     ...map.bands.filter((b) => b.framed).map((b) => ({
       id: `band:${b.index}`, type: "frame", position: { x: b.x, y: b.y }, zIndex: -1,
@@ -269,14 +304,21 @@ function Canvas({ map, h, wide }: { map: PropsMap; h: PropsMapHandlers; wide: bo
       || h.selected === e.from || h.selected === e.to);
     return {
       id: e.id, source: e.from, target: e.to, type: "default", focusable: false, selectable: false,
-      style: { stroke: f.stroke, strokeWidth: lit ? f.width + 1.2 : f.width, strokeDasharray: f.dash,
+      style: { stroke: inkOf(e.flow, scheme), strokeWidth: lit ? f.width + 1.2 : f.width, strokeDasharray: f.dash,
                opacity: h.selected && !lit ? 0.35 : 0.9 },
-      markerEnd: { type: MarkerType.ArrowClosed, color: f.stroke, width: 14, height: 14 },
+      markerEnd: { type: MarkerType.ArrowClosed, color: inkOf(e.flow, scheme), width: 14, height: 14 },
     };
-  }), [map, h.selected]);
+  }), [map, h.selected, scheme]);
   const [mini, setMini] = useState(false);
-  const scheme = useComputedColorScheme("light");
   return (
+    <div ref={rootRef} style={{ position: "relative", width: "100%", height: "100%" }}>
+    {legibility === "overview" && (
+      <Text size="11px" fw={600} data-legibility-hint="" style={{ position: "absolute", left: 8, bottom: 6, zIndex: 5,
+        padding: "2px 6px", borderRadius: 4, pointerEvents: "none",
+        background: "light-dark(rgba(255,255,255,0.92), rgba(0,0,0,0.6))" }}>
+        Overview: labels under {MIN_TEXT_PX} px are hidden -- zoom in (+, wheel) to read them
+      </Text>
+    )}
     <ReactFlow
       colorMode={scheme}
       nodes={nodes} edges={edges} nodeTypes={NODE_TYPES}
@@ -302,6 +344,7 @@ function Canvas({ map, h, wide }: { map: PropsMap; h: PropsMapHandlers; wide: bo
         nodeColor={(n) => n.type === "frame" ? "transparent"
           : `var(--mantine-color-${KIND[(n.data as BlockData).block.kind].color}-4)`} />}
     </ReactFlow>
+    </div>
   );
 }
 

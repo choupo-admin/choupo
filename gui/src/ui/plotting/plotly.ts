@@ -36,6 +36,8 @@ License
 
 import { createElement } from "react";
 import { useComputedColorScheme } from "@mantine/core";
+import { MIN_TEXT_PX } from "../../case/legibility.js";
+import { withSecondChannel } from "../../case/plotChannels.js";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore -- the basic-dist package has no types
 import Plotly from "plotly.js-basic-dist-min";
@@ -171,14 +173,76 @@ function themeLayout(layout: any, c: Chrome): any {
   return out;
 }
 
+// THE ONE MINIMUM TEXT SIZE ON A FIGURE (DEV.md 4c C168 slice 2, ruling
+// (c)): a tick, a legend entry, an annotation, a title is never drawn below
+// MIN_TEXT_PX.  The audit measured 9 px legend and tick text on NanoFiltran's
+// overview figures; one floor here reaches every figure in the app.  A size
+// above the floor is kept as the figure declared it.
+function floorFont(f: any): any {
+  if (!f || typeof f !== "object") return f;
+  return typeof f.size === "number" && f.size < MIN_TEXT_PX ? { ...f, size: MIN_TEXT_PX } : f;
+}
+
+function floorLayout(layout: any): any {
+  const out: any = { ...layout };
+  out.font = { ...(layout.font ?? {}), size: Math.max(layout.font?.size ?? 12, MIN_TEXT_PX) };
+  if (layout.legend) out.legend = { ...layout.legend, font: floorFont(layout.legend.font) };
+  if (layout.title && typeof layout.title === "object") out.title = { ...layout.title, font: floorFont(layout.title.font) };
+  if (layout.hoverlabel) out.hoverlabel = { ...layout.hoverlabel, font: floorFont(layout.hoverlabel.font) };
+  if (Array.isArray(layout.annotations))
+    out.annotations = layout.annotations.map((a: any) => (a && a.font ? { ...a, font: floorFont(a.font) } : a));
+  for (const k of Object.keys(layout)) {
+    if (!/^[xy]axis\d*$/.test(k) || !layout[k]) continue;
+    const ax = layout[k];
+    //  A LOG axis draws its in-between digits (2, 3, ... 9 under a "D1"/"D2"
+    //  tick step) at 0.75 of the tick font -- Plotly's own rule -- which is
+    //  where the audit's 9 px tick text came from (12 x 0.75).  So the font of
+    //  a log axis is floored at MIN / 0.75, which puts those digits at the
+    //  minimum and the decade labels a little larger.
+    const tickMin = ax.type === "log" ? Math.ceil(MIN_TEXT_PX / 0.75) : MIN_TEXT_PX;
+    const tf = ax.tickfont ?? {};
+    out[k] = {
+      ...ax,
+      tickfont: { ...tf, size: Math.max(tf.size ?? out.font.size, tickMin) },
+      titlefont: floorFont(ax.titlefont),
+      ...(ax.title && typeof ax.title === "object" ? { title: { ...ax.title, font: floorFont(ax.title.font) } } : {}),
+    };
+  }
+  return out;
+}
+
+// NAMED PLOT CONTROLS (C168 slice 2; the audit counted 330 unnamed
+// interactive nodes on NanoFiltran after a run: 15 mode-bar links on each of
+// 22 figures, every one `title=""`).  Plotly writes the button's name into
+// `data-title` and leaves the link with no accessible name; this copies it
+// into aria-label and gives the link the button role it acts as.
+function nameModebar(gd: any): void {
+  if (!gd || typeof gd.querySelectorAll !== "function") return;
+  for (const a of gd.querySelectorAll(".modebar-btn")) {
+    const name = a.getAttribute("data-title");
+    if (name && a.getAttribute("aria-label") !== name) {
+      a.setAttribute("aria-label", name);
+      a.setAttribute("role", "button");
+    }
+  }
+}
+
 // The exported <Plot> wraps react-plotly.js and re-themes the incoming layout
 // to the active colour scheme.  Consumers pass a `darkLayout`-based layout as
 // before; in light mode the chrome is swapped to light here (one place), and it
 // re-renders on toggle via useComputedColorScheme.  Trace colours are left
 // alone (they read on both backgrounds).
+//
+// It also applies, in this one place, the two rules every figure owes a
+// reader (C168 slice 2): the minimum text size (`floorLayout`) and no two
+// series told apart by colour alone (case/plotChannels.ts) -- and it names
+// the mode-bar controls.
 export function Plot(props: any) {
   const scheme = useComputedColorScheme("light");
   const c = scheme === "dark" ? CHROME_DARK : CHROME_LIGHT;
-  const layout = themeLayout(props.layout ?? {}, c);
-  return createElement(RawPlot, { ...props, layout });
+  const layout = floorLayout(themeLayout(props.layout ?? {}, c));
+  const data = withSecondChannel(props.data ?? []);
+  const onInitialized = (fig: any, gd: any) => { nameModebar(gd); props.onInitialized?.(fig, gd); };
+  const onUpdate = (fig: any, gd: any) => { nameModebar(gd); props.onUpdate?.(fig, gd); };
+  return createElement(RawPlot, { ...props, layout, data, onInitialized, onUpdate });
 }

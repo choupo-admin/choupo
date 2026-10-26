@@ -46,6 +46,7 @@ import {
   ReactFlowProvider,
   useNodesInitialized,
   useReactFlow,
+  useStore as useFlowStore,
   useStoreApi,
   type Edge,
   type Node,
@@ -77,13 +78,17 @@ import {
   PHASE_ORDER,
   phaseColor as phaseColorFor,
   classifyPhase,
+  inkFor,
   totalFlowOf,
+  type UiScheme,
 } from "./plotting/palette.js";
+import { useLegibilityFloor } from "./legibilityFloor.js";
+import { MIN_TEXT_PX } from "../case/legibility.js";
 import {
   formatSig,
 } from "../state/displayUnits.js";
 import { ErrorBoundary } from "./ErrorBoundary.js";
-import { FLOWSHEET_FIT, FLOWSHEET_FIT_ANIMATED, FLOWSHEET_MIN_ZOOM } from "./flowsheetViewport.js";
+import { FLOWSHEET_FIT_ANIMATED, FLOWSHEET_MIN_ZOOM, flowsheetFitFor } from "./flowsheetViewport.js";
 import { cardFoldOffset, CARD_BODY_W, CARD_HANDLE_W, CARD_MARGIN, selectionLeafLabel } from "./panelFold.js";
 import { PropertyPanel } from "./PropertyPanel.js";
 import { StreamTerminal } from "./StreamTerminal.js";
@@ -141,8 +146,12 @@ interface PhaseStyle {
   undeclared?: boolean;
 }
 
-/** The wire of a stream whose phase only the run will tell (C168). */
-const UNDECLARED_PHASE_COLOUR = "var(--mantine-color-gray-5)";
+/** The wire of a stream whose phase only the run will tell (C168), and of a
+ *  stream the canvas has nothing to say about at all: a NEUTRAL ink, never
+ *  a phase hue.  The old fallback was the accent cyan, which read as LIQUID
+ *  on every wire drawn before a run (C168 slice 1's finding, closed in
+ *  slice 2).  Grey holds 4.2:1 on the light canvas and 5.3:1 on the dark. */
+const NEUTRAL_WIRE: Record<UiScheme, string> = { light: "#6c757d", dark: "#868e96" };
 
 const NODE_TYPES = {
   unitNode: UnitNode,
@@ -153,10 +162,10 @@ const NODE_TYPES = {
 // at a scrubbed instant).  vf is the AUTHORITATIVE phase signal (phase-colour-
 // is-semantic), so a non-zero flow is assumed (an instant face always carries
 // flow) and classifyPhase decides liquid / two-phase / vapour.
-function phaseColorFromVf(vf: number, scheme: "default" | "cvd-safe"):
+function phaseColorFromVf(vf: number, scheme: "default" | "cvd-safe", ui: UiScheme):
   { color: string; phase: PhaseKind } {
   const phase = classifyPhase({ vf, F: 1, F_mass: 1 });
-  return { color: phaseColorFor(phase, scheme), phase };
+  return { color: phaseColorFor(phase, scheme, ui), phase };
 }
 
 // Custom edge types.  `tear` routes recycle back-edges below the node
@@ -332,6 +341,13 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   // above) -- drives the React Flow canvas chrome + dot grid.
   const uiScheme = useComputedColorScheme("light");
   const reactFlow = useReactFlow();
+  //  The fit for THIS pane: on a short one (200 % browser zoom) its margins
+  //  shrink, or the fit has no room and falls to the minimum zoom
+  //  (flowsheetViewport.ts FIT_MARGIN_SHARE, C168 slice 2).
+  const paneH = useFlowStore((s) => s.height);
+  const fitOptions = useMemo(() => flowsheetFitFor(paneH), [paneH]);
+  const fitAnimated = useRef(FLOWSHEET_FIT_ANIMATED);
+  fitAnimated.current = flowsheetFitFor(paneH, true);
 
   // Visualisation filters (view-only, not case data): show/hide stream
   // classes so a busy plant declutters.  Process material is always on;
@@ -672,12 +688,12 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       saveLayout(tutorialName, snapshotLayout(graph.nodes, {}, {}));
     else clearLayout(tutorialName);
     setLayoutEpoch((e) => e + 1);
-    window.setTimeout(() => reactFlow.fitView(FLOWSHEET_FIT_ANIMATED), 50);
+    window.setTimeout(() => reactFlow.fitView(fitAnimated.current), 50);
   }, [curatedLayout, tutorialName, graph, reactFlow]);
   const restoreCaseLayout = useCallback(() => {
     clearLayout(tutorialName);
     setLayoutEpoch((e) => e + 1);
-    window.setTimeout(() => reactFlow.fitView(FLOWSHEET_FIT_ANIMATED), 50);
+    window.setTimeout(() => reactFlow.fitView(fitAnimated.current), 50);
   }, [tutorialName, reactFlow]);
 
   // AN ARRANGEMENT FROM BEFORE 2026-10-11 (state/layout.ts `migrateV1`): it
@@ -690,7 +706,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   const restoreEarlier = useCallback(() => {
     if (!restoreLegacyLayout(tutorialName)) return;
     setLayoutEpoch((e) => e + 1);
-    window.setTimeout(() => reactFlow.fitView(FLOWSHEET_FIT_ANIMATED), 50);
+    window.setTimeout(() => reactFlow.fitView(fitAnimated.current), 50);
   }, [tutorialName, reactFlow]);
   const forgetEarlier = useCallback(() => {
     forgetLegacyLayout(tutorialName);
@@ -791,7 +807,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     });
     if (!measured) return;
     fittedFor.current = tutorialName;
-    reactFlow.fitView(FLOWSHEET_FIT_ANIMATED);
+    reactFlow.fitView(fitAnimated.current);
   }, [tutorialName, reactFlow, nodes, nodesInitialized, rfStore]);
 
   // Stream selection by clicking an edge: the edge label IS the stream name
@@ -912,8 +928,8 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       //  LIQUID, which drew "L" on a 300 K syngas and on a stream declaring
       //  `phase gas;` (its word was never read).
       if (!streamSource.isRun && phase !== "empty" && streamSource.undeclared.has(st.name))
-        return { color: UNDECLARED_PHASE_COLOUR, phase, totalFlow, undeclared: true };
-      let color = phaseColorFor(phase, colorScheme);
+        return { color: NEUTRAL_WIRE[uiScheme], phase, totalFlow, undeclared: true };
+      let color = phaseColorFor(phase, colorScheme, uiScheme);
       if (colourField && phase !== "empty")
         color = colourOfValue(valueOf(st, colourField), scale, colorMap);
       return { color, phase, totalFlow };
@@ -954,7 +970,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       anyBelow: below,
     };
   }, [streamSource, perStream, graph, show.utility, colourField, widthField,
-      displayPrefs.colorScale, cc.range, colorScheme, colorMap]);
+      displayPrefs.colorScale, cc.range, colorScheme, colorMap, uiScheme]);
 
   //  Publish the drawn range, so the Colours menu can start a FIXED range
   //  from what the reader is looking at.
@@ -1070,7 +1086,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                 vf: ov.vf ?? resolved?.vf,
               };
               if (ov.vf !== undefined) {
-                const ps = phaseColorFromVf(ov.vf, colorScheme);
+                const ps = phaseColorFromVf(ov.vf, colorScheme, uiScheme);
                 phaseColor = ps.color;
                 phaseLabel = PHASE_LABEL[ps.phase];
                 phaseGlyph = PHASE_GLYPH[ps.phase];
@@ -1254,17 +1270,32 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         // carried (phase-colour-is-semantic; no phase travels on a dynamic
         // stream today, so the edge keeps its default colour).
         const ov = (!isEnergy && !isDuty && label) ? scrubOverlay.get(label) : undefined;
-        const ovColor = ov?.vf !== undefined
-          ? phaseColorFromVf(ov.vf, colorScheme).color : undefined;
+        const ovPhase = ov?.vf !== undefined ? phaseColorFromVf(ov.vf, colorScheme, uiScheme) : undefined;
+        const ovColor = ovPhase?.color;
         //  A single-duty stub's wire follows the RUN (C52): hidden with an
         //  idle stub, coloured by the sign the engine published.
         const stubRun = isDuty ? dutyRun.get(e.source) : undefined;
+        //  A fixed ink (heat, work, duty, recipe) in the scheme's own shade
+        //  (palette.ts `inkFor`); a wire with nothing to say is NEUTRAL --
+        //  never the accent cyan, which reads as liquid (C168 slice 2).
         const color = stubRun
-          ? DUTY_TIER_COLOUR[stubRun.tier]
-          : (isEnergy || isDuty)
-          ? (e.style as { stroke?: string } | undefined)?.stroke
-              ?? "var(--mantine-color-accent-5)"
-          : ps?.color ?? ovColor ?? "var(--mantine-color-accent-5)";
+          ? inkFor(DUTY_TIER_COLOUR[stubRun.tier], uiScheme)
+          : (isEnergy || isDuty || isRecipe)
+          ? inkFor((e.style as { stroke?: string } | undefined)?.stroke ?? NEUTRAL_WIRE.dark, uiScheme)
+          : ps?.color ?? ovColor ?? NEUTRAL_WIRE[uiScheme];
+        //  THE PHASE, SAID A SECOND WAY (ruling (d)): the letter rides the
+        //  wire's move-point (ui/WirePhaseMark.tsx).  "?" where 0/ declares
+        //  no phase before a run; nothing on a wire with no phase to say,
+        //  nor while the wires are coloured by a field (the colour then
+        //  means the field, and the legend says so).
+        const material0 = !isEnergy && !isDuty && !isRecipe;
+        const wirePhase: PhaseKind | undefined = material0
+          ? (ps && !ps.undeclared ? ps.phase : ovPhase?.phase) : undefined;
+        const wireGlyph = !material0 || colourField ? undefined
+          : ps?.undeclared ? "?"
+          : wirePhase && wirePhase !== "empty" ? PHASE_GLYPH[wirePhase] : undefined;
+        const wirePhaseLabel = ps?.undeclared ? "not declared in 0/ -- resolved by the run"
+          : wirePhase ? PHASE_LABEL[wirePhase] : undefined;
         //  "FOLLOW A MOLECULE" (C114): the width is THAT component's own flow,
         //  with a stated floor so a trace stays visible; everything else
         //  keeps the total-mass rule.
@@ -1289,6 +1320,12 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           // stays fixed; only the orthogonal bend slides).  Tears keep
           // their dedicated under-row router.
           type: isTear || isBack || isWrap ? "tear" : "waypoint",
+          //  THE WIRE'S ACCESSIBLE NAME is the stream it carries (C168 slice
+          //  2): React Flow's default was "Edge from unit:A to unit:B",
+          //  which names neither the stream nor what kind of wire it is.
+          ariaLabel: label
+            ? `stream ${label}${isTear ? ", recycle cut" : ""}${dashKind !== "process" && dashKind !== "tear" ? `, ${dashKind}` : ""}${wirePhaseLabel ? `, phase ${wirePhaseLabel}` : ""}`
+            : (isEnergy ? "energy link" : isDuty ? "utility duty" : undefined),
           data: {
 ...(e.data as object),
             center: edgeCenters[e.id],
@@ -1302,6 +1339,8 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             dashKind: dashKind !== "process"
               ? dashKind : (ps?.phase === "empty" ? "empty" : "process"),
             num: numberOf(label),   // ABSOLUTE number (overrides toGraph local)
+            phaseGlyph: wireGlyph,
+            phaseLabel: wirePhaseLabel,
             ...(boundary ? { boundary: { refused: boundary.refused } } : {}),
           },
           // Visualisation filter: hide this edge when its class is toggled
@@ -1360,7 +1399,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     [graph.edges, selectedStreamName, phaseOf, utilityOf, maxFlow, show,
      edgeCenters, onEdgeCenterChange, commitEdgeCenters, onEdgeCenterReset,
      runResult, numberOf, scrubOverlay, colorScheme, loops, dutyRun, cc.follow, widthValueOf, maxWidthFlow, streamDimmed,
-     returnWireDrawn],
+     returnWireDrawn, uiScheme, colourField],
   );
 
   //  THE DASH LEGEND.  Derived from the kind each edge was STAMPED with, so
@@ -1386,7 +1425,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         prefs: displayPrefs, anyNoData, anyBelow, threshold: cc.threshold, follow: cc.follow }));
     } else if (phasesPresent.size > 0) {
       out.push(phaseLegend(PHASE_ORDER.filter((p) => phasesPresent.has(p)).map((p) => ({
-        colour: phaseColorFor(p, colorScheme), label: `${PHASE_GLYPH[p]} ${PHASE_LABEL[p]}` }))));
+        colour: phaseColorFor(p, colorScheme, uiScheme), label: `${PHASE_GLYPH[p]} ${PHASE_LABEL[p]}` }))));
     }
     if (unitColours && cc.unitKpi) {
       const without = graph.nodes.some((n) => n.type === "unitNode"
@@ -1396,7 +1435,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     }
     return out;
   }, [colourField, fieldScale, colorMap, displayPrefs, anyNoData, anyBelow, cc.threshold,
-      cc.follow, phasesPresent, colorScheme, unitColours, cc.unitKpi, cc.unitThreshold, graph]);
+      cc.follow, phasesPresent, colorScheme, unitColours, cc.unitKpi, cc.unitThreshold, graph, uiScheme]);
 
   //  The SHOW bar's measured height: the legend column sits under it.
   const showBarRef = useRef<HTMLDivElement>(null);
@@ -1411,6 +1450,11 @@ function CanvasInner({ flowsheet, scrubInstant }: {
 
   //  THE PROBE: every field a hovered stream publishes (C114 item 6).
   const wrapperRef = useRef<HTMLDivElement>(null);
+  //  THE LEGIBILITY FLOOR (C168 slice 2, ruling (c)): no label is drawn
+  //  below MIN_TEXT_PX; at fit the drawing is the simplified view (names and
+  //  phase letters kept at the minimum, the rest hidden) and the full graph
+  //  is one zoom away.  The hint below says which the reader is looking at.
+  const legibility = useLegibilityFloor(wrapperRef);
   const [probe, setProbe] = useState<{ name: string; rows: ProbeRow[];
     x: number; y: number; w: number; h: number } | null>(null);
   const showProbe = useCallback((label: string, ev: { clientX: number; clientY: number }) => {
@@ -1476,7 +1520,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       if (ev.key === "Escape") {
         selectNode(null);
       } else if (ev.key === "f" || ev.key === "F") {
-        reactFlow.fitView(FLOWSHEET_FIT_ANIMATED);
+        reactFlow.fitView(fitAnimated.current);
       } else if (ev.key === "]" && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
         if (selectedNodeId) togglePanel("property");
       }
@@ -1493,7 +1537,10 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     //  class carries no per-value claim -- everything the run produced dims
     //  together (case/staleness.ts).
     <div ref={wrapperRef} className={stale.stale ? "choupo-stale-canvas" : undefined}
-      style={{ position: "relative", width: "100%", height: "100%", background: "light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-8))" }}>
+      //  THE LIGHT CANVAS IS `gray-1` (C168 slice 2): it was `gray-6`, a mid
+      //  grey no wire hue could hold 3:1 against (1.0-1.6:1, every wire on
+      //  ammonia02).  The light palette (palette.ts) is tuned on this one.
+      style={{ position: "relative", width: "100%", height: "100%", background: "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-8))" }}>
       <ReactFlow
         nodes={styledNodes}
         edges={styledEdges}
@@ -1527,7 +1574,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             openInNewWindow(n.id);
           } else if (n.id.startsWith("unit:")) {
             const uname = n.id.slice("unit:".length);
-            // Two unit surfaces (gui-credo §4): single click = the read-only
+            // Two unit surfaces (gui-credo §4): single click = the (what-if)
             // selection card, double click = the unit's INTERNALS page
             // (tables + plots + the What-if tab).  Inside a focus tab the
             // unit IS the tab's subject -- opening another internals of
@@ -1550,7 +1597,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         }}
         onPaneClick={() => selectNode(null)}
         fitView
-        fitViewOptions={FLOWSHEET_FIT}
+        fitViewOptions={fitOptions}
         //  React Flow's default minZoom is 0.5, which clamped both the wheel
         //  and every fit on a large flowsheet (C102, ui/flowsheetViewport.ts).
         minZoom={FLOWSHEET_MIN_ZOOM}
@@ -1597,7 +1644,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                  already legible for exactly this reason -- `variant="default"`
                  brings a surface of its own.  */}
             {rc.badge && (
-              <Badge size="sm" color={rc.badge.color} variant="filled"
+              <Badge size="md" color={rc.badge.color} variant="filled"
                 title={rc.badge.title}>
                 {rc.badge.text}
               </Badge>
@@ -1633,7 +1680,12 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             pointerEvents: "none",
           }}
         >
-          <Text size="10px" c="dimmed" ff="monospace">
+          {legibility === "overview" && (
+            <Text size="11px" ff="monospace" fw={600} data-legibility-hint="">
+              Overview: labels under {MIN_TEXT_PX} px are hidden -- zoom in (+, wheel) to read them
+            </Text>
+          )}
+          <Text size="11px" c="dimmed" ff="monospace">
             F: fit view  ·  Esc: deselect  ·  ]: fold card  ·  double-click: drill in
           </Text>
         </Box>
@@ -1654,7 +1706,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             alignItems: "center",
           }}
         >
-          <Text size="10px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
+          <Text size="11px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
             show
           </Text>
           <Group gap={6}>
@@ -1782,15 +1834,15 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                 maxWidth: 520,
               }}
             >
-              <Text size="10px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
+              <Text size="11px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
                 wires
               </Text>
               {dashesPresent.map((d) => (
                 <Box key={d.kind} style={{ display: "flex", gap: 5, alignItems: "center" }} title={d.meaning}>
-                  <svg width={22} height={6} aria-hidden>
+                  <svg width={34} height={6} aria-hidden>
                     <line
-                      x1={0} y1={3} x2={22} y2={3}
-                      stroke={d.colour ?? "currentColor"}
+                      x1={0} y1={3} x2={34} y2={3}
+                      stroke={d.colour ? inkFor(d.colour, uiScheme) : "currentColor"}
                       strokeWidth={2}
                       strokeDasharray={d.dash ?? undefined}
                       opacity={d.opacity}
@@ -1802,7 +1854,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                       </g>
                     )}
                   </svg>
-                  <Text size="10px" c="dimmed">{d.label}</Text>
+                  <Text size="11px" c="dimmed">{d.label}</Text>
                 </Box>
               ))}
             </Box>
@@ -1832,8 +1884,8 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             <Text size="xs" fw={700} ff="monospace" mb={2}>{probe.name}</Text>
             {probe.rows.map((r, i) => (
               <Box key={i} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                <Text size="10px" c="dimmed" ff="monospace">{r.label}</Text>
-                <Text size="10px" ff="monospace" style={{ textAlign: "right" }}>{r.value}</Text>
+                <Text size="11px" c="dimmed" ff="monospace">{r.label}</Text>
+                <Text size="11px" ff="monospace" style={{ textAlign: "right" }}>{r.value}</Text>
               </Box>
             ))}
           </Box>

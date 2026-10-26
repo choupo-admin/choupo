@@ -87,4 +87,10 @@ export const theme = createTheme({
   headings: {
     fontWeight: "600",
   },
+  //  A TOAST'S CLOSE BUTTON HAS A NAME (DEV.md 4c C168 slice 2): Mantine
+  //  draws it as an icon with none -- the audit's one unnamed control on the
+  //  plant after a run.
+  components: {
+    Notification: { defaultProps: { closeButtonProps: { "aria-label": "Dismiss this message" } } },
+  },
 });

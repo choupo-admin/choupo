@@ -58,10 +58,10 @@ export function ModelBoundaryBadge({ x, y, refused }: {
           transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`,
           pointerEvents: "none",
           fontFamily: "JetBrains Mono, monospace",
-          fontSize: 9,
+          fontSize: 11,
           fontWeight: 700,
           letterSpacing: 0.3,
-          lineHeight: "12px",
+          lineHeight: "14px",
           padding: "1px 4px",
           borderRadius: 3,
           ...(refused

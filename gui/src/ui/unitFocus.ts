@@ -29,8 +29,8 @@ License
 /*---------------------------------------------------------------------------*\
   Unit pop-outs (gui-credo §4 "Tab citizenship + two surfaces").
 
-  There are exactly TWO unit surfaces: the read-only selection card (single
-  click) and the unit's INTERNALS page (double click, `?internals=` -- tables,
+  There are exactly TWO unit surfaces: the selection card (single
+  click; its what-if fields edit the open copy only) and the unit's INTERNALS page (double click, `?internals=` -- tables,
   plots and the What-if tab).  Both pop-outs ride the SAME synthesised 1-unit
   clone of the open case: the unit + its inlet streams FROZEN from the parent
   run, `$variable` operation values resolved to their converged numbers.

@@ -35,6 +35,95 @@ License
   --mantine-color-dimmed: var(--mantine-color-gray-9);
 }
 
+/* ---------------------------------------------------------------------------
+   THE FOCUS RING IS INK, NOT ACCENT (DEV.md 4c C168 slice 2; WCAG 2.4.7 and
+   1.4.11).  Mantine draws `:focus-visible` in the primary colour, accent-6
+   #00acc1: measured 2.74:1 on white and 1.21:1 on the old mid-grey canvas,
+   so a keyboard user could not see where they were -- and the flowsheet's
+   nodes and wires drew no ring at all (46 of 72 stops on ammonia02).  One
+   ink per scheme, near-black on light, near-white on dark: >= 15:1 against
+   every light surface and >= 12:1 against every dark one, whatever the
+   control's own colour, because the 2 px offset puts the ring on the
+   SURROUND.  One home: these variables.
+   --------------------------------------------------------------------------- */
+:root {
+  --choupo-focus-ink: #1a1b1e;
+}
+:root[data-mantine-color-scheme="dark"] {
+  --choupo-focus-ink: #e8f2f2;
+}
+:focus-visible,
+.mantine-focus-auto:focus-visible,
+.mantine-focus-always:focus {
+  outline: 2px solid var(--choupo-focus-ink) !important;
+  outline-offset: 2px;
+}
+/* A control whose input is a zero-size box (a Chip, a Checkbox drawn by its
+   label) shows the ring on what the reader SEES. */
+.mantine-Chip-input:focus-visible + .mantine-Chip-label,
+.mantine-Switch-input:focus-visible + .mantine-Switch-track {
+  outline: 2px solid var(--choupo-focus-ink) !important;
+  outline-offset: 2px;
+}
+/* The canvas: a node takes the ring on its box; an SVG wire has no box, so
+   its path takes an ink halo (a ring of the same ink, drawn round the line). */
+.react-flow__node:focus-visible {
+  outline: 2px solid var(--choupo-focus-ink) !important;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.react-flow__edge:focus-visible {
+  outline: none !important;
+}
+.react-flow__edge:focus-visible .react-flow__edge-path {
+  filter: drop-shadow(0 0 1.5px var(--choupo-focus-ink)) drop-shadow(0 0 1.5px var(--choupo-focus-ink));
+}
+
+/* ---------------------------------------------------------------------------
+   THE LEGIBILITY FLOOR ON A ZOOMED DRAWING (DEV.md 4c C168 slice 2, ruling
+   (c)).  case/legibility.ts decides, ui/legibilityFloor.ts marks: a label
+   that would render below the minimum is not drawn, and a primary label
+   (a unit's name, a block's title, a wire's phase letter) is drawn AT the
+   minimum.  `--choupo-lg-min` and `--choupo-canvas-zoom` are set on the
+   drawing's root by the hook, from MIN_TEXT_PX -- the number has one home.
+   --------------------------------------------------------------------------- */
+[data-lg="hide"] {
+  visibility: hidden !important;
+}
+[data-lg="grow"] {
+  font-size: calc(var(--choupo-lg-min, 11px) / var(--choupo-canvas-zoom, 1)) !important;
+  line-height: 1.15 !important;
+  white-space: nowrap;
+}
+
+/* Text for a screen reader only (a landmark's heading). */
+.choupo-sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+/* The skip link: off screen until it has the keyboard focus. */
+.choupo-skip-link {
+  position: absolute;
+  left: 8px;
+  top: -40px;
+  z-index: 1000;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+}
+.choupo-skip-link:focus {
+  top: 4px;
+}
+
 /* Property Explorer — the new-lens PULSE.  When a lens NEWLY materialises in the
    LENS strip (the 2-VLE -> McCabe reveal, felt not buried), it slides in with a
    brief 600ms accent ring so the unlock is visceral (EXPLORER-ux-redesign §4).

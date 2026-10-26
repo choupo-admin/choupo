@@ -51,17 +51,27 @@ with detail surfaced on demand (see §2.5).  It is not:
    fallback (message + stack + reset button).  Defensive numeric
    formatters render "—" instead of throwing on missing data.
 6. **Onboarding is implicit in the layout.**  Any opened case
-   answers "what is this?" within 5 seconds: the full flowsheet is
-   on screen at once, the case subtitle comes from
-   `controlDict.description`, and the detail (streams, thermo, case
-   files, log, plots) is one click away in the top-menu workspaces.
+   answers "what is this?" within 5 seconds: the whole plant
+   STRUCTURE is on screen at once (at fit, a simplified view -- see
+   *Legibility wins over fitting* below; it used to read "the full
+   flowsheet", which at 17+ blocks meant 4-6 px labels), the case
+   subtitle comes from `controlDict.description`, and the detail
+   (streams, thermo, case files, log, plots) is one click away in the
+   top-menu workspaces.
 
 ## 2.5 The shell (current layout)
 
 The shell was redesigned in the Fase A/B workspaces rework
-(2026-05-27, `gui/src/ui/AppShell.tsx`).  There is **no** permanent
-left case-tree, **no** right Properties panel, and **no** bottom tab
-strip — all three were removed.  The layout is now:
+(2026-05-27, `gui/src/ui/AppShell.tsx`).  There is **no second tree**,
+**no** right Properties panel, and **no** bottom tab strip.  The rule
+on the left is not "no left pane" but "no SECOND navigation" (DEV.md 4c
+C168's ruling (a), 2026-10-26): a left pane is allowed when it is the
+case's ONE primary navigation AND it collapses -- the Workflow's outline
+of a properties case is that pane (it folds to a 28 px strip, `[`, the
+panel contract's left edge); a flowsheet case has none, because its
+canvas IS its navigation.  What was removed in 2026-05 was an always-on
+file tree BESIDE the canvas: two ways to reach the same objects, the
+second doing little.  The layout of a flowsheet case is:
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -118,6 +128,9 @@ strip — all three were removed.  The layout is now:
   parameters and its latest-run KPIs, or a stream's conditions.  It is
   a small overlay card, NOT a docked right panel, and it disappears
   when nothing is selected (it does not fall back to a ThermoSummary).
+  A unit's continuous `operation` scalars are EDITABLE on it -- a
+  what-if of the OPEN COPY, never of the case on disk (DEV.md 4c C168's
+  ruling (1), "tinkering", 2026-10-26; see §4).
 - **PropsView (the Workflow).**  A `choupoProps` case (carries
   `propsDict`, no `flowsheet`) -- or a two-mode case shown in its
   Workflow -- replaces the canvas centre with the Workflow (C172 slice 3):
@@ -258,6 +271,90 @@ test and every screenshot agrees while the phone is broken.  A defect no
 part of the workbench can see is exactly what a gate is for --
 `check_viewport_units`.
 
+## 2.6 Legibility, colour and the keyboard (DEV.md 4c C168, 2026-10-26)
+
+The C168 audit measured the GUI against WCAG 2.2 AA and found four places
+where this credo and the heuristics disagreed.  The commander decided them
+(Vítor delegated: "decide tu"), and slice 2 built them.  They bind every
+surface.
+
+**(c) LEGIBILITY WINS OVER FITTING THE WHOLE FLOWSHEET.  ONE minimum text
+size: 11 CSS px, RENDERED.**  The number has one home,
+`gui/src/case/legibility.ts` (`MIN_TEXT_PX`).  Rendered means the declared
+size times every scale between the text and the screen (a canvas's zoom, an
+SVG viewBox).  CSS px means browser zoom multiplies it: at 200 % an 11 px
+label is 22 device px, which is WCAG 1.4.4 met, not argued.  WHY 11: it is
+the size the Workflow was already held to (C172 slice 3), the smallest size
+the GUI already used for running secondary text, and the caption floor of
+the common interface guidelines (11 pt).  The audit's illegible text was all
+below it: 9 px badges, 9 px status-bar and legend text, 9 px tick digits,
+4.7 px map labels and 3.9-7.7 px flowsheet labels.  A larger floor would cost
+the dense chrome rows a second line.  It is a floor, not a style: text above
+it is untouched.
+- On a FIXED surface (the chrome, the Workflow, a plot) it is a floor on the
+  declared size.  The shared `<Plot>` wrapper floors every figure's fonts.
+  A LOG axis is floored at 15 px, because Plotly draws its in-between digits
+  at 0.75 of the tick font.
+- On a ZOOMED drawing (the flowsheet, the calculation map) a canvas
+  fitting itself to its box would shrink every label with the box.  So each
+  label is decided from the zoom (`ui/legibilityFloor.ts`, generic over
+  every text node in the viewport):
+  - it is drawn as declared when it is legible;
+  - a PRIMARY label is drawn AT the minimum: a unit's name, a block's title,
+    a wire's phase letter, marked `data-legible-primary`;
+  - any other label is NOT DRAWN.  An illegible label is not information.
+
+  So **the drawing at fit is the simplified view** (shapes, wires, names,
+  phase letters), and the full graph is one zoom away.  The canvas says
+  which one the reader is looking at ("Overview: labels under 11 px are
+  hidden").  Past 2.6 times its own size a primary label hides too, because
+  the names would overlap, and the drawing is then a map of shapes.  On a
+  short pane (200 % zoom on a laptop) the fit's margins shrink in proportion
+  (`flowsheetViewport.ts` `FIT_MARGIN_SHARE`).  Before this, the fixed
+  150 + 56 px margins exceeded the pane, and every plant was drawn as a dot
+  at zoom 0.01.
+
+**(d) NO MEANING IN COLOUR ALONE.**  Every fact a colour carries has a
+second channel:
+- **Phase on a wire** is a LETTER on the wire's move-point: L, V, V+L, S,
+  S+L, or "?" before a run where `0/` declares none
+  (`ui/WirePhaseMark.tsx`).  Until this slice only the terminals had one.
+- **Wire kinds** each have a dash pattern of their OWN, differing in SHAPE:
+  energy dash-dot, utility long dash, duty dots, recipe dash-dot-dot, empty
+  sparse dashes (`case/edgeDashes.ts`, one table).  Two pairs used to share
+  a stroke and differ by colour only (`4 4`, `6 3`), and `6 4` against
+  `6 3` was a pixel apart.
+- **The calculation map's wire kinds** likewise.  "measured data" and
+  "results" were both solid, and "reference numbers" and "record written"
+  were both plain dashes.
+- **Series of one figure** that differ only by colour get a marker SHAPE
+  (markers) or a DASH (lines), applied once in the `<Plot>` wrapper
+  (`case/plotChannels.ts`).  A declared dash or fill is kept.
+- **Selection and the active view** are said to assistive technology
+  (`aria-current`, `aria-expanded`), not only drawn in yellow or teal.
+
+**THE LIGHT PALETTE IS HELD AGAINST THE CANVAS IT IS DRAWN ON.**  The phase
+hues were tuned on the dark canvas, where all of them pass 3:1.  On the light
+canvas, a mid grey (`gray-6`), every wire measured 1.0-1.6:1.  The light
+canvas is now `gray-1`.  Each phase hue, and each fixed ink (heat, work,
+duty, recipe), has a LIGHT twin of the same hue darkened to >= 3.8:1 on it
+(`ui/plotting/palette.ts`, `phaseColor(…, ui)` and `inkFor`).  The meaning
+of a hue never changes between the schemes.  A wire with nothing to say is
+NEUTRAL grey, never the accent cyan, which reads as liquid.
+
+**THE KEYBOARD.**
+- **The focus ring is INK, not accent.**  It is near-black on light and
+  near-white on dark, 2 px, offset onto the surround.  That holds >= 15:1
+  on every surface whatever the control's colour.  The accent ring was
+  2.74:1 on white and 1.21:1 on the old canvas.
+- A flowsheet node takes the ring on its box.  A wire takes an ink halo
+  round its line.  A chip shows it on its label.
+- The shell has a skip link and landmarks: `banner`, `navigation`, `main`
+  with a heading, and `contentinfo`.
+- A wire's accessible name is its stream ("stream S3, recycle cut, phase
+  liquid"), not "Edge from unit:A to unit:B".
+- A plot's mode-bar buttons carry their names.
+
 ## 3. Deliberate adaptations vs ParaView
 
 ParaView is the architectural inspiration (DSL + viewer family, dicts
@@ -266,7 +363,7 @@ chemical-process simulation is not CFD; some adaptations are needed.
 
 | Where | ParaView | Choupo | Why |
 |---|---|---|---|
-| **Left panel** | Pipeline Browser: source + applied filters | **None.**  The flowsheet canvas is full-screen; case files live in the on-demand **Case** workspace, not a permanent tree | An always-on left tree where clicking does little was "nojo" — a docked panel earns its pixels only if it is constantly useful.  The case files are one menu click away instead. |
+| **Left panel** | Pipeline Browser: source + applied filters | **On a flowsheet case, none**: the canvas is full-screen and IS the navigation; case files live in the on-demand **Case** workspace.  **On a properties case, the Workflow's outline** -- the case's ONE navigation, collapsible (C168 ruling (a)) | An always-on left tree where clicking does little was "nojo" — a docked panel earns its pixels only if it is constantly useful.  The rule is "no SECOND tree": a pane that is the only way through the case's studies and steps is constantly useful, and it folds when the reader wants the width. |
 | **Right panel** | Properties of selected filter | **Floating selection card** (top-right): the selected node's hardware + run KPIs, or a stream's conditions.  Vanishes when nothing is selected | A docked Properties panel is mostly empty most of the time.  A card that appears on selection and gets out of the way otherwise keeps the canvas dominant. |
 | **View modes** | Render View / Spreadsheet / Plot / etc. swap on the central canvas | **On-demand workspaces** opened from the top menu (context-dependent lineup — see §2.5; `MenuBar.tsx` is the authority); each toggles over the canvas, Esc returns | Done in Fase A/B (2026-05-27).  The earlier bottom-tab strip was removed; workspaces are the canvas-view-mode pattern this row once flagged for "Layer 2". |
 | **Multi-view split** | Yes (4-up layout) | **No — pop-outs (new tab) instead** | Pop-outs let the user multi-monitor or window-tile, with the same outcome and far less code.  Browser tabs are persistent and survive a Choupo crash. |
@@ -567,9 +664,24 @@ a 1-unit case that never existed on disk).  Where it lives was settled
 by Vítor, overruling the first card-based build AND the forum's
 focus-tab arrangement:
 
-- **The parent flowsheet stays a pure viewer.**  No editable fields on
-  the main case's canvas or selection card, ever.  Dict-on-disk stays
+- **The parent flowsheet never authors the case.**  Dict-on-disk stays
   the only authoring channel for the case itself (principle §2.1).
+  **CORRECTED 2026-10-26 (DEV.md 4c C168, Vítor's ruling (1):
+  "tinkering").**  This bullet used to read "No editable fields on the
+  main case's canvas or selection card, ever", and the code had said
+  otherwise since 2026-06-21, when Vítor overruled the read-only card
+  ("TINKERING", `ui/PropertyPanel.tsx`); the C168 audit found the card
+  taking edits under a header that still said "Read-only", and he ruled
+  that the tinkering stays.  So the selection card's continuous
+  `operation` scalars ARE editable, and what the card does is said on
+  it: **a what-if edit of the OPEN COPY** -- the case loaded in this
+  tab -- marked PENDING beside the field (the value on disk shown with
+  it, one click back), ANNOUNCED (a polite status on the card, and the
+  Run control counting the pending edits), used by the next run, and
+  **never written to disk**.  A `$reference`, an integer (it reallocates
+  a structure, not a value) and a properties operation stay read-only.
+  The internals page below keeps the sweep and the plots; the card is the
+  one-number nudge.
 - **Parameter manipulation happens in the unit's INTERNALS page**
   (`?internals=`, the pop-out where the unit's tables and PLOTS live) —
   a "What-if" tab beside Streams/Hardware/Dict/Model: edit the
@@ -604,7 +716,8 @@ however attractive.  This is what keeps the GUI from becoming a
 monster of one-off controls.
 
 **Tab citizenship + two surfaces (2026-06-12).**  There are exactly
-TWO unit surfaces: the read-only selection card (single click) and the
+TWO unit surfaces: the selection card (single click; its what-if
+fields edit the open copy only, see above) and the
 unit's internals page (double-click; tables + plots + the What-if
 tab).  A pop-out tab is a REAL tab: it must survive F5 (stable,
 never-consumed stash), carry a distinguishing `document.title`, and
@@ -625,8 +738,15 @@ this Credo before proposing**.
   disk.  GUI never edits.
 - **Palette of unit-op types as a drag source.**  This is a
   catalogue-of-types editor pattern.  Choupo has no catalogue-of-types
-  palette and no permanent left panel at all — the flowsheet comes
-  from the case dicts, not from dragging blocks onto a canvas.
+  palette and no left panel beside the canvas — the flowsheet comes
+  from the case dicts, not from dragging blocks onto a canvas.  (The
+  Workflow's outline is not this: it lists the case's own declared
+  studies and steps, it is the case's one navigation, and it folds.)
+- **A second tree.**  Two ways through the same objects -- a tree
+  beside a map beside a details list, each repeating the others -- is
+  what the C168 audit found on the properties screen.  One primary
+  navigation per case kind; a left pane only when it is that one, and
+  collapsible.
 - **Setup wizard / modal property selector / "choose your thermo
   package" first-step dialog.**  Authoring is offline.  The GUI
   starts by loading a case, not by configuring one.
@@ -785,8 +905,9 @@ and dragging or folding recovers it.
 (2026-09-22).**  The run-status badge read as low-contrast coloured text, and
 the cause is a fact about this app rather than about the badge: **the React
 Flow pane does not share the background of the rest of the app** -- every
-other surface is `gray-0` in the light scheme, the canvas is `gray-6`, a mid
-grey.  A Mantine `light` variant is a saturated foreground on a very pale tint
+other surface is `gray-0` in the light scheme, the canvas was then `gray-6`, a
+mid grey (it is `gray-1` since 2026-10-26: see *the light palette* below).  A
+Mantine `light` variant is a saturated foreground on a very pale tint
 of the same hue, computed for the PAGE's background; over mid grey the tint
 vanishes and the word is left floating.  So anything overlaid on the canvas --
 a badge, a chip, a legend -- is `filled`, or sits on a box with its own

@@ -688,6 +688,9 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
               px={shape.padX}
               disabled={disabled}
               title={disabled ? PINCH_DISABLED_HINT : undefined}
+              //  the view on screen, said to assistive technology too: the
+              //  filled button was its only sign (colour alone, C168 audit)
+              aria-current={isActive ? "page" : undefined}
               onClick={() => { if (!disabled) openWorkspace(w.label, w.key); }}
               styles={{
                 root: {
@@ -717,6 +720,9 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
             <Menu.Label>The Workflow</Menu.Label>
             <Menu.Item
               data-menu-item="calculation-map"
+              //  a toggle says its state (C168 slice 2): the check icon alone
+              //  was the only sign the map was open
+              role="menuitemcheckbox" aria-checked={propsMapOpen}
               leftSection={propsMapOpen ? <IconCheck size={14} /> : <span style={{ display: "inline-block", width: 14 }} />}
               onClick={() => setPropsMapOpen(!propsMapOpen)}
               title="The whole graph of the calculation: data, models, operations, views, derived from system/propsDict"
@@ -840,7 +846,8 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
       {/* `position: relative` so the ghosts anchor here and not on the page;
           `overflow: hidden` so a ghost mid-measurement can never paint or
           widen the header even for the frame it exists. */}
-      <Box style={{ position: "relative", height: "100%", minWidth: 0, overflow: "hidden" }}>
+      <Box component="nav" aria-label="Case views"
+        style={{ position: "relative", height: "100%", minWidth: 0, overflow: "hidden" }}>
         {/* `wrap="nowrap"`, like the ghost that measures this row.  It was
             missing here and only here: Mantine's Group wraps by default, so on
             a tool tab at 390 px -- where "Tool: Property origins" is wider
@@ -989,6 +996,7 @@ function TopMenu({
     >
       <Menu.Target>
         <Button
+          aria-current={active ? "page" : undefined}
           variant={active ? "filled" : "subtle"}
           color={active ? "accent" : "gray"}
           size="compact-xs"
@@ -1062,6 +1070,7 @@ function ViewsMenu({ views, isActive, isDisabled, disabledHint, onPick, px }: {
           <Menu.Item
             key={w.label}
             disabled={disabled}
+            aria-current={active ? "page" : undefined}
             title={disabled ? disabledHint : undefined}
             leftSection={active
               ? <IconCheck size={14} />

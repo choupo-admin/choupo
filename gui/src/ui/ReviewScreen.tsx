@@ -96,13 +96,14 @@ import { PropsMapCanvas } from "./PropsMap.js";
 import {
   CaseLink, Diagnostics, FigureGrid, FittedParametersBlock, PointTableViews, SelectionDetails,
 } from "./PropsDetails.js";
-import { useMeasuredBoxHeight } from "./methods/methodsChrome.js";
+import { useMeasuredBoxHeight, useMeasuredBoxWidth } from "./methods/methodsChrome.js";
 import { WorkflowOutline } from "./WorkflowOutline.js";
 import { WorkflowInspector } from "./WorkflowInspector.js";
 import { stepLabel, stepOfOp, workflowOutline, type WorkflowStep, type WorkflowStudy } from "../case/workflowSteps.js";
 import { operationMapMeta } from "../case/operationSchemas.js";
 import {
-  PROPS_MAP_PANEL, panelBoxProps, shownTopPanelPx, usePanel,
+  PROPS_MAP_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle, WORKFLOW_OUTLINE_PANEL,
+  panelBoxProps, shownTopPanelPx, usePanel, usePanelShortcut,
 } from "./panelContract.js";
 import { clampSize } from "../state/prefs.js";
 import { autoMapPx, DETAILS_FLOOR_PX, openDetailsCap } from "./propsSplit.js";
@@ -968,6 +969,22 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
    *  owns the FOLD ("figures full height"), so it runs controlled with a
    *  value nothing writes. */
   const reduceMotion = useReducedMotion();
+  //  THE OUTLINE FOLDS (DEV.md 4c C168 slice 2, ruling (a)): a left pane is
+  //  allowed because it is the case's ONE navigation AND collapses -- the
+  //  panel contract's left rail (`[`, the 28 px strip, a width the reader
+  //  drags), where C172 slice 3 had drawn a fixed 248 px column.
+  const outlineHost = useMeasuredBoxWidth<HTMLDivElement>();
+  const outlinePanel = usePanel(WORKFLOW_OUTLINE_PANEL, { availablePx: outlineHost.width });
+  usePanelShortcut(outlinePanel);
+  const outlineBox = panelBoxProps(outlinePanel, !!reduceMotion);
+  //  The centre's figures size themselves on a WINDOW resize (Plotly's
+  //  useResizeHandler); folding or dragging the outline changes their width
+  //  without one, and the figures overlapped until something else resized
+  //  the window.  So a fold or a drag says so, once the width has settled.
+  useEffect(() => {
+    const id = window.setTimeout(() => window.dispatchEvent(new Event("resize")), reduceMotion ? 0 : 260);
+    return () => window.clearTimeout(id);
+  }, [outlinePanel.collapsed, outlinePanel.size, reduceMotion]);
   const split = useMeasuredBoxHeight<HTMLDivElement>();
   const mapSpec = PROPS_MAP_PANEL.prefs.size;
   //  the affordance's cap on the map's DRAWN height: render-only
@@ -1101,22 +1118,36 @@ export function ReviewScreen({ ops, result, readiness, readinessProminent, ledge
     </Box>
   );
 
+  if (narrow) {
+    return (
+      <Box data-review="screen" style={{ position: "absolute", inset: 0, display: "grid",
+        gridTemplateColumns: "minmax(0, 1fr)" }}>
+        {centre}
+      </Box>
+    );
+  }
   return (
-    <Box data-review="screen" style={{ position: "absolute", inset: 0, display: "grid",
-      gridTemplateColumns: narrow ? "minmax(0, 1fr)" : "248px minmax(0, 1fr) 330px" }}>
-      {!narrow && (
-        <Box style={{ minHeight: 0, borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+    <Box data-review="screen" ref={outlineHost.ref}
+      style={{ position: "absolute", inset: 0, display: "flex", minWidth: 0 }}>
+      {outlinePanel.collapsed && <PanelReopenStrip panel={outlinePanel} scent="OUTLINE" />}
+      <Box data-workflow-outline-pane="" data-panel={outlineBox["data-panel"]}
+        style={{ ...outlineBox.style, minHeight: 0, display: "flex", flexDirection: "column",
+          borderRight: outlinePanel.collapsed ? "none"
+            : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
           background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8))" }}>
-          {treePane}
-        </Box>
-      )}
-      {centre}
-      {!narrow && (
-        <Box data-inspector-pane="" style={{ minHeight: 0, borderLeft: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+        <Group justify="space-between" wrap="nowrap" gap={4} px={6} pt={4} style={{ flex: "0 0 auto" }}>
+          <Text size="xs" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.5 }}>Workflow</Text>
+          <PanelCollapseButton panel={outlinePanel} />
+        </Group>
+        <Box style={{ flex: 1, minHeight: 0 }}>{treePane}</Box>
+      </Box>
+      <PanelResizeHandle panel={outlinePanel} />
+      <Box style={{ flex: 1, minWidth: 0, minHeight: 0 }}>{centre}</Box>
+      <Box data-inspector-pane=""
+        style={{ flex: "0 0 330px", minHeight: 0, borderLeft: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
           background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-8))" }}>
-          {inspector}
-        </Box>
-      )}
+        {inspector}
+      </Box>
     </Box>
   );
 }

@@ -94,6 +94,30 @@ export const FLOWSHEET_FIT: FitViewOptions = {
  *  layout menu), where the camera moving tells him what happened. */
 export const FLOWSHEET_FIT_ANIMATED: FitViewOptions = { ...FLOWSHEET_FIT, duration: 200 };
 
+/** The share of a SHORT pane's height the fit's top + bottom margins may
+ *  take.  At 200 % browser zoom on a 1366 x 768 laptop the canvas is about
+ *  200 CSS px tall, LESS than the fixed 150 + 56 px margins: the fit had no
+ *  room at all and fell to FLOWSHEET_MIN_ZOOM (0.01) -- every case measured
+ *  (C168 slice 2) drew its plant as a dot.  Below the height where the
+ *  margins fit, they shrink in proportion, so the fit always keeps at least
+ *  this share of the pane for the drawing.  On a desk-size pane nothing
+ *  changes: the constants above are used as they are. */
+export const FIT_MARGIN_SHARE = 0.4;
+
+/** The fit for a pane `paneH` CSS px tall (the constants, shrunk on a short
+ *  pane -- see FIT_MARGIN_SHARE). */
+export function flowsheetFitFor(paneH: number, animated = false): FitViewOptions {
+  const base = animated ? FLOWSHEET_FIT_ANIMATED : FLOWSHEET_FIT;
+  const top = parseFloat(FLOWSHEET_FIT_PADDING.top);
+  const bottom = parseFloat(FLOWSHEET_FIT_PADDING.bottom);
+  if (!(paneH > 0) || top + bottom <= FIT_MARGIN_SHARE * paneH) return base;
+  const k = (FIT_MARGIN_SHARE * paneH) / (top + bottom);
+  return {
+    ...base,
+    padding: { ...FLOWSHEET_FIT_PADDING, top: `${Math.round(top * k)}px`, bottom: `${Math.round(bottom * k)}px` },
+  };
+}
+
 /** The rectangle a set of boxes covers, in flowsheet coordinates. */
 export interface Rect { x: number; y: number; width: number; height: number }
 

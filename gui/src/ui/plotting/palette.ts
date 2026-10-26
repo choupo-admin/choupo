@@ -67,25 +67,78 @@ export type ColorMode = "phase" | "temperature" | "pressure" | "field";
 
 /** Phase palettes.  `default` is the project cyan/orange lineup; `cvd-safe`
  *  is an Okabe-Ito-derived set chosen to stay distinct under deuteranopia /
- *  protanopia and separated in luminance (so it also survives a projector). */
-const SCHEMES: Record<ColorScheme, Record<PhaseKind, string>> = {
+ *  protanopia and separated in luminance (so it also survives a projector).
+ *
+ *  ONE INK PER UI SCHEME (DEV.md 4c C168 slice 2, "the light palette held
+ *  against the canvas").  The bright hues below were tuned for the DARK
+ *  canvas, where every one passes 3:1 (5.2-8.9).  On the light canvas they
+ *  failed all of them -- liquid #26c6da 1.6:1, vapour #fa8c16 1.4:1 against
+ *  the old mid-grey, and 1.9-2.1:1 even against white -- so a wire, the one
+ *  graphic a flowsheet is read by, was below WCAG 1.4.11 in the default
+ *  theme.  The `light` set is the SAME hue family darkened until it holds
+ *  >= 3.8:1 against the light canvas (`gray-1`, #f1f3f5; FlowCanvas.tsx),
+ *  so the phase a colour means does not change between the schemes.
+ *  `empty` is the one dark-scheme change: #555a60 was 2.5:1 on the dark
+ *  canvas. */
+export type UiScheme = "light" | "dark";
+const SCHEMES: Record<ColorScheme, Record<UiScheme, Record<PhaseKind, string>>> = {
   default: {
-    empty: "#555a60",
-    liquid: "#26c6da", // project cyan (matches accent-5)
-    vapour: "#fa8c16", // warm orange
-    twoPhase: "#b06ec1", // muted purple (liquid + vapour together)
-    slurry: "#a07050", // warm brown (liquid + solid)
-    solid: "#c89060", // tan
+    dark: {
+      empty: "#868e96",
+      liquid: "#26c6da", // project cyan (matches accent-5)
+      vapour: "#fa8c16", // warm orange
+      twoPhase: "#b06ec1", // muted purple (liquid + vapour together)
+      slurry: "#a07050", // warm brown (liquid + solid)
+      solid: "#c89060", // tan
+    },
+    light: {
+      empty: "#555a60",
+      liquid: "#0c8599", // cyan, 3.9:1 on gray-1
+      vapour: "#d9480f", // orange, 3.9:1
+      twoPhase: "#9c36b5", // purple, 5.2:1
+      slurry: "#8a5a35", // brown, 5.3:1
+      solid: "#8f7a00", // ochre, 3.8:1
+    },
   },
   "cvd-safe": {
-    empty: "#555a60",
-    liquid: "#56b4e9", // sky blue
-    vapour: "#e69f00", // orange
-    twoPhase: "#cc79a7", // reddish purple
-    slurry: "#8c6d31", // brown
-    solid: "#f0e442", // yellow
+    dark: {
+      empty: "#868e96",
+      liquid: "#56b4e9", // sky blue
+      vapour: "#e69f00", // orange
+      twoPhase: "#cc79a7", // reddish purple
+      slurry: "#8c6d31", // brown
+      solid: "#f0e442", // yellow
+    },
+    light: {
+      empty: "#555a60",
+      liquid: "#0072b2", // Okabe-Ito blue, 4.7:1 on gray-1
+      vapour: "#d55e00", // Okabe-Ito vermillion, 3.5:1
+      twoPhase: "#a64d79", // reddish purple, 4.8:1
+      slurry: "#8c6d31", // brown, 4.3:1
+      solid: "#7a6a00", // dark yellow, 4.9:1
+    },
   },
 };
+
+/** The FIXED wire inks of the canvas -- a heat or work link, a duty, a
+ *  recipe transfer, an undecided sign -- written once (toGraph.ts,
+ *  edgeDashes.ts, dutySign.ts) in their dark-canvas hue, mapped here to the
+ *  light-canvas ink that holds 3:1 (same hue, darker).  A colour with no
+ *  entry is drawn as given. */
+const LIGHT_INK: Record<string, string> = {
+  "#e8590c": "#c2410c", // heat / heating duty (orange)      4.5:1 on gray-1
+  "#22b8cf": "#1971c2", // cooling duty (cyan -> blue)         4.5:1
+  "#fab005": "#a85d00", // shaft work (amber)                  4.5:1
+  "#9775fa": "#7048e8", // electrical power (violet)           5.0:1
+  "#20c997": "#087f5b", // recipe transfer (teal)              4.5:1
+  "#868e96": "#6c757d", // a sign the run has not decided      4.2:1
+};
+
+/** The ink a fixed canvas colour is drawn in under the UI scheme. */
+export function inkFor(colour: string, ui: UiScheme): string {
+  if (ui !== "light") return colour;
+  return LIGHT_INK[colour.toLowerCase()] ?? colour;
+}
 
 export const PHASE_LABEL: Record<PhaseKind, string> = {
   empty: "empty",
@@ -116,14 +169,15 @@ export const PHASE_ORDER: PhaseKind[] = [
   "solid",
 ];
 
-/** The colour assigned to a phase under the chosen scheme. */
-export function phaseColor(phase: PhaseKind, scheme: ColorScheme = "default"): string {
-  return SCHEMES[scheme][phase];
+/** The colour assigned to a phase under the chosen palette, drawn on the
+ *  `ui` scheme's canvas (default dark: the hues the palette was tuned on). */
+export function phaseColor(phase: PhaseKind, scheme: ColorScheme = "default", ui: UiScheme = "dark"): string {
+  return SCHEMES[scheme][ui][phase];
 }
 
-/** The whole phase->colour map for a scheme (legend rendering). */
-export function phaseColors(scheme: ColorScheme = "default"): Record<PhaseKind, string> {
-  return SCHEMES[scheme];
+/** The whole phase->colour map for a palette (legend rendering). */
+export function phaseColors(scheme: ColorScheme = "default", ui: UiScheme = "dark"): Record<PhaseKind, string> {
+  return SCHEMES[scheme][ui];
 }
 
 // ---- phase classification (the ONE rule) -----------------------------------

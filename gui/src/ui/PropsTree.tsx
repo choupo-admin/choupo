@@ -90,11 +90,18 @@ export function PropsTree({ tree, selected, onSelect, onNewPlot, onRemovePlot, e
           paddingLeft: 2 + depth * 12, borderRadius: 3,
           background: isSel ? "light-dark(var(--mantine-color-yellow-1), rgba(250,204,21,0.18))" : undefined,
         }}>
-          <Box style={{ width: 14, flex: "0 0 14px", cursor: hasKids ? "pointer" : undefined }}
-            onClick={() => hasKids && setOpen((o) => ({ ...o, [n.id]: !opened }))}>
-            {hasKids && (opened ? <IconChevronDown size={12} /> : <IconChevronRight size={12} />)}
-          </Box>
+          {/*  A FOLDER'S DISCLOSURE IS A BUTTON THAT SAYS ITS STATE (C168
+               slice 2): it was a div with a click handler -- no keyboard, no
+               name, and its open/closed state given by the chevron alone. */}
+          {hasKids ? (
+            <UnstyledButton aria-expanded={opened} aria-label={`${opened ? "fold" : "unfold"} ${n.label}`}
+              onClick={() => setOpen((o) => ({ ...o, [n.id]: !opened }))}
+              style={{ width: 18, flex: "0 0 18px", display: "inline-flex", justifyContent: "center", borderRadius: 3 }}>
+              {opened ? <IconChevronDown size={12} /> : <IconChevronRight size={12} />}
+            </UnstyledButton>
+          ) : <Box style={{ width: 18, flex: "0 0 18px" }} />}
           <UnstyledButton data-tree-node={n.id} onClick={() => onSelect(n.id)}
+            aria-current={isSel ? "true" : undefined}
             title={n.detail ? `${n.label} -- ${n.detail}` : n.label}
             style={{ display: "flex", flex: 1, minWidth: 0, alignItems: "center", gap: 6, padding: "2px 4px" }}>
             <Text size="xs" truncate style={{ flex: 1, minWidth: 0 }}
@@ -136,7 +143,7 @@ export function PropsTree({ tree, selected, onSelect, onNewPlot, onRemovePlot, e
   return (
     <ScrollArea h="100%" type="auto" data-review="tree">
       <Box p={6}>
-        <UnstyledButton onClick={() => onSelect("")} data-tree-node="root"
+        <UnstyledButton onClick={() => onSelect("")} data-tree-node="root" aria-current={!selected ? "true" : undefined}
           style={{ display: "block", width: "100%", padding: "2px 6px", borderRadius: 3, marginBottom: 4,
             background: !selected ? "light-dark(var(--mantine-color-yellow-1), rgba(250,204,21,0.18))" : undefined }}>
           <Text size="xs" fw={700}>Overview</Text>

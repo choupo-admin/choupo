@@ -50,7 +50,7 @@ import { useEffect, useState } from "react";
 import { engineVersionLabel, fetchEngineVersion, type EngineVersion } from "../case/engineVersion.js";
 import { useStore } from "../state/store.js";
 
-export const STATUS_BAR_PX = 22;
+export const STATUS_BAR_PX = 24;
 
 export function StatusBar() {
   const [engineVersion, setEngineVersion] = useState<EngineVersion | null>(null);
@@ -70,7 +70,11 @@ export function StatusBar() {
             : "The engine version this app runs -- releases, development line and citation at choupo.org/releases"}>
           <Badge size="xs" radius="sm" variant="light" data-engine-version=""
             color={engineVersion.version === "Choupo-dev" ? "orange" : "gray"}
-            styles={{ root: { textTransform: "none", cursor: "help" } }}>
+            styles={{ root: { textTransform: "none", cursor: "help", fontSize: 11, height: 18,
+              //  the light variant's own text is 2.3:1 on its tint (C168 audit)
+              color: engineVersion.version === "Choupo-dev"
+                ? "light-dark(var(--mantine-color-orange-9), var(--mantine-color-orange-3))"
+                : "light-dark(var(--mantine-color-dark-7), var(--mantine-color-gray-1))" } }}>
             {engineVersionLabel(engineVersion)}
           </Badge>
         </Tooltip>
@@ -81,13 +85,15 @@ export function StatusBar() {
             ? "The last run used the real engine, compiled to WebAssembly and run in this browser."
             : "The last run used the MOCK solver: its numbers are NOT real."}>
           <Badge size="xs" radius="sm" variant="light" data-adapter={adapter}
-            color={adapter === "wasm" ? "accent" : "yellow"}>
+            color={adapter === "wasm" ? "accent" : "yellow"}
+            styles={{ root: { fontSize: 11, height: 18,
+              color: "light-dark(var(--mantine-color-dark-7), var(--mantine-color-gray-1))" } }}>
             {adapter === "wasm" ? "engine: WASM" : `engine: ${adapter.toUpperCase()}`}
           </Badge>
         </Tooltip>
       )}
       {!engineVersion && !adapter && (
-        <Text size="10px" c="dimmed">no engine stamp and no run yet in this tab</Text>
+        <Text size="11px" c="dimmed">no engine stamp and no run yet in this tab</Text>
       )}
     </Group>
   );

@@ -81,6 +81,11 @@ interface UnitNodeData {
   [key: string]: unknown;
 }
 
+/** A unit's type and model badges at the one minimum text size (C168 slice
+ *  2): Mantine's `xs` badge is 9 px, which the audit measured below every
+ *  legible threshold. */
+const BADGE_11 = { root: { fontSize: 11, height: 18 } } as const;
+
 const POSITION_OF: Record<HandleSide, Position> = {
   left: Position.Left,
   right: Position.Right,
@@ -349,6 +354,10 @@ export function UnitNode({ id, data, selected }: NodeProps) {
                        hardware difference instead is what this replaced.  */}
                   {symbol.tag && (
                     <text x={24} y={27} textAnchor="middle"
+                          //  sized to fit INSIDE the drawn vessel; the
+                          //  legibility floor (C168 slice 2) shows it only
+                          //  once it renders >= 11 px, i.e. zoomed in --
+                          //  a larger tag overran the outline
                           fontSize={symbol.tag.length > 3 ? 8 : 10}
                           fontWeight={700} fontFamily="Inter, sans-serif"
                           fill="currentColor" stroke="none">
@@ -358,12 +367,15 @@ export function UnitNode({ id, data, selected }: NodeProps) {
                 </svg>
               ) : icon}
             </span>
-            <Text fw={700} size="md" c="var(--mantine-color-text)">
+            {/*  PRIMARY for the legibility floor: at fit the name is kept at
+                 the minimum size while the badge and the lines are hidden
+                 (case/legibility.ts) -- the overview still says what is what. */}
+            <Text fw={700} size="md" c="var(--mantine-color-text)" data-legible-primary="">
               {unit.name}
             </Text>
           </Group>
           {(tinted || untinted) && (
-            <Text size="10px" ff="monospace" fw={600}
+            <Text size="11px" ff="monospace" fw={600}
               c={tinted ? "var(--mantine-color-text)" : "dimmed"}
               data-testid="unit-kpi-chip"
               style={{ whiteSpace: "nowrap" }}>
@@ -393,11 +405,11 @@ export function UnitNode({ id, data, selected }: NodeProps) {
               UPPER_CASE naming convention, docs/ai/case-layout.md).  A unit
               TYPE must read in its natural case ("Heat Exchanger", not
               "HEAT EXCHANGER") so it is never mistaken for a sector. */}
-          <Badge color="accent" variant="light" size="xs" radius="sm" tt="none">
+          <Badge color="accent" variant="light" size="xs" radius="sm" tt="none" styles={BADGE_11}>
             {label}
           </Badge>
           {typeof unit.model === "string" && unit.model && (
-            <Badge color="gray" variant="light" size="xs" radius="sm" tt="none">
+            <Badge color="gray" variant="light" size="xs" radius="sm" tt="none" styles={BADGE_11}>
               {unit.model}
             </Badge>
           )}

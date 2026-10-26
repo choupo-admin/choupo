@@ -54,6 +54,12 @@ import {
 } from "./flowsheetLayout.js";
 import { measureLayout } from "./layoutMetrics.js";
 import { stubNodeId } from "./stubDocking.js";
+import { dashSpec } from "./edgeDashes.js";
+
+/** A kind's dash, from the ONE table (case/edgeDashes.ts): these edges used
+ *  to carry their own literals, which the canvas then overrode -- two homes
+ *  that agreed only until the table moved (C168 slice 2 moved it). */
+const DASH = (k: "energy" | "duty" | "recipe"): string => dashSpec(k).dash!;
 import { DUTY_TIER_COLOUR, preRunDutyTier, type DutyTier } from "./dutySign.js";
 import { COLUMN_TYPES, HEAT_DUTY_TYPES, POWER_DRAW_TYPES, PHASE_SPLIT_TYPES, DYNAMIC_HOLDUP_TYPES } from "./dutyTypes.js";
 
@@ -752,7 +758,7 @@ function buildGraph(
           style: {
             stroke: isHeat ? "#e8590c" : "#fab005",   // heat = orange, work = amber
             strokeWidth: 1.6,
-            strokeDasharray: "6 4",
+            strokeDasharray: DASH("energy"),
           },
           labelStyle: { fill: isHeat ? "#e8590c" : "#fab005", fontWeight: 600 },
           data: { kind: "energy", energyKind: ein.kind },
@@ -783,7 +789,7 @@ function buildGraph(
         label: `transfer @ ${t}`,
         type: "smoothstep",
         animated: false,
-        style: { stroke: "#20c997", strokeWidth: 1.6, strokeDasharray: "4 4" },
+        style: { stroke: "#20c997", strokeWidth: 1.6, strokeDasharray: DASH("recipe") },
         labelStyle: { fill: "#20c997", fontWeight: 600 },
         data: { kind: "recipe" },
       });
@@ -801,7 +807,7 @@ function buildGraph(
       label: "distillate (continuous)",
       type: "smoothstep",
       animated: false,
-      style: { stroke: "#20c997", strokeWidth: 1.6, strokeDasharray: "4 4" },
+      style: { stroke: "#20c997", strokeWidth: 1.6, strokeDasharray: DASH("recipe") },
       labelStyle: { fill: "#20c997", fontWeight: 600 },
       data: { kind: "recipe" },
     });
@@ -825,7 +831,7 @@ function buildGraph(
         style: {
           stroke: heating ? "#e8590c" : "#22b8cf",   // heat = orange, cooling = cyan
           strokeWidth: 1.6,
-          strokeDasharray: "6 3",
+          strokeDasharray: DASH("duty"),
         },
         data: { kind: "duty", tier: heating ? "heating" : "cooling" },
       });
@@ -848,7 +854,7 @@ function buildGraph(
       style: {
         stroke: DUTY_TIER_COLOUR[tier],
         strokeWidth: 1.6,
-        strokeDasharray: "6 3",
+        strokeDasharray: DASH("duty"),
       },
       data: { kind: "duty", tier },
     });
@@ -872,7 +878,7 @@ function buildGraph(
       style: {
         stroke: heating ? "#e8590c" : "#22b8cf",
         strokeWidth: 1.6,
-        strokeDasharray: "6 3",
+        strokeDasharray: DASH("duty"),
       },
       data: { kind: "duty", tier: heating ? "heating" : "cooling" },
     });
@@ -892,7 +898,7 @@ function buildGraph(
       targetHandle: "power",
       type: "smoothstep",
       animated: false,
-      style: { stroke: "#9775fa", strokeWidth: 1.6, strokeDasharray: "6 3" },
+      style: { stroke: "#9775fa", strokeWidth: 1.6, strokeDasharray: DASH("duty") },
       data: { kind: "duty", tier: "power" },
     });
   }

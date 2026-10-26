@@ -73,6 +73,13 @@ import { ClipboardBridge } from "./ClipboardBridge.js";
 import { CaseSwitcher } from "./CaseSwitcher.js";
 import { tabChromeFor } from "./tabChrome.js";
 
+/** The case bar's state badges at the one minimum text size (DEV.md 4c C168
+ *  slice 2: Mantine's xs badge is 9 px), and a light badge's word in an ink
+ *  that holds on its own tint (the light variant's teal measured ~2:1). */
+const BADGE_11 = { root: { fontSize: 11, height: 18 } } as const;
+const BADGE_11_INK = (c: string) => ({ root: { fontSize: 11, height: 18,
+  color: `light-dark(var(--mantine-color-${c}-9), var(--mantine-color-${c}-3))` } });
+
 export function TopBar({ onMinWidth }: {
   /* THE WIDTH THIS BAR MUST KEEP, measured and handed to the shell.
    *
@@ -435,7 +442,7 @@ export function TopBar({ onMinWidth }: {
         <Group ref={brandRef} gap={7} align="center" wrap="nowrap" style={{ cursor: "pointer" }}
           onClick={goHome} title="Home (welcome)">
           <img src={`${import.meta.env.BASE_URL}logo2-mark.png`} alt="" height={26} style={{ display: "block", width: "auto", marginBottom: 1 }} />
-          <Text fw={700} size="md" style={{ letterSpacing: 0.3, lineHeight: 1 }}>
+          <Text fw={700} size="md" data-logotype="" style={{ letterSpacing: 0.3, lineHeight: 1 }}>
             <span style={{ color: "light-dark(var(--mantine-color-accent-7), var(--mantine-color-accent-4))" }}>C</span>HOUPO<sup style={{ fontSize: "0.55em", fontWeight: 600, verticalAlign: "super", letterSpacing: 0 }}>®</sup>
           </Text>
         </Group>
@@ -450,7 +457,7 @@ export function TopBar({ onMinWidth }: {
         )}
         {currentEntry?.unsupportedReason && (
           <Tooltip label={currentEntry.unsupportedReason} multiline w={300} withArrow>
-            <Badge size="xs" radius="sm" variant="light" color="yellow">
+            <Badge size="xs" radius="sm" variant="light" color="yellow" styles={BADGE_11_INK("yellow")}>
               view only
             </Badge>
           </Tooltip>
@@ -460,7 +467,7 @@ export function TopBar({ onMinWidth }: {
             label="Case has unsaved edits.  Click the save icon to download the modified flowsheetDict; click the restore icon to discard."
             multiline w={300} withArrow
           >
-            <Badge size="xs" radius="sm" variant="filled" color="orange">
+            <Badge size="xs" radius="sm" variant="filled" color="orange" styles={BADGE_11}>
               ● edited
             </Badge>
           </Tooltip>
@@ -470,19 +477,19 @@ export function TopBar({ onMinWidth }: {
             label={`Written into the open case by the last run: ${runUpdated.join(", ")}.  `
               + "The next run reads it and File > Download case (.zip) carries it; the files on disk are unchanged."}>
             <Badge size="xs" radius="sm" variant="light" color="teal" data-run-updated=""
-              styles={{ root: { textTransform: "none" } }}>
+              styles={{ root: { ...BADGE_11_INK("teal").root, textTransform: "none" } }}>
               updated by run
             </Badge>
           </Tooltip>
         )}
         {scratchCount > 0 && (
           <Tooltip
-            label="Tinkering: numbers you changed in the Properties box.  They are applied when you Run, but NOT saved to disk — the file is still the source of truth.  Reset (↺) returns to the file."
+            label="What-if: values you changed on the selection card edit the OPEN COPY of the case only.  The next run uses them; they are never written to disk -- the file is still the source of truth.  Reset (↺) returns to the file."
             multiline w={320} withArrow
           >
-            <Badge size="xs" radius="sm" variant="filled" color="yellow"
+            <Badge size="xs" radius="sm" variant="filled" color="yellow" styles={BADGE_11}
               leftSection={<IconFlask size={11} />}>
-              tinkering — {scratchCount} unsaved {scratchCount === 1 ? "edit" : "edits"}
+              what-if — {scratchCount} pending {scratchCount === 1 ? "edit" : "edits"}, not on disk
             </Badge>
           </Tooltip>
         )}

@@ -64,17 +64,26 @@ describe("precedence -- an edge can be several things at once", () => {
   });
 });
 
-describe("the ambiguous patterns are RECORDED, not papered over", () => {
-  it("empty and recipe share 4 4, and only colour separates them", () => {
-    expect(dashSpec("empty").dash).toBe(dashSpec("recipe").dash);
-    expect(dashSpec("recipe").colour).toBeTruthy();
-    expect(dashSpec("empty").colour).toBeUndefined();
+describe("no kind is told apart by colour alone (C168 ruling (d))", () => {
+  it("every dashed kind has a pattern of its OWN", () => {
+    //  It used to record two shared strokes (empty/recipe `4 4`,
+    //  utility/duty `6 3`) separated only by colour; ruling (d) took the
+    //  decision the module had left open.
+    const dashed = DASH_KINDS.filter((d) => d.dash !== null);
+    expect(new Set(dashed.map((d) => d.dash)).size).toBe(dashed.length);
   });
 
-  it("utility and duty share 6 3, and only colour separates them", () => {
-    expect(dashSpec("utility").dash).toBe(dashSpec("duty").dash);
-    expect(dashSpec("duty").colour).toBeTruthy();
-    expect(dashSpec("utility").colour).toBeUndefined();
+  it("the patterns differ in SHAPE, not by a gap a pixel longer", () => {
+    //  `6 4` against `6 3` was distinct as a string and identical to an
+    //  eye: no two dashed kinds may have the same number of segments AND
+    //  first dash within 2 px of each other.
+    const dashed = DASH_KINDS.filter((d) => d.dash !== null).map((d) => d.dash!.split(" ").map(Number));
+    for (let i = 0; i < dashed.length; i++)
+      for (let j = i + 1; j < dashed.length; j++) {
+        const a = dashed[i]!, b = dashed[j]!;
+        const close = a.length === b.length && Math.abs(a[0]! - b[0]!) <= 2 && Math.abs(a[1]! - b[1]!) <= 2;
+        expect(close).toBe(false);
+      }
   });
 
   it("a kind with no fixed colour must not claim one -- the wire keeps its phase", () => {
@@ -89,7 +98,7 @@ describe("the style the canvas spreads", () => {
     //  A recycle is a pipe: solid, with the cut MARKED on it (C41).
     expect(dashStyle("tear")).toEqual({});
     expect(dashSpec("tear").mark).toBe("cut");
-    expect(dashStyle("empty")).toEqual({ strokeDasharray: "4 4", opacity: 0.55 });
+    expect(dashStyle("empty")).toEqual({ strokeDasharray: "3 6", opacity: 0.55 });
     expect(dashStyle("process")).toEqual({});
   });
 });

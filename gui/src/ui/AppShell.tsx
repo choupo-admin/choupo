@@ -408,8 +408,17 @@ export function AppShell() {
           `overflow-x: auto` strips were nested in a box already wider than the
           screen.  Capping the header at the column width lets the row lay
           itself out for the space it actually has. */}
+      {/*  LANDMARKS (DEV.md 4c C168 slice 2; the audit found none, and no
+           heading): a skip link first, the header a `banner`, the menu a
+           `navigation` (MenuBar), the case a `main` with a heading a screen
+           reader can jump to, the status bar a `contentinfo`.  */}
+      <a href="#choupo-main" className="choupo-skip-link"
+        onClick={(e) => { e.preventDefault(); document.getElementById("choupo-main")?.focus(); }}>
+        Skip to the case
+      </a>
       <Box
         ref={header.ref}
+        component="header"
         style={{
           gridArea: "header",
           display: "flex",
@@ -447,9 +456,14 @@ export function AppShell() {
            FlowCanvas.  One decision, one home: state/useStaleResult.ts.  It
            is a fingerprint, not a dependency analysis -- everything dims or
            nothing does.  */}
-      <Box className={stale.stale && activeWorkspace !== null
+      <Box component="main" id="choupo-main" tabIndex={-1} aria-labelledby="choupo-main-title"
+        className={stale.stale && activeWorkspace !== null
                       && RESULT_WORKSPACES.includes(activeWorkspace) ? "choupo-stale-body" : undefined}
-        style={{ gridArea: "center", position: "relative", minWidth: 0, minHeight: 0, height: "100%", overflow: "hidden" }}>
+        style={{ gridArea: "center", position: "relative", minWidth: 0, minHeight: 0, height: "100%", overflow: "hidden",
+                 outline: "none" }}>
+        <h1 id="choupo-main-title" className="choupo-sr-only">
+          {caseOpen ? `Case ${tutorialName}${activeWorkspace ? ` -- ${activeWorkspace}` : ""}` : "Choupo"}
+        </h1>
         {!caseOpen ? (
           // No case open (blank boot): the welcome on-ramp -- EXCEPT the
           // Property Explorer and the Methods workspace, which are standalone

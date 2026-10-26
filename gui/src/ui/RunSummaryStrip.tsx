@@ -47,7 +47,7 @@ import {
 function Item({ label, children, title }: { label: string; children: ReactNode; title?: string }) {
   return (
     <Group gap={4} wrap="nowrap" title={title} style={{ flex: "0 0 auto" }}>
-      <Text size="10px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.4 }}>{label}</Text>
+      <Text size="11px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.4 }}>{label}</Text>
       <Text size="xs" ff="monospace">{children}</Text>
     </Group>
   );
@@ -70,7 +70,7 @@ function Products({ s }: { s: RunSummary }) {
   const mass = flowBasis(prefs.flow) === "mass";
   return (
     <Group gap={10} wrap="wrap" style={{ minWidth: 0 }}>
-      <Text size="10px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.4 }}>products</Text>
+      <Text size="11px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.4 }}>products</Text>
       {s.products.map((p) => {
         //  The engine's own fields: F (kmol/s, overall) or F_mass (kg/s),
         //  converted to the display unit like every stream table.

@@ -2087,6 +2087,45 @@ accepts today, and that is a policy call.
 > them.  Open with Vitor: pcsaft01 declares the vapour root under a
 > liquid name (proposed `properties ( Z_liquid v_molar_liq )`, one golden
 > row leaves).
+> SLICE 2 BUILT 2026-10-26 (branch claude/c168-slice2; GUI and credo only,
+> no engine source, no golden moved).  The four rulings are in the credo
+> (new §2.6, and §2.5, §3, §4, §5 corrected) and are built.
+> (a) The Workflow outline is a panel-contract left rail; `[` folds it.
+> "No permanent left tree" became "no second tree".
+> (b) Built by C172 slice 1.
+> (c) ONE minimum: 11 CSS px, RENDERED (case/legibility.ts).  The shared
+> <Plot> floors every figure; a log axis is floored at 15 px.  A zoomed
+> drawing marks each label from the zoom (ui/legibilityFloor.ts): shown,
+> grown to the minimum if primary, else hidden.  The fit is the
+> simplified view and says so.  On a short pane the fit's margins shrink;
+> at 200 % zoom every plant had fitted at 0.01.
+> (d) A phase letter on every wire.  A dash of its own for every wire kind
+> and every map wire kind.  Series that differ only by colour get a
+> marker shape or a dash (case/plotChannels.ts).  The light canvas is
+> gray-1, with a light palette >= 3.8:1 on it.  The pre-run fallback wire
+> is neutral grey.
+> Also: the focus ring is ink (>= 15:1); a skip link and landmarks;
+> aria-current and aria-expanded; wires named by their stream; plot
+> controls and toast close buttons named.
+> (1) The selection card says "What-if ... the OPEN COPY ... never written
+> to disk"; its fields are named, and a polite status announces pending
+> edits.
+> Measured at 1366x768 and 200 % on flash01, ammonia02,
+> ChemicalPlantTutorial, NanoFiltran (with and without its map) and
+> membrane24 (Flowsheet and Workflow), base build against this branch:
+> - text below 11 px: 0 on every surface (was 108/108 flowsheet labels on
+>   ammonia02, 170/170 on the map);
+> - focus stops below 3:1: 0 of about 60 (was 44-60);
+> - unnamed controls: 0 (was 330 on NanoFiltran);
+> - colour-only wire kinds and figure series: 0.
+> OWED, not fixed:
+> - at 200 % on a laptop the canvas is about 220 CSS px tall under the
+>   run strip and the canvas legends (base the same);
+> - at that zoom the plant and the map fit as shapes only (names past
+>   GROW_MAX are hidden);
+> - EduTools drawings (ui/methods/) keep ~250 sub-11 px declarations;
+> - the selection card's number field is cut at the card's right edge
+>   (base the same).
 
 > **C167. THE SUITE USES EVERY CORE (Vitor, 2026-10-25, watching the
 > sweep on his 10-core laptop: "aquilo passa a maioria do tempo a usar so

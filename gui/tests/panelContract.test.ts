@@ -57,6 +57,7 @@ import {
   autoCollapseDefault, collapseTooltip, expandTooltip, nudgeSize, shortcutHint,
   swallowsShortcut,
   type PanelChrome,
+  WORKFLOW_OUTLINE_PANEL,
 } from "../src/ui/panelContract.js";
 import { PANELS } from "../src/state/prefs.js";
 
@@ -92,6 +93,10 @@ const ALL: [string, PanelChrome][] = [
   // TOP panel above the details of the selection, which had a computed height
   // and no handle ("o painel que fica por baixo nao e ajustavel").
   ["props calculation map", PROPS_MAP_PANEL],
+  // The Workflow's outline joined on 2026-10-26 (DEV.md 4c C168 slice 2,
+  // ruling (a)): a left pane is allowed when it is the case's ONE navigation
+  // AND it collapses -- so it folds like every other rail.
+  ["workflow outline", WORKFLOW_OUTLINE_PANEL],
 ];
 
 /** Panels that deliberately carry NO fold, with the reason.  A panel that is

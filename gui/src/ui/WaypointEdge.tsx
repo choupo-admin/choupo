@@ -54,6 +54,7 @@ import { useRef, useState } from "react";
 
 import type { XY } from "../state/layout.js";
 import { ModelBoundaryBadge, type BoundaryBadgeData } from "./ModelBoundaryBadge.js";
+import { WirePhaseMark } from "./WirePhaseMark.js";
 
 interface WaypointData {
   center?: XY;
@@ -84,9 +85,10 @@ export function WaypointEdge(props: EdgeProps) {
   });
 
   const moved = data.center !== undefined;
+  //  never the accent cyan as a fallback: it reads as LIQUID (C168 slice 2)
   const color =
     (style as { stroke?: string } | undefined)?.stroke ??
-    "var(--mantine-color-accent-5)";
+    "var(--mantine-color-gray-6)";
 
   const onPointerDown = (e: React.PointerEvent) => {
     e.stopPropagation();   // don't start a canvas pan
@@ -155,17 +157,8 @@ export function WaypointEdge(props: EdgeProps) {
           {/* A move-point at the centre of EVERY stream: always visible (so
               there's an obvious thing to grab), brighter on hover / once
               moved.  Filled when moved, hollow otherwise. */}
-          <div
-            style={{
-              width: hover ? 12 : 9,
-              height: hover ? 12 : 9,
-              borderRadius: "50%",
-              border: `2px solid ${color}`,
-              background: moved ? color : "light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))",
-              opacity: moved || hover ? 1 : 0.55,
-              transition: "opacity 120ms ease, width 120ms ease, height 120ms ease",
-            }}
-          />
+          <WirePhaseMark color={color} glyph={data.phaseGlyph as string | undefined}
+            label={data.phaseLabel as string | undefined} moved={moved} hover={hover} />
         </div>
         {/* PFD stream number, just above the bend point (display-only, toggled
             by the SHOW "№ streams" chip). */}
@@ -176,7 +169,7 @@ export function WaypointEdge(props: EdgeProps) {
               position: "absolute",
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY - 15}px)`,
               pointerEvents: "none",
-              fontSize: 10, fontWeight: 700, fontFamily: "monospace", lineHeight: 1,
+              fontSize: 11, fontWeight: 700, fontFamily: "monospace", lineHeight: 1,
               padding: "1px 5px", borderRadius: 8,
               color: "light-dark(#fff, #111)",
               background: "light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4))",
