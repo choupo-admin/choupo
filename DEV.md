@@ -1807,6 +1807,17 @@ accepts today, and that is a policy call.
 > nothing reads what is not yet computed).  The workflow's arrows take the
 > flowsheet's visual grammar; each is labelled with what it carries (a
 > stream's state there, a file or record here).
+> RESTATED by Vitor on the live site the same day, the diagram still not
+> built ("devia de abrir com o workflow tal como a simulacao abre com o
+> flowsheet ... quando clicas num block do diagrama devia de ficar ao lado
+> a mesma coisa que fica na operacao unitaria do flowsheet"): a single
+> click opens the SAME side panel a unit operation opens (PropertyPanel),
+> not a third panel; and "o 'view' nao esta la a fazer nada!!! Devia ficar
+> em 'reports'": the properties menu loses View and gains REPORTS (the
+> fit/curation records, dossiers, parity and residual tables, downloads),
+> mirroring the flowsheet's menu.  Slice 3b dispatched at once, on the
+> merged accessibility base -- the commander had held it back for the
+> label minimum, which was the wrong order.
 > THE TWO OWED FINDINGS BUILT 2026-10-26 (branch claude/fit-band-units,
 > engine; curate02's parity wiring NOT touched).  (1) A band is held to its
 > statistic's unit: the Dictionary now keeps a scalar's unit WORD as
