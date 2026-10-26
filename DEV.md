@@ -1712,6 +1712,20 @@ accepts today, and that is a policy call.
 > own menu entry, the way Streams and Reports sit beside the flowsheet --
 > named STUDIES (the case's own word in propsDict), the commander's choice,
 > open to his.  A single click keeps selecting (outline + inspector).
+> And the reason the analogy is EXACT, his correction of the commander,
+> who had proposed drawing the workflow's arrows differently "because a
+> flowsheet arrow is matter": "O flowsheet nao e materia a passar!  E uma
+> coincidencia!  Porque se decide que a informacao segue as correntes!"
+> In a sequential-modular simulator an arrow is INFORMATION -- the output
+> one unit computed is the input of the next -- and it coincides with the
+> pipes only because the method chooses that information follows the
+> streams (a recycle needs a TEAR, a guessed value: the graph is one of
+> computation, not of pipes).  So both homes draw one structure, a graph
+> of information dependencies walked in an order, and the engine already
+> checks both with one rule (validateSequentialPlan, propsPlan::validate:
+> nothing reads what is not yet computed).  The workflow's arrows take the
+> flowsheet's visual grammar; each is labelled with what it carries (a
+> stream's state there, a file or record here).
 
 > **C171. THE PROPS SCREEN REDESIGNED BEFORE A RESEARCHER SEES IT, AND A
 > PROPER WAY TO CITE (Vitor, 2026-10-26, on the live NanoFiltran case
