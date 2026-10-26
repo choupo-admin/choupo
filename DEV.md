@@ -1854,6 +1854,19 @@ accepts today, and that is a policy call.
 > sweep on the same commit give identical result lines (order and
 > verdict) -- a full sweep run here for that purpose, under C163.
 > Status: recorded; dispatched the same turn.
+> SLICE 2 LANDED 2026-10-26: the 132 gate sites a write-only strace sweep
+> found writing nothing shared run N-wide inside segments runTests cuts
+> from its own text (any SERIAL gate or tree-changing line is a barrier;
+> an unlisted gate is SERIAL); the GUI witnesses run CHOUPO_JOBS-wide;
+> gate-selftest rebuilds with make -j; each timing wrapper owns
+> PID-named files (the emptied suiteTimings.raw on Vitor's laptop).
+> Proven: --fast -j1 and -j4 give 83 identical result lines and one
+> verdict; --gui green.  NOT proven here: the full -j1 vs -jN sweep,
+> stopped under 0.4 -- Vitor's 10-core sweep against his serial run is the
+> proof.  Estimate there: ~40 min serial -> 15-20 min.  The gate side gains
+> about 2x at most (50 segments of ~2.6 PAR gates).  SLICE 3, recorded not
+> started: read traces of the PAR gates, so a segment may cross a writer
+> whose writes no PAR gate reads.
 
 > **C166. NANOFILTRAN IN CHOUPO, EXPLAINED SO A PHD STUDENT CAN REIMPLEMENT
 > IT (Vitor, 2026-10-25, with two review notes from another session --
@@ -3090,9 +3103,10 @@ accepts today, and that is a policy call.
 > `bin/runTests > runTests.log 2>&1; echo $?` -- the verdict is the
 > `PASS n / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL k` line at the end of
 > the log, the ten slowest items are printed after it and every item's
-> seconds land in `build/suiteTimings.csv`.  The case walk is SERIAL: the
-> ten cores shorten the build and the GUI tests (vitest's workers), not
-> the walk.  With the log in a file, a progress line `[runTests] k/N
+> seconds land in `build/suiteTimings.csv`.  The suite is N-wide by
+> default (C167: the cases in a pool, the gates the write traces mark PAR
+> between barriers, `bin/curate/suite_lanes.txt`; `-j 1` is the old serial
+> walk, `-j N` or CHOUPO_JOBS sets the width).  With the log in a file, a progress line `[runTests] k/N
 > items (p%)` is written to the terminal (since cdef2cb4d).  Do not edit
 > the tree while it runs; after any `git pull` run
 > `make all` again first (check_build_fresh refuses a stale binary and
