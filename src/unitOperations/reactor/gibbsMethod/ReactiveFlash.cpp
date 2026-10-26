@@ -33,7 +33,6 @@ License
 #include "thermo/Component.H"
 
 #include <cmath>
-#include <iostream>
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 

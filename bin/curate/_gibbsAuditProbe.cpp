@@ -35,6 +35,7 @@ Description
 
         NAMES                         the package's component order
         LNPHI V|L T P y...            ln phi_i on the vapour / liquid root
+        PSAT T                        each component's Psat(T) [Pa]
         K T P x... y...               the package's own VL K-values,
                                       Kvec(T, P, x, y)
         GRES T P y...                 g_res/RT = H_res/RT - S_res/R on the
@@ -175,6 +176,15 @@ int main(int argc, char** argv)
                         : thermo.eos().phi(T, P, y);
                     out << "OK";
                     for (auto v : phi) out << " " << std::log(v);
+                    out << "\n";
+                }
+                else if (op == "PSAT")
+                {
+                    scalar T = 0.0;
+                    ls >> T;
+                    out << "OK";
+                    for (std::size_t i = 0; i < n; ++i)
+                        out << " " << thermo.Psat(i, T);
                     out << "\n";
                 }
                 else if (op == "K")

@@ -6428,6 +6428,21 @@ PYEOF
     fi
     rm -f /tmp/vllefb.$$
 
+    # Real-gas Gibbs gate (2026-10-26, DEV.md 4c C173): every route that
+    # MINIMISES a Gibbs energy carries the vapour the package declares.
+    # directMin minimised an SRK package as an ideal gas (ammonia, 700 K,
+    # 200 bar: 30.01 % NH3 against the fugacity condition's 32.39 %) and the
+    # VLLE flash ignored `fugacityModel SRK;` to every printed digit.
+    if gate_exec "$ROOT/bin/curate/check_gibbs_real_gas.py" > /tmp/gibrg.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "gibbs-real-gas-gate" "$(head -1 /tmp/gibrg.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_gibbs_real_gas.py)\n" "gibbs-real-gas-gate"
+        cat /tmp/gibrg.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gibrg.$$
+
     # Charge-balance gate: when a case SOLVES its pH, electroneutrality is an
     # equation the solver imposes, so its residual on the ANSWER belongs at
     # round-off -- and a precipitating crystal, being neutral, may not move it.
