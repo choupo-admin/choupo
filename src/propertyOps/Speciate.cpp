@@ -407,8 +407,17 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
         diag_["SI_" + mineral] = si;   // POST-equilibration when equilibrate set
     // n_<m>: precipitated amount [mol/kg] per ALLOWED mineral (reads 0.000 for
     // an evicted phase; the key is absent entirely when equilibrate{} is unused).
+    // mass_<m>: the same amount as a MASS [mg per kg water], weighed through
+    // the solver's own mineralMW (the one the precipitation ledger prints) --
+    // a view draws it against T_K across one equilibrium per temperature.
     for (const auto& [mineral, np] : res.precipitated)
+    {
         diag_["n_" + mineral] = np;
+        diag_["mass_" + mineral] = np * solver.mineralMW(mineral) * 1000.0;
+    }
+    // T_K: the temperature this equilibrium was solved at (the declared
+    // `temperature`, default 298.15 K) -- the x of a view across operations.
+    diag_["T_K"] = in.T;
     if (dict->found("diagSpecies"))
         for (const auto& name : dict->lookupWordList("diagSpecies"))
         {
@@ -661,6 +670,16 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
                   << dict->subDict("output")->lookupWord("file") << ", "
                   << res.SI.size() << " mineral SI value(s)\n";
     return 0;
+}
+
+std::string Speciate::diagnosticUnit(const std::string& key) const
+{
+    auto starts = [&](const char* p) { return key.rfind(p, 0) == 0; };
+    if (key == "T_K")       return "K";
+    if (starts("mass_"))    return "mg/kg";     // per kg of water
+    if (starts("n_"))       return "mol/kg";    // per kg of water
+    if (starts("SI_") || key == "pH") return "-";
+    return {};
 }
 
 } // namespace Choupo

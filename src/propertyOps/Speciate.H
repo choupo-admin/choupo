@@ -129,6 +129,11 @@ public:
     std::vector<std::string> headline() const override
     { return { "pH", "I", "aw" }; }
 
+    // T_K, the amounts and masses precipitated, and the saturation indices
+    // carry their units so a propsDict view can draw them across operations
+    // (DEV.md 4c C180: precipitation against temperature).
+    std::string diagnosticUnit(const std::string& key) const override;
+
 private:
     std::map<std::string, scalar> diag_;
 };
