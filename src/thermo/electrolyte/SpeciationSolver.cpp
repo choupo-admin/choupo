@@ -657,10 +657,12 @@ double SpeciationSolver::mineralMW(const std::string& mineral) const
     for (const auto& [ion, nu] : me->masters)
     {
         if (ion == "H") { mw += nu * 1.008; continue; }
-        const double m = ionMW(ion);
+        // A master is an aqueous species, charged or not (H4SiO4 is neutral):
+        // weigh it through the generic lookup, never the ion-only one.
+        const double m = aqueousSpeciesMW(ion);
         if (m <= 0.0)
-            throw std::runtime_error("mineralMW: ion '" + ion + "' (in " + mineral
-                + ") has no MW in its ion record (species/<name>.dat) -- add `MW <g/mol>;` to its entry");
+            throw std::runtime_error("mineralMW: master species '" + ion + "' (in " + mineral
+                + ") has no MW in its species record (species/<name>.dat) -- add `MW { value <g/mol>; unit g/mol; }` to it");
         mw += nu * m;
     }
     return mw;
@@ -2462,7 +2464,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                          "  | The safe direction is rigorous: ceiling ~ 0 => no\n"
                          "  | driving force.\n"
                          "  +---------------------------------------------------------+\n";
-            std::cout << "  [note] mineral MW derived as sum nu*MW(ion) + nuWater*MW(H2O)"
+            std::cout << "  [note] mineral MW derived as sum nu*MW(master species) + nuWater*MW(H2O)"
                          " from species/<name>.dat (no minerals.dat MW field)\n";
 
             std::cout << "  PRECIPITATION LEDGER:\n";

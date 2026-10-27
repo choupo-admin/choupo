@@ -450,6 +450,19 @@ inline double ionMW(const std::string& species)
     return (i && i->found("MW")) ? i->lookupScalar("MW") : 0.0;
 }
 
+// Molar mass [g/mol] of a named AQUEOUS model species, charged OR neutral;
+// 0.0 if its record states none.  A mineral's dissolution masters and a
+// water-analysis total are aqueous species and need not be ions -- silica
+// dissolves to the NEUTRAL H4SiO4 -- so they are weighed here, through the
+// generic lookup.  ionMW stays the ion-physics wrapper and keeps findIon's
+// refusal of a neutral species; both read the same record, so the molar mass
+// has one home.
+inline double aqueousSpeciesMW(const std::string& species)
+{
+    auto r = findAqueousSpecies(species);
+    return (r && r->found("MW")) ? r->lookupScalar("MW") : 0.0;
+}
+
 // Build a configured PitzerSingleSalt for the salt M(nu_c) X(nu_a) named by its
 // cation/anion species keys.  Throws (loudly) if either ion or the pair is absent.
 inline PitzerSingleSalt loadSalt(const std::string& cation, const std::string& anion)

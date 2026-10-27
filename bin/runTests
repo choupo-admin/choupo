@@ -6493,6 +6493,19 @@ PYEOF
     fi
     rm -f /tmp/qgate.$$
 
+    # Neutral-master mineral gate (DEV.md 4c C179): silica dissolves to the
+    # NEUTRAL H4SiO4, and a mineral's molar mass was weighed through the
+    # ion-only lookup, so every silica phase killed the precipitation ledger.
+    if gate_exec "$ROOT/bin/curate/check_neutral_master_mineral.py" > /tmp/qgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "check_neutral_master_mineral" "$(head -1 /tmp/qgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_neutral_master_mineral.py)\n" "check_neutral_master_mineral"
+        cat /tmp/qgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/qgate.$$
+
     # Asset-home gate (Codex assets-audit, 2026-07-18): a physical asset lives
     # in ONE home (constant/assets/) -- the legacy membranes/ overlay let a
     # sealed case open input its manifest never claimed.
