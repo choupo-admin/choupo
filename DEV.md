@@ -1528,6 +1528,23 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C183. A PROPS RUN'S RESULTS ARE NOT IN THE CASE TREE (Vitor,
+> 2026-10-27: "os resultados não aparecem juntamente com os dicionários na
+> estrutura do caso. Deviam de aparecer?"; recorded, not built -- credit is
+> short).**  Measured: the browser worker harvests into the Case tree only
+> `converged/` and `design/` (`gui/public/workers/solverWorker.js:255`,
+> OUTPUT_ROOTS); a props run's `postProcessing/` (each view's CSV + JSON)
+> and each operation's own `output { file ...; }` CSV reach only the
+> plotting channel (Studies/Reports).  Yet `gui/src/ui/caseTree.ts:123`
+> (RUN_OUTPUT_ROOTS) already classifies `postProcessing/` as run output, so
+> the same case opened from a DISK folder draws it, dimmed, and run in the
+> browser does not.  Proposed: (1) GUI only -- add `postProcessing` to the
+> worker's OUTPUT_ROOTS plus its adapter channel, drawn dimmed as run output
+> like `converged/`; (2) VITOR'S DECISION -- a props operation writes its
+> CSV at the CASE ROOT beside system/ and constant/; OpenFOAM's shape would
+> put it under `postProcessing/<op>/`, which moves where the engine writes
+> and touches cases and gates.  STATUS: TO DO (1); (2) awaits Vitor.
+
 > **NOTE (Vitor, 2026-10-27: "O caso novo não é para aparecer" -> "Apagar
 > o caso").**  The case `tutorials/props/electrolyte/precipitation_volcanic_
 > cooling` built for C179/C180/C182 is DELETED from tutorials/ (no catalogue
