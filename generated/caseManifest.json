@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 496,
+  "cases": 497,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -2181,6 +2181,14 @@
    "application": "choupoProps",
    "ops": [
     "scalingScan",
+    "speciate"
+   ],
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/precipitation_volcanic_cooling": {
+   "application": "choupoProps",
+   "ops": [
     "speciate"
    ],
    "roles": [],
@@ -7422,6 +7430,7 @@
     "tutorials/props/electrolyte/pitzer_seawater_verify",
     "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",
     "tutorials/props/electrolyte/precipitation_ro_brackish",
+    "tutorials/props/electrolyte/precipitation_volcanic_cooling",
     "tutorials/props/electrolyte/rainwater_air",
     "tutorials/props/electrolyte/scaling_ro_brackish",
     "tutorials/props/electrolyte/softener_brackish",
@@ -9206,6 +9215,7 @@
     "tutorials/props/electrolyte/pitzer_hmw_hot_agreement",
     "tutorials/props/electrolyte/pitzer_seawater_verify",
     "tutorials/props/electrolyte/precipitation_ro_brackish",
+    "tutorials/props/electrolyte/precipitation_volcanic_cooling",
     "tutorials/props/electrolyte/rainwater_air",
     "tutorials/props/electrolyte/scaling_ro_brackish",
     "tutorials/props/thermoTest/model4_speciation_scaling"
