@@ -1528,6 +1528,39 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C185. THREE MORE SOLVER/KINETICS DEFECTS (the external review,
+> ChatGPT, at 1ecec224, relayed by Vitor 2026-10-27 for SATURDAY; its order:
+> 9, then 8, then 7).**  Each VERIFIED BY READING on main b3b25db47
+> (2026-10-27), each reproduced by the reviewer in an isolated test only:
+> (9) `src/unitOperations/batch/BatchReactor.cpp:449`: `case
+> RateForm::ThirdBody: case RateForm::Factory: break;` leaves the switch
+> with k = 0, so the ThirdBody arm inside the Falloff case (k = A T^b
+> exp(-Ea/RT) [M]) is unreachable and every thirdBody reaction runs at
+> rate ZERO (reviewer: 0 instead of 42; reversible 0 instead of 28).
+> `tutorials/batch/.../ignition01_h2o2` declares four (R5-R8): its ignition
+> delay is pinned on a mechanism missing them -- the fix MOVES its golden,
+> list to Vitor before any re-record.
+> (8) `src/solver/ODE/AdaptiveTimeStep.H` (`ctrl.nPositive =
+> (units.size() == 1) ? units[0].nPositive : 0;`, still so on the C178
+> branch): with two or more ODE units the positivity guard is OFF, so an
+> overshoot past zero is ACCEPTED by the integrator (ok = true) and then
+> clipped by the unit's setOdeState -- reviewer: A -> B from A = 1 with a
+> second idle unit integrates A = -1, B = 2 and publishes A = 0, B = 2,
+> inventory doubled.  To verify on Saturday: the clip site per unit.  Fix
+> direction: carry a per-ROW positivity mask (the rows are interleaved, so
+> a prefix count cannot express it), never a clip after acceptance.
+> (7) `src/thermo/reaction/RateLaw.cpp:180-191`: with `revBalance` the
+> reverse rate is (kf/Kc) PROD abar^nu over the ADSORBED activities abar =
+> K_i theta_i, so the rate vanishes at PROD (K_i theta_i)^nu = Kc, not at
+> PROD theta_i^nu = Kc -- the equilibrium is shifted by PROD K_i^nu
+> (reviewer: Kc = 1, K = 1 and 10, rate -0.75 at equal concentrations,
+> zero only at cB/cA = 0.1).  Converged answers, wrong conversion and
+> duty.  Fix: the detailed-balance reverse term must be built so that
+> rf = rr exactly at the declared Kc (divide out the adsorption factors of
+> the reverse step); find every corpus case using LHHW + revBalance, list
+> the moved rows.
+> STATUS: SCHEDULED for Saturday, after or beside C184's defects A/B.
+
 > **C184. DISTILLATION ROBUSTNESS: fullMESH AND THE n-D NEWTON (an
 > external review, ChatGPT, relayed by Vitor 2026-10-27 for SATURDAY;
 > recorded, not started).**  Trigger: Vitor's dimethyl-ether plant (Gibbs
