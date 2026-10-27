@@ -203,6 +203,19 @@ reconcileWeightedLeastSquares(const ReconciliationRequest& req)
             " another.  Check the `enforce ( ... )` list.");
     }
 
+    //  An infeasible constraint set is now REPORTED by the solver rather than
+    //  certified at a point that violates it (C178, 2026-10-27): before, a
+    //  working set that could not hold every row returned "KKT satisfied"
+    //  with a row left violated.  Here every start is feasible on the
+    //  non-negativity rows (the C121 shift), so the only way to reach this is
+    //  enforced laws that contradict each other or the bounds -- a statement
+    //  about the ANALYSIS, refused as one.
+    if (!qr.converged)
+        throw std::runtime_error(std::string("analysis reconciliation: the"
+            " constrained least-squares problem has no admissible answer -- ")
+            + qr.reason + ".  The enforced laws cannot hold together for any"
+            " non-negative composition.  Check the `enforce ( ... )` list.");
+
     //  ---- (2) THE ANSWER --------------------------------------------------
     ReconciliationOutcome out;
     out.iterations = qr.iterations;

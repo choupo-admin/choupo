@@ -1582,6 +1582,22 @@ accepts today, and that is a policy call.
 >   Reach to measure before fixing: which corpus cases run each path
 >   (adaptive and fixed-step time loops; every SQP/QP consumer), so the
 >   validation is sized by what each fix can reach.  WAITS for Saturday.
+>   **BUILT 2026-10-27 on `claude/c178-solver-failures` (not merged):**
+>   all three reproduced on 65b541ead and fixed -- `advance()` throws a
+>   named `IntegrationFailure` before the scatter (+ declarable
+>   `timeSteppingControl.maxSteps`; `BatchAdsorber`, the one unit that
+>   discarded `ok`, refuses too); the QP admits violated rows into the
+>   working set and certifies only a primal-feasible point, an infeasible
+>   QP returned as such (the reconciler refuses it -- it had published a
+>   quantity reconciled to -1); the SQP never differences a failed
+>   evaluation (other side, announced; both -> named stop) and relaxes an
+>   inconsistent linearisation by Powell's theta, announced.  Corpus: no
+>   time case reaches `ok = false`; **optim06's
+>   `values_converged_feasible` moves 6 -> 3, NOT re-recorded** -- on main
+>   N = 9/10/11 "converged" at R = 73.19/14.26/6.75, outside the declared
+>   R <= 6 (false certificates of defect 2).  Gate
+>   `check_solver_failures`; record
+>   `docs/design/a-failed-computation-is-not-a-result.md`.
 
 > **C177. A LABORATORY TEMPLATE FOR A DSPM-DE FIT (Vitor, 2026-10-26:
 > "um dataset do laboratorio e um metodo para estimar os parametros

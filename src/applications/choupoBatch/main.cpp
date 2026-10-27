@@ -96,6 +96,7 @@ Description
 
 #include <variant>
 #include <algorithm>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -326,6 +327,17 @@ try
         adaptSet.deltaT0   = ts->lookupScalarOrDefault("deltaT0",   deltaT);
         adaptSet.deltaTmax = ts->lookupScalarOrDefault("deltaTmax", writeInterval);
         adaptSet.maxGrowth = ts->lookupScalarOrDefault("maxGrowth", 4.0);
+        //  The per-interval runaway guard (C178): declared, it is the
+        //  integrator's maxSteps; absent, the integrator's own default.
+        if (ts->found("maxSteps"))
+        {
+            const scalar ms = ts->lookupScalar("maxSteps");
+            if (!(ms >= 1.0) || ms != std::floor(ms))
+                throw std::runtime_error("timeSteppingControl.maxSteps must"
+                    " be a positive whole number of sub-steps per interval"
+                    " (got " + std::to_string(ms) + ")");
+            adaptSet.maxSteps = static_cast<std::size_t>(ms);
+        }
         adaptSet.verbosity = verbosity;
     }
 
@@ -344,7 +356,12 @@ try
         std::cout << "  rtol=" << adaptSet.rtol << "  atol=" << adaptSet.atol
                   << "  deltaT0=" << adaptSet.deltaT0 << " s"
                   << "  deltaTmax=" << adaptSet.deltaTmax << " s"
-                  << "  maxGrowth=" << adaptSet.maxGrowth << "\n";
+                  << "  maxGrowth=" << adaptSet.maxGrowth
+                  << (adaptSet.maxSteps > 0
+                        ? "  maxSteps=" + std::to_string(adaptSet.maxSteps)
+                          + " per interval (declared)"
+                        : std::string())
+                  << "\n";
     std::cout << "reactions library: "
               << (reactionsDict ? "loaded" : "not present")
               << "\n\n";
@@ -1346,11 +1363,16 @@ if (flowsheetDict->found("cycle"))
                         [up]               { return up->odeState(); },
                         [up](const sVector& y){ up->setOdeState(y); },
                         [up](const sVector& y){ return up->odeDerivative(y); },
-                        up->odeNPositive() });
+                        up->odeNPositive(),
+                        up->name() });
                 }
                 else
                     unit->step(t, tNext - t);   // non-ODE vessel: one fixed step
             }
+            //  advance() THROWS IntegrationFailure when the integrator gives
+            //  up short of tNext (C178): the clock, the routing, the recipe
+            //  events and the write below are never reached for a state that
+            //  stopped short.
             if (!odeUnits.empty())
                 stepper.advance(odeUnits, t, tNext, onStep);
 

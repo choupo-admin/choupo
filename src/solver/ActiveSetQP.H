@@ -54,7 +54,8 @@ Description
         2. If the resulting full step d keeps every INACTIVE inequality
            feasible, accept it and examine the Lagrange multipliers of the
            active INEQUALITY rows:
-             - all lambda >= 0  ->  KKT satisfied -> OPTIMAL, return.
+             - all lambda >= 0  ->  KKT satisfied -> OPTIMAL, return
+                                    (once every row is checked feasible).
              - else  ->  DROP the inequality with the most-negative
                          multiplier from W (it wants to move off its bound).
         3. Else take the maximal feasible fraction alpha in [0,1) toward
@@ -65,6 +66,18 @@ Description
 
     Box bounds lo <= d <= hi (on the QP step itself) are folded in as
     ordinary inequality rows so the same machinery handles them.
+
+    Feasibility (C178, 2026-10-27):
+      * the running point starts at d = 0, which need not satisfy the
+        inequalities; the MOST violated inactive row joins the working set
+        (one per iteration) and the KKT solve drives it onto its bound, the
+        way it drives the equalities -- a violated row never blocks the ratio
+        test and is never silently left behind;
+      * "KKT satisfied" requires PRIMAL FEASIBILITY of every row (equalities,
+        active and inactive inequalities, rows the LICQ recovery dropped), not
+        only the sign of the active multipliers; a point that fails it is
+        returned with converged = false, infeasible = true and the violated
+        row named -- an infeasible QP is reported, never certified.
 
     Honesty:
       * a max-iteration cap that ABORTS LOUDLY ("active-set did not
@@ -92,7 +105,10 @@ struct QPResult
                                 //   (size = #ineq; zero for inactive rows)
     std::vector<bool> active;   // active flag per inequality row at the optimum
     int     iterations = 0;     // working-set changes performed
-    bool    converged  = false; // true if KKT met within the cap
+    bool    converged  = false; // true if KKT met within the cap AND every
+                                //   row (active or not) is primal feasible
+    bool    infeasible = false; // true when the constraints cannot all hold
+                                //   (converged is then false)
     std::string reason;         // human-readable termination note
 };
 

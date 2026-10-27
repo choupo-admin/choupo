@@ -292,7 +292,7 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "by each meter's sigma and it splits EXACTLY into one part per "
       + "balance; the table's by-balance columns are those parts, and they "
       + "add up to each meter's adjustment.  The engine publishes the "
-      + "multiplier of each balance as written (AnalysisReconciler.cpp:248) "
+      + "multiplier of each balance as written (AnalysisReconciler.cpp:261) "
       + "-- its solver works on rows rescaled to sigma units and turns its "
       + "own multiplier back into this one.",
     derivation: [

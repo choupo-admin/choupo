@@ -19,7 +19,7 @@
   TWO PANELS, AND THE PAGE SAYS WHICH IS WHICH AT THE TOP OF EACH.
 
   THE CONSTRUCTION panel draws the engine's own self-check problem
-  (`verifyActiveSetQP`, src/solver/ActiveSetQP.cpp:320-360) in the plane: the
+  (`verifyActiveSetQP`, src/solver/ActiveSetQP.cpp:463-503) in the plane: the
   objective's circular contours, the three half-planes, and the path the
   active-set method walks from the origin.  A reader moves the unconstrained
   minimum, moves the budget line, and warm-starts the working set — and
@@ -402,7 +402,11 @@ export function ActiveSetQpTool(): JSX.Element {
                           : s.action === "step"
                           ? "a full step, nothing in the way"
                           : s.action === "licq"
-                          ? "LICQ recovery — the KKT system went singular"
+                          ? "LICQ recovery — the working set is linearly dependent"
+                          : s.action === "admit"
+                          ? `ADMIT row ${s.row} — violated where the solver stands`
+                          : s.action === "infeasible"
+                          ? `INFEASIBLE — row ${s.row} still violated, not certified`
                           : "the working-set cap — the engine throws here"}
                       </Table.Td>
                     </Table.Tr>

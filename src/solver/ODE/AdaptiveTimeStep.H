@@ -46,7 +46,17 @@ Description
       * NEVER overshoots an interval end --- the caller clamps each call to
         the next write / recipe-event / controller-sample time, so the
         instant dirs + trajectory rows land on CLEAN times (adjustableRunTime);
-      * reports each accepted step (the glass-box step history) via onStep.
+      * reports each accepted step (the glass-box step history) via onStep;
+      * REFUSES an interval the integrator could not finish (2026-10-27,
+        DEV.md 4c C178): when Rosenbrock23 gives up (maxSteps, or the step
+        driven below its floor) advance() throws IntegrationFailure, naming
+        the interval, the time reached, the cause and the units -- it never
+        returns to a caller that would set t = t1 over a state that stopped
+        short.  Both time loops (choupoBatch, and the dynamicDriver behind
+        choupoCtrl and choupoSemiContinuous) had discarded the return value,
+        so the clock, the routing, the recipe events and the <t>/ writes all
+        moved on to t1.  The refusal lives HERE, in the one function both
+        call, so a caller cannot forget to read it.
 
     This is a thin orchestrator over the existing ODEIntegrator: it does NOT
     re-implement error control --- it scatters/gathers the per-unit packed
@@ -61,6 +71,9 @@ Description
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
 #include <vector>
 
 namespace Choupo::solver
@@ -75,6 +88,18 @@ struct OdeUnit
     std::function<void(const sVector&)>      commit;      // write Y back
     std::function<sVector(const sVector&)>   derivative;  // dY/dt = f(Y)
     std::size_t                              nPositive = 0;  // species rows
+    std::string                              name;           // for a refusal
+};
+
+//- The integrator could not finish an interval.  Thrown by
+//  AdaptiveTimeStepper::advance; the message names everything the student
+//  needs (interval, time reached, cause, statistics, units, remedies).  Under
+//  an outer driver it reaches the driver as a failed EVALUATION.
+class IntegrationFailure : public std::runtime_error
+{
+public:
+    explicit IntegrationFailure(const std::string& what)
+        : std::runtime_error(what) {}
 };
 
 // Adaptive-stepping settings, read once from controlDict.timeStepping.
@@ -85,6 +110,11 @@ struct AdaptiveSettings
     scalar deltaT0   = 0.0;      // initial (LOW) step; 0 => integrator auto
     scalar deltaTmax = 0.0;      // cap on the step; 0 => no cap (= interval)
     scalar maxGrowth = 4.0;      // per-accepted-step growth limit (maxCo-like)
+    //  Runaway guard PER INTERVAL [t0, t1]: the integrator gives up (and
+    //  advance() refuses) after this many sub-steps.  0 => the integrator's
+    //  own default (ODEControls::maxSteps).  Declarable as
+    //  timeSteppingControl.maxSteps so a student can see the guard fire.
+    std::size_t maxSteps = 0;
     int    verbosity = 1;
 };
 
@@ -155,6 +185,7 @@ public:
         ctrl.hInit     = (hCarry_ > 0.0) ? hCarry_ : settings_.deltaT0;
         ctrl.hMax      = settings_.deltaTmax;
         ctrl.maxGrowth = settings_.maxGrowth;
+        if (settings_.maxSteps > 0) ctrl.maxSteps = settings_.maxSteps;
         ctrl.verbosity = 0;            // the driver owns the glass-box prints
         // nPositive can only mark a CONTIGUOUS prefix; with several units the
         // species rows are interleaved, so we leave nPositive=0 and rely on
@@ -178,6 +209,12 @@ public:
 
         st = integ_->integrate(y, t0, t1, f, ctrl);
 
+        // --- a FAILED interval is refused, never handed back as a step ----
+        //  The partial vector is NOT scattered: nothing may describe the
+        //  units as having reached t1, and the run ends here.
+        if (!st.ok)
+            throw IntegrationFailure(failureMessage(units, t0, t1, st, ctrl));
+
         // --- scatter the result back into the units ---------------------
         for (std::size_t u = 0; u < units.size(); ++u)
         {
@@ -191,6 +228,38 @@ public:
     }
 
     scalar carriedStep() const { return hCarry_; }
+
+    //  The refusal's text: ONE home, so both time loops say the same thing.
+    static std::string failureMessage(const std::vector<OdeUnit>& units,
+                                      scalar t0, scalar t1,
+                                      const ODEStats& st,
+                                      const ODEControls& ctrl)
+    {
+        std::ostringstream os;
+        os << "time integration FAILED on the interval [" << t0 << ", " << t1
+           << "] s: Rosenbrock23 gave up at t = " << st.tReached << " s ("
+           << (t1 > t0 ? 100.0 * (st.tReached - t0) / (t1 - t0) : 0.0)
+           << " % of the interval) -- "
+           << (st.failure.empty() ? std::string("cause not reported")
+                                  : st.failure)
+           << ".  " << st.accepted << " accepted and " << st.rejected
+           << " rejected sub-step(s), last step h = " << st.hLast
+           << " s against the floor hMin = " << st.hMinUsed
+           << " s, maxSteps = " << ctrl.maxSteps << ".  Unit(s) integrated: ";
+        for (std::size_t u = 0; u < units.size(); ++u)
+            os << (u ? ", " : "")
+               << (units[u].name.empty() ? std::string("(unnamed)")
+                                         : "'" + units[u].name + "'");
+        os << ".  The state is NOT advanced to t = " << t1 << " s: no recipe"
+              " event fires, nothing is routed, no trajectory row and no"
+              " time directory is written for it, and a run under an outer"
+              " driver reports this evaluation as FAILED.  Remedies: tighten"
+              " deltaTmax / deltaT0, loosen rtol / atol, raise"
+              " timeSteppingControl.maxSteps if the guard was declared low,"
+              " or check the model for a singularity near t = "
+           << st.tReached << " s.";
+        return os.str();
+    }
 
 private:
     AdaptiveSettings                 settings_;
