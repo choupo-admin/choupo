@@ -1558,6 +1558,27 @@ accepts today, and that is a policy call.
 >      x = 0 returns x = 0, converged, "KKT conditions satisfied" (answer
 >      x = -1).  Fix: a derivative from a failed evaluation is refused --
 >      try the other side / a smaller step, else stop with a named failure.
+>   **VERIFIED BY READING, 2026-10-27 (commander; nothing run, no repro
+>   built yet):**  (1) `AdaptiveTimeStepper::advance`
+>   (`src/solver/ODE/AdaptiveTimeStep.H:110-192`) returns the integrator's
+>   `ODEStats` with `ok = false` when it gives up, and has ALREADY
+>   committed the partial state into every unit (`:181-185`); neither
+>   caller reads the return (no `.ok` read on it in DynamicDriver.cpp or
+>   choupoBatch/main.cpp), so the clock moves to t1 over a state that
+>   stopped short.  (2) `activeSetQP` starts at x = 0 with no phase 1
+>   (`ActiveSetQP.cpp:161`); an inequality violated at the start is
+>   neither active nor a blocking row, and on a zero step the only test is
+>   the active multipliers' sign (`:233-262`), so an infeasible point is
+>   certified -- and an SQP iterate that violates a constraint hands it
+>   exactly such a linearisation.  Second consumer besides the SQP:
+>   `src/streams/AnalysisReconciler.cpp` (the A2 weighted-least-squares
+>   reconciliation).  (3) `SQP.cpp`'s FD lambda (`:114-147`) reads
+>   `rp`/`rm` without `.ok`, while the base point (`:187`) and the line
+>   search (`:362`) do check it; on a throwing evaluation
+>   `OptimizationDriver.cpp:635-638` returns `ok = false` with whatever
+>   f/h/g held, so the difference is taken against a placeholder.  Corpus
+>   consumers of `method sqp`: the steady `optimisation/` outerDicts --
+>   count them on Saturday.
 >   Reach to measure before fixing: which corpus cases run each path
 >   (adaptive and fixed-step time loops; every SQP/QP consumer), so the
 >   validation is sized by what each fix can reach.  WAITS for Saturday.
