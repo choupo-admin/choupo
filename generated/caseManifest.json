@@ -2189,6 +2189,7 @@
   "tutorials/props/electrolyte/precipitation_volcanic_cooling": {
    "application": "choupoProps",
    "ops": [
+    "series",
     "speciate"
    ],
    "roles": [],
@@ -9199,6 +9200,7 @@
     "tutorials/props/thermoTest/model4_speciation_scaling"
    ],
    "series": [
+    "tutorials/props/electrolyte/precipitation_volcanic_cooling",
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"
    ],

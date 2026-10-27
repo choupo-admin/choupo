@@ -2041,14 +2041,15 @@ GOLDEN PINS (locked by the golden master): pin\_gypsum\_amount Ca = SO4 = 0.0305
 \tutentry{precipitation\_volcanic\_cooling}{tutorials/props/electrolyte/precipitation\_volcanic\_cooling}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{raw\_55C}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{eq\_55C}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{eq\_45C}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{eq\_35C}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{eq\_25C}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{eq\_20C}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{eq\_20C\_chalcedony}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{eq\_20C\_quartz}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{precipitation\_vs\_T}\\[-1pt]{\tiny series}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{raw\_55C}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{eq\_55C}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{eq\_45C}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{eq\_35C}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{eq\_25C}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{eq\_20C}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{eq\_20C\_chalcedony}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{eq\_20C\_quartz}\\[-1pt]{\tiny speciate}};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{A volcanic water cooled from 55 C to 20 C: which minerals can precipitate, and how much? Each operation is an INDEPENDENT equilibrium at its own temperature on the SAME analysis (nothing removed between them) -- not a sequential cooling that withdraws the solids as they form. Amorphous silica (SiO2a) is undersaturated at 55 and 45 C and precipitates from 35 C down (0 $\to$ 50 mg/kg); calcite, whose solubility FALLS as T rises, precipitates more hot than cold (106 $\to$ 69 mg/kg); gypsum stays dissolved. Quartz and chalcedony are far more supersaturated than amorphous silica at every temperature, and are kinetically inhibited at these temperatures -- allowing quartz instead shows how much the answer depends on WHICH silica phase the student lets form. The amounts are an EQUILIBRIUM CEILING, not a deposit prediction. The analysis is ILLUSTRATIVE, not a measured spring.}
@@ -2081,7 +2082,7 @@ Data: curated USGS PHREEQC records (public domain), resolved from data/standards
 \goldrow{diag}{raw\_55C}{SI\_burkeite}{-19.5661261272}
 \goldrow{diag}{raw\_55C}{SI\_calcite}{1.07760869162}
 \goldrow{diag}{raw\_55C}{SI\_carnallite}{-17.0948774628}
-\goldmore{471}
+\goldmore{500}
 \end{tutgolden}
 
 \clearpage
