@@ -1,0 +1,26 @@
+// Implantacao CONCEPTUAL. Sem validacao de afastamentos ou zonas ATEX.
+items
+(
+    { item "preheater"; x 0 m; y 0 m; z 0 m; orientation alongX;
+      footprint { length 6 m; width 2 m; height 2 m; } }
+    { item "reactor"; x 12 m; y 0 m; z 0 m; orientation vertical; }
+    { item "cooler"; x 24 m; y 0 m; z 0 m; orientation alongX;
+      footprint { length 6 m; width 2 m; height 2 m; } }
+    { item "C1/shell"; x 38 m; y 0 m; z 0 m; orientation vertical; }
+    { item "C1/condenser"; x 38 m; y 8 m; z 0 m; orientation alongX;
+      footprint { length 4 m; width 1.5 m; height 2 m; } }
+    { item "C1/reboiler"; x 44 m; y 0 m; z 0 m; orientation alongX;
+      footprint { length 4 m; width 1.5 m; height 2 m; } }
+    { item "C2/shell"; x 58 m; y 0 m; z 0 m; orientation vertical; }
+    { item "C2/condenser"; x 58 m; y 8 m; z 0 m; orientation alongX;
+      footprint { length 4 m; width 1.5 m; height 2 m; } }
+    { item "C2/reboiler"; x 64 m; y 0 m; z 0 m; orientation alongX;
+      footprint { length 4 m; width 1.5 m; height 2 m; } }
+    { nonProcess "controlRoom"; kind controlRoom;
+      x -2 m; y -38 m; z 0 m; orientation alongX;
+      footprint { length 12 m; width 9 m; height 4 m; }
+      source "hipotese didatica; nao e projeto civil";
+      reason "separacao conceptual do bloco industrial";
+      ignition "pessoal e equipamento electrico"; }
+);
+plot { margin 8 m; reason "hipotese didatica; nao prova distancias de seguranca"; }

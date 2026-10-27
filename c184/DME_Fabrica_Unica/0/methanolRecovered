@@ -1,0 +1,9 @@
+// Estimativa inicial; nao substitui o resultado convergido.
+componentMolarFlows
+{
+    methanol 1.16 kmol/h;
+    dimethylEther 0.02 kmol/h;
+    water 0.02 kmol/h;
+}
+T 348 K;
+P 1.5 bar;

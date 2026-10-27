@@ -1,0 +1,13 @@
+application choupoSolve;
+description "DME: Gibbs, two multicomponent fullMESH columns, methanol recycle, sizing, costing, layout and economics";
+verbosity 3;
+reports
+{
+    streamTable { }
+    massBalance { }
+    energyBalance { }
+    profiles { }
+    design { }
+    economics { }
+    spreadsheet { }
+}

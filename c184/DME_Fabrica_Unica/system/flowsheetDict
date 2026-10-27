@@ -1,0 +1,66 @@
+// UMA PLANTA / UM FLOWSHEET. Propriedades DME ainda nao validadas.
+units
+(
+    { name M1; type mixer; inputs ( freshMethanol recycleHP ); outputs ( mixedFeed );
+      operation { T 320 K; } }
+    { name preheater; type phaseChanger; in mixedFeed; outputs ( reactorFeed );
+      operation { outletT 550 K; P 12 bar; } }
+    { name reactor; type gibbsReactor; in reactorFeed; outputs ( reactorOut );
+      operation
+      {
+        T 550 K; P 12 bar;
+        // Independent element basis: H = 2*C + 2*O for every
+        // species allowed in THIS reactor (methanol, DME, water).
+        // Enforcing C and O automatically enforces H exactly.
+        // The Gibbs solver requires N_species > N_independent_elements.
+        elements ( C O );
+        species
+        (
+          { name methanol;      atoms ( 1 1 ); }
+          { name dimethylEther; atoms ( 2 1 ); }
+          { name water;         atoms ( 0 1 ); }
+        );
+      }
+    }
+    { name V101; type valve; in reactorOut; outputs ( lowPressure );
+      operation { P 3 bar; } }
+    { name cooler; type phaseChanger; in lowPressure; outputs ( columnFeed );
+      operation { outletT 330 K; P 3 bar; } }
+    { name C1; type distillationColumn; model fullMESH;
+      in columnFeed; outputs ( DMEproduct C1bottoms );
+      operation
+      {
+        nStages 18; feedStage 9; refluxRatio 2.0;
+        distillateRate 54.0 kmol/h; P 3 bar;
+        hydraulics
+        {
+          trayType sieve; traySpacing 0.50;
+          weirHeight 0.050; holeDiameter 0.005;
+          holeAreaFraction 0.10; downcomerAreaFraction 0.12;
+          weirLengthFraction 0.77; orificeCoefficient 0.84;
+          floodFraction 0.80; sigma 0.020;
+        }
+      }
+    }
+    { name V102; type valve; in C1bottoms; outputs ( C2feed );
+      operation { P 1.5 bar; } }
+    { name C2; type distillationColumn; model fullMESH;
+      in C2feed; outputs ( methanolRecovered wastewater );
+      operation
+      {
+        nStages 22; feedStage 11; refluxRatio 2.0;
+        distillateRate 1.2 kmol/h; P 1.5 bar;
+        hydraulics
+        {
+          trayType sieve; traySpacing 0.50;
+          weirHeight 0.050; holeDiameter 0.005;
+          holeAreaFraction 0.10; downcomerAreaFraction 0.12;
+          weirLengthFraction 0.77; orificeCoefficient 0.84;
+          floodFraction 0.80; sigma 0.035;
+        }
+      }
+    }
+    { name P101; type pump; in methanolRecovered; outputs ( recycleHP );
+      operation { eta 0.65; P_out 12 bar; } }
+);
+boundary { inlets ( freshMethanol ); outlets ( DMEproduct wastewater ); }

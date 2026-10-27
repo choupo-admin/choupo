@@ -1,0 +1,4 @@
+tearStreams ( recycleHP );
+recycleSolver Wegstein;
+recycleTol 1e-5;
+recycleMaxIter 80;

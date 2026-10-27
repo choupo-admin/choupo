@@ -1,0 +1,19 @@
+// Precos EXCLUSIVAMENTE didaticos; nao sao cotacoes de outubro de 2026.
+products
+(
+    { stream DMEproduct; price 0.90; costYear 2026;
+      provenance { origin "hipotese didatica; sem cotacao";
+                   method "valor ilustrativo EUR por kg"; } }
+);
+rawMaterials
+(
+    { stream freshMethanol; price 0.40; costYear 2026;
+      provenance { origin "hipotese didatica; sem cotacao";
+                   method "valor ilustrativo EUR por kg"; } }
+);
+labourRate 35.0;
+labourRateYear 2026;
+labourProvenance { origin "hipotese didatica"; method "EUR/h total"; }
+usdToEur 0.92;
+usdToEurDate "2026-10-27";
+fxProvenance { origin "hipotese didatica"; method "nao e cotacao ECB"; }

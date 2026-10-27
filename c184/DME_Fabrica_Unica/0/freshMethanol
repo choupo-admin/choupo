@@ -1,0 +1,7 @@
+// Estimativa inicial; nao substitui o resultado convergido.
+componentMolarFlows
+{
+    methanol 109 kmol/h;
+}
+T 300 K;
+P 12 bar;

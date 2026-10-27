@@ -1,0 +1,62 @@
+// Pre-dimensionamento e avaliacao economica do MESMO caso.
+// Bases didaticas declaradas: nao substituem cinetica ou projeto mecanico.
+sizing
+{
+    units
+    (
+        { unitName preheater; type shellTubeHX; material SS316;
+          designRules { U 250; LMTD 75; pressureDesign 14; } }
+        { unitName reactor; type vessel; material SS316;
+          designRules { volume 6; L_over_D 3; pressureDesign 14;
+                        corrosionAllow 0.003; jointEfficiency 1.0; } }
+        { unitName cooler; type shellTubeHX; material SS316;
+          designRules { U 350; LMTD 30; pressureDesign 5; } }
+        { unitName C1; type distillationColumn; material SS316;
+          designRules
+          {
+              traySpacing 0.50; pressureDesign 5;
+              corrosionAllow 0.003; jointEfficiency 1.0;
+              disengagementHeight 1.2; sumpHeight 1.5;
+              trayMaterial stainlessSteel;
+              condenser { U 350; LMTD 20; pressureDesign 5; }
+              reboiler { U 600; LMTD 70; pressureDesign 5; }
+          }
+        }
+        { unitName C2; type distillationColumn; material SS316;
+          designRules
+          {
+              traySpacing 0.50; pressureDesign 3;
+              corrosionAllow 0.003; jointEfficiency 1.0;
+              disengagementHeight 1.2; sumpHeight 1.5;
+              trayMaterial stainlessSteel;
+              condenser { U 500; LMTD 40; pressureDesign 3; }
+              reboiler { U 650; LMTD 65; pressureDesign 3; }
+          }
+        }
+    );
+}
+costing
+{
+    method Turton;
+    year 2026;
+    cepci 820; // hipotese de demonstracao, nao valor verificado
+    cepci2001 397;
+    usdToEur 0.92; // hipotese de demonstracao
+}
+economics
+{
+    method discountedCashFlow;
+    projectLife 10;
+    constructionPeriod 1;
+    discountRate 0.10;
+    taxRate 0.25;
+    depreciation straightLine;
+    depreciableLife 9;
+    salvageFraction 0.0;
+    workingCapital 0.15;
+    streamFactor 0.91324;
+    siteFactor 0.50;
+    contingencyFee 1.18;
+    estimateClass 4;
+    refuseOnMissingPrice 1;
+}
