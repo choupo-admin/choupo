@@ -88,7 +88,7 @@ export const SOURWATER_STEPS = [
     assumes: "That the case DECLARES which networks exist.  A component with "
       + "no declared bridge is refused rather than guessed at by name — a "
       + "species called `S` is not automatically sulfide.",
-    cites: "SpeciationSolver.cpp:679-690",
+    cites: "SpeciationSolver.cpp:681-692",
   },
   {
     n: 2,
@@ -120,7 +120,7 @@ export const SOURWATER_STEPS = [
       + "reported as not activated, with the master species that was "
       + "missing — the closure shows its work rather than assembling itself "
       + "silently.",
-    cites: "SpeciationSolver.cpp:702-707, SpeciationSolver.cpp:1690-1697",
+    cites: "SpeciationSolver.cpp:704-709, SpeciationSolver.cpp:1692-1699",
   },
   {
     n: 3,
