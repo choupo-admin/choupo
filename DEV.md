@@ -1528,6 +1528,17 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C182. A TEMPERATURE AXIS IN degC (Vitor, 2026-10-27: "considera
+> apresentar a temperatura em °C no gráfico da GUI ... A conversão de escala
+> não exige um novo modelo termodinâmico").**  The views reader, which held
+> every published unit to the declared one, now makes ONE change of scale:
+> a series published in K on an axis declared `degC` (or `degF`) is
+> rescaled through `units::fromSI`, the one home of showing kelvin in an
+> affine unit; every other pair still refuses.  The engine keeps publishing
+> T_K (one home for the number); the GUI computes nothing.  The witness's
+> `precipitation_vs_T` declares `unit "degC"`; gate arm (g) holds x + 273.15
+> to each op's T_K.  STATUS: BUILT.
+
 > **C181. A SEQUENTIAL COOLING MODEL (Vitor, 2026-10-27: "Segunda
 > prioridade, a estudar separadamente ... Depois discutimos a arquitetura
 > do modelo sequencial"; recorded for later, credit is short).**  Before

@@ -48,7 +48,7 @@ views
         name    precipitation_vs_T;
         type    series;
         title   "Equilibrium ceiling of each mineral against temperature (independent equilibria on the same water, nothing withdrawn between them)";
-        xAxis   { label "temperature"; unit "K"; scale linear; }
+        xAxis   { label "temperature"; unit "degC"; scale linear; }   // T_K is published in K; the view rescales (no model)
         yAxis   { label "precipitated, per kg of water"; unit "mg/kg"; scale linear; }
         series
         (
