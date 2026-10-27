@@ -7,7 +7,8 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  precipitation_volcanic_cooling --- a silica-bearing volcanic water cooled
+  neutralMasterMineral (fixture of check_neutral_master_mineral, NOT a
+  tutorial -- Vitor, 2026-10-27) --- a silica-bearing volcanic water cooled
   from 55 C to 20 C, and the minerals it can deposit.
 
   THE ANALYSIS IS ILLUSTRATIVE (mg/L, typical of a sulphate-bicarbonate

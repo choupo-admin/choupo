@@ -1528,6 +1528,14 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **NOTE (Vitor, 2026-10-27: "O caso novo não é para aparecer" -> "Apagar
+> o caso").**  The case `tutorials/props/electrolyte/precipitation_volcanic_
+> cooling` built for C179/C180/C182 is DELETED from tutorials/ (no catalogue
+> entry, not in the site bundle, no golden).  Its dicts live on as the
+> FIXTURE of `check_neutral_master_mineral` (bin/curate/fixtures/
+> neutralMasterMineral), which the gate copies to a temporary directory and
+> runs, so every regression arm survives.
+
 > **C182. A TEMPERATURE AXIS IN degC (Vitor, 2026-10-27: "considera
 > apresentar a temperatura em °C no gráfico da GUI ... A conversão de escala
 > não exige um novo modelo termodinâmico").**  The views reader, which held
@@ -1566,7 +1574,7 @@ accepts today, and that is a policy call.
 > per op.  `speciate` now publishes `T_K` (K) and `mass_<m>` (mg per kg
 > water, `n_<m>` x the solver's own `mineralMW`), with units through
 > `diagnosticUnit` (also `n_` mol/kg, `SI_`/pH "-").  The witness
-> `precipitation_volcanic_cooling` declares the view
+> the gate fixture `bin/curate/fixtures/neutralMasterMineral` declares the view
 > `precipitation_vs_T` (3 minerals x 5 temperatures); gate
 > `check_neutral_master_mineral` arm (g) holds every point to the op's own
 > diagnostic.  No golden moved (36 electrolyte cases); 29 rows appended to
@@ -1592,7 +1600,7 @@ accepts today, and that is a policy call.
 > 571301962): `electrolyte::aqueousSpeciesMW` (findAqueousSpecies, charged or
 > neutral) weighs `mineralMW`'s masters and `Speciate.cpp`'s mass-basis
 > totals; findIon/ionMW unchanged.  Witness
-> `precipitation_volcanic_cooling`, gate `check_neutral_master_mineral`.
+> the gate fixture `bin/curate/fixtures/neutralMasterMineral`, gate `check_neutral_master_mineral`.
 > NAMED, not fixed: `mineralMW` still writes H = 1.008 and H2O = 18.015 as
 > literals (equal to the records today -- a second home).
 
