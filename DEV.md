@@ -1655,6 +1655,20 @@ accepts today, and that is a policy call.
 >   R <= 6 (false certificates of defect 2).  Gate
 >   `check_solver_failures`; record
 >   `docs/design/a-failed-computation-is-not-a-result.md`.
+> VITOR'S RULINGS (2026-10-27) AND WHAT WAS DONE ON THEM.  (1) optim06's
+> `values_converged_feasible` 6 -> 3 re-recorded ONLY after an independent
+> check that is not the SQP: a gridSweep of N = 8..14 x R = 1.5..6 (46
+> points, step 0.1, the case's own declared box) on the C178 build.  Every
+> point of N = 9, 10, 11 converges and the purity peaks at R = 6 below the
+> 0.98 spec (x_D_LK 0.93597, 0.96272, 0.97765); N = 12, 13, 14 meet it from
+> R = 4.4, 3.5, 2.9 (N = 8 converges nowhere).  So the three were false
+> certificates, not convergence failures.  That one row moved, nothing
+> else.  (2) The reflux range is NOT widened: the problem stays the same.
+> (3) `timeSteppingControl.maxSteps` stays, optional, defaults untouched:
+> one reader now (`solver::readMaxSteps`, AdaptiveTimeStep.H, called by
+> choupoBatch and the dynamic driver -- it had been parsed twice), refusing
+> 0, a fraction, anything above 1e9, and the key under fixed stepping (no
+> reader there); gate `check_solver_failures` arm (e), 8 refusals.
 
 > **C177. A LABORATORY TEMPLATE FOR A DSPM-DE FIT (Vitor, 2026-10-26:
 > "um dataset do laboratorio e um metodo para estimar os parametros

@@ -378,6 +378,37 @@ def arm_source():
     return n
 
 
+def arm_declaration(tmp: Path):
+    """(e) THE KEY ITSELF (Vitor, 2026-10-27: optional, defaults unchanged,
+    validated rigorously).  One reader, solver::readMaxSteps; each bad
+    declaration must refuse by name before any integration, on choupoBatch
+    (whose main calls the reader) and choupoCtrl (the dynamic driver)."""
+    bad = [("zero", "0", "between 1 and 1e9 (got 0)"),
+           ("fraction", "2.5", "between 1 and 1e9 (got 2.5)"),
+           ("huge", "1e12", "between 1 and 1e9 (got 1e+12)"),
+           ("fixed", "5", "this run is `timeStepping fixed`")]
+    n = 0
+    for tag, rel, binary in CASES[:2]:
+        for name, val, want in bad:
+            case = copy_case(rel, tmp / f"{tag}_{name}")
+            cd = case / "system" / "controlDict"
+            txt = cd.read_text()
+            txt = re.sub(r"\btimeStepping\s+\w+\s*;", "", txt)
+            txt = re.sub(r"\btimeSteppingControl\s*\{[^}]*\}", "", txt)
+            mode = "fixed" if name == "fixed" else "adaptive"
+            txt += (f"\ntimeStepping {mode};\ntimeSteppingControl"
+                    f" {{ maxSteps {val}; deltaT0 0.01; deltaTmax 0.01; }}\n")
+            cd.write_text(txt)
+            rc, out = run(binary, case)
+            if rc == 0 or want not in out or "Time integration" in out:
+                fails.append(f"(e) {tag} ({binary}) maxSteps {val} under "
+                             f"{mode} stepping exited {rc} without refusing "
+                             f"it by name before integrating ({want!r}):\n"
+                             f"{out[-800:]}")
+            n += 1
+    return n
+
+
 def main() -> int:
     missing = [b for _, _, b in CASES if not (BUILD / b).exists()]
     if missing:
@@ -389,6 +420,7 @@ def main() -> int:
         v = arm_probe(tmp)
         seen = arm_binaries(tmp)
         nOuter = arm_outer(tmp)
+        nDecl = arm_declaration(tmp)
         nInt = arm_source()
     if fails:
         print("check_solver_failures: FAILED")
@@ -399,7 +431,9 @@ def main() -> int:
           "returned: the probe (solver sources alone, bounds-checked) sees "
           "dy/dt = y^2 asked to t = 2 refused by name at t = "
           f"{re.search(r'gave up at t = ([0-9.e+-]+)', v['blowupMessage']).group(1)}"
-          " s with NOTHING committed, a declared maxSteps 5 refused, a "
+          " s with NOTHING committed, a declared maxSteps 5 refused (and "
+          f"{nDecl} bad maxSteps declarations -- 0, 2.5, 1e12, or under fixed "
+          "stepping -- refused by name before integrating), a "
           "well-posed interval untouched; the QP gives x = 1 (not 0) for "
           "x >= 1, flags x >= 1 with x <= 0 INFEASIBLE instead of certifying "
           "it, and the reconciliation refuses laws that force b = -1; the "

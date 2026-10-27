@@ -66,8 +66,10 @@ Description
 #pragma once
 
 #include "ODEIntegrator.H"
+#include "core/Dictionary.H"
 #include "core/Types.H"
 
+#include <cmath>
 #include <cstddef>
 #include <functional>
 #include <memory>
@@ -117,6 +119,36 @@ struct AdaptiveSettings
     std::size_t maxSteps = 0;
     int    verbosity = 1;
 };
+
+//  THE ONE READER of `maxSteps` (DEV.md 4c C178), shared by choupoBatch and
+//  the dynamic driver: the adaptive integrator's per-interval runaway guard.
+//  Optional; absent returns 0 (the integrator keeps its own default).  It is
+//  read where the other adaptive keys are -- a `timeSteppingControl {}`
+//  sub-dict, else flat in controlDict -- and REFUSED when the run does not
+//  integrate adaptively (a fixed-step run has no such guard, and a declared
+//  key nothing reads would be a silent no-op), when it is not a whole
+//  number, when it is below 1, or above 1e9 (a guard that large guards
+//  nothing, and the conversion to a step count must stay exact).
+inline std::size_t readMaxSteps(const DictPtr& controlDict, bool adaptive)
+{
+    const DictPtr ts = controlDict->found("timeSteppingControl")
+        ? controlDict->subDict("timeSteppingControl") : controlDict;
+    if (!ts->found("maxSteps")) return 0;
+    if (!adaptive)
+        throw std::runtime_error("maxSteps is the ADAPTIVE integrator's"
+            " per-interval step guard, and this run is `timeStepping fixed`"
+            " (or declares none) -- nothing would read it.  Declare"
+            " `timeStepping adaptive;` or delete maxSteps.");
+    const scalar ms = ts->lookupScalar("maxSteps");
+    if (!(ms >= 1.0 && ms <= 1.0e9) || ms != std::floor(ms))
+    {
+        std::ostringstream os;
+        os << "timeSteppingControl.maxSteps must be a whole number of"
+              " sub-steps per interval between 1 and 1e9 (got " << ms << ")";
+        throw std::runtime_error(os.str());
+    }
+    return static_cast<std::size_t>(ms);
+}
 
 class AdaptiveTimeStepper
 {

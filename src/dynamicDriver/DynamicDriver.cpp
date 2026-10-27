@@ -516,6 +516,9 @@ try
         controlDict->lookupWordOrDefault("timeStepping", "fixed");
     const bool adaptive = (timeStepping == "adaptive");
     solver::AdaptiveSettings adaptSet;
+    //  The per-interval runaway guard (C178): one reader, which also refuses
+    //  it on a fixed-step run.
+    adaptSet.maxSteps = solver::readMaxSteps(controlDict, adaptive);
     if (adaptive)
     {
         DictPtr ts = controlDict->found("timeSteppingControl")
@@ -525,17 +528,6 @@ try
         adaptSet.deltaT0   = ts->lookupScalarOrDefault("deltaT0",   deltaT);
         adaptSet.deltaTmax = ts->lookupScalarOrDefault("deltaTmax", deltaT);
         adaptSet.maxGrowth = ts->lookupScalarOrDefault("maxGrowth", 4.0);
-        //  The per-interval runaway guard (C178): declared, it is the
-        //  integrator's maxSteps; absent, the integrator's own default.
-        if (ts->found("maxSteps"))
-        {
-            const scalar ms = ts->lookupScalar("maxSteps");
-            if (!(ms >= 1.0) || ms != std::floor(ms))
-                throw std::runtime_error("timeSteppingControl.maxSteps must"
-                    " be a positive whole number of sub-steps per interval"
-                    " (got " + std::to_string(ms) + ")");
-            adaptSet.maxSteps = static_cast<std::size_t>(ms);
-        }
         adaptSet.verbosity = verbosity;
     }
 
