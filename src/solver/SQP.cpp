@@ -104,46 +104,120 @@ SQPResult sqp(const SQPEvaluator& eval,
     sVector typX = opts.typX;
     if (typX.size() != n) typX.assign(n, 1.0);
 
+    //  A response is USABLE only if the model evaluated (ok), the objective
+    //  is finite, and it carries exactly the residuals the solver will read.
+    //  A failed evaluation's f/h/g are placeholders (OptimizationDriver
+    //  returns whatever they held when the simulator threw), and a response
+    //  whose h/g are not sized would be read out of bounds (C178).
+    auto usable = [&](const SQPResponse& r) -> bool
+    {
+        if (!r.ok || !std::isfinite(r.f)) return false;
+        if (r.h.size() != nEq || r.g.size() != nIneq) return false;
+        for (scalar v : r.h) if (!std::isfinite(v)) return false;
+        for (scalar v : r.g) if (!std::isfinite(v)) return false;
+        return true;
+    };
+
     // ----------------------------------------------------------------------
     //  FD gradients of f AND every constraint from ONE perturbation per var.
     //    forward  : n+1 evaluations (base + n)
     //    central  : 2n evaluations
     //  Returns gradF (n), Jh (nEq x n), Jg (nIneq x n), and the base response.
+    //
+    //  A DERIVATIVE IS NEVER BUILT FROM A FAILED EVALUATION (C178,
+    //  2026-10-27).  Until then the perturbed responses were differenced
+    //  without reading `ok`, so a model that could not be evaluated at
+    //  x + h contributed its placeholder value and the SQP certified a wrong
+    //  point (min x on [-1, 1], evaluable only for x <= 0, from x = 0
+    //  returned x = 0, "KKT conditions satisfied"; the answer is -1).  Now:
+    //  forward fails -> the BACKWARD difference (x - h); under central
+    //  differences one side failing -> the one-sided difference on the
+    //  other side against the base point; each such fallback is ANNOUNCED
+    //  in `fdNote` (the iteration trace) and counted.  Both sides failing ->
+    //  no derivative exists, the function returns false with `fdFailure`
+    //  naming the variable, the point and the step, and the SQP stops
+    //  unconverged.
     // ----------------------------------------------------------------------
+    std::string fdNote;
+    std::string fdFailure;
     auto gradients = [&](const sVector& x, const SQPResponse& base,
                          sVector& gradF,
                          std::vector<sVector>& Jh,
-                         std::vector<sVector>& Jg)
+                         std::vector<sVector>& Jg) -> bool
     {
         gradF.assign(n, 0.0);
         Jh.assign(nEq,   sVector(n, 0.0));
         Jg.assign(nIneq, sVector(n, 0.0));
+        fdNote.clear();
+
+        auto diff = [&](std::size_t j, const SQPResponse& a,
+                        const SQPResponse& b, scalar width)
+        {
+            gradF[j] = (a.f - b.f) / width;
+            for (std::size_t i = 0; i < nEq;   ++i)
+                Jh[i][j] = (a.h[i] - b.h[i]) / width;
+            for (std::size_t i = 0; i < nIneq; ++i)
+                Jg[i][j] = (a.g[i] - b.g[i]) / width;
+        };
+        auto announce = [&](std::size_t j, const char* side)
+        {
+            ++R.fdOneSided;
+            if (!fdNote.empty()) fdNote += "; ";
+            fdNote += "FD x[" + std::to_string(j) + "]: " + side
+                    + " difference (the other side's evaluation failed)";
+        };
+        auto refuse = [&](std::size_t j, scalar h)
+        {
+            fdFailure = "no finite difference exists for variable x["
+                + std::to_string(j) + "] at x = " + std::to_string(x[j])
+                + ": the model failed at BOTH x + h and x - h (h = "
+                + std::to_string(h) + ")";
+            return false;
+        };
 
         for (std::size_t j = 0; j < n; ++j)
         {
             const scalar h = opts.fdStep * std::max(std::abs(x[j]), typX[j]);
             sVector xp = x; xp[j] = x[j] + h;
-            SQPResponse rp = E(xp);
+            const SQPResponse rp = E(xp);
+            const bool okp = usable(rp);
 
             if (opts.central)
             {
                 sVector xm = x; xm[j] = x[j] - h;
-                SQPResponse rm = E(xm);
-                gradF[j] = (rp.f - rm.f) / (2.0 * h);
-                for (std::size_t i = 0; i < nEq;   ++i)
-                    Jh[i][j] = (rp.h[i] - rm.h[i]) / (2.0 * h);
-                for (std::size_t i = 0; i < nIneq; ++i)
-                    Jg[i][j] = (rp.g[i] - rm.g[i]) / (2.0 * h);
+                const SQPResponse rm = E(xm);
+                const bool okm = usable(rm);
+                if (okp && okm)  diff(j, rp,   rm,   2.0 * h);
+                else if (okp)  { diff(j, rp,   base, h); announce(j, "forward");  }
+                else if (okm)  { diff(j, base, rm,   h); announce(j, "backward"); }
+                else           return refuse(j, h);
             }
+            else if (okp)
+                diff(j, rp, base, h);
             else
             {
-                gradF[j] = (rp.f - base.f) / h;
-                for (std::size_t i = 0; i < nEq;   ++i)
-                    Jh[i][j] = (rp.h[i] - base.h[i]) / h;
-                for (std::size_t i = 0; i < nIneq; ++i)
-                    Jg[i][j] = (rp.g[i] - base.g[i]) / h;
+                sVector xm = x; xm[j] = x[j] - h;
+                const SQPResponse rm = E(xm);
+                if (usable(rm)) { diff(j, base, rm, h); announce(j, "backward"); }
+                else            return refuse(j, h);
             }
         }
+        return true;
+    };
+
+    //  The stopping record of a failed iterate: stationarity cannot be
+    //  measured, the primal feasibility of the point we stop at can.
+    auto stopUnmeasured = [&](const SQPResponse& at, const std::string& why)
+    {
+        R.reason    = why;
+        R.converged = false;
+        R.kktStat = std::numeric_limits<scalar>::quiet_NaN();
+        R.kktFeasEq = 0.0;
+        for (scalar hv : at.h) R.kktFeasEq = std::max(R.kktFeasEq, std::abs(hv));
+        R.kktFeasIneq = 0.0;
+        for (scalar gv : at.g) R.kktFeasIneq = std::max(R.kktFeasIneq, std::max(0.0, gv));
+        R.kktCompl    = std::numeric_limits<scalar>::quiet_NaN();
+        R.kktDualFeas = std::numeric_limits<scalar>::quiet_NaN();
     };
 
     // Gradient of the Lagrangian:
@@ -184,7 +258,7 @@ SQPResult sqp(const SQPEvaluator& eval,
 
     // Initial point + checks.
     SQPResponse base = E(R.x);
-    if (!base.ok)
+    if (!usable(base))
     {
         R.reason   = "infeasible/failed start -- the model could not be"
                      " evaluated at x0 (SQP v1 refuses to guess a feasible"
@@ -203,7 +277,15 @@ SQPResult sqp(const SQPEvaluator& eval,
         // --- linearise ---
         sVector gradF;
         std::vector<sVector> Jh, Jg;
-        gradients(R.x, base, gradF, Jh, Jg);
+        if (!gradients(R.x, base, gradF, Jh, Jg))
+        {
+            stopUnmeasured(base, "finite-difference gradient FAILED -- "
+                + fdFailure + " (the SQP stops: a derivative is never built"
+                  " from a failed evaluation)");
+            break;
+        }
+        const std::string fdNoteHere = fdNote;
+        std::string relaxNote;
 
         // --- build + solve the QP step ---
         //   min 0.5 d^T B d + gradF^T d
@@ -264,6 +346,67 @@ SQPResult sqp(const SQPEvaluator& eval,
             R.kktDualFeas = std::numeric_limits<scalar>::quiet_NaN();
             break;
         }
+        //  AN INCONSISTENT LINEARISATION IS RELAXED, NEVER IGNORED (C178,
+        //  2026-10-27).  activeSetQP now reports a QP whose constraints
+        //  cannot all hold inside the box (converged = false, infeasible =
+        //  true) instead of certifying a point that violates one.  Before
+        //  C178 that point was a silent out-of-box step: the solver dropped
+        //  the binding box row and stepped past it.  An inconsistent
+        //  linearisation is an ordinary SQP event (an iterate far from the
+        //  feasible region, a constraint whose slope is small), and the
+        //  remedy is Powell's (1978, the reference this file already cites
+        //  for the damped BFGS): scale the residuals the QP is asked to
+        //  REMOVE -- every equality and every inequality violated at x --
+        //  by the largest theta in [0, 1] for which the QP is consistent.
+        //  The set of such theta is an interval containing 0 (theta = 0 is
+        //  satisfied by d = 0, since x lies in the box and the other rows
+        //  hold there), so it is found by bisection, each probe a QP solve
+        //  (tiny beside one simulator call).  The step then removes theta of
+        //  the violation instead of all of it, the merit's directional
+        //  derivative says so, and the trace ANNOUNCES theta.  theta = 0
+        //  with a vanishing step is a local infeasibility, and the SQP stops
+        //  unconverged naming it.
+        scalar relaxTheta = 1.0;
+        if (!QP.converged)
+        {
+            const QPResult firstVerdict = QP;
+            auto relaxed = [&](scalar th, QPResult& out) -> bool
+            {
+                QPProblem q = qp;
+                for (auto& b : q.beq) b *= th;
+                for (std::size_t k = 0; k < mUser; ++k)
+                    if (q.bineq[k] > 0.0) q.bineq[k] *= th;
+                try { out = activeSetQP(q); }
+                catch (const std::exception&) { return false; }
+                return out.converged;
+            };
+            QPResult atLo;
+            if (!relaxed(0.0, atLo))
+            {
+                stopUnmeasured(base, std::string("QP subproblem ")
+                    + (firstVerdict.infeasible ? "INFEASIBLE" : "not solved")
+                    + " at this iterate (" + firstVerdict.reason + "), and"
+                      " even the fully relaxed linearisation (theta = 0) has"
+                      " no solution -- the SQP stops here (start from a"
+                      " point nearer the feasible region, or relax a"
+                      " constraint)");
+                break;
+            }
+            scalar lo = 0.0, hi = 1.0;
+            for (int b = 0; b < 40 && hi - lo > 1.0e-8; ++b)
+            {
+                const scalar mid = 0.5 * (lo + hi);
+                QPResult atMid;
+                if (relaxed(mid, atMid)) { lo = mid; atLo = atMid; }
+                else                     hi = mid;
+            }
+            relaxTheta = lo;
+            QP    = atLo;
+            relaxNote = "Powell relaxation: the linearised constraints cannot"
+                " all hold inside the box; the QP removes theta = "
+                + std::to_string(relaxTheta) + " of the violation";
+            ++R.relaxedSteps;
+        }
 
         const sVector& d = QP.d;
         // QP multipliers: equalities + the USER inequalities (drop the bound
@@ -321,12 +464,19 @@ SQPResult sqp(const SQPEvaluator& eval,
                 t.kktFeasIneq = kktFeasIneq; t.kktCompl = kktCompl;
                 t.mu = mu; t.alpha = 0.0; t.theta = 1.0;
                 t.note = kktOK ? "KKT satisfied" : "QP step ~ 0";
+                if (!fdNoteHere.empty()) t.note += " [" + fdNoteHere + "]";
+                if (!relaxNote.empty())  t.note += " [" + relaxNote + "]";
                 opts.onIter(t);
             }
             R.converged = kktOK;
             R.reason = kktOK ? "KKT conditions satisfied"
-                             : "QP step vanished before KKT met"
-                               " (likely FD-gradient noise floor)";
+                     : !relaxNote.empty()
+                         ? "QP step vanished under a Powell relaxation"
+                           " (theta = " + std::to_string(relaxTheta) + ") -- a"
+                           " LOCAL INFEASIBILITY: no step inside the box"
+                           " reduces the linearised violation"
+                         : "QP step vanished before KKT met"
+                           " (likely FD-gradient noise floor)";
             break;
         }
 
@@ -341,7 +491,9 @@ SQPResult sqp(const SQPEvaluator& eval,
         scalar penNow = 0.0;
         for (scalar hv : base.h) penNow += std::abs(hv);
         for (scalar gv : base.g) penNow += std::max(0.0, gv);
-        const scalar Dphi = dotv(gradF, d) - mu * penNow;
+        //  Under a Powell relaxation the linearised violation falls by
+        //  theta * penNow, not by all of it (C178).
+        const scalar Dphi = dotv(gradF, d) - mu * relaxTheta * penNow;
 
         // --- watchdog: every K iters force the full step (Maratos relief) ---
         const bool watchdog = (opts.watchdogEvery > 0)
@@ -359,7 +511,7 @@ SQPResult sqp(const SQPEvaluator& eval,
         {
             for (std::size_t j = 0; j < n; ++j) xTrial[j] = R.x[j] + alpha * d[j];
             rTrial = E(xTrial);
-            if (!rTrial.ok) { alpha *= 0.5; continue; }
+            if (!usable(rTrial)) { alpha *= 0.5; continue; }
 
             const scalar phiT = merit(rTrial, mu);
 
@@ -407,7 +559,19 @@ SQPResult sqp(const SQPEvaluator& eval,
         // gradL at the new point uses the new gradients there.
         sVector gradFnew;
         std::vector<sVector> JhNew, JgNew;
-        gradients(xTrial, rTrial, gradFnew, JhNew, JgNew);
+        if (!gradients(xTrial, rTrial, gradFnew, JhNew, JgNew))
+        {
+            //  The merit accepted xTrial, but no derivative exists there: the
+            //  point is kept (it is better than the last one) and the SQP
+            //  stops UNCONVERGED, naming why.
+            R.x  = xTrial;
+            base = rTrial;
+            stopUnmeasured(base, "finite-difference gradient FAILED at the"
+                " accepted step -- " + fdFailure + " (the SQP stops: a"
+                " derivative is never built from a failed evaluation)");
+            ++it;
+            break;
+        }
         sVector gLnew = gradLagr(gradFnew, JhNew, JgNew, lamEqNew, lamIneqNew);
         sVector gLold = gradLagr(gradF,    Jh,    Jg,    lamEqNew, lamIneqNew);
         sVector y(n);
@@ -465,6 +629,10 @@ SQPResult sqp(const SQPEvaluator& eval,
             else if (fullRejectedThoughFeasImproved)
                 t.note = "Maratos: full step improved feasibility but the"
                          " merit rejected it (watchdog is the only v1 relief)";
+            if (!fdNoteHere.empty())
+                t.note += (t.note.empty() ? "" : " ") + ("[" + fdNoteHere + "]");
+            if (!relaxNote.empty())
+                t.note += (t.note.empty() ? "" : " ") + ("[" + relaxNote + "]");
             opts.onIter(t);
         }
 

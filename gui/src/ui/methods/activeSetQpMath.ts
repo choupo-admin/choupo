@@ -25,7 +25,7 @@
   with B symmetric positive definite — Nocedal & Wright, Numerical
   Optimization 2nd ed. (2006), Algorithm 16.3, §16.5, a public-domain method
   and explicitly NOT a port of any code.  It has three real callers: the inner
-  QP of every SQP iteration (src/solver/SQP.cpp:247), the constrained
+  QP of every SQP iteration (src/solver/SQP.cpp:329), the constrained
   optimisation driver (src/outerDriver/OptimizationDriver.cpp:484), and the
   laboratory-analysis reconciliation (src/streams/AnalysisReconciler.cpp:192).
 
@@ -36,14 +36,14 @@
   because its multiplier went negative.  The engine returns the answer and the
   final active set; it does not publish the sequence.  So the sequence is
   recomputed here, from `activeSetQP`'s own loop
-  (src/solver/ActiveSetQP.cpp:171-293, headed by the algorithm's own name at
-  src/solver/ActiveSetQP.cpp:151), and every entry of the returned trace is
+  (src/solver/ActiveSetQP.cpp:189-436, headed by the algorithm's own name at
+  src/solver/ActiveSetQP.cpp:152), and every entry of the returned trace is
   one working-set change.
 
   WHAT KEEPS IT HONEST.  The engine ships a HAND-WORKED problem with a known
   primal solution, a known active set and known multipliers, and asserts its
   own solver reproduces them to 1e-9 before every SQP run
-  (`verifyActiveSetQP`, src/solver/ActiveSetQP.cpp:320-360).  That problem is
+  (`verifyActiveSetQP`, src/solver/ActiveSetQP.cpp:463-503).  That problem is
   `HAND_WORKED` below, unchanged, and it is the page's anchor: the engine is
   the judge, on exactly this problem, every time somebody runs a constrained
   optimisation.
@@ -51,9 +51,9 @@
   THE TRANSCRIPTION IS OF THE ENGINE'S VARIANT, NOT OF THE TEXTBOOK'S.  Two
   differences matter and both are in the engine's own comments: it keeps a
   RUNNING POINT starting at zero and solves each KKT system for a SUB-STEP
-  (:150-161), and it carries a LICQ recovery that drops the most recently
+  (:151-162), and it carries a LICQ recovery that drops the most recently
   added inequality when the KKT system goes singular and forbids it
-  re-entering (:163-168, :211-229).  Reproducing the textbook instead would
+  re-entering (:164-169, :303-321).  Reproducing the textbook instead would
   produce a different sequence of working sets from the one the engine
   actually walks, which is the only thing this module is for.
 
@@ -106,7 +106,7 @@ const dot = (a: readonly number[], b: readonly number[]): number => {
 // ---- The problem -----------------------------------------------------------
 
 /** A convex QP, in exactly the engine's own field names so the two can be
- *  read side by side (src/solver/ActiveSetQP.H:104-114). */
+ *  read side by side (src/solver/ActiveSetQP.H:120-130). */
 export interface QPProblem {
   /** n x n, symmetric positive definite. */
   B: number[][];
@@ -121,7 +121,7 @@ export interface QPProblem {
 }
 
 /** THE ENGINE'S OWN SELF-CHECK PROBLEM, copied unchanged from
- *  `verifyActiveSetQP` (src/solver/ActiveSetQP.cpp:322-332).
+ *  `verifyActiveSetQP` (src/solver/ActiveSetQP.cpp:465-475).
  *
  *      min  0.5 (d1^2 + d2^2) - d1 - 2 d2
  *      s.t. d1 + d2 <= 1,   d1 >= 0,   d2 >= 0
@@ -172,7 +172,7 @@ export const rowValue = (
 // ---- The loop, transcribed -------------------------------------------------
 
 /** The engine's own two tolerances, with its names and values
- *  (src/solver/ActiveSetQP.cpp:143-144). */
+ *  (src/solver/ActiveSetQP.cpp:144-145). */
 export const FEAS_TOL = 1.0e-10;
 export const LAM_TOL = 1.0e-12;
 
@@ -197,7 +197,15 @@ export type QpAction =
    *  rather than spinning; the page reports it instead of throwing, since a
    *  reader who dragged a constraint into a degenerate position wants to be
    *  told what happened. */
-  | "cap";
+  | "cap"
+  /** An inequality was VIOLATED at the running point (an infeasible start):
+   *  the most violated one joins the working set, so the next KKT solve
+   *  drives it onto its bound (C178). */
+  | "admit"
+  /** The multipliers passed but a row is still violated: the constraints
+   *  cannot all hold, and the engine returns NOT converged, infeasible
+   *  (C178) -- never "KKT satisfied". */
+  | "infeasible";
 
 export interface QpStep {
   /** Iteration index, as the engine counts working-set changes. */
@@ -224,6 +232,8 @@ export interface QpStep {
 
 export interface QpTrace {
   steps: QpStep[];
+  /** True when the rows cannot all hold (converged is then false). */
+  infeasible?: boolean;
   /** The answer, or the last point reached. */
   d: number[];
   /** One multiplier per inequality row; zero on an inactive one, exactly as
@@ -236,10 +246,25 @@ export interface QpTrace {
   reason: string;
 }
 
+/** The engine's row tolerance (C178): a row is judged against the terms it
+ *  balances, 1e-9 x max(1, |b|, sum |a_j x_j|) -- src/solver/ActiveSetQP.cpp
+ *  `rowTol`. */
+export const rowTol = (
+  a: readonly number[], b: number, x: readonly number[],
+): number => {
+  let ax = 0;
+  for (let j = 0; j < a.length; ++j) ax += Math.abs((a[j] ?? 0) * (x[j] ?? 0));
+  return 1e-9 * Math.max(1, Math.abs(b), ax);
+};
+
 /** ACTIVE-SET QP, transcribed from `activeSetQP`
- *  (src/solver/ActiveSetQP.cpp:119-299), recording the working set at every
+ *  (src/solver/ActiveSetQP.cpp:120-442), recording the working set at every
  *  change.  Same order of operations, same tolerances, same LICQ recovery,
- *  and the same running-point formulation starting at x = 0. */
+ *  the same running-point formulation starting at x = 0, and since C178
+ *  (2026-10-27) the same treatment of an INFEASIBLE start (the most violated
+ *  row is admitted to the working set, one per pass), the same linear-
+ *  dependence test BEFORE the solve, and the same final verdict: "KKT
+ *  satisfied" only when every row is feasible. */
 export function activeSetQP(
   qp: QPProblem, warmStart?: readonly boolean[], maxIter = 50,
 ): QpTrace {
@@ -254,7 +279,32 @@ export function activeSetQP(
   const lambdaIneq = new Array<number>(mi).fill(0);
   let lambdaEq = new Array<number>(me).fill(0);
 
+  const norm = (v: readonly number[]): number => Math.sqrt(dot(v, v));
+
   for (let it = 0; it < maxIter; ++it) {
+    //  An infeasible start (C178): the MOST violated inactive row, scaled by
+    //  its norm, joins the working set -- one per pass.
+    {
+      let worst = 0;
+      let worstK = -1;
+      for (let k = 0; k < mi; ++k) {
+        if (active[k] || forbidden[k]) continue;
+        const a = qp.Aineq[k]!;
+        const b = qp.bineq[k] ?? 0;
+        const ck = rowValue(a, b, x);
+        if (ck <= rowTol(a, b, x)) continue;
+        const nk = norm(a);
+        const v = nk > 0 ? ck / nk : ck;
+        if (v > worst) { worst = v; worstK = k; }
+      }
+      if (worstK >= 0) {
+        active[worstK] = true;
+        steps.push({ it, x: [...x], p: [], alpha: 0, xNext: [...x],
+          working: active.flatMap((on, k) => (on && k !== worstK ? [k] : [])),
+          lambda: [], action: "admit", row: worstK, f: objective(qp, x) });
+      }
+    }
+
     //  Working set: the equalities (always) plus the active inequalities.
     const Arows: number[][] = [];
     const brows: number[] = [];
@@ -269,6 +319,37 @@ export function activeSetQP(
         brows.push(rowValue(qp.Aineq[k]!, qp.bineq[k] ?? 0, x));
         ineqRowOf.push(k);
       }
+
+    //  A linearly dependent working set, found BEFORE the solve (C178):
+    //  modified Gram-Schmidt, twice; an active INEQUALITY in the span of the
+    //  rows before it is dropped and forbidden, as the LICQ recovery does.
+    {
+      const basis: number[][] = [];
+      let dependent = -1;
+      for (let r = 0; r < Arows.length && dependent < 0; ++r) {
+        const v = [...Arows[r]!];
+        const n0 = norm(v);
+        for (let pass = 0; pass < 2; ++pass)
+          for (const q of basis) {
+            const c = dot(q, v);
+            for (let j = 0; j < n; ++j) v[j] = (v[j] ?? 0) - c * (q[j] ?? 0);
+          }
+        const nv = norm(v);
+        if (n0 > 0 && nv > 1e-10 * n0) basis.push(v.map((e) => e / nv));
+        else if (r >= me) dependent = ineqRowOf[r - me] as number;
+      }
+      if (dependent >= 0) {
+        active[dependent] = false;
+        forbidden[dependent] = true;
+        if (!reason)
+          reason = "LICQ recovery: dropped a linearly-dependent active"
+            + " inequality (correlated constraints)";
+        steps.push({ it, x: [...x], p: [], alpha: 0, xNext: [...x],
+          working: [...ineqRowOf], lambda: [], action: "licq", row: dependent,
+          f: objective(qp, x) });
+        continue;
+      }
+    }
 
     //  Gradient of the objective at the running point: B x + g.
     const grad = new Array<number>(n).fill(0);
@@ -338,6 +419,32 @@ export function activeSetQP(
         for (let r = 0; r < ineqRowOf.length; ++r)
           lambdaIneq[ineqRowOf[r] as number] = lambdaW[me + r] ?? 0;
         lambdaEq = lambdaW.slice(0, me);
+        //  OPTIMAL only if EVERY row is feasible (C178): equalities, active
+        //  and inactive inequalities, forbidden ones too.
+        let worstExcess = 0;
+        let violated = -1;
+        for (let k = 0; k < me; ++k) {
+          const a = qp.Aeq[k]!;
+          const b = qp.beq[k] ?? 0;
+          const exc = Math.abs(rowValue(a, b, x));
+          if (exc > rowTol(a, b, x) && exc > worstExcess) worstExcess = exc;
+        }
+        for (let k = 0; k < mi; ++k) {
+          const a = qp.Aineq[k]!;
+          const b = qp.bineq[k] ?? 0;
+          const exc = rowValue(a, b, x);
+          if (exc > rowTol(a, b, x) && exc > worstExcess) {
+            worstExcess = exc; violated = k;
+          }
+        }
+        if (worstExcess > 0) {
+          steps.push({ it, x: [...x], p, alpha: 0, xNext: [...x],
+            working: [...ineqRowOf], lambda: lamsHere, action: "infeasible",
+            row: violated >= 0 ? violated : null, f: objective(qp, x) });
+          return { steps, d: [...x], lambdaIneq, lambdaEq,
+            active: [...active], converged: false, infeasible: true,
+            reason: "QP INFEASIBLE: the constraints cannot all hold" };
+        }
         steps.push({ it, x: [...x], p, alpha: 0, xNext: [...x],
           working: [...ineqRowOf], lambda: lamsHere, action: "optimal",
           row: null, f: objective(qp, x) });
@@ -361,6 +468,9 @@ export function activeSetQP(
       const slope = dot(qp.Aineq[k]!, p);
       if (slope > FEAS_TOL) {
         const ck = rowValue(qp.Aineq[k]!, qp.bineq[k] ?? 0, x);
+        //  A row already violated does not block (C178): it joins the
+        //  working set at the top of the next pass.
+        if (ck > rowTol(qp.Aineq[k]!, qp.bineq[k] ?? 0, x)) continue;
         const a = -ck / slope;
         if (a < alpha) { alpha = Math.max(a, 0); blockK = k; }
       }

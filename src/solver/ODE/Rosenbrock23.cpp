@@ -276,7 +276,13 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
         //  t1 -- remembered so the next interval can start from IT
         const scalar hWanted = h;
         if (h > t1 - t) h = t1 - t;
-        if (st.steps >= ctrl.maxSteps) { st.ok = false; break; }
+        if (st.steps >= ctrl.maxSteps)
+        {
+            st.ok = false;
+            st.failure = "maxSteps: " + std::to_string(ctrl.maxSteps)
+                       + " steps taken without reaching the interval end";
+            break;
+        }
 
         // --- one Jacobian + one factorisation of W = I - h*d*J --------------
         f0 = f(t, y);
@@ -297,7 +303,18 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                     W[i][j] = (i == j ? 1.0 : 0.0) - h * d * J[i][j];
 
             try { luFactor(W, piv); }
-            catch (...) { h *= 0.5; ++st.rejected; if (h < hMin) { st.ok = false; break; } continue; }
+            catch (...)
+            {
+                h *= 0.5; ++st.rejected;
+                if (h < hMin)
+                {
+                    st.ok = false;
+                    st.failure = "hMin: the step fell below the floor while"
+                                 " W = I - h d J stayed singular";
+                    break;
+                }
+                continue;
+            }
         }
         else
         {
@@ -333,7 +350,18 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                             Wb.b[b][w][i][k] = ((w == 1 && i == k) ? 1.0 : 0.0)
                                              - h * d * colored.bands.b[b][w][i][k];
             try { Wbt = blockThomasFactor(Wb); }
-            catch (...) { h *= 0.5; ++st.rejected; if (h < hMin) { st.ok = false; break; } continue; }
+            catch (...)
+            {
+                h *= 0.5; ++st.rejected;
+                if (h < hMin)
+                {
+                    st.ok = false;
+                    st.failure = "hMin: the step fell below the floor while"
+                                 " W = I - h d J stayed singular";
+                    break;
+                }
+                continue;
+            }
         }
 
         const scalar hd = h * d;
@@ -478,10 +506,21 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                 const scalar fac = 0.8 * std::pow(errNorm, -1.0 / 3.0);
                 h *= std::min(1.0, std::max(0.1, fac));
             }
-            if (h < hMin) { st.ok = false; break; }
+            if (h < hMin)
+            {
+                st.ok = false;
+                st.failure = std::string("hMin: the step fell below the floor"
+                                         " after a rejected step (")
+                    + (!finite   ? "non-finite candidate state"
+                      : negative ? "a positive row driven negative"
+                                 : "local error above tolerance")
+                    + ")";
+                break;
+            }
         }
     }
 
+    st.tReached  = t;
     st.hLast     = h;
     st.hNext     = hNext;
     st.hMinUsed  = hMin;

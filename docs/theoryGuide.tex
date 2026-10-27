@@ -11741,6 +11741,31 @@ unrecoverable, and the solver throws a clear diagnostic rather than
 returning garbage. A working-set-change cap aborts loudly on suspected
 cycling --- never a silent spin.
 
+\paragraph{An infeasible start, and a failed computation.}
+Algorithm 16.3 assumes a \emph{feasible} starting point, and the QP an
+SQP iteration hands over starts at $\dv = 0$, which violates every
+constraint the iterate itself violates.  Until 2026-10-27 such a row was
+neither in $W$ nor a blocking row, so a zero step was certified optimal
+at a point that broke it ($\min \tfrac12 d^2$ s.t.\ $d \ge 1$ returned
+$d = 0$).  Now the most violated inactive row joins $W$ at each pass ---
+the KKT solve then drives its residual to zero exactly as it drives an
+equality's --- a linearly dependent working set is found before the
+solve by Gram--Schmidt instead of by hoping the elimination throws, and
+\textbf{optimal} is declared only once \emph{every} row, active or not,
+is checked feasible; a QP whose rows cannot all hold is returned
+\emph{not converged, infeasible}, naming the row.  The SQP answers an
+infeasible linearisation (an iterate far from the feasible region, a
+constraint with a small slope) with Powell's relaxation
+\cite{Powell1978}: the residuals the step must remove are scaled by the
+largest $\theta \in [0,1]$ for which the QP is consistent, found by
+bisection and announced in the trace; $\theta = 0$ with a vanishing step
+is reported as a \emph{local infeasibility}.  Before, the solver stepped
+past the box instead --- one integer-enumeration tutorial reported reflux
+ratios of 73, 14 and 6.8 as optima of a problem declared on $R \le 6$.
+Finally, a finite difference is never built from a failed simulator
+evaluation: the other side is taken, announced, and a variable whose two
+sides both fail stops the SQP, unconverged, naming it.
+
 \subsection{A worked self-check: Hock--Schittkowski}
 
 Because the SQP is finite-difference and the simulator pass is noisy,

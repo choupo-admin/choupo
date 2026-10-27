@@ -67,8 +67,14 @@ ODEStats RK4::integrate(sVector& y, scalar t0, scalar t1,
         // Honest failure: an explicit method on a stiff system overflows.
         bool bad = false;
         for (scalar v : y) if (!std::isfinite(v)) { bad = true; break; }
-        if (bad) { st.ok = false; break; }
+        if (bad)
+        {
+            st.ok = false;
+            st.failure = "a non-finite state on a fixed RK4 step";
+            break;
+        }
     }
+    st.tReached = t;
     st.hLast    = h;
     st.hMinUsed = h;
     return st;
