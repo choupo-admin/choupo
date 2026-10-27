@@ -1528,6 +1528,24 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C179. A NEUTRAL SPECIES IS NOT AN ION: THE MOLAR MASS OF A MINERAL
+> (Vitor, 2026-10-27, from a volcanic-water cooling case run in the GUI:
+> the speciate op's PRECIPITATION LEDGER died on `species 'H4SiO4' is
+> NEUTRAL`).**  `SpeciationSolver::mineralMW` summed its masters' molar
+> masses through `ionMW`, i.e. `findIon`, which refuses a charge-0 species
+> by design -- so every silica phase (SiO2a, chalcedony, quartz, whose
+> dissolution master is H4SiO4) killed the ledger, precipitated or not.
+> The same wrong abstraction sat in `Speciate.cpp`'s mass-basis total
+> (`H4SiO4 ... mg/L`).  Asked for: the fix at the abstraction (an aqueous
+> species' molar mass is not an ion's; `findIon` keeps its refusal; no
+> molar mass duplicated), the other `ionMW` callers audited, SiO2 = 60.083
+> g/mol confirmed, regression tests (SiO2a precipitating and staying
+> dissolved, chalcedony/quartz, calcite + gypsum unchanged, mass balance and
+> SI before/after), the WASM rebuilt and the GUI shown running the case;
+> then the 55 -> 20 C cooling case giving mass precipitated per mineral vs
+> T, an independent equilibrium at each T kept apart from a sequential
+> cooling that removes the solids.  STATUS: IN PROGRESS.
+
 > **C178. AN EXTERNAL CODE REVIEW (ChatGPT, relayed by Vitor 2026-10-27:
 > "O chatGPT esta a rever o choupo ... para tu registares para resolveres
 > no sabado quando houver muito credito").**  Items are recorded as

@@ -1,0 +1,145 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  precipitation_volcanic_cooling --- a silica-bearing volcanic water cooled
+  from 55 C to 20 C, and the minerals it can deposit.
+
+  THE ANALYSIS IS ILLUSTRATIVE (mg/L, typical of a sulphate-bicarbonate
+  thermal spring; not a measured sample).  Silica is declared as its
+  dissolved form H4SiO4, a NEUTRAL aqueous species: 250 mg/L of H4SiO4 is
+  2.60 mmol/kg, i.e. 156 mg/L reported "as SiO2".
+
+  WHAT EACH OPERATION IS.  An independent EQUILIBRIUM at one temperature, on
+  the SAME analysis -- nothing is carried from one operation to the next, so
+  the solids formed at 55 C are still in the water at 45 C.  That is not a
+  sequential cooling in which each deposit is withdrawn before the water
+  cools further; the two differ wherever a mineral that formed hot would
+  redissolve cold, and this case computes only the first.
+
+  THE AMOUNTS ARE AN EQUILIBRIUM CEILING (SI -> 0, infinite time, no
+  nucleation barrier), printed per mineral in each PRECIPITATION LEDGER and
+  as n_<mineral> in the result.  A saturation index says how far from
+  equilibrium a mineral is; the ledger says how much would have to leave the
+  water to get there.  They are different numbers: read both.
+
+  SILICA.  Amorphous silica (SiO2a), chalcedony and quartz all dissolve to
+  H4SiO4 (SiO2 + 2 H2O = H4SiO4).  At these temperatures quartz and
+  chalcedony form too slowly to matter, so the cooling series allows only
+  SiO2a; the last two operations allow chalcedony and quartz instead, to show
+  how much the answer depends on WHICH phase the student lets form.
+
+  Data: curated USGS PHREEQC records (public domain), resolved from
+  data/standards/ at run time.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    // -- the water as sampled at 55 C, raw: saturation indices only ---------
+    {
+        name        raw_55C;
+        type        speciate;
+        temperature 328.15 K;
+        analyticalTotals { Na 520 mg/L; K 40 mg/L; Ca 150 mg/L; Mg 25 mg/L;
+                           Cl 400 mg/L; SO4 700 mg/L; HCO3 450 mg/L;
+                           H4SiO4 250 mg/L; }
+        pH          solve;
+        output      { file raw_55C.csv; }
+    }
+
+    // -- independent equilibrium at 55 C: SiO2a, calcite, gypsum allowed ----
+    {
+        name        eq_55C;
+        type        speciate;
+        temperature 328.15 K;
+        analyticalTotals { Na 520 mg/L; K 40 mg/L; Ca 150 mg/L; Mg 25 mg/L;
+                           Cl 400 mg/L; SO4 700 mg/L; HCO3 450 mg/L;
+                           H4SiO4 250 mg/L; }
+        pH          solve;
+        equilibrate { minerals ( SiO2a calcite gypsum ); }
+        output      { file eq_55C.csv; }
+    }
+
+    // -- independent equilibrium at 45 C: SiO2a, calcite, gypsum allowed ----
+    {
+        name        eq_45C;
+        type        speciate;
+        temperature 318.15 K;
+        analyticalTotals { Na 520 mg/L; K 40 mg/L; Ca 150 mg/L; Mg 25 mg/L;
+                           Cl 400 mg/L; SO4 700 mg/L; HCO3 450 mg/L;
+                           H4SiO4 250 mg/L; }
+        pH          solve;
+        equilibrate { minerals ( SiO2a calcite gypsum ); }
+        output      { file eq_45C.csv; }
+    }
+
+    // -- independent equilibrium at 35 C: SiO2a, calcite, gypsum allowed ----
+    {
+        name        eq_35C;
+        type        speciate;
+        temperature 308.15 K;
+        analyticalTotals { Na 520 mg/L; K 40 mg/L; Ca 150 mg/L; Mg 25 mg/L;
+                           Cl 400 mg/L; SO4 700 mg/L; HCO3 450 mg/L;
+                           H4SiO4 250 mg/L; }
+        pH          solve;
+        equilibrate { minerals ( SiO2a calcite gypsum ); }
+        output      { file eq_35C.csv; }
+    }
+
+    // -- independent equilibrium at 25 C: SiO2a, calcite, gypsum allowed ----
+    {
+        name        eq_25C;
+        type        speciate;
+        temperature 298.15 K;
+        analyticalTotals { Na 520 mg/L; K 40 mg/L; Ca 150 mg/L; Mg 25 mg/L;
+                           Cl 400 mg/L; SO4 700 mg/L; HCO3 450 mg/L;
+                           H4SiO4 250 mg/L; }
+        pH          solve;
+        equilibrate { minerals ( SiO2a calcite gypsum ); }
+        output      { file eq_25C.csv; }
+    }
+
+    // -- independent equilibrium at 20 C: SiO2a, calcite, gypsum allowed ----
+    {
+        name        eq_20C;
+        type        speciate;
+        temperature 293.15 K;
+        analyticalTotals { Na 520 mg/L; K 40 mg/L; Ca 150 mg/L; Mg 25 mg/L;
+                           Cl 400 mg/L; SO4 700 mg/L; HCO3 450 mg/L;
+                           H4SiO4 250 mg/L; }
+        pH          solve;
+        equilibrate { minerals ( SiO2a calcite gypsum ); }
+        output      { file eq_20C.csv; }
+    }
+
+    // -- 20 C, chalcedony allowed in place of amorphous silica --------------------
+    {
+        name        eq_20C_chalcedony;
+        type        speciate;
+        temperature 293.15 K;
+        analyticalTotals { Na 520 mg/L; K 40 mg/L; Ca 150 mg/L; Mg 25 mg/L;
+                           Cl 400 mg/L; SO4 700 mg/L; HCO3 450 mg/L;
+                           H4SiO4 250 mg/L; }
+        pH          solve;
+        equilibrate { minerals ( chalcedony calcite gypsum ); }
+        output      { file eq_20C_chalcedony.csv; }
+    }
+
+    // -- 20 C, quartz allowed in place of amorphous silica --------------------
+    {
+        name        eq_20C_quartz;
+        type        speciate;
+        temperature 293.15 K;
+        analyticalTotals { Na 520 mg/L; K 40 mg/L; Ca 150 mg/L; Mg 25 mg/L;
+                           Cl 400 mg/L; SO4 700 mg/L; HCO3 450 mg/L;
+                           H4SiO4 250 mg/L; }
+        pH          solve;
+        equilibrate { minerals ( quartz calcite gypsum ); }
+        output      { file eq_20C_quartz.csv; }
+    }
+);
