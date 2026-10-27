@@ -180,6 +180,36 @@ def main():
         if not d.get("n_" + ph, 0.0) > 0.0:
             fail(f"(e) eq_20C_{ph}: {ph} did not precipitate")
 
+    # (g) THE NATIVE FIGURE (DEV.md 4c C180): the propsDict view draws, per
+    #     mineral, one point per operation at (T_K, mass_<m>), and each point
+    #     is the op's own published diagnostic -- the view computes nothing.
+    vcsv = CASE / "postProcessing/case/precipitation_vs_T.csv"
+    if not vcsv.exists():
+        fail("(g) the view postProcessing/case/precipitation_vs_T.csv was not written")
+    else:
+        rows = list(csv.DictReader(vcsv.open()))
+        seen = set()
+        ops_T = ["eq_55C", "eq_45C", "eq_35C", "eq_25C", "eq_20C"]
+        for r in rows:
+            ph, x, y = r["series"], float(r["x"]), float(r["y"])
+            match = [o for o in ops_T
+                     if abs(diag.get(o, {}).get("T_K", -1) - x) < 1e-9]
+            if len(match) != 1:
+                fail(f"(g) view point {ph} at x = {x} matches no single operation's T_K")
+                continue
+            d = diag[match[0]]
+            want = d.get("mass_" + ph)
+            if want is None or abs(y - want) > 1e-9 * max(1.0, abs(want)):
+                fail(f"(g) view point {ph} at {x} K = {y}, operation"
+                     f" {match[0]} publishes mass_{ph} = {want}")
+            n = d.get("n_" + ph, 0.0)
+            mw = mw_sio2 if ph in SILICA else None
+            if mw and abs(y - n * mw * 1000.0) > 1e-6 * max(1.0, y):
+                fail(f"(g) {match[0]}: mass_{ph} = {y} is not n * MW = {n * mw * 1000.0}")
+            seen.add((ph, match[0]))
+        if len(seen) != 15:
+            fail(f"(g) the view holds {len(seen)} (mineral, temperature) points, 15 declared")
+
     # (f) -------------------------------------------------------------------
     salt = (ROOT / "src/thermo/electrolyte/SaltFromCatalogue.H").read_text()
     fi = re.search(r"inline DictPtr findIon\(.*?\n\}", salt, re.S)
@@ -210,7 +240,9 @@ def main():
           " n * MW, SiO2a reaches both ledger paths (dissolved at 55 C,"
           f" precipitated at 20 C), Si and Ca close within {REL_TOL:g} on"
           f" {1 + len(ops_eq)} operations, every equilibrated phase sits at"
-          " SI = 0 or SI < 0 with n = 0, and findIon still refuses a"
+          " SI = 0 or SI < 0 with n = 0, the native view precipitation_vs_T"
+          " draws each op's own (T_K, mass_<m>) for 3 minerals x 5 T, and"
+          " findIon still refuses a"
           " neutral (witness precipitation_volcanic_cooling; amounts NOT"
           " validated against a measured spring)")
     return 0

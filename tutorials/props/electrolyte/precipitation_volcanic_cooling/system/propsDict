@@ -38,6 +38,27 @@
   data/standards/ at run time.
 \*---------------------------------------------------------------------------*/
 
+//  THE FIGURE: mass precipitated against temperature, one point per
+//  operation (each an independent equilibrium on the same analysis), one
+//  curve per mineral.  A saturation index is NOT drawn here: it says how far
+//  from equilibrium a mineral is, this says how much must leave the water.
+views
+(
+    {
+        name    precipitation_vs_T;
+        type    series;
+        title   "Equilibrium ceiling of each mineral against temperature (independent equilibria on the same water, nothing withdrawn between them)";
+        xAxis   { label "temperature"; unit "K"; scale linear; }
+        yAxis   { label "precipitated, per kg of water"; unit "mg/kg"; scale linear; }
+        series
+        (
+            { name SiO2a;   label "amorphous silica (SiO2a)"; ops ( eq_55C eq_45C eq_35C eq_25C eq_20C ); x T_K; y mass_SiO2a;   style linesMarkers; }
+            { name calcite; label "calcite";                  ops ( eq_55C eq_45C eq_35C eq_25C eq_20C ); x T_K; y mass_calcite; style linesMarkers; }
+            { name gypsum;  label "gypsum";                   ops ( eq_55C eq_45C eq_35C eq_25C eq_20C ); x T_K; y mass_gypsum;  style linesMarkers; }
+        );
+    }
+);
+
 operations
 (
     // -- the water as sampled at 55 C, raw: saturation indices only ---------
