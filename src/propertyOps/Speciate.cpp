@@ -33,7 +33,7 @@ License
 #include "core/Constants.H"                         // R
 #include "core/Units.H"                             // atm_to_Pa
 #include "thermo/electrolyte/EdwardsCatalogue.H"    // loadEdwardsHenry (Eq 13)
-#include "thermo/electrolyte/SaltFromCatalogue.H"   // ionMW (ions.dat)
+#include "thermo/electrolyte/SaltFromCatalogue.H"   // aqueousSpeciesMW
 #include "thermo/ThermoPackageBuilder.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
 #include "thermo/electrolyte/PitzerHMW.H"
@@ -96,15 +96,16 @@ scalar totalAsMolality(const DictPtr& t, const std::string& ion)
     }
 
     // mass/volume (mg/L, g/L, ppm): canonical kg/m^3; to moles through the
-    // ion's MW (ions.dat), then the same rho ~ 1 kg/L closure.
+    // master's MW (its species record -- charged or neutral, H4SiO4 is a
+    // master too), then the same rho ~ 1 kg/L closure.
     if (dims == Dims::density)
     {
-        const double MW = electrolyte::ionMW(ion);   // g/mol = kg/kmol
+        const double MW = electrolyte::aqueousSpeciesMW(ion);   // g/mol = kg/kmol
         if (MW <= 0.0)
             throw std::runtime_error("totals." + ion + " is on a mass basis "
-                "(mg/L | g/L) but the '" + ion + "' row in ions.dat has no MW"
-                " -- add `MW <g/mol>;` to the ion entry, or give the total in"
-                " mol/kg");
+                "(mg/L | g/L) but the '" + ion + "' species record"
+                " (species/<name>.dat) has no MW -- add `MW { value <g/mol>;"
+                " unit g/mol; }` to it, or give the total in mol/kg");
         announceRhoOnce();
         return v / MW;                  // kg/m^3 / (kg/kmol) = mol/L -> mol/kg
     }

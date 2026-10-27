@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoProps;
+description   "A volcanic water cooled from 55 C to 20 C: which minerals can precipitate, and how much? Each operation is an INDEPENDENT equilibrium at its own temperature on the SAME analysis (nothing removed between them) -- not a sequential cooling that withdraws the solids as they form. Amorphous silica (SiO2a) is undersaturated at 55 and 45 C and precipitates from 35 C down (0 -> 50 mg/kg); calcite, whose solubility FALLS as T rises, precipitates more hot than cold (106 -> 69 mg/kg); gypsum stays dissolved. Quartz and chalcedony are far more supersaturated than amorphous silica at every temperature, and are kinetically inhibited at these temperatures -- allowing quartz instead shows how much the answer depends on WHICH silica phase the student lets form. The amounts are an EQUILIBRIUM CEILING, not a deposit prediction. The analysis is ILLUSTRATIVE, not a measured spring.";
+verbosity     2;
