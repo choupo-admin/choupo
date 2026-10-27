@@ -1528,6 +1528,52 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C184. DISTILLATION ROBUSTNESS: fullMESH AND THE n-D NEWTON (an
+> external review, ChatGPT, relayed by Vitor 2026-10-27 for SATURDAY;
+> recorded, not started).**  Trigger: Vitor's dimethyl-ether plant (Gibbs
+> reactor -> two columns, `C1` `model fullMESH`, methanol recycle) failed in
+> the GUI: newtonND block-Thomas solve singular at row 2 (it 5, |F| 2.05),
+> Cp of methanol/water integrated down to 82.6 K, then the dense solve
+> singular at row 87 (it 0, |F| 10.7), `unit 'C1' failed to converge`.  The
+> case is NOT in the tree: ask Vitor for its dicts first.
+> VERIFIED BY READING (2026-10-27):
+> (A) `src/unitOperations/distillation/DistillationColumn.cpp:3057` enters
+> the fullMESH phase on the model word alone, with no `res.converged` test
+> on the CMO phase (:2921), so an unconverged CMO iterate seeds
+> `newtonND(residualF, w0, optsF)` (:3194).  Nuance: the verdict is not
+> laundered -- :3197 only ever clears `res.converged` -- but a failed CMO
+> phase still seeds the rigorous one, and a fullMESH that then converges is
+> reported NOT converged.
+> (B) `src/solver/NewtonND.cpp:528-537`: when backtracking exhausts with
+> the last trial FINITE but no better (normFNew >= normF), the guard at
+> :554 only catches an empty or non-finite trial, so x is advanced to that
+> trial (:562) -- contradicting the comment above it.  Confirmed.
+> Asked for, to plan with Vitor before code: P0 a step contract (accepted /
+> rejected / infeasible / singular; Armijo; the last good iterate kept),
+> singular-Jacobian recovery (Levenberg-Marquardt / trust region / rank-
+> revealing least squares, accepted only on the original equations), a
+> conditioning diagnostic that names the block and the physics, residual
+> and unknown scaling; P1 admissible iterates (T > 0, flows >= 0, the
+> simplex; fraction-to-the-boundary; an out-of-domain thermo evaluation as
+> an infeasible trial, never a silent clamp; a supercritical species is not
+> a reason to refuse a mixture); P2 a thermodynamic initial profile (bubble/
+> dew at the column pressure, volatilities, CMO flows; `stageProfile` kept)
+> in place of Ttop = Tf - 5, Tbot = Tf + 15 (:2839); P3 continuation CMO ->
+> MESH -> fullMESH with an adaptive step, the final answer satisfying 100 %
+> of the declared fullMESH equations, NEVER a silent fall-back to another
+> model; a feasibility diagnosis that tells apart (A) physically infeasible,
+> (B) thermo data missing or extrapolated, (C) ill-conditioned, (D) an
+> implementation fault.  Tests: the DME plant, ideal columns with reference
+> answers, azeotropes, subcooled / two-phase / superheated feeds, near-pure
+> and trace components, pinches and impossible specs, singular Jacobians
+> and exhausted line searches, native vs WASM; every converged case checked
+> independently (component and energy balances, sums, equilibrium,
+> internal flows); before/after CPU, residual evaluations, iterations,
+> success rate.  No golden re-recorded to make a regression pass.  Order:
+> the two defects first, reproduce, minimal fixes, suite, then
+> initialisation/recovery, then the full DME plant with its recycle.
+> STATUS: SCHEDULED for Saturday; A and B are small and come first.
+
 > **C183. A PROPS RUN'S RESULTS ARE NOT IN THE CASE TREE (Vitor,
 > 2026-10-27: "os resultados não aparecem juntamente com os dicionários na
 > estrutura do caso. Deviam de aparecer?"; recorded, not built -- credit is
