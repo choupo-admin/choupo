@@ -1528,6 +1528,40 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C178. AN EXTERNAL CODE REVIEW (ChatGPT, relayed by Vitor 2026-10-27:
+> "O chatGPT esta a rever o choupo ... para tu registares para resolveres
+> no sabado quando houver muito credito").**  Items are recorded as
+> relayed, each TO VERIFY against the engine before any fix (a review's
+> claim is a bug report, not a finding).  Reviewer's own scope: reproduced
+> in small tests compiled against the real sources at 1ecec2248; the link
+> to the drivers was read in the code, not run through full applications;
+> no published case was shown wrong.  Lines below were READ on main
+> 2026-10-27 and say what the review describes.
+>   1. **A failed integration still advances the clock.**  Asked to 2 s,
+>      the integrator stopped near 1 s with ok = false; the drivers ignore
+>      it, set t = tNext, then route, run events and publish the state.
+>      `src/dynamicDriver/DynamicDriver.cpp:1695` (`stepper.advance(...)`,
+>      result unread) and `src/applications/choupoBatch/main.cpp:1355`
+>      (then `t = tNext;` at :1357).  Fix: check success before advancing
+>      t, firing an event or writing a state; a failure ends the run with
+>      a named refusal.  FIRST, per the reviewer: it touches the timeline.
+>   2. **ActiveSetQP certifies a point that violates an inactive
+>      constraint.**  min x^2/2 s.t. x >= 1 returns x = 0, converged,
+>      "KKT satisfied": on a zero step it checks the multipliers
+>      (`src/solver/ActiveSetQP.cpp:250`) and never the feasibility of the
+>      inactive rows; an infeasible start is not handled.  Feeds wrong
+>      steps to the SQP.  Fix: a feasible start (phase 1 or refusal) and
+>      full primal feasibility before "KKT satisfied".
+>   3. **SQP builds finite differences from failed evaluations.**  The FD
+>      loop (`src/solver/SQP.cpp:~123`, `SQPResponse rp = E(xp)`) does not
+>      read `ok`; min f(x) = x on [-1, 1], evaluable only for x <= 0, from
+>      x = 0 returns x = 0, converged, "KKT conditions satisfied" (answer
+>      x = -1).  Fix: a derivative from a failed evaluation is refused --
+>      try the other side / a smaller step, else stop with a named failure.
+>   Reach to measure before fixing: which corpus cases run each path
+>   (adaptive and fixed-step time loops; every SQP/QP consumer), so the
+>   validation is sized by what each fix can reach.  WAITS for Saturday.
+
 > **C177. A LABORATORY TEMPLATE FOR A DSPM-DE FIT (Vitor, 2026-10-26:
 > "um dataset do laboratorio e um metodo para estimar os parametros
 > daquela membrana que minimizam os desvios do dataset das rejeicoes ...
