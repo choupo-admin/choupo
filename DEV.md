@@ -1528,6 +1528,39 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C186. THREE MORE: A FAILED SIMULATION OPTIMISED, PRESSURE OUTSIDE THE
+> RECYCLE TEST, AN UNCONVERGED BUBBLE T DRAWN (the external review,
+> ChatGPT, at 1ecec224, relayed by Vitor 2026-10-27 for SATURDAY; its
+> order: 5, then 4 and 6).**  Each VERIFIED BY READING on main b3b25db47
+> (2026-10-27; item 4 also on the C178 branch); reviewer's reproductions
+> are isolated tests, corpus reach not measured.
+> (5) `src/unitOperations/flowsheet/Flowsheet.cpp` packTears (~:1732, F, z,
+> T per tear) and the Newton tear coordinates (~:3247, F_i and T): PRESSURE
+> IS NOT A TEAR VARIABLE, so a loop whose P drifts pass to pass (mixer ->
+> pipe -> splitter, a pressure drop and no pump: no steady state with
+> positive flow) reports residual 0 and "converged" (reviewer: 5.0 -> 4.9
+> bar, residual zero, next pass lower still).  Fix direction: P joins the
+> tear test (or its pass-to-pass change is checked and refused by name as a
+> loop with no pressure-consistent steady state); measure which corpus
+> recycles move.
+> (4) `src/outerDriver/OptimizationDriver.cpp`: an evaluation reads the
+> objective and constraints off the result without its `converged` flag --
+> on the C178 branch `out.ok` still tests only finiteness (~:631) -- so a
+> flowsheet that did not converge feeds the optimiser (reviewer: a
+> simulator always `converged=false`, 15 evaluations, "converged", exit 0;
+> Nelder-Mead path ~:344 at 1ecec224).  Fix: an unconverged simulation is a
+> FAILED evaluation (the C178 rule: ok = false), on both the Nelder-Mead
+> and the SQP paths and in the integer enumeration.
+> (6) `src/thermo/SaturationCurves.cpp:82` `bubbleT` returns `r.x` without
+> `r.converged`; with the bracket floor at 200 K a failed solve returns
+> 200 K (reviewer: true 191.893 K, sum K x = 1.52575 at 200 K, 20 of 29
+> points invalid).  `src/applications/choupoSolve/main.cpp` ~:400-415
+> guards only out-of-range y and an envelope pinned at 200 K at EVERY point,
+> so a PARTLY wrong curve is published.  Fix: an unconverged bubble/dew
+> point is not a point (dropped and counted, or the diagram refused by
+> name); the guards read the solver's verdict, not a symptom.
+> STATUS: SCHEDULED for Saturday with C184/C185.
+
 > **C185. THREE MORE SOLVER/KINETICS DEFECTS (the external review,
 > ChatGPT, at 1ecec224, relayed by Vitor 2026-10-27 for SATURDAY; its order:
 > 9, then 8, then 7).**  Each VERIFIED BY READING on main b3b25db47
