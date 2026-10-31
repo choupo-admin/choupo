@@ -1684,11 +1684,23 @@ accepts today, and that is a policy call.
 > moved, not changed); every AUTHORED inlet checked before any unit runs
 > (`Flowsheet::checkAuthoredInletAcceptance`, so `choupo-lint` reports it);
 > `choupoSolve --describe-units` prints every unit's contract (52 types, 3
-> declared).  Gate `check_unit_acceptance`.  Slice B: the ED stack, batch
-> ED, ion exchanger and crystalliser; the `requires` vocabulary;
-> `passThrough` on the ED stack with a witness; the generated GUI / F1 /
-> docs/ai sections from `--describe-units`; per-port contracts; the
-> recycle question of the design record's section 8.
+> declared).  Gate `check_unit_acceptance`.  Slice B DONE (fdbc410e9): the
+> ED stack, batch ED, batch diafilter, ion exchanger and crystalliser on
+> the contract (new rule word `aqueousSolventAndIons`, `atLeastOne`, a
+> `needs` list -- `requires` is a C++20 keyword -- and `appliesTo
+> combinedFeed` for the crystalliser's antisolvent inlets); `passThrough`
+> on the ED stack (`passThrough { <c> { fate diluate|concentrate; } reason
+> "..."; }`, no split fraction: a split would be a transfer across the
+> membranes, which the declaration says does not happen), in every
+> balance, recorded as a declaredApproximation; witness
+> `ed10_passthrough_benzene`; `choupoBatch --describe-units`.  DEFECT
+> FOUND, same shape as (1): the batch diafilter retains in silence a
+> holdup component that is neither the solvent nor `role nonvolatile` --
+> it never permeates.  Slice C: that defect; the generator of the GUI /
+> F1 / docs/ai "modelled / may pass / refuses" sections from both
+> `--describe-units` outputs with a freshness gate (the docs/ai text of
+> slice B is hand-written and is replaced by it); per-port contracts (the
+> batch ED's diluate-tank check); the recycle question.
 
 > **C187. WHAT THE 2026-10-31 AUDIT FOUND UNRECORDED (two independent
 > passes over the session transcript, 24-31 Oct; recorded by the architect
