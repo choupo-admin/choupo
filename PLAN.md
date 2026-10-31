@@ -34,6 +34,7 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 
 | status | what | ref |
 |---|---|---|
+| todo | C191 (A) The tree of chemistry: curate the graph record (seven roots, ~150 nodes, a citation per edge) -- a general, several days; then the EduTool | C191 |
 | todo | Distillation defects A (fullMESH seeded by an unconverged CMO phase) and B (NewtonND accepts a non-improving step); measure which corpus cases reach the path; a full sweep only with Vítor's written authorisation | C184 A/B |
 | todo | Positivity guard off with several ODE units -- AFTER C178 lands (same file) | C185 item 8 |
 | todo | Optimiser reads unconverged simulations -- AFTER C178 lands (same file) | C186 item 4 |
@@ -46,6 +47,7 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 
 | status | what | ref |
 |---|---|---|
+| todo | C191 (B) candidates: the methanation reactor EduTool; a Power-to-Gas plant case (scope to decide) | C191 |
 | todo | Candidates from the external opinion (pedagogical scope first): seeded crystallisation, cake washing and filtration, a linear chromatography column with fraction collection | C190 |
 | todo | Verify and fix C187 (1) (the Gibbs review's three open items) and (2) (SpeciationSolver outer convergence) | C187 |
 | todo | Views for choupoSolve cases; C149's parallel runs | C187 (5), (6) |

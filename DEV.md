@@ -1528,6 +1528,57 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C191. THE TREE OF CHEMISTRY, AND THE METHANATION REACTOR (Vitor,
+> 2026-10-31 night, after a conversation with a reaction-engineering
+> colleague about CO2 methanation and the list of a hundred commodity
+> chemicals; the two registered on his request, the first APPROVED AS A
+> COMMISSION, the second a candidate).**
+> (A) COMMISSION -- EduTool "The tree of chemistry".  THE MESSAGE a
+> student leaves with (pedagogical scope, decided by the architect, rule
+> 00): the hundred-odd commodity products grow from SEVEN organic roots
+> (ethylene, propylene, the C4s, benzene, toluene, the xylenes, and
+> synthesis gas with methanol as its first derivative) plus the
+> inorganic four (ammonia, sulphuric acid, chlorine/caustic, the nitric
+> and phosphoric acids), and the sustainable transition REPLACES THE
+> ROOTS, not the leaves (syngas from biomass or from CO2 + electrolytic
+> H2; ethylene from bio-ethanol or MTO; ammonia from green H2; aromatics
+> from lignin).  Three views of ONE directed graph (~150 nodes, ~200
+> edges, each edge a reaction with its stoichiometry, a typical carbon
+> yield and a citation): (1) DEPTH -- pick a product, see the path to
+> its roots with mass and carbon on every edge (kg ethylene and chlorine
+> per kg PVC); (2) CONVERGENCE and FORCED CO-PRODUCTION -- pick a root
+> or a feedstock, see what depends on it and what the cracker or the
+> cumene route produces whether the market wants it or not; (3) THE
+> TREE OF 2050 -- for each root, the fossil route beside the
+> alternatives, with H2 per carbon and energy per tonne (this view
+> absorbs the "carbon and hydrogen network" tool proposed the same
+> night).  The map, not the terrain: a reaction the student then wants
+> to SIMULATE is a Choupo case (cumene, methanol, ammonia exist).  DATA
+> is the whole work: a curated graph record under data/standards/ with
+> a citation per edge from open, citable sources (IEA chemistry reports,
+> industry-association production data; Ullmann's and Kirk-Othmer by
+> title only, no copied tables), licence-checked by
+> `check_source_licence`; the graph drawn with the GUI's existing React
+> Flow; the lesson in the existing EduTool grammar with its `file:line`
+> citations into the engine where a node has a case.  Nycolle Braga
+> Caetano (starts April 2026) is a fitting reviewer of the graph.
+> Dispatch: a general for the graph's curation (several days), then one
+> for the tool; no engine change.
+> (B) CANDIDATE -- EduTool "The methanation reactor": CO2 + 4 H2 -> CH4 +
+> 2 H2O (Sabatier, -165 kJ/mol, Ni, 250-400 C), the sum of the reverse
+> shift and CO methanation; strongly exothermic and mole-reducing, so
+> equilibrium wants low T and high P while the kinetics want T -- the
+> SAME lesson as the ammonia converter (van Heerden, the locus of maximum
+> rate, beds in series with interstage cooling and water removal), on a
+> reaction the student reads about: existing content, new application.
+> Also a candidate: a `plant/` Power-to-Gas case (electrolytic H2 or a
+> declared H2 inlet with its electricity, 2-3 adiabatic beds with
+> interstage cooling and water knock-out, recycle, the carbon balance of
+> a biogenic CO2), reusing the green-ammonia converter pattern -- no new
+> physics.  Scope of (B) to be decided before dispatch.
+> STATUS: (A) COMMISSIONED 2026-10-31, graph curation first; (B)
+> recorded.
+
 > **C190. THE EXTERNAL AUDIT'S FIFTEEN, AND ITS COMPARISON WITH THE
 > OTHER OPEN-SOURCE SIMULATOR (ChatGPT's summary of its conversation with
 > Vitor, relayed 2026-10-31 night as a technical OPINION, not orders;
