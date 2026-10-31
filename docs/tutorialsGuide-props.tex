@@ -2038,54 +2038,6 @@ GOLDEN PINS (locked by the golden master): pin\_gypsum\_amount Ca = SO4 = 0.0305
 \end{tutgolden}
 
 \clearpage
-\tutentry{precipitation\_volcanic\_cooling}{tutorials/props/electrolyte/precipitation\_volcanic\_cooling}
-\begin{tutscheme}
-\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{precipitation\_vs\_T}\\[-1pt]{\tiny series}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{raw\_55C}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{eq\_55C}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{eq\_45C}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{eq\_35C}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{eq\_25C}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{eq\_20C}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{eq\_20C\_chalcedony}\\[-1pt]{\tiny speciate}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{eq\_20C\_quartz}\\[-1pt]{\tiny speciate}};
-\end{tikzpicture}
-\end{tutscheme}
-\tutwhat{A volcanic water cooled from 55 C to 20 C: which minerals can precipitate, and how much? Each operation is an INDEPENDENT equilibrium at its own temperature on the SAME analysis (nothing removed between them) -- not a sequential cooling that withdraws the solids as they form. Amorphous silica (SiO2a) is undersaturated at 55 and 45 C and precipitates from 35 C down (0 $\to$ 50 mg/kg); calcite, whose solubility FALLS as T rises, precipitates more hot than cold (106 $\to$ 69 mg/kg); gypsum stays dissolved. Quartz and chalcedony are far more supersaturated than amorphous silica at every temperature, and are kinetically inhibited at these temperatures -- allowing quartz instead shows how much the answer depends on WHICH silica phase the student lets form. The amounts are an EQUILIBRIUM CEILING, not a deposit prediction. The analysis is ILLUSTRATIVE, not a measured spring.}
-\begin{tutnarrative}
-a silica-bearing volcanic water cooled from 55 C to 20 C, and the minerals it can deposit.
-
-THE ANALYSIS IS ILLUSTRATIVE (mg/L, typical of a sulphate-bicarbonate thermal spring; not a measured sample). Silica is declared as its dissolved form H4SiO4, a NEUTRAL aqueous species: 250 mg/L of H4SiO4 is 2.60 mmol/kg, i.e. 156 mg/L reported "as SiO2".
-
-WHAT EACH OPERATION IS. An independent EQUILIBRIUM at one temperature, on the SAME analysis -- nothing is carried from one operation to the next, so the solids formed at 55 C are still in the water at 45 C. That is not a sequential cooling in which each deposit is withdrawn before the water cools further; the two differ wherever a mineral that formed hot would redissolve cold, and this case computes only the first.
-
-THE AMOUNTS ARE AN EQUILIBRIUM CEILING (SI $\to$ 0, infinite time, no nucleation barrier), printed per mineral in each PRECIPITATION LEDGER and as n\_<mineral> in the result. A saturation index says how far from equilibrium a mineral is; the ledger says how much would have to leave the water to get there. They are different numbers: read both.
-
-SILICA. Amorphous silica (SiO2a), chalcedony and quartz all dissolve to H4SiO4 (SiO2 + 2 H2O = H4SiO4). At these temperatures quartz and chalcedony form too slowly to matter, so the cooling series allows only SiO2a; the last two operations allow chalcedony and quartz instead, to show how much the answer depends on WHICH phase the student lets form.
-
-Data: curated USGS PHREEQC records (public domain), resolved from data/standards/ at run time.
-
-\end{tutnarrative}
-\begin{tutgolden}
-\goldrow{diag}{raw\_55C}{I}{0.0375344098233}
-\goldrow{diag}{raw\_55C}{SI\_SiO2a}{-0.106713800737}
-\goldrow{diag}{raw\_55C}{SI\_akermanite}{-9.16712393281}
-\goldrow{diag}{raw\_55C}{SI\_anhydrite}{-0.79225922031}
-\goldrow{diag}{raw\_55C}{SI\_anthophyllite}{2.75800596244}
-\goldrow{diag}{raw\_55C}{SI\_aragonite}{0.918048427505}
-\goldrow{diag}{raw\_55C}{SI\_arcanite}{-7.30293349861}
-\goldrow{diag}{raw\_55C}{SI\_artinite}{-3.91205612634}
-\goldrow{diag}{raw\_55C}{SI\_bischofite}{-11.6946025138}
-\goldrow{diag}{raw\_55C}{SI\_bloedite}{-9.90936274691}
-\goldrow{diag}{raw\_55C}{SI\_brucite}{-3.84406675857}
-\goldrow{diag}{raw\_55C}{SI\_burkeite}{-19.5661261272}
-\goldrow{diag}{raw\_55C}{SI\_calcite}{1.07760869162}
-\goldrow{diag}{raw\_55C}{SI\_carnallite}{-17.0948774628}
-\goldmore{500}
-\end{tutgolden}
-
-\clearpage
 \tutentry{rainwater\_air}{tutorials/props/electrolyte/rainwater\_air}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

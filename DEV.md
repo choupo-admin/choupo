@@ -1528,6 +1528,155 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C186. THREE MORE: A FAILED SIMULATION OPTIMISED, PRESSURE OUTSIDE THE
+> RECYCLE TEST, AN UNCONVERGED BUBBLE T DRAWN (the external review,
+> ChatGPT, at 1ecec224, relayed by Vitor 2026-10-27 for SATURDAY; its
+> order: 5, then 4 and 6).**  Each VERIFIED BY READING on main b3b25db47
+> (2026-10-27; item 4 also on the C178 branch); reviewer's reproductions
+> are isolated tests, corpus reach not measured.
+> (5) `src/unitOperations/flowsheet/Flowsheet.cpp` packTears (~:1732, F, z,
+> T per tear) and the Newton tear coordinates (~:3247, F_i and T): PRESSURE
+> IS NOT A TEAR VARIABLE, so a loop whose P drifts pass to pass (mixer ->
+> pipe -> splitter, a pressure drop and no pump: no steady state with
+> positive flow) reports residual 0 and "converged" (reviewer: 5.0 -> 4.9
+> bar, residual zero, next pass lower still).  Fix direction: P joins the
+> tear test (or its pass-to-pass change is checked and refused by name as a
+> loop with no pressure-consistent steady state); measure which corpus
+> recycles move.
+> (4) `src/outerDriver/OptimizationDriver.cpp`: an evaluation reads the
+> objective and constraints off the result without its `converged` flag --
+> on the C178 branch `out.ok` still tests only finiteness (~:631) -- so a
+> flowsheet that did not converge feeds the optimiser (reviewer: a
+> simulator always `converged=false`, 15 evaluations, "converged", exit 0;
+> Nelder-Mead path ~:344 at 1ecec224).  Fix: an unconverged simulation is a
+> FAILED evaluation (the C178 rule: ok = false), on both the Nelder-Mead
+> and the SQP paths and in the integer enumeration.
+> (6) `src/thermo/SaturationCurves.cpp:82` `bubbleT` returns `r.x` without
+> `r.converged`; with the bracket floor at 200 K a failed solve returns
+> 200 K (reviewer: true 191.893 K, sum K x = 1.52575 at 200 K, 20 of 29
+> points invalid).  `src/applications/choupoSolve/main.cpp` ~:400-415
+> guards only out-of-range y and an envelope pinned at 200 K at EVERY point,
+> so a PARTLY wrong curve is published.  Fix: an unconverged bubble/dew
+> point is not a point (dropped and counted, or the diagram refused by
+> name); the guards read the solver's verdict, not a symptom.
+> STATUS: SCHEDULED for Saturday with C184/C185.
+
+> **C185. THREE MORE SOLVER/KINETICS DEFECTS (the external review,
+> ChatGPT, at 1ecec224, relayed by Vitor 2026-10-27 for SATURDAY; its order:
+> 9, then 8, then 7).**  Each VERIFIED BY READING on main b3b25db47
+> (2026-10-27), each reproduced by the reviewer in an isolated test only:
+> (9) `src/unitOperations/batch/BatchReactor.cpp:449`: `case
+> RateForm::ThirdBody: case RateForm::Factory: break;` leaves the switch
+> with k = 0, so the ThirdBody arm inside the Falloff case (k = A T^b
+> exp(-Ea/RT) [M]) is unreachable and every thirdBody reaction runs at
+> rate ZERO (reviewer: 0 instead of 42; reversible 0 instead of 28).
+> `tutorials/batch/combustion/ignition01_h2o2` (and its `_rk4`, `_eulersi`
+> twins) declares four (R5-R8): its ignition
+> delay is pinned on a mechanism missing them -- the fix MOVES its golden,
+> list to Vitor before any re-record.
+> (8) `src/solver/ODE/AdaptiveTimeStep.H` (`ctrl.nPositive =
+> (units.size() == 1) ? units[0].nPositive : 0;`, still so on the C178
+> branch): with two or more ODE units the positivity guard is OFF, so an
+> overshoot past zero is ACCEPTED by the integrator (ok = true) and then
+> clipped by the unit's setOdeState -- reviewer: A -> B from A = 1 with a
+> second idle unit integrates A = -1, B = 2 and publishes A = 0, B = 2,
+> inventory doubled.  To verify on Saturday: the clip site per unit.  Fix
+> direction: carry a per-ROW positivity mask (the rows are interleaved, so
+> a prefix count cannot express it), never a clip after acceptance.
+> (7) `src/thermo/reaction/RateLaw.cpp:180-191`: with `revBalance` the
+> reverse rate is (kf/Kc) PROD abar^nu over the ADSORBED activities abar =
+> K_i theta_i, so the rate vanishes at PROD (K_i theta_i)^nu = Kc, not at
+> PROD theta_i^nu = Kc -- the equilibrium is shifted by PROD K_i^nu
+> (reviewer: Kc = 1, K = 1 and 10, rate -0.75 at equal concentrations,
+> zero only at cB/cA = 0.1).  Converged answers, wrong conversion and
+> duty.  Fix: the detailed-balance reverse term must be built so that
+> rf = rr exactly at the declared Kc (divide out the adsorption factors of
+> the reverse step); find every corpus case using LHHW + revBalance, list
+> the moved rows.
+> STATUS: SCHEDULED for Saturday, after or beside C184's defects A/B.
+
+> **C184. DISTILLATION ROBUSTNESS: fullMESH AND THE n-D NEWTON (an
+> external review, ChatGPT, relayed by Vitor 2026-10-27 for SATURDAY;
+> recorded, not started).**  Trigger: Vitor's dimethyl-ether plant (Gibbs
+> reactor -> two columns, `C1` `model fullMESH`, methanol recycle) failed in
+> the GUI: newtonND block-Thomas solve singular at row 2 (it 5, |F| 2.05),
+> Cp of methanol/water integrated down to 82.6 K, then the dense solve
+> singular at row 87 (it 0, |F| 10.7), `unit 'C1' failed to converge`.  The
+> case is NOT in the tree: ask Vitor for its dicts first.
+> VERIFIED BY READING (2026-10-27):
+> (A) `src/unitOperations/distillation/DistillationColumn.cpp:3057` enters
+> the fullMESH phase on the model word alone, with no `res.converged` test
+> on the CMO phase (:2921), so an unconverged CMO iterate seeds
+> `newtonND(residualF, w0, optsF)` (:3194).  Nuance: the verdict is not
+> laundered -- :3197 only ever clears `res.converged` -- but a failed CMO
+> phase still seeds the rigorous one, and a fullMESH that then converges is
+> reported NOT converged.
+> (B) `src/solver/NewtonND.cpp:528-537`: when backtracking exhausts with
+> the last trial FINITE but no better (normFNew >= normF), the guard at
+> :554 only catches an empty or non-finite trial, so x is advanced to that
+> trial (:562) -- contradicting the comment above it.  Confirmed.
+> Asked for, to plan with Vitor before code: P0 a step contract (accepted /
+> rejected / infeasible / singular; Armijo; the last good iterate kept),
+> singular-Jacobian recovery (Levenberg-Marquardt / trust region / rank-
+> revealing least squares, accepted only on the original equations), a
+> conditioning diagnostic that names the block and the physics, residual
+> and unknown scaling; P1 admissible iterates (T > 0, flows >= 0, the
+> simplex; fraction-to-the-boundary; an out-of-domain thermo evaluation as
+> an infeasible trial, never a silent clamp; a supercritical species is not
+> a reason to refuse a mixture); P2 a thermodynamic initial profile (bubble/
+> dew at the column pressure, volatilities, CMO flows; `stageProfile` kept)
+> in place of Ttop = Tf - 5, Tbot = Tf + 15 (:2839); P3 continuation CMO ->
+> MESH -> fullMESH with an adaptive step, the final answer satisfying 100 %
+> of the declared fullMESH equations, NEVER a silent fall-back to another
+> model; a feasibility diagnosis that tells apart (A) physically infeasible,
+> (B) thermo data missing or extrapolated, (C) ill-conditioned, (D) an
+> implementation fault.  Tests: the DME plant, ideal columns with reference
+> answers, azeotropes, subcooled / two-phase / superheated feeds, near-pure
+> and trace components, pinches and impossible specs, singular Jacobians
+> and exhausted line searches, native vs WASM; every converged case checked
+> independently (component and energy balances, sums, equilibrium,
+> internal flows); before/after CPU, residual evaluations, iterations,
+> success rate.  No golden re-recorded to make a regression pass.  Order:
+> the two defects first, reproduce, minimal fixes, suite, then
+> initialisation/recovery, then the full DME plant with its recycle.
+> STATUS: SCHEDULED for Saturday; A and B are small and come first.
+
+> **C183. A PROPS RUN'S RESULTS ARE NOT IN THE CASE TREE (Vitor,
+> 2026-10-27: "os resultados não aparecem juntamente com os dicionários na
+> estrutura do caso. Deviam de aparecer?"; recorded, not built -- credit is
+> short).**  Measured: the browser worker harvests into the Case tree only
+> `converged/` and `design/` (`gui/public/workers/solverWorker.js:255`,
+> OUTPUT_ROOTS); a props run's `postProcessing/` (each view's CSV + JSON)
+> and each operation's own `output { file ...; }` CSV reach only the
+> plotting channel (Studies/Reports).  Yet `gui/src/ui/caseTree.ts:123`
+> (RUN_OUTPUT_ROOTS) already classifies `postProcessing/` as run output, so
+> the same case opened from a DISK folder draws it, dimmed, and run in the
+> browser does not.  Proposed: (1) GUI only -- add `postProcessing` to the
+> worker's OUTPUT_ROOTS plus its adapter channel, drawn dimmed as run output
+> like `converged/`; (2) VITOR'S DECISION -- a props operation writes its
+> CSV at the CASE ROOT beside system/ and constant/; OpenFOAM's shape would
+> put it under `postProcessing/<op>/`, which moves where the engine writes
+> and touches cases and gates.  STATUS: TO DO (1); (2) awaits Vitor.
+
+> **NOTE (Vitor, 2026-10-27: "O caso novo não é para aparecer" -> "Apagar
+> o caso").**  The volcanic-water props case built for C179/C180/C182 is
+> DELETED from tutorials/ (no catalogue
+> entry, not in the site bundle, no golden).  Its dicts live on as the
+> FIXTURE of `check_neutral_master_mineral` (bin/curate/fixtures/
+> neutralMasterMineral), which the gate copies to a temporary directory and
+> runs, so every regression arm survives.
+
+> **C182. A TEMPERATURE AXIS IN degC (Vitor, 2026-10-27: "considera
+> apresentar a temperatura em °C no gráfico da GUI ... A conversão de escala
+> não exige um novo modelo termodinâmico").**  The views reader, which held
+> every published unit to the declared one, now makes ONE change of scale:
+> a series published in K on an axis declared `degC` (or `degF`) is
+> rescaled through `units::fromSI`, the one home of showing kelvin in an
+> affine unit; every other pair still refuses.  The engine keeps publishing
+> T_K (one home for the number); the GUI computes nothing.  The witness's
+> `precipitation_vs_T` declares `unit "degC"`; gate arm (g) holds x + 273.15
+> to each op's T_K.  STATUS: BUILT.
+
 > **C181. A SEQUENTIAL COOLING MODEL (Vitor, 2026-10-27: "Segunda
 > prioridade, a estudar separadamente ... Depois discutimos a arquitetura
 > do modelo sequencial"; recorded for later, credit is short).**  Before
@@ -1555,7 +1704,7 @@ accepts today, and that is a policy call.
 > per op.  `speciate` now publishes `T_K` (K) and `mass_<m>` (mg per kg
 > water, `n_<m>` x the solver's own `mineralMW`), with units through
 > `diagnosticUnit` (also `n_` mol/kg, `SI_`/pH "-").  The witness
-> `precipitation_volcanic_cooling` declares the view
+> the gate fixture `bin/curate/fixtures/neutralMasterMineral` declares the view
 > `precipitation_vs_T` (3 minerals x 5 temperatures); gate
 > `check_neutral_master_mineral` arm (g) holds every point to the op's own
 > diagnostic.  No golden moved (36 electrolyte cases); 29 rows appended to
@@ -1581,7 +1730,7 @@ accepts today, and that is a policy call.
 > 571301962): `electrolyte::aqueousSpeciesMW` (findAqueousSpecies, charged or
 > neutral) weighs `mineralMW`'s masters and `Speciate.cpp`'s mass-basis
 > totals; findIon/ionMW unchanged.  Witness
-> `precipitation_volcanic_cooling`, gate `check_neutral_master_mineral`.
+> the gate fixture `bin/curate/fixtures/neutralMasterMineral`, gate `check_neutral_master_mineral`.
 > NAMED, not fixed: `mineralMW` still writes H = 1.008 and H2O = 18.015 as
 > literals (equal to the records today -- a second home).
 

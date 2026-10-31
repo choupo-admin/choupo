@@ -14,8 +14,11 @@ Both now weigh through `aqueousSpeciesMW` (the generic aqueous lookup);
 `findIon` keeps its refusal, and the molar mass keeps its one home, the
 species record.
 
-Arms, each run on the witness
-tutorials/props/electrolyte/precipitation_volcanic_cooling:
+Arms, each run on the gate's own fixture bin/curate/fixtures/
+neutralMasterMineral (a volcanic water equilibrated at 55..20 C), copied to a
+temporary directory and run there.  It is a fixture, not a tutorial: Vitor
+ruled 2026-10-27 that the case is not to appear (no catalogue entry, not in
+the site bundle), so it lives beside the gate that reads it:
   (a) the run exits 0 and every equilibrate op prints its ledger;
   (b) BOTH ledger paths are reached for a neutral-master phase: SiO2a
       stays dissolved (n = 0) at 55 C and precipitates (n > 0) at 20 C;
@@ -40,12 +43,15 @@ answers -- those are held by precipitation_ro_brackish's golden.
 Exit 1 listing failures."""
 import csv
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-CASE = ROOT / "tutorials/props/electrolyte/precipitation_volcanic_cooling"
+FIXTURE = ROOT / "bin/curate/fixtures/neutralMasterMineral"
+CASE = None            # the temporary copy main() runs
 BIN = ROOT / "choupoProps"
 STD = ROOT / "data/standards"
 
@@ -76,6 +82,14 @@ def record_mw(path):
 
 
 def main():
+    global CASE
+    with tempfile.TemporaryDirectory() as td:
+        CASE = Path(td) / "neutralMasterMineral"
+        shutil.copytree(FIXTURE, CASE)
+        return check()
+
+
+def check():
     if not BIN.exists():
         print("check_neutral_master_mineral: REFUSED -- no native choupoProps"
               " (run `make all` first)")
@@ -192,8 +206,10 @@ def main():
         ops_T = ["eq_55C", "eq_45C", "eq_35C", "eq_25C", "eq_20C"]
         for r in rows:
             ph, x, y = r["series"], float(r["x"]), float(r["y"])
+            # the axis is declared in degC: the view rescales the published
+            # T_K (C182), so x + 273.15 must be the operation's own T_K
             match = [o for o in ops_T
-                     if abs(diag.get(o, {}).get("T_K", -1) - x) < 1e-9]
+                     if abs(diag.get(o, {}).get("T_K", -1) - (x + 273.15)) < 1e-9]
             if len(match) != 1:
                 fail(f"(g) view point {ph} at x = {x} matches no single operation's T_K")
                 continue
@@ -241,9 +257,9 @@ def main():
           f" precipitated at 20 C), Si and Ca close within {REL_TOL:g} on"
           f" {1 + len(ops_eq)} operations, every equilibrated phase sits at"
           " SI = 0 or SI < 0 with n = 0, the native view precipitation_vs_T"
-          " draws each op's own (T_K, mass_<m>) for 3 minerals x 5 T, and"
+          " draws each op's own (T_K, drawn in degC, mass_<m>) for 3 minerals x 5 T, and"
           " findIon still refuses a"
-          " neutral (witness precipitation_volcanic_cooling; amounts NOT"
+          " neutral (fixture bin/curate/fixtures/neutralMasterMineral; amounts NOT"
           " validated against a measured spring)")
     return 0
 
