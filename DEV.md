@@ -1564,7 +1564,20 @@ accepts today, and that is a policy call.
 > GUI credo: a runner, not an editor).  Seed data: of the four files the
 > spec names only Choupo_catalogo_RO_NF_consolidado_SI.xlsx is on the
 > laptop (~/Downloads); the others were asked of Vitor.
-> STATUS: DECIDED 2026-10-31; slice (1) next.
+> STATUS: DECIDED 2026-10-31.  Slice (1) DONE the same night (7c186a77a):
+> `rejection { <s> fromRatedTest; }` inverts the module record's rated
+> OBSERVED rejection to the intrinsic one with the module itself as the
+> probe (one home: src/unitOperations/membrane/RatedTestInversion), at the
+> sheet's own feed (permeateFlow / recovery); refusals by name; witness
+> `membrane25_rated_test_inversion_nf270_4040` (R_int 0.9833 from the
+> sheet's 0.97; at 8 bar the naive 0.97 passes 1.81x the MgSO4); gate
+> `check_rejection_inversion`.  FOUND, for curation: at the rated test the
+> engine's NF270 permeate is 14.47 m3/d against the sheet's 9.5 -- the
+> record's fitted A_w is high for the element (printed by the run, not
+> hidden).  Open: the rated-test feed rule is stated twice (C++ and
+> check_membrane_modules arm (f)); no Theory Guide section yet; the
+> SW30HR-380 NaCl test has no witness.  Next: slice (2), `ratedTest` as a
+> list.
 
 > **C188. WHAT A UNIT ACCEPTS: MODELLED, A DECLARED APPROXIMATION, OR
 > REFUSED (an external proposal, ChatGPT, "chemical component
