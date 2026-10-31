@@ -119,6 +119,7 @@ Description
 #include <fstream>
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -406,25 +407,76 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
             for (scalar y : t.yDew)
                 if (y < -slack || y > 1.0 + slack) { yValid = false; break; }
 
-            // Guard (4): a bubble/dew T pinned at the bubble-T solver's
-            // bracket floor (200 K, SaturationCurves.cpp) for EVERY
-            // composition is a degenerate envelope --- the Newton never left
-            // the bound, so the flat "diagram" is a solver artefact, not
-            // physics.  Omit the block and say so.
-            constexpr scalar Tfloor = 200.0;
-            bool pinnedAtFloor = !t.Tbubble.empty();
-            for (std::size_t k = 0; k < t.Tbubble.size(); ++k)
-                if (t.Tbubble[k] > Tfloor + 0.01 || t.Tdew[k] > Tfloor + 0.01)
-                    { pinnedAtFloor = false; break; }
-            if (pinnedAtFloor)
+            // Guard (4): THE SOLVER'S VERDICT, never a symptom (DEV.md 4c
+            // C186 item 6).  This guard used to look for a T pinned at the
+            // 200 K bracket floor at EVERY point, so a curve wrong at SOME
+            // points was published (measured by the review: 20 of 29 bubble
+            // points unconverged at 200 K, sum K x = 1.526, the true bubble T
+            // 191.9 K).  binaryTxy now judges each composition on the
+            // Newton's own final residual against kTxyAcceptResidual (the ONE
+            // home, SaturationCurves.H): above it the point is dropped, inside
+            // it but short of the Newton's 1e-8 it is drawn.  Both are COUNTED
+            // aloud here (stderr + the caveat block), and a diagram left with
+            // fewer than half of the compositions it set out to draw is
+            // refused by name -- a stated default: an envelope that is mostly
+            // gaps reads as a complete one.
+            const std::size_t nDropped  = t.xUnconverged.size();
+            const std::size_t nAccepted = t.xAcceptedUnconverged.size();
+            const std::size_t nKept     = t.xBubble.size();
+            std::ostringstream ps;
+            ps.precision(6);
+            ps << t.P / 1.0e5;
+            bool enoughPoints = nKept > 0;
+            if (nDropped > 0)
             {
-                if (verbosity >= 2)
-                    std::cout << "[txy] envelope degenerate: bubble/dew T"
-                                 " pinned at the 200 K solver floor for every"
-                                 " composition -- a solver artefact, not"
-                                 " physics; omitting the T-x-y block.\n";
+                std::ostringstream xs;
+                xs.precision(4);
+                for (std::size_t k = 0; k < nDropped; ++k)
+                    xs << (k ? ", " : "") << t.xUnconverged[k];
+                enoughPoints = nKept > 0 && 2 * nKept >= static_cast<std::size_t>(t.nAttempted);
+                const std::string msg =
+                    "T-x-y diagram at P = " + ps.str() + " bar: the"
+                    " bubble-T Newton did not converge at "
+                    + std::to_string(nDropped) + " of "
+                    + std::to_string(t.nAttempted) + " compositions (x_"
+                    + t.comp1 + " = " + xs.str() + ") -- an unconverged solve"
+                    " is not a point, so they are dropped; "
+                    + (enoughPoints
+                        ? std::to_string(nKept) + " points are drawn."
+                        : "the " + std::to_string(nKept) + " that remain are"
+                          " fewer than half, so the diagram is REFUSED.")
+                    + "  (The bubble-T bracket is 200..700 K: a mixture that"
+                      " boils outside it has no point here.)";
+                std::cerr << "[txy] " << msg << "\n";
+                AdvisoryLog::instance().add("solver", "warning",
+                    "T-x-y diagram", msg);
             }
-            else if (yValid) r.txy = std::move(t);
+            if (nAccepted > 0 && enoughPoints)
+            {
+                std::ostringstream ws;
+                ws.precision(2);
+                ws << std::scientific << t.worstAcceptedResidual;
+                std::ostringstream tol;
+                tol.precision(0);
+                tol << std::scientific << kTxyAcceptResidual;
+                const std::string msg =
+                    "T-x-y diagram at P = " + ps.str() + " bar: "
+                    + std::to_string(nAccepted) + " of "
+                    + std::to_string(t.nAttempted) + " points accepted at"
+                    " |sum K x - 1| <= " + tol.str() + " although the bubble-T"
+                    " Newton did not meet its 1e-8; worst |f| = " + ws.str()
+                    + ".  At a typical slope that is well under 1e-3 K, so the"
+                    " curve is drawn -- but the Newton's own test was not met"
+                    " there, which is what a K with numerical noise above"
+                    " 1e-8 looks like.";
+                std::cerr << "[txy] " << msg << "\n";
+                AdvisoryLog::instance().add("solver", "info",
+                    "T-x-y diagram", msg);
+            }
+            if (nDropped == 0 && nKept == 0 && verbosity >= 2)
+                std::cout << "[txy] T-x-y block omitted: no composition was"
+                             " attempted.\n";
+            if (enoughPoints && yValid) r.txy = std::move(t);
         } catch (const std::exception& e) {
             // Some thermo combinations (e.g. azeotropes near pure-component
             // bounds) can fail the inner Newton; the diagram is omitted.  The

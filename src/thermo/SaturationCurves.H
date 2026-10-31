@@ -74,12 +74,49 @@ namespace Choupo {
 /// a column on SRK published states that did not satisfy the package's
 /// equilibrium by 9.4e-4 in ln K).  A caller with a non-ideal vapour
 /// passes the vapour its stage actually sends up.
+///
+/// `converged`, when given, receives the Newton's own verdict (DEV.md 4c
+/// C186 item 6).  The returned T is the last iterate either way, and an
+/// unconverged one is NOT a bubble point: with the bracket at 200..700 K a
+/// liquid that boils below 200 K comes back as T = 200 K with sum K x far
+/// from 1.  Every caller decides what that means for it (see
+/// docs/design/an-unconverged-bubble-point-is-not-a-point.md, section 3).
 scalar bubbleT(const ThermoPackage& thermo,
                const sVector& x,
                scalar P,
                scalar Tguess,
                scalar tolerance = 1.0e-8,
-               const sVector* yVapour = nullptr);
+               const sVector* yVapour = nullptr,
+               bool* converged = nullptr);
+
+/// The same solve, with the Newton's whole verdict: the last iterate, whether
+/// it met `tolerance`, and its own final residual sum K x - 1.
+struct BubbleTSolve
+{
+    scalar T;
+    bool   converged;
+    scalar residual;
+};
+BubbleTSolve bubbleTSolve(const ThermoPackage& thermo,
+                          const sVector& x,
+                          scalar P,
+                          scalar Tguess,
+                          scalar tolerance = 1.0e-8,
+                          const sVector* yVapour = nullptr);
+
+/// THE T-x-y DIAGRAM'S ACCEPTANCE TOLERANCE, the one home (C186 item 6, the
+/// architect's ruling of 2026-10-31).  A point of the diagram is accepted on
+/// the bubble-T Newton's OWN final residual, |sum K x - 1| <= this -- never on
+/// T or y.  The Newton is asked for 1e-8; a package whose K carries numerical
+/// noise above that floor (PC-SAFT's density root, flash20: residuals 6e-8 to
+/// 3e-6 after the full 30 iterations) never meets it, and its points are
+/// right to plotting precision.  The relation: dT ~ |f| / |d(sum K x)/dT|,
+/// and the slope is d ln Psat / dT ~ dHvap / (R T^2), about 0.03-0.05 /K for
+/// an ordinary liquid near its boiling point, so 1e-5 buys ~3e-4 K -- far
+/// below a pixel.  A point accepted here but NOT converged is counted and
+/// announced; a point above it is dropped.  The defect this tolerance must
+/// still refuse is a point on the 200 K bracket floor, at |f| ~ 0.5.
+constexpr scalar kTxyAcceptResidual = 1.0e-5;
 
 /// THE TRIVIAL SATURATION ROOT (DEV.md 4c C131, family a).  A bubble or dew
 /// residual sum K x - 1 (or sum y/K - 1) is satisfied IDENTICALLY when every
@@ -140,6 +177,15 @@ struct BinaryTxy
     std::vector<scalar> Tbubble;       // [K]
     std::vector<scalar> yDew;          // vapour mole fraction of comp1
     std::vector<scalar> Tdew;          // [K]  (== Tbubble — same Newton solve)
+    //  Compositions whose bubble-T Newton did NOT converge: not points of the
+    //  diagram, so they are absent from the four vectors above and listed
+    //  here for the caller to count aloud (DEV.md 4c C186 item 6).
+    int                 nAttempted = 0;
+    std::vector<scalar> xUnconverged;          // DROPPED: |f| > kTxyAcceptResidual
+    //  Drawn although the Newton did not meet its own tolerance: accepted on
+    //  |f| <= kTxyAcceptResidual, counted for the caller to announce.
+    std::vector<scalar> xAcceptedUnconverged;
+    scalar              worstAcceptedResidual = 0.0;
 };
 
 /// Sweep x_1 across (0, 1) using nPoints interior points and build a
@@ -147,6 +193,11 @@ struct BinaryTxy
 /// exactly to avoid pure-component edge cases where some activity
 /// models can be singular; the curve still extends close enough to the
 /// boiling points for a clean plot.  Only valid when thermo.n() == 2.
+/// A composition whose bubble-T Newton leaves |sum K x - 1| above
+/// kTxyAcceptResidual is dropped and listed in `xUnconverged`; one inside it
+/// that the Newton did not call converged is drawn and listed in
+/// `xAcceptedUnconverged`.  The next solve starts from the last ACCEPTED
+/// temperature, never from a dropped iterate.
 BinaryTxy binaryTxy(const ThermoPackage& thermo,
                     scalar P,
                     int nPoints = 31);

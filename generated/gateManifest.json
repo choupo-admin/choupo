@@ -1345,6 +1345,11 @@
       "exit": 0,
       "claim": "check_neutral_master_mineral: OK -- a NEUTRAL dissolution master (H4SiO4) is weighed by its species record: SiO2 = 60.083 g/mol, 5 precipitating silica ledger lines equal n * MW, SiO2a reaches both ledger paths (dissolved at 55 C, precipitated at 20 C), Si and Ca close within 1e-07 on 8 operations, every equilibrated phase sits at SI = 0 or SI < 0 with n = 0, the native view precipitation_vs_T draws each op's own (T_K, drawn in degC, mass_<m>) for 3 minerals x 5 T, and findIon still refuses a neutral (fixture bin/curate/fixtures/neutralMasterMineral; amounts NOT validated against a measured spring)",
       "seconds": 0.7
+    },
+    "check_txy_bubble_verdict": {
+      "exit": 0,
+      "claim": "check_txy_bubble_verdict: OK -- at 2 bar 2 of 29 unconverged compositions are dropped and counted, 27 drawn, none at the 200 K floor; at 1 bar 17 of 29 fail and the diagram is refused by name; flash01's 29-point diagram is drawn with no count; flash20 (PC-SAFT) draws all 29 points, 26 of them accepted at |f| <= 1e-5 short of the Newton's 1e-8 and announced (worst |f| = 2.69e-06); the column's bubbleTWithItsVapour reads the verdict of all 3 bubbleT calls and folds it into its flag; the guard reads xUnconverged and no 200 K constant; the count reaches the caveat block on both witnesses.  NOT checked: whether a point is RIGHT beyond its residual, and the Wang-Henke stage loop's bubbleT calls (judged by the column's stage test)",
+      "seconds": 16.3
     }
   }
 }
