@@ -64,6 +64,14 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    shown, a merge that `git revert` undoes) is TAKEN and reported, not
    asked: mission command -- act on the stated intent without further
    orders -- and the one-way / two-way door distinction.
+8. **THE PLAN IS `PLAN.md`, READ IT AT THE START OF EVERY SESSION** (Vítor,
+   2026-10-31: "qualquer sessão que eu inicie sabe esse plano").  It holds
+   what is scheduled for the next hour, the next day and the next seven
+   days, and what waits on Vítor, each row pointing at its DEV.md 4c entry
+   (the register of record).  Change a row in the same commit as the work
+   that changes it.  A private claude.ai page shows it to Vítor in
+   Portuguese; the page is a VIEW of this file and is updated from it,
+   never the other way round.
 
 ## 1. What this project is
 
