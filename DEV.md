@@ -1528,6 +1528,59 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C187. WHAT THE 2026-10-31 AUDIT FOUND UNRECORDED (two independent
+> passes over the session transcript, 24-31 Oct; recorded by the architect
+> under CLAUDE.md rule 00).**  Each item below is a CLAIM to verify against
+> the engine before any fix; the file pointers were located 2026-10-31 on
+> main a84aa7922, the behaviour was NOT re-run.
+> (1) THE 2026-10-26 GIBBS REVIEW'S THREE "NOT ESTABLISHED" ITEMS (C173
+> recorded the seven that held, not these):
+>   (a) `src/unitOperations/reactor/gibbsMethod/DirectMin.cpp`: the gamma
+>   ordering, an NV = 0 (no vapour) state reached by PENALTY rather than by
+>   a phase decision, and the gas-EOS fixed-point loop capped at 30 passes
+>   (is the cap announced when it binds?);
+>   (b) the LL route declares convergence on Nelder-Mead's STOPPING rule,
+>   and the VLLE advisory that follows it (does "converged" mean the
+>   equal-activity Newton polish met its tolerance?);
+>   (c) `ThermoPackage::Kvec_phases` (src/thermo/ThermoPackage.cpp:564) on
+>   a phi-phi package, and the liquid-to-solid `s_formation` rung.
+> (2) `SpeciationSolver`: the OUTER (gamma) convergence is accepted
+> without requiring that the inner Newton converged on its last pass.
+> (3) A COMPARISON WITH AN OPEN-SOURCE FLOWSHEET SIMULATOR, delivered
+> 2026-10-26 only as a private page (it names the program, so it stays out
+> of this tree, C7).  Its verdicts: the other program leads on maturity,
+> thermodynamic breadth (hundreds of pairs against single digits),
+> interfaces and no-compile extension; Choupo leads on verification
+> process, provenance, economics/sizing/layout and its research niches;
+> transparency only narrowly (the other has a per-call equation
+> inspector).  ITS RECOMMENDATIONS, registered here as candidates:
+> (i) finish every closure-by-construction audit (C174, done for the
+> listed variables; keep enumerating); (ii) external validation -- one
+> peer-reviewed comparison against published data, one membrane/ED
+> validation against measured rigs (the C123 benchmark READMEs as a
+> paper); (iii) external audits on a cadence, specifically a
+> fugacity-equality check on every published two-phase state and an
+> independent re-derivation of every flash objective; (iv) a curated
+> NRTL/UNIQUAC/Wilson base for the 50-100 binaries courses use, by the C16
+> route; (v) a student authoring path that is not an editor: a "new case
+> from template" with in-browser lint, and the dict, the run and the
+> refusal side by side; (vi) the "named, not fixed" items on common units
+> (VLLE/LL equal-fugacity polish, y.phi.P in ElementPotential and
+> ReactiveFlash liquid tests, shortcut-column product T, an adiabatic
+> extractor); (vii) breadth only where a course needs it (a three-phase
+> separator, a reference EoS for gas courses); (viii) keep the benchmark
+> folder growing.  Explicitly NOT recommended: CAPE-OPEN, a scripting
+> language, an Excel add-in, a GUI editor (settled decisions).
+> (4) TWO LIQUID SURFACES (C173): today a refusal by name.  The
+> architecture decision moved to the architect (rule 00) and is SCHEDULED
+> in PLAN.md, decided with its written reason before any code.
+> (5) VIEWS FOR choupoSolve CASES: the `views` grammar (C180/C182) draws
+> props operations only; a steady case's profiles and sweeps have no
+> declared view.  Candidate, not started.
+> (6) C149 still promises PARALLEL RUNS (several candidates or ops at
+> once); not built, not scheduled until now -- PLAN.md long term.
+> STATUS: recorded 2026-10-31; each item placed in PLAN.md.
+
 > **C186. THREE MORE: A FAILED SIMULATION OPTIMISED, PRESSURE OUTSIDE THE
 > RECYCLE TEST, AN UNCONVERGED BUBBLE T DRAWN (the external review,
 > ChatGPT, at 1ecec224, relayed by Vitor 2026-10-27 for SATURDAY; its
@@ -1870,6 +1923,9 @@ accepts today, and that is a policy call.
 > its envelope's 38.6 kW -- the CMO traffic appears not to carry its 24 K
 > subcooled feed's enthalpic q (C169 item 4); 16 isothermalFlash rows leave
 > up to 0.87 kW, judged only in a plant sum (record section 4).
+> STATUS CORRECTED 2026-10-31: LANDED on main 2026-10-26 (merge
+> 1df34f86e).  Open from it: the aceticAcid02 subcooled-feed q (PLAN.md,
+> long term, with C175).
 
 > **C173. AN EXTERNAL AUDIT OF THE GIBBS AND PHASE ROUTES (Vitor,
 > 2026-10-26, forwarding a review by another model: "Auditoria CHOUPO Gibbs
@@ -1947,6 +2003,11 @@ accepts today, and that is a policy call.
 > kept line for line); check_compile_clean, check_wasm_dialect, and every
 > gate reading a touched source.  PENDING: Vitor's word on the ternary01
 > rows, then the merge.
+> STATUS CORRECTED 2026-10-31: LANDED on main 2026-10-26 (c2bbb6bcf);
+> ternary01's three rows re-recorded with Vitor's word (7f595413c, the
+> Tutorials Guide b895af5c7).  NOT yet recorded at the time and recorded
+> now: the review's three "not established" items -- see the 2026-10-31
+> addendum at the end of this entry.
 
 > **C172. ONE GUI OR TWO: PROCESS SIMULATION AND PROPERTIES & DATA (Vitor,
 > 2026-10-26, after "Nos temos de por um pouco de ordem nas propriedades!
@@ -2036,6 +2097,8 @@ accepts today, and that is a policy call.
 > ledger in the thermo package's, comparisons on the overview), the
 > per-sector props route and the map's drag seam removed, version +
 > adapter in a status bar, Variables/Pinch/Literature hidden when empty.
+> (CORRECTED 2026-10-31: the status bar was REMOVED the same day,
+> e27f0b8ab -- the version and the adapter live in About.)
 > Content: a fit's details show the FIT / HELD OUT datasets, the band,
 > the held-out statistic in its own unit, the verdict WITH identifiability
 > (also in the strip), the parameters as symbols with units (r_p = 0.6748
@@ -2308,6 +2371,9 @@ accepts today, and that is a policy call.
 > C130's first instruments.
 > Status: recorded 2026-10-26; work dispatched by priority, two to three
 > generals at a time (disk).
+> STATUS CORRECTED 2026-10-31: item (6)'s "C127 dispatched" was FALSE --
+> no branch, worktree or commit for C127 exists (`git branch -a`, `git log`
+> searched that day); C127 is in PLAN.md's long term, to dispatch.
 
 > **C169. THE COLUMN SOLVES THE THERMODYNAMICS ITS STREAMS CARRY (Vitor,
 > 2026-10-26, forwarding an external audit of the distillation models run
@@ -4128,6 +4194,11 @@ accepts today, and that is a policy call.
 > The "at least 5x less permeable" factor is NOT written: on the sources'
 > own numbers the salt-transport coefficient B is not lower for FT-30;
 > the measured factors went to Vitor for a ruling.
+> STATUS CORRECTED 2026-10-31: LANDED on main 2026-10-26 (merge
+> ef2a1f2b4).  The factor ruling falls to the architect under CLAUDE.md
+> rule 00 (2026-10-31): the factor stays UNWRITTEN, because the sources'
+> own numbers do not support it and a number they do not support is not
+> written.
 
 > **C139. AN EDUTOOL ON THE ECONOMICS OF THE CHEMICAL NETWORK: BASE
 > CHEMICALS, INTERMEDIATES, INDUSTRIAL PARKS AND INTERNATIONAL TRADE
@@ -5745,6 +5816,9 @@ accepts today, and that is a policy call.
 > integration commit).  Open, in C127: fit vs held-out points drawn
 > distinct, the view opening on the SELECTED model, per-point held-out
 > residuals from the engine.  C116 follows on the same screen.
+> STATUS CORRECTED 2026-10-31: stage 2 (the evidence lens) is ON MAIN
+> since 2026-10-21 (branch head 3d0b4e7f6 is an ancestor of main; merged
+> before ef812dd06).  Stage 3 is open.
 
 > **C116. "EXPLORE" AND "PROPERTY SURFACES" ARE TWO DOORS TO ONE ROOM
 > (Vitor, 2026-10-20, back on the thermophysical layer: "temos o 'explore' e
