@@ -35,6 +35,7 @@ License
 #include "core/Dictionary.H"
 
 #include <cmath>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -182,6 +183,58 @@ void Reaction::refuseLiquidBasisDetailedBalance(const Dictionary&  reaction,
         "    REMEDY: give the reverse leg its own regressed `A_rev` / `Ea_rev`"
         " (on the `reactions ( ... )` grammar), or compute the equilibrium with"
         " an `equilibriumReactor` or a `gibbsReactor`, which price the phases.");
+}
+
+void Reaction::refuseNonMassActionDetailedBalance(const Dictionary&  reaction,
+                                                  const std::string& name,
+                                                  const std::string& who)
+{
+    if (reaction.lookupWordOrDefault("reversible", "false") != "true") return;
+    if (!reaction.found("stoichiometry")) return;
+
+    std::ostringstream bad;
+    bad.precision(10);
+    for (const auto& s : reaction.lookupDictList("stoichiometry"))
+    {
+        const std::string c  = s->lookupWordOrDefault("component", "?");
+        const scalar      nu = s->lookupScalar("nu");
+        //  Only a declared key can break detailed balance: a reactant's
+        //  `order` is required (forwardOrder refuses it absent), a product's
+        //  defaults to 0 and `orderRev` to max(nu, 0) -- both mass action.
+        if (s->found("order"))
+        {
+            const scalar ord  = s->lookupScalar("order");
+            const scalar want = (nu < 0.0) ? -nu : 0.0;
+            if (ord != want)
+                bad << "\n      species '" << c << "': `order " << ord
+                    << ";` where detailed balance needs " << want
+                    << (nu < 0.0 ? " (= |nu|, a reactant)" : " (a product)");
+        }
+        if (s->found("orderRev"))
+        {
+            const scalar ord  = s->lookupScalar("orderRev");
+            const scalar want = (nu > 0.0) ? nu : 0.0;
+            if (ord != want)
+                bad << "\n      species '" << c << "': `orderRev " << ord
+                    << ";` where detailed balance needs " << want
+                    << (nu > 0.0 ? " (= nu, a product)" : " (a reactant)");
+        }
+    }
+    if (bad.str().empty()) return;
+
+    throw std::runtime_error(
+        who + ": reaction '" + name + "' declares `reversible true;` (the reverse"
+        " rate from detailed balance, k_rev = k_fwd / Kc, on the products at"
+        " their stoichiometric powers) with orders that are not mass action:"
+        + bad.str() + "\n"
+        "    With these orders the net rate does NOT vanish at PROD c^nu = Kc:"
+        " the law would come to rest at an equilibrium other than the one it"
+        " declares, converged and at exit 0.\n"
+        "    REMEDY: remove `reversible true;` and write the reverse leg"
+        " explicitly -- a regressed `A_rev` / `Ea_rev` with its `orderRev`"
+        " (Arrhenius or LHHW on the `reactions ( ... )` grammar), or a"
+        " `type expression` law with its own `forward` and `reverse` -- or"
+        " declare the mass-action orders if the mechanism is elementary.");
 }
 
 scalar Reaction::forwardOrder(const Dictionary&  entry,

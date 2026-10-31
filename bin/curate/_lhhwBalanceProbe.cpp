@@ -110,17 +110,19 @@ struct Law
 
 const double A  = 1.0e7, Ea = 8.0e4, Arev = 3.0e6, Earev = 9.0e4;
 
-std::string lawText(const Law& L)
+const char* kMassAction =
+    "  { component CO;    nu -1; order 1; }\n"
+    "  { component water; nu -1; order 1; }\n"
+    "  { component CO2;   nu  1; order 0; }\n"
+    "  { component H2;    nu  1; order 0; }\n";
+
+std::string lawText(const Law& L, const std::string& stoich = kMassAction)
 {
     std::ostringstream s;
     s.precision(17);
     s << "limitingReactant CO;\n";
     if (L.reversible) s << "reversible true;\n";
-    s << "stoichiometry (\n"
-         "  { component CO;    nu -1; order 1; }\n"
-         "  { component water; nu -1; order 1; }\n"
-         "  { component CO2;   nu  1; order 0; }\n"
-         "  { component H2;    nu  1; order 0; }\n);\n"
+    s << "stoichiometry (\n" << stoich << ");\n"
          "kinetics {\n  type " << L.type << ";\n  A " << A << ";\n  Ea " << Ea
       << ";\n";
     if (L.explicitRev) s << "  A_rev " << Arev << ";\n  Ea_rev " << Earev << ";\n";
@@ -322,6 +324,69 @@ int main(int argc, char** argv)
                 out << "}";
             }
             out << "]}";
+        }
+        out << "]";
+
+        // THE RULING (DEV.md 4c C185, 2026-10-31): detailed balance with a
+        // non-mass-action order is refused by name.  Each entry: a law, its
+        // stoichiometry, and whether RateLaw::fromDict must refuse it.
+        struct Refusal { std::string name; Law law; std::string stoich; bool mustRefuse; };
+        const std::string adsCO = "{ component CO; K0 10; }";
+        std::vector<Refusal> refusals = {
+            {"powerLaw_reactant_order_half",
+             {"", "Arrhenius", true, false, "", 1, 1, {}},
+             "  { component CO;    nu -1; order 0.5; }\n"
+             "  { component water; nu -1; order 1; }\n"
+             "  { component CO2;   nu  1; }\n  { component H2; nu 1; }\n", true},
+            {"lhhw_reactant_order_two",
+             {"", "LHHW", true, false, adsCO, 1, 1, {}},
+             "  { component CO;    nu -1; order 1; }\n"
+             "  { component water; nu -1; order 2; }\n"
+             "  { component CO2;   nu  1; }\n  { component H2; nu 1; }\n", true},
+            {"powerLaw_product_forward_order",
+             {"", "Arrhenius", true, false, "", 1, 1, {}},
+             "  { component CO;    nu -1; order 1; }\n  { component water; nu -1; order 1; }\n"
+             "  { component CO2;   nu  1; order 1; }\n  { component H2; nu 1; }\n", true},
+            {"powerLaw_orderRev_two",
+             {"", "Arrhenius", true, false, "", 1, 1, {}},
+             "  { component CO;    nu -1; order 1; }\n  { component water; nu -1; order 1; }\n"
+             "  { component CO2;   nu  1; }\n  { component H2; nu 1; orderRev 2; }\n", true},
+            {"explicitReverse_nonElementary_accepted",
+             {"", "Arrhenius", false, true, "", 1, 1, {}},
+             "  { component CO;    nu -1; order 0.5; }\n"
+             "  { component water; nu -1; order 1; }\n"
+             "  { component CO2;   nu  1; }\n  { component H2; nu 1; orderRev 0.5; }\n", false},
+            {"massAction_declared_accepted",
+             {"", "Arrhenius", true, false, "", 1, 1, {}},
+             "  { component CO;    nu -1; order 1; }\n"
+             "  { component water; nu -1; order 1; }\n"
+             "  { component CO2;   nu  1; order 0; orderRev 1; }\n"
+             "  { component H2;    nu  1; order 0; orderRev 1; }\n", false},
+        };
+        out << ", \"refusals\": [";
+        bool firstR = true;
+        for (const auto& R : refusals)
+        {
+            std::string msg;
+            bool refused = false;
+            try
+            {
+                auto rxn = Dictionary::fromString(lawText(R.law, R.stoich), R.name);
+                RateLaw::fromDict(rxn, thermo, "probe:" + R.name);
+            }
+            catch (const std::exception& e) { refused = true; msg = e.what(); }
+            std::string esc;
+            for (char ch : msg)
+            {
+                if (ch == '"' || ch == '\\') { esc += '\\'; esc += ch; }
+                else if (ch == '\n') esc += "\\n";
+                else esc += ch;
+            }
+            if (!firstR) out << ",";
+            firstR = false;
+            out << "{\"name\": \"" << R.name << "\", \"mustRefuse\": "
+                << (R.mustRefuse ? "true" : "false") << ", \"refused\": "
+                << (refused ? "true" : "false") << ", \"message\": \"" << esc << "\"}";
         }
         out << "]}\n";
         std::cout << out.str();

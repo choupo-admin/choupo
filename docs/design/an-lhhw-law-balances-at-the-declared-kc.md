@@ -96,13 +96,30 @@ Three consequences, each held by the gate:
   arm (b) the sign on both sides; arm (c) the power law and the explicit
   reverse equal to their recomputation with ==.
 
-## 4. Not done, named
+## 4. Non-mass-action orders under detailed balance: refused (the ruling)
 
-* **Non-mass-action forward orders under detailed balance.**  If a reactant's
-  `order` is not |nu|, the zero of k_f PROD c^order - (k_f/Kc) PROD_{nu>0} c^nu
-  is not at Kc on EITHER path.  No corpus case declares that combination; a
-  refusal would be a new rule on the power law too, and is left to a separate
-  decision.
+If a reactant's `order` is not |nu|, a product carries a forward `order`, or
+an `orderRev` is not nu, the zero of the derived law is not at Kc on EITHER
+path, the power law included.  The architect ruled on 2026-10-31 that this
+combination is REFUSED BY NAME: a law that cannot reach its own declared
+equilibrium is a wrong answer at exit 0, and the legitimate way to write a
+non-elementary mechanism is an explicit reverse leg (`A_rev`/`Ea_rev` with its
+`orderRev`, or a `type expression` law with `forward` and `reverse`).
+
+ONE home, `Reaction::refuseNonMassActionDetailedBalance`, beside the
+liquid-basis refusal; it reads the reaction's own `stoichiometry` entries, so
+only a DECLARED key can trip it.  Its callers are every reader that derives
+the reverse leg from Kc (measured 2026-10-31 by grepping `"reversible"` in
+`src/`): `RateLaw::fromDict` (the `reactions ( ... )` path of `cstr` and `pfr`,
+`dynamicCSTR`, the batch vessel's factory laws), the single-reaction `cstr`
+and `pfr`, and the batch vessel's own forms (Arrhenius, modified Arrhenius,
+third body, fall-off).  `ExpressionRate` refuses `reversible` outright and
+`dynamicCSTR` sends every reversible reaction to `RateLaw`, so neither needs
+a call.  Corpus reach, measured on every explicit `order`/`orderRev` under
+`reversible true` in `tutorials/` and `data/`: none refuses.
+
+## 5. Not done, named
+
 * **A reactor integrating to the zero.**  The gate holds the law; that a
   `cstr`, `pfr`, `batchReactor` or `dynamicCSTR` integrates to it is the
   reactor's, and no witness case was added because none reaches the path.

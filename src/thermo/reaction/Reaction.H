@@ -129,6 +129,23 @@ public:
                                                  const std::string& name,
                                                  const std::string& who);
 
+    // -- Detailed balance with NON-MASS-ACTION orders, refused (DEV.md 4c
+    //    C185, the architect's ruling of 2026-10-31).  `reversible true;`
+    //    derives the reverse leg as (k_fwd / Kc) PROD_{nu>0} c^nu, and its
+    //    zero is at PROD c^nu = Kc ONLY when every forward order is the
+    //    mass-action max(-nu, 0) and every declared `orderRev` is max(nu, 0).
+    //    Any other order puts the net rate's zero somewhere other than the
+    //    declared equilibrium -- a law that cannot reach its own equilibrium,
+    //    at exit 0.  Read off the reaction's own `stoichiometry` entries, so
+    //    every reader (RateLaw, the single-reaction cstr and pfr, the batch
+    //    vessel's native forms) refuses through this ONE sentence; only a
+    //    DECLARED key can break the rule (a product's `order` and every
+    //    `orderRev` default to mass action).  The remedy is
+    //    an explicit reverse leg.
+    static void refuseNonMassActionDetailedBalance(const Dictionary&  reaction,
+                                                   const std::string& name,
+                                                   const std::string& who);
+
     // -- The same computation, broken out for a glass-box report ----------
     //    Kp (pressure basis), Σν, and Kc = Kp·(P°/(R_u T))^Σν; lnKp = −ΔG°/RT
     //    itself, for a caller that must not lose it to exp over/underflow.

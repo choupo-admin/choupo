@@ -92,6 +92,8 @@ RateLaw RateLaw::fromDict(const DictPtr&       rxn,
         throw std::runtime_error(who + ": `reversible true` derives the reverse rate from "
             "Kc, a CONCENTRATION-basis equilibrium constant, which does not fit an "
             "activity-basis rate law -- give the regressed `A_rev`/`Ea_rev` instead");
+    if (law.revBalance_)
+        Reaction::refuseNonMassActionDetailedBalance(*rxn, rxn->name(), who);
 
     // Adsorption: the LHHW denominator.  Absent => plain power law.
     if (kin->found("adsorption"))

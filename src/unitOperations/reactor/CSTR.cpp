@@ -213,6 +213,8 @@ int CSTR::solve(const DictPtr& dict,
     {
         Reaction::refuseLiquidBasisDetailedBalance(*rxnDict, nu,
             rxnDict->name(), "CSTR");
+        Reaction::refuseNonMassActionDetailedBalance(*rxnDict,
+            rxnDict->name(), "CSTR");
         K_eq  = Reaction::equilibriumKc(thermo, nu, T_react);
         k_rev = k / K_eq;
     }
