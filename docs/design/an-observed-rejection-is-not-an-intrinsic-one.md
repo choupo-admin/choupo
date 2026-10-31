@@ -11,8 +11,8 @@ gate `bin/curate/check_rejection_inversion.py`; one home
 per solute, `R_int = 1 - c_p/c_m`, measured against the WALL (Geraldes &
 Afonso, J. Membr. Sci. 300 (2007) 20, Eq. 1, R an input).  A data sheet
 quotes an OBSERVED one, `1 - c_p/c_feed` -- the NF270-4040 sheet's
-"stabilized salt rejection > 97.0 %" at 2,000 ppm MgSO4, 4.8 bar, 25 C,
-15 % recovery.  The wall is richer than the feed twice over: the film
+"stabilized salt rejection > 97.0 %" at 2,000 ppm MgSO4, an applied 70 psi
+(4.8 bar gauge, 5.81 bar absolute -- section 6), 25 C, 15 % recovery.  The wall is richer than the feed twice over: the film
 polarises it (`c_m/c_b > 1`) and the bulk concentrates along the leaf as
 the water leaves.  A student who types the sheet's 0.97 as R_int therefore
 gets a permeate saltier than the sheet measured, at exit 0, with nothing
@@ -54,8 +54,10 @@ depends on; the sheet's permeate and recovery together give the feed the
 element was tested at.  Matching the sheet's recovery instead would need a
 feed the sheet never ran, scaled by however far the membrane record's A_w
 is from the element's.  The cost is stated, not hidden: with the NF270
-record's teaching-case A_w the engine's permeate at the rated test is 14.5
-m3/d against the sheet's 9.5 (recovery 22.9 % against 15 %), so the
+record's teaching-case A_w the engine's permeate at the rated test is 18.9
+m3/d against the sheet's 9.5 (recovery 29.8 % against 15 %, at the gauge
+reading of section 6; 14.5 m3/d and 22.9 % when slice 1 read the 4.8 bar as
+absolute), so the
 polarisation the inversion corrects for is the engine's, and both numbers
 are printed.  It is also the rule `check_membrane_modules` arm (f) runs the
 rated test with.
@@ -84,15 +86,17 @@ the record is read (all or nothing, `MembraneModule.cpp`).
 
 ## 3. The witness
 
-membrane25: the same NF270-4040 element twice, fed 2,000 ppm MgSO4 at 8 bar.
+membrane25: the same NF270-4040 element twice, fed 2,000 ppm MgSO4 at 8 bar
+absolute; the rated test read as GAUGE (section 6), 5.81 bar absolute.
 
 | | R_int | c_m/c_b at the rated test | R_obs at 8 bar | permeate MgSO4 |
 |---|---|---|---|---|
-| derived | 0.98331 | 1.593 | 0.94426 | 111 ppm |
+| derived | 0.98641 | 1.874 | 0.95453 | 91 ppm |
 | naive (0.97 typed) | 0.97 | -- | 0.90065 | 199 ppm |
 
-The naive element passes 1.81x the salt; at the sheet's own test it reports
-94.6 %, not 97.0 %.
+The naive element passes 2.18x the salt; at the sheet's own test it reports
+93.4 %, not 97.0 %.  (Slice 1 read the 4.8 bar as absolute: R_int 0.98331,
+c_m/c_b 1.593, R_obs 0.94426, 111 ppm, 1.81x, 94.6 %.)
 
 ## 4. What the gate holds
 
@@ -104,7 +108,9 @@ film, held to its closed form `R_obs = 1 - (1 - (1 - r)^(1 - R))/r` to 1e-5
 at 800 stations and falling first-order from 200 (the march is first order).
 So R_int and R_obs are EQUAL only in the limit of no film AND vanishing
 recovery -- a refinement of "equal when polarisation is switched off",
-measured: at the probe's 29.5 % recovery the bulk term alone is 0.0046.
+measured: at the probe's 29.5 % recovery the bulk term alone is 0.0046
+(slice 1's absolute reading; at the gauge reading the film-off probe runs
+at 39.3 % recovery and derives R_int 0.976239).
 
 ## 5. Rejected alternatives
 
@@ -174,12 +180,22 @@ token.  An unknown id, or an id naming another solute's test, refuses.
 With two derived solutes in one unit (two tests), `ratedTest_recovery` and
 `ratedTest_permeateFlow` take the solute's suffix; one keeps slice 1's keys.
 
-**Found on the way, not changed.**  Slice 1 reads the NF270-4040 sheet's
-"70 psi applied" as an ABSOLUTE 4.8 bar.  Applied pressures in a data sheet
-are normally gauge (5.8 bar absolute); the record does not say, so the run
-now announces the reading -- declaring `pressureBasis feedGauge;` on the
-record is a curation act on the sheet's wording and would move membrane25's
-goldens.
+**Found on the way, and decided.**  Slice 1 read the NF270-4040 sheet's
+"applied pressure 70 psi (4.8 bar)" as an ABSOLUTE 4.8 bar.  DECIDED
+(DEV.md 4c C189, rule 00): a data sheet's applied pressure is GAUGE (psig)
+unless the sheet says otherwise.  The NF270-4040 and SW30HR-380 records
+declare `pressureBasis feedGauge;` in their rated test, each quoting the
+sheet's own words for the pressure ("applied pressure 70 psi (4.8 bar)";
+"800 psi (55 bar)", neither saying absolute), and the probe runs at 5.81
+and 56.0 bar absolute.  membrane15 and membrane25 were re-imported against
+the records; membrane25's NFderived rows moved (R_int 0.98331 -> 0.98641,
+the rated test's c_m/c_b 1.593 -> 1.874) and were re-recorded with the
+list.  membrane16 keeps its pre-C146 seal: re-sealing it would move its film and
+friction, held for Vítor since C146 (`a-stage-of-spiral-elements.md` 4),
+and the attempt on 2026-10-31 was refused by the importer anyway -- its
+staged run reported `FeedSpacerRegistry: unknown feed spacer
+'Spacer-28mil' ... the builtins were not installed`.  membrane16 inverts
+nothing, so none of its numbers depends on the pressure basis.
 
 Gate `bin/curate/check_rated_tests.py` (single == list of one on
 membrane15/16/25; a HYPOTHETICAL fixture record built in a temporary

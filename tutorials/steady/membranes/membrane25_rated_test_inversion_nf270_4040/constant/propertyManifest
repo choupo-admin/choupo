@@ -28,10 +28,10 @@ propertyManifest
         "assets/NF270-4040.dat"
         {
             type          imported;
-            sha256        "f5407ed6137168b97a3186d9ca979c442272273bb0d1ad474bc93e236aa81c67";
-            computationalSha256 "b6ebcda3a80695118e70ebd7dbb655228e3a1700bc04d864f3bb7fb554f7e4f4";
+            sha256        "03db5bc8ef6479e7996baadc4b99dd206ce6f9e5d384df93b1e7108bab04230c";
+            computationalSha256 "368d3ed98f7f463b025bff944c4d439e9a1c5bcd4c752f8bfa90a456603a58a9";
             origin        "data/standards/assets/NF270-4040.dat";
-            originSha256  "d364e799badda9f1d60da02659ebb1310bacb47d74544b3c701aa318cffb73a3";
+            originSha256  "12201c00c43ee00eb0aa75700bc026b3ff40dd102862744070c0e72279d0ed27";
             release       Choupo-2608;
         }
         "assets/NF270.dat"

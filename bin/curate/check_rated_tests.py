@@ -46,7 +46,11 @@ WHAT THIS GATE CHECKS (every run is RUN here):
       each one; the derived R_int(MgSO4) equals the shipped membrane25's to
       1e-9 (a selector that took the first test, or the NaCl one, could not);
       the caveat line says which test was chosen and says NONE of the
-      "does not state" sentences, while the shipped membrane25 says all three.
+      "does not state" sentences, while the shipped membrane25 says the two
+      its record leaves unstated (value type, permeate-flow basis) and
+      announces its declared GAUGE pressure made absolute (C189: the
+      NF270-4040 record declares `pressureBasis feedGauge;`, so the fixture's
+      MgSO4 test declares it too and the two R_int agree).
   (d) ONE SOLUTE, TWO TESTS.  Two MgSO4 tests `a` (the sheet's numbers) and
       `b` (8 bar, 0.95 -- hypothetical): `MgSO4 fromRatedTest;` REFUSES naming
       both ids and the list form; `MgSO4 ( fromRatedTest b );` runs and its
@@ -60,11 +64,15 @@ WHAT THIS GATE CHECKS (every run is RUN here):
       solute's test; a range; a net driving pressure; a permeate flow from a
       separate test; a solute stated as another formula; the list form with
       a word other than fromRatedTest.
-  (g) A GAUGE PRESSURE is announced made absolute ("bar absolute") and the
-      run converges.
+  (g) A GAUGE PRESSURE is announced made absolute ("bar absolute"), the
+      run converges, its R_int equals membrane25's (whose record is gauge,
+      C189) to 1e-9, and the same test read `feedAbsolute` gives a
+      different R_int.
 
-WHAT IT DOES NOT CHECK: that any optional fact is TRUE of a real element (no
-shipped record declares one -- a curation act); the KPIs of two derived
+WHAT IT DOES NOT CHECK: that any optional fact is TRUE of a real element
+(the shipped records declare only `pressureBasis feedGauge;`, the C189 rule
+that a data sheet's applied pressure is gauge -- a curation act, read from
+the sheet's wording, which no gate can verify); the KPIs of two derived
 solutes from two tests in one unit (suffixed keys, published, no witness);
 any conversion between a solute and its stated formula (refused instead).
 
@@ -162,7 +170,7 @@ SHEET_B = """solute MgSO4; feedMassFraction 2.0e-3; P 8.0 bar; T 298.15 K;
 NACL = """id naclStd; solute NaCl; feedMassFraction 2.0e-3; P 4.8 bar; T 298.15 K;
         recovery 0.15; permeateFlow 9.5 m3/d; rejection 0.50;"""
 FULL = """id mgso4Typical; """ + SHEET + """
-        rejectionValueType typical; pressureBasis feedAbsolute; pH 7;
+        rejectionValueType typical; pressureBasis feedGauge; pH 7;
         permeateFlowBasis sameTest; source "gate fixture, hypothetical";"""
 
 
@@ -265,9 +273,16 @@ def main():
             fail("(c) membrane25 did not run (exit %d)" % rc)
         absent = ("does not state whether the rejection", "does not state what its pressure",
                   "does not state whether the permeate flow")
-        for a in absent:
+        #  The NF270-4040 record declares `pressureBasis feedGauge;` (C189) and
+        #  nothing else optional: two absences announced, the pressure read as
+        #  gauge and said so, its absence sentence NOT said.
+        for a in absent[0], absent[2]:
             if a not in so25 or a not in se25:
-                fail("(c) membrane25 (no optional fact declared) does not announce %r on stdout and stderr" % a)
+                fail("(c) membrane25 does not announce %r on stdout and stderr" % a)
+        if absent[1] in so25:
+            fail("(c) membrane25's record declares its pressure basis, yet the run says %r" % absent[1])
+        if "4.8 bar(g) + 1.01325 bar (standard atmosphere) = 5.81325 bar absolute" not in so25:
+            fail("(c) membrane25 does not announce its gauge pressure made absolute")
 
         # ---- (b) both forms refuse -----------------------------------------
         refusal(tmp, "both forms", "ratedTest { %s }\n%s" % (SHEET, tests_list(SHEET)),
@@ -287,7 +302,7 @@ def main():
                 for opt in (", stated as", ", rejection ", ", pressure ", ", pH", ", permeate flow ", "; source:"):
                     if opt in nacl[0].split(": permeate")[1].replace(", rejection 50.00 %", ""):
                         fail("(c) the NaCl line prints an optional fact the record does not state: %r" % opt)
-                for opt in (", rejection typical", ", pressure feedAbsolute", ", pH 7",
+                for opt in (", rejection typical", ", pressure feedGauge", ", pH 7",
                             ", permeate flow sameTest", "; source: gate fixture, hypothetical"):
                     if opt not in mgso4[0]:
                         fail("(c) the MgSO4 line does not print the declared %r: %s" % (opt, mgso4[0]))
@@ -351,10 +366,19 @@ def main():
 
         # ---- (g) a gauge pressure ------------------------------------------------
         rc, so, se = probe(tmp, "g_gauge", "ratedTest { %s pressureBasis feedGauge; }" % SHEET)
+        rcA, soA, seA = probe(tmp, "g_absolute", "ratedTest { %s pressureBasis feedAbsolute; }" % SHEET)
+        Rg, Ra = R_int(so), R_int(soA)
         if rc != 0 or "bar(g) + 1.01325 bar (standard atmosphere) = 5.81325 bar absolute" not in so:
             fail("(g) the gauge probe: exit %d, announcement %s" % (rc, "absent" if rc == 0 else "-"))
+        elif rcA != 0 or Rg is None or Ra is None or R25 is None:
+            fail("(g) the absolute probe did not run (exit %d)" % rcA)
+        elif abs(Rg - R25) > 1e-9 or abs(Rg - Ra) < 1e-6:
+            #  membrane25's record is gauge (C189): the gauge fixture must
+            #  reproduce it, and the absolute reading must not.
+            fail("(g) gauge R_int %.12f, membrane25 %.12f, absolute %.12f" % (Rg, R25, Ra))
         else:
-            print("  (g) gauge announced and made absolute: R_int %.6f (absolute reading %.6f)" % (R_int(so), R25 or 0))
+            print("  (g) gauge announced and made absolute: R_int %.6f = membrane25's; the absolute reading "
+                  "gives %.6f" % (Rg, Ra))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

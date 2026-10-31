@@ -74,6 +74,8 @@ ratedTest
     solute            MgSO4;
     feedMassFraction  2.0e-3;      // 2,000 ppm MgSO4
     P                 4.8 bar;     // 70 psi applied
+    pressureBasis     feedGauge;   // the sheet: "applied pressure 70 psi (4.8 bar)" -- a data sheet's
+                                   // applied pressure is gauge unless it says otherwise (DEV.md C189)
     T                 298.15 K;    // 77 F (25 C)
     recovery          0.15;
     permeateFlow      9.5 m3/d;    // 2,500 gpd

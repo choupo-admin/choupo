@@ -163,6 +163,14 @@ module and PRINTS:
     | data sheet: 26.0 m3/d at 8 %, rejection 99.70 %   (ratio permeate 1.99x)
 ```
 
+(Since 2026-10-31, DEV.md 4c C189, both records declare `pressureBasis
+feedGauge;` -- a data sheet's applied pressure is gauge unless the sheet
+says otherwise -- and the probe adds the standard atmosphere: 5.81 bar and
+56.0 bar absolute.  The same gate then prints NF270-4040 20.56 m3/d
+(recovery 32.5 %), rejection 99.70 %, ratio 2.16x; SW30HR-380 53.98 m3/d
+(recovery 16.6 %), rejection 99.85 %, ratio 2.08x.  The block above is the
+absolute reading of 2026-09-15, kept as measured then.)
+
 (Since C146, 2026-10-24, the catalogue SW30HR-380 names its feed spacer as a
 record, `Spacer-28mil`, and its channel's hydraulic diameter is Schock &
 Miquel's Eq. 17 (0.914 mm) instead of 2 h eps (1.280 mm); the same probe
@@ -171,7 +179,7 @@ and keeps its numbers -- see `a-stage-of-spiral-elements.md`.)
 
 Two findings, recorded and not tuned.  **The fitted `A_w` of both membrane
 records is high against the manufacturer's own test — 1.6× on the NF270,
-2.0× on the SW30HR** — under a spacer channel with a computed film, where
+2.0× on the SW30HR** (2.16× and 2.08× at the gauge reading of C189) — under a spacer channel with a computed film, where
 membrane01 was recorded with a constant `k_film 5e-5` and 35 g/L.  Both
 records say in their own headers that their permeabilities are fits to a
 teaching case (`provenance fittedToCase`), and task #67 already names

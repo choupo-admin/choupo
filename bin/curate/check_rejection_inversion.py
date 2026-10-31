@@ -23,7 +23,9 @@ WHAT THIS GATE CHECKS (every case is RUN here):
       NFnaive; files a `provenance` advisory naming the module.  Then the
       derived R_int is typed back as a NUMBER (the ordinary path, no
       inversion) into a copy whose NFderived feed is the rated test itself
-      (2,000 ppm, 4.8 bar, 25 C, permeateFlow/recovery) and the module's
+      (2,000 ppm, the record's 4.8 bar read as the probe reads it -- GAUGE,
+      5.81325 bar absolute, since the record declares `pressureBasis
+      feedGauge;` (C189) -- 25 C, permeateFlow/recovery) and the module's
       R_obs_MgSO4 there must equal the sheet's 0.97 to 1e-7 (the solve stops
       at 1e-10 on R_obs; the slack is the 12 figures the result JSON carries
       and the feed's own rounding).  NFnaive at the same feed is printed:
@@ -146,15 +148,25 @@ def edit_derived(case, pattern, repl, flags=0):
     p.write_text(head + body2 + tail)
 
 
+def rated_pressure_bar():
+    """The rated feed pressure as the engine's probe reads it: the record's
+    4.8 bar, plus the standard atmosphere when the CATALOGUE record declares
+    `pressureBasis feedGauge;` (RatedTestInversion.cpp conditionsOf)."""
+    rec = (ROOT / "data/standards/assets/NF270-4040.dat").read_text()
+    rec = re.sub(r"//[^\n]*", "", rec)
+    return 4.8 + (1.01325 if re.search(r"pressureBasis\s+feedGauge\s*;", rec) else 0.0)
+
+
 def rated_feed(path):
     """Write the rated test's feed exactly as the engine's probe builds it:
-    2,000 ppm MgSO4 at rho 1000 and permeateFlow / recovery, 4.8 bar, 25 C."""
+    2,000 ppm MgSO4 at rho 1000 and permeateFlow / recovery, the rated
+    pressure as the probe reads it (rated_pressure_bar), 25 C."""
     Q = 9.5 / 0.15 / 24.0                       # m3/h
     m = Q * 1000.0
     s = path.read_text()
     s = re.sub(r"water\s+[0-9.eE+-]+ kmol/h;", "water   %.12g kmol/h;" % (m * 0.998 / MW["water"]), s)
     s = re.sub(r"MgSO4\s+[0-9.eE+-]+ kmol/h;", "MgSO4   %.12g kmol/h;" % (m * 0.002 / MW["MgSO4"]), s)
-    s = re.sub(r"P\s+8\.0 bar;", "P               4.8 bar;", s)
+    s = re.sub(r"P\s+8\.0 bar;", "P               %.6f bar;" % rated_pressure_bar(), s)
     path.write_text(s)
 
 

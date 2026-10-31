@@ -62,6 +62,8 @@ ratedTest
     solute            NaCl;
     feedMassFraction  32.0e-3;     // 32,000 ppm NaCl (+ 5 ppm boron, not modelled)
     P                 55 bar;      // 800 psi applied
+    pressureBasis     feedGauge;   // the sheet: "800 psi (55 bar)", no "absolute" -- a data sheet's
+                                   // applied pressure is gauge unless it says otherwise (DEV.md C189)
     T                 298.15 K;    // 77 F (25 C), pH 8
     recovery          0.08;
     permeateFlow      26 m3/d;     // 6,900 gpd

@@ -11,32 +11,35 @@
   rejection is not the INTRINSIC rejection `constantRejection` takes.
 
   The NF270-4040 sheet quotes "stabilized salt rejection > 97.0 %" for
-  2,000 ppm MgSO4 at 4.8 bar, 25 C, 15 % recovery -- OBSERVED, feed to
-  permeate.  The law's R_int is measured against the WALL, which is richer
+  2,000 ppm MgSO4 at an applied 70 psi (4.8 bar), 25 C, 15 % recovery --
+  OBSERVED, feed to permeate.  An applied pressure on a data sheet is GAUGE
+  unless the sheet says otherwise (DEV.md C189): the record declares
+  `pressureBasis feedGauge;`, so the test is run at 4.8 + 1.01325 =
+  5.81 bar absolute, and the run says so.  The law's R_int is measured against the WALL, which is richer
   than the feed: the film polarises it and the bulk concentrates along the
   leaf.  Two copies of the same element, fed the same 2,000 ppm MgSO4 at
-  8 bar (away from the rated 4.8 bar):
+  8 bar absolute (away from the rated 5.81 bar):
 
     NFderived  `rejection { MgSO4 fromRatedTest; }` -- the engine runs THIS
                element at the sheet's rated test and finds the R_int whose
                predicted observed rejection is 0.97:
-                   R_int(MgSO4)        = 0.98331  (KPI R_int_fromRatedTest_MgSO4)
-                   c_m/c_b at the test = 1.593    (ratedTest_cm_over_cb_MgSO4,
+                   R_int(MgSO4)        = 0.98641  (KPI R_int_fromRatedTest_MgSO4)
+                   c_m/c_b at the test = 1.874    (ratedTest_cm_over_cb_MgSO4,
                                                    the channel average)
     NFnaive    `rejection { MgSO4 0.97; }` -- the sheet's number pasted as
                if it were intrinsic.
 
   At 8 bar the two permeates carry (KPI R_obs_MgSO4; the permeate streams):
-      NFderived  R_obs 0.94426, permeate 1128 kg/h at 111 ppm MgSO4
+      NFderived  R_obs 0.95453, permeate 1124 kg/h at 91 ppm MgSO4
       NFnaive    R_obs 0.90065, permeate 1145 kg/h at 199 ppm MgSO4
-  -- the naive element passes 1.81x the salt, and at the sheet's own test
-  it would report 94.6 %, not the 97.0 % the sheet measured.  (Both R_obs
+  -- the naive element passes 2.18x the salt, and at the sheet's own test
+  it would report 93.4 %, not the 97.0 % the sheet measured.  (Both R_obs
   fall below 0.97 at 8 bar: 43 % of the water leaves, so the bulk
   concentrates, and the film is thicker at the higher flux.)
 
   NOT a validation: the NF270 record's A_w is a fit to a teaching case --
-  at the rated test the engine's permeate is 14.5 m3/d against the sheet's
-  9.5 (recovery 22.9 % against 15 %), printed by the [ratedTest] line, so
+  at the rated test the engine's permeate is 18.9 m3/d against the sheet's
+  9.5 (recovery 29.8 % against 15 %), printed by the [ratedTest] line, so
   the polarisation the inversion corrects for is the engine's, not the
   bench's -- and a constant R_int stays constant away from the test.  See
   the README.
