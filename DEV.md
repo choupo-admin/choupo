@@ -1576,8 +1576,17 @@ accepts today, and that is a policy call.
 > record's fitted A_w is high for the element (printed by the run, not
 > hidden).  Open: the rated-test feed rule is stated twice (C++ and
 > check_membrane_modules arm (f)); no Theory Guide section yet; the
-> SW30HR-380 NaCl test has no witness.  Next: slice (2), `ratedTest` as a
-> list.
+> SW30HR-380 NaCl test has no witness.  Slice (2) DONE (10dc43173):
+> `ratedTests ( {..} )` beside `ratedTest {}` (read as a list of one,
+> byte-identical); per-test optional facts id / rejectionValueType /
+> pressureBasis / pH / permeateFlowBasis / soluteBasis / source, absent stays
+> absent, announced where the inversion needs a reading;
+> `<s> ( fromRatedTest <id> )`; gate `check_rated_tests` (a hypothetical
+> fixture record, never in data/standards).  DECIDED (rule 00): a data
+> sheet's applied pressure is GAUGE (psig) unless the sheet says otherwise;
+> the NF270-4040 and SW30HR-380 records declare `pressureBasis feedGauge;`
+> -- a separate slice, because it moves membrane25's goldens (R_int 0.9833
+> -> 0.9864 at the gauge reading).
 
 > **C188. WHAT A UNIT ACCEPTS: MODELLED, A DECLARED APPROXIMATION, OR
 > REFUSED (an external proposal, ChatGPT, "chemical component

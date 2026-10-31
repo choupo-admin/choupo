@@ -19,7 +19,7 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 | status | what | ref |
 |---|---|---|
 | todo | C188 item 5: the per-unit acceptance contract, on its design record | C188 |
-| running | C189 slice 2: several rated tests per module (`ratedTest` as a list, the single form kept) | C189 |
+| running | Rated pressures read as GAUGE: declare pressureBasis feedGauge on NF270-4040 and SW30HR-380; membrane25's goldens move (list and reasons in the commit) | C189 |
 | todo | C189 slices 3-6: six illustrative classes, import/QA to data/local, shortlist with no default score, docs | C189 |
 | todo | Curation: the NF270 record's A_w gives 14.47 m3/d at the rated test against the sheet's 9.5 | C189 |
 | running | C178 is on main (421bc12e0); validate it in the site's WASM | C178 |
@@ -95,5 +95,6 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 | done | C186 item 6: an unconverged bubble point is not a T-x-y point (plot tolerance in one home, announced) | C186, b98ddc97e |
 | done | C188 defects 1-4: RO swallowed a volatile solute; a pump pumped vapour; the aqueous solvent has one home; activity models declare their domain | C188, 6348b66e3 |
 | done | C178 integrated; lesson citations re-pointed by content (C185/C186 had moved them); Node 18 `File` for the GUI tests | C178, 421bc12e0 |
+| done | C189 slice 2: several rated tests per module, each as the sheet states it (ratedTests, fromRatedTest <id>) | C189, 10dc43173 |
 | done | C189 slice 1: a datasheet's observed rejection inverted to the intrinsic one (fromRatedTest, membrane25) | C189, 7c186a77a |
 | done | bin/runTests pins CHOUPO_HOME and PATH to its own tree (a worktree's suite had read the primary checkout's engine and data) | b98ddc97e |
