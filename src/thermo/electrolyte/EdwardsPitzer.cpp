@@ -107,6 +107,22 @@ const std::string& EdwardsPitzer::pHScale() const
     return s;
 }
 
+ActivityDomain EdwardsPitzer::validityDomain() const
+{
+    ActivityDomain d;
+    d.I_max        = 6.0;
+    d.source       = "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24 (1978) "
+                     "966: ~6 molal for the Pitzer expansion, lower when "
+                     "ionisation is extensive";
+    d.subject      = "Edwards et al. (1978)";
+    d.bandLabel    = "validity limit";
+    d.consequence  = "the paper's own upper limit (lower still when ionisation "
+                     "is extensive); results here are a code-to-code target, "
+                     "not a physical claim";
+    d.beyondPhrase = "lower when ionisation is extensive";
+    return d;
+}
+
 double EdwardsPitzer::lnGammaDiluteLimit(double b0_aa, double m_a)
 {
     return 2.0 * b0_aa * m_a;                                        // (8a)

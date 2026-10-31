@@ -3416,6 +3416,25 @@ PYEOF
     fi
     rm -f /tmp/edwards.$$
 
+    # Activity-domain gate (DEV.md 4c C188 item 4, 2026-10-31).  An aqueous
+    # activity model DECLARES its own validity domain
+    # (AqueousActivity::validityDomain, pure virtual) and no caller decides it
+    # by the model's name: the retired `I > 0.5 && activityName_ == "davies"`
+    # branch and the two property ops' restated "~0.5 mol/kg" are refused at
+    # source, and through the engine Davies announces beyond its band with
+    # its own sentence and not inside it, PitzerHMW (no stated bound)
+    # announces nothing, Edwards announces beyond its paper's ~6 mol/kg.
+    # Sabotage-verified three ways (docstring).
+    if gate_exec "$ROOT/bin/curate/check_activity_domain.py" > /tmp/actdomain.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "activity-domain-gate" "$(tail -1 /tmp/actdomain.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_activity_domain.py)\n" "activity-domain-gate"
+        cat /tmp/actdomain.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/actdomain.$$
+
     # Validity-window gate (2026-08-05, from the I3 provenance audit).  I4
     # says a number outside its fitted range is ANNOUNCED, never silently
     # extrapolated -- and that announcement is driven by a declared interval

@@ -1486,8 +1486,8 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         else
             std::cout << "  aqueous activity: " << actDisp << " (A = "
                       << std::setprecision(4) << A
-                      << ") -- trustworthy to I ~ 0.5 mol/kg, indicative beyond;"
-                         " a_w from phi = 1 (dilute approximation)\n"
+                      << ") -- " << activity_->validityDomain().bannerPhrase()
+                      << "; a_w from phi = 1 (dilute approximation)\n"
                       << std::defaultfloat;
         if (doExchange)
         {
@@ -2383,9 +2383,12 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         }
     }
 
-    // -- honesty: Davies beyond its range is INDICATIVE, and we say so ----------
-    // (Pitzer HMW is built for exactly this high-I regime -- the advisory is a
-    // Davies-only caveat, so it never fires when Pitzer is the active model.)
+    // -- honesty: a model beyond its DECLARED domain is INDICATIVE, and we say so
+    // The band is the MODEL's declaration (AqueousActivity::validityDomain,
+    // DEV.md 4c C188 item 4), never a branch here on its name: this used to
+    // read `if (I > 0.5 && activityName_ == "davies")`, so the band had a
+    // second home here and any other model was "in domain" by omission.  A
+    // model that states no bound (PitzerHMW today) announces nothing.
     //
     // THE THRESHOLD IS THE ONE THE MESSAGE CLAIMS (corrected 2026-07-27).  It
     // guarded 0.7 while stating a ~0.5 trust range in its own text, which left
@@ -2394,16 +2397,14 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
     // quotable number with no caveat at all.  Either the guard comes down to
     // what the message says, or the message goes up to what the guard does;
     // the two cannot disagree, and the honest direction is to guard sooner.
-    if (I > 0.5 && activityName_ == "davies")
+    if (const ActivityDomain dom = activity_->validityDomain(); dom.beyond(I))
     {
-        out.daviesExceeded = true;
-        std::ostringstream msg;
-        msg << "Davies activity at I = " << std::fixed << std::setprecision(2)
-            << I << " mol/kg -- beyond its ~0.5 mol/kg trust range; speciation "
-               "and SI are INDICATIVE (use Pitzer for quantitative work)";
-        if (AdvisoryLog::instance().add("model", "warning", "speciation", msg.str())
+        out.activityBeyondDomain = true;
+        out.activityDomainNote   = dom.sentence(I);
+        if (AdvisoryLog::instance().add("model", "warning", "speciation",
+                                        out.activityDomainNote)
             && verbosity >= 2)
-            std::cout << "  [advisory] " << msg.str() << "\n";
+            std::cout << "  [advisory] " << out.activityDomainNote << "\n";
     }
 
     if (verbosity >= 2)
@@ -2527,9 +2528,9 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                       << std::setprecision(4) << out.Ibefore << " -> " << out.I
                       << " mol/kg\n" << std::defaultfloat;
 
-            if (out.daviesExceeded)
-                std::cout << "    [advisory] I > 0.5 mol/kg -- n_precip here is "
-                             "INDICATIVE (Davies beyond its trust range)\n";
+            if (out.activityBeyondDomain)
+                std::cout << "    [advisory] n_precip here is INDICATIVE: "
+                          << out.activityDomainNote << "\n";
         }
 
         // given-pH + H-leg mineral: loud pH-stat warning (H is NOT conserved)

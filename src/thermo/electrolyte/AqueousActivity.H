@@ -149,10 +149,55 @@ struct ActivityResult
     std::function<double()> osmotic;
 };
 
+// THE VALIDITY DOMAIN AN ACTIVITY MODEL DECLARES ABOUT ITSELF (DEV.md 4c C188
+// item 4, 2026-10-31).  Until then the only domain check in the engine was a
+// branch in SpeciationSolver on the model's NAME with Davies' 0.5 mol/kg band
+// written inline, and two property ops restated the number in their own text:
+// three homes for one fact about one model, and a model added later would
+// have been silently "in domain" everywhere because nobody had written its
+// name into the branch.  Now each model states its band HERE, with the source
+// that states it, and every caller asks `beyond(I)` and prints `sentence(I)`
+// -- no caller decides a domain, and no caller names a model.
+//
+// An ABSENT bound is a fact too: `I_max <= 0` means "no bound stated in the
+// tree", and then nothing is announced.  A number nobody can cite is never
+// written here to fill the slot (a default here would be a second Davies band
+// under another model's name).
+//
+// Ionic strength only.  Temperature is checked where a model's PARAMETERS are
+// read (each Edwards record's Trange, the K(T) fits' ranges), because a
+// temperature window is a property of a parameter set, not of the equation.
+struct ActivityDomain
+{
+    double      I_max = 0.0;   // upper ionic strength [mol/kg]; <= 0: no stated bound
+    std::string source;        // who states the bound (cited, never inferred)
+    std::string subject;       // how the sentence names the model ("Davies")
+    std::string bandLabel;     // what the band is ("trust range")
+    std::string consequence;   // what a result beyond it is
+    std::string beyondPhrase;  // short form for a banner ("indicative beyond")
+
+    bool stated() const { return I_max > 0.0; }
+    bool beyond(double I) const { return stated() && I > I_max; }
+
+    // "~0.5 mol/kg trust range" -- the band as the model names it.
+    std::string band() const;
+    // "trustworthy to I ~ 0.5 mol/kg, indicative beyond" (banner form), or
+    // "no ionic-strength bound stated" when the model states none.
+    std::string bannerPhrase() const;
+    // "<subject> activity at I = 1.66 mol/kg -- beyond its <band>;
+    //  <consequence>" -- THE sentence every caller prints.
+    std::string sentence(double I) const;
+};
+
 class AqueousActivity
 {
 public:
     virtual ~AqueousActivity() = default;
+
+    // THE VALIDITY DOMAIN THIS MODEL STATES (see ActivityDomain above).  PURE
+    // VIRTUAL for the reason pHScale is: a new model must declare its band,
+    // or that it has none, or it does not compile.
+    virtual ActivityDomain validityDomain() const = 0;
 
     // The activity model's registered name (e.g. "davies").
     virtual const std::string& modelName() const = 0;

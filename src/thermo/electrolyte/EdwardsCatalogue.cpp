@@ -288,6 +288,13 @@ const std::string& EdwardsPitzerModel::pHScale() const
     return probe.pHScale();
 }
 
+ActivityDomain EdwardsPitzerModel::validityDomain() const
+{
+    //  Delegated for the same reason as pHScale: one statement of the band.
+    static const EdwardsPitzer probe{EdwardsParameters{}};
+    return probe.validityDomain();
+}
+
 ActivityResult EdwardsPitzerModel::evaluate(const IonState& st, double T) const
 {
     return EdwardsPitzer(assembleEdwardsParameters(st.name, st.charge, T))

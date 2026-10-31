@@ -205,7 +205,11 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
         throw std::runtime_error("scalingScan: cannot open output file");
 
     const scalar dr = (rTo - rFrom) / static_cast<scalar>(nPts - 1);
-    bool daviesExceeded = false;
+    //  Where the scan first leaves the active activity model's DECLARED
+    //  domain, and the model's own sentence there (C188 item 4: this op
+    //  restates no band and names no model).
+    bool beyondDomain = false;
+    std::string domainNote;
     scalar rExceed = 1.0, lastI = 0.0;
     // onset tracking: the first r where each allowed mineral begins to precipitate
     std::map<std::string, scalar> rOnset;
@@ -352,8 +356,8 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
             }
         csv << "\n";
 
-        if (raw.daviesExceeded && !daviesExceeded)
-        { daviesExceeded = true; rExceed = r; }
+        if (raw.activityBeyondDomain && !beyondDomain)
+        { beyondDomain = true; rExceed = r; domainNote = raw.activityDomainNote; }
         lastI = raw.I;
 
         if (k == 0 || k + 1 == nPts)                          // pin the end points
@@ -390,12 +394,12 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
     for (const auto& m : siCols)
         if (siOnset.count(m)) diag_["recovery_at_" + m + "_onset"] = siOnset.at(m);
 
-    if (daviesExceeded && verbosity >= 1)
-        std::cout << "  [advisory] Davies beyond its ~0.5 mol/kg trust range "
-                     "from r = " << std::fixed << std::setprecision(2) << rExceed
-                  << " (I = " << std::setprecision(3) << lastI
-                  << " mol/kg at r = " << std::setprecision(2) << rTo
-                  << ") -- SI there is INDICATIVE\n" << std::defaultfloat;
+    if (beyondDomain && verbosity >= 1)
+        std::cout << "  [advisory] from r = " << std::fixed
+                  << std::setprecision(2) << rExceed << " on (I = "
+                  << std::setprecision(3) << lastI << " mol/kg at r = "
+                  << std::setprecision(2) << rTo << "): " << domainNote
+                  << "\n" << std::defaultfloat;
 
     if (verbosity >= 2)
     {

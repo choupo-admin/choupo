@@ -334,6 +334,15 @@ const std::string& PitzerHMW::pHScale() const
     return s;
 }
 
+ActivityDomain PitzerHMW::validityDomain() const
+{
+    ActivityDomain d;                 // I_max = 0: no stated bound (see header)
+    d.subject = "Pitzer HMW";
+    d.source  = "none stated: the HMW pair records carry no molality or "
+                "ionic-strength range";
+    return d;
+}
+
 // ----------------------------------------------------------------------------
 ActivityResult PitzerHMW::evaluate(const IonState& st, double T) const
 {
