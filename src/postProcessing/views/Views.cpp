@@ -29,6 +29,7 @@ License
 #include "postProcessing/views/Views.H"
 
 #include "core/DictAudit.H"
+#include "core/Units.H"
 #include "result/ResultEmitter.H"
 #include "thermo/RecordResolver.H"
 
@@ -1042,6 +1043,22 @@ void resolveSeries(Series& s, const std::vector<Publication>& pubs,
                " share no x value");
 }
 
+//  A TEMPERATURE PUBLISHED IN K MAY BE DRAWN ON AN AXIS DECLARED IN degC (or
+//  degF) -- DEV.md 4c C182, Vitor: a student reads a cooling from 55 to 20 C
+//  at once, and a change of SCALE needs no model.  The values are rescaled
+//  through units::fromSI, the one home of showing a kelvin value in an affine
+//  unit, and the series then carries the declared unit; every other pair of
+//  units stays held to the declaration (checkUnit refuses).
+void toAffineTemperature(std::vector<scalar>& v, std::string& unit, bool isPublished,
+                         const std::string& declared)
+{
+    if (!isPublished || declared.empty() || unit == declared || unit != "K") return;
+    const auto spec = units::lookupUnit(declared);
+    if (!spec || !spec->affine) return;
+    for (auto& x : v) x = units::fromSI(x, declared);
+    unit = declared;
+}
+
 void checkUnit(const std::string& published, bool isPublished, const std::string& declared,
                const std::string& what, const std::string& where)
 {
@@ -1297,12 +1314,15 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                 if (it.xAxis.label.empty()) it.xAxis.label = s.xKey;
                 if (it.kind == "plot" && it.yAxis.label.empty())
                     it.yAxis.label = it.series.size() == 1 ? s.yKey : std::string();
+                toAffineTemperature(s.x, s.xUnit, s.xPublished, it.xAxis.unit);
                 checkUnit(s.xUnit, s.xPublished, it.xAxis.unit, "x ('" + s.xKey + "')", sw);
                 const std::string yDecl = it.kind == "plot" ? it.yAxis.unit
                                         : (s.declaredUnit.empty() ? s.yUnit : s.declaredUnit);
                 if (it.kind == "table" && s.declaredUnit.empty() && !s.yPublished)
                     refuse(sw, "the source publishes no unit for '" + s.yKey + "' -- declare"
                            " the column's `unit`");
+                if (it.kind == "plot")
+                    toAffineTemperature(s.y, s.yUnit, s.yPublished, yDecl);
                 checkUnit(s.yUnit, s.yPublished, yDecl, "y ('" + s.yKey + "')", sw);
                 if (!s.xPublished) s.xUnit = it.xAxis.unit;
                 if (!s.yPublished) s.yUnit = yDecl;

@@ -63,8 +63,10 @@ Description
     THE READER REFUSES every name it cannot resolve, listing what IS
     published (an operation, a diagnostic, a table, a column, a reference,
     a series a difference names) and every key nothing reads; it holds a
-    unit the source publishes to the one declared, and an axis that
-    declares none takes the one its series publish.  It writes each view to
+    unit the source publishes to the one declared (one change of SCALE is
+    made, never a model: a temperature published in K is drawn on an axis
+    declared in degC or degF through units::fromSI, DEV.md 4c C182), and an
+    axis that declares none takes the one its series publish.  It writes each view to
     postProcessing/<op>/<view>.csv (postProcessing/case/ for a view drawing
     several operations) and its description to <view>.json beside it, and
     returns the descriptions as the result JSON's `postProcessing` block --
