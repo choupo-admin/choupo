@@ -1345,6 +1345,11 @@
       "exit": 0,
       "claim": "check_neutral_master_mineral: OK -- a NEUTRAL dissolution master (H4SiO4) is weighed by its species record: SiO2 = 60.083 g/mol, 5 precipitating silica ledger lines equal n * MW, SiO2a reaches both ledger paths (dissolved at 55 C, precipitated at 20 C), Si and Ca close within 1e-07 on 8 operations, every equilibrated phase sits at SI = 0 or SI < 0 with n = 0, the native view precipitation_vs_T draws each op's own (T_K, drawn in degC, mass_<m>) for 3 minerals x 5 T, and findIon still refuses a neutral (fixture bin/curate/fixtures/neutralMasterMineral; amounts NOT validated against a measured spring)",
       "seconds": 0.7
+    },
+    "check_lhhw_detailed_balance": {
+      "exit": 0,
+      "claim": "check_lhhw_detailed_balance: OK -- 15 reversible (law, T) points rest at the declared Kc (worst |r|/r_f = 3.2e-16, adsorption shifts up to x10), 15 point toward it from both sides, 6 unmoved laws (power law, explicit reverse) equal their recomputation bit for bit; NOT checked: non-mass-action forward orders, reactor integration",
+      "seconds": 1.7
     }
   }
 }

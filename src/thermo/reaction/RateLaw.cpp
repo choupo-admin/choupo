@@ -169,10 +169,16 @@ scalar RateLaw::netRate(const ThermoPackage& thermo, scalar T,
     else
         theta = conc;
 
-    // abar: the ADSORBED species the surface step actually sees.
+    // abar: the ADSORBED species the surface step actually sees.  Kads keeps
+    // the weight each species was given, so the detailed-balance leg below
+    // can divide out exactly the factors the numerator carries.
     sVector abar = theta;
+    sVector Kads(n, 1.0);
     for (const auto& st : sites_)
-        abar[st.i] = st.K0 * std::exp(st.B / T) * theta[st.i];
+    {
+        Kads[st.i] = st.K0 * std::exp(st.B / T);
+        abar[st.i] = Kads[st.i] * theta[st.i];
+    }
 
     scalar rf = kf;
     for (std::size_t i = 0; i < n; ++i)
@@ -191,6 +197,15 @@ scalar RateLaw::netRate(const ThermoPackage& thermo, scalar T,
         rr = (Kc > 0.0) ? kf / Kc : 0.0;
         for (std::size_t i = 0; i < n; ++i)
             if (nu_[i] > 0.0) rr *= std::pow(abar[i], nu_[i]);
+        // Kc is a statement about the BULK: PROD theta_i^nu_i = Kc.  Both legs
+        // run on abar = K_i theta_i, so without this division the two legs
+        // balance at PROD (K_i theta_i)^nu_i = Kc, an equilibrium shifted by
+        // PROD K_i^nu_i (DEV.md 4c C185 item 7).  Dividing by that product
+        // puts the zero of the net rate back at the declared Kc.  The
+        // derivation: docs/design/an-lhhw-law-balances-at-the-declared-kc.md.
+        for (std::size_t i = 0; i < n; ++i)
+            if (nu_[i] != 0.0 && Kads[i] != 1.0)
+                rr /= std::pow(Kads[i], nu_[i]);
     }
 
     if (!ads_) return rf - rr;
