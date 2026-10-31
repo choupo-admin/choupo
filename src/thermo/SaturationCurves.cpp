@@ -56,7 +56,20 @@ scalar bubbleT(const ThermoPackage& thermo,
                scalar P,
                scalar Tguess,
                scalar tolerance,
-               const sVector* yVapour)
+               const sVector* yVapour,
+               bool* converged)
+{
+    const BubbleTSolve s = bubbleTSolve(thermo, x, P, Tguess, tolerance, yVapour);
+    if (converged) *converged = s.converged;
+    return s.T;
+}
+
+BubbleTSolve bubbleTSolve(const ThermoPackage& thermo,
+                          const sVector& x,
+                          scalar P,
+                          scalar Tguess,
+                          scalar tolerance,
+                          const sVector* yVapour)
 {
     const sVector& y = yVapour ? *yVapour : x;
     auto f = [&](scalar T)
@@ -80,7 +93,13 @@ scalar bubbleT(const ThermoPackage& thermo,
     nro.monotoneIncreasing = true;
     nro.maxStep            = 15.0;
     auto r = solver::newton1D(f, df, Tguess, nro);
-    return r.x;
+    //  On a Newton that ran out of iterations, `r.residual` is |f| at the
+    //  iterate BEFORE the last step and `r.x` the one after it, so the
+    //  residual does not describe the temperature returned.  The residual a
+    //  caller judges must be the one AT that temperature: evaluate it there.
+    //  (A converged Newton breaks before stepping, so the two agree.)
+    const scalar residual = r.converged ? r.residual : std::abs(f(r.x));
+    return { r.x, r.converged, residual };
 }
 
 BinaryTxy binaryTxy(const ThermoPackage& thermo, scalar P, int nPoints)
@@ -108,7 +127,26 @@ BinaryTxy binaryTxy(const ThermoPackage& thermo, scalar P, int nPoints)
         const scalar x1 = static_cast<scalar>(k) / static_cast<scalar>(nPoints - 1);
         sVector x = { x1, 1.0 - x1 };
 
-        scalar T = bubbleT(thermo, x, P, Tguess);
+        out.nAttempted += 1;
+        const BubbleTSolve s = bubbleTSolve(thermo, x, P, Tguess, 1.0e-8);
+        const scalar T = s.T;
+        //  An unconverged solve is not a point (C186 item 6): with the
+        //  bracket floor at 200 K a liquid that boils below it came back as
+        //  200 K, |f| ~ 0.5, and was drawn.  The decision is on the Newton's
+        //  OWN final residual against the ONE acceptance tolerance; a point
+        //  outside it is dropped, listed for the caller to count, and never
+        //  the seed of the next solve.
+        const scalar absF = std::abs(s.residual);
+        if (!s.converged && !(absF <= kTxyAcceptResidual))
+        {
+            out.xUnconverged.push_back(x1);
+            continue;
+        }
+        if (!s.converged)
+        {
+            out.xAcceptedUnconverged.push_back(x1);
+            out.worstAcceptedResidual = std::max(out.worstAcceptedResidual, absF);
+        }
         Tguess   = T;
 
         auto K = thermo.Kvec(T, P, x, x);

@@ -490,20 +490,27 @@ sVector stageVapourK(const ThermoPackage& thermo, scalar T, scalar P,
 //  temperature and the vapour are solved together: T at a fixed vapour
 //  (`bubbleT`'s Newton, one home), the vapour at that T (`incipientPhase`),
 //  repeated until the vapour stops moving.  `converged` is false when it
-//  does not, and the caller says so.
+//  does not, AND when the bubble-T Newton that returned T did not meet its
+//  own tolerance (DEV.md 4c C186 item 6, the architect's ruling: a verdict
+//  dropped is the defect) -- and the caller says so.
 scalar bubbleTWithItsVapour(const ThermoPackage& thermo, const sVector& x,
                             scalar P, scalar Tguess, scalar tol,
                             bool* converged = nullptr, sVector* yOut = nullptr)
 {
     if (converged) *converged = true;
+    bool tOk = true;
     if (!vapourFugacityDependsOnY(thermo))
-        return bubbleT(thermo, x, P, Tguess, tol);
+    {
+        const scalar T0 = bubbleT(thermo, x, P, Tguess, tol, nullptr, &tOk);
+        if (converged) *converged = tOk;
+        return T0;
+    }
     sVector y = normalisedVapour(thermo.Kvec(Tguess, P, x, x), x);
     scalar T = Tguess;
     bool ok = false;
     for (int it = 0; it < 50 && !ok; ++it)
     {
-        T = bubbleT(thermo, x, P, T, tol, &y);
+        T = bubbleT(thermo, x, P, T, tol, &y, &tOk);
         const auto r = incipientPhase::vapour(thermo, T, P, x,
                                               thermo.Kvec(T, P, x, y));
         if (r.trial.empty()) break;
@@ -513,8 +520,11 @@ scalar bubbleTWithItsVapour(const ThermoPackage& thermo, const sVector& x,
         y  = r.trial;
         ok = dy < 1.0e-12;
     }
-    if (ok) T = bubbleT(thermo, x, P, T, tol, &y);
-    if (converged) *converged = ok;
+    if (ok) T = bubbleT(thermo, x, P, T, tol, &y, &tOk);
+    //  The verdict that counts is the LAST solve's, the one whose T is
+    //  returned; an inner solve that missed and was then superseded is an
+    //  iterate.
+    if (converged) *converged = ok && tOk;
     if (yOut) *yOut = y;
     return T;
 }

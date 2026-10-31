@@ -1350,6 +1350,11 @@
       "exit": 0,
       "claim": "check_lhhw_detailed_balance: OK -- 15 reversible (law, T) points rest at the declared Kc (worst |r|/r_f = 3.2e-16, adsorption shifts up to x10), 15 point toward it from both sides, 6 unmoved laws (power law, explicit reverse) equal their recomputation bit for bit; 4 non-mass-action laws under `reversible true` refused by name through RateLaw and 2 legitimate ones accepted; 3 of 3 native readers (single-reaction cstr, single-reaction pfr, batch vessel) refuse through the same home; NOT checked: reactor integration, laws registered from a case's code/",
       "seconds": 1.9
+    },
+    "check_txy_bubble_verdict": {
+      "exit": 0,
+      "claim": "check_txy_bubble_verdict: OK -- at 2 bar 2 of 29 unconverged compositions are dropped and counted, 27 drawn, none at the 200 K floor; at 1 bar 17 of 29 fail and the diagram is refused by name; flash01's 29-point diagram is drawn with no count; flash20 (PC-SAFT) draws all 29 points, 26 of them accepted at |f| <= 1e-5 short of the Newton's 1e-8 and announced (worst |f| = 2.69e-06); the column's bubbleTWithItsVapour reads the verdict of all 3 bubbleT calls and folds it into its flag; the guard reads xUnconverged and no 200 K constant; the count reaches the caveat block on both witnesses.  NOT checked: whether a point is RIGHT beyond its residual, and the Wang-Henke stage loop's bubbleT calls (judged by the column's stage test)",
+      "seconds": 13.5
     }
   }
 }

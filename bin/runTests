@@ -5072,6 +5072,21 @@ PYEOF
         fail=$((fail+1))
     fi
 
+    # An unconverged bubble point is not a point of the T-x-y diagram (DEV.md
+    # 4c C186 item 6).  bubbleT returned its last iterate without the
+    # Newton's verdict, and the guard refused a diagram only when EVERY point
+    # sat on the 200 K bracket floor -- so a curve wrong at SOME points was
+    # published.  Two propane + ethane witnesses are built in a temporary
+    # directory: one drawn without its dropped points, one refused by name.
+    if gate_exec "$ROOT/bin/curate/check_txy_bubble_verdict.py" > /tmp/txyverdict.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "txy-bubble-verdict" "$(head -1 /tmp/txyverdict.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_txy_bubble_verdict.py)\n" "txy-bubble-verdict"
+        cat /tmp/txyverdict.$$
+        fail=$((fail+1))
+    fi
+
     # explainProperty: an explanation the engine does not agree with must not
     # be published.  The op's ledger is re-added INDEPENDENTLY here (never
     # trusting its own gap rows), the s_298 rows are read back against the
