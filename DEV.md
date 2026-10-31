@@ -1806,7 +1806,19 @@ accepts today, and that is a policy call.
 > `tutorials/batch/combustion/ignition01_h2o2` (and its `_rk4`, `_eulersi`
 > twins) declares four (R5-R8): its ignition
 > delay is pinned on a mechanism missing them -- the fix MOVES its golden,
-> list to Vitor before any re-record.
+> list to Vitor before any re-record.  DONE 2026-10-31 (42de25568): the
+> two case labels swapped so ThirdBody reaches the arm that already
+> computes k(T) [M]; reproduced first (R5 alone at 2800 K: 0 % converted
+> against 37.02 % in 2 ms; the reversible form stuck at c_H = 0 instead of
+> the Kc plateau).  MEASURED, against the review's prediction: NO golden
+> moved -- the goldens pin the END state, which is the equilibrium, and Kc
+> is unchanged; what moved is the PATH (ignition01 reaches its final state
+> at 12 us instead of 39, the recombinations releasing their heat as soon
+> as the radical pool exists; the ignition delays, 8 and 43 us, are
+> unchanged -- induction is chain branching, which R5-R8 do not drive).
+> ignition02's README had credited R5 with the induction: false (written
+> while R5 ran at zero; removing R5 leaves 43 us) and corrected.  Gate
+> `check_third_body_rate` (independent integration; three sabotages).
 > (8) `src/solver/ODE/AdaptiveTimeStep.H` (`ctrl.nPositive =
 > (units.size() == 1) ? units[0].nPositive : 0;`, still so on the C178
 > branch): with two or more ODE units the positivity guard is OFF, so an

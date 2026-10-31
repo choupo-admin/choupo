@@ -32,7 +32,6 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 
 | status | what | ref |
 |---|---|---|
-| todo | thirdBody reactions at rate zero (BatchReactor); ignition01 x3 goldens move -- list to Vítor | C185 item 9 |
 | todo | Distillation defects A (fullMESH seeded by an unconverged CMO phase) and B (NewtonND accepts a non-improving step); measure which corpus cases reach the path; a full sweep only with Vítor's written authorisation | C184 A/B |
 | todo | Positivity guard off with several ODE units -- AFTER C178 lands (same file) | C185 item 8 |
 | todo | Optimiser reads unconverged simulations -- AFTER C178 lands (same file) | C186 item 4 |
@@ -95,6 +94,7 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 | done | C186 item 6: an unconverged bubble point is not a T-x-y point (plot tolerance in one home, announced) | C186, b98ddc97e |
 | done | C188 defects 1-4: RO swallowed a volatile solute; a pump pumped vapour; the aqueous solvent has one home; activity models declare their domain | C188, 6348b66e3 |
 | done | C178 integrated; lesson citations re-pointed by content (C185/C186 had moved them); Node 18 `File` for the GUI tests | C178, 421bc12e0 |
+| done | C185 item 9: thirdBody reactions ran at rate zero in the batch reactor; fixed, no golden moved (the end state is the equilibrium), the path changed | C185, 42de25568 |
 | done | C188 item 5 slice C: the diafilter defect closed; the contract generates the docs/ai and GUI sections (one source) | C188, 0ca2b5166 |
 | done | C188 item 5 slice B: ED, batch ED, diafilter, ion exchanger, crystalliser on the contract; passThrough on the ED stack (ed10) | C188, fdbc410e9 |
 | done | C188 item 5 slice A: the acceptance contract, one writer of refusals, RO and pump migrated, authored inlets checked before the solve, --describe-units | C188, fe9420e07 |

@@ -9,8 +9,13 @@ converts and announces every one).
 **Result: τ_ign (max dT/dt) = 43 µs** vs the measured ~40–60 µs window.
 
 Two lessons:
-1. **No seed.** This mechanism self-initiates (R5: H₂ + M = 2Ḣ, Ea = 105
-   kcal/mol — slow, but that slowness IS the induction chemistry).  With the
+1. **No seed.** This mechanism self-initiates, and the 43 µs delay is the
+   chain-BRANCHING chemistry (R1-R3), not the dissociation R5 (H₂ + M =
+   2Ḣ, Ea = 105 kcal/mol): MEASURED 2026-10-31, when R5-R8 first ran at
+   their true rate (DEV.md 4c C185 item 9 -- they had run at ZERO), the
+   delay stayed 43 µs, and removing R5 from the mechanism leaves it at
+   43 µs too.  (This paragraph used to credit R5 with the induction; that
+   was written while R5 ran at zero and was never true.)  With the
    ignition01-style trace-H seed the delay collapses to 12 µs: initial
    conditions are physics, not knobs.
 2. The engine now prints `tau_ign` in the epilogue (time of max dT/dt on the
