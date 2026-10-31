@@ -1528,6 +1528,69 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C190. THE EXTERNAL AUDIT'S FIFTEEN, AND ITS COMPARISON WITH THE
+> OTHER OPEN-SOURCE SIMULATOR (ChatGPT's summary of its conversation with
+> Vitor, relayed 2026-10-31 night as a technical OPINION, not orders;
+> audited commit 1ecec2248 of 2026-10-26).**  Each of its fifteen points
+> confronted with main e41af35f8 (grep and read, 2026-10-31):
+> ALREADY CLOSED on main: (1) time loops ignoring ODEStats.ok, (2) the QP
+> declaring convergence with a violated inactive row, (3) the SQP's finite
+> differences on failed evaluations -- all three C178 (a-failed-
+> computation-is-not-a-result.md); (6) bubbleT without its verdict -- C186
+> item 6; (7) LHHW shifted equilibrium -- C185 item 7; (9) ThirdBody at
+> rate zero -- C185 item 9 (no golden moved: the goldens pin the
+> equilibrium).  IN PROGRESS, a general each: (4) the optimiser reading an
+> unconverged simulation -- C186 item 4; (8) the positivity guard off with
+> several ODE units -- C185 item 8.  SCHEDULED: (5) pressure not a tear
+> variable -- C186 item 5, next after (4)/(8) land (same Flowsheet.cpp).
+> NEW, CONFIRMED IN THE CODE and now registered here: (10) a NEGATIVE
+> kinetic order is silently dropped on the vessels' own Arrhenius paths --
+> `if (rxn.order[s] <= 0.0) continue;` (BatchReactor.cpp:476,
+> DynamicCSTR.cpp:658): r = 2 c_A / c_B with c_A = 3, c_B = 100 returns 6
+> instead of 0.06 -- an inhibition order is a mechanism fact, and the
+> factory RateLaw path (`std::pow(conc, order)` for order != 0) honours
+> it, so the two paths disagree; (11) `catalystLoading` reaches the
+> factory laws (`checkLoading`) and the dynamicCSTR's own path (cf at
+> :647) -- MEASURE the batch vessel's own path (cf at :436) with the
+> reviewer's 1 -> 400 probe before calling it a defect; (13) the CHEMKIN
+> A-unit conversion rounds each order to an integer BEFORE summing the
+> molecularity (BatchReactor.cpp:208, `std::lround(o)` per order):
+> orders 0.5 + 1.5 are read as 1 + 2 and the converted A is 1000x too
+> low -- sum first, then decide what a non-integer molecularity means (a
+> CHEMKIN A is reported for integer molecularity; a fractional-order law
+> with a `units` block should REFUSE, naming the SI form); (14) the batch
+> vessel's own Arrhenius reader does not read `A_rev`/`Ea_rev` -- CHECK:
+> DynamicCSTR.cpp:179 routes any reaction with `A_rev` to RateLaw; does
+> BatchReactor.cpp do the same, or does an explicit reverse pair silently
+> run irreversible there?  (15) the membrane fitter
+> (FitParametersMembrane.cpp:879) sets `converged = true` when NO step
+> lowers chi2 -- "a minimum at the solver's resolution" -- which is also
+> what a stalled search far from a minimum looks like; the stop reason is
+> published, so the verdict must be `stalled`, not `converged`, unless a
+> gradient test says otherwise.  (12) PC-SAFT's density root scan on 400
+> intervals (PCSAFT.cpp:330) can miss two close roots near the spinodal:
+> demonstrated only in a metastable window; a refinement near a sign
+> change of the derivative, or a bracket on the spinodal, is the remedy;
+> LOW priority, said so by the reviewer too.
+> ORDER for the new ones: (10) and (13) first (wrong rates at exit 0 in
+> corpus-reachable grammar), then (14), (11) measured, (15), (12).
+> THE COMPARISON (section 3): accepted as stated -- no parity or
+> superiority is claimed; what is absent (UNIFAC Dortmund/LL, multi-
+> parameter EoS, GERG-2008, PRSV2, LKP, analytic PC-SAFT derivatives,
+> a phase-envelope continuation through the retrograde region) stays
+> absent unless a membrane / electrolyte / solids case needs it; nothing
+> is built to match a list.  The Pareto areas of section 4 ARE this
+> project's line already (C188 / C189 / the speciation-to-membrane chain);
+> section 6's "easy wins" are registered as candidates, not commissions:
+> seeded crystallisation on the existing population balance, cake washing
+> by ideal stages and constant-pressure cake filtration (the
+> crystallise -> filter -> wash demonstrator), and a linear isothermal
+> liquid chromatography column with fraction collection -- each needs a
+> pedagogical scope decided before dispatch (what the student is told),
+> which is the architect's and is NOT taken here.  The name of the other
+> simulator does not enter the tree (C7).
+> STATUS: RECORDED 2026-10-31; (10) and (13) scheduled next.
+
 > **C189. RO/NF: A MEMBRANE A STUDENT CHOOSES BY WHAT IT DOES, THEN THE
 > COMMERCIAL MODULE (an external specification, ChatGPT, relayed by Vitor
 > 2026-10-31 as a suggestion under rule 00; text in his repository
