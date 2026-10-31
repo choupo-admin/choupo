@@ -51,8 +51,12 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    updates are input, weighed after reflection and judged by their content
    (rule 2).  What stays his because only he holds it: facts about his own
    acts (an email sent, a PDF he owns, an ORCID), consent of a named person
-   to an authorship or identity change, and -- until he lifts it -- the
-   authorisation of each `git push`, asked with the list of commits ready.
+   to an authorship or identity change.  The authorisation of each `git
+   push` was his too, until he lifted it the same evening ("A partir de
+   agora tens autorização para fazer push quando achares bem, porque já
+   acho que a sessão está estável"): validated work is pushed when the
+   coordinating session judges it ready, and reported after -- never
+   unvalidated work, never a force-push of `main`, never a moved tag.
 1. **Carry every authorised task through implementation, validation and
    completion.**  Routine technical steps inside the agreed scope are
    decided, not asked.  (Architecture, pedagogy and the RESERVED items were
