@@ -111,6 +111,10 @@ public:
         return kpis_;
     }
 
+    //  A LIQUID inlet only (DEV.md 4c C188 defect 2, moved onto the contract
+    //  in item 5): the model is the incompressible one.  Pump.cpp.
+    UnitAcceptance acceptance() const override;
+
 private:
     inline static const std::string type_ = "pump";
     std::vector<ProcessStream>      produced_;

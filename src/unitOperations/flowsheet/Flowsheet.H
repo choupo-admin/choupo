@@ -384,6 +384,19 @@ private:
         std::map<std::string, SimulationResult::RecycleLoop>* loopsOut
             = nullptr) const;
 
+    // WHAT A UNIT ACCEPTS, checked before the first unit runs (DEV.md 4c
+    // C188 item 5; unitOperations/UnitAcceptance.H).  Every AUTHORED inlet
+    // (no unit produces it) is checked against the DECLARED acceptance of
+    // each unit that consumes it, in that unit's own thermophysical world,
+    // by the one function that writes such a refusal.  A produced stream is
+    // checked only at the solve, by the unit itself.  Under --lint the
+    // findings are APPENDED to `lintFindings` (the lint reports every
+    // defect at once); otherwise any finding REFUSES the run.  Defined in
+    // FlowsheetAcceptance.cpp.
+    void checkAuthoredInletAcceptance(const std::vector<DictPtr>& units,
+                                      const ThermoPackage&        thermo,
+                                      std::vector<std::string>&   lintFindings);
+
     bool init0_      = false;
     bool init0Force_ = false;
     bool lint_       = false;

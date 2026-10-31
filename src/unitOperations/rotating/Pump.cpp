@@ -65,30 +65,17 @@ int Pump::solve(const DictPtr& dict,
     //  The model below is the incompressible one -- W = v dP / eta on the
     //  liquid molar volume -- and the outlet is published as a liquid.  The
     //  inlet's phase was never read, so a vapour or a two-phase feed was
-    //  "pumped" on a liquid volume and came out liquid, at exit 0.  The
-    //  inlet is read as it MEANS (`resolvedInletVaporFraction`, the one home
-    //  every unit that reads its inlet during the solve uses) and any vapour
-    //  REFUSES, naming the unit that compresses a gas.
+    //  "pumped" on a liquid volume and came out liquid, at exit 0.  The rule
+    //  is this unit's DECLARED acceptance (`Pump::acceptance()` below, item 5
+    //  of C188), applied by the one function that writes such a refusal, on
+    //  the inlet read as it MEANS (`resolvedInletVaporFraction`, inside
+    //  `acceptanceInletOf`).  An authored inlet was already checked before the
+    //  first unit ran; a produced one is checked here.
     {
         const std::string locus =
             "pump '" + (dict->name().empty() ? type() : dict->name()) + "'";
-        const scalar vf_in = flashState::resolvedInletVaporFraction(
-            feedDict, T_in, P_in, x, thermo, locus);
-        if (vf_in > 0.0)
-        {
-            char b[160];
-            std::snprintf(b, sizeof(b), "vapour fraction %.6g at T = %.2f K,"
-                " P = %.4g bar", static_cast<double>(vf_in),
-                static_cast<double>(T_in), static_cast<double>(P_in / 1.0e5));
-            throw std::runtime_error("Pump: " + locus + " is fed a stream that"
-                " is not a liquid (" + std::string(b) + ").  The pump model is"
-                " the incompressible one, W = v dP / eta on the LIQUID molar"
-                " volume, and its outlet is a liquid; a vapour fed to it would"
-                " be priced on a volume it does not have (and a real pump fed"
-                " vapour loses its prime).  REMEDY: subcool the feed (a cooler, or a higher"
-                " suction pressure) so it arrives liquid, or use a `compressor`"
-                " for a gas.");
-        }
+        checkAcceptance(*this, acceptanceInletOf(feedDict, x, thermo, locus,
+                        acceptance()), thermo, locus);
     }
 
     // ---- Efficiency (always required) -----------------------------------
@@ -388,6 +375,24 @@ int Pump::solve(const DictPtr& dict,
     kpis_["F"]            = F;
 
     return 0;
+}
+
+//  WHAT THE PUMP ACCEPTS (DEV.md 4c C188 item 5): a liquid, and nothing
+//  else -- every component it is handed is pumped (its volume is the
+//  liquid's, a dissolved ion's left out and announced in solve()).
+UnitAcceptance Pump::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.phases.liquid = true;
+    a.phases.vapour = false;
+    a.phases.why = "The pump model is the incompressible one, W = v dP / eta"
+        " on the LIQUID molar volume, and its outlet is a liquid; a vapour fed"
+        " to it would be priced on a volume it does not have (and a real pump"
+        " fed vapour loses its prime).";
+    a.phases.remedy = "subcool the feed (a cooler, or a higher suction"
+        " pressure) so it arrives liquid, or use a `compressor` for a gas.";
+    return a;
 }
 
 } // namespace Choupo

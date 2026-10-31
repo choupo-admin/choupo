@@ -100,6 +100,23 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         throw std::runtime_error("SpiralWoundModule: feed composition does not"
             " sum to 1 (Σz = " + std::to_string(zSum) + ")");
 
+    //  WHAT THIS MODULE MODELS, AND WHAT IT MUST NOT SWALLOW (DEV.md 4c C188
+    //  defect 1, moved onto the per-unit contract in item 5).  The march
+    //  carries the solvent and the NONVOLATILE solutes; the outlets close
+    //  their volume on the solvent (rho/MW_water).  A present component that
+    //  is neither was given z = 0 in both outlets and its mass reappeared as
+    //  water -- an ethanol feed came out as pure water, the kg balance closing
+    //  and the carbon gone, at exit 0.  The rule is this unit's DECLARED
+    //  acceptance (`SpiralWoundModule::acceptance()`), applied on the feed it
+    //  is handed by the one function that writes such a refusal; an authored
+    //  feed was already checked before the first unit ran.
+    {
+        const std::string locus = "spiralWoundModule '"
+            + (dict->name().empty() ? type() : dict->name()) + "'";
+        checkAcceptance(*this, acceptanceInletOf(feedDict, z_in, thermo, locus,
+                        acceptance()), thermo, locus);
+    }
+
     // ---- Operating parameters ---------------------------------------------
     auto opDict = dict->subDict("operation");
     const std::string unitLabel = dict->name().empty() ? type() : dict->name();
@@ -727,50 +744,6 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                       << "' --- assuming perfect rejection (B_s = 0)\n";
     }
     const std::size_t Ns = soluteIdx.size();
-
-    //  WHAT THIS MODULE MODELS, AND WHAT IT MUST NOT SWALLOW (DEV.md 4c C188
-    //  defect 1).  The march carries the solvent and the NONVOLATILE solutes
-    //  above; the outlets close their volume on the solvent (rho/MW_water).
-    //  A present component that is neither was given z = 0 in both outlets
-    //  and its mass reappeared as water -- an ethanol feed came out as pure
-    //  water, the kg balance closing and the carbon gone, at exit 0.  So a
-    //  present component this module does not carry is REFUSED by name, and
-    //  so is a feed with no solvent at all.
-    if (!(z_in[iWater] > 0.0))
-        throw std::runtime_error("SpiralWoundModule: the feed"
-            " carries no water (z_water = " + std::to_string(z_in[iWater])
-            + "), and this module's transport and its outlet closure are"
-            " written for an AQUEOUS feed -- the solvent permeates, the"
-            " nonvolatile solutes are rejected.  A non-aqueous feed needs a"
-            " different separation model (none is registered for organic"
-            " solvent nanofiltration today).");
-    {
-        std::string unmodelled;
-        for (std::size_t i = 0; i < Ncomp; ++i)
-        {
-            if (i == iWater || !(z_in[i] > 0.0)) continue;
-            if (thermo.comp(i).isNonvolatile()) continue;
-            unmodelled += "\n      '" + thermo.comp(i).name() + "' (z = "
-                + std::to_string(z_in[i]) + ", role '"
-                + thermo.comp(i).role() + "')";
-        }
-        if (!unmodelled.empty())
-            throw std::runtime_error("SpiralWoundModule: the"
-                " feed carries component(s) this module does not model:"
-                + unmodelled + "\n"
-                "    It carries the solvent (water) and the solutes the case"
-                " declares `role nonvolatile;`, each with its own permeance;"
-                " any other component would leave in NEITHER outlet, its mass"
-                " re-counted as water.\n"
-                "    REMEDY: if the component is a solute this membrane rejects"
-                " or passes (ethanol in a wine, say), declare it `role"
-                " nonvolatile;` in the case and give the membrane its `B_s`"
-                " permeance -- it then enters the transport and the osmotic"
-                " pressure like any solute (`role` is the CASE's, so every"
-                " other unit then also reads it as nonvolatile -- a flash"
-                " downstream would no longer boil it); otherwise remove it"
-                " from the feed before the module.");
-    }
 
     //  AN ION-DECLARED FEED UNDER THE UNCOUPLED LAW IS SAID SO, WHATEVER ELSE
     //  THE CASE DECLARES.  This sentence used to live inside the scaling{}
@@ -2052,6 +2025,36 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     }
 
     return 0;
+}
+
+//  WHAT THE MODULE ACCEPTS (DEV.md 4c C188 item 5): an aqueous feed whose
+//  every present component is the solvent or a declared nonvolatile solute.
+//  No phase rule is declared: none existed before the contract, and slice A
+//  moves refusals without adding one.
+UnitAcceptance SpiralWoundModule::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.solvent.aqueousRequired = true;
+    a.solvent.why = "this module's transport and its outlet closure are"
+        " written for an AQUEOUS feed -- the solvent permeates, the"
+        " nonvolatile solutes are rejected.";
+    a.solvent.remedy = "a non-aqueous feed needs a different separation model"
+        " (none is registered for organic solvent nanofiltration today).";
+    a.models.rule = UnitAcceptance::ModelsRule::aqueousSolventAndNonvolatileSolutes;
+    a.models.sentence = "the aqueous solvent (water unless the case declares"
+        " another) and the solutes the case declares `role nonvolatile;`, each"
+        " with its own permeance";
+    a.models.why = "any other component would leave in NEITHER outlet, its"
+        " mass re-counted as the solvent.";
+    a.models.remedy = "if the component is a solute this membrane rejects or"
+        " passes (ethanol in a wine, say), declare it `role nonvolatile;` in"
+        " the case and give the membrane its `B_s` permeance -- it then enters"
+        " the transport and the osmotic pressure like any solute (`role` is the"
+        " CASE's, so every other unit then also reads it as nonvolatile -- a"
+        " flash downstream would no longer boil it); otherwise remove it from"
+        " the feed before the module.";
+    return a;
 }
 
 } // namespace Choupo

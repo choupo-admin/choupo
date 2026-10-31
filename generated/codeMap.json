@@ -45,6 +45,9 @@
   "Absorber": [
    "src/unitOperations/separation/Absorber.H"
   ],
+  "AcceptanceInlet": [
+   "src/unitOperations/UnitAcceptance.H"
+  ],
   "ActivityDomain": [
    "src/thermo/electrolyte/AqueousActivity.H"
   ],
@@ -332,6 +335,9 @@
   ],
   "ComputedReport": [
    "src/reporting/ComputedReport.H"
+  ],
+  "Condition": [
+   "src/unitOperations/UnitAcceptance.H"
   ],
   "ConservationConstraint": [
    "src/streams/AnalysisReconciler.H"
@@ -1147,6 +1153,9 @@
   "ModelBoundaryLedger": [
    "src/reporting/ModelBoundaryLedger.H"
   ],
+  "Models": [
+   "src/unitOperations/UnitAcceptance.H"
+  ],
   "ModifiedEucken": [
    "src/thermo/transport/ModifiedEucken.H"
   ],
@@ -1317,6 +1326,9 @@
   ],
   "PhaseSplitScan": [
    "src/propertyOps/PhaseSplitScan.H"
+  ],
+  "Phases": [
+   "src/unitOperations/UnitAcceptance.H"
   ],
   "PinchPass": [
    "src/postProcessing/PinchPass.H"
@@ -1763,6 +1775,9 @@
   "SolutionWriter": [
    "src/io/SolutionWriter.H"
   ],
+  "Solvent": [
+   "src/unitOperations/UnitAcceptance.H"
+  ],
   "SpacerCorrelation": [
    "src/thermo/membrane/FeedSpacer.H"
   ],
@@ -1950,6 +1965,9 @@
   ],
   "UNIQUAC": [
    "src/thermo/activityCoefficient/UNIQUAC.H"
+  ],
+  "UnitAcceptance": [
+   "src/unitOperations/UnitAcceptance.H"
   ],
   "UnitEnergy": [
    "src/reporting/BalanceMath.H"
@@ -3294,6 +3312,7 @@
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flowsheet/Flowsheet.H",
    "src/unitOperations/flowsheet/MemberFolder.H",
@@ -3594,6 +3613,7 @@
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H",
@@ -4514,6 +4534,7 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/equationOfState/EquationOfState.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/saturation/BubblePoint.H"
   ],
@@ -4625,6 +4646,7 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/equationOfState/EquationOfState.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/saturation/BubblePoint.H"
   ],
@@ -4657,6 +4679,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -4958,6 +4981,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/saturation/BubblePoint.H"
   ],
@@ -5073,6 +5097,7 @@
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/saturation/BubblePoint.H"
   ],
@@ -5172,6 +5197,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/reaction/Reaction.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/reactor/GibbsReactor.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
@@ -5347,6 +5373,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/saturation/BubblePoint.H",
    "src/unitOperations/saturation/DewPoint.H"
@@ -5374,6 +5401,7 @@
    "src/thermo/electrolyte/SpeciationSolver.H",
    "src/thermo/phase/Phase.H",
    "src/thermo/phase/SolidPhase.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H"
   ],
@@ -5477,6 +5505,7 @@
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/saturation/BubblePoint.H"
@@ -5625,6 +5654,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H"
   ],
@@ -5647,6 +5677,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/saturation/BubblePoint.H"
@@ -6046,6 +6077,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -6084,6 +6116,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -6145,6 +6178,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -6182,6 +6216,7 @@
    "src/thermo/ThermoOverride.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/ThermoPackageBuilder.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -6281,6 +6316,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -6316,6 +6352,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -6379,6 +6416,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -7826,6 +7864,26 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/thermo/vaporPressure/Wagner.H"
   ],
+  "src/unitOperations/UnitAcceptance.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/result/ClosureVariable.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/StreamEquilibrium.H"
+  ],
   "src/unitOperations/UnitOperation.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -7841,6 +7899,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/reaction/Reaction.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/crystallisation/Crystalliser.H",
    "src/unitOperations/distillation/DistillationColumn.H",
@@ -8148,6 +8207,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/batch/BatchStill.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
@@ -8276,6 +8336,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/electrolyte/ElectrolyteModel.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/crystallisation/CrystallisationHeat.H",
    "src/unitOperations/crystallisation/CrystallisationSaturation.H",
@@ -8306,6 +8367,7 @@
    "src/thermo/electrolyte/SpeciationSolver.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/reaction/Reaction.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/distillation/DistillationColumn.H",
    "src/unitOperations/distillation/TrayHydraulics.H",
@@ -8331,6 +8393,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/distillation/ShortcutColumn.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -8390,6 +8453,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/reaction/ReactionRate.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicCSTR.H",
@@ -8411,6 +8475,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H",
@@ -8489,6 +8554,7 @@
    "src/thermo/electrolyte/SaltFromCatalogue.H",
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/electrochem/EDCell.H",
    "src/unitOperations/electrochem/Electrochem.H",
@@ -8530,6 +8596,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/AdiabaticFlash.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -8565,6 +8632,7 @@
    "src/thermo/phase/SolidPhase.H",
    "src/thermo/solidEquilibrium/SolidEquilibrium.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IncipientPhase.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -8625,6 +8693,7 @@
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -8632,6 +8701,35 @@
    "src/unitOperations/flowsheet/Flowsheet.H",
    "src/unitOperations/flowsheet/MemberFolder.H",
    "src/unitOperations/flowsheet/ModelBoundaryAudit.H",
+   "src/unitOperations/flowsheet/UnitInputs.H"
+  ],
+  "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp": [
+   "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/result/ClosureVariable.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/streams/StreamOverrides.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flowsheet/Flowsheet.H",
+   "src/unitOperations/flowsheet/MemberFolder.H",
    "src/unitOperations/flowsheet/UnitInputs.H"
   ],
   "src/unitOperations/flowsheet/UnitInputs.cpp": [
@@ -8663,6 +8761,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -8687,6 +8786,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/heatTransfer/CoolingTower.H",
    "src/unitOperations/heatTransfer/Psychrometry.H"
@@ -8714,6 +8814,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/heatTransfer/EvaporativeDryer.H",
    "src/unitOperations/heatTransfer/Psychrometry.H"
@@ -8738,6 +8839,7 @@
    "src/thermo/electrolyte/ElectrolyteModel.H",
    "src/thermo/electrolyte/UnmodelledSolutes.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -8763,6 +8865,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -8789,6 +8892,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -8809,6 +8913,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -8835,6 +8940,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -8859,6 +8965,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -8885,6 +8992,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -8957,6 +9065,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -8978,6 +9087,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/hydraulics/PneumaticConveyor.H"
   ],
@@ -9010,6 +9120,7 @@
    "src/thermo/electrolyte/SaltFromCatalogue.H",
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/membrane/MembraneModule.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/membrane/RatedTestInversion.H",
    "src/unitOperations/membrane/SpiralWoundModule.H"
@@ -9045,6 +9156,7 @@
    "src/thermo/membrane/MembraneModule.H",
    "src/thermo/membrane/MembraneModuleRegistry.H",
    "src/thermo/membrane/MembraneRegistry.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/membrane/BulkConversion.H",
    "src/unitOperations/membrane/RatedTestInversion.H",
@@ -9265,6 +9377,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -9286,6 +9399,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -9313,6 +9427,7 @@
    "src/thermo/reaction/ExpressionRate.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -9340,6 +9455,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -9364,6 +9480,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/reaction/Reaction.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -9390,6 +9507,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/reaction/Reaction.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -9423,6 +9541,7 @@
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -9441,6 +9560,7 @@
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
    "src/streams/ProcessStream.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/reactor/PolymerKPIs.H"
   ],
@@ -9485,6 +9605,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -9667,6 +9788,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -9688,6 +9810,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/rotating/ElectricLoad.H"
   ],
@@ -9720,6 +9843,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -9739,6 +9863,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/rotating/IsentropicCore.H",
    "src/unitOperations/rotating/Turbine.H"
@@ -9758,6 +9883,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IncipientPhase.H",
    "src/unitOperations/saturation/BubblePoint.H"
@@ -9778,6 +9904,7 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/saturation/DewPoint.H"
   ],
@@ -9798,6 +9925,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/henrysLaw/HenrysLaw.H",
    "src/thermo/henrysLaw/HenrysLawRegistry.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/Absorber.H",
    "src/unitOperations/separation/LumpedCpEnergyNote.H"
@@ -9815,6 +9943,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/BagFilter.H"
   ],
@@ -9831,6 +9960,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/Cyclone.H",
    "src/unitOperations/separation/cycloneModel/CycloneModel.H"
@@ -9848,6 +9978,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/separation/Extractor.H"
@@ -9866,6 +9997,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/GasSolidSplitter.H"
   ],
@@ -9893,6 +10025,7 @@
    "src/thermo/electrolyte/SaltFromCatalogue.H",
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/electrolyte/SpeciationSolver.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/IonExchanger.H"
   ],
@@ -9913,6 +10046,7 @@
    "src/thermo/adsorbent/Adsorbent.H",
    "src/thermo/adsorbent/AdsorbentRegistry.H",
    "src/thermo/adsorbent/IsothermModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/PSA.H"
   ],
@@ -9933,6 +10067,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/henrysLaw/HenrysLaw.H",
    "src/thermo/henrysLaw/HenrysLawRegistry.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/LumpedCpEnergyNote.H",
    "src/unitOperations/separation/Stripper.H"
@@ -9953,6 +10088,7 @@
    "src/thermo/adsorbent/Adsorbent.H",
    "src/thermo/adsorbent/AdsorbentRegistry.H",
    "src/thermo/adsorbent/IsothermModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/TSATwinBed.H"
   ],
@@ -10017,6 +10153,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/PricedDensity.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -10039,6 +10176,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/PricedDensity.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -10213,6 +10351,7 @@
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
    "src/unitOperations/batch/BatchCrystalliser.cpp",
@@ -10233,6 +10372,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
@@ -10361,7 +10501,8 @@
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
   ],
   "src/core/BuildingRecords.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -10438,7 +10579,8 @@
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
   ],
   "src/core/Citation.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -10790,6 +10932,7 @@
    "src/thermo/vaporPressure/Antoine.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
    "src/thermo/vaporPressure/Wagner.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -10817,6 +10960,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/flowsheet/UnitInputs.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
@@ -11135,6 +11279,7 @@
    "src/thermo/vaporPressure/Antoine.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
    "src/thermo/vaporPressure/Wagner.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -11162,6 +11307,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/flowsheet/UnitInputs.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
@@ -11338,7 +11484,8 @@
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
   ],
   "src/core/Formula.H": [
    "src/core/Formula.cpp",
@@ -11530,6 +11677,7 @@
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -11557,6 +11705,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/flowsheet/UnitInputs.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
@@ -11816,6 +11965,7 @@
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -11843,6 +11993,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/flowsheet/UnitInputs.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
@@ -11986,7 +12137,8 @@
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
   ],
   "src/core/PublishedTable.H": [
    "src/applications/choupoProps/main.cpp",
@@ -12175,7 +12327,8 @@
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
   ],
   "src/core/Sha256.H": [
    "src/core/DictCanonical.cpp",
@@ -12267,7 +12420,8 @@
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
   ],
   "src/core/Types.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -12526,6 +12680,7 @@
    "src/thermo/vaporPressure/Antoine.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
    "src/thermo/vaporPressure/Wagner.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -12553,6 +12708,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/flowsheet/UnitInputs.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
@@ -13496,6 +13652,7 @@
    "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -13516,6 +13673,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
@@ -13661,7 +13819,8 @@
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
   ],
   "src/result/UnitProfile.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -13735,6 +13894,7 @@
    "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -13755,6 +13915,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
@@ -13930,6 +14091,7 @@
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -13956,6 +14118,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/flowsheet/UnitInputs.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
@@ -14220,6 +14383,7 @@
    "src/streams/SpeciationBlock.cpp",
    "src/streams/StreamStateIO.cpp",
    "src/streams/UtilityCircuit.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -14240,6 +14404,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/flowsheet/UnitInputs.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
@@ -14315,7 +14480,8 @@
    "src/outerDriver/OuterDriver.cpp",
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/SweepDriver.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
   ],
   "src/streams/StreamOwnership.H": [
    "src/applications/choupoSolve/main.cpp",
@@ -14544,6 +14710,7 @@
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -14571,6 +14738,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/flowsheet/UnitInputs.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
@@ -14875,6 +15043,7 @@
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -14901,6 +15070,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/flowsheet/UnitInputs.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
@@ -15143,6 +15313,7 @@
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/saturation/BubblePoint.cpp",
    "src/unitOperations/saturation/DewPoint.cpp"
   ],
@@ -15336,6 +15507,7 @@
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -15362,6 +15534,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/flowsheet/UnitInputs.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
@@ -16354,6 +16527,81 @@
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
    "src/thermo/vaporPressure/Wagner.cpp"
   ],
+  "src/unitOperations/UnitAcceptance.H": [
+   "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
+   "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
+   "src/propertyOps/PropertyEvaluator.cpp",
+   "src/propertyOps/PropertyScanBinary.cpp",
+   "src/propertyOps/PropertyScanTernary.cpp",
+   "src/reporting/ElementBalanceReport.cpp",
+   "src/reporting/EnergyBalanceReport.cpp",
+   "src/reporting/MassBalanceReport.cpp",
+   "src/reporting/ModelBoundaryLedger.cpp",
+   "src/reporting/SpreadsheetReport.cpp",
+   "src/reporting/StreamTableReport.cpp",
+   "src/reporting/UtilityAllocationReport.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/batch/BatchStill.cpp",
+   "src/unitOperations/crystallisation/Crystalliser.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/ShortcutColumn.cpp",
+   "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
+   "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
+   "src/unitOperations/flash/AdiabaticFlash.cpp",
+   "src/unitOperations/flash/IsothermalFlash.cpp",
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
+   "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
+   "src/unitOperations/heatTransfer/Evaporator.cpp",
+   "src/unitOperations/heatTransfer/HeatExchanger.cpp",
+   "src/unitOperations/heatTransfer/Heater.cpp",
+   "src/unitOperations/heatTransfer/MultiStreamHX.cpp",
+   "src/unitOperations/heatTransfer/PhaseChanger.cpp",
+   "src/unitOperations/heatTransfer/SolidDryer.cpp",
+   "src/unitOperations/heatTransfer/SprayDryer.cpp",
+   "src/unitOperations/hydraulics/Pipe.cpp",
+   "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
+   "src/unitOperations/membrane/RatedTestInversion.cpp",
+   "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/mixer/Mixer.cpp",
+   "src/unitOperations/mixer/Splitter.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
+   "src/unitOperations/reactor/ConversionReactor.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
+   "src/unitOperations/reactor/GibbsReactor.cpp",
+   "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/PolymerKPIs.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
+   "src/unitOperations/rotating/Compressor.cpp",
+   "src/unitOperations/rotating/ElectricLoad.cpp",
+   "src/unitOperations/rotating/Pump.cpp",
+   "src/unitOperations/rotating/Turbine.cpp",
+   "src/unitOperations/saturation/BubblePoint.cpp",
+   "src/unitOperations/saturation/DewPoint.cpp",
+   "src/unitOperations/separation/Absorber.cpp",
+   "src/unitOperations/separation/BagFilter.cpp",
+   "src/unitOperations/separation/Cyclone.cpp",
+   "src/unitOperations/separation/Extractor.cpp",
+   "src/unitOperations/separation/GasSolidSplitter.cpp",
+   "src/unitOperations/separation/IonExchanger.cpp",
+   "src/unitOperations/separation/PSA.cpp",
+   "src/unitOperations/separation/Stripper.cpp",
+   "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/storage/StorageTank.cpp",
+   "src/unitOperations/valve/Valve.cpp"
+  ],
   "src/unitOperations/UnitOperation.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
@@ -16375,6 +16623,7 @@
    "src/reporting/SpreadsheetReport.cpp",
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
@@ -16386,6 +16635,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
    "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
@@ -16584,6 +16834,7 @@
    "src/reporting/SpreadsheetReport.cpp",
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
@@ -16626,6 +16877,7 @@
    "src/reporting/SpreadsheetReport.cpp",
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/flash/AdiabaticFlash.cpp",
@@ -16663,6 +16915,7 @@
    "src/reporting/SpreadsheetReport.cpp",
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/flash/AdiabaticFlash.cpp",
@@ -16692,12 +16945,14 @@
   ],
   "src/unitOperations/flowsheet/Flowsheet.H": [
    "src/applications/choupoSolve/main.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
   ],
   "src/unitOperations/flowsheet/MemberFolder.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/reporting/ModelBoundaryLedger.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
   ],
   "src/unitOperations/flowsheet/ModelBoundaryAudit.H": [
    "src/unitOperations/flowsheet/Flowsheet.cpp"
@@ -16705,6 +16960,7 @@
   "src/unitOperations/flowsheet/UnitInputs.H": [
    "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/flowsheet/UnitInputs.cpp"
   ],
   "src/unitOperations/heatTransfer/ConvectiveDryer.H": [

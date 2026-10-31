@@ -1,10 +1,11 @@
 # What a unit accepts: modelled, a declared approximation, or refused
 
-DEV.md 4c C188, item (5).  Status: **DESIGN, decided 2026-10-31 under rule
-00; no code yet.**  Defects (1) and (2) of the same commission are shipped
-(`check_membrane_feed_scope`, `check_pump_liquid_inlet`); (3) and (4) are in
-progress.  This record fixes the contract before any unit is migrated onto
-it.
+DEV.md 4c C188, item (5).  Status: **DESIGN decided 2026-10-31 under rule
+00; SLICE A BUILT the same day** (section 9): the contract, its one checking
+function, the pre-solve pass, `--describe-units`, and the two units that
+already refused migrated onto it.  Defects (1)-(4) of the same commission are
+shipped (`check_membrane_feed_scope`, `check_pump_liquid_inlet`,
+`check_aqueous_solvent_home`, `check_activity_domain`).
 
 ## 1. The problem, measured
 
@@ -185,3 +186,56 @@ about the thermophysical system:
 * Whether a recycle that brings a new component into a unit after the first
   pass refuses at once or at the converged state (measured on the first
   recycle that reaches a migrated unit).
+
+## 9. Slice A, as built (2026-10-31)
+
+What exists now, and the choices the design left open that the build had to
+settle:
+
+* **`UnitAcceptance`** (`src/unitOperations/UnitAcceptance.H`) is a struct of
+  data: `declared` (false on the default, so `--describe-units` can tell an
+  unmigrated unit from one that declared "everything"); `phases` (liquid /
+  vapour, each with its `why` and `remedy`); `solvent` (`aqueousRequired`,
+  read through `ThermoPackage::findAqueousSolvent`, the one home of the
+  solvent since C188 item 3); `models` (a CLOSED rule word --
+  `everyComponent` | `aqueousSolventAndNonvolatileSolutes` -- with its
+  sentence, its `why` and its remedy: a word rather than a free lambda so the
+  test has one home and the generated docs can print the rule);
+  `passThroughFates` (empty everywhere); `refusesAlso` (id, sentence, remedy
+  and a test returning the violation's detail -- no unit uses it yet).
+  `requires` (section 3's package capabilities) is NOT in the struct: its
+  vocabulary is fixed when the first three units are migrated (section 8),
+  and an empty field would be a field nobody reads.
+* **`acceptanceFindings`** (`UnitAcceptance.cpp`) is the one place an
+  acceptance refusal is written: one finding per violated clause, each naming
+  the unit, its type, the stream, the fact and the remedy.
+  `checkAcceptance(unit, inlet, thermo, where)` throws them at the unit's
+  solve; the pre-solve pass collects them.
+* **The inlet's phase is resolved only when the contract restricts phases**
+  (`acceptanceInletOf`): resolving it for a unit that accepts every phase would
+  run an inlet flash, and raise its advisories, on a unit that never asked.
+* **The pre-solve pass** is `Flowsheet::checkAuthoredInletAcceptance`
+  (`src/unitOperations/flowsheet/FlowsheetAcceptance.cpp`), called once in
+  `solve()` right after the undetermined-saturation refusal and before the
+  lint seam: every AUTHORED inlet with F > 0 of every unit whose class
+  declared a contract, utility ports excepted, in that unit's OWN world
+  (`thermoFor`).  Under `--lint` the findings join the lint's list
+  ("authored inlet not accepted: ..."); otherwise they refuse the run before
+  the flowsheet banner prints.  A produced stream is checked only at the solve.
+  The contract applies to every process inlet of a unit; both migrated units
+  have one, and a per-PORT contract waits for a unit that needs it.
+* **`choupoSolve --describe-units`** prints every registered type's contract
+  as JSON (`schema unitAcceptance-v1`), needing no case.
+* **Migrated:** `spiralWoundModule` (aqueous solvent required; models the
+  solvent and the `role nonvolatile` solutes; no phase rule, because none
+  existed and slice A adds no refusal) and `pump` (liquid only).  Their
+  refusals MOVED: the RO module's from deep in its solve to the point where
+  its feed composition is read, so a feed it cannot accept is refused before
+  any membrane record is looked up.
+* **Gate:** `check_unit_acceptance` (sabotages in its docstring).
+
+**What remains (slice B onward):** the ED stack and batch ED, the ion
+exchanger, the crystalliser onto the contract; the `requires` vocabulary;
+`passThrough` (section 5), first on the electrodialysis stack with a witness;
+the generator under `bin/curate/` that writes the GUI / F1 / docs/ai sections
+from `--describe-units`, and its freshness gate; section 8's recycle question.
