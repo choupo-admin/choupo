@@ -122,9 +122,72 @@ measured: at the probe's 29.5 % recovery the bulk term alone is 0.0046.
   number for a neutral salt; the split is a model (SDEM's zero-current
   field, DSPM-DE's pore), not a datum.
 
-## 6. Not done
+## 6. Several rated tests (slice 2, 2026-10-31)
 
-Several rated tests per module (`ratedTest` as a list), the functional
-classes and the shortlist tool are C189 slices (2)-(5).  The SW30HR-380
+A data sheet may quote several standard tests -- an NaCl and an MgSO4
+test, a typical and a minimum value, a second pressure.  They are
+different operating points or different KINDS of number, so the record
+keeps each as stated and nothing averages them:
+
+```
+ratedTests
+(
+    { id naclStd;  solute NaCl;  feedMassFraction 2.0e-3; P 4.8 bar; T 298.15 K;
+      recovery 0.15; permeateFlow 9.5 m3/d; rejection 0.50; }
+    { id mgso4Typ; solute MgSO4; ... rejection 0.97; rejectionValueType typical;
+      pressureBasis feedGauge; pH 7; permeateFlowBasis sameTest;
+      source "Form No. ..., Rev. ..., date"; }
+);
+```
+
+**One home.**  `ratedTest {}` is read as a list of one (every shipped
+record unchanged, byte-identical runs, held by the gate); a record
+declaring both forms is refused.  The seven numbers stay required (all or
+nothing); the optional facts are `id`, `rejectionValueType`
+(`typical|minimum|maximum|approximate|range`, a range written `rejection
+( lo hi );`), `pressureBasis` (`feedAbsolute|feedGauge|netDriving`), `pH`,
+`permeateFlowBasis` (`sameTest|separateTest`), `soluteBasis` (the formula
+the sheet states the solute AS -- boron as B) and a per-test `source`.  An
+unknown key or word refuses (a misspelt key would otherwise leave its fact
+silently absent).  Ids are unique, and two tests of one solute must each
+carry one.
+
+**Absent stays absent.**  The print lists every test (`Rated test <id>:`)
+with exactly the optional facts it declares.  The inversion reads the
+facts it needs and, where the record is silent, ANNOUNCES the reading it
+takes (one `[ratedTest]` line, stdout + stderr + a provenance advisory):
+the rejection inverted as stated, the pressure read as the absolute feed
+pressure (slice 1's reading), the permeate flow assumed from the same test.
+membrane25's record states none of the three, so its run now says so; no
+number moved.  A `minimum`/`maximum` makes R_int a bound, said; a gauge
+pressure is made absolute with the standard atmosphere, said.  REFUSED,
+because each leaves the probe without the number it needs: a range (which
+end is a decision about the element), a net driving pressure (the osmotic
+pressure the sheet assumed is not stated), a permeate flow from a separate
+test (the feed, and so the film, would be guessed), a solute stated as
+another formula (no conversion here).
+
+**Which test.**  `rejection { <s> fromRatedTest; }` takes the one test of
+`<s>`; with two it refuses naming their ids, and the case writes `<s> (
+fromRatedTest <id> );` -- a word list, because a dictionary value is one
+token.  An unknown id, or an id naming another solute's test, refuses.
+With two derived solutes in one unit (two tests), `ratedTest_recovery` and
+`ratedTest_permeateFlow` take the solute's suffix; one keeps slice 1's keys.
+
+**Found on the way, not changed.**  Slice 1 reads the NF270-4040 sheet's
+"70 psi applied" as an ABSOLUTE 4.8 bar.  Applied pressures in a data sheet
+are normally gauge (5.8 bar absolute); the record does not say, so the run
+now announces the reading -- declaring `pressureBasis feedGauge;` on the
+record is a curation act on the sheet's wording and would move membrane25's
+goldens.
+
+Gate `bin/curate/check_rated_tests.py` (single == list of one on
+membrane15/16/25; a HYPOTHETICAL fixture record built in a temporary
+directory for everything else -- no manufacturer's test is invented in
+data/standards).
+
+## 7. Not done
+
+The functional classes and the shortlist tool are C189 slices (3)-(5).  The SW30HR-380
 record's NaCl test is not inverted by any witness.  A constant R_int stays
 constant away from the test.  The membrane records' A_w is not corrected.

@@ -638,8 +638,8 @@
     },
     "check_membrane_modules": {
       "exit": 0,
-      "claim": "check_membrane_modules: OK -- 3 `kind membraneModule` records (NF270-4040, SW30HR-380, SEPA_CF) match a second transcription of their documents on every data-sheet value, mark every value the document does not state `origin estimated; reviewStatus unverified;` with a note saying how to verify it and mark no data-sheet value so; membrane15/16/17 announce exactly the estimates of the record each RAN (its sealed mirror where it has one; the record's own note, a provenance advisory each) and no [limit] line; 5 refusals fire by name (inline area / channelHeight / membrane beside a spiral module, a cell without a membrane, an unknown module with the registered list); the published inlet crossflow recomputes the feed flow on W = A/L for the cell (one face, L = A/slotWidth) and A/(2L) for the spiral to 1e-9; a 60 bar, 5 m3/h twin prints both [limit] lines and exits 0; the two spirals' rated tests ran and printed engine vs data sheet.  NOT CHECKED: whether any estimate is a good one, the transcription against the PDFs, any band on the rated-test ratio, the batch vessel, DSPM-DE under a module, the pH limit (no witness declares a pH), the four Generic-* records and the feed spacers (check_spiral_array's).",
-      "seconds": 0.4
+      "claim": "check_membrane_modules: OK -- 3 `kind membraneModule` records (NF270-4040, SW30HR-380, SEPA_CF) match a second transcription of their documents on every data-sheet value, mark every value the document does not state `origin estimated; reviewStatus unverified;` with a note saying how to verify it and mark no data-sheet value so; membrane15/16/17 announce exactly the estimates of the record each RAN (its sealed mirror where it has one; the record's own note, a provenance advisory each) and no [limit] line; 5 refusals fire by name (inline area / channelHeight / membrane beside a spiral module, a cell without a membrane, an unknown module with the registered list); the published inlet crossflow recomputes the feed flow on W = A/L for the cell (one face, L = A/slotWidth) and A/(2L) for the spiral to 1e-9; a 60 bar, 5 m3/h twin prints both [limit] lines and exits 0; every rated test of the two spirals (either record form) ran and printed engine vs data sheet.  NOT CHECKED: whether any estimate is a good one, the transcription against the PDFs, any band on the rated-test ratio, the batch vessel, DSPM-DE under a module, the pH limit (no witness declares a pH), the four Generic-* records and the feed spacers (check_spiral_array's).",
+      "seconds": 0.3
     },
     "check_method_tools": {
       "exit": 0,
@@ -1384,6 +1384,11 @@
     "check_rejection_inversion": {
       "exit": 0,
       "claim": "check_rejection_inversion: OK -- membrane25 derives R_int(MgSO4) = 0.983313 from the NF270-4040 sheet's OBSERVED 0.97 with the module's own film (announced on stdout, stderr and as an accepted provenance advisory; five KPIs); typed back as a number and re-run at the rated test it reproduces 0.97 to 1e-7, and at the witness's own feed it reproduces the witness (the R used is the R published); R_int > R_obs with c_m/c_b > 1, and with the film off the gap is the closed-form bulk term to 1e-5; 7 refusals by name (no ratedTest, wrong solute, ion-by-ion feed, unreachable rejection, no module, unknown word, batch diafilter); no other shipped case declares fromRatedTest.  NOT CHECKED: R_int away from the rated test, the record's A_w, the SW30HR-380 sheet.",
+      "seconds": 0.4
+    },
+    "check_rated_tests": {
+      "exit": 0,
+      "claim": "check_rated_tests: OK -- `ratedTest {}` and `ratedTests ( {..} )` with one test give byte-identical runs of membrane15/16/25; both forms on one record refuse; a hypothetical two-solute record prints each test on its own line with exactly the optional facts it declares and the inversion takes the MgSO4 test listed second (R_int = membrane25's to 1e-9); two MgSO4 tests refuse an unnamed request and `( fromRatedTest b )` reproduces test b alone to 1e-12; 7 record refusals and 7 inversion refusals fire by name; an undeclared value type, pressure meaning and permeate-flow basis are announced on membrane25 and not on a fully declared test; a gauge pressure is announced made absolute.  NOT CHECKED: any optional fact against a real data sheet (no shipped record declares one), two derived solutes in one unit, formula conversion.",
       "seconds": 0.4
     }
   }

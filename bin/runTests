@@ -4502,6 +4502,21 @@ PYEOF
     fi
     rm -f /tmp/rinv.$$
 
+    # Several rated tests per module record (2026-10-31, DEV.md 4c C189
+    # slice 2).  `ratedTests ( {..} {..} )` beside the single `ratedTest {}`
+    # (a list of one, byte-identical runs); each test keeps its own optional
+    # facts, absent stays absent; `<s> ( fromRatedTest <id> )` names the test
+    # when two share a solute; refusals by name; a HYPOTHETICAL fixture.
+    if gate_exec "$ROOT/bin/curate/check_rated_tests.py" > /tmp/rtests.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "rated-tests-gate" "$(grep -m1 '^check_rated_tests: OK' /tmp/rtests.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_rated_tests.py)\n" "rated-tests-gate"
+        cat /tmp/rtests.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rtests.$$
+
     # Ion-diffusivity temperature gate (2026-10-24, DEV.md 4c C145 ruling,
     # built C148).  D_i(T) = D_i0 (T/298.15)(mu(298.15)/mu(T)) on the
     # package's own liquid viscosity, ONE home (thermo/transport/

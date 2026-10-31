@@ -88,7 +88,9 @@ Description
     for that solute by inverting the module record's `ratedTest {}` with
     the module's own film (membrane/RatedTestInversion.H, the one home);
     the unit hands the value back through setRatedRejection before the
-    first station.  A unit that holds no module record (the batch
+    first station.  When the record carries several tests of that solute
+    the case names one, `rejection { MgSO4 ( fromRatedTest <id> ); }`
+    (C189 slice 2).  A unit that holds no module record (the batch
     diafilter) cannot, and the law then refuses the word by name.
 \*---------------------------------------------------------------------------*/
 
@@ -120,6 +122,8 @@ public:
     //  `<solute> fromRatedTest;` (see the header): the solutes still waiting
     //  for a derived R, and the door the deriving unit hands it through.
     std::vector<std::string> ratedTestSolutes() const override { return pendingRated_; }
+    std::string ratedTestId(const std::string& solute) const override
+    { const auto it = ratedIds_.find(solute); return it == ratedIds_.end() ? std::string() : it->second; }
     void setRatedRejection(const std::string& solute, scalar R_int) override;
 
     //- The relative permeate charge above which an ion-declared feed is
@@ -134,6 +138,7 @@ private:
     std::string                   source_;
     std::vector<std::string>      pendingRated_;   // fromRatedTest, not yet derived
     std::vector<std::string>      derivedRated_;   // fromRatedTest, derived
+    std::map<std::string, std::string> ratedIds_;  // solute -> the named test's id
 
     mutable bool                  resolved_ = false;
     mutable std::vector<scalar>   ratio_;      // 1 - R_i, per solute slot

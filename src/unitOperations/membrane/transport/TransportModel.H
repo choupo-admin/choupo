@@ -327,6 +327,9 @@ public:
     //  and hands the derived value back through setRatedRejection; a law
     //  that never asks gets nothing handed.
     virtual std::vector<std::string> ratedTestSolutes() const { return {}; }
+    //  The id of the rated test the case named for `solute` (`<solute> (
+    //  fromRatedTest <id> );`, C189 slice 2); empty when it named none.
+    virtual std::string ratedTestId(const std::string& /*solute*/) const { return {}; }
     virtual void setRatedRejection(const std::string& solute, scalar /*R_int*/)
     {
         throw std::runtime_error("transport " + type() + ": no parameter of"

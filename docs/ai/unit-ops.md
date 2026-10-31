@@ -1454,6 +1454,23 @@ each channel node):
   diafilter).  Every other solute keeps its declared number.  Witness
   `membrane25_rated_test_inversion_nf270_4040`; gate
   `check_rejection_inversion`.
+  **Several rated tests** (C189 slice 2): a record may carry `ratedTests (
+  { ... } { ... } );` -- each test kept as the sheet states it, never
+  averaged (`ratedTest {}` is a list of one; both on one record refuse).
+  Besides the seven required numbers a test may state `id`,
+  `rejectionValueType typical|minimum|maximum|approximate|range` (a range
+  is `rejection ( lo hi );`), `pressureBasis feedAbsolute|feedGauge|netDriving`,
+  `pH`, `permeateFlowBasis sameTest|separateTest`, `soluteBasis <formula>`
+  and its own `source`; what it does not state stays ABSENT.
+  `fromRatedTest` takes the one test of that solute; when two share it,
+  name one: `rejection { MgSO4 ( fromRatedTest <id> ); }` (an unnamed
+  request refuses listing the ids).  The inversion ANNOUNCES an undeclared
+  value type, pressure meaning or permeate-flow basis with the reading it
+  takes (absolute feed pressure; flow from the same test), makes a gauge
+  pressure absolute with the standard atmosphere (announced), and REFUSES a
+  range, a net driving pressure, a permeate flow from a separate test and a
+  solute stated as another formula.  The run prints every test (`Rated
+  test <id>:`).  Gate `check_rated_tests`.
 
 **Props bench `polarisationIndex`** (choupoProps) — the glass-box surface of
 the multi-ionic polarisation model: given `massTransfer { model StirredCell;

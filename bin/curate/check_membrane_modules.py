@@ -47,7 +47,9 @@ stale converged/):
   (e) THE LIMITS.  A membrane15 twin at 60 bar and 5 m3/h feed prints
       `[limit]` lines naming P_max and feedFlow_max and STILL EXITS 0 (a
       limit announces, never refuses); no witness prints any `[limit]` line.
-  (f) THE RATED TEST, MEASURED.  Each spiral record's `ratedTest {}` is run
+  (f) THE RATED TEST, MEASURED.  EVERY rated test of each spiral record
+      (`ratedTest {}`, or each entry of `ratedTests ( ... )` -- C189 slice
+      2; the list form is parsed by this gate's own reader) is run
       through the engine (the sheet's solute, concentration, pressure and
       temperature; the feed flow the sheet's recovery implies,
       permeateFlow / recovery) and the engine's permeate flow and rejection
@@ -199,6 +201,16 @@ def parse_block(toks, i):
         if toks[i] == "{":
             sub, i = parse_block(toks, i + 1)
             d[key] = sub
+        elif toks[i] == "(" and toks[i + 1] == "{":
+            #  A list of blocks, `ratedTests ( { ... } { ... } );`.
+            items = []
+            i += 1
+            while toks[i] == "{":
+                sub, i = parse_block(toks, i + 1)
+                items.append(sub)
+            assert toks[i] == ")" and toks[i + 1] == ";"
+            d[key] = items
+            i += 2
         elif toks[i] == "(":
             j = toks.index(")", i)
             d[key] = [float(x) for x in toks[i + 1:j]]
@@ -226,6 +238,16 @@ def si(entry):
     if entry[1] not in UNIT:
         raise RuntimeError(f"unit '{entry[1]}' not in the gate's table")
     return v * UNIT[entry[1]]
+
+
+def rated_tests(d):
+    """Every rated test of a record: `ratedTest {}` is a list of one,
+    `ratedTests ( ... )` as written (C189 slice 2, the engine's reading)."""
+    if "ratedTest" in d and "ratedTests" in d:
+        raise RuntimeError("a record declares both ratedTest and ratedTests")
+    if "ratedTest" in d:
+        return [d["ratedTest"]]
+    return list(d.get("ratedTests", []))
 
 
 def word(entry):
@@ -327,8 +349,11 @@ def main():
         for k in tb.get("absentLimits", []):
             if k in lim:
                 failures.append(f"(a) {name}: limits.{k} declared but the document states none")
+        tests = rated_tests(d)
         if "ratedTest" in tb:
-            rt = d.get("ratedTest", {})
+            if len(tests) != 1:
+                failures.append(f"(a) {name}: {len(tests)} rated tests vs the sheet's one")
+            rt = tests[0] if tests else {}
             if word(rt.get("solute", [])) != tb["ratedSolute"]:
                 failures.append(f"(a) {name}: ratedTest.solute {word(rt.get('solute', []))!r}")
             for k, v in tb["ratedTest"].items():
@@ -336,7 +361,7 @@ def main():
                     failures.append(f"(a) {name}: ratedTest.{k} missing")
                 elif not close(si(rt[k]), v):
                     failures.append(f"(a) {name}: ratedTest.{k} = {si(rt[k])} vs the sheet's {v}")
-        elif "ratedTest" in d:
+        elif tests:
             failures.append(f"(a) {name}: a cell has no rated test")
         if "availableSpacers" in tb:
             sp = d.get("availableSpacers", [])
@@ -494,9 +519,30 @@ def main():
 
         # ---------------- (f) the rated test, measured -------------------------
         measured = []
+        #  EVERY test of each spiral record (C189 slice 2: a record may carry
+        #  several), read from the CATALOGUE record itself -- arm (a) has
+        #  already held each number to the TABLE.
+        runs = []
         for case, name, unit in ((M15, "NF270-4040", "NF"), (M16, "SW30HR-380", "RO")):
-            tb = TABLE[name]; rt = tb["ratedTest"]; sol = tb["ratedSolute"]
-            dd = tmp / ("rated_" + name)
+            for n, t in enumerate(rated_tests(records.get(name, {}))):
+                runs.append((case, name, unit, n, t))
+        for case, name, unit, n, t in runs:
+            sol = word(t.get("solute", []))
+            if sol not in MW:
+                failures.append(f"(f) {name} test {n}: solute {sol!r} has no MW in this gate's table")
+                continue
+            rt = {k: si(t[k]) for k in ("feedMassFraction", "P", "T", "recovery", "permeateFlow")}
+            #  The rejection as the record states it: one value, or a range
+            #  `( lo hi )` (printed as such, never averaged).
+            rej = t["rejection"]
+            rt["rejection"] = rej if isinstance(rej[0], float) else si(rej)
+            basis = word(t.get("pressureBasis", []))
+            if basis == "netDriving":
+                print(f"  [rated test] {name} test {n}: a NET DRIVING pressure -- the feed it implies is not stated; not run")
+                continue
+            if basis == "feedGauge":
+                rt["P"] += 101325.0                                   # the engine's reading (standard atmosphere)
+            dd = tmp / ("rated_%s_%d" % (name, n))
             copy_case(case, dd)
             #  The rated test measures the CATALOGUE record (arm (a)'s), not a
             #  sealed witness's frozen mirror of it.
@@ -531,9 +577,11 @@ def main():
             perm_m3d = k["J_w_avg"] * A * 86400.0
             R = k[f"R_obs_{sol}"]
             measured.append((name, perm_m3d, rt["permeateFlow"] * 86400.0, R, rt["rejection"], k["water_recovery"]))
+            sheet_R = ("%.2f-%.2f" % (rt["rejection"][0] * 100, rt["rejection"][1] * 100)
+                       if isinstance(rt["rejection"], list) else "%.2f" % (rt["rejection"] * 100))
             print(f"  [rated test] {name}: {w * 1e6:.0f} ppm {sol}, {rt['P'] / 1e5:.1f} bar, {rt['T']:.2f} K, feed {Qf * 86400:.1f} m3/d --"
                   f" engine permeate {perm_m3d:.2f} m3/d (recovery {k['water_recovery'] * 100:.1f} %), rejection {R * 100:.2f} %"
-                  f"   | data sheet: {rt['permeateFlow'] * 86400:.1f} m3/d at {rt['recovery'] * 100:.0f} %, rejection {rt['rejection'] * 100:.2f} %"
+                  f"   | data sheet: {rt['permeateFlow'] * 86400:.1f} m3/d at {rt['recovery'] * 100:.0f} %, rejection {sheet_R} %"
                   f"   (ratio permeate {perm_m3d / (rt['permeateFlow'] * 86400):.2f}x -- a MEASUREMENT of the fitted A_w, not a verdict)")
 
     if failures:
@@ -549,7 +597,7 @@ def main():
           "and no [limit] line; 5 refusals fire by name (inline area / channelHeight / membrane beside a spiral module, a cell "
           "without a membrane, an unknown module with the registered list); the published inlet crossflow recomputes the feed "
           "flow on W = A/L for the cell (one face, L = A/slotWidth) and A/(2L) for the spiral to 1e-9; a 60 bar, 5 m3/h twin "
-          "prints both [limit] lines and exits 0; the two spirals' rated tests ran and printed engine vs data sheet.  "
+          "prints both [limit] lines and exits 0; every rated test of the two spirals (either record form) ran and printed engine vs data sheet.  "
           "NOT CHECKED: whether any estimate is a good one, the transcription against the PDFs, any band on the rated-test "
           "ratio, the batch vessel, DSPM-DE under a module, the pH limit (no witness declares a pH), the four Generic-* "
           "records and the feed spacers (check_spiral_array's).")

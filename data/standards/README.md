@@ -61,7 +61,12 @@ data/standards/                     one folder = one KIND of thing (M1-M5, 2026-
 │                                   psi,lambda,zeta} eNRTL/ SRK/ adsorption/ UNIFAC/
 │                                   Joback.dat vanKrevelen.dat Yang2020.dat solution/
 ├── assets/       <name>.dat        physical kit, FLAT; kind = consumer (RO|NF|IEM|
-│                                   constructionMaterial|adsorbent|ionExchangeResin)
+│                                   constructionMaterial|adsorbent|ionExchangeResin|
+│                                   membraneModule|feedSpacer|edStack); a
+│                                   membraneModule carries its sheet's standard
+│                                   test(s) as `ratedTest {}` or, several, each
+│                                   as stated, `ratedTests ( {..} {..} );` --
+│                                   grammar in docs/ai/unit-ops.md
 ├── mixtures/ · utilities/          predefined mixtures · plant utility services
 └── (a case declares its system in constant/thermoPhysPropDict; sealing with
    bin/choupo-import mirrors the closure into the case's constant/ under a

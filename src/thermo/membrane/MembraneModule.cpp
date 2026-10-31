@@ -45,6 +45,109 @@ const std::vector<std::string>& MembraneModule::acceptedFormats()
     return f;
 }
 
+const std::vector<std::string>& MembraneModule::acceptedRejectionValueTypes()
+{
+    static const std::vector<std::string> w =
+        { "typical", "minimum", "maximum", "approximate", "range" };
+    return w;
+}
+
+const std::vector<std::string>& MembraneModule::acceptedPressureBases()
+{
+    static const std::vector<std::string> w = { "feedAbsolute", "feedGauge", "netDriving" };
+    return w;
+}
+
+const std::vector<std::string>& MembraneModule::acceptedPermeateFlowBases()
+{
+    static const std::vector<std::string> w = { "sameTest", "separateTest" };
+    return w;
+}
+
+// ---------------------------------------------------------------------------
+//  ONE rated test.  The seven numbers are required (all or nothing); the
+//  optional facts are read only when written and stay ABSENT otherwise.  A
+//  key this reader does not know refuses -- a misspelt `rejectionValuType`
+//  would otherwise leave the fact silently absent.
+RatedTest MembraneModule::readRatedTest(const DictPtr& r, const std::string& where) const
+{
+    static const std::vector<std::string> keys = {
+        "id", "solute", "soluteBasis", "feedMassFraction", "P", "pressureBasis",
+        "T", "pH", "recovery", "permeateFlow", "permeateFlowBasis",
+        "rejection", "rejectionValueType", "source" };
+    for (const auto& k : r->keys())
+    {
+        bool ok = false;
+        for (const auto& a : keys) if (a == k) ok = true;
+        if (!ok)
+            throw std::runtime_error(where + ": "
+                + registryRefusal::message("rated-test key", k, keys, "Accepted"));
+    }
+    auto oneOf = [&](const std::string& key, const std::vector<std::string>& words) {
+        if (!r->found(key)) return std::string();
+        const std::string w = r->lookupWord(key);
+        for (const auto& a : words) if (a == w) return w;
+        throw std::runtime_error(where + ": "
+            + registryRefusal::message("`" + key + "`", w, words, "Accepted"));
+    };
+
+    RatedTest t;
+    t.id                 = r->lookupWordOrDefault("id", "");
+    t.solute             = r->lookupWord("solute");
+    t.soluteBasis        = r->lookupWordOrDefault("soluteBasis", "");
+    t.feedMassFraction   = r->lookupScalar("feedMassFraction");
+    t.P                  = r->lookupScalar("P", Dims::pressure);
+    t.pressureBasis      = oneOf("pressureBasis", acceptedPressureBases());
+    t.T                  = r->lookupScalar("T", Dims::temperature);
+    if (r->found("pH")) { t.hasPH = true; t.pH = r->lookupScalar("pH"); }
+    t.recovery           = r->lookupScalar("recovery");
+    t.permeateFlow       = r->lookupScalar("permeateFlow", Dims::volumetricFlow);
+    t.permeateFlowBasis  = oneOf("permeateFlowBasis", acceptedPermeateFlowBases());
+    t.rejectionValueType = oneOf("rejectionValueType", acceptedRejectionValueTypes());
+    t.source             = r->lookupWordOrDefault("source", "");
+
+    //  A RANGE is two numbers and nothing else is: `rejection ( lo hi );`
+    //  with `rejectionValueType range;`, a single value otherwise.
+    const bool isList = r->found("rejection")
+        && std::holds_alternative<std::vector<scalar>>(r->entryValue("rejection"));
+    if (t.isRange())
+    {
+        if (!isList)
+            throw std::runtime_error(where + ": `rejectionValueType range;` states"
+                " a range, so `rejection` is its two ends, `rejection ( 0.96 0.99 );`.");
+        const auto v = r->lookupList("rejection");
+        if (v.size() != 2 || !(v[0] < v[1]))
+            throw std::runtime_error(where + ": a rejection range is two"
+                " increasing fractions, `rejection ( lo hi );`.");
+        t.rejectionLow = v[0];  t.rejectionHigh = v[1];
+        t.rejection    = std::nan("");
+        if (v[0] <= 0.0 || v[1] > 1.0)
+            throw std::runtime_error(where + ": rejection ends are FRACTIONS"
+                " (97 % -> 0.97).");
+    }
+    else
+    {
+        if (isList)
+            throw std::runtime_error(where + ": `rejection` is a list, which is"
+                " a range -- declare `rejectionValueType range;` beside it, or"
+                " write the one value the sheet states.");
+        t.rejection = r->lookupScalar("rejection");
+        if (t.rejection <= 0.0 || t.rejection > 1.0)
+            throw std::runtime_error(where + " feedMassFraction,"
+                " recovery and rejection are FRACTIONS (2000 ppm -> 2.0e-3,"
+                " 15 % -> 0.15, 97 % -> 0.97).");
+    }
+    if (t.feedMassFraction <= 0.0 || t.feedMassFraction >= 1.0
+     || t.recovery <= 0.0 || t.recovery >= 1.0)
+        throw std::runtime_error(where + " feedMassFraction,"
+            " recovery and rejection are FRACTIONS (2000 ppm -> 2.0e-3,"
+            " 15 % -> 0.15, 97 % -> 0.97).");
+    if (t.hasPH && !(t.pH >= 0.0 && t.pH <= 14.0))
+        throw std::runtime_error(where + ": pH " + std::to_string(t.pH)
+            + " is outside [0, 14].");
+    return t;
+}
+
 void MembraneModule::readFromDict(const DictPtr& d, const std::string& sourcePath)
 {
     sourcePath_   = sourcePath;
@@ -200,24 +303,48 @@ void MembraneModule::readFromDict(const DictPtr& d, const std::string& sourcePat
         }
     }
 
-    // ---- ratedTest {} : the data sheet's standard test, all or nothing ----
+    // ---- the data sheet's standard test(s) (DEV.md 4c C189 slice 2) -------
+    //  `ratedTest {}` is ONE test and is read as a list of one;
+    //  `ratedTests ( {..} {..} );` is several, each kept as the source
+    //  states it.  Both on one record is two homes for one fact: refused.
+    rated_.clear();
+    if (d->found("ratedTest") && d->found("ratedTests"))
+        throw std::runtime_error(locus + ": declares BOTH `ratedTest {}` and"
+            " `ratedTests ( ... )` -- one home for the rated tests.  Move the"
+            " single test into the list (`ratedTests ( { ... } );`) or keep"
+            " only the single block.");
     if (d->found("ratedTest"))
+        rated_.push_back(readRatedTest(d->subDict("ratedTest"), locus + ": ratedTest{}"));
+    if (d->found("ratedTests"))
     {
-        auto r = d->subDict("ratedTest");
-        rated_.declared         = true;
-        rated_.solute           = r->lookupWord("solute");
-        rated_.feedMassFraction = r->lookupScalar("feedMassFraction");
-        rated_.P                = r->lookupScalar("P", Dims::pressure);
-        rated_.T                = r->lookupScalar("T", Dims::temperature);
-        rated_.recovery         = r->lookupScalar("recovery");
-        rated_.permeateFlow     = r->lookupScalar("permeateFlow", Dims::volumetricFlow);
-        rated_.rejection        = r->lookupScalar("rejection");
-        if (rated_.feedMassFraction <= 0.0 || rated_.feedMassFraction >= 1.0
-         || rated_.recovery <= 0.0 || rated_.recovery >= 1.0
-         || rated_.rejection <= 0.0 || rated_.rejection > 1.0)
-            throw std::runtime_error(locus + ": ratedTest{} feedMassFraction,"
-                " recovery and rejection are FRACTIONS (2000 ppm -> 2.0e-3,"
-                " 15 % -> 0.15, 97 % -> 0.97).");
+        if (!d->hasDictList("ratedTests"))
+            throw std::runtime_error(locus + ": `ratedTests` must be a list of"
+                " blocks, `ratedTests ( { solute ...; ... } { ... } );`.");
+        const auto list = d->lookupDictList("ratedTests");
+        if (list.empty())
+            throw std::runtime_error(locus + ": `ratedTests ( )` is empty --"
+                " remove it, or declare the tests the sheet states.");
+        for (std::size_t i = 0; i < list.size(); ++i)
+            rated_.push_back(readRatedTest(list[i], locus + ": ratedTests["
+                + std::to_string(i) + "]"));
+        //  Names are unique; and two tests of ONE solute must each be named,
+        //  or no case could say which of them it means.
+        std::set<std::string> ids;
+        for (const auto& t : rated_)
+            if (!t.id.empty() && !ids.insert(t.id).second)
+                throw std::runtime_error(locus + ": two rated tests carry the"
+                    " id '" + t.id + "' -- an id names ONE test.");
+        for (std::size_t i = 0; i < rated_.size(); ++i)
+            for (std::size_t j = i + 1; j < rated_.size(); ++j)
+                if (rated_[i].solute == rated_[j].solute
+                 && (rated_[i].id.empty() || rated_[j].id.empty()))
+                    throw std::runtime_error(locus + ": ratedTests[" + std::to_string(i)
+                        + "] and ratedTests[" + std::to_string(j) + "] are both "
+                        + rated_[i].solute + " tests and at least one carries no"
+                          " `id` -- two tests of one solute are two operating"
+                          " points (or a typical and a minimum value), never"
+                          " averaged, and a case names the one it means by its"
+                          " id.  Give each an `id <word>;`.");
     }
 
     // ---- provenance {} : the citation, and the per-value ESTIMATES --------

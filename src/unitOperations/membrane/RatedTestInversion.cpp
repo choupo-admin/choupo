@@ -42,6 +42,7 @@ License
 #include <memory>
 #include <stdexcept>
 #include <streambuf>
+#include <vector>
 
 namespace Choupo {
 namespace membrane {
@@ -77,16 +78,23 @@ private:
     std::streambuf* old_;
 };
 
+//  The standard atmosphere a GAUGE pressure is measured from (Pa).  A sheet
+//  that says "psig" states its pressure above the local atmosphere; the
+//  probe needs it absolute, and the standard atmosphere is the convention
+//  (announced where it is used, never silently).
+constexpr scalar standardAtmosphere = 101325.0;
+
 RatedTestConditions conditionsOf(const DictPtr& unitDict,
                                  const MembraneModule& record,
+                                 const RatedTest& rt,
                                  const std::string& solute)
 {
-    const RatedTest& rt = record.ratedTest();
     RatedTestConditions c;
     c.module           = record.name();
+    c.test             = rt.label();
     c.solute           = solute;
     c.feedMassFraction = rt.feedMassFraction;
-    c.P                = rt.P;
+    c.P                = rt.pressureBasis == "feedGauge" ? rt.P + standardAtmosphere : rt.P;
     c.P_permeate       = unitDict->subDict("operation")
                              ->lookupScalar("P_permeate", Dims::pressure);
     c.T                = rt.T;
@@ -97,17 +105,80 @@ RatedTestConditions conditionsOf(const DictPtr& unitDict,
     return c;
 }
 
+std::string joinIds(const std::vector<const RatedTest*>& ts)
+{
+    std::string out;
+    for (const auto* t : ts)
+        out += (out.empty() ? "" : ", ") + (t->id.empty() ? std::string("(no id)") : t->id);
+    return out;
+}
+
 } // namespace
+
+// ---------------------------------------------------------------------------
+const RatedTest& selectRatedTest(const MembraneModule& record,
+                                 const std::string& solute,
+                                 const std::string& testId,
+                                 const std::string& who)
+{
+    const auto& tests = record.ratedTests();
+    if (tests.empty())
+        throw std::runtime_error(who + ": module '" + record.name() + "' ("
+            + record.sourcePath() + ") carries no `ratedTest {}` (nor a"
+              " `ratedTests ( ... )` list) -- there is no observed rejection to"
+              " invert.  Declare R_int as a number with its `source`.");
+    std::vector<const RatedTest*> all, ofSolute;
+    for (const auto& t : tests)
+    {
+        all.push_back(&t);
+        if (t.solute == solute) ofSolute.push_back(&t);
+    }
+    if (!testId.empty())
+    {
+        for (const auto& t : tests)
+            if (t.id == testId)
+            {
+                if (t.solute != solute)
+                    throw std::runtime_error(who + ": test '" + testId + "' of"
+                        " module '" + record.name() + "' is a " + t.solute
+                        + " test, not a " + solute + " one -- a data sheet's"
+                          " test says nothing about another solute.");
+                return t;
+            }
+        throw std::runtime_error(who + ": module '" + record.name() + "' has no"
+            " rated test with id '" + testId + "'.  Its tests: " + joinIds(all) + ".");
+    }
+    if (ofSolute.empty())
+    {
+        std::string rated;
+        for (const auto* t : all)
+            if (rated.find(t->solute) == std::string::npos)
+                rated += (rated.empty() ? "" : ", ") + t->solute;
+        throw std::runtime_error(who + ": module '" + record.name() + "' was"
+            " rated on " + rated + ", not on " + solute + " -- a data sheet's"
+            " test says nothing about another solute.  Only the rated solute ("
+            + rated + ") can be derived `fromRatedTest`; declare " + solute
+            + "'s R_int as a number with its `source`.");
+    }
+    if (ofSolute.size() > 1)
+        throw std::runtime_error(who + ": module '" + record.name() + "' carries "
+            + std::to_string(ofSolute.size()) + " " + solute + " tests (ids "
+            + joinIds(ofSolute) + ") -- different operating points, or a typical"
+              " and a bound, never averaged.  Name the one you mean:"
+              " `rejection { " + solute + " ( fromRatedTest <id> ); }`.");
+    return *ofSolute.front();
+}
 
 // ---------------------------------------------------------------------------
 RatedTestPoint rateAtRatedTest(const DictPtr& unitDict,
                                const ThermoPackage& thermo,
                                const MembraneModule& record,
+                               const RatedTest& test,
                                const std::string& solute,
                                scalar R_int,
                                const std::string& unitLabel)
 {
-    const RatedTestConditions c = conditionsOf(unitDict, record, solute);
+    const RatedTestConditions c = conditionsOf(unitDict, record, test, solute);
 
     //  THE PROBE DICT: a deep copy of the unit's own (an alias would rewrite
     //  the case's), one element in one vessel, no scaling audit, the rated
@@ -180,6 +251,7 @@ RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
                                         const ThermoPackage& thermo,
                                         const MembraneModule* record,
                                         const std::string& solute,
+                                        const std::string& testId,
                                         const std::string& unitLabel)
 {
     const std::string who = "spiralWoundModule '" + unitLabel + "': `rejection { "
@@ -189,18 +261,78 @@ RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
             " rated test, and this unit names no module (`module <name>;`).  A"
             " typed geometry carries no data sheet to invert -- declare R_int"
             " as a number with its `source`, or name the element's record.");
-    const RatedTest& rt = record->ratedTest();
-    if (!rt.declared)
-        throw std::runtime_error(who + ": module '" + record->name() + "' ("
-            + record->sourcePath() + ") carries no `ratedTest {}` -- there is"
-              " no observed rejection to invert.  Declare R_int as a number with"
-              " its `source`.");
-    if (rt.solute != solute)
-        throw std::runtime_error(who + ": module '" + record->name() + "' was"
-            " rated on " + rt.solute + ", not on " + solute + " -- a data sheet's"
-            " test says nothing about another solute.  Only `" + rt.solute
-            + " fromRatedTest;` can be derived; declare " + solute + "'s R_int as"
-              " a number with its `source`.");
+    const RatedTest& rt = selectRatedTest(*record, solute, testId, who);
+    const std::string what = rt.label() + " of module '" + record->name() + "'";
+    std::string caveatsOut;
+
+    //  THE TEST'S OWN MEANING.  What the probe needs and the record does not
+    //  carry refuses; what the record leaves unstated and the probe can read
+    //  one way only is ANNOUNCED with that reading.  Nothing is defaulted
+    //  in silence.
+    if (rt.isRange())
+        throw std::runtime_error(who + ": " + what + " states its rejection as"
+            " a RANGE (" + fmt(rt.rejectionLow * 100.0, "%.4g") + "-"
+            + fmt(rt.rejectionHigh * 100.0, "%.4g") + " %), and the inversion"
+              " needs ONE observed value.  Choosing an end, or the middle, is a"
+              " decision about the element -- declare R_int as a number with"
+              " its `source` saying which.");
+    if (rt.pressureBasis == "netDriving")
+        throw std::runtime_error(who + ": " + what + " states a NET DRIVING"
+            " pressure, and the probe needs the feed pressure; recovering it"
+            " needs the osmotic pressure difference the sheet assumed, which"
+            " it does not state.  Declare R_int as a number with its `source`.");
+    if (rt.permeateFlowBasis == "separateTest")
+        throw std::runtime_error(who + ": " + what + " states that its"
+            " permeate flow was NOT measured in the rejection test, so"
+            " permeateFlow / recovery is not the feed the rejection was"
+            " measured at -- the crossflow, and so the film, would be"
+            " guessed.  Declare R_int as a number with its `source`.");
+    if (!rt.soluteBasis.empty() && rt.soluteBasis != rt.solute)
+        throw std::runtime_error(who + ": " + what + " states its " + rt.solute
+            + " AS " + rt.soluteBasis + ", and the probe feeds the component "
+            + rt.solute + "; converting the stated concentration between the two"
+              " formulae is not done here.  Declare R_int as a number with its"
+              " `source`.");
+    {
+        std::string cv;
+        auto add = [&](const std::string& x) { cv += (cv.empty() ? "" : "; ") + x; };
+        if (record->ratedTests().size() > 1)
+            add(rt.label() + " chosen, of " + std::to_string(record->ratedTests().size())
+                + " on the record");
+        if (rt.rejectionValueType.empty())
+            add("the record does not state whether the rejection "
+                + fmt(rt.rejection * 100.0, "%.4g") + " % is typical, a minimum or"
+                " a maximum -- inverted as stated");
+        else if (rt.rejectionValueType == "minimum")
+            add("the rejection is a MINIMUM, so the derived R_int is a lower bound");
+        else if (rt.rejectionValueType == "maximum")
+            add("the rejection is a MAXIMUM, so the derived R_int is an upper bound");
+        else if (rt.rejectionValueType == "approximate")
+            add("the rejection is stated as APPROXIMATE");
+        if (rt.pressureBasis.empty())
+            add("the record does not state what its pressure "
+                + fmt(rt.P * 1e-5, "%.4g") + " bar means -- read as the absolute"
+                " feed pressure");
+        else if (rt.pressureBasis == "feedGauge")
+            add("the pressure is GAUGE: feed " + fmt(rt.P * 1e-5, "%.4g") + " bar(g) + "
+                + fmt(standardAtmosphere * 1e-5, "%.6g") + " bar (standard atmosphere) = "
+                + fmt((rt.P + standardAtmosphere) * 1e-5, "%.6g") + " bar absolute");
+        if (rt.permeateFlowBasis.empty())
+            add("the record does not state whether the permeate flow was measured"
+                " in the same test -- the feed permeateFlow / recovery assumes it was");
+        if (rt.hasPH)
+            add("pH " + fmt(rt.pH, "%.3g") + " is stated and the probe models no pH");
+        if (!cv.empty())
+        {
+            const std::string line = what + " for " + solute + ": " + cv;
+            std::cout << "  [ratedTest] " << line << "\n";
+            std::cerr << "[ratedTest] spiralWoundModule '" << unitLabel << "': "
+                      << line << "\n";
+            AdvisoryLog::instance().add("provenance", "info",
+                "spiralWoundModule '" + unitLabel + "'", line);
+        }
+        caveatsOut = cv;
+    }
     bool known = false;
     for (std::size_t i = 0; i < thermo.n(); ++i)
         if (thermo.comp(i).name() == solute) { known = true; break; }
@@ -240,11 +372,12 @@ RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
     }
 
     RatedTestInversion inv;
-    inv.conditions = conditionsOf(unitDict, *record, solute);
+    inv.conditions = conditionsOf(unitDict, *record, rt, solute);
+    inv.conditions.caveats = caveatsOut;
     const scalar target = rt.rejection;
 
     auto f = [&](scalar R, RatedTestPoint& p) {
-        p = rateAtRatedTest(unitDict, thermo, *record, solute, R, unitLabel);
+        p = rateAtRatedTest(unitDict, thermo, *record, rt, solute, R, unitLabel);
         return p.R_obs - target;
     };
     RatedTestPoint pa, pb;
@@ -259,7 +392,7 @@ RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
               " lie STRICTLY between the predicted observed rejection at R_int"
               " = 0 (" + fmt(pa.R_obs * 100.0, "%.6g") + " %) and at R_int = 1 ("
             + fmt(pb.R_obs * 100.0, "%.6g") + " %), at " + fmt(rt.feedMassFraction * 1e6, "%.0f")
-            + " ppm " + solute + ", " + fmt(rt.P * 1e-5, "%.4g") + " bar, "
+            + " ppm " + solute + ", " + fmt(inv.conditions.P * 1e-5, "%.4g") + " bar, "
             + fmt(rt.T, "%.2f") + " K, feed " + fmt(inv.conditions.feedFlow * 86400.0, "%.4g")
             + " m3/d.  There is no intrinsic rejection in (0, 1) that this"
               " module turns into the sheet's number; declare R_int as a number"

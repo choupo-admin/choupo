@@ -359,7 +359,7 @@ def main():
         # ---- (d) no silent spread -----------------------------------------
         users = []
         for p in (ROOT / "tutorials").rglob("flowsheetDict"):
-            if re.search(r"\bfromRatedTest\s*;", ccr_strip(p.read_text())):
+            if re.search(r"\bfromRatedTest\b", ccr_strip(p.read_text())):
                 users.append(p.parent.parent.relative_to(ROOT).as_posix())
         if users != [WITNESS.relative_to(ROOT).as_posix()]:
             fail("(d) the cases declaring `fromRatedTest` are %s, expected the witness alone" % users)

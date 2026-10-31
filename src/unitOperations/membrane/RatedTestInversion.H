@@ -26,6 +26,7 @@ License
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
 Functions
+    Choupo::membrane::selectRatedTest
     Choupo::membrane::rateAtRatedTest
     Choupo::membrane::invertRatedRejection
 
@@ -64,8 +65,21 @@ Description
     are published beside the sheet's, never hidden.  It is also the rule
     bin/curate/check_membrane_modules.py arm (f) runs the rated test with.
 
+    WHICH TEST (C189 slice 2).  A record may carry several rated tests
+    (`ratedTests ( ... )`).  The test whose solute is the asked one is
+    taken; when two share that solute the case names one by its id,
+    `rejection { MgSO4 ( fromRatedTest <id> ); }`, and an unnamed request
+    refuses listing the ids.  The test's optional facts are read here and
+    nowhere else: an absent rejection value type, pressure meaning or
+    permeate-flow basis is ANNOUNCED with the reading taken (one
+    `[ratedTest]` line, stdout + stderr + a provenance advisory); a range,
+    a net driving pressure, a permeate flow from a separate test and a
+    solute stated on another formula REFUSE (each leaves the probe without
+    the number it needs); a gauge pressure is made absolute with the
+    standard atmosphere, announced.
+
     WHAT IT REFUSES, by name: no `module` record, a record with no
-    `ratedTest {}`, a solute that is not the rated one, a solute that is not
+    rated test, a solute that is not a rated one, a solute that is not
     a component of the case, a case whose solutes are declared ION BY ION
     (a salt test is not an ion rejection -- that split is SDEM's or
     DSPM-DE's), and a rated rejection the film model cannot reach (the
@@ -89,6 +103,7 @@ namespace Choupo {
 
 class ThermoPackage;
 class MembraneModule;
+struct RatedTest;
 
 namespace membrane {
 
@@ -96,9 +111,11 @@ namespace membrane {
 struct RatedTestConditions
 {
     std::string module;
+    std::string test;                // "the rated test" or "test '<id>'"
+    std::string caveats;             // what was announced about absent facts
     std::string solute;
     scalar feedMassFraction = 0.0;   // kg/kg
-    scalar P                = 0.0;   // Pa, feed
+    scalar P                = 0.0;   // Pa, feed (absolute)
     scalar P_permeate       = 0.0;   // Pa, the case's own
     scalar T                = 0.0;   // K
     scalar recoverySheet    = 0.0;   // permeate/feed, the sheet's
@@ -132,23 +149,35 @@ struct RatedTestInversion
 //- The tolerance the bracketed solve stops at, on R_obs.
 constexpr scalar ratedInversionTolerance = 1.0e-10;
 
+//- The rated test `solute` asks for: the one test of that solute, or the
+//  test named `testId` (empty: not named).  Refuses by name: no test, no
+//  test of that solute, an unknown id, an id naming another solute's test,
+//  two tests of the solute and no id.  `who` opens every refusal.
+const RatedTest& selectRatedTest(const MembraneModule& record,
+                                 const std::string& solute,
+                                 const std::string& testId,
+                                 const std::string& who);
+
 //- The module of `unitDict` (a spiralWoundModule's augmented dict) run at
-//  the record's rated test with `solute` given intrinsic rejection R_int;
-//  every other declared R kept.  Console output of the probe is silenced
-//  and its advisories are filed as TRIAL ones.
+//  the rated test `test` of `record` with `solute` given intrinsic
+//  rejection R_int; every other declared R kept.  Console output of the
+//  probe is silenced and its advisories are filed as TRIAL ones.
 RatedTestPoint rateAtRatedTest(const DictPtr& unitDict,
                                const ThermoPackage& thermo,
                                const MembraneModule& record,
+                               const RatedTest& test,
                                const std::string& solute,
                                scalar R_int,
                                const std::string& unitLabel);
 
 //- R_int for `solute` such that the module's predicted OBSERVED rejection
-//  at the rated test equals the record's.  Refuses as stated above.
+//  at the chosen rated test (selectRatedTest) equals the record's.
+//  Refuses as stated above.
 RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
                                         const ThermoPackage& thermo,
                                         const MembraneModule* record,
                                         const std::string& solute,
+                                        const std::string& testId,
                                         const std::string& unitLabel);
 
 } // namespace membrane

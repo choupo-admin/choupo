@@ -40,7 +40,8 @@ Description
     `channelHeight`, `spacerPorosity`, spread over the operation and its
     massTransfer/pressureDrop sub-blocks -- the record carries ONCE, together
     with the manufacturer's LIMITS (checked against the run, announced, never
-    refused) and its RATED TEST (the standard test the data sheet quotes,
+    refused) and its RATED TEST(S) (the standard test(s) the data sheet quotes,
+    one `ratedTest {}` or several `ratedTests ( ... )`, each as stated,
     which the gate check_membrane_modules runs the engine against as a
     measurement).
 
@@ -82,17 +83,36 @@ struct ModuleEstimate
     std::string notes;          // how to verify it -- REQUIRED
 };
 
-//- The manufacturer's standard test, as the data sheet quotes it.
+//- ONE of the manufacturer's standard tests, as the data sheet quotes it
+//  (DEV.md 4c C189 slice 2: a record may carry several, `ratedTests ( {..}
+//  {..} );`, each kept with its OWN meaning -- a NaCl test and an MgSO4 test
+//  are different operating points, and a minimum is never averaged with a
+//  typical value).  The seven numbers below the id are REQUIRED (all or
+//  nothing); every other fact is OPTIONAL and, when the sheet does not state
+//  it, ABSENT -- an empty word or a has* flag, never a default.  A reader
+//  that needs an absent fact refuses or announces it by name.
 struct RatedTest
 {
-    bool        declared     = false;
+    std::string id;                     // optional name; required when two tests share a solute
     std::string solute;                 // the test solute (a component name)
+    std::string soluteBasis;            // optional: the formula the sheet states it AS (boron as B)
     scalar      feedMassFraction = 0.0; // kg/kg (2000 ppm -> 2.0e-3)
-    scalar      P            = 0.0;     // Pa, applied feed pressure
+    scalar      P            = 0.0;     // Pa, applied pressure as stated
+    std::string pressureBasis;          // optional: feedAbsolute | feedGauge | netDriving
     scalar      T            = 0.0;     // K
+    bool        hasPH        = false;   scalar pH = 0.0;   // optional
     scalar      recovery     = 0.0;     // permeate/feed, volumetric
     scalar      permeateFlow = 0.0;     // m3/s
-    scalar      rejection    = 0.0;     // stabilised salt rejection, fraction
+    std::string permeateFlowBasis;      // optional: sameTest | separateTest
+    std::string rejectionValueType;     // optional: typical|minimum|maximum|approximate|range
+    scalar      rejection    = 0.0;     // stated observed rejection (NaN when a range)
+    scalar      rejectionLow = 0.0, rejectionHigh = 0.0;   // range only
+    std::string source;                 // optional: the document (form, revision, date)
+
+    bool isRange() const { return rejectionValueType == "range"; }
+    // "test '<id>'" or "the rated test" -- for sentences.
+    std::string label() const
+    { return id.empty() ? std::string("the rated test") : "test '" + id + "'"; }
 };
 
 //- The manufacturer's operating limits.  A limit the sheet does not state is
@@ -153,7 +173,13 @@ public:
 
     // ---- The manufacturer's limits and standard test -----------------------
     const ModuleLimits& limits()      const { return limits_; }
-    const RatedTest&    ratedTest()   const { return rated_; }
+    //  Every rated test, in the record's order: `ratedTest {}` is read as a
+    //  list of one, `ratedTests ( ... )` as written; empty = none declared.
+    const std::vector<RatedTest>& ratedTests() const { return rated_; }
+    // The accepted words of the optional facts, in one place.
+    static const std::vector<std::string>& acceptedRejectionValueTypes();
+    static const std::vector<std::string>& acceptedPressureBases();
+    static const std::vector<std::string>& acceptedPermeateFlowBases();
 
     // ---- Every value the record declares as an estimate ---------------------
     const std::vector<ModuleEstimate>& estimates() const { return estimates_; }
@@ -166,7 +192,8 @@ private:
     scalar leafLength_ = 0.0, slotWidth_ = 0.0, slotDepth_ = 0.0, holdUpVolume_ = 0.0;
     std::vector<scalar> spacers_;
     ModuleLimits limits_;
-    RatedTest    rated_;
+    std::vector<RatedTest> rated_;
+    RatedTest readRatedTest(const DictPtr& r, const std::string& where) const;
     std::vector<ModuleEstimate> estimates_;
 };
 

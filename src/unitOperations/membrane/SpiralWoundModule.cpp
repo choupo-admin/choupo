@@ -825,7 +825,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     std::vector<membrane::RatedTestInversion> ratedInversions;
     for (const auto& s : transportModel->ratedTestSolutes())
     {
-        auto inv = membrane::invertRatedRejection(dict, thermo, modRec, s, unitLabel);
+        auto inv = membrane::invertRatedRejection(dict, thermo, modRec, s, transportModel->ratedTestId(s), unitLabel);
         transportModel->setRatedRejection(s, inv.R_int);
         const auto& c = inv.conditions;
         char b[900];
@@ -1716,8 +1716,12 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         kpis_["R_int_fromRatedTest_" + s]   = inv.R_int;
         kpis_["ratedTest_R_obs_" + s]       = inv.conditions.rejectionSheet;
         kpis_["ratedTest_cm_over_cb_" + s]  = inv.atRoot.cmOverCb;
-        kpis_["ratedTest_recovery"]         = inv.atRoot.recovery;
-        kpis_["ratedTest_permeateFlow"]     = inv.atRoot.permeateFlow;
+        //  Two derived solutes may come from two DIFFERENT tests (C189
+        //  slice 2), so the probe's recovery and permeate are then the
+        //  solute's own; one derived solute keeps the slice-1 keys.
+        const std::string tail = ratedInversions.size() > 1 ? "_" + s : "";
+        kpis_["ratedTest_recovery" + tail]     = inv.atRoot.recovery;
+        kpis_["ratedTest_permeateFlow" + tail] = inv.atRoot.permeateFlow;
     }
     //  The inlet crossflow velocity in the record's channel -- the number a
     //  laboratory protocol prescribes (the SEPA CF manual's 0.1-0.5 m/s), so
@@ -1892,23 +1896,48 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                     nLeaves, static_cast<double>(L), static_cast<double>(W_leaf));
                 std::cout << b;
             }
-            const RatedTest& rt = modRec->ratedTest();
-            if (rt.declared)
+            for (const RatedTest& rt : modRec->ratedTests())
             {
-                //  The data sheet's own standard test, printed beside the run
-                //  so a reader sees what the manufacturer measured at.  The
-                //  comparison at THOSE conditions is check_membrane_modules'.
-                char b[300];
+                //  The data sheet's own standard test(s), printed beside the
+                //  run so a reader sees what the manufacturer measured at --
+                //  EVERY test, each as the source states it (C189 slice 2);
+                //  an optional fact the record does not state is not printed.
+                //  The comparison at THOSE conditions is check_membrane_modules'.
+                //  "Rated test:" keeps its 17-column field; a named test's
+                //  longer label keeps at least one space before the numbers.
+                const std::string head = (rt.id.empty() ? std::string("Rated test:")
+                                                        : "Rated test " + rt.id + ":") + " ";
+                char rej[80];
+                if (rt.isRange())
+                    std::snprintf(rej, sizeof(rej), "%.2f-%.2f %%",
+                        static_cast<double>(rt.rejectionLow * 100.0),
+                        static_cast<double>(rt.rejectionHigh * 100.0));
+                else
+                    std::snprintf(rej, sizeof(rej), "%.2f %%",
+                        static_cast<double>(rt.rejection * 100.0));
+                std::string extra;
+                if (!rt.soluteBasis.empty())        extra += ", stated as " + rt.soluteBasis;
+                if (!rt.rejectionValueType.empty()) extra += ", rejection " + rt.rejectionValueType;
+                if (!rt.pressureBasis.empty())      extra += ", pressure " + rt.pressureBasis;
+                if (rt.hasPH)
+                {
+                    char ph[32];
+                    std::snprintf(ph, sizeof(ph), ", pH %.3g", static_cast<double>(rt.pH));
+                    extra += ph;
+                }
+                if (!rt.permeateFlowBasis.empty())  extra += ", permeate flow " + rt.permeateFlowBasis;
+                if (!rt.source.empty())             extra += "; source: " + rt.source;
+                char b[400];
                 std::snprintf(b, sizeof(b),
-                    "  Rated test:      %g ppm %s, %.2f bar, %.2f K, recovery"
-                    " %.0f %%: permeate %.3g m3/d, rejection %.2f %% (data sheet)\n",
+                    "  %-17s%g ppm %s, %.2f bar, %.2f K, recovery"
+                    " %.0f %%: permeate %.3g m3/d, rejection %s",
+                    head.c_str(),
                     static_cast<double>(rt.feedMassFraction * 1e6),
                     rt.solute.c_str(), static_cast<double>(rt.P * 1e-5),
                     static_cast<double>(rt.T),
                     static_cast<double>(rt.recovery * 100.0),
-                    static_cast<double>(rt.permeateFlow * 86400.0),
-                    static_cast<double>(rt.rejection * 100.0));
-                std::cout << b;
+                    static_cast<double>(rt.permeateFlow * 86400.0), rej);
+                std::cout << b << extra << " (data sheet)\n";
             }
         }
         else

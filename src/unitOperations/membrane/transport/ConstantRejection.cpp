@@ -80,7 +80,21 @@ void ConstantRejection::readParameters(const DictPtr& params)
     {
         //  `<solute> fromRatedTest;` -- the ONE word this block accepts in
         //  place of a number (DEV.md 4c C189): R_int is DERIVED by the unit
-        //  from its module record's rated test, never typed.
+        //  from its module record's rated test, never typed.  The list form
+        //  `<solute> ( fromRatedTest <id> );` names WHICH of the record's
+        //  tests (slice 2).
+        if (std::holds_alternative<std::vector<std::string>>(r->entryValue(k)))
+        {
+            const auto ws = r->lookupWordList(k);
+            if (ws.size() != 2 || ws[0] != "fromRatedTest")
+                throw std::runtime_error("transport constantRejection: the"
+                    " intrinsic rejection of '" + k + "' is a word list -- the"
+                    " one list this block accepts is `( fromRatedTest <id> )`,"
+                    " naming a rated test of the module record by its id.");
+            pendingRated_.push_back(k);
+            ratedIds_[k] = ws[1];
+            continue;
+        }
         if (std::holds_alternative<std::string>(r->entryValue(k)))
         {
             const std::string w = r->lookupWord(k);
