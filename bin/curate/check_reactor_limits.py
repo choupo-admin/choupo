@@ -461,8 +461,18 @@ def main() -> int:
                     ok = False
         base = probe(T / "ctrl/ctrl11_esterification_jacket", td / "r7_base")
         rev = probe(T / "ctrl/ctrl11_esterification_jacket", td / "r7_rev")
-        if edit(rev / "constant/reactions", "    limitingReactant   ethanol;",
-                "    limitingReactant   ethanol;\n    reversible         true;", "R7"):
+        #  ctrl11's law is pseudo-first-order (acetic acid `order 0`, in
+        #  excess), and `reversible true` beside a non-mass-action order is
+        #  REFUSED since DEV.md 4c C185 (Reaction::refuseNonMassAction
+        #  DetailedBalance): its zero would not be at Kc.  So BOTH copies take
+        #  the mass-action order 1 on the acid, and the pair still differs in
+        #  the reverse leg alone.
+        acid0 = "{ component aceticAcid;    nu -1;  order 0; }"
+        acid1 = "{ component aceticAcid;    nu -1;  order 1; }"
+        if (edit(base / "constant/reactions", acid0, acid1, "R7")
+                and edit(rev / "constant/reactions", acid0, acid1, "R7")
+                and edit(rev / "constant/reactions", "    limitingReactant   ethanol;",
+                "    limitingReactant   ethanol;\n    reversible         true;", "R7")):
             ends = []
             for c in (base, rev):
                 if expect_runs("R7 (reverse leg)", c, "choupoCtrl") is None:

@@ -171,6 +171,19 @@ set -uo pipefail
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 
+# --- THE SUITE TESTS ITS OWN TREE (2026-10-31) ------------------------------
+#  A worktree's suite read the PRIMARY checkout's engine and data: the shell
+#  profile (etc/bashrc) exports CHOUPO_HOME and puts that checkout's root and
+#  bin/ on PATH, so every gate that resolves `choupoSolve`/`runCase` by PATH ran
+#  a binary built days earlier, and every engine run read that checkout's
+#  private data/local (ChemSep pairs that turn an ideal-pair refusal into a
+#  silent pass).  Measured on the C185/C186 integration: four gates failed for
+#  the environment and passed with these two lines (problem_divergence,
+#  standards_write_guard, fit_then_simulate; release_identity was the tags).
+#  So the suite pins both to the tree it lives in.
+export CHOUPO_HOME="$ROOT"
+export PATH="$ROOT:$ROOT/bin:$PATH"
+
 # --- THE CORES (2026-10-25, DEV.md 4c C167) ------------------------------------
 #  Vitor watched the sweep on a ten-core laptop use one core most of the time.
 #  The case walk and every gate ran one after another, so the cores shortened

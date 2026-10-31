@@ -228,6 +228,9 @@
   "BubblePoint": [
    "src/unitOperations/saturation/BubblePoint.H"
   ],
+  "BubbleTSolve": [
+   "src/thermo/SaturationCurves.H"
+  ],
   "BuildingConnection": [
    "src/core/BuildingRecords.H"
   ],
