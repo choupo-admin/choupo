@@ -1528,6 +1528,67 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C188. WHAT A UNIT ACCEPTS: MODELLED, A DECLARED APPROXIMATION, OR
+> REFUSED (an external proposal, ChatGPT, "chemical component
+> classification and unit operation compatibility architecture", relayed
+> by Vitor 2026-10-31 as SUGGESTIONS under rule 00; his two refinements the
+> same hour are part of the commission).**  Mapped against the engine
+> first (a read-only agent, its two gravest findings re-read by the
+> commander at main a84aa7922):
+> EXISTS and is kept: ONE component registry (`thermo/Database.cpp:140`);
+> the component/species split with typed ids (`core/Identifiers.H`) and
+> declared bridges (`aqueousMapping`/`dissociatesTo`, one crossing in
+> `AqueousChemistry::singleMaster`); both bases verified (`m = A n`);
+> electroneutrality in the speciation; membrane commercial data as
+> `assets/` records apart from components.
+> DEFECTS it exposed, each a wrong answer at exit 0 today:
+> (1) `SpiralWoundModule.cpp:718` takes as solutes only the NONVOLATILE
+> components; any other (ethanol in water) gets z = 0 in both outlets and
+> its mass reappears as water through the `rho/MW_water` closure (:1449,
+> :1472) -- mass closes in kg, carbon vanishes.  The right test exists only
+> inside the optional `scaling{}` audit (:885).
+> (2) `rotating/Pump.cpp` never reads the inlet's phase and publishes
+> `vf = 0` (:340): a vapour is pumped as a liquid.
+> (3) water found BY NAME in 7 units (SpiralWoundModule, ED stack, ion
+> exchanger, batch diafilter, batch ED, ThermoPackageBuilder, Flowsheet)
+> against the declared-solvent rule (section 5, SystemClassifier).
+> (4) the Davies band (I > 0.5) hard-coded at three callers
+> (SpeciationSolver.cpp:2397, ScalingScan.cpp:394, Exchange.cpp:234)
+> instead of declared once by the model.
+> ABSENT: a per-unit declaration of what it accepts, and any pre-solve
+> compatibility pass.
+> THE DECISION (rule 00).  Three states, never two:
+>   * MODELLED -- the component enters the unit's equations because the
+>     declared models can price it within their DECLARED domain (Vitor:
+>     ethanol diluted in wine is modelled when the package computes its
+>     activity; the aqueous speciation is valid while water is the
+>     dominant solvent, a criterion the MODEL states with its reason --
+>     never a universal threshold);
+>   * A DECLARED APPROXIMATION -- the component crosses the unit unmodelled
+>     (Vitor: a little benzene in a second liquid phase through an
+>     electrodialysis stack).  Declared in the existing `approximations {}`
+>     grammar as a new kind `passThrough` (component, unit, fate, reason):
+>     authorisation is the block's presence, an unlisted component refuses,
+>     a listing nobody needs refuses; it enters the mass, element and
+>     energy balances, and is RECORDED on the ProblemDivergence channel
+>     (banner, result JSON, converged/problemDivergence), never refused;
+>     its fate is the case's (a split is a model choice; no default);
+>   * REFUSED -- by name, with both remedies (a model that prices it, or
+>     the passThrough declaration).
+> Order: (1) and (2) first, each reproduced before the fix; then (3) and
+> (4); then the per-unit contract -- accepts / requires / may pass through
+> -- as ONE source read by a pre-solve pass, the GUI, F1 and docs/ai, its
+> design record written before code, each unit's and each model's page
+> carrying a GENERATED "modelled / may pass / refuses" section.
+> REJECTED from the proposal: a mandatory identity-type field on every
+> record (curation burden; the facts already derive from the record); a
+> universal "material state" classifier with thresholds (each model
+> declares its own domain); "water + ethanol in aqueous RO is an error"
+> (wine dealcoholisation by RO is industrial practice -- the transport
+> model's domain decides).  Commercial membrane selection: deferred, as
+> the proposal itself says.
+> STATUS: DECIDED 2026-10-31; slice (1) next.
+
 > **C187. WHAT THE 2026-10-31 AUDIT FOUND UNRECORDED (two independent
 > passes over the session transcript, 24-31 Oct; recorded by the architect
 > under CLAUDE.md rule 00).**  Each item below is a CLAIM to verify against
