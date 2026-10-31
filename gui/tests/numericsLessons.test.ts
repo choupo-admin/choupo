@@ -433,7 +433,7 @@ describe("every file:line these pages cite into the engine resolves", () => {
     //  288-291 and still covers it; this list holds the ONE line that must
     //  carry the string.  (Drift found 2026-09-16 by an unrelated slice --
     //  a pre-existing red that had nothing to do with it.)
-    ["src/applications/choupoSolve/main.cpp", 308, "Mass balance (global)"],
+    ["src/applications/choupoSolve/main.cpp", 309, "Mass balance (global)"],
     ["src/streams/ProcessStream.H", 80, "kmol/s"],
     // --- tear streams: the plan contract
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 4317, "Flowsheet::validateSequentialPlan"],

@@ -1365,6 +1365,11 @@
       "exit": 0,
       "claim": "check_pump_liquid_inlet: OK -- a vapour inlet (water, 400 K, 1 bar) is refused, naming the compressor; pump01 (liquid water) runs as before.  NOT checked: a produced two-phase inlet (no corpus case feeds a pump one)",
       "seconds": 0.0
+    },
+    "check_solver_failures": {
+      "exit": 0,
+      "claim": "check_solver_failures: OK -- a failed computation is refused, not returned: the probe (solver sources alone, bounds-checked) sees dy/dt = y^2 asked to t = 2 refused by name at t = 0.999972 s with NOTHING committed, a declared maxSteps 5 refused (and 8 bad maxSteps declarations -- 0, 2.5, 1e12, or under fixed stepping -- refused by name before integrating), a well-posed interval untouched; the QP gives x = 1 (not 0) for x >= 1, flags x >= 1 with x <= 0 INFEASIBLE instead of certifying it, and the reconciliation refuses laws that force b = -1; the SQP reaches x = -1 (not 0) on the reviewer's half-evaluable model under forward and central differences with the one-sided step counted, stops unconverged when no difference exists, and solves an inconsistent first linearisation under a counted Powell relaxation within 2.0e-05 of its box; 3 binaries (batch06, ctrl03, unsteady01) refuse a failed interval with no time directory, no converged/ and the t = 0 trajectory row alone; a sweep over the failing ctrl03 reports 2 of 2 evaluations FAILED; 3 `->integrate(` call site(s) outside src/solver/ODE read .ok.  NOT covered: the fixed-step RK4 time loop (units refuse on their own), whether a corpus case SHOULD converge, the SQP path on corpus cases (their goldens), any restoration beyond Powell's relaxation.",
+      "seconds": 8.0
     }
   }
 }
