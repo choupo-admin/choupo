@@ -83,9 +83,12 @@ void MembraneModuleRegistry::loadFrom(const std::string& dataRoot)
                 FeedSpacerRegistry::add(std::move(s));
                 continue;
             }
-            if (kind != "membraneModule") continue;
+            if (kind != "membraneModule" && kind != "membraneClass") continue;
             MembraneModule m;
-            m.readFromDict(d, e.path().string());
+            if (kind == "membraneClass")
+                m.readClassFromDict(d, e.path().string());   // C189 slice 3
+            else
+                m.readFromDict(d, e.path().string());
             guard.claim(m.name(), e.path().string());
             registry()[m.name()] = std::move(m);
         }
@@ -99,6 +102,21 @@ void MembraneModuleRegistry::loadFrom(const std::string& dataRoot)
         records::ScanGuard guard("MembraneModuleRegistry", "membrane module");
         records::ScanGuard sg("FeedSpacerRegistry", "feed spacer");
         for (const auto& d : records::localScanDirs("assets")) scan(d, guard, sg);
+    }
+    //  A FUNCTIONAL CLASS names its element by reference (C189 slice 3):
+    //  adopted here, after BOTH tiers are loaded, so the order of a directory
+    //  scan and the tier the element lives in cannot matter.  An element no
+    //  tier carries refuses through the one refusal sentence.
+    for (auto& [nm, m] : registry())
+    {
+        if (!m.isFunctionalClass()) continue;
+        const auto it = registry().find(m.element());
+        if (it == registry().end())
+            throw std::runtime_error("membrane class '" + nm + "' ("
+                + m.sourcePath() + "): `element " + m.element() + ";` -- "
+                + registryRefusal::message("membrane module", m.element(),
+                                           registryRefusal::keysOf(registry())));
+        m.adoptElement(it->second);
     }
 }
 

@@ -1395,6 +1395,11 @@
       "exit": 0,
       "claim": "check_unit_acceptance: OK -- the two units' refusals live in the contract (source); ethanol-in-RO refused before any unit ran; choupo-lint reports ethanol-in-RO; vapour-into-pump refused before any unit ran; choupo-lint reports vapour-into-pump; a produced vapour is refused by the pump at its solve; --describe-units lists 52 types, 3 declared; check_membrane_feed_scope and check_pump_liquid_inlet pass.  Scope: the two migrated units (spiralWoundModule, pump) and the default on mixer; NOT checked: any other unit's contract, pass-through (not built), a recycle bringing a new component into a migrated unit",
       "seconds": 0.2
+    },
+    "check_membrane_classes": {
+      "exit": 0,
+      "claim": "check_membrane_classes: OK -- the six `kind membraneClass` records (NF_OPEN, NF_DIVALENT_SELECTIVE, NF_TIGHT, BWRO_HIGH_FLUX, BWRO_HIGH_REJECTION, SWRO) are illustrative, name no manufacturer and keep each stated rejection inside its band; each run announces it ([illustrative], stdout + stderr + an accepted advisory); every derived R_int typed on an independent fixture at the class's reference test reproduces the stated observed rejection to 1e-7; an unknown class, SDEM, solutionDiffusion, a typed rated salt, a class as a bare membrane, a class naming a manufacturer and one claiming another review status all refuse by name.  NOT checked: whether a class's values are good teaching values, the engine's permeate against the stated one (printed only), the batch diafilter (does not refuse a class)",
+      "seconds": 0.5
     }
   }
 }

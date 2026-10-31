@@ -974,6 +974,18 @@ A `spiralWoundModule` names one with `module <name>;` and an `electrodialysisSta
 | `NF270-4040` |
 | `SEPA_CF` |
 | `SW30HR-380` |
+## Functional membrane classes (a membrane chosen by what it does)
+
+ILLUSTRATIVE teaching profiles, not products (`reviewStatus illustrative;`, announced on every run; no manufacturer).  Named where an element is: `module <class>;`, with `transport constantRejection;` and `rejection { <salt> fromRatedTest; }` -- each class states one OBSERVED rejection per salt at its own reference test (the middle of a stated band), an A_w and its generic element by reference; the intrinsic rejection is derived, never typed.  Any other transport law refuses.
+
+| Name |
+|---|
+| `BWRO_HIGH_FLUX` |
+| `BWRO_HIGH_REJECTION` |
+| `NF_DIVALENT_SELECTIVE` |
+| `NF_OPEN` |
+| `NF_TIGHT` |
+| `SWRO` |
 ## Feed spacers (the channel a spiral element is wound with)
 
 Named by an element record (`feedSpacer <name>;`) or, with the explicit `area` + `length` form, by the case.  Thickness = channel height; porosity weighed or derived from the mesh; the hydraulic diameter is Schock & Miquel's Eq. 17 (derived from the filament); the record carries its Sherwood and friction correlations with their Reynolds window, announced when a run leaves it.

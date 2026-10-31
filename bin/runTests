@@ -4532,6 +4532,21 @@ PYEOF
     fi
     rm -f /tmp/rtests.$$
 
+    # Functional membrane classes (2026-10-31, DEV.md 4c C189 slice 3).
+    # Six `kind membraneClass` records (NF_OPEN ... SWRO): illustrative,
+    # announced on every run, no manufacturer, each stated observed rejection
+    # inside its band; the derived intrinsic R typed on an independent fixture
+    # reproduces it at the class's reference test; seven refusals by name.
+    if gate_exec "$ROOT/bin/curate/check_membrane_classes.py" > /tmp/mclass.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "membrane-classes-gate" "$(grep -m1 '^check_membrane_classes: OK' /tmp/mclass.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_membrane_classes.py)\n" "membrane-classes-gate"
+        cat /tmp/mclass.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/mclass.$$
+
     # Ion-diffusivity temperature gate (2026-10-24, DEV.md 4c C145 ruling,
     # built C148).  D_i(T) = D_i0 (T/298.15)(mu(298.15)/mu(T)) on the
     # package's own liquid viscosity, ONE home (thermo/transport/

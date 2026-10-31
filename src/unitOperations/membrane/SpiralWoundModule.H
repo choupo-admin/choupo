@@ -147,8 +147,15 @@ public:
     //  C188, defect 1 moved onto the contract in item 5).  The .cpp.
     UnitAcceptance                  acceptance()      const override;
 
+    //  Set by the rated-test inversion (RatedTestInversion.cpp) on the probe
+    //  it builds: the probe TYPES the trial R_int of a salt a functional
+    //  class rates, which a case may not (C189 slice 3), and it announces
+    //  nothing.  A C++ flag, not a dict key, so no case can set it.
+    void markRatedTestProbe() { ratedTestProbe_ = true; }
+
 private:
     inline static const std::string type_ = "spiralWoundModule";
+    bool ratedTestProbe_ = false;
 
     std::vector<ProcessStream>     out_;
     std::map<std::string, scalar>  kpis_;

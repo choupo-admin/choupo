@@ -271,7 +271,9 @@ int SpiralWoundModule::solve(const DictPtr& dict,
             std::snprintf(b, sizeof(b),
                 "  [spec] module '%s' (%s, %s): A %g m2, %s %g m\n",
                 modRec->name().c_str(), modRec->format().c_str(),
-                modRec->manufacturer().c_str(),
+                modRec->isFunctionalClass()
+                    ? ("functional class on " + modRec->element()).c_str()
+                    : modRec->manufacturer().c_str(),
                 static_cast<double>(A_membrane),
                 flatCell ? "channel length = activeArea / slotWidth ="
                          : "leaf length",
@@ -640,7 +642,66 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     //  predates it is untouched.
     if (opDict->found("transportParameters"))
         transportModel->readParameters(opDict->subDict("transportParameters"));
-    const scalar dP_drop    = opDict->lookupScalarOrDefault("dP_feed_total", 0.0,
+
+    //  A FUNCTIONAL CLASS (DEV.md 4c C189 slice 3, thermo/membrane/
+    //  MembraneModule.H).  It states OBSERVED salt rejections at its own
+    //  reference test and a water permeance -- nothing per ion, no pore, no
+    //  B_s -- so ONE law can run it, `constantRejection`, and the intrinsic
+    //  rejection of every salt it rates is DERIVED (`fromRatedTest`), never
+    //  typed.  Both refuse by name with the remedy; and every run that reads
+    //  a class says it is a declared teaching profile.
+    if (hasModule && modRec->isFunctionalClass() && !ratedTestProbe_)
+    {
+        const std::string who = "spiralWoundModule '" + unitLabel + "': `module "
+                              + modRec->name() + ";` is a functional class";
+        if (transportModel->type() != "constantRejection")
+            throw std::runtime_error(who + ", and `transport "
+                + transportModel->type() + ";` needs data a class does not"
+                  " have (per-solute B_s for solutionDiffusion, per-ion"
+                  " permeances for SDEM, a pore for DSPM-DE).  Declare"
+                  " `transport constantRejection;` with `rejection { <salt>"
+                  " fromRatedTest; }`, or name a membrane record that carries"
+                  " the data (a commercial `module`, or a generic element with"
+                  " `membrane <name>;`).");
+        if (opDict->found("transportParameters")
+         && opDict->subDict("transportParameters")->found("rejection"))
+        {
+            auto rj = opDict->subDict("transportParameters")->subDict("rejection");
+            for (const auto& t : modRec->ratedTests())
+                if (rj->found(t.solute)
+                 && !std::holds_alternative<std::string>(rj->entryValue(t.solute))
+                 && !std::holds_alternative<std::vector<std::string>>(rj->entryValue(t.solute)))
+                    throw std::runtime_error(who + " that states an OBSERVED "
+                        + t.solute + " rejection at its reference test, and the"
+                          " case types a number for it -- the intrinsic rejection"
+                          " of a rated salt is derived, never typed.  Write `"
+                        + t.solute + " fromRatedTest;`, or, to study another"
+                          " value, copy the class into the case's constant/assets/"
+                          " and change its reference rejection there.");
+        }
+        std::string rated;
+        for (const auto& t : modRec->ratedTests())
+        {
+            char v[96];
+            std::snprintf(v, sizeof(v), "%s%s %.4g %%", rated.empty() ? "" : ", ",
+                t.solute.c_str(), static_cast<double>(t.rejection * 100.0));
+            rated += v;
+        }
+        const std::string msg = "a FUNCTIONAL CLASS, not a product -- its"
+            " observed rejections (" + rated + " at its reference tests) and its"
+            " water permeance are a declared teaching profile (reviewStatus "
+            + MembraneModule::classReviewStatus() + "), NOT measurements; deployed"
+              " in the generic element " + modRec->element() + " -- "
+            + modRec->description();
+        if (verbosity >= 1)
+            std::cout << "  [illustrative] module '" << modRec->name() << "': "
+                      << msg << "\n";
+        std::cerr << "[illustrative] spiralWoundModule '" << unitLabel
+                  << "': module '" << modRec->name() << "' is " << msg << "\n";
+        AdvisoryLog::instance().add("provenance", "warning",
+            "module '" + modRec->name() + "'", msg);
+    }
+    const scalar dP_drop   = opDict->lookupScalarOrDefault("dP_feed_total", 0.0,
                                                             Dims::pressure);
 
     // Multi-element train: N elements in series (nElements resolved by the
@@ -666,6 +727,16 @@ int SpiralWoundModule::solve(const DictPtr& dict,
 
     // ---- Build per-solute permeability table from the Membrane DB ---------
     const Membrane& mem = MembraneRegistry::byName(membraneName);
+    //  A functional class is chosen as a WHOLE (C189 slice 3): its A_w
+    //  belongs with its element and its reference tests.  Named as a bare
+    //  `membrane` beside another element, its rejections could not be
+    //  derived and nothing would say it is illustrative -- refused.
+    if (mem.isFunctionalClass() && !(hasModule && modRec->isFunctionalClass()))
+        throw std::runtime_error("spiralWoundModule '" + unitLabel + "': `membrane "
+            + membraneName + ";` names a functional CLASS, which is chosen as a"
+              " whole -- write `module " + membraneName + ";` (its element, its"
+              " reference tests and its water permeance come together) and"
+              " remove the separate `module`/`membrane` pair.");
 
     // Rating check (no-silent-crutch / "ratings should speak"): WARN -- never
     // clamp -- if the feed is outside the element's catalogue rating, so the
@@ -1910,7 +1981,8 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                     static_cast<double>(rt.T),
                     static_cast<double>(rt.recovery * 100.0),
                     static_cast<double>(rt.permeateFlow * 86400.0), rej);
-                std::cout << b << extra << " (data sheet)\n";
+                std::cout << b << extra << (modRec->isFunctionalClass()
+                    ? " (illustrative class reference)\n" : " (data sheet)\n");
             }
         }
         else

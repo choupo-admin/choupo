@@ -35,6 +35,11 @@ Description
     kind-of-thing -- and NOT folded into it: a membrane knows nothing about
     geometry and a module knows nothing about transport, so one map keyed by
     name could not tell a student which of the two `NF270` names.
+
+    It also holds the FUNCTIONAL CLASSES (`kind membraneClass;`, DEV.md 4c
+    C189 slice 3) under their own names: a class is named where an element
+    is (`module NF_DIVALENT_SELECTIVE;`), and the generic element it names
+    by reference is adopted once every tier is loaded.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

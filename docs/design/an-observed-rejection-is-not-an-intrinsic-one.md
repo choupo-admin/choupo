@@ -204,6 +204,121 @@ data/standards).
 
 ## 7. Not done
 
-The functional classes and the shortlist tool are C189 slices (3)-(5).  The SW30HR-380
+The functional classes are section 8 (slice 3); the import/QA tool and the
+shortlist are C189 slices (4)-(5).  The SW30HR-380
 record's NaCl test is not inverted by any witness.  A constant R_int stays
 constant away from the test.  The membrane records' A_w is not corrected.
+
+## 8. A membrane chosen by what it does (slice 3, 2026-10-31)
+
+*Witness `tutorials/steady/membranes/membrane26_class_sulphate_removal`;
+gate `bin/curate/check_membrane_classes.py`.*
+
+A student designing a sulphate removal knows what the membrane must DO
+before he knows which product to buy.  DECIDED (DEV.md 4c C189, rule 00):
+six functional classes, ILLUSTRATIVE teaching assumptions, their intrinsic
+rejections derived by section 2, never typed; chosen in the case's
+dictionary.
+
+**The grammar.**  A class is a record of its own kind, `kind
+membraneClass;`, in `data/standards/assets/`, named where an element is
+named: `module NF_DIVALENT_SELECTIVE;`.  Why a kind of its own and not a
+`membraneModule`: a class is BOTH halves the tree keeps apart -- a
+transport fact (its `A_w`, which a module record must not carry) and a
+hardware fact (the element, the reference tests) -- and one file read by
+two readers, each taking only its own facts, keeps the student's choice
+one word.  `MembraneRegistry` reads its transport half (`membraneType NF |
+RO`, `A_w`; `permeabilities`, `poreModel` and `fit` refused);
+`MembraneModuleRegistry` reads the rest and, after every tier is loaded,
+ADOPTS the named generic element's geometry and estimates (`element
+Generic-4040;` -- an element that names a membrane, a flat cell or another
+class refuses).  Why `module` and not a new key: a class stands in for an
+element in the one slot a case has for one; a second key would be a
+second door to that slot.  A class keeps its element: the observed
+rejections were stated on it, so the inversion's probe runs on the same
+geometry the case runs.
+
+**The record.**
+
+```
+name           NF_DIVALENT_SELECTIVE;
+kind           membraneClass;
+membraneType   NF;
+reviewStatus   illustrative;
+description    "...";   application "...";
+element        Generic-4040;
+A_w            2.78e-6 m/s/bar;
+ratedTests ( { id naclRef; solute NaCl; ... rejection 0.30; rejectionValueType typical;
+               pressureBasis feedGauge; permeateFlowBasis sameTest; source "..."; }
+             { id mgso4Ref; solute MgSO4; ... rejection 0.95; ... } );
+bands { NaCl { min 0.10; max 0.50; }  MgSO4 { min 0.90; max 1.0; }  source "..."; }
+provenance { source "..."; A_w { origin assumed; method "..."; } }
+```
+
+`reviewStatus illustrative;` is the ONE review word a class takes, and its
+one home is `MembraneModule::classReviewStatus()`; anything else (a
+`reviewed`, which no measurement backs) refuses.  No `manufacturer`,
+`model`, `modelNumber` or `partNumber`: refused.  The reference test uses
+slice 2's grammar with every optional fact the inversion reads DECLARED,
+so nothing about a class's own test is read one way and announced.  A
+class states ONE test per salt.  `bands {}` is parsed: every rated salt
+has a band, every stated value lies inside it.
+
+**The values, and why.**  Each observed rejection is the MIDDLE of the
+external specification's screening window (section 3 there: "example
+screening windows -- NOT universal guarantees"); a lower-bounded window
+("> 90 %") is read as [lower, 100 %].  The middle is a choice and is
+recorded as one.  The water permeance is a curator's round teaching value
+(no source states one), chosen so the class element delivers about its
+stated reference permeate at the reference test; the run prints the
+engine's figure beside it (within 7 % for all six).
+
+| class | type | reference test | stated R_obs | band | A_w (L m-2 h-1 bar-1) | derived R_int |
+|---|---|---|---|---|---|---|
+| NF_OPEN | NF | 2000 ppm NaCl, 4.8 bar g, 15 % | NaCl 0.15 | 0-0.30 | 15 | 0.200795 |
+| NF_DIVALENT_SELECTIVE | NF | 2000 ppm, 4.8 bar g, 15 % | NaCl 0.30, MgSO4 0.95 | 0.10-0.50, 0.90-1 | 10 | 0.375655, 0.963425 |
+| NF_TIGHT | NF | 2000 ppm NaCl, 4.8 bar g, 15 % | NaCl 0.70 | 0.50-0.90 | 7 | 0.758303 |
+| BWRO_HIGH_FLUX | RO | 2000 ppm NaCl, 15.5 bar g, 15 % | NaCl 0.975 | 0.95-1 | 5 | 0.982132 |
+| BWRO_HIGH_REJECTION | RO | 2000 ppm NaCl, 15.5 bar g, 15 % | NaCl 0.995 | 0.99-1 | 3 | 0.996398 |
+| SWRO | RO | 32000 ppm NaCl, 55 bar g, 8 % | NaCl 0.9975 | 0.995-1 | 1.1 | 0.997889 |
+
+(Derived R_int on Generic-4040 with the witness's film: Schock & Miquel on
+the element's spacer, the Geraldes & Afonso suction correction, one
+diffusivity 1.2e-9 m2/s, 20 stations.  A case with another film derives
+its own -- which is the point.)
+
+**What the engine does with a class.**  Announces it on every run
+(`[illustrative] module '<class>': a FUNCTIONAL CLASS, not a product ...`,
+stdout, stderr and a provenance advisory into the caveat block), and marks
+its tests "(illustrative class reference)" where a module's say "(data
+sheet)".  REFUSES by name: a transport law other than `constantRejection`
+(a class has no B_s, no per-ion permeance, no pore -- the remedy names
+`constantRejection` with `fromRatedTest`, or a membrane record that
+carries the data); a number typed for a salt the class rates (the remedy:
+`fromRatedTest`, or copy the class into `constant/assets/` and change its
+reference rejection); a class named as a bare `membrane` beside another
+element (chosen as a whole); an unknown class (the registered list).  A
+salt the class does NOT rate keeps a typed R with its source -- a class
+says nothing about it.
+
+**The probe.**  The inversion's probe types the trial R_int of a rated salt
+-- exactly what a case may not -- so it is marked as the probe by a C++
+flag (`SpiralWoundModule::markRatedTestProbe`), never a dict key no case
+could be stopped from writing.  And a probe left another rated salt's
+`fromRatedTest` in place, which made it invert that salt too, nested; that
+salt is absent from the probe's feed, so a placeholder number stands in.
+
+**REJECTED.**  A class as a `kind membraneModule` record carrying an `A_w`
+(a module knows nothing about transport); a class as a membrane record
+named beside `module Generic-4040;` (the reference tests would sit on a
+membrane, and nothing would bind the class to the element it was stated
+on); two records per class (the student's one choice split across two
+homes); a band's END as the value; letting SDEM or DSPM-DE run a class on
+invented ion data.
+
+**Not done.**  A class in a different element size (it keeps
+Generic-4040; a per-size reference permeate or a flux-based reference test
+would be needed); the batch diafilter does not refuse a class named as its
+`membrane`; `bin/choupo-import` does not know a class's element reference
+(the witness is not sealed); the shortlist from a class to products
+(slice 5).

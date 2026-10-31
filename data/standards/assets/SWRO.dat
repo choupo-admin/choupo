@@ -1,0 +1,83 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane FUNCTIONAL CLASS: SWRO
+  (a seawater reverse-osmosis membrane)
+
+  WHAT THIS RECORD IS.  A membrane a student chooses by WHAT IT DOES,
+  before -- or instead of -- choosing a product.  It is NOT a product: it
+  names no manufacturer and no model number, and every number in it is an
+  ILLUSTRATIVE teaching assumption, not a measurement
+  (`reviewStatus illustrative;`, announced on every run that reads it).
+  A case names it where it would name an element: `module SWRO;` with
+  `transport constantRejection;` and `rejection { NaCl fromRatedTest; }`.
+
+  WHAT IT DECLARES, and how each value was chosen (DEV.md 4c C189):
+    * the OBSERVED rejection, feed to permeate, at its own reference test --
+      ONE value, taken at the MIDDLE of the screening window the external
+      specification gives for the class (`bands {}` below; a lower-bounded
+      window "> x %" is read as [x, 100 %]).  The middle is a choice,
+      recorded as one: the value a teaching profile can defend without
+      claiming to be either end.
+          NaCl   window > 99.5 %   -> 99.75 %
+    * a water permeance A_w, a round teaching value (1.1 L m-2 h-1
+      bar-1), chosen by the curator so that the class element delivers about
+      its reference permeate at the reference test.  No source states it.
+    * the element it is deployed in, BY REFERENCE: `element Generic-4040;`
+      (data/standards/assets/Generic-4040.dat) -- its area, leaves, leaf
+      length and feed spacer are adopted, never restated, and their own
+      estimates are announced as that record's.
+  The INTRINSIC rejection `constantRejection` needs is DERIVED from the
+  observed one by inverting the reference test with the module's own film
+  (src/unitOperations/membrane/RatedTestInversion), never typed here.
+
+  THE REFERENCE TEST is the conventional seawater RO standard test (32,000 ppm NaCl, 55 bar gauge, 25 C, 8 % recovery) on the class element.  Its permeate
+  flow is the class's own nominal figure, chosen with A_w; the run prints
+  the engine's permeate at the test beside it.
+
+  NOTHING PER ION, NO PORE.  A class states salt rejections; splitting a
+  salt's rejection between its ions is a transport model (SDEM, DSPM-DE),
+  not a datum, so only `transport constantRejection;` can run a class.
+\*---------------------------------------------------------------------------*/
+
+name           SWRO;
+kind           membraneClass;
+membraneType   RO;
+reviewStatus   illustrative;
+description    "a seawater reverse-osmosis membrane";
+application    "seawater desalination";
+element        Generic-4040;
+
+A_w            3.06e-07 m/s/bar;    // 1.1 L m-2 h-1 bar-1, illustrative
+
+ratedTests
+(
+    {
+        id                 naclRef;
+        solute             NaCl;
+        feedMassFraction   0.032;
+        P                  55 bar;
+        pressureBasis      feedGauge;
+        T                  298.15 K;
+        recovery           0.08;
+        permeateFlow       5 m3/d;
+        permeateFlowBasis  sameTest;
+        rejection          0.9975;
+        rejectionValueType typical;
+        source             "illustrative class reference test (Choupo, DEV.md 4c C189); not a measurement";
+    }
+);
+
+bands
+{
+    NaCl   { min 0.995; max 1; }
+    source "external specification relayed by Vitor Geraldes 2026-10-31 (DEV.md 4c C189), section 3, example screening windows -- NOT universal guarantees";
+}
+
+provenance
+{
+    source  "Choupo functional class, DEV.md 4c C189 slice 3 (2026-10-31): an illustrative teaching profile; the rejection window from the external specification's section 3, the value at its middle, A_w a curator's round teaching value";
+    A_w
+    {
+        origin  assumed;
+        method  "a round teaching value consistent with the class's reference permeate";
+    }
+}

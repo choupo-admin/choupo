@@ -74,6 +74,9 @@ public:
     const std::string& name()        const { return name_;        }
     const std::string& kind()        const { return kind_;        }  // "RO" | "NF" | "UF"
     const std::string& manufacturer()const { return manufacturer_;}
+    //  A functional class's transport half (DEV.md 4c C189 slice 3): kind()
+    //  is then the type it stands for (NF | RO), and it carries A_w only.
+    bool isFunctionalClass() const { return isClass_; }
 
     // ---- Solution-diffusion transport coefficients ---------------------
     // Pure-water permeability (single value, characteristic of the
@@ -161,6 +164,7 @@ public:
 
 private:
     std::string name_, kind_, manufacturer_;
+    bool        isClass_ = false;
     scalar      A_w_     = 0.0;
     std::map<std::string, scalar> Bs_;
     scalar      P_max_   = 0.0;

@@ -41,6 +41,30 @@ void Membrane::readFromDict(const DictPtr& d)
     kind_         = d->lookupWordOrDefault("kind", "");
     manufacturer_ = d->lookupWordOrDefault("manufacturer", "");
 
+    //  A FUNCTIONAL CLASS (`kind membraneClass;`, DEV.md 4c C189 slice 3) is
+    //  read here for its transport half only: the membrane type it stands
+    //  for and its water permeance.  The rest of the file -- the element,
+    //  the reference tests, the bands -- is MembraneModule's.  A class
+    //  carries NOTHING per solute or per ion and no pore: a B_s, an ion
+    //  permeance or a pore radius on it would be a product's data under a
+    //  profile's name, so they refuse.
+    if (kind_ == "membraneClass")
+    {
+        isClass_ = true;
+        kind_    = d->lookupWordOrDefault("membraneType", "");
+        if (kind_ != "NF" && kind_ != "RO")
+            throw std::runtime_error("membrane class '" + name_ + "': declares"
+                " `membraneType NF | RO;` -- the kind of membrane the class"
+                " stands for (got '" + kind_ + "').");
+        for (const char* k : { "permeabilities", "poreModel", "fit" })
+            if (d->found(k))
+                throw std::runtime_error("membrane class '" + name_ + "':"
+                    " declares `" + std::string(k) + "` -- a functional class"
+                    " states observed salt rejections and a water permeance"
+                    " only; per-solute permeances and a pore are a membrane"
+                    " RECORD's data (kind NF | RO).");
+    }
+
     A_w_      = d->lookupScalar       ("A_w", Dims::permeabilityWater);   // required
     P_max_    = d->lookupScalarOrDefault("P_max",    0.0);
     T_max_    = d->lookupScalarOrDefault("T_max",    0.0);
