@@ -68,6 +68,7 @@ Description
 #include "core/Dictionary.H"
 #include "core/Types.H"
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -184,6 +185,38 @@ public:
     // ---- Every value the record declares as an estimate ---------------------
     const std::vector<ModuleEstimate>& estimates() const { return estimates_; }
 
+    // ---- A FUNCTIONAL CLASS (DEV.md 4c C189 slice 3) -----------------------
+    //
+    //  `kind membraneClass;` -- a membrane a student chooses by WHAT IT DOES
+    //  (NF_DIVALENT_SELECTIVE, SWRO, ...) instead of by a product name.  One
+    //  file, two readers, disjoint facts: Membrane (thermo/membrane/
+    //  Membrane.H) reads its A_w, this class reads the rest -- the element it
+    //  is deployed in, BY REFERENCE (`element Generic-4040;`, whose geometry
+    //  and estimates are adopted by MembraneModuleRegistry once every record
+    //  is loaded; the class restates none of it), its reference rated tests
+    //  (the slice-2 grammar, every optional fact declared), and the band each
+    //  stated rejection was chosen from.  A class is ILLUSTRATIVE: its numbers
+    //  are a declared teaching profile, never measurements, and its ONE review
+    //  word is `reviewStatus illustrative;` (classReviewStatus(), the one
+    //  home of that word).  It names no manufacturer and no model number, and
+    //  carries nothing per ion and no pore, so only `transport
+    //  constantRejection;` can run it (SpiralWoundModule refuses the rest).
+    bool isFunctionalClass() const { return isClass_; }
+    static const std::string& classReviewStatus();
+    void readClassFromDict(const DictPtr& dict, const std::string& sourcePath);
+    //  The element the class is deployed in (a GENERIC element record: names
+    //  no membrane, a spiral, not itself a class), and the adoption of its
+    //  geometry -- called by the registry after every scan.
+    const std::string& element() const { return element_; }
+    void adoptElement(const MembraneModule& element);
+    const std::string& description() const { return description_; }
+    const std::string& application() const { return application_; }
+    //  The band each rated solute's stated rejection was chosen from
+    //  (documentation the reader CHECKS: the value must lie inside it).
+    struct Band { scalar min = 0.0, max = 0.0; };
+    const std::map<std::string, Band>& rejectionBands() const { return bands_; }
+    const std::string& bandSource() const { return bandSource_; }
+
 private:
     std::string name_, manufacturer_, source_, sourcePath_, format_, membrane_, feedSpacer_;
     int    leaves_ = 0;
@@ -195,6 +228,9 @@ private:
     std::vector<RatedTest> rated_;
     RatedTest readRatedTest(const DictPtr& r, const std::string& where) const;
     std::vector<ModuleEstimate> estimates_;
+    bool        isClass_ = false;
+    std::string element_, description_, application_, bandSource_;
+    std::map<std::string, Band> bands_;
 };
 
 } // namespace Choupo

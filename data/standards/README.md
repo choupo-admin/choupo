@@ -62,7 +62,7 @@ data/standards/                     one folder = one KIND of thing (M1-M5, 2026-
 │                                   Joback.dat vanKrevelen.dat Yang2020.dat solution/
 ├── assets/       <name>.dat        physical kit, FLAT; kind = consumer (RO|NF|IEM|
 │                                   constructionMaterial|adsorbent|ionExchangeResin|
-│                                   membraneModule|feedSpacer|edStack); a
+│                                   membraneModule|membraneClass|feedSpacer|edStack); a
 │                                   membraneModule carries its sheet's standard
 │                                   test(s) as `ratedTest {}` or, several, each
 │                                   as stated, `ratedTests ( {..} {..} );` --

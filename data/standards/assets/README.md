@@ -9,6 +9,7 @@ record — one namespace, one consumer each:
 |---|---|---|
 | `RO` / `NF` | `MembraneRegistry` (solution-diffusion; SpiralWoundModule) | SW30HR, NF270, NF270_dspmde |
 | `membraneModule` | `MembraneModuleRegistry` (the HARDWARE a membrane is deployed in: area, channel geometry, limits, rated test; `module <name>;` in SpiralWoundModule) | NF270-4040, SW30HR-380 (spiral elements), SEPA_CF (a flat-sheet laboratory cell) |
+| `membraneClass` | `MembraneRegistry` (its `A_w`) AND `MembraneModuleRegistry` (its element, by reference, and its reference tests); `module <class>;` in SpiralWoundModule -- a membrane chosen by WHAT IT DOES, ILLUSTRATIVE (`reviewStatus illustrative;`), no manufacturer; only `transport constantRejection;` runs one (DEV.md 4c C189 slice 3) | NF_OPEN, NF_DIVALENT_SELECTIVE, NF_TIGHT, BWRO_HIGH_FLUX, BWRO_HIGH_REJECTION, SWRO |
 | `IEM` | the `electrodialysisStack` unit's own reader | CMX_AMX |
 | `edStack` | `EDStackRegistry` (the electrodialysis HARDWARE the membrane pair is built into: cell pairs, active area, channel, spacer, hydraulic passes, the stack's OWN Sherwood correlation, limits; `stack <name>;` in `electrodialysisStack`) | EUR2C-7P18 (a bench stack), EurodiaED-100P-50 (an industrial stack) |
 | `constructionMaterial` | `MaterialRegistry` (sizing / costing) | carbonSteel, SS304, SS316, aluminium |

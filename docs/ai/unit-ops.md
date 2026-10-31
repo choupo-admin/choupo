@@ -1484,6 +1484,25 @@ each channel node):
   range, a net driving pressure, a permeate flow from a separate test and a
   solute stated as another formula.  The run prints every test (`Rated
   test <id>:`).  Gate `check_rated_tests`.
+  **A membrane chosen by WHAT IT DOES** (C189 slice 3): six functional
+  CLASSES -- `NF_OPEN`, `NF_DIVALENT_SELECTIVE`, `NF_TIGHT`,
+  `BWRO_HIGH_FLUX`, `BWRO_HIGH_REJECTION`, `SWRO` (`kind membraneClass`
+  records in `data/standards/assets/`) -- are named where an element is:
+  `module NF_DIVALENT_SELECTIVE;`, with `transport constantRejection;` and
+  `rejection { NaCl fromRatedTest; MgSO4 fromRatedTest; }`.  A class is an
+  ILLUSTRATIVE teaching profile, not a product (no manufacturer) and not a
+  measurement (`reviewStatus illustrative;`, announced `[illustrative]` on
+  every run): one OBSERVED rejection per salt at its own reference test (the
+  middle of a stated screening window, kept in `bands {}`), a water
+  permeance `A_w`, and its generic element by reference (`element
+  Generic-4040;`, geometry and estimates adopted, never restated).  The
+  INTRINSIC rejection of a rated salt is DERIVED (`fromRatedTest`); typing a
+  number for it REFUSES (copy the class into `constant/assets/` to change
+  it).  A salt the class does not rate takes a typed R with its source.
+  Only `constantRejection` runs a class: `solutionDiffusion`, `SDEM` and
+  `DSPM-DE` REFUSE by name (a class has no B_s, no per-ion permeance, no
+  pore); so does a class named as a bare `membrane` beside another element.
+  Witness `membrane26_class_sulphate_removal`; gate `check_membrane_classes`.
 
 **Props bench `polarisationIndex`** (choupoProps) — the glass-box surface of
 the multi-ionic polarisation model: given `massTransfer { model StirredCell;

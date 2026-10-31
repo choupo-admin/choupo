@@ -387,4 +387,164 @@ void MembraneModule::readFromDict(const DictPtr& d, const std::string& sourcePat
     }
 }
 
+// ===========================================================================
+//  A FUNCTIONAL CLASS (DEV.md 4c C189 slice 3): `kind membraneClass;`.
+//  See MembraneModule.H.  The transport half (A_w, the membrane type) is
+//  Membrane::readFromDict's; this reader takes the rest and refuses anything
+//  that would make a class look like -- or claim the data of -- a product.
+// ===========================================================================
+const std::string& MembraneModule::classReviewStatus()
+{
+    static const std::string w = "illustrative";
+    return w;
+}
+
+void MembraneModule::readClassFromDict(const DictPtr& d, const std::string& sourcePath)
+{
+    sourcePath_ = sourcePath;
+    isClass_    = true;
+    name_       = d->lookupWordOrDefault("name", "");
+    if (name_.empty())
+        throw std::runtime_error("MembraneModule: " + sourcePath
+            + " has no `name` entry");
+    const std::string locus = "membrane class '" + name_ + "' (" + sourcePath + ")";
+
+    //  A class is a PROFILE, not a product: no manufacturer, no model number.
+    for (const char* k : { "manufacturer", "model", "modelNumber", "partNumber" })
+        if (d->found(k))
+            throw std::runtime_error(locus + ": declares `" + std::string(k)
+                + "` -- a functional class is a teaching profile of what a"
+                  " membrane DOES, never a product; a manufacturer's element is"
+                  " a `kind membraneModule;` record with its data sheet.");
+    //  Its ONE review word.  Anything else would read as a claim a class
+    //  cannot make (`reviewed`, `checked`: a class has no measurement behind
+    //  it to review).
+    const std::string rs = d->lookupWordOrDefault("reviewStatus", "");
+    if (rs != classReviewStatus())
+        throw std::runtime_error(locus + ": a functional class must declare"
+            " `reviewStatus " + classReviewStatus() + ";` -- its rejections and"
+            " water permeance are a declared teaching profile, not measurements"
+            + (rs.empty() ? std::string(" (none declared)")
+                          : " (it declares `" + rs + "`)") + ".");
+    description_ = d->lookupWordOrDefault("description", "");
+    application_ = d->lookupWordOrDefault("application", "");
+    if (description_.empty() || application_.empty())
+        throw std::runtime_error(locus + ": a class states what it is for --"
+            " `description \"...\";` and `application \"...\";`.");
+
+    //  THE ELEMENT, BY REFERENCE.  The class restates no geometry: the
+    //  registry adopts the named element's once every record is loaded.
+    element_ = d->lookupWordOrDefault("element", "");
+    if (element_.empty())
+        throw std::runtime_error(locus + ": names no `element <name>;` -- the"
+            " generic element record (kind membraneModule, e.g. Generic-4040)"
+            " its reference tests were stated on and that a case runs it in.");
+    for (const char* k : { "format", "membrane", "activeArea", "channelHeight",
+                           "spacerPorosity", "leafLength", "leaves", "feedSpacer",
+                           "nominalDiameter", "elementLength", "limits",
+                           "ratedTest" })
+        if (d->found(k))
+            throw std::runtime_error(locus + ": declares `" + std::string(k)
+                + "`, which the class takes from its element `" + element_
+                + "` (or, for `ratedTest`, writes as `ratedTests ( ... )`) --"
+                  " one home.  Remove it.");
+    format_   = "spiralWound";
+    membrane_ = name_;            // the class is its own membrane (Membrane.H)
+
+    //  THE REFERENCE TESTS: the slice-2 grammar, and every optional fact the
+    //  inversion reads DECLARED -- a class is written here, so nothing about
+    //  its own test is left for the inversion to read one way.
+    if (!d->found("ratedTests") || !d->hasDictList("ratedTests"))
+        throw std::runtime_error(locus + ": a class declares its reference"
+            " OBSERVED rejections as `ratedTests ( { ... } );` -- the intrinsic"
+            " rejection is derived from them (`fromRatedTest`), never typed.");
+    const auto list = d->lookupDictList("ratedTests");
+    if (list.empty())
+        throw std::runtime_error(locus + ": `ratedTests ( )` is empty.");
+    std::set<std::string> solutes;
+    for (std::size_t i = 0; i < list.size(); ++i)
+    {
+        const std::string where = locus + ": ratedTests[" + std::to_string(i) + "]";
+        RatedTest t = readRatedTest(list[i], where);
+        if (t.rejectionValueType != "typical" || t.pressureBasis.empty()
+         || t.pressureBasis == "netDriving" || t.permeateFlowBasis != "sameTest"
+         || t.source.empty())
+            throw std::runtime_error(where + ": a class's reference test"
+                " declares `rejectionValueType typical;` (the one value chosen"
+                " from its band), `pressureBasis feedGauge | feedAbsolute;`,"
+                " `permeateFlowBasis sameTest;` and a `source` -- nothing is"
+                " left for the inversion to read one way.");
+        if (!solutes.insert(t.solute).second)
+            throw std::runtime_error(where + ": a second " + t.solute + " test"
+                " -- a class states ONE reference rejection per salt.");
+        rated_.push_back(std::move(t));
+    }
+
+    //  THE BANDS: the window each stated rejection was chosen from.  Parsed
+    //  so it can be checked: every rated solute has one, and its value lies
+    //  inside it.
+    if (!d->found("bands"))
+        throw std::runtime_error(locus + ": no `bands {}` -- the window each"
+            " stated rejection was chosen from, `bands { NaCl { min 0.10;"
+            " max 0.50; } source \"...\"; }`.");
+    auto b = d->subDict("bands");
+    bandSource_ = b->lookupWordOrDefault("source", "");
+    if (bandSource_.empty())
+        throw std::runtime_error(locus + ": bands{} names no `source`.");
+    for (const auto& k : b->keys())
+    {
+        if (k == "source") continue;
+        auto e = b->subDict(k);
+        Band bd{ e->lookupScalar("min"), e->lookupScalar("max") };
+        if (!(bd.min >= 0.0 && bd.min < bd.max && bd.max <= 1.0))
+            throw std::runtime_error(locus + ": bands." + k + " must be two"
+                " increasing fractions in [0, 1].");
+        if (!solutes.count(k))
+            throw std::runtime_error(locus + ": bands{} carries a band for "
+                + k + ", which no reference test states.");
+        bands_[k] = bd;
+    }
+    for (const auto& t : rated_)
+    {
+        const auto it = bands_.find(t.solute);
+        if (it == bands_.end())
+            throw std::runtime_error(locus + ": the " + t.solute + " reference"
+                " rejection has no band in bands{}.");
+        if (t.rejection < it->second.min || t.rejection > it->second.max)
+            throw std::runtime_error(locus + ": the " + t.solute + " reference"
+                " rejection " + std::to_string(t.rejection) + " lies outside its"
+                " band [" + std::to_string(it->second.min) + ", "
+                + std::to_string(it->second.max) + "].");
+    }
+
+    if (!d->found("provenance"))
+        throw std::runtime_error(locus + ": no `provenance {}` -- the class"
+            " says where its profile came from (`source \"...\";`).");
+    source_ = d->subDict("provenance")->lookupWordOrDefault("source", "");
+    if (source_.empty())
+        throw std::runtime_error(locus + ": provenance{} names no `source`.");
+}
+
+void MembraneModule::adoptElement(const MembraneModule& e)
+{
+    const std::string locus = "membrane class '" + name_ + "' (" + sourcePath_ + ")";
+    if (e.isFunctionalClass() || e.isFlatSheetCell() || !e.membrane().empty())
+        throw std::runtime_error(locus + ": `element " + e.name() + ";` must"
+            " name a GENERIC spiral element (a `kind membraneModule;` record"
+            " that names no membrane, e.g. Generic-4040) -- '" + e.name()
+            + "' is " + (e.isFunctionalClass() ? std::string("another class")
+                       : e.isFlatSheetCell() ? std::string("a flat-sheet cell")
+                       : "a commercial element wound with " + e.membrane()) + ".");
+    activeArea_      = e.activeArea_;
+    channelHeight_   = e.channelHeight_;
+    spacerPorosity_  = e.spacerPorosity_;
+    leafLength_      = e.leafLength_;
+    leaves_          = e.leaves_;
+    nominalDiameter_ = e.nominalDiameter_;
+    elementLength_   = e.elementLength_;
+    feedSpacer_      = e.feedSpacer_;
+    limits_          = e.limits_;
+    estimates_       = e.estimates_;      // announced by the unit, as the element's
+}
+
 } // namespace Choupo

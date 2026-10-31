@@ -42,6 +42,8 @@ License
 #include <memory>
 #include <stdexcept>
 #include <streambuf>
+#include <string>
+#include <variant>
 #include <vector>
 
 namespace Choupo {
@@ -191,6 +193,20 @@ RatedTestPoint rateAtRatedTest(const DictPtr& unitDict,
     DictPtr rej = op->subDict("transportParameters")->subDict("rejection");
     rej->erase(solute);
     rej->insert(solute, R_int, Dims::dimensionless);
+    //  Every OTHER solute still declared `fromRatedTest` is absent from the
+    //  probe's feed (water + the rated solute only), so its R enters nothing
+    //  -- but left as the word it would make the probe run an inversion of
+    //  its own, nested (C189 slice 3: a functional class rates two salts).
+    //  A placeholder number stands in; it multiplies a zero concentration.
+    const std::vector<std::string> others = rej->keys();   // a copy: erased below
+    for (const auto& k : others)
+        if (k != solute
+         && (std::holds_alternative<std::string>(rej->entryValue(k))
+          || std::holds_alternative<std::vector<std::string>>(rej->entryValue(k))))
+        {
+            rej->erase(k);
+            rej->insert(k, 1.0, Dims::dimensionless);
+        }
 
     //  THE RATED FEED: water + the solute at feedMassFraction, its volume
     //  closed on the module's own solution density (rho_feed, the key
@@ -213,6 +229,7 @@ RatedTestPoint rateAtRatedTest(const DictPtr& unitDict,
     probe->insert("composition", comp);
 
     SpiralWoundModule m;
+    m.markRatedTestProbe();
     {
         //  A trial: what the probe raises is about the rated test, not about
         //  the case's answer (core/Advisory.H, the partition).

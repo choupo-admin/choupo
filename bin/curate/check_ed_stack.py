@@ -783,6 +783,11 @@ def main():
 
     # ---------------- (a) the record against the paper ---------------------
     for p in sorted(ASSETS.glob("*.dat")):
+        #  Only an edStack record is this parser's: another kind may use a
+        #  grammar it does not read (a list of blocks, `ratedTests ( {..} )`,
+        #  C189 slices 2-3), so the kind is matched on the text first.
+        if not re.search(r"^\s*kind\s+edStack\s*;", strip_comments(p.read_text()), re.M):
+            continue
         d = parse_record(p)
         if word(d.get("kind", [])) != "edStack":
             continue

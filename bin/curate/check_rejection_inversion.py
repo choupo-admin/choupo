@@ -50,8 +50,9 @@ WHAT THIS GATE CHECKS (every case is RUN here):
       rejection the film cannot reach (a case-local record at 1.0); a unit
       with no module record (inline area/length); a word that is not
       `fromRatedTest`; and the batch diafilter, which holds no module record.
-  (d) NO SILENT SPREAD.  No shipped case but the witness declares
-      `fromRatedTest` (an existing case is unchanged because the inversion
+  (d) NO SILENT SPREAD.  No shipped case but the witness (and, since C189
+      slice 3, the functional-class witness membrane26, held by
+      check_membrane_classes) declares `fromRatedTest` (an existing case is unchanged because the inversion
       runs only where declared; the scoped suite pins their goldens).
 
 WHAT THIS GATE DOES **NOT** COVER, stated so its green line cannot imply it.
@@ -98,6 +99,7 @@ import check_constant_rejection as ccr      # noqa: E402  (run / copy_case / set
 
 ROOT = Path(__file__).resolve().parents[2]
 WITNESS = ROOT / "tutorials/steady/membranes/membrane25_rated_test_inversion_nf270_4040"
+CLASS_WITNESS = "tutorials/steady/membranes/membrane26_class_sulphate_removal"
 M21 = ROOT / "tutorials/steady/membranes/membrane21_two_stage_nf_array"
 DIA = ROOT / "tutorials/batch/membrane/diafilter01_nf_desalting"
 SHEET_R = 0.97
@@ -373,8 +375,12 @@ def main():
         for p in (ROOT / "tutorials").rglob("flowsheetDict"):
             if re.search(r"\bfromRatedTest\b", ccr_strip(p.read_text())):
                 users.append(p.parent.parent.relative_to(ROOT).as_posix())
-        if users != [WITNESS.relative_to(ROOT).as_posix()]:
-            fail("(d) the cases declaring `fromRatedTest` are %s, expected the witness alone" % users)
+        #  The functional-class witness (C189 slice 3) derives its class's
+        #  rejections the same way and is held by check_membrane_classes.
+        allowed = {WITNESS.relative_to(ROOT).as_posix(), CLASS_WITNESS}
+        if sorted(users) != sorted(allowed):
+            fail("(d) the cases declaring `fromRatedTest` are %s, expected the two witnesses %s"
+                 % (sorted(users), sorted(allowed)))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

@@ -313,6 +313,17 @@ def _components_footer() -> str:
         "run that reads it.  The `Generic-*` modules are the four standard "
         "40-inch sizes (every value an estimate, the membrane the case's).",
     ) + "\n" + _kind_section(
+        "## Functional membrane classes (a membrane chosen by what it does)",
+        ("membraneClass",),
+        "ILLUSTRATIVE teaching profiles, not products (`reviewStatus "
+        "illustrative;`, announced on every run; no manufacturer).  Named "
+        "where an element is: `module <class>;`, with `transport "
+        "constantRejection;` and `rejection { <salt> fromRatedTest; }` -- each "
+        "class states one OBSERVED rejection per salt at its own reference test "
+        "(the middle of a stated band), an A_w and its generic element by "
+        "reference; the intrinsic rejection is derived, never typed.  Any other "
+        "transport law refuses.",
+    ) + "\n" + _kind_section(
         "## Feed spacers (the channel a spiral element is wound with)",
         ("feedSpacer",),
         "Named by an element record (`feedSpacer <name>;`) or, with the "

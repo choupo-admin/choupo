@@ -1,0 +1,101 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane26_class_sulphate_removal -- a membrane chosen by WHAT IT DOES.
+
+  THE TASK.  A brackish water (3 g/L NaCl, 2 g/L MgSO4) must lose its
+  sulphate and may keep its sodium chloride.  Before choosing a product, a
+  student chooses a FUNCTION: `module NF_DIVALENT_SELECTIVE;` names a
+  functional CLASS (data/standards/assets/NF_DIVALENT_SELECTIVE.dat, kind
+  membraneClass) -- "high sulphate retention with NaCl passage".
+
+  WHAT THE CLASS IS.  An ILLUSTRATIVE teaching profile, not a membrane
+  anyone sells and not a measurement: an OBSERVED rejection per salt at its
+  own reference test (2,000 ppm, 4.8 bar gauge, 25 C, 15 % recovery) --
+  NaCl 30 %, MgSO4 95 %, each the middle of the class's screening window
+  (10-50 %, > 90 %) -- a water permeance (10 L m-2 h-1 bar-1) and the
+  generic element it is deployed in (Generic-4040, by reference).  The run
+  says so on every line that matters: `[illustrative]`, and the element's
+  own `[estimate]` lines.
+
+  WHAT THE ENGINE DERIVES.  `constantRejection` needs the INTRINSIC
+  rejection, against the wall; the class states the OBSERVED one, against
+  the feed.  `fromRatedTest` runs THIS element at the class's reference
+  test and finds the R_int whose predicted observed rejection is the
+  class's (src/unitOperations/membrane/RatedTestInversion):
+      R_int(NaCl)  = 0.37566  (KPI R_int_fromRatedTest_NaCl)
+      R_int(MgSO4) = 0.96342  (KPI R_int_fromRatedTest_MgSO4)
+
+  THE ANSWER, three elements in series at 7 bar absolute:
+      water recovery 32.45 %, permeate 811 kg/h;
+      R_obs(NaCl)  0.2865 -> permeate 2140 ppm NaCl   (feed 3000 mg/L)
+      R_obs(MgSO4) 0.9466 -> permeate  107 ppm MgSO4  (feed 2000 mg/L),
+                             i.e. 85 ppm as sulphate.
+  The sodium chloride passes, the sulphate stays: what the class was chosen
+  to do.  Both observed rejections sit a little below the class's stated
+  ones (30 %, 95 %): at 7 bar a third of the water leaves, so the bulk
+  concentrates along the vessel, which the reference test at 15 % recovery
+  barely saw.
+
+  WHAT A STUDENT SHOULD CHANGE.
+    * The CLASS: `module NF_OPEN;` passes more salt of every kind (it rates
+      NaCl only, so MgSO4 then needs a typed R_int with its source --
+      a class says nothing about a salt it does not rate); `module
+      NF_TIGHT;` holds more NaCl too.
+    * The PRESSURE and the number of ELEMENTS: recovery against permeate
+      sulphate.
+    * The CLASS's assumptions themselves: copy the record into this case's
+      constant/assets/ and move its MgSO4 rejection inside its band -- the
+      intrinsic value is re-derived; typing a number here instead is
+      refused, because a rated salt's intrinsic rejection is derived.
+    * Then the PRODUCT: a commercial element (`module NF270-4040;`, its data
+      sheet's rated test) -- the shortlist from a class to products is a
+      later slice (DEV.md 4c C189 (5)).
+
+  NOT a validation: no number in this case is measured.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        NF;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );
+        operation
+        {
+            module           NF_DIVALENT_SELECTIVE;   // a functional CLASS (illustrative), data/standards/assets/
+            transport        constantRejection;       // the one law a class can run
+            transportParameters
+            {
+                rejection { NaCl fromRatedTest;  MgSO4 fromRatedTest; }
+                source    "DERIVED: the illustrative class NF_DIVALENT_SELECTIVE's observed reference rejections (NaCl 30 %, MgSO4 95 %) inverted with this element's own film at the class's reference tests";
+            }
+            elements         3;                 // Generic-4040 elements in series in one vessel
+            P_permeate       1.0 bar;
+            nNodes           20;                // stations per element
+
+            massTransfer
+            {
+                model          SchockMiquel;    // coefficients + window: the element's spacer record
+                viscosity      0.89e-3;         // Pa.s, water at 25 C
+                diffusivity    1.2e-9;          // m2/s, ONE value for both lumped salts (NaCl 1.6, MgSO4 0.85 x 1e-9)
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        none;          // lumped salts: nothing to couple
+            }
+        }
+    }
+);

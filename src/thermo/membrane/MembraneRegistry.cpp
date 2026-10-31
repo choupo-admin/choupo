@@ -94,9 +94,12 @@ void MembraneRegistry::loadFrom(const std::string& dataRoot)
                 throw std::runtime_error("MembraneRegistry: asset '"
                     + e.path().string() + "' has no `kind` -- every record in the"
                     " shared assets/ home must declare its consumer (RO | NF | UF | IEM"
-                    " | membraneModule | feedSpacer | edStack | constructionMaterial"
+                    " | membraneModule | membraneClass | feedSpacer | edStack | constructionMaterial"
                     " | adsorbent | ionExchangeResin | catalyst)");
-            if (kind != "RO" && kind != "NF" && kind != "UF") continue;
+            //  A functional class (C189 slice 3) is ALSO read here, for its
+            //  transport half (A_w); MembraneModuleRegistry reads the rest.
+            if (kind != "RO" && kind != "NF" && kind != "UF"
+             && kind != "membraneClass") continue;
             Membrane m;
             m.readFromDict(d);
             if (m.name().empty())
