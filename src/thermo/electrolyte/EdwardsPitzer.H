@@ -153,6 +153,16 @@ public:
     const std::string& modelName() const override;
     const std::string& pHScale()   const override;
 
+    //  The paper's own upper limit: it quotes ~6 molal as the validity of the
+    //  Pitzer expansion and adds that "if ionization is extensive, the upper
+    //  limit is necessarily lower" (transcribed in
+    //  docs/design/sour-water-stripper-scope.md, the Table 8 notes, and read
+    //  there against the IONIC STRENGTH of the paper's own rows).  Declared on
+    //  I, as the tree reads it.  What this does NOT see: a molecular solution
+    //  above 6 molal at I ~ 0 (the paper's limit may be on total molality);
+    //  that is an under-announcement, never a false one.
+    ActivityDomain validityDomain() const override;
+
     ActivityResult evaluate(const IonState& st, double T) const override;
 
     void announceParameters(const IonState& st,

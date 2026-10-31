@@ -229,10 +229,9 @@ int Exchange::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
                   << "%);  Na added " << std::setprecision(2)
                   << diag_["Na_added_meqL"] << " meq/L (the salt penalty)\n"
                   << std::defaultfloat;
-        if (res.daviesExceeded)
-            std::cout << "    [advisory] I > 0.5 mol/kg -- the exchange "
-                         "equilibrium here is INDICATIVE (Davies beyond its "
-                         "trust range)\n";
+        if (res.activityBeyondDomain)
+            std::cout << "    [advisory] the exchange equilibrium here is "
+                         "INDICATIVE: " << res.activityDomainNote << "\n";
     }
 
     // isotherm diag/CSV (loaded eq-fraction beta_s vs solution eq-fraction of

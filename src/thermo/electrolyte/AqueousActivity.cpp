@@ -33,12 +33,42 @@ License
 #include "thermo/electrolyte/EdwardsCatalogue.H"
 
 #include <cmath>
+#include <iomanip>
 #include <map>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 
 namespace Choupo {
 namespace electrolyte {
+
+// ---- the declared validity domain: its three renderings ---------------------
+// ONE formatter for the band, so the banner, the advisory and the property
+// ops' restatements can never quote two different numbers for one model.
+std::string ActivityDomain::band() const
+{
+    if (!stated()) return "no stated ionic-strength bound";
+    std::ostringstream os;
+    os << "~" << I_max << " mol/kg " << bandLabel;
+    return os.str();
+}
+
+std::string ActivityDomain::bannerPhrase() const
+{
+    if (!stated()) return "no ionic-strength bound stated";
+    std::ostringstream os;
+    os << "trustworthy to I ~ " << I_max << " mol/kg, " << beyondPhrase;
+    return os.str();
+}
+
+std::string ActivityDomain::sentence(double I) const
+{
+    std::ostringstream os;
+    os << subject << " activity at I = " << std::fixed << std::setprecision(2)
+       << I << " mol/kg -- beyond its " << std::defaultfloat << band() << "; "
+       << consequence;
+    return os.str();
+}
 
 // ---- the Davies builtin -----------------------------------------------------
 // A VERBATIM move of SpeciationSolver::daviesA / daviesGamma behind the
@@ -46,12 +76,35 @@ namespace electrolyte {
 //   A(T)        = 0.51 * SolventProperties::debyeHuckelFactor(T)  (0.51 at 25 C)
 //   log10 g_i   = -A z_i^2 ( sqrt(I)/(1+sqrt(I)) - 0.3 I )
 //   neutral     => g = 1 (z == 0 or I <= 0; no Setchenow b*I term in v1)
-// Trustworthy to I ~ 0.5 mol/kg, indicative beyond (the solver announces it).
+// Trustworthy to I ~ 0.5 mol/kg, indicative beyond: the band is DECLARED in
+// validityDomain() below and the solver announces a state beyond it.
 namespace {
 
 class DaviesActivity : public AqueousActivity
 {
 public:
+    //  Davies' own band.  The +0.3 I term is an empirical stretch of the
+    //  Debye-Huckel law, fitted by Davies to the mean activity coefficients
+    //  of dilute electrolytes and quoted as reliable to I ~ 0.5 mol/kg
+    //  (Davies, Ion Association, Butterworths 1962; theoryGuide
+    //  \cite{Davies1962}).  The band edge is MEASURED in the tree by
+    //  tutorials/props/electrolyte/davies01_band_edge: the gamma_pm error
+    //  against PitzerHMW crosses ~2-8 % over m = 0.25-0.5 and grows without
+    //  bound beyond it.
+    ActivityDomain validityDomain() const override
+    {
+        ActivityDomain d;
+        d.I_max        = 0.5;
+        d.source       = "Davies, Ion Association (Butterworths, 1962): the "
+                         "equation's own ~0.5 mol/kg band";
+        d.subject      = "Davies";
+        d.bandLabel    = "trust range";
+        d.consequence  = "speciation and SI are INDICATIVE (use Pitzer for "
+                         "quantitative work)";
+        d.beyondPhrase = "indicative beyond";
+        return d;
+    }
+
     const std::string& modelName() const override
     {
         static const std::string n = "davies";

@@ -109,6 +109,7 @@ class EdwardsPitzerModel : public AqueousActivity
 public:
     const std::string& modelName() const override;
     const std::string& pHScale()   const override;
+    ActivityDomain     validityDomain() const override;   // delegated to the kernel
 
     ActivityResult evaluate(const IonState& st, double T) const override;
 

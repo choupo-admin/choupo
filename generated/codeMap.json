@@ -45,6 +45,9 @@
   "Absorber": [
    "src/unitOperations/separation/Absorber.H"
   ],
+  "ActivityDomain": [
+   "src/thermo/electrolyte/AqueousActivity.H"
+  ],
   "ActivityModel": [
    "src/thermo/activityCoefficient/ActivityModel.H"
   ],

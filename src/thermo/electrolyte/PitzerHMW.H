@@ -110,6 +110,15 @@ public:
     //  not defaulted -- see AqueousActivity::pHScale.
     const std::string& pHScale() const override;
 
+    //  NO STATED BOUND.  The HMW pair records under
+    //  data/standards/parameters/Pitzer/ carry no molality or ionic-strength
+    //  range, and no source in the tree states one for the model as a whole
+    //  (the "I ~ 6 mol/kg" in the tutorials guide is a claim about the
+    //  SEAWATER system's validation, not a bound the parameter sets declare).
+    //  So nothing is announced, and no number is written here to fill the
+    //  slot.  The day a curated set carries its range, it is read there.
+    ActivityDomain validityDomain() const override;
+
     // Freeze the per-ion Pitzer gammas for the pass state (full molality + name
     // + charge vectors).  Fills BOTH gamma(z) (charge-keyed fallback, used for
     // species absent from pairs.dat) and gammaNamed(name, z) (the per-identity

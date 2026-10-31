@@ -108,8 +108,9 @@ Description
                  factor as the Pitzer/eNRTL kernels
                  (SolventProperties::debyeHuckelFactor).  Neutral species:
                  gamma = 1 (no Setchenow b*I term in v1 -- stated honestly).
-                 Trustworthy to I ~ 0.5 mol/kg, indicative beyond; the solver
-                 SAYS so and raises an advisory above I ~ 0.7.
+                 Trustworthy to I ~ 0.5 mol/kg, indicative beyond -- the band
+                 is the MODEL's declaration (AqueousActivity::validityDomain),
+                 and the solver raises the model's own advisory beyond it.
       * a_w      ln a_w = -(M_w/1000) sum_i m_i  (osmotic coefficient phi = 1
                  -- the dilute-solution approximation, announced).
       * NEWTON   on the master mole balances in LOG space (x_j = ln m_j keeps
@@ -377,7 +378,14 @@ struct SpeciationResult
     std::vector<std::string>      vantHoffK;// entries using constant-dH van't Hoff
     std::vector<std::string>      extrapolated;  // analytic used beyond its fitted
                                             //   range (announced, never silent)
-    bool                          daviesExceeded = false;  // I above ~0.5 mol/kg
+    //  The state lies beyond the ACTIVE activity model's DECLARED validity
+    //  domain (AqueousActivity::validityDomain; C188 item 4).  Model-neutral:
+    //  the solver never decides a band by a model's name, and a consumer
+    //  prints `activityDomainNote` -- the model's own sentence -- instead of
+    //  restating a number.  (Was `daviesExceeded`, a C++ field only: no
+    //  result JSON key, golden or GUI reader ever carried it.)
+    bool                          activityBeyondDomain = false;
+    std::string                   activityDomainNote;  // the model's sentence at I
 
     //  D-R1 label (Vitor's 2026-08-02 condition 2): a result computed on a
     //  deliberately RESTRICTED network says so, and carries the declared
@@ -435,7 +443,8 @@ public:
     ~SpeciationSolver();
 
     // Solve one state.  verbosity >= 2 prints the honest model header
-    // (Davies trust range, phi = 1 water activity, flat-K list at off-25 C);
+    // (the model's declared domain, phi = 1 water activity, flat-K list at
+    // off-25 C);
     // >= 3 prints the Newton iteration trace (the pedagogical default).
     SpeciationResult solve(const SpeciationInput& in, int verbosity) const;
 

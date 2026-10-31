@@ -1365,6 +1365,11 @@
       "exit": 0,
       "claim": "check_pump_liquid_inlet: OK -- a vapour inlet (water, 400 K, 1 bar) is refused, naming the compressor; pump01 (liquid water) runs as before.  NOT checked: a produced two-phase inlet (no corpus case feeds a pump one)",
       "seconds": 0.0
+    },
+    "check_activity_domain": {
+      "exit": 0,
+      "claim": "[activity-domain] OK the activity models declare their own domain (4 AqueousActivity classes, each with validityDomain; no name branch or inline band in SpeciationSolver/ScalingScan/Exchange); Davies announces beyond I = 0.5 with its own sentence and not inside it, PitzerHMW states no bound and announces nothing, Edwards announces beyond its paper's ~6 mol/kg; NOT checked: whether a declared band is true, temperature domains, the mixed-solvent dominant-solvent criterion (no source states one)",
+      "seconds": 2.3
     }
   }
 }
