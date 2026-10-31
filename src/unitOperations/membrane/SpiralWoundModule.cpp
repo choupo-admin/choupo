@@ -405,8 +405,8 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         if (thermo.hasLiquidDiffusivity() && thermo.hasLiquidViscosity())
         {
             //  One solute diffusivity serves the film model; price it for the
-            //  FIRST nonvolatile solute in water, and say which one.
-            std::size_t iSol = Ncomp, iW = thermo.indexOf("water");
+            //  FIRST nonvolatile solute in the aqueous solvent; say which one.
+            std::size_t iSol = Ncomp, iW = thermo.aqueousSolventIndex();
             for (std::size_t i = 0; i < Ncomp; ++i)
                 if (thermo.comp(i).isNonvolatile() && z_in[i] > 0.0) { iSol = i; break; }
             if (iSol < Ncomp)
@@ -634,10 +634,10 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     const scalar interDP = opDict->lookupScalarOrDefault("interElementDP", 0.0,
                                                          Dims::pressure);
 
-    // Find the water component by name; if the user has not called it
-    // "water" the look-up fails loudly --- the transport model
-    // assumes an aqueous carrier.
-    const std::size_t iWater = thermo.indexOf("water");
+    // The aqueous carrier, from its ONE home (the declared aqueous solvent,
+    // water by default); absent from the package, the look-up refuses by
+    // name --- the transport model assumes an aqueous carrier.
+    const std::size_t iWater = thermo.aqueousSolventIndex();
     const scalar MW_water = thermo.comp(iWater).MW();      // kg/kmol
 
     // Per-component molar masses [kg/kmol]: needed for a mass-consistent

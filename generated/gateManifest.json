@@ -1355,6 +1355,11 @@
       "exit": 0,
       "claim": "check_txy_bubble_verdict: OK -- at 2 bar 2 of 29 unconverged compositions are dropped and counted, 27 drawn, none at the 200 K floor; at 1 bar 17 of 29 fail and the diagram is refused by name; flash01's 29-point diagram is drawn with no count; flash20 (PC-SAFT) draws all 29 points, 26 of them accepted at |f| <= 1e-5 short of the Newton's 1e-8 and announced (worst |f| = 2.69e-06); the column's bubbleTWithItsVapour reads the verdict of all 3 bubbleT calls and folds it into its flag; the guard reads xUnconverged and no 200 K constant; the count reaches the caveat block on both witnesses.  NOT checked: whether a point is RIGHT beyond its residual, and the Wang-Henke stage loop's bubbleT calls (judged by the column's stage test)",
       "seconds": 13.5
+    },
+    "check_aqueous_solvent_home": {
+      "exit": 0,
+      "claim": "check_aqueous_solvent_home: OK -- the aqueous solvent has ONE home (ThermoPackage::aqueousSolventName, default in defaultAqueousSolvent): no \"water\" literal names it in src/ outside the home and 2 pinned props-bench files, one reader of `aqueous.solvent`, 7 carrier-pricing sites read it, an undeclared component refuses by name on the Pitzer and reactive paths.  NOT checked: a unit computing on a non-water solvent (no corpus case declares one).",
+      "seconds": 1.0
     }
   }
 }

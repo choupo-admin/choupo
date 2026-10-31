@@ -1371,13 +1371,13 @@ void runUnit(const DictPtr&                                          udict,
         const std::size_t ia = idxOf("aqueous"), io = idxOf("organic");
         if (ia < outputs.size())
         {
-            //  The solvent is the DECLARED one when the package names it,
-            //  water otherwise -- never a hardcoded "water" (SystemClassifier
-            //  doctrine: no `if (name == "water")` anywhere).
-            std::size_t wi = thermo.n();
-            if (const auto* cfg = thermo.reactiveConfig()) wi = cfg->solventIdx;
-            else for (std::size_t i = 0; i < thermo.n(); ++i)
-                     if (thermo.comp(i).name() == "water") { wi = i; break; }
+            //  The solvent is the package's aqueous solvent -- its ONE home
+            //  (ThermoPackage::aqueousSolventName: the DECLARED one, water by
+            //  default), never a name recognised here (SystemClassifier
+            //  doctrine: no `if (name == "water")` anywhere) -- the index a
+            //  reactive package's config carries, from the same one reader.
+            //  thermo.n() when the system carries none.
+            const std::size_t wi = thermo.findAqueousSolvent();
             //  NO SOLVENT AT ALL and an outlet still called `aqueous`.
             //  vlle03_audit_artificial did exactly this -- three synthetic
             //  components compA/compB/compC and `outputs ( vapor aqueous

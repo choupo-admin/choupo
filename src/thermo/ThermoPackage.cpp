@@ -83,8 +83,7 @@ namespace Choupo {
 //  fugacity, so a default member-wise move would leave the moved-in phases
 //  pointing at the SOURCE's emptied vector -> a dangling read in fEffective.
 //  Move every member, then re-point the phases at THIS vector.  Copy stays
-//  deleted (phases_ holds unique_ptr).  KEEP THE MEMBER LIST IN SYNC with
-//  the data members if any are added.
+//  deleted (phases_ holds unique_ptr).  KEEP THE MEMBER LIST IN SYNC.
 ThermoPackage::ThermoPackage() = default;
 ThermoPackage::ThermoPackage(ThermoPackage&& o) noexcept { *this = std::move(o); }
 ThermoPackage::~ThermoPackage() = default;
@@ -104,6 +103,7 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
         liquidDiffusivity_  = std::move(o.liquidDiffusivity_);
         surfaceTension_     = std::move(o.surfaceTension_);
         solventName_        = std::move(o.solventName_);
+        declaredAqueousSolvent_ = std::move(o.declaredAqueousSolvent_);
         declaredSolutes_    = std::move(o.declaredSolutes_);
         vleWorld_           = std::move(o.vleWorld_);
         pureFluid_          = std::move(o.pureFluid_);
@@ -1233,22 +1233,22 @@ std::optional<scalar> ThermoPackage::dHsolnForSolute(std::size_t i) const
     if (!c.isNonvolatile() || !c.hasGibbsData() || c.naturalPhase() != "solid")
         return std::nullopt;
 
-    // Resolve the solvent.  The package's declared `solvent` wins; when none
-    // is named, DEFAULT to water and ANNOUNCE it (deduped, every run).
+    // Resolve the solvent.  The declared Henry `solvent` wins; else DEFAULT to
+    // the aqueous solvent (aqueousSolventName(), water unless declared), ANNOUNCED.
     const bool   defaulted = solventName_.empty();
-    const std::string solvent = defaulted ? "water" : solventName_;
+    const std::string solvent = defaulted ? aqueousSolventName() : solventName_;
 
     if (SolutionRegistry::has(c.name(), solvent))
     {
         const SolutionPair& sp = SolutionRegistry::byPair(c.name(), solvent);
         if (defaulted)
             if (AdvisoryLog::instance().add("thermo", "info", "solution",
-                    "dHsoln(" + c.name() + "): solvent not named -> DEFAULT = water; "
-                    "solution/" + c.name() + "-water.dat"
+                    "dHsoln(" + c.name() + "): solvent not named -> DEFAULT = "
+                    + solvent + "; solution/" + c.name() + "-" + solvent + ".dat"
                     + (sp.source().empty() ? "" : "  [" + sp.source() + "]")))
-                std::cerr << "[thermo] dHsoln(" << c.name()
-                          << "): solvent not named -> DEFAULT = water; "
-                          << "solution/" << c.name() << "-water.dat\n";
+                std::cerr << "[thermo] dHsoln(" << c.name() << "): solvent not"
+                          << " named -> DEFAULT = " << solvent << "; solution/"
+                          << c.name() << "-" << solvent << ".dat\n";
         return sp.dHsoln();
     }
 
@@ -1493,11 +1493,11 @@ scalar ThermoPackage::speciesPhaseEnthalpy(std::size_t i, scalar T,
     {
         scalar cpAq;
         if (SolutionRegistry::has(c.name(),
-                solventName_.empty() ? "water" : solventName_)
+                solventName_.empty() ? aqueousSolventName() : solventName_)
          && SolutionRegistry::byPair(c.name(),
-                solventName_.empty() ? "water" : solventName_).hasCpAq())
+                solventName_.empty() ? aqueousSolventName() : solventName_).hasCpAq())
             cpAq = SolutionRegistry::byPair(c.name(),
-                solventName_.empty() ? "water" : solventName_).cpAq()
+                solventName_.empty() ? aqueousSolventName() : solventName_).cpAq()
                 * (T - 298.15);
         else
             cpAq = c.hasCpLiquid() ? c.cpLiquid().H(T, 298.15) : 0.0;
@@ -2061,6 +2061,67 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
         throw std::runtime_error("ThermoPackage::density: liquid molar volume"
             " is not a finite positive number");
     return Mbar / Vmix;                                         // kg/m³
+}
+
+// ---- THE AQUEOUS SOLVENT -- one home (DEV.md 4c C188) -----------------------
+//  Placed at the end of the file so that no line an EduTool lesson cites by
+//  `file:line` above it moved when it arrived.
+const std::string& ThermoPackage::defaultAqueousSolvent()
+{
+    //  THE ONE HOME of the default aqueous solvent: the value an undeclared
+    //  `equilibrium { aqueous { solvent ...; } }` takes.
+    static const std::string w = "water";
+    return w;
+}
+
+const std::string& ThermoPackage::aqueousSolventName() const
+{
+    return declaredAqueousSolvent_ ? *declaredAqueousSolvent_
+                                   : defaultAqueousSolvent();
+}
+
+std::size_t ThermoPackage::findAqueousSolvent() const
+{
+    const std::string& name = aqueousSolventName();
+    for (std::size_t i = 0; i < components_.size(); ++i)
+        if (components_[i].name() == name) return i;
+    for (std::size_t i = 0; i < components_.size(); ++i)
+        for (const auto& a : components_[i].aliases())
+            if (a == name) return i;
+    return components_.size();
+}
+
+std::size_t ThermoPackage::aqueousSolventIndex() const
+{
+    const std::size_t i = findAqueousSolvent();
+    if (i < components_.size()) return i;
+    const std::string& name = aqueousSolventName();
+    throw std::runtime_error("ThermoPackage: the aqueous solvent '" + name
+        + "' is not a component of this package ("
+        + (declaredAqueousSolvent_
+             ? "declared by `equilibrium { aqueous { solvent " + name + "; } }`"
+             : std::string("the default: no `equilibrium { aqueous {"
+                 " solvent <name>; } }` is declared"))
+        + ").  Add it to `components ( ... )`, or declare the aqueous"
+          " solvent the system carries.");
+}
+
+std::string ThermoPackage::declaredAqueousSolventIn(const DictPtr& aq)
+{
+    return (aq && aq->found("solvent")) ? aq->lookupWord("solvent")
+                                        : defaultAqueousSolvent();
+}
+
+ThermoPackage& ThermoPackage::stampAqueousSolvent(const DictPtr& aq)
+{
+    //  Stamped only when DECLARED, so an undeclared case keeps the default
+    //  and says nothing it did not say before.
+    if (aq && aq->found("solvent"))
+    {
+        declaredAqueousSolvent_ = declaredAqueousSolventIn(aq);
+        (void)aqueousSolventIndex();   // refuses by name when not a component
+    }
+    return *this;
 }
 
 } // namespace Choupo

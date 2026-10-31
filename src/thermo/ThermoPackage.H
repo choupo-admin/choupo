@@ -581,6 +581,49 @@ public:
     // falls back to the Raoult/γ-φ K-value.
     const std::string& solventName() const { return solventName_; }
 
+    // The AQUEOUS solvent -- ONE home (DEV.md 4c C188) -------------------
+    // The component every aqueous computation is built on: the molality
+    // basis and the speciation of an electrolyte package, and the carrier
+    // a membrane, an electrodialysis stack, a batch diafilter and an ion
+    // exchanger price their solvent flux on.  It is DECLARED,
+    // `equilibrium { aqueous { solvent <name>; } }`, read by ONE reader,
+    // declaredAqueousSolventIn() below (both electrolyte assemblies call
+    // it), and stamped on the package by stampAqueousSolvent(), which
+    // refuses by name a solvent that is not a component of the package.
+    //
+    // A package built from any other declaration (no aqueous chemistry: a
+    // gammaPhi membrane case, a legacy per-unit thermo{} dict) keeps the
+    // meaning every unit gave it before this home existed -- the DEFAULT,
+    // defaultAqueousSolvent() = water, the aqueous formulation's own
+    // reference.  That default is not a recognition of a name: it is the
+    // documented default of an undeclared key, and it lives HERE and
+    // nowhere else (gate check_aqueous_solvent_home).
+    //
+    // NOT solventName() above.  That is the Henry-dilute solvent of the
+    // diluteSolution formulation, whose PRESENCE switches the Henry K path
+    // on for solute-role components; empty means "no Henry convention".
+    // Folding the two would make every package carry a Henry solvent and
+    // move every `role solute` K-value.  The two cannot both be declared
+    // (they live in two different formulations); where a reader needs "the
+    // liquid's solvent" it takes the Henry one when declared, else this.
+    static const std::string& defaultAqueousSolvent();
+    const std::string& aqueousSolventName() const;
+    bool aqueousSolventDeclared() const { return declaredAqueousSolvent_.has_value(); }
+    // Index of the aqueous solvent among the components; n() when the
+    // package carries no such component (a unit decides what that means).
+    std::size_t findAqueousSolvent() const;
+    // The same, refusing by name when the solvent is not a component.
+    std::size_t aqueousSolventIndex() const;
+    // THE ONE READER of the declaration: `solvent` in the electrolyte
+    // formulation's `aqueous {}` block, else the default.  The builder calls
+    // it; nothing else reads the key.
+    static std::string declaredAqueousSolventIn(const DictPtr& aqueousBlock);
+    // Builder-only: stamp the DECLARED aqueous solvent of `aqueousBlock`
+    // (nothing when it declares none, so the default stands).  Refuses by
+    // name when the declared solvent is not a component of this package.
+    // Returns *this so the builder can stamp the package it returns.
+    ThermoPackage& stampAqueousSolvent(const DictPtr& aqueousBlock);
+
     // The VLE world in force ("gammaPhi" default, "phiPhi" when the package /
     // thermoPackage selected `liquid eos.<Model>` / `vleWorld phiPhi;`).  The
     // flash reads it to print the K-value header in the framing the K actually
@@ -690,6 +733,9 @@ private:
     std::unique_ptr<LiquidDiffusivityModel>   liquidDiffusivity_;
     std::unique_ptr<SurfaceTensionModel>      surfaceTension_;
     std::string                               solventName_;
+    // The DECLARED aqueous solvent (see aqueousSolventName()); empty until
+    // the builder stamps a declaration, and the default stands for it.
+    std::optional<std::string>                declaredAqueousSolvent_;
     // Henry solutes declared at ASSEMBLY level: `solutes ( H2 N2 );` next to
     // `solvent`.  The USER-FACING convention is the propertyPackage's
     // solution{} block; the ThermoPackageBuilder translates it to this key
