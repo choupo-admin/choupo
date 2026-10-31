@@ -262,8 +262,16 @@ timeSteppingControl
     deltaT0     1.0e-3;            // s   initial (LOW) step — it grows from here
     deltaTmax   10.0;             // s   cap on the step (the spiritual maxCo)
     maxGrowth   2.0;              // per-accepted-step growth limit
+    // maxSteps 100000;            // optional runaway guard per interval
+                                   // (default: the integrator's 2000000)
 }
 ```
+
+If the integrator gives up inside an interval (the step below its floor, or
+`maxSteps` exhausted) the run STOPS with a refusal naming the interval, the
+time reached, the cause and the units -- the clock is never advanced over a
+state that stopped short (DEV.md 4c C178).  Under an `outerDict` that pass
+is a FAILED evaluation.
 
 In `choupoCtrl` the digital controller still samples on the fixed `deltaT`
 grid; the adaptive integrator sub-steps the plant BETWEEN samples with the

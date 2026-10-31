@@ -20,7 +20,7 @@ kpi     column01               nStages          14               1e-4
 kpi     column01               x_B_HK           0.979999245367   1e-4
 kpi     column01               x_D_LK           0.979999243461   1e-4
 kpi     enumeration            best_value       14               1e-4
-kpi     enumeration            values_converged_feasible 6                1e-4
+kpi     enumeration            values_converged_feasible 3                1e-4
 kpi     enumeration            values_total     7                1e-4
 utility column01               heating.steamLP.duty_kW 1065.59910237    1e-4
 utility column01               heating.steamLP.T 382.835751971    1e-4

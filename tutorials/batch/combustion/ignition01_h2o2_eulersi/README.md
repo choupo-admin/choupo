@@ -23,9 +23,9 @@ gave up, and the reactor refuses by name instead of exiting 0:
 
 ```
 ERROR: BatchReactor 'bomb': the 'EulerSI' integrator GAVE UP inside a
-0.000001 s step (accepted 1 sub-step(s) before a positivity/finiteness
-violation or step-floor).  Use a smaller deltaT or a stiff integrator
-(integrator Rosenbrock23;).
+0.000001 s step (accepted 1 sub-step(s), stopping 0.000001 s into it: a
+non-finite or negative state on a fixed semi-implicit Euler step).  Use a
+smaller deltaT or a stiff integrator (integrator Rosenbrock23;).
 ```
 
 `.expect-nonconvergence` records why that refusal exists (until 2026-08-22

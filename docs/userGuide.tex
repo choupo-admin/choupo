@@ -2801,9 +2801,11 @@ enumerate every value in \code{min..max}, each one a NEW run (a changed
 sized object would lie), solving the inner continuous problem at each.
 The FULL table is emitted --- failures included, best marked
 (\file{optim06\_integer\_stages}: the classic $N$-vs-$R$ trade, boilup
-falling 1.03\,$\to$\,0.045\,kmol/s from 9 to 14 stages at the same
-purity spec, with $N=8$ refused aloud because the feed cannot sit on
-the bottom stage).
+falling 0.056\,$\to$\,0.035\,kmol/s from 12 to 14 stages at the same
+purity spec; 9 to 11 stages cannot reach that spec inside the declared
+reflux range $R \le 6$, and the SQP says so --- a local infeasibility,
+announced, never an optimum outside the box --- while $N=8$ is refused
+aloud because the feed cannot sit on the bottom stage).
 
 \begin{tryit}
 \code{runCase tutorials/steady/optimisation/sensitivity01\_column\_reflux}
@@ -3157,7 +3159,12 @@ the fixed-step RK4 loop.  Add \code{timeStepping adaptive;} to
 integrator takes over --- the step starts low (\code{deltaT0}), grows
 through quiet stretches, and shrinks through the runaway, with the step
 history printed at verbosity 3.  Trajectory rows still land on the
-clean \code{writeInterval} grid.  Compare
+clean \code{writeInterval} grid.  If the integrator gives up inside an
+interval --- the step driven below its floor, or the per-interval guard
+\code{timeSteppingControl \{ maxSteps N; \}} exhausted --- the run
+\emph{stops} with a refusal naming the interval, the time reached, the
+cause and the units: the clock is not advanced over a state that stopped
+short, and no event, routing or time directory follows it.  Compare
 \file{batch06\_adaptive\_runaway} with its fixed-step twin, and
 \file{ignition01\_h2o2} (real \'O Conaire H/O ignition, a stiffness
 ratio $\sim 10^{7}$) with \file{ignition01\_h2o2\_rk4}, which blows up to NaN at
@@ -3596,7 +3603,7 @@ as first-class columns.
 The trajectory CSV carries every CV, MV and setpoint --- plot it and
 read the tuning off the page.
 
-% Source: src/dynamicDriver/DynamicDriver.cpp:848-891 (declaration, the two
+% Source: src/dynamicDriver/DynamicDriver.cpp:865-908 (declaration, the two
 % refusals, the armed line), :737-759 (accepted-step trapezoid),
 % :1513-1570 (KPIs, reports/rtd/E.csv, the printed moments and spread).
 % Grammar as written by tutorials/ctrl/ctrl18_rtd_pulse_cstr/system/controlDict
@@ -3629,7 +3636,7 @@ dynamic unit, a \code{tracer} that is not a declared component, and a
 run in which no tracer ever left the outlet
 (\file{ctrl18\_rtd\_pulse\_cstr}).
 
-% Source: src/dynamicDriver/DynamicDriver.cpp:893-970 (declaration,
+% Source: src/dynamicDriver/DynamicDriver.cpp:910-987 (declaration,
 % `frequency` XOR `reference`, the five refusals, the armed line),
 % :1574-1620 (the fit, its KPIs, the fewer-than-8-samples refusal).
 % Grammar as written by tutorials/ctrl/ctrl19_freq_response_cstr/system/controlDict;
@@ -3666,7 +3673,7 @@ division by the drive's declared amplitude.  A fit window that
 \code{linkedTargets ( controllers[1].signal.frequency );} so the carrier
 mirror moves in lockstep (\file{ctrl20\_bode\_cstr}).
 
-% Source: src/dynamicDriver/DynamicDriver.cpp:1004-1023 (trajectory.csv
+% Source: src/dynamicDriver/DynamicDriver.cpp:1021-1040 (trajectory.csv
 % header and rows), :892-897 (console echo), :1470-1477 (the summary
 % line), :1498-1509 (SP_final / PV_final / MV_final);
 % src/control/ScheduleController.H:83 (hasPV() false) against

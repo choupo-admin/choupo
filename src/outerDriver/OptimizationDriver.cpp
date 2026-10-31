@@ -759,8 +759,22 @@ int OptimizationDriver::runSqp()
               << "  status:        " << (R.converged ? "CONVERGED" : "stopped")
               << "  (" << R.reason << ")\n"
               << "  iterations:    " << R.iterations
-              << "   simulator runs: " << simRuns << "\n"
-              << "  best objective:" << std::scientific << std::setprecision(6)
+              << "   simulator runs: " << simRuns << "\n";
+    //  One-sided differences taken because a perturbed evaluation FAILED
+    //  (C178): announced per iteration in the trace, counted here.  Silent
+    //  when none were taken, so every run that never hit one prints as before.
+    if (R.fdOneSided > 0)
+        std::cout << "  FD fallbacks:  " << R.fdOneSided
+                  << " one-sided difference(s), the other side's simulation"
+                     " FAILED (see the iteration notes)\n";
+    //  QP linearisations inconsistent with the box, solved under Powell's
+    //  relaxation (C178): announced per iteration, counted here.
+    if (R.relaxedSteps > 0)
+        std::cout << "  QP relaxed:    " << R.relaxedSteps
+                  << " iteration(s) whose linearised constraints could not"
+                     " all hold inside the box (Powell theta < 1, see the"
+                     " iteration notes)\n";
+    std::cout << "  best objective:" << std::scientific << std::setprecision(6)
               << "  " << sensed(R.f) << "\n"
               << "  best variables:\n";
     for (std::size_t i = 0; i < R.x.size(); ++i)
