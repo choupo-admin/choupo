@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 186 records already exist
+## 1. Why an index, when 187 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 186 design records, **128 state a rejected alternative and 58 do not** —
+- Of 187 design records, **129 state a rejected alternative and 58 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -288,6 +288,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`no-closure-by-construction.md`](../design/no-closure-by-construction.md) | ADR | yes | **SHIPPED 2026-10-26** (DEV.md 4c C174) -- a balance used to COMPUTE a term cannot be the evidence that the term is right: the CMO column's `Q_reboiler_kW = dH - Q_condenser` closed its first law for ANY condenser duty, and `check_energy_closure` read it green while the condenser was wrong on all 34 columns (C169).  ENUMERATED: five closure variables (the column's reboiler in three branches, non-isothermal cstr/pfr `Q_kW`, the TSA cooling duty, the membrane's water) and every other duty and outlet classified with its check named; the line is a DEFINITION (the unit's only balance, re-priced by the report) versus a PLUG (the model also states the term by another equation).  Units declare them (`UnitOperation::closureVariables`) with a SECOND ROUTE; the reports stamp and announce them; the energy/mass gates hold their own tables two-way, stop counting them as closing and fail a route that must agree.  REJECTED: gates recomputing the routes, failing every not-verified one (CMO would be red for ever), marking every by-difference outlet, a separate list beside an unchanged count.  No golden moved.  Gates `check_energy_closure`, `check_mass_closure`, `check_element_balance` |
 | [`an-lhhw-law-balances-at-the-declared-kc.md`](../design/an-lhhw-law-balances-at-the-declared-kc.md) | ADR | yes | **SHIPPED 2026-10-31** -- C185 item 7: an LHHW law under `reversible true` rests at the DECLARED Kc.  Both legs run on the adsorbed K_i theta_i, so the reverse constant is k_f / (Kc PROD K_i^nu_i), derived in the record; the power law is not edited.  The architect's ruling the same day: `reversible true` beside a non-mass-action `order`/`orderRev` is REFUSED by name in every reader that derives the reverse from Kc (`Reaction::refuseNonMassActionDetailedBalance`).  REJECTED: leaving such a law to run to an equilibrium it does not declare.  Gate `check_lhhw_detailed_balance` |
 | [`an-unconverged-bubble-point-is-not-a-point.md`](../design/an-unconverged-bubble-point-is-not-a-point.md) | ADR | yes | **SHIPPED 2026-10-31** -- C186 item 6: the T-x-y diagram judges each composition on the bubble-T Newton's own final residual against ONE tolerance (`kTxyAcceptResidual`, 1e-5): above it the point is dropped and counted aloud, inside it but short of the Newton's 1e-8 it is drawn and announced; fewer than half the points refuses the diagram by name; the 200 K floor guard is gone; the column's `bubbleTWithItsVapour` folds the verdict into its flag.  REJECTED: accepting only a converged Newton (it refused flash20's PC-SAFT diagram, right to ~1e-4 K).  Gate `check_txy_bubble_verdict` |
+| [`what-a-unit-accepts.md`](../design/what-a-unit-accepts.md) | ADR | yes | **DESIGN 2026-10-31, no code yet** -- C188 item 5: every present component is MODELLED (inside the declared models' own domain), a DECLARED APPROXIMATION (passes through, `passThrough { <comp> { fate ...; } reason ...; }` in the unit's block, in every balance, recorded on the ProblemDivergence channel), or REFUSED by name with both remedies.  One C++ declaration per unit class (`acceptance()`), applied by ONE `checkAcceptance` before the solve (authored inlets) and at the solve (the stream handed), and printed by `--describe-units` for the generated GUI / F1 / docs/ai sections.  REJECTED: a mandatory identity-type field, a universal material-state classifier, a default fate, 'water + ethanol in RO is an error'. |
 
 ### Historical
 
@@ -340,7 +341,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**58 of 186 records state no rejected alternative.**  For a FORUM or a STUDY
+**58 of 187 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

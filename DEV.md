@@ -1547,7 +1547,7 @@ accepts today, and that is a policy call.
 > its mass reappears as water through the `rho/MW_water` closure (:1449,
 > :1472) -- mass closes in kg, carbon vanishes.  The right test exists only
 > inside the optional `scaling{}` audit (:885).
-> (2) `rotating/Pump.cpp` never reads the inlet's phase and publishes
+> (2) `src/unitOperations/rotating/Pump.cpp` never reads the inlet's phase and publishes
 > `vf = 0` (:340): a vapour is pumped as a liquid.
 > (3) water found BY NAME in 7 units (SpiralWoundModule, ED stack, ion
 > exchanger, batch diafilter, batch ED, ThermoPackageBuilder, Flowsheet)
