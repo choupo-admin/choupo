@@ -1696,11 +1696,17 @@ accepts today, and that is a policy call.
 > `ed10_passthrough_benzene`; `choupoBatch --describe-units`.  DEFECT
 > FOUND, same shape as (1): the batch diafilter retains in silence a
 > holdup component that is neither the solvent nor `role nonvolatile` --
-> it never permeates.  Slice C: that defect; the generator of the GUI /
-> F1 / docs/ai "modelled / may pass / refuses" sections from both
-> `--describe-units` outputs with a freshness gate (the docs/ai text of
-> slice B is hand-written and is replaced by it); per-port contracts (the
-> batch ED's diluate-tank check); the recycle question.
+> it never permeates.  Slice C DONE (0ca2b5166): that defect reproduced
+> (diafilter01 + ethanol ran to exit 0, the ethanol kept whole through 5.43
+> diavolumes) and closed by the RO module's rule on the diafilter's
+> contract; `bin/curate/gen_unit_acceptance_docs.py` writes each declared
+> unit's models / may pass / refuses / needs into docs/ai/unit-ops.md
+> (generated regions) and gui/schemas/unitAcceptance.json, drawn by the
+> GUI's Model tab -- ONE source for the engine, the docs and the GUI; an
+> undeclared unit gets no section.  Remaining (record section 11):
+> passThrough on other units, per-port contracts, the batch crystalliser,
+> more `needs` words, one home for the shared RO/diafilter remedy
+> sentence, the Theory Guide section, the recycle question.
 
 > **C187. WHAT THE 2026-10-31 AUDIT FOUND UNRECORDED (two independent
 > passes over the session transcript, 24-31 Oct; recorded by the architect
