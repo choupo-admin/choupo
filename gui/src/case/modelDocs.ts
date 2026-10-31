@@ -67,7 +67,22 @@ export function modelSection(type: string): string | null {
   for (let i = start + 1; i < lines.length; i++) {
     if (/^###\s/.test(lines[i] ?? "")) { end = i; break; }
   }
-  return lines.slice(start, end).join("\n").trim();
+  return stripAcceptanceRegions(lines.slice(start, end)).join("\n").trim();
+}
+
+// The generated "what this unit accepts" region (bin/curate/
+// gen_unit_acceptance_docs.py) is drawn from its JSON twin
+// (case/unitAcceptance.ts), so the raw text drops it rather than show it
+// twice -- markers included, which a plain-text panel would print verbatim.
+function stripAcceptanceRegions(lines: string[]): string[] {
+  const out: string[] = [];
+  let inside = false;
+  for (const l of lines) {
+    if (/^<!-- BEGIN GENERATED unit-acceptance /.test(l)) { inside = true; continue; }
+    if (/^<!-- END GENERATED unit-acceptance /.test(l)) { inside = false; continue; }
+    if (!inside) out.push(l);
+  }
+  return out;
 }
 
 // Unit-op type -> the Theory Guide named destination (\label in the .tex,

@@ -4466,6 +4466,20 @@ PYEOF
     fi
     rm -f /tmp/unitacc.$$
 
+    # unit-acceptance-docs (2026-10-31, DEV.md 4c C188 item 5, slice C).  The
+    # "what this unit accepts" regions of docs/ai/unit-ops.md and the GUI's
+    # gui/schemas/unitAcceptance.json are GENERATED from both binaries'
+    # --describe-units (registered in bin/curate/generated_artefacts.py).
+    if gate_exec "$ROOT/bin/curate/gen_unit_acceptance_docs.py" --check > /tmp/unitaccdocs.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "unit-acceptance-docs" "$(grep -m1 '^unit-acceptance-docs: OK' /tmp/unitaccdocs.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/gen_unit_acceptance_docs.py, then commit the result)\n" "unit-acceptance-docs"
+        cat /tmp/unitaccdocs.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/unitaccdocs.$$
+
     # spiral-array gate (2026-10-24, DEV.md 4c C146).  One unit is one STAGE
     # (`vessels`, `elements`); the four standard sizes and the feed spacers
     # are RECORDS; d_h is Schock & Miquel's Eq. (17) and the spacer carries

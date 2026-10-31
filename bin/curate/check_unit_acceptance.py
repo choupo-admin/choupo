@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """check_unit_acceptance -- what a unit accepts is a DECLARATION, checked by
 ONE function, before the solve on every authored inlet and at the solve on
-the stream a unit is handed (DEV.md 4c C188 item 5, slices A and B; the contract is
+the stream a unit is handed (DEV.md 4c C188 item 5, slices A, B and C; the contract is
 docs/design/what-a-unit-accepts.md).
 
 THE CONTRACT.  `UnitOperation::acceptance()` returns a `UnitAcceptance`
@@ -125,11 +125,49 @@ SABOTAGES, slice B (by hand, 2026-10-31, each restored and rebuilt):
         (i) ed10 did not run (exit 2): ... passThrough { <component> { fate
             diluate | concentrate; }  reason "..."; }
 
+SLICE C (2026-10-31; docs/design/what-a-unit-accepts.md section 11).
+
+  (l) THE BATCH DIAFILTER REFUSES A COMPONENT IT DOES NOT MODEL.  Its
+      contract carries rule aqueousSolventAndNonvolatileSolutes (read off
+      `choupoBatch --describe-units`), and diafilter01 with 0.001 of ethanol
+      in the holdup refuses at initialise naming the vessel, the clause, the
+      component and the `role nonvolatile` remedy.  THE PARENT BEHAVIOUR
+      (main 6277d47c7, the same case copy): exit 0, `n_ethanol_final
+      0.0005555` -- the 0.001 x 0.5555 kmol charged, retained WHOLE after
+      5.43 diavolumes that washed NaCl to 50.2 % -- with no word said.
+  (m) THE GENERATED TEXT.  bin/curate/gen_unit_acceptance_docs.py's outputs
+      (the docs/ai/unit-ops.md regions and gui/schemas/unitAcceptance.json)
+      equal what it generates from the current binaries, and each names
+      EXACTLY the declared units (a type and its aliases share one region,
+      `spiralWoundModule,membraneSW`); the undeclared mixer is in neither.
+
+SABOTAGES, slice C (by hand, 2026-10-31, each restored):
+  S7  `a.models.rule = ...` in BatchDiafilter::acceptance commented out,
+      rebuilt.  FAILED:
+        (l) batchDiafilter's models rule is 'everyComponent', not
+            aqueousSolventAndNonvolatileSolutes
+        (l) a diafilter holdup carrying ethanol ran to exit 0 -- the
+            component would be retained in silence
+        (m) docs/ai/unit-ops.md or gui/schemas/unitAcceptance.json is not
+            what the current binaries generate -- run
+            bin/curate/gen_unit_acceptance_docs.py
+  S8  a hand-written region for `mixer` added before the splitter heading.
+      FAILED (and the generator's own --check reported STALE):
+        (m) docs/ai/unit-ops.md or gui/schemas/unitAcceptance.json is not
+            what the current binaries generate -- ...
+        (m) docs/ai/unit-ops.md carries a contract for undeclared unit(s)
+            ['mixer']
+        (m) the undeclared mixer got a generated section
+  S9  the batchDiafilter region deleted by hand.  FAILED:
+        (m) docs/ai/unit-ops.md or gui/schemas/unitAcceptance.json is not
+            what the current binaries generate -- ...
+        (m) docs/ai/unit-ops.md omits declared unit(s) ['batchDiafilter']
+
 WHAT IS NOT CHECKED.  The pass-through's ENERGY balance: ed10's energy
 report is UNAVAILABLE for want of an enthalpy datum on Na and Cl (ed01's own
 records), so only the priceable part could be read (the water+benzene
-enthalpy flow is the same in and out); the batch diafilter's refusal fired
-(source arm only); a recycle that brings a new component into a migrated
+enthalpy flow is the same in and out); the batch diafilter's NO-SOLVENT
+refusal fired (source arm only; arm (l) fires its models refusal); a recycle that brings a new component into a migrated
 unit after the first pass (no witness).
 
 Exit 1 naming the arm that failed.
@@ -672,6 +710,97 @@ def arm_k(tmp, fail, ok):
                   f"{nd} declared; the rig refuses through its contract at initialise")
 
 
+DIAF = ROOT / "tutorials" / "batch" / "membrane" / "diafilter01_nf_desalting"
+
+
+def arm_l(tmp, fail, ok):
+    """(l) the batch diafilter refuses, by name, a holdup component it does
+    not model (slice C; before it, the vessel retained it in silence)."""
+    if not BATCH.exists():
+        fail.append(f"(l) no {BATCH} -- build the tree first")
+        return
+    _, out = run_bin(BATCH, ["--describe-units"])
+    lines = out.splitlines()
+    start = next((i for i, l in enumerate(lines) if l == "{"), None)
+    try:
+        d = {u["type"]: u for u in
+             json.loads("\n".join(lines[start:]))["units"]}["batchDiafilter"]
+    except (TypeError, ValueError, KeyError) as e:
+        fail.append("(l) no batchDiafilter contract in choupoBatch "
+                    f"--describe-units ({e})")
+        return
+    if d["models"]["rule"] != "aqueousSolventAndNonvolatileSolutes":
+        fail.append("(l) batchDiafilter's models rule is "
+                    f"{d['models']['rule']!r}, not "
+                    "aqueousSolventAndNonvolatileSolutes")
+    w = copy_case(DIAF, Path(tmp) / "accDiaf_ethanol")
+    try:
+        edit(w / "constant" / "thermoPhysPropDict",
+             "components       ( water  NaCl  MgSO4 );",
+             "components       ( water  NaCl  MgSO4  ethanol );")
+        edit(w / "0" / "internalStates" / "retentate",
+             "        water    0.99928;",
+             "        water    0.99828;\n        ethanol  0.00100;")
+    except AssertionError as e:
+        fail.append(f"(l) {e}")
+        return
+    rc, out = run_bin(BATCH, [], w)
+    words = ("batchDiafilter 'retentate'",
+             "carries component(s) this unit does not model",
+             "'ethanol'", "role nonvolatile")
+    missing = [x for x in words if x not in out]
+    if rc == 0:
+        fail.append("(l) a diafilter holdup carrying ethanol ran to exit 0 -- "
+                    "the component would be retained in silence")
+    elif missing:
+        fail.append(f"(l) the diafilter refused (exit {rc}) but without "
+                    f"{missing}:\n      " + out[-600:])
+    else:
+        ok.append("the batch diafilter refuses ethanol in its holdup by name, "
+                  "through its contract (rule "
+                  "aqueousSolventAndNonvolatileSolutes)")
+
+
+def arm_m(fail, ok):
+    """(m) the generated "what this unit accepts" text: current, and naming
+    every declared unit and no undeclared one."""
+    sys.path.insert(0, str(ROOT / "bin" / "curate"))
+    try:
+        import gen_unit_acceptance_docs as gen
+        doc, js, units, _ = gen.outputs()
+    except Exception as e:  # noqa: BLE001 -- a check that cannot run must not pass
+        fail.append(f"(m) the generator could not run: {e}")
+        return
+    if gen.DOC.read_text() != doc or not gen.JSON_OUT.exists() \
+            or gen.JSON_OUT.read_text() != js:
+        fail.append("(m) docs/ai/unit-ops.md or gui/schemas/unitAcceptance.json"
+                    " is not what the current binaries generate -- run "
+                    "bin/curate/gen_unit_acceptance_docs.py")
+    declared = set(units)
+    in_doc = {x for key in re.findall(
+                  r"^<!-- BEGIN GENERATED unit-acceptance (\S+) ",
+                  gen.DOC.read_text(), re.M) for x in key.split(",")}
+    in_js = (set(json.loads(gen.JSON_OUT.read_text())["units"])
+             if gen.JSON_OUT.exists() else set())
+    for where, got in (("docs/ai/unit-ops.md", in_doc),
+                       ("gui/schemas/unitAcceptance.json", in_js)):
+        if got - declared:
+            fail.append(f"(m) {where} carries a contract for undeclared "
+                        f"unit(s) {sorted(got - declared)}")
+        if declared - got:
+            fail.append(f"(m) {where} omits declared unit(s) "
+                        f"{sorted(declared - got)}")
+    for need in ("batchDiafilter", "spiralWoundModule", "pump"):
+        if need not in declared:
+            fail.append(f"(m) {need} is not among the declared contracts")
+    if "mixer" in in_doc | in_js:
+        fail.append("(m) the undeclared mixer got a generated section")
+    if not any(f.startswith("(m)") for f in fail):
+        ok.append("the generated acceptance text is current and names exactly "
+                  f"the {len(declared)} declared unit(s) in unit-ops.md and "
+                  "the GUI's unitAcceptance.json")
+
+
 def main() -> int:
     if not BIN.exists():
         print(f"check_unit_acceptance: FAILED\n  no {BIN} -- build the tree "
@@ -688,7 +817,9 @@ def main() -> int:
         arm_i(tmp, fail, ok)
         arm_j(tmp, fail, ok)
         arm_k(tmp, fail, ok)
+        arm_l(tmp, fail, ok)
     arm_d(fail, ok)
+    arm_m(fail, ok)
     arm_e(fail, ok)
     if fail:
         print("check_unit_acceptance: FAILED")
@@ -700,8 +831,8 @@ def main() -> int:
           "ionExchanger, crystalliser; batchElectrodialysis, batchDiafilter), "
           "the default on mixer, and passThrough on the ED stack; NOT checked: "
           "the energy balance of a pass-through on a case whose package prices "
-          "it on a different phase than it carries, the batch diafilter's "
-          "refusal fired, a recycle bringing a new component into a migrated "
+          "it on a different phase than it carries, the text outside the "
+          "generated acceptance regions, a recycle bringing a new component into a migrated "
           "unit")
     return 0
 

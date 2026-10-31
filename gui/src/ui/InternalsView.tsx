@@ -52,6 +52,7 @@ import { useEffect } from "react";
 import type { StreamResult, UnitProfile } from "../adapters/SolverAdapter.js";
 import { dictToText } from "../adapters/WasmAdapter.js";
 import { modelSection, theoryLink } from "../case/modelDocs.js";
+import { acceptanceOf, type UnitAcceptanceLists } from "../case/unitAcceptance.js";
 import type { CaseFiles } from "../case/types.js";
 import { ProfilePlot } from "./plotting/ProfilePlot.js";
 import { ExpiredTabPanel } from "./ExpiredTabPanel.js";
@@ -115,6 +116,7 @@ export function InternalsView() {
   const def = hasProfile ? "profiles" : isReactor ? "reactions" : "streams";
   const model = modelSection(s.type);
   const theory = theoryLink(s.type);
+  const accepts = acceptanceOf(s.type);
   // The graphical mini-flowsheet viewer of the same clone (?focus=): its
   // sibling stash is written by the same pop-out act, so it can be opened
   // straight from here.
@@ -205,6 +207,7 @@ export function InternalsView() {
                 <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={6}>
                   How this model works — from docs/ai/unit-ops.md
                 </Text>
+                {accepts && <AcceptsBlock type={s.type} a={accepts} />}
                 <Text size="sm" style={{ whiteSpace: "pre-wrap", lineHeight: 1.55 }}>
                   {model ?? "See the Theory Guide section below for this unit's model."}
                 </Text>
@@ -328,6 +331,30 @@ function KVTable({ title, rows }: { title: string; rows: Record<string, unknown>
           </Table.Tbody>
         </Table>
       )}
+    </Box>
+  );
+}
+
+// What the unit ACCEPTS, as its declaration says (gui/schemas/
+// unitAcceptance.json, generated from `--describe-units`; DEV.md 4c C188).
+// Draws the generator's own sentences; computes nothing.
+function AcceptsBlock({ type, a }: { type: string; a: UnitAcceptanceLists }) {
+  const rows: [string, string[]][] = [
+    ["Models", a.models], ["May pass through", a.mayPass],
+    ["Refuses", a.refuses], ["Needs", a.needs],
+  ];
+  return (
+    <Box mb="md" data-testid="unit-acceptance">
+      <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={4}>
+        What {type} accepts — declared by the unit ({a.binary} --describe-units)
+      </Text>
+      <Text size="xs" c="dimmed" mb={4}>Judged on {a.judged}.</Text>
+      {rows.map(([head, items]) => items.length > 0 && (
+        <Box key={head} mb={4}>
+          <Text size="sm" fw={600}>{head}</Text>
+          {items.map((s, i) => <Text key={i} size="sm" pl="sm">• {s}</Text>)}
+        </Box>
+      ))}
     </Box>
   );
 }

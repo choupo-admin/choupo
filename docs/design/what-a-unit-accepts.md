@@ -1,10 +1,12 @@
 # What a unit accepts: modelled, a declared approximation, or refused
 
 DEV.md 4c C188, item (5).  Status: **DESIGN decided 2026-10-31 under rule
-00; SLICES A AND B BUILT the same day** (sections 9 and 10): the contract,
-its one checking function, the pre-solve pass, `--describe-units`, the seven
-units that already refused migrated onto it, and the declared pass-through
-on the electrodialysis stack.  Defects (1)-(4) of the same commission are
+00; SLICES A, B AND C BUILT the same day** (sections 9, 10 and 11): the
+contract, its one checking function, the pre-solve pass, `--describe-units`,
+the seven units that already refused migrated onto it, the declared
+pass-through on the electrodialysis stack, the batch diafilter's `models`
+rule, and the generated "models / may pass / refuses / needs" text in
+docs/ai and the GUI.  Defects (1)-(4) of the same commission are
 shipped (`check_membrane_feed_scope`, `check_pump_liquid_inlet`,
 `check_aqueous_solvent_home`, `check_activity_domain`).
 
@@ -280,7 +282,7 @@ after slice B is its last paragraph.
     holdup component that is neither the solvent nor `role nonvolatile` is
     never refused and never permeates -- retained whole, in silence; that is
     the RO module's defect (1) one unit along, and its rule is the RO
-    module's.
+    module's.  (Closed in slice C, section 11.)
 * **`needs`** is section 3's `requires`, spelled `needs` because `requires`
   is a C++20 keyword (`check_wasm_dialect` promotes the C++20-compatibility
   family).  Its vocabulary is ONE word today, `aqueousActivityModel`, the
@@ -330,11 +332,61 @@ after slice B is its last paragraph.
 * **Gate** `check_unit_acceptance`, arms (f)-(k) added (sabotages in its
   docstring).
 
-**What remains (slice C onward):** the generator under `bin/curate/` that
-writes the GUI / F1 / docs/ai "modelled / may pass / refuses" sections from
-both `--describe-units` documents, and its freshness gate (the docs/ai text
-written in slice B is hand-written and is to be replaced by the generated
-section); `passThrough` on any other unit (the RO module's fates are to be
-measured, section 5); per-port contracts (the batch rig's cation/anion
-refusal); the batch crystalliser and the diafilter's `models` rule; the
-`needs` vocabulary beyond its one word; section 8's recycle question.
+**What remained after slice B** is section 11's last paragraph.
+
+## 11. Slice C, as built (2026-10-31)
+
+* **The diafilter's defect, reproduced and closed.**  diafilter01 with
+  0.001 of ethanol in the holdup (manifest removed, `ethanol` added to the
+  components): the parent ran to exit 0 and reported `n_ethanol_final
+  0.0005555` -- exactly the 0.001 x 0.5555 kmol it was charged with --
+  after 5.43 diavolumes that washed NaCl down to 50.2 %.  Ethanol, which a
+  loose NF membrane passes nearly freely, was retained whole and nothing
+  said so: the RO module's defect (1), one unit along.  `batchDiafilter`
+  now declares the module's rule, `aqueousSolventAndNonvolatileSolutes`
+  (its transport builds a permeance only for the `role nonvolatile`
+  solutes), with the module's remedy, and the same holdup refuses by name
+  at initialise: `'ethanol' (z = 0.001000): role 'volatile'`.  The three
+  diafilter cases carry only water and `role nonvolatile` salts, and run
+  unchanged.  The remedy text is a near copy of the module's (the module's
+  file was being edited by another slice; one home for the sentence is
+  named, not built).
+* **The generator** `bin/curate/gen_unit_acceptance_docs.py` runs BOTH
+  binaries of the tree (`--describe-units`) and writes, for every unit
+  that DECLARED a contract, four lists -- models / may pass through /
+  refuses / needs -- each sentence the declaration's own, in two places:
+  a region of `docs/ai/unit-ops.md` between `<!-- BEGIN GENERATED
+  unit-acceptance <types> -->` / `<!-- END ... -->` markers, and
+  `gui/schemas/unitAcceptance.json` (where engine-derived GUI data lives:
+  `propsFileTraffic.json` is its precedent).  One renderer serves both, so
+  the GUI computes nothing.  A region is rewritten in place; a declared
+  unit without one gets one just before the first heading after its own; a
+  region for a unit that no longer declares is removed; an undeclared unit
+  gets nothing (silence keeps meaning "nothing declared").  A type and its
+  aliases share a heading and one region (`spiralWoundModule,membraneSW`),
+  and the generator refuses if they ever declare different contracts.  The
+  hand-written "Accepts" paragraphs of slices A and B (crystalliser, ion
+  exchanger, ED stack, the choupoBatch intro) are replaced by the regions;
+  the ED stack's `passThrough` grammar and semantics stay hand-written,
+  because they explain a declaration, not the contract.
+* **Registered** in `generated_artefacts.py` as two entries (the region,
+  conflict `human`, scope `region`; the JSON, conflict `regenerate`; phase
+  `build`), and its `--check` is a `bin/runTests` row
+  (`unit-acceptance-docs`).
+* **GUI**: the Internals "Model" tab (`InternalsView.tsx`), which already
+  shows the unit's catalogue section (`modelDocs.modelSection`), draws the
+  four lists above it from the JSON (`case/unitAcceptance.ts`), and
+  `modelSection` drops the generated region from the raw text so it is not
+  shown twice.
+* **Gate** `check_unit_acceptance`, arms (l) (the diafilter refusal fires
+  by name through its contract) and (m) (the generated text is current and
+  names exactly the declared units, in both outputs; the undeclared mixer
+  in neither).
+
+**What remains (slice D onward):** `passThrough` on any other unit (the RO
+module's fates are to be measured, section 5); per-port contracts (the
+batch rig's cation/anion refusal); the batch crystalliser; the `needs`
+vocabulary beyond its one word; one home for the RO module's and the
+diafilter's shared remedy sentence; a Theory Guide page per unit carrying
+the generated section (only docs/ai and the GUI carry it today); section
+8's recycle question.

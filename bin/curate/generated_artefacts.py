@@ -143,6 +143,18 @@ ENTRIES = [
        [PY, "bin/curate/gen_props_file_traffic.py", "--check"], "engine",
        note="choupoProps --file-traffic, the engine's one table of what "
             "each op reads and writes; check_props_order arm (c) holds it"),
+    _e("unitAcceptanceDocs", ["docs/ai/unit-ops.md"],
+       [PY, "bin/curate/gen_unit_acceptance_docs.py"],
+       [PY, "bin/curate/gen_unit_acceptance_docs.py", "--check"], "build",
+       conflict="human", scope="region",
+       note="only the regions between BEGIN/END GENERATED unit-acceptance "
+            "markers; the rest of the catalogue is hand-written.  Runs both "
+            "binaries' --describe-units (DEV.md 4c C188 slice C)"),
+    _e("unitAcceptanceJson", ["gui/schemas/unitAcceptance.json"],
+       [PY, "bin/curate/gen_unit_acceptance_docs.py"],
+       [PY, "bin/curate/gen_unit_acceptance_docs.py", "--check"], "build",
+       note="the same lists as the unit-ops.md regions, for the GUI's Model "
+            "tab; one generator writes both"),
     _e("guideVersion", ["docs/version.tex"],
        [PY, "bin/curate/guide_version.py"],
        [PY, "bin/curate/guide_version.py", "--check"], "pre"),

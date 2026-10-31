@@ -685,13 +685,13 @@ std::string BatchDiafilter::energyLedgerGap() const
            " energy balance is UNAVAILABLE until a pump is modelled.";
 }
 
-//  WHAT THE VESSEL ACCEPTS (DEV.md 4c C188 item 5).  The one refusal its
-//  initialise wrote until slice B -- no aqueous carrier -- is this
-//  declaration, judged on the initial holdup.  No `models` rule is declared:
-//  none existed, and slice B moves refusals without adding one (what this
-//  vessel does with a component that is neither the solvent nor a
-//  `role nonvolatile` solute -- it never permeates -- is recorded in
-//  docs/design/what-a-unit-accepts.md as an open question).
+//  WHAT THE VESSEL ACCEPTS (DEV.md 4c C188 item 5).  The aqueous carrier
+//  (slice B: the one refusal its initialise wrote) and, since slice C, the
+//  components its transport carries: the solvent and the `role nonvolatile`
+//  solutes it builds a permeance for (`soluteIdx_` in initialise).  Any
+//  other holdup component never permeated and was retained whole, in
+//  silence -- the spiral-wound module's defect (1), one unit along; the rule
+//  is the module's, judged on the initial holdup.
 UnitAcceptance BatchDiafilter::acceptance() const
 {
     UnitAcceptance a;
@@ -702,6 +702,20 @@ UnitAcceptance BatchDiafilter::acceptance() const
     a.solvent.remedy = "add the aqueous solvent (water unless the case"
         " declares another) to the components and to the holdup, or use a"
         " unit that does not make that assumption.";
+    a.models.rule = UnitAcceptance::ModelsRule::aqueousSolventAndNonvolatileSolutes;
+    a.models.sentence = "the aqueous solvent (water unless the case declares"
+        " another) and the solutes the case declares `role nonvolatile;`, each"
+        " with its own permeance";
+    a.models.why = "any other component would never permeate -- it would stay"
+        " in the vessel whole, through every diavolume, with no permeance and"
+        " no word said.";
+    a.models.remedy = "if the component is a solute this membrane rejects or"
+        " passes (ethanol in a wine, say), declare it `role nonvolatile;` in"
+        " the case and give the membrane its `B_s` permeance -- it then enters"
+        " the transport and the osmotic pressure like any solute (`role` is the"
+        " CASE's, so every other unit then also reads it as nonvolatile -- a"
+        " flash downstream would no longer boil it); otherwise remove it from"
+        " the holdup.";
     return a;
 }
 
