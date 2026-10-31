@@ -164,6 +164,11 @@ public:
 
     std::map<std::string, scalar> kpis() const override { return kpis_; }
 
+    //  What the stack accepts (DEV.md 4c C188 item 5): an aqueous feed of
+    //  ions on both channels, an aqueous activity model, and a declared
+    //  pass-through to either outlet.
+    UnitAcceptance acceptance() const override;
+
 private:
     inline static const std::string type_ = "electrodialysisStack";
 

@@ -91,6 +91,10 @@ public:
     std::vector<ProcessStream>    producedStreams() const override { return out_; }
     std::map<std::string, scalar> kpis()            const override { return kpis_; }
 
+    //  What the softener accepts (DEV.md 4c C188 item 5): an aqueous water
+    //  analysis of ions, and the case's aqueous activity model.
+    UnitAcceptance                acceptance()      const override;
+
 private:
     inline static const std::string type_ = "ionExchanger";
 

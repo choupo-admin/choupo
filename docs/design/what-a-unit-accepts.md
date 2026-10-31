@@ -1,9 +1,10 @@
 # What a unit accepts: modelled, a declared approximation, or refused
 
 DEV.md 4c C188, item (5).  Status: **DESIGN decided 2026-10-31 under rule
-00; SLICE A BUILT the same day** (section 9): the contract, its one checking
-function, the pre-solve pass, `--describe-units`, and the two units that
-already refused migrated onto it.  Defects (1)-(4) of the same commission are
+00; SLICES A AND B BUILT the same day** (sections 9 and 10): the contract,
+its one checking function, the pre-solve pass, `--describe-units`, the seven
+units that already refused migrated onto it, and the declared pass-through
+on the electrodialysis stack.  Defects (1)-(4) of the same commission are
 shipped (`check_membrane_feed_scope`, `check_pump_liquid_inlet`,
 `check_aqueous_solvent_home`, `check_activity_domain`).
 
@@ -234,8 +235,106 @@ settle:
   any membrane record is looked up.
 * **Gate:** `check_unit_acceptance` (sabotages in its docstring).
 
-**What remains (slice B onward):** the ED stack and batch ED, the ion
-exchanger, the crystalliser onto the contract; the `requires` vocabulary;
-`passThrough` (section 5), first on the electrodialysis stack with a witness;
-the generator under `bin/curate/` that writes the GUI / F1 / docs/ai sections
-from `--describe-units`, and its freshness gate; section 8's recycle question.
+**What remained after slice A** is section 10's first half; what remains
+after slice B is its last paragraph.
+
+## 10. Slice B, as built (2026-10-31)
+
+* **Five more units on the contract**, each refusal MOVED (same condition,
+  same remedy, now written by `acceptanceFindings`):
+  * `electrodialysisStack` -- aqueous solvent in both channels; the IONS
+    (rule `aqueousSolventAndIons`: every other present component crosses its
+    declared bridge, `AqueousChemistry::singleMaster`, to ONE species with a
+    record in the catalogue -- the bridge's own refusal sentence travels in
+    the finding); at least one ion per channel (`models.atLeastOne`); the
+    case's aqueous activity model (`needs aqueousActivityModel`).  These were
+    four throws in the stack's solve and in `edCell::buildChannel`.  The
+    builder keeps its guards: the batch rig rebuilds a channel at every
+    instant, and a diluate the run itself strips of ions is a RESULT the
+    contract cannot see (check_ed_batch S9/S12 meet exactly that guard).
+  * `ionExchanger` -- the same rule, the same need, its own sentences; four
+    throws moved.
+  * `crystalliser` -- judged on the COMBINED feed (`appliesTo combinedFeed`,
+    new: a brine and an antisolvent are one liquor; judging the antisolvent
+    inlet alone would refuse every drowning-out case).  Two `refusesAlso`
+    conditions: a crystallisable solute (the package's electrolyte salt, or a
+    present component with `solubility {}`), a volatile carrier.  The
+    auto-selection of the solute has ONE home, `crystAutoSolute`, read by the
+    contract and by `crystSaturation`.  An operation-selected solute
+    (`operation.solute`) is the unit's CONFIGURATION, not its feed: its two
+    refusals stay inside `crystSaturation`, which the batch crystalliser (not
+    migrated) also calls.  "The feed is not supersaturated" is NOT in the
+    contract: the saturation is the model's answer at the declared T_op, a
+    result of the solve (section 4's "never by a symptom").
+  * `batchElectrodialysis`, `batchDiafilter` (choupoBatch).  **choupoBatch
+    has no pre-solve seam**: `BatchUnitOperation` gained the same
+    `acceptance()` virtual, and a declaring vessel judges its INITIAL HOLDUP
+    in its own `initialise`, which runs for every vessel before any vessel
+    steps.  `checkAcceptance(acc, type, ...)` is the overload for a unit that
+    is not a `UnitOperation`.  The rig judges both tanks; "the diluate carries
+    N cation(s) and M anion(s)" was NOT moved -- it is read off the built
+    channel and concerns the diluate tank alone, while a contract applies to
+    every tank (a per-port contract would host it).  The diafilter's one
+    refusal (no aqueous carrier) moved; no `models` rule was added, because
+    slice B moves refusals and adds none.  NAMED, not fixed: a diafilter
+    holdup component that is neither the solvent nor `role nonvolatile` is
+    never refused and never permeates -- retained whole, in silence; that is
+    the RO module's defect (1) one unit along, and its rule is the RO
+    module's.
+* **`needs`** is section 3's `requires`, spelled `needs` because `requires`
+  is a C++20 keyword (`check_wasm_dialect` promotes the C++20-compatibility
+  family).  Its vocabulary is ONE word today, `aqueousActivityModel`, the
+  only package capability the three ionic units read by name; a capability
+  is about the PACKAGE, so its finding names no stream and the pre-solve
+  pass keeps one copy of it.
+* **`choupoBatch --describe-units`** prints the vessels' contracts through
+  the same writer (`describeAcceptancesJson`); the JSON gained `appliesTo`,
+  `needs`, `models.atLeastOne`, and `passThrough` became `{ fates, why }`
+  (schema still `unitAcceptance-v1`: nothing read it yet).
+* **`passThrough` (section 5), on the electrodialysis stack only.**  The
+  grammar is section 5's.  `passThroughFindings` is the one place its
+  refusals are written: a unit that offers no fate (judged for EVERY unit
+  that carries the block, migrated or not, in the pre-solve pass -- a block
+  an unmigrated unit would silently ignore is a decision the case thinks it
+  took); a name that is not a component; the aqueous solvent; a component
+  the unit MODELS; an unknown key; a missing or unoffered `fate`; no
+  `reason`; an empty block.  A covered component is ACCEPTED by
+  `acceptanceFindings` (not judged by `models`, not counted by
+  `atLeastOne`).  `recordPassThrough` puts one `declaredApproximation` per
+  (unit, component) on the ProblemDivergence channel, deduplicated there.
+  **The fates the stack offers are `diluate | concentrate`, the outlet that
+  carries ALL of the component the stack is fed (both channels together);
+  no split fraction is offered**: dividing a component between the channels
+  is a transfer across the membranes, a partition the declaration says the
+  stack does not perform, and a fraction would be a fitted number with no
+  mechanism behind it.  A fate that moves a component out of the channel it
+  was fed in is the case's claim, and the run prints the amount.  The stack
+  carries the component unchanged in amount to its outlet; `buildChannel`
+  skips it (it is not an ion of the channel, and the molalities are taken
+  on the solvent, so no stack number moves).
+* **Witness** `tutorials/steady/electrodialysis/ed10_passthrough_benzene`:
+  ed01 with 0.01 kmol/h of benzene in the diluate feed, declared `fate
+  diluate`.  Measured: benzene 0.01 kmol/h (2.778e-6 kmol/s) in the diluate
+  feed, 0.01 kmol/h in the diluate, 0 in the concentrate; the stack's mass
+  row 653.6157 kg/h in and out (100.0000 %); carbon 0.06 kmol/h in and out
+  (100.0000 %, residual 7e-18); one `declaredApproximation` in the banner,
+  the result JSON and `converged/problemDivergence`; and every stack KPI
+  (U 13.5060661272 V, demin 0.831450327632, i_lim 131.456 A/m2, ...) equal
+  to the benzene-free twin's to every printed digit.  The ENERGY balance of
+  this case is UNAVAILABLE -- ed01's Na and Cl records carry no enthalpy
+  datum -- so the pass-through's first law is visible only on the priceable
+  part (the water + benzene enthalpy flow, -1426.72995812 kW, is the same on
+  the diluate feed and the diluate).  Read against ed01 the voltage differs
+  in the fourth figure: ed10 was sealed against the Choupo-2608 catalogue
+  (different curated Na/Cl diffusivities), ed01 against 2607.
+* **Gate** `check_unit_acceptance`, arms (f)-(k) added (sabotages in its
+  docstring).
+
+**What remains (slice C onward):** the generator under `bin/curate/` that
+writes the GUI / F1 / docs/ai "modelled / may pass / refuses" sections from
+both `--describe-units` documents, and its freshness gate (the docs/ai text
+written in slice B is hand-written and is to be replaced by the generated
+section); `passThrough` on any other unit (the RO module's fates are to be
+measured, section 5); per-port contracts (the batch rig's cation/anion
+refusal); the batch crystalliser and the diafilter's `models` rule; the
+`needs` vocabulary beyond its one word; section 8's recycle question.

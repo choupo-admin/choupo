@@ -107,13 +107,33 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     Feed dil = readFeed(ins[0]);
     Feed con = readFeed(ins[1]);
     const scalar T = dil.T;     // isothermal stack (announced)
+    const std::string unitLabel = dict->name().empty() ? type() : dict->name();
 
-    //  The aqueous carrier from its ONE home; refuses by name if absent.
+    // ---- WHAT THE STACK ACCEPTS (DEV.md 4c C188 item 5) --------------------
+    //  The aqueous carrier on both channels, ions only, and the case's
+    //  aqueous activity model: the stack's DECLARED contract (`acceptance()`
+    //  below), applied to both inlets by the one function that writes such a
+    //  refusal.  A component the case DECLARED to pass through (`passThrough
+    //  {}` in this unit's entry) is accepted, carried unmodelled to its
+    //  declared outlet, and recorded on the ProblemDivergence channel.  An
+    //  authored inlet was already checked before the first unit ran.
+    const std::string locus = type() + " '" + unitLabel + "'";
+    const PassThroughDeclaration passThrough =
+        readPassThrough(dict, acceptance(), type(), thermo, locus);
+    checkAcceptance(*this, acceptanceInletOf(ins[0], dil.z, thermo, locus,
+                    acceptance()), thermo, locus, &passThrough);
+    checkAcceptance(*this, acceptanceInletOf(ins[1], con.z, thermo, locus,
+                    acceptance()), thermo, locus, &passThrough);
+    recordPassThrough(passThrough, locus);
+    std::vector<std::size_t> passIdx;
+    for (const auto& e : passThrough.entries) passIdx.push_back(e.index);
+
+    //  The aqueous carrier from its ONE home (the contract above made sure
+    //  the feed carries it).
     const std::size_t iWater = thermo.aqueousSolventIndex();
 
     // ---- operation{} hardware ---------------------------------------------
     auto op = dict->subDict("operation");
-    const std::string unitLabel = dict->name().empty() ? type() : dict->name();
 
     //  THE STACK RECORD (2026-09-16).  `stack <name>;` names a `kind edStack`
     //  record in assets/ and the record supplies what the case used to type:
@@ -227,21 +247,16 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     //  on the author's behalf, invisible in every file the student opens.  It
     //  survived because the grammar had no slot for a liquid-only electrolyte
     //  declaration; now that `equilibrium { aqueous { … } }` is readable with
-    //  any formulation, the stack reads what the case declared -- or refuses.
+    //  any formulation, the stack reads what the case declared; a case that
+    //  declared none was refused by the contract above (`needs`).
     const auto& aqChem = thermo.aqueousChemistry();
-    if (!aqChem.declared || aqChem.activityModel.empty())
-        throw std::runtime_error("electrodialysisStack refused: this stack"
-            " needs aqueous activities but the case declares no aqueous"
-            " chemistry.  Add to constant/thermoPhysPropDict:\n"
-            "    equilibrium { aqueous { activityModel { model davies; } } }\n"
-            "(independent of `formulation` -- a stack that computes no phase"
-            " equilibrium still HAS an aqueous solution).  No default is"
-            " applied.");
     auto act = electrolyte::AqueousActivity::New(aqChem.activityModel);
 
     // Build channel states ONCE per pass (NOT inside any inner I loop).
-    ChannelState chD = edCell::buildChannel(type(), thermo, dil.z, iWater, T, *act);
-    ChannelState chC = edCell::buildChannel(type(), thermo, con.z, iWater, T, *act);
+    ChannelState chD = edCell::buildChannel(type(), thermo, dil.z, iWater, T, *act,
+                                            passIdx);
+    ChannelState chC = edCell::buildChannel(type(), thermo, con.z, iWater, T, *act,
+                                            passIdx);
 
     // mol/s of each transferable ion entering the diluate channel (the cap on
     // what current can remove).  Per ion: F_dil [kmol/s] * 1000 * z_frac.
@@ -631,7 +646,7 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     {
         const FaradaySplit s = faradaySplit(Icur);
         return edCell::buildChannel(type(), thermo, moleFractions(s.FzD),
-                                    iWater, T, *act).kappa;
+                                    iWater, T, *act, passIdx).kappa;
     };
 
     scalar I = 0.0;
@@ -756,8 +771,37 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         s.F = Ftot;
         s.z = moleFractions(Fz);
     };
-    finalise(outD, split.FzD);
-    finalise(outC, split.FzC);
+    //  A DECLARED PASS-THROUGH: every mole of the component fed to the stack
+    //  (both channels) leaves in its declared outlet, unchanged in amount.
+    //  It entered no equation above, so this is the only line that moves it.
+    //  A fate that takes it into the OTHER channel is a transfer the case
+    //  claims, and the run says so, with the amount.
+    sVector FzD = split.FzD, FzC = split.FzC;
+    for (const auto& e : passThrough.entries)
+    {
+        const std::size_t i = e.index;
+        const scalar fed    = FzD[i] + FzC[i];
+        const scalar across = (e.fate == "diluate") ? FzC[i] : FzD[i];
+        FzD[i] = (e.fate == "diluate")     ? fed : 0.0;
+        FzC[i] = (e.fate == "concentrate") ? fed : 0.0;
+        if (verbosity >= 1)
+        {
+            std::cout << "  [passThrough] " << locus << ": " << e.component
+                      << " carried unmodelled to the " << e.fate << " outlet ("
+                      << std::scientific << std::setprecision(6) << fed
+                      << " kmol/s, unchanged in amount; a DECLARED approximation,"
+                         " recorded above the KPIs)\n" << std::fixed;
+            if (across > 0.0)
+                std::cout << "  [passThrough] " << locus << ": the declared fate"
+                          << " takes " << std::scientific << std::setprecision(6)
+                          << across << " kmol/s of " << e.component
+                          << " out of the channel it was fed in -- a transfer"
+                             " across the membranes that the CASE claims; the"
+                             " stack models none.\n" << std::fixed;
+        }
+    }
+    finalise(outD, FzD);
+    finalise(outC, FzC);
 
     //  Does either membrane carry more than one counter-ion?  Only then is
     //  the C35 split anything but the single-salt expression, and only then
@@ -1118,6 +1162,54 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     }
 
     return 0;
+}
+
+//  WHAT THE STACK ACCEPTS (DEV.md 4c C188 item 5).  The three refusals the
+//  stack's solve and its channel builder wrote until slice B -- a channel with
+//  no aqueous carrier, a component the bridge does not take to one catalogued
+//  ion, a case with no aqueous activity model -- and the fourth, a channel
+//  with no ion at all, are this declaration now; the conditions are the same.
+UnitAcceptance ElectrodialysisStack::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.solvent.aqueousRequired = true;
+    a.solvent.why = "electrodialysis needs an aqueous carrier: the molalities,"
+        " the channel conductivities and the Nernst potentials are all built"
+        " on it.";
+    a.solvent.remedy = "carry the aqueous solvent (water unless the case"
+        " declares another) in BOTH channel feeds.";
+    a.needs.push_back({ UnitAcceptance::Capability::aqueousActivityModel,
+        "The Nernst membrane potential and the channel conductivities are"
+        " computed from aqueous activities, and choosing their model is the"
+        " case's: no default is applied.",
+        "add to constant/thermoPhysPropDict\n"
+        "        equilibrium { aqueous { activityModel { model davies; } } }\n"
+        "    (independent of `formulation` -- a stack that computes no phase"
+        " equilibrium still HAS an aqueous solution)." });
+    a.models.rule = UnitAcceptance::ModelsRule::aqueousSolventAndIons;
+    a.models.sentence = "the aqueous solvent and the IONS -- every other"
+        " component must cross its declared component -> species bridge"
+        " (`aqueousMapping`) to ONE aqueous species with a record in the"
+        " species catalogue";
+    a.models.why = "the stack's transport is written ion by ion: a component"
+        " that is not one ion has no charge, no diffusivity and no share of"
+        " the Faraday transfer.";
+    a.models.remedy = "feed the IONS (Na, Cl, ...), not a salt or a neutral"
+        " molecule, each with its `aqueousMapping`.";
+    a.models.atLeastOne = true;
+    a.models.noneWhy = "A channel with no ion carries no current -- nothing to"
+        " transport.  REMEDY: feed the channel its ions.";
+    a.passThroughFates = { "diluate", "concentrate" };
+    a.passThroughWhy = "A fate is the outlet that carries ALL of the"
+        " component the stack is fed, both channels together.  No split"
+        " fraction is offered: dividing a component between the channels is a"
+        " transfer across the membranes, a partition the declaration says the"
+        " stack does not perform -- a fraction would be a fitted number with"
+        " no mechanism behind it.  A fate that moves a component out of the"
+        " channel it was fed in is the case's claim, and the run prints the"
+        " amount.";
+    return a;
 }
 
 } // namespace Choupo

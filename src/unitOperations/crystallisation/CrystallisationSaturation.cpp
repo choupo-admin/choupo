@@ -40,6 +40,25 @@ namespace Choupo {
 // for that solute only when it IS the package's electrolyte salt; any other named
 // solute falls back to its own solubility curve -- so KHT (solubility curve) and
 // KCl (eNRTL) coexist in one package, each crystalliser targeting one.
+std::size_t crystAutoSolute(const ThermoPackage& thermo, const sVector& z)
+{
+    const std::size_t n = thermo.n();
+    if (thermo.hasElectrolyte())
+        return thermo.indexOf(thermo.electrolyte().soluteName());
+    for (std::size_t i = 0; i < n && i < z.size(); ++i)
+        if (z[i] > 0.0 && thermo.comp(i).hasSolubility()) return i;
+    return n;
+}
+
+bool crystHasCarrier(const ThermoPackage& thermo, const sVector& z,
+                     std::size_t iSolute)
+{
+    for (std::size_t i = 0; i < thermo.n() && i < z.size(); ++i)
+        if (z[i] > 0.0 && i != iSolute && thermo.comp(i).hasVaporPressure())
+            return true;
+    return false;
+}
+
 SatState crystSaturation(const ThermoPackage& thermo, const sVector& z, scalar F, scalar T_op,
                          const std::string& soluteOverride)
 {
@@ -56,17 +75,15 @@ SatState crystSaturation(const ThermoPackage& thermo, const sVector& z, scalar F
                 + "' (operation.solute) is not a component of this package.");
         r.useElec = pkgHasElec && thermo.electrolyte().soluteName() == soluteOverride;
     }
-    else if (pkgHasElec)
-    {
-        r.iSolute = thermo.indexOf(thermo.electrolyte().soluteName());
-        r.useElec = true;
-    }
     else
     {
-        for (std::size_t i = 0; i < n; ++i)
-            if (z[i] > 0.0 && thermo.comp(i).hasSolubility()) { r.iSolute = i; break; }
-        r.useElec = false;
+        r.iSolute = crystAutoSolute(thermo, z);
+        r.useElec = pkgHasElec;
     }
+    //  Without `operation.solute`, the steady crystalliser's DECLARED
+    //  acceptance refuses these two feeds before it gets here (C188 item 5);
+    //  this guard remains for the operation-selected solute and for the batch
+    //  crystalliser, which has no contract yet.
     if (r.iSolute == n)
         throw std::runtime_error("Crystalliser: no crystallising solute in the feed"
             " (need a component with a `solubility {}` block, or an `electrolyte {}` block).");

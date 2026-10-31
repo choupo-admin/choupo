@@ -159,7 +159,7 @@ public:
                                   // incomplete types in this header
 
     const std::string& type() const override;
-
+    UnitAcceptance     acceptance() const override;   // C188: an aqueous holdup
     void initialise(const DictPtr&       unitDict,
                     const ThermoPackage& thermo,
                     const DictPtr&       reactionsDict) override;

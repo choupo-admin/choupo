@@ -1,0 +1,104 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict --- ED10 a component the stack does not model, DECLARED to
+                    pass through it
+  ===========================================================================
+
+  ed01's stack and ed01's NaCl diluate, with ONE change: the diluate feed
+  also carries a little benzene (0.01 kmol/h against 17.9 kmol/h of water,
+  about 0.78 kg/h -- above benzene's solubility in water, so in the plant it
+  would ride as droplets of a second liquid phase).
+
+      diluateFeed (+ benzene) -> +-----------------+ -> diluate (+ benzene)
+                                 |   ED stack      |
+      concentrateFeed       ->   | (CMX/AMX, N=100)| -> concentrate
+                                 +-----------------+
+
+  WHAT THIS SHOWS.  The stack models the aqueous solvent and the IONS:
+  every other component must cross its declared bridge to one catalogued
+  ion (`choupoSolve --describe-units` prints that contract).  Benzene is
+  not an ion, so without the `passThrough` block below the run is REFUSED
+  before any unit runs, naming benzene and both remedies.  With the block,
+  benzene is ACCEPTED as a DECLARED APPROXIMATION: it enters none of the
+  stack's equations, every mole of it leaves in the outlet the case names
+  (`fate diluate`), and it is in every balance (mass, elements, energy).
+
+  THE PASS-THROUGH IS A DECLARED APPROXIMATION, NOT A RESULT.  The run
+  records it on the problem-divergence channel -- printed ABOVE the KPIs,
+  in the result JSON and in converged/problemDivergence -- with the reason
+  below.  What it sets aside is real: an organic film on the membranes,
+  a change in the channel's conductivity, any benzene the membranes would
+  sorb.  The stack computes none of them, and says so.
+
+  Benzene moves no stack number: the molalities are taken on the water and
+  benzene is not an ion of the channel, so the same case run WITHOUT benzene
+  gives every KPI (voltage, demin ratio, limiting current, specific energy)
+  to the last printed digit -- check_unit_acceptance runs that twin.  (Read
+  against ed01 the voltage differs in the fourth figure: this case was
+  sealed against the Choupo-2608 catalogue, whose Na and Cl records carry
+  different curated diffusivities from the 2607 records ed01 was sealed
+  with.  That is the catalogue, not the benzene.)
+
+  The thermophysical package is ed01's ideal liquid with benzene added (see
+  constant/thermoPhysPropDict): it prices the streams for the balances and
+  does not represent the second liquid phase either.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        edStack;
+        type        electrodialysisStack;
+        inputs      ( diluateFeed  concentrateFeed );
+        outputs     ( diluate  concentrate );
+
+        operation
+        {
+            N_cellpairs       100;
+            current           8.0;        // A (raw SI) -- applied current (below i_lim, see log)
+            xi                0.9;         // current efficiency (announced default)
+            membraneArea      0.2 m2;     // per membrane
+            channelThickness  0.5 mm;     // spacer gap
+            channelLength     0.4 m;      // flow path (for the Leveque k)
+            linearVelocity    0.05 m/s;   // cross-flow velocity
+            E_electrodes      1.5;        // V (raw SI) -- lumped electrode overpotential (announced)
+            membrane          CMX_AMX;    // IEM pair (data/standards or constant/membranes)
+        }
+
+        //  A DECLARED APPROXIMATION (DEV.md 4c C188): benzene crosses the
+        //  stack outside its equations.  The fates the stack offers are
+        //  `diluate` and `concentrate` (the outlet that carries ALL of it);
+        //  no split fraction is offered, and the reason is required.
+        passThrough
+        {
+            benzene { fate diluate; }
+            reason  "trace organic in a second liquid phase riding with the diluate; the stack's ion transport does not act on it";
+        }
+
+        // The DC power drawn by the stack is published on an energy wire as
+        // W_electric (P = U*I), mirroring the turbine/compressor shaft-wire
+        // convention; the rectifier (electricLoad) absorbs it.
+        energyOutputs
+        (
+            { name power;  kind work;  expression "W_electric";  unit W; }
+        );
+    }
+    {
+        name        rectifier;
+        type        electricLoad;
+        operation   { eta 1.0; }
+        energyInputs
+        (
+            { from edStack.power;  kind work;  target W_shaft; }
+        );
+    }
+);

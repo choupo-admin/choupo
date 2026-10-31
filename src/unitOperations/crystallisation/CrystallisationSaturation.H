@@ -105,4 +105,15 @@ SatState crystSaturation(const ThermoPackage& thermo,
                          scalar               T_op,
                          const std::string&   soluteOverride = "");
 
+//- The two FEED facts the saturation stands on, without an operation-
+//  selected solute (DEV.md 4c C188 item 5): the solute the unit would pick
+//  -- the package's electrolyte salt, else the first PRESENT component with a
+//  `solubility {}` curve; `thermo.n()` when there is none -- and whether a
+//  present volatile component other than it is there to carry it.  ONE home
+//  for the auto-selection: `crystSaturation` and the steady crystalliser's
+//  declared acceptance both read it.
+std::size_t crystAutoSolute(const ThermoPackage& thermo, const sVector& z);
+bool        crystHasCarrier(const ThermoPackage& thermo, const sVector& z,
+                            std::size_t iSolute);
+
 } // namespace Choupo

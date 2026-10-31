@@ -3224,6 +3224,53 @@ diluateFeed (the wine) $\to$ +-----------------------+ $\to$ diluate (stabilised
 \goldmore{111}
 \end{tutgolden}
 
+\clearpage
+\tutentry{ed10\_passthrough\_benzene}{tutorials/steady/electrodialysis/ed10\_passthrough\_benzene}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (edStack) at (0.0,-0.0) {\textbf{edStack}\\[-1pt]{\tiny electrodialysisStack}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (rectifier) at (0.0,-1.7) {\textbf{rectifier}\\[-1pt]{\tiny electricLoad}};
+  \draw[->] ($(edStack.west)+(-1.05,-0.17)$) -- ($(edStack.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {diluateFeed};
+  \draw[->] ($(edStack.west)+(-1.05,0.17)$) -- ($(edStack.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {concentrateFeed};
+  \draw[->] ($(edStack.east)+(0,-0.17)$) -- ($(edStack.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {diluate};
+  \draw[->] ($(edStack.east)+(0,0.17)$) -- ($(edStack.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {concentrate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Electrodialysis stack: NaCl desalination with benzene DECLARED to pass through}
+\begin{tutnarrative}
+ED10 a component the stack does not model, DECLARED to pass through it
+
+ed01's stack and ed01's NaCl diluate, with ONE change: the diluate feed also carries a little benzene (0.01 kmol/h against 17.9 kmol/h of water, about 0.78 kg/h -- above benzene's solubility in water, so in the plant it would ride as droplets of a second liquid phase).
+
+diluateFeed (+ benzene) $\to$ +-----------------+ $\to$ diluate (+ benzene) | ED stack | concentrateFeed $\to$ | (CMX/AMX, N=100)| $\to$ concentrate +-----------------+
+
+WHAT THIS SHOWS. The stack models the aqueous solvent and the IONS: every other component must cross its declared bridge to one catalogued ion (`choupoSolve --describe-units` prints that contract). Benzene is not an ion, so without the `passThrough` block below the run is REFUSED before any unit runs, naming benzene and both remedies. With the block, benzene is ACCEPTED as a DECLARED APPROXIMATION: it enters none of the stack's equations, every mole of it leaves in the outlet the case names (`fate diluate`), and it is in every balance (mass, elements, energy).
+
+THE PASS-THROUGH IS A DECLARED APPROXIMATION, NOT A RESULT. The run records it on the problem-divergence channel -- printed ABOVE the KPIs, in the result JSON and in converged/problemDivergence -- with the reason below. What it sets aside is real: an organic film on the membranes, a change in the channel's conductivity, any benzene the membranes would sorb. The stack computes none of them, and says so.
+
+Benzene moves no stack number: the molalities are taken on the water and benzene is not an ion of the channel, so the same case run WITHOUT benzene gives every KPI (voltage, demin ratio, limiting current, specific energy) to the last printed digit -- check\_unit\_acceptance runs that twin. (Read against ed01 the voltage differs in the fourth figure: this case was sealed against the Choupo-2608 catalogue, whose Na and Cl records carry different curated diffusivities from the 2607 records ed01 was sealed with. That is the catalogue, not the benzene.)
+
+The thermophysical package is ed01's ideal liquid with benzene added (see constant/thermoPhysPropDict): it prices the streams for the balances and does not represent the second liquid phase either.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{concentrate}{F}{0.00501492454869}
+\goldrow{stream}{concentrate}{T}{298.15}
+\goldrow{stream}{concentrateFeed}{F}{0.00500000000039}
+\goldrow{stream}{concentrateFeed}{T}{298.15}
+\goldrow{stream}{diluate}{F}{0.00498785323076}
+\goldrow{stream}{diluate}{T}{298.15}
+\goldrow{stream}{diluateFeed}{F}{0.00500277777906}
+\goldrow{stream}{diluateFeed}{T}{298.15}
+\goldrow{kpi}{edStack}{E\_mem\_pair}{0.0794573845787}
+\goldrow{kpi}{edStack}{I}{8}
+\goldrow{kpi}{edStack}{N\_cellpairs}{100}
+\goldrow{kpi}{edStack}{R\_pair}{0.00507540958664}
+\goldrow{kpi}{edStack}{U}{13.5060661272}
+\goldrow{kpi}{edStack}{W\_electric}{108.048529017}
+\goldmore{17}
+\end{tutgolden}
+
 \subsection{evaporation}
 \grouptheory{evaporation}
 \clearpage

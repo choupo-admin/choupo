@@ -1,0 +1,34 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  concentrate            F                0.00501492454869   1e-4
+stream  concentrate            T                298.15             1e-4
+stream  concentrateFeed        F                0.00500000000039   1e-4
+stream  concentrateFeed        T                298.15             1e-4
+stream  diluate                F                0.00498785323076   1e-4
+stream  diluate                T                298.15             1e-4
+stream  diluateFeed            F                0.00500277777906   1e-4
+stream  diluateFeed            T                298.15             1e-4
+kpi     edStack                E_mem_pair       0.0794573845787    1e-4
+kpi     edStack                I                8                  1e-4
+kpi     edStack                N_cellpairs      100                1e-4
+kpi     edStack                R_pair           0.00507540958664   1e-4
+kpi     edStack                U                13.5060661272      1e-4
+kpi     edStack                W_electric       108.048529017      1e-4
+kpi     edStack                W_electric_kW    0.108048529017     1e-4
+kpi     edStack                current_efficiency 0.9                1e-4
+kpi     edStack                demin_ratio      0.831450327632     1e-4
+kpi     edStack                i_density        40                 1e-4
+kpi     edStack                i_lim            131.456386301      1e-4
+kpi     edStack                i_over_ilim      0.304283429094     1e-4
+kpi     edStack                specific_energy_kWh_per_m3 0.334400392866     1e-4
+kpi     rectifier              W_electric       108.048529017      1e-4
+kpi     rectifier              W_electric_kW    0.108048529017     1e-4
+kpi     rectifier              W_losses         0                  1e-4
+kpi     rectifier              W_shaft          108.048529017      1e-4
+kpi     rectifier              W_shaft_kW       0.108048529017     1e-4
+kpi     rectifier              eta_generator    1                  1e-4
+utility rectifier              power.electricity_(generated).duty_kW 0.108048529017     1e-4
+utility rectifier              power.electricity_(generated).T -1                 1e-4
+utility rectifier              power.electricity_(generated).kg_s 0                  1e-4
+utility rectifier              power.electricity_(generated).eur_h -0.0108134967841   1e-4

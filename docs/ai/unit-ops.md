@@ -1673,6 +1673,13 @@ that returns the PSD the equilibrium model cannot).
 crystalliser combines them internally (no separate `mixer` node), e.g. a
 brine + an antisolvent for drowning-out.  Single feed = `in feed;`.
 
+**Accepts** (`choupoSolve --describe-units`), judged on the COMBINED feed: a
+crystallisable solute (the package's electrolyte salt, or a present component
+with a `solubility {}` curve) and a volatile solvent to carry it.  A feed that
+is not supersaturated at the operating temperature is NOT an acceptance
+question -- the saturation is the model's answer -- and is refused by the
+MSMPR/FVM solve itself.
+
 **Which salt (multi-salt feeds)** — `operation { solute <name>; }` names the
 species this unit crystallises when the feed carries more than one (two
 crystallisers in series, each pulling out a different salt).  The saturation
@@ -1955,6 +1962,13 @@ Common shape:
   operation { mode isothermal | adiabatic;  T_setpoint <K>;... }
   reaction  / crystallisation / dischargeTo... }
 ```
+
+`choupoBatch --describe-units` prints what each vessel ACCEPTS -- the same
+contract a steady unit declares.  choupoBatch has no pre-solve pass, so a
+vessel that declares one (`batchElectrodialysis`: an aqueous holdup of ions
+in both tanks and an aqueous activity model; `batchDiafilter`: an aqueous
+holdup) judges its initial holdup in its own `initialise`, before any vessel
+takes a step.
 
 ### `batchReactor`
 Closed vessel, RK4 in time.  `mode isothermal` (T held) or `adiabatic`
@@ -2593,6 +2607,10 @@ resin per kg water) and the engine derives + announces
 ```
 operation { resin SAC_Na;  resinDose 1.0 L/kg;  bedVolume 1.5 m3;  pH 7.0; }
 ```
+**Accepts** (`choupoSolve --describe-units`): an aqueous feed whose every
+other component is an ION (its `aqueousMapping` to one catalogued species),
+at least one ion, and the case's aqueous activity model; no pass-through is
+offered.  Refused before any unit runs when the feed is authored.
 Example: `membrane08_softened_scaling` (the softening pre-treatment).
 
 ### `psa`
@@ -2709,6 +2727,41 @@ electroneutral.  Every ion on such a membrane needs a D0 (a case-local
 species record is enough); a missing one refuses by name.  Such a unit
 publishes `demin_<ion>`, `t_transfer_<ion>` (the pass-average share) and
 `eq_transferred_cem` / `eq_transferred_aem`.  A single salt is unchanged.
+
+**What the stack accepts** (`choupoSolve --describe-units` prints it): the
+aqueous solvent in BOTH channel feeds, the case's aqueous activity model
+(`equilibrium { aqueous { activityModel { ... } } }`), and IONS -- every
+other component must cross its `aqueousMapping` to ONE aqueous species with
+a record in the species catalogue, and each channel must carry at least one.
+An authored feed that breaks this is refused before any unit runs (and by
+`choupo-lint`); a produced one at the stack's own solve.
+
+**A component the stack does not model may be DECLARED to pass through it**
+-- a declared approximation, never a default:
+```
+{ name edStack;  type electrodialysisStack;  inputs ( dil con );  outputs ( diluate concentrate );
+  operation { ... }
+  passThrough
+  {
+      benzene { fate diluate; }        // diluate | concentrate
+      reason  "trace organic in a second liquid phase; the stack's ion transport does not act on it";
+  }
+}
+```
+The component enters none of the stack's equations; EVERY mole of it fed to
+the stack (both channels together) leaves in the declared outlet, so it is in
+the mass, element and energy balances.  The fates are `diluate` and
+`concentrate`; **no split fraction is offered** -- dividing a component
+between the channels is a transfer across the membranes, which is the
+transport the declaration says does not happen (a fate that moves it out of
+the channel it was fed in is the case's claim, and the run prints the
+amount).  Each pass-through is recorded once on the problem-divergence
+channel as a `declaredApproximation` (printed above the KPIs, in the result
+JSON and in `converged/problemDivergence`).  Refused by name: a component
+the stack MODELS (an ion), the aqueous solvent, a fate not offered, a
+missing `fate`, a missing `reason`, a name that is not a component, and the
+block on any unit that offers no pass-through.  Example:
+`ed10_passthrough_benzene`.
 
 # Outer drivers (in `outerDict`)
 

@@ -138,12 +138,20 @@ struct ChannelState
 //- Build the ionic state of a channel from a MOLE-FRACTION composition,
 //  freezing the activity coefficients once.  The component -> species
 //  crossing goes through the DECLARED bridge, never by name identity.
+//  `passThrough` lists the components a case DECLARED to cross the stack
+//  outside its equations (UnitAcceptance's `passThrough`, DEV.md 4c C188):
+//  they are not ions of the channel, and the molality closure is on the
+//  solvent, so their presence changes no number this builds.
+//  What a stack ACCEPTS is its declared contract, checked before this runs
+//  (`ElectrodialysisStack::acceptance`, `BatchElectrodialysis::acceptance`);
+//  the guards inside remain for a channel the run itself strips of ions.
 ChannelState buildChannel(const std::string&   who,
                           const ThermoPackage& thermo,
                           const sVector&       z,
                           std::size_t          iWater,
                           scalar               T,
-                          const electrolyte::AqueousActivity& act);
+                          const electrolyte::AqueousActivity& act,
+                          const std::vector<std::size_t>& passThrough = {});
 
 //- The GEOMETRIC MEAN activity ratio a_conc/a_dil over the ions of one sign
 //  (`sign` > 0: cations).  1.0 when no ion of that sign is matched in both

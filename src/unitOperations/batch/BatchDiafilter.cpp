@@ -210,15 +210,15 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
               " (solvent made up as fast as it permeates; solutes wash out).");
 
     // ---- solutes and their permeabilities ---------------------------------
-    //  The aqueous carrier, from its ONE home (water unless declared).
+    //  The aqueous carrier, from its ONE home (water unless declared); what
+    //  the vessel ACCEPTS is its declared contract (`acceptance()`, C188),
+    //  judged on the initial holdup before anything is built on it.
     iWater_ = thermo.findAqueousSolvent();
-    if (iWater_ >= N)
-        throw std::runtime_error(
-            "batchDiafilter '" + name() + "': the aqueous solvent '"
-            + thermo.aqueousSolventName() + "' is not a component."
-            "  The transport laws in this tree assume an aqueous carrier and"
-            " price the solvent flux on it; add it to the components or"
-            " use a unit that does not make that assumption.");
+    {   AcceptanceInlet in;  in.streamName = "initial holdup";
+        auto i0 = unitDict->subDict("initial");  in.T = i0->lookupScalar("T");
+        in.P = i0->lookupScalar("P");  in.z = readComposition(i0, thermo,
+            "batchDiafilter '" + name() + "' init");
+        checkAcceptance(acceptance(), type(), in, thermo, "batchDiafilter '" + name() + "'"); }
 
     soluteIdx_.clear();
     B_s_.clear();
@@ -683,6 +683,26 @@ std::string BatchDiafilter::energyLedgerGap() const
            " and the `shaftWork` ledger kind is reserved and unimplemented."
            "  The material and the vessel enthalpy ARE priced; the campaign"
            " energy balance is UNAVAILABLE until a pump is modelled.";
+}
+
+//  WHAT THE VESSEL ACCEPTS (DEV.md 4c C188 item 5).  The one refusal its
+//  initialise wrote until slice B -- no aqueous carrier -- is this
+//  declaration, judged on the initial holdup.  No `models` rule is declared:
+//  none existed, and slice B moves refusals without adding one (what this
+//  vessel does with a component that is neither the solvent nor a
+//  `role nonvolatile` solute -- it never permeates -- is recorded in
+//  docs/design/what-a-unit-accepts.md as an open question).
+UnitAcceptance BatchDiafilter::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.solvent.aqueousRequired = true;
+    a.solvent.why = "the transport laws in this tree assume an aqueous carrier"
+        " and price the solvent flux on it.";
+    a.solvent.remedy = "add the aqueous solvent (water unless the case"
+        " declares another) to the components and to the holdup, or use a"
+        " unit that does not make that assumption.";
+    return a;
 }
 
 } // namespace Choupo

@@ -139,16 +139,77 @@ int Crystalliser::solve(const DictPtr& dict,
     //  A chain that dispatches on a declared word must refuse a word it does
     //  not know, exactly as the cyclone's model FACTORY already does.
     const std::string model = dict->lookupWordOrDefault("model", "equilibrium");
-    if (model == "MSMPR" || model == "msmpr" || model == "populationBalance")
-        return solveMSMPR(dict, thermo, verbosity);
-    if (model == "FVM" || model == "discretizedPBE" || model == "FVM-PBE")
-        return solveDiscretizedPBE(dict, thermo, verbosity);
-    if (model != "equilibrium")
+    const bool isMSMPR = (model == "MSMPR" || model == "msmpr"
+                       || model == "populationBalance");
+    const bool isFVM   = (model == "FVM" || model == "discretizedPBE"
+                       || model == "FVM-PBE");
+    if (!isMSMPR && !isFVM && model != "equilibrium")
         throw std::runtime_error("Crystalliser: " + registryRefusal::message(
             "crystalliser model", model,
             {"equilibrium", "MSMPR", "msmpr", "populationBalance",
              "FVM", "FVM-PBE", "discretizedPBE"}, "Accepted"));
+
+    //  WHAT THE CRYSTALLISER ACCEPTS (DEV.md 4c C188 item 5), judged on the
+    //  feed it COMBINES its inlets into -- a brine and an antisolvent are one
+    //  liquor in the vessel.  An all-authored feed was already checked before
+    //  the first unit ran; a produced one is checked here.
+    {
+        const FeedState fd = readCombinedFeed(dict, thermo);
+        AcceptanceInlet in;
+        in.streamName = "combined feed";
+        in.T = fd.T_feed;  in.P = fd.P;  in.z = fd.z;  in.vf = 0.0;
+        checkAcceptance(*this, in, thermo, type() + " '"
+            + (dict->name().empty() ? type() : dict->name()) + "'");
+    }
+
+    if (isMSMPR) return solveMSMPR(dict, thermo, verbosity);
+    if (isFVM)   return solveDiscretizedPBE(dict, thermo, verbosity);
     return solveEquilibrium(dict, thermo, verbosity);
+}
+
+//  WHAT THE CRYSTALLISER ACCEPTS (DEV.md 4c C188 item 5).  Two of its feed
+//  refusals are this declaration, on the COMBINED feed: no crystallisable
+//  solute, and no volatile carrier.  The solute is the one the unit would
+//  pick without `operation.solute` (`crystAutoSolute`, the one home of that
+//  choice); an operation-selected solute is the unit's CONFIGURATION, not
+//  its feed, and stays refused inside `crystSaturation`.  NOT in the
+//  contract, deliberately: "the feed is not supersaturated at the operating
+//  temperature" (MSMPR, FVM) -- the saturation is the MODEL's answer at the
+//  declared T_op, a result of the solve, never a fact of the feed.
+UnitAcceptance Crystalliser::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.appliesTo = UnitAcceptance::Scope::combinedFeed;
+    a.refusesAlso.push_back({ "crystallisableSolute",
+        "A crystalliser needs a solute whose saturation the package can"
+        " compute: the package's electrolyte salt, or a component with a"
+        " `solubility {}` curve.",
+        "declare the salt's `electrolyte {}` model in the package, or give the"
+        " solute a `solubility {}` block in its component record.",
+        [](const AcceptanceInlet& in, const ThermoPackage& th)
+            -> std::optional<std::string>
+        {
+            if (crystAutoSolute(th, in.z) < th.n()) return std::nullopt;
+            return std::string("carries no crystallising solute -- no"
+                " component with a `solubility {}` block is present, and the"
+                " package declares no electrolyte model");
+        } });
+    a.refusesAlso.push_back({ "volatileCarrier",
+        "The saturation is a solute mass per mass of a SOLVENT, a volatile"
+        " carrier (water, an alcohol).",
+        "feed the solvent with the solute.",
+        [](const AcceptanceInlet& in, const ThermoPackage& th)
+            -> std::optional<std::string>
+        {
+            const std::size_t iSol = crystAutoSolute(th, in.z);
+            if (iSol >= th.n() || crystHasCarrier(th, in.z, iSol))
+                return std::nullopt;
+            return std::string("carries no solvent -- no present component"
+                " other than the solute '" + th.comp(iSol).name()
+                + "' has a vapour pressure");
+        } });
+    return a;
 }
 
 int Crystalliser::solveEquilibrium(const DictPtr& dict,

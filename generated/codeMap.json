@@ -627,6 +627,9 @@
   "EnthalpyInversion": [
    "src/unitOperations/reactor/ReactorOutlet.H"
   ],
+  "Entry": [
+   "src/unitOperations/UnitAcceptance.H"
+  ],
   "EquationOfState": [
    "src/thermo/equationOfState/EquationOfState.H"
   ],
@@ -1210,6 +1213,9 @@
   "NRTrace": [
    "src/solver/NewtonRaphson.H"
   ],
+  "Need": [
+   "src/unitOperations/UnitAcceptance.H"
+  ],
   "Node": [
    "src/core/Formula.H"
   ],
@@ -1299,6 +1305,9 @@
   ],
   "ParticleSizeDistribution": [
    "src/streams/ProcessStream.H"
+  ],
+  "PassThroughDeclaration": [
+   "src/unitOperations/UnitAcceptance.H"
   ],
   "PelletSolution": [
    "src/unitOperations/reactor/pellet/PelletDiffusion.H"
@@ -3127,6 +3136,7 @@
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
   ],
@@ -7870,14 +7880,23 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
+   "src/thermo/Database.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
+   "src/thermo/electrolyte/ENRTLSingleSalt.H",
+   "src/thermo/electrolyte/PitzerForm.H",
+   "src/thermo/electrolyte/PitzerSingleSalt.H",
+   "src/thermo/electrolyte/SaltFromCatalogue.H",
+   "src/thermo/electrolyte/SolventProperties.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -7976,6 +7995,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchAccumulator.H",
    "src/unitOperations/batch/BatchUnitOperation.H"
   ],
@@ -8008,6 +8028,7 @@
    "src/thermo/adsorbent/Adsorbent.H",
    "src/thermo/adsorbent/AdsorbentRegistry.H",
    "src/thermo/adsorbent/IsothermModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchAdsorber.H",
    "src/unitOperations/batch/BatchUnitOperation.H"
   ],
@@ -8034,6 +8055,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchCrystalliser.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
    "src/unitOperations/crystallisation/CrystallisationHeat.H",
@@ -8065,6 +8087,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/membrane/Membrane.H",
    "src/thermo/membrane/MembraneRegistry.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchDiafilter.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
    "src/unitOperations/membrane/BulkConversion.H",
@@ -8099,6 +8122,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchDryer.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
    "src/unitOperations/heatTransfer/DryingCurve.H",
@@ -8141,6 +8165,7 @@
    "src/thermo/electrolyte/SaltFromCatalogue.H",
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchElectrodialysis.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
    "src/unitOperations/electrochem/EDCell.H",
@@ -8177,6 +8202,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchReactor.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
    "src/unitOperations/reactor/CatalystPellet.H",
@@ -8237,6 +8263,7 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/reaction/ReactionRate.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchAccumulator.H",
    "src/unitOperations/batch/BatchAdsorber.H",
    "src/unitOperations/batch/BatchCrystalliser.H",
@@ -8287,6 +8314,7 @@
    "src/thermo/adsorbent/Adsorbent.H",
    "src/thermo/adsorbent/AdsorbentRegistry.H",
    "src/thermo/adsorbent/IsothermModel.H",
+   "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
    "src/unitOperations/batch/FixedBedAdsorber.H"
   ],
@@ -12126,6 +12154,7 @@
    "src/result/ResultEmitter.cpp",
    "src/thermo/ApproximationAuthorisation.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
    "src/unitOperations/batch/BatchCrystalliser.cpp",
@@ -14877,6 +14906,7 @@
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -15222,6 +15252,7 @@
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -15364,6 +15395,7 @@
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/batch/BatchDryer.cpp",
@@ -15774,6 +15806,7 @@
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -15837,6 +15870,7 @@
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -15871,6 +15905,7 @@
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -15907,6 +15942,7 @@
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -15942,6 +15978,7 @@
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -16528,6 +16565,7 @@
    "src/thermo/vaporPressure/Wagner.cpp"
   ],
   "src/unitOperations/UnitAcceptance.H": [
+   "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/postProcessing/sizing/GasStoreSize.cpp",
@@ -16550,7 +16588,16 @@
    "src/reporting/UtilityAllocationReport.cpp",
    "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/batch/BatchAccumulator.cpp",
+   "src/unitOperations/batch/BatchAdsorber.cpp",
+   "src/unitOperations/batch/BatchCrystalliser.cpp",
+   "src/unitOperations/batch/BatchDiafilter.cpp",
+   "src/unitOperations/batch/BatchDryer.cpp",
+   "src/unitOperations/batch/BatchElectrodialysis.cpp",
+   "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
+   "src/unitOperations/batch/BatchUnitOperation.cpp",
+   "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",

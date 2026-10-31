@@ -99,6 +99,10 @@ public:
     std::map<std::string, scalar> kpis()            const override { return kpis_; }
     std::optional<UnitProfile>    profile()         const override { return profile_; }
 
+    //  What the crystalliser accepts (DEV.md 4c C188 item 5), judged on the
+    //  combined feed: a crystallisable solute and a volatile carrier.
+    UnitAcceptance                acceptance()      const override;
+
 private:
     int solveEquilibrium    (const DictPtr& dict, const ThermoPackage& thermo, int verbosity);
     int solveMSMPR          (const DictPtr& dict, const ThermoPackage& thermo, int verbosity);

@@ -104,7 +104,8 @@ void readIEMPair(const std::string& who, const std::string& name,
 ChannelState buildChannel(const std::string& who,
                           const ThermoPackage& thermo, const sVector& z,
                           std::size_t iWater, scalar T,
-                          const electrolyte::AqueousActivity& act)
+                          const electrolyte::AqueousActivity& act,
+                          const std::vector<std::size_t>& passThrough)
 {
     const scalar z_water = z[iWater];
     if (z_water <= 0.0)
@@ -117,6 +118,8 @@ ChannelState buildChannel(const std::string& who,
     {
         if (i == iWater) continue;
         if (z[i] <= 0.0) continue;
+        if (std::find(passThrough.begin(), passThrough.end(), i)
+            != passThrough.end()) continue;   // declared: not an ion of the channel
         // The component -> species crossing goes through the DECLARED bridge
         // (aqueousMapping / dissociatesTo), never by name identity.
         const SpeciesId sp = thermo.aqueousChemistry().singleMaster(

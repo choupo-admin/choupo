@@ -243,7 +243,13 @@ public:
 
     std::string energyLedgerGap() const override;
 
+    //  What the rig accepts (DEV.md 4c C188 item 5), judged on both tanks.
+    UnitAcceptance acceptance() const override;
+
 private:
+    void checkInitialTanks(const DictPtr& unitDict, const ThermoPackage& thermo,
+                           const std::string& who) const;
+
     //  Everything the rig is doing at one instant, from the two inventories.
     struct Instant
     {

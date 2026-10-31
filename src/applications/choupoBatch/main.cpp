@@ -199,10 +199,19 @@ try
         "  directory.\n"
         "\n"
         "  --version, -V     print the banner (which carries version and commit)\n"
+        "  --describe-units  print every vessel type's declared acceptance as JSON\n"
         "  --help, -h        this text\n";
 
     if (handleStandardFlags(argc, argv, USAGE))
         return 0;
+    if (argc > 1 && std::string(argv[1]) == "--describe-units")   // C188 item 5
+    {
+        std::vector<std::pair<std::string, UnitAcceptance>> units;
+        for (const auto& t : BatchUnitOperation::availableTypes())
+            units.emplace_back(t, BatchUnitOperation::New(t)->acceptance());
+        describeAcceptancesJson(std::cout, units);
+        return 0;
+    }
     if (argc > 1 && argv[1][0] == '-')
         refuseUnknownOption(argv[1], USAGE);
 

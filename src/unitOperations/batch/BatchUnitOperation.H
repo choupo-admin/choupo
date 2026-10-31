@@ -50,6 +50,7 @@ Description
 #include "result/SimulationResult.H"   // TimelineEvent (the sequence/Gantt feed)
 #include "core/Types.H"
 #include "thermo/ThermoPackage.H"
+#include "unitOperations/UnitAcceptance.H"   // what a vessel accepts (C188)
 
 #include <functional>
 #include <map>
@@ -107,6 +108,14 @@ public:
     virtual void initialise(const DictPtr&        unitDict,
                             const ThermoPackage&  thermo,
                             const DictPtr&        reactionsDict) = 0;
+
+    // What the vessel ACCEPTS (DEV.md 4c C188 item 5;
+    // unitOperations/UnitAcceptance.H): the same contract a steady unit
+    // declares, judged by the same function on the initial holdup the
+    // vessel is handed.  choupoBatch has no pre-solve seam of its own, so a
+    // vessel that declares one checks it in its `initialise` -- which runs
+    // before the first step of any vessel.  Default: undeclared, accepts all.
+    virtual UnitAcceptance acceptance() const { return {}; }
 
     // Advance the vessel state by dt starting from current time t.
     virtual void step(scalar t, scalar dt) = 0;

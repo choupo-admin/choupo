@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture: ed01's, with
+  benzene added.
+  Raoult DECLARED, not defaulted (gamma = 1 identically).  The ideal
+  liquid here does NOT represent benzene's second liquid phase: with
+  gamma = 1 the package reads the trace of benzene as dissolved.  That is
+  the package pricing the streams for the balances; it is not what the
+  stack does with benzene, which is nothing (see system/flowsheetDict).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( water  Na  Cl  benzene );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    // The liquid IS an aqueous electrolyte solution -- declared here, once,
+    // independently of the phase equilibrium above (this stack computes no
+    // VLE).  The stack READS this; it no longer freezes a model of its own.
+    aqueous
+    {
+        activityModel { model davies; }
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

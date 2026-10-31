@@ -81,12 +81,21 @@ int IonExchanger::solve(const DictPtr& dict,
         throw std::runtime_error("ionExchanger: feed composition does not sum "
             "to 1 (Sigma z = " + std::to_string(zSum) + ")");
 
-    //  The aqueous carrier from its ONE home; refuses by name if absent.
+    // ---- WHAT THE SOFTENER ACCEPTS (DEV.md 4c C188 item 5) -----------------
+    //  An aqueous water analysis of ions and the case's aqueous activity
+    //  model: the unit's DECLARED contract (`acceptance()` below), applied by
+    //  the one function that writes such a refusal.  An authored inlet was
+    //  already checked before the first unit ran; a produced one is here.
+    {
+        const std::string locus = type() + " '"
+            + (dict->name().empty() ? type() : dict->name()) + "'";
+        checkAcceptance(*this, acceptanceInletOf(feedDict, z_in, thermo, locus,
+                        acceptance()), thermo, locus);
+    }
+
+    //  The aqueous carrier from its ONE home (the contract made sure it is fed).
     const std::size_t iWater = thermo.aqueousSolventIndex();
     const scalar z_water = z_in[iWater];
-    if (z_water <= 0.0)
-        throw std::runtime_error("ionExchanger: the feed has no water -- a "
-            "softener needs an aqueous carrier (water as a component)");
 
     // ---- operation{} : HARDWARE in -------------------------------------
     auto opDict = dict->subDict("operation");
@@ -125,19 +134,13 @@ int IonExchanger::solve(const DictPtr& dict,
     {
         if (i == iWater) continue;
         if (z_in[i] <= 0.0) continue;
-        // component -> species through the DECLARED bridge, never by name.
+        // component -> species through the DECLARED bridge, never by name
+        // (the contract above refused any component that does not cross it
+        // to one catalogued ion, and a feed carrying none).
         const SpeciesId sp = thermo.aqueousChemistry().singleMaster(
             ComponentId(thermo.comp(i).name()));
-        if (!electrolyte::findAqueousSpecies(sp.key))
-            throw std::runtime_error("ionExchanger: species '" + sp.key + "' has "
-                "no row in ions.dat -- the softener needs an IONIC water "
-                "analysis (master ions Ca, Mg, Na, K, Cl, SO4, HCO3, ... + "
-                "water, with the electrolyte catalogue in constant/electrolyte/).");
         in.totals[sp] = (z_in[i] / z_water) * molesWaterPerKg;   // mol/kg water
     }
-    if (in.totals.empty())
-        throw std::runtime_error("ionExchanger: the inlet carries no ions -- a "
-            "softener needs a water analysis to soften");
 
     // pH: a number (given) or the word `solve` (electroneutrality closure).
     bool solvePH = true;
@@ -186,13 +189,8 @@ int IonExchanger::solve(const DictPtr& dict,
             " unit key -- the aqueous activity model belongs to the case, in"
             " constant/thermoPhysPropDict:\n"
             "    equilibrium { aqueous { activityModel { model davies; } } }");
-    const auto& aqChem = thermo.aqueousChemistry();
-    if (!aqChem.declared || aqChem.activityModel.empty())
-        throw std::runtime_error("ionExchanger refused: this unit needs aqueous"
-            " activities but the case declares no aqueous chemistry.  Add to"
-            " constant/thermoPhysPropDict:\n"
-            "    equilibrium { aqueous { activityModel { model davies; } } }\n"
-            "No default is applied.");
+    //  A case that declares no aqueous activity model was refused by the
+    //  contract (`needs aqueousActivityModel`).
     // The package owns the engine; this unit borrows it.
     const electrolyte::SpeciationSolver& solver = thermo.speciator();
     electrolyte::readExchange(wrap, in, solver, verbosity);
@@ -351,6 +349,44 @@ int IonExchanger::solve(const DictPtr& dict,
     }
 
     return 0;
+}
+
+//  WHAT THE SOFTENER ACCEPTS (DEV.md 4c C188 item 5).  The four refusals its
+//  solve wrote until slice B -- a feed with no aqueous carrier, a component
+//  the bridge does not take to one catalogued ion, a feed with no ion, a
+//  case with no aqueous activity model -- are this declaration; the
+//  conditions are the same.  It offers no pass-through: the speciation and
+//  the exchange equilibrium are written on the whole water analysis, and a
+//  foreign component's effect on them is not something it can set aside.
+UnitAcceptance IonExchanger::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.solvent.aqueousRequired = true;
+    a.solvent.why = "a softener exchanges the ions of an AQUEOUS solution: the"
+        " speciation and the resin equilibrium are written on molalities in"
+        " the aqueous carrier.";
+    a.solvent.remedy = "carry the aqueous solvent (water unless the case"
+        " declares another) in the feed.";
+    a.needs.push_back({ UnitAcceptance::Capability::aqueousActivityModel,
+        "The speciation and the exchange equilibrium are written on aqueous"
+        " activities, and choosing their model is the case's: no default is"
+        " applied.",
+        "add to constant/thermoPhysPropDict\n"
+        "        equilibrium { aqueous { activityModel { model davies; } } }" });
+    a.models.rule = UnitAcceptance::ModelsRule::aqueousSolventAndIons;
+    a.models.sentence = "the aqueous solvent and the IONS of a water analysis"
+        " (Ca, Mg, Na, K, Cl, SO4, HCO3, ...) -- every other component must"
+        " cross its declared component -> species bridge (`aqueousMapping`)"
+        " to ONE aqueous species with a record in the species catalogue";
+    a.models.why = "the speciation and the resin equilibrium are written ion by"
+        " ion; a component that is not one ion has no place in either.";
+    a.models.remedy = "feed the master IONS of the water analysis, each with"
+        " its `aqueousMapping`, not a salt or a neutral molecule.";
+    a.models.atLeastOne = true;
+    a.models.noneWhy = "A softener needs a water analysis to soften.  REMEDY:"
+        " feed the water's ions.";
+    return a;
 }
 
 } // namespace Choupo

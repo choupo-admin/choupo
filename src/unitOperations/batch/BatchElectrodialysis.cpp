@@ -106,13 +106,12 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
             unitDict->subDict("solver")->lookupScalarOrDefault("verbosity",
                                                                verbosity_));
 
-    //  The aqueous carrier, from its ONE home (water unless declared).
+    //  The aqueous carrier, from its ONE home (water unless declared).  What
+    //  the rig ACCEPTS -- both tanks -- is its declared contract (C188 item 5,
+    //  `acceptance()`), judged on the initial holdup before anything is
+    //  built on it: `checkInitialTanks`, at the end of this file.
     iWater_ = thermo.findAqueousSolvent();
-    if (iWater_ >= Nc)
-        throw std::runtime_error(who + ": the aqueous solvent '"
-            + thermo.aqueousSolventName() + "' is not a component."
-            "  Electrodialysis needs an aqueous carrier; the molality closure"
-            " and the conductivity are both built on it.");
+    checkInitialTanks(unitDict, thermo, who);
 
     auto op = unitDict->subDict("operation");
 
@@ -263,16 +262,17 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
     }
 
     // ---- the case's aqueous activity model, never this unit's -------------
+    //  The rig needs aqueous activities (the Nernst membrane potential is a
+    //  function of them), and a case that declares no aqueous chemistry was
+    //  refused above by the contract's `needs aqueousActivityModel` -- the
+    //  same sentence the steady stack and the softener write, from the one
+    //  function that writes it (`acceptanceFindings`).  Until C188 slice B
+    //  this unit wrote its own copy here, two lines from the read it guards;
+    //  the condition, the block it names and the absence of any default are
+    //  unchanged.  What remains below is the read: the model the case
+    //  declared, built once for the whole campaign (the rig is isothermal,
+    //  so its activities move only with composition).
     const auto& aqChem = thermo.aqueousChemistry();
-    if (!aqChem.declared || aqChem.activityModel.empty())
-        throw std::runtime_error(who + " refused: this rig needs aqueous"
-            " activities (the Nernst membrane potential is a function of"
-            " them) but the case declares no aqueous chemistry.  Add to"
-            " constant/thermoPhysPropDict:\n"
-            "    equilibrium { aqueous { activityModel { model davies; } } }\n"
-            "(independent of `formulation` -- a rig that computes no phase"
-            " equilibrium still HAS an aqueous solution).  No default is"
-            " applied.");
     act_ = electrolyte::AqueousActivity::New(aqChem.activityModel);
 
     // ---- the two tanks, from 0/internalStates/<unit> ----------------------
@@ -966,6 +966,72 @@ std::string BatchElectrodialysis::energyLedgerGap() const
            " are likewise unmodelled shaft work.  The MATERIAL balance is"
            " exact (the rig is closed); the campaign energy balance is"
            " UNAVAILABLE until the rig is given a thermal boundary.";
+}
+
+// ---------------------------------------------------------------------------
+//  WHAT THE RIG ACCEPTS (DEV.md 4c C188 item 5)
+// ---------------------------------------------------------------------------
+//  The refusals this unit and its channel builder wrote at initialise until
+//  slice B -- no aqueous carrier, a component that is not one catalogued
+//  ion, a tank with no ion, no aqueous activity model -- are this
+//  declaration, the same contract the steady stack declares (no
+//  pass-through: a batch rig has no outlet to send one to).  NOT moved: "the
+//  diluate carries N cation(s) and M anion(s)", which is read off the built
+//  channel and is about the DILUATE tank alone, while a contract applies to
+//  every tank; a per-port contract would host it.
+UnitAcceptance BatchElectrodialysis::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.solvent.aqueousRequired = true;
+    a.solvent.why = "electrodialysis needs an aqueous carrier: the molality"
+        " closure and the conductivity are both built on it.";
+    a.solvent.remedy = "carry the aqueous solvent (water unless the case"
+        " declares another) in BOTH tanks.";
+    a.needs.push_back({ UnitAcceptance::Capability::aqueousActivityModel,
+        "The Nernst membrane potential is a function of the aqueous"
+        " activities, and choosing their model is the case's: no default is"
+        " applied.",
+        "add to constant/thermoPhysPropDict\n"
+        "        equilibrium { aqueous { activityModel { model davies; } } }\n"
+        "    (independent of `formulation` -- a rig that computes no phase"
+        " equilibrium still HAS an aqueous solution)." });
+    a.models.rule = UnitAcceptance::ModelsRule::aqueousSolventAndIons;
+    a.models.sentence = "the aqueous solvent and the IONS -- every other"
+        " component must cross its declared component -> species bridge"
+        " (`aqueousMapping`) to ONE aqueous species with a record in the"
+        " species catalogue";
+    a.models.why = "the rig's transport is written ion by ion: a component that"
+        " is not one ion has no charge, no diffusivity and no share of the"
+        " current.";
+    a.models.remedy = "charge the tanks with IONS (Na, Cl, ...), not a salt or"
+        " a neutral molecule, each with its `aqueousMapping`.";
+    a.models.atLeastOne = true;
+    a.models.noneWhy = "A tank with no ion carries no current -- nothing to"
+        " transport.  REMEDY: charge the tank with its ions.";
+    return a;
+}
+
+//  The contract applied to both tanks of the initial holdup.  A missing
+//  `concentrate {}` block is not judged here: initialise refuses it by name
+//  with the grammar to write.
+void BatchElectrodialysis::checkInitialTanks(const DictPtr&       unitDict,
+                                             const ThermoPackage& thermo,
+                                             const std::string&   who) const
+{
+    const auto init = unitDict->subDict("initial");
+    for (const std::string tank : { "diluate", "concentrate" })
+    {
+        if (tank == "concentrate" && !init->found("concentrate")) continue;
+        const DictPtr td = (tank == "diluate") ? init : init->subDict(tank);
+        AcceptanceInlet in;
+        in.streamName = tank + " tank";
+        in.T  = init->lookupScalar("T");
+        in.P  = init->lookupScalar("P");
+        in.z  = readComposition(td, thermo, who + " " + tank);
+        in.vf = 0.0;
+        checkAcceptance(acceptance(), type(), in, thermo, who);
+    }
 }
 
 } // namespace Choupo

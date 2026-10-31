@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """check_unit_acceptance -- what a unit accepts is a DECLARATION, checked by
 ONE function, before the solve on every authored inlet and at the solve on
-the stream a unit is handed (DEV.md 4c C188 item 5, slice A; the contract is
+the stream a unit is handed (DEV.md 4c C188 item 5, slices A and B; the contract is
 docs/design/what-a-unit-accepts.md).
 
 THE CONTRACT.  `UnitOperation::acceptance()` returns a `UnitAcceptance`
@@ -66,10 +66,71 @@ long tails elided):
         (a) rotating/Pump.cpp still writes acceptance refusal text
             ['not a liquid'] -- it belongs in UnitAcceptance.cpp
 
-WHAT IS NOT CHECKED.  Any unit beyond the two migrated ones (the default
-contract is asserted on one, mixer); the pass-through declaration (not built);
-a recycle that brings a new component into a migrated unit after the first
-pass (no witness).
+SLICE B (2026-10-31; docs/design/what-a-unit-accepts.md section 10) adds
+electrodialysisStack, ionExchanger, crystalliser (judged on its COMBINED
+feed), and the choupoBatch vessels batchElectrodialysis and batchDiafilter
+(choupoBatch has no pre-solve seam: a vessel judges its initial holdup in
+its own initialise), the `needs` capability word `aqueousActivityModel`,
+and `passThrough` on the ED stack (witness ed10_passthrough_benzene).
+
+  (f) SOURCE: the five slice-B units carry none of their old refusal
+      phrases, call checkAcceptance (the rig through checkInitialTanks),
+      define ::acceptance() with `declared = true`; UnitAcceptance.cpp
+      writes the new heads; the stack calls readPassThrough and
+      recordPassThrough.
+  (g) AN AUTHORED FEED IS REFUSED BEFORE ANY UNIT RUNS: ed10 without its
+      passThrough block (benzene, naming the bridge's own sentence and the
+      passThrough remedy); ed01 with no aqueous chemistry; membrane08 with
+      Ca's bridge removed (the softener); crystalliser01 with no sucrose.
+  (h) A PRODUCED diluate carrying benzene is refused AT THE SOLVE by a second
+      stack that declares no pass-through (the flowsheet banner printed).
+  (i) THE PASS-THROUGH: ed10 runs; the declaredApproximation is in the run
+      output and once in converged/problemDivergence; benzene 0.01 kmol/h in
+      the diluate feed is 0.01 kmol/h in the diluate and 0 in the
+      concentrate; the stack's mass row closes at 100.0000 % and the carbon
+      row carries benzene's 0.06 kmol C/h at 100.0000 %; and every stack KPI
+      equals the benzene-free twin's EXACTLY (benzene entered no equation).
+  (j) EACH PASS-THROUGH REFUSAL FIRES BY NAME before any unit runs: a fate
+      not offered, no fate, no reason, a modelled ion (Na), the solvent, a
+      name that is not a component, the block on a unit that offers none
+      (the rectifier, an unmigrated electricLoad).
+  (k) `choupoBatch --describe-units` lists the vessels' contracts, and the
+      rig with no aqueous chemistry refuses through its contract.
+  (d) also holds the three new steady contracts.
+
+SABOTAGES, slice B (by hand, 2026-10-31, each restored and rebuilt):
+  S4  `recordPassThrough(passThrough, locus);` commented out in
+      ElectrodialysisStack.cpp.  FAILED:
+        (f) ElectrodialysisStack.cpp does not call recordPassThrough(
+        (i) the pass-through is not on the divergence channel (0 mention(s)
+            of 'pass benzene through to the diluate outlet')
+        (i) converged/problemDivergence does not record the pass-through
+  S5  benzene VANISHES instead of passing (both outlet flows of the
+      pass-through set to 0 in the stack).  FAILED:
+        (h) a produced diluate carrying benzene was accepted by a stack that
+            declares no pass-through
+        (i) benzene was not carried unchanged to the diluate: fed 0.01,
+            diluate 0.0, concentrate 0.0 kmol/h
+        (i) the stack's mass balance does not close: 'edStack,653.6157,
+            652.8346,-0.7811,99.8805,'
+        (i) the carbon balance does not carry benzene's 0.06 kmol C/h:
+            'C,6.000000e-02,0.000000e+00,-6.000000e-02,0.0000'
+      (the (h) line is the second stack being fed NO benzene, so it had
+      nothing to refuse -- the sabotage reaches it too.)
+  S6  the pre-solve pass ignores the declaration (`nullptr` handed to
+      acceptanceFindings in place of the pass-through).  FAILED:
+        (h) the pre-solve pass refused a PRODUCED stream  [it refused the
+            first stack's AUTHORED inlet -- the arm's wording names the
+            symptom it expects, not this one]
+        (i) ed10 did not run (exit 2): ... passThrough { <component> { fate
+            diluate | concentrate; }  reason "..."; }
+
+WHAT IS NOT CHECKED.  The pass-through's ENERGY balance: ed10's energy
+report is UNAVAILABLE for want of an enthalpy datum on Na and Cl (ed01's own
+records), so only the priceable part could be read (the water+benzene
+enthalpy flow is the same in and out); the batch diafilter's refusal fired
+(source arm only); a recycle that brings a new component into a migrated
+unit after the first pass (no witness).
 
 Exit 1 naming the arm that failed.
 """
@@ -254,6 +315,20 @@ def arm_d(fail, ok):
     if (not m or m["declared"] or m["phases"]["accepted"] != ["liquid", "vapour"]
             or m["models"]["rule"] != "everyComponent"):
         fail.append(f"(d) mixer does not carry the default contract: {m}")
+    e, x, c = units.get("electrodialysisStack"), units.get("ionExchanger"), \
+        units.get("crystalliser")
+    if (not e or not e["declared"] or e["models"]["rule"] != "aqueousSolventAndIons"
+            or not e["models"].get("atLeastOne")
+            or [n["capability"] for n in e["needs"]] != ["aqueousActivityModel"]
+            or e["passThrough"]["fates"] != ["diluate", "concentrate"]):
+        fail.append(f"(d) electrodialysisStack's contract is wrong: {e}")
+    if (not x or not x["declared"] or x["models"]["rule"] != "aqueousSolventAndIons"
+            or x["passThrough"]["fates"] != []):
+        fail.append(f"(d) ionExchanger's contract is wrong: {x}")
+    if (not c or not c["declared"] or c["appliesTo"] != "combinedFeed"
+            or [r["id"] for r in c["refusesAlso"]]
+            != ["crystallisableSolute", "volatileCarrier"]):
+        fail.append(f"(d) crystalliser's contract is wrong: {c}")
     if not any(f.startswith("(d)") for f in fail):
         nd = sum(1 for u in units.values() if u["declared"])
         ok.append(f"--describe-units lists {len(units)} types, {nd} declared")
@@ -269,6 +344,334 @@ def arm_e(fail, ok):
         ok.append("check_membrane_feed_scope and check_pump_liquid_inlet pass")
 
 
+# ===========================================================================
+#  SLICE B (2026-10-31): the ED stack, the ion exchanger, the crystalliser,
+#  the two batch vessels, and `passThrough` on the stack.
+# ===========================================================================
+BATCH = ROOT / "build" / "linux64Gcc" / "choupoBatch"
+ED01 = ROOT / "tutorials" / "steady" / "electrodialysis" / "ed01_nacl_desalination"
+ED10 = ROOT / "tutorials" / "steady" / "electrodialysis" / "ed10_passthrough_benzene"
+SOFT = ROOT / "tutorials" / "steady" / "membranes" / "membrane08_softened_scaling"
+SUGAR = ROOT / "tutorials" / "steady" / "crystallisation" / "crystalliser01_sugar"
+EDB = ROOT / "tutorials" / "batch" / "electrodialysis" / "edbatch01_constant_current"
+PT_REQ = "pass benzene through to the diluate outlet"
+
+#  (unit source, class, old refusal phrases that must be GONE from it)
+MIGRATED_B = (
+    ("electrochem/ElectrodialysisStack.cpp", "ElectrodialysisStack",
+     ["declares no aqueous chemistry", "needs aqueous activities"]),
+    ("separation/IonExchanger.cpp", "IonExchanger",
+     ["declares no aqueous chemistry", "no row in ions.dat",
+      "carries no ions", "feed has no water"]),
+    ("crystallisation/Crystalliser.cpp", "Crystalliser", []),
+    ("batch/BatchElectrodialysis.cpp", "BatchElectrodialysis",
+     ["declares no aqueous chemistry", "is not a component"]),
+    ("batch/BatchDiafilter.cpp", "BatchDiafilter", ["is not a component"]),
+)
+
+
+def run_bin(binary, args, case=None):
+    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+    cmd = [str(binary)] + args + ([str(case)] if case else [])
+    r = subprocess.run(cmd, capture_output=True, text=True, timeout=600, env=env)
+    return r.returncode, r.stdout + r.stderr
+
+
+def edit(path, old, new):
+    t = path.read_text()
+    if old not in t:
+        raise AssertionError(f"probe anchor missing in {path.name}: {old!r}")
+    path.write_text(t.replace(old, new, 1))
+
+
+def strip_block(path, head):
+    """Delete the brace block that starts at `head` (brace-matched)."""
+    t = path.read_text()
+    i = t.index(head)
+    j = t.index("{", i)
+    depth = 0
+    for k in range(j, len(t)):
+        if t[k] == "{":
+            depth += 1
+        elif t[k] == "}":
+            depth -= 1
+            if depth == 0:
+                path.write_text(t[:i] + t[k + 1:])
+                return
+    raise AssertionError(f"unbalanced block {head!r} in {path}")
+
+
+def arm_f(fail, ok):
+    """(f) source: every slice-B unit refuses through the contract."""
+    for rel, cls, gone in MIGRATED_B:
+        code = strip_comments((SRC / rel).read_text())
+        left = [h for h in gone if h in code]
+        if left:
+            fail.append(f"(f) {rel} still writes its old refusal text {left} "
+                        "-- it belongs in its contract (UnitAcceptance.cpp)")
+        if "checkAcceptance(" not in code and "checkInitialTanks(" not in code:
+            fail.append(f"(f) {rel} does not call checkAcceptance(")
+        m = re.search(cls + r"::acceptance\(\)\s*const\s*\{(.*?)\n\}", code, re.S)
+        if not m or "declared = true" not in m.group(1):
+            fail.append(f"(f) {rel} defines no {cls}::acceptance() declaring itself")
+    core = strip_comments((SRC / "UnitAcceptance.cpp").read_text())
+    for h in ("needs aqueous activities", "carries none of the components",
+              "offers NO pass-through", "is the aqueous solvent",
+              "is a component this unit", "offered by this unit", "no `reason`",
+              "declaredApproximation"):
+        if h not in core:
+            fail.append(f"(f) UnitAcceptance.cpp does not write the head {h!r}")
+    ed = strip_comments((SRC / "electrochem/ElectrodialysisStack.cpp").read_text())
+    for call in ("readPassThrough(", "recordPassThrough("):
+        if call not in ed:
+            fail.append(f"(f) ElectrodialysisStack.cpp does not call {call}")
+    if not any(f.startswith("(f)") for f in fail):
+        ok.append("the five slice-B units refuse through their contracts (source)")
+
+
+def presolve(tag, case, words, fail, ok, arm):
+    rc, out = run([], case)
+    missing = [x for x in [PRESOLVE] + words if x not in out]
+    if rc == 0:
+        fail.append(f"({arm}) {tag}: ran to exit 0")
+    elif PRESOLVE not in out:
+        fail.append(f"({arm}) {tag}: the refusal came from the unit's solve, not "
+                    "the pre-solve pass:\n      " + out[-500:])
+    elif missing:
+        fail.append(f"({arm}) {tag}: refused before the solve but without {missing}:"
+                    "\n      " + out[-700:])
+    elif BANNER in out:
+        fail.append(f"({arm}) {tag}: the '{BANNER}' banner printed")
+    else:
+        ok.append(f"{tag} refused before any unit ran")
+
+
+def arm_g(tmp, fail, ok):
+    """(g) the migrated steady units refuse an authored feed before the solve."""
+    # ED: benzene with NO pass-through declared.
+    w = copy_case(ED10, Path(tmp) / "accED_benzene")
+    strip_block(w / "system" / "flowsheetDict", "        passThrough")
+    presolve("benzene-into-ED", w, ["'benzene'", "does not model",
+             "declares no aqueous mapping", "passThrough { <component>"],
+             fail, ok, "g")
+    # ED: no aqueous activity model.
+    w = copy_case(ED01, Path(tmp) / "accED_noAqueous")
+    strip_block(w / "constant" / "thermoPhysPropDict", "    aqueous")
+    presolve("ED-without-aqueous-chemistry", w,
+             ["the case declares no aqueous chemistry", "`aqueousActivityModel`"],
+             fail, ok, "g")
+    # ion exchanger: Ca's bridge removed (the bridge's own sentence travels).
+    w = copy_case(SOFT, Path(tmp) / "accIX_bridge")
+    ca = w / "constant" / "components" / "Ca.dat"
+    t = ca.read_text()
+    u = re.sub(r"(?ms)^aqueousMapping\s*\([^)]*\)\s*;\s*$", "", t, count=1)
+    if u == t:
+        u = re.sub(r"(?m)^dissociatesTo.*$", "", t, count=1)
+    if u == t:
+        fail.append("(g) ionExchanger: Ca.dat declares no bridge to remove")
+    else:
+        ca.write_text(u)
+        presolve("unbridged-Ca-into-softener", w,
+                 ["ionExchanger 'softener'", "'Ca'", "declares no aqueous mapping"],
+                 fail, ok, "g")
+    # crystalliser: a sugar feed with no sugar.
+    w = copy_case(SUGAR, Path(tmp) / "accCryst_noSolute")
+    edit(w / "0" / "feed", "    sucrose    15 kmol/h;\n", "")
+    presolve("solute-free-crystalliser-feed", w,
+             ["crystalliser", "carries no crystallising solute"], fail, ok, "g")
+
+
+def arm_h(tmp, fail, ok):
+    """(h) a PRODUCED stream carrying an undeclared component is refused by the
+    consuming stack at its own solve: ed10 with a second stack downstream that
+    declares no pass-through."""
+    w = copy_case(ED10, Path(tmp) / "accED_produced")
+    fd = w / "system" / "flowsheetDict"
+    t = fd.read_text()
+    second = """    {
+        name        edStack2;
+        type        electrodialysisStack;
+        inputs      ( diluate  concentrate );
+        outputs     ( diluate2  concentrate2 );
+        operation
+        {
+            N_cellpairs       100;
+            current           1.0;
+            xi                0.9;
+            membraneArea      0.2 m2;
+            channelThickness  0.5 mm;
+            channelLength     0.4 m;
+            linearVelocity    0.05 m/s;
+            E_electrodes      1.5;
+            membrane          CMX_AMX;
+        }
+    }
+    {
+        name        rectifier;"""
+    if "    {\n        name        rectifier;" not in t:
+        fail.append("(h) could not build the produced-stream witness (ed10 moved)")
+        return
+    fd.write_text(t.replace("    {\n        name        rectifier;", second, 1))
+    shutil.copy(w / "0" / "diluate", w / "0" / "diluate2")
+    shutil.copy(w / "0" / "concentrate", w / "0" / "concentrate2")
+    rc, out = run([], w)
+    if rc == 0:
+        fail.append("(h) a produced diluate carrying benzene was accepted by a"
+                    " stack that declares no pass-through")
+    elif PRESOLVE in out:
+        fail.append("(h) the pre-solve pass refused a PRODUCED stream")
+    elif BANNER not in out:
+        fail.append(f"(h) the run stopped before the flowsheet started (exit {rc}):"
+                    "\n      " + out[-500:])
+    elif "edStack2" not in out or "'benzene'" not in out or "does not model" not in out:
+        fail.append(f"(h) refused (exit {rc}) but not by edStack2's contract:"
+                    "\n      " + out[-500:])
+    else:
+        ok.append("a produced diluate carrying benzene is refused by the next stack at its solve")
+
+
+def num(tag, text):
+    m = re.search(tag, text)
+    return float(m.group(1)) if m else None
+
+
+def arm_i(tmp, fail, ok):
+    """(i) THE PASS-THROUGH: ed10 runs, records the approximation once, carries
+    benzene unchanged to the diluate, closes its balances, and reproduces
+    ed01's stack numbers (benzene entered no equation)."""
+    w = copy_case(ED10, Path(tmp) / "accED_witness")
+    rc, out = run([], w)
+    if rc != 0:
+        fail.append(f"(i) ed10 did not run (exit {rc}):\n      " + out[-600:])
+        return
+    if out.count(PT_REQ) < 2:          # the banner + the result JSON
+        fail.append(f"(i) the pass-through is not on the divergence channel "
+                    f"({out.count(PT_REQ)} mention(s) of {PT_REQ!r})")
+    pd = w / "converged" / "problemDivergence"
+    if not pd.exists() or PT_REQ not in pd.read_text() \
+            or "declaredApproximation" not in pd.read_text():
+        fail.append("(i) converged/problemDivergence does not record the pass-through")
+    elif pd.read_text().count(PT_REQ) != 1:
+        fail.append("(i) converged/problemDivergence records the pass-through "
+                    f"{pd.read_text().count(PT_REQ)} times, not once")
+    # benzene: in == out, and all of it in the diluate.
+    def benz(stream):
+        f = w / "converged" / stream
+        if not f.exists():
+            return None
+        m = re.search(r"^\s*benzene\s+(\S+)\s+kmol/h;", f.read_text(), re.M)
+        return float(m.group(1)) if m else 0.0
+    bin_, bout, bcon = benz("diluateFeed"), benz("diluate"), benz("concentrate")
+    if bin_ is None or bout is None:
+        fail.append(f"(i) converged/ lacks the diluate streams ({bin_}, {bout})")
+    elif abs(bin_ - 0.01) > 1e-9 or abs(bout - bin_) > 1e-9 * max(1.0, bin_) \
+            or (bcon or 0.0) != 0.0:
+        fail.append(f"(i) benzene was not carried unchanged to the diluate: fed "
+                    f"{bin_}, diluate {bout}, concentrate {bcon} kmol/h")
+    # the balances the run closes: the stack's mass row and the carbon atoms
+    # (benzene's only element no other component carries).
+    mb = w / "reports" / "balances" / "massBalance_byUnit.csv"
+    eb = w / "reports" / "balances" / "elementBalance.csv"
+    row = next((l for l in (mb.read_text().splitlines() if mb.exists() else [])
+                if l.startswith("edStack,")), "")
+    if row.split(",")[4:5] != ["100.0000"]:
+        fail.append(f"(i) the stack's mass balance does not close: {row!r}")
+    crow = next((l for l in (eb.read_text().splitlines() if eb.exists() else [])
+                 if l.startswith("C,")), "")
+    cells = crow.split(",")
+    if len(cells) < 5 or cells[4] != "100.0000" or abs(float(cells[1]) - 0.06) > 1e-9:
+        fail.append(f"(i) the carbon balance does not carry benzene's 0.06 kmol C/h: {crow!r}")
+    # benzene moves no stack number: the same case without benzene.
+    tw = copy_case(ED10, Path(tmp) / "accED_twin")
+    for s in ("diluateFeed", "diluate"):
+        edit(tw / "0" / s, "    benzene    0.01 kmol/h;\n", "")
+    rc2, out2 = run([], tw)
+    if rc2 != 0:
+        fail.append(f"(i) the benzene-free twin did not run (exit {rc2})")
+    else:
+        for key in ("I", "U", "demin_ratio", "i_lim", "E_mem_pair", "R_pair",
+                    "specific_energy_kWh_per_m3"):
+            pat = r'"' + re.escape(key) + r'"\s*:\s*([-0-9.eE+]+)'
+            g, v = num(pat, out2), num(pat, out)
+            if g is None or v is None or v != g:
+                fail.append(f"(i) edStack {key} = {v} with benzene against {g}"
+                            " without: benzene moved a number it should not reach")
+    if not any(f.startswith("(i)") for f in fail):
+        ok.append(f"ed10: benzene {bin_} kmol/h carried to the diluate unchanged, "
+                  "recorded once as a declaredApproximation, mass and carbon "
+                  "balances closed, every stack KPI equal to the benzene-free twin's")
+
+
+def arm_j(tmp, fail, ok):
+    """(j) each pass-through refusal fires, by name, before any unit runs."""
+    probes = (
+        ("fate-not-offered", lambda w: edit(w / "system" / "flowsheetDict",
+            "benzene { fate diluate; }", "benzene { fate permeate; }"),
+         "fate 'permeate' is not offered"),
+        ("no-fate", lambda w: edit(w / "system" / "flowsheetDict",
+            "benzene { fate diluate; }", "benzene { }"),
+         "no `fate`"),
+        ("no-reason", lambda w: edit(w / "system" / "flowsheetDict",
+            '            reason  "trace organic', '            //reason  "trace organic'),
+         "no `reason`"),
+        ("modelled-ion", lambda w: edit(w / "system" / "flowsheetDict",
+            "benzene { fate diluate; }", "benzene { fate diluate; }\n            Na { fate diluate; }"),
+         "'Na' is a component this unit MODELS"),
+        ("the-solvent", lambda w: edit(w / "system" / "flowsheetDict",
+            "benzene { fate diluate; }", "benzene { fate diluate; }\n            water { fate diluate; }"),
+         "'water' is the aqueous solvent"),
+        ("not-a-component", lambda w: edit(w / "system" / "flowsheetDict",
+            "benzene { fate diluate; }", "benzene { fate diluate; }\n            toluene { fate diluate; }"),
+         "'toluene' is not a component of this package"),
+        ("unit-offers-none", lambda w: edit(w / "system" / "flowsheetDict",
+            "        operation   { eta 1.0; }",
+            "        operation   { eta 1.0; }\n        passThrough { benzene { fate diluate; } reason \"x\"; }"),
+         "electricLoad 'rectifier' (type electricLoad) `passThrough`: this unit offers NO pass-through"),
+    )
+    for tag, mutate, words in probes:
+        w = copy_case(ED10, Path(tmp) / ("accPT_" + tag))
+        try:
+            mutate(w)
+        except AssertionError as e:
+            fail.append(f"(j) {tag}: {e}")
+            continue
+        presolve("passThrough " + tag, w, [words], fail, ok, "j")
+
+
+def arm_k(tmp, fail, ok):
+    """(k) choupoBatch: the vessels' contracts, and the initialise check."""
+    if not BATCH.exists():
+        fail.append(f"(k) no {BATCH} -- build the tree first")
+        return
+    rc, out = run_bin(BATCH, ["--describe-units"])
+    lines = out.splitlines()
+    start = next((i for i, l in enumerate(lines) if l == "{"), None)
+    try:
+        units = {u["type"]: u for u in
+                 json.loads("\n".join(lines[start:]))["units"]}
+    except (TypeError, ValueError, KeyError) as e:
+        fail.append(f"(k) choupoBatch --describe-units is not the expected JSON ({e})")
+        return
+    b, d = units.get("batchElectrodialysis"), units.get("batchDiafilter")
+    if (not b or not b["declared"] or b["models"]["rule"] != "aqueousSolventAndIons"
+            or [n["capability"] for n in b["needs"]] != ["aqueousActivityModel"]):
+        fail.append(f"(k) batchElectrodialysis's contract is wrong: {b}")
+    if not d or not d["declared"] or not d["solvent"]["aqueousRequired"]:
+        fail.append(f"(k) batchDiafilter's contract is wrong: {d}")
+    w = copy_case(EDB, Path(tmp) / "accEDB_noAqueous")
+    strip_block(w / "constant" / "thermoPhysPropDict", "    aqueous")
+    rc, out = run_bin(BATCH, [], w)
+    if rc == 0:
+        fail.append("(k) a batch ED rig with no aqueous chemistry ran to exit 0")
+    elif "`aqueousActivityModel`" not in out or "batchElectrodialysis 'rig'" not in out:
+        fail.append(f"(k) the batch rig refused (exit {rc}) but not through its"
+                    " contract:\n      " + out[-500:])
+    if not any(f.startswith("(k)") for f in fail):
+        nd = sum(1 for u in units.values() if u["declared"])
+        ok.append(f"choupoBatch --describe-units lists {len(units)} vessel types, "
+                  f"{nd} declared; the rig refuses through its contract at initialise")
+
+
 def main() -> int:
     if not BIN.exists():
         print(f"check_unit_acceptance: FAILED\n  no {BIN} -- build the tree "
@@ -276,9 +679,15 @@ def main() -> int:
         return 1
     fail, ok = [], []
     arm_a(fail, ok)
+    arm_f(fail, ok)
     with tempfile.TemporaryDirectory(prefix="unitAcceptance_") as tmp:
         arm_b(tmp, fail, ok)
         arm_c(tmp, fail, ok)
+        arm_g(tmp, fail, ok)
+        arm_h(tmp, fail, ok)
+        arm_i(tmp, fail, ok)
+        arm_j(tmp, fail, ok)
+        arm_k(tmp, fail, ok)
     arm_d(fail, ok)
     arm_e(fail, ok)
     if fail:
@@ -286,10 +695,14 @@ def main() -> int:
         for f in fail:
             print("  " + f)
         return 1
-    print("check_unit_acceptance: OK -- " + "; ".join(ok) + ".  Scope: the two "
-          "migrated units (spiralWoundModule, pump) and the default on mixer; "
-          "NOT checked: any other unit's contract, pass-through (not built), a "
-          "recycle bringing a new component into a migrated unit")
+    print("check_unit_acceptance: OK -- " + "; ".join(ok) + ".  Scope: the "
+          "seven migrated units (spiralWoundModule, pump, electrodialysisStack, "
+          "ionExchanger, crystalliser; batchElectrodialysis, batchDiafilter), "
+          "the default on mixer, and passThrough on the ED stack; NOT checked: "
+          "the energy balance of a pass-through on a case whose package prices "
+          "it on a different phase than it carries, the batch diafilter's "
+          "refusal fired, a recycle bringing a new component into a migrated "
+          "unit")
     return 0
 
 
