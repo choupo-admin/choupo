@@ -1676,8 +1676,19 @@ accepts today, and that is a policy call.
 > stated bound).  Open, named: the dominant-solvent criterion of the
 > mixed-solvent composite (no source in the tree states one); EDCell's
 > constant water MW; the props bench's own `aqueousProperties.solvent`.
-> Next: (5), the per-unit contract, on the design record
-> `docs/design/what-a-unit-accepts.md`.
+> (5) slice A DONE (fe9420e07): `UnitAcceptance` (data: accepted phases,
+> aqueous-solvent requirement, a CLOSED rule word for what the unit models,
+> pass-through fates, extra refusals) on `UnitOperation::acceptance()`;
+> ONE writer of acceptance refusals (`acceptanceFindings`, called by
+> `checkAcceptance`); spiralWoundModule and pump migrated (their refusals
+> moved, not changed); every AUTHORED inlet checked before any unit runs
+> (`Flowsheet::checkAuthoredInletAcceptance`, so `choupo-lint` reports it);
+> `choupoSolve --describe-units` prints every unit's contract (52 types, 3
+> declared).  Gate `check_unit_acceptance`.  Slice B: the ED stack, batch
+> ED, ion exchanger and crystalliser; the `requires` vocabulary;
+> `passThrough` on the ED stack with a witness; the generated GUI / F1 /
+> docs/ai sections from `--describe-units`; per-port contracts; the
+> recycle question of the design record's section 8.
 
 > **C187. WHAT THE 2026-10-31 AUDIT FOUND UNRECORDED (two independent
 > passes over the session transcript, 24-31 Oct; recorded by the architect

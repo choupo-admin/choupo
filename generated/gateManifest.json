@@ -1390,6 +1390,11 @@
       "exit": 0,
       "claim": "check_rated_tests: OK -- `ratedTest {}` and `ratedTests ( {..} )` with one test give byte-identical runs of membrane15/16/25; both forms on one record refuse; a hypothetical two-solute record prints each test on its own line with exactly the optional facts it declares and the inversion takes the MgSO4 test listed second (R_int = membrane25's to 1e-9); two MgSO4 tests refuse an unnamed request and `( fromRatedTest b )` reproduces test b alone to 1e-12; 7 record refusals and 7 inversion refusals fire by name; an undeclared value type, pressure meaning and permeate-flow basis are announced on membrane25 and not on a fully declared test; a gauge pressure is announced made absolute.  NOT CHECKED: any optional fact against a real data sheet (no shipped record declares one), two derived solutes in one unit, formula conversion.",
       "seconds": 0.5
+    },
+    "check_unit_acceptance": {
+      "exit": 0,
+      "claim": "check_unit_acceptance: OK -- the two units' refusals live in the contract (source); ethanol-in-RO refused before any unit ran; choupo-lint reports ethanol-in-RO; vapour-into-pump refused before any unit ran; choupo-lint reports vapour-into-pump; a produced vapour is refused by the pump at its solve; --describe-units lists 52 types, 3 declared; check_membrane_feed_scope and check_pump_liquid_inlet pass.  Scope: the two migrated units (spiralWoundModule, pump) and the default on mixer; NOT checked: any other unit's contract, pass-through (not built), a recycle bringing a new component into a migrated unit",
+      "seconds": 0.2
     }
   }
 }

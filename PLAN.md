@@ -18,7 +18,7 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 
 | status | what | ref |
 |---|---|---|
-| todo | C188 item 5: the per-unit acceptance contract, on its design record | C188 |
+| todo | C188 item 5 slice B: ED stack, batch ED, ion exchanger, crystalliser onto the contract; passThrough on the ED stack; generated docs from --describe-units | C188 |
 | todo | C189 slices 3-6: six illustrative classes, import/QA to data/local, shortlist with no default score, docs | C189 |
 | todo | Curation: the records' A_w gives 2.16x (NF270-4040) and 2.08x (SW30HR-380) the sheets' permeate at their rated tests | C189 |
 | todo | bin/choupo-import cannot seal a case that reads a feed-spacer record (FeedSpacerRegistry builtins not installed) | C189 |
@@ -95,6 +95,7 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 | done | C186 item 6: an unconverged bubble point is not a T-x-y point (plot tolerance in one home, announced) | C186, b98ddc97e |
 | done | C188 defects 1-4: RO swallowed a volatile solute; a pump pumped vapour; the aqueous solvent has one home; activity models declare their domain | C188, 6348b66e3 |
 | done | C178 integrated; lesson citations re-pointed by content (C185/C186 had moved them); Node 18 `File` for the GUI tests | C178, 421bc12e0 |
+| done | C188 item 5 slice A: the acceptance contract, one writer of refusals, RO and pump migrated, authored inlets checked before the solve, --describe-units | C188, fe9420e07 |
 | done | Rated pressures read as gauge on NF270-4040 and SW30HR-380; membrane25 re-recorded (14 rows, one stated cause) | C189, 320bdc7a8 |
 | done | C189 slice 2: several rated tests per module, each as the sheet states it (ratedTests, fromRatedTest <id>) | C189, 10dc43173 |
 | done | C189 slice 1: a datasheet's observed rejection inverted to the intrinsic one (fromRatedTest, membrane25) | C189, 7c186a77a |
