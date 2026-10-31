@@ -4451,6 +4451,21 @@ PYEOF
     fi
     rm -f /tmp/pumpinlet.$$
 
+    # unit-acceptance gate (2026-10-31, DEV.md 4c C188 item 5, slice A).  What
+    # a unit accepts is a DECLARATION (UnitOperation::acceptance()), refused by
+    # ONE function: before the solve on every authored inlet (and in
+    # choupo-lint), at the solve on a produced one.  The RO module and the
+    # pump are migrated onto it; --describe-units prints every contract.
+    if gate_exec "$ROOT/bin/curate/check_unit_acceptance.py" > /tmp/unitacc.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "unit-acceptance" "$(grep -m1 '^check_unit_acceptance: OK' /tmp/unitacc.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_unit_acceptance.py)\n" "unit-acceptance"
+        cat /tmp/unitacc.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/unitacc.$$
+
     # spiral-array gate (2026-10-24, DEV.md 4c C146).  One unit is one STAGE
     # (`vessels`, `elements`); the four standard sizes and the feed spacers
     # are RECORDS; d_h is Schock & Miquel's Eq. (17) and the spacer carries

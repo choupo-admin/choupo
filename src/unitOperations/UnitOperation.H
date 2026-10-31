@@ -55,6 +55,7 @@ Description
 #include "streams/ProcessStream.H"
 #include "result/UnitProfile.H"
 #include "result/ClosureVariable.H"
+#include "unitOperations/UnitAcceptance.H"
 
 #include <functional>
 #include <map>
@@ -234,6 +235,16 @@ public:
     //     Evaporator     → { 1 }      // input 1 is the heating-side stream
     //     DynamicCSTR    → { 1 }      // input 1 is the jacket stream
     virtual std::vector<std::size_t> utilityPorts() const { return {}; }
+
+    // ---- WHAT THIS UNIT ACCEPTS (DEV.md 4c C188 item 5) --------------------
+    //  The unit's DECLARATION of the inlet phases, solvent and components its
+    //  model is written for (unitOperations/UnitAcceptance.H;
+    //  docs/design/what-a-unit-accepts.md).  Read by the flowsheet's pre-solve
+    //  pass on every AUTHORED inlet, by the unit's own solve on the stream it
+    //  is handed (`checkAcceptance`, the one place such a refusal is written),
+    //  and by `choupoSolve --describe-units`.  Default: accepts every phase,
+    //  models every component -- an unmigrated unit behaves as before.
+    virtual UnitAcceptance acceptance() const { return {}; }
 
     // ---- Run-time selection (explicit registry) ----------------------------
     using Factory = std::function<std::unique_ptr<UnitOperation>()>;

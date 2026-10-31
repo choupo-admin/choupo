@@ -2835,9 +2835,8 @@ int Flowsheet::solve(const DictPtr& dict,
     //  inlet's phase may resolve it at its own (T, P, z) -- see
     //  `flashState::resolvedInletVaporFraction`.  Tears are produced, so
     //  they are not marked.  Nothing about the stream itself changes here.
-    //  (Moved above the lint seam 2026-10-05, C36 item 1, so that the
-    //  refusal below -- a fact about the DECLARATION -- is one `choupo-lint`
-    //  raises too; nothing between here and the first unit reads the flag.)
+    //  (Above the lint seam since C36 item 1, so the two refusals below --
+    //  facts about the DECLARATION -- are ones `choupo-lint` raises too.)
     {
         std::set<std::string> producedHere;
         for (const auto& fu : topology_)
@@ -2913,6 +2912,7 @@ int Flowsheet::solve(const DictPtr& dict,
             throw std::runtime_error(
                 flashState::undeterminedStreamsMessage(undetermined));
     }
+    checkAuthoredInletAcceptance(units, thermo, planFindings);   // C188: FlowsheetAcceptance.cpp
 
     // ---- choupo-lint: validate and stop (read-only, same seam) -----------
     //  Everything above this line reads the disk and composes in memory;

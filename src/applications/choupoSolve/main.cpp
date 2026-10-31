@@ -525,9 +525,7 @@ try
     PostProcessor   ::registerBuiltins();
     Report          ::registerBuiltins();
 
-    // Flags: `-init0` materialises 0/ instead of solving (arch step 2);
-    // `--force` lets it regenerate existing internal/outlet estimates;
-    // `--lint` validates the case and stops (read-only, never solves).
+    // Flags: the USAGE text below is their one list (and lines here are cited).
     static const char* USAGE =
         "Usage: choupoSolve [options] [case-directory]\n"
         "\n"
@@ -545,6 +543,7 @@ try
         "  --layout-draft    solve, then write a DRAFT system/layoutDict from the\n"
         "                    sized items (flow order, one area per sector); never\n"
         "                    overwrites without --force (bin/choupo-layout --draft)\n"
+        "  --describe-units  print every unit type's declared acceptance as JSON\n"
         "  --version, -V     print the banner (which carries version and commit)\n"
         "  --help, -h        this text\n";
 
@@ -563,6 +562,7 @@ try
         else if (arg == "-lint"  || arg == "--lint")  lintMode = true;
         else if (arg == "--manifest")                 manifestMode = true;
         else if (arg == "--layout-draft")             layoutDraftMode = true;
+        else if (arg == "--describe-units") { describeUnitsJson(std::cout); return 0; }  // C188 item 5
         //  A FLAG IS NOT A FILENAME.  The catch-all this replaces turned any
         //  unrecognised argument into a case directory, so `--lnt myCase`
         //  ran the SOLVE with the lint silently dropped, at exit 0.

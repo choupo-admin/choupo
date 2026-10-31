@@ -143,6 +143,9 @@ public:
     std::map<std::string, scalar>   kpis()            const override { return kpis_; }
     std::vector<ClosureVariable> closureVariables() const override { return closures_; }
     std::optional<UnitProfile>      profile()         const override { return profile_; }
+    //  An aqueous feed of solvent + declared nonvolatile solutes (DEV.md 4c
+    //  C188, defect 1 moved onto the contract in item 5).  The .cpp.
+    UnitAcceptance                  acceptance()      const override;
 
 private:
     inline static const std::string type_ = "spiralWoundModule";
