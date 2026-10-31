@@ -10,7 +10,7 @@ Last reviewed: 2026-10-31, after an audit of every request Vítor made from
 2026-10-24 to 2026-10-31 (two independent passes over the session transcript;
 24-25 Oct: nothing lost, 10 partial; 26-31 Oct: 3 lost, 8 partial), and after
 Vítor's rule 00 (CLAUDE.md): the architect takes every decision; only facts
-Vítor alone holds, and each push, wait on him.
+Vítor alone holds wait on him (push authorisation lifted the same evening).
 
 Status words: `todo` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
@@ -18,8 +18,10 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 
 | status | what | ref |
 |---|---|---|
-| running | Integrate C178 (with Vítor's three rulings) on top of the Node 18 fix to `method_tools.mjs`; then validate it in the site's WASM | C178 |
-| running | C185 item 7 (LHHW detailed balance), general choupo-59 on `claude/c185-lhhw-balance` | C185 |
+| running | C189 slice 1: invert a rated OBSERVED rejection to the intrinsic one with the module's own film model | C189 |
+| todo | C188 item 5: the per-unit acceptance contract, on its design record | C188 |
+| todo | C189 slices 2-6: several rated tests per module, six illustrative classes, import/QA to data/local, shortlist with no default score, docs | C189 |
+| running | C178 is on main (421bc12e0); validate it in the site's WASM | C178 |
 | todo | Check on the site, after its deploy, that the volcanic case is gone and the GUI lesson test fix is live | C182 |
 
 ## Medium term (the next day)
@@ -34,7 +36,6 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 | todo | Positivity guard off with several ODE units -- AFTER C178 lands (same file) | C185 item 8 |
 | todo | Optimiser reads unconverged simulations -- AFTER C178 lands (same file) | C186 item 4 |
 | todo | Pressure is not a tear variable: a loop with no pressure-consistent steady state "converges" | C186 item 5 |
-| todo | An unconverged bubble temperature is drawn in the T-x-y diagram | C186 item 6 |
 | todo | C170's owed fixes: gates must not judge `data/local` or untracked files; `check_workspace_truth` wording; refuse `nu 0; order 1`; records still citing Burcat | C170 |
 
 ## Long term (the next seven days)
@@ -89,3 +90,8 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 | done | Seven wrong STATUS lines corrected in DEV.md 4c (C140, C173, C174, C118 stage 2, C172, C170 item 6; C178 on its integration) | DEV.md 4c |
 | done | The audit's unrecorded items recorded (C187), the comparison's recommendations registered without the name | C187 |
 | done | CLAUDE.md section 0: rule 00 (the architect decides), the laptop's measured budget, "the CML plan" | CLAUDE.md |
+| done | C185 item 7 (LHHW detailed balance at the declared Kc) and the ruling: detailed balance with non-mass-action orders refused by name | C185, b98ddc97e |
+| done | C186 item 6: an unconverged bubble point is not a T-x-y point (plot tolerance in one home, announced) | C186, b98ddc97e |
+| done | C188 defects 1-4: RO swallowed a volatile solute; a pump pumped vapour; the aqueous solvent has one home; activity models declare their domain | C188, 6348b66e3 |
+| done | C178 integrated; lesson citations re-pointed by content (C185/C186 had moved them); Node 18 `File` for the GUI tests | C178, 421bc12e0 |
+| done | bin/runTests pins CHOUPO_HOME and PATH to its own tree (a worktree's suite had read the primary checkout's engine and data) | b98ddc97e |

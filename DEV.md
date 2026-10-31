@@ -1528,6 +1528,44 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C189. RO/NF: A MEMBRANE A STUDENT CHOOSES BY WHAT IT DOES, THEN THE
+> COMMERCIAL MODULE (an external specification, ChatGPT, relayed by Vitor
+> 2026-10-31 as a suggestion under rule 00; text in his repository
+> vitormgeraldes/centriMembSolver, branch share-choupo-claude-spec-20261031,
+> CLAUDE_CODE_CHOUPO_MEMBRANE_CLASSES_AND_SELECTION.md).**  Read against the
+> engine first.  Its premise that "classification and compatibility are
+> ALREADY implemented" is FALSE: C188's defects are closed but its per-unit
+> contract (5) is a design record only -- not a blocker, since the RO module
+> already refuses a non-aqueous feed.  ALREADY THERE (measured): module
+> records (Generic-2540..16040, NF270-4040, SW30HR-380, SEPA_CF), the
+> Spacer-28mil record, the two-face factor (A/(2L) spiral, A/L flat cell),
+> Schock-Miquel on the declared spacer, SDEM and DSPM-DE, bulk AND wall
+> saturation indices (SpiralWoundModule.cpp, `scaling{}`).
+> THE VALUABLE CORE, and it is physics: `constantRejection` takes an
+> INTRINSIC rejection (`c_p = (1 - R) c_m`, ConstantRejection.cpp) while a
+> datasheet quotes an OBSERVED one; a student pasting 99.5 % gets the wrong
+> permeate whenever polarisation is active.  So slice 1: invert a rated
+> observed rejection to the intrinsic one with the module's OWN film model
+> at the stated test conditions, announced, never pretended when the test
+> conditions are incomplete.
+> DECIDED (rule 00): (1) the inversion; (2) several rated tests per module
+> (`ratedTest` becomes a list, the single form kept); (3) six functional
+> classes (NF_OPEN, NF_DIVALENT_SELECTIVE, NF_TIGHT, BWRO_HIGH_FLUX,
+> BWRO_HIGH_REJECTION, SWRO) as records marked ILLUSTRATIVE -- their bands
+> are teaching assumptions, not measurements, and their intrinsic parameters
+> come from (1), never typed; (4) an idempotent import/QA tool that writes
+> data/local only, promotion a curation act; (5) a shortlist tool: hard
+> filters, each candidate re-rated at the student's conditions, a table of
+> every criterion side by side -- NO default weighted score (a hidden-weight
+> sum is the "magic score" the spec itself forbids; weights only when the
+> case declares them); it writes a report and a VARIANT of the case, never
+> rewrites the original; (6) the documentation, F1 and GUI display.  CHANGED from the spec:
+> the class is chosen in the case's dictionary, not in a GUI editor (the
+> GUI credo: a runner, not an editor).  Seed data: of the four files the
+> spec names only Choupo_catalogo_RO_NF_consolidado_SI.xlsx is on the
+> laptop (~/Downloads); the others were asked of Vitor.
+> STATUS: DECIDED 2026-10-31; slice (1) next.
+
 > **C188. WHAT A UNIT ACCEPTS: MODELLED, A DECLARED APPROXIMATION, OR
 > REFUSED (an external proposal, ChatGPT, "chemical component
 > classification and unit operation compatibility architecture", relayed
@@ -1593,7 +1631,21 @@ accepts today, and that is a policy call.
 > 0.16111 kmol/s feed) and a water-free feed too; the parent pump pumped
 > water at 400 K and 1 bar.  Both refuse by name now (gates
 > `check_membrane_feed_scope`, `check_pump_liquid_inlet`); the 27 RO and 7
-> pump cases of the corpus all run unchanged.  Next: (3) and (4).
+> pump cases of the corpus all run unchanged.  (3) and (4) DONE the same
+> evening, each by a general in its own worktree, integrated together
+> (6348b66e3): the aqueous solvent has ONE home on the package
+> (`ThermoPackage::aqueousSolventIndex`, gate `check_aqueous_solvent_home`;
+> the Pitzer/eNRTL assembly had ignored a declared solvent entirely;
+> `solventName()` stays the Henry solvent, a different fact); each aqueous
+> activity engine declares its own ionic-strength domain
+> (`AqueousActivity::validityDomain`, gate `check_activity_domain`: Davies
+> 0.5 mol/kg, Edwards 6 mol/kg -- the paper's own Pitzer limit, which
+> `edwards03_table8_vle` row 3 now announces it exceeds -- PitzerHMW no
+> stated bound).  Open, named: the dominant-solvent criterion of the
+> mixed-solvent composite (no source in the tree states one); EDCell's
+> constant water MW; the props bench's own `aqueousProperties.solvent`.
+> Next: (5), the per-unit contract, on the design record
+> `docs/design/what-a-unit-accepts.md`.
 
 > **C187. WHAT THE 2026-10-31 AUDIT FOUND UNRECORDED (two independent
 > passes over the session transcript, 24-31 Oct; recorded by the architect
