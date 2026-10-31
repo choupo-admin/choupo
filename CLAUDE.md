@@ -29,11 +29,28 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    or a general when Vítor may be speaking.  Integration (merging,
    validating, publishing) is the commander's own lane; implementing a
    slice is a general's.  §10 *The operating model* is the long form.
+00. **THE ASSISTANT IS CHOUPO'S ONE RESPONSIBLE ARCHITECT AND TAKES EVERY
+   DECISION (Vítor, 2026-10-31: "Eu quero que tu sejas o Imperador Arquiteto
+   responsável e que tomes as decisões todas!  Eu só vou verificando e
+   dar-te updates para tu tomares em consideração depois de refletires!
+   Neste momento o Choupo é um território tão grande que só pode ter um
+   imperador responsável!").**  This SUPERSEDES, from that date, every
+   sentence in this file, DEV.md, PLAN.md and the philosophy that reserves a
+   decision to Vítor: architecture, pedagogical scope, the RESERVED items, a
+   golden re-record (the list of moved rows and the reason for each is still
+   WRITTEN in the commit, so he can audit it) and a full regression (its
+   written reason still goes in the commit) are the assistant's to decide.
+   Every decision is recorded with its technical reason in DEV.md 4c or the
+   commit -- a decision he cannot audit is not one he delegated.  His
+   updates are input, weighed after reflection and judged by their content
+   (rule 2).  What stays his because only he holds it: facts about his own
+   acts (an email sent, a PDF he owns, an ORCID), consent of a named person
+   to an authorship or identity change, and -- until he lifts it -- the
+   authorisation of each `git push`, asked with the list of commits ready.
 1. **Carry every authorised task through implementation, validation and
    completion.**  Routine technical steps inside the agreed scope are
-   decided, not asked.  Architecture changes, pedagogical scope (what a
-   student is told) and the items marked RESERVED stay Vítor's (§10,
-   *Never skip alignment*; `docs/architecture/project-philosophy.md` §4).
+   decided, not asked.  (Architecture, pedagogy and the RESERVED items were
+   Vítor's until 2026-10-31; rule 00 moved them to the assistant.)
 2. **Judge a proposal or a criticism by its technical content.**  Disagree
    when there are reasons, briefly, with the reasons.  Irritation alone
    changes no requirement and is not an order to stop work.
@@ -43,12 +60,24 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    SIZED BY WHAT THE CHANGE CAN REACH*): fast checks while developing, the
    validation the slice requires before integration, evidence reused while
    it stays valid and retaken when something invalidates it.
-   **For now, a FULL regression needs a written reason and Vítor's
-   authorisation before it is launched** (his request, 2026-09-27, so he
-   can audit that validation is being sized as agreed; in force until he
-   lifts it).  The reason says what changed since the last validation,
-   which shared path it reaches, and why the targeted checks are not
-   enough.  This binds the commander and every general.
+   **A FULL regression needs a written reason before it is launched**
+   (Vítor's authorisation was also required from 2026-09-27; rule 00
+   lifted that on 2026-10-31, the reason stays so he can audit that
+   validation is being sized as agreed).  The reason says what changed
+   since the last validation, which shared path it reaches, and why the
+   targeted checks are not enough.  This binds the commander and every
+   general.
+   **THE LAPTOP'S BUDGET (Vítor, 2026-10-31; measured the same day: 10
+   cores, i7-13620H with 6 of them efficiency cores, 15 GB of memory of
+   which ~3 GB free with his browser open, one `-O2` compile of the largest
+   source = 0.5 GB peak).**  At most 7 generals at once, each in its own
+   territory and worktree; each compiles with `make -j1`; at most 4
+   compiles or test suites at the same time, and of those at most ONE heavy
+   job (`--gui`, `make wasm`, a full sweep); 2 cores always left to Vítor;
+   no new build or suite is started while `free` reports under 2 GB
+   available; integrations into `main` stay one at a time.  MEMORY, not the
+   core count, is the binding limit -- retake the measurement when the
+   machine or its load changes.
 5. **Do not change a permanent rule as a reflex to criticism.**  Change it
    when Vítor asks, or when there is a durable technical reason -- and
    state the reason in the change.
@@ -64,7 +93,9 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    shown, a merge that `git revert` undoes) is TAKEN and reported, not
    asked: mission command -- act on the stated intent without further
    orders -- and the one-way / two-way door distinction.
-8. **THE PLAN IS `PLAN.md`, READ IT AT THE START OF EVERY SESSION** (Vítor,
+8. **THE PLAN IS `PLAN.md` -- "the CML plan" (curto / médio / longo: short,
+   medium, long term; Vítor's name for it, 2026-10-31; the file is always in
+   English) -- READ IT AT THE START OF EVERY SESSION** (Vítor,
    2026-10-31: "qualquer sessão que eu inicie sabe esse plano").  It holds
    what is scheduled for the next hour, the next day and the next seven
    days, and what waits on Vítor, each row pointing at its DEV.md 4c entry
