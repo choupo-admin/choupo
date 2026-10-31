@@ -1570,7 +1570,8 @@ accepts today, and that is a policy call.
 > with k = 0, so the ThirdBody arm inside the Falloff case (k = A T^b
 > exp(-Ea/RT) [M]) is unreachable and every thirdBody reaction runs at
 > rate ZERO (reviewer: 0 instead of 42; reversible 0 instead of 28).
-> `tutorials/batch/.../ignition01_h2o2` declares four (R5-R8): its ignition
+> `tutorials/batch/combustion/ignition01_h2o2` (and its `_rk4`, `_eulersi`
+> twins) declares four (R5-R8): its ignition
 > delay is pinned on a mechanism missing them -- the fix MOVES its golden,
 > list to Vitor before any re-record.
 > (8) `src/solver/ODE/AdaptiveTimeStep.H` (`ctrl.nPositive =
@@ -1658,8 +1659,8 @@ accepts today, and that is a policy call.
 > and touches cases and gates.  STATUS: TO DO (1); (2) awaits Vitor.
 
 > **NOTE (Vitor, 2026-10-27: "O caso novo não é para aparecer" -> "Apagar
-> o caso").**  The case `tutorials/props/electrolyte/precipitation_volcanic_
-> cooling` built for C179/C180/C182 is DELETED from tutorials/ (no catalogue
+> o caso").**  The volcanic-water props case built for C179/C180/C182 is
+> DELETED from tutorials/ (no catalogue
 > entry, not in the site bundle, no golden).  Its dicts live on as the
 > FIXTURE of `check_neutral_master_mineral` (bin/curate/fixtures/
 > neutralMasterMineral), which the gate copies to a temporary directory and
