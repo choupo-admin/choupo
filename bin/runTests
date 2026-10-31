@@ -2985,6 +2985,20 @@ PYEOF
     fi
     rm -f /tmp/feedswitch.$$
 
+    # third-body-rate gate (2026-10-31, DEV.md 4c C185 item 9): the batch
+    # reactor's `thirdBody` rate is k(T)[M] PROD c, forward and reversible,
+    # held against an independent integration with an independent Kc -- the
+    # form had run at rate ZERO (a `break` that skipped it).
+    if gate_exec "$ROOT/bin/curate/check_third_body_rate.py" > /tmp/thirdbody.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "third-body-rate" "$(grep -m1 '^check_third_body_rate: OK' /tmp/thirdbody.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_third_body_rate.py)\n" "third-body-rate"
+        cat /tmp/thirdbody.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/thirdbody.$$
+
     # solverDict-lint gate: a system/solverDict in a batch/ctrl case is a
     # file nobody reads -- announced by name with the cost stated (the
     # unread-keys posture), never refused; clean cases stay silent

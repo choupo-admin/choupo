@@ -35,7 +35,7 @@ verbosity     3;
 
 // ---- Time integration ----
 startTime       0;          // s
-endTime         2.0e-4;      // s  (the trace-H seed ignites it at ~8 us; equilibrium by ~50 us)
+endTime         2.0e-4;      // s  (the trace-H seed ignites it at ~8 us; equilibrium by ~12 us)
 deltaT          1.0e-6;     // s   (the stiff integrator sub-steps adaptively
                             //      within each deltaT; the explicit RK4 sibling
                             //      cannot survive this step -- that is the point)

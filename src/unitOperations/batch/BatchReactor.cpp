@@ -449,8 +449,8 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
         case RateForm::ModArrhenius:
             k = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
             break;
-        case RateForm::ThirdBody:
         case RateForm::Factory: break;   // handled above
+        case RateForm::ThirdBody:        // k [M], the arm below (C185 (9))
         case RateForm::Falloff:
         {
             sVector conc(n.size());

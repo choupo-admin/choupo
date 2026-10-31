@@ -16,8 +16,8 @@ and plot `trajectory.csv` (T and the radicals H/O/OH vs time). You will see:
 | phase | what happens | ~time |
 |---|---|---|
 | induction | T almost flat (1100→1220 K); H/O/OH grow **exponentially** from the seed | 0 → ~6 µs |
-| ignition  | chain branching outruns termination; T runs away past 2500 K | ~6 → 9 µs |
-| equilibrium | the thermo pins the burned state; net rate → 0 | after ~50 µs |
+| ignition  | chain branching outruns termination; T runs away past 2500 K | ~6 → 8 µs |
+| equilibrium | the radicals recombine (H + OH + M, H + O2 + M, ...); the thermo pins the burned state; net rate → 0 | after ~12 µs |
 
 The **ignition delay** τ_ign (the time of maximum dT/dt, printed in the run's
 epilogue on the 1 µs write grid) is ≈ **8 µs** here.  The trace H seed is
