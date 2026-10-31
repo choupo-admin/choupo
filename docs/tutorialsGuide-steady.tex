@@ -8777,6 +8777,57 @@ NOT a validation: the NF270 record's A\_w is a fit to a teaching case -- at the 
 \goldmore{27}
 \end{tutgolden}
 
+\clearpage
+\tutentry{membrane26\_class\_sulphate\_removal}{tutorials/steady/membranes/membrane26\_class\_sulphate\_removal}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NF) at (0.0,-0.0) {\textbf{NF}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(NF.west)+(-1.05,0.00)$) -- ($(NF.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(NF.east)+(0,-0.17)$) -- ($(NF.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(NF.east)+(0,0.17)$) -- ($(NF.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A membrane chosen by WHAT IT DOES: sulphate removal on the illustrative functional class NF\_DIVALENT\_SELECTIVE, its intrinsic rejections derived from the class's observed ones}
+\begin{tutnarrative}
+a membrane chosen by WHAT IT DOES.
+
+THE TASK. A brackish water (3 g/L NaCl, 2 g/L MgSO4) must lose its sulphate and may keep its sodium chloride. Before choosing a product, a student chooses a FUNCTION: `module NF\_DIVALENT\_SELECTIVE;` names a functional CLASS (data/standards/assets/NF\_DIVALENT\_SELECTIVE.dat, kind membraneClass) -- "high sulphate retention with NaCl passage".
+
+WHAT THE CLASS IS. An ILLUSTRATIVE teaching profile, not a membrane anyone sells and not a measurement: an OBSERVED rejection per salt at its own reference test (2,000 ppm, 4.8 bar gauge, 25 C, 15 \% recovery) -- NaCl 30 \%, MgSO4 95 \%, each the middle of the class's screening window (10-50 \%, > 90 \%) -- a water permeance (10 L m-2 h-1 bar-1) and the generic element it is deployed in (Generic-4040, by reference). The run says so on every line that matters: `[illustrative]`, and the element's own `[estimate]` lines.
+
+WHAT THE ENGINE DERIVES. `constantRejection` needs the INTRINSIC rejection, against the wall; the class states the OBSERVED one, against the feed. `fromRatedTest` runs THIS element at the class's reference test and finds the R\_int whose predicted observed rejection is the class's (src/unitOperations/membrane/RatedTestInversion): R\_int(NaCl) = 0.37566 (KPI R\_int\_fromRatedTest\_NaCl) R\_int(MgSO4) = 0.96342 (KPI R\_int\_fromRatedTest\_MgSO4)
+
+THE ANSWER, three elements in series at 7 bar absolute: water recovery 32.45 \%, permeate 811 kg/h; R\_obs(NaCl) 0.2865 $\to$ permeate 2140 ppm NaCl (feed 3000 mg/L) R\_obs(MgSO4) 0.9466 $\to$ permeate 107 ppm MgSO4 (feed 2000 mg/L), i.e. 85 ppm as sulphate. The sodium chloride passes, the sulphate stays: what the class was chosen to do. Both observed rejections sit a little below the class's stated ones (30 \%, 95 \%): at 7 bar a third of the water leaves, so the bulk concentrates along the vessel, which the reference test at 15 \% recovery barely saw.
+
+WHAT A STUDENT SHOULD CHANGE. The CLASS: `module NF\_OPEN;` passes more salt of every kind (it rates NaCl only, so MgSO4 then needs a typed R\_int with its source -- a class says nothing about a salt it does not rate); `module NF\_TIGHT;` holds more NaCl too. The PRESSURE and the number of ELEMENTS: recovery against permeate sulphate. The CLASS's assumptions themselves: copy the record into this case's constant/assets/ and move its MgSO4 rejection inside its band -- the intrinsic value is re-derived; typing a number here instead is refused, because a rated salt's intrinsic rejection is derived. Then the PRODUCT: a commercial element (`module NF270-4040;`, its data sheet's rated test) -- the shortlist from a class to products is a later slice (DEV.md 4c C189 (5)).
+
+NOT a validation: no number in this case is measured.
+
+\end{tutnarrative}
+\tutreadme{The question. A brackish water (3 g/L NaCl, 2 g/L MgSO4) must lose its sulphate and may keep its sodium chloride. Which membrane? Before a product, a student chooses a FUNCTION.}
+\tutreadme{The choice. module NF\_DIVALENT\_SELECTIVE; names a functional CLASS -- data/standards/assets/NF\_DIVALENT\_SELECTIVE.dat, kind membraneClass -- one of six (NF\_OPEN, NF\_DIVALENT\_SELECTIVE, NF\_TIGHT, BWRO\_HIGH\_FLUX, BWRO\_HIGH\_REJECTION, SWRO). A class is an ILLUSTRATIVE teaching profile, not a product and not a measurement: an OBSERVED rejection per salt at its own reference test (here NaCl 30 \% and MgSO4 95 \%, each the middle of the class's screening window), a water permeance, and the generic element it is deployed in (Generic-4040, by reference). The run says so: [illustrative] module 'NF\_DIVALENT\_SELECTIVE': a FUNCTIONAL CLASS, not a product ..., on stdout, on stderr and in the end-of-run caveat block.}
+\tutreadme{What the engine derives. transport constantRejection; takes the INTRINSIC rejection (against the wall); the class states the OBSERVED one (against the feed). rejection \{ NaCl fromRatedTest; MgSO4 fromRatedTest; \} runs this element at the class's reference test and inverts it (DEV.md 4c C189 slice 1): R\_int(NaCl) = 0.37566, R\_int(MgSO4) = 0.96342.}
+\tutreadme{The answer. Three elements at 7 bar: recovery 32.45 \%, the permeate at 2140 ppm NaCl and 107 ppm MgSO4 (85 ppm as sulphate).}
+\tutreadme{What a student should change. The class (NF\_OPEN, NF\_TIGHT); the pressure and the number of elements; the class's own assumptions, by copying the record into constant/assets/ and moving a rejection inside its band (typing a number for a rated salt in the case is refused -- the intrinsic value is derived); then a product (module NF270-4040;).}
+\tutreadme{Not a validation. No number here is measured. Gate: bin/curate/check\_membrane\_classes.py. Record: docs/design/an-observed-rejection-is-not-an-intrinsic-one.md section 8.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0384027444444}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{permeate}{F}{0.0124896798589}
+\goldrow{stream}{permeate}{T}{298.15}
+\goldrow{stream}{retentate}{F}{0.0259130645856}
+\goldrow{stream}{retentate}{T}{298.15}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_avg}{0.222310130994}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem1}{0.221704274787}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem2}{0.222726991067}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem3}{0.222529419939}
+\goldrow{kpi}{NF}{Gamma\_NaCl\_avg}{0.0763298682296}
+\goldrow{kpi}{NF}{Gamma\_NaCl\_elem1}{0.0761466561845}
+\goldrow{kpi}{NF}{Gamma\_NaCl\_elem2}{0.0764559181868}
+\goldrow{kpi}{NF}{Gamma\_NaCl\_elem3}{0.0763961909198}
+\goldmore{43}
+\end{tutgolden}
+
 \subsection{optimisation}
 \grouptheory{optimisation}
 \clearpage
