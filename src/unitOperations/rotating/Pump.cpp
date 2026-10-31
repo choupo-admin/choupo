@@ -29,6 +29,7 @@ License
 #include "Pump.H"
 #include "solver/NewtonRaphson.H"
 #include "core/Advisory.H"
+#include "unitOperations/flash/StreamEquilibrium.H"   // the ONE inlet-phase reading
 
 #include <cmath>
 #include <cstdio>
@@ -59,6 +60,36 @@ int Pump::solve(const DictPtr& dict,
         zsum += x[thermo.indexOf(key)];
     }
     for (auto& v : x) v /= zsum;
+
+    // ---- THE INLET MUST BE A LIQUID (DEV.md 4c C188 defect 2) ------------
+    //  The model below is the incompressible one -- W = v dP / eta on the
+    //  liquid molar volume -- and the outlet is published as a liquid.  The
+    //  inlet's phase was never read, so a vapour or a two-phase feed was
+    //  "pumped" on a liquid volume and came out liquid, at exit 0.  The
+    //  inlet is read as it MEANS (`resolvedInletVaporFraction`, the one home
+    //  every unit that reads its inlet during the solve uses) and any vapour
+    //  REFUSES, naming the unit that compresses a gas.
+    {
+        const std::string locus =
+            "pump '" + (dict->name().empty() ? type() : dict->name()) + "'";
+        const scalar vf_in = flashState::resolvedInletVaporFraction(
+            feedDict, T_in, P_in, x, thermo, locus);
+        if (vf_in > 0.0)
+        {
+            char b[160];
+            std::snprintf(b, sizeof(b), "vapour fraction %.6g at T = %.2f K,"
+                " P = %.4g bar", static_cast<double>(vf_in),
+                static_cast<double>(T_in), static_cast<double>(P_in / 1.0e5));
+            throw std::runtime_error("Pump: " + locus + " is fed a stream that"
+                " is not a liquid (" + std::string(b) + ").  The pump model is"
+                " the incompressible one, W = v dP / eta on the LIQUID molar"
+                " volume, and its outlet is a liquid; a vapour fed to it would"
+                " be priced on a volume it does not have (and in a real pump it"
+                " cavitates).  REMEDY: subcool the feed (a cooler, or a higher"
+                " suction pressure) so it arrives liquid, or use a `compressor`"
+                " for a gas.");
+        }
+    }
 
     // ---- Efficiency (always required) -----------------------------------
     const scalar eta = operDict->lookupScalar("eta");
