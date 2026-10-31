@@ -16,10 +16,10 @@ Status words: `todo` · `running` · `waits-Vitor` · `blocked` · `done`.
 
 | status | what | ref |
 |---|---|---|
-| running | Finish integrating C182: the degC axis, the volcanic case deleted from the site, DEV.md entries C182-C186, the fix of the GUI lesson test red on main since C179 | C182 |
 | todo | Correct seven wrong STATUS lines in DEV.md 4c: C140 (Cadotte landed), C173 (merged and re-recorded), C174 (merged), C118 stage 2 (lens on main), C172 (status bar removed), C170 item 6 (C127 was never dispatched), C178 (built on its branch) | DEV.md 4c |
-| todo | Record what the audit found unrecorded: the three "not established" items of the 2026-10-26 Gibbs review (DirectMin gamma ordering and NV=0 by penalty, the gas-EOS loop capped at 30 passes; LL converged on Nelder-Mead stopping and the VLLE advisory; `Kvec_phases` on a phi-phi package and liquid-to-solid `s_formation`); SpeciationSolver outer convergence not requiring the inner Newton; the DWSIM comparison (report into the repo, its recommendations registered); the two-liquid-surface architecture call into 4b; views for choupoSolve cases; the parallel runs C149 still promises | C173, C149, new |
+| todo | Record what the audit found unrecorded: the three "not established" items of the 2026-10-26 Gibbs review (DirectMin gamma ordering and NV=0 by penalty, the gas-EOS loop capped at 30 passes; LL converged on Nelder-Mead stopping and the VLLE advisory; `Kvec_phases` on a phi-phi package and liquid-to-solid `s_formation`); SpeciationSolver outer convergence not requiring the inner Newton; the comparison with an open-source flowsheet simulator delivered on 2026-10-26 only as a private page (report into the repo where the doctrine allows the name, its recommendations registered); the two-liquid-surface architecture call into 4b; views for choupoSolve cases; the parallel runs C149 still promises | C173, C149, new |
 | todo | Integrate C178 (with Vítor's three rulings) and validate it in the site's WASM | C178 |
+| todo | Check on the site, after its deploy, that the volcanic case is gone and the GUI lesson test fix is live | C182 |
 
 ## Medium term (the next day)
 
@@ -75,3 +75,5 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 | done | Precipitation against temperature as a native view; seen in the site's Studies | C180, b3b25db47 |
 | done | JOSS paper sent to Pedro Mendes (paper.md attached) | 2026-10-27 |
 | done | Audit of Vítor's requests 24-31 Oct | 2026-10-31 |
+| done | C182 on main: the degC view axis, the volcanic case deleted (now a gate fixture), DEV.md C182-C186, five GUI lesson citations re-pointed | C182, 85700dbb8 |
+| done | This plan in git (PLAN.md, CLAUDE.md section 0 rule 8) | PLAN.md |
