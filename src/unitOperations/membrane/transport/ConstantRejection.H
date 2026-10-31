@@ -81,6 +81,15 @@ Description
     `transport SDEM;`, which derives the split from per-ion permeances).
     Equal R's on every ion of an electroneutral wall pass (the charge is
     then (1 - R) times the wall's, zero).
+
+    AN R DERIVED FROM THE DATA SHEET (DEV.md 4c C189).  A data sheet quotes
+    an OBSERVED rejection (feed to permeate), never this law's intrinsic
+    one.  `rejection { MgSO4 fromRatedTest; }` asks the unit to DERIVE R_int
+    for that solute by inverting the module record's `ratedTest {}` with
+    the module's own film (membrane/RatedTestInversion.H, the one home);
+    the unit hands the value back through setRatedRejection before the
+    first station.  A unit that holds no module record (the batch
+    diafilter) cannot, and the law then refuses the word by name.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -108,6 +117,11 @@ public:
     //  the module does not warn about a solute the record gives no B_s.
     bool readsMembranePermeabilities() const override { return false; }
 
+    //  `<solute> fromRatedTest;` (see the header): the solutes still waiting
+    //  for a derived R, and the door the deriving unit hands it through.
+    std::vector<std::string> ratedTestSolutes() const override { return pendingRated_; }
+    void setRatedRejection(const std::string& solute, scalar R_int) override;
+
     //- The relative permeate charge above which an ion-declared feed is
     //  refused (|sum z c_p| / sum |z| c_p).
     static constexpr scalar chargeTolerance = 1.0e-6;
@@ -118,6 +132,8 @@ private:
     bool                          read_ = false;
     std::map<std::string, scalar> R_;          // component name -> R_int
     std::string                   source_;
+    std::vector<std::string>      pendingRated_;   // fromRatedTest, not yet derived
+    std::vector<std::string>      derivedRated_;   // fromRatedTest, derived
 
     mutable bool                  resolved_ = false;
     mutable std::vector<scalar>   ratio_;      // 1 - R_i, per solute slot

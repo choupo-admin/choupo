@@ -28,6 +28,7 @@ License
 
 #include "SpiralWoundModule.H"
 #include "BulkConversion.H"
+#include "RatedTestInversion.H"
 
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -815,6 +816,46 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         AdvisoryLog::instance().add("model", dSoluteSeverity,
             "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",
             dSoluteAdvisory);
+
+    // ---- An intrinsic rejection DERIVED from the data sheet (C189) --------
+    //  `rejection { <solute> fromRatedTest; }`: the module is run at its
+    //  record's rated test and R_int found such that the predicted OBSERVED
+    //  rejection is the sheet's (membrane/RatedTestInversion.H, the one home,
+    //  which also refuses).  Only when declared: no other run is touched.
+    std::vector<membrane::RatedTestInversion> ratedInversions;
+    for (const auto& s : transportModel->ratedTestSolutes())
+    {
+        auto inv = membrane::invertRatedRejection(dict, thermo, modRec, s, unitLabel);
+        transportModel->setRatedRejection(s, inv.R_int);
+        const auto& c = inv.conditions;
+        char b[900];
+        std::snprintf(b, sizeof(b),
+            "R_int(%s) = %.6f DERIVED from the rated test of module '%s': observed"
+            " %.4g %% at %.0f ppm, %.3g bar (permeate %.3g bar), %.2f K, feed"
+            " %.4g m3/d (= the sheet's permeate %.4g m3/d / recovery %.3g);"
+            " the module predicts c_m/c_b = %.4f (channel average), recovery"
+            " %.2f %% and permeate %.4g m3/d there; bracketed solve residual"
+            " %.2e after %d probe(s)",
+            s.c_str(), static_cast<double>(inv.R_int), c.module.c_str(),
+            static_cast<double>(c.rejectionSheet * 100.0),
+            static_cast<double>(c.feedMassFraction * 1e6),
+            static_cast<double>(c.P * 1e-5),
+            static_cast<double>(c.P_permeate * 1e-5),
+            static_cast<double>(c.T),
+            static_cast<double>(c.feedFlow * 86400.0),
+            static_cast<double>(c.permeateSheet * 86400.0),
+            static_cast<double>(c.recoverySheet),
+            static_cast<double>(inv.atRoot.cmOverCb),
+            static_cast<double>(inv.atRoot.recovery * 100.0),
+            static_cast<double>(inv.atRoot.permeateFlow * 86400.0),
+            static_cast<double>(inv.residual), inv.iterations);
+        std::cout << "  [ratedTest] " << b << "\n";
+        std::cerr << "[ratedTest] spiralWoundModule '" << unitLabel << "': "
+                  << b << "\n";
+        AdvisoryLog::instance().add("provenance", "info",
+            "spiralWoundModule '" + unitLabel + "'", b);
+        ratedInversions.push_back(std::move(inv));
+    }
 
     // ---- Discretise the channel length -----------------------------------
     // Effective width W chosen such that  W · L = A_membrane.
@@ -1666,6 +1707,18 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     kpis_["water_recovery"] = recovery;
     kpis_["J_w_avg"]        = (A_total > 0) ? Q_perm / A_total : 0.0;  // m/s
     kpis_["dP_feed"]        = P_in - P_b;
+    //  The rated-test inversion (C189), when declared: the derived R_int, the
+    //  sheet's observed rejection it came from, and what the module predicts
+    //  at the rated test.  The solve's residual is printed, never pinned.
+    for (const auto& inv : ratedInversions)
+    {
+        const std::string& s = inv.conditions.solute;
+        kpis_["R_int_fromRatedTest_" + s]   = inv.R_int;
+        kpis_["ratedTest_R_obs_" + s]       = inv.conditions.rejectionSheet;
+        kpis_["ratedTest_cm_over_cb_" + s]  = inv.atRoot.cmOverCb;
+        kpis_["ratedTest_recovery"]         = inv.atRoot.recovery;
+        kpis_["ratedTest_permeateFlow"]     = inv.atRoot.permeateFlow;
+    }
     //  The inlet crossflow velocity in the record's channel -- the number a
     //  laboratory protocol prescribes (the SEPA CF manual's 0.1-0.5 m/s), so
     //  a case that declares its feed flow to hit one can be held to it.

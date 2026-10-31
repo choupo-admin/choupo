@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A data sheet's OBSERVED rejection inverted to the INTRINSIC one: NF270-4040 with MgSO4 fromRatedTest, beside the same element with the sheet's 0.97 pasted as intrinsic";
+verbosity     3;

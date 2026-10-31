@@ -80,6 +80,7 @@ Description
 #include <limits>
 #include <map>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -318,6 +319,20 @@ public:
     //  the polarisation builder does not refuse it for want of charged
     //  SOLUTES (DEV.md 4c C148).
     virtual bool decomposesSaltsIntoIons() const { return false; }
+
+    //  The solutes whose parameter the case asked to DERIVE from the module
+    //  record's rated test (`<solute> fromRatedTest;`, DEV.md 4c C189) --
+    //  only constantRejection reads that word today.  The unit that holds
+    //  the record performs the inversion (membrane/RatedTestInversion.H)
+    //  and hands the derived value back through setRatedRejection; a law
+    //  that never asks gets nothing handed.
+    virtual std::vector<std::string> ratedTestSolutes() const { return {}; }
+    virtual void setRatedRejection(const std::string& solute, scalar /*R_int*/)
+    {
+        throw std::runtime_error("transport " + type() + ": no parameter of"
+            " this law is derived from a rated test (asked for '" + solute
+            + "').");
+    }
 
     // ---- Factory ----
     static void registerType(const std::string& name, Factory f);

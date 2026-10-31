@@ -4485,6 +4485,23 @@ PYEOF
     fi
     rm -f /tmp/crej.$$
 
+    # Rated-test inversion gate (2026-10-31, DEV.md 4c C189 slice 1).
+    # `rejection { <solute> fromRatedTest; }` derives the INTRINSIC R from a
+    # module record's OBSERVED rated rejection with the module's own film:
+    # the derived R re-run at the rated test reproduces the sheet's number;
+    # R_int > R_obs under polarisation, and with the film switched off the
+    # gap is the closed-form bulk-concentration term alone; six refusals;
+    # no shipped case but the witness declares the word.
+    if gate_exec "$ROOT/bin/curate/check_rejection_inversion.py" > /tmp/rinv.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "rejection-inversion-gate" "$(grep -m1 '^check_rejection_inversion: OK' /tmp/rinv.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_rejection_inversion.py)\n" "rejection-inversion-gate"
+        cat /tmp/rinv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rinv.$$
+
     # Ion-diffusivity temperature gate (2026-10-24, DEV.md 4c C145 ruling,
     # built C148).  D_i(T) = D_i0 (T/298.15)(mu(298.15)/mu(T)) on the
     # package's own liquid viscosity, ONE home (thermo/transport/

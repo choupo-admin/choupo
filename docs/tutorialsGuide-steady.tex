@@ -8679,6 +8679,57 @@ WHAT IS PINNED (expected.props). The fitted values and their uncertainties, the 
 \goldmore{46}
 \end{tutgolden}
 
+\clearpage
+\tutentry{membrane25\_rated\_test\_inversion\_nf270\_4040}{tutorials/steady/membranes/membrane25\_rated\_test\_inversion\_nf270\_4040}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFderived) at (0.0,-0.0) {\textbf{NFderived}\\[-1pt]{\tiny spiralWoundModule}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFnaive) at (0.0,-1.7) {\textbf{NFnaive}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(NFderived.west)+(-1.05,0.00)$) -- ($(NFderived.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedDerived};
+  \draw[->] ($(NFnaive.west)+(-1.05,0.00)$) -- ($(NFnaive.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedNaive};
+  \draw[->] ($(NFderived.east)+(0,-0.17)$) -- ($(NFderived.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentateDerived};
+  \draw[->] ($(NFderived.east)+(0,0.17)$) -- ($(NFderived.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeateDerived};
+  \draw[->] ($(NFnaive.east)+(0,-0.17)$) -- ($(NFnaive.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentateNaive};
+  \draw[->] ($(NFnaive.east)+(0,0.17)$) -- ($(NFnaive.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeateNaive};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A data sheet's OBSERVED rejection inverted to the INTRINSIC one: NF270-4040 with MgSO4 fromRatedTest, beside the same element with the sheet's 0.97 pasted as intrinsic}
+\begin{tutnarrative}
+a data sheet's OBSERVED rejection is not the INTRINSIC rejection `constantRejection` takes.
+
+The NF270-4040 sheet quotes "stabilized salt rejection > 97.0 \%" for 2,000 ppm MgSO4 at 4.8 bar, 25 C, 15 \% recovery -- OBSERVED, feed to permeate. The law's R\_int is measured against the WALL, which is richer than the feed: the film polarises it and the bulk concentrates along the leaf. Two copies of the same element, fed the same 2,000 ppm MgSO4 at 8 bar (away from the rated 4.8 bar):
+
+NFderived `rejection \{ MgSO4 fromRatedTest; \}` -- the engine runs THIS element at the sheet's rated test and finds the R\_int whose predicted observed rejection is 0.97: R\_int(MgSO4) = 0.98331 (KPI R\_int\_fromRatedTest\_MgSO4) c\_m/c\_b at the test = 1.593 (ratedTest\_cm\_over\_cb\_MgSO4, the channel average) NFnaive `rejection \{ MgSO4 0.97; \}` -- the sheet's number pasted as if it were intrinsic.
+
+At 8 bar the two permeates carry (KPI R\_obs\_MgSO4; the permeate streams): NFderived R\_obs 0.94426, permeate 1128 kg/h at 111 ppm MgSO4 NFnaive R\_obs 0.90065, permeate 1145 kg/h at 199 ppm MgSO4 -- the naive element passes 1.81x the salt, and at the sheet's own test it would report 94.6 \%, not the 97.0 \% the sheet measured. (Both R\_obs fall below 0.97 at 8 bar: 43 \% of the water leaves, so the bulk concentrates, and the film is thicker at the higher flux.)
+
+NOT a validation: the NF270 record's A\_w is a fit to a teaching case -- at the rated test the engine's permeate is 14.5 m3/d against the sheet's 9.5 (recovery 22.9 \% against 15 \%), printed by the [ratedTest] line, so the polarisation the inversion corrects for is the engine's, not the bench's -- and a constant R\_int stays constant away from the test. See the README.
+
+\end{tutnarrative}
+\tutreadme{The question. The NF270-4040 data sheet says "stabilized salt rejection > 97.0 \%" (2,000 ppm MgSO4, 4.8 bar, 25 C, 15 \% recovery). transport constantRejection; asks for an intrinsic rejection R\_int. Can the student type 0.97?}
+\tutreadme{No, and this case shows by how much. The sheet's number is OBSERVED, 1 - c\_p/c\_feed; the law's R\_int is measured against the WALL, 1 - c\_p/c\_m. The wall is richer than the feed twice over: the film polarises it (c\_m/c\_b > 1), and the bulk concentrates along the leaf as the water leaves. So 0.97 typed as R\_int passes MORE salt than the sheet measured.}
+\tutreadme{What the case does. Two copies of the same element, fed the same 2,000 ppm MgSO4 at 8 bar:}
+\tutreadme{NFderived rejection \{ MgSO4 fromRatedTest; \} NFnaive rejection \{ MgSO4 0.97; \}}
+\tutreadme{fromRatedTest makes the engine run THIS element (its record, its spacer channel, its Schock \& Miquel film, its osmotic model) at the sheet's rated test -- one element, the sheet's solute at its mass fraction, its P and T, the case's permeate pressure, and the feed the sheet's figures imply (permeate / recovery = 9.5 / 0.15 = 63.3 m3/d) -- and solve, by a bracketed 1-D search, for the R\_int whose predicted observed rejection is 0.97. The run says so on stdout, on stderr and in the caveat block:}
+\tutreadme{[ratedTest] R\_int(MgSO4) = 0.983313 DERIVED from the rated test of module 'NF270-4040': observed 97 \% at 2000 ppm, 4.8 bar (permeate 1 bar), ...; the module predicts c\_m/c\_b = 1.5926 (channel average), recovery 22.85 \% and permeate 14.47 m3/d there; bracketed solve residual ... after 5 probe(s)}
+\begin{tutgolden}
+\goldrow{stream}{feedDerived}{F}{0.0406204850803}
+\goldrow{stream}{feedDerived}{T}{298.15}
+\goldrow{stream}{feedNaive}{F}{0.0406204850803}
+\goldrow{stream}{feedNaive}{T}{298.15}
+\goldrow{stream}{permeateDerived}{F}{0.0173900849729}
+\goldrow{stream}{permeateDerived}{T}{298.15}
+\goldrow{stream}{permeateNaive}{F}{0.0176496756356}
+\goldrow{stream}{permeateNaive}{T}{298.15}
+\goldrow{stream}{retentateDerived}{F}{0.0232304001073}
+\goldrow{stream}{retentateDerived}{T}{298.15}
+\goldrow{stream}{retentateNaive}{F}{0.0229708094447}
+\goldrow{stream}{retentateNaive}{T}{298.15}
+\goldrow{kpi}{NFderived}{Gamma\_MgSO4\_avg}{1.60429127628}
+\goldrow{kpi}{NFderived}{J\_w\_avg}{4.12252739112e-05}
+\goldmore{27}
+\end{tutgolden}
+
 \subsection{optimisation}
 \grouptheory{optimisation}
 \clearpage

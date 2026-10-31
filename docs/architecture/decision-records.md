@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 188 records already exist
+## 1. Why an index, when 189 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 188 design records, **130 state a rejected alternative and 58 do not** —
+- Of 189 design records, **131 state a rejected alternative and 58 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -67,6 +67,7 @@ direction is an error.
 
 | record | kind | alt | status |
 |---|---|---|---|
+| [`an-observed-rejection-is-not-an-intrinsic-one.md`](../design/an-observed-rejection-is-not-an-intrinsic-one.md) | ADR | yes | **SHIPPED 2026-10-31 (C189 slice 1)** -- `rejection { <solute> fromRatedTest; }` under `transport constantRejection;` derives the INTRINSIC rejection from a module record's OBSERVED rated rejection by running the module itself at the rated test (one element, the sheet's solute, P, T, feed = permeateFlow/recovery) and solving for R_int by a bracketed 1-D search; announced and published, refused by name otherwise (no record, no ratedTest, another solute, an ion-by-ion feed, an unreachable rejection, a unit with no record).  REJECTED: the observed value used as R_int with an announcement; moving the feed to match the sheet's recovery; a closed-form film correction beside the module; splitting a salt's rejection between its ions. |
 | [`a-props-case-drawn-as-its-calculation.md`](../design/a-props-case-drawn-as-its-calculation.md) | ADR | yes | **SHIPPED 2026-10-25 (C151 phase 1, 5888a3e19)** -- a props case's Results is THREE panes: a tree of the case shelved by discipline, a calculation map DERIVED from the propsDict (data -> models -> operations -> views, typed and coloured wires, ops of one type grouped, studies as derived frames), and the details of the selection; each op type states its discipline, activity, models, data and records in its own schema (`"x-choupo"`), the one home the map and the tree read.  REJECTED: a hand-placed or stored layout and a graph-layout library (the layered layout is computed); a hand-written study label (would need a new propsDict key); records joining studies (one shared record would weld them). |
 | [`one-case-two-modes.md`](../design/one-case-two-modes.md) | ADR | yes | **SHIPPED 2026-10-25 (C149 + C152, 0eb788d7e)** -- `fitParameters` gains `residual { kind membrane; }` (DSPM-DE / SDEM / solution-diffusion / constant rejection fitted to a lab sheet, a held-out verdict) and its promotable record is read by the process case; a case may carry `flowsheetDict` AND `propsDict` over one `constant/` -- `controlDict.application` is the default mode, `runCase <case> props|process` the other, information flows one way (Properties writes records, Process reads them and refuses a stale one), goldens `expected` + `expected.<mode>`.  REJECTED: two (or three) cases for one study, OpenFOAM's one-case posture taken instead; a golden layout that changes what `expected` means to every reader. |
 | [`a-post-processing-dictionary.md`](../design/a-post-processing-dictionary.md) | ADR | yes | **SHIPPED 2026-10-24 (C147/C149, 9dcd73ffc)** -- every props operation publishes its DEFAULT views with nothing declared; a case adds the views its paper needs (`views ( ... )`, `references ( ... )`) in the SAME propsDict, over what the run publishes; the engine resolves every name, holds every unit and writes the numbers, the GUI draws and computes nothing.  REJECTED: a separate `system/postProcessDict` (the first cut, ruled out by C149: views are about the operations and a case declaring nothing must still be read as figures); `postDict` (a pass that adds numbers, a view adds none).  The generalisation to choupoSolve units is named, not built. |
@@ -342,7 +343,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**58 of 188 records state no rejected alternative.**  For a FORUM or a STUDY
+**58 of 189 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

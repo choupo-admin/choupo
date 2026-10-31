@@ -1,0 +1,44 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feedDerived            F                0.0406204850803    1e-4
+stream  feedDerived            T                298.15             1e-4
+stream  feedNaive              F                0.0406204850803    1e-4
+stream  feedNaive              T                298.15             1e-4
+stream  permeateDerived        F                0.0173900849729    1e-4
+stream  permeateDerived        T                298.15             1e-4
+stream  permeateNaive          F                0.0176496756356    1e-4
+stream  permeateNaive          T                298.15             1e-4
+stream  retentateDerived       F                0.0232304001073    1e-4
+stream  retentateDerived       T                298.15             1e-4
+stream  retentateNaive         F                0.0229708094447    1e-4
+stream  retentateNaive         T                298.15             1e-4
+kpi     NFderived              Gamma_MgSO4_avg  1.60429127628      1e-4
+kpi     NFderived              J_w_avg          4.12252739112e-05  1e-4
+kpi     NFderived              R_int_fromRatedTest_MgSO4 0.983313294977     1e-4
+kpi     NFderived              R_obs_MgSO4      0.944259327806     1e-4
+kpi     NFderived              Re_inlet         411.811614592      1e-4
+kpi     NFderived              Re_max           411.811614592      1e-4
+kpi     NFderived              Re_min           235.793591151      1e-4
+kpi     NFderived              dP_feed          20114.8485131      1e-4
+kpi     NFderived              hydraulicDiameter 0.00128016         1e-4
+kpi     NFderived              mass_closure_rel 1.51457797267e-16  1e-4
+kpi     NFderived              ratedTest_R_obs_MgSO4 0.97               1e-4
+kpi     NFderived              ratedTest_cm_over_cb_MgSO4 1.59262596003      1e-4
+kpi     NFderived              ratedTest_permeateFlow 0.000167512482871  1e-4
+kpi     NFderived              ratedTest_recovery 0.228522292422     1e-4
+kpi     NFderived              solute_closure_rel 1.39091297333e-16  1e-4
+kpi     NFderived              u_crossflow_inlet 0.286301975524     1e-4
+kpi     NFderived              water_recovery   0.427423650047     1e-4
+kpi     NFnaive                Gamma_MgSO4_avg  1.59384056669      1e-4
+kpi     NFnaive                J_w_avg          4.18437681328e-05  1e-4
+kpi     NFnaive                R_obs_MgSO4      0.90065142707      1e-4
+kpi     NFnaive                Re_inlet         411.811614592      1e-4
+kpi     NFnaive                Re_max           411.811614592      1e-4
+kpi     NFnaive                Re_min           233.152829306      1e-4
+kpi     NFnaive                dP_feed          19986.6826703      1e-4
+kpi     NFnaive                hydraulicDiameter 0.00128016         1e-4
+kpi     NFnaive                mass_closure_rel 1.51457797267e-16  1e-4
+kpi     NFnaive                solute_closure_rel 1.39091297333e-16  1e-4
+kpi     NFnaive                u_crossflow_inlet 0.286301975524     1e-4
+kpi     NFnaive                water_recovery   0.43383619829      1e-4

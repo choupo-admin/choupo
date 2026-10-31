@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 496,
+  "cases": 497,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -6281,6 +6281,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/membranes/membrane25_rated_test_inversion_nf270_4040": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "unitModels": [
+    "SchockMiquel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/optimisation/designSpec01_triple_equal_areas": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -7733,6 +7750,7 @@
     "tutorials/steady/membranes/membrane22_two_stage_nf_array_dspmde",
     "tutorials/steady/membranes/membrane23_constant_rejection_nf8040",
     "tutorials/steady/membranes/membrane24_fit_then_simulate",
+    "tutorials/steady/membranes/membrane25_rated_test_inversion_nf270_4040",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",
@@ -8386,6 +8404,7 @@
     "tutorials/steady/membranes/membrane22_two_stage_nf_array_dspmde",
     "tutorials/steady/membranes/membrane23_constant_rejection_nf8040",
     "tutorials/steady/membranes/membrane24_fit_then_simulate",
+    "tutorials/steady/membranes/membrane25_rated_test_inversion_nf270_4040",
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
@@ -8912,6 +8931,7 @@
     "tutorials/steady/membranes/membrane22_two_stage_nf_array_dspmde",
     "tutorials/steady/membranes/membrane23_constant_rejection_nf8040",
     "tutorials/steady/membranes/membrane24_fit_then_simulate",
+    "tutorials/steady/membranes/membrane25_rated_test_inversion_nf270_4040",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",

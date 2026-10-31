@@ -1436,6 +1436,24 @@ each channel node):
   SDEM;`).  Taken by the spiral module, the flat cell and `batchDiafilter`.
   Witness `membrane23_constant_rejection_nf8040`; gate
   `check_constant_rejection`.
+  **A data sheet's rejection is OBSERVED, not intrinsic** (feed to permeate;
+  the wall is richer than the feed).  Do not paste it as R.  On a
+  `spiralWoundModule` whose `module <name>;` record carries a `ratedTest {}`,
+  write `rejection { MgSO4 fromRatedTest; }` for the RATED solute: the engine
+  runs that element at the sheet's test (its solute in water at
+  `feedMassFraction`, its P and T, the case's `P_permeate`, one element, the
+  feed `permeateFlow / recovery`) and finds by a bracketed solve the R_int
+  whose predicted observed rejection is the sheet's -- announced
+  (`[ratedTest]` on stdout and stderr, a provenance advisory) and published
+  (`R_int_fromRatedTest_<s>`, `ratedTest_R_obs_<s>`,
+  `ratedTest_cm_over_cb_<s>`, `ratedTest_recovery`,
+  `ratedTest_permeateFlow`).  It REFUSES by name: no module record, a record
+  with no `ratedTest`, a solute other than the rated one, a case declared ion
+  by ion (a salt test says nothing about the ions' split), a rated rejection
+  the film model cannot reach, and any unit with no module record (the batch
+  diafilter).  Every other solute keeps its declared number.  Witness
+  `membrane25_rated_test_inversion_nf270_4040`; gate
+  `check_rejection_inversion`.
 
 **Props bench `polarisationIndex`** (choupoProps) — the glass-box surface of
 the multi-ionic polarisation model: given `massTransfer { model StirredCell;

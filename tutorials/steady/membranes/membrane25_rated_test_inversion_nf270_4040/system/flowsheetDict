@@ -1,0 +1,114 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane25_rated_test_inversion_nf270_4040 -- a data sheet's OBSERVED
+  rejection is not the INTRINSIC rejection `constantRejection` takes.
+
+  The NF270-4040 sheet quotes "stabilized salt rejection > 97.0 %" for
+  2,000 ppm MgSO4 at 4.8 bar, 25 C, 15 % recovery -- OBSERVED, feed to
+  permeate.  The law's R_int is measured against the WALL, which is richer
+  than the feed: the film polarises it and the bulk concentrates along the
+  leaf.  Two copies of the same element, fed the same 2,000 ppm MgSO4 at
+  8 bar (away from the rated 4.8 bar):
+
+    NFderived  `rejection { MgSO4 fromRatedTest; }` -- the engine runs THIS
+               element at the sheet's rated test and finds the R_int whose
+               predicted observed rejection is 0.97:
+                   R_int(MgSO4)        = 0.98331  (KPI R_int_fromRatedTest_MgSO4)
+                   c_m/c_b at the test = 1.593    (ratedTest_cm_over_cb_MgSO4,
+                                                   the channel average)
+    NFnaive    `rejection { MgSO4 0.97; }` -- the sheet's number pasted as
+               if it were intrinsic.
+
+  At 8 bar the two permeates carry (KPI R_obs_MgSO4; the permeate streams):
+      NFderived  R_obs 0.94426, permeate 1128 kg/h at 111 ppm MgSO4
+      NFnaive    R_obs 0.90065, permeate 1145 kg/h at 199 ppm MgSO4
+  -- the naive element passes 1.81x the salt, and at the sheet's own test
+  it would report 94.6 %, not the 97.0 % the sheet measured.  (Both R_obs
+  fall below 0.97 at 8 bar: 43 % of the water leaves, so the bulk
+  concentrates, and the film is thicker at the higher flux.)
+
+  NOT a validation: the NF270 record's A_w is a fit to a teaching case --
+  at the rated test the engine's permeate is 14.5 m3/d against the sheet's
+  9.5 (recovery 22.9 % against 15 %), printed by the [ratedTest] line, so
+  the polarisation the inversion corrects for is the engine's, not the
+  bench's -- and a constant R_int stays constant away from the test.  See
+  the README.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        NFderived;
+        type        spiralWoundModule;
+        in          feedDerived;
+        outputs     ( retentateDerived  permeateDerived );
+        operation
+        {
+            module           NF270-4040;     // data/standards/assets/, its ratedTest {} is inverted
+            transport        constantRejection;
+            transportParameters
+            {
+                rejection { MgSO4 fromRatedTest; }
+                source    "DERIVED: the NF270-4040 data sheet's observed MgSO4 rejection (> 97.0 %, Form No. 45-D01529-en Rev. 8) inverted with this element's own film at the sheet's rated test";
+            }
+            P_permeate       1.0 bar;
+            nNodes           50;
+
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      0.89e-3;           // Pa.s, water at 25 C
+                diffusivity    0.85e-9;           // m2/s, MgSO4 (the value membrane23's header quotes)
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        none;          // one lumped salt: nothing to couple
+            }
+        }
+    }
+    {
+        name        NFnaive;
+        type        spiralWoundModule;
+        in          feedNaive;
+        outputs     ( retentateNaive  permeateNaive );
+        operation
+        {
+            module           NF270-4040;
+            transport        constantRejection;
+            transportParameters
+            {
+                rejection { MgSO4 0.97; }
+                source    "the NF270-4040 data sheet's OBSERVED MgSO4 rejection pasted as if it were intrinsic -- the mistake this case exists to show";
+            }
+            P_permeate       1.0 bar;
+            nNodes           50;
+
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      0.89e-3;
+                diffusivity    0.85e-9;
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        none;
+            }
+        }
+    }
+);

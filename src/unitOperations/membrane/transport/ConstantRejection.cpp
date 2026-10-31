@@ -32,6 +32,7 @@ License
 #include "core/Dimensions.H"
 #include "thermo/ThermoPackage.H"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <iostream>
@@ -77,6 +78,20 @@ void ConstantRejection::readParameters(const DictPtr& params)
     auto r = params->subDict("rejection");
     for (const auto& k : r->keys())
     {
+        //  `<solute> fromRatedTest;` -- the ONE word this block accepts in
+        //  place of a number (DEV.md 4c C189): R_int is DERIVED by the unit
+        //  from its module record's rated test, never typed.
+        if (std::holds_alternative<std::string>(r->entryValue(k)))
+        {
+            const std::string w = r->lookupWord(k);
+            if (w != "fromRatedTest")
+                throw std::runtime_error("transport constantRejection: the"
+                    " intrinsic rejection of '" + k + "' is the word `" + w
+                    + "` -- write a number in [0, 1], or `fromRatedTest` to"
+                      " derive it from the module record's rated test.");
+            pendingRated_.push_back(k);
+            continue;
+        }
         const scalar R = r->lookupScalar(k, Dims::dimensionless);
         if (!std::isfinite(R) || R < 0.0 || R > 1.0)
             throw std::runtime_error("transport constantRejection: the"
@@ -88,10 +103,25 @@ void ConstantRejection::readParameters(const DictPtr& params)
                   " ions' permeances.");
         R_[k] = R;
     }
-    if (R_.empty())
+    if (R_.empty() && pendingRated_.empty())
         throw std::runtime_error(ctx + ": `rejection {}` is empty -- declare"
             " R_int for every solute of the feed.");
     read_ = true;
+}
+
+void ConstantRejection::setRatedRejection(const std::string& solute, scalar R_int)
+{
+    const auto it = std::find(pendingRated_.begin(), pendingRated_.end(), solute);
+    if (it == pendingRated_.end())
+        throw std::runtime_error("transport constantRejection: '" + solute
+            + "' was not declared `fromRatedTest` -- nothing to derive.");
+    if (!std::isfinite(R_int) || R_int < 0.0 || R_int > 1.0)
+        throw std::runtime_error("transport constantRejection: the R_int"
+            " derived for '" + solute + "' is " + fmtR(R_int)
+            + ", outside [0, 1].");
+    R_[solute] = R_int;
+    pendingRated_.erase(it);
+    derivedRated_.push_back(solute);
 }
 
 void ConstantRejection::resolveOnce(const TransportContext& ctx) const
@@ -102,6 +132,13 @@ void ConstantRejection::resolveOnce(const TransportContext& ctx) const
             " `transportParameters { rejection { <solute> <R_int>; ... }"
             " source \"...\"; }` in the unit's operation -- the law has no"
             " rejections without it.");
+    if (!pendingRated_.empty())
+        throw std::runtime_error("transport constantRejection: `rejection { "
+            + pendingRated_.front() + " fromRatedTest; }` asks for R_int to be"
+              " DERIVED from a module record's rated test, and this unit holds"
+              " no module record to derive it from (only a spiralWoundModule"
+              " with `module <name>;` does).  Declare the intrinsic rejection"
+              " as a number, with its `source`.");
 
     const ThermoPackage& thermo = ctx.thermo;
     const std::size_t Ns = ctx.soluteIdx.size();
@@ -156,8 +193,13 @@ void ConstantRejection::resolveOnce(const TransportContext& ctx) const
                  " its permeabilities not read\n"
               << "  [constantRejection] R_int:";
     for (std::size_t s = 0; s < Ns; ++s)
-        std::cout << "  " << thermo.comp(ctx.soluteIdx[s]).name() << " "
-                  << fmtR(1.0 - ratio_[s]);
+    {
+        const std::string nm = thermo.comp(ctx.soluteIdx[s]).name();
+        std::cout << "  " << nm << " " << fmtR(1.0 - ratio_[s]);
+        if (std::find(derivedRated_.begin(), derivedRated_.end(), nm)
+            != derivedRated_.end())
+            std::cout << " (derived from the rated test)";
+    }
     std::cout << "   (source: " << source_ << ")\n";
     if (perIon_)
         std::cout << "  [constantRejection] " << nIons << " charged solute(s):"

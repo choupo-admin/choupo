@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases). ---*/
+//  The data sheet's rated feed (DuPont FilmTec NF270, Form No. 45-D01529-en,
+//  Rev. 8): 2,000 ppm MgSO4, and the feed its rated test implies -- 9.5 m3/d
+//  of permeate at 15 % recovery = 63.33 m3/d = 2.6389 m3/h.  Per hour at
+//  rho 1000 kg/m3: MgSO4 2638.89 x 0.002 / 120.37 = 0.043846 kmol and water
+//  2638.89 x 0.998 / 18.015 = 146.190 kmol.  Fed at 8 bar, NOT at the
+//  sheet's 4.8 bar: the element runs AWAY from its rated test, where the
+//  derived R_int is used and not merely reproduced.  feedDerived is the same.
+componentMolarFlows
+{
+    water   146.18990 kmol/h;
+    MgSO4   0.043846289 kmol/h;
+}
+T               298.15 K;      // 25 C, the sheet's test temperature
+P               8.0 bar;       // above the rated 4.8 bar (70 psi)

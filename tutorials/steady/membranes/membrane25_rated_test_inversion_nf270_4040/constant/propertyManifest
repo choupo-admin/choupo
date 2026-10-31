@@ -1,0 +1,83 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-10-31";
+    importerVersion    "3";
+    records
+    {
+        "assets/NF270-4040.dat"
+        {
+            type          imported;
+            sha256        "f5407ed6137168b97a3186d9ca979c442272273bb0d1ad474bc93e236aa81c67";
+            computationalSha256 "b6ebcda3a80695118e70ebd7dbb655228e3a1700bc04d864f3bb7fb554f7e4f4";
+            origin        "data/standards/assets/NF270-4040.dat";
+            originSha256  "d364e799badda9f1d60da02659ebb1310bacb47d74544b3c701aa318cffb73a3";
+            release       Choupo-2608;
+        }
+        "assets/NF270.dat"
+        {
+            type          imported;
+            sha256        "063cfb4ae539b51b90c08d2239318374e2442effcbcbc12c88608f7479eefda8";
+            computationalSha256 "bcf6399b2a14e4765e3725872e57d7e55a355b25fd4dd146f4f5a98607be0c46";
+            origin        "data/standards/assets/NF270.dat";
+            originSha256  "2c0ca9909550c83b462c08e39689002c8724c7bdf166e59c67b6a91b13b7b247";
+            release       Choupo-2608;
+        }
+        "components/MgSO4.dat"
+        {
+            type          imported;
+            sha256        "22ea11e9d0a8c36693238049f6d4da1bb834f8edc39308533419231722757116";
+            computationalSha256 "d477057332cfe5d4b0d2b0e6dcd488eab02d7048056fa25b8a241d43eeb957f2";
+            origin        "data/standards/components/MgSO4.dat";
+            originSha256  "cefcbbf6427890e74a7ba2bb548b60c94b3ab2dba229bb6090b3cbcfb1cd1241";
+            release       Choupo-2608;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "434214d874e17a076ce391a9d1dbca47321b4285429660688db4e64237ee0b2a";
+            computationalSha256 "ce55eca4e8c4f234b2633edec3fb54de5e630256ace48491a44357db2aaacf5c";
+            origin        "data/standards/components/water.dat";
+            originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
+            release       Choupo-2608;
+        }
+        "species/Mg.dat"
+        {
+            type          imported;
+            sha256        "5db78f9c33698f61367e42e24a55e883563db60bb47b54f0a2f34db115c855f4";
+            computationalSha256 "6fd439e81addfd69bd1e36fc8e5a8d2973db885cc2e152f04cc7e76d50a578f1";
+            origin        "data/standards/species/Mg.dat";
+            originSha256  "53f2cec8663591fb01ed3b61ff74beef7bd775e8ba696444cbd3c8fb3f70f54a";
+            release       Choupo-2608;
+        }
+        "species/SO4.dat"
+        {
+            type          imported;
+            sha256        "f776fac424d960111304300785d7e07f55c6e787f1f8d362159a923673149bf9";
+            computationalSha256 "079fafa46d13566f7ec1808a717e2ba5f7b13c26659fd6e15f96ebcd2460cb74";
+            origin        "data/standards/species/SO4.dat";
+            originSha256  "5cc20d9553c02ca481fa49333533c06ecf3d1cff8111c7ecbe21768bb2510e67";
+            release       Choupo-2608;
+        }
+    }
+}
