@@ -1586,7 +1586,17 @@ accepts today, and that is a policy call.
 > sheet's applied pressure is GAUGE (psig) unless the sheet says otherwise;
 > the NF270-4040 and SW30HR-380 records declare `pressureBasis feedGauge;`
 > -- a separate slice, because it moves membrane25's goldens (R_int 0.9833
-> -> 0.9864 at the gauge reading).
+> -> 0.9864 at the gauge reading).  DONE (320bdc7a8): both records declare
+> it, quoting their sheet wording; membrane25 re-sealed and re-recorded
+> (14 rows, one stated cause: the rated test at 5.81 bar absolute), its
+> header now R_int 0.98641 and 2.18x the salt for the naive 0.97;
+> membrane15 re-sealed (water/Na/Cl mirrors refreshed, no row moved);
+> membrane16 deliberately left on its pre-C146 seal.  FOUND: (a) at the
+> rated tests the engine's permeate is 2.16x the NF270-4040 sheet and
+> 2.08x the SW30HR-380 sheet -- the records' A_w is high for the
+> elements, a curation item; (b) `bin/choupo-import` cannot seal a case
+> that reads a feed-spacer record ("FeedSpacerRegistry: unknown feed
+> spacer 'Spacer-28mil' ... the builtins were not installed").
 
 > **C188. WHAT A UNIT ACCEPTS: MODELLED, A DECLARED APPROXIMATION, OR
 > REFUSED (an external proposal, ChatGPT, "chemical component
