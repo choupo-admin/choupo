@@ -1400,6 +1400,11 @@
       "exit": 0,
       "claim": "check_third_body_rate: OK -- the batch reactor's thirdBody rate is k(T)[M]c_H2 on R5 of O Conaire 2004 at 2800 K: irreversible, 37.02 % of the H2 converted in 2 ms, n_H2 and n_H equal to an independent RK4 integration to 1e-6; reversible: on the plateau c_H^2/c_H2 = 2.88541e-05 = Kc 2.88541e-05 kmol/m3 (independent, from the records); RateForm::ThirdBody read only in BatchReactor.cpp.  Scope: the thirdBody form of batchReactor; NOT checked: falloff, the adiabatic energy balance, CHEMKIN conversion at other molecularities",
       "seconds": 1.2
+    },
+    "check_membrane_classes": {
+      "exit": 0,
+      "claim": "check_membrane_classes: OK -- the six `kind membraneClass` records (NF_OPEN, NF_DIVALENT_SELECTIVE, NF_TIGHT, BWRO_HIGH_FLUX, BWRO_HIGH_REJECTION, SWRO) are illustrative, name no manufacturer and keep each stated rejection inside its band; each run announces it ([illustrative], stdout + stderr + an accepted advisory); every derived R_int typed on an independent fixture at the class's reference test reproduces the stated observed rejection to 1e-7; an unknown class, SDEM, solutionDiffusion, a typed rated salt, a class as a bare membrane, a class naming a manufacturer and one claiming another review status all refuse by name.  NOT checked: whether a class's values are good teaching values, the engine's permeate against the stated one (printed only), the batch diafilter (does not refuse a class)",
+      "seconds": 0.4
     }
   }
 }
