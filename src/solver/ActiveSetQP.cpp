@@ -39,6 +39,7 @@ Reference (public-domain method, primary source -- NOT a port of any code):
 #include <iomanip>
 #include <iostream>
 #include <numeric>
+#include <sstream>
 #include <stdexcept>
 
 namespace Choupo::solver {
@@ -167,9 +168,57 @@ QPResult activeSetQP(const QPProblem&         qp,
     // the drop/re-add cycle that two nearly-parallel constraints would form.
     std::vector<bool> forbidden(mi, false);
 
+    //  THE FEASIBILITY TEST, one home (C178, 2026-10-27).  A row's value
+    //  c_k(x) = a_k . x + b_k is judged against a tolerance that scales with
+    //  the terms the row balances (the 2026-08-09 normalised-residual rule):
+    //  an absolute 1e-10 on a row whose constant is 1e6 would be a demand on
+    //  the last digit of Gaussian elimination.
+    auto rowTol = [&](const sVector& a, scalar b) -> scalar
+    {
+        scalar ax = 0.0;
+        for (std::size_t j = 0; j < n; ++j) ax += std::abs(a[j] * x[j]);
+        return 1.0e-9 * std::max({1.0, std::abs(b), ax});
+    };
+    auto rowNorm = [&](const sVector& a) -> scalar
+    {
+        scalar s2 = 0.0;
+        for (scalar v : a) s2 += v * v;
+        return std::sqrt(s2);
+    };
+
     int it = 0;
     for (; it < maxIter; ++it)
     {
+        //  AN INFEASIBLE START (C178).  The running point starts at x = 0,
+        //  and nothing guarantees the INEQUALITIES hold there -- an SQP
+        //  iterate that violates a constraint hands this solver exactly that
+        //  linearisation.  Before C178 a violated row was neither in the
+        //  working set nor a blocking row of the ratio test, so a zero step
+        //  was certified "KKT satisfied" at a point that violated it
+        //  (min x^2/2 s.t. x >= 1 returned x = 0, converged).  Now the MOST
+        //  violated inactive row (scaled by its norm) joins the working set,
+        //  ONE per iteration, and the KKT solve drives its residual to zero
+        //  exactly as it drives the equalities' -- the posture this solver
+        //  already takes for equalities, extended to violated inequalities,
+        //  instead of a separate phase-1 LP.  One at a time, most violated
+        //  first, so of two parallel violated rows the binding one enters
+        //  and the implied one is satisfied by it rather than both entering
+        //  and tripping the LICQ recovery.
+        {
+            scalar      worst  = 0.0;
+            std::size_t worstK = mi;
+            for (std::size_t k = 0; k < mi; ++k)
+            {
+                if (active[k] || forbidden[k]) continue;
+                const scalar ck = dot(qp.Aineq[k], x) + qp.bineq[k];
+                if (ck <= rowTol(qp.Aineq[k], qp.bineq[k])) continue;
+                const scalar nk = rowNorm(qp.Aineq[k]);
+                const scalar v  = (nk > 0.0) ? ck / nk : ck;
+                if (v > worst) { worst = v; worstK = k; }
+            }
+            if (worstK != mi) active[worstK] = true;
+        }
+
         // Working set: equalities (always) + active inequalities.
         std::vector<sVector> Arows;
         sVector              browsZero;   // RHS for the sub-step: hold rows at 0 change
@@ -188,6 +237,49 @@ QPResult activeSetQP(const QPProblem&         qp,
                 browsZero.push_back(dot(qp.Aineq[k], x) + qp.bineq[k]);
                 ineqRowOf.push_back(k);
             }
+
+        //  A LINEARLY DEPENDENT WORKING SET, found BEFORE the solve (C178).
+        //  The LICQ recovery below relied on gaussSolve THROWING on a
+        //  singular KKT matrix; with B far from the identity the elimination
+        //  leaves a round-off pivot instead, the "solution" is noise, and
+        //  the loop cycles to its cap (measured: two opposite bound rows in
+        //  one variable with B = 24.7).  So the active INEQUALITY rows are
+        //  orthogonalised against the rows before them (modified Gram-
+        //  Schmidt, twice); one numerically in their span is dropped and
+        //  forbidden exactly as the throw path does.  A dependent EQUALITY
+        //  is left to the solve's own honest diagnostic, as before.
+        {
+            std::vector<sVector> basis;
+            std::size_t dependentIneq = mi;
+            for (std::size_t r = 0; r < Arows.size() && dependentIneq == mi; ++r)
+            {
+                sVector v = Arows[r];
+                const scalar n0 = rowNorm(v);
+                for (int pass = 0; pass < 2; ++pass)
+                    for (const auto& q : basis)
+                    {
+                        const scalar c = dot(q, v);
+                        for (std::size_t j = 0; j < n; ++j) v[j] -= c * q[j];
+                    }
+                const scalar nv = rowNorm(v);
+                if (n0 > 0.0 && nv > 1.0e-10 * n0)
+                {
+                    for (auto& e : v) e /= nv;
+                    basis.push_back(v);
+                }
+                else if (r >= me)
+                    dependentIneq = ineqRowOf[r - me];
+            }
+            if (dependentIneq != mi)
+            {
+                active[dependentIneq]    = false;
+                forbidden[dependentIneq] = true;
+                if (R.reason.empty())
+                    R.reason = "LICQ recovery: dropped a linearly-dependent"
+                               " active inequality (correlated constraints)";
+                continue;
+            }
+        }
 
         // Gradient of 0.5 x^T B x + g^T x  at x  is  B x + g.
         sVector grad(n, 0.0);
@@ -249,7 +341,54 @@ QPResult activeSetQP(const QPProblem&         qp,
             }
             if (dropPos == ineqRowOf.size())
             {
-                // All active-inequality multipliers >= 0  ->  OPTIMAL.
+                // All active-inequality multipliers >= 0.  OPTIMAL only if x
+                // is PRIMAL FEASIBLE on EVERY row (C178): equalities, active
+                // and inactive inequalities, and any row the LICQ recovery
+                // forbade.  A sign test on the active multipliers alone says
+                // nothing about a row that is not in the working set.
+                std::string violated;
+                scalar      worstExcess = 0.0;
+                auto judge = [&](const char* kind, std::size_t k,
+                                 const sVector& a, scalar b, bool equality)
+                {
+                    const scalar c   = dot(a, x) + b;
+                    const scalar exc = equality ? std::abs(c) : c;
+                    const scalar tol = rowTol(a, b);
+                    if (exc > tol && exc > worstExcess)
+                    {
+                        worstExcess = exc;
+                        std::ostringstream os;
+                        os << kind << " row " << k << " (value "
+                           << std::setprecision(6) << c << ", tolerance "
+                           << tol << ")";
+                        violated = os.str();
+                    }
+                };
+                for (std::size_t k = 0; k < me; ++k)
+                    judge("equality", k, qp.Aeq[k], qp.beq[k], true);
+                for (std::size_t k = 0; k < mi; ++k)
+                    judge(forbidden[k] ? "inequality (dropped by the LICQ"
+                                         " recovery)" : "inequality",
+                          k, qp.Aineq[k], qp.bineq[k], false);
+                R.d = x;
+                R.lambdaEq.assign(lambdaW.begin(), lambdaW.begin() + me);
+                R.lambdaIneq.assign(mi, 0.0);
+                for (std::size_t r = 0; r < ineqRowOf.size(); ++r)
+                    R.lambdaIneq[ineqRowOf[r]] = lambdaW[me + r];
+                R.active = active;
+                R.iterations = it;
+                if (!violated.empty())
+                {
+                    //  No feasible point satisfies the constraints together
+                    //  (the working set could not hold them all): the QP is
+                    //  INFEASIBLE, and it is said so, never certified.
+                    R.converged = false;
+                    R.infeasible = true;
+                    R.reason = "QP INFEASIBLE: the constraints cannot all"
+                               " hold -- the working set settled with "
+                             + violated + " still violated";
+                    return R;
+                }
                 R.converged = true;
                 R.reason    = "KKT satisfied";
                 R.d         = x;
@@ -277,6 +416,10 @@ QPResult activeSetQP(const QPProblem&         qp,
             if (slope > feasTol)
             {
                 const scalar ck = dot(qp.Aineq[k], x) + qp.bineq[k]; // <= 0
+                //  A row ALREADY violated does not block (C178): it is not a
+                //  bound the step is approaching but one it has yet to reach;
+                //  it joins the working set at the top of the next iteration.
+                if (ck > rowTol(qp.Aineq[k], qp.bineq[k])) continue;
                 const scalar a  = -ck / slope;
                 if (a < alpha)
                 {

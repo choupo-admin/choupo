@@ -84,8 +84,8 @@ int Pump::solve(const DictPtr& dict,
                 " is not a liquid (" + std::string(b) + ").  The pump model is"
                 " the incompressible one, W = v dP / eta on the LIQUID molar"
                 " volume, and its outlet is a liquid; a vapour fed to it would"
-                " be priced on a volume it does not have (and in a real pump it"
-                " cavitates).  REMEDY: subcool the feed (a cooler, or a higher"
+                " be priced on a volume it does not have (and a real pump fed"
+                " vapour loses its prime).  REMEDY: subcool the feed (a cooler, or a higher"
                 " suction pressure) so it arrives liquid, or use a `compressor`"
                 " for a gas.");
         }

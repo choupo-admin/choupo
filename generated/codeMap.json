@@ -906,6 +906,9 @@
   "Instant": [
    "src/unitOperations/batch/BatchElectrodialysis.H"
   ],
+  "IntegrationFailure": [
+   "src/solver/ODE/AdaptiveTimeStep.H"
+  ],
   "Ion": [
    "src/unitOperations/electrochem/LimitingCurrent.H"
   ],

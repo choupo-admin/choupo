@@ -433,7 +433,7 @@ describe("every file:line these pages cite into the engine resolves", () => {
     //  288-291 and still covers it; this list holds the ONE line that must
     //  carry the string.  (Drift found 2026-09-16 by an unrelated slice --
     //  a pre-existing red that had nothing to do with it.)
-    ["src/applications/choupoSolve/main.cpp", 308, "Mass balance (global)"],
+    ["src/applications/choupoSolve/main.cpp", 309, "Mass balance (global)"],
     ["src/streams/ProcessStream.H", 80, "kmol/s"],
     // --- tear streams: the plan contract
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 4317, "Flowsheet::validateSequentialPlan"],
@@ -446,15 +446,15 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 4575, "[plan] material recycle"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 4459, "c <= p->second"],
     // --- the QP
-    ["src/solver/ActiveSetQP.cpp", 151, "N&W Algorithm 16.3"],
-    ["src/solver/ActiveSetQP.cpp", 270, "N&W eq. 16.41"],
-    ["src/solver/ActiveSetQP.cpp", 235, "pnorm < 1.0e-12"],
-    ["src/solver/ActiveSetQP.cpp", 143, "feasTol"],
-    ["src/solver/ActiveSetQP.cpp", 144, "lamTol"],
-    ["src/solver/ActiveSetQP.cpp", 292, "add it to W"],
-    ["src/solver/ActiveSetQP.H", 104, "struct QPProblem"],
-    ["src/solver/ActiveSetQP.H", 112, "Aineq"],
-    ["src/solver/SQP.cpp", 247, "activeSetQP(qp)"],
+    ["src/solver/ActiveSetQP.cpp", 152, "N&W Algorithm 16.3"],
+    ["src/solver/ActiveSetQP.cpp", 409, "N&W eq. 16.41"],
+    ["src/solver/ActiveSetQP.cpp", 327, "pnorm < 1.0e-12"],
+    ["src/solver/ActiveSetQP.cpp", 144, "feasTol"],
+    ["src/solver/ActiveSetQP.cpp", 145, "lamTol"],
+    ["src/solver/ActiveSetQP.cpp", 435, "add it to W"],
+    ["src/solver/ActiveSetQP.H", 120, "struct QPProblem"],
+    ["src/solver/ActiveSetQP.H", 128, "Aineq"],
+    ["src/solver/SQP.cpp", 329, "activeSetQP(qp)"],
     ["src/outerDriver/OptimizationDriver.cpp", 484, "verifyActiveSetQP"],
     ["src/streams/AnalysisReconciler.cpp", 192, "solver::activeSetQP(qp)"],
     //  the normalised law rows the multipliers belong to (C22 slice 2)

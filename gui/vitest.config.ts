@@ -18,5 +18,8 @@ export default defineConfig({
     // before any test loads, or marks them REFUSED with the remedy.  The
     // contract and the list: tests/witnessOutputs.ts.
     globalSetup: ["tests/witnessSetup.ts"],
+    // Globals the browser has and Node 18 lacks (`File`), installed only
+    // when absent -- see tests/nodeGlobals.ts.
+    setupFiles: ["tests/nodeGlobals.ts"],
   },
 });

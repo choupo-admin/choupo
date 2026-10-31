@@ -134,6 +134,7 @@ Description
 #include "result/ResultEmitter.H"
 
 #include <algorithm>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -515,6 +516,9 @@ try
         controlDict->lookupWordOrDefault("timeStepping", "fixed");
     const bool adaptive = (timeStepping == "adaptive");
     solver::AdaptiveSettings adaptSet;
+    //  The per-interval runaway guard (C178): one reader, which also refuses
+    //  it on a fixed-step run.
+    adaptSet.maxSteps = solver::readMaxSteps(controlDict, adaptive);
     if (adaptive)
     {
         DictPtr ts = controlDict->found("timeSteppingControl")
@@ -545,7 +549,12 @@ try
         std::cout << "  rtol=" << adaptSet.rtol << "  atol=" << adaptSet.atol
                   << "  deltaT0=" << adaptSet.deltaT0 << " s"
                   << "  deltaTmax=" << adaptSet.deltaTmax << " s"
-                  << "  maxGrowth=" << adaptSet.maxGrowth << "\n";
+                  << "  maxGrowth=" << adaptSet.maxGrowth
+                  << (adaptSet.maxSteps > 0
+                        ? "  maxSteps=" + std::to_string(adaptSet.maxSteps)
+                          + " per interval (declared)"
+                        : std::string())
+                  << "\n";
     std::cout << "reactions library: "
               << (reactionsDict ? "loaded" : "not present")
               << "\n\n";
@@ -1678,7 +1687,8 @@ try
                         [up]               { return up->odeState(); },
                         [up](const sVector& y){ up->setOdeState(y); },
                         [up](const sVector& y){ return up->odeDerivative(y); },
-                        up->odeNPositive() });
+                        up->odeNPositive(),
+                        up->name() });
                 }
                 else
                 {
@@ -1691,6 +1701,10 @@ try
                 // the global ledger refuses rather than fabricate a closure.
                 ledger.refuse("mixed ODE and non-ODE units under adaptive"
                               " stepping: no common accepted-step grid");
+            //  advance() THROWS IntegrationFailure when the integrator gives
+            //  up short of tNext (C178): routing, t = tNext and the write
+            //  below are never reached for a state that stopped short, and
+            //  under an outerDict the throw is a FAILED evaluation.
             if (!odeUnits.empty())
                 stepper.advance(odeUnits, t, tNext, onStep,
                     [&](scalar tEnd, scalar /*hTaken*/)

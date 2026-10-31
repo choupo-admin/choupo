@@ -1047,8 +1047,11 @@ void BatchReactor::step(scalar /*t*/, scalar dt)
             throw std::runtime_error("BatchReactor '" + name_ + "': the '"
                 + integrator_ + "' integrator GAVE UP inside a "
                 + std::to_string(dt) + " s step (accepted " 
-                + std::to_string(st.accepted) + " sub-step(s) before a"
-                " positivity/finiteness violation or step-floor).  Use a"
+                + std::to_string(st.accepted) + " sub-step(s), stopping "
+                + std::to_string(st.tReached) + " s into it: "
+                + (st.failure.empty() ? std::string("cause not reported")
+                                      : st.failure)
+                + ").  Use a"
                 " smaller deltaT or a stiff integrator"
                 " (integrator Rosenbrock23;).");
     }
