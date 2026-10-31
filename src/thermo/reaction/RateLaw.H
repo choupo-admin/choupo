@@ -59,10 +59,25 @@ Class
       saturated -- an ion-exchange resin swollen with liquid, say, where every
       site is occupied by SOMETHING and only the competition matters.
 
-    The reverse rate is either DETAILED BALANCE (`reversible true`, k_r =
-    k_f / Kc, so equilibrium is exactly where the thermodynamics puts it), or
-    an explicitly regressed Arrhenius pair (`A_rev`, `Ea_rev`) -- which is what
-    a kinetic paper reports, and what a fitted K_a can then be checked against.
+    The reverse rate is either DETAILED BALANCE (`reversible true`, so
+    equilibrium is exactly where the thermodynamics puts it), or an explicitly
+    regressed Arrhenius pair (`A_rev`, `Ea_rev`) -- which is what a kinetic
+    paper reports, and what a fitted K_a can then be checked against.
+
+    Under detailed balance Kc is a statement about the BULK, PROD theta_i^nu_i
+    = Kc, while both legs run on the ADSORBED abar_i.  So the reverse constant
+    is not k_f / Kc but
+
+        k_r = k_f / ( Kc . PROD_i K_i^nu_i )
+
+    which is k_f / Kc whenever no reacting species adsorbs (the power law, bit
+    for bit) and otherwise divides out exactly the weights the numerator
+    carries.  Without that product the net rate vanished at PROD (K_i
+    theta_i)^nu_i = Kc, an equilibrium shifted by PROD K_i^nu_i (DEV.md 4c
+    C185 item 7; docs/design/an-lhhw-law-balances-at-the-declared-kc.md).
+    The zero is exact when the forward orders are the reactants' |nu_i|, the
+    mass-action form detailed balance presumes; the denominator is a common
+    factor of both legs and never moves it.
 
     Note the adsorption weights sit in the NUMERATOR too.  That is not a
     convention: the rate-determining surface step sees the ADSORBED species,

@@ -180,6 +180,8 @@ int PFR::solve(const DictPtr& dict,
     {
         Reaction::refuseLiquidBasisDetailedBalance(*rxnDict, nu,
             rxnDict->name(), "PFR");
+        Reaction::refuseNonMassActionDetailedBalance(*rxnDict,
+            rxnDict->name(), "PFR");
         const scalar K_eq = Reaction::equilibriumKc(thermo, nu, T);
         k_rev = k / K_eq;
     }

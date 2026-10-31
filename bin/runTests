@@ -5058,6 +5058,20 @@ PYEOF
         fail=$((fail+1))
     fi
 
+    # An LHHW law with `reversible true` must come to rest at the DECLARED Kc
+    # (DEV.md 4c C185 item 7).  Both legs run on the adsorbed K_i theta_i, so
+    # a reverse constant of k_f / Kc balanced at an equilibrium shifted by
+    # PROD K_i^nu_i, converged and at exit 0.  No corpus case reaches it, so
+    # the probe writes the laws in memory and evaluates RateLaw itself.
+    if gate_exec "$ROOT/bin/curate/check_lhhw_detailed_balance.py" > /tmp/lhhwdb.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "lhhw-detailed-balance" "$(head -1 /tmp/lhhwdb.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lhhw_detailed_balance.py)\n" "lhhw-detailed-balance"
+        cat /tmp/lhhwdb.$$
+        fail=$((fail+1))
+    fi
+
     # explainProperty: an explanation the engine does not agree with must not
     # be published.  The op's ledger is re-added INDEPENDENTLY here (never
     # trusting its own gap rows), the s_298 rows are read back against the

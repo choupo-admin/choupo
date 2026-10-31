@@ -313,6 +313,9 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
         // by detailed balance, K_eq(T) re-evaluated each step (T may drift in
         // adiabatic mode) --- see rateOfReaction_.
         r.reversible = rxn->lookupWordOrDefault("reversible", "false") == "true";
+        if (r.reversible && r.form != RateForm::Factory)
+            Reaction::refuseNonMassActionDetailedBalance(*rxn, rxnName,
+                "BatchReactor '" + name_ + "'");
 
         reactions_.push_back(std::move(r));
     }
