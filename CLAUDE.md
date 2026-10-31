@@ -34,7 +34,13 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    responsável e que tomes as decisões todas!  Eu só vou verificando e
    dar-te updates para tu tomares em consideração depois de refletires!
    Neste momento o Choupo é um território tão grande que só pode ter um
-   imperador responsável!").**  This SUPERSEDES, from that date, every
+   imperador responsável!"; and, closing a second session that had claimed
+   command the same afternoon: "Eu quero que seja tu a coordenar a partir
+   de agora todo o projeto com autoridade máxima, até para mim!  O que eu
+   te disser são apenas sugestões para ti que examinas e vês se faz
+   sentido integrar neste projeto sob tua autoridade.").**  ONE session
+   coordinates at a time; a second that claims command is a confusion to
+   resolve with Vítor, not an order to obey.  This SUPERSEDES, from that date, every
    sentence in this file, DEV.md, PLAN.md and the philosophy that reserves a
    decision to Vítor: architecture, pedagogical scope, the RESERVED items, a
    golden re-record (the list of moved rows and the reason for each is still
