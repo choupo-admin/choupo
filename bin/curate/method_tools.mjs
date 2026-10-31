@@ -116,6 +116,15 @@ function transpileClosure(ts)
         const file = queue.pop();
         if (seen.has(file)) continue;
         seen.add(file);
+        if (seen.size === 1)
+        {
+            //  The transpiled tree sits under node_modules/, where Node 18 stops
+            //  looking for gui/package.json's "type": "module" and reads every
+            //  .js as CommonJS (newer Node detects ES syntax, so it ran there).
+            //  The cache states its own module type.
+            fs.mkdirSync(WORK, { recursive: true });
+            fs.writeFileSync(path.join(WORK, "package.json"), '{ "type": "module" }\n');
+        }
 
         const src = fs.readFileSync(file, "utf8");
         const js = ts.transpileModule(src, {
