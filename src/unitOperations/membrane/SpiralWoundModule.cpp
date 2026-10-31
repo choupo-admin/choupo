@@ -727,6 +727,50 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     }
     const std::size_t Ns = soluteIdx.size();
 
+    //  WHAT THIS MODULE MODELS, AND WHAT IT MUST NOT SWALLOW (DEV.md 4c C188
+    //  defect 1).  The march carries the solvent and the NONVOLATILE solutes
+    //  above; the outlets close their volume on the solvent (rho/MW_water).
+    //  A present component that is neither was given z = 0 in both outlets
+    //  and its mass reappeared as water -- an ethanol feed came out as pure
+    //  water, the kg balance closing and the carbon gone, at exit 0.  So a
+    //  present component this module does not carry is REFUSED by name, and
+    //  so is a feed with no solvent at all.
+    if (!(z_in[iWater] > 0.0))
+        throw std::runtime_error("SpiralWoundModule: the feed"
+            " carries no water (z_water = " + std::to_string(z_in[iWater])
+            + "), and this module's transport and its outlet closure are"
+            " written for an AQUEOUS feed -- the solvent permeates, the"
+            " nonvolatile solutes are rejected.  A non-aqueous feed needs a"
+            " different separation model (none is registered for organic"
+            " solvent nanofiltration today).");
+    {
+        std::string unmodelled;
+        for (std::size_t i = 0; i < Ncomp; ++i)
+        {
+            if (i == iWater || !(z_in[i] > 0.0)) continue;
+            if (thermo.comp(i).isNonvolatile()) continue;
+            unmodelled += "\n      '" + thermo.comp(i).name() + "' (z = "
+                + std::to_string(z_in[i]) + ", role '"
+                + thermo.comp(i).role() + "')";
+        }
+        if (!unmodelled.empty())
+            throw std::runtime_error("SpiralWoundModule: the"
+                " feed carries component(s) this module does not model:"
+                + unmodelled + "\n"
+                "    It carries the solvent (water) and the solutes the case"
+                " declares `role nonvolatile;`, each with its own permeance;"
+                " any other component would leave in NEITHER outlet, its mass"
+                " re-counted as water.\n"
+                "    REMEDY: if the component is a solute this membrane rejects"
+                " or passes (ethanol in a wine, say), declare it `role"
+                " nonvolatile;` in the case and give the membrane its `B_s`"
+                " permeance -- it then enters the transport and the osmotic"
+                " pressure like any solute (`role` is the CASE's, so every"
+                " other unit then also reads it as nonvolatile -- a flash"
+                " downstream would no longer boil it); otherwise remove it"
+                " from the feed before the module.");
+    }
+
     //  AN ION-DECLARED FEED UNDER THE UNCOUPLED LAW IS SAID SO, WHATEVER ELSE
     //  THE CASE DECLARES.  This sentence used to live inside the scaling{}
     //  audit, so an ionic case with no audit block ran silent -- an

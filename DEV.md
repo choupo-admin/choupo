@@ -1587,7 +1587,13 @@ accepts today, and that is a policy call.
 > (wine dealcoholisation by RO is industrial practice -- the transport
 > model's domain decides).  Commercial membrane selection: deferred, as
 > the proposal itself says.
-> STATUS: DECIDED 2026-10-31; slice (1) next.
+> STATUS: DECIDED 2026-10-31.  Defects (1) and (2) DONE the same day, each
+> reproduced on main b98ddc97e first: the parent RO ran an ethanol feed to
+> exit 0 with ethanol = 0 in both outlets (outlet moles 0.16327 against a
+> 0.16111 kmol/s feed) and a water-free feed too; the parent pump pumped
+> water at 400 K and 1 bar.  Both refuse by name now (gates
+> `check_membrane_feed_scope`, `check_pump_liquid_inlet`); the 27 RO and 7
+> pump cases of the corpus all run unchanged.  Next: (3) and (4).
 
 > **C187. WHAT THE 2026-10-31 AUDIT FOUND UNRECORDED (two independent
 > passes over the session transcript, 24-31 Oct; recorded by the architect

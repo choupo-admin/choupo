@@ -9678,6 +9678,9 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/rotating/Pump.H"
   ],
   "src/unitOperations/rotating/Turbine.cpp": [
@@ -16539,6 +16542,7 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
+   "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
@@ -16579,6 +16583,7 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
+   "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -16615,6 +16620,7 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
+   "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],

@@ -1355,6 +1355,16 @@
       "exit": 0,
       "claim": "check_txy_bubble_verdict: OK -- at 2 bar 2 of 29 unconverged compositions are dropped and counted, 27 drawn, none at the 200 K floor; at 1 bar 17 of 29 fail and the diagram is refused by name; flash01's 29-point diagram is drawn with no count; flash20 (PC-SAFT) draws all 29 points, 26 of them accepted at |f| <= 1e-5 short of the Newton's 1e-8 and announced (worst |f| = 2.69e-06); the column's bubbleTWithItsVapour reads the verdict of all 3 bubbleT calls and folds it into its flag; the guard reads xUnconverged and no 200 K constant; the count reaches the caveat block on both witnesses.  NOT checked: whether a point is RIGHT beyond its residual, and the Wang-Henke stage loop's bubbleT calls (judged by the column's stage test)",
       "seconds": 13.5
+    },
+    "check_membrane_feed_scope": {
+      "exit": 0,
+      "claim": "check_membrane_feed_scope: OK -- an ethanol feed is refused naming the component and the remedy; a water-free feed is refused for its missing solvent; membrane01 (water + NaCl) runs as before.  NOT checked: the declared pass-through approximation (C188, not built)",
+      "seconds": 0.1
+    },
+    "check_pump_liquid_inlet": {
+      "exit": 0,
+      "claim": "check_pump_liquid_inlet: OK -- a vapour inlet (water, 400 K, 1 bar) is refused, naming the compressor; pump01 (liquid water) runs as before.  NOT checked: a produced two-phase inlet (no corpus case feeds a pump one)",
+      "seconds": 0.0
     }
   }
 }
