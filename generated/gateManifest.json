@@ -1380,6 +1380,11 @@
       "exit": 0,
       "claim": "[activity-domain] OK the activity models declare their own domain (4 AqueousActivity classes, each with validityDomain; no name branch or inline band in SpeciationSolver/ScalingScan/Exchange); Davies announces beyond I = 0.5 with its own sentence and not inside it, PitzerHMW states no bound and announces nothing, Edwards announces beyond its paper's ~6 mol/kg; NOT checked: whether a declared band is true, temperature domains, the mixed-solvent dominant-solvent criterion (no source states one)",
       "seconds": 2.2
+    },
+    "check_rejection_inversion": {
+      "exit": 0,
+      "claim": "check_rejection_inversion: OK -- membrane25 derives R_int(MgSO4) = 0.983313 from the NF270-4040 sheet's OBSERVED 0.97 with the module's own film (announced on stdout, stderr and as an accepted provenance advisory; five KPIs); typed back as a number and re-run at the rated test it reproduces 0.97 to 1e-7, and at the witness's own feed it reproduces the witness (the R used is the R published); R_int > R_obs with c_m/c_b > 1, and with the film off the gap is the closed-form bulk term to 1e-5; 7 refusals by name (no ratedTest, wrong solute, ion-by-ion feed, unreachable rejection, no module, unknown word, batch diafilter); no other shipped case declares fromRatedTest.  NOT CHECKED: R_int away from the rated test, the record's A_w, the SW30HR-380 sheet.",
+      "seconds": 0.4
     }
   }
 }
