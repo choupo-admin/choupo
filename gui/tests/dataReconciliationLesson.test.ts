@@ -431,7 +431,7 @@ describe("data-reconciliation: the lesson text", () => {
       "DataReconciliation.cpp:740": "const scalar chi2Crit = chi2UpperQuantile(nu, alpha);",
       "DataReconciliation.cpp:754": "z[c] = out.rows[c].correction / std::sqrt(V[c][c]);",
       "DataReconciliation.cpp:758": "1.0 - std::pow(1.0 - alpha, 1.0 / static_cast<scalar>(nRedundant))",
-      "AnalysisReconciler.cpp:248": "co.multiplierAsWritten = qr.lambdaEq[k] / rowScale[k];",
+      "AnalysisReconciler.cpp:261": "co.multiplierAsWritten = qr.lambdaEq[k] / rowScale[k];",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, want] of Object.entries(CLAIMS)) {

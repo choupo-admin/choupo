@@ -80,8 +80,15 @@ ODEStats EulerSI::integrate(sVector& y, scalar t0, scalar t1,
         for (std::size_t i = 0; i < ctrl.nPositive && i < n; ++i)
             if (y[i] < 0.0) { bad = true; break; }
         for (scalar v : y) if (!std::isfinite(v)) { bad = true; break; }
-        if (bad) { st.ok = false; break; }
+        if (bad)
+        {
+            st.ok = false;
+            st.failure = "a non-finite or negative state on a fixed"
+                         " semi-implicit Euler step";
+            break;
+        }
     }
+    st.tReached = t;
     st.hLast    = h;
     st.hMinUsed = h;
     return st;

@@ -4613,6 +4613,23 @@ PYEOF
     rm -f /tmp/odeblk.$$
     rm -f /tmp/blocktri.$$
 
+    # solver-failures gate (2026-10-27, DEV.md 4c C178).  A failed
+    # computation is not a result: a time integration that gives up short of
+    # its interval refuses by name in all three time-integrated binaries (and
+    # under an outer driver is a FAILED evaluation), the active-set QP never
+    # certifies a point that violates a row, and the SQP never differences a
+    # failed evaluation.  The reviewer's three repros run against the real
+    # sources, bounds-checked.
+    if gate_exec "$ROOT/bin/curate/check_solver_failures.py" > /tmp/solvfail.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "solver-failures-gate" "$(head -1 /tmp/solvfail.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_solver_failures.py)\n" "solver-failures-gate"
+        cat /tmp/solvfail.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/solvfail.$$
+
     # held-out-pressure gate (2026-08-25).  A bubble-point fit prices every
     # point at the pressure its own measurement declares -- a column where the
     # study varied it, a held-constant where the study fixed it -- so a pair

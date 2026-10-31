@@ -61,6 +61,14 @@ Description
     objective and the FULL constraint Jacobian come from ONE perturbation
     of each variable, so a forward-difference iteration costs n+1
     evaluations of the response callback (central: 2n).
+
+    Failed computations are not results (C178, 2026-10-27): a derivative is
+    never built from a failed evaluation (the other side is used, announced;
+    both failing stops the SQP unconverged, naming the variable), and a QP
+    subproblem the active-set solver reports INFEASIBLE is solved under
+    Powell's (1978) relaxation -- the residuals the step must remove scaled
+    by the largest consistent theta in [0, 1], announced -- and the SQP stops
+    unconverged when even theta = 0 has no solution.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -121,6 +129,14 @@ struct SQPResult
     bool    converged   = false;
     bool    feasible    = false; // start (and finish) feasible enough to trust
     std::string reason;
+    //  Finite differences taken ONE-SIDED because the other side's model
+    //  evaluation failed (C178): each is announced in the iteration trace;
+    //  this is the count, for the final report.
+    int     fdOneSided  = 0;
+    //  Iterations whose QP linearisation was INCONSISTENT with the box and
+    //  was solved under Powell's (1978) relaxation (C178): announced in the
+    //  trace with the theta used; this is the count.
+    int     relaxedSteps = 0;
 
     // The 5 KKT residuals at the returned point (the certificate).
     scalar  kktStat     = 0.0;

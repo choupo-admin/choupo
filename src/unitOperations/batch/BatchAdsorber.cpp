@@ -494,7 +494,24 @@ void BatchAdsorber::step(scalar /*t*/, scalar dt)
         ctrl.rtol      = 1.0e-7;
         ctrl.nPositive = y.size();             // loadings must stay >= 0
         ctrl.verbosity = verbosity_;
-        integ->integrate(y, 0.0, dt, f, ctrl);
+        const auto st = integ->integrate(y, 0.0, dt, f, ctrl);
+        //  The integrator REPORTS when it gave up; until C178 (2026-10-27)
+        //  this return was discarded and the partial loadings were committed
+        //  as the state at t + dt.  The siblings (BatchReactor,
+        //  FixedBedAdsorber) already refused; so does this unit now.
+        if (!st.ok)
+        {
+            std::ostringstream os;
+            os << "batchAdsorber '" << name_ << "': the '" << integrator_
+               << "' integrator gave up inside a " << dt << " s step at "
+               << st.tReached << " s into it ("
+               << (st.failure.empty() ? std::string("cause not reported")
+                                      : st.failure)
+               << "; " << st.accepted << " accepted sub-step(s)) -- the"
+                  " loadings are NOT committed.  Use a smaller deltaT or a"
+                  " stiff integrator (integrator Rosenbrock23;).";
+            throw std::runtime_error(os.str());
+        }
     }
 
     commitLoadings_(y);

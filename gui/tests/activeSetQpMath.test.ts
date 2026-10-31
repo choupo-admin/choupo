@@ -361,3 +361,34 @@ describe("the engine plane's knob lands on the shipped case", () => {
     expect(methodCase(QP_WITNESS, alkalinitySigmaOverride(8))).toBeTruthy();
   });
 });
+
+//  C178 (2026-10-27): the engine certified min x^2/2 s.t. x >= 1 at x = 0,
+//  because the start violated an inactive row nothing looked at.  The
+//  transcription claims to walk the ENGINE's variant, so it must make the
+//  same repairs: the violated row is ADMITTED, and a QP whose rows cannot all
+//  hold is reported infeasible, never "KKT satisfied".  The same three
+//  problems are run against the C++ by bin/curate/check_solver_failures.py.
+describe("activeSetQP: an infeasible start and an infeasible QP (C178)", () => {
+  it("x >= 1 from zero: the violated row is admitted and x = 1", () => {
+    const t = activeSetQP({ B: [[1]], g: [0], Aeq: [], beq: [],
+      Aineq: [[-1]], bineq: [1] });
+    expect(t.converged).toBe(true);
+    expect(t.d[0]).toBeCloseTo(1, 12);
+    expect(t.lambdaIneq[0]).toBeCloseTo(1, 12);
+    expect(t.steps.some((s) => s.action === "admit" && s.row === 0)).toBe(true);
+  });
+  it("x >= 1 and x <= 0: reported infeasible, not certified", () => {
+    const t = activeSetQP({ B: [[1]], g: [0], Aeq: [], beq: [],
+      Aineq: [[-1], [1]], bineq: [1, 0] });
+    expect(t.converged).toBe(false);
+    expect(t.infeasible).toBe(true);
+    expect(t.reason).toMatch(/INFEASIBLE/);
+  });
+  it("two parallel violated rows: the binding one enters, (2, 0)", () => {
+    const t = activeSetQP({ B: [[1, 0], [0, 1]], g: [0, 0], Aeq: [], beq: [],
+      Aineq: [[-1, 0], [-1, 0]], bineq: [1, 2] });
+    expect(t.converged).toBe(true);
+    expect(t.d[0]).toBeCloseTo(2, 12);
+    expect(t.d[1]).toBeCloseTo(0, 12);
+  });
+});

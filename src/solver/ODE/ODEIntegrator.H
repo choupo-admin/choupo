@@ -191,6 +191,16 @@ struct ODEStats
     scalar      hMinUsed = 0.0;
     scalar      stiffness = 0.0;   // |lambda_max| * h_explicit-bound estimate
     bool        ok       = true;   // false if it gave up (maxSteps / hMin)
+    //  WHERE and WHY it gave up (2026-10-27, DEV.md 4c C178).  A caller that
+    //  reads only `ok` can refuse, but cannot NAME the refusal: an
+    //  integration asked to reach t1 that stopped short is a fact with a
+    //  time and a cause, and both travel with the statistics.  tReached is
+    //  the time of the last ACCEPTED state (= t1 on success); `failure` is
+    //  empty on success and otherwise names the cause in words (maxSteps,
+    //  the step floor and what drove the step below it, a non-finite or
+    //  negative state on a fixed step).
+    scalar      tReached = 0.0;
+    std::string failure;
 };
 
 class ODEIntegrator
