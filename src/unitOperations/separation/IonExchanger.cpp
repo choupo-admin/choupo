@@ -81,7 +81,8 @@ int IonExchanger::solve(const DictPtr& dict,
         throw std::runtime_error("ionExchanger: feed composition does not sum "
             "to 1 (Sigma z = " + std::to_string(zSum) + ")");
 
-    const std::size_t iWater = thermo.indexOf("water");        // loud if absent
+    //  The aqueous carrier from its ONE home; refuses by name if absent.
+    const std::size_t iWater = thermo.aqueousSolventIndex();
     const scalar z_water = z_in[iWater];
     if (z_water <= 0.0)
         throw std::runtime_error("ionExchanger: the feed has no water -- a "

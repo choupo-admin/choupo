@@ -55,8 +55,11 @@ Factor factorFor(const ThermoPackage& thermo, std::size_t iSolvent, scalar T_K)
 
 Factor factor(const ThermoPackage& thermo, scalar T_K)
 {
+    //  The liquid's solvent: the Henry solvent where the package declares
+    //  one, else the aqueous solvent from its ONE home (water by default).
     const std::string solvent = thermo.solventName().empty()
-                              ? std::string("water") : thermo.solventName();
+                              ? thermo.aqueousSolventName()
+                              : thermo.solventName();
     for (std::size_t i = 0; i < thermo.n(); ++i)
         if (thermo.comp(i).name() == solvent) return factorFor(thermo, i, T_K);
     Factor f;

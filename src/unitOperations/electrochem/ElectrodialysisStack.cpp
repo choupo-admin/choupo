@@ -108,7 +108,8 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     Feed con = readFeed(ins[1]);
     const scalar T = dil.T;     // isothermal stack (announced)
 
-    const std::size_t iWater = thermo.indexOf("water");   // loud if absent
+    //  The aqueous carrier from its ONE home; refuses by name if absent.
+    const std::size_t iWater = thermo.aqueousSolventIndex();
 
     // ---- operation{} hardware ---------------------------------------------
     auto op = dict->subDict("operation");

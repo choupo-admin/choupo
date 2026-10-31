@@ -6369,6 +6369,20 @@ PYEOF
     fi
     rm -f /tmp/rcgate.$$
 
+    # Aqueous-solvent home gate (DEV.md 4c C188): the declared aqueous
+    # solvent has ONE home on the package, every unit reads it, no "water"
+    # literal names it in src/ outside that home, and an undeclared
+    # component refuses by name (Pitzer + reactive witnesses).
+    if gate_exec "$ROOT/bin/curate/check_aqueous_solvent_home.py" > /tmp/asgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "aqueous-solvent-home-gate" "$(tail -1 /tmp/asgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_aqueous_solvent_home.py)\n" "aqueous-solvent-home-gate"
+        cat /tmp/asgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/asgate.$$
+
     # Sealed-corpus gate: every top-level case carries constant/propertyManifest
     # -- the student finds a hashed copy of every record the case uses INSIDE
     # the case.  The two live-overlay demos are exempt by design (their lesson

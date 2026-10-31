@@ -210,14 +210,14 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
               " (solvent made up as fast as it permeates; solutes wash out).");
 
     // ---- solutes and their permeabilities ---------------------------------
-    bool haveWater = false;
-    for (std::size_t i = 0; i < N; ++i)
-        if (compNames_[i] == "water") { iWater_ = i; haveWater = true; break; }
-    if (!haveWater)
+    //  The aqueous carrier, from its ONE home (water unless declared).
+    iWater_ = thermo.findAqueousSolvent();
+    if (iWater_ >= N)
         throw std::runtime_error(
-            "batchDiafilter '" + name() + "': no component named `water`."
+            "batchDiafilter '" + name() + "': the aqueous solvent '"
+            + thermo.aqueousSolventName() + "' is not a component."
             "  The transport laws in this tree assume an aqueous carrier and"
-            " price the solvent flux as water; name the carrier `water` or"
+            " price the solvent flux on it; add it to the components or"
             " use a unit that does not make that assumption.");
 
     soluteIdx_.clear();

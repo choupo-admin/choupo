@@ -279,7 +279,7 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
 static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
                                       const Database& db,
                                       bool isENRTL,
-                                      const ChemistrySystem* chem)
+                                      const ChemistrySystem* chem, const std::string& solventName)
 {
     // Repo root = parent of the data/ dir (Database::currentRoot() is data/).
     const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
@@ -564,14 +564,14 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
         }
         else
         {
-            if (cn == "water") solventIdx = comps.size();
+            if (cn == solventName) solventIdx = comps.size();   // the DECLARED aqueous solvent
             comps.push_back(db.loadComponent(cn));   // solvent / antisolvent / curve-solute
         }
     }
     if (saltName.empty())
         absent("a salt component (with dissociatesTo)", "propertyPackage.components");
     if (solventIdx == compNames.size())
-        absent("a water solvent", "propertyPackage.components");
+        absent("the aqueous solvent '" + solventName + "'", "propertyPackage.components");
 
     // (c) cation/anion from the salt's `dissociatesTo`: classify by CHARGE SIGN
     //     (charge via findIon: case ions.dat overlay /
@@ -1021,8 +1021,8 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     //     defaulting to water as the aqueous formulation's reference) -- the
     //     classifier never recognises a solvent by name.
     const auto names = v2->lookupWordList("components");
-    const std::string solventName =
-        aq->found("solvent") ? aq->lookupWord("solvent") : "water";
+    const std::string solventName =   // its ONE reader lives with its ONE home
+        ThermoPackage::declaredAqueousSolventIn(aq);
     std::vector<Component> comps;
     comps.reserve(names.size());
     std::size_t solventIdx = names.size();
@@ -2466,7 +2466,7 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
         }
         if (reactiveShape)
         {
-            return buildReactiveElectrolyte(v2, db, eq, aq, chem);
+            return std::move(buildReactiveElectrolyte(v2, db, eq, aq, chem).stampAqueousSolvent(aq));
         }
         //  ONE reader of the slot.  The single-salt Pitzer/eNRTL adapter has
         //  no molecular backbone -- the composite `molecular <w>;` is served
@@ -2512,8 +2512,8 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                          " inf-dilution ion datum + L_phi), vapour idealGasCp"
                          " (elements datum).  Assembled NATIVELY from the v2"
                          " grammar (no translated intermediate).\n";
-        return buildElectrolyte(v2->lookupWordList("components"), db,
-                                /*isENRTL=*/model == "eNRTL", chem);
+        return std::move(buildElectrolyte(v2->lookupWordList("components"), db, /*isENRTL=*/model == "eNRTL",
+                                chem, ThermoPackage::declaredAqueousSolventIn(aq)).stampAqueousSolvent(aq));
     }
 
     if (form == "diluteSolution")

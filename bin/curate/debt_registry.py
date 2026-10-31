@@ -742,3 +742,41 @@ EVIDENCE_LEGACY_DEBT = {
                "instead of a citation -- a decision for the curator, not a "
                "mechanical edit.",
 }
+
+
+# ---------------------------------------------------------------------------
+#  AQUEOUS SOLVENT BY NAME -- "water" literals outside the one home
+#  (2026-10-31, DEV.md 4c C188; read by check_aqueous_solvent_home)
+# ---------------------------------------------------------------------------
+
+#  The aqueous solvent's ONE home is ThermoPackage::aqueousSolventName()
+#  (default in defaultAqueousSolvent()).  These two props-bench ops still
+#  write the word, each with its exact count -- a pin that grows or shrinks
+#  fails, so a new name recognition cannot hide behind an old one.
+AQUEOUS_SOLVENT_NAME_LITERALS = {
+    "src/propertyOps/FreezingPoint.cpp": (1,
+        "props-bench op whose SUBJECT is the ice of water: it loads water.dat"
+        " as the crystal's own record"),
+    "src/propertyOps/Speciate.cpp": (2,
+        "props-bench speciation stack is water-only by construction (water"
+        " Debye-Hueckel surface): one literal REFUSES a declared non-water"
+        " `aqueousProperties.solvent` by name, the other prices the solvent"
+        " leg (Psat) that refusal guards"),
+}
+
+AQUEOUS_SOLVENT_NAME_DEBT = {
+    "why": "Two props-bench ops name water directly instead of reading the "
+           "package's aqueous solvent.  Both are honest today -- FreezingPoint "
+           "is ABOUT water's ice, and Speciate refuses any other solvent by "
+           "name before it uses the word -- but the bench surface "
+           "(`aqueousProperties.solvent`, propertyOps/CasePackage.H) is a "
+           "second declaration of the solvent that the package's home does "
+           "not see.",
+    "remedy": "When the speciation stack gains a non-water solvent surface, "
+              "read the solvent from the package's home and load ITS Psat; "
+              "FreezingPoint becomes a solvent-generic freezing op only if "
+              "a non-water solid solvent is ever curated.  Then delete the "
+              "pin; the gate fails until it goes.",
+    "blocked": "A non-water Debye-Hueckel surface (A(T), molality basis on "
+               "another solvent) is new physics, not a mechanical edit.",
+}

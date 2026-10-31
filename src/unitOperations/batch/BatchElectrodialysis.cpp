@@ -106,11 +106,11 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
             unitDict->subDict("solver")->lookupScalarOrDefault("verbosity",
                                                                verbosity_));
 
-    bool haveWater = false;
-    for (std::size_t i = 0; i < Nc; ++i)
-        if (compNames_[i] == "water") { iWater_ = i; haveWater = true; break; }
-    if (!haveWater)
-        throw std::runtime_error(who + ": no component named `water`."
+    //  The aqueous carrier, from its ONE home (water unless declared).
+    iWater_ = thermo.findAqueousSolvent();
+    if (iWater_ >= Nc)
+        throw std::runtime_error(who + ": the aqueous solvent '"
+            + thermo.aqueousSolventName() + "' is not a component."
             "  Electrodialysis needs an aqueous carrier; the molality closure"
             " and the conductivity are both built on it.");
 
