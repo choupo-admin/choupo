@@ -1564,6 +1564,22 @@ accepts today, and that is a policy call.
 > GUI credo: a runner, not an editor).  Seed data: of the four files the
 > spec names only Choupo_catalogo_RO_NF_consolidado_SI.xlsx is on the
 > laptop (~/Downloads); the others were asked of Vitor.
+> MONETISATION, OPEN (Vitor, 2026-10-31 evening): the design stage that
+> reads each manufacturer's data is where Choupo could earn -- a
+> manufacturer that AUTHORISES its presence (a written sponsorship with a
+> licence for name, logo and sheets) gets an assigned "partner" block in
+> the result (logo, direct product and quotation links, data the maker
+> verifies and maintains); EVERY module with public data stays in the
+> comparison, cited, and a gate proves the ranking never reads who pays
+> (a paid position or an undisclosed exclusion is an unfair commercial
+> practice under EU law, Directive 2005/29/EC Annex I item 11a, and the
+> comparison must stay objective, Directive 2006/114/EC).  NOT decided:
+> Vitor contacts no manufacturer until Choupo has traffic; the first he
+> intends to approach is Synder Filtration.  Architecture already fixed
+> for it: module records separate performance data from a commercial
+> relation field (`partner`, `dataVerifiedBy`) that the ranking of slice
+> (5) never reads; the GUI marks the block "sponsored".  Legal review of
+> the sponsorship contract is TalentGround's before any launch.
 > STATUS: DECIDED 2026-10-31.  Slice (1) DONE the same night (7c186a77a):
 > `rejection { <s> fromRatedTest; }` inverts the module record's rated
 > OBSERVED rejection to the intrinsic one with the module itself as the

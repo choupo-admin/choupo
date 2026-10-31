@@ -67,6 +67,7 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 | decide | Scope of the chemical-network EduTool | C139 |
 | decide | Two liquid surfaces: the architecture (today a refusal by name) | C173, C187 (4) |
 | decide | The comparison's recommendations (ii)-(viii): which enter the plan | C187 (3) |
+| waits-Vitor | Membrane sponsorship (partner block, ranking never reads who pays): contact manufacturers only once Choupo has traffic; Synder Filtration first | C189 |
 
 ## Waits on Vítor (facts and acts only he holds)
 
