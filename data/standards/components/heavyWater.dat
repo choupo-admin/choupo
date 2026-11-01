@@ -1,70 +1,163 @@
 /*--------------------------------*- Choupo -*-----------------------*\
-  Component: heavyWater  (D2O1, CAS 7789-20-0)
-  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
-  pure-fluid properties from the published reference EOS below.
-  Reference EOS: Herrig-JPCRD-2019
-  NOTE: formation properties (dHf, s_298) and group decompositions
-  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+  Component: heavyWater  (D2O, CAS 7789-20-0)
+  REVIEWED 2026-11-02 against the IAPWS formulation for heavy water.
+
+  Every value below is DERIVED from, or transcribed from, the primary
+  sources named in `provenance {}` by bin/curate/heavy_water_iapws.py, a
+  script that first reproduces the release's own computer-verification
+  tables (R16-17(2018) Tables 6, 7 and 8, to 1e-8) and then evaluates the
+  equation.  bin/curate/check_heavy_water.py holds this record to that
+  script.  Record of the work and of what is NOT here:
+  docs/design/heavy-water-from-the-iapws-formulation.md.
+
+  Sources READ for this record:
+    [R16] IAPWS R16-17(2018), Revised Release on the IAPWS Formulation 2017
+          for the Thermodynamic Properties of Heavy Water.
+          https://iapws.org/technical-guidance/release/Heavy
+          (cover page: publication in whole or in part is allowed in all
+          countries provided that attribution is given to IAPWS).
+    [H18] Herrig, Thol, Harvey & Lemmon, "A Reference Equation of State for
+          Heavy Water", J. Phys. Chem. Ref. Data 47, 043102 (2018),
+          doi:10.1063/1.5053993 -- Table 1 (constants) and Table 3 /
+          Eqs. (1)-(3) (auxiliary equations).
+    [S17] Simko et al., "Recommended Ideal-Gas Thermochemical Functions for
+          Heavy Water and its Substituent Isotopologues", J. Phys. Chem.
+          Ref. Data 46, 023104 (2017), doi:10.1063/1.4983120, Table 6.
+
+  WHAT IS NOT HERE, AND WHY (a visible gap, not a fabricated value):
+    * standardThermochemistry (dHf_298, s_298).  The grammar requires the
+      PAIR.  The ideal-gas entropy of D2(16O) at 298.15 K is READ: 216.60269
+      (3) J/(mol K) [S17, Table 6] -- but no cleared primary for the
+      formation ENTHALPY was read (the NIST-JANAF page is NIST SRD, no
+      grant; the ATcT server refused the request), and a half block would
+      be refused by the loader.  So neither is entered.  Consequence: D2O
+      cannot sit in a reactor or on a formation-datum energy balance; it
+      CAN be flashed, heated and cooled (sensible + latent).
+    * UNIFAC group decomposition (the previous record mapped D2O to the
+      H2O group): an isotope-blind approximation nobody verified; removed.
+    * Transport (viscosity, thermal conductivity, surface tension): IAPWS
+      R5-85(1994) (surface tension) was read and R17-20 / R18-21 exist for
+      viscosity and conductivity, but the engine has no record-level form
+      for them; not entered.
+    * An isotope-mixing term: S and Cp refer to D2(16O); the IAPWS "heavy
+      water" has the oxygen isotopic composition of ordinary water.
 \*---------------------------------------------------------------------------*/
 
 name        heavyWater;
 
-//  Review state, MACHINE-READABLE (AP2, 2026-08-05).  This used to
-//  live only in the banner above, which the parser discards -- so the
-//  engine could not announce it and a run said nothing.
-reviewStatus   interim;
-reviewReason   importedFromCoolProp720_notCheckedAgainstPrimaries;
+//  Review state, MACHINE-READABLE.  `reviewed`: every value that remains in
+//  this record was read back against a primary source (see provenance {}).
+reviewStatus   reviewed;
 formula     D2O1;
 CAS         7789-20-0;
 
-MW          20.0275;        // kg/kmol  [CoolProp]
-Tc          643.8470;        // K        [CoolProp EOS]
-Pc          216.61831;        // bar      [CoolProp EOS]
-omega       0.36422;        // [-]      [CoolProp EOS]
-Tb          374.5488;        // K  normal boiling [CoolProp]
-HvapTb      41495.5;        // J/mol  at Tb     [CoolProp]
-Vliq        1.8134e-05;        // m3/mol @298K     [CoolProp]
+//  The substance-level fact the SystemClassifier requires inside an
+//  electrolyte system (as water.dat declares): D2O is the medium of a
+//  deuterated solvent, not a solute of the speciation network.
+aqueousSpeciation  none;
+
+MW          20.027508;      // kg/kmol  [R16 Eq. (4)]
+Tc          643.847;        // K        [R16 Eq. (1)]
+Pc          216.618;        // bar      [H18 Table 1: 21.6618 MPa]
+omega       0.36422;        // [-]      from the EOS at Tr = 0.7 (H18 Table 1 prints 0.364)
+Tb          374.549;        // K  normal boiling [H18 Table 1]
+HvapTb      41495.5;        // J/mol  at Tb  (h'' - h' of the EOS, Maxwell criterion)
+Vliq        1.8134e-05;     // m3/mol @298.15 K  (1/rho', rho' = 55.14503 mol/dm3 from the EOS)
 
 vaporPressure
 {
-    model         Antoine;
-    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
-    coefficients  (5.12849   1674.18   -47.8945);
-    Trange        (289.73  630.97);
+    //  The auxiliary vapour-pressure equation of Herrig et al. 2018, Eq. (1):
+    //      ln(p/pc) = (Tc/T) * sum n_i * u^e_i ,   u = 1 - T/Tc ,
+    //  i.e. a Wagner equation with the exponents (1, 1.5, 2.44, 5.3, 14, 20)
+    //  and the REDUCING constants Tc = 643.847 K, pc = 21.6618 MPa.  The
+    //  coefficients are those of H18 Table 3 AS PRINTED (7 digits), so they
+    //  reproduce the paper's own check value at 293.15 K (1.999143263e-3
+    //  MPa) to 9.4e-7 relative, and the EOS (Maxwell criterion) to <= 8.0e-5
+    //  over the whole window (the paper states < 1e-4).  The previous
+    //  Antoine fit was off the EOS by +0.33 % at 298.15 K, -0.56 % at the
+    //  normal boiling point and -2.3 % at 630 K.
+    model         Wagner;
+    reducing      { T 643.847 K;  P 21.6618 MPa; }
+    exponents     (1 1.5 2.44 5.3 14 20);
+    coefficients  (-7.944403  1.943403  -2.4353  -3.42  35.5  -302.0);
+    Trange        (276.969  643.847);
 }
 
 idealGasHeatCapacity
 {
+    //  Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3, least-squares in
+    //  RELATIVE error to the ideal-gas Cp of R16 Eq. (6) (Table 1 constants),
+    //  250-825 K at 5 K steps; max deviation 0.139 %.  Against Simko et al.
+    //  Table 6 (D2(16O)): +0.047 % at 298.15 K, -0.017 % at 500 K, +0.007 %
+    //  at 800 K.
     model         polynomial;
-    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
-    coefficients  (32.0172  0.00194035  2.20869e-05  -1.05514e-08);
-    Trange        (255  1000);
+    coefficients  (32.175051  0.00086394854  2.4326217e-05  -1.1994149e-08);
+    Trange        (250  825);
 }
 
 liquidHeatCapacity
 {
+    //  Cp [J/(mol.K)] on the SATURATED liquid, least-squares in relative
+    //  error to cp of the EOS along the Maxwell saturation line, 277-471 K
+    //  at 2 K steps; max deviation 0.47 % (at the window ends), +0.17 % at
+    //  298.15 K.  Saturated-liquid cp, not constant-pressure cp at 1 bar: the
+    //  two differ by less than 0.1 % below 450 K and diverge above.
     model         polynomial;
-    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
-    coefficients  (94.2836  -0.0501526  2.80529e-05  7.5157e-08);
-    Trange        (322  375);
+    coefficients  (93.378466  -0.0037319070  -0.00020903884  3.9294371e-07);
+    Trange        (277  471);
 }
 
 triplePoint
 {
-    T   276.9690;
-    P   661.5871;
+    T   276.969;        // K   [H18 Table 1, adopted from Marko et al. 1989]
+    P   661.59;         // Pa  [H18 Table 1: 0.661 59 kPa, "this work"]
 }
 
 provenance
 {
-    constants      "CoolProp 7.2.0 -- Herrig-JPCRD-2019";
-    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.55%";
-    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 0.12%";
-    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
-    triplePoint    "CoolProp reference EOS triple-point T,P";
-}
-
-groups
-{
-    unifac ( { group H2O; count 1; } );   // added from data/groupEstimative (UNIFAC decomposition; vocab-checked vs groups.dat)
+    constants
+    {
+        origin       literature;
+        method       "MW, Tc, Pc, Tb, triple point transcribed from IAPWS R16-17(2018) Eqs. (1),(4) and Herrig et al. 2018 Table 1; omega and HvapTb and Vliq DERIVED from the EOS by bin/curate/heavy_water_iapws.py (omega = -log10(p(0.7 Tc)/pc) - 1; HvapTb = h'' - h' at the EOS normal boiling point 374.5488 K; Vliq = 1/rho'(298.15 K))";
+        citation     "IAPWS R16-17(2018), https://iapws.org/technical-guidance/release/Heavy; Herrig, Thol, Harvey & Lemmon, J. Phys. Chem. Ref. Data 47, 043102 (2018), doi:10.1063/1.5053993, Table 1";
+        uncertainty  "the transcription reproduces R16-17 Tables 6-8 to 1e-8; Pc of the EOS (21.6618 MPa) differs from the IAPWS critical-point release value (21.671 MPa, +/- 0.01 MPa) by 0.0092 MPa, which the paper itself notes";
+    }
+    vaporPressure
+    {
+        origin       literature;
+        method       "Wagner equation transcribed from Herrig et al. 2018 Eq. (1), coefficients of Table 3 as printed";
+        citation     "Herrig, Thol, Harvey & Lemmon, J. Phys. Chem. Ref. Data 47, 043102 (2018), doi:10.1063/1.5053993, Eq. (1) and Table 3";
+        validity     (276.969 643.847);
+        uncertainty  "equation vs the EOS by the Maxwell criterion: max 8.0e-5 relative (stated < 1e-4); the EOS itself: mostly within 0.05 % (H18 abstract and Sec. 5.1.1)";
+    }
+    idealGasHeatCapacity
+    {
+        origin       regressed;
+        method       "cubic polynomial, weighted least squares in relative error, to the ideal-gas Cp of R16-17 Eq. (6), 250-825 K, 5 K steps (bin/curate/heavy_water_iapws.py --fit)";
+        citation     "IAPWS R16-17(2018) Eq. (6) and Table 1 (itself a fit to Simko et al., J. Phys. Chem. Ref. Data 46, 023104 (2017), doi:10.1063/1.4983120)";
+        validity     (250 825);
+        uncertainty  "fit residual vs Eq. (6): max 0.139 %; vs Simko Table 6 D2(16O): +0.047 % at 298.15 K";
+    }
+    liquidHeatCapacity
+    {
+        origin       regressed;
+        method       "cubic polynomial, weighted least squares in relative error, to cp of the saturated liquid from the EOS (Maxwell criterion), 277-471 K, 2 K steps (bin/curate/heavy_water_iapws.py --fit)";
+        citation     "IAPWS R16-17(2018) Eqs. (5)-(7), Tables 1-2";
+        validity     (277 471);
+        uncertainty  "fit residual vs the EOS: max 0.474 %; the EOS cp uncertainty is given in R16-17 Fig. 3";
+    }
+    Vliq
+    {
+        origin       literature;
+        method       "saturated-liquid molar volume at 298.15 K from the EOS: rho' = 55.14503 mol/dm3 (the auxiliary Eq. (2) gives 55.14970, 8.5e-5 higher)";
+        citation     "IAPWS R16-17(2018); Herrig et al. 2018 Eq. (2)";
+        uncertainty  "saturated-liquid density: R16-17 Fig. 4 and Herrig et al. 2018 Fig. 9";
+    }
+    triplePoint
+    {
+        origin       literature;
+        method       "transcribed";
+        citation     "Herrig et al. 2018 Table 1 (Ttp from Marko, Jakli & Jancso, J. Chem. Thermodyn. 21, 437 (1989); ptp 'this work')";
+        uncertainty  "the paper notes the triple-point pressure deviates ~0.35 % from vapour-pressure data at slightly higher T (Sec. 2)";
+    }
 }

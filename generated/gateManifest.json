@@ -1470,6 +1470,11 @@
       "exit": 0,
       "claim": "check_gates_judge_tracked: OK -- 5 of 5 converted gates keep their verdict when an UNTRACKED file and a data/local/ file violate their rule, and 5 of 5 FAIL on the same violation once it is tracked (scratch index, the real one untouched); tracked_tree refuses by name outside a repository.  NOT checked: the ~130 other gates that walk a directory (only the converted ones were measured to differ), and gates whose subject is the private tier itself.",
       "seconds": 43.6
+    },
+    "check_heavy_water": {
+      "exit": 0,
+      "claim": "check_heavy_water: OK -- heavyWater.dat (reviewed) is the IAPWS R16-17(2018)/Herrig 2018 formulation: Wagner block = Eq.(1) Table 3; psat within 5.7e-05 of the full EOS at 6 temperatures (<= 1e-4); Tb/HvapTb/omega/Vliq/MW/Pc/Tc match; Cp fits reproduce; engine psat = the equation to 1e-6; boiling points from the engine: H2O 373.1243 K (IF97), D2O 374.5502 K (EOS 374.5488), shift 1.4259 K. Does NOT check transport (not carried), the EOS's own uncertainty, or any formation datum (none entered).",
+      "seconds": 0.1
     }
   }
 }

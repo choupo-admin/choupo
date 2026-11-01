@@ -1,0 +1,61 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  heavyWater01_isotope_effect --- D2O against H2O, from the catalogue records.
+
+  WHAT THIS CASE EVALUATES.  The saturation pressure of heavy water (record
+  `heavyWater`: the Wagner equation of Herrig, Thol, Harvey & Lemmon, J. Phys.
+  Chem. Ref. Data 47, 043102 (2018), Eq. (1)) and of ordinary water
+  (IAPWS-IF97, via `pureFluids`) at 25/50/75/100 degC, and the normal boiling
+  point of each pure liquid as its bubble temperature at 101325 Pa.  Nothing
+  here is stated from memory: bin/curate/check_heavy_water.py recomputes the
+  heavy-water side from the IAPWS R16-17(2018) Helmholtz equation (Maxwell
+  criterion), reads the ordinary-water side from the IF97 saturation equation,
+  and holds this case's published numbers (CSV cells, pinned by `csv` rows) to
+  both.
+
+  WHAT IS VERIFIED.  That the engine reproduces the primary equation: the
+  Wagner arithmetic to 1e-6, the equation against the full D2O EOS to 8e-5,
+  the boiling point of D2O against the EOS's.  WHAT IS NOT.  No measured datum
+  is compared here; the ordinary-water side is IF97 (itself a correlation of
+  IAPWS-95); `Hvap` is the engine's Watson estimate from the record's Tc, Tb
+  and HvapTb (exact at Tb, an extrapolation elsewhere -- NOT the EOS latent
+  heat).  The record carries no formation datum, so `propertyPoint` (which
+  prints H_ig) refuses heavyWater by name: this case uses the scan operation,
+  which evaluates only what it is asked for.  No mixture property of D2O +
+  H2O is claimed (the isotope-exchange equilibrium H2O + D2O = 2 HDO is not
+  modelled).
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        psat_isotope;
+        type        propertyScan1D;
+        vary        { variable T;  from 298.15 K;  to 373.15 K;  n 4; }
+        state       { P 1 bar;  composition { water 0.5;  heavyWater 0.5; } }
+        properties  ( Psat_water  Psat_heavyWater  Hvap_heavyWater );
+        output      { file psat_isotope.csv; }
+    }
+    {
+        name        boiling_water;
+        type        propertyScan1D;
+        vary        { variable P;  from 101325 Pa;  to 101325.5 Pa;  n 2; }
+        state       { T 373.15 K;  composition { water 1.0; } }
+        properties  ( T_bubble );
+        output      { file boiling_water.csv; }
+    }
+    {
+        name        boiling_heavyWater;
+        type        propertyScan1D;
+        vary        { variable P;  from 101325 Pa;  to 101325.5 Pa;  n 2; }
+        state       { T 373.15 K;  composition { heavyWater 1.0; } }
+        properties  ( T_bubble );
+        output      { file boiling_heavyWater.csv; }
+    }
+);
