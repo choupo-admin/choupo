@@ -46,6 +46,8 @@ import { IconClipboardCopy, IconClipboardCheck, IconCheck, IconAlertTriangle, Ic
 import { useStore } from "../state/store.js";
 import { buildGuideContext, buildRequestContext, parseClaudeReply, applyEdits } from "../agent/clipboardContext.js";
 import { downloadCaseFile, downloadCaseZip } from "../case/saveCase.js";
+import { probablyMissingZero } from "../case/completeZero.js";
+import { EV_OFFER_COMPLETE_ZERO } from "./CompleteZeroDialog.js";
 
 export function ClipboardBridge({ opened, onClose }: { opened: boolean; onClose: () => void }) {
   const caseFiles = useStore((s) => s.caseFiles);
@@ -56,6 +58,7 @@ export function ClipboardBridge({ opened, onClose }: { opened: boolean; onClose:
   const [copied, setCopied] = useState(false);
   const [guideCopied, setGuideCopied] = useState(false);
   const [reply, setReply] = useState("");
+  const [zeroHint, setZeroHint] = useState<string[]>([]);
   const [applied, setApplied] = useState<{ changed: string[]; errors: string[] } | null>(null);
   // On the HOSTED site (a remote hostname) the copy-paste dance does not belong:
   // authoring is done LOCALLY with the student's own agent on the downloaded case
@@ -83,6 +86,10 @@ export function ClipboardBridge({ opened, onClose }: { opened: boolean; onClose:
       for (const p of changed) downloadCaseFile(p, next.rawFiles![p]!, tutorialName);
     }
     setApplied({ changed, errors });
+    //  After an applied reply, a 0/ that probably lacks streams is OFFERED
+    //  the engine's own -init0 (a hint, never the authority: a false offer
+    //  is harmless, -init0 never overwrites).  case/completeZero.ts.
+    setZeroHint(changed.length ? probablyMissingZero(next) : []);
   };
 
   return (
@@ -181,6 +188,20 @@ export function ClipboardBridge({ opened, onClose }: { opened: boolean; onClose:
                   <Alert color="teal" variant="light" icon={<IconCheck size={16} />} title={`Applied ${applied.changed.length} file(s)`}>
                     <Group gap={6}>{applied.changed.map((p) => <Badge key={p} variant="light" color="teal" size="sm" styles={{ root: { textTransform: "none" } }}>{p}</Badge>)}</Group>
                     <Text size="xs" c="dimmed" mt={4}>Downloaded — copy each into the case dir and reload to make it permanent.</Text>
+                  </Alert>
+                )}
+                {zeroHint.length > 0 && (
+                  <Alert color="yellow" variant="light" mt="xs" icon={<IconAlertTriangle size={16} />}
+                    title="0/ looks incomplete">
+                    <Text size="xs">
+                      No state file in 0/ for: {zeroHint.join(", ")}. The engine will refuse the run until
+                      they exist; its own <code>-init0</code> can write them from your authored inlets.
+                    </Text>
+                    <Button mt={6} size="xs" variant="default" data-complete-zero-offer
+                      onClick={() => window.dispatchEvent(new CustomEvent(EV_OFFER_COMPLETE_ZERO,
+                        { detail: { hint: zeroHint } }))}>
+                      Complete 0/…
+                    </Button>
                   </Alert>
                 )}
                 {applied.errors.length > 0 && (

@@ -62,6 +62,21 @@ int run_case(const char* caseDir)
     return main(2, argv);
 }
 
+//  THE BROWSER'S `bin/choupo-init0` (DEV.md 4c C200 phase B').  The same
+//  main(), the same `-init0` branch (main.cpp, `if (init0Mode)`), so the
+//  C++ that materialises 0/ has ONE home and the browser does not carry a
+//  second copy of it.  It never overwrites an existing 0/ file (no --force
+//  here: a student's authored state is not the browser's to regenerate).
+EMSCRIPTEN_KEEPALIVE
+int run_case_init0(const char* caseDir)
+{
+    char arg0[] = "choupoSolve";
+    char arg1[] = "-init0";
+    char* dirCopy = const_cast<char*>(caseDir);
+    char* argv[] = { arg0, arg1, dirCopy, nullptr };
+    return main(3, argv);
+}
+
 } // extern "C"
 
 #endif // __EMSCRIPTEN__

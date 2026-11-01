@@ -622,6 +622,14 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
             Reload case from disk
           </Menu.Item>
           <Menu.Divider />
+          {/*  C200 B': the browser's bin/choupo-init0.  There is no "Case"
+              menu (Case is a workspace); File carries the case operations. */}
+          <Menu.Item
+            onClick={() => window.dispatchEvent(new CustomEvent("choupo:complete-zero"))}
+            disabled={!canDownloadZip || !caseFiles.flowsheet}
+          >
+            Complete 0/ (materialise missing streams)
+          </Menu.Item>
           <Menu.Item
             onClick={() => {
               //  the promotable records the last runs wrote travel with it

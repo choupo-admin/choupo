@@ -699,6 +699,11 @@ export interface RunResult {
    *  them into the open case (case/caseWrites.ts); absent = nothing declared
    *  or nothing written. */
   caseWrites?: { [relPath: string]: string };
+  /** The 0/ files the engine's own `-init0` WROTE (a run with
+   *  `opts.init0`), keyed by case-relative path -- new paths only, an
+   *  existing file is never in here.  Carried into the case by
+   *  case/completeZero.ts, marked generated and announced. */
+  init0Files?: { [relPath: string]: string };
   /** Discounted-cash-flow appraisal (Perry / Turton Ch.10) from an economics
    *  postDict: the headline scalars (FCI / TCI / COM_d / revenue / NPV / IRR /
    *  payback + AACE accuracy band) AND the year-by-year DCF table.  Absent for
@@ -1326,5 +1331,10 @@ export interface SolverAdapter {
      *  choupoSolve) can run its property comparisons -- one case, two run
      *  paths chosen by the view you are in. */
     binaryOverride?: string,
+    /** `init0`: run the engine's own `-init0` (choupoSolve only) instead of
+     *  a solve -- the browser's `bin/choupo-init0`.  The files it wrote come
+     *  back in `RunResult.init0Files`.  An adapter that cannot do it (the
+     *  mock) ignores the flag and returns no `init0Files`. */
+    opts?: { init0?: boolean },
   ): Promise<RunResult>;
 }
