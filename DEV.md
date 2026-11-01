@@ -1532,8 +1532,8 @@ accepts today, and that is a policy call.
 > IMPORT TO A RECORD A RESEARCHER CAN DEFEND (Vitor, 2026-11-02: "quero
 > promover porque ha investigadores que me pediram").**  MEASURED: the
 > catalogue already carries `heavyWater.dat` (D2O, CAS 7789-20-0) since the
-> first release, `reviewStatus interim` with reason
-> `importedFromCoolProp720_notCheckedAgainstPrimaries`; its Antoine and Cp
+> first release, `reviewStatus interim` (imported from CoolProp 7.2.0, not
+> checked against the primaries); its Antoine and Cp
 > polynomials are FITTED to the CoolProp EOS (Herrig et al. 2019), it has no
 > formation datum and no entropy, and no tutorial case uses it.  The
 > architect's first answer ("keep, do not promote: no case needs it") was
