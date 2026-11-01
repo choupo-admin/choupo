@@ -539,3 +539,32 @@ prints ENERGY BALANCE FAILED.  The lesson generalises: *an auditor that
 reads the same disk as the solver must read it by the same rule* — the
 declaration walk (folder members) and the data walk (pair records) were
 two rules the auditor lacked, found one day apart.
+
+## The probe of A5 and A4 after the turbine learned to refuse (2026-11-01)
+
+The gate's A5 and A4 arms made an imbalance inside the `turbine` of
+`perUnitThermo01_srk_nrtl` by pinning `phase liquid;` on a feed that is a
+vapour at 430 K, 6 bar: the report priced a liquid, the turbine expanded a
+vapour (raw 536 kW against a 7.5 kW step, status `unconfirmed`).  Since
+C188 the turbine declares that it accepts a vapour and nothing else, so
+that pin is refused before any unit runs.  The refusal is right, and the
+probe's premise -- a unit that ignores the stream's phase -- is gone by
+design.  Measured: no declaration the contract admits leaves a turbine
+imbalance its step cannot reproduce (`phase gas;` closes at 300 K, 360 K and
+600 K/20 MPa to under 0.3 W; a 15 MPa real-gas corner leaves a 2 W gap that
+sits on the tolerance, which is no probe).
+
+What the contract does admit is a pinned vapour at a (T, P) where the mixture
+is physically liquid (`T 360 K; phase gas;`).  The turbine prices it
+consistently (step -0.885 kW, reproduced and credited), and the FLASH
+downstream, which re-flashes its inlet to its real equilibrium while the
+report prices the vapour label, carries a genuine imbalance of -574.75 kW
+with a step of 0 (its NRTL liquid prices nothing across an all-vapour
+label): status `unconfirmed`, remaining equal to raw, ENERGY alarm.  A5 and
+A4 now audit the flash (A4 deletes the flash's `thermo {}` block: status
+`none`), with the turbine's credited step as the in-run witness that the arm
+can tell credit from refusal.  What the arms test is unchanged: a step that
+does not reproduce the imbalance is printed and not credited, and an
+imbalance with no declaration is credited nothing.  What they no longer
+show is a non-zero but unreproducing step; A3b still does (the 1e-30
+tolerance on basis01).
