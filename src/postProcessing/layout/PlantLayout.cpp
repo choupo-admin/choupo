@@ -3549,6 +3549,21 @@ void checkBundCrossings(PlantLayoutRecord& rec, const FindingSink& addFinding)
 Footprint publishedFootprint(const EquipmentSizing& s)
 {
     Footprint f;
+    //  A PUBLISHED BOX first (C199): the three envelope keys, all in metres.
+    {
+        auto l = s.values.find("envelopeLength");
+        auto w = s.values.find("envelopeWidth");
+        auto h = s.values.find("envelopeHeight");
+        if (l != s.values.end() && w != s.values.end() && h != s.values.end()
+            && s.unitOf("envelopeLength") == "m" && s.unitOf("envelopeWidth") == "m"
+            && s.unitOf("envelopeHeight") == "m")
+        {
+            f.known = true;  f.box = true;
+            f.L = l->second;  f.W = w->second;  f.Hbox = h->second;
+            f.fromKeys = "envelopeLength/Width/Height";
+            return f;
+        }
+    }
     for (const auto& p : kPairs)
     {
         auto d = s.values.find(p.d);
@@ -3826,9 +3841,17 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
                            + " = " + num(f.D) + " m / " + num(f.L)
                            + " m) -- one item, one size; delete the"
                            " footprint");
-                it.shape = "cylinder";
                 it.footprintFrom = "published";
-                setExtents(it, f.D, f.L, 0.0, where);
+                if (f.box)
+                {
+                    it.shape = "box";
+                    setExtents(it, f.L, f.W, f.Hbox, where);
+                }
+                else
+                {
+                    it.shape = "cylinder";
+                    setExtents(it, f.D, f.L, 0.0, where);
+                }
             }
             else
             {
@@ -4497,7 +4520,14 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
         dd.it.id = s->itemId();
         dd.it.kind = s->equipmentType;
         dd.it.sector = s->sector;
-        if (f.known)
+        if (f.known && f.box)
+        {
+            dd.it.shape = "box";
+            dd.it.footprintFrom = "published";
+            dd.it.orientation = "alongX";
+            setExtents(dd.it, f.L, f.W, f.Hbox, dd.it.id);
+        }
+        else if (f.known)
         {
             dd.it.shape = "cylinder";
             dd.it.footprintFrom = "published";

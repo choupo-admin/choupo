@@ -43,7 +43,37 @@ WHAT THIS CHECKS.
       holds the circle its sized volume needs at its height, and the
       exchanger's array count is ceil(Q_LP / rated flow).
 
+  (f)-(k) THE PLANT IS TRAINS AND RACKS (DEV.md 4c C199), recomputed from the
+      case's own dicts and the result's stream masses, never from a sizer's
+      answer:
+      (f) six trains (the PDF's six skids of 16 442 m3/d), one item per train
+          for every pump, exchanger and bank family, the per-train flows, shaft
+          powers, vessels, membrane area and devices times six equal the plant's
+          (and the PDF's 233 / 54 / 18 vessels of seven elements), the specific
+          shaft energy is the case's 2.81 kWh/m3;
+      (g) the pumps: pumps per train = ceil(flow per train / the postDict's
+          declared largest pump), running = trains x installed, installed =
+          running + the declared spares, utilisation, discharge pressure below
+          the declared rating;
+      (h) the exchanger arrays: devices per train = ceil(Q_LP / the window's
+          top), each device inside the window, the window itself the Q650's
+          250-650 gpm converted, the brine pressure under 83 bar;
+      (i) the vessel banks: vessel length, racks, vessels in the last rack, rack
+          envelope, loading clearance and bank envelope recomputed from the
+          flowsheet's vessels and elements, the module record's element size
+          and the postDict's declared numbers, and the plan's box equal to the
+          published envelope;
+      (j) the RO building: every bank, pump and array stands in its room, on the
+          floor, inside the room's box;
+      (k) six more fixtures refuse by name: a pump with no rating, a pump too
+          small for its train (naming the count), a bank with no rack size,
+          vessels the trains cannot share, an exchanger above its pressure
+          rating, per-train sizing with no trains declared.
+
 WHAT THIS DOES NOT CHECK, said plainly:
+  * THAT A PUMP, RACK OR CLEARANCE NUMBER IS A REAL ONE.  Those not read from an
+    open page are ASSUMED and say so; the gate holds the arithmetic, not the
+    catalogue.
   * THAT ANY NUMBER IS THE REAL PLANT'S.  The PDF is a manufacturer's claim at
     its own test conditions; the case assumes the conditions, derives A_w from
     them, lumps the ions and picks the plant pressures so that 47.2 % and the
@@ -282,9 +312,15 @@ def arm_e(res):
         return
     R = rects(L)
     ids = sorted(R)
+    ITEM = {i["id"]: i for i in L["items"]}
     for a in range(len(ids)):
         for b in range(a + 1, len(ids)):
             A, B = R[ids[a]], R[ids[b]]
+            #  the building's shell holds the items its rooms list (C100); the
+            #  engine checks that they fit their room, this arm skips the pair
+            if (ids[a] == "roBuilding" and ITEM[ids[b]].get("room")) or \
+               (ids[b] == "roBuilding" and ITEM[ids[a]].get("room")):
+                continue
             if A[0] < B[1] and B[0] < A[1] and A[2] < B[3] and B[2] < A[3]:
                 fails.append("(e) footprints overlap: %s and %s" % (ids[a], ids[b]))
     fx = L["fence"]
@@ -323,16 +359,297 @@ def arm_e(res):
         x0, x1, y0, y1, h = R[t]
         if not m or (x1 - x0) * (y1 - y0) * h < float(m.group(1)) * 0.999:
             fails.append("(e) %s's box (%.0f m3) cannot hold its sized volume %s m3" % (t, (x1 - x0) * (y1 - y0) * h, m.group(1) if m else "?"))
-    # the exchanger array
-    p = CASE / "design" / "PX" / "pressureExchanger"
-    txt = p.read_text() if p.is_file() else ""
-    q = re.search(r"Q_LP\s+([0-9.eE+-]+) m3/h;", txt)
-    rot = re.search(r"rotors\s+\[0 0 0 0 0\]\s+([0-9.]+);", txt)
-    rated = re.search(r"ratedFlowPerUnit\s+([0-9.eE+-]+) m3/h;", txt)
-    if not (q and rot and rated) or float(rot.group(1)) != math.ceil(float(q.group(1)) / float(rated.group(1)) - 1e-12):
-        fails.append("(e) the exchanger sheet's rotors are not ceil(Q_LP / rated flow)")
     s = L.get("summary", {})
     return len(ids), len(L["roads"]), s
+
+
+# ---------------------------------------------------------------------------
+#  C199: THE PLANT IS TRAINS AND RACKS.  Everything below is recomputed from the
+#  case's own dicts (postDict, flowsheetDict, the module records) and the
+#  result's streams, never from the sizers' own answers.
+# ---------------------------------------------------------------------------
+SKIDS = 6                    # the PDF: six skids of 16 442 m3/d each
+PDF_SKID_M3D = 16442.0
+PDF_SKID_VESSELS = {"RO1": 233, "RO2a": 54, "RO2b": 18}     # "233 (7M)", "54:18 (7M)"
+GPM_M3H = 0.2271247          # 1 US gpm in m3/h (3.785411784 L x 60 / 1000)
+IN_M = 0.0254
+
+
+def strip_comments(s: str) -> str:
+    return re.sub(r"//[^\n]*", "", re.sub(r"/\*.*?\*/", "", s, flags=re.S))
+
+
+def post_text() -> str:
+    return strip_comments((CASE / "system" / "postDict").read_text())
+
+
+def flow_text() -> str:
+    return strip_comments((CASE / "system" / "flowsheetDict").read_text())
+
+
+def entry(post: str, unit: str) -> str:
+    m = re.search(r"unitName\s+%s;(.*?)(?=unitName\s|\Z)" % re.escape(unit), post, re.S)
+    return m.group(1) if m else ""
+
+
+def numu(txt: str, key: str, unit: str):
+    m = re.search(r"\b%s\s+([0-9.eE+-]+)\s*%s\b" % (key, re.escape(unit)), txt)
+    return float(m.group(1)) if m else None
+
+
+def num(txt: str, key: str):
+    m = re.search(r"\b%s\s+([0-9.eE+-]+)\s*;" % key, txt)
+    return float(m.group(1)) if m else None
+
+
+def by_unit(res):
+    out = {}
+    for e in res.get("equipment", []):
+        out.setdefault(e["unit"], []).append(e)
+    for u in out:
+        out[u].sort(key=lambda e: e.get("tag", ""))
+    return out
+
+
+def close(a, b, tol=1e-9):
+    return abs(a - b) <= tol * max(1.0, abs(b))
+
+
+def arm_f(res):
+    """(f) THE TRAINS: six, as the PDF's six skids, every family has one item per
+    train, and the per-train numbers times the trains reproduce the plant's."""
+    K, S, U = res["kpis"], res["streams"], by_unit(res)
+    tr = res.get("trains") or {}
+    if tr.get("count") != SKIDS:
+        fails.append("(f) the result declares %r trains, the PDF's skids are %d" % (tr.get("count"), SKIDS))
+        return None
+    prod_m3d = S["perm2"]["F_mass"] / 1000.0 * 86400.0
+    if rel(prod_m3d / SKIDS, PDF_SKID_M3D) > 3e-4:
+        fails.append("(f) a train makes %.1f m3/d, the PDF's skid %.0f" % (prod_m3d / SKIDS, PDF_SKID_M3D))
+    for u in ("HPpump", "Booster", "Pass2Pump", "PX", "RO1", "RO2a", "RO2b"):
+        items = U.get(u, [])
+        tags = [e.get("tag") for e in items]
+        if tags != ["train%d" % k for k in range(1, SKIDS + 1)]:
+            fails.append("(f) %s has items %r, not train1..train%d" % (u, tags, SKIDS))
+            continue
+        for k, e in enumerate(items, 1):
+            v = e["values"]
+            if v.get("trains") != SKIDS or v.get("trainIndex") != k:
+                fails.append("(f) %s/%s does not publish trains=%d trainIndex=%d" % (u, e["tag"], SKIDS, k))
+        v0 = items[0]["values"]
+        if u in ("HPpump", "Booster", "Pass2Pump"):
+            if not close(v0["Q_train"] * SKIDS, v0["Q_plant"]) or not close(v0["shaftPowerTrain"] * SKIDS, K[u]["W_shaft_kW"], 1e-9):
+                fails.append("(f) %s: the per-train flow or shaft power times %d is not the plant's" % (u, SKIDS))
+        if u == "PX":
+            if not close(v0["Q_LP"] * SKIDS, K["PX"]["Q_LPin_m3h"], 1e-9) or v0["rotorsPlant"] != v0["rotors"] * SKIDS:
+                fails.append("(f) PX: the per-train flow or the rotor count times %d is not the plant's" % SKIDS)
+        if u.startswith("RO"):
+            if v0["vessels"] * SKIDS != K[u]["vessels"] or v0["vesselsPlant"] != K[u]["vessels"] \
+                    or not close(v0["membraneArea"] * SKIDS, K[u]["area_stage"], 1e-9):
+                fails.append("(f) %s: the per-train vessels or membrane area times %d is not the unit's" % (u, SKIDS))
+            if v0["vessels"] != PDF_SKID_VESSELS[u]:
+                fails.append("(f) %s: %d vessels per train, the PDF's skid design has %d" % (u, v0["vessels"], PDF_SKID_VESSELS[u]))
+            if v0["elementsPerVessel"] != 7:
+                fails.append("(f) %s: %d elements per vessel, the PDF's '7M' is 7" % (u, v0["elementsPerVessel"]))
+    shaft = sum(K[u]["W_shaft_kW"] for u in ("IntakePump", "HPpump", "Booster", "Pass2Pump"))
+    spec = shaft / (S["perm2"]["F_mass"] / 1000.0 * 3600.0)
+    if abs(spec - 2.81) > 0.01:
+        fails.append("(f) the plant's specific shaft energy is %.4f kWh/m3, the case's 2.81" % spec)
+    return spec
+
+
+def arm_g(res):
+    """(g) THE PUMPS: the count is ceil(flow per train / the declared largest
+    pump), recomputed from the stream masses and the postDict's own number."""
+    U, S, post = by_unit(res), res["streams"], post_text()
+    inlet = {"HPpump": ("toHPpump", 1025.0), "Booster": ("pxHPout", 1025.0),
+             "Pass2Pump": ("perm1", 1000.0), "IntakePump": ("s0", 1025.0)}
+    out = {}
+    for u, (stream, rho) in inlet.items():
+        e = entry(post, u)
+        qmax = numu(e, "maxFlowPerUnit", "m3/h")
+        if qmax is None:
+            fails.append("(g) %s declares no maxFlowPerUnit in the postDict" % u)
+            continue
+        N = SKIDS if "perTrain yes" in e else 1
+        q_train = S[stream]["F_mass"] / rho * 3600.0 / N          # m3/h, from the stream mass
+        items = U.get(u, [])
+        if len(items) != N:
+            fails.append("(g) %s has %d items, %d expected" % (u, len(items), N))
+            continue
+        v = items[0]["values"]
+        q_sheet = v.get("Q_train", v["Q_plant"])
+        if rel(q_sheet, q_train) > 0.015:
+            fails.append("(g) %s: the sheet's flow %.1f m3/h disagrees with the stream's %.1f (>1.5 %%)" % (u, q_sheet, q_train))
+        need = max(1, math.ceil(q_train / qmax - 1e-9))
+        got = int(v["pumpsNeeded"])
+        if got != need:
+            fails.append("(g) %s: the sheet needs %d pump(s) per train, ceil(%.1f / %g) = %d" % (u, got, q_train, qmax, need))
+        installed = int(v.get("pumpsPerTrain", v["pumpsRunningPlant"]))
+        if installed < need:
+            fails.append("(g) %s: %d installed, %d needed" % (u, installed, need))
+        run = installed * N
+        sp = re.search(r"spare\s*\{\s*count\s+(\d+)", e)
+        spare = int(sp.group(1)) if sp else 0
+        if v["pumpsRunningPlant"] != run or v["pumpsSparePlant"] != spare or v["pumpsInstalledPlant"] != run + spare:
+            fails.append("(g) %s: running/spare/installed %r/%r/%r, expected %d/%d/%d" % (
+                u, v["pumpsRunningPlant"], v["pumpsSparePlant"], v["pumpsInstalledPlant"], run, spare, run + spare))
+        util = (v["flowPerPump"]) / qmax
+        if not close(v["utilisation"], util, 1e-9) or util > 1.0:
+            fails.append("(g) %s: utilisation %.6f, flowPerPump/max = %.6f" % (u, v["utilisation"], util))
+        pr = numu(e, "pressureRating", "bar")
+        if pr is not None and v["P_out"] > pr:
+            fails.append("(g) %s discharges at %.1f bar above the declared rating %.0f" % (u, v["P_out"], pr))
+        out[u] = (need, installed, run, spare)
+    return out
+
+
+def arm_h(res):
+    """(h) THE PRESSURE-EXCHANGER ARRAYS: devices per train = ceil(Q_LP / the
+    top of the declared window), every device inside the window and under the
+    pressure limit, the window itself the vendor's gpm figures converted."""
+    U, S, post = by_unit(res), res["streams"], post_text()
+    e = entry(post, "PX")
+    rated, lo, rating = numu(e, "ratedFlowPerUnit", "m3/h"), numu(e, "minFlowPerUnit", "m3/h"), numu(e, "pressureRating", "bar")
+    if None in (rated, lo, rating):
+        fails.append("(h) the PX entry lacks ratedFlowPerUnit, minFlowPerUnit or pressureRating")
+        return None
+    if rel(650 * GPM_M3H, rated) > 5e-4 or rel(250 * GPM_M3H, lo) > 5e-4 or rating != 83.0:
+        fails.append("(h) the window %.1f-%.1f m3/h / %.0f bar is not the Q650's 250-650 gpm / 83 bar" % (lo, rated, rating))
+    q_train = S["toPX"]["F_mass"] / 1025.0 * 3600.0 / SKIDS
+    rot = None
+    for it in U.get("PX", []):
+        v = it["values"]
+        if rel(v["Q_LP"], q_train) > 0.015:
+            fails.append("(h) PX/%s: Q_LP %.1f m3/h vs the stream's %.1f" % (it["tag"], v["Q_LP"], q_train))
+        rot = math.ceil(v["Q_LP"] / rated - 1e-9)
+        if int(v["rotors"]) != rot:
+            fails.append("(h) PX/%s: %d devices, ceil(%.2f / %.1f) = %d" % (it["tag"], v["rotors"], v["Q_LP"], rated, rot))
+        if not (lo - 1e-9 <= v["Q_LP"] / v["rotors"] <= rated + 1e-9):
+            fails.append("(h) PX/%s: %.1f m3/h per device is outside the window %.1f-%.1f" % (it["tag"], v["Q_LP"] / v["rotors"], lo, rated))
+        if S["brine"]["P"] / 1e5 > rating:
+            fails.append("(h) the brine enters the exchanger at %.1f bar, above %.0f" % (S["brine"]["P"] / 1e5, rating))
+    return rot
+
+
+def arm_i(res):
+    """(i) THE VESSEL BANKS: vessel length, racks, rack envelope, loading
+    clearance and the bank's envelope recomputed from the dicts, and the plan's
+    box equals the published envelope."""
+    U, post, flow = by_unit(res), post_text(), flow_text()
+    L = {i["id"]: i for i in res["layout"]["items"]}
+    n = 0
+    for u in ("RO1", "RO2a", "RO2b"):
+        fb = re.search(r"name\s+%s;.*?module\s+([\w-]+);.*?vessels\s+(\d+);\s*elements\s+(\d+);" % u, flow, re.S)
+        if not fb:
+            fails.append("(i) cannot read %s's module, vessels and elements from the flowsheet" % u)
+            continue
+        mod, vessels, elems = fb.group(1), int(fb.group(2)), int(fb.group(3))
+        rec = strip_comments((CASE / "constant" / "assets" / (mod + ".dat")).read_text())
+        Le = numu(rec, "elementLength", "in") * IN_M
+        De = numu(rec, "nominalDiameter", "in") * IN_M
+        e = entry(post, u)
+        if numu(e, "endAllowance", "m") is None or re.search(r"vesselsPerRack\s+\d+", e) is None:
+            fails.append("(i) %s declares no endAllowance or vesselsPerRack" % u)
+            continue
+        allow, OD = numu(e, "endAllowance", "m"), numu(e, "outsideDiameter", "m")
+        vpr, tiers = int(num(e, "vesselsPerRack")), int(num(e, "tiers"))
+        pitch, tp = numu(e, "pitch", "m"), numu(e, "tierPitch", "m")
+        base, margin, aisle = numu(e, "baseHeight", "m"), numu(e, "endMargin", "m"), numu(e, "aisle", "m")
+        kcl = num(e, "vesselLengths")
+        vt = vessels // SKIDS
+        Lv = elems * Le + allow
+        racks = math.ceil(vt / vpr)
+        want = {"vesselLength": Lv, "racks": racks, "rackLength": Lv + 2 * margin, "rackWidth": (vpr // tiers) * pitch,
+                "rackHeight": base + tiers * tp, "loadingClearance": kcl * Lv, "vesselsPerTier": vpr // tiers,
+                "vesselsLastRack": vt - (racks - 1) * vpr}
+        want["envelopeLength"] = want["rackLength"] + want["loadingClearance"]
+        want["envelopeWidth"] = racks * want["rackWidth"] + (racks - 1) * aisle
+        want["envelopeHeight"] = want["rackHeight"]
+        if OD < De or pitch < OD or tp < OD:
+            fails.append("(i) %s: the vessel/pitch/element diameters are inconsistent (%.3f / %.3f / %.3f)" % (u, De, OD, pitch))
+        for it in U.get(u, []):
+            v = it["values"]
+            for k, w in want.items():
+                if not close(v[k], w, 1e-9):
+                    fails.append("(i) %s/%s: %s = %r, recomputed %r" % (u, it["tag"], k, v[k], w))
+            if vpr % tiers or (racks - 1) * vpr + v["vesselsLastRack"] != vt:
+                fails.append("(i) %s/%s: the racks do not hold the train's %d vessels" % (u, it["tag"], vt))
+            if not close(v["elementsPerBank"], vt * elems):
+                fails.append("(i) %s/%s: elementsPerBank %r != %d" % (u, it["tag"], v["elementsPerBank"], vt * elems))
+            li = L.get(u + "/" + it["tag"])
+            if not li or not (close(li["dx"], want["envelopeLength"], 1e-9) and close(li["dy"], want["envelopeWidth"], 1e-9)
+                              and close(li["dz"], want["envelopeHeight"], 1e-9)) or li.get("footprintFrom") != "published":
+                fails.append("(i) %s/%s: the plan's box is not the published envelope" % (u, it["tag"]))
+            n += 1
+    return n
+
+
+def arm_j(res):
+    """(j) THE RO BUILDING: every bank, pump and exchanger array stands in a
+    room of the building, and its footprint lies inside that room."""
+    B = res.get("building")
+    if not B:
+        fails.append("(j) the result carries no building block")
+        return None
+    rooms = {r["name"]: r for r in B["rooms"]}
+    want = {"RO1": "ro1Hall", "RO2a": "ro2Hall", "RO2b": "ro2Hall", "HPpump": "pumpHall",
+            "Booster": "pumpHall", "Pass2Pump": "pumpHall", "PX": "pxHall"}
+    L = {i["id"]: i for i in res["layout"]["items"]}
+    n = 0
+    for u, room in want.items():
+        for k in range(1, SKIDS + 1):
+            iid = "%s/train%d" % (u, k)
+            it = L.get(iid)
+            if it is None:
+                fails.append("(j) %s is not placed" % iid)
+                continue
+            if it.get("room") != room or iid not in rooms[room]["equipment"]:
+                fails.append("(j) %s stands in room %r, expected %s" % (iid, it.get("room"), room))
+                continue
+            r = rooms[room]
+            if it["x"] - it["dx"] / 2 < r["xMin"] - 1e-9 or it["x"] + it["dx"] / 2 > r["xMax"] + 1e-9 \
+                    or it["y"] - it["dy"] / 2 < r["yMin"] - 1e-9 or it["y"] + it["dy"] / 2 > r["yMax"] + 1e-9:
+                fails.append("(j) %s does not lie inside room %s" % (iid, room))
+            if abs(it["z"] - r["z"]) > 1e-9:
+                fails.append("(j) %s does not stand on its room's floor" % iid)
+            n += 1
+    return n, len(rooms)
+
+
+def arm_k(tmp):
+    """(k) REFUSALS BY NAME of the new sizers."""
+    n = 0
+
+    def refused(name, edit, words):
+        nonlocal n
+        d = fixture(tmp, name, edit)
+        out, code = run_case(d)
+        if code == 0 and "FAILED" not in out:
+            fails.append("(k) %s: nothing refused (exit 0, no FAILED line)" % name)
+            return
+        miss = [w for w in words if w not in out]
+        if miss:
+            fails.append("(k) %s: refused, but not naming %r.  Tail:\n%s" % (name, miss, out[-500:]))
+        n += 1
+    P = lambda d: d / "system" / "postDict"
+    refused("pump-without-a-rating", lambda d: sub_file(P(d),
+            "                    maxFlowPerUnit  1600 m3/h;\n                    pressureRating  90 bar;\n                    origin          literature;",
+            "                    pressureRating  90 bar;\n                    origin          literature;"),
+            ["HPpump", "maxFlowPerUnit"])
+    refused("pump-too-small", lambda d: sub_file(P(d),
+            "maxFlowPerUnit  1600 m3/h;\n                    pressureRating  90 bar;\n                    origin          assumed;\n                    source          \"the Sulzer MSD-RO ceiling",
+            "maxFlowPerUnit  600 m3/h;\n                    pressureRating  90 bar;\n                    origin          assumed;\n                    source          \"the Sulzer MSD-RO ceiling"),
+            ["Pass2Pump", "do NOT carry", "2 pump"])
+    refused("bank-without-a-rack-size", lambda d: sub_file(P(d), "vesselsPerRack  48;\n", ""),
+            ["RO1", "vesselsPerRack"])
+    refused("vessels-not-shared-by-trains", lambda d: sub_file(d / "system" / "flowsheetDict", "vessels          1398;", "vessels          1399;"),
+            ["RO1", "cannot be shared"])
+    refused("exchanger-above-its-pressure-rating", lambda d: sub_file(P(d), "pressureRating    83 bar;", "pressureRating    50 bar;"),
+            ["PX", "pressure rating"])
+    refused("per-train-without-trains", lambda d: sub_file(P(d), "    trains\n    {", "    notTrains\n    {"),
+            ["declares no trains"])
+    return n
 
 
 def main():
@@ -353,10 +670,16 @@ def main():
     try:
         arm_c(res, out, tmp)
         nref = arm_d(tmp)
+        nref2 = arm_k(tmp)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     e = arm_e(res)
-    if fails or a is None or e is None:
+    spec = arm_f(res)
+    pumps = arm_g(res)
+    px = arm_h(res)
+    nb = arm_i(res)
+    bld = arm_j(res)
+    if fails or a is None or e is None or spec is None or not pumps or px is None or not nb or bld is None:
         print("check_swro_plant: FAILED")
         for f in fails:
             print("  " + f)
@@ -372,10 +695,20 @@ def main():
           "(a boron solute with no rejection, a record with no boron test, 30 bays in a 22-bay car park, `at` on an east side); the "
           "layout's %d footprints overlap nowhere and stand inside the fence, none of %d roads crosses one, the gate opens "
           "on the north line and the three boundary pipes cross at published points on the fence labelled `(not drawn)`, "
-          "each tank's box holds its sized volume, and the exchanger's rotors are ceil(Q_LP / rated).  NOT CHECKED: that any "
-          "number is the real plant's (the PDF is a manufacturer's claim at assumed test conditions), the layout against "
-          "any code or the real site, the first law, and boron as pH-dependent physics (not modelled)."
-          % (CASE.name, prod, r1 * 100, r2 * 100, tds, fac, b, nref, ni, nr))
+          "each tank's box holds its sized volume.  THE PLANT IS %d TRAINS (the PDF's six skids of 16 442 m3/d): every pump, "
+          "exchanger and bank family has one item per train, the per-train flows, shaft powers, vessels, membrane area and "
+          "devices times %d reproduce the plant's, and the specific shaft energy is %.3f kWh/m3; the pump counts are "
+          "ceil(flow per train / the declared largest pump) from the stream masses (HP %d, booster %d, second pass %d per train, "
+          "intake station %d, plus declared spares); each train's exchanger array is %d devices inside the Q650's 250-650 gpm "
+          "window and under 83 bar; the %d vessel banks' length, racks, rack envelope, loading clearance and plan box are "
+          "recomputed from the dicts; %d bank, pump and array items stand in the %d rooms of the RO building; %d more fixtures "
+          "refuse by name (a pump with no rating, one too small for its train, a bank with no rack size, vessels the trains "
+          "cannot share, an exchanger above its pressure rating, per-train sizing with no trains declared).  NOT CHECKED: that any "
+          "number is the real plant's (the PDF is a manufacturer's claim at assumed test conditions; every pump, vessel and "
+          "rack number not read from a page is ASSUMED and says so), the layout against any code or the real site, the first "
+          "law, and boron as pH-dependent physics (not modelled)."
+          % (CASE.name, prod, r1 * 100, r2 * 100, tds, fac, b, nref, ni, nr, SKIDS, SKIDS, spec,
+             pumps["HPpump"][0], pumps["Booster"][0], pumps["Pass2Pump"][0], pumps["IntakePump"][2], px, nb, bld[0], bld[1], nref2))
     return 0
 
 

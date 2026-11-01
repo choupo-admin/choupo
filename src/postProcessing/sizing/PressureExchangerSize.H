@@ -63,6 +63,13 @@ Description
             );
         }
 
+    C199 ADDITIONS (all optional): `perTrain yes;` sizes ONE ARRAY PER TRAIN of
+    the plant's declared identical trains (`sizing { trains { ... } }`, see
+    TrainSplit.H); `pressureRating <P>;` is the maker's pressure limit and the
+    sizer REFUSES an operating or design pressure above it; `minFlowPerUnit
+    <Q>;` is the bottom of the maker's flow window and a rotor under it
+    REFUSES.  Both are declared with the entry's `source`.
+
     NOT COSTED.  No Turton cost set covers a rotary pressure exchanger
     (`costing/Turton.cpp::coeffsFor` names its nine words and this is not one
     of them), so the item is listed apart through `notCostedBecause` -- the

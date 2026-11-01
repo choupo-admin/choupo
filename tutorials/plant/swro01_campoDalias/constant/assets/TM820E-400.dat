@@ -51,6 +51,8 @@ format         spiralWound;
 activeArea     37 m2;              // the case study, Table 1 (400 ft2)
 feedSpacer     Spacer-28mil;       // ESTIMATE, see provenance
 leafLength     0.95 m;             // ESTIMATE, see provenance
+nominalDiameter  8 in;             // ASSUMED, see provenance: the vessel-bank sizer (C199) reads it
+elementLength    40 in;            // ASSUMED, see provenance: "400" in the name is the area in ft2 of an 8-inch x 40-inch element
 
 ratedTests
 (
@@ -86,6 +88,9 @@ ratedTests
 provenance
 {
     source  "Toray Industries case study MC-CS-CAMPODEDALIAS-1910 (2019), Table 1; a manufacturer's claim";
+
+    nominalDiameter { origin assumed; method "the 8-inch class of a 400 ft2 seawater element; the document states no outside size (DEV.md 4c C199)"; }
+    elementLength   { origin assumed; method "the 40-inch length of the class; the document states no outside size (DEV.md 4c C199)"; }
 
     leafLength
     {

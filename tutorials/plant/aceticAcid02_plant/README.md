@@ -194,8 +194,9 @@ publish).
 
 * `M1`, `M2` (pipe junctions), `purgeSplit` (a tee) and `letdown` (a control
   valve) — no vessel, no area, no driver, so no item.
-* `methanolPump` — the engine has no pump sizer, so it has no item (and no
-  place on the plot plan).
+* `methanolPump` — the case declares no pump sizing entry (a `ratedMachine`
+  of kind `volumeRate`, DEV.md 4c C199, would size one from a declared largest-pump
+  flow), so it has no item (and no place on the plot plan).
 
 ## 7. Plant layout
 

@@ -106,14 +106,17 @@ So the two-species route (a) is not available, and the case takes route (b).
 5. **A stream whose first unit has no sizer has no fence crossing**: the router
    crosses the fence only where a sized item or a junction piped to one is
    reached, so the intake is routed through a one-inlet `mixer` (the intake
-   chamber) to the intake pump, and the four pumps are sized as `compressor`
-   items by their shaft power (the engine has no pump sizer).  The sheet says
-   `compressor` and its basis says pass-through: a stand-in.  Follow-ups: a pump
-   sizer, and a sizer for a spiral-wound vessel bank that publishes a
-   footprint (then the RO halls stop being boxes the router cannot reach).
+   chamber) to the intake pump, and the four pumps were sized as `compressor`
+   items by their shaft power (a stand-in: the engine had no pump sizer).
+   SUPERSEDED by C199 ([`a-desalination-plant-is-trains-and-racks.md`](a-desalination-plant-is-trains-and-racks.md)):
+   the pumps are `ratedMachine` items of kind `volumeRate`, the vessel banks are
+   `membraneBank` items that publish a footprint, and the plant is six trains.
 
 ## 5. What the layout shows and what it announces
 
+(As built by C194; C199 reorganises it: 59 footprints, six trains in one RO
+building, 9 routed pipes and 15 listed as not routed, plot area 78 407 m2, see
+[`a-desalination-plant-is-trains-and-racks.md`](a-desalination-plant-is-trains-and-racks.md).)
 22 footprints (6 sized items, 4 pumps, 12 declared boxes), five roads, a
 north gate with its fence opening, a pipe rack, 13 routed pipes and 11 listed
 as not routed with their reasons; plot area 78 069 m2, the footprints 34 %.  The
@@ -128,5 +131,5 @@ disinfection chemistry (declared placeholder contact tanks), fouling and the
 elements' ageing, a temperature correction of A_w (the module has none; the
 case runs at 25 °C, 2 K above the document's feed range), the filters'
 particulate removal and pressure drop, costs, the real device's piston
-hydraulics, a sizer for the membrane vessel banks, and any comparison with the
+hydraulics, and any comparison with the
 real plant: the document is a manufacturer's claim.
