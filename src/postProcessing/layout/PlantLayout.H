@@ -260,6 +260,12 @@ struct Footprint
     bool        known = false;
     scalar      D     = 0.0;    // [m]
     scalar      L     = 0.0;    // [m] along the cylinder's axis
+    //  A PUBLISHED BOX (DEV.md 4c C199): a vessel bank publishes the envelope
+    //  of its racks as `envelopeLength/Width/Height`; then `box` is set, L is
+    //  the length, W the width and Hbox the height, and D is unused.
+    bool        box   = false;
+    scalar      W     = 0.0;    // [m]
+    scalar      Hbox  = 0.0;    // [m]
     std::string fromKeys;       // e.g. "D/H"
     std::string why;
 };

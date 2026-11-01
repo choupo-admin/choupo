@@ -36,6 +36,7 @@ License
 #include "sizing/GasStoreSize.H"
 
 #include <algorithm>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <set>
@@ -209,6 +210,28 @@ int SizingPass::run(SimulationResult& result)
         for (const auto& [u, s] : sectorOf) own[s] = s;
         for (const auto& [s, same] : own)
             if (!sectorOf.count(s)) sectorOf[s] = same;
+    }
+
+    //  THE TRAINS (DEV.md 4c C199): the plant is simulated at plant flow and
+    //  sized per train when its sizing entries say `perTrain yes;`.  ONE
+    //  declaration, with its source and reason; no count is a default.
+    result.trains = {};
+    if (sizingDict_->found("trains"))
+    {
+        const DictPtr td = sizingDict_->subDict("trains");
+        for (const char* k : { "count", "source", "reason" })
+            if (!td->found(k))
+                throw std::runtime_error(std::string("sizing { trains { ... } }: `")
+                    + k + "` is not declared.  A plant of N identical trains"
+                    " says N, where N comes from (`source`) and why the trains"
+                    " are identical (`reason`).");
+        const scalar c = td->lookupScalar("count");
+        if (!(c >= 1.0) || std::abs(c - std::round(c)) > 1e-9)
+            throw std::runtime_error("sizing { trains { count } } must be a"
+                " whole number >= 1; got " + std::to_string(c));
+        result.trains.count  = static_cast<int>(std::lround(c));
+        result.trains.source = td->lookupWord("source");
+        result.trains.reason = td->lookupWord("reason");
     }
 
     //  TWO LISTS: `units ( ... )`, the items a flowsheet unit realises, and

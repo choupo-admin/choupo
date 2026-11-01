@@ -168,6 +168,19 @@ struct SimulationResult
     //  yes and the reasons were already printed above.  The two have
     //  different remedies, so the distinction is carried rather than guessed.
     bool                                                           sizingAttempted = false;
+
+    //  THE TRAINS A PLANT IS BUILT IN (DEV.md 4c C199).  A plant of identical
+    //  parallel trains is simulated ONCE at plant flow and sized PER TRAIN:
+    //  the physics does not change, the organisation does.  Declared in the
+    //  postDict `sizing { trains { count; source; reason; } }`, read by the
+    //  sizers whose entry says `perTrain yes;`.  count 0 = none declared.
+    struct TrainDeclaration
+    {
+        int         count = 0;
+        std::string source;
+        std::string reason;
+    };
+    TrainDeclaration                                               trains;
     //  WHICH UNITS THE SIZING PASS TRIED AND COULD NOT SIZE, each with the
     //  refusal its sizer gave (2026-10-17, DEV.md 4c C79).  The pass has
     //  always printed them and counted them; a reader downstream -- the plot

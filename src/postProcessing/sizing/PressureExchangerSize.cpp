@@ -28,6 +28,7 @@ License
 
 #include "PressureExchangerSize.H"
 #include "MaterialLimits.H"
+#include "TrainSplit.H"
 #include "core/Dimensions.H"
 
 #include <cmath>
@@ -55,13 +56,19 @@ std::vector<EquipmentSizing> PressureExchangerSize::size(
                 " pressureExchanger?)");
         return it->second;
     };
-    const scalar Q_LP     = need("Q_LPin_m3h");          // m3/h, the rated side
-    const scalar Q_HP     = need("Q_HPin_m3h");
-    const scalar Q_HPout  = need("Q_HPout_m3h");
-    const scalar Q_LPout  = need("Q_LPout_m3h");
+    //  A PLANT OF N IDENTICAL TRAINS (C199): the unit ran at plant flow, so
+    //  each train sees 1/N of every flow and of the booster duty; the
+    //  pressures are the same.  N = 0 is the unit sized whole, as before.
+    const int N = trainSplit::trainsOf(result, designRules,
+                                       "PressureExchanger '" + unitName + "'");
+    const scalar share    = N > 0 ? 1.0 / N : 1.0;
+    const scalar Q_LP     = need("Q_LPin_m3h") * share;  // m3/h, the rated side
+    const scalar Q_HP     = need("Q_HPin_m3h") * share;
+    const scalar Q_HPout  = need("Q_HPout_m3h") * share;
+    const scalar Q_LPout  = need("Q_LPout_m3h") * share;
     const scalar dP_HP    = need("dP_HP_bar");
     const scalar dP_LP    = need("dP_LP_bar");
-    const scalar booster  = need("boosterDuty_kW");      // hydraulic, eta_pump = 1
+    const scalar booster  = need("boosterDuty_kW") * share;  // hydraulic, eta_pump = 1
     const scalar P_HPin   = need("P_HPin") / 1.0e5;      // bar
     const scalar P_HPout  = need("P_HPout") / 1.0e5;
 
@@ -103,6 +110,47 @@ std::vector<EquipmentSizing> PressureExchangerSize::size(
     const scalar P_des = pDeclared
         ? designRules->lookupScalar("pressureDesign", Dims::pressure) / 1.0e5
         : P_HPin;
+
+    //  THE MAKER'S PRESSURE LIMIT AND FLOW WINDOW (C199), both optional and
+    //  both DECLARED with the entry's `source`: a device is not rated above
+    //  its limit, so the operating high-pressure inlet and the design
+    //  pressure above it REFUSE by name -- the same posture as a material's
+    //  maxP -- and so does a per-rotor flow under the minimum of the maker's
+    //  window, since the maker rates no operation there.  It is the SIZER
+    //  that checks, not the unit: the limit belongs to the device model the
+    //  array is built of, and the unit's physics does not depend on it.
+    //  Absent, nothing is checked.
+    scalar pRating = 0.0, flowMin = 0.0;
+    if (designRules->found("pressureRating"))
+    {
+        pRating = designRules->lookupScalar("pressureRating", Dims::pressure) / 1.0e5;
+        if (!(pRating > 0.0))
+            throw std::runtime_error("PressureExchanger: unit '" + unitName
+                + "' -- `pressureRating` must be positive.");
+        if (P_HPin > pRating + 1e-9 || P_des > pRating + 1e-9)
+            throw std::runtime_error("PressureExchanger: unit '" + unitName
+                + "' -- the high-pressure inlet is " + std::to_string(P_HPin)
+                + " bar and the design pressure " + std::to_string(P_des)
+                + " bar, above the device's declared pressure rating of "
+                + std::to_string(pRating) + " bar (" + source + ").  The maker"
+                  " rates no operation there: lower the pressure, or declare"
+                  " the rating of the device that carries it.");
+    }
+    if (designRules->found("minFlowPerUnit"))
+    {
+        flowMin = designRules->lookupScalar("minFlowPerUnit",
+                                            Dims::volumetricFlow) * 3600.0;
+        if (!(flowMin > 0.0) || flowMin > rated)
+            throw std::runtime_error("PressureExchanger: unit '" + unitName
+                + "' -- `minFlowPerUnit` must be positive and not above"
+                  " `ratedFlowPerUnit`.");
+        if (Q_LP / rotors < flowMin - 1e-9)
+            throw std::runtime_error("PressureExchanger: unit '" + unitName
+                + "' -- each rotor would see " + std::to_string(Q_LP / rotors)
+                + " m3/h, under the maker's minimum of "
+                + std::to_string(flowMin) + " m3/h: fewer, larger devices"
+                  " are needed, or a smaller model.");
+    }
 
     EquipmentSizing d;
     d.unitName       = unitName;
@@ -150,9 +198,25 @@ std::vector<EquipmentSizing> PressureExchangerSize::size(
         " price it as a declared quote (`costing { quotes ( { unit " + unitName
         + "; ... } ) }`, DEV.md 4c C98)";
 
+    if (pRating > 0.0) d.set("pressureRating", pRating, "bar");
+    if (flowMin > 0.0) d.set("minFlowPerUnit", flowMin, "m3/h");
+
     //  ONE ITEM: the array is one piece of equipment for the sheet; its rotor
-    //  count is a size on it, not a sibling per rotor.
-    return { d };
+    //  count is a size on it, not a sibling per rotor.  UNLESS the plant is
+    //  built in trains (C199): then ONE ARRAY PER TRAIN, identical, each
+    //  tagged, with the plant totals beside the per-train numbers.
+    if (N == 0) return { d };
+    d.set("rotorsPlant", rotors * N, "-");
+    d.basis += "; per TRAIN: the plant's flows divided by the " + std::to_string(N)
+        + " declared identical trains (" + result.trains.source + ")";
+    std::vector<EquipmentSizing> out;
+    for (int k = 1; k <= N; ++k)
+    {
+        EquipmentSizing t = d;
+        trainSplit::stamp(t, k, N);
+        out.push_back(std::move(t));
+    }
+    return out;
 }
 
 } // namespace Choupo
