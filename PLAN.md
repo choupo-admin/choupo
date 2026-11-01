@@ -1,9 +1,13 @@
-# PLAN -- the CML plan: what is scheduled, by horizon (short, medium, long term)
+# PLAN -- the work schedule: the next hour, the next day, the next three days
+
+This is NOT the CML plan.  Choupo's development plan (short, medium and long
+term, in months and years) is `CML.md`; this file schedules the work that
+advances it.
 
 Read at the start of every session (CLAUDE.md section 0, rule 8).  Each row
 points at its entry in DEV.md section 4c, the register of record; this file
 says only WHEN and IN WHAT ORDER.  Change a row in the same commit as the work
-that changes it.  Vítor's private Portuguese view of this plan is
+that changes it.  Vítor's private Portuguese view of this schedule is
 https://claude.ai/artifact/JnokFGgoNMTAWvu9fkgyoQ -- updated FROM this file.
 
 Last reviewed: 2026-11-01 (rows brought up to date: C178, C185 7/9, C186 4/6, C188, C189 1-4, C191 graph on main; usage budget tight -- generals on Sonnet), earlier 2026-10-31, after an audit of every request Vítor made from
@@ -14,7 +18,7 @@ Vítor alone holds wait on him (push authorisation lifted the same evening).
 
 Status words: `todo` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
-## Short term (the next hour)
+## Next hour
 
 | status | what | ref |
 |---|---|---|
@@ -30,7 +34,7 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 | running | Validate C178 in the site's WASM (CI builds it after the push; confirm the site updated) | C178 |
 | todo | Check on the site, after its deploy, that the volcanic case is gone and the GUI lesson test fix is live | C182 |
 
-## Medium term (the next day)
+## Next day
 
 Generals in parallel only on disjoint files; the commander integrates one at a
 time.  Any golden row that moves goes to Vítor as a list before it is recorded.
@@ -45,7 +49,7 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 | todo | C190 (14) batch own reader and A_rev; (11) catalystLoading on the batch own path, measured; (15) the membrane fitter's 'converged' on a stall; (12) PC-SAFT root scan near the spinodal | C190 |
 | todo | C170's owed fixes: gates must not judge `data/local` or untracked files; `check_workspace_truth` wording; refuse `nu 0; order 1`; records still citing Burcat | C170 |
 
-## Long term (the next seven days)
+## Next three days
 
 | status | what | ref |
 |---|---|---|
