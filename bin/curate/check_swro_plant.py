@@ -70,6 +70,19 @@ WHAT THIS CHECKS.
           vessels the trains cannot share, an exchanger above its pressure
           rating, per-train sizing with no trains declared.
 
+  (l)-(m) A HEADER IS SIZED BY ITS VELOCITY (DEV.md 4c C199, `pipeHeader`):
+      (l) the 54 header items (feed, brine, permeate of RO1, RO2a, RO2b, six
+          trains) have their flow per train, required bore sqrt(4Q/(pi vmax)),
+          nominal bore (the smallest DECLARED bore at or above it, velocity
+          inside the window), velocity, Reynolds number, Churchill friction
+          factor (written out HERE) and Darcy-Weisbach drop per metre
+          recomputed from the postDict and the stream masses; the density is
+          the package's as published and is only range-checked;
+      (m) four fixtures refuse by name: no velocity window, no bore that fits
+          (the message must give the largest declared bore, which the second,
+          weaker refusal does not -- a sabotage survived without that word), a
+          window above the nearest bore, no viscosity.
+
 WHAT THIS DOES NOT CHECK, said plainly:
   * THAT A PUMP, RACK OR CLEARANCE NUMBER IS A REAL ONE.  Those not read from an
     open page are ASSUMED and say so; the gate holds the arithmetic, not the
@@ -403,8 +416,12 @@ def num(txt: str, key: str):
 
 
 def by_unit(res):
+    """The sized items of each unit, the header pipes (C199, `pipeHeader`) apart:
+    they are items of the bank's unit but not its banks."""
     out = {}
     for e in res.get("equipment", []):
+        if e.get("type") == "pipeHeader":
+            continue
         out.setdefault(e["unit"], []).append(e)
     for u in out:
         out[u].sort(key=lambda e: e.get("tag", ""))
@@ -652,6 +669,126 @@ def arm_k(tmp):
     return n
 
 
+# ---------------------------------------------------------------------------
+#  C199: A HEADER IS SIZED BY ITS VELOCITY.  Recomputed from the case's own
+#  dicts (the velocity window, the declared bores, the roughness, the
+#  viscosity) and the result's stream masses; the density is the package's, as
+#  PUBLISHED on the sheet, and is only range-checked here (no independent
+#  density of a lumped NaCl brine exists in this gate).
+# ---------------------------------------------------------------------------
+def churchill(Re, rr):
+    """Churchill (1977), written out here, not called from the engine."""
+    A = (2.457 * math.log(1.0 / ((7.0 / Re) ** 0.9 + 0.27 * rr))) ** 16
+    B = (37530.0 / Re) ** 16
+    return 8.0 * ((8.0 / Re) ** 12 + 1.0 / (A + B) ** 1.5) ** (1.0 / 12.0)
+
+
+def header_entries(post: str):
+    """[(unit, text)] for every postDict entry of type pipeHeader."""
+    out = []
+    for m in re.finditer(r"unitName\s+(\w+);\s*type\s+pipeHeader;(.*?)(?=unitName\s|\Z)", post, re.S):
+        out.append((m.group(1), m.group(2)))
+    return out
+
+
+def arm_l(res):
+    """(l) THE HEADERS: every header's required bore, nominal bore, velocity and
+    pressure drop per metre recomputed from the dicts and the stream masses; the
+    bore is the smallest declared one at or above the required bore and its
+    velocity stays inside the window."""
+    post, S = post_text(), res["streams"]
+    heads = {}
+    for e in res.get("equipment", []):
+        if e.get("type") == "pipeHeader":
+            heads[(e["unit"], e["tag"])] = e
+    ents = header_entries(post)
+    if len(ents) != 3:
+        fails.append("(l) the postDict declares %d pipeHeader entries, expected 3 (RO1, RO2a, RO2b)" % len(ents))
+        return None
+    n = 0
+    seen = []
+    for unit, txt in ents:
+        vmin, vmax = numu(txt, "min", "m/s"), numu(txt, "max", "m/s")
+        bores = sorted(float(x) for x in re.findall(r"insideDiameter\s+([0-9.eE+-]+)\s*m\b", txt))
+        eps = numu(txt, "value", "mm")
+        mu = numu(txt, "value", "Pa.s")
+        fm = re.search(r"frictionModel\s+(\w+);", txt)
+        roles = re.findall(r"role\s+(\w+);\s*stream\s+(\w+);", txt)
+        if None in (vmin, vmax, eps, mu) or not bores or not roles or not fm or fm.group(1) != "Churchill":
+            fails.append("(l) %s: cannot read the header declarations (window, bores, roughness, viscosity, Churchill, headers)" % unit)
+            continue
+        eps *= 1e-3
+        for role, stream in roles:
+            seen.append((unit, role))
+            for k in range(1, SKIDS + 1):
+                it = heads.get((unit, "train%d.%s" % (k, role)))
+                if it is None:
+                    fails.append("(l) %s has no %s header item for train %d" % (unit, role, k))
+                    continue
+                v = it["values"]
+                rho = v["density"]
+                if not (990.0 <= rho <= 1060.0):
+                    fails.append("(l) %s/%s: density %r kg/m3 is not that of a liquid water stream" % (unit, it["tag"], rho))
+                Q = S[stream]["F_mass"] / rho / SKIDS                     # m3/s per train
+                Dreq = math.sqrt(4.0 * Q / (math.pi * vmax))
+                fit = [d for d in bores if d >= Dreq * (1 - 1e-12)]
+                if not fit:
+                    fails.append("(l) %s/%s: no declared bore holds %.4f m, yet the engine sized it" % (unit, it["tag"], Dreq))
+                    continue
+                D = fit[0]
+                vel = 4.0 * Q / (math.pi * D * D)
+                if not (vmin * (1 - 1e-12) <= vel <= vmax * (1 + 1e-12)):
+                    fails.append("(l) %s/%s: velocity %.4f m/s outside the window [%g, %g]" % (unit, it["tag"], vel, vmin, vmax))
+                Re = rho * vel * D / mu
+                f = churchill(Re, eps / D)
+                dp = f / D * 0.5 * rho * vel * vel
+                want = {"flow": Q * 3600.0, "requiredInsideDiameter": Dreq, "nominalInsideDiameter": D,
+                        "headerNominalDiameter": D, "velocity": vel, "reynolds": Re, "frictionFactor": f,
+                        "pressureDropPerMetre": dp, "velocityMin": vmin, "velocityMax": vmax, "viscosity": mu}
+                for key, w in want.items():
+                    if not close(v[key], w, 1e-6):
+                        fails.append("(l) %s/%s: %s = %r, recomputed %r" % (unit, it["tag"], key, v[key], w))
+                n += 1
+    if len(seen) != 9:
+        fails.append("(l) %d headers declared, expected feed, brine and permeate for 3 banks" % len(seen))
+    return n
+
+
+def arm_m(tmp):
+    """(m) REFUSALS BY NAME of the header sizer: no velocity window, no size that
+    fits (too short a list; a window the nearest bore falls under), no
+    viscosity (the package declares no model)."""
+    n = 0
+
+    def refused(name, edit, words):
+        nonlocal n
+        d = fixture(tmp, name, edit)
+        out, code = run_case(d)
+        if code == 0 and "FAILED" not in out:
+            fails.append("(m) %s: nothing refused (exit 0, no FAILED line)" % name)
+            return
+        miss = [w for w in words if w not in out]
+        if miss:
+            fails.append("(m) %s: refused, but not naming %r.  Tail:\n%s" % (name, miss, out[-500:]))
+        n += 1
+    P = lambda d: d / "system" / "postDict"
+    refused("header-without-a-velocity-window", lambda d: sub_file(P(d),
+            "velocity\n                {\n                    min     1.0 m/s;", "notvelocity\n                {\n                    min     1.0 m/s;"),
+            ["pipeHeader", "RO1", "velocity"])
+    refused("header-without-a-bore-that-fits", lambda d: sub_file(P(d),
+            "{ insideDiameter 0.45 m; } { insideDiameter 0.50 m; } { insideDiameter 0.55 m; }\n"
+            "                        { insideDiameter 0.60 m; } { insideDiameter 0.70 m; } { insideDiameter 0.80 m; }",
+            "{ insideDiameter 0.45 m; }"),
+            ["NO declared size fits", "RO1", "feed", "the largest declared is 0.45 m"])
+    refused("header-window-above-the-nearest-bore", lambda d: sub_file(P(d),
+            "min     1.0 m/s;\n                    max     2.0 m/s;", "min     1.99 m/s;\n                    max     2.0 m/s;"),
+            ["NO declared size fits", "below the window's minimum"])
+    refused("header-without-a-viscosity", lambda d: sub_file(P(d),
+            "viscosity\n                {\n                    value   1.0e-3 Pa.s;", "notviscosity\n                {\n                    value   1.0e-3 Pa.s;"),
+            ["pipeHeader", "viscosity"])
+    return n
+
+
 def main():
     if not (ROOT / "choupoSolve").exists():
         print("check_swro_plant: FAILED -- no choupoSolve build")
@@ -671,6 +808,7 @@ def main():
         arm_c(res, out, tmp)
         nref = arm_d(tmp)
         nref2 = arm_k(tmp)
+        nref3 = arm_m(tmp)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     e = arm_e(res)
@@ -679,7 +817,8 @@ def main():
     px = arm_h(res)
     nb = arm_i(res)
     bld = arm_j(res)
-    if fails or a is None or e is None or spec is None or not pumps or px is None or not nb or bld is None:
+    nh = arm_l(res)
+    if fails or a is None or e is None or spec is None or not pumps or px is None or not nb or bld is None or not nh:
         print("check_swro_plant: FAILED")
         for f in fails:
             print("  " + f)
@@ -706,9 +845,9 @@ def main():
           "cannot share, an exchanger above its pressure rating, per-train sizing with no trains declared).  NOT CHECKED: that any "
           "number is the real plant's (the PDF is a manufacturer's claim at assumed test conditions; every pump, vessel and "
           "rack number not read from a page is ASSUMED and says so), the layout against any code or the real site, the first "
-          "law, and boron as pH-dependent physics (not modelled)."
+          "law, and boron as pH-dependent physics (not modelled).  THE HEADERS (C199): the %d header items (feed, brine and permeate of three banks, six trains) have their required bore, nominal bore, velocity inside the declared window, Reynolds number, Churchill friction factor and pressure drop per metre recomputed from the dicts and the stream masses (the density is the package's, range-checked only); %d more fixtures refuse by name (no velocity window, no bore that fits, a window above the nearest bore, no viscosity).  NOT CHECKED: that the window or the list of bores is a standard's (both are the case's, assumed), the header's length, fittings and wall."
           % (CASE.name, prod, r1 * 100, r2 * 100, tds, fac, b, nref, ni, nr, SKIDS, SKIDS, spec,
-             pumps["HPpump"][0], pumps["Booster"][0], pumps["Pass2Pump"][0], pumps["IntakePump"][2], px, nb, bld[0], bld[1], nref2))
+             pumps["HPpump"][0], pumps["Booster"][0], pumps["Pass2Pump"][0], pumps["IntakePump"][2], px, nb, bld[0], bld[1], nref2, nh, nref3))
     return 0
 
 

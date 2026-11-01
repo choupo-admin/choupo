@@ -239,6 +239,8 @@ const std::map<std::string, UnitSpec>& table()
         { "J/kg/K",     UnitSpec{ 1.0,      Dims::heatCapacity } },
         { "N/m",        UnitSpec{ 1.0,      Dims::surfaceTension } },
         { "W/m2",       UnitSpec{ 1.0,      Dims::heatFlux } },
+        //   A pressure gradient: the drop per metre a header is sized to (C199).
+        { "Pa/m",       UnitSpec{ 1.0,      Dimensions{ 1, -2, -2, 0, 0 } } },
 
         // ----- molar mass → kg/kmol -------------------------------------
         { "kg/kmol", UnitSpec{ 1.0,         Dims::molarMass } },

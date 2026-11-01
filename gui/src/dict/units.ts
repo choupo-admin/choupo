@@ -238,6 +238,9 @@ const TABLE: Record<string, UnitSpec> = {
   "J/kg/K": { factor: 1.0, affine: false },
   "N/m":    { factor: 1.0, affine: false },
   "W/m2":   { factor: 1.0, affine: false },
+  // pressure gradient Pa/m, the drop per metre of a sized header (C199) --
+  // mirrors src/core/Units.cpp, added in the same commit.
+  "Pa/m":   { factor: 1.0, affine: false },
 
   // molar mass → kg/kmol
   "kg/kmol": { factor: 1.0, affine: false },

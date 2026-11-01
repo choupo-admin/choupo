@@ -2365,6 +2365,25 @@ clearance $k\,L_{\mathrm{vessel}}$, width $N_{\mathrm{racks}}W_{\mathrm{rack}}
 + (N_{\mathrm{racks}}-1)\,a_{\mathrm{aisle}}$ and height $H_{\mathrm{rack}}$.
 A pitch below the vessel diameter, a vessel narrower than its element and a
 rack that does not divide into tiers each refuse by name.
+\item \textbf{Headers} (\code{pipeHeader}): the feed, brine and permeate
+header of each bank are sized by velocity, one item per header and train.
+The case lists them, \code{headers ( \{ role feed; stream roFeed; \} \dots{}
+)}, and declares a velocity window \code{velocity \{ min; max; origin; source;
+reason; \}}, the inside diameters it can buy \code{nominalSizes \{ sizes ( \{
+insideDiameter \dots{}; \} \dots{} ); \dots{} \}}, a roughness, a friction
+correlation and a viscosity (the package here declares none).  The sizer reads
+the volumetric flow of the named stream per train and takes the
+smallest declared bore not below $D=\sqrt{4Q/(\pi v_{\max})}$, provided its
+velocity stays above $v_{\min}$; if none fits it refuses, naming the window,
+the required bore and the list.  It publishes the required and the nominal
+bore (\code{headerNominalDiameter}), the velocity and the Darcy--Weisbach
+pressure drop per metre, $f\,\rho v^2/(2D)$, with $f$ from the declared
+correlation.  Choupo carries no pipe schedule table: the list of bores is the
+case's.  The window of the worked example, 1--2~m/s, is \emph{assumed}: the
+only figure found in an open page (``typically 1--2~m/s'', a vendor article on
+small commercial RO plants) is not specific to seawater or to a header, and
+the FilmTec design-guideline excerpt read states no piping velocity.  The
+drop is per metre; length, fittings, wall and pressure class are not modelled.
 \item \textbf{The hall.}  The racks stand in a \code{building \{\}} of
 \file{system/layoutDict}, whose rooms list the items that stand in them; the
 engine publishes the counts and envelopes, and the plant layout check
