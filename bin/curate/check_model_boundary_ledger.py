@@ -36,18 +36,23 @@ THE FIVE ARMS, each probed through the real binary.
       criterion is therefore doing the deciding, not decoration.
 
   A4  A FABRICATED BOUNDARY BUYS NOTHING.  `perUnitThermo01_srk_nrtl` with
-      its feed PINNED `phase liquid;` (see A5) and its turbine's `thermo {}`
-      block deleted has a 536 kW imbalance and no declared override: the
+      its feed PINNED `phase gas;` at 360 K (see A5) and its flash's
+      `thermo {}` block deleted has a 574 kW imbalance and no declared
+      override: the
       boundary reads `none`, the step is exactly 0, the remaining equals
       the raw, and the RED alarm fires.  A boundary is a DECLARATION; the
       size of an imbalance is never evidence of its cause.
 
   A5  AN UNREPRODUCED STEP BUYS NOTHING.  `perUnitThermo01_srk_nrtl` with
-      its feed PINNED `phase liquid;`: the turbine declares a real SRK
-      world, the auditor prices a 7.5 kW step across it, and 536 kW
-      remains.  The status is `unconfirmed`, the step is printed but NOT
+      its feed PINNED `phase gas;` at 360 K (the turbine's contract admits
+      a declared vapour; it refuses the old `phase liquid;` probe): the
+      turbine's SRK step (-0.885 kW) is reproduced and credited, the
+      flash's declared NRTL world prices no step across an all-vapour
+      label, and 574.75 kW remains.  The status is `unconfirmed`, the step is printed but NOT
       credited, the remaining residual equals the raw one, and the alarm
-      stays.  UNTIL 2026-10-03 THESE TWO ARMS RAN THE CASE AS SHIPPED, and
+      stays.  (Rebuilt 2026-11-01 after the turbine's acceptance contract,
+      DEV.md 4c C188, refused the earlier `phase liquid;` probe; the
+      measurements are in the arm's comment.)  UNTIL 2026-10-03 THESE TWO ARMS RAN THE CASE AS SHIPPED, and
       the 536 kW they relied on was the energy report pricing an UNPINNED
       vapour feed on the carried default (a liquid) -- the V2 debt DEV.md
       names.  The flowsheet now resolves every unpinned domain inlet before
@@ -98,7 +103,7 @@ alarm on every one of A3 / A4 / A5.
         check_model_boundary_ledger: FAIL
           - A3: no ENERGY alarm for 'transporter' under an unmeetable
             declared tolerance
-          - A5: no ENERGY alarm for the turbine whose step was not
+          - A5: no ENERGY alarm for the flash whose step was not
             reproduced
           - A4: no ENERGY alarm on a genuine imbalance with no declared
             override
@@ -175,6 +180,42 @@ def closures(out: str) -> dict:
 
 def near(a, b, tol=1.0e-4):
     return abs(a - b) <= tol
+
+
+def make_cold_vapour_feed(case: Path) -> None:
+    """perUnitThermo01's feed re-declared as a PINNED VAPOUR at 360 K, 6 bar
+    -- a (T, P) where the mixture is physically liquid.  The turbine's
+    acceptance contract admits it (it is declared vapour) and prices it
+    consistently; the flash downstream re-flashes the 'expanded' label to
+    its real equilibrium while the report prices the label (see A5)."""
+    feed = case / "0" / "feed"
+    txt = feed.read_text()
+    new = re.sub(r"^T\s+430 K;", "T               360 K;", txt, flags=re.M)
+    if new == txt:
+        failures.append("A5/A4: the fixture drifted -- the feed no longer"
+                        " declares 'T 430 K;'")
+    feed.write_text(new + "phase           gas;\n")
+
+
+def strip_unit_thermo(text: str, unit: str):
+    """The flowsheetDict text with the `thermo { ... }` block of the named
+    unit removed (brace-matched), or None when it is not where expected."""
+    i = text.find("name        %s;" % unit)
+    if i < 0:
+        return None
+    j = text.find("thermo", i)
+    k = text.find("{", j)
+    if j < 0 or k < 0:
+        return None
+    depth, n = 0, k
+    while n < len(text):
+        depth += (text[n] == "{") - (text[n] == "}")
+        n += 1
+        if depth == 0:
+            break
+    if depth != 0:
+        return None
+    return text[:j] + text[n:]
 
 
 def main() -> int:
@@ -318,72 +359,92 @@ def main() -> int:
             if "1e-30" not in out2:
                 failures.append("A3: the declared controls were not announced")
 
-        # ---- A5: perUnitThermo01 with a DECLARED liquid feed -- a step
-        #          that does not reproduce the imbalance buys nothing.
+        # ---- A5: perUnitThermo01 with a DECLARED vapour feed that is not
+        #          one -- a step that does not reproduce the imbalance buys
+        #          nothing.
         #
-        #  THE 536 kW WAS THE INLET, NOT THE BOUNDARY (2026-10-03).  As
-        #  shipped, perUnitThermo01's feed (ethanol/water at 430 K, 6 bar)
-        #  declares no phase and is single-phase VAPOUR at its own (T, P);
-        #  the energy report priced it on the carried default -- vf = 0, a
-        #  liquid -- and the turbine carried a 536 kW "imbalance" that no
-        #  7.5 kW SRK step could reproduce.  Since the flowsheet resolves
-        #  every unpinned domain inlet before the report reads it
-        #  (docs/design/a-stream-is-fixed-by-two-variables.md), the shipped
-        #  case closes at 0.12 % and its step is REPRODUCED and credited --
-        #  so the probe's premise dissolved.  The imbalance is re-created by
-        #  DECLARATION: `phase liquid;` on the feed is a pin the report
-        #  prices as declared (R-E2), the vapour's latent heat is then a
-        #  genuine imbalance inside the turbine, and the arm tests what it
-        #  always tested -- that a step which does not reproduce it is
-        #  printed and not credited.  Measured: raw 536.0360 kW, step 7.5154
-        #  kW, remaining 536.0360 kW, status unconfirmed, alarm -- the old
-        #  shape to the last digit.
+        #  THE PROBE WAS REBUILT (2026-11-01, DEV.md 4c C188).  It used to
+        #  pin `phase liquid;` on the vapour feed (430 K, 6 bar) so the
+        #  report priced the TURBINE's inlet as a liquid while the turbine
+        #  expanded it as a vapour: raw 536.036 kW, step 7.5154 kW, status
+        #  unconfirmed.  Since C188 the turbine DECLARES that it accepts a
+        #  vapour and nothing else (`Turbine::acceptance()`), so that
+        #  pin is refused before any unit runs -- the correct behaviour, and
+        #  the probe's premise (a unit that ignores the stream's phase) is
+        #  gone BY DESIGN.  MEASURED: no declaration the contract admits
+        #  leaves a turbine imbalance its step cannot reproduce -- `phase
+        #  gas;` on the feed at any (T, P) closes (360 K: raw -0.8847 kW,
+        #  step -0.8850 kW, accounted; the same at 300 K and 600 K/20 MPa),
+        #  and only a real-gas corner at 15 MPa leaves a 2 W gap that sits
+        #  on the tolerance, which is no probe.
+        #
+        #  What the contract DOES admit is a pinned vapour at a (T, P) where
+        #  the mixture is physically liquid: `T 360 K; phase gas;`.  The
+        #  turbine is consistent with it (its step is reproduced -- the
+        #  credited side of the same run), but the FLASH downstream re-flashes
+        #  the 'expanded' vapour label to its real equilibrium while the
+        #  report prices the label, and carries a genuine imbalance:
+        #  raw -574.751 kW, step 0 kW (the stream is all-vapour by label, so
+        #  the NRTL-liquid declaration prices nothing across it), remaining
+        #  -574.751 kW, status unconfirmed, ENERGY alarm.  The arm tests what
+        #  it always tested -- that a step which does not reproduce the
+        #  imbalance is printed and not credited -- on the flash, with the
+        #  turbine's credited step beside it so the arm can still fail.
         pu = fresh(tmp, "perunit", PERUNIT)
-        with open(pu / "0" / "feed", "a") as fh:
-            fh.write("phase           liquid;\n")
+        make_cold_vapour_feed(pu)
         rc3, out3 = run(pu)
         if rc3 != 0:
             failures.append("A5: perUnitThermo01 did not run")
         else:
-            e3 = closures(out3).get("turbine")
-            if e3 is None:
-                failures.append("A5: no ledger entry for the turbine, which"
-                                " declares a thermo{} world")
+            c3 = closures(out3)
+            e3 = c3.get("flash")
+            et = c3.get("turbine")
+            if e3 is None or et is None:
+                failures.append("A5: no ledger entry for the flash or the"
+                                " turbine, which both declare a thermo{}"
+                                " world")
             else:
+                if et.get("status") != "accounted" \
+                   or near(et["step_kW"], 0.0, 1.0e-6):
+                    failures.append("A5: the turbine's SRK step is not priced"
+                                    " and credited (status '%s', step %s kW)"
+                                    " -- the arm cannot tell credit from"
+                                    " refusal" % (et.get("status"),
+                                                  et["step_kW"]))
                 if e3.get("status") != "unconfirmed":
-                    failures.append("A5: perUnitThermo01's turbine step was"
-                                    " credited although the audit reports"
-                                    " status '%s'" % e3.get("status"))
-                if near(e3["step_kW"], 0.0, 1.0e-6):
-                    failures.append("A5: no step was priced across a declared"
-                                    " boundary -- the arm cannot fail")
+                    failures.append("A5: the flash's step was credited"
+                                    " although the audit reports status '%s'"
+                                    % e3.get("status"))
+                if abs(e3["raw_kW"]) < 1.0:
+                    failures.append("A5: the flash has no imbalance to"
+                                    " alarm about -- the arm cannot fail")
                 if not near(e3["remaining_kW"], e3["raw_kW"], 1.0e-6):
                     failures.append("A5: an unreproduced step was credited"
                                     " against the remaining residual")
-            if not alarmed(out3, "turbine"):
-                failures.append("A5: no ENERGY alarm for the turbine whose"
+            if not alarmed(out3, "flash"):
+                failures.append("A5: no ENERGY alarm for the flash whose"
                                 " step was not reproduced")
 
         # ---- A4: the same case with the DECLARATION removed --------------
+        #  The same cold-vapour feed as A5; the declaration removed is the
+        #  FLASH's NRTL `thermo {}` block (the unit that carries the
+        #  imbalance).  Measured: raw -574.1065 kW, no world declared,
+        #  status none, step 0, remaining = raw, alarm.
         fab = fresh(tmp, "fabricated", PERUNIT)
-        with open(fab / "0" / "feed", "a") as fh:      # the same declared liquid as A5
-            fh.write("phase           liquid;\n")
+        make_cold_vapour_feed(fab)
         fd = fab / "system" / "flowsheetDict"
-        txt = fd.read_text()
-        m = re.search(r"^.*thermo\s*\{ equilibrium \{ vapour \{ fugacityModel"
-                      r" SRK; \} \} \}.*$\n", txt, re.M)
-        if not m:
-            failures.append("A4: the fixture drifted -- the turbine's SRK"
-                            " thermo{} block is no longer where the probe"
-                            " expects it")
+        stripped = strip_unit_thermo(fd.read_text(), "flash")
+        if stripped is None:
+            failures.append("A4: the fixture drifted -- the flash's thermo{}"
+                            " block is no longer where the probe expects it")
         else:
-            fd.write_text(txt.replace(m.group(0), ""))
+            fd.write_text(stripped)
             rc4, out4 = run(fab)
             if rc4 != 0:
                 failures.append("A4: the declaration-free variant did not run")
             else:
-                r4 = csv_rows(fab).get("turbine", {})
-                e4 = closures(out4).get("turbine")
+                r4 = csv_rows(fab).get("flash", {})
+                e4 = closures(out4).get("flash")
                 #  The entry EXISTS -- a unit whose closure is reconciled is
                 #  always accounted for, and an absent row would be silence
                 #  where a verdict is owed.  What it must say is `none`.
@@ -414,8 +475,8 @@ def main() -> int:
                                         " alarm about -- the arm cannot fail")
                 except (KeyError, ValueError):
                     failures.append("A4: the three quantities are unreadable"
-                                    " on the declaration-free turbine")
-                if not alarmed(out4, "turbine"):
+                                    " on the declaration-free flash")
+                if not alarmed(out4, "flash"):
                     failures.append("A4: no ENERGY alarm on a genuine"
                                     " imbalance with no declared override")
 
