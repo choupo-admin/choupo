@@ -1550,7 +1550,20 @@ accepts today, and that is a policy call.
 > each push that adds a unit, the site's own build and one run of the new
 > case in the browser are verified (CLAUDE.md section 6, the 2026-08-27
 > lesson); a row in the plan, not a hope.
-> STATUS: COMMISSIONED 2026-11-02.
+> DONE 2026-11-02, (a)(b)(c) (ba62b677b): `repoint_lesson_citations` re-points
+> GUI lesson citations by content (three shapes: `{file,line,contains}`
+> records, CLAIMS-table keys with their prose copies, ANCHORS tuples; 79
+> stale citations re-pointed on a shifted copy, 253/253 lesson tests pass with
+> no hand edit; refuses an ambiguous or missing claim; `--check`, `--inventory`;
+> 61 files still carry bare prose tokens it does not manage); gate
+> `check_citation_repointer` (six sabotages); `check_decision_index --write`
+> rewrites the three count sentences; `bin/integrate` runs the tool when its
+> --gui step fails on citations and keeps both sides of a conflict that only
+> ADDS lines to bin/runTests, EquipmentSize.cpp, UnitOperation.cpp or the
+> decision index (tested on a throwaway repo; the --gui auto-repoint is
+> untested end to end).  STILL OPEN: the second half -- the site's WASM build
+> and a browser run after each push that adds a unit.
+> STATUS: (a)(b)(c) DONE; the site check is a plan row.
 
 > **C195. WHAT CHOUPO LACKS FOR THE TWO PHARMACEUTICAL-PLANT PROJECT GROUPS
 > OF 2026-27 (Vitor, 2026-11-02: "le os indices dos projetos dos anos
