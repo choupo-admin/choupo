@@ -1126,6 +1126,9 @@
   "Membrane": [
    "src/thermo/membrane/Membrane.H"
   ],
+  "MembraneBankSize": [
+   "src/postProcessing/sizing/MembraneBankSize.H"
+  ],
   "MembraneModule": [
    "src/thermo/membrane/MembraneModule.H"
   ],
@@ -1959,6 +1962,9 @@
   "Trace": [
    "src/core/Formula.H"
   ],
+  "TrainDeclaration": [
+   "src/result/SimulationResult.H"
+  ],
   "TransferRecord": [
    "src/result/SimulationResult.H"
   ],
@@ -2313,6 +2319,10 @@
    {
     "key": "ratedMachine",
     "type": "RatedMachineSize"
+   },
+   {
+    "key": "membraneBank",
+    "type": "MembraneBankSize"
    }
   ],
   "src/propertyOps/ConstantEstimator.cpp": [
@@ -4547,6 +4557,7 @@
    "src/postProcessing/sizing/CycloneSize.H",
    "src/postProcessing/sizing/EquipmentSize.H",
    "src/postProcessing/sizing/EvaporatorSize.H",
+   "src/postProcessing/sizing/MembraneBankSize.H",
    "src/postProcessing/sizing/PressureExchangerSize.H",
    "src/postProcessing/sizing/RatedMachineSize.H",
    "src/postProcessing/sizing/ReliefValveSize.H",
@@ -4678,6 +4689,34 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
   ],
+  "src/postProcessing/sizing/MembraneBankSize.cpp": [
+   "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/RegistryRefusal.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/materials/Material.H",
+   "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/MembraneBankSize.H",
+   "src/postProcessing/sizing/TrainSplit.H",
+   "src/result/ClosureVariable.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H"
+  ],
   "src/postProcessing/sizing/PhaseDensity.cpp": [
    "src/core/Advisory.H",
    "src/core/BatchPlanRecords.H",
@@ -4720,6 +4759,7 @@
    "src/postProcessing/sizing/EquipmentSize.H",
    "src/postProcessing/sizing/MaterialLimits.H",
    "src/postProcessing/sizing/PressureExchangerSize.H",
+   "src/postProcessing/sizing/TrainSplit.H",
    "src/result/ClosureVariable.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -4747,6 +4787,7 @@
    "src/materials/Material.H",
    "src/postProcessing/sizing/EquipmentSize.H",
    "src/postProcessing/sizing/RatedMachineSize.H",
+   "src/postProcessing/sizing/TrainSplit.H",
    "src/result/ClosureVariable.H",
    "src/result/ResultEmitter.H",
    "src/result/SimulationResult.H",
@@ -10492,6 +10533,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -10696,6 +10738,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -10777,6 +10820,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -10996,6 +11040,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -11349,6 +11394,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -11697,6 +11743,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -11793,6 +11840,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -12084,6 +12132,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -12364,6 +12413,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -12472,6 +12522,7 @@
    "src/postProcessing/layout/BuildingLayout.cpp",
    "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/ConverterShellSize.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
@@ -12564,6 +12615,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -12652,6 +12704,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -12765,6 +12818,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -13178,6 +13232,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
@@ -13367,6 +13422,7 @@
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/GasStoreSize.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
@@ -13404,6 +13460,10 @@
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselSize.cpp"
+  ],
+  "src/postProcessing/sizing/MembraneBankSize.H": [
+   "src/postProcessing/sizing/EquipmentSize.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp"
   ],
   "src/postProcessing/sizing/PhaseDensity.H": [
    "src/postProcessing/sizing/GasStoreSize.cpp",
@@ -13449,6 +13509,11 @@
   "src/postProcessing/sizing/StorageTankSize.H": [
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp"
+  ],
+  "src/postProcessing/sizing/TrainSplit.H": [
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
+   "src/postProcessing/sizing/PressureExchangerSize.cpp",
+   "src/postProcessing/sizing/RatedMachineSize.cpp"
   ],
   "src/postProcessing/sizing/VesselMechanics.H": [
    "src/postProcessing/sizing/CatalystBedSize.cpp",
@@ -13926,6 +13991,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -14097,6 +14163,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -14177,6 +14244,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -14335,6 +14403,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -14673,6 +14742,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -14905,6 +14975,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -15304,6 +15375,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -15619,6 +15691,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
@@ -15780,6 +15853,7 @@
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PressureExchangerSize.cpp",
    "src/postProcessing/sizing/RatedMachineSize.cpp",
