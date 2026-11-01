@@ -21,6 +21,23 @@ up to the fence -- NOT the real site.
 = 98 664.7 m3/day; first pass 47.20 %, second 87.0 %; 2.0 mg/L NaCl-equivalent
 and 0.046 mg/L boron in the product; 2.81 kWh/m3 of pump shaft work.
 
+**Six trains, one building (DEV.md 4c C199).**  The case study says six skids of
+16 442 m3/day, and an industrial SWRO plant is built so: identical trains, each
+with its own high-pressure pump, its own array of pressure exchangers and its
+own vessel racks.  The flowsheet is solved ONCE at plant flow (six identical
+trains in parallel carry six times a train's flow) and the SIZING is done per
+train: `system/postDict` declares `trains { count 6; ... }` and the pumps, the
+exchanger arrays and the vessel banks yield items `train1` .. `train6` with
+their per-train numbers beside the plant's.  A pump is rated by the largest
+machine one make builds (Sulzer MSD-RO, 1600 m3/h: one per train at 50 % load,
+plus a declared spare), the exchanger array is 6 devices of the Energy Recovery
+PX Q650 window per train under its 83 bar limit, and each pass's vessels stand
+in racks (233 vessels of 7.64 m in 5 racks of four tiers, the loading clearance
+of one vessel length at the east end of each bank).  The 42 items stand in the
+four rooms of one reverse-osmosis building in `system/layoutDict`.  What the
+open sources did not give -- the rack pitch, the aisle, the loading clearance --
+is declared `assumed` and says so.
+
 **What a student should notice.**
 1. The document's "feed pressure" figures (5.52 and 1.03 MPa) are TEST
    pressures: 47.2 % recovery of this seawater needs 58.6 bar, and the second
@@ -34,5 +51,9 @@ and 0.046 mg/L boron in the product; 2.81 kWh/m3 of pump shaft work.
    is a converged state for that reason.
 4. The plot plan announces six findings (five water tanks with no bund, one
    entrance) and leaves them.
+5. The pump count is `ceil(flow per train / the largest pump)`: with 6 trains it
+   is 1 per train; with ONE train the same high-pressure flow (4791 m3/h) would need 3 pumps in parallel
+   (declare `installed { count 3; }`; the sizer says so when you do not).
 
-Gate: `bin/curate/check_swro_plant.py`.
+Record: `docs/design/a-desalination-plant-is-trains-and-racks.md`.  Gate:
+`bin/curate/check_swro_plant.py`.

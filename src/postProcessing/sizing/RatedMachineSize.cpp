@@ -28,6 +28,7 @@ License
 
 #include "RatedMachineSize.H"
 
+#include "TrainSplit.H"
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
 #include "core/RegistryRefusal.H"
@@ -84,6 +85,175 @@ void needText(const DictPtr& d, const std::string& block, const std::string& who
                   " carries where it came from and why it is this plant's.");
 }
 
+//  ---- kind volumeRate (C199): a pump rated by the flow it can carry -------
+//
+//  A seawater plant does not put its whole flow through one pump: the
+//  maker's catalogue ends at a largest machine, so the flow is shared by N
+//  pumps in parallel per train and the trains by the plant.  Nothing is
+//  scheduled by a batch plan here, so this kind reads NO plan: the load is
+//  the pump's own published flow, `F` (kmol/s) times `v_molar_liq`
+//  (m3/mol), and the rating is the CASE's declared largest pump.
+//
+//      pumpsNeeded   = ceil( Q_train / maxFlowPerUnit )
+//      utilisation   = Q_train / (pumpsInstalled maxFlowPerUnit)
+//
+//  `installed { count; source; reason; }` is the pumps IN PARALLEL PER TRAIN
+//  the case builds (default 1); fewer than needed REFUSES, naming the count.
+//  `spare { count; source; reason; }` is the PLANT's stand-by pumps (the
+//  practice read for C199: Ebara supplied Carlsbad with 4 axially split
+//  multistage pumps, 3 running and 1 spare); absent, none.
+std::vector<EquipmentSizing> sizeVolumeRate(const std::string& unitName,
+    const SimulationResult& result, const Material& material,
+    const DictPtr& designRules, const std::string& who,
+    const std::string& typeName)
+{
+    const int N = trainSplit::trainsOf(result, designRules, who);
+    const int nTr = std::max(1, N);
+
+    auto kit = result.kpis.find(unitName);
+    if (kit == result.kpis.end())
+        throw std::runtime_error(who + ": the unit has no KPIs in the result.");
+    auto kp = [&](const char* key) -> scalar
+    {
+        auto it = kit->second.find(key);
+        if (it == kit->second.end())
+            throw std::runtime_error(who + ": kind volumeRate reads the pump's"
+                " own published `" + key + "` and the unit publishes none (is"
+                " it a liquid `pump`?).");
+        return it->second;
+    };
+    const scalar Qplant = kp("F") * 1000.0 * kp("v_molar_liq") * 3600.0;   // m3/h
+    const scalar Wplant = kp("W_shaft_kW");
+    const scalar head   = kp("head_m");
+    const scalar Pout   = kp("P_out") / 1.0e5;                              // bar
+    const scalar Qtrain = Qplant / nTr;
+
+    const DictPtr rating = designRules->found("rating")
+        && std::holds_alternative<DictPtr>(designRules->entryValue("rating"))
+        ? designRules->subDict("rating") : nullptr;
+    if (!rating)
+        throw std::runtime_error(who + ": `rating { maxFlowPerUnit <Q>; origin"
+            " literature|assumed; source \"...\"; reason \"...\"; }` is not"
+            " declared -- the largest pump the maker builds, and where that"
+            " number came from.  No catalogue is carried and no default is"
+            " taken.");
+    needText(rating, "rating", who);
+    if (!rating->found("origin"))
+        throw std::runtime_error(who + ": `rating { origin ...; }` is not"
+            " declared (literature | assumed).");
+    const std::string origin = rating->lookupWord("origin");
+    if (origin != "literature" && origin != "assumed")
+        throw std::runtime_error(who + ": " + registryRefusal::message(
+            "origin", origin, { "literature", "assumed" }, "Accepted"));
+    const scalar qMax = need(rating, "maxFlowPerUnit", Dims::volumetricFlow, who,
+        "the largest flow ONE pump of the chosen make is built for, e.g."
+        " `maxFlowPerUnit 1600 m3/h;`") * 3600.0;
+    if (!(qMax > 0.0))
+        throw std::runtime_error(who + ": maxFlowPerUnit must be positive.");
+    scalar pRating = 0.0;
+    if (rating->found("pressureRating"))
+    {
+        pRating = rating->lookupScalar("pressureRating", Dims::pressure) / 1.0e5;
+        if (Pout > pRating + 1e-9)
+            throw std::runtime_error(who + ": the pump discharges at "
+                + fmt(Pout) + " bar, above the declared pressure rating of "
+                + fmt(pRating) + " bar (" + rating->lookupWord("source")
+                + ").  The maker builds no pump for it.");
+    }
+
+    const int needed = std::max(1, static_cast<int>(std::ceil(Qtrain / qMax - 1e-9)));
+    int installed = 1;
+    if (designRules->found("installed"))
+    {
+        const DictPtr ins = designRules->subDict("installed");
+        needText(ins, "installed", who);
+        if (!ins->found("count"))
+            throw std::runtime_error(who + ": `installed { count N; }` has no `count`.");
+        const scalar c = ins->lookupScalar("count");
+        if (!(c >= 1.0) || std::abs(c - std::round(c)) > 1e-9)
+            throw std::runtime_error(who + ": `installed.count` must be a whole number >= 1.");
+        installed = static_cast<int>(std::lround(c));
+    }
+    int spare = 0;
+    if (designRules->found("spare"))
+    {
+        const DictPtr sp = designRules->subDict("spare");
+        needText(sp, "spare", who);
+        if (!sp->found("count"))
+            throw std::runtime_error(who + ": `spare { count N; }` has no `count`.");
+        const scalar c = sp->lookupScalar("count");
+        if (!(c >= 0.0) || std::abs(c - std::round(c)) > 1e-9)
+            throw std::runtime_error(who + ": `spare.count` must be a whole number >= 0.");
+        spare = static_cast<int>(std::lround(c));
+    }
+    if (installed < needed)
+        throw std::runtime_error(who + ": " + std::to_string(installed)
+            + " pump(s) per train do NOT carry the flow -- " + fmt(Qtrain)
+            + " m3/h per train against " + fmt(qMax) + " m3/h for the largest"
+            " pump (" + rating->lookupWord("source") + ").  " + std::to_string(needed)
+            + " pump(s) in parallel per train would: declare `installed { count "
+            + std::to_string(needed) + "; source \"...\"; reason \"...\"; }`,"
+              " or more trains, or a larger pump.");
+
+    const scalar perPump = Qtrain / installed;
+    const scalar util    = perPump / qMax;
+    EquipmentSizing d;
+    d.unitName      = unitName;
+    d.equipmentType = typeName;
+    d.material      = material.name;
+    d.set("Q_plant",           Qplant,                      "m3/h");
+    //  The per-train numbers exist only where the plant is built in trains; a
+    //  single station (the intake) publishes the plant's and no "train".
+    if (N > 0)
+    {
+        d.set("Q_train",           Qtrain,                  "m3/h");
+        d.set("pumpsPerTrain",     installed,               "-");
+        d.set("shaftPowerTrain",   Wplant / nTr,            "kW");
+    }
+    d.set("maxFlowPerUnit",    qMax,                        "m3/h");
+    d.set("pumpsNeeded",       needed,                      "-");
+    d.set("flowPerPump",       perPump,                     "m3/h");
+    d.set("utilisation",       util,                        "-");
+    d.set("shaftPowerPerPump", Wplant / nTr / installed,    "kW");
+    d.set("shaftPowerPlant",   Wplant,                      "kW");
+    d.set("head",              head,                        "m");
+    d.set("P_out",             Pout,                        "bar");
+    if (pRating > 0.0) d.set("pressureRating", pRating,     "bar");
+    d.set("pumpsRunningPlant", static_cast<scalar>(installed) * nTr, "-");
+    d.set("pumpsSparePlant",   spare,                       "-");
+    d.set("pumpsInstalledPlant", static_cast<scalar>(installed) * nTr + spare, "-");
+    d.basis = "pumps per train = ceil(Q_train / the largest pump's flow); Q = the"
+        " pump's own published F x v_molar_liq; the largest pump is the CASE's"
+        " (" + origin + ": " + rating->lookupWord("source") + "); shaft power is"
+        " the unit's own W_shaft shared by the trains; " + std::to_string(spare)
+        + " stand-by pump(s) for the plant (declared)"
+        + (N > 0 ? "; per TRAIN of the " + std::to_string(N) + " declared"
+                   " identical trains (" + result.trains.source + ")"
+                 : std::string());
+    d.notCostedBecause = "no cost correlation is carried for a process pump here;"
+        " the money is the case's declared quote (`costing { quotes }`)";
+
+    scalar thr = kAnnounceDefault;
+    if (designRules->found("announceAbove")) thr = designRules->lookupScalar("announceAbove");
+    if (util > thr)
+    {
+        const std::string msg = "utilisation " + fmt(util) + " is above " + fmt(thr)
+            + ": the pump carries " + fmt(perPump) + " m3/h of a largest-pump flow of "
+            + fmt(qMax) + " m3/h, little margin";
+        std::cerr << "[sizing] " << who << ": " << msg << "\n";
+        AdvisoryLog::instance().add("sizing", "warning", who, msg);
+    }
+    if (N == 0) return { d };
+    std::vector<EquipmentSizing> out;
+    for (int k = 1; k <= N; ++k)
+    {
+        EquipmentSizing t = d;
+        trainSplit::stamp(t, k, N);
+        out.push_back(std::move(t));
+    }
+    return out;
+}
+
 } // namespace
 
 std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
@@ -92,6 +262,13 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
     const DictPtr&          designRules) const
 {
     const std::string who = "ratedMachine '" + unitName + "'";
+
+    //  THE KIND WITHOUT A BATCH PLAN (C199): a pump is rated by flow, and
+    //  nothing in a continuous plant is scheduled.  Decided before the plan
+    //  is demanded.
+    if (designRules->found("kind") && designRules->lookupWord("kind") == "volumeRate")
+        return sizeVolumeRate(unitName, result, material, designRules, who, type_);
+
     const BatchPlanRecord& plan = result.batchPlan;
 
     if (!plan.present)
@@ -120,7 +297,7 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
             " packagingLine).");
     const std::string kind = designRules->lookupWord("kind");
     const std::vector<std::string> kinds =
-        { "batchVolume", "massRate", "tabletPress", "packagingLine" };
+        { "batchVolume", "massRate", "tabletPress", "packagingLine", "volumeRate" };
     if (std::find(kinds.begin(), kinds.end(), kind) == kinds.end())
         throw std::runtime_error(who + ": " + registryRefusal::message(
             "kind", kind, kinds, "Accepted"));

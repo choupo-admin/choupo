@@ -7,44 +7,269 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  postDict -- the SIZING pass of the plant's few sized items (no costing: the
-  case study gives no costs and Choupo has no Turton set for a membrane
-  skid or a work exchanger).
+  postDict -- the SIZING pass of the plant (no costing: the case study gives
+  no costs and Choupo has no Turton set for a membrane skid, a work exchanger
+  or a vessel bank).
 
-  THE ENERGY-RECOVERY ARRAY.  The case study's device is a piston-type work
-  exchanger (DWEER); this engine's `pressureExchanger` is the rotary one, so
-  the sheet counts ROTARY units from a declared rated flow of 60 m3/h each
-  (the author-set order of magnitude membrane27 uses, to be replaced by a
-  maker's sheet) -- a stand-in that fixes the item's identity for the plot
-  plan, not a statement about how many exchangers the real plant has.
+  A PLANT OF SIX TRAINS (DEV.md 4c C199).  The Toray case study states six
+  skids of 16 442 m3/day each, and a large SWRO plant is built exactly so: N
+  identical trains, each with its own high-pressure pump, its own array of
+  pressure exchangers and its own vessel racks (the practice read for C199:
+  Danfoss, multiple trains for large SWRO plants; Sulzer MSD-RO for trains of
+  20 000-30 000 m3/day).  The flowsheet is solved ONCE at plant flow -- six
+  identical trains in parallel carry six times a train's flow, and the physics
+  is the same -- and the sizing is done PER TRAIN: `trains` below declares the
+  count with its source, and every entry that says `perTrain yes;` yields six
+  items (train1 .. train6), each publishing its per-train numbers beside the
+  plant's.  The flowsheet's `vessels 1398` is 6 x 233 and its three pumps and
+  the exchanger carry the six trains' flow.
+
+  WHAT IS READ, WHAT IS DECLARED.  Every pump and bank number the sizer does
+  not READ from the run is the case's, declared with its origin (`literature`
+  where an open page states it, `assumed` where none does) and where it came
+  from.  The sources read for C199 (2026-11-02), by what each was and what was
+  taken:
+    * Sulzer, MSD-RO axially split multistage pump, brochure e10110 (the PDF
+      read in full) and the product page: "covering SWRO train capacities from
+      20 000 to 30 000 m3/d"; capacities 1000 to 1600 m3/h; pressures up to
+      90 bar (the product page: up to 1600 m3/h, 650 m, 90 bar).  Taken:
+      1600 m3/h and 90 bar as the largest high-pressure pump of one make.
+    * Energy Recovery, PX Q-series page: "Operates with concentrate flow from
+      4.5-147.6 m3/h (20-650 gpm)" and "up to 83 bar (1,200 psi)"; the PX Q650
+      press release (9 March 2026) gives its range as 250-650 gpm.  Taken:
+      147.6 m3/h = 650 gpm x 0.22712 m3/h per US gpm; 56.8 m3/h = 250 gpm x
+      0.22712; 83 bar.
+    * Danfoss, "Multiple trains for large SWRO plants -- how much flow should
+      one pump produce": the page returned 403 to this reader (only the
+      search engine's summary of it was read, which says a large plant is three
+      or more parallel trains, each on a pump of 10 000-15 000 m3/day); used as
+      context, NOT as a number in this case.
+    * CompositesWorld, "Composites' role in seawater reverse osmosis
+      desalination": Carlsbad has 2236 filament-wound pressure vessels of
+      eight elements each, rated for different pressures in different areas
+      (1200, 600 or 450 psi); the same page gives 8-inch, 28.4-foot vessels
+      for the SANTA BARBARA plant.  The commander's C199 note attributed the
+      28.4 ft to Carlsbad; the page says Santa Barbara.  Taken: the 28.4 ft
+      length less eight 40-inch elements (8 x 1.016 m = 8.128 m) is 0.53 m of
+      end hardware -- used as the vessel end allowance, ASSUMED to apply to
+      this plant's seven-element vessel.
+    * Element loading (Hydranautics TSB122, LG Chem TSB 102 read as search
+      results only): no open source stated a numeric clearance at the vessel
+      end, so the loading clearance is ASSUMED, not read.
+
+  THE COUNTS AND THEIR CHECKS (recomputed by the case's gate from these dicts):
+    pumps per train = ceil( Q_train / the largest pump ); the PX devices per
+    train = ceil( Q_LP,train / 147.6 m3/h ), each between 56.8 and 147.6 m3/h
+    and under 83 bar; vessel length = elements x 40 in + the end allowance;
+    racks = ceil( vessels per train / vessels per rack ).
 
   THE THREE TANKS (the two contact tanks and the product store) are the
   flowsheet's `storageTank` units, linked by `unit <name>;` (DEV.md 4c C87):
   the hold time stays in the flowsheet.  Carbon steel stands in for the
   concrete or lined steel of a real potable-water store: it only fixes the
-  record the sizer needs; no cost is computed.
+  record the sizer needs; no cost is computed.  The `material SS316` of the
+  pumps and banks likewise fixes a record only (the vessels are FRP).
 \*---------------------------------------------------------------------------*/
 
 sizing
 {
+    trains
+    {
+        count   6;
+        source  "Toray case study MC-CS-CAMPODEDALIAS-1910: six skids of 16 442 m3/d each (6 x 16 442 = 98 652 against the 98 664 m3/d it states)";
+        reason  "the skids are one design repeated (233 vessels of seven elements in the first pass, 54:18 in the second): identical trains in parallel, each with its own pump, exchanger array and racks, carry six times a train's flow, so the flowsheet is solved once at plant flow and sized per train";
+    }
+
     units
     (
-        //  THE PUMPS.  The engine has no pump sizer; `compressor`'s sizer passes a
-        //  unit's published shaft power through, which a pump publishes too, so the
-        //  four pumps are items of that kind -- the sheet says `compressor` and its
-        //  basis says "pass-through": a stand-in that gives each pump an identity
-        //  on the plot plan, NOT a pump design (follow-up: a pump sizer).
-        { unitName IntakePump;  type compressor;  material SS316;  designRules { pressureDesign 4; } }
-        { unitName HPpump;      type compressor;  material SS316;  designRules { pressureDesign 75; } }
-        { unitName Booster;     type compressor;  material SS316;  designRules { pressureDesign 75; } }
-        { unitName Pass2Pump;   type compressor;  material SS316;  designRules { pressureDesign 20; } }
-        { unitName PX;  type pressureExchanger;  material SS316;
-          designRules
-          {
-              ratedFlowPerUnit  60 m3/h;
-              source            "author-set order of magnitude, as membrane27_swro_energy_recovery (DEV.md 4c C192); the case study's device is a piston-type work exchanger, so the count is a stand-in, not the plant's";
-              pressureDesign    75 bar;       // author-set: the high-pressure inlet is 58 bar
-          } }
+        //  ---- THE PUMPS: a pump is rated by the largest flow one machine of
+        //  its make carries; the sheet publishes how many stand in parallel
+        //  per train and in the plant, their utilisation and shaft power.
+        {
+            unitName IntakePump;  type ratedMachine;  material SS316;
+            designRules
+            {
+                kind volumeRate;
+                rating
+                {
+                    maxFlowPerUnit  4000 m3/h;
+                    origin          assumed;
+                    source          "author-set order of magnitude for a low-lift intake pump; no open source read states one (the Sulzer MSD-RO figures are for high-pressure membrane-feed pumps)";
+                    reason          "the intake lifts the whole plant's water 1 bar to the filters; one machine cannot carry 9400 m3/h, so a small station of pumps in parallel stands in";
+                }
+                installed { count 3;  source "ceil(9386 m3/h / 4000 m3/h) = 3";  reason "the number of machines the declared maximum needs; the plant has ONE intake station (not per train)"; }
+                spare     { count 1;  source "ASSUMED: one stand-by machine for the station, as the C199 practice reading says Carlsbad runs its high-pressure pumps (not re-read here)";  reason "a pump out for maintenance must not stop the plant"; }
+            }
+        }
+        {
+            unitName HPpump;  type ratedMachine;  material SS316;
+            designRules
+            {
+                kind volumeRate;
+                perTrain yes;
+                rating
+                {
+                    maxFlowPerUnit  1600 m3/h;
+                    pressureRating  90 bar;
+                    origin          literature;
+                    source          "Sulzer MSD-RO axially split multistage pump, product page and brochure e10110: capacities 1000 to 1600 m3/h, up to 90 bar, covering SWRO trains of 20 000-30 000 m3/d";
+                    reason          "the largest high-pressure SWRO pump of one make read; this train's pump carries about 800 m3/h, half of it";
+                }
+                spare { count 1;  source "ASSUMED: one stand-by pump for the plant's six running pumps; the C199 practice reading says Carlsbad has 3 running and 1 spare (Ebara), not re-read here";  reason "a stand-by high-pressure pump that any train can switch to"; }
+            }
+        }
+        {
+            unitName Booster;  type ratedMachine;  material SS316;
+            designRules
+            {
+                kind volumeRate;
+                perTrain yes;
+                rating
+                {
+                    maxFlowPerUnit  1600 m3/h;
+                    pressureRating  90 bar;
+                    origin          assumed;
+                    source          "the Sulzer MSD-RO figures (1600 m3/h, 90 bar) taken as the ceiling of a booster of the same family; no open source read states a booster's own maximum";
+                    reason          "the booster restores the pressure the exchanger loses (about 24 m of head) on the recovered flow of a train";
+                }
+                spare { count 1;  source "ASSUMED, as for the high-pressure pumps";  reason "a stand-by booster for the plant"; }
+            }
+        }
+        {
+            unitName Pass2Pump;  type ratedMachine;  material SS316;
+            designRules
+            {
+                kind volumeRate;
+                perTrain yes;
+                rating
+                {
+                    maxFlowPerUnit  1600 m3/h;
+                    pressureRating  90 bar;
+                    origin          assumed;
+                    source          "the Sulzer MSD-RO ceiling (1600 m3/h) taken for a second-pass feed pump at 10.7 bar; no open source read states a maximum for a pump of this duty";
+                    reason          "the second-pass feed of a train, about 790 m3/h";
+                }
+                spare { count 1;  source "ASSUMED, as for the high-pressure pumps";  reason "a stand-by second-pass pump for the plant"; }
+            }
+        }
+
+        //  ---- THE ENERGY-RECOVERY ARRAY: one array per train.  The case
+        //  study's device is a piston-type work exchanger (DWEER); this
+        //  engine's `pressureExchanger` is the rotary one, so the devices are
+        //  counted from the Energy Recovery PX Q650's flow window, a stand-in
+        //  that fixes the item's identity and the order of the count, not a
+        //  statement about the real plant's devices.
+        {
+            unitName PX;  type pressureExchanger;  material SS316;
+            designRules
+            {
+                perTrain          yes;
+                ratedFlowPerUnit  147.6 m3/h;       // 650 gpm x 0.22712 m3/h per gpm: the top of the Q650 window
+                minFlowPerUnit    56.8 m3/h;        // 250 gpm x 0.22712: the bottom of the Q650 window
+                pressureRating    83 bar;           // the PX Q-series maximum
+                source            "Energy Recovery PX Q-series page (4.5-147.6 m3/h, 20-650 gpm; up to 83 bar) and the PX Q650 press release of 9 March 2026 (250-650 gpm); a manufacturer's figures; the case study's own device is a piston-type work exchanger, so the count is a stand-in, not the plant's";
+                pressureDesign    75 bar;           // author-set: the high-pressure inlet is 58 bar
+            }
+        }
+
+        //  ---- THE VESSEL BANKS: the unit's `vessels` and `elements` become
+        //  racks of horizontal vessels, per train and per pass.  Every
+        //  number below is the case's and ASSUMED (no open source gives a
+        //  rack pitch or a loading clearance); the vessel's end allowance is
+        //  derived from a stated vessel length, see the header.
+        {
+            unitName RO1;  type membraneBank;  material SS316;
+            designRules
+            {
+                perTrain yes;
+                vessel
+                {
+                    endAllowance     0.53 m;
+                    outsideDiameter  0.25 m;
+                    origin           assumed;
+                    source           "end allowance: a 28.4 ft (8.66 m) 8-inch vessel (CompositesWorld, Santa Barbara plant) less eight 40-inch elements = 0.53 m, assumed to hold for this plant's vessel; outside diameter: ASSUMED for an 8-inch class vessel with its end closures, none read";
+                    reason           "the vessel is longer than its elements by the end closures and the feed and brine ports";
+                }
+                rack
+                {
+                    vesselsPerRack  48;
+                    tiers           4;
+                    pitch           0.40 m;
+                    tierPitch       0.40 m;
+                    baseHeight      0.30 m;
+                    endMargin       0.25 m;
+                    aisle           1.5 m;
+                    origin          assumed;
+                    source          "author-set round numbers; no open source gave a vessel pitch, rack size or aisle (DEV.md 4c C199 searched)";
+                    reason          "four tiers of twelve vessels is a frame a person can service from the floor and the side; the pitch leaves room for the end-closure piping and couplings";
+                }
+                loadingClearance
+                {
+                    vesselLengths  1;
+                    origin         assumed;
+                    source         "ASSUMED: the elements are pushed into a vessel from one end, so a free length of one vessel is kept at that end (the practice the C199 brief states); the Hydranautics and LG Chem loading bulletins were found as search results only and state no clearance";
+                    reason         "elements are pushed in and out one at a time, in line with the vessel";
+                }
+            }
+        }
+        {
+            unitName RO2a;  type membraneBank;  material SS316;
+            designRules
+            {
+                perTrain yes;
+                vessel
+                {
+                    endAllowance     0.53 m;
+                    outsideDiameter  0.25 m;
+                    origin           assumed;
+                    source           "as RO1";
+                    reason           "as RO1: the same vessel family";
+                }
+                rack
+                {
+                    vesselsPerRack  28;
+                    tiers           4;
+                    pitch           0.40 m;
+                    tierPitch       0.40 m;
+                    baseHeight      0.30 m;
+                    endMargin       0.25 m;
+                    aisle           1.5 m;
+                    origin          assumed;
+                    source          "as RO1 (author-set)";
+                    reason          "54 vessels per train in two racks of 28 and 26: four tiers of seven";
+                }
+                loadingClearance { vesselLengths 1;  origin assumed;  source "as RO1";  reason "as RO1"; }
+            }
+        }
+        {
+            unitName RO2b;  type membraneBank;  material SS316;
+            designRules
+            {
+                perTrain yes;
+                vessel
+                {
+                    endAllowance     0.53 m;
+                    outsideDiameter  0.25 m;
+                    origin           assumed;
+                    source           "as RO1";
+                    reason           "as RO1: the same vessel family";
+                }
+                rack
+                {
+                    vesselsPerRack  20;
+                    tiers           4;
+                    pitch           0.40 m;
+                    tierPitch       0.40 m;
+                    baseHeight      0.30 m;
+                    endMargin       0.25 m;
+                    aisle           1.5 m;
+                    origin          assumed;
+                    source          "as RO1 (author-set)";
+                    reason          "18 vessels per train in one rack: four tiers of five";
+                }
+                loadingClearance { vesselLengths 1;  origin assumed;  source "as RO1";  reason "as RO1"; }
+            }
+        }
     );
 
     storage

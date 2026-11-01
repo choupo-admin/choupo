@@ -128,6 +128,13 @@
   pass pressures and the first-pass pressure were solved together for the
   product, 47.2 %, 87 % and a balanced exchanger.
 
+  SIX TRAINS (DEV.md 4c C199).  The document's six skids are six identical
+  trains in parallel, so this flowsheet carries their SUM (`vessels 1398` is
+  6 x 233, and the pumps and the exchanger carry six times a train's flow); the
+  physics is the same and is solved once.  The sizing is per train:
+  system/postDict declares `trains { count 6; }` and yields train1 .. train6 for
+  each pump, exchanger array and vessel bank.
+
   THE PLOT PLAN (system/layoutDict) is Choupo's design of a plant of this
   scale up to the fence, NOT the real site: the document gives no site plan.
 \*---------------------------------------------------------------------------*/

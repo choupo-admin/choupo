@@ -33,6 +33,7 @@ License
 #include "CrystalliserSize.H"
 #include "CycloneSize.H"
 #include "CompressorSize.H"
+#include "MembraneBankSize.H"
 #include "PressureExchangerSize.H"
 #include "RatedMachineSize.H"
 #include "VesselSize.H"
@@ -122,6 +123,11 @@ void EquipmentSize::registerBuiltins()
     //  lot.  The word names the EQUIPMENT; `kind` names what is rated.
     registerType("ratedMachine",
         []{ return std::make_unique<RatedMachineSize>(); });
+    //  THE VESSEL BANK OF A SPIRAL-WOUND STAGE (2026-11-02, DEV.md 4c C199):
+    //  racks of pressure vessels with a loading clearance, per train, from the
+    //  unit's own vessel and element counts; NOT costed.
+    registerType("membraneBank",
+        []{ return std::make_unique<MembraneBankSize>(); });
 }
 
 } // namespace Choupo

@@ -782,6 +782,10 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     std::vector<const std::pair<const std::string, CostBreakdown>*> unsizedCosts;
     for (const auto& kv : r.costs)
         if (!r.sizings.count(kv.first)) unsizedCosts.push_back(&kv);
+    if (r.trains.count > 0)
+        os << ",\n  \"trains\": { \"count\": " << r.trains.count
+           << ", \"source\": " << esc(r.trains.source)
+           << ", \"reason\": " << esc(r.trains.reason) << " }";
     if (!r.sizings.empty() || !unsizedCosts.empty())
     {
         os << ",\n  \"equipment\": [";
