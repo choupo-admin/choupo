@@ -28,9 +28,8 @@ License
 
 #include "UnitOperation.H"
 
-// All built-in unit operations are listed here.  To add a new one:
-//   1. #include its header below.
-//   2. Add a one-line registerType() entry inside registerBuiltins().
+// All built-in unit operations are listed here.  To add a new one: #include
+// its header below, add one registerType() line inside registerBuiltins().
 #include "distillation/DistillationColumn.H"
 #include "distillation/ShortcutColumn.H"
 #include "flash/AdiabaticFlash.H"
@@ -50,6 +49,7 @@ License
 #include "rotating/Compressor.H"
 #include "rotating/ElectricLoad.H"
 #include "rotating/Pump.H"
+#include "rotating/PressureExchanger.H"
 #include "rotating/Turbine.H"
 #include "hydraulics/Pipe.H"
 #include "hydraulics/PneumaticConveyor.H"
@@ -176,6 +176,9 @@ void UnitOperation::registerBuiltins()
     reg("compressor",         []{ return std::make_unique<Compressor>();         });
     reg("turbine",            []{ return std::make_unique<Turbine>();            });
     reg("pump",               []{ return std::make_unique<Pump>();               });
+    //  The seawater-RO energy-recovery device (2026-11-01, DEV.md 4c C192):
+    //  two liquids exchange pressure by displacement in a rotor's ducts.
+    reg("pressureExchanger",  []{ return std::make_unique<PressureExchanger>();  });
     reg("electricLoad",       []{ return std::make_unique<ElectricLoad>();       });
     reg("mixer",              []{ return std::make_unique<Mixer>();              });
     reg("splitter",           []{ return std::make_unique<Splitter>();           });
