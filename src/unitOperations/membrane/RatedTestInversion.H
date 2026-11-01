@@ -97,6 +97,7 @@ Description
 #include "core/Dictionary.H"
 #include "core/Types.H"
 
+#include <limits>
 #include <string>
 
 namespace Choupo {
@@ -134,6 +135,36 @@ struct RatedTestPoint
     scalar permeateFlow = 0.0;   // m3/s, the engine's
 };
 
+//- What the module predicts at ANY stated conditions (SI), one element in
+//  one vessel (the shortlist's probe, C189 slice 5; the rated test's too).
+struct ModuleAtConditions
+{
+    scalar R_int        = 0.0;
+    scalar R_obs        = 0.0;   // 1 - c_p/c_feed
+    scalar cmOverCb     = 1.0;
+    scalar recovery     = 0.0;   // volumetric, the engine's
+    scalar flux         = 0.0;   // m3/m2/s, channel average
+    scalar permeateFlow = 0.0;   // m3/s = flux x the record's active area
+    scalar dP           = 0.0;   // Pa, feed-channel drop of the element
+};
+
+//- The module of `unitDict` run for ONE element at the conditions given
+//  (water + `solute` at `feedMassFraction`, `feedFlow` m3/s, T, absolute P),
+//  `solute` given intrinsic rejection R_int.  The one probe both the rated
+//  test and the shortlist use.
+ModuleAtConditions runModuleAt(const DictPtr& unitDict,
+                               const ThermoPackage& thermo,
+                               const MembraneModule& record,
+                               const std::string& solute,
+                               scalar R_int,
+                               scalar feedMassFraction,
+                               scalar feedFlow,
+                               scalar T,
+                               scalar P,
+                               const std::string& unitLabel,
+                               const std::string& probeName,
+                               scalar A_w_override = std::numeric_limits<scalar>::quiet_NaN());
+
 //- The inversion's answer.
 struct RatedTestInversion
 {
@@ -168,7 +199,8 @@ RatedTestPoint rateAtRatedTest(const DictPtr& unitDict,
                                const RatedTest& test,
                                const std::string& solute,
                                scalar R_int,
-                               const std::string& unitLabel);
+                               const std::string& unitLabel,
+                               scalar A_w_override = std::numeric_limits<scalar>::quiet_NaN());
 
 //- R_int for `solute` such that the module's predicted OBSERVED rejection
 //  at the chosen rated test (selectRatedTest) equals the record's.
@@ -178,7 +210,36 @@ RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
                                         const MembraneModule* record,
                                         const std::string& solute,
                                         const std::string& testId,
-                                        const std::string& unitLabel);
+                                        const std::string& unitLabel,
+                                        scalar A_w_override = std::numeric_limits<scalar>::quiet_NaN(),
+                                        bool announce = true);
+
+//- The water permeance AND the intrinsic rejection that BOTH reproduce a
+//  rated test (C189 slice 5b).  The record's A_w is a teaching fit to some
+//  other case (the NF270 and SW30HR records say so); the data sheet's
+//  permeate flow at its rated test is a MEASUREMENT of the element, and the
+//  module's flux law J_w = A_w (dP - dpi) turns it into A_w the way the
+//  observed rejection turns into R_int.  The two are coupled (the wall
+//  concentration depends on the flux, the osmotic pressure on the
+//  rejection), so they are found together by alternating the two bracketed
+//  1-D solves until A_w is stationary.  The record's A_w is the start and is
+//  returned beside the derived one.
+struct WaterPermeanceDerivation
+{
+    scalar A_w          = 0.0;    // m/(s.Pa), derived
+    scalar A_w_record   = 0.0;    // m/(s.Pa), the membrane record's
+    int    rounds       = 0;      // alternations
+    scalar permeateGap  = 0.0;    // relative: (engine - sheet)/sheet at the answer
+    RatedTestInversion inv;       // the R_int at the derived A_w
+};
+
+WaterPermeanceDerivation deriveWaterPermeance(const DictPtr& unitDict,
+                                              const ThermoPackage& thermo,
+                                              const MembraneModule& record,
+                                              scalar A_w_record,
+                                              const std::string& solute,
+                                              const std::string& testId,
+                                              const std::string& unitLabel);
 
 } // namespace membrane
 } // namespace Choupo

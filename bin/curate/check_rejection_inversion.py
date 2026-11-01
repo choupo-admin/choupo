@@ -100,6 +100,7 @@ import check_constant_rejection as ccr      # noqa: E402  (run / copy_case / set
 ROOT = Path(__file__).resolve().parents[2]
 WITNESS = ROOT / "tutorials/steady/membranes/membrane25_rated_test_inversion_nf270_4040"
 CLASS_WITNESS = "tutorials/steady/membranes/membrane26_class_sulphate_removal"
+SHEET_WITNESS = "tutorials/steady/membranes/membrane28_water_permeance_from_sheets"   # C189 slice 5b
 M21 = ROOT / "tutorials/steady/membranes/membrane21_two_stage_nf_array"
 DIA = ROOT / "tutorials/batch/membrane/diafilter01_nf_desalting"
 SHEET_R = 0.97
@@ -377,9 +378,9 @@ def main():
                 users.append(p.parent.parent.relative_to(ROOT).as_posix())
         #  The functional-class witness (C189 slice 3) derives its class's
         #  rejections the same way and is held by check_membrane_classes.
-        allowed = {WITNESS.relative_to(ROOT).as_posix(), CLASS_WITNESS}
+        allowed = {WITNESS.relative_to(ROOT).as_posix(), CLASS_WITNESS, SHEET_WITNESS}
         if sorted(users) != sorted(allowed):
-            fail("(d) the cases declaring `fromRatedTest` are %s, expected the two witnesses %s"
+            fail("(d) the cases declaring `fromRatedTest` are %s, expected the three witnesses %s"
                  % (sorted(users), sorted(allowed)))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)

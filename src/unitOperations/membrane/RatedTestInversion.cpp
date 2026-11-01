@@ -172,16 +172,19 @@ const RatedTest& selectRatedTest(const MembraneModule& record,
 }
 
 // ---------------------------------------------------------------------------
-RatedTestPoint rateAtRatedTest(const DictPtr& unitDict,
+ModuleAtConditions runModuleAt(const DictPtr& unitDict,
                                const ThermoPackage& thermo,
                                const MembraneModule& record,
-                               const RatedTest& test,
                                const std::string& solute,
                                scalar R_int,
-                               const std::string& unitLabel)
+                               scalar feedMassFraction,
+                               scalar feedFlow,
+                               scalar T,
+                               scalar P,
+                               const std::string& unitLabel,
+                               const std::string& probeName,
+                               scalar A_w_override)
 {
-    const RatedTestConditions c = conditionsOf(unitDict, record, test, solute);
-
     //  THE PROBE DICT: a deep copy of the unit's own (an alias would rewrite
     //  the case's), one element in one vessel, no scaling audit, the rated
     //  solute's R a number.
@@ -208,20 +211,20 @@ RatedTestPoint rateAtRatedTest(const DictPtr& unitDict,
             rej->insert(k, 1.0, Dims::dimensionless);
         }
 
-    //  THE RATED FEED: water + the solute at feedMassFraction, its volume
+    //  THE FEED: water + the solute at feedMassFraction, its volume
     //  closed on the module's own solution density (rho_feed, the key
-    //  toBulk reads), so the probe's volumetric feed is exactly c.feedFlow.
+    //  toBulk reads), so the probe's volumetric feed is exactly `feedFlow`.
     const std::size_t iW = thermo.aqueousSolventIndex();
     const std::size_t iS = thermo.indexOf(solute);
     const scalar rho  = op->lookupScalarOrDefault("rho_feed", 1000.0);
-    const scalar w    = c.feedMassFraction;
+    const scalar w    = feedMassFraction;
     const scalar nS   = w / thermo.comp(iS).MW();             // kmol/kg
     const scalar nW   = (1.0 - w) / thermo.comp(iW).MW();
-    const scalar F    = c.feedFlow * rho * (nS + nW);         // kmol/s
+    const scalar F    = feedFlow * rho * (nS + nW);           // kmol/s
     DictPtr feed = probe->subDict("feed");
     feed->insert("F", F);
-    feed->insert("T", c.T);
-    feed->insert("P", c.P);
+    feed->insert("T", T);
+    feed->insert("P", P);
     auto comp = std::make_shared<Dictionary>("composition");
     for (std::size_t i = 0; i < thermo.n(); ++i)
         comp->insert(thermo.comp(i).name(),
@@ -230,6 +233,7 @@ RatedTestPoint rateAtRatedTest(const DictPtr& unitDict,
 
     SpiralWoundModule m;
     m.markRatedTestProbe();
+    if (!std::isnan(A_w_override)) m.setWaterPermeabilityOverride(A_w_override);
     {
         //  A trial: what the probe raises is about the rated test, not about
         //  the case's answer (core/Advisory.H, the partition).
@@ -239,9 +243,9 @@ RatedTestPoint rateAtRatedTest(const DictPtr& unitDict,
         catch (const std::exception& e)
         {
             throw std::runtime_error("spiralWoundModule '" + unitLabel + "':"
-                " the rated-test probe of module '" + record.name() + "' ("
+                " the " + probeName + " of module '" + record.name() + "' ("
                 + fmt(w * 1e6, "%.0f") + " ppm " + solute + ", "
-                + fmt(c.P * 1e-5, "%.3g") + " bar, " + fmt(c.T, "%.2f")
+                + fmt(P * 1e-5, "%.3g") + " bar, " + fmt(T, "%.2f")
                 + " K) at R_int = " + fmt(R_int, "%.10g") + " failed: "
                 + e.what());
         }
@@ -250,16 +254,41 @@ RatedTestPoint rateAtRatedTest(const DictPtr& unitDict,
     auto get = [&](const std::string& key) {
         const auto it = k.find(key);
         if (it == k.end())
-            throw std::runtime_error("rated-test probe: the module published"
+            throw std::runtime_error("module probe: the module published"
                 " no `" + key + "`.");
         return it->second;
     };
+    ModuleAtConditions r;
+    r.R_int        = R_int;
+    r.R_obs        = get("R_obs_" + solute);
+    r.cmOverCb     = 1.0 + get("Gamma_" + solute + "_avg");
+    r.recovery     = get("water_recovery");
+    r.flux         = get("J_w_avg");
+    r.permeateFlow = r.flux * record.activeArea_m2();
+    r.dP           = get("dP_feed");
+    return r;
+}
+
+// ---------------------------------------------------------------------------
+RatedTestPoint rateAtRatedTest(const DictPtr& unitDict,
+                               const ThermoPackage& thermo,
+                               const MembraneModule& record,
+                               const RatedTest& test,
+                               const std::string& solute,
+                               scalar R_int,
+                               const std::string& unitLabel,
+                               scalar A_w_override)
+{
+    const RatedTestConditions c = conditionsOf(unitDict, record, test, solute);
+    const ModuleAtConditions r = runModuleAt(unitDict, thermo, record, solute,
+        R_int, c.feedMassFraction, c.feedFlow, c.T, c.P, unitLabel,
+        "rated-test probe", A_w_override);
     RatedTestPoint p;
-    p.R_int        = R_int;
-    p.R_obs        = get("R_obs_" + solute);
-    p.cmOverCb     = 1.0 + get("Gamma_" + solute + "_avg");
-    p.recovery     = get("water_recovery");
-    p.permeateFlow = get("J_w_avg") * record.activeArea_m2();
+    p.R_int        = r.R_int;
+    p.R_obs        = r.R_obs;
+    p.cmOverCb     = r.cmOverCb;
+    p.recovery     = r.recovery;
+    p.permeateFlow = r.permeateFlow;
     return p;
 }
 
@@ -269,7 +298,9 @@ RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
                                         const MembraneModule* record,
                                         const std::string& solute,
                                         const std::string& testId,
-                                        const std::string& unitLabel)
+                                        const std::string& unitLabel,
+                                        scalar A_w_override,
+                                        bool announce)
 {
     const std::string who = "spiralWoundModule '" + unitLabel + "': `rejection { "
                           + solute + " fromRatedTest; }`";
@@ -339,7 +370,7 @@ RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
                 " in the same test -- the feed permeateFlow / recovery assumes it was");
         if (rt.hasPH)
             add("pH " + fmt(rt.pH, "%.3g") + " is stated and the probe models no pH");
-        if (!cv.empty())
+        if (!cv.empty() && announce)
         {
             const std::string line = what + " for " + solute + ": " + cv;
             std::cout << "  [ratedTest] " << line << "\n";
@@ -394,7 +425,8 @@ RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
     const scalar target = rt.rejection;
 
     auto f = [&](scalar R, RatedTestPoint& p) {
-        p = rateAtRatedTest(unitDict, thermo, *record, rt, solute, R, unitLabel);
+        p = rateAtRatedTest(unitDict, thermo, *record, rt, solute, R, unitLabel,
+                            A_w_override);
         return p.R_obs - target;
     };
     RatedTestPoint pa, pb;
@@ -439,6 +471,93 @@ RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
     inv.residual   = fc;
     inv.iterations = it + 1;
     return inv;
+}
+
+// ---------------------------------------------------------------------------
+WaterPermeanceDerivation deriveWaterPermeance(const DictPtr& unitDict,
+                                              const ThermoPackage& thermo,
+                                              const MembraneModule& record,
+                                              scalar A_w_record,
+                                              const std::string& solute,
+                                              const std::string& testId,
+                                              const std::string& unitLabel)
+{
+    const std::string who = "spiralWoundModule '" + unitLabel
+        + "': `waterPermeance fromRatedTest;`";
+    const RatedTest& rt = selectRatedTest(record, solute, testId, who);
+    if (!(rt.permeateFlow > 0.0))
+        throw std::runtime_error(who + ": " + rt.label() + " of module '"
+            + record.name() + "' states no permeate flow.");
+    if (rt.permeateFlowBasis == "separateTest")
+        throw std::runtime_error(who + ": " + rt.label() + " states that its"
+            " permeate flow was NOT measured in the rejection test -- the"
+            " permeate flow of another test is not this feed's.  Keep the"
+            " membrane record's A_w.");
+    const RatedTestConditions c = conditionsOf(unitDict, record, rt, solute);
+
+    WaterPermeanceDerivation d;
+    d.A_w_record = A_w_record;
+    scalar A = A_w_record;
+    RatedTestInversion inv;
+    for (d.rounds = 1; d.rounds <= 60; ++d.rounds)
+    {
+        //  (1) R_int such that the observed rejection is the sheet's, at THIS A.
+        inv = invertRatedRejection(unitDict, thermo, &record, solute, testId,
+                                   unitLabel, A, d.rounds == 1);
+        //  (2) A such that the permeate is the sheet's, at THIS R_int.  The
+        //      permeate rises with A, so the sign of f brackets it; the
+        //      bracket is walked by factors of two and bisected in log A.
+        auto f = [&](scalar Aa) {
+            return runModuleAt(unitDict, thermo, record, solute, inv.R_int,
+                       c.feedMassFraction, c.feedFlow, c.T, c.P, unitLabel,
+                       "water-permeance probe", Aa).permeateFlow
+                   - c.permeateSheet;
+        };
+        scalar lo = A, hi = A;
+        if (f(A) > 0.0)
+        {
+            int k = 0;
+            while (f(lo) > 0.0)
+            {
+                lo *= 0.5;
+                if (++k > 60) throw std::runtime_error(who + ": no water"
+                    " permeance reproduces the sheet's permeate flow (the"
+                    " module passes more than " + fmt(c.permeateSheet * 86400.0)
+                    + " m3/d even at vanishing A_w).");
+            }
+        }
+        else
+        {
+            int k = 0;
+            while (f(hi) < 0.0)
+            {
+                hi *= 2.0;
+                if (++k > 60) throw std::runtime_error(who + ": no water"
+                    " permeance reproduces the sheet's permeate flow (the"
+                    " module passes less than " + fmt(c.permeateSheet * 86400.0)
+                    + " m3/d at any A_w tried).");
+            }
+        }
+        for (int it = 0; it < 200 && hi / lo > 1.0 + 1.0e-14; ++it)
+        {
+            const scalar mid = std::sqrt(lo * hi);
+            if (f(mid) < 0.0) lo = mid; else hi = mid;
+        }
+        const scalar Anew = std::sqrt(lo * hi);
+        const bool stationary = std::abs(Anew - A) <= 1.0e-12 * A;
+        A = Anew;
+        if (stationary) break;
+        if (d.rounds == 60)
+            throw std::runtime_error(who + ": the alternation between the"
+                " rejection and the water permeance did not settle in 60"
+                " rounds.");
+    }
+    //  The answer, announced once at the settled A_w.
+    d.A_w = A;
+    d.inv = invertRatedRejection(unitDict, thermo, &record, solute, testId,
+                                 unitLabel, A, false);
+    d.permeateGap = (d.inv.atRoot.permeateFlow - c.permeateSheet) / c.permeateSheet;
+    return d;
 }
 
 } // namespace membrane

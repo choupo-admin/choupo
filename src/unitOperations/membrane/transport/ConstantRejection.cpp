@@ -203,8 +203,10 @@ void ConstantRejection::resolveOnce(const TransportContext& ctx) const
     std::cout << "  [constantRejection] constant INTRINSIC rejection per"
                  " solute (Geraldes & Afonso, J. Membr. Sci. 300 (2007) 20,"
                  " Eq. 1, R_i an input): c_p,i = (1 - R_i) c_m,i at the wall,"
-                 " N_i = J_v c_p,i, J_v = A_w (dP - dpi); the record's A_w,"
-                 " its permeabilities not read\n"
+                 " N_i = J_v c_p,i, J_v = A_w (dP - dpi); A_w is the membrane"
+                 " record's unless the unit derived it from a rated test"
+                 " (`waterPermeance fromRatedTest;`, announced), its"
+                 " permeabilities not read\n"
               << "  [constantRejection] R_int:";
     for (std::size_t s = 0; s < Ns; ++s)
     {

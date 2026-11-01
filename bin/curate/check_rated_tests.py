@@ -109,6 +109,8 @@ BIN = ROOT / "choupoSolve"
 M15 = ROOT / "tutorials/steady/membranes/membrane15_module_nf270_4040"
 M16 = ROOT / "tutorials/steady/membranes/membrane16_module_sw30hr_8040"
 M25 = ROOT / "tutorials/steady/membranes/membrane25_rated_test_inversion_nf270_4040"
+M26 = ROOT / "tutorials/steady/membranes/membrane26_class_sulphate_removal"
+M28 = ROOT / "tutorials/steady/membranes/membrane28_water_permeance_from_sheets"
 
 fails = []
 
@@ -233,6 +235,125 @@ def refusal(tmp, label, rated_text, must, entry=None):
         fail("(%s) %s: exit %d but the message lacks %r:\n%s" % (label[0], label, rc, missing, out[-700:]))
         return
     print("  (%s) %s: refused (exit %d)" % (label[0], label, rc))
+
+
+def kpis_of(so, unit):
+    j = result_of(so)
+    return None if j is None else j.get("kpis", {}).get(unit)
+
+
+def mw_of(comp):
+    tx = (ROOT / "data/standards/components" / (comp + ".dat")).read_text()
+    return float(re.search(r"^\s*MW\s+([0-9.eE+-]+)\s*;", tx, re.M).group(1))
+
+
+def arm_h(tmp):
+    """(h) `waterPermeance fromRatedTest;` (C189 slice 5b): membrane28 derives A_w
+    and R_int together from each sheet's rated test.  The sheet's permeate flow
+    and recovery are reproduced to 1e-9; the derived A_w is below the membrane
+    record's (the finding: the records are teaching fits); and an INDEPENDENT
+    run -- no waterPermeance, the printed R_int typed, the printed A_w typed on
+    a plain membrane record -- reproduces the sheet's permeate AND observed
+    rejection at the sheet's own feed to 1e-7."""
+    d = tmp / "h_witness"
+    copy_case(M28, d)
+    rc, so, se = run(d)
+    if rc != 0:
+        fail("(h) membrane28 did not run (exit %d):\n%s" % (rc, (so + se)[-700:]))
+        return
+    sheets = {
+        "NF": dict(module="NF270-4040", salt="MgSO4", perm=9.5, rec=0.15, Robs=0.97, P=4.8 + 1.01325,
+                   w=2.0e-3, area=7.6, kind="NF", rec_A=36.0),
+        "RO": dict(module="SW30HR-380", salt="NaCl", perm=26.0, rec=0.08, Robs=0.997, P=55.0 + 1.01325,
+                   w=32.0e-3, area=35.0, kind="RO", rec_A=3.6),
+    }
+    for unit, sh in sheets.items():
+        k = kpis_of(so, unit)
+        if k is None:
+            fail("(h) %s: no KPIs" % unit)
+            continue
+        if abs(k["ratedTest_permeateFlow"] * 86400.0 / sh["perm"] - 1.0) > 1e-9:
+            fail("(h) %s: the rated-test permeate %.9g m3/d is not the sheet's %g" %
+                 (unit, k["ratedTest_permeateFlow"] * 86400.0, sh["perm"]))
+        if abs(k["ratedTest_recovery"] - sh["rec"]) > 1e-9:
+            fail("(h) %s: the rated-test recovery %.10g is not the sheet's %g" % (unit, k["ratedTest_recovery"], sh["rec"]))
+        Aw, Ar = k["A_w_fromRatedTest_LMH_per_bar"], k["A_w_record_LMH_per_bar"]
+        if abs(Ar - sh["rec_A"]) > 1e-9 * sh["rec_A"] or not Aw < Ar:
+            fail("(h) %s: derived A_w %.6g vs the membrane record's %.6g (expected the record's %g and a lower derived one)" %
+                 (unit, Aw, Ar, sh["rec_A"]))
+        sh["Aw"], sh["R"] = Aw, k["R_int_fromRatedTest_" + sh["salt"]]
+    if any("Aw" not in sh for sh in sheets.values()):
+        return
+    #  the independent fixture: membrane28 with NO waterPermeance, each unit's
+    #  A_w and R_int TYPED (A_w on a plain membrane record), fed the sheet's
+    #  own rated feed -- nothing is derived in this run
+    ind = tmp / "h_indep"
+    copy_case(M28, ind)
+    (ind / "constant/assets").mkdir(parents=True, exist_ok=True)
+    fl = ind / "system/flowsheetDict"
+    t = fl.read_text()
+    t = t.replace("            waterPermeance   fromRatedTest;\n", "")
+    for unit, sh in sheets.items():
+        mem = "IND_" + unit
+        rec = (ROOT / "data/standards/assets" / (sh["module"] + ".dat")).read_text()
+        rec = re.sub(r"\nmembrane\s+\w+;", "\nmembrane       %s;" % mem, rec, count=1)
+        (ind / "constant/assets" / (sh["module"] + ".dat")).write_text(rec)
+        (ind / "constant/assets" / (mem + ".dat")).write_text(
+            "name %s;\nkind %s;\nA_w %.15g m/s/bar;\n" % (mem, sh["kind"], sh["Aw"] / 3.6e6))
+        t = re.sub(r"rejection \{ %s fromRatedTest; \}" % sh["salt"],
+                   "rejection { %s %.15g; }" % (sh["salt"], sh["R"]), t, count=1)
+        Q_m3h = sh["perm"] / sh["rec"] / 24.0
+        kg = Q_m3h * 1000.0
+        (ind / ("0/feed" + unit)).write_text(
+            "componentMolarFlows\n{\n    water   %.15g kmol/h;\n    %s   %.15g kmol/h;\n}\n"
+            "T 298.15 K;\nP %.10g bar;\n" % (kg * (1 - sh["w"]) / mw_of("water"), sh["salt"],
+                                              kg * sh["w"] / mw_of(sh["salt"]), sh["P"]))
+    t = re.sub(r"source    \"DERIVED[^\"]*\";", "source    \"gate: typed\";", t)
+    fl.write_text(t)
+    rc2, so2, se2 = run(ind)
+    if rc2 != 0:
+        fail("(h) the independent run did not execute (exit %d):\n%s" % (rc2, (so2 + se2)[-600:]))
+    else:
+        for unit, sh in sheets.items():
+            k2 = kpis_of(so2, unit)
+            perm = k2["J_w_avg"] * sh["area"] * 86400.0
+            if abs(perm / sh["perm"] - 1.0) > 1e-7 or abs(k2["R_obs_" + sh["salt"]] - sh["Robs"]) > 1e-7:
+                fail("(h) %s: the independent run gives permeate %.9g m3/d (sheet %g), R_obs %.9g (sheet %g)" %
+                     (unit, perm, sh["perm"], k2["R_obs_" + sh["salt"]], sh["Robs"]))
+            else:
+                print("  (h) %s: A_w %.4g L/m2/h/bar derived (the membrane record says %g); the sheet's permeate %g "
+                      "m3/d and observed rejection %g reproduced by an independent run to 1e-7; R_int %.6f" %
+                      (unit, sh["Aw"], sh["rec_A"], sh["perm"], sh["Robs"], sh["R"]))
+    # refusals, by name
+    def refuse_h(label, case, edit_fn, must):
+        dd = tmp / ("h_ref_" + label)
+        copy_case(case, dd)
+        edit_fn(dd)
+        rc3, so3, se3 = run(dd)
+        out = so3 + se3
+        if rc3 == 0:
+            fail("(h) %s: ran to exit 0 -- no refusal" % label)
+        elif any(m not in out for m in must):
+            fail("(h) %s: exit %d but the message lacks %r:\n%s" % (label, rc3, must, out[-500:]))
+        else:
+            print("  (h) %s: refused (exit %d)" % (label, rc3))
+    def ed(path_rel, old, new):
+        def f(dd):
+            pp = dd / path_rel
+            tt = pp.read_text()
+            t2 = tt.replace(old, new, 1) if old in tt else re.sub(old, new, tt, count=1)
+            if t2 == tt:
+                raise RuntimeError("fixture edit did not apply: %r" % old)
+            pp.write_text(t2)
+        return f
+    refuse_h("class", M26, ed("system/flowsheetDict", "elements         3;",
+             "elements         3;\n            waterPermeance   fromRatedTest;"), ["functional class", "waterPermeance"])
+    refuse_h("word", M28, ed("system/flowsheetDict", "waterPermeance   fromRatedTest;\n            P_permeate       1.0 bar;\n            nNodes           50;\n            massTransfer\n            {\n                model          SchockMiquel;\n                viscosity      0.89e-3;",
+             "waterPermeance   fromTheCatalogue;\n            P_permeate       1.0 bar;\n            nNodes           50;\n            massTransfer\n            {\n                model          SchockMiquel;\n                viscosity      0.89e-3;"),
+             ["the one accepted word is", "fromRatedTest"])
+    refuse_h("law", M28, ed("system/flowsheetDict", "transport        constantRejection;\n            transportParameters\n            {\n                rejection { MgSO4 fromRatedTest; }",
+             "transport        solutionDiffusion;\n            transportParameters\n            {\n                rejection { MgSO4 fromRatedTest; }"),
+             ["waterPermeance", "constantRejection"])
 
 
 def main():
@@ -379,6 +500,9 @@ def main():
         else:
             print("  (g) gauge announced and made absolute: R_int %.6f = membrane25's; the absolute reading "
                   "gives %.6f" % (Rg, Ra))
+
+        # ---- (h) the water permeance a sheet implies -----------------------------
+        arm_h(tmp)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -391,7 +515,7 @@ def main():
           "second (R_int = membrane25's to 1e-9); two MgSO4 tests refuse an unnamed request and `( fromRatedTest b )` "
           "reproduces test b alone to 1e-12; 7 record refusals and 7 inversion refusals fire by name; an undeclared "
           "value type, pressure meaning and permeate-flow basis are announced on membrane25 and not on a fully "
-          "declared test; a gauge pressure is announced made absolute.  NOT CHECKED: any optional fact against a "
+          "declared test; a gauge pressure is announced made absolute; `waterPermeance fromRatedTest;` (membrane28) derives A_w and R_int together so that an INDEPENDENT run with both typed reproduces each sheet's permeate flow and observed rejection to 1e-7 (NF270-4040 A_w 14.88 against the record's 36, SW30HR-380 1.318 against 3.6 L/m2/h/bar) and refuses a class, an unknown word and a law other than constantRejection.  NOT CHECKED: any optional fact against a "
           "real data sheet (no shipped record declares one), two derived solutes in one unit, formula conversion.")
     return 0
 

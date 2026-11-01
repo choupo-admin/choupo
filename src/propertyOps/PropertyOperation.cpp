@@ -59,6 +59,7 @@ License
 #include "FreezingPoint.H"
 #include "PitzerActivity.H"
 #include "PolarisationIndex.H"
+#include "MembraneShortlist.H"
 #include "PoreTransportBench.H"
 #include "ENRTLMixedSolventOp.H"
 #include "ENRTLMultiSaltOp.H"
@@ -222,6 +223,10 @@ void PropertyOperation::registerBuiltins()
     reg("estimateComponent", []{ return std::make_unique<EstimateComponent>(); });
     reg("elementalComposition", []{ return std::make_unique<ElementCompositionOp>(); });
     reg("polarisationIndex", []{ return std::make_unique<PolarisationIndex>(); });
+    //  FROM A FUNCTIONAL CLASS TO THE COMMERCIAL ELEMENTS THAT DO IT (DEV.md 4c
+    //  C189 slice 5): hard filters, each survivor re-rated at the student's
+    //  conditions, every criterion side by side, no score.
+    reg("membraneShortlist", []{ return std::make_unique<MembraneShortlist>(); });
     //  THE DSPM-DE LAW AT IMPOSED PERMEATE FLUXES (DEV.md 4c C138 slice 2):
     //  the transport law the membrane units march, handed J_v the way
     //  NanoFiltran takes it, ion by ion.

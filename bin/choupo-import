@@ -1721,9 +1721,14 @@ def main():
                 atext = re.sub(r'/\*.*?\*/', '', atext, flags=re.S)
                 atext = re.sub(r'(^|\s)//.*$', '', atext, flags=re.M)
                 #  ... and a spiral element names the feed spacer it is wound
-                #  with (`feedSpacer Spacer-28mil;`, C146) -- followed the same way.
+                #  with (`feedSpacer Spacer-28mil;`, C146) -- followed the same way,
+                #  and a FUNCTIONAL CLASS names the generic element it is deployed
+                #  in (`element Generic-4040;`, C189 slice 3), whose own record names
+                #  the spacer: the class case could not be sealed until the reference
+                #  was followed (C189 slice 5, found when the importer was asked to
+                #  seal membrane26 -- "unknown membrane module 'Generic-4040'").
                 for m in re.finditer(
-                        r'^\s*(?:membranes?|feedSpacer)\s+([A-Za-z0-9_-]+)\s*;',
+                        r'^\s*(?:membranes?|feedSpacer|element)\s+([A-Za-z0-9_-]+)\s*;',
                         atext, re.M):
                     asset_names.add(m.group(1))
                 break

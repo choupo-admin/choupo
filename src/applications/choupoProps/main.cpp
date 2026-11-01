@@ -89,6 +89,7 @@ Description
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/membrane/MembraneRegistry.H"
+#include "thermo/membrane/MembraneModuleRegistry.H"
 
 #include <cmath>
 #include <filesystem>
@@ -450,6 +451,7 @@ try
     //  bench (DEV.md 4c C138).  A sealed case with the catalogue hidden
     //  reads its own constant/assets/ alone, as in choupoSolve.
     MembraneRegistry::loadFrom(dataRoot.string());
+    MembraneModuleRegistry::loadFrom(dataRoot.string());   // the membraneShortlist op (C189 slice 5)
 
     // --- Dictionaries ---------------------------------------------------
     //  Cascade resolution (folder cascade), identical to choupoSolve: a sector node

@@ -153,9 +153,17 @@ public:
     //  nothing.  A C++ flag, not a dict key, so no case can set it.
     void markRatedTestProbe() { ratedTestProbe_ = true; }
 
+    //  Set by the rated-test machinery (RatedTestInversion.cpp) on the probes
+    //  that look for the water permeance a data sheet implies: the unit then
+    //  runs with this A_w [m/(s.Pa)] in place of the membrane record's.  A C++
+    //  setter, not a dict key -- a case that wants the sheet's permeance
+    //  writes `waterPermeance fromRatedTest;` and the unit derives it.
+    void setWaterPermeabilityOverride(scalar A) { A_w_override_ = A; }
+
 private:
     inline static const std::string type_ = "spiralWoundModule";
     bool ratedTestProbe_ = false;
+    scalar A_w_override_ = -1.0;   // < 0: the membrane record's A_w
 
     std::vector<ProcessStream>     out_;
     std::map<std::string, scalar>  kpis_;

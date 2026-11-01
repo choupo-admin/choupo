@@ -867,9 +867,65 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     //  rejection is the sheet's (membrane/RatedTestInversion.H, the one home,
     //  which also refuses).  Only when declared: no other run is touched.
     std::vector<membrane::RatedTestInversion> ratedInversions;
+
+    //  THE WATER PERMEANCE the sheet implies (C189 slice 5b).  The membrane
+    //  record's A_w is a teaching fit to another case; the sheet's permeate
+    //  at its rated test measures THIS element.  `waterPermeance
+    //  fromRatedTest;` finds the A_w (and, with it, the R_int of the test's
+    //  solute) that reproduce the sheet's permeate AND its observed
+    //  rejection.  Only when declared: no other run is touched.
+    scalar A_w_eff = (A_w_override_ > 0.0) ? A_w_override_ : mem.A_w();
+    bool   awDerived = false;
+    scalar awRecord = mem.A_w(), awGap = 0.0;
+    int    awRounds = 0;
+    if (opDict->found("waterPermeance") && !ratedTestProbe_)
+    {
+        const std::string who = "spiralWoundModule '" + unitLabel
+            + "': `waterPermeance " + opDict->lookupWord("waterPermeance") + ";`";
+        if (opDict->lookupWord("waterPermeance") != "fromRatedTest")
+            throw std::runtime_error(who + " -- the one accepted word is"
+                " `fromRatedTest`.");
+        if (!hasModule || modRec->isFunctionalClass())
+            throw std::runtime_error(who + " derives A_w from a commercial"
+                " module record's rated test; this unit names "
+                + std::string(hasModule ? "a functional class (its A_w is its"
+                " own declared teaching value)" : "no module")
+                + ".  Keep the membrane record's A_w.");
+        if (transportModel->type() != "constantRejection"
+         || transportModel->ratedTestSolutes().empty())
+            throw std::runtime_error(who + " is derived together with the"
+                " intrinsic rejection of the test's solute: declare `transport"
+                " constantRejection;` with `rejection { <solute> fromRatedTest;"
+                " }`.");
+        const std::string s0 = transportModel->ratedTestSolutes().front();
+        auto d = membrane::deriveWaterPermeance(dict, thermo, *modRec, mem.A_w(),
+            s0, transportModel->ratedTestId(s0), unitLabel);
+        A_w_eff   = d.A_w;
+        awDerived = true;
+        awRounds  = d.rounds;
+        awGap     = d.permeateGap;
+        transportModel->setRatedRejection(s0, d.inv.R_int);
+        char b[600];
+        std::snprintf(b, sizeof(b),
+            "A_w = %.4g L/m2/h/bar DERIVED from the rated test of module '%s'"
+            " (the membrane record '%s' says %.4g): the sheet's permeate %.4g"
+            " m3/d at %.3g bar absolute reproduced to %.1e (relative) together"
+            " with R_int(%s) = %.6f, after %d alternation(s) of the two solves",
+            static_cast<double>(d.A_w * 3.6e11), modRec->name().c_str(),
+            mem.name().c_str(), static_cast<double>(mem.A_w() * 3.6e11),
+            static_cast<double>(d.inv.conditions.permeateSheet * 86400.0),
+            static_cast<double>(d.inv.conditions.P * 1e-5),
+            static_cast<double>(std::abs(d.permeateGap)), s0.c_str(),
+            static_cast<double>(d.inv.R_int), d.rounds);
+        std::cout << "  [ratedTest] " << b << "\n";
+        std::cerr << "[ratedTest] spiralWoundModule '" << unitLabel << "': " << b << "\n";
+        AdvisoryLog::instance().add("provenance", "info",
+            "spiralWoundModule '" + unitLabel + "'", b);
+        ratedInversions.push_back(std::move(d.inv));
+    }
     for (const auto& s : transportModel->ratedTestSolutes())
     {
-        auto inv = membrane::invertRatedRejection(dict, thermo, modRec, s, transportModel->ratedTestId(s), unitLabel);
+        auto inv = membrane::invertRatedRejection(dict, thermo, modRec, s, transportModel->ratedTestId(s), unitLabel, A_w_eff);
         transportModel->setRatedRejection(s, inv.R_int);
         const auto& c = inv.conditions;
         char b[900];
@@ -1332,7 +1388,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     // Initial node
     auto makeCtx = [&](scalar Qlocal) -> membrane::TransportContext
     {
-        return membrane::TransportContext{ thermo, soluteIdx, B_s, mem.A_w(),
+        return membrane::TransportContext{ thermo, soluteIdx, B_s, A_w_eff,
                                  polar, hydraulicsAt(Qlocal), P_b, P_perm,
                                  T_in, c_b, *osmModel, &mem, specSolver };
     };
@@ -1754,6 +1810,13 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     //  The rated-test inversion (C189), when declared: the derived R_int, the
     //  sheet's observed rejection it came from, and what the module predicts
     //  at the rated test.  The solve's residual is printed, never pinned.
+    if (awDerived)
+    {
+        kpis_["A_w_fromRatedTest_LMH_per_bar"] = A_w_eff * 3.6e11;
+        kpis_["A_w_record_LMH_per_bar"]        = awRecord * 3.6e11;
+        kpis_["A_w_ratedPermeateGap_rel"]      = awGap;
+        kpis_["A_w_alternations"]              = static_cast<scalar>(awRounds);
+    }
     for (const auto& inv : ratedInversions)
     {
         const std::string& s = inv.conditions.solute;
