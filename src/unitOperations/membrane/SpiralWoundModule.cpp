@@ -1843,6 +1843,16 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         kpis_["feedFlowPerVessel"] = feed_vol;                     // m3/s
         kpis_["area_stage"]     = nVessels * A_total;              // m2
     }
+    //  THE ELEMENT'S OUTSIDE SIZE, for the vessel-bank sizer (DEV.md 4c C199),
+    //  published only when the module record DECLARES it (a record that does
+    //  not publishes nothing, and no sizer invents one).
+    if (hasModule && !modRec->isFlatSheetCell())
+    {
+        if (modRec->elementLength_m() > 0.0)
+            kpis_["elementLength_m"]   = modRec->elementLength_m();
+        if (modRec->nominalDiameter_m() > 0.0)
+            kpis_["elementDiameter_m"] = modRec->nominalDiameter_m();
+    }
     if (nLeaves > 0)
     {
         kpis_["leaves"]    = static_cast<scalar>(nLeaves);

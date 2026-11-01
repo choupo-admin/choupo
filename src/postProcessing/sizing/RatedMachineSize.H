@@ -73,6 +73,17 @@ Description
     no revolution or pack, and the sheet declares the unit on the value it
     publishes.)
 
+      volumeRate    (C199) a PUMP rated by the largest flow one machine of the
+                    chosen make carries.  No batch plan is read.  rating:
+                    maxFlowPerUnit [m3/h], origin literature|assumed, source,
+                    reason (and an optional pressureRating); the load is the
+                    pump's own published F x v_molar_liq.  pumpsNeeded =
+                    ceil(Q_train / maxFlowPerUnit); `installed { count }` is
+                    the pumps in parallel PER TRAIN (default 1; fewer than
+                    needed REFUSES naming the count); `spare { count }` the
+                    plant's stand-by pumps; `perTrain yes;` sizes one item per
+                    declared train (TrainSplit.H).
+
     `installed { count N; source; reason; }` declares more than one machine
     (the second unit that makes an over-100 % stage legal); absent, the count
     is the plan's own `unitsInstalled`.  Utilisation = load / capacity.
