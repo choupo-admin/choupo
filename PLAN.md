@@ -36,6 +36,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| todo | C200 URGENT: any LLM learns Choupo from a brief it reads (kernel brief, task packs, generated reference) and designs before it copies; evaluation harness and the baseline first | C200 |
 | running | General: boron Stage 1 -- two species split at the inlet pH (thermodynamic pKa), permeances from the two rated tests | C198 |
 | running | General: a negative outlet pressure is refused by name, a trial iterate announced (the `s.P <= 0` clamp in runUnit) | C186 5b |
 
