@@ -1528,6 +1528,63 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C200. ANY LLM MUST LEARN CHOUPO FROM A BRIEF IT ACTUALLY READS, AND DESIGN
+> BEFORE IT COPIES (Vitor, 2026-11-02, URGENT: "os alunos podem interagir com o
+> choupo.org atraves de ti usando qualquer LLM ... pedem a LLM um projeto, ou
+> uma consulta e ajuste de propriedades termofisicas; a LLM aprende Choupo e
+> prepara um .zip; o aluno abre-o na GUI e faz a curadoria e a validacao ...
+> mas a LLM salta diretamente para um tutorial semelhante e nao faz um
+> trabalho otimizado ... revê toda a documentacao que qualquer LLM vai ler,
+> numa linguagem que minimize os tokens e maximize a aprendizagem").**
+> MEASURED 2026-11-02: docs/ai/ is 887 126 bytes (about 220 000 tokens), 20
+> files; the largest are unit-ops.md 193 KB, schemas-reference.md 157 KB,
+> case-layout.md 112 KB, components.md 75 KB, gui-credo.md 70 KB (a GUI-design
+> file, irrelevant to a student's LLM), pitfalls.md 41 KB; AGENTS.md is 5 KB and
+> is the only entry a chat reads first; `bin/llmctx` concatenates the lot.  No
+> chat window holds that with attention, so an LLM reads the head, matches a
+> tutorial by name and copies it: the symptom is the size, not the model.
+> ARCHITECTURE (the architect's, to be tested, not assumed): (1) a KERNEL BRIEF
+> of about 6-8 k tokens every LLM reads first: what Choupo is, the glass-box
+> rules, the case layout, the WORKFLOW with its mandatory first step -- write a
+> DESIGN BRIEF (basis, units, thermo package and why, what is validated against
+> what, what is NOT modelled) BEFORE opening any tutorial; tutorials are syntax
+> examples only AFTER the design -- the twelve traps that cost a student a
+> wrong answer at exit 0, the zip contract (what the GUI opens), how to check
+> (bin/choupo-lint, and what to tell the student to click); (2) TASK PACKS of 3-6 k
+> tokens each, loaded on demand from an INDEX one screen long: property
+> consultation and fit, a membrane design, a distillation, a reactor, a
+> crystalliser, a pharmaceutical plant, ...; (3) a GENERATED reference -- one line per unit
+> and per key with its unit, produced from the engine's own contracts
+> (`choupoSolve --describe-units`, the schemas), never hand-copied; (4) every
+> pack in a terse, telegraphic form (keys and tables, no narrative), with the
+> history and the argument moved to the design records a person reads.  The
+> reference tools exist for the student: choupo-lint validates a case without
+> solving it.  EVALUATION, because a brief is judged by what an LLM does with
+> it, not by its look: a fixed set of 8-10 representative student tasks, each
+> given to a proxy LLM holding ONLY the packs (Haiku and Sonnet are the proxy:
+> if a small model succeeds a large one will), scored mechanically -- the zip
+> passes choupo-lint, solves, its balances close, it states a design basis,
+> it does NOT copy a tutorial wholesale (a similarity measure against the
+> corpus), and its token cost is recorded.  PHASES: A the evaluation harness and
+> the baseline (today's llmctx: the number to beat), B the kernel brief and
+> the index, C the packs, D the generated reference, E the second measurement
+> and the delta.  MODEL: the architecture, the protocol and the eval design are
+> the Opus-class work (one session); the packs, the generators and the
+> harness are Sonnet generals'.
+> STATUS: COMMISSIONED 2026-11-02, URGENT.  ARCHITECTURE DECIDED the same
+> day: record `docs/design/an-llm-learns-choupo-from-a-brief.md` (indexed).
+> Two facts measured on the way changed the plan: the browser cannot
+> materialise 0/ (so an LLM must invent every intermediate stream -- phase B'
+> gives the app the engine's own -init0), and the bridge's guide comment says
+> ~97 KB for >500 kB.  The kernel draft (the future `kernel.md` of docs/ai, held off main
+> until its packs exist, because check_doc_references refuses a pointer to a
+> missing file) was RUN: a case written from its grammar alone (catalogue
+> NRTL, degC, phaseChanger outletT, init0, flash) solved at exit 0 with the
+> energy boundary closing at 0.0000 kW; one false line in the draft (that
+> degC is not a unit; src/core/Units.cpp:132) was caught and fixed.
+> Dispatched: A (harness + baseline), B' (browser 0/), packs recycles +
+> pressure, separations, reactors.
+
 > **C198. BORON IN REVERSE OSMOSIS AS TWO SPECIES SPLIT BY THE pH (Vitor,
 > 2026-11-01: "o boro e para modelar"; C194 shipped it as a declared lumped
 > approximation; 2026-11-02, Opus switched on by Vitor: "faz a proposta do
@@ -2647,6 +2704,14 @@ accepts today, and that is a policy call.
 > corpus must be measured first (item 5b).  The Wegstein lesson's `[F, z, T]`
 > becomes `[F, z, T, P]`.
 > STILL OPEN: item 5 (pressure is not a tear variable).
+> ITEM 5b DONE 2026-11-02 (integration of 0aae8f4e9; record
+> docs/design/a-negative-pressure-is-refused.md).  The architect's reason
+> for integrating WITHOUT the full sweep, which bin/integrate reached on
+> Flowsheet.cpp: the change alters behaviour only for P < 0 on an accepted
+> pass; the corpus reach was MEASURED by the general (28 cases publish
+> P == 0, the unit-did-not-set sentinel that stays, none negative), so no
+> existing result can move; the evidence is 53 gates, --gui 42/0, scoped
+> 58/0 and --fast 77/0 on the branch.  No golden was re-recorded.
 
 > **C185. THREE MORE SOLVER/KINETICS DEFECTS (the external review,
 > ChatGPT, at 1ecec224, relayed by Vitor 2026-10-27 for SATURDAY; its order:

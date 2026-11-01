@@ -36,8 +36,13 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| running | C200 URGENT, the architect: the kernel brief (drafted; its grammar run end to end on a test case) lands with the packs; record `docs/design/an-llm-learns-choupo-from-a-brief.md` | C200 |
+| running | General: C200 A -- the evaluation harness (proxy assistant, ten design problems, mechanical scoring) and today's baseline | C200 |
+| running | General: C200 B' -- the browser materialises 0/ through the engine's own -init0 (Case > Complete 0/, offered after the bridge applies a reply) | C200 |
+| running | Generals: C200 packs -- recycles + pressure, separations, reactors (each example run before it is written) | C200 |
+| integrating | The GUI reads the `pipeHeader` sheets (branch built), after the negative-pressure branch | C199 |
 | running | General: boron Stage 1 -- two species split at the inlet pH (thermodynamic pKa), permeances from the two rated tests | C198 |
-| running | General: a negative outlet pressure is refused by name, a trial iterate announced (the `s.P <= 0` clamp in runUnit) | C186 5b |
+| integrating | A negative outlet pressure is refused by name, a trial iterate announced (the `s.P <= 0` clamp in runUnit); `bin/integrate` building | C186 5b |
 
 ## Next day (at most 5)
 
@@ -50,7 +55,8 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| todo | The GUI reads the `pipeHeader` sheets (the headers leave the dashed state); the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
+| todo | C200 remaining packs (heat, electrolytes, membranes, solids, design-cost, drivers, batch-transient, props), the generated reference and `llms.txt` on the site; the harness re-run | C200 |
+| todo | C199 leftovers: the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
 | todo | The real boron: two-solute transport (boric acid, borate), a stream pH with speciation, a curated H3BO3/BOH4 record, a dosing unit; and a recycle solver that refuses the trivial fixed point by name | C198 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
