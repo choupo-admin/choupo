@@ -36,7 +36,8 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 
 | status | what | ref |
 |---|---|---|
-| todo | C191 (A) The tree of chemistry: curate the graph record (seven roots, ~150 nodes, a citation per edge) -- a general, several days; then the EduTool | C191 |
+| todo | C191 (A) the EduTool 'The tree of chemistry' on the curated graph (three views; every assumed yield band drawn as the curator's, with its reason) | C191 |
+| todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
 | todo | Distillation defects A (fullMESH seeded by an unconverged CMO phase) and B (NewtonND accepts a non-improving step); measure which corpus cases reach the path; a full sweep only with Vítor's written authorisation | C184 A/B |
 | todo | Positivity guard off with several ODE units -- AFTER C178 lands (same file) | C185 item 8 |
 | todo | The sibling drivers read unconverged points too: DesignSpec, GridSweep, Sweep (same shape as C186 item 4) | C186 |
@@ -109,6 +110,7 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 | done | C188 item 5 slice B: ED, batch ED, diafilter, ion exchanger, crystalliser on the contract; passThrough on the ED stack (ed10) | C188, fdbc410e9 |
 | done | C188 item 5 slice A: the acceptance contract, one writer of refusals, RO and pump migrated, authored inlets checked before the solve, --describe-units | C188, fe9420e07 |
 | done | C186 item 4: the optimiser rejects unconverged simulations on every path (NM, SQP, integer enumeration) | C186, 1ad1aef00 |
+| done | C191 (A) the graph of commodity chemistry curated: 157 substances, 168 routes, every route cited, all yield bands marked assumed | C191, 2b49af710 |
 | done | C189 slice 4: the membrane catalogue import/QA tool; the real import of the workbook (13 records, all pressure bases unstated) | C189, bf3402ef5 |
 | done | C189 slice 3: six illustrative membrane classes a student chooses by what they do (membrane26) | C189, 625c4c065 |
 | done | Rated pressures read as gauge on NF270-4040 and SW30HR-380; membrane25 re-recorded (14 rows, one stated cause) | C189, 320bdc7a8 |

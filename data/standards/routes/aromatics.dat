@@ -1,0 +1,768 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  THE AROMATIC ROOTS: benzene, toluene and the xylenes and what grows from them
+  -- the nylon intermediates with their forced ammonium sulfate and N2O, the
+  isocyanates with their forced HCl, PTA/PET and phthalic anhydride, and the
+  toluene swing routes (HDA, disproportionation).
+  Grammar: README.md beside this file.  Every edge is re-read, balanced and
+  checked by bin/curate/check_chemistry_graph.py.
+\*---------------------------------------------------------------------------*/
+
+
+recordType    productionRoutes;
+schemaVersion 1;
+graph         treeOfChemistry;
+
+routes
+(
+    {
+        name     benzeneHydrogenation;
+        kind     reaction;
+        target   cyclohexane;
+        family   hydrogenation;
+        era      incumbent;
+        description "Benzene hydrogenation: nearly all cyclohexane is made for the nylon intermediates.";
+        stoichiometry
+        (
+            { component benzene;               nu -1; }
+            { component H2;                    nu -3; }
+            { component cyclohexane;           nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.98 0.995 );
+            origin  assumed;
+            reason  "Ni or Pt liquid/gas-phase hydrogenation, selectivity > 99 %; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Cyclohexane'"; }
+            { source ullmanns; locus "'Cyclohexane'"; }
+        );
+    }
+
+    {
+        name     cyclohexaneOxidation;
+        kind     reaction;
+        target   cyclohexanone;
+        family   oxidation;
+        era      incumbent;
+        description "Liquid-phase air oxidation of cyclohexane at deliberately LOW conversion: KA oil, roughly 1:1 ketone and alcohol, the fork to adipic acid (nylon 6,6) and caprolactam (nylon 6).";
+        stoichiometry
+        (
+            { component cyclohexane;           nu -2; }
+            { component O2;                    nu -1.5; }
+            { component cyclohexanone;         nu 1; }
+            { component cyclohexanol;          nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.75 0.85 );
+            origin  assumed;
+            reason  "air oxidation at 3-6 % per pass (to hold selectivity 75-85 %) to KA oil (ketone + alcohol); the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 10, 'Cyclohexanol/cyclohexanone'"; }
+            { source ullmanns; locus "'Cyclohexanol and Cyclohexanone'"; }
+        );
+    }
+
+    {
+        name     KAoilNitricOxidation;
+        kind     reaction;
+        target   adipicAcid;
+        family   oxidation;
+        era      incumbent;
+        description "KA oil oxidised by nitric acid to adipic acid: one N2O (300 x CO2 in warming potential) FORCED per mole until the abatement units of the 1990s -- the nitric acid root consumed as a reagent.";
+        stoichiometry
+        (
+            { component cyclohexanol;          nu -1; }
+            { component HNO3;                  nu -2; }
+            { component adipicAcid;            nu 1; }
+            { component N2O;                   nu 1; }
+            { component water;                 nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.92 0.96 );
+            origin  assumed;
+            reason  "nitric acid oxidation with Cu/V catalyst; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 10, 'Adipic acid'"; }
+            { source ullmanns; locus "'Adipic Acid'"; }
+        );
+    }
+
+    {
+        name     nylon66Polycondensation;
+        kind     reaction;
+        target   nylon66;
+        family   polymerisation;
+        era      incumbent;
+        description "The nylon salt (AH salt) polycondensed in the melt.  Written per repeat unit: one adipic acid and one HMDA per unit.";
+        stoichiometry
+        (
+            { component adipicAcid;            nu -1; }
+            { component hexamethylenediamine;  nu -1; }
+            { component nylon66;               nu 1; }
+            { component water;                 nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.995 );
+            origin  assumed;
+            reason  "melt polycondensation of the nylon salt; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Polyamides'"; }
+        );
+    }
+
+    {
+        name     ammoniaToNO;
+        kind     reaction;
+        target   NO;
+        family   oxidation;
+        era      incumbent;
+        description "The Ostwald first step: ammonia burned over Pt/Rh gauze in milliseconds to NO -- the one reaction that opens the whole nitrogen-oxide chain (nitric acid, hydroxylamine).";
+        stoichiometry
+        (
+            { component NH3;                   nu -4; }
+            { component O2;                    nu -5; }
+            { component NO;                    nu 4; }
+            { component water;                 nu 6; }
+        );
+        yield
+        {
+            basis   nitrogen;
+            band    ( 0.95 0.97 );
+            origin  assumed;
+            reason  "Pt/Rh gauze, 850-950 C, selectivity 95-97 % to NO; the curator's band";
+        }
+        cases    ( "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways" );
+        provenance
+        (
+            { source ullmanns; locus "'Nitric Acid, Nitrous Acid, and Nitrogen Oxides'"; }
+            { source moulijn2013; locus "nitric acid"; }
+        );
+    }
+
+    {
+        name     hydroxylamineFromNO;
+        kind     reaction;
+        target   hydroxylamine;
+        family   hydrogenation;
+        era      incumbent;
+        description "Hydroxylamine for the oxime: NO hydrogenated over Pd in a phosphate buffer (HPO), or the older Raschig route via ammonium nitrite and SO2.";
+        stoichiometry
+        (
+            { component NO;                    nu -1; }
+            { component H2;                    nu -1.5; }
+            { component hydroxylamine;         nu 1; }
+        );
+        yield
+        {
+            basis   nitrogen;
+            band    ( 0.8 0.9 );
+            origin  assumed;
+            reason  "HPO (phosphate-buffered) or Raschig; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 10, 'Caprolactam' -- hydroxylamine processes"; }
+            { source ullmanns; locus "'Hydroxylamine'"; }
+        );
+    }
+
+    {
+        name     cyclohexanoneOximation;
+        kind     reaction;
+        target   cyclohexanoneOxime;
+        family   condensation;
+        era      incumbent;
+        description "Oximation of cyclohexanone with hydroxylamine (sulfate or phosphate).";
+        stoichiometry
+        (
+            { component cyclohexanone;         nu -1; }
+            { component hydroxylamine;         nu -1; }
+            { component cyclohexanoneOxime;    nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.99 );
+            origin  assumed;
+            reason  "quantitative oximation; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 10, 'Caprolactam'"; }
+            { source ullmanns; locus "'Caprolactam'"; }
+        );
+    }
+
+    {
+        name     beckmannRearrangement;
+        kind     reaction;
+        target   caprolactam;
+        family   rearrangement;
+        era      incumbent;
+        description "The Beckmann rearrangement in oleum and the ammonia neutralisation that follows: 1.8 t ammonium sulfate per t caprolactam in the classic route -- sulfuric acid AND ammonia consumed to make a fertiliser nobody ordered.  The forced co-product that the ammoximation (Sumitomo) and HPO routes were built to shrink.";
+        stoichiometry
+        (
+            { component cyclohexanoneOxime;    nu -1; }
+            { component H2SO4;                 nu -1; }
+            { component NH3;                   nu -2; }
+            { component caprolactam;           nu 1; }
+            { component ammoniumSulfate;       nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.99 );
+            origin  assumed;
+            reason  "Beckmann rearrangement in oleum, then neutralisation; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 10, 'Caprolactam'"; }
+            { source ullmanns; locus "'Caprolactam'"; }
+        );
+    }
+
+    {
+        name     caprolactamPolymerisation;
+        kind     reaction;
+        target   nylon6;
+        family   polymerisation;
+        era      incumbent;
+        description "Hydrolytic ring-opening polymerisation of caprolactam.  Written per repeat unit.";
+        stoichiometry
+        (
+            { component caprolactam;           nu -1; }
+            { component nylon6;                nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.88 0.92 );
+            origin  assumed;
+            reason  "hydrolytic ring-opening polymerisation, 88-92 % conversion at equilibrium, monomer extracted and recycled; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Polyamides'"; }
+        );
+    }
+
+    {
+        name     benzeneNitration;
+        kind     reaction;
+        target   nitrobenzene;
+        family   nitration;
+        era      incumbent;
+        description "Mixed-acid (HNO3/H2SO4) nitration of benzene: almost all nitrobenzene goes to aniline.  Sulfuric acid acts as the catalyst and water sink, reconcentrated and recycled.";
+        stoichiometry
+        (
+            { component benzene;               nu -1; }
+            { component HNO3;                  nu -1; }
+            { component nitrobenzene;          nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.99 );
+            origin  assumed;
+            reason  "mixed-acid nitration, selectivity > 99 %; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Nitrobenzene'"; }
+            { source ullmanns; locus "'Nitrobenzene and Nitrotoluenes'"; }
+        );
+    }
+
+    {
+        name     nitrobenzeneHydrogenation;
+        kind     reaction;
+        target   aniline;
+        family   hydrogenation;
+        era      incumbent;
+        description "Nitrobenzene hydrogenated to aniline, 85 % of which goes to MDI.";
+        stoichiometry
+        (
+            { component nitrobenzene;          nu -1; }
+            { component H2;                    nu -3; }
+            { component aniline;               nu 1; }
+            { component water;                 nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.995 );
+            origin  assumed;
+            reason  "Cu or Ni/Pd gas-phase or liquid-phase hydrogenation; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Aniline'"; }
+            { source ullmanns; locus "'Aniline'"; }
+        );
+    }
+
+    {
+        name     phosgeneSynthesis;
+        kind     reaction;
+        target   phosgene;
+        family   chlorination;
+        era      incumbent;
+        description "CO + Cl2 over activated carbon: phosgene, never shipped, made where the isocyanates and polycarbonate are made -- the hidden chlorine consumer of polyurethanes.";
+        stoichiometry
+        (
+            { component CO;                    nu -1; }
+            { component Cl2;                   nu -1; }
+            { component phosgene;              nu 1; }
+        );
+        yield
+        {
+            basis   chlorine;
+            band    ( 0.98 0.995 );
+            origin  assumed;
+            reason  "activated-carbon catalysed, quantitative; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Phosgene'"; }
+        );
+    }
+
+    {
+        name     MDIsynthesis;
+        kind     reaction;
+        target   MDI;
+        family   condensation;
+        era      incumbent;
+        description "Aniline + formaldehyde condense (HCl catalysed) to methylenedianiline, which phosgene converts to MDI: four HCl per MDI are FORCED, and the chlorine is in neither reactant nor product of the polyurethane -- it is a reagent that leaves as acid.  Three roots meet: benzene (aniline), syngas (formaldehyde, CO) and chlor-alkali.";
+        stoichiometry
+        (
+            { component aniline;               nu -2; }
+            { component formaldehyde;          nu -1; }
+            { component phosgene;              nu -2; }
+            { component MDI;                   nu 1; }
+            { component HCl;                   nu 4; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.95 );
+            origin  assumed;
+            reason  "aniline-formaldehyde condensation to MDA, then phosgenation; written as the overall; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Diisocyanates'"; }
+            { source ullmanns; locus "'Isocyanates, Organic'"; }
+        );
+    }
+
+    {
+        name     benzeneAlkylationLAB;
+        kind     reaction;
+        target   LAB;
+        family   alkylation;
+        era      incumbent;
+        description "Benzene alkylated with a detergent-range linear olefin: linear alkylbenzene (written on dodecylbenzene), sulfonated to LAS, the workhorse anionic surfactant -- the benzene and ethylene (via the oligomer) trees meet.";
+        stoichiometry
+        (
+            { component benzene;               nu -1; }
+            { component 1Dodecene;             nu -1; }
+            { component LAB;                   nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.93 0.97 );
+            origin  assumed;
+            reason  "HF or solid-acid (DETAL) alkylation with a benzene excess; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Alkylbenzenes'"; }
+            { source ullmanns; locus "'Surfactants'"; }
+        );
+    }
+
+    {
+        name     tolueneHDA;
+        kind     reaction;
+        target   benzene;
+        family   hydrodealkylation;
+        era      incumbent;
+        description "Toluene + H2 to benzene + methane: the swing route that converts the surplus toluene into the benzene the market wants, at the cost of a methyl group burned as fuel gas.  The HDA plant is Choupo's flat two-recycle flowsheet.";
+        stoichiometry
+        (
+            { component toluene;               nu -1; }
+            { component H2;                    nu -1; }
+            { component benzene;               nu 1; }
+            { component CH4;                   nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.96 0.99 );
+            origin  assumed;
+            reason  "thermal or catalytic HDA at 600-700 C, selectivity > 95 % on toluene (benzene basis 6/7 of the carbon); the curator's band";
+        }
+        cases    ( "tutorials/plant/hda" "tutorials/steady/reactors/conversion01_hda" );
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 12, 'Benzene' -- hydrodealkylation"; }
+            { source ullmanns; locus "'Benzene'"; }
+        );
+    }
+
+    {
+        name     tolueneDisproportionation;
+        kind     reaction;
+        target   mixedXylenes;
+        family   disproportionation;
+        era      incumbent;
+        description "Two toluenes to one benzene and one xylene over an acid zeolite: no carbon lost, both products wanted -- the preferred toluene outlet where p-xylene demand (PET) is the driver.";
+        stoichiometry
+        (
+            { component toluene;               nu -2; }
+            { component benzene;               nu 1; }
+            { component mixedXylenes;          nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.98 );
+            origin  assumed;
+            reason  "TDP over ZSM-5/mordenite; selective TDP gives > 90 % p-xylene in the C8; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 12, 'Xylenes' -- disproportionation and transalkylation"; }
+            { source ullmanns; locus "'Xylenes'"; }
+        );
+    }
+
+    {
+        name     tolueneDinitration;
+        kind     reaction;
+        target   24Dinitrotoluene;
+        family   nitration;
+        era      incumbent;
+        description "Dinitration of toluene in mixed acid: the 80:20 2,4-/2,6-dinitrotoluene mixture of the TDI chain.";
+        stoichiometry
+        (
+            { component toluene;               nu -1; }
+            { component HNO3;                  nu -2; }
+            { component 24Dinitrotoluene;      nu 1; }
+            { component water;                 nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.98 );
+            origin  assumed;
+            reason  "two-stage mixed-acid nitration (2,4- and 2,6-isomers, 80:20); the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Diisocyanates' -- TDI"; }
+            { source ullmanns; locus "'Nitrobenzene and Nitrotoluenes'"; }
+        );
+    }
+
+    {
+        name     dinitrotolueneHydrogenation;
+        kind     reaction;
+        target   toluenediamine;
+        family   hydrogenation;
+        era      incumbent;
+        description "Both nitro groups hydrogenated to the diamine.";
+        stoichiometry
+        (
+            { component 24Dinitrotoluene;      nu -1; }
+            { component H2;                    nu -6; }
+            { component toluenediamine;        nu 1; }
+            { component water;                 nu 4; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.99 );
+            origin  assumed;
+            reason  "Pd or Ni hydrogenation; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Diisocyanates'"; }
+            { source ullmanns; locus "'Isocyanates, Organic'"; }
+        );
+    }
+
+    {
+        name     TDIphosgenation;
+        kind     reaction;
+        target   TDI;
+        family   condensation;
+        era      incumbent;
+        description "TDI by phosgenation of toluenediamine: the flexible-foam isocyanate, four HCl forced per mole.";
+        stoichiometry
+        (
+            { component toluenediamine;        nu -1; }
+            { component phosgene;              nu -2; }
+            { component TDI;                   nu 1; }
+            { component HCl;                   nu 4; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.92 0.96 );
+            origin  assumed;
+            reason  "phosgenation in o-dichlorobenzene; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Diisocyanates'"; }
+            { source ullmanns; locus "'Isocyanates, Organic'"; }
+        );
+    }
+
+    {
+        name     tolueneOxidationBenzoic;
+        kind     reaction;
+        target   benzoicAcid;
+        family   oxidation;
+        era      incumbent;
+        description "Liquid-phase air oxidation of toluene over cobalt: benzoic acid for the (minor) phenol route, benzoates and caprolactam (SNIA).";
+        stoichiometry
+        (
+            { component toluene;               nu -1; }
+            { component O2;                    nu -1.5; }
+            { component benzoicAcid;           nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.85 0.92 );
+            origin  assumed;
+            reason  "Co-catalysed liquid-phase air oxidation; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Benzoic acid'"; }
+            { source ullmanns; locus "'Benzoic Acid and Derivatives'"; }
+        );
+    }
+
+    {
+        name     pXyleneOxidation;
+        kind     reaction;
+        target   terephthalicAcid;
+        family   oxidation;
+        era      incumbent;
+        description "The Amoco oxidation in acetic acid over Co/Mn/Br: both methyls to carboxyls in one pass, then hydrogenation of the crude acid to PTA -- the whole reason p-xylene is separated from its isomers.";
+        stoichiometry
+        (
+            { component pXylene;               nu -1; }
+            { component O2;                    nu -3; }
+            { component terephthalicAcid;      nu 1; }
+            { component water;                 nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.98 );
+            origin  assumed;
+            reason  "Amoco Co/Mn/Br in acetic acid, 200 C, 15-30 bar, yield > 95 %; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 14, 'Terephthalic acid' -- the Amoco process"; }
+            { source ullmanns; locus "'Terephthalic Acid, Dimethyl Terephthalate, and Isophthalic Acid'"; }
+        );
+    }
+
+    {
+        name     PTAesterificationDMT;
+        kind     reaction;
+        target   dimethylTerephthalate;
+        family   esterification;
+        era      incumbent;
+        description "DMT, the older PET monomer (purified by distillation rather than crystallisation); today most PET is made from PTA directly.";
+        stoichiometry
+        (
+            { component terephthalicAcid;      nu -1; }
+            { component methanol;              nu -2; }
+            { component dimethylTerephthalate; nu 1; }
+            { component water;                 nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Terephthalic Acid, Dimethyl Terephthalate, and Isophthalic Acid'"; }
+        );
+    }
+
+    {
+        name     PETpolycondensation;
+        kind     reaction;
+        target   PET;
+        family   polymerisation;
+        era      incumbent;
+        description "PTA + MEG esterified and polycondensed: the bottle and fibre polyester, where the xylene and ethylene trees join.  Written per repeat unit.";
+        stoichiometry
+        (
+            { component terephthalicAcid;      nu -1; }
+            { component ethyleneGlycol;        nu -1; }
+            { component PET;                   nu 1; }
+            { component water;                 nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.995 );
+            origin  assumed;
+            reason  "direct esterification then melt polycondensation under vacuum; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Polyesters'"; }
+            { source iea2018; locus "ch. 4, Figure 4.2, key thermoplastics"; }
+        );
+    }
+
+    {
+        name     oXyleneOxidation;
+        kind     reaction;
+        target   phthalicAnhydride;
+        family   oxidation;
+        era      incumbent;
+        description "Gas-phase oxidation of o-xylene over V2O5/TiO2 in multitubular salt-cooled reactors: phthalic anhydride for plasticisers (phthalate esters of 2-EH) and alkyd resins -- the o-xylene tree meets the oxo tree.";
+        stoichiometry
+        (
+            { component oXylene;               nu -1; }
+            { component O2;                    nu -3; }
+            { component phthalicAnhydride;     nu 1; }
+            { component water;                 nu 3; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.78 0.84 );
+            origin  assumed;
+            reason  "V2O5/TiO2 gas-phase oxidation, 78-84 % molar yield; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 14, 'Phthalic anhydride'"; }
+            { source ullmanns; locus "'Phthalic Acid and Derivatives'"; }
+        );
+    }
+
+    {
+        name     benzeneChlorination;
+        kind     reaction;
+        target   monochlorobenzene;
+        family   chlorination;
+        era      incumbent;
+        description "Ring chlorination of benzene over FeCl3: chlorobenzene (nitrochlorobenzenes, solvents) with one HCl forced per mole.";
+        stoichiometry
+        (
+            { component benzene;               nu -1; }
+            { component Cl2;                   nu -1; }
+            { component monochlorobenzene;     nu 1; }
+            { component HCl;                   nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.85 0.9 );
+            origin  assumed;
+            reason  "FeCl3-catalysed, dichlorobenzenes the by-products; the curator's band";
+        }
+        cases    ( "tutorials/steady/reactors/chlorophenol01_chlorination" );
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Chlorobenzenes'"; }
+            { source ullmanns; locus "'Chlorinated Hydrocarbons'"; }
+        );
+    }
+
+    {
+        name     DEHPesterification;
+        kind     reaction;
+        target   DEHP;
+        family   esterification;
+        era      incumbent;
+        description "Phthalic anhydride + two 2-ethylhexanols: the plasticiser of flexible PVC, where the o-xylene and the oxo (propylene + syngas) trees meet.";
+        stoichiometry
+        (
+            { component phthalicAnhydride;     nu -1; }
+            { component 2Ethylhexanol;         nu -2; }
+            { component DEHP;                  nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "Ti-catalysed esterification; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Plasticizers'"; }
+        );
+    }
+
+    {
+        name     phenolHydrogenation;
+        kind     reaction;
+        target   cyclohexanone;
+        family   hydrogenation;
+        era      incumbent;
+        description "The phenol route to KA oil (selective, no low-conversion oxidation) -- used where phenol is cheap beside cyclohexane.";
+        stoichiometry
+        (
+            { component phenol;                nu -2; }
+            { component H2;                    nu -5; }
+            { component cyclohexanone;         nu 1; }
+            { component cyclohexanol;          nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "Pd-catalysed gas-phase hydrogenation of phenol to a ketone-rich KA; written as a 1:1 pair for the fork; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 10, 'Cyclohexanol/cyclohexanone' -- the phenol route"; }
+            { source ullmanns; locus "'Cyclohexanol and Cyclohexanone'"; }
+        );
+    }
+);

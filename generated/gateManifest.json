@@ -1415,6 +1415,11 @@
       "exit": 0,
       "claim": "check_optimiser_converged: OK -- an unconverged simulation is a FAILED evaluation, never an objective: on cavett01 copies whose recycle stops at recycleMaxIter 2, nelderMead (23 evaluations FAILED by name), sqp (2 evaluations FAILED by name), integer (69 evaluations FAILED by name) each refuse by name and print no optimum; with recycleMaxIter 8 the Nelder-Mead search counts 3 of 8 evaluations failed (did not converge), reports a finite best and replays a converged recycle; the converging copy prints no FAILED line and ends 'status: converged' (held); 4 `simulator_(` call site(s) read the verdict through simulationFailure() before the result is read.  NOT covered: the sweep, gridSweep and designSpec drivers; whether a corpus optimisation SHOULD converge; the choupoCtrl functor.",
       "seconds": 22.5
+    },
+    "check_chemistry_graph": {
+      "exit": 0,
+      "claim": "check_chemistry_graph: OK -- 7 files, 157 substances, 168 routes: every reaction balances on the engine's element table, every route cites a declared source, every substance is reachable from a feedstock, the target graph has no undeclared cycle, 7 + 4 roots declared, every cited case exists.  NOT checked: whether a yield band (189 of 189 are `assumed`) or a locus is TRUE, or whether the route list is complete.",
+      "seconds": 0.0
     }
   }
 }

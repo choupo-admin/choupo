@@ -1,0 +1,425 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  THE INORGANIC ROOTS: sulfuric acid (contact process) and the wet-process
+  phosphoric acid it is mostly made for, chlorine WITH caustic from the brine
+  cell, nitric acid (Ostwald) and the fertiliser salts that take the ammonia.
+  Grammar: README.md beside this file.  Every edge is re-read, balanced and
+  checked by bin/curate/check_chemistry_graph.py.
+\*---------------------------------------------------------------------------*/
+
+
+recordType    productionRoutes;
+schemaVersion 1;
+graph         treeOfChemistry;
+
+routes
+(
+    {
+        name     sulfurCombustion;
+        kind     reaction;
+        target   SO2;
+        family   oxidation;
+        era      incumbent;
+        description "Molten sulfur burned in dry air at 1000 C: the first step of the contact process (SO2 also comes from smelter gas and spent-acid regeneration).";
+        stoichiometry
+        (
+            { component sulfur;                nu -1; }
+            { component O2;                    nu -1; }
+            { component SO2;                   nu 1; }
+        );
+        yield
+        {
+            basis   sulfur;
+            band    ( 0.99 0.999 );
+            origin  assumed;
+            reason  "sulfur burner; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Sulfuric Acid and Sulfur Trioxide'"; }
+            { source moulijn2013; locus "sulfuric acid"; }
+        );
+    }
+
+    {
+        name     SO2ContactOxidation;
+        kind     reaction;
+        target   SO3;
+        family   oxidation;
+        era      incumbent;
+        description "The contact process: SO2 over vanadium pentoxide/potassium pyrosulfate in four adiabatic beds with interstage cooling, equilibrium-limited and exothermic -- the same van Heerden lesson as the ammonia converter.";
+        stoichiometry
+        (
+            { component SO2;                   nu -1; }
+            { component O2;                    nu -0.5; }
+            { component SO3;                   nu 1; }
+        );
+        yield
+        {
+            basis   sulfur;
+            band    ( 0.995 0.999 );
+            origin  assumed;
+            reason  "double contact / double absorption, 99.7-99.9 % conversion over V2O5-K2SO4; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Sulfuric Acid and Sulfur Trioxide'"; }
+            { source moulijn2013; locus "sulfuric acid: the contact process"; }
+        );
+    }
+
+    {
+        name     SO3Absorption;
+        kind     reaction;
+        target   H2SO4;
+        family   acidBase;
+        era      incumbent;
+        description "SO3 absorbed in 98-99 % sulfuric acid (never in water, which gives a mist); diluted to the grade sold.  Sulfuric acid is the largest-volume chemical and a REAGENT in most of its uses: it leaves as sulfate, not as acid.";
+        stoichiometry
+        (
+            { component SO3;                   nu -1; }
+            { component water;                 nu -1; }
+            { component H2SO4;                 nu 1; }
+        );
+        yield
+        {
+            basis   sulfur;
+            band    ( 0.999 1 );
+            origin  assumed;
+            reason  "absorption in 98 % acid, quantitative; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Sulfuric Acid and Sulfur Trioxide'"; }
+        );
+    }
+
+    {
+        name     wetProcessPhosphoricAcid;
+        kind     reaction;
+        target   H3PO4;
+        family   acidBase;
+        era      incumbent;
+        description "The wet process: sulfuric acid attacks fluorapatite and the calcium leaves as phosphogypsum -- 5 t per t of P2O5, the largest forced co-product in this graph, stacked by the hundreds of millions of tonnes.  Most sulfuric acid in the world is made for this reaction.";
+        stoichiometry
+        (
+            { component phosphateRock;         nu -1; }
+            { component H2SO4;                 nu -5; }
+            { component water;                 nu -10; }
+            { component H3PO4;                 nu 3; }
+            { component gypsum;                nu 5; }
+            { component HF;                    nu 1; }
+        );
+        yield
+        {
+            basis   phosphorus;
+            band    ( 0.94 0.97 );
+            origin  assumed;
+            reason  "dihydrate process P2O5 recovery; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Phosphoric Acid and Phosphates'"; }
+            { source kirkOthmer; locus "'Phosphoric Acids and Phosphates'"; }
+        );
+    }
+
+    {
+        name     DAPneutralisation;
+        kind     reaction;
+        target   DAP;
+        family   acidBase;
+        era      incumbent;
+        description "Diammonium phosphate: phosphoric acid neutralised with ammonia and granulated -- the ammonia and phosphoric acid roots meet in the largest phosphate fertiliser.";
+        stoichiometry
+        (
+            { component H3PO4;                 nu -1; }
+            { component NH3;                   nu -2; }
+            { component DAP;                   nu 1; }
+        );
+        yield
+        {
+            basis   phosphorus;
+            band    ( 0.98 0.995 );
+            origin  assumed;
+            reason  "pipe-reactor/granulator ammoniation; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Phosphate Fertilizers'"; }
+        );
+    }
+
+    {
+        name     chlorAlkaliElectrolysis;
+        kind     reaction;
+        target   Cl2;
+        family   electrolysis;
+        era      incumbent;
+        description "Brine electrolysis in membrane cells: 1.13 t NaOH and 0.028 t H2 per t Cl2, by stoichiometry, whether the caustic is wanted or not -- the inorganic archetype of forced co-production, which is why the price of one swings against the other (the 'ECU', electrochemical unit).";
+        stoichiometry
+        (
+            { component NaCl;                  nu -2; }
+            { component water;                 nu -2; }
+            { component Cl2;                   nu 1; }
+            { component NaOH;                  nu 2; }
+            { component H2;                    nu 1; }
+        );
+        yield
+        {
+            basis   chlorine;
+            band    ( 0.95 0.98 );
+            origin  assumed;
+            reason  "membrane cell current efficiency 95-97 %; the curator's band";
+        }
+        energy
+        (
+            { route "membrane cell, electricity per t Cl2"; band ( 2.5 3 ); unit "MWh per t Cl2"; origin assumed; reason "the band quoted for membrane cells in the handbook named in provenance (about 2.1 MWh per t for the cell alone, more with caustic evaporation); not read back"; }
+        );
+        provenance
+        (
+            { source obrien2005; locus "the membrane, diaphragm and mercury cell processes"; }
+            { source ullmanns; locus "'Chlorine'"; }
+            { source iea2018; locus "ch. 3: electricity use of the chemical sector"; }
+        );
+    }
+
+    {
+        name     HClSynthesis;
+        kind     reaction;
+        target   HCl;
+        family   synthesis;
+        era      incumbent;
+        description "Direct synthesis from the cell's own H2 and Cl2 -- but most HCl is the BY-PRODUCT of chlorinations (isocyanates, allyl chloride, EDC cracking), and the chlorine industry's problem is placing it.";
+        stoichiometry
+        (
+            { component H2;                    nu -1; }
+            { component Cl2;                   nu -1; }
+            { component HCl;                   nu 2; }
+        );
+        yield
+        {
+            basis   chlorine;
+            band    ( 0.99 0.999 );
+            origin  assumed;
+            reason  "burner synthesis; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Hydrochloric Acid'"; }
+        );
+    }
+
+    {
+        name     ammoniaOxidationNitricAcid;
+        kind     reaction;
+        target   HNO3;
+        family   oxidation;
+        era      incumbent;
+        description "The Ostwald process as its overall equation: ammonia burned to NO on Pt/Rh gauze, oxidised to NO2 on cooling, absorbed in water to 55-65 % acid with the NO recycled up the column.  Nearly all nitric acid goes to fertiliser (ammonium nitrate) and the nitrations.";
+        stoichiometry
+        (
+            { component NH3;                   nu -1; }
+            { component O2;                    nu -2; }
+            { component HNO3;                  nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   nitrogen;
+            band    ( 0.94 0.97 );
+            origin  assumed;
+            reason  "Ostwald overall: gauze selectivity 95-97 % times absorption 98-99 %; the curator's band";
+        }
+        cases    ( "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways" );
+        provenance
+        (
+            { source ullmanns; locus "'Nitric Acid, Nitrous Acid, and Nitrogen Oxides'"; }
+            { source moulijn2013; locus "nitric acid"; }
+        );
+    }
+
+    {
+        name     ammoniumNitrateNeutralisation;
+        kind     reaction;
+        target   ammoniumNitrate;
+        family   acidBase;
+        era      incumbent;
+        description "Ammonium nitrate: the fertiliser (and explosive) that takes most of the nitric acid.";
+        stoichiometry
+        (
+            { component NH3;                   nu -1; }
+            { component HNO3;                  nu -1; }
+            { component ammoniumNitrate;       nu 1; }
+        );
+        yield
+        {
+            basis   nitrogen;
+            band    ( 0.99 0.999 );
+            origin  assumed;
+            reason  "neutralisation; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Ammonium Compounds'"; }
+        );
+    }
+
+    {
+        name     ammoniumSulfateNeutralisation;
+        kind     reaction;
+        target   ammoniumSulfate;
+        family   acidBase;
+        era      incumbent;
+        description "Direct neutralisation -- a minor source beside the caprolactam and coke-oven by-product.";
+        stoichiometry
+        (
+            { component NH3;                   nu -2; }
+            { component H2SO4;                 nu -1; }
+            { component ammoniumSulfate;       nu 1; }
+        );
+        yield
+        {
+            basis   nitrogen;
+            band    ( 0.99 0.999 );
+            origin  assumed;
+            reason  "neutralisation; most ammonium sulfate is in fact the caprolactam co-product; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Ammonium Compounds'"; }
+        );
+    }
+
+    {
+        name     limestoneCalcination;
+        kind     reaction;
+        target   CaO;
+        family   pyrolysis;
+        era      incumbent;
+        description "Limestone calcined to quicklime at 900-1100 C, with its CO2 -- the lime of the carbide furnace, the chlorohydrin routes and the Solvay process.";
+        stoichiometry
+        (
+            { component CaCO3;                 nu -1; }
+            { component CaO;                   nu 1; }
+            { component CO2;                   nu 1; }
+        );
+        yield
+        {
+            basis   mass;
+            band    ( 0.55 0.56 );
+            origin  assumed;
+            reason  "56 % of the limestone mass is lime by stoichiometry; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Lime and Limestone'"; }
+        );
+    }
+
+    {
+        name     limeHydration;
+        kind     reaction;
+        target   CaOH2;
+        family   hydration;
+        era      incumbent;
+        description "Slaking of lime to the milk of lime the chlorohydrin dehydrochlorinations consume.";
+        stoichiometry
+        (
+            { component CaO;                   nu -1; }
+            { component water;                 nu -1; }
+            { component CaOH2;                 nu 1; }
+        );
+        yield
+        {
+            basis   mass;
+            band    ( 1.3 1.32 );
+            origin  assumed;
+            reason  "stoichiometric slaking; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Lime and Limestone'"; }
+        );
+    }
+
+    {
+        name     fluorsparToHF;
+        kind     reaction;
+        target   HF;
+        family   acidBase;
+        era      incumbent;
+        description "Fluorspar + sulfuric acid to hydrogen fluoride -- the root of every fluorocarbon, fluoropolymer and AlF3, with anhydrite forced: sulfuric acid again consumed as a reagent.";
+        stoichiometry
+        (
+            { component fluorspar;             nu -1; }
+            { component H2SO4;                 nu -1; }
+            { component HF;                    nu 2; }
+            { component CaSO4;                 nu 1; }
+        );
+        yield
+        {
+            basis   mass;
+            band    ( 0.48 0.5 );
+            origin  assumed;
+            reason  "0.5 kg HF per kg CaF2 by stoichiometry, 95-98 % recovered; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Fluorine Compounds, Inorganic'"; }
+        );
+    }
+
+    {
+        name     anthraquinoneH2O2;
+        kind     reaction;
+        target   H2O2;
+        family   hydrogenation;
+        era      incumbent;
+        description "The anthraquinone process: an alkylanthraquinone is hydrogenated and re-oxidised by air, the net result being H2 + O2 to H2O2 -- the oxidant of HPPO and of pulp bleaching.";
+        stoichiometry
+        (
+            { component H2;                    nu -1; }
+            { component O2;                    nu -1; }
+            { component H2O2;                  nu 1; }
+        );
+        yield
+        {
+            basis   hydrogen;
+            band    ( 0.9 0.95 );
+            origin  assumed;
+            reason  "the anthraquinone cycle (Pd hydrogenation, air oxidation), written as the net reaction; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Hydrogen Peroxide'"; }
+        );
+    }
+
+    {
+        name     solvayProcess;
+        kind     reaction;
+        target   Na2CO3;
+        family   acidBase;
+        era      incumbent;
+        description "The Solvay (ammonia-soda) process as its overall equation: brine + limestone to soda ash with calcium chloride forced -- the ammonia is a recycled carrier and does not appear.  Soda ash for glass, the other chlor-alkali product.";
+        stoichiometry
+        (
+            { component NaCl;                  nu -2; }
+            { component CaCO3;                 nu -1; }
+            { component Na2CO3;                nu 1; }
+            { component CaCl2;                 nu 1; }
+        );
+        yield
+        {
+            basis   mass;
+            band    ( 0.85 0.92 );
+            origin  assumed;
+            reason  "overall Na recovery of the ammonia-soda process; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Sodium Carbonate'"; }
+            { source moulijn2013; locus "the Solvay process as the classic inorganic flowsheet"; }
+        );
+    }
+);

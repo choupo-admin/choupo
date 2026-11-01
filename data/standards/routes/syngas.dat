@@ -1,0 +1,546 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  THE SYNTHESIS-GAS ROOT and the first derivatives of CO + H2: reforming,
+  shift, gasification, methanol and its outlets, ammonia and urea.  The ammonia
+  edge is written ONCE: its hydrogen comes from reforming + shift today and from
+  electrolysis tomorrow, and the transition replaces the root, not this edge.
+  Grammar: README.md beside this file.  Every edge is re-read, balanced and
+  checked by bin/curate/check_chemistry_graph.py.
+\*---------------------------------------------------------------------------*/
+
+
+recordType    productionRoutes;
+schemaVersion 1;
+graph         treeOfChemistry;
+
+routes
+(
+    {
+        name     steamMethaneReforming;
+        kind     reaction;
+        target   CO;
+        family   reforming;
+        era      incumbent;
+        description "Steam reforming over Ni, 800-900 C, 20-30 bar: strongly endothermic, fired from outside the tubes.  Today's source of most of the world's hydrogen and syngas -- and of the CO2 that comes with them.  The ratio H2/CO = 3 is what makes methane the preferred methanol and ammonia feed.";
+        stoichiometry
+        (
+            { component CH4;                   nu -1; }
+            { component water;                 nu -1; }
+            { component CO;                    nu 1; }
+            { component H2;                    nu 3; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "methane slip 2-5 % after primary + secondary reforming; the curator's band";
+        }
+        cases    ( "tutorials/steady/gibbs/gibbs02_steam_reforming" "tutorials/steady/reactors/equil01_reforming" "tutorials/props/gibbs/landscape03_steam_reforming" "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways" "tutorials/steady/gibbs/gibbs11_carbon_deposition" "tutorials/steady/separation/psa01_h2_psa" );
+        provenance
+        (
+            { source moulijn2013; locus "ch. on synthesis gas"; }
+            { source ullmanns; locus "'Gas Production, 2. Processes'"; }
+            { source ieaAmmonia2021; locus "executive summary: just over 70 % of ammonia is made from natural gas by steam reforming"; }
+        );
+    }
+
+    {
+        name     partialOxidationMethane;
+        kind     reaction;
+        target   CO;
+        family   reforming;
+        era      incumbent;
+        description "Autothermal reforming / partial oxidation with oxygen: no external firing, H2/CO = 2 -- the ratio the methanol and Fischer-Tropsch syntheses want.  Needs an air separation unit.";
+        stoichiometry
+        (
+            { component CH4;                   nu -1; }
+            { component O2;                    nu -0.5; }
+            { component CO;                    nu 1; }
+            { component H2;                    nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.93 0.98 );
+            origin  assumed;
+            reason  "autothermal/partial oxidation carbon efficiency; the curator's band";
+        }
+        provenance
+        (
+            { source moulijn2013; locus "synthesis gas: ATR and POX"; }
+            { source ullmanns; locus "'Gas Production, 2. Processes'"; }
+        );
+    }
+
+    {
+        name     waterGasShift;
+        kind     reaction;
+        target   H2;
+        family   shift;
+        era      incumbent;
+        description "The water-gas shift converts the CO of reformed gas into more hydrogen and CO2: it is what turns syngas into AMMONIA feed (all the carbon leaves as CO2) and what tunes the H2/CO ratio for methanol.";
+        stoichiometry
+        (
+            { component CO;                    nu -1; }
+            { component water;                 nu -1; }
+            { component CO2;                   nu 1; }
+            { component H2;                    nu 1; }
+        );
+        yield
+        {
+            basis   hydrogen;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "high- plus low-temperature shift leave 0.2-0.5 % CO; the curator's band";
+        }
+        cases    ( "tutorials/steady/gibbs/gibbs01_water_gas_shift" "tutorials/steady/reactors/cstr02_reversible_wgs" "tutorials/steady/reactors/pfr02_reversible_wgs" "tutorials/batch/reactor/batch04_reversible_wgs" "tutorials/steady/reactors/ladder01_wgs_three_rungs" "tutorials/props/gibbs/landscape02_water_gas_shift" );
+        provenance
+        (
+            { source moulijn2013; locus "synthesis gas: the shift reactors"; }
+            { source ullmanns; locus "'Hydrogen, 2. Production'"; }
+        );
+    }
+
+    {
+        name     coalGasification;
+        kind     processYield;
+        target   CO;
+        family   gasification;
+        era      incumbent;
+        description "Entrained-flow or fluidised-bed gasification with oxygen and steam, 1300-1500 C: the syngas is CO-rich (H2/CO < 1) and needs a large shift step, so coal-based methanol and ammonia carry roughly twice the CO2 of gas-based.  China's methanol and a quarter of the world's ammonia stand on it.";
+        feed     coal;
+        slate
+        (
+            { component CO;                    massPerKgFeed ( 1.2 1.8 ); origin assumed; reason "kg CO per kg coal (dry, ash-free) in an entrained-flow gasifier; most of the coal's carbon leaves as CO, the rest as CO2; the curator's band"; }
+            { component H2;                    massPerKgFeed ( 0.05 0.12 ); origin assumed; reason "kg H2 per kg coal; the curator's band"; }
+            { component CO2;                   massPerKgFeed ( 0.3 0.8 ); origin assumed; reason "the curator's band"; }
+        );
+        provenance
+        (
+            { source moulijn2013; locus "coal gasification"; }
+            { source ieaAmmonia2021; locus "executive summary: coal gasification supplies most of the remaining ammonia, about 85 % of China's"; }
+            { source iea2018; locus "p. 29: coal feedstock is split fairly evenly between methanol and ammonia"; }
+        );
+    }
+
+    {
+        name     methanolSynthesis;
+        kind     reaction;
+        target   methanol;
+        family   synthesis;
+        era      incumbent;
+        description "Low-pressure methanol synthesis over Cu/ZnO/Al2O3, 220-280 C, 50-100 bar, with a synthesis loop: the first derivative of syngas and the one that carries ALL its carbon into a liquid.  Written on CO; the CO2 path (CO2 + 3 H2) runs in the same loop and is the transition edge.";
+        stoichiometry
+        (
+            { component CO;                    nu -1; }
+            { component H2;                    nu -2; }
+            { component methanol;              nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "Cu/ZnO/Al2O3 selectivity > 99 %, overall carbon efficiency with purge; the curator's band";
+        }
+        cases    ( "tutorials/steady/reactors/equil02_methanol_declared_pathways" "tutorials/steady/reactors/screen01_methanol_routes" );
+        provenance
+        (
+            { source moulijn2013; locus "methanol synthesis"; }
+            { source ullmanns; locus "'Methanol'"; }
+            { source weissermelArpe2003; locus "ch. 2, 'Basic Products of Industrial Syntheses'"; }
+        );
+    }
+
+    {
+        name     methanolToFormaldehyde;
+        kind     reaction;
+        target   formaldehyde;
+        family   oxidation;
+        era      incumbent;
+        description "Methanol's largest outlet (about 40 %): oxidative dehydrogenation over silver (600-700 C) or oxidation over Fe-Mo oxide (300-400 C), to the formalin that makes the wood-adhesive and plastics resins.";
+        stoichiometry
+        (
+            { component methanol;              nu -1; }
+            { component O2;                    nu -0.5; }
+            { component formaldehyde;          nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.88 0.94 );
+            origin  assumed;
+            reason  "silver or iron-molybdate oxide process; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 2, 'Formaldehyde'"; }
+            { source ullmanns; locus "'Formaldehyde'"; }
+            { source iea2018; locus "p. 24: about 40 % of methanol is converted to formaldehyde"; }
+        );
+    }
+
+    {
+        name     ureaFormaldehydeCondensation;
+        kind     reaction;
+        target   ureaFormaldehydeResin;
+        family   condensation;
+        era      incumbent;
+        description "Urea + formaldehyde condense to the methylol ureas and then to the resin (written per methylene-urea repeat unit): the glue of particleboard and plywood -- the end of the methanol chain nobody sees, and with the phenolic and melamine resins about 40 % of methanol's outlet.";
+        stoichiometry
+        (
+            { component urea;                  nu -1; }
+            { component formaldehyde;          nu -1; }
+            { component ureaFormaldehydeResin; nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "the condensation is quantitative at the usual F/U ratio of 1.0-1.3; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Amino Resins'"; }
+        );
+    }
+
+    {
+        name     methanolCarbonylation;
+        kind     reaction;
+        target   aceticAcid;
+        family   carbonylation;
+        era      incumbent;
+        description "The Monsanto/Cativa process: homogeneous Rh or Ir iodide catalysis, 150-200 C, 30-60 bar, near-quantitative on both methanol and CO.  It displaced the acetaldehyde (ethylene) route and is why acetic acid now hangs from the syngas root.";
+        stoichiometry
+        (
+            { component methanol;              nu -1; }
+            { component CO;                    nu -1; }
+            { component aceticAcid;            nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.99 );
+            origin  assumed;
+            reason  "Rh (Monsanto) or Ir (Cativa) catalysed carbonylation selectivity > 99 % on methanol; the curator's band";
+        }
+        cases    ( "tutorials/plant/aceticAcid01_gibbsReactor" "tutorials/plant/aceticAcid02_plant" );
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 7, 'Acetic acid' -- the Monsanto process"; }
+            { source ullmanns; locus "'Acetic Acid'"; }
+        );
+    }
+
+    {
+        name     acetateEsterification;
+        kind     reaction;
+        target   methylAcetate;
+        family   esterification;
+        era      incumbent;
+        description "Methyl acetate by reactive distillation (the Eastman column): an equilibrium-limited esterification pushed to completion by taking the ester overhead.";
+        stoichiometry
+        (
+            { component aceticAcid;            nu -1; }
+            { component methanol;              nu -1; }
+            { component methylAcetate;         nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "reactive distillation drives the equilibrium to completion; the curator's band";
+        }
+        cases    ( "tutorials/steady/distillation/column05_reactive_methylacetate" "tutorials/steady/reactors/cstr07_lhhw_methylAcetate" "tutorials/batch/reactor/batch07_lhhw_methylAcetate" );
+        provenance
+        (
+            { source ullmanns; locus "'Acetic Acid' -- esters"; }
+        );
+    }
+
+    {
+        name     aceticAnhydrideCarbonylation;
+        kind     reaction;
+        target   aceticAnhydride;
+        family   carbonylation;
+        era      incumbent;
+        description "Eastman's coal-to-chemicals chain: methyl acetate + CO over Rh gives the anhydride for cellulose acetate -- a syngas-only path to a C4 oxygenate.";
+        stoichiometry
+        (
+            { component methylAcetate;         nu -1; }
+            { component CO;                    nu -1; }
+            { component aceticAnhydride;       nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "Rh-catalysed carbonylation of methyl acetate (Eastman); the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 7, 'Acetic anhydride'"; }
+            { source ullmanns; locus "'Acetic Anhydride and Mixed Fatty Acid Anhydrides'"; }
+        );
+    }
+
+    {
+        name     methanolDehydrationDME;
+        kind     reaction;
+        target   dimethylEther;
+        family   dehydration;
+        era      incumbent;
+        description "DME by methanol dehydration over alumina: an aerosol propellant and LPG substitute, and the intermediate of the MTO chemistry.";
+        stoichiometry
+        (
+            { component methanol;              nu -2; }
+            { component dimethylEther;         nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "alumina-catalysed dehydration; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Dimethyl Ether'"; }
+        );
+    }
+
+    {
+        name     methanolHydrochlorination;
+        kind     reaction;
+        target   methylChloride;
+        family   chlorination;
+        era      incumbent;
+        description "Methanol + HCl gives methyl chloride, the silicone (methylchlorosilane) precursor and the first of the chloromethanes -- a route that CONSUMES the HCl the chlorinations force.";
+        stoichiometry
+        (
+            { component methanol;              nu -1; }
+            { component HCl;                   nu -1; }
+            { component methylChloride;        nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "alumina or ZnCl2 catalysed gas-phase hydrochlorination; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 2, chloromethanes"; }
+            { source ullmanns; locus "'Chloromethanes'"; }
+        );
+    }
+
+    {
+        name     MTBEEtherification;
+        kind     reaction;
+        target   MTBE;
+        family   etherification;
+        era      incumbent;
+        description "MTBE over a sulfonic acid resin, 50-90 C: the gasoline oxygenate that is also HOW isobutene is taken out of the C4 cut (the ether is cracked back to pure isobutene where that is the product wanted).";
+        stoichiometry
+        (
+            { component isoButene;             nu -1; }
+            { component methanol;              nu -1; }
+            { component MTBE;                  nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "acid-resin catalysed, equilibrium driven by reactive distillation; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 3, 'Olefins' -- MTBE from raffinate 1"; }
+            { source ullmanns; locus "'Methyl tert-Butyl Ether'"; }
+        );
+    }
+
+    {
+        name     ammoniaSynthesis;
+        kind     reaction;
+        target   NH3;
+        family   synthesis;
+        era      incumbent;
+        description "Haber-Bosch over promoted iron, 400-500 C, 100-300 bar, in a synthesis loop.  The chemistry is the same whatever the hydrogen's origin: the FOSSIL ammonia is this edge fed by steam reforming + shift; the GREEN ammonia is this edge fed by electrolysis.  The transition replaces the root (the hydrogen), not the leaf.";
+        stoichiometry
+        (
+            { component N2;                    nu -1; }
+            { component H2;                    nu -3; }
+            { component NH3;                   nu 2; }
+        );
+        yield
+        {
+            basis   hydrogen;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "hydrogen efficiency of the synthesis loop with purge recovery; the curator's band";
+        }
+        energy
+        (
+            { route "global average, all routes, net, ~2019"; band ( 41 41 ); unit "GJ per t NH3"; origin literature; locus "ieaAmmonia2021: 'around 41 GJ/t on a net basis'"; }
+            { route "best available technology, natural gas"; band ( 28 28 ); unit "GJ per t NH3"; origin literature; locus "ieaAmmonia2021: 28 GJ/t for natural gas-based production"; }
+            { route "best available technology, coal"; band ( 36 36 ); unit "GJ per t NH3"; origin literature; locus "ieaAmmonia2021: 36 GJ/t for coal-based production"; }
+            { route "direct CO2, global average"; band ( 2.4 2.4 ); unit "t CO2 per t NH3"; origin literature; locus "ieaAmmonia2021: 'around 2.4 t CO2 per tonne of production'"; }
+        );
+        cases    ( "tutorials/plant/ammonia02_full_plant" "tutorials/plant/ammonia03_quench_converter" "tutorials/steady/flowsheets/ammonia01_synthesis_loop" "tutorials/plant/ammoniaReactor04_kineticSizing" "tutorials/plant/ammoniaRoutes01_screening" "tutorials/plant/greenAmmonia03_basicDesign" "tutorials/plant/greenAmmoniaPEQ_baseCase" "tutorials/props/gibbs/landscape01_ammonia_synthesis" "tutorials/props/kinetics/ammoniaRate01_dyson_simon" );
+        provenance
+        (
+            { source ieaAmmonia2021; locus "executive summary: energy intensity, routes and emissions"; }
+            { source smith2020; locus "the Haber-Bosch process in a carbon-free landscape"; }
+            { source ullmanns; locus "'Ammonia, 2. Production Processes'"; }
+            { source moulijn2013; locus "ammonia synthesis"; }
+        );
+    }
+
+    {
+        name     ureaSynthesis;
+        kind     reaction;
+        target   urea;
+        family   condensation;
+        era      incumbent;
+        description "Ammonium carbamate at 150-200 bar dehydrates to urea: the largest ammonia derivative (more than half) and the one process that USES the ammonia plant's own CO2 -- 0.73 t per t urea, released again when the fertiliser hydrolyses in the soil.";
+        stoichiometry
+        (
+            { component NH3;                   nu -2; }
+            { component CO2;                   nu -1; }
+            { component urea;                  nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   nitrogen;
+            band    ( 0.97 0.99 );
+            origin  assumed;
+            reason  "total-recycle stripping processes; the curator's band";
+        }
+        provenance
+        (
+            { source iea2018; locus "p. 24: more than half of ammonia is converted to urea, made from the CO2 of the ammonia plant; p. 52: a tonne of urea requires a minimum of 0.73 t CO2"; }
+            { source ullmanns; locus "'Urea'"; }
+        );
+    }
+
+    {
+        name     fischerTropsch;
+        kind     reaction;
+        target   nOctane;
+        family   synthesis;
+        era      incumbent;
+        description "Fischer-Tropsch: syngas to paraffinic liquids over Co or Fe (Sasol, Shell).  Written on n-octane as the representative chain: the same chemistry on biomass or CO2-derived syngas is the e-fuel / BTL route.";
+        stoichiometry
+        (
+            { component CO;                    nu -8; }
+            { component H2;                    nu -17; }
+            { component nOctane;               nu 1; }
+            { component water;                 nu 8; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.75 0.9 );
+            origin  assumed;
+            reason  "Co or Fe catalyst, C5+ selectivity 75-90 % with CH4 and CO2 the losses; the curator's band";
+        }
+        provenance
+        (
+            { source moulijn2013; locus "Fischer-Tropsch synthesis"; }
+            { source huber2006; locus "biomass-to-liquids via FT"; }
+        );
+    }
+
+    {
+        name     phenolFormaldehydeResin;
+        kind     reaction;
+        target   phenolicResin;
+        family   condensation;
+        era      incumbent;
+        description "Phenol-formaldehyde resins (Bakelite): the oldest synthetic polymer, still the plywood and moulding resin.  Written per methylene-phenol repeat unit.";
+        stoichiometry
+        (
+            { component phenol;                nu -1; }
+            { component formaldehyde;          nu -1; }
+            { component phenolicResin;         nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "acid (novolac) or base (resol) catalysed condensation; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Phenolic Resins'"; }
+        );
+    }
+
+    {
+        name     formaldehydePolymerisation;
+        kind     reaction;
+        target   POM;
+        family   polymerisation;
+        era      incumbent;
+        description "Polyacetal (POM): formaldehyde or its trimer polymerised to the engineering plastic of gears and clips.  Written per repeat unit.";
+        stoichiometry
+        (
+            { component formaldehyde;          nu -1; }
+            { component POM;                   nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.95 );
+            origin  assumed;
+            reason  "anionic polymerisation of purified formaldehyde or trioxane; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Polyoxymethylenes'"; }
+        );
+    }
+
+    {
+        name     ureaToMelamine;
+        kind     reaction;
+        target   melamine;
+        family   condensation;
+        era      incumbent;
+        description "Six ureas to one melamine with six ammonias and three CO2 returned to the urea plant: the melamine resins of laminates, made entirely from ammonia and CO2.";
+        stoichiometry
+        (
+            { component urea;                  nu -6; }
+            { component melamine;              nu 1; }
+            { component NH3;                   nu 6; }
+            { component CO2;                   nu 3; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.45 0.5 );
+            origin  assumed;
+            reason  "half the urea carbon returns as CO2 by stoichiometry; the process is near-quantitative on top of that; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Melamine and Guanamines'"; }
+        );
+    }
+);
