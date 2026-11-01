@@ -2999,6 +2999,21 @@ PYEOF
     fi
     rm -f /tmp/thirdbody.$$
 
+    # vessel-kinetic-orders gate (2026-11-01, DEV.md 4c C190 items 10, 13): the
+    # vessels' own Arrhenius paths honour a NEGATIVE order (r = k cE^2/cA) and
+    # refuse it at concentration zero; the CHEMKIN A conversion sums the
+    # orders before it decides (0.5 + 1.5 = molecularity 2) and refuses a
+    # non-integer sum -- held against this gate's own RK4 integrations.
+    if gate_exec "$ROOT/bin/curate/check_vessel_kinetic_orders.py" > /tmp/vesselorders.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "vessel-kinetic-orders" "$(grep -m1 '^check_vessel_kinetic_orders: OK' /tmp/vesselorders.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_vessel_kinetic_orders.py)\n" "vessel-kinetic-orders"
+        cat /tmp/vesselorders.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/vesselorders.$$
+
     # positivity-mask gate (2026-10-31, DEV.md 4c C185 item 8): the adaptive
     # integrator's positivity guard is a per-ROW mask over every packed unit
     # -- it had been a prefix count, switched OFF for two or more units, the

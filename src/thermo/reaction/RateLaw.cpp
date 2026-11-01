@@ -44,6 +44,7 @@ RateLaw RateLaw::fromDict(const DictPtr&       rxn,
 {
     const std::size_t n = thermo.n();
     RateLaw law;
+    law.who_ = who;
     law.nu_.assign(n, 0.0);
     law.order_.assign(n, 0.0);
     law.orderRev_.assign(n, 0.0);
@@ -143,7 +144,7 @@ scalar RateLaw::netRate(const ThermoPackage& thermo, scalar T,
     {
         scalar rf = kf;
         for (std::size_t i = 0; i < n; ++i)
-            if (order_[i] != 0.0) rf *= std::pow(conc[i], order_[i]);
+            rf *= Reaction::powerLawFactor(conc[i], order_[i], thermo.comp(i).name(), who_);
         scalar rr = 0.0;
         if (revBalance_)
         {
@@ -156,7 +157,7 @@ scalar RateLaw::netRate(const ThermoPackage& thermo, scalar T,
         {
             rr = Reaction::arrheniusRate(Arev_, Earev_, T);
             for (std::size_t i = 0; i < n; ++i)
-                if (orderRev_[i] != 0.0) rr *= std::pow(conc[i], orderRev_[i]);
+                rr *= Reaction::powerLawFactor(conc[i], orderRev_[i], thermo.comp(i).name(), who_);
         }
         return rf - rr;
     }
@@ -184,14 +185,14 @@ scalar RateLaw::netRate(const ThermoPackage& thermo, scalar T,
 
     scalar rf = kf;
     for (std::size_t i = 0; i < n; ++i)
-        if (order_[i] != 0.0) rf *= std::pow(abar[i], order_[i]);
+        rf *= Reaction::powerLawFactor(abar[i], order_[i], thermo.comp(i).name(), who_);
 
     scalar rr = 0.0;
     if (revExplicit_)
     {
         rr = Reaction::arrheniusRate(Arev_, Earev_, T);
         for (std::size_t i = 0; i < n; ++i)
-            if (orderRev_[i] != 0.0) rr *= std::pow(abar[i], orderRev_[i]);
+            rr *= Reaction::powerLawFactor(abar[i], orderRev_[i], thermo.comp(i).name(), who_);
     }
     else if (revBalance_)
     {

@@ -277,4 +277,55 @@ scalar Reaction::forwardOrder(const Dictionary&  entry,
         "    at the product stoichiometry, so `orderRev` defaults on its own.");
 }
 
+scalar Reaction::powerLawFactor(scalar             c,
+                                scalar             order,
+                                const std::string& species,
+                                const std::string& who)
+{
+    if (order == 0.0)
+        return 1.0;                       // the ONLY order that leaves the law
+    if (order < 0.0 && !(c > 0.0))
+    {
+        std::ostringstream m;
+        m << who << ": species '" << species << "' has kinetic order " << order
+          << " (an inhibition order) and its concentration is " << c
+          << ", so c^order diverges and the rate has no finite value.\n"
+             "    A negative order is a mechanism fact and is honoured, never"
+             " dropped and never\n"
+             "    clamped.  REMEDY: start the vessel with a non-zero amount of '"
+          << species << "', or use a rate law that stays finite at zero"
+             " (an LHHW denominator\n    or a `type expression` law with its"
+             " own saturation term).";
+        throw std::runtime_error(m.str());
+    }
+    return std::pow(c, order);
+}
+
+int Reaction::chemkinMolecularity(const std::vector<scalar>& orders,
+                                  const std::string&         reaction,
+                                  const std::string&         who)
+{
+    scalar sum = 0.0;
+    for (scalar o : orders) sum += o;
+    const scalar nearest = std::round(sum);
+    if (std::abs(sum - nearest) > 1.0e-9)
+    {
+        std::ostringstream m;
+        m << who << ": reaction '" << reaction << "' declares CHEMKIN units for"
+             " A but its orders (";
+        for (std::size_t i = 0; i < orders.size(); ++i)
+            m << (i ? ", " : "") << orders[i];
+        m << ") sum to " << sum << ", not an integer.\n"
+             "    A CHEMKIN pre-exponential factor is reported for an INTEGER"
+             " molecularity, so the\n    cm-mol-s -> SI conversion of A has no"
+             " defined factor here (rounding each order, or the sum, would"
+             " scale A by a wrong power of 1000).\n"
+             "    REMEDY: give A in SI (kmol, m3, s) with the `units` block"
+             " omitted, converting by hand for the sum of orders "
+          << sum << ".";
+        throw std::runtime_error(m.str());
+    }
+    return static_cast<int>(nearest);
+}
+
 } // namespace Choupo

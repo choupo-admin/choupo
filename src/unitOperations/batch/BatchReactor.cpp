@@ -202,26 +202,39 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
         auto kin = rxn->subDict("kinetics");
         const std::string ktype = kin->lookupWord("type");
 
-        // Forward molecularity (for the cm-mol-s -> SI A conversion): the sum
-        // of the positive (reactant-side) power-law orders, rounded to int.
-        int molecularity = 0;
-        for (scalar o : r.order) if (o > 0.0) molecularity += static_cast<int>(std::lround(o));
+        // Molecularity (for the cm-mol-s -> SI A conversion) = the SUM of the
+        // declared orders, decided ONLY when a cm unit asks for it (a
+        // fractional-order law in SI never needs it).  SUM first, then decide:
+        // `Reaction::chemkinMolecularity` is the one home and refuses a
+        // non-integer sum (C190 item 13: each order used to be rounded BEFORE
+        // the sum, orders 0.5 + 1.5 read as 1 + 2, A 1000x too low).
+        const auto usesCm = [](const DictPtr& d)
+        {
+            return d->found("units")
+                && d->subDict("units")->lookupWordOrDefault("A", "").find("cm")
+                       != std::string::npos;
+        };
+        const auto molec = [&]() -> int
+        {
+            return Reaction::chemkinMolecularity(r.order, rxnName, "batchReactor");
+        };
 
         // Optional units block: convert CHEMKIN cm-mol-s / cal-mol to SI on
         // load (and announce it).  Absent => values already SI (legacy).
-        const auto convA  = [&](scalar A, int molec) { return ckA_(kin, A, molec); };
+        const auto convA  = [&](scalar A, int extra)
+        { return usesCm(kin) ? ckA_(kin, A, molec() + extra) : A; };
         const auto convEa = [&](scalar Ea)           { return ckEa_(kin, Ea);     };
 
         if (ktype == "Arrhenius")
         {
             r.form  = RateForm::Arrhenius;
-            r.A_pre = convA(kin->lookupScalar("A"), molecularity);
+            r.A_pre = convA(kin->lookupScalar("A"), 0);
             r.Ea    = convEa(kin->lookupScalar("Ea"));
         }
         else if (ktype == "modifiedArrhenius")
         {
             r.form  = RateForm::ModArrhenius;
-            r.A_pre = convA(kin->lookupScalar("A"), molecularity);
+            r.A_pre = convA(kin->lookupScalar("A"), 0);
             r.b     = kin->lookupScalar("b");
             r.Ea    = convEa(kin->lookupScalar("Ea"));
         }
@@ -230,7 +243,7 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             // k·[M], [M] from per-species efficiencies; molecularity gains the
             // +M, so the A conversion uses molecularity+1.
             r.form  = RateForm::ThirdBody;
-            r.A_pre = convA(kin->lookupScalar("A"), molecularity + 1);
+            r.A_pre = convA(kin->lookupScalar("A"), 1);
             r.b     = kin->lookupScalarOrDefault("b", 0.0);
             r.Ea    = convEa(kin->lookupScalar("Ea"));
             r.tbEff = thirdBodyEfficiencies_(kin, thermo);
@@ -240,11 +253,12 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             // High-pressure limit kInf on the main A/b/Ea; low-pressure kLow in
             // a `low {…}` sub-dict (molecularity+1); optional `troe ( … )`.
             r.form  = RateForm::Falloff;
-            r.A_pre = convA(kin->lookupScalar("A"), molecularity);        // kInf
+            r.A_pre = convA(kin->lookupScalar("A"), 0);        // kInf
             r.b     = kin->lookupScalarOrDefault("b", 0.0);
             r.Ea    = convEa(kin->lookupScalar("Ea"));
             auto low = kin->subDict("low");
-            r.A_low  = ckA_(low, low->lookupScalar("A"), molecularity + 1);
+            r.A_low  = usesCm(low) ? ckA_(low, low->lookupScalar("A"), molec() + 1)
+                                   : low->lookupScalar("A");
             r.b_low  = low->lookupScalarOrDefault("b", 0.0);
             r.Ea_low = ckEa_(low, low->lookupScalar("Ea"));
             if (kin->found("troe")) r.troe = kin->lookupList("troe");
@@ -473,9 +487,11 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
     scalar r = k;
     for (std::size_t s = 0; s < rxn.comps.size(); ++s)
     {
-        if (rxn.order[s] <= 0.0) continue;
+        if (rxn.order[s] == 0.0) continue;              // C190 item 10: a NEGATIVE order is honoured
         const scalar c_i = n[rxn.comps[s]] / V;
-        r *= std::pow(std::max<scalar>(c_i, 0.0), rxn.order[s]);
+        r *= Reaction::powerLawFactor(rxn.order[s] > 0.0 ? std::max<scalar>(c_i, 0.0) : c_i,
+                                      rxn.order[s], thermo_->comp(rxn.comps[s]).name(),
+                                      "batchReactor reaction '" + rxn.name + "'");
     }
     if (!rxn.reversible) return r;
 
