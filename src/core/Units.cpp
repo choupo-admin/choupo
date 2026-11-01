@@ -84,6 +84,14 @@ const std::map<std::string, UnitSpec>& table()
         { "min",     UnitSpec{ min_to_s,    Dims::time } },
         { "h",       UnitSpec{ h_to_s,      Dims::time } },
         { "hr",      UnitSpec{ h_to_s,      Dims::time } },
+
+        // ----- inverse time -> 1/s -------------------------------------
+        //  A rate of events (tablets per hour, revolutions per minute),
+        //  added with the rated machines (DEV.md 4c C195) so a design sheet
+        //  can declare one; no named unit spelled it before.
+        { "1/s",     UnitSpec{ 1.0,          Dims::inverseTime } },
+        { "1/min",   UnitSpec{ 1.0 / 60.0,   Dims::inverseTime } },
+        { "1/h",     UnitSpec{ 1.0 / 3600.0, Dims::inverseTime } },
         { "day",     UnitSpec{ day_to_s,    Dims::time } },
 
         // ----- length → m -----------------------------------------------

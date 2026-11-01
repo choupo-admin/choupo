@@ -28,6 +28,7 @@ License
 
 #include "PostProcessor.H"
 #include "BatchPlanPass.H"
+#include "CleanUtilitiesPass.H"
 #include "CostingPass.H"
 #include "EconomicsPass.H"
 #include "PinchPass.H"
@@ -113,6 +114,13 @@ void PostProcessor::registerBuiltins()
     registerType("batchPlan",
         [](const DictPtr& d) -> std::unique_ptr<PostProcessor>
         { return std::make_unique<BatchPlanPass>(d); });
+
+    //  The clean utilities (HVAC, purified water) fed by the building the
+    //  layout checked (DEV.md 4c C195): declared AFTER `sizing` and, to be
+    //  fed by the layout, run where main.cpp checks the layout.
+    registerType("cleanUtilities",
+        [](const DictPtr& d) -> std::unique_ptr<PostProcessor>
+        { return std::make_unique<CleanUtilitiesPass>(d); });
 
     registerType("pinchPass",
         [](const DictPtr& d) -> std::unique_ptr<PostProcessor>

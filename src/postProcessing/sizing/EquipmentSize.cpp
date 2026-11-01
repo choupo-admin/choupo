@@ -34,6 +34,7 @@ License
 #include "CycloneSize.H"
 #include "CompressorSize.H"
 #include "PressureExchangerSize.H"
+#include "RatedMachineSize.H"
 #include "VesselSize.H"
 #include "ReliefValveSize.H"
 #include "EvaporatorSize.H"
@@ -115,6 +116,12 @@ void EquipmentSize::registerBuiltins()
     //  converter.  The word names the EQUIPMENT; `unitName` names the sector.
     registerType("converterShell",
         []{ return std::make_unique<ConverterShellSize>(); });
+    //  A MACHINE THE CASE RATES (2026-11-02, DEV.md 4c C195): a mixer or a
+    //  splitter standing for a blender, mill, press, coating pan or packaging
+    //  line, checked against a declared vendor rating and the batch plan's
+    //  lot.  The word names the EQUIPMENT; `kind` names what is rated.
+    registerType("ratedMachine",
+        []{ return std::make_unique<RatedMachineSize>(); });
 }
 
 } // namespace Choupo

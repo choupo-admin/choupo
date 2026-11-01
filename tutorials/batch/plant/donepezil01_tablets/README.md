@@ -211,7 +211,24 @@ bed's drying rate; the coater coats a lot in 4 h, not 1.5 h, so its real
 air flow is a little over a third of what the basis gives it.  Its heater
 is sized (and priced) at the basis rate — say so, or scale it.
 
-**Quoted, not correlated (DEV.md 4c C98).**  Choupo has no sizer and no cost
+**Does the machine fit the lot and the shift? (DEV.md 4c C195).**  Each
+solid-dose machine is checked by a `ratedMachine` entry in `system/postDict`
+against a rating YOU declare (all author-set here) and the batch plan's lot:
+utilisation = load / (machines x rating), refused above 1, announced above
+0.85.  Base ratings: **granulator 0.93**, **fluid-bed dryer 0.89**, mill
+0.30, **final blender 0.86**, tablet press 0.77, coating pan 0.61, packaging
+line 0.70.  A rating is the group's to replace; a changed rating changes the
+verdict.  The items are neither costed (the quotes below) nor placed.
+**The clean utilities** (`cleanUtilities`, last in `postDict`) size the air
+and the purified water from the building of `system/layoutDict`: 29 served
+rooms, 7 100 m3 (4 910 m3 of grade D at 20 air changes an hour, 2 190 m3 of
+CNC at 6), a supply of 111 340 m3/h, a 51.5 kW fan, 134 kW of winter heating
+and 90 kW of summer cooling of the fresh-air share -- SENSIBLE only, no
+humidity, no latent load, no room heat gain -- and 3.1 m3 of purified water a
+lot, a peak of 3.14 m3/h, a 3.93 m3/h generator and a 12.6 m3 tank at 4 h.
+Every number is an author-set assumption; no standard's table is shipped.
+
+**Quoted, not correlated (DEV.md 4c C98).**  Choupo has no cost
 correlation for the solid-dose machines or the GMP building, and it does not
 invent one; `system/postDict` DECLARES a price for each, in `costing {
 quotes ( ... ); }`, scaled with the batch plan by the six-tenths rule

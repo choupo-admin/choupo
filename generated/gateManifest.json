@@ -1435,6 +1435,11 @@
       "exit": 0,
       "claim": "check_pressure_exchanger: OK -- on membrane27_swro_energy_recovery the exchanger's three balances recompute from the result JSON outside the engine (volume less the leakage and the four flows conserving it, every component's LP outlet the remainder of the volumetric mix, Stover's efficiency on the stream pressures, each to 1e-6, the salinity rise from the streams' own masses, Q_kW = 0 and the dissipation (1 - eta) of the input); 7 fixtures refuse by name (efficiency absent, 1.2; mixing -0.1; no source; no drain pressure; a vapour seawater and a non-aqueous feed through the acceptance contract, before any unit runs); the sheet's rotors = ceil(Q_LP / ratedFlowPerUnit) and move to 2 on a halved rating, the item is NOT costed and a missing rating refuses; every sizing value carries a unit, both port blocks carry pressures, and the GUI fixture is the sheet the run just wrote.  NOT CHECKED: whether Stover's definition is the maker's, whether the three numbers fit any device, the first law (UNAVAILABLE on this component set), the membrane's answer.",
       "seconds": 0.2
+    },
+    "check_tablet_machines": {
+      "exit": 0,
+      "claim": "check_tablet_machines: OK -- 15 rated machines of apalutamide01_tablets and donepezil01_tablets recompute their utilisation (lot hours from the declared lot and its stream, the unit's inlet mass, the stage's operating time or bulk density, the declared rating and installed count) and their machines needed to 1e-6; 65 rooms of the two buildings, re-read from layoutDict by an independent reader, give 3 grade items and two totals whose volume, supply flow, fan power and sensible winter/summer duty agree; the 5 water uses give the demand per lot, the year, the Gantt peak, the generator and the tank; the capital total stays complete, the layout stays unplaced 0 / internal 0 and the quotes beside the sized machines stay priced; 9 refusals/fixtures fire by name (a missing rating key or source, a machine that does not fit and the declared second unit that makes it legal, an unknown kind, a unit in no stage, a grade with no air-change rate, an unserved name that is no room, a water use in no stage).  NOT CHECKED: the vendor numbers and air-change rates (the case's own assumptions), any machine physics (there is none).",
+      "seconds": 0.4
     }
   }
 }

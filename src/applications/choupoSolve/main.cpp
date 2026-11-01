@@ -1483,7 +1483,10 @@ try
             auto chain = PostProcessor::buildChain(postDict);
             for (auto& pp : chain)
             {
-                if (!layoutApplied && pp->type() == "economics")
+                //  `cleanUtilities` reads the building the layout checked,
+                //  so the layout runs before it as well (DEV.md 4c C195).
+                if (!layoutApplied && (pp->type() == "economics"
+                                       || pp->type() == "cleanUtilities"))
                 {
                     applyLayout(result);
                     layoutApplied = true;

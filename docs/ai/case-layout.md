@@ -746,6 +746,51 @@ the governing one.  Worked case: `tutorials/plant/greenAmmonia03_basicDesign`.
 A valve may also protect a SECTOR's own item (`unitName CONVERTER;`, below):
 its `blockedOutlet` streams are the sector's outlets, read from the topology.
 
+**A MACHINE FITS THE BATCH -- `type ratedMachine` (DEV.md 4c C195).**  The
+blenders, roller compactor, mill, screen, tablet press, coating pan and
+packaging line of a tablet plant are `mixer`/`splitter` units that carry mass
+only.  A `ratedMachine` entry checks one of them against a vendor rating the
+CASE declares and the batch plan's lot (so `batchPlan` goes above `sizing`):
+
+```
+{ unitName tabletPress;  type ratedMachine;  material SS316;
+  designRules
+  {
+      kind  tabletPress;     // batchVolume | massRate | tabletPress | packagingLine
+      rating
+      {
+          stations 45;  turretSpeed 60;  compressionsPerRevolution 1;   // turretSpeed in rpm (a plain number)
+          itemMass 0.7 g;                                               // the pressed tablet
+          source "...";  reason "...";                                  // REQUIRED
+      }
+      // installed { count 2; source "..."; reason "..."; }   // a declared second unit; else the plan's own
+      // shift { length 8 h; source "..."; reason "..."; }     // announce a lot that spans shifts
+      // announceAbove 0.85;                                    // else the stated 0.85, announced
+  } }
+```
+
+`batchVolume` takes `nominalVolume` (m3) and `maxFill` and compares the lot's
+working volume (the stage's mass per lot over its bulk density); `massRate`
+takes `capacity` (kg/h) and compares the mass the unit's inlets carry per lot
+over the stage's operating time; `packagingLine` takes `packsPerMinute`,
+`itemsPerPack` and `itemMass`.  Utilisation = load / (machines x rating); above
+1 the entry REFUSES, naming the machines that would carry the lot; above 0.85
+it announces.  Not costed (the case's `costing { quotes }` carries the money
+and is NOT blocked by the item) and not placed on the plot plan (its room is).
+No rating is ever defaulted.  Worked cases:
+`tutorials/batch/plant/apalutamide01_tablets`, `donepezil01_tablets`.
+
+**THE CLEAN UTILITIES -- the `cleanUtilities` pass (DEV.md 4c C195).**  Declared
+AFTER `economics`, it runs after the layout and reads the building the layout
+checked (`result.building`): `hvac { air {}; changesPerHour ( { grade; perHour;
+source; reason; } ); fan {}; outdoor {}; supply {}; unserved { rooms (...); } }`
+and `purifiedWater { fluid {}; uses ( { name; stream | volumePerLot; stage;
+drawTime; when start|end; } ); generator { margin; }; storage { holdTime; } }`.
+Every number is the case's, with a `source` and a `reason`; no air-change table
+is shipped.  HVAC is SENSIBLE only (no humidity, no latent load, no room heat
+gain), said on every run.  Items: `hvac/grade<G>`, `hvac/total`,
+`purifiedWater/generator`, `purifiedWater/storage` -- not costed, not placed.
+
 **ONE PRESSURE SHELL AROUND A SECTOR'S EQUIPMENT -- `type converterShell`
 (DEV.md 4c C69).**  A multibed converter is one pressure vessel holding its
 beds and interbed exchangers, while the flowsheet still computes each as its
