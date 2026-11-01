@@ -689,6 +689,26 @@ The Hansen distance Ra\textasciicircum{}2 = 4(dD - dD,t)\textasciicircum{}2 + (d
 \quad (and 2 more)
 \end{tutoriallink}
 
+\paragraph{\code{membraneShortlist}}\label{op:membraneShortlist}
+FROM A FUNCTIONAL CLASS TO THE COMMERCIAL ELEMENTS THAT DO IT. Hard filters on each registered module record (membrane of the class's type, a spiral element, ONE rated test of the solute, its rated rejection inside the class band, declared P\_max / T\_max / pH limits at the student's feed), then each survivor is re-rated on the module itself at the STUDENT'S conditions (its water permeance and intrinsic rejection derived from its own rated test; the feed flow found so ONE element delivers the asked recovery), and the feed-flow and pressure-drop limits filter again. Every criterion is published side by side per module -- permeate flow, observed rejection, permeate concentration, flux, P/flux, hydraulic energy per m3, feed flow, pressure drop, margins -- in ALPHABETICAL order of the module name. There is no score, no weight and no rank, and a record's \code{partner} / \code{dataVerifiedBy} is never read. Diagnostics: n\_candidates, n\_pass, n\_excluded and, per re-rated module, <module>\_\_<criterion> (hyphens in the name become underscores). Also writes the CSV of \code{output.file}. One solute, one element, a constant intrinsic rejection fixed at the sheet's one test. Witness shortlist01\_class\_to\_modules (gate check\_membrane\_shortlist).
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{carrier} & Membrane record for elements that name none \\
+\code{class}\textbf{*} & Functional class \\
+\code{conditions}\textbf{*} & The student's operating conditions \\
+\code{operation}\textbf{*} & Film, pressure drop and polarisation \\
+\code{output} & Output \\
+\code{solute}\textbf{*} & Solute \\
+\code{tiers} & Catalogue tiers that are candidates \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/membrane/shortlist01\_class\_to\_modules}
+\end{tutoriallink}
+
 \paragraph{\code{phaseEnvelope}}\label{op:phaseEnvelope}
 The P-T phase envelope of a MIXTURE at fixed feed composition: the bubble curve (V/F -> 0) and the dew curve (V/F -> 1) traced in the (T, P) plane and written as a long-form CSV (P\_Pa, T\_K, curve). An envelope is drawn to find the CRICONDENTHERM -- the highest temperature at which the feed can hold a liquid, what a pipeline is designed against -- and the retrograde region beside it, and both live at the nose, which no single-specification march can close: this trace does NOT close it, says so on every run, and names Michelsen's arc-length continuation with a switching specification (Fluid Phase Equilib. 4 (1980) 1) as the algorithm that would. The bubble and dew solves are BubblePoint::compute and DewPoint::compute -- the same routines the bubbleT and dewT units call, so neither saturation residual exists twice. Marching in pressure, the temperature maximum is not a turning point for the specification, so an INTERIOR maximum is reported as a BRACKETED cricondentherm naming the two pressures it lies between; an endpoint maximum is not reported, because it says where the range stops and not where the mixture peaks. A point that CONVERGED but is discontinuous with its branch is discarded and the branch ends there: the bubble curve is monotonically increasing in P up to the critical point (physics, not a heuristic) and the dew curve gets a continuity test, because both saturation solvers bracket T in 200-700 K and are warm-started, so Newton can land on a different root and report success -- which it did, drawing a bubble temperature FALLING with pressure and publishing a cricondentherm that was the resulting spike. A branch that produces no point at all is reported as never having started, which is a different finding from a branch that stopped, and has a different remedy.
 
