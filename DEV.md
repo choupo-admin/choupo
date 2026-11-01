@@ -1768,6 +1768,18 @@ accepts today, and that is a policy call.
 > H3BO3/BOH4 record from a primary source and a dosing unit (C198).  Gate
 > `check_swro_plant` (five sabotages); 34 cases PASS, `--fast` 77/0, `--gui`
 > 42/0 after the viewport test learned the plant folds.
+> FOUND BY VITOR 2026-11-02 in the browser: the 3D layout view of this case
+> did not start ("can't access property index, t[0] is undefined").  CAUSE
+> (read from the case's own run, not guessed): the case declares the road
+> `middle` passing UNDER the rack along its WHOLE length (rackCrossing xMin
+> -118, xMax 130), the drawing never stands a post on pavement, so the rack has
+> no portals and its concrete-footing list is empty; three.js's
+> mergeGeometries reads geometries[0].index and throws on an empty list.
+> FIXED (`mergeNonEmpty` in layoutRenderer.ts: an empty part is drawn as absent;
+> test `layoutMergeEmpty`).  OPEN, the case's: a rack with no portal is drawn
+> floating -- the road and the rack should be declared so the rack stands
+> (portals at its ends) or the road crosses it.  Not seen by any test before
+> because no test builds the scene from a real layout and no CI opens WebGL.
 > STATUS: DONE 2026-11-02.
 
 > **C193. THE CML PLAN IS THE 1 HOUR / 1 DAY / 3 DAYS / BEYOND A WEEK

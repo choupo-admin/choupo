@@ -270,6 +270,18 @@ export const DAYLIGHT = {
  *  and its label, never by an opaque safety-orange fill that would hide the
  *  rooms and the equipment inside.  Any other flagged item's envelope parts
  *  are safety orange (its decoration keeps its own role). */
+/** Merge a list of geometries, or nothing for an EMPTY list.  three.js's
+ *  mergeGeometries reads `geometries[0].index` and throws on an empty list
+ *  ("t[0] is undefined" in the minified bundle): a pipe rack whose portals all
+ *  give way to a road passing under it (swro01_campoDalias, 2026-11-02) has no
+ *  concrete footings to merge, and the whole 3D view refused to start.  An
+ *  absent part is drawn as absent, never as a crash. */
+export function mergeNonEmpty<G extends { index: unknown }>(
+  merge: (geoms: G[], useGroups?: boolean) => G | null, geoms: G[]): G | null {
+  if (geoms.length === 0) return null;
+  return merge(geoms, false);
+}
+
 export function partMaterialKey(s: { shell?: boolean; flagged: boolean; nonProcess: boolean },
                                 p: { decoration: boolean; role: PartRole }):
   "shell" | "flagged" | "nonProcess" | "process" | Exclude<PartRole, "body"> {
@@ -1153,7 +1165,7 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       for (const dz of [-r.halfWidth - 0.2, r.halfWidth + 0.2])
         bx(r.x1 - r.x0, 0.22, 0.18, (r.x0 + r.x1) / 2, ty - 0.35, r.zc + dz, steel);
     for (const [geoms, role] of [[steel, "steel"], [concrete, "concrete"]] as const) {
-      const merged = m.mergeGeometries(geoms, false);
+      const merged = mergeNonEmpty(m.mergeGeometries, geoms);
       for (const g of geoms) g.dispose();
       if (!merged) continue;
       keep(merged);
