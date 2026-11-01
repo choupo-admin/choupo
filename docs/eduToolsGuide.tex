@@ -1533,6 +1533,91 @@ environmental inventory, so it does not say which route wins; the Choupo
 cases linked from the routes, and the route-screening tool, are where that
 is asked.  Co-products are listed, not credited.
 
+\subsection{Patent expiry and generic entry}\label{sec:edu-patent-expiry}
+
+\declaredanchor{ch:economics}
+
+\noindent\textit{\small Tool:} \code{tool=patent-expiry}.  \textit{\small
+Case it starts from:} \file{tutorials/batch/plant/apalutamide01\_tablets}
+(and, with other numbers, \file{donepezil01\_tablets}); no engine run.
+
+\subsubsection*{The question}
+
+\emph{My group designs a generic tablet plant for the day the originator's
+exclusivity ends.  What volume will the plant sell, at what price, year
+by year, what does the case's economics read from that, and how much of
+the revenue is at risk if we enter a year or two late or the price falls
+further than we assumed?}
+
+In this industry the business case is decided by a calendar, not by the
+equipment.  The page takes the originator's annual sales and its price
+before exclusivity ends, which fix the volume $V_0=S_0/P_0$ of the
+molecule, and then applies four curves that you can read and edit: the
+generic price relative to the originator's, either by the number of generic
+producers or by the years since the first generic entry; the cumulative
+share of the volume the generics take; the number of rivals in each year;
+and the share of the generic volume the newcomer wins.  In market year $k$ the
+plant sells $N=\min(V_0\,g_k\,w(n_k),Q)$ tablets at $p=P_0\,\rho\,f$, with
+$g_k$ the generic share averaged over the year (the curve is read at the
+\emph{end} of a year), $w$ the newcomer's share among $n_k$ producers, $\rho$ the
+price ratio, $f$ the depth factor of the sensitivity and $Q$ the design production.
+
+\subsubsection*{What the case reads}
+
+The economics block holds one price per kilogram and one production; the
+volume profile is its \code{rampUp} list, the fraction of the design
+production sold in each of the first operating years
+(\file{src/postProcessing/EconomicsPass.cpp} requires each entry in
+$[0,1]$ and at most \code{projectLife} entries).  The page prints that
+list and the one constant price $p^{*}=\mathrm{PV}/\sum_j N_j(1+i)^{-j}$ that gives the
+same present value as the falling prices, in the case's own units (EUR per
+kilogram of \code{packagedTablets}).  The equivalence holds for the
+discount rate you gave the page; change the rate in the case and
+re-run the page.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+Read the table first.  The default curves bring the plant to four
+producers in year three and a price of about $4.0$ EUR a tablet, the case's
+own price, but the volume reaches only about ten million tablets a year,
+below the fourteen million the case produces from its first year: the
+case's $25\,\%$ market share and this page's curves do not agree, and the
+column ``sold'' shows by how much.  Now switch the price index from
+``number of producers (US, FDA)'' to ``years since first entry (EU, EC)'':
+the price in year three is about $11.5$ EUR instead of $4.0$.  The two
+studies differ by that much because they measure different things in
+different markets, and your report has to say which one it follows.  Then
+open the sensitivity table: entering one year late hardly changes the present
+value at your launch (about one per cent, upwards), which hides the delay; the next
+column, brought to the first generic entry, shows the loss.
+\end{tryit}
+
+\subsubsection*{The points are marked, and so are the limits}
+
+\begin{pitfall}
+\textbf{That a curve is a forecast, or that the page tells you when you may
+sell.}  Each curve point says whether a published study states it
+(\emph{stated}: the FDA's 2019 report for the price by number of producers,
+the European Commission's sector inquiry fact sheet for the price by time
+and for the generic volume in the first two years) or the page interpolated,
+extended or chose it (\emph{assumed}, with its reason); a number you edit
+becomes \emph{assumed}.  The number of rivals and the newcomer's share have
+no source.  The databases that give price-erosion curves by product class
+are commercial and are not shipped.  The page is not a freedom-to-operate
+analysis: the dossier of the apalutamide case lists the European
+counterparts of the patent and their supplementary protection certificates
+as not verified, and the date the page starts from (3 December 2035) is
+Google Patents' anticipated expiry of one US patent.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+The molecule's volume is held constant and the originator's reply
+(a price cut, an authorised generic, a new formulation) is not modelled.
+The sensitivities move one thing at a time on the same curves and carry no
+probability.
+
 \section{Constructions not yet documented here}\label{sec:edu-stubs}
 
 %  No count here.  This sentence used to say "Six live tools", against a

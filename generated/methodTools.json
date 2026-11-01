@@ -33,8 +33,8 @@
       "meaning": "an input -- a value you set with a control, or one the example's author declared -- not a result"
     }
   ],
-  "liveTools": 67,
-  "registryTools": 67,
+  "liveTools": 68,
+  "registryTools": 68,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -801,6 +801,18 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=tree-of-chemistry"
+    },
+    {
+      "id": "patent-expiry",
+      "label": "Patent expiry and generic entry",
+      "discipline": "Process design & economics",
+      "teaches": "That a generic drug plant is designed for a market its originator's patent calendar creates: the price falls with the number of generic producers (or with time), the volume moves to the generics along a second curve, and the newcomer wins a share of it -- all declared as editable curves whose points are marked stated (a published study gives that number) or assumed -- and what the case's economics reads from them (a rampUp list and one discounted-volume-weighted price), with the revenue at risk if the entry is a year or two late or the erosion deeper.  Not a freedom-to-operate analysis.",
+      "origins": [
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=patent-expiry"
     },
     {
       "id": "solvent-mixture",

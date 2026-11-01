@@ -74,7 +74,7 @@ export type MethodToolId =
   | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
   | "plant-layout" | "gmp-layout" | "pool-fire" | "bund" | "materials" | "syngas"
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
-  | "sines-pta" | "ip-strategy" | "tree-of-chemistry";
+  | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1780,6 +1780,35 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "transition replaces the roots, not the leaves.  Every yield band is "
       + "the curator's estimate and the page draws it as one.",
     theory: "ch:balances",
+  },
+  //  COMMISSIONED 2026-11-02 (DEV.md 4c C195, the architect's scope after
+  //  Vitor: in the pharmaceutical industry the market is "muito influenciado
+  //  pelas patentes e pelos genericos").  A NOTES page with no engine run:
+  //  the volume and price per year are arithmetic on curves the student
+  //  declares and can edit (origin `page`); the points a published study
+  //  states (FDA 2019; EC 2009) are `reference` and every other point is
+  //  `assumption`, each with its reason (docs/design/patent-expiry-and-
+  //  generic-entry.md).  NOT a freedom-to-operate analysis, said first.
+  //  ON THIS SHELF because it sits upstream of the plant's economics: what
+  //  `rampUp` and the one `price` of the case should be.  `theory` is the
+  //  discounted-cash-flow chapter, whose present value the page uses.
+  {
+    id: "patent-expiry",
+    label: "Patent expiry and generic entry",
+    discipline: "Process design & economics", kind: "notes",
+    status: "live",
+    origins: ["page", "reference", "assumption"],
+    teaches: "That a generic drug plant is designed for a market its "
+      + "originator's patent calendar creates: the price falls with the "
+      + "number of generic producers (or with time), the volume moves to "
+      + "the generics along a second curve, and the newcomer wins a share "
+      + "of it -- all declared as editable curves whose points are marked "
+      + "stated (a published study gives that number) or assumed -- and "
+      + "what the case's economics reads from them (a rampUp list and one "
+      + "discounted-volume-weighted price), with the revenue at risk if the "
+      + "entry is a year or two late or the erosion deeper.  Not a "
+      + "freedom-to-operate analysis.",
+    theory: "ch:economics",
   },
   //  WHICH SOLVENT, OR WHICH SOLVENT MIXTURE (2026-10-21, DEV.md 4c C128,
   //  Vitor: the student PREDICTS the best composition before the curve is
