@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*102 of 102 registered operations carry a schema and are documented below.*
+*103 of 103 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -733,6 +733,7 @@ Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its 
 | `length` |   | number | m |  |
 | `elements` |   | number | - | The elements in series in each pressure vessel: the retentate of one feeds the next. A REAL count is allowed (an optimisation driver vari… |
 | `vessels` |   | integer | - | Identical pressure vessels in parallel in this stage. One vessel is solved on F/n and its outlets are scaled by n (exact for identical ve… |
+| `waterPermeance` |   | string | — | `fromRatedTest` derives the water permeance A_w TOGETHER with the intrinsic rejection of the rated solute, so that the module reproduces … |
 | `feedSpacer` |   | string | — | With the explicit `area` + `length` form only: a feed spacer RECORD (kind feedSpacer) that supplies the channel height, porosity and Eq. … |
 | `P_permeate` | ✓ | number | Pa |  |
 | `dP_feed_total` |   | number | Pa | Total friction drop along the feed channel, applied linearly. The `pressureDrop { model SchockMiquel; }` block computes it from the space… |
@@ -746,6 +747,20 @@ Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its 
 | `pressureDrop` |   | object | — | Computes the feed-channel drop from the spacer geometry instead of taking `dP_feed_total`. |
 | `massTransfer` |   | object | — | Computes k_film from a Sherwood correlation instead of taking it as a constant. |
 | `polarisation` |   | object | — | The film's POLICY, one block whichever way k arrives (a correlation or a bare `k_film`); declaring these words inside massTransfer {} ref… |
+
+## `membraneShortlist`  (membraneShortlist operation)
+
+FROM A FUNCTIONAL CLASS TO THE COMMERCIAL ELEMENTS THAT DO IT. Hard filters on each registered module record (membrane of the class's type, a spiral element, ONE rated test of the solute, its rated rejection inside the class band, declared P_max / T_max / pH limits at the student's feed), then each survivor is re-rated on the module itself at the STUDENT'S conditions (its water permeance and intrinsic rejection derived from its own rated test; the feed flow found so ONE element delivers the asked recovery), and the feed-flow and pressure-drop limits filter again. Every criterion is published side by side per module -- permeate flow, observed rejection, permeate concentration, flux, P/flux, hydraulic energy per m3, feed flow, pressure drop, margins -- in ALPHABETICAL order of the module name. There is no score, no weight and no rank, and a record's `partner` / `dataVerifiedBy` is never read. Diagnostics: n_candidates, n_pass, n_excluded and, per re-rated module, <module>__<criterion> (hyphens in the name become underscores). Also writes the CSV of `output.file`. One solute, one element, a constant intrinsic rejection fixed at the sheet's one test. Witness shortlist01_class_to_modules (gate check_membrane_shortlist).
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `class` | ✓ | string | — | A `kind membraneClass` record (NF_OPEN, NF_DIVALENT_SELECTIVE, NF_TIGHT, BWRO_HIGH_FLUX, BWRO_HIGH_REJECTION, SWRO). A commercial module … |
+| `solute` | ✓ | string | — | The salt the choice is about: a component of the case that the class rates. Required. |
+| `tiers` |   | array[string] | — | Which tiers of the module registry contribute candidates: standards (data/standards/assets), case (the case's constant/assets), local (da… |
+| `carrier` |   | string | — | An imported element names no membrane; this NF or RO membrane record supplies its type and the starting water permeance (the permeance is… |
+| `conditions` | ✓ | object | — | Nothing here is defaulted; a missing key refuses by name. |
+| `operation` | ✓ | object | — | The blocks a spiralWoundModule unit writes in its operation (massTransfer, pressureDrop, polarisation, nNodes, rho_feed, ...) and `P_perm… |
+| `output` |   | object | — |  |
 
 ## `mixer`  (mixer operation)
 
@@ -1151,6 +1166,7 @@ Spiral-wound membrane module (RO/NF), solved node by node along the feed channel
 | `length` |   | number | m |  |
 | `elements` |   | number | - | The elements in series in each pressure vessel: the retentate of one feeds the next. A REAL count is allowed (an optimisation driver vari… |
 | `vessels` |   | integer | - | Identical pressure vessels in parallel in this stage. One vessel is solved on F/n and its outlets are scaled by n (exact for identical ve… |
+| `waterPermeance` |   | string | — | `fromRatedTest` derives the water permeance A_w TOGETHER with the intrinsic rejection of the rated solute, so that the module reproduces … |
 | `feedSpacer` |   | string | — | With the explicit `area` + `length` form only: a feed spacer RECORD (kind feedSpacer) that supplies the channel height, porosity and Eq. … |
 | `P_permeate` | ✓ | number | Pa |  |
 | `dP_feed_total` |   | number | Pa | Total friction drop along the feed channel, applied linearly. The `pressureDrop { model SchockMiquel; }` block computes it from the space… |

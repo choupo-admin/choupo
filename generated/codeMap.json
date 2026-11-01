@@ -1135,6 +1135,9 @@
   "MembraneRegistry": [
    "src/thermo/membrane/MembraneRegistry.H"
   ],
+  "MembraneShortlist": [
+   "src/propertyOps/MembraneShortlist.H"
+  ],
   "Memo": [
    "src/thermo/electrolyte/SaltFromCatalogue.H"
   ],
@@ -1167,6 +1170,9 @@
   ],
   "ModifiedEucken": [
    "src/thermo/transport/ModifiedEucken.H"
+  ],
+  "ModuleAtConditions": [
+   "src/unitOperations/membrane/RatedTestInversion.H"
   ],
   "ModuleEstimate": [
    "src/thermo/membrane/MembraneModule.H"
@@ -1422,6 +1428,9 @@
   ],
   "PoreWall": [
    "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
+  ],
+  "Port": [
+   "src/unitOperations/UnitAcceptance.H"
   ],
   "PostProcessor": [
    "src/postProcessing/PostProcessor.H"
@@ -2098,6 +2107,9 @@
   "WallSolution": [
    "src/unitOperations/membrane/massTransfer/Polarisation.H"
   ],
+  "WaterPermeanceDerivation": [
+   "src/unitOperations/membrane/RatedTestInversion.H"
+  ],
   "Wegstein": [
    "src/solver/Wegstein.H"
   ],
@@ -2497,6 +2509,10 @@
    {
     "key": "polarisationIndex",
     "type": "PolarisationIndex"
+   },
+   {
+    "key": "membraneShortlist",
+    "type": "MembraneShortlist"
    },
    {
     "key": "poreTransport",
@@ -3247,6 +3263,8 @@
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/membrane/Membrane.H",
+   "src/thermo/membrane/MembraneModule.H",
+   "src/thermo/membrane/MembraneModuleRegistry.H",
    "src/thermo/membrane/MembraneRegistry.H",
    "src/thermo/phase/Phase.H",
    "src/thermo/pureFluid/PureFluidModel.H",
@@ -3766,6 +3784,7 @@
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
    "src/core/Identifiers.H",
+   "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/ProblemDivergence.H",
    "src/core/ResultRecords.H",
@@ -5446,6 +5465,29 @@
    "src/thermo/Database.H",
    "src/thermo/RecordResolver.H"
   ],
+  "src/propertyOps/MembraneShortlist.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/PublishedTable.H",
+   "src/core/Types.H",
+   "src/propertyOps/MembraneShortlist.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/membrane/Membrane.H",
+   "src/thermo/membrane/MembraneModule.H",
+   "src/thermo/membrane/MembraneModuleRegistry.H",
+   "src/thermo/membrane/MembraneRegistry.H",
+   "src/unitOperations/membrane/RatedTestInversion.H",
+   "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
+   "src/unitOperations/membrane/osmotic/OsmoticModel.H",
+   "src/unitOperations/membrane/pressureDrop/PressureDropModel.H"
+  ],
   "src/propertyOps/MixingRules.cpp": [
    "src/core/Constants.H",
    "src/core/Dictionary.H",
@@ -5665,6 +5707,7 @@
    "src/propertyOps/HeatTransferBench.H",
    "src/propertyOps/IsothermEval.H",
    "src/propertyOps/Kinetics1D.H",
+   "src/propertyOps/MembraneShortlist.H",
    "src/propertyOps/MixingRules.H",
    "src/propertyOps/MolecularActivity.H",
    "src/propertyOps/PhaseEnvelope.H",
@@ -7538,6 +7581,7 @@
    "src/thermo/membrane/MembraneModule.H"
   ],
   "src/thermo/membrane/MembraneModuleRegistry.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -8173,10 +8217,12 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
    "src/unitOperations/batch/BatchCrystalliser.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
    "src/unitOperations/crystallisation/CrystallisationHeat.H",
-   "src/unitOperations/crystallisation/CrystallisationSaturation.H"
+   "src/unitOperations/crystallisation/CrystallisationSaturation.H",
+   "src/unitOperations/crystallisation/Crystalliser.H"
   ],
   "src/unitOperations/batch/BatchDiafilter.cpp": [
    "src/core/Advisory.H",
@@ -10091,6 +10137,7 @@
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/Absorber.H",
+   "src/unitOperations/separation/KremserAcceptance.H",
    "src/unitOperations/separation/LumpedCpEnergyNote.H"
   ],
   "src/unitOperations/separation/BagFilter.cpp": [
@@ -10192,6 +10239,21 @@
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/IonExchanger.H"
   ],
+  "src/unitOperations/separation/KremserAcceptance.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/henrysLaw/HenrysLaw.H",
+   "src/thermo/henrysLaw/HenrysLawRegistry.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/separation/KremserAcceptance.H"
+  ],
   "src/unitOperations/separation/PSA.cpp": [
    "src/core/Constants.H",
    "src/core/Dictionary.H",
@@ -10232,6 +10294,7 @@
    "src/thermo/henrysLaw/HenrysLawRegistry.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/separation/KremserAcceptance.H",
    "src/unitOperations/separation/LumpedCpEnergyNote.H",
    "src/unitOperations/separation/Stripper.H"
   ],
@@ -10506,6 +10569,7 @@
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/membrane/FittedRecord.cpp",
+   "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
@@ -10784,6 +10848,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PoreTransportBench.cpp",
@@ -10967,6 +11032,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
@@ -11208,6 +11274,7 @@
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
@@ -11318,6 +11385,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
@@ -11559,6 +11627,7 @@
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
@@ -11757,6 +11826,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
@@ -11946,6 +12016,7 @@
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
@@ -11953,6 +12024,7 @@
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/core/InfeasibleTrial.H": [
+   "src/outerDriver/DesignSpec.cpp",
    "src/solver/NewtonND.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
@@ -12045,6 +12117,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
@@ -12238,6 +12311,7 @@
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
@@ -12360,6 +12434,7 @@
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
@@ -12727,6 +12802,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
@@ -12988,6 +13064,7 @@
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
@@ -13520,6 +13597,10 @@
    "src/propertyOps/Kinetics1D.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/MembraneShortlist.H": [
+   "src/propertyOps/MembraneShortlist.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/MixingRules.H": [
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -13581,6 +13662,7 @@
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
@@ -14275,6 +14357,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
@@ -14413,6 +14496,7 @@
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
@@ -14854,6 +14938,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
@@ -15042,6 +15127,7 @@
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
@@ -15240,6 +15326,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
@@ -15378,6 +15465,7 @@
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
@@ -15714,6 +15802,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
@@ -15851,6 +15940,7 @@
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
@@ -16365,6 +16455,7 @@
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/unitOperations/separation/Absorber.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
    "src/unitOperations/separation/Stripper.cpp"
   ],
   "src/thermo/henrysLaw/HenrysLawRegistry.H": [
@@ -16374,6 +16465,7 @@
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/unitOperations/separation/Absorber.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
    "src/unitOperations/separation/Stripper.cpp"
   ],
   "src/thermo/iapws/IAPWSTransport.H": [
@@ -16401,6 +16493,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/FitParametersMembrane.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/PoreTransportBench.cpp",
    "src/thermo/membrane/FittedRecord.cpp",
    "src/thermo/membrane/Membrane.cpp",
@@ -16410,8 +16503,10 @@
    "src/unitOperations/membrane/transport/DSPM_DE.cpp"
   ],
   "src/thermo/membrane/MembraneModule.H": [
+   "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/thermo/membrane/FeedSpacer.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
@@ -16419,8 +16514,10 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
   "src/thermo/membrane/MembraneModuleRegistry.H": [
+   "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
@@ -16430,6 +16527,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/FitParametersMembrane.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/PoreTransportBench.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
@@ -16877,6 +16975,7 @@
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/separation/GasSolidSplitter.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
@@ -16906,6 +17005,7 @@
    "src/reporting/UtilityAllocationReport.cpp",
    "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/batch/BatchCrystalliser.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
@@ -17020,6 +17120,7 @@
   ],
   "src/unitOperations/crystallisation/Crystalliser.H": [
    "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/batch/BatchCrystalliser.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp"
   ],
   "src/unitOperations/distillation/DistillationColumn.H": [
@@ -17373,6 +17474,7 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
   "src/unitOperations/membrane/RatedTestInversion.H": [
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
@@ -17383,6 +17485,7 @@
   ],
   "src/unitOperations/membrane/massTransfer/MassTransferModel.H": [
    "src/propertyOps/FitParametersMembrane.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PoreTransportBench.cpp",
    "src/unitOperations/UnitOperation.cpp",
@@ -17410,6 +17513,7 @@
   ],
   "src/unitOperations/membrane/osmotic/OsmoticModel.H": [
    "src/propertyOps/FitParametersMembrane.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/PoreTransportBench.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
@@ -17424,6 +17528,7 @@
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp"
   ],
   "src/unitOperations/membrane/pressureDrop/PressureDropModel.H": [
+   "src/propertyOps/MembraneShortlist.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp"
@@ -17694,6 +17799,11 @@
   "src/unitOperations/separation/IonExchanger.H": [
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/separation/IonExchanger.cpp"
+  ],
+  "src/unitOperations/separation/KremserAcceptance.H": [
+   "src/unitOperations/separation/Absorber.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
+   "src/unitOperations/separation/Stripper.cpp"
   ],
   "src/unitOperations/separation/LumpedCpEnergyNote.H": [
    "src/unitOperations/separation/Absorber.cpp",

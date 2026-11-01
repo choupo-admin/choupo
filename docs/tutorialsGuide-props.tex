@@ -3203,6 +3203,50 @@ The gate check\_polarisation\_coupling recomputes the same four equations in Pyt
 \goldmore{55}
 \end{tutgolden}
 
+\clearpage
+\tutentry{shortlist01\_class\_to\_modules}{tutorials/props/membrane/shortlist01\_class\_to\_modules}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{shortlist}\\[-1pt]{\tiny membraneShortlist}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{From a membrane class to the commercial elements that do it: hard filters, each survivor re-rated at the student's conditions, every criterion side by side, no score}
+\begin{tutnarrative}
+shortlist01 -- THE SHORTLIST (DEV.md 4c C189 slice 5): from a membrane class to the commercial elements that do what the class does.
+
+THE QUESTION. membrane26 chose a membrane by WHAT IT DOES (NF\_DIVALENT\_SELECTIVE: hold sulphate, let sodium chloride through). Which products in the catalogue do that, at MY pressure, MY temperature, MY feed and MY recovery -- not at the data sheet's?
+
+WHAT THE OP DOES. (1) Hard filters on each module record: the membrane is of the class's type (NF here), the record carries ONE rated test of MgSO4, the sheet's rated rejection lies inside the class's band (>= 90 \%), the declared limits hold at this feed. (2) Each survivor is re-run with the transport law and film of the `operation` block below, its intrinsic rejection DERIVED from its OWN rated test (slice 1), at the conditions below, with the feed flow found so ONE element delivers the recovery asked. Then the limits that need the run (feed flow, pressure drop) filter again.
+
+WHAT IT DOES NOT DO. It scores nothing and ranks nothing. Every criterion is published side by side, the candidates in alphabetical order of their names, and a record's commercial-relation fields (`partner`, `dataVerifiedBy`) are never read. What matters most -- permeate flow, permeate quality, specific pressure -- is the student's decision.
+
+WHAT TO READ. The printed rows (and shortlist.csv): permeate flow and concentration, flux, P/flux (bar per L/m2/h), the hydraulic energy per m3 of permeate (feed pressure x feed flow / permeate flow, no recovery device), the feed flow, the element's pressure drop and each limit's margin ((limit - value)/limit; pH in pH units; "n/s" = the record states no such limit). EXCLUDED rows say why, in the record's own numbers.
+
+\end{tutnarrative}
+\tutreadme{The question. membrane26 chose a membrane by what it DOES (NF\_DIVALENT\_SELECTIVE: hold sulphate, let sodium chloride through). Which products in the catalogue do that -- at MY pressure, MY temperature, MY feed and MY recovery, not at the data sheet's?}
+\tutreadme{The op. membraneShortlist (DEV.md 4c C189 slice 5). It does two things and nothing else.}
+\tutreadme{1. $\ast$Hard filters$\ast$, on each module record: the membrane is of the class's type (NF here), the record carries ONE rated test of the asked solute, that test's rated rejection lies inside the class's band, the declared limits (P\_max, T\_max, pH) hold at the student's feed. A limit the record does not state is not a filter (n/s). 2. $\ast$Re-rating$\ast$: every survivor is re-run with the film and spacer of the operation block, its intrinsic rejection DERIVED from its OWN rated test (slice 1), at the student's conditions, with the feed flow found so ONE element delivers the recovery asked. The limits that need the run (feed flow, pressure drop) then filter again.}
+\tutreadme{What it will not do. Score, weight or rank. Every criterion is printed side by side (permeate flow, observed rejection, permeate concentration, flux, P/flux, hydraulic energy per m3, feed flow, pressure drop, margins to each limit), the candidates in alphabetical order of their names, and what matters most is the student's decision. A record's commercial-relation fields (partner, dataVerifiedBy) are never read: the gate proves it.}
+\tutreadme{What to expect here. tiers ( standards case ) keeps the golden independent of one machine's private data/local/assets/ records (the importer's home); drop the line and an imported catalogue joins the table, each of its records announced [local] UNVERIFIED. Of the shipped records NF270-4040 passes; SW30HR-380 is excluded (an RO membrane, rated on NaCl); the Generic elements are excluded (they carry no rated test).}
+\tutreadme{Read it with care. The re-rating is the transport law of a lumped salt with its intrinsic rejection fixed at the sheet's ONE test -- a model's reading of a data sheet away from its test, not a guarantee of the product.}
+\begin{tutgolden}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_A\_w\_LMH\_per\_bar}{14.8806573771}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_R\_int}{0.979346761192}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_R\_obs}{0.969702755801}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_dP\_bar}{0.430832573708}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_feedFlow\_m3h}{3.46318793226}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_flux\_LMH}{68.3523937423}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_margin\_P}{0.829268292683}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_margin\_T}{0.0628634292001}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_margin\_dP}{0.569167426292}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_margin\_feedFlow}{0.0380033521509}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_margin\_pH}{2.5}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_permeateConc\_ppm}{60.5944883985}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_permeateFlow\_m3d}{12.4674766186}
+\goldrow{diag}{shortlist}{NF270\_4040\_\_recovery}{0.150000000752}
+\goldmore{10}
+\end{tutgolden}
+
 \subsection{molecular}
 \grouptheory{molecular}
 \clearpage
@@ -4380,6 +4424,42 @@ WHAT THIS IS AND IS NOT. The mixture is ideal BY DEFINITION (the substances are 
 \goldrow{diag}{reactionMassBubblePoint}{Z}{1}
 \goldrow{diag}{reactionMassBubblePoint}{gamma}{1.07888124878}
 \goldrow{diag}{reactionMassBubblePoint}{v\_molar}{0.0270856136618}
+\end{tutgolden}
+
+\clearpage
+\tutentry{heavyWater01\_isotope\_effect}{tutorials/props/thermo/heavyWater01\_isotope\_effect}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{psat\_isotope}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{boiling\_water}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{boiling\_heavyWater}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Heavy water against ordinary water: the vapour-pressure isotope effect and the boiling points, from the records}
+\begin{tutnarrative}
+D2O against H2O, from the catalogue records.
+
+WHAT THIS CASE EVALUATES. The saturation pressure of heavy water (record `heavyWater`: the Wagner equation of Herrig, Thol, Harvey \& Lemmon, J. Phys. Chem. Ref. Data 47, 043102 (2018), Eq. (1)) and of ordinary water (IAPWS-IF97, via `pureFluids`) at 25/50/75/100 degC, and the normal boiling point of each pure liquid as its bubble temperature at 101325 Pa. Nothing here is stated from memory: bin/curate/check\_heavy\_water.py recomputes the heavy-water side from the IAPWS R16-17(2018) Helmholtz equation (Maxwell criterion), reads the ordinary-water side from the IF97 saturation equation, and holds this case's published numbers (CSV cells, pinned by `csv` rows) to both.
+
+WHAT IS VERIFIED. That the engine reproduces the primary equation: the Wagner arithmetic to 1e-6, the equation against the full D2O EOS to 8e-5, the boiling point of D2O against the EOS's. WHAT IS NOT. No measured datum is compared here; the ordinary-water side is IF97 (itself a correlation of IAPWS-95); `Hvap` is the engine's Watson estimate from the record's Tc, Tb and HvapTb (exact at Tb, an extrapolation elsewhere -- NOT the EOS latent heat). The record carries no formation datum, so `propertyPoint` (which prints H\_ig) refuses heavyWater by name: this case uses the scan operation, which evaluates only what it is asked for. No mixture property of D2O + H2O is claimed (the isotope-exchange equilibrium H2O + D2O = 2 HDO is not modelled).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{csv}{psat\_isotope.csv}{0:Psat\_water}{3.1697468500e+03}
+\goldrow{csv}{psat\_isotope.csv}{0:Psat\_heavyWater}{2.7362295800e+03}
+\goldrow{csv}{psat\_isotope.csv}{0:Hvap\_heavyWater}{4.5626456900e+04}
+\goldrow{csv}{psat\_isotope.csv}{1:Psat\_water}{1.2351270400e+04}
+\goldrow{csv}{psat\_isotope.csv}{1:Psat\_heavyWater}{1.1117923400e+04}
+\goldrow{csv}{psat\_isotope.csv}{1:Hvap\_heavyWater}{4.4343347400e+04}
+\goldrow{csv}{psat\_isotope.csv}{2:Psat\_water}{3.8595362700e+04}
+\goldrow{csv}{psat\_isotope.csv}{2:Psat\_heavyWater}{3.5826392400e+04}
+\goldrow{csv}{psat\_isotope.csv}{2:Hvap\_heavyWater}{4.2996612600e+04}
+\goldrow{csv}{psat\_isotope.csv}{3:Psat\_water}{1.0141797800e+05}
+\goldrow{csv}{psat\_isotope.csv}{3:Psat\_heavyWater}{9.6302716000e+04}
+\goldrow{csv}{psat\_isotope.csv}{3:Hvap\_heavyWater}{4.1577284500e+04}
+\goldrow{csv}{boiling\_water.csv}{0:T\_bubble}{3.7312430000e+02}
+\goldrow{csv}{boiling\_heavyWater.csv}{0:T\_bubble}{3.7455020600e+02}
+\goldmore{9}
 \end{tutgolden}
 
 \clearpage

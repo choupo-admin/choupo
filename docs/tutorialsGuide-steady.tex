@@ -8799,7 +8799,7 @@ WHAT THE ENGINE DERIVES. `constantRejection` needs the INTRINSIC rejection, agai
 
 THE ANSWER, three elements in series at 7 bar absolute: water recovery 32.45 \%, permeate 811 kg/h; R\_obs(NaCl) 0.2865 $\to$ permeate 2140 ppm NaCl (feed 3000 mg/L) R\_obs(MgSO4) 0.9466 $\to$ permeate 107 ppm MgSO4 (feed 2000 mg/L), i.e. 85 ppm as sulphate. The sodium chloride passes, the sulphate stays: what the class was chosen to do. Both observed rejections sit a little below the class's stated ones (30 \%, 95 \%): at 7 bar a third of the water leaves, so the bulk concentrates along the vessel, which the reference test at 15 \% recovery barely saw.
 
-WHAT A STUDENT SHOULD CHANGE. The CLASS: `module NF\_OPEN;` passes more salt of every kind (it rates NaCl only, so MgSO4 then needs a typed R\_int with its source -- a class says nothing about a salt it does not rate); `module NF\_TIGHT;` holds more NaCl too. The PRESSURE and the number of ELEMENTS: recovery against permeate sulphate. The CLASS's assumptions themselves: copy the record into this case's constant/assets/ and move its MgSO4 rejection inside its band -- the intrinsic value is re-derived; typing a number here instead is refused, because a rated salt's intrinsic rejection is derived. Then the PRODUCT: a commercial element (`module NF270-4040;`, its data sheet's rated test) -- the shortlist from a class to products is a later slice (DEV.md 4c C189 (5)).
+WHAT A STUDENT SHOULD CHANGE. The CLASS: `module NF\_OPEN;` passes more salt of every kind (it rates NaCl only, so MgSO4 then needs a typed R\_int with its source -- a class says nothing about a salt it does not rate); `module NF\_TIGHT;` holds more NaCl too. The PRESSURE and the number of ELEMENTS: recovery against permeate sulphate. The CLASS's assumptions themselves: copy the record into this case's constant/assets/ and move its MgSO4 rejection inside its band -- the intrinsic value is re-derived; typing a number here instead is refused, because a rated salt's intrinsic rejection is derived. Then the PRODUCT: a commercial element (`module NF270-4040;`, its data sheet's rated test) -- the shortlist from a class to products is the props op `membraneShortlist` (tutorials/props/membrane/ shortlist01\_class\_to\_modules, DEV.md 4c C189 slice 5).
 
 NOT a validation: no number in this case is measured.
 
@@ -8887,6 +8887,54 @@ NOT a validation: no number here is measured. NOT modelled: the rotor's hydrauli
 \goldrow{stream}{roFeed}{F}{0.252368398001}
 \goldrow{stream}{roFeed}{T}{298.15}
 \goldmore{159}
+\end{tutgolden}
+
+\clearpage
+\tutentry{membrane28\_water\_permeance\_from\_sheets}{tutorials/steady/membranes/membrane28\_water\_permeance\_from\_sheets}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NF) at (0.0,-0.0) {\textbf{NF}\\[-1pt]{\tiny spiralWoundModule}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (RO) at (0.0,-1.7) {\textbf{RO}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(NF.west)+(-1.05,0.00)$) -- ($(NF.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedNF};
+  \draw[->] ($(RO.west)+(-1.05,0.00)$) -- ($(RO.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedRO};
+  \draw[->] ($(NF.east)+(0,-0.17)$) -- ($(NF.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentateNF};
+  \draw[->] ($(NF.east)+(0,0.17)$) -- ($(NF.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeateNF};
+  \draw[->] ($(RO.east)+(0,-0.17)$) -- ($(RO.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentateRO};
+  \draw[->] ($(RO.east)+(0,0.17)$) -- ($(RO.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeateRO};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The water permeance a data sheet implies: NF270-4040 and SW30HR-380 with waterPermeance fromRatedTest, reproducing each sheet's permeate flow and observed rejection at its rated test}
+\begin{tutnarrative}
+the WATER PERMEANCE a data sheet implies, found the way its observed rejection is (DEV.md 4c C189 slice 5b).
+
+THE FINDING THIS CASE ANSWERS. At the rated tests of the two shipped elements the engine's permeate was 2.16x the NF270-4040 sheet and 2.08x the SW30HR-380 sheet. Not the inversion's fault, and not the active area: the membrane records NF270 and SW30HR carry an A\_w that is a fit to a TEACHING case (their `provenance fittedToCase;`, 36 and 3.6 L/m2/h/bar), while a data sheet measures THE ELEMENT's permeate at a stated pressure. Two things that share a symbol and are not the same fact.
+
+THE DECISION. `waterPermeance fromRatedTest;` in the unit's operation (beside `rejection \{ <salt> fromRatedTest; \}`, which it needs) runs the module at the record's rated test and finds, together, the A\_w that reproduces the sheet's PERMEATE flow and the R\_int that reproduces its observed REJECTION. They are coupled (the wall concentration depends on the flux, the osmotic pressure on the rejection), so the two solves alternate until A\_w is stationary. The membrane record is not edited: its fit still serves the case it was fitted to (membrane02, membrane01), and nothing else moves. The derived A\_w is a MODEL parameter of the element as the film model reads it -- not a manufacturer's number -- and the unit publishes it beside the record's (A\_w\_fromRatedTest\_LMH\_per\_bar, A\_w\_record\_LMH\_per\_bar).
+
+TWO UNITS, one per sheet: NF270-4040 (MgSO4, rated 4.8 bar gauge) fed at 8 bar absolute, SW30HR-380 (NaCl, rated 55 bar gauge) fed at 56 bar.
+
+\end{tutnarrative}
+\tutreadme{The question. At their own rated tests the engine gave 2.16x the NF270-4040 sheet's permeate and 2.08x the SW30HR-380 sheet's (the C189 slice-2 finding). Whose number is wrong?}
+\tutreadme{The answer. The membrane records'. NF270 and SW30HR carry an A\_w that is a FIT to a teaching case (provenance fittedToCase;: 36 and 3.6 L/m2/h/bar), while a data sheet measures THE ELEMENT's permeate at a stated pressure. Two facts sharing a symbol. The inversion that turns the sheet's observed rejection into the intrinsic one (membrane25) is not at fault, and neither is the active area.}
+\tutreadme{The decision. waterPermeance fromRatedTest; in the unit's operation, beside rejection \{ <salt> fromRatedTest; \} (which it needs), runs the module at the record's rated test and finds, TOGETHER, the A\_w that reproduces the sheet's permeate and the R\_int that reproduces its observed rejection (the two are coupled through the wall concentration and the osmotic pressure, so the solves alternate until A\_w is stationary). The membrane records are NOT edited: their fit still serves the cases it was fitted to.}
+\tutreadme{(A\_w in L/m2/h/bar; KPIs A\_w\_fromRatedTest\_LMH\_per\_bar, A\_w\_record\_LMH\_per\_bar.) The derived value is a MODEL parameter of the element as this film model reads it, not a manufacturer's number.}
+\tutreadme{Not a validation. One test per element fixes one A\_w and one R\_int; away from the test a constant R\_int stays constant (the real one rises with flux). Gate: bin/curate/check\_rated\_tests.py arm (h) -- an independent run with both values typed reproduces each sheet to 1e-7. The shortlist (tutorials/props/membrane/shortlist01\_class\_to\_modules) re-rates every candidate with this derivation.}
+\begin{tutgolden}
+\goldrow{stream}{feedNF}{F}{0.0406204850803}
+\goldrow{stream}{feedNF}{T}{298.15}
+\goldrow{stream}{feedRO}{F}{0.203553611111}
+\goldrow{stream}{feedRO}{T}{298.15}
+\goldrow{stream}{permeateNF}{F}{0.00942283109071}
+\goldrow{stream}{permeateNF}{T}{298.15}
+\goldrow{stream}{permeateRO}{F}{0.0166865465761}
+\goldrow{stream}{permeateRO}{T}{298.15}
+\goldrow{stream}{retentateNF}{F}{0.0311976539896}
+\goldrow{stream}{retentateNF}{T}{298.15}
+\goldrow{stream}{retentateRO}{F}{0.186867064535}
+\goldrow{stream}{retentateRO}{T}{298.15}
+\goldrow{kpi}{NF}{A\_w\_alternations}{6}
+\goldrow{kpi}{NF}{A\_w\_fromRatedTest\_LMH\_per\_bar}{14.8806573771}
+\goldmore{44}
 \end{tutgolden}
 
 \subsection{optimisation}

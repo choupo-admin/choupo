@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 503,
+  "cases": 504,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -3107,6 +3107,20 @@
    "application": "choupoProps",
    "ops": [
     "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/thermo/heavyWater01_isotope_effect": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan1D"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -7615,6 +7629,7 @@
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
+    "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
     "tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP",
     "tutorials/props/thermo/temperature01_gas_thermometer",
@@ -8925,6 +8940,7 @@
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
+    "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/thermoTest/atoms01_formula_parser",
@@ -9313,6 +9329,7 @@
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/flash01_operating_line",
     "tutorials/props/steam/steam02_water_transport",
+    "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/temperature01_gas_thermometer"
    ],
    "propertyScan2D": [
