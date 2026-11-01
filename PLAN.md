@@ -37,6 +37,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | status | what | ref |
 |---|---|---|
 | running | General: the Campo de Dalías plant from Toray's case study, boron in both passes, layout up to the fence | C194 |
+| running | General: heavy water curated from the IAPWS formulation (researchers asked) | C197 |
 | running | General: the EduTool 'Patent expiry and generic entry' for the two pharmaceutical groups | C195 (4) |
 
 ## Next day (at most 5)

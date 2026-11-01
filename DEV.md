@@ -1528,6 +1528,28 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C197. HEAVY WATER IN THE STANDARD COMPONENTS, PROMOTED FROM A COOLPROP
+> IMPORT TO A RECORD A RESEARCHER CAN DEFEND (Vitor, 2026-11-02: "quero
+> promover porque ha investigadores que me pediram").**  MEASURED: the
+> catalogue already carries `heavyWater.dat` (D2O, CAS 7789-20-0) since the
+> first release, `reviewStatus interim` with reason
+> `importedFromCoolProp720_notCheckedAgainstPrimaries`; its Antoine and Cp
+> polynomials are FITTED to the CoolProp EOS (Herrig et al. 2019), it has no
+> formation datum and no entropy, and no tutorial case uses it.  The
+> architect's first answer ("keep, do not promote: no case needs it") was
+> overturned by a stated need: researchers asked, which is the concrete use
+> the catalogue rule asks for.  SCOPE: pure component from the PRIMARY
+> formulation (the IAPWS heavy-water release and the correlations it names),
+> coefficients computed by a script with its residual against the primary
+> equation over the validity window, the formation datum only from a source
+> the licence rule admits (otherwise left out and said), a props witness
+> against H2O at the same T,P, a gate, status promoted only for what was
+> verified.  NOT in scope, listed for Vitor from the general's report:
+> D2O-H2O mixtures, the isotope exchange equilibrium (H2O + D2O = 2 HDO),
+> NMR use.  A researcher's actual use case is the open question (a fact only
+> Vitor holds) -- it decides whether mixtures or HDO come next.
+> STATUS: COMMISSIONED 2026-11-02; with a general.
+
 > **C196. THE COST OF INTEGRATING MANY GENERALS, AND THE SITE THAT NOBODY
 > BUILDS LOCALLY (the commander's own review, 2026-11-02, while seven
 > generals ran at Vitor's order -- "reflectir e rever o Choupo").**
