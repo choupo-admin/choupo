@@ -1576,7 +1576,14 @@ accepts today, and that is a policy call.
 > neutral and the ionic form of one element cross the active layer with
 > different permeances.  If it does not, that is the commission's real
 > content, and it is scoped back to Vitor.
-> STATUS: COMMISSIONED 2026-11-01; layout scope question still open.
+> DECIDED 2026-11-01 (Vitor: "leva ate ao limite da vedacao"): the layout
+> reaches the FENCE (C93) -- every process area, building, road, the gate
+> and the fence opening, the pipe rack; the intake pipeline and the brine
+> outfall cross the fence at published points with their labels, and what
+> lies beyond (the subsea pipe, the irrigation network) is named at the
+> crossing and NOT drawn.
+> STATUS: COMMISSIONED 2026-11-01; scope settled; waits its turn in the
+> queue (the plan's next-day column), then a brief with every claim measured.
 
 > **C193. THE CML PLAN IS THE 1 HOUR / 1 DAY / 3 DAYS / BEYOND A WEEK
 > TABLE, KEPT CURRENT (Vitor, 2026-10-31 13:25 "plano de desenvolvimento de
