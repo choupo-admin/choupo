@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 189 records already exist
+## 1. Why an index, when 190 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 189 design records, **131 state a rejected alternative and 58 do not** —
+- Of 190 design records, **132 state a rejected alternative and 58 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -291,6 +291,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`an-unconverged-bubble-point-is-not-a-point.md`](../design/an-unconverged-bubble-point-is-not-a-point.md) | ADR | yes | **SHIPPED 2026-10-31** -- C186 item 6: the T-x-y diagram judges each composition on the bubble-T Newton's own final residual against ONE tolerance (`kTxyAcceptResidual`, 1e-5): above it the point is dropped and counted aloud, inside it but short of the Newton's 1e-8 it is drawn and announced; fewer than half the points refuses the diagram by name; the 200 K floor guard is gone; the column's `bubbleTWithItsVapour` folds the verdict into its flag.  REJECTED: accepting only a converged Newton (it refused flash20's PC-SAFT diagram, right to ~1e-4 K).  Gate `check_txy_bubble_verdict` |
 | [`what-a-unit-accepts.md`](../design/what-a-unit-accepts.md) | ADR | yes | **DESIGN 2026-10-31; slices A, B and C BUILT the same day** (the contract, `checkAcceptance`, the pre-solve pass, `--describe-units`; spiralWoundModule + pump in A; the ED stack, ion exchanger, crystalliser, batch ED and batch diafilter in B, with the `needs` capability vocabulary and `passThrough` on the ED stack, witness `ed10_passthrough_benzene`; in C the batch diafilter's `models` rule and the GENERATED "models / may pass / refuses / needs" text, `bin/curate/gen_unit_acceptance_docs.py` -> docs/ai/unit-ops.md regions + `gui/schemas/unitAcceptance.json`, drawn in the GUI's Model tab; gate `check_unit_acceptance`) -- C188 item 5: every present component is MODELLED (inside the declared models' own domain), a DECLARED APPROXIMATION (passes through, `passThrough { <comp> { fate ...; } reason ...; }` in the unit's block, in every balance, recorded on the ProblemDivergence channel), or REFUSED by name with both remedies.  One C++ declaration per unit class (`acceptance()`), applied by ONE `checkAcceptance` before the solve (authored inlets) and at the solve (the stream handed), and printed by `--describe-units` for the generated GUI / F1 / docs/ai sections.  REJECTED: a mandatory identity-type field, a universal material-state classifier, a default fate, 'water + ethanol in RO is an error'. |
 | [`a-failed-computation-is-not-a-result.md`](../design/a-failed-computation-is-not-a-result.md) | ADR | yes | **SHIPPED 2026-10-31** (built 2026-10-27, DEV.md 4c C178) -- a failed computation is not a result: an integration that stalls or a QP/SQP step that cannot be computed is a FAILED evaluation, never a number handed on as an answer; reproduced first by small programs against the sources.  Gate `check_solver_failures` |
+| [`a-pressure-exchanger-is-three-balances.md`](../design/a-pressure-exchanger-is-three-balances.md) | ADR | yes | **SHIPPED 2026-11-01** -- commission C192: the rotary ceramic pressure exchanger of seawater RO as a unit (`pressureExchanger`, four positional ports) with NO physics beyond three algebraic balances, each on ONE declared maker's number with no default (`efficiency`, Stover's definition solved for P_HPout with the drain pressure declared; `mixing`, VOLUMETRIC, the brine share of the pressurised outlet; `leakage`, HP -> drain); T unchanged, Q = 0, the dissipation published and not put on a stream; a sizer `PressureExchangerSize` (rotors = ceil(Q_LP / a declared rated flow), the drops and the hydraulic booster duty read from the unit, NOT costed: no Turton set); the GUI schematic keyed on the sheet's word (rotor nominal, four ports with the run's pressures, booster box, provenance in ink and word); witness `membrane27_swro_energy_recovery` (1.88 kWh/m3 with the device, 3.67 without, 1.09 the thermodynamic minimum).  REJECTED: a default for any device number; mixing on a molar basis; an energy balance across the device; refusing an under-flushed duct inside a recycle; a neighbour's Turton correlation; a rotor drawn to a diameter the sheet does not carry.  Gate `check_pressure_exchanger` |
 
 ### Historical
 
@@ -343,7 +344,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**58 of 189 records state no rejected alternative.**  For a FORUM or a STUDY
+**58 of 190 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

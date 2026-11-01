@@ -21379,6 +21379,90 @@ its discharge pressure ($P_{\text{out}}=30$\,bar); the shaft power is the
 result --- the exact inverse of pump01.
 \end{tutoriallink}
 
+\subsection{The pressure exchanger: pressure moved from one liquid to
+another}\label{sec:pressure-exchanger}
+
+A seawater reverse-osmosis train rejects more than half of what it
+pressurises: at 45\,\% recovery, 55 of every 100\,m$^3$ pumped to 55\,bar
+leave as brine still carrying almost all of that pressure.  Throttling it
+away costs the plant most of its energy.  The \emph{rotary pressure
+exchanger} takes that pressure back without a pump: a ceramic rotor of
+longitudinal ducts turns between two end covers; each duct is filled in
+turn by the high-pressure brine, which pushes out the seawater the duct
+held at nearly the same pressure, and by low-pressure seawater, which
+pushes the depressurised brine to drain.  Liquid displaces liquid, with
+no piston between them, which is why the device is rotary and ceramic
+and why it has exactly the three imperfections its data sheet quotes.
+
+The unit \code{pressureExchanger} carries no physics of its own beyond
+three algebraic balances on its two inlets --- the brine (high pressure
+in) and the seawater (low pressure in) --- each on a volumetric basis,
+$Q=\dot n\,\bar v$ with $\bar v$ the liquid molar volume of the stream:
+
+\begin{equation}
+   Q_{\text{HP,out}} = (1-\lambda)\,Q_{\text{HP,in}},\qquad
+   Q_{\text{LP,out}} = Q_{\text{LP,in}} + \lambda\,Q_{\text{HP,in}},
+\end{equation}
+the \emph{leakage} $\lambda$ (1--2\,\%) being the lubrication flow across
+the rotor--stator gap, from the high-pressure side to the drain;
+\begin{equation}
+   n_{i,\text{HP,out}}
+   = m\,Q_{\text{HP,out}}\,\frac{F_b z_{b,i}}{Q_b}
+   + (1-m)\,Q_{\text{HP,out}}\,\frac{F_s z_{s,i}}{Q_s},
+   \qquad
+   n_{i,\text{LP,out}} = F_b z_{b,i} + F_s z_{s,i} - n_{i,\text{HP,out}},
+\end{equation}
+the \emph{mixing} $m$ (3--6\,\%) being the share of the pressurised
+outlet's volume that is brine left in the duct --- matter closes by
+construction, and the salinity the feed gains is the device's hidden
+penalty, because the osmotic pressure the membrane must beat rises with
+it; and
+\begin{equation}
+   \eta = \frac{Q_{\text{HP,out}}P_{\text{HP,out}} + Q_{\text{LP,out}}P_{\text{LP,out}}}
+               {Q_{\text{HP,in}}P_{\text{HP,in}} + Q_{\text{LP,in}}P_{\text{LP,in}}},
+   \qquad
+   P_{\text{HP,out}} = \frac{\eta\,(Q_{\text{HP,in}}P_{\text{HP,in}} + Q_{\text{LP,in}}P_{\text{LP,in}})
+                             - Q_{\text{LP,out}}P_{\text{LP,out}}}{Q_{\text{HP,out}}},
+\end{equation}
+the pressure-transfer \emph{efficiency} $\eta$ (95--98\,\%), Stover's
+definition (Desalination 203 (2007) 168--175), solved for the one unknown
+once the drain pressure $P_{\text{LP,out}}$ is declared.  The three
+numbers are a maker's: none has a default, and a case that omits one is
+refused by name.  Temperature is unchanged.  The device does no work on
+the fluid, publishes $Q=0$, and what it dissipates, $(1-\eta)$ of the
+pressure energy entering, is published beside the hydraulic duty the
+booster pump must then pay to lift the pressurised seawater the last
+1--2\,bar back to the high-pressure pump's discharge.
+
+\begin{intuition}
+Where did the specific energy of seawater RO go, from $\sim$8 to
+$\sim$3\,kWh\,m$^{-3}$ in thirty years?  Decompose it.  The
+thermodynamic minimum for a feed of osmotic pressure $\pi_0$ at recovery
+$r$ is the work of pushing each increment of permeate against the brine's
+rising osmotic pressure, $\pi_0/(1-x)$:
+\[
+   w_{\min} = \frac{1}{r}\int_0^{r}\frac{\pi_0}{1-x}\,dx
+            = \pi_0\,\frac{-\ln(1-r)}{r},
+\]
+about 1\,kWh\,m$^{-3}$ for seawater at 45\,\%.  A single-pass train with
+no recovery device pays the high-pressure pump for the WHOLE feed,
+$Q_{\text{feed}}\,\Delta P/\eta_{\text{pump}}$, and throws the brine's
+share away --- three to four times the minimum.  With a pressure
+exchanger the high-pressure pump moves only the permeate's volume (plus
+the leak); the brine's volume is re-pressurised by the brine itself, at a
+cost of the device's $(1-\eta)$ and a small booster.  What remains above
+the minimum is the membrane's own overpressure (the flux needs a driving
+force) and the pumps' efficiencies.  The witness below prints every term.
+\end{intuition}
+
+\begin{tutoriallink}
+\file{tutorials/steady/membranes/membrane27\_swro\_energy\_recovery} ---
+high-pressure pump + rotary exchanger + booster + one SW30HR-380 stage on
+membrane01's seawater: the specific energy with and without the device,
+beside the thermodynamic minimum, and the exchanger's specification sheet
+(an array of rotors from a declared rated flow, not costed).
+\end{tutoriallink}
+
 % ---------------------------------------------------------------------
 \section{Pipe pressure drop: Darcy--Weisbach and the friction
 factor}\label{ch:hydraulics-pressure}
