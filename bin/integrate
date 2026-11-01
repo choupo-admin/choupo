@@ -61,7 +61,13 @@ a human, leaving the worktree where it stopped:
     Claude, trailer `Integrated-by: bin/integrate`).
  2. CONFLICTS.  A conflict in a GENERATED file -- the one home of that list is
     bin/curate/generated_artefacts.py -- is resolved by taking main's side and
-    REGENERATING.  A conflict in any other file, or in a generated file whose
+    REGENERATING.  A REGISTRATION LIST (ADDITIVE_LISTS below: the gate blocks
+    of bin/runTests, the include and `reg(...)` lines of EquipmentSize.cpp and
+    UnitOperation.cpp, the table rows of decision-records.md) whose two sides
+    ONLY ADD lines to what the merge base had is resolved by keeping both, in
+    order, ANNOUNCED with the file and the added lines (DEV.md 4c C196); a side
+    that also changes or removes a line STOPS the run.  A conflict in any other
+    file, or in a generated file whose
     entry says `conflict human` (a generated REGION inside hand-written text),
     STOPS the run and prints the files.
  3. REGENERATION.  Every registry entry with a check is checked; a stale one
@@ -111,6 +117,7 @@ Vítor's (a full sweep).  Logs: <the worktree's git dir>/integrate/.
 Record: docs/design/integrating-a-branch-is-mechanical.md.
 """
 
+import difflib
 import fnmatch
 import importlib.util
 import json
@@ -317,6 +324,80 @@ def prepare_worktree(repo: Path, wt: Path, slug: str, base_sha: str,
     git(wt, *args)
 
 
+#  The registration lists every general appends to.  A conflict there is two
+#  sides adding different lines at one spot, which is no disagreement; each
+#  entry names the normalisation applied BEFORE the "only adds" test (the
+#  decision index's count sentences are DERIVED, so both sides "changing" them
+#  is not a change of substance -- they are rewritten afterwards).
+ADDITIVE_LISTS = {
+    "bin/runTests": None,
+    "src/postProcessing/sizing/EquipmentSize.cpp": None,
+    "src/unitOperations/UnitOperation.cpp": None,
+    "docs/architecture/decision-records.md": "decision-index",
+}
+
+_COUNT_SENTENCES = (
+    (re.compile(r"when \d+ records already exist"), "when 0 records already exist"),
+    (re.compile(r"Of \d+ design records, \*\*\d+ state a rejected alternative and \d+ do not\*\*"),
+     "Of 0 design records, **0 state a rejected alternative and 0 do not**"),
+    (re.compile(r"\*\*\d+ of \d+ records state no rejected alternative"),
+     "**0 of 0 records state no rejected alternative"),
+)
+
+
+def _mask(text, kind):
+    if kind != "decision-index":
+        return text
+    for pat, rep_ in _COUNT_SENTENCES:
+        text = pat.sub(rep_, text)
+    return text
+
+
+def _stage(wt, n, p):
+    rc, out = run(["git", "-C", str(wt), "show", f":{n}:{p}"], wt)
+    return out if rc == 0 else None
+
+
+def additive_resolution(wt, p, kind):
+    """(merged text, announcement) if both sides only ADD lines to the merge
+    base of `p`, else (None, why not).  Pure: writes nothing in the tree."""
+    base, ours, theirs = (_stage(wt, n, p) for n in (1, 2, 3))
+    if None in (base, ours, theirs):
+        return None, "no common base for the file (added/deleted on a side)"
+    base, ours, theirs = (_mask(x, kind) for x in (base, ours, theirs))
+    #  Both sides only insert, so the merge is exact and needs no heuristic:
+    #  at every position of the base, main's insertions then the branch's,
+    #  then the base line.  (The stock union merge was measured to repeat
+    #  the unchanged lines BETWEEN two nearby hunks, so it is not used.)
+    a = base.split("\n")
+    ins = {"main": {}, "branch": {}}
+    added = {"main": [], "branch": []}
+    for who, side in (("main", ours), ("branch", theirs)):
+        b = side.split("\n")
+        for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(
+                None, a, b, autojunk=False).get_opcodes():
+            if tag in ("replace", "delete"):
+                return None, (f"the {who} side also CHANGES or REMOVES "
+                              f"line(s) of the merge base (e.g. {a[i1].strip()[:70]!r}), "
+                              "not only adds")
+            if tag == "insert":
+                ins[who].setdefault(i1, []).extend(b[j1:j2])
+                added[who] += b[j1:j2]
+    out = []
+    for k in range(len(a) + 1):
+        out += ins["main"].get(k, []) + ins["branch"].get(k, [])
+        if k < len(a):
+            out.append(a[k])
+    out = "\n".join(out)
+
+    def show(ls):
+        return "; ".join(x.strip()[:60] for x in ls[:4]) + (
+            f"; ... (+{len(ls) - 4})" if len(ls) > 4 else "")
+    return out, (f"main adds {len(added['main'])} line(s) [{show(added['main'])}], "
+                 f"the branch adds {len(added['branch'])} line(s) "
+                 f"[{show(added['branch'])}]")
+
+
 def merge(wt: Path, label: str, br_sha: str, slug: str, reg):
     msg = (f"Merge remote-tracking branch '{label}' into integ/{slug}"
            if label.startswith("origin/") else
@@ -331,10 +412,16 @@ def merge(wt: Path, label: str, br_sha: str, slug: str, reg):
                  "").split()
     if not conflicts:
         raise Stop("the merge failed without a conflict:\n" + tail(out, 20))
-    human, gen = [], []
+    human, gen, additive = [], [], []
     for p in conflicts:
         e = reg.entry_for(p, wt)
-        if e is None:
+        if e is None and p in ADDITIVE_LISTS:
+            text, why = additive_resolution(wt, p, ADDITIVE_LISTS[p])
+            if text is None:
+                human.append((p, f"a registration list, but {why}"))
+            else:
+                additive.append((p, text, why, ADDITIVE_LISTS[p]))
+        elif e is None:
             human.append((p, "not a generated file"))
         elif e["conflict"] != "regenerate" or not e["generate"]:
             human.append((p, f"generated entry `{e['name']}` says conflict "
@@ -349,6 +436,19 @@ def merge(wt: Path, label: str, br_sha: str, slug: str, reg):
                       + ", ".join(p for p, _ in gen) + ")" if gen else "")
                    + f"\n  The worktree is left MID-MERGE at {wt}: resolve "
                    "and commit there, or `git merge --abort`.")
+    for p, text, why, kind in additive:
+        (wt / p).write_text(text)
+        if kind == "decision-index":
+            rc, out = run([sys.executable, "bin/curate/check_decision_index.py",
+                           "--write"], wt, env=tree_env(wt))
+            if rc != 0:
+                raise Stop("the decision index counts could not be rewritten:\n"
+                           + tail(out, 10))
+        git(wt, "add", "--", p)
+        say(f"    conflict in {p}: both sides only ADD lines to a registration "
+            f"list; kept both, in order -- {why}"
+            + ("; counts rewritten (check_decision_index --write)"
+               if kind == "decision-index" else ""))
     for p, e in gen:
         git(wt, "checkout", "--ours", "--", p)
         git(wt, "add", "--", p)
@@ -854,6 +954,53 @@ def run_gates(wt, gates, logdir, results, observed):
                             + tail(out, 15)))
 
 
+def repoint_citations(wt, gui_out, logdir, results):
+    """--gui failed: if lesson `file:line` citations went stale, re-point them
+    with bin/curate/repoint_lesson_citations.py, commit that, and re-run ONLY
+    the failing GUI test files, ONCE.  Announced; the original failure stays in
+    the verdict unless the re-run of every failing file passes (DEV.md 4c C196)."""
+    tool = wt / "bin" / "curate" / "repoint_lesson_citations.py"
+    if not tool.exists():
+        return
+    files = sorted(set(re.findall(r"(tests/[\w.-]+\.test\.tsx?)",
+                                  "\n".join(ln for ln in gui_out.splitlines()
+                                            if "FAIL" in ln))))
+    say(f"[{stamp()}] --gui failed ({len(files)} test file(s) named): "
+        "re-pointing stale lesson citations (repoint_lesson_citations.py)")
+    rc, out = run([sys.executable, str(tool), "--root", str(wt)], wt,
+                  env=tree_env(wt), log=logdir / "repoint.log")
+    for ln in out.splitlines():
+        if ln.startswith(("re-point:", "REFUSED", "repoint_lesson")):
+            say("    " + ln)
+    if "re-pointed" not in out:
+        results.append(("repoint_lesson_citations", rc == 0,
+                        "no stale citation found -- the --gui failure is "
+                        "not a moved line" if rc == 0 else tail(out, 8)))
+        return
+    sha = commit(wt, changed_paths(wt),
+                 "integrate: re-point GUI lesson citations moved by the merge")
+    verdict_extra = f"committed {sha}; " if sha else ""
+    if not files or rc != 0:
+        results.append(("repoint_lesson_citations", False, verdict_extra
+                        + "re-pointed, but "
+                        + ("some citation REFUSED" if rc != 0 else
+                           "no failing test file was named to re-run")
+                        + ":\n" + tail(out, 8)))
+        return
+    rc2, out2 = run(["npx", "vitest", "run"] + files, wt / "gui",
+                    env=tree_env(wt), log=logdir / "repoint-rerun.log")
+    ok = rc2 == 0
+    results.append(("repoint_lesson_citations + rerun", ok, verdict_extra
+                    + f"re-ran {len(files)} test file(s) once: "
+                    + ("PASS -- the earlier --gui failure was moved lines only"
+                       if ok else "still FAIL\n" + tail(out2, 10))))
+    other = [ln for ln in gui_out.splitlines()
+             if ln.startswith(("FAIL ", "REFUSED ")) and "gui-tests" not in ln]
+    if ok and not other:
+        results[:] = [r for r in results
+                      if not (r[0] == "runTests --gui" and r[1] is False)]
+
+
 def run_tier(wt, flag, logdir, results):
     if flag == "--gui" and not (wt / "gui" / "node_modules").is_dir():
         npm_ci(wt, logdir)
@@ -871,6 +1018,8 @@ def run_tier(wt, flag, logdir, results):
     results.append((f"runTests {flag}", f == 0, f"PASS {p} / FAIL {f}"
                     + ("" if f == 0 else "\n" + "\n".join(
                         "    " + x for x in fails[:20]))))
+    if flag == "--gui" and f != 0:
+        repoint_citations(wt, out, logdir, results)
 
 
 # --------------------------------------------------------------------------
