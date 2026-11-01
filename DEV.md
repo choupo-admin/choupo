@@ -1553,7 +1553,13 @@ accepts today, and that is a policy call.
 > validation anchor, never mixed.  TWO QUESTIONS PUT TO VITOR (his research
 > area): the pKa route in seawater; whether the split frozen at the inlet pH is
 > acceptable for the teaching case until Stage 2.
-> STATUS: PROPOSED 2026-11-02; waits for Vitor's reading of the two questions.
+> DECIDED 2026-11-02 (Vitor: "usa a constante termodinamica e congela o pH a
+> entrada"): (1) the engine's route is the THERMODYNAMIC constant with its
+> enthalpy plus the case's declared activity model (Dickson's conditional
+> seawater constant is the validation anchor only, never mixed in); (2) the
+> split is FROZEN at the module inlet's pH, announced on every run, until Stage
+> 2 resolves pH per station.  Stage 1 dispatched to a general the same hour.
+> STATUS: DECIDED 2026-11-02; Stage 1 with a general.
 
 > **C199. A DESALINATION PLANT IS TRAINS AND RACKS, NOT ONE GIANT PUMP AND
 > ONE VESSEL BANK (Vitor, 2026-11-02, after seeing swro01_campoDalias's layout:

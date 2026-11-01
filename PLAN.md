@@ -37,6 +37,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | status | what | ref |
 |---|---|---|
 | running | General: the pipe and header sizer behind the rack drawings (diameter, velocity, pressure drop per train; `headerNominalDiameter`) | C199 |
+| running | General: boron Stage 1 -- two species split at the inlet pH (thermodynamic pKa), permeances from the two rated tests | C198 |
 | running | General: a negative outlet pressure is refused by name, a trial iterate announced (the `s.P <= 0` clamp in runUnit) | C186 5b |
 
 ## Next day (at most 5)
@@ -91,7 +92,6 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| waits-Vitor | Read the boron proposal (docs/design/boron-in-reverse-osmosis-proposal.md) and answer its two questions: the pKa route in seawater; the split frozen at the inlet pH | C198 |
 | waits-Vitor | Open swro01_campoDalias in the browser: does the 3D start, are the 2D drawings legible? | C199 |
 | waits-Vitor | Reactive full MESH and the multi-ion NF dataset: the reference PDFs | C175, C176 |
 | waits-Vitor | JOSS: ORCIDs, DOI; whether Pedro Mendes agrees to enter CITATION.cff | C168 (3), C171 |
