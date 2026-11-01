@@ -34,6 +34,7 @@ License
   structured arrays / tables (for the Streams + Plots tabs).
 \*---------------------------------------------------------------------------*/
 
+import type { MembraneBank } from "../case/membraneBank.js";
 import type { GmpBuilding } from "./buildingPayload.js";
 import type { PhaseSplitScanBlock } from "./phaseSplitPayload.js";
 import type { PostProcessingBlock } from "../case/postProcessing.js";
@@ -761,6 +762,10 @@ export interface LayoutItem {
   /** The room of the declared GMP building it stands in (DEV.md 4c C100):
    *  its base `z` is that room's floor.  Absent for an item in the open. */
   room?: string;
+  /** A `membraneBank` item's vessel geometry, ATTACHED BY THE GUI from the
+   *  item's own design sheet (`case/withBanks.ts`); the engine's layout block
+   *  carries only the envelope.  Absent when the sheet could not be read. */
+  bank?: MembraneBank;
 }
 
 export interface LayoutArea {

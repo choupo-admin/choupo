@@ -82,6 +82,10 @@ import { PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
 import { popOutCaseLayout } from "../state/useLayoutPopOut.js";
 import { useStaleResult } from "../state/useStaleResult.js";
 import { caseLayoutStash } from "../case/layoutPopOut.js";
+import { rackElevationSvg } from "../case/roHallDrawings.js";
+import { readBank } from "../case/membraneBank.js";
+import { TrainsAndRacks } from "./TrainsAndRacks.js";
+import { hasBankSheet } from "../case/withBanks.js";
 import { ExportLayoutButton } from "./ExportLayoutButton.js";
 import {
   parseDesignSheet, unitDesignSheets, type DesignPort, type DesignSheet,
@@ -137,6 +141,7 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     .map((u) => ({ u, n: unitDesignSheets(runResult.designFiles, u.name).sheets.length }))
     .filter((c) => c.n > 0);
   const tree = useMemo(() => designSheetTree(runResult.designFiles), [runResult.designFiles]);
+  const hasBanks = useMemo(() => hasBankSheet(runResult.designFiles), [runResult.designFiles]);
   const econ = runResult.economics;
   //  The tornado, built ONCE from the engine's sensitivity rows; null when
   //  the case declared no sensitivity -- and then there is no section.
@@ -156,6 +161,7 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     economics: !!econ,
     sensitivity: tornado !== null,
     layout: scene !== null,
+    trains: hasBanks,
     batchPlan: !!runResult.batchPlan,
   };
   const sections = reportSections(facts);
@@ -184,6 +190,7 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     exchangers: () => <ExchangersBody runResult={runResult} units={hxUnits} />,
     economics:  () => (econ ? <EconomicsBody econ={econ} /> : null),
     sensitivity: () => (tornado ? <SensitivityBody fig={tornado} /> : null),
+    trains:     () => <TrainsAndRacks runResult={runResult} />,
     layout:     () => (scene && layout ? <LayoutBody layout={layout} scene={scene}
                                                     building={runResult.building} /> : null),
     batchPlan:  () => (runResult.batchPlan
@@ -828,7 +835,10 @@ function SheetView({ sheet, path }: { sheet: DesignSheet; path: string }) {
   //  own printable pages and are not re-drawn on this view.
   const scheme = useMemo(() =>
     (sheet.equipment === "pressureExchanger" && hasSchematic(sheet.equipment))
-      ? pressureExchangerSvg(sheet) : null, [sheet]);
+      ? pressureExchangerSvg(sheet)
+      //  A vessel bank is drawn as ITS RACK, with its three headers (C199).
+      : (sheet.equipment === "membraneBank" && hasSchematic(sheet.equipment))
+        ? rackElevationSvg(readBank(sheet)) : null, [sheet]);
   return (
     <Stack gap="sm">
       <Text size="xs" c="dimmed" ff="monospace">design/{path}</Text>

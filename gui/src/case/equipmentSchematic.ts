@@ -70,13 +70,13 @@ export function marked(text: string, who: Provenance): string {
 
 /*  ---- Small helpers shared by every builder ---------------------------- */
 
-const INK = "#2b2b2b", STEEL = "#c2ccd6", METAL = "#8a97a6",
+export const INK = "#2b2b2b", STEEL = "#c2ccd6", METAL = "#8a97a6",
       GHOST = "#9aa7b4", WARM = "#e0785a", COOL = "#4a90d9";
 
-const esc = (s: string): string =>
+export const esc = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-function text(x: number, y: number, s: string, fill = INK, size = 11,
+export function text(x: number, y: number, s: string, fill = INK, size = 11,
               anchor: "start" | "middle" | "end" = "start",
               style = ""): string {
   return `<text x="${x}" y="${y}" fill="${fill}" font-size="${size}" `
@@ -662,6 +662,171 @@ export function pressureExchangerSvg(sheet: DesignSheet): PressureExchangerSchem
   };
 }
 
+/*  ---- One TRAIN of a desalination plant (DEV.md 4c C199 phase B) -------- */
+
+/** The roles of the sheets of ONE train, found from the STREAMS the sheets'
+ *  ports name -- never from unit names, which are the case's. */
+export interface TrainRoles {
+  hpPump?: DesignSheet; booster?: DesignSheet; pass2Pump?: DesignSheet;
+  px?: DesignSheet; ro1?: DesignSheet; ro2a?: DesignSheet; ro2b?: DesignSheet;
+}
+
+export interface TrainSchematic {
+  svg: string;
+  notes: { text: string; who: Provenance | null }[];
+  roles: TrainRoles;
+  /** Roles the sheets did not resolve; empty when the drawing is complete. */
+  unresolved: string[];
+}
+
+/** Does this sheet belong to a plant sized per train? */
+export function isTrainSheet(sheet: DesignSheet | null | undefined): boolean {
+  return !!sheet && sizingValue(sheet, "trains") !== undefined
+    && ["ratedMachine", "pressureExchanger", "membraneBank"].includes(sheet.equipment);
+}
+
+const outNames = (s: DesignSheet): string[] => s.outlets.map((p) => p.global);
+const inNames = (s: DesignSheet): string[] => s.inlets.map((p) => p.global);
+
+/** Resolve the seven roles from the train's sheets by their streams: the
+ *  exchanger's HP-side inlet is the first bank's brine; the booster takes the
+ *  exchanger's pressurised outlet; the pass-2 pump feeds a bank that is not the
+ *  first; the second bank takes the first one's concentrate; the pump left over
+ *  is the high-pressure pump.  A role it cannot find stays undefined and is
+ *  NAMED in `unresolved`. */
+export function trainRoles(sheets: readonly DesignSheet[]): { roles: TrainRoles; unresolved: string[] } {
+  const roles: TrainRoles = {};
+  const pumps = sheets.filter((s) => s.equipment === "ratedMachine");
+  const banks = sheets.filter((s) => s.equipment === "membraneBank");
+  roles.px = sheets.find((s) => s.equipment === "pressureExchanger");
+  const brine = roles.px?.inlets[0]?.global, pxHP = roles.px?.outlets[0]?.global;
+  roles.ro1 = banks.find((b) => brine !== undefined && outNames(b).includes(brine));
+  roles.booster = pumps.find((q) => pxHP !== undefined && inNames(q).includes(pxHP));
+  const others = banks.filter((b) => b !== roles.ro1);
+  roles.pass2Pump = pumps.find((q) => q !== roles.booster
+    && others.some((b) => outNames(q).some((o) => inNames(b).includes(o))));
+  roles.ro2a = others.find((b) => roles.pass2Pump !== undefined
+    && outNames(roles.pass2Pump).some((o) => inNames(b).includes(o)));
+  roles.ro2b = others.find((b) => b !== roles.ro2a && roles.ro2a !== undefined
+    && outNames(roles.ro2a).some((o) => inNames(b).includes(o)));
+  roles.hpPump = pumps.find((q) => q !== roles.booster && q !== roles.pass2Pump);
+  const names: [keyof TrainRoles, string][] = [["hpPump", "high-pressure pump"], ["booster", "booster"],
+    ["pass2Pump", "second-pass pump"], ["px", "pressure-exchanger array"], ["ro1", "first-pass banks"],
+    ["ro2a", "second-pass bank a"], ["ro2b", "second-pass bank b"]];
+  return { roles, unresolved: names.filter(([k]) => !roles[k]).map(([, n]) => n) };
+}
+
+/** ONE TRAIN: the high-pressure pump, the exchanger array and its booster,
+ *  the first-pass banks, the second-pass pump and banks (RO2a, RO2b), and the
+ *  permeate, spent-brine and recycle lines, every count and flow read from the
+ *  train's own sheets.  The flows of a bank are its UNIT's plant streams
+ *  divided by the declared trains (computed, and said so); a pump's and the
+ *  array's are the per-train numbers their sheets carry.  Roles come from the
+ *  streams (`trainRoles`); a train whose sheets do not resolve draws a
+ *  LABELLED BOX naming the roles it could not find. */
+export function trainSchematicSvg(sheets: readonly DesignSheet[]): TrainSchematic {
+  const { roles, unresolved } = trainRoles(sheets);
+  const W = 1220, H = 450;
+  if (unresolved.length > 0) {
+    const svg = `<svg viewBox="0 0 520 120" width="100%" style="max-width:520px" role="img" `
+      + `aria-label="train schematic: not drawn"><rect x="20" y="20" width="480" height="80" rx="6" `
+      + `fill="${STEEL}" stroke="${INK}" stroke-width="1.4"/>`
+      + text(260, 52, "Train schematic: not drawn", INK, 13, "middle")
+      + text(260, 74, `no sheet resolves: ${unresolved.join(", ")}`, "#556", 10.5, "middle") + "</svg>";
+    return { svg, roles, unresolved,
+      notes: [{ text: "The train is drawn from the streams its sheets name; the roles above were not found.", who: null }] };
+  }
+  const R = roles as Required<TrainRoles>;
+  const N = sizingValue(R.px, "trains")?.value ?? sizingValue(R.ro1, "trains")?.value ?? 1;
+  const p: string[] = [];
+  const line = (pts: [number, number][], ink: string, arrow = true, w = 2.4): void => {
+    p.push(`<polyline points="${pts.map((q) => q.join(",")).join(" ")}" fill="none" stroke="${ink}" `
+      + `stroke-width="${w}"${arrow ? ' marker-end="url(#ah)"' : ""}/>`);
+  };
+  const row = (x: number, y: number, s: string, who: Provenance | null, size = 9.5): void => {
+    p.push(text(x, y, who ? marked(s, who) : s, who ? PROVENANCE_INK[who] : "#556", size, "start"));
+  };
+  const node = (x: number, y: number, w: number, h: number, title: string,
+                rows: { t: string; who: Provenance | null }[]): void => {
+    p.push(`<rect data-node="${esc(title)}" x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="#eef1f5" stroke="${INK}" stroke-width="1.4"/>`);
+    p.push(text(x + 6, y + 14, title, INK, 11, "start", ' font-weight="600"'));
+    rows.forEach((r, i) => row(x + 6, y + 28 + i * 12.5, r.t, r.who, 8.2));
+  };
+  const v = (s: DesignSheet, k: string, d = 4): string => fmt(sizingValue(s, k), d);
+  const perTrainFlow = (port: { mdot?: number } | undefined): string =>
+    port?.mdot === undefined ? "flow not published" : `${Number((port.mdot * 3.6 / N).toPrecision(4))} t/h per train`;
+
+  const pumpRows = (s: DesignSheet) => [
+    { t: `${v(s, "pumpsPerTrain")} pump${sizingValue(s, "pumpsPerTrain")?.value === 1 ? "" : "s"} of ${v(s, "maxFlowPerUnit")} max`, who: "declared" as Provenance },
+    { t: `${v(s, "flowPerPump")} each`, who: "choupo" as Provenance },
+    { t: `${v(s, "shaftPowerPerPump")} shaft each`, who: "choupo" as Provenance },
+    { t: `to ${v(s, "P_out")}`, who: "choupo" as Provenance },
+  ];
+  const bankRows = (s: DesignSheet, inP?: { mdot?: number }, perm?: { mdot?: number }) => [
+    { t: `${v(s, "vessels")} vessels x ${v(s, "elementsPerVessel")} elements`, who: "unit" as Provenance },
+    { t: `${v(s, "racks")} rack(s) of ${v(s, "tiers")} tiers x ${v(s, "vesselsPerTier")}`, who: "choupo" as Provenance },
+    { t: `feed ${perTrainFlow(inP)}`, who: "choupo" as Provenance },
+    { t: `permeate ${perTrainFlow(perm)}`, who: "choupo" as Provenance },
+  ];
+
+  //  ---- the first row: feed, HP pump, join, first pass, second pass ------
+  line([[10, 110], [90, 110]], COOL);
+  p.push(`<circle cx="55" cy="110" r="3.5" fill="${COOL}"/>`);
+  node(90, 70, 160, 84, R.hpPump.unit, pumpRows(R.hpPump));
+  line([[250, 110], [310, 110]], COOL);
+  p.push(`<circle cx="290" cy="110" r="3.5" fill="${COOL}"/>`);
+  node(310, 66, 190, 92, `${R.ro1.unit} (first pass)`, bankRows(R.ro1, R.ro1.inlets[0], R.ro1.outlets[1]));
+  line([[500, 110], [540, 110]], "#3a9a6a");
+  node(540, 70, 160, 84, R.pass2Pump.unit, pumpRows(R.pass2Pump));
+  line([[700, 110], [740, 110]], COOL);
+  node(740, 62, 190, 100, `${R.ro2a.unit} (2nd pass)`, bankRows(R.ro2a, R.ro2a.inlets[0], R.ro2a.outlets[1]));
+  line([[930, 100], [970, 100]], WARM);
+  node(970, 62, 190, 100, `${R.ro2b.unit} (2nd pass)`, bankRows(R.ro2b, R.ro2b.inlets[0], R.ro2b.outlets[1]));
+  //  permeate to the product, and the recycle of the second pass's concentrate
+  line([[835, 162], [835, 196], [1065, 196]], "#3a9a6a", false);
+  line([[1065, 162], [1065, 196]], "#3a9a6a", false);
+  p.push(`<line x1="1065" y1="196" x2="1205" y2="196" stroke="#3a9a6a" stroke-width="2.4" marker-end="url(#ah)"/>`);
+  row(880, 214, `product ${perTrainFlow({ mdot: ((R.ro2a.outlets[1]?.mdot ?? NaN) + (R.ro2b.outlets[1]?.mdot ?? NaN)) })} (both permeates)`, "choupo");
+  line([[1160, 100], [1195, 100], [1195, 30], [30, 30], [30, 110]], WARM, false);
+  p.push(`<circle cx="30" cy="110" r="3.5" fill="${WARM}"/>`);
+  row(560, 24, `reject recycled to the feed: ${perTrainFlow(R.ro2b.outlets[0])}`, "choupo");
+
+  //  ---- the second row: the pressure-exchanger array and its booster -----
+  const px = R.px;
+  node(620, 245, 170, 118, `${px.unit} (array)`, [
+    { t: `${v(px, "rotors")} devices`, who: "choupo" },
+    { t: `${v(px, "flowPerRotor")} each`, who: "choupo" },
+    { t: `rated ${v(px, "ratedFlowPerUnit")} per device`, who: "declared" },
+    ...(sizingValue(px, "minFlowPerUnit") ? [{ t: `window from ${v(px, "minFlowPerUnit")}`, who: "declared" as Provenance }] : []),
+    { t: `recovers ${v(px, "P_recovered")}`, who: "choupo" },
+    { t: `booster duty ${v(px, "boosterPower")}`, who: "choupo" },
+  ]);
+  node(330, 292, 160, 84, R.booster.unit, pumpRows(R.booster));
+  line([[440, 158], [440, 285], [620, 285]], WARM);                        // first-pass brine to the HP side
+  row(446, 262, `brine ${perTrainFlow(R.ro1.outlets[0])}`, "choupo");
+  line([[620, 330], [490, 330]], COOL);                                    // pressurised seawater to the booster
+  line([[330, 330], [290, 330], [290, 112]], COOL);                       // booster to the join
+  line([[55, 110], [55, 410], [840, 410], [840, 330], [790, 330]], COOL);  // low-pressure feed to the array
+  row(110, 404, "low-pressure feed to the array (the split of the feed)", null);
+  line([[790, 285], [1100, 285]], WARM);                                   // spent brine
+  row(810, 276, `spent brine to the outfall ${perTrainFlow(px.outlets[1])}`, "choupo");
+
+  const defs = `<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" `
+    + `orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="${INK}"/></marker></defs>`;
+  const notes: TrainSchematic["notes"] = [
+    { text: `One of ${N} identical trains: the plant's flows divide by ${N} (the declared trains); a bank's `
+      + "feed, permeate and brine below are those streams divided by it (computed), a pump's and the array's "
+      + "are the per-train numbers their sheets carry.", who: "choupo" },
+    { text: "Each box's rows carry their provenance in ink and in the word: the case's declared maxima and "
+      + "ratings, the unit's own counts, Choupo's computed flows.", who: null },
+    { text: "Roles are found from the streams the sheets name, never from unit names. Pipes, valves and "
+      + "headers are not drawn here (see the rack elevation); the lines are the flowsheet's connections.", who: null },
+  ];
+  return { svg: `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px" role="img" `
+    + `aria-label="one desalination train">${defs}${p.join("")}</svg>`, notes, roles, unresolved };
+}
+
+
 /*  ---- The registry ------------------------------------------------------ */
 
 /** THE EQUIPMENT WORDS THIS MODULE CAN DRAW FROM A SPECIFICATION SHEET ALONE.
@@ -685,7 +850,7 @@ export function pressureExchangerSvg(sheet: DesignSheet): PressureExchangerSchem
  *  `pressureExchanger` (DEV.md 4c C192) is drawn from its one sheet alone by
  *  `pressureExchangerSvg`: the rotor nominal, the four ports with the
  *  pressures the run wrote, the rotor count and rated flow, the booster box. */
-export const SCHEMATIC_KINDS: readonly string[] = ["sieveTrays", "pressureExchanger"];
+export const SCHEMATIC_KINDS: readonly string[] = ["sieveTrays", "pressureExchanger", "membraneBank"];
 
 /** Whether this module has a real drawing for an equipment word. */
 export function hasSchematic(equipment: string): boolean {

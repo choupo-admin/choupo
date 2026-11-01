@@ -100,6 +100,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { SceneSolid, Vec3 } from "./plantLayout.js";
+import { vesselPlaces, type MembraneBank } from "./membraneBank.js";
 
 export type Axis = "x" | "y" | "z";
 
@@ -174,7 +175,20 @@ export interface PrismPart extends PartBase {
   rise: number;
 }
 
-export type Part = CylinderPart | HeadPart | BoxPart | RingPart | PrismPart;
+/** MANY IDENTICAL CYLINDERS lying along a plan axis: one description, drawn
+ *  as ONE instanced mesh (DEV.md 4c C199 phase B) -- a train has up to 233
+ *  pressure vessels and the plant 1398, and a mesh per vessel is the draw
+ *  call the scene cannot afford.  `centres` are relative to `at`. */
+export interface InstancedCylinderPart extends PartBase {
+  prim: "instances";
+  axis: "x" | "z";
+  length: number;
+  radius: number;
+  centres: Vec3[];
+}
+
+export type Part = CylinderPart | HeadPart | BoxPart | RingPart | PrismPart
+  | InstancedCylinderPart;
 
 /** One item's drawing: its parts, and which entry drew it (said in the
  *  hover tooltip, so a reader can tell a kind drawing from the fallback). */
@@ -351,6 +365,9 @@ export interface ModelInput {
   size: Vec3;
   /** three.js Y of the envelope's base (the item's published base z). */
   base: number;
+  /** A `membraneBank` item's geometry, read from its sheet (membraneBank.ts);
+   *  absent for every other kind and for a bank whose sheet could not be read. */
+  bank?: MembraneBank;
 }
 
 type Recipe = (m: ModelInput) => EquipmentDrawing | null;
@@ -839,6 +856,56 @@ export const SITE_MODELS: Readonly<Record<string, Recipe>> = {
   windsock,
 };
 
+/** A BANK OF PRESSURE VESSELS (DEV.md 4c C199 phase B): every vessel a
+ *  horizontal cylinder of the published `vesselOutsideDiameter` and
+ *  `vesselLength`, in `tiers` of `vesselsPerTier`, the racks side by side
+ *  with `rackAisle`, the loading clearance free at the high-x end, the base
+ *  at `baseHeight`.  The vessels are the BODY and stand inside the envelope
+ *  the engine published; the frame (base, posts, cradles) is decoration, also
+ *  inside it.  One instanced part per rack.  No bank geometry (the sheet was
+ *  missing or lacked a key): null, and the plain box stands, its tooltip
+ *  naming the missing keys. */
+const membraneBank: Recipe = (m) => {
+  const b = m.bank;
+  if (!b) return null;
+  const L = b.envelopeLength, W = b.envelopeWidth, H = b.envelopeHeight;
+  //  bank frame (x along, y across, z up) -> centred three.js (X, Y up, Z = -y)
+  const to = (x: number, y: number, z: number): Vec3 => [x - L / 2, z - H / 2, -(y - W / 2)];
+  const R = b.vesselOutsideDiameter / 2;
+  const parts: Part[] = [];
+  const places = vesselPlaces(b);
+  for (let r = 0; r < b.racks; r++) {
+    const mine = places.filter((p) => p.rack === r);
+    parts.push({ prim: "instances", role: "body", decoration: false, at: [0, 0, 0], axis: "x",
+      length: b.vesselLength, radius: R, centres: mine.map((p) => to(p.x, p.y, p.z)) });
+    const y0 = r * (b.rackWidth + b.rackAisle), yc = y0 + b.rackWidth / 2;
+    //  The base frame: the slab the racks stand on, up to `baseHeight`.
+    if (b.baseHeight > 0)
+      parts.push(box("steel", true, to(b.rackLength / 2, yc, b.baseHeight / 2),
+        [b.rackLength, b.baseHeight, b.rackWidth]));
+    //  Four corner posts from the base to the top of the rack.
+    const post = 0.12;
+    for (const px of [post / 2, b.rackLength - post / 2])
+      for (const py of [y0 + post / 2, y0 + b.rackWidth - post / 2])
+        parts.push(box("steel", true, to(px, py, (b.baseHeight + b.rackHeight) / 2),
+          [post, b.rackHeight - b.baseHeight, post]));
+    //  A cradle under each vessel row at two points of its length, per tier.
+    const t = Math.min(0.05, Math.max(0, (b.tierPitch - b.vesselOutsideDiameter) / 2));
+    if (t >= 0.01)
+      for (let k = 0; k < b.tiers; k++)
+        for (const fx of [0.2, 0.8])
+          parts.push(box("steel", true,
+            to(b.endMargin + fx * b.vesselLength, yc,
+               b.baseHeight + k * b.tierPitch + (b.tierPitch - b.vesselOutsideDiameter) / 2 - t / 2),
+            [0.15, t, b.rackWidth]));
+  }
+  return { parts, model: "membraneBank",
+           describes: `${b.vessels} pressure vessels of ${b.elementsPerVessel} elements in `
+             + `${b.racks} rack${b.racks === 1 ? "" : "s"} (${b.tiers} tiers of `
+             + `${b.vesselsPerTier}), loading clearance ${b.loadingClearance.toFixed(2)} m free `
+             + "at the high-x end" };
+};
+
 /** ONE entry per equipment kind, keyed on the registered word the sizers
  *  stamp (src/postProcessing/sizing, `equipmentType`).  A `vessel` is drawn
  *  standing or lying as the engine placed it. */
@@ -849,6 +916,7 @@ export const EQUIPMENT_MODELS: Readonly<Record<string, Recipe>> = {
   stirredTank,
   compressor,
   sprayDryer,
+  membraneBank,
 };
 
 /** The plain drawing: the engine's cylinder or the case's box, exactly the
@@ -868,9 +936,10 @@ export function plainDrawing(m: ModelInput): EquipmentDrawing {
  *  non-process item (a building, a control room) is the box its case
  *  declared. */
 export function equipmentDrawing(s: Pick<SceneSolid, "kind" | "shape" | "axis" | "size"
-  | "center" | "nonProcess">): EquipmentDrawing {
+  | "center" | "nonProcess"> & { bank?: MembraneBank }): EquipmentDrawing {
   const m: ModelInput = { kind: s.kind, shape: s.shape, axis: s.axis, size: s.size,
-                          base: s.center[1] - s.size[1] / 2 };
+                          base: s.center[1] - s.size[1] / 2,
+                          ...(s.bank ? { bank: s.bank } : {}) };
   const recipe = s.nonProcess ? SITE_MODELS[s.kind] : EQUIPMENT_MODELS[s.kind];
   return recipe?.(m) ?? plainDrawing(m);
 }
@@ -891,6 +960,18 @@ export function partBounds(p: Part): [Vec3, Vec3] {
     }
     case "ring":
       return ext([p.R + p.r, p.r, p.R + p.r]);
+    case "instances": {
+      const h: Vec3 = p.axis === "x" ? [p.length / 2, p.radius, p.radius]
+        : [p.radius, p.radius, p.length / 2];
+      const lo: Vec3 = [Infinity, Infinity, Infinity];
+      const hi: Vec3 = [-Infinity, -Infinity, -Infinity];
+      for (const c of p.centres)
+        for (let k = 0; k < 3; k++) {
+          lo[k] = Math.min(lo[k]!, p.at[k]! + c[k]! - h[k]!);
+          hi[k] = Math.max(hi[k]!, p.at[k]! + c[k]! + h[k]!);
+        }
+      return [lo, hi];
+    }
     case "prism": {
       const lo: Vec3 = [x, y, z], hi: Vec3 = [x, y + p.rise, z];
       const k = p.axis === "x" ? 0 : 2, c = p.axis === "x" ? 2 : 0;

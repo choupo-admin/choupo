@@ -379,7 +379,7 @@ describe("axis ticks and the Reports section", () => {
 
   it("a run with a plan earns the Reports section, first", () => {
     const facts = { equipment: false, sheets: false, columns: false, exchangers: false,
-      economics: false, sensitivity: false, layout: false };
+      economics: false, sensitivity: false, layout: false, trains: false };
     expect(reportSections({ ...facts, batchPlan: true }).map((s) => s.id)[0]).toBe("batchPlan");
     expect(reportSections({ ...facts, batchPlan: false }).map((s) => s.id))
       .not.toContain("batchPlan");

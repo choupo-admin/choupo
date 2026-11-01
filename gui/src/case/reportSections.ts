@@ -37,7 +37,7 @@
 
 export type ReportSectionId =
   | "equipment" | "sheets" | "utilities" | "mass" | "energy"
-  | "layout" | "columns" | "exchangers" | "economics" | "sensitivity" | "batchPlan";
+  | "layout" | "trains" | "columns" | "exchangers" | "economics" | "sensitivity" | "batchPlan";
 
 export interface ReportSection {
   id: ReportSectionId;
@@ -53,6 +53,9 @@ export interface ReportFacts {
   sheets: boolean;
   /** The case declared a plant layout and the engine published it. */
   layout: boolean;
+  /** The run wrote at least one `membraneBank` specification sheet (DEV.md 4c
+   *  C199 phase B): a hall of pressure-vessel racks to draw. */
+  trains: boolean;
   /** At least one tray column the sizing pass sized. */
   columns: boolean;
   /** At least one heat exchanger with a computed U. */
@@ -85,6 +88,9 @@ export function reportSections(f: ReportFacts): ReportSection[] {
   if (f.layout)
     out.push({ id: "layout", title: "Plant layout (3D)",
       subtitle: "the plot plan the case declared, as the engine checked it" });
+  if (f.trains)
+    out.push({ id: "trains", title: "Trains and racks",
+      subtitle: "one train, the plan of the hall, a section and the elevation of a rack" });
   out.push({ id: "utilities", title: "Utilities",
     subtitle: "plant services sized by temperature level" });
   out.push({ id: "mass", title: "Global mass balance",

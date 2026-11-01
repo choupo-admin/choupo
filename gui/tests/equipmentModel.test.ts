@@ -154,7 +154,8 @@ describe("the body is the engine's envelope; decoration never stands in for it",
       for (const p of equipmentDrawing(s).parts) {
         const dims = p.prim === "box" ? [...p.size] : p.prim === "cylinder"
           ? [p.length, Math.max(p.rStart, p.rEnd)] : p.prim === "head" ? [p.r, p.depth]
-          : p.prim === "prism" ? [p.length, p.width, p.rise] : [p.R, p.r];
+          : p.prim === "prism" ? [p.length, p.width, p.rise]
+          : p.prim === "instances" ? [p.length, p.radius] : [p.R, p.r];
         for (const v of dims) {
           expect(Number.isFinite(v)).toBe(true);
           expect(v).toBeGreaterThan(0);
