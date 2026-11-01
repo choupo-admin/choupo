@@ -1576,7 +1576,7 @@ accepts today, and that is a policy call.
 > Two facts measured on the way changed the plan: the browser cannot
 > materialise 0/ (so an LLM must invent every intermediate stream -- phase B'
 > gives the app the engine's own -init0), and the bridge's guide comment says
-> ~97 KB for >500 kB.  The kernel draft (docs/ai/kernel.md, held off main
+> ~97 KB for >500 kB.  The kernel draft (the future `kernel.md` of docs/ai, held off main
 > until its packs exist, because check_doc_references refuses a pointer to a
 > missing file) was RUN: a case written from its grammar alone (catalogue
 > NRTL, degC, phaseChanger outletT, init0, flash) solved at exit 0 with the
