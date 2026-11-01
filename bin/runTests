@@ -3014,6 +3014,21 @@ PYEOF
     fi
     rm -f /tmp/vesselorders.$$
 
+    # audit-remaining gate (2026-11-01, DEV.md 4c C190 items 14, 11, 15, 12): the
+    # batch vessel reads an explicit A_rev/Ea_rev pair (it ran irreversible), a
+    # declared catalystLoading reaches the vessels' own rate law, a membrane fit
+    # that no step improves is judged by a gradient test (`stalled`, exit 1) and
+    # the PC-SAFT density scan finds two roots closer than its grid.
+    if gate_exec "$ROOT/bin/curate/check_audit_remaining.py" > /tmp/auditrem.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "audit-remaining" "$(grep -m1 '^check_audit_remaining: OK' /tmp/auditrem.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_audit_remaining.py)\n" "audit-remaining"
+        cat /tmp/auditrem.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/auditrem.$$
+
     # positivity-mask gate (2026-10-31, DEV.md 4c C185 item 8): the adaptive
     # integrator's positivity guard is a per-ROW mask over every packed unit
     # -- it had been a prefix count, switched OFF for two or more units, the

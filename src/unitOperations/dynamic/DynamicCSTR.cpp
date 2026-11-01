@@ -651,7 +651,7 @@ scalar DynamicCSTR::rateOfReaction_(const ReactionSpec& rxn,
         return cf * rxn.law->netRate(*thermo_, rs);
     }
 
-    const scalar k = rxn.A_pre * std::exp(-rxn.Ea / (constant::R * T));
+    const scalar k = (catalystLoading_ > 0.0 ? catalystLoading_ : 1.0) * rxn.A_pre * std::exp(-rxn.Ea / (constant::R * T));  // C190 item 11: the bed density converts a per-gram constant (it was read and dropped)
     scalar r = k;
     for (std::size_t s = 0; s < rxn.comps.size(); ++s)
     {

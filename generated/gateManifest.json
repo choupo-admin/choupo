@@ -1435,6 +1435,11 @@
       "exit": 0,
       "claim": "check_pressure_exchanger: OK -- on membrane27_swro_energy_recovery the exchanger's three balances recompute from the result JSON outside the engine (volume less the leakage and the four flows conserving it, every component's LP outlet the remainder of the volumetric mix, Stover's efficiency on the stream pressures, each to 1e-6, the salinity rise from the streams' own masses, Q_kW = 0 and the dissipation (1 - eta) of the input); 7 fixtures refuse by name (efficiency absent, 1.2; mixing -0.1; no source; no drain pressure; a vapour seawater and a non-aqueous feed through the acceptance contract, before any unit runs); the sheet's rotors = ceil(Q_LP / ratedFlowPerUnit) and move to 2 on a halved rating, the item is NOT costed and a missing rating refuses; every sizing value carries a unit, both port blocks carry pressures, and the GUI fixture is the sheet the run just wrote.  NOT CHECKED: whether Stover's definition is the maker's, whether the three numbers fit any device, the first law (UNAVAILABLE on this component set), the membrane's answer.",
       "seconds": 0.2
+    },
+    "check_audit_remaining": {
+      "exit": 0,
+      "claim": "check_audit_remaining: OK -- an explicit reverse pair is read by the batch vessel (0.5858 kmol of 0.5858 at equilibrium, equal to an independent RK4 to 1e-6; the dynamic vessel agrees, dn_B 0.0002783 kmol in 10 ms); the pair on thirdBody, beside `units`, or alone refuses by name; `catalystLoading` reaches the vessels' own law (batch 0.002999 -> 0.989 kmol; dynamic dn_B 5.747e-06 -> 0.001978 kmol); a membrane fit that no step improves is judged by a gradient test (shipped: converged; fdStep 0.1: stalled, exit 1; maxIter 2: maxIterations); PC-SAFT density scan (vapour branch ends 4 Pa from its fitted spinodal 5.14984 bar).  Scope: the vessels' own Arrhenius path; NOT checked: other problems than membrane24 for the 1e-3 cosine, PC-SAFT mixtures",
+      "seconds": 3.7
     }
   }
 }
