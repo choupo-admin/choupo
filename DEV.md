@@ -1695,8 +1695,30 @@ accepts today, and that is a policy call.
 > (the GUI divides the plant's mass flows by the trains and says so).  Not done:
 > headers in 3D, piping in the plan, pumps and arrays by kind in 3D, WebGL
 > tests.  `--gui` 42/0.
-> STATUS: PHASES A, B AND C DONE 2026-11-02; the pressure-centre alternative,
-> the pipe and header sizer and the pump curves remain.
+> DONE 2026-11-02, the HEADER SIZER (9186e11dd, a general): sizer `pipeHeader`
+> -- a line's volumetric flow against a DECLARED velocity window (1-2 m/s,
+> `assumed`: the only open figure found was a small-plant vendor blog) and a
+> DECLARED list of nominal inside diameters (no pipe schedule table is
+> carried: those are no-grant standards); the smallest bore inside the window,
+> refusal by name when none fits or a window or viscosity is missing;
+> publishes `requiredInsideDiameter`, `nominalInsideDiameter`, `velocity`,
+> `pressureDropPerMetre` (Darcy-Weisbach, Churchill friction) and
+> `headerNominalDiameter`; nine headers per train, 54 items; per train RO1
+> feed 0.60 m at 1.69 m/s and 30.9 Pa/m, brine 0.45 m, permeate 0.40 m.  The
+> density is the package's 997 kg/m3 against the 1025 the modules declare
+> (announced).  Gate `check_swro_plant` arms (l)-(m).  SHARED-PATH DECISION of
+> the architect, with its reason (the integrator asked for a full sweep): the
+> diff reaches src/core/Units.cpp (ONE unit added, `Pa/m`; no tutorial or data
+> file outside the new case writes that unit, so no existing parse can change)
+> and a comment string of the design-sheet header (the goldens pin the sheet's
+> keys, not its comment); `--scope` 3/0, `--fast` 77/0, `--gui` 42/0 and the
+> sheet gates passed, so a full sweep adds nothing.  OPEN: the GUI's rack
+> elevation reads `headerNominalDiameter` from the BANK sheet, but the key
+> lives on the `pipeHeader` sheets (unit = the bank, tag = `train<k>.<role>`):
+> a small GUI step; the headers stay dashed until then.
+> STATUS: PHASES A, B, C AND THE HEADER SIZER DONE 2026-11-02; the GUI read of
+> the header sheets, the vessel port positions, the pressure-centre case and
+> the pump curves remain.
 
 > **C197. HEAVY WATER IN THE STANDARD COMPONENTS, PROMOTED FROM A COOLPROP
 > IMPORT TO A RECORD A RESEARCHER CAN DEFEND (Vitor, 2026-11-02: "quero

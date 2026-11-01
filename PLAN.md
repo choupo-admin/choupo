@@ -36,7 +36,6 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| running | General: the pipe and header sizer behind the rack drawings (diameter, velocity, pressure drop per train; `headerNominalDiameter`) | C199 |
 | running | General: boron Stage 1 -- two species split at the inlet pH (thermodynamic pKa), permeances from the two rated tests | C198 |
 | running | General: a negative outlet pressure is refused by name, a trial iterate announced (the `s.P <= 0` clamp in runUnit) | C186 5b |
 
@@ -51,7 +50,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| todo | The vessel port positions, the pressure-centre alternative case and the pump curves (the rest of C199) | C199 |
+| todo | The GUI reads the `pipeHeader` sheets (the headers leave the dashed state); the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
 | todo | The real boron: two-solute transport (boric acid, borate), a stream pH with speciation, a curated H3BO3/BOH4 record, a dosing unit; and a recycle solver that refuses the trivial fixed point by name | C198 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
@@ -101,6 +100,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| done | The header sizer (diameter, velocity, pressure drop per header, 54 items) | C199, 9186e11dd |
 | done | C199 B and C: every vessel inside its rack in 3D, plan / section / rack elevation with headers, the train schematic, the RO/NF layout heuristics in the user guide | C199, 7c63e6493, 8c6532f38 |
 | done | C199 phase A: the Campo de Dalías plant is six trains in one RO building (pumps with a declared maximum, PX arrays, vessel banks with racks and loading clearance) | C199, 191be6e8a |
 | done | Heavy water promoted: IAPWS/Herrig vapour pressure, reviewed against the primary equation, UNIFAC H2O as a declared approximation | C197, 4d3cb4f9d |
