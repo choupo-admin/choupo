@@ -660,6 +660,50 @@ PRODUCTS = """
 """
 
 
+def strip_rated_machines(t):
+    """The multiproduct probes test the BATCH PLAN, not the sizers: a
+    `ratedMachine` entry and the `cleanUtilities` pass each refuse a
+    multiproduct plan by name (DEV.md 4c C195, a stated limit of both), so
+    the probe's copy drops them."""
+    out = []
+    i = 0
+    while True:
+        m = re.search(r"\{\s*unitName\s+\w+;\s*type\s+ratedMachine;", t[i:])
+        if not m:
+            out.append(t[i:])
+            break
+        s = i + m.start()
+        depth = 0
+        k = s
+        while True:
+            if t[k] == "{":
+                depth += 1
+            elif t[k] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            k += 1
+        out.append(t[i:s])
+        i = k + 1
+    t = "".join(out)
+    # The clean-utilities pass also reads the single-product plan's lot and Gantt.
+    m = re.search(r"\ncleanUtilities\n\{", t)
+    if m:
+        s = m.start() + 1
+        k = t.index("{", s)
+        depth = 0
+        while True:
+            if t[k] == "{":
+                depth += 1
+            elif t[k] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            k += 1
+        t = t[:s] + t[k + 1:]
+    return t
+
+
 def multi_edit(order="strengthA strengthB strengthC", products=PRODUCTS, pco=PCO, extra=None):
     """The witness's postDict made multiproduct: `production {}` replaced by
     `products ( ... ); campaignOrder ( ... );`, and every stage given its
@@ -669,6 +713,7 @@ def multi_edit(order="strengthA strengthB strengthC", products=PRODUCTS, pco=PCO
         if not m:
             raise RuntimeError("production block not found")
         t = t[:m.start()] + "\n" + products.replace("ORDER", order) + t[m.end():]
+        t = strip_rated_machines(t)
         for st, v in (pco or {}).items():
             t = stage_edit(t, st, "source ", f"productChangeover {v};\n            source ")
         return extra(t) if extra else t
