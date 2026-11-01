@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Gate: the decision index covers every design record, and its counts are real.
 
-    bin/curate/check_decision_index.py
+    bin/curate/check_decision_index.py            # check
+    bin/curate/check_decision_index.py --write    # rewrite the three count sentences from the table
 
 WHY THIS EXISTS.  `docs/architecture/decision-records.md` is the V8 view of the
 42010 description: the answer to *"has this been decided, and where?"*.  Its
@@ -64,7 +65,60 @@ CLAIMS = [
 ]
 
 
+def counts(text: str):
+    """(files on disk, total, yes, no) -- the table's own recount."""
+    on_disk = sorted(p.name for p in DESIGN.glob("*.md"))
+    rows = ROW.findall(text)
+    design_rows = [r for r in rows if r[0] in on_disk]
+    total = len(design_rows)
+    yes = sum(1 for r in design_rows if r[2].strip().lower().startswith("yes"))
+    return on_disk, total, yes, total - yes
+
+
+def write_counts() -> int:
+    """Rewrite exactly the three count sentences from the table (idempotent).
+
+    The counts are DERIVED, so they are written, not typed (DEV.md 4c C196):
+    a hand-edited number conflicted on every merge that added a record.  Every
+    occurrence of a sentence is rewritten, and a sentence line repeated
+    immediately after itself (the debris of a union merge of two different
+    counts) is collapsed to one.  Nothing else in the file is touched, and the
+    checks below are unchanged."""
+    text = INDEX.read_text()
+    _, total, yes, no = counts(text)
+    new = {
+        "when_n": (re.compile(r'(when )\d+( records already exist)'),
+                   lambda m: f"{m.group(1)}{total}{m.group(2)}"),
+        "of_n": (re.compile(r'(Of )\d+( design records,)'),
+                 lambda m: f"{m.group(1)}{total}{m.group(2)}"),
+        "pair": (re.compile(r'(\*\*)\d+( state a rejected alternative and )\d+( do not\*\*)'),
+                 lambda m: f"{m.group(1)}{yes}{m.group(2)}{no}{m.group(3)}"),
+        "no_of": (re.compile(r'(\*\*)\d+( of )\d+( records state no rejected alternative)'),
+                  lambda m: f"{m.group(1)}{no}{m.group(2)}{total}{m.group(3)}"),
+    }
+    out = text
+    for pat, fn in new.values():
+        out = pat.sub(fn, out)
+    lines, kept = out.split("\n"), []
+    sentence = re.compile(r'when \d+ records already exist|Of \d+ design records|'
+                          r'\d+ of \d+ records state no rejected alternative')
+    for ln in lines:
+        if kept and ln == kept[-1] and sentence.search(ln):
+            continue
+        kept.append(ln)
+    out = "\n".join(kept)
+    if out != text:
+        INDEX.write_text(out)
+        print(f"check_decision_index --write: counts rewritten from the table "
+              f"({total} records, {yes} state a rejected alternative, {no} do not)")
+    else:
+        print("check_decision_index --write: counts already match the table")
+    return 0
+
+
 def main() -> int:
+    if "--write" in sys.argv[1:]:
+        return write_counts()
     fail = []
     if not INDEX.exists() or not DESIGN.is_dir():
         print("check_decision_index: FAILED\n  index or docs/design/ missing")
@@ -72,7 +126,7 @@ def main() -> int:
     text = INDEX.read_text()
 
     # ---- (a) coverage -------------------------------------------------
-    on_disk = sorted(p.name for p in DESIGN.glob("*.md"))
+    on_disk, total, yes, no = counts(text)
     missing = [n for n in on_disk if n not in text]
     for m in missing:
         fail.append(f"docs/design/{m} is NOT in the index.  An index consulted "
@@ -80,12 +134,6 @@ def main() -> int:
                     "complete, or it answers wrongly with authority.")
 
     # ---- (b) the stated counts match the table ------------------------
-    rows = ROW.findall(text)
-    design_rows = [r for r in rows if r[0] in on_disk]
-    total = len(design_rows)
-    yes = sum(1 for r in design_rows if r[2].strip().lower().startswith("yes"))
-    no = total - yes
-
     for pat, kind in CLAIMS:
         m = pat.search(text)
         if not m:
@@ -108,6 +156,9 @@ def main() -> int:
         print("check_decision_index: FAILED")
         for f in fail:
             print("  " + f)
+        if any("prose" in f for f in fail):
+            print("  The counts are derived, not typed: run "
+                  "`bin/curate/check_decision_index.py --write` to rewrite them from the table.")
         return 1
 
     print(f"check_decision_index: OK -- all {len(on_disk)} design record(s) "

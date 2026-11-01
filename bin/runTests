@@ -2680,6 +2680,21 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/lsym.$$
 
+    #  Citation re-pointer gate (DEV.md 4c C196): the tool that re-points
+    #  GUI lessons' file:line citations after an engine edit moves lines is
+    #  held to a synthetic fixture of each shape it manages.  Pure file
+    #  reading in a temp dir, so it cannot SKIP.
+    gate_exec "$ROOT/bin/curate/check_citation_repointer.py" > /tmp/crp.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "citation-repointer-gate" "$(head -1 /tmp/crp.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_citation_repointer.py)\n" "citation-repointer-gate"
+        cat /tmp/crp.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/crp.$$
+
     # Tree gate (Migration 6): retired data/standards homes must never come
     # back -- neither as src path-builders nor as resurrected directories.
     if gate_exec "$ROOT/bin/curate/check_tree_gate.py" > /tmp/treegate.$$ 2>&1; then

@@ -30,25 +30,26 @@ header names the PLAN.md commit it reflects, so a stale view shows itself.
 
 Last reviewed: 2026-11-01 (restructured by capacity; earlier reviews in git).
 
-Status words: `todo` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
+Status words: `todo` · `queued` (built by a general, waiting its turn to integrate) · `integrating` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
 ## Now (running; at most 7 generals, Vítor's order of 2026-11-02, laptop budget in CLAUDE.md rule 4)
 
 | status | what | ref |
 |---|---|---|
-| running | General: pressure as a tear variable; the sibling drivers read unconverged points | C186 (5) |
-| running | General: the rest of the external audit (batch A_rev, catalystLoading, membrane fitter verdict, PC-SAFT roots) | C190 (14)(11)(15)(12) |
-| running | General: the commercial shortlist, the A_w curation, the module registry's local tier, the importer's spacer defect | C189 |
+| queued | General: pressure as a tear variable; the sibling drivers read unconverged points (two goldens to re-record on the architect's reasons) | C186 (5) |
+| integrating | General: the rest of the external audit (batch A_rev, catalystLoading, membrane fitter verdict, PC-SAFT roots) | C190 (14)(11)(15)(12) |
+| queued | General: the commercial shortlist, the A_w curation, the module registry's local tier, the importer's spacer defect | C189 |
+| queued | General: the acceptance contract on the remaining units and the Theory Guide section | C188 item 5 |
 | running | General: the Campo de Dalías plant from Toray's case study, boron in both passes, layout up to the fence | C194 |
-| running | General: the acceptance contract on the remaining units and the Theory Guide section | C188 item 5 |
-| running | General: the distillation defects A and B, measured against the corpus | C184 |
+| queued | General: the distillation defects A and B, measured against the corpus | C184 |
+| running | General: C170's owed fixes (gates judge the tracked tree, `nu 0; order 1`, the Burcat records) | C170 |
 | running | General: the EduTool 'Patent expiry and generic entry' for the two pharmaceutical groups | C195 (4) |
 
 ## Next day (at most 5)
 
 | status | what | ref |
 |---|---|---|
-| todo | Integration friction: a tool that re-points GUI lesson citations by content, decision-index counts generated, additive registration conflicts kept by `bin/integrate` | C196 |
+| todo | `s.P <= 0 -> P_inherit` in Flowsheet.cpp runUnit can hide a spurious fixed point: measure the corpus, then refuse a negative outlet pressure by name | C186 item 5b |
 | todo | After each push that adds a unit: the site's own WASM build and one browser run of the new case (the pressure exchanger first) | C196 |
 | todo | Confirm on the site (WASM) that C178 and C182 are published (minutes, done between integrations) | C178, C182 |
 
@@ -104,6 +105,7 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 
 | status | what | ref |
 |---|---|---|
+| done | Integration friction: a tool that re-points lesson citations by content, index counts generated, additive conflicts kept by bin/integrate | C196, ba62b677b |
 | done | Sized tablet machines (utilisation against the batch plan) and clean utilities (HVAC, purified water) for the two pharmaceutical groups | C195 (1)(2), 96e3d118d |
 | done | The pressure exchanger: unit, design sheet, schematic, SWRO energy-recovery case (1.88 against 3.67 kWh/m3) | C192 |
 | done | Negative kinetic orders honoured on the vessels' own paths; CHEMKIN molecularity summed before rounding | C190 (10)(13), ab25caab5 |
