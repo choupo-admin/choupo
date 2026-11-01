@@ -66,6 +66,7 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 | status | what | ref |
 |---|---|---|
 | todo | Verify and fix the Gibbs review's three open items and the SpeciationSolver outer convergence | C187 (1)(2) |
+| todo | Pharmaceutical groups: sized items for the tablet machines and the clean utilities (HVAC, purified water), blend uniformity -- scope put to Vítor | C195 |
 | todo | Distillation P0 (step contract, singular-Jacobian diagnostic); re-run and classify Vítor's DME plant | C184 |
 | todo | aceticAcid02: the subcooled-feed q in the simultaneous column branch | C174, C175 |
 | todo | Seeded crystallisation, cake filtration and washing, a linear chromatography column (pedagogical scope first) | C190 |

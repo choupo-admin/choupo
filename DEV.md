@@ -1528,6 +1528,42 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C195. WHAT CHOUPO LACKS FOR THE TWO PHARMACEUTICAL-PLANT PROJECT GROUPS
+> OF 2026-27 (Vitor, 2026-11-02: "le os indices dos projetos dos anos
+> anteriores ... ve o que falta de importante ao Choupo para servir de apoio
+> aos meus dois grupos"; their base cases are apalutamide01_tablets and
+> donepezil01_tablets).**  Method: 19 student reports (PIF, 2017-2025, in
+> Vitor's folder `Projetos antigos`; text read by a general, chapter lists in
+> the commander's scratchpad INDICES.md, counts by keyword, not by page) set
+> against what the two cases' READMEs declare Choupo computes.  Reports: 15
+> tablets, 3 parenteral (Keytruda, Metex, Perjeta), 1 inhaler, 2 capsules; 4
+> stop at market and patent.  Done by hand or in Excel in the projects that
+> reached design: batch Gantt (10), CAPEX-to-NPV chain (14; IRR by Solver),
+> break-even (12), sensitivity (12), equipment chosen from vendor catalogues
+> and matched to batch size (14), HVAC / purified water / WFI / effluent as
+> description with a cost (11-14, NO air-change calculation in any),
+> staffing (12), market forecast by Excel trend or DDD/prevalence (10).
+> NEVER in any report: simulator use, API synthesis, PK, F0 sterilisation.
+> ALREADY IN CHOUPO, so not a gap: the batch plan and Gantt (C99, C110),
+> CAPEX/OPEX/NPV/payback/working capital/sensitivity (C68), quoted equipment
+> and the declared crew (C98), the GMP building (C97, C100), the plant
+> layout, the spray, fluid-bed and coating dryers.  GAPS, in the order a
+> tablet group meets them: (1) the machines the two cases carry as mass
+> balance only -- blender, roller compactor, mill, screen, tablet press,
+> coating pan, packaging line -- have no sized item, so "does the machine
+> fit the batch and the shift" (what 14 projects did in Excel) is not
+> computed; a declared-rating capacity sizer per machine kind, utilisation
+> read from the batch plan, no new physics; (2) the clean utilities --
+> purified water, HVAC air changes by room grade, compressed air, effluent
+> -- as sized items fed by the rooms' declared volumes and grades (the
+> building already knows both); (3) blend content uniformity (donepezil
+> section 8, flagged by the case itself); (4) the market forecast upstream
+> of the volume (10 projects; an EduTool, not engine); (5) a sterile route
+> (filling, lyophiliser, sterilising filtration, F0) -- only if a group
+> picks a parenteral, 3 of 19 did.  PEDAGOGICAL SCOPE of (1)-(2) is put to
+> Vitor before dispatch (CLAUDE.md section 10).
+> STATUS: COMMISSIONED 2026-11-02 (analysis done; scope question put).
+
 > **C194. THE CAMPO DE DALIAS SEAWATER DESALINATION PLANT (THE "SEA OF
 > PLASTIC"), FROM A PUBLIC CASE STUDY, WITH ITS WHOLE LAYOUT (Vitor,
 > 2026-11-01: "o maior dessalinizador do sul de Espanha, que produz agua
