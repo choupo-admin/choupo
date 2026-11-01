@@ -314,7 +314,29 @@ one lot each) and the two acetone tanks.  The
 run announces that almost every one is **below its correlation's range**
 (the plant is small) — those costs are extrapolations.
 
-**Quoted, not correlated (DEV.md 4c C98).**  Choupo has no sizer and no cost
+**Does the machine fit the lot and the shift? (DEV.md 4c C195).**  Each
+solid-dose machine is checked by a `ratedMachine` entry in `system/postDict`
+against a RATING YOU DECLARE (with its source) and the batch plan's lot:
+utilisation = load / (machines x rating), refused above 1, announced above
+0.85.  With the base ratings (all author-set except the roller compactor's
+vendor maximum, the dossier's 400 kg/h): blender 0.85, roller compactor 0.31,
+mill 0.25, screen 0.25, **final blender 0.95** (the 400 kg lot is 0.8 m3 of a
+1.2 m3 bin at 70 % maximum fill), **tablet press 0.88** (142 857 tablets/h
+needed against 162 000), coating pan 0.81, **packaging line 0.88** (631 packs
+of 112 an hour against 720).  A rating is the group's to replace; a changed
+rating changes the verdict, which is the exercise.  These items are neither
+costed (the quotes below carry the money) nor placed (their room is).
+**The clean utilities** (`cleanUtilities`, last in `postDict`) size the air
+and the purified water from the building of `system/layoutDict`: 36 served
+rooms, 10 945 m3, a supply of 65 670 m3/h at the declared 6 air changes an
+hour (CNC), a 30.4 kW fan, 79 kW of winter heating and 53 kW of summer
+cooling of the fresh-air share -- SENSIBLE only (no humidity, no latent
+load, no room heat gain) -- and 3.0 m3 of purified water a lot (the cleaning
+dominates: the coating suspension needs 0.048 m3), a peak of 3.0 m3/h, a
+3.75 m3/h generator and a 12 m3 tank at 4 h.  Every air-change rate and
+water number is an author-set assumption; no standard's table is shipped.
+
+**Quoted, not correlated (DEV.md 4c C98).**  Choupo has no cost
 correlation for the solid-dose machines or the GMP building, and it does not
 invent one.  So `system/postDict` DECLARES a price for each, in
 `costing { quotes ( ... ); }`:

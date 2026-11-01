@@ -89,6 +89,11 @@ const TABLE: Record<string, UnitSpec> = {
   hr: { factor: 3600.0, affine: false },
   day: { factor: 86400.0, affine: false },
 
+  // inverse time → 1/s (a rate of events; DEV.md 4c C195)
+  "1/s": { factor: 1.0, affine: false },
+  "1/min": { factor: 1.0 / 60.0, affine: false },
+  "1/h": { factor: 1.0 / 3600.0, affine: false },
+
   // length → m
   m: { factor: 1.0, affine: false },
   mm: { factor: 1.0e-3, affine: false },

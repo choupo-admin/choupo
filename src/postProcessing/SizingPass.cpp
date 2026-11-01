@@ -330,6 +330,10 @@ int SizingPass::run(SimulationResult& result)
         //  DEV.md 4c C62), in mm2 as API 520 states it.
         else if (dims.values.count("A_relief"))
         { sizeKey = sized("A_relief"); sizeVal = dims.values.at("A_relief"); }
+        //  A RATED MACHINE'S SIZE IS HOW FULL IT RUNS (2026-11-02, DEV.md 4c
+        //  C195): the load over the vendor rating the case declared.
+        else if (dims.values.count("utilisation"))
+        { sizeKey = sized("utilisation"); sizeVal = dims.values.at("utilisation"); }
         //  NO CANONICAL SIZE IS SAID, NOT PRINTED AS ZERO.  This column
         //  used to fall through to an empty key and `0.0000`, and a zero
         //  volume is a CLAIM -- the same reason a port with no state is

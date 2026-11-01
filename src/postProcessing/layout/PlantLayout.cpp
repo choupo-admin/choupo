@@ -344,10 +344,12 @@ std::vector<const EquipmentSizing*> itemsInFlowOrder(const SimulationResult& r)
     std::set<std::string> done;
     for (const auto& u : r.topology)
         for (const auto& [id, s] : r.sizings)
-            if (s.unitName == u.name && done.insert(id).second)
+            if (s.notPlacedBecause.empty()
+                && s.unitName == u.name && done.insert(id).second)
                 out.push_back(&s);
     for (const auto& [id, s] : r.sizings)
-        if (done.insert(id).second) out.push_back(&s);
+        if (s.notPlacedBecause.empty() && done.insert(id).second)
+            out.push_back(&s);
     return out;
 }
 
@@ -573,7 +575,8 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         if (s != r.sizings.end()) placedOf[s->second.unitName].push_back(&i);
     }
     std::map<std::string, std::vector<std::string>> sizedOf;
-    for (const auto& [id, s] : r.sizings) sizedOf[s.unitName].push_back(id);
+    for (const auto& [id, s] : r.sizings)
+        if (s.notPlacedBecause.empty()) sizedOf[s.unitName].push_back(id);
     std::map<std::string, std::string> typeOf;
     for (const auto& u : r.topology) typeOf[u.name] = u.type;
 
@@ -4132,6 +4135,10 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
     //  ---- sized items left out --------------------------------------------
     for (const auto& [id, s] : r.sizings)
     {
+        //  A machine that stands in a room of the building is placed by its
+        //  room (EquipmentSizing::notPlacedBecause): neither left out nor
+        //  internal.
+        if (!s.notPlacedBecause.empty()) continue;
         std::string host;
         if (isInternal(s, r, host)) { rec.internal.push_back(id); continue; }
         if (!placed.count(id)) rec.unplaced.push_back(id);

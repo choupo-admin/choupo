@@ -2904,7 +2904,21 @@ time, on a small teaching building the engine checks in the browser
 \emph{Plant layout}); the corpus witness with a whole building declared is
 \texttt{apalutamide01\_tablets}.
 
-\textbf{Not checked --- yours to do.} Air-change rates, HVAC zoning and
+\textbf{Air and water, sized from the building.} A case's
+\texttt{cleanUtilities} pass reads the rooms the layout has just
+checked (plan area, floor height, grade) and sizes the air plant from
+\emph{air-change rates the case declares, one per grade, each with its
+source and reason}: supply flow, fan power and the sensible heating and
+cooling of the fresh-air share. The air is sensible only --- no
+humidity, no latent load, no room heat gain, and the run says so ---
+and the purified-water generator and storage follow from the water the
+batch plan draws and a declared cleaning volume. No table of air
+changes is shipped (the published ones are standards that grant no
+redistribution), so the rates in the two tablet witnesses are
+author-set and marked so.
+
+\textbf{Not checked --- yours to do.} The air-change rate each grade
+needs, HVAC zoning and
 the filter classes behind each grade; particle and microbial limits;
 door widths, corridor widths and travel distances to an exit; the
 interlocks themselves; and whether a declared grade, step or separation
@@ -2976,8 +2990,14 @@ from the case with its source, refuses an impossible plan and announces
 a poor one; a vessel may take its volume from it, a quoted machine's
 price may scale with its size (the cost-capacity exponent is the
 case's), and the economics takes the year's flows from its production.
-\textbf{Not computed:} the intermediate store's size, a second product
-sharing the line, QC release times. Worked case:
+A \texttt{ratedMachine} entry then asks, of each machine the flowsheet
+carries as a mass balance only, \emph{does it fit the lot and the
+shift}: the load (working volume, kg/h, tablets/h or packs/h) read from
+the plan and the run, over a vendor rating the case declares with its
+source --- never defaulted --- and refused above 100\,\%, announced
+above 85\,\%. It computes no machine physics (no compaction force, no
+blend uniformity). \textbf{Not computed:} the intermediate store's
+size, a second product sharing the line, QC release times. Worked case:
 \texttt{tutorials/batch/plant/apalutamide01\_tablets}. The method is taught in
 the batch-process chapters of design textbooks (Biegler, Grossmann \&
 Westerberg, \emph{Systematic Methods of Chemical Process Design}; Seider

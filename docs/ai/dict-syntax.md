@@ -183,6 +183,8 @@ suffixes below are accepted -- anything else is a parse error.  Includes:
 - **Area:** `m2`, `cm2`, `mm2`.
 - **Volume:** `m3`, `L` (`l`), `mL` (`ml`).
 - **Volumetric flow:** `m3/s`, `m3/h`, `L/s`, `L/h`, `L/min`.
+- **Inverse time (a rate of events):** `1/s`, `1/min`, `1/h` (DEV.md 4c C195;
+  a design sheet declares a tablet or pack rate with them).
 - **Time:** `s` (`sec`), `min`, `h` (`hr`), `day`.
 - **Mass:** `kg`, `g`, `t` (`ton`/`tonne`).
 - **Energy / power:** `J`, `kJ`, `MJ`, `W`, `kW`, `MW_power` (`MW_power`,

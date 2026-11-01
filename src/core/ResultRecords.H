@@ -420,6 +420,17 @@ struct EquipmentSizing
     //  is said to be outside the scope, once, by the sizer that knows it.
     std::string                                  notCostedBecause;
 
+    //  AN ITEM THE PLOT PLAN DOES NOT PLACE, AND WHY (2026-11-02, DEV.md 4c
+    //  C195).  A process machine of a solid-dose suite (a mill, a tablet
+    //  press) STANDS IN A ROOM of the building; the room is what the plot
+    //  plan places, and the machine is neither an unplaced item nor an
+    //  internal one of another.  NON-EMPTY means the layout skips the item
+    //  everywhere (placeable list, unplaced count, pipe endpoints) and its
+    //  unit keeps the role it had without the sizing -- a `mixer` that is
+    //  a junction on the pipe rack stays one.  EMPTY on every other item, so
+    //  nothing that existed before this field changes.
+    std::string                                  notPlacedBecause;
+
     //  THE ITEMS WHOSE PRESSURE SHELL THIS ITEM IS (2026-10-12, DEV.md 4c
     //  C69).  A multibed converter is ONE pressure vessel holding the beds
     //  and the interbed exchangers; its `converterShell` item lists here the

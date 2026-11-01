@@ -804,7 +804,24 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             if (!sz.sector.empty()) os << ", \"sector\": " << esc(sz.sector);
             os << ", \"type\": " << esc(sz.equipmentType)
                << ", \"material\": " << esc(sz.material);
-            if (!sz.basis.empty()) os << ", \"basis\": " << esc(sz.basis);
+            //  A SIZED ITEM THAT IS ALSO QUOTED (a rated machine, DEV.md 4c
+            //  C195) is ONE line, as its quote was before the sizing existed:
+            //  `basis` keeps the quote's words (the golden pins them) and the
+            //  sizer's own rule travels as `sizingBasis`.
+            {
+                const auto qi = r.costs.find(itemKey);
+                const bool quoted = qi != r.costs.end()
+                                 && !qi->second.quoteBasis.empty();
+                if (quoted)
+                {
+                    os << ", \"basis\": " << esc("declared quote, "
+                          + qi->second.quoteBasis + ", " + qi->second.quoteKind);
+                    if (!sz.basis.empty())
+                        os << ", \"sizingBasis\": " << esc(sz.basis);
+                }
+                else if (!sz.basis.empty())
+                    os << ", \"basis\": " << esc(sz.basis);
+            }
             os << ", \"values\": {";
             bool firstV = true;
             for (const auto& [k, v] : sz.values)
@@ -853,7 +870,22 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                     firstF = false;
                     os << esc(k) << ": " << num(v);
                 }
-                os << " } }";
+                os << " }";
+                //  A DECLARED QUOTE on a sized item (a rated machine, DEV.md
+                //  4c C195, is not costed and its unit may be quoted) carries
+                //  the declaration's words exactly as a quote with no sizing
+                //  does, so the source of the price never goes missing.
+                if (!c.quoteBasis.empty())
+                {
+                    if (!c.quoteSource.empty()) os << ", \"source\": " << esc(c.quoteSource);
+                    if (!c.quoteReason.empty()) os << ", \"reason\": " << esc(c.quoteReason);
+                    if (!c.quoteFactorSource.empty())
+                        os << ", \"bareModuleFactorSource\": " << esc(c.quoteFactorSource);
+                    if (!c.quoteScaleStage.empty())
+                        os << ", \"scaledWithStage\": " << esc(c.quoteScaleStage)
+                           << ", \"exponentSource\": " << esc(c.quoteExponentSource);
+                }
+                os << " }";
             }
             os << " }";
         }

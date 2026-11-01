@@ -22,8 +22,10 @@
   granulator, the fluid-bed dryer, the mill, the final blender, the tablet
   press, the coating pan and the packaging line are MASS-BALANCE
   PLACEHOLDERS (or, for the two dryers, a `solidDryer` with no sizer):
-  Choupo has no sizer and no cost correlation for any of them, and it does
-  not invent one.  Neither is the GMP BUILDING.  They enter the capital as
+  Choupo has no cost correlation and no machine model for any of them, and
+  it does not invent one; since DEV.md 4c C195 each is checked for FIT by a
+  `ratedMachine` entry below (the lot's load over a rating the case
+  declares).  Neither is the GMP BUILDING costed.  They enter the capital as
   DECLARED QUOTES (`costing { quotes ( ... ); }` below, DEV.md 4c C98): one
   price per item, each an AUTHOR-SET PLACEHOLDER said so on its own line,
   for the group to replace with a vendor's quotation.  NOT in the capital
@@ -210,6 +212,121 @@ sizing
         { unitName coatingSuspensionPrep;  type vessel;  material SS316;
           designRules { volume fromBatchPlan;  L_over_D 1.5;  pressureDesign 2;
                         corrosionAllow 0.0015;  jointEfficiency 1.0; } }
+
+        //  ---- THE SOLID-DOSE MACHINES, RATED (DEV.md 4c C195) --------------
+        //  Each machine the flowsheet carries as a mass-balance placeholder is
+        //  checked against a DECLARED rating and the batch plan's lot:
+        //  utilisation = load / (machines x rating).  EVERY rating below is
+        //  an author-set assumption for the group to replace with a data
+        //  sheet.  The item is not costed (the quote below carries the money)
+        //  and not placed (its ROOM is what the plot plan places).
+        { unitName granulator;  type ratedMachine;  material SS316;
+          designRules
+          {
+              kind batchVolume;
+              rating
+              {
+                       nominalVolume 1.2 m3;
+                       maxFill 0.6;
+                       source "author-set assumption (DEV.md 4c C195), not a vendor data sheet: a high-shear granulator bowl of about a cubic metre";
+                       reason "the dry powders, the binder and the wet mass of one lot in one bowl";
+              }
+              shift { length 8 h;
+                      source "README section 2a / the batch plan: the solid-dose suite runs two day shifts of 8 h (system/postDict, train availableTime)";
+                      reason "a lot that cannot be finished inside the shift it starts in spans shifts, a staffing and GMP line-clearance question"; }
+          } }
+        { unitName fluidBedDryer;  type ratedMachine;  material SS316;
+          designRules
+          {
+              kind batchVolume;
+              rating
+              {
+                       nominalVolume 1.5 m3;
+                       maxFill 0.5;
+                       source "author-set assumption (DEV.md 4c C195), not a vendor data sheet: a fluid-bed product bowl; the largest fill leaves room for the bed to expand";
+                       reason "the wet mass of one lot dried in one load";
+              }
+              shift { length 8 h;
+                      source "README section 2a / the batch plan: the solid-dose suite runs two day shifts of 8 h (system/postDict, train availableTime)";
+                      reason "a lot that cannot be finished inside the shift it starts in spans shifts, a staffing and GMP line-clearance question"; }
+          } }
+        { unitName mill;  type ratedMachine;  material SS316;
+          designRules
+          {
+              kind massRate;
+              rating
+              {
+                       capacity 500 kg/h;
+                       source "author-set assumption (DEV.md 4c C195), not a vendor data sheet: a conical screen mill";
+                       reason "the dried granules sized through a screen; replace with the mill's data sheet";
+              }
+              shift { length 8 h;
+                      source "README section 2a / the batch plan: the solid-dose suite runs two day shifts of 8 h (system/postDict, train availableTime)";
+                      reason "a lot that cannot be finished inside the shift it starts in spans shifts, a staffing and GMP line-clearance question"; }
+          } }
+        { unitName finalBlender;  type ratedMachine;  material SS316;
+          designRules
+          {
+              kind batchVolume;
+              rating
+              {
+                       nominalVolume 1.0 m3;
+                       maxFill 0.7;
+                       source "author-set assumption (DEV.md 4c C195), not a vendor data sheet: a bin blender and its bin";
+                       reason "the 300 kg final-blend lot of the case in one bin";
+              }
+              shift { length 8 h;
+                      source "README section 2a / the batch plan: the solid-dose suite runs two day shifts of 8 h (system/postDict, train availableTime)";
+                      reason "a lot that cannot be finished inside the shift it starts in spans shifts, a staffing and GMP line-clearance question"; }
+          } }
+        { unitName tabletPress;  type ratedMachine;  material SS316;
+          designRules
+          {
+              kind tabletPress;
+              rating
+              {
+                       stations 55;
+                       turretSpeed 60;
+                       compressionsPerRevolution 1;
+                       itemMass 0.28 g;
+                       source "author-set assumption (DEV.md 4c C195), not a vendor data sheet: a rotary press, 55 stations at 60 rpm, single-sided, nameplate with no efficiency applied; the pressed core is the 280 mg of the case (README section 2)";
+                       reason "a mid-size rotary press; replace with the press vendor's data sheet and tooling";
+              }
+              shift { length 8 h;
+                      source "README section 2a / the batch plan: the solid-dose suite runs two day shifts of 8 h (system/postDict, train availableTime)";
+                      reason "a lot that cannot be finished inside the shift it starts in spans shifts, a staffing and GMP line-clearance question"; }
+          } }
+        { unitName coatingPan;  type ratedMachine;  material SS316;
+          designRules
+          {
+              kind batchVolume;
+              rating
+              {
+                       nominalVolume 1.0 m3;
+                       maxFill 0.65;
+                       source "author-set assumption (DEV.md 4c C195), not a vendor data sheet: a perforated coating pan of about a cubic metre";
+                       reason "one lot of cores in one pan load";
+              }
+              shift { length 8 h;
+                      source "README section 2a / the batch plan: the solid-dose suite runs two day shifts of 8 h (system/postDict, train availableTime)";
+                      reason "a lot that cannot be finished inside the shift it starts in spans shifts, a staffing and GMP line-clearance question"; }
+          } }
+        { unitName packagingLine;  type ratedMachine;  material SS316;
+          designRules
+          {
+              kind packagingLine;
+              rating
+              {
+                       packsPerMinute 100;
+                       itemsPerPack 28;
+                       itemMass 0.29023 g;
+                       source "author-set assumption (DEV.md 4c C195), not a vendor data sheet: a blister line at 100 blisters of 28 tablets a minute; the packed tablet is the 0.29023 g of the case";
+                       reason "a PVC/aluminium blister line at its nameplate speed; replace with the packaging vendor's data sheet";
+              }
+              shift { length 8 h;
+                      source "README section 2a / the batch plan: the solid-dose suite runs two day shifts of 8 h (system/postDict, train availableTime)";
+                      reason "a lot that cannot be finished inside the shift it starts in spans shifts, a staffing and GMP line-clearance question"; }
+          } }
     );
 }
 
@@ -348,6 +465,102 @@ economics
         price   80;      // EUR per m2 of plot
         source  "placeholder for the groups' site; not a market quotation";
         reason  "a round number so that the land appears in the capital and the cash flow; replace it with the price of the site the group chooses";
+    }
+}
+
+//  ===================== THE CLEAN UTILITIES (DEV.md 4c C195) ==================
+//  The air and the purified water of the building, sized from the building the
+//  layout checked (system/layoutDict) and the batch plan above.  Run AFTER the
+//  economics, so no item here reaches the capital: every item is `not costed`
+//  and the building quote carries HVAC and the utilities.  EVERY NUMBER IN
+//  THIS BLOCK IS AN AUTHOR-SET ASSUMPTION for the group to replace; none is
+//  from a standard's table (the published air-change tables are no-grant
+//  documents and are not shipped).  The air is SENSIBLE only: no humidity, no
+//  latent load, no room heat gain -- the run says so.
+cleanUtilities
+{
+    hvac
+    {
+        air
+        {
+            density       1.2 kg/m3;
+            heatCapacity  1006 J/kg/K;
+            source "author-set assumption (DEV.md 4c C195): dry air near 20 degC, rounded";
+            reason "the density and heat capacity that turn a volume flow into a heat duty";
+        }
+        //  Air changes per hour of each GRADE of the building, and why.
+        changesPerHour
+        (
+            { grade D;    perHour 20;
+              source "author-set assumption (DEV.md 4c C195), not from a standard's table";
+              reason "an order of magnitude for a graded oral-solid-dose room; the group replaces it with the rate its own contamination and cleanliness argument supports"; }
+            { grade CNC;  perHour 6;
+              source "author-set assumption (DEV.md 4c C195), not from a standard's table";
+              reason "an order of magnitude for a controlled-not-classified room (comfort and dust control); the group replaces it"; }
+        );
+        fan
+        {
+            pressureRise  1000 Pa;
+            efficiency    0.6;
+            source "author-set assumption (DEV.md 4c C195)";
+            reason "filters (to the final HEPA), coils, silencers and ducting of an air-handling unit, lumped; the fan and drive efficiency of a medium centrifugal fan";
+        }
+        outdoor
+        {
+            winter  2 degC;
+            summer  32 degC;
+            source "author-set assumption (DEV.md 4c C195): no site is declared for this plant";
+            reason "design temperatures of a temperate site; the group replaces them with its site's design values";
+        }
+        supply
+        {
+            temperature       20 degC;
+            freshAirFraction  0.2;
+            source "author-set assumption (DEV.md 4c C195)";
+            reason "a recirculating air-handling unit takes a fifth of its flow fresh; a contained room with an open API would take 100 % fresh air, a question for the group";
+        }
+        //  The technical floor houses the air plant and the utilities: it is
+        //  not served by it.
+        unserved
+        {
+            rooms ( hvacPlant utilities electrical techLanding );
+            source "system/layoutDict: the technical floor (AHUs, utilities, switchgear)";
+            reason "plant rooms are not conditioned by the air plant they house";
+        }
+    }
+
+    purifiedWater
+    {
+        fluid
+        {
+            density 998 kg/m3;
+            source "author-set assumption (DEV.md 4c C195): water near 20 degC, rounded";
+            reason "turns the water mass of the balance into a volume";
+        }
+        uses
+        (
+            { name binderWater;  stream granWater;  stage binderPreparation;  drawTime 0.5 h;  when start;
+              source "the flowsheet stream granWater (the water of the 10 wt % HPC binder), read from the converged balance";
+              reason "purified water is the granulating liquid"; }
+            { name coatingSuspensionWater;  stream coatWater;  stage suspensionPreparation;  drawTime 0.5 h;  when start;
+              source "the flowsheet stream coatWater (the water of the 12 wt % coating suspension), read from the converged balance";
+              reason "purified water is the solvent of an aqueous film-coat suspension"; }
+            { name cleaning;  volumePerLot 3 m3;  stage coating;  drawTime 1 h;  when end;
+              source "author-set assumption (DEV.md 4c C195): the wash of the granulator, the dryer bowl, the pan and the tanks after a lot";
+              reason "cleaning between lots is the second use of purified water in a tablet plant; replace with the group's cleaning procedure"; }
+        );
+        generator
+        {
+            margin  0.25;
+            source "author-set assumption (DEV.md 4c C195)";
+            reason "a quarter above the peak draw: demand growth and the loop's own return flow";
+        }
+        storage
+        {
+            holdTime  4 h;
+            source "author-set assumption (DEV.md 4c C195)";
+            reason "four hours of the peak draw without the generator: a shutdown or a sanitisation";
+        }
     }
 }
 

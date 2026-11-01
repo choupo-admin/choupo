@@ -66,7 +66,11 @@ price(const DictPtr& costingDict, const CostingModel& model,
     std::set<std::string> sizedUnits;
     for (const auto& [item, sz] : result.sizings)
     {
-        sizedUnits.insert(sz.unitName);
+        //  A unit whose every sized item is deliberately NOT priced (a rated
+        //  machine, `notCostedBecause`) is not priced by a correlation, so a
+        //  quote beside it prices nothing twice -- it is the quote that
+        //  carries the money (DEV.md 4c C195).
+        if (sz.notCostedBecause.empty()) sizedUnits.insert(sz.unitName);
         (void)item;
     }
 
