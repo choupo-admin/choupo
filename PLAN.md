@@ -32,17 +32,17 @@ Last reviewed: 2026-11-01 (restructured by capacity; earlier reviews in git).
 
 Status words: `todo` · `queued` (built by a general, waiting its turn to integrate) · `integrating` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
-## Now (running; at most 7 generals, Vítor's order of 2026-11-02, laptop budget in CLAUDE.md rule 4)
+## Now (RESUME HERE after the 2026-11-02 controlled shutdown; nothing is running)
+
+Every general stopped with the laptop.  All their work is on origin as `backup/*` branches; the first thing to read is `HANDOFF-C200.md` on `backup/c200-handoff`.
 
 | status | what | ref |
 |---|---|---|
-| running | C200 URGENT, the architect: the kernel brief (drafted; its grammar run end to end on a test case) lands with the packs; record `docs/design/an-llm-learns-choupo-from-a-brief.md` | C200 |
-| running | General: C200 A -- the evaluation harness (proxy assistant, ten design problems, mechanical scoring) and today's baseline | C200 |
-| running | General: C200 B' -- the browser materialises 0/ through the engine's own -init0 (Case > Complete 0/, offered after the bridge applies a reply) | C200 |
-| running | Generals: C200 packs -- recycles + pressure, separations, reactors (each example run before it is written) | C200 |
-| integrating | The GUI reads the `pipeHeader` sheets (branch built), after the negative-pressure branch | C199 |
-| running | General: boron Stage 1 -- two species split at the inlet pH (thermodynamic pKa), permeances from the two rated tests | C198 |
-| integrating | A negative outlet pressure is refused by name, a trial iterate announced (the `s.P <= 0` clamp in runUnit); `bin/integrate` building | C186 5b |
+| todo | Merge the kernel (`backup/c200-handoff`) with the three packs (`backup/pack-recycles-pressure`, `backup/pack-separations`, `backup/pack-reactors`) in ONE commit (check_doc_references refuses a kernel pointing at missing packs); fix the kernel from the packs' findings; record the contradictions found in older docs/ai in DEV.md C200 | C200 |
+| todo | Relaunch the browser Complete-0/ general from `backup/a8318e2acf001dce2` (it was in `--gui` validation; 16 files of WIP) | C200 B' |
+| todo | Integrate boron Stage 1 (`backup/boron-stage1`); the golden re-record of swro01_campoDalias is ruled acceptable, the list goes in the commit | C198 |
+| todo | Integrate the GUI header-read branch (`backup/adc55b34e36500669`) | C199 |
+| todo | Re-run the LLM-brief harness (`bin/curate/llm_brief_eval.py`, branch `backup/c200-harness`) on the kernel + packs; baseline: `--core` solves 7/10, the GUI bridge guide 0/10 | C200 A |
 
 ## Next day (at most 5)
 
