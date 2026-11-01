@@ -36,7 +36,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| running | General: pressure as a tear variable; the sibling drivers read unconverged points | C186 (5) |
+| queued | General: pressure as a tear variable; the sibling drivers read unconverged points (two goldens to re-record on the architect's reasons) | C186 (5) |
 | integrating | General: the rest of the external audit (batch A_rev, catalystLoading, membrane fitter verdict, PC-SAFT roots) | C190 (14)(11)(15)(12) |
 | queued | General: the commercial shortlist, the A_w curation, the module registry's local tier, the importer's spacer defect | C189 |
 | queued | General: the acceptance contract on the remaining units and the Theory Guide section | C188 item 5 |
@@ -49,6 +49,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| todo | `s.P <= 0 -> P_inherit` in Flowsheet.cpp runUnit can hide a spurious fixed point: measure the corpus, then refuse a negative outlet pressure by name | C186 item 5b |
 | todo | After each push that adds a unit: the site's own WASM build and one browser run of the new case (the pressure exchanger first) | C196 |
 | todo | Confirm on the site (WASM) that C178 and C182 are published (minutes, done between integrations) | C178, C182 |
 

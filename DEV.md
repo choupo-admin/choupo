@@ -2261,6 +2261,23 @@ accepts today, and that is a policy call.
 > drivers: DesignSpec.cpp:257 reads targets without `converged`,
 > GridSweepDriver.cpp:135 treats only a throw as a failed point, and
 > SweepDriver extracts an unconverged point's responses into its table.
+> BUILT 2026-11-02 (43b5c58c8, a general; integrating): item 5 -- P is in both
+> tear vectors (Wegstein in bar, Newton scaled), a loop that does not close on
+> pressure exits 1 and says handed X bar / returns Y bar; reproduced first
+> (mixer + pipe + splitter: 5.000 handed, 3.006 returned, "converged" in 1
+> Newton iteration, exit 0); 26 corpus recycle loops all converge; the
+> sibling drivers (sweep, gridSweep, designSpec) now route through the ONE
+> `simulationFailure` (moved to ResponseExtractor).  Two goldens moved and are
+> re-recorded on the architect's reasons: membrane27 `flowImbalance`
+> (the recycle's pressure now converged, was one pass stale by ~0.35 Pa) and
+> greenAmmonia03 `H_closure_gap_kW` (-7.8e-7 -> +5.0e-7 kW, round-off on a
+> microwatt gap).  OPEN, found by the general: `Flowsheet.cpp` runUnit has
+> `if (s.P <= 0.0) s.P = P_inherit;` -- a pipe whose drop exceeds its inlet
+> publishes a negative P and this line silently replaces it, so a Wegstein
+> loop with a large drop can reach a spurious fixed point at ~0.1 bar and
+> "converge"; a negative P may be a legitimate Newton trial iterate, so the
+> corpus must be measured first (item 5b).  The Wegstein lesson's `[F, z, T]`
+> becomes `[F, z, T, P]`.
 > STILL OPEN: item 5 (pressure is not a tear variable).
 
 > **C185. THREE MORE SOLVER/KINETICS DEFECTS (the external review,
