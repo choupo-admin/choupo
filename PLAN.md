@@ -18,6 +18,8 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 
 | status | what | ref |
 |---|---|---|
+| running | C185 item 8 (positivity mask with several ODE units) and C186 item 4 (optimiser rejects unconverged simulations), one general each | C185, C186 |
+| running | C189 slice 3 (six illustrative membrane classes) integrating; --gui and the membrane scope on the combination before push | C189 |
 | todo | C188 item 5 remaining: passThrough on other units, per-port contracts, batch crystalliser, the recycle question | C188 |
 | todo | C189 slices 3-6: six illustrative classes, import/QA to data/local, shortlist with no default score, docs | C189 |
 | todo | Curation: the records' A_w gives 2.16x (NF270-4040) and 2.08x (SW30HR-380) the sheets' permeate at their rated tests | C189 |
@@ -32,16 +34,21 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 
 | status | what | ref |
 |---|---|---|
+| todo | C191 (A) The tree of chemistry: curate the graph record (seven roots, ~150 nodes, a citation per edge) -- a general, several days; then the EduTool | C191 |
 | todo | Distillation defects A (fullMESH seeded by an unconverged CMO phase) and B (NewtonND accepts a non-improving step); measure which corpus cases reach the path; a full sweep only with Vítor's written authorisation | C184 A/B |
 | todo | Positivity guard off with several ODE units -- AFTER C178 lands (same file) | C185 item 8 |
 | todo | Optimiser reads unconverged simulations -- AFTER C178 lands (same file) | C186 item 4 |
 | todo | Pressure is not a tear variable: a loop with no pressure-consistent steady state "converges" | C186 item 5 |
+| todo | C190 (10): a negative kinetic order silently dropped on the vessels' own Arrhenius paths; (13): CHEMKIN A conversion rounds each order before summing | C190 |
+| todo | C190 (14) batch own reader and A_rev; (11) catalystLoading on the batch own path, measured; (15) the membrane fitter's 'converged' on a stall; (12) PC-SAFT root scan near the spinodal | C190 |
 | todo | C170's owed fixes: gates must not judge `data/local` or untracked files; `check_workspace_truth` wording; refuse `nu 0; order 1`; records still citing Burcat | C170 |
 
 ## Long term (the next seven days)
 
 | status | what | ref |
 |---|---|---|
+| todo | C191 (B) candidates: the methanation reactor EduTool; a Power-to-Gas plant case (scope to decide) | C191 |
+| todo | Candidates from the external opinion (pedagogical scope first): seeded crystallisation, cake washing and filtration, a linear chromatography column with fraction collection | C190 |
 | todo | Verify and fix C187 (1) (the Gibbs review's three open items) and (2) (SpeciationSolver outer convergence) | C187 |
 | todo | Views for choupoSolve cases; C149's parallel runs | C187 (5), (6) |
 | todo | Distillation P0 (step contract, singular-Jacobian diagnostic naming the stage and equation); P1-P3 as a written proposal for Vítor, no code | C184 |
