@@ -25,7 +25,7 @@ import type { PlantLayout } from "../adapters/SolverAdapter.js";
 import type { GmpBuilding } from "../adapters/buildingPayload.js";
 import { parseDesignSheet, type DesignSheet } from "./designSheet.js";
 import { isTrainSheet, sizingValue, trainSchematicSvg, type TrainSchematic } from "./equipmentSchematic.js";
-import { readBank, type BankRead } from "./membraneBank.js";
+import { headersOf, readBank, type BankRead } from "./membraneBank.js";
 import {
   hallPlanSvg, rackElevationSvg, rackSectionSvg, roomOf, type Drawing, type RoofInput,
 } from "./roHallDrawings.js";
@@ -111,9 +111,9 @@ export function hallSet(designFiles: { [relPath: string]: string } | undefined,
   const rack = Math.min(Math.max(0, want?.rack ?? 0), nRacks - 1);
   return {
     trains, bankIds: ids, pick: { train: k, bankId, rack }, racks: nRacks,
-    train: trainSchematicSvg(mine),
+    train: trainSchematicSvg(mine, sheets),
     plan: hallPlanSvg({ items: layout?.items ?? [], ...(building ? { building } : {}), banks }),
     section: rackSectionSvg(read, rack, roofFor(building, layout, bankId)),
-    elevation: rackElevationSvg(read, rack),
+    elevation: rackElevationSvg(read, rack, read.ok ? headersOf(sheets, read.bank) : undefined),
   };
 }

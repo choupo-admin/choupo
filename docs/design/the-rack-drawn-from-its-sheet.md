@@ -129,3 +129,20 @@ bank's volumetric flows (the GUI divides the unit's plant mass flows).
 Not done: the headers in 3D, piping in the plan, the booster and pumps drawn by
 kind in 3D (they are the case's boxes), a screenshot test (WebGL is not
 available in tests; the geometry description is pure and tested).
+
+## 8. BUILT 2026-11-02: the headers at their own size
+
+The header sizer (`a-header-is-sized-by-its-velocity.md`) publishes its sheets
+on the bank's unit with the tag `train<k>.<role>`, so the header sheets have no
+layout item and are read as a FAMILY: `headersOf(sheets, bank)`
+(`membraneBank.ts`) joins on the bank's unit and `trainIndex`, and `readHeader`
+refuses a sheet lacking a key or carrying it in a wrong unit.  The rack
+elevation draws each header at ITS OWN `headerNominalDiameter`, solid, to scale
+against the vessel (feed 0.60 and brine 0.45 m on RO1 differ), with two
+dimension lines per header in the two provenance channels: the nominal bore
+(`declared`: picked from the case's declared list) and the required bore
+(`Choupo`, "computed from v max"; also a dashed inner ring), and a note with the
+velocity and the pressure drop per metre.  A header whose sheet is absent stays
+the dashed mark, labelled "not sized"; the old bank-sheet key is kept as a
+fallback only.  The train schematic's bank boxes gained a `headers` row (feed /
+brine / permeate bores, declared).  The engine publishes every key needed.

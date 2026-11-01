@@ -42,10 +42,11 @@
       does (`PROVENANCE_INK` / `PROVENANCE_WORD`): what the case declared, what
       Choupo computed, what a record supplied.  Each is a `<g data-dim data-who>`
       so a test (and a reader of the source) can find it.
-    * THE HEADER PIPES ARE NOT SIZED: no pipe sizer exists for them.  They are
-      drawn at the sheet's `headerNominalDiameter` WHEN THE CASE DECLARED ONE and
-      at a plain stroke, labelled "diameter not declared", when it did not --
-      and the drawing says in words that they are not sized.
+    * THE HEADERS ARE DRAWN AT THEIR OWN SIZE (C199, the header sizer): each
+      of the feed, brine and permeate headers is read from ITS `pipeHeader`
+      sheet (unit = the bank, tag `train<k>.<role>`; `headersOf`) and drawn at
+      its own `headerNominalDiameter`, to scale against the vessel; a header
+      with no sheet stays a dashed mark, labelled "not sized".
     * What a drawing CONVENTION fixes and the engine does not publish (which end
       feeds, where a header runs above the rack, that a vessel sits at the centre
       of its pitch cell) is printed in the notes beside the picture, with the
@@ -57,7 +58,7 @@ import {
   type Provenance,
 } from "./equipmentSchematic.js";
 import {
-  vesselsInRack, type BankRead,
+  HEADER_ROLES, vesselsInRack, type BankHeaders, type BankRead, type HeaderRole,
 } from "./membraneBank.js";
 import type { LayoutItem } from "../adapters/SolverAdapter.js";
 import type { BuildingRoom, GmpBuilding } from "../adapters/buildingPayload.js";
@@ -116,6 +117,22 @@ function dimLine(into: Drawing["dims"], id: string, kind: "h" | "v", a: number, 
 
 /** A LABELLED BOX for a drawing that cannot be made: the title and the keys
  *  the sheet lacks, never a guess. */
+/** A DIMENSION whose line sits at the circle it measures and whose words sit
+ *  in the legend band (the headers are too close for inline labels): a short
+ *  vertical dimension line at the circle (its role tells which) and the label, with its word, in the band. */
+function bandDim(into: Drawing["dims"], id: string, a: number, b: number, atX: number,
+                 tx: number, ty: number, label: string, who: Provenance): string {
+  const ink = PROVENANCE_INK[who];
+  const s = marked(label, who);
+  into.push({ id, who, label: s });
+  return `<g data-dim="${id}" data-who="${who}" stroke="${ink}" fill="none" stroke-width="1">`
+    + `<line x1="${atX}" y1="${a}" x2="${atX}" y2="${b}"/>`
+    + `<line x1="${atX - 3}" y1="${a}" x2="${atX + 3}" y2="${a}"/>`
+    + `<line x1="${atX - 3}" y1="${b}" x2="${atX + 3}" y2="${b}"/>`
+    + text(tx, ty, s, ink, 9.5, "start", ' stroke="none"')
+    + `</g>`;
+}
+
 export function missingSvg(title: string, missing: readonly string[]): Drawing {
   const W = 520, H = 120;
   const svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px" role="img" `
@@ -137,12 +154,15 @@ const svgOpen = (W: number, H: number, label: string): string =>
 /** "N x M" style label of a count with its provenance. */
 const count = (n: number, what: string): string => `${n} ${what}${n === 1 ? "" : "s"}`;
 
-/** The header note every rack drawing carries. */
-const HEADER_NOTE: Drawing["notes"][number] = {
-  text: "THE HEADER PIPES ARE NOT SIZED: Choupo has no pipe sizer for them yet. They are drawn "
-    + "at the case's declared nominal diameter when the sheet carries one "
-    + "(`headerNominalDiameter`), and at a plain stroke, labelled, when it does not.",
+/** The note a rack drawing carries about its headers, by what was found: the
+ *  `pipeHeader` sheets size them (DEV.md 4c C199, the header sizer); a header
+ *  whose sheet is absent is a dashed mark with NO diameter, said so. */
+const HEADER_FALLBACK_NOTE: Drawing["notes"][number] = {
+  text: "A header drawn dashed is NOT SIZED: the run carries no `pipeHeader` sheet for it (the case declares no "
+    + "header sizing for this bank), so it is a plain labelled mark with no diameter.",
   who: null };
+
+const ROLE_INK: { [R in HeaderRole]: string } = { feed: COOL, brine: WARM, permeate: "#3a9a6a" };
 
 /*  ======================================================================  */
 /*  The SECTION through a rack bay                                          */
@@ -248,7 +268,7 @@ export function rackSectionSvg(read: BankRead, rackIndex = 0, roof?: RoofInput):
  *  brine headers above the vessels, the permeate header at the low-x end, and
  *  the connection of every tier to them; below it the same rack seen from
  *  above with every vessel of its top tier on the three headers. */
-export function rackElevationSvg(read: BankRead, rackIndex = 0): Drawing {
+export function rackElevationSvg(read: BankRead, rackIndex = 0, headers: BankHeaders = {}): Drawing {
   if (!read.ok) return missingSvg("Elevation of a rack", read.missing);
   const b = read.bank;
   const r = Math.min(Math.max(0, rackIndex), b.racks - 1);
@@ -256,7 +276,10 @@ export function rackElevationSvg(read: BankRead, rackIndex = 0): Drawing {
   const nTiers = Math.ceil(n / b.vesselsPerTier);
   const W = 900;
   //  the horizontal extent: permeate header, the rack, the loading clearance
-  const left = 190, hdrAbove = 1.1 * b.vesselOutsideDiameter + 0.3;   // drawing room, not a dimension
+  //  every header's bore from ITS OWN sheet (the bank sheet's key is the legacy single bore)
+  const boreOf = (role: HeaderRole): number | undefined => headers[role]?.diameter ?? b.headerNominalDiameter;
+  const maxBore = Math.max(0, ...HEADER_ROLES.map((q) => boreOf(q) ?? 0));
+  const left = 190, hdrAbove = Math.max(1.1 * b.vesselOutsideDiameter + 0.3, maxBore + 0.5);   // drawing room, not a dimension
   const spanM = b.rackLength + b.loadingClearance;
   const s = Math.min((W - left - 40) / spanM, 80);
   const ox = left;
@@ -266,7 +289,8 @@ export function rackElevationSvg(read: BankRead, rackIndex = 0): Drawing {
 
   //  ---- panel 1: the side elevation --------------------------------------
   const topM = b.rackHeight + hdrAbove;
-  const floor1 = 50 + topM * s + 8;
+  const BAND = 54;                                   // the header legend band above the elevation
+  const floor1 = 50 + BAND + topM * s + 8;
   const Z = (z: number): number => floor1 - z * s;
   p.push(text(ox, 22, `Elevation of rack ${r + 1} of ${b.racks} (looking across the rack)`, INK, 12, "start"));
   p.push(text(W - 330, 22, "feed", COOL, 11, "start"), text(W - 270, 22, "brine", WARM, 11, "start"),
@@ -278,8 +302,9 @@ export function rackElevationSvg(read: BankRead, rackIndex = 0): Drawing {
   const brineX = b.rackLength - feedX;
   const permX = -2.6 * b.vesselOutsideDiameter;                               // convention: axial permeate at the low-x end
   const hz = b.rackHeight + 0.5 * hdrAbove;                                   // convention: header axes above the rack
-  const rH = b.headerNominalDiameter ? (b.headerNominalDiameter / 2) * s : 0.35 * b.vesselOutsideDiameter * s;   // undeclared: a plain mark
-  const hdrStroke = b.headerNominalDiameter ? `fill="#f2f5f8"` : `fill="none" stroke-dasharray="3 2"`;
+  //  the TRUE radius in pixels at the vessels' own scale; a header with no sheet is a plain mark
+  const rOf = (role: HeaderRole): number => { const d = boreOf(role); return d ? (d / 2) * s : 0.35 * b.vesselOutsideDiameter * s; };
+  const strokeOf = (role: HeaderRole): string => boreOf(role) ? `fill="#f2f5f8"` : `fill="none" stroke-dasharray="3 2"`;
   for (let t = 0; t < nTiers; t++) {
     const vz = b.baseHeight + (t + 0.5) * b.tierPitch;
     const inTier = Math.min(b.vesselsPerTier, n - t * b.vesselsPerTier);
@@ -294,13 +319,29 @@ export function rackElevationSvg(read: BankRead, rackIndex = 0): Drawing {
     p.push(`<line data-branch="permeate" x1="${X(b.endMargin)}" y1="${Z(vz)}" x2="${X(permX)}" y2="${Z(vz)}" stroke="#3a9a6a" stroke-width="1.6"/>`);
   }
   p.push(`<line x1="${X(permX)}" y1="${Z(b.baseHeight / 2 + 0.2 * b.rackHeight)}" x2="${X(permX)}" y2="${Z(b.rackHeight)}" stroke="#3a9a6a" stroke-width="3"/>`);
-  for (const [x, z, ink, name] of [[feedX, hz, COOL, "feed"], [brineX, hz, WARM, "brine"]] as const) {
-    p.push(`<circle data-header="${name}" cx="${X(x)}" cy="${Z(z)}" r="${rH}" ${hdrStroke} stroke="${ink}" stroke-width="2"/>`);
-    p.push(text(X(x), Z(z) - rH - 4, `${name} header`, ink, 10, "middle"));
-  }
-  p.push(`<circle data-header="permeate" cx="${X(permX)}" cy="${Z(hz)}" r="${rH}" ${hdrStroke} stroke="#3a9a6a" stroke-width="2"/>`);
-  p.push(text(X(permX) - rH - 4, Z(hz) + 3, "permeate header", "#3a9a6a", 10, "end"));
   p.push(`<line x1="${X(permX)}" y1="${Z(hz)}" x2="${X(permX)}" y2="${Z(b.rackHeight)}" stroke="#3a9a6a" stroke-width="2"/>`);
+  for (const [x, role] of [[feedX, "feed"], [brineX, "brine"], [permX, "permeate"]] as const) {
+    const ink = ROLE_INK[role], h = headers[role], r = rOf(role), cx = X(x), cy = Z(hz);
+    const sized = boreOf(role) !== undefined;
+    p.push(`<circle data-header="${role}" data-sized="${sized ? 1 : 0}"${sized ? ` data-diameter="${boreOf(role)}"` : ""} `
+      + `cx="${cx}" cy="${cy}" r="${r}" ${strokeOf(role)} stroke="${ink}" stroke-width="2"/>`);
+    //  the headers sit close together, so their words go in the legend band; the circle carries its role
+    if (role === "permeate") p.push(text(cx - r - 6, cy + 3, sized ? "permeate" : "permeate (not sized)", ink, 10, "end"));
+    else p.push(text(cx, cy - r - 4, sized ? role : `${role} (not sized)`, ink, 10, "middle"));
+    if (h) {
+      //  the computed requirement: the smallest bore under the window's top, a dashed ring inside the picked bore
+      p.push(`<circle data-required="${role}" cx="${cx}" cy="${cy}" r="${(h.required / 2) * s}" fill="none" `
+        + `stroke="${PROVENANCE_INK.choupo}" stroke-dasharray="2 2" stroke-width="1"/>`);
+      //  the legend band: one column per header, each line a dimension of its circle (the rule, in two channels)
+      const colX = 30 + HEADER_ROLES.indexOf(role) * 290;
+      p.push(text(colX, 44, `${role} header, ${F(h.flow)} m3/h per train`, ink, 10.5, "start", ' font-weight="600"'));
+      p.push(bandDim(dims, `header.${role}.nominal`, cy - r, cy + r, cx + r + 6, colX, 57,
+        `${role} nominal bore ${F(h.diameter)} m`, "declared"));
+      p.push(bandDim(dims, `header.${role}.required`, cy - (h.required / 2) * s, cy + (h.required / 2) * s, cx - r - 6, colX, 69,
+        `${role} required bore ${F(h.required)} m, computed`, "choupo"));
+      p.push(text(colX, 81, `v ${F(h.velocity)} m/s, ${F(h.pressureDropPerMetre)} Pa/m`, "#456", 9.5, "start"));
+    }
+  }
   //  loading clearance, hatched, free at the high-x end
   if (b.loadingClearance > 0)
     p.push(`<rect data-clearance="1" x="${X(b.rackLength)}" y="${Z(b.rackHeight)}" width="${b.loadingClearance * s}" `
@@ -339,9 +380,9 @@ export function rackElevationSvg(read: BankRead, rackIndex = 0): Drawing {
     p.push(`<circle cx="${X(brineX)}" cy="${Y(yc)}" r="2.6" fill="${WARM}"/>`);
   }
   const yTop = Y(b.rackWidth) - 6, yBot = Y(0) + 6;
-  p.push(`<line x1="${X(feedX)}" y1="${yTop}" x2="${X(feedX)}" y2="${yBot}" stroke="${COOL}" stroke-width="${Math.max(1.6, rH)}" ${b.headerNominalDiameter ? "" : 'stroke-dasharray="3 2"'}/>`);
-  p.push(`<line x1="${X(brineX)}" y1="${yTop}" x2="${X(brineX)}" y2="${yBot}" stroke="${WARM}" stroke-width="${Math.max(1.6, rH)}" ${b.headerNominalDiameter ? "" : 'stroke-dasharray="3 2"'}/>`);
-  p.push(`<line x1="${X(permX)}" y1="${yTop}" x2="${X(permX)}" y2="${yBot}" stroke="#3a9a6a" stroke-width="${Math.max(1.6, rH)}" ${b.headerNominalDiameter ? "" : 'stroke-dasharray="3 2"'}/>`);
+  p.push(`<line x1="${X(feedX)}" y1="${yTop}" x2="${X(feedX)}" y2="${yBot}" stroke="${COOL}" stroke-width="${Math.max(1.6, 2 * rOf("feed"))}" ${boreOf("feed") ? 'stroke-opacity="0.5"' : 'stroke-dasharray="3 2"'}/>`);
+  p.push(`<line x1="${X(brineX)}" y1="${yTop}" x2="${X(brineX)}" y2="${yBot}" stroke="${WARM}" stroke-width="${Math.max(1.6, 2 * rOf("brine"))}" ${boreOf("brine") ? 'stroke-opacity="0.5"' : 'stroke-dasharray="3 2"'}/>`);
+  p.push(`<line x1="${X(permX)}" y1="${yTop}" x2="${X(permX)}" y2="${yBot}" stroke="#3a9a6a" stroke-width="${Math.max(1.6, 2 * rOf("permeate"))}" ${boreOf("permeate") ? 'stroke-opacity="0.5"' : 'stroke-dasharray="3 2"'}/>`);
   if (b.loadingClearance > 0)
     p.push(`<rect x="${X(b.rackLength)}" y="${Y(b.rackWidth)}" width="${b.loadingClearance * s}" height="${b.rackWidth * sy}" `
       + `fill="url(#hatch)" stroke="${GHOST}" stroke-dasharray="4 3"/>`);
@@ -359,11 +400,14 @@ export function rackElevationSvg(read: BankRead, rackIndex = 0): Drawing {
     { text: "convention: feed and brine are radial ports near the vessel ends, branching up to headers above the "
       + "rack; permeate leaves each end cap at the low-x end; the sheet publishes no port positions. "
       + "The loading clearance (hatched) stays free at the high-x end, as the engine's envelope has it.", who: null },
-    b.headerNominalDiameter
-      ? { text: `Headers are drawn at the declared nominal diameter ${F(b.headerNominalDiameter)} m.`, who: "declared" }
-      : { text: "Header diameter: the sheet carries no `headerNominalDiameter`, so the headers are drawn at a plain, "
-          + "dashed stroke with NO diameter.", who: null },
-    HEADER_NOTE,
+    ...HEADER_ROLES.flatMap((role): Drawing["notes"] => {
+      const h = headers[role];
+      if (!h) return [];
+      return [{ text: `${role} header: nominal bore ${F(h.diameter)} m (the smallest declared bore that fits; required `
+        + `${F(h.required)} m), ${F(h.flow)} m3/h per train at ${F(h.velocity)} m/s, ${F(h.pressureDropPerMetre)} Pa/m. `
+        + `Drawn to scale against the vessels (outside diameter ${F(b.vesselOutsideDiameter)} m).`, who: "choupo" }];
+    }),
+    ...(HEADER_ROLES.some((q) => boreOf(q) === undefined) ? [HEADER_FALLBACK_NOTE] : []),
   ];
   return { svg: svgOpen(W, H, "elevation of one rack with its headers") + defs + p.join("") + "</svg>", notes, dims };
 }

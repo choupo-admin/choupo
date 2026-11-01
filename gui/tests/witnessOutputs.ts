@@ -306,6 +306,13 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
       file: `design/${u}/train${k}`,
       readBy: ["roHallDrawings.test.ts", "membraneBankModel.test.ts"],
     }))),
+  //  the header sheets (C199, the header sizer): unit = the bank, tag train<k>.<role>
+  ...["RO1", "RO2a", "RO2b"].flatMap((u) =>
+    [1, 2, 3, 4, 5, 6].flatMap((k) => ["feed", "brine", "permeate"].map((role) => ({
+      caseDir: "tutorials/plant/swro01_campoDalias",
+      file: `design/${u}/train${k}.${role}`,
+      readBy: ["roHallDrawings.test.ts", "membraneBankModel.test.ts"],
+    })))),
   {
     caseDir: "tutorials/plant/swro01_campoDalias",
     file: "log.choupoSolve",

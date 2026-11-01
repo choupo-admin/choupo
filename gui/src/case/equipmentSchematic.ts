@@ -33,6 +33,7 @@
   rather than something a reader downstream infers by comparing numbers.
 \*---------------------------------------------------------------------------*/
 import type { DesignPort, DesignSheet, DesignValue } from "./designSheet.js";
+import { headersOf, readBank } from "./membraneBank.js";
 
 /*  ---- Provenance: one vocabulary, two channels ------------------------- */
 
@@ -724,7 +725,8 @@ export function trainRoles(sheets: readonly DesignSheet[]): { roles: TrainRoles;
  *  array's are the per-train numbers their sheets carry.  Roles come from the
  *  streams (`trainRoles`); a train whose sheets do not resolve draws a
  *  LABELLED BOX naming the roles it could not find. */
-export function trainSchematicSvg(sheets: readonly DesignSheet[]): TrainSchematic {
+export function trainSchematicSvg(sheets: readonly DesignSheet[],
+                                  allSheets: readonly DesignSheet[] = []): TrainSchematic {
   const { roles, unresolved } = trainRoles(sheets);
   const W = 1220, H = 450;
   if (unresolved.length > 0) {
@@ -762,11 +764,21 @@ export function trainSchematicSvg(sheets: readonly DesignSheet[]): TrainSchemati
     { t: `${v(s, "shaftPowerPerPump")} shaft each`, who: "choupo" as Provenance },
     { t: `to ${v(s, "P_out")}`, who: "choupo" as Provenance },
   ];
+  //  the bank's three header bores (feed / brine / permeate), read from its
+  //  `pipeHeader` sheets of THIS train; no row when none is on the run
+  const headerRow = (s: DesignSheet): { t: string; who: Provenance | null }[] => {
+    const bank = readBank(s);
+    if (!bank.ok) return [];
+    const h = headersOf(allSheets, bank.bank);
+    const f = (r: "feed" | "brine" | "permeate"): string => h[r] ? String(Number(h[r]!.diameter.toPrecision(3))) : "-";
+    return Object.keys(h).length === 0 ? [] : [{ t: `headers \u00d8 ${f("feed")} / ${f("brine")} / ${f("permeate")} m`, who: "declared" }];
+  };
   const bankRows = (s: DesignSheet, inP?: { mdot?: number }, perm?: { mdot?: number }) => [
     { t: `${v(s, "vessels")} vessels x ${v(s, "elementsPerVessel")} elements`, who: "unit" as Provenance },
     { t: `${v(s, "racks")} rack(s) of ${v(s, "tiers")} tiers x ${v(s, "vesselsPerTier")}`, who: "choupo" as Provenance },
     { t: `feed ${perTrainFlow(inP)}`, who: "choupo" as Provenance },
     { t: `permeate ${perTrainFlow(perm)}`, who: "choupo" as Provenance },
+    ...headerRow(s),
   ];
 
   //  ---- the first row: feed, HP pump, join, first pass, second pass ------
@@ -775,7 +787,7 @@ export function trainSchematicSvg(sheets: readonly DesignSheet[]): TrainSchemati
   node(90, 70, 160, 84, R.hpPump.unit, pumpRows(R.hpPump));
   line([[250, 110], [310, 110]], COOL);
   p.push(`<circle cx="290" cy="110" r="3.5" fill="${COOL}"/>`);
-  node(310, 66, 190, 92, `${R.ro1.unit} (first pass)`, bankRows(R.ro1, R.ro1.inlets[0], R.ro1.outlets[1]));
+  node(310, 62, 190, 100, `${R.ro1.unit} (first pass)`, bankRows(R.ro1, R.ro1.inlets[0], R.ro1.outlets[1]));
   line([[500, 110], [540, 110]], "#3a9a6a");
   node(540, 70, 160, 84, R.pass2Pump.unit, pumpRows(R.pass2Pump));
   line([[700, 110], [740, 110]], COOL);
@@ -819,6 +831,8 @@ export function trainSchematicSvg(sheets: readonly DesignSheet[]): TrainSchemati
       + "are the per-train numbers their sheets carry.", who: "choupo" },
     { text: "Each box's rows carry their provenance in ink and in the word: the case's declared maxima and "
       + "ratings, the unit's own counts, Choupo's computed flows.", who: null },
+    { text: "A bank's `headers` row lists its feed / brine / permeate header bores in metres (the nominal bore the "
+      + "header sizer picked from the case's declared list); the rack elevation draws them.", who: "declared" },
     { text: "Roles are found from the streams the sheets name, never from unit names. Pipes, valves and "
       + "headers are not drawn here (see the rack elevation); the lines are the flowsheet's connections.", who: null },
   ];
