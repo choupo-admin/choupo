@@ -37,7 +37,6 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | status | what | ref |
 |---|---|---|
 | running | General: the Campo de Dalías plant organised in trains (HP pump + PX array + vessel racks per train), vessel-bank item, RO hall; then the 3D racks and the 2D plan/section (GUI) | C199 |
-| running | General: heavy water curated from the IAPWS formulation (researchers asked) | C197 |
 
 ## Next day (at most 5)
 
@@ -100,6 +99,9 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| done | Heavy water promoted: IAPWS/Herrig vapour pressure, reviewed against the primary equation, UNIFAC H2O as a declared approximation | C197, 4d3cb4f9d |
+| done | check_model_boundary_ledger probes repaired after the turbine contract (they audit the flash) | C188, 0734b0c60 |
+| done | The 3D layout view no longer crashes on a rack with no portals (found by Vítor on swro01_campoDalias) | C194, b19085a6b |
 | done | The Campo de Dalías SWRO plant from Toray's case study, two passes, boron as a declared lumped approximation, layout to the fence | C194, 3736c17e8 |
 | done | The EduTool 'Patent expiry and generic entry' for the two pharmaceutical groups (two real sources read, the rest declared assumed) | C195 (4), facf7ca2b |
 | done | Pressure is a tear variable; the sibling drivers read no unconverged point (two goldens moved on written reasons) | C186 (5), 43b5c58c8 |

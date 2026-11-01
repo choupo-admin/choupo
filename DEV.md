@@ -1590,6 +1590,30 @@ accepts today, and that is a policy call.
 > D2O-H2O mixtures, the isotope exchange equilibrium (H2O + D2O = 2 HDO),
 > NMR use.  A researcher's actual use case is the open question (a fact only
 > Vitor holds) -- it decides whether mixtures or HDO come next.
+> DONE 2026-11-02 (4d3cb4f9d, a general; 0636122e1 the integration): D2O is
+> derived from the IAPWS R16-17(2018) formulation and Herrig, Thol, Harvey and
+> Lemmon, JPCRD 47, 043102 (2018) (the brief had the authors wrong -- the paper
+> says so): the vapour pressure is Herrig Eq. 1 with its Table 3 coefficients
+> given as DATA to the existing Wagner model (vs the full EOS at 298.15 K
+> 2736.230 Pa against 2736.386, was +0.33 % with the old fitted Antoine; at
+> 630 K -0.005 % against -2.3 %), constants, saturated-liquid and ideal-gas Cp
+> refit by script with their residuals, `reviewStatus reviewed` -- a script
+> verification against the primary equation (the transcription reproduces every
+> check value of R16-17 Tables 6-8 to 1e-8), NOT a human review.  NO formation
+> datum: the only primaries found are no-grant compilations (NIST SRD) or
+> unreachable (ATcT 403), so D2O flashes and heats but cannot enter a
+> formation-datum balance.  The UNIFAC group `H2O` is restored as a DECLARED
+> APPROXIMATION (origin assumed in the provenance: no published D2O
+> decomposition was read; the H/D isotope effect on activity coefficients is
+> not modelled) because a `reviewed` molecular record is held to a group block.
+> Witness `heavyWater01_isotope_effect` (H2O 373.1243 K, D2O 374.5502 K, shift
+> 1.4259 K; the EOS says 374.5488, so the engine is 0.0014 K above it).  Gate
+> `check_heavy_water` (nine sabotages).  COULD NOT DO, for Vitor: H2O + D2O
+> mixtures and the isotope exchange equilibrium (no HDO species), D2O
+> viscosity/conductivity/surface tension (R17-20, R18-21 not read), a Helmholtz
+> route for D2O, ice and NMR properties.  Integration also found and repaired
+> `check_model_boundary_ledger` on main (see C188: the turbine's contract
+> refuses a liquid, which its A4/A5 probes fed; they now audit the flash).
 > STATUS: COMMISSIONED 2026-11-02; with a general.
 
 > **C196. THE COST OF INTEGRATING MANY GENERALS, AND THE SITE THAT NOBODY
