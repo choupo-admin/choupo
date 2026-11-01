@@ -2006,7 +2006,27 @@ accepts today, and that is a policy call.
 > so a PARTLY wrong curve is published.  Fix: an unconverged bubble/dew
 > point is not a point (dropped and counted, or the diagram refused by
 > name); the guards read the solver's verdict, not a symptom.
-> STATUS: SCHEDULED for Saturday with C184/C185.
+> DONE 2026-10-31 (item 6, d8a895955): `bubbleTSolve`, ONE acceptance
+> tolerance `kTxyAcceptResidual` = 1e-5 in SaturationCurves.H (the
+> architect's ruling: flash20's PC-SAFT K carries noise above the Newton's
+> 1e-8, 26 of 29 points end at |f| 6e-8..3e-6, right to ~1e-4 K), points
+> above it dropped and counted aloud, points accepted short of 1e-8
+> announced, fewer than half refuses the diagram; the column's
+> `bubbleTWithItsVapour` folds the verdict into its flag.  Gate
+> `check_txy_bubble_verdict`.
+> DONE 2026-11-01 (item 4, 1ad1aef00): `simulationFailure` is the ONE home
+> reading `result.converged`; Nelder-Mead, SQP and the integer
+> enumeration treat an unconverged simulation as a FAILED evaluation,
+> named with its point and counted by cause, and all-fail refuses by name.
+> Reproduced first on cavett01 with recycleMaxIter 2: NM "converged" at
+> 3.389 against the plant's 3.6843, SQP printed a KKT certificate over it.
+> Also fixed: an enumeration over a Nelder-Mead child reported every value
+> "converged NO" at objective 0.  Gate `check_optimiser_converged`; 32
+> outerDict cases PASS, no golden moved.  OPEN, the same shape in sibling
+> drivers: DesignSpec.cpp:257 reads targets without `converged`,
+> GridSweepDriver.cpp:135 treats only a throw as a failed point, and
+> SweepDriver extracts an unconverged point's responses into its table.
+> STILL OPEN: item 5 (pressure is not a tear variable).
 
 > **C185. THREE MORE SOLVER/KINETICS DEFECTS (the external review,
 > ChatGPT, at 1ecec224, relayed by Vitor 2026-10-27 for SATURDAY; its order:
