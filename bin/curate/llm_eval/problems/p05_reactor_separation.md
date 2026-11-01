@@ -1,0 +1,2 @@
+# Problem 05
+Methanol synthesis, simplified: 100 kmol/h of fresh feed with H2:CO = 2:1 (molar), at 50 bar and 250 C, enters an isothermal reactor at 250 C and 50 bar where CO + 2 H2 -> CH3OH reaches a CO conversion of 40 percent. The reactor effluent is cooled to 30 C at 50 bar and flashed. Report the crude methanol (liquid) flow and purity, the off-gas flow and composition, and the reactor heat duty.

@@ -1,0 +1,2 @@
+# Problem 06
+Separate 100 kmol/h of a saturated-liquid feed, 50 mol% benzene and 50 mol% toluene, at 1.013 bar in a distillation column at 1.013 bar. The distillate must be at least 98 mol% benzene and the bottoms at least 98 mol% toluene. Total condenser, partial reboiler. Report the number of stages you used, the reflux ratio, the feed stage, the condenser and reboiler duties, and the product flows and purities.
