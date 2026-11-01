@@ -42,6 +42,14 @@
       "description": "Identical pressure vessels in parallel in this stage. One vessel is solved on F/n and its outlets are scaled by n (exact for identical vessels; announced). A multi-stage array is built in the flowsheet, one unit per stage, with its interstage pump a unit of its own.",
       "unit": "-"
     },
+    "waterPermeance": {
+      "type": "string",
+      "title": "Water permeance from the data sheet",
+      "description": "`fromRatedTest` derives the water permeance A_w TOGETHER with the intrinsic rejection of the rated solute, so that the module reproduces the sheet's permeate flow and observed rejection at its rated test (the membrane record's A_w is typically a fit to a teaching case, the sheet measures the element). Needs a commercial `module` record, `transport constantRejection;` and `rejection { <salt> fromRatedTest; }`; refuses a functional class. Absent = the membrane record's A_w. The derived value is announced beside the record's and published as KPIs A_w_fromRatedTest_LMH_per_bar / A_w_record_LMH_per_bar.",
+      "enum": [
+        "fromRatedTest"
+      ]
+    },
     "feedSpacer": {
       "type": "string",
       "title": "Feed spacer record",
