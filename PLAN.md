@@ -10,9 +10,10 @@ header names the PLAN.md commit it reflects, so a stale view shows itself.
 
 ## How the plan is kept (the architect's rule, 2026-11-01)
 
-1. **Capacity, not hope.**  The usage budget allows 2-3 generals at once,
-   each 30-60 minutes, and integrations one at a time.  So: **Now** holds
-   only what is RUNNING (at most 3 rows); **Next day** at most 5 rows;
+1. **Capacity, not hope.**  Up to 7 generals at once (CLAUDE.md rule 4:
+   each `make -j1`, at most 4 compiles or suites, one heavy job, 2 cores
+   and 2 GB always left), each 30-60 minutes, integrations one at a time.  So: **Now** holds
+   only what is RUNNING (at most 7 rows: Vítor ordered up to 7 generals on 2026-11-02); **Next day** at most 5 rows;
    **Next three days** at most 8; everything else is **Beyond a week**.  A
    column over its cap pushes its LAST row down one column.
 2. **Order inside a column is priority**: a wrong number at exit 0 first,
@@ -31,32 +32,33 @@ Last reviewed: 2026-11-01 (restructured by capacity; earlier reviews in git).
 
 Status words: `todo` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
-## Now (running; at most 3)
+## Now (running; at most 7 generals, Vítor's order of 2026-11-02, laptop budget in CLAUDE.md rule 4)
 
 | status | what | ref |
 |---|---|---|
+| running | Integration of the tablet machines and clean utilities (--gui on the final tree) | C195 (1)(2) |
+| running | General: pressure as a tear variable; the sibling drivers read unconverged points | C186 (5) |
+| running | General: the rest of the external audit (batch A_rev, catalystLoading, membrane fitter verdict, PC-SAFT roots) | C190 (14)(11)(15)(12) |
+| running | General: the commercial shortlist, the A_w curation, the module registry's local tier, the importer's spacer defect | C189 |
+| running | General: the Campo de Dalías plant from Toray's case study, boron in both passes, layout up to the fence | C194 |
+| running | General: the acceptance contract on the remaining units and the Theory Guide section | C188 item 5 |
+| running | General: the distillation defects A and B, measured against the corpus | C184 |
+| running | General: the EduTool 'Patent expiry and generic entry' for the two pharmaceutical groups | C195 (4) |
 
 ## Next day (at most 5)
 
 | status | what | ref |
 |---|---|---|
+| todo | Integration friction: a tool that re-points GUI lesson citations by content, decision-index counts generated, additive registration conflicts kept by `bin/integrate` | C196 |
+| todo | After each push that adds a unit: the site's own WASM build and one browser run of the new case (the pressure exchanger first) | C196 |
 | todo | Confirm on the site (WASM) that C178 and C182 are published (minutes, done between integrations) | C178, C182 |
-| todo | Pressure is not a tear variable; and DesignSpec, GridSweep and Sweep read unconverged points (one general: same driver files) | C186 (5) |
-| todo | The rest of the audit: A_rev on the batch path, catalystLoading measured, the membrane fitter's 'converged' on a stall, PC-SAFT roots | C190 (14)(11)(15)(12) |
-| todo | The commercial shortlist: hard filters, each candidate re-rated at the student's conditions, no default score, `partner` never read by the ranking | C189 slice 5 |
-| todo | The Campo de Dalías seawater desalination plant (the sea of plastic) from Toray's case study, with its whole layout (scope put to Vítor) | C194 |
 
 ## Next three days (at most 8)
 
 | status | what | ref |
 |---|---|---|
-| todo | The acceptance contract on the remaining units and the Theory Guide section: modelled / declared approximation / refused | C188 item 5 |
-| todo | Curation: the module records' A_w gives about twice the sheets' permeate (NF270-4040, SW30HR-380) | C189 |
-| todo | The module registry's data/local tier; the importer cannot seal a case with a feed-spacer record | C189 |
-| todo | Distillation defects A (fullMESH seeded by an unconverged CMO phase) and B (NewtonND accepts a non-improving step) | C184 |
 | todo | C170's owed fixes: gates must not judge data/local or untracked files; refuse `nu 0; order 1`; records still citing Burcat | C170 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
-| todo | The EduTool 'Patent expiry and generic entry': originator sales, loss of exclusivity, generic competitors, price erosion and share, out to the economics (for the two pharmaceutical groups) | C195 (4) |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
 
 ## Beyond a week

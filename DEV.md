@@ -1528,6 +1528,30 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C196. THE COST OF INTEGRATING MANY GENERALS, AND THE SITE THAT NOBODY
+> BUILDS LOCALLY (the commander's own review, 2026-11-02, while seven
+> generals ran at Vitor's order -- "reflectir e rever o Choupo").**
+> MEASURED on 2026-11-01/02, one commander integrating five branches: the
+> SAME additive conflicts were resolved by hand three times -- the counts in
+> docs/architecture/decision-records.md (prose says 192, table has 193),
+> generated/gateManifest.json, and the registration lines every sizer and
+> every gate adds (EquipmentSize.cpp, bin/runTests); and GUI lessons'
+> `file:line` citations into src were re-pointed by hand in three files
+> (runLog, caseAssembly, plantLayout, bund) after an engine edit moved
+> lines, each time by an ad-hoc script.  With seven generals this is the
+> bottleneck.  COMMISSION: (a) a tool named repoint_lesson_citations (not yet written)
+> that re-points every citation by the CONTENT its `contains`/claim names,
+> refusing an ambiguous or missing one, called by `bin/integrate` when --gui
+> fails on citations; (b) the decision index counts GENERATED
+> (`check_decision_index --write`), so that conflict cannot exist; (c)
+> `bin/integrate` resolves a conflict whose two sides only ADD lines to a
+> registration list by keeping both, and says so.  SECOND: new units reach
+> the GUI only when CI rebuilds the WASM, which no local run does -- after
+> each push that adds a unit, the site's own build and one run of the new
+> case in the browser are verified (CLAUDE.md section 6, the 2026-08-27
+> lesson); a row in the plan, not a hope.
+> STATUS: COMMISSIONED 2026-11-02.
+
 > **C195. WHAT CHOUPO LACKS FOR THE TWO PHARMACEUTICAL-PLANT PROJECT GROUPS
 > OF 2026-27 (Vitor, 2026-11-02: "le os indices dos projetos dos anos
 > anteriores ... ve o que falta de importante ao Choupo para servir de apoio
