@@ -1561,7 +1561,22 @@ accepts today, and that is a policy call.
 > layout machinery (C75, C80-C96), NOT the real site's plan, and its header
 > says so.  PLACE: tutorials/plant/.  The C192 pressure exchanger stands in
 > for the isobaric recovery (a rotor device in both).
-> STATUS: COMMISSIONED 2026-11-01; scope questions put to Vitor.
+> DECIDED 2026-11-01 (Vitor: "o boro e para modelar"): the second pass and
+> BORON are modelled -- boric acid (neutral, passes the first pass at about
+> 91 % rejection) and borate (an anion, rejected) with the pH raised
+> between the passes, which is what makes the water fit for irrigation.
+> MEASURED before any brief (2026-11-01, grep of the tree): species
+> `H3BO3`, `BOH4`, `B3O3OH4`, `B4O5OH4`, `CaBOH4`, `MgBOH4` exist in
+> data/standards/species; NO boric-acid / borate equilibrium record exists in
+> data/standards/chemistry (to be curated from a primary source, never
+> typed from memory); the SW30HR-380 record says boron is "not modelled";
+> there is no pH-dosing unit (a `mixer` fed a caustic stream is the route);
+> UNMEASURED, first step of the general: whether `spiralWoundModule`
+> couples the feed speciation (pH) to per-species transport, so that the
+> neutral and the ionic form of one element cross the active layer with
+> different permeances.  If it does not, that is the commission's real
+> content, and it is scoped back to Vitor.
+> STATUS: COMMISSIONED 2026-11-01; layout scope question still open.
 
 > **C193. THE CML PLAN IS THE 1 HOUR / 1 DAY / 3 DAYS / BEYOND A WEEK
 > TABLE, KEPT CURRENT (Vitor, 2026-10-31 13:25 "plano de desenvolvimento de
