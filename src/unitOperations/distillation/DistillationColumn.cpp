@@ -3036,6 +3036,11 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     }
     announceTrialRefusals();
 
+    if (verbosity >= 2 && res.stalledSteps > 0)
+        std::cout << "  [solver] MESH: " << res.stalledSteps
+                  << " floor-damped line-search step(s) were taken (the line"
+                     " search exhausted without reducing |F|; announced,"
+                     " limited by NDOptions::maxStalledSteps)\n";
     if (verbosity >= 2 && std::isfinite(res.offBandMax))
         std::cout << "  [solver] block-tridiagonal structure VERIFIED on the"
                      " first iteration: max |J| outside the bands = "
@@ -3192,6 +3197,36 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             }
             return g;
         };
+        //  AN UNCONVERGED CMO PHASE SEEDS THE MESH ONLY AS AN ANNOUNCED SEED
+        //  (DEV.md 4c C184 defect A).  This phase used to start on the model
+        //  word alone: a CMO iterate that had NOT met its tolerance seeded the
+        //  rigorous Newton in silence, and a full MESH that then converged was
+        //  still reported NOT converged by the CMO's flag.  Seeds are the
+        //  student's to own (no silent crutch), so: the failed bootstrap is
+        //  announced with its stage count, iterations and residual; the
+        //  rigorous Newton still runs from it (it solves different rows, and
+        //  refusing would discard a run it may rescue); and the verdict is
+        //  THE FULL MESH'S -- the equations the case declared -- never the
+        //  bootstrap's.
+        const bool cmoSeedFailed = !res.converged;
+        auto fmtSci = [](scalar v) {
+            std::ostringstream o;
+            o << std::scientific << std::setprecision(3) << v;
+            return o.str();
+        };
+        if (cmoSeedFailed)
+        {
+            const std::string msg = "column '" + dict->name() + "' (" + fmModel
+                + "): the constant-molal-overflow phase that seeds the full"
+                " MESH did NOT converge (" + std::to_string(N) + " stages, "
+                + std::to_string(res.iterations) + " iterations, |F| = "
+                + fmtSci(res.residual) + " against 1e-9).  The full"
+                " MESH is started from that unconverged iterate as an"
+                " ANNOUNCED seed; the verdict below is the full MESH's own.";
+            AdvisoryLog::instance().add("solver", "warning",
+                                        "distillationColumn", msg);
+            std::cerr << "  [solver] " << msg << "\n";
+        }
         sVector w0(mU, 0.0);                                       // seed from the CMO profile
         for (std::size_t j = 0; j < N; ++j) {
             for (std::size_t i = 0; i + 1 < n; ++i) w0[j*mv+i] = x[j][i];
@@ -3204,7 +3239,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         auto resF = solver::newtonND(residualF, w0, optsF);
         announceTrialRefusals();
         for (std::size_t j = 0; j < N; ++j) unpackF(resF.x, j, x[j], T[j], V[j], L[j]);
-        if (!resF.converged) res.converged = false;
+        if (cmoSeedFailed) { res.converged = resF.converged; res.residual = resF.residual; }
+        else if (!resF.converged) res.converged = false;
+        if (resF.stalledSteps > 0 && verbosity >= 2)
+            std::cerr << "  [solver] full-MESH: " << resF.stalledSteps
+                      << " floor-damped line-search step(s) were taken"
+                         " (announced; NDOptions::maxStalledSteps)\n";
         if (verbosity >= 2)
             std::cerr << "  full-MESH (Naphtali-Sandholm): "
                       << (resF.converged ? "converged" : "NOT converged")

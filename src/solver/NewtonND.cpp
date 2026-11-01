@@ -399,11 +399,23 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
     scalar  mismatch = std::numeric_limits<scalar>::quiet_NaN();
     long    jacEvals = 0;
 
+    //  The BEST iterate seen, and the stalled-step count (NDOptions::
+    //  maxStalledSteps).  An unconverged exit returns the best, which is what
+    //  every stop message says it returns.
+    sVector bestX = x, bestF = Fx;
+    scalar  bestNorm = normF;
+    int     stalled = 0;
+    auto restoreBest = [&]() {
+        if (bestNorm < normF) { x = bestX; Fx = bestF; normF = bestNorm; }
+    };
+    auto finish = [&](NDResult r) { r.stalledSteps = stalled; return r; };
+
     int it = 0;
     for (; it < opts.maxIter; ++it)
     {
         if (normF < opts.tolerance)
-            return {x, Fx, normF, it, true, offBand, jacEvals, {}, mismatch};
+            return finish({x, Fx, normF, it, true, offBand, jacEvals, {}, mismatch});
+        if (normF < bestNorm) { bestX = x; bestF = Fx; bestNorm = normF; }
 
         // Build J(x) and solve J · dx = -F
         sVector minusFx(Fx.size());
@@ -489,10 +501,11 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
             catch (const std::exception& e)
             {
                 if (opts.onIter) opts.onIter({it, x, Fx, normF, 0.0});
-                return {x, Fx, normF, it, false, offBand, jacEvals,
+                restoreBest();
+                return finish({x, Fx, normF, it, false, offBand, jacEvals,
                         announceStop(std::string("the block-Thomas linear"
                             " solve of the Newton step failed (")
-                            + e.what() + ")", it, normF), mismatch};
+                            + e.what() + ")", it, normF), mismatch});
             }
         }
         else
@@ -504,10 +517,11 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
             {
                 // Singular Jacobian — bail with last iterate, and SAY so.
                 if (opts.onIter) opts.onIter({it, x, Fx, normF, 0.0});
-                return {x, Fx, normF, it, false, offBand, jacEvals,
+                restoreBest();
+                return finish({x, Fx, normF, it, false, offBand, jacEvals,
                         announceStop(std::string("the dense linear solve of"
                             " the Newton step failed (") + e.what() + ")",
-                            it, normF)};
+                            it, normF)});
             }
         }
 
@@ -557,10 +571,42 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
         if (FxNew.empty() || !std::isfinite(normFNew))
         {
             if (opts.onIter) opts.onIter({it, x, Fx, normF, alpha});
-            return {x, Fx, normF, it, false, offBand, jacEvals,
+            restoreBest();
+            return finish({x, Fx, normF, it, false, offBand, jacEvals,
                     announceStop("the line search found no evaluable step"
                         " (every trial infeasible or non-finite down to the"
-                        " minimum backtracking factor)", it, normF), mismatch};
+                        " minimum backtracking factor)", it, normF), mismatch});
+        }
+
+        //  A FINITE trial that does not reduce the norm is a STALLED step, not
+        //  a descent (C184 defect B): the loop above exits on `alpha <
+        //  minAlpha` holding the last trial it evaluated, and this code used
+        //  to advance to it unconditionally, contradicting the comment that
+        //  promises the last good iterate.  It is counted, announced once,
+        //  and limited; past the allowance the solve stops NOT converged.
+        if (opts.backtracking && !(normFNew < normF))
+        {
+            ++stalled;
+            AdvisoryLog::instance().add("solver", "warning", "newtonND",
+                "the line search EXHAUSTED without a step that reduces the"
+                " residual: the step is taken damped to the floor"
+                " (alpha ~ minAlpha) and COUNTED; the solve stops NOT"
+                " converged once its allowance of "
+                + std::to_string(opts.maxStalledSteps)
+                + " such steps is spent (NDOptions::maxStalledSteps).");
+            if (stalled > opts.maxStalledSteps)
+            {
+                if (opts.onIter) opts.onIter({it, x, Fx, normF, alpha});
+                restoreBest();
+                return finish({x, Fx, normF, it, false, offBand, jacEvals,
+                        announceStop("the line search found no step that"
+                            " reduces the residual (best trial |F| = "
+                            + std::to_string(normFNew) + " against "
+                            + std::to_string(normF) + ") and the allowance of "
+                            + std::to_string(opts.maxStalledSteps)
+                            + " floor-damped steps is spent", it, normF),
+                        mismatch});
+            }
         }
 
         if (opts.onIter) opts.onIter({it, x, Fx, normF, alpha});
@@ -573,7 +619,8 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
     //  maxIter reached: the structure measurement and the Jacobian count
     //  travel with this exit too (they were dropped here, so a column that
     //  hit maxIter lost its `block-tridiagonal structure VERIFIED` line).
-    return {x, Fx, normF, it, normF < opts.tolerance, offBand, jacEvals, {}, mismatch};
+    if (!(normF < opts.tolerance)) restoreBest();
+    return finish({x, Fx, normF, it, normF < opts.tolerance, offBand, jacEvals, {}, mismatch});
 }
 
 } // namespace Choupo::solver

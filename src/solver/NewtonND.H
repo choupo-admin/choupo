@@ -96,6 +96,9 @@ struct NDResult
     //  difference carries its own truncation and round-off error, so this
     //  is a number to ANNOUNCE (~1e-6 is agreement), not a refusal test.
     scalar    analyticMismatch = std::numeric_limits<scalar>::quiet_NaN();
+    //- Steps taken although no backtracking trial reduced ||F|| (see
+    //  NDOptions::maxStalledSteps).  0 on a monotone solve.
+    int       stalledSteps = 0;
 };
 
 //- A DECLARED block-tridiagonal structure: unknowns grouped in nBlocks
@@ -143,6 +146,18 @@ struct NDOptions
     scalar    fdStep           = 1.0e-7;
     bool      backtracking     = true;
     scalar    minAlpha         = 1.0e-4;
+    //- STALLED STEPS (DEV.md 4c C184 defect B).  When the backtracking line
+    //  search exhausts holding a FINITE trial that does not reduce ||F||, the
+    //  step used to be taken in silence -- the iterate moved uphill while the
+    //  stop messages promised "the last good iterate".  It is now COUNTED,
+    //  ANNOUNCED, and limited to this allowance in total over one solve (0 =
+    //  strict: the first such step stops the solve); past it the solve stops
+    //  NOT converged and returns the BEST iterate seen, never the last.
+    //  25 is not a theorem: the corpus's columns converge through up to a
+    //  dozen of these floor-damped steps (stripper02: 12 of 43 iterations,
+    //  acetone06: 2 of 15), so a strict default would turn working cases
+    //  into failures; the count travels in NDResult::stalledSteps.
+    int       maxStalledSteps  = 25;
     // Parallelise the finite-difference Jacobian across cores.  Opt-in: set ONLY
     // when the residual F is thread-safe (a pure function, no shared mutable
     // state).  The recycle / flowsheet Newton mutates unit state -> leave false.

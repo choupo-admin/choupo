@@ -4874,6 +4874,21 @@ PYEOF
     fi
     rm -f /tmp/solvfail.$$
 
+    # distillation-seed gate (2026-11-01, DEV.md 4c C184 A+B).  A CMO phase
+    # that did not converge seeds the full MESH only as an ANNOUNCED seed and
+    # the verdict is the full MESH's own; a Newton step that no backtracking
+    # trial improves is counted, limited, and never returned as the last good
+    # iterate (the best iterate is).  Probe + end-to-end + source arms.
+    if gate_exec "$ROOT/bin/curate/check_distillation_seed.py" > /tmp/distseed.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "distillation-seed-gate" "$(head -1 /tmp/distseed.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_distillation_seed.py)\n" "distillation-seed-gate"
+        cat /tmp/distseed.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/distseed.$$
+
     # optimiser-converged gate (2026-10-31, DEV.md 4c C186 (4)).  An
     # unconverged simulation is a FAILED evaluation on every optimiser path
     # (Nelder-Mead, SQP, the integer enumeration), counted by cause and
