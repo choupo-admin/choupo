@@ -38,7 +38,6 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 |---|---|---|
 | running | General: the Campo de Dalías plant from Toray's case study, boron in both passes, layout up to the fence | C194 |
 | running | General: heavy water curated from the IAPWS formulation (researchers asked) | C197 |
-| running | General: the EduTool 'Patent expiry and generic entry' for the two pharmaceutical groups | C195 (4) |
 
 ## Next day (at most 5)
 
@@ -100,6 +99,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| done | The EduTool 'Patent expiry and generic entry' for the two pharmaceutical groups (two real sources read, the rest declared assumed) | C195 (4), facf7ca2b |
 | done | Pressure is a tear variable; the sibling drivers read no unconverged point (two goldens moved on written reasons) | C186 (5), 43b5c58c8 |
 | done | The acceptance contract on 15 more units, three real defects found by it (turbine fed a liquid, absorber with an inert solute, extractor ports), the Theory Guide section | C188 item 5, 54f3ab783 |
 | done | The commercial shortlist (no score), A_w derived from the data sheet, the module registry's local tier, class cases seal | C189, 2aa30a65d |

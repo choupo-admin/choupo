@@ -1657,6 +1657,28 @@ accepts today, and that is a policy call.
 > after re-pointing nine lesson citations (runLog, caseAssembly, plantLayout,
 > bund) that C195's added lines had moved -- the cost C196 names.  NOT done:
 > compressed air, effluent, per-room items, a multiproduct plan.
+> DONE 2026-11-02, item (4), the EduTool `patent-expiry` (facf7ca2b, a general):
+> originator sales and price, loss-of-exclusivity date, lag to the first
+> generic, the student's own launch delay, five editable curves (generic
+> price by number of producers and by years since entry, cumulative generic
+> share, rivals per year, the newcomer's share), each point `stated` or
+> `assumed` with a reason and an edited point becoming `assumed`; the page
+> outputs a `rampUp ( ... )` list, `perYear ... kg` and one price in the keys
+> and units apalutamide01 reads, and a scenario table (late by 1 and 2 years,
+> price ratio x 0.5).  SOURCES READ: FDA 2019 Conrad and Lutter (generic price
+> cuts 39 / 54 / 79 / more than 95 % at 1 / 2 / 4 / 6+ producers; the 3- and 5-
+> producer points are interpolations marked `assumed`) and the European
+> Commission sector-inquiry fact sheet (generic price 25 % below at entry and
+> 40 % after two years; share about 30 % and 45 %; first entry more than 7
+> months after loss of exclusivity); the EC final report was NOT read, so the
+> rivals-per-year and newcomer-share curves are `assumed`.  Two findings
+> printed, not tuned away: a late entrant looks as well off when discounted to
+> its own launch (it skips the thin early years), so both dates are shown; and
+> the plateau of ~10 M tablets/year is below the 14 M/year the case produces
+> from year 1.  The case's economics cannot take a price that varies by year,
+> so the page pastes a volume ramp plus one discounted-volume-weighted price.
+> `--gui` 42/0.  STILL OPEN: (3) blend uniformity, (5) a sterile route, and the
+> compaction bench (waits for the groups' data).
 > STATUS: COMMISSIONED 2026-11-02; (1)(2) DONE; (4) with a general; (3), (5)
 > and the compaction bench wait.
 
