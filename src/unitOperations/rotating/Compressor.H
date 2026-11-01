@@ -148,6 +148,9 @@ public:
         return kpis_;
     }
 
+    //  What it accepts (C188 item 5, slice D): a vapour suction.
+    UnitAcceptance acceptance() const override;
+
 private:
     inline static const std::string type_ = "compressor";
     std::vector<ProcessStream>      produced_;

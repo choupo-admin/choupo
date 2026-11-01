@@ -113,6 +113,9 @@ public:
     std::vector<std::string> readsInteriorKinds() const override
     { return { "stageProfile" }; }
 
+    //  What it accepts (C188 item 5, slice D): two liquids.
+    UnitAcceptance acceptance() const override;
+
     //  The seed above, rendered as the profile `choupo-init0` materialises --
     //  built by the SAME two functions the solve uses, so the file and the run
     //  can never describe different starting states.

@@ -87,6 +87,10 @@ struct AcceptanceInlet
     scalar      P  = 0.0;       // Pa
     sVector     z;              // normalised overall composition
     scalar      vf = 0.0;       // the vapour fraction the inlet MEANS
+    //  The unit's process-inlet index this stream arrives at (-1 = not
+    //  known / not per-port): a unit whose ports accept different phases
+    //  (an absorber's gas and its wash) declares `UnitAcceptance::ports`.
+    int         port = -1;
 };
 
 struct UnitAcceptance
@@ -105,6 +109,20 @@ struct UnitAcceptance
         std::string why;        // what the model assumes about the phase
         std::string remedy;
     } phases;
+
+    //  PER-PORT PHASES (C188 item 5, slice D).  A unit whose process inlets
+    //  are not alike -- an absorber's gas feed and its liquid wash -- declares
+    //  one entry per inlet, in the order of the unit's `inputs (...)`, and the
+    //  phase clause is judged against THAT port's `phases`; `phases` above is
+    //  then the default for any port not listed.  Empty = every inlet is
+    //  judged against `phases`.  The port's `name` is for the message and the
+    //  generated documentation.
+    struct Port
+    {
+        std::string name;
+        Phases      phases;
+    };
+    std::vector<Port> ports;
 
     //  Whether the declared aqueous solvent (`ThermoPackage::
     //  aqueousSolventIndex`, water by default) must be present in the feed.
@@ -237,7 +255,8 @@ AcceptanceInlet acceptanceInletOf(const DictPtr&        feedDict,
                                   const sVector&        z,
                                   const ThermoPackage&  thermo,
                                   const std::string&    locus,
-                                  const UnitAcceptance& acc);
+                                  const UnitAcceptance& acc,
+                                  int                   port = -1);
 
 //  THE ONE PLACE AN ACCEPTANCE REFUSAL IS WRITTEN.  Returns one finding per
 //  violated clause (empty = accepted), each a complete sentence naming the

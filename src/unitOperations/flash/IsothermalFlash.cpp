@@ -2854,4 +2854,19 @@ void printFlashResult(const FlashSolution& sol,
     std::cout << "====================================================================\n\n";
 }
 
+//  WHAT THE UNIT ACCEPTS (DEV.md 4c C188 item 5, slice D): the unit models
+//  whatever component it is handed, in any phase, as its sentence says; it
+//  has no component-subset rule, so the sentence is the whole contract.
+UnitAcceptance IsothermalFlash::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.models.sentence =
+        "every component of the feed, split among the phases the package's "
+        "equilibrium finds at the specified conditions (a vapour, one or "
+        "two liquids, and any solid phase the case declares); a nonvolatile "
+        "stays in the liquid (K = 0)";
+    return a;
+}
+
 } // namespace Choupo

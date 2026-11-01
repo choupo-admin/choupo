@@ -311,6 +311,15 @@ int Evaporator::solve(const DictPtr& dict,
     //  are non-volatile solutes whose mass stays in the concentrated
     //  liquid.  Exactly one volatile species expected.
     // -------------------------------------------------------------------
+    //  WHAT THE UNIT ACCEPTS (C188 item 5, slice D): exactly one volatile
+    //  species in the feed -- the contract's `oneVolatileSolvent` condition,
+    //  which replaced the two throws that stood here ("multiple volatile
+    //  components" / "no volatile species"), so it is reported before any unit
+    //  runs when the feed is authored.  A produced feed is judged here.
+    const std::string evapLocus = "evaporator '"
+        + (dict->name().empty() ? type() : dict->name()) + "'";
+    checkAcceptance(*this, acceptanceInletOf(feedDict, z, thermo, evapLocus,
+                    acceptance(), 0), thermo, evapLocus);
     std::size_t iSolvent = thermo.n();
     for (std::size_t i = 0; i < n; ++i)
     {
@@ -319,17 +328,8 @@ int Evaporator::solve(const DictPtr& dict,
                                      // carry components this sector does not use
         const std::string& r = thermo.comp(i).role();
         if (r == "volatile" || r == "solute")
-        {
-            if (iSolvent != thermo.n())
-                throw std::runtime_error("Evaporator: multiple volatile"
-                    " components in feed --- this single-effect model"
-                    " supports exactly one (the solvent)");
-            iSolvent = i;
-        }
+            iSolvent = i;            // the contract guarantees exactly one
     }
-    if (iSolvent == thermo.n())
-        throw std::runtime_error("Evaporator: feed has no volatile species"
-            " --- a solvent is required for evaporation");
     const Component& solv = thermo.comp(iSolvent);
     const scalar MW_solv  = solv.MW();
     const scalar K_b      = solv.K_b();          // 0 if not declared
@@ -927,6 +927,54 @@ int Evaporator::solve(const DictPtr& dict,
     kpis_["F_vap_kmol_h"]  = vap.F  * 3600.0;
 
     return r.converged ? 0 : 1;
+}
+
+//  WHAT THE EVAPORATOR ACCEPTS (DEV.md 4c C188 item 5, slice D): a liquor with
+//  EXACTLY ONE volatile species (the solvent); every other component is a
+//  nonvolatile solute whose mass stays in the concentrate and which raises
+//  the boiling point.  The steam chest is a utility port and is judged by the
+//  unit's own chest-phase rule.
+UnitAcceptance Evaporator::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.models.sentence = "one volatile solvent (the single feed component whose"
+        " role is `volatile` or `solute`), evaporated, and every other component"
+        " as a nonvolatile solute that stays in the concentrate and raises its"
+        " boiling point";
+    UnitAcceptance::Condition c;
+    c.id = "oneVolatileSolvent";
+    c.sentence = "This single-effect model evaporates ONE solvent: with two"
+        " volatile components the vapour would be a mixture whose composition"
+        " the unit has no equilibrium for, and with none there is nothing to"
+        " evaporate.  (Wine, with its ethanol, is two volatiles.)";
+    c.remedy = "give every component except the solvent `role nonvolatile;`"
+        " if it really stays in the liquid, or use a `flash` or a"
+        " `distillationColumn` for a volatile mixture.";
+    c.test = [](const AcceptanceInlet& in, const ThermoPackage& th)
+        -> std::optional<std::string>
+    {
+        std::string vol;
+        int count = 0;
+        for (std::size_t i = 0; i < th.n() && i < in.z.size(); ++i)
+        {
+            if (in.z[i] <= 0.0) continue;
+            const std::string& r = th.comp(i).role();
+            if (r == "volatile" || r == "solute")
+            {
+                ++count;
+                vol += (vol.empty() ? "'" : ", '") + th.comp(i).name() + "'";
+            }
+        }
+        if (count == 1) return std::nullopt;
+        if (count == 0)
+            return std::string("carries no volatile species (every component is"
+                               " nonvolatile)");
+        return "carries " + std::to_string(count) + " volatile components ("
+               + vol + ")";
+    };
+    a.refusesAlso.push_back(std::move(c));
+    return a;
 }
 
 } // namespace Choupo

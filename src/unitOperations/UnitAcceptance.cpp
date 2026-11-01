@@ -150,14 +150,21 @@ AcceptanceInlet acceptanceInletOf(const DictPtr&        feedDict,
                                   const sVector&        z,
                                   const ThermoPackage&  thermo,
                                   const std::string&    locus,
-                                  const UnitAcceptance& acc)
+                                  const UnitAcceptance& acc,
+                                  int                   port)
 {
     AcceptanceInlet in;
+    in.port = port;
+    //  Whether any phase restriction applies to THIS inlet: the unit's own,
+    //  or its port's.
+    const UnitAcceptance::Phases& ph =
+        (port >= 0 && static_cast<std::size_t>(port) < acc.ports.size())
+        ? acc.ports[static_cast<std::size_t>(port)].phases : acc.phases;
     in.streamName = feedDict->lookupWordOrDefault("streamName", "");
     in.T  = feedDict->lookupScalar("T", Dims::temperature);
     in.P  = feedDict->lookupScalar("P", Dims::pressure);
     in.z  = z;
-    in.vf = (acc.phases.liquid && acc.phases.vapour)
+    in.vf = (ph.liquid && ph.vapour)
           ? feedDict->lookupScalarOrDefault("vf", 0.0)
           : flashState::resolvedInletVaporFraction(feedDict, in.T, in.P, z,
                                                    thermo, locus);
@@ -178,12 +185,18 @@ std::vector<std::string> acceptanceFindings(const UnitAcceptance&  acc,
     const std::size_t n = thermo.n();
 
     // ---- The phases the model is written for -------------------------------
+    //  (the port's own, when the unit declares per-port phases)
     {
+        const bool portKnown = inlet.port >= 0
+            && static_cast<std::size_t>(inlet.port) < acc.ports.size();
+        const UnitAcceptance::Phases& ph = portKnown
+            ? acc.ports[static_cast<std::size_t>(inlet.port)].phases
+            : acc.phases;
         const bool vapourPresent = inlet.vf > 0.0;
         const bool liquidPresent = inlet.vf < 1.0;
         const char* notWhat = nullptr;
-        if (!acc.phases.vapour && vapourPresent)      notWhat = "a liquid";
-        else if (!acc.phases.liquid && liquidPresent) notWhat = "a vapour";
+        if (!ph.vapour && vapourPresent)      notWhat = "a liquid";
+        else if (!ph.liquid && liquidPresent) notWhat = "a vapour";
         if (notWhat)
         {
             char b[200];
@@ -191,8 +204,14 @@ std::vector<std::string> acceptanceFindings(const UnitAcceptance&  acc,
                 " P = %.4g bar", static_cast<double>(inlet.vf),
                 static_cast<double>(inlet.T),
                 static_cast<double>(inlet.P / 1.0e5));
-            out.push_back(head + " is not " + notWhat + " (" + b + ").  "
-                + acc.phases.why + "  REMEDY: " + acc.phases.remedy);
+            out.push_back(head
+                + (portKnown && !acc.ports[static_cast<std::size_t>(inlet.port)]
+                                     .name.empty()
+                       ? " (the " + acc.ports[static_cast<std::size_t>(inlet.port)]
+                                         .name + " inlet)"
+                       : std::string())
+                + " is not " + notWhat + " (" + b + ").  "
+                + ph.why + "  REMEDY: " + ph.remedy);
         }
     }
 
@@ -481,6 +500,23 @@ void describeAcceptancesJson(
         if (!a.phases.why.empty())    os << ", \"why\": " << q(a.phases.why);
         if (!a.phases.remedy.empty()) os << ", \"remedy\": " << q(a.phases.remedy);
         os << " }";
+        os << ",\n      \"ports\": [";
+        for (std::size_t k = 0; k < a.ports.size(); ++k)
+        {
+            const auto& pp = a.ports[k];
+            os << (k ? ", " : "") << "{ \"name\": " << q(pp.name)
+               << ", \"accepted\": [";
+            bool f3 = true;
+            if (pp.phases.liquid) { os << "\"liquid\""; f3 = false; }
+            if (pp.phases.vapour) { os << (f3 ? "" : ", ") << "\"vapour\""; }
+            os << "]";
+            if (!pp.phases.why.empty())
+                os << ", \"why\": " << q(pp.phases.why);
+            if (!pp.phases.remedy.empty())
+                os << ", \"remedy\": " << q(pp.phases.remedy);
+            os << " }";
+        }
+        os << "]";
         os << ",\n      \"solvent\": { \"aqueousRequired\": "
            << (a.solvent.aqueousRequired ? "true" : "false");
         if (!a.solvent.why.empty())    os << ", \"why\": " << q(a.solvent.why);

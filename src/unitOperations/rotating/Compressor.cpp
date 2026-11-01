@@ -63,49 +63,24 @@ int Compressor::solve(const DictPtr& dict,
 
     // ---- LIQUID IN THE SUCTION IS REFUSED (DEV.md 4c, 2026-10-21) --------
     //
-    //  A compressor is a vapour machine: liquid in its suction is a design
-    //  fault in practice (slugging, erosion, a broken valve plate), and the
-    //  arithmetic below has no answer for it either -- `H_real` and `S_real`
-    //  are the VAPOUR root at the OVERALL composition, so a two-phase feed
-    //  was compressed as if it were all vapour, in silence, while the energy
-    //  report resolved the same stream and found the latent heat of its
-    //  liquid unaccounted (24.93 kW at the hydrogen compressor of the
-    //  methanol benchmark, whose feed carries 3.4 % condensed water).  That
-    //  is the family CLAUDE.md 6 names, THE STATE A UNIT COMPUTES WITH IS
-    //  NOT THE STATE ITS STREAMS CARRY; wet compression is physics nobody
-    //  asked for.  So the suction is read by what it MEANS -- an authored
-    //  inlet at its own (T, P, z), a produced one at its producer's answer
-    //  (`flashState::resolvedInletVaporFraction`, the one home) -- and any
-    //  liquid refuses the unit by name, with the two remedies.
+    //  A compressor is a vapour machine: `H_real` and `S_real` are the VAPOUR
+    //  root at the OVERALL composition, so a two-phase feed was compressed as
+    //  if it were all vapour, in silence, while the energy report resolved the
+    //  same stream and found the latent heat of its liquid unaccounted
+    //  (24.93 kW at the hydrogen compressor of the methanol benchmark, whose
+    //  feed carries 3.4 % condensed water).  The rule is this unit's DECLARED
+    //  acceptance (`Compressor::acceptance()` below, C188 item 5 slice D --
+    //  the refusal moved there from this block, its remedies unchanged), read
+    //  by what the suction MEANS (`resolvedInletVaporFraction`, inside
+    //  `acceptanceInletOf`).  An authored suction was already judged before
+    //  the first unit ran; a produced one is judged here.
     {
         const std::string unitName = dict->name().empty() ? type() : dict->name();
         const std::string inName   = feedDict->lookupWordOrDefault("streamName", "?");
-        const scalar vfSuction = flashState::resolvedInletVaporFraction(
-            feedDict, T_in, P_in, y, thermo,
-            "compressor '" + unitName + "' suction '" + inName + "'");
-        //  The one home returns exactly 1 for a vapour (it rounds V/F within
-        //  1e-9 of a phase boundary onto it), so any value below 1 is liquid.
-        if (vfSuction < 1.0)
-        {
-            std::ostringstream m;
-            m << std::setprecision(6)
-              << "Compressor '" << unitName << "': its suction '" << inName
-              << "' carries LIQUID -- at its own T = " << T_in << " K and P = "
-              << (P_in / 1.0e5) << " bar the stream is "
-              << (vfSuction <= 0.0 ? "all liquid" : "two-phase")
-              << " (vapour fraction V/F = " << vfSuction
-              << ", liquid fraction " << (1.0 - vfSuction) << ", "
-              << (1.0 - vfSuction) * F * 3600.0 << " kmol/h of liquid).\n"
-                 "  A compressor is a vapour machine: it does not compress a"
-                 " liquid, and this unit's isentropic path has no answer for"
-                 " one (it would compute the vapour root of the overall"
-                 " composition and hide the liquid's latent heat).\n"
-                 "  REMEDY: put a knock-out drum upstream -- a `flash` at the"
-                 " suction's T and P, its vapour to this compressor and its"
-                 " liquid out of the plant -- or, if the stream is meant to be"
-                 " a liquid, raise its pressure with a `pump` instead.";
-            throw std::runtime_error(m.str());
-        }
+        const std::string locus = "compressor '" + unitName + "' suction '"
+                                + inName + "'";
+        checkAcceptance(*this, acceptanceInletOf(feedDict, y, thermo, locus,
+                        acceptance()), thermo, "compressor '" + unitName + "'");
     }
 
     // ---- Hardware --------------------------------------------------------
@@ -259,6 +234,30 @@ int Compressor::solve(const DictPtr& dict,
     kpis_["F"]          = F;
 
     return 0;
+}
+
+//  WHAT THE COMPRESSOR ACCEPTS (DEV.md 4c C188 item 5, slice D): a vapour, and
+//  nothing else.  Every component it is handed is compressed as one mixture
+//  priced by the package.
+UnitAcceptance Compressor::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.phases.liquid = false;
+    a.phases.vapour = true;
+    a.phases.why = "A compressor is a vapour machine: its isentropic path"
+        " (`H_real`, `S_real`) is the VAPOUR root at the overall composition,"
+        " so a liquid or two-phase suction would be compressed as if it were all"
+        " vapour while the energy report, resolving the same stream, finds the"
+        " latent heat of its liquid unaccounted (slugging, erosion and a broken"
+        " valve plate in a real machine).";
+    a.phases.remedy = "put a knock-out drum upstream -- a `flash` at the"
+        " suction's T and P, its vapour to this compressor and its liquid out of"
+        " the plant -- or, if the stream is meant to be a liquid, raise its"
+        " pressure with a `pump` instead.";
+    a.models.sentence = "every component of the suction, as one vapour mixture"
+        " priced by the package's enthalpy and entropy";
+    return a;
 }
 
 } // namespace Choupo

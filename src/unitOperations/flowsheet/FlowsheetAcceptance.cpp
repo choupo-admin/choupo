@@ -89,6 +89,14 @@ void Flowsheet::checkAuthoredInletAcceptance(
         //  An unmigrated unit with no pass-through block accepts all, and is
         //  left before its world is built (building one announces things).
         if (!acc.declared && !declaresPassThrough) continue;
+        //  A unit that DECLARED a contract but restricts nothing (a flash, a
+        //  valve: every component, every phase) has nothing to judge here, and
+        //  building its world would announce things for no finding.
+        const bool restricts = !(acc.phases.liquid && acc.phases.vapour)
+            || !acc.ports.empty() || acc.solvent.aqueousRequired
+            || acc.models.rule != UnitAcceptance::ModelsRule::everyComponent
+            || !acc.needs.empty() || !acc.refusesAlso.empty();
+        if (acc.declared && !restricts && !declaresPassThrough) continue;
         //  The unit's OWN world: the one its solve reads its inlet in.
         const ThermoPackage& world = acc.declared
             ? thermoFor(fu.name, ud->second, thermo) : thermo;
@@ -104,6 +112,7 @@ void Flowsheet::checkAuthoredInletAcceptance(
 
         const auto utilPorts = probe->utilityPorts();
         std::vector<const ProcessStream*> process;
+        std::vector<int>                  portOf;   // each one's index in the unit's inputs
         bool allAuthored = true;
         for (std::size_t k = 0; k < fu.ins.size(); ++k)
         {
@@ -117,6 +126,7 @@ void Flowsheet::checkAuthoredInletAcceptance(
             //  composition to judge, and the unit's own solve still checks it.
             if (!s.authoredInlet || !(s.F > 0.0)) continue;
             process.push_back(&s);
+            portOf.push_back(static_cast<int>(k));
         }
 
         if (acc.appliesTo == UnitAcceptance::Scope::combinedFeed)
@@ -144,11 +154,14 @@ void Flowsheet::checkAuthoredInletAcceptance(
                 keep(std::move(f));
             continue;
         }
-        for (const auto* s : process)
+        for (std::size_t pi = 0; pi < process.size(); ++pi)
         {
+            const auto* s = process[pi];
             const DictPtr feed = streamToDict(*s, world);
-            const AcceptanceInlet in =
-                acceptanceInletOf(feed, s->z, world, locus, acc);
+            //  The port is the stream's place among the unit's inputs, so a
+            //  unit whose inlets accept different phases judges each by its own.
+            const AcceptanceInlet in = acceptanceInletOf(feed, s->z, world,
+                                                         locus, acc, portOf[pi]);
             for (auto& f : acceptanceFindings(acc, fu.type, in, world, locus, &pt))
                 keep(std::move(f));
         }

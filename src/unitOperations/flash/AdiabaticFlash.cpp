@@ -380,4 +380,19 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     return r.converged ? 0 : 1;
 }
 
+//  WHAT THE UNIT ACCEPTS (DEV.md 4c C188 item 5, slice D): the unit models
+//  whatever component it is handed, in any phase, as its sentence says; it
+//  has no component-subset rule, so the sentence is the whole contract.
+UnitAcceptance AdiabaticFlash::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.models.sentence =
+        "every component of the feed, split among the phases the package's "
+        "equilibrium finds at the outlet pressure and the inlet's enthalpy "
+        "(a vapour, one or two liquids, and any solid phase the case "
+        "declares)";
+    return a;
+}
+
 } // namespace Choupo

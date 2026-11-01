@@ -29,6 +29,7 @@ License
 #include "Absorber.H"
 #include "LumpedCpEnergyNote.H"
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
+#include "KremserAcceptance.H"
 #include "thermo/ThermoPackage.H"
 
 #include <algorithm>
@@ -112,86 +113,25 @@ int Absorber::solve(const DictPtr& dict,
         isSolute[i] = (thermo.comp(i).role() == "solute" && !solv.empty()
                     && HenrysLawRegistry::has(thermo.comp(i).name(), solv));
 
-    //  ---- AN ABSORBER WITH NOTHING TO ABSORB MUST REFUSE ------------------
+    //  ---- WHAT THIS UNIT ACCEPTS IS ITS CONTRACT (C188 item 5, slice D) ---
     //
-    //  Found 2026-08-12, building Luyben's acetone absorber on a `gammaPhi`
-    //  package.  This method is KREMSER: it reads Henry's law, it does not
-    //  consult the activity model at all, and it needs a package that names a
-    //  SOLVENT and at least one component whose role is `solute` with a Henry
-    //  pair against that solvent.  Given a package that names none, every
-    //  branch above silently produced `false`, every component fell through to
-    //  `inert`, and the unit returned the gas UNCHANGED while the entire
-    //  solvent stream -- 20 kmol/h of water -- simply disappeared.  Exit 0.
-    //
-    //  The default mass-balance report caught it (49.2 % closure, and the
-    //  element balance failed on oxygen), which is the safety net working.
-    //  But a unit that has ALREADY DETERMINED it cannot do its job must not
-    //  hand a fabricated answer to a report and hope the report objects.  The
-    //  no-silent-crutch rule is about exactly this: announce, or refuse --
-    //  never return something that looks like an answer.
-    if (solv.empty())
-        throw std::runtime_error("Absorber: this package names no SOLVENT, so"
-            " the unit cannot tell which component washes and which is washed"
-            " out.\n"
-            "        The Kremser method here reads HENRY'S LAW, not the"
-            " activity model -- a `gammaPhi` package with UNIFAC or NRTL"
-            " carries no answer it can use.\n"
-            "        Declare the dilute-solution formulation instead:\n"
-            "                equilibrium { formulation diluteSolution;"
-            " liquid { solvent { component <name>; ... } solutes { ... } } }\n"
-            "        (see tutorials/steady/absorption/absorber01_NH3_water)."
-            "  Refused rather than run: with no solvent every component is"
-            " inert, the gas would leave unchanged and the solvent stream"
-            " would vanish.");
-
-    if (std::none_of(isSolute.begin(), isSolute.end(), [](bool b){ return b; }))
+    //  The refusals that used to stand here -- a package with no SOLVENT, a
+    //  gas with no SOLUTE, a non-solute arriving in the wash (which left in
+    //  neither outlet, found by the C131 review at 97.469 % mass closure, exit
+    //  0) -- and the new ones (a `role solute` with no Henry pair, which fell
+    //  through to the inert branch in silence; a gas fed to the liquid port or
+    //  a liquid to the gas port) are CONDITIONS of `kremserAcceptance(true)`
+    //  (KremserAcceptance.cpp), written by the one function that writes an
+    //  acceptance refusal, and reported before any unit runs when the inlet is
+    //  authored.  A produced stream is judged here, at the solve.
     {
-        std::string present;
-        for (std::size_t i = 0; i < n; ++i)
-            if (y_in[i] > 1.0e-9 && thermo.comp(i).name() != solv)
-                present += (present.empty() ? "" : ", ") + thermo.comp(i).name();
-        throw std::runtime_error("Absorber: not one component is a SOLUTE this"
-            " unit can transfer into '" + solv + "'.\n"
-            "        A component transfers only when its record declares"
-            " `role solute;` AND a Henry pair <component>-" + solv + " exists."
-            "  Present in the gas: " + present + ".\n"
-            "        Refused rather than run: with no solute the gas leaves"
-            " unchanged and the solvent stream vanishes, which is an answer"
-            " only in the sense that it is a number.");
+        const std::string locus = "absorber '"
+            + (dict->name().empty() ? type() : dict->name()) + "'";
+        checkAcceptance(*this, acceptanceInletOf(ins[0], y_in, thermo, locus,
+                        acceptance(), 0), thermo, locus);
+        checkAcceptance(*this, acceptanceInletOf(ins[1], x_in, thermo, locus,
+                        acceptance(), 1), thermo, locus);
     }
-
-    //  ---- MATERIAL THIS METHOD HAS NO ROUTE FOR MUST REFUSE --------------
-    //
-    //  Found by the C131 separations review (2026-10-25).  The method moves a
-    //  SOLUTE between the phases, holds the SOLVENT in the liquid and an INERT
-    //  in the gas -- and an inert that arrived with the SOLVENT stream (a gas
-    //  dissolved in the wash, a second solvent component such as an amine)
-    //  had no row at all: the molar-flow loop below wrote `V_in * y_in` for it
-    //  and nothing for its liquid, so it left in neither outlet.  Measured on
-    //  absorber01 with 5 kmol/h of N2 in the wash: 97.469 % mass closure,
-    //  exit 0.  Where such a component goes is a modelling claim (absorbed,
-    //  stripped into the gas, carried through) that a Kremser cascade does
-    //  not make, so it is refused by name.  A TRACE (below 1e-12 of the
-    //  solvent stream -- round-off an upstream unit can hand over) is carried
-    //  through in the liquid instead, so a recycle is not killed by a
-    //  rounding error and nothing is ever deleted.
-    constexpr scalar kTraceFraction = 1.0e-12;
-    for (std::size_t i = 0; i < n; ++i)
-        if (!isSolute[i] && i != iSolv && L_in * x_in[i] > kTraceFraction * L_in)
-            throw std::runtime_error("Absorber: the solvent stream carries "
-                + std::to_string(L_in * x_in[i] * 3600.0) + " kmol/h of '"
-                + thermo.comp(i).name() + "', which is neither the solvent '"
-                + solv + "' nor a solute this unit transfers.\n"
-                "        This method moves SOLUTES (`role solute;` with a Henry"
-                " pair against the solvent) between the phases, holds the"
-                " solvent in the liquid and every other component in the gas;"
-                " it has no rule for a non-solute that arrives in the LIQUID"
-                " (absorbed, stripped or carried through are three different"
-                " answers, and Kremser makes none of them).\n"
-                "        Refused rather than run: this component would leave in"
-                " neither outlet.  Remove it from the solvent stream, declare it"
-                " a solute with a Henry pair, or model the column rigorously"
-                " (`distillationColumn` with `model simultaneous;`).");
 
     // ---- Energy data (heat-of-absorption balance; isothermal fallback) -
     const scalar T0 = 0.5 * (T_gas + T_sol);
@@ -422,5 +362,11 @@ int Absorber::solve(const DictPtr& dict,
     }
     return 0;
 }
+
+} // namespace Choupo
+
+namespace Choupo {
+
+UnitAcceptance Absorber::acceptance() const { return kremserAcceptance(true); }
 
 } // namespace Choupo
