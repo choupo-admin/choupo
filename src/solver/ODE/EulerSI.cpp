@@ -77,8 +77,9 @@ ODEStats EulerSI::integrate(sVector& y, scalar t0, scalar t1,
         //  2026-08-22 nPositive was silently ignored here: the declared
         //  control the caller handed in simply did not apply.)
         bool bad = false;
-        for (std::size_t i = 0; i < ctrl.nPositive && i < n; ++i)
-            if (y[i] < 0.0) { bad = true; break; }
+        for (std::size_t i = 0; i < ctrl.positiveRows.size() && i < n; ++i)
+            if (ctrl.positiveRows[i] && y[i] < 0.0)
+            { bad = true; st.negativeRow = i; break; }
         for (scalar v : y) if (!std::isfinite(v)) { bad = true; break; }
         if (bad)
         {

@@ -56,7 +56,15 @@ Description
         choupoCtrl and choupoSemiContinuous) had discarded the return value,
         so the clock, the routing, the recipe events and the <t>/ writes all
         moved on to t1.  The refusal lives HERE, in the one function both
-        call, so a caller cannot forget to read it.
+        call, so a caller cannot forget to read it;
+      * GUARDS EVERY UNIT'S SPECIES ROWS with ONE per-row positivity mask
+        (2026-10-31, DEV.md 4c C185 item 8): each unit's leading
+        `odeNPositive()` rows are marked at that unit's offset in the packed
+        vector, and a trial step that drives any of them negative is
+        REJECTED by the integrator (the step halves).  The guard used to be
+        a prefix count, which cannot name rows at an offset, so with two or
+        more units it was switched OFF and the overshoot was accepted and
+        then clipped by the unit -- inventory invented at exit 0.
 
     This is a thin orchestrator over the existing ODEIntegrator: it does NOT
     re-implement error control --- it scatters/gathers the per-unit packed
@@ -81,17 +89,49 @@ Description
 namespace Choupo::solver
 {
 
-// One ODE-form unit, reduced to the four closures the driver needs.  The
-// caller (choupoBatch / choupoCtrl) builds these from a unit's
-// odeState/setOdeState/odeDerivative/odeNPositive.
+// One ODE-form unit, reduced to the closures the driver needs.  The caller
+// (choupoBatch / the dynamic driver) builds these from a unit's
+// odeState/setOdeState/odeDerivative/odeNPositive/odeRowLabel.
 struct OdeUnit
 {
     std::function<sVector()>                 pack;        // current packed Y
     std::function<void(const sVector&)>      commit;      // write Y back
     std::function<sVector(const sVector&)>   derivative;  // dY/dt = f(Y)
-    std::size_t                              nPositive = 0;  // species rows
+    //  The unit's LEADING rows that must stay >= 0 (its species rows; the
+    //  unit's own contract, `odeNPositive()`).  advance() marks them at the
+    //  unit's offset in the global per-row mask -- see positiveRowMask.
+    std::size_t                              nPositive = 0;
     std::string                              name;           // for a refusal
+    //  Optional: the name of packed row i ("n_compA"), so a refusal can say
+    //  WHICH state the mask stopped.  Empty => the row is named by index.
+    std::function<std::string(std::size_t)>  rowLabel;
 };
+
+//  THE ONE HOME of the per-row positivity mask over a vector packed from
+//  several units (2026-10-31, DEV.md 4c C185 item 8).  `off` is the offset
+//  table advance() builds (off[u] .. off[u+1] are unit u's rows).  Each unit's
+//  leading nPositive rows are marked AT ITS OFFSET, so the guard holds for
+//  every unit -- the prefix count it replaced could only mark the first unit,
+//  and the driver had switched the guard OFF for every run with two or more.
+//  A unit claiming more positive rows than it packs is a contract violation
+//  and is REFUSED by name here, never truncated in silence.
+inline std::vector<bool> positiveRowMask(const std::vector<OdeUnit>& units,
+                                         const std::vector<std::size_t>& off)
+{
+    std::vector<bool> mask(off.back(), false);
+    for (std::size_t u = 0; u < units.size(); ++u)
+    {
+        const std::size_t rows = off[u + 1] - off[u];
+        if (units[u].nPositive > rows)
+            throw std::runtime_error("AdaptiveTimeStepper: unit '"
+                + units[u].name + "' declares " + std::to_string(units[u].nPositive)
+                + " positive rows but packs only " + std::to_string(rows)
+                + " -- odeNPositive() must not exceed odeState().size()");
+        for (std::size_t i = 0; i < units[u].nPositive; ++i)
+            mask[off[u] + i] = true;
+    }
+    return mask;
+}
 
 //- The integrator could not finish an interval.  Thrown by
 //  AdaptiveTimeStepper::advance; the message names everything the student
@@ -219,10 +259,11 @@ public:
         ctrl.maxGrowth = settings_.maxGrowth;
         if (settings_.maxSteps > 0) ctrl.maxSteps = settings_.maxSteps;
         ctrl.verbosity = 0;            // the driver owns the glass-box prints
-        // nPositive can only mark a CONTIGUOUS prefix; with several units the
-        // species rows are interleaved, so we leave nPositive=0 and rely on
-        // each unit's setOdeState() clamp + the integrator's finiteness guard.
-        ctrl.nPositive = (units.size() == 1) ? units[0].nPositive : 0;
+        //  Every unit's species rows, at that unit's offset: a trial step that
+        //  drives any of them negative is REJECTED by the integrator and the
+        //  step shrinks.  Nothing downstream clips -- a negative masked row
+        //  reaching a unit's commit is a defect the unit refuses by name.
+        ctrl.positiveRows = positiveRowMask(units, off);
         if (onStep) ctrl.onAccept = onStep;
         // State-aware ledger hook: commit the ACCEPTED state into the units
         // FIRST, so the ledger's snapshots read the accepted state, then let
@@ -273,8 +314,31 @@ public:
            << (t1 > t0 ? 100.0 * (st.tReached - t0) / (t1 - t0) : 0.0)
            << " % of the interval) -- "
            << (st.failure.empty() ? std::string("cause not reported")
-                                  : st.failure)
-           << ".  " << st.accepted << " accepted and " << st.rejected
+                                  : st.failure);
+        //  The row the mask stopped, named by its unit and its own label: a
+        //  student reads "n_compA of 'tank1'", not "row 7 of 12".
+        if (st.negativeRow != static_cast<std::size_t>(-1))
+        {
+            std::size_t lo = 0;
+            for (std::size_t u = 0; u < units.size(); ++u)
+            {
+                const std::size_t rows = units[u].pack().size();
+                if (st.negativeRow < lo + rows)
+                {
+                    const std::size_t i = st.negativeRow - lo;
+                    os << " -- the row driven negative is row " << i
+                       << " of unit '" << units[u].name << "'";
+                    if (units[u].rowLabel)
+                        os << " (" << units[u].rowLabel(i) << ")";
+                    os << ": its model keeps consuming that state past"
+                          " zero, which no positivity-preserving step can"
+                          " follow";
+                    break;
+                }
+                lo += rows;
+            }
+        }
+        os << ".  " << st.accepted << " accepted and " << st.rejected
            << " rejected sub-step(s), last step h = " << st.hLast
            << " s against the floor hMin = " << st.hMinUsed
            << " s, maxSteps = " << ctrl.maxSteps << ".  Unit(s) integrated: ";

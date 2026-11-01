@@ -460,11 +460,13 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
         }
         errNorm = std::sqrt(errNorm / static_cast<scalar>(n));
 
-        // positivity: a step that drives a species row negative is unphysical
-        // and would feed a fractional pow() a negative base -> NaN.  Reject it.
+        // positivity: a step that drives a masked row negative is unphysical
+        // and would feed a fractional pow() a negative base -> NaN.  Reject it
+        // (the mask covers every packed unit's rows, at their own offsets).
         bool negative = false;
-        for (std::size_t i = 0; i < ctrl.nPositive && i < n; ++i)
-            if (ynew[i] < 0.0) { negative = true; break; }
+        for (std::size_t i = 0; i < ctrl.positiveRows.size() && i < n; ++i)
+            if (ctrl.positiveRows[i] && ynew[i] < 0.0)
+            { negative = true; st.negativeRow = i; break; }
 
         bool finite = true;
         for (scalar v : ynew) if (!std::isfinite(v)) { finite = false; break; }

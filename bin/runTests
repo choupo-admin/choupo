@@ -2999,6 +2999,20 @@ PYEOF
     fi
     rm -f /tmp/thirdbody.$$
 
+    # positivity-mask gate (2026-10-31, DEV.md 4c C185 item 8): the adaptive
+    # integrator's positivity guard is a per-ROW mask over every packed unit
+    # -- it had been a prefix count, switched OFF for two or more units, the
+    # overshoot accepted and then clipped (inventory invented at exit 0).
+    if gate_exec "$ROOT/bin/curate/check_positivity_mask.py" > /tmp/posmask.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "positivity-mask" "$(grep -m1 '^check_positivity_mask: OK' /tmp/posmask.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_positivity_mask.py)\n" "positivity-mask"
+        cat /tmp/posmask.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/posmask.$$
+
     # solverDict-lint gate: a system/solverDict in a batch/ctrl case is a
     # file nobody reads -- announced by name with the cost stated (the
     # unread-keys posture), never refused; clean cases stay silent

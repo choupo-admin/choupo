@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 189 records already exist
+## 1. Why an index, when 190 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 189 design records, **131 state a rejected alternative and 58 do not** —
+- Of 190 design records, **132 state a rejected alternative and 58 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -291,6 +291,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`an-unconverged-bubble-point-is-not-a-point.md`](../design/an-unconverged-bubble-point-is-not-a-point.md) | ADR | yes | **SHIPPED 2026-10-31** -- C186 item 6: the T-x-y diagram judges each composition on the bubble-T Newton's own final residual against ONE tolerance (`kTxyAcceptResidual`, 1e-5): above it the point is dropped and counted aloud, inside it but short of the Newton's 1e-8 it is drawn and announced; fewer than half the points refuses the diagram by name; the 200 K floor guard is gone; the column's `bubbleTWithItsVapour` folds the verdict into its flag.  REJECTED: accepting only a converged Newton (it refused flash20's PC-SAFT diagram, right to ~1e-4 K).  Gate `check_txy_bubble_verdict` |
 | [`what-a-unit-accepts.md`](../design/what-a-unit-accepts.md) | ADR | yes | **DESIGN 2026-10-31; slices A, B and C BUILT the same day** (the contract, `checkAcceptance`, the pre-solve pass, `--describe-units`; spiralWoundModule + pump in A; the ED stack, ion exchanger, crystalliser, batch ED and batch diafilter in B, with the `needs` capability vocabulary and `passThrough` on the ED stack, witness `ed10_passthrough_benzene`; in C the batch diafilter's `models` rule and the GENERATED "models / may pass / refuses / needs" text, `bin/curate/gen_unit_acceptance_docs.py` -> docs/ai/unit-ops.md regions + `gui/schemas/unitAcceptance.json`, drawn in the GUI's Model tab; gate `check_unit_acceptance`) -- C188 item 5: every present component is MODELLED (inside the declared models' own domain), a DECLARED APPROXIMATION (passes through, `passThrough { <comp> { fate ...; } reason ...; }` in the unit's block, in every balance, recorded on the ProblemDivergence channel), or REFUSED by name with both remedies.  One C++ declaration per unit class (`acceptance()`), applied by ONE `checkAcceptance` before the solve (authored inlets) and at the solve (the stream handed), and printed by `--describe-units` for the generated GUI / F1 / docs/ai sections.  REJECTED: a mandatory identity-type field, a universal material-state classifier, a default fate, 'water + ethanol in RO is an error'. |
 | [`a-failed-computation-is-not-a-result.md`](../design/a-failed-computation-is-not-a-result.md) | ADR | yes | **SHIPPED 2026-10-31** (built 2026-10-27, DEV.md 4c C178) -- a failed computation is not a result: an integration that stalls or a QP/SQP step that cannot be computed is a FAILED evaluation, never a number handed on as an answer; reproduced first by small programs against the sources.  Gate `check_solver_failures` |
+| [`the-positivity-guard-is-a-mask-over-every-unit.md`](../design/the-positivity-guard-is-a-mask-over-every-unit.md) | ADR | yes | **BUILT 2026-10-31** (DEV.md 4c C185 item 8) -- the adaptive integrator's positivity guard is a per-ROW mask over every packed unit, built from each unit's own contract at its offset; a trial step that drives a masked row negative is REJECTED, nothing downstream clips, and a negative row reaching a unit's commit is refused as an engine defect.  It had been a prefix count, switched OFF for two or more units: A -> B beside an idle vessel published A = 0, B = 2 from a total of 1, at exit 0.  REJECTED: reordering the packing to keep a prefix; an announced clip after acceptance; two members for one decision.  Gate `check_positivity_mask` |
 
 ### Historical
 
@@ -343,7 +344,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**58 of 189 records state no rejected alternative.**  For a FORUM or a STUDY
+**58 of 190 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

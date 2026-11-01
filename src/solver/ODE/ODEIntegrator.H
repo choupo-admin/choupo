@@ -150,8 +150,17 @@ struct ODEControls
                                          //   spiritual maxCo: the step may not
                                          //   grow by more than this factor)
     std::size_t maxSteps  = 2000000;     // runaway guard
-    std::size_t nPositive = 0;           // first nPositive rows must stay >= 0
-                                         // (species mole/conc rows; T excluded)
+    //  POSITIVITY, as a per-ROW mask (2026-10-31, DEV.md 4c C185 item 8).
+    //  positiveRows[i] == true: row i must stay >= 0 (a species mole or
+    //  concentration row; T excluded), and a trial step that drives it
+    //  negative is REJECTED and the step shrinks -- a fixed-step method,
+    //  which cannot reject, gives up (st.ok = false).  Rows beyond the
+    //  mask's length are unguarded; an empty mask guards nothing.  This
+    //  used to be a PREFIX COUNT (`nPositive`), which cannot name the rows
+    //  of a vector packed from several units at their own offsets, so the
+    //  adaptive driver switched the guard OFF whenever it packed more than
+    //  one unit and the units clipped the overshoot after acceptance.
+    std::vector<bool> positiveRows;
     int         verbosity = 1;           // >=3 prints the stiffness verdict
 
     // Optional glass-box hook: invoked once per ACCEPTED step with the time at
@@ -201,6 +210,11 @@ struct ODEStats
     //  negative state on a fixed step).
     scalar      tReached = 0.0;
     std::string failure;
+    //  WHICH ROW the positivity mask refused, when `failure` says a row was
+    //  driven negative (the row of the LAST rejected trial): the caller that
+    //  packed several units can name the unit and the state it belongs to.
+    //  SIZE_MAX when no row was refused.
+    std::size_t negativeRow = static_cast<std::size_t>(-1);
 };
 
 class ODEIntegrator

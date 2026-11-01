@@ -92,6 +92,7 @@ public:
     void    setOdeState(const sVector& y) override;
     sVector odeDerivative(const sVector& y) const override { return derivatives_(y); }
     std::size_t odeNPositive() const override { return state_.n.size(); }
+    std::string odeRowLabel(std::size_t i) const override;
 
     const BatchState& state() const override { return state_; }
     //- The reactor's whole integrated state IS its holdup (the inventory

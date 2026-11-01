@@ -134,7 +134,13 @@ public:
     virtual void    setOdeState(const sVector& /*y*/) {}            // unpack+commit
     virtual sVector odeDerivative(const sVector& /*y*/) const { return {}; }
     // Number of leading rows of Y that must stay >= 0 (species moles; T free).
+    //   The adaptive driver marks them at this unit's offset in its per-row
+    //   positivity mask, so the guard holds however many units are packed.
     virtual std::size_t odeNPositive() const     { return 0; }
+    // The name of packed row i, for a refusal that names the state the mask
+    // stopped ("n_compA").  Default: the index.
+    virtual std::string odeRowLabel(std::size_t i) const
+    { return "row " + std::to_string(i); }
 
     // Inspect current state (for trajectory writeout).
     virtual const BatchState& state() const = 0;

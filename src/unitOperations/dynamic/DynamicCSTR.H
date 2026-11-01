@@ -94,6 +94,7 @@ public:
     void    setOdeState(const sVector& y) override;
     sVector odeDerivative(const sVector& y) const override { return derivatives_(y); }
     std::size_t odeNPositive() const override { return n_.size(); }
+    std::string odeRowLabel(std::size_t i) const override;
 
     sVector stateVector() const override;
     std::vector<std::string> stateLabels() const override;
