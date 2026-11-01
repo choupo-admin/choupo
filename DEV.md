@@ -1660,6 +1660,18 @@ accepts today, and that is a policy call.
 > case in the tree (the three cumene edges link nothing; cumene is now a
 > candidate case).  Next: the EduTool itself, on section 8 of
 > docs/design/the-tree-of-chemistry-is-a-record.md.  (B) recorded.
+> DONE 2026-11-01 (A), the EduTool (0ced76401, 584188add): three views
+> (depth, convergence and forced co-production, the tree of 2050) on the
+> graph, every assumed yield band drawn dashed and marked as the curator's
+> estimate with its reason; the reader takes formula, CAS and molar mass
+> from the component records and atomic weights from AtomicWeights.cpp, so
+> nothing is copied.  A one-character parser fix rode with it: the GUI's dict
+> tokenizer now accepts `=` inside a word, as Dictionary::isWordChar does --
+> the Explorer had been silently dropping propylene, 1,3-butadiene,
+> 1-butene, isobutene, vinyl acetate, acrylic and methacrylic acid and methyl
+> oleate.  OPEN: the depth view has no co-product credit (the vinyl chloride
+> HCl is made from chlorine, not taken from the cracker; stated on the
+> page); `npm run build` once to confirm the .cpp glob bundles.
 
 > **C190. THE EXTERNAL AUDIT'S FIFTEEN, AND ITS COMPARISON WITH THE
 > OTHER OPEN-SOURCE SIMULATOR (ChatGPT's summary of its conversation with
