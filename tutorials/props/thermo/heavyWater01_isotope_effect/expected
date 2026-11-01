@@ -1,0 +1,30 @@
+# Reference KPIs (golden master) for heavyWater01_isotope_effect.
+# Created 2026-11-02 with the case (no existing golden re-recorded).  These rows are
+# SELF-RECORDED pins of what the engine prints (csv cells, pinned because the scan's
+# numbers live only in the CSV).  They say the answer has not MOVED; that the numbers are
+# RIGHT is bin/curate/check_heavy_water.py's job (recomputation from IAPWS R16-17(2018)
+# and the IF97 saturation equation), not this file's.
+# kind   name      key                    expected      reltol
+csv     psat_isotope.csv       0:Psat_water         3.1697468500e+03  1e-6
+csv     psat_isotope.csv       0:Psat_heavyWater    2.7362295800e+03  1e-6
+csv     psat_isotope.csv       0:Hvap_heavyWater    4.5626456900e+04  1e-6
+csv     psat_isotope.csv       1:Psat_water         1.2351270400e+04  1e-6
+csv     psat_isotope.csv       1:Psat_heavyWater    1.1117923400e+04  1e-6
+csv     psat_isotope.csv       1:Hvap_heavyWater    4.4343347400e+04  1e-6
+csv     psat_isotope.csv       2:Psat_water         3.8595362700e+04  1e-6
+csv     psat_isotope.csv       2:Psat_heavyWater    3.5826392400e+04  1e-6
+csv     psat_isotope.csv       2:Hvap_heavyWater    4.2996612600e+04  1e-6
+csv     psat_isotope.csv       3:Psat_water         1.0141797800e+05  1e-6
+csv     psat_isotope.csv       3:Psat_heavyWater    9.6302716000e+04  1e-6
+csv     psat_isotope.csv       3:Hvap_heavyWater    4.1577284500e+04  1e-6
+csv     boiling_water.csv      0:T_bubble           3.7312430000e+02  1e-6
+csv     boiling_heavyWater.csv 0:T_bubble           3.7455020600e+02  1e-6
+diag    psat_isotope           n_emptyCurves    0                1e-4
+diag    psat_isotope           n_failures       0                1e-4
+diag    psat_isotope           n_points         4                1e-4
+diag    boiling_water          n_emptyCurves    0                1e-4
+diag    boiling_water          n_failures       0                1e-4
+diag    boiling_water          n_points         2                1e-4
+diag    boiling_heavyWater     n_emptyCurves    0                1e-4
+diag    boiling_heavyWater     n_failures       0                1e-4
+diag    boiling_heavyWater     n_points         2                1e-4

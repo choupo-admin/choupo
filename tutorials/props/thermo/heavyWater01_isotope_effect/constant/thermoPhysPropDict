@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- ideal gamma-phi, Raoult DECLARED.
+
+  Water is routed to the IAPWS-IF97 saturation curve (`pureFluids`), which the
+  tree verifies against its release tables on every run: the ordinary-water
+  side of the comparison is therefore the IAPWS standard, NOT water.dat's
+  Antoine fit (which is +2.5 % at 373 K, see docs/design/
+  what-water-dat-does-not-say.md).  Heavy water reads its own record, whose
+  vapour pressure is the Wagner equation of Herrig et al. 2018 Eq. (1).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( water  heavyWater );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+pureFluids
+{
+    water { method IF97; }
+}

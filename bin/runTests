@@ -5588,6 +5588,22 @@ PYEOF
     fi
     rm -f /tmp/phsplit.$$
 
+    # Heavy-water gate (2026-11-02): heavyWater.dat is DERIVED from the IAPWS
+    # R16-17(2018) Helmholtz formulation and Herrig et al. 2018 Eq. (1).  The
+    # script transcription reproduces R16-17 Tables 6-8; the record's Wagner
+    # block equals Table 3; its vapour pressure, Tb, HvapTb, omega, Vliq and Cp
+    # fits are recomputed from the EOS; the witness's engine output (psat, the
+    # two boiling points) is held to the equation; no invented formation datum.
+    if gate_exec "$ROOT/bin/curate/check_heavy_water.py" > /tmp/heavyw.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "heavy-water-gate" "$(gate_claim check_heavy_water /tmp/heavyw.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_heavy_water.py)\n" "heavy-water-gate"
+        cat /tmp/heavyw.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/heavyw.$$
+
     # Data-reconciliation gate (2026-10-20, DEV.md 4c C121): the
     # `dataReconciliation` props op reconciles plant flow readings under the
     # node balances through analysis::reconcileWeightedLeastSquares (the one
