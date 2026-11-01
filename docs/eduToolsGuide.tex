@@ -1432,6 +1432,107 @@ the campaign's first law reports itself \textsc{unavailable} rather than
 closing on a term quietly set to zero.  And the vessel is one well-mixed
 liquid at one temperature.
 
+\subsection{The tree of chemistry: a hundred products, eleven roots}\label{sec:edu-tree-of-chemistry}
+
+\declaredanchor{ch:balances}
+
+\noindent\textit{\small Tool:} \code{tool=tree-of-chemistry}.  \textit{\small
+Records:} the folder \file{data/standards/routes/} (its \file{README.md} is the
+grammar); no engine run, and no case is needed to read the page.
+
+\subsubsection*{The question}
+
+\emph{The list of commodity chemicals is a hundred names long and looks
+like a hundred unrelated industries.  Is it?  And if the energy system
+changes, how much of that list has to be rebuilt?}
+
+The answer the page carries is that the list is one tree.  The products
+grow from seven organic roots --- ethylene, propylene, the C4 olefins,
+benzene, toluene, the xylenes, and synthesis gas with methanol as its first
+derivative --- and four inorganic ones --- ammonia, sulfuric acid,
+chlorine with caustic soda, and the nitric and phosphoric acids --- and the
+sustainable transition replaces the \emph{roots}, not the leaves.  The
+graph is a curated record: substances are nodes, a named production route
+is an edge, and each edge is a balanced equation (or, for a cracker whose
+feed has no formula, a stated slate) with a yield band and a citation.
+
+\subsubsection*{Three views of one graph}
+
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{Depth.}  Pick a product.  The page walks the routes
+        backwards to the roots and feedstocks and prints, on every edge, the
+        kilograms of each input per kilogram of what that route makes.  For a
+        reaction
+        \[
+          m_i = \frac{|\nu_i|\,M_i}{\nu_t\,M_t\,y},
+        \]
+        the floor $|\nu_i| M_i/(\nu_t M_t)$ from the balanced equation and the
+        molar masses of the component records, divided by the route's yield
+        $y$.  Because $y$ is a \emph{band}, so is $m_i$, and along a chain the
+        bands multiply.  The page starts with three worked products ---
+        ethylene and chlorine per kilogram of PVC, the Hock route to phenol
+        from benzene and propylene, and methanol from CO$_2$ with the hydrogen
+        from water --- and each can be changed by choosing another route for
+        any substance on the path.
+  \item \textbf{Convergence and forced co-production.}  Pick a root or any
+        substance.  The page lists what consumes it, everything reachable from
+        it, and the products at the leaves nothing else consumes.  Pick a
+        route and it lists what the route makes whether anyone wants it or
+        not: every product that is not its \dict{target}.  The cumene route's
+        acetone follows phenol at a fixed molar ratio; a steam cracker's
+        propylene, C4 cut and pyrolysis gasoline follow its ethylene in the
+        proportions of a slate.
+  \item \textbf{The tree of 2050.}  For each root, the incumbent routes beside
+        the transition routes, with hydrogen per carbon derived from the
+        stoichiometry as $-\nu_{\mathrm{H_2}}/(\nu_t n_{\mathrm{C}})$ (three
+        for CO$_2$ to methanol, four for CO$_2$ to methane) and the energy
+        figures where a source states one.  The ammonia edge is written once:
+        green ammonia is the same reaction fed by a different hydrogen route,
+        so what the page shows replaced is the \emph{feeder}.
+\end{itemize}
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+Open PVC and read the two totals.  The floor of one ethylene and one
+chlorine per repeat unit is already about $0.45$ and $1.13$ kilograms per
+kilogram; the bands sit above it, and the table says by how much.  Now click
+the dichloroethane box and make it by oxychlorination instead of direct
+chlorination.  The chlorine does not go away: the new step takes its
+chlorine as HCl, which the page makes from chlorine and hydrogen, so
+hydrogen and oxygen join the totals.  The record marks that route as a
+declared cycle --- the balanced plant feeds it the HCl its own cracker
+releases --- and the page does \emph{not} net that HCl against the
+chlorine; it states the limit.  Then open phenol, go to the forced
+co-production view and read the acetone beside it: one mole per mole, so
+about $0.62$ kilograms per kilogram, and a single number rather than a
+band, because the yield does not enter that ratio.
+\end{tryit}
+
+\subsubsection*{The numbers are estimates, and the page draws them as such}
+
+\begin{pitfall}
+\textbf{That a figure on the page was measured.}  Every yield band and
+every slate share in the records is the curator's estimate
+(\dict{origin assumed}, with a reason); none was read back against a
+published table.  The page draws each as an estimate --- a dashed underline,
+the mark ``est.'', the reason on hover and again in the detail row of the
+selected route --- and says so on its first screen.  The stoichiometry is
+checked atom by atom by \file{bin/curate/check\_chemistry\_graph.py}; the only
+figures read from a source are the IEA's production volumes and four
+ammonia energy intensities, each with its page.  A route with a Choupo case
+links to it; a route without one says ``no case yet'' and links nothing.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+The graph is a selection of the chains a course on the chemical industry
+names, not an inventory, and no check can see a route that is missing.  It
+holds no prices, no capacities beyond the IEA's five volumes, and no
+environmental inventory, so it does not say which route wins; the Choupo
+cases linked from the routes, and the route-screening tool, are where that
+is asked.  Co-products are listed, not credited.
+
 \section{Constructions not yet documented here}\label{sec:edu-stubs}
 
 %  No count here.  This sentence used to say "Six live tools", against a

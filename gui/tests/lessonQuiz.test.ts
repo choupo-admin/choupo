@@ -80,6 +80,8 @@ import { BundTool } from "../src/ui/methods/BundTool.js";
 import { ReactorLadderTool } from "../src/ui/methods/ReactorLadderTool.js";
 import { FrontEndLoadingTool } from "../src/ui/methods/FrontEndLoadingTool.js";
 import { IpStrategyTool } from "../src/ui/methods/IpStrategyTool.js";
+import { TREE_QUIZ, TREE_STEPS } from "../src/ui/methods/treeOfChemistryLesson.js";
+import { TreeOfChemistryTool } from "../src/ui/methods/TreeOfChemistryTool.js";
 
 const GUI = new URL("../", import.meta.url);
 const read = (rel: string): string => readFileSync(new URL(rel, GUI), "utf-8");
@@ -135,6 +137,10 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "ip-strategy": {
     quiz: IP_QUIZ, quizName: "IP_QUIZ", lesson: IP_STEPS, lessonName: "IP_STEPS",
     file: "src/ui/methods/IpStrategyTool.tsx", tool: IpStrategyTool,
+  },
+  "tree-of-chemistry": {
+    quiz: TREE_QUIZ, quizName: "TREE_QUIZ", lesson: TREE_STEPS, lessonName: "TREE_STEPS",
+    file: "src/ui/methods/TreeOfChemistryTool.tsx", tool: TreeOfChemistryTool,
   },
 };
 

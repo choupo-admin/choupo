@@ -74,7 +74,7 @@ export type MethodToolId =
   | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
   | "plant-layout" | "gmp-layout" | "pool-fire" | "bund" | "materials" | "syngas"
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
-  | "sines-pta" | "ip-strategy";
+  | "sines-pta" | "ip-strategy" | "tree-of-chemistry";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1747,6 +1747,39 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "from the patents and the Federal Circuit opinions; and an exercise "
       + "against a rival who reads your filings.  Not legal advice.",
     theory: "ch:economics",
+  },
+  //  COMMISSIONED 2026-10-31 (DEV.md 4c C191 A); the graph it draws is the
+  //  curated record data/standards/routes/ (docs/design/the-tree-of-
+  //  chemistry-is-a-record.md), the architect's message is in its README.
+  //  A NOTES page with no engine run: the numbers are stoichiometric
+  //  arithmetic over the records (origin `page`), every yield band is the
+  //  curator's estimate (`assumption`, drawn as one, with its reason) and
+  //  the IEA volumes and ammonia intensities are `reference`.
+  //  ON THIS SHELF because choosing the chemistry route to a product is the
+  //  first design decision, beside route screening (which filters the routes
+  //  to one product) and Front-End Loading (which stages what follows); no
+  //  other shelf is about the chemical industry as a whole.  `theory` is the
+  //  balances chapter: the page's one equation is the element balance and
+  //  the mass arithmetic built on it.
+  {
+    id: "tree-of-chemistry",
+    label: "The tree of chemistry: a hundred products, eleven roots",
+    discipline: "Process design & economics", kind: "notes",
+    status: "live",
+    origins: ["page", "reference", "assumption"],
+    teaches: "That the commodity chemicals are one tree: seven organic roots "
+      + "(ethylene, propylene, the C4s, benzene, toluene, the xylenes, "
+      + "synthesis gas with methanol) and four inorganic ones (ammonia, "
+      + "sulfuric acid, chlorine with caustic, the nitric and phosphoric "
+      + "acids), read three ways from one graph of balanced routes: depth "
+      + "(the kilograms of each raw material behind a kilogram of PVC, phenol "
+      + "or methanol, as a band, never a point), convergence and forced "
+      + "co-production (the acetone that follows every phenol, the slate a "
+      + "cracker cannot refuse), and the tree of 2050 (hydrogen per carbon "
+      + "derived from the stoichiometry) -- and that the sustainable "
+      + "transition replaces the roots, not the leaves.  Every yield band is "
+      + "the curator's estimate and the page draws it as one.",
+    theory: "ch:balances",
   },
   //  WHICH SOLVENT, OR WHICH SOLVENT MIXTURE (2026-10-21, DEV.md 4c C128,
   //  Vitor: the student PREDICTS the best composition before the curve is
