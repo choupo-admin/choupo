@@ -223,7 +223,7 @@
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 180 design record(s) appear in the index, and its stated counts (124 state a rejected alternative, 56 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
+      "claim": "check_decision_index: OK -- all 192 design record(s) appear in the index, and its stated counts (134 state a rejected alternative, 58 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
       "seconds": 0.0
     },
     "check_default_reports": {
@@ -253,8 +253,8 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 827 path mention(s) and 251 case name(s) across 22 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
-      "seconds": 1.2
+      "claim": "check_doc_references: OK -- 830 path mention(s) and 251 case name(s) across 22 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
+      "seconds": 1.1
     },
     "check_doctrine": {
       "exit": 0,
@@ -1425,6 +1425,11 @@
       "exit": 0,
       "claim": "check_positivity_mask: OK -- the adaptive integrator's positivity guard is a per-row mask over every packed unit: a zeroth-order A -> B beside an idle second vessel (choupoSemiContinuous) and beside an idle second batchReactor (choupoBatch) REFUSES at the zero crossing naming the cause, the unit and the row, as the one-unit case does; stopped before the crossing it publishes n_compA = 0.200, n_compB = 0.800, total 1.000; no prefix logic, no clip in the two setOdeState bodies.  Scope: the Rosenbrock23 path under `timeStepping adaptive`; NOT checked: the fixed-step own-RK4 paths (announced clips), EulerSI through advance(), the RK4 class",
       "seconds": 0.2
+    },
+    "check_vessel_kinetic_orders": {
+      "exit": 0,
+      "claim": "check_vessel_kinetic_orders: OK -- the vessels' own Arrhenius paths honour a negative order (r = k cE^2/cA: converted 0.0008997 kmol in 10 ms, equal to an independent RK4 to 1e-6; the dropped-order answer was 0.08738), a negative order at zero concentration refuses by name, the CHEMKIN molecularity of 0.5 + 1.5 is 2 (A_SI = 1) and 0.5 + 1.0 refuses, the dynamic CSTR agrees (dn_B 9.812e-05 kmol in 10 ms), no order <= 0 skip remains in src/.  Scope: the vessels' own Arrhenius path; NOT checked: LHHW at a negative order, thirdBody/falloff conversions",
+      "seconds": 0.3
     }
   }
 }
