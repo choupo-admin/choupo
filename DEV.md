@@ -1571,7 +1571,19 @@ accepts today, and that is a policy call.
 > and the delta.  MODEL: the architecture, the protocol and the eval design are
 > the Opus-class work (one session); the packs, the generators and the
 > harness are Sonnet generals'.
-> STATUS: COMMISSIONED 2026-11-02, URGENT.
+> STATUS: COMMISSIONED 2026-11-02, URGENT.  ARCHITECTURE DECIDED the same
+> day: record `docs/design/an-llm-learns-choupo-from-a-brief.md` (indexed).
+> Two facts measured on the way changed the plan: the browser cannot
+> materialise 0/ (so an LLM must invent every intermediate stream -- phase B'
+> gives the app the engine's own -init0), and the bridge's guide comment says
+> ~97 KB for >500 kB.  The kernel draft (docs/ai/kernel.md, held off main
+> until its packs exist, because check_doc_references refuses a pointer to a
+> missing file) was RUN: a case written from its grammar alone (catalogue
+> NRTL, degC, phaseChanger outletT, init0, flash) solved at exit 0 with the
+> energy boundary closing at 0.0000 kW; one false line in the draft (that
+> degC is not a unit; src/core/Units.cpp:132) was caught and fixed.
+> Dispatched: A (harness + baseline), B' (browser 0/), packs recycles +
+> pressure, separations, reactors.
 
 > **C198. BORON IN REVERSE OSMOSIS AS TWO SPECIES SPLIT BY THE pH (Vitor,
 > 2026-11-01: "o boro e para modelar"; C194 shipped it as a declared lumped
