@@ -1707,7 +1707,23 @@ accepts today, and that is a policy call.
 > WITHOUT the exchanger beside it; a Pelton-turbine scenario (85-90 %,
 > no mixing) as a second case later.  Candidate EduTool "the energy of
 > desalination" (why SWRO fell from ~8 to ~3 kWh/m3), scope to decide.
-> STATUS: COMMISSIONED 2026-11-01.
+> DONE 2026-11-02: unit `pressureExchanger` (volumes Q = F v, Stover's
+> efficiency on the absolute pressures, `efficiency`, `mixing`, `leakage`,
+> `P_LPout`, `source` all REQUIRED and refused by name), sizer
+> `PressureExchangerSize` (`rotors = ceil(Q_LP / ratedFlowPerUnit)`, uncosted:
+> no Turton set), its schematic in the Reports tab, witness
+> `membrane27_swro_energy_recovery` (47.2 % recovery, 1.88 kWh/m3 with the
+> exchanger against 3.67 without, thermodynamic minimum 1.09), gate
+> `check_pressure_exchanger` (three sabotages).  DECIDED with the reason:
+> the witness's plant first law stays UNAVAILABLE (NaCl has no liquid heat
+> capacity in membrane01's component set; an ion-written twin would show
+> the pumps' known useful-work residual); the exchanger's own row closes by
+> construction.  Stover's mixing and salinity-rise ranges are inconsistent
+> at 47 % recovery under this volumetric definition (recorded, not tuned).
+> The split fraction 0.49 is hand-set and declared in the case header.
+> Validation: 38 membrane/rotating cases PASS, `--gui` 41/0, no golden moved.
+> NOT done: the Pelton-turbine variant, the booster as a sized item.
+> STATUS: DONE 2026-11-02.
 
 > **C191. THE TREE OF CHEMISTRY, AND THE METHANATION REACTOR (Vitor,
 > 2026-10-31 night, after a conversation with a reaction-engineering
