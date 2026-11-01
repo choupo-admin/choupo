@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 500,
+  "cases": 501,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -1467,6 +1467,28 @@
    },
    "roles": [],
    "hasGolden": false
+  },
+  "tutorials/plant/swro01_campoDalias": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "mixer",
+    "pressureExchanger",
+    "pump",
+    "spiralWoundModule",
+    "splitter",
+    "storageTank"
+   ],
+   "unitModels": [
+    "SchockMiquel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
   },
   "tutorials/plant/tartaricAcid": {
    "application": "choupoSolve",
@@ -7602,6 +7624,7 @@
     "tutorials/plant/lithiumBrinePlant",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/plant/sugarPlantEconomicsSweep",
+    "tutorials/plant/swro01_campoDalias",
     "tutorials/plant/tartaricAcid",
     "tutorials/plant/twoSectorDemo",
     "tutorials/plant/twoSectorDemo/SECTOR_R",
@@ -8354,6 +8377,7 @@
     "tutorials/plant/ammoniaReactor03_equilibriumApproach",
     "tutorials/plant/ammoniaReactor04_kineticSizing",
     "tutorials/plant/polycaprolactonePlant",
+    "tutorials/plant/swro01_campoDalias",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
@@ -8404,6 +8428,7 @@
     "tutorials/ctrl/ctrl08_prbs_ident"
    ],
    "pressureExchanger": [
+    "tutorials/plant/swro01_campoDalias",
     "tutorials/steady/membranes/membrane27_swro_energy_recovery"
    ],
    "psa": [
@@ -8415,6 +8440,7 @@
    ],
    "pump": [
     "tutorials/plant/aceticAcid02_plant",
+    "tutorials/plant/swro01_campoDalias",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane21_two_stage_nf_array",
     "tutorials/steady/membranes/membrane22_two_stage_nf_array_dspmde",
@@ -8445,6 +8471,7 @@
     "tutorials/steady/drying/solidDryer02_starved_air"
    ],
    "spiralWoundModule": [
+    "tutorials/plant/swro01_campoDalias",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
     "tutorials/steady/membranes/membrane03_concentration_polarization",
@@ -8485,6 +8512,7 @@
     "tutorials/plant/ammoniaReactor03_equilibriumApproach",
     "tutorials/plant/ammoniaReactor04_kineticSizing",
     "tutorials/plant/polycaprolactonePlant",
+    "tutorials/plant/swro01_campoDalias",
     "tutorials/steady/drying/convDryer01_sugar_curve",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
@@ -8521,7 +8549,8 @@
    ],
    "storageTank": [
     "tutorials/batch/plant/apalutamide01_tablets",
-    "tutorials/plant/aceticAcid02_plant"
+    "tutorials/plant/aceticAcid02_plant",
+    "tutorials/plant/swro01_campoDalias"
    ],
    "stripper": [
     "tutorials/steady/absorption/stripper01_NH3_water"
@@ -8786,6 +8815,7 @@
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/plant/polycaprolactonePlant/properties",
     "tutorials/plant/sugarPlantEconomicsSweep",
+    "tutorials/plant/swro01_campoDalias",
     "tutorials/plant/tartaricAcid",
     "tutorials/props/adsorption/isotherm01_eval_13x_co2",
     "tutorials/props/adsorption/isotherm02_fit_jaschik",

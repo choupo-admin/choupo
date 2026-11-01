@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane MODULE (CASE-LOCAL): Toray ROMEMBRA TM720C-430 brackish-water
+  element, as the Campo de Dalias case study states it, for the SECOND PASS.
+  NOT a catalogue record (DEV.md 4c C189, C194).
+
+  SOURCE.  Toray Industries, MC-CS-CAMPODEDALIAS-1910 (2019), Table 1,
+  second-pass column -- a manufacturer's claim.
+
+  WHAT THE DOCUMENT STATES (origin literature):
+      active area            40 m2 (430 ft2)
+      flow rate              33.3 m3/d (8,800 gpd)
+      NaCl rejection         99.2 %
+      boron rejection        95 % at pH 10
+      feed pressure          1.03 MPa (150 psi)
+  WHAT IT DOES NOT STATE, ASSUMED (origin assumed): the test conditions --
+  the conventional brackish-water test of the catalogue's own classes
+  (BWRO_HIGH_FLUX, BWRO_HIGH_REJECTION): 2,000 ppm NaCl, 25 C, 15 %
+  recovery; boron at 5 ppm (the DuPont sheet's test); the 1.03 MPa read as
+  the pressure of the test AND of the plant, as in TM820E-400.dat.  The
+  geometry is the SW30HR-380 record's (8-inch x 40-inch), an announced
+  estimate.
+
+  THE pH OF THE BORON TEST IS 10, and that is what the case's second pass
+  needs: the pass is run on the permeate of the first with its pH raised
+  (caustic), which converts boric acid, a neutral molecule the membrane lets
+  through, into borate, an anion it rejects.  The engine does NOT move a
+  stream's pH nor couple it to transport; it reads this rated test as the
+  boron rejection of the second pass and says so.  See the case header.
+\*---------------------------------------------------------------------------*/
+
+name           TM720C-430;
+kind           membraneModule;
+manufacturer   "Toray (as stated in case study MC-CS-CAMPODEDALIAS-1910; no data sheet read)";
+membrane       TM720C;
+format         spiralWound;
+
+activeArea     40 m2;              // the case study, Table 1 (430 ft2)
+feedSpacer     Spacer-28mil;       // ESTIMATE, see provenance
+leafLength     0.95 m;             // ESTIMATE, see provenance
+
+ratedTests
+(
+    {
+        id                 naclRef;
+        solute             NaCl;
+        feedMassFraction   2.0e-3;      // ASSUMED standard brackish test
+        P                  1.03 MPa;    // the document's "feed pressure"
+        pressureBasis      feedGauge;
+        T                  298.15 K;
+        recovery           0.15;        // ASSUMED
+        permeateFlow       33.3 m3/d;   // the document: 8,800 gpd per element
+        permeateFlowBasis  sameTest;
+        rejection          0.992;       // the document: 99.2 %
+        source             "Toray case study MC-CS-CAMPODEDALIAS-1910, Table 1 (rejection, flow, area, pressure: stated; salinity, recovery, temperature: assumed standard brackish test)";
+    }
+    {
+        id                 boronRef;
+        solute             boron;
+        feedMassFraction   5.0e-6;      // ASSUMED
+        P                  1.03 MPa;
+        pressureBasis      feedGauge;
+        T                  298.15 K;
+        pH                 10;          // the document: "95 % at pH 10"
+        recovery           0.15;
+        permeateFlow       33.3 m3/d;
+        permeateFlowBasis  sameTest;
+        rejection          0.95;        // the document: 95 %
+        source             "Toray case study MC-CS-CAMPODEDALIAS-1910, Table 1 (boron rejection 95 % at pH 10 stated; boron concentration, recovery, temperature assumed)";
+    }
+);
+
+provenance
+{
+    source  "Toray Industries case study MC-CS-CAMPODEDALIAS-1910 (2019), Table 1; a manufacturer's claim";
+
+    leafLength
+    {
+        origin        estimated;
+        reviewStatus  unverified;
+        notes         "(the feed spacer, the 28 mil of Spacer-28mil, is carried over too, equally unverified) borrowed from the SW30HR-380 record (same 8-inch x 40-inch format); the document states no geometry; to be verified against the Toray element's data sheet";
+    }
+}

@@ -1,0 +1,56 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- the SIZING pass of the plant's few sized items (no costing: the
+  case study gives no costs and Choupo has no Turton set for a membrane
+  skid or a work exchanger).
+
+  THE ENERGY-RECOVERY ARRAY.  The case study's device is a piston-type work
+  exchanger (DWEER); this engine's `pressureExchanger` is the rotary one, so
+  the sheet counts ROTARY units from a declared rated flow of 60 m3/h each
+  (the author-set order of magnitude membrane27 uses, to be replaced by a
+  maker's sheet) -- a stand-in that fixes the item's identity for the plot
+  plan, not a statement about how many exchangers the real plant has.
+
+  THE THREE TANKS (the two contact tanks and the product store) are the
+  flowsheet's `storageTank` units, linked by `unit <name>;` (DEV.md 4c C87):
+  the hold time stays in the flowsheet.  Carbon steel stands in for the
+  concrete or lined steel of a real potable-water store: it only fixes the
+  record the sizer needs; no cost is computed.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        //  THE PUMPS.  The engine has no pump sizer; `compressor`'s sizer passes a
+        //  unit's published shaft power through, which a pump publishes too, so the
+        //  four pumps are items of that kind -- the sheet says `compressor` and its
+        //  basis says "pass-through": a stand-in that gives each pump an identity
+        //  on the plot plan, NOT a pump design (follow-up: a pump sizer).
+        { unitName IntakePump;  type compressor;  material SS316;  designRules { pressureDesign 4; } }
+        { unitName HPpump;      type compressor;  material SS316;  designRules { pressureDesign 75; } }
+        { unitName Booster;     type compressor;  material SS316;  designRules { pressureDesign 75; } }
+        { unitName Pass2Pump;   type compressor;  material SS316;  designRules { pressureDesign 20; } }
+        { unitName PX;  type pressureExchanger;  material SS316;
+          designRules
+          {
+              ratedFlowPerUnit  60 m3/h;
+              source            "author-set order of magnitude, as membrane27_swro_energy_recovery (DEV.md 4c C192); the case study's device is a piston-type work exchanger, so the count is a stand-in, not the plant's";
+              pressureDesign    75 bar;       // author-set: the high-pressure inlet is 58 bar
+          } }
+    );
+
+    storage
+    (
+        { unit Remineralisation;  material carbonSteel;  maxTankVolume 5000; }
+        { unit Disinfection;      material carbonSteel;  maxTankVolume 5000; }
+        { unit ProductTank;       material carbonSteel;  maxTankVolume 10000; }
+    );
+}

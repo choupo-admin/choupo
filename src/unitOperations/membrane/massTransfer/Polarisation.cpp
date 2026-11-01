@@ -481,6 +481,16 @@ WallSolution wallWithPermeateRatio(const PolarisationPolicy&       policy,
             }
             lambda *= 0.5;
         }
+        //  A stall AT THE ROUND-OFF FLOOR is a converged answer, not a refusal
+        //  (DEV.md 4c C194): the test above is an absolute 1e-13 on a residual
+        //  scaled by the largest bulk concentration, and a finite-difference
+        //  Newton on a wall carrying a 5 ppm solute beside a 0.6 kmol/m3 salt
+        //  can sit at 1.0-1.8e-13 with no step that lowers it -- measured on
+        //  the Campo de Dalias second pass during a recycle's early iterates.
+        //  Below 1e-10 (three decades above the floor, ten below any
+        //  physical residual) the iterate is returned as it stands.
+        if (!accepted && fmax < 1e-10)
+            return w;
         if (!accepted)
         {
             w.ok = false;

@@ -1,0 +1,12 @@
+/*--- Choupo stream state.  A SEED where the unit computes it (the run overwrites it in converged/):
+     this case is a recycle loop with a knife-edge, so 0/ is the CONVERGED state of a previous run -- a cold
+     start from a rough guess falls into a spurious fixed point (see the header of flowsheetDict). ---*/
+
+componentMolarFlows
+{
+    water  519352.491601 kmol/h;
+    NaCl   5846.312360 kmol/h;
+    boron  4.638756 kmol/h;
+}
+T               298.15 K;
+P               1.0000 bar;

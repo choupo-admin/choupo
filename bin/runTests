@@ -7597,6 +7597,25 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/tabletmach.$$
 
+    # Campo de Dalias seawater plant gate (2026-11-02, DEV.md 4c C194): the
+    # two-pass SWRO built on a manufacturer's case study says what its header
+    # says, recomputed outside the engine -- the product (98 664 m3/day), the
+    # first pass's 47.2 % and the second's 84-90 %, the recycle, the mass
+    # closure and the exchanger's balance from stream masses; the feed as
+    # Table 2's ions in osmotic equivalence; the boron tests the PDF states and
+    # the pH limitation PINNED; four refusals by name; and the plot plan's
+    # geometry (no overlap, no road through a footprint, inside the fence, the
+    # three boundary crossings on the fence labelled as beyond the plan).
+    if gate_exec "$ROOT/bin/curate/check_swro_plant.py" > /tmp/swrogate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "swro-plant-gate" "$(gate_claim check_swro_plant /tmp/swrogate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_swro_plant.py)\n" "swro-plant-gate"
+        cat /tmp/swrogate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/swrogate.$$
+
     # Bund-arithmetic gate (2026-10-25, DEV.md 4c C136): the layout check's
     # bund capacity arithmetic (BundArithmetic.H) is the secondary-containment
     # EduTool's (a probe reproduces every example its TypeScript test pins),
