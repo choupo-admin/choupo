@@ -2067,6 +2067,31 @@ accepts today, and that is a policy call.
 > README says to copy a record into the case, and reading the local tier
 > is an engine change left open.  Next: slice (5), the shortlist.
 
+> DONE 2026-11-02, slice 5 and the open items (2aa30a65d, 66f54b2cd, a
+> general): `membraneShortlist` (a choupoProps op): hard filters from each
+> record's own numbers (type, class band, rated solute, `limits {}`), each
+> survivor RE-RATED at the student's P, T, feed and recovery with the existing
+> transport law, every criterion side by side, NO score, weight or rank, the
+> `partner` block never read (a source arm and a byte-identity arm prove it).
+> The 2.16x / 2.08x permeate of the module records was the RECORD, not the
+> inversion: the A_w in the NF270 and SW30HR membrane records is a fit to
+> teaching cases (36 and 3.6 L/m2/h/bar) while a data sheet measures the
+> ELEMENT; the fix is an opt-in `waterPermeance fromRatedTest;` that derives
+> A_w together with R_int (NF270-4040: 14.88 against 36; SW30HR-380: 1.318
+> against 3.6; the sheet's permeate reproduced to 5e-15), the records
+> untouched.  The module registry now has data/local as its lowest tier
+> (standards beats local with a `[shadowed]` line, a used local record prints
+> `[local] UNVERIFIED`, a sealed run never reads it): this REVERSES slice 4's
+> decision, for a stated reason -- a shortlist over N imported records cannot
+> have N copies pasted into a case.  The importer closure now follows a
+> class's `element` (a class case could not be sealed); the 'unknown feed
+> spacer' refusal did NOT reproduce for a spacer-reading module.  Gates
+> `check_membrane_shortlist`, `check_rated_tests` arm (h),
+> `check_membrane_classes` arm (f); eight sabotages.  Witnesses
+> `shortlist01_class_to_modules`, `membrane28_water_permeance_from_sheets`.
+> NOT done: a shortlist over a real multi-candidate local catalogue (the
+> machine's data/local holds no module records; only the gate's fixture
+> exercises it).
 > **C188. WHAT A UNIT ACCEPTS: MODELLED, A DECLARED APPROXIMATION, OR
 > REFUSED (an external proposal, ChatGPT, "chemical component
 > classification and unit operation compatibility architecture", relayed
@@ -2177,6 +2202,26 @@ accepts today, and that is a policy call.
 > more `needs` words, one home for the shared RO/diafilter remedy
 > sentence, the Theory Guide section, the recycle question.
 
+> DONE 2026-11-02, item 5 continued (54f3ab783, a general): declared and
+> refusing -- compressor, turbine, absorber, stripper, extractor, evaporator,
+> batchCrystalliser; declared with their approximations stated -- distillation
+> and shortcut columns, flash and adiabatic flash, valve, heat exchanger, mixer,
+> splitter; per-port form (`UnitAcceptance::ports`: the absorber takes gas as
+> vapour and wash as liquid, the stripper the mirror, the extractor liquid on
+> both).  THREE REAL DEFECTS found by reading what the units silently ignore,
+> each reproduced on the parent at exit 0 and now refused before the unit runs:
+> a turbine fed a LIQUID expanded it as vapour (rankine01 at 420 K, 5 bar,
+> liquid water: 4.21 bar, 405.5 K); an absorber with a `role solute` component
+> and no Henry pair against the solvent left it inert in the clean gas
+> (0.0536 mole fraction unwashed); the extractor and the Kremser ports never
+> read the inlet phase.  Theory Guide section 'What a unit accepts' (three
+> states, the wine-ethanol against benzene-in-ED example, how a pass-through is
+> identified on the input and the output).  NOT done: PSA/TSA and the fixed-bed
+> adsorbers (the isotherm set is unit configuration, which a class-level
+> contract cannot see: a configuration-aware contract), the remaining unit
+> kinds (heater, phaseChanger, pipe, reactors, dryers, tank, cyclone, bag
+> filter, multiStreamHX).  The three defects were found by the contract alone:
+> its first measured return.
 > **C187. WHAT THE 2026-10-31 AUDIT FOUND UNRECORDED (two independent
 > passes over the session transcript, 24-31 Oct; recorded by the architect
 > under CLAUDE.md rule 00).**  Each item below is a CLAIM to verify against
@@ -2398,6 +2443,21 @@ accepts today, and that is a policy call.
 > initialisation/recovery, then the full DME plant with its recycle.
 > STATUS: SCHEDULED for Saturday; A and B are small and come first.
 
+> DONE 2026-11-02, defects A and B (126fc9b98, a general): B -- NewtonND
+> took non-improving steps at the line-search floor and returned a worse
+> iterate than it claimed (probe: |F| 2 -> 50 claimed as the last good
+> iterate); now each such step is COUNTED and ANNOUNCED (`NDResult::
+> stalledSteps`, allowance `maxStalledSteps` default 25 per solve, 0 strict)
+> and every unconverged exit returns the BEST iterate; two corpus cases take
+> such steps and still converge (acetone06_luyben_column_C1 2 of 15,
+> stripper02_sour_water_h2s 12 of 43; the allowance is a bound, not derived).
+> A -- an unconverged CMO phase seeded the full MESH in silence; now ANNOUNCED
+> with the stage count and residual and the published residual is the full
+> MESH's own; NO corpus case reaches it (only constructed ones: column06 with
+> a declared interior of 10 K).  Not built: the singular-Jacobian diagnostic
+> naming the stage and equation (the row of the flattened system maps
+> differently in the CMO and full-MESH layouts).  Gate
+> `check_distillation_seed` (three sabotages).
 > **C183. A PROPS RUN'S RESULTS ARE NOT IN THE CASE TREE (Vitor,
 > 2026-10-27: "os resultados não aparecem juntamente com os dicionários na
 > estrutura do caso. Deviam de aparecer?"; recorded, not built -- credit is
@@ -3109,6 +3169,27 @@ accepts today, and that is a policy call.
 > no branch, worktree or commit for C127 exists (`git branch -a`, `git log`
 > searched that day); C127 is in PLAN.md's long term, to dispatch.
 
+> DONE 2026-11-02 (5759132c6, a general): (1) gates judged `data/local` and
+> untracked files -- MEASURED by two full runs, clean and dirty: three verdicts
+> flipped (check_duplicate_keys, check_problem_divergence,
+> check_source_licence) and three claims differed; four static gates now list
+> files through `tracked_tree.py` (`git ls-files`; CANNOT RUN when it cannot
+> enumerate) and two engine-driven gates run against a throw-away CHOUPO_HOME
+> with no local data; gate `check_gates_judge_tracked`.  DECIDED by the
+> architect: NO engine-level CHOUPO_NO_LOCAL switch (the gates already do it
+> with a throw-away home; a switch is a second route to the same effect);
+> `check_case_tiers` and `check_fastset` stay on the disk walk (they mirror
+> runTests' own walk, and failing on an untracked tutorial folder is right).
+> (2) `check_workspace_truth` now says BEHIND (fast-forward) apart from
+> DIVERGED and states what was and was not checked.  (3) `nu 0; order 1`:
+> the reversible case is already refused by name (C185); the irreversible one
+> is a homogeneous catalyst or, with a negative order (C190), an inhibitor and
+> is NOT refused; the corpus has no `nu 0`.  (4) Burcat: 16 of 36 records
+> migrated to NASA/TP-2002-211556 where the report agrees (dHf 0.5 kJ/mol, s
+> 0.02 J/(mol K), Cp 2 %); 12 have no entry under that formula and 8
+> disagree (C2O, N2H2, NH2, NO3, SH, ClO, HOCl, O3) and stay pinned.  OPEN
+> debt, the architect's, to be taken in a window that moves goldens on
+> purpose: the 31 case mirrors still carry the old Burcat values (a re-import).
 > **C169. THE COLUMN SOLVES THE THERMODYNAMICS ITS STREAMS CARRY (Vitor,
 > 2026-10-26, forwarding an external audit of the distillation models run
 > on fd688e4ce: "detetou algumas coisas graves.  Podes ver?").**  Four
