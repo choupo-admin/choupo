@@ -1,0 +1,2 @@
+# Problem 04
+Fresh feed: 80 kmol/h, 50 mol% benzene and 50 mol% toluene, saturated liquid at 1.2 bar. It is mixed with a recycle stream and sent to a flash drum at 1.2 bar and 100 C. The liquid leaving the drum is split: 70 percent of it returns as the recycle, the rest is the liquid product. The vapour is the vapour product. Report the converged recycle flow and composition, the two product flows and compositions, and the overall component balances.

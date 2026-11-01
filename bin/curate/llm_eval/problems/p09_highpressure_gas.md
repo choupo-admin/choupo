@@ -1,0 +1,2 @@
+# Problem 09
+A natural-gas stream of 300 kmol/h with 85 mol% methane, 7 mol% ethane, 4 mol% propane, 2 mol% n-butane and 2 mol% CO2 is available at 100 bar and 40 C. It is expanded through a valve to 30 bar and the resulting stream is separated in a flash drum. Report the temperature after the valve, the vapour fraction, and the liquid composition and flow. At these pressures the gas is far from ideal; the model must reflect that.
