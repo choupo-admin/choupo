@@ -1570,7 +1570,7 @@ accepts today, and that is a policy call.
 > with its ducts, the four ports labelled with their stream names and
 > pressures, the booster beside it, every dimension in two channels (ink
 > and the word), "provenance not published" where the sizer cannot say.
-> (4) Witness `membrane27_swro_energy_recovery` on membrane01's
+> (4) Witness: membrane27 (SWRO energy recovery, to be created) on membrane01's
 > seawater RO: high-pressure pump + exchanger + booster + the SW30HR
 > stage, its header decomposing the specific energy (thermodynamic
 > minimum ~1 kWh/m3, membrane, recovery device) and stating the energy

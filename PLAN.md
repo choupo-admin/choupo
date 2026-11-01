@@ -18,7 +18,7 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 
 | status | what | ref |
 |---|---|---|
-| running | C192: the pressure exchanger unit, its design sheet and its schematic; witness membrane27 (SWRO energy recovery) | C192 |
+| running | C192: the pressure exchanger unit, its design sheet and its schematic; witness membrane27, SWRO energy recovery, to be created | C192 |
 | running | C185 item 8 (positivity mask with several ODE units) and C186 item 4 (optimiser rejects unconverged simulations), one general each | C185, C186 |
 | todo | C189 slice 4: the idempotent import/QA tool for manufacturer catalogues, writing data/local only (one seed file on the laptop: ~/Downloads/Choupo_catalogo_RO_NF_consolidado_SI.xlsx) | C189 |
 | todo | C188 item 5 remaining: passThrough on other units, per-port contracts, batch crystalliser, the recycle question | C188 |
