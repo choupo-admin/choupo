@@ -1846,7 +1846,16 @@ accepts today, and that is a policy call.
 > pedagogical scope decided before dispatch (what the student is told),
 > which is the architect's and is NOT taken here.  The name of the other
 > simulator does not enter the tree (C7).
-> STATUS: RECORDED 2026-10-31; (10) and (13) scheduled next.
+> DONE 2026-11-02 (ab25caab5): (10) a negative order is honoured on the
+> vessels' own paths (BatchReactor, DynamicCSTR) and RateLaw; at zero
+> concentration the rate diverges and the run REFUSES by name, one rule in
+> `Reaction::powerLawFactor`; (13) the CHEMKIN molecularity sums the orders
+> before deciding, a non-integer sum with a cm units block refuses naming the
+> SI remedy.  Probes: negative order 0.08738 -> 0.0008997 kmol (RK4 equal to
+> 1e-6); orders 0.5 + 1.5 A = 0.001 -> 1.0.  Gate `check_vessel_kinetic_orders`
+> (two sabotages); 108 cases PASS, no golden moved (the corpus has no negative
+> order).  STILL OPEN: (14), (11), (15), (12).
+> STATUS: RECORDED 2026-10-31; (10) and (13) DONE; (14) next.
 
 > **C189. RO/NF: A MEMBRANE A STUDENT CHOOSES BY WHAT IT DOES, THEN THE
 > COMMERCIAL MODULE (an external specification, ChatGPT, relayed by Vitor

@@ -36,7 +36,6 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 | status | what | ref |
 |---|---|---|
 | running | The pressure exchanger: unit, design sheet, schematic, SWRO energy-recovery case (a general, validating) | C192 |
-| running | Negative kinetic orders dropped and the CHEMKIN A rounded per order: wrong rates at exit 0 (a Sonnet general) | C190 (10)(13) |
 
 ## Next day (at most 5)
 
@@ -105,6 +104,7 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 
 | status | what | ref |
 |---|---|---|
+| done | Negative kinetic orders honoured on the vessels' own paths; CHEMKIN molecularity summed before rounding | C190 (10)(13), ab25caab5 |
 | done | The EduTool 'The tree of chemistry' (three views; every assumed band drawn as the curator's); the GUI dict parser keeps `=` in a word | C191 (A), 0ced76401 |
 | done | Silica: a neutral dissolution master weighed as an aqueous species; checked in the site's WASM | C179, 571301962 |
 | done | Precipitation against temperature as a native view; seen in the site's Studies | C180, b3b25db47 |
