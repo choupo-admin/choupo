@@ -1528,6 +1528,48 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C199. A DESALINATION PLANT IS TRAINS AND RACKS, NOT ONE GIANT PUMP AND
+> ONE VESSEL BANK (Vitor, 2026-11-02, after seeing swro01_campoDalias's layout:
+> "numa instalacao real ha limite para a dimensao maxima das bombas e dos
+> recuperadores de pressao e a industria organiza aquilo por clusters de
+> bombeagem e recuperacao de pressao! E era importante fazer o layout 3D dos
+> racks de vasos de pressao dentro do pavilhao e plantas 2D. Ve online as boas
+> praticas").**  PRACTICES READ ONLINE 2026-11-02 (open pages; vendor and trade
+> sources, no standard; NO numeric clearance or spacing was found in any open
+> source, so those stay author-set and are said so): (1) a large SWRO plant is
+> a set of TRAINS, one HP pump and one pressure-exchanger array per train, or a
+> `pressure centre` (a few large HP pumps and boosters feeding many racks
+> through a common header): Danfoss, `multiple trains for large SWRO plants`
+> (a 600 000 m3/d plant of 24 racks: 24 trains of 1041 m3/h each against 8
+> pressure-centre trains of 3125 m3/h, efficiency above 87 % against above
+> 90 %; one very large pump trades redundancy for efficiency); Sulzer's MSD-RO
+> pump covers SWRO trains of 20 000-30 000 m3/d; Ebara supplied Carlsbad with 4
+> axially split multistage pumps, 3 running and 1 spare; (2) a pressure
+> exchanger is a MODULAR device: Energy Recovery's PX Q650 takes 250-650 gpm
+> per device, up to 83 bar, mixing as low as 2 %, so a train carries an ARRAY
+> sized by ceil(flow / device flow), and the vendor sizes pre-engineered arrays
+> per train capacity; (3) a vessel holds 1 to 8 elements, 8 inch vessels about
+> 28.4 ft long at Carlsbad (8 elements each, 2236 vessels, 17 888 modules),
+> ratings varying by position (1200/600/450 psi), the second pass beside or
+> around the first (Torrevieja puts the second-pass vessels on both sides of
+> the first); Sorek stands 16 inch elements vertically. DECISIONS (architect):
+> (a) the plant is declared as N TRAINS, each with its HP pump, its PX array and
+> its vessel racks, the per-pump and per-device maxima DECLARED with their
+> source, counts PUBLISHED (the Toray case study itself states 6 skids of
+> 16 442 m3/d, so the case keeps 6 trains); (b) a vessel BANK is a sized item
+> (vessels, elements per vessel, tiers, racks, pitch, vessel length from the
+> element length plus the end allowance, the loading clearance that practice
+> requires) with its envelope and counts on the sheet; (c) the RO hall is a
+> BUILDING the racks stand in (C100), drawn in 3D with every vessel inside its
+> rack and by two 2D plans (plan and section) built from the same published
+> geometry; (d) NO number is invented: where no open source gives a clearance,
+> the case declares it `assumed` with the reason.  PHASES: A, the engine and
+> the case (trains, pump sizer, PX array, vessel-bank item, hall); B, the GUI
+> (3D racks inside the hall, the 2D plan and section views).  OPEN: a
+> pressure-centre alternative (a second case, the comparison the Danfoss page
+> makes), pump curves and the cost.
+> STATUS: COMMISSIONED 2026-11-02; phase A with a general.
+
 > **C197. HEAVY WATER IN THE STANDARD COMPONENTS, PROMOTED FROM A COOLPROP
 > IMPORT TO A RECORD A RESEARCHER CAN DEFEND (Vitor, 2026-11-02: "quero
 > promover porque ha investigadores que me pediram").**  MEASURED: the

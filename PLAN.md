@@ -36,6 +36,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| running | General: the Campo de Dalías plant organised in trains (HP pump + PX array + vessel racks per train), vessel-bank item, RO hall; then the 3D racks and the 2D plan/section (GUI) | C199 |
 | running | General: heavy water curated from the IAPWS formulation (researchers asked) | C197 |
 
 ## Next day (at most 5)
