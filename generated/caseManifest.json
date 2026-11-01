@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 501,
+  "cases": 503,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -2653,6 +2653,20 @@
      "ideal"
     ],
     "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/membrane/shortlist01_class_to_modules": {
+   "application": "choupoProps",
+   "ops": [
+    "membraneShortlist"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
    },
    "roles": [],
    "hasGolden": true
@@ -6375,6 +6389,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/membranes/membrane28_water_permeance_from_sheets": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "unitModels": [
+    "SchockMiquel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/optimisation/designSpec01_triple_equal_areas": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -7549,6 +7580,7 @@
     "tutorials/props/membrane/dspmde01_water_treatment_salts",
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
+    "tutorials/props/membrane/shortlist01_class_to_modules",
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/envelope01_natural_gas",
@@ -7832,6 +7864,7 @@
     "tutorials/steady/membranes/membrane25_rated_test_inversion_nf270_4040",
     "tutorials/steady/membranes/membrane26_class_sulphate_removal",
     "tutorials/steady/membranes/membrane27_swro_energy_recovery",
+    "tutorials/steady/membranes/membrane28_water_permeance_from_sheets",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",
@@ -8499,6 +8532,7 @@
     "tutorials/steady/membranes/membrane25_rated_test_inversion_nf270_4040",
     "tutorials/steady/membranes/membrane26_class_sulphate_removal",
     "tutorials/steady/membranes/membrane27_swro_energy_recovery",
+    "tutorials/steady/membranes/membrane28_water_permeance_from_sheets",
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
@@ -8875,6 +8909,7 @@
     "tutorials/props/membrane/dspmde01_water_treatment_salts",
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
+    "tutorials/props/membrane/shortlist01_class_to_modules",
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_root_jump",
     "tutorials/props/molecular/flash01_operating_line",
@@ -9034,6 +9069,7 @@
     "tutorials/steady/membranes/membrane25_rated_test_inversion_nf270_4040",
     "tutorials/steady/membranes/membrane26_class_sulphate_removal",
     "tutorials/steady/membranes/membrane27_swro_energy_recovery",
+    "tutorials/steady/membranes/membrane28_water_permeance_from_sheets",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",
@@ -9202,6 +9238,9 @@
    ],
    "linearTbEstimate": [
     "tutorials/props/estimate/userEstimate01_linear_tb"
+   ],
+   "membraneShortlist": [
+    "tutorials/props/membrane/shortlist01_class_to_modules"
    ],
    "mixingRules": [
     "tutorials/props/molecular/mixrules01_natural_gas"

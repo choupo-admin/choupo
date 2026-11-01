@@ -1470,6 +1470,11 @@
       "exit": 0,
       "claim": "check_gates_judge_tracked: OK -- 5 of 5 converted gates keep their verdict when an UNTRACKED file and a data/local/ file violate their rule, and 5 of 5 FAIL on the same violation once it is tracked (scratch index, the real one untouched); tracked_tree refuses by name outside a repository.  NOT checked: the ~130 other gates that walk a directory (only the converted ones were measured to differ), and gates whose subject is the private tier itself.",
       "seconds": 43.6
+    },
+    "check_swro_plant": {
+      "exit": 0,
+      "claim": "check_swro_plant: OK -- on swro01_campoDalias the product is 98664.7 m3/day (the PDF's 98 664), the first pass recovers 47.20 % (47.2) and the second 87.0 % (84-90), the recycle is what the second pass did not permeate, the plant's mass closes and the exchanger balances, the product holds 2.0 mg/L TDS (1.0716 x NaCl-eq) and 0.046 mg/L boron against < 400 and < 0.5, all recomputed from stream masses; the feed is Table 2's twelve ions in osmotic NaCl equivalence and 5.3 mg/L boron; the boron tests are the PDF's (91 % at pH 8, 95 % at pH 10), announced as an approximation, and relabelling the pH moves nothing (the limitation is PINNED); 4 fixtures refuse by name (a boron solute with no rejection, a record with no boron test, 30 bays in a 22-bay car park, `at` on an east side); the layout's 22 footprints overlap nowhere and stand inside the fence, none of 5 roads crosses one, the gate opens on the north line and the three boundary pipes cross at published points on the fence labelled `(not drawn)`, each tank's box holds its sized volume, and the exchanger's rotors are ceil(Q_LP / rated).  NOT CHECKED: that any number is the real plant's (the PDF is a manufacturer's claim at assumed test conditions), the layout against any code or the real site, the first law, and boron as pH-dependent physics (not modelled).",
+      "seconds": 0.2
     }
   }
 }
