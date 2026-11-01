@@ -1528,25 +1528,23 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
-> **C193. THE CML PLAN -- CHOUPO'S DEVELOPMENT PLAN, SHORT, MEDIUM AND
-> LONG TERM (Vitor, 2026-10-31 13:25: "Tem o plano de desenvolvimento de
-> curto, medio e longo prazo (vamos chamar plano CML)?"; repeated
-> 2026-11-01: "isso nao e o CML ... eu pedi para isso ser construido").**
-> LOST FOR TWELVE HOURS, and how: the session that received the question
-> answered "yes, it is PLAN.md" and renamed the work SCHEDULE (next hour /
-> day / days) "the CML plan" in PLAN.md and CLAUDE.md rule 8; the
-> successor read the name and inherited the confusion, and at 23:44 the
-> external audit Vitor asked to be integrated "no plano CML" went into the
-> schedule and C190 only.  A question phrased "do you have X?" about
-> something that does not exist is a REQUEST, and answering it by renaming
-> what does exist is the failure.  DONE 2026-11-01: `CML.md` at the root
-> (horizons: to the end of 2026 / 2027 / 2028-2029, chosen by the
-> architect with the reason written in the file; the C190 audit integrated
-> in its sections 2 and 4); PLAN.md retitled the schedule and its last
-> horizon set to three days (Vitor's description, 2026-11-01); CLAUDE.md
-> rule 8 names both files.  The Portuguese view of CML.md is a private
-> page, updated from the file.
-> STATUS: DONE (first version); reviewed whenever the direction changes.
+> **C193. THE CML PLAN IS THE 1 HOUR / 1 DAY / 3 DAYS / BEYOND A WEEK
+> TABLE, KEPT CURRENT (Vitor, 2026-10-31 13:25 "plano de desenvolvimento de
+> curto, medio e longo prazo (vamos chamar plano CML)"; 2026-11-01: "isso
+> e uma tabela com o que se vai fazer a curto (1h) medio (1dia) e longo
+> prazo (3 dias)", "eu quero uma coisa de 1h, 1 dia e 3 dias ou mais para
+> eu me ir guiando", "o que nao couber pode ficar para > 1 semana").**
+> TWO MISREADINGS, both the commander's, recorded so neither recurs: shown
+> a stale prose summary as "the CML", Vitor said it was not the CML and
+> described the table; the commander read that as "the table is not the
+> CML" and built a months-and-years roadmap under the name, which he then
+> corrected.  Rule taken: when Vitor rejects a deliverable, restate what he
+> asked for in his own words and check it against the thing shown before
+> building anything.  DONE 2026-11-01: PLAN.md is the CML plan with four
+> horizons (1 hour, 1 day, 3 days, beyond a week); its Portuguese page
+> brought up to date the same hour (it had stood ten hours stale);
+> the roadmap kept as ROADMAP.md, feeding the last column.
+> STATUS: DONE.
 
 > **C192. THE PRESSURE EXCHANGER: THE UNIT, ITS DESIGN SHEET AND ITS
 > SCHEMATIC (Vitor, 2026-11-01 -- "faz essa operacao unitaria e depois

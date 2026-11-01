@@ -103,20 +103,19 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    shown, a merge that `git revert` undoes) is TAKEN and reported, not
    asked: mission command -- act on the stated intent without further
    orders -- and the one-way / two-way door distinction.
-8. **TWO PLANS, READ AT THE START OF EVERY SESSION, BOTH ALWAYS IN
-   ENGLISH** (Vítor, 2026-10-31: "qualquer sessão que eu inicie sabe esse
-   plano").  **`CML.md` is "the CML plan"** (curto / médio / longo: Vítor's
-   name, 2026-10-31) -- Choupo's DEVELOPMENT plan: where the project goes
-   and why, short term to the end of the year, medium the next year, long
-   the two after.  **`PLAN.md` is the work SCHEDULE**: what is done in the
-   next hour, the next day and the next three days, each row pointing at
-   its DEV.md 4c entry (the register of record) and changed in the same
-   commit as the work that changes it.  They are NOT the same document, and
-   confusing them is a paid-for error: on 2026-10-31 the session asked for
-   the CML plan answered that it already existed and renamed the schedule,
-   so the plan Vítor asked for was not built until 2026-11-01 (DEV.md 4c
-   C193).  Private claude.ai pages show both to Vítor in Portuguese; each
-   page is a VIEW of its file, updated from it, never the other way round.
+8. **THE CML PLAN IS `PLAN.md`, READ AT THE START OF EVERY SESSION, ALWAYS
+   IN ENGLISH** (Vítor, 2026-10-31: "qualquer sessão que eu inicie sabe esse
+   plano"; horizons, 2026-11-01: "1 h, 1 dia e 3 dias ou mais ... o que não
+   couber pode ficar para > 1 semana").  It holds what is done in the next
+   hour, the next day, the next three days and beyond a week, plus the
+   architect's decisions and what waits on Vítor, each row pointing at its
+   DEV.md 4c entry and changed in the same commit as the work that changes
+   it.  A private claude.ai page shows it to Vítor in Portuguese; the page
+   is a VIEW of this file, updated from it, never the other way round, and
+   it is brought up to date whenever a row changes state -- a stale view is
+   the defect Vítor sees first.  `ROADMAP.md` is the months-and-years
+   direction that feeds the last column; it is not the CML plan (DEV.md 4c
+   C193 records the two-way confusion of 2026-10-31/11-01).
 
 ## 1. What this project is
 

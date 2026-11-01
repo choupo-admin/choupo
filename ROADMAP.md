@@ -1,18 +1,10 @@
-# CML -- Choupo's development plan (short, medium and long term)
+# ROADMAP -- Choupo's development roadmap (months and years)
 
-Asked for by Vítor on 2026-10-31 ("o plano de desenvolvimento de curto,
-médio e longo prazo -- vamos chamar plano CML") and NOT built that day: the
-session that answered called the work schedule by that name instead.  This
-file is the plan; the schedule is `PLAN.md`.  The difference, which is why
-there are two files:
-
-* **`CML.md` (this file)** says WHERE Choupo is going and WHY, in months and
-  years.  It changes when the direction changes.
-* **`PLAN.md`** says what is done in the next hour, the next day and the next
-  three days.  It changes many times a day and is derived from this file and
-  from DEV.md 4c.
-* **DEV.md 4c** is the register of record: every commission, with its
-  decision and its reason.  Each item below points at its entry.
+Where Choupo is going and why, in months and years.  It is NOT the CML plan:
+the CML plan is `PLAN.md` (Vítor, 2026-11-01: what is done in the next hour,
+the next day, the next three days, and beyond a week), and this file feeds
+its last column.  DEV.md 4c is the register of record; each item below
+points at its entry.
 
 Horizons, chosen by the architect (CLAUDE.md rule 00) with the reason stated:
 **short = to the end of 2026** (the commissions already open and one release

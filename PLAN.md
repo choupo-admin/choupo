@@ -1,13 +1,14 @@
-# PLAN -- the work schedule: the next hour, the next day, the next three days
+# PLAN -- the CML plan: the next hour, the next day, the next three days, beyond a week
 
-This is NOT the CML plan.  Choupo's development plan (short, medium and long
-term, in months and years) is `CML.md`; this file schedules the work that
-advances it.
+The CML plan (curto / médio / longo; Vítor's name, 2026-10-31, and his
+horizons, 2026-11-01: "1 h, 1 dia e 3 dias ou mais ... o que não couber pode
+ficar para > 1 semana").  Where the project goes in months and years is
+`ROADMAP.md`, which feeds the last section.
 
 Read at the start of every session (CLAUDE.md section 0, rule 8).  Each row
 points at its entry in DEV.md section 4c, the register of record; this file
 says only WHEN and IN WHAT ORDER.  Change a row in the same commit as the work
-that changes it.  Vítor's private Portuguese view of this schedule is
+that changes it.  Vítor's private Portuguese view of this plan is
 https://claude.ai/artifact/JnokFGgoNMTAWvu9fkgyoQ -- updated FROM this file.
 
 Last reviewed: 2026-11-01 (rows brought up to date: C178, C185 7/9, C186 4/6, C188, C189 1-4, C191 graph on main; usage budget tight -- generals on Sonnet), earlier 2026-10-31, after an audit of every request Vítor made from
@@ -53,18 +54,25 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 | status | what | ref |
 |---|---|---|
 | todo | C191 (B) candidates: the methanation reactor EduTool; a Power-to-Gas plant case (scope to decide) | C191 |
-| todo | Candidates from the external opinion (pedagogical scope first): seeded crystallisation, cake washing and filtration, a linear chromatography column with fraction collection | C190 |
 | todo | Verify and fix C187 (1) (the Gibbs review's three open items) and (2) (SpeciationSolver outer convergence) | C187 |
 | todo | Views for choupoSolve cases; C149's parallel runs | C187 (5), (6) |
+| todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
 | todo | Distillation P0 (step contract, singular-Jacobian diagnostic naming the stage and equation); P1-P3 as a written proposal for Vítor, no code | C184 |
 | todo | Re-run Vítor's DME plant (branch `claude/c184-distillation`) and classify its failure: infeasible spec / thermo data / ill-conditioned / implementation | C184 |
 | todo | aceticAcid02: the subcooled-feed q in the simultaneous column branch | C174, C175 |
+
+## Beyond a week
+
+| status | what | ref |
+|---|---|---|
+| todo | Candidates from the external opinion (pedagogical scope first): seeded crystallisation, cake washing and filtration, a linear chromatography column with fraction collection | C190 |
 | todo | Show a props run's `postProcessing/` in the GUI case tree | C183 (1) |
 | todo | Owed answer tables: point-by-point reply to the EduTools review; C112 final table | C150, C112 |
 | todo | EduTools: actually dispatch C127; quizzes (7 of 66 tools have one); C132; the RTD lesson | C127, C158, C132 |
 | todo | Commit the UX-audit deliverables now only in a scratchpad (component inventory, information-architecture map, reuse list, acceptance criteria) | C168 |
 | todo | Parity study phase 0 is only on `claude/c160-parity-study`: land it or decide | C160 |
 | todo | Check that the details pane is still resizable after the C172 rewrite | C153 |
+| todo | The months-and-years roadmap: ROADMAP.md | C193 |
 
 ## The architect's decisions (rule 00; each taken with its written reason in DEV.md 4c)
 
