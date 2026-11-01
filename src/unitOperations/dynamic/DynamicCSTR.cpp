@@ -655,9 +655,9 @@ scalar DynamicCSTR::rateOfReaction_(const ReactionSpec& rxn,
     scalar r = k;
     for (std::size_t s = 0; s < rxn.comps.size(); ++s)
     {
-        if (rxn.order[s] <= 0.0) continue;
+        if (rxn.order[s] == 0.0) continue;              // C190 item 10: a NEGATIVE order is honoured
         const scalar c_i = n[rxn.comps[s]] / V;
-        r *= std::pow(std::max<scalar>(c_i, 0.0), rxn.order[s]);
+        r *= Reaction::powerLawFactor(rxn.order[s] > 0.0 ? std::max<scalar>(c_i, 0.0) : c_i, rxn.order[s], thermo_->comp(rxn.comps[s]).name(), "dynamicCSTR reaction '" + rxn.name + "'");
     }
     return r;
 }

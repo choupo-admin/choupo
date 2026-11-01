@@ -184,6 +184,37 @@ public:
                                scalar             nu,
                                const std::string& component,
                                const std::string& who);
+
+    // -- One factor of a power-law rate: c ^ order (DEV.md 4c C190 item 10) -
+    //
+    //    A kinetic order is a fact about the MECHANISM and its sign is part of
+    //    the fact: an inhibition order is NEGATIVE (r = k cA^2 / cB).  Only an
+    //    order of EXACTLY zero leaves the rate law, so that is the only skip.
+    //    The vessels' own Arrhenius paths used to skip every order <= 0, which
+    //    turned r = k cA^2 cB^-1 at cA = 3, cB = 100 into 9k instead of 0.09k,
+    //    at exit 0.
+    //
+    //    A species with a NEGATIVE order at concentration zero (or below) has
+    //    a rate that diverges.  The rule, ONE for every reader of a power law:
+    //    REFUSE by name (`who`, the species and the order).  Never a silent
+    //    clamp (a clamp invents the rate) and never inf into the integrator.
+    //    `c` is the caller's concentration; a caller that clamps a positive-
+    //    order species at zero does so before the call.
+    static scalar powerLawFactor(scalar             c,
+                                 scalar             order,
+                                 const std::string& species,
+                                 const std::string& who);
+
+    // -- The molecularity a CHEMKIN A is reported for ------------------------
+    //
+    //    SUM the orders first, then decide: orders 0.5 + 1.5 are molecularity
+    //    2, not (round 0.5) + (round 1.5) = 1 + 2 = 3 (an A converted 1000x
+    //    too low).  A CHEMKIN A is reported for an INTEGER molecularity, so a
+    //    sum that is not an integer REFUSES by name with the remedy.
+    //    Negative orders count (the units of k follow the whole sum).
+    static int chemkinMolecularity(const std::vector<scalar>& orders,
+                                   const std::string&         reaction,
+                                   const std::string&         who);
 };
 
 } // namespace Choupo

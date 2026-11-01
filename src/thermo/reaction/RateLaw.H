@@ -139,6 +139,7 @@ public:
 private:
 
     std::string type_     = "Arrhenius";
+    std::string who_      = "RateLaw";                // caller, for a refusal naming it
     bool        activity_ = false;              // theta = gamma.x instead of c
 
     scalar A_    = 0.0, Ea_    = 0.0;           // forward
