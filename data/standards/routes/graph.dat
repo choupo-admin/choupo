@@ -1,0 +1,451 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  THE TREE OF CHEMISTRY -- the graph's substances, roots and sources.
+  This record is the HEADER of ONE directed graph whose edges live in the
+  sibling `recordType productionRoutes` files of this folder.  Nodes are
+  substances; an edge is a named route (a reaction, a separation or a
+  lumped process step) from its reactants to its target.  Nothing in the
+  engine reads this folder (README.md beside it); its consumer is the
+  EduTool `The tree of chemistry` (DEV.md 4c C191 A), and its gate is
+  bin/curate/check_chemistry_graph.py, which re-reads every file here,
+  balances every reaction with the engine's own formula grammar and
+  atomic-weight table, and holds every node and edge to the rules the
+  README states.
+  THE MESSAGE (the architect's, DEV.md 4c C191): the hundred-odd commodity
+  products grow from SEVEN organic roots and FOUR inorganic ones, and the
+  sustainable transition replaces the ROOTS, not the leaves.  A node's
+  role (feedstock, root, intermediate, product) is NOT stored: a root is
+  declared below, and the rest is read off the topology (no inbound edge =
+  feedstock; no outbound edge = product), so that it can never disagree
+  with the edges.  Likewise a node that has a catalogue component record
+  carries neither formula nor CAS here: both are READ from
+  data/standards/components/<name>.dat (one home), and the gate holds the
+  graph to the catalogue.
+\*---------------------------------------------------------------------------*/
+
+
+recordType    routeGraph;
+schemaVersion 1;
+name          treeOfChemistry;
+description   "The commodity chemicals as one directed graph: feedstocks, seven organic and four inorganic roots, intermediates and products, joined by named production routes with their stoichiometry, yield, co-products and citation.";
+
+//  THE ROOTS.  Seven organic, four inorganic (the architect's list).  A root
+//  with several members is ONE root (the C4s, the xylenes, chlorine WITH caustic
+//  -- co-produced -- and synthesis gas as the CO + H2 pair with methanol as its
+//  first derivative).  `group` is organic | inorganic and the gate counts 7 + 4.
+roots
+(
+    { name ethylene;                group organic;   members ( ethylene ); label "ethylene"; }
+    { name propylene;               group organic;   members ( propylene ); label "propylene"; }
+    { name C4s;                     group organic;   members ( 13Butadiene 1Butene isoButene ); label "the C4s: butadiene and the butenes"; }
+    { name benzene;                 group organic;   members ( benzene ); label "benzene"; }
+    { name toluene;                 group organic;   members ( toluene ); label "toluene"; }
+    { name xylenes;                 group organic;   members ( pXylene oXylene mXylene ); label "the xylenes"; }
+    { name syngas;                  group organic;   members ( CO H2 methanol ); label "synthesis gas (CO + H2), with methanol as its first derivative"; }
+    { name ammonia;                 group inorganic; members ( NH3 ); label "ammonia"; }
+    { name sulfuricAcid;            group inorganic; members ( H2SO4 ); label "sulfuric acid"; }
+    { name chlorAlkali;             group inorganic; members ( Cl2 NaOH ); label "chlorine and caustic soda, co-produced"; }
+    { name nitricAndPhosphoricAcid; group inorganic; members ( HNO3 H3PO4 ); label "the nitric and phosphoric acids"; }
+);
+
+//  THE PROCESS FAMILIES an edge may declare (`family`), each with its meaning.
+//  One home: the gate reads this list, not a copy of it.
+processFamilies
+(
+    { name separation;            meaning "a physical separation of a cut or a mixture: distillation, extraction, crystallisation, adsorption"; }
+    { name steamCracking;         meaning "thermal pyrolysis of a hydrocarbon feed in the presence of steam, 800-900 C, milliseconds"; }
+    { name catalyticCracking;     meaning "fluid catalytic cracking of a heavy cut over a zeolite, 500-550 C"; }
+    { name catalyticReforming;    meaning "naphtha dehydrocyclisation/isomerisation over Pt on alumina to aromatics + hydrogen"; }
+    { name reforming;             meaning "steam or autothermal reforming of a light hydrocarbon to CO + H2"; }
+    { name gasification;          meaning "partial oxidation of a solid or heavy feed with steam/oxygen to CO + H2"; }
+    { name shift;                 meaning "the water-gas shift and its reverse"; }
+    { name electrolysis;          meaning "an electrochemical conversion driven by electricity"; }
+    { name hydrogenation;         meaning "addition of H2 over a metal catalyst"; }
+    { name dehydrogenation;       meaning "removal of H2, thermal or catalytic"; }
+    { name dehydration;           meaning "removal of water over an acid catalyst"; }
+    { name hydration;             meaning "addition of water over an acid catalyst"; }
+    { name oxidation;             meaning "selective oxidation with O2/air over a solid catalyst"; }
+    { name ammoxidation;          meaning "oxidation in the presence of NH3 to a nitrile"; }
+    { name hydroformylation;      meaning "olefin + CO + H2 to an aldehyde over a Co or Rh complex (oxo)"; }
+    { name carbonylation;         meaning "insertion of CO, homogeneously catalysed"; }
+    { name alkylation;            meaning "aromatic + olefin over an acid catalyst"; }
+    { name isomerisation;         meaning "skeletal or positional rearrangement over an acid or bifunctional catalyst"; }
+    { name disproportionation;    meaning "transalkylation of methyl groups between aromatic rings"; }
+    { name hydrodealkylation;     meaning "removal of an alkyl group from an aromatic ring with H2"; }
+    { name chlorination;          meaning "addition or substitution of chlorine; oxychlorination uses HCl + O2"; }
+    { name nitration;             meaning "substitution with HNO3 in mixed acid"; }
+    { name esterification;        meaning "acid + alcohol to an ester + water"; }
+    { name etherification;        meaning "olefin + alcohol to an ether over an acid resin"; }
+    { name polymerisation;        meaning "chain or step growth of a monomer to its polymer"; }
+    { name condensation;          meaning "a coupling that releases a small molecule (water, NH3, HCl)"; }
+    { name acidBase;              meaning "neutralisation or acid attack with no redox"; }
+    { name rearrangement;         meaning "an intramolecular rearrangement (Beckmann, Hock)"; }
+    { name synthesis;             meaning "a direct catalytic synthesis from its elements or from syngas"; }
+    { name fermentation;          meaning "a microbial conversion"; }
+    { name pyrolysis;             meaning "thermal depolymerisation or cracking of a solid/polymer feed"; }
+    { name methanation;           meaning "hydrogenation of CO/CO2 to methane"; }
+    { name methanolToHydrocarbons; meaning "zeolite-catalysed conversion of methanol to olefins or aromatics"; }
+);
+
+//  THE SOURCES every edge cites by id.  `licence` is the grant the SOURCE
+//  carries: ccBy4 / ccBy3 (text and figures reusable with attribution),
+//  citedWork (a copyrighted work named as the reference for a FACT -- a title
+//  or a DOI is a citation, a copied table is not).  `verification` says how
+//  well the citation itself is known: checkedCopy (the document was opened and
+//  read), bibliographicRecord (title/authors/journal/year corroborated against
+//  the Crossref record of the DOI on the date noted; the paper NOT opened),
+//  titleOnly (a textbook or encyclopaedia named by title as the standard
+//  reference for the route; no page claimed).  No source here is a
+//  NonCommercial or no-grant compilation: industry-association statistics
+//  (ACC, Cefic, Plastics Europe) were checked on 2026-11-01 and are NOT used,
+//  because their terms permit non-commercial use only or state no grant.
+sources
+(
+    {
+        name          iea2018;
+        citation      "IEA (2018), The Future of Petrochemicals: Towards more sustainable plastics and fertilisers, OECD/IEA, Paris";
+        url           "https://www.iea.org/reports/the-future-of-petrochemicals";
+        licence       ccBy4;
+        licenceNote   "the report page states 'Licence: CC BY 4.0' (read 2026-11-01); the 2018 PDF's own front matter still says 'subject to specific restrictions', the IEA having relicensed its reports since -- the page is the current grant";
+        verification  checkedCopy;
+        verificationNote "PDF read 2026-11-01; page numbers below are the report's own";
+    }
+    {
+        name          ieaAmmonia2021;
+        citation      "IEA (2021), Ammonia Technology Roadmap: Towards more sustainable nitrogen fertiliser production, IEA, Paris";
+        url           "https://www.iea.org/reports/ammonia-technology-roadmap";
+        licence       ccBy4;
+        verification  checkedCopy;
+        verificationNote "the report's executive-summary page read 2026-11-01; the full PDF not opened";
+    }
+    {
+        name          ieaHydrogen2019;
+        citation      "IEA (2019), The Future of Hydrogen: Seizing today's opportunities, IEA, Paris";
+        url           "https://www.iea.org/reports/the-future-of-hydrogen";
+        licence       ccBy4;
+        verification  checkedCopy;
+        verificationNote "report page read 2026-11-01";
+    }
+    {
+        name          weissermelArpe2003;
+        citation      "K. Weissermel, H.-J. Arpe, Industrial Organic Chemistry, 4th ed., Wiley-VCH, Weinheim (2003)";
+        licence       citedWork;
+        verification  titleOnly;
+        verificationNote "named as the standard reference for the route; no table or page copied; the stoichiometry is checked by the gate, not quoted from the book";
+    }
+    {
+        name          chauvelLefebvre1989;
+        citation      "A. Chauvel, G. Lefebvre, Petrochemical Processes, vols. 1-2, Editions Technip, Paris (1989)";
+        licence       citedWork;
+        verification  titleOnly;
+    }
+    {
+        name          ullmanns;
+        citation      "Ullmann's Encyclopedia of Industrial Chemistry, Wiley-VCH, Weinheim (online edition); the article named in each edge's locus";
+        licence       citedWork;
+        verification  titleOnly;
+    }
+    {
+        name          kirkOthmer;
+        citation      "Kirk-Othmer Encyclopedia of Chemical Technology, Wiley (online edition); the article named in each edge's locus";
+        licence       citedWork;
+        verification  titleOnly;
+    }
+    {
+        name          moulijn2013;
+        citation      "J. A. Moulijn, M. Makkee, A. van Diepen, Chemical Process Technology, 2nd ed., Wiley (2013)";
+        licence       citedWork;
+        verification  titleOnly;
+    }
+    {
+        name          obrien2005;
+        citation      "T. F. O'Brien, T. V. Bommaraju, F. Hine, Handbook of Chlor-Alkali Technology, Springer (2005)";
+        licence       citedWork;
+        verification  titleOnly;
+    }
+    {
+        name          ren2006;
+        citation      "T. Ren, M. Patel, K. Blok, Olefins from conventional and heavy feedstocks: Energy use in steam cracking and alternative processes, Energy 31 (2006) 425-451";
+        doi           "10.1016/j.energy.2005.04.001";
+        licence       citedWork;
+        verification  bibliographicRecord;
+        verificationNote "Crossref record of the DOI read 2026-11-01: title, authors, journal, volume, pages and year agree with the citation; the article itself was not opened";
+    }
+    {
+        name          amghizar2017;
+        citation      "I. Amghizar, L. A. Vandewalle, K. M. Van Geem, G. B. Marin, New Trends in Olefin Production, Engineering 3 (2017) 171-178";
+        doi           "10.1016/J.ENG.2017.02.006";
+        licence       ccBy4;
+        licenceNote   "Crossref lists CC BY 4.0 for the article";
+        verification  bibliographicRecord;
+        verificationNote "Crossref record of the DOI read 2026-11-01: title, authors, journal, volume, pages and year agree with the citation; the article itself was not opened";
+    }
+    {
+        name          tian2015;
+        citation      "P. Tian, Y. Wei, M. Ye, Z. Liu, Methanol to Olefins (MTO): From Fundamentals to Commercialization, ACS Catalysis 5 (2015) 1922-1938";
+        doi           "10.1021/acscatal.5b00007";
+        licence       citedWork;
+        verification  bibliographicRecord;
+        verificationNote "Crossref record of the DOI read 2026-11-01: title, authors, journal, volume, pages and year agree with the citation; the article itself was not opened";
+    }
+    {
+        name          zhangYu2013;
+        citation      "M. Zhang, Y. Yu, Dehydration of Ethanol to Ethylene, Industrial & Engineering Chemistry Research 52 (2013) 9505-9514";
+        doi           "10.1021/ie401157c";
+        licence       citedWork;
+        verification  bibliographicRecord;
+        verificationNote "Crossref record of the DOI read 2026-11-01: title, authors, journal, volume, pages and year agree with the citation; the article itself was not opened";
+    }
+    {
+        name          sattler2014;
+        citation      "J. J. H. B. Sattler, J. Ruiz-Martinez, E. Santillan-Jimenez, B. M. Weckhuysen, Catalytic Dehydrogenation of Light Alkanes on Metals and Metal Oxides, Chemical Reviews 114 (2014) 10613-10653";
+        doi           "10.1021/cr5002436";
+        licence       citedWork;
+        verification  bibliographicRecord;
+        verificationNote "Crossref record of the DOI read 2026-11-01: title, authors, journal, volume, pages and year agree with the citation; the article itself was not opened";
+    }
+    {
+        name          perezFortes2016;
+        citation      "M. Perez-Fortes, J. C. Schoneberger, A. Boulamanti, E. Tzimas, Methanol synthesis using captured CO2 as raw material: Techno-economic and environmental assessment, Applied Energy 161 (2016) 718-732";
+        doi           "10.1016/j.apenergy.2015.07.067";
+        licence       citedWork;
+        verification  bibliographicRecord;
+        verificationNote "Crossref record of the DOI read 2026-11-01: title, authors, journal, volume, pages and year agree with the citation; the article itself was not opened";
+    }
+    {
+        name          zakzeski2010;
+        citation      "J. Zakzeski, P. C. A. Bruijnincx, A. L. Jongerius, B. M. Weckhuysen, The Catalytic Valorization of Lignin for the Production of Renewable Chemicals, Chemical Reviews 110 (2010) 3552-3599";
+        doi           "10.1021/cr900354u";
+        licence       citedWork;
+        verification  bibliographicRecord;
+        verificationNote "Crossref record of the DOI read 2026-11-01: title, authors, journal, volume, pages and year agree with the citation; the article itself was not opened";
+    }
+    {
+        name          huber2006;
+        citation      "G. W. Huber, S. Iborra, A. Corma, Synthesis of Transportation Fuels from Biomass: Chemistry, Catalysts, and Engineering, Chemical Reviews 106 (2006) 4044-4098";
+        doi           "10.1021/cr068360d";
+        licence       citedWork;
+        verification  bibliographicRecord;
+        verificationNote "Crossref record of the DOI read 2026-11-01: title, authors, journal, volume, pages and year agree with the citation; the article itself was not opened";
+    }
+    {
+        name          smith2020;
+        citation      "C. Smith, A. K. Hill, L. Torrente-Murciano, Current and future role of Haber-Bosch ammonia in a carbon-free energy landscape, Energy & Environmental Science 13 (2020) 331-344";
+        doi           "10.1039/C9EE02873K";
+        licence       ccBy3;
+        licenceNote   "Crossref lists CC BY 3.0 for the article";
+        verification  bibliographicRecord;
+        verificationNote "Crossref record of the DOI read 2026-11-01: title, authors, journal, volume, pages and year agree with the citation; the article itself was not opened";
+    }
+);
+
+//  PRODUCTION VOLUMES, the only market numbers in the graph: each one sourced
+//  and dated.  A volume naming several substances is their COMBINED figure.
+productionVolumes
+(
+    { substances ( NH3 ); value 185; unit "Mt/yr"; basis "approximately, 2017"; source iea2018; locus "p. 24: 'Global ammonia production is approximately 185 million tonnes per year'"; }
+    { substances ( methanol ); value 100; unit "Mt/yr"; basis "approximately, 2017"; source iea2018; locus "p. 24: 'Global methanol production is approximately 100 Mt/yr'"; }
+    { substances ( ethylene propylene ); value 255; unit "Mt/yr"; basis "combined light olefins, approximately, 2017"; source iea2018; locus "p. 24: 'Combined global ethylene and propylene production is approximately 255 Mt/yr'"; }
+    { substances ( benzene toluene mixedXylenes ); value 110; unit "Mt/yr"; basis "BTX aromatics combined, approximately, 2017"; source iea2018; locus "p. 25: 'Global production of BTX aromatics is approximately 110 Mt/yr'"; }
+    { substances ( H2 ); value 70; unit "Mt/yr"; basis "dedicated hydrogen production, approximately, 2018"; source ieaHydrogen2019; locus "report page: 'around 70 million tonnes' of dedicated hydrogen a year"; }
+);
+
+//  THE SUBSTANCES.  `component` names the catalogue record the formula and CAS
+//  are read from; a node without one carries its own `formula` (engine grammar,
+//  src/thermo/ElementComposition.H) and `cas` where one exists.  `kind` is
+//  molecule (default, omitted), polymer (the formula is the REPEAT UNIT and a
+//  polymerisation edge balances per unit) or lumped (a cut or a mixture with no
+//  molecular formula: it may only feed `separation` and `processYield` edges).
+substances
+(
+    //  a boiling-range mixture; the graph enters it through its naphtha and gas-oil cuts
+    { name crudeOil; label "crude oil"; cas 8002-05-9; kind lumped; }
+    //  mostly methane with ethane, propane and butanes; resolved into its constituents by separation
+    { name naturalGas; label "natural gas"; cas 8006-14-2; kind lumped; }
+    //  the straight-run cut steam crackers and reformers are fed with
+    { name naphtha; label "naphtha (C5-C12 cut)"; cas 8030-30-6; kind lumped; }
+    //  the refinery cut fluid catalytic cracking (FCC) converts; its propylene and C4s reach the chemical sector
+    { name gasOil; label "gas oil (vacuum/atmospheric)"; kind lumped; }
+    //  gasified to CO + H2; the feedstock of about a quarter of the world's ammonia and of China's methanol
+    { name coal; label "coal"; kind lumped; }
+    //  wood, straw, residues: cellulose + hemicellulose + lignin; a gasification or fermentation feed
+    { name biomass; label "lignocellulosic biomass"; kind lumped; }
+    //  the aromatic polymer of biomass (15-30 wt% of wood), the only renewable aromatic feedstock at scale
+    { name lignin; label "lignin"; cas 9005-53-2; kind lumped; }
+    //  polyolefin-rich sorted waste; pyrolysis returns a naphtha-like oil to the cracker
+    { name wastePlastics; label "mixed plastic waste"; kind lumped; }
+    //  taken as the fluorapatite end-member so the wet-process attack balances; real rock carries carbonate, silica and iron
+    { name phosphateRock; label "phosphate rock (fluorapatite)"; formula "Ca5(PO4)3F"; cas 1306-05-4; }
+    //  today almost entirely recovered from sour gas and oil (Claus); the mined (Frasch) source is history
+    { name sulfur; label "sulfur"; formula S; cas 7704-34-9; }
+    { name H2S; label "hydrogen sulfide (sour gas)"; formula H2S; cas 7783-06-4; }
+    { name NaCl; label "sodium chloride (brine)"; component NaCl; }
+    { name water; label "water"; component water; }
+    { name N2; label "nitrogen (from air)"; component N2; }
+    { name O2; label "oxygen (from air)"; component O2; }
+    //  a by-product of reforming, shift and fermentation; a FEEDSTOCK of urea and, in the transition, of methanol and methane
+    { name CO2; label "carbon dioxide"; component CO2; }
+    //  natural gas is 85-95 % methane; biomethane is the same molecule
+    { name CH4; label "methane"; component CH4; }
+    { name ethane; label "ethane"; component ethane; }
+    { name propane; label "propane"; component propane; }
+    { name nButane; label "n-butane"; component nButane; }
+    { name isoButane; label "isobutane"; component isoButane; }
+    { name sucrose; label "sucrose (cane/beet sugar)"; component sucrose; }
+    { name CaOH2; label "calcium hydroxide (lime)"; formula "Ca(OH)2"; cas 1305-62-0; }
+    { name CaCl2; label "calcium chloride"; component CaCl2; }
+    { name CO; label "carbon monoxide"; component CO; }
+    { name H2; label "hydrogen"; component H2; }
+    { name ethylene; label "ethylene"; component ethylene; }
+    { name propylene; label "propylene"; component propylene; }
+    { name 13Butadiene; label "1,3-butadiene"; component 13Butadiene; }
+    //  stands for the n-butenes (1-butene, cis/trans-2-butene) of the C4 raffinate
+    { name 1Butene; label "1-butene (n-butenes)"; component 1Butene; }
+    { name isoButene; label "isobutene"; component isoButene; }
+    //  the cracker's C4 stream: butadiene, isobutene, n-butenes, butanes; resolved by extraction and etherification
+    { name mixedC4; label "crude C4 cut"; kind lumped; }
+    { name benzene; label "benzene"; component benzene; }
+    { name toluene; label "toluene"; component toluene; }
+    //  the C8 aromatics cut of a reformer or cracker: p-, m-, o-xylene and ethylbenzene; resolved by crystallisation or adsorption
+    { name mixedXylenes; label "mixed xylenes (C8 aromatics cut)"; formula C8H10; cas 1330-20-7; }
+    { name pXylene; label "p-xylene"; component pXylene; }
+    { name oXylene; label "o-xylene"; component oXylene; }
+    { name mXylene; label "m-xylene"; component mXylene; }
+    //  the cracker's C5+ liquid, 60-70 wt% aromatics after hydrotreating; a BTX source second only to reformate
+    { name pyrolysisGasoline; label "pyrolysis gasoline (pygas)"; kind lumped; }
+    //  the aromatic-rich gasoline of a naphtha reformer; the largest BTX source
+    { name reformate; label "catalytic reformate"; kind lumped; }
+    { name methanol; label "methanol"; component methanol; }
+    { name NH3; label "ammonia"; component NH3; }
+    { name H2SO4; label "sulfuric acid"; component H2SO4; }
+    { name Cl2; label "chlorine"; component Cl2; }
+    { name NaOH; label "sodium hydroxide (caustic soda)"; component NaOH; }
+    { name HNO3; label "nitric acid"; component HNO3; }
+    { name H3PO4; label "phosphoric acid"; component H3PO4; }
+    { name polyethylene; label "polyethylene (HDPE/LDPE/LLDPE)"; component polyethylene; kind polymer; }
+    { name ethyleneOxide; label "ethylene oxide"; component ethyleneOxide; }
+    { name ethyleneGlycol; label "ethylene glycol (MEG)"; component ethyleneGlycol; }
+    //  stands for the ethanolamines (mono-, di-, tri-) of the EO + ammonia reaction
+    { name monoethanolamine; label "monoethanolamine"; component monoethanolamine; }
+    { name Dichloroethane; label "1,2-dichloroethane (EDC)"; component Dichloroethane; }
+    { name vinylChloride; label "vinyl chloride (VCM)"; component vinylChloride; }
+    { name PVC; label "poly(vinyl chloride)"; component PVC; kind polymer; }
+    { name ethylBenzene; label "ethylbenzene"; component ethylBenzene; }
+    { name styrene; label "styrene"; component styrene; }
+    { name polystyrene; label "polystyrene"; component polystyrene; kind polymer; }
+    { name acetaldehyde; label "acetaldehyde"; component acetaldehyde; }
+    { name aceticAcid; label "acetic acid"; component aceticAcid; }
+    { name vinylAcetate; label "vinyl acetate (VAM)"; component vinylAcetate; }
+    { name ethanol; label "ethanol"; component ethanol; }
+    { name ethylAcetate; label "ethyl acetate"; component ethylAcetate; }
+    { name polypropylene; label "polypropylene"; component polypropylene; kind polymer; }
+    { name acrylonitrile; label "acrylonitrile"; component acrylonitrile; }
+    { name 12PropyleneOxide; label "propylene oxide"; component 12PropyleneOxide; }
+    { name propyleneGlycol; label "propylene glycol"; formula C3H8O2; cas 57-55-6; }
+    { name cumene; label "cumene"; component cumene; }
+    { name cumeneHydroperoxide; label "cumene hydroperoxide"; component cumeneHydroperoxide; }
+    { name phenol; label "phenol"; component phenol; }
+    { name acetone; label "acetone"; component acetone; }
+    { name bisphenolA; label "bisphenol A"; formula C15H16O2; cas 80-05-7; }
+    //  repeat unit of the bisphenol-A carbonate; CAS of the polymer class is not given here
+    { name polycarbonate; label "polycarbonate (BPA-PC)"; formula C16H14O3; kind polymer; }
+    { name acrolein; label "acrolein"; formula C3H4O; cas 107-02-8; }
+    { name acrylicAcid; label "acrylic acid"; component acrylicAcid; }
+    { name isopropanol; label "isopropanol"; component isopropanol; }
+    { name butanal; label "n-butanal (butyraldehyde)"; component butanal; }
+    { name nButanol; label "n-butanol"; component nButanol; }
+    { name 2Ethylhexanol; label "2-ethylhexanol"; formula C8H18O; cas 104-76-7; }
+    { name HCN; label "hydrogen cyanide"; component HCN; }
+    { name acetoneCyanohydrin; label "acetone cyanohydrin"; formula C4H7NO; cas 75-86-5; }
+    { name methylMethacrylate; label "methyl methacrylate (MMA)"; component methylMethacrylate; }
+    { name PMMA; label "poly(methyl methacrylate)"; component PMMA; kind polymer; }
+    //  the forced co-product of the acetone-cyanohydrin MMA route, about 1.2 kg per kg MMA
+    { name NH4HSO4; label "ammonium bisulfate"; formula NH4HSO4; cas 7803-63-6; }
+    { name allylChloride; label "allyl chloride"; formula C3H5Cl; cas 107-05-1; }
+    { name epichlorohydrin; label "epichlorohydrin"; formula C3H5ClO; cas 106-89-8; }
+    //  stands for both chlorohydrin isomers of the PO chlorohydrin route
+    { name propyleneChlorohydrin; label "propylene chlorohydrin"; formula C3H7ClO; cas 78-89-7; }
+    { name polybutadiene; label "polybutadiene rubber"; formula C4H6; cas 9003-17-2; kind polymer; }
+    { name MTBE; label "methyl tert-butyl ether"; formula C5H12O; cas 1634-04-4; }
+    { name maleicAnhydride; label "maleic anhydride"; component maleicAnhydride; }
+    { name adiponitrile; label "adiponitrile"; formula C6H8N2; cas 111-69-3; }
+    { name hexamethylenediamine; label "hexamethylenediamine (HMDA)"; formula C6H16N2; cas 124-09-4; }
+    { name cyclohexane; label "cyclohexane"; component cyclohexane; }
+    { name cyclohexanol; label "cyclohexanol (KA oil, alcohol half)"; component cyclohexanol; }
+    { name cyclohexanone; label "cyclohexanone (KA oil, ketone half)"; component cyclohexanone; }
+    { name adipicAcid; label "adipic acid"; component adipicAcid; }
+    { name nylon66; label "nylon 6,6"; formula C12H22N2O2; cas 32131-17-2; kind polymer; }
+    { name cyclohexanoneOxime; label "cyclohexanone oxime"; formula C6H11NO; cas 100-64-1; }
+    { name hydroxylamine; label "hydroxylamine"; formula NH3O; cas 7803-49-8; }
+    { name caprolactam; label "caprolactam"; formula C6H11NO; cas 105-60-2; }
+    { name nylon6; label "nylon 6"; formula C6H11NO; cas 25038-54-4; kind polymer; }
+    //  the forced co-product of caprolactam (about 1.8 kg per kg in the classic route) and a fertiliser
+    { name ammoniumSulfate; label "ammonium sulfate"; formula "(NH4)2SO4"; cas 7783-20-2; }
+    { name nitrobenzene; label "nitrobenzene"; component nitrobenzene; }
+    { name aniline; label "aniline"; component aniline; }
+    { name phosgene; label "phosgene"; formula COCl2; cas 75-44-5; }
+    { name MDI; label "methylene diphenyl diisocyanate (MDI)"; formula C15H10N2O2; cas 101-68-8; }
+    { name 24Dinitrotoluene; label "2,4-dinitrotoluene"; component 24Dinitrotoluene; }
+    { name toluenediamine; label "toluene-2,4-diamine (TDA)"; formula C7H10N2; cas 95-80-7; }
+    { name TDI; label "toluene diisocyanate (TDI)"; formula C9H6N2O2; cas 584-84-9; }
+    { name benzoicAcid; label "benzoic acid"; component benzoicAcid; }
+    { name terephthalicAcid; label "terephthalic acid (PTA)"; component terephthalicAcid; }
+    { name dimethylTerephthalate; label "dimethyl terephthalate (DMT)"; component dimethylTerephthalate; }
+    { name PET; label "poly(ethylene terephthalate)"; component PET; kind polymer; }
+    { name phthalicAnhydride; label "phthalic anhydride"; formula C8H4O3; cas 85-44-9; }
+    { name formaldehyde; label "formaldehyde"; formula CH2O; cas 50-00-0; }
+    { name dimethylEther; label "dimethyl ether (DME)"; component dimethylEther; }
+    { name aceticAnhydride; label "acetic anhydride"; component aceticAnhydride; }
+    { name methylAcetate; label "methyl acetate"; component methylAcetate; }
+    { name urea; label "urea"; formula CH4N2O; cas 57-13-6; }
+    { name NO; label "nitric oxide"; component NO; }
+    { name ammoniumNitrate; label "ammonium nitrate"; formula NH4NO3; cas 6484-52-2; }
+    { name DAP; label "diammonium phosphate (DAP)"; formula "(NH4)2HPO4"; cas 7783-28-0; }
+    { name SO2; label "sulfur dioxide"; component SO2; }
+    { name SO3; label "sulfur trioxide"; component SO3; }
+    //  the forced co-product of wet-process phosphoric acid, about 5 t per t P2O5
+    { name gypsum; label "phosphogypsum (CaSO4.2H2O)"; component gypsum; }
+    //  the fluorine of the apatite leaves the wet process as HF/fluorosilicates; recovered or scrubbed
+    { name HF; label "hydrogen fluoride"; formula HF; cas 7664-39-3; }
+    { name HCl; label "hydrogen chloride"; component HCl; }
+    //  the forced co-product of biodiesel transesterification, about 0.1 kg per kg biodiesel
+    { name glycerol; label "glycerol (biodiesel co-product)"; component glycerol; }
+    //  stands for the ethylene oligomers (C4-C20 linear alpha-olefins); the C12 is the detergent-range representative
+    { name 1Dodecene; label "1-dodecene (linear alpha-olefins, C4-C20)"; formula C12H24; cas 112-41-4; }
+    { name LAB; label "linear alkylbenzene (as dodecylbenzene)"; formula C18H30; cas 123-01-3; }
+    //  repeat unit of the methylene-urea condensate; with the melamine and phenolic resins, about 40 % of methanol's outlet
+    { name ureaFormaldehydeResin; label "urea-formaldehyde resin"; formula C2H4N2O; cas 9011-05-6; kind polymer; }
+    //  stands for the chloromethanes: CH3Cl for silicones, then CH2Cl2, CHCl3 and CCl4 by further chlorination
+    { name methylChloride; label "methyl chloride (chloromethanes)"; component methylChloride; }
+    //  the forced emission of the adipic acid nitric oxidation until abated
+    { name N2O; label "nitrous oxide"; component N2O; }
+    //  metallurgical/petroleum coke taken as carbon, the carbide-furnace reductant
+    { name coke; label "coke (carbon)"; formula C; cas 65996-77-2; }
+    { name CaCO3; label "limestone (calcium carbonate)"; component CaCO3; }
+    { name CaO; label "lime (calcium oxide)"; component CaO; }
+    { name CaC2; label "calcium carbide"; formula CaC2; cas 75-20-7; }
+    { name acetylene; label "acetylene"; component acetylene; }
+    { name fluorspar; label "fluorspar (calcium fluoride)"; formula CaF2; cas 7789-75-5; }
+    { name CaSO4; label "anhydrite (calcium sulfate)"; component CaSO4; }
+    { name melamine; label "melamine"; formula C3H6N6; cas 108-78-1; }
+    { name monochlorobenzene; label "chlorobenzene"; component monochlorobenzene; }
+    { name H2O2; label "hydrogen peroxide"; component H2O2; }
+    { name methacrylicAcid; label "methacrylic acid"; component methacrylicAcid; }
+    //  written as three butadiene units per styrene unit, close to the usual 75:25 by mass
+    { name SBR; label "styrene-butadiene rubber (3:1 repeat)"; formula C20H26; cas 9003-55-8; kind polymer; }
+    //  stands for the paraffinic FT product; the C8 is the representative member
+    { name nOctane; label "Fischer-Tropsch liquids (as n-octane)"; component nOctane; }
+    { name phenolicResin; label "phenol-formaldehyde resin (novolac)"; formula C7H6O; cas 9003-35-4; kind polymer; }
+    { name POM; label "polyoxymethylene (polyacetal)"; formula CH2O; cas 9002-81-7; kind polymer; }
+    { name PAN; label "polyacrylonitrile (acrylic fibre)"; formula C3H3N; cas 25014-41-9; kind polymer; }
+    { name butylAcrylate; label "n-butyl acrylate"; formula C7H12O2; cas 141-32-2; }
+    //  stands for the phthalate plasticisers (DEHP, DOTP, DINP) of flexible PVC
+    { name DEHP; label "di(2-ethylhexyl) phthalate (DEHP)"; formula C24H38O4; cas 117-81-7; }
+    { name lacticAcid; label "lactic acid"; formula C3H6O3; cas 50-21-5; }
+    { name PLA; label "poly(lactic acid)"; formula C3H4O2; cas 26100-51-6; kind polymer; }
+    { name 14Butanediol; label "1,4-butanediol (BDO)"; component 14Butanediol; }
+    //  a triglyceride taken as triolein so that transesterification balances
+    { name triolein; label "vegetable oil (as triolein)"; formula C57H104O6; cas 122-32-7; }
+    { name methylOleate; label "biodiesel (FAME, as methyl oleate)"; component methylOleate; }
+    { name Na2CO3; label "soda ash (sodium carbonate)"; component Na2CO3; }
+    { name glucose; label "glucose (from starch or cellulose)"; component glucose; }
+);

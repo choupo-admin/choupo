@@ -1,0 +1,1520 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  THE OLEFIN ROOTS: ethylene, propylene and the C4s and what grows from them --
+  the polymers, EO/MEG, the VCM chain, styrene, the Hock route and its forced
+  acetone, the oxo chain, acrylonitrile, PO, MMA and the nylon-6,6 diamine.
+  Grammar: README.md beside this file.  Every edge is re-read, balanced and
+  checked by bin/curate/check_chemistry_graph.py.
+\*---------------------------------------------------------------------------*/
+
+
+recordType    productionRoutes;
+schemaVersion 1;
+graph         treeOfChemistry;
+
+routes
+(
+    {
+        name     ethylenePolymerisation;
+        kind     reaction;
+        target   polyethylene;
+        family   polymerisation;
+        era      incumbent;
+        description "The largest single chemical product: HDPE and LLDPE by coordination catalysis, LDPE by high-pressure radical polymerisation.  Written per repeat unit.";
+        stoichiometry
+        (
+            { component ethylene;              nu -1; }
+            { component polyethylene;          nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.995 );
+            origin  assumed;
+            reason  "Ziegler-Natta/metallocene slurry, gas-phase and high-pressure radical processes convert nearly all the monomer; the curator's band";
+        }
+        provenance
+        (
+            { source iea2018; locus "p. 24: the largest derivative of each light olefin is its simplest polymer"; }
+            { source weissermelArpe2003; locus "ch. 3"; }
+            { source ullmanns; locus "'Polyethylene'"; }
+        );
+    }
+
+    {
+        name     ethyleneOxidation;
+        kind     reaction;
+        target   ethyleneOxide;
+        family   oxidation;
+        era      incumbent;
+        description "Direct oxidation over supported silver, 200-300 C, 10-30 bar: the one large-scale epoxidation with air/oxygen.  The 10-20 % of ethylene burned to CO2 is the route's defining loss.";
+        stoichiometry
+        (
+            { component ethylene;              nu -1; }
+            { component O2;                    nu -0.5; }
+            { component ethyleneOxide;         nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.8 0.9 );
+            origin  assumed;
+            reason  "silver-catalysed selectivity 80-90 %, the rest burned to CO2; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 7, 'Ethylene oxide'"; }
+            { source ullmanns; locus "'Ethylene Oxide'"; }
+        );
+    }
+
+    {
+        name     ethyleneOxideHydration;
+        kind     reaction;
+        target   ethyleneGlycol;
+        family   hydration;
+        era      incumbent;
+        description "Non-catalytic hydration with a large water excess (to hold back the higher glycols): MEG for PET and antifreeze.";
+        stoichiometry
+        (
+            { component ethyleneOxide;         nu -1; }
+            { component water;                 nu -1; }
+            { component ethyleneGlycol;        nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.88 0.92 );
+            origin  assumed;
+            reason  "thermal hydration with excess water gives ~90 % MEG, the rest di- and triethylene glycol; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 7, 'Ethylene glycol'"; }
+            { source ullmanns; locus "'Ethylene Glycol'"; }
+        );
+    }
+
+    {
+        name     ethyleneOxideAmmonia;
+        kind     reaction;
+        target   monoethanolamine;
+        family   condensation;
+        era      incumbent;
+        description "EO + aqueous ammonia gives the ethanolamines -- the CO2-capture solvents and surfactant precursors.";
+        stoichiometry
+        (
+            { component ethyleneOxide;         nu -1; }
+            { component NH3;                   nu -1; }
+            { component monoethanolamine;      nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "the EO is consumed quantitatively; the mono/di/tri split is set by the NH3 excess; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Ethanolamines and Propanolamines'"; }
+        );
+    }
+
+    {
+        name     ethyleneDirectChlorination;
+        kind     reaction;
+        target   Dichloroethane;
+        family   chlorination;
+        era      incumbent;
+        description "Direct chlorination of ethylene in liquid EDC over FeCl3: half of a balanced VCM plant's EDC.";
+        stoichiometry
+        (
+            { component ethylene;              nu -1; }
+            { component Cl2;                   nu -1; }
+            { component Dichloroethane;        nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.99 );
+            origin  assumed;
+            reason  "FeCl3-catalysed liquid-phase addition, selectivity > 99 %; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 9, 'Vinyl chloride'"; }
+            { source ullmanns; locus "'Chlorinated Hydrocarbons'"; }
+        );
+    }
+
+    {
+        name     ethyleneOxychlorination;
+        kind     reaction;
+        target   Dichloroethane;
+        family   chlorination;
+        era      incumbent;
+        description "Oxychlorination over CuCl2/alumina, 220-250 C: the other half of EDC, made from the HCl that the EDC cracker returns -- which is what makes the VCM plant 'balanced' on chlorine.";
+        stoichiometry
+        (
+            { component ethylene;              nu -1; }
+            { component HCl;                   nu -2; }
+            { component O2;                    nu -0.5; }
+            { component Dichloroethane;        nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.93 0.97 );
+            origin  assumed;
+            reason  "CuCl2 fluid-bed oxychlorination; the curator's band";
+        }
+        cycle    "the balanced VCM plant: the HCl that EDC cracking releases is consumed here, so no HCl leaves the plant and the chlorine is used twice";
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 9, 'Vinyl chloride' -- the balanced process"; }
+            { source ullmanns; locus "'Chlorinated Hydrocarbons'"; }
+        );
+    }
+
+    {
+        name     EDCcracking;
+        kind     reaction;
+        target   vinylChloride;
+        family   dehydrogenation;
+        era      incumbent;
+        description "Thermal dehydrochlorination of EDC, 500 C, 15-30 bar: half the chlorine leaves as HCl, which the oxychlorination step takes back.";
+        stoichiometry
+        (
+            { component Dichloroethane;        nu -1; }
+            { component vinylChloride;         nu 1; }
+            { component HCl;                   nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "thermal cracking at 500 C, 50-60 % per pass, > 98 % overall with EDC recycle; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 9, 'Vinyl chloride'"; }
+            { source ullmanns; locus "'Chlorinated Hydrocarbons'"; }
+        );
+    }
+
+    {
+        name     vinylChloridePolymerisation;
+        kind     reaction;
+        target   PVC;
+        family   polymerisation;
+        era      incumbent;
+        description "Suspension (mostly) or emulsion radical polymerisation of VCM.  Per repeat unit: one PVC unit carries one ethylene and one chlorine -- the DEPTH view's answer to 'kg ethylene and chlorine per kg PVC'.";
+        stoichiometry
+        (
+            { component vinylChloride;         nu -1; }
+            { component PVC;                   nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.85 0.95 );
+            origin  assumed;
+            reason  "suspension polymerisation to 85-95 % conversion, the monomer recovered; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Poly(Vinyl Chloride)'"; }
+            { source iea2018; locus "ch. 4, Figure 4.2, key thermoplastics"; }
+        );
+    }
+
+    {
+        name     benzeneEthylation;
+        kind     reaction;
+        target   ethylBenzene;
+        family   alkylation;
+        era      incumbent;
+        description "Benzene + ethylene over an acid zeolite (once AlCl3): essentially all ethylbenzene goes to styrene -- the point where the ethylene and benzene trees join.";
+        stoichiometry
+        (
+            { component benzene;               nu -1; }
+            { component ethylene;              nu -1; }
+            { component ethylBenzene;          nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.99 );
+            origin  assumed;
+            reason  "zeolite (ZSM-5/beta) alkylation with transalkylation of the polyethylbenzenes; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Ethylbenzene'"; }
+            { source ullmanns; locus "'Ethylbenzene'"; }
+        );
+    }
+
+    {
+        name     ethylBenzeneDehydrogenation;
+        kind     reaction;
+        target   styrene;
+        family   dehydrogenation;
+        era      incumbent;
+        description "Adiabatic or isothermal dehydrogenation over potassium-promoted iron oxide with a large steam dilution: endothermic, equilibrium-limited, the monomer of polystyrene, ABS and SBR.";
+        stoichiometry
+        (
+            { component ethylBenzene;          nu -1; }
+            { component styrene;               nu 1; }
+            { component H2;                    nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.95 );
+            origin  assumed;
+            reason  "Fe-K oxide, 600-650 C, steam-diluted, 60-70 % per pass, 90-95 % selectivity; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Styrene'"; }
+            { source ullmanns; locus "'Styrene'"; }
+        );
+    }
+
+    {
+        name     styrenePolymerisation;
+        kind     reaction;
+        target   polystyrene;
+        family   polymerisation;
+        era      incumbent;
+        description "Thermal/radical bulk polymerisation of styrene.  Written per repeat unit.";
+        stoichiometry
+        (
+            { component styrene;               nu -1; }
+            { component polystyrene;           nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.995 );
+            origin  assumed;
+            reason  "bulk/suspension radical polymerisation; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Polystyrene and Styrene Copolymers'"; }
+        );
+    }
+
+    {
+        name     ethyleneWacker;
+        kind     reaction;
+        target   acetaldehyde;
+        family   oxidation;
+        era      incumbent;
+        description "The Wacker process (PdCl2/CuCl2 in aqueous HCl): the historical acetic-acid route, now a minor acetaldehyde source since methanol carbonylation took acetic acid to the syngas root.";
+        stoichiometry
+        (
+            { component ethylene;              nu -1; }
+            { component O2;                    nu -0.5; }
+            { component acetaldehyde;          nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.93 0.96 );
+            origin  assumed;
+            reason  "PdCl2/CuCl2 Wacker oxidation; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 7, 'Acetaldehyde' -- the Wacker-Hoechst process"; }
+            { source ullmanns; locus "'Acetaldehyde'"; }
+        );
+    }
+
+    {
+        name     acetaldehydeOxidation;
+        kind     reaction;
+        target   aceticAcid;
+        family   oxidation;
+        era      incumbent;
+        description "Liquid-phase air oxidation of acetaldehyde: the ethylene route to acetic acid, largely displaced by carbonylation.";
+        stoichiometry
+        (
+            { component acetaldehyde;          nu -1; }
+            { component O2;                    nu -0.5; }
+            { component aceticAcid;            nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.92 0.96 );
+            origin  assumed;
+            reason  "Mn/Co acetate catalysed liquid-phase oxidation; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 7, 'Acetic acid' -- acetaldehyde oxidation"; }
+        );
+    }
+
+    {
+        name     vinylAcetateSynthesis;
+        kind     reaction;
+        target   vinylAcetate;
+        family   oxidation;
+        era      incumbent;
+        description "Gas-phase acetoxylation over Pd/Au: VAM for PVA, PVAc emulsions and EVA -- the ethylene and syngas roots meeting again.";
+        stoichiometry
+        (
+            { component ethylene;              nu -1; }
+            { component aceticAcid;            nu -1; }
+            { component O2;                    nu -0.5; }
+            { component vinylAcetate;          nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.92 0.95 );
+            origin  assumed;
+            reason  "Pd/Au on silica gas-phase acetoxylation, selectivity 92-95 % on ethylene; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 9, 'Vinyl acetate'"; }
+            { source ullmanns; locus "'Vinyl Esters'"; }
+        );
+    }
+
+    {
+        name     ethyleneHydration;
+        kind     reaction;
+        target   ethanol;
+        family   hydration;
+        era      incumbent;
+        description "Synthetic ethanol by direct vapour-phase hydration over phosphoric acid: small beside fermentation ethanol, and the reverse of the bio-ethylene route.";
+        stoichiometry
+        (
+            { component ethylene;              nu -1; }
+            { component water;                 nu -1; }
+            { component ethanol;               nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.98 );
+            origin  assumed;
+            reason  "H3PO4 on silica, 300 C, 70 bar, 4-5 % per pass, > 95 % overall; the curator's band";
+        }
+        cycle    "ethylene and ethanol interconvert: hydration (synthetic ethanol) and dehydration (bio-ethylene) are both practised, and which way the arrow points is a feedstock decision";
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 8, 'Ethanol'"; }
+            { source ullmanns; locus "'Ethanol'"; }
+        );
+    }
+
+    {
+        name     ethylAcetateEsterification;
+        kind     reaction;
+        target   ethylAcetate;
+        family   esterification;
+        era      incumbent;
+        description "Fischer esterification of acetic acid with ethanol: the solvent ester and the Choupo esterification teaching case.";
+        stoichiometry
+        (
+            { component aceticAcid;            nu -1; }
+            { component ethanol;               nu -1; }
+            { component ethylAcetate;          nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "equilibrium esterification with water removal; the curator's band";
+        }
+        cases    ( "tutorials/plant/esterification2sector" "tutorials/steady/economics/economics01_esterification_dcf" "tutorials/ctrl/ctrl11_esterification_jacket" "tutorials/steady/optimisation/optim05_reactor_npv" );
+        provenance
+        (
+            { source ullmanns; locus "'Acetic Acid' -- esters"; }
+        );
+    }
+
+    {
+        name     ethyleneOligomerisation;
+        kind     reaction;
+        target   1Dodecene;
+        family   polymerisation;
+        era      incumbent;
+        description "Ethylene oligomerisation (Ni/phosphine SHOP, or Ziegler growth on aluminium) to the linear alpha-olefins: LLDPE comonomers (C4-C8), detergent-range (C10-C14) and lubricant-range olefins.  Written on 1-dodecene as the representative member.";
+        stoichiometry
+        (
+            { component ethylene;              nu -6; }
+            { component 1Dodecene;             nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.97 );
+            origin  assumed;
+            reason  "Ni/phosphine (SHOP) or Ziegler growth oligomerisation to the C4-C20 alpha-olefins, written on the C12 as representative; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 3, 'Olefins' -- oligomerisation of ethylene"; }
+            { source ullmanns; locus "'Olefins'"; }
+        );
+    }
+
+    {
+        name     propylenePolymerisation;
+        kind     reaction;
+        target   polypropylene;
+        family   polymerisation;
+        era      incumbent;
+        description "Isotactic polypropylene over MgCl2-supported Ziegler-Natta catalysts: propylene's largest derivative by far.  Written per repeat unit.";
+        stoichiometry
+        (
+            { component propylene;             nu -1; }
+            { component polypropylene;         nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.995 );
+            origin  assumed;
+            reason  "Ziegler-Natta bulk/gas-phase polymerisation; the curator's band";
+        }
+        provenance
+        (
+            { source iea2018; locus "p. 24"; }
+            { source ullmanns; locus "'Polypropylene'"; }
+        );
+    }
+
+    {
+        name     propyleneAmmoxidation;
+        kind     reaction;
+        target   acrylonitrile;
+        family   ammoxidation;
+        era      incumbent;
+        description "The SOHIO ammoxidation, 400-500 C, fluid bed: propylene, ammonia and air in one pass to acrylonitrile (fibres, ABS, adiponitrile), with HCN as a forced by-product.";
+        stoichiometry
+        (
+            { component propylene;             nu -1; }
+            { component NH3;                   nu -1; }
+            { component O2;                    nu -1.5; }
+            { component acrylonitrile;         nu 1; }
+            { component water;                 nu 3; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.8 0.85 );
+            origin  assumed;
+            reason  "SOHIO fluid-bed over Bi-Mo/Fe-Sb oxides, 80-85 % on propylene with HCN and acetonitrile as by-products; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 11, 'Acrylonitrile' -- the SOHIO process"; }
+            { source ullmanns; locus "'Acrylonitrile'"; }
+        );
+    }
+
+    {
+        name     propyleneOxideChlorohydrin;
+        kind     reaction;
+        target   propyleneChlorohydrin;
+        family   chlorination;
+        era      incumbent;
+        description "Chlorohydrination of propylene in water: the old PO route, still a large one, that converts its chlorine into calcium chloride waste.";
+        stoichiometry
+        (
+            { component propylene;             nu -1; }
+            { component Cl2;                   nu -1; }
+            { component water;                 nu -1; }
+            { component propyleneChlorohydrin; nu 1; }
+            { component HCl;                   nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.95 );
+            origin  assumed;
+            reason  "hypochlorous acid addition in dilute aqueous solution; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 11, 'Propylene oxide' -- the chlorohydrin process"; }
+            { source ullmanns; locus "'Propylene Oxide'"; }
+        );
+    }
+
+    {
+        name     chlorohydrinDehydrochlorination;
+        kind     reaction;
+        target   12PropyleneOxide;
+        family   condensation;
+        era      incumbent;
+        description "Lime dehydrochlorination of the chlorohydrin: the PO is stripped out and about 2 t of CaCl2 brine per t PO is the forced co-product -- the reason the hydroperoxide and HPPO routes were developed.";
+        stoichiometry
+        (
+            { component propyleneChlorohydrin; nu -2; }
+            { component CaOH2;                 nu -1; }
+            { component 12PropyleneOxide;      nu 2; }
+            { component CaCl2;                 nu 1; }
+            { component water;                 nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.93 0.97 );
+            origin  assumed;
+            reason  "saponification with milk of lime; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 11, 'Propylene oxide'"; }
+            { source ullmanns; locus "'Propylene Oxide'"; }
+        );
+    }
+
+    {
+        name     propyleneOxideHydroperoxide;
+        kind     reaction;
+        target   12PropyleneOxide;
+        family   oxidation;
+        era      incumbent;
+        description "The PO/SM co-product route: ethylbenzene is autoxidised to its hydroperoxide, which epoxidises propylene over Mo; the alcohol is dehydrated to styrene.  Written as the overall reaction: 2.2-2.5 t styrene is FORCED per t PO.";
+        stoichiometry
+        (
+            { component propylene;             nu -1; }
+            { component ethylBenzene;          nu -1; }
+            { component O2;                    nu -1; }
+            { component 12PropyleneOxide;      nu 1; }
+            { component styrene;               nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.95 );
+            origin  assumed;
+            reason  "overall on propylene for the PO/SM (Halcon/ARCO) coproduct route; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 11, 'Propylene oxide' -- the oxirane/Halcon process"; }
+            { source ullmanns; locus "'Propylene Oxide'"; }
+        );
+    }
+
+    {
+        name     propyleneOxideHydration;
+        kind     reaction;
+        target   propyleneGlycol;
+        family   hydration;
+        era      incumbent;
+        description "Propylene glycol by hydration of PO: unsaturated polyester resins, food/pharma humectant, de-icer.";
+        stoichiometry
+        (
+            { component 12PropyleneOxide;      nu -1; }
+            { component water;                 nu -1; }
+            { component propyleneGlycol;       nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.85 0.9 );
+            origin  assumed;
+            reason  "thermal hydration in excess water, the rest di- and tripropylene glycol; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Propanediols'"; }
+        );
+    }
+
+    {
+        name     benzenePropylation;
+        kind     reaction;
+        target   cumene;
+        family   alkylation;
+        era      incumbent;
+        description "Benzene + propylene over a zeolite (once solid phosphoric acid): almost all cumene is made for the Hock phenol process.";
+        stoichiometry
+        (
+            { component benzene;               nu -1; }
+            { component propylene;             nu -1; }
+            { component cumene;                nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.99 );
+            origin  assumed;
+            reason  "zeolite alkylation with transalkylation of diisopropylbenzene; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Cumene'"; }
+            { source ullmanns; locus "'Cumene'"; }
+        );
+    }
+
+    {
+        name     cumeneAutoxidation;
+        kind     reaction;
+        target   cumeneHydroperoxide;
+        family   oxidation;
+        era      incumbent;
+        description "Liquid-phase air oxidation of cumene to the hydroperoxide, the intermediate of the Hock rearrangement.";
+        stoichiometry
+        (
+            { component cumene;                nu -1; }
+            { component O2;                    nu -1; }
+            { component cumeneHydroperoxide;   nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.93 0.97 );
+            origin  assumed;
+            reason  "air autoxidation at 90-120 C to 20-30 % per pass, selectivity > 93 %; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Phenol' -- the Hock process"; }
+            { source ullmanns; locus "'Phenol'"; }
+        );
+    }
+
+    {
+        name     hockCleavage;
+        kind     reaction;
+        target   phenol;
+        family   rearrangement;
+        era      incumbent;
+        description "The Hock cleavage in dilute H2SO4: ONE mole of acetone per mole of phenol, 0.62 t per t -- the textbook example of FORCED CO-PRODUCTION, which is why phenol demand sets the acetone supply (and sent the MMA producers looking for other acetone-free routes).";
+        stoichiometry
+        (
+            { component cumeneHydroperoxide;   nu -1; }
+            { component phenol;                nu 1; }
+            { component acetone;               nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.98 );
+            origin  assumed;
+            reason  "acid-catalysed cleavage; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Phenol' -- the Hock process"; }
+            { source ullmanns; locus "'Phenol'"; }
+        );
+    }
+
+    {
+        name     phenolAcetoneCondensation;
+        kind     reaction;
+        target   bisphenolA;
+        family   condensation;
+        era      incumbent;
+        description "Two phenols condense with one acetone over an acid ion-exchange resin: BPA for polycarbonate and epoxy resins consumes both Hock products in the right ratio.";
+        stoichiometry
+        (
+            { component phenol;                nu -2; }
+            { component acetone;               nu -1; }
+            { component bisphenolA;            nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.98 );
+            origin  assumed;
+            reason  "acid resin catalysed with a phenol excess; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Phenol Derivatives'"; }
+            { source kirkOthmer; locus "'Bisphenol A'"; }
+        );
+    }
+
+    {
+        name     polycarbonatePhosgenation;
+        kind     reaction;
+        target   polycarbonate;
+        family   polymerisation;
+        era      incumbent;
+        description "Interfacial polycondensation of the bisphenolate with phosgene: the chlorine enters as phosgene and leaves as salt -- chlorine used as a reagent, not kept in the product.  Written per repeat unit.";
+        stoichiometry
+        (
+            { component bisphenolA;            nu -1; }
+            { component phosgene;              nu -1; }
+            { component NaOH;                  nu -2; }
+            { component polycarbonate;         nu 1; }
+            { component NaCl;                  nu 2; }
+            { component water;                 nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "interfacial polycondensation; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Polycarbonates'"; }
+        );
+    }
+
+    {
+        name     propyleneOxidationAcrolein;
+        kind     reaction;
+        target   acrolein;
+        family   oxidation;
+        era      incumbent;
+        description "First stage of the two-stage acrylic acid process over bismuth molybdate, 320-370 C.";
+        stoichiometry
+        (
+            { component propylene;             nu -1; }
+            { component O2;                    nu -1; }
+            { component acrolein;              nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.85 0.92 );
+            origin  assumed;
+            reason  "Bi-Mo oxide first stage; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 11, 'Acrolein and acrylic acid'"; }
+            { source ullmanns; locus "'Acrolein and Methacrolein'"; }
+        );
+    }
+
+    {
+        name     acroleinOxidation;
+        kind     reaction;
+        target   acrylicAcid;
+        family   oxidation;
+        era      incumbent;
+        description "Second stage over Mo-V-W oxide: acrylic acid for superabsorbents and acrylate esters.";
+        stoichiometry
+        (
+            { component acrolein;              nu -1; }
+            { component O2;                    nu -0.5; }
+            { component acrylicAcid;           nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.93 0.97 );
+            origin  assumed;
+            reason  "Mo-V oxide second stage; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 11, 'Acrylic acid'"; }
+            { source ullmanns; locus "'Acrylic Acid and Derivatives'"; }
+        );
+    }
+
+    {
+        name     propyleneHydration;
+        kind     reaction;
+        target   isopropanol;
+        family   hydration;
+        era      incumbent;
+        description "Direct hydration of propylene (the indirect sulfuric-acid route is history): solvent, and the feed of the dehydrogenation route to acetone.";
+        stoichiometry
+        (
+            { component propylene;             nu -1; }
+            { component water;                 nu -1; }
+            { component isopropanol;           nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.98 );
+            origin  assumed;
+            reason  "direct hydration over acid resin or supported H3PO4; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 8, 'Isopropanol'"; }
+            { source ullmanns; locus "'Propanols'"; }
+        );
+    }
+
+    {
+        name     isopropanolDehydrogenation;
+        kind     reaction;
+        target   acetone;
+        family   dehydrogenation;
+        era      incumbent;
+        description "The on-purpose acetone route (Luyben's acetone process in the Choupo cases): isopropanol dehydrogenation, the alternative to taking acetone as the Hock co-product.";
+        stoichiometry
+        (
+            { component isopropanol;           nu -1; }
+            { component acetone;               nu 1; }
+            { component H2;                    nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.98 );
+            origin  assumed;
+            reason  "Cu/ZnO or Zn oxide, 350-400 C, 85-90 % per pass; the curator's band";
+        }
+        cases    ( "tutorials/steady/reactors/acetone02_luyben_reactor" "tutorials/steady/flowsheets/acetone03_luyben_reaction_section" "tutorials/steady/absorption/acetone05_luyben_absorber" "tutorials/steady/distillation/acetone06_luyben_column_C1" "tutorials/steady/distillation/acetone07_luyben_column_C2" "tutorials/plant/acetonePlant" );
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 11, 'Acetone'"; }
+            { source ullmanns; locus "'Acetone'"; }
+        );
+    }
+
+    {
+        name     propyleneHydroformylation;
+        kind     reaction;
+        target   butanal;
+        family   hydroformylation;
+        era      incumbent;
+        description "The oxo reaction: propylene + syngas over Rh (once Co), 100 C, 10-20 bar, to n-butanal (and some isobutanal) -- the propylene and syngas roots meet.";
+        stoichiometry
+        (
+            { component propylene;             nu -1; }
+            { component CO;                    nu -1; }
+            { component H2;                    nu -1; }
+            { component butanal;               nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.93 0.97 );
+            origin  assumed;
+            reason  "Rh/TPPTS low-pressure oxo, n/iso 10-20 : 1; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 6, 'Syntheses involving carbon monoxide' -- hydroformylation"; }
+            { source ullmanns; locus "'Aldehydes, Aliphatic'"; }
+        );
+    }
+
+    {
+        name     butanalHydrogenation;
+        kind     reaction;
+        target   nButanol;
+        family   hydrogenation;
+        era      incumbent;
+        description "n-Butanol by hydrogenation of n-butanal: solvent and acrylate/plasticiser alcohol.";
+        stoichiometry
+        (
+            { component butanal;               nu -1; }
+            { component H2;                    nu -1; }
+            { component nButanol;              nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.99 );
+            origin  assumed;
+            reason  "Ni or Cu hydrogenation; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 8, 'Butanols'"; }
+            { source ullmanns; locus "'Butanols'"; }
+        );
+    }
+
+    {
+        name     butanalAldol2EH;
+        kind     reaction;
+        target   2Ethylhexanol;
+        family   condensation;
+        era      incumbent;
+        description "Aldol condensation of two butanals and hydrogenation: 2-EH, the plasticiser alcohol (DEHP, DOTP) -- the largest oxo product.";
+        stoichiometry
+        (
+            { component butanal;               nu -2; }
+            { component H2;                    nu -2; }
+            { component 2Ethylhexanol;         nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.92 0.96 );
+            origin  assumed;
+            reason  "aldol condensation (NaOH) then hydrogenation of 2-ethylhexenal; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 6, '2-Ethylhexanol'"; }
+            { source ullmanns; locus "'2-Ethylhexanol'"; }
+        );
+    }
+
+    {
+        name     andrussowHCN;
+        kind     reaction;
+        target   HCN;
+        family   ammoxidation;
+        era      incumbent;
+        description "The Andrussow process: methane + ammonia + air over Pt/Rh gauze -- the on-purpose HCN beside the SOHIO by-product.";
+        stoichiometry
+        (
+            { component CH4;                   nu -1; }
+            { component NH3;                   nu -1; }
+            { component O2;                    nu -1.5; }
+            { component HCN;                   nu 1; }
+            { component water;                 nu 3; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.6 0.7 );
+            origin  assumed;
+            reason  "Andrussow over Pt/Rh gauze, 1100 C, 60-70 % on methane; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 2, 'Hydrocyanic acid'"; }
+            { source ullmanns; locus "'Cyano Compounds, Inorganic'"; }
+        );
+    }
+
+    {
+        name     acetoneCyanohydrinFormation;
+        kind     reaction;
+        target   acetoneCyanohydrin;
+        family   condensation;
+        era      incumbent;
+        description "Acetone + HCN: the first step of the classic (ACH) methyl methacrylate route.";
+        stoichiometry
+        (
+            { component acetone;               nu -1; }
+            { component HCN;                   nu -1; }
+            { component acetoneCyanohydrin;    nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "base-catalysed addition at 20-40 C; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 11, 'Methacrylic acid and esters' -- the ACH process"; }
+            { source ullmanns; locus "'Methacrylic Acid and Derivatives'"; }
+        );
+    }
+
+    {
+        name     ACHtoMMA;
+        kind     reaction;
+        target   methylMethacrylate;
+        family   esterification;
+        era      incumbent;
+        description "ACH + sulfuric acid gives the methacrylamide sulfate, which methanol esterifies: 1.2 t of ammonium bisulfate per t MMA is FORCED, and must be regenerated to sulfuric acid or sold -- sulfuric acid used as a reagent, consumed as waste.";
+        stoichiometry
+        (
+            { component acetoneCyanohydrin;    nu -1; }
+            { component H2SO4;                 nu -1; }
+            { component methanol;              nu -1; }
+            { component methylMethacrylate;    nu 1; }
+            { component NH4HSO4;               nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.8 0.9 );
+            origin  assumed;
+            reason  "amidation in oleum, then esterification; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 11, 'Methacrylic acid and esters'"; }
+            { source ullmanns; locus "'Methacrylic Acid and Derivatives'"; }
+        );
+    }
+
+    {
+        name     MMApolymerisation;
+        kind     reaction;
+        target   PMMA;
+        family   polymerisation;
+        era      incumbent;
+        description "Radical polymerisation of MMA: acrylic sheet and mouldings.  Written per repeat unit.";
+        stoichiometry
+        (
+            { component methylMethacrylate;    nu -1; }
+            { component PMMA;                  nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.995 );
+            origin  assumed;
+            reason  "radical bulk/suspension polymerisation; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Polymethacrylates'"; }
+        );
+    }
+
+    {
+        name     propyleneAllylChlorination;
+        kind     reaction;
+        target   allylChloride;
+        family   chlorination;
+        era      incumbent;
+        description "Substitutive (not additive) chlorination of propylene at 500 C: allyl chloride, the epichlorohydrin precursor, with one HCl forced per mole.";
+        stoichiometry
+        (
+            { component propylene;             nu -1; }
+            { component Cl2;                   nu -1; }
+            { component allylChloride;         nu 1; }
+            { component HCl;                   nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.8 0.85 );
+            origin  assumed;
+            reason  "high-temperature substitutive chlorination, 500 C, 80-85 % selectivity; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 11, 'Allyl compounds'"; }
+            { source ullmanns; locus "'Allyl Compounds'"; }
+        );
+    }
+
+    {
+        name     allylChlorideToEpichlorohydrin;
+        kind     reaction;
+        target   epichlorohydrin;
+        family   chlorination;
+        era      incumbent;
+        description "Chlorohydrination of allyl chloride and lime dehydrochlorination: epichlorohydrin for epoxy resins, with CaCl2 forced -- the same chemistry as the chlorohydrin PO route.  (The glycerol-based route is the bio alternative.)";
+        stoichiometry
+        (
+            { component allylChloride;         nu -1; }
+            { component Cl2;                   nu -1; }
+            { component CaOH2;                 nu -1; }
+            { component epichlorohydrin;       nu 1; }
+            { component CaCl2;                 nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.85 0.92 );
+            origin  assumed;
+            reason  "hypochlorination to the dichlorohydrins, then lime dehydrochlorination; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 11, 'Epichlorohydrin'"; }
+            { source ullmanns; locus "'Epoxides'"; }
+        );
+    }
+
+    {
+        name     butadienePolymerisation;
+        kind     reaction;
+        target   polybutadiene;
+        family   polymerisation;
+        era      incumbent;
+        description "Polybutadiene (and, with styrene, SBR): the synthetic rubbers of tyres, butadiene's main outlet.  Written per repeat unit.";
+        stoichiometry
+        (
+            { component 13Butadiene;           nu -1; }
+            { component polybutadiene;         nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "solution polymerisation (Nd, Li, Co); the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Rubber, 3. Synthetic Rubbers'"; }
+            { source weissermelArpe2003; locus "ch. 5, '1,3-Diolefins'"; }
+        );
+    }
+
+    {
+        name     butadieneHydrocyanation;
+        kind     reaction;
+        target   adiponitrile;
+        family   condensation;
+        era      incumbent;
+        description "Two HCN added across butadiene over a Ni(0) phosphite catalyst: adiponitrile, the nylon-6,6 diamine precursor (the alternative is acrylonitrile electrohydrodimerisation).";
+        stoichiometry
+        (
+            { component 13Butadiene;           nu -1; }
+            { component HCN;                   nu -2; }
+            { component adiponitrile;          nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.95 );
+            origin  assumed;
+            reason  "Ni(0)/phosphite hydrocyanation (DuPont); the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 10, 'Adiponitrile'"; }
+            { source ullmanns; locus "'Adipic Acid' and 'Hexamethylenediamine'"; }
+        );
+    }
+
+    {
+        name     adiponitrileHydrogenation;
+        kind     reaction;
+        target   hexamethylenediamine;
+        family   hydrogenation;
+        era      incumbent;
+        description "Hydrogenation of both nitriles to HMDA.";
+        stoichiometry
+        (
+            { component adiponitrile;          nu -1; }
+            { component H2;                    nu -4; }
+            { component hexamethylenediamine;  nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.98 );
+            origin  assumed;
+            reason  "Raney Ni/Co with NH3 or KOH to suppress secondary amines; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 10, 'Hexamethylenediamine'"; }
+            { source ullmanns; locus "'Hexamethylenediamine'"; }
+        );
+    }
+
+    {
+        name     butaneOxidationMaleic;
+        kind     reaction;
+        target   maleicAnhydride;
+        family   oxidation;
+        era      incumbent;
+        description "Butane oxidation over VPO: a 14-electron oxidation in one catalytic pass -- the route that replaced benzene oxidation and the exemplary selective oxidation.";
+        stoichiometry
+        (
+            { component nButane;               nu -1; }
+            { component O2;                    nu -3.5; }
+            { component maleicAnhydride;       nu 1; }
+            { component water;                 nu 4; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.55 0.65 );
+            origin  assumed;
+            reason  "vanadium phosphate oxide, 400 C, 55-65 % molar yield; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 13, 'Maleic anhydride' -- the butane route"; }
+            { source ullmanns; locus "'Maleic and Fumaric Acids'"; }
+        );
+    }
+
+    {
+        name     isobutaneDehydrogenation;
+        kind     reaction;
+        target   isoButene;
+        family   dehydrogenation;
+        era      incumbent;
+        description "On-purpose isobutene by isobutane dehydrogenation, for MTBE where the cracker's C4 cut is short.";
+        stoichiometry
+        (
+            { component isoButane;             nu -1; }
+            { component isoButene;             nu 1; }
+            { component H2;                    nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.88 0.93 );
+            origin  assumed;
+            reason  "Cr2O3/alumina (Catofin) or Pt-Sn, 550-600 C, 50-60 % per pass; the curator's band";
+        }
+        provenance
+        (
+            { source sattler2014; locus "isobutane dehydrogenation"; }
+            { source weissermelArpe2003; locus "ch. 3, 'Olefins'"; }
+        );
+    }
+
+    {
+        name     methacrylicFromIsobutene;
+        kind     reaction;
+        target   methacrylicAcid;
+        family   oxidation;
+        era      incumbent;
+        description "The acetone-free MMA route: isobutene oxidised via methacrolein to methacrylic acid (Japanese C4 processes) -- no ammonium bisulfate, no HCN, no phenol plant to depend on.";
+        stoichiometry
+        (
+            { component isoButene;             nu -1; }
+            { component O2;                    nu -1.5; }
+            { component methacrylicAcid;       nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.6 0.7 );
+            origin  assumed;
+            reason  "two-stage Mo-Bi / heteropolyacid oxidation via methacrolein; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 11, 'Methacrylic acid and esters' -- the isobutene route"; }
+            { source ullmanns; locus "'Methacrylic Acid and Derivatives'"; }
+        );
+    }
+
+    {
+        name     methacrylicEsterification;
+        kind     reaction;
+        target   methylMethacrylate;
+        family   esterification;
+        era      incumbent;
+        description "Esterification of methacrylic acid with methanol to MMA.";
+        stoichiometry
+        (
+            { component methacrylicAcid;       nu -1; }
+            { component methanol;              nu -1; }
+            { component methylMethacrylate;    nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "acid-resin esterification; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Methacrylic Acid and Derivatives'"; }
+        );
+    }
+
+    {
+        name     SBRpolymerisation;
+        kind     reaction;
+        target   SBR;
+        family   polymerisation;
+        era      incumbent;
+        description "Styrene-butadiene rubber by emulsion copolymerisation, about 75:25 by mass: the tyre rubber that takes most of the butadiene.  Written per 3:1 repeat.";
+        stoichiometry
+        (
+            { component 13Butadiene;           nu -3; }
+            { component styrene;               nu -1; }
+            { component SBR;                   nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "cold emulsion copolymerisation; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Rubber, 3. Synthetic Rubbers'"; }
+        );
+    }
+
+    {
+        name     maleicHydrogenationBDO;
+        kind     reaction;
+        target   14Butanediol;
+        family   hydrogenation;
+        era      incumbent;
+        description "Maleic anhydride (from butane) hydrogenated to 1,4-butanediol: THF, PBT, spandex -- the butane route that displaced the acetylene (Reppe) one.";
+        stoichiometry
+        (
+            { component maleicAnhydride;       nu -1; }
+            { component H2;                    nu -5; }
+            { component 14Butanediol;          nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.95 );
+            origin  assumed;
+            reason  "Davy/Kvaerner ester hydrogenation or direct Cu/Zn hydrogenation; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Butanediols, Butenediol, and Butynediol'"; }
+        );
+    }
+
+    {
+        name     acetyleneHydrochlorination;
+        kind     reaction;
+        target   vinylChloride;
+        family   chlorination;
+        era      incumbent;
+        description "Acetylene + HCl over HgCl2/carbon: the VCM route of coal-based China, which CONSUMES HCl where the ethylene route forces it.";
+        stoichiometry
+        (
+            { component acetylene;             nu -1; }
+            { component HCl;                   nu -1; }
+            { component vinylChloride;         nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.98 );
+            origin  assumed;
+            reason  "HgCl2 on carbon (being replaced by Au and other mercury-free catalysts); the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 9, 'Vinyl chloride' -- the acetylene route"; }
+            { source ullmanns; locus "'Chlorinated Hydrocarbons'"; }
+        );
+    }
+
+    {
+        name     HPPOepoxidation;
+        kind     reaction;
+        target   12PropyleneOxide;
+        family   oxidation;
+        era      incumbent;
+        description "HPPO (Evonik/Uhde, BASF/Dow): propylene epoxidised by hydrogen peroxide over TS-1, with water the only co-product -- the route built to escape both the chlorohydrin's CaCl2 and the hydroperoxide's forced styrene.";
+        stoichiometry
+        (
+            { component propylene;             nu -1; }
+            { component H2O2;                  nu -1; }
+            { component 12PropyleneOxide;      nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.93 0.97 );
+            origin  assumed;
+            reason  "TS-1 titanium silicalite in methanol, selectivity > 95 %; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Propylene Oxide'"; }
+            { source weissermelArpe2003; locus "ch. 11, 'Propylene oxide'"; }
+        );
+    }
+
+    {
+        name     acrylonitrilePolymerisation;
+        kind     reaction;
+        target   PAN;
+        family   polymerisation;
+        era      incumbent;
+        description "Polyacrylonitrile: acrylic fibres and the carbon-fibre precursor.  Written per repeat unit.";
+        stoichiometry
+        (
+            { component acrylonitrile;         nu -1; }
+            { component PAN;                   nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.97 );
+            origin  assumed;
+            reason  "solution/suspension radical polymerisation; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Polyacrylonitriles'"; }
+        );
+    }
+
+    {
+        name     acrylonitrileEHD;
+        kind     reaction;
+        target   adiponitrile;
+        family   electrolysis;
+        era      incumbent;
+        description "Monsanto's electrohydrodimerisation of acrylonitrile to adiponitrile: the propylene route to nylon 6,6 beside the butadiene one, and the largest organic electrosynthesis.";
+        stoichiometry
+        (
+            { component acrylonitrile;         nu -2; }
+            { component H2;                    nu -1; }
+            { component adiponitrile;          nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.88 0.93 );
+            origin  assumed;
+            reason  "the Monsanto electrohydrodimerisation, written with H2 standing for the cathodic protons/electrons; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 10, 'Adiponitrile' -- the electrohydrodimerisation"; }
+            { source ullmanns; locus "'Adipic Acid'"; }
+        );
+    }
+
+    {
+        name     butylAcrylateEsterification;
+        kind     reaction;
+        target   butylAcrylate;
+        family   esterification;
+        era      incumbent;
+        description "Butyl acrylate: the acrylic acid and oxo trees meet in the paint and adhesive latex monomer.";
+        stoichiometry
+        (
+            { component acrylicAcid;           nu -1; }
+            { component nButanol;              nu -1; }
+            { component butylAcrylate;         nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "acid-catalysed esterification with water removal; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Acrylic Acid and Derivatives'"; }
+        );
+    }
+);

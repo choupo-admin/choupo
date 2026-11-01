@@ -1627,8 +1627,21 @@ accepts today, and that is a policy call.
 > interstage cooling and water knock-out, recycle, the carbon balance of
 > a biogenic CO2), reusing the green-ammonia converter pattern -- no new
 > physics.  Scope of (B) to be decided before dispatch.
-> STATUS: (A) COMMISSIONED 2026-10-31, graph curation first; (B)
-> recorded.
+> STATUS: (A) COMMISSIONED 2026-10-31.  THE GRAPH IS CURATED
+> 2026-11-01 (2b49af710): data/standards/routes/ (a record KIND beside
+> heuristics/, no engine reader, held by `check_chemistry_graph`): 157
+> substances, 168 routes (140 reactions, 18 separations, 10 process-yield
+> slates; 144 incumbent, 24 transition), 4 declared cycles, 51 links to 44
+> existing cases; every route cites one of 18 declared sources; the
+> ammonia edge is written ONCE -- fossil and green differ only in where
+> the H2 comes from.  HONESTY, for the tool: all 189 yield bands are
+> `origin assumed` with a reason (none read back on a page); only the IEA
+> volumes and four IEA ammonia intensities are `literature`.  Excluded by
+> licence: ACC (non-commercial grant only), Cefic and Plastics Europe (no
+> grant found).  My commission was WRONG on one point: there is no cumene
+> case in the tree (the three cumene edges link nothing; cumene is now a
+> candidate case).  Next: the EduTool itself, on section 8 of
+> docs/design/the-tree-of-chemistry-is-a-record.md.  (B) recorded.
 
 > **C190. THE EXTERNAL AUDIT'S FIFTEEN, AND ITS COMPARISON WITH THE
 > OTHER OPEN-SOURCE SIMULATOR (ChatGPT's summary of its conversation with
