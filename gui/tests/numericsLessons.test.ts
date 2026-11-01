@@ -455,7 +455,7 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/solver/ActiveSetQP.H", 120, "struct QPProblem"],
     ["src/solver/ActiveSetQP.H", 128, "Aineq"],
     ["src/solver/SQP.cpp", 329, "activeSetQP(qp)"],
-    ["src/outerDriver/OptimizationDriver.cpp", 484, "verifyActiveSetQP"],
+    ["src/outerDriver/OptimizationDriver.cpp", 595, "verifyActiveSetQP"],
     ["src/streams/AnalysisReconciler.cpp", 192, "solver::activeSetQP(qp)"],
     //  the normalised law rows the multipliers belong to (C22 slice 2)
     ["src/streams/AnalysisReconciler.cpp", 129, "c.coeff[r] * req.rows[r].sigma"],

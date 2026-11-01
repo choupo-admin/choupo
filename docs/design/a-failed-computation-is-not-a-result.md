@@ -162,3 +162,85 @@ reconciliation cases (`analysis01`, `analysis02`, `reconcile01`) and
 
 Gate: `check_solver_failures` (probe arm, three binaries end to end, an
 outer-driver arm, a source arm; six by-hand sabotages in its docstring).
+
+## 6. The optimiser read the objective off a simulation that did not converge (C186 (4), 2026-10-31)
+
+The same review named a fourth place, one band up: `OptimizationDriver`'s
+evaluators read the objective and the constraint responses off the
+`SimulationResult` without its `converged` flag -- the SQP evaluator set
+`ok` from finiteness alone, the Nelder-Mead evaluator from "did the
+simulator throw".  The route that reaches it was measured by reading, not
+remembered: a UNIT that fails to converge THROWS inside the flowsheet
+(`Flowsheet.cpp`, `runUnit`: `rc != 0` -> "failed to converge") and was
+always a failed evaluation; a RECYCLE that stops at `recycleMaxIter` does
+NOT throw -- `Flowsheet::solve` returns 1, `runSimulation` stamps
+`converged = false` on a result that still carries the last iterate's
+streams and KPIs, and the optimiser priced that iterate as if it were the
+plant.  `converged` is the one verdict a `SimulationResult` carries that
+means "not an answer" (the seal's `diverged` is an announced provenance
+state, not a failure).
+
+Reproduced before the fix on copies of `cavett01_recycle_train` (the
+corpus's smallest recycle case; its golden has P1.F = 3.6843 kmol/s) with
+`recycleMaxIter 2`, FL2's temperature the variable and P1.F the objective:
+
+| path | `main` at e41af35f8 answered |
+|---|---|
+| Nelder-Mead | `status: converged (tolX)`, 6 evaluations, best objective 3.389188 -- the two-iteration iterate, exit 0 |
+| SQP | `status: CONVERGED (KKT conditions satisfied)`, 7 simulator runs, a KKT certificate printed over the same 3.389188, exit 0 |
+| integer enumeration (SQP children) | every value "converged yes", best 3.34999, `values_converged_feasible 3` of 3, exit 0 |
+
+And one the reproduction found on the way: the integer enumeration over a
+`nelderMead` child reported every value "converged NO" at objective 0,
+because `runNelderMead` never published `lastX_`/`lastF_`/`lastConverged_`
+(only the SQP path did) -- so the enumeration's "best kept" was wired for
+one back-end.  No corpus case takes that route (`optim06` enumerates over
+SQP); it is fixed with this slice because the gate's integer arm would
+otherwise have been unable to tell the defect from the fix.
+
+**The rule, applied:** an unconverged simulation is a FAILED evaluation on
+every path, `ok = false` -- treated exactly as the EXISTING failed-evaluation
+handling treats a simulator that threw (Nelder-Mead: the vertex is +inf and
+the simplex contracts away from it; SQP: C178's one-sided difference,
+line-search rejection or named stop; the enumeration: a child that refused
+is a row with no value).  ONE home decides whether a simulation is an answer
+(`simulationFailure(const SimulationResult&)` in `OptimizationDriver.cpp`),
+and every `simulator_(` call reads its result through it before anything
+else reads it -- the two evaluators and the two replays at the optimum.
+Each failure is said at its site with the point named
+(`[evaluation k] FAILED -- the simulation did not converge ... (units[0].operation.T = 326)`),
+counted by cause in an `EvaluationLedger` (did not converge / simulator
+threw / non-finite) that the final report prints only when non-zero, so a
+run that never hit one prints as before; the enumeration sums its
+children's ledgers.  A run whose EVERY evaluation failed refuses by name
+(Nelder-Mead after the solver returns: a simplex of +inf vertices still
+shrinks to `tolX` and the solver calls that "converged", which is the
+reviewer's reproduction exactly; SQP at its initial-point check, now naming
+the cause), and a replay at the optimum that does not converge although
+the evaluation there was accepted refuses too -- the second line of
+defence.
+
+Measured after the fix on the same copies: Nelder-Mead 23 evaluations, 23
+FAILED by name, the refusal, exit 2; SQP refused at the initial point
+naming the cause; the enumeration prints `nan` for every value, "6 of 6
+(did not converge 6)", "NO converged-feasible value", exit 1.  With the cap
+at 8 and P1.F minimised (toward the end of the range where the Newton
+needs 10-11 iterations) the search fails 3 of 8 evaluations, counts them,
+ends at T = 324 K with a finite best (3.68374) and replays a recycle that
+converges in 8 -- the optimum is read off converged points only.
+
+Named, NOT fixed, the siblings of the same shape in the other drivers:
+`DesignSpec.cpp` reads its targets off `simulator_(...)` without
+`converged`; `GridSweepDriver.cpp` treats only a throw as a failed point;
+`SweepDriver.cpp` reads `converged` to skip the post chain and the
+representative point but still extracts the responses of an unconverged
+point into its table.  Each is one `simulationFailure`-shaped check away
+and is Vítor's to schedule, because a sweep's table is also a plot a
+student reads and the honest row shape (nan, or the value flagged) is a
+presentation decision.
+
+Gate: `check_optimiser_converged` (the three paths on the all-failing copy,
+the partly converging search, the converging copy unchanged, a source arm
+holding every `simulator_(` site to the one home; three by-hand sabotages
+in its docstring).  The GUI lesson citation of `verifyActiveSetQP` moved
+with the file (484 -> 595) and both homes of it were updated.
