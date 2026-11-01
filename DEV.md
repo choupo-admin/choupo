@@ -1622,8 +1622,24 @@ accepts today, and that is a policy call.
 > case, the pump curves, the header sizing.  Integration also recorded the
 > plant as the FOURTH case declaring `fromRatedTest` in
 > `check_rejection_inversion` arm (d).
-> STATUS: PHASE A DONE; B (the GUI drawings) and C (the guide, the train
-> schematic) with generals.
+> DONE 2026-11-02, PHASE C (i), the guide (8c6532f38, a general): the user
+> guide's `spiralWoundModule` entry gains `How an RO/NF plant is laid out`
+> (trains against a pressure centre, the pump and device maxima, the array,
+> vessel banks, the second pass, the loading clearance, a worked example from
+> the case), each claim with the source a general READ -- Sulzer MSD-RO brochure
+> e10110, Energy Recovery's PX Q-series page, CompositesWorld's SWRO vessels
+> article, The Water Network's Torrevieja note -- or marked author-set; it says
+> plainly that no open source gave a numeric clearance, pitch or aisle, and takes
+> NOTHING from the Danfoss page (403).  Also docs/ai/unit-ops.md and the
+> catalogue pointer.  Integration found a defect of the heavy-water integration
+> that was ALREADY on main: its witness's sealed mirror of heavyWater.dat had
+> been edited without re-sealing, so the case no longer reproduced its own seal
+> (`check_seal_drift`, sealedReproducibilityFailures 1); re-sealed with
+> `bin/choupo-import --overwrite`.  LESSON: a sealed mirror is changed only by
+> the importer, never by cp; `check_heavy_water` arm (f) compares bytes to the
+> catalogue, not the manifest hash.
+> STATUS: PHASE A and C (i) DONE; B and the train schematic with a general
+> (built, integrating).
 
 > **C197. HEAVY WATER IN THE STANDARD COMPONENTS, PROMOTED FROM A COOLPROP
 > IMPORT TO A RECORD A RESEARCHER CAN DEFEND (Vitor, 2026-11-02: "quero
