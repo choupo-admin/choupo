@@ -37,7 +37,6 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | status | what | ref |
 |---|---|---|
 | queued | General: pressure as a tear variable; the sibling drivers read unconverged points (two goldens to re-record on the architect's reasons) | C186 (5) |
-| integrating | General: the rest of the external audit (batch A_rev, catalystLoading, membrane fitter verdict, PC-SAFT roots) | C190 (14)(11)(15)(12) |
 | queued | General: the commercial shortlist, the A_w curation, the module registry's local tier, the importer's spacer defect | C189 |
 | queued | General: the acceptance contract on the remaining units and the Theory Guide section | C188 item 5 |
 | running | General: the Campo de Dalías plant from Toray's case study, boron in both passes, layout up to the fence | C194 |
@@ -105,6 +104,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| done | The rest of the external audit: explicit reverse pair on the batch vessel, catalystLoading on the own paths, the membrane fitter's stall verdict, PC-SAFT roots near the spinodal | C190 (14)(11)(15)(12), 3168d0c7e |
 | done | Integration friction: a tool that re-points lesson citations by content, index counts generated, additive conflicts kept by bin/integrate | C196, ba62b677b |
 | done | Sized tablet machines (utilisation against the batch plan) and clean utilities (HVAC, purified water) for the two pharmaceutical groups | C195 (1)(2), 96e3d118d |
 | done | The pressure exchanger: unit, design sheet, schematic, SWRO energy-recovery case (1.88 against 3.67 kWh/m3) | C192 |

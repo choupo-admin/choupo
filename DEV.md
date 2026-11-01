@@ -1926,7 +1926,27 @@ accepts today, and that is a policy call.
 > 1e-6); orders 0.5 + 1.5 A = 0.001 -> 1.0.  Gate `check_vessel_kinetic_orders`
 > (two sabotages); 108 cases PASS, no golden moved (the corpus has no negative
 > order).  STILL OPEN: (14), (11), (15), (12).
-> STATUS: RECORDED 2026-10-31; (10) and (13) DONE; (14) next.
+> DONE 2026-11-02 (3168d0c7e), a general: (14) an explicit reverse pair
+> (`A_rev`/`Ea_rev`) was accepted and IGNORED by the batch vessel's own path
+> (0.9756 kmol converted forward-only against the analytic 0.5858); now routed
+> to RateLaw, the one home of the reverse leg, and refused beside
+> modifiedArrhenius/thirdBody/falloff, a cm units block, or `Ea_rev` without
+> `A_rev`.  (11) `catalystLoading` was read, announced and never applied on the
+> own paths of BOTH vessels (the brief named the batch only; DynamicCSTR's own
+> path had it too) -- loading 1 and 400 gave identical conversions; fixed, both
+> equal to independent RK4.  (15) the membrane fitter published `converged` on
+> a stall (membrane24 with fdStep 0.1 stopped 0.7 % from its minimum and was
+> written to a record); now a gradient test on the Jacobian re-taken at a fine
+> step -> `curation.optimiser` = converged|stalled|maxIterations|lawFailed
+> (a SEPARATE word beside the five held-out verdicts, whose vocabulary lives in
+> five homes; the architect accepts that reading).  (12) PC-SAFT close roots
+> near the spinodal: n-hexane 298.15 K vapour branch ended 235 Pa short of the
+> fold, now 4 Pa.  Gate `check_audit_remaining` (six sabotages).  91 cases PASS,
+> no golden moved.  Integration found and fixed two things the earlier slices
+> had left: `check_batch_plan`'s multiproduct probes now drop the `ratedMachine`
+> entries and the `cleanUtilities` pass (a stated limit of both, C195), and five
+> scripts committed without the execute bit (runTests: Permission denied).
+> STATUS: ALL FIFTEEN DONE OR ANSWERED 2026-11-02.
 
 > **C189. RO/NF: A MEMBRANE A STUDENT CHOOSES BY WHAT IT DOES, THEN THE
 > COMMERCIAL MODULE (an external specification, ChatGPT, relayed by Vitor
