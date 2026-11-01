@@ -1405,6 +1405,11 @@
       "exit": 0,
       "claim": "check_membrane_classes: OK -- the six `kind membraneClass` records (NF_OPEN, NF_DIVALENT_SELECTIVE, NF_TIGHT, BWRO_HIGH_FLUX, BWRO_HIGH_REJECTION, SWRO) are illustrative, name no manufacturer and keep each stated rejection inside its band; each run announces it ([illustrative], stdout + stderr + an accepted advisory); every derived R_int typed on an independent fixture at the class's reference test reproduces the stated observed rejection to 1e-7; an unknown class, SDEM, solutionDiffusion, a typed rated salt, a class as a bare membrane, a class naming a manufacturer and one claiming another review status all refuse by name.  NOT checked: whether a class's values are good teaching values, the engine's permeate against the stated one (printed only), the batch diafilter (does not refuse a class)",
       "seconds": 0.4
+    },
+    "check_membrane_import": {
+      "exit": 0,
+      "claim": "check_membrane_import: OK -- bin/choupo-import-membranes on a SYNTHETIC catalogue (FixtureCo, built in a temporary directory): counts read back from the written records, a second run changes no byte and no mtime, a duplicate and a contradictory test pair are both written and reported (never merged), an unstated pressure basis is omitted and listed (gauge/absolute written only as the input says), both data/standards paths refuse naming records::refuseStandardsWrite, every written record loads in choupoSolve on a membrane15 copy with one `Rated test` line per test and the slice-1 inversion runs on an imported two-test element, a non-SI constant and an absent input refuse/report by name, the spacer opt-in is an announced estimate, nine rejection kinds and three not-written reasons listed, prose dropped, the derived sheet cross-checked.  NOT checked: any number against a manufacturer's sheet; the private Downloads file.",
+      "seconds": 1.7
     }
   }
 }

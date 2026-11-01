@@ -1793,7 +1793,24 @@ accepts today, and that is a policy call.
 > `check_membrane_classes`.  Open: a class is fixed to Generic-4040;
 > the batch diafilter does not refuse a class as its `membrane`;
 > `choupo-import` does not follow a class's element reference (witness
-> unsealed).  Next: slice (4), the import/QA tool to data/local.
+> unsealed).  
+> Slice (4) DONE (bf3402ef5): `bin/choupo-import-membranes` reads a
+> manufacturer spreadsheet (any path; an absent file is "not imported"),
+> validates SI dimensions, never merges distinct revisions, records
+> provenance per field, reports duplicates and contradictions, and writes
+> `kind membraneModule` records in the slice-2 grammar to data/local ONLY
+> (idempotent; refuses data/standards); pressureBasis is written only when
+> the sheet states it.  Gate `check_membrane_import` on a synthetic
+> fixture, never the private file.  THE REAL IMPORT of Vitor's workbook
+> (28-10-2026, 145 models, 84 tests): 13 records (DuPont 6, LG 6,
+> Hydranautics 1) with 13 tests, ALL with the pressure basis unstated
+> (the sheet has no such column); 132 models not written (85 no area, 45
+> no spacer, 2 flat sheets), 71 tests rejected with the reason; 2
+> verified, 11 unverified by the sheet's own grading.  FOUND: the
+> MembraneModuleRegistry reads data/standards/assets and the case's
+> constant/assets only, NOT data/local/assets -- unlike components; the
+> README says to copy a record into the case, and reading the local tier
+> is an engine change left open.  Next: slice (5), the shortlist.
 
 > **C188. WHAT A UNIT ACCEPTS: MODELLED, A DECLARED APPROXIMATION, OR
 > REFUSED (an external proposal, ChatGPT, "chemical component

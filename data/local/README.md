@@ -36,6 +36,14 @@ announced as `[local] UNVERIFIED` — never silent.
   via `bin/curate/chemsep_to_choupo.py`, which writes here);
 * component records and property estimates you generate or license;
 * `fitParameters` proposals (regression results awaiting your curation);
+* `assets/` -- membrane module records transcribed from a manufacturer
+  catalogue by `bin/choupo-import-membranes` (DEV.md 4c C189 slice 4), each
+  `reviewStatus unverified` and naming the file, sheet and row behind every
+  value, with the tool's `IMPORT-REPORT-membranes.{txt,json}` beside them.
+  NOTE the exception to the resolution order above: the module registry does
+  NOT read `data/local/assets/`; a record here is USED by copying it into a
+  case's `constant/assets/` (`module <name>; membrane <NF|RO record>;`), and
+  promoted to `data/standards/assets/` only by a human who read the sheet;
 * any third-party dataset whose redistribution you have not established.
 
 Because it is private, `data/local/` is where third-party values live without

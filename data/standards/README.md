@@ -14,6 +14,20 @@ explicit provenance metadata in each file.
 > so a verified entry here always shadows a same-named `local` one (local only fills
 > gaps). Keep this tree clean: if a file here is an estimate or carries a
 > licence-encumbered value, it is in the wrong tier.
+>
+> **Membrane module records have a narrower rule (2026-11-01, DEV.md 4c
+> C189 slice 4).**  `bin/choupo-import-membranes` writes `kind
+> membraneModule` records transcribed from a manufacturer catalogue into
+> `data/local/assets/` -- never here.  That precedence line does NOT apply
+> to them: `MembraneModuleRegistry` scans `data/standards/assets/` and a
+> case's own `constant/assets/`, and does not read `data/local/assets/` at
+> all (measured in `src/thermo/membrane/MembraneModuleRegistry.cpp`).  An
+> imported record reaches a run by being copied into the case's
+> `constant/assets/` with the membrane declared beside it (`module <name>;
+> membrane <NF|RO record>;`), and reaches this tree only by a human reading
+> the cited data sheet and writing the curated record (the NF270-4040 /
+> SW30HR-380 shape).  Every imported record says `reviewStatus
+> unverified;` and names the file, sheet and row each value came from.
 
 ## ⛔ Read-only — do not modify in place
 

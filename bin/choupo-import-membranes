@@ -1,0 +1,929 @@
+#!/usr/bin/env python3
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -----------------------------------------------------------------------------
+#     SPDX-License-Identifier: GPL-3.0-or-later
+# =============================================================================
+"""choupo-import-membranes -- import / QA of a manufacturer membrane catalogue
+into PRIVATE `kind membraneModule` records under data/local (DEV.md 4c C189,
+slice 4).
+
+    bin/choupo-import-membranes <catalogue.xlsx|.csv> [more ...]
+                                [--out data/local/assets]
+                                [--assume-spacer-mil N]
+                                [--dry-run]
+
+WHAT IT WRITES.  One record per spiral-wound element the input describes
+completely enough for the engine to load it, in the grammar of
+data/standards/assets/NF270-4040.dat (slice 2: `ratedTests ( {..} )`, the
+per-test optional facts), every rated test AS THE INPUT STATES IT -- never
+averaged, never merged, never completed -- plus an IMPORT REPORT whose counts
+are COMPUTED by reading the records back, never from the loop that wrote
+them.  Everything it writes is `reviewStatus unverified`: this tool
+verifies nothing against a data sheet; it transcribes a working spreadsheet
+and says where every number came from (file, sheet, row, the source URL the
+row carries, the conversion applied).
+
+WHERE IT WRITES, AND WHERE IT REFUSES TO.  data/local/ is the gitignored
+PRIVATE tier (data/local/README.md); promotion to data/standards/ is a human
+curation act and is NOT this tool's.  An `--out` under data/standards
+REFUSES.  The rule's ONE home is the engine's `records::refuseStandardsWrite`
+(src/thermo/RecordResolver.H); `refuse_standards_write` below mirrors its
+two tests (a path component literally named `standards`; a path resolving
+inside <root>/data/standards) and does NOT re-implement its wording.
+
+HOW A WRITTEN RECORD REACHES A RUN -- measured, not assumed (2026-11-01):
+`MembraneModuleRegistry::loadFrom` scans data/standards/assets and every
+case-local constant/assets; it does NOT scan data/local/assets (that tier is
+read by the component loader and the NRTL/UNIQUAC/Wilson pair readers only).
+So an imported record is USED by copying it into the case's
+`constant/assets/` and declaring the membrane beside the module in the
+operation (`module <name>; membrane <NF|RO record>;` -- an imported element
+names no membrane, like Generic-4040, because the catalogue states no
+transport parameters).  The report says so.
+
+WHAT IT NEVER DOES.  It never fills a missing number: an element without an
+active area or without a spacer thickness is NOT written and is listed with
+what is missing (`--assume-spacer-mil N` is the one opt-in, applied as an
+ANNOUNCED estimate with a note naming the flag); a rated test missing any of
+its seven numbers is rejected by name; a rejection stated as a range whose
+two ends the input does not carry is rejected; a brochure "reference value"
+with no test conditions is rejected (it is not a rated test).  A pressure
+basis the input does not state is NOT assumed: the `pressureBasis` key is
+omitted (the engine announces the absence where the inversion needs it) and
+the test is listed.  The derived columns of a consolidated sheet (Jw, u_s,
+d_e, A_cs, Cmed ...) are never imported: the tree never stores a derivative
+-- they are CROSS-CHECKED against the originals where both sheets exist.
+A field that reads like copied catalogue prose is dropped and said so.
+
+IDEMPOTENT.  The same input writes the same bytes; a record whose text is
+unchanged is left untouched (its mtime stands) and counted as unchanged.
+Nothing time-stamped goes into a record -- only the workbook's own date.
+
+INPUT SCHEMAS -- recognised by a sheet's header set, never by its name:
+    membranes-v1   id, fabricante, modelo, classe, area_m2, espacador_mil,
+                   fonte (+ optional espacador_h_mm, epsilon_assumida,
+                   geometria_status, qualidade_fonte, observacoes, ...)
+    tests-v1       id, membrana_id, soluto_ou_sal, rejeicao_pct,
+                   natureza_rejeicao, concentracao_mg_L, pressao_bar,
+                   temperatura_C, recuperacao_pct, pH, caudal_GPD, fonte
+                   (+ optional notas, base_pressao)
+    hypotheses-v1  Parâmetro, Valor, Descrição   (L_ef_m, epsilon, GPD_em_m3_s,
+                   mil_em_m -- the workbook's declared assumptions and
+                   conversion constants; a constant that is not the SI one
+                   REFUSES the workbook)
+    derived-si-v1  the Modulo_SI sheet -- cross-checked, never imported
+A sheet with another header set is ignored by name.  An input path that does
+not exist is reported "not imported" -- no row is invented for it.
+"""
+
+import argparse
+import csv
+import hashlib
+import json
+import os
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_OUT = ROOT / "data" / "local" / "assets"
+TOOL = "bin/choupo-import-membranes"
+REPORT_TXT = "IMPORT-REPORT-membranes.txt"
+REPORT_JSON = "IMPORT-REPORT-membranes.json"
+
+# ---- SI conversions this tool applies (each one is NAMED in the record) ----
+GPD_TO_M3_PER_DAY = 3.785411784e-3        # US gallon per day -> m3/d (exact)
+MIL_TO_M = 25.4e-6                        # 1/1000 inch -> m (exact)
+GPD_TO_M3_PER_S = GPD_TO_M3_PER_DAY / 86400.0
+T0 = 273.15                               # degC -> K
+
+# ---- the input's words for a rejection's KIND -> the engine's words --------
+#  (MembraneModule::acceptedRejectionValueTypes: typical minimum maximum
+#  approximate range).  A "reference value" is NOT a rated test.
+#  ORDER MATTERS: "valor de referência (não nominal)" contains "nominal", so the
+#  reference words are tested first, the range word next, the kind words last.
+NATURE_WORDS = [
+    ("referência", None), ("referencia", None), ("reference", None),
+    ("intervalo", "range"), ("range", "range"),
+    ("mínima", "minimum"), ("minima", "minimum"), ("mínimo", "minimum"), ("minimum", "minimum"),
+    ("máxima", "maximum"), ("maxima", "maximum"), ("maximum", "maximum"),
+    ("aproximad", "approximate"), ("approximate", "approximate"),
+    ("nominal", "typical"), ("típic", "typical"), ("tipic", "typical"), ("typical", "typical"),
+]
+SOLUTE_WORDS = {
+    "nacl": "NaCl", "mgso4": "MgSO4", "cacl2": "CaCl2", "na2so4": "Na2SO4",
+    "sio2": "silica", "silica": "silica", "sílica": "silica",
+    "boro": "boron", "boron": "boron", "b": "boron",
+    "glucose": "glucose", "sucrose": "sucrose", "sacarose": "sucrose",
+}
+#  Solutes the catalogue has NO component record for: the test is kept as the
+#  input states it, and the record says a case cannot invert it today.
+SOLUTES_WITHOUT_RECORD = {"boron"}
+PRESSURE_BASIS_WORDS = {
+    "gauge": "feedGauge", "feedgauge": "feedGauge", "psig": "feedGauge",
+    "manometrica": "feedGauge", "manométrica": "feedGauge", "relativa": "feedGauge",
+    "absolute": "feedAbsolute", "feedabsolute": "feedAbsolute", "psia": "feedAbsolute",
+    "absoluta": "feedAbsolute",
+    "net": "netDriving", "netdriving": "netDriving", "ndp": "netDriving",
+}
+PROSE_MARKS = ("©", "®", "™", "copyright", "all rights reserved", "todos os direitos")
+PROSE_MAX_CHARS = 240
+
+SCHEMAS = {
+    "membranes-v1": {"id", "fabricante", "modelo", "classe", "area_m2", "espacador_mil", "fonte"},
+    "tests-v1": {"id", "membrana_id", "soluto_ou_sal", "rejeicao_pct", "natureza_rejeicao",
+                 "concentracao_mg_l", "pressao_bar", "temperatura_c", "recuperacao_pct",
+                 "ph", "caudal_gpd", "fonte"},
+    "hypotheses-v1": {"parâmetro", "valor", "descrição"},
+    "derived-si-v1": {"ensaio", "membrana_id", "qp_m3_s", "pfeed_pa", "cf_kg_m3", "t_k"},
+}
+
+
+class ImportRefusal(Exception):
+    pass
+
+
+# ---------------------------------------------------------------------------
+#  Reading
+# ---------------------------------------------------------------------------
+def sha256_of(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 16), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def norm_header(h):
+    return str(h).strip().lower() if h is not None else ""
+
+
+def sheet_schema(headers):
+    hs = {norm_header(h) for h in headers if h is not None}
+    for name, need in SCHEMAS.items():
+        if need <= hs:
+            return name
+    return None
+
+
+def read_tables(path):
+    """Every table in an input, as (sheetName, schema, headers, rows) with rows
+    as dicts keyed by the NORMALISED header plus a `_row` (1-based, the
+    spreadsheet's own numbering) and the raw text of a README-like sheet."""
+    tables = []
+    meta = {}
+    if path.suffix.lower() == ".csv":
+        with open(path, newline="", encoding="utf-8-sig") as f:
+            rows = list(csv.reader(f))
+        if not rows:
+            return tables, meta
+        headers = rows[0]
+        tables.append(("csv", sheet_schema(headers), headers,
+                       [dict(zip([norm_header(h) for h in headers], r), _row=i + 2)
+                        for i, r in enumerate(rows[1:])]))
+        return tables, meta
+    try:
+        import openpyxl
+    except ImportError:
+        raise ImportRefusal("openpyxl is not installed (python3 -m pip install openpyxl); "
+                            "an .xlsx cannot be read without it.")
+    wb = openpyxl.load_workbook(str(path), data_only=True, read_only=True)
+    for ws in wb.worksheets:
+        rows = list(ws.iter_rows(values_only=True))
+        if not rows:
+            continue
+        headers = list(rows[0])
+        schema = sheet_schema(headers)
+        if schema is None:
+            #  A README-like sheet: the workbook's own date, if its first cell
+            #  row carries one (dd-mm-yyyy), is the only date this tool keeps.
+            for r in rows[:3]:
+                for cell in r:
+                    m = re.search(r"\b(\d{2}-\d{2}-\d{4})\b", str(cell or ""))
+                    if m and "workbookDate" not in meta:
+                        meta["workbookDate"] = m.group(1)
+            tables.append((ws.title, None, headers, []))
+            continue
+        keys = [norm_header(h) for h in headers]
+        body = []
+        for i, r in enumerate(rows[1:]):
+            if all(c is None or str(c).strip() == "" for c in r):
+                continue
+            d = dict(zip(keys, r))
+            d["_row"] = i + 2
+            body.append(d)
+        tables.append((ws.title, schema, headers, body))
+    return tables, meta
+
+
+def num(v):
+    """A number or None; a string that is not a number is a refusal, not a 0."""
+    if v is None:
+        return None
+    if isinstance(v, (int, float)):
+        return float(v)
+    s = str(v).strip().replace(",", ".")
+    if s == "":
+        return None
+    try:
+        return float(s)
+    except ValueError:
+        raise ImportRefusal("not a number: %r" % v)
+
+
+def text(v):
+    return "" if v is None else str(v).strip()
+
+
+def looks_like_prose(s):
+    if len(s) > PROSE_MAX_CHARS:
+        return True
+    low = s.lower()
+    return any(m in low for m in PROSE_MARKS)
+
+
+# ---------------------------------------------------------------------------
+#  Normalisation of identities (NEVER merging distinct revisions)
+# ---------------------------------------------------------------------------
+def stable_id(model):
+    s = re.sub(r"\s+", "-", model.strip())
+    s = s.replace("/", "_").replace("+", "plus")
+    s = re.sub(r"[^A-Za-z0-9_.\-]", "", s)
+    return s
+
+
+def fmt(x, sig=10):
+    s = "%.*g" % (sig, x)
+    return s
+
+
+def dict_string(s):
+    return '"' + s.replace("\\", "\\\\").replace('"', "'") + '"'
+
+
+# ---------------------------------------------------------------------------
+#  The import
+# ---------------------------------------------------------------------------
+class Importer:
+    def __init__(self, args):
+        self.args = args
+        self.inputs = []            # dicts: path, sha256, sheets, status
+        self.elements = {}          # name -> element dict
+        self.tests = {}             # element name -> [test dicts]
+        self.not_written = []       # (sheetId, manufacturer, model, reason)
+        self.rejected_tests = []    # (testId, element, reason, kind)
+        self.duplicates = []        # strings
+        self.contradictions = []    # strings
+        self.unstated_basis = []    # test ids
+        self.dropped_fields = []    # strings
+        self.ignored_sheets = []    # strings
+        self.cross_check = []       # strings (derived-SI mismatches)
+        self.hypotheses = {}        # workbook assumptions
+        self.workbook_date = ""
+        self.seen_test_ids = {}
+        self.solutes_without_record = set()
+
+    # ---- inputs --------------------------------------------------------
+    def read_input(self, path):
+        p = Path(path)
+        if not p.exists():
+            self.inputs.append({"path": str(p), "status": "not imported: file not found"})
+            return
+        rec = {"path": str(p), "sha256": sha256_of(p), "sheets": [], "status": "read"}
+        self.inputs.append(rec)
+        tables, meta = read_tables(p)
+        if meta.get("workbookDate"):
+            self.workbook_date = meta["workbookDate"]
+        by_schema = {}
+        for title, schema, headers, rows in tables:
+            rec["sheets"].append({"sheet": title, "schema": schema or "ignored", "rows": len(rows)})
+            if schema is None:
+                self.ignored_sheets.append("%s: sheet '%s' ignored -- no recognised schema (headers: %s)"
+                                           % (p.name, title, ", ".join(text(h) for h in headers if h)[:120]))
+                continue
+            by_schema.setdefault(schema, []).append((title, rows))
+        #  Order: hypotheses first (the elements read them), then elements,
+        #  then tests, then the derived sheet's cross-check.
+        for title, rows in by_schema.get("hypotheses-v1", []):
+            self.read_hypotheses(p, title, rows)
+        for title, rows in by_schema.get("membranes-v1", []):
+            self.read_elements(p, title, rows)
+        for title, rows in by_schema.get("tests-v1", []):
+            self.read_tests(p, title, rows)
+        for title, rows in by_schema.get("derived-si-v1", []):
+            self.cross_check_derived(p, title, rows)
+        if not by_schema:
+            rec["status"] = "not imported: no sheet with a recognised schema"
+
+    def read_hypotheses(self, p, title, rows):
+        for r in rows:
+            k = text(r.get("parâmetro"))
+            v = r.get("valor")
+            d = text(r.get("descrição"))
+            if k == "":
+                continue
+            self.hypotheses[k] = {"value": v, "description": d, "where": "%s sheet %s row %d" % (p.name, title, r["_row"])}
+        #  A declared conversion constant that is not the SI one refuses the
+        #  workbook: every number downstream would be off by that factor.
+        for key, si, what in (("GPD_em_m3_s", GPD_TO_M3_PER_S, "US gal/d -> m3/s"),
+                              ("mil_em_m", MIL_TO_M, "mil -> m")):
+            if key in self.hypotheses:
+                v = num(self.hypotheses[key]["value"])
+                if v is None or abs(v - si) > 1e-6 * si:
+                    raise ImportRefusal("%s declares %s = %r for %s; the SI factor is %.12g -- the "
+                                        "workbook's own conversion is not the SI one, refusing it "
+                                        "rather than importing numbers off by that factor."
+                                        % (p.name, key, v, what, si))
+
+    # ---- elements ------------------------------------------------------
+    def read_elements(self, p, title, rows):
+        for r in rows:
+            where = "%s sheet %s row %d" % (p.name, title, r["_row"])
+            sid = text(r.get("id"))
+            manufacturer = text(r.get("fabricante"))
+            model = text(r.get("modelo"))
+            cls = text(r.get("classe"))
+            if model == "" or manufacturer == "":
+                self.not_written.append((sid, manufacturer, model, "no manufacturer or no model (%s)" % where))
+                continue
+            name = stable_id(model)
+            if name == "" or name[0].isdigit():
+                self.not_written.append((sid, manufacturer, model,
+                                         "model '%s' gives no usable record name (a name is a dictionary "
+                                         "word and may not start with a digit) (%s)" % (model, where)))
+                continue
+            if "flatsheet" in cls.lower().replace(" ", "") or "flat" in model.lower():
+                self.not_written.append((sid, manufacturer, model,
+                                         "a flat sheet, not a spiral-wound element: `format flatSheetCell` "
+                                         "needs slot geometry the input does not carry (%s)" % where))
+                continue
+            try:
+                area = num(r.get("area_m2"))
+                mil = num(r.get("espacador_mil"))
+                h_mm = num(r.get("espacador_h_mm"))
+                eps = num(r.get("epsilon_assumida"))
+            except ImportRefusal as e:
+                self.not_written.append((sid, manufacturer, model, "%s (%s)" % (e, where)))
+                continue
+            if mil is not None and h_mm is not None and abs(mil * MIL_TO_M * 1e3 - h_mm) > 1e-6:
+                self.not_written.append((sid, manufacturer, model,
+                                         "espacador_mil %g and espacador_h_mm %g disagree (%s)" % (mil, h_mm, where)))
+                continue
+            missing = []
+            if area is None or area <= 0:
+                missing.append("area_m2")
+            spacer_origin = None
+            if mil is None:
+                if self.args.assume_spacer_mil is not None:
+                    mil = float(self.args.assume_spacer_mil)
+                    spacer_origin = ("estimated",
+                                     "the input states no feed-spacer thickness; %g mil supplied on the "
+                                     "command line (--assume-spacer-mil %g) -- an educated value, to be "
+                                     "verified by measuring the spacer on an unrolled leaf"
+                                     % (mil, mil))
+                else:
+                    missing.append("espacador_mil (feed-spacer thickness; --assume-spacer-mil N opts in)")
+            else:
+                spacer_origin = ("literature",
+                                 "feed-spacer thickness %g mil transcribed from %s (column espacador_mil); "
+                                 "not read back against the data sheet" % (mil, where))
+            if missing:
+                self.not_written.append((sid, manufacturer, model, "missing " + " and ".join(missing) + " (%s)" % where))
+                continue
+            #  Porosity: the row's own, else the workbook's declared assumption.
+            if eps is not None:
+                eps_origin = ("estimated", "epsilon_assumida %g in %s -- the workbook's own assumption "
+                              "(its geometria_status: %s); to be verified by weighing a spacer coupon: "
+                              "porosity = 1 - m/(rho_PP A h)" % (eps, where, text(r.get("geometria_status")) or "none"))
+            elif "epsilon" in self.hypotheses:
+                eps = num(self.hypotheses["epsilon"]["value"])
+                eps_origin = ("estimated", "epsilon = %g declared ASSUMED in %s ('%s'); to be verified by "
+                              "weighing a spacer coupon: porosity = 1 - m/(rho_PP A h)"
+                              % (eps, self.hypotheses["epsilon"]["where"], self.hypotheses["epsilon"]["description"]))
+            else:
+                self.not_written.append((sid, manufacturer, model,
+                                         "missing spacer porosity (no epsilon_assumida, no hypotheses sheet) (%s)" % where))
+                continue
+            if not (0.0 < eps <= 1.0):
+                self.not_written.append((sid, manufacturer, model, "spacer porosity %g outside (0, 1] (%s)" % (eps, where)))
+                continue
+            #  Leaf length: only the workbook's declared assumption can supply it.
+            if "L_ef_m" in self.hypotheses:
+                L = num(self.hypotheses["L_ef_m"]["value"])
+                L_origin = ("estimated", "L_ef = %g m declared ASSUMED in %s ('%s') -- not a measurement "
+                            "of the leaf; to be verified against the element's leaf dimensions (unroll one)"
+                            % (L, self.hypotheses["L_ef_m"]["where"], self.hypotheses["L_ef_m"]["description"]))
+            else:
+                self.not_written.append((sid, manufacturer, model,
+                                         "missing leaf length (no L_ef_m in a hypotheses sheet) (%s)" % where))
+                continue
+            if L is None or L <= 0:
+                self.not_written.append((sid, manufacturer, model, "leaf length %r is not > 0 (%s)" % (L, where)))
+                continue
+            url = text(r.get("fonte"))
+            if url == "":
+                self.not_written.append((sid, manufacturer, model, "no source (fonte) -- a record cites its sheet (%s)" % where))
+                continue
+            note = text(r.get("observacoes"))
+            if note and looks_like_prose(note):
+                self.dropped_fields.append("%s: observacoes dropped (reads like copied prose, %d chars)" % (where, len(note)))
+                note = ""
+            quality = text(r.get("qualidade_fonte"))
+            e = {
+                "sheetId": sid, "manufacturer": manufacturer, "model": model, "name": name,
+                "class": cls, "area": area, "mil": mil, "spacer_origin": spacer_origin,
+                "eps": eps, "eps_origin": eps_origin, "L": L, "L_origin": L_origin,
+                "url": url, "note": note, "quality": quality,
+                "geo": text(r.get("geometria_status")), "where": where,
+                "sheet_verified": "VERIFICADA" in quality.upper() or "VERIFIED" in quality.upper(),
+            }
+            if name in self.elements:
+                prev = self.elements[name]
+                same = all(prev[k] == e[k] for k in ("manufacturer", "area", "mil", "eps", "L", "url", "class"))
+                if same:
+                    self.duplicates.append("element %s (%s %s): %s repeats %s with the same values -- written once"
+                                           % (name, manufacturer, model, where, prev["where"]))
+                else:
+                    self.contradictions.append(
+                        "element %s: %s (%s %s) and %s (%s %s) map to ONE record name with different values "
+                        "-- NEITHER written (two revisions are two records; rename one in the input)"
+                        % (name, where, manufacturer, model, prev["where"], prev["manufacturer"], prev["model"]))
+                    self.not_written.append((sid, manufacturer, model, "name collision with %s (%s)" % (prev["sheetId"], prev["where"])))
+                    self.not_written.append((prev["sheetId"], prev["manufacturer"], prev["model"],
+                                             "name collision with %s (%s)" % (sid, where)))
+                    prev["_collided"] = True
+                continue
+            self.elements[name] = e
+
+    # ---- tests ---------------------------------------------------------
+    def read_tests(self, p, title, rows):
+        by_sheet_id = {e["sheetId"]: e for e in self.elements.values() if e["sheetId"]}
+        for r in rows:
+            where = "%s sheet %s row %d" % (p.name, title, r["_row"])
+            tid = text(r.get("id"))
+            mem = text(r.get("membrana_id"))
+            el = by_sheet_id.get(mem)
+            label = "%s (%s)" % (tid or "<no id>", mem)
+            if el is None:
+                reason = ("its element %s was not written" % mem) if any(nw[0] == mem for nw in self.not_written) \
+                    else ("names an element id %s that no membranes sheet carries" % mem)
+                self.rejected_tests.append((tid, mem, reason + " (%s)" % where, "element-not-written" if el is None and any(nw[0] == mem for nw in self.not_written) else "orphan"))
+                continue
+            if tid == "" or not re.match(r"^[A-Za-z][A-Za-z0-9_.\-]*$", tid):
+                self.rejected_tests.append((tid, el["name"], "test id %r is not a dictionary word (%s)" % (tid, where), "bad-id"))
+                continue
+            if tid in self.seen_test_ids:
+                self.rejected_tests.append((tid, el["name"], "duplicate test id -- already read at %s (%s)" % (self.seen_test_ids[tid], where), "duplicate-id"))
+                self.duplicates.append("test id %s: %s repeats %s -- the second row rejected (an id names ONE test)" % (tid, where, self.seen_test_ids[tid]))
+                continue
+            self.seen_test_ids[tid] = where
+            sol_raw = text(r.get("soluto_ou_sal"))
+            solute = SOLUTE_WORDS.get(sol_raw.lower())
+            if solute is None:
+                self.rejected_tests.append((tid, el["name"], "solute word %r is not in the tool's table (NaCl, MgSO4, CaCl2, Na2SO4, SiO2, boron, glucose, sucrose) (%s)" % (sol_raw, where), "unknown-solute"))
+                continue
+            nature = text(r.get("natureza_rejeicao"))
+            legacy = "legado" in nature.lower() or "legacy" in nature.lower()
+            value_type = "?"
+            for word, vt in NATURE_WORDS:
+                if word in nature.lower():
+                    value_type = vt
+                    break
+            if value_type == "?":
+                self.rejected_tests.append((tid, el["name"], "rejection kind %r is not a word this tool maps (nominal/mínima/máxima/aproximada/intervalo/referência) (%s)" % (nature, where), "unknown-kind"))
+                continue
+            if value_type is None:
+                self.rejected_tests.append((tid, el["name"], "a reference value (%r), not a rated test -- no test conditions stated (%s)" % (nature, where), "reference-value"))
+                continue
+            try:
+                rej = num(r.get("rejeicao_pct"))
+                conc = num(r.get("concentracao_mg_l"))
+                P = num(r.get("pressao_bar"))
+                T = num(r.get("temperatura_c"))
+                Y = num(r.get("recuperacao_pct"))
+                pH = num(r.get("ph"))
+                gpd = num(r.get("caudal_gpd"))
+            except ImportRefusal as e:
+                self.rejected_tests.append((tid, el["name"], "%s (%s)" % (e, where), "not-a-number"))
+                continue
+            if value_type == "range":
+                self.rejected_tests.append((tid, el["name"], "stated as a range (%r) but the input carries no two ends -- a range is `rejection ( lo hi )`, never one number (%s)" % (nature, where), "range-without-ends"))
+                continue
+            missing = [k for k, v in (("rejeicao_pct", rej), ("concentracao_mg_L", conc), ("pressao_bar", P),
+                                       ("temperatura_C", T), ("recuperacao_pct", Y), ("caudal_GPD", gpd)) if v is None]
+            if missing:
+                self.rejected_tests.append((tid, el["name"], "incomplete rated test, missing " + ", ".join(missing) + " -- never filled (%s)" % where, "incomplete"))
+                continue
+            if not (0 < rej <= 100) or not (0 < conc < 1e6) or not (0 < Y < 100) or P <= 0 or gpd <= 0 or not (-50 < T < 150):
+                self.rejected_tests.append((tid, el["name"], "a value outside its physical range (R %g %%, C %g mg/L, P %g bar, T %g C, Y %g %%, Q %g gpd) (%s)" % (rej, conc, P, T, Y, gpd, where), "out-of-range"))
+                continue
+            if pH is not None and not (0 <= pH <= 14):
+                self.rejected_tests.append((tid, el["name"], "pH %g outside [0, 14] (%s)" % (pH, where), "out-of-range"))
+                continue
+            basis_raw = text(r.get("base_pressao"))
+            if basis_raw == "":
+                basis = ""
+                self.unstated_basis.append(tid)
+            else:
+                basis = PRESSURE_BASIS_WORDS.get(basis_raw.lower().replace(" ", ""))
+                if basis is None:
+                    self.rejected_tests.append((tid, el["name"], "pressure basis word %r unknown (gauge | absolute | net) (%s)" % (basis_raw, where), "unknown-pressure-basis"))
+                    continue
+            note = text(r.get("notas"))
+            if note and looks_like_prose(note):
+                self.dropped_fields.append("%s: notas dropped (reads like copied prose, %d chars)" % (where, len(note)))
+                note = ""
+            url = text(r.get("fonte")) or el["url"]
+            if solute in SOLUTES_WITHOUT_RECORD:
+                self.solutes_without_record.add(solute)
+            t = {
+                "id": tid, "element": el["name"], "solute": solute, "solute_raw": sol_raw,
+                "rej": rej, "value_type": value_type, "nature": nature, "legacy": legacy,
+                "conc": conc, "P": P, "T": T, "Y": Y, "pH": pH, "gpd": gpd, "basis": basis,
+                "url": url, "note": note, "where": where,
+                "sheet_verified": (not legacy) and ("validar" not in note.lower()) and ("verify" not in note.lower()),
+            }
+            self.tests.setdefault(el["name"], []).append(t)
+
+        #  Duplicates and contradictions among the tests of one element: the
+        #  same solute at the same conditions twice.  BOTH are written, each
+        #  as its row states it -- a duplicate is reported, a contradiction is
+        #  reported, neither is merged or chosen.
+        for name, ts in self.tests.items():
+            groups = {}
+            for t in ts:
+                key = (t["solute"], t["conc"], t["P"], t["T"], t["Y"], t["pH"])
+                groups.setdefault(key, []).append(t)
+            for key, g in groups.items():
+                if len(g) < 2:
+                    continue
+                vals = {(t["rej"], t["gpd"], t["value_type"]) for t in g}
+                ids = ", ".join(t["id"] for t in g)
+                if len(vals) == 1:
+                    self.duplicates.append("tests %s of %s: the same %s test (%g mg/L, %g bar, %g C, %g %%) stated %d times with the same values -- all written, none merged"
+                                           % (ids, name, key[0], key[1], key[2], key[3], key[4], len(g)))
+                else:
+                    self.contradictions.append("tests %s of %s: the same %s test conditions (%g mg/L, %g bar, %g C, %g %%) with DIFFERENT values %s -- all written as stated, none chosen"
+                                               % (ids, name, key[0], key[1], key[2], key[3], key[4],
+                                                  "; ".join("%s: R %g %% %s, %g gpd" % (t["id"], t["rej"], t["value_type"], t["gpd"]) for t in g)))
+
+    # ---- the derived sheet: cross-checked, never imported ----------------
+    def cross_check_derived(self, p, title, rows):
+        all_tests = {t["id"]: t for ts in self.tests.values() for t in ts}
+        n = 0
+        for r in rows:
+            tid = text(r.get("ensaio"))
+            t = all_tests.get(tid)
+            if t is None:
+                continue
+            n += 1
+            checks = (("pfeed_pa", t["P"] * 1e5, 1.0), ("qp_m3_s", t["gpd"] * GPD_TO_M3_PER_S, 1e-12),
+                      ("cf_kg_m3", t["conc"] / 1000.0, 1e-9), ("t_k", t["T"] + T0, 1e-6))
+            for col, want, tol in checks:
+                try:
+                    got = num(r.get(col))
+                except ImportRefusal:
+                    got = None
+                if got is None:
+                    continue
+                if abs(got - want) > tol:
+                    self.cross_check.append("%s sheet %s row %d: %s = %r but %s's original converts to %.12g"
+                                            % (p.name, title, r["_row"], col, got, tid, want))
+        self.dropped_fields.append("%s sheet %s: derived columns (Jw, u_s, u_int, d_e, A_cs, Cmed, Cp, Cc, Qf ...) "
+                                   "not imported -- the tree never stores a derivative; %d row(s) cross-checked "
+                                   "against the originals, %d mismatch(es)" % (p.name, title, n, len(self.cross_check)))
+
+    # ---- writing -------------------------------------------------------
+    def record_text(self, e):
+        ts = self.tests.get(e["name"], [])
+        src_files = sorted({i["path"] for i in self.inputs if i.get("sha256")})
+        head = []
+        head.append("/*--------------------------------*- Choupo -*-----------------------*\\")
+        head.append("  Membrane MODULE: %s %s -- IMPORTED, UNVERIFIED (data/local tier)" % (e["manufacturer"], e["model"]))
+        head.append("")
+        head.append("  Written by %s from a working catalogue spreadsheet; every value is" % TOOL)
+        head.append("  a TRANSCRIPTION of that spreadsheet (file, sheet and row named per")
+        head.append("  field below), NOT a reading of the manufacturer's data sheet.  This")
+        head.append("  tool verifies nothing: `reviewStatus unverified` on the whole record.")
+        head.append("  Promotion to data/standards/ is a human curation act -- read the")
+        head.append("  cited sheet, check each number, and write the curated record by hand.")
+        head.append("")
+        head.append("  The element names NO membrane: the catalogue states no transport")
+        head.append("  parameters.  A case declares one beside it, as for Generic-4040:")
+        head.append("      module %s; membrane <NF or RO record>;" % e["name"])
+        head.append("  and reaches this file by copying it into the case's constant/assets/")
+        head.append("  (MembraneModuleRegistry does not scan data/local/assets).")
+        if e["class"]:
+            head.append("  Catalogue class as the input states it: %s (not read by the engine)." % e["class"])
+        if e["quality"]:
+            head.append("  Input's own grade of its source: %s." % e["quality"])
+        if e["note"]:
+            head.append("  Input's note: %s" % e["note"])
+        if not ts:
+            head.append("  No rated test of this element survived the import (see the report).")
+        head.append("\\*---------------------------------------------------------------------------*/")
+        L = []
+        L.append("name           %s;" % e["name"])
+        L.append("kind           membraneModule;")
+        L.append("manufacturer   %s;" % dict_string(e["manufacturer"]))
+        L.append("format         spiralWound;")
+        L.append("reviewStatus   unverified;       // imported, not read back against the data sheet")
+        L.append("")
+        L.append("activeArea     %-18s // transcribed, see provenance" % (fmt(e["area"]) + " m2;"))
+        L.append("channelHeight  %-18s // %s mil x 25.4e-3 mm/mil, see provenance" % (fmt(e["mil"] * MIL_TO_M * 1e3) + " mm;", fmt(e["mil"])))
+        L.append("spacerPorosity %-18s // ESTIMATE, see provenance" % (fmt(e["eps"]) + ";"))
+        L.append("leafLength     %-18s // ESTIMATE, see provenance" % (fmt(e["L"]) + " m;"))
+        L.append("")
+        if ts:
+            L.append("//  The rated tests AS THE INPUT STATES THEM: one block per input row,")
+            L.append("//  never averaged.  Conversions: mg/L taken as mg/kg (ppm by mass, 1 kg/L);")
+            L.append("//  %% -> fraction; degC + 273.15; US gal/d x %s m3/d." % fmt(GPD_TO_M3_PER_DAY))
+            L.append("ratedTests")
+            L.append("(")
+            for t in ts:
+                L.append("    //  %s%s" % (t["where"], (" -- input's note: " + t["note"]) if t["note"] else ""))
+                if t["solute"] in SOLUTES_WITHOUT_RECORD:
+                    L.append("    //  NOTE: no component record of %s in the catalogue; a case cannot invert this test today." % t["solute"])
+                L.append("    {")
+                L.append("        id                 %s;" % t["id"])
+                L.append("        solute             %s;%s" % (t["solute"], ("              // input: " + t["solute_raw"]) if t["solute_raw"] != t["solute"] else ""))
+                L.append("        feedMassFraction   %-18s // %s mg/L" % (fmt(t["conc"] / 1e6) + ";", fmt(t["conc"])))
+                if t["basis"]:
+                    L.append("        P                  %-18s // basis as the input states it" % (fmt(t["P"]) + " bar;"))
+                    L.append("        pressureBasis      %s;" % t["basis"])
+                else:
+                    L.append("        P                  %-18s // the input states NO pressure basis (gauge or absolute):" % (fmt(t["P"]) + " bar;"))
+                    L.append("                                              // pressureBasis omitted, never assumed")
+                L.append("        T                  %-18s // %s C" % (fmt(t["T"] + T0) + " K;", fmt(t["T"])))
+                if t["pH"] is not None:
+                    L.append("        pH                 %s;" % fmt(t["pH"]))
+                L.append("        recovery           %s;" % fmt(t["Y"] / 100.0))
+                L.append("        permeateFlow       %-18s // %s gpd" % (fmt(t["gpd"] * GPD_TO_M3_PER_DAY) + " m3/d;", fmt(t["gpd"])))
+                L.append("        rejection          %-18s // %s %% (%s)" % (fmt(t["rej"] / 100.0) + ";", fmt(t["rej"]), t["nature"]))
+                L.append("        rejectionValueType %s;" % t["value_type"])
+                L.append("        source             %s;" % dict_string("%s; transcribed via %s%s" % (t["url"], t["where"], "; the input marks it legacy, to be verified" if t["legacy"] else "")))
+                L.append("    }")
+            L.append(");")
+            L.append("")
+        wb = (" dated %s" % self.workbook_date) if self.workbook_date else ""
+        L.append("provenance")
+        L.append("{")
+        L.append("    source  %s;" % dict_string("%s; transcribed via %s%s (not read back against the sheet)" % (e["url"], e["where"], wb)))
+        L.append("    importedFrom  %s;" % dict_string("; ".join("%s sha256 %s" % (Path(i["path"]).name, i["sha256"]) for i in self.inputs if i.get("sha256"))))
+        L.append("    importer      %s;" % dict_string(TOOL))
+        if e["sheetId"]:
+            L.append("    sheetId       %s;" % dict_string(e["sheetId"]))
+        if e["class"]:
+            L.append("    sheetClass    %s;" % dict_string(e["class"]))
+        if e["quality"]:
+            L.append("    sheetQuality  %s;" % dict_string(e["quality"]))
+        L.append("")
+        L.append("    activeArea")
+        L.append("    {")
+        L.append("        origin        literature;")
+        L.append("        reviewStatus  unverified;")
+        L.append("        notes         %s;" % dict_string("active area %s m2 transcribed from %s (column area_m2); not read back against the data sheet" % (fmt(e["area"]), e["where"])))
+        L.append("    }")
+        for key, (origin, notes) in (("channelHeight", e["spacer_origin"]), ("spacerPorosity", e["eps_origin"]), ("leafLength", e["L_origin"])):
+            L.append("    %s" % key)
+            L.append("    {")
+            L.append("        origin        %s;" % origin)
+            L.append("        reviewStatus  unverified;")
+            L.append("        notes         %s;" % dict_string(notes))
+            L.append("    }")
+        L.append("}")
+        return "\n".join(head) + "\n\n" + "\n".join(L) + "\n"
+
+    def write_all(self, out):
+        written, unchanged = [], []
+        for name in sorted(self.elements):
+            e = self.elements[name]
+            if e.get("_collided"):
+                continue
+            txt = self.record_text(e)
+            path = out / (name + ".dat")
+            if path.exists() and path.read_text(encoding="utf-8") == txt:
+                unchanged.append(path)
+                continue
+            if not self.args.dry_run:
+                path.write_text(txt, encoding="utf-8")
+            written.append(path)
+        return written, unchanged
+
+
+# ---------------------------------------------------------------------------
+#  Counts COMPUTED from the records written (never from the import loop)
+# ---------------------------------------------------------------------------
+RE_NAME = re.compile(r"^name\s+(\S+);", re.M)
+RE_MANUF = re.compile(r'^manufacturer\s+"([^"]*)";', re.M)
+RE_TEST = re.compile(r"\n\s*\{\s*\n\s*id\s+(\S+);\s*\n\s*solute\s+(\S+);", re.M)
+RE_BASIS = re.compile(r"^\s*pressureBasis\s+(\S+);", re.M)
+
+
+def read_back(out, names):
+    recs = {}
+    for name in names:
+        p = out / (name + ".dat")
+        if not p.exists():
+            continue
+        s = p.read_text(encoding="utf-8")
+        m = RE_NAME.search(s)
+        mm = RE_MANUF.search(s)
+        tests = RE_TEST.findall(s)
+        bases = RE_BASIS.findall(s)
+        recs[name] = {"file": str(p), "name": m.group(1) if m else "", "manufacturer": mm.group(1) if mm else "",
+                      "tests": [{"id": a, "solute": b} for a, b in tests],
+                      "pressureBasisStated": len(bases), "pressureBasisUnstated": len(tests) - len(bases),
+                      "estimates": s.count("origin        estimated;")}
+    return recs
+
+
+def verification_of(imp, name):
+    e = imp.elements[name]
+    ts = imp.tests.get(name, [])
+    parts = [e["sheet_verified"]] + [t["sheet_verified"] for t in ts]
+    if all(parts):
+        return "verified-by-input"
+    if any(parts):
+        return "partially-verified-by-input"
+    return "unverified"
+
+
+def refuse_standards_write(out):
+    """Mirror of records::refuseStandardsWrite (src/thermo/RecordResolver.H),
+    the ONE home of the rule in the engine: a path with a component literally
+    named `standards`, or resolving inside <root>/data/standards, is refused.
+    The RULE is repeated here (Python cannot call the C++); the wording is not."""
+    parts = Path(out).parts
+    inside = False
+    try:
+        root = (ROOT / "data" / "standards").resolve()
+        want = Path(out).resolve()
+        inside = root == want or root in want.parents
+    except OSError:
+        inside = False
+    if "standards" in parts or inside:
+        raise ImportRefusal("refusing to write under %s -- data/standards/ is the frozen, curated "
+                            "catalogue; this tool writes the PRIVATE tier only (data/local/assets). "
+                            "The rule's one home is records::refuseStandardsWrite "
+                            "(src/thermo/RecordResolver.H); promotion is a human curation act." % out)
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(prog="choupo-import-membranes",
+                                 description="Import / QA a manufacturer RO/NF catalogue into private "
+                                             "`kind membraneModule` records under data/local/assets (never data/standards).")
+    ap.add_argument("inputs", nargs="+", help=".xlsx or .csv catalogue files (absent ones are reported, never invented)")
+    ap.add_argument("--out", default=str(DEFAULT_OUT), help="output directory (default data/local/assets; data/standards refuses)")
+    ap.add_argument("--assume-spacer-mil", type=float, default=None,
+                    help="OPT-IN: write elements whose spacer thickness the input does not state, with this "
+                         "thickness as an ANNOUNCED estimate (origin estimated, a note naming this flag)")
+    ap.add_argument("--dry-run", action="store_true", help="read and report; write no record")
+    args = ap.parse_args(argv)
+
+    out = Path(args.out)
+    try:
+        refuse_standards_write(out)
+        imp = Importer(args)
+        for p in args.inputs:
+            imp.read_input(p)
+    except ImportRefusal as e:
+        print("choupo-import-membranes: REFUSED -- %s" % e, file=sys.stderr)
+        return 2
+
+    if not args.dry_run:
+        out.mkdir(parents=True, exist_ok=True)
+    written, unchanged = imp.write_all(out)
+    names = [n for n, e in imp.elements.items() if not e.get("_collided")]
+    recs = read_back(out, names) if not args.dry_run else {}
+
+    #  ---- the report: counts from the files -----------------------------
+    by_manuf = {}
+    verif = {"verified-by-input": 0, "partially-verified-by-input": 0, "unverified": 0}
+    n_tests = 0
+    n_unstated = 0
+    n_without_test = 0
+    n_estimates = 0
+    for name, r in sorted(recs.items()):
+        by_manuf[r["manufacturer"]] = by_manuf.get(r["manufacturer"], 0) + 1
+        n_tests += len(r["tests"])
+        n_unstated += r["pressureBasisUnstated"]
+        n_estimates += r["estimates"]
+        if not r["tests"]:
+            n_without_test += 1
+        verif[verification_of(imp, name)] += 1
+    by_kind = {}
+    for _a, _b, _c, k in imp.rejected_tests:
+        by_kind[k] = by_kind.get(k, 0) + 1
+    would_write = sum(1 for nw in imp.not_written if "espacador_mil" in nw[3] and "missing area" not in nw[3])
+
+    report = {
+        "tool": TOOL,
+        "out": str(out),
+        "inputs": imp.inputs,
+        "workbookDate": imp.workbook_date,
+        "hypotheses": {k: {"value": v["value"], "where": v["where"]} for k, v in imp.hypotheses.items()},
+        "records": {"total": len(recs), "writtenOrUpdated": len(written), "unchanged": len(unchanged),
+                    "byManufacturer": by_manuf, "verification": verif, "withoutRatedTest": n_without_test,
+                    "announcedEstimates": n_estimates},
+        "ratedTests": {"total": n_tests, "pressureBasisUnstated": n_unstated,
+                       "pressureBasisUnstatedIds": sorted(imp.unstated_basis),
+                       "bySolute": {}},
+        "notWritten": [{"sheetId": a, "manufacturer": b, "model": c, "reason": d} for a, b, c, d in imp.not_written],
+        "rejectedTests": [{"id": a, "element": b, "reason": c, "kind": k} for a, b, c, k in imp.rejected_tests],
+        "rejectedTestsByKind": by_kind,
+        "duplicates": imp.duplicates,
+        "contradictions": imp.contradictions,
+        "dropped": imp.dropped_fields,
+        "ignoredSheets": imp.ignored_sheets,
+        "derivedCrossCheckMismatches": imp.cross_check,
+        "solutesWithoutComponentRecord": sorted(imp.solutes_without_record),
+        "elementsAssumeSpacerWouldAdd": would_write if args.assume_spacer_mil is None else 0,
+        "idempotent": len(written) == 0 and len(recs) > 0,
+        "dryRun": args.dry_run,
+    }
+    for r in recs.values():
+        for t in r["tests"]:
+            report["ratedTests"]["bySolute"][t["solute"]] = report["ratedTests"]["bySolute"].get(t["solute"], 0) + 1
+
+    lines = []
+    lines.append("IMPORT REPORT -- %s" % TOOL)
+    lines.append("output directory: %s" % out)
+    lines.append("")
+    lines.append("INPUTS")
+    for i in imp.inputs:
+        if i.get("sha256"):
+            lines.append("  %s  sha256 %s" % (i["path"], i["sha256"]))
+            for s in i["sheets"]:
+                lines.append("      sheet %-22s %-16s %d row(s)" % (s["sheet"], s["schema"], s["rows"]))
+        else:
+            lines.append("  %s  -- %s" % (i["path"], i["status"]))
+    if imp.workbook_date:
+        lines.append("  workbook date (its own README): %s" % imp.workbook_date)
+    for k, v in imp.hypotheses.items():
+        lines.append("  workbook assumption %s = %r  (%s)" % (k, v["value"], v["where"]))
+    lines.append("")
+    lines.append("RECORDS (counted by reading the files back)")
+    lines.append("  records in place: %d   (%d written or updated this run, %d unchanged)%s"
+                 % (len(recs), len(written), len(unchanged), "   -- IDEMPOTENT: nothing changed" if report["idempotent"] else ""))
+    for m, n in sorted(by_manuf.items()):
+        lines.append("    %-24s %d" % (m, n))
+    lines.append("  verification, BY THE INPUT'S OWN GRADING (this tool verified nothing; every record is reviewStatus unverified):")
+    for k, n in verif.items():
+        lines.append("    %-30s %d" % (k, n))
+    lines.append("  records with no rated test: %d" % n_without_test)
+    lines.append("  announced estimates in the records (spacer porosity, leaf length, an assumed spacer): %d" % n_estimates)
+    lines.append("  rated tests: %d   (%s)" % (n_tests, ", ".join("%s %d" % kv for kv in sorted(report["ratedTests"]["bySolute"].items())) or "none"))
+    lines.append("  rated tests with NO stated pressure basis (pressureBasis omitted, never assumed): %d%s"
+                 % (n_unstated, ("  -- " + ", ".join(sorted(imp.unstated_basis))) if imp.unstated_basis else ""))
+    if imp.solutes_without_record:
+        lines.append("  solutes with no component record in the catalogue (kept as stated; not invertible today): %s" % ", ".join(sorted(imp.solutes_without_record)))
+    lines.append("")
+    lines.append("ELEMENTS NOT WRITTEN: %d" % len(imp.not_written))
+    for a, b, c, d in imp.not_written:
+        lines.append("  %-9s %-20s %-24s %s" % (a, b, c, d))
+    if args.assume_spacer_mil is None and would_write:
+        lines.append("  (--assume-spacer-mil N would write %d more, each with the spacer as an ANNOUNCED estimate)" % would_write)
+    lines.append("")
+    lines.append("RATED TESTS REJECTED: %d   (%s)" % (len(imp.rejected_tests), ", ".join("%s %d" % kv for kv in sorted(by_kind.items())) or "none"))
+    for a, b, c, k in imp.rejected_tests:
+        lines.append("  %-10s %-24s [%s] %s" % (a, b, k, c))
+    lines.append("")
+    lines.append("DUPLICATES FOUND: %d" % len(imp.duplicates))
+    for d in imp.duplicates:
+        lines.append("  " + d)
+    lines.append("CONTRADICTIONS FOUND: %d" % len(imp.contradictions))
+    for d in imp.contradictions:
+        lines.append("  " + d)
+    lines.append("")
+    lines.append("DROPPED / NOT IMPORTED FIELDS")
+    for d in imp.dropped_fields:
+        lines.append("  " + d)
+    for d in imp.ignored_sheets:
+        lines.append("  " + d)
+    if imp.cross_check:
+        lines.append("DERIVED-SHEET CROSS-CHECK MISMATCHES: %d" % len(imp.cross_check))
+        for d in imp.cross_check:
+            lines.append("  " + d)
+    lines.append("")
+    lines.append("HOW TO USE A RECORD.  Copy <out>/<name>.dat into a case's constant/assets/ and declare")
+    lines.append("  `module <name>; membrane <NF|RO record>;` in the spiralWoundModule operation; the engine")
+    lines.append("  does not scan data/local/assets.  Promotion to data/standards/ is a human curation act:")
+    lines.append("  read the cited sheet, check every number, write the curated record by hand.")
+    txt = "\n".join(lines) + "\n"
+    print(txt)
+    if not args.dry_run:
+        (out / REPORT_TXT).write_text(txt, encoding="utf-8")
+        (out / REPORT_JSON).write_text(json.dumps(report, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

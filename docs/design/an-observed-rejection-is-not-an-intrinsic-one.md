@@ -322,3 +322,81 @@ would be needed); the batch diafilter does not refuse a class named as its
 `membrane`; `bin/choupo-import` does not know a class's element reference
 (the witness is not sealed); the shortlist from a class to products
 (slice 5).
+
+## 9. Slice 4 (2026-11-01): the catalogue import writes the private tier, and the engine does not read it from there
+
+**What.**  `bin/choupo-import-membranes` turns a working catalogue
+spreadsheet (one sheet of elements, one of data-sheet tests, one of the
+workbook's own assumptions, one of derived SI columns) into `kind
+membraneModule` records in the slice-2 grammar under `data/local/assets/`,
+plus an import report.  Gate `check_membrane_import` on a SYNTHETIC
+catalogue, never the private file.
+
+**The rules, each one an arm of the gate.**  Counts are READ BACK from the
+files, never taken from the loop that wrote them.  A second run changes no
+byte and no mtime and says so.  Two rows stating one test are BOTH written,
+each citing its row, and listed -- as a duplicate when the values agree, as a
+contradiction when they do not; nothing is averaged and nothing is chosen.
+Two element rows that map to one record name with different values are
+neither written (two revisions are two records; the input is asked to rename
+one).  A pressure basis the input does not state is OMITTED, never assumed:
+the engine already announces the absence where the inversion needs a reading
+(slice 2), so the tool has nothing to add but the list.  An element without
+an active area or a spacer thickness is NOT written and listed with what is
+missing; `--assume-spacer-mil N` is the one opt-in and is written as an
+announced estimate naming the flag.  A rated test missing any of its seven
+numbers, a rejection stated as a range whose ends the input does not carry,
+a brochure "reference value" with no test conditions: rejected by name.  The
+derived columns (flux, velocities, Schock-Miquel diameter, mean
+concentrations) are never imported -- the tree never stores a derivative --
+and are cross-checked against the originals.  A field that reads like copied
+catalogue prose is dropped and said.  `--out` under `data/standards`
+refuses; the rule's one home is `records::refuseStandardsWrite` and the
+Python mirrors its two tests, not its wording.
+
+**Measured, not assumed, and it changed the design.**
+`MembraneModuleRegistry::loadFrom` scans `data/standards/assets` and every
+case-local `constant/assets`; it does NOT scan `data/local/assets`.  The
+README's precedence line (`standards > local`) is the component loader's and
+the pair readers'.  So an imported record is USED by copying it into the
+case's `constant/assets/` with the membrane declared beside it (`module
+<name>; membrane <NF|RO record>;` -- an imported element names no membrane,
+like Generic-4040, because a catalogue states no transport parameters), and
+the record's header, the report and both READMEs say so.  Teaching the
+registry a third tier was not taken: it is an engine change, and a private
+record reaching every run by name is the shape `data/local/README.md` warns
+about for the ThermoML cache.
+
+**What the real workbook holds (the private file; numbers here are the
+report's, not the tree's).**  Five manufacturers, 145 elements, 84 test rows;
+87 elements carry no active area and 98 no spacer thickness, so 13 records
+are written by default (DuPont 6, LG 6, Hydranautics 1; the Toray rows carry
+a spacer and no area, the Hydranautics index rows neither); 13 rated tests
+(NaCl 11, MgSO4 2), every one with its pressure basis unstated; 71 test rows
+rejected, 65 of them because their element was not written and 6 because
+they are brochure reference values (boron, silica) with no conditions.  The
+NF270-4040 row reproduces the shipped record's test to the digit (97 %
+minimum, 2000 mg/L, 4.8 bar, 25 C, 15 %, 2500 gpd) but states no spacer, so
+the shipped record's announced 28 mil estimate is exactly what the tool
+refuses to invent.  Run on the imported NF270-400/34 through a membrane25
+copy, the slice-1 inversion gives R_int(MgSO4) = 0.983347 from the sheet's
+97 % minimum, with the engine announcing the unstated basis read as absolute.
+
+**REJECTED.**  Filling a missing spacer from a sibling element (the shipped
+NF270-4040 does it BY HAND, with a note; a tool doing it silently is the
+2026-09-04 dryer shape); averaging a duplicate; a `pressureBasis unknown`
+word (the grammar has no such word, and absence IS the engine's
+representation of "not stated"); writing a record for an element with no
+geometry (it could not load, and a record the engine refuses is a tool
+defect); a third registry tier in the engine (above).
+
+**Not done.**  The other three files the external specification names are
+not on the laptop; the tool takes any path and reports an absent one as
+"not imported".  A `membraneClass` is not imported (a class is a teaching
+record, never a catalogue row).  Limits (P_max, T_max, pH) are not in this
+workbook's columns and are not written.  The shortlist (slice 5) needs from
+these records: the geometry, every rated test with its `rejectionValueType`
+and its stated or unstated basis, the manufacturer and the sheet quality
+word -- all present -- and a membrane transport record per element, which
+no catalogue states and which the shortlist must take from the class (slice
+3) or the inversion (slice 1).
