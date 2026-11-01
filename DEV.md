@@ -1528,6 +1528,57 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C192. THE PRESSURE EXCHANGER: THE UNIT, ITS DESIGN SHEET AND ITS
+> SCHEMATIC (Vitor, 2026-11-01 -- "faz essa operacao unitaria e depois
+> faz tambem a subrotina de design detalhado e faz ate um esquema HTML,
+> como fazes para os permutadores de calor").**  The rotary ceramic
+> pressure exchanger of seawater RO (the ERI PX class): a rotor of ~12
+> longitudinal ducts turning at 1200-1500 rpm, each duct alternately
+> filled by the high-pressure brine (which pushes the seawater it held
+> out at nearly the same pressure) and by low-pressure seawater (which
+> pushes the depressurised brine to drain) -- liquid-to-liquid contact,
+> no piston, no seals, which is why it is rotary and ceramic.  THREE
+> DECLARED PARAMETERS characterise it, each from the maker's sheet or
+> from Stover, Desalination 203 (2007) 168-175: the pressure-transfer
+> (energy) EFFICIENCY, 95-98 %, eta = (Q_HPout P_HPout + Q_LPout
+> P_LPout) / (Q_HPin P_HPin + Q_LPin P_LPin); the volumetric MIXING, 3-6
+> %, the share of brine that stays in the duct and leaves with the
+> pressurised seawater, raising the feed's salinity 1-3 % (and so the
+> osmotic pressure the module must beat -- the hidden penalty); and the
+> LEAKAGE (lubrication flow), 1-2 %, the rotor-stator gap flow to the
+> low-pressure outlet.  The HP-side pressure loss (1-2 bar) is what the
+> BOOSTER pump restores before the recovered stream rejoins the
+> high-pressure pump's discharge.  No new physics: three algebraic
+> balances (mass per stream less leakage and mixing, salinity by the
+> mixing factor, pressure by the efficiency, T unchanged).
+> DECIDED (rule 00): (1) the unit `pressureExchanger` in
+> src/unitOperations/rotating/, two inlets (highPressureIn: the brine;
+> lowPressureIn: the seawater) and two outlets (highPressureOut: the
+> pressurised seawater; lowPressureOut: the spent brine), `operation {
+> efficiency; mixing; leakage; }` all three REQUIRED with a `source`
+> (no default: a maker's number), KPIs P_recovered, salinity increase of
+> the feed, booster duty required, specific energy; on the C188
+> acceptance contract (liquid, aqueous, every component modelled);
+> (2) its design sheet: a sizer `PressureExchangerSize` on the pattern
+> of ShellTubeHX/CompressorSize -- rotor count from the maker's rated
+> flow per unit (declared, the ERI PX-Q300 class ~ 50-68 m3/h per unit
+> is a datum the case cites, never a built-in), the array in parallel,
+> the booster's shaft power, the HP/LP pressure drops, NOT costed through
+> `notCostedBecause` unless a Turton set covers it (none does -- say so);
+> (3) the schematic in gui/src/case/equipmentSchematic.ts keyed on the
+> sizer's equipment word, drawn like the shellTubeHX sheet: the rotor
+> with its ducts, the four ports labelled with their stream names and
+> pressures, the booster beside it, every dimension in two channels (ink
+> and the word), "provenance not published" where the sizer cannot say.
+> (4) Witness `membrane27_swro_energy_recovery` on membrane01's
+> seawater RO: high-pressure pump + exchanger + booster + the SW30HR
+> stage, its header decomposing the specific energy (thermodynamic
+> minimum ~1 kWh/m3, membrane, recovery device) and stating the energy
+> WITHOUT the exchanger beside it; a Pelton-turbine scenario (85-90 %,
+> no mixing) as a second case later.  Candidate EduTool "the energy of
+> desalination" (why SWRO fell from ~8 to ~3 kWh/m3), scope to decide.
+> STATUS: COMMISSIONED 2026-11-01.
+
 > **C191. THE TREE OF CHEMISTRY, AND THE METHANATION REACTOR (Vitor,
 > 2026-10-31 night, after a conversation with a reaction-engineering
 > colleague about CO2 methanation and the list of a hundred commodity
