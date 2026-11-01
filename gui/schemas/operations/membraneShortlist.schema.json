@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/membraneShortlist.schema.json",
+  "title": "membraneShortlist operation",
+  "x-choupo": {
+    "discipline": "Separation",
+    "activity": "evaluate",
+    "models": [
+      {
+        "key": "operation.massTransfer.model",
+        "role": "film mass transfer"
+      },
+      {
+        "key": "operation.pressureDrop.model",
+        "role": "pressure drop"
+      },
+      {
+        "key": "operation.polarisation.suctionCorrection",
+        "role": "suction correction"
+      }
+    ],
+    "data": [
+      {
+        "key": "class",
+        "kind": "record",
+        "label": "membrane class record",
+        "file": "constant/assets/{}.dat"
+      }
+    ]
+  },
+  "description": "FROM A FUNCTIONAL CLASS TO THE COMMERCIAL ELEMENTS THAT DO IT. Hard filters on each registered module record (membrane of the class's type, a spiral element, ONE rated test of the solute, its rated rejection inside the class band, declared P_max / T_max / pH limits at the student's feed), then each survivor is re-rated on the module itself at the STUDENT'S conditions (its water permeance and intrinsic rejection derived from its own rated test; the feed flow found so ONE element delivers the asked recovery), and the feed-flow and pressure-drop limits filter again. Every criterion is published side by side per module -- permeate flow, observed rejection, permeate concentration, flux, P/flux, hydraulic energy per m3, feed flow, pressure drop, margins -- in ALPHABETICAL order of the module name. There is no score, no weight and no rank, and a record's `partner` / `dataVerifiedBy` is never read. Diagnostics: n_candidates, n_pass, n_excluded and, per re-rated module, <module>__<criterion> (hyphens in the name become underscores). Also writes the CSV of `output.file`. One solute, one element, a constant intrinsic rejection fixed at the sheet's one test. Witness shortlist01_class_to_modules (gate check_membrane_shortlist).",
+  "type": "object",
+  "properties": {
+    "class": {
+      "type": "string",
+      "title": "Functional class",
+      "description": "A `kind membraneClass` record (NF_OPEN, NF_DIVALENT_SELECTIVE, NF_TIGHT, BWRO_HIGH_FLUX, BWRO_HIGH_REJECTION, SWRO). A commercial module here refuses. It must rate the solute (carry a band for it)."
+    },
+    "solute": {
+      "type": "string",
+      "title": "Solute",
+      "description": "The salt the choice is about: a component of the case that the class rates. Required."
+    },
+    "tiers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "standards",
+          "case",
+          "local"
+        ]
+      },
+      "title": "Catalogue tiers that are candidates",
+      "description": "Which tiers of the module registry contribute candidates: standards (data/standards/assets), case (the case's constant/assets), local (data/local/assets, UNVERIFIED). Absent = all three. A witness declares `( standards case )` so its golden does not depend on one machine's private records."
+    },
+    "carrier": {
+      "type": "string",
+      "title": "Membrane record for elements that name none",
+      "description": "An imported element names no membrane; this NF or RO membrane record supplies its type and the starting water permeance (the permeance is then derived from the element's own rated test). Absent = such elements are excluded with that reason."
+    },
+    "conditions": {
+      "type": "object",
+      "title": "The student's operating conditions",
+      "description": "Nothing here is defaulted; a missing key refuses by name.",
+      "properties": {
+        "T": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Feed temperature",
+          "unit": "K"
+        },
+        "P": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Feed pressure",
+          "unit": "Pa",
+          "description": "Read with its basis in `pressureBasis`."
+        },
+        "pressureBasis": {
+          "type": "string",
+          "enum": [
+            "feedAbsolute",
+            "feedGauge"
+          ],
+          "title": "Pressure basis",
+          "description": "feedGauge adds the standard atmosphere."
+        },
+        "recovery": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "title": "Recovery per element",
+          "unit": "-"
+        },
+        "feedMassFraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "title": "Solute mass fraction in the feed",
+          "unit": "kg/kg"
+        },
+        "pH": {
+          "type": "number",
+          "title": "Feed pH (optional)",
+          "description": "When given, a record's pH limits filter and their margin (pH units) is published; absent, no pH filter.",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "T",
+        "P",
+        "pressureBasis",
+        "recovery",
+        "feedMassFraction"
+      ],
+      "additionalProperties": false
+    },
+    "operation": {
+      "type": "object",
+      "title": "Film, pressure drop and polarisation",
+      "description": "The blocks a spiralWoundModule unit writes in its operation (massTransfer, pressureDrop, polarisation, nNodes, rho_feed, ...) and `P_permeate` (required). The op supplies module, transport and rejection itself; module, membrane, transport, transportParameters, elements and vessels written here are replaced. Read by the module probes, not by the op.",
+      "properties": {
+        "P_permeate": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Permeate pressure",
+          "unit": "Pa"
+        }
+      },
+      "required": [
+        "P_permeate"
+      ],
+      "additionalProperties": true
+    },
+    "output": {
+      "type": "object",
+      "title": "Output",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV of the side-by-side table",
+          "description": "One row per candidate, status pass|excluded with the reason, then every criterion."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "class",
+    "solute",
+    "conditions",
+    "operation"
+  ],
+  "additionalProperties": false
+}
