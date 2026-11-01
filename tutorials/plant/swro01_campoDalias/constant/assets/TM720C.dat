@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane (CASE-LOCAL): Toray TM720C brackish-water membrane, water
+  permeance ONLY -- the transport record behind TM720C-430.dat.
+
+  A_w is NOT stated by the case study: DERIVED here so that the element
+  delivers the document's 33.3 m3/d at the assumed standard brackish test of
+  TM720C-430.dat (2,000 ppm NaCl, 1.03 MPa, 25 C, 15 % recovery), by running
+  the module at that test (`[ratedTest]` prints the engine's permeate beside
+  the sheet's) and moving A_w until they agree.  A calibration to the
+  manufacturer's claim, origin `assumed`.
+\*---------------------------------------------------------------------------*/
+
+name           TM720C;
+kind           RO;
+manufacturer   "Toray";
+
+A_w            1.204e-6  m/s/bar;     // DERIVED, see header

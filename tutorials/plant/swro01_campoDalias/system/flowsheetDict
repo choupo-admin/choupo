@@ -1,0 +1,389 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  swro01_campoDalias -- A TWO-PASS SEAWATER DESALINATION PLANT FROM A
+  MANUFACTURER'S PUBLIC CASE STUDY (DEV.md 4c C194).
+
+  SOURCE.  Toray Industries, "Seawater Desalination Using Toray's RO Membranes
+  to Support a Thriving Agricultural Economy" (Campo de Dalias Desalination
+  Plant, Almeria), MC-CS-CAMPODEDALIAS-1910, 2019: two pages, a MANUFACTURER'S
+  document about its own membranes.  Every performance figure in it is
+  Toray's claim "based on manufacturer's test conditions"; none is a
+  measurement of this case.  It gives: an open intake by a 1.6 km subsea
+  pipeline; pretreatment by 40 dual-media filters (glass-fibre-reinforced
+  polyester) then 5-micron cartridges (99.6 % particulate removal); a two-pass
+  reverse osmosis of six skids each, the first pass TM820E-400 seawater
+  elements (skid 233 vessels of 7 elements, "233 (7M)"; 37 m2, 28.3 m3/d,
+  99.75 % NaCl and 91 % boron at pH 8; "47.2 % system recovery"), the second
+  pass TM720C-430 brackish elements (54:18 vessels of 7 elements; 40 m2,
+  33.3 m3/d, 99.2 % NaCl and 95 % boron at pH 10; "84-90 %" recovery); the
+  second pass's concentrate recycled to the first; an isobaric energy-recovery
+  system of 95 % efficiency (DWEER); post-treatment by remineralisation and
+  disinfection; 98 664 m3/day; the feed analysis (its Table 2); a permeate
+  target of TDS < 400 mg/L and boron < 0.5 mg/L.  NOT in it: a site plan,
+  vessel and pump counts beyond the skid designs, pump sizes, energy per m3,
+  costs, the temperature of operation (14-23 C is the feed's range).
+
+  WHAT THIS CASE TAKES FROM IT, AND WHAT IT ADDS.
+    From the document (origin literature): the 98 664 m3/day; the six skids and
+    their vessel counts (1398 vessels in the first pass, 324 + 108 in the
+    second, 7 elements each); the elements' areas, flows and rejections; the
+    47.2 % first-pass recovery and the second pass's 84-90 % (87 % chosen);
+    the 95 % energy-recovery efficiency; the recycle; the feed analysis.
+    The document's two internal figures for the product differ slightly
+    (98 664 m3/day against 6 skids x 16 442 = 98 652): the case uses 98 664.
+    ASSUMED by the case, each with its reason where it stands: the test
+    conditions of the manufacturer's figures; the membranes' water
+    permeances (derived from them); the elements' geometry; the temperature
+    (25 C, 2 K above the document's feed range -- the module has no
+    temperature correction of A_w); pump efficiencies; the device's mixing and
+    leakage; every hold time and tank; the whole plot plan.
+    NOT MODELLED: the particulate removal of the filters (no solids), the
+    filters' own pressure drop, the pH and the caustic dosing between the
+    passes, the remineralisation and disinfection chemistry, the real
+    device's piston hydraulics, fouling and the elements' ageing.
+
+  THE SALTS ARE ONE LUMPED SOLUTE.  The document's Table 2 lists twelve ions
+  (TDS 38 697 mg/L).  The module's rated-test inversion needs a salt, not
+  ions, so the ions are replaced by NaCl at the SAME OSMOTIC PRESSURE: the
+  ions' 1235.9 mmol/L give 617.9 mmol/L NaCl = 36.11 g/L, against the
+  38 697 mg/L of actual TDS (the lump weighs 6.7 % less than the ions; the
+  permeate TDS quoted below, as NaCl, reads about 7 % lower than a real TDS).
+  Boron (5.3 mg/L as B) is a second lumped solute.
+
+  THE FIGURES THE DOCUMENT CALLS "FEED PRESSURE" ARE THE TEST PRESSURES, AND
+  THE PLANT'S ARE SOLVED.  Table 1 prints 5.52 MPa (800 psi) and 1.03 MPa
+  (150 psi) beside the elements' flow and rejection, which are test figures.
+  The case takes them as the rated tests' pressures.  They cannot be the
+  plant's: a 47.2 % recovery of this seawater leaves a concentrate at
+  63.5 g/L NaCl-equivalent (about 53 bar of osmotic pressure), which 55.2 bar
+  cannot push past; the first pass here needs 58.6 bar (HP pump and booster
+  discharge) for 47.2 %.  The second pass runs at 10.74 bar, not 10.3, which
+  puts its recovery at 87 % (the document's 84-90 %) with the first pass's
+  permeate: at 10.3 bar the same array recovers 94.8 %.
+
+  WHAT THE RUN SAYS (2026-11-02; the golden is the authority):
+      product                4111.0 m3/h = 98 664.7 m3/day (the document's 98 664)
+      intake                 9461.3 m3/h; recovery of the intake 43.5 %
+      first pass             47.20 % recovery (the document's 47.2 %), 13.05
+                             LMH average flux on 362 082 m2, feed 10 011 m3/h at
+                             58.59 bar, brine 63.5 g/L NaCl-eq at 57.9 bar,
+                             permeate 109.6 mg/L NaCl-eq, boron 0.483 mg/L
+      second pass            87.0 % recovery, 33.99 LMH on 120 960 m2 (the
+                             element's rated 34.7), concentrate 614 m3/h at
+                             0.83 g/L, boron 3.4 mg/L, recycled to the first
+      product                1.9 mg/L NaCl-eq (the document's target < 400
+                             mg/L TDS), boron 0.046 mg/L (< 0.5)
+      energy recovery        flows balanced to 1e-5; 54.1 bar recovered on
+                             5209 m3/h, 7.76 MW hydraulic; the feed's
+                             salinity up 1.8 %
+      pump shaft powers      HP pump 9185 kW, booster 437 kW, second-pass
+                             pump 1604 kW, intake 326 kW: 11 552 kW, i.e.
+                             2.81 kWh per m3 of product (shaft only: no
+                             motor losses, no pretreatment or post-treatment
+                             loads, no product delivery)
+
+  BORON, AND WHAT THE ENGINE CANNOT DO.  Boron is the reason for the second
+  pass and for the caustic between the passes: boric acid (pKa about 9,
+  neutral, small enough to pass a seawater membrane) is converted at pH 10
+  into borate (an anion, rejected).  THE MODULE DOES NOT COUPLE THE FEED'S
+  SPECIATION TO THE TRANSPORT (measured, DEV.md 4c C194): every solute moves
+  by its own permeance or rejection, the speciation solver is used only by
+  the optional scaling audit, no stream carries a pH, no unit moves one (a
+  `mixer` fed caustic changes component flows, not a pH), and no
+  boric-acid/borate equilibrium record exists in data/standards/chemistry
+  (none is invented here).  So boron is ONE lumped solute, with a CONSTANT
+  intrinsic rejection per element derived from the manufacturer's observed
+  one at the pH of its test (91 % at pH 8 for the first pass; 95 % at pH 10
+  for the second -- two rated tests, `boronRef`, in the two module records),
+  and THE pH IS A DECLARED LABEL of each test, not a state.  This is an
+  APPROXIMATION and the run announces it ([ratedTest] lines: "pH 8 is stated
+  and the probe models no pH"; the `source` of each module's
+  transportParameters says the same).  Its consequence is that the case cannot
+  show what a student would want to see: the boron rejection of the second
+  pass FALLING as the dosing is turned down.  What would show it: a transport
+  law in which boric acid and borate are two solutes with their own
+  permeances, a stream pH and its speciation (the H3BO3/BOH4 equilibrium
+  record, curated from a primary), and a dosing unit that moves the pH --
+  the follow-up.  A second finding: the probe of the boron test is water plus
+  5 ppm boron at the test's pressure, with no osmotic pressure to oppose it,
+  so it runs at 19 % recovery instead of the test's 8-15 %; the derived
+  intrinsic rejection (0.9357, 0.9642) is that of the probe.
+
+  THE LOOP IS A KNIFE-EDGE, AND 0/ IS A CONVERGED STATE.  The exchanger
+  returns 99 % of the brine's volume to the membrane feed, so the first pass
+  is a loop of gain near one (membrane27 shows it), and the second pass's
+  concentrate is a second tear.  A cold start from a rough guess converges,
+  with this Wegstein, to a SPURIOUS fixed point (all water circulating, no
+  permeate); 0/ therefore holds the converged state of a previous run and the
+  case restarts from it in two iterations.  Changing a pressure or a flow
+  moves the answer: re-seed from converged/ or tune the split fraction
+  (0.4791) to balance the exchanger.  The intake flow, the split, the two
+  pass pressures and the first-pass pressure were solved together for the
+  product, 47.2 %, 87 % and a balanced exchanger.
+
+  THE PLOT PLAN (system/layoutDict) is Choupo's design of a plant of this
+  scale up to the fence, NOT the real site: the document gives no site plan.
+\*---------------------------------------------------------------------------*/
+
+tearStreams ( brine  conc2 );
+
+units
+(
+    //  ---- the intake and the pretreatment ---------------------------------
+    {
+        name        IntakeChamber;
+        type        mixer;                      // a one-inlet junction: the intake's wet well, where the subsea line ends -- a node the plot plan can route the line to
+        inputs      ( seawater );
+        outputs     ( s0 );
+        operation   { T 298.15 K; }
+    }
+    {
+        name        IntakePump;
+        type        pump;
+        in          s0;
+        outputs     ( s1 );
+        operation
+        {
+            P_out     2.0 bar;                  // ASSUMED: lifts the 1.6 km subsea line's water through the filters to the HP pump's suction; the filters' own pressure drops are NOT modelled (no valve/pipe unit prices on this component set's enthalpy)
+            eta       0.80;                     // ASSUMED
+        }
+    }
+    {
+        name        MediaFilters;
+        type        storageTank;                // PLACEHOLDER: a pass-through with a hold time; the filtration is NOT modelled
+        in          s1;
+        outputs     ( s2 );
+        operation   { residenceTime 5 min;  fillFraction 0.85; }    // ASSUMED empty-bed contact time of 40 dual-media filters in GRP (the document: 40 units, glass-fibre-reinforced polyester); the 99.6 % particulate removal is the manufacturer's figure and has no solids to act on here
+    }
+    {
+        name        CartridgeFilters;
+        type        storageTank;                // PLACEHOLDER, as above
+        in          s2;
+        outputs     ( s3 );
+        operation   { residenceTime 0.5 min;  fillFraction 0.85; }  // ASSUMED; the document: 5 micron cartridges
+    }
+    {
+        name        FeedMix;
+        type        mixer;
+        inputs      ( s3  conc2 );                // the pretreated seawater and the second pass's concentrate
+        outputs     ( feed1 );
+        operation   { T 298.15 K; }
+    }
+
+    //  ---- the first pass: HP pump + energy recovery + 1398 vessels --------
+    {
+        name        Split;
+        type        splitter;
+        in          feed1;
+        outputs     ( toHPpump  toPX );
+        operation   { fractions ( 0.479110  0.520890 ); }
+    }
+    {
+        name        HPpump;
+        type        pump;
+        in          toHPpump;
+        outputs     ( hpFeed );
+        operation
+        {
+            P_out     58.589 bar;
+            eta       0.82;                     // ASSUMED
+        }
+    }
+    {
+        name        PX;
+        type        pressureExchanger;
+        inputs      ( brine  toPX );
+        outputs     ( pxHPout  spentBrine );
+        operation
+        {
+            efficiency      0.95;               // the document: "isobaric energy recovery system ... 95 % efficiency"
+            mixing          0.02;               // ASSUMED
+            leakage         0.01;               // ASSUMED
+            P_LPout         1.3 bar;            // ASSUMED: the outfall line
+            targetPressure  58.589 bar;
+            source          "efficiency 0.95: Toray case study MC-CS-CAMPODEDALIAS-1910 (DWEER, 95 %); mixing and leakage: ASSUMED, low-end values of Stover, Desalination 203 (2007) 168-175, for a device the document does not describe further; the rotary unit of this engine stands in for the document's piston-type work exchanger";
+        }
+    }
+    {
+        name        Booster;
+        type        pump;
+        in          pxHPout;
+        outputs     ( boosted );
+        operation
+        {
+            P_out     58.589 bar;
+            eta       0.80;                     // ASSUMED
+        }
+    }
+    {
+        name        Join;
+        type        mixer;
+        inputs      ( hpFeed  boosted );
+        outputs     ( roFeed );
+        operation   { T 298.15 K; }
+    }
+    {
+        name        RO1;
+        type        spiralWoundModule;
+        in          roFeed;
+        outputs     ( brine  perm1 );
+        operation
+        {
+            module           TM820E-400;        // constant/assets/, case-local
+            vessels          1398;              // 6 skids x 233 vessels (the document: "233 (7M)")
+            elements         7;                 // "7M": seven elements per vessel
+            P_permeate       1.0 bar;
+            rho_feed         1025;              // kg/m3, ASSUMED: seawater near 20 C
+            nNodes           10;
+            transport        constantRejection;
+            transportParameters
+            {
+                rejection
+                {
+                    NaCl  ( fromRatedTest naclRef );
+                    boron ( fromRatedTest boronRef );
+                }
+                source  "DERIVED from the Toray case study's observed rejections (NaCl 99.75 %, boron 91 % at pH 8; MC-CS-CAMPODEDALIAS-1910, Table 1) by inverting two ASSUMED standard tests with the module's own film; boron is ONE lumped solute with a CONSTANT rejection -- the pH dependence of the neutral boric acid / anionic borate split is NOT modelled (see header)";
+            }
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      1.0e-3;          // Pa.s, ASSUMED seawater near 20 C
+                diffusivity    1.5e-9;          // m2/s, ASSUMED: one value serves both solutes (NaCl at seawater strength)
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        none;        // lumped solutes: nothing to couple
+            }
+        }
+    }
+
+    //  ---- the second pass: pH raised, two stages, 84-90 % recovery --------
+    //  The caustic dosing that lifts the first pass's permeate to pH 10 is a
+    //  DECLARED PLACEHOLDER, not a unit: no stream carries a pH here, and the
+    //  second pass's boron rejection is read from the pH 10 rated test.
+    {
+        name        Pass2Pump;
+        type        pump;
+        in          perm1;
+        outputs     ( feed2 );
+        operation
+        {
+            P_out     10.7447 bar;                 // SOLVED: 87 % second-pass recovery (the document's 1.03 MPa is the test pressure)
+            eta       0.80;                     // ASSUMED
+        }
+    }
+    {
+        name        RO2a;
+        type        spiralWoundModule;
+        in          feed2;
+        outputs     ( conc2a  perm2a );
+        operation
+        {
+            module           TM720C-430;
+            vessels          324;               // 6 skids x 54 vessels (the document: "54:18 (7M)", first stage)
+            elements         7;
+            P_permeate       1.0 bar;
+            nNodes           10;
+            transport        constantRejection;
+            transportParameters
+            {
+                rejection
+                {
+                    NaCl  ( fromRatedTest naclRef );
+                    boron ( fromRatedTest boronRef );
+                }
+                source  "DERIVED from the Toray case study's observed rejections (NaCl 99.2 %, boron 95 % at pH 10; MC-CS-CAMPODEDALIAS-1910, Table 1) by inverting two ASSUMED standard tests; boron a lumped solute with a constant rejection read at pH 10 -- the pH is a declared label of the test, not a stream property (see header)";
+            }
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      1.0e-3;
+                diffusivity    1.5e-9;
+            }
+            pressureDrop     { model SchockMiquel; }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        none;
+            }
+        }
+    }
+    {
+        name        RO2b;
+        type        spiralWoundModule;
+        in          conc2a;
+        outputs     ( conc2  perm2b );
+        operation
+        {
+            module           TM720C-430;
+            vessels          108;               // 6 skids x 18 vessels (the document: "54:18", second stage)
+            elements         7;
+            P_permeate       1.0 bar;
+            nNodes           10;
+            transport        constantRejection;
+            transportParameters
+            {
+                rejection
+                {
+                    NaCl  ( fromRatedTest naclRef );
+                    boron ( fromRatedTest boronRef );
+                }
+                source  "as RO2a";
+            }
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      1.0e-3;
+                diffusivity    1.5e-9;
+            }
+            pressureDrop     { model SchockMiquel; }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        none;
+            }
+        }
+    }
+    {
+        name        ProductMix;
+        type        mixer;
+        inputs      ( perm2a  perm2b );
+        outputs     ( perm2 );
+        operation   { T 298.15 K; }
+    }
+    //  ---- post-treatment: DECLARED PLACEHOLDERS, then the product store ---
+    {
+        name        Remineralisation;
+        type        storageTank;
+        in          perm2;
+        outputs     ( remin );
+        operation   { residenceTime 0.25 h;  fillFraction 0.85; }   // PLACEHOLDER: a contact tank; the lime/CO2 dosing is NOT modelled
+    }
+    {
+        name        Disinfection;
+        type        storageTank;
+        in          remin;
+        outputs     ( disinfected );
+        operation   { residenceTime 0.5 h;  fillFraction 0.85; }   // PLACEHOLDER: a contact tank; the chlorine dosing is NOT modelled
+    }
+    {
+        name        ProductTank;
+        type        storageTank;
+        in          disinfected;
+        outputs     ( product );
+        operation   { residenceTime 6 h;  fillFraction 0.85; }      // ASSUMED: six hours of product
+    }
+);

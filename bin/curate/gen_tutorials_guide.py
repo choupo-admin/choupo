@@ -288,7 +288,17 @@ def parse_units(case: Path):
         units.append((nm.group(1), tp.group(1), list(dict.fromkeys(ins)), list(dict.fromkeys(outs))))
     return units
 
-def tikz_flowsheet(units):
+def tear_streams(case: Path):
+    """The streams a case declares as recycle tears (`tearStreams ( a b );`)."""
+    f = case / "system/flowsheetDict"
+    if not f.exists():
+        return set()
+    txt = re.sub(r"//.*", "", f.read_text(errors="replace"))
+    txt = re.sub(r"/\*.*?\*/", "", txt, flags=re.S)
+    m = re.search(r"\btearStreams\s*\(([^)]*)\)", txt)
+    return set(m.group(1).split()) if m else set()
+
+def tikz_flowsheet(units, tears=frozenset()):
     """Block diagram: columns by topological depth from the feeds; forward
     edges labelled with the stream; recycles dashed underneath."""
     if not units:
@@ -303,7 +313,9 @@ def tikz_flowsheet(units):
         for nm, tp, ins, outs in units:
             d = 0
             for st in ins:
-                if st in producer and producer[st] != nm:
+                #  a declared TEAR is a back edge: counting it would let a
+                #  recycle loop push every unit one column right per pass
+                if st in producer and producer[st] != nm and st not in tears:
                     d = max(d, depth[producer[st]] + 1)
             depth[nm] = max(depth[nm], d)
     cols = {}
@@ -418,7 +430,7 @@ for cat in CATS:
             out.append("\\clearpage")
             out.append(f"\\tutentry{{{latex_escape(c.name)}}}{{{latex_escape(str(rel))}}}")
             units = parse_units(c)
-            fig = tikz_flowsheet(units) if units else tikz_props(props_ops(c)) and tikz_props(props_ops(c))
+            fig = tikz_flowsheet(units, tear_streams(c)) if units else tikz_props(props_ops(c)) and tikz_props(props_ops(c))
             if fig:
                 out.append("\\begin{tutscheme}")
                 out.append(fig)

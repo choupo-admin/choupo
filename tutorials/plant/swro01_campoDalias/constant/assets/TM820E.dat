@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane (CASE-LOCAL): Toray TM820E seawater membrane, water permeance
+  ONLY -- the transport record behind TM820E-400.dat.
+
+  A_w is NOT stated by the case study: it is DERIVED here, once, so that the
+  element delivers the document's 28.3 m3/d at the assumed standard test of
+  TM820E-400.dat (32,000 ppm NaCl, 5.52 MPa, 25 C, 8 % recovery) -- found by
+  running the module at that test (the engine prints its permeate beside the
+  sheet's at every run, `[ratedTest]`) and moving A_w until the two agree.
+  It is a calibration to the manufacturer's claim, origin `assumed`; the
+  rejections are NOT here (the law that runs the case takes them from the
+  rated tests), and no solute permeability B_s is declared.
+\*---------------------------------------------------------------------------*/
+
+name           TM820E;
+kind           RO;
+manufacturer   "Toray";
+
+A_w            3.875e-7  m/s/bar;     // DERIVED, see header

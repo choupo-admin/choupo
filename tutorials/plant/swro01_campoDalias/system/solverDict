@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  TWO TEARS, `brine` (the pressure exchanger's high-pressure inlet) and `rec`
+  (the second pass's concentrate, back to the first pass's feed).  Wegstein
+  with its full secant step, as membrane27: the exchanger loop's gain is
+  1 - leakage, so a Newton step on it overshoots (see that case's solverDict).
+\*---------------------------------------------------------------------------*/
+
+recycleSolver          Wegstein;
+recycleWegsteinQmin    -5;
+recycleWegsteinQmax    0;
+recycleMaxIter         800;
+recycleTol             1.0e-5;

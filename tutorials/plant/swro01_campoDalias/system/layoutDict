@@ -1,0 +1,351 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  swro01_campoDalias -- THE PLOT PLAN, UP TO THE FENCE (DEV.md 4c C194).
+
+  THIS IS CHOUPO'S DESIGN OF A PLANT OF THIS SCALE, NOT THE REAL SITE'S PLAN.
+  The case study the flowsheet is built on (Toray, MC-CS-CAMPODEDALIAS-1910)
+  gives no site plan, no coordinates and no building sizes.  Every position,
+  footprint, road, the rack, the fence opening and every crossing below is an
+  AUTHOR-SET ASSUMPTION FOR THIS EXERCISE, round numbers chosen so that the
+  checks are visible; none is taken from the real plant, a spacing table or
+  a code (Choupo ships none).  The engine's own contributions are the sizes
+  the sizing pass published (the tanks' volumes, the exchanger array's count)
+  and the checks.
+
+  THE SITE.  The sea is to the SOUTH.  The intake pipeline arrives at the
+  south fence and the brine outfall leaves it there; the process runs
+  south -> north: intake pumps and pretreatment (a row along the south), the
+  first-pass reverse-osmosis hall with the high-pressure pump hall and the
+  energy-recovery array east of it, the second-pass hall north of it, and
+  the product stores in the north, from where the product leaves by the north
+  fence.  The administration (offices, control room, laboratory, workshop) is
+  west, along the entrance road from the gate on the north.
+
+  WHERE THE PLAN STOPS (Vitor's decision, C194): AT THE FENCE.  The
+  crossings below name what lies beyond -- the 1.6 km subsea intake pipeline,
+  the brine outfall and its diffuser, the irrigation and potable network --
+  and none of it is drawn.
+
+  WHAT THE PIPE ROUTER CAN AND CANNOT DO HERE.  The spiral-wound module has
+  no sizer that publishes a footprint (the vessel bank's), so the reverse-
+  osmosis halls and the pretreatment are NON-PROCESS boxes, and the router
+  routes only the streams whose ends are sized items or junctions piped to
+  one: the four pumps (the engine has no pump sizer, so they are sized as
+  `compressor` items by their shaft power -- see system/postDict), the
+  exchanger array and the tanks; every other stream is listed in the result
+  as not routed, with its reason, rather than drawn by guess.  A sizer for
+  the vessel banks is the follow-up that makes the rest routable.  The
+  intake line is routed to the fence through a one-inlet `mixer` (the intake
+  chamber), the only way a stream whose first unit has no sizer reaches it.
+  THE RUN ANNOUNCES SIX FINDINGS and leaves them: the five water tanks have no
+  bund (a civil matter this exercise does not declare) and the site has one
+  entrance.
+  Footprints of the tanks are SQUARE boxes of the diameter their volume needs
+  at the declared height (V = pi D^2 H / 4, cylinder-equivalent), declared
+  because the storage sizer publishes a volume and no diameter.
+\*---------------------------------------------------------------------------*/
+
+items
+(
+    //  ---- sized items (their identity is the sizing pass's) ---------------
+    {
+        item        "PX";
+        x           75 m;  y -30 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 30 m; width 20 m; height 6 m; }   // author-set: the array of rotary units on a skid
+    }
+    {
+        item        "Remineralisation/tank1";
+        x           100 m;  y 50 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 14 m; width 14 m; height 8 m; }   // author-set: 1.2e3 m3 at 8 m
+    }
+    {
+        item        "Disinfection/tank1";
+        x           120 m;  y 72 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 20 m; width 20 m; height 8 m; }   // author-set: 2.4e3 m3 at 8 m
+    }
+    {
+        item        "ProductTank/tank1";
+        x           10 m;  y 105 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 33 m; width 33 m; height 12 m; }  // author-set: 9.7e3 m3 at 12 m
+    }
+    {
+        item        "ProductTank/tank2";
+        x           50 m;  y 105 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 33 m; width 33 m; height 12 m; }
+    }
+    {
+        item        "ProductTank/tank3";
+        x           90 m;  y 105 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 33 m; width 33 m; height 12 m; }
+    }
+
+    {
+        item        "IntakePump";
+        x           -150 m;  y -80 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 30 m; width 20 m; height 8 m; }   // author-set: the intake pump station on the sea side where the subsea line arrives
+    }
+    {
+        item        "HPpump";
+        x           105 m;  y 2 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 28 m; width 14 m; height 8 m; }   // author-set: the high-pressure pump bank of six skids, aggregated (9.2 MW)
+    }
+    {
+        item        "Booster";
+        x           105 m;  y 22 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 14 m; width 8 m; height 5 m; }    // author-set: the booster bank beside it
+    }
+    {
+        item        "Pass2Pump";
+        x           30 m;  y 60 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 20 m; width 20 m; height 8 m; }   // author-set: the second-pass feed pumps and the caustic dosing skid
+    }
+
+    //  ---- the process halls (no sizer publishes their footprint) -----------
+    {
+        nonProcess  "mediaFilters";
+        kind        filterHall;
+        x           -80 m;  y -80 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 90 m; width 36 m; height 9 m; }
+        source      "author-set assumption for this exercise; not a design";
+        reason      "the battery of 40 dual-media filters in glass-fibre-reinforced polyester (the case study's count), two rows under one roof";
+    }
+    {
+        nonProcess  "cartridgeFilters";
+        kind        filterHall;
+        x           -5 m;  y -80 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 20 m; width 16 m; height 6 m; }
+        source      "author-set assumption for this exercise; not a design";
+        reason      "the 5-micron cartridge filter housings, the last barrier before the high-pressure pumps";
+    }
+    {
+        nonProcess  "ro1Hall";
+        kind        roHall;
+        x           -20 m;  y -10 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 150 m; width 60 m; height 10 m; }
+        source      "author-set assumption for this exercise; not a design";
+        reason      "the first pass: six skids of 233 pressure vessels of 7 elements (the case study's skid design), about 1398 vessels of 7.2 m in banks under one roof";
+    }
+    {
+        nonProcess  "ro2Hall";
+        kind        roHall;
+        x           -60 m;  y 60 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 110 m; width 40 m; height 10 m; }
+        source      "author-set assumption for this exercise; not a design";
+        reason      "the second pass: six skids of 54:18 vessels of 7 elements (the case study's skid design)";
+    }
+    {
+        nonProcess  "chemicalsAndCIP";
+        kind        chemicalStore;
+        x           110 m;  y -70 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 30 m; width 20 m; height 6 m; }
+        source      "author-set assumption for this exercise; not a design";
+        reason      "antiscalant, caustic, the cleaning-in-place skid and the post-treatment dosing (lime/CO2, chlorine): all PLACEHOLDERS in the flowsheet, a store here";
+    }
+    {
+        nonProcess  "substation";
+        kind        substation;
+        x           110 m;  y -40 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 24 m; width 16 m; height 6 m; }
+        source      "author-set assumption for this exercise; not a design";
+        reason      "the electrical supply of about 12 MW of pump shaft power (the run's own figure), by the pump hall";
+    }
+
+    //  ---- administration, west of the process -----------------------------
+    {
+        nonProcess  "controlRoom";
+        kind        controlRoom;
+        x           -150 m;  y 0 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 18 m; width 12 m; height 5 m; }
+        source      "author-set assumption for this exercise; not a building design";
+        reason      "the operators' room on the entrance road, the process's DCS";
+    }
+    {
+        nonProcess  "offices";
+        kind        office;
+        x           -150 m;  y 40 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 30 m; width 12 m; height 8 m; }
+        source      "author-set assumption for this exercise; not a building design";
+        reason      "management and engineering offices beside the gate side of the site";
+    }
+    {
+        nonProcess  "laboratory";
+        kind        laboratory;
+        x           -150 m;  y 75 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 15 m; width 10 m; height 5 m; }
+        source      "author-set assumption for this exercise; not a building design";
+        reason      "water-quality laboratory: the permeate's TDS and boron are the plant's acceptance criteria";
+    }
+    {
+        nonProcess  "workshop";
+        kind        warehouse;
+        x           40 m;  y -72 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 30 m; width 16 m; height 8 m; }
+        source      "author-set assumption for this exercise; not a building design";
+        reason      "maintenance workshop and spares, including the stock of membrane elements";
+    }
+    {
+        nonProcess  "gate";
+        kind        gate;
+        x           -114 m;  y 136 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 4 m; width 3 m; height 3 m; }
+        source      "author-set assumption for this exercise; not a building design";
+        reason      "the main entrance on the north fence, at the head of the spine road";
+    }
+    {
+        nonProcess  "carPark";
+        kind        carPark;
+        x           -90 m;  y 108 m;  z 0 m;
+        orientation alongX;
+        footprint   { length 40 m; width 16 m; height 0.2 m; }
+        source      "author-set assumption for this exercise; not a parking design";
+        reason      "the staff car park just inside the gate, away from the process halls";
+        ignition    "car engines and people: treated as an ignition source";
+        parking
+        {
+            bays        22;
+            bay         { width 2.5 m; length 5 m; }
+            aisle       6 m;
+            angle       90 deg;
+            arrangement doubleLoaded;
+            entry       reverse;
+            source      "author-set assumption for this exercise: a common car bay and a two-way aisle, as round numbers; not a parking standard";
+            reason      "22 bays for the shift crews of a six-skid plant (an author-set count)";
+        }
+    }
+);
+
+separation
+(
+    {
+        source  "author-set assumption for this exercise; not taken from any published spacing table";
+        reason  "round numbers so the check is visible: tanks stand apart for access and the exchanger array keeps off them";
+        measure edgeToEdge;
+        distances
+        (
+            { between ( storageTank storageTank );        distance 5 m;  }
+            { between ( pressureExchanger storageTank );  distance 20 m; }
+        );
+    }
+);
+
+//  THE ROADS.  The spine runs from the gate down the west side of the
+//  process halls, the south road along the north edge of the pretreatment,
+//  the middle road between the two passes and the east road along the
+//  chemical store, the substation and the product stores; the north road
+//  closes the ring.  The rack (6 m) stands above the 5 m headroom.
+roads
+{
+    source   "author-set assumption for this exercise; not taken from a road or fire standard";
+    reason   "a ring road so a fire tender reaches every hall from two sides, joined to the gate by the spine";
+    headroom 5 m;
+    access
+    {
+        distance 20 m;
+        source   "author-set assumption for this exercise; not taken from a fire code";
+        reason   "the reach of a fire tender's hoses and of a mobile crane parked on the road, as a round number";
+    }
+    network
+    (
+        {
+            road         "spine";
+            width        6 m;
+            cornerRadius 10 m;
+            reason       "from the gate to the south road, between the administration and the process halls";
+            waypoints    ( { x -122 m; y 134 m; } { x -122 m; y 128 m; } { x -122 m; y -51 m; } );
+        }
+        {
+            road         "north";
+            width        6 m;
+            cornerRadius 10 m;
+            reason       "north of the product stores, joining the spine to the east road";
+            waypoints    ( { x -122 m; y 128 m; } { x 135 m; y 128 m; } );
+        }
+        {
+            road         "south";
+            width        6 m;
+            cornerRadius 10 m;
+            reason       "between the pretreatment and the first-pass hall, to the east road";
+            waypoints    ( { x -122 m; y -51 m; } { x 135 m; y -51 m; } );
+        }
+        {
+            road         "middle";
+            width        6 m;
+            cornerRadius 10 m;
+            reason       "between the first-pass hall and the second-pass hall, with the rack alongside";
+            waypoints    ( { x -122 m; y 30 m; } { x 135 m; y 30 m; } );
+        }
+        {
+            road         "east";
+            width        6 m;
+            cornerRadius 10 m;
+            reason       "closing the ring along the chemical store, the substation and the contact tanks";
+            waypoints    ( { x 135 m; y -51 m; } { x 135 m; y 128 m; } );
+        }
+    );
+}
+
+plot
+{
+    margin  5 m;
+    reason  "author-set assumption for this exercise: the fence and a 5 m clear strip inside it; the roads lie inside the envelope; not taken from any spacing standard";
+}
+
+//  THE PIPE RACK: 6 m up, along the middle road, where the product,
+//  the concentrate returns and the services of a real plant would run.
+pipeRack
+{
+    y            34 m;
+    elevation    6 m;
+    laneSpacing  0.6 m;
+    lanesPerTier 6;
+    tierSpacing  1.5 m;
+    xStart       -118 m;
+    xEnd         130 m;
+    reason       "author-set assumption for this exercise: one east-west rack north of the middle road, above the roads' 5 m headroom";
+}
+
+//  THE FENCE.  Drawn from the plot, opening at the gate (north).  The
+//  three boundary streams cross it at published points; what lies beyond
+//  is named here and NOT drawn.
+fence
+{
+    source  "author-set assumption for this exercise; not taken from any site survey or fencing standard";
+    reason  "the site boundary: the land the plot prices, closed by a fence with one gate, and the point where each pipeline enters or leaves the plant";
+    inset   0 m;
+    crossings
+    (
+        { stream seawater;   from "the open intake: the 1.6 km subsea pipeline from the Mediterranean (not drawn)";                       side south;  at -134 m; }
+        { stream spentBrine; to   "the brine outfall: the concentrate line to its diffuser in the sea (not drawn)";                         side south;  at 75 m; }
+        { stream product;    to   "the irrigation and potable network: the product main to the Campo de Dalias region (not drawn)";         side north;  at 70 m; }
+    );
+}
+
+// ************************************************************************* //

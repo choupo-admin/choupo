@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 193 records already exist
+## 1. Why an index, when 194 records already exist
 ## 1. Why an index, when 190 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
@@ -28,7 +28,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 193 design records, **135 state a rejected alternative and 58 do not** —
+- Of 194 design records, **136 state a rejected alternative and 58 do not** —
 - Of 190 design records, **132 state a rejected alternative and 58 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
@@ -297,6 +297,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`a-failed-computation-is-not-a-result.md`](../design/a-failed-computation-is-not-a-result.md) | ADR | yes | **SHIPPED 2026-10-31** (built 2026-10-27, DEV.md 4c C178) -- a failed computation is not a result: an integration that stalls or a QP/SQP step that cannot be computed is a FAILED evaluation, never a number handed on as an answer; reproduced first by small programs against the sources.  Gate `check_solver_failures` |
 | [`the-positivity-guard-is-a-mask-over-every-unit.md`](../design/the-positivity-guard-is-a-mask-over-every-unit.md) | ADR | yes | **BUILT 2026-10-31** (DEV.md 4c C185 item 8) -- the adaptive integrator's positivity guard is a per-ROW mask over every packed unit, built from each unit's own contract at its offset; a trial step that drives a masked row negative is REJECTED, nothing downstream clips, and a negative row reaching a unit's commit is refused as an engine defect.  It had been a prefix count, switched OFF for two or more units: A -> B beside an idle vessel published A = 0, B = 2 from a total of 1, at exit 0.  REJECTED: reordering the packing to keep a prefix; an announced clip after acceptance; two members for one decision.  Gate `check_positivity_mask` |
 | [`a-pressure-exchanger-is-three-balances.md`](../design/a-pressure-exchanger-is-three-balances.md) | ADR | yes | **SHIPPED 2026-11-01** -- commission C192: the rotary ceramic pressure exchanger of seawater RO as a unit (`pressureExchanger`, four positional ports) with NO physics beyond three algebraic balances, each on ONE declared maker's number with no default (`efficiency`, Stover's definition solved for P_HPout with the drain pressure declared; `mixing`, VOLUMETRIC, the brine share of the pressurised outlet; `leakage`, HP -> drain); T unchanged, Q = 0, the dissipation published and not put on a stream; a sizer `PressureExchangerSize` (rotors = ceil(Q_LP / a declared rated flow), the drops and the hydraulic booster duty read from the unit, NOT costed: no Turton set); the GUI schematic keyed on the sheet's word (rotor nominal, four ports with the run's pressures, booster box, provenance in ink and word); witness `membrane27_swro_energy_recovery` (1.88 kWh/m3 with the device, 3.67 without, 1.09 the thermodynamic minimum).  REJECTED: a default for any device number; mixing on a molar basis; an energy balance across the device; refusing an under-flushed duct inside a recycle; a neighbour's Turton correlation; a rotor drawn to a diameter the sheet does not carry.  Gate `check_pressure_exchanger` |
+| [`a-desalination-plant-from-a-case-study.md`](../design/a-desalination-plant-from-a-case-study.md) | ADR | yes | **SHIPPED 2026-11-02** -- commission C194: the Campo de Dalias two-pass SWRO (`tutorials/plant/swro01_campoDalias`) built on a manufacturer's two-page case study, every PDF figure `literature` and the rest `assumed`; MEASURED first that `spiralWoundModule` does NOT couple speciation (pH) to transport, so boron is ONE lumped solute with a constant intrinsic rejection per element from the PDF's two pH-labelled tests (91 % at pH 8, 95 % at pH 10), announced as an approximation and the limitation PINNED by the gate; the document's "feed pressure" figures are test pressures (the plant's solved: 58.59 and 10.74 bar); a recycle through the pressure exchanger has a spurious fixed point (0/ is a converged state); one engine fix (`Polarisation` Newton stall at round-off no longer refuses); the plot plan to the fence with three labelled crossings `(not drawn)`; gate `check_swro_plant` |
 
 ### Historical
 
@@ -349,7 +350,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**58 of 193 records state no rejected alternative.**  For a FORUM or a STUDY
+**58 of 194 records state no rejected alternative.**  For a FORUM or a STUDY
 **58 of 190 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled

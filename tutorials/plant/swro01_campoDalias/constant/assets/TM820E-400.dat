@@ -1,0 +1,96 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane MODULE (CASE-LOCAL): Toray ROMEMBRA TM820E-400 seawater element,
+  as the Campo de Dalias case study states it.  NOT a catalogue record: no
+  Toray record is in data/standards/assets and this one implies no
+  sponsorship, endorsement or data-sheet reading (DEV.md 4c C189, C194).
+
+  SOURCE.  Toray Industries, "Seawater Desalination Using Toray's RO
+  Membranes to Support a Thriving Agricultural Economy", MC-CS-CAMPODEDALIAS-1910
+  (2019), Table 1, first-pass column -- a MANUFACTURER'S two-page case study;
+  every performance figure is Toray's own claim "based on manufacturer's test
+  conditions", not a measurement of this case.
+
+  WHAT THE DOCUMENT STATES (origin literature):
+      active area            37 m2 (400 ft2)
+      flow rate              28.3 m3/d (7,500 gpd)
+      NaCl rejection         99.75 %
+      boron rejection        91 % at pH 8
+      feed pressure          5.52 MPa (800 psi)
+  WHAT IT DOES NOT STATE, and this record ASSUMES (origin assumed):
+      the TEST CONDITIONS those figures belong to -- feed salinity, recovery,
+      temperature, whether the 5.52 MPa is the test pressure or the plant's
+      operating pressure.  READ HERE AS BOTH: the pressure of the test and
+      of the plant (the document prints it beside the flow and the
+      rejection, which are test figures).  The standard seawater test is
+      ASSUMED: 32,000 ppm NaCl, 25 C, 8 % recovery (the conditions the
+      SW30HR-380 record in the catalogue quotes from the DuPont sheet, Form
+      No. 45-D00971-en, Rev. 7), the boron test at 5 ppm boron beside it
+      (the same sheet).  If Toray's own differ, so do the intrinsic
+      rejections derived below.
+  THE GEOMETRY is not in the document either: an 8-inch x 40-inch spiral
+  element, so the channel is the SW30HR-380 element's (spacer 28 mil, leaf
+  length 0.95 m), carried here as an announced ESTIMATE, unverified.
+
+  TWO RATED TESTS, one per solute, each inverted by the module's own film
+  into the intrinsic rejection the `constantRejection` law needs
+  (`rejection { NaCl ( fromRatedTest naclRef ); boron ( fromRatedTest boronRef ); }`).
+  THE BORON PROBE is water + 5 ppm boron at the NaCl test's pressure and
+  permeate flow, so it has no osmotic pressure to oppose it and runs at a
+  higher recovery than 8 %: the engine prints its permeate and recovery at
+  the probe beside the sheet's, and the intrinsic boron rejection derived
+  from it is a constant (the law does not move it with flux or pH).  That is
+  the approximation the case declares; see its flowsheetDict header.
+\*---------------------------------------------------------------------------*/
+
+name           TM820E-400;
+kind           membraneModule;
+manufacturer   "Toray (as stated in case study MC-CS-CAMPODEDALIAS-1910; no data sheet read)";
+membrane       TM820E;
+format         spiralWound;
+
+activeArea     37 m2;              // the case study, Table 1 (400 ft2)
+feedSpacer     Spacer-28mil;       // ESTIMATE, see provenance
+leafLength     0.95 m;             // ESTIMATE, see provenance
+
+ratedTests
+(
+    {
+        id                 naclRef;
+        solute             NaCl;
+        feedMassFraction   32.0e-3;     // ASSUMED standard seawater test (see header)
+        P                  5.52 MPa;    // the document's "feed pressure"
+        pressureBasis      feedGauge;   // ASSUMED: a data-sheet pressure is gauge unless it says otherwise
+        T                  298.15 K;    // ASSUMED
+        recovery           0.08;        // ASSUMED
+        permeateFlow       28.3 m3/d;   // the document: 7,500 gpd per element
+        permeateFlowBasis  sameTest;
+        rejection          0.9975;      // the document: 99.75 %
+        source             "Toray case study MC-CS-CAMPODEDALIAS-1910, Table 1 (rejection, flow, area, pressure: stated; salinity, recovery, temperature: assumed standard seawater test)";
+    }
+    {
+        id                 boronRef;
+        solute             boron;
+        feedMassFraction   5.0e-6;      // ASSUMED: 5 ppm boron, the DuPont sheet's test (SW30HR-380 record)
+        P                  5.52 MPa;
+        pressureBasis      feedGauge;
+        T                  298.15 K;
+        pH                 8;           // the document: "91 % at pH 8"
+        recovery           0.08;        // ASSUMED
+        permeateFlow       28.3 m3/d;
+        permeateFlowBasis  sameTest;
+        rejection          0.91;        // the document: 91 %
+        source             "Toray case study MC-CS-CAMPODEDALIAS-1910, Table 1 (boron rejection 91 % at pH 8 stated; boron concentration, recovery, temperature assumed)";
+    }
+);
+
+provenance
+{
+    source  "Toray Industries case study MC-CS-CAMPODEDALIAS-1910 (2019), Table 1; a manufacturer's claim";
+
+    leafLength
+    {
+        origin        estimated;
+        reviewStatus  unverified;
+        notes         "(the feed spacer, the 28 mil of Spacer-28mil, is carried over too, equally unverified) borrowed from the SW30HR-380 record (same 8-inch x 40-inch format, leaf length 0.95 m, itself an estimate); the document states no geometry; to be verified against the Toray element's data sheet";
+    }
+}

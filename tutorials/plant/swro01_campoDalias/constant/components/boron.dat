@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (CASE-LOCAL): boron, LUMPED -- the total of boric acid
+  B(OH)3 and borate B(OH)4-, expressed AS B (the basis the Toray case study
+  states: "Boron (B) 5.3 mg/L" in its Table 2, "boron rejection 91 % at pH 8"
+  and "95 % at pH 10" in its Table 1).
+
+  WHY ONE LUMPED SOLUTE AND NOT TWO SPECIES.  The membrane module of this
+  engine moves each declared solute by its OWN rejection and does not couple
+  the feed's speciation (the pH) to the transport: a neutral boric acid and
+  an anionic borate cannot be given different permeances by pH, and nothing
+  in the flowsheet changes a stream's pH.  So boron is ONE solute whose
+  observed rejection is the manufacturer's figure at the pH of each pass
+  (the case's module records carry both tests).  The two species are in
+  data/standards/species (H3BO3, BOH4) but no boric-acid/borate
+  equilibrium record exists in data/standards/chemistry, and none is invented
+  here.  See the case's flowsheetDict header for the approximation and for
+  the physics a follow-up must add.
+
+  Only the facts the engine reads are stated: the molar mass of the element
+  (10.81 g/mol, the standard atomic weight of boron) and that it is a
+  nonvolatile non-electrolyte solute at the dilution of seawater (5.3 mg/L).
+  No thermochemistry is declared: the case is not a first-law case (its
+  component set has no liquid heat capacity for NaCl, as membrane27's).
+\*---------------------------------------------------------------------------*/
+
+name           boron;
+formula        B;
+MW             10.81;          // g/mol, standard atomic weight of boron
+role           nonvolatile;
+Vliq           3.9e-5;         // m3/mol -- ASSUMED, UNVERIFIED: the order of magnitude of the partial molar volume of aqueous boric acid (~39 cm3/mol, recalled, not read from a source); the pump model requires a liquid molar volume, and at 0.49 mmol/L its effect on the stream's volume is 2e-5 of it -- to be replaced by a cited value
+//  liquidHeatCapacity -- a PLACEHOLDER the pump's enthalpy leg requires of a nonvolatile
+//  solute (the engine refuses the ideal-gas fallback).  ASSUMED, UNVERIFIED, NO value is
+//  claimed for aqueous boron: 100 J/(mol K) is the order of a small aqueous molecule, and
+//  at 5.3 mg/L the solute is 9e-6 of the stream's moles, so it moves no number the case
+//  reports; the plant's first law is UNAVAILABLE here in any case (NaCl has no liquid Cp).
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (100.0);
+    Trange        (273.15  323.15);
+}
+dissociation   1;          // one particle in the van't Hoff osmotic pressure (5.3 mg/L: negligible beside the salt)

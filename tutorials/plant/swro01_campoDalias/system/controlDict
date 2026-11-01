@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Campo de Dalias two-pass seawater desalination plant from a manufacturer's public case study: pretreatment, first pass with pressure-exchanger energy recovery, second pass with the concentrate recycled, boron, post-treatment placeholders, and a plot plan up to the fence";
+verbosity     3;
+tier          showcase;
+
+citations
+(
+    "Toray Industries, Seawater Desalination Using Toray's RO Membranes to Support a Thriving Agricultural Economy (Campo de Dalias Desalination Plant), case study MC-CS-CAMPODEDALIAS-1910, 2019"
+    "R. L. Stover, Seawater reverse osmosis with isobaric energy recovery devices, Desalination 203 (2007) 168-175"
+    "DuPont FilmTec SW30HR-380 Element Product Data Sheet, Form No. 45-D00971-en, Rev. 7, January 2026 (the assumed standard test conditions)"
+);

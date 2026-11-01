@@ -8834,10 +8834,10 @@ NOT a validation: no number in this case is measured.
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Split) at (0.0,-0.0) {\textbf{Split}\\[-1pt]{\tiny splitter}};
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (HPpump) at (2.9,-0.0) {\textbf{HPpump}\\[-1pt]{\tiny pump}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (PX) at (72.5,-0.0) {\textbf{PX}\\[-1pt]{\tiny pressureExchanger}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Booster) at (75.4,-0.0) {\textbf{Booster}\\[-1pt]{\tiny pump}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Join) at (78.3,-0.0) {\textbf{Join}\\[-1pt]{\tiny mixer}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (RO) at (81.2,-0.0) {\textbf{RO}\\[-1pt]{\tiny spiralWoundModule}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (PX) at (2.9,-1.7) {\textbf{PX}\\[-1pt]{\tiny pressureExchanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Booster) at (5.8,-0.0) {\textbf{Booster}\\[-1pt]{\tiny pump}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Join) at (8.7,-0.0) {\textbf{Join}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (RO) at (11.6,-0.0) {\textbf{RO}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(Split.west)+(-1.05,0.00)$) -- ($(Split.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
   \draw[->] (Split) -- (HPpump) node[midway, above, font=\tiny] {toHPpump};
   \draw[->, dashed] (RO.south) .. controls +(0,-1.0) and +(0,-1.0) .. (PX.south) node[midway, below, font=\tiny] {brine};
