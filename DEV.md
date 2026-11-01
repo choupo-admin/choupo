@@ -1528,29 +1528,40 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
-> **C194. A SEAWATER DESALINATION PLANT FOR GREENHOUSE IRRIGATION, FROM
-> A PUBLIC CASE STUDY, WITH ITS WHOLE LAYOUT (Vitor, 2026-11-01: "o maior
-> dessalinizador do sul de Espanha, que produz agua de rega para a regiao do
-> mar de plastico ... tirar dados para fazer o projeto ... por o case study
-> em /plants ... fazer o layout da fabrica toda").**  Candidate site read
-> online 2026-11-01: the Carboneras SWRO plant (Almeria; 42 hm3/year, about
-> 120 000 m3/day; 12 RO racks and about 12 100 membranes in the 2005 press
-> note; Pelton-turbine energy recovery with isobaric chambers added to two
-> lines later; 45 % conversion per the builder; irrigation of the Campo de
-> Nijar named by the builder; brine to sea through the former power-station
-> canal, a new outfall under MITECO viability study).  Public sources do NOT
-> give a kWh/m3 for the plant, a site plan, or coordinates; the pages that
-> name the irrigation link are the builder's, not the operator's data sheet.
-> The sea-of-plastic (Campo de Dalias) is served by another Acuamed plant;
-> WHICH plant is the case study is the open scoping question (put to
-> Vitor, a pedagogical scope).  RULES: values from the cited primary
-> sources only, each with its origin word (a number read from a press
-> note is `literature` with the note cited, a number the case supplies is
-> `assumed`); the layout is Choupo's DESIGN of a plant at that scale on the
-> declared layout machinery (C75, C80-C96), NOT a copy of the real site, and
-> says so in its header; the case reuses the C192 pressure exchanger and the
-> SW30HR class records.  PLACE: tutorials/plant/.
-> STATUS: COMMISSIONED 2026-11-01; scope put to Vitor.
+> **C194. THE CAMPO DE DALIAS SEAWATER DESALINATION PLANT (THE "SEA OF
+> PLASTIC"), FROM A PUBLIC CASE STUDY, WITH ITS WHOLE LAYOUT (Vitor,
+> 2026-11-01: "o maior dessalinizador do sul de Espanha, que produz agua
+> de rega para a regiao do mar de plastico ... tirar dados para fazer o
+> projeto ... por o case study em /plants ... fazer o layout da fabrica
+> toda"; he then sent the manufacturer's case study, PDF ROCaseStudy, which
+> IS the source).**  Source: Toray Industries, "Seawater Desalination Using
+> Toray's RO Membranes to Support a Thriving Agricultural Economy",
+> MC-CS-CAMPODEDALIAS-1910 (2019), two pages, a MANUFACTURER'S document
+> (its own membranes; performance "per manufacturer's test conditions").  It
+> gives: open intake through a 1.6 km subsea pipe; two-stage pretreatment
+> (40 dual-media filters, glass-fibre-reinforced polyester, then 5 micron
+> cartridges, 99.6 % removal); a TWO-PASS RO of six skids; first pass
+> TM820E-400 seawater elements, 233 (7M) skid design, 47.2 % system
+> recovery, 5.52 MPa feed, 99.75 % NaCl and 91 % boron rejection at pH 8;
+> second pass TM720C-430 brackish elements, 54:18 (7M), 84-90 % recovery,
+> 1.03 MPa, 99.2 % NaCl and 95 % boron rejection at pH 10; second-pass
+> concentrate recycled to the first pass; DWEER isobaric energy recovery at
+> 95 % efficiency; remineralisation then disinfection; 98 664 m3/day (129 600
+> m3/day expandable), 310 days a year, 16 442 m3/day per skid, permeate
+> target TDS < 400 mg/L and boron < 0.5 mg/L; the full feed analysis (TDS
+> 38 697 mg/L, ions, boron 5.3 mg/L, 14-23 degC, pH 8.2).  The 2014 build
+> / 2016 commissioning dates disagree inside the document and are NOT used.
+> NOT in it: a site plan, coordinates, pump and vessel counts, energy per
+> m3, costs.  RULES: every value from the PDF carries origin `literature`
+> and the case cites it (a manufacturer's number is the manufacturer's
+> claim, said so); anything the case adds (vessels per skid, pump sizes,
+> building areas) is `assumed` with its reason; the Toray element records
+> are CASE-LOCAL (no catalogue record, no sponsorship implication, C189);
+> the layout is Choupo's DESIGN of a plant at this scale on the declared
+> layout machinery (C75, C80-C96), NOT the real site's plan, and its header
+> says so.  PLACE: tutorials/plant/.  The C192 pressure exchanger stands in
+> for the isobaric recovery (a rotor device in both).
+> STATUS: COMMISSIONED 2026-11-01; scope questions put to Vitor.
 
 > **C193. THE CML PLAN IS THE 1 HOUR / 1 DAY / 3 DAYS / BEYOND A WEEK
 > TABLE, KEPT CURRENT (Vitor, 2026-10-31 13:25 "plano de desenvolvimento de

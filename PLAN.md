@@ -46,7 +46,7 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 | todo | Pressure is not a tear variable; and DesignSpec, GridSweep and Sweep read unconverged points (one general: same driver files) | C186 (5) |
 | todo | The rest of the audit: A_rev on the batch path, catalystLoading measured, the membrane fitter's 'converged' on a stall, PC-SAFT roots | C190 (14)(11)(15)(12) |
 | todo | The commercial shortlist: hard filters, each candidate re-rated at the student's conditions, no default score, `partner` never read by the ranking | C189 slice 5 |
-| todo | The seawater desalination plant for greenhouse irrigation from a public case study, with its whole layout (scope put to Vítor) | C194 |
+| todo | The Campo de Dalías seawater desalination plant (the sea of plastic) from Toray's case study, with its whole layout (scope put to Vítor) | C194 |
 
 ## Next three days (at most 8)
 
