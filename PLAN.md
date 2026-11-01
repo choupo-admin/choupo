@@ -36,12 +36,13 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| running | General: the pipe and header sizer behind the rack drawings (diameter, velocity, pressure drop per train; `headerNominalDiameter`) | C199 |
+| running | General: a negative outlet pressure is refused by name, a trial iterate announced (the `s.P <= 0` clamp in runUnit) | C186 5b |
 
 ## Next day (at most 5)
 
 | status | what | ref |
 |---|---|---|
-| todo | `s.P <= 0 -> P_inherit` in Flowsheet.cpp runUnit can hide a spurious fixed point: measure the corpus, then refuse a negative outlet pressure by name | C186 item 5b |
 | todo | After each push that adds a unit: the site's own WASM build and one browser run of the new case (the pressure exchanger first) | C196 |
 | todo | Confirm on the site (WASM) that C178 and C182 are published (minutes, done between integrations) | C178, C182 |
 
@@ -49,9 +50,8 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| todo | The pipe and header sizer behind the rack drawings, the vessel port positions, the pressure-centre alternative case, the pump curves | C199 |
+| todo | The vessel port positions, the pressure-centre alternative case and the pump curves (the rest of C199) | C199 |
 | todo | The real boron: two-solute transport (boric acid, borate), a stream pH with speciation, a curated H3BO3/BOH4 record, a dosing unit; and a recycle solver that refuses the trivial fixed point by name | C198 |
-| todo | C170's owed fixes: gates must not judge data/local or untracked files; refuse `nu 0; order 1`; records still citing Burcat | C170 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
 
@@ -91,6 +91,8 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| waits-Vitor | Switch to Opus for a DESIGN PROPOSAL (no code) of the real boron: stream pH, pH-coupled transport per species, an H3BO3/BOH4 equilibrium record, a dosing unit (C198) | C198 |
+| waits-Vitor | Open swro01_campoDalias in the browser: does the 3D start, are the 2D drawings legible? | C199 |
 | waits-Vitor | Reactive full MESH and the multi-ion NF dataset: the reference PDFs | C175, C176 |
 | waits-Vitor | JOSS: ORCIDs, DOI; whether Pedro Mendes agrees to enter CITATION.cff | C168 (3), C171 |
 | waits-Vitor | Was the reply to Tim (MionTec) sent? | C171 |
