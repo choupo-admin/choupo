@@ -1528,6 +1528,30 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C194. A SEAWATER DESALINATION PLANT FOR GREENHOUSE IRRIGATION, FROM
+> A PUBLIC CASE STUDY, WITH ITS WHOLE LAYOUT (Vitor, 2026-11-01: "o maior
+> dessalinizador do sul de Espanha, que produz agua de rega para a regiao do
+> mar de plastico ... tirar dados para fazer o projeto ... por o case study
+> em /plants ... fazer o layout da fabrica toda").**  Candidate site read
+> online 2026-11-01: the Carboneras SWRO plant (Almeria; 42 hm3/year, about
+> 120 000 m3/day; 12 RO racks and about 12 100 membranes in the 2005 press
+> note; Pelton-turbine energy recovery with isobaric chambers added to two
+> lines later; 45 % conversion per the builder; irrigation of the Campo de
+> Nijar named by the builder; brine to sea through the former power-station
+> canal, a new outfall under MITECO viability study).  Public sources do NOT
+> give a kWh/m3 for the plant, a site plan, or coordinates; the pages that
+> name the irrigation link are the builder's, not the operator's data sheet.
+> The sea-of-plastic (Campo de Dalias) is served by another Acuamed plant;
+> WHICH plant is the case study is the open scoping question (put to
+> Vitor, a pedagogical scope).  RULES: values from the cited primary
+> sources only, each with its origin word (a number read from a press
+> note is `literature` with the note cited, a number the case supplies is
+> `assumed`); the layout is Choupo's DESIGN of a plant at that scale on the
+> declared layout machinery (C75, C80-C96), NOT a copy of the real site, and
+> says so in its header; the case reuses the C192 pressure exchanger and the
+> SW30HR class records.  PLACE: tutorials/plant/.
+> STATUS: COMMISSIONED 2026-11-01; scope put to Vitor.
+
 > **C193. THE CML PLAN IS THE 1 HOUR / 1 DAY / 3 DAYS / BEYOND A WEEK
 > TABLE, KEPT CURRENT (Vitor, 2026-10-31 13:25 "plano de desenvolvimento de
 > curto, medio e longo prazo (vamos chamar plano CML)"; 2026-11-01: "isso

@@ -46,12 +46,13 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 | todo | Pressure is not a tear variable; and DesignSpec, GridSweep and Sweep read unconverged points (one general: same driver files) | C186 (5) |
 | todo | The rest of the audit: A_rev on the batch path, catalystLoading measured, the membrane fitter's 'converged' on a stall, PC-SAFT roots | C190 (14)(11)(15)(12) |
 | todo | The commercial shortlist: hard filters, each candidate re-rated at the student's conditions, no default score, `partner` never read by the ranking | C189 slice 5 |
-| todo | The acceptance contract on the remaining units and the Theory Guide section: modelled / declared approximation / refused | C188 item 5 |
+| todo | The seawater desalination plant for greenhouse irrigation from a public case study, with its whole layout (scope put to Vítor) | C194 |
 
 ## Next three days (at most 8)
 
 | status | what | ref |
 |---|---|---|
+| todo | The acceptance contract on the remaining units and the Theory Guide section: modelled / declared approximation / refused | C188 item 5 |
 | todo | Curation: the module records' A_w gives about twice the sheets' permeate (NF270-4040, SW30HR-380) | C189 |
 | todo | The module registry's data/local tier; the importer cannot seal a case with a feed-spacer record | C189 |
 | todo | Distillation defects A (fullMESH seeded by an unconverged CMO phase) and B (NewtonND accepts a non-improving step) | C184 |
@@ -59,12 +60,12 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
 | todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
-| todo | Verify and fix the Gibbs review's three open items and the SpeciationSolver outer convergence | C187 (1)(2) |
 
 ## Beyond a week
 
 | status | what | ref |
 |---|---|---|
+| todo | Verify and fix the Gibbs review's three open items and the SpeciationSolver outer convergence | C187 (1)(2) |
 | todo | Distillation P0 (step contract, singular-Jacobian diagnostic); re-run and classify Vítor's DME plant | C184 |
 | todo | aceticAcid02: the subcooled-feed q in the simultaneous column branch | C174, C175 |
 | todo | Seeded crystallisation, cake filtration and washing, a linear chromatography column (pedagogical scope first) | C190 |
