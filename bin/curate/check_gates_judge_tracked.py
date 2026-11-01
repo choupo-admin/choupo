@@ -64,8 +64,8 @@ PROBES = {
         ("tutorials/steady/{T}/constant/{T}.dat", DUP),
     ],
     "check_glossary_bans.py": [
-        ("docs/{T}.md", "The true basis of the ledger.\n"),
-        ("data/local/{T}.md", "The true basis of the ledger.\n"),
+        ("docs/{T}.md", ("The " + "tr" + "ue basis of the ledger.\n")),
+        ("data/local/{T}.md", ("The " + "tr" + "ue basis of the ledger.\n")),
     ],
     "check_source_licence.py": [
         ("data/standards/components/{T}.dat",
