@@ -133,4 +133,13 @@ Dimensions expectedResponseDimensions(const SimulationResult& r,
     return Dims::dimensionless;
 }
 
+std::string simulationFailure(const SimulationResult& r)
+{
+    if (!r.converged)
+        return "the simulation did not converge (the flowsheet answered"
+               " converged = false: its recycle stopped at recycleMaxIter"
+               " or does not close on a tear variable)";
+    return {};
+}
+
 } // namespace Choupo

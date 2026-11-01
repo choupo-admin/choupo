@@ -28,6 +28,7 @@ License
 
 #include "DesignSpec.H"
 #include "ResponseExtractor.H"
+#include "core/InfeasibleTrial.H"
 #include "core/Advisory.H"
 #include "core/Dictionary.H"
 #include "postProcessing/PostProcessor.H"
@@ -255,6 +256,22 @@ int DesignSpec::run()
                 clone->setScalarAtPath("variables." + vars_[i].variable, xi);
         }
         SimulationResult r = simulator_(clone, ov);
+        //  A target is never read off an unconverged simulation (DEV.md 4c
+        //  C186, docs/design/a-tear-has-a-pressure.md): the residual of the
+        //  design problem would be the last iterate's, and Newton would
+        //  "solve" it.  Named with the coordinates; the Newton's own handling
+        //  of a throwing residual then stops it, announced.
+        if (const std::string why = simulationFailure(r); !why.empty())
+        {
+            std::ostringstream pt;
+            pt << std::setprecision(8);
+            for (std::size_t i = 0; i < n; ++i)
+                pt << (i ? ", " : "") << "$" << vars_[i].variable << " = "
+                   << std::clamp(x[i], vars_[i].lo, vars_[i].hi);
+            throw InfeasibleTrial("DesignSpec: evaluation "
+                + std::to_string(evalCounter) + " FAILED at (" + pt.str()
+                + ") -- " + why);
+        }
         sVector F(n, 0.0);
         for (std::size_t j = 0; j < n; ++j)
         {
@@ -347,6 +364,9 @@ int DesignSpec::run()
             clone->setScalarAtPath("variables." + vars_[i].variable, xi);
     }
     auto finalResult = simulator_(clone, ov);
+    if (const std::string why = simulationFailure(finalResult); !why.empty())
+        throw std::runtime_error("DesignSpec: the replay at the design point"
+            " FAILED -- " + why + ".  The design point is not reported.");
     //  A largest-of target says WHICH quantity it found largest at the
     //  design point -- the author did not name it, so the run does -- and
     //  whether a second one sits within the target's tolerance of it (a

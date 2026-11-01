@@ -298,10 +298,19 @@ def arm_source():
         fails.append(f"(d) only {n} `simulator_(` call site(s) found in "
                      "OptimizationDriver.cpp (expected the two evaluators "
                      "and the two replays)")
+    #  Since 2026-11-01 the verdict lives in ResponseExtractor.cpp, shared
+    #  by every outer driver (check_driver_convergence); it must not be
+    #  defined here a second time.
+    rx = strip_comments((ROOT / "src" / "outerDriver"
+                         / "ResponseExtractor.cpp").read_text(errors="replace"))
     m = re.search(r"std::string simulationFailure\(const SimulationResult& "
-                  r"\w+\)\s*\{(.*?)\n\}", code, re.S)
+                  r"\w+\)\s*\{(.*?)\n\}", rx, re.S)
     if not m or ".converged" not in m.group(1):
-        fails.append("(d) simulationFailure() does not read `.converged`")
+        fails.append("(d) simulationFailure() (ResponseExtractor.cpp) does "
+                     "not read `.converged`")
+    if re.search(r"std::string simulationFailure\(", code):
+        fails.append("(d) OptimizationDriver.cpp defines its own "
+                     "simulationFailure -- two homes for one verdict")
     other = [ln for ln in strip_comments(SRC.read_text()).splitlines()
              if ".converged" in ln and "R.converged" not in ln
              and "r.conv" not in ln and "simulationFailure" not in ln]

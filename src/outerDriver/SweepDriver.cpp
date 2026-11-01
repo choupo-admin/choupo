@@ -150,11 +150,26 @@ int SweepDriver::run()
             clone->setScalarAtPath(lp, val);        // lockstep, same datum
 
         SimulationResult result;
-        try { result = simulator_(clone, ov); }
+        std::string pointFailure;
+        try
+        {
+            result = simulator_(clone, ov);
+            //  An UNCONVERGED simulation is a failed point (DEV.md 4c C186,
+            //  docs/design/a-tear-has-a-pressure.md): its responses are the
+            //  last iterate's, not the plant's, and are published as nan.
+            pointFailure = simulationFailure(result);
+            if (!pointFailure.empty())
+                std::cerr << "  [point " << k << "  " << targetPath_ << " = "
+                          << val << "]  FAILED -- " << pointFailure << "\n";
+        }
         catch (const std::exception& e)
         {
+            pointFailure = std::string("simulator FAILED: ") + e.what();
             std::cerr << "  [point " << k << "  " << val << "]  simulator FAILED: "
                       << e.what() << "\n";
+        }
+        if (!pointFailure.empty())
+        {
             ++failures;
             csv << k << "," << val;
             for (std::size_t i = 0; i < responses_.size(); ++i) csv << ",nan";
@@ -268,6 +283,11 @@ int SweepDriver::run()
     }
 
     csv.close();
+    if (failures > 0 && static_cast<std::size_t>(failures) == nPoints_)
+        throw std::runtime_error("SweepDriver: every one of the "
+            + std::to_string(nPoints_) + " sweep point(s) FAILED (an"
+            " unconverged or throwing simulation); no response is reported --"
+            " the CSV " + reportFile_ + " holds only nan rows");
     std::cout << "\n  Sweep complete.  " << (nPoints_ - failures)
               << "/" << nPoints_ << " points converged.\n"
               << "  CSV written to: " << reportFile_ << "\n\n";

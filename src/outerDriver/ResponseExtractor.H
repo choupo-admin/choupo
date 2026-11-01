@@ -72,4 +72,15 @@ scalar extractResponse(const SimulationResult& r,
 Dimensions expectedResponseDimensions(const SimulationResult& r,
                                       const std::string&      key);
 
+//  THE ONE HOME of "is this simulation an answer?" (DEV.md 4c C186 (4) and
+//  its sibling drivers, docs/design/a-tear-has-a-pressure.md).  A unit that
+//  fails to converge THROWS inside the flowsheet and was always a failed
+//  point; a RECYCLE that stops at recycleMaxIter (or whose pressure does not
+//  close) does not throw -- runSimulation stamps `converged = false` on a
+//  result that still carries the last iterate's streams and KPIs.  Every
+//  outer driver reads a point's result through this function BEFORE it
+//  reads a number off it (gate check_driver_convergence, check_optimiser_
+//  converged arm (d)).  Empty = usable; otherwise the cause, in words.
+std::string simulationFailure(const SimulationResult& r);
+
 } // namespace Choupo

@@ -1739,11 +1739,17 @@ sVector packTears(const std::vector<std::string>& tears,
         v.push_back(s.F);
         for (auto z : s.z) v.push_back(z);
         v.push_back(s.T);
+        //  PRESSURE IS A TEAR VARIABLE (DEV.md 4c C186 (5)).  Carried in
+        //  BAR in this vector: the Wegstein test is the absolute L2 norm of
+        //  the whole vector (kmol/s, K), and a pressure in pascals would
+        //  make 1e-5 mean 10 micropascals while F and T are held to 1e-5 of
+        //  their own units.
+        v.push_back(s.P / 1.0e5);
     }
     return v;
 }
 
-// Unpack a Wegstein tear vector [F, z_0..z_{nC-1}, T] per tear back onto the
+// Unpack a Wegstein tear vector [F, z_0..z_{nC-1}, T, P] per tear back onto the
 // streams.  Negative total flows / fractions are floored to zero (a PHYSICAL
 // bound, F >= 0, z_i >= 0).  Per the "no silent crutch" credo this clip is
 // announced -- but only when `announce` is set (the loop passes it on the
@@ -1783,6 +1789,7 @@ void unpackTears(const std::vector<std::string>& tears,
                       << std::fixed << std::setprecision(2) << v[off]
                       << " K is non-physical (T > 0) -- check the spec\n";
         s.T = v[off];                                 ++off;
+        s.P = v[off] * 1.0e5;                         ++off;
         // Author absolute bounds (after the physical floors).
         if (bounds)
         {
@@ -3147,6 +3154,46 @@ int Flowsheet::solve(const DictPtr& dict,
         int         finalIteration = itBase;
         const char* finalSolver    = "recycle";
 
+        //  PRESSURE IS A TEAR VARIABLE (DEV.md 4c C186 (5), record
+        //  docs/design/a-tear-has-a-pressure.md).  A loop whose units drop
+        //  the pressure and nothing in it sets one (a mixer takes the lowest
+        //  inlet P, a pipe drops it, a splitter returns it) has NO
+        //  pressure-consistent steady state: each pass returns a lower P than
+        //  it was handed.  P rides in the tear vector, so the test sees it;
+        //  when the loop does not converge this names every tear whose
+        //  pressure is the reason, with the assumed and the returned value.
+        //  `stride` = variables per tear; P is the last of them.
+        auto namePressureFailures = [&](const sVector& assumed,
+                                        const sVector& returned,
+                                        std::size_t stride, scalar toBar)
+        {
+            for (std::size_t ti = 0; ti < tears.size(); ++ti)
+            {
+                const std::size_t k = ti * stride + stride - 1;
+                if (k >= assumed.size() || k >= returned.size()) break;
+                const scalar rel = std::abs(returned[k] - assumed[k]) * toBar
+                                 / std::max(std::abs(assumed[k]) * toBar, 1.0);
+                if (rel > tearTol)
+                {
+                    std::ostringstream m;
+                    m << "tear '" << tears[ti] << "': the loop does not close"
+                      << " on PRESSURE -- it is handed " << std::fixed
+                      << std::setprecision(4) << assumed[k] * toBar
+                      << " bar and returns " << returned[k] * toBar
+                      << " bar (relative change " << std::scientific
+                      << std::setprecision(2) << rel << ").  A recycle with a"
+                      << " pressure drop and nothing in the loop that sets a"
+                      << " pressure (a pump, compressor or valve to a fixed P)"
+                      << " has no pressure-consistent steady state; the"
+                      << " answer is refused, not reported as converged.";
+                    std::cout << "  [recycle] " << m.str() << "\n";
+                    std::cerr << "[recycle] " << m.str() << "\n";
+                    AdvisoryLog::instance().add("recycle", "error",
+                        "tear '" + tears[ti] + "'", m.str());
+                }
+            }
+        };
+
         if (recSolver == "Wegstein")
         {
             std::cout << "Recycle outer loop (Wegstein over "
@@ -3224,6 +3271,13 @@ int Flowsheet::solve(const DictPtr& dict,
             else
                 std::cout << "WARNING: recycle did NOT converge in " << maxOuter
                           << " iterations (last |Δtear|2 = " << std::scientific << lastDelta << ").\n";
+            if (!converged)
+            {
+                sVector xl = packTears(tears, streams_);
+                sweep(/*quiet=*/true);
+                namePressureFailures(xl, packTears(tears, streams_),
+                                     thermo.n() + 3, 1.0);
+            }
             finalConverged = converged;
             finalResidual  = lastDelta;
             // The converged final instant is a SEPARATE point (its residual is
@@ -3251,6 +3305,7 @@ int Flowsheet::solve(const DictPtr& dict,
                     for (std::size_t i = 0; i < nc; ++i)
                         v.push_back(s.F * (i < s.z.size() ? s.z[i] : 0.0));
                     v.push_back(s.T);
+                    v.push_back(s.P);   // pressure is a tear variable (C186 (5))
                 }
                 return v;
             };
@@ -3282,6 +3337,7 @@ int Flowsheet::solve(const DictPtr& dict,
                                   << std::fixed << std::setprecision(2) << v[off]
                                   << " K is non-physical (T > 0) -- check the spec\n";
                     s.T = v[off++];
+                    s.P = v[off++];
                     // Author absolute bounds (after the physical floors).
                     auto bit = streamBounds.find(name);
                     if (bit != streamBounds.end() && bit->second.any)
@@ -3305,6 +3361,8 @@ int Flowsheet::solve(const DictPtr& dict,
                     for (std::size_t i = 0; i < nc; ++i) scale[off + i] = Ftot;
                     off += nc;
                     scale[off] = std::max(std::abs(x0[off]), 1.0);   // T
+                    off += 1;
+                    scale[off] = std::max(std::abs(x0[off]), 1.0);   // P
                     off += 1;
                 }
             }
@@ -3362,6 +3420,7 @@ int Flowsheet::solve(const DictPtr& dict,
                         for (std::size_t i = 0; i < nc; ++i)
                             a.z[i] = (F > 0.0) ? Fi[i] / F : 0.0;
                         a.T = tr.x[off++];
+                        a.P = tr.x[off++];
                         // a.vf carries over from the template (computed) as
                         // the phase proxy; computeTearImbalance recomputes
                         // the enthalpy from (T,P,vf,z) consistently on both
@@ -3390,6 +3449,11 @@ int Flowsheet::solve(const DictPtr& dict,
             else
                 std::cout << "WARNING: recycle Newton did NOT converge in " << maxOuter
                           << " iterations (last |r|2 = " << std::scientific << res.residual << ").\n";
+            if (!res.converged)
+            {
+                residual(res.x);   // streams_ now at G(x)
+                namePressureFailures(res.x, packFlow(), nc + 2, 1.0e-5);
+            }
             finalConverged = res.converged;
             finalResidual  = res.residual;
             // NEXT iteration number for the converged instant (see the Wegstein

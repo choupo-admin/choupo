@@ -13,6 +13,8 @@
 ---
 
 ## 1. Why an index, when 196 records already exist
+## 1. Why an index, when 194 records already exist
+## 1. Why an index, when 190 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -28,6 +30,8 @@ Three concrete costs, all observed:
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
 - Of 196 design records, **138 state a rejected alternative and 58 do not** —
+- Of 194 design records, **135 state a rejected alternative and 59 do not** —
+- Of 190 design records, **132 state a rejected alternative and 58 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -67,6 +71,7 @@ direction is an error.
 
 | record | kind | alt | status |
 |---|---|---|---|
+| [`a-tear-has-a-pressure.md`](../design/a-tear-has-a-pressure.md) | ADR | no | **SHIPPED 2026-11-01 (DEV.md 4c C186 item 5)** -- pressure is a tear variable: a recycle with a pressure drop and nothing setting a pressure is refused by tear name instead of "converging" on a pass-to-pass drift; `sweep`, `gridSweep` and `designSpec` read every point through the one `simulationFailure` verdict (a failed point is named, nan, counted; all-fail refuses).  Reproduced first.  Gate `check_driver_convergence` |
 | [`the-tree-of-chemistry-is-a-record.md`](../design/the-tree-of-chemistry-is-a-record.md) | ADR | yes | **SHIPPED 2026-11-01 (C191 A, the graph's curation)** -- the commodity chemicals as ONE directed graph of records under `data/standards/routes/` (a sibling kind beside `heuristics/`, no engine reader): a `routeGraph` header (7 organic + 4 inorganic roots, the process-family vocabulary, the sources with their licence and verification words, the IEA production volumes, every substance) and `productionRoutes` files split by chapter; three route kinds (a balanced `reaction`, a mass-basis `separation`, a `processYield` slate on a lumped feed -- the cracker's forced co-production stated as kg per kg); a node's role, its forced co-products and the hydrogen per carbon are DERIVED, never stored; a node with a catalogue component carries no formula or CAS of its own; every yield band not read back on a page is `origin assumed` with its reason (all of them, on the day); gate `check_chemistry_graph` balances every reaction on the engine's element table and holds reachability, the 7 + 4, the declared cycles, the citations and the cited cases.  REJECTED: a stored `role`; a `coProducts` list; a lumped `syngas` node; yields typed as facts; industry-association statistics (non-commercial or no-grant terms); generating the records at build time; a `secondaryTarget` for the co-produced roots |
 | [`an-observed-rejection-is-not-an-intrinsic-one.md`](../design/an-observed-rejection-is-not-an-intrinsic-one.md) | ADR | yes | **SHIPPED 2026-10-31 (C189 slice 1)** -- `rejection { <solute> fromRatedTest; }` under `transport constantRejection;` derives the INTRINSIC rejection from a module record's OBSERVED rated rejection by running the module itself at the rated test (one element, the sheet's solute, P, T, feed = permeateFlow/recovery) and solving for R_int by a bracketed 1-D search; announced and published, refused by name otherwise (no record, no ratedTest, another solute, an ion-by-ion feed, an unreachable rejection, a unit with no record).  REJECTED: the observed value used as R_int with an announcement; moving the feed to match the sheet's recovery; a closed-form film correction beside the module; splitting a salt's rejection between its ions.  **Section 8, slice 3 (same day): six ILLUSTRATIVE functional classes** (`kind membraneClass`, named as `module <class>;`, `reviewStatus illustrative;` announced, no manufacturer, the generic element by reference, one observed rejection per salt at the middle of a stated band, the intrinsic one derived); only `constantRejection` runs one.  REJECTED there: a class as a module record carrying A_w; a class as a membrane beside a generic element; two records per class; a band's end as the value.  **Section 9, slice 4 (2026-11-01): `bin/choupo-import-membranes`** writes catalogue elements as private `data/local/assets/` records (counts read back from the files, idempotent, duplicates and contradictions reported never merged, an unstated pressure basis omitted never assumed, nothing filled in, data/standards refused); measured: the module registry does not read data/local, so a record is used by copying it into the case's `constant/assets/`.  REJECTED there: a sibling's spacer filled in silently; a `pressureBasis unknown` word; a third registry tier. |
 | [`a-props-case-drawn-as-its-calculation.md`](../design/a-props-case-drawn-as-its-calculation.md) | ADR | yes | **SHIPPED 2026-10-25 (C151 phase 1, 5888a3e19)** -- a props case's Results is THREE panes: a tree of the case shelved by discipline, a calculation map DERIVED from the propsDict (data -> models -> operations -> views, typed and coloured wires, ops of one type grouped, studies as derived frames), and the details of the selection; each op type states its discipline, activity, models, data and records in its own schema (`"x-choupo"`), the one home the map and the tree read.  REJECTED: a hand-placed or stored layout and a graph-layout library (the layered layout is computed); a hand-written study label (would need a new propsDict key); records joining studies (one shared record would weld them). |
@@ -351,6 +356,8 @@ is not an argument.
 ## 5. What this index shows that no individual record could
 
 **58 of 196 records state no rejected alternative.**  For a FORUM or a STUDY
+**59 of 194 records state no rejected alternative.**  For a FORUM or a STUDY
+**58 of 190 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
