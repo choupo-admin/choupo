@@ -36,7 +36,6 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| running | General: the Campo de Dalías plant from Toray's case study, boron in both passes, layout up to the fence | C194 |
 | running | General: heavy water curated from the IAPWS formulation (researchers asked) | C197 |
 
 ## Next day (at most 5)
@@ -51,6 +50,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| todo | The real boron: two-solute transport (boric acid, borate), a stream pH with speciation, a curated H3BO3/BOH4 record, a dosing unit; and a recycle solver that refuses the trivial fixed point by name | C198 |
 | todo | C170's owed fixes: gates must not judge data/local or untracked files; refuse `nu 0; order 1`; records still citing Burcat | C170 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
@@ -99,6 +99,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| done | The Campo de Dalías SWRO plant from Toray's case study, two passes, boron as a declared lumped approximation, layout to the fence | C194, 3736c17e8 |
 | done | The EduTool 'Patent expiry and generic entry' for the two pharmaceutical groups (two real sources read, the rest declared assumed) | C195 (4), facf7ca2b |
 | done | Pressure is a tear variable; the sibling drivers read no unconverged point (two goldens moved on written reasons) | C186 (5), 43b5c58c8 |
 | done | The acceptance contract on 15 more units, three real defects found by it (turbine fed a liquid, absorber with an inert solute, extractor ports), the Theory Guide section | C188 item 5, 54f3ab783 |

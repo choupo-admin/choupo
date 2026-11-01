@@ -1736,8 +1736,39 @@ accepts today, and that is a policy call.
 > outfall cross the fence at published points with their labels, and what
 > lies beyond (the subsea pipe, the irrigation network) is named at the
 > crossing and NOT drawn.
-> STATUS: COMMISSIONED 2026-11-01; scope settled; waits its turn in the
-> queue (the plan's next-day column), then a brief with every claim measured.
+> DONE 2026-11-02 (3736c17e8, a general): `tutorials/plant/swro01_campoDalias`,
+> two-pass SWRO from Toray's case study.  STEP 1 MEASURED: `spiralWoundModule`
+> does NOT couple the feed's speciation (pH) to transport (every law moves
+> each solute by its own permeance or rejection keyed by name; no stream
+> carries a pH, no unit moves one), and the tree has no boric acid/borate
+> equilibrium record; so BORON is a DECLARED APPROXIMATION (route b): ONE
+> lumped solute with a constant intrinsic rejection per pass derived from the
+> sheet's two rated tests (91 % at pH 8, 95 % at pH 10), announced in the
+> records, the unit sources and every run's `[ratedTest]` lines; the gate pins
+> the limitation (relabelling the second pass's test pH changes nothing) so the
+> day the engine couples pH the arm fails and demands a rewrite.  RESULT:
+> 98 664.7 m3/day from 9461 m3/h of intake; first pass 47.20 % recovery (1398
+> vessels, 13.05 LMH), second pass 87 % (33.99 LMH, 324 + 108 vessels); product
+> 1.9 mg/L NaCl-equivalent and 0.046 mg/L boron; 2.81 kWh/m3; first law
+> UNAVAILABLE as in membrane27; layout of 22 footprints, 5 roads, a rack and a
+> gate to the fence, the intake, outfall and product crossing at labelled
+> points marked not drawn.  CONTRADICTIONS WITH THE PDF, recorded: its 'feed
+> pressures' 5.52 and 1.03 MPa can only be TEST pressures (47.2 % recovery
+> leaves ~53 bar of brine osmotic pressure), so the plant's own were solved
+> (58.59 and 10.74 bar); the twelve ions of its Table 2 are lumped as NaCl at the
+> same osmotic pressure; 25 C against the PDF's 14-23 C.  An engine fix rode
+> with it: the polarisation Newton refused a converged wall stalled at residual
+> 1e-13; a stall below 1e-10 now returns converged.  FINDINGS: the recycle has a
+> SPURIOUS TRIVIAL FIXED POINT (all water circulating, 0.1 % recovery) from a
+> rough start, so `0/` holds a converged state and `recycleWegsteinQmin -5` is
+> needed; a recycle solver that refuses the trivial point by name is a
+> follow-up; no pump sizer (four `compressor` items), no vessel-bank sizer (the
+> RO halls are boxes the router cannot reach, 11 streams not routed).  OPEN, the
+> real boron: a two-solute transport law, a stream pH with speciation, a curated
+> H3BO3/BOH4 record from a primary source and a dosing unit (C198).  Gate
+> `check_swro_plant` (five sabotages); 34 cases PASS, `--fast` 77/0, `--gui`
+> 42/0 after the viewport test learned the plant folds.
+> STATUS: DONE 2026-11-02.
 
 > **C193. THE CML PLAN IS THE 1 HOUR / 1 DAY / 3 DAYS / BEYOND A WEEK
 > TABLE, KEPT CURRENT (Vitor, 2026-10-31 13:25 "plano de desenvolvimento de
