@@ -1,78 +1,80 @@
-# PLAN -- the CML plan: the next hour, the next day, the next three days, beyond a week
+# PLAN -- the CML plan: now, the next day, the next three days, beyond a week
 
-The CML plan (curto / médio / longo; Vítor's name, 2026-10-31, and his
-horizons, 2026-11-01: "1 h, 1 dia e 3 dias ou mais ... o que não couber pode
-ficar para > 1 semana").  Where the project goes in months and years is
-`ROADMAP.md`, which feeds the last section.
+The CML plan (curto / médio / longo; Vítor's name, 2026-10-31; his horizons,
+2026-11-01: "1 h, 1 dia e 3 dias ou mais ... o que não couber pode ficar para
+> 1 semana").  Months and years are `ROADMAP.md`, which feeds the last
+section.  Read at the start of every session (CLAUDE.md rule 8).  Each row
+points at its DEV.md 4c entry, the register of record.  Vítor's private
+Portuguese view is https://claude.ai/artifact/JnokFGgoNMTAWvu9fkgyoQ; its
+header names the PLAN.md commit it reflects, so a stale view shows itself.
 
-Read at the start of every session (CLAUDE.md section 0, rule 8).  Each row
-points at its entry in DEV.md section 4c, the register of record; this file
-says only WHEN and IN WHAT ORDER.  Change a row in the same commit as the work
-that changes it.  Vítor's private Portuguese view of this plan is
-https://claude.ai/artifact/JnokFGgoNMTAWvu9fkgyoQ -- updated FROM this file.
+## How the plan is kept (the architect's rule, 2026-11-01)
 
-Last reviewed: 2026-11-01 (rows brought up to date: C178, C185 7/9, C186 4/6, C188, C189 1-4, C191 graph on main; usage budget tight -- generals on Sonnet), earlier 2026-10-31, after an audit of every request Vítor made from
-2026-10-24 to 2026-10-31 (two independent passes over the session transcript;
-24-25 Oct: nothing lost, 10 partial; 26-31 Oct: 3 lost, 8 partial), and after
-Vítor's rule 00 (CLAUDE.md): the architect takes every decision; only facts
-Vítor alone holds wait on him (push authorisation lifted the same evening).
+1. **Capacity, not hope.**  The usage budget allows 2-3 generals at once,
+   each 30-60 minutes, and integrations one at a time.  So: **Now** holds
+   only what is RUNNING (at most 3 rows); **Next day** at most 5 rows;
+   **Next three days** at most 8; everything else is **Beyond a week**.  A
+   column over its cap pushes its LAST row down one column.
+2. **Order inside a column is priority**: a wrong number at exit 0 first,
+   then what Vítor asked for most recently, then what unblocks other rows,
+   then the rest.
+3. **Revised as Vítor gives tasks.**  A new task is written in DEV.md 4c in
+   the same turn (CLAUDE.md section 10), placed by rule 2, and the column
+   caps of rule 1 decide what moves down; the move is said to him in one
+   line.  A row is never dropped silently: it moves, finishes, or leaves
+   with its reason in DEV.md 4c.
+4. **Pulled forward when a slot frees**: when a general finishes, the first
+   row of Next day starts and the first row of the next column moves up.
+5. **Done rows stay one week**, then leave this file (DEV.md keeps them).
+
+Last reviewed: 2026-11-01 (restructured by capacity; earlier reviews in git).
 
 Status words: `todo` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
-## Next hour
+## Now (running; at most 3)
 
 | status | what | ref |
 |---|---|---|
-| running | C191 (A): the EduTool 'The tree of chemistry' on the curated graph, a general | C191 |
-| todo | C190 (10) negative orders dropped and (13) CHEMKIN rounding -- Sonnet generals, next | C190 |
-| running | C192: the pressure exchanger unit, its design sheet and its schematic; witness membrane27, SWRO energy recovery, to be created | C192 |
-| todo | C189 slice 5: the shortlist (hard filters, each candidate re-rated at the student's conditions, every criterion side by side, no default score; `partner` field the ranking never reads) | C189 |
-| todo | The module registry reads no data/local tier (components do): decide and build, or keep the copy-into-the-case rule | C189 |
-| todo | C188 item 5 remaining: passThrough on other units, per-port contracts, batch crystalliser, the recycle question | C188 |
-| todo | Curation: the records' A_w gives 2.16x (NF270-4040) and 2.08x (SW30HR-380) the sheets' permeate at their rated tests | C189 |
-| todo | bin/choupo-import cannot seal a case that reads a feed-spacer record (FeedSpacerRegistry builtins not installed) | C189 |
-| running | Validate C178 in the site's WASM (CI builds it after the push; confirm the site updated) | C178 |
-| todo | Check on the site, after its deploy, that the volcanic case is gone and the GUI lesson test fix is live | C182 |
+| running | The pressure exchanger: unit, design sheet, schematic, SWRO energy-recovery case (a general, validating) | C192 |
+| running | The EduTool 'The tree of chemistry': integration onto main (--gui on a build, then the production bundle) | C191 (A) |
+| running | Negative kinetic orders dropped and the CHEMKIN A rounded per order: wrong rates at exit 0 (a Sonnet general) | C190 (10)(13) |
 
-## Next day
-
-Generals in parallel only on disjoint files; the commander integrates one at a
-time.  Any golden row that moves goes to Vítor as a list before it is recorded.
+## Next day (at most 5)
 
 | status | what | ref |
 |---|---|---|
-| todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
-| todo | Distillation defects A (fullMESH seeded by an unconverged CMO phase) and B (NewtonND accepts a non-improving step); measure which corpus cases reach the path; a full sweep only with Vítor's written authorisation | C184 A/B |
-| todo | The sibling drivers read unconverged points too: DesignSpec, GridSweep, Sweep (same shape as C186 item 4) | C186 |
-| todo | Pressure is not a tear variable: a loop with no pressure-consistent steady state "converges" | C186 item 5 |
-| todo | C190 (10): a negative kinetic order silently dropped on the vessels' own Arrhenius paths; (13): CHEMKIN A conversion rounds each order before summing | C190 |
-| todo | C190 (14) batch own reader and A_rev; (11) catalystLoading on the batch own path, measured; (15) the membrane fitter's 'converged' on a stall; (12) PC-SAFT root scan near the spinodal | C190 |
-| todo | C170's owed fixes: gates must not judge `data/local` or untracked files; `check_workspace_truth` wording; refuse `nu 0; order 1`; records still citing Burcat | C170 |
+| todo | Confirm on the site (WASM) that C178 and C182 are published (minutes, done between integrations) | C178, C182 |
+| todo | Pressure is not a tear variable; and DesignSpec, GridSweep and Sweep read unconverged points (one general: same driver files) | C186 (5) |
+| todo | The rest of the audit: A_rev on the batch path, catalystLoading measured, the membrane fitter's 'converged' on a stall, PC-SAFT roots | C190 (14)(11)(15)(12) |
+| todo | The commercial shortlist: hard filters, each candidate re-rated at the student's conditions, no default score, `partner` never read by the ranking | C189 slice 5 |
+| todo | The acceptance contract on the remaining units and the Theory Guide section: modelled / declared approximation / refused | C188 item 5 |
 
-## Next three days
+## Next three days (at most 8)
 
 | status | what | ref |
 |---|---|---|
-| todo | C191 (B) candidates: the methanation reactor EduTool; a Power-to-Gas plant case (scope to decide) | C191 |
-| todo | Verify and fix C187 (1) (the Gibbs review's three open items) and (2) (SpeciationSolver outer convergence) | C187 |
-| todo | Views for choupoSolve cases; C149's parallel runs | C187 (5), (6) |
+| todo | Curation: the module records' A_w gives about twice the sheets' permeate (NF270-4040, SW30HR-380) | C189 |
+| todo | The module registry's data/local tier; the importer cannot seal a case with a feed-spacer record | C189 |
+| todo | Distillation defects A (fullMESH seeded by an unconverged CMO phase) and B (NewtonND accepts a non-improving step) | C184 |
+| todo | C170's owed fixes: gates must not judge data/local or untracked files; refuse `nu 0; order 1`; records still citing Burcat | C170 |
+| todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
-| todo | Distillation P0 (step contract, singular-Jacobian diagnostic naming the stage and equation); P1-P3 as a written proposal for Vítor, no code | C184 |
-| todo | Re-run Vítor's DME plant (branch `claude/c184-distillation`) and classify its failure: infeasible spec / thermo data / ill-conditioned / implementation | C184 |
-| todo | aceticAcid02: the subcooled-feed q in the simultaneous column branch | C174, C175 |
+| todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
+| todo | Verify and fix the Gibbs review's three open items and the SpeciationSolver outer convergence | C187 (1)(2) |
 
 ## Beyond a week
 
 | status | what | ref |
 |---|---|---|
-| todo | Candidates from the external opinion (pedagogical scope first): seeded crystallisation, cake washing and filtration, a linear chromatography column with fraction collection | C190 |
+| todo | Distillation P0 (step contract, singular-Jacobian diagnostic); re-run and classify Vítor's DME plant | C184 |
+| todo | aceticAcid02: the subcooled-feed q in the simultaneous column branch | C174, C175 |
+| todo | Seeded crystallisation, cake filtration and washing, a linear chromatography column (pedagogical scope first) | C190 |
+| todo | Views for choupoSolve cases; parallel runs | C187 (5)(6) |
 | todo | Show a props run's `postProcessing/` in the GUI case tree | C183 (1) |
-| todo | Owed answer tables: point-by-point reply to the EduTools review; C112 final table | C150, C112 |
-| todo | EduTools: actually dispatch C127; quizzes (7 of 66 tools have one); C132; the RTD lesson | C127, C158, C132 |
-| todo | Commit the UX-audit deliverables now only in a scratchpad (component inventory, information-architecture map, reuse list, acceptance criteria) | C168 |
-| todo | Parity study phase 0 is only on `claude/c160-parity-study`: land it or decide | C160 |
-| todo | Check that the details pane is still resizable after the C172 rewrite | C153 |
-| todo | The months-and-years roadmap: ROADMAP.md | C193 |
+| todo | Owed answer tables: the EduTools review; C112 final table | C150, C112 |
+| todo | EduTools: dispatch C127; quizzes (7 of 66 tools have one); C132; the RTD lesson | C127, C158, C132 |
+| todo | UX-audit deliverables committed; parity study phase 0 landed or decided; details pane resizable after C172 | C168, C160, C153 |
+| todo | The months-and-years roadmap | ROADMAP.md |
 
 ## The architect's decisions (rule 00; each taken with its written reason in DEV.md 4c)
 
@@ -93,7 +95,6 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 
 | status | what | ref |
 |---|---|---|
-| waits-Vitor | Each `git push` (asked with the list of commits ready) | rule 00 |
 | waits-Vitor | Reactive full MESH and the multi-ion NF dataset: the reference PDFs | C175, C176 |
 | waits-Vitor | JOSS: ORCIDs, DOI; whether Pedro Mendes agrees to enter CITATION.cff | C168 (3), C171 |
 | waits-Vitor | Was the reply to Tim (MionTec) sent? | C171 |
