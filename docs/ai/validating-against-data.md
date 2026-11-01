@@ -59,12 +59,53 @@ Things that will bite you:
   set is `T, P, x_<component>, rho` — not `(T, rho)`.  If you only use the
   first two columns you are discarding the fact that distinguishes the points.
 
-### 1.2 Anything else
+### 1.2 A manufacturer's RO/NF catalogue — `bin/choupo-import-membranes`
+
+A working spreadsheet of commercial elements (manufacturer, model, active
+area, spacer thickness, the data-sheet tests: solute, ppm, pressure,
+temperature, recovery, permeate flow, rejection, a source URL per row)
+becomes one `kind membraneModule` record per element, in the grammar of
+`data/standards/assets/NF270-4040.dat`, under the **private** tier:
+
+```bash
+bin/choupo-import-membranes catalogue.xlsx                 # -> data/local/assets/
+bin/choupo-import-membranes catalogue.xlsx --dry-run       # read and report only
+bin/choupo-import-membranes a.xlsx b.csv --out data/local/assets
+```
+
+Things that will bite you:
+
+* **It writes `data/local/assets/` and refuses `data/standards/`.**  Promotion
+  is a human act: read the cited sheet, check each number, write the curated
+  record.  Every imported record is `reviewStatus unverified` and names the
+  file, sheet and row behind every value and the conversion applied.
+* **The module registry does not read `data/local/assets/`.**  To run an
+  imported element, copy its `.dat` into the case's `constant/assets/` and
+  declare the membrane beside it: `module <name>; membrane <NF|RO record>;`
+  (an imported element names no membrane -- the catalogue states no
+  transport parameters).
+* **Nothing is filled in.**  No active area or no spacer thickness: the
+  element is not written and the report says which is missing
+  (`--assume-spacer-mil N` is the one opt-in, written as an announced
+  estimate naming the flag).  A test missing any of its seven numbers, a
+  rejection stated as a range without its ends, a brochure "reference value"
+  with no conditions: rejected by name.  A pressure basis the input does not
+  state is **omitted**, never assumed (the engine announces the absence where
+  the inversion needs it).
+* **Duplicates and contradictions are reported, never merged**: two rows
+  stating one test are both written, each citing its row, and listed.
+* **Counts in the report are read back from the files**, and a second run on
+  the same input changes nothing and says so.
+* The derived columns of a consolidated sheet (flux, velocities, hydraulic
+  diameter) are never imported -- the tree never stores a derivative -- and
+  are cross-checked against the originals where both sheets exist.
+
+### 1.3 Anything else
 
 Primary publications, the user's own laboratory data, a vendor data sheet.  The
 rules in §4 apply identically.
 
-### 1.3 What may enter the repository
+### 1.4 What may enter the repository
 
 Read [`data-doctrine.md`](data-doctrine.md) and
 [`curation-protocol.md`](curation-protocol.md) in full before writing any
