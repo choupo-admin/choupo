@@ -91,7 +91,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| waits-Vitor | Switch to Opus for a DESIGN PROPOSAL (no code) of the real boron: stream pH, pH-coupled transport per species, an H3BO3/BOH4 equilibrium record, a dosing unit (C198) | C198 |
+| waits-Vitor | Read the boron proposal (docs/design/boron-in-reverse-osmosis-proposal.md) and answer its two questions: the pKa route in seawater; the split frozen at the inlet pH | C198 |
 | waits-Vitor | Open swro01_campoDalias in the browser: does the 3D start, are the 2D drawings legible? | C199 |
 | waits-Vitor | Reactive full MESH and the multi-ion NF dataset: the reference PDFs | C175, C176 |
 | waits-Vitor | JOSS: ORCIDs, DOI; whether Pedro Mendes agrees to enter CITATION.cff | C168 (3), C171 |

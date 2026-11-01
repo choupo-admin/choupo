@@ -1528,6 +1528,33 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C198. BORON IN REVERSE OSMOSIS AS TWO SPECIES SPLIT BY THE pH (Vitor,
+> 2026-11-01: "o boro e para modelar"; C194 shipped it as a declared lumped
+> approximation; 2026-11-02, Opus switched on by Vitor: "faz a proposta do
+> boro").**  PROPOSAL written, no code:
+> docs/design/boron-in-reverse-osmosis-proposal.md.  It measures the engine first
+> (the module reads pH only in `scaling {}`, SpiralWoundModule.cpp:1053-1066;
+> SDEM already carries neutral and charged species, SDEM.cpp:302-318; a
+> stream's pH is report-only, ProcessStream.H:185-245; the carbonate network
+> and water dissociation are curated, no boric-acid record exists) and
+> recommends: STAGE 1 now -- a curated `BOH4-formation` record from a primary
+> source, the module splits boron by alpha = 1/(1+10^(pKa-pH)) at a DECLARED
+> inlet pH and transports each form with its own permeance, the two
+> permeances inverted from the data sheet's TWO pH-labelled rated tests (91 %
+> at pH 8, 95 % at pH 10: identifiable because alpha differs), recombined into
+> the apparent boron component, the frozen split ANNOUNCED, a held-out measured
+> point if an open primary source can be read; STAGE 2 after its own ADR -- the
+> pH COMPUTED from the carbonate system carried as real solutes, resolved at a
+> unit's inlet (one home), CO2 passing the membrane, a caustic dosing mixer
+> under a `designSpec` on pH and the caustic as a reagent cost; STAGE 3 (the
+> twelve ions under SDEM) not recommended -- no per-ion permeances exist for
+> these membranes.  pKa: a thermodynamic constant plus the declared activity
+> model as the engine route, Dickson's conditional seawater constant as the
+> validation anchor, never mixed.  TWO QUESTIONS PUT TO VITOR (his research
+> area): the pKa route in seawater; whether the split frozen at the inlet pH is
+> acceptable for the teaching case until Stage 2.
+> STATUS: PROPOSED 2026-11-02; waits for Vitor's reading of the two questions.
+
 > **C199. A DESALINATION PLANT IS TRAINS AND RACKS, NOT ONE GIANT PUMP AND
 > ONE VESSEL BANK (Vitor, 2026-11-02, after seeing swro01_campoDalias's layout:
 > "numa instalacao real ha limite para a dimensao maxima das bombas e dos
