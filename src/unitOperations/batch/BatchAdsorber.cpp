@@ -492,7 +492,7 @@ void BatchAdsorber::step(scalar /*t*/, scalar dt)
         solver::ODEControls ctrl;
         ctrl.atol.assign(y.size(), 1.0e-12);   // q rows [mol/kg]
         ctrl.rtol      = 1.0e-7;
-        ctrl.nPositive = y.size();             // loadings must stay >= 0
+        ctrl.positiveRows.assign(y.size(), true);   // loadings must stay >= 0
         ctrl.verbosity = verbosity_;
         const auto st = integ->integrate(y, 0.0, dt, f, ctrl);
         //  The integrator REPORTS when it gave up; until C178 (2026-10-27)

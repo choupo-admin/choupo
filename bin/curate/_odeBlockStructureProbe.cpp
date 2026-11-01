@@ -96,7 +96,7 @@ Run integrate(ODEBlockStructure* s)
         c.atol = {1.0e-9};
         c.rtol = 1.0e-6;
         c.hInit = (hCarry > 0.0) ? std::min(hCarry, sub) : 0.0;
-        c.nPositive = 2 * N;
+        c.positiveRows.assign(2 * N, true);
         c.verbosity = 0;
         c.structure = s;
         const ODEStats st = r.integrate(out.y, t, t + sub, f, c);

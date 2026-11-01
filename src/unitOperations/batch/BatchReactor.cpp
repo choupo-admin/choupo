@@ -36,9 +36,9 @@ License
 #include "unitOperations/reactor/CatalystPellet.H"
 #include "thermo/ThermoAnnounce.H"
 #include "solver/ODE/ODEIntegrator.H"
-
+#include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
-
+#include <sstream>
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -1035,7 +1035,7 @@ void BatchReactor::step(scalar /*t*/, scalar dt)
         ctrl.atol.assign(n + 1, 1.0e-15);   // species rows: rtol dominates
         ctrl.atol[n] = 1.0e-6;              // temperature row [K]
         ctrl.rtol      = 1.0e-7;
-        ctrl.nPositive = n;                 // mole numbers must stay >= 0 (T free)
+        ctrl.positiveRows.assign(n, true);  // mole numbers must stay >= 0 (T free)
         ctrl.verbosity = verbosity_;
         const auto st = integ->integrate(y0, 0.0, dt, f, ctrl);
         //  The integrator REPORTS when it gave up (maxSteps / hMin / a
@@ -1056,10 +1056,31 @@ void BatchReactor::step(scalar /*t*/, scalar dt)
                 " (integrator Rosenbrock23;).");
     }
 
-    // Unpack and guard against numerical drift below zero on the mole
-    // numbers (the rate eqs are nonlinear --- the step can overshoot).
+    //  Unpack.  The stiff branch cannot hand back a negative mole number
+    //  (its positivity mask rejects the trial), so a negative row here comes
+    //  from the EXPLICIT RK4 step, which cannot reject a step.  It is clipped
+    //  to zero -- and the clip is ANNOUNCED with the amount it invents, never
+    //  silent (2026-10-31, DEV.md 4c C185 item 8): a clipped overshoot is
+    //  inventory the vessel did not hold.
     for (std::size_t i = 0; i < n; ++i)
+    {
+        if (y0[i] < 0.0)
+        {
+            std::ostringstream m;
+            m << "the fixed " << integrator_ << " step of " << dt
+              << " s drove n_" << thermo_->comp(i).name() << " to " << y0[i]
+              << " kmol and it was CLIPPED to zero (" << -y0[i]
+              << " kmol invented): a fixed step cannot reject an overshoot --"
+                 " reduce deltaT, or declare `timeStepping adaptive;` so the"
+                 " step that crosses zero is rejected instead";
+            if (AdvisoryLog::instance().addAnnouncedOnce(
+                    "batchReactor-clip:" + name_ + ":" + thermo_->comp(i).name(),
+                    "bound", "warning", "batchReactor '" + name_ + "'", m.str()))
+                std::cerr << "  [batchReactor] WARNING: '" << name_ << "': "
+                          << m.str() << "\n";
+        }
         state_.n[i] = std::max<scalar>(y0[i], 0.0);
+    }
     state_.T = (mode_ == Mode::Isothermal) ? T_setpoint_ : y0[n];
     //  An ACCEPTED state must be physical: a finite but negative or zero
     //  absolute temperature is not an extrapolation, it is a blown
@@ -1089,8 +1110,32 @@ void BatchReactor::setOdeState(const sVector& y)
 {
     const std::size_t n = state_.n.size();
     for (std::size_t i = 0; i < n; ++i)
-        state_.n[i] = std::max<scalar>(y[i], 0.0);
+    {
+        //  The adaptive driver's per-row positivity mask covers every mole
+        //  number this vessel packs (odeNPositive), so the integrator never
+        //  ACCEPTS a step that drives one negative.  This used to clip to
+        //  zero in silence -- and with two or more packed units the mask was
+        //  OFF, so the clip was inventing inventory (DEV.md 4c C185 item 8).
+        //  A negative row arriving here now is an ENGINE DEFECT (a mask not
+        //  applied, or a caller committing an unaccepted trial), and it is
+        //  refused by name rather than hidden.
+        if (y[i] < 0.0)
+            throw std::runtime_error("BatchReactor '" + name_ + "': the"
+                " integrator committed a NEGATIVE mole number n_"
+                + thermo_->comp(i).name() + " = " + std::to_string(y[i])
+                + " kmol.  The per-row positivity mask (solver/ODE/"
+                "AdaptiveTimeStep.H, positiveRowMask) must reject such a"
+                " step before it is accepted; that it reached setOdeState is"
+                " an engine defect, not a case error -- report it.");
+        state_.n[i] = y[i];
+    }
     state_.T = (mode_ == Mode::Isothermal) ? T_setpoint_ : y[n];
+}
+
+std::string BatchReactor::odeRowLabel(std::size_t i) const
+{
+    const std::size_t n = state_.n.size();
+    return i < n ? "n_" + thermo_->comp(i).name() : std::string("T");
 }
 
 } // namespace Choupo

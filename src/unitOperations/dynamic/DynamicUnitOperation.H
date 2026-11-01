@@ -109,8 +109,8 @@ public:
     virtual sVector odeState()   const           { return {}; }     // pack Y
     virtual void    setOdeState(const sVector& /*y*/) {}            // unpack+commit
     virtual sVector odeDerivative(const sVector& /*y*/) const { return {}; }
-    // Number of leading rows of Y that must stay >= 0 (species moles; T free).
-    virtual std::size_t odeNPositive() const     { return 0; }
+    // Leading rows of Y that must stay >= 0 (species; T free) -- masked at this unit's OFFSET by the adaptive driver's per-row mask; odeRowLabel names row i for a refusal.
+    virtual std::size_t odeNPositive() const     { return 0; }  virtual std::string odeRowLabel(std::size_t i) const { return "row " + std::to_string(i); }
 
     // ---- Balance contract (read-only) ---------------------------------
     //  The instantaneous BalanceSnapshot the choupoCtrl ledger integrates.

@@ -1547,7 +1547,7 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
         ctrl.atol      = atol_;
         ctrl.rtol      = rtol_;
         ctrl.hInit     = (hCarry_ > 0.0) ? std::min(hCarry_, sub) : 0.0;
-        ctrl.nPositive = (ergun_ ? compNames_.size() + nAds : 2 * nAds) * N_;
+        ctrl.positiveRows.assign((ergun_ ? compNames_.size() + nAds : 2 * nAds) * N_, true);
         ctrl.verbosity = 0;               // the unit prints its own summary
         if (jacobian_ == "blockTridiagonal")
         {

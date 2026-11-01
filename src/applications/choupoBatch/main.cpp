@@ -1365,7 +1365,7 @@ if (flowsheetDict->found("cycle"))
                         [up](const sVector& y){ up->setOdeState(y); },
                         [up](const sVector& y){ return up->odeDerivative(y); },
                         up->odeNPositive(),
-                        up->name() });
+                        up->name(), [up](std::size_t i){ return up->odeRowLabel(i); } });
                 }
                 else
                     unit->step(t, tNext - t);   // non-ODE vessel: one fixed step

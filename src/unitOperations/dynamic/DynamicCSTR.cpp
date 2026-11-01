@@ -785,8 +785,29 @@ void DynamicCSTR::step(scalar /*t*/, scalar dt)
     for (std::size_t i = 0; i < y.size(); ++i)
         y[i] += dt / 6.0 * (k1[i] + 2.0*k2[i] + 2.0*k3[i] + k4[i]);
 
+    //  A fixed RK4 step cannot reject an overshoot, so a negative mole number
+    //  is clipped to zero here -- ANNOUNCED with the amount it invents, never
+    //  silent (2026-10-31, DEV.md 4c C185 item 8).  The adaptive path has no
+    //  clip: its per-row mask rejects the step instead (setOdeState below).
     for (std::size_t i = 0; i < N; ++i)
+    {
+        if (y[i] < 0.0)
+        {
+            std::ostringstream m;
+            m << "the fixed RK4 step of " << dt << " s drove n_"
+              << thermo_->comp(i).name() << " to " << y[i]
+              << " kmol and it was CLIPPED to zero (" << -y[i]
+              << " kmol invented): a fixed step cannot reject an overshoot --"
+                 " reduce deltaT, or declare `timeStepping adaptive;` so the"
+                 " step that crosses zero is rejected instead";
+            if (AdvisoryLog::instance().addAnnouncedOnce(
+                    "dynamicCSTR-clip:" + name_ + ":" + thermo_->comp(i).name(),
+                    "bound", "warning", "dynamicCSTR '" + name_ + "'", m.str()))
+                std::cerr << "  [dynamicCSTR] WARNING: '" << name_ << "': "
+                          << m.str() << "\n";
+        }
         n_[i] = std::max<scalar>(y[i], 0.0);
+    }
     if (mixtureH_) { H_ = y[N];  T_ = TfromH_(n_, H_, T_); }
     else           T_ = y[N];
 }
@@ -807,9 +828,34 @@ void DynamicCSTR::setOdeState(const sVector& y)
 {
     const std::size_t N = n_.size();
     for (std::size_t i = 0; i < N; ++i)
-        n_[i] = std::max<scalar>(y[i], 0.0);
+    {
+        //  The adaptive driver's per-row positivity mask covers every mole
+        //  number this vessel packs (odeNPositive), so the integrator never
+        //  ACCEPTS a step that drives one negative.  This used to clip to
+        //  zero in silence -- and with two or more packed units the mask was
+        //  OFF, so the clip was inventing inventory (DEV.md 4c C185 item 8:
+        //  A -> B from A = 1 beside an idle vessel published A = 0, B = 2).
+        //  A negative row arriving here now is an ENGINE DEFECT (a mask not
+        //  applied, or a caller committing an unaccepted trial), and it is
+        //  refused by name rather than hidden.
+        if (y[i] < 0.0)
+            throw std::runtime_error("DynamicCSTR '" + name_ + "': the"
+                " integrator committed a NEGATIVE mole number n_"
+                + thermo_->comp(i).name() + " = " + std::to_string(y[i])
+                + " kmol.  The per-row positivity mask (solver/ODE/"
+                "AdaptiveTimeStep.H, positiveRowMask) must reject such a"
+                " step before it is accepted; that it reached setOdeState is"
+                " an engine defect, not a case error -- report it.");
+        n_[i] = y[i];
+    }
     if (mixtureH_) { H_ = y[N];  T_ = TfromH_(n_, H_, T_); }
     else           T_ = y[N];
+}
+
+std::string DynamicCSTR::odeRowLabel(std::size_t i) const
+{
+    return i < n_.size() ? "n_" + thermo_->comp(i).name()
+                         : std::string(mixtureH_ ? "H" : "T");
 }
 
 sVector DynamicCSTR::stateVector() const
