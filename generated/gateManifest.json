@@ -499,7 +499,7 @@
     "check_groups": {
       "exit": 0,
       "claim": "[check_groups] OK -- every enforced compound declares its groups.  NOT ENFORCED, and counted rather than hidden: 91 record(s) carry `reviewStatus interim` and no groups block, because the databank they were imported from does not supply group assignments and this project does not derive them from structure.  Each becomes enforced the moment it is marked reviewed.",
-      "seconds": 0.3
+      "seconds": 0.2
     },
     "check_guide_anchors": {
       "exit": 0,

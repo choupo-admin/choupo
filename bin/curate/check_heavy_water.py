@@ -32,8 +32,10 @@ WHAT IT CHECKS (arms):
       boiling points the record implies;
   (g) the record keeps its honesty: `reviewStatus reviewed;`, NO
       standardThermochemistry block (its pair is not sourced -- adding one
-      without a cleared primary must be a decision, not a drift), no UNIFAC
-      group.
+      without a cleared primary must be a decision, not a drift), and the
+      UNIFAC group, if present, is exactly `H2O` AND declared an assumption in
+      the provenance (`groups { origin assumed; }`) -- D2O has no published
+      decomposition, so a group may stand only as a declared approximation.
 
 WHAT IT DOES NOT CHECK.  That the IAPWS equation is right about heavy water
 (that is the formulation's own uncertainty: vapour pressure mostly 0.05 %); the
@@ -94,8 +96,15 @@ def run_checks():
         fail("(g) reviewStatus is not `reviewed`")
     if re.search(r'^standardThermochemistry', text, re.M):
         fail("(g) standardThermochemistry appeared: its source pair (dHf, s) must be a cleared primary")
-    if re.search(r'unifac', text, re.I) and re.search(r'^groups', text, re.M):
-        fail("(g) an unverified UNIFAC decomposition is back")
+    if re.search(r'^groups', text, re.M):
+        g = block(text, "groups")
+        if g is None or not re.search(r'unifac\s*\(\s*\{\s*group\s+H2O\s*;\s*count\s+1\s*;\s*\}\s*\)', g):
+            fail("(g) the UNIFAC group is not exactly `H2O` (a declared approximation, not a decomposition)")
+        pg = block(text, "provenance")
+        gm = re.search(r'^\s+groups\s*\n\s*\{(.*?)^\s*\}', pg or "", re.S | re.M)
+        gp = gm.group(1) if gm else None
+        if gp is None or not re.search(r'origin\s+assumed\s*;', gp):
+            fail("(g) the UNIFAC group stands without `origin assumed` in the provenance")
 
     # (b) the Wagner block IS Herrig Eq. (1) / Table 3
     vp = block(text, "vaporPressure")

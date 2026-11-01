@@ -113,6 +113,17 @@ triplePoint
     P   661.59;         // Pa  [H18 Table 1: 0.661 59 kPa, "this work"]
 }
 
+//  UNIFAC: D2O is carried on the H2O group -- a DECLARED APPROXIMATION.  No
+//  published UNIFAC decomposition of heavy water was read (a gap, said here and
+//  in the provenance below); the H/D isotope effect on liquid-phase activity
+//  coefficients is therefore NOT modelled.  Restored 2026-11-02 because
+//  check_groups holds every `reviewed` molecular record to a group block, and
+//  the earlier record already mapped D2O this way (C197).
+groups
+{
+    unifac ( { group H2O; count 1; } );
+}
+
 provenance
 {
     constants
@@ -159,5 +170,12 @@ provenance
         method       "transcribed";
         citation     "Herrig et al. 2018 Table 1 (Ttp from Marko, Jakli & Jancso, J. Chem. Thermodyn. 21, 437 (1989); ptp 'this work')";
         uncertainty  "the paper notes the triple-point pressure deviates ~0.35 % from vapour-pressure data at slightly higher T (Sec. 2)";
+    }
+    groups
+    {
+        origin       assumed;
+        method       "D2O is represented by the UNIFAC H2O group; no published decomposition of heavy water was read";
+        citation     "none: an assumption of this record, not a published D2O decomposition";
+        uncertainty  "the H/D isotope effect on activity coefficients (a small effect on the pure-water scale; not quantified here) is not modelled; mixtures with organics inherit the H2O group's parameters unchanged";
     }
 }
