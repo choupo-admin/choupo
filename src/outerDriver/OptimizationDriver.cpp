@@ -113,7 +113,70 @@ scalar extractObjective(const SimulationResult& r,
     return std::numeric_limits<scalar>::quiet_NaN();  // unreachable
 }
 
+//  THE ONE HOME of "is this simulation an answer?" (DEV.md 4c C186 (4)).
+//  A unit that fails to converge THROWS inside the flowsheet (Flowsheet.cpp,
+//  runUnit) and was always a failed evaluation; a RECYCLE that stops at
+//  recycleMaxIter does not throw -- Flowsheet::solve returns 1 and
+//  runSimulation stamps `converged = false` on a result that still carries
+//  the last iterate's streams and KPIs.  Every evaluator here used to read
+//  the objective off that result, so the optimiser priced an iterate as if
+//  it were the plant (the external review's reproduction: a simulator always
+//  `converged = false`, "converged", exit 0).  Empty = usable; otherwise the
+//  cause, in words, for the ledger and the site.  Every `simulator_(` call
+//  reads its result through this function BEFORE anything else reads it
+//  (gate check_optimiser_converged, arm (d)).
+std::string simulationFailure(const SimulationResult& r)
+{
+    if (!r.converged)
+        return "the simulation did not converge (the flowsheet answered"
+               " converged = false: its recycle stopped at recycleMaxIter)";
+    return {};
+}
+
 } // anonymous namespace
+
+std::string OptimizationDriver::EvaluationLedger::byCause() const
+{
+    return "did not converge " + std::to_string(notConverged)
+         + ", simulator threw " + std::to_string(threw)
+         + ", non-finite " + std::to_string(nonFinite);
+}
+
+void OptimizationDriver::EvaluationLedger::add(const EvaluationLedger& o)
+{
+    total        += o.total;
+    notConverged += o.notConverged;
+    threw        += o.threw;
+    nonFinite    += o.nonFinite;
+}
+
+std::string OptimizationDriver::describePoint(const std::vector<scalar>& xUser) const
+{
+    std::ostringstream os;
+    os << std::setprecision(6);
+    for (std::size_t i = 0; i < vars_.size() && i < xUser.size(); ++i)
+        os << (i ? ", " : "") << vars_[i].path << " = " << xUser[i];
+    for (const auto& [fp, fv] : fixedVars_)
+        os << (os.str().empty() ? "" : ", ") << fp << " = " << fv << " (fixed)";
+    return os.str();
+}
+
+//  Count one failed evaluation by cause and SAY it, with the point it failed
+//  at -- after the evaluator has restored the console it silenced, so the
+//  line reaches the reader that the inner chatter does not.
+void OptimizationDriver::noteFailedEvaluation(Fail kind, const std::string& cause,
+                                              const std::vector<scalar>& xUser)
+{
+    switch (kind)
+    {
+        case Fail::NotConverged: ++ledger_.notConverged; break;
+        case Fail::Threw:        ++ledger_.threw;        break;
+        case Fail::NonFinite:    ++ledger_.nonFinite;    break;
+        case Fail::None:         return;
+    }
+    std::cout << "  [evaluation " << ledger_.total << "] FAILED -- " << cause
+              << "  (" << describePoint(xUser) << ")\n";
+}
 
 OptimizationDriver::OptimizationDriver(const DictPtr& d)
   : outerDict_(d)
@@ -315,11 +378,10 @@ int OptimizationDriver::runNelderMead()
     // -----------------------------------------------------------------
     //  Build the f: R^n -> R closure that Nelder-Mead will call.
     // -----------------------------------------------------------------
-    int evalCount = 0;
     std::ostringstream sink;
 
     auto evaluate = [&](const sVector& x) -> scalar {
-        ++evalCount;
+        ++ledger_.total;
 
         // Clone fresh flowsheet from source so each evaluation is hermetic.
         auto clone = Dictionary::fromFile(flowsheetDict_->sourceName());
@@ -339,29 +401,44 @@ int OptimizationDriver::runNelderMead()
         auto* coutBuf = std::cout.rdbuf(sink.rdbuf());
         auto* cerrBuf = std::cerr.rdbuf(sink.rdbuf());
 
+        //  A FAILED evaluation -- the simulator threw, the flowsheet did not
+        //  converge, or the objective is not finite -- is +inf: the huge
+        //  penalty pulls the simplex away (Nelder-Mead treats the vertex as
+        //  "worst" and contracts/shrinks toward the better ones).  It is
+        //  counted by cause and said with its point, never read as a value.
         scalar fval = std::numeric_limits<scalar>::infinity();
+        Fail kind = Fail::None;
+        std::string cause;
         try {
             auto result = simulator_(clone, ov);
-            if (needPost) {
-                auto chain = PostProcessor::buildChain(postDict_);
-                for (auto& pp : chain) pp->run(result);
+            cause = simulationFailure(result);
+            if (!cause.empty()) kind = Fail::NotConverged;
+            else {
+                if (needPost) {
+                    auto chain = PostProcessor::buildChain(postDict_);
+                    for (auto& pp : chain) pp->run(result);
+                }
+                fval = extractObjective(result, objKind_, objPath_);
+                if (!std::isfinite(fval)) {
+                    kind  = Fail::NonFinite;
+                    cause = "the objective '" + objPath_ + "' is not finite";
+                }
+                else if (objSense_ == Sense::Maximise)
+                    fval = -fval;
             }
-            fval = extractObjective(result, objKind_, objPath_);
-            if (!std::isfinite(fval))
-                fval = std::numeric_limits<scalar>::infinity();
-            else if (objSense_ == Sense::Maximise)
-                fval = -fval;
         }
-        catch (const std::exception&) {
-            // Simulator failed at this point: huge penalty pulls the
-            // simplex away.  Nelder-Mead will treat this vertex as
-            // "worst" and contract/shrink toward the better ones.
-            fval = std::numeric_limits<scalar>::infinity();
+        catch (const std::exception& e) {
+            kind  = Fail::Threw;
+            cause = std::string("the simulator threw: ") + e.what();
         }
 
         std::cout.rdbuf(coutBuf);
         std::cerr.rdbuf(cerrBuf);
         sink.str(""); sink.clear();
+        if (kind != Fail::None) {
+            fval = std::numeric_limits<scalar>::infinity();
+            noteFailedEvaluation(kind, cause, x);
+        }
         return fval;
     };
 
@@ -423,6 +500,21 @@ int OptimizationDriver::runNelderMead()
 
     csv.close();
 
+    //  EVERY evaluation FAILED: there is no converged simulation to read an
+    //  objective from, so no optimum exists to report (C186 (4)).  A simplex
+    //  of +inf vertices still shrinks to tolX and the solver would call that
+    //  "converged" -- which is the reviewer's reproduction, exactly.
+    if (ledger_.failed() == ledger_.total || !std::isfinite(R.f))
+        throw std::runtime_error("OptimizationDriver(nelderMead): every one of"
+            " the " + std::to_string(ledger_.total) + " evaluation(s) FAILED ("
+            + ledger_.byCause() + ") -- there is no converged simulation to"
+            " read the objective from, so no optimum is reported.  Each"
+            " failure is named above with its point.  Remedies: raise"
+            " `recycleMaxIter` / loosen `recycleTol` in system/solverDict"
+            " where the flowsheet's recycle stops at its cap, narrow the"
+            " variable ranges to where the flowsheet converges, or fix the"
+            " `initial` point.");
+
     // -----------------------------------------------------------------
     //  Final report
     // -----------------------------------------------------------------
@@ -430,8 +522,15 @@ int OptimizationDriver::runNelderMead()
               << "  status:        " << (R.converged ? "converged" : "stopped")
               << "  (" << R.reason << ")\n"
               << "  iterations:    " << R.iterations
-              << "   evaluations: " << R.evaluations << "\n"
-              << "  best objective:" << std::scientific << std::setprecision(6)
+              << "   evaluations: " << R.evaluations << "\n";
+    //  Failed evaluations by cause (C186 (4)): silent when none failed, so a
+    //  run that never hit one prints as before.
+    if (ledger_.failed() > 0)
+        std::cout << "  failed evaluations: " << ledger_.failed() << " of "
+                  << ledger_.total << "  (" << ledger_.byCause()
+                  << ") -- each named above with its point; none entered"
+                     " the objective\n";
+    std::cout << "  best objective:" << std::scientific << std::setprecision(6)
               << "  " << sensed(R.f) << "\n"
               << "  best variables:\n";
     for (std::size_t i = 0; i < R.x.size(); ++i)
@@ -457,10 +556,22 @@ int OptimizationDriver::runNelderMead()
         else
             clone->setScalarAtPath(vars_[i].path, R.x[i]);
     auto finalResult = simulator_(clone, ov);
+    if (const std::string why = simulationFailure(finalResult); !why.empty())
+        throw std::runtime_error("OptimizationDriver(nelderMead): the replay"
+            " at the optimum FAILED -- " + why + " -- although the evaluation"
+            " at this point was accepted; the simulation is not reproducible"
+            " here and no result is published");
     if (needPost) {
         auto chain = PostProcessor::buildChain(postDict_);
         for (auto& pp : chain) pp->run(finalResult);
     }
+    //  Publish the solution for programmatic consumers (the integer
+    //  enumeration, paretoSweep): x in USER units, f in the USER sense.
+    //  Nelder-Mead is unconstrained, so a converged simplex is feasible.
+    lastX_         = R.x;
+    lastF_         = sensed(R.f);
+    lastConverged_ = R.converged;
+    lastFeasible_  = true;
     setFinalResult(finalResult);          // expose for the reports{} chain
     if (emitJson_) emitResultJson(std::cout, finalResult);
 
@@ -579,66 +690,94 @@ int OptimizationDriver::runSqp()
     //  The response evaluator: ONE simulator pass -> objective + all
     //  constraints, with the inner chatter silenced.  Takes SCALED x.
     // ----------------------------------------------------------------------
-    int simRuns = 0;
     std::ostringstream sink;
+    std::string lastCause;     // of the most recent failed evaluation
 
     auto evaluateAll = [&](const sVector& xs) -> solver::SQPResponse
     {
-        ++simRuns;
+        ++ledger_.total;
         solver::SQPResponse out;
         out.h.assign(nEq, 0.0);
         out.g.assign(nIneq, 0.0);
 
         auto clone = Dictionary::fromFile(flowsheetDict_->sourceName());
         StreamOverrides ov;
+        std::vector<scalar> xUser(n);
         for (const auto& [fp, fv] : fixedVars_)
             if (fp.rfind("streams.", 0) == 0)
                  ov.set(StreamOverrides::fromDictPath(fp), fv);
             else clone->setScalarAtPath(fp, fv);
         for (std::size_t i = 0; i < n; ++i)
+        {
+            xUser[i] = xs[i] * s[i];
             if (vars_[i].path.rfind("streams.", 0) == 0)
-                ov.set(StreamOverrides::fromDictPath(vars_[i].path), xs[i] * s[i]);
+                ov.set(StreamOverrides::fromDictPath(vars_[i].path), xUser[i]);
             else
-                clone->setScalarAtPath(vars_[i].path, xs[i] * s[i]);
+                clone->setScalarAtPath(vars_[i].path, xUser[i]);
+        }
 
+        //  `ok = false` on EVERY failure -- the simulator threw, the
+        //  flowsheet did not converge, a response is not finite -- and the
+        //  SQP treats it as C178 built (one-sided difference, line-search
+        //  rejection, a named stop).  Counted by cause, said with the point.
         auto* coutBuf = std::cout.rdbuf(sink.rdbuf());
         auto* cerrBuf = std::cerr.rdbuf(sink.rdbuf());
+        Fail kind = Fail::None;
+        std::string cause;
         try
         {
             auto result = simulator_(clone, ov);
-            if (needPost)
+            cause = simulationFailure(result);
+            if (!cause.empty()) kind = Fail::NotConverged;
+            else
             {
-                auto chain = PostProcessor::buildChain(postDict_);
-                for (auto& pp : chain) pp->run(result);
-            }
-            scalar f = extractObjective(result, objKind_, objPath_);
-            // SQP always MINIMISES; flip for a maximise objective.
-            out.f = (objSense_ == Sense::Maximise) ? -f : f;
+                if (needPost)
+                {
+                    auto chain = PostProcessor::buildChain(postDict_);
+                    for (auto& pp : chain) pp->run(result);
+                }
+                scalar f = extractObjective(result, objKind_, objPath_);
+                // SQP always MINIMISES; flip for a maximise objective.
+                out.f = (objSense_ == Sense::Maximise) ? -f : f;
 
-            for (std::size_t e = 0; e < nEq; ++e)
-            {
-                const auto& c = constraints_[eqIdx[e]];
-                const scalar resp = extractResponse(result, c.path, "constraint");
-                out.h[e] = (resp - c.rhs) / c.tol;     // tol-scaled equality
+                for (std::size_t e = 0; e < nEq; ++e)
+                {
+                    const auto& c = constraints_[eqIdx[e]];
+                    const scalar resp = extractResponse(result, c.path, "constraint");
+                    out.h[e] = (resp - c.rhs) / c.tol;     // tol-scaled equality
+                }
+                for (std::size_t q = 0; q < nIneq; ++q)
+                {
+                    const auto& c = constraints_[ineqIdx[q]];
+                    const scalar resp = extractResponse(result, c.path, "constraint");
+                    out.g[q] = (c.op == Constraint::Op::AtMost) ? (resp - c.rhs)
+                                                                : (c.rhs - resp);
+                }
+                out.ok = std::isfinite(out.f);
+                for (scalar v : out.h) out.ok = out.ok && std::isfinite(v);
+                for (scalar v : out.g) out.ok = out.ok && std::isfinite(v);
+                if (!out.ok)
+                {
+                    kind  = Fail::NonFinite;
+                    cause = "the objective '" + objPath_ + "' or a constraint"
+                            " response is not finite";
+                }
             }
-            for (std::size_t q = 0; q < nIneq; ++q)
-            {
-                const auto& c = constraints_[ineqIdx[q]];
-                const scalar resp = extractResponse(result, c.path, "constraint");
-                out.g[q] = (c.op == Constraint::Op::AtMost) ? (resp - c.rhs)
-                                                            : (c.rhs - resp);
-            }
-            out.ok = std::isfinite(out.f);
-            for (scalar v : out.h) out.ok = out.ok && std::isfinite(v);
-            for (scalar v : out.g) out.ok = out.ok && std::isfinite(v);
         }
-        catch (const std::exception&)
+        catch (const std::exception& e)
         {
-            out.ok = false;
+            kind  = Fail::Threw;
+            cause = std::string("the simulator threw: ") + e.what();
         }
         std::cout.rdbuf(coutBuf);
         std::cerr.rdbuf(cerrBuf);
         sink.str(""); sink.clear();
+        if (kind != Fail::None)
+        {
+            out.ok = false;
+            lastCause = cause;
+            noteFailedEvaluation(kind, cause, xUser);
+        }
         return out;
     };
 
@@ -680,10 +819,13 @@ int OptimizationDriver::runSqp()
     std::cout << "  [noise-floor probe]  F(x0) evaluated twice:  |dF| = "
               << std::scientific << std::setprecision(3) << repeat
               << "   (the FD gradient step must clear this)\n";
-    if (!r0a.ok)
+    if (!r0a.ok || !r0b.ok)
         throw std::runtime_error("OptimizationDriver(sqp): the model could not"
-            " be evaluated at the initial point -- SQP v1 refuses to guess a"
-            " feasible start; fix `initial` in the variables block.");
+            " be evaluated at the initial point (" + lastCause + ") -- SQP v1"
+            " refuses to guess a feasible start; fix `initial` in the"
+            " variables block, or raise `recycleMaxIter` / loosen"
+            " `recycleTol` in system/solverDict where the flowsheet's recycle"
+            " stops at its cap.");
     {
         // Honest infeasible-start report (does NOT abort -- SQP can recover
         // for inequalities; equalities are driven to feasibility too).
@@ -759,7 +901,13 @@ int OptimizationDriver::runSqp()
               << "  status:        " << (R.converged ? "CONVERGED" : "stopped")
               << "  (" << R.reason << ")\n"
               << "  iterations:    " << R.iterations
-              << "   simulator runs: " << simRuns << "\n";
+              << "   simulator runs: " << ledger_.total << "\n";
+    //  Failed evaluations by cause (C186 (4)): silent when none failed.
+    if (ledger_.failed() > 0)
+        std::cout << "  failed evaluations: " << ledger_.failed() << " of "
+                  << ledger_.total << "  (" << ledger_.byCause()
+                  << ") -- each named above with its point; none entered"
+                     " the objective or a constraint\n";
     //  One-sided differences taken because a perturbed evaluation FAILED
     //  (C178): announced per iteration in the trace, counted here.  Silent
     //  when none were taken, so every run that never hit one prints as before.
@@ -858,6 +1006,11 @@ int OptimizationDriver::runSqp()
         else
             clone->setScalarAtPath(vars_[i].path, R.x[i] * s[i]);
     auto finalResult = simulator_(clone, ov);
+    if (const std::string why = simulationFailure(finalResult); !why.empty())
+        throw std::runtime_error("OptimizationDriver(sqp): the replay at the"
+            " optimum FAILED -- " + why + " -- although the evaluation at"
+            " this point was accepted; the simulation is not reproducible"
+            " here and no result is published");
     if (needPost)
     {
         auto chain = PostProcessor::buildChain(postDict_);
@@ -922,11 +1075,15 @@ int OptimizationDriver::runIntegerEnumeration()
             drv->suppressResultJson();
             drv->setReportFile("integer_point_history.csv");
             drv->run();
+            ledger_.add(drv->evaluations());
         }
         catch (const std::exception& e)
         {
             std::cout << "  [enumeration] " << iv.path << " = " << v
                       << " FAILED (" << e.what() << ")\n";
+            //  A child that refused (every evaluation failed) still counted
+            //  its evaluations: the enumeration's ledger keeps them.
+            if (drv) ledger_.add(drv->evaluations());
             drv.reset();
         }
         Row r{v, std::numeric_limits<scalar>::quiet_NaN(), false, false};
@@ -957,6 +1114,13 @@ int OptimizationDriver::runIntegerEnumeration()
                   << "   " << (r.conv ? "yes" : "NO ")
                   << "        " << (r.feas ? "yes" : "NO")
                   << (best && r.v == bestV ? "   <-- BEST" : "") << "\n";
+    //  Failed evaluations across every value, by cause (C186 (4)): silent
+    //  when none failed.
+    if (ledger_.failed() > 0)
+        std::cout << "  failed evaluations across the enumeration: "
+                  << ledger_.failed() << " of " << ledger_.total << " ("
+                  << ledger_.byCause() << ") -- each named above with its"
+                     " point; none entered any objective\n";
 
     if (!best)
     {

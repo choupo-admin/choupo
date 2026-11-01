@@ -4781,6 +4781,21 @@ PYEOF
     fi
     rm -f /tmp/solvfail.$$
 
+    # optimiser-converged gate (2026-10-31, DEV.md 4c C186 (4)).  An
+    # unconverged simulation is a FAILED evaluation on every optimiser path
+    # (Nelder-Mead, SQP, the integer enumeration), counted by cause and
+    # named with its point; a run whose every evaluation failed refuses by
+    # name instead of reporting an optimum read off an unconverged recycle.
+    if gate_exec "$ROOT/bin/curate/check_optimiser_converged.py" > /tmp/optconv.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "optimiser-converged-gate" "$(head -1 /tmp/optconv.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_optimiser_converged.py)\n" "optimiser-converged-gate"
+        cat /tmp/optconv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/optconv.$$
+
     # held-out-pressure gate (2026-08-25).  A bubble-point fit prices every
     # point at the pressure its own measurement declares -- a column where the
     # study varied it, a held-constant where the study fixed it -- so a pair
