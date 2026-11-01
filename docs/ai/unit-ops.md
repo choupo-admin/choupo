@@ -1414,6 +1414,32 @@ NO membrane -- declare it beside `module`); the leaf WIDTH is derived,
 A/(2 n L), and a record storing it refuses.  `moduleDiameter` + `nModules`
 (the hand table they replace) REFUSE, naming them.
 
+**HOW A PLANT OF STAGES IS LAID OUT** (2026-11-02, C199; full text with
+sources and limits: User Guide, `spiralWoundModule`, "How an RO/NF plant is
+laid out").  A big plant is N identical TRAINS (each: its HP pump, its
+pressure-exchanger array, its vessel racks), or a pressure centre (few large
+pumps, many racks on a header; not yet a tutorial); the trade is efficiency
+against redundancy (author's judgement, no number read).  Machines have
+maxima: Sulzer MSD-RO 1000-1600 m3/h, up to 90 bar, SWRO trains of
+20 000-30 000 m3/d; Energy Recovery PX Q-series 4.5-147.6 m3/h per series,
+up to 83 bar -- so a train gets `ceil(Q/Q_device)` devices and
+`ceil(Q/Q_pump)` pumps.  A vessel holds 1-8 elements; ratings vary by
+position (Carlsbad 1200/600/450 psi; its 2236 vessels hold 8 elements; the
+28.4 ft vessel is Santa Barbara's); Torrevieja stands its second pass on both
+sides of the first.  NO open source gave a loading clearance, rack pitch or
+aisle; the usual practice (one vessel length free at a rack end) is stated
+as the author's, and the case DECLARES every such number `origin assumed;`.
+In `system/postDict`: `sizing { trains { count N; source; reason; } }` and
+`perTrain yes;` on each replicated entry (pump `ratedMachine`
+`kind volumeRate; rating { maxFlowPerUnit; pressureRating; origin; source;
+reason; }`; `pressureExchanger` `ratedFlowPerUnit`/`minFlowPerUnit`/
+`pressureRating`; `membraneBank` `vessel {}`/`rack {}`/`loadingClearance
+{ vesselLengths }`); the engine publishes counts, per-pump and per-train
+numbers and the bank envelope, and the racks stand in a `building {}` of
+`layoutDict`.  Witness `swro01_campoDalias` (6 trains; 233+54+18 vessels of
+7 elements per train; 5+2+1 racks; one 1530.8 kW HP pump and 6 PX devices per
+train; loading clearance 7.642 m; numbers from the C199 phase A record).
+
 **The feed spacer is a record** (`kind feedSpacer`): `thickness` (the
 channel height), `porosity` XOR `filamentDiameter` + `meshLength` (Schock &
 Miquel Eqs. 19-22), `filamentDiameter` XOR `hydraulicDiameter`; d_h is

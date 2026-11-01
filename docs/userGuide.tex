@@ -2235,6 +2235,173 @@ the scaling driver (\file{membrane07\_scaling\_si}).  Start with
 \file{membrane01\_RO\_NaCl\_seawater}, then the concentration-polarisation
 sweep \file{membrane03\_concentration\_polarization}.
 
+\begingroup\Urlmuskip=0mu plus 1mu\relax
+\medskip\noindent\textbf{How an RO/NF plant is laid out.}  The element above
+is the smallest piece of a plant; the equipment a student designs around
+it is organised by a few practices that decide how many pumps, exchangers,
+vessels and racks a plant has and where they stand.  This subsection states
+each practice, its source and its limits.  Every source below is an open
+vendor or trade page read on 2~November 2026; no standard was read, and
+\emph{no open source read gave a numeric clearance, pitch or aisle} (see
+item~4).  Where a number has no source it is called \emph{author-set}, and
+the case declares it \code{origin assumed;}.
+
+\begin{enumerate}
+\item \textbf{Trains, or a pressure centre.}  A large seawater plant is not
+one pump and one vessel bank.  It is organised either as \emph{trains}, each
+with its own high-pressure pump, its own pressure-exchanger array and its own
+vessel racks, or as a \emph{pressure centre}: a few large pumps feeding many
+racks through a common header.  The trade is efficiency against redundancy: a
+larger pump is the more efficient machine, but its failure stops everything
+it feeds, while many trains lose one train at a time.  This trade is the
+author's engineering judgement.  The vendor article on it (Danfoss,
+\emph{Multiple trains for large SWRO plants: how much flow should one pump
+produce}) returned an access error when fetched, and only a search engine's
+summary of it was seen, so \emph{nothing is taken from it}.  What was read is
+the size a single pump is built for (item~2).  The case
+\file{swro01\_campoDalias} is built as six trains because the manufacturer's
+case study it follows states six skids of equal capacity; a pressure-centre
+alternative is not yet a tutorial.
+
+\item \textbf{The maxima of one pump and of one exchanger, and why the plant
+is organised in clusters.}  A machine has a largest size.  Sulzer's
+\emph{MSD-RO axially split multistage pumps}, brochure e10110
+(\url{https://www.sulzer.com/en/-/media/files/products/pumps/axially-split-pumps/brochures/msdro_axiallysplitmultistagepumps_e10110.pdf},
+read), states capacities of 1000 to 1600~m$^3$/h, pressures up to 90~bar, and
+that the pump covers ``SWRO train capacities from 20\,000 \dots{} to
+30\,000~m$^3$/d''.  Energy Recovery's \emph{PX Q-series} page
+(\url{https://energyrecovery.com/pressure-exchangers/px-q-series/}, read)
+states a concentrate flow of 4.5 to 147.6~m$^3$/h (20 to 650~gpm) for the
+series, pressures up to 83~bar, volumetric mixing as low as 2~\%, and offers
+the exchangers as a ready-to-install \emph{array} package for a train
+(``train production capacity starting from 3000~CMD'').  The window
+250--650~gpm (56.8 to 147.6~m$^3$/h) of the Q650 model comes from the
+vendor's release of 9~March 2026, seen only as a search summary.  The pages
+say nothing about how many devices or pumps a plant should use.  The
+consequence is arithmetic and is the guide's own: a train needing more flow
+than one device passes is given an \emph{array},
+$n_{\mathrm{PX}}=\lceil Q/Q_{\mathrm{device}}\rceil$, and a train needing more
+than one pump passes is given $\lceil Q/Q_{\mathrm{pump}}\rceil$ pumps.  A
+\emph{spare} pump shared by the trains is an author-set choice in the case;
+a statement that Carlsbad runs three pumps and one spare was not re-read and
+is not relied on.
+
+\item \textbf{The pressure-vessel bank.}  A vessel holds one to eight
+elements in series (eight at Carlsbad, seven in the Campo de Dalias case).
+CompositesWorld, \emph{Composites' role in seawater reverse osmosis
+desalination}
+(\url{https://www.compositesworld.com/articles/composites-role-in-seawater-reverse-osmosis-desalination-},
+read; the last 15\,000 characters of the page were not), reports for the
+Carlsbad plant 2236 filament-wound vessels of eight elements each (17\,888
+modules), rated 1200, 600 or 450~psi \emph{depending on the area} (the page
+does not say which position gets which rating), and that groups of vessels
+fed from one pressurised header are called trains and are ``arranged in
+racks''.  The 28.4-ft, 8-inch, eight-element vessel on that page belongs to
+the \emph{Santa Barbara} plant, not to Carlsbad.  That ratings vary with
+position means the \code{pressureRating} of a bank is a property of the
+bank, not of the plant; which vessels need the highest rating (the
+high-pressure end of the first pass) is the author's reasoning, not the
+page's.  On the second pass, The Water Network's note on the Torrevieja plant
+(\url{https://thewaternetwork.com/water-news-post-TFp/OwEEo2ZXUXrGgVIK-A4wiA},
+read) says that its second-pass vessels are set \emph{on both sides} of the
+first-pass vessels, unlike most plants, where the second pass sits on one
+side.  That one sentence is all that was read; it says nothing of how common
+either layout is.
+
+\item \textbf{Element loading and the clearance at the end of a rack.}
+Elements are pushed into and pulled out of a horizontal vessel one at a time,
+in line with it, so the usual practice is to keep about one vessel length free
+at one end of a rack.  \emph{No open source read stated this.}  The
+Hydranautics TSB122 and LG Chem TSB~102 loading bulletins were searched; the
+LG Chem one was found to describe the loading procedure (how far to insert
+the first element), not the space around the rack, and neither gave a
+clearance, a vessel pitch, a tier pitch or an aisle.  The one-vessel-length
+rule is the practice as the author states it, following from the geometry of
+withdrawing an element in line; the vendor installation guides that give a
+figure were not readable here, so a student designing a real hall must take
+the figure from the vessel maker's guide.  In Choupo this number, the rack
+pitch, the tier pitch, the end margin and the aisle are all \emph{declared by
+the case and marked \code{origin assumed;}} with a reason; none is a
+default.
+\end{enumerate}
+\endgroup
+
+\noindent\textbf{How Choupo carries this.}  The flowsheet is solved once, at
+plant flow, because $N$ identical trains in parallel carry $N$ times a
+train's flow; the sizing is done per train.  In \file{system/postDict} the
+case declares \code{sizing \{ trains \{ count~$N$; source; reason; \} \}} and
+adds \code{perTrain yes;} to each replicated entry; each such entry then
+yields $N$ items (\code{train1}\dots\code{trainN}) that publish their own
+numbers beside the plant's.  An entry saying \code{perTrain} with no declared
+trains refuses by name, and a vessel count that does not divide by $N$
+refuses naming the remainder.
+\begin{itemize}
+\item \textbf{Pumps} (\code{ratedMachine}, kind \code{volumeRate}): the case
+declares the largest pump, \code{rating \{ maxFlowPerUnit; pressureRating;
+origin; source; reason; \}}.  The sizer publishes the pumps needed per train,
+$\lceil Q_{\mathrm{train}}/Q_{\max}\rceil$, the installed count (fewer than
+needed refuses), the spare, the flow and shaft power per pump, per train and
+for the plant, and the utilisation (announced above 85~\%).  Choupo carries no
+pump catalogue.
+\item \textbf{Pressure-exchanger array} (\code{pressureExchanger}): the
+declared device window (\code{minFlowPerUnit}, \code{ratedFlowPerUnit}) and
+\code{pressureRating}; a device below the bottom of its window or a pressure
+above the rating refuses.
+\item \textbf{Vessel bank} (\code{membraneBank}): from the module's own
+\code{vessels}, \code{elements} and element length and diameter, plus the
+case's vessel (\code{endAllowance}, \code{outsideDiameter}), rack
+(\code{vesselsPerRack}, \code{tiers}, \code{pitch}, \code{tierPitch},
+\code{baseHeight}, \code{endMargin}, \code{aisle}) and
+\code{loadingClearance \{ vesselLengths \}}.  The sheet publishes
+\begin{align*}
+L_{\mathrm{vessel}} &= n_{\mathrm{el}}\,L_{\mathrm{el}} + a_{\mathrm{end}},
+  \qquad N_{\mathrm{racks}} = \lceil N_{\mathrm{vessels}}/N_{\mathrm{rack}}\rceil,\\
+L_{\mathrm{rack}} &= L_{\mathrm{vessel}} + 2\,m_{\mathrm{end}},\quad
+W_{\mathrm{rack}} = \tfrac{N_{\mathrm{rack}}}{N_{\mathrm{tiers}}}\,p,\quad
+H_{\mathrm{rack}} = h_0 + N_{\mathrm{tiers}}\,p_{\mathrm{tier}},
+\end{align*}
+and the bank's \emph{envelope}: length $L_{\mathrm{rack}}$ plus the loading
+clearance $k\,L_{\mathrm{vessel}}$, width $N_{\mathrm{racks}}W_{\mathrm{rack}}
++ (N_{\mathrm{racks}}-1)\,a_{\mathrm{aisle}}$ and height $H_{\mathrm{rack}}$.
+A pitch below the vessel diameter, a vessel narrower than its element and a
+rack that does not divide into tiers each refuse by name.
+\item \textbf{The hall.}  The racks stand in a \code{building \{\}} of
+\file{system/layoutDict}, whose rooms list the items that stand in them; the
+engine publishes the counts and envelopes, and the plant layout check
+refuses overlaps.  The racks, plans and the schematic of a train are drawn
+from the published sheet; the drawings compute nothing of their own.
+\end{itemize}
+
+\noindent\textbf{A worked example}: \file{swro01\_campoDalias}, six trains,
+98\,664.7~m$^3$/d of product.  \emph{Declared by the case:} six trains
+(source: the manufacturer's case study, six skids); a largest pump of
+1600~m$^3$/h and 90~bar and an exchanger window of 56.8--147.6~m$^3$/h at up
+to 83~bar (both \emph{literature}, the pages above); and, all
+\emph{assumed}: a vessel end allowance of 0.53~m (the Santa Barbara
+28.4-ft vessel less eight 40-inch elements, taken to hold here), an outside
+diameter of 0.25~m, 0.40~m pitch and tier pitch, a 1.5~m aisle, 48, 28 and
+20 vessels per rack in four tiers, and a loading clearance of one vessel
+length.  \emph{Computed by the engine} (the numbers are those published with
+the case's design record, DEV.md 4c C199 phase~A; they were not re-run for
+this text): per train one high-pressure pump of 798.6~m$^3$/h (49.9~\% of
+1600) taking 1530.8~kW of shaft power, and six exchanger devices
+(868.2~m$^3$/h of low-pressure flow, 144.7~m$^3$/h per device, inside the
+window); the plant runs six pumps and one spare.  Per train the first pass has
+233 vessels of 7 elements and the second pass $54+18$; a vessel is
+$7\times1.016+0.53=7.642$~m long, which is also the loading clearance; the
+vessels stand in $5+2+1$ racks; a 48-vessel rack measures
+$8.14\times4.8\times1.9$~m ($L\times W\times H$) and the first-pass bank has
+an envelope of $15.78\times30\times1.9$~m.  \emph{Literature:} the ranges and
+ratings of the pump and the exchanger, eight-element vessels with ratings that
+vary by position, and the second pass on both sides at Torrevieja.
+\emph{Limits:} the exchanger is a stand-in (the manufacturer's case study
+uses a piston-type work exchanger); the layout is Choupo's design, not the
+real site's; a pressure-centre alternative, pump curves, NPSH and the cost of
+the pump bank and vessels are not modelled.  The declarations and their
+stated sources are in
+\file{tutorials/plant/swro01\_campoDalias/system/postDict}.
+
+
 \paragraph{\code{ionExchanger}.}  A cation-exchange softener: the inlet
 water analysis is fully equilibrated with a fixed-capacity Na-form
 resin (Gaines--Thomas mass action), so Ca/Mg drop onto the resin and Na
