@@ -82,6 +82,9 @@ public:
     std::map<std::string, scalar> kpis()            const override { return kpis_; }
     std::optional<UnitProfile>    profile()         const override { return profile_; }
 
+    //  What it accepts (C188 item 5, slice D): KremserAcceptance.cpp.
+    UnitAcceptance acceptance() const override;
+
 private:
     inline static const std::string type_ = "absorber";
     std::vector<ProcessStream>       produced_;

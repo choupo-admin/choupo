@@ -144,14 +144,14 @@ def main() -> int:
         k1 = probe(STR, td / "k1_steam")
         if edit(k1 / "0/strippingGas", "    N2    100 kmol/h;",
                 "    N2    80 kmol/h;\n    water 20 kmol/h;", "K1"):
-            expect_refusal("K1", k1, ["Stripper:", "stripping gas",
+            expect_refusal("K1", k1, ["type stripper", "stripping gas",
                                       "SOLVENT 'water'"])
 
         # -- K2: an inert in the rich liquid
         k2 = probe(STR, td / "k2_inert")
         if edit(k2 / "0/liquidFeed", "    water    95 kmol/h;",
                 "    water    90 kmol/h;\n    N2    5 kmol/h;", "K2"):
-            expect_refusal("K2", k2, ["Stripper:", "liquid feed", "'N2'"])
+            expect_refusal("K2", k2, ["type stripper", "rich liquid", "'N2'"])
 
         # -- K3: an inert in the absorber's solvent
         k3 = probe(ABS, td / "k3_inert")
@@ -163,11 +163,11 @@ def main() -> int:
             failures.append("K3: the fixture could not be built")
         else:
             sv.write_text(t2)
-            expect_refusal("K3", k3, ["Absorber:", "solvent stream", "'N2'"])
+            expect_refusal("K3", k3, ["type absorber", "liquid wash", "'N2'"])
 
         # -- K4: no solvent in the package, both units
-        for tag, src, unit in (("stripper", STR, "Stripper:"),
-                               ("absorber", ABS, "Absorber:")):
+        for tag, src, unit in (("stripper", STR, "type stripper"),
+                               ("absorber", ABS, "type absorber")):
             k4 = probe(src, td / f"k4_{tag}")
             (k4 / "constant/thermoPhysPropDict").write_text(GAMMA_PHI)
             expect_refusal(f"K4 ({tag})", k4,

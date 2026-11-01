@@ -797,6 +797,196 @@ log in CLAUDE.md~§14 for the current state.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{What a unit accepts: modelled, a declared approximation, or
+refused}\label{ch:unit-acceptance}
+
+\begin{whatyoulllearn}
+A stream is not accepted by a unit just because the ports connect.
+Every unit operation models a \emph{subset} of what a stream can carry,
+and the rest of this manual's honesty depends on the engine saying, for
+every component that arrives, which of three things happens to it: it is
+\textbf{modelled}, it \textbf{crosses the unit as a declared
+approximation}, or the run is \textbf{refused} --- by name, with the
+remedy.  This section explains why a unit declares what it accepts, how
+a declared approximation is identified on the input and on the output,
+and how to read a refusal.
+\end{whatyoulllearn}
+
+\subsection{The question a connection does not answer}
+
+Two feeds, one question.  A wine is water with a few per cent of
+ethanol; a brine going to an electrodialysis stack is water with its
+ions and, by accident, a trace of benzene in a second liquid phase.
+Should a unit that was written for aqueous solutions take them?
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item The \textbf{ethanol in the wine} is, for a reverse-osmosis
+        module, an ordinary solute: dealcoholisation by membrane is
+        industrial practice, and the transport model prices ethanol's
+        activity inside its \emph{declared domain}.  Refusing it because
+        ``ethanol is not an ion'' would refuse a legitimate process.
+  \item The \textbf{benzene in the stack} enters none of the stack's
+        equations: the stack moves ions across membranes, and benzene is
+        neither an ion nor priced by anything the stack computes.  It is
+        not \emph{wrong} for it to cross the stack --- but nobody should
+        be able to miss that it did.
+\end{itemize}
+
+A simulator with only two answers (``accept'' and ``refuse'') must
+either refuse the wine or silently carry the benzene.  Before this
+contract existed Choupo did something worse than either, in two units:
+the reverse-osmosis module re-counted a volatile solute's moles as
+water (the outlets then held 0.16327\,kmol/s against a 0.16111\,kmol/s
+feed, exit~0), and the batch diafilter \emph{retained} a permeable
+solute whole through 5.43 diavolumes that washed the salt to 50\,\%.
+Neither run said anything.  A unit that has not decided what it does
+with a component decides it by accident.
+
+\subsection{Three states, never two}
+
+For a unit and the stream it is handed, every \emph{present} component
+is in exactly one state:
+
+\begin{enumerate}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{Modelled.}  The component enters the unit's equations,
+        because the declared models can price it inside the model's own
+        validity domain.  The domain is a statement of the \emph{model}
+        (the Davies activity coefficient states its ionic-strength
+        range; the aqueous speciation needs water as the dominant
+        solvent) --- never a universal threshold the engine invents.
+  \item \textbf{A declared approximation (it passes through).}  The
+        component crosses the unit without entering its equations, and
+        the \emph{case} says so: a \code{passThrough} block in the
+        unit's entry names the component, the outlet it leaves by (its
+        \emph{fate}) and the reason.  The engine never chooses a fate:
+        where a component goes in a separator \emph{is} a model choice.
+  \item \textbf{Refused.}  The run stops before the unit computes
+        anything, naming the unit, the stream, the component and the
+        fact, and offering both remedies: a model that prices it, or the
+        \code{passThrough} declaration.
+\end{enumerate}
+
+\subsection{A declared approximation is identified twice}
+
+The benzene case is the one to study
+(\file{tutorials/steady/electrodialysis/ed10\_passthrough\_benzene}).
+The case adds, to the stack's entry,
+\begin{verbatim}
+passThrough
+{
+    benzene { fate diluate; }
+    reason  "trace organic in a second liquid phase; the stack's ion
+             transport does not act on it";
+}
+\end{verbatim}
+and the engine does three things with it.
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{On the input} it judges the declaration: a component
+        the unit \emph{models} cannot be listed (a listing nobody needs
+        reads like a decision), a missing \code{fate} or \code{reason}
+        refuses, and a block on a unit that offers no pass-through
+        refuses.  Authorisation is the block's presence: an unlisted
+        component that the unit does not model is still refused.
+  \item \textbf{In the run} the component is carried unchanged in amount
+        to the named outlet and counted in \emph{every} balance --- mass,
+        elements and energy --- so conservation stays checkable.  In
+        \file{ed10} the stack's mass row closes at 100.0000\,\% on
+        653.6157\,kg/h and the carbon row carries benzene's
+        0.06\,kmol\,C/h in and out.
+  \item \textbf{On the output} it is recorded as a
+        \emph{declared approximation} on the \code{problemDivergence}
+        channel: in the run banner, in the result JSON and in
+        \file{converged/problemDivergence}, above the caveats.  The
+        answer therefore says, on its face, that the question it
+        answered was ``the stack, with benzene passing through''.
+\end{itemize}
+
+\noindent Every stack result in \file{ed10} equals the benzene-free
+twin's to the last printed digit, which is the point: the approximation
+claims that benzene does not act on the stack, and the run shows that
+nothing in the stack moved.  What the stack \emph{cannot} show is
+whether the claim is physically true of the real brine --- that remains
+the author's, which is why the \code{reason} is mandatory.
+
+\subsection{Where the contract lives}
+
+Each unit class answers one function, \code{acceptance()}, and the
+answer is data: the inlet phases the model is written for (for the whole
+unit, or \emph{per port} --- an absorber's gas feed must be a vapour and
+its wash a liquid), whether the declared aqueous solvent must be
+present, a closed rule naming which components the equations carry, the
+package capabilities it needs, the pass-through fates it offers, and any
+further refusal condition with its sentence.  The default accepts every
+phase and models every component, so a unit that has not declared a
+contract behaves as it always did.
+
+One function writes every acceptance refusal.  It is called before any
+unit runs, on every \emph{authored} inlet (so \code{choupo-lint}
+reports it too and the message points at the stream the student wrote),
+and again at the unit's own solve on the stream it is actually handed (a
+\emph{produced} stream, and a recycle, exist only then).  The
+documentation is generated from the same declaration:
+\code{choupoSolve --describe-units} prints every contract as JSON, the
+\emph{Model} tab of the GUI and \file{docs/ai/unit-ops.md} draw the
+``models / may pass through / refuses / needs'' lists from it, and the
+table below is written by the same generator.  Nothing about what a unit
+accepts is written twice.
+
+\begin{center}
+\footnotesize\sloppy\setlength{\emergencystretch}{4em}
+\input{theoryGuide-unitAcceptanceTable.tex}
+\end{center}
+
+\subsection{Reading a refusal}
+
+A refusal has the same anatomy everywhere.
+
+\begin{verbatim}
+absorber 'scrubber' (type absorber): the feed (stream 'gasFeed') carries
+component(s) declared solutes that this unit cannot transfer:
+      'air' (5 mol%) is `role solute` but has no Henry pair against 'water'.
+  A component is transferred only when its record declares `role solute;`
+  AND a Henry pair against the solvent exists.  A solute with no pair is not
+  transferred -- the cascade would carry it through as an inert, in silence,
+  and report a gas it never washed ... at exit 0.
+  REMEDY: curate the Henry pair <component>-<solvent> (a curation act, cited
+  to its primary source), or change the component's role if it is meant to be
+  an inert carrier.
+\end{verbatim}
+
+\noindent Read it in four parts: \emph{who} (the unit and its type),
+\emph{what it was handed} (the stream and the component, with its
+amount), \emph{why the unit cannot} (the sentence of the clause, which is
+the same sentence the generated documentation prints), and the
+\emph{remedy}.  Two habits follow.  First, the remedy is a choice, not an
+order: pricing the component with a model that covers it and declaring it
+a pass-through are different scientific claims, and only the author can
+make either.  Second, a refusal is not a failure of the simulator; it is
+the simulator declining to produce a number whose meaning it cannot
+state.
+
+\begin{pitfall}
+\textbf{A silent inert is an undeclared approximation.}  The Kremser
+absorber transfers a component only when its record says
+\code{role solute} \emph{and} a Henry pair against the solvent exists.
+A solute without a pair used to fall through to the inert branch: the
+gas passed on unwashed and the run exited 0.  It is a contract clause
+now.  When you write a unit, or a case, ask of every component that
+crosses it: is it in the equations, is it declared, or is it silently
+somewhere in between?
+\end{pitfall}
+
+\subsection{What the contract does not do}
+
+It does not decide physics.  It refuses or announces only what a unit
+already cannot do, using the unit's own classification; it invents no
+threshold and no default fate.  It also does not yet cover every unit:
+the table lists those that declare a contract, and an undeclared unit
+accepts what it always accepted.  The remaining units are migrated as
+each is read for what it silently ignores.
+
+% ---------------------------------------------------------------------
 \section{One equation, many declarations: the map}\label{ch:theory-map}
 
 \begin{whatyoulllearn}

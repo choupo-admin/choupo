@@ -155,6 +155,12 @@ ENTRIES = [
        [PY, "bin/curate/gen_unit_acceptance_docs.py", "--check"], "build",
        note="the same lists as the unit-ops.md regions, for the GUI's Model "
             "tab; one generator writes both"),
+    _e("unitAcceptanceTex", ["docs/theoryGuide-unitAcceptanceTable.tex"],
+       [PY, "bin/curate/gen_unit_acceptance_docs.py"],
+       [PY, "bin/curate/gen_unit_acceptance_docs.py", "--check"], "build",
+       note="the map of declared contracts (unit, models, may pass, refusal "
+            "names) the Theory Guide's section on what a unit accepts inputs; "
+            "one generator writes all three outputs (DEV.md 4c C188 slice D)"),
     _e("guideVersion", ["docs/version.tex"],
        [PY, "bin/curate/guide_version.py"],
        [PY, "bin/curate/guide_version.py", "--check"], "pre"),

@@ -163,6 +163,39 @@ SABOTAGES, slice C (by hand, 2026-10-31, each restored):
             what the current binaries generate -- ...
         (m) docs/ai/unit-ops.md omits declared unit(s) ['batchDiafilter']
 
+SLICE D (2026-11-01; docs/design/what-a-unit-accepts.md section 12).
+
+  (n) THE NEW REFUSALS FIRE BEFORE ANY UNIT RUNS, by name: rankine01 with its
+      feed at 420 K (liquid water) refuses at the turbine ("is not a vapour";
+      THE PARENT expanded it as vapour, 5 bar -> 4.21 bar, published vf = 1,
+      exit 0); absorber01 with 5 kmol/h of a `role solute` component that has
+      no Henry pair ('air') refuses naming the pair (THE PARENT passed it
+      through unwashed, exit 0); absorber01 with a 400 K wash refuses at the
+      "liquid wash inlet" (the per-port phase); evaporator01 with ethanol in
+      the feed refuses `oneVolatileSolvent` naming 'water' and 'ethanol'.
+  (o) SOURCE + --describe-units: absorber, stripper, compressor, evaporator
+      and the batch crystalliser carry none of their old inline refusal text
+      and call checkAcceptance; turbine and extractor call it; the absorber
+      lists ports [gas feed: vapour, liquid wash: liquid] and the
+      soluteWithoutHenryPair clause; the stripper's ports are the mirror; the
+      batch crystalliser carries the steady crystalliser's two clauses (k).
+  (m) also holds docs/theoryGuide-unitAcceptanceTable.tex current.
+
+SABOTAGES, slice D (by hand, 2026-11-01, each restored and rebuilt):
+  S10 `a.phases.liquid = true;` in Turbine::acceptance.  FAILED, three arms:
+        (n) liquid-into-turbine: ran to exit 0
+        (o) turbine / compressor are not vapour-only
+        (m) docs/ai/unit-ops.md or gui/schemas/unitAcceptance.json is not what
+            the current binaries generate
+  S11 the soluteWithoutHenryPair test made to return "satisfied" always.
+      FAILED, one arm: (n) solute-without-Henry-pair: ran to exit 0.  Only
+      the run witness sees it: the clause id is still listed.
+  S12 `a.ports = ...` dropped in kremserAcceptance.  FAILED:
+        (n) vapour-wash-into-absorber: ran to exit 0
+        (o) absorber's per-port phases are wrong: []
+        (o) stripper's per-port phases are wrong: []
+        (m) the generated text is stale
+
 WHAT IS NOT CHECKED.  The pass-through's ENERGY balance: ed10's energy
 report is UNAVAILABLE for want of an enthalpy datum on Na and Cl (ed01's own
 records), so only the priceable part could be read (the water+benzene
@@ -344,7 +377,7 @@ def arm_d(fail, ok):
     except (ValueError, KeyError) as e:
         fail.append(f"(d) --describe-units is not the expected JSON ({e})")
         return
-    p, r, m = units.get("pump"), units.get("spiralWoundModule"), units.get("mixer")
+    p, r, m = units.get("pump"), units.get("spiralWoundModule"), units.get("cyclone")
     if not p or not p["declared"] or p["phases"]["accepted"] != ["liquid"]:
         fail.append(f"(d) pump's contract is not declared liquid-only: {p}")
     if (not r or not r["declared"] or not r["solvent"]["aqueousRequired"]
@@ -352,7 +385,7 @@ def arm_d(fail, ok):
         fail.append(f"(d) spiralWoundModule's contract is wrong: {r}")
     if (not m or m["declared"] or m["phases"]["accepted"] != ["liquid", "vapour"]
             or m["models"]["rule"] != "everyComponent"):
-        fail.append(f"(d) mixer does not carry the default contract: {m}")
+        fail.append(f"(d) cyclone does not carry the default contract: {m}")
     e, x, c = units.get("electrodialysisStack"), units.get("ionExchanger"), \
         units.get("crystalliser")
     if (not e or not e["declared"] or e["models"]["rule"] != "aqueousSolventAndIons"
@@ -704,6 +737,11 @@ def arm_k(tmp, fail, ok):
     elif "`aqueousActivityModel`" not in out or "batchElectrodialysis 'rig'" not in out:
         fail.append(f"(k) the batch rig refused (exit {rc}) but not through its"
                     " contract:\n      " + out[-500:])
+    bc = units.get("batchCrystalliser")
+    if (not bc or not bc["declared"] or [r["id"] for r in bc["refusesAlso"]]
+            != ["crystallisableSolute", "volatileCarrier"]):
+        fail.append(f"(k) batchCrystalliser does not carry the steady "
+                    f"crystalliser's contract: {bc}")
     if not any(f.startswith("(k)") for f in fail):
         nd = sum(1 for u in units.values() if u["declared"])
         ok.append(f"choupoBatch --describe-units lists {len(units)} vessel types, "
@@ -767,12 +805,13 @@ def arm_m(fail, ok):
     sys.path.insert(0, str(ROOT / "bin" / "curate"))
     try:
         import gen_unit_acceptance_docs as gen
-        doc, js, units, _ = gen.outputs()
+        doc, js, units, _, tex = gen.outputs()
     except Exception as e:  # noqa: BLE001 -- a check that cannot run must not pass
         fail.append(f"(m) the generator could not run: {e}")
         return
     if gen.DOC.read_text() != doc or not gen.JSON_OUT.exists() \
-            or gen.JSON_OUT.read_text() != js:
+            or gen.JSON_OUT.read_text() != js \
+            or not gen.TEX_OUT.exists() or gen.TEX_OUT.read_text() != tex:
         fail.append("(m) docs/ai/unit-ops.md or gui/schemas/unitAcceptance.json"
                     " is not what the current binaries generate -- run "
                     "bin/curate/gen_unit_acceptance_docs.py")
@@ -790,15 +829,148 @@ def arm_m(fail, ok):
         if declared - got:
             fail.append(f"(m) {where} omits declared unit(s) "
                         f"{sorted(declared - got)}")
-    for need in ("batchDiafilter", "spiralWoundModule", "pump"):
+    for need in ("batchDiafilter", "spiralWoundModule", "pump", "compressor",
+                 "turbine", "absorber", "stripper", "extractor", "evaporator",
+                 "batchCrystalliser", "distillationColumn", "shortcutColumn",
+                 "isothermalFlash", "adiabaticFlash", "valve", "heatExchanger",
+                 "mixer", "splitter"):
         if need not in declared:
             fail.append(f"(m) {need} is not among the declared contracts")
-    if "mixer" in in_doc | in_js:
-        fail.append("(m) the undeclared mixer got a generated section")
+    if "cyclone" in in_doc | in_js:
+        fail.append("(m) the undeclared cyclone got a generated section")
+    for need in sorted(declared):
+        if "\\texttt{" + need.replace("_", "\\_") + "}" not in gen.TEX_OUT.read_text():
+            fail.append(f"(m) docs/theoryGuide-unitAcceptanceTable.tex omits {need}")
     if not any(f.startswith("(m)") for f in fail):
         ok.append("the generated acceptance text is current and names exactly "
                   f"the {len(declared)} declared unit(s) in unit-ops.md and "
                   "the GUI's unitAcceptance.json")
+
+
+# ---------------------------------------------------------------------------
+#  SLICE D (2026-11-01; docs/design/what-a-unit-accepts.md section 12)
+# ---------------------------------------------------------------------------
+TURB = ROOT / "tutorials" / "steady" / "power" / "rankine01_water"
+ABS = ROOT / "tutorials" / "steady" / "absorption" / "absorber01_NH3_water"
+EVAP = ROOT / "tutorials" / "steady" / "evaporation" / "evaporator01_brine"
+
+
+def unseal(w):
+    for sub in ("components", "species", "parameters", "chemistry", "conventions"):
+        d = w / "constant" / sub
+        if d.exists():
+            shutil.rmtree(d)
+    return w
+
+
+def sub1(path, pattern, repl):
+    t = path.read_text()
+    t2, n = re.subn(pattern, repl, t, count=1, flags=re.M)
+    path.write_text(t2)
+    return n == 1
+
+
+def arm_n(tmp, fail, ok):
+    """(n) slice D: the new refusals fire BEFORE any unit runs, by name."""
+    # turbine fed a LIQUID (the parent expanded it as vapour at exit 0).
+    w = copy_case(TURB, Path(tmp) / "accTurbine_liquid")
+    good = (sub1(w / "0" / "feedSteam", r"^T\s+800 K;", "T               420 K;")
+            and sub1(w / "system" / "flowsheetDict", r"W_shaft\s+-10\.0 kW;",
+                     "W_shaft -0.5 kW;"))
+    if not good:
+        fail.append("(n) could not build the turbine witness (rankine01 moved)")
+    else:
+        presolve("liquid-into-turbine", w,
+                 ["type turbine", "is not a vapour", "valve"], fail, ok, "n")
+
+    # absorber: a `role solute` with no Henry pair (parent: passed on, exit 0).
+    w = copy_case(ABS, Path(tmp) / "accAbs_air")
+    air = ROOT / "data" / "standards" / "components" / "air.dat"
+    (w / "constant" / "components").mkdir(exist_ok=True)
+    (w / "constant" / "components" / "air.dat").write_text(
+        air.read_text() + "\nrole solute;\n")
+    good = sub1(w / "constant" / "thermoPhysPropDict",
+                r"components\s+\( NH3  N2  water \);",
+                "components       ( NH3  N2  air  water );")
+    for f in ("gasFeed", "cleanGas"):
+        good &= sub1(w / "0" / f, r"^    N2    90 kmol/h;",
+                     "    N2    85 kmol/h;\n    air    5 kmol/h;")
+    if not good:
+        fail.append("(n) could not build the absorber witness (absorber01 moved)")
+    else:
+        presolve("solute-without-Henry-pair", w,
+                 ["type absorber", "'air'", "no Henry pair"], fail, ok, "n")
+
+    # absorber PER-PORT: the wash arrives as a vapour (400 K, 1 atm).
+    w = copy_case(ABS, Path(tmp) / "accAbs_port")
+    if not sub1(w / "0" / "solvent", r"^T\s+298\.15 K;", "T               400 K;"):
+        fail.append("(n) could not build the absorber port witness")
+    else:
+        presolve("vapour-wash-into-absorber", w,
+                 ["type absorber", "liquid wash inlet", "is not a liquid"],
+                 fail, ok, "n")
+
+    # evaporator: two volatile species in the feed.
+    w = unseal(copy_case(EVAP, Path(tmp) / "accEvap_two"))
+    good = sub1(w / "constant" / "thermoPhysPropDict",
+                r"components\s+\( water NaCl \);",
+                "components       ( water NaCl ethanol );")
+    good &= sub1(w / "0" / "feed", r"^    NaCl    1\.067 kmol/h;",
+                 "    NaCl    1.067 kmol/h;\n    ethanol 1 kmol/h;")
+    if not good:
+        fail.append("(n) could not build the evaporator witness")
+    else:
+        presolve("two-volatiles-into-evaporator", w,
+                 ["type evaporator", "'water'", "'ethanol'"], fail, ok, "n")
+
+
+def arm_o(fail, ok):
+    """(o) SOURCE: the slice-D units carry none of their old inline refusals
+    and call the contract; --describe-units shows the per-port form."""
+    olds = {
+        "separation/Absorber.cpp": ["names no SOLVENT", "not one component is a SOLUTE",
+                                     "neither the solvent"],
+        "separation/Stripper.cpp": ["names no SOLVENT", "not one component is a SOLUTE",
+                                     "neither the solvent"],
+        "rotating/Compressor.cpp": ["carries LIQUID"],
+        "heatTransfer/Evaporator.cpp": ["multiple volatile", "feed has no volatile"],
+        "batch/BatchCrystalliser.cpp": ["no crystallising solute"],
+    }
+    for rel, heads in olds.items():
+        code = strip_comments((SRC / rel).read_text())
+        left = [h for h in heads if h in code]
+        if left:
+            fail.append(f"(o) {rel} still writes refusal text {left} -- it "
+                        "belongs to the contract")
+        if "checkAcceptance(" not in code:
+            fail.append(f"(o) {rel} does not call checkAcceptance(")
+    for rel in ("rotating/Turbine.cpp", "separation/Extractor.cpp"):
+        if "checkAcceptance(" not in strip_comments((SRC / rel).read_text()):
+            fail.append(f"(o) {rel} does not call checkAcceptance(")
+    rc, out = run(["--describe-units"])
+    lines = out.splitlines()
+    start = next((i for i, l in enumerate(lines) if l == "{"), None)
+    try:
+        units = {u["type"]: u for u in json.loads("\n".join(lines[start:]))["units"]}
+    except (TypeError, ValueError, KeyError):
+        fail.append("(o) --describe-units is not JSON")
+        return
+    a, s, tb, c = (units.get("absorber"), units.get("stripper"),
+                   units.get("turbine"), units.get("compressor"))
+    if not a or [p["name"] for p in a.get("ports", [])] != ["gas feed", "liquid wash"] \
+            or [p["accepted"] for p in a["ports"]] != [["vapour"], ["liquid"]]:
+        fail.append(f"(o) absorber's per-port phases are wrong: {a and a.get('ports')}")
+    if not s or [p["accepted"] for p in s.get("ports", [])] != [["liquid"], ["vapour"]]:
+        fail.append(f"(o) stripper's per-port phases are wrong: {s and s.get('ports')}")
+    if not tb or tb["phases"]["accepted"] != ["vapour"] \
+            or not c or c["phases"]["accepted"] != ["vapour"]:
+        fail.append("(o) turbine / compressor are not vapour-only")
+    ids = [r["id"] for r in (a or {}).get("refusesAlso", [])]
+    if "soluteWithoutHenryPair" not in ids:
+        fail.append(f"(o) absorber lacks the soluteWithoutHenryPair clause: {ids}")
+    if not any(f.startswith("(o)") for f in fail):
+        ok.append("the slice-D units refuse through the contract (source) and"
+                  " declare per-port phases")
 
 
 def main() -> int:
@@ -818,7 +990,9 @@ def main() -> int:
         arm_j(tmp, fail, ok)
         arm_k(tmp, fail, ok)
         arm_l(tmp, fail, ok)
+        arm_n(tmp, fail, ok)
     arm_d(fail, ok)
+    arm_o(fail, ok)
     arm_m(fail, ok)
     arm_e(fail, ok)
     if fail:
@@ -827,9 +1001,14 @@ def main() -> int:
             print("  " + f)
         return 1
     print("check_unit_acceptance: OK -- " + "; ".join(ok) + ".  Scope: the "
-          "seven migrated units (spiralWoundModule, pump, electrodialysisStack, "
-          "ionExchanger, crystalliser; batchElectrodialysis, batchDiafilter), "
-          "the default on mixer, and passThrough on the ED stack; NOT checked: "
+          "migrated units (slices A-C: spiralWoundModule, pump, electrodialysisStack, "
+          "ionExchanger, crystalliser, batchElectrodialysis, batchDiafilter; "
+          "slice D: compressor, turbine, absorber, stripper, extractor, "
+          "evaporator, batchCrystalliser, plus the declaration-only column, "
+          "shortcut, flashes, valve, heatExchanger, mixer, splitter), the "
+          "default on cyclone, and passThrough on the ED stack; NOT checked: "
+          "a run witness of the extractor's liquid-only ports and of the batch "
+          "crystalliser's refusals (source and --describe-units arms only); "
           "the energy balance of a pass-through on a case whose package prices "
           "it on a different phase than it carries, the text outside the "
           "generated acceptance regions, a recycle bringing a new component into a migrated "

@@ -778,4 +778,20 @@ int Mixer::solve(const DictPtr& dict,
     return converged ? 0 : 1;
 }
 
+//  WHAT THE UNIT ACCEPTS (DEV.md 4c C188 item 5, slice D): the unit models
+//  whatever component it is handed, in any phase, as its sentence says; it
+//  has no component-subset rule, so the sentence is the whole contract.
+UnitAcceptance Mixer::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.models.sentence =
+        "every component of every inlet, summed; the outlet is the "
+        "package's equilibrium at the outlet pressure, at the temperature "
+        "that closes the adiabatic balance or at the declared one (then the "
+        "duty it implies is published and the outlet carries the dominant "
+        "phase's label)";
+    return a;
+}
+
 } // namespace Choupo

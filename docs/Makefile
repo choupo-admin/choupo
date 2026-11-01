@@ -57,6 +57,10 @@ tutorialsGuide.pdf: $(wildcard tutorialsGuide-*.tex)
 # schema must rebuild the PDF, exactly as editing a tutorials part does.
 propsGuide.pdf: propsGuide-operations.tex
 
+# The theory guide \input{}s a GENERATED table of the unit contracts (rendered
+# by bin/curate/gen_unit_acceptance_docs.py from the engine's --describe-units).
+theoryGuide.pdf: theoryGuide-unitAcceptanceTable.tex
+
 # Every guide depends on the GENERATED version stamp -- a version bump must
 # rebuild all four PDFs, or they keep claiming the previous release.
 $(PDFS) tutorialsGuide.pdf: version.tex

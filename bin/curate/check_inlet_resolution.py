@@ -855,12 +855,18 @@ def arm_q(tmp: pathlib.Path, fail: list) -> str:
     """(q) A COMPRESSOR REFUSES LIQUID IN ITS SUCTION."""
     src = strip_comments(COMPRESSOR_SRC.read_text()) \
         if COMPRESSOR_SRC.is_file() else ""
-    if not re.search(r"flashState::resolvedInletVaporFraction\s*\(", src):
+    #  Since C188 slice D the rule is the unit's DECLARED acceptance: the
+    #  suction is read by `acceptanceInletOf` (the one home of the inlet
+    #  reading, which calls flashState::resolvedInletVaporFraction) and the
+    #  refusal is written by `checkAcceptance`.
+    if not re.search(r"checkAcceptance\s*\(", src) or \
+            not re.search(r"acceptanceInletOf\s*\(", src):
         fail.append("(q1) Compressor.cpp does not read its suction through "
-                    "flashState::resolvedInletVaporFraction")
-    if not re.search(r"if\s*\(\s*vfSuction\s*<\s*1\.0\s*\)", src):
-        fail.append("(q1) Compressor.cpp does not refuse a suction vapour "
-                    "fraction below 1")
+                    "acceptanceInletOf / checkAcceptance")
+    if not re.search(r"Compressor::acceptance\(\)\s*const\s*\{.*?"
+                     r"phases\.liquid\s*=\s*false", src, re.S):
+        fail.append("(q1) Compressor::acceptance() does not refuse a liquid "
+                    "suction (phases.liquid = false)")
     said = []
     for T, shape in (("80", "two-phase"), ("70", "all liquid")):
         case = tmp / ("compressor_suction_" + T)
@@ -879,11 +885,11 @@ def arm_q(tmp: pathlib.Path, fail: list) -> str:
                         "exit 0 -- liquid in a compressor's suction must "
                         "refuse" % (T, shape))
             continue
-        for need in ("carries LIQUID", shape, "vapour fraction V/F = ",
+        for need in ("is not a vapour", "vapour fraction ",
                      "knock-out drum", "`pump`"):
             if need not in log:
                 fail.append("(q2) the %s K refusal does not say %r" % (T, need))
-        m = re.search(r"V/F = ([0-9.eE+-]+)", log)
+        m = re.search(r"vapour fraction ([0-9.eE+-]+)", log)
         said.append("%s K V/F = %s, exit %d" % (T, m.group(1) if m else "?", rc))
     case = tmp / "compressor_suction_shipped"
     shutil.copytree(ROOT / COMPRESSOR_CASE, case)

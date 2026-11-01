@@ -31,6 +31,7 @@ License
 #include "streams/Composition.H"
 #include "thermo/Component.H"
 #include "unitOperations/crystallisation/CrystallisationHeat.H"
+#include "unitOperations/crystallisation/Crystalliser.H"      // its contract is the vessel's
 
 #include <cmath>
 #include <filesystem>
@@ -91,18 +92,23 @@ void BatchCrystalliser::initialise(const DictPtr&       unitDict,
     //  compared kg salt / kg water against kg salt / kg (water + ethanol) and
     //  called the quotient a supersaturation.  It never showed because no
     //  batch case had an antisolvent; batch14 is that case.
+    //  WHAT THE VESSEL ACCEPTS is the steady crystalliser's contract (C188 item
+    //  5, slice D): the same two conditions -- a crystallising solute and a
+    //  volatile carrier -- judged on the initial holdup, by the same function,
+    //  before the shared resolver is asked for a saturation.  The two refusals
+    //  that stood below (no solute, no solvent) are those conditions' and
+    //  moved here.
+    {   AcceptanceInlet in;  in.streamName = "initial holdup";
+        in.T = state_.T;  in.P = state_.P;  in.z = x;
+        checkAcceptance(acceptance(), type(), in, thermo,
+                        "batchCrystalliser '" + name_ + "'"); }
+
     const SatState sat = crystSaturation(thermo, state_.n, 1.0, T_);
     iSolute_ = sat.iSolute;
     iSolv_   = sat.iSolv;
     iAnti_   = sat.iAnti;
     MW_anti_ = (sat.iAnti < n) ? thermo.comp(sat.iAnti).MW() : 0.0;
     c_sat_   = sat.c_sat;              // kg solute / kg solvent at T (isothermal)
-    if (iSolute_ == n)
-        throw std::runtime_error("BatchCrystalliser '" + name_ + "': no"
-            " crystallising solute (need a component with a `solubility {}` block).");
-    if (iSolv_ == n)
-        throw std::runtime_error("BatchCrystalliser '" + name_ + "': no solvent"
-            " in the charge.");
 
     const Component& sol  = thermo.comp(iSolute_);
     const Component& solv = thermo.comp(iSolv_);
@@ -371,6 +377,15 @@ BatchCrystalliser::trajectoryExtras() const
         { "magmaDensity",    M_T },
         { "crystalMass_kg",  crys },
     };
+}
+
+//  WHAT THE VESSEL ACCEPTS (C188 item 5, slice D): the steady crystalliser's
+//  contract, because both ask the same resolver (`crystSaturation`) for the
+//  same saturation of the same liquor: a crystallising solute and a volatile
+//  carrier.  ONE declaration, so the two units cannot drift apart.
+UnitAcceptance BatchCrystalliser::acceptance() const
+{
+    return Crystalliser().acceptance();
 }
 
 } // namespace Choupo

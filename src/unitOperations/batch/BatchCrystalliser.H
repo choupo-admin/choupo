@@ -75,6 +75,9 @@ public:
 
     const std::string& type() const override { return type_; }
 
+    //  What it accepts (C188 item 5, slice D): the steady crystalliser's contract.
+    UnitAcceptance acceptance() const override;
+
     void initialise(const DictPtr&        unitDict,
                     const ThermoPackage&  thermo,
                     const DictPtr&        reactionsDict) override;

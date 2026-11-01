@@ -143,6 +143,13 @@ def lists_of(binary, u):
                        + (" or ".join("a " + p for p in acc) if acc else
                           "of any phase")
                        + " -- " + _end(u["phases"].get("why", "")))
+    for port in u.get("ports", []):
+        if port["accepted"] != ["liquid", "vapour"]:
+            refuses.append("The " + port["name"] + " inlet carrying something"
+                           " that is not "
+                           + (" or ".join("a " + p for p in port["accepted"])
+                              if port["accepted"] else "of any phase")
+                           + " -- " + _end(port.get("why", "")))
     if u["solvent"]["aqueousRequired"]:
         refuses.append("A feed carrying no aqueous solvent -- "
                        + _end(u["solvent"].get("why", "")))
@@ -271,6 +278,65 @@ def render_doc(text, units):
     return "\n".join(kept)
 
 
+TEX_OUT = ROOT / "docs" / "theoryGuide-unitAcceptanceTable.tex"
+_TEX_SPECIAL = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$",
+                "#": r"\#", "_": r"\_", "{": r"\{", "}": r"\}",
+                "~": r"\textasciitilde{}", "^": r"\textasciicircum{}"}
+
+
+def _tex(s):
+    """Plain text -> LaTeX: specials escaped, `code` spans set in \\texttt."""
+    out = []
+    for i, chunk in enumerate(s.split("`")):
+        e = "".join(_TEX_SPECIAL.get(c, c) for c in chunk)
+        out.append("\\texttt{" + e + "}" if i % 2 else e)
+    return "".join(out)
+
+
+def render_tex(units):
+    """One longtable row per declared unit for the Theory Guide: what it
+    models, what it may pass through, and the NAMES of what it refuses (the
+    sentences live in docs/ai/unit-ops.md and in the GUI's Model tab; this is
+    the map a reader holds before opening either)."""
+    grouped = {}      # a type and its aliases are one row
+    for t in sorted(units):
+        binary, u = units[t]
+        L = lists_of(binary, u)
+        names = []
+        if u["phases"]["accepted"] != ["liquid", "vapour"]:
+            names.append("phase: " + " or ".join(u["phases"]["accepted"])
+                         + " only")
+        for port in u.get("ports", []):
+            if port["accepted"] != ["liquid", "vapour"]:
+                names.append("phase of the " + port["name"] + ": "
+                             + " or ".join(port["accepted"]) + " only")
+        if u["solvent"]["aqueousRequired"]:
+            names.append("no aqueous solvent")
+        if u["models"]["rule"] != "everyComponent":
+            names.append("component outside the model")
+        for c in u["refusesAlso"]:
+            names.append(c["id"])
+        for n in u["needs"]:
+            names.append("needs " + n["capability"])
+        may = ("fate " + " | ".join(u["passThrough"]["fates"])
+               if u["passThrough"]["fates"] else "none")
+        body = (" & " + _tex(L["models"][0]) + " & " + _tex(may) + " & "
+                + _tex("; ".join(names) if names else "nothing") + " \\\\")
+        grouped.setdefault(body, []).append(t)
+    rows = [", ".join("\\texttt{" + "".join(_TEX_SPECIAL.get(c, c) for c in x)
+                      + "}" for x in ts) + body
+            for body, ts in grouped.items()]
+    col = ">{\\raggedright\\arraybackslash}p{%s\\linewidth}"
+    head = ("% " + HEADER + "\n"
+            "\\begin{longtable}{@{}" + col % "0.17" + col % "0.38"
+            + col % "0.12" + col % "0.28" + "@{}}\n"
+            "\\hline\n"
+            "\\textbf{Unit} & \\textbf{Models} & \\textbf{May pass} & "
+            "\\textbf{Refuses (clause names)} \\\\\n"
+            "\\hline\n\\endhead\n")
+    return head + "\n".join(rows) + "\n\\hline\n\\end{longtable}\n"
+
+
 def render_json(units):
     obj = {"comment": HEADER, "schema": "unitAcceptanceDocs-v1",
            "units": {t: lists_of(*units[t]) for t in sorted(units)}}
@@ -279,25 +345,27 @@ def render_json(units):
 
 def outputs():
     units, listed = declared_units()
-    return render_doc(DOC.read_text(), units), render_json(units), units, listed
+    return (render_doc(DOC.read_text(), units), render_json(units), units,
+            listed, render_tex(units))
 
 
 def main(argv):
     try:
-        doc, js, units, listed = outputs()
+        doc, js, units, listed, tex = outputs()
     except (RuntimeError, ValueError) as e:
         print(f"gen_unit_acceptance_docs: REFUSED -- {e}")
         return 1
     rel = (DOC.relative_to(ROOT), JSON_OUT.relative_to(ROOT))
     if "--check" in argv[1:]:
-        stale = [str(p) for p, new in ((DOC, doc), (JSON_OUT, js))
+        stale = [str(p) for p, new in ((DOC, doc), (JSON_OUT, js), (TEX_OUT, tex))
                  if not p.exists() or p.read_text() != new]
         if stale:
             print("gen_unit_acceptance_docs: STALE -- " + ", ".join(stale)
                   + " is not what the engine's declarations generate; run "
                   "bin/curate/gen_unit_acceptance_docs.py")
             return 1
-        print(f"unit-acceptance-docs: OK -- {rel[0]} and {rel[1]} are what "
+        print(f"unit-acceptance-docs: OK -- {rel[0]}, {rel[1]} and "
+              f"{TEX_OUT.relative_to(ROOT)} are what "
               f"the {len(units)} declared contract(s) generate "
               f"({', '.join(sorted(units))}), read from choupoSolve "
               f"({listed['choupoSolve']} types) and choupoBatch "
@@ -306,6 +374,7 @@ def main(argv):
         return 0
     DOC.write_text(doc)
     JSON_OUT.write_text(js)
+    TEX_OUT.write_text(tex)
     print(f"gen_unit_acceptance_docs: wrote {rel[0]} ({len(units)} region(s)) "
           f"and {rel[1]}")
     return 0

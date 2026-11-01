@@ -1136,4 +1136,20 @@ int HeatExchanger::solve(const DictPtr& dict,
     return 0;
 }
 
+//  WHAT THE UNIT ACCEPTS (DEV.md 4c C188 item 5, slice D): the unit models
+//  whatever component it is handed, in any phase, as its sentence says; it
+//  has no component-subset rule, so the sentence is the whole contract.
+UnitAcceptance HeatExchanger::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.models.sentence =
+        "every component of both streams, by the effectiveness-NTU method "
+        "on a constant heat capacity per stream (re-evaluated at its mean "
+        "temperature); a phase change inside the exchanger is not modelled "
+        "by the eps-NTU relation -- the outlet is re-resolved at the "
+        "package's equilibrium and the change is announced";
+    return a;
+}
+
 } // namespace Choupo

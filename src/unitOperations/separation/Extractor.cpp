@@ -497,6 +497,29 @@ int Extractor::solve(const DictPtr& dict,
     if (F_feed <= 0.0) throw std::runtime_error("Extractor: feed F must be > 0");
     if (F_solv <= 0.0) throw std::runtime_error("Extractor: solvent F must be > 0");
 
+    // ---- BOTH INLETS MUST BE LIQUIDS (C188 item 5, slice D) -------------
+    //  The cascade equilibrates liquid against liquid; the inlet's phase was
+    //  never read, so a vapour fed to either port entered the stage balances
+    //  as if it were a liquid, at exit 0.  The rule is this unit's DECLARED
+    //  acceptance (`Extractor::acceptance()` below); an authored inlet was
+    //  judged before the first unit ran, a produced one is judged here.
+    {
+        const std::string locus = "extractor '"
+            + (dict->name().empty() ? type() : dict->name()) + "'";
+        auto asFraction = [&](const sVector& mol, scalar F)
+        {
+            sVector z(mol);
+            for (auto& v : z) v /= F;
+            return z;
+        };
+        checkAcceptance(*this, acceptanceInletOf(ins[0],
+                        asFraction(feedMol, F_feed), thermo, locus,
+                        acceptance(), 0), thermo, locus);
+        checkAcceptance(*this, acceptanceInletOf(ins[1],
+                        asFraction(solvMol, F_solv), thermo, locus,
+                        acceptance(), 1), thermo, locus);
+    }
+
     // ---- Operation block ----------------------------------------------
     auto oper = dict->subDict("operation");
     const int N = static_cast<int>(std::lround(oper->lookupScalar("stages")));
@@ -833,6 +856,35 @@ int Extractor::solve(const DictPtr& dict,
                   << " (rel.) --- check the stage balances.\n";
 
     return 0;
+}
+
+//  WHAT THE EXTRACTOR ACCEPTS (DEV.md 4c C188 item 5, slice D): two liquids.
+//  Every component is split between the extract and the raffinate by the
+//  package's liquid-liquid equilibrium at the column's one temperature.
+UnitAcceptance Extractor::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    UnitAcceptance::Port feed, solvent;
+    feed.name = "feed";
+    solvent.name = "solvent";
+    for (auto* p : { &feed, &solvent })
+    {
+        p->phases.liquid = true;
+        p->phases.vapour = false;
+        p->phases.why = "The cascade equilibrates LIQUID against liquid on the"
+            " package's liquid-liquid model, at one temperature and with no"
+            " energy balance; a vapour fed to it would enter the stage balances"
+            " as if it were a liquid.";
+        p->phases.remedy = "condense or cool the stream so it arrives liquid"
+            " (a `heater` or `phaseChanger`, or a higher pressure), or separate"
+            " its vapour with a `flash` first.";
+    }
+    a.ports = { feed, solvent };
+    a.models.sentence = "every component of both streams, split between the"
+        " extract and the raffinate by the package's liquid-liquid equilibrium"
+        " at the column's one temperature";
+    return a;
 }
 
 } // namespace Choupo

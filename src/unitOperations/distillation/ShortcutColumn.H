@@ -99,6 +99,9 @@ public:
               const ThermoPackage& thermo,
               int verbosity) override;
 
+    //  What it accepts (C188 item 5, slice D): declared.
+    UnitAcceptance acceptance() const override;
+
     std::vector<ProcessStream>    producedStreams() const override { return produced_; }
     std::map<std::string, scalar> kpis()            const override { return kpis_; }
 

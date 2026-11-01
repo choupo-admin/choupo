@@ -372,4 +372,18 @@ int Valve::solve(const DictPtr& dict,
     return r.converged ? 0 : 1;
 }
 
+//  WHAT THE UNIT ACCEPTS (DEV.md 4c C188 item 5, slice D): the unit models
+//  whatever component it is handed, in any phase, as its sentence says; it
+//  has no component-subset rule, so the sentence is the whole contract.
+UnitAcceptance Valve::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.models.sentence =
+        "every component of the feed, throttled isenthalpically: the outlet "
+        "is the package's equilibrium at the lower pressure carrying the "
+        "inlet's enthalpy, in whatever phase the feed is";
+    return a;
+}
+
 } // namespace Choupo

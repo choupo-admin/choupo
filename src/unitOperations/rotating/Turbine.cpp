@@ -58,6 +58,22 @@ int Turbine::solve(const DictPtr& dict,
     }
     for (auto& v : y) v /= zsum;
 
+    // ---- THE INLET MUST BE A VAPOUR (DEV.md 4c C188 item 5, slice D) ------
+    //  The expansion below prices the inlet with `H_real` / `S_real`, which are
+    //  the VAPOUR root at the overall composition, and the outlet is published
+    //  as a vapour (`out.vf = 1`).  A liquid or two-phase inlet was therefore
+    //  expanded as if it were all vapour, in silence -- the compressor's
+    //  wet-suction defect (2026-10-21) one machine along.  The rule is this
+    //  unit's DECLARED acceptance (`Turbine::acceptance()` below), read on the
+    //  inlet as it MEANS; an authored inlet was already judged before the
+    //  first unit ran.
+    {
+        const std::string unitName = dict->name().empty() ? type() : dict->name();
+        checkAcceptance(*this, acceptanceInletOf(feedDict, y, thermo,
+                        "turbine '" + unitName + "' inlet", acceptance()),
+                        thermo, "turbine '" + unitName + "'");
+    }
+
     // ---- Hardware --------------------------------------------------------
     const scalar W_shaft = operDict->lookupScalar("W_shaft", Dims::power);
     const scalar eta     = operDict->lookupScalar("eta");
@@ -169,6 +185,27 @@ int Turbine::solve(const DictPtr& dict,
     kpis_["F"]           = F;
 
     return 0;
+}
+
+//  WHAT THE TURBINE ACCEPTS (DEV.md 4c C188 item 5, slice D): a vapour, and
+//  nothing else; every component is expanded as one mixture priced by the
+//  package.
+UnitAcceptance Turbine::acceptance() const
+{
+    UnitAcceptance a;
+    a.declared = true;
+    a.phases.liquid = false;
+    a.phases.vapour = true;
+    a.phases.why = "The turbine prices its inlet and its isentropic path with"
+        " the VAPOUR root of the package at the overall composition and publishes"
+        " its outlet as a vapour; a liquid or two-phase inlet would be expanded"
+        " as if it were all vapour, hiding the latent heat of its liquid.";
+    a.phases.remedy = "superheat the stream (a `heater`) so it arrives as"
+        " vapour, or separate the liquid first with a `flash` and expand only"
+        " its vapour; a liquid that must lose pressure goes through a `valve`.";
+    a.models.sentence = "every component of the inlet, as one vapour mixture"
+        " priced by the package's enthalpy and entropy";
+    return a;
 }
 
 } // namespace Choupo
