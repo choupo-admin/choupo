@@ -1,0 +1,35 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane27_swro_energy_recovery / system/solverDict
+
+  ONE recycle, ONE tear: the brine the RO stage produces LAST is what the
+  exchanger consumes SECOND, so `brine` is cut and seeded in 0/brine.
+
+  WHY WEGSTEIN AND NOT THE DEFAULT NEWTON.  The loop's gain is close to one
+  by construction: the exchanger returns (1 - leakage) = 98.5 % of the brine
+  VOLUME to the membrane feed, so the fixed point
+      Q_RO = Q_HPpump + 0.985 (Q_RO - Q_permeate)
+  is set by the 1.5 % that leaks and by how the permeate moves with the
+  feed -- the plant's recovery is a knife edge on the high-pressure pump's
+  flow, which is exactly why a real SWRO train controls that pump to the
+  permeate it wants.  A Newton step on such a loop divides a small
+  nonlinearity by that 1.5 % and overshoots to an unphysical trial (a brine
+  with no water, a booster asked to pump DOWN) that the units refuse; the
+  Wegstein secant stays on physical trials.  The q bound is widened from
+  its default floor (-1) so the secant may take its full step on a loop
+  whose slope is 0.985 (the default floor would leave a 0.97 contraction
+  per iteration); both solvers converge to the same unique fixed point.
+\*---------------------------------------------------------------------------*/
+
+recycleSolver          Wegstein;
+recycleWegsteinQmin    -100;
+recycleWegsteinQmax    0;
+recycleMaxIter         200;
+recycleTol             1.0e-6;

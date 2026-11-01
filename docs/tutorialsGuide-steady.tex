@@ -8828,6 +8828,67 @@ NOT a validation: no number in this case is measured.
 \goldmore{43}
 \end{tutgolden}
 
+\clearpage
+\tutentry{membrane27\_swro\_energy\_recovery}{tutorials/steady/membranes/membrane27\_swro\_energy\_recovery}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Split) at (0.0,-0.0) {\textbf{Split}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (HPpump) at (2.9,-0.0) {\textbf{HPpump}\\[-1pt]{\tiny pump}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (PX) at (72.5,-0.0) {\textbf{PX}\\[-1pt]{\tiny pressureExchanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Booster) at (75.4,-0.0) {\textbf{Booster}\\[-1pt]{\tiny pump}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Join) at (78.3,-0.0) {\textbf{Join}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (RO) at (81.2,-0.0) {\textbf{RO}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(Split.west)+(-1.05,0.00)$) -- ($(Split.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (Split) -- (HPpump) node[midway, above, font=\tiny] {toHPpump};
+  \draw[->, dashed] (RO.south) .. controls +(0,-1.0) and +(0,-1.0) .. (PX.south) node[midway, below, font=\tiny] {brine};
+  \draw[->] (Split) -- (PX) node[midway, above, font=\tiny] {toPX};
+  \draw[->] (PX) -- (Booster) node[midway, above, font=\tiny] {pxHPout};
+  \draw[->] (HPpump) -- (Join) node[midway, above, font=\tiny] {hpFeed};
+  \draw[->] (Booster) -- (Join) node[midway, above, font=\tiny] {boosted};
+  \draw[->] (Join) -- (RO) node[midway, above, font=\tiny] {roFeed};
+  \draw[->] ($(PX.east)+(0,0.00)$) -- ($(PX.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {spentBrine};
+  \draw[->] ($(RO.east)+(0,0.00)$) -- ($(RO.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{SWRO with energy recovery: high-pressure pump + rotary pressure exchanger + booster + one SW30HR-380 stage on membrane01's seawater -- the specific energy decomposed}
+\begin{tutnarrative}
+WHERE THE ENERGY OF SEAWATER RO GOES.
+
+THE PLANT. membrane01's seawater (35 g/L NaCl, 25 C), 16 m3/h at 2 bar after pretreatment, split between a HIGH-PRESSURE PUMP (to 55 bar) and the low-pressure side of a ROTARY PRESSURE EXCHANGER (the ERI PX class: a ceramic rotor whose ducts are filled in turn by the high-pressure brine, which pushes the seawater they held out at nearly its own pressure, and by low-pressure seawater, which pushes the spent brine to drain). The pressurised seawater the exchanger returns is lifted the last 1.6 bar by a BOOSTER pump, joins the high-pressure pump's discharge, and the two feed ONE SW30HR-380 stage (2 vessels x 7 elements, the record data/standards/assets/SW30HR-380.dat). The stage's brine is the exchanger's high-pressure inlet -- a recycle, cut at `brine`.
+
+THE EXCHANGER'S THREE NUMBERS are a maker's and are declared, never defaulted (Stover, Desalination 203 (2007) 168-175, the ranges he states for isobaric rotary devices): pressure-transfer efficiency 0.96 (95-98 \%), leakage 0.015 (1-2 \%), both the middle of their ranges; mixing 0.03, the LOW end of his 3-6 \%, because under this unit's definition (the brine share of the pressurised outlet's VOLUME) 3 \% on this brine (6.3 \% w/w against a 3.3 \% feed) already raises the feed's salinity 2.8 \%, the top of the 1-3 \% he quotes for that penalty; the middle of his mixing range would give 4.3 \%. His two ranges are not consistent under this definition at 47 \% recovery -- a finding about the definition, recorded and not tuned away.
+
+THE ANSWER (read off the run, 2026-11-01): plant recovery 47.2 \% of the RO feed (16.2 m3/h), 48.3 \% of the seawater drawn (16.4 m3/h); permeate 7.94 m3/h, 99.23 \% observed NaCl rejection brine 8.31 m3/h at 54.12 bar, 6.3 \% w/w exchanger P\_HPout 53.37 bar (solved from eta): 51.4 bar recovered on 8.18 m3/h of seawater, 11.7 kW hydraulic; HP-side loss 0.76 bar; feed salinity 3.30 $\to$ 3.39 \% w/w (+2.83 \%); flows balanced to 1.0 \% (LP in 8.39 vs HP in 8.31 m3/h); dissipated 0.52 kW high-pressure pump 14.47 kW shaft (8.06 m3/h, 2 $\to$ 55 bar, eta 0.82) booster 0.46 kW shaft (8.18 m3/h, 53.37 $\to$ 55 bar, eta 0.80)
+
+THE SPECIFIC ENERGY, DECOMPOSED (pump SHAFT powers over the permeate; no motor or drive efficiency is modelled, no pretreatment, no permeate delivery): with the exchanger (14.47 + 0.46) kW / 7.94 m3/h = 1.88 kWh/m3 WITHOUT it, the same plant pumping its whole RO feed (16.24 m3/h, 8.06 + 8.18) through the high-pressure pump and throttling the brine: (16.24/3600) x 53e5 Pa / 0.82 = 29.2 kW $\to$ 3.67 kWh/m3 so the device halves the plant's pumping energy, at the price of 2.8 \% more salinity on the membrane's feed. THE THERMODYNAMIC MINIMUM for this feed and this recovery, from the osmotic pressure the package gives (the module's own van't Hoff model, pi = 2 c R T; c = 9.568 kmol/h NaCl in 16.45 m3/h = 0.582 kmol/m3, so pi\_0 = 28.8 bar) at the plant recovery r = 0.483: w\_min = pi\_0 (-ln(1 - r)) / r = 28.8 x 1.366 = 39.3 bar = 3.93 MJ/m3 = 1.09 kWh/m3. The 0.79 kWh/m3 between the minimum and the plant is the membrane's overpressure (55 bar fed against 28.8-54 bar of osmotic pressure along the vessel), the pumps' efficiencies, the exchanger's 4 \% and its booster. A student should move the pressure, the recovery (the split fraction) and the three device numbers and watch the terms.
+
+THE KNIFE EDGE, which is real. The exchanger returns 98.5 \% of the brine's VOLUME to the membrane feed, so the loop's gain is 0.985 and the recovery is set by the 1.5 \% that leaks and by how the permeate moves with the feed: the high-pressure pump's flow IS the permeate (plus the leak), and the split fraction here (0.49 to the pump) was tuned by hand until the device ran balanced -- what a real train's control does with that pump's drive. Newton on the tear overshoots on such a loop (a trial brine with no water, a booster asked to pump down); system/solverDict selects Wegstein with its full secant step, which converges in five.
+
+WHAT THE RUN SAYS AND CANNOT SAY. The mixer `Join` is DECLARED isothermal at the feed temperature: an adiabatic mix would need NaCl's liquid heat capacity, which its record does not carry (membrane01's component set), so the pumps' 0.28 K and 0.01 K dissipation rises are discarded there and no mixing duty is priced -- announced. FOR THE SAME REASON THE PLANT'S FIRST LAW IS UNAVAILABLE on this component set (`energyBalance UNAVAILABLE`, as on membrane01): the exchanger's own row closes by construction (T unchanged, Q = 0), but nothing here can show it, and the pumps' useful work v dP is not carried by the liquid enthalpy surface in any case (Pump.cpp says why). An ion-written twin (water, Na, Cl) would have a first law and would show the pumps' residual; it is not built here. The exchanger's three balances ARE checked, independently of the engine, by bin/curate/check\_pressure\_exchanger.py on this case's result JSON.
+
+THE SHEET. system/postDict sizes the exchanger (design/PX/ pressureExchanger): one rotor at a DECLARED rated flow of 60 m3/h per unit (an author-set order of magnitude for the PX-Q300 class, to be replaced by a maker's sheet), the pressure drops and the hydraulic booster duty read from the unit, NOT COSTED (no Turton set). The GUI draws it: the rotor nominal, the four ports with their pressures, the booster beside the high-pressure outlet.
+
+NOT a validation: no number here is measured. NOT modelled: the rotor's hydraulics, the duct-by-duct unsteadiness, any dependence of the mixing on flow imbalance or salinity, the motor and drive, pretreatment.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{boosted}{F}{0.127146448001}
+\goldrow{stream}{boosted}{T}{298.159780601}
+\goldrow{stream}{brine}{F}{0.13035446605}
+\goldrow{stream}{brine}{T}{298.15}
+\goldrow{stream}{feed}{F}{0.255555}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{hpFeed}{F}{0.12522195}
+\goldrow{stream}{hpFeed}{T}{298.428449039}
+\goldrow{stream}{permeate}{F}{0.122013931952}
+\goldrow{stream}{permeate}{T}{298.15}
+\goldrow{stream}{pxHPout}{F}{0.127146448001}
+\goldrow{stream}{pxHPout}{T}{298.15}
+\goldrow{stream}{roFeed}{F}{0.252368398001}
+\goldrow{stream}{roFeed}{T}{298.15}
+\goldmore{159}
+\end{tutgolden}
+
 \subsection{optimisation}
 \grouptheory{optimisation}
 \clearpage

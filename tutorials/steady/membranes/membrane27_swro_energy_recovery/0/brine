@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases). ---*/
+//  THE TEAR SEED.  `brine` is the RO stage's concentrate and the exchanger's
+//  high-pressure inlet, and the exchanger runs BEFORE the stage in the
+//  declared order, so the recycle is cut here (`tearStreams ( brine );`) and
+//  this file is where the Wegstein loop starts: roughly the brine of a
+//  stage at ~47 % recovery on this feed -- a SEED, never an answer; the run
+//  announces the cut and what it converged to.
+componentMolarFlows
+{
+    water   440 kmol/h;
+    NaCl    9.45 kmol/h;
+}
+T               298.15 K;
+P               54.4 bar;
