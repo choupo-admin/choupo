@@ -4919,6 +4919,21 @@ PYEOF
     fi
     rm -f /tmp/drvconv.$$
 
+    # negative-pressure gate (2026-11-02, DEV.md 4c C186 item 5b).  A pipe
+    # whose drop exceeds its inlet publishes a NEGATIVE outlet pressure; an
+    # accepted pass refuses it by name (it used to substitute the inlet's
+    # pressure and exit 0), a trial sweep is announced, P == 0 stays the
+    # unit-did-not-set sentinel.
+    if gate_exec "$ROOT/bin/curate/check_negative_pressure.py" > /tmp/negp.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "negative-pressure-gate" "$(head -1 /tmp/negp.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_negative_pressure.py)\n" "negative-pressure-gate"
+        cat /tmp/negp.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/negp.$$
+
     # held-out-pressure gate (2026-08-25).  A bubble-point fit prices every
     # point at the pressure its own measurement declares -- a column where the
     # study varied it, a held-constant where the study fixed it -- so a pair

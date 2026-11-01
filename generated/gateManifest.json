@@ -1480,6 +1480,11 @@
       "exit": 0,
       "claim": "check_heavy_water: OK -- heavyWater.dat (reviewed) is the IAPWS R16-17(2018)/Herrig 2018 formulation: Wagner block = Eq.(1) Table 3; psat within 5.7e-05 of the full EOS at 6 temperatures (<= 1e-4); Tb/HvapTb/omega/Vliq/MW/Pc/Tc match; Cp fits reproduce; engine psat = the equation to 1e-6; boiling points from the engine: H2O 373.1243 K (IF97), D2O 374.5502 K (EOS 374.5488), shift 1.4259 K. Does NOT check transport (not carried), the EOS's own uncertainty, or any formation datum (none entered).",
       "seconds": 0.1
+    },
+    "check_negative_pressure": {
+      "exit": 0,
+      "claim": "check_negative_pressure: OK -- a pipe whose drop exceeds its inlet pressure is refused by unit, stream, P and inlet on an accepted pass (feed-forward, and in a torn recycle under Newton and Wegstein; the same line with a small drop runs); a trial sweep that visits a negative pressure is announced (2 clamp(s), stdout and caveat block) and the loop still converges; P == 0 (cstr) is still the unit-did-not-set sentinel.  NOT covered: P == 0 as an error (kept on purpose), the time-integrated binaries, other units' reactions to a received pressure.",
+      "seconds": 0.1
     }
   }
 }
