@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 205 records already exist
+## 1. Why an index, when 206 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 205 design records, **146 state a rejected alternative and 59 do not** —
+- Of 206 design records, **147 state a rejected alternative and 59 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -307,6 +307,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`a-desalination-plant-from-a-case-study.md`](../design/a-desalination-plant-from-a-case-study.md) | ADR | yes | **SHIPPED 2026-11-02** -- commission C194: the Campo de Dalias two-pass SWRO (`tutorials/plant/swro01_campoDalias`) built on a manufacturer's two-page case study, every PDF figure `literature` and the rest `assumed`; MEASURED first that `spiralWoundModule` does NOT couple speciation (pH) to transport, so boron is ONE lumped solute with a constant intrinsic rejection per element from the PDF's two pH-labelled tests (91 % at pH 8, 95 % at pH 10), announced as an approximation and the limitation PINNED by the gate; the document's "feed pressure" figures are test pressures (the plant's solved: 58.59 and 10.74 bar); a recycle through the pressure exchanger has a spurious fixed point (0/ is a converged state); one engine fix (`Polarisation` Newton stall at round-off no longer refuses); the plot plan to the fence with three labelled crossings `(not drawn)`; gate `check_swro_plant` |
 | [`a-desalination-plant-is-trains-and-racks.md`](../design/a-desalination-plant-is-trains-and-racks.md) | ADR | yes | **BUILT 2026-11-02 (phase A)** -- commission C199: the Campo de Dalias plant is six TRAINS (the PDF's six skids), solved once at plant flow and sized per train (`sizing { trains {...} }` + `perTrain yes;`, items train1..train6); pumps are `ratedMachine` kind `volumeRate` (declared largest pump, pumps per train and spares published, refused when too few); the pressure-exchanger array per train with a declared window and pressure rating; a new `membraneBank` sizer (vessels, racks, tiers, loading clearance, published box envelope the plan reads); the RO hall a `building {}` the 42 items stand in; no open source gave a clearance, so those are `assumed`; gate `check_swro_plant` extended (arms f-k) |
 | [`the-rack-drawn-from-its-sheet.md`](../design/the-rack-drawn-from-its-sheet.md) | ADR | yes | **BUILT 2026-11-02 (phase B)** -- commission C199: the vessel bank is drawn from its own sheet -- every vessel an instanced cylinder inside its rack inside the hall in 3D (the kind `membraneBank`, one `InstancedMesh` per rack, the sheet joined to the layout at one seam, `withBanks`); the usual 2D drawing set (plan, section through a rack bay, elevation of a rack with its feed/brine/permeate headers) as pure SVG functions, every dimension marked by ink AND word, the headers NOT sized and said so, a missing key a labelled box naming it; one train drawn in the equipment-schematic module with its roles found from the streams; a Reports section "Trains and racks" earned by a bank sheet; held by tests that recompute from the case's real run output |
+| [`a-header-is-sized-by-its-velocity.md`](../design/a-header-is-sized-by-its-velocity.md) | ADR | yes | **BUILT 2026-11-02** -- commission C199, the pipe and header sizer: `pipeHeader` sizes the feed, brine and permeate header of each vessel bank, per train, from the named stream's volumetric flow (the package's density) and a DECLARED velocity window and DECLARED list of inside diameters (no pipe schedule table: no-grant standards), picking the smallest bore within the window, REFUSING when none fits, publishing required and nominal bore (`headerNominalDiameter`), velocity and Darcy-Weisbach drop per metre (Churchill); the window is `assumed` (the one open figure, 1-2 m/s, is a small-plant vendor blog); alternatives rejected: a schedule table in the engine, the key on the bank's sheet, a velocity default; gate `check_swro_plant` arms (l)-(m) |
 
 ### Historical
 
@@ -359,7 +360,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**59 of 205 records state no rejected alternative.**  For a FORUM or a STUDY
+**59 of 206 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

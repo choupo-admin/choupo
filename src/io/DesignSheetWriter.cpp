@@ -285,9 +285,9 @@ std::size_t write(const std::string&                       caseRoot,
         //  item, so every other sheet is character-for-character what it was.
         if (!sz.stream.empty())
         {
-            o << "//  A STORAGE ITEM: not a flowsheet unit.  It is attached to"
-                 " the boundary stream\n//  below and sized from that"
-                 " stream's own flow and state.\n";
+            o << "//  AN ITEM ATTACHED TO A STREAM (a storage tank, a header"
+                 " pipe): it is sized from\n//  the stream below, its own flow"
+                 " and state, not from the unit's ports.\n";
             o << "inlets\n{\n";
             o << portBlock(0, sz.stream, PortRoles::of(roles, sz.stream),
                            result, thermo);

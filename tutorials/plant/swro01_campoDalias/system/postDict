@@ -270,6 +270,153 @@ sizing
                 loadingClearance { vesselLengths 1;  origin assumed;  source "as RO1";  reason "as RO1"; }
             }
         }
+
+        //  ---- THE HEADERS (DEV.md 4c C199, the header sizer): the feed,
+        //  brine and permeate header of each vessel bank, sized per train by
+        //  a velocity window from the flow of the stream each carries.  The
+        //  window and the list of bores are the case's and ASSUMED; see the
+        //  design record docs/design/a-header-is-sized-by-its-velocity.md.
+        {
+            unitName RO1;  type pipeHeader;  material SS316;
+            designRules
+            {
+                perTrain yes;
+                headers
+                (
+                { role feed; stream roFeed; }
+                { role brine; stream brine; }
+                { role permeate; stream perm1; }
+                );
+                frictionModel Churchill;
+                velocity
+                {
+                    min     1.0 m/s;
+                    max     2.0 m/s;
+                    origin  assumed;
+                    source  "typical 1-2 m/s of a commercial RO plant's piping (Netsol Water, 'How to design pipe size in a commercial RO plant', read 2026-11-02; a vendor page for small plants, not specific to seawater or to a header); no open SWRO source gave a window (searched: FilmTec design guidelines, vendor pages)";
+                    reason  "the first pass carries a whole train's flow in each header: a window typical of plant piping keeps the head loss and the erosion at the branch connections modest";
+                }
+                nominalSizes
+                {
+                    origin  assumed;
+                    source  "author-set list of inside diameters, standing for the bores the plant can buy; no pipe schedule table is carried (ASME B36.10, DIN and ISO tables are no-grant standards)";
+                    reason  "the sizer needs a list to choose from; the list is the case's, not a standard's";
+                    sizes
+                    (
+                        { insideDiameter 0.15 m; } { insideDiameter 0.20 m; } { insideDiameter 0.25 m; }
+                        { insideDiameter 0.30 m; } { insideDiameter 0.35 m; } { insideDiameter 0.40 m; }
+                        { insideDiameter 0.45 m; } { insideDiameter 0.50 m; } { insideDiameter 0.55 m; }
+                        { insideDiameter 0.60 m; } { insideDiameter 0.70 m; } { insideDiameter 0.80 m; }
+                    );
+                }
+                roughness
+                {
+                    value   0.045 mm;
+                    source  "the textbook roughness of commercial steel (0.045 mm, Moody chart); not read from a source for this pipe's material";
+                    reason  "an author-set value for a clean header; the real wall (duplex steel, GRP) is smoother or rougher by the maker's figure";
+                }
+                viscosity
+                {
+                    value   1.0e-3 Pa.s;
+                    source  "ASSUMED seawater near 20 C, the same value the case's modules use; the package declares no liquid-viscosity model";
+                    reason  "the Reynolds number needs one; the drop per metre is insensitive to it in rough turbulent flow";
+                }
+            }
+        }
+        {
+            unitName RO2a;  type pipeHeader;  material SS316;
+            designRules
+            {
+                perTrain yes;
+                headers
+                (
+                { role feed; stream feed2; }
+                { role brine; stream conc2a; }
+                { role permeate; stream perm2a; }
+                );
+                frictionModel Churchill;
+                velocity
+                {
+                    min     1.0 m/s;
+                    max     2.0 m/s;
+                    origin  assumed;
+                    source  "typical 1-2 m/s of a commercial RO plant's piping (Netsol Water, 'How to design pipe size in a commercial RO plant', read 2026-11-02; a vendor page for small plants, not specific to seawater or to a header); no open SWRO source gave a window (searched: FilmTec design guidelines, vendor pages)";
+                    reason  "as RO1: the second pass's first stage";
+                }
+                nominalSizes
+                {
+                    origin  assumed;
+                    source  "author-set list of inside diameters, standing for the bores the plant can buy; no pipe schedule table is carried (ASME B36.10, DIN and ISO tables are no-grant standards)";
+                    reason  "the sizer needs a list to choose from; the list is the case's, not a standard's";
+                    sizes
+                    (
+                        { insideDiameter 0.15 m; } { insideDiameter 0.20 m; } { insideDiameter 0.25 m; }
+                        { insideDiameter 0.30 m; } { insideDiameter 0.35 m; } { insideDiameter 0.40 m; }
+                        { insideDiameter 0.45 m; } { insideDiameter 0.50 m; } { insideDiameter 0.55 m; }
+                        { insideDiameter 0.60 m; } { insideDiameter 0.70 m; } { insideDiameter 0.80 m; }
+                    );
+                }
+                roughness
+                {
+                    value   0.045 mm;
+                    source  "the textbook roughness of commercial steel (0.045 mm, Moody chart); not read from a source for this pipe's material";
+                    reason  "an author-set value for a clean header; the real wall (duplex steel, GRP) is smoother or rougher by the maker's figure";
+                }
+                viscosity
+                {
+                    value   1.0e-3 Pa.s;
+                    source  "ASSUMED seawater near 20 C, the same value the case's modules use; the package declares no liquid-viscosity model";
+                    reason  "the Reynolds number needs one; the drop per metre is insensitive to it in rough turbulent flow";
+                }
+            }
+        }
+        {
+            unitName RO2b;  type pipeHeader;  material SS316;
+            designRules
+            {
+                perTrain yes;
+                headers
+                (
+                { role feed; stream conc2a; }
+                { role brine; stream conc2; }
+                { role permeate; stream perm2b; }
+                );
+                frictionModel Churchill;
+                velocity
+                {
+                    min     1.0 m/s;
+                    max     2.0 m/s;
+                    origin  assumed;
+                    source  "typical 1-2 m/s of a commercial RO plant's piping (Netsol Water, 'How to design pipe size in a commercial RO plant', read 2026-11-02; a vendor page for small plants, not specific to seawater or to a header); no open SWRO source gave a window (searched: FilmTec design guidelines, vendor pages)";
+                    reason  "as RO1: the second pass's second stage, fed with the first stage's concentrate";
+                }
+                nominalSizes
+                {
+                    origin  assumed;
+                    source  "author-set list of inside diameters, standing for the bores the plant can buy; no pipe schedule table is carried (ASME B36.10, DIN and ISO tables are no-grant standards)";
+                    reason  "the sizer needs a list to choose from; the list is the case's, not a standard's";
+                    sizes
+                    (
+                        { insideDiameter 0.15 m; } { insideDiameter 0.20 m; } { insideDiameter 0.25 m; }
+                        { insideDiameter 0.30 m; } { insideDiameter 0.35 m; } { insideDiameter 0.40 m; }
+                        { insideDiameter 0.45 m; } { insideDiameter 0.50 m; } { insideDiameter 0.55 m; }
+                        { insideDiameter 0.60 m; } { insideDiameter 0.70 m; } { insideDiameter 0.80 m; }
+                    );
+                }
+                roughness
+                {
+                    value   0.045 mm;
+                    source  "the textbook roughness of commercial steel (0.045 mm, Moody chart); not read from a source for this pipe's material";
+                    reason  "an author-set value for a clean header; the real wall (duplex steel, GRP) is smoother or rougher by the maker's figure";
+                }
+                viscosity
+                {
+                    value   1.0e-3 Pa.s;
+                    source  "ASSUMED seawater near 20 C, the same value the case's modules use; the package declares no liquid-viscosity model";
+                    reason  "the Reynolds number needs one; the drop per metre is insensitive to it in rough turbulent flow";
+                }
+            }
+        }
     );
 
     storage

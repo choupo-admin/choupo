@@ -34,6 +34,7 @@ License
 #include "CycloneSize.H"
 #include "CompressorSize.H"
 #include "MembraneBankSize.H"
+#include "PipeHeaderSize.H"
 #include "PressureExchangerSize.H"
 #include "RatedMachineSize.H"
 #include "VesselSize.H"
@@ -128,6 +129,11 @@ void EquipmentSize::registerBuiltins()
     //  unit's own vessel and element counts; NOT costed.
     registerType("membraneBank",
         []{ return std::make_unique<MembraneBankSize>(); });
+    //  THE HEADERS OF A RACK (2026-11-02, DEV.md 4c C199): the feed, brine
+    //  and permeate pipes sized by a declared velocity window from the flow
+    //  of the named stream, from the case's own list of bores; NOT costed.
+    registerType("pipeHeader",
+        []{ return std::make_unique<PipeHeaderSize>(); });
 }
 
 } // namespace Choupo
