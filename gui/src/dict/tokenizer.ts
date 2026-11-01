@@ -73,7 +73,8 @@ const isWordChar = (c: string) =>
   c === "/" ||
   c === "[" ||
   c === "]" ||
-  c === "$";       // for $var references (resolved at solve time by the C++ engine)
+  c === "$" ||     // for $var references (resolved at solve time by the C++ engine)
+  c === "=";       // UNIFAC subgroup names (CH2=CH, C=C): the C++ Dictionary::isWordChar has it, and without it propylene, butadiene and methyl oleate failed to parse here
 
 /**
  * std::stod-style parse: returns [value, consumedCount].
