@@ -22,7 +22,6 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 
 | status | what | ref |
 |---|---|---|
-| running | C185 item 8 (positivity mask): integrated with main, --gui and the 79 time cases running; then push | C185 |
 | running | C191 (A): the EduTool 'The tree of chemistry' on the curated graph, a general | C191 |
 | todo | C190 (10) negative orders dropped and (13) CHEMKIN rounding -- Sonnet generals, next | C190 |
 | running | C192: the pressure exchanger unit, its design sheet and its schematic; witness membrane27, SWRO energy recovery, to be created | C192 |
@@ -112,6 +111,7 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 | done | C188 item 5 slice C: the diafilter defect closed; the contract generates the docs/ai and GUI sections (one source) | C188, 0ca2b5166 |
 | done | C188 item 5 slice B: ED, batch ED, diafilter, ion exchanger, crystalliser on the contract; passThrough on the ED stack (ed10) | C188, fdbc410e9 |
 | done | C188 item 5 slice A: the acceptance contract, one writer of refusals, RO and pump migrated, authored inlets checked before the solve, --describe-units | C188, fe9420e07 |
+| done | C185 item 8: the positivity guard is a per-row mask over every ODE unit | C185, 42de9160d |
 | done | C186 item 4: the optimiser rejects unconverged simulations on every path (NM, SQP, integer enumeration) | C186, 1ad1aef00 |
 | done | C191 (A) the graph of commodity chemistry curated: 157 substances, 168 routes, every route cited, all yield bands marked assumed | C191, 2b49af710 |
 | done | C189 slice 4: the membrane catalogue import/QA tool; the real import of the workbook (13 records, all pressure bases unstated) | C189, bf3402ef5 |

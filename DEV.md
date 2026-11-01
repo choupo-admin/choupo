@@ -2095,6 +2095,12 @@ accepts today, and that is a policy call.
 > inventory doubled.  To verify on Saturday: the clip site per unit.  Fix
 > direction: carry a per-ROW positivity mask (the rows are interleaved, so
 > a prefix count cannot express it), never a clip after acceptance.
+> DONE 2026-11-01 (42de9160d): the guard is a per-ROW mask
+> (`positiveRows`) over every packed unit, so an overshoot past zero in any
+> unit is a rejected step, never a clip after acceptance; the reviewer's
+> A -> B probe with an idle second unit now conserves the inventory.  Gate
+> `check_positivity_mask`; --gui clean, 78/0 on the 79 time-integrated
+> cases (3 deliberate expected-fails), no golden moved.
 > (7) `src/thermo/reaction/RateLaw.cpp:180-191`: with `revBalance` the
 > reverse rate is (kf/Kc) PROD abar^nu over the ADSORBED activities abar =
 > K_i theta_i, so the rate vanishes at PROD (K_i theta_i)^nu = Kc, not at
