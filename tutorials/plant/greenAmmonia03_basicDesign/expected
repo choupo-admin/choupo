@@ -82,7 +82,7 @@ kpi     Chiller                vf_out           0.82934417727    1e-4
 kpi     FEHE                   C_cold           165649.236816    1e-4
 kpi     FEHE                   C_hot            153640.764185    1e-4
 kpi     FEHE                   C_r              0.927488119975   1e-4
-kpi     FEHE                   H_closure_gap_kW -7.8010634752e-07 1e-4
+kpi     FEHE                   H_closure_gap_kW 4.99996531289e-07 1e-4
 kpi     FEHE                   LMTD             72.9274521522    1e-4
 kpi     FEHE                   NTU              7.15955824506    1e-4
 kpi     FEHE                   Q                64066545.3653    1e-4

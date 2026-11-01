@@ -70,7 +70,7 @@ kpi     PX                     dP_LP_bar        0.7                1e-4
 kpi     PX                     dissipation_kW   0.518215077348     1e-4
 kpi     PX                     efficiency       0.96               1e-4
 kpi     PX                     feedSalinityIncrease 0.0283175895758    1e-4
-kpi     PX                     flowImbalance    0.00999430799828   1e-4
+kpi     PX                     flowImbalance    0.00999661648169   1e-4
 kpi     PX                     leakage          0.015              1e-4
 kpi     PX                     leakageFlow_m3h  0.124608371818     1e-4
 kpi     PX                     mixedBrineFlow_m3h 0.245478492481     1e-4
