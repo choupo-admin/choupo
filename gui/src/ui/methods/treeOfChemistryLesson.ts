@@ -241,7 +241,7 @@ export const TREE_STEPS: readonly LessonStep[] = [
       + "tree from the roots: a transition plan that has to rebuild the "
       + "hundred leaves is not a plan, and the graph shows it does not "
       + "have to. Where a source states an energy intensity for a route "
-      + "the page shows it with its origin word; where none was read back, "
+      + "the page shows it with the word that says where it came from, and where none was read back, "
       + "it says so rather than showing a number.",
   },
   {
