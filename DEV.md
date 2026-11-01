@@ -1528,6 +1528,118 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C195. WHAT CHOUPO LACKS FOR THE TWO PHARMACEUTICAL-PLANT PROJECT GROUPS
+> OF 2026-27 (Vitor, 2026-11-02: "le os indices dos projetos dos anos
+> anteriores ... ve o que falta de importante ao Choupo para servir de apoio
+> aos meus dois grupos"; their base cases are apalutamide01_tablets and
+> donepezil01_tablets).**  Method: 19 student reports (PIF, 2017-2025, in
+> Vitor's folder `Projetos antigos`; text read by a general, chapter lists in
+> the commander's scratchpad INDICES.md, counts by keyword, not by page) set
+> against what the two cases' READMEs declare Choupo computes.  Reports: 15
+> tablets, 3 parenteral (Keytruda, Metex, Perjeta), 1 inhaler, 2 capsules; 4
+> stop at market and patent.  Done by hand or in Excel in the projects that
+> reached design: batch Gantt (10), CAPEX-to-NPV chain (14; IRR by Solver),
+> break-even (12), sensitivity (12), equipment chosen from vendor catalogues
+> and matched to batch size (14), HVAC / purified water / WFI / effluent as
+> description with a cost (11-14, NO air-change calculation in any),
+> staffing (12), market forecast by Excel trend or DDD/prevalence (10).
+> NEVER in any report: simulator use, API synthesis, PK, F0 sterilisation.
+> ALREADY IN CHOUPO, so not a gap: the batch plan and Gantt (C99, C110),
+> CAPEX/OPEX/NPV/payback/working capital/sensitivity (C68), quoted equipment
+> and the declared crew (C98), the GMP building (C97, C100), the plant
+> layout, the spray, fluid-bed and coating dryers.  GAPS, in the order a
+> tablet group meets them: (1) the machines the two cases carry as mass
+> balance only -- blender, roller compactor, mill, screen, tablet press,
+> coating pan, packaging line -- have no sized item, so "does the machine
+> fit the batch and the shift" (what 14 projects did in Excel) is not
+> computed; a declared-rating capacity sizer per machine kind, utilisation
+> read from the batch plan, no new physics; (2) the clean utilities --
+> purified water, HVAC air changes by room grade, compressed air, effluent
+> -- as sized items fed by the rooms' declared volumes and grades (the
+> building already knows both); (3) blend content uniformity (donepezil
+> section 8, flagged by the case itself); (4) the market forecast upstream
+> of the volume (10 projects; an EduTool, not engine); (5) a sterile route
+> (filling, lyophiliser, sterilising filtration, F0) -- only if a group
+> picks a parenteral, 3 of 19 did.  PEDAGOGICAL SCOPE of (1)-(2) is put to
+> Vitor before dispatch (CLAUDE.md section 10).
+> DECIDED 2026-11-02 (Vitor: the market EduTool matters "porque na
+> industria farmaceutica isso e muito influenciado pelas patentes e pelos
+> genericos"): item (4) is RAISED, the architect's scope: an EduTool 'Patent
+> expiry and generic entry' -- the originator's sales and loss-of-exclusivity
+> date in, the number of generic entrants, the price erosion by number of
+> competitors and the share the newcomer wins as DECLARED curves with their
+> source and origin word, out the volume and the price per year that the
+> economics reads (`streamFactor`, price), so the plant's NPV is discounted
+> from the launch the way apalutamide01 already does by hand.  HONEST LIMITS,
+> said on the page: it is NOT a freedom-to-operate analysis (the apalutamide
+> dossier itself lists the European counterparts and SPCs as unverified);
+> price-erosion figures from the commercial databases are not redistributable,
+> so only curves from published studies are shipped, each cited and marked
+> `assumed` unless the study states them for the product class.  The
+> compaction bench (props op: Heckel, Kawakita, Ryshkewitch fitted to the
+> group's own measured data) and the machine-capacity sizer follow;
+> Johanson roller compaction is a second phase.  OPEN, a fact only Vitor
+> holds: whether the groups can measure compaction data or must take
+> literature values.
+> STATUS: COMMISSIONED 2026-11-02.
+
+> **C194. THE CAMPO DE DALIAS SEAWATER DESALINATION PLANT (THE "SEA OF
+> PLASTIC"), FROM A PUBLIC CASE STUDY, WITH ITS WHOLE LAYOUT (Vitor,
+> 2026-11-01: "o maior dessalinizador do sul de Espanha, que produz agua
+> de rega para a regiao do mar de plastico ... tirar dados para fazer o
+> projeto ... por o case study em /plants ... fazer o layout da fabrica
+> toda"; he then sent the manufacturer's case study, PDF ROCaseStudy, which
+> IS the source).**  Source: Toray Industries, "Seawater Desalination Using
+> Toray's RO Membranes to Support a Thriving Agricultural Economy",
+> MC-CS-CAMPODEDALIAS-1910 (2019), two pages, a MANUFACTURER'S document
+> (its own membranes; performance "per manufacturer's test conditions").  It
+> gives: open intake through a 1.6 km subsea pipe; two-stage pretreatment
+> (40 dual-media filters, glass-fibre-reinforced polyester, then 5 micron
+> cartridges, 99.6 % removal); a TWO-PASS RO of six skids; first pass
+> TM820E-400 seawater elements, 233 (7M) skid design, 47.2 % system
+> recovery, 5.52 MPa feed, 99.75 % NaCl and 91 % boron rejection at pH 8;
+> second pass TM720C-430 brackish elements, 54:18 (7M), 84-90 % recovery,
+> 1.03 MPa, 99.2 % NaCl and 95 % boron rejection at pH 10; second-pass
+> concentrate recycled to the first pass; DWEER isobaric energy recovery at
+> 95 % efficiency; remineralisation then disinfection; 98 664 m3/day (129 600
+> m3/day expandable), 310 days a year, 16 442 m3/day per skid, permeate
+> target TDS < 400 mg/L and boron < 0.5 mg/L; the full feed analysis (TDS
+> 38 697 mg/L, ions, boron 5.3 mg/L, 14-23 degC, pH 8.2).  The 2014 build
+> / 2016 commissioning dates disagree inside the document and are NOT used.
+> NOT in it: a site plan, coordinates, pump and vessel counts, energy per
+> m3, costs.  RULES: every value from the PDF carries origin `literature`
+> and the case cites it (a manufacturer's number is the manufacturer's
+> claim, said so); anything the case adds (vessels per skid, pump sizes,
+> building areas) is `assumed` with its reason; the Toray element records
+> are CASE-LOCAL (no catalogue record, no sponsorship implication, C189);
+> the layout is Choupo's DESIGN of a plant at this scale on the declared
+> layout machinery (C75, C80-C96), NOT the real site's plan, and its header
+> says so.  PLACE: tutorials/plant/.  The C192 pressure exchanger stands in
+> for the isobaric recovery (a rotor device in both).
+> DECIDED 2026-11-01 (Vitor: "o boro e para modelar"): the second pass and
+> BORON are modelled -- boric acid (neutral, passes the first pass at about
+> 91 % rejection) and borate (an anion, rejected) with the pH raised
+> between the passes, which is what makes the water fit for irrigation.
+> MEASURED before any brief (2026-11-01, grep of the tree): species
+> `H3BO3`, `BOH4`, `B3O3OH4`, `B4O5OH4`, `CaBOH4`, `MgBOH4` exist in
+> data/standards/species; NO boric-acid / borate equilibrium record exists in
+> data/standards/chemistry (to be curated from a primary source, never
+> typed from memory); the SW30HR-380 record says boron is "not modelled";
+> there is no pH-dosing unit (a `mixer` fed a caustic stream is the route);
+> UNMEASURED, first step of the general: whether `spiralWoundModule`
+> couples the feed speciation (pH) to per-species transport, so that the
+> neutral and the ionic form of one element cross the active layer with
+> different permeances.  If it does not, that is the commission's real
+> content, and it is scoped back to Vitor.
+> DECIDED 2026-11-01 (Vitor: "leva ate ao limite da vedacao"): the layout
+> reaches the FENCE (C93) -- every process area, building, road, the gate
+> and the fence opening, the pipe rack; the intake pipeline and the brine
+> outfall cross the fence at published points with their labels, and what
+> lies beyond (the subsea pipe, the irrigation network) is named at the
+> crossing and NOT drawn.
+> STATUS: COMMISSIONED 2026-11-01; scope settled; waits its turn in the
+> queue (the plan's next-day column), then a brief with every claim measured.
+
 > **C193. THE CML PLAN IS THE 1 HOUR / 1 DAY / 3 DAYS / BEYOND A WEEK
 > TABLE, KEPT CURRENT (Vitor, 2026-10-31 13:25 "plano de desenvolvimento de
 > curto, medio e longo prazo (vamos chamar plano CML)"; 2026-11-01: "isso
