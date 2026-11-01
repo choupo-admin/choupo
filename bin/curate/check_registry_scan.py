@@ -293,9 +293,10 @@ else:
 #      their keys are directional (solute-solvent, cation-anion).
 # ---------------------------------------------------------------------------
 SYMMETRIC = ("NRTL", "UNIQUAC", "Wilson")
+from tracked_tree import all_tracked  # noqa: E402
+_TRACKED = set(all_tracked(ROOT, "check_registry_scan"))
 unreachable, npair = [], 0
-for base in (os.path.join(ROOT, "data", "standards", "parameters"),
-             os.path.join(ROOT, "data", "local", "parameters")):
+for base in (os.path.join(ROOT, "data", "standards", "parameters"),):  # TRACKED tier only: data/local is private (C170 item 4)
     for model in SYMMETRIC:
         d = os.path.join(base, model)
         if not os.path.isdir(d):
@@ -303,6 +304,9 @@ for base in (os.path.join(ROOT, "data", "standards", "parameters"),
         for fn in sorted(os.listdir(d)):
             if not fn.endswith(".dat"):
                 continue
+            if os.path.relpath(os.path.join(d, fn), ROOT).replace(os.sep, "/") \
+                    not in _TRACKED:
+                continue            # an untracked stray is not the corpus
             npair += 1
             stem = fn[:-4]
             a, _, b = stem.partition("-")

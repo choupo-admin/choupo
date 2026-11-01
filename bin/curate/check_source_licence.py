@@ -143,8 +143,24 @@ from pathlib import Path
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).resolve().parent))
 from debt_registry import SOURCE_LICENCE, NC_COMPILATION, NO_GRANT_CASE_LOCAL
+from tracked_tree import all_tracked
 
 ROOT = Path(__file__).resolve().parents[2]
+
+#  THE TRACKED TREE ONLY (DEV.md 4c C170 item 4).  Every arm below used to
+#  `rglob` the disk, so an untracked or private (data/local/) file with a
+#  banned source changed the verdict of THIS machine and of no other.
+_TRACKED = None
+
+
+def _tracked_under(base, suffix=None):
+    global _TRACKED
+    if _TRACKED is None:
+        _TRACKED = sorted(all_tracked(ROOT, "check_source_licence"))
+    rel = Path(base).relative_to(ROOT).as_posix()
+    return [ROOT / r for r in _TRACKED
+            if r.startswith(rel + "/") and (suffix is None or r.endswith(suffix))
+            and (ROOT / r).is_file()]
 
 #  The protocol's NEVER list, as name patterns.  DECHEMA is handled
 #  separately: a NAMED monograph in the series (Knapp et al.) is a citable
@@ -227,7 +243,7 @@ def no_grant_mechanism():
         base = ROOT / root
         if not base.is_dir():
             continue
-        for p in sorted(base.rglob("*")):
+        for p in _tracked_under(base):
             if not p.is_file():
                 continue
             if root == "tutorials" and "constant" not in p.parts:
@@ -407,7 +423,7 @@ def standard_table_violations():
         base = ROOT / root
         if not base.is_dir():
             continue
-        for f in base.rglob("*"):
+        for f in _tracked_under(base):
             if not f.is_file() or f.resolve() == me or "node_modules" in f.parts:
                 continue
             if f.suffix not in STANDARD_TABLE_SUFFIXES:
@@ -620,7 +636,7 @@ def case_local_no_grant():
     value's origin (the same via/authority rules as the catalogue arm), and
     the number of records scanned."""
     found, nscan = [], 0
-    for p in sorted((ROOT / CASE_LOCAL_ROOT).rglob("*.dat")):
+    for p in _tracked_under(ROOT / CASE_LOCAL_ROOT, ".dat"):
         if "constant" not in p.parts:
             continue
         nscan += 1
@@ -742,7 +758,7 @@ def main() -> int:
         base = ROOT / root
         if not base.is_dir():
             continue
-        for f in base.rglob("*"):
+        for f in _tracked_under(base):
             if (not f.is_file() or f.suffix.lower() not in PAPER_SCAN_SUFFIXES
                     or "node_modules" in f.parts):
                 continue
@@ -768,7 +784,7 @@ def main() -> int:
                   "check_true_ions failure again.")
             return 1
     for root in SCAN:
-        for p in sorted((ROOT / root).rglob("*.dat")):
+        for p in _tracked_under(ROOT / root, ".dat"):
             try:
                 text = p.read_text()
             except (UnicodeDecodeError, OSError):
@@ -976,7 +992,7 @@ def main() -> int:
         #  the WORD the record declares, not a databank licence.
         f"{n} ({ACCEPTED_DATABANK[n]['licence'] if n in ACCEPTED_DATABANK else ACCEPTED_PUBLIC_DOMAIN[n]['licenceWord']}, {k} record(s))"
         for n, k in sorted(accepted_seen.items()))
-    print(f"check_source_licence: OK -- {nfiles} record(s) scanned (an "
+    print(f"check_source_licence: OK -- {nfiles} TRACKED record(s) scanned (untracked and data/local files are NOT judged; an "
           f"absent or collapsed scan root REFUSES); no "
           f"encumbered source stands as the authority for a value, except "
           f"{len(PINNED)} pinned violations awaiting curation (a primary "

@@ -33,8 +33,13 @@ zero duplicates, declared clean -- and the full suite then found four more,
 one of them inside a GATE's own fixture.  Sampling and asserting is the habit
 this file replaces.
 
-Scope: data/standards/, data/local/ if present, every tutorial dict, and the
-drafts under docs/design/ -- the one place with no other net.
+Scope: the TRACKED files of data/standards/, every tutorial dict, and the
+drafts under docs/design/ -- the one place with no other net.  `data/local/`
+(the private working tier) and untracked files are NOT judged (DEV.md 4c
+C170 item 4): a private record is not the corpus, and the same commit must
+give the same verdict on every machine.  A student's private duplicate key is
+still caught where it matters -- the engine parses it, and the reader's
+`[local]` announcement names the tier.
 """
 
 import os
@@ -42,6 +47,8 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from tracked_tree import tracked_files  # noqa: E402
 
 #  Files the engine parses as dictionaries.  Extension-less names are the
 #  case dicts (controlDict, flowsheetDict, thermoPhysPropDict, 0/<stream>, ...).
@@ -49,7 +56,7 @@ DICT_NAMES = ("controlDict", "flowsheetDict", "thermoPhysPropDict", "solverDict"
               "outerDict", "postDict", "chemistryDict", "designDict",
               "propsDict", "reactions", "propertyManifest")
 
-SCAN = [("data/standards", None), ("data/local", None),
+SCAN = [("data/standards", None),
         ("tutorials", None), ("docs/design", None)]
 
 fails = []
@@ -125,25 +132,25 @@ def scan(path):
     return out
 
 
-for rel, _ in SCAN:
-    base = os.path.join(ROOT, rel)
-    if not os.path.isdir(base):
+nscanned = 0
+for rel in tracked_files(ROOT, *[r for r, _ in SCAN], gate="check_duplicate_keys"):
+    parts = rel.split("/")
+    dirpath_parts, fn = parts[:-1], parts[-1]
+    if any(d in ("converged", "reports", ".git", "node_modules")
+           or re.fullmatch(r"\d+(\.\d+)?", d)
+           for d in dirpath_parts[1:]):
         continue
-    for dirpath, dirnames, filenames in os.walk(base):
-        dirnames[:] = [d for d in dirnames
-                       if d not in ("converged", "reports", ".git", "node_modules")
-                       and not re.fullmatch(r"\d+(\.\d+)?", d)]
-        for fn in filenames:
-            if not (fn.endswith(".dat") or fn in DICT_NAMES
-                    or os.path.basename(dirpath) == "0"):
-                continue
-            if fn.startswith("log.") or fn.endswith(".md"):
-                continue
-            p = os.path.join(dirpath, fn)
-            for key, first, second in scan(p):
-                fails.append("%s: key '%s' declared at line %d and again at %d "
-                             "in the same block -- last wins, silently"
-                             % (os.path.relpath(p, ROOT), key, first, second))
+    if not (fn.endswith(".dat") or fn in DICT_NAMES
+            or (dirpath_parts and dirpath_parts[-1] == "0")):
+        continue
+    if fn.startswith("log.") or fn.endswith(".md"):
+        continue
+    p = os.path.join(ROOT, rel)
+    nscanned += 1
+    for key, first, second in scan(p):
+        fails.append("%s: key '%s' declared at line %d and again at %d "
+                     "in the same block -- last wins, silently"
+                     % (rel, key, first, second))
 
 if fails:
     print("DUPLICATE KEYS (%d) -- the file's order would decide the answer:"
@@ -154,6 +161,7 @@ if fails:
         print("  ... and %d more" % (len(fails) - 40))
     sys.exit(1)
 
-print("duplicate-key gate: every dict on disk declares each key once "
-      "(standards, local, tutorials, design drafts)")
+print("check_duplicate_keys: OK -- each of %d TRACKED dict file(s) declares each "
+      "key once (standards, tutorials, design drafts); NOT judged: data/local/ "
+      "and untracked files" % nscanned)
 sys.exit(0)
