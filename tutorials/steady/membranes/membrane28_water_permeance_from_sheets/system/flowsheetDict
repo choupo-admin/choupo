@@ -1,0 +1,101 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane28_water_permeance_from_sheets -- the WATER PERMEANCE a data sheet
+  implies, found the way its observed rejection is (DEV.md 4c C189 slice 5b).
+
+  THE FINDING THIS CASE ANSWERS.  At the rated tests of the two shipped
+  elements the engine's permeate was 2.16x the NF270-4040 sheet and 2.08x the
+  SW30HR-380 sheet.  Not the inversion's fault, and not the active area:
+  the membrane records NF270 and SW30HR carry an A_w that is a fit to a
+  TEACHING case (their `provenance fittedToCase;`, 36 and 3.6 L/m2/h/bar),
+  while a data sheet measures THE ELEMENT's permeate at a stated pressure.
+  Two things that share a symbol and are not the same fact.
+
+  THE DECISION.  `waterPermeance fromRatedTest;` in the unit's operation
+  (beside `rejection { <salt> fromRatedTest; }`, which it needs) runs the
+  module at the record's rated test and finds, together, the A_w that
+  reproduces the sheet's PERMEATE flow and the R_int that reproduces its
+  observed REJECTION.  They are coupled (the wall concentration depends on
+  the flux, the osmotic pressure on the rejection), so the two solves
+  alternate until A_w is stationary.  The membrane record is not edited: its
+  fit still serves the case it was fitted to (membrane02, membrane01), and
+  nothing else moves.  The derived A_w is a MODEL parameter of the element
+  as the film model reads it -- not a manufacturer's number -- and the unit
+  publishes it beside the record's (A_w_fromRatedTest_LMH_per_bar,
+  A_w_record_LMH_per_bar).
+
+  TWO UNITS, one per sheet: NF270-4040 (MgSO4, rated 4.8 bar gauge) fed at
+  8 bar absolute, SW30HR-380 (NaCl, rated 55 bar gauge) fed at 56 bar.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        NF;
+        type        spiralWoundModule;
+        in          feedNF;
+        outputs     ( retentateNF  permeateNF );
+        operation
+        {
+            module           NF270-4040;
+            transport        constantRejection;
+            transportParameters
+            {
+                rejection { MgSO4 fromRatedTest; }
+                source    "DERIVED: the NF270-4040 sheet's observed MgSO4 rejection and permeate flow (Form No. 45-D01529-en Rev. 8) inverted with this element's own film at the sheet's rated test";
+            }
+            waterPermeance   fromRatedTest;
+            P_permeate       1.0 bar;
+            nNodes           50;
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      0.89e-3;
+                diffusivity    0.85e-9;
+            }
+            pressureDrop      { model SchockMiquel; }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        none;
+            }
+        }
+    }
+    {
+        name        RO;
+        type        spiralWoundModule;
+        in          feedRO;
+        outputs     ( retentateRO  permeateRO );
+        operation
+        {
+            module           SW30HR-380;
+            transport        constantRejection;
+            transportParameters
+            {
+                rejection { NaCl fromRatedTest; }
+                source    "DERIVED: the SW30HR-380 sheet's observed NaCl rejection and permeate flow (Form No. 45-D00971-en Rev. 7) inverted with this element's own film at the sheet's rated test";
+            }
+            waterPermeance   fromRatedTest;
+            P_permeate       1.0 bar;
+            nNodes           50;
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      0.95e-3;
+                diffusivity    1.6e-9;
+            }
+            pressureDrop      { model SchockMiquel; }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        none;
+            }
+        }
+    }
+);

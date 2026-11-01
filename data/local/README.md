@@ -40,10 +40,12 @@ announced as `[local] UNVERIFIED` — never silent.
   catalogue by `bin/choupo-import-membranes` (DEV.md 4c C189 slice 4), each
   `reviewStatus unverified` and naming the file, sheet and row behind every
   value, with the tool's `IMPORT-REPORT-membranes.{txt,json}` beside them.
-  NOTE the exception to the resolution order above: the module registry does
-  NOT read `data/local/assets/`; a record here is USED by copying it into a
-  case's `constant/assets/` (`module <name>; membrane <NF|RO record>;`), and
-  promoted to `data/standards/assets/` only by a human who read the sheet;
+  The module registry reads `data/local/assets/` as its LOWEST tier (local <
+  standards < the case's `constant/assets/`, DEV.md 4c C189 slice 5): a record
+  here is used by `module <name>; membrane <NF|RO record>;`, announced
+  `[local] ... UNVERIFIED` on every run that reads it, shadowed by a standards
+  record of the same name, and promoted to `data/standards/assets/` only by a
+  human who read the sheet;
 * any third-party dataset whose redistribution you have not established.
 
 Because it is private, `data/local/` is where third-party values live without

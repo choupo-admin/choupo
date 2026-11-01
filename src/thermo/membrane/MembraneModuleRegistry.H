@@ -61,6 +61,12 @@ public:
     static const MembraneModule& byName(const std::string& name);
 
     static std::vector<std::string> availableNames();
+
+    //- Which tier the record of `name` was read from: "local" (data/local/
+    //  assets, gitignored, UNVERIFIED -- the importer's home), "standards"
+    //  or "case" (the case's constant/assets); empty for an unknown name.
+    //  Precedence, lowest first: local < standards < case.
+    static std::string tierOf(const std::string& name);
 };
 
 } // namespace Choupo

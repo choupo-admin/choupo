@@ -1,0 +1,26 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record-append).
+# kind   name      key         expected        reltol
+diag    shortlist              NF270_4040__A_w_LMH_per_bar 14.8806573771    1e-4
+diag    shortlist              NF270_4040__R_int 0.979346761192   1e-4
+diag    shortlist              NF270_4040__R_obs 0.969702755801   1e-4
+diag    shortlist              NF270_4040__dP_bar 0.430832573708   1e-4
+diag    shortlist              NF270_4040__feedFlow_m3h 3.46318793226    1e-4
+diag    shortlist              NF270_4040__flux_LMH 68.3523937423    1e-4
+diag    shortlist              NF270_4040__margin_P 0.829268292683   1e-4
+diag    shortlist              NF270_4040__margin_T 0.0628634292001  1e-4
+diag    shortlist              NF270_4040__margin_dP 0.569167426292   1e-4
+diag    shortlist              NF270_4040__margin_feedFlow 0.0380033521509  1e-4
+diag    shortlist              NF270_4040__margin_pH 2.5              1e-4
+diag    shortlist              NF270_4040__permeateConc_ppm 60.5944883985    1e-4
+diag    shortlist              NF270_4040__permeateFlow_m3d 12.4674766186    1e-4
+diag    shortlist              NF270_4040__recovery 0.150000000752   1e-4
+diag    shortlist              NF270_4040__specificEnergy_kWh_m3 1.2962962898     1e-4
+diag    shortlist              NF270_4040__specificPressure_bar_per_LMH 0.102410458753   1e-4
+diag    shortlist              SEPA_CF__margin_P 0.898550724638   1e-4
+diag    shortlist              SEPA_CF__margin_T 0.160495565254   1e-4
+diag    shortlist              SW30HR_380__margin_P 0.915662650602   1e-4
+diag    shortlist              SW30HR_380__margin_T 0.0628634292001  1e-4
+diag    shortlist              SW30HR_380__margin_pH 3.5              1e-4
+diag    shortlist              n_candidates     7                1e-4
+diag    shortlist              n_excluded       6                1e-4
+diag    shortlist              n_pass           1                1e-4

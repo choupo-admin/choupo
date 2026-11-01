@@ -54,7 +54,7 @@ window, said so in each record); the engine's permeate at the reference test
 against the class's stated permeate (printed in (b), not asserted -- the
 same posture as check_membrane_modules (f)); the batch diafilter, which
 reads membranes by name and does not refuse a class (an open item); the
-shortlist from a class to products (slice 5).
+shortlist from a class to products (check_membrane_shortlist.py).
 
 SABOTAGE-VERIFIED 2026-10-31 (edits BY HAND, rebuilt where C++ moved, run,
 restored; the gate never patches a source):
@@ -392,6 +392,36 @@ def main():
                       % (k.get("R_int_fromRatedTest_NaCl", float("nan")),
                          k.get("R_int_fromRatedTest_MgSO4", float("nan")),
                          k.get("R_obs_NaCl", float("nan")), k.get("R_obs_MgSO4", float("nan"))))
+
+        # ---- (f) the SEAL follows a class's element and a module's spacer ----
+        #  C189 slice 5: bin/choupo-import could not seal a class case -- the
+        #  class names its element by reference (`element Generic-4040;`) and
+        #  the closure did not follow it ("unknown membrane module
+        #  'Generic-4040'") -- and the feed spacer a module is wound with
+        #  (`feedSpacer`) must come along.  Each witness is sealed in a temp
+        #  copy with the standards catalogue hidden and must REPRODUCE its
+        #  golden; the mirrored records are listed.
+        importer = ROOT / "bin" / "choupo-import"
+        for label, src, must_mirror in (
+                ("class", WITNESS, ("NF_DIVALENT_SELECTIVE.dat", "Generic-4040.dat", "SchockMiquel-FilmTecFT30.dat")),
+                ("module+spacer", ROOT / "tutorials/steady/membranes/membrane28_water_permeance_from_sheets",
+                 ("NF270-4040.dat", "SW30HR-380.dat", "Spacer-28mil.dat"))):
+            sd = tmp / ("seal_" + label.replace("+", "_"))
+            shutil.copytree(src, sd, ignore=shutil.ignore_patterns(
+                "converged", "log.*", "reports", "design", "propertyManifest"))
+            for sub in ("assets", "components", "species"):
+                shutil.rmtree(sd / "constant" / sub, ignore_errors=True)
+            r = subprocess.run([str(importer), str(sd)], capture_output=True, text=True, timeout=900)
+            out = r.stdout + r.stderr
+            if r.returncode != 0 or "reproduced its `expected` golden" not in out:
+                fail("(f) sealing the %s witness failed (exit %d):\n%s" % (label, r.returncode, out[-700:]))
+                continue
+            miss = [m for m in must_mirror if not (sd / "constant/assets" / m).exists()]
+            if miss:
+                fail("(f) sealing the %s witness did not mirror %s" % (label, miss))
+            else:
+                print("  (f) the %s witness seals with the catalogue hidden and reproduces its golden; mirrored %s"
+                      % (label, ", ".join(must_mirror)))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -404,7 +434,7 @@ def main():
           "derived R_int typed on an independent fixture at the class's reference test reproduces "
           "the stated observed rejection to 1e-7; an unknown class, SDEM, solutionDiffusion, a typed "
           "rated salt, a class as a bare membrane, a class naming a manufacturer and one claiming "
-          "another review status all refuse by name.  NOT checked: whether a class's values are good "
+          "another review status all refuse by name; the importer seals the class witness (following the class's element) and a spacer-reading module witness with the catalogue hidden, each reproducing its golden.  NOT checked: whether a class's values are good "
           "teaching values, the engine's permeate against the stated one (printed only), the batch "
           "diafilter (does not refuse a class)" % ", ".join(CLASSES))
     return 0

@@ -55,8 +55,9 @@
       intrinsic value is re-derived; typing a number here instead is
       refused, because a rated salt's intrinsic rejection is derived.
     * Then the PRODUCT: a commercial element (`module NF270-4040;`, its data
-      sheet's rated test) -- the shortlist from a class to products is a
-      later slice (DEV.md 4c C189 (5)).
+      sheet's rated test) -- the shortlist from a class to products is the
+      props op `membraneShortlist` (tutorials/props/membrane/
+      shortlist01_class_to_modules, DEV.md 4c C189 slice 5).
 
   NOT a validation: no number in this case is measured.
 \*---------------------------------------------------------------------------*/

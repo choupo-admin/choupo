@@ -28,13 +28,16 @@ License
 
 #include "MembraneModuleRegistry.H"
 #include "FeedSpacer.H"
+#include "core/Advisory.H"
 #include "core/Dictionary.H"
 #include "core/RegistryRefusal.H"
 #include "core/RegistryScan.H"
 #include "thermo/RecordResolver.H"
 
 #include <filesystem>
+#include <iostream>
 #include <map>
+#include <set>
 #include <stdexcept>
 
 namespace Choupo {
@@ -47,6 +50,14 @@ std::map<std::string, MembraneModule>& registry()
 {
     static std::map<std::string, MembraneModule> r;
     return r;
+}
+
+//  The tier each registered name was last read from: "local" (data/local/
+//  assets), "standards" (data/standards/assets) or "case" (constant/assets).
+std::map<std::string, std::string>& tierMap()
+{
+    static std::map<std::string, std::string> t;
+    return t;
 }
 
 } // anonymous namespace
@@ -66,7 +77,7 @@ void MembraneModuleRegistry::loadFrom(const std::string& dataRoot)
     //  into FeedSpacerRegistry -- so every binary that loads the modules
     //  loads their spacers, with no second call in any main.
     auto scan = [](const fs::path& dir, records::ScanGuard& guard,
-                   records::ScanGuard& spacerGuard)
+                   records::ScanGuard& spacerGuard, const char* tier)
     {
         if (!fs::exists(dir)) return;
         for (auto& e : fs::directory_iterator(dir))
@@ -90,18 +101,49 @@ void MembraneModuleRegistry::loadFrom(const std::string& dataRoot)
             else
                 m.readFromDict(d, e.path().string());
             guard.claim(m.name(), e.path().string());
-            registry()[m.name()] = std::move(m);
+            const std::string nm = m.name();
+            //  A higher tier replacing a lower one's name: a local record
+            //  that a standards record takes the place of is SHADOWED, said.
+            const auto prior = tierMap().find(nm);
+            if (prior != tierMap().end() && prior->second == "local"
+             && std::string(tier) == "standards")
+                std::cerr << "[shadowed] membrane module '" << nm << "': a data/local/"
+                             "assets record exists but the data/standards/ one is used"
+                             " instead (standards beats local; local fills gaps).\n";
+            tierMap()[nm] = tier;
+            registry()[nm] = std::move(m);
         }
     };
+    //  THE THREE TIERS, lowest precedence first (DEV.md 4c C189 slice 5, the
+    //  data/local decision): data/local/assets/ (gitignored, the importer's
+    //  home, bin/choupo-import-membranes) < data/standards/assets/ < the
+    //  case's constant/assets/.  Components have read data/local since
+    //  2026-07-13 with `standards beats local; local fills gaps`; a module
+    //  record is the same kind of curated-or-not fact, and the importer
+    //  writes ONLY there, so without this tier an imported catalogue was
+    //  invisible until a human copied each record into every case.  Reading
+    //  it costs a student nothing he did not already accept for components:
+    //  a name that exists in both tiers takes the standards record
+    //  ([shadowed], announced), and a local record that is USED is announced
+    //  `[local] ... UNVERIFIED` by byName.  A sealed run passes no data root
+    //  and so never reads this tier.
+    tierMap().clear();
+    if (!dataRoot.empty())
     {
         records::ScanGuard guard("MembraneModuleRegistry", "membrane module");
         records::ScanGuard sg("FeedSpacerRegistry", "feed spacer");
-        scan(fs::path(dataRoot) / "standards" / "assets", guard, sg);
+        scan(fs::path(dataRoot) / "local" / "assets", guard, sg, "local");
     }
     {
         records::ScanGuard guard("MembraneModuleRegistry", "membrane module");
         records::ScanGuard sg("FeedSpacerRegistry", "feed spacer");
-        for (const auto& d : records::localScanDirs("assets")) scan(d, guard, sg);
+        scan(fs::path(dataRoot) / "standards" / "assets", guard, sg, "standards");
+    }
+    {
+        records::ScanGuard guard("MembraneModuleRegistry", "membrane module");
+        records::ScanGuard sg("FeedSpacerRegistry", "feed spacer");
+        for (const auto& d : records::localScanDirs("assets"))
+            scan(d, guard, sg, "case");
     }
     //  A FUNCTIONAL CLASS names its element by reference (C189 slice 3):
     //  adopted here, after BOTH tiers are loaded, so the order of a directory
@@ -127,7 +169,22 @@ const MembraneModule& MembraneModuleRegistry::byName(const std::string& name)
         throw std::runtime_error("MembraneModuleRegistry: "
             + registryRefusal::message("membrane module", name,
                                        registryRefusal::keysOf(registry())));
+    if (tierMap()[name] == "local")
+        if (AdvisoryLog::instance().addAnnouncedOnce("localModule:" + name,
+                "provenance", "warning", "membrane module '" + name + "'",
+                "read from data/local/ -- UNVERIFIED, not part of the curated"
+                " catalogue"))
+            std::cerr << "[local] membrane module '" << name << "': loaded from"
+                         " data/local/ -- UNVERIFIED; a student must review the"
+                         " record against its data sheet and promote it to"
+                         " data/standards/ before the result is trusted.\n";
     return it->second;
+}
+
+std::string MembraneModuleRegistry::tierOf(const std::string& name)
+{
+    const auto it = tierMap().find(name);
+    return it == tierMap().end() ? std::string() : it->second;
 }
 
 std::vector<std::string> MembraneModuleRegistry::availableNames()

@@ -1388,8 +1388,8 @@
     },
     "check_rated_tests": {
       "exit": 0,
-      "claim": "check_rated_tests: OK -- `ratedTest {}` and `ratedTests ( {..} )` with one test give byte-identical runs of membrane15/16/25; both forms on one record refuse; a hypothetical two-solute record prints each test on its own line with exactly the optional facts it declares and the inversion takes the MgSO4 test listed second (R_int = membrane25's to 1e-9); two MgSO4 tests refuse an unnamed request and `( fromRatedTest b )` reproduces test b alone to 1e-12; 7 record refusals and 7 inversion refusals fire by name; an undeclared value type, pressure meaning and permeate-flow basis are announced on membrane25 and not on a fully declared test; a gauge pressure is announced made absolute.  NOT CHECKED: any optional fact against a real data sheet (no shipped record declares one), two derived solutes in one unit, formula conversion.",
-      "seconds": 0.5
+      "claim": "check_rated_tests: OK -- `ratedTest {}` and `ratedTests ( {..} )` with one test give byte-identical runs of membrane15/16/25; both forms on one record refuse; a hypothetical two-solute record prints each test on its own line with exactly the optional facts it declares and the inversion takes the MgSO4 test listed second (R_int = membrane25's to 1e-9); two MgSO4 tests refuse an unnamed request and `( fromRatedTest b )` reproduces test b alone to 1e-12; 7 record refusals and 7 inversion refusals fire by name; an undeclared value type, pressure meaning and permeate-flow basis are announced on membrane25 and not on a fully declared test; a gauge pressure is announced made absolute; `waterPermeance fromRatedTest;` (membrane28) derives A_w and R_int together so that an INDEPENDENT run with both typed reproduces each sheet's permeate flow and observed rejection to 1e-7 (NF270-4040 A_w 14.88 against the record's 36, SW30HR-380 1.318 against 3.6 L/m2/h/bar) and refuses a class, an unknown word and a law other than constantRejection.  NOT CHECKED: any optional fact against a real data sheet (no shipped record declares one), two derived solutes in one unit, formula conversion.",
+      "seconds": 0.8
     },
     "check_unit_acceptance": {
       "exit": 0,
@@ -1403,8 +1403,8 @@
     },
     "check_membrane_classes": {
       "exit": 0,
-      "claim": "check_membrane_classes: OK -- the six `kind membraneClass` records (NF_OPEN, NF_DIVALENT_SELECTIVE, NF_TIGHT, BWRO_HIGH_FLUX, BWRO_HIGH_REJECTION, SWRO) are illustrative, name no manufacturer and keep each stated rejection inside its band; each run announces it ([illustrative], stdout + stderr + an accepted advisory); every derived R_int typed on an independent fixture at the class's reference test reproduces the stated observed rejection to 1e-7; an unknown class, SDEM, solutionDiffusion, a typed rated salt, a class as a bare membrane, a class naming a manufacturer and one claiming another review status all refuse by name.  NOT checked: whether a class's values are good teaching values, the engine's permeate against the stated one (printed only), the batch diafilter (does not refuse a class)",
-      "seconds": 0.4
+      "claim": "check_membrane_classes: OK -- the six `kind membraneClass` records (NF_OPEN, NF_DIVALENT_SELECTIVE, NF_TIGHT, BWRO_HIGH_FLUX, BWRO_HIGH_REJECTION, SWRO) are illustrative, name no manufacturer and keep each stated rejection inside its band; each run announces it ([illustrative], stdout + stderr + an accepted advisory); every derived R_int typed on an independent fixture at the class's reference test reproduces the stated observed rejection to 1e-7; an unknown class, SDEM, solutionDiffusion, a typed rated salt, a class as a bare membrane, a class naming a manufacturer and one claiming another review status all refuse by name; the importer seals the class witness (following the class's element) and a spacer-reading module witness with the catalogue hidden, each reproducing its golden.  NOT checked: whether a class's values are good teaching values, the engine's permeate against the stated one (printed only), the batch diafilter (does not refuse a class)",
+      "seconds": 1.5
     },
     "check_membrane_import": {
       "exit": 0,
@@ -1435,6 +1435,11 @@
       "exit": 0,
       "claim": "check_pressure_exchanger: OK -- on membrane27_swro_energy_recovery the exchanger's three balances recompute from the result JSON outside the engine (volume less the leakage and the four flows conserving it, every component's LP outlet the remainder of the volumetric mix, Stover's efficiency on the stream pressures, each to 1e-6, the salinity rise from the streams' own masses, Q_kW = 0 and the dissipation (1 - eta) of the input); 7 fixtures refuse by name (efficiency absent, 1.2; mixing -0.1; no source; no drain pressure; a vapour seawater and a non-aqueous feed through the acceptance contract, before any unit runs); the sheet's rotors = ceil(Q_LP / ratedFlowPerUnit) and move to 2 on a halved rating, the item is NOT costed and a missing rating refuses; every sizing value carries a unit, both port blocks carry pressures, and the GUI fixture is the sheet the run just wrote.  NOT CHECKED: whether Stover's definition is the maker's, whether the three numbers fit any device, the first law (UNAVAILABLE on this component set), the membrane's answer.",
       "seconds": 0.2
+    },
+    "check_membrane_shortlist": {
+      "exit": 0,
+      "claim": "check_membrane_shortlist: OK -- the shortlist applies its hard filters by each record's own numbers (type, class band, rated solute, P_max, and after the re-rating feedFlow_max and dP_max), re-rates every survivor at the student's conditions (recovery exact to 1e-8; an independent choupoSolve run of the printed R_int and feed flow reproduces the permeate and observed rejection to 1e-6), lists every criterion side by side in alphabetical order of the name with no sort, score, weight or rank, never reads a record's partner/dataVerifiedBy (CSV and table byte-identical with or without), refuses a mis-declared request by name, and reads data/local only as the lowest, announced tier.  NOT CHECKED: the transport law's reading of a sheet away from its test, any record against its product, several solutes or elements at once.",
+      "seconds": 3.5
     }
   }
 }

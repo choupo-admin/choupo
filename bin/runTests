@@ -4620,6 +4620,24 @@ PYEOF
     fi
     rm -f /tmp/mimport.$$
 
+    # The membrane SHORTLIST (2026-11-01, DEV.md 4c C189 slice 5).  From a
+    # functional class to the commercial elements: hard filters by each
+    # record's own numbers, each survivor re-rated at the student's
+    # conditions (an independent choupoSolve run reproduces the table), every
+    # criterion side by side in alphabetical order, no sort/score/weight/rank
+    # in the source, a record's partner/dataVerifiedBy never read, and
+    # data/local read only as the lowest announced tier.  A HYPOTHETICAL
+    # catalogue built in a temp dir.
+    if gate_exec "$ROOT/bin/curate/check_membrane_shortlist.py" > /tmp/mshort.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "membrane-shortlist-gate" "$(grep -m1 '^check_membrane_shortlist: OK' /tmp/mshort.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_membrane_shortlist.py)\n" "membrane-shortlist-gate"
+        cat /tmp/mshort.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/mshort.$$
+
     # Ion-diffusivity temperature gate (2026-10-24, DEV.md 4c C145 ruling,
     # built C148).  D_i(T) = D_i0 (T/298.15)(mu(298.15)/mu(T)) on the
     # package's own liquid viscosity, ONE home (thermo/transport/

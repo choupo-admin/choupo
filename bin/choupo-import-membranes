@@ -38,15 +38,16 @@ REFUSES.  The rule's ONE home is the engine's `records::refuseStandardsWrite`
 two tests (a path component literally named `standards`; a path resolving
 inside <root>/data/standards) and does NOT re-implement its wording.
 
-HOW A WRITTEN RECORD REACHES A RUN -- measured, not assumed (2026-11-01):
-`MembraneModuleRegistry::loadFrom` scans data/standards/assets and every
-case-local constant/assets; it does NOT scan data/local/assets (that tier is
-read by the component loader and the NRTL/UNIQUAC/Wilson pair readers only).
-So an imported record is USED by copying it into the case's
-`constant/assets/` and declaring the membrane beside the module in the
-operation (`module <name>; membrane <NF|RO record>;` -- an imported element
-names no membrane, like Generic-4040, because the catalogue states no
-transport parameters).  The report says so.
+HOW A WRITTEN RECORD REACHES A RUN (revised 2026-11-01, DEV.md 4c C189 slice
+5): `MembraneModuleRegistry::loadFrom` reads data/local/assets as the LOWEST
+tier (local < standards < the case's constant/assets): standards beats local
+([shadowed], announced) and a local record that is used is announced
+`[local] ... UNVERIFIED`.  An imported element names NO membrane (the
+catalogue states no transport parameters), so a case declares one beside the
+module (`module <name>; membrane <NF|RO record>;`), and the `membraneShortlist`
+props op takes a `carrier` for them.  Copying the record into the case's
+`constant/assets/` still works and is how a sealed case carries it.  The
+report says so.
 
 WHAT IT NEVER DOES.  It never fills a missing number: an element without an
 active area or without a spacer thickness is NOT written and is listed with
@@ -618,8 +619,9 @@ class Importer:
         head.append("  The element names NO membrane: the catalogue states no transport")
         head.append("  parameters.  A case declares one beside it, as for Generic-4040:")
         head.append("      module %s; membrane <NF or RO record>;" % e["name"])
-        head.append("  and reaches this file by copying it into the case's constant/assets/")
-        head.append("  (MembraneModuleRegistry does not scan data/local/assets).")
+        head.append("  The module registry reads this file from data/local/assets as its lowest")
+        head.append("  tier (announced [local] UNVERIFIED); copying it into the case's")
+        head.append("  constant/assets/ also works, and is how a sealed case carries it.")
         if e["class"]:
             head.append("  Catalogue class as the input states it: %s (not read by the engine)." % e["class"])
         if e["quality"]:
@@ -913,9 +915,9 @@ def main(argv=None):
         for d in imp.cross_check:
             lines.append("  " + d)
     lines.append("")
-    lines.append("HOW TO USE A RECORD.  Copy <out>/<name>.dat into a case's constant/assets/ and declare")
-    lines.append("  `module <name>; membrane <NF|RO record>;` in the spiralWoundModule operation; the engine")
-    lines.append("  does not scan data/local/assets.  Promotion to data/standards/ is a human curation act:")
+    lines.append("HOW TO USE A RECORD.  Declare `module <name>; membrane <NF|RO record>;` in the spiralWoundModule")
+    lines.append("  operation: the engine reads data/local/assets as its lowest tier (announced [local] UNVERIFIED);")
+    lines.append("  a copy in the case's constant/assets/ also works.  Promotion to data/standards/ is a human curation act:")
     lines.append("  read the cited sheet, check every number, write the curated record by hand.")
     txt = "\n".join(lines) + "\n"
     print(txt)

@@ -1,0 +1,77 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  shortlist01 -- THE SHORTLIST (DEV.md 4c C189 slice 5): from a membrane
+  class to the commercial elements that do what the class does.
+
+  THE QUESTION.  membrane26 chose a membrane by WHAT IT DOES
+  (NF_DIVALENT_SELECTIVE: hold sulphate, let sodium chloride through).
+  Which products in the catalogue do that, at MY pressure, MY temperature,
+  MY feed and MY recovery -- not at the data sheet's?
+
+  WHAT THE OP DOES.  (1) Hard filters on each module record: the membrane
+  is of the class's type (NF here), the record carries ONE rated test of
+  MgSO4, the sheet's rated rejection lies inside the class's band
+  (>= 90 %), the declared limits hold at this feed.  (2) Each survivor is
+  re-run with the transport law and film of the `operation` block below, its
+  intrinsic rejection DERIVED from its OWN rated test (slice 1), at the
+  conditions below, with the feed flow found so ONE element delivers the
+  recovery asked.  Then the limits that need the run (feed flow, pressure
+  drop) filter again.
+
+  WHAT IT DOES NOT DO.  It scores nothing and ranks nothing.  Every
+  criterion is published side by side, the candidates in alphabetical order
+  of their names, and a record's commercial-relation fields (`partner`,
+  `dataVerifiedBy`) are never read.  What matters most -- permeate flow,
+  permeate quality, specific pressure -- is the student's decision.
+
+  WHAT TO READ.  The printed rows (and shortlist.csv): permeate flow and
+  concentration, flux, P/flux (bar per L/m2/h), the hydraulic energy per
+  m3 of permeate (feed pressure x feed flow / permeate flow, no recovery
+  device), the feed flow, the element's pressure drop and each limit's
+  margin ((limit - value)/limit; pH in pH units; "n/s" = the record states
+  no such limit).  EXCLUDED rows say why, in the record's own numbers.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name      shortlist;
+        type      membraneShortlist;
+        class     NF_DIVALENT_SELECTIVE;     // the functional class of membrane26
+        solute    MgSO4;
+        tiers     ( standards case );        // not data/local: this golden must not depend on one machine's private records
+        conditions
+        {
+            T                298.15 K;
+            P                7 bar;
+            pressureBasis    feedAbsolute;   // declared, never defaulted
+            recovery         0.15;           // per element
+            feedMassFraction 2.0e-3;         // 2,000 ppm MgSO4
+            pH               7.5;
+        }
+        operation                            // as a spiralWoundModule unit writes it
+        {
+            P_permeate       1.0 bar;
+            nNodes           50;
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      0.89e-3;      // Pa.s, water at 25 C
+                diffusivity    0.85e-9;      // m2/s, MgSO4
+            }
+            pressureDrop      { model SchockMiquel; }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        none;
+            }
+        }
+        output { file "shortlist.csv"; }
+    }
+);
