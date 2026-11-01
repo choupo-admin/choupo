@@ -1,0 +1,194 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane27_swro_energy_recovery -- WHERE THE ENERGY OF SEAWATER RO GOES.
+
+  THE PLANT.  membrane01's seawater (35 g/L NaCl, 25 C), 16 m3/h at 2 bar
+  after pretreatment, split between a HIGH-PRESSURE PUMP (to 55 bar) and the
+  low-pressure side of a ROTARY PRESSURE EXCHANGER (the ERI PX class: a
+  ceramic rotor whose ducts are filled in turn by the high-pressure brine,
+  which pushes the seawater they held out at nearly its own pressure, and by
+  low-pressure seawater, which pushes the spent brine to drain).  The
+  pressurised seawater the exchanger returns is lifted the last 1.6 bar by
+  a BOOSTER pump, joins the high-pressure pump's discharge, and the two feed
+  ONE SW30HR-380 stage (2 vessels x 7 elements, the record
+  data/standards/assets/SW30HR-380.dat).  The stage's brine is the
+  exchanger's high-pressure inlet -- a recycle, cut at `brine`.
+
+  THE EXCHANGER'S THREE NUMBERS are a maker's and are declared, never
+  defaulted (Stover, Desalination 203 (2007) 168-175, the ranges he states
+  for isobaric rotary devices): pressure-transfer efficiency 0.96 (95-98 %),
+  leakage 0.015 (1-2 %), both the middle of their ranges; mixing 0.03, the
+  LOW end of his 3-6 %, because under this unit's definition (the brine
+  share of the pressurised outlet's VOLUME) 3 % on this brine (6.3 % w/w
+  against a 3.3 % feed) already raises the feed's salinity 2.8 %, the top
+  of the 1-3 % he quotes for that penalty; the middle of his mixing range
+  would give 4.3 %.  His two ranges are not consistent under this
+  definition at 47 % recovery -- a finding about the definition, recorded
+  and not tuned away.
+
+  THE ANSWER (read off the run, 2026-11-01):
+      plant recovery        47.2 % of the RO feed (16.2 m3/h), 48.3 % of
+                            the seawater drawn (16.4 m3/h); permeate 7.94
+                            m3/h, 99.23 % observed NaCl rejection
+      brine                 8.31 m3/h at 54.12 bar, 6.3 % w/w
+      exchanger             P_HPout 53.37 bar (solved from eta): 51.4 bar
+                            recovered on 8.18 m3/h of seawater, 11.7 kW
+                            hydraulic; HP-side loss 0.76 bar; feed
+                            salinity 3.30 -> 3.39 % w/w (+2.83 %); flows
+                            balanced to 1.0 % (LP in 8.39 vs HP in 8.31
+                            m3/h); dissipated 0.52 kW
+      high-pressure pump    14.47 kW shaft (8.06 m3/h, 2 -> 55 bar, eta 0.82)
+      booster               0.46 kW shaft (8.18 m3/h, 53.37 -> 55 bar, eta 0.80)
+
+  THE SPECIFIC ENERGY, DECOMPOSED (pump SHAFT powers over the permeate; no
+  motor or drive efficiency is modelled, no pretreatment, no permeate
+  delivery):
+      with the exchanger      (14.47 + 0.46) kW / 7.94 m3/h  =  1.88 kWh/m3
+      WITHOUT it, the same plant pumping its whole RO feed (16.24 m3/h,
+      8.06 + 8.18) through the high-pressure pump and throttling the brine:
+                              (16.24/3600) x 53e5 Pa / 0.82 = 29.2 kW
+                                                     -> 3.67 kWh/m3
+      so the device halves the plant's pumping energy, at the price of
+      2.8 % more salinity on the membrane's feed.
+      THE THERMODYNAMIC MINIMUM for this feed and this recovery, from the
+      osmotic pressure the package gives (the module's own van't Hoff
+      model, pi = 2 c R T; c = 9.568 kmol/h NaCl in 16.45 m3/h = 0.582
+      kmol/m3, so pi_0 = 28.8 bar) at the plant recovery r = 0.483:
+          w_min = pi_0 (-ln(1 - r)) / r = 28.8 x 1.366 = 39.3 bar
+                = 3.93 MJ/m3 = 1.09 kWh/m3.
+      The 0.79 kWh/m3 between the minimum and the plant is the membrane's
+      overpressure (55 bar fed against 28.8-54 bar of osmotic pressure
+      along the vessel), the pumps' efficiencies, the exchanger's 4 % and
+      its booster.  A student should move the pressure, the recovery (the
+      split fraction) and the three device numbers and watch the terms.
+
+  THE KNIFE EDGE, which is real.  The exchanger returns 98.5 % of the
+  brine's VOLUME to the membrane feed, so the loop's gain is 0.985 and the
+  recovery is set by the 1.5 % that leaks and by how the permeate moves
+  with the feed: the high-pressure pump's flow IS the permeate (plus the
+  leak), and the split fraction here (0.49 to the pump) was tuned by hand
+  until the device ran balanced -- what a real train's control does with
+  that pump's drive.  Newton on the tear overshoots on such a loop (a trial
+  brine with no water, a booster asked to pump down); system/solverDict
+  selects Wegstein with its full secant step, which converges in five.
+
+  WHAT THE RUN SAYS AND CANNOT SAY.  The mixer `Join` is DECLARED
+  isothermal at the feed temperature: an adiabatic mix would need NaCl's
+  liquid heat capacity, which its record does not carry (membrane01's
+  component set), so the pumps' 0.28 K and 0.01 K dissipation rises are
+  discarded there and no mixing duty is priced -- announced.  FOR THE SAME
+  REASON THE PLANT'S FIRST LAW IS UNAVAILABLE on this component set
+  (`energyBalance UNAVAILABLE`, as on membrane01): the exchanger's own row
+  closes by construction (T unchanged, Q = 0), but nothing here can show
+  it, and the pumps' useful work v dP is not carried by the liquid enthalpy
+  surface in any case (Pump.cpp says why).  An ion-written twin (water, Na,
+  Cl) would have a first law and would show the pumps' residual; it is not
+  built here.  The exchanger's three balances ARE checked, independently
+  of the engine, by bin/curate/check_pressure_exchanger.py on this case's
+  result JSON.
+
+  THE SHEET.  system/postDict sizes the exchanger (design/PX/
+  pressureExchanger): one rotor at a DECLARED rated flow of 60 m3/h per
+  unit (an author-set order of magnitude for the PX-Q300 class, to be
+  replaced by a maker's sheet), the pressure drops and the hydraulic
+  booster duty read from the unit, NOT COSTED (no Turton set).  The GUI
+  draws it: the rotor nominal, the four ports with their pressures, the
+  booster beside the high-pressure outlet.
+
+  NOT a validation: no number here is measured.  NOT modelled: the rotor's
+  hydraulics, the duct-by-duct unsteadiness, any dependence of the mixing on
+  flow imbalance or salinity, the motor and drive, pretreatment.
+\*---------------------------------------------------------------------------*/
+
+tearStreams ( brine );
+
+units
+(
+    {
+        name        Split;
+        type        splitter;
+        in          feed;
+        outputs     ( toHPpump  toPX );
+        operation   { fractions ( 0.49  0.51 ); }     // tuned so the exchanger runs balanced (see header)
+    }
+    {
+        name        HPpump;
+        type        pump;
+        in          toHPpump;
+        outputs     ( hpFeed );
+        operation
+        {
+            P_out     55 bar;                          // the membrane feed header
+            eta       0.82;                            // ASSUMED: a large SWRO high-pressure pump
+        }
+    }
+    {
+        name        PX;
+        type        pressureExchanger;
+        inputs      ( brine  toPX );                   // highPressureIn = the brine, lowPressureIn = the seawater
+        outputs     ( pxHPout  spentBrine );           // highPressureOut, lowPressureOut
+        operation
+        {
+            efficiency      0.96;                      // Stover 2007: 95-98 % for the rotary ceramic class
+            mixing          0.03;                      // volumetric, 3-6 %
+            leakage         0.015;                     // lubrication flow, 1-2 %
+            P_LPout         1.3 bar;                   // the drain line, absolute
+            targetPressure  55 bar;                    // the HP pump's discharge: what the booster must reach
+            source          "R. L. Stover, Desalination 203 (2007) 168-175, the ranges stated for isobaric rotary devices; efficiency and leakage the middle of their ranges, the mixing the low end (see the header); author-set";
+        }
+    }
+    {
+        name        Booster;
+        type        pump;
+        in          pxHPout;
+        outputs     ( boosted );
+        operation
+        {
+            P_out     55 bar;                          // rejoins the HP pump's discharge
+            eta       0.80;                            // ASSUMED
+        }
+    }
+    {
+        name        Join;
+        type        mixer;
+        inputs      ( hpFeed  boosted );
+        outputs     ( roFeed );
+        operation   { T 298.15 K; }
+    }
+    {
+        name        RO;
+        type        spiralWoundModule;
+        in          roFeed;
+        outputs     ( brine  permeate );
+        operation
+        {
+            module           SW30HR-380;               // data/standards/assets/, kind membraneModule
+            vessels          2;                        // pressure vessels in parallel
+            elements         7;                        // elements in series in each vessel
+            P_permeate       1.0 bar;
+            nNodes           20;                       // stations per element
+
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      0.95e-3;                // Pa.s, seawater near 25 C
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        none;               // one lumped salt
+            }
+        }
+    }
+);

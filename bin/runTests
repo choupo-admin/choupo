@@ -7473,6 +7473,25 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/reliefvalve.$$
 
+    # Pressure-exchanger gate (2026-11-01, DEV.md 4c C192): the rotary
+    # exchanger's three balances (volume less the leakage, composition by the
+    # volumetric mixing, pressure by Stover's efficiency) recompute from the
+    # witness's result JSON outside the engine; the three declared numbers,
+    # the source and the drain pressure refuse by name when absent or out of
+    # range, and a vapour or non-aqueous feed refuses through the acceptance
+    # contract; the sizer's rotor count is ceil(Q_LP / the declared rated
+    # flow) and the item stays uncosted; the GUI fixture is the sheet the run
+    # wrote.
+    if gate_exec "$ROOT/bin/curate/check_pressure_exchanger.py" > /tmp/pxgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pressure-exchanger-gate" "$(gate_claim check_pressure_exchanger /tmp/pxgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pressure_exchanger.py)\n" "pressure-exchanger-gate"
+        cat /tmp/pxgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pxgate.$$
+
     # Bund-arithmetic gate (2026-10-25, DEV.md 4c C136): the layout check's
     # bund capacity arithmetic (BundArithmetic.H) is the secondary-containment
     # EduTool's (a probe reproduces every example its TypeScript test pins),

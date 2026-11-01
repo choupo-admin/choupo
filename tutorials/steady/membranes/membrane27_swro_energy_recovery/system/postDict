@@ -1,0 +1,39 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- the SIZING pass, so the pressure exchanger has a specification
+  sheet (design/PX/pressureExchanger) and the GUI draws its schematic.
+
+  The exchanger's sheet is an ARRAY of rotary units in parallel:
+      rotors = ceil(Q_LP / ratedFlowPerUnit),
+  the rated flow a MAKER'S datum the case declares with its source -- there
+  is no built-in table of models.  The pressure drops, the recovered
+  pressure and the hydraulic booster duty are read from the unit.  The item
+  is NOT COSTED: no Turton correlation covers a rotary ceramic pressure
+  exchanger, and the sheet says so; a price would be a declared quote
+  (`costing { quotes ( ... ) }`).
+
+  The `material` word names the HOUSING: the rotor itself is ceramic
+  (alumina), for which the construction-material catalogue carries no
+  record, and the design pressure is compared with the housing's rating.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        { unitName PX;  type pressureExchanger;  material SS316;
+          designRules
+          {
+              ratedFlowPerUnit  60 m3/h;      // ONE rotary unit's rated flow (declared, cited below)
+              source            "Order of magnitude of the ERI PX-Q300 class as stated in DEV.md 4c C192 (~50-68 m3/h per unit); the maker's data sheet was not read -- an AUTHOR-SET figure, to be replaced by the sheet's rated flow";
+              pressureDesign    70 bar;       // the housing's design pressure, author-set (HP inlet ~58 bar)
+          } }
+    );
+}

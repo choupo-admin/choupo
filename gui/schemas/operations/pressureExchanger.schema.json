@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/pressureExchanger.schema.json",
+  "title": "pressureExchanger operation",
+  "description": "Rotary pressure exchanger of seawater RO (DEV.md 4c C192): inputs ( highPressureIn lowPressureIn ) -- the brine, then the seawater; outputs ( highPressureOut lowPressureOut ) -- the pressurised seawater, then the spent brine.  Three algebraic balances on volumetric flows: volume less the leakage, the HP outlet's composition by the volumetric mixing (the LP outlet the remainder), and the HP outlet pressure solved from Stover's efficiency with the drain pressure declared.  T unchanged, Q = 0.  Every device number is REQUIRED: a maker's number, never a default.",
+  "type": "object",
+  "properties": {
+    "efficiency": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Pressure-transfer efficiency",
+      "description": "eta = (Q_HPout P_HPout + Q_LPout P_LPout) / (Q_HPin P_HPin + Q_LPin P_LPin), on the absolute pressures the streams carry; 95-98 % for the rotary ceramic class (Stover, Desalination 203 (2007) 168-175).",
+      "unit": "-"
+    },
+    "mixing": {
+      "type": "number",
+      "minimum": 0,
+      "exclusiveMaximum": 1,
+      "title": "Volumetric mixing",
+      "description": "The share of the high-pressure outlet's VOLUME that is brine left in the duct; it raises the feed's salinity.  3-6 % for the rotary ceramic class.",
+      "unit": "-"
+    },
+    "leakage": {
+      "type": "number",
+      "minimum": 0,
+      "exclusiveMaximum": 1,
+      "title": "Leakage (lubrication flow)",
+      "description": "The share of the high-pressure inlet volume that crosses the rotor-stator gap to the low-pressure outlet.  1-2 % for the rotary ceramic class.",
+      "unit": "-"
+    },
+    "P_LPout": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Drain pressure",
+      "description": "Absolute pressure of the low-pressure (spent brine) outlet; the device sets it by nothing of its own, so the case declares it.",
+      "unit": "Pa"
+    },
+    "targetPressure": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Booster target pressure",
+      "description": "The pressure the booster must lift the high-pressure outlet to (the high-pressure pump's discharge); sets the boosterDuty_kW KPI.  Absent, the brine inlet's pressure is read in its place and announced.",
+      "unit": "Pa"
+    },
+    "source": {
+      "type": "string",
+      "title": "Source of the device numbers",
+      "description": "Where the efficiency, the mixing and the leakage come from (a maker's sheet or a paper).  Required."
+    }
+  },
+  "required": [
+    "efficiency",
+    "mixing",
+    "leakage",
+    "P_LPout",
+    "source"
+  ],
+  "additionalProperties": false
+}

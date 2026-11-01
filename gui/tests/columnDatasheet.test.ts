@@ -481,8 +481,9 @@ sizing { D 1 m; }
 });
 
 describe("the schematic is dispatched on the equipment word", () => {
-  it("draws a tower for sieveTrays and nothing else", () => {
+  it("draws a tower for sieveTrays (and, since C192, a rotor for pressureExchanger) and nothing else", () => {
     expect(hasSchematic("sieveTrays")).toBe(true);
+    expect(hasSchematic("pressureExchanger")).toBe(true);
     //  `vessel` is the shell's OWN word and the reflux drum's and a flash
     //  drum's.  Keying the tower on it would put fourteen trays inside every
     //  drum in the corpus.

@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*101 of 101 registered operations carry a schema and are documented below.*
+*102 of 102 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -909,6 +909,19 @@ The PPR78 / E-PPR78 group-contribution binary interaction parameters of the PR78
 | `T` | ✓ | number | K | The ONE temperature every kij of the set is evaluated at -- the declared temperature of the unit that will read the set. |
 | `components` |   | array[string] | — | The components whose pairs are written; absent, every component of the case's system. |
 | `output` | ✓ | object | — | `{ record "constant/parameters/PengRobinson/<name>.dat"; }` -- inside the case (data/standards/ is refused). Each pair carries kij and th… |
+
+## `pressureExchanger`  (pressureExchanger operation)
+
+Rotary pressure exchanger of seawater RO (DEV.md 4c C192): inputs ( highPressureIn lowPressureIn ) -- the brine, then the seawater; outputs ( highPressureOut lowPressureOut ) -- the pressurised seawater, then the spent brine.  Three algebraic balances on volumetric flows: volume less the leakage, the HP outlet's composition by the volumetric mixing (the LP outlet the remainder), and the HP outlet pressure solved from Stover's efficiency with the drain pressure declared.  T unchanged, Q = 0.  Every device number is REQUIRED: a maker's number, never a default.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `efficiency` | ✓ | number | - | eta = (Q_HPout P_HPout + Q_LPout P_LPout) / (Q_HPin P_HPin + Q_LPin P_LPin), on the absolute pressures the streams carry; 95-98 % for the… |
+| `mixing` | ✓ | number | - | The share of the high-pressure outlet's VOLUME that is brine left in the duct; it raises the feed's salinity.  3-6 % for the rotary ceram… |
+| `leakage` | ✓ | number | - | The share of the high-pressure inlet volume that crosses the rotor-stator gap to the low-pressure outlet.  1-2 % for the rotary ceramic c… |
+| `P_LPout` | ✓ | number | Pa | Absolute pressure of the low-pressure (spent brine) outlet; the device sets it by nothing of its own, so the case declares it. |
+| `targetPressure` |   | number | Pa | The pressure the booster must lift the high-pressure outlet to (the high-pressure pump's discharge); sets the boosterDuty_kW KPI.  Absent… |
+| `source` | ✓ | string | — | Where the efficiency, the mixing and the leakage come from (a maker's sheet or a paper).  Required. |
 
 ## `propertyPoint`  (propertyPoint operation)
 

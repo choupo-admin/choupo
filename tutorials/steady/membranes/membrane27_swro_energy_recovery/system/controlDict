@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "SWRO with energy recovery: high-pressure pump + rotary pressure exchanger + booster + one SW30HR-380 stage on membrane01's seawater -- the specific energy decomposed";
+verbosity     3;
+
+citations
+(
+    "R. L. Stover, Seawater reverse osmosis with isobaric energy recovery devices, Desalination 203 (2007) 168-175"
+    "DuPont FilmTec SW30HR-380 Element Product Data Sheet, Form No. 45-D00971-en, Rev. 7, January 2026"
+);

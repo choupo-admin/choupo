@@ -162,6 +162,7 @@ const THEORY_DEST: Record<string, string> = {
   compressor: "ch:rotating",
   turbine: "ch:rotating",
   pump: "ch:rotating",
+  pressureExchanger: "sec:pressure-exchanger",
   electricLoad: "ch:simple-ops",
   // solids
   cyclone: "ch:solids-sep",

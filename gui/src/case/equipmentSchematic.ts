@@ -501,6 +501,167 @@ export function columnTowerSvg(d: ColumnDrawing): ColumnSchematic {
   };
 }
 
+/*  ---- The rotary pressure exchanger (DEV.md 4c C192) -------------------- */
+
+/** What the exchanger drawing decided, so the caller can repeat it in prose. */
+export interface PressureExchangerSchematic {
+  svg: string;
+  /** Notes that belong BESIDE the picture (an SVG has no reflow). */
+  notes: { text: string; who: Provenance | null }[];
+  /** The rotor count the sheet published, or 0 when it published none. */
+  rotors: number;
+}
+
+/** THE ROTOR, ITS DUCTS, THE FOUR PORTS AND THE BOOSTER -- drawn from the
+ *  `pressureExchanger` sheet alone (DEV.md 4c C192).
+ *
+ *  WHAT IS DRAWN AND FROM WHERE.  The rotor is a horizontal cylinder with
+ *  its ducts suggested as lines: the sheet carries no rotor diameter, no
+ *  length and no duct count (the sizer publishes none -- the rotor's
+ *  hydraulics are not modelled), so the cylinder is NOMINAL and no dimension
+ *  is written on it.  What IS lettered is what the sheet states: the four
+ *  ports with their stream names and the PRESSURES the run wrote on them
+ *  (the sheet's own `inlets {}` / `outlets {}`, in the order the unit binds
+ *  them: inlet 0 the brine at high pressure, inlet 1 the seawater at low
+ *  pressure, outlet 0 the pressurised seawater, outlet 1 the spent brine);
+ *  the rotor count and the rated flow per unit from `sizing {}`; the HP-side
+ *  loss and the booster's hydraulic duty beside a booster box drawn on the
+ *  high-pressure outlet; the three declared device parameters.
+ *
+ *  PROVENANCE IN TWO CHANNELS, as on the column: the rated flow, the
+ *  efficiency, the mixing and the leakage are the CASE's (declared), the
+ *  rotor count, the recovered pressure, the pressure drops and the booster
+ *  duty are Choupo's; the design pressure is whichever the basis sentence
+ *  says, and the drawing does not parse that sentence -- it writes
+ *  "provenance not published" for it.  A port whose pressure the sheet did
+ *  not carry is drawn with its name and no number. */
+export function pressureExchangerSvg(sheet: DesignSheet): PressureExchangerSchematic {
+  const W = 800, HH = 300;
+  const p: string[] = [];
+
+  const vRotors = sizingValue(sheet, "rotors");
+  const vRated = sizingValue(sheet, "ratedFlowPerUnit");
+  const vPerRotor = sizingValue(sheet, "flowPerRotor");
+  const vDpHP = sizingValue(sheet, "dP_HP");
+  const vDpLP = sizingValue(sheet, "dP_LP");
+  const vRec = sizingValue(sheet, "P_recovered");
+  const vBoost = sizingValue(sheet, "boosterPower");
+  const vEta = sizingValue(sheet, "efficiency");
+  const vMix = sizingValue(sheet, "mixing");
+  const vLeak = sizingValue(sheet, "leakage");
+  const vSal = sizingValue(sheet, "salinityIncrease");
+  const vPdes = sizingValue(sheet, "pressureDesign");
+  const rotors = Math.max(0, Math.round(vRotors?.value ?? 0));
+
+  //  ---- the rotor: a nominal cylinder, no dimension on it -----------------
+  const xL = 250, xR = 550, yT = 95, yB = 205, ry = 20;
+  const cy = (yT + yB) / 2;
+  p.push(`<path d="M${xL} ${yT} H${xR} a${ry} ${(yB - yT) / 2} 0 0 1 0 ${yB - yT} `
+    + `H${xL} a${ry} ${(yB - yT) / 2} 0 0 1 0 ${-(yB - yT)} z" fill="${STEEL}" `
+    + `stroke="${INK}" stroke-width="1.6"/>`);
+  //  the near end cover, an ellipse, and the ducts as lines along the rotor
+  p.push(`<ellipse cx="${xL}" cy="${cy}" rx="${ry}" ry="${(yB - yT) / 2}" `
+    + `fill="#d6dde5" stroke="${INK}" stroke-width="1.4"/>`);
+  for (let i = 1; i <= 5; i++) {
+    const y = yT + ((yB - yT) * i) / 6;
+    p.push(`<line x1="${xL + ry}" y1="${y}" x2="${xR - 4}" y2="${y}" `
+      + `stroke="${METAL}" stroke-width="1.1" stroke-dasharray="6 4"/>`);
+  }
+  p.push(text((xL + xR) / 2, cy + 4, "ceramic rotor · ducts", "#556", 11, "middle"));
+  p.push(text((xL + xR) / 2, yB + 16, "rotor geometry not published: nominal",
+    GHOST, 9.5, "middle"));
+
+  //  ---- the four ports, lettered with stream name and pressure -----------
+  const bar = (P: number | undefined) =>
+    P === undefined ? "" : `  ${(P / 1e5).toFixed(2)} bar`;
+  const hpIn = sheet.inlets[0], lpIn = sheet.inlets[1];
+  const hpOut = sheet.outlets[0], lpOut = sheet.outlets[1];
+  const port = (x0: number, x1: number, y: number, label: string, ink: string,
+                anchorX: number, anchor: "start" | "end", dy: number) => {
+    p.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="${ink}" `
+      + `stroke-width="3.5"/>`);
+    p.push(text(anchorX, y + dy, label, ink, 10, anchor));
+  };
+  //  High-pressure side on the RIGHT end (brine in, pressurised seawater
+  //  out); low-pressure side on the LEFT (seawater in, spent brine out).
+  if (hpIn) port(xR + ry, xR + ry + 60, yT + 25,
+    `${hpIn.global || "highPressureIn"}${bar(hpIn.P)}`, WARM, xR + ry + 64, "start", 4);
+  if (hpOut) port(xR + ry, xR + ry + 60, yB - 25,
+    `${hpOut.global || "highPressureOut"}${bar(hpOut.P)}`, COOL, xR + ry + 64, "start", 4);
+  if (lpIn) port(xL - ry - 60, xL - ry, yB - 25,
+    `${lpIn.global || "lowPressureIn"}${bar(lpIn.P)}`, COOL, xL - ry - 64, "end", 4);
+  if (lpOut) port(xL - ry - 60, xL - ry, yT + 25,
+    `${lpOut.global || "lowPressureOut"}${bar(lpOut.P)}`, WARM, xL - ry - 64, "end", 4);
+  //  arrows of direction, as words at the ends: in / out
+  p.push(text(xR + ry + 30, yT + 14, "HP in", "#667", 9, "middle"));
+  p.push(text(xR + ry + 30, yB - 12, "HP out", "#667", 9, "middle"));
+  p.push(text(xL - ry - 30, yB - 12, "LP in", "#667", 9, "middle"));
+  p.push(text(xL - ry - 30, yT + 14, "LP out", "#667", 9, "middle"));
+
+  //  ---- the booster, beside the high-pressure outlet ----------------------
+  //  A box only: Choupo sizes no booster here (the flowsheet's own pump unit
+  //  carries its shaft power); what the sheet states is the HYDRAULIC duty
+  //  the device leaves to it, and that is what is written.
+  const BX = 700, BY = yB - 44, BW = 80, BH = 38;
+  p.push(`<rect x="${BX}" y="${BY}" width="${BW}" height="${BH}" rx="5" `
+    + `fill="#e2e7ec" stroke="${INK}" stroke-width="1.3"/>`);
+  p.push(text(BX + BW / 2, BY + 16, "booster", INK, 11, "middle"));
+  p.push(text(BX + BW / 2, BY + 29,
+    vBoost ? marked(fmt(vBoost), "choupo") : "duty not published",
+    vBoost ? PROVENANCE_INK.choupo : "#777", 9, "middle"));
+  p.push(`<line x1="${xR + ry + 60}" y1="${yB - 25}" x2="${BX}" y2="${yB - 25}" `
+    + `stroke="${COOL}" stroke-width="2" stroke-dasharray="4 3"/>`);
+
+  //  ---- the dimensions the sheet does carry, each with its provenance ----
+  const dimY = 36;
+  if (vRotors)
+    p.push(text(xL, dimY, marked(`${rotors} rotor${rotors === 1 ? "" : "s"} in parallel`,
+      "choupo"), PROVENANCE_INK.choupo, 11, "start"));
+  if (vRated)
+    p.push(text(xL, dimY + 16, marked(`rated ${fmt(vRated)} per unit`, "declared"),
+      PROVENANCE_INK.declared, 10.5, "start"));
+  if (vPerRotor)
+    p.push(text(xL, dimY + 31, marked(`${fmt(vPerRotor)} LP flow per rotor`, "choupo"),
+      PROVENANCE_INK.choupo, 10.5, "start"));
+  if (vRec)
+    p.push(text(xR + ry + 64, cy + 4, marked(`recovers ${fmt(vRec)}`, "choupo"),
+      PROVENANCE_INK.choupo, 10.5, "start"));
+  if (vDpHP)
+    p.push(text(xR + ry + 64, yB + 18, marked(`HP side loses ${fmt(vDpHP)}`, "choupo"),
+      PROVENANCE_INK.choupo, 10, "start"));
+  if (vDpLP)
+    p.push(text(xL - ry - 64, yB + 18, marked(`LP side loses ${fmt(vDpLP)}`, "choupo"),
+      PROVENANCE_INK.choupo, 10, "end"));
+  const dLabel = vPdes
+    ? `design pressure ${fmt(vPdes)} (provenance not published)` : "design pressure not published";
+  p.push(text(xL, HH - 14, dLabel, "#777", 10, "start"));
+
+  //  ---- the notes that belong BESIDE the picture ------------------------
+  const notes: { text: string; who: Provenance | null }[] = [];
+  if (vEta) notes.push({ text: `pressure-transfer efficiency ${fmt(vEta)}`, who: "declared" });
+  if (vMix) notes.push({ text: `volumetric mixing ${fmt(vMix)}`, who: "declared" });
+  if (vLeak) notes.push({ text: `leakage (lubrication flow) ${fmt(vLeak)}`, who: "declared" });
+  if (vSal)
+    notes.push({ text: `the feed's salinity rises ${(vSal.value * 100).toFixed(2)} % through the device`,
+                 who: "choupo" });
+  if (vRotors)
+    notes.push({ text: `${rotors} rotor${rotors === 1 ? "" : "s"}: ceil(LP flow / rated flow per unit)`,
+                 who: "choupo" });
+  notes.push({
+    text: "the rotor is drawn NOMINAL: the sheet publishes no rotor diameter, "
+      + "length or duct count, and the device is NOT costed (no Turton set "
+      + "covers it)",
+    who: null });
+
+  return {
+    svg: `<svg viewBox="0 0 ${W} ${HH}" width="100%" style="max-width:${W}px" `
+      + `role="img" aria-label="rotary pressure exchanger schematic">`
+      + p.join("") + "</svg>",
+    notes,
+    rotors,
+  };
+}
+
 /*  ---- The registry ------------------------------------------------------ */
 
 /** THE EQUIPMENT WORDS THIS MODULE CAN DRAW FROM A SPECIFICATION SHEET ALONE.
@@ -519,8 +680,12 @@ export function columnTowerSvg(d: ColumnDrawing): ColumnSchematic {
  *  shell's own word is `vessel` -- the same word a flash drum and this
  *  column's own reflux drum carry -- so keying the tower on `vessel` would
  *  draw a fourteen-tray tower on every drum in the corpus.  The trays are the
- *  fact that makes it a column. */
-export const SCHEMATIC_KINDS: readonly string[] = ["sieveTrays"];
+ *  fact that makes it a column.
+ *
+ *  `pressureExchanger` (DEV.md 4c C192) is drawn from its one sheet alone by
+ *  `pressureExchangerSvg`: the rotor nominal, the four ports with the
+ *  pressures the run wrote, the rotor count and rated flow, the booster box. */
+export const SCHEMATIC_KINDS: readonly string[] = ["sieveTrays", "pressureExchanger"];
 
 /** Whether this module has a real drawing for an equipment word. */
 export function hasSchematic(equipment: string): boolean {

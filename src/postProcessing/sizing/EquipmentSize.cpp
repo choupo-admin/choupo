@@ -33,6 +33,7 @@ License
 #include "CrystalliserSize.H"
 #include "CycloneSize.H"
 #include "CompressorSize.H"
+#include "PressureExchangerSize.H"
 #include "VesselSize.H"
 #include "ReliefValveSize.H"
 #include "EvaporatorSize.H"
@@ -86,6 +87,11 @@ void EquipmentSize::registerBuiltins()
         []{ return std::make_unique<CycloneSize>(); });
     registerType("compressor",
         []{ return std::make_unique<CompressorSize>(); });
+    //  THE SEAWATER-RO ENERGY-RECOVERY DEVICE (2026-11-01, DEV.md 4c C192):
+    //  an array of rotary units counted from a declared rated flow, the drops
+    //  and the booster duty read from the unit, NOT costed (no Turton set).
+    registerType("pressureExchanger",
+        []{ return std::make_unique<PressureExchangerSize>(); });
     registerType("vessel",
         []{ return std::make_unique<VesselSize>(); });
     //  THE ONLY SIZER THAT RETURNS MORE THAN ONE ITEM (2026-09-07): a column

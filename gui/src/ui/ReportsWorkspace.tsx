@@ -69,6 +69,9 @@ import { massBalance } from "../case/balances.js";
 import { heatExchangerDatasheetHtml } from "./HeatExchangerDatasheet.js";
 import { findKernDesign, kernView } from "../case/hxDatasheet.js";
 import { columnDatasheetHtml } from "./ColumnDatasheet.js";
+import {
+  PROVENANCE_INK, PROVENANCE_WORD, hasSchematic, pressureExchangerSvg,
+} from "../case/equipmentSchematic.js";
 import { tornadoFigure, fmtMoney, type TornadoFigure } from "../case/tornado.js";
 import { TornadoPlot } from "./plotting/TornadoPlot.js";
 import { layoutScene, type LayoutScene } from "../case/plantLayout.js";
@@ -819,9 +822,28 @@ function SheetView({ sheet, path }: { sheet: DesignSheet; path: string }) {
     ["unit", sheet.unit], ["sector", sheet.sector], ["equipment", sheet.equipment],
     ["item", sheet.item], ["material", sheet.material],
   ];
+  //  THE DRAWING IS DISPATCHED ON THE EQUIPMENT KIND (equipmentSchematic.ts):
+  //  a kind drawn from its ONE sheet alone is drawn here, above the table;
+  //  the tower (shell + trays together) and the designed exchanger have their
+  //  own printable pages and are not re-drawn on this view.
+  const scheme = useMemo(() =>
+    (sheet.equipment === "pressureExchanger" && hasSchematic(sheet.equipment))
+      ? pressureExchangerSvg(sheet) : null, [sheet]);
   return (
     <Stack gap="sm">
       <Text size="xs" c="dimmed" ff="monospace">design/{path}</Text>
+      {scheme && (
+        <Box>
+          <Box dangerouslySetInnerHTML={{ __html: scheme.svg }} />
+          <Box component="ul" fz="xs" m={0} pl="md">
+            {scheme.notes.map((n, i) => (
+              <li key={i} style={n.who ? { color: PROVENANCE_INK[n.who] } : undefined}>
+                {n.text}{n.who ? <i> ({PROVENANCE_WORD[n.who]})</i> : null}
+              </li>
+            ))}
+          </Box>
+        </Box>
+      )}
       <Group gap="lg" wrap="wrap">
         {ident.filter(([, v]) => v !== "").map(([k, v]) => (
           <Box key={k}>

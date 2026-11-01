@@ -183,6 +183,12 @@ export const SYMBOLS: readonly UnitSymbolSpec[] = [
     //  The circle with its impeller triangle and the discharge riser.
     path: "M24 28m-12 0a12 12 0 1024 0a12 12 0 10-24 0 M19 34l12-6-12-6z"
         + " M4 28h8 M24 16V6 M24 6h8" },
+  //  The rotary pressure exchanger (DEV.md 4c C192): a rotor drawn as a
+  //  horizontal cylinder with its ducts, high-pressure ports on one end and
+  //  low-pressure ports on the other.
+  { cls: "PressureExchanger", label: "pressure exchanger (rotary)",
+    path: "M10 16h28a4 8 0 010 16H10a4 8 0 010-16z M14 20h20 M14 24h20 M14 28h20"
+        + " M3 20h7 M3 28h7 M38 20h7 M38 28h7" },
 
   //  ---- TOPOLOGY.  The four that collided in round two.
   { cls: "Mixer", label: "mixer",
@@ -444,6 +450,7 @@ export const UNIT_CLASS: { readonly [type: string]: string } = {
   compressor: "Compressor",
   turbine: "Turbine",
   pump: "Pump",
+  pressureExchanger: "PressureExchanger",
   electricLoad: "ElectricLoad",
   mixer: "Mixer",
   splitter: "Splitter",

@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases). ---*/
+//  16 m3/h of 35 g/L NaCl seawater (membrane01's feed, scaled 1.6x): per
+//  m3, NaCl 35/58.44 = 0.599 kmol and water ~56.9 kmol (rho ~ 1025 kg/m3),
+//  so 16 m3/h carries water 910.43 kmol/h and NaCl 9.568 kmol/h.  At the
+//  high-pressure pump's and the exchanger's suction, after pretreatment:
+//  2 bar absolute, 25 C.
+componentMolarFlows
+{
+    water   910.43 kmol/h;
+    NaCl    9.568 kmol/h;
+}
+T               298.15 K;
+P               2 bar;

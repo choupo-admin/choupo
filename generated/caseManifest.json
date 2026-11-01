@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 499,
+  "cases": 500,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -6332,6 +6332,27 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/membranes/membrane27_swro_energy_recovery": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "mixer",
+    "pressureExchanger",
+    "pump",
+    "spiralWoundModule",
+    "splitter"
+   ],
+   "unitModels": [
+    "SchockMiquel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/optimisation/designSpec01_triple_equal_areas": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -7787,6 +7808,7 @@
     "tutorials/steady/membranes/membrane24_fit_then_simulate",
     "tutorials/steady/membranes/membrane25_rated_test_inversion_nf270_4040",
     "tutorials/steady/membranes/membrane26_class_sulphate_removal",
+    "tutorials/steady/membranes/membrane27_swro_energy_recovery",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",
@@ -8344,6 +8366,7 @@
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/gibbs/claus01_thermal_stage",
     "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
+    "tutorials/steady/membranes/membrane27_swro_energy_recovery",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
@@ -8380,6 +8403,9 @@
    "prbs": [
     "tutorials/ctrl/ctrl08_prbs_ident"
    ],
+   "pressureExchanger": [
+    "tutorials/steady/membranes/membrane27_swro_energy_recovery"
+   ],
    "psa": [
     "tutorials/steady/separation/psa01_h2_psa"
    ],
@@ -8392,6 +8418,7 @@
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane21_two_stage_nf_array",
     "tutorials/steady/membranes/membrane22_two_stage_nf_array_dspmde",
+    "tutorials/steady/membranes/membrane27_swro_energy_recovery",
     "tutorials/steady/power/rankine02_water",
     "tutorials/steady/rotating/pump01_water",
     "tutorials/steady/rotating/pump02_pressure_spec"
@@ -8444,6 +8471,7 @@
     "tutorials/steady/membranes/membrane24_fit_then_simulate",
     "tutorials/steady/membranes/membrane25_rated_test_inversion_nf270_4040",
     "tutorials/steady/membranes/membrane26_class_sulphate_removal",
+    "tutorials/steady/membranes/membrane27_swro_energy_recovery",
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
@@ -8465,6 +8493,7 @@
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
+    "tutorials/steady/membranes/membrane27_swro_energy_recovery",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
@@ -8974,6 +9003,7 @@
     "tutorials/steady/membranes/membrane24_fit_then_simulate",
     "tutorials/steady/membranes/membrane25_rated_test_inversion_nf270_4040",
     "tutorials/steady/membranes/membrane26_class_sulphate_removal",
+    "tutorials/steady/membranes/membrane27_swro_energy_recovery",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",

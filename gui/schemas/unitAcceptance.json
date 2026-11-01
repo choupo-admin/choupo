@@ -110,6 +110,22 @@
    ],
    "needs": []
   },
+  "pressureExchanger": {
+   "binary": "choupoSolve",
+   "judged": "each process inlet, before any unit runs when the inlet is authored, else at the unit's own solve",
+   "rule": "everyComponent",
+   "models": [
+    "Every component the two streams carry, each with a liquid molar volume or an aqueous bridge (a dissolved solute, whose volume is then the solvent's)."
+   ],
+   "mayPass": [
+    "Nothing: no pass-through is offered, so every component it is handed enters its equations or is refused."
+   ],
+   "refuses": [
+    "A feed that is not a liquid -- The exchanger moves pressure between two LIQUIDS by displacement in a duct: its balances are volumetric on the liquid molar volume, and a vapour has no duct volume to exchange.",
+    "A feed carrying no aqueous solvent -- the device is the seawater-RO energy-recovery device: both streams are aqueous solutions, the salinity it moves between them is the solute mass fraction on the aqueous solvent, and a dissolved solute's volume is taken as the solvent's."
+   ],
+   "needs": []
+  },
   "pump": {
    "binary": "choupoSolve",
    "judged": "each process inlet, before any unit runs when the inlet is authored, else at the unit's own solve",
