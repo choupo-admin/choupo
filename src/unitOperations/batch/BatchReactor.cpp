@@ -176,8 +176,33 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
         //  factory law (LHHW, expression, a user law) reads its own
         //  stoichiometry and refuses what it does not read.
         const std::string ktypeEarly = rxn->subDict("kinetics")->lookupWord("type");
-        const bool ownLaw = ktypeEarly == "Arrhenius" || ktypeEarly == "modifiedArrhenius"
-                         || ktypeEarly == "thirdBody" || ktypeEarly == "falloff";
+        //  C190 item 14.  An EXPLICIT reverse pair (`A_rev`/`Ea_rev`) is a fact
+        //  about the mechanism that only the shared RateLaw reads: the vessel's
+        //  own Arrhenius product is the forward leg alone, so a reaction that
+        //  declared the pair ran IRREVERSIBLE here at exit 0 (DynamicCSTR has
+        //  routed it to RateLaw since C131).  It is routed to the one home, and
+        //  on the words RateLaw does not serve the pair is refused by name.
+        const auto kinEarly = rxn->subDict("kinetics");
+        const bool explicitReverse = kinEarly->found("A_rev") || kinEarly->found("Ea_rev");
+        if (explicitReverse && (ktypeEarly == "modifiedArrhenius"
+                             || ktypeEarly == "thirdBody" || ktypeEarly == "falloff"))
+            throw std::runtime_error("BatchReactor: reaction '" + rxnName + "': `A_rev`/"
+                "`Ea_rev` is declared on kinetics `type " + ktypeEarly + "`, whose reverse"
+                " leg the vessel does not read -- it would run IRREVERSIBLE.  Declare the pair"
+                " on `type Arrhenius` (the shared rate law reads both legs), or use `reversible"
+                " true;` (detailed balance) where the law is mass-action.");
+        if (kinEarly->found("A_rev") != kinEarly->found("Ea_rev"))
+            throw std::runtime_error("BatchReactor: reaction '" + rxnName + "': the explicit reverse"
+                " leg is a PAIR -- `A_rev` and `Ea_rev` together; one alone would be read as"
+                " no reverse leg at all.");
+        if (explicitReverse && kinEarly->found("units"))
+            throw std::runtime_error("BatchReactor: reaction '" + rxnName + "': `A_rev`/`Ea_rev`"
+                " beside a CHEMKIN `units` block -- the shared rate law that reads the reverse"
+                " leg does no cm-mol-s conversion.  Give both legs in SI (kmol, m3, s; J/mol)"
+                " and drop the `units` block.");
+        const bool ownLaw = !explicitReverse
+                         && (ktypeEarly == "Arrhenius" || ktypeEarly == "modifiedArrhenius"
+                          || ktypeEarly == "thirdBody" || ktypeEarly == "falloff");
 
         auto stoich = rxn->lookupDictList("stoichiometry");
         r.comps.reserve(stoich.size());
@@ -225,7 +250,7 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
         { return usesCm(kin) ? ckA_(kin, A, molec() + extra) : A; };
         const auto convEa = [&](scalar Ea)           { return ckEa_(kin, Ea);     };
 
-        if (ktype == "Arrhenius")
+        if (ktype == "Arrhenius" && !explicitReverse)
         {
             r.form  = RateForm::Arrhenius;
             r.A_pre = convA(kin->lookupScalar("A"), 0);
@@ -483,6 +508,14 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
             break;
         }
     }
+
+    //  C190 item 11.  `catalystLoading` (kg of catalyst per m3 of vessel) turns a
+    //  rate constant reported PER GRAM of catalyst into the vessel's volumetric
+    //  one: mol/(g.s) x kg/m3 = kmol/(m3.s), exactly.  The factory laws applied it
+    //  above and the steady cstr/pfr apply it to every law; this path read the key
+    //  (and announced that the pellet is a point) but never used it, so the
+    //  declared bed density changed nothing.  Both legs carry it (k_rev = k/Kc).
+    if (catalystLoading_ > 0.0) k *= catalystLoading_;
 
     scalar r = k;
     for (std::size_t s = 0; s < rxn.comps.size(); ++s)

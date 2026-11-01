@@ -168,6 +168,9 @@ namespace {
 
 namespace fs = std::filesystem;
 const scalar NaN = std::numeric_limits<scalar>::quiet_NaN();
+//  A least-squares minimum has J^T r = 0: the cosine between the residual and
+//  every free (unbound) Jacobian column below this is "stationary" (C190 item 15).
+const scalar kStationaryCosine = 1.0e-3;
 
 //  A free parameter.
 struct MemParam
@@ -837,6 +840,9 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
     int iter = 0;
     bool converged = predicting;
     std::string stopWhy = predicting ? "prediction (no free parameter)" : "";
+    //  WHY the search stopped, as ONE word the curation channel publishes
+    //  (C190 item 15): converged | stalled | maxIterations | lawFailed.
+    std::string stopKind = predicting ? "prediction" : "";
     if (verbosity >= 3 && !predicting)
         std::cout << "  iter   chi2            lambda\n  " << std::setw(4) << 0 << "   "
                   << std::scientific << std::setprecision(6) << chi2 << "\n";
@@ -844,7 +850,7 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
     {
         ++iter;
         std::vector<sVector> J;
-        if (!jacobian(th, r0, J)) { stopWhy = "the law failed at a Jacobian step"; break; }
+        if (!jacobian(th, r0, J)) { stopWhy = "the law failed at a Jacobian step"; stopKind = "lawFailed"; break; }
         bool accepted = false;
         for (int tries = 0; tries < 12 && !accepted; ++tries)
         {
@@ -864,7 +870,7 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
                 th = tn; r0 = rn; chi2 = c2; E0 = En;
                 lambda = std::max(lambda / 10.0, scalar(1e-12));
                 accepted = true;
-                if (rel < tol || stepMax < 1e-9) { converged = true; stopWhy = "relative chi2 change below the tolerance"; }
+                if (rel < tol || stepMax < 1e-9) { converged = true; stopKind = "converged"; stopWhy = "relative chi2 change below the tolerance"; }
             }
             else lambda *= 10.0;
         }
@@ -876,10 +882,60 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
             for (std::size_t i = 0; i < P; ++i) std::cout << "   " << std::setprecision(6) << v[i];
             std::cout << "\n";
         }
-        if (!accepted) { converged = true; stopWhy = "no step lowers chi2 (a minimum at the solver's resolution)"; break; }
+        if (!accepted)
+        {
+            //  NO STEP LOWERS chi2 is what a minimum looks like AND what a stalled
+            //  search looks like (a Jacobian too coarse to point downhill, a
+            //  parameter pinned against a bound the data want to leave): the
+            //  absence of a step is not a verdict (C190 item 15).  The stationarity
+            //  is TESTED instead: with the Jacobian re-taken at a fine step, the
+            //  cosine between the residual and each free column is ~0 at a
+            //  least-squares minimum (J^T r = 0); a column at a declared bound whose
+            //  descent direction points out of the domain is a KKT point and is
+            //  not held against the fit.
+            const scalar fdSaved = fdStep;
+            fdStep = std::min(fdStep, scalar(1.0e-4));
+            std::vector<sVector> Jg;
+            const bool gOk = jacobian(th, r0, Jg);
+            fdStep = fdSaved;
+            scalar worst = 0.0; std::size_t worstI = 0;
+            const scalar rNorm = std::sqrt(chi2);
+            if (gOk && rNorm > 0.0)
+                for (std::size_t i = 0; i < P; ++i)
+                {
+                    scalar g = 0.0, cn = 0.0;
+                    for (std::size_t k = 0; k < Jg.size(); ++k) { g += Jg[k][i] * r0[k]; cn += Jg[k][i] * Jg[k][i]; }
+                    if (!(cn > 0.0)) continue;
+                    const scalar lo = params[i].logScale ? (std::isfinite(params[i].lo) && params[i].lo > 0
+                                        ? std::log(params[i].lo) : -INFINITY) : params[i].lo;
+                    const scalar hi = params[i].logScale ? (std::isfinite(params[i].hi) && params[i].hi > 0
+                                        ? std::log(params[i].hi) : INFINITY) : params[i].hi;
+                    const scalar eps = 1e-9 * std::max(std::abs(th[i]), scalar(1.0));
+                    if (g > 0.0 && std::isfinite(lo) && th[i] <= lo + eps) continue;
+                    if (g < 0.0 && std::isfinite(hi) && th[i] >= hi - eps) continue;
+                    const scalar cs = std::abs(g) / (std::sqrt(cn) * rNorm);
+                    if (cs > worst) { worst = cs; worstI = i; }
+                }
+            std::ostringstream w; w << std::scientific << std::setprecision(2) << worst;
+            if (gOk && worst < kStationaryCosine)
+            {
+                converged = true; stopKind = "converged";
+                stopWhy = "no step lowers chi2 and the gradient test holds (max cosine(residual, column) "
+                          + w.str() + " < 1e-3: a minimum at the solver's resolution)";
+            }
+            else
+            {
+                converged = false; stopKind = "stalled";
+                stopWhy = gOk ? "stalled: no step lowers chi2 but J^T r is NOT zero (cosine(residual, d r / d "
+                                + params[worstI].path + ") = " + w.str() + " >= 1e-3) -- the search ended away"
+                                " from a minimum"
+                              : "stalled: no step lowers chi2 and the law failed at the gradient test";
+            }
+            break;
+        }
         if (converged) break;
     }
-    if (!converged && stopWhy.empty()) stopWhy = "maxIter reached";
+    if (!converged && stopWhy.empty()) { stopWhy = "maxIter reached"; stopKind = "maxIterations"; }
 
     // ---- round to the record's precision and evaluate EVERY row there -------
     sVector vals = natural(th);
@@ -1034,6 +1090,10 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
 
     //  THE CURATION AXIS (words): always present, as the other fits do.
     curation_["verdict"] = verdict;
+    //  The verdict above judges the values the search ENDED at; whether the search
+    //  earned them is this word (C190 item 15).  `stalled`, `maxIterations` and
+    //  `lawFailed` mean the values are reported, not promoted (no record is written).
+    curation_["optimiser"] = stopKind;
     if (part.engaged())
     {
         curation_["partitionFingerprint"] = part.fingerprint();
@@ -1113,6 +1173,9 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
                       << part.acceptanceMaxAADPct() << " " << part.acceptanceUnit()
                       << "  -- " << part.acceptanceOrigin() << "\n";
         std::cout << "  VERDICT\n    " << verdict << "\n";
+        if (!predicting && stopKind != "converged")
+            std::cout << "  OPTIMISER\n    " << stopKind << " -- the verdict above judges the values the"
+                         " search ENDED at, not a converged fit\n";
     }
 
     // ---- the record (C152) -------------------------------------------------------

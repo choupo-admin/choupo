@@ -16,10 +16,12 @@
 #include "core/Constants.H"
 #include "core/Dictionary.H"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 
 namespace Choupo {
 
@@ -328,16 +330,52 @@ scalar PCSAFT::solveDensity(scalar T, scalar P, const sVector& x,
     const scalar etaMax = 0.74;                            // closest-packing
     const scalar etaLo = 1.0e-10, etaHi = etaMax;
     const int N = 400;
-    scalar prevE = etaLo, prevF = Pof(etaLo) - P;
+    std::vector<scalar> es(N + 1), fs(N + 1);
+    for (int k = 0; k <= N; ++k)
+    {
+        es[k] = etaLo + (etaHi-etaLo)*k/N;
+        fs[k] = Pof(es[k]) - P;
+    }
     std::vector<std::pair<scalar,scalar>> roots;           // (etaLeft, etaRight)
     for (int k = 1; k <= N; ++k)
     {
-        const scalar e = etaLo + (etaHi-etaLo)*k/N;
-        const scalar f = Pof(e) - P;
-        if (prevF == 0.0) roots.push_back({prevE, prevE});
-        else if (prevF*f < 0.0) roots.push_back({prevE, e});
-        prevE = e; prevF = f;
+        if (fs[k-1] == 0.0) roots.push_back({es[k-1], es[k-1]});
+        else if (fs[k-1]*fs[k] < 0.0) roots.push_back({es[k-1], es[k]});
     }
+    //  TWO ROOTS CLOSER THAN THE GRID (C190 item 12).  Near a spinodal the
+    //  vapour (or liquid) root and the unstable one approach each other and can
+    //  both fall inside ONE interval: P(eta) - P then has the SAME sign at every
+    //  sample around them, no sign change is seen, and the scan reports the
+    //  other phase's root as if it were this one (a silent root swap).  Where
+    //  three consecutive samples bend (a sample extremum) and carry one sign,
+    //  the extremum is located by a golden-section search; if it crosses zero
+    //  the pair is added as two brackets.
+    for (int k = 1; k < N; ++k)
+    {
+        const scalar a = fs[k-1], b = fs[k], c = fs[k+1];
+        if (a == 0.0 || b == 0.0 || c == 0.0) continue;
+        if (!((a > 0.0) == (b > 0.0) && (b > 0.0) == (c > 0.0))) continue;   // a bracket exists
+        const bool isMin = (b < a && b < c), isMax = (b > a && b > c);
+        if (!isMin && !isMax) continue;
+        const scalar sgn = isMin ? 1.0 : -1.0;                // minimise sgn * f
+        scalar lo = es[k-1], hi = es[k+1];
+        const scalar gr = 0.5 * (std::sqrt(5.0) - 1.0);
+        scalar x1 = hi - gr*(hi-lo), x2 = lo + gr*(hi-lo);
+        scalar f1 = sgn*(Pof(x1)-P), f2 = sgn*(Pof(x2)-P);
+        for (int it = 0; it < 60 && (hi-lo) > 1.0e-13; ++it)
+        {
+            if (f1 < f2) { hi = x2; x2 = x1; f2 = f1; x1 = hi - gr*(hi-lo); f1 = sgn*(Pof(x1)-P); }
+            else         { lo = x1; x1 = x2; f1 = f2; x2 = lo + gr*(hi-lo); f2 = sgn*(Pof(x2)-P); }
+        }
+        const scalar xe = 0.5*(lo+hi);
+        const scalar fe = Pof(xe) - P;
+        if ((fe > 0.0) != (a > 0.0))                          // the extremum crossed zero
+        {
+            roots.push_back({es[k-1], xe});
+            roots.push_back({xe, es[k+1]});
+        }
+    }
+    std::sort(roots.begin(), roots.end());
     if (roots.empty())
         throw std::runtime_error("PCSAFT: no physical density root at the"
             " requested (T,P) within eta < 0.74 -- the state is outside the"
