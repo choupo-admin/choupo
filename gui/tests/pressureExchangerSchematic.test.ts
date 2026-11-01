@@ -30,9 +30,9 @@ inlets
         global      "brine";
         bc          tear;
         T           298.15 K;
-        P           5412313.9 Pa;
-        F           0.13035447 kmol/s;
-        mdot        2.4555952 kg/s;
+        P           5412314.1 Pa;
+        F           0.1303543 kmol/s;
+        mdot        2.455592 kg/s;
         vapourFraction 0;
     }
     port1
@@ -54,9 +54,9 @@ outlets
         global      "pxHPout";
         bc          interior;
         T           298.15 K;
-        P           5336538.9 Pa;
-        F           0.12714645 kmol/s;
-        mdot        2.3455484 kg/s;
+        P           5336539.4 Pa;
+        F           0.12714616 kmol/s;
+        mdot        2.345543 kg/s;
         vapourFraction 0;
     }
     port1
@@ -65,23 +65,23 @@ outlets
         bc          computed;
         T           298.15 K;
         P           130000 Pa;
-        F           0.1335412 kmol/s;
-        mdot        2.5127939 kg/s;
+        F           0.13354119 kmol/s;
+        mdot        2.5127937 kg/s;
         vapourFraction 0;
     }
 }
 
 sizing
 {
-    P_HPin                54.123138 bar;
-    P_HPout               53.365389 bar;
-    P_recovered           51.365389 bar;
-    Q_HP                  8.3072248 m3/h;
-    Q_HPout               8.1826164 m3/h;
+    P_HPin                54.123141 bar;
+    P_HPout               53.365394 bar;
+    P_recovered           51.365394 bar;
+    Q_HP                  8.3072058 m3/h;
+    Q_HPout               8.1825977 m3/h;
     Q_LP                  8.3902498 m3/h;
-    Q_LPout               8.5148581 m3/h;
-    boosterPower          0.37153866 kW;
-    dP_HP                 0.75774819 bar;
+    Q_LPout               8.5148578 m3/h;
+    boosterPower          0.37153669 kW;
+    dP_HP                 0.75774683 bar;
     dP_LP                 0.7 bar;
     efficiency            [0 0 0 0 0] 0.96;
     flowPerRotor          8.3902498 m3/h;
@@ -90,7 +90,7 @@ sizing
     pressureDesign        70 bar;
     ratedFlowPerUnit      60 m3/h;
     rotors                [0 0 0 0 0] 1;
-    salinityIncrease      [0 0 0 0 0] 0.02831759;
+    salinityIncrease      [0 0 0 0 0] 0.028317602;
 }
 `;
 

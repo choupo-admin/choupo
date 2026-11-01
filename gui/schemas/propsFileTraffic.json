@@ -272,6 +272,16 @@
     }
    ]
   },
+  "membraneShortlist": {
+   "reads": [],
+   "writes": [
+    {
+     "key": "output.file",
+     "kind": "file",
+     "default": ""
+    }
+   ]
+  },
   "mixingRules": {
    "reads": [],
    "writes": []

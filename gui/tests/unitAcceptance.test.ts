@@ -24,8 +24,8 @@ describe("unit acceptance (generated)", () => {
   });
 
   it("an undeclared unit has no entry: silence means nothing declared", () => {
-    expect(acceptanceOf("mixer")).toBeNull();
-    expect(acceptanceTypes()).not.toContain("mixer");
+    expect(acceptanceOf("cyclone")).toBeNull();
+    expect(acceptanceTypes()).not.toContain("cyclone");
   });
 
   it("the raw section drops the generated region and its markers", () => {
