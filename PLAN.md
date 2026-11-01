@@ -19,7 +19,7 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 | status | what | ref |
 |---|---|---|
 | running | C185 item 8 (positivity mask with several ODE units) and C186 item 4 (optimiser rejects unconverged simulations), one general each | C185, C186 |
-| running | C189 slice 3 (six illustrative membrane classes) integrating; --gui and the membrane scope on the combination before push | C189 |
+| todo | C189 slice 4: the idempotent import/QA tool for manufacturer catalogues, writing data/local only (one seed file on the laptop: ~/Downloads/Choupo_catalogo_RO_NF_consolidado_SI.xlsx) | C189 |
 | todo | C188 item 5 remaining: passThrough on other units, per-port contracts, batch crystalliser, the recycle question | C188 |
 | todo | C189 slices 3-6: six illustrative classes, import/QA to data/local, shortlist with no default score, docs | C189 |
 | todo | Curation: the records' A_w gives 2.16x (NF270-4040) and 2.08x (SW30HR-380) the sheets' permeate at their rated tests | C189 |
@@ -106,6 +106,7 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 | done | C188 item 5 slice C: the diafilter defect closed; the contract generates the docs/ai and GUI sections (one source) | C188, 0ca2b5166 |
 | done | C188 item 5 slice B: ED, batch ED, diafilter, ion exchanger, crystalliser on the contract; passThrough on the ED stack (ed10) | C188, fdbc410e9 |
 | done | C188 item 5 slice A: the acceptance contract, one writer of refusals, RO and pump migrated, authored inlets checked before the solve, --describe-units | C188, fe9420e07 |
+| done | C189 slice 3: six illustrative membrane classes a student chooses by what they do (membrane26) | C189, 625c4c065 |
 | done | Rated pressures read as gauge on NF270-4040 and SW30HR-380; membrane25 re-recorded (14 rows, one stated cause) | C189, 320bdc7a8 |
 | done | C189 slice 2: several rated tests per module, each as the sheet states it (ratedTests, fromRatedTest <id>) | C189, 10dc43173 |
 | done | C189 slice 1: a datasheet's observed rejection inverted to the intrinsic one (fromRatedTest, membrane25) | C189, 7c186a77a |

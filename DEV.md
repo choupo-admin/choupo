@@ -1727,6 +1727,22 @@ accepts today, and that is a policy call.
 > elements, a curation item; (b) `bin/choupo-import` cannot seal a case
 > that reads a feed-spacer record ("FeedSpacerRegistry: unknown feed
 > spacer 'Spacer-28mil' ... the builtins were not installed").
+> Slice (3) DONE (625c4c065): six `kind membraneClass` records
+> (NF_OPEN, NF_DIVALENT_SELECTIVE, NF_TIGHT, BWRO_HIGH_FLUX,
+> BWRO_HIGH_REJECTION, SWRO) named in the `module` slot, each
+> `reviewStatus illustrative;` and announced on every run that reads it,
+> each with its reference test in the slice-2 grammar (the band's middle
+> as the stated observed rejection, a CHOICE recorded as one) and a
+> teaching A_w (`origin assumed`: no source states one); the intrinsic
+> rejections DERIVED by the slice-1 inversion; a class refuses any law
+> but constantRejection, a typed number for a salt it rates, a
+> manufacturer name.  Witness `membrane26_class_sulphate_removal`
+> (NF_DIVALENT_SELECTIVE: R_int NaCl 0.3757, MgSO4 0.9634; 85 ppm
+> sulphate in the permeate at 32 % recovery).  Gate
+> `check_membrane_classes`.  Open: a class is fixed to Generic-4040;
+> the batch diafilter does not refuse a class as its `membrane`;
+> `choupo-import` does not follow a class's element reference (witness
+> unsealed).  Next: slice (4), the import/QA tool to data/local.
 
 > **C188. WHAT A UNIT ACCEPTS: MODELLED, A DECLARED APPROXIMATION, OR
 > REFUSED (an external proposal, ChatGPT, "chemical component
