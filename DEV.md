@@ -1568,7 +1568,28 @@ accepts today, and that is a policy call.
 > (3D racks inside the hall, the 2D plan and section views).  OPEN: a
 > pressure-centre alternative (a second case, the comparison the Danfoss page
 > makes), pump curves and the cost.
-> STATUS: COMMISSIONED 2026-11-02; phase A with a general.
+> PHASE C, asked by Vitor 2026-11-02 ("inclui isto no user guide da operacao
+> unitaria de osmose inversa / nanofiltracao, porque sao importantes estas
+> heuristicas de layout para o design do equipamento; o ideal seria ate ter um
+> HTML, semelhante ao do permutador de calor, que mostra esquematicamente como
+> tudo esta organizado num train"): (i) the heuristics written into the user
+> guide's spiralWoundModule entry (docs/userGuide.tex, the paragraph at
+> `spiralWoundModule (alias membraneSW)`): trains against a pressure centre,
+> the per-pump and per-device maxima and why, the PX array, vessels per rack and
+> tiers, the loading clearance, the second pass beside or around the first --
+> EACH with its source (read, cited) or said to be author-set, and the C199
+> sources' limits (vendor and trade pages, no numeric spacing in any open
+> source); (ii) a schematic of a TRAIN, drawn like the exchanger's in the
+> equipment-schematic module (gui/src/case/equipmentSchematic.ts, dispatched on
+> the sheet's own equipment word, a labelled box where no drawing exists): the
+> HP pump, the PX array, the booster, the vessel banks of both passes, the
+> permeate and brine lines, each dimension marked by ink and by word as
+> declared or computed.  Phase C needs phase A's published keys, so it is
+> dispatched after A and together with B (one GUI general: the 3D racks, the
+> plans and sections, the train schematic) plus a documentation general for
+> (i).
+> STATUS: COMMISSIONED 2026-11-02; phase A with a general; B and C wait for A's
+> keys.
 
 > **C197. HEAVY WATER IN THE STANDARD COMPONENTS, PROMOTED FROM A COOLPROP
 > IMPORT TO A RECORD A RESEARCHER CAN DEFEND (Vitor, 2026-11-02: "quero

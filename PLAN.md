@@ -50,6 +50,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| todo | C199 phases B and C after A: the GUI draws every vessel inside its rack in the RO hall (3D), a plan and a section (2D) and a schematic of one train; the layout heuristics written into the user guide's RO/NF entry | C199 |
 | todo | The real boron: two-solute transport (boric acid, borate), a stream pH with speciation, a curated H3BO3/BOH4 record, a dosing unit; and a recycle solver that refuses the trivial fixed point by name | C198 |
 | todo | C170's owed fixes: gates must not judge data/local or untracked files; refuse `nu 0; order 1`; records still citing Burcat | C170 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
