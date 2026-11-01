@@ -108,7 +108,9 @@ import type { GTAOPass as GTAOPassT } from "three/examples/jsm/postprocessing/GT
 import type { OutlinePass as OutlinePassT } from "three/examples/jsm/postprocessing/OutlinePass.js";
 import type { OutputPass as OutputPassT } from "three/examples/jsm/postprocessing/OutputPass.js";
 
-import { equipmentDrawing, type Part, type PartRole } from "../../case/equipmentModel.js";
+import {
+  equipmentDrawing, type InstancedCylinderPart, type Part, type PartRole,
+} from "../../case/equipmentModel.js";
 import {
   BUND_WALL_THICKNESS, cameraFit, declutter, LABEL_PRIORITY, PHASE_COLOURS, pointAlong, ROUTE_ARROW_SPACING,
   type LabelBox, type LayoutScene, type Phase, type RenderQuality, type Vec3, type ViewPreset,
@@ -609,6 +611,9 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
         g.computeVertexNormals();
         break;
       }
+      case "instances":
+        //  Never merged: the caller draws these as ONE InstancedMesh.
+        throw new Error("an instanced part is drawn by InstancedMesh, not merged");
     }
     g.translate(p.at[0], p.at[1], p.at[2]);
     return g;
@@ -630,8 +635,12 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       return [key, roleMat.get(p.role)!];
     };
     const byMat = new Map<string, { mat: T3.Material; geoms: T3.BufferGeometry[]; envelope: boolean }>();
+    //  INSTANCED parts (a vessel bank: up to 233 identical cylinders a train)
+    //  are NOT merged geometry: ONE InstancedMesh per part, added below.
+    const instanced: { part: InstancedCylinderPart; mat: T3.Material }[] = [];
     for (const p of drawing.parts) {
       const [key, mat] = matOf(p);
+      if (p.prim === "instances") { instanced.push({ part: p, mat }); continue; }
       const e = byMat.get(key) ?? { mat, geoms: [], envelope: false };
       e.geoms.push(geometryOf(p));
       e.envelope ||= !p.decoration;
@@ -659,6 +668,25 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       //  A shell's glow would fill the glass and hide the rooms: its finding
       //  is carried by its edges (below) and its label instead.
       if (s.flagged && envelope && !s.shell) flaggedMeshes.push(mesh);
+    }
+    for (const { part: p, mat } of instanced) {
+      if (p.centres.length === 0) continue;     //  an empty rack draws nothing
+      const g = new THREE.CylinderGeometry(p.radius, p.radius, p.length,
+        segs(p.radius), 1, false);
+      if (p.axis === "x") g.rotateZ(-Math.PI / 2); else g.rotateX(Math.PI / 2);
+      const im = new THREE.InstancedMesh(keep(g), mat, p.centres.length);
+      const mat4 = new THREE.Matrix4();
+      p.centres.forEach((c, i) => {
+        im.setMatrixAt(i, mat4.makeTranslation(p.at[0] + c[0], p.at[1] + c[1], p.at[2] + c[2]));
+      });
+      im.instanceMatrix.needsUpdate = true;
+      im.castShadow = true;
+      im.receiveShadow = true;
+      im.userData.tooltip = tooltip;
+      keep(im);
+      group.add(im);
+      pickables.push(im);
+      if (s.flagged && !p.decoration) flaggedMeshes.push(im);
     }
     if (s.shell) {
       const [hx, hy, hz] = [s.size[0] / 2, s.size[1] / 2, s.size[2] / 2];

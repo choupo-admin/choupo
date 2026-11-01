@@ -98,6 +98,7 @@ import type {
 } from "./SolverAdapter.js";
 import { WASM_WORKER_URL } from "./wasmModule.js";
 import { countRunCase } from "../analytics.js";
+import { withBanks } from "../case/withBanks.js";
 import { noteRunSettled, noteRunStarted } from "./runLedger.js";
 
 // The markers the WASM solver wraps its structured-result JSON in.  Exported
@@ -244,6 +245,10 @@ export class WasmAdapter implements SolverAdapter {
         //  no sizing pass must not look like a case that failed to solve.
         if (designFiles && Object.keys(designFiles).length > 0) {
           result.designFiles = designFiles;
+          //  THE ONE SEAM that joins a vessel bank's layout envelope to its
+          //  own sheet (DEV.md 4c C199 phase B): every reader of
+          //  `result.layout` then sees the bank, none reads a sheet.
+          if (result.layout) result.layout = withBanks(result.layout, designFiles) ?? result.layout;
         }
         //  Same rule, third tree: a case whose units publish no profile must
         //  not read as a case that failed to solve.

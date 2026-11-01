@@ -106,6 +106,7 @@ License
 import type {
   PlantLayout, LayoutAccess, LayoutItem, LayoutPipe, LayoutRoad,
 } from "../adapters/SolverAdapter.js";
+import { bankProblems, type MembraneBank } from "./membraneBank.js";
 
 export type Vec3 = [number, number, number];
 
@@ -125,6 +126,9 @@ export interface SceneSolid {
    *  the rooms inside it show.  Set by `withBuilding`, never here. */
   shell?: boolean;
   footprintFrom: "published" | "declared";
+  /** A `membraneBank` item's vessel geometry, read from its sheet and attached
+   *  by `withBanks` (DEV.md 4c C199 phase B); drawn by `equipmentModel`. */
+  bank?: MembraneBank;
   ignition: boolean;
   release: boolean;
   /** The engine published a finding naming this item. */
@@ -632,6 +636,15 @@ function solidOf(it: LayoutItem, flagged: boolean, findings: string[],
     `${what} · ${dims} · ${sizeWord}`,
     `at (${fmt(it.x)}, ${fmt(it.y)}) m, base z ${fmt(it.z)} m`,
   ];
+  if (it.bank) {
+    const b = it.bank;
+    tooltip.push(`bank: ${b.vessels} vessels x ${b.elementsPerVessel} elements, `
+      + `${b.racks} rack${b.racks === 1 ? "" : "s"} of ${b.tiers} tiers x ${b.vesselsPerTier}`);
+    for (const pr of bankProblems(b)) tooltip.push(`BANK SHEET INCONSISTENT: ${pr}`);
+  } else if (it.kind === "membraneBank") {
+    tooltip.push("bank geometry not drawn: its design sheet was not read, or lacks a key "
+      + "(see the sheet); the engine's envelope box is shown");
+  }
   if (it.room)
     tooltip.push(`indoors: in room ${it.room} of the GMP building, standing on its floor`);
   if (it.release)
@@ -649,6 +662,7 @@ function solidOf(it: LayoutItem, flagged: boolean, findings: string[],
     id: it.id, kind: it.kind, sector: it.sector,
     shape: it.shape, axis, center, size,
     nonProcess: it.nonProcess, footprintFrom: it.footprintFrom,
+    ...(it.bank ? { bank: it.bank } : {}),
     ignition: !!it.ignition, release: !!it.release, flagged,
     //  A flagged item's label carries a warning GLYPH beside its id: the
     //  word channel that survives greyscale; the finding itself is in the

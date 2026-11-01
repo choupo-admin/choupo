@@ -296,6 +296,22 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["batchGantt.test.ts", "citation.test.ts"],
     stdout: true,
   },
+  //  THE DESALINATION PLANT'S SHEETS AND RESULT (DEV.md 4c C199 phase B): the
+  //  seven sized kinds of six trains (42 sheets) and the structured result
+  //  (layout + building), read by the tests that build the 3D bank model and
+  //  every 2D drawing of the hall from the case's REAL run output.
+  ...["HPpump", "Booster", "Pass2Pump", "PX", "RO1", "RO2a", "RO2b"].flatMap((u) =>
+    [1, 2, 3, 4, 5, 6].map((k) => ({
+      caseDir: "tutorials/plant/swro01_campoDalias",
+      file: `design/${u}/train${k}`,
+      readBy: ["roHallDrawings.test.ts", "membraneBankModel.test.ts"],
+    }))),
+  {
+    caseDir: "tutorials/plant/swro01_campoDalias",
+    file: "log.choupoSolve",
+    readBy: ["roHallDrawings.test.ts", "membraneBankModel.test.ts"],
+    stdout: true,
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by
