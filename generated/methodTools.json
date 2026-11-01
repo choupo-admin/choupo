@@ -33,8 +33,8 @@
       "meaning": "an input -- a value you set with a control, or one the example's author declared -- not a result"
     }
   ],
-  "liveTools": 66,
-  "registryTools": 66,
+  "liveTools": 67,
+  "registryTools": 67,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -789,6 +789,18 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=ip-strategy"
+    },
+    {
+      "id": "tree-of-chemistry",
+      "label": "The tree of chemistry: a hundred products, eleven roots",
+      "discipline": "Process design & economics",
+      "teaches": "That the commodity chemicals are one tree: seven organic roots (ethylene, propylene, the C4s, benzene, toluene, the xylenes, synthesis gas with methanol) and four inorganic ones (ammonia, sulfuric acid, chlorine with caustic, the nitric and phosphoric acids), read three ways from one graph of balanced routes: depth (the kilograms of each raw material behind a kilogram of PVC, phenol or methanol, as a band, never a point), convergence and forced co-production (the acetone that follows every phenol, the slate a cracker cannot refuse), and the tree of 2050 (hydrogen per carbon derived from the stoichiometry) -- and that the sustainable transition replaces the roots, not the leaves.  Every yield band is the curator's estimate and the page draws it as one.",
+      "origins": [
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=tree-of-chemistry"
     },
     {
       "id": "solvent-mixture",
