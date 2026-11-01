@@ -1562,7 +1562,26 @@ accepts today, and that is a policy call.
 > (filling, lyophiliser, sterilising filtration, F0) -- only if a group
 > picks a parenteral, 3 of 19 did.  PEDAGOGICAL SCOPE of (1)-(2) is put to
 > Vitor before dispatch (CLAUDE.md section 10).
-> STATUS: COMMISSIONED 2026-11-02 (analysis done; scope question put).
+> DECIDED 2026-11-02 (Vitor: the market EduTool matters "porque na
+> industria farmaceutica isso e muito influenciado pelas patentes e pelos
+> genericos"): item (4) is RAISED, the architect's scope: an EduTool 'Patent
+> expiry and generic entry' -- the originator's sales and loss-of-exclusivity
+> date in, the number of generic entrants, the price erosion by number of
+> competitors and the share the newcomer wins as DECLARED curves with their
+> source and origin word, out the volume and the price per year that the
+> economics reads (`streamFactor`, price), so the plant's NPV is discounted
+> from the launch the way apalutamide01 already does by hand.  HONEST LIMITS,
+> said on the page: it is NOT a freedom-to-operate analysis (the apalutamide
+> dossier itself lists the European counterparts and SPCs as unverified);
+> price-erosion figures from the commercial databases are not redistributable,
+> so only curves from published studies are shipped, each cited and marked
+> `assumed` unless the study states them for the product class.  The
+> compaction bench (props op: Heckel, Kawakita, Ryshkewitch fitted to the
+> group's own measured data) and the machine-capacity sizer follow;
+> Johanson roller compaction is a second phase.  OPEN, a fact only Vitor
+> holds: whether the groups can measure compaction data or must take
+> literature values.
+> STATUS: COMMISSIONED 2026-11-02.
 
 > **C194. THE CAMPO DE DALIAS SEAWATER DESALINATION PLANT (THE "SEA OF
 > PLASTIC"), FROM A PUBLIC CASE STUDY, WITH ITS WHOLE LAYOUT (Vitor,

@@ -58,15 +58,16 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 | todo | Distillation defects A (fullMESH seeded by an unconverged CMO phase) and B (NewtonND accepts a non-improving step) | C184 |
 | todo | C170's owed fixes: gates must not judge data/local or untracked files; refuse `nu 0; order 1`; records still citing Burcat | C170 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
+| todo | The EduTool 'Patent expiry and generic entry': originator sales, loss of exclusivity, generic competitors, price erosion and share, out to the economics (for the two pharmaceutical groups) | C195 (4) |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
-| todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
 
 ## Beyond a week
 
 | status | what | ref |
 |---|---|---|
+| todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
 | todo | Verify and fix the Gibbs review's three open items and the SpeciationSolver outer convergence | C187 (1)(2) |
-| todo | Pharmaceutical groups: sized items for the tablet machines and the clean utilities (HVAC, purified water), blend uniformity -- scope put to Vítor | C195 |
+| todo | Pharmaceutical groups: the compaction bench (Heckel, Kawakita, Ryshkewitch fitted to the group's data), sized tablet machines, clean utilities (HVAC, purified water), blend uniformity | C195 |
 | todo | Distillation P0 (step contract, singular-Jacobian diagnostic); re-run and classify Vítor's DME plant | C184 |
 | todo | aceticAcid02: the subcooled-feed q in the simultaneous column branch | C174, C175 |
 | todo | Seeded crystallisation, cake filtration and washing, a linear chromatography column (pedagogical scope first) | C190 |
