@@ -493,8 +493,8 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 45255 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 43075 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
-      "seconds": 12.9
+      "claim": "check_glossary_bans: OK -- 41542 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 43233 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
+      "seconds": 7.6
     },
     "check_groups": {
       "exit": 0,
@@ -1394,7 +1394,7 @@
     "check_unit_acceptance": {
       "exit": 0,
       "claim": "check_unit_acceptance: OK -- the two units' refusals live in the contract (source); the five slice-B units refuse through their contracts (source); ethanol-in-RO refused before any unit ran; choupo-lint reports ethanol-in-RO; vapour-into-pump refused before any unit ran; choupo-lint reports vapour-into-pump; a produced vapour is refused by the pump at its solve; benzene-into-ED refused before any unit ran; ED-without-aqueous-chemistry refused before any unit ran; unbridged-Ca-into-softener refused before any unit ran; solute-free-crystalliser-feed refused before any unit ran; a produced diluate carrying benzene is refused by the next stack at its solve; ed10: benzene 0.01 kmol/h carried to the diluate unchanged, recorded once as a declaredApproximation, mass and carbon balances closed, every stack KPI equal to the benzene-free twin's; passThrough fate-not-offered refused before any unit ran; passThrough no-fate refused before any unit ran; passThrough no-reason refused before any unit ran; passThrough modelled-ion refused before any unit ran; passThrough the-solvent refused before any unit ran; passThrough not-a-component refused before any unit ran; passThrough unit-offers-none refused before any unit ran; choupoBatch --describe-units lists 9 vessel types, 3 declared; the rig refuses through its contract at initialise; the batch diafilter refuses ethanol in its holdup by name, through its contract (rule aqueousSolventAndNonvolatileSolutes); liquid-into-turbine refused before any unit ran; solute-without-Henry-pair refused before any unit ran; vapour-wash-into-absorber refused before any unit ran; two-volatiles-into-evaporator refused before any unit ran; --describe-units lists 53 types, 25 declared; the slice-D units refuse through the contract (source) and declare per-port phases; the generated acceptance text is current and names exactly the 28 declared unit(s) in unit-ops.md and the GUI's unitAcceptance.json; check_membrane_feed_scope and check_pump_liquid_inlet pass.  Scope: the migrated units (slices A-C: spiralWoundModule, pump, electrodialysisStack, ionExchanger, crystalliser, batchElectrodialysis, batchDiafilter; slice D: compressor, turbine, absorber, stripper, extractor, evaporator, batchCrystalliser, plus the declaration-only column, shortcut, flashes, valve, heatExchanger, mixer, splitter), the default on cyclone, and passThrough on the ED stack; NOT checked: a run witness of the extractor's liquid-only ports and of the batch crystalliser's refusals (source and --describe-units arms only); the energy balance of a pass-through on a case whose package prices it on a different phase than it carries, the text outside the generated acceptance regions, a recycle bringing a new component into a migrated unit",
-      "seconds": 0.6
+      "seconds": 0.5
     },
     "check_third_body_rate": {
       "exit": 0,
@@ -1414,7 +1414,7 @@
     "check_optimiser_converged": {
       "exit": 0,
       "claim": "check_optimiser_converged: OK -- an unconverged simulation is a FAILED evaluation, never an objective: on cavett01 copies whose recycle stops at recycleMaxIter 2, nelderMead (23 evaluations FAILED by name), sqp (2 evaluations FAILED by name), integer (69 evaluations FAILED by name) each refuse by name and print no optimum; with recycleMaxIter 8 the Nelder-Mead search counts 3 of 8 evaluations failed (did not converge), reports a finite best and replays a converged recycle; the converging copy prints no FAILED line and ends 'status: converged' (held); 4 `simulator_(` call site(s) read the verdict through simulationFailure() before the result is read.  NOT covered: the sweep, gridSweep and designSpec drivers; whether a corpus optimisation SHOULD converge; the choupoCtrl functor.",
-      "seconds": 22.5
+      "seconds": 21.0
     },
     "check_chemistry_graph": {
       "exit": 0,
@@ -1450,6 +1450,26 @@
       "exit": 0,
       "claim": "check_audit_remaining: OK -- an explicit reverse pair is read by the batch vessel (0.5858 kmol of 0.5858 at equilibrium, equal to an independent RK4 to 1e-6; the dynamic vessel agrees, dn_B 0.0002783 kmol in 10 ms); the pair on thirdBody, beside `units`, or alone refuses by name; `catalystLoading` reaches the vessels' own law (batch 0.002999 -> 0.989 kmol; dynamic dn_B 5.747e-06 -> 0.001978 kmol); a membrane fit that no step improves is judged by a gradient test (shipped: converged; fdStep 0.1: stalled, exit 1; maxIter 2: maxIterations); PC-SAFT density scan (vapour branch ends 4 Pa from its fitted spinodal 5.14984 bar).  Scope: the vessels' own Arrhenius path; NOT checked: other problems than membrane24 for the 1e-3 cosine, PC-SAFT mixtures",
       "seconds": 3.3
+    },
+    "check_membrane_shortlist": {
+      "exit": 0,
+      "claim": "check_membrane_shortlist: OK -- the shortlist applies its hard filters by each record's own numbers (type, class band, rated solute, P_max, and after the re-rating feedFlow_max and dP_max), re-rates every survivor at the student's conditions (recovery exact to 1e-8; an independent choupoSolve run of the printed R_int and feed flow reproduces the permeate and observed rejection to 1e-6), lists every criterion side by side in alphabetical order of the name with no sort, score, weight or rank, never reads a record's partner/dataVerifiedBy (CSV and table byte-identical with or without), refuses a mis-declared request by name, and reads data/local only as the lowest, announced tier.  NOT CHECKED: the transport law's reading of a sheet away from its test, any record against its product, several solutes or elements at once.",
+      "seconds": 2.9
+    },
+    "check_distillation_seed": {
+      "exit": 0,
+      "claim": "check_distillation_seed: OK -- a Newton step no trial improves is counted and limited and the BEST iterate is returned (probe: x = 3, |F| = 2, not the uphill 2.99976 / 50; strict mode stops at the first); a CMO phase that did not converge (15 stages, 77 iterations, |F| = 4.586e+04) seeds the full MESH only as an ANNOUNCED seed and the verdict is the full MESH's own; acetone06 still converges through 2 announced floor-damped step(s).  NOT covered: a seed the full MESH converts (none found in the corpus), the singular-Jacobian stage/equation diagnostic (C184 P0), the allowance's default of 25.",
+      "seconds": 3.1
+    },
+    "check_driver_convergence": {
+      "exit": 0,
+      "claim": "check_driver_convergence: OK -- a tear carries its pressure: a mixer -> pipe -> splitter recycle with no pressure set in the loop is refused by tear name under Newton and Wegstein (and the same loop with a valve to a fixed P converges); an unconverged simulation is a failed point in sweep, grid, designSpec (all-fail refuses by name, failed points named with coordinates and published as nan: 1 of 5 points failed at recycleMaxIter 8); the converging copy is unchanged (held); 4 `simulator_(` site(s) read the verdict through simulationFailure() first.  NOT covered: whether a corpus loop should be pressure-consistent (bin/runTests --scope), pumps/compressors as the setter of P, the energy-tear Wegstein vector.",
+      "seconds": 5.4
+    },
+    "check_gates_judge_tracked": {
+      "exit": 0,
+      "claim": "check_gates_judge_tracked: OK -- 5 of 5 converted gates keep their verdict when an UNTRACKED file and a data/local/ file violate their rule, and 5 of 5 FAIL on the same violation once it is tracked (scratch index, the real one untouched); tracked_tree refuses by name outside a repository.  NOT checked: the ~130 other gates that walk a directory (only the converted ones were measured to differ), and gates whose subject is the private tier itself.",
+      "seconds": 43.6
     }
   }
 }
