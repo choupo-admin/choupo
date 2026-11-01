@@ -82,6 +82,8 @@ import { FrontEndLoadingTool } from "../src/ui/methods/FrontEndLoadingTool.js";
 import { IpStrategyTool } from "../src/ui/methods/IpStrategyTool.js";
 import { TREE_QUIZ, TREE_STEPS } from "../src/ui/methods/treeOfChemistryLesson.js";
 import { TreeOfChemistryTool } from "../src/ui/methods/TreeOfChemistryTool.js";
+import { PATENT_QUIZ, PATENT_STEPS } from "../src/ui/methods/patentExpiryLesson.js";
+import { PatentExpiryTool } from "../src/ui/methods/PatentExpiryTool.js";
 
 const GUI = new URL("../", import.meta.url);
 const read = (rel: string): string => readFileSync(new URL(rel, GUI), "utf-8");
@@ -141,6 +143,10 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "tree-of-chemistry": {
     quiz: TREE_QUIZ, quizName: "TREE_QUIZ", lesson: TREE_STEPS, lessonName: "TREE_STEPS",
     file: "src/ui/methods/TreeOfChemistryTool.tsx", tool: TreeOfChemistryTool,
+  },
+  "patent-expiry": {
+    quiz: PATENT_QUIZ, quizName: "PATENT_QUIZ", lesson: PATENT_STEPS, lessonName: "PATENT_STEPS",
+    file: "src/ui/methods/PatentExpiryTool.tsx", tool: PatentExpiryTool,
   },
 };
 
