@@ -1638,8 +1638,32 @@ accepts today, and that is a policy call.
 > `bin/choupo-import --overwrite`.  LESSON: a sealed mirror is changed only by
 > the importer, never by cp; `check_heavy_water` arm (f) compares bytes to the
 > catalogue, not the manifest hash.
-> STATUS: PHASE A and C (i) DONE; B and the train schematic with a general
-> (built, integrating).
+> DONE 2026-11-02, PHASE B and C (ii), the GUI (7c63e6493, a general): the 3D
+> view draws the new kind `membraneBank`: every vessel a cylinder of the sheet's
+> `vesselOutsideDiameter` x `vesselLength`, in tiers of `vesselsPerTier`, racks
+> of `vesselsPerRack` side by side with `rackAisle`, the base frame at
+> `baseHeight`, the loading clearance free at the high-x end, ONE InstancedMesh
+> per rack (1830 vessels in the plant); a new Reports section `Trains and racks`
+> (earned by the existence of a `membraneBank` sheet, with train, bank and rack
+> pickers) holds the 2D SET -- a PLAN of the hall (four rooms, 48 racks, the
+> loading clearances hatched, the A-A cut), a SECTION of one rack bay (48
+> vessels in 4 tiers, diameter, pitch, base, headroom to the roof 8.1 m), the
+> ELEVATION of one rack with its feed, brine and permeate headers -- and the
+> SCHEMATIC of one train (pump, PX array, booster, RO1, RO2a, RO2b, the product,
+> spent-brine and recycle lines with counts and flows per train), every
+> dimension in two channels (ink and the word declared or computed), a missing
+> key a labelled box that names it.  The tests read the case's REAL run output
+> (no transcription to drift) and recompute vessel, rack and envelope counts by
+> hand; one checks every vessel lies inside its rack; the empty-list guard of
+> the 3D merge is covered.  OPEN, for the engine: `headerNominalDiameter` and a
+> pipe sizer behind it (the headers are drawn dashed and said not to be sized),
+> vessel PORT positions (drawn by convention, labelled so), a per-key
+> declared/computed list on the bank sheet, volumetric flows on the bank sheets
+> (the GUI divides the plant's mass flows by the trains and says so).  Not done:
+> headers in 3D, piping in the plan, pumps and arrays by kind in 3D, WebGL
+> tests.  `--gui` 42/0.
+> STATUS: PHASES A, B AND C DONE 2026-11-02; the pressure-centre alternative,
+> the pipe and header sizer and the pump curves remain.
 
 > **C197. HEAVY WATER IN THE STANDARD COMPONENTS, PROMOTED FROM A COOLPROP
 > IMPORT TO A RECORD A RESEARCHER CAN DEFEND (Vitor, 2026-11-02: "quero
