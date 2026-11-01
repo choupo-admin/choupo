@@ -97,8 +97,10 @@ Description
 #include "core/Dictionary.H"
 #include "core/Types.H"
 
+#include <functional>
 #include <limits>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -212,7 +214,61 @@ RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
                                         const std::string& testId,
                                         const std::string& unitLabel,
                                         scalar A_w_override = std::numeric_limits<scalar>::quiet_NaN(),
-                                        bool announce = true);
+                                        bool announce = true,
+                                        const std::string& pHNote = std::string());
+
+//- THE SPLIT FORM (DEV.md 4c C198, Stage 1; membrane/AqueousSplit.H).  An
+//  apparent component carried by an acid and its conjugate base has two
+//  intrinsic rejections.  Each rated test of the component, at ITS OWN pH,
+//  is inverted by the module's own film into the component's effective
+//  rejection R_eff,t (the one-test inversion above, run per test), and
+//
+//        1 - R_eff,t = (1 - alpha_t)(1 - R_acid) + alpha_t (1 - R_base)
+//
+//  with alpha_t the base fraction at the test's pH and T (the package's, given
+//  by the caller).  TWO tests at two pH are a 2x2 linear problem for the two
+//  passages; ONE test determines the acid when the base is given.  Refuses by
+//  name: a test with no stated pH, two tests at the same pH (alpha_1 ~ alpha_2:
+//  unidentifiable), a solution with a negative passage or a rejection below
+//  zero.
+struct SplitRejections
+{
+    scalar R_acid = 0.0, R_base = 0.0;
+    int    nTests = 0;
+    std::vector<RatedTestInversion> inversions;  // per test, the one-test inversion
+    std::vector<scalar>             alphas;      // per test
+    std::vector<scalar>             pHs;
+    std::vector<scalar>             R_eff;       // per test (the inversions' R_int)
+};
+
+//- The base fraction at a rated test: the caller's closure over the package.
+using AlphaAtTest = std::function<scalar(const RatedTest&)>;
+
+SplitRejections invertSplitFromTwoTests(const DictPtr& unitDict,
+                                        const ThermoPackage& thermo,
+                                        const MembraneModule* record,
+                                        const std::string& component,
+                                        const std::string& id1,
+                                        const std::string& id2,
+                                        const AlphaAtTest& alphaAt,
+                                        const std::string& unitLabel,
+                                        scalar A_w_override = std::numeric_limits<scalar>::quiet_NaN());
+
+//- One test, the base's R_base given (declared or tied to another solute).
+SplitRejections invertSplitFromOneTest(const DictPtr& unitDict,
+                                       const ThermoPackage& thermo,
+                                       const MembraneModule* record,
+                                       const std::string& component,
+                                       const std::string& id,
+                                       scalar R_base,
+                                       const AlphaAtTest& alphaAt,
+                                       const std::string& unitLabel,
+                                       scalar A_w_override = std::numeric_limits<scalar>::quiet_NaN());
+
+//- The pure algebra, exposed for the gate: passages from two (alpha, R_eff)
+//  pairs; refuses an unidentifiable pair or a negative passage.
+void solveSplitPassages(scalar alpha1, scalar Reff1, scalar alpha2, scalar Reff2,
+                        scalar& R_acid, scalar& R_base, const std::string& who);
 
 //- The water permeance AND the intrinsic rejection that BOTH reproduce a
 //  rated test (C189 slice 5b).  The record's A_w is a teaching fit to some

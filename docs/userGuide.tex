@@ -2235,6 +2235,29 @@ the scaling driver (\file{membrane07\_scaling\_si}).  Start with
 \file{membrane01\_RO\_NaCl\_seawater}, then the concentration-polarisation
 sweep \file{membrane03\_concentration\_polarization}.
 
+\medskip\noindent\textbf{Boron: one component, two forms.}  Boric acid is a
+small neutral molecule that crosses a seawater membrane almost like water;
+borate is an anion the membrane rejects like a salt, and which one dominates is
+the pH against the acid's pKa (9.24 at 25~\textdegree{}C, from the
+\file{chemistry/BOH4-formation.dat} record, with its enthalpy).  A module
+declares \code{aqueousSplit \{ component boron; acid H3BO3; base BOH4; pH 8.2;
+pHSource "..."; rejection \{ \dots \} \}} together with
+\code{boron ( fromAqueousSplit );} in its \code{rejection} block.  The base
+fraction $\alpha=1/(1+10^{\mathrm{p}K_a-\mathrm{pH}})$ is asked of the
+\emph{case's} declared aqueous chemistry (the activity model the case declares
+under \code{equilibrium \{ aqueous \{ \} \}}, never one the unit picks) at the module
+inlet and the \emph{declared} pH; the streams keep the apparent boron, the
+module reports the two forms.  The permeances come from the data sheet's rated
+tests: two tests of one element at two pH (\code{tests ( id1 id2 )}) give both
+forms; one test gives the acid and the borate's rejection is a declared
+assumption (\code{base ( sameAs NaCl );}), announced on every run.  Stage~1
+freezes the split at the inlet's pH and takes the pH as a label of the module:
+no stream carries a pH and the caustic dosing that sets the second pass's pH is
+not a unit.  At seawater strength Davies is outside its own band and the run
+says so.  Lower the second pass's pH in
+\file{swro01\_campoDalias} from 10 to 9 and the product's boron rises from
+0.04 to 0.14~mg/L.
+
 \begingroup\Urlmuskip=0mu plus 1mu\relax
 \medskip\noindent\textbf{How an RO/NF plant is laid out.}  The element above
 is the smallest piece of a plant; the equipment a student designs around
