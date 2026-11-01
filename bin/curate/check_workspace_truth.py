@@ -140,37 +140,72 @@ def main() -> int:
         else:
             rc, _, _ = git("merge-base", "--is-ancestor", origin, head)
             if rc != 0:
-                rc2, mb, _ = git("merge-base", head, origin)
-                _, localonly, _ = git("log", "--oneline",
-                                      f"{mb}..{head}") if rc2 == 0 else (0, "", "")
-                print("check_workspace_truth: REFUSED -- THE WORKSPACE IS NOT"
-                      " THE TREE YOU THINK IT IS.")
-                print(f"  HEAD          {head[:10]} ({branch})")
-                print(f"  origin/{branch}  {origin[:10]}  <- the truth")
-                print(f"  merge-base    {mb[:10] if rc2 == 0 else '?'}")
-                print("  The container recycler has rewound this checkout."
-                      "  Every measurement, build or commit made here"
-                      " describes a DIFFERENT tree and manufactures false"
-                      " evidence.")
-                if localonly:
-                    print("  Commits on HEAD but not on origin (cherry-pick"
-                          " candidates -- a GENERATED file among them must be"
-                          " regenerated, never transported):")
-                    for ln in localonly.splitlines()[:10]:
-                        print("    " + ln)
-                    print("  --remediate REFUSES this case: it will not choose"
-                          " for you between discarding and cherry-picking.")
-                    return 1
-                if remediate:
-                    git("reset", "--hard", f"origin/{branch}")
-                    print(f"  REMEDIATED: reset --hard origin/{branch} (no"
-                          " local-only commits existed, nothing destroyed).")
-                    _, head, _ = git("rev-parse", "HEAD")
+                #  TWO DIFFERENT FACTS shared one message (C170 item 4,
+                #  2026-10-26): HEAD an ANCESTOR of origin means the checkout
+                #  is merely BEHIND (a laptop that has not pulled -- the cure
+                #  is `git pull`, and no recycler is involved); HEAD NOT an
+                #  ancestor means the history diverged (rewound or
+                #  force-moved), which is the recycler's signature.  Telling
+                #  a laptop that "the container recycler has rewound this
+                #  checkout" accused an innocent machine.
+                rcb, _, _ = git("merge-base", "--is-ancestor", head, origin)
+                _, nbehind, _ = git("rev-list", "--count", f"{head}..{origin}")
+                if rcb == 0:
+                    print("check_workspace_truth: REFUSED -- THE CHECKOUT IS"
+                          f" BEHIND origin/{branch} by {nbehind} commit(s)"
+                          " (fast-forward only; nothing local is lost).")
+                    print(f"  HEAD          {head[:10]} ({branch})")
+                    print(f"  origin/{branch}  {origin[:10]}  <- the truth")
+                    print("  Every measurement made here describes an OLDER"
+                          " tree than origin's.")
+                    if remediate:
+                        rcm, _, errm = git("merge", "--ff-only",
+                                           f"origin/{branch}")
+                        if rcm != 0:
+                            print("  --remediate could not fast-forward: "
+                                  + errm)
+                            return 1
+                        print(f"  REMEDIATED: fast-forwarded to origin/{branch}.")
+                        _, head, _ = git("rev-parse", "HEAD")
+                    else:
+                        print(f"  Remedy: git pull --ff-only origin {branch}"
+                              "    (or bin/curate/check_workspace_truth.py"
+                              " --remediate)")
+                        return 1
                 else:
-                    print(f"  Remedy: bin/curate/check_workspace_truth.py"
-                          f" --remediate    (safe: no local-only commits)"
-                          if not localonly else "")
-                    return 1
+                    rc2, mb, _ = git("merge-base", head, origin)
+                    _, localonly, _ = git("log", "--oneline",
+                                          f"{mb}..{head}") if rc2 == 0 else (0, "", "")
+                    print("check_workspace_truth: REFUSED -- THE HISTORY HAS"
+                          f" DIVERGED from origin/{branch}: HEAD is not an"
+                          " ancestor of it and it is not an ancestor of HEAD"
+                          " (rewound, force-moved or never pushed).")
+                    print(f"  HEAD          {head[:10]} ({branch})")
+                    print(f"  origin/{branch}  {origin[:10]}  <- the truth")
+                    print(f"  merge-base    {mb[:10] if rc2 == 0 else '?'}")
+                    print("  A container recycler leaves exactly this"
+                          " signature, and so does a local branch that was"
+                          " rebased.  Every measurement, build or commit made"
+                          " here may describe a DIFFERENT tree.")
+                    if localonly:
+                        print("  Commits on HEAD but not on origin (cherry-pick"
+                              " candidates -- a GENERATED file among them must"
+                              " be regenerated, never transported):")
+                        for ln in localonly.splitlines()[:10]:
+                            print("    " + ln)
+                        print("  --remediate REFUSES this case: it will not"
+                              " choose for you between discarding and"
+                              " cherry-picking.")
+                        return 1
+                    if remediate:
+                        git("reset", "--hard", f"origin/{branch}")
+                        print(f"  REMEDIATED: reset --hard origin/{branch} (no"
+                              " local-only commits existed, nothing destroyed).")
+                        _, head, _ = git("rev-parse", "HEAD")
+                    else:
+                        print("  Remedy: bin/curate/check_workspace_truth.py"
+                              " --remediate    (safe: no local-only commits)")
+                        return 1
 
     # ---- P2: the poisoned overlay, detected by what it removes -----------
     _, dirty_raw, _ = git("diff", "--name-only", "HEAD")
@@ -222,11 +257,14 @@ def main() -> int:
     rc, ahead_raw, _ = git("log", "--oneline", f"origin/{branch}..HEAD")
     ahead = [ln for ln in ahead_raw.splitlines() if ln]
     state = "SYNCED with" if not ahead else f"AHEAD of ({len(ahead)} commit(s), push soon -- the recycler eats local refs)"
-    print(f"check_workspace_truth: OK -- HEAD {head[:10]} is {state}"
-          f" origin/{branch} (freshly fetched), and the poisoned overlay is"
-          " absent.  NOT GUARANTEED: the recycler itself, and the window"
-          " between this proof and the action it guards -- git's own"
-          " non-fast-forward refusal is the backstop there.")
+    print(f"check_workspace_truth: OK -- CHECKED: HEAD {head[:10]} is {state}"
+          f" origin/{branch} (origin is an ancestor of HEAD, after a fresh"
+          " fetch), and none of the recycler-overlay sentinel files has lost"
+          " its sentinel.  NOT CHECKED: untracked files, the content of any"
+          " tracked file beyond those sentinels, whether HEAD is the commit"
+          " you meant, the recycler itself, and the window between this proof"
+          " and the action it guards (git's own non-fast-forward refusal is"
+          " the backstop there).")
     sys.stdout.write(note)
     return 0
 

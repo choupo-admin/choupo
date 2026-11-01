@@ -92,6 +92,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from tracked_tree import tracked_files  # noqa: E402
 
 #  The deprecated forms.  `apparent` is deliberately ABSENT: it is correct.
 BANNED = [
@@ -220,31 +222,32 @@ def sector_word_pass():
 def main() -> int:
     hits, exempt_seen, nfiles = [], set(), 0
 
-    for root in SCAN_ROOTS:
-        base = ROOT / root
-        paths = [base] if base.is_file() else sorted(base.rglob("*"))
-        for p in paths:
-            if not p.is_file() or p.suffix not in SCAN_SUFFIX:
-                continue
-            rel = p.relative_to(ROOT).as_posix()
-            if any(c in rel for c, _ in CLASS_EXEMPT) or DELIBERATION.match(rel):
-                continue
-            try:
-                text = p.read_text()
-            except (UnicodeDecodeError, OSError):
-                continue
-            nfiles += 1
-            found = [(n, line, remedy)
-                     for n, line in enumerate(text.splitlines(), 1)
-                     for pat, remedy in BANNED if pat.search(line)]
-            if not found:
-                continue
-            if rel in NAMED_EXEMPT:
-                exempt_seen.add(rel)
-                continue
-            for n, line, remedy in found:
-                hits.append(f"{rel}:{n}  -> use {remedy}\n        "
-                            + line.strip()[:110])
+    #  THE TRACKED TREE ONLY (DEV.md 4c C170 item 4): `rglob` judged whatever
+    #  was on THIS disk -- data/local/ (private), run outputs, scratch -- so
+    #  the same commit gave a different file count, and could give a different
+    #  verdict, on a machine holding private data.
+    for rel in tracked_files(ROOT, *SCAN_ROOTS, gate="check_glossary_bans"):
+        p = ROOT / rel
+        if p.suffix not in SCAN_SUFFIX:
+            continue
+        if any(c in rel for c, _ in CLASS_EXEMPT) or DELIBERATION.match(rel):
+            continue
+        try:
+            text = p.read_text()
+        except (UnicodeDecodeError, OSError):
+            continue
+        nfiles += 1
+        found = [(n, line, remedy)
+                 for n, line in enumerate(text.splitlines(), 1)
+                 for pat, remedy in BANNED if pat.search(line)]
+        if not found:
+            continue
+        if rel in NAMED_EXEMPT:
+            exempt_seen.add(rel)
+            continue
+        for n, line, remedy in found:
+            hits.append(f"{rel}:{n}  -> use {remedy}\n        "
+                        + line.strip()[:110])
 
     stale = sorted(set(NAMED_EXEMPT) - exempt_seen)
 
@@ -283,7 +286,8 @@ def main() -> int:
                   "possible which kind of species.")
         return 1
 
-    print(f"check_glossary_bans: OK -- {nfiles} file(s) scanned; no deprecated "
+    print(f"check_glossary_bans: OK -- {nfiles} TRACKED file(s) scanned (data/local/ "
+          "and untracked files are NOT judged); no deprecated "
           f"glossary wording in live text.  {len(NAMED_EXEMPT)} file(s) are "
           "exempt BY NAME because they state, teach or record the ban (a "
           "document that defines a ban must be able to quote it); superseded "

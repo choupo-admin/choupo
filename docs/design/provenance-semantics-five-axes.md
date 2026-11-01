@@ -317,9 +317,10 @@ blocks nested one level deeper —
 value it derives, and the form the Explorer's component inspector was taught to
 read on 2026-09-03.  Recounted at both depths:
 
-**census: 30 direct + 2316 per-value = 2346 across 553 files**
+**census: 30 direct + 2364 per-value = 2394 across 569 files**
 
-(recounted 2026-10-31: the six functional membrane classes of DEV.md 4c C189
+(recounted 2026-11-01: sixteen catalogue records re-sourced from NASA/TP-2002-211556, DEV.md 4c C170 item 4, each adds three per-value `literature` blocks and gains a `provenance {}` it lacked: +48 per-value, +16 files; and, before it,
+2026-10-31: the six functional membrane classes of DEV.md 4c C189
 slice 3 each add one `origin assumed;` A_w and one file) against the "~95 values across 72 files" above.  Two of the four numbers the
 first correction got right stayed right (`assumed` 16, `standard` 3); the
 population it was written to find was one level further in.

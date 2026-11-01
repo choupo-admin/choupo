@@ -6466,6 +6466,20 @@ PYEOF
     fi
     rm -f /tmp/regscan.$$
 
+    # Tracked-tree gate: a gate that walks the disk judges THIS machine, not the
+    # commit (DEV.md 4c C170 item 4: private data/local/ and untracked files
+    # changed verdicts on Vitor's laptop).  Writes probe files into the tree
+    # (and removes them), so it has no PAR lane in suite_lanes.txt.
+    if gate_exec "$ROOT/bin/curate/check_gates_judge_tracked.py" > /tmp/judgetracked.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "gates-judge-tracked-gate" "$(tail -1 /tmp/judgetracked.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_gates_judge_tracked.py)\n" "gates-judge-tracked-gate"
+        cat /tmp/judgetracked.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/judgetracked.$$
+
     # Standard-include gate: g++ hands a file <sstream> through <iostream>;
     # emscripten's libc++ does not.  So the WASM build -- which is what
     # www.choupo.org is MADE of -- can fail on a file that compiles perfectly

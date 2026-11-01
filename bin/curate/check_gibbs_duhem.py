@@ -68,6 +68,23 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+
+#  THE PUBLIC TIER ONLY (DEV.md 4c C170 item 4).  The engine falls back to
+#  data/local/ for a pair or a component the standards lack, so a machine with
+#  private pair files answered this gate's probes differently from a clean
+#  clone.  Every engine process this gate starts reads a throw-away root whose
+#  data/ is the TRACKED standards and no `local` (bin/curate/tracked_tree.py).
+import atexit as _atexit
+import contextlib as _contextlib
+import os as _os
+_sys_path_here = str(Path(__file__).resolve().parent)
+if _sys_path_here not in sys.path:
+    sys.path.insert(0, _sys_path_here)
+from tracked_tree import public_data_root as _public_data_root  # noqa: E402
+_stack = _contextlib.ExitStack()
+_atexit.register(_stack.close)
+_os.environ["CHOUPO_HOME"] = _stack.enter_context(
+    _public_data_root(ROOT, "check_gibbs_duhem"))
 PROBE = ROOT / "build" / "linux64Gcc" / "gdProbe"
 SRC = ROOT / "bin" / "curate" / "_gibbsDuhemProbe.cpp"
 
@@ -103,7 +120,7 @@ def main() -> int:
         return 1
 
     p = subprocess.run([str(PROBE)], capture_output=True, text=True,
-                       env=dict(os.environ, CHOUPO_HOME=str(ROOT)), timeout=600)
+                       env=dict(os.environ, CHOUPO_HOME=_os.environ["CHOUPO_HOME"]), timeout=600)
     raw = p.stdout + p.stderr
     m = re.search(r'<<<JSON\n(.*?)JSON>>>', raw, re.S)
     if p.returncode != 0 or not m:

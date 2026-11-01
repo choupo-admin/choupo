@@ -51,6 +51,20 @@ temperatures.  Arms:
       that derive the reverse leg from Kc without RateLaw) with CO's order
       set to 0.5 must each exit non-zero naming CO, 0.5 and the remedy.
 
+  (g) A COLLIDER WRITTEN `nu 0; order 1` (C170 item 5, 2026-10-26, decided
+      2026-11-01).  C164 found explicit colliders declared this way leaving a
+      mechanism on a false plateau at exit 0.  That is case (e) -- the
+      reverse leg has no c_M, so the zero is not at Kc -- and the refusal
+      already fires under `reversible true`; this arm holds it for the
+      collider's own spelling (a copy of batch04 with H2 as the collider)
+      and holds the other half of the decision: the SAME entry in an
+      IRREVERSIBLE reaction is ACCEPTED, because a species outside the
+      stoichiometry with a declared order is a homogeneous catalyst or, with
+      a negative order (honoured since C190 item 10), an inhibitor -- a
+      mechanism fact the stoichiometry cannot express and the rate law can.
+      Refusing it would forbid catalysis.  The corpus declares no `nu 0`
+      entry (measured by grep, 2026-11-01).
+
 WHAT IS NOT CHECKED.  Whether a reactor INTEGRATES to the zero: that is the
 reactor's, and the zero it integrates to is what this gate holds.  A rate law
 registered from a case's code/ that reads `reversible` itself is outside the
@@ -237,6 +251,51 @@ def main() -> int:
             else:
                 nNative += 1
 
+    # ---- (g) a `nu 0; order 1` collider: refused reversible, kept irreversible
+    nCollider = 0
+    with tempfile.TemporaryDirectory(prefix="lhhwcol_") as tmp:
+        src = ROOT / "tutorials" / "batch/reactor/batch04_reversible_wgs"
+        for rev in ("true", "false"):
+            dst = Path(tmp) / ("col_" + rev)
+            shutil.copytree(src, dst)
+            rx = dst / "constant" / "reactions"
+            text = rx.read_text()
+            new = re.sub(r"\{\s*component\s+H2;\s*nu\s+1;\s*order\s+0;\s*\}",
+                         "{ component H2; nu 0; order 1; }", text, count=1)
+            new = re.sub(r"^(\s*)reversible\s+true;", rf"\g<1>reversible {rev};",
+                         new, count=1, flags=re.M)
+            if new == text and rev == "true":
+                fail.append("(g) could not write H2 as a `nu 0; order 1` "
+                            "collider -- the witness's reactions file moved")
+                continue
+            rx.write_text(new)
+            r = subprocess.run([str(BUILD / "choupoBatch"), str(dst)],
+                               capture_output=True, text=True, timeout=300,
+                               env=env, cwd=dst)
+            out = r.stdout + r.stderr
+            if rev == "true":
+                missing = [w for w in ("reversible true", "species 'H2'",
+                                       "`order 1;`", "needs 0", "A_rev")
+                           if w not in out]
+                if r.returncode == 0:
+                    fail.append("(g) a `nu 0; order 1` collider under "
+                                "`reversible true` exited 0 -- the false "
+                                "plateau C164 found")
+                elif missing:
+                    fail.append("(g) the collider refusal does not name "
+                                f"{missing}:\n      " + out[-500:])
+                else:
+                    nCollider += 1
+            else:
+                if r.returncode != 0:
+                    fail.append("(g) the same `nu 0; order 1` entry in an "
+                                "IRREVERSIBLE reaction was refused (exit "
+                                f"{r.returncode}); a homogeneous catalyst or "
+                                "inhibitor is a legitimate kinetic form:\n"
+                                "      " + out[-400:])
+                else:
+                    nCollider += 1
+
     if fail:
         print("check_lhhw_detailed_balance: FAILED")
         for f in fail:
@@ -251,6 +310,8 @@ def main() -> int:
           f"by name through RateLaw and {nAccepted} legitimate ones accepted; "
           f"{nNative} of {len(NATIVE)} native readers (single-reaction cstr, "
           "single-reaction pfr, batch vessel) refuse through the same home; "
+          f"{nCollider}/2 collider probes (`nu 0; order 1` refused reversible, "
+          "kept irreversible); "
           "NOT checked: reactor integration, laws registered from a case's "
           "code/")
     return 0

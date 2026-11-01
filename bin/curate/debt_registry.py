@@ -134,6 +134,22 @@ SOURCE_LICENCE = {
 #  Reno 1993 -- a US government work, public domain) as the clean route for
 #  dHf_298/s_298/Cp, and ATcT (DOE, versioned OSTI DOI, no NC clause) for
 #  dHf.  Re-import each species from there and the pin goes.
+#  PARTLY DISCHARGED 2026-11-01 (DEV.md 4c C170 item 4).  Sixteen records
+#  were re-sourced from NASA/TP-2002-211556 (US government work, public
+#  domain; `bin/curate/nasa_tp2002_to_choupo.py`) because the report carries
+#  the same species and AGREES with the value the record held to dHf 0.5
+#  kJ/mol, s 0.02 J/(mol K) and Cp 2 % over the record's own Trange: C, CH3,
+#  CS, CS2, Cl, H, H2O2, HO2, N, N2H4, NH, O, S, S2, SO, SO3.  What is left
+#  below is left for a REASON the migration measured, never for want of
+#  trying: the report has no entry under that formula (C3H3, C3H5, C4H2,
+#  C4H4, C5H5, C6H5, CH3CO, CH3O2, HONO, HSO, HSO3, N2H3 -- or only isomers
+#  whose identity the record does not state), or it has one that DISAGREES
+#  (C2O dHf +87.8 kJ/mol, N2H2 +89.1 kJ/mol, NH2 +2.9, NO3 +3.5, SH s +0.20,
+#  ClO s +8.3, HOCl s +0.40, O3 Cp 3.0 %).  A disagreement is a fact for a
+#  curator (a different isomer or state?), not a number to choose.  The
+#  sealed MIRRORS of these records under tutorials/ (31 files) are outside
+#  `check_source_licence`'s scan and still carry the old values; refreshing
+#  them is a re-import and moves goldens (Vitor's list).
 NC_COMPILATION = {
     "data/standards/components/C2O.dat":
         "the card was read out of BURCAT.THR itself.",
@@ -153,12 +169,6 @@ NC_COMPILATION = {
         "the card was read out of BURCAT.THR itself.",
     "data/standards/components/CH3O2.dat":
         "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/CS.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/CS2.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/Cl.dat":
-        "the card was read out of BURCAT.THR itself.",
     "data/standards/components/ClO.dat":
         "the card was read out of BURCAT.THR itself.",
     "data/standards/components/HOCl.dat":
@@ -173,37 +183,11 @@ NC_COMPILATION = {
         "the card was read out of BURCAT.THR itself.",
     "data/standards/components/N2H3.dat":
         "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/N2H4.dat":
-        "the card was read out of BURCAT.THR itself.",
     "data/standards/components/NO3.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/S.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/S2.dat":
         "the card was read out of BURCAT.THR itself.",
     "data/standards/components/SH.dat":
         "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/SO.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/SO3.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/C.dat":
-        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
-    "data/standards/components/CH3.dat":
-        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
-    "data/standards/components/H.dat":
-        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
-    "data/standards/components/H2O2.dat":
-        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
-    "data/standards/components/HO2.dat":
-        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
-    "data/standards/components/N.dat":
-        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
-    "data/standards/components/NH.dat":
-        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
     "data/standards/components/NH2.dat":
-        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
-    "data/standards/components/O.dat":
         "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
     "data/standards/components/O3.dat":
         "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
