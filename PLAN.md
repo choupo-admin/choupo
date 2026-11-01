@@ -36,7 +36,6 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 
 | status | what | ref |
 |---|---|---|
-| running | Integration of the tablet machines and clean utilities (--gui on the final tree) | C195 (1)(2) |
 | running | General: pressure as a tear variable; the sibling drivers read unconverged points | C186 (5) |
 | running | General: the rest of the external audit (batch A_rev, catalystLoading, membrane fitter verdict, PC-SAFT roots) | C190 (14)(11)(15)(12) |
 | running | General: the commercial shortlist, the A_w curation, the module registry's local tier, the importer's spacer defect | C189 |
@@ -105,6 +104,7 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 
 | status | what | ref |
 |---|---|---|
+| done | Sized tablet machines (utilisation against the batch plan) and clean utilities (HVAC, purified water) for the two pharmaceutical groups | C195 (1)(2), 96e3d118d |
 | done | The pressure exchanger: unit, design sheet, schematic, SWRO energy-recovery case (1.88 against 3.67 kWh/m3) | C192 |
 | done | Negative kinetic orders honoured on the vessels' own paths; CHEMKIN molecularity summed before rounding | C190 (10)(13), ab25caab5 |
 | done | The EduTool 'The tree of chemistry' (three views; every assumed band drawn as the curator's); the GUI dict parser keeps `=` in a word | C191 (A), 0ced76401 |

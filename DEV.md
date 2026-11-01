@@ -1605,7 +1605,25 @@ accepts today, and that is a policy call.
 > Johanson roller compaction is a second phase.  OPEN, a fact only Vitor
 > holds: whether the groups can measure compaction data or must take
 > literature values.
-> STATUS: COMMISSIONED 2026-11-02.
+> DONE 2026-11-02, items (1) and (2) (96e3d118d, merged with C192): sizer
+> `ratedMachine` (kinds batchVolume, massRate, tabletPress, packagingLine;
+> utilisation read from the batch plan, refused above 1, announced above
+> 0.85, `installed { count }` the declared second unit) attached to the
+> machines of both cases (apalutamide 0.25-0.95, donepezil 0.30-0.93); the
+> `cleanUtilities` pass reads `result.building` (no second parser): room
+> volumes, supply air from air changes DECLARED per grade, fan power, sensible
+> heating and cooling, purified-water demand/generator/tank from the plan's
+> Gantt; sensible-only limit announced on every run.  Found on the way and
+> fixed: a quote beside a sized unit was refused as double pricing; sized
+> machines would have counted as 'unplaced' in the layout
+> (`notPlacedBecause`); units `1/min`, `1/h` were unregistered.  No golden
+> moved (159 + 162 rows appended).  Gate `check_tablet_machines` (six
+> sabotages).  Validation: 7 scope cases PASS, `--fast` 76/0, `--gui` 41/0
+> after re-pointing nine lesson citations (runLog, caseAssembly, plantLayout,
+> bund) that C195's added lines had moved -- the cost C196 names.  NOT done:
+> compressed air, effluent, per-room items, a multiproduct plan.
+> STATUS: COMMISSIONED 2026-11-02; (1)(2) DONE; (4) with a general; (3), (5)
+> and the compaction bench wait.
 
 > **C194. THE CAMPO DE DALIAS SEAWATER DESALINATION PLANT (THE "SEA OF
 > PLASTIC"), FROM A PUBLIC CASE STUDY, WITH ITS WHOLE LAYOUT (Vitor,
