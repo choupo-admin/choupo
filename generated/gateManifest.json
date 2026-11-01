@@ -253,8 +253,8 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 832 path mention(s) and 256 case name(s) across 22 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
-      "seconds": 0.8
+      "claim": "check_doc_references: OK -- 832 path mention(s) and 257 case name(s) across 22 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
+      "seconds": 1.0
     },
     "check_doctrine": {
       "exit": 0,
@@ -373,8 +373,8 @@
     },
     "check_equipment_pinned": {
       "exit": 0,
-      "claim": "check_equipment_pinned: OK -- 3774 equipment key(s) across 25 sizing case(s) are pinned in their goldens, in both directions (published implies pinned, pinned implies published), by the generator's own emission rule (basis when stated, every sizing value, every held-inventory quantity, the three cost totals; never the costing factors, which check_cost_provenance recomputes from).  1 golden-less sweep(s) excused by name.  NOT CHECKED: whether any size or cost is RIGHT, whether a sizer STATES a basis (task #78), or the pinned numbers' agreement with the run (bin/runTests' job for every row).",
-      "seconds": 53.5
+      "claim": "check_equipment_pinned: OK -- 4778 equipment key(s) across 25 sizing case(s) are pinned in their goldens, in both directions (published implies pinned, pinned implies published), by the generator's own emission rule (basis when stated, every sizing value, every held-inventory quantity, the three cost totals; never the costing factors, which check_cost_provenance recomputes from).  1 golden-less sweep(s) excused by name.  NOT CHECKED: whether any size or cost is RIGHT, whether a sizer STATES a basis (task #78), or the pinned numbers' agreement with the run (bin/runTests' job for every row).",
+      "seconds": 63.3
     },
     "check_estimate_class": {
       "exit": 0,
@@ -493,8 +493,8 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 41592 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 43288 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
-      "seconds": 7.7
+      "claim": "check_glossary_bans: OK -- 41596 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 43291 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
+      "seconds": 8.8
     },
     "check_groups": {
       "exit": 0,
@@ -583,8 +583,8 @@
     },
     "check_layering": {
       "exit": 0,
-      "claim": "check_layering: OK -- 73 subsystem edge(s) measured across all 15 declared subsystems.",
-      "seconds": 0.2
+      "claim": "check_layering: OK -- 77 subsystem edge(s) measured across all 15 declared subsystems.",
+      "seconds": 0.1
     },
     "check_legacy_schema": {
       "exit": 0,
@@ -673,7 +673,7 @@
     },
     "check_operation_result_crossing": {
       "exit": 0,
-      "claim": "check_operation_result_crossing: OK -- all 6 field(s) that `OperationResult` declares (curation, diagnostics, headline, name, provenance, type) are written by the rebuild in WasmAdapter, so a result the engine publishes reaches the browser instead of being dropped at the crossing; 0 field(s) are declared as deliberate drops.  This is the hole that lost the fit's `curation` verdict on the day it was published, and `headline` for far longer.  NOT CHECKED: that a carried field is USED, that the browser renders it, or the other adapters (MockAdapter builds fixtures, not engine output).  MIRROR ARM (d): all 11 utilityAllocation key(s) the engine emits (MW, T, allocated, carried, duty_kW, eur_h, kg_s, port, tier, unit, utility) are declared by `UtilityAllocationRow` -- ONE record, which is this arm's whole domain; every other emitted block is unswept.",
+      "claim": "check_operation_result_crossing: OK -- all 8 field(s) that `OperationResult` declares (curation, diagnostics, headline, name, provenance, rc, type, units) are written by the rebuild in WasmAdapter, so a result the engine publishes reaches the browser instead of being dropped at the crossing; 0 field(s) are declared as deliberate drops.  This is the hole that lost the fit's `curation` verdict on the day it was published, and `headline` for far longer.  NOT CHECKED: that a carried field is USED, that the browser renders it, or the other adapters (MockAdapter builds fixtures, not engine output).  MIRROR ARM (d): all 11 utilityAllocation key(s) the engine emits (MW, T, allocated, carried, duty_kW, eur_h, kg_s, port, tier, unit, utility) are declared by `UtilityAllocationRow` -- ONE record, which is this arm's whole domain; every other emitted block is unswept.",
       "seconds": 0.0
     },
     "check_origin_census": {
@@ -1388,8 +1388,8 @@
     },
     "check_rated_tests": {
       "exit": 0,
-      "claim": "check_rated_tests: OK -- `ratedTest {}` and `ratedTests ( {..} )` with one test give byte-identical runs of membrane15/16/25; both forms on one record refuse; a hypothetical two-solute record prints each test on its own line with exactly the optional facts it declares and the inversion takes the MgSO4 test listed second (R_int = membrane25's to 1e-9); two MgSO4 tests refuse an unnamed request and `( fromRatedTest b )` reproduces test b alone to 1e-12; 7 record refusals and 7 inversion refusals fire by name; an undeclared value type, pressure meaning and permeate-flow basis are announced on membrane25 and not on a fully declared test; a gauge pressure is announced made absolute.  NOT CHECKED: any optional fact against a real data sheet (no shipped record declares one), two derived solutes in one unit, formula conversion.",
-      "seconds": 0.5
+      "claim": "check_rated_tests: OK -- `ratedTest {}` and `ratedTests ( {..} )` with one test give byte-identical runs of membrane15/16/25; both forms on one record refuse; a hypothetical two-solute record prints each test on its own line with exactly the optional facts it declares and the inversion takes the MgSO4 test listed second (R_int = membrane25's to 1e-9); two MgSO4 tests refuse an unnamed request and `( fromRatedTest b )` reproduces test b alone to 1e-12; 7 record refusals and 7 inversion refusals fire by name; an undeclared value type, pressure meaning and permeate-flow basis are announced on membrane25 and not on a fully declared test; a gauge pressure is announced made absolute; `waterPermeance fromRatedTest;` (membrane28) derives A_w and R_int together so that an INDEPENDENT run with both typed reproduces each sheet's permeate flow and observed rejection to 1e-7 (NF270-4040 A_w 14.88 against the record's 36, SW30HR-380 1.318 against 3.6 L/m2/h/bar) and refuses a class, an unknown word and a law other than constantRejection.  NOT CHECKED: any optional fact against a real data sheet (no shipped record declares one), two derived solutes in one unit, formula conversion.",
+      "seconds": 0.7
     },
     "check_unit_acceptance": {
       "exit": 0,
@@ -1403,8 +1403,8 @@
     },
     "check_membrane_classes": {
       "exit": 0,
-      "claim": "check_membrane_classes: OK -- the six `kind membraneClass` records (NF_OPEN, NF_DIVALENT_SELECTIVE, NF_TIGHT, BWRO_HIGH_FLUX, BWRO_HIGH_REJECTION, SWRO) are illustrative, name no manufacturer and keep each stated rejection inside its band; each run announces it ([illustrative], stdout + stderr + an accepted advisory); every derived R_int typed on an independent fixture at the class's reference test reproduces the stated observed rejection to 1e-7; an unknown class, SDEM, solutionDiffusion, a typed rated salt, a class as a bare membrane, a class naming a manufacturer and one claiming another review status all refuse by name.  NOT checked: whether a class's values are good teaching values, the engine's permeate against the stated one (printed only), the batch diafilter (does not refuse a class)",
-      "seconds": 0.4
+      "claim": "check_membrane_classes: OK -- the six `kind membraneClass` records (NF_OPEN, NF_DIVALENT_SELECTIVE, NF_TIGHT, BWRO_HIGH_FLUX, BWRO_HIGH_REJECTION, SWRO) are illustrative, name no manufacturer and keep each stated rejection inside its band; each run announces it ([illustrative], stdout + stderr + an accepted advisory); every derived R_int typed on an independent fixture at the class's reference test reproduces the stated observed rejection to 1e-7; an unknown class, SDEM, solutionDiffusion, a typed rated salt, a class as a bare membrane, a class naming a manufacturer and one claiming another review status all refuse by name; the importer seals the class witness (following the class's element) and a spacer-reading module witness with the catalogue hidden, each reproducing its golden.  NOT checked: whether a class's values are good teaching values, the engine's permeate against the stated one (printed only), the batch diafilter (does not refuse a class)",
+      "seconds": 1.3
     },
     "check_membrane_import": {
       "exit": 0,
@@ -1473,8 +1473,8 @@
     },
     "check_swro_plant": {
       "exit": 0,
-      "claim": "check_swro_plant: OK -- on swro01_campoDalias the product is 98664.7 m3/day (the PDF's 98 664), the first pass recovers 47.20 % (47.2) and the second 87.0 % (84-90), the recycle is what the second pass did not permeate, the plant's mass closes and the exchanger balances, the product holds 2.0 mg/L TDS (1.0716 x NaCl-eq) and 0.046 mg/L boron against < 400 and < 0.5, all recomputed from stream masses; the feed is Table 2's twelve ions in osmotic NaCl equivalence and 5.3 mg/L boron; the boron tests are the PDF's (91 % at pH 8, 95 % at pH 10), announced as an approximation, and relabelling the pH moves nothing (the limitation is PINNED); 4 fixtures refuse by name (a boron solute with no rejection, a record with no boron test, 30 bays in a 22-bay car park, `at` on an east side); the layout's 22 footprints overlap nowhere and stand inside the fence, none of 5 roads crosses one, the gate opens on the north line and the three boundary pipes cross at published points on the fence labelled `(not drawn)`, each tank's box holds its sized volume, and the exchanger's rotors are ceil(Q_LP / rated).  NOT CHECKED: that any number is the real plant's (the PDF is a manufacturer's claim at assumed test conditions), the layout against any code or the real site, the first law, and boron as pH-dependent physics (not modelled).",
-      "seconds": 0.2
+      "claim": "check_swro_plant: OK -- on swro01_campoDalias the product is 98664.7 m3/day (the PDF's 98 664), the first pass recovers 47.20 % (47.2) and the second 87.0 % (84-90), the recycle is what the second pass did not permeate, the plant's mass closes and the exchanger balances, the product holds 2.0 mg/L TDS (1.0716 x NaCl-eq) and 0.046 mg/L boron against < 400 and < 0.5, all recomputed from stream masses; the feed is Table 2's twelve ions in osmotic NaCl equivalence and 5.3 mg/L boron; the boron tests are the PDF's (91 % at pH 8, 95 % at pH 10), announced as an approximation, and relabelling the pH moves nothing (the limitation is PINNED); 4 fixtures refuse by name (a boron solute with no rejection, a record with no boron test, 30 bays in a 22-bay car park, `at` on an east side); the layout's 59 footprints overlap nowhere and stand inside the fence, none of 5 roads crosses one, the gate opens on the north line and the three boundary pipes cross at published points on the fence labelled `(not drawn)`, each tank's box holds its sized volume.  THE PLANT IS 6 TRAINS (the PDF's six skids of 16 442 m3/d): every pump, exchanger and bank family has one item per train, the per-train flows, shaft powers, vessels, membrane area and devices times 6 reproduce the plant's, and the specific shaft energy is 2.810 kWh/m3; the pump counts are ceil(flow per train / the declared largest pump) from the stream masses (HP 1, booster 1, second pass 1 per train, intake station 3, plus declared spares); each train's exchanger array is 6 devices inside the Q650's 250-650 gpm window and under 83 bar; the 18 vessel banks' length, racks, rack envelope, loading clearance and plan box are recomputed from the dicts; 42 bank, pump and array items stand in the 4 rooms of the RO building; 6 more fixtures refuse by name (a pump with no rating, one too small for its train, a bank with no rack size, vessels the trains cannot share, an exchanger above its pressure rating, per-train sizing with no trains declared).  NOT CHECKED: that any number is the real plant's (the PDF is a manufacturer's claim at assumed test conditions; every pump, vessel and rack number not read from a page is ASSUMED and says so), the layout against any code or the real site, the first law, and boron as pH-dependent physics (not modelled).",
+      "seconds": 0.5
     },
     "check_heavy_water": {
       "exit": 0,
