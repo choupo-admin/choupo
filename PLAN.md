@@ -6,7 +6,7 @@ says only WHEN and IN WHAT ORDER.  Change a row in the same commit as the work
 that changes it.  Vítor's private Portuguese view of this plan is
 https://claude.ai/artifact/JnokFGgoNMTAWvu9fkgyoQ -- updated FROM this file.
 
-Last reviewed: 2026-10-31, after an audit of every request Vítor made from
+Last reviewed: 2026-11-01 (rows brought up to date: C178, C185 7/9, C186 4/6, C188, C189 1-4, C191 graph on main; usage budget tight -- generals on Sonnet), earlier 2026-10-31, after an audit of every request Vítor made from
 2026-10-24 to 2026-10-31 (two independent passes over the session transcript;
 24-25 Oct: nothing lost, 10 partial; 26-31 Oct: 3 lost, 8 partial), and after
 Vítor's rule 00 (CLAUDE.md): the architect takes every decision; only facts
@@ -18,15 +18,16 @@ Status words: `todo` · `running` · `decide` (the architect's, with a written r
 
 | status | what | ref |
 |---|---|---|
+| running | C185 item 8 (positivity mask): integrated with main, --gui and the 79 time cases running; then push | C185 |
+| running | C191 (A): the EduTool 'The tree of chemistry' on the curated graph, a general | C191 |
+| todo | C190 (10) negative orders dropped and (13) CHEMKIN rounding -- Sonnet generals, next | C190 |
 | running | C192: the pressure exchanger unit, its design sheet and its schematic; witness membrane27, SWRO energy recovery, to be created | C192 |
-| running | C185 item 8 (positivity mask with several ODE units) and C186 item 4 (optimiser rejects unconverged simulations), one general each | C185, C186 |
 | todo | C189 slice 5: the shortlist (hard filters, each candidate re-rated at the student's conditions, every criterion side by side, no default score; `partner` field the ranking never reads) | C189 |
 | todo | The module registry reads no data/local tier (components do): decide and build, or keep the copy-into-the-case rule | C189 |
 | todo | C188 item 5 remaining: passThrough on other units, per-port contracts, batch crystalliser, the recycle question | C188 |
-| todo | C189 slices 3-6: six illustrative classes, import/QA to data/local, shortlist with no default score, docs | C189 |
 | todo | Curation: the records' A_w gives 2.16x (NF270-4040) and 2.08x (SW30HR-380) the sheets' permeate at their rated tests | C189 |
 | todo | bin/choupo-import cannot seal a case that reads a feed-spacer record (FeedSpacerRegistry builtins not installed) | C189 |
-| running | C178 is on main (421bc12e0); validate it in the site's WASM | C178 |
+| running | Validate C178 in the site's WASM (CI builds it after the push; confirm the site updated) | C178 |
 | todo | Check on the site, after its deploy, that the volcanic case is gone and the GUI lesson test fix is live | C182 |
 
 ## Medium term (the next day)
@@ -36,10 +37,8 @@ time.  Any golden row that moves goes to Vítor as a list before it is recorded.
 
 | status | what | ref |
 |---|---|---|
-| todo | C191 (A) the EduTool 'The tree of chemistry' on the curated graph (three views; every assumed yield band drawn as the curator's, with its reason) | C191 |
 | todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
 | todo | Distillation defects A (fullMESH seeded by an unconverged CMO phase) and B (NewtonND accepts a non-improving step); measure which corpus cases reach the path; a full sweep only with Vítor's written authorisation | C184 A/B |
-| todo | Positivity guard off with several ODE units -- AFTER C178 lands (same file) | C185 item 8 |
 | todo | The sibling drivers read unconverged points too: DesignSpec, GridSweep, Sweep (same shape as C186 item 4) | C186 |
 | todo | Pressure is not a tear variable: a loop with no pressure-consistent steady state "converges" | C186 item 5 |
 | todo | C190 (10): a negative kinetic order silently dropped on the vessels' own Arrhenius paths; (13): CHEMKIN A conversion rounds each order before summing | C190 |
