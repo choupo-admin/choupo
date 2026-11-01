@@ -1627,8 +1627,21 @@ accepts today, and that is a policy call.
 > interstage cooling and water knock-out, recycle, the carbon balance of
 > a biogenic CO2), reusing the green-ammonia converter pattern -- no new
 > physics.  Scope of (B) to be decided before dispatch.
-> STATUS: (A) COMMISSIONED 2026-10-31, graph curation first; (B)
-> recorded.
+> STATUS: (A) COMMISSIONED 2026-10-31.  THE GRAPH IS CURATED
+> 2026-11-01 (2b49af710): data/standards/routes/ (a record KIND beside
+> heuristics/, no engine reader, held by `check_chemistry_graph`): 157
+> substances, 168 routes (140 reactions, 18 separations, 10 process-yield
+> slates; 144 incumbent, 24 transition), 4 declared cycles, 51 links to 44
+> existing cases; every route cites one of 18 declared sources; the
+> ammonia edge is written ONCE -- fossil and green differ only in where
+> the H2 comes from.  HONESTY, for the tool: all 189 yield bands are
+> `origin assumed` with a reason (none read back on a page); only the IEA
+> volumes and four IEA ammonia intensities are `literature`.  Excluded by
+> licence: ACC (non-commercial grant only), Cefic and Plastics Europe (no
+> grant found).  My commission was WRONG on one point: there is no cumene
+> case in the tree (the three cumene edges link nothing; cumene is now a
+> candidate case).  Next: the EduTool itself, on section 8 of
+> docs/design/the-tree-of-chemistry-is-a-record.md.  (B) recorded.
 
 > **C190. THE EXTERNAL AUDIT'S FIFTEEN, AND ITS COMPARISON WITH THE
 > OTHER OPEN-SOURCE SIMULATOR (ChatGPT's summary of its conversation with
@@ -2006,7 +2019,27 @@ accepts today, and that is a policy call.
 > so a PARTLY wrong curve is published.  Fix: an unconverged bubble/dew
 > point is not a point (dropped and counted, or the diagram refused by
 > name); the guards read the solver's verdict, not a symptom.
-> STATUS: SCHEDULED for Saturday with C184/C185.
+> DONE 2026-10-31 (item 6, d8a895955): `bubbleTSolve`, ONE acceptance
+> tolerance `kTxyAcceptResidual` = 1e-5 in SaturationCurves.H (the
+> architect's ruling: flash20's PC-SAFT K carries noise above the Newton's
+> 1e-8, 26 of 29 points end at |f| 6e-8..3e-6, right to ~1e-4 K), points
+> above it dropped and counted aloud, points accepted short of 1e-8
+> announced, fewer than half refuses the diagram; the column's
+> `bubbleTWithItsVapour` folds the verdict into its flag.  Gate
+> `check_txy_bubble_verdict`.
+> DONE 2026-11-01 (item 4, 1ad1aef00): `simulationFailure` is the ONE home
+> reading `result.converged`; Nelder-Mead, SQP and the integer
+> enumeration treat an unconverged simulation as a FAILED evaluation,
+> named with its point and counted by cause, and all-fail refuses by name.
+> Reproduced first on cavett01 with recycleMaxIter 2: NM "converged" at
+> 3.389 against the plant's 3.6843, SQP printed a KKT certificate over it.
+> Also fixed: an enumeration over a Nelder-Mead child reported every value
+> "converged NO" at objective 0.  Gate `check_optimiser_converged`; 32
+> outerDict cases PASS, no golden moved.  OPEN, the same shape in sibling
+> drivers: DesignSpec.cpp:257 reads targets without `converged`,
+> GridSweepDriver.cpp:135 treats only a throw as a failed point, and
+> SweepDriver extracts an unconverged point's responses into its table.
+> STILL OPEN: item 5 (pressure is not a tear variable).
 
 > **C185. THREE MORE SOLVER/KINETICS DEFECTS (the external review,
 > ChatGPT, at 1ecec224, relayed by Vitor 2026-10-27 for SATURDAY; its order:

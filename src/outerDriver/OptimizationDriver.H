@@ -128,13 +128,34 @@ public:
     //  it from the optimised set.
     void fixVariable(const std::string& path, scalar v);
 
-    //  Solution of the LAST run() (populated by the SQP path): x in USER
-    //  units by variable order, the objective in the USER sense, and the
-    //  solver's own converged/feasible verdicts.
+    //  Solution of the LAST run() (both back-ends): x in USER units by
+    //  variable order, the objective in the USER sense, and the solver's own
+    //  converged/feasible verdicts.  (The Nelder-Mead path used to publish
+    //  none of these, so an integer enumeration over a `nelderMead` child
+    //  reported every value "converged NO" at objective 0 -- fixed with
+    //  C186 (4), 2026-10-31.)
     const std::vector<scalar>& solutionX() const { return lastX_; }
     scalar solutionF()          const { return lastF_; }
     bool   solutionConverged()  const { return lastConverged_; }
     bool   solutionFeasible()   const { return lastFeasible_; }
+
+    //  WHAT THE SIMULATOR ANSWERED, evaluation by evaluation, by cause
+    //  (DEV.md 4c C186 (4); docs/design/a-failed-computation-is-not-a-result.md
+    //  §6).  An evaluation whose flowsheet did NOT converge is a FAILED
+    //  evaluation exactly as one whose simulator threw: it yields no number,
+    //  it is counted here, and it is said at its site with the point named.
+    //  The ledger is per run(); the integer enumeration sums its children's.
+    struct EvaluationLedger
+    {
+        int total        = 0;   // simulator calls made
+        int notConverged = 0;   // the flowsheet answered converged = false
+        int threw        = 0;   // the simulator or the post chain threw
+        int nonFinite    = 0;   // the objective / a constraint is not finite
+        int failed() const { return notConverged + threw + nonFinite; }
+        std::string byCause() const;          // "did not converge 3, ..."
+        void add(const EvaluationLedger& o);
+    };
+    const EvaluationLedger& evaluations() const { return ledger_; }
 
     // Objective specification (public so the free objective-extractor
     // can dispatch on it from the.cpp's anonymous namespace).
@@ -185,11 +206,19 @@ private:
     // The integer-enumeration outer loop (run() dispatches to it when a
     // declared variable carries `integer;`).
     int runIntegerEnumeration();
-    // Last-run solution (SQP path; see the public accessors).
+    // Last-run solution (both back-ends; see the public accessors).
     std::vector<scalar>     lastX_;
     scalar                  lastF_ = 0.0;
     bool                    lastConverged_ = false;
     bool                    lastFeasible_  = false;
+
+    //  The failed-evaluation ledger of this run() and the one way an
+    //  evaluation is marked failed: counted by cause, said with the point.
+    enum class Fail { None, NotConverged, Threw, NonFinite };
+    EvaluationLedger        ledger_;
+    void noteFailedEvaluation(Fail kind, const std::string& cause,
+                              const std::vector<scalar>& xUser);
+    std::string describePoint(const std::vector<scalar>& xUser) const;
 
     // The two solver back-ends.
     int runNelderMead();
