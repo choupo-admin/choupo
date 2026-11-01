@@ -153,6 +153,7 @@ describe("the flowsheet canvas zooms out to the whole flowsheet (C102)", () => {
       "plant/greenAmmonia02_feasibility50bar",
       "plant/greenAmmonia03_basicDesign",
       "plant/greenAmmoniaPEQ_baseCase",
+      "plant/swro01_campoDalias",
       "steady/economics/economics03_startup_years",
       "steady/flowsheets/proxy01_gas_loop",
       "steady/power/combined01_brayton_rankine",
