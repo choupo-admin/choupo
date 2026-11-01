@@ -28,10 +28,10 @@ propertyManifest
         "components/heavyWater.dat"
         {
             type          imported;
-            sha256        "b4103716e13038e8f342711586d8131fb527e15605d6d1e5bdc762a6c36adf62";
-            computationalSha256 "b709ff218008017c2cf2dbc5e2e4ef0c190ff69558b22c7c487557f44fb8b33b";
+            sha256        "230347014f4c889bfe1288ac91ebce7f190400b807aec2ed1b7366f125072345";
+            computationalSha256 "20c6f20326b337d22ae0257223da9c5bbb8dcfb14a332d71d6c6341081bac6a1";
             origin        "data/standards/components/heavyWater.dat";
-            originSha256  "c9e666b2754c07a3bd709ff6d8386ab04d8a07d5820ee0291979e4fbd0dd4db2";
+            originSha256  "b27c00f93408f94049f7e2703e8efd8af72e12ead5604267f7d9c0768f565c27";
             release       Choupo-2608;
         }
         "components/water.dat"

@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/components/heavyWater.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: heavyWater  (D2O, CAS 7789-20-0)
   REVIEWED 2026-11-02 against the IAPWS formulation for heavy water.
