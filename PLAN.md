@@ -36,7 +36,6 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| running | General: the Campo de Dalías plant organised in trains (HP pump + PX array + vessel racks per train), vessel-bank item, RO hall; then the 3D racks and the 2D plan/section (GUI) | C199 |
 
 ## Next day (at most 5)
 
@@ -100,6 +99,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| done | C199 phase A: the Campo de Dalías plant is six trains in one RO building (pumps with a declared maximum, PX arrays, vessel banks with racks and loading clearance) | C199, 191be6e8a |
 | done | Heavy water promoted: IAPWS/Herrig vapour pressure, reviewed against the primary equation, UNIFAC H2O as a declared approximation | C197, 4d3cb4f9d |
 | done | check_model_boundary_ledger probes repaired after the turbine contract (they audit the flash) | C188, 0734b0c60 |
 | done | The 3D layout view no longer crashes on a rack with no portals (found by Vítor on swro01_campoDalias) | C194, b19085a6b |

@@ -1540,16 +1540,18 @@ accepts today, and that is a policy call.
 > a set of TRAINS, one HP pump and one pressure-exchanger array per train, or a
 > `pressure centre` (a few large HP pumps and boosters feeding many racks
 > through a common header): Danfoss, `multiple trains for large SWRO plants`
-> (a 600 000 m3/d plant of 24 racks: 24 trains of 1041 m3/h each against 8
-> pressure-centre trains of 3125 m3/h, efficiency above 87 % against above
-> 90 %; one very large pump trades redundancy for efficiency); Sulzer's MSD-RO
+> (a SEARCH SUMMARY of that page, which a reader could not open -- 403 --: 24
+> trains of 1041 m3/h against 8 pressure-centre trains of 3125 m3/h, efficiency
+> above 87 % against above 90 %; NOT verified and NOT used by the guide); Sulzer's MSD-RO
 > pump covers SWRO trains of 20 000-30 000 m3/d; Ebara supplied Carlsbad with 4
 > axially split multistage pumps, 3 running and 1 spare; (2) a pressure
 > exchanger is a MODULAR device: Energy Recovery's PX Q650 takes 250-650 gpm
 > per device, up to 83 bar, mixing as low as 2 %, so a train carries an ARRAY
 > sized by ceil(flow / device flow), and the vendor sizes pre-engineered arrays
-> per train capacity; (3) a vessel holds 1 to 8 elements, 8 inch vessels about
-> 28.4 ft long at Carlsbad (8 elements each, 2236 vessels, 17 888 modules),
+> per train capacity (the 250-650 gpm window of the Q650 is from a search
+> summary of the press release; the series page read gives 20-650 gpm); (3) a vessel holds 1 to 8 elements, 8 inch vessels; Carlsbad has 2236
+> vessels of 8 elements (17 888 modules) and the 28.4 ft vessel is SANTA
+> BARBARA's, not Carlsbad's (corrected by phase A),
 > ratings varying by position (1200/600/450 psi), the second pass beside or
 > around the first (Torrevieja puts the second-pass vessels on both sides of
 > the first); Sorek stands 16 inch elements vertically. DECISIONS (architect):
@@ -1598,8 +1600,30 @@ accepts today, and that is a policy call.
 > rather than a guess.  The header pipes are NOT sized in phase B (their
 > diameter and velocity need a pipe sizer, a later item): they are drawn at a
 > declared nominal size and said so.
-> STATUS: COMMISSIONED 2026-11-02; phase A with a general; B and C wait for A's
-> keys.
+> DONE 2026-11-02, PHASE A (191be6e8a, a general): `swro01_campoDalias` is SIX
+> TRAINS in ONE reverse-osmosis building: ONE `sizing { trains { count 6;
+> source; reason; } }` read into `result.trains` plus `perTrain yes;` per
+> entry (the flowsheet is solved once at plant flow and sized per train: six
+> sector copies would have renamed every stream and moved the whole golden).
+> Per train: HP pump 798.6 m3/h, 1530.8 kW (one pump at 49.9 % of a declared
+> 1600 m3/h, from Sulzer's MSD-RO brochure: 1000-1600 m3/h, up to 90 bar),
+> booster 72.9 kW, second-pass pump 267.3 kW, PX array of 6 devices of
+> 144.7 m3/h (36 in the plant, 56.8-147.6 m3/h window, 83 bar checked in the
+> sizer); 6 running + 1 spare of each pump; the intake 3 + 1 pumps.  Vessel
+> bank (`membraneBank`): RO1 233 x 7 in 5 racks, RO2a 54 x 7 in 2, RO2b 18 x 7
+> in 1; vessel length 7.642 m (7 x 1.016 + a 0.53 m end allowance derived from
+> the Santa Barbara vessel, assumed), loading clearance one vessel length at the
+> high-x end (practice; no open source gave a number), envelopes 15.78 x 30 x
+> 1.9 m; halls 1845 / 4182 / 1722 / 952 m2 in a building of 151 x 63 x 10 m.
+> `ratedMachine` gained kind `volumeRate`.  No physics row of the golden moved;
+> 1037 equipment and 479 layout rows added, 2 + 18 changed, 33 + 87 removed (the
+> old lumped items); recorded fresh, this case only.  OPEN: the 6 identical
+> lines the router draws to train 1's item, the pressure-centre alternative
+> case, the pump curves, the header sizing.  Integration also recorded the
+> plant as the FOURTH case declaring `fromRatedTest` in
+> `check_rejection_inversion` arm (d).
+> STATUS: PHASE A DONE; B (the GUI drawings) and C (the guide, the train
+> schematic) with generals.
 
 > **C197. HEAVY WATER IN THE STANDARD COMPONENTS, PROMOTED FROM A COOLPROP
 > IMPORT TO A RECORD A RESEARCHER CAN DEFEND (Vitor, 2026-11-02: "quero
