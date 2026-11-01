@@ -68,6 +68,13 @@ data/standards/                     one folder = one KIND of thing (M1-M5, 2026-
 │                                   as stated, `ratedTests ( {..} {..} );` --
 │                                   grammar in docs/ai/unit-ops.md
 ├── mixtures/ · utilities/          predefined mixtures · plant utility services
+├── heuristics/   <name>.dat        cited selection rules, one claim per file; NO engine
+│                                   reader (the EduTools selection plane; its README)
+├── routes/       graph.dat +       THE TREE OF CHEMISTRY: one directed graph of the
+│                 <chapter>.dat     commodity chemicals -- substances, roots, routes with
+│                                   balanced stoichiometry, yield, co-products, citation;
+│                                   NO engine reader, held by check_chemistry_graph
+│                                   (its README; docs/design/the-tree-of-chemistry-is-a-record.md)
 └── (a case declares its system in constant/thermoPhysPropDict; sealing with
    bin/choupo-import mirrors the closure into the case's constant/ under a
    sha256 constant/propertyManifest, making the case runtime-self-contained)

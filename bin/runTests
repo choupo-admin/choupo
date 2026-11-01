@@ -7413,6 +7413,22 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/bundarith.$$
 
+    # Chemistry-graph gate (2026-11-01, DEV.md 4c C191 A): the tree of
+    # chemistry under data/standards/routes/ is a record no engine reads, so
+    # no case can fail when a route is unbalanced, uncited, unreachable or
+    # loops -- the gate re-reads every file, balances every reaction on the
+    # engine's own element table, holds the 7 + 4 roots, the declared cycles,
+    # the citations and the cited Choupo cases.
+    if gate_exec "$ROOT/bin/curate/check_chemistry_graph.py" > /tmp/chemgraph.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "chemistry-graph-gate" "$(gate_claim check_chemistry_graph /tmp/chemgraph.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_chemistry_graph.py)\n" "chemistry-graph-gate"
+        cat /tmp/chemgraph.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/chemgraph.$$
+
     # Converter-shell gate (2026-10-12, DEV.md 4c C69): the green-ammonia
     # basic design's CONVERTER sector is ONE pressure shell -- D the beds'
     # ONE declared diameter (each bed's height its V_R over it, the binding

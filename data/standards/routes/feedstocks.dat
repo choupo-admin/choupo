@@ -1,0 +1,713 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  FEEDSTOCKS TO ROOTS: how crude oil, natural gas, coal, sugar, sour gas and
+  waste plastics become the roots -- the crackers, the reformer, FCC, the
+  separations of the cuts, Claus and fermentation.  Here the FORCED CO-PRODUCTION
+  of the steam cracker is stated as a mass slate on a lumped feed, because a
+  naphtha has no molecular formula to balance.
+  Grammar: README.md beside this file.  Every edge is re-read, balanced and
+  checked by bin/curate/check_chemistry_graph.py.
+\*---------------------------------------------------------------------------*/
+
+
+recordType    productionRoutes;
+schemaVersion 1;
+graph         treeOfChemistry;
+
+routes
+(
+    {
+        name     crudeToNaphtha;
+        kind     separation;
+        target   naphtha;
+        family   separation;
+        era      incumbent;
+        description "Atmospheric distillation of crude oil: the naphtha cut is the steam cracker's and the reformer's feed; the gas oil cut feeds FCC.";
+        feed     crudeOil;
+        yield
+        {
+            basis   mass;
+            band    ( 0.15 0.3 );
+            origin  assumed;
+            reason  "straight-run naphtha is 15-30 wt% of a typical crude; the figure depends on the crude and is the curator's band";
+        }
+        provenance
+        (
+            { source moulijn2013; locus "refinery overview chapter"; }
+            { source iea2018; locus "ch. 1, Figure 1.7 'Primary chemicals in context' and ch. 2 on feedstocks"; }
+        );
+    }
+
+    {
+        name     crudeToGasOil;
+        kind     separation;
+        target   gasOil;
+        family   separation;
+        era      incumbent;
+        description "Atmospheric and vacuum distillation of crude oil to the gas-oil cuts that feed fluid catalytic cracking.";
+        feed     crudeOil;
+        yield
+        {
+            basis   mass;
+            band    ( 0.25 0.4 );
+            origin  assumed;
+            reason  "atmospheric + vacuum gas oil as a fraction of crude; the curator's band";
+        }
+        provenance
+        (
+            { source moulijn2013; locus "refinery overview chapter"; }
+        );
+    }
+
+    {
+        name     naturalGasToMethane;
+        kind     separation;
+        target   CH4;
+        family   separation;
+        era      incumbent;
+        description "Gas processing: acid-gas removal, dehydration and NGL extraction leave pipeline methane.";
+        feed     naturalGas;
+        yield
+        {
+            basis   mass;
+            band    ( 0.8 0.95 );
+            origin  assumed;
+            reason  "methane content of pipeline natural gas, 85-95 vol%; the curator's band";
+        }
+        provenance
+        (
+            { source moulijn2013; locus "natural gas processing"; }
+        );
+    }
+
+    {
+        name     naturalGasToEthane;
+        kind     separation;
+        target   ethane;
+        family   separation;
+        era      incumbent;
+        description "NGL extraction (cryogenic turbo-expander): the ethane that feeds the gas-based crackers of North America and the Middle East.";
+        feed     naturalGas;
+        yield
+        {
+            basis   mass;
+            band    ( 0.02 0.1 );
+            origin  assumed;
+            reason  "ethane in raw gas varies from 1 to 10 vol% by field; the curator's band";
+        }
+        provenance
+        (
+            { source moulijn2013; locus "natural gas processing"; }
+            { source iea2018; locus "ch. 2: ethane and LPG availability by region"; }
+        );
+    }
+
+    {
+        name     naturalGasToPropane;
+        kind     separation;
+        target   propane;
+        family   separation;
+        era      incumbent;
+        description "NGL extraction: propane and butanes (LPG), also recovered in refineries.";
+        feed     naturalGas;
+        yield
+        {
+            basis   mass;
+            band    ( 0.01 0.05 );
+            origin  assumed;
+            reason  "propane in raw gas; the curator's band";
+        }
+        provenance
+        (
+            { source moulijn2013; locus "natural gas processing"; }
+        );
+    }
+
+    {
+        name     naturalGasToButanes;
+        kind     separation;
+        target   nButane;
+        family   separation;
+        era      incumbent;
+        description "NGL extraction: the butanes (n- and iso-) of LPG; n-butane is the maleic anhydride feed, isobutane the alkylation/isobutene feed.";
+        feed     naturalGas;
+        yield
+        {
+            basis   mass;
+            band    ( 0.005 0.03 );
+            origin  assumed;
+            reason  "butanes in raw gas; the curator's band";
+        }
+        provenance
+        (
+            { source moulijn2013; locus "natural gas processing"; }
+        );
+    }
+
+    {
+        name     naphthaSteamCracking;
+        kind     processYield;
+        target   ethylene;
+        family   steamCracking;
+        era      incumbent;
+        description "The cracker is a FORCED CO-PRODUCTION machine: one tonne of naphtha gives ethylene, propylene, a C4 cut, pyrolysis gasoline, hydrogen and fuel gas in proportions set by the feed and the severity, not by the market.  Chemistry: free-radical pyrolysis at 800-880 C, 0.1-0.5 s, steam-diluted, followed by quench and a cryogenic separation train.";
+        feed     naphtha;
+        slate
+        (
+            { component ethylene;              massPerKgFeed ( 0.28 0.34 ); origin assumed; reason "high-severity naphtha cracking ethylene yield; the curator's band"; }
+            { component propylene;             massPerKgFeed ( 0.13 0.17 ); origin assumed; reason "the curator's band"; }
+            { component mixedC4;               massPerKgFeed ( 0.08 0.12 ); origin assumed; reason "crude C4 cut, roughly half butadiene; the curator's band"; }
+            { component pyrolysisGasoline;     massPerKgFeed ( 0.18 0.25 ); origin assumed; reason "C5+ liquid; the curator's band"; }
+            { component H2;                    massPerKgFeed ( 0.008 0.012 ); origin assumed; reason "the curator's band"; }
+            { component CH4;                   massPerKgFeed ( 0.14 0.17 ); origin assumed; reason "fuel gas, burned in the furnaces; the curator's band"; }
+        );
+        energy
+        (
+            { route "naphtha cracker, typical"; band ( 26 31 ); unit "GJ per t ethylene"; origin assumed; reason "the band quoted in the energy-use review named in provenance; not read back against its table"; }
+        );
+        provenance
+        (
+            { source ren2006; locus "Table of typical product yields by feedstock"; }
+            { source iea2018; locus "p. 32, Figure 2.5 'Yield of individual HVCs in multi-product processes' (naphtha, ethane, LPG, gas oil, NCC, MTO)"; }
+            { source weissermelArpe2003; locus "ch. 3, 'Olefins'"; }
+            { source chauvelLefebvre1989; locus "vol. 1, steam cracking"; }
+        );
+    }
+
+    {
+        name     ethaneSteamCracking;
+        kind     processYield;
+        target   ethylene;
+        family   steamCracking;
+        era      incumbent;
+        description "Ethane cracking gives almost only ethylene: the slate is narrow, the separation train short, and the co-products that a naphtha cracker forces (propylene, butadiene, aromatics) are NOT made -- which is why the shale-gas crackers tightened the propylene and butadiene markets.";
+        feed     ethane;
+        slate
+        (
+            { component ethylene;              massPerKgFeed ( 0.78 0.84 ); origin assumed; reason "overall yield with ethane recycle to extinction; the curator's band"; }
+            { component propylene;             massPerKgFeed ( 0.01 0.03 ); origin assumed; reason "the curator's band"; }
+            { component mixedC4;               massPerKgFeed ( 0.01 0.03 ); origin assumed; reason "the curator's band"; }
+            { component pyrolysisGasoline;     massPerKgFeed ( 0.01 0.03 ); origin assumed; reason "the curator's band"; }
+            { component H2;                    massPerKgFeed ( 0.05 0.07 ); origin assumed; reason "the curator's band"; }
+            { component CH4;                   massPerKgFeed ( 0.04 0.07 ); origin assumed; reason "the curator's band"; }
+        );
+        energy
+        (
+            { route "ethane cracker, typical"; band ( 17 21 ); unit "GJ per t ethylene"; origin assumed; reason "the band quoted in the energy-use review named in provenance; not read back against its table"; }
+        );
+        provenance
+        (
+            { source ren2006; locus "typical yields and energy use by feedstock"; }
+            { source iea2018; locus "p. 32, Figure 2.5: ethane gives the highest ethylene yield and the least balanced slate"; }
+            { source amghizar2017; locus "shale ethane and the feedstock shift"; }
+        );
+    }
+
+    {
+        name     gasOilFCC;
+        kind     processYield;
+        target   propylene;
+        family   catalyticCracking;
+        era      incumbent;
+        description "Fluid catalytic cracking is a FUELS process whose C3/C4 off-gas supplies about a third of the world's propylene; the balance of the slate (gasoline, cycle oils, coke) is outside this graph.";
+        feed     gasOil;
+        slate
+        (
+            { component propylene;             massPerKgFeed ( 0.04 0.1 ); origin assumed; reason "FCC propylene yield, 4-6 % in fuel mode, up to 10 % with ZSM-5 additive in petrochemical mode; the curator's band"; }
+            { component mixedC4;               massPerKgFeed ( 0.06 0.12 ); origin assumed; reason "FCC C4s, isobutene-rich, butadiene-poor; the curator's band"; }
+        );
+        provenance
+        (
+            { source moulijn2013; locus "fluid catalytic cracking"; }
+            { source iea2018; locus "p. 29: about 190 Mt of chemicals, two-thirds HVCs, are produced as refinery by-products"; }
+        );
+    }
+
+    {
+        name     naphthaReforming;
+        kind     processYield;
+        target   reformate;
+        family   catalyticReforming;
+        era      incumbent;
+        description "Catalytic reforming over Pt/Re on chlorided alumina, 500 C, 5-30 bar: naphthenes dehydrogenate and paraffins cyclise to aromatics, releasing hydrogen.  The reformate is the largest BTX source; aromatics extraction follows.";
+        feed     naphtha;
+        slate
+        (
+            { component reformate;             massPerKgFeed ( 0.8 0.9 ); origin assumed; reason "C5+ reformate yield; the curator's band"; }
+            { component H2;                    massPerKgFeed ( 0.02 0.035 ); origin assumed; reason "the refinery's main hydrogen source; the curator's band"; }
+        );
+        provenance
+        (
+            { source moulijn2013; locus "catalytic reforming"; }
+            { source weissermelArpe2003; locus "ch. 12, 'Aromatics'"; }
+        );
+    }
+
+    {
+        name     reformateToBenzene;
+        kind     separation;
+        target   benzene;
+        family   separation;
+        era      incumbent;
+        description "Liquid-liquid extraction (sulfolane) and distillation of the reformate's BTX.";
+        feed     reformate;
+        yield
+        {
+            basis   mass;
+            band    ( 0.03 0.08 );
+            origin  assumed;
+            reason  "benzene content of reformate; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 12, aromatics extraction (sulfolane, glycol processes)"; }
+        );
+    }
+
+    {
+        name     reformateToToluene;
+        kind     separation;
+        target   toluene;
+        family   separation;
+        era      incumbent;
+        description "Toluene is the most abundant reformate aromatic -- more than the market wants, which is why toluene is hydrodealkylated and disproportionated to benzene and xylenes.";
+        feed     reformate;
+        yield
+        {
+            basis   mass;
+            band    ( 0.15 0.25 );
+            origin  assumed;
+            reason  "toluene content of reformate; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 12, aromatics extraction"; }
+        );
+    }
+
+    {
+        name     reformateToXylenes;
+        kind     separation;
+        target   mixedXylenes;
+        family   separation;
+        era      incumbent;
+        description "The C8 cut of the reformate: a near-equilibrium mixture of the three xylenes and ethylbenzene.";
+        feed     reformate;
+        yield
+        {
+            basis   mass;
+            band    ( 0.15 0.25 );
+            origin  assumed;
+            reason  "C8 aromatics content of reformate; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 12, aromatics extraction"; }
+        );
+    }
+
+    {
+        name     pygasToBenzene;
+        kind     separation;
+        target   benzene;
+        family   separation;
+        era      incumbent;
+        description "Hydrotreated pyrolysis gasoline is 60-70 wt% aromatics and benzene-rich; the naphtha cracker is therefore a benzene producer too.";
+        feed     pyrolysisGasoline;
+        yield
+        {
+            basis   mass;
+            band    ( 0.25 0.4 );
+            origin  assumed;
+            reason  "benzene content of hydrotreated pygas; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 12, 'Aromatics' -- pyrolysis gasoline as a source"; }
+        );
+    }
+
+    {
+        name     pygasToToluene;
+        kind     separation;
+        target   toluene;
+        family   separation;
+        era      incumbent;
+        description "Toluene from the aromatics extraction of pyrolysis gasoline.";
+        feed     pyrolysisGasoline;
+        yield
+        {
+            basis   mass;
+            band    ( 0.1 0.2 );
+            origin  assumed;
+            reason  "the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 12, 'Aromatics'"; }
+        );
+    }
+
+    {
+        name     pygasToXylenes;
+        kind     separation;
+        target   mixedXylenes;
+        family   separation;
+        era      incumbent;
+        description "C8 aromatics from the aromatics extraction of pyrolysis gasoline.";
+        feed     pyrolysisGasoline;
+        yield
+        {
+            basis   mass;
+            band    ( 0.05 0.12 );
+            origin  assumed;
+            reason  "the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 12, 'Aromatics'"; }
+        );
+    }
+
+    {
+        name     c4ExtractionButadiene;
+        kind     separation;
+        target   13Butadiene;
+        family   separation;
+        era      incumbent;
+        description "Extractive distillation (NMP, DMF or acetonitrile) takes butadiene out of the crude C4 cut; the raffinate carries the butenes.";
+        feed     mixedC4;
+        yield
+        {
+            basis   mass;
+            band    ( 0.35 0.5 );
+            origin  assumed;
+            reason  "butadiene content of a naphtha-cracker C4 cut; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 5, '1,3-Diolefins' -- extractive distillation with NMP/DMF/acetonitrile"; }
+        );
+    }
+
+    {
+        name     c4RaffinateIsobutene;
+        kind     separation;
+        target   isoButene;
+        family   separation;
+        era      incumbent;
+        description "Isobutene is taken from raffinate 1 by reaction (MTBE etherification, then cracking back; or hydration to tert-butanol) because it cannot be distilled from the n-butenes.";
+        feed     mixedC4;
+        yield
+        {
+            basis   mass;
+            band    ( 0.2 0.3 );
+            origin  assumed;
+            reason  "isobutene content of a cracker C4 cut; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 3, 'Olefins' -- raffinate 1 and the isobutene routes"; }
+        );
+    }
+
+    {
+        name     c4RaffinateButenes;
+        kind     separation;
+        target   1Butene;
+        family   separation;
+        era      incumbent;
+        description "Raffinate 2 (after butadiene and isobutene) is the n-butenes: 1-butene for LLDPE comonomer, 2-butenes for alkylate and sec-butanol.";
+        feed     mixedC4;
+        yield
+        {
+            basis   mass;
+            band    ( 0.2 0.35 );
+            origin  assumed;
+            reason  "n-butene content of a cracker C4 cut; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 3, 'Olefins' -- raffinate 2"; }
+        );
+    }
+
+    {
+        name     xylenesToPXylene;
+        kind     separation;
+        target   pXylene;
+        family   separation;
+        era      incumbent;
+        description "The three xylenes boil within 6 K and cannot be distilled apart; p-xylene is crystallised (highest melting point) or adsorbed (simulated moving bed), and the raffinate is isomerised back to equilibrium and recycled.";
+        feed     mixedXylenes;
+        yield
+        {
+            basis   mass;
+            band    ( 0.18 0.24 );
+            origin  assumed;
+            reason  "p-xylene in an equilibrium C8 cut is about 20-24 %; recovered per pass by crystallisation or simulated-moving-bed adsorption; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 12, xylene separation -- crystallisation and adsorption"; }
+            { source kirkOthmer; locus "'Xylenes and Ethylbenzene'"; }
+        );
+    }
+
+    {
+        name     xylenesToOXylene;
+        kind     separation;
+        target   oXylene;
+        family   separation;
+        era      incumbent;
+        description "o-Xylene boils 5 K above the others and is the one xylene that superfractionation can take.";
+        feed     mixedXylenes;
+        yield
+        {
+            basis   mass;
+            band    ( 0.15 0.22 );
+            origin  assumed;
+            reason  "o-xylene in an equilibrium C8 cut; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 12, xylene separation"; }
+        );
+    }
+
+    {
+        name     xylenesToMXylene;
+        kind     separation;
+        target   mXylene;
+        family   separation;
+        era      incumbent;
+        description "m-Xylene, the equilibrium-favoured isomer, is mostly isomerised to p-xylene rather than sold.";
+        feed     mixedXylenes;
+        yield
+        {
+            basis   mass;
+            band    ( 0.4 0.5 );
+            origin  assumed;
+            reason  "m-xylene is the most abundant isomer at equilibrium; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 12, xylene separation"; }
+        );
+    }
+
+    {
+        name     mXyleneIsomerisation;
+        kind     reaction;
+        target   pXylene;
+        family   isomerisation;
+        era      incumbent;
+        description "The p-xylene loop: the crystalliser or adsorber raffinate is re-equilibrated over an acid zeolite and returned, so that nearly all the C8 cut ends as p-xylene.";
+        stoichiometry
+        (
+            { component mXylene;               nu -1; }
+            { component pXylene;               nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.2 0.24 );
+            origin  assumed;
+            reason  "per-pass conversion to equilibrium (~22 % p-xylene); overall near-quantitative with recycle; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 12, xylene isomerisation (acid zeolite / Pt bifunctional)"; }
+        );
+    }
+
+    {
+        name     sourGasClaus;
+        kind     reaction;
+        target   sulfur;
+        family   oxidation;
+        era      incumbent;
+        description "The Claus process: a third of the H2S is burned to SO2 in the thermal stage, which then reacts with the rest over alumina.  Virtually all elemental sulfur is now recovered this way from sour gas and oil -- the sulfuric acid root rests on the refinery.";
+        stoichiometry
+        (
+            { component H2S;                   nu -2; }
+            { component O2;                    nu -1; }
+            { component sulfur;                nu 2; }
+            { component water;                 nu 2; }
+        );
+        yield
+        {
+            basis   sulfur;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "Claus + tail-gas treatment sulfur recovery; the curator's band";
+        }
+        cases    ( "tutorials/steady/gibbs/claus01_thermal_stage" );
+        provenance
+        (
+            { source ullmanns; locus "'Sulfur'"; }
+            { source moulijn2013; locus "gas treating and the Claus process"; }
+        );
+    }
+
+    {
+        name     sucroseFermentation;
+        kind     reaction;
+        target   ethanol;
+        family   fermentation;
+        era      transition;
+        description "Sucrose (cane, beet) hydrolysed and fermented by yeast: the bio-ethanol that Brazil dehydrates to ethylene.  A third of the sugar's carbon leaves as CO2 by stoichiometry -- a concentrated, biogenic CO2 stream.";
+        stoichiometry
+        (
+            { component sucrose;               nu -1; }
+            { component water;                 nu -1; }
+            { component ethanol;               nu 4; }
+            { component CO2;                   nu 4; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.6 0.65 );
+            origin  assumed;
+            reason  "two-thirds of the sugar carbon goes to ethanol and one-third to CO2 by stoichiometry; yeast yield 90-95 % of that; the curator's band";
+        }
+        cases    ( "tutorials/plant/ChemicalPlantTutorial" );
+        provenance
+        (
+            { source huber2006; locus "ethanol from sugars and the biorefinery context"; }
+            { source iea2018; locus "ch. 5, bio-based routes in the Clean Technology Scenario"; }
+        );
+    }
+
+    {
+        name     plasticsPyrolysis;
+        kind     processYield;
+        target   naphtha;
+        family   pyrolysis;
+        era      transition;
+        description "Chemical recycling: thermal pyrolysis of sorted polyolefin waste returns a naphtha-range oil that, after hydrotreating, re-enters the steam cracker -- the only route that closes the carbon loop on plastics without burning them.";
+        feed     wastePlastics;
+        slate
+        (
+            { component naphtha;               massPerKgFeed ( 0.5 0.8 ); origin assumed; reason "pyrolysis oil yield from polyolefin-rich waste, hydrotreated to a cracker feed; the curator's band"; }
+        );
+        provenance
+        (
+            { source iea2018; locus "ch. 5, chemical recycling in the Clean Technology Scenario"; }
+            { source amghizar2017; locus "feedstock trends"; }
+        );
+    }
+
+    {
+        name     methaneToAcetylene;
+        kind     reaction;
+        target   acetylene;
+        family   pyrolysis;
+        era      incumbent;
+        description "Acetylene from methane by partial oxidation at 1500 C and millisecond quench (BASF): the gas-based acetylene that the carbide route competes with.";
+        stoichiometry
+        (
+            { component CH4;                   nu -2; }
+            { component acetylene;             nu 1; }
+            { component H2;                    nu 3; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.3 0.4 );
+            origin  assumed;
+            reason  "BASF partial-oxidation (submerged flame) acetylene from methane; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 4, 'Acetylene'"; }
+            { source ullmanns; locus "'Acetylene'"; }
+        );
+    }
+
+    {
+        name     carbideFurnace;
+        kind     reaction;
+        target   CaC2;
+        family   pyrolysis;
+        era      incumbent;
+        description "Lime + coke in the electric-arc furnace to calcium carbide: the coal-based acetylene route that China's PVC still stands on -- electricity-hungry, and a reminder that a root can be replaced in the OTHER direction.";
+        stoichiometry
+        (
+            { component CaO;                   nu -1; }
+            { component coke;                  nu -3; }
+            { component CaC2;                  nu 1; }
+            { component CO;                    nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.6 0.67 );
+            origin  assumed;
+            reason  "two of three carbons end in the carbide by stoichiometry; electric-arc furnace, 2000 C; the curator's band";
+        }
+        energy
+        (
+            { route "electric-arc carbide furnace"; band ( 3 3.5 ); unit "MWh per t CaC2"; origin assumed; reason "the electricity consumption usually quoted for the carbide furnace; not read back"; }
+        );
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 4, 'Acetylene' -- the carbide process"; }
+            { source ullmanns; locus "'Calcium Carbide'"; }
+        );
+    }
+
+    {
+        name     carbideHydrolysis;
+        kind     reaction;
+        target   acetylene;
+        family   hydration;
+        era      incumbent;
+        description "Carbide + water to acetylene and slaked lime (the lime is the forced co-product, returned to the furnace or sold).";
+        stoichiometry
+        (
+            { component CaC2;                  nu -1; }
+            { component water;                 nu -2; }
+            { component acetylene;             nu 1; }
+            { component CaOH2;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.97 0.99 );
+            origin  assumed;
+            reason  "wet generator; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Acetylene'"; }
+        );
+    }
+
+    {
+        name     methaneChlorination;
+        kind     reaction;
+        target   methylChloride;
+        family   chlorination;
+        era      incumbent;
+        description "Direct thermal chlorination of methane: the chloromethanes with HCl forced -- beside the methanol hydrochlorination that consumes it.";
+        stoichiometry
+        (
+            { component CH4;                   nu -1; }
+            { component Cl2;                   nu -1; }
+            { component methylChloride;        nu 1; }
+            { component HCl;                   nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.8 0.9 );
+            origin  assumed;
+            reason  "thermal chlorination, the higher chloromethanes co-produced; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 2, chloromethanes"; }
+            { source ullmanns; locus "'Chloromethanes'"; }
+        );
+    }
+);

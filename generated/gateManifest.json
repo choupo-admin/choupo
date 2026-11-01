@@ -1400,6 +1400,11 @@
       "exit": 0,
       "claim": "check_third_body_rate: OK -- the batch reactor's thirdBody rate is k(T)[M]c_H2 on R5 of O Conaire 2004 at 2800 K: irreversible, 37.02 % of the H2 converted in 2 ms, n_H2 and n_H equal to an independent RK4 integration to 1e-6; reversible: on the plateau c_H^2/c_H2 = 2.88541e-05 = Kc 2.88541e-05 kmol/m3 (independent, from the records); RateForm::ThirdBody read only in BatchReactor.cpp.  Scope: the thirdBody form of batchReactor; NOT checked: falloff, the adiabatic energy balance, CHEMKIN conversion at other molecularities",
       "seconds": 1.2
+    },
+    "check_chemistry_graph": {
+      "exit": 0,
+      "claim": "check_chemistry_graph: OK -- 7 files, 157 substances, 168 routes: every reaction balances on the engine's element table, every route cites a declared source, every substance is reachable from a feedstock, the target graph has no undeclared cycle, 7 + 4 roots declared, every cited case exists.  NOT checked: whether a yield band (189 of 189 are `assumed`) or a locus is TRUE, or whether the route list is complete.",
+      "seconds": 0.1
     }
   }
 }

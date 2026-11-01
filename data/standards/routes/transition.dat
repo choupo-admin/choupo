@@ -1,0 +1,603 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  THE TREE OF 2050: the routes that REPLACE THE ROOTS -- electrolytic hydrogen,
+  CO2 to methanol, methane and CO, methanol to olefins and aromatics, bio-ethanol
+  to ethylene, biomass gasification and biomethane, lignin to aromatics, and
+  on-purpose propylene.  Every edge carries the same fields as the incumbent ones
+  (`era transition`) so the tool can draw the two side by side; the hydrogen a
+  route consumes per carbon is DERIVED from its stoichiometry by the gate and the
+  tool and is never stored.
+  Grammar: README.md beside this file.  Every edge is re-read, balanced and
+  checked by bin/curate/check_chemistry_graph.py.
+\*---------------------------------------------------------------------------*/
+
+
+recordType    productionRoutes;
+schemaVersion 1;
+graph         treeOfChemistry;
+
+routes
+(
+    {
+        name     waterElectrolysis;
+        kind     reaction;
+        target   H2;
+        family   electrolysis;
+        era      transition;
+        description "Water electrolysis (alkaline, PEM, solid oxide): hydrogen with no carbon -- the ROOT replacement for ammonia, methanol and every hydrogenation, with oxygen as the co-product.  The chemistry downstream is unchanged; what moves is where the hydrogen comes from and what the electricity costs.";
+        stoichiometry
+        (
+            { component water;                 nu -2; }
+            { component H2;                    nu 2; }
+            { component O2;                    nu 1; }
+        );
+        yield
+        {
+            basis   hydrogen;
+            band    ( 0.99 1 );
+            origin  assumed;
+            reason  "Faradaic efficiency; the curator's band";
+        }
+        energy
+        (
+            { route "alkaline / PEM electrolyser, system"; band ( 50 55 ); unit "kWh per kg H2"; origin assumed; reason "the specific electricity consumption usually quoted for today's alkaline and PEM systems; the IEA hydrogen report carries the figure in its technology annex, not read back here"; }
+        );
+        cases    ( "tutorials/plant/greenAmmonia03_basicDesign" "tutorials/plant/greenAmmoniaPEQ_baseCase" "tutorials/plant/ammoniaRoutes01_screening" );
+        provenance
+        (
+            { source ieaHydrogen2019; locus "electrolytic hydrogen and its cost"; }
+            { source ieaAmmonia2021; locus "executive summary: electrolysis reaches more than 25 % (SDS) / 40 % (NZE) of ammonia production by 2050"; }
+            { source smith2020; locus "electrolysis-based Haber-Bosch"; }
+            { source ullmanns; locus "'Hydrogen, 2. Production'"; }
+        );
+    }
+
+    {
+        name     reverseWaterGasShift;
+        kind     reaction;
+        target   CO;
+        family   shift;
+        era      transition;
+        description "The reverse water-gas shift: captured CO2 + electrolytic H2 to CO for a syngas of any ratio -- the entry of CO2 into the Fischer-Tropsch and oxo chemistry.";
+        stoichiometry
+        (
+            { component CO2;                   nu -1; }
+            { component H2;                    nu -1; }
+            { component CO;                    nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.5 0.8 );
+            origin  assumed;
+            reason  "equilibrium-limited per pass at 600-900 C, driven by recycle; the curator's band";
+        }
+        cycle    "CO2 and CO interconvert: the forward shift makes hydrogen from CO, the reverse shift makes CO from captured CO2 -- the carbon loop of power-to-X";
+        provenance
+        (
+            { source perezFortes2016; locus "CO2-to-methanol assessment"; }
+            { source moulijn2013; locus "the shift equilibrium"; }
+        );
+    }
+
+    {
+        name     CO2toMethanol;
+        kind     reaction;
+        target   methanol;
+        family   synthesis;
+        era      transition;
+        description "Direct hydrogenation of CO2 to methanol in the same Cu/ZnO loop as the syngas route: 1.375 t CO2 and 0.19 t H2 per t methanol by stoichiometry, with one water forced per methanol.  The methanol root replaced at its source -- and then every methanol derivative, MTO olefins included, is made from CO2 and electricity.";
+        stoichiometry
+        (
+            { component CO2;                   nu -1; }
+            { component H2;                    nu -3; }
+            { component methanol;              nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.97 );
+            origin  assumed;
+            reason  "Cu/ZnO/Al2O3 with recycle, selectivity > 99 %, carbon efficiency set by the purge; the curator's band";
+        }
+        cases    ( "tutorials/steady/reactors/screen01_methanol_routes" "tutorials/steady/reactors/equil02_methanol_declared_pathways" );
+        provenance
+        (
+            { source perezFortes2016; locus "techno-economic and environmental assessment of methanol from captured CO2"; }
+            { source iea2018; locus "ch. 5, the electricity pathway (Figure 5.20: non-energy inputs for primary chemicals)"; }
+        );
+    }
+
+    {
+        name     CO2methanation;
+        kind     reaction;
+        target   CH4;
+        family   methanation;
+        era      transition;
+        description "The Sabatier reaction: CO2 + 4 H2 to synthetic methane, strongly exothermic and mole-reducing -- equilibrium wants low T, kinetics want high, the ammonia converter's lesson again (DEV.md C191 B).  Four H2 per carbon: the most hydrogen-hungry of the power-to-X routes.";
+        stoichiometry
+        (
+            { component CO2;                   nu -1; }
+            { component H2;                    nu -4; }
+            { component CH4;                   nu 1; }
+            { component water;                 nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "Sabatier over Ni, 250-400 C, in beds in series with interstage cooling and water removal; the curator's band";
+        }
+        cycle    "power-to-gas closes the carbon loop: the methane reformed to CO2 is remade from CO2 -- the same molecule, round the loop";
+        provenance
+        (
+            { source moulijn2013; locus "methanation"; }
+            { source ullmanns; locus "'Methanation'"; }
+        );
+    }
+
+    {
+        name     MTOethylene;
+        kind     reaction;
+        target   ethylene;
+        family   methanolToHydrocarbons;
+        era      transition;
+        description "Methanol to olefins over SAPO-34 (DMTO, UOP/Hydro): the ethylene that China makes from COAL today and that a CO2-methanol plant would make tomorrow.  The cracker's forced slate is replaced by a tunable one.";
+        stoichiometry
+        (
+            { component methanol;              nu -2; }
+            { component ethylene;              nu 1; }
+            { component water;                 nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.35 0.45 );
+            origin  assumed;
+            reason  "ethylene share of a SAPO-34 MTO product (light olefins 80-90 % total, ethylene/propylene adjustable 0.8-1.5); the curator's band";
+        }
+        provenance
+        (
+            { source tian2015; locus "the DMTO process and SAPO-34"; }
+            { source iea2018; locus "p. 32, Figure 2.5 (MTO slate) and ch. 2 on coal-to-olefins in China"; }
+            { source amghizar2017; locus "methanol-to-olefins among the new routes"; }
+        );
+    }
+
+    {
+        name     MTOpropylene;
+        kind     reaction;
+        target   propylene;
+        family   methanolToHydrocarbons;
+        era      transition;
+        description "The propylene half of MTO (and the ZSM-5 MTP variant that maximises it): on-purpose propylene from methanol.";
+        stoichiometry
+        (
+            { component methanol;              nu -3; }
+            { component propylene;             nu 1; }
+            { component water;                 nu 3; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.35 0.45 );
+            origin  assumed;
+            reason  "propylene share of the MTO/MTP product (ZSM-5 MTP goes to > 60 % propylene); the curator's band";
+        }
+        provenance
+        (
+            { source tian2015; locus "MTO and MTP"; }
+            { source amghizar2017; locus "methanol-to-propylene"; }
+        );
+    }
+
+    {
+        name     MTAtoluene;
+        kind     reaction;
+        target   toluene;
+        family   methanolToHydrocarbons;
+        era      transition;
+        description "Methanol to aromatics over metal-modified ZSM-5 (written on toluene; the product is a BTX mix): the one route that puts aromatics on the syngas root, so that benzene, toluene and the xylenes can come from biomass or CO2.";
+        stoichiometry
+        (
+            { component methanol;              nu -7; }
+            { component toluene;               nu 1; }
+            { component water;                 nu 7; }
+            { component H2;                    nu 3; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.6 0.75 );
+            origin  assumed;
+            reason  "aromatics share of a Zn/Ga-ZSM-5 MTA product (BTX, with toluene and xylenes dominant); the curator's band";
+        }
+        provenance
+        (
+            { source tian2015; locus "methanol-to-hydrocarbons chemistry and the hydrocarbon pool"; }
+            { source iea2018; locus "ch. 5, methanol-based routes to HVCs"; }
+        );
+    }
+
+    {
+        name     ethanolDehydration;
+        kind     reaction;
+        target   ethylene;
+        family   dehydration;
+        era      transition;
+        description "Ethanol dehydration over alumina (Braskem, Brazil): bio-ethylene -- polyethylene with a biogenic carbon, the cracker's product without the cracker.  1.7 t ethanol per t ethylene by stoichiometry.";
+        stoichiometry
+        (
+            { component ethanol;               nu -1; }
+            { component ethylene;              nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "alumina or zeolite, 300-500 C, ethylene selectivity above 95 %; the curator's band";
+        }
+        provenance
+        (
+            { source zhangYu2013; locus "catalysts and processes for ethanol dehydration"; }
+            { source iea2018; locus "ch. 5, bio-based ethylene in the Clean Technology Scenario"; }
+        );
+    }
+
+    {
+        name     biomassGasification;
+        kind     processYield;
+        target   CO;
+        family   gasification;
+        era      transition;
+        description "Biomass gasification (fluidised bed or entrained flow, oxygen/steam) to a tar-laden syngas that is cleaned and shifted: the biogenic syngas root for methanol, ammonia (after shift) and Fischer-Tropsch.";
+        feed     biomass;
+        slate
+        (
+            { component CO;                    massPerKgFeed ( 0.6 1 ); origin assumed; reason "kg CO per kg dry biomass in an oxygen/steam-blown gasifier after tar reforming; the curator's band"; }
+            { component H2;                    massPerKgFeed ( 0.04 0.08 ); origin assumed; reason "the curator's band"; }
+            { component CO2;                   massPerKgFeed ( 0.4 0.8 ); origin assumed; reason "the curator's band"; }
+        );
+        provenance
+        (
+            { source huber2006; locus "biomass gasification to syngas and the syngas-to-fuels routes"; }
+            { source iea2018; locus "ch. 5, biomass-based primary chemicals"; }
+        );
+    }
+
+    {
+        name     biomethane;
+        kind     processYield;
+        target   CH4;
+        family   fermentation;
+        era      transition;
+        description "Anaerobic digestion of wet biomass to biogas and upgrading to biomethane: the same molecule as natural gas, feeding the same reformer -- the root replaced without touching the plant.";
+        feed     biomass;
+        slate
+        (
+            { component CH4;                   massPerKgFeed ( 0.15 0.3 ); origin assumed; reason "kg CH4 per kg volatile solids by anaerobic digestion, upgraded to biomethane; the curator's band"; }
+            { component CO2;                   massPerKgFeed ( 0.2 0.4 ); origin assumed; reason "the curator's band"; }
+        );
+        provenance
+        (
+            { source huber2006; locus "biogas in the biorefinery"; }
+            { source iea2018; locus "ch. 5"; }
+        );
+    }
+
+    {
+        name     ligninDepolymerisation;
+        kind     processYield;
+        target   phenol;
+        family   pyrolysis;
+        era      transition;
+        description "Lignin, the only renewable aromatic polymer at scale: catalytic depolymerisation and hydrodeoxygenation to phenolics and BTX.  The yields are low and the chemistry is not commercial -- the aromatic root is the hardest to replace, which is why MTA matters.";
+        feed     lignin;
+        slate
+        (
+            { component phenol;                massPerKgFeed ( 0.05 0.15 ); origin assumed; reason "kg phenolics per kg lignin by catalytic depolymerisation/hydrodeoxygenation; the curator's band"; }
+            { component benzene;               massPerKgFeed ( 0.03 0.1 ); origin assumed; reason "the curator's band"; }
+            { component toluene;               massPerKgFeed ( 0.03 0.1 ); origin assumed; reason "the curator's band"; }
+            { component mixedXylenes;          massPerKgFeed ( 0.02 0.08 ); origin assumed; reason "the curator's band"; }
+        );
+        provenance
+        (
+            { source zakzeski2010; locus "catalytic depolymerisation and hydrodeoxygenation of lignin to aromatics and phenolics"; }
+            { source iea2018; locus "ch. 5, bio-based aromatics"; }
+        );
+    }
+
+    {
+        name     propaneDehydrogenation;
+        kind     reaction;
+        target   propylene;
+        family   dehydrogenation;
+        era      transition;
+        description "On-purpose propylene: when ethane crackers stopped forcing propylene, propane dehydrogenation (Oleflex, Catofin) was built to make it alone -- fossil, but the structural answer to a root whose co-product was lost.  Endothermic, equilibrium-limited, hydrogen as co-product.";
+        stoichiometry
+        (
+            { component propane;               nu -1; }
+            { component propylene;             nu 1; }
+            { component H2;                    nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.85 0.92 );
+            origin  assumed;
+            reason  "Pt-Sn (Oleflex) or Cr2O3 (Catofin), 550-650 C, 30-40 % per pass, selectivity 85-92 %; the curator's band";
+        }
+        provenance
+        (
+            { source sattler2014; locus "catalytic dehydrogenation of propane"; }
+            { source amghizar2017; locus "on-purpose propylene"; }
+        );
+    }
+
+    {
+        name     ethanolToEthylAcetateDehydrogenative;
+        kind     reaction;
+        target   ethylAcetate;
+        family   dehydrogenation;
+        era      transition;
+        description "Ethyl acetate from ethanol alone (Cu catalyst, hydrogen co-product): a bio-ethanol route to an ester that otherwise needs acetic acid.";
+        stoichiometry
+        (
+            { component ethanol;               nu -2; }
+            { component ethylAcetate;          nu 1; }
+            { component H2;                    nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.95 );
+            origin  assumed;
+            reason  "Cu-catalysed dehydrogenative coupling of bio-ethanol; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Acetic Acid' -- esters; the ethanol dehydrogenation route"; }
+        );
+    }
+
+    {
+        name     glycerolToEpichlorohydrin;
+        kind     reaction;
+        target   epichlorohydrin;
+        family   chlorination;
+        era      transition;
+        description "Epichlorohydrin from biodiesel glycerol by hydrochlorination (Solvay Epicerol): the bio alternative to the allyl chloride route, consuming HCl instead of Cl2 -- the chlorine still enters, but as the acid the chlorinations struggle to place.";
+        stoichiometry
+        (
+            { component glycerol;              nu -1; }
+            { component HCl;                   nu -2; }
+            { component NaOH;                  nu -1; }
+            { component epichlorohydrin;       nu 1; }
+            { component NaCl;                  nu 1; }
+            { component water;                 nu 3; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.85 0.92 );
+            origin  assumed;
+            reason  "glycerol hydrochlorination to the dichloropropanols, then dehydrochlorination (Epicerol); the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Epoxides'"; }
+        );
+    }
+
+    {
+        name     olefinMetathesis;
+        kind     reaction;
+        target   propylene;
+        family   isomerisation;
+        era      transition;
+        description "Olefin metathesis (OCT): ethylene + 2-butene to two propylenes over WO3 -- the on-purpose propylene of the ethane-cracker era, converting the slate's surplus into the olefin it no longer forces.";
+        stoichiometry
+        (
+            { component ethylene;              nu -1; }
+            { component 1Butene;               nu -1; }
+            { component propylene;             nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.95 );
+            origin  assumed;
+            reason  "WO3/silica metathesis of ethylene with 2-butene (the 1-butene isomerised in situ), near-equilibrium with recycle; the curator's band";
+        }
+        provenance
+        (
+            { source amghizar2017; locus "on-purpose propylene by metathesis"; }
+            { source ullmanns; locus "'Propene'"; }
+        );
+    }
+
+    {
+        name     ethanolDehydrogenation;
+        kind     reaction;
+        target   acetaldehyde;
+        family   dehydrogenation;
+        era      transition;
+        description "Acetaldehyde by ethanol dehydrogenation (or oxidative dehydrogenation over Ag): the bio-ethanol entry to the acetyl chain, and the route that preceded Wacker.";
+        stoichiometry
+        (
+            { component ethanol;               nu -1; }
+            { component acetaldehyde;          nu 1; }
+            { component H2;                    nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.95 );
+            origin  assumed;
+            reason  "Cu or Ag catalysed, 90-95 % selectivity; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Acetaldehyde' -- the ethanol route"; }
+            { source weissermelArpe2003; locus "ch. 7, 'Acetaldehyde'"; }
+        );
+    }
+
+    {
+        name     lebedevButadiene;
+        kind     reaction;
+        target   13Butadiene;
+        family   dehydration;
+        era      transition;
+        description "The Lebedev process: ethanol to butadiene in one step -- the butadiene of the wartime synthetic-rubber programmes and the bio route to the C4 root, which is otherwise the hardest to replace because nothing makes it on purpose.";
+        stoichiometry
+        (
+            { component ethanol;               nu -2; }
+            { component 13Butadiene;           nu 1; }
+            { component water;                 nu 2; }
+            { component H2;                    nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.55 0.7 );
+            origin  assumed;
+            reason  "Lebedev one-step (MgO/SiO2) or Ostromislensky two-step, butadiene selectivity 55-70 %; the curator's band";
+        }
+        provenance
+        (
+            { source weissermelArpe2003; locus "ch. 5, '1,3-Diolefins' -- butadiene from ethanol"; }
+            { source ullmanns; locus "'Butadiene'"; }
+        );
+    }
+
+    {
+        name     biodieselTransesterification;
+        kind     reaction;
+        target   methylOleate;
+        family   esterification;
+        era      transition;
+        description "Vegetable oil + methanol to FAME biodiesel with ONE glycerol per triglyceride forced (about 10 % by mass) -- the forced co-product that made glycerol cheap and opened the Epicerol route.  Three roots: a bio-oil, methanol and (downstream) chlorine.";
+        stoichiometry
+        (
+            { component triolein;              nu -1; }
+            { component methanol;              nu -3; }
+            { component methylOleate;          nu 3; }
+            { component glycerol;              nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.95 0.99 );
+            origin  assumed;
+            reason  "base-catalysed transesterification, > 98 % conversion; the curator's band";
+        }
+        provenance
+        (
+            { source huber2006; locus "biodiesel by transesterification and its glycerol"; }
+            { source ullmanns; locus "'Fatty Acid Methyl Esters'"; }
+        );
+    }
+
+    {
+        name     biomassHydrolysis;
+        kind     processYield;
+        target   glucose;
+        family   hydration;
+        era      transition;
+        description "Pretreatment and enzymatic hydrolysis of lignocellulose to fermentable sugars, leaving lignin: the second-generation (non-food) sugar platform.";
+        feed     biomass;
+        slate
+        (
+            { component glucose;               massPerKgFeed ( 0.3 0.45 ); origin assumed; reason "kg fermentable sugars per kg dry lignocellulose after pretreatment and enzymatic hydrolysis; the curator's band"; }
+            { component lignin;                massPerKgFeed ( 0.15 0.3 ); origin assumed; reason "kg lignin per kg dry wood, the residue of hydrolysis; the curator's band"; }
+        );
+        provenance
+        (
+            { source huber2006; locus "pretreatment and hydrolysis of lignocellulose"; }
+            { source zakzeski2010; locus "lignin as the hydrolysis residue"; }
+        );
+    }
+
+    {
+        name     glucoseFermentationEthanol;
+        kind     reaction;
+        target   ethanol;
+        family   fermentation;
+        era      transition;
+        description "Glucose fermented by yeast: the cellulosic ethanol of the second-generation biorefinery -- the same ethanol, the same CO2 co-product.";
+        stoichiometry
+        (
+            { component glucose;               nu -1; }
+            { component ethanol;               nu 2; }
+            { component CO2;                   nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.6 0.65 );
+            origin  assumed;
+            reason  "two-thirds of the sugar carbon by stoichiometry, 90-95 % of that in practice; the curator's band";
+        }
+        cases    ( "tutorials/plant/ChemicalPlantTutorial" );
+        provenance
+        (
+            { source huber2006; locus "ethanol fermentation"; }
+        );
+    }
+
+    {
+        name     glucoseFermentationLactic;
+        kind     reaction;
+        target   lacticAcid;
+        family   fermentation;
+        era      transition;
+        description "Glucose to lactic acid with NO carbon lost by stoichiometry -- the platform chemical of PLA.";
+        stoichiometry
+        (
+            { component glucose;               nu -1; }
+            { component lacticAcid;            nu 2; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.85 0.95 );
+            origin  assumed;
+            reason  "homofermentative lactic acid bacteria, 85-95 % on sugar; the curator's band";
+        }
+        provenance
+        (
+            { source huber2006; locus "the sugar platform chemicals"; }
+        );
+    }
+
+    {
+        name     lacticAcidPolymerisation;
+        kind     reaction;
+        target   PLA;
+        family   polymerisation;
+        era      transition;
+        description "Poly(lactic acid) by condensation to the lactide and ring-opening polymerisation: the bio-based, compostable polyester.  Written per repeat unit.";
+        stoichiometry
+        (
+            { component lacticAcid;            nu -1; }
+            { component PLA;                   nu 1; }
+            { component water;                 nu 1; }
+        );
+        yield
+        {
+            basis   carbon;
+            band    ( 0.9 0.97 );
+            origin  assumed;
+            reason  "via the lactide and ring-opening polymerisation; the curator's band";
+        }
+        provenance
+        (
+            { source ullmanns; locus "'Polyesters'"; }
+        );
+    }
+);
