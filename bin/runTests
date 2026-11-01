@@ -4841,6 +4841,21 @@ PYEOF
     fi
     rm -f /tmp/optconv.$$
 
+    # driver-convergence gate (2026-11-01, DEV.md 4c C186 (5) + the sibling
+    # drivers).  Pressure is a tear variable: a recycle with a pressure drop
+    # and nothing setting a pressure is refused by tear name; sweep,
+    # gridSweep and designSpec read every point through simulationFailure
+    # (a failed point is named, nan, counted; all-fail refuses by name).
+    if gate_exec "$ROOT/bin/curate/check_driver_convergence.py" > /tmp/drvconv.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "driver-convergence-gate" "$(head -1 /tmp/drvconv.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_driver_convergence.py)\n" "driver-convergence-gate"
+        cat /tmp/drvconv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/drvconv.$$
+
     # held-out-pressure gate (2026-08-25).  A bubble-point fit prices every
     # point at the pressure its own measurement declares -- a column where the
     # study varied it, a held-constant where the study fixed it -- so a pair

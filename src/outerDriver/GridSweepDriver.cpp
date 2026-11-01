@@ -140,6 +140,20 @@ int GridSweepDriver::run()
                 converged = false;
                 ++failures;
             }
+            //  An UNCONVERGED simulation is a failed point too (DEV.md 4c
+            //  C186, docs/design/a-tear-has-a-pressure.md): read through the
+            //  ONE home, named with its coordinates, published as nan.
+            if (converged)
+            {
+                if (const std::string why = simulationFailure(result);
+                    !why.empty())
+                {
+                    std::cerr << "  [point " << pt << "  A=" << va << " B=" << vb
+                              << "]  FAILED -- " << why << "\n";
+                    converged = false;
+                    ++failures;
+                }
+            }
 
             csv << pt << "," << va << "," << vb;
             if (!converged)
@@ -165,6 +179,11 @@ int GridSweepDriver::run()
     }
 
     csv.close();
+    if (failures > 0 && static_cast<std::size_t>(failures) == total)
+        throw std::runtime_error("GridSweepDriver: every one of the "
+            + std::to_string(total) + " grid point(s) FAILED (an unconverged"
+            " or throwing simulation); no response is reported -- the CSV "
+            + reportFile_ + " holds only nan rows");
     std::cout << "\n  Grid sweep complete.  " << (total - static_cast<std::size_t>(failures))
               << "/" << total << " points converged.\n"
               << "  CSV written to: " << reportFile_ << "\n\n";

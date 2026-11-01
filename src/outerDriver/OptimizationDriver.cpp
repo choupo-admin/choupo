@@ -113,26 +113,6 @@ scalar extractObjective(const SimulationResult& r,
     return std::numeric_limits<scalar>::quiet_NaN();  // unreachable
 }
 
-//  THE ONE HOME of "is this simulation an answer?" (DEV.md 4c C186 (4)).
-//  A unit that fails to converge THROWS inside the flowsheet (Flowsheet.cpp,
-//  runUnit) and was always a failed evaluation; a RECYCLE that stops at
-//  recycleMaxIter does not throw -- Flowsheet::solve returns 1 and
-//  runSimulation stamps `converged = false` on a result that still carries
-//  the last iterate's streams and KPIs.  Every evaluator here used to read
-//  the objective off that result, so the optimiser priced an iterate as if
-//  it were the plant (the external review's reproduction: a simulator always
-//  `converged = false`, "converged", exit 0).  Empty = usable; otherwise the
-//  cause, in words, for the ledger and the site.  Every `simulator_(` call
-//  reads its result through this function BEFORE anything else reads it
-//  (gate check_optimiser_converged, arm (d)).
-std::string simulationFailure(const SimulationResult& r)
-{
-    if (!r.converged)
-        return "the simulation did not converge (the flowsheet answered"
-               " converged = false: its recycle stopped at recycleMaxIter)";
-    return {};
-}
-
 } // anonymous namespace
 
 std::string OptimizationDriver::EvaluationLedger::byCause() const

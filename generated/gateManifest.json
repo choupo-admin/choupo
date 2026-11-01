@@ -1414,7 +1414,7 @@
     "check_optimiser_converged": {
       "exit": 0,
       "claim": "check_optimiser_converged: OK -- an unconverged simulation is a FAILED evaluation, never an objective: on cavett01 copies whose recycle stops at recycleMaxIter 2, nelderMead (23 evaluations FAILED by name), sqp (2 evaluations FAILED by name), integer (69 evaluations FAILED by name) each refuse by name and print no optimum; with recycleMaxIter 8 the Nelder-Mead search counts 3 of 8 evaluations failed (did not converge), reports a finite best and replays a converged recycle; the converging copy prints no FAILED line and ends 'status: converged' (held); 4 `simulator_(` call site(s) read the verdict through simulationFailure() before the result is read.  NOT covered: the sweep, gridSweep and designSpec drivers; whether a corpus optimisation SHOULD converge; the choupoCtrl functor.",
-      "seconds": 22.5
+      "seconds": 28.0
     },
     "check_chemistry_graph": {
       "exit": 0,
@@ -1435,6 +1435,11 @@
       "exit": 0,
       "claim": "check_pressure_exchanger: OK -- on membrane27_swro_energy_recovery the exchanger's three balances recompute from the result JSON outside the engine (volume less the leakage and the four flows conserving it, every component's LP outlet the remainder of the volumetric mix, Stover's efficiency on the stream pressures, each to 1e-6, the salinity rise from the streams' own masses, Q_kW = 0 and the dissipation (1 - eta) of the input); 7 fixtures refuse by name (efficiency absent, 1.2; mixing -0.1; no source; no drain pressure; a vapour seawater and a non-aqueous feed through the acceptance contract, before any unit runs); the sheet's rotors = ceil(Q_LP / ratedFlowPerUnit) and move to 2 on a halved rating, the item is NOT costed and a missing rating refuses; every sizing value carries a unit, both port blocks carry pressures, and the GUI fixture is the sheet the run just wrote.  NOT CHECKED: whether Stover's definition is the maker's, whether the three numbers fit any device, the first law (UNAVAILABLE on this component set), the membrane's answer.",
       "seconds": 0.2
+    },
+    "check_driver_convergence": {
+      "exit": 0,
+      "claim": "check_driver_convergence: OK -- a tear carries its pressure: a mixer -> pipe -> splitter recycle with no pressure set in the loop is refused by tear name under Newton and Wegstein (and the same loop with a valve to a fixed P converges); an unconverged simulation is a failed point in sweep, grid, designSpec (all-fail refuses by name, failed points named with coordinates and published as nan: 1 of 5 points failed at recycleMaxIter 8); the converging copy is unchanged (held); 4 `simulator_(` site(s) read the verdict through simulationFailure() first.  NOT covered: whether a corpus loop should be pressure-consistent (bin/runTests --scope), pumps/compressors as the setter of P, the energy-tear Wegstein vector.",
+      "seconds": 7.8
     }
   }
 }
