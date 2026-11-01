@@ -26,7 +26,7 @@
   Optimization 2nd ed. (2006), Algorithm 16.3, §16.5, a public-domain method
   and explicitly NOT a port of any code.  It has three real callers: the inner
   QP of every SQP iteration (src/solver/SQP.cpp:329), the constrained
-  optimisation driver (src/outerDriver/OptimizationDriver.cpp:595), and the
+  optimisation driver (src/outerDriver/OptimizationDriver.cpp:575), and the
   laboratory-analysis reconciliation (src/streams/AnalysisReconciler.cpp:192).
 
   WHY THE TRANSCRIPTION EXISTS, and it is the same argument as the Wegstein

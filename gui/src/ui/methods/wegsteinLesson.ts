@@ -24,7 +24,7 @@
   diagonal.  Everything else on the page is a consequence.
 
   THE QUESTION IT WAS BUILT TO ANSWER.  The tear vector holds a molar flow,
-  a set of mole fractions and a temperature, and the owner's standing doubt
+  a set of mole fractions, a temperature and a pressure, and the owner's standing doubt
   was how one accelerator can serve them at once.  It never compares them:
   the acceleration is per variable, and the secant slope each variable gets
   is a ratio of two differences in that variable's own unit, so it is
@@ -91,16 +91,19 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     n: 2,
     title: "What is actually in the vector — and it is not the same for both solvers",
     body: "A process stream carries a total flow, a composition, a "
-      + "temperature, a pressure and a phase split. Pressure is set by the "
-      + "units and the phase split follows from a flash, so neither is torn. "
-      + "What remains is where the two solvers in Choupo part company, and "
+      + "temperature, a pressure and a phase split. The phase split follows "
+      + "from a flash and is not torn. The pressure IS torn, since a loop "
+      + "whose units change the pressure has a steady state only if the "
+      + "pressure that comes back is the pressure that was handed in (a "
+      + "recycle that returns 3 bar after being handed 5 bar is not "
+      + "converged, whatever its flows do). What remains is where the two solvers in Choupo part company, and "
       + "the difference is worth knowing because it is the first place a "
       + "reader's mental model can go wrong.",
     derivation: [
       { step: "The WEGSTEIN branch packs the total flow, every mole "
-          + "fraction, and the temperature — per torn stream "
+          + "fraction, the temperature and the pressure — per torn stream "
           + "(src/unitOperations/flowsheet/Flowsheet.cpp:1732-1743).",
-        eq: String.raw`x = ( F,\ z_1,\ z_2,\ \ldots,\ z_{N_c},\ T )`},
+        eq: String.raw`x = ( F,\ z_1,\ z_2,\ \ldots,\ z_{N_c},\ T,\ P )`},
       { step: "That is one number more than the stream has independent "
           + "content, because the fractions must sum to one. The redundant "
           + "direction is harmless but real, and the unpack step "
@@ -128,11 +131,12 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
         means: "molar flow of component i alone, "
         + "numbered 1 to Nc", unit: "kmol/s" },
       { sym: "T", means: "temperature of the torn stream", unit: "K" },
+      { sym: "P", means: "pressure of the torn stream", unit: "bar" },
       { sym: "N_c", means: "number of components in the flowsheet" },
     ],
     note: "So the Wegstein tear vector really does hold a flow of order "
       + "1e-4 kmol/s, several dimensionless fractions, and a temperature "
-      + "near 360 K, all in one list. That is the situation the next three "
+      + "near 360 K and a pressure of a few bar, all in one list. That is the situation the next three "
       + "steps are about.",
   },
   {
@@ -320,7 +324,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "of them and they are not the same number. The Wegstein CLASS "
       + "defaults to [-5, 0] (src/solver/Wegstein.H:73-74); the RECYCLE loop "
       + "constructs it with [-1, 0] "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3156-3157). A Choupo "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3203-3204). A Choupo "
       + "recycle that declares nothing therefore runs at the gentler clamp.",
   },
   {
@@ -375,7 +379,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "norm of the change in the packed tear vector falls below the "
       + "declared tolerance — a flow in kmol/s, a handful of mole fractions "
       + "and a temperature in kelvin, added in quadrature with no scaling "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3176, the norm at "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3223, the norm at "
       + ":2043-2052). A temperature near 360 dominates a flow near 1e-4 by "
       + "six orders of magnitude, so a run can satisfy that test with the "
       + "temperature pinned to six digits and the recycle flow still several "
@@ -474,7 +478,7 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
       + "not the rest of the stream's state",
     body: "The pack and unpack move exactly those three things "
       + "(src/unitOperations/flowsheet/Flowsheet.cpp:1732-1743 and "
-      + "src/unitOperations/flowsheet/Flowsheet.cpp:1753-1794). The pressure "
+      + "src/unitOperations/flowsheet/Flowsheet.cpp:1759-1800). The pressure "
       + "and the phase split are NOT torn: pressure is set by the units, and "
       + "the vapour fraction sitting on the torn stream is whatever the "
       + "previous sweep left there — the engine says so in its own words on "
