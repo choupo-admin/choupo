@@ -1588,6 +1588,16 @@ accepts today, and that is a policy call.
 > dispatched after A and together with B (one GUI general: the 3D racks, the
 > plans and sections, the train schematic) plus a documentation general for
 > (i).
+> DECIDED 2026-11-02 (Vitor: "faz como achares mais de acordo com as boas
+> praticas"): the 2D set of an RO hall follows the usual drawing set of a plant
+> -- a PLAN, a SECTION and an ELEVATION OF ONE RACK with its three headers
+> (feed, brine, permeate) and the connection of every vessel to them, which is
+> the drawing where a rack is understood; each drawn from the published
+> geometry alone (no number typed in the GUI), every dimension marked by ink
+> and by word as declared or computed, a missing key drawing a labelled box
+> rather than a guess.  The header pipes are NOT sized in phase B (their
+> diameter and velocity need a pipe sizer, a later item): they are drawn at a
+> declared nominal size and said so.
 > STATUS: COMMISSIONED 2026-11-02; phase A with a general; B and C wait for A's
 > keys.
 
