@@ -18,8 +18,15 @@ conditions, the water permeances, the geometry) is declared `assumed` or
 up to the fence -- NOT the real site.
 
 **The answer** (2026-11-02; `expected` is the authority).  Product 4111 m3/h
-= 98 664.7 m3/day; first pass 47.20 %, second 87.0 %; 2.0 mg/L NaCl-equivalent
-and 0.046 mg/L boron in the product; 2.81 kWh/m3 of pump shaft work.
+= 98 668.7 m3/day; first pass 47.20 %, second 87.0 %; 2.0 mg/L NaCl-equivalent
+and 0.043 mg/L boron in the product; 2.81 kWh/m3 of pump shaft work.
+
+**Boron (DEV.md 4c C198, Stage 1).**  Boron is carried as boric acid and borate,
+split by the pH against the acid's curated pKa through the package; each
+module declares its pH (8.2 for the first pass, Table 2; 10 for the second,
+Table 1 -- the caustic dosing is not modelled).  Lower the second pass's pH to 9
+and the product's boron rises; the sheet's one test per element fixes the acid
+and the borate is assumed rejected like the salt (declared, announced).
 
 **Six trains, one building (DEV.md 4c C199).**  The case study says six skids of
 16 442 m3/day, and an industrial SWRO plant is built so: identical trains, each
