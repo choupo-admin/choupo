@@ -1,0 +1,42 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  bubbleOut              F                0.0277777777778    1e-4
+stream  bubbleOut              T                397.261090159      1e-4
+stream  dewOut                 F                0.0277777777778    1e-4
+stream  dewOut                 T                403.434181212      1e-4
+stream  feedA                  F                0.0277777777778    1e-4
+stream  feedA                  T                298                1e-4
+stream  feedB                  F                0.0277777777778    1e-4
+stream  feedB                  T                298                1e-4
+kpi     boilerLiquid           F                0.0277777777778    1e-4
+kpi     boilerLiquid           P                220000             1e-4
+kpi     boilerLiquid           Q                409065.981556      1e-4
+kpi     boilerLiquid           Q_kW             409.065981556      1e-4
+kpi     boilerLiquid           Q_sensible_kW    409.065981556      1e-4
+kpi     boilerLiquid           T_in             298                1e-4
+kpi     boilerLiquid           T_out            397.261090159      1e-4
+kpi     boilerLiquid           Tsat             413.515485487      1e-4
+kpi     boilerLiquid           vf_in            0                  1e-4
+kpi     boilerVapour           F                0.0277777777778    1e-4
+kpi     boilerVapour           P                220000             1e-4
+kpi     boilerVapour           Q                1337777.67945      1e-4
+kpi     boilerVapour           Q_kW             1337.77767945      1e-4
+kpi     boilerVapour           Q_latent_kW      898.644634506      1e-4
+kpi     boilerVapour           Q_sensible_kW    439.133044946      1e-4
+kpi     boilerVapour           T_in             298                1e-4
+kpi     boilerVapour           T_out            403.434181212      1e-4
+kpi     boilerVapour           Tsat             413.515485487      1e-4
+kpi     boilerVapour           vf_in            0                  1e-4
+kpi     boilerVapour           vf_out           0.999999946155     1e-4
+boundary global               H_feeds_kW       1506.9482564       1e-4
+boundary global               Q_boundary_kW    1746.84366101      1e-4
+boundary global               H_products_kW    3253.79191741      1e-4
+utility boilerLiquid           heating.steamMP.duty_kW 409.065981556      1e-4
+utility boilerLiquid           heating.steamMP.T 397.261090159      1e-4
+utility boilerLiquid           heating.steamMP.kg_s 0.205457549752     1e-4
+utility boilerLiquid           heating.steamMP.eur_h 22.089563004       1e-4
+utility boilerVapour           heating.steamMP.duty_kW 1337.77767945      1e-4
+utility boilerVapour           heating.steamMP.T 403.434181212      1e-4
+utility boilerVapour           heating.steamMP.kg_s 0.671912445731     1e-4
+utility boilerVapour           heating.steamMP.eur_h 72.2399946904      1e-4

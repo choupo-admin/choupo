@@ -30,6 +30,8 @@ License
 #include "unitOperations/flash/IsothermalFlash.H"
 #include "unitOperations/flash/PureSaturationPlateau.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
+#include "unitOperations/saturation/BubblePoint.H"
+#include "unitOperations/saturation/DewPoint.H"
 #include "core/Advisory.H"
 #include "unitOperations/heatTransfer/htc/PhaseChangeHTC.H"
 #include "materials/MaterialRegistry.H"
@@ -435,13 +437,78 @@ int PhaseChanger::solve(const DictPtr& dict,
                         "phaseChanger '" + un + "'", m.str()))
                     std::cerr << "[phaseChanger] " << m.str() << "\n";
             }
+            //  A SATURATED STATE OF A MIXTURE IS ITS BUBBLE POINT (vf 0) OR ITS
+            //  DEW POINT (vf 1) AT P_out (DEV.md 4c C202).  vf(T) is EXACTLY
+            //  0 below the bubble point (1 above the dew point), so "vf - target"
+            //  is exactly zero over a whole interval there, and a scan that
+            //  accepts `f_prev * f_cur <= 0` takes the first flat interval and
+            //  returns its midpoint -- a liquid 119 K sub-cooled, at exit 0.
+            //  The saturation point has its own solver, on the unit's own
+            //  package: use it.  Not for a gas-dominant stream (no dome centre,
+            //  above): that keeps the search below, which now needs a STRICT
+            //  sign change.
+            const bool gasDominant = (TcDom > 0.0 && Tc > TcDom);
+            if ((vf_target == 0.0 || vf_target == 1.0) && !gasDominant)
+            {
+                const bool bubble = (vf_target == 0.0);
+                bool ok = false;
+                scalar Tsat_mix = 0.0;
+                if (bubble)
+                {
+                    const BubblePoint::Result b = BubblePoint::compute(thermo, z, P_out, Tc);
+                    ok = b.converged; Tsat_mix = b.T;
+                }
+                else
+                {
+                    const DewPoint::Result d = DewPoint::compute(thermo, z, P_out, Tc);
+                    ok = d.converged; Tsat_mix = d.T;
+                }
+                if (!ok || !(Tsat_mix > 0.0) || !std::isfinite(Tsat_mix))
+                {
+                    std::ostringstream m;
+                    m << "phaseChanger: the " << (bubble ? "bubble" : "dew")
+                      << " point of the outlet (the saturated "
+                      << (bubble ? "liquid" : "vapour") << ") at P = " << P_out
+                      << " Pa did not converge (T reached " << Tsat_mix
+                      << " K) -- the saturation state cannot be located";
+                    throw std::runtime_error(m.str());
+                }
+                //  Verify against the flash this unit prices the outlet with:
+                //  1 K on the single-phase side must be single-phase, 1 K on
+                //  the other side must be two-phase.  A disagreement is a
+                //  refusal, never a silently different state.
+                const scalar vfSingle = flashAt(bubble ? Tsat_mix - 1.0 : Tsat_mix + 1.0).V_over_F;
+                const scalar vfOther  = flashAt(bubble ? Tsat_mix + 1.0 : Tsat_mix - 1.0).V_over_F;
+                const bool consistent = bubble
+                    ? (vfSingle <= 1.0e-6 && vfOther > 1.0e-6)
+                    : (vfSingle >= 1.0 - 1.0e-6 && vfOther < 1.0 - 1.0e-6);
+                if (!consistent)
+                {
+                    std::ostringstream m;
+                    m << std::setprecision(8)
+                      << "phaseChanger: the " << (bubble ? "bubble" : "dew")
+                      << " point " << Tsat_mix << " K at P = " << P_out
+                      << " Pa disagrees with this unit's flash (vf at "
+                      << (bubble ? Tsat_mix - 1.0 : Tsat_mix + 1.0) << " K = "
+                      << vfSingle << ", at "
+                      << (bubble ? Tsat_mix + 1.0 : Tsat_mix - 1.0) << " K = "
+                      << vfOther << ")";
+                    throw std::runtime_error(m.str());
+                }
+                T_out = Tsat_mix;
+            }
+            else
+            {
             scalar lo = -1.0, hi = -1.0;
             scalar Tprev = scanLo, fprev = fvf(Tprev);
             const scalar dT_scan = 2.0;
             for (scalar T = Tprev + dT_scan; T <= scanHi; T += dT_scan)
             {
                 const scalar fcur = fvf(T);
-                if (fprev * fcur <= 0.0) { lo = Tprev; hi = T; break; }
+                //  STRICT: an f that is exactly zero over an interval is a flat
+                //  side of the dome, not a root (C202).
+                if (fprev * fcur < 0.0 || (fcur == 0.0 && fprev != 0.0))
+                { lo = Tprev; hi = T; break; }
                 Tprev = T; fprev = fcur;
             }
             if (lo < 0.0)
@@ -460,6 +527,7 @@ int PhaseChanger::solve(const DictPtr& dict,
                 throw std::runtime_error("phaseChanger: vf-target Newton on "
                     "T_out did not converge");
             T_out = r.x;
+            }
         }
     }
 

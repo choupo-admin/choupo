@@ -160,6 +160,17 @@ WHAT THIS GATE DOES NOT CHECK, said plainly:
     covered by arms (a)-(g); only arm (h) touches it, and only through its
     published first law.
 
+ARM (j), DEV.md 4c C202 (2026-11-02): phasechange02_saturated_mixture runs a
+40/60 benzene/toluene liquid to `outletState saturatedLiquid` / `saturatedVapour`
+at 2.2 bar, and each T_out must sit within 0.05 K of an INDEPENDENT Raoult
+bubble / dew point computed here from the case's own Antoine records
+(397.261 K / 403.434 K).  SABOTAGE (by hand, engine rebuilt, source restored
+and rebuilt): reverting PhaseChanger.cpp to the `fprev * fcur <= 0.0` bracket
+scan with the saturation-point route disabled -> "(j) boilerLiquid: T_out =
+294.515 K but the independent bubble point ... is 397.261 K" (the reviewer's
+number to the digit) and "(j) boilerVapour: T_out = 403.487 K ... 403.434 K"
+(the 2 K scan step).  Restored: OK.
+
 SABOTAGE-VERIFIED 2026-10-05, arms (c1), (c2) and (i), by hand: each applied,
 read back off disk, the engine rebuilt, the gate run, then the source restored
 byte-identical (md5 checked against the pre-sabotage copy) and `make all`.
@@ -269,6 +280,8 @@ DONOR = ROOT / "tutorials" / "steady" / "evaporation" / "evaporator02_triple_eff
 EVAP06 = ROOT / "tutorials" / "steady" / "evaporation" / "evaporator06_nacl_pitzer"
 EVAP02 = DONOR
 PHASECHANGE = ROOT / "tutorials" / "steady" / "heat" / "phasechange01_partial_condenser"
+
+SATMIX = ROOT / "tutorials" / "steady" / "heat" / "phasechange02_saturated_mixture"
 
 CONTROL = """\
 application   choupoSolve;
@@ -696,6 +709,53 @@ def main() -> int:
                         "stream read as liquid the condenser published "
                         "Q_latent_kW = +370.98 -- a positive latent term on a "
                         "unit whose whole subject is condensation.")
+
+        # ---- (j) a saturated state of a MIXTURE is its bubble / dew point ---
+        #  DEV.md 4c C202.  Independent Raoult bubble/dew point from the
+        #  witness's own Antoine records, held to the unit's T_out.
+        rc, out = run(SATMIX)
+        if rc != 0:
+            failures.append(f"(j) {SATMIX.name} did not run (exit {rc})")
+        else:
+            ant = {}
+            for comp in ("benzene", "toluene"):
+                txt = (SATMIX / "constant" / "components" / f"{comp}.dat").read_text()
+                m = re.search(r"model\s+Antoine;.*?coefficients\s*\(\s*([-0-9.eE+]+)\s+"
+                              r"([-0-9.eE+]+)\s+([-0-9.eE+]+)\s*\)", txt, re.S)
+                ant[comp] = tuple(float(g) for g in m.groups())
+            z = {"benzene": 0.4, "toluene": 0.6}
+            P_bar = 2.2
+
+            def psat(c, T):
+                A, B, C = ant[c]
+                return 10.0 ** (A - B / (T + C))
+
+            def bisect(f, lo, hi):
+                for _ in range(200):
+                    mid = 0.5 * (lo + hi)
+                    if f(lo) * f(mid) <= 0.0:
+                        hi = mid
+                    else:
+                        lo = mid
+                return 0.5 * (lo + hi)
+
+            Tb = bisect(lambda T: sum(z[c] * psat(c, T) for c in z) / P_bar - 1.0, 300.0, 500.0)
+            Td = bisect(lambda T: sum(z[c] / psat(c, T) for c in z) * P_bar - 1.0, 300.0, 500.0)
+            for unit, want, label in (("boilerLiquid", Tb, "bubble"),
+                                      ("boilerVapour", Td, "dew")):
+                m = re.search(r"T_out:\s+([0-9.]+)\s+K", out[out.find(f"  {unit}  "):])
+                if not m:
+                    failures.append(f"(j) no T_out printed for {unit}")
+                    continue
+                T_out = float(m.group(1))
+                if abs(T_out - want) > 0.05:
+                    failures.append(
+                        f"(j) {unit}: T_out = {T_out:.3f} K but the independent "
+                        f"{label} point of 40/60 benzene/toluene at 2.2 bar is "
+                        f"{want:.3f} K.  A saturated state of a mixture IS its "
+                        "bubble (vf 0) / dew (vf 1) point; the bracket scan used "
+                        "to accept the flat-zero side of vf(T) and returned "
+                        "294.5 K (119 K sub-cooled) at exit 0 (C202).")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

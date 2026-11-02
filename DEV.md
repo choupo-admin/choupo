@@ -1542,7 +1542,13 @@ accepts today, and that is a policy call.
 > bracket scan at src/unitOperations/heatTransfer/PhaseChanger.cpp:428-433
 > accepts the first interval where vf(T) - 0 is identically zero; no corpus
 > case reaches that branch (rankine02_water is pure), and the kernel teaches
-> the spec; (2) its two lookup URLs (choupo.org/llm/components.txt and
+> the spec; **ITEM 1 FIXED (branch worktree-agent-a8e125a686ad1dcec):** saturated
+> liquid / vapour of a mixture is solved as its bubble / dew point
+> (BubblePoint/DewPoint::compute, cross-checked against the unit's own flash,
+> refused by name otherwise), other targets use a strict sign-change bracket;
+> witness `phasechange02_saturated_mixture` (bubble 397.261 K, dew 403.434 K;
+> the old scan gave 294.515 K and 403.487 K), gate arm (j) of
+> `check_evaporator_chest_phase`; (2) its two lookup URLs (choupo.org/llm/components.txt and
 > unit-keys.md) return 404; (3) the "Case > Complete 0/" button it tells
 > students to use is C200 B', not on main; (4) it names twelve packs and
 > three exist; (5) five text corrections listed in the record (menu label,

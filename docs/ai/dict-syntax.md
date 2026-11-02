@@ -468,6 +468,17 @@ after `type`):
   + area as RESULTS.  Supply `wallK` **or** `wallMaterial`, never spec `U`/
   `area` in geometry mode (they are outputs).
 
+### `phaseChanger` `outletState` on a MIXTURE — the bubble and the dew point
+
+On a mixture `outletState saturatedLiquid;` (or `outletQuality 0;`) lands the
+outlet on the mixture's **bubble point** at the outlet pressure and
+`saturatedVapour;` (or `outletQuality 1;`) on its **dew point** — two different
+temperatures, the dome has a width.  Both are solved by the package's own
+bubble/dew solvers and checked against the unit's flash; if the point cannot be
+found the unit refuses by name.  The liquid is therefore HEATED to its bubble
+point from a cold feed (Q > 0).  Witness: `phasechange02_saturated_mixture`.
+A pure fluid is saturated at one temperature, as before.
+
 ### `phaseChanger` (condenser) `model geometry;` — film-condensation HTC
 
 The dome-crossing `phaseChanger` (aliases `condenser` / `boiler`) has a
