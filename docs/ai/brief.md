@@ -64,8 +64,11 @@ Three rules the engine enforces (it refuses, naming the remedy):
 * `flowsheetDict` holds **no stream values**.  T, P, flows live in `0/`.
 * **Every stream in the graph has one file in `0/`.**  You write the
   authored **inlets** and the **tear seeds**; `bin/choupo-init0 <case>`
-  generates the rest by propagating from the inlets.  The browser app
-  cannot do this yet: in the app, write every stream's file yourself.  Do not invent intermediate states.
+  generates the rest by propagating from the inlets.  In the browser app,
+  **File > Complete 0/** does the same (the engine's own `-init0`: it writes
+  only the missing files, never overwrites one you wrote, announces each file
+  it generated and marks it *generated* in the Case tree, and refuses a
+  recycle with no tear seed).  Do not invent intermediate states.
 * Units run **in declared order**.  Every unit input must be an inlet, an
   output of an EARLIER unit, or a declared tear.  A loop without a declared
   tear is refused (the message prints the cycle and a valid order).
