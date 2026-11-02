@@ -1653,21 +1653,24 @@ accepts today, and that is a policy call.
 > closure of the chain (latent heat at Tb) before building an engine home on
 > it.
 
-> **THE STUDENTS' FEEDBACK LOOP (Vitor, 2026-11-02 night, about the layouts the
-> assistants produce: "podem depois ser corrigidos quando os alunos te derem
-> feedback! Eles tambem tem de contribuir para o projeto! Tu propoes a base
-> inicial e eles vao dando feedback e revendo").**  DECIDED: the packs and the
-> site's assistant documents are a FIRST VERSION, said so to the students; they
-> improve through the groups' reports.  The route is the issue tracker
-> (CONTRIBUTING.md: the project is maintainer-led, external code and pull
-> requests are not accepted, a report is advice and creates no authorship), now
-> with a template, `.github/ISSUE_TEMPLATE/assistant-feedback.md` (the case, the
-> assistant and documents used, what went wrong, the smallest case).  Every
-> failure a group reports becomes a harness problem (`llm_brief_eval.py`,
-> `bin/curate/llm_eval/problems/`) and, when it is the document's fault, a pack
-> fix: the loop is report -> problem -> pack -> re-run.  NOT decided, Vitor's
-> alone: whether students are NAMED as contributors in the documents (consent
-> of each named person, CLAUDE.md section 0 rule 00).
+> **HOW THE STUDENTS USE IT (Vitor, 2026-11-02 night; this CORRECTS the
+> paragraph written an hour earlier, which had them reporting to the
+> project: "Para ja eles nao contribuem com nada!  Eles pedem um projeto a
+> LLM (ChatGPT ou Claude).  O LLM le as instrucoes do Choupo.  Prepara a
+> primeira versao zip.  O aluno abre e ve na GUI do Choupo.  Depois valida,
+> cura e propoe alteracoes.  Novo zip e repete o ciclo").**  The loop is
+> student <-> LLM, with Choupo as the tool the LLM was taught and the app as
+> the place the student LOOKS: ask -> the LLM reads the brief and packs from
+> choupo.org (`/llm/brief.md`, `/llms.txt`) -> a first version as a zip or as
+> `=== FILE ===` blocks -> the student opens it (File > Open case .zip, or the
+> clipboard bridge for an assistant that cannot make a file) -> validates and
+> reviews with the Streams, the balances and the log -> proposes changes TO THE
+> LLM -> a new version -> repeat.  So the brief must teach REVISION, not only
+> design (a general is adding that section, C200); nothing is asked of the
+> students for the project.  The issue template
+> `.github/ISSUE_TEMPLATE/assistant-feedback.md` stays in the repository for
+> later and is not part of the class.  Whether students are ever NAMED as
+> contributors remains Vitor's alone (consent of each named person).
 
 > **C208. FOUR ENGINE DEFECTS FOUND WHILE WRITING THE TABLET-PLANT PACKS
 > (a general, 2026-11-02 night, each MEASURED and not fixed; the first two are
