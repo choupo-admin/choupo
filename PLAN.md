@@ -36,7 +36,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| running | DEADLINE 2026-11-03 12:00 (Vitor's tutoring class): the compaction bench for the two pharmaceutical groups -- a choupoProps fit of Heckel, Kawakita and Ryshkewitch-Duckworth to LITERATURE datasets (MCC, a lactose grade; open primaries, each cited), witnesses, gate, docs, checked in the browser; the site publishes on the push to main | C195 |
+| todo | Watch the tutoring class (2026-11-03 12:00): students' reports reach Vitor and come here; each is recorded in DEV.md 4c the turn it arrives, then fixed | C200, C195 |
 
 ## Next day (at most 5)
 
@@ -119,6 +119,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| done | The site serves the assistant documents: /llms.txt, /llm/brief.md (with the revision section) and seven packs, among them batch-plant, layout and design-cost; checked live | C200, 0828dffeb |
 | done | Dynamic units, slice 1: `dynamicTank` (level by an outflow or a valve; one holdup home; two witnesses; PI holds the level, P-only offsets 0.050 m) | C205, 32aa8f278 |
 | done | The compaction bench `compactionFit` (Heckel, Kawakita, Ryshkewitch-Duckworth) with two open-data witnesses, MCC and DCPD; no open lactose dataset found, none invented | C195 |
 | done | The phaseChanger's saturated mixture is its bubble/dew point (it returned a liquid 102.7 K below its bubble point at exit 0) | C202 (1), 8a3946237 |
