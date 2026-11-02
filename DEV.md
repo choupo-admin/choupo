@@ -1686,6 +1686,24 @@ accepts today, and that is a policy call.
 > membrane08 reading seen on the earlier boron and phaseChanger integrations);
 > neither touches the diff.
 
+> **C201 ITEM 1, THE CONSTANT CORRECTED ON A BRANCH (2026-11-02 night,
+> `worktree-agent-abc81697fbee7f77f`, 5bed50aeb, not merged):** logK25 3.107
+> with the ethanoic log Kf inputs in the record, a gate arm recomputing it
+> (sabotage caught), the 5 mirrors updated; only the five reactive flashes
+> move (31 other acetic-acid cases unchanged).  NOT landed alone, the
+> architect's decision: with K 3.5 times larger the reactive flash's LATENT
+> DOUBLE COUNT (one-record-two-vapours §6: the association heat added on top
+> of a liquid built from the apparent HvapTb, which already holds it) grows in
+> proportion -- flash13's residual -0.25 -> -0.79 kW, flash17's 2.5 %
+> (about 2 W) outside the band.  The associated-vapour slice
+> (`backup/c201-acetic-vapour`) counts that heat ONCE; so the constant and that
+> slice land TOGETHER, the slice rebased on the corrected K and re-measured
+> (the latent heat at Tb expected near the measured 24.4 kJ/mol), with one
+> moved-row list.  No pin is added to make flash17 pass.  ALSO FOUND, to
+> measure: `check_seal_drift` lists 9 damaged sucrose / H2SO4 mirrors and 1809
+> moved-value records -- unrelated to acetic acid, not measured against a
+> baseline, possibly pre-existing.
+
 > **C210. THE DIRECTION: CHOUPO A USEFUL TOOL FOR THE PHARMACEUTICAL PLANT
 > PROJECT (Vitor, 2026-11-02 night: "Eu quero que o Choupo comece a ser uma
 > ferramenta util para o projeto de industria farmaceutica. E so isso.").**
