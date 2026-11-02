@@ -1528,6 +1528,27 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C202. THE C200 KERNEL REVIEWED BY RUNNING IT, AND A PHASECHANGER THAT
+> STOPS 119 K SHORT (Vitor, 2026-11-02: "Podes rever o kernel?").**  DONE as
+> a review of the kernel brief (`kernel.md` on `backup/c200-handoff`, 656822b90);
+> record `docs/reviews/2026-11-02-kernel-review.md`.  Its grammar holds:
+> three cases written from the kernel alone (a recycle, an SRK
+> compressor-exchanger train, a column) and its NRTL-catalogue and UNIFAC
+> routes all ran at exit 0 with their balances closed.  It OWES, before the
+> kernel lands: (1) **a wrong number at exit 0 in the engine** --
+> `phaseChanger` `outletState saturatedLiquid` (and `outletQuality 0`) on a
+> MIXTURE returns a liquid 119 K below saturation (40/60 benzene/toluene at
+> 2.2 bar: T_out 294.515 K beside its own Tsat 413.515 K), because the
+> bracket scan at src/unitOperations/heatTransfer/PhaseChanger.cpp:428-433
+> accepts the first interval where vf(T) - 0 is identically zero; no corpus
+> case reaches that branch (rankine02_water is pure), and the kernel teaches
+> the spec; (2) its two lookup URLs (choupo.org/llm/components.txt and
+> unit-keys.md) return 404; (3) the "Case > Complete 0/" button it tells
+> students to use is C200 B', not on main; (4) it names twelve packs and
+> three exist; (5) five text corrections listed in the record (menu label,
+> the MASS strip contradiction, the feedStage ranges, sources pointing at
+> unit-ops.md, kij for SRK).
+
 > **C201. A NEWCOMER'S REVIEW OF THE TUTORIALS (Vitor, 2026-11-02: "Podes
 > fazer durante duas horas verificacao dos tutoriais como se fosses um
 > engenheiro que nao conhece este simulador."; then "Podes gravar no
