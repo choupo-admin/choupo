@@ -139,6 +139,57 @@ export function readBank(sheet: DesignSheet | null | undefined): BankRead {
   return { ok: true, bank };
 }
 
+/** The three headers of a rack. */
+export type HeaderRole = "feed" | "brine" | "permeate";
+export const HEADER_ROLES: readonly HeaderRole[] = ["feed", "brine", "permeate"];
+
+/** One header, as its `pipeHeader` sheet states it (DEV.md 4c C199, the header
+ *  sizer).  Every number is the sheet's, under its own name and unit. */
+export interface BankHeader {
+  role: HeaderRole;
+  /** The nominal bore the sizer picked from the case's declared list, m. */
+  diameter: number;
+  /** The smallest bore that stays under the velocity window's top, m. */
+  required: number;
+  velocity: number;             // m/s
+  pressureDropPerMetre: number; // Pa/m
+  flow: number;                 // m3/h, per train
+}
+export type BankHeaders = { [R in HeaderRole]?: BankHeader };
+
+/** Read one `pipeHeader` sheet.  Null when it lacks a key or carries it in a
+ *  wrong unit -- never defaulted. */
+export function readHeader(sheet: DesignSheet | null | undefined): BankHeader | null {
+  if (!sheet || sheet.equipment !== "pipeHeader") return null;
+  const role = sheet.item.split(".").pop() as HeaderRole;
+  if (!HEADER_ROLES.includes(role)) return null;
+  const get = (k: string, u: string): number | null => {
+    const v = sizingValue(sheet, k);
+    return v && v.unit === u && Number.isFinite(v.value) ? v.value : null;
+  };
+  const diameter = get("headerNominalDiameter", "m"), required = get("requiredInsideDiameter", "m"),
+    velocity = get("velocity", "m/s"), dp = get("pressureDropPerMetre", "Pa/m"), flow = get("flow", "m3/h");
+  if (diameter === null || diameter <= 0 || required === null || velocity === null || dp === null || flow === null)
+    return null;
+  return { role, diameter, required, velocity, pressureDropPerMetre: dp, flow };
+}
+
+/** The headers of ONE bank: the `pipeHeader` sheets whose unit is the bank's
+ *  and whose `trainIndex` is the bank's (the engine's join: unit + train; the
+ *  header sheets have no layout item of their own).  A role with no readable
+ *  sheet is absent, and the drawing falls back to a labelled dashed mark. */
+export function headersOf(sheets: readonly DesignSheet[], bank: MembraneBank): BankHeaders {
+  const out: BankHeaders = {};
+  for (const s of sheets) {
+    if (s.equipment !== "pipeHeader" || s.unit !== bank.unit) continue;
+    const ti = sizingValue(s, "trainIndex")?.value;
+    if (bank.trainIndex !== undefined && ti !== undefined && Math.round(ti) !== Math.round(bank.trainIndex)) continue;
+    const h = readHeader(s);
+    if (h) out[h.role] = h;
+  }
+  return out;
+}
+
 /** One vessel's place, in the BANK frame (x along the vessels from the rack's
  *  start, y across from the first rack's edge, z up from the floor). */
 export interface VesselPlace { rack: number; tier: number; col: number; x: number; y: number; z: number }

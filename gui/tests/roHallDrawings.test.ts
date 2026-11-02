@@ -13,7 +13,7 @@ import {
   PROVENANCE_INK, PROVENANCE_WORD, hasSchematic, trainRoles, trainSchematicSvg,
 } from "../src/case/equipmentSchematic.js";
 import { allSheets, bankReads, hallSet, trainIndices, trainSheets } from "../src/case/hallSet.js";
-import { readBank, vesselsInRack } from "../src/case/membraneBank.js";
+import { headersOf, readBank, readHeader, vesselsInRack } from "../src/case/membraneBank.js";
 import { rackElevationSvg, rackSectionSvg, hallPlanSvg } from "../src/case/roHallDrawings.js";
 import { sheetItemId } from "../src/case/withBanks.js";
 import { loadHall } from "./hallFixture.js";
@@ -170,25 +170,27 @@ describe("the elevation of one rack, with its three headers", () => {
     expect(Number(m[1]) / Number(m[2])).toBeCloseTo(b.bank.vesselLength / b.bank.vesselOutsideDiameter, 6);
   });
 
-  it("says the headers are NOT sized, and that no diameter was declared", () => {
-    const e = set().elevation!;
-    const text = e.notes.map((n) => n.text).join(" ");
-    expect(text).toContain("HEADER PIPES ARE NOT SIZED");
-    expect(text).toContain("headerNominalDiameter");
-    expect(e.svg).toContain("stroke-dasharray");
+  it("a bank given NO header sheet draws its three headers dashed and says they are not sized", () => {
+    const b = bankReads(allSheets(hall().designFiles)).get("RO1/train1")!;
+    const e = rackElevationSvg(b, 0);
+    for (const k of ["feed", "brine", "permeate"]) {
+      const c = new RegExp(`<circle data-header="${k}" data-sized="0"[^>]*stroke-dasharray`).exec(e.svg);
+      expect(c, k).not.toBeNull();
+    }
+    expect(e.notes.map((n) => n.text).join(" ")).toContain("NOT SIZED");
+    expect(e.svg).not.toContain("data-required");
   });
 
-  it("draws the headers at a declared nominal diameter when the sheet carries one", () => {
+  it("the legacy single bore on the bank sheet still sizes all three headers (no header sheets)", () => {
     const text = hall().designFiles["design/RO1/train1"]!
       .replace("    pitch ", "    headerNominalDiameter 0.4 m;\n    pitch ");
     const b = readBank(parseDesignSheet(text));
     if (!b.ok) throw new Error("bank");
     expect(b.bank.headerNominalDiameter).toBe(0.4);
     const e = rackElevationSvg(b, 0);
-    const s = Number(/data-header="feed" cx="[\d.]+" cy="[\d.]+" r="([\d.]+)"/.exec(e.svg)![1]);
+    const r = Number(/data-header="feed" data-sized="1" data-diameter="0.4" cx="[\d.]+" cy="[\d.]+" r="([\d.]+)"/.exec(e.svg)![1]);
     const sc = (Number(/data-tier="0" x="[\d.]+" y="[\d.]+" width="([\d.]+)"/.exec(e.svg)![1]) / b.bank.vesselLength);
-    expect(s / sc).toBeCloseTo(0.2, 6);                       // radius 0.2 m at the drawing's scale
-    expect(e.notes.map((n) => n.text).join(" ")).toContain("declared nominal diameter 0.4 m");
+    expect(r / sc).toBeCloseTo(0.2, 6);                       // radius 0.2 m at the drawing's scale
   });
 
   it("the element length printed is the SHEET's, not a constant", () => {
@@ -292,5 +294,160 @@ describe("hallSet picks", () => {
     expect(hs.bankIds.sort()).toEqual(["RO1/train3", "RO2a/train3", "RO2b/train3"]);
     expect(hs.pick.bankId).toBeDefined();
     expect(sheetItemId(parseDesignSheet(hall().designFiles["design/RO2b/train3"]!)!)).toBe("RO2b/train3");
+  });
+});
+
+
+/*  ====================================================================  */
+/*  The headers, each at ITS OWN sheet's size (C199, the header sizer)      */
+/*  ====================================================================  */
+
+describe("the headers are drawn at the size their pipeHeader sheets state", () => {
+  const sheets = () => allSheets(hall().designFiles);
+  const bank = (unit = "RO1", k = 1) => {
+    const r = bankReads(sheets()).get(`${unit}/train${k}`)!;
+    if (!r.ok) throw new Error("bank");
+    return r;
+  };
+  const headerSheet = (unit: string, k: number, role: string) =>
+    parseDesignSheet(hall().designFiles[`design/${unit}/train${k}.${role}`]!)!;
+  const val = (sh: ReturnType<typeof headerSheet>, key: string) => sh.sizing.find((v) => v.key === key)!.value;
+  const circle = (svg: string, role: string) => {
+    const m = new RegExp(`<circle data-header="${role}" data-sized="(\\d)"(?: data-diameter="([\\d.]+)")? cx="([\\d.]+)" cy="([\\d.]+)" r="([\\d.]+)" ([^>]*)/>`).exec(svg)!;
+    return { sized: m[1] === "1", diameter: m[2] === undefined ? undefined : Number(m[2]), r: Number(m[5]), attrs: m[6]! };
+  };
+  const scale = (svg: string, b: ReturnType<typeof bank>) =>      // pixels per metre, from the vessel length
+    Number(/data-tier="0" x="[\d.]+" y="[\d.]+" width="([\d.]+)"/.exec(svg)![1]) / b.bank.vesselLength;
+
+  it("the sheets are the engine's: one per header per train, keyed on the bank unit and the train", () => {
+    const hs = sheets().filter((x) => x.equipment === "pipeHeader");
+    expect(hs).toHaveLength(3 * 3 * 6);
+    for (const h of hs) {
+      expect(["RO1", "RO2a", "RO2b"]).toContain(h.unit);
+      expect(h.item).toMatch(/^train[1-6]\.(feed|brine|permeate)$/);
+      expect(Math.round(val(h, "trainIndex"))).toBe(Number(/^train(\d)/.exec(h.item)![1]));
+    }
+  });
+
+  it("each header circle has its own sheet's nominal bore as its diameter, to scale against the vessel", () => {
+    const hsPick = set();
+    const b = bank();
+    const e = hsPick.elevation!;
+    const s = scale(e.svg, b);
+    const vesselR = Number(/data-tier="0"[^>]*rx="([\d.]+)"/.exec(e.svg)![1]);
+    expect(vesselR / s).toBeCloseTo(b.bank.vesselOutsideDiameter / 2, 6);
+    for (const role of ["feed", "brine", "permeate"]) {
+      const sh = headerSheet("RO1", 1, role);
+      const D = val(sh, "headerNominalDiameter");
+      const c = circle(e.svg, role);
+      expect(c.sized, role).toBe(true);
+      expect(c.diameter, role).toBe(D);
+      //  the true ratio header / vessel, recomputed from the circle radii in pixels
+      expect(c.r / vesselR, role).toBeCloseTo((D / 2) / (b.bank.vesselOutsideDiameter / 2), 6);
+      expect(c.r / s * 2, role).toBeCloseTo(D, 6);
+      expect(c.attrs, role).not.toContain("stroke-dasharray");
+    }
+  });
+
+  it("feed and brine are drawn at DIFFERENT bores (each its own sheet's), the larger flow the larger bore", () => {
+    const e = set().elevation!;
+    const f = headerSheet("RO1", 1, "feed"), br = headerSheet("RO1", 1, "brine");
+    expect(circle(e.svg, "feed").diameter).toBe(val(f, "headerNominalDiameter"));
+    expect(circle(e.svg, "brine").diameter).toBe(val(br, "headerNominalDiameter"));
+    expect(val(f, "headerNominalDiameter")).toBeGreaterThan(val(br, "headerNominalDiameter"));
+    expect(val(f, "flow")).toBeGreaterThan(val(br, "flow"));
+  });
+
+  it("the sheet numbers the drawing prints satisfy the sizer's own rule, recomputed by hand", () => {
+    for (const role of ["feed", "brine", "permeate"]) {
+      const sh = headerSheet("RO1", 1, role);
+      const Q = val(sh, "flow") / 3600, vmax = val(sh, "velocityMax"), vmin = val(sh, "velocityMin");
+      const Dreq = Math.sqrt(4 * Q / (Math.PI * vmax));
+      expect(val(sh, "requiredInsideDiameter"), role).toBeCloseTo(Dreq, 3);
+      const D = val(sh, "headerNominalDiameter");
+      expect(D, role).toBeGreaterThanOrEqual(Dreq);
+      const v = 4 * Q / (Math.PI * D * D);
+      expect(v, role).toBeCloseTo(val(sh, "velocity"), 3);
+      expect(v, role).toBeGreaterThanOrEqual(vmin);
+      expect(v, role).toBeLessThanOrEqual(vmax);
+    }
+  });
+
+  it("each header carries a nominal-bore dimension (declared) and a required-bore dimension (Choupo), in two channels", () => {
+    const e = set().elevation!;
+    const groups = dimGroups(e.svg);
+    for (const role of ["feed", "brine", "permeate"]) {
+      const sh = headerSheet("RO1", 1, role);
+      const nom = e.dims.find((d) => d.id === `header.${role}.nominal`)!;
+      const req = e.dims.find((d) => d.id === `header.${role}.required`)!;
+      expect(nom.who).toBe("declared");
+      expect(req.who).toBe("choupo");
+      expect(nom.label).toContain(`${role} nominal bore ${Number(val(sh, "headerNominalDiameter").toPrecision(3))} m`);
+      expect(req.label).toContain(`${role} required bore ${Number(val(sh, "requiredInsideDiameter").toPrecision(3))} m, computed`);
+      for (const id of [nom.id, req.id]) {
+        const g = groups.find((x) => x.id === id)!;
+        expect(g.inkOk, id).toBe(true);
+        expect(g.wordOk, id).toBe(true);
+      }
+    }
+    //  the note names the velocity and the pressure drop per metre, from the sheet
+    const text = e.notes.map((n) => n.text).join(" ");
+    const sh = headerSheet("RO1", 1, "feed");
+    expect(text).toContain(`${Number(val(sh, "velocity").toPrecision(3))} m/s`);
+    expect(text).toContain(`${Number(val(sh, "pressureDropPerMetre").toPrecision(3))} Pa/m`);
+    expect(e.svg).toContain(`v ${Number(val(sh, "velocity").toPrecision(3))} m/s, ${Number(val(sh, "pressureDropPerMetre").toPrecision(3))} Pa/m`);
+    expect(e.svg).toContain(`feed header, ${Number(val(sh, "flow").toPrecision(3))} m3/h per train`);
+    expect(text).not.toContain("NOT SIZED");
+  });
+
+  it("a header drawn for train 2 reads train 2's sheet, not train 1's", () => {
+    const hs = set({ train: 2, bankId: "RO2a/train2" });
+    const sh = headerSheet("RO2a", 2, "brine");
+    expect(circle(hs.elevation!.svg, "brine").diameter).toBe(val(sh, "headerNominalDiameter"));
+    const b = bank("RO2a", 2);
+    const h = headersOf(sheets(), b.bank);
+    expect(Object.keys(h).sort()).toEqual(["brine", "feed", "permeate"]);
+    expect(h.brine!.diameter).toBe(val(sh, "headerNominalDiameter"));
+  });
+
+  it("with ONE header sheet REMOVED that header is dashed and unsized, the others stay solid", () => {
+    const keep = sheets().filter((x) => !(x.equipment === "pipeHeader" && x.unit === "RO1" && x.item === "train1.brine"));
+    const b = bank();
+    const e = rackElevationSvg(b, 0, headersOf(keep, b.bank));
+    expect(circle(e.svg, "brine").sized).toBe(false);
+    expect(circle(e.svg, "brine").diameter).toBeUndefined();
+    expect(circle(e.svg, "brine").attrs).toContain("stroke-dasharray");
+    expect(e.svg).toContain("brine (not sized)");
+    for (const role of ["feed", "permeate"]) {
+      expect(circle(e.svg, role).sized, role).toBe(true);
+      expect(circle(e.svg, role).attrs, role).not.toContain("stroke-dasharray");
+    }
+    expect(e.dims.some((d) => d.id === "header.brine.nominal")).toBe(false);
+    expect(e.dims.some((d) => d.id === "header.feed.nominal")).toBe(true);
+    expect(e.notes.map((n) => n.text).join(" ")).toContain("NOT SIZED");
+  });
+
+  it("with ALL header sheets removed the whole rack falls back to the dashed marks", () => {
+    const keep = sheets().filter((x) => x.equipment !== "pipeHeader");
+    const b = bank();
+    expect(headersOf(keep, b.bank)).toEqual({});
+    const e = rackElevationSvg(b, 0, headersOf(keep, b.bank));
+    for (const role of ["feed", "brine", "permeate"]) expect(circle(e.svg, role).sized, role).toBe(false);
+    expect(e.dims.filter((d) => d.id.startsWith("header."))).toEqual([]);
+  });
+
+  it("a header sheet missing a key (no velocity) is not read, and that header falls back", () => {
+    const text = hall().designFiles["design/RO1/train1.feed"]!.replace(/^\s*velocity\s.*$/m, "");
+    expect(readHeader(parseDesignSheet(text))).toBeNull();
+    expect(readHeader(headerSheet("RO1", 1, "feed"))).not.toBeNull();
+  });
+
+  it("the train schematic's bank rows list the header bores, from the sheets", () => {
+    const hs = set();
+    const f = (role: string) => Number(val(headerSheet("RO1", 1, role), "headerNominalDiameter").toPrecision(3));
+    expect(hs.train.svg).toContain(`headers Ø ${f("feed")} / ${f("brine")} / ${f("permeate")} m (declared)`);
+    //  without the header sheets the row is absent
+    const bare = trainSchematicSvg(trainSheets(sheets(), 1), sheets().filter((x) => x.equipment !== "pipeHeader"));
+    expect(bare.svg).not.toContain("headers Ø");
   });
 });

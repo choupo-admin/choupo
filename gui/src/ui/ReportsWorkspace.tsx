@@ -83,7 +83,8 @@ import { popOutCaseLayout } from "../state/useLayoutPopOut.js";
 import { useStaleResult } from "../state/useStaleResult.js";
 import { caseLayoutStash } from "../case/layoutPopOut.js";
 import { rackElevationSvg } from "../case/roHallDrawings.js";
-import { readBank } from "../case/membraneBank.js";
+import { headersOf, readBank } from "../case/membraneBank.js";
+import { allSheets } from "../case/hallSet.js";
 import { TrainsAndRacks } from "./TrainsAndRacks.js";
 import { hasBankSheet } from "../case/withBanks.js";
 import { ExportLayoutButton } from "./ExportLayoutButton.js";
@@ -792,7 +793,7 @@ function EquipmentSheets({ designFiles, tree }: {
       </Box>
       <Box style={{ flex: "3 1 360px", minWidth: 0 }}>
         {active === null ? null
-         : sheet ? <SheetView sheet={sheet} path={active} />
+         : sheet ? <SheetView sheet={sheet} path={active} designFiles={designFiles} />
          : (
           //  THREE STATES, NEVER TWO: the file is there and could not be read.
           //  Say so, and show the text -- the file is what the engine wrote.
@@ -824,7 +825,7 @@ const num = (v: number): string => {
   return a >= 1e6 || a < 1e-3 ? v.toExponential(3) : v.toPrecision(5).replace(/\.?0+$/, "");
 };
 
-function SheetView({ sheet, path }: { sheet: DesignSheet; path: string }) {
+function SheetView({ sheet, path, designFiles }: { sheet: DesignSheet; path: string; designFiles: RunResult["designFiles"] }) {
   const ident: [string, string][] = [
     ["unit", sheet.unit], ["sector", sheet.sector], ["equipment", sheet.equipment],
     ["item", sheet.item], ["material", sheet.material],
@@ -838,7 +839,7 @@ function SheetView({ sheet, path }: { sheet: DesignSheet; path: string }) {
       ? pressureExchangerSvg(sheet)
       //  A vessel bank is drawn as ITS RACK, with its three headers (C199).
       : (sheet.equipment === "membraneBank" && hasSchematic(sheet.equipment))
-        ? rackElevationSvg(readBank(sheet)) : null, [sheet]);
+        ? rackElevationSvg(readBank(sheet), 0, (() => { const r = readBank(sheet); return r.ok ? headersOf(allSheets(designFiles), r.bank) : {}; })()) : null, [sheet, designFiles]);
   return (
     <Stack gap="sm">
       <Text size="xs" c="dimmed" ff="monospace">design/{path}</Text>

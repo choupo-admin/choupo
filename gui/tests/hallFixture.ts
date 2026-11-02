@@ -16,6 +16,8 @@ import { witnessOutput } from "./witnessRead.js";
 export const SWRO = "tutorials/plant/swro01_campoDalias";
 export const SWRO_UNITS = ["HPpump", "Booster", "Pass2Pump", "PX", "RO1", "RO2a", "RO2b"] as const;
 export const SWRO_TRAINS = 6;
+export const SWRO_HEADER_BANKS = ["RO1", "RO2a", "RO2b"] as const;
+export const HEADER_ROLES_ALL = ["feed", "brine", "permeate"] as const;
 
 const emptyCase: CaseFiles = { thermoPackage: {}, controlDict: {} };
 
@@ -34,6 +36,10 @@ export function loadHall(): Hall {
   for (const u of SWRO_UNITS)
     for (let k = 1; k <= SWRO_TRAINS; k++)
       designFiles[`design/${u}/train${k}`] = witnessOutput(SWRO, `design/${u}/train${k}`);
+  for (const u of SWRO_HEADER_BANKS)
+    for (let k = 1; k <= SWRO_TRAINS; k++)
+      for (const role of HEADER_ROLES_ALL)
+        designFiles[`design/${u}/train${k}.${role}`] = witnessOutput(SWRO, `design/${u}/train${k}.${role}`);
   const r = extractStructured(witnessOutput(SWRO, "log.choupoSolve"), emptyCase);
   if (!r.layout || !r.building) throw new Error("swro01 published no layout/building block");
   const attached = withBanks(r.layout, designFiles);
