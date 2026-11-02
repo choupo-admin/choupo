@@ -49,6 +49,7 @@ Every general stopped with the laptop.  All their work is on origin as `backup/*
 
 | status | what | ref |
 |---|---|---|
+| doing | Dynamic units, slice 1: a tank with a level (manipulated outflow and a valve outflow), witnesses + gate + docs/ai | C205 |
 | todo | phaseChanger `outletState saturatedLiquid` / `outletQuality 0` on a mixture stops 119 K below saturation at exit 0 (PhaseChanger.cpp:428-433): fix the bracket scan, add a mixture witness; the C200 brief teaches this spec | C202 (1) |
 | todo | (Opus) Acetic acid: the slice is BUILT on `backup/c201-acetic-vapour`; settle first why the engine prices 33.0 vs the measured 24.4 kJ/mol latent heat at Tb (test: Watson on the monomer-basis latent heat), then the column dew-point distillate, the Gibbs/three-phase/binaryTxy readers, the formula-match identity; then the moved rows to Vitor. Earlier text: Acetic acid, ONE slice: the liquid bridge (confirmed cause of the 7x esterification heat, branch `backup/c201-acetic-bridge`) together with the vapour-side association (one-record-two-vapours doc); alone it doubles real column condensers; then the seven tutorials whose exotherm was the artefact (content decision for Vitor) | C201 (1) |
 | todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says | C201 (2) |

@@ -1636,6 +1636,31 @@ accepts today, and that is a policy call.
 > closure of the chain (latent heat at Tb) before building an engine home on
 > it.
 
+> **C205. THE DYNAMIC VERSIONS OF THE UNITS THAT HAVE NONE (Vitor, 2026-11-02,
+> after the C204 Pareto: "Mas eu tambem quero que implementes a versao
+> dinamica nas operacoes que ainda nao tem").**  Read as approving C204's
+> scope and its order of unit dynamics.  The architect's decisions, taken
+> before the first dispatch: (D1) a vessel's liquid INVENTORY is a state:
+> the volume is the sum of the holdup's liquid molar volumes from the case's
+> package and the LEVEL is that volume over the declared cross-section of a
+> declared geometry; a vessel that runs dry or overflows REFUSES by name at
+> that instant, never clamps; (D2) the outflow is either a manipulated flow
+> (`mv F_out`, a flow-controlled pump) or a valve on the outlet,
+> F = Cv x opening x sqrt(dP/rho) with the static head in dP (`mv opening`),
+> so the student sees an INTEGRATING level beside a SELF-REGULATING one;
+> (D3) energy is the stored H on the elements datum and T its readout (the
+> canonical route `dynamicCSTR` already takes), and the accepted-step balance
+> ledger claims mass and energy for it; (D4) ONE home for the variable-volume
+> holdup, which the variable-volume CSTR (slice 2) and the dynamic flash
+> drum (slice 3) reuse rather than copy; (D5) every slice carries its
+> witnesses, a gate, and the docs/ai brief + pack entry in the same commit
+> (CLAUDE.md §10).  ORDER (C204): 1 tank with level (both outflows), 2 CSTR
+> with variable volume, 3 flash drum (liquid level, vapour pressure, T),
+> 4 exchanger/heater as quasiSteady + sensor lag, 5 the RO train's pressure
+> and recovery, 6 the column's inventories on a quasiSteady column (announced
+> as an approximation), the full dynamic MESH last.  One or two slices at a
+> time (laptop and usage budgets).
+
 > **C204. AN EDUTOOL ON WHERE TO PLACE THE CONTROL LOOPS IN THE COMMON UNIT
 > OPERATIONS, WITH A PARETO ANALYSIS (Vitor, 2026-11-02: "Achas bem um
 > EduTools sobre estrategias de colocacao do sistema de controlo nas
