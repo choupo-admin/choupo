@@ -1044,6 +1044,12 @@ std::vector<EnergyWire> resolveEnergyInputs(const DictPtr&                      
     return resolved;
 }
 
+//  Trial sweeps (quiet: a Newton probe or a Wegstein iterate) that met a
+//  NEGATIVE outlet pressure and handled it as before; reset when a recycle
+//  solve starts, announced when it ends.
+std::size_t g_trialPressureClamps = 0;
+std::string g_trialPressureFirst;
+
 // ---------------------------------------------------------------------------
 //  Execute a single unit op, register its produced streams under the
 //  user-given names.  Used both in single-pass and Wegstein-outer modes.
@@ -1188,6 +1194,42 @@ void runUnit(const DictPtr&                                          udict,
     {
         ProcessStream s = produced[k];
         s.name = outputs[k];
+        //  P == 0 is the sentinel "this unit did not set a pressure" (every
+        //  cstr and pfr publishes it by design): the outlet inherits the
+        //  first inlet's.  P < 0 is a DIFFERENT fact -- a pipe whose drop
+        //  exceeds its inlet -- and is never the inlet's pressure.  An
+        //  ACCEPTED pass refuses it by name; a TRIAL sweep (a Newton
+        //  probe or a Wegstein iterate, quiet) may legitimately visit it
+        //  on its way, keeps the old handling and is counted so the end
+        //  of the solve announces it (docs/design/a-negative-pressure-is-
+        //  refused.md).
+        if (s.P < 0.0)
+        {
+            if (quiet)
+            {
+                ++g_trialPressureClamps;
+                if (g_trialPressureClamps == 1)
+                    g_trialPressureFirst = "unit '" + uname + "' stream '"
+                        + outputs[k] + "' published " + std::to_string(s.P * 1.0e-5)
+                        + " bar from an inlet at "
+                        + std::to_string(P_inherit * 1.0e-5) + " bar";
+            }
+            else
+            {
+                std::ostringstream m;
+                m << "unit '" << uname << "' (" << utype << "): outlet stream '"
+                  << outputs[k] << "' has a NEGATIVE pressure, P = "
+                  << std::fixed << std::setprecision(4) << s.P * 1.0e-5
+                  << " bar, from an inlet at " << P_inherit * 1.0e-5
+                  << " bar -- the pressure drop exceeds the inlet pressure, so"
+                  << " there is no physical outlet state, and substituting the"
+                  << " inlet pressure would report a pressure the unit did not"
+                  << " compute.  Reduce the drop (a larger diameter, a shorter"
+                  << " line, a lower flow) or add a pump or a valve to a fixed"
+                  << " pressure.";
+                throw std::runtime_error("Flowsheet: " + m.str());
+            }
+        }
         if (s.P <= 0.0) s.P = P_inherit;
         streams[outputs[k]] = s;
     }
@@ -3088,6 +3130,8 @@ int Flowsheet::solve(const DictPtr& dict,
         }
 
         // One SM sweep through every unit (quiet during iteration).
+        g_trialPressureClamps = 0;
+        g_trialPressureFirst.clear();
         auto sweep = [&](bool quiet)
         {
             energyWires_.clear();   // re-accumulate per sweep
@@ -3475,6 +3519,19 @@ int Flowsheet::solve(const DictPtr& dict,
         for (const auto& t : tears)
             if (streams_.count(t)) finalAssumedTears[t] = streams_.at(t);
         sweep(/*quiet=*/false);
+        if (g_trialPressureClamps > 0)
+        {
+            //  Not silent: the accepted pass above did NOT meet a negative
+            //  pressure (it would have refused), but the iteration did.
+            const std::string msg = "trial pressure clamped "
+                + std::to_string(g_trialPressureClamps)
+                + " time(s) during the recycle iteration (a unit published a"
+                  " negative outlet pressure on a trial sweep and the inlet"
+                  " pressure stood in for it); the accepted pass did not.  First: "
+                + g_trialPressureFirst + ".";
+            std::cout << "  [pressure] " << msg << "\n";
+            AdvisoryLog::instance().add("pressure", "warning", "recycle solve", msg);
+        }
         const TearImbalance finalImb = computeTearImbalance(
             finalAssumedTears, streams_, tears, thermo, feedScales);
         globalMassResiduals_.push_back(finalImb.mass);

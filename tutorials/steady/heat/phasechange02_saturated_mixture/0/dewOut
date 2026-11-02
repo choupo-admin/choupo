@@ -1,0 +1,10 @@
+/*--- Choupo stream state: seed (the unit's answer is written to converged/). ---*/
+
+componentMolarFlows
+{
+    benzene    40 kmol/h;
+    toluene    60 kmol/h;
+}
+
+T               400 K;
+P               220000 Pa;

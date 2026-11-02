@@ -90,7 +90,7 @@ const INTERIOR_HINT =
 
 export function FileTree({
   files, active, onSelect, title = "Files", lessonFirst = true,
-  look = caseLook, order = caseOrder,
+  look = caseLook, order = caseOrder, leafBadge,
 }: {
   files: string[];
   active: string | null;
@@ -101,6 +101,9 @@ export function FileTree({
   lessonFirst?: boolean;
   look?: LookOf;
   order?: OrderOf;
+  /** A badge beside ONE file (with its tooltip) -- the case tree uses it to
+   *  mark a 0/ file the engine generated rather than the student wrote. */
+  leafBadge?: (path: string) => { text: string; hint: string } | null;
 }) {
   const tree = useMemo(() => squash(buildTree(files)), [files]);
   const isLesson = (f: string) => lessonFirst && /^README\.md$/i.test(f);
@@ -143,6 +146,16 @@ export function FileTree({
         >
           {leaf}
         </Text>
+        {(() => {
+          const b = leafBadge?.(f);
+          return b ? (
+            <Tooltip label={b.hint} withArrow>
+              <Badge size="xs" variant="light" color="gray" style={{ textTransform: "none", cursor: "help" }}>
+                {b.text}
+              </Badge>
+            </Tooltip>
+          ) : null;
+        })()}
       </Group>
     );
   };

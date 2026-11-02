@@ -68,18 +68,18 @@
   puts its recovery at 87 % (the document's 84-90 %) with the first pass's
   permeate: at 10.3 bar the same array recovers 94.8 %.
 
-  WHAT THE RUN SAYS (2026-11-02; the golden is the authority):
-      product                4111.0 m3/h = 98 664.7 m3/day (the document's 98 664)
+  WHAT THE RUN SAYS (2026-11-02, boron split by the pH, C198; the golden is the authority):
+      product                4111.2 m3/h = 98 668.7 m3/day (the document's 98 664)
       intake                 9461.3 m3/h; recovery of the intake 43.5 %
       first pass             47.20 % recovery (the document's 47.2 %), 13.05
                              LMH average flux on 362 082 m2, feed 10 011 m3/h at
                              58.59 bar, brine 63.5 g/L NaCl-eq at 57.9 bar,
-                             permeate 109.6 mg/L NaCl-eq, boron 0.483 mg/L
+                             permeate 109.6 mg/L NaCl-eq, boron 0.457 mg/L
       second pass            87.0 % recovery, 33.99 LMH on 120 960 m2 (the
                              element's rated 34.7), concentrate 614 m3/h at
-                             0.83 g/L, boron 3.4 mg/L, recycled to the first
+                             0.83 g/L, boron 3.2 mg/L, recycled to the first
       product                1.9 mg/L NaCl-eq (the document's target < 400
-                             mg/L TDS), boron 0.046 mg/L (< 0.5)
+                             mg/L TDS), boron 0.043 mg/L (< 0.5)
       energy recovery        flows balanced to 1e-5; 54.1 bar recovered on
                              5209 m3/h, 7.76 MW hydraulic; the feed's
                              salinity up 1.8 %
@@ -89,32 +89,45 @@
                              motor losses, no pretreatment or post-treatment
                              loads, no product delivery)
 
-  BORON, AND WHAT THE ENGINE CANNOT DO.  Boron is the reason for the second
-  pass and for the caustic between the passes: boric acid (pKa about 9,
-  neutral, small enough to pass a seawater membrane) is converted at pH 10
-  into borate (an anion, rejected).  THE MODULE DOES NOT COUPLE THE FEED'S
-  SPECIATION TO THE TRANSPORT (measured, DEV.md 4c C194): every solute moves
-  by its own permeance or rejection, the speciation solver is used only by
-  the optional scaling audit, no stream carries a pH, no unit moves one (a
-  `mixer` fed caustic changes component flows, not a pH), and no
-  boric-acid/borate equilibrium record exists in data/standards/chemistry
-  (none is invented here).  So boron is ONE lumped solute, with a CONSTANT
-  intrinsic rejection per element derived from the manufacturer's observed
-  one at the pH of its test (91 % at pH 8 for the first pass; 95 % at pH 10
-  for the second -- two rated tests, `boronRef`, in the two module records),
-  and THE pH IS A DECLARED LABEL of each test, not a state.  This is an
-  APPROXIMATION and the run announces it ([ratedTest] lines: "pH 8 is stated
-  and the probe models no pH"; the `source` of each module's
-  transportParameters says the same).  Its consequence is that the case cannot
-  show what a student would want to see: the boron rejection of the second
-  pass FALLING as the dosing is turned down.  What would show it: a transport
-  law in which boric acid and borate are two solutes with their own
-  permeances, a stream pH and its speciation (the H3BO3/BOH4 equilibrium
-  record, curated from a primary), and a dosing unit that moves the pH --
-  the follow-up.  A second finding: the probe of the boron test is water plus
-  5 ppm boron at the test's pressure, with no osmotic pressure to oppose it,
-  so it runs at 19 % recovery instead of the test's 8-15 %; the derived
-  intrinsic rejection (0.9357, 0.9642) is that of the probe.
+  BORON IS TWO SPECIES SPLIT BY THE pH (DEV.md 4c C198, Stage 1).  Boron is
+  the reason for the second pass and for the caustic between the passes:
+  boric acid (neutral, small enough to pass a seawater membrane) is
+  converted at pH 10 into borate (an anion, rejected).  Each module declares
+  `aqueousSplit {}`: the apparent boron is carried as H3BO3 and BOH4, the
+  base fraction alpha = 1/(1 + 10^(pKa - pH)) is asked of the PACKAGE (the
+  curated constant data/standards/chemistry/BOH4-formation.dat, pKa 9.24 with
+  its van't Hoff enthalpy, and this case's declared aqueous activity model,
+  Davies, for gamma and a_w) at the module inlet's bulk and the DECLARED pH,
+  and each form has its own intrinsic rejection.  Alpha is 0.108 at the first
+  pass (pH 8.2, I = 0.59 mol/kg) and 0.858 at the second (pH 10).
+  THE PERMEANCES come from the sheet's rated tests: ONE boron test per
+  element (91 % at pH 8; 95 % at pH 10, `boronRef` in the two records) is
+  inverted through the module's own film and, at the test's own alpha,
+  determines the ACID's rejection; the BASE's is a DECLARED ASSUMPTION (the
+  element's own NaCl rejection: an anion rejected like the salt) because one
+  test cannot identify two permeances.  TWO tests of one element at two pH
+  would give both (`rejection { tests ( id1 id2 ) }`; the gate runs that form
+  on a fixture), and the engine refuses a single test offered as two or two
+  at the same pH.  The result is R_acid 0.932 and R_base 0.998 for the
+  first-pass element, 0.790 and 0.994 for the second-pass one.
+  THE LIMITS, announced on every run: THE pH IS A DECLARED LABEL of each
+  module (8.2, Table 2; 10, Table 1), not a state -- no stream carries a pH,
+  and the caustic dosing that would set the second pass's pH is NOT a unit
+  (Stage 2); the split is FROZEN at the inlet's pH along the channel; both
+  forms share the one film coefficient; Davies is outside its own ~0.5 mol/kg
+  band at seawater strength, so alpha at the first pass is indicative (the
+  apparent pKa it gives, 9.12, is NOT Dickson's conditional seawater constant,
+  8.60 on the total scale -- the comparison is printed by the gate, never
+  tuned).  What the case now shows: lower the second pass's declared pH from 10
+  to 9 and the product's boron rises from 0.04 to 0.14 mg/L, as alpha predicts.
+  A finding about the probe: the boron test is water plus 5 ppm boron at the
+  test's pressure, with no osmotic pressure to oppose it, so it runs at 19 %
+  recovery instead of the test's 8-15 %; the derived effective rejection
+  (0.9357, 0.9642) is that of the probe.  And boron is a solute of the van't
+  Hoff osmotic pressure (`dissociation 1`): the second pass's feed is so dilute
+  that boron is about 1 % of its osmotic pressure, so the product moved by
+  0.004 % when boron's rejection changed from the lumped to the split form (the
+  NaCl-side rows of the golden moved for that reason alone).
 
   THE LOOP IS A KNIFE-EDGE, AND 0/ IS A CONVERGED STATE.  The exchanger
   returns 99 % of the brine's volume to the membrane feed, so the first pass
@@ -249,15 +262,28 @@ units
             P_permeate       1.0 bar;
             rho_feed         1025;              // kg/m3, ASSUMED: seawater near 20 C
             nNodes           10;
+            aqueousSplit
+            {
+                component   boron;
+                acid        H3BO3;
+                base        BOH4;
+                pH          8.2;
+                pHSource    "Toray case study MC-CS-CAMPODEDALIAS-1910, Table 2 (the seawater analysis: pH 8.2); the pH of the feed is a DECLARED label of this module (Stage 1: no stream carries a pH)";
+                rejection
+                {
+                    acid  ( fromRatedTest boronRef );    // the acid from the sheet's 91 % at pH 8 (Table 1)
+                    base  ( sameAs NaCl );              // ASSUMED: borate is an anion and is rejected like the salt (the module's own NaCl intrinsic rejection); the data sheet states one boron test per element, which cannot identify two permeances
+                }
+            }
             transport        constantRejection;
             transportParameters
             {
                 rejection
                 {
                     NaCl  ( fromRatedTest naclRef );
-                    boron ( fromRatedTest boronRef );
+                    boron ( fromAqueousSplit );
                 }
-                source  "DERIVED from the Toray case study's observed rejections (NaCl 99.75 %, boron 91 % at pH 8; MC-CS-CAMPODEDALIAS-1910, Table 1) by inverting two ASSUMED standard tests with the module's own film; boron is ONE lumped solute with a CONSTANT rejection -- the pH dependence of the neutral boric acid / anionic borate split is NOT modelled (see header)";
+                source  "DERIVED from the Toray case study's observed rejections (NaCl 99.75 %, boron 91 % at pH 8; MC-CS-CAMPODEDALIAS-1910, Table 1) by inverting two ASSUMED standard tests with the module's own film; boron is the apparent total of boric acid and borate, split by the pH of the aqueousSplit block (see header)";
             }
             massTransfer
             {
@@ -304,15 +330,28 @@ units
             elements         7;
             P_permeate       1.0 bar;
             nNodes           10;
+            aqueousSplit
+            {
+                component   boron;
+                acid        H3BO3;
+                base        BOH4;
+                pH          10;
+                pHSource    "DECLARED: the case study states the second pass at pH 10 (Table 1, boron rejection 95 % at pH 10) and no dosing; the caustic that sets this pH is Stage 2 and is NOT modelled -- the pH is a label of this module";
+                rejection
+                {
+                    acid  ( fromRatedTest boronRef );    // the acid from the sheet's 95 % at pH 10 (Table 1)
+                    base  ( sameAs NaCl );              // ASSUMED: borate is an anion and is rejected like the salt (the module's own NaCl intrinsic rejection); the data sheet states one boron test per element, which cannot identify two permeances
+                }
+            }
             transport        constantRejection;
             transportParameters
             {
                 rejection
                 {
                     NaCl  ( fromRatedTest naclRef );
-                    boron ( fromRatedTest boronRef );
+                    boron ( fromAqueousSplit );
                 }
-                source  "DERIVED from the Toray case study's observed rejections (NaCl 99.2 %, boron 95 % at pH 10; MC-CS-CAMPODEDALIAS-1910, Table 1) by inverting two ASSUMED standard tests; boron a lumped solute with a constant rejection read at pH 10 -- the pH is a declared label of the test, not a stream property (see header)";
+                source  "DERIVED from the Toray case study's observed rejections (NaCl 99.2 %, boron 95 % at pH 10; MC-CS-CAMPODEDALIAS-1910, Table 1) by inverting two ASSUMED standard tests; boron the apparent total of boric acid and borate, split by the pH of the aqueousSplit block (see header)";
             }
             massTransfer
             {
@@ -340,13 +379,26 @@ units
             elements         7;
             P_permeate       1.0 bar;
             nNodes           10;
+            aqueousSplit
+            {
+                component   boron;
+                acid        H3BO3;
+                base        BOH4;
+                pH          10;
+                pHSource    "DECLARED: the case study states the second pass at pH 10 (Table 1, boron rejection 95 % at pH 10) and no dosing; the caustic that sets this pH is Stage 2 and is NOT modelled -- the pH is a label of this module";
+                rejection
+                {
+                    acid  ( fromRatedTest boronRef );    // the acid from the sheet's 95 % at pH 10 (Table 1)
+                    base  ( sameAs NaCl );              // ASSUMED: borate is an anion and is rejected like the salt (the module's own NaCl intrinsic rejection); the data sheet states one boron test per element, which cannot identify two permeances
+                }
+            }
             transport        constantRejection;
             transportParameters
             {
                 rejection
                 {
                     NaCl  ( fromRatedTest naclRef );
-                    boron ( fromRatedTest boronRef );
+                    boron ( fromAqueousSplit );
                 }
                 source  "as RO2a";
             }

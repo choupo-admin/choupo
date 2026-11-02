@@ -144,16 +144,19 @@ type WorkerMessage =
   | { type: "designFiles"; files: { [relPath: string]: string } }
   | { type: "instants"; files: { [relPath: string]: string } }
   | { type: "proposals"; files: { [relPath: string]: string } }
-  | { type: "caseWrites"; files: { [relPath: string]: string } };
+  | { type: "caseWrites"; files: { [relPath: string]: string } }
+  | { type: "init0Files"; files: { [relPath: string]: string } };
 
 export class WasmAdapter implements SolverAdapter {
   run(caseFiles: CaseFiles,
     onChunk: (chunk: string) => void,
     signal?: AbortSignal,
     binaryOverride?: string,
+    opts?: { init0?: boolean },
   ): Promise<RunResult> {
     return new Promise((resolve) => {
       let log = "";
+      let init0Files: { [relPath: string]: string } | null = null;
       let trajectoryCsv: string | null = null;
       let csvFiles: { [relPath: string]: string } | null = null;
       let convergedFiles: { [relPath: string]: string } | null = null;
@@ -262,6 +265,8 @@ export class WasmAdapter implements SolverAdapter {
         if (caseWrites && Object.keys(caseWrites).length > 0) {
           result.caseWrites = caseWrites;
         }
+        //  An -init0 run answers with the files it wrote, possibly none.
+        if (init0Files) result.init0Files = init0Files;
         if (cancelled) noteRunSettled("cancelled", ledgerBinary);
         else if (status === "done") {
           const carried = (Object.keys(result) as (keyof RunResult)[])
@@ -310,6 +315,8 @@ export class WasmAdapter implements SolverAdapter {
           proposals = msg.files;
         } else if (msg.type === "caseWrites") {
           caseWrites = msg.files;
+        } else if (msg.type === "init0Files") {
+          init0Files = msg.files;
         } else if (msg.type === "done") {
           if (msg.rc !== 0) emit(`\n[wasm] exited with code ${msg.rc}`);
           settle(msg.rc === 0 ? "done" : "error");
@@ -327,7 +334,8 @@ export class WasmAdapter implements SolverAdapter {
       // Choose the right WASM binary based on the case's
       // controlDict.application field (binaryOverride wins for the Props view).
       const app = binaryOverride ?? caseFiles.controlDict["application"];
-      const binary = selectBinary(app);
+      //  -init0 exists in choupoSolve only (the browser's choupo-init0).
+      const binary = opts?.init0 ? "choupoSolve" : selectBinary(app);
       ledgerBinary = binary;
       emit(`[adapter] dispatching to ${binary} WASM`);
 
@@ -343,6 +351,7 @@ export class WasmAdapter implements SolverAdapter {
         binary,
         files: serialiseCase(caseFiles),
         caseWrites: writes,
+        ...(opts?.init0 ? { init0: true } : {}),
       });
     });
   }

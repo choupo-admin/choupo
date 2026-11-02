@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  phasechange02_saturated_mixture  --  meta-control
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Saturated liquid and vapour of a benzene-toluene mixture: bubble and dew point";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

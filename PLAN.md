@@ -32,17 +32,26 @@ Last reviewed: 2026-11-01 (restructured by capacity; earlier reviews in git).
 
 Status words: `todo` · `queued` (built by a general, waiting its turn to integrate) · `integrating` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
-## Now (running; at most 7 generals, Vítor's order of 2026-11-02, laptop budget in CLAUDE.md rule 4)
+## Now (RESUME HERE after the 2026-11-02 controlled shutdown; nothing is running)
+
+Every general stopped with the laptop.  All their work is on origin as `backup/*` branches; the first thing to read is `HANDOFF-C200.md` on `backup/c200-handoff`.
 
 | status | what | ref |
 |---|---|---|
-| running | General: boron Stage 1 -- two species split at the inlet pH (thermodynamic pKa), permeances from the two rated tests | C198 |
-| running | General: a negative outlet pressure is refused by name, a trial iterate announced (the `s.P <= 0` clamp in runUnit) | C186 5b |
+| todo | Before the brief lands, read docs/reviews/2026-11-02-kernel-review.md: the phaseChanger fix, the two 404 URLs, Complete 0/ on the site, nine missing packs, five text corrections | C202 |
+| todo | Merge the brief (`backup/c200-handoff`, its `kernel.md` renamed `brief.md` (in docs/ai) in the same commit) with the three packs (`backup/pack-recycles-pressure`, `backup/pack-separations`, `backup/pack-reactors`) in ONE commit (check_doc_references refuses a brief pointing at missing packs; the table lists only the packs that exist, the URLs and the browser Complete 0/ are not promised until they exist); fix the brief from the packs' findings; record the contradictions found in older docs/ai in DEV.md C200 | C200 |
+| todo | Relaunch the browser Complete-0/ general from `backup/a8318e2acf001dce2` (it was in `--gui` validation; 16 files of WIP) | C200 B' |
+| todo | Integrate boron Stage 1 (`backup/boron-stage1`); the golden re-record of swro01_campoDalias is ruled acceptable, the list goes in the commit | C198 |
+| todo | Integrate the GUI header-read branch (`backup/adc55b34e36500669`) | C199 |
+| todo | Re-run the LLM-brief harness (`bin/curate/llm_brief_eval.py`, branch `backup/c200-harness`) on the brief + packs; baseline: `--core` solves 7/10, the GUI bridge guide 0/10 | C200 A |
 
 ## Next day (at most 5)
 
 | status | what | ref |
 |---|---|---|
+| todo | phaseChanger `outletState saturatedLiquid` / `outletQuality 0` on a mixture stops 119 K below saturation at exit 0 (PhaseChanger.cpp:428-433): fix the bracket scan, add a mixture witness; the C200 brief teaches this spec | C202 (1) |
+| todo | Acetic acid, ONE slice: the liquid bridge (confirmed cause of the 7x esterification heat, branch `backup/c201-acetic-bridge`) together with the vapour-side association (one-record-two-vapours doc); alone it doubles real column condensers; then the seven tutorials whose exotherm was the artefact (content decision for Vitor) | C201 (1) |
+| todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says | C201 (2) |
 | todo | After each push that adds a unit: the site's own WASM build and one browser run of the new case (the pressure exchanger first) | C196 |
 | todo | Confirm on the site (WASM) that C178 and C182 are published (minutes, done between integrations) | C178, C182 |
 
@@ -50,15 +59,19 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| todo | The GUI reads the `pipeHeader` sheets (the headers leave the dashed state); the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
+| todo | C200 remaining packs (heat, electrolytes, membranes, solids, design-cost, drivers, batch-transient, props), the generated reference and `llms.txt` on the site; the harness re-run | C200 |
+| todo | C199 leftovers: the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
 | todo | The real boron: two-solute transport (boric acid, borate), a stream pH with speciation, a curated H3BO3/BOH4 record, a dosing unit; and a recycle solver that refuses the trivial fixed point by name | C198 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
+| todo | Newcomer surfaces: `runCase` shows the answer, the balance verdict and the caveat block (not a log tail); one "start here" path across doc, landing cards and the site folder | C201 (3), (4) |
+| todo | Tutorial texts the review found stale or false (column duties after the condenser fix, flash02's "What to try", membrane01's header) and the housekeeping list; moved goldens, if any, go to Vitor as a list | C201 (5), (6) |
 
 ## Beyond a week
 
 | status | what | ref |
 |---|---|---|
+| todo | `digitalTwin/`, its own tutorials folder (operation of a designed plant, continuous on choupoCtrl then batch on choupoBatch, layout REQUIRED): plan of dynamic models per unit first, then loops/instruments with a generated P&ID, then the operator panel (pedagogical scope to Vitor first) | C203 |
 | todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
 | todo | Verify and fix the Gibbs review's three open items and the SpeciationSolver outer convergence | C187 (1)(2) |
 | todo | Pharmaceutical groups: the compaction bench (Heckel, Kawakita, Ryshkewitch fitted to the group's data), sized tablet machines, clean utilities (HVAC, purified water), blend uniformity | C195 |

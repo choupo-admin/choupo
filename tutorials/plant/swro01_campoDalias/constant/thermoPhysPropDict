@@ -9,8 +9,9 @@
 /*---------------------------------------------------------------------------*\
   thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture, the salts as ONE
   lumped nonvolatile solute (NaCl, in OSMOTIC equivalence to the seawater of
-  the case study's Table 2) and boron as a second lumped solute
-  (constant/components/boron.dat).  membrane01's form with one more solute.
+  the case study's Table 2) and boron as a second solute that the modules split
+  into boric acid and borate by the pH (constant/components/boron.dat; the
+  declared aqueous chemistry below).  membrane01's form with one more solute.
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
@@ -24,6 +25,17 @@ equilibrium
     {
         activityModel ideal;
         standardState pureLiquid;
+    }
+    //  THE AQUEOUS CHEMISTRY THE BORON SPLIT READS (DEV.md 4c C198).  The liquid
+    //  IS seawater: the module asks the package for the base fraction of the
+    //  boron (H3BO3 + H2O = BOH4 + H, chemistry/BOH4-formation.dat) at its
+    //  inlet bulk, and the activity model is the CASE'S.  Davies is the
+    //  model the tree has that carries every ion here; at seawater strength
+    //  (I ~ 0.6 mol/kg) it is beyond its own ~0.5 mol/kg band and the run says
+    //  so -- the alpha at pass 1 is indicative, not quantitative.
+    aqueous
+    {
+        activityModel { model davies; }
     }
     vapour
     {

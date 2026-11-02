@@ -1528,6 +1528,273 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C202 INTEGRATION (the architect, 2026-11-02):** item 1 (phaseChanger) and
+> the assistant brief landed in `main` without a full sweep.  Reach measured:
+> `bin/integrate` ran the 10 cases that use phaseChanger/boiler/condenser
+> (PASS 15 / FAIL 0, no golden moved) and the gates that read the touched
+> files.  Its two FAILs are the environment, not the diff: `check_method_tools`
+> could not run (the integration worktree had no installed GUI packages), and
+> `check_element_closure` read no elementBalance for membrane08, a case
+> outside the scope whose run output the worktree did not hold; both pass or
+> run in the primary checkout (element closure: 249 cases close, 1 pinned).
+> The brief's docs gates (references, glossary, doctrine) pass.
+
+> **C201 ITEM 1, MEASURED, AND NOT LANDED (the architect, 2026-11-02).**
+> Cause confirmed in the code: the liquid acetic acid is the monomer
+> ideal-gas datum minus a Watson latent heat scaled from `HvapTb 24390`,
+> which is the heat to the DIMERISED vapour (Component.cpp h_formation,
+> liquid rung); the cstr01 reaction heat -25.7 kJ/mol is that 24 kJ/mol.
+> A general derived the bridge from the curated vapour dimerisation (one
+> parser, no copied constants): acetic liquid -486.3 vs -484.3, reaction
+> heat -0.38 kJ/mol at 298 K against about -3 measured.  Branch
+> `backup/c201-acetic-bridge` (49a16f684), moved-row list
+> `c201-item1-moved-rows.md` in docs/design on that branch.  **Not merged,
+> because it trades one error for another:** (a) 182 rows in 14 cases price
+> acetic acid's vaporisation to the ideal-gas MONOMER in units whose vapour
+> model has no dimer, so for a real dimerised vapour the duties become too
+> large (aceticAcid02_plant lights condenser -36.5 -> -75.1 kW, column05
+> reboiler +33 %); the other half is the vapour side of
+> `docs/design/one-record-two-vapours-acetic-acid.md` (association as a
+> property of the VAPOUR model), which must land WITH the bridge, as one
+> slice; (b) the exotherm of seven tutorials (batch02/04/06 runaway,
+> cstr04/05/06, pfr04) was this artefact: honest acetic-acid esterification
+> in the liquid is nearly thermoneutral, so they need other chemistry or
+> another narrative -- a content decision, put to Vitor when the slice is
+> ready.  Not run: full sweep, --gui, wasm.  NEXT: design the vapour-side
+> half, then one slice with its list of moved rows.
+> **DECIDED (the architect, 2026-11-02; this takes the two questions
+> `docs/design/one-record-two-vapours-acetic-acid.md` §5 had RESERVED):**
+> (i) `HvapTb` speaks the MEASURED latent heat, to the real associated
+> vapour, and keeps it (the Hildebrand, relief-valve and K_b readers need
+> exactly that); (ii) ASSOCIATION IS A PROPERTY OF THE VAPOUR MODEL, not of
+> one flash formulation: wherever a component carries a curated vapour
+> association (today acetic acid's `vapourDimerisation`, read by ONE parser,
+> `thermo/VapourAssociation.H` on the bridge branch), an ideal-gas vapour is
+> the equilibrium monomer + dimer mixture (the chemical theory of vapour
+> imperfection) -- its fugacity is the MONOMER partial pressure, so the pure
+> limit stays exact (p_m + p_d = the record's apparent Psat, and the liquid
+> side uses the monomer's saturation pressure solved from the same K), and
+> its enthalpy carries the association heat.  ONE home, extracted from the
+> reactive VLE builder (`SpeciationSolver`, the v = t_mono + 2 t_dim
+> re-weighting), reached through `ThermoPackage`'s K-values and vapour
+> enthalpy, so every unit sees it; the liquid bridge (piece 1) lands IN THE
+> SAME SLICE.  An equation-of-state vapour carrying an associating component
+> keeps its EoS and ANNOUNCES that the association is not priced (no silent
+> double treatment).  Validation before landing: a non-reactive acetic
+> acid + water T-x-y against a measured dataset the tree can cite, the
+> pure-component limit, and the cstr01 reaction heat within the bridge
+> branch's band.  The seven tutorials whose exotherm was the artefact come
+> to Vitor as a content list when the slice is ready.  NOT dispatched yet
+> (laptop budget: the boron lane holds the build slots).
+
+> **C200 B' INTEGRATION (the architect, 2026-11-02):** `File > Complete 0/`
+> landed without the full sweep that `bin/integrate` flagged as reached
+> (it could not attribute `src/applications/choupoSolve/wasmEntry.cpp`).
+> Written reason: the one engine-side edit, `run_case_init0`, sits inside
+> that file's `#if defined(__EMSCRIPTEN__)` (line 45 to the end), so no
+> native binary changes; `make/wasm.mk` only exports the symbol for the
+> WASM target; everything else is `gui/`.  Evidence: `--gui` PASS 42 / FAIL
+> 0, `--fast` PASS 77 / FAIL 0, `npm test` 6777 passed, and a Chromium run
+> of flash01 with `0/liquid` and `0/vapor` removed (refused, dialog,
+> Complete 0/ wrote both, the second run converged).  Open: the user guide
+> (`docs/userGuide.tex`) documents only `bin/choupo-init0` -- a small
+> follow-up that rebuilds its PDF.
+
+> **C203. A DIGITAL TWIN AS THE LAST FORM OF A PLANT CASE (Vitor, 2026-11-02:
+> "em plant pode haver um modelo final em modo de controlo que vai desde o
+> layout depois ate ao painel de controle? ... plant era so para estado
+> estacionario e o /digitalTween ficava para tudo ... painel de controlo,
+> e ate gerava os diagrama PFD e o projeto de controlo").**  RECORDED, NOT
+> STARTED; the architect's reading: yes, as a CASE FORM over `plant/` run by
+> `choupoCtrl` (one binary per problem class; no new binary, and a top-level
+> `tutorials/` folder is a discipline, so no `/digitalTwin` folder until a
+> complete case justifies it).  Missing, in this order: (1) dynamic models per
+> unit (today only `dynamicCSTR` and the `quasiSteady` adapter run in time;
+> columns, exchangers, vessels with holdup have none) -- a plan of which
+> families and in what order comes FIRST; (2) a declaration of instruments
+> and loops (measurement, actuator, setpoint) with a degrees-of-freedom
+> check, from which the P&ID is GENERATED, never drawn; (3) the operator
+> panel, which meets the GUI credo ("runner, not editor", docs/ai/gui-credo.md
+> to be read first): the panel may change declared setpoints and disturbances
+> only, never the case structure.  Witness candidate: the green-ammonia plant
+> (layout, sizing and cost exist).  Pedagogical scope to be put to Vitor
+> before any dispatch.
+> **DECIDED (the architect, 2026-11-02, after Vitor: "separar /digitalTween
+> de plant ... um processo completo que trabalha em modo de controlo em
+> estado continuo, ou em batch. Tem de ter layout"):** this REVISES the
+> reading above in one place -- `digitalTwin/` IS its own top-level folder
+> of `tutorials/` (the spelling is `digitalTwin`), a discipline: the
+> OPERATION and control of a designed plant, studied after `plant/`
+> (steady design, untouched).  Still NO new binary: continuous mode runs
+> on `choupoCtrl`, batch mode on `choupoBatch` (recipes, campaigns).  A
+> twin case REFUSES by name without a `layoutDict` (optional in `plant/`,
+> required here: it feeds the generated PFD/P&ID, the panel's positions and
+> the 3D view) and without its declared instruments and loops.  The twin
+> stays SELF-CONTAINED (credo): its `0/` is seeded from the design's
+> `converged/` by a tool in the `choupo-init0` style, the origin recorded
+> in the case; it is never linked to the `plant/` folder.  Order unchanged:
+> dynamic models per unit, then loops/instruments/P&ID, then the panel;
+> continuous first, batch after.
+
+> **C202. THE C200 KERNEL REVIEWED BY RUNNING IT, AND A PHASECHANGER THAT
+> STOPS 119 K SHORT (Vitor, 2026-11-02: "Podes rever o kernel?").**  DONE as
+> a review of the kernel brief (`kernel.md` on `backup/c200-handoff`, 656822b90);
+> record `docs/reviews/2026-11-02-kernel-review.md`.  Its grammar holds:
+> three cases written from the kernel alone (a recycle, an SRK
+> compressor-exchanger train, a column) and its NRTL-catalogue and UNIFAC
+> routes all ran at exit 0 with their balances closed.  It OWES, before the
+> kernel lands: (1) **a wrong number at exit 0 in the engine** --
+> `phaseChanger` `outletState saturatedLiquid` (and `outletQuality 0`) on a
+> MIXTURE returns a liquid 119 K below saturation (40/60 benzene/toluene at
+> 2.2 bar: T_out 294.515 K beside its own Tsat 413.515 K), because the
+> bracket scan at src/unitOperations/heatTransfer/PhaseChanger.cpp:428-433
+> accepts the first interval where vf(T) - 0 is identically zero; no corpus
+> case reaches that branch (rankine02_water is pure), and the kernel teaches
+> the spec; **ITEM 1 FIXED (branch worktree-agent-a8e125a686ad1dcec):** saturated
+> liquid / vapour of a mixture is solved as its bubble / dew point
+> (BubblePoint/DewPoint::compute, cross-checked against the unit's own flash,
+> refused by name otherwise), other targets use a strict sign-change bracket;
+> witness `phasechange02_saturated_mixture` (bubble 397.261 K, dew 403.434 K;
+> the old scan gave 294.515 K and 403.487 K), gate arm (j) of
+> `check_evaporator_chest_phase`; (2) its two lookup URLs (choupo.org/llm/components.txt and
+> unit-keys.md) return 404; (3) the "Case > Complete 0/" button it tells
+> students to use is C200 B', not on main; (4) it names twelve packs and
+> three exist; (5) five text corrections listed in the record (menu label,
+> the MASS strip contradiction, the feedStage ranges, sources pointing at
+> unit-ops.md, kij for SRK).
+> **DECIDED (the architect, 2026-11-02, after Vitor read "kernel" as the
+> computational core in `src/`):** the document is renamed `brief.md` (in docs/ai)
+> ("the assistant brief") in the commit that lands it -- in scientific
+> software "kernel" means the computational core, and this tree already uses
+> it that way (EdwardsPitzer's "PURE kernel", Kern, IF97), so a document for
+> an LLM must not share the word; the record names above keep their date-stamped
+> filenames.  It lands AFTER the phaseChanger fix (1), WITHOUT waiting for
+> (2)-(4): its pack table lists only the packs that exist and names the rest
+> as not yet written (no path), its lookup points at `data/standards/
+> components/` until phase D publishes the URLs, and it teaches
+> `bin/choupo-init0` and says the browser cannot complete 0/ until C200 B'
+> lands (that sentence buried in B's own commit); (5) rides the landing commit.
+
+> **C201. A NEWCOMER'S REVIEW OF THE TUTORIALS (Vitor, 2026-11-02: "Podes
+> fazer durante duas horas verificacao dos tutoriais como se fosses um
+> engenheiro que nao conhece este simulador."; then "Podes gravar no
+> repositorio?").**  DONE as a review, read-only, on origin/main 663bc5510
+> (native build) and the live site the same morning; the record is
+> `docs/reviews/2026-11-02-newcomer-tutorial-review.md`, every number
+> measured, nothing fixed.  It OWES these slices, in the order the plan's
+> rule 2 sets (a wrong number at exit 0 first):
+> (1) **start-here step 6 publishes a reaction heat about 7x too large**
+> -- `cstr01_first_order` Q_kW -1.879 at extent 0.07304 mol/s = -25.7
+> kJ/mol for liquid ethanol + acetic acid, about -3 kJ/mol in reality; by
+> hand the whole gap is acetic acid's liquid enthalpy (a MONOMER ideal-gas
+> datum minus `HvapTb 24390`, the heat of vaporisation to the DIMERISED
+> vapour), not yet confirmed in the code; a data and arity decision for Vitor
+> (finding F9);
+> (2) **the GUI's MASS cell reads "not published" on almost every case**:
+> `src/result/ResultEmitter.cpp:1229` emits `globalMassBoundary` only when
+> a utility circuit is declared and says a reader that does not find it
+> must read the massBalance report's TOTAL scope;
+> `gui/src/case/runSummary.ts:65` reads only that object (J2);
+> (3) `bin/runCase`'s terminal summary is `tail -14` of the log
+> (`bin/runCase:357`): no answer, no balance verdict, and neither the
+> unit-less `P 1.0` (exit 0, V/F = 1) nor a misspelt key reaches it (F1,
+> K1, K2);
+> (4) three different "start here" paths -- docs/start-here.md, the site's
+> landing cards, the site's "first path" folder (J1);
+> (5) tutorial READMEs and case CLAUDE.md files quoting column duties from
+> before the C169/C174 condenser fix (column01, column03, column18,
+> acetonePlant; extract02's sweep count), flash02's false "What to try",
+> membrane01's self-contradicting header (F5-F7, F12, G1, G2, I1);
+> (6) housekeeping: README binary counts, the stale capability matrix,
+> listCases' description column, duplicate case numbers, template
+> CLAUDE.md placeholders, maintainer history in student text (section A,
+> C, E, H of the record).  A golden row that moves in any slice goes to
+> Vitor as a list first.
+
+> **C200. ANY LLM MUST LEARN CHOUPO FROM A BRIEF IT ACTUALLY READS, AND DESIGN
+> BEFORE IT COPIES (Vitor, 2026-11-02, URGENT: "os alunos podem interagir com o
+> choupo.org atraves de ti usando qualquer LLM ... pedem a LLM um projeto, ou
+> uma consulta e ajuste de propriedades termofisicas; a LLM aprende Choupo e
+> prepara um .zip; o aluno abre-o na GUI e faz a curadoria e a validacao ...
+> mas a LLM salta diretamente para um tutorial semelhante e nao faz um
+> trabalho otimizado ... revê toda a documentacao que qualquer LLM vai ler,
+> numa linguagem que minimize os tokens e maximize a aprendizagem").**
+> MEASURED 2026-11-02: docs/ai/ is 887 126 bytes (about 220 000 tokens), 20
+> files; the largest are unit-ops.md 193 KB, schemas-reference.md 157 KB,
+> case-layout.md 112 KB, components.md 75 KB, gui-credo.md 70 KB (a GUI-design
+> file, irrelevant to a student's LLM), pitfalls.md 41 KB; AGENTS.md is 5 KB and
+> is the only entry a chat reads first; `bin/llmctx` concatenates the lot.  No
+> chat window holds that with attention, so an LLM reads the head, matches a
+> tutorial by name and copies it: the symptom is the size, not the model.
+> ARCHITECTURE (the architect's, to be tested, not assumed): (1) a KERNEL BRIEF
+> of about 6-8 k tokens every LLM reads first: what Choupo is, the glass-box
+> rules, the case layout, the WORKFLOW with its mandatory first step -- write a
+> DESIGN BRIEF (basis, units, thermo package and why, what is validated against
+> what, what is NOT modelled) BEFORE opening any tutorial; tutorials are syntax
+> examples only AFTER the design -- the twelve traps that cost a student a
+> wrong answer at exit 0, the zip contract (what the GUI opens), how to check
+> (bin/choupo-lint, and what to tell the student to click); (2) TASK PACKS of 3-6 k
+> tokens each, loaded on demand from an INDEX one screen long: property
+> consultation and fit, a membrane design, a distillation, a reactor, a
+> crystalliser, a pharmaceutical plant, ...; (3) a GENERATED reference -- one line per unit
+> and per key with its unit, produced from the engine's own contracts
+> (`choupoSolve --describe-units`, the schemas), never hand-copied; (4) every
+> pack in a terse, telegraphic form (keys and tables, no narrative), with the
+> history and the argument moved to the design records a person reads.  The
+> reference tools exist for the student: choupo-lint validates a case without
+> solving it.  EVALUATION, because a brief is judged by what an LLM does with
+> it, not by its look: a fixed set of 8-10 representative student tasks, each
+> given to a proxy LLM holding ONLY the packs (Haiku and Sonnet are the proxy:
+> if a small model succeeds a large one will), scored mechanically -- the zip
+> passes choupo-lint, solves, its balances close, it states a design basis,
+> it does NOT copy a tutorial wholesale (a similarity measure against the
+> corpus), and its token cost is recorded.  PHASES: A the evaluation harness and
+> the baseline (today's llmctx: the number to beat), B the kernel brief and
+> the index, C the packs, D the generated reference, E the second measurement
+> and the delta.  MODEL: the architecture, the protocol and the eval design are
+> the Opus-class work (one session); the packs, the generators and the
+> harness are Sonnet generals'.
+> STATUS: COMMISSIONED 2026-11-02, URGENT.  ARCHITECTURE DECIDED the same
+> day: record `docs/design/an-llm-learns-choupo-from-a-brief.md` (indexed).
+> Two facts measured on the way changed the plan: the browser cannot
+> materialise 0/ (so an LLM must invent every intermediate stream -- phase B'
+> gives the app the engine's own -init0), and the bridge's guide comment says
+> ~97 KB for >500 kB.  The kernel draft (the future `kernel.md` of docs/ai, held off main
+> until its packs exist, because check_doc_references refuses a pointer to a
+> missing file) was RUN: a case written from its grammar alone (catalogue
+> NRTL, degC, phaseChanger outletT, init0, flash) solved at exit 0 with the
+> energy boundary closing at 0.0000 kW; one false line in the draft (that
+> degC is not a unit; src/core/Units.cpp:132) was caught and fixed.
+> Dispatched: A (harness + baseline), B' (browser 0/), packs recycles +
+> pressure, separations, reactors.
+
+> **C198 ROUTE FOR SEAWATER (the architect, 2026-11-02, after the measurement
+> study `docs/design/boron-in-seawater-apparent-pka-study.md`, Vitor having
+> asked whether Stage 1 is good practice):**  Stage 1 stays as LANDED -- the
+> mechanism (two forms, a pH split, an exact effective rejection) and the
+> lesson, calibrated at the data sheet's pH, where the pKa error largely
+> cancels; it is NOT a quantitative tool for extrapolating in pH, and its
+> case says so.  Measured: boron's apparent pK in reference seawater (Millero
+> 2008 via TEOS-10 Table D.3; Dickson 1990 moved to the engine's scale, 8.82)
+> is 9.12 under Davies with or without the major-ion pairs, 8.95 with the
+> Ca/Mg borate complexes, and 8.84 under `pitzerHMW` with the tree's own
+> boron binaries plus the two `pitzer.dat` complexes (+0.016); the residual
+> +0.13 under Davies is a sodium-borate interaction no public ion-association
+> database carries, and fitting one to Dickson would make the check the fit.
+> DECIDED: **seawater boron is a Pitzer (`pitzerHMW`) route; Davies stays for
+> the low-salinity second pass and brackish feeds.**  Caveat recorded, not
+> hidden: the Pitzer boron parameters were themselves fitted to seawater
+> measurements of the kind Dickson's constant rests on, so the agreement
+> confirms the transcription and the engine, not an independent prediction.
+> NEXT (curation, before any case uses it): the BOH4 / CaBOH4 / MgBOH4
+> formation records and the eight Pitzer mixing records the study lists, each
+> from its PRIMARY -- Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771
+> must be READ first (not read in the session; Vitor's library access may be
+> the route); the borate constant of the Pitzer route is the one of THAT
+> parameterisation (-9.239), never mixed with phreeqc.dat's -9.24 + dH, which
+> stays the Davies route's (D2: identity per curated parameterisation).  Then
+> Stage 2 (pH along the channel) on the seawater feed as major ions.
+
 > **C198. BORON IN REVERSE OSMOSIS AS TWO SPECIES SPLIT BY THE pH (Vitor,
 > 2026-11-01: "o boro e para modelar"; C194 shipped it as a declared lumped
 > approximation; 2026-11-02, Opus switched on by Vitor: "faz a proposta do
@@ -2647,6 +2914,14 @@ accepts today, and that is a policy call.
 > corpus must be measured first (item 5b).  The Wegstein lesson's `[F, z, T]`
 > becomes `[F, z, T, P]`.
 > STILL OPEN: item 5 (pressure is not a tear variable).
+> ITEM 5b DONE 2026-11-02 (integration of 0aae8f4e9; record
+> docs/design/a-negative-pressure-is-refused.md).  The architect's reason
+> for integrating WITHOUT the full sweep, which bin/integrate reached on
+> Flowsheet.cpp: the change alters behaviour only for P < 0 on an accepted
+> pass; the corpus reach was MEASURED by the general (28 cases publish
+> P == 0, the unit-did-not-set sentinel that stays, none negative), so no
+> existing result can move; the evidence is 53 gates, --gui 42/0, scoped
+> 58/0 and --fast 77/0 on the branch.  No golden was re-recorded.
 
 > **C185. THREE MORE SOLVER/KINETICS DEFECTS (the external review,
 > ChatGPT, at 1ecec224, relayed by Vitor 2026-10-27 for SATURDAY; its order:

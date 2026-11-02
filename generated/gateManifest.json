@@ -23,8 +23,8 @@
     },
     "check_advisory_attribution": {
       "exit": 0,
-      "claim": "check_advisory_attribution: OK -- column13's caveat block reports 19 advisory(ies) about its ANSWER (still naming Davies beyond its trust range on the published blocks) and attributes 95 to three named solver searches, where it used to print 103 indistinguishable lines; a molecular case that opens no frame prints no path section at all; status only ever moves toward the answer (checked against the sink in isolation, both directions); every advisory in the result JSON carries a status; and each frame has one home whose close sits below its last search.  NOT covered: which solvers OUGHT to be framed -- the recycle Wegstein, the Gibbs multi-start, Wang-Henke and both time integrators still report their paths as answers -- whether any given trial advisory is uninteresting, and the absence of the data race the same change closed (no test can demonstrate that).",
-      "seconds": 1.0
+      "claim": "check_advisory_attribution: OK -- column13's caveat block reports 21 advisory(ies) about its ANSWER (still naming Davies beyond its trust range on the published blocks) and attributes 95 to three named solver searches, where it used to print 103 indistinguishable lines; a molecular case that opens no frame prints no path section at all; status only ever moves toward the answer (checked against the sink in isolation, both directions); every advisory in the result JSON carries a status; and each frame has one home whose close sits below its last search.  NOT covered: which solvers OUGHT to be framed -- the recycle Wegstein, the Gibbs multi-start, Wang-Henke and both time integrators still report their paths as answers -- whether any given trial advisory is uninteresting, and the absence of the data race the same change closed (no test can demonstrate that).",
+      "seconds": 0.7
     },
     "check_ammonia_rate": {
       "exit": 0,
@@ -68,8 +68,8 @@
     },
     "check_bashrc_path": {
       "exit": 0,
-      "claim": "check_bashrc_path: OK -- sourcing etc/bashrc leaves recursive `$(MAKE)` working (probed with a throwaway project carrying its own `make/` directory, which is the actual failure, not the PATH order that causes it), REPAIRS a PATH that already carries the broken order rather than skipping because it finds itself on it, keeps /home/user/choupo/.claude/worktrees/agent-a620623183ee54d42 reachable for the ./choupoSolve symlinks, and keeps bin/ ahead of the system directories.  NOT CHECKED: zsh and the POSIX fallback branch, which resolve their own location differently; and whether `make wasm` itself succeeds, which needs emscripten -- what is established is that the PATH no longer stops it starting.",
-      "seconds": 0.1
+      "claim": "check_bashrc_path: OK -- sourcing etc/bashrc leaves recursive `$(MAKE)` working (probed with a throwaway project carrying its own `make/` directory, which is the actual failure, not the PATH order that causes it), REPAIRS a PATH that already carries the broken order rather than skipping because it finds itself on it, keeps /home/vitor/Choupo/.claude/worktrees/integ-worktree-complete0 reachable for the ./choupoSolve symlinks, and keeps bin/ ahead of the system directories.  NOT CHECKED: zsh and the POSIX fallback branch, which resolve their own location differently; and whether `make wasm` itself succeeds, which needs emscripten -- what is established is that the PATH no longer stops it starting.",
+      "seconds": 0.0
     },
     "check_basis_rank": {
       "exit": 0,
@@ -113,7 +113,7 @@
     },
     "check_case_tiers": {
       "exit": 0,
-      "claim": "check_case_tiers: OK -- 449 witness(es), 40 tutorial(s), 15 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or sectored flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
+      "claim": "check_case_tiers: OK -- 450 witness(es), 40 tutorial(s), 15 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or sectored flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
       "seconds": 0.1
     },
     "check_caveat_surface": {
@@ -223,7 +223,7 @@
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 207 design record(s) appear in the index, and its stated counts (148 state a rejected alternative, 59 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
+      "claim": "check_decision_index: OK -- all 209 design record(s) appear in the index, and its stated counts (149 state a rejected alternative, 60 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
       "seconds": 0.0
     },
     "check_default_reports": {
@@ -253,8 +253,8 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 833 path mention(s) and 259 case name(s) across 22 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
-      "seconds": 1.0
+      "claim": "check_doc_references: OK -- 871 path mention(s) and 262 case name(s) across 23 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
+      "seconds": 0.9
     },
     "check_doctrine": {
       "exit": 0,
@@ -278,8 +278,8 @@
     },
     "check_duplicate_keys": {
       "exit": 0,
-      "claim": null,
-      "seconds": 2.4
+      "claim": "check_duplicate_keys: OK -- each of 8655 TRACKED dict file(s) declares each key once (standards, tutorials, design drafts); NOT judged: data/local/ and untracked files",
+      "seconds": 1.9
     },
     "check_duty_inversion": {
       "exit": 0,
@@ -373,8 +373,8 @@
     },
     "check_equipment_pinned": {
       "exit": 0,
-      "claim": "check_equipment_pinned: OK -- 4778 equipment key(s) across 25 sizing case(s) are pinned in their goldens, in both directions (published implies pinned, pinned implies published), by the generator's own emission rule (basis when stated, every sizing value, every held-inventory quantity, the three cost totals; never the costing factors, which check_cost_provenance recomputes from).  1 golden-less sweep(s) excused by name.  NOT CHECKED: whether any size or cost is RIGHT, whether a sizer STATES a basis (task #78), or the pinned numbers' agreement with the run (bin/runTests' job for every row).",
-      "seconds": 56.1
+      "claim": "check_equipment_pinned: OK -- 5696 equipment key(s) across 25 sizing case(s) are pinned in their goldens, in both directions (published implies pinned, pinned implies published), by the generator's own emission rule (basis when stated, every sizing value, every held-inventory quantity, the three cost totals; never the costing factors, which check_cost_provenance recomputes from).  1 golden-less sweep(s) excused by name.  NOT CHECKED: whether any size or cost is RIGHT, whether a sizer STATES a basis (task #78), or the pinned numbers' agreement with the run (bin/runTests' job for every row).",
+      "seconds": 66.5
     },
     "check_estimate_class": {
       "exit": 0,
@@ -468,8 +468,8 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 12 of 267 gates, and the other 255 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
-      "seconds": 511.4
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 12 of 295 gates, and the other 283 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
+      "seconds": 309.1
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -493,8 +493,8 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 41601 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 43301 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
-      "seconds": 8.6
+      "claim": "check_glossary_bans: OK -- 41617 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 43316 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
+      "seconds": 8.4
     },
     "check_groups": {
       "exit": 0,
@@ -858,8 +858,8 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 98 registered operations carries a schema (94 exercised by the corpus over 1137 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
-      "seconds": 74.4
+      "claim": "check_schema_coverage: OK -- every one of the 100 registered operations carries a schema (96 exercised by the corpus over 1174 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
+      "seconds": 26.4
     },
     "check_sdem": {
       "exit": 0,
@@ -933,8 +933,8 @@
     },
     "check_source_licence": {
       "exit": 0,
-      "claim": "check_source_licence: OK -- 1194 record(s) scanned (an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 36 existing ones do and are pinned.  No-grant mechanism (C164): no line of the 7412 catalogue records and case-local constant/ files names GRI-Mech as a value's origin (none pinned; a cross-check marker before the name is allowed).  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 5046 case-local records under tutorials/**/constant/: 33 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)); NASA/TP-2002-211556 (publicDomain, 14 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 17068 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (8 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
-      "seconds": 9.0
+      "claim": "check_source_licence: OK -- 1207 TRACKED record(s) scanned (untracked and data/local files are NOT judged; an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 20 existing ones do and are pinned.  No-grant mechanism (C164): no line of the 7460 catalogue records and case-local constant/ files names GRI-Mech as a value's origin (none pinned; a cross-check marker before the name is allowed).  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 5068 case-local records under tutorials/**/constant/: 33 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)); NASA/TP-2002-211556 (publicDomain, 30 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 13444 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (8 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
+      "seconds": 4.9
     },
     "check_species_citation": {
       "exit": 0,
@@ -1088,8 +1088,8 @@
     },
     "check_utility_allocation_pinned": {
       "exit": 0,
-      "claim": "check_utility_allocation_pinned: OK -- 1373 utility-allocation quantit(ies) pinned across 159 emitting case(s), in both directions (published implies pinned, pinned implies published), with the chosen utility's NAME in each row's key so a different pick reports MISSING rather than shifting a number.  2 emitting case(s) ship no golden and are exempt: tutorials/plant/sugarPlantEconomicsSweep, tutorials/steady/reactors/equil02_methanol_declared_pathways.  NOT CHECKED: whether a choice is GOOD (an expensive utility pins as happily as a cheap one), and whether a catalogue price may be quoted as a cost at all -- that is check_economics_honesty's.",
-      "seconds": 293.8
+      "claim": "check_utility_allocation_pinned: OK -- 1381 utility-allocation quantit(ies) pinned across 160 emitting case(s), in both directions (published implies pinned, pinned implies published), with the chosen utility's NAME in each row's key so a different pick reports MISSING rather than shifting a number.  2 emitting case(s) ship no golden and are exempt: tutorials/plant/sugarPlantEconomicsSweep, tutorials/steady/reactors/equil02_methanol_declared_pathways.  NOT CHECKED: whether a choice is GOOD (an expensive utility pins as happily as a cheap one), and whether a catalogue price may be quoted as a cost at all -- that is check_economics_honesty's.",
+      "seconds": 306.6
     },
     "check_utility_tag_symmetry": {
       "exit": 0,
@@ -1138,8 +1138,8 @@
     },
     "check_wasm_dialect": {
       "exit": 0,
-      "claim": "check_wasm_dialect: OK -- all 395 source file(s) parse under clang with the C++14/17/20 extension families promoted to errors, and the probe (a lambda capturing a structured binding, the construct that broke the site on 2026-08-27) is still rejected.  NOT COVERED, and the distinction matters: this is NOT `make wasm`. It uses the LOCAL clang and the LOCAL libstdc++ headers, so it sees dialect extensions and not the libc++ header differences check_std_includes exists for; the warning list is an enumeration with that gate's own blind spot; nothing is linked or run; and emscripten's clang is OLDER than any local one, so a construct the local clang accepts silently would pass here.  `make wasm` remains the complete check.",
-      "seconds": 38.5
+      "claim": "check_wasm_dialect: OK -- all 396 source file(s) parse under clang with the C++14/17/20 extension families promoted to errors, and the probe (a lambda capturing a structured binding, the construct that broke the site on 2026-08-27) is still rejected.  NOT COVERED, and the distinction matters: this is NOT `make wasm`. It uses the LOCAL clang and the LOCAL libstdc++ headers, so it sees dialect extensions and not the libc++ header differences check_std_includes exists for; the warning list is an enumeration with that gate's own blind spot; nothing is linked or run; and emscripten's clang is OLDER than any local one, so a construct the local clang accepts silently would pass here.  `make wasm` remains the complete check.",
+      "seconds": 91.8
     },
     "check_witness_tier": {
       "exit": 0,
@@ -1148,8 +1148,8 @@
     },
     "check_workspace_truth": {
       "exit": 0,
-      "claim": "check_workspace_truth: OK -- HEAD 39cb1732e9 is AHEAD of (17 commit(s), push soon -- the recycler eats local refs) origin/claude/c37-housekeeping (freshly fetched), and the poisoned overlay is absent.  NOT GUARANTEED: the recycler itself, and the window between this proof and the action it guards -- git's own non-fast-forward refusal is the backstop there.",
-      "seconds": 1.1
+      "claim": "check_workspace_truth: OK -- CHECKED: HEAD 142c1f6dc7 is SYNCED with origin/integ/worktree-agent-a5c22562aa834596f (origin is an ancestor of HEAD, after a fresh fetch), and none of the recycler-overlay sentinel files has lost its sentinel.  NOT CHECKED: untracked files, the content of any tracked file beyond those sentinels, whether HEAD is the commit you meant, the recycler itself, and the window between this proof and the action it guards (git's own non-fast-forward refusal is the backstop there).",
+      "seconds": 1.0
     },
     "check_unit_duty_allocation": {
       "exit": 0,
@@ -1313,8 +1313,8 @@
     },
     "check_reactor_limits": {
       "exit": 0,
-      "claim": "check_reactor_limits: OK -- R1 sum(nu) != 0 detailed balance refused on 4 paths, an expression law keeps its own refusal; WGS (sum 0) runs; R2 autocatalytic cstr announces 2 roots (washout UNSTABLE, REPORTED), cubic 3; monotone cases silent; R3 a gibbs condensate with one outlet refused; gibbs09 runs; R4 SRK: equilibriumReactor y_NH3 0.3239 = gibbsReactor 0.3239; R5 equil01 fed at 700 K: Q = 80.43 kW = report dH; R6 supersaturated gas-phase equilibrium refused, by component and at the mixture's dew point; equil01 runs; R7 dynamicCSTR announces sum(nu) != 0; reverse leg moves n_ethanol 1.11333560e-02 -> 1.28653936e-02 (NOT checked: several-reaction extent multiplicity, a liquid standard state for reversible liquid reactions)",
-      "seconds": 1.1
+      "claim": "check_reactor_limits: OK -- R1 sum(nu) != 0 detailed balance refused on 4 paths, an expression law keeps its own refusal; WGS (sum 0) runs; R2 autocatalytic cstr announces 2 roots (washout UNSTABLE, REPORTED), cubic 3; monotone cases silent; R3 a gibbs condensate with one outlet refused; gibbs09 runs; R4 SRK: equilibriumReactor y_NH3 0.3239 = gibbsReactor 0.3239; R5 equil01 fed at 700 K: Q = 80.43 kW = report dH; R6 supersaturated gas-phase equilibrium refused, by component and at the mixture's dew point; equil01 runs; R7 dynamicCSTR announces sum(nu) != 0; reverse leg moves n_ethanol 7.88335088e-03 -> 8.77318676e-03 (NOT checked: several-reaction extent multiplicity, a liquid standard state for reversible liquid reactions)",
+      "seconds": 5.8
     },
     "check_pore_partition": {
       "exit": 0,
@@ -1323,8 +1323,8 @@
     },
     "check_props_order": {
       "exit": 0,
-      "claim": "check_props_order: OK -- 46 registered op types each carry a file-traffic row; 48 guarded writes in their sources match a write slot; the GUI's published copy (gui/schemas/propsFileTraffic.json) is the engine's table and no op schema keeps its own writes; 46 op schemas' x-choupo data match the table; 135 corpus propsDicts in declared order (134 pass; 1 declaring a process-run input refuse, on a copy without run outputs, naming the Flowsheet run); a read of a later write, by path, default path, membrane name and by construction, refuses with the remedy and the right order passes; ctrl17's absent trajectory refuses before operation [0] naming the Flowsheet run, and four writtenBy misdeclarations refuse.  NOT checked: that the table lists every key an op reads (no single home for reads), computed paths, registry reads other than membranes, the package",
-      "seconds": 2.0
+      "claim": "check_props_order: OK -- 47 registered op types each carry a file-traffic row; 48 guarded writes in their sources match a write slot; the GUI's published copy (gui/schemas/propsFileTraffic.json) is the engine's table and no op schema keeps its own writes; 47 op schemas' x-choupo data match the table; 137 corpus propsDicts in declared order (136 pass; 1 declaring a process-run input refuse, on a copy without run outputs, naming the Flowsheet run); a read of a later write, by path, default path, membrane name and by construction, refuses with the remedy and the right order passes; ctrl17's absent trajectory refuses before operation [0] naming the Flowsheet run, and four writtenBy misdeclarations refuse.  NOT checked: that the table lists every key an op reads (no single home for reads), computed paths, registry reads other than membranes, the package",
+      "seconds": 3.5
     },
     "check_column_thermo_consistency": {
       "exit": 0,
@@ -1348,8 +1348,8 @@
     },
     "check_lhhw_detailed_balance": {
       "exit": 0,
-      "claim": "check_lhhw_detailed_balance: OK -- 15 reversible (law, T) points rest at the declared Kc (worst |r|/r_f = 3.2e-16, adsorption shifts up to x10), 15 point toward it from both sides, 6 unmoved laws (power law, explicit reverse) equal their recomputation bit for bit; 4 non-mass-action laws under `reversible true` refused by name through RateLaw and 2 legitimate ones accepted; 3 of 3 native readers (single-reaction cstr, single-reaction pfr, batch vessel) refuse through the same home; NOT checked: reactor integration, laws registered from a case's code/",
-      "seconds": 1.9
+      "claim": "check_lhhw_detailed_balance: OK -- 15 reversible (law, T) points rest at the declared Kc (worst |r|/r_f = 3.2e-16, adsorption shifts up to x10), 15 point toward it from both sides, 6 unmoved laws (power law, explicit reverse) equal their recomputation bit for bit; 4 non-mass-action laws under `reversible true` refused by name through RateLaw and 2 legitimate ones accepted; 3 of 3 native readers (single-reaction cstr, single-reaction pfr, batch vessel) refuse through the same home; 2/2 collider probes (`nu 0; order 1` refused reversible, kept irreversible); NOT checked: reactor integration, laws registered from a case's code/",
+      "seconds": 2.2
     },
     "check_txy_bubble_verdict": {
       "exit": 0,
@@ -1480,6 +1480,11 @@
       "exit": 0,
       "claim": "check_heavy_water: OK -- heavyWater.dat (reviewed) is the IAPWS R16-17(2018)/Herrig 2018 formulation: Wagner block = Eq.(1) Table 3; psat within 5.7e-05 of the full EOS at 6 temperatures (<= 1e-4); Tb/HvapTb/omega/Vliq/MW/Pc/Tc match; Cp fits reproduce; engine psat = the equation to 1e-6; boiling points from the engine: H2O 373.1243 K (IF97), D2O 374.5502 K (EOS 374.5488), shift 1.4259 K. Does NOT check transport (not carried), the EOS's own uncertainty, or any formation datum (none entered).",
       "seconds": 0.1
+    },
+    "check_negative_pressure": {
+      "exit": 0,
+      "claim": "check_negative_pressure: OK -- a pipe whose drop exceeds its inlet pressure is refused by unit, stream, P and inlet on an accepted pass (feed-forward, and in a torn recycle under Newton and Wegstein; the same line with a small drop runs); a trial sweep that visits a negative pressure is announced (2 clamp(s), stdout and caveat block) and the loop still converges; P == 0 (cstr) is still the unit-did-not-set sentinel.  NOT covered: P == 0 as an error (kept on purpose), the time-integrated binaries, other units' reactions to a received pressure.",
+      "seconds": 0.2
     }
   }
 }

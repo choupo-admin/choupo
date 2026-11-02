@@ -1868,6 +1868,13 @@ Rules: an inlet file is never touched; an unseeded recycle is a hard error
 naming the file to author; `incomplete 0/ + choupoSolve` stays FATAL — this
 tool is the sanctioned way out.
 
+**In the browser app** the same engine path is **File > Complete 0/** (it runs
+`choupoSolve -init0` in WASM, no `--force`): it adds only the missing files to
+the open case, lists and logs each one it generated (marked *generated* in the
+Case tree), keeps every file the case already has, and refuses a recycle with
+no seed exactly as the tool does.  A run refused for an incomplete `0/` offers
+it.  Download the case `.zip` afterwards to keep the generated files.
+
 **It materialises the INTERIOR half too** (2026-09-07). A state directory is a
 restartable snapshot, so a unit that *reads* an interior gets one written at
 `0/internalStates/<SECTOR>/<unit>` beside the stream files. What lands there is

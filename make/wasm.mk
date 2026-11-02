@@ -229,9 +229,15 @@ $(WASM_OBJ)/%.o: %.cpp $(WASM_CXX_STAMP) | gitversion
 #  `$(@:.wasm=.js)` is idempotent: it leaves the .js member alone and rewrites
 #  the .wasm member to it, so the recipe asks emcc for the same artefact
 #  whichever member triggered it.
+#  choupoSolve alone also exports `run_case_init0` (the browser's
+#  `bin/choupo-init0`, wasmEntry.cpp).  A later -sEXPORTED_FUNCTIONS replaces
+#  the shared one, so the full list is restated; the other four binaries do
+#  not define the symbol and keep the shared list.
+WASM_SOLVE_EXTRA_EXPORTS := "-sEXPORTED_FUNCTIONS=['_run_case','_run_case_init0','_malloc','_free']"
+
 define WASM_LINK
 	@printf "  EMLD  %s  (%d objects, %s)\n" $(@:.wasm=.js) $(words $(filter %.o,$^)) $(WASM_MODE)
-	@$(EMXX) $(WASM_LDFLAGS) -sEXPORT_NAME=$(1) -o $(@:.wasm=.js) \
+	@$(EMXX) $(WASM_LDFLAGS) $(2) -sEXPORT_NAME=$(1) -o $(@:.wasm=.js) \
 		$(filter %.o,$^)
 	@printf "  -->   wasm: %s\n" $(@:.js=.wasm)
 endef
@@ -241,7 +247,7 @@ endef
 #  instead of declaring everything current.  See WASM_LINK above for what that
 #  re-run used to produce.
 $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_SOLVE_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
-	$(call WASM_LINK,createChoupoSolve)
+	$(call WASM_LINK,createChoupoSolve,$(WASM_SOLVE_EXTRA_EXPORTS))
 
 $(WASM_BATCH_JS) $(WASM_BATCH_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_BATCH_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
 	$(call WASM_LINK,createChoupoBatch)
