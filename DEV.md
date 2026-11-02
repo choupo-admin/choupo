@@ -1528,6 +1528,17 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C202 INTEGRATION (the architect, 2026-11-02):** item 1 (phaseChanger) and
+> the assistant brief landed in `main` without a full sweep.  Reach measured:
+> `bin/integrate` ran the 10 cases that use phaseChanger/boiler/condenser
+> (PASS 15 / FAIL 0, no golden moved) and the gates that read the touched
+> files.  Its two FAILs are the environment, not the diff: `check_method_tools`
+> could not run (no gui/node_modules in the integration worktree), and
+> `check_element_closure` read no elementBalance for membrane08, a case
+> outside the scope whose run output the worktree did not hold; both pass or
+> run in the primary checkout (element closure: 249 cases close, 1 pinned).
+> The brief's docs gates (references, glossary, doctrine) pass.
+
 > **C203. A DIGITAL TWIN AS THE LAST FORM OF A PLANT CASE (Vitor, 2026-11-02:
 > "em plant pode haver um modelo final em modo de controlo que vai desde o
 > layout depois ate ao painel de controle? ... plant era so para estado
