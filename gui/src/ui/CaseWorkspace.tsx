@@ -88,6 +88,7 @@ import { keyHelp, type KeyHelp } from "../case/keyHelp.js";
 import { locatePropsBlocks } from "../case/propsDictLocate.js";
 import { openGuide } from "../help/guideLinks.js";
 import { FileTree } from "./FileTree.js";
+import { GENERATED_ZERO_HINT, isGeneratedZero } from "../case/completeZero.js";
 
 import { lessonOutline } from "../case/lesson.js";
 import { parse, type DictEntry } from "../dict/index.js";
@@ -299,6 +300,15 @@ export function CaseWorkspace() {
     [caseFiles.rawFiles, convergedOut, designOut]);
   const files = useMemo(() => orderFiles(Object.keys(raw)), [raw]);
   const [activePath, setActivePath] = useState<string | null>(null);
+  //  0/ files the engine's own -init0 wrote (Case > Complete 0/): marked,
+  //  because the student did not write them and the next run rewrites the
+  //  estimates it can.  Kind stays state0 (caseTree.kindOf) -- the badge is
+  //  the only addition.
+  const generated0 = useStore((s) => s.generated0);
+  const generatedBadge = useMemo(
+    () => (p: string) => isGeneratedZero(p, caseFiles.rawFiles, generated0)
+      ? { text: "generated", hint: GENERATED_ZERO_HINT } : null,
+    [caseFiles.rawFiles, generated0]);
 
   // Default: flowsheetDict / propsDict, else first file.
   const active =
@@ -453,6 +463,7 @@ export function CaseWorkspace() {
         files={files}
         active={active}
         onSelect={selectFile}
+        leafBadge={generatedBadge}
       />
     </ScrollArea>
   );

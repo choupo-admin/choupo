@@ -68,8 +68,8 @@
     },
     "check_bashrc_path": {
       "exit": 0,
-      "claim": "check_bashrc_path: OK -- sourcing etc/bashrc leaves recursive `$(MAKE)` working (probed with a throwaway project carrying its own `make/` directory, which is the actual failure, not the PATH order that causes it), REPAIRS a PATH that already carries the broken order rather than skipping because it finds itself on it, keeps /home/user/choupo/.claude/worktrees/agent-a620623183ee54d42 reachable for the ./choupoSolve symlinks, and keeps bin/ ahead of the system directories.  NOT CHECKED: zsh and the POSIX fallback branch, which resolve their own location differently; and whether `make wasm` itself succeeds, which needs emscripten -- what is established is that the PATH no longer stops it starting.",
-      "seconds": 0.1
+      "claim": "check_bashrc_path: OK -- sourcing etc/bashrc leaves recursive `$(MAKE)` working (probed with a throwaway project carrying its own `make/` directory, which is the actual failure, not the PATH order that causes it), REPAIRS a PATH that already carries the broken order rather than skipping because it finds itself on it, keeps /home/vitor/Choupo/.claude/worktrees/integ-worktree-complete0 reachable for the ./choupoSolve symlinks, and keeps bin/ ahead of the system directories.  NOT CHECKED: zsh and the POSIX fallback branch, which resolve their own location differently; and whether `make wasm` itself succeeds, which needs emscripten -- what is established is that the PATH no longer stops it starting.",
+      "seconds": 0.0
     },
     "check_basis_rank": {
       "exit": 0,
@@ -253,7 +253,7 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 844 path mention(s) and 262 case name(s) across 22 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
+      "claim": "check_doc_references: OK -- 871 path mention(s) and 262 case name(s) across 23 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
       "seconds": 0.9
     },
     "check_doctrine": {
