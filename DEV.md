@@ -1631,10 +1631,40 @@ accepts today, and that is a policy call.
 > that branch's moved-rows doc); the content decision on the seven
 > exotherm tutorials is unchanged.  NEXT, in Opus: settle (1) by testing the
 > hypothesis against the NBS liquid, then (2)-(4).
+> **The hypothesis tested by hand (the architect, 2026-11-02, the record's
+> own numbers; arithmetic reproduced the general's 32.99 kJ/mol to 0.04):**
+> Watson on the MONOMER-basis latent heat gives 26.17 kJ/mol at Tb (+7 %
+> against 24.39) but puts the 298 K liquid at -479.6 kJ/mol against NBS's
+> -484.5 (4.9 kJ/mol high).  Decisive control: pinning the 298 K liquid to
+> NBS itself still prices 31.11 kJ/mol at Tb.  So the contradiction is NOT
+> Watson's: with this record's liquid Cp (123.1, constant) and dimerisation
+> (log K25 2.555 bar^-1, dH -63.18 kJ/mol, van 't Hoff with constant dH over
+> 93 K) the NBS liquid at 298 K and the measured latent heat at Tb are
+> 6.7 kJ/mol apart.  A rising liquid Cp (~150 J/mol K near Tb, unverified)
+> accounts for ~1 kJ/mol of it; the rest sits in the vapour's association at
+> Tb (the dimer share needed is ~0.37 mol dimer per mol vaporised against
+> the 0.26 the record's K gives there).  NEXT is a READING, not code: Chao &
+> Zwolinski 1978 (the record's own primary, srd.nist.gov reprint) for the
+> dimerisation's temperature dependence and the equilibrium-mixture latent
+> heat they tabulate, and a primary liquid Cp(T); only then which anchor the
+> slice honours.
 > **Lesson recorded:** a data-record chain (datum, latent heat, Cp, K, dH)
 > that is individually cited can still be jointly inconsistent; check the
 > closure of the chain (latent heat at Tb) before building an engine home on
 > it.
+
+> **C206. TWO EDUTOOLS, LIQUID EFFLUENT TREATMENT AND GASEOUS EMISSION
+> TREATMENT, IN PARETO MODE (Vitor, 2026-11-02: "precisamos de uma Edutool
+> para tratamentos de efluentes liquidos e outra gasosos, em modo Pareto ...
+> Nao e urgente").**  RECORDED; placed beyond a week in PLAN.md.  Pareto
+> mode is read as C204's: the few treatment steps that cover most of what a
+> student's plant emits, each with its rule of thumb AND the exception that
+> must be taught with it, and a case that runs where the engine can run one;
+> what the engine cannot model yet is said on the page, never drawn as if it
+> were computed.  First step, before any dispatch: the Pareto analysis
+> itself (which effluents the corpus plants produce -- measured from their
+> boundary streams -- set against the standard treatment trains) and the
+> pedagogical scope put to Vitor (CLAUDE.md section 10).
 
 > **C205. THE DYNAMIC VERSIONS OF THE UNITS THAT HAVE NONE (Vitor, 2026-11-02,
 > after the C204 Pareto: "Mas eu tambem quero que implementes a versao
