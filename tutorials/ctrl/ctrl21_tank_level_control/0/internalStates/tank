@@ -1,5 +1,6 @@
 /*--------------------------------*- Choupo -*----------------------------------*\
-  0/internalStates/tank -- the initial holdup of 'tank': at the 2.0 m
+  0/internalStates/tank -- DYNAMIC initial holdup.  This record is the
+  initial HOLDUP of 'tank', the vessel's starting state: at the 2.0 m
   setpoint, at balance (F_in = F_out = 0.20 kmol/s), 293.15 K, 1 atm.
 \*-----------------------------------------------------------------------------*/
 
