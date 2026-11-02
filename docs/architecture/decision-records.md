@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 209 records already exist
+## 1. Why an index, when 210 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 209 design records, **149 state a rejected alternative and 60 do not** —
+- Of 210 design records, **149 state a rejected alternative and 61 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -310,6 +310,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`the-rack-drawn-from-its-sheet.md`](../design/the-rack-drawn-from-its-sheet.md) | ADR | yes | **BUILT 2026-11-02 (phase B)** -- commission C199: the vessel bank is drawn from its own sheet -- every vessel an instanced cylinder inside its rack inside the hall in 3D (the kind `membraneBank`, one `InstancedMesh` per rack, the sheet joined to the layout at one seam, `withBanks`); the usual 2D drawing set (plan, section through a rack bay, elevation of a rack with its feed/brine/permeate headers) as pure SVG functions, every dimension marked by ink AND word, the headers NOT sized and said so, a missing key a labelled box naming it; one train drawn in the equipment-schematic module with its roles found from the streams; a Reports section "Trains and racks" earned by a bank sheet; held by tests that recompute from the case's real run output |
 | [`boron-in-reverse-osmosis-proposal.md`](../design/boron-in-reverse-osmosis-proposal.md) | PROPOSAL | yes | **PROPOSED 2026-11-02** -- commission C198: boron as two species (boric acid neutral, borate an anion) split by the pH against its pKa, each with its own permeance inverted from two pH-labelled rated tests; Stage 1 with a declared pH, Stage 2 with the pH computed from the carbonate system and a caustic dosing unit; the rejected alternative: the full twelve-ion seawater set under SDEM (no per-ion permeances exist for these membranes) and a conditional seawater pKa as the engine route (kept as the validation anchor) |
 | [`an-llm-learns-choupo-from-a-brief.md`](../design/an-llm-learns-choupo-from-a-brief.md) | ADR | yes | **DECIDED 2026-11-01** -- commission C200: a student's own assistant learns Choupo from a kernel brief (at most 8 k tokens) plus task packs read on demand, writes DESIGN.md before any case file and before looking at a tutorial, returns files in the `=== FILE ===` format the app applies, and the browser materialises 0/ through the engine's own -init0; judged by an evaluation harness against today's baseline; the rejected alternative: shipping the whole docs/ai reference (over 500 kB) and letting the assistant start from the nearest tutorial |
+| [`c200-pack-specification.md`](../design/c200-pack-specification.md) | spec | no | **2026-11-02** -- the written brief each pack-writing general received for C200: one family per pack, keys read from the C++, one example that was RUN, what is refused; the packs it produced are `docs/ai/packs/` and the assistant brief they hang from is `docs/ai/brief.md`. |
 | [`a-header-is-sized-by-its-velocity.md`](../design/a-header-is-sized-by-its-velocity.md) | ADR | yes | **BUILT 2026-11-02** -- commission C199, the pipe and header sizer: `pipeHeader` sizes the feed, brine and permeate header of each vessel bank, per train, from the named stream's volumetric flow (the package's density) and a DECLARED velocity window and DECLARED list of inside diameters (no pipe schedule table: no-grant standards), picking the smallest bore within the window, REFUSING when none fits, publishing required and nominal bore (`headerNominalDiameter`), velocity and Darcy-Weisbach drop per metre (Churchill); the window is `assumed` (the one open figure, 1-2 m/s, is a small-plant vendor blog); alternatives rejected: a schedule table in the engine, the key on the bank's sheet, a velocity default; gate `check_swro_plant` arms (l)-(m) |
 
 ### Historical
@@ -363,7 +364,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**60 of 209 records state no rejected alternative.**  For a FORUM or a STUDY
+**61 of 210 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
