@@ -77,7 +77,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | todo | NaCl in water has no enthalpy datum the default energy report can use (the harness's p10, REFUSED by the engine): curate it | C200 5.2 |
 | todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
 | todo | Verify and fix the Gibbs review's three open items and the SpeciationSolver outer convergence | C187 (1)(2) |
-| todo | Pharmaceutical groups: the compaction bench (Heckel, Kawakita, Ryshkewitch fitted to the group's data), sized tablet machines, clean utilities (HVAC, purified water), blend uniformity | C195 |
+| todo | Pharmaceutical groups: blend uniformity; a sterile route if a group picks one; open lactose compaction data (none found) | C195 |
 | todo | Distillation P0 (step contract, singular-Jacobian diagnostic); re-run and classify Vítor's DME plant | C184 |
 | todo | aceticAcid02: the subcooled-feed q in the simultaneous column branch | C174, C175 |
 | todo | Seeded crystallisation, cake filtration and washing, a linear chromatography column (pedagogical scope first) | C190 |
@@ -118,6 +118,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | status | what | ref |
 |---|---|---|
 | done | Dynamic units, slice 1: `dynamicTank` (level by an outflow or a valve; one holdup home; two witnesses; PI holds the level, P-only offsets 0.050 m) | C205, 32aa8f278 |
+| done | The compaction bench `compactionFit` (Heckel, Kawakita, Ryshkewitch-Duckworth) with two open-data witnesses, MCC and DCPD; no open lactose dataset found, none invented | C195 |
 | done | The phaseChanger's saturated mixture is its bubble/dew point (it returned a liquid 102.7 K below its bubble point at exit 0) | C202 (1), 8a3946237 |
 | done | The assistant brief (`docs/ai/brief.md`, renamed from kernel.md) with four packs; the review's corrections | C200, C202 |
 | done | File > Complete 0/ in the app; the user guide documents it | C200 B', 3c4cfeff4, 2aadac008 |

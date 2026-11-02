@@ -1,0 +1,47 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    dcpd_inDie             dev_ryshkewitch_kb_pct 2.33048956558      1e-4
+diag    dcpd_inDie             dev_ryshkewitch_sigma0_MPa_pct 49.4763706254      1e-4
+diag    dcpd_inDie             heckel_A         1.33186263307      1e-4
+diag    dcpd_inDie             heckel_A_ci95    0.0229519605641    1e-4
+diag    dcpd_inDie             heckel_DA        0.736014904288     1e-4
+diag    dcpd_inDie             heckel_K_ci95_perMPa 7.74836836182e-05  1e-4
+diag    dcpd_inDie             heckel_K_perMPa  0.00196611284247   1e-4
+diag    dcpd_inDie             heckel_Py_MPa    508.617805854      1e-4
+diag    dcpd_inDie             heckel_Py_ci95_MPa 20.0444146948      1e-4
+diag    dcpd_inDie             heckel_R2        0.99330881447      1e-4
+diag    dcpd_inDie             kawakita_R2      0.999736957603     1e-4
+diag    dcpd_inDie             kawakita_a       0.63714261759      1e-4
+diag    dcpd_inDie             kawakita_b_perMPa 0.0655574652353    1e-4
+diag    dcpd_inDie             kawakita_invb_MPa 15.2537929344      1e-4
+diag    dcpd_inDie             n_heckel         21                 1e-4
+diag    dcpd_inDie             n_kawakita       42                 1e-4
+diag    dcpd_inDie             n_ryshkewitch    19                 1e-4
+diag    dcpd_inDie             paper_ryshkewitch_kb 15                 1e-4
+diag    dcpd_inDie             paper_ryshkewitch_sigma0_MPa 20.5               1e-4
+diag    dcpd_inDie             ryshkewitch_R2   0.994051251226     1e-4
+diag    dcpd_inDie             ryshkewitch_kb   15.3495734348      1e-4
+diag    dcpd_inDie             ryshkewitch_kb_ci95 0.607662913464     1e-4
+diag    dcpd_inDie             ryshkewitch_sigma0_MPa 30.6426559782      1e-4
+diag    dcpa_lubricated        dev_heckel_Py_MPa_pct 69.5431201833      1e-4
+diag    dcpa_lubricated        heckel_A         0.989460304658     1e-4
+diag    dcpa_lubricated        heckel_A_ci95    0.0907062623221    1e-4
+diag    dcpa_lubricated        heckel_DA        0.628222716644     1e-4
+diag    dcpa_lubricated        heckel_K_ci95_perMPa 0.00029287909719   1e-4
+diag    dcpa_lubricated        heckel_K_perMPa  0.00135903330253   1e-4
+diag    dcpa_lubricated        heckel_Py_MPa    735.817141596      1e-4
+diag    dcpa_lubricated        heckel_Py_ci95_MPa 158.572611669      1e-4
+diag    dcpa_lubricated        heckel_R2        0.99500850486      1e-4
+diag    dcpa_lubricated        kawakita_R2      0.999217472171     1e-4
+diag    dcpa_lubricated        kawakita_a       0.453141561557     1e-4
+diag    dcpa_lubricated        kawakita_b_perMPa 0.0132168235414    1e-4
+diag    dcpa_lubricated        kawakita_invb_MPa 75.6611448181      1e-4
+diag    dcpa_lubricated        n_heckel         4                  1e-4
+diag    dcpa_lubricated        n_kawakita       6                  1e-4
+diag    dcpa_lubricated        n_ryshkewitch    6                  1e-4
+diag    dcpa_lubricated        paper_heckel_Py_MPa 434                1e-4
+diag    dcpa_lubricated        ryshkewitch_R2   0.988892139794     1e-4
+diag    dcpa_lubricated        ryshkewitch_kb   16.0616696291      1e-4
+diag    dcpa_lubricated        ryshkewitch_kb_ci95 2.36276699188      1e-4
+diag    dcpa_lubricated        ryshkewitch_sigma0_MPa 79.3863156553      1e-4

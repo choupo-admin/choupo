@@ -2349,9 +2349,35 @@ accepts today, and that is a policy call.
 > and often inconsistent, and 3 of 14 design projects are sterile.  The
 > synthesis classifies the work as EASY (E1-E9, each inside an existing home)
 > and IMPORTANT LONG-TERM (L1-L10); both are placed in PLAN.md.
-> STATUS: COMMISSIONED 2026-11-02; (1)(2) DONE; (4) DONE; the compaction
-> bench with a general (deadline 2026-11-03 12:00); (3), (5) wait; the
-> verification above is DONE.
+> DONE 2026-11-02, the compaction bench (a general; Vitor's answer: the groups
+> take LITERATURE data of similar products, not their own): props op
+> `compactionFit` -- Heckel on a DECLARED window (Py = 1/K, A, D_A, 95 %
+> half-widths), Kawakita (a, b, 1/b; C tabulated, from V and V0, or C = 1 -
+> D0/D), Ryshkewitch-Duckworth on ln(sigma_t) (sigma_t tabulated or 2F/(pi d
+> t)); a window with no point, or fewer than 4, refuses by name; the source's
+> own values in `reported {}` printed beside the fitted ones, never tuned; no
+> curation verdict claimed (no held-out evidence); published tables + default
+> views.  Witnesses `tutorials/props/powder/compaction01_mcc` and
+> `compaction02_dcpd_brittle`, from two CC BY 4.0 open datasets read from
+> their files: van der Haven et al., Sci. Data 13 (2026) 1468 (Avicel PH200
+> and DCPD Emcompress in die, crushing forces; Kawakita strain computed from
+> each tablet's raw fill height and thickness) and Kukuls & Mohylyuk, RSU
+> Dataverse 2025 (lubricated UF-711 and DI-CAFOS A60, out of die; pressure
+> computed from the upper-punch force).  Fitted against the sources:
+> Mohylyuk et al. 2024 out-of-die Py 106 / 434 MPa against 266 / 736 here --
+> the paper's windows (100-150 and 250-450 MPa) hold 1 and 3 deposited rows,
+> so they cannot be declared here; the dataset's own sigma_0 21.7 / 20.5 MPa
+> against 34.2 / 30.6 here while k_b agrees (6.6 / 15.0 against 7.17 /
+> 15.35), unexplained and said so.  NO OPEN LACTOSE DATASET with tabulated
+> rows was found, so none is invented: compaction02 is the brittle reference
+> and quotes Lura et al. 2020 (Tablettose 80 in-die Py 120.8 MPa) for the
+> donepezil group.  Mixture rules NOT implemented (said on every run).  Gate
+> `check_compaction_bench` (recomputation + three refusals; one sabotage, b
+> and 1/b swapped, caught on all four Kawakita fits).  NOT done: lactose data
+> (a group can digitise a CC BY figure into the same grammar), any mixture
+> rule, Johanson roller compaction.
+> STATUS: COMMISSIONED 2026-11-02; (1)(2)(4) and the compaction bench DONE; the
+> verification of the list against the reports read in full is DONE; (3), (5) wait.
 
 > **C194. THE CAMPO DE DALIAS SEAWATER DESALINATION PLANT (THE "SEA OF
 > PLASTIC"), FROM A PUBLIC CASE STUDY, WITH ITS WHOLE LAYOUT (Vitor,

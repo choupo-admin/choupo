@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*103 of 103 registered operations carry a schema and are documented below.*
+*104 of 104 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -183,6 +183,21 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `murphreeEfficiency` |   | number | - | Fraction of the equilibrium change each tray actually achieves; defaults to 1 (equilibrium stages). Any value other than 1 makes the stag… |
 | `condenser` |   | object | — | The condenser's own block. `type` decides what stage 1 IS, the same in every method: `total` (the default, announced when used) -- nStage… |
 | `hydraulics` |   | object | — | Present = run a hydraulic RATING on the converged profile, which the stage equations never do: can the trays pass the traffic? Give `diam… |
+
+## `compactionFit`  (compactionFit operation)
+
+The COMPACTION BENCH (DEV.md 4c C195): the Heckel, Kawakita and Ryshkewitch-Duckworth models of a pharmaceutical powder, each fitted by least squares on the straight line its authors wrote, to a declared dataset of ONE material. The Heckel and Kawakita pressure windows are DECLARED by the case, never chosen by the op; a window with no point, or with fewer than 4, refuses. The equations, citations and validity statements are printed beside the numbers, and values the source itself reports are printed beside the fitted ones as a cross-check. No mixture rule is implemented: an excipient stands in for the blend.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `material` |   | string | — | What the dataset is, as printed in the source (e.g. "Avicel PH-102"). |
+| `dataset` |   | string | — | Path to a self-describing dataset dict, relative to the case: columns P [MPa]; exactly one of D [-], porosity [-] or density [g/cm3]; opt… |
+| `trueDensity` |   | ['number', 'string'] | — | The material's true (pycnometric) density, e.g. `1.59 g/cm3`; required only when the dataset gives the compact's `density`. |
+| `heckel` |   | object | — | ln(1/(1-D)) = K P + A on the DECLARED linear region; mean yield pressure Py = 1/K. |
+| `kawakita` |   | object | — | P/C = P/a + 1/(a b), C = (V0 - V)/V0, on the declared pressure window. |
+| `ryshkewitch` |   | object | — | sigma_t = sigma_0 exp(-k_b eps), fitted on ln(sigma_t); sigma_t tabulated or computed as 2F/(pi d t) (Fell & Newton 1970). |
+| `reported` |   | object | — | The source's own fitted values (Py, A, a, invb, sigma0, kb), printed beside the fitted ones; never used to tune. |
+| `output` |   | object | — | `{ file <name>.csv; }` -- the published tables, one block per model. |
 
 ## `compressor`  (compressor operation)
 
