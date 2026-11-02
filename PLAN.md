@@ -71,7 +71,7 @@ Every general stopped with the laptop.  All their work is on origin as `backup/*
 
 | status | what | ref |
 |---|---|---|
-| todo | Digital twin as the last form of a plant case: plan of dynamic models per unit first, then loop/instrument declaration with a generated P&ID, then the operator panel (pedagogical scope to Vitor first) | C203 |
+| todo | `digitalTwin/`, its own tutorials folder (operation of a designed plant, continuous on choupoCtrl then batch on choupoBatch, layout REQUIRED): plan of dynamic models per unit first, then loops/instruments with a generated P&ID, then the operator panel (pedagogical scope to Vitor first) | C203 |
 | todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
 | todo | Verify and fix the Gibbs review's three open items and the SpeciationSolver outer convergence | C187 (1)(2) |
 | todo | Pharmaceutical groups: the compaction bench (Heckel, Kawakita, Ryshkewitch fitted to the group's data), sized tablet machines, clean utilities (HVAC, purified water), blend uniformity | C195 |

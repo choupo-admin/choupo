@@ -1582,6 +1582,22 @@ accepts today, and that is a policy call.
 > only, never the case structure.  Witness candidate: the green-ammonia plant
 > (layout, sizing and cost exist).  Pedagogical scope to be put to Vitor
 > before any dispatch.
+> **DECIDED (the architect, 2026-11-02, after Vitor: "separar /digitalTween
+> de plant ... um processo completo que trabalha em modo de controlo em
+> estado continuo, ou em batch. Tem de ter layout"):** this REVISES the
+> reading above in one place -- `digitalTwin/` IS its own top-level folder
+> of `tutorials/` (the spelling is `digitalTwin`), a discipline: the
+> OPERATION and control of a designed plant, studied after `plant/`
+> (steady design, untouched).  Still NO new binary: continuous mode runs
+> on `choupoCtrl`, batch mode on `choupoBatch` (recipes, campaigns).  A
+> twin case REFUSES by name without a `layoutDict` (optional in `plant/`,
+> required here: it feeds the generated PFD/P&ID, the panel's positions and
+> the 3D view) and without its declared instruments and loops.  The twin
+> stays SELF-CONTAINED (credo): its `0/` is seeded from the design's
+> `converged/` by a tool in the `choupo-init0` style, the origin recorded
+> in the case; it is never linked to the `plant/` folder.  Order unchanged:
+> dynamic models per unit, then loops/instruments/P&ID, then the panel;
+> continuous first, batch after.
 
 > **C202. THE C200 KERNEL REVIEWED BY RUNNING IT, AND A PHASECHANGER THAT
 > STOPS 119 K SHORT (Vitor, 2026-11-02: "Podes rever o kernel?").**  DONE as
