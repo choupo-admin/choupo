@@ -1631,6 +1631,23 @@ accepts today, and that is a policy call.
 > that branch's moved-rows doc); the content decision on the seven
 > exotherm tutorials is unchanged.  NEXT, in Opus: settle (1) by testing the
 > hypothesis against the NBS liquid, then (2)-(4).
+> **The hypothesis tested by hand (the architect, 2026-11-02, the record's
+> own numbers; arithmetic reproduced the general's 32.99 kJ/mol to 0.04):**
+> Watson on the MONOMER-basis latent heat gives 26.17 kJ/mol at Tb (+7 %
+> against 24.39) but puts the 298 K liquid at -479.6 kJ/mol against NBS's
+> -484.5 (4.9 kJ/mol high).  Decisive control: pinning the 298 K liquid to
+> NBS itself still prices 31.11 kJ/mol at Tb.  So the contradiction is NOT
+> Watson's: with this record's liquid Cp (123.1, constant) and dimerisation
+> (log K25 2.555 bar^-1, dH -63.18 kJ/mol, van 't Hoff with constant dH over
+> 93 K) the NBS liquid at 298 K and the measured latent heat at Tb are
+> 6.7 kJ/mol apart.  A rising liquid Cp (~150 J/mol K near Tb, unverified)
+> accounts for ~1 kJ/mol of it; the rest sits in the vapour's association at
+> Tb (the dimer share needed is ~0.37 mol dimer per mol vaporised against
+> the 0.26 the record's K gives there).  NEXT is a READING, not code: Chao &
+> Zwolinski 1978 (the record's own primary, srd.nist.gov reprint) for the
+> dimerisation's temperature dependence and the equilibrium-mixture latent
+> heat they tabulate, and a primary liquid Cp(T); only then which anchor the
+> slice honours.
 > **Lesson recorded:** a data-record chain (datum, latent heat, Cp, K, dH)
 > that is individually cited can still be jointly inconsistent; check the
 > closure of the chain (latent heat at Tb) before building an engine home on
