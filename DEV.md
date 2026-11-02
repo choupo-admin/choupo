@@ -1706,7 +1706,21 @@ accepts today, and that is a policy call.
 > units).  A recycle that crosses the wrapper from one train to another REFUSES
 > by name.  Phase 2, not now: non-identical trains (one stopped, a spare,
 > N+1), uneven distribution over the header -- they belong with the digital
-> twin (C203), where stopping a train is an operating scenario.  Migration:
+> twin (C203), where stopping a train is an operating scenario.  CHECKED
+> ONLINE (2026-11-02, Vitor asked whether this is good flowsheet practice):
+> the PFD convention of Turton et al. (course slides read, KFUPM CHE 425
+> chapter 1, slides 9-10) is "XX-YZZ A/B ... A/B identifies parallel units or
+> backup units not shown on a PFD" -- equipment in the same service is drawn
+> ONCE and its parallel or spare copies are carried by the tag suffix, which
+> matches drawing one train; so the repeated sector's item tags carry the
+> train letter (A..F) beside the "x N" box, in the convention's own form.
+> Seawater RO plants are built as many identical, independently operable
+> trains with redundancy by count (Perth 12 SWRO trains; a DOE workshop slide
+> lists the number and size of trains and the redundant capacity among the
+> core design choices) -- the C209 premise holds for this case.  NOT found:
+> any public source stating how simulators should model identical trains, so
+> "one train with a multiplicity" is Choupo's design choice, argued above, and
+> is not to be described as an industry standard.  Migration:
 > swro01_campoDalias is the witness (its goldens move only by the
 > representation, which the list in the commit shows).  Placed first in Beyond
 > a week.
