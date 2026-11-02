@@ -28,6 +28,7 @@ License
 
 #include "SpiralWoundModule.H"
 #include "BulkConversion.H"
+#include "AqueousSplit.H"
 #include "RatedTestInversion.H"
 
 #include "core/Advisory.H"
@@ -923,8 +924,189 @@ int SpiralWoundModule::solve(const DictPtr& dict,
             "spiralWoundModule '" + unitLabel + "'", b);
         ratedInversions.push_back(std::move(d.inv));
     }
-    for (const auto& s : transportModel->ratedTestSolutes())
+    // ---- THE AQUEOUS SPLIT (C198, Stage 1; membrane/AqueousSplit.H) -------
+    //  `aqueousSplit {}` carries ONE apparent component (boron) as an acid and
+    //  its conjugate base with their OWN rejections, the base fraction alpha
+    //  read from the PACKAGE at the module inlet's bulk, the inlet T and the
+    //  DECLARED pH.  Exact reduction to the component's effective rejection
+    //  under the conditions AqueousSplit.H states; refused where it is not.
+    struct SplitRun
     {
+        bool active = false;
+        membrane::AqueousSplitSpec spec;
+        membrane::SplitState st;           // at the module inlet
+        scalar R_acid = 0.0, R_base = 0.0, R_eff = 0.0;
+        int    nTests = 0;
+        std::vector<scalar> testAlpha, testReff, testPH;   // per rated test used
+        std::size_t iComp = 0;             // component index in the thermo
+    } splitRun;
+    const bool hasSplitBlock = opDict->found("aqueousSplit");
+    if (hasSplitBlock)
+    {
+        const std::string who = "spiralWoundModule '" + unitLabel + "'";
+        splitRun.spec = membrane::readAqueousSplit(opDict->subDict("aqueousSplit"), who);
+        if (transportModel->type() != "constantRejection")
+            throw std::runtime_error(who + ": `aqueousSplit {}` needs `transport"
+                " constantRejection;` -- the two forms recombine exactly into"
+                " the component's effective rejection only when each form's"
+                " passage is constant along the channel.  With `transport "
+                + transportModel->type() + ";` the passage of each form depends"
+                  " on the local flux, the reduction is not exact, and no"
+                  " approximation is applied in its place (Stage 1).");
+        if (polar.perSoluteK())
+            throw std::runtime_error(who + ": `aqueousSplit {}` shares ONE film"
+                " coefficient between the two forms; this unit's polarisation"
+                " gives each solute its own, and the reduction would no longer"
+                " be exact.  Declare one `diffusivity` for the component.");
+        bool listed = false;
+        for (std::size_t i = 0; i < Ncomp; ++i)
+            if (thermo.comp(i).name() == splitRun.spec.component)
+            { listed = true; splitRun.iComp = i; }
+        if (!listed)
+            throw std::runtime_error(who + ": `aqueousSplit { component "
+                + splitRun.spec.component + "; }` names no component of the case.");
+        const auto& pend = transportModel->ratedTestSolutes();
+        const bool pendingSplit = std::find(pend.begin(), pend.end(),
+            splitRun.spec.component) != pend.end()
+            && transportModel->ratedTestId(splitRun.spec.component) == "fromAqueousSplit";
+        if (!pendingSplit && !ratedTestProbe_)
+            throw std::runtime_error(who + ": `aqueousSplit` declares the component '"
+                + splitRun.spec.component + "', and `transportParameters {"
+                " rejection { " + splitRun.spec.component + " ( fromAqueousSplit ); } }`"
+                " is not written -- the split's effective rejection has nowhere"
+                " to go.");
+        splitRun.active = true;
+    }
+    else
+        for (const auto& s : transportModel->ratedTestSolutes())
+            if (transportModel->ratedTestId(s) == "fromAqueousSplit")
+                throw std::runtime_error("spiralWoundModule '" + unitLabel
+                    + "': `rejection { " + s + " ( fromAqueousSplit ); }` defers to"
+                      " an `aqueousSplit {}` block, and the operation declares none.");
+
+    //  The split component is derived LAST: its base may be tied to another
+    //  solute's rejection (`base ( sameAs NaCl )`).
+    std::vector<std::string> pendingRated = transportModel->ratedTestSolutes();
+    std::stable_partition(pendingRated.begin(), pendingRated.end(),
+        [&](const std::string& x){ return !(splitRun.active && x == splitRun.spec.component); });
+    for (const auto& s : pendingRated)
+    {
+        if (splitRun.active && s == splitRun.spec.component)
+        {
+            const std::string who = "spiralWoundModule '" + unitLabel + "'";
+            auto& sp = splitRun.spec;
+            auto bulkIn = membrane::toBulk(F_in / nVessels, z_in, MW, rho, Ncomp);
+            std::vector<std::pair<std::size_t, scalar>> bulkPairs;
+            for (std::size_t i = 0; i < Ncomp; ++i)
+                if (i != iWater && thermo.comp(i).isNonvolatile())
+                    bulkPairs.emplace_back(i, bulkIn.c[i]);
+            splitRun.st = membrane::splitAt(thermo, sp, bulkPairs, rho, T_in, sp.pH, 0);
+
+            //  alpha AT A RATED TEST: that test's pH and T, the component
+            //  alone in water at the test's mass fraction (the probe's feed).
+            membrane::AlphaAtTest alphaAt = [&](const RatedTest& rt) -> scalar
+            {
+                const scalar c = rt.feedMassFraction * rho / thermo.comp(splitRun.iComp).MW();
+                return membrane::splitAt(thermo, sp, { { splitRun.iComp, c } },
+                                         rho, rt.T, rt.pH, 0).alpha;
+            };
+            auto baseR = [&]() -> scalar
+            {
+                if (sp.hasBaseValue) return sp.baseValue;
+                for (const auto& iv : ratedInversions)
+                    if (iv.conditions.solute == sp.baseSameAs) return iv.R_int;
+                throw std::runtime_error(who + ": `aqueousSplit { rejection { base"
+                    " ( sameAs " + sp.baseSameAs + " ); } }` -- '" + sp.baseSameAs
+                    + "' has no intrinsic rejection DERIVED `fromRatedTest` in"
+                      " this unit to be tied to.  Write the base's rejection as a"
+                      " number with its reason, or derive that solute's.");
+            };
+            std::string how;
+            if (sp.twoTests())
+            {
+                auto r = membrane::invertSplitFromTwoTests(dict, thermo, modRec, s,
+                    sp.testIds[0], sp.testIds[1], alphaAt, unitLabel, A_w_eff);
+                splitRun.R_acid = r.R_acid; splitRun.R_base = r.R_base;
+                splitRun.nTests = 2;
+                splitRun.testAlpha = r.alphas; splitRun.testReff = r.R_eff; splitRun.testPH = r.pHs;
+                char b[400];
+                std::snprintf(b, sizeof(b), "TWO rated tests (%s at pH %.3g, alpha %.5f;"
+                    " %s at pH %.3g, alpha %.5f) determine BOTH forms",
+                    sp.testIds[0].c_str(), static_cast<double>(r.pHs[0]),
+                    static_cast<double>(r.alphas[0]), sp.testIds[1].c_str(),
+                    static_cast<double>(r.pHs[1]), static_cast<double>(r.alphas[1]));
+                how = b;
+                for (auto& iv : r.inversions) ratedInversions.push_back(std::move(iv));
+            }
+            else if (!sp.acidTest.empty())
+            {
+                const scalar Rb = baseR();
+                auto r = membrane::invertSplitFromOneTest(dict, thermo, modRec, s,
+                    sp.acidTest, Rb, alphaAt, unitLabel, A_w_eff);
+                splitRun.R_acid = r.R_acid; splitRun.R_base = r.R_base;
+                splitRun.nTests = 1;
+                splitRun.testAlpha = r.alphas; splitRun.testReff = r.R_eff; splitRun.testPH = r.pHs;
+                char b[500];
+                std::snprintf(b, sizeof(b), "ONE rated test (%s at pH %.3g, alpha"
+                    " %.5f) determines the ACID; the BASE rejection %.6f is a"
+                    " DECLARED ASSUMPTION (%s) -- one test cannot identify two"
+                    " permeances",
+                    sp.acidTest.c_str(), static_cast<double>(r.pHs[0]),
+                    static_cast<double>(r.alphas[0]), static_cast<double>(Rb),
+                    sp.hasBaseValue ? "a number in the case"
+                                    : ("the same intrinsic rejection as " + sp.baseSameAs
+                                       + ": an anion rejected like a salt").c_str());
+                how = b;
+                for (auto& iv : r.inversions) ratedInversions.push_back(std::move(iv));
+            }
+            else
+            {
+                splitRun.R_acid = sp.acidValue;
+                splitRun.R_base = baseR();
+                how = "both rejections DECLARED as numbers in the case";
+            }
+            splitRun.R_eff = membrane::effectiveRejection(
+                splitRun.st.alpha, splitRun.R_acid, splitRun.R_base);
+            transportModel->setRatedRejection(s, splitRun.R_eff);
+
+            char b[1400];
+            std::snprintf(b, sizeof(b),
+                "%s split into %s (acid) and %s (base), FROZEN at the module inlet:"
+                " pH %.3f DECLARED (%s; %s) at %.2f K, I = %.4f mol/kg, activity model"
+                " '%s' (gamma_acid %.4f, gamma_base %.4f), the curated constant"
+                " pKa(T) = %.4f (log K %.4f) -> alpha = %.5f (apparent pKa %.4f);"
+                " %s; R_acid = %.6f, R_base = %.6f -> R_eff = %.6f for the component."
+                "  Stage 1: pH is a DECLARED label of the module, not a stream"
+                " property; the split is not re-resolved along the channel; both"
+                " forms share one film coefficient.",
+                s.c_str(), sp.acid.c_str(), sp.base.c_str(),
+                static_cast<double>(sp.pH), sp.pHSource.c_str(),
+                splitRun.st.pHScale.c_str(), static_cast<double>(T_in),
+                static_cast<double>(splitRun.st.I),
+                thermo.aqueousChemistry().activityModel.c_str(),
+                static_cast<double>(splitRun.st.gamma_acid),
+                static_cast<double>(splitRun.st.gamma_base),
+                static_cast<double>(splitRun.st.pKa_thermo),
+                static_cast<double>(splitRun.st.logK_T),
+                static_cast<double>(splitRun.st.alpha),
+                static_cast<double>(splitRun.st.pKa_apparent), how.c_str(),
+                static_cast<double>(splitRun.R_acid), static_cast<double>(splitRun.R_base),
+                static_cast<double>(splitRun.R_eff));
+            std::cout << "  [split] " << b << "\n";
+            std::cerr << "[split] spiralWoundModule '" << unitLabel << "': " << b << "\n";
+            AdvisoryLog::instance().add("approximation", "warning",
+                "spiralWoundModule '" + unitLabel + "'", std::string("aqueousSplit: ") + b);
+            if (splitRun.st.beyondDomain)
+            {
+                //  The speciation's OWN announcement (AdvisoryLog, "speciation",
+                //  the model's declared band) has already fired and rides the
+                //  end-of-run caveat block; this echoes its sentence beside
+                //  the alpha it qualifies.  No second advisory is raised.
+                std::cout << "  [split] aqueousSplit alpha at the module inlet: "
+                          << splitRun.st.domainNote << "\n";
+            }
+            continue;
+        }
         auto inv = membrane::invertRatedRejection(dict, thermo, modRec, s, transportModel->ratedTestId(s), unitLabel, A_w_eff);
         transportModel->setRatedRejection(s, inv.R_int);
         const auto& c = inv.conditions;
@@ -1962,6 +2144,48 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         //  The channel-average polarisation index per solute (Geraldes &
         //  Afonso 2007's Gamma), so a golden can pin what the film did.
         if (nRecorded > 0) kpis_["Gamma_" + nm + "_avg"] = gammaSum[s] / nRecorded;
+    }
+    //  THE SPLIT'S FORMS (C198): the package's alpha and constant, the two
+    //  rejections, and the permeate and retentate of each form (the split
+    //  frozen, so the retentate keeps alpha; the permeate follows the passages).
+    if (splitRun.active)
+    {
+        std::size_t sb = 0;
+        for (std::size_t s = 0; s < Ns; ++s)
+            if (soluteIdx[s] == splitRun.iComp) sb = s;
+        const auto& st = splitRun.st;
+        const auto pass = membrane::splitPassage(st.alpha, splitRun.R_acid, splitRun.R_base);
+        const scalar MWc = thermo.comp(splitRun.iComp).MW();
+        const scalar Fp = F_perm_solute[sb] * nVessels;          // kmol/s, stage
+        const scalar Fr = c_b[sb] * Q_b * nVessels;
+        kpis_["split_pH"]            = splitRun.spec.pH;
+        kpis_["split_alpha"]         = st.alpha;
+        kpis_["split_pKa_thermo"]    = st.pKa_thermo;
+        kpis_["split_pKa_apparent"]  = st.pKa_apparent;
+        kpis_["split_gamma_acid"]    = st.gamma_acid;
+        kpis_["split_gamma_base"]    = st.gamma_base;
+        kpis_["split_I"]             = st.I;
+        kpis_["split_R_acid"]        = splitRun.R_acid;
+        kpis_["split_R_base"]        = splitRun.R_base;
+        kpis_["split_R_eff"]         = splitRun.R_eff;
+        for (std::size_t t = 0; t < splitRun.testAlpha.size(); ++t)
+        {
+            const std::string tt = std::to_string(t + 1);
+            kpis_["split_test" + tt + "_pH"]    = splitRun.testPH[t];
+            kpis_["split_test" + tt + "_alpha"] = splitRun.testAlpha[t];
+            kpis_["split_test" + tt + "_R_eff"] = splitRun.testReff[t];
+        }
+        kpis_["split_tests"] = static_cast<scalar>(splitRun.nTests);
+        kpis_["split_permeate_acid_kmol_s"]   = Fp * pass.permeateAcidShare;
+        kpis_["split_permeate_base_kmol_s"]   = Fp * pass.permeateBaseShare;
+        kpis_["split_retentate_acid_kmol_s"]  = Fr * (1.0 - st.alpha);
+        kpis_["split_retentate_base_kmol_s"]  = Fr * st.alpha;
+        if (Q_perm > 0.0)
+        {
+            const scalar cp = F_perm_solute[sb] / Q_perm;      // kmol/m3
+            kpis_["split_permeate_acid_mg_L"] = cp * pass.permeateAcidShare * MWc * 1.0e3;
+            kpis_["split_permeate_base_mg_L"] = cp * pass.permeateBaseShare * MWc * 1.0e3;
+        }
     }
     //  The interface potential gradient, averaged, when the film was coupled.
     if (nXi > 0) kpis_["xi_V_per_m_avg"] = xiSum / nXi;

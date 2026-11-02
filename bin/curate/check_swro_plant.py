@@ -25,13 +25,19 @@ WHAT THIS CHECKS.
   (b) THE FEED is Table 2 of the PDF: the twelve ions are summed to their
       osmotic NaCl equivalent and the boron to B, and the `seawater` stream
       carries exactly that per m3 at the declared 1025 kg/m3.
-  (c) THE BORON ROUTE.  The module records carry the PDF's two boron tests
-      (91 % at pH 8; 95 % at pH 10), the engine's rated-test KPIs reproduce
-      them, and the approximation is ANNOUNCED in the output.  THE LIMITATION
-      IS PINNED: a copy with the second pass's test labelled pH 7 gives the
-      SAME intrinsic boron rejection -- the engine does not couple the pH to
-      the transport.  The day it does, this arm fails and demands that the
-      case's header, the design record and this gate be rewritten.
+  (c) THE BORON SPLIT (DEV.md 4c C198, Stage 1).  The module records carry the
+      PDF's two boron tests (91 % at pH 8; 95 % at pH 10), the engine's
+      rated-test KPIs reproduce them, and each module splits boron into boric
+      acid and borate at its DECLARED pH (8.2 for the first pass, Table 2;
+      10 for the second, Table 1).  THE ARM THAT PINNED THE OPPOSITE IS
+      REWRITTEN INTO ITS POSITIVE FORM: the derived pair of permeances
+      reproduces the rated test at the TEST's own pH; relabelling the second
+      pass's test pH 10 -> 7 changes the derived acid rejection (alpha at the
+      test moved) and NOT the component's effective rejection at the test
+      (that is the sheet's number through the module's film); declaring the
+      second pass at pH 9 raises the product's boron; the run announces the
+      frozen split and the assumed base.  The full recomputation is
+      check_boron_split.py's.
   (d) REFUSALS BY NAME: a unit whose rejection list omits the boron
       solute present in its feed, one whose module record has no boron test, a car park that
       cannot hold its bays, a fence crossing with `at` on an east/west side.
@@ -94,7 +100,8 @@ WHAT THIS DOES NOT CHECK, said plainly:
     validation.
   * THE LAYOUT AGAINST ANY CODE OR THE REAL SITE: every position is author-set.
   * THE FIRST LAW (UNAVAILABLE on this component set, as membrane27).
-  * BORON AS A pH-DEPENDENT PHYSICS: the case does not model it (see (c)).
+  * BORON AS A COMPUTED-pH PHYSICS: the pH is a declared label of each module
+    (Stage 1); Stage 2 resolves it from the carbonate system (see (c)).
 """
 import json
 import math
@@ -164,11 +171,11 @@ def fixture(tmp: Path, name: str, edit) -> Path:
     return dst
 
 
-def sub_file(p: Path, old: str, new: str):
+def sub_file(p: Path, old: str, new: str, count: int = 1):
     s = p.read_text()
     if old not in s:
         raise RuntimeError("fixture edit: %r not in %s" % (old, p))
-    p.write_text(s.replace(old, new, 1))
+    p.write_text(s.replace(old, new, count))
 
 
 def declared_rho_sea() -> float:
@@ -263,22 +270,44 @@ def arm_c(res, out, tmp):
         gn = K[unit].get("ratedTest_R_obs_NaCl")
         if gn is None or abs(gn - want_n) > 1e-6:
             fails.append("(c) %s: the NaCl rated-test reproduction is %r, not %.4f" % (unit, gn, want_n))
-    if "the probe models no pH" not in out:
-        fails.append("(c) the run does not announce that the boron probe models no pH (the approximation's output half)")
-    if "boron is ONE lumped solute" not in (CASE / "system" / "flowsheetDict").read_text():
-        fails.append("(c) the case's `source` no longer declares boron a lumped solute with a constant rejection (the input half)")
-    # the pH-label fixture: the engine must NOT move the intrinsic rejection
+    for needle in ("FROZEN at the module inlet", "DECLARED ASSUMPTION", "pH 8.200 DECLARED", "pH 10.000 DECLARED"):
+        if needle not in out:
+            fails.append("(c) the run does not announce %r (the split's output half)" % needle)
+    fs = (CASE / "system" / "flowsheetDict").read_text()
+    if fs.count("aqueousSplit") < 3 or "boron ( fromAqueousSplit );" not in fs:
+        fails.append("(c) the case no longer declares boron through `aqueousSplit {}` on its three modules (the input half)")
+    # the derived pair reproduces the rated test AT THE TEST'S pH
+    for unit in ("RO1", "RO2a"):
+        k = K[unit]
+        want = 1.0 - ((1.0 - k["split_test1_alpha"]) * (1.0 - k["split_R_acid"]) + k["split_test1_alpha"] * (1.0 - k["split_R_base"]))
+        if abs(want - k["split_test1_R_eff"]) > 1e-9:
+            fails.append("(c) %s: the derived (R_acid, R_base) does not reproduce its rated test at the test's pH (%.9f vs %.9f)"
+                         % (unit, want, k["split_test1_R_eff"]))
+    # THE POSITIVE FORM of the old limitation: the pH now couples
     d = fixture(tmp, "ph-label", lambda d: sub_file(d / "constant" / "assets" / "TM720C-430.dat", "pH                 10;", "pH                 7;"))
     out2, code = run_case(d)
     r2 = result_json(out2) if code == 0 else None
     if r2 is None:
         fails.append("(c) the pH-label fixture did not run")
     else:
-        a, b = res["kpis"]["RO2a"]["R_int_fromRatedTest_boron"], r2["kpis"]["RO2a"]["R_int_fromRatedTest_boron"]
-        if rel(a, b) > 1e-9:
-            fails.append("(c) THE LIMITATION HAS MOVED: relabelling the second pass's boron test pH 10 -> 7 changed the intrinsic"
-                         " rejection (%.6f -> %.6f), so the engine now couples pH to transport.  Rewrite the case header's BORON"
-                         " section, the design record and this arm." % (a, b))
+        a, b = K["RO2a"], r2["kpis"]["RO2a"]
+        if abs(a["split_R_acid"] - b["split_R_acid"]) < 1e-3:
+            fails.append("(c) relabelling the second pass's boron TEST pH 10 -> 7 left the acid rejection at %.6f: the pH does not reach the split"
+                         % a["split_R_acid"])
+        if rel(a["R_int_fromRatedTest_boron"], b["R_int_fromRatedTest_boron"]) > 1e-9:
+            fails.append("(c) relabelling the test pH moved the component's effective rejection AT THE TEST (%.6f -> %.6f): that is the sheet's"
+                         " number through the film and must not depend on the label" % (a["R_int_fromRatedTest_boron"], b["R_int_fromRatedTest_boron"]))
+    d = fixture(tmp, "pass2-pH9", lambda d: sub_file(d / "system" / "flowsheetDict", "                pH          10;", "                pH          9;", 2))
+    out3, code = run_case(d)
+    r3 = result_json(out3) if code == 0 else None
+    if r3 is None:
+        fails.append("(c) the pass-2 pH 9 fixture did not run")
+    else:
+        def prod_b(r):
+            st = r["streams"]["perm2"]
+            return st["composition"]["boron"] * st["F"] / st["F_mass"]
+        if not prod_b(r3) > prod_b(res):
+            fails.append("(c) declaring the second pass at pH 9 did not raise the product's boron: the pH does not couple to the plant")
 
 
 def arm_d(tmp):
@@ -295,7 +324,7 @@ def arm_d(tmp):
             fails.append("(d) %s: refused, but not naming %r.  Tail:\n%s" % (name, miss, out[-600:]))
         n += 1
     refused("boron-without-a-rejection", lambda d: sub_file(d / "system" / "flowsheetDict",
-            "                    NaCl  ( fromRatedTest naclRef );\n                    boron ( fromRatedTest boronRef );\n                }\n                source  \"as RO2a\";",
+            "                    NaCl  ( fromRatedTest naclRef );\n                    boron ( fromAqueousSplit );\n                }\n                source  \"as RO2a\";",
             "                    NaCl  ( fromRatedTest naclRef );\n                }\n                source  \"as RO2a\";"),
             ["boron"])
     def drop_boron_test(d):
@@ -829,8 +858,10 @@ def main():
           "(47.2) and the second %.1f %% (84-90), the recycle is what the second pass did not permeate, the plant's mass "
           "closes and the exchanger balances, the product holds %.1f mg/L TDS (%.4f x NaCl-eq) and %.3f mg/L boron "
           "against < 400 and < 0.5, all recomputed from stream masses; the feed is Table 2's twelve ions in osmotic NaCl "
-          "equivalence and 5.3 mg/L boron; the boron tests are the PDF's (91 %% at pH 8, 95 %% at pH 10), announced as an "
-          "approximation, and relabelling the pH moves nothing (the limitation is PINNED); %d fixtures refuse by name "
+          "equivalence and 5.3 mg/L boron; the boron tests are the PDF's (91 %% at pH 8, 95 %% at pH 10), each module splits boron "
+          "into acid and borate at its DECLARED pH, the derived pair reproduces the test at the test's pH, relabelling the test's pH "
+          "moves the acid rejection and not the effective one at the test, and a second pass declared at pH 9 raises the product's "
+          "boron (the pH couples; the old pinned limitation is gone); %d fixtures refuse by name "
           "(a boron solute with no rejection, a record with no boron test, 30 bays in a 22-bay car park, `at` on an east side); the "
           "layout's %d footprints overlap nowhere and stand inside the fence, none of %d roads crosses one, the gate opens "
           "on the north line and the three boundary pipes cross at published points on the fence labelled `(not drawn)`, "
@@ -845,7 +876,7 @@ def main():
           "cannot share, an exchanger above its pressure rating, per-train sizing with no trains declared).  NOT CHECKED: that any "
           "number is the real plant's (the PDF is a manufacturer's claim at assumed test conditions; every pump, vessel and "
           "rack number not read from a page is ASSUMED and says so), the layout against any code or the real site, the first "
-          "law, and boron as pH-dependent physics (not modelled).  THE HEADERS (C199): the %d header items (feed, brine and permeate of three banks, six trains) have their required bore, nominal bore, velocity inside the declared window, Reynolds number, Churchill friction factor and pressure drop per metre recomputed from the dicts and the stream masses (the density is the package's, range-checked only); %d more fixtures refuse by name (no velocity window, no bore that fits, a window above the nearest bore, no viscosity).  NOT CHECKED: that the window or the list of bores is a standard's (both are the case's, assumed), the header's length, fittings and wall."
+          "law, and boron's pH computed from the carbonate system (Stage 2: the pH is a declared label).  THE HEADERS (C199): the %d header items (feed, brine and permeate of three banks, six trains) have their required bore, nominal bore, velocity inside the declared window, Reynolds number, Churchill friction factor and pressure drop per metre recomputed from the dicts and the stream masses (the density is the package's, range-checked only); %d more fixtures refuse by name (no velocity window, no bore that fits, a window above the nearest bore, no viscosity).  NOT CHECKED: that the window or the list of bores is a standard's (both are the case's, assumed), the header's length, fittings and wall."
           % (CASE.name, prod, r1 * 100, r2 * 100, tds, fac, b, nref, ni, nr, SKIDS, SKIDS, spec,
              pumps["HPpump"][0], pumps["Booster"][0], pumps["Pass2Pump"][0], pumps["IntakePump"][2], px, nb, bld[0], bld[1], nref2, nh, nref3))
     return 0

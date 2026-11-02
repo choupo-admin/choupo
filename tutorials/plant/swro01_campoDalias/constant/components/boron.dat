@@ -4,17 +4,15 @@
   states: "Boron (B) 5.3 mg/L" in its Table 2, "boron rejection 91 % at pH 8"
   and "95 % at pH 10" in its Table 1).
 
-  WHY ONE LUMPED SOLUTE AND NOT TWO SPECIES.  The membrane module of this
-  engine moves each declared solute by its OWN rejection and does not couple
-  the feed's speciation (the pH) to the transport: a neutral boric acid and
-  an anionic borate cannot be given different permeances by pH, and nothing
-  in the flowsheet changes a stream's pH.  So boron is ONE solute whose
-  observed rejection is the manufacturer's figure at the pH of each pass
-  (the case's module records carry both tests).  The two species are in
-  data/standards/species (H3BO3, BOH4) but no boric-acid/borate
-  equilibrium record exists in data/standards/chemistry, and none is invented
-  here.  See the case's flowsheetDict header for the approximation and for
-  the physics a follow-up must add.
+  BORON IS ONE APPARENT COMPONENT CARRIED BY TWO FORMS (DEV.md 4c C198,
+  Stage 1).  The streams keep the apparent total, as B; the membrane modules
+  split it into boric acid (neutral, H3BO3) and borate (an anion, BOH4) by the
+  base fraction alpha the package computes at the module inlet from the
+  curated constant (data/standards/chemistry/BOH4-formation.dat) and the
+  DECLARED pH, and give each form its own rejection (the `aqueousSplit {}` of
+  each module).  The bridge below tells the package that one mole of this
+  component is one mole of the master species H3BO3 (boron AS B, so 1 mol B =
+  1 mol H3BO3); no name identity is used.
 
   Only the facts the engine reads are stated: the molar mass of the element
   (10.81 g/mol, the standard atomic weight of boron) and that it is a
@@ -39,4 +37,5 @@ liquidHeatCapacity
     coefficients  (100.0);
     Trange        (273.15  323.15);
 }
+aqueousMapping ( { species H3BO3; nu 1; } );   // 1 mol B = 1 mol H3BO3 (the master of boron in the species catalogue)
 dissociation   1;          // one particle in the van't Hoff osmotic pressure (5.3 mg/L: negligible beside the salt)
