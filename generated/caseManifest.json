@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 504,
+  "cases": 505,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -5850,6 +5850,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/heat/phasechange02_saturated_mixture": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "phaseChanger"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/heat/pinch01_four_stream_classic": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -7846,6 +7860,7 @@
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/heat/mheatx01_two_hot_one_cold",
     "tutorials/steady/heat/phasechange01_partial_condenser",
+    "tutorials/steady/heat/phasechange02_saturated_mixture",
     "tutorials/steady/heat/pinch01_four_stream_classic",
     "tutorials/steady/heat/reboiler_water_copper",
     "tutorials/steady/hydraulics/letdown01_ammonia_flashing",
@@ -8461,7 +8476,8 @@
     "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
-    "tutorials/plant/ammoniaReactor04_kineticSizing"
+    "tutorials/plant/ammoniaReactor04_kineticSizing",
+    "tutorials/steady/heat/phasechange02_saturated_mixture"
    ],
    "pipe": [
     "tutorials/steady/hydraulics/pipe01_water_line",
@@ -9053,6 +9069,7 @@
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/heat/mheatx01_two_hot_one_cold",
     "tutorials/steady/heat/phasechange01_partial_condenser",
+    "tutorials/steady/heat/phasechange02_saturated_mixture",
     "tutorials/steady/heat/pinch01_four_stream_classic",
     "tutorials/steady/heat/reboiler_water_copper",
     "tutorials/steady/hydraulics/pipe01_water_line",
