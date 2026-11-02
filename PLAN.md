@@ -42,16 +42,17 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| todo | Engine defects found writing the packs, the quiet ones first: a missing raw-material price, a missing labourRate and a failed sizer all end at exit 0 (REFUSE or fail the run); `choupo-init0` writes `T 0 K` for solids-only streams; then the `adiabaticFlash` stall and the layout with no sized item | C208 |
 | todo | Acetic acid: correct the record's vapour dimerisation constant (log K25 2.555 is FORMIC acid's; acetic acid's own is 3.107 atm^-1, docs/design/acetic-acid-latent-heat-closure.md), reseal its mirrors, the moved rows in the commit; then rebase `backup/c201-acetic-vapour` on it and re-measure | C201 (1) |
 | todo | (Opus) Acetic acid, after the reading: choose the anchor the slice honours, then the column's dew-point distillate (aceticAcid02_plant +8.69 kW), the Gibbs / three-phase / binaryTxy readers, the association record's identity (not by formula); land `backup/c201-acetic-vapour` with its moved rows; the seven exotherm tutorials to Vitor as a content list | C201 (1) |
 | todo | Dynamic units, slice 2: the CSTR with a variable volume, on slice 1's holdup home | C205 |
 | todo | The control-placement EduTool, pages 1-5 (inventory, pressure, flow and ratio, temperature, composition: rule + exception + a case that runs; the level page says what cannot run until slices 1-3 land) and the plant method page | C204 |
-| todo | The site's own WASM build, then one browser run each of what reached main without one: Complete 0/, the pressure exchanger, the boron split, the dynamic tank; confirm C178 and C182 there | C196, C200 B', C178, C182 |
 
 ## Next three days (at most 8)
 
 | status | what | ref |
 |---|---|---|
+| todo | The site's own WASM build, then one browser run each of what reached main without one: Complete 0/, the pressure exchanger, the boron split, the dynamic tank; confirm C178 and C182 there | C196, C200 B', C178, C182 |
 | todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says (the brief now names the defect) | C201 (2) |
 | todo | PIF easy wins, from the reports read in full: E2 HVAC cost from the supply air, E3 cleaning events -> CIP water and effluent volumes, E4 building cost from room areas, E5 economics hygiene (working capital three ways side by side, royalty inside a patent window), E6 per-machine utilisation and Gantt in the GUI, E7 and E8 two EduTools (how a PIF economics goes wrong; the demand forecast) | C195, docs/reviews/2026-11-02-pif-reports-synthesis.md |
 | todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag | C205 |
@@ -59,12 +60,12 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | todo | Newcomer surfaces: `runCase` shows the answer, the balance verdict and the caveat block; one "start here" path across doc, landing cards and the site folder | C201 (3), (4) |
 | todo | Tutorial texts the review found stale or false and the housekeeping list; moved goldens, if any, as a list | C201 (5), (6) |
 | todo | C199 leftovers: the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
-| todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 
 ## Beyond a week
 
 | status | what | ref |
 |---|---|---|
+| todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | PIF long-term (L1-L10 of the synthesis): the sterile route (filling, lyophiliser, sterilising filtration, F0), full HVAC (latent and equipment loads, the pressure cascade's leakage), labour following the plan and multiproduct campaigns, quality calculations (blend uniformity, cleaning limits), utility networks (steam, compressed air, vacuum), equipment catalogue records, scale-up and solid-dosage unit models, the economics as a distribution | C195, docs/reviews/2026-11-02-pif-reports-synthesis.md |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
 | todo | A specification sheet for every routed pipe: length from the layout, bore from a velocity window or the economic diameter, total pressure drop (run + fittings + valves + head), the pump a line needs, the instruments from the loop declarations; and the pipe's cost | C207 |

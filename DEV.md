@@ -1653,6 +1653,22 @@ accepts today, and that is a policy call.
 > closure of the chain (latent heat at Tb) before building an engine home on
 > it.
 
+> **C208. FOUR ENGINE DEFECTS FOUND WHILE WRITING THE TABLET-PLANT PACKS
+> (a general, 2026-11-02 night, each MEASURED and not fixed; the first two are
+> wrong or missing answers at exit 0 and go first).**  (1) `bin/choupo-init0`
+> writes an EMPTY stream with `T 0 K` for any stream carrying only solids, and
+> the run then refuses it; (2) QUIET FAILURES at exit 0: a raw-material inlet
+> with no `rawMaterials` price is silently left out of C_RM; a missing
+> `labourRate` prints `REQUIRED PRICE MISSING` and ends with no appraisal;
+> a sizer that FAILED is only printed in the Sizing table -- against the
+> project's own rule that nothing fails in silence (CLAUDE.md section 6, the
+> honesty slice); (3) `adiabaticFlash` on the 363 K ethanol-water liquid let
+> down to 1.013 bar stalls at a residual of 0.64 J/mol and stops with
+> `failed to converge`; (4) a `layoutDict` with no sized item stops the run,
+> so a building-only case cannot be checked.  The packs tell the reader to
+> grep the log for `ERROR`, `FAILED` and `MISSING` until (2) is fixed, and to
+> write solids-only streams by hand until (1) is.  Placed first in Next day.
+
 > **C207. A SPECIFICATION SHEET FOR EVERY PIPE OF A LAID-OUT PLANT (Vitor,
 > 2026-11-02: "no caso de se criar um layout com piping, valvulas, etc, achas
 > que se pode colocar uma folha de especificacao para cada conduta? Ai
