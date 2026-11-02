@@ -1528,6 +1528,26 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C203. A DIGITAL TWIN AS THE LAST FORM OF A PLANT CASE (Vitor, 2026-11-02:
+> "em plant pode haver um modelo final em modo de controlo que vai desde o
+> layout depois ate ao painel de controle? ... plant era so para estado
+> estacionario e o /digitalTween ficava para tudo ... painel de controlo,
+> e ate gerava os diagrama PFD e o projeto de controlo").**  RECORDED, NOT
+> STARTED; the architect's reading: yes, as a CASE FORM over `plant/` run by
+> `choupoCtrl` (one binary per problem class; no new binary, and a top-level
+> `tutorials/` folder is a discipline, so no `/digitalTwin` folder until a
+> complete case justifies it).  Missing, in this order: (1) dynamic models per
+> unit (today only `dynamicCSTR` and the `quasiSteady` adapter run in time;
+> columns, exchangers, vessels with holdup have none) -- a plan of which
+> families and in what order comes FIRST; (2) a declaration of instruments
+> and loops (measurement, actuator, setpoint) with a degrees-of-freedom
+> check, from which the P&ID is GENERATED, never drawn; (3) the operator
+> panel, which meets the GUI credo ("runner, not editor", docs/ai/gui-credo.md
+> to be read first): the panel may change declared setpoints and disturbances
+> only, never the case structure.  Witness candidate: the green-ammonia plant
+> (layout, sizing and cost exist).  Pedagogical scope to be put to Vitor
+> before any dispatch.
+
 > **C202. THE C200 KERNEL REVIEWED BY RUNNING IT, AND A PHASECHANGER THAT
 > STOPS 119 K SHORT (Vitor, 2026-11-02: "Podes rever o kernel?").**  DONE as
 > a review of the kernel brief (`kernel.md` on `backup/c200-handoff`, 656822b90);
