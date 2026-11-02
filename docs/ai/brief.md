@@ -6,7 +6,10 @@ Choupo is an open-source, glass-box process simulator (C++17): every
 equation, iteration and property value is visible.  This brief is the whole
 contract for a steady case.  For anything deeper, read ONLY the pack the
 design needs (index at the end).  Do not load the long references unless a
-pack sends you there.
+pack sends you there.  A BATCH plant (tablets, lots, campaigns), its building
+layout, machine sizing, costing and economics is the same kind of case plus a
+`system/postDict` (and `system/layoutDict`): read the packs `batch-plant`,
+`layout` and `design-cost` before designing it.
 
 ## 1. The protocol — DESIGN first, files second
 
@@ -58,6 +61,10 @@ app (clipboard bridge) or saves the files as a `.zip` and uses
 ├── constant/thermoPhysPropDict   components + thermodynamic model
 └── 0/<stream>                one file per stream: the STATE
 ```
+
+Optional, for design: `system/postDict` (batch plan, sizing, costing,
+economics, clean utilities), `system/layoutDict` (plot plan, building) and
+`constant/economics` (prices).  Their grammar is in the packs of §9, not here.
 
 Three rules the engine enforces (it refuses, naming the remedy):
 
@@ -304,6 +311,8 @@ pressures unless stated.
 * Membranes (`spiralWoundModule`, `pressureExchanger`), electrodialysis,
   evaporators, crystallisers, dryers, cyclones, pipes, storage tanks,
   adsorption, ion exchange — their packs are not yet written (§9).
+  Solid-dose placeholders (blender, press, packaging line) are `mixer` /
+  `splitter` units: pack `batch-plant`.
 
 A unit declares what it accepts; a wrong model, a missing key or an
 unknown keyword is REFUSED with a message that names the remedy.  Read the
@@ -335,11 +344,18 @@ Each pack: keys, degrees of freedom, refusals and one minimal example.
 | `docs/ai/packs/reactors.md` | reactions, kinetics, equilibrium, Gibbs |
 | `docs/ai/packs/separations.md` | columns, absorbers, strippers, extraction |
 | `docs/ai/packs/pressure.md` | pumps, compressors, valves, pipes, hydraulics |
+| `docs/ai/packs/batch-plant.md` | a plant that runs in lots (tablets): batch plan, machine ratings and utilisation, HVAC and purified water, quotes, crew |
+| `docs/ai/packs/layout.md` | plot plan (rack, roads, fence, zones), the GMP building: rooms, grades, airlocks, flows |
+| `docs/ai/packs/design-cost.md` | equipment sizing, costing, economics (CAPEX, OPEX, NPV, IRR, sensitivity) |
+
+The same files are served at `https://www.choupo.org/llm/packs/<name>.md`
+(this brief: `https://www.choupo.org/llm/brief.md`; index:
+`https://www.choupo.org/llms.txt`).
 
 NOT YET WRITTEN (say so in `DESIGN.md` if the design needs one, and read
 the tutorial cases of that family instead): heat (exchangers, utilities,
-pinch), electrolytes, membranes, solids, design and cost, drivers (sweeps,
-optimisation, design specs), batch and transient, props.
+pinch), electrolytes, membranes, solids, drivers (sweeps, optimisation,
+design specs), transient simulation, props.
 
 Reference lookups (do not read end to end): `data/standards/components/`
 (names); each unit's accepted keys are in its source file (see SOURCES).

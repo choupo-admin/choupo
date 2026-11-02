@@ -1925,6 +1925,30 @@ accepts today, and that is a policy call.
 > degC is not a unit; src/core/Units.cpp:132) was caught and fixed.
 > Dispatched: A (harness + baseline), B' (browser 0/), packs recycles +
 > pressure, separations, reactors.
+>
+> **C200 PHASE C, TABLET PLANT (a general, 2026-11-02/03, for the pharmaceutical
+> project groups' noon deadline):** three packs `docs/ai/packs/batch-plant.md`
+> (batch plan, `ratedMachine`, `cleanUtilities`, quotes, crew), `layout.md`
+> (plot plan, the GMP building) and `design-cost.md` (sizing, costing,
+> economics), each with an example RUN from scratch; the brief's §9 lists
+> them.  The SITE now serves the assistant documents: `bin/curate/llm_site.py`
+> (called by `bin/buildSite`, verified in `publish-site.yml`) copies
+> `docs/ai/brief.md`, `docs/ai/packs/*.md` and the long references to
+> `/llm/**` and writes `/llms.txt` from the files present (links and one-line
+> descriptions from each file's H1).  Harness problems p11 (machine
+> utilisation), p12 (HVAC and purified water), p13 (plot plan), haiku proxy:
+> brief + the three packs, first run lint 2/3, solves 0/3; after reading the
+> failures (an engine limit and two pack gaps) and ONE pack fix: lint 3/3,
+> solves 2/3, balances 2/3.  ENGINE FINDINGS the general measured and did NOT
+> fix, each reported to the architect: (1) `choupo-init0` writes an EMPTY
+> stream with `T 0 K` for any stream that carries only solids; (2) a raw-material
+> inlet with no `rawMaterials` price is silently left out of C_RM; a missing
+> `labourRate` prints REQUIRED PRICE MISSING and exits 0 with no appraisal, and
+> a sizer that FAILED prints in the table and exits 0; (3) `adiabaticFlash` on a
+> 363 K ethanol-water liquid let down to 1.013 bar stalls at a residual of
+> 0.64 J/mol and the run stops with `failed to converge`; (4) a `layoutDict`
+> with no sized item stops the run (a building-only case cannot be checked).
+> The packs state the first, the second and the fourth as limitations.
 
 > **C198 ROUTE FOR SEAWATER (the architect, 2026-11-02, after the measurement
 > study `docs/design/boron-in-seawater-apparent-pka-study.md`, Vitor having
