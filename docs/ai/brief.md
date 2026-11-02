@@ -328,10 +328,10 @@ Each pack: keys, degrees of freedom, refusals and one minimal example.
 
 | Pack | When |
 |---|---|
-| `packs/recycles.md` | any loop, tear choice, convergence |
-| `packs/reactors.md` | reactions, kinetics, equilibrium, Gibbs |
-| `packs/separations.md` | columns, absorbers, strippers, extraction |
-| `packs/pressure.md` | pumps, compressors, valves, pipes, hydraulics |
+| `docs/ai/packs/recycles.md` | any loop, tear choice, convergence |
+| `docs/ai/packs/reactors.md` | reactions, kinetics, equilibrium, Gibbs |
+| `docs/ai/packs/separations.md` | columns, absorbers, strippers, extraction |
+| `docs/ai/packs/pressure.md` | pumps, compressors, valves, pipes, hydraulics |
 
 NOT YET WRITTEN (say so in `DESIGN.md` if the design needs one, and read
 the tutorial cases of that family instead): heat (exchangers, utilities,
