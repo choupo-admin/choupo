@@ -327,6 +327,58 @@
         }
       },
       "additionalProperties": false
+    },
+    "aqueousSplit": {
+      "type": "object",
+      "title": "Aqueous split (a weak acid and its conjugate base)",
+      "description": "ONE apparent component carried by two internal forms with their OWN rejections, split by the pH (boron in seawater RO as boric acid and borate, DEV.md 4c C198 Stage 1). `component`: the apparent component; `acid`, `base`: the two species the package knows; `pH`: DECLARED at the module inlet; `pHSource`: where that pH comes from (required); `rejection { acid ( ... ); base ( ... ); }`: `fromRatedTest <name>` or `sameAs <solute>` for each form. The fraction is the package's (the curated constant and the case's declared aqueous activity model); the effective rejection is exact under constant-rejection transport, one film coefficient and a split frozen at the inlet pH. Absent, no split.",
+      "properties": {
+        "component": {
+          "type": "string",
+          "title": "Apparent component"
+        },
+        "acid": {
+          "type": "string",
+          "title": "Acid species"
+        },
+        "base": {
+          "type": "string",
+          "title": "Base species"
+        },
+        "pH": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 14,
+          "title": "Declared pH",
+          "unit": "-"
+        },
+        "pHSource": {
+          "type": "string",
+          "title": "Source of the pH"
+        },
+        "rejection": {
+          "type": "object",
+          "title": "Rejection of each form",
+          "properties": {
+            "acid": {
+              "type": "array"
+            },
+            "base": {
+              "type": "array"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "component",
+        "acid",
+        "base",
+        "pH",
+        "pHSource",
+        "rejection"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
