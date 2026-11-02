@@ -794,6 +794,15 @@ tool is the sanctioned way out.  The generated files are estimates the
 solver overwrites; they exist so that the initial state is explicit,
 inspectable, and on disk --- never an invisible in-memory guess.
 
+In the browser app the same step is \emph{File $\rightarrow$ Complete
+\file{0/}}.  It runs the engine's own \code{-init0} (the code that backs
+\code{bin/choupo-init0}, without \code{--force}), so it can never
+overwrite a file you wrote: the dialog and the Log list each generated
+file with the engine's \code{[init0]} lines, the Case tree marks them
+\emph{generated}, and an unseeded recycle is refused by the engine itself,
+naming the file to author.  A run refused for an incomplete \file{0/}
+offers the action directly.
+
 \begin{keyidea}
 \file{flowsheetDict} = topology.  \file{0/} = numbers.
 \file{converged/} = the answer.  Every stream's state is a file you can
