@@ -106,6 +106,15 @@ jobs:
               || { echo "$app.wasm is $sz B -- not a build"; exit 1; }
           done
           grep -q "www.choupo.org" "$d/CNAME" || { echo "CNAME does not name the site"; exit 1; }
+          #  THE ASSISTANT DOCUMENTS (llms.txt + /llm/**, from docs/ai).  A
+          #  student's own LLM reads these; a site without them is the 404 that
+          #  sent assistants to raw.githubusercontent.com.  llm_site.py --verify
+          #  reads the dist back: brief and at least one pack present and
+          #  non-empty, every link of llms.txt served, every served pack listed.
+          for f in llms.txt llm/brief.md; do
+            [ -s "$d/$f" ] || { echo "MISSING or EMPTY: $f"; exit 1; }
+          done
+          python3 bin/curate/llm_site.py "$d" --verify
           #  The site went 55 commits stale once without anyone noticing,
           #  because nothing compared what is BUILT against what is SERVED.
           #  Name a case that exists here and did not exist then: if the
