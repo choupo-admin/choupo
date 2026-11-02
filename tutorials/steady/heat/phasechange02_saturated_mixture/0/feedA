@@ -1,0 +1,11 @@
+/*--- Choupo stream state: 40/60 benzene/toluene liquid, 298 K, 2.2 bar. ---*/
+
+componentMolarFlows
+{
+    benzene    40 kmol/h;
+    toluene    60 kmol/h;
+}
+
+T               298 K;
+P               220000 Pa;
+phase           liquid;

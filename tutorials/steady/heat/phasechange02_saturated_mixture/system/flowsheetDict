@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------*\
+  phasechange02_saturated_mixture  --  a saturated state of a MIXTURE is its
+  bubble point or its dew point
+
+  The same 40/60 benzene/toluene liquid (298 K, 2.2 bar) goes to two
+  phaseChangers:
+
+      feedA -> boilerLiquid  (outletState saturatedLiquid) -> bubbleOut
+      feedB -> boilerVapour  (outletState saturatedVapour) -> dewOut
+
+  A pure fluid is saturated at ONE temperature; a mixture is saturated over a
+  RANGE, between its bubble point (the first vapour, vf = 0) and its dew point
+  (the last liquid, vf = 1).  "Saturated liquid" is the bubble point and
+  "saturated vapour" is the dew point -- two different temperatures, here
+  397.3 K and 403.4 K at 2.2 bar (ideal Raoult).  The `Tsat(P_out)` line the
+  unit prints is the DOMINANT component's own saturation T (413.5 K, pure
+  toluene), a dome centre for the search -- it is neither of the two.  The outlet must land ON them: the saturated liquid at the
+  bubble point is HEATED from the 298 K feed (Q > 0), never cooled.
+
+  WHY THIS CASE EXISTS (DEV.md 4c C202).  The unit once located the vapour
+  fraction target by scanning T for a sign change of vf(T) - target.  For a
+  target of 0 that function is EXACTLY zero below the bubble point, so the
+  first scan interval was accepted as a root and the outlet landed about 119 K
+  BELOW the dome centre (103 K below the true bubble point) -- a sub-cooled liquid labelled saturated, with the
+  duty the wrong sign (-15 kW), at exit 0.  The saturation points now come from
+  the package's bubble-point and dew-point solvers, and the result is checked
+  against the unit's own flash.  The gate check_phase_changer_saturation reads
+  this case and holds T_out to an independent bubble/dew point.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        boilerLiquid;
+        type        phaseChanger;
+        in          feedA;
+        outputs     ( bubbleOut );
+        operation   { outletState saturatedLiquid; }
+    }
+    {
+        name        boilerVapour;
+        type        phaseChanger;
+        in          feedB;
+        outputs     ( dewOut );
+        operation   { outletState saturatedVapour; }
+    }
+);

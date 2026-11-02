@@ -9216,7 +9216,9 @@
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/PhaseChanger.H",
-   "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.H"
+   "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.H",
+   "src/unitOperations/saturation/BubblePoint.H",
+   "src/unitOperations/saturation/DewPoint.H"
   ],
   "src/unitOperations/heatTransfer/SolidDryer.cpp": [
    "src/core/Advisory.H",
@@ -17910,6 +17912,7 @@
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
+   "src/unitOperations/heatTransfer/PhaseChanger.cpp",
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/saturation/BubblePoint.cpp"
   ],
@@ -17917,6 +17920,7 @@
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/heatTransfer/PhaseChanger.cpp",
    "src/unitOperations/saturation/DewPoint.cpp"
   ],
   "src/unitOperations/separation/Absorber.H": [

@@ -1528,6 +1528,112 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C202 INTEGRATION (the architect, 2026-11-02):** item 1 (phaseChanger) and
+> the assistant brief landed in `main` without a full sweep.  Reach measured:
+> `bin/integrate` ran the 10 cases that use phaseChanger/boiler/condenser
+> (PASS 15 / FAIL 0, no golden moved) and the gates that read the touched
+> files.  Its two FAILs are the environment, not the diff: `check_method_tools`
+> could not run (no gui/node_modules in the integration worktree), and
+> `check_element_closure` read no elementBalance for membrane08, a case
+> outside the scope whose run output the worktree did not hold; both pass or
+> run in the primary checkout (element closure: 249 cases close, 1 pinned).
+> The brief's docs gates (references, glossary, doctrine) pass.
+
+> **C203. A DIGITAL TWIN AS THE LAST FORM OF A PLANT CASE (Vitor, 2026-11-02:
+> "em plant pode haver um modelo final em modo de controlo que vai desde o
+> layout depois ate ao painel de controle? ... plant era so para estado
+> estacionario e o /digitalTween ficava para tudo ... painel de controlo,
+> e ate gerava os diagrama PFD e o projeto de controlo").**  RECORDED, NOT
+> STARTED; the architect's reading: yes, as a CASE FORM over `plant/` run by
+> `choupoCtrl` (one binary per problem class; no new binary, and a top-level
+> `tutorials/` folder is a discipline, so no `/digitalTwin` folder until a
+> complete case justifies it).  Missing, in this order: (1) dynamic models per
+> unit (today only `dynamicCSTR` and the `quasiSteady` adapter run in time;
+> columns, exchangers, vessels with holdup have none) -- a plan of which
+> families and in what order comes FIRST; (2) a declaration of instruments
+> and loops (measurement, actuator, setpoint) with a degrees-of-freedom
+> check, from which the P&ID is GENERATED, never drawn; (3) the operator
+> panel, which meets the GUI credo ("runner, not editor", docs/ai/gui-credo.md
+> to be read first): the panel may change declared setpoints and disturbances
+> only, never the case structure.  Witness candidate: the green-ammonia plant
+> (layout, sizing and cost exist).  Pedagogical scope to be put to Vitor
+> before any dispatch.
+
+> **C202. THE C200 KERNEL REVIEWED BY RUNNING IT, AND A PHASECHANGER THAT
+> STOPS 119 K SHORT (Vitor, 2026-11-02: "Podes rever o kernel?").**  DONE as
+> a review of the kernel brief (`kernel.md` on `backup/c200-handoff`, 656822b90);
+> record `docs/reviews/2026-11-02-kernel-review.md`.  Its grammar holds:
+> three cases written from the kernel alone (a recycle, an SRK
+> compressor-exchanger train, a column) and its NRTL-catalogue and UNIFAC
+> routes all ran at exit 0 with their balances closed.  It OWES, before the
+> kernel lands: (1) **a wrong number at exit 0 in the engine** --
+> `phaseChanger` `outletState saturatedLiquid` (and `outletQuality 0`) on a
+> MIXTURE returns a liquid 119 K below saturation (40/60 benzene/toluene at
+> 2.2 bar: T_out 294.515 K beside its own Tsat 413.515 K), because the
+> bracket scan at src/unitOperations/heatTransfer/PhaseChanger.cpp:428-433
+> accepts the first interval where vf(T) - 0 is identically zero; no corpus
+> case reaches that branch (rankine02_water is pure), and the kernel teaches
+> the spec; **ITEM 1 FIXED (branch worktree-agent-a8e125a686ad1dcec):** saturated
+> liquid / vapour of a mixture is solved as its bubble / dew point
+> (BubblePoint/DewPoint::compute, cross-checked against the unit's own flash,
+> refused by name otherwise), other targets use a strict sign-change bracket;
+> witness `phasechange02_saturated_mixture` (bubble 397.261 K, dew 403.434 K;
+> the old scan gave 294.515 K and 403.487 K), gate arm (j) of
+> `check_evaporator_chest_phase`; (2) its two lookup URLs (choupo.org/llm/components.txt and
+> unit-keys.md) return 404; (3) the "Case > Complete 0/" button it tells
+> students to use is C200 B', not on main; (4) it names twelve packs and
+> three exist; (5) five text corrections listed in the record (menu label,
+> the MASS strip contradiction, the feedStage ranges, sources pointing at
+> unit-ops.md, kij for SRK).
+> **DECIDED (the architect, 2026-11-02, after Vitor read "kernel" as the
+> computational core in `src/`):** the document is renamed `brief.md` (in docs/ai)
+> ("the assistant brief") in the commit that lands it -- in scientific
+> software "kernel" means the computational core, and this tree already uses
+> it that way (EdwardsPitzer's "PURE kernel", Kern, IF97), so a document for
+> an LLM must not share the word; the record names above keep their date-stamped
+> filenames.  It lands AFTER the phaseChanger fix (1), WITHOUT waiting for
+> (2)-(4): its pack table lists only the packs that exist and names the rest
+> as not yet written (no path), its lookup points at `data/standards/
+> components/` until phase D publishes the URLs, and it teaches
+> `bin/choupo-init0` and says the browser cannot complete 0/ until C200 B'
+> lands (that sentence buried in B's own commit); (5) rides the landing commit.
+
+> **C201. A NEWCOMER'S REVIEW OF THE TUTORIALS (Vitor, 2026-11-02: "Podes
+> fazer durante duas horas verificacao dos tutoriais como se fosses um
+> engenheiro que nao conhece este simulador."; then "Podes gravar no
+> repositorio?").**  DONE as a review, read-only, on origin/main 663bc5510
+> (native build) and the live site the same morning; the record is
+> `docs/reviews/2026-11-02-newcomer-tutorial-review.md`, every number
+> measured, nothing fixed.  It OWES these slices, in the order the plan's
+> rule 2 sets (a wrong number at exit 0 first):
+> (1) **start-here step 6 publishes a reaction heat about 7x too large**
+> -- `cstr01_first_order` Q_kW -1.879 at extent 0.07304 mol/s = -25.7
+> kJ/mol for liquid ethanol + acetic acid, about -3 kJ/mol in reality; by
+> hand the whole gap is acetic acid's liquid enthalpy (a MONOMER ideal-gas
+> datum minus `HvapTb 24390`, the heat of vaporisation to the DIMERISED
+> vapour), not yet confirmed in the code; a data and arity decision for Vitor
+> (finding F9);
+> (2) **the GUI's MASS cell reads "not published" on almost every case**:
+> `src/result/ResultEmitter.cpp:1229` emits `globalMassBoundary` only when
+> a utility circuit is declared and says a reader that does not find it
+> must read the massBalance report's TOTAL scope;
+> `gui/src/case/runSummary.ts:65` reads only that object (J2);
+> (3) `bin/runCase`'s terminal summary is `tail -14` of the log
+> (`bin/runCase:357`): no answer, no balance verdict, and neither the
+> unit-less `P 1.0` (exit 0, V/F = 1) nor a misspelt key reaches it (F1,
+> K1, K2);
+> (4) three different "start here" paths -- docs/start-here.md, the site's
+> landing cards, the site's "first path" folder (J1);
+> (5) tutorial READMEs and case CLAUDE.md files quoting column duties from
+> before the C169/C174 condenser fix (column01, column03, column18,
+> acetonePlant; extract02's sweep count), flash02's false "What to try",
+> membrane01's self-contradicting header (F5-F7, F12, G1, G2, I1);
+> (6) housekeeping: README binary counts, the stale capability matrix,
+> listCases' description column, duplicate case numbers, template
+> CLAUDE.md placeholders, maintainer history in student text (section A,
+> C, E, H of the record).  A golden row that moves in any slice goes to
+> Vitor as a list first.
+
 > **C200. ANY LLM MUST LEARN CHOUPO FROM A BRIEF IT ACTUALLY READS, AND DESIGN
 > BEFORE IT COPIES (Vitor, 2026-11-02, URGENT: "os alunos podem interagir com o
 > choupo.org atraves de ti usando qualquer LLM ... pedem a LLM um projeto, ou
@@ -1571,7 +1677,19 @@ accepts today, and that is a policy call.
 > and the delta.  MODEL: the architecture, the protocol and the eval design are
 > the Opus-class work (one session); the packs, the generators and the
 > harness are Sonnet generals'.
-> STATUS: COMMISSIONED 2026-11-02, URGENT.
+> STATUS: COMMISSIONED 2026-11-02, URGENT.  ARCHITECTURE DECIDED the same
+> day: record `docs/design/an-llm-learns-choupo-from-a-brief.md` (indexed).
+> Two facts measured on the way changed the plan: the browser cannot
+> materialise 0/ (so an LLM must invent every intermediate stream -- phase B'
+> gives the app the engine's own -init0), and the bridge's guide comment says
+> ~97 KB for >500 kB.  The kernel draft (the future `kernel.md` of docs/ai, held off main
+> until its packs exist, because check_doc_references refuses a pointer to a
+> missing file) was RUN: a case written from its grammar alone (catalogue
+> NRTL, degC, phaseChanger outletT, init0, flash) solved at exit 0 with the
+> energy boundary closing at 0.0000 kW; one false line in the draft (that
+> degC is not a unit; src/core/Units.cpp:132) was caught and fixed.
+> Dispatched: A (harness + baseline), B' (browser 0/), packs recycles +
+> pressure, separations, reactors.
 
 > **C198. BORON IN REVERSE OSMOSIS AS TWO SPECIES SPLIT BY THE pH (Vitor,
 > 2026-11-01: "o boro e para modelar"; C194 shipped it as a declared lumped
@@ -2692,6 +2810,14 @@ accepts today, and that is a policy call.
 > corpus must be measured first (item 5b).  The Wegstein lesson's `[F, z, T]`
 > becomes `[F, z, T, P]`.
 > STILL OPEN: item 5 (pressure is not a tear variable).
+> ITEM 5b DONE 2026-11-02 (integration of 0aae8f4e9; record
+> docs/design/a-negative-pressure-is-refused.md).  The architect's reason
+> for integrating WITHOUT the full sweep, which bin/integrate reached on
+> Flowsheet.cpp: the change alters behaviour only for P < 0 on an accepted
+> pass; the corpus reach was MEASURED by the general (28 cases publish
+> P == 0, the unit-did-not-set sentinel that stays, none negative), so no
+> existing result can move; the evidence is 53 gates, --gui 42/0, scoped
+> 58/0 and --fast 77/0 on the branch.  No golden was re-recorded.
 
 > **C185. THREE MORE SOLVER/KINETICS DEFECTS (the external review,
 > ChatGPT, at 1ecec224, relayed by Vitor 2026-10-27 for SATURDAY; its order:
