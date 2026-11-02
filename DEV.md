@@ -1562,6 +1562,30 @@ accepts today, and that is a policy call.
 > another narrative -- a content decision, put to Vitor when the slice is
 > ready.  Not run: full sweep, --gui, wasm.  NEXT: design the vapour-side
 > half, then one slice with its list of moved rows.
+> **DECIDED (the architect, 2026-11-02; this takes the two questions
+> `docs/design/one-record-two-vapours-acetic-acid.md` §5 had RESERVED):**
+> (i) `HvapTb` speaks the MEASURED latent heat, to the real associated
+> vapour, and keeps it (the Hildebrand, relief-valve and K_b readers need
+> exactly that); (ii) ASSOCIATION IS A PROPERTY OF THE VAPOUR MODEL, not of
+> one flash formulation: wherever a component carries a curated vapour
+> association (today acetic acid's `vapourDimerisation`, read by ONE parser,
+> `thermo/VapourAssociation.H` on the bridge branch), an ideal-gas vapour is
+> the equilibrium monomer + dimer mixture (the chemical theory of vapour
+> imperfection) -- its fugacity is the MONOMER partial pressure, so the pure
+> limit stays exact (p_m + p_d = the record's apparent Psat, and the liquid
+> side uses the monomer's saturation pressure solved from the same K), and
+> its enthalpy carries the association heat.  ONE home, extracted from the
+> reactive VLE builder (`SpeciationSolver`, the v = t_mono + 2 t_dim
+> re-weighting), reached through `ThermoPackage`'s K-values and vapour
+> enthalpy, so every unit sees it; the liquid bridge (piece 1) lands IN THE
+> SAME SLICE.  An equation-of-state vapour carrying an associating component
+> keeps its EoS and ANNOUNCES that the association is not priced (no silent
+> double treatment).  Validation before landing: a non-reactive acetic
+> acid + water T-x-y against a measured dataset the tree can cite, the
+> pure-component limit, and the cstr01 reaction heat within the bridge
+> branch's band.  The seven tutorials whose exotherm was the artefact come
+> to Vitor as a content list when the slice is ready.  NOT dispatched yet
+> (laptop budget: the boron lane holds the build slots).
 
 > **C200 B' INTEGRATION (the architect, 2026-11-02):** `File > Complete 0/`
 > landed without the full sweep that `bin/integrate` flagged as reached
