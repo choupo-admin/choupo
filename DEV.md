@@ -1730,6 +1730,33 @@ accepts today, and that is a policy call.
 > DynamicCSTR.H:33 -- so no level loop can be shown today), the
 > `quasiSteady` adapter and `williamsOttoPlant`; controllers are PID,
 > Schedule and Signal, acting on unit parameters (ctrl01: cv T, mv T_jacket).
+> **THE PARETO, as brought to Vitor (the content a general builds from; the
+> order is engineering judgement after Luyben, Tyreus & Luyben, Plantwide
+> Process Control (1998) and Skogestad, Comput. Chem. Eng. 28 (2004) 219 --
+> NOT read in the session, so no number is quoted from them).**  Each page:
+> the rule, the exception taught WITH it, a case that runs.
+> (1) LIQUID INVENTORY: level by the OUTFLOW downstream of the throughput
+> manipulator; exceptions: upstream of it, level by the INFLOW; a surge tank
+> takes averaging (P-only) control, not a tight PI; a reflux drum is
+> controlled by the LARGEST stream (reflux, not distillate, when R >> 1).
+> (2) GAS INVENTORY (pressure): by the vapour outflow or the heat removal;
+> exceptions: column pressure by the condenser duty; a compressor by speed,
+> its anti-surge a separate loop.  (3) FLOW AND RATIO: one flow sets the
+> throughput, the others follow by ratio; exceptions: one valve per line; a
+> positive-displacement pump by speed or recycle, never a valve on its
+> discharge.  (4) TEMPERATURE BY A UTILITY: the utility flow or a bypass;
+> exceptions: an exothermic reactor open-loop unstable needs a jacket
+> cascade; a process-process exchanger is controlled by the bypass, not the
+> flow.  (5) COMPOSITION / QUALITY: inferred from a tray temperature;
+> exceptions: one composition is easy, two couple (RGA); the temperature is
+> pressure-compensated.  (6) CONSTRAINTS AND SAFETY (override, split range,
+> anti-surge) are taught last, as exceptions to the five.  Loops 1-4 are
+> most of a plant's loops; 5 carries the most value per loop.  Plus one
+> METHOD page: count the control degrees of freedom, choose the throughput
+> manipulator, close the inventories in the right direction, then quality.
+> Order of unit dynamics this implies (C205): tank with level, flash drum,
+> exchanger, variable-volume CSTR, RO train, the column's inventories.
+
 
 > **C203. A DIGITAL TWIN AS THE LAST FORM OF A PLANT CASE (Vitor, 2026-11-02:
 > "em plant pode haver um modelo final em modo de controlo que vai desde o
