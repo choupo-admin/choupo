@@ -1686,6 +1686,21 @@ accepts today, and that is a policy call.
 > membrane08 reading seen on the earlier boron and phaseChanger integrations);
 > neither touches the diff.
 
+> **C210. THE DIRECTION: CHOUPO A USEFUL TOOL FOR THE PHARMACEUTICAL PLANT
+> PROJECT (Vitor, 2026-11-02 night: "Eu quero que o Choupo comece a ser uma
+> ferramenta util para o projeto de industria farmaceutica. E so isso.").**
+> DECIDED, the architect's ordering from today: the PIF project is the first
+> priority of the plan, ahead of the other lines (which continue after).  The
+> MEASURE of useful is the 14 design reports read in full (C195,
+> `docs/reviews/2026-11-02-pif-reports-synthesis.md`): every calculation they
+> did by hand, copied or bought as a lump is one Choupo must compute, with the
+> source of its data declared.  ORDER after the 2026-11-03 tutoring class:
+> (1) the quiet exit-0 failures of C208 (a missing price gives a wrong
+> pharmaceutical cost with no warning -- the old reports' own error); (2) the
+> easy wins E2-E8, one general each, each inside an existing home; (3) the
+> long-term L1-L10, the sterile route and full HVAC first.  What the two groups
+> report from the class goes ahead of all of it.
+
 > **C209. A SECTOR THAT SAYS HOW MANY TIMES IT IS REPEATED (Vitor, 2026-11-02
 > night, about swro01_campoDalias: "no flowsheet devia haver forma de
 > notificar isso ... qualquer envolucro que dissesse quantas vezes se tem de
