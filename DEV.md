@@ -1539,6 +1539,30 @@ accepts today, and that is a policy call.
 > run in the primary checkout (element closure: 249 cases close, 1 pinned).
 > The brief's docs gates (references, glossary, doctrine) pass.
 
+> **C201 ITEM 1, MEASURED, AND NOT LANDED (the architect, 2026-11-02).**
+> Cause confirmed in the code: the liquid acetic acid is the monomer
+> ideal-gas datum minus a Watson latent heat scaled from `HvapTb 24390`,
+> which is the heat to the DIMERISED vapour (Component.cpp h_formation,
+> liquid rung); the cstr01 reaction heat -25.7 kJ/mol is that 24 kJ/mol.
+> A general derived the bridge from the curated vapour dimerisation (one
+> parser, no copied constants): acetic liquid -486.3 vs -484.3, reaction
+> heat -0.38 kJ/mol at 298 K against about -3 measured.  Branch
+> `backup/c201-acetic-bridge` (49a16f684), moved-row list
+> `c201-item1-moved-rows.md` in docs/design on that branch.  **Not merged,
+> because it trades one error for another:** (a) 182 rows in 14 cases price
+> acetic acid's vaporisation to the ideal-gas MONOMER in units whose vapour
+> model has no dimer, so for a real dimerised vapour the duties become too
+> large (aceticAcid02_plant lights condenser -36.5 -> -75.1 kW, column05
+> reboiler +33 %); the other half is the vapour side of
+> `docs/design/one-record-two-vapours-acetic-acid.md` (association as a
+> property of the VAPOUR model), which must land WITH the bridge, as one
+> slice; (b) the exotherm of seven tutorials (batch02/04/06 runaway,
+> cstr04/05/06, pfr04) was this artefact: honest acetic-acid esterification
+> in the liquid is nearly thermoneutral, so they need other chemistry or
+> another narrative -- a content decision, put to Vitor when the slice is
+> ready.  Not run: full sweep, --gui, wasm.  NEXT: design the vapour-side
+> half, then one slice with its list of moved rows.
+
 > **C203. A DIGITAL TWIN AS THE LAST FORM OF A PLANT CASE (Vitor, 2026-11-02:
 > "em plant pode haver um modelo final em modo de controlo que vai desde o
 > layout depois ate ao painel de controle? ... plant era so para estado
