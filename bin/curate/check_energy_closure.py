@@ -569,8 +569,16 @@ def ratchet_kW(pin: float) -> float:
 #  mixer's outlet is now the state of equal enthalpy RESOLVED at its own
 #  equilibrium (269.67 K, V/F 0.7788; 273.62 K, V/F 0.6169).
 #    cavett01_recycle_train  88.0220 % -> 0.0000 % (+0.0019 kW)   LEFT
+#  esterification2sector RE-PINNED 170.9790 -> 325.5220 on 2026-11-02 (DEV.md
+#  4c C201 item 1, the architect's decision): the residual is ONE model-
+#  boundary step (closure.SEPARATION.flash raw = step to 1e-4 kW), -808.0 ->
+#  -869.1 kW in absolute terms (+7.6 %), and the percentage grew mostly
+#  because its DENOMINATOR (energy exchanged) collapsed when the liquid
+#  esterification stopped releasing 243 kW it never really released (the
+#  acetic-acid liquid is now bridged to the datum's monomer, not to the
+#  associated vapour).  The debt is the same step, still unpaid.
 KNOWN_OPEN = {
-    "tutorials/plant/esterification2sector": 170.9790,
+    "tutorials/plant/esterification2sector": 325.5220,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,

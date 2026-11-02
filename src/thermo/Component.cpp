@@ -33,6 +33,7 @@ License
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // electrolyte::ionCharge (dissociatesTo -> cation/anion)
 
 #include "thermo/Database.H"
+#include "thermo/VapourAssociation.H"
 #include "core/Constants.H"
 #include "core/Dimensions.H"
 
@@ -1165,7 +1166,7 @@ scalar Component::h_formation(scalar T, const std::string& targetPhase) const
 
     // Hvap_latent at 298 K (when needed).  Sucrose-like solids never need
     // it (they never go through a gas leg); volatile species always have it.
-    auto hvap298 = [&]() -> scalar { return Hvap_latent(298.15); };
+    auto hvap298 = [&]() -> scalar { return datumBridge298().H; };
 
     if (naturalPhase_ == targetPhase)
     {
@@ -1285,14 +1286,14 @@ scalar Component::s_formation(scalar T_K, const std::string& targetPhase) const
                 "': s_formation crosses a vaporisation leg, which needs a"
                 " vaporPressure model -- a nonvolatile has no such leg and"
                 " must be asked for its own phase instead.");
-        const scalar Psat = vp().Psat_Pa(298.15);
+        const scalar Psat = datumBridge298().pRefPa;   // = Psat unless associated
         if (!(Psat > 0.0))
             throw std::runtime_error("Component '" + name_ +
                 "': non-positive Psat(298.15 K); the vaporisation entropy"
                 " leg cannot be taken.");
         const scalar dG = -constant::R * 298.15
                         * std::log(Psat / constant::Pref);
-        return (Hvap_latent(298.15) - dG) / 298.15;
+        return (datumBridge298().H - dG) / 298.15;
     };
 
     if (naturalPhase_ == targetPhase)
@@ -1340,6 +1341,40 @@ scalar Component::Hvap_latent(scalar T) const
     const scalar num = Tc_ - T;
     const scalar den = Tc_ - Tb_;
     return Hvap_Tb_ * std::pow(num / den, 0.38);
+}
+
+const Component::DatumBridge298& Component::datumBridge298() const
+{
+    if (bridgeResolved_) return bridge_;
+    bridge_.H = Hvap_latent(298.15);
+    bridge_.pRefPa = vp_ ? vp().Psat_Pa(298.15) : 0.0;
+    bridge_.associated = false;
+    if (vp_ && bridge_.pRefPa > 0.0 && !formula_.empty())
+    {
+        if (auto dim = vapourAssociation::find(formula_))
+        {
+            const scalar atm = 101325.0;
+            const auto sv = vapourAssociation::saturated(*dim, 298.15,
+                                                         bridge_.pRefPa / atm);
+            const scalar assoc = -dim->dH * sv.xi;
+            bridge_.H += assoc;
+            bridge_.pRefPa = sv.pMonoAtm * atm;
+            bridge_.associated = true;
+            const std::string msg = "liquid bridged to the datum's ideal-gas"
+                " MONOMER: Hvap(298.15 K) = calorimetric "
+                + std::to_string(Hvap_latent(298.15) / 1000.0)
+                + " + dimer dissociation " + std::to_string(assoc / 1000.0)
+                + " = " + std::to_string(bridge_.H / 1000.0)
+                + " kJ/mol  (xi = " + std::to_string(sv.xi)
+                + " dimer per mol vaporised, from " + dim->record
+                + ", source: " + dim->source + ")";
+            if (AdvisoryLog::instance().add("thermo", "info",
+                    "datumBridge " + name_, msg))
+                std::cerr << "[thermo] " << name_ << ": " << msg << "\n";
+        }
+    }
+    bridgeResolved_ = true;
+    return bridge_;
 }
 
 void Component::requireWatsonSlopeLiquidFallback(const char* leg) const

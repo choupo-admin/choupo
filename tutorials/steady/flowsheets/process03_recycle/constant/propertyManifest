@@ -25,6 +25,15 @@ propertyManifest
     importerVersion    "3";
     records
     {
+        "chemistry/aceticAcid-dissolution.dat"
+        {
+            type          imported;
+            sha256        "5dd5da8910aceb5934b692bf2e5a8bccc1d33e8dbd0749b7ffa4a46d0c0216e5";
+            computationalSha256 "c0e418eac12766196055d39ae71b405d83b45136db6c66b08dc77557876e0394";
+            origin        "data/standards/chemistry/aceticAcid-dissolution.dat";
+            originSha256  "54181e6669c954ee42578e9876c86878288961ac1888a7a1a1619236427b881b";
+            release       Choupo-2608;
+        }
         "chemistry/HAc-formation.dat"
         {
             type          imported;
