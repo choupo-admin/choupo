@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  DIAMETRAL CRUSHING OF DCPD (Emcompress premium) TABLETS
+  -- van der Haven et al., Sci. Data 13 (2026) 1468, CC BY 4.0.
+
+  Transcribed from the archive's `Tablet crushing.zip -> Tablet crushing
+  (single)/Diametrical crushing/Radial tensile strengths DCPD.xlsx`: per
+  tablet the height t, the diameter d, the breaking force F and the density
+  (mass over the measured volume), OUT OF DIE.  Rows whose breaking force is
+  recorded as 0 are left out: the workbook marks them as broken on the other
+  tester (`Kilian` vs the texture analyser `TA`, which was calibrated only to
+  50 kg) and gives no force for them.  19 tablets.  The workbook's own
+  tensile strength is 2F/(pi d t) and the bench recomputes it from F, d, t.
+\*---------------------------------------------------------------------------*/
+provenance
+{
+    source         "van der Haven, D. L. H., Mikoroni, M., Jensen, R., Ortoft, F. H., Andreasen, J. L., Andersen, M. E., Dax, D., Zafar, U., Megarry, A., Naelapaa, K., Fragkopoulos, I. S., Elliott, J. A., Characterisation data of common pharmaceutical excipient powders and tablets for formulation development, Sci. Data 13 (2026) 1468, doi:10.1038/s41597-026-07707-0; data: Zenodo doi:10.5281/zenodo.16732963";
+    licence        "CC BY 4.0 (article and Zenodo record)";
+    transcribed    "from Tablet crushing (single)/Diametrical crushing/Radial tensile strengths DCPD.xlsx, read 2026-11-02";
+    reviewStatus   interim;
+}
+
+columns
+(
+    { name F; unit N; }      // diametral breaking force
+    { name d; unit mm; }      // tablet diameter
+    { name t; unit mm; }      // tablet height
+    { name density; unit g/cm3; }      // out-of-die tablet density
+);
+
+data
+(
+      24.5823   11.30   4.01  1.715517    // RD [min] tablet 3, TA
+      23.1388   11.30   4.01  1.715766    // RD [min] tablet 7, TA
+      23.9214   11.31   4.00  1.715024    // RD [min] tablet 8, TA
+      33.1445   11.31   4.00  1.783207    // RD [1] tablet 2, TA
+      31.3705   11.31   4.00  1.781465    // RD [1] tablet 3, TA
+      33.6731   11.31   4.01  1.777767    // RD [1] tablet 5, TA
+      60.5110   11.33   4.00  1.873127    // RD [2] tablet 6, TA
+      65.1054   11.32   4.00  1.881655    // RD [2] tablet 7, TA
+      64.7553   11.32   4.00  1.878922    // RD [2] tablet 9, TA
+     113.3776   11.34   3.99  1.952678    // RD [3] tablet 6, TA
+     106.8768   11.33   3.99  1.957867    // RD [3] tablet 8, TA
+     107.9036   11.33   3.99  1.957121    // RD [3] tablet 9, TA
+     163.5337   11.34   4.01  2.021457    // RD [4] tablet 4, TA
+     173.4894   11.34   4.01  2.024173    // RD [4] tablet 6, TA
+     157.7576   11.34   4.01  2.022938    // RD [4] tablet 7, TA
+     291.8400   11.35   4.03  2.103530    // RD [max] tablet 2, TA
+     238.3830   11.34   4.04  2.102761    // RD [max] tablet 3, TA
+     229.1020   11.35   4.04  2.101259    // RD [max] tablet 4, TA
+     290.3474   11.34   4.04  2.104722    // RD [max] tablet 7, TA
+);

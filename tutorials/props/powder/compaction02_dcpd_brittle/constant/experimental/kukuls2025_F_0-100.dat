@@ -1,0 +1,54 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  CaHPO4 DI-CAFOS A60, LUBRICATED (formulation F 0-100) -- out-of-die solid fraction, in-die strain and diametral
+  strength at six compaction pressures; Kukuls & Mohylyuk, RSU Dataverse
+  (2025), doi:10.48510/FK2/MFMNDR, CC BY 4.0, file `F_0-100.tab`.
+
+  The formulation (2.0 % sodium stearyl fumarate, 0.3 % colloidal silica)
+  and the protocol (STYL'One Nano, 11.28 mm flat punches, 70 rpm, 500 mg)
+  are those of Mohylyuk et al., Pharmaceutics 16 (2024) 362 (CC BY).  Every
+  value is the MEAN of ten tablets as the file prints it.
+    P        computed HERE: the upper-punch peak force of the MAIN
+             compression (the file's second `Upper punch peak force` row; the
+             first is the 5 kN pre-compression) over the punch face
+             pi (11.28 mm)^2 / 4 = 99.93 mm2.  The file prints no pressure.
+    D        `Solid fraction (%)` / 100 -- OUT OF DIE (measured after
+             ejection), on the true density the file's ReadMe states.
+    C        (H0 - h)/H0 with H0 the `Filling height` and h the main
+             compression's `Compression thickness` -- IN DIE.
+    F, d, t  `Hardness (N)`, `Diameter (mm)`, `Thickness (mm)`.
+\*---------------------------------------------------------------------------*/
+provenance
+{
+    source         "Kukuls, K., Mohylyuk, V., Direct compression of lubricated mixture of microcrystalline cellulose and calcium phosphate dibasic anhydrous, RSU Dataverse (2025), doi:10.48510/FK2/MFMNDR";
+    licence        "CC BY 4.0 (dataset record)";
+    transcribed    "from F_0-100.tab of the dataset, read 2026-11-02";
+    reviewStatus   interim;
+}
+
+columns
+(
+    { name P; unit MPa; }      // main-compression pressure (upper punch)
+    { name D; unit -; }      // out-of-die solid fraction
+    { name C; unit -; }      // in-die Kawakita strain
+    { name F; unit N; }      // hardness (diametral breaking force)
+    { name d; unit mm; }      // diameter
+    { name t; unit mm; }      // out-of-die thickness
+);
+
+data
+(
+       95.464  0.6538  0.25937     14.4   11.29   2.68
+      142.296  0.6901  0.29683     24.7   11.30   2.54
+      243.163  0.7370  0.34006     49.1   11.30   2.39
+      338.327  0.7660  0.36599     73.7   11.31   2.30
+      435.693  0.7928  0.38617     98.9   11.31   2.22
+      478.722  0.7814  0.39481    111.1   11.31   2.24
+);

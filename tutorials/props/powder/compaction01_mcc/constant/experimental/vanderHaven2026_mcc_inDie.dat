@@ -1,0 +1,94 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  IN-DIE COMPACTION OF MCC (Avicel PH200)
+  -- van der Haven et al., Sci. Data 13 (2026) 1468, CC BY 4.0.
+
+  Each row is ONE tablet compressed once on a Styl'One compaction simulator
+  (Euro B 11.28 mm flat-faced punches), read at its MAXIMUM force:
+    P        the compaction pressure, the mean of the upper and lower punch
+             forces over the punch face (the dataset's own definition);
+    density  the in-die density at that force, corrected for punch
+             deformation -- both transcribed from the archive's
+             `Compaction (true density)/Preprocessed data/Density vs
+             Pressure - MCC.csv` (columns 2 and 1), all 45 rows;
+    C        the Kawakita volume strain (H0 - h)/H0, computed HERE from the
+             same tablet's raw file (`Raw data/MCC/*.xlsx`, sheet Datas:
+             `Die filling height` H0 and `Corrected compression thickness at
+             max force` h); the raw file's pressure matches the
+             preprocessed one to 1e-3 MPa, which is how the rows were paired.
+  The true density the case declares (1.6374 g/cm3) is the dataset's own
+  EFFECTIVE true density (Kuentz-Leuenberger fit), `Processed
+  data/Effective true density/Effective true densities.tab` -- not a helium
+  pycnometry value; a pycnometric one is lower for MCC, which moves D.
+  Rows sorted by pressure; values as printed to six figures, nothing adjusted.
+\*---------------------------------------------------------------------------*/
+provenance
+{
+    source         "van der Haven, D. L. H., Mikoroni, M., Jensen, R., Ortoft, F. H., Andreasen, J. L., Andersen, M. E., Dax, D., Zafar, U., Megarry, A., Naelapaa, K., Fragkopoulos, I. S., Elliott, J. A., Characterisation data of common pharmaceutical excipient powders and tablets for formulation development, Sci. Data 13 (2026) 1468, doi:10.1038/s41597-026-07707-0; data: Zenodo doi:10.5281/zenodo.16732963";
+    licence        "CC BY 4.0 (article and Zenodo record)";
+    transcribed    "from Preprocessed data/Density vs Pressure - MCC.csv and Raw data/MCC/*.xlsx of the Zenodo archive, read 2026-11-02";
+    reviewStatus   interim;
+}
+
+columns
+(
+    { name P; unit MPa; }      // compaction pressure at maximum force
+    { name density; unit g/cm3; }      // in-die density at maximum force
+    { name C; unit -; }      // Kawakita strain (H0 - h)/H0, from the raw file
+);
+
+data
+(
+       18.1762  0.791775  0.526481    // MCC_truedensity_02kN_No2.xlsx
+       18.1837  0.791826  0.525255    // MCC_truedensity_02kN_No3.xlsx
+       18.2618  0.791804  0.526809    // MCC_truedensity_02kN_No1.xlsx
+       36.8002  0.999743  0.622967    // MCC_truedensity_04kN_No1.xlsx
+       37.0984  1.002917  0.628475    // MCC_truedensity_04kN_No2.xlsx
+       37.1089  1.002602  0.628283    // MCC_truedensity_04kN_No3.xlsx
+       65.3289  1.180956  0.686596    // MCC_truedensity_07kN_No1.xlsx
+       65.4850  1.182447  0.684040    // MCC_truedensity_07kN_No2.xlsx
+       65.7287  1.184066  0.682783    // MCC_truedensity_07kN_No3.xlsx
+      104.4067  1.324424  0.717662    // MCC_truedensity_11kN_No1.xlsx
+      105.1241  1.326659  0.720207    // MCC_truedensity_11kN_No2.xlsx
+      105.9567  1.328555  0.718861    // MCC_truedensity_11kN_No3.xlsx
+      163.9452  1.439004  0.740917    // MCC_truedensity_17kN_No2.xlsx
+      164.0187  1.438491  0.743371    // MCC_truedensity_17kN_No3.xlsx
+      164.9673  1.440600  0.740617    // MCC_truedensity_17kN_No1.xlsx
+      222.4365  1.499958  0.753901    // MCC_truedensity_23kN_No2.xlsx
+      223.4286  1.501381  0.753631    // MCC_truedensity_23kN_No1.xlsx
+      224.5229  1.502497  0.753480    // MCC_truedensity_23kN_No3.xlsx
+      278.7343  1.535828  0.756929    // MCC_truedensity_29kN_No2.xlsx
+      280.7086  1.537230  0.756544    // MCC_truedensity_29kN_No3.xlsx
+      281.7918  1.538225  0.757689    // MCC_truedensity_29kN_No1.xlsx
+      330.9864  1.560563  0.760987    // MCC_truedensity_35kN_No2.xlsx
+      332.7011  1.561851  0.759264    // MCC_truedensity_35kN_No3.xlsx
+      334.3251  1.562067  0.757596    // MCC_truedensity_35kN_No1.xlsx
+      385.7667  1.575595  0.761353    // MCC_truedensity_41kN_No2.xlsx
+      388.0447  1.576266  0.760822    // MCC_truedensity_41kN_No1.xlsx
+      388.6141  1.576613  0.764781    // MCC_truedensity_41kN_No3.xlsx
+      439.7525  1.586436  0.767131    // MCC_truedensity_47kN_No2.xlsx
+      439.7580  1.586063  0.765808    // MCC_truedensity_47kN_No3.xlsx
+      440.9423  1.586738  0.767805    // MCC_truedensity_47kN_No1.xlsx
+      503.4748  1.596230  0.765948    // MCC_truedensity_54kN_No1.xlsx
+      504.7842  1.596950  0.765529    // MCC_truedensity_54kN_No2.xlsx
+      505.5557  1.597514  0.766821    // MCC_truedensity_54kN_No3.xlsx
+      567.4338  1.606571  0.765707    // MCC_truedensity_61kN_No3.xlsx
+      568.3624  1.608108  0.767120    // MCC_truedensity_61kN_No1.xlsx
+      569.6503  1.607553  0.766725    // MCC_truedensity_61kN_No2.xlsx
+      627.4686  1.615525  0.770773    // MCC_truedensity_68kN_No2.xlsx
+      628.9401  1.616376  0.769133    // MCC_truedensity_68kN_No1.xlsx
+      631.0235  1.616707  0.769509    // MCC_truedensity_68kN_No3.xlsx
+      669.8421  1.620979  0.773716    // MCC_truedensity_75kN_No3.xlsx
+      679.0568  1.621317  0.770582    // MCC_truedensity_75kN_No2.xlsx
+      682.4511  1.624011  0.769158    // MCC_truedensity_75kN_No1.xlsx
+      682.7738  1.622722  0.772404    // MCC_truedensity_81kN_No1.xlsx
+      683.1911  1.623464  0.772346    // MCC_truedensity_81kN_No2.xlsx
+      686.4267  1.622860  0.771387    // MCC_truedensity_81kN_No3.xlsx
+);

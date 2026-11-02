@@ -11,6 +11,37 @@
     }
    ]
   },
+  "compactionFit": {
+   "reads": [
+    {
+     "key": "dataset",
+     "kind": "file",
+     "default": ""
+    },
+    {
+     "key": "heckel.dataset",
+     "kind": "file",
+     "default": ""
+    },
+    {
+     "key": "kawakita.dataset",
+     "kind": "file",
+     "default": ""
+    },
+    {
+     "key": "ryshkewitch.dataset",
+     "kind": "file",
+     "default": ""
+    }
+   ],
+   "writes": [
+    {
+     "key": "output.file",
+     "kind": "file",
+     "default": ""
+    }
+   ]
+  },
   "dataReconciliation": {
    "reads": [
     {

@@ -617,6 +617,28 @@ Glass-box surface of the ONE shared formula parser (src/thermo/ElementCompositio
 
 \subsection{Other}
 
+\paragraph{\code{compactionFit}}\label{op:compactionFit}
+The COMPACTION BENCH (DEV.md 4c C195): the Heckel, Kawakita and Ryshkewitch-Duckworth models of a pharmaceutical powder, each fitted by least squares on the straight line its authors wrote, to a declared dataset of ONE material. The Heckel and Kawakita pressure windows are DECLARED by the case, never chosen by the op; a window with no point, or with fewer than 4, refuses. The equations, citations and validity statements are printed beside the numbers, and values the source itself reports are printed beside the fitted ones as a cross-check. No mixture rule is implemented: an excipient stands in for the blend.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{dataset} & Compaction dataset \\
+\code{heckel} & Heckel fit \\
+\code{kawakita} & Kawakita fit \\
+\code{material} & Material \\
+\code{output} & CSV output \\
+\code{reported} & Values the source reports \\
+\code{ryshkewitch} & Ryshkewitch-Duckworth fit \\
+\code{trueDensity} & True density \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/powder/compaction01\_mcc}
+\quad (and 1 more)
+\end{tutoriallink}
+
 \paragraph{\code{enthalpyConcentration}}\label{op:enthalpyConcentration}
 The saturated-liquid and saturated-vapour enthalpy loci of a BINARY at ONE pressure — the data an enthalpy-concentration (Ponchon-Savarit) construction is drawn on; the construction itself belongs to a drawing tool. Every row is one equilibrium: it carries BOTH ends of a tie line (the liquid x1 with h\_liquid, the vapour y1 with H\_vapour) at the ONE temperature they share, so a consumer never pairs rows by index and never interpolates one end of a tie. \code{role bubble} rows put x1 on the uniform grid, \code{role dew} rows put y1 on it; both are solved through the SAME bubble-point kernel, a dew node being the inversion y\_eq(x) = y1. The op REFUSES up front unless the thermophysical system has EXACTLY 2 components, and unless every component can be priced on the project's one enthalpy datum (the elements at 298.15 K): it names any component with no route to that datum, any component with no idealGasHeatCapacity\{\} block (no saturated-vapour leg), and any component whose standardThermochemistry.referenceState is off the ideal-gas rung — no private Cp integral is ever substituted. A node that cannot be solved (bubble Newton not converged, a non-monotonic y\_eq(x1) that has no single-valued dew inversion, a y1 outside the converged bubble image, an enthalpy kernel refusal) is PUBLISHED as a refusal row with its status, never dropped. Diagnostics headline lambda = H\_vapour $-$ h\_liquid over the locus, the spread of which measures what constant molar overflow costs.
 

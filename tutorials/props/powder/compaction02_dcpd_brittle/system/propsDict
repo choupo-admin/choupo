@@ -1,0 +1,130 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  compaction02 -- A BRITTLE EXCIPIENT ON THE COMPACTION BENCH: DICALCIUM
+  PHOSPHATE, AND WHY IT IS NOT LACTOSE.
+
+  The donepezil tablet case (tutorials/batch/plant/donepezil01_tablets) is
+  62 % lactose monohydrate, a FRAGMENTING excipient.  This case was meant
+  to fit the compaction models to open lactose data, and it does not,
+  because NO open dataset with tabulated lactose pressure-density or
+  strength-porosity rows was found on 2026-11-02 (CC BY sources searched:
+  MDPI Pharmaceutics, Int. J. Pharm. X, PMC open access, Zenodo, Data in
+  Brief; the lactose datasets located were NonCommercial, figure-only, or
+  "available on request").  No lactose numbers were invented in its place.
+
+  What it fits instead is the open brittle reference that WAS found, from
+  the same two sources as compaction01, so the plastic-against-brittle
+  contrast can be read off two cases built the same way:
+
+    dcpd_inDie       DCPD Emcompress premium (dihydrate), van der Haven et
+                     al., Sci. Data 13 (2026) 1468, CC BY 4.0: 42 tablets,
+                     in-die density at maximum force; 19 crushed
+                     diametrally.  Compared with the sigma_0 and k_b the
+                     dataset itself reports.
+    dcpa_lubricated  CaHPO4 anhydrous DI-CAFOS A60 + 2 % sodium stearyl
+                     fumarate + 0.3 % silica (Kukuls & Mohylyuk 2025, CC BY
+                     4.0; protocol of Mohylyuk et al., Pharmaceutics 16
+                     (2024) 362), out of die, compared with that paper's
+                     Py = 434 MPa.
+
+  WHAT TO READ.  Py here is several hundred MPa -- several times MCC's
+  (compaction01) -- the signature of a material that densifies by
+  FRACTURE, not by flow.  Its tablets are weak at a given porosity (low
+  tensile strength) and k_b is large: the strength collapses fast as the
+  pores open.  Lactose sits between the two: for Tablettose 80 the
+  literature gives an in-die Py of 120.8 +/- 1.5 MPa at 11.28 mm, against
+  52.2 +/- 4.2 MPa for MCC Vivapur 102 in the same study (Lura et al., Int.
+  J. Pharm. X 2 (2020) 100061, Table 2, CC BY) -- quoted for the donepezil
+  group to compare with, NOT fitted here, because the study gives the
+  curves only as figures.
+
+  A FINDING, PRINTED AND NOT TUNED: on both materials of the van der Haven
+  dataset (here and in the other powder case) the fitted k_b agrees with
+  the dataset's own constant within 10 %, but the fitted sigma_0 comes out
+  about 1.5 times the dataset's.  A fit in sigma_t instead of ln(sigma_t)
+  does not close it (measured: 30.9 and 28.4 MPa).  The files read do not
+  say how the dataset's "Eq. 4" was fitted or on which porosity; its report
+  PDF was not read.  sigma_0 is an extrapolation to zero porosity, so a
+  small difference in slope or in the porosity basis moves it a lot.
+
+  FOR THE DONEPEZIL GROUP.  To fit your own lactose: find an open dataset
+  (or digitise a CC BY figure, stating the reading error in the dataset
+  header), write it in the grammar of the files in constant/experimental/,
+  declare its Heckel window with a reason, and put the paper's own Py in
+  `reported {}`.  Say which lactose (monohydrate milled, sieved,
+  agglomerated, spray-dried, anhydrous): Py differs between grades by a
+  factor of two.  A wet-granulated blend (your case's route) compacts
+  differently again from the dry excipient, and NO mixture rule is
+  implemented -- the excipient stands in for the blend, and you say so.
+
+  THE PAPER'S Py AND THIS CASE'S.  Mohylyuk et al. 2024 analyse the F 0-100
+  formulation between 250 and 450 MPa.  The deposited averages have three
+  rows there (243 MPa falls just below it); a 3-point line refuses here, so
+  the case declares 140-440 MPa (four rows) and both values are printed.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        dcpd_inDie;
+        type        compactionFit;
+        material    "DCPD Emcompress premium (in-die, van der Haven et al. 2026)";
+        dataset     "constant/experimental/vanderHaven2026_dcpd_inDie.dat";
+        //  The dataset's own EFFECTIVE true density (Kuentz-Leuenberger fit).
+        trueDensity 2.438 g/cm3;
+
+        heckel
+        {
+            Pmin    100 MPa;
+            Pmax    450 MPa;
+            reason  "the middle of the range: below ~100 MPa the fragments are still rearranging (the curve is steeper), above ~450 MPa it bends upwards again";
+        }
+        kawakita
+        {
+            Pmin    25 MPa;
+            Pmax    710 MPa;
+            reason  "P/C is straight over the whole range the dataset covers";
+        }
+        ryshkewitch
+        {
+            dataset "constant/experimental/vanderHaven2026_dcpd_diametral.dat";
+        }
+        reported
+        {
+            sigma0  20.5 MPa;
+            kb      15.0;
+            source  "van der Haven et al. 2026, Zenodo archive, Processed data/Single/Ryshkewitch-Duckworth constants.csv, 100 wt% DCPD, diametrical";
+        }
+    }
+    {
+        name        dcpa_lubricated;
+        type        compactionFit;
+        material    "CaHPO4 DI-CAFOS A60 + 2 % PRUV + 0.3 % Syloid (out-of-die, Kukuls & Mohylyuk 2025)";
+        dataset     "constant/experimental/kukuls2025_F_0-100.dat";
+        heckel
+        {
+            Pmin    140 MPa;
+            Pmax    440 MPa;
+            reason  "four rows; the paper's 250-450 MPa window holds three deposited rows; the highest pressure's solid fraction falls (78.1 % after 79.3 %, s.d. 4 %)";
+        }
+        kawakita
+        {
+            Pmin    90 MPa;
+            Pmax    480 MPa;
+            reason  "all six main compressions (in-die strain)";
+        }
+        ryshkewitch { }
+        reported
+        {
+            Py      434 MPa;
+            source  "Mohylyuk et al., Pharmaceutics 16 (2024) 362, section 3 (out-of-die Heckel, F 0-100)";
+        }
+    }
+);

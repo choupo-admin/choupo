@@ -58,6 +58,7 @@ License
 #include "IsothermEval.H"
 #include "FreezingPoint.H"
 #include "PitzerActivity.H"
+#include "CompactionFit.H"
 #include "PolarisationIndex.H"
 #include "MembraneShortlist.H"
 #include "PoreTransportBench.H"
@@ -235,6 +236,10 @@ void PropertyOperation::registerBuiltins()
     //  global and measurement tests and the posterior covariance (DEV.md 4c
     //  C121).  The weighted least squares itself is the one in
     //  streams/AnalysisReconciler; this op assembles and tests around it.
+    //  THE COMPACTION BENCH (DEV.md 4c C195): Heckel, Kawakita and
+    //  Ryshkewitch-Duckworth fitted to a declared dataset, the linear
+    //  region declared by the case.
+    reg("compactionFit", []{ return std::make_unique<CompactionFit>(); });
     reg("dataReconciliation", []{ return std::make_unique<DataReconciliation>(); });
 }
 
