@@ -66,6 +66,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| todo | Two EduTools in Pareto mode: liquid effluent treatment and gaseous emission treatment (first the Pareto against the corpus plants' own boundary streams, then the scope to Vitor) | C206 |
 | blocked | Seawater boron on Pitzer: BOH4/CaBOH4/MgBOH4 formation and eight mixing records, each from its primary (blocked on reading Felmy & Weare 1986) | C198 |
 | todo | Dynamic units, slices 5 and 6: the RO train's pressure and recovery, the column's inventories on a quasiSteady column; the full dynamic MESH last | C205 |
 | todo | `digitalTwin/`, its own tutorials folder (operation of a designed plant, continuous on choupoCtrl then batch on choupoBatch, layout REQUIRED): loops/instruments with a generated P&ID after the unit dynamics, then the operator panel (pedagogical scope to Vitor first) | C203 |

@@ -1653,6 +1653,19 @@ accepts today, and that is a policy call.
 > closure of the chain (latent heat at Tb) before building an engine home on
 > it.
 
+> **C206. TWO EDUTOOLS, LIQUID EFFLUENT TREATMENT AND GASEOUS EMISSION
+> TREATMENT, IN PARETO MODE (Vitor, 2026-11-02: "precisamos de uma Edutool
+> para tratamentos de efluentes liquidos e outra gasosos, em modo Pareto ...
+> Nao e urgente").**  RECORDED; placed beyond a week in PLAN.md.  Pareto
+> mode is read as C204's: the few treatment steps that cover most of what a
+> student's plant emits, each with its rule of thumb AND the exception that
+> must be taught with it, and a case that runs where the engine can run one;
+> what the engine cannot model yet is said on the page, never drawn as if it
+> were computed.  First step, before any dispatch: the Pareto analysis
+> itself (which effluents the corpus plants produce -- measured from their
+> boundary streams -- set against the standard treatment trains) and the
+> pedagogical scope put to Vitor (CLAUDE.md section 10).
+
 > **C205. THE DYNAMIC VERSIONS OF THE UNITS THAT HAVE NONE (Vitor, 2026-11-02,
 > after the C204 Pareto: "Mas eu tambem quero que implementes a versao
 > dinamica nas operacoes que ainda nao tem").**  Read as approving C204's
