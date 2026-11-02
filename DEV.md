@@ -1686,6 +1686,31 @@ accepts today, and that is a policy call.
 > membrane08 reading seen on the earlier boron and phaseChanger integrations);
 > neither touches the diff.
 
+> **C209. A SECTOR THAT SAYS HOW MANY TIMES IT IS REPEATED (Vitor, 2026-11-02
+> night, about swro01_campoDalias: "no flowsheet devia haver forma de
+> notificar isso ... qualquer envolucro que dissesse quantas vezes se tem de
+> multiplicar"; his premise: in modern chemical industry a unit passes its
+> economic maximum size and the engineer designs ONE train, repeated in
+> parallel).**  MEASURED today: the case carries the SUM of six identical
+> trains (`vessels 1398` = 6 x 233; pumps and exchanger at six times a train's
+> flow) and declares `trains { count 6; }` separately in the postDict for the
+> per-train sizing (`TrainSplit.H` in the sizing sources) -- the number six has TWO homes.
+> DECIDED, the architect's design: a sector declares `repeat N;` and holds ONE
+> train at a train's flows; the streams that cross its boundary carry the PLANT
+> TOTAL and the engine splits inlets by N and sums outlets (no hand arithmetic);
+> what is shared (intake, pretreatment, product tank, CIP, building) lives
+> outside the wrapper; the stream table shows "per train" and "x N = total",
+> the three balances count the total; the per-train sizing reads `repeat` and
+> the postDict `trains { count }` goes (one home for N); the GUI draws the
+> sector as a stacked box labelled "x N" (the PFD convention for parallel
+> units).  A recycle that crosses the wrapper from one train to another REFUSES
+> by name.  Phase 2, not now: non-identical trains (one stopped, a spare,
+> N+1), uneven distribution over the header -- they belong with the digital
+> twin (C203), where stopping a train is an operating scenario.  Migration:
+> swro01_campoDalias is the witness (its goldens move only by the
+> representation, which the list in the commit shows).  Placed first in Beyond
+> a week.
+
 > **C208. FOUR ENGINE DEFECTS FOUND WHILE WRITING THE TABLET-PLANT PACKS
 > (a general, 2026-11-02 night, each MEASURED and not fixed; the first two are
 > wrong or missing answers at exit 0 and go first).**  (1) `bin/choupo-init0`

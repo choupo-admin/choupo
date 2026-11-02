@@ -65,6 +65,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| todo | A sector that says how many times it repeats (`repeat N;`): ONE train in the flowsheet, plant-total streams across its boundary split and summed by the engine, shared services outside, the stream table per train and total, the GUI box "x N"; replaces `trains { count }` in the postDict; witness swro01_campoDalias | C209 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | PIF long-term (L1-L10 of the synthesis): the sterile route (filling, lyophiliser, sterilising filtration, F0), full HVAC (latent and equipment loads, the pressure cascade's leakage), labour following the plan and multiproduct campaigns, quality calculations (blend uniformity, cleaning limits), utility networks (steam, compressed air, vacuum), equipment catalogue records, scale-up and solid-dosage unit models, the economics as a distribution | C195, docs/reviews/2026-11-02-pif-reports-synthesis.md |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
