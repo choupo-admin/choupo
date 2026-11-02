@@ -130,7 +130,12 @@ int ExplainProperty::run(const DictPtr& dict,
 
     const scalar residual = !wantResidual ? 0.0
         : (wantS ? thermo.eos().S_residual(T, P_Pa, z)
-                 : thermo.eos().H_residual(T, P_Pa, z));
+                 : thermo.eos().H_residual(T, P_Pa, z))
+          //  the vapour association's departure (exactly 0 unless priced,
+          //  DEV.md 4c C201 item 1) -- the package's residual, not the EoS's
+          //  alone, or the rebuild would accuse the engine of a gap
+        + (wantResidual ? thermo.associationResidualTotal(T, P_Pa, z, !wantS)
+                        : 0.0);
     const scalar totalEngine = !wantResidual ? idealEngine
         : (wantS ? thermo.S_real(T, P_Pa, z) : thermo.H_real(T, P_Pa, z));
     const scalar totalRebuilt = idealEngine + residual;

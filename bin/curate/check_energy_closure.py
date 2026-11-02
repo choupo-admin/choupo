@@ -577,6 +577,11 @@ def ratchet_kW(pin: float) -> float:
 #  esterification stopped releasing 243 kW it never really released (the
 #  acetic-acid liquid is now bridged to the datum's monomer, not to the
 #  associated vapour).  The debt is the same step, still unpaid.
+#  RE-PINNED 325.5220 -> 329.1840 the same day, when piece 2 landed WITH the
+#  bridge (the associated ideal-gas vapour): the step SHRANK in absolute terms,
+#  -869.1 -> -760.1 kW (the reactor-outlet vapour leg now carries the dimer
+#  heat on both sides of the boundary), and the percentage rose only because
+#  the energy-exchanged denominator moved with it (225.4 kW of boundary duty).
 #  flash17_two_liquids_reactive (2.5460 % = 0.0022 kW of a 0.085 kW exchange,
 #  pinned 2026-11-03): the reactive flash prices the vapour DIMER's association
 #  heat in its duty and the report prices the stream without it.  MEASURED, not
@@ -586,7 +591,7 @@ def ratchet_kW(pin: float) -> float:
 #  (backup/c201-acetic-vapour), which makes the dimer a property of the vapour
 #  model the report reads too.  DEV.md 4c C201.
 KNOWN_OPEN = {
-    "tutorials/plant/esterification2sector": 325.5220,
+    "tutorials/plant/esterification2sector": 329.1840,
     "tutorials/steady/flash/flash17_two_liquids_reactive": 2.5460,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/rotating/pump01_water": 65.0000,

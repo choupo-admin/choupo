@@ -220,3 +220,129 @@ Measured on flash13 when the dimer record was adopted (2026-08-24, the
 record's own comment): the association term is -0.25 kW against a 665.8 kW
 duty, so at that case's vacuum and temperature the double count is small.
 It is not small at 298 K and 1 atm, where 82 % of the vapour is dimer.
+
+## 7. What was built (DEV.md 4c C201 item 1, both pieces, 2026-11-02)
+
+The two questions of section 5 were decided by the architect (DEV.md 4c C201
+item 1, the DECIDED paragraph): `HvapTb` speaks the MEASURED latent heat, and
+association is a property of the VAPOUR MODEL.  Both pieces landed as one
+slice.
+
+**Piece 1, the liquid bridge** (`Component::datumBridge298`): the liquid is
+bridged to the datum's ideal-gas monomer by the calorimetric heat plus the
+dissociation heat of the dimers in the saturated vapour at 298.15 K, 28.18 +
+25.91 = 54.09 kJ/mol (section 2's arithmetic, read from the chemistry record).
+
+**Piece 2, the associated ideal-gas vapour** (`ThermoPackage`, one home; the
+true-vapour split moved verbatim from `ReactiveVLE` into
+`thermo/VapourAssociation.H`, which both now call):
+
+* `Kvec` (and through it `stageK` on a molecular package, the flash, the
+  column's MESH, the bubble and dew kernels) divides every K by the
+  association's fugacity coefficient -- phi_a = t_m/(tau y_a) for the acid,
+  1/tau for every other component -- and references the acid's liquid side to
+  the MONOMER saturation pressure (`PsatLiquidReference`, from K_dim and the
+  record's apparent Psat).  The pure limit is exact: pure acetic acid boils at
+  the Antoine root, 391.0085 K (record Tb 391.05, Antoine's own residual),
+  bubble = dew, K = 1.
+* `H_real` / `S_real` (and so `H_stream_formation`, every duty and the energy
+  report) add the association departure: H = t_d dH, G/RT = sum y_i ln phi_i.
+* The reactive flash no longer adds the dimer heat to its duty (section 6's
+  double count): it is in the vapour enthalpy, once.  flash13's duty is the
+  bridge-only number (669.64 kW) and its unit residual -0.2506 kW is now 0.
+* A vapour whose fugacity depends on its own composition is iterated at its
+  incipient composition in `BubblePoint::compute` and in the column
+  (`vapourFugacityDependsOnComposition`, the package's answer, not the
+  column's own test).
+* An EoS vapour (SRK, PR, phi-phi) keeps its EoS and ANNOUNCES that the
+  association is not priced; the sensible-datum `Hvapour` (no pressure)
+  keeps the calorimetric latent heat and says so.
+
+**Not reached, named:** the Gibbs reactors (`GibbsMethod`, `DirectMin`,
+`EquilibriumReactor`) and `VaporPhase::fEffective` (three-phase answers) ask
+`eos().phi` directly and see a monomer ideal gas; `SaturationCurves`'
+`binaryTxy` (the T-x-y block choupoSolve prints for a binary) evaluates K at
+y = x.  Each would need its own reading of the package's vapour; none was
+given a second home here.
+
+### 7.1 Validation
+
+* **Pure limit**: above; held by `check_reference_rung` arm (k).
+* **Latent heat at Tb**: the package prices 33.03 kJ/mol between the
+  saturated liquid and the saturated associated vapour at 391.01 K, against
+  the record's measured 24.39 (+35 %).  The engine reproduces the closed form
+  of the record's own legs to the joule -- monomer bridge at 298.15 K
+  (54.09) + Kirchhoff on the record's Cp's (-4.58: the monomer ideal-gas
+  polynomial against the constant liquid Cp 123.1) + the dimer heat at Tb
+  (-16.49, xi = 0.261 from Chao & Zwolinski's K and dH) -- so the +8.6 kJ/mol
+  is the RECORD's legs not closing at Tb, not an engine error.  Which leg is
+  off was not established (candidates: Watson's extrapolation of an
+  associating latent heat to 298 K, which already sat 1.9 kJ/mol above NBS
+  in section 2; the constant liquid Cp; the van't Hoff extrapolation of
+  K_dim over 93 K).  Before this slice the same quantity was 23.6 kJ/mol on
+  the monomer vapour -- right by cancellation of two errors of ~26 kJ/mol --
+  and 49.5 with the bridge alone.
+* **Acetic acid + water T-x-y at 101.325 kPa**, UNIFAC liquid (the corpus's
+  non-reactive acetic-acid model, `aceticAcid02_plant`), against Calvar,
+  Dominguez & Tojo, Fluid Phase Equilib. 235 (2005) 215-222 (24 measured
+  points, located in the NIST ThermoML archive; witness
+  `tutorials/props/compare/aceticWater01_txy_association`): AAD T 3.486 K ->
+  2.187 K, AAD y_water 0.0355 -> 0.0272 (monomer ideal gas -> associated
+  vapour).  The model stays below the data throughout (bias -2.19 K), part of
+  which is the water record's own normal boiling point, 0.70 K low.  Nothing
+  was tuned.
+* **cstr01's reaction heat**: Q +0.0132 kW at 0.07304 mol/s, i.e. +0.18
+  kJ/mol at 350 K; the 298 K liquid esterification heat is -0.38 kJ/mol,
+  inside arm (j)'s band.
+
+### 7.2 What moved (no golden re-recorded)
+
+37 acetic-acid cases: 3 PASS (compare_kinetics_order, rate01, flash11), 34
+FAIL, 741 rows (with the vanished cooling-utility rows).  Grouped by key
+(a mechanical classification, checked against the largest moves):
+
+* **A, 414 rows / 29 cases -- the liquid reaction heat (piece 1)**: reactor
+  duties, adiabatic and jacketed temperature rises, batch ledgers, ctrl11,
+  H_feeds, cooling utilities and the economics priced on them.  Exactly the
+  bridge branch's group 2.  It includes **column05's reboiler +33 %**
+  (0.640 -> 0.853 kW): the column is reactive, and the extra 0.213 kW is its
+  reaction extent, 8.19e-6 kmol/s, times the 25.9 kJ/mol of exotherm the
+  bridge removed -- the reboiler now supplies what the reaction used to.  It
+  is NOT a vaporisation duty, and the bridge-only list filed it as one.
+* **B, 208 rows / 11 cases -- the VLE of acetic acid (piece 2)**: the
+  associated vapour lowers the acid's volatility (process01's separator
+  K_aceticAcid 0.428 -> 0.345, V/F 0.452 -> 0.299; process02's separator
+  goes from V/F 0.056 to subcooled, its vapour product vanishing), with the
+  stream flows, compositions, sizing and layout that follow; most of them in
+  aceticAcid02_plant (117).
+* **C, 89 rows / 13 cases -- vaporisation duties on the associated vapour**:
+  aceticAcid02_plant lightsColumn condenser -36.46 -> **-52.14 kW** (bridge
+  alone -75.1), reboiler 118.3 -> 133.8 kW, plant condenser -308.7 ->
+  **-411.2 kW** (bridge alone -457.1); recipe01/03 still duties; the
+  flowsheet separators.  **They did not come back to their old values**: they
+  came back by the dimer heat and stop where the latent heat of 7.1 stops,
+  about a third high.
+* **D, 21 rows / 4 cases -- the reactive flashes**: the bridge's H_feeds
+  shift plus the duty now counting the dimer heat once (flash13 665.82 ->
+  669.64 kW, the unit residual -0.25 -> 0).
+* **E, 6 rows -- aceticAcid01's Gibbs reactor**: -3927 -> -4635 kW, the
+  bridge's liquid-acid shift (bridge alone -4630); its own equilibrium does
+  not see the association (above).
+* **F, 3 rows -- detailed-balance reverse constants** (cstr04/05/06), as in
+  the bridge branch.
+
+### 7.3 Open, and blocking: aceticAcid02_plant's lights-column distillate
+
+`check_energy_closure`'s unit arm fails on `aceticAcid02_plant`: the
+lightsColumn leaves +8.69 kW unattributed.  Measured: the distillate carries
+7 % CO, its bubble point does not converge (residual 8.8, the bracket cannot
+reach a liquid that holds CO at 1.5 bar), so the column publishes it at the
+TOP TRAY's temperature -- the composition's DEW point -- unpinned, and says so
+(`[distillate] WARNING`, DistillationColumn.cpp, the fallback after
+`makeDistillate`'s bubble solve).  The report then re-resolves a stream that
+sits ON its dew curve, and the side it lands on is decided by the last digits:
+before this slice it landed liquid, now vapour (sum z/K = 1.003 at y = z;
+HV - HL = 31.3 kJ/mol x 0.278 mol/s = 8.69 kW).  The defect is the published
+state (a liquid at its dew temperature), not the vapour model; the fix is the
+column's (a partial condenser or a vent for the noncondensable), and it was
+not invented here.

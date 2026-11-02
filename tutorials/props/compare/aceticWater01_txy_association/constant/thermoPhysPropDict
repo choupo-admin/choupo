@@ -1,0 +1,23 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- gamma-phi, UNIFAC liquid, ideal-gas vapour.
+
+  The same liquid model the corpus's non-reactive acetic-acid flowsheet uses
+  (tutorials/plant/aceticAcid02_plant: UNIFAC, ideal-gas vapour).  Acetic acid
+  carries a curated vapour dimerisation (chemistry/aceticAcid-dissolution.dat,
+  vapourDimerisation, Chao & Zwolinski 1978), so its ideal-gas vapour is the
+  equilibrium monomer + dimer mixture (DEV.md 4c C201 item 1): nothing in
+  this file asks for it -- association is a property of the vapour model,
+  not a case option.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( aceticAcid  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model UNIFAC; }  standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}

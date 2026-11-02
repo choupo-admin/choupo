@@ -1,0 +1,49 @@
+/*---------------------------------------------------------------------------*\
+  aceticWater01_txy_association
+  =============================
+  WHAT A DIMERISED VAPOUR DOES TO A T-x-y DIAGRAM.  Acetic acid's vapour is
+  largely dimers near its boiling point, so the acid is LESS volatile than its
+  vapour pressure alone suggests: the dimers take up partial pressure that
+  the monomer -- the species in equilibrium with the liquid -- does not.
+  This case evaluates the bubble temperature and the vapour composition at
+  the 24 liquid compositions Calvar, Dominguez & Tojo measured at 101.325 kPa
+  (constant/experimental/calvar2005_txy.csv), plus the two pure boiling
+  points, on UNIFAC (predictive, no fitted pair) and the associated ideal-gas
+  vapour.  The gate check_reference_rung arm (k) holds the pure limit and the
+  latent heat at Tb and prints the comparison with these measurements; the
+  numbers are recorded in docs/design/one-record-two-vapours-acetic-acid.md
+  section 7.  Nothing here is tuned.
+
+  WHAT IS NOT IN IT: no regressed acetic-acid/water pair (the catalogue holds
+  none); the measured points were read from the NIST ThermoML archive copy of
+  the article and NOT checked against the article itself.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        bp_aceticAcid;
+        type        propertyPoint;
+        state       { T 391 K;  P 101.325 kPa;  composition { aceticAcid 1.0;  water 0.0; } }
+        properties  ( T_bubble  H_real );
+    }
+    {
+        name        bp_water;
+        type        propertyPoint;
+        state       { T 373 K;  P 101.325 kPa;  composition { aceticAcid 0.0;  water 1.0; } }
+        properties  ( T_bubble );
+    }
+    {
+        name        txy_calvar2005;
+        type        propertyScan1D;
+        vary
+        {
+            variable x[water];
+            points ( 0.0901 0.1414 0.1934 0.2593 0.3241 0.3627 0.4454 0.4702
+                     0.5071 0.5337 0.5698 0.6046 0.6546 0.6808 0.7057 0.7332
+                     0.7789 0.8287 0.8555 0.8963 0.9140 0.9391 0.9653 0.9902 );
+        }
+        state       { T 380 K;  P 101.325 kPa;  composition { aceticAcid 0.5;  water 0.5; } }
+        properties  ( T_bubble  y_eq_water );
+        output      { file txy_calvar2005.csv; }
+    }
+);

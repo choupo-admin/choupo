@@ -74,8 +74,14 @@ int PropertyPoint::run(const DictPtr& dict,
 
     const scalar Zval   = thermo.eos().Z(T, P_Pa, z);
     const scalar vmol   = thermo.eos().molarVolume(T, P_Pa, z);
-    const scalar H_R    = thermo.eos().H_residual(T, P_Pa, z);
-    const scalar S_R    = thermo.eos().S_residual(T, P_Pa, z);
+    //  The residual is the vapour MODEL's: the EoS departure plus, on an
+    //  ideal-gas vapour carrying a curated association, the dimer's
+    //  (ThermoPackage::associationResidualTotal, exactly 0 otherwise -- DEV.md
+    //  4c C201 item 1), so H_real here is the package's H_real.
+    const scalar H_R    = thermo.eos().H_residual(T, P_Pa, z)
+                        + thermo.associationResidualTotal(T, P_Pa, z, true);
+    const scalar S_R    = thermo.eos().S_residual(T, P_Pa, z)
+                        + thermo.associationResidualTotal(T, P_Pa, z, false);
     const scalar H_real = H_ig + H_R;
     const scalar S_real = S_ig + S_R;
 
