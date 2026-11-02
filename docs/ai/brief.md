@@ -1,4 +1,4 @@
-# Choupo kernel brief — read this first, all of it
+# Choupo assistant brief — read this first, all of it
 
 You are helping a student design a chemical process and write it as a
 **Choupo case** that opens in the browser at https://choupo.org/app and runs.
@@ -43,7 +43,7 @@ Every file as:
 
 Paths relative to the case folder.  The student pastes the reply into the
 app (clipboard bridge) or saves the files as a `.zip` and uses
-*Open Case from .zip…*.  No prose between files; explanations go in
+*Open case .zip*.  No prose between files; explanations go in
 `DESIGN.md` or in `//` comments.
 
 ## 3. The case
@@ -63,9 +63,9 @@ Three rules the engine enforces (it refuses, naming the remedy):
 
 * `flowsheetDict` holds **no stream values**.  T, P, flows live in `0/`.
 * **Every stream in the graph has one file in `0/`.**  You write the
-  authored **inlets** and the **tear seeds**; the app's
-  *Case › Complete 0/* (or `bin/choupo-init0 <case>`) generates the rest
-  by propagating from the inlets.  Do not invent intermediate states.
+  authored **inlets** and the **tear seeds**; `bin/choupo-init0 <case>`
+  generates the rest by propagating from the inlets.  The browser app
+  cannot do this yet: in the app, write every stream's file yourself.  Do not invent intermediate states.
 * Units run **in declared order**.  Every unit input must be an inlet, an
   output of an EARLIER unit, or a declared tear.  A loop without a declared
   tear is refused (the message prints the cycle and a valid order).
@@ -96,7 +96,7 @@ verbosity     3;                  // 3 = Newton iterations visible
 
 Other binaries: `choupoBatch` (batch recipes), `choupoSemiContinuous`
 (transient flowsheet), `choupoCtrl` (transient + control loops),
-`choupoProps` (property bench).  Each has its pack.
+`choupoProps` (property bench).
 
 ### flowsheetDict
 
@@ -160,7 +160,7 @@ Decision rule (write the reason in `DESIGN.md`):
 | polar / non-ideal liquid, low P | `gammaPhi` + `NRTL` if the pair is in the catalogue, else `UNIFAC` |
 | gases, high P, light hydrocarbons, H2/N2/CO2 | `phiPhi` + `SRK` or `PengRobinson` |
 | two liquid phases (extraction) | `gammaGamma` → pack *separations* |
-| salts in water | `electrolyteGammaPhi` → pack *electrolytes* |
+| salts in water | `electrolyteGammaPhi` (no pack yet: read the cases under `tutorials/props/electrolyte/` and `tutorials/steady/crystallisation/`) |
 
 Ideal (Raoult):
 
@@ -223,6 +223,21 @@ caloric
 }
 ```
 
+A cubic EoS takes a binary `kij` per pair INSIDE the `equationOfState` block
+that consumes it (a kij is not portable between cubics); with none the run
+announces `kij = 0` for every pair.  A catalogued pair:
+
+```
+    equationOfState
+    {
+        model SRK;  mixingRule vanDerWaalsOneFluid;
+        binaryInteractions
+        {
+            N2-CH4 { source "data/standards/parameters/SRK/N2-CH4.dat"; }
+        }
+    }
+```
+
 Enthalpy has ONE datum (the elements at 298.15 K), so heats of reaction come
 from the components' formation data — never write a `dH_rxn` unless a pack
 tells you to.
@@ -234,8 +249,8 @@ by formula (`N2` `O2` `H2` `CO` `CO2` `CH4` `NH3` `H2S` `Ar` `NaCl`),
 organics in camelCase (`water` `methanol` `ethanol` `acetone` `benzene`
 `toluene` `nHexane` `nHeptane` `cyclohexane` `aceticAcid` `styrene`;
 `air` exists as a pseudo-component).  Check every name against
-https://choupo.org/llm/components.txt; a name that is not there makes the
-case refuse.  If a compound is missing, say so in `DESIGN.md` and propose
+`data/standards/components/` in the repository (one `<name>.dat` per
+component); a name that is not there makes the case refuse.  If a compound is missing, say so in `DESIGN.md` and propose
 the closest catalogued substitute as an explicit, labelled approximation.
 
 ## 7. Unit catalogue (steady) — what you SPECIFY → what is COMPUTED
@@ -251,6 +266,9 @@ pressures unless stated.
 * `phaseChanger` (`boiler`, `condenser`) — 1 in/1 out; spec exactly ONE of
   `outletT`, `outletQuality`, `outletState saturatedVapour|saturatedLiquid`,
   `superheat`, `subcool`, `Q` → the rest.  **Use this to reach a T.**
+  On a MIXTURE `saturatedLiquid` is the bubble point and `saturatedVapour`
+  the dew point at the outlet P (two different temperatures); the printed
+  `Tsat(P_out)` is the dominant component's, not either of them.
 * `heatExchanger` — inputs (hot cold), outputs (hotOut coldOut); spec
   `area`, `U`, `flow counter|co` → duty and both outlets (ε-NTU rating).
 * `mixer` — inputs (…), out (1); `operation {}` adiabatic → T; or
@@ -272,7 +290,8 @@ pressures unless stated.
   Runs at the feed's P.  Good for a first design.
 * `distillationColumn` (`column`) — out (distillate bottoms); spec
   `nStages` (equilibrium stages incl. reboiler, total condenser NOT
-  counted; feedStage 2..N, 1..N-1 under the default model), `feedStage`, `refluxRatio`, `distillateRate` XOR
+  counted), `feedStage` (default model `WangHenke`: 1..N-1, and 2..N-1
+  with a partial condenser; `model simultaneous`: 2..N), `refluxRatio`, `distillateRate` XOR
   `distillateRecovery { component …; fraction …; }`, `P`.  Use
   `model simultaneous;` for non-ideal/azeotropic systems.  Pack
   *separations*.
@@ -281,7 +300,7 @@ pressures unless stated.
   outputs (strippedLiquid richGas).  Pack *separations*.
 * Membranes (`spiralWoundModule`, `pressureExchanger`), electrodialysis,
   evaporators, crystallisers, dryers, cyclones, pipes, storage tanks,
-  adsorption, ion exchange — each has its pack.
+  adsorption, ion exchange — their packs are not yet written (§9).
 
 A unit declares what it accepts; a wrong model, a missing key or an
 unknown keyword is REFUSED with a message that names the remedy.  Read the
@@ -292,7 +311,10 @@ message, fix exactly that, re-run.
 In the app: open the case, *Run*, read **Streams** first, then **Log**.
 Command line: `bin/runCase <case>`; `bin/choupo-lint <case>` validates
 without solving.  Every converged steady run prints and writes mass,
-element and energy balances — check they close before trusting a number,
+element and energy balances in the LOG and under `reports/` (the app's
+run strip may still say MASS "not published" on cases where the log
+closes it -- a known display defect; trust the log) — check they close
+before trusting a number,
 and compare each key result with the estimate in `DESIGN.md` §6.  The
 solution is written to `converged/`; never edit it — change `0/` or the
 operation block and run again.
@@ -309,18 +331,15 @@ Each pack: keys, degrees of freedom, refusals and one minimal example.
 | `packs/recycles.md` | any loop, tear choice, convergence |
 | `packs/reactors.md` | reactions, kinetics, equilibrium, Gibbs |
 | `packs/separations.md` | columns, absorbers, strippers, extraction |
-| `packs/heat.md` | exchangers, utilities, pinch, energy streams |
 | `packs/pressure.md` | pumps, compressors, valves, pipes, hydraulics |
-| `packs/electrolytes.md` | salts, pH, aqueous speciation |
-| `packs/membranes.md` | RO/NF, electrodialysis, energy recovery |
-| `packs/solids.md` | crystallisers, dryers, cyclones, filters |
-| `packs/design-cost.md` | sizing, costing, economics, layout |
-| `packs/drivers.md` | sweeps, optimisation, design specs |
-| `packs/batch-transient.md` | batch recipes, transients, control loops |
-| `packs/props.md` | property bench, data fitting |
 
-Reference lookups (do not read end to end): `components.txt` (names),
-`unit-keys.md` (every unit's accepted keys, generated from the engine).
+NOT YET WRITTEN (say so in `DESIGN.md` if the design needs one, and read
+the tutorial cases of that family instead): heat (exchangers, utilities,
+pinch), electrolytes, membranes, solids, design and cost, drivers (sweeps,
+optimisation, design specs), batch and transient, props.
+
+Reference lookups (do not read end to end): `data/standards/components/`
+(names); each unit's accepted keys are in its source file (see SOURCES).
 
 <!-- SOURCES (for maintainers; a gate holds each to the engine):
   absorber ports ....... src/unitOperations/separation/Absorber.cpp:70,99,282-289
@@ -331,9 +350,11 @@ Reference lookups (do not read end to end): `components.txt` (names),
   -init0 ............... src/applications/choupoSolve/main.cpp:155,208,535
   material forms ....... src/streams/StreamStateIO.cpp:1052-1086
   two-variable rule .... docs/ai/stream-state.md §2; gate check_overspecified_stream
-  heater takes Q only .. docs/ai/unit-ops.md "heater"
+  heater takes Q only .. src/unitOperations/heatTransfer/Heater.cpp:70-79
   NRTL catalogue pairs . data/standards/parameters/NRTL/ (9 files, 2026-11-01)
   units incl. degC ..... src/core/Units.cpp:62,107,132,189
   SRK / PengRobinson ... src/thermo/equationOfState/EquationOfState.cpp:72-81
-  unit operation keys .. docs/ai/unit-ops.md (each unit's section)
+  unit operation keys .. each unit's own .cpp under src/unitOperations/ (unit-ops.md is NOT authoritative)
+  phaseChanger mixture . src/unitOperations/heatTransfer/PhaseChanger.cpp (C202 item 1)
+  feedStage ranges ..... src/unitOperations/distillation/DistillationColumn.cpp:1343,1351,2373
 -->

@@ -1,6 +1,6 @@
 # Pack: separations (columns, absorbers, strippers, extraction, drums)
 
-Read after the kernel. Units here: `shortcutColumn` (FUG) · `distillationColumn` · `absorber` · `stripper` · `extractor` · `isothermalFlash` as drum or decanter.
+Read after the brief (`docs/ai/brief.md`). Units here: `shortcutColumn` (FUG) · `distillationColumn` · `absorber` · `stripper` · `extractor` · `isothermalFlash` as drum or decanter.
 
 ## 1. Which unit
 

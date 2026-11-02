@@ -1,11 +1,11 @@
 # C200 phase C -- how to write a pack (the architect's specification)
 
 Read first: /home/vitor/Choupo/docs/design/an-llm-learns-choupo-from-a-brief.md (the record) and the
-kernel draft at /tmp/claude-1000/-home-vitor-Choupo/318c4334-74e1-5696-b0f1-f1ae2205d23b/scratchpad/kernel.md
-(it will land as docs/ai/kernel.md together with the packs; do not commit it yourself).
+brief (drafted as `kernel.md`, landed as docs/ai/brief.md)
+(it landed together with the packs).
 
 THE READER is a student's own assistant (ChatGPT, Claude.ai, any LLM) with a limited context, which has
-read the kernel and now needs ONE topic to finish a DESIGN.md and write the case files.  It cannot run
+read the brief and now needs ONE topic to finish a DESIGN.md and write the case files.  It cannot run
 the engine.  It must not copy a tutorial.
 
 A PACK is docs/ai/packs/<name>.md, at most ~6 k tokens (aim 3-5 k; measure: bytes/4).  Telegraphic,
@@ -33,6 +33,6 @@ on cases in YOUR scratch dir; never write into /home/vitor/Choupo).  Never `git 
 branch: author "Vítor Geraldes <talentgroundlda@gmail.com>", committer env GIT_COMMITTER_NAME="Claude"
 GIT_COMMITTER_EMAIL="noreply@anthropic.com", NO Co-Authored-By trailer.  Do not push.  Run
 bin/curate/check_doc_references.py, check_glossary_bans.py and check_doctrine.py on your branch (the pack
-must not name a commercial simulator).  No yes-men: if the kernel draft states something false about your
+must not name a commercial simulator).  No yes-men: if the brief draft states something false about your
 topic, say so in your report with the file:line.  Report: pack size in bytes, the example's run result,
 the contradictions found, your branch name.

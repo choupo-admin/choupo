@@ -1,6 +1,6 @@
 # Pack: reactors and kinetics
 
-Read this when the design has a reaction.  Read the kernel first.
+Read this when the design has a reaction.  Read the brief (`docs/ai/brief.md`) first.
 
 ## 1. Which reactor
 
@@ -364,5 +364,5 @@ kinetic 52 % is below it; the irreversible law has no knowledge of this ceiling,
    Reaction.cpp:45 (A exp(-Ea/RT)), 245-275 (order required), 202-237 (detailed balance refusal);
    ExpressionRate.cpp:112-166 (no order/reversible; source, basis, rateOf required), 202-215 (parameters), 287-293 (definitions), 374-385 (rate/forward/reverse), 431 (rateConstant), 460 (validity).
  expression symbols/units: docs/ai/unit-ops.md section "A RATE LAW WRITTEN IN THE CASE" cross-checked by the run; unit table src/core/Units.cpp:257-279.
- ports/in/outputs: kernel; flowsheet usage in the four run cases.
+ ports/in/outputs: the brief; flowsheet usage in the four run cases.
 -->
