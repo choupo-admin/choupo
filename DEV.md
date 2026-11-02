@@ -1533,7 +1533,7 @@ accepts today, and that is a policy call.
 > `bin/integrate` ran the 10 cases that use phaseChanger/boiler/condenser
 > (PASS 15 / FAIL 0, no golden moved) and the gates that read the touched
 > files.  Its two FAILs are the environment, not the diff: `check_method_tools`
-> could not run (no gui/node_modules in the integration worktree), and
+> could not run (the integration worktree had no installed GUI packages), and
 > `check_element_closure` read no elementBalance for membrane08, a case
 > outside the scope whose run output the worktree did not hold; both pass or
 > run in the primary checkout (element closure: 249 cases close, 1 pinned).
