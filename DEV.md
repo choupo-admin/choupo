@@ -1672,6 +1672,20 @@ accepts today, and that is a policy call.
 > later and is not part of the class.  Whether students are ever NAMED as
 > contributors remains Vitor's alone (consent of each named person).
 
+> **THE COMPACTION BENCH INTEGRATED (the architect, 2026-11-02 night):**
+> `compactionFit` is on main without the full sweep `bin/integrate` flags for a
+> shared path (`PropsPlan.cpp`/`PropertyOperation.cpp` register an operation).
+> Written reason: the registration adds one operation to the props bench and
+> changes no existing one; the reach is the props cases, which the integration
+> ran (`--scope` PASS 3/0 over the two new witnesses and a neighbour, `--fast`
+> 78/0, `--gui` 42/0, the new gate and its sabotage; the general ran
+> `--scope tutorials/props`, 132 pass, and no existing golden moved).  Two
+> gates FAILED in the integration worktree and PASS in the primary checkout:
+> `check_both_bases` and `check_element_closure` both read run outputs
+> (`converged/`) of cases the worktree had not run (the second is the
+> membrane08 reading seen on the earlier boron and phaseChanger integrations);
+> neither touches the diff.
+
 > **C208. FOUR ENGINE DEFECTS FOUND WHILE WRITING THE TABLET-PLANT PACKS
 > (a general, 2026-11-02 night, each MEASURED and not fixed; the first two are
 > wrong or missing answers at exit 0 and go first).**  (1) `bin/choupo-init0`
