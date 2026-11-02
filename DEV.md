@@ -1600,6 +1600,42 @@ accepts today, and that is a policy call.
 > (`docs/userGuide.tex`) documents only `bin/choupo-init0` -- a small
 > follow-up that rebuilds its PDF.
 
+> **C201 ITEM 1, THE VAPOUR HALF BUILT AND NOT LANDED (2026-11-02).**  Branch
+> `backup/c201-acetic-vapour` (1bdfda51f = the bridge branch merged with main
+> plus the associated vapour): one home in `thermo/VapourAssociation.H`, read
+> by `ThermoPackage` K / Kvec / H_real / S_real, the reactive builder, the
+> isothermal flash, the column's vapour-dependence test, the bubble point and
+> three property ops (the dimer heat is now counted once; flash13's unit
+> residual -0.25 -> 0).  Measured: the pure limit holds (boils at 391.0085 K
+> for a record Tb of 391.05); acetic acid + water at 1 atm against Calvar et
+> al. 2005 (24 points, located through the ThermoML toolchain) improves,
+> T 3.49 -> 2.19 K, y_water 0.0355 -> 0.0272; cstr01's reaction heat stays in
+> the reference band.  **Not landed, for four reasons:** (1) **the engine
+> prices 33.03 kJ/mol between saturated liquid and saturated vapour at Tb,
+> against the record's measured 24.39 (+35 %)**, so the lights condenser of
+> aceticAcid02_plant comes back to -52.1 kW (golden -36.5, bridge alone
+> -75.1) instead of its old value: the record's inputs do not agree with each
+> other at Tb (Watson applied to the APPARENT latent heat, the constant
+> liquid Cp, the dimerisation constant extrapolated 93 K); a hypothesis to
+> TEST, not a decision: Watson should extrapolate the monomer-basis latent
+> heat (HvapTb + dimer fraction x dimer heat at Tb), not the apparent one;
+> (2) `check_energy_closure` fails on aceticAcid02_plant (+8.69 kW): the
+> column publishes a distillate with 7 % CO on its own dew point, so the
+> report's re-flash picks the side by the last digits -- the fix belongs to
+> the column (partial condenser or a vent), not to this slice; (3) readers
+> still on a monomer ideal gas: the Gibbs reactors (GibbsMethod, DirectMin,
+> EquilibriumReactor), `VaporPhase::fEffective` and `binaryTxy` in
+> SaturationCurves; (4) the association record is matched by formula
+> (C2H4O2), so methylFormate would be taken for acetic acid -- an identity
+> decision.  741 rows move over the 37 acetic-acid cases (grouped list in
+> that branch's moved-rows doc); the content decision on the seven
+> exotherm tutorials is unchanged.  NEXT, in Opus: settle (1) by testing the
+> hypothesis against the NBS liquid, then (2)-(4).
+> **Lesson recorded:** a data-record chain (datum, latent heat, Cp, K, dH)
+> that is individually cited can still be jointly inconsistent; check the
+> closure of the chain (latent heat at Tb) before building an engine home on
+> it.
+
 > **C203. A DIGITAL TWIN AS THE LAST FORM OF A PLANT CASE (Vitor, 2026-11-02:
 > "em plant pode haver um modelo final em modo de controlo que vai desde o
 > layout depois ate ao painel de controle? ... plant era so para estado
