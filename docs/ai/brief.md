@@ -27,6 +27,7 @@ tutorial or write any case file.  It contains, with numbers:
    (outlet T, V/F, duty, purity), from a hand estimate, so a wrong run is
    visible at once.
 7. **Left out** — what the design deliberately ignores.
+8. **Revisions** — empty in round 0; one dated entry per later round (§10).
 
 Tutorials exist, but they solve OTHER problems.  Never start from one and
 change numbers.  You may read one AFTER `DESIGN.md`, for grammar only; then
@@ -46,8 +47,9 @@ Every file as:
 
 Paths relative to the case folder.  The student pastes the reply into the
 app (clipboard bridge) or saves the files as a `.zip` and uses
-*Open case .zip*.  No prose between files; explanations go in
-`DESIGN.md` or in `//` comments.
+*Open case .zip*.  **Close every block with `=== END FILE ===`**: the
+clipboard bridge parses only closed blocks; the zip route ignores the line.
+No prose between files; explanations go in `DESIGN.md` or in `//` comments.
 
 ## 3. The case
 
@@ -360,6 +362,52 @@ design specs), transient simulation, props.
 Reference lookups (do not read end to end): `data/standards/components/`
 (names); each unit's accepted keys are in its source file (see SOURCES).
 
+## 10. Revising a case from feedback (round 2 and later)
+
+The loop is: you design -> the student opens it in the app, validates and
+reviews -> sends you feedback -> you revise -> repeat.  `DESIGN.md` is the memory across rounds and the
+students' approved files are the ground truth: **do not regenerate the case.**
+
+1. **The input.**  The student pastes the current files (or names them) and
+   the feedback.  Work from THEIR files, never from memory of your last reply:
+   they may have edited them.  A file you were not shown is not yours to rewrite.
+2. **Change list first.**  Open your reply with `DESIGN.md` (its REVISIONS entry,
+   step 5) and put in it a numbered list: what changes, in which file and key,
+   and which result numbers should move and which not.  Ask ONE question only if
+   a change is ambiguous or breaks `DESIGN.md` (e.g. a degree-of-freedom count);
+   otherwise proceed.
+3. **Touch only what the list needs.**  Send `=== FILE:` blocks ONLY for files
+   that change, each with its COMPLETE new content (the app replaces the whole
+   file).  Do not re-send an untouched file, reformat, re-order or re-comment
+   it.  Do not rename a stream or unit unless asked.
+4. **What the app does with your reply** (`gui/src/agent/clipboardContext.ts`
+   `applyEdits`): a block REPLACES the file of that path, or ADDS it if new; a
+   dict that does not parse is rejected by name and the rest still applies.
+   **It cannot delete.**  Removing or renaming a stream leaves its old `0/` file
+   as an ORPHAN, which the engine refuses; so list under the change list "delete
+   `0/<name>`" and tell the student to delete it.  A new stream needs no file
+   unless it is an authored inlet or a tear seed (step 6).  Through a `.zip`
+   the student copies your changed files over the folder (same effect).
+5. **Append to `DESIGN.md`** (send the whole file, with earlier text unchanged) a
+   section `## Revisions`, one entry per round: `### Round N — <date>`, the
+   student's feedback quoted VERBATIM, the change list, and `Key numbers:
+   before -> after`.  You cannot run the case: write the before values you know
+   and `after: not yet known — please paste the new Streams table` and ask for it.
+   Next round, fill that in before anything else.
+6. **After a change to streams or topology** tell the student to run
+   **File > Complete 0/** (or `bin/choupo-init0 <case>`; it writes only MISSING
+   files and never overwrites).  An existing intermediate or product file is a
+   seed the solver recomputes: do NOT ask for it to be deleted, except a tear
+   seed whose estimate the change made wrong (then give the new value).  Then Run, and check: the balances in the log close, and no line contains
+   `ERROR`, `FAILED`, `MISSING` or `ORPHAN`.
+7. **When Choupo cannot compute what the feedback asks** (a packed-bed model, a
+   unit or key not in §7 or the packs): say so in the REVISIONS entry, propose a
+   labelled approximation using a unit that exists, or leave it out and say what
+   is lost.  Never invent a key or unit type.
+8. **Language.**  Feedback may arrive in Portuguese or another language: answer
+   and write `DESIGN.md` in the student's language, but case files, keys, unit
+   names, stream names and `//` comments stay in the engine's English.
+
 <!-- SOURCES (for maintainers; a gate holds each to the engine):
   absorber ports ....... src/unitOperations/separation/Absorber.cpp:70,99,282-289
   shortcut KPIs ........ src/unitOperations/distillation/ShortcutColumn.cpp:305-316
@@ -376,4 +424,9 @@ Reference lookups (do not read end to end): `data/standards/components/`
   unit operation keys .. each unit's own .cpp under src/unitOperations/ (unit-ops.md is NOT authoritative)
   phaseChanger mixture . src/unitOperations/heatTransfer/PhaseChanger.cpp (C202 item 1)
   feedStage ranges ..... src/unitOperations/distillation/DistillationColumn.cpp:1343,1351,2373
+  §10 apply a reply .... gui/src/agent/clipboardContext.ts:57 (FILE_RE needs END FILE), :138-166 (applyEdits:
+                         replace or add into rawFiles/extraFiles, parse-validated dicts, no delete);
+                         gui/src/ui/ClipboardBridge.tsx:80-93 (changed files applied, then Complete 0/ hint)
+  §10 ORPHAN / MISSING . src/unitOperations/flowsheet/Flowsheet.cpp:2403-2432,2464 (0/ completeness refusal)
+  §10 init0 no overwrite src/applications/choupoSolve/main.cpp:536-537; gui/src/case/completeZero.ts:20-28
 -->

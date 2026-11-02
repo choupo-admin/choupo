@@ -17,6 +17,26 @@ USAGE
                                  [--problems p01,p05 ...] [--model haiku] [--rescore]
     Default briefs: core (bin/llmctx --core) and bridge (the GUI clipboard guide).
     --rescore re-reads existing reply.txt files and calls NO model.
+    Brief `llm` = docs/ai/brief.md + every docs/ai/packs/*.md (what a student's assistant reads).
+
+REVISION MODE (DEV.md 4c C200; the brief's section 10).  A problem file whose first lines
+declare  `start: <case path under tutorials/>`  and  `feedback: <text>`  is a REVISION
+problem; a problem file without them is scored exactly as before.  Optional lines:
+    allowed: f1, f2    files the change list legitimately needs (DESIGN.md always allowed)
+    check: <file> <path> == <value> [unit]    a key read FROM THE CASE after the reply is applied;
+                       <path> = dotted keys, a list element selected as units[NAME]; value and unit
+                       compared numerically in SI (rel 1e-6), a bare word compared as text
+    check: <file> absent /<regex>/    the comment-stripped file must not match (no invented key)
+    expect: unsupported   the feedback asks for what Choupo cannot do: DESIGN.md must say so
+                       (regex UNSUPPORTED_RE) and the case must still solve
+The start case (non-output files only: no converged/, reports/, expected, README) is copied to
+the run dir as the student's current case; `llm_eval/starts/<case>.DESIGN.md` is added when
+the case has no DESIGN.md.  The prompt is brief + the case files (system/, 0/, DESIGN.md,
+constant/thermoPhysPropDict, reactions) + the feedback.  The reply is applied OVER the start the
+way the app does it (gui/src/agent/clipboardContext.ts applyEdits: a block REPLACES the file
+or ADDS it; there is NO delete), then the usual init0 / lint / solve / balances.  Reported:
+files changed vs the start (counted BEFORE init0 writes anything), which are outside `allowed`,
+DESIGN.md has a Revisions entry quoting the feedback verbatim, each `check:`.
 
 SCORING (per run)
     design    DESIGN.md present, and how many of the seven items of record 4.2
@@ -117,7 +137,15 @@ def brief_bridge():
             out += f"\n<!-- docs/ai/{name}.md -->\n{p.read_text()}\n"
     return out
 
+def brief_llm():
+    out = (ROOT / "docs" / "ai" / "brief.md").read_text()
+    for p in sorted((ROOT / "docs" / "ai" / "packs").glob("*.md")):
+        out += f"\n\n<!-- docs/ai/packs/{p.name} -->\n{p.read_text()}"
+    return out
+
 def load_brief(spec):
+    if spec == "llm":
+        return "llm", brief_llm()
     if spec == "core":
         return "core", brief_core()
     if spec == "bridge":
@@ -152,7 +180,10 @@ def usage_of(j):
 # ----------------------------------------------------------------- reply -> case
 FILE_RE = re.compile(r"^=== FILE:\s*(.+?)\s*===\s*$", re.M)
 
+END_RE = re.compile(r"\n?^=== END FILE ===\s*$", re.M)
+
 def parse_reply(text):
+    text = END_RE.sub("", text)        # the bridge's closing marker (clipboardContext.ts:57); not file content
     marks = list(FILE_RE.finditer(text))
     files = []
     for i, m in enumerate(marks):
@@ -323,6 +354,212 @@ def similarity(root):
         out[rel] = {"max": round(best[0], 3), "tutorial": best[1]}
     return out
 
+
+# ----------------------------------------------------------------- revision mode
+import shutil
+HEAD_RE = re.compile(r"^(start|feedback|allowed|check|expect):\s*(.*)$")
+UNSUPPORTED_RE = re.compile(r"cannot|can ?not|not (supported|available|implemented|modell?ed)|no (packing|packed)|"
+                            r"does not (have|support|model|exist)|n[aã]o (suporta|existe|consegue|[ée] poss)|"
+                            r"unsupported|not in choupo|no such", re.I)
+OUTPUT_SKIP = ("converged", "reports", "expected", "README.md", "log.choupo")
+
+def parse_problem(text):
+    """(meta, body). meta has start/feedback/allowed/checks/expect when the file declares a revision."""
+    meta = {"checks": []}
+    lines = text.split("\n")
+    i = 0
+    while i < len(lines):
+        m = HEAD_RE.match(lines[i])
+        if not m: break
+        k, v = m.groups()
+        if k == "check": meta["checks"].append(v.strip())
+        else: meta[k] = v.strip()
+        i += 1
+    return (meta if "start" in meta else None), "\n".join(lines[i:]).strip()
+
+def copy_start(start_rel, dst):
+    src = ROOT / start_rel
+    if not (src / "system" / "flowsheetDict").exists():
+        sys.exit(f"revision problem: start case {start_rel} has no system/flowsheetDict")
+    for f in src.rglob("*"):
+        rel = f.relative_to(src)
+        if f.is_file() and not any(part.startswith(OUTPUT_SKIP) for part in rel.parts):
+            (dst / rel).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(f, dst / rel)
+    if not (dst / "DESIGN.md").exists():
+        d = HERE / "llm_eval" / "starts" / (src.name + ".DESIGN.md")
+        if not d.exists(): sys.exit(f"missing prepared DESIGN.md {d}")
+        shutil.copyfile(d, dst / "DESIGN.md")
+
+PROMPT_FILES = re.compile(r"^(system/|0/|DESIGN\.md$|constant/thermoPhysPropDict$|constant/reactions$)")
+
+def case_dump(case):
+    out, other = "", []
+    for f in sorted(case.rglob("*")):
+        if not f.is_file(): continue
+        rel = str(f.relative_to(case))
+        if rel.endswith(".cho"): continue
+        if PROMPT_FILES.match(rel):
+            out += f"\n=== FILE: {rel} ===\n{f.read_text()}\n=== END FILE ===\n"
+        else:
+            other.append(rel)
+    return out.strip() + ("\n\n(also in the case, not shown, unchanged: " + ", ".join(other) + ")" if other else "")
+
+REV_INSTRUCTIONS = """\
+You are given reference documentation for a process simulator called Choupo, then the student's CURRENT case
+(the files they approved so far), then their feedback.  Revise the case following the documentation.
+
+You cannot read other files, run commands or ask questions beyond what the documentation allows.
+Reply ONLY with files, each closed by its end marker, in exactly this format, and no prose outside the files:
+
+=== FILE: <relative path inside the case> ===
+<file content>
+=== END FILE ===
+
+The FIRST file must be DESIGN.md.
+"""
+
+def snapshot(case):
+    return {str(f.relative_to(case)): f.read_bytes() for f in case.rglob("*") if f.is_file()}
+
+UNITS = {"bar": 1e5, "pa": 1.0, "kpa": 1e3, "mpa": 1e6, "atm": 101325.0, "k": 1.0, "kw": 1e3, "w": 1.0, "mw": 1e6,
+         "kmol/h": 1e3/3600, "mol/s": 1.0, "kmol/s": 1e3, "m2": 1.0, "w/m2/k": 1.0, "kg/h": 1/3600, "kg/s": 1.0}
+
+def to_si(tokens):
+    """['3','bar'] -> 3e5 ; ['25','degC'] -> 298.15 ; a lone number is raw SI ; else None."""
+    try: v = float(tokens[0])
+    except Exception: return None
+    if len(tokens) == 1: return v
+    u = tokens[1].lower()
+    if u in ("degc", "c"): return v + 273.15
+    return v * UNITS[u] if u in UNITS else None
+
+def toks(text):
+    text = re.sub(r"/\*.*?\*/", " ", text, flags=re.S)
+    text = re.sub(r"//[^\n]*", " ", text)
+    return re.findall(r'"[^"]*"|[{}();]|[^\s{}();]+', text)
+
+def parse_dict(t, i=0):
+    d = {}
+    while i < len(t) and t[i] != "}":
+        key = t[i]; i += 1
+        if i < len(t) and t[i] == "{":
+            d[key], i = parse_dict(t, i + 1); i += 1
+        elif i < len(t) and t[i] == "(":
+            L, i = [], i + 1
+            while i < len(t) and t[i] != ")":
+                if t[i] == "{":
+                    e, i = parse_dict(t, i + 1); i += 1; L.append(e)
+                else: L.append(t[i]); i += 1
+            d[key] = L; i += 1
+            if i < len(t) and t[i] == ";": i += 1
+        else:
+            v = []
+            while i < len(t) and t[i] != ";": v.append(t[i]); i += 1
+            d[key] = v; i += 1
+    return d, i
+
+def lookup(d, path):
+    cur = d
+    for seg in path.split("."):
+        m = re.match(r"(\w+)(?:\[(\w+)\])?$", seg)
+        if not m or not isinstance(cur, dict) or m.group(1) not in cur: return None
+        cur = cur[m.group(1)]
+        if m.group(2) is not None:
+            sel = m.group(2)
+            hit = [e for e in cur if isinstance(e, dict) and e.get("name") == [sel]] if isinstance(cur, list) else []
+            if not hit and sel.isdigit() and isinstance(cur, list) and int(sel) < len(cur): hit = [cur[int(sel)]]
+            if not hit: return None
+            cur = hit[0]
+    return cur
+
+def run_check(root, line):
+    """-> (ok, text). Smallest honest checker: see the module docstring."""
+    m = re.match(r"(\S+)\s+absent\s+/(.*)/\s*$", line)
+    if m:
+        f = root / m.group(1)
+        if not f.exists(): return True, f"{line}  (file absent)"
+        body = " ".join(toks(f.read_text()))
+        hit = re.search(m.group(2), body, re.I)
+        return (not hit), f"{line}  -> " + (f"FOUND {hit.group(0)!r}" if hit else "absent")
+    m = re.match(r"(\S+)\s+(\S+)\s*==\s*(.+?)\s*$", line)
+    if not m: return False, f"unparsable check: {line}"
+    f, path, want = root / m.group(1), m.group(2), m.group(3).split()
+    if not f.exists(): return False, f"{line}  -> {m.group(1)} missing"
+    d, _ = parse_dict(toks(f.read_text()))
+    got = lookup(d, path)
+    if got is None: return False, f"{line}  -> key not found"
+    w, g = to_si(want), (to_si(got) if isinstance(got, list) else None)
+    if w is not None and g is not None:
+        ok = abs(g - w) <= 1e-6 * max(abs(w), 1e-30)
+    else:
+        ok = isinstance(got, list) and got == want
+    return ok, f"{line}  -> found {' '.join(got) if isinstance(got, list) else '{...}'}"
+
+def norm(s):
+    s = re.sub(r"^\s*>\s?", "", s, flags=re.M)
+    return re.sub(r"\s+", " ", s.replace("*", "").replace("`", "")).strip().lower()
+
+def simulate_student_deletes(case_dir, design_text):
+    """The app cannot delete (applyEdits: replace or add only), so a removed stream's 0/ file is an ORPHAN
+    the engine refuses.  The brief tells the assistant to NAME the file to delete; the student then deletes it.
+    Simulate exactly that and nothing more: an engine-reported ORPHAN is deleted only if DESIGN.md names its
+    path next to a delete/remove word.  An orphan the reply did not mention stays and the case fails, as it would."""
+    root = find_case_root(case_dir)
+    if root is None: return []
+    env = dict(os.environ, CHOUPO_HOME=str(BIN_HOME))
+    _, out = sh([str(BIN_HOME / "choupoSolve"), "--lint", str(root)], str(root), env)
+    done = []
+    for m in re.finditer(r"ORPHAN\s+(0/\S+)", out):
+        rel = m.group(1)
+        if re.search(r"(delet|remov|apag|elimin)[^\n]{0,160}" + re.escape(rel) + r"|" + re.escape(rel) +
+                     r"[^\n]{0,160}(delet|remov|apag|elimin)", design_text, re.I):
+            f = root / rel
+            if f.is_file(): f.unlink(); done.append(rel)
+    return done
+
+def score_revision(meta, start_snap, case_dir, run_dir, files):
+    """Apply the reply over the start (app semantics), score the changes, then the usual run score."""
+    for rel, body in files:                       # applyEdits: replace or add, never delete
+        pth = Path(rel)
+        if pth.is_absolute() or ".." in pth.parts: continue
+        dst = case_dir / pth; dst.parent.mkdir(parents=True, exist_ok=True); dst.write_text(body)
+    now = snapshot(case_dir)
+    changed = sorted(r for r, b in now.items() if start_snap.get(r) != b)
+    allowed = {x.strip() for x in meta.get("allowed", "").split(",") if x.strip()} | {"DESIGN.md"}
+    extra = [r for r in changed if r not in allowed]
+    dtxt = (case_dir / "DESIGN.md").read_text() if (case_dir / "DESIGN.md").exists() else ""
+    has_rev = bool(re.search(r"^#+.*revis", dtxt, re.I | re.M))
+    quotes = norm(meta["feedback"]) in norm(dtxt)
+    deleted = simulate_student_deletes(case_dir, dtxt)
+    sc = score_run(case_dir, run_dir)
+    sc["revision"] = {"student_deleted": deleted, "files_changed": changed, "n_changed": len(changed), "extra_files": extra,
+                      "design_has_revisions": has_rev, "design_quotes_feedback": quotes,
+                      "asks_for_numbers": bool(re.search(r"not yet known|paste|new (streams|numbers|results)|please (send|share)", dtxt, re.I))}
+    root = find_case_root(case_dir)
+    res = []
+    for c in meta["checks"]:
+        ok, txt = run_check(root, c) if root else (False, f"{c} (no case root)")
+        res.append({"ok": ok, "check": txt})
+    sc["revision"]["checks"] = res
+    if meta.get("expect") == "unsupported":
+        sc["revision"]["says_unsupported"] = bool(UNSUPPORTED_RE.search(dtxt))
+    return sc
+
+def rev_table(rows):
+    L = ["| brief | problem | solves | balances ok | files changed | outside allowed | student deleted | REVISIONS | quotes feedback | checks | says unsupported |",
+         "|---|---|---|---|---|---|---|---|---|---|---|"]
+    for r in rows:
+        s = r["score"]; v = s.get("revision")
+        if v is None: continue
+        ck = v["checks"]
+        L.append("| {} | {} | {} | {} | {} ({}) | {} | {} | {} | {} | {}/{} | {} |".format(
+            r["brief"], r["problem"], "yes" if s.get("solves") else "NO", "yes" if s.get("balances_ok") else "NO",
+            v["n_changed"], ", ".join(v["files_changed"]), ", ".join(v["extra_files"]) or "-", ", ".join(v["student_deleted"]) or "-",
+            "yes" if v["design_has_revisions"] else "NO", "yes" if v["design_quotes_feedback"] else "NO",
+            sum(c["ok"] for c in ck), len(ck), {True: "yes", False: "NO", None: "-"}[v.get("says_unsupported")]))
+    return "\n".join(L)
+
 # ----------------------------------------------------------------- main
 def engine_commit():
     try:
@@ -400,6 +637,7 @@ def main():
     for bname, btxt in briefs:
         for p in probs:
             pid = p.stem.split("_")[0]
+            rmeta, rbody = parse_problem(p.read_text())
             rd = out / bname / pid; rd.mkdir(parents=True, exist_ok=True)
             reply_f = rd / "reply.txt"; raw_f = rd / "raw.json"
             tokens = {"in": 0, "in_net": 0, "out": 0}
@@ -408,6 +646,12 @@ def main():
                 j = json.loads(raw_f.read_text()) if raw_f.exists() else None
             else:
                 prompt = f"{btxt}\n\n---\n\n{INSTRUCTIONS}\n---\n\n{p.read_text()}"
+                if rmeta:
+                    st = rd / "_start"
+                    if st.exists(): shutil.rmtree(st)
+                    st.mkdir(); copy_start(rmeta["start"], st)
+                    prompt = (f"{btxt}\n\n---\n\n{REV_INSTRUCTIONS}\n---\n\n# The student's current case\n\n"
+                              f"{case_dump(st)}\n\n# The student's feedback\n\n{rmeta['feedback']}\n")
                 print(f"[{bname}/{pid}] proxy call, prompt {len(prompt)} chars", file=sys.stderr)
                 j, err = run_claude(prompt, a.model)
                 if j:
@@ -422,10 +666,17 @@ def main():
                 continue
             case_dir = rd / "case"
             if case_dir.exists():
-                import shutil; shutil.rmtree(case_dir)
+                shutil.rmtree(case_dir)
             case_dir.mkdir()
-            files, refused = write_case(parse_reply(reply_f.read_text()), case_dir)
-            sc = score_run(case_dir, rd)
+            if rmeta:
+                copy_start(rmeta["start"], case_dir)
+                start_snap = snapshot(case_dir)
+                freplies = parse_reply(reply_f.read_text())
+                files = [r for r, _ in freplies]; refused = []
+                sc = score_revision(rmeta, start_snap, case_dir, rd, freplies)
+            else:
+                files, refused = write_case(parse_reply(reply_f.read_text()), case_dir)
+                sc = score_run(case_dir, rd)
             sc["files"] = files; sc["refused_paths"] = refused
             (rd / "score.json").write_text(json.dumps(sc, indent=1))
             rows.append({"brief": bname, "problem": pid, "tokens": tokens, "score": sc})
@@ -434,7 +685,10 @@ def main():
     meta = {"date": time.strftime("%Y-%m-%d"), "model": a.model, "engine_commit": engine_commit(),
             "overhead_in_tokens": overhead, "brief_chars": {n: len(t) for n, t in briefs}}
     (out / "summary.json").write_text(json.dumps({"meta": meta, "rows": rows}, indent=1))
-    md = table(rows, [n for n, _ in briefs])
+    plain = [r for r in rows if "revision" not in r["score"]]
+    md = table(plain, [n for n, _ in briefs]) if plain else ""
+    rt = rev_table(rows)
+    if rt.count("\n") > 1: md += ("\n\n" if md else "") + "REVISION problems:\n\n" + rt
     (out / "summary.md").write_text(md + "\n")
     print(md)
 
