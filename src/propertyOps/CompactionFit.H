@@ -102,7 +102,8 @@ Description
 
     Publishes tables `heckel`, `kawakita`, `ryshkewitch` (every row of the
     dataset, the fitted line at it, the residual and an inWindow flag) and
-    their default views; diagnostics are each model's parameters, R2,
+    their default views (the fitted curve from `heckelLine`, `kawakitaLine`,
+    `ryshkewitchLine`: 21 points over the fitted points only); diagnostics are each model's parameters, R2,
     n_<model>, the 95 % half-widths, and paper_<key> / dev_<key>_pct where
     a reported value was declared.
 \*---------------------------------------------------------------------------*/

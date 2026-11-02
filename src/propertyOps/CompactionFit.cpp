@@ -37,6 +37,7 @@ License
 #include <cmath>
 #include <cstdio>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
@@ -226,6 +227,30 @@ void readWindow(const DictPtr& b, const std::string& site, scalar& lo, scalar& h
         throw std::runtime_error(site + ": Pmax must exceed Pmin");
 }
 
+//  THE FITTED CURVE OVER THE POINTS IT WAS FITTED ON, and nowhere else: a
+//  line drawn across the whole dataset would show the model where the case
+//  declared it does NOT hold (the curved ends of a Heckel plot).  21 points
+//  between the smallest and largest abscissa inside the window.
+PublishedTable fittedCurve(const std::string& name, const std::string& what,
+                           const PublishedTable::Column& xc,
+                           const PublishedTable::Column& yc,
+                           const std::vector<scalar>& xin,
+                           const std::function<scalar(scalar)>& f)
+{
+    PublishedTable t;
+    t.name = name;
+    t.description = what;
+    t.columns = { xc, yc };
+    const scalar lo = *std::min_element(xin.begin(), xin.end());
+    const scalar hi = *std::max_element(xin.begin(), xin.end());
+    for (int i = 0; i <= 20; ++i)
+    {
+        const scalar xv = lo + (hi - lo) * scalar(i) / 20.0;
+        t.rows.push_back({ xv, f(xv) });
+    }
+    return t;
+}
+
 } // namespace
 
 std::string CompactionFit::diagnosticUnit(const std::string& key) const
@@ -363,6 +388,10 @@ int CompactionFit::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
             std::cout << line;
         }
         tables_.push_back(std::move(tab));
+        tables_.push_back(fittedCurve("heckelLine",
+            "the fitted Heckel line over the declared window's points only",
+            { "P_MPa", "MPa" }, { "lnInvPorosity_fit", "-" }, x,
+            [&](scalar P) { return L.m * P + L.q; }));
     }
 
     // ===================================================================
@@ -458,6 +487,10 @@ int CompactionFit::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
             tab.rows.push_back({ P, C[r], yy, yf, yy - yf, (P >= lo && P <= hi) ? 1.0 : 0.0 });
         }
         tables_.push_back(std::move(tab));
+        tables_.push_back(fittedCurve("kawakitaLine",
+            "the fitted Kawakita line over the declared window's points only",
+            { "P_MPa", "MPa" }, { "P_over_C_fit_MPa", "MPa" }, x,
+            [&](scalar P) { return L.m * P + L.q; }));
     }
 
     // ===================================================================
@@ -554,6 +587,10 @@ int CompactionFit::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
             tab.rows.push_back({ e, sig[r], sf, res, (e >= emin && e <= emax) ? 1.0 : 0.0 });
         }
         tables_.push_back(std::move(tab));
+        tables_.push_back(fittedCurve("ryshkewitchLine",
+            "the fitted Ryshkewitch-Duckworth curve over the porosities it was fitted on",
+            { "porosity", "-" }, { "sigma_t_fit_MPa", "MPa" }, x,
+            [&](scalar e) { return s0 * std::exp(-kb * e); }));
     }
 
     if (reported && reported->found("source"))
@@ -590,21 +627,21 @@ std::string CompactionFit::defaultViews(const std::string& op) const
     {
         if (t.name == "heckel")
             v += "{ name heckel; type series; op " + op + "; title \"" + op + ": Heckel plot --"
-                 " the line is fitted on the declared window only\"; xAxis { label \"P [MPa]\"; }"
+                 " the line is fitted on the declared window and drawn only there\"; xAxis { label \"P\"; }"
                  " yAxis { label \"ln(1/(1 - D))\"; } series ("
                  " { name data; label \"data\"; op " + op + "; table heckel; x P_MPa; y lnInvPorosity; style markers; }"
-                 " { name fit; label \"K P + A\"; op " + op + "; table heckel; x P_MPa; y lnInvPorosity_fit; style lines; } ); }\n";
+                 " { name fit; label \"K P + A\"; op " + op + "; table heckelLine; x P_MPa; y lnInvPorosity_fit; style lines; } ); }\n";
         else if (t.name == "kawakita")
             v += "{ name kawakita; type series; op " + op + "; title \"" + op + ": Kawakita plot\";"
-                 " xAxis { label \"P [MPa]\"; } yAxis { label \"P/C [MPa]\"; } series ("
+                 " xAxis { label \"P\"; } yAxis { label \"P/C\"; } series ("
                  " { name data; label \"data\"; op " + op + "; table kawakita; x P_MPa; y P_over_C_MPa; style markers; }"
-                 " { name fit; label \"P/a + 1/(a b)\"; op " + op + "; table kawakita; x P_MPa; y P_over_C_fit_MPa; style lines; } ); }\n";
+                 " { name fit; label \"P/a + 1/(a b)\"; op " + op + "; table kawakitaLine; x P_MPa; y P_over_C_fit_MPa; style lines; } ); }\n";
         else if (t.name == "ryshkewitch")
             v += "{ name ryshkewitch; type series; op " + op + "; title \"" + op + ": tensile"
                  " strength against porosity (Ryshkewitch-Duckworth)\"; xAxis { label \"porosity\"; }"
-                 " yAxis { label \"sigma_t [MPa]\"; } series ("
+                 " yAxis { label \"sigma_t\"; } series ("
                  " { name data; label \"data\"; op " + op + "; table ryshkewitch; x porosity; y sigma_t_MPa; style markers; }"
-                 " { name fit; label \"sigma_0 exp(-k_b eps)\"; op " + op + "; table ryshkewitch; x porosity; y sigma_t_fit_MPa; style lines; } ); }\n";
+                 " { name fit; label \"sigma_0 exp(-k_b eps)\"; op " + op + "; table ryshkewitchLine; x porosity; y sigma_t_fit_MPa; style lines; } ); }\n";
     }
     return v;
 }
