@@ -1653,6 +1653,22 @@ accepts today, and that is a policy call.
 > closure of the chain (latent heat at Tb) before building an engine home on
 > it.
 
+> **THE STUDENTS' FEEDBACK LOOP (Vitor, 2026-11-02 night, about the layouts the
+> assistants produce: "podem depois ser corrigidos quando os alunos te derem
+> feedback! Eles tambem tem de contribuir para o projeto! Tu propoes a base
+> inicial e eles vao dando feedback e revendo").**  DECIDED: the packs and the
+> site's assistant documents are a FIRST VERSION, said so to the students; they
+> improve through the groups' reports.  The route is the issue tracker
+> (CONTRIBUTING.md: the project is maintainer-led, external code and pull
+> requests are not accepted, a report is advice and creates no authorship), now
+> with a template, `.github/ISSUE_TEMPLATE/assistant-feedback.md` (the case, the
+> assistant and documents used, what went wrong, the smallest case).  Every
+> failure a group reports becomes a harness problem (`llm_brief_eval.py`,
+> `bin/curate/llm_eval/problems/`) and, when it is the document's fault, a pack
+> fix: the loop is report -> problem -> pack -> re-run.  NOT decided, Vitor's
+> alone: whether students are NAMED as contributors in the documents (consent
+> of each named person, CLAUDE.md section 0 rule 00).
+
 > **C208. FOUR ENGINE DEFECTS FOUND WHILE WRITING THE TABLET-PLANT PACKS
 > (a general, 2026-11-02 night, each MEASURED and not fixed; the first two are
 > wrong or missing answers at exit 0 and go first).**  (1) `bin/choupo-init0`
