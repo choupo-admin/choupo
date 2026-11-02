@@ -253,8 +253,8 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 871 path mention(s) and 262 case name(s) across 23 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
-      "seconds": 0.9
+      "claim": "check_doc_references: OK -- 873 path mention(s) and 262 case name(s) across 23 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
+      "seconds": 1.0
     },
     "check_doctrine": {
       "exit": 0,
@@ -1485,6 +1485,11 @@
       "exit": 0,
       "claim": "check_negative_pressure: OK -- a pipe whose drop exceeds its inlet pressure is refused by unit, stream, P and inlet on an accepted pass (feed-forward, and in a torn recycle under Newton and Wegstein; the same line with a small drop runs); a trial sweep that visits a negative pressure is announced (2 clamp(s), stdout and caveat block) and the loop still converges; P == 0 (cstr) is still the unit-did-not-set sentinel.  NOT covered: P == 0 as an error (kept on purpose), the time-integrated binaries, other units' reactions to a received pressure.",
       "seconds": 0.2
+    },
+    "check_boron_split": {
+      "exit": 0,
+      "claim": "check_boron_split: OK -- the record is the databank's (log K -9.24, dH 3.224 kcal); on swro01_campoDalias alpha is 0.10774 at pass 1 (pH 8.2, I 0.593, Davies) and 0.85814 at pass 2 (pH 10, I 0.0019), recomputed from the record, the declared pH and the activity model; the acid's rejection (0.9321 at pass 1, 0.7900 at pass 2) is recomputed from the rated test and the salt-like base (0.9978, 0.9939), R_eff, the permeate shares of the two forms and the closure of the permeate boron reproduce; the pass-2 pH moved 10 -> 9 lowers R_eff 0.96495 -> 0.86680 as alpha(9) predicts and raises the product boron 0.0425 -> 0.1412 mg/L; TWO rated tests (alpha 0.0546, 0.8542; the second a SYNTHETIC fixture) give R_acid 0.9322 and R_base 0.9952 = the 2x2 recomputed; 8 fixtures refuse by name; HELD-OUT (a lab membrane, NOT the plant's; pH 7 fixes the acid): predicted 92.91 % at pH 8 against 93.5 % measured (-0.59 pp, band +-1.0), 98.06 % at pH 10 against > 98 %.  PRINTED, never gated: the engine's apparent pKa at seawater strength 9.118 against Dickson's pK*B 8.597 (S 35, 25 C, total scale).  NOT CHECKED: Davies at seawater strength (outside its band, announced), the Toray numbers (the fit), any boron measurement of the plant.",
+      "seconds": 1.1
     }
   }
 }
