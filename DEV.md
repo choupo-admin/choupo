@@ -1653,6 +1653,29 @@ accepts today, and that is a policy call.
 > closure of the chain (latent heat at Tb) before building an engine home on
 > it.
 
+> **C207. A SPECIFICATION SHEET FOR EVERY PIPE OF A LAID-OUT PLANT (Vitor,
+> 2026-11-02: "no caso de se criar um layout com piping, valvulas, etc, achas
+> que se pode colocar uma folha de especificacao para cada conduta? Ai
+> ficaria a bomba (se precisasse), instrumentacao e sensores, e com a perda
+> de carga total e a velocidade de passagem otima").**  RECORDED; the
+> architect's reading: yes, as one more `design/` item per ROUTED stream (the
+> line list a project hands over), built from what the engine already
+> publishes -- the routed length from the layout (C80), the bore chosen from
+> a declared velocity window as the header sizer does (`pipeHeader`, C199),
+> the stream's own density and viscosity from the package -- plus what the
+> case DECLARES (fittings and valves as equivalent lengths or K values, the
+> instruments on the line).  Out: the total pressure drop (straight run +
+> fittings + valves + static head), the velocity, and, where the available
+> pressure does not cover the drop, the pump the line needs, sized and
+> listed (never silently added to the flowsheet).  The "optimal velocity" is
+> the ECONOMIC diameter -- capital of the pipe against the cost of pumping
+> over the plant's life -- a published correlation the case cites, or a
+> declared velocity window, never an invented rule.  The instruments come
+> from the loop declarations of C203/C204, so the sheet and the generated
+> P&ID read one declaration.  Pipe cost is the remaining half of the layout's
+> "NOT done" (CLAUDE.md section 6, the plant-layout paragraph).  Placed beyond
+> a week, after the compaction deadline; sequenced with C203's loop grammar.
+
 > **C206. TWO EDUTOOLS, LIQUID EFFLUENT TREATMENT AND GASEOUS EMISSION
 > TREATMENT, IN PARETO MODE (Vitor, 2026-11-02: "precisamos de uma Edutool
 > para tratamentos de efluentes liquidos e outra gasosos, em modo Pareto ...
