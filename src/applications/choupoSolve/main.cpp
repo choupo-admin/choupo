@@ -1478,6 +1478,7 @@ try
         //  way.  A case with no layoutDict is untouched (`applyLayout`
         //  returns at once), and the sizing it reads is complete by then.
         bool layoutApplied = false;
+        bool postChainFailed = false;
         if (postDict)
         {
             auto chain = PostProcessor::buildChain(postDict);
@@ -1491,7 +1492,14 @@ try
                     applyLayout(result);
                     layoutApplied = true;
                 }
-                pp->run(result);
+                //  The count a pass returns used to be DISCARDED here (C208):
+                //  a missing REQUIRED PRICE ended at exit 0 with no appraisal (a refused
+                //  SIZER does not fail the run: see PostProcessor.H).
+                //  Exit 2 is the refusal code this binary already uses; the
+                //  chain still runs on, so every table the case asked for
+                //  is printed before the run is declared failed.
+                if (PostProcessor::failsRunOn(*pp, pp->run(result)))
+                    postChainFailed = true;
             }
         }
         if (!layoutApplied) applyLayout(result);
@@ -1541,6 +1549,7 @@ try
         if (!validate0(result)) finalRc = 1;
         writeConverged(result);
         writeDesignSheets(result);
+        if (postChainFailed && finalRc == 0) finalRc = 2;
 
         // (utility allocation now done inside `simulate` -- carried on every
         // pass, direct + outer -- so the GUI always has it.)

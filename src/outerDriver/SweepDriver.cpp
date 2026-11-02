@@ -217,7 +217,7 @@ int SweepDriver::run()
             try
             {
                 auto chain = PostProcessor::buildChain(postDict_);
-                for (auto& pp : chain) pp->run(result);
+                for (auto& pp : chain) PostProcessor::runOrThrow(*pp, result);
             }
             catch (const std::exception& e)
             {

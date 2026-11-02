@@ -1741,6 +1741,36 @@ accepts today, and that is a policy call.
 > grep the log for `ERROR`, `FAILED` and `MISSING` until (2) is fixed, and to
 > write solids-only streams by hand until (1) is.  Placed first in Next day.
 
+> **C208 STATUS (a general, 2026-11-02, after the measurement): (1) and (2a)
+> and (2b) FIXED; (2c) NOT CHANGED, on purpose.**  (1) `choupo-init0` mixed the
+> FLUID flow only, so a powder stream (F = 0) was written as `componentMolarFlows
+> {}` + `T 0 K`; the mix now sums the solid molar flows too (T weighted by them
+> when no inlet carries fluid; every fluid estimate is unchanged), and an
+> outlet whose producer receives NO material is REFUSED by name (`NO ESTIMATE
+> 0/<stream>`), never written at T 0 K (`Flowsheet::runInit0`; gate
+> `check_internal_states` arm (w)).  (2b) the count a post-processing pass
+> returns was DISCARDED by every caller; `PostProcessor::nonzeroFailsRun()` /
+> `failsRunOn()` is now the ONE rule: the economics pass says yes, so a missing
+> REQUIRED price ends `ERROR: the 'economics' post-processing pass ...`, exit 2
+> (`choupoSolve`), or a failed point in the outer drivers' own channel
+> (`runOrThrow`: Sweep, Optimization, DesignSpec).  (2a) every boundary inlet
+> (consumed, produced by no unit, not a declared utility circuit's supply, not an
+> observer's feed) must be NAMED by a `rawMaterials` entry -- priced, or free
+> with the existing `price 0;` + `provenance` -- or the pass refuses, naming the
+> stream and the remedy (`unpricedRawMaterialInlets`, `EconomicsPass.cpp`; gate
+> `check_cost_provenance` arm (x)).  (2c) a refused SIZER stays an ITEM refused
+> and never the run: that is a DOCUMENTED contract (`check_design_sheet` arm (n)
+> "a missing price must refuse the ITEM, never the run"; the plot plan C79;
+> `incomplete-sizing` in the caveat block), so it was not changed; the sizing
+> and costing counts keep their INCOMPLETE channel.  WHAT THE FIX MADE VISIBLE
+> (not fixed, not priced): `tutorials/plant/ChemicalPlantTutorial` has no
+> `constant/economics` (deleted in 96abd3572 while its postDict still runs the
+> economics pass) and now exits 2 -- and every gate that runs the flagship with
+> it; `tutorials/plant/sugarPlantEconomicsSweep` has no price for the inlets
+> BdAir, DryingAir, PlantSteam and loses its economics KPIs at every point
+> (`[sweep] post-processing FAILED at this point`).  Both need the author's
+> decision (a price, a `price 0;` with its reason, or no economics block).
+
 > **C207. A SPECIFICATION SHEET FOR EVERY PIPE OF A LAID-OUT PLANT (Vitor,
 > 2026-11-02: "no caso de se criar um layout com piping, valvulas, etc, achas
 > que se pode colocar uma folha de especificacao para cada conduta? Ai

@@ -18,11 +18,18 @@ pack `layout`.
   (`assumed ( ... )` on the design sheet), a declared value announces nothing.
 * The estimate is AACE class 5 by default (-50 %/+100 %): it says where its
   numbers come from and carries no more accuracy than that.
-* Failures are quiet in the exit code.  A sizer that cannot size prints
-  `<unit>  FAILED: <reason>` in the Sizing table and the run still exits 0;
-  the unit is then absent from costing.  A missing economics price prints
-  `EconomicsPass: REQUIRED PRICE MISSING -- <name>` and exits 0 without an
-  appraisal.  Grep the log for `FAILED`, `MISSING`, `ERROR`, `INCOMPLETE`.
+* A SIZER that cannot size is refused as an ITEM, never as the run: it prints
+  `<unit>  FAILED: <reason>` in the Sizing table, the unit is then absent from
+  costing, the totals read INCOMPLETE and the caveat block carries
+  `incomplete-sizing`; the run still exits 0 (the documented contract, held by
+  `check_design_sheet` arm (n)).  So read the Sizing table and grep the log
+  for `FAILED`, `INCOMPLETE`.  A REQUIRED economics price that is missing
+  (`labourRate`, a product price, a `rawMaterials` entry for a boundary
+  inlet) is different: the run FAILS (`EconomicsPass: REQUIRED PRICE MISSING
+  -- <name>`, then `ERROR: the 'economics' post-processing pass ...`, exit 2)
+  and no appraisal is made.  Every boundary inlet the plant consumes needs a
+  `rawMaterials` entry, priced or declared free with `price 0;` and its
+  `provenance`; utility-circuit supplies are exempt.
 
 ## 2. `sizing { units ( ... ) }`
 
@@ -268,7 +275,7 @@ point, not a case error).  Use `isothermalFlash` at the heater outlet T.
 Variants run: `residenceTime 300 s` on the drum -> `flashDrum FAILED: Vessel:
 unit 'flashDrum' has no 'N_out_mol_s' KPI needed to size it ... give the volume
 directly`, exit 0; `constant/economics` without `labourRate` -> `REQUIRED PRICE
-MISSING -- labourRate`, exit 0; a 1.5 kW heater -> `[validity] WARNING ...
+MISSING -- labourRate`, exit 2 and no appraisal; a 1.5 kW heater -> `[validity] WARNING ...
 OUTSIDE the correlation range [10, 1000] -- cost EXTRAPOLATED`.
 
 ## 6. What a student should still decide (write it in DESIGN.md)
