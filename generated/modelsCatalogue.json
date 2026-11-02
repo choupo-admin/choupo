@@ -1083,7 +1083,7 @@
         "key": "chemistry",
         "name": "Equilibrium reaction records (dissolution, association, gas-liquid)",
         "source": "data/standards/chemistry/",
-        "count": 77
+        "count": 78
       },
       {
         "key": "conventions",
@@ -1159,9 +1159,9 @@
       },
       {
         "key": "assets",
-        "name": "Plant assets, flat with a `kind` field: construction materials, membranes, membrane modules, feed spacers, electrodialysis stacks, adsorbents, ion-exchange media",
+        "name": "Plant assets, flat with a `kind` field: construction materials, membranes, membrane classes, membrane modules, feed spacers, electrodialysis stacks, adsorbents, ion-exchange media",
         "source": "data/standards/assets/",
-        "count": 27
+        "count": 33
       },
       {
         "key": "utilities",
