@@ -37,7 +37,6 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | status | what | ref |
 |---|---|---|
 | running | DEADLINE 2026-11-03 12:00 (Vitor's tutoring class): the compaction bench for the two pharmaceutical groups -- a choupoProps fit of Heckel, Kawakita and Ryshkewitch-Duckworth to LITERATURE datasets (MCC, a lactose grade; open primaries, each cited), witnesses, gate, docs, checked in the browser; the site publishes on the push to main | C195 |
-| integrating | Dynamic units, slice 1: `dynamicTank` (built and validated by its general; bin/integrate running) | C205 |
 
 ## Next day (at most 5)
 
@@ -116,6 +115,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| done | Dynamic units, slice 1: `dynamicTank` (level by an outflow or a valve; one holdup home; two witnesses; PI holds the level, P-only offsets 0.050 m) | C205, 32aa8f278 |
 | done | The phaseChanger's saturated mixture is its bubble/dew point (it returned a liquid 102.7 K below its bubble point at exit 0) | C202 (1), 8a3946237 |
 | done | The assistant brief (`docs/ai/brief.md`, renamed from kernel.md) with four packs; the review's corrections | C200, C202 |
 | done | File > Complete 0/ in the app; the user guide documents it | C200 B', 3c4cfeff4, 2aadac008 |

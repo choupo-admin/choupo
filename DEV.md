@@ -1714,6 +1714,19 @@ accepts today, and that is a policy call.
 > as an approximation), the full dynamic MESH last.  One or two slices at a
 > time (laptop and usage budgets).
 
+> **C205 SLICE 1 INTEGRATED (the architect, 2026-11-02):** `dynamicTank` is on
+> main (`32aa8f278`) without the full sweep `bin/integrate` flags for a shared
+> path.  Written reason: the one edit to existing engine code is that
+> `DynamicCSTR::hMix_` and `TfromH_` now delegate to the new shared home with
+> byte-identical code (the general proved no golden moved); the reach is the
+> time-integrated cases, which the integration ran (`--scope` PASS 30 / FAIL
+> 0 over ctrl and unsteady, `--fast` 77/0, `--gui` 42/0, check_ctrl_balance,
+> the new gate and its sabotage).  The browser does not see the type until
+> the next WASM build (PLAN.md Next day).  Open, said by the general: one feed
+> face per vessel (a `quasiSteady` mixer in front for several), no adaptive
+> step for the tank, energy needs a formation datum; chapter ch:dyn-tank cites
+> nothing and is pinned in KNOWN_UNCITED, as ch:dyn-cstr is.
+
 > **C204. AN EDUTOOL ON WHERE TO PLACE THE CONTROL LOOPS IN THE COMMON UNIT
 > OPERATIONS, WITH A PARETO ANALYSIS (Vitor, 2026-11-02: "Achas bem um
 > EduTools sobre estrategias de colocacao do sistema de controlo nas
