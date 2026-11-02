@@ -1,0 +1,81 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  unsteady05_tank_valve_drain -- a SELF-REGULATING level.
+
+  A water tank drained through a valve, with NO controller.  The inflow steps
+  from 0.20 to 0.30 kmol/s (a 50 % step, applied at t = 0 by starting the
+  tank at the steady level of the OLD inflow and feeding the NEW one -- the
+  initial-condition step of unsteady02), and the level climbs to a new
+  steady level by itself, because the outflow grows with the level:
+
+      Q = Cv x opening x sqrt(dP / rho)            [m3/s]
+      dP = P + rho g h - P_downstream              (static head + vessel
+                                                    pressure - downstream)
+      F_out = Q rho / MW                           [kmol/s]
+      A rho/MW dh/dt = F_in - F_out                (mass balance, the level
+                                                    is volume / area)
+
+  Here the vessel is open to the same pressure the valve discharges to
+  (P = P_downstream = 1 atm), so the head alone drives the flow and the
+  steady state F_out = F_in has a closed form:
+
+      h* = (Q / (Cv x))^2 / g          with Q = F_in MW / rho
+
+  Cv is the valve's effective flow AREA in m2 (the orifice equation's Cd A),
+  `opening` the fraction of the stroke (linear), the outlet is at the bottom.
+  Because Q ~ sqrt(h), h* grows with the SQUARE of the inflow: a 1.5-fold
+  step in the inflow gives a 2.25-fold step in the level (0.998 m -> 2.245 m
+  at rho = 1001.55 kg/m3, the package's own density at 293.15 K: the water
+  record's Vliq at 25 C with Rackett supplying the temperature shape).  The engine
+  prints this closed form at start-up; the run's own final level, read from
+  trajectory.csv (column `level`), agrees with it to < 1e-3.
+
+  WHAT TO SEE.  A first-order-like response with tau ~ 2600 s at the new
+  level (linearising Q about h*: tau = A / (dQ/dh) = 2 A h* / Q).  Compare
+  with ctrl21: with a manipulated OUTFLOW instead of a valve the same tank
+  has NO such tendency -- it integrates the difference of the flows without
+  bound, and only a level controller closes the loop.
+
+  ENERGY.  The tank stores H on the elements datum (the package's mixture
+  liquid surface) and T is a readout; the feed arrives at the tank's own
+  temperature, so T stays at 293.15 K and the first-law ledger closes (see
+  the `[balance]` lines and check_dynamic_tank).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        tank;
+        type        dynamicTank;
+        in          feed;
+        outputs     ( drain );
+
+        operation
+        {
+            geometry
+            {
+                shape       verticalCylinder;
+                diameter    2.0 m;              // area 3.1416 m2
+                height      4.0 m;              // the overflow level
+            }
+
+            outflow
+            {
+                mode        valve;
+                opening     0.5;
+                valve
+                {
+                    Cv                  2.3e-3 m2;      // effective flow area (Cd A)
+                    downstreamPressure  101325.0 Pa;
+                }
+            }
+        }
+    }
+);

@@ -27137,6 +27137,91 @@ $t = 1500$\,s.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{The liquid tank with a level: integrating and self-regulating
+inventory}\label{ch:dyn-tank}
+
+The vessel of the previous section holds its volume fixed.  The most
+common control loop of a plant does not: it holds a \emph{level}, and a
+level exists only if the liquid volume is free to move.  \code{dynamicTank}
+is the minimal such vessel --- a vertical cylinder of declared diameter
+$D$ and height $H_v$, a liquid, one feed, one outflow, no reaction.  Its
+state is the inventory $n_i$ and the stored enthalpy $H$ (the temperature
+$T$ is a readout of $H(\nv,T)$ on the package's mixture liquid surface,
+the same ``mixture-$H$'' route as \code{DynamicCSTR}):
+\begin{align}
+  \frac{dn_i}{dt} &= \dot n_{\mathrm{in},i} - F_{\mathrm{out}}\,x_i,
+     \label{eq:tank-mass}\\
+  \frac{dH}{dt} &= F_{\mathrm{in}}\,h(\zv_{\mathrm{in}},T_{\mathrm{in}})
+     - F_{\mathrm{out}}\,h(\xv,T) + \frac{UA}{1000}\,(T_j - T).
+     \label{eq:tank-energy}
+\end{align}
+The volume is not declared but derived from the package, $V = \sum_i n_i
+M_i / \rho(T,P,\xv)$ (the liquid density of the case's package; a package
+that cannot price one refuses by name), and the level is
+\begin{equation}
+  h \;=\; \frac{V}{\pi D^{2}/4}.
+  \label{eq:tank-level}
+\end{equation}
+A tank that runs dry ($V\le 0$) or overflows ($h>H_v$) is \emph{refused}
+at that instant, never clamped: the liquid that would spill is neither in
+the vessel nor in any stream.
+
+\paragraph{Two outflows, two behaviours.}  The outflow is declared, and
+the two declarations are two different processes.
+
+\emph{Manipulated flow} (\code{mode flow}, a flow-controlled pump).
+$F_{\mathrm{out}}$ is the manipulated variable; with one component,
+\[
+  \frac{dh}{dt} \;=\; \frac{M}{\rho A}\,\bigl(F_{\mathrm{in}} - F_{\mathrm{out}}\bigr),
+\]
+a pure \emph{integrator}: nothing brings the level back, and a constant
+imbalance runs the tank dry or over the top.  A level controller on
+$F_{\mathrm{out}}$ must be \emph{reverse acting} (a level above the
+setpoint raises the outflow), which with the direct-acting
+$u = u_0 + K_p e + K_i\!\int e$, $e = \mathrm{SP}-h$, means negative gains.
+The closed loop is second order, $\omega_n^{2} = a|K_i|$,
+$2\zeta\omega_n = a|K_p|$ with $a = M/(\rho A)$; a P-only controller
+settles with an offset $h-\mathrm{SP} = (F_{\mathrm{in}}-u_0)/|K_p|$ that
+the integral term removes.
+
+\emph{Valve on the outlet} (\code{mode valve}, manipulated variable the
+opening $x\in[0,1]$):
+\begin{equation}
+  Q = C_v\,x\,\sqrt{\Delta P/\rho},\qquad
+  \Delta P = P + \rho g h - P_{\mathrm{down}},\qquad
+  F_{\mathrm{out}} = Q\rho/M,
+  \label{eq:tank-valve}
+\end{equation}
+where $C_v$ is the valve's effective flow \emph{area} in m$^2$ (the
+orifice equation's $C_dA$) and the outlet sits at the bottom.  Now the
+outflow grows with the level and the tank \emph{regulates itself}: at
+steady state $F_{\mathrm{out}}=F_{\mathrm{in}}$ and
+\begin{equation}
+  h^{\star} \;=\; \frac{(Q/C_vx)^{2}}{g} \;-\; \frac{P - P_{\mathrm{down}}}{\rho g},
+  \qquad Q = F_{\mathrm{in}}M/\rho,
+  \label{eq:tank-hstar}
+\end{equation}
+approached with the time constant $\tau = A/(dQ/dh) = 2Ah^{\star}/Q$ for
+$P=P_{\mathrm{down}}$.  Because $Q\propto\sqrt h$, the steady level grows
+with the \emph{square} of the inflow.  The arithmetic of
+\eqref{eq:tank-level}--\eqref{eq:tank-hstar} (volume, level, valve, the
+dry/overflow refusals) has one home, \code{VariableVolumeHoldup}, shared
+with the variable-volume vessels to come.
+
+\begin{tutoriallink}{unsteady/unsteady05\_tank\_valve\_drain}
+Water tank drained through a valve, no controller.  A 50\,\% step in the
+inflow (0.20 to 0.30\,kmol/s) takes the level from 0.998\,m to the
+closed-form $h^{\star}=2.245$\,m of \eqref{eq:tank-hstar}; the run reaches
+it by itself.
+\end{tutoriallink}
+
+\begin{tutoriallink}{ctrl/ctrl21\_tank\_level\_control}
+The same tank with a manipulated outflow and a PI level controller
+($K_p=-2$, $K_i=-0.01$).  The same inflow step is rejected and the level
+returns to the 2.0\,m setpoint; with $K_i=0$ it settles 0.050\,m high.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
 \section{Feedback control: the ideal PID, derivative-on-PV, anti-windup}\label{ch:pid}
 
 \begin{whatyoulllearn}

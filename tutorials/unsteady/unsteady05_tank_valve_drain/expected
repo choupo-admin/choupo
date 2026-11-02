@@ -1,0 +1,30 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     balance                element_H_closure_rel 6.61926901636e-08  1e-4
+kpi     balance                element_O_closure_rel 6.61926901636e-08  1e-4
+kpi     balance                element_worst_closure_rel 6.61926901636e-08  1e-4
+kpi     balance                energy_balance_available 1                  1e-4
+kpi     balance                energy_closure_rel 6.61927451875e-08  1e-4
+kpi     balance                energy_functional_H 1                  1e-4
+kpi     balance                energy_kJ_final  -112451371.957     1e-4
+kpi     balance                energy_kJ_heat_cum 0                  1e-4
+kpi     balance                energy_kJ_in_cum -2064809460.48     1e-4
+kpi     balance                energy_kJ_initial -50088123.8522     1e-4
+kpi     balance                energy_kJ_out_cum -2002446075.7      1e-4
+kpi     balance                energy_residual_kJ 136.675406478      1e-4
+kpi     balance                mass_closure_rel 6.61926901501e-08  1e-4
+kpi     balance                mass_kg_final    7064.01381482      1e-4
+kpi     balance                mass_kg_in_cum   129708             1e-4
+kpi     balance                mass_kg_initial  3146.45515384      1e-4
+kpi     balance                mass_kg_out_cum  125790.432753      1e-4
+kpi     balance                mass_residual_kg -0.00858572145398  1e-4
+kpi     balance                material_available 1                  1e-4
+kpi     tank                   F_in_final       0.3                1e-4
+kpi     tank                   F_out_final      0.299992627653     1e-4
+kpi     tank                   T_final          293.15             1e-4
+kpi     tank                   density_final    1001.5477819       1e-4
+kpi     tank                   level_final      2.24507055383      1e-4
+kpi     tank                   n_water_final    392.118446562      1e-4
+kpi     tank                   t_end            24000              1e-4
+kpi     tank                   volume_final     7.0530971587       1e-4

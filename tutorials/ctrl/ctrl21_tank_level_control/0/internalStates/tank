@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/tank -- the initial holdup of 'tank': at the 2.0 m
+  setpoint, at balance (F_in = F_out = 0.20 kmol/s), 293.15 K, 1 atm.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "tank";
+equipment   dynamicTank;
+
+holdup
+{
+    T           293.15;
+    P           101325.0;
+    level       2.0;
+    molarComposition { water 1.0; }
+}

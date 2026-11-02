@@ -177,3 +177,47 @@ EVERY UF NUMBER HERE IS HYPOTHETICAL, as in membrane19 (the membrane, c\_gel, S,
 \goldmore{27}
 \end{tutgolden}
 
+\clearpage
+\tutentry{unsteady05\_tank\_valve\_drain}{tutorials/unsteady/unsteady05\_tank\_valve\_drain}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (tank) at (0.0,-0.0) {\textbf{tank}\\[-1pt]{\tiny dynamicTank}};
+  \draw[->] ($(tank.west)+(-1.05,0.00)$) -- ($(tank.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(tank.east)+(0,0.00)$) -- ($(tank.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {drain};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Water tank drained through a valve, no controller: after a 50 \% step in the inflow the level SELF-REGULATES to the closed-form h$\ast$ = (Q/(Cv x))\textasciicircum{}2/g (0.998 m $\to$ 2.245 m)}
+\begin{tutnarrative}
+A water tank drained through a valve, with NO controller. The inflow steps from 0.20 to 0.30 kmol/s (a 50 \% step, applied at t = 0 by starting the tank at the steady level of the OLD inflow and feeding the NEW one -- the initial-condition step of unsteady02), and the level climbs to a new steady level by itself, because the outflow grows with the level:
+
+Q = Cv x opening x sqrt(dP / rho) [m3/s] dP = P + rho g h - P\_downstream (static head + vessel pressure - downstream) F\_out = Q rho / MW [kmol/s] A rho/MW dh/dt = F\_in - F\_out (mass balance, the level is volume / area)
+
+Here the vessel is open to the same pressure the valve discharges to (P = P\_downstream = 1 atm), so the head alone drives the flow and the steady state F\_out = F\_in has a closed form:
+
+h$\ast$ = (Q / (Cv x))\textasciicircum{}2 / g with Q = F\_in MW / rho
+
+Cv is the valve's effective flow AREA in m2 (the orifice equation's Cd A), `opening` the fraction of the stroke (linear), the outlet is at the bottom. Because Q \textasciitilde{} sqrt(h), h$\ast$ grows with the SQUARE of the inflow: a 1.5-fold step in the inflow gives a 2.25-fold step in the level (0.998 m $\to$ 2.245 m at rho = 1001.55 kg/m3, the package's own density at 293.15 K: the water record's Vliq at 25 C with Rackett supplying the temperature shape). The engine prints this closed form at start-up; the run's own final level, read from trajectory.csv (column `level`), agrees with it to < 1e-3.
+
+WHAT TO SEE. A first-order-like response with tau \textasciitilde{} 2600 s at the new level (linearising Q about h$\ast$: tau = A / (dQ/dh) = 2 A h$\ast$ / Q). Compare with ctrl21: with a manipulated OUTFLOW instead of a valve the same tank has NO such tendency -- it integrates the difference of the flows without bound, and only a level controller closes the loop.
+
+ENERGY. The tank stores H on the elements datum (the package's mixture liquid surface) and T is a readout; the feed arrives at the tank's own temperature, so T stays at 293.15 K and the first-law ledger closes (see the `[balance]` lines and check\_dynamic\_tank).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{balance}{element\_H\_closure\_rel}{6.61926901636e-08}
+\goldrow{kpi}{balance}{element\_O\_closure\_rel}{6.61926901636e-08}
+\goldrow{kpi}{balance}{element\_worst\_closure\_rel}{6.61926901636e-08}
+\goldrow{kpi}{balance}{energy\_balance\_available}{1}
+\goldrow{kpi}{balance}{energy\_closure\_rel}{6.61927451875e-08}
+\goldrow{kpi}{balance}{energy\_functional\_H}{1}
+\goldrow{kpi}{balance}{energy\_kJ\_final}{-112451371.957}
+\goldrow{kpi}{balance}{energy\_kJ\_heat\_cum}{0}
+\goldrow{kpi}{balance}{energy\_kJ\_in\_cum}{-2064809460.48}
+\goldrow{kpi}{balance}{energy\_kJ\_initial}{-50088123.8522}
+\goldrow{kpi}{balance}{energy\_kJ\_out\_cum}{-2002446075.7}
+\goldrow{kpi}{balance}{energy\_residual\_kJ}{136.675406478}
+\goldrow{kpi}{balance}{mass\_closure\_rel}{6.61926901501e-08}
+\goldrow{kpi}{balance}{mass\_kg\_final}{7064.01381482}
+\goldmore{13}
+\end{tutgolden}
+

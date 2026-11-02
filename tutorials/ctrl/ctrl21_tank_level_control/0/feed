@@ -1,0 +1,13 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/feed -- the state of stream 'feed' at t = 0: ONE file per stream.
+  A domain inlet; the Signal FeedStep drives its total flow (0.20 -> 0.30
+  kmol/s at t = 600 s).
+\*-----------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    water  0.20 kmol/s;
+}
+
+T               293.15 K;
+P               101325.0 Pa;

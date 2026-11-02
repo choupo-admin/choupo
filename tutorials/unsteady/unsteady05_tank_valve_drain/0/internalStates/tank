@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/tank -- the initial holdup of 'tank'.
+  Declared by LEVEL: 1.0 m of water at 293.15 K under 1 atm (the steady
+  level of the old inflow, 0.20 kmol/s, is 0.998 m).  The engine turns the
+  level into moles with the package's own liquid density.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "tank";
+equipment   dynamicTank;
+
+holdup
+{
+    T           293.15;
+    P           101325.0;
+    level       1.0;
+    molarComposition { water 1.0; }
+}
