@@ -4163,8 +4163,9 @@ domains like membranes).
 * **A NEW CAPABILITY REACHES THE AI AGENTS IN THE SAME COMMIT, BESIDE THE
   GUIDES** (Vítor, 2026-11-02, DEV.md 4c C200).  A unit, model, case form or
   refusal that a student's own assistant could use is incomplete until the
-  documents that assistant reads carry it: the kernel brief and the task
-  pack of its family under `docs/ai/` (with its keys, ports, degrees of
+  documents that assistant reads carry it: the assistant brief
+  (`brief.md`, in docs/ai once it lands) and the task pack of its family
+  under `docs/ai/` (with its keys, ports, degrees of
   freedom and a minimal example that was RUN), next to the theory and
   tutorials guides and the catalogue.  Where the engine can state it
   itself, it is GENERATED (`--describe-units`), never hand-copied, so the

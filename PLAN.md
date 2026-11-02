@@ -38,18 +38,18 @@ Every general stopped with the laptop.  All their work is on origin as `backup/*
 
 | status | what | ref |
 |---|---|---|
-| todo | Before the kernel lands, read docs/reviews/2026-11-02-kernel-review.md: the phaseChanger fix, the two 404 URLs, Complete 0/ on the site, nine missing packs, five text corrections | C202 |
-| todo | Merge the kernel (`backup/c200-handoff`) with the three packs (`backup/pack-recycles-pressure`, `backup/pack-separations`, `backup/pack-reactors`) in ONE commit (check_doc_references refuses a kernel pointing at missing packs); fix the kernel from the packs' findings; record the contradictions found in older docs/ai in DEV.md C200 | C200 |
+| todo | Before the brief lands, read docs/reviews/2026-11-02-kernel-review.md: the phaseChanger fix, the two 404 URLs, Complete 0/ on the site, nine missing packs, five text corrections | C202 |
+| todo | Merge the brief (`backup/c200-handoff`, its `kernel.md` renamed `brief.md` (in docs/ai) in the same commit) with the three packs (`backup/pack-recycles-pressure`, `backup/pack-separations`, `backup/pack-reactors`) in ONE commit (check_doc_references refuses a brief pointing at missing packs; the table lists only the packs that exist, the URLs and the browser Complete 0/ are not promised until they exist); fix the brief from the packs' findings; record the contradictions found in older docs/ai in DEV.md C200 | C200 |
 | todo | Relaunch the browser Complete-0/ general from `backup/a8318e2acf001dce2` (it was in `--gui` validation; 16 files of WIP) | C200 B' |
 | todo | Integrate boron Stage 1 (`backup/boron-stage1`); the golden re-record of swro01_campoDalias is ruled acceptable, the list goes in the commit | C198 |
 | todo | Integrate the GUI header-read branch (`backup/adc55b34e36500669`) | C199 |
-| todo | Re-run the LLM-brief harness (`bin/curate/llm_brief_eval.py`, branch `backup/c200-harness`) on the kernel + packs; baseline: `--core` solves 7/10, the GUI bridge guide 0/10 | C200 A |
+| todo | Re-run the LLM-brief harness (`bin/curate/llm_brief_eval.py`, branch `backup/c200-harness`) on the brief + packs; baseline: `--core` solves 7/10, the GUI bridge guide 0/10 | C200 A |
 
 ## Next day (at most 5)
 
 | status | what | ref |
 |---|---|---|
-| todo | phaseChanger `outletState saturatedLiquid` / `outletQuality 0` on a mixture stops 119 K below saturation at exit 0 (PhaseChanger.cpp:428-433): fix the bracket scan, add a mixture witness; the C200 kernel teaches this spec | C202 (1) |
+| todo | phaseChanger `outletState saturatedLiquid` / `outletQuality 0` on a mixture stops 119 K below saturation at exit 0 (PhaseChanger.cpp:428-433): fix the bracket scan, add a mixture witness; the C200 brief teaches this spec | C202 (1) |
 | todo | start-here step 6 (cstr01) publishes an esterification heat about 7x too large: confirm in the code that acetic acid's liquid enthalpy (monomer gas datum minus a dimer-vapour Hvap) is the cause, measure which cases it reaches, put the data decision to Vitor | C201 (1) |
 | todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says | C201 (2) |
 | todo | After each push that adds a unit: the site's own WASM build and one browser run of the new case (the pressure exchanger first) | C196 |

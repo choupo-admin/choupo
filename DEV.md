@@ -1548,6 +1548,18 @@ accepts today, and that is a policy call.
 > three exist; (5) five text corrections listed in the record (menu label,
 > the MASS strip contradiction, the feedStage ranges, sources pointing at
 > unit-ops.md, kij for SRK).
+> **DECIDED (the architect, 2026-11-02, after Vitor read "kernel" as the
+> computational core in `src/`):** the document is renamed `brief.md` (in docs/ai)
+> ("the assistant brief") in the commit that lands it -- in scientific
+> software "kernel" means the computational core, and this tree already uses
+> it that way (EdwardsPitzer's "PURE kernel", Kern, IF97), so a document for
+> an LLM must not share the word; the record names above keep their date-stamped
+> filenames.  It lands AFTER the phaseChanger fix (1), WITHOUT waiting for
+> (2)-(4): its pack table lists only the packs that exist and names the rest
+> as not yet written (no path), its lookup points at `data/standards/
+> components/` until phase D publishes the URLs, and it teaches
+> `bin/choupo-init0` and says the browser cannot complete 0/ until C200 B'
+> lands (that sentence buried in B's own commit); (5) rides the landing commit.
 
 > **C201. A NEWCOMER'S REVIEW OF THE TUTORIALS (Vitor, 2026-11-02: "Podes
 > fazer durante duas horas verificacao dos tutoriais como se fosses um
