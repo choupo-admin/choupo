@@ -202,6 +202,50 @@ Findings, each measured:
 * **D** -- the generated reference and `llms.txt` on the site.
 * **E** -- the harness again, the table published to Vitor.
 
+### 5.2 The brief and the packs, measured (2026-11-02, phase E first run)
+
+Same proxy (`claude -p --model haiku`, tools disabled), same ten problems,
+ONE run per cell.  Two briefs: `brief` = `docs/ai/brief.md` alone (15 kB);
+`briefpacks` = the brief plus the four packs that exist (recycles, pressure,
+separations, reactors).  **The harness gained one step** (`init0`): the brief
+tells the assistant to write only the authored inlets and tear seeds and the
+student to run Complete 0/ (the app) or `bin/choupo-init0`, so each case is
+completed with `choupoSolve -init0` (no `--force`) before lint and solve, and
+that step's own exit code is reported.  Without it all 20 runs failed lint for
+a step the brief delegates (measured on the first scoring), which is why the
+same replies were re-scored with no new model call.
+
+| brief | runs | DESIGN.md | mean items /7 | lint ok | solves | balances ok | tokens in (net, all 10) |
+|---|---|---|---|---|---|---|---|
+| `brief` | 10 | 10/10 | 6.9 | 8/10 | 6/10 | 5/10 | 67 888 |
+| `briefpacks` | 10 | 10/10 | 6.8 | 10/10 | 10/10 | 9/10 | 331 228 |
+
+Against the 2026-11-01 baseline (`--core`: 7 of 10 solve at 205-254 k input
+tokens per run; the bridge guide: 0 of 10), the brief reads 6.8 k tokens per
+run and the brief with packs 33 k, so **10 of 10 solving at 7-30 times less
+input**.  What these numbers do NOT say: the baseline was scored on the bare
+replies (no `init0`), so the comparison is indicative until the baseline is
+re-scored in the same way; one run per cell on a small model is not a
+distribution; the scoring is mechanical (a solved case is not a correct
+design); the flowsheet similarity to a tutorial is 0.5-0.95 and highest where
+a pack example is close to the problem (p06 0.91, p07 0.95), which is the pack
+doing its job and also the thing to watch for copying.
+
+What failed with the brief alone, each a lesson for the brief rather than the
+assistant: p05, p06 (a case that completes and lints and does not solve:
+read `solve.log` per case before changing anything); **p07** the absorber
+needs a declared SOLVENT package (`diluteSolution`) that the brief does not
+state (the pack for separations does, and p07 solves with it); **p09** a
+component name that is not a catalogue file name (the proxy has no tools to
+look names up; the brief says the names are exact, and 12 of them are
+listed); **p10** (NaCl in water, which no pack covers) solves with mass and elements at
+100 % in BOTH briefs and is not "balances ok" because the engine's own energy
+balance REFUSES it: `NaCl` has no enthalpy datum in the form the default
+energy report needs (`globalEnergyBoundary.csv`, status REFUSED, reason named).
+That is the engine saying it cannot verify the first law there, so the strict
+rule (energy must be verified) stands; the finding is for the curation of the
+salt, not for the brief or the harness.
+
 ## 7. What is deliberately not done
 
 * No fine-tuning, no embeddings, no retrieval server: the site serves static

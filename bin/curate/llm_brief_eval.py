@@ -24,6 +24,8 @@ SCORING (per run)
               its keyword patterns (ITEM_PATTERNS below) occurs anywhere in
               DESIGN.md, case-insensitive.  It measures presence of the topic,
               not its correctness; a stricter reader is a later refinement.
+    init0     `choupoSolve -init0 <case>` (no --force) run BEFORE lint: the student's
+              Complete 0/ step, which the brief delegates; its exit code is reported.
     lint      `choupoSolve --lint <case>` exit code (bin/choupo-lint:26 is
               `exec choupoSolve --lint`; src/applications/choupoSolve/main.cpp
               :538 documents the flag).  Only for application choupoSolve.
@@ -228,6 +230,16 @@ def score_run(case_dir, run_dir):
     if not binp.exists():
         s.update(lint=None, solves=False, reason=f"binary {binp} missing"); return s
     if app == "choupoSolve":
+        # THE STUDENT'S STEP, NOT THE ASSISTANT'S: the brief tells the assistant to
+        # write only the authored inlets and tear seeds and the student to run
+        # Complete 0/ (the app) or bin/choupo-init0 -- the same `-init0`, never
+        # --force.  Scoring lint on the bare reply would fail every case for a
+        # step the brief delegates (measured 2026-11-02: 20 of 20 runs).  Its
+        # own result is reported (`init0`), so a case that cannot be completed
+        # is told apart from one that completes and then fails.
+        rc0, out0 = sh([str(BIN_HOME / "choupoSolve"), "-init0", str(root)], str(root), env)
+        (run_dir / "init0.log").write_text(out0)
+        s["init0"] = rc0
         rc, out = sh([str(BIN_HOME / "choupoSolve"), "--lint", str(root)], str(root), env)
         (run_dir / "lint.log").write_text(out)
         s["lint"] = rc
