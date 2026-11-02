@@ -86,10 +86,24 @@ void ConstantRejection::readParameters(const DictPtr& params)
         if (std::holds_alternative<std::vector<std::string>>(r->entryValue(k)))
         {
             const auto ws = r->lookupWordList(k);
+            //  `<solute> ( fromAqueousSplit );` (C198): this component is the
+            //  apparent total of an acid and its base; the unit resolves its
+            //  EFFECTIVE R_int from its `aqueousSplit {}` block and hands it
+            //  back through setRatedRejection like a rated one.  The sentinel
+            //  id is the word itself; only the unit reads it.
+            if (ws.size() == 1 && ws[0] == "fromAqueousSplit")
+            {
+                pendingRated_.push_back(k);
+                ratedIds_[k] = "fromAqueousSplit";
+                continue;
+            }
             if (ws.size() != 2 || ws[0] != "fromRatedTest")
                 throw std::runtime_error("transport constantRejection: the"
                     " intrinsic rejection of '" + k + "' is a word list -- the"
-                    " one list this block accepts is `( fromRatedTest <id> )`,"
+                    " lists this block accepts are `( fromRatedTest <id> )`, naming"
+                    " a rated test of the module record by its id, and"
+                    " `( fromAqueousSplit )`, deferring to the unit's"
+                    " `aqueousSplit {}`;"
                     " naming a rated test of the module record by its id.");
             pendingRated_.push_back(k);
             ratedIds_[k] = ws[1];
