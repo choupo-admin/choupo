@@ -1768,6 +1768,33 @@ accepts today, and that is a policy call.
 > Dispatched: A (harness + baseline), B' (browser 0/), packs recycles +
 > pressure, separations, reactors.
 
+> **C198 ROUTE FOR SEAWATER (the architect, 2026-11-02, after the measurement
+> study `docs/design/boron-in-seawater-apparent-pka-study.md`, Vitor having
+> asked whether Stage 1 is good practice):**  Stage 1 stays as LANDED -- the
+> mechanism (two forms, a pH split, an exact effective rejection) and the
+> lesson, calibrated at the data sheet's pH, where the pKa error largely
+> cancels; it is NOT a quantitative tool for extrapolating in pH, and its
+> case says so.  Measured: boron's apparent pK in reference seawater (Millero
+> 2008 via TEOS-10 Table D.3; Dickson 1990 moved to the engine's scale, 8.82)
+> is 9.12 under Davies with or without the major-ion pairs, 8.95 with the
+> Ca/Mg borate complexes, and 8.84 under `pitzerHMW` with the tree's own
+> boron binaries plus the two `pitzer.dat` complexes (+0.016); the residual
+> +0.13 under Davies is a sodium-borate interaction no public ion-association
+> database carries, and fitting one to Dickson would make the check the fit.
+> DECIDED: **seawater boron is a Pitzer (`pitzerHMW`) route; Davies stays for
+> the low-salinity second pass and brackish feeds.**  Caveat recorded, not
+> hidden: the Pitzer boron parameters were themselves fitted to seawater
+> measurements of the kind Dickson's constant rests on, so the agreement
+> confirms the transcription and the engine, not an independent prediction.
+> NEXT (curation, before any case uses it): the BOH4 / CaBOH4 / MgBOH4
+> formation records and the eight Pitzer mixing records the study lists, each
+> from its PRIMARY -- Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771
+> must be READ first (not read in the session; Vitor's library access may be
+> the route); the borate constant of the Pitzer route is the one of THAT
+> parameterisation (-9.239), never mixed with phreeqc.dat's -9.24 + dH, which
+> stays the Davies route's (D2: identity per curated parameterisation).  Then
+> Stage 2 (pH along the channel) on the seawater feed as major ions.
+
 > **C198. BORON IN REVERSE OSMOSIS AS TWO SPECIES SPLIT BY THE pH (Vitor,
 > 2026-11-01: "o boro e para modelar"; C194 shipped it as a declared lumped
 > approximation; 2026-11-02, Opus switched on by Vitor: "faz a proposta do
