@@ -5,9 +5,12 @@ held at 350 K in a closed vessel for 600 s and the Fischer esterification
 runs — the kinetics of `cstr01`, now integrated in time by RK4 at 1 s
 steps.  The golden: ethanol falls from **9.25 mol to 1.083 mol**
 (**X = 88.3 %**), 8.167 mol of ethyl acetate made, and the jacket has
-removed **210.15 kJ** to hold the temperature — exactly
-−25.73 kJ/mol of reaction, the elements-datum heat every reactor in
-Choupo prices on.
+supplied only **+1.48 kJ** to hold the temperature — exactly
++0.18 kJ/mol of reaction at 350 K, the elements-datum heat every reactor
+in Choupo prices on.  The real liquid esterification is only mildly
+exothermic (about −3 to −4 kJ/mol); Choupo reads about −0.4 kJ/mol at
+298 K because of Watson errors on the four liquid enthalpies, so the
+jacket duty here is a small number of either sign, not a cooling load.
 
 ## The lesson
 
@@ -21,7 +24,7 @@ Choupo prices on.
    sampled.
 3. **The campaign ledger closes at machine precision.**  `[campaign]
    mass balance … closure 4.5e-16`, `energy balance: dH_vessels =
-   −210.15 kJ … = Q_ledger −210.15 kJ, closure 0` — every joule the
+   +1.48 kJ … = Q_ledger +1.48 kJ, closure 0` — every joule the
    jacket took is a state difference on the charge, never a quadrature,
    which is why the closure is zero and not merely small.
 4. **A CSTR at the same τ does worse.**  600 s here gives 88 %; the
@@ -32,5 +35,6 @@ Choupo prices on.
 ## What to try
 
 Set `T_setpoint 370 K;`: k roughly triples, the exponential steepens,
-and the ledger's Q grows with the extent.  Then `batch02_adiabatic`
-removes the jacket, and T becomes one more state on the trajectory.
+and the ledger's Q follows the extent (small, because the reaction is
+nearly thermoneutral).  Then `batch02_adiabatic` removes the jacket, and T
+becomes one more state on the trajectory.

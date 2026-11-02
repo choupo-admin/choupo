@@ -5,7 +5,8 @@ CSTR.  One reaction (Fischer esterification), pseudo-first-order in
 ethanol, Arrhenius kinetics from `constant/reactions`.  The golden:
 **X = 52.59 %** conversion of ethanol, extent **ξ = 0.0730 mol/s**,
 residence time **τ = 310.3 s**, rate constant **k = 3.575e-3 s⁻¹** at
-350 K, and the reactor removing **1.88 kW** to stay isothermal.
+350 K, and a reactor duty of only **+0.013 kW** to stay isothermal (the
+reaction is nearly thermoneutral here; see lesson 4).
 
 ## The lesson
 

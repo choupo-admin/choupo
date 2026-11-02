@@ -7,10 +7,11 @@ of streams, and information follows them.**
 
 The golden: conversion of ethanol **X = 0.5259** at a residence time of
 **310.3 s** (Damköhler number 1.109, k = 3.575e-3 s⁻¹ from the Arrhenius
-law), the reactor removing **1.88 kW**; the separator flashes **45.2 %**
+law), the reactor duty a negligible **+0.013 kW** (the reaction is nearly
+thermoneutral); the separator flashes **45.2 %**
 of what arrives (0.452 kmol/h vapour, 0.548 kmol/h liquid) with
 K_ethanol 1.696, K_ethylAcetate 1.608, K_aceticAcid 0.428, K_water 0.767,
-taking **4.98 kW** to hold 365 K.
+taking **5.43 kW** to hold 365 K.
 
 ## The lesson
 
@@ -27,11 +28,11 @@ taking **4.98 kW** to hold 365 K.
    before it was produced.
 4. **Every balance is drawn from the engine, by default.**  The
    **Reports** tab carries the mass closure and the plant-boundary first
-   law (`Q_boundary 3.1026 kW` — the NET heat crossing the boundary, not
-   either unit's duty); the flash's 4.98 kW appears there under
+   law (`Q_boundary 5.4405 kW` — the NET heat crossing the boundary, not
+   either unit's duty); the flash's 5.43 kW appears there under
    **Utilities**, as the steamLP that serves it.  The **per-element**
    closure is drawn in the **Plots** tab, not in Reports.  The reactor's
-   −1.88 kW is in neither: it is a per-unit duty, and the engine writes it
+   +0.013 kW is in neither: it is a per-unit duty, and the engine writes it
    to `reports/balances/energyBalance_byUnit.csv`, which the CLI leaves in
    the case directory.  Three numbers, three surfaces — worth knowing
    before you go looking for one in the wrong place.
