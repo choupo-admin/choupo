@@ -50,7 +50,7 @@ Every general stopped with the laptop.  All their work is on origin as `backup/*
 | status | what | ref |
 |---|---|---|
 | todo | phaseChanger `outletState saturatedLiquid` / `outletQuality 0` on a mixture stops 119 K below saturation at exit 0 (PhaseChanger.cpp:428-433): fix the bracket scan, add a mixture witness; the C200 brief teaches this spec | C202 (1) |
-| todo | start-here step 6 (cstr01) publishes an esterification heat about 7x too large: confirm in the code that acetic acid's liquid enthalpy (monomer gas datum minus a dimer-vapour Hvap) is the cause, measure which cases it reaches, put the data decision to Vitor | C201 (1) |
+| todo | Acetic acid, ONE slice: the liquid bridge (confirmed cause of the 7x esterification heat, branch `backup/c201-acetic-bridge`) together with the vapour-side association (one-record-two-vapours doc); alone it doubles real column condensers; then the seven tutorials whose exotherm was the artefact (content decision for Vitor) | C201 (1) |
 | todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says | C201 (2) |
 | todo | After each push that adds a unit: the site's own WASM build and one browser run of the new case (the pressure exchanger first) | C196 |
 | todo | Confirm on the site (WASM) that C178 and C182 are published (minutes, done between integrations) | C178, C182 |
@@ -71,6 +71,7 @@ Every general stopped with the laptop.  All their work is on origin as `backup/*
 
 | status | what | ref |
 |---|---|---|
+| todo | `digitalTwin/`, its own tutorials folder (operation of a designed plant, continuous on choupoCtrl then batch on choupoBatch, layout REQUIRED): plan of dynamic models per unit first, then loops/instruments with a generated P&ID, then the operator panel (pedagogical scope to Vitor first) | C203 |
 | todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
 | todo | Verify and fix the Gibbs review's three open items and the SpeciationSolver outer convergence | C187 (1)(2) |
 | todo | Pharmaceutical groups: the compaction bench (Heckel, Kawakita, Ryshkewitch fitted to the group's data), sized tablet machines, clean utilities (HVAC, purified water), blend uniformity | C195 |

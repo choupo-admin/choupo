@@ -191,6 +191,10 @@ ModuleAtConditions runModuleAt(const DictPtr& unitDict,
     DictPtr probe = unitDict->deepCopy();
     probe->erase("scaling");
     DictPtr op = probe->subDict("operation");
+    //  The probe runs the component as ONE solute with the effective R_int it
+    //  is handed; a split declared on the unit is resolved by the CALLER (the
+    //  per-test inversions below), never nested in the probe.
+    op->erase("aqueousSplit");
     op->insert("elements", 1.0, Dims::dimensionless);
     op->insert("vessels",  1.0, Dims::dimensionless);
     DictPtr rej = op->subDict("transportParameters")->subDict("rejection");
@@ -300,7 +304,8 @@ RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
                                         const std::string& testId,
                                         const std::string& unitLabel,
                                         scalar A_w_override,
-                                        bool announce)
+                                        bool announce,
+                                        const std::string& pHNote)
 {
     const std::string who = "spiralWoundModule '" + unitLabel + "': `rejection { "
                           + solute + " fromRatedTest; }`";
@@ -369,7 +374,9 @@ RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
             add("the record does not state whether the permeate flow was measured"
                 " in the same test -- the feed permeateFlow / recovery assumes it was");
         if (rt.hasPH)
-            add("pH " + fmt(rt.pH, "%.3g") + " is stated and the probe models no pH");
+            add("pH " + fmt(rt.pH, "%.3g") + (pHNote.empty()
+                ? std::string(" is stated and the probe models no pH")
+                : " is stated; " + pHNote));
         if (!cv.empty() && announce)
         {
             const std::string line = what + " for " + solute + ": " + cv;
@@ -471,6 +478,143 @@ RatedTestInversion invertRatedRejection(const DictPtr& unitDict,
     inv.residual   = fc;
     inv.iterations = it + 1;
     return inv;
+}
+
+// ---------------------------------------------------------------------------
+//  THE SPLIT FORM (C198 Stage 1)
+// ---------------------------------------------------------------------------
+void solveSplitPassages(scalar a1, scalar Reff1, scalar a2, scalar Reff2,
+                        scalar& R_acid, scalar& R_base, const std::string& who)
+{
+    //  p_t = (1 - a_t) pa + a_t pb ;  det = a2 - a1
+    const scalar det = a2 - a1;
+    if (!(std::abs(det) > 1.0e-3))
+        throw std::runtime_error(who + ": the two rated tests give base"
+            " fractions alpha = " + fmt(a1, "%.6g") + " and " + fmt(a2, "%.6g")
+            + " -- the same pH to within the resolution of the problem.  Two"
+              " equations that are one equation do not identify two"
+              " permeances (the acid's and the base's); a second test needs a"
+              " DIFFERENT pH.");
+    const scalar p1 = 1.0 - Reff1, p2 = 1.0 - Reff2;
+    const scalar pa = (p1 * a2 - a1 * p2) / det;
+    const scalar pb = ((1.0 - a1) * p2 - (1.0 - a2) * p1) / det;
+    if (!(pa >= 0.0) || !(pb >= 0.0))
+        throw std::runtime_error(who + ": the two tests (effective passages "
+            + fmt(p1, "%.6g") + " at alpha " + fmt(a1, "%.6g") + ", " + fmt(p2, "%.6g")
+            + " at alpha " + fmt(a2, "%.6g") + ") imply a NEGATIVE passage ("
+            + (pa < 0.0 ? "acid " + fmt(pa, "%.6g") : "base " + fmt(pb, "%.6g"))
+            + ") -- no non-negative pair of permeances reproduces both.  The"
+              " tests contradict the two-form model (or the pH of one of them)"
+              " and nothing is clipped.");
+    if (pa > 1.0 || pb > 1.0)
+        throw std::runtime_error(who + ": the two tests imply a passage above"
+            " 1 (acid " + fmt(pa, "%.6g") + ", base " + fmt(pb, "%.6g")
+            + "), i.e. a NEGATIVE intrinsic rejection, which this law does not"
+              " have.");
+    R_acid = 1.0 - pa;
+    R_base = 1.0 - pb;
+}
+
+namespace {
+
+const RatedTest& splitTest(const MembraneModule* record, const std::string& component,
+                           const std::string& id, const std::string& who)
+{
+    if (record == nullptr)
+        throw std::runtime_error(who + " derives the split from rated tests of"
+            " a module record, and this unit names no module.");
+    const RatedTest& rt = selectRatedTest(*record, component, id, who);
+    if (!rt.hasPH)
+        throw std::runtime_error(who + ": " + rt.label() + " of module '"
+            + record->name() + "' states no pH, and the base fraction of that"
+              " test is set by it -- without the pH the test says nothing about"
+              " the split.  Declare `pH <value>;` in the test (as the sheet"
+              " states it).");
+    return rt;
+}
+
+} // namespace
+
+SplitRejections invertSplitFromTwoTests(const DictPtr& unitDict,
+                                        const ThermoPackage& thermo,
+                                        const MembraneModule* record,
+                                        const std::string& component,
+                                        const std::string& id1,
+                                        const std::string& id2,
+                                        const AlphaAtTest& alphaAt,
+                                        const std::string& unitLabel,
+                                        scalar A_w_override)
+{
+    const std::string who = "spiralWoundModule '" + unitLabel
+        + "': `aqueousSplit { rejection { tests ( " + id1 + " " + id2 + " ) } }`";
+    SplitRejections out;
+    scalar a[2], Re[2];
+    const std::string ids[2] = { id1, id2 };
+    for (int t = 0; t < 2; ++t)
+    {
+        const RatedTest& rt = splitTest(record, component, ids[t], who);
+        a[t] = alphaAt(rt);
+        auto inv = invertRatedRejection(unitDict, thermo, record, component,
+            ids[t], unitLabel, A_w_override, true,
+            "the base fraction alpha = " + fmt(a[t], "%.5f") + " at that pH and"
+            " the package's constant sets the split of the component into its"
+            " two forms (aqueousSplit); R_int below is the COMPONENT's effective"
+            " one at that pH");
+        Re[t] = inv.R_int;
+        out.alphas.push_back(a[t]);
+        out.pHs.push_back(rt.pH);
+        out.R_eff.push_back(inv.R_int);
+        out.inversions.push_back(std::move(inv));
+    }
+    out.nTests = 2;
+    solveSplitPassages(a[0], Re[0], a[1], Re[1], out.R_acid, out.R_base, who);
+    return out;
+}
+
+SplitRejections invertSplitFromOneTest(const DictPtr& unitDict,
+                                       const ThermoPackage& thermo,
+                                       const MembraneModule* record,
+                                       const std::string& component,
+                                       const std::string& id,
+                                       scalar R_base,
+                                       const AlphaAtTest& alphaAt,
+                                       const std::string& unitLabel,
+                                       scalar A_w_override)
+{
+    const std::string who = "spiralWoundModule '" + unitLabel
+        + "': `aqueousSplit { rejection { acid ( fromRatedTest " + id + " ); } }`";
+    const RatedTest& rt = splitTest(record, component, id, who);
+    SplitRejections out;
+    const scalar a = alphaAt(rt);
+    auto inv = invertRatedRejection(unitDict, thermo, record, component, id,
+        unitLabel, A_w_override, true,
+        "the base fraction alpha = " + fmt(a, "%.5f") + " at that pH and the"
+        " package's constant sets the split of the component into its two forms"
+        " (aqueousSplit); R_int below is the COMPONENT's effective one at that pH");
+    const scalar p = 1.0 - inv.R_int, pb = 1.0 - R_base;
+    if (!(a < 1.0 - 1.0e-9))
+        throw std::runtime_error(who + ": at pH " + fmt(rt.pH) + " the base"
+            " fraction is " + fmt(a, "%.9f") + " -- the test has no acid in it"
+            " to determine the acid's permeance.");
+    const scalar pa = (p - a * pb) / (1.0 - a);
+    if (!(pa >= 0.0))
+        throw std::runtime_error(who + ": with the base's rejection "
+            + fmt(R_base, "%.6g") + " the test's effective passage "
+            + fmt(p, "%.6g") + " at alpha " + fmt(a, "%.6g") + " leaves a"
+            " NEGATIVE acid passage (" + fmt(pa, "%.6g") + "): the base alone"
+            " would already pass more than the sheet measured.  Nothing is"
+            " clipped; declare a higher base rejection or revisit the test.");
+    if (pa > 1.0)
+        throw std::runtime_error(who + ": the acid passage comes out "
+            + fmt(pa, "%.6g") + " > 1, a negative intrinsic rejection.");
+    out.R_acid = 1.0 - pa;
+    out.R_base = R_base;
+    out.nTests = 1;
+    out.alphas.push_back(a);
+    out.pHs.push_back(rt.pH);
+    out.R_eff.push_back(inv.R_int);
+    out.inversions.push_back(std::move(inv));
+    return out;
 }
 
 // ---------------------------------------------------------------------------

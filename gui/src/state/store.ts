@@ -385,6 +385,12 @@ interface AppState {
   /** Replace caseFiles in place (NOT pristine) -- used by the clipboard bridge
    *  to apply the agent's edits; leaves the case marked "edited" for download. */
   applyCaseFiles: (files: CaseFiles) => void;
+  /** The 0/ files the engine's own -init0 wrote into the open case
+   *  (case/completeZero.ts), path -> the body it wrote.  A file draws as
+   *  GENERATED only while the case still holds exactly that body: opening
+   *  another case or editing the file unmarks it with no reset to forget. */
+  generated0: { [relPath: string]: string };
+  markGenerated0: (files: { [relPath: string]: string }) => void;
   selectNode: (id: string | null) => void;
   /** TimeScrubber <-> FlowCanvas link: the instant index the scrubber sits on,
    *  so dragging the slider ANIMATES the dynamic flowsheet (live flux on the
@@ -824,6 +830,8 @@ export const useStore = create<AppState>((set, get) => ({
     set(() => ({ caseFiles: files, pristineCaseFiles: files, scratchEdits: {} })),
 
   applyCaseFiles: (files) => set(() => ({ caseFiles: files })),
+  generated0: {},
+  markGenerated0: (files) => set((s) => ({ generated0: { ...s.generated0, ...files } })),
 
   setOperationScalar: (unitName, key, value) =>
     set((s) => {

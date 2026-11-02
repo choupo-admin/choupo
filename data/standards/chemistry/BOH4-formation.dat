@@ -1,0 +1,15 @@
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+// Borate from its masters (catalogue formation convention): boric acid is the
+// master of boron (SOLUTION_MASTER_SPECIES  B  H3BO3), so
+//     H3BO3 + H2O = BOH4 + H+,   logK25 = -pKa = -9.24,   dH = +3.224 kcal/mol.
+// The databank writes the same equilibrium as  H3BO3 = H2BO3- + H+  (its borate
+// is B(OH)4- less one water); the water has unit activity here, so the constant
+// is identical.  The databank states NO primary for this line (read 2026-11-02,
+// phreeqc3/database/phreeqc.dat lines 319-321) and NO validity window: it is
+// recorded as such, never completed from memory.  This is a THERMODYNAMIC
+// (infinite-dilution) constant: in seawater it must be paired with the case's
+// declared aqueous activity model, never with a conditional seawater constant.
+species BOH4; masters ( { ion H3BO3; nu 1; } { ion H; nu -1; } ); nuWater 1;
+      logK25 -9.24; dH 13489.2; source "USGS PHREEQC phreeqc.dat (public domain): H3BO3 = H2BO3- + H+, log_k -9.24, delta_h 3.224 kcal; primary and temperature window not stated in db";

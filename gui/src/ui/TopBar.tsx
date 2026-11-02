@@ -70,6 +70,8 @@ import { UnitsMenu } from "./UnitsMenu.js";
 import { ColoursMenu } from "./ColoursMenu.js";
 import { ColorSchemeToggle } from "./ColorSchemeToggle.js";
 import { ClipboardBridge } from "./ClipboardBridge.js";
+import { CompleteZeroDialog, EV_OFFER_COMPLETE_ZERO } from "./CompleteZeroDialog.js";
+import { parseIncomplete0 } from "../case/completeZero.js";
 import { CaseSwitcher } from "./CaseSwitcher.js";
 import { tabChromeFor } from "./tabChrome.js";
 
@@ -312,6 +314,13 @@ export function TopBar({ onMinWidth }: {
       finishRun(result, carried.length > 0
         ? declaredInputsOf(useStore.getState().caseFiles, scratchEdits)
         : runInputsOf(tinkered, scratchEdits));
+      //  A RUN THE ENGINE REFUSED FOR AN INCOMPLETE 0/ is OFFERED the engine's
+      //  own -init0 (never run unasked): case/completeZero.ts quotes the
+      //  refusal it matches.
+      if (result.status !== "done") {
+        const inc = parseIncomplete0(result.log);
+        if (inc) window.dispatchEvent(new CustomEvent(EV_OFFER_COMPLETE_ZERO, { detail: inc }));
+      }
       // CURATION-PHASE: a composite case (sectors) whose streams are not wired
       // (children but empty connections) is still in curation -- choupoSolve
       // emits the curation message and there is NOTHING simulated.  The GUI must
@@ -573,6 +582,7 @@ export function TopBar({ onMinWidth }: {
       </Group>
     </Group>
     <ClipboardBridge opened={clipOpen} onClose={() => setClipOpen(false)} />
+    <CompleteZeroDialog />
     </>
   );
 }

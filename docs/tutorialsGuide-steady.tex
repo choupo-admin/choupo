@@ -7351,6 +7351,49 @@ A NOTE THIS CASE EARNED THE HARD WAY (2026-09-12). The line above has said "feed
 \end{tutgolden}
 
 \clearpage
+\tutentry{phasechange02\_saturated\_mixture}{tutorials/steady/heat/phasechange02\_saturated\_mixture}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (boilerLiquid) at (0.0,-0.0) {\textbf{boilerLiquid}\\[-1pt]{\tiny phaseChanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (boilerVapour) at (0.0,-1.7) {\textbf{boilerVapour}\\[-1pt]{\tiny phaseChanger}};
+  \draw[->] ($(boilerLiquid.west)+(-1.05,0.00)$) -- ($(boilerLiquid.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedA};
+  \draw[->] ($(boilerVapour.west)+(-1.05,0.00)$) -- ($(boilerVapour.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedB};
+  \draw[->] ($(boilerLiquid.east)+(0,0.00)$) -- ($(boilerLiquid.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bubbleOut};
+  \draw[->] ($(boilerVapour.east)+(0,0.00)$) -- ($(boilerVapour.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {dewOut};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Saturated liquid and vapour of a benzene-toluene mixture: bubble and dew point}
+\begin{tutnarrative}
+a saturated state of a MIXTURE is its bubble point or its dew point
+
+The same 40/60 benzene/toluene liquid (298 K, 2.2 bar) goes to two phaseChangers:
+
+feedA $\to$ boilerLiquid (outletState saturatedLiquid) $\to$ bubbleOut feedB $\to$ boilerVapour (outletState saturatedVapour) $\to$ dewOut
+
+A pure fluid is saturated at ONE temperature; a mixture is saturated over a RANGE, between its bubble point (the first vapour, vf = 0) and its dew point (the last liquid, vf = 1). "Saturated liquid" is the bubble point and "saturated vapour" is the dew point -- two different temperatures, here 397.3 K and 403.4 K at 2.2 bar (ideal Raoult). The `Tsat(P\_out)` line the unit prints is the DOMINANT component's own saturation T (413.5 K, pure toluene), a dome centre for the search -- it is neither of the two. The outlet must land ON them: the saturated liquid at the bubble point is HEATED from the 298 K feed (Q > 0), never cooled.
+
+WHY THIS CASE EXISTS (DEV.md 4c C202). The unit once located the vapour fraction target by scanning T for a sign change of vf(T) - target. For a target of 0 that function is EXACTLY zero below the bubble point, so the first scan interval was accepted as a root and the outlet landed about 119 K BELOW the dome centre (103 K below the true bubble point) -- a sub-cooled liquid labelled saturated, with the duty the wrong sign (-15 kW), at exit 0. The saturation points now come from the package's bubble-point and dew-point solvers, and the result is checked against the unit's own flash. The gate check\_phase\_changer\_saturation reads this case and holds T\_out to an independent bubble/dew point.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{bubbleOut}{F}{0.0277777777778}
+\goldrow{stream}{bubbleOut}{T}{397.261090159}
+\goldrow{stream}{dewOut}{F}{0.0277777777778}
+\goldrow{stream}{dewOut}{T}{403.434181212}
+\goldrow{stream}{feedA}{F}{0.0277777777778}
+\goldrow{stream}{feedA}{T}{298}
+\goldrow{stream}{feedB}{F}{0.0277777777778}
+\goldrow{stream}{feedB}{T}{298}
+\goldrow{kpi}{boilerLiquid}{F}{0.0277777777778}
+\goldrow{kpi}{boilerLiquid}{P}{220000}
+\goldrow{kpi}{boilerLiquid}{Q}{409065.981556}
+\goldrow{kpi}{boilerLiquid}{Q\_kW}{409.065981556}
+\goldrow{kpi}{boilerLiquid}{Q\_sensible\_kW}{409.065981556}
+\goldrow{kpi}{boilerLiquid}{T\_in}{298}
+\goldmore{25}
+\end{tutgolden}
+
+\clearpage
 \tutentry{pinch01\_four\_stream\_classic}{tutorials/steady/heat/pinch01\_four\_stream\_classic}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

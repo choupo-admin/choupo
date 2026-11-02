@@ -38,6 +38,10 @@
     worker -> main:  { type: "csvFiles",   files: { [relPath]: string } }
     worker -> main:  { type: "instants",   files: { "<t>/<stream>": string,
                                                      "<t>/internalStates/<unit>": string, ... } }
+    worker -> main:  { type: "init0Files", files: { "0/<stream>": string, ... } }
+                     (only for a run with `init0: true`: the 0/ files the
+                      engine's own -init0 WROTE -- paths the run was not
+                      handed; nothing else is harvested)
     worker -> main:  { type: "done",       rc:    number }
     worker -> main:  { type: "error",      message: string }
 \*---------------------------------------------------------------------------*/
@@ -204,6 +208,44 @@ self.addEventListener("message", async (e) => {
             type: "error",
             message: "Module.ccall not exported; rebuild WASM",
           });
+          return;
+        }
+        //  THE BROWSER'S `bin/choupo-init0` (DEV.md 4c C200 phase B').  The
+        //  engine's own -init0 branch materialises 0/ and leaves: no solve,
+        //  no outputs.  The files it WROTE travel back as `init0Files`; the
+        //  main thread decides what to do with them and announces it.
+        if (msg.init0) {
+          try {
+            if (typeof Module._run_case_init0 !== "function") {
+              settle({
+                type: "error",
+                message: "this engine build has no run_case_init0; rebuild WASM (make wasm-gui)",
+              });
+              return;
+            }
+            const rc0 = Module.ccall("run_case_init0", "number", ["string"], ["/case"]);
+            log("[worker] run_case_init0 returned rc=" + rc0);
+            const made = {};
+            const walk0 = (dir) => {
+              if (!Module.FS.analyzePath(dir).exists) return;
+              for (const name of Module.FS.readdir(dir)) {
+                if (name === "." || name === "..") continue;
+                const path = dir + "/" + name;
+                const st = Module.FS.stat(path);
+                if (Module.FS.isDir(st.mode)) { walk0(path); continue; }
+                const rel = path.substring("/case/".length);
+                if (Object.prototype.hasOwnProperty.call(msg.files, rel)) continue;
+                made[rel] = Module.FS.readFile(path, { encoding: "utf8" });
+              }
+            };
+            walk0("/case/0");
+            self.postMessage({ type: "init0Files", files: made });
+            settle({ type: "done", rc: rc0 });
+          } catch (err) {
+            const message = err && err.message ? err.message : String(err);
+            log("[worker] run_case_init0 threw: " + message);
+            settle({ type: "error", message });
+          }
           return;
         }
         try {
