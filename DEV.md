@@ -1636,6 +1636,23 @@ accepts today, and that is a policy call.
 > closure of the chain (latent heat at Tb) before building an engine home on
 > it.
 
+> **C204. AN EDUTOOL ON WHERE TO PLACE THE CONTROL LOOPS IN THE COMMON UNIT
+> OPERATIONS, WITH A PARETO ANALYSIS (Vitor, 2026-11-02: "Achas bem um
+> EduTools sobre estrategias de colocacao do sistema de controlo nas
+> operacoes unitarias mais comuns? Faz uma analise pareto.").**  RECORDED;
+> the Pareto analysis was brought to Vitor in the session the same day, with
+> the proposed pedagogical scope and the order of unit dynamics it implies for
+> C203; NOTHING dispatched before his answer on the scope (CLAUDE.md §10: a
+> pedagogical scope is put to Vitor first).  Measured facts it rests on:
+> corpus unit frequencies (steady + plant + batch/plant flowsheets:
+> isothermalFlash 97, mixer 49, splitter 42, spiralWoundModule 42,
+> phaseChanger 37, gibbsReactor 36, distillationColumn 34, heater 26,
+> evaporator 24, cstr 22, compressor 21, pump 13, heatExchanger 13, pfr 12);
+> the only time-integrated units are `dynamicCSTR` (CONSTANT volume,
+> DynamicCSTR.H:33 -- so no level loop can be shown today), the
+> `quasiSteady` adapter and `williamsOttoPlant`; controllers are PID,
+> Schedule and Signal, acting on unit parameters (ctrl01: cv T, mv T_jacket).
+
 > **C203. A DIGITAL TWIN AS THE LAST FORM OF A PLANT CASE (Vitor, 2026-11-02:
 > "em plant pode haver um modelo final em modo de controlo que vai desde o
 > layout depois ate ao painel de controle? ... plant era so para estado
