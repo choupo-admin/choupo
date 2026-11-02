@@ -724,3 +724,55 @@ ANCHORS: the exact first-order closed forms at each grid point, AR = 1/sqrt(1+(w
 \goldmore{20}
 \end{tutgolden}
 
+\clearpage
+\tutentry{ctrl21\_tank\_level\_control}{tutorials/ctrl/ctrl21\_tank\_level\_control}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (tank) at (0.0,-0.0) {\textbf{tank}\\[-1pt]{\tiny dynamicTank}};
+  \draw[->] ($(tank.west)+(-1.05,0.00)$) -- ($(tank.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(tank.east)+(0,0.00)$) -- ($(tank.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Water tank with a manipulated outflow and a PI level controller: the inflow steps +50 \% at 600 s, the integrating level is brought back to the 2.0 m setpoint (P-only would settle 0.05 m off)}
+\begin{tutnarrative}
+the most common loop of a plant: INVENTORY.
+
+The same water tank as unsteady05 (D = 2 m, area 3.1416 m2), but its outflow is a MANIPULATED FLOW (a flow-controlled pump: `mode flow`, mv F\_out), so the level INTEGRATES the difference of the flows,
+
+A rho/MW dh/dt = F\_in - F\_out plant gain a = MW/(rho A) = 5.7e-3 m/s per kmol/s (rho = 1001.55 kg/m3)
+
+and nothing brings it back: an integrating process. A level controller closes the loop on F\_out. The inflow steps at t = 600 s from 0.20 to 0.30 kmol/s (a Signal on the tank's inlet face).
+
+THE SIGN. The controller is direct-acting on error = setpoint - level, and a level ABOVE the setpoint must RAISE the outflow, so the gains are NEGATIVE (u = bias + Kp (SP - h) + Ki Int(SP - h) with Kp < 0). Bias 0.20 kmol/s is the outflow that balances the old inflow.
+
+WHAT THE TWO CONTROLLERS DO (measured; check\_dynamic\_tank re-runs both):
+
+PI (Kp = -2, Ki = -0.01): the integral term removes the offset; the level returns to the 2.0 m setpoint (zero offset), after a peak excursion of 0.031 m (max |h - 2| in trajectory.csv; the end offset is < 1e-7 m). P-only (Ki = 0, edit one line): the outflow must rise by 0.10 kmol/s and a proportional-only controller can only do that with an error, F\_out = bias + Kp (SP - h) $\to$ h - SP = (F\_in,new - bias)/|Kp| = 0.10 / 2 = 0.050 m (offset: the level settles at 2.05 m).
+
+The closed loop is second order, wn\textasciicircum{}2 = a |Ki| , 2 zeta wn = a |Kp|: wn = 7.6e-3 1/s, zeta = 0.76. The inflow is a disturbance the loop must reject; the tank's own buffering (volume) is what the controller trades against the downstream flow's smoothness -- loose level control is a feature, not a defect, when the outflow feeds another unit.
+
+ENERGY. H on the elements datum, T a readout; the ledger claims mass and energy and closes (check\_dynamic\_tank).
+
+\end{tutnarrative}
+\tutreadme{A water tank (dynamicTank, D = 2 m, 3.14 m$^2$) whose outflow is a manipulated flow (mode flow, mv F\_out, a flow-controlled pump). Because nothing in the outflow depends on the level, the level integrates the difference of the flows and never comes back by itself. A PI level controller on F\_out closes the loop. The inflow steps from 0.20 to 0.30 kmol/s at t = 600 s; 3000 s run, 2 s steps.}
+\tutreadme{Run it: runCase tutorials/ctrl/ctrl21\_tank\_level\_control (it runs under choupoCtrl). Its sibling unsteady05\_tank\_valve\_drain drains the same tank through a valve instead and needs no controller.}
+\tutreadme{1. The PI holds the level. Plot level in trajectory.csv: it stays at the 2.0 m setpoint, rises by at most 0.031 m after the inflow step and returns with zero offset (< 1e-7 m at the end). The integral term is what removes the offset. 2. P-only settles off the setpoint. Set Ki 0.0; in the controller's gains \{\} and run again: the level ends at 2.05 m. A proportional controller needs an error to hold a different outflow, and the offset is (F\_in,new - bias)/ = (0.30 - 0.20)/2 = 0.050 m. 3. The gains are negative. The controller is direct-acting on error = setpoint - level; a level ABOVE the setpoint must RAISE the outflow, so the loop is reverse-acting and Kp, Ki are negative. With a positive sign the level runs away until the tank overflows, and the engine refuses that by name (OVERFLOWED). 4. The ledger claims mass and energy and closes (\textasciitilde{}1e-14): the tank stores its enthalpy on the elements datum, T is a readout. [balance] lines print the check.}
+\tutreadme{The closed loop is second order (?n $\approx$ 7.6e-3 1/s, ? $\approx$ 0.76). The tank's buffering is what a loose level loop trades against the smoothness of the downstream flow. check\_dynamic\_tank re-runs both the PI and the P-only variants and holds these numbers.}
+\begin{tutgolden}
+\goldrow{kpi}{FeedStep}{MV\_final}{0.3}
+\goldrow{kpi}{FeedStep}{PV\_final}{0}
+\goldrow{kpi}{FeedStep}{SP\_final}{0.3}
+\goldrow{kpi}{LC1}{MV\_final}{0.299999843429}
+\goldrow{kpi}{LC1}{PV\_final}{1.99999993364}
+\goldrow{kpi}{LC1}{SP\_final}{2}
+\goldrow{kpi}{balance}{element\_H\_closure\_rel}{2.32787331257e-14}
+\goldrow{kpi}{balance}{element\_O\_closure\_rel}{2.32787331257e-14}
+\goldrow{kpi}{balance}{element\_worst\_closure\_rel}{2.32787331257e-14}
+\goldrow{kpi}{balance}{energy\_balance\_available}{1}
+\goldrow{kpi}{balance}{energy\_closure\_rel}{3.7609444182e-14}
+\goldrow{kpi}{balance}{energy\_functional\_H}{1}
+\goldrow{kpi}{balance}{energy\_kJ\_final}{-100176244.47}
+\goldrow{kpi}{balance}{energy\_kJ\_heat\_cum}{0}
+\goldmore{19}
+\end{tutgolden}
+

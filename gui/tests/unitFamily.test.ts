@@ -95,8 +95,9 @@ describe("SHAPE IS THE EQUIPMENT, TAG IS THE CALCULATION MODEL", () => {
     const tagged = SYMBOLS.filter((s) => s.tag).map((s) => s.cls).sort();
     expect(tagged).toEqual([
       "Absorber", "AdiabaticFlash", "CSTR", "ConversionReactor",
-      "DistillationColumn", "DynamicCSTR", "EquilibriumReactor",
-      "GibbsReactor", "IsothermalFlash", "ShortcutColumn", "Stripper",
+      "DistillationColumn", "DynamicCSTR", "DynamicTank", "EquilibriumReactor",
+      "GibbsReactor", "IsothermalFlash", "ShortcutColumn", "StorageTank",
+      "Stripper",
     ]);
   });
 

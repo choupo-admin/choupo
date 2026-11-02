@@ -6810,6 +6810,20 @@ PYEOF
     fi
     rm -f /tmp/cbgate.$$
 
+    # Dynamic-tank gate (DEV.md 4c C205 slice 1): the level tank's mass AND
+    # energy ledgers close, the valve's steady level equals its closed form,
+    # PI holds the setpoint where P-only settles off by (F_in,new-bias)/|Kp|,
+    # and a dry / overflowing / reversing tank is refused by name.
+    if gate_exec "$ROOT/bin/curate/check_dynamic_tank.py" > /tmp/dtgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "dynamic-tank-gate" "$(head -1 /tmp/dtgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_dynamic_tank.py)\n" "dynamic-tank-gate"
+        cat /tmp/dtgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/dtgate.$$
+
     # Flash-model gate: the machine that solves a flash has a NAME (`model`,
     # the distillation convention) -- and a name that cannot lie.  Four
     # refusals, including the one that matters: a REACTIVE package's machine

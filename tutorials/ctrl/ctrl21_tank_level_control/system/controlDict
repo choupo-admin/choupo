@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+tier          tutorial;
+application   choupoCtrl;
+description   "Water tank with a manipulated outflow and a PI level controller: the inflow steps +50 % at 600 s, the integrating level is brought back to the 2.0 m setpoint (P-only would settle 0.05 m off)";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         3000;     // s
+deltaT          2.0;      // s
+writeInterval   100;      // s
+
+solutionControl
+{
+    write           true;
+    flushEach       true;
+}

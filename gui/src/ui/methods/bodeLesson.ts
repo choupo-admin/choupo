@@ -159,7 +159,7 @@ export const BODE_STEPS: readonly LessonStep[] = [
       + "engine's own equation, not from a transfer function someone wrote "
       + "down.  The unit integrates dn/dt = F·z_in − F·(n/Σn) with the "
       + "outflow equal to the inflow "
-      + "(src/unitOperations/dynamic/DynamicCSTR.cpp:670-673).",
+      + "(src/unitOperations/dynamic/DynamicCSTR.cpp:648-651).",
     derivation: [
       { step: "Write that balance for the tracer alone, in mole fraction, "
           + "with the total inventory N and the flow F both constant "

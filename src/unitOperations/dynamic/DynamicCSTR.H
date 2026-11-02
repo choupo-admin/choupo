@@ -69,6 +69,7 @@ Description
 #include <memory>
 
 #include "DynamicUnitOperation.H"
+#include "VariableVolumeHoldup.H"   // the mixture-H surface it shares with dynamicTank
 
 namespace Choupo {
 

@@ -569,36 +569,14 @@ scalar DynamicCSTR::cpSurface_(std::size_t i, scalar T) const
 
 scalar DynamicCSTR::hMix_(const sVector& n, scalar T) const
 {
-    scalar nt = 0.0;
-    for (auto v : n) nt += std::max<scalar>(v, 0.0);
-    if (nt <= 0.0) return 0.0;
-    sVector x(n.size(), 0.0);
-    for (std::size_t i = 0; i < n.size(); ++i)
-        x[i] = std::max<scalar>(n[i], 0.0) / nt;
-    //  THE mixture surface -- the same H_liquid_formation every balance
-    //  reads, electrolyte aqueous-ion branch included.
-    return thermo_->H_liquid_formation(T, x);            // J/mol
+    //  The mixture surface and its inverse have ONE home since C205
+    //  (VariableVolumeHoldup): the dynamic tank calls the same two functions.
+    return VariableVolumeHoldup::mixtureEnthalpy(*thermo_, n, T);   // J/mol
 }
 
 scalar DynamicCSTR::TfromH_(const sVector& n, scalar H, scalar Tguess) const
 {
-    //  1-D Newton on the SAME surface, derivative taken numerically from it
-    //  (one surface, one derivative -- the cpSurface_ principle at mixture
-    //  level).  H in kJ; hMix in J/mol == kJ/kmol; n in kmol.
-    scalar nt = 0.0;
-    for (auto v : n) nt += std::max<scalar>(v, 0.0);
-    if (nt <= 0.0) return Tguess;
-    scalar T = Tguess;
-    for (int it = 0; it < 50; ++it)
-    {
-        const scalar r  = nt * hMix_(n, T) - H;          // kJ
-        const scalar cp = nt * (hMix_(n, T + 0.5) - hMix_(n, T - 0.5));  // kJ/K
-        if (std::abs(cp) < 1.0e-30) break;
-        const scalar dT = -r / cp;
-        T += std::max<scalar>(-25.0, std::min<scalar>(25.0, dT));
-        if (std::abs(dT) < 1.0e-10) return T;
-    }
-    return T;
+    return VariableVolumeHoldup::temperatureFromEnthalpy(*thermo_, n, H, Tguess);
 }
 
 scalar DynamicCSTR::hLiq_(std::size_t i, scalar T) const

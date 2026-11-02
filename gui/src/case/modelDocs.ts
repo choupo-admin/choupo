@@ -108,6 +108,7 @@ const THEORY_DEST: Record<string, string> = {
   yieldReactor: "ch:conversion-reactor",
   batchReactor: "ch:batch-adiabatic",
   dynamicCSTR: "ch:dyn-cstr",
+  dynamicTank: "ch:dyn-tank",
   // distillation / gas contacting
   distillationColumn: "ch:distillation",
   column: "ch:distillation",

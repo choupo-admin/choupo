@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSemiContinuous;
+description   "Water tank drained through a valve, no controller: after a 50 % step in the inflow the level SELF-REGULATES to the closed-form h* = (Q/(Cv x))^2/g (0.998 m -> 2.245 m)";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         24000;    // s  (~9 time constants of the new level)
+deltaT          10.0;     // s
+writeInterval   1200;     // s
