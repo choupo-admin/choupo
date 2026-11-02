@@ -117,6 +117,9 @@
   "AqueousGraph": [
    "src/curation/AqueousGraph.H"
   ],
+  "AqueousSplitSpec": [
+   "src/unitOperations/membrane/AqueousSplit.H"
+  ],
   "AqueousSurface": [
    "src/propertyOps/CasePackage.H"
   ],
@@ -1852,6 +1855,15 @@
   ],
   "SpiralWoundModule": [
    "src/unitOperations/membrane/SpiralWoundModule.H"
+  ],
+  "SplitPassage": [
+   "src/unitOperations/membrane/AqueousSplit.H"
+  ],
+  "SplitRejections": [
+   "src/unitOperations/membrane/RatedTestInversion.H"
+  ],
+  "SplitState": [
+   "src/unitOperations/membrane/AqueousSplit.H"
   ],
   "Splitter": [
    "src/unitOperations/mixer/Splitter.H"
@@ -9369,6 +9381,19 @@
    "src/core/Types.H",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
   ],
+  "src/unitOperations/membrane/AqueousSplit.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/electrolyte/SpeciationSolver.H",
+   "src/unitOperations/membrane/AqueousSplit.H"
+  ],
   "src/unitOperations/membrane/RatedTestInversion.cpp": [
    "src/core/Advisory.H",
    "src/core/Dictionary.H",
@@ -9430,6 +9455,7 @@
    "src/thermo/membrane/MembraneRegistry.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/membrane/AqueousSplit.H",
    "src/unitOperations/membrane/BulkConversion.H",
    "src/unitOperations/membrane/RatedTestInversion.H",
    "src/unitOperations/membrane/SpiralWoundModule.H",
@@ -11313,6 +11339,7 @@
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
+   "src/unitOperations/membrane/AqueousSplit.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
@@ -11668,6 +11695,7 @@
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
+   "src/unitOperations/membrane/AqueousSplit.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
@@ -12071,6 +12099,7 @@
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
+   "src/unitOperations/membrane/AqueousSplit.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
@@ -12368,6 +12397,7 @@
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
+   "src/unitOperations/membrane/AqueousSplit.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
@@ -13120,6 +13150,7 @@
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
+   "src/unitOperations/membrane/AqueousSplit.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
@@ -14591,6 +14622,7 @@
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
+   "src/unitOperations/membrane/AqueousSplit.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
@@ -15225,6 +15257,7 @@
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
+   "src/unitOperations/membrane/AqueousSplit.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
@@ -15566,6 +15599,7 @@
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
+   "src/unitOperations/membrane/AqueousSplit.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
@@ -16045,6 +16079,7 @@
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
+   "src/unitOperations/membrane/AqueousSplit.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
@@ -16474,6 +16509,7 @@
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/membrane/AqueousSplit.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/separation/IonExchanger.cpp"
@@ -17613,6 +17649,10 @@
    "src/propertyOps/FrictionBench.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp"
+  ],
+  "src/unitOperations/membrane/AqueousSplit.H": [
+   "src/unitOperations/membrane/AqueousSplit.cpp",
+   "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
   "src/unitOperations/membrane/BulkConversion.H": [
    "src/unitOperations/batch/BatchDiafilter.cpp",

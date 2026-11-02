@@ -747,6 +747,7 @@ Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its 
 | `pressureDrop` |   | object | — | Computes the feed-channel drop from the spacer geometry instead of taking `dP_feed_total`. |
 | `massTransfer` |   | object | — | Computes k_film from a Sherwood correlation instead of taking it as a constant. |
 | `polarisation` |   | object | — | The film's POLICY, one block whichever way k arrives (a correlation or a bare `k_film`); declaring these words inside massTransfer {} ref… |
+| `aqueousSplit` |   | object | — | ONE apparent component carried by two internal forms with their OWN rejections, split by the pH (boron in seawater RO as boric acid and b… |
 
 ## `membraneShortlist`  (membraneShortlist operation)
 
@@ -1180,6 +1181,7 @@ Spiral-wound membrane module (RO/NF), solved node by node along the feed channel
 | `pressureDrop` |   | object | — | Computes the feed-channel drop from the spacer geometry instead of taking `dP_feed_total`. |
 | `massTransfer` |   | object | — | Computes k_film from a Sherwood correlation instead of taking it as a constant. |
 | `polarisation` |   | object | — | The film's POLICY, one block whichever way k arrives (a correlation or a bare `k_film`); declaring these words inside massTransfer {} ref… |
+| `aqueousSplit` |   | object | — | ONE apparent component carried by two internal forms with their OWN rejections, split by the pH (boron in seawater RO as boric acid and b… |
 
 ## `splitter`  (splitter operation)
 
