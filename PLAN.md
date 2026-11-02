@@ -36,6 +36,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| decide | FREEZE: nothing is integrated into main (and so nothing reaches the site) until the tutoring class of 2026-11-03 ends; the generals' work stays on their branches -- the C208 refusals may make cases that run today refuse | C200, C195 |
 | todo | Watch the tutoring class (2026-11-03 12:00): students' reports reach Vitor and come here; each is recorded in DEV.md 4c the turn it arrives, then fixed | C200, C195 |
 
 ## Next day (at most 5)
