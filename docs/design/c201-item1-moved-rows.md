@@ -1,5 +1,74 @@
 # C201 item 1 -- moved golden rows (NOT re-recorded)
 
+**SUPERSEDED BY THE TWO-PIECE SLICE (2026-11-02, later the same day).**  The
+list below the line was taken with the liquid bridge ALONE (piece 1).  Piece 2
+(the associated ideal-gas vapour) landed with it in one slice; the current
+list, grouped by reason, is section 7.2 of
+`docs/design/one-record-two-vapours-acetic-acid.md`, and the mechanical
+grouping it was read from is reproduced here.  Two corrections to the
+bridge-only reading: column05's reboiler +33 % is NOT a vaporisation duty (it
+is the reaction extent times the removed exotherm, group A), and the
+aceticAcid02 condensers did not come back to their old values (group C).
+
+```
+== group A: 414 rows, 29 cases
+   cases: batch01b_first_order_eulersi (10), batch01_first_order (10), batch02_adiabatic (5), batch04_transient_dirs (5), batch06_adaptive_runaway (5), batch07_lhhw_methylAcetate (9), recipe01_react_then_distill (25), recipe02_setpoint_ramp (15), recipe03_conditional_partial (16), ctrl11_esterification_jacket (12), aceticAcid02_plant (51), esterification2sector (14), column05_reactive_methylacetate (19), economics01_esterification_dcf (22), economics02_irr_sweep (19), process01_reactor_flash (8), process02_reactor_hx_flash (16), process02_with_design (16), process03_recycle (22), recycle_autoinit_tear (22), optim02_process_cost (13), optim05_reactor_npv (19), cstr01_first_order (8), cstr04_adiabatic (7), cstr05_multiplicity (8), cstr06_jacketed (13), cstr07_lhhw_methylAcetate (8), pfr01_first_order (9), pfr04_adiabatic (8)
+   aceticAcid02_plant kpi.acidTank.holdupMass_dimethylEther_kg 1.155790705e-05 -> 5.71411007638e-05 (394.4 %)
+   aceticAcid02_plant boundary.global.residual_kW 3.37958734977 -> -5.30041136624 (256.8 %)
+   recipe02_setpoint_ramp kpi.campaign.energy_dH_vessels_kJ -104.365240634 -> 135.317326797 (229.7 %)
+   recipe02_setpoint_ramp kpi.campaign.energy_Q_ledger_kJ -104.365240634 -> 135.317326797 (229.7 %)
+   economics01_esterification_dcf boundary.global.Q_boundary_kW -609.936345464 -> 592.506347009 (197.1 %)
+   ctrl11_esterification_jacket kpi.balance.energy_kJ_heat_cum -1199.4769622 -> 758.819785104 (163.3 %)
+== group B: 208 rows, 11 cases
+   cases: aceticAcid02_plant (117), esterification2sector (2), economics01_esterification_dcf (9), economics02_irr_sweep (9), process01_reactor_flash (9), process02_reactor_hx_flash (9), process02_with_design (9), process03_recycle (13), recycle_autoinit_tear (13), optim02_process_cost (9), optim05_reactor_npv (9)
+   aceticAcid02_plant equipment.acidTank/tank1.inventory.mass.dimethylEther 1.155790705e-05 -> 5.71411007638e-05 (394.4 %)
+   process02_with_design stream.vapProd.F 1.56096992667e-05 -> 0 (100.0 %)
+   process02_with_design kpi.separator.V_over_F 0.05619491736 -> 0 (100.0 %)
+   process02_with_design kpi.separator.F_beta 1.56096992667e-05 -> 0 (100.0 %)
+   process02_reactor_hx_flash stream.vapProd.F 1.56096992667e-05 -> 0 (100.0 %)
+   process02_reactor_hx_flash kpi.separator.V_over_F 0.05619491736 -> 0 (100.0 %)
+== group C: 89 rows, 13 cases
+   cases: recipe01_react_then_distill (10), recipe03_conditional_partial (6), aceticAcid02_plant (21), column05_reactive_methylacetate (1), economics01_esterification_dcf (6), economics02_irr_sweep (6), process01_reactor_flash (5), process02_reactor_hx_flash (6), process02_with_design (6), process03_recycle (5), recycle_autoinit_tear (5), optim02_process_cost (6), optim05_reactor_npv (6)
+   process02_with_design kpi.separator.Q_kW 0.5605016693 -> 0 (100.0 %)
+   process02_with_design kpi.separator.Q 560.5016693 -> 0 (100.0 %)
+   process02_reactor_hx_flash kpi.separator.Q_kW 0.5605016693 -> 0 (100.0 %)
+   process02_reactor_hx_flash kpi.separator.Q 560.5016693 -> 0 (100.0 %)
+   aceticAcid02_plant utility.lightsColumn.cooling.coolingWater.kg_s 0.872280918693 -> 1.24738676974 (43.0 %)
+   aceticAcid02_plant utility.lightsColumn.cooling.coolingWater.eur_h 0.052504333058 -> 0.075082704444 (43.0 %)
+== group D: 21 rows, 4 cases
+   cases: flash10_acetic_water_reactive (2), flash12_nh3_acetic_ethanol_reactive (2), flash13_acetic_ethanol_vacuum_flash (9), flash17_two_liquids_reactive (8)
+   flash13_acetic_ethanol_vacuum_flash boundary.global.residual_kW -0.250639537157 -> 0 (100.0 %)
+   flash17_two_liquids_reactive utility.flash01.heating.steamLP.eur_h 0.00372595028468 -> 0.0037526948907 (0.7 %)
+   flash17_two_liquids_reactive kpi.flash01.Q 86.2488491825 -> 86.8679372846 (0.7 %)
+   flash17_two_liquids_reactive utility.flash01.heating.steamLP.duty_kW 0.0862488491825 -> 0.0868679372846 (0.7 %)
+   flash17_two_liquids_reactive kpi.flash01.Q_kW 0.0862488491825 -> 0.0868679372846 (0.7 %)
+   flash17_two_liquids_reactive boundary.global.Q_boundary_kW 0.0862488491825 -> 0.0868679372846 (0.7 %)
+== group E: 6 rows, 1 cases
+   cases: aceticAcid01_gibbsReactor (6)
+   aceticAcid01_gibbsReactor utility.reactor.cooling.coolingWater.duty_kW -3927.08208264 -> -4635.07603554 (18.0 %)
+   aceticAcid01_gibbsReactor kpi.reactor.Q_kW -3927.08208264 -> -4635.07603554 (18.0 %)
+   aceticAcid01_gibbsReactor boundary.global.Q_boundary_kW -3927.08208264 -> -4635.07603554 (18.0 %)
+   aceticAcid01_gibbsReactor utility.reactor.cooling.coolingWater.eur_h 5.654998199 -> 6.67450949117 (18.0 %)
+   aceticAcid01_gibbsReactor utility.reactor.cooling.coolingWater.kg_s 93.9493321206 -> 110.886986496 (18.0 %)
+   aceticAcid01_gibbsReactor boundary.global.H_products_kW -12515.6544755 -> -13223.3086845 (5.7 %)
+== group F: 3 rows, 3 cases
+   cases: cstr04_adiabatic (1), cstr05_multiplicity (1), cstr06_jacketed (1)
+   cstr05_multiplicity kpi.reactor.k_esterification_etac 0.406108484365 -> 1.16475156872e-05 (100.0 %)
+   cstr04_adiabatic kpi.reactor.k_esterification_etac 0.88934531923 -> 0.00348040574284 (99.6 %)
+   cstr06_jacketed kpi.reactor.k_esterification_etac 0.0534254733127 -> 0.00141043674633 (97.4 %)
+```
+
+Groups: A liquid reaction heat (piece 1); B acetic-acid VLE on the associated
+vapour (piece 2); C vaporisation duties on the associated vapour; D reactive
+flashes (dimer heat counted once); E the Gibbs reactor; F detailed-balance
+reverse constants.  Classification by key and case, checked against the
+largest moves; 37 cases run, 3 PASS, 34 FAIL, 741 rows.
+
+---
+
+## The bridge-only list (historical)
+
+
 Branch commit a9d82ffe7 (+ the follow-up that carries this file).  37 acetic-acid cases run with `bin/runTests`: 3 PASS, 34 FAIL, 455 value rows moved (plus the cooling-utility rows that vanish).  No golden was re-recorded.  Every row below traces to the one change -- the liquid acetic acid is bridged to the datum's ideal-gas monomer through the DERIVED heat (calorimetric 28.2 + dimer dissociation 25.9 = 54.1 kJ/mol at 298.15 K) -- but NOT every row traces to the two reasons first expected (the removed dimer heat of a liquid reaction; the reactive-flash double count).  The rows of the third kind are listed first.
 
 ## Group 1 -- NOT one of the two expected reasons: acetic-acid vaporisation priced to the ideal-gas MONOMER in units whose vapour carries no dimer

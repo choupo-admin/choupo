@@ -6,6 +6,7 @@
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "solver/NewtonND.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
+#include "thermo/VapourAssociation.H"
 #include "thermo/solidEquilibrium/SolidEquilibriumService.H"
 
 #include <algorithm>
@@ -771,14 +772,11 @@ void unpackVapour(const sVector&                  u,
     }
 }
 
-//  TRUE vapour composition under dimerisation: the apparent vaporised
-//  moles of the dimerising volatile split as v_d = t_mono + 2 t_dim,
-//  with the vapour-phase equilibrium p_dim = K_dim p_mono^2 (partial
-//  pressures over the TRUE mole count tau = S + t_mono + t_dim, S = the
-//  other volatiles' moles).  g(t_mono) = (v_d - t_mono)/2
-//  - K_dim P t_mono^2 / tau is monotone with a bracketed sign change --
-//  bisection is exact enough and never escapes (0, v_d].
-struct TrueVap { scalar tMono, tDim, tau; };
+//  TRUE vapour composition under dimerisation: the ONE home is
+//  thermo/VapourAssociation.H (`vapourAssociation::trueVapour`, moved there
+//  verbatim, DEV.md 4c C201 item 1) -- the ideal-gas vapour of EVERY package
+//  reads the same split.  This adapter sums the other volatiles' moles.
+using TrueVap = vapourAssociation::TrueVapour;
 
 TrueVap trueVapour(const sVector&                  vap,
                    const std::vector<std::size_t>& act,
@@ -791,22 +789,7 @@ TrueVap trueVapour(const sVector&                  vap,
     for (const auto appIdx : act)
         if (appIdx != dimIdx) S += vap[appIdx];
     if (dimIdx == nApp) return { 0.0, 0.0, S };
-    const scalar vd = vap[dimIdx];
-    if (vd <= 0.0) return { 0.0, 0.0, S };
-    auto g = [&](scalar tm)
-    {
-        const scalar tau = S + tm + (vd - tm)/2.0;
-        return (vd - tm)/2.0 - Kd * Patm * tm*tm / std::max(tau, 1e-300);
-    };
-    scalar lo = 0.0, hi = vd;
-    for (int b = 0; b < 80; ++b)
-    {
-        const scalar mid = 0.5*(lo + hi);
-        (g(mid) > 0.0 ? lo : hi) = mid;
-    }
-    const scalar tm = 0.5*(lo + hi);
-    const scalar td = (vd - tm)/2.0;
-    return { tm, td, S + tm + td };
+    return vapourAssociation::trueVapour(vap[dimIdx], S, Kd, Patm);
 }
 
 //  A VAPOUR IS NOT A GAS, AND WHICH ONE A SUBSTANCE IS DEPENDS ON T.
@@ -1285,9 +1268,8 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             // partial pressure.  Announced below; van't Hoff in T.
             if (g->hasDimer)
             {
-                const scalar Kd = std::pow(10.0, g->dimLogK25
-                    - (g->dimDH / (std::log(10.0) * 8.31446))
-                      * (1.0/T_K - 1.0/298.15));
+                const scalar Kd = vapourAssociation::Kdim(g->dimLogK25,
+                                                          g->dimDH, T_K);
                 const scalar pD = Kd * pM * pM;
                 pSum += pD;
                 //  Apparent (monomer) basis: a dimer is two monomers here as
@@ -1444,9 +1426,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                 " -- this slice re-weights the vapour balance for ONE"
                 " (cross-association is a later, deliberate slice).");
         dimIdx = appIdx;
-        Kd = std::pow(10.0, g->dimLogK25
-                 - (g->dimDH / (std::log(10.0) * 8.31446))
-                   * (1.0/T_K - 1.0/298.15));
+        Kd = vapourAssociation::Kdim(g->dimLogK25, g->dimDH, T_K);
     }
     const scalar dimPatm = P_Pa / kAtm;
     auto trueVapourOf = [&](const sVector& vap) -> TrueVap

@@ -70,6 +70,7 @@ Description
 #include "core/Dictionary.H"
 #include "core/Types.H"
 #include "solver/Convergence.H"
+#include "thermo/VapourAssociation.H"
 
 #include <map>
 #include <memory>
@@ -213,6 +214,42 @@ public:
     //  the model has none.
     sVector stageK(scalar T_K, scalar P_Pa, const sVector& zStage,
                    const sVector& x, const sVector& y) const;   // .cpp
+
+    //  ---- VAPOUR ASSOCIATION: a property of the VAPOUR MODEL -------------
+    //  (DEV.md 4c C201 item 1, piece 2; docs/design/one-record-two-vapours-
+    //  acetic-acid.md.)  When a component carries a curated vapour
+    //  dimerisation (chemistry/ `vapourDimerisation`, read by the ONE parser
+    //  thermo/VapourAssociation.H) and the package's vapour is an IDEAL GAS,
+    //  that vapour is the equilibrium monomer + dimer mixture: the K-values
+    //  divide by the association's fugacity coefficients
+    //  (`vapourAssociationLnPhi`), the liquid side of the associating
+    //  component is referenced to the MONOMER's saturation pressure
+    //  (`PsatLiquidReference`, solved from the same K and the record's
+    //  apparent Psat, so the pure limit p_m + p_d = Psat is exact), and
+    //  H_real / S_real carry the association heat and entropy.  Every unit
+    //  that asks this package for a K or a vapour enthalpy therefore sees one
+    //  vapour.  An equation-of-state vapour keeps its EoS and ANNOUNCES once
+    //  per run that the association is not priced.  A package with no such
+    //  component is byte-identical.
+    bool   vapourAssociationPriced() const;                    // .cpp
+    std::size_t associatingComponent() const;                  // n() when none
+    scalar PsatLiquidReference(std::size_t i, scalar T_K) const;
+    sVector vapourAssociationLnPhi(scalar T_K, scalar P_Pa,
+                                   const sVector& y) const;    // zeros when not priced
+    vapourAssociation::AssociationResidual
+           vapourAssociationResidual(scalar T_K, scalar P_Pa,
+                                     const sVector& y) const;  // per mol of sum(y)
+    //  True when the vapour's fugacity coefficients depend on the VAPOUR's own
+    //  composition (a non-ideal EoS, or a priced association): a caller that
+    //  asks for K at y = x must then iterate the incipient vapour.
+    bool   vapourFugacityDependsOnComposition() const;
+    //  The association's own departure, for the amounts y (sum(y) need not
+    //  be one): H_real = H_ig + EoS residual + this, and the same for S.
+    //  Exactly 0 when nothing associates or the vapour is not an ideal gas.
+    //  Public so a reader that prints the residual split (propertyPoint)
+    //  prints the vapour the package prices, not a second sum of its own.
+    scalar associationResidualTotal(scalar T_K, scalar P_Pa, const sVector& y,
+                                    bool enthalpy) const;
 
     // ----- Phase access (multi-phase generalisation) ---------------------
     std::size_t       nPhases()                       const { return phases_.size(); }
@@ -765,6 +802,10 @@ private:
     //  student needs to know it happened, not to read it hundreds of times.
     mutable bool stageProjectionAnnounced_ = false;
     mutable bool stageIncipientAnnounced_  = false;
+    //  The associating component, resolved on first use (see above).
+    mutable bool        associationResolved_ = false;
+    mutable std::size_t associationIndex_    = 0;      // n() when none
+    mutable vapourAssociation::Dimerisation associationDim_;
 };
 
 } // namespace Choupo

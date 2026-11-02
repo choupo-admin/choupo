@@ -291,6 +291,29 @@ A sealed case must carry that chemistry record (`bin/choupo-import` adds it);
 without one, the plain Watson bridge applies.  Do not "fix" the liquid enthalpy
 of such an acid by editing `HvapTb` — the other readers need the measured value.
 
+**The vapour side is the same record's (DEV.md 4c C201 item 1, piece 2).**  On
+an IDEAL-GAS vapour, that component's vapour is the equilibrium monomer + dimer
+mixture -- the chemical theory of vapour imperfection -- in every unit, because
+it lives in the package (`ThermoPackage::Kvec`, `stageK`, `BubblePoint`, the
+flash, `H_real`/`S_real` and so `H_stream_formation`): the fugacity is the
+MONOMER partial pressure, the liquid is referenced to the monomer saturation
+pressure (solved from the same K and the apparent Psat, so pure acetic acid
+still boils at its Antoine root), and the vapour enthalpy carries the dimer
+heat (`h_dim = 2 h_mono + dH`).  Announced once per run (`[thermo] vapour
+association of aceticAcid priced ...`).  The reactive flash no longer adds the
+dimer heat to its duty: it is in the vapour enthalpy, once.  An EoS vapour
+(SRK, PR, phi-phi) keeps its EoS and ANNOUNCES that the association is not
+priced; the sensible-datum vapour (`Hvapour`, no pressure) keeps the
+calorimetric latent heat and says so.  Not reached, and named: the Gibbs
+reactors' own vapour chemical potentials (`gibbsReactor`, `equilibriumReactor`
+call `eos().phi` directly) and the named-phase `VaporPhase::fEffective`
+(three-phase answers) -- they see a monomer ideal gas.  What a case author
+should expect: the latent heat the package prices for pure acetic acid at its
+boiling point is about 33 kJ/mol against the measured 24.4 (the record's own
+legs -- a Watson-extrapolated 298 K bridge, a constant liquid Cp and Chao's
+dimerisation -- do not close at Tb; docs/design/one-record-two-vapours-acetic-
+acid.md section 7), so an acetic-acid condenser duty reads high by that much.
+
 ## Balance diagnostics (2607)
 
 Three levels, engine-owned: total MASS, per-ELEMENT atoms (the true

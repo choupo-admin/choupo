@@ -1,0 +1,10 @@
+/*---------------------------------------------------------------------------*\
+  controlDict -- aceticWater01_txy_association
+\*---------------------------------------------------------------------------*/
+application   choupoProps;
+description   "Acetic acid/water T-x-y at 1 atm on UNIFAC with the ASSOCIATED ideal-gas vapour (monomer + dimer), against Calvar, Dominguez & Tojo (2005)";
+verbosity     2;
+citations
+(
+    "N. Calvar, A. Dominguez, J. Tojo, Vapor-liquid equilibria for the quaternary reactive system ethyl acetate + ethanol + water + acetic acid and some of the constituent binary systems at 101.3 kPa, Fluid Phase Equilib. 235 (2005) 215-222, doi:10.1016/j.fluid.2005.07.010"
+);

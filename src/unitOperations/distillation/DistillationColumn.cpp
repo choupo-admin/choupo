@@ -460,10 +460,14 @@ sVector normalisedVapour(const sVector& K, const sVector& x)
 //  phi = 1, so K(x, y) = K(x, x) exactly, and every such column is
 //  byte-identical), and a package that resolves reactive equilibrium, whose
 //  `stageK` is the stage's own reactive flash and reads neither slot.
+//  An ASSOCIATED ideal-gas vapour (DEV.md 4c C201 item 1) is the second
+//  case: its fugacity coefficients are the dimer split's, which depends on
+//  y -- the package says which (`vapourFugacityDependsOnComposition`, one
+//  home), so the column cannot name the EoS case and forget this one.
 bool vapourFugacityDependsOnY(const ThermoPackage& thermo)
 {
     return !thermo.hasReactiveEquilibrium() && thermo.hasEos()
-        && !thermo.eos().isIdeal();
+        && thermo.vapourFugacityDependsOnComposition();
 }
 
 sVector stageVapourK(const ThermoPackage& thermo, scalar T, scalar P,

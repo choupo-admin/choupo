@@ -577,8 +577,13 @@ def ratchet_kW(pin: float) -> float:
 #  esterification stopped releasing 243 kW it never really released (the
 #  acetic-acid liquid is now bridged to the datum's monomer, not to the
 #  associated vapour).  The debt is the same step, still unpaid.
+#  RE-PINNED 325.5220 -> 329.1840 the same day, when piece 2 landed WITH the
+#  bridge (the associated ideal-gas vapour): the step SHRANK in absolute terms,
+#  -869.1 -> -760.1 kW (the reactor-outlet vapour leg now carries the dimer
+#  heat on both sides of the boundary), and the percentage rose only because
+#  the energy-exchanged denominator moved with it (225.4 kW of boundary duty).
 KNOWN_OPEN = {
-    "tutorials/plant/esterification2sector": 325.5220,
+    "tutorials/plant/esterification2sector": 329.1840,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,

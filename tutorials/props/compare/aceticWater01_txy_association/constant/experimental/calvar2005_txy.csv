@@ -1,0 +1,32 @@
+# Acetic acid (1) + water (2) isobaric VLE at 101.325 kPa.
+# Source: N. Calvar, A. Dominguez, J. Tojo, Fluid Phase Equilib. 235 (2005)
+#   215-222, doi:10.1016/j.fluid.2005.07.010 -- MEASURED, read from the NIST
+#   TRC ThermoML archive copy of the article (10.1016/j.fluid.2005.07.010.xml,
+#   PureOrMixtureData blocks 13 and 14).
+# reviewStatus transcribedNotCheckedAgainstArticle
+# columns: x_water (liquid), T_K (boiling temperature), y_water (vapour)
+x_water,T_K,y_water
+0.0901,386.54,0.2253
+0.1414,384.47,0.3177
+0.1934,382.96,0.3954
+0.2593,381.86,0.4654
+0.3241,380.39,0.5311
+0.3627,379.83,0.5622
+0.4454,378.65,0.6371
+0.4702,378.35,0.6593
+0.5071,377.84,0.6844
+0.5337,377.47,0.7047
+0.5698,377.18,0.7271
+0.6046,376.70,0.7536
+0.6546,376.28,0.7961
+0.6808,375.98,0.8200
+0.7057,375.68,0.8394
+0.7332,375.45,0.8566
+0.7789,375.00,0.8819
+0.8287,374.62,0.9064
+0.8555,374.45,0.9183
+0.8963,374.11,0.9419
+0.9140,373.99,0.9515
+0.9391,373.84,0.9651
+0.9653,373.66,0.9809
+0.9902,373.31,0.9951
