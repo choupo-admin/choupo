@@ -22348,6 +22348,126 @@ the cake $\Delta P$. \\
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{Powder compaction: Heckel, Kawakita and
+Ryshkewitch--Duckworth}\label{ch:powder-compaction}
+
+\begin{whatyoulllearn}
+A tablet press turns a powder bed into a compact by pressure alone, and
+the three questions its design asks of the powder are: how readily does it
+densify (Heckel), how much does the bed's volume fall and how fast
+(Kawakita), and how strong is the compact it leaves (Ryshkewitch--Duckworth).
+Each model is a straight line in its authors' own variables, and the
+\code{compactionFit} props operation fits those three lines to a declared
+dataset of ONE material by ordinary least squares --- the line a student
+would draw by hand --- and prints each equation, its citation and the
+validity statement beside the numbers.
+\end{whatyoulllearn}
+
+\subsection{Heckel: densification as a first-order process in pressure}
+
+Heckel \cite{Heckel1961a,Heckel1961b} treated the fall of the pore volume
+with pressure as first order in the pores that remain:
+\begin{equation}
+  \ln\frac{1}{1-D} = K P + A, \qquad P_y = \frac{1}{K},
+  \label{eq:heckel}
+\end{equation}
+where $D$ is the relative density of the compact (its density over the
+material's true density), $P$ the compaction pressure, $K$ the slope and $A$
+the intercept.  The reciprocal of the slope is the \emph{mean yield
+pressure} $P_y$.  The intercept gives $D_A = 1 - e^{-A}$, the densification
+the linear region extrapolates to at zero pressure; the excess of $D_A$ over
+the bed's initial relative density is the densification by particle
+rearrangement and fragmentation before plastic flow dominates.
+
+\paragraph{The linear region is a declaration.}  A real Heckel plot is
+curved at low pressure (rearrangement, fragmentation) and at high pressure
+($D \to 1$, elastic deformation of the compact), and $P_y$ is the slope of
+the region in between.  Which region that is depends on the material and on
+the source, so \code{compactionFit} fits ONLY the window the case declares
+(\code{heckel \{ Pmin; Pmax; \}}) and never chooses it: a window chosen from
+the residuals would be a fit judging itself.  Every row of the dataset is
+published with its residual and an in-window flag, so the curvature outside
+the window is visible.
+
+\paragraph{Reading $P_y$.}  A low mean yield pressure (well under about
+100\,MPa) is the signature of a material that deforms \emph{plastically}
+(microcrystalline cellulose is the classical example); a high one of a
+material that \emph{fragments} (lactose, dicalcium phosphate).  In-die
+values (density computed during compression) and out-of-die values
+(measured on the ejected tablet) differ: the in-die compact still carries
+the elastic strain the ejected one has recovered, so in-die $P_y$ is lower.
+A $P_y$ quoted without saying which is half a number.
+
+\subsection{Kawakita: the volume strain of the bed}
+
+Kawakita and L\"udde \cite{KawakitaLudde1970} wrote the engineering volume
+strain $C = (V_0 - V)/V_0$ of a powder column under pressure $P$ as
+\begin{equation}
+  \frac{P}{C} = \frac{P}{a} + \frac{1}{a\,b},
+  \label{eq:kawakita}
+\end{equation}
+where $a$ is the limiting strain at infinite pressure (close to the bed's
+initial porosity) and $1/b$ is a pressure related to the yield stress of the
+particles.  When the dataset gives relative densities instead of volumes,
+the mass is conserved, so $V/V_0 = D_0/D$ and $C = 1 - D_0/D$, with $D_0$
+the bed's initial (bulk over true) relative density, which the case
+declares with its source.
+
+\subsection{Ryshkewitch--Duckworth: strength against porosity}
+
+Ryshkewitch \cite{Ryshkewitch1953}, measuring sintered alumina and zirconia,
+and Duckworth \cite{Duckworth1953}, commenting on that paper, gave the
+strength of a porous body as an exponential in its porosity
+$\varepsilon = 1 - D$:
+\begin{equation}
+  \sigma_t = \sigma_0\, e^{-k_b \varepsilon},
+  \label{eq:ryshkewitch}
+\end{equation}
+fitted as $\ln\sigma_t = \ln\sigma_0 - k_b\varepsilon$.  $\sigma_0$ is the
+strength extrapolated to ZERO porosity --- a property of the line, not of
+any tablet anyone pressed --- and $k_b$ says how fast the bonding is lost as
+the pores open.  For a flat-faced cylindrical tablet broken diametrally the
+tensile strength follows from the crushing force $F$, the diameter $d$ and
+the thickness $t$ (Fell and Newton \cite{FellNewton1970}):
+\begin{equation}
+  \sigma_t = \frac{2F}{\pi\, d\, t}.
+  \label{eq:fellnewton}
+\end{equation}
+It is the elastic solution for a disc loaded across a diameter, so it
+holds for flat faces only; a convex tablet needs another expression, which
+\code{compactionFit} does not carry.
+
+\subsection{What the bench claims, and what it does not}
+
+\begin{itemize}
+  \item \textbf{One material.}  A blend is not an excipient.  No mixture
+  rule for $P_y$, $\sigma_0$ or $k_b$ is implemented, so a literature
+  dataset of the formulation's main excipient stands in for the blend only
+  as far as that excipient dominates it, and a case says so.
+  \item \textbf{No fit chooses its window.}  A Heckel or Kawakita block with
+  no declared window refuses; a window holding no point refuses; one holding
+  fewer than $(\text{parameters} + 2) = 4$ points refuses, because a line
+  through three points has one residual degree of freedom and an $R^2$ that
+  says nothing.
+  \item \textbf{The source's own values are a cross-check.}  Where the case
+  declares the parameters the source itself reports (\code{reported \{\}}),
+  both are printed side by side with their difference.  They are never used
+  to tune; a difference is a finding (a different window, in-die against
+  out-of-die, a different true density).
+  \item \textbf{No maturity is claimed.}  A single literature dataset has
+  no held-out evidence, so the operation publishes no curation verdict.
+\end{itemize}
+
+\begin{tutoriallink}
+\file{tutorials/props/powder/compaction01\_mcc} --- microcrystalline cellulose,
+the main excipient of the apalutamide tablet case. \\
+\file{tutorials/props/powder/compaction02\_dcpd\_brittle} --- dicalcium
+phosphate, the brittle counterpart.  It stands where lactose (the main
+excipient of the donepezil tablet case) should: no open lactose dataset
+with tabulated rows was found, and none is invented.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
 \section{Drying: spray dryer and solid dryer}\label{ch:drying-overview}
 
 %  This section and \S\ref{ch:drying} are a deliberate PAIR, not a double
@@ -25893,6 +26013,33 @@ Technol.}\ \textbf{4}, 401, 1985.  The measured fractional-efficiency
 curves of a Stairmand high-efficiency cyclone that
 \file{cyclone05\_dirgo\_leith\_validation} runs against --- the only
 MEASURED cyclone data in the tree.
+
+\bibitem{Heckel1961a} Heckel, R. W., ``Density-pressure relationships in
+powder compaction'', \emph{Trans.\ Metall.\ Soc.\ AIME}, 221, 671--675
+(1961).  Located, not read: Eq.~(\ref{eq:heckel}) is quoted as the open
+sources of the compaction witnesses state it.
+
+\bibitem{Heckel1961b} Heckel, R. W., ``An analysis of powder compaction
+phenomena'', \emph{Trans.\ Metall.\ Soc.\ AIME}, 221, 1001--1008 (1961).
+Located, not read.
+
+\bibitem{KawakitaLudde1970} Kawakita, K., \& L\"udde, K.-H., ``Some
+considerations on powder compression equations'', \emph{Powder Technol.},
+4, 61--68 (1970/71), DOI 10.1016/0032-5910(70)80001-7.  Located, not read:
+Eq.~(\ref{eq:kawakita}) is quoted as the open sources state it.
+
+\bibitem{Ryshkewitch1953} Ryshkewitch, E., ``Compression strength of porous
+sintered alumina and zirconia'', \emph{J.\ Am.\ Ceram.\ Soc.}, 36, 65--68
+(1953), DOI 10.1111/j.1151-2916.1953.tb12837.x.  Located, not read.
+
+\bibitem{Duckworth1953} Duckworth, W., ``Discussion of Ryshkewitch paper'',
+\emph{J.\ Am.\ Ceram.\ Soc.}, 36, 68 (1953).  Located, not read.
+
+\bibitem{FellNewton1970} Fell, J. T., \& Newton, J. M., ``Determination of
+tablet strength by the diametral-compression test'', \emph{J.\ Pharm.\
+Sci.}, 59, 688--691 (1970), DOI 10.1002/jps.2600590523.  Located, not read:
+Eq.~(\ref{eq:fellnewton}) is the elastic disc solution as the open sources
+quote it.
 
 \bibitem{Gnielinski1976} Gnielinski, V., 1976.  The lower-scatter
 turbulent in-tube correlation on Petukhov's smooth-tube friction factor;

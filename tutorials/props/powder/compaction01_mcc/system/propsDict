@@ -1,0 +1,170 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  compaction01 -- MICROCRYSTALLINE CELLULOSE ON THE COMPACTION BENCH.
+
+  MCC is the main excipient of the apalutamide tablet case
+  (tutorials/batch/plant/apalutamide01_tablets: MCC 295.5 + silicified MCC
+  116.9 mg of a 700 mg core).  This case fits the three compaction models
+  to OPEN measurements of MCC, so the numbers a tablet-press design needs --
+  how hard the press must push, how much the bed shrinks, how strong the
+  tablet comes out -- have a source a reader can open.
+
+  WHY A NEW FOLDER, `tutorials/props/powder/`.  The tutorial folders of
+  `props/` are named by the subject a student studies, and powder
+  compaction is none of the existing ones (it is not thermodynamics,
+  transport or a membrane): it is solids processing, the first props bench
+  of its kind.
+
+  THREE OPERATIONS, TWO SOURCES (both CC BY 4.0; datasets in
+  constant/experimental/, each with its own provenance header):
+
+    mcc_inDie            Avicel PH200, van der Haven et al., Sci. Data 13
+                         (2026) 1468 -- 45 tablets compressed once on a
+                         compaction simulator, IN-DIE density at maximum
+                         force; 22 tablets crushed diametrally.  Heckel on
+                         the declared low-pressure window, Kawakita on all
+                         pressures, Ryshkewitch-Duckworth on the crushing
+                         data, compared with the sigma_0 and k_b the dataset
+                         itself reports.
+    mcc_inDie_highWindow the SAME 45 tablets, Heckel on a high-pressure
+                         window: the mean yield pressure roughly doubles.
+                         The window IS part of the answer, which is why the
+                         case declares it and the op never chooses it.
+    mcc_lubricated       CEOLUS UF-711 + 2 % sodium stearyl fumarate + 0.3 %
+                         silica (Kukuls & Mohylyuk 2025 dataset; protocol of
+                         Mohylyuk et al., Pharmaceutics 16 (2024) 362), the
+                         mean of ten tablets at each of six pressures, OUT OF
+                         DIE, compared with the Py = 106 MPa that paper
+                         reports.
+
+  WHAT TO READ IN THE OUTPUT.  Py of MCC is low (tens to ~100 MPa in die on
+  the low-pressure line): it deforms PLASTICALLY, which is why it binds so
+  well and why it is the filler of choice for direct compression.  Compare
+  it with compaction02 (dicalcium phosphate, brittle, several hundred MPa).
+  The out-of-die Py is HIGHER than the in-die one on similar pressures
+  because the ejected tablet has recovered the elastic part of its strain.
+
+  THE PAPER'S Py IS NOT REPRODUCED, AND THE REASON IS THE LESSON.  Mohylyuk
+  et al. 2024 state their linear region as 100-150 MPa.  The deposited data
+  carries ONE of its six pressures in that window (137 MPa), and a line
+  through fewer than 4 points refuses here, so this case declares 90-340
+  MPa (4 points) and gets a different, larger, Py.  (The two-point slope
+  between the 91 and 137 MPa rows would give about 100 MPa -- close to the
+  paper's -- but a two-point line has no residual to judge it by.)  Both
+  numbers are printed; nothing is tuned.
+
+  A FINDING, PRINTED AND NOT TUNED: on both materials of the van der Haven
+  dataset (here and in the other powder case) the fitted k_b agrees with
+  the dataset's own constant within 10 %, but the fitted sigma_0 comes out
+  about 1.5 times the dataset's.  A fit in sigma_t instead of ln(sigma_t)
+  does not close it (measured: 30.9 and 28.4 MPa).  The files read do not
+  say how the dataset's "Eq. 4" was fitted or on which porosity; its report
+  PDF was not read.  sigma_0 is an extrapolation to zero porosity, so a
+  small difference in slope or in the porosity basis moves it a lot.
+
+  HOW TO USE THIS FOR YOUR FORMULATION.
+    1. Find an OPEN dataset (CC BY: MDPI Pharmaceutics, Int. J. Pharm. X,
+       Sci. Data, Zenodo, institutional dataverses) for the excipient that
+       dominates your blend -- the same grade if you can.  Check its licence
+       on the article page; NonCommercial or "available on request" is not
+       usable.
+    2. Write its rows in the experiments grammar (copy one of the files in
+       constant/experimental/): P in MPa and ONE of D, porosity or the
+       compact's density (then declare `trueDensity`, with its source).
+       Say whether the density is in-die or out-of-die.
+    3. Plot the Heckel line first (run with a wide window and look at the
+       `heckel` table's residuals), then DECLARE the linear region you
+       defend, with a `reason`.  Report Py WITH its window and its in-die
+       or out-of-die basis; a Py without them cannot be compared.
+    4. If the source reports its own values, put them in `reported {}`.
+       A difference is a finding (window, density basis, true density),
+       never something to tune away.
+  LIMITS, said plainly: these are data for MCC, not for your blend.  NO
+  mixture rule (for Py, sigma_0 or k_b) is implemented; the source's own
+  ternary data shows mixtures do not follow a simple average.  Lubricant
+  (magnesium stearate) weakens MCC tablets and the lubricated dataset here
+  is the closer stand-in for a real formulation.  For another MCC grade the
+  literature gives in-die Py = 52.2 +/- 4.2 MPa for Vivapur 102 at 11.28 mm
+  (Lura et al., Int. J. Pharm. X 2 (2020) 100061, Table 2, CC BY) -- quoted
+  for comparison, not fitted here.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        mcc_inDie;
+        type        compactionFit;
+        material    "MCC Avicel PH200 (in-die, van der Haven et al. 2026)";
+        dataset     "constant/experimental/vanderHaven2026_mcc_inDie.dat";
+        //  The dataset's own EFFECTIVE true density (Kuentz-Leuenberger fit,
+        //  Processed data/Effective true density/Effective true densities.tab).
+        trueDensity 1.6374 g/cm3;
+
+        heckel
+        {
+            Pmin    30 MPa;
+            Pmax    170 MPa;
+            reason  "the low-pressure line where plastic flow dominates: below ~30 MPa the bed is still rearranging, above ~170 MPa D > 0.88 and the in-die curve bends towards D = 1";
+        }
+        kawakita
+        {
+            Pmin    15 MPa;
+            Pmax    700 MPa;
+            reason  "P/C is straight over the whole range the dataset covers";
+        }
+        ryshkewitch
+        {
+            dataset "constant/experimental/vanderHaven2026_mcc_diametral.dat";
+        }
+        reported
+        {
+            sigma0  21.7 MPa;
+            kb      6.6;
+            source  "van der Haven et al. 2026, Zenodo archive, Processed data/Single/Ryshkewitch-Duckworth constants.csv, 100 wt% MCC, diametrical";
+        }
+    }
+    {
+        name        mcc_inDie_highWindow;
+        type        compactionFit;
+        material    "MCC Avicel PH200 (in-die, van der Haven et al. 2026), high-pressure window";
+        dataset     "constant/experimental/vanderHaven2026_mcc_inDie.dat";
+        trueDensity 1.6374 g/cm3;
+        heckel
+        {
+            Pmin    250 MPa;
+            Pmax    450 MPa;
+            reason  "deliberately the HIGH-pressure end, to show how much Py depends on the window";
+        }
+    }
+    {
+        name        mcc_lubricated;
+        type        compactionFit;
+        material    "MCC CEOLUS UF-711 + 2 % PRUV + 0.3 % Syloid (out-of-die, Kukuls & Mohylyuk 2025)";
+        dataset     "constant/experimental/kukuls2025_F_100-0.dat";
+        heckel
+        {
+            Pmin    90 MPa;
+            Pmax    340 MPa;
+            reason  "the four lowest of six pressures: the solid fraction stops rising above ~340 MPa (89.3, 90.0, 89.7 %); the paper's own 100-150 MPa window holds one deposited row";
+        }
+        kawakita
+        {
+            Pmin    90 MPa;
+            Pmax    480 MPa;
+            reason  "all six main compressions (in-die strain)";
+        }
+        ryshkewitch { }
+        reported
+        {
+            Py      106 MPa;
+            source  "Mohylyuk et al., Pharmaceutics 16 (2024) 362, section 3 (out-of-die Heckel, F 100-0; linear region 100-150 MPa)";
+        }
+    }
+);

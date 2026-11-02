@@ -3763,6 +3763,101 @@ WHAT THIS CASE DOES NOT SAY. It does not say SRK is wrong, and it does not say a
 \goldmore{178}
 \end{tutgolden}
 
+\subsection{powder}
+\grouptheory{powder}
+\clearpage
+\tutentry{compaction01\_mcc}{tutorials/props/powder/compaction01\_mcc}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{mcc\_inDie}\\[-1pt]{\tiny compactionFit}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{mcc\_inDie\_highWindow}\\[-1pt]{\tiny compactionFit}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{mcc\_lubricated}\\[-1pt]{\tiny compactionFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Microcrystalline cellulose on the compaction bench: Heckel, Kawakita and Ryshkewitch-Duckworth fitted to two open datasets, in die and out of die, with the declared Heckel window shown to move Py}
+\begin{tutnarrative}
+compaction01 -- MICROCRYSTALLINE CELLULOSE ON THE COMPACTION BENCH.
+
+MCC is the main excipient of the apalutamide tablet case (tutorials/batch/plant/apalutamide01\_tablets: MCC 295.5 + silicified MCC 116.9 mg of a 700 mg core). This case fits the three compaction models to OPEN measurements of MCC, so the numbers a tablet-press design needs -- how hard the press must push, how much the bed shrinks, how strong the tablet comes out -- have a source a reader can open.
+
+WHY A NEW FOLDER, `tutorials/props/powder/`. The tutorial folders of `props/` are named by the subject a student studies, and powder compaction is none of the existing ones (it is not thermodynamics, transport or a membrane): it is solids processing, the first props bench of its kind.
+
+THREE OPERATIONS, TWO SOURCES (both CC BY 4.0; datasets in constant/experimental/, each with its own provenance header):
+
+mcc\_inDie Avicel PH200, van der Haven et al., Sci. Data 13 (2026) 1468 -- 45 tablets compressed once on a compaction simulator, IN-DIE density at maximum force; 22 tablets crushed diametrally. Heckel on the declared low-pressure window, Kawakita on all pressures, Ryshkewitch-Duckworth on the crushing data, compared with the sigma\_0 and k\_b the dataset itself reports. mcc\_inDie\_highWindow the SAME 45 tablets, Heckel on a high-pressure window: the mean yield pressure roughly doubles. The window IS part of the answer, which is why the case declares it and the op never chooses it. mcc\_lubricated CEOLUS UF-711 + 2 \% sodium stearyl fumarate + 0.3 \% silica (Kukuls \& Mohylyuk 2025 dataset; protocol of Mohylyuk et al., Pharmaceutics 16 (2024) 362), the mean of ten tablets at each of six pressures, OUT OF DIE, compared with the Py = 106 MPa that paper reports.
+
+WHAT TO READ IN THE OUTPUT. Py of MCC is low (tens to \textasciitilde{}100 MPa in die on the low-pressure line): it deforms PLASTICALLY, which is why it binds so well and why it is the filler of choice for direct compression. Compare it with compaction02 (dicalcium phosphate, brittle, several hundred MPa). The out-of-die Py is HIGHER than the in-die one on similar pressures because the ejected tablet has recovered the elastic part of its strain.
+
+THE PAPER'S Py IS NOT REPRODUCED, AND THE REASON IS THE LESSON. Mohylyuk et al. 2024 state their linear region as 100-150 MPa. The deposited data carries ONE of its six pressures in that window (137 MPa), and a line through fewer than 4 points refuses here, so this case declares 90-340 MPa (4 points) and gets a different, larger, Py. (The two-point slope between the 91 and 137 MPa rows would give about 100 MPa -- close to the paper's -- but a two-point line has no residual to judge it by.) Both numbers are printed; nothing is tuned.
+
+A FINDING, PRINTED AND NOT TUNED: on both materials of the van der Haven dataset (here and in the other powder case) the fitted k\_b agrees with the dataset's own constant within 10 \%, but the fitted sigma\_0 comes out about 1.5 times the dataset's. A fit in sigma\_t instead of ln(sigma\_t) does not close it (measured: 30.9 and 28.4 MPa). The files read do not say how the dataset's "Eq. 4" was fitted or on which porosity; its report PDF was not read. sigma\_0 is an extrapolation to zero porosity, so a small difference in slope or in the porosity basis moves it a lot.
+
+HOW TO USE THIS FOR YOUR FORMULATION. 1. Find an OPEN dataset (CC BY: MDPI Pharmaceutics, Int. J. Pharm. X, Sci. Data, Zenodo, institutional dataverses) for the excipient that dominates your blend -- the same grade if you can. Check its licence on the article page; NonCommercial or "available on request" is not usable. 2. Write its rows in the experiments grammar (copy one of the files in constant/experimental/): P in MPa and ONE of D, porosity or the compact's density (then declare `trueDensity`, with its source). Say whether the density is in-die or out-of-die. 3. Plot the Heckel line first (run with a wide window and look at the `heckel` table's residuals), then DECLARE the linear region you defend, with a `reason`. Report Py WITH its window and its in-die or out-of-die basis; a Py without them cannot be compared. 4. If the source reports its own values, put them in `reported \{\}`. A difference is a finding (window, density basis, true density), never something to tune away. LIMITS, said plainly: these are data for MCC, not for your blend. NO mixture rule (for Py, sigma\_0 or k\_b) is implemented; the source's own ternary data shows mixtures do not follow a simple average. Lubricant (magnesium stearate) weakens MCC tablets and the lubricated dataset here is the closer stand-in for a real formulation. For another MCC grade the literature gives in-die Py = 52.2 +/- 4.2 MPa for Vivapur 102 at 11.28 mm (Lura et al., Int. J. Pharm. X 2 (2020) 100061, Table 2, CC BY) -- quoted for comparison, not fitted here.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{mcc\_inDie}{dev\_ryshkewitch\_kb\_pct}{8.68066281422}
+\goldrow{diag}{mcc\_inDie}{dev\_ryshkewitch\_sigma0\_MPa\_pct}{57.4687063406}
+\goldrow{diag}{mcc\_inDie}{heckel\_A}{0.657612232409}
+\goldrow{diag}{mcc\_inDie}{heckel\_A\_ci95}{0.063671311004}
+\goldrow{diag}{mcc\_inDie}{heckel\_DA}{0.481913070072}
+\goldrow{diag}{mcc\_inDie}{heckel\_K\_ci95\_perMPa}{0.000609029851532}
+\goldrow{diag}{mcc\_inDie}{heckel\_K\_perMPa}{0.00906082550054}
+\goldrow{diag}{mcc\_inDie}{heckel\_Py\_MPa}{110.365220028}
+\goldrow{diag}{mcc\_inDie}{heckel\_Py\_ci95\_MPa}{7.41827701722}
+\goldrow{diag}{mcc\_inDie}{heckel\_R2}{0.990980625546}
+\goldrow{diag}{mcc\_inDie}{kawakita\_R2}{0.999983473773}
+\goldrow{diag}{mcc\_inDie}{kawakita\_a}{0.780867436427}
+\goldrow{diag}{mcc\_inDie}{kawakita\_b\_perMPa}{0.111550591336}
+\goldrow{diag}{mcc\_inDie}{kawakita\_invb\_MPa}{8.96454234825}
+\goldmore{39}
+\end{tutgolden}
+
+\clearpage
+\tutentry{compaction02\_dcpd\_brittle}{tutorials/props/powder/compaction02\_dcpd\_brittle}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{dcpd\_inDie}\\[-1pt]{\tiny compactionFit}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{dcpa\_lubricated}\\[-1pt]{\tiny compactionFit}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A brittle excipient on the compaction bench: dicalcium phosphate fitted to two open datasets (no open lactose dataset was found, and none is invented), against MCC's plastic behaviour in compaction01}
+\begin{tutnarrative}
+compaction02 -- A BRITTLE EXCIPIENT ON THE COMPACTION BENCH: DICALCIUM PHOSPHATE, AND WHY IT IS NOT LACTOSE.
+
+The donepezil tablet case (tutorials/batch/plant/donepezil01\_tablets) is 62 \% lactose monohydrate, a FRAGMENTING excipient. This case was meant to fit the compaction models to open lactose data, and it does not, because NO open dataset with tabulated lactose pressure-density or strength-porosity rows was found on 2026-11-02 (CC BY sources searched: MDPI Pharmaceutics, Int. J. Pharm. X, PMC open access, Zenodo, Data in Brief; the lactose datasets located were NonCommercial, figure-only, or "available on request"). No lactose numbers were invented in its place.
+
+What it fits instead is the open brittle reference that WAS found, from the same two sources as compaction01, so the plastic-against-brittle contrast can be read off two cases built the same way:
+
+dcpd\_inDie DCPD Emcompress premium (dihydrate), van der Haven et al., Sci. Data 13 (2026) 1468, CC BY 4.0: 42 tablets, in-die density at maximum force; 19 crushed diametrally. Compared with the sigma\_0 and k\_b the dataset itself reports. dcpa\_lubricated CaHPO4 anhydrous DI-CAFOS A60 + 2 \% sodium stearyl fumarate + 0.3 \% silica (Kukuls \& Mohylyuk 2025, CC BY 4.0; protocol of Mohylyuk et al., Pharmaceutics 16 (2024) 362), out of die, compared with that paper's Py = 434 MPa.
+
+WHAT TO READ. Py here is several hundred MPa -- several times MCC's (compaction01) -- the signature of a material that densifies by FRACTURE, not by flow. Its tablets are weak at a given porosity (low tensile strength) and k\_b is large: the strength collapses fast as the pores open. Lactose sits between the two: for Tablettose 80 the literature gives an in-die Py of 120.8 +/- 1.5 MPa at 11.28 mm, against 52.2 +/- 4.2 MPa for MCC Vivapur 102 in the same study (Lura et al., Int. J. Pharm. X 2 (2020) 100061, Table 2, CC BY) -- quoted for the donepezil group to compare with, NOT fitted here, because the study gives the curves only as figures.
+
+A FINDING, PRINTED AND NOT TUNED: on both materials of the van der Haven dataset (here and in the other powder case) the fitted k\_b agrees with the dataset's own constant within 10 \%, but the fitted sigma\_0 comes out about 1.5 times the dataset's. A fit in sigma\_t instead of ln(sigma\_t) does not close it (measured: 30.9 and 28.4 MPa). The files read do not say how the dataset's "Eq. 4" was fitted or on which porosity; its report PDF was not read. sigma\_0 is an extrapolation to zero porosity, so a small difference in slope or in the porosity basis moves it a lot.
+
+FOR THE DONEPEZIL GROUP. To fit your own lactose: find an open dataset (or digitise a CC BY figure, stating the reading error in the dataset header), write it in the grammar of the files in constant/experimental/, declare its Heckel window with a reason, and put the paper's own Py in `reported \{\}`. Say which lactose (monohydrate milled, sieved, agglomerated, spray-dried, anhydrous): Py differs between grades by a factor of two. A wet-granulated blend (your case's route) compacts differently again from the dry excipient, and NO mixture rule is implemented -- the excipient stands in for the blend, and you say so.
+
+THE PAPER'S Py AND THIS CASE'S. Mohylyuk et al. 2024 analyse the F 0-100 formulation between 250 and 450 MPa. The deposited averages have three rows there (243 MPa falls just below it); a 3-point line refuses here, so the case declares 140-440 MPa (four rows) and both values are printed.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{dcpd\_inDie}{dev\_ryshkewitch\_kb\_pct}{2.33048956558}
+\goldrow{diag}{dcpd\_inDie}{dev\_ryshkewitch\_sigma0\_MPa\_pct}{49.4763706254}
+\goldrow{diag}{dcpd\_inDie}{heckel\_A}{1.33186263307}
+\goldrow{diag}{dcpd\_inDie}{heckel\_A\_ci95}{0.0229519605641}
+\goldrow{diag}{dcpd\_inDie}{heckel\_DA}{0.736014904288}
+\goldrow{diag}{dcpd\_inDie}{heckel\_K\_ci95\_perMPa}{7.74836836182e-05}
+\goldrow{diag}{dcpd\_inDie}{heckel\_K\_perMPa}{0.00196611284247}
+\goldrow{diag}{dcpd\_inDie}{heckel\_Py\_MPa}{508.617805854}
+\goldrow{diag}{dcpd\_inDie}{heckel\_Py\_ci95\_MPa}{20.0444146948}
+\goldrow{diag}{dcpd\_inDie}{heckel\_R2}{0.99330881447}
+\goldrow{diag}{dcpd\_inDie}{kawakita\_R2}{0.999736957603}
+\goldrow{diag}{dcpd\_inDie}{kawakita\_a}{0.63714261759}
+\goldrow{diag}{dcpd\_inDie}{kawakita\_b\_perMPa}{0.0655574652353}
+\goldrow{diag}{dcpd\_inDie}{kawakita\_invb\_MPa}{15.2537929344}
+\goldmore{30}
+\end{tutgolden}
+
 \subsection{reactor}
 \grouptheory{reactor}
 \clearpage

@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/compactionFit.schema.json",
+  "title": "compactionFit operation",
+  "x-choupo": {"discipline": "Solids", "activity": "fit", "models": [{"fixed": "Heckel", "role": "densification"}, {"fixed": "Kawakita", "role": "volume reduction"}, {"fixed": "Ryshkewitch-Duckworth", "role": "tensile strength against porosity"}], "data": [{"key": "dataset", "kind": "experiment", "label": "compaction dataset"}, {"key": "heckel.dataset", "kind": "experiment", "label": "Heckel dataset"}, {"key": "kawakita.dataset", "kind": "experiment", "label": "Kawakita dataset"}, {"key": "ryshkewitch.dataset", "kind": "experiment", "label": "tensile-strength dataset"}, {"key": "reported", "kind": "inline", "flow": "reference", "label": "the source's own fitted values"}]},
+  "description": "The COMPACTION BENCH (DEV.md 4c C195): the Heckel, Kawakita and Ryshkewitch-Duckworth models of a pharmaceutical powder, each fitted by least squares on the straight line its authors wrote, to a declared dataset of ONE material. The Heckel and Kawakita pressure windows are DECLARED by the case, never chosen by the op; a window with no point, or with fewer than 4, refuses. The equations, citations and validity statements are printed beside the numbers, and values the source itself reports are printed beside the fitted ones as a cross-check. No mixture rule is implemented: an excipient stands in for the blend.",
+  "type": "object",
+  "properties": {
+    "material": {
+      "type": "string",
+      "title": "Material",
+      "description": "What the dataset is, as printed in the source (e.g. \"Avicel PH-102\")."
+    },
+    "dataset": {
+      "type": "string",
+      "title": "Compaction dataset",
+      "description": "Path to a self-describing dataset dict, relative to the case: columns P [MPa]; exactly one of D [-], porosity [-] or density [g/cm3]; optionally sigma_t [MPa] or F [N] with d [mm] and t [mm]; optionally V [mL] or C [-]. A model block may name its own dataset."
+    },
+    "trueDensity": {
+      "type": ["number", "string"],
+      "title": "True density",
+      "description": "The material's true (pycnometric) density, e.g. `1.59 g/cm3`; required only when the dataset gives the compact's `density`."
+    },
+    "heckel": {
+      "type": "object",
+      "title": "Heckel fit",
+      "additionalProperties": false,
+      "description": "ln(1/(1-D)) = K P + A on the DECLARED linear region; mean yield pressure Py = 1/K.",
+      "properties": {
+        "Pmin": {"type": ["number", "string"], "description": "lower end of the linear region, e.g. `50 MPa`"},
+        "Pmax": {"type": ["number", "string"], "description": "upper end of the linear region"},
+        "reason": {"type": "string", "description": "why this window (the source's own choice, the curvature seen, ...)"},
+        "dataset": {"type": "string", "description": "a dataset for this model only"}
+      },
+      "required": ["Pmin", "Pmax"]
+    },
+    "kawakita": {
+      "type": "object",
+      "title": "Kawakita fit",
+      "additionalProperties": false,
+      "description": "P/C = P/a + 1/(a b), C = (V0 - V)/V0, on the declared pressure window.",
+      "properties": {
+        "Pmin": {"type": ["number", "string"]},
+        "Pmax": {"type": ["number", "string"]},
+        "reason": {"type": "string"},
+        "dataset": {"type": "string"},
+        "initialVolume": {"type": ["number", "string"], "description": "V0 [mL], when the dataset gives V"},
+        "initialRelativeDensity": {"type": "number", "description": "D0 (bulk / true density), when C is read from the relative density: C = 1 - D0/D"}
+      },
+      "required": ["Pmin", "Pmax"]
+    },
+    "ryshkewitch": {
+      "type": "object",
+      "title": "Ryshkewitch-Duckworth fit",
+      "additionalProperties": false,
+      "description": "sigma_t = sigma_0 exp(-k_b eps), fitted on ln(sigma_t); sigma_t tabulated or computed as 2F/(pi d t) (Fell & Newton 1970).",
+      "properties": {
+        "porosityMin": {"type": "number"},
+        "porosityMax": {"type": "number"},
+        "reason": {"type": "string"},
+        "dataset": {"type": "string"}
+      }
+    },
+    "reported": {
+      "type": "object",
+      "title": "Values the source reports",
+      "additionalProperties": false,
+      "description": "The source's own fitted values (Py, A, a, invb, sigma0, kb), printed beside the fitted ones; never used to tune.",
+      "properties": {
+        "Py": {"type": ["number", "string"]},
+        "A": {"type": "number"},
+        "a": {"type": "number"},
+        "invb": {"type": ["number", "string"]},
+        "sigma0": {"type": ["number", "string"]},
+        "kb": {"type": "number"},
+        "source": {"type": "string"}
+      }
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` -- the published tables, one block per model.",
+      "properties": {"file": {"type": "string", "title": "CSV file name"}},
+      "required": ["file"]
+    }
+  },
+  "additionalProperties": false
+}

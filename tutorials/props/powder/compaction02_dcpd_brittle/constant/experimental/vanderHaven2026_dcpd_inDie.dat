@@ -1,0 +1,91 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  IN-DIE COMPACTION OF DCPD (Emcompress premium)
+  -- van der Haven et al., Sci. Data 13 (2026) 1468, CC BY 4.0.
+
+  Each row is ONE tablet compressed once on a Styl'One compaction simulator
+  (Euro B 11.28 mm flat-faced punches), read at its MAXIMUM force:
+    P        the compaction pressure, the mean of the upper and lower punch
+             forces over the punch face (the dataset's own definition);
+    density  the in-die density at that force, corrected for punch
+             deformation -- both transcribed from the archive's
+             `Compaction (true density)/Preprocessed data/Density vs
+             Pressure - DCPD.csv` (columns 2 and 1), all 42 rows;
+    C        the Kawakita volume strain (H0 - h)/H0, computed HERE from the
+             same tablet's raw file (`Raw data/DCPD/*.xlsx`, sheet Datas:
+             `Die filling height` H0 and `Corrected compression thickness at
+             max force` h); the raw file's pressure matches the
+             preprocessed one to 1e-3 MPa, which is how the rows were paired.
+  The true density the case declares (2.438 g/cm3) is the dataset's own
+  EFFECTIVE true density (Kuentz-Leuenberger fit), `Processed
+  data/Effective true density/Effective true densities.tab` -- not a helium
+  pycnometry value; a pycnometric one is lower for MCC, which moves D.
+  Rows sorted by pressure; values as printed to six figures, nothing adjusted.
+\*---------------------------------------------------------------------------*/
+provenance
+{
+    source         "van der Haven, D. L. H., Mikoroni, M., Jensen, R., Ortoft, F. H., Andreasen, J. L., Andersen, M. E., Dax, D., Zafar, U., Megarry, A., Naelapaa, K., Fragkopoulos, I. S., Elliott, J. A., Characterisation data of common pharmaceutical excipient powders and tablets for formulation development, Sci. Data 13 (2026) 1468, doi:10.1038/s41597-026-07707-0; data: Zenodo doi:10.5281/zenodo.16732963";
+    licence        "CC BY 4.0 (article and Zenodo record)";
+    transcribed    "from Preprocessed data/Density vs Pressure - DCPD.csv and Raw data/DCPD/*.xlsx of the Zenodo archive, read 2026-11-02";
+    reviewStatus   interim;
+}
+
+columns
+(
+    { name P; unit MPa; }      // compaction pressure at maximum force
+    { name density; unit g/cm3; }      // in-die density at maximum force
+    { name C; unit -; }      // Kawakita strain (H0 - h)/H0, from the raw file
+);
+
+data
+(
+       29.6955  1.635349  0.488910    // DCPD_truedensity_03kN_No1.xlsx
+       29.8411  1.635217  0.488955    // DCPD_truedensity_03kN_No3.xlsx
+       30.0857  1.636964  0.490278    // DCPD_truedensity_03kN_No2.xlsx
+       50.2928  1.744220  0.521706    // DCPD_truedensity_05kN_No2.xlsx
+       50.5109  1.744452  0.521183    // DCPD_truedensity_05kN_No1.xlsx
+       51.1514  1.747862  0.523040    // DCPD_truedensity_05kN_No3.xlsx
+       79.8642  1.836005  0.544627    // DCPD_truedensity_08kN_No3.xlsx
+       80.3810  1.837020  0.546077    // DCPD_truedensity_08kN_No2.xlsx
+       81.5008  1.840613  0.545759    // DCPD_truedensity_08kN_No1.xlsx
+      118.2570  1.911816  0.563415    // DCPD_truedensity_12kN_No1.xlsx
+      120.1027  1.914260  0.564496    // DCPD_truedensity_12kN_No2.xlsx
+      120.5545  1.915295  0.562745    // DCPD_truedensity_12kN_No3.xlsx
+      164.7312  1.974398  0.575151    // DCPD_truedensity_17kN_No2.xlsx
+      165.1575  1.974638  0.576598    // DCPD_truedensity_17kN_No1.xlsx
+      165.2000  1.975092  0.576868    // DCPD_truedensity_17kN_No3.xlsx
+      218.8115  2.027648  0.588335    // DCPD_truedensity_23kN_No3.xlsx
+      221.3482  2.029639  0.587598    // DCPD_truedensity_23kN_No1.xlsx
+      221.9581  2.030403  0.587414    // DCPD_truedensity_23kN_No2.xlsx
+      271.3904  2.068149  0.595206    // DCPD_truedensity_29kN_No2.xlsx
+      272.4456  2.067808  0.596454    // DCPD_truedensity_29kN_No1.xlsx
+      272.5061  2.067546  0.594840    // DCPD_truedensity_29kN_No3.xlsx
+      324.1973  2.101080  0.602012    // DCPD_truedensity_35kN_No2.xlsx
+      324.8048  2.102120  0.600170    // DCPD_truedensity_35kN_No1.xlsx
+      325.2415  2.102789  0.601810    // DCPD_truedensity_35kN_No3.xlsx
+      383.4051  2.133211  0.607300    // DCPD_truedensity_42kN_No2.xlsx
+      384.8171  2.134311  0.608433    // DCPD_truedensity_42kN_No1.xlsx
+      386.2650  2.134781  0.606369    // DCPD_truedensity_42kN_No3.xlsx
+      442.9952  2.164176  0.613755    // DCPD_truedensity_49kN_No3.xlsx
+      443.0347  2.163149  0.612034    // DCPD_truedensity_49kN_No1.xlsx
+      443.2979  2.164449  0.613669    // DCPD_truedensity_49kN_No2.xlsx
+      501.7116  2.182304  0.616289    // DCPD_truedensity_56kN_No1.xlsx
+      501.8402  2.186106  0.616818    // DCPD_truedensity_56kN_No3.xlsx
+      502.2510  2.186043  0.616581    // DCPD_truedensity_56kN_No2.xlsx
+      562.0472  2.204719  0.621284    // DCPD_truedensity_63kN_No2.xlsx
+      562.3994  2.205924  0.621269    // DCPD_truedensity_63kN_No1.xlsx
+      562.7211  2.204889  0.619629    // DCPD_truedensity_63kN_No3.xlsx
+      623.1772  2.224220  0.624473    // DCPD_truedensity_70kN_No3.xlsx
+      623.5505  2.222591  0.624451    // DCPD_truedensity_70kN_No2.xlsx
+      624.3305  2.224634  0.624124    // DCPD_truedensity_70kN_No1.xlsx
+      706.0960  2.250914  0.628304    // DCPD_truedensity_80kN_No1.xlsx
+      708.1203  2.254679  0.629316    // DCPD_truedensity_80kN_No3.xlsx
+      708.5981  2.247592  0.629207    // DCPD_truedensity_80kN_No2.xlsx
+);

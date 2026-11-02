@@ -7641,6 +7641,20 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/tabletmach.$$
+    # Compaction-bench gate (2026-11-02, DEV.md 4c C195): every Heckel,
+    # Kawakita and Ryshkewitch-Duckworth fit of the two `compactionFit`
+    # witnesses recomputes from the case's own dataset and declared window,
+    # and the refusals (too few points, an empty window, no window) fire by
+    # name on copies.
+    if gate_exec "$ROOT/bin/curate/check_compaction_bench.py" > /tmp/compaction.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "compaction-bench-gate" "$(gate_claim check_compaction_bench /tmp/compaction.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_compaction_bench.py)\n" "compaction-bench-gate"
+        cat /tmp/compaction.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/compaction.$$
 
     # Campo de Dalias seawater plant gate (2026-11-02, DEV.md 4c C194): the
     # two-pass SWRO built on a manufacturer's case study says what its header
