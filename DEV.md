@@ -1528,6 +1528,42 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C201. A NEWCOMER'S REVIEW OF THE TUTORIALS (Vitor, 2026-11-02: "Podes
+> fazer durante duas horas verificacao dos tutoriais como se fosses um
+> engenheiro que nao conhece este simulador."; then "Podes gravar no
+> repositorio?").**  DONE as a review, read-only, on origin/main 663bc5510
+> (native build) and the live site the same morning; the record is
+> `docs/reviews/2026-11-02-newcomer-tutorial-review.md`, every number
+> measured, nothing fixed.  It OWES these slices, in the order the plan's
+> rule 2 sets (a wrong number at exit 0 first):
+> (1) **start-here step 6 publishes a reaction heat about 7x too large**
+> -- `cstr01_first_order` Q_kW -1.879 at extent 0.07304 mol/s = -25.7
+> kJ/mol for liquid ethanol + acetic acid, about -3 kJ/mol in reality; by
+> hand the whole gap is acetic acid's liquid enthalpy (a MONOMER ideal-gas
+> datum minus `HvapTb 24390`, the heat of vaporisation to the DIMERISED
+> vapour), not yet confirmed in the code; a data and arity decision for Vitor
+> (finding F9);
+> (2) **the GUI's MASS cell reads "not published" on almost every case**:
+> `src/result/ResultEmitter.cpp:1229` emits `globalMassBoundary` only when
+> a utility circuit is declared and says a reader that does not find it
+> must read the massBalance report's TOTAL scope;
+> `gui/src/case/runSummary.ts:65` reads only that object (J2);
+> (3) `bin/runCase`'s terminal summary is `tail -14` of the log
+> (`bin/runCase:357`): no answer, no balance verdict, and neither the
+> unit-less `P 1.0` (exit 0, V/F = 1) nor a misspelt key reaches it (F1,
+> K1, K2);
+> (4) three different "start here" paths -- docs/start-here.md, the site's
+> landing cards, the site's "first path" folder (J1);
+> (5) tutorial READMEs and case CLAUDE.md files quoting column duties from
+> before the C169/C174 condenser fix (column01, column03, column18,
+> acetonePlant; extract02's sweep count), flash02's false "What to try",
+> membrane01's self-contradicting header (F5-F7, F12, G1, G2, I1);
+> (6) housekeeping: README binary counts, the stale capability matrix,
+> listCases' description column, duplicate case numbers, template
+> CLAUDE.md placeholders, maintainer history in student text (section A,
+> C, E, H of the record).  A golden row that moves in any slice goes to
+> Vitor as a list first.
+
 > **C200. ANY LLM MUST LEARN CHOUPO FROM A BRIEF IT ACTUALLY READS, AND DESIGN
 > BEFORE IT COPIES (Vitor, 2026-11-02, URGENT: "os alunos podem interagir com o
 > choupo.org atraves de ti usando qualquer LLM ... pedem a LLM um projeto, ou

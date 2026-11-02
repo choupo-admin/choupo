@@ -48,6 +48,8 @@ Every general stopped with the laptop.  All their work is on origin as `backup/*
 
 | status | what | ref |
 |---|---|---|
+| todo | start-here step 6 (cstr01) publishes an esterification heat about 7x too large: confirm in the code that acetic acid's liquid enthalpy (monomer gas datum minus a dimer-vapour Hvap) is the cause, measure which cases it reaches, put the data decision to Vitor | C201 (1) |
+| todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says | C201 (2) |
 | todo | After each push that adds a unit: the site's own WASM build and one browser run of the new case (the pressure exchanger first) | C196 |
 | todo | Confirm on the site (WASM) that C178 and C182 are published (minutes, done between integrations) | C178, C182 |
 
@@ -60,6 +62,8 @@ Every general stopped with the laptop.  All their work is on origin as `backup/*
 | todo | The real boron: two-solute transport (boric acid, borate), a stream pH with speciation, a curated H3BO3/BOH4 record, a dosing unit; and a recycle solver that refuses the trivial fixed point by name | C198 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
+| todo | Newcomer surfaces: `runCase` shows the answer, the balance verdict and the caveat block (not a log tail); one "start here" path across doc, landing cards and the site folder | C201 (3), (4) |
+| todo | Tutorial texts the review found stale or false (column duties after the condenser fix, flash02's "What to try", membrane01's header) and the housekeeping list; moved goldens, if any, go to Vitor as a list | C201 (5), (6) |
 
 ## Beyond a week
 
