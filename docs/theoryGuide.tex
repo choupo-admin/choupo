@@ -1403,6 +1403,28 @@ $P^{\mathrm{sat}}(T)$ validity ceiling          & $T_c$ as the upper bound on An
 \end{tabularx}
 \end{center}
 
+\paragraph{Which vapour the latent heat speaks.}
+A record's \code{HvapTb} is the calorimetric heat, to the \emph{real}
+vapour.  The formation datum the liquid rung hangs from is the
+ideal-gas \emph{monomer}.  For a non-associating fluid the two vapours
+coincide and Watson alone bridges the liquid to the datum.  For a
+carboxylic acid they do not: 82~\% of the acetic-acid molecules in its
+saturated vapour at $298\,\mathrm{K}$ are hydrogen-bonded dimers, so the
+liquid-to-monomer heat is the calorimetric one plus the heat of
+dissociating the dimers present,
+$\Delta h^{\mathrm{vap}}_{\mathrm{mono}} = \Delta h^{\mathrm{vap}}_{\mathrm{cal}}
++ \xi\,(-\Delta h_{\mathrm{dim}})$, with $\xi$ the moles of dimer per mole
+vaporised from $K_{\mathrm{dim}} = p_{\mathrm{D}}/p_{\mathrm{M}}^{2}$ at
+$p_{\mathrm{M}} + p_{\mathrm{D}} = P^{\mathrm{sat}}$.  The pair
+($\log K$, $\Delta h_{\mathrm{dim}}$) is read from the chemistry record
+that curates the vapour dimerisation --- the same record the reactive
+flash uses --- and the derived bridge is announced once per run
+(\code{Component::datumBridge298}).  For acetic acid it is
+$54.1\,\mathrm{kJ/mol}$ against $28.2$ without it, which moves the
+liquid-phase esterification heat from $-26$ to about $-0.4\,\mathrm{kJ/mol}$
+(measured calorimetry: about $-3$ to $-4$).  A component with no curated
+association keeps the plain Watson bridge.
+
 \begin{intuition}
 A practical sanity check when staring at the numbers in a fresh
 \file{.dat} file: $T_b/T_c$ should sit in roughly the range

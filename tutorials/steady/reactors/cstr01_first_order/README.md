@@ -20,8 +20,16 @@ residence time **τ = 310.3 s**, rate constant **k = 3.575e-3 s⁻¹** at
 3. **k comes from `A` and `Ea`, at this T.**  The reaction record says
    the pair is ILLUSTRATIVE.  Read the Arrhenius line in the log
    (`k_fwd: 3.5750e-03`) and reproduce it from `A exp(−Ea/RT)`.
-4. **Isothermal means somebody removes the heat.**  The reaction is
-   exothermic; `Q_kW = −1.88` is what the jacket must take away.
+4. **Isothermal means somebody removes (or supplies) the heat.**  The
+   liquid-phase esterification is nearly thermoneutral: calorimetry puts it
+   at about −3 to −4 kJ/mol, and Choupo prices it from the four liquid
+   formation enthalpies at about +0.2 kJ/mol at 330 K (`dHrxn_kJ_per_mol`
+   in the log; `Q_kW` is of order 0.01 kW).  Acetic acid's liquid is bridged
+   to the ideal-gas monomer datum through the derived heat that includes
+   dissociating its vapour dimers (announced in the log); with the
+   calorimetric heat alone the reaction would read −25.7 kJ/mol, which is
+   the heat of making dimers, not of esterifying.  The residual ~4 kJ/mol
+   against calorimetry is Watson's extrapolation error on the four liquids.
    `cstr04_adiabatic` removes nothing and lets T answer.
 
 ## What to try

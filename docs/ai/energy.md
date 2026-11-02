@@ -278,6 +278,19 @@ gas in one compressor; the ethanol-water azeotrope in a recovery column whose
 plant otherwise runs an electrolyte model).  When you do, expect the printed
 `H` to step at the boundary — that step is information, not a bug.
 
+## The liquid rung of an associating vapour (acetic acid)
+
+The formation datum is the ideal-gas monomer; the record's `HvapTb` is the
+calorimetric heat to the real vapour.  For a component whose gas formula has a
+curated `vapourDimerisation { logK25; dH; }` in a `chemistry/` record, the
+liquid is bridged to the datum by the DERIVED heat (calorimetric + the
+dissociation heat of the dimers in the saturated vapour at 298.15 K), read from
+that one record and announced once per run
+(`[thermo] aceticAcid: liquid bridged to the datum's ideal-gas MONOMER ...`).
+A sealed case must carry that chemistry record (`bin/choupo-import` adds it);
+without one, the plain Watson bridge applies.  Do not "fix" the liquid enthalpy
+of such an acid by editing `HvapTb` — the other readers need the measured value.
+
 ## Balance diagnostics (2607)
 
 Three levels, engine-owned: total MASS, per-ELEMENT atoms (the true

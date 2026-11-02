@@ -76,6 +76,23 @@ remedy that does not work).
       that does not work is worse than no advice, and nothing else in the tree
       would have caught it.
 
+  (j) THE LIQUID RUNG OF AN ASSOCIATING ACID (DEV.md 4c C201 item 1, finding
+      F9 of docs/reviews/2026-11-02-newcomer-tutorial-review.md).  Real
+      aceticAcid / ethanol / ethylAcetate / water crossed gas -> liquid must
+      land within a band of the liquid formation enthalpies (-484.3 +-5,
+      -277.0 +-2, -479.3 +-2, -285.83 +-2 kJ/mol), and the esterification
+      heat they give within +-5 kJ/mol of -3.83.  Measured with the derived
+      bridge: acetic acid -486.34 (-2.04), ethanol -277.90, ethyl acetate
+      -478.22, water -286.40; reaction -0.38 kJ/mol at 298 K.  Without it
+      acetic acid sat at -460.43 (+23.87) and the reaction at -26.3 (cstr01
+      published Q = -1.879 kW at 0.07304 mol/s = -25.7 kJ/mol).  The band is
+      wide on purpose: the residual is Watson's extrapolation to 298 K, which
+      this arm does not claim to fix.  SABOTAGE (by hand, 2026-11-02): the
+      `vapourDimerisation` key of chemistry/aceticAcid-dissolution.dat
+      renamed -> arm (j) FAILED naming aceticAcid +23.87 kJ/mol; record
+      restored.  (Only the acetic-acid enthalpy band fires in that case; the
+      reaction-heat band is reached only when all four enthalpies pass.)
+
 WHAT IS NOT CHECKED, deliberately:
 
   * whether a record's DECLARED rung is the right one for its numbers.  That
@@ -295,6 +312,47 @@ def main() -> int:
                            f"J/mol of CODATA while its legs are {dh:+.0f} J/mol "
                            f"and {ds:+.2f} J/(mol K) out -- the cancellation "
                            "that makes a potential the right interface")
+
+    # ---- (j) the LIQUID RUNG of the esterification four (DEV.md 4c C201) ---
+    #  The liquid heat of an associating acid is bridged to the datum's own
+    #  ideal-gas MONOMER by a DERIVED heat (calorimetric + dimer dissociation).
+    #  Bridged with the calorimetric heat alone, acetic acid's liquid sat 23.9
+    #  kJ/mol above its liquid formation enthalpy and the liquid-phase
+    #  esterification heat came out -26 kJ/mol against about -4 measured
+    #  (cstr01 published Q = -1.879 kW at 0.07304 mol/s).  Primary values:
+    #  NIST WebBook / NBS liquid dHf: acetic acid -484.3, ethanol -277.0,
+    #  ethyl acetate -479.3, water -285.83 kJ/mol.
+    LIQ = {"aceticAcid": (-484.3e3, 5.0e3), "ethanol": (-277.0e3, 2.0e3),
+           "ethylAcetate": (-479.3e3, 2.0e3), "water": (-285.83e3, 2.0e3)}
+    hl, ok_liq = {}, True
+    for nm, (ref, band) in LIQ.items():
+        e = got.get("liquidRung_" + nm, {})
+        if e.get("result") != "ok":
+            fail.append(f"(j) {nm}: liquid rung unreadable: {e.get('result')}")
+            ok_liq = False
+            continue
+        hl[nm] = e["h"]
+        if abs(e["h"] - ref) > band:
+            fail.append(f"(j) {nm}: h_formation(298.15 K, liquid) = "
+                        f"{e['h']/1e3:.2f} kJ/mol is {(e['h']-ref)/1e3:+.2f} "
+                        f"from the liquid formation enthalpy {ref/1e3:.2f} "
+                        f"(band +-{band/1e3:.1f}).")
+            ok_liq = False
+    if ok_liq:
+        rxn = hl["ethylAcetate"] + hl["water"] - hl["aceticAcid"] - hl["ethanol"]
+        REF_RXN = (-479.3 - 285.83 + 484.3 + 277.0) * 1e3     # -3.83 kJ/mol
+        if abs(rxn - REF_RXN) > 5.0e3:
+            fail.append(f"(j) liquid esterification heat {rxn/1e3:.2f} kJ/mol "
+                        f"is {(rxn-REF_RXN)/1e3:+.2f} from the value the four "
+                        f"liquid formation enthalpies give ({REF_RXN/1e3:.2f}), "
+                        "band +-5 kJ/mol.  A bridge to the wrong vapour shifts "
+                        "this by the dimer dissociation heat (~26 kJ/mol).")
+        else:
+            checked.append(f"the liquid esterification heat is {rxn/1e3:.2f} "
+                           f"kJ/mol against {REF_RXN/1e3:.2f} from the liquid "
+                           "formation enthalpies (acetic acid bridged to the "
+                           "datum's monomer, "
+                           f"{(hl['aceticAcid']+484.3e3)/1e3:+.2f} kJ/mol out)")
 
     # ---- (g) the named remedy actually works ------------------------------
     for key, target in (("formationSolidToSolid", "solid"),
