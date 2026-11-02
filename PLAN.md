@@ -36,23 +36,24 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| running | Dynamic units, slice 1: a tank with a level (a manipulated outflow and a valve outflow), the one variable-volume holdup home, witnesses, gate, docs/ai | C205 |
-| running | Acetic acid, a READING: Chao & Zwolinski 1978 (the record's primary) for the dimerisation's temperature dependence and the mixture latent heat, and a primary liquid Cp(T) -- the 6.7 kJ/mol between the NBS liquid at 298 K and the measured latent heat at Tb | C201 (1) |
+| running | DEADLINE 2026-11-03 12:00 (Vitor's tutoring class): the compaction bench for the two pharmaceutical groups -- a choupoProps fit of Heckel, Kawakita and Ryshkewitch-Duckworth to LITERATURE datasets (MCC, a lactose grade; open primaries, each cited), witnesses, gate, docs, checked in the browser; the site publishes on the push to main | C195 |
+| integrating | Dynamic units, slice 1: `dynamicTank` (built and validated by its general; bin/integrate running) | C205 |
 
 ## Next day (at most 5)
 
 | status | what | ref |
 |---|---|---|
+| todo | Acetic acid: correct the record's vapour dimerisation constant (log K25 2.555 is FORMIC acid's; acetic acid's own is 3.107 atm^-1, docs/design/acetic-acid-latent-heat-closure.md), reseal its mirrors, the moved rows in the commit; then rebase `backup/c201-acetic-vapour` on it and re-measure | C201 (1) |
 | todo | (Opus) Acetic acid, after the reading: choose the anchor the slice honours, then the column's dew-point distillate (aceticAcid02_plant +8.69 kW), the Gibbs / three-phase / binaryTxy readers, the association record's identity (not by formula); land `backup/c201-acetic-vapour` with its moved rows; the seven exotherm tutorials to Vitor as a content list | C201 (1) |
 | todo | Dynamic units, slice 2: the CSTR with a variable volume, on slice 1's holdup home | C205 |
 | todo | The control-placement EduTool, pages 1-5 (inventory, pressure, flow and ratio, temperature, composition: rule + exception + a case that runs; the level page says what cannot run until slices 1-3 land) and the plant method page | C204 |
-| todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says (the brief now names the defect) | C201 (2) |
 | todo | The site's own WASM build, then one browser run each of what reached main without one: Complete 0/, the pressure exchanger, the boron split, the dynamic tank; confirm C178 and C182 there | C196, C200 B', C178, C182 |
 
 ## Next three days (at most 8)
 
 | status | what | ref |
 |---|---|---|
+| todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says (the brief now names the defect) | C201 (2) |
 | todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag | C205 |
 | todo | C200 remaining packs (heat, electrolytes, membranes, solids, design-cost, drivers, batch-transient, props), the generated reference and `llms.txt` on the site; re-score the 2026-11-01 baseline with the -init0 step so the comparison is like for like | C200 |
 | todo | Newcomer surfaces: `runCase` shows the answer, the balance verdict and the caveat block; one "start here" path across doc, landing cards and the site folder | C201 (3), (4) |
@@ -60,12 +61,12 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | todo | C199 leftovers: the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
-| blocked | Seawater boron on Pitzer: BOH4/CaBOH4/MgBOH4 formation and eight mixing records, each from its primary (blocked on reading Felmy & Weare 1986) | C198 |
 
 ## Beyond a week
 
 | status | what | ref |
 |---|---|---|
+| blocked | Seawater boron on Pitzer: BOH4/CaBOH4/MgBOH4 formation and eight mixing records, each from its primary (blocked on reading Felmy & Weare 1986) | C198 |
 | todo | Dynamic units, slices 5 and 6: the RO train's pressure and recovery, the column's inventories on a quasiSteady column; the full dynamic MESH last | C205 |
 | todo | `digitalTwin/`, its own tutorials folder (operation of a designed plant, continuous on choupoCtrl then batch on choupoBatch, layout REQUIRED): loops/instruments with a generated P&ID after the unit dynamics, then the operator panel (pedagogical scope to Vitor first) | C203 |
 | todo | The control EduTool, phase 2: the engine counts the control degrees of freedom and the inventory direction on the case's own topology and publishes them; the GUI draws | C204 |
