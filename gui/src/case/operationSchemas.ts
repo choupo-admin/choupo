@@ -138,7 +138,7 @@ export function operationDescription(opType: string): string | undefined {
    construction, e.g. constant/reactions). */
 
 export const PROPS_DISCIPLINES = [
-  "Thermodynamics", "Transport", "Kinetics", "Separation", "Data", "Safety",
+  "Thermodynamics", "Transport", "Kinetics", "Separation", "Solids", "Data", "Safety",
 ] as const;
 export type PropsDiscipline = typeof PROPS_DISCIPLINES[number];
 

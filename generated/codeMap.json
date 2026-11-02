@@ -321,6 +321,9 @@
   "ColumnSize": [
    "src/postProcessing/sizing/ColumnSize.H"
   ],
+  "CompactionFit": [
+   "src/propertyOps/CompactionFit.H"
+  ],
   "Component": [
    "src/thermo/Component.H"
   ],
@@ -2546,6 +2549,10 @@
    {
     "key": "poreTransport",
     "type": "PoreTransportBench"
+   },
+   {
+    "key": "compactionFit",
+    "type": "CompactionFit"
    },
    {
     "key": "dataReconciliation",
@@ -5100,6 +5107,20 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
   ],
+  "src/propertyOps/CompactionFit.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/PublishedTable.H",
+   "src/core/Types.H",
+   "src/propertyOps/CompactionFit.H",
+   "src/propertyOps/FitAlgebra.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/RecordResolver.H"
+  ],
   "src/propertyOps/ConstantEstimator.cpp": [
    "src/propertyOps/ConstantEstimator.H",
    "src/propertyOps/Joback.H",
@@ -5777,6 +5798,7 @@
    "src/core/Origin.H",
    "src/core/PublishedTable.H",
    "src/core/Types.H",
+   "src/propertyOps/CompactionFit.H",
    "src/propertyOps/DataReconciliation.H",
    "src/propertyOps/ENRTLMixedSolventOp.H",
    "src/propertyOps/ENRTLMultiSaltOp.H",
@@ -11122,6 +11144,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -11478,6 +11501,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -11927,6 +11951,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
@@ -12221,6 +12246,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
@@ -12542,6 +12568,7 @@
   "src/core/PublishedTable.H": [
    "src/applications/choupoProps/main.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
@@ -12914,6 +12941,7 @@
    "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -13630,6 +13658,10 @@
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/Speciate.cpp"
   ],
+  "src/propertyOps/CompactionFit.H": [
+   "src/propertyOps/CompactionFit.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/ConstantEstimator.H": [
    "src/applications/choupoProps/main.cpp",
    "src/propertyOps/ConstantEstimator.cpp",
@@ -13702,6 +13734,7 @@
    "src/propertyOps/PropertyOperation.cpp"
   ],
   "src/propertyOps/FitAlgebra.H": [
+   "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitParametersMembrane.cpp"
   ],
@@ -13798,6 +13831,7 @@
   ],
   "src/propertyOps/PropertyOperation.H": [
    "src/applications/choupoProps/main.cpp",
+   "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
@@ -15086,6 +15120,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
@@ -15318,6 +15353,7 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/SweepDriver.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
@@ -15679,6 +15715,7 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/SweepDriver.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",

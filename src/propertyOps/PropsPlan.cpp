@@ -114,6 +114,19 @@ const std::map<std::string, OpSlots>& table()
             ds.ensureSuffix = ".dat";
             m["polarisationIndex"] = { { ds }, {} };
         }
+        //  CompactionFit.cpp: the op's dataset and each model block's own,
+        //  `.dat` appended when absent; the CSV of the published tables.
+        {
+            std::vector<Slot> ds;
+            for (const char* k : { "dataset", "heckel.dataset",
+                                   "kawakita.dataset", "ryshkewitch.dataset" })
+            {
+                Slot s = F(k);
+                s.ensureSuffix = ".dat";
+                ds.push_back(s);
+            }
+            m["compactionFit"] = { ds, outFile };
+        }
         //  PoreTransportBench.cpp: the membrane by name, the profile CSV.
         m["poreTransport"] = { { M("membrane") }, { F("profile") } };
         //  Ppr78Kij.cpp: the group table, and the kij SET record it writes.

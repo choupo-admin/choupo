@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 505,
+  "cases": 507,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -2868,6 +2868,34 @@
    ],
    "thermo": {
     "formulation": "phiPhi"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/powder/compaction01_mcc": {
+   "application": "choupoProps",
+   "ops": [
+    "compactionFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/powder/compaction02_dcpd_brittle": {
+   "application": "choupoProps",
+   "ops": [
+    "compactionFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
    },
    "roles": [],
    "hasGolden": true
@@ -7627,6 +7655,8 @@
     "tutorials/props/molecular/ppr78Kij01_ch4_co2_h2",
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
     "tutorials/props/molecular/srk01_h2n2_density",
+    "tutorials/props/powder/compaction01_mcc",
+    "tutorials/props/powder/compaction02_dcpd_brittle",
     "tutorials/props/reactor/thiele01_sphere_first_order",
     "tutorials/props/reactor/thiele02_prater_temperature",
     "tutorials/props/reconciliation/reconcile01_recycle_loop",
@@ -8948,6 +8978,8 @@
     "tutorials/props/molecular/envelope02_root_jump",
     "tutorials/props/molecular/flash01_operating_line",
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
+    "tutorials/props/powder/compaction01_mcc",
+    "tutorials/props/powder/compaction02_dcpd_brittle",
     "tutorials/props/reactor/thiele01_sphere_first_order",
     "tutorials/props/reactor/thiele02_prater_temperature",
     "tutorials/props/reconciliation/reconcile01_recycle_loop",
@@ -9178,6 +9210,10 @@
   "byOp": {
    "activityCoefficients": [
     "tutorials/props/molecular/nrtl01_ethanol_water_package"
+   ],
+   "compactionFit": [
+    "tutorials/props/powder/compaction01_mcc",
+    "tutorials/props/powder/compaction02_dcpd_brittle"
    ],
    "dataReconciliation": [
     "tutorials/props/reconciliation/reconcile01_recycle_loop"

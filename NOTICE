@@ -95,6 +95,20 @@ method, licence).  The third-party datasets bundled here, and their licences, ar
   Hoff coefficients (ln H_xp[Pa] = A + B/T) were converted to Choupo's
   H_ref / enthalpy parameterisation; see each `*-water.dat` header.
 
+* Powder-compaction datasets (`tutorials/props/powder/*/constant/experimental/`)
+  van der Haven, D. L. H. et al. (2026), "Characterisation data of common
+  pharmaceutical excipient powders and tablets for formulation development,"
+  Sci. Data 13, 1468, doi:10.1038/s41597-026-07707-0; data Zenodo
+  doi:10.5281/zenodo.16732963.  Kukuls, K. & Mohylyuk, V. (2025), "Direct
+  compression of lubricated mixture of microcrystalline cellulose and calcium
+  phosphate dibasic anhydrous," RSU Dataverse, doi:10.48510/FK2/MFMNDR.  Both
+  licensed CC BY 4.0.  CHANGES: rows transcribed into Choupo's dataset grammar;
+  the Kawakita strain computed from each tablet's raw fill height and
+  thickness (van der Haven) and from the tabulated filling height and in-die
+  thickness (Kukuls); the Kukuls pressure computed from the upper-punch force
+  over the punch face; tablets with no recorded breaking force left out.  Each
+  file header states which.
+
 * Pure-component reference-fluid data (part of `data/standards/components/`)
   Derived from CoolProp (Bell, Wronski, Quoilin & Lemort, 2014; MIT licence)
   high-accuracy Helmholtz equations of state.  Antoine and ideal-gas-Cp

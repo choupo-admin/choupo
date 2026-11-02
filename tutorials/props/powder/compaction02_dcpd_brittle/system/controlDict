@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoProps;
+description   "A brittle excipient on the compaction bench: dicalcium phosphate fitted to two open datasets (no open lactose dataset was found, and none is invented), against MCC's plastic behaviour in compaction01";
+
+verbosity     2;
+
+citations
+(
+    "van der Haven, D. L. H. et al., Characterisation data of common pharmaceutical excipient powders and tablets for formulation development, Sci. Data 13 (2026) 1468, doi:10.1038/s41597-026-07707-0; data Zenodo doi:10.5281/zenodo.16732963 (CC BY 4.0)"
+    "Kukuls, K., Mohylyuk, V., Direct compression of lubricated mixture of microcrystalline cellulose and calcium phosphate dibasic anhydrous, RSU Dataverse (2025), doi:10.48510/FK2/MFMNDR (CC BY 4.0)"
+    "Mohylyuk, V. et al., The effect of microcrystalline cellulose-CaHPO4 mixtures in different volume ratios on the compaction and structural-mechanical properties of tablets, Pharmaceutics 16 (2024) 362 (CC BY)"
+    "Lura, A., Tardy, G., Kleinebudde, P., Breitkreutz, J., Int. J. Pharm. X 2 (2020) 100061, doi:10.1016/j.ijpx.2020.100061 (CC BY) -- lactose and MCC in-die Py, quoted for comparison"
+);

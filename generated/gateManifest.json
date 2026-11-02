@@ -1490,6 +1490,11 @@
       "exit": 0,
       "claim": "check_boron_split: OK -- the record is the databank's (log K -9.24, dH 3.224 kcal); on swro01_campoDalias alpha is 0.10774 at pass 1 (pH 8.2, I 0.593, Davies) and 0.85814 at pass 2 (pH 10, I 0.0019), recomputed from the record, the declared pH and the activity model; the acid's rejection (0.9321 at pass 1, 0.7900 at pass 2) is recomputed from the rated test and the salt-like base (0.9978, 0.9939), R_eff, the permeate shares of the two forms and the closure of the permeate boron reproduce; the pass-2 pH moved 10 -> 9 lowers R_eff 0.96495 -> 0.86680 as alpha(9) predicts and raises the product boron 0.0425 -> 0.1412 mg/L; TWO rated tests (alpha 0.0546, 0.8542; the second a SYNTHETIC fixture) give R_acid 0.9322 and R_base 0.9952 = the 2x2 recomputed; 8 fixtures refuse by name; HELD-OUT (a lab membrane, NOT the plant's; pH 7 fixes the acid): predicted 92.91 % at pH 8 against 93.5 % measured (-0.59 pp, band +-1.0), 98.06 % at pH 10 against > 98 %.  PRINTED, never gated: the engine's apparent pKa at seawater strength 9.118 against Dickson's pK*B 8.597 (S 35, 25 C, total scale).  NOT CHECKED: Davies at seawater strength (outside its band, announced), the Toray numbers (the fit), any boron measurement of the plant.",
       "seconds": 1.1
+    },
+    "check_compaction_bench": {
+      "exit": 0,
+      "claim": "check_compaction_bench: OK -- 13 model fit(s) in 5 compactionFit op(s) of 2 witnesses recomputed from each case's own dataset and window (Heckel, Kawakita, Ryshkewitch-Duckworth, 1e-6); three refusals fire by name (3 points, an empty window, no window).  Not checked: the transcription from the source, or whether the declared window is the right one.",
+      "seconds": 0.1
     }
   }
 }

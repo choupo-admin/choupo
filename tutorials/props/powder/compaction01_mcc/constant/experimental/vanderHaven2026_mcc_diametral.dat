@@ -1,0 +1,62 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  DIAMETRAL CRUSHING OF MCC (Avicel PH200) TABLETS
+  -- van der Haven et al., Sci. Data 13 (2026) 1468, CC BY 4.0.
+
+  Transcribed from the archive's `Tablet crushing.zip -> Tablet crushing
+  (single)/Diametrical crushing/Radial tensile strengths MCC.xlsx`: per
+  tablet the height t, the diameter d, the breaking force F and the density
+  (mass over the measured volume), OUT OF DIE.  Rows whose breaking force is
+  recorded as 0 are left out: the workbook marks them as broken on the other
+  tester (`Kilian` vs the texture analyser `TA`, which was calibrated only to
+  50 kg) and gives no force for them.  22 tablets.  The workbook's own
+  tensile strength is 2F/(pi d t) and the bench recomputes it from F, d, t.
+\*---------------------------------------------------------------------------*/
+provenance
+{
+    source         "van der Haven, D. L. H., Mikoroni, M., Jensen, R., Ortoft, F. H., Andreasen, J. L., Andersen, M. E., Dax, D., Zafar, U., Megarry, A., Naelapaa, K., Fragkopoulos, I. S., Elliott, J. A., Characterisation data of common pharmaceutical excipient powders and tablets for formulation development, Sci. Data 13 (2026) 1468, doi:10.1038/s41597-026-07707-0; data: Zenodo doi:10.5281/zenodo.16732963";
+    licence        "CC BY 4.0 (article and Zenodo record)";
+    transcribed    "from Tablet crushing (single)/Diametrical crushing/Radial tensile strengths MCC.xlsx, read 2026-11-02";
+    reviewStatus   interim;
+}
+
+columns
+(
+    { name F; unit N; }      // diametral breaking force
+    { name d; unit mm; }      // tablet diameter
+    { name t; unit mm; }      // tablet height
+    { name density; unit g/cm3; }      // out-of-die tablet density
+);
+
+data
+(
+      51.9046   11.37   3.99  0.798776    // RD [min] tablet 3, TA
+      51.9801   11.38   4.00  0.794150    // RD [min] tablet 5, TA
+      51.2917   11.38   4.00  0.794887    // RD [min] tablet 9, TA
+     119.2930   11.36   4.04  0.938029    // RD [1] tablet 2, TA
+     122.3693   11.36   4.11  0.924934    // RD [1] tablet 6, TA
+     128.8937   11.37   4.08  0.930821    // RD [1] tablet 1, TA
+     135.2131   11.36   4.04  0.943158    // RD [1] tablet 10, TA
+     193.3263   11.35   4.05  1.046937    // RD [2] tablet 3, TA
+     200.7313   11.35   4.06  1.044359    // RD [2] tablet 6, TA
+     205.8641   11.35   4.06  1.047767    // RD [2] tablet 9, TA
+     374.0629   11.33   4.05  1.194885    // RD [3] tablet 1, TA
+     356.6983   11.33   4.05  1.186803    // RD [3] tablet 5, TA
+     353.0286   11.33   4.05  1.188762    // RD [3] tablet 9, TA
+     645.5000   11.32   4.05  1.325553    // RD [4] tablet 3, Kilian
+     653.5000   11.32   4.05  1.327271    // RD [4] tablet 5, Kilian
+     657.5000   11.31   4.05  1.329865    // RD [4] tablet 10, Kilian
+     786.0000   11.31   4.06  1.395971    // RD [5] tablet 8, Kilian
+     786.5000   11.31   4.05  1.394011    // RD [5] tablet 3, Kilian
+     775.0000   11.31   4.05  1.394256    // RD [5] tablet 10, Kilian
+     999.0000   11.30   3.98  1.444591    // RD [max] tablet 5, Kilian
+     994.5000   11.31   3.98  1.440036    // RD [max] tablet 6, Kilian
+    1010.0000   11.30   3.98  1.445092    // RD [max] tablet 7, Kilian
+);
