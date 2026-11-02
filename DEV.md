@@ -1563,6 +1563,19 @@ accepts today, and that is a policy call.
 > ready.  Not run: full sweep, --gui, wasm.  NEXT: design the vapour-side
 > half, then one slice with its list of moved rows.
 
+> **C200 B' INTEGRATION (the architect, 2026-11-02):** `File > Complete 0/`
+> landed without the full sweep that `bin/integrate` flagged as reached
+> (it could not attribute `src/applications/choupoSolve/wasmEntry.cpp`).
+> Written reason: the one engine-side edit, `run_case_init0`, sits inside
+> that file's `#if defined(__EMSCRIPTEN__)` (line 45 to the end), so no
+> native binary changes; `make/wasm.mk` only exports the symbol for the
+> WASM target; everything else is `gui/`.  Evidence: `--gui` PASS 42 / FAIL
+> 0, `--fast` PASS 77 / FAIL 0, `npm test` 6777 passed, and a Chromium run
+> of flash01 with `0/liquid` and `0/vapor` removed (refused, dialog,
+> Complete 0/ wrote both, the second run converged).  Open: the user guide
+> (`docs/userGuide.tex`) documents only `bin/choupo-init0` -- a small
+> follow-up that rebuilds its PDF.
+
 > **C203. A DIGITAL TWIN AS THE LAST FORM OF A PLANT CASE (Vitor, 2026-11-02:
 > "em plant pode haver um modelo final em modo de controlo que vai desde o
 > layout depois ate ao painel de controle? ... plant era so para estado
