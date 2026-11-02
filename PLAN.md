@@ -28,51 +28,49 @@ header names the PLAN.md commit it reflects, so a stale view shows itself.
    row of Next day starts and the first row of the next column moves up.
 5. **Done rows stay one week**, then leave this file (DEV.md keeps them).
 
-Last reviewed: 2026-11-01 (restructured by capacity; earlier reviews in git).
+Last reviewed: 2026-11-02 evening (the resume list closed; today's asks C203-C205 placed; earlier reviews in git).
 
 Status words: `todo` · `queued` (built by a general, waiting its turn to integrate) · `integrating` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
-## Now (RESUME HERE after the 2026-11-02 controlled shutdown; nothing is running)
-
-Every general stopped with the laptop.  All their work is on origin as `backup/*` branches; the first thing to read is `HANDOFF-C200.md` on `backup/c200-handoff`.
+## Now (running)
 
 | status | what | ref |
 |---|---|---|
-| todo | Before the brief lands, read docs/reviews/2026-11-02-kernel-review.md: the phaseChanger fix, the two 404 URLs, Complete 0/ on the site, nine missing packs, five text corrections | C202 |
-| todo | Merge the brief (`backup/c200-handoff`, its `kernel.md` renamed `brief.md` (in docs/ai) in the same commit) with the three packs (`backup/pack-recycles-pressure`, `backup/pack-separations`, `backup/pack-reactors`) in ONE commit (check_doc_references refuses a brief pointing at missing packs; the table lists only the packs that exist, the URLs and the browser Complete 0/ are not promised until they exist); fix the brief from the packs' findings; record the contradictions found in older docs/ai in DEV.md C200 | C200 |
-| todo | Relaunch the browser Complete-0/ general from `backup/a8318e2acf001dce2` (it was in `--gui` validation; 16 files of WIP) | C200 B' |
-| todo | Integrate boron Stage 1 (`backup/boron-stage1`); the golden re-record of swro01_campoDalias is ruled acceptable, the list goes in the commit | C198 |
-| todo | Integrate the GUI header-read branch (`backup/adc55b34e36500669`) | C199 |
-| todo | Re-run the LLM-brief harness (`bin/curate/llm_brief_eval.py`, branch `backup/c200-harness`) on the brief + packs; baseline: `--core` solves 7/10, the GUI bridge guide 0/10 | C200 A |
+| running | Dynamic units, slice 1: a tank with a level (a manipulated outflow and a valve outflow), the one variable-volume holdup home, witnesses, gate, docs/ai | C205 |
+| running | Acetic acid, a READING: Chao & Zwolinski 1978 (the record's primary) for the dimerisation's temperature dependence and the mixture latent heat, and a primary liquid Cp(T) -- the 6.7 kJ/mol between the NBS liquid at 298 K and the measured latent heat at Tb | C201 (1) |
 
 ## Next day (at most 5)
 
 | status | what | ref |
 |---|---|---|
-| doing | Dynamic units, slice 1: a tank with a level (manipulated outflow and a valve outflow), witnesses + gate + docs/ai | C205 |
-| todo | phaseChanger `outletState saturatedLiquid` / `outletQuality 0` on a mixture stops 119 K below saturation at exit 0 (PhaseChanger.cpp:428-433): fix the bracket scan, add a mixture witness; the C200 brief teaches this spec | C202 (1) |
-| todo | (Opus) Acetic acid: the slice is BUILT on `backup/c201-acetic-vapour`; settle first why the engine prices 33.0 vs the measured 24.4 kJ/mol latent heat at Tb (test: Watson on the monomer-basis latent heat), then the column dew-point distillate, the Gibbs/three-phase/binaryTxy readers, the formula-match identity; then the moved rows to Vitor. Earlier text: Acetic acid, ONE slice: the liquid bridge (confirmed cause of the 7x esterification heat, branch `backup/c201-acetic-bridge`) together with the vapour-side association (one-record-two-vapours doc); alone it doubles real column condensers; then the seven tutorials whose exotherm was the artefact (content decision for Vitor) | C201 (1) |
-| todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says | C201 (2) |
-| todo | After each push that adds a unit: the site's own WASM build and one browser run of the new case (the pressure exchanger first) | C196 |
-| todo | Confirm on the site (WASM) that C178 and C182 are published (minutes, done between integrations) | C178, C182 |
+| todo | (Opus) Acetic acid, after the reading: choose the anchor the slice honours, then the column's dew-point distillate (aceticAcid02_plant +8.69 kW), the Gibbs / three-phase / binaryTxy readers, the association record's identity (not by formula); land `backup/c201-acetic-vapour` with its moved rows; the seven exotherm tutorials to Vitor as a content list | C201 (1) |
+| todo | Dynamic units, slice 2: the CSTR with a variable volume, on slice 1's holdup home | C205 |
+| todo | The control-placement EduTool, pages 1-5 (inventory, pressure, flow and ratio, temperature, composition: rule + exception + a case that runs; the level page says what cannot run until slices 1-3 land) and the plant method page | C204 |
+| todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says (the brief now names the defect) | C201 (2) |
+| todo | The site's own WASM build, then one browser run each of what reached main without one: Complete 0/, the pressure exchanger, the boron split, the dynamic tank; confirm C178 and C182 there | C196, C200 B', C178, C182 |
 
 ## Next three days (at most 8)
 
 | status | what | ref |
 |---|---|---|
-| todo | C200 remaining packs (heat, electrolytes, membranes, solids, design-cost, drivers, batch-transient, props), the generated reference and `llms.txt` on the site; the harness re-run | C200 |
+| todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag | C205 |
+| todo | C200 remaining packs (heat, electrolytes, membranes, solids, design-cost, drivers, batch-transient, props), the generated reference and `llms.txt` on the site; re-score the 2026-11-01 baseline with the -init0 step so the comparison is like for like | C200 |
+| todo | Newcomer surfaces: `runCase` shows the answer, the balance verdict and the caveat block; one "start here" path across doc, landing cards and the site folder | C201 (3), (4) |
+| todo | Tutorial texts the review found stale or false and the housekeeping list; moved goldens, if any, as a list | C201 (5), (6) |
 | todo | C199 leftovers: the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
-| todo | The real boron: two-solute transport (boric acid, borate), a stream pH with speciation, a curated H3BO3/BOH4 record, a dosing unit; and a recycle solver that refuses the trivial fixed point by name | C198 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
-| todo | Newcomer surfaces: `runCase` shows the answer, the balance verdict and the caveat block (not a log tail); one "start here" path across doc, landing cards and the site folder | C201 (3), (4) |
-| todo | Tutorial texts the review found stale or false (column duties after the condenser fix, flash02's "What to try", membrane01's header) and the housekeeping list; moved goldens, if any, go to Vitor as a list | C201 (5), (6) |
+| blocked | Seawater boron on Pitzer: BOH4/CaBOH4/MgBOH4 formation and eight mixing records, each from its primary (blocked on reading Felmy & Weare 1986) | C198 |
 
 ## Beyond a week
 
 | status | what | ref |
 |---|---|---|
-| todo | `digitalTwin/`, its own tutorials folder (operation of a designed plant, continuous on choupoCtrl then batch on choupoBatch, layout REQUIRED): plan of dynamic models per unit first, then loops/instruments with a generated P&ID, then the operator panel (pedagogical scope to Vitor first) | C203 |
+| todo | Dynamic units, slices 5 and 6: the RO train's pressure and recovery, the column's inventories on a quasiSteady column; the full dynamic MESH last | C205 |
+| todo | `digitalTwin/`, its own tutorials folder (operation of a designed plant, continuous on choupoCtrl then batch on choupoBatch, layout REQUIRED): loops/instruments with a generated P&ID after the unit dynamics, then the operator panel (pedagogical scope to Vitor first) | C203 |
+| todo | The control EduTool, phase 2: the engine counts the control degrees of freedom and the inventory direction on the case's own topology and publishes them; the GUI draws | C204 |
+| todo | Boron Stage 2: the pH along the channel, the seawater feed as major ions, a dosing unit (caustic before pass 2), and a recycle solver that refuses the trivial fixed point by name | C198 |
+| todo | NaCl in water has no enthalpy datum the default energy report can use (the harness's p10, REFUSED by the engine): curate it | C200 5.2 |
 | todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
 | todo | Verify and fix the Gibbs review's three open items and the SpeciationSolver outer convergence | C187 (1)(2) |
 | todo | Pharmaceutical groups: the compaction bench (Heckel, Kawakita, Ryshkewitch fitted to the group's data), sized tablet machines, clean utilities (HVAC, purified water), blend uniformity | C195 |
@@ -105,6 +103,7 @@ Every general stopped with the laptop.  All their work is on origin as `backup/*
 
 | status | what | ref |
 |---|---|---|
+| waits-Vitor | Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771 (the seawater boron Pitzer parameters' primary): a copy through IST's library | C198 |
 | waits-Vitor | Open swro01_campoDalias in the browser: does the 3D start, are the 2D drawings legible? | C199 |
 | waits-Vitor | Reactive full MESH and the multi-ion NF dataset: the reference PDFs | C175, C176 |
 | waits-Vitor | JOSS: ORCIDs, DOI; whether Pedro Mendes agrees to enter CITATION.cff | C168 (3), C171 |
@@ -114,6 +113,14 @@ Every general stopped with the laptop.  All their work is on origin as `backup/*
 
 | status | what | ref |
 |---|---|---|
+| done | The phaseChanger's saturated mixture is its bubble/dew point (it returned a liquid 102.7 K below its bubble point at exit 0) | C202 (1), 8a3946237 |
+| done | The assistant brief (`docs/ai/brief.md`, renamed from kernel.md) with four packs; the review's corrections | C200, C202 |
+| done | File > Complete 0/ in the app; the user guide documents it | C200 B', 3c4cfeff4, 2aadac008 |
+| done | Boron Stage 1: boric acid and borate split by the declared pH; swro01_campoDalias re-recorded with the list; the GUI schema key it needed | C198, b3efefd9e, a551c1762 |
+| done | Boron in seawater, measured: Davies 9.12, Pitzer 8.84 against Dickson's 8.82; the seawater route is Pitzer | C198, b23ab43e5 |
+| done | The rack elevation draws each header at its own pipeHeader sheet | C199, ac3716305 |
+| done | The LLM-brief harness, and its first run: the brief + four packs solve 10/10 at 7-30x less input | C200 A/E, df9f9e22b |
+| done | Decisions: digitalTwin/ is its own folder (C203); the control-placement EduTool scope (C204); the dynamic units' contract and order (C205); association is a property of the vapour model (C201) | C201, C203-C205 |
 | done | The header sizer (diameter, velocity, pressure drop per header, 54 items) | C199, 9186e11dd |
 | done | C199 B and C: every vessel inside its rack in 3D, plan / section / rack elevation with headers, the train schematic, the RO/NF layout heuristics in the user guide | C199, 7c63e6493, 8c6532f38 |
 | done | C199 phase A: the Campo de Dalías plant is six trains in one RO building (pumps with a declared maximum, PX arrays, vessel banks with racks and loading clearance) | C199, 191be6e8a |
