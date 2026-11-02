@@ -314,6 +314,16 @@ site_url="https://www.choupo.org"
 } > "$dist/sitemap.xml"
 printf 'User-agent: *\nAllow: /\nSitemap: %s/sitemap.xml\n' "$site_url" > "$dist/robots.txt"
 echo "sitemap: $(grep -c '<loc>' "$dist/sitemap.xml") URLs in sitemap.xml; robots.txt written"
+#  THE ASSISTANT DOCUMENTS (llms.txt and /llm/**).  A student's own LLM reads
+#  docs/ai/brief.md and the task packs to design a case; the site served none
+#  of it until 2026-11-02 (/llms.txt and /llm/* were 404, the brief was
+#  readable only at raw.githubusercontent.com).  The copy and the index are
+#  DERIVED from the files present by bin/curate/llm_site.py -- never a
+#  hand-kept list -- and a missing brief or pack REFUSES the build.
+python3 "$root/bin/curate/llm_site.py" "$dist" || {
+    echo "[buildSite] ERROR: the assistant documents (docs/ai -> /llm, /llms.txt) could not be assembled" >&2
+    exit 1
+}
 #  Jekyll is not involved and must not be: a directory or file beginning with
 #  an underscore (the app's chunks can) would be silently dropped otherwise.
 touch "$dist/.nojekyll"

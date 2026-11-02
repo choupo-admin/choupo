@@ -253,8 +253,8 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 878 path mention(s) and 266 case name(s) across 23 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
-      "seconds": 0.9
+      "claim": "check_doc_references: OK -- 889 path mention(s) and 266 case name(s) across 23 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
+      "seconds": 1.0
     },
     "check_doctrine": {
       "exit": 0,
@@ -493,8 +493,8 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 41684 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 43388 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
-      "seconds": 9.3
+      "claim": "check_glossary_bans: OK -- 41696 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 43401 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
+      "seconds": 8.3
     },
     "check_groups": {
       "exit": 0,
@@ -818,8 +818,8 @@
     },
     "check_release_identity": {
       "exit": 0,
-      "claim": null,
-      "seconds": 0.1
+      "claim": "check_release_identity: OK -- v2608.json each records the commit its tag resolves to, survives a fresh recount from a worktree of that tag, and carries a citation equal to a fresh render of the tag's own CITATION.cff through the generator's parser (imported, not copied).  Every data-inv fallback literal in 3 site source pages equals its artefact value, and no bare hand count sits beside 'runnable tutorials' in prose.  Every 1 published artefact(s) naming a release name the newest one.  Every frozen-app link is declared in site/frozenApps.txt (1 declared), so a link to an archive that was never uploaded is refused by name.  NOT CHECKED, said plainly: the PRODUCTION HOST (this gate reads repo sources; choupo.org may differ) -- and that is exactly what the declaration cannot prove either: it records that somebody SAYS the copy was uploaded, not that it is being served.",
+      "seconds": 1.7
     },
     "check_resolver_coherence": {
       "exit": 0,
@@ -933,8 +933,8 @@
     },
     "check_source_licence": {
       "exit": 0,
-      "claim": "check_source_licence: OK -- 1208 TRACKED record(s) scanned (untracked and data/local files are NOT judged; an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 20 existing ones do and are pinned.  No-grant mechanism (C164): no line of the 7479 catalogue records and case-local constant/ files names GRI-Mech as a value's origin (none pinned; a cross-check marker before the name is allowed).  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 5078 case-local records under tutorials/**/constant/: 33 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)); NASA/TP-2002-211556 (publicDomain, 30 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 13514 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (8 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
-      "seconds": 5.2
+      "claim": "check_source_licence: OK -- 1208 TRACKED record(s) scanned (untracked and data/local files are NOT judged; an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 20 existing ones do and are pinned.  No-grant mechanism (C164): no line of the 7479 catalogue records and case-local constant/ files names GRI-Mech as a value's origin (none pinned; a cross-check marker before the name is allowed).  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 5078 case-local records under tutorials/**/constant/: 33 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)); NASA/TP-2002-211556 (publicDomain, 30 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 13526 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (8 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
+      "seconds": 5.1
     },
     "check_species_citation": {
       "exit": 0,

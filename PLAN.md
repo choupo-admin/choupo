@@ -56,7 +56,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says (the brief now names the defect) | C201 (2) |
 | todo | PIF easy wins, from the reports read in full: E2 HVAC cost from the supply air, E3 cleaning events -> CIP water and effluent volumes, E4 building cost from room areas, E5 economics hygiene (working capital three ways side by side, royalty inside a patent window), E6 per-machine utilisation and Gantt in the GUI, E7 and E8 two EduTools (how a PIF economics goes wrong; the demand forecast) | C195, docs/reviews/2026-11-02-pif-reports-synthesis.md |
 | todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag | C205 |
-| todo | C200 remaining packs (heat, electrolytes, membranes, solids, design-cost, drivers, batch-transient, props), the generated reference and `llms.txt` on the site; re-score the 2026-11-01 baseline with the -init0 step so the comparison is like for like | C200 |
+| todo | C200 remaining packs (heat, electrolytes, membranes, solids, drivers, transient, props), the generated reference (the site serves docs/ai as it stands); re-score the 2026-11-01 baseline with the -init0 step so the comparison is like for like | C200 |
 | todo | Newcomer surfaces: `runCase` shows the answer, the balance verdict and the caveat block; one "start here" path across doc, landing cards and the site folder | C201 (3), (4) |
 | todo | Tutorial texts the review found stale or false and the housekeeping list; moved goldens, if any, as a list | C201 (5), (6) |
 | todo | C199 leftovers: the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
@@ -128,6 +128,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | done | Boron in seawater, measured: Davies 9.12, Pitzer 8.84 against Dickson's 8.82; the seawater route is Pitzer | C198, b23ab43e5 |
 | done | The rack elevation draws each header at its own pipeHeader sheet | C199, ac3716305 |
 | done | The LLM-brief harness, and its first run: the brief + four packs solve 10/10 at 7-30x less input | C200 A/E, df9f9e22b |
+| done | Packs batch-plant, layout, design-cost (tablet plant: batch plan, machine utilisation, HVAC and purified water, plot plan and building, costing and economics) and `llms.txt` + `/llm/**` on the site (live after the next publish); harness p11-p13: lint 3/3, solves 2/3 | C200 phase C |
 | done | Decisions: digitalTwin/ is its own folder (C203); the control-placement EduTool scope (C204); the dynamic units' contract and order (C205); association is a property of the vapour model (C201) | C201, C203-C205 |
 | done | The header sizer (diameter, velocity, pressure drop per header, 54 items) | C199, 9186e11dd |
 | done | C199 B and C: every vessel inside its rack in 3D, plan / section / rack elevation with headers, the train schematic, the RO/NF layout heuristics in the user guide | C199, 7c63e6493, 8c6532f38 |

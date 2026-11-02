@@ -246,6 +246,45 @@ That is the engine saying it cannot verify the first law there, so the strict
 rule (energy must be verified) stands; the finding is for the curation of the
 salt, not for the brief or the harness.
 
+### 5.3 Revising from feedback (2026-11-02, result)
+
+The loop the brief serves has a second half: the student opens the assistant's
+zip (or pasted blocks) in the app, validates and reviews, and sends feedback to
+the assistant, which returns a new version.  Brief section 10 teaches that half:
+a numbered change list first, only the changed files re-sent in full, a dated
+`## Revisions` entry in `DESIGN.md` quoting the feedback verbatim, the Complete 0/
+step and what to check, and "say so, label an approximation, never invent a key"
+for what Choupo cannot compute.  Every step rests on what the app does with a
+reply (`gui/src/agent/clipboardContext.ts` `applyEdits`): a block REPLACES a file
+or ADDS one, **nothing can be deleted**, so a removed stream leaves its `0/` file
+as an ORPHAN the engine refuses and the student must delete it.  Reading that code
+also found that the clipboard bridge parses only blocks closed by
+`=== END FILE ===`, which the brief did not ask for; it does now.
+
+The harness gained a revision mode (`start:` / `feedback:` / `check:` lines in a
+problem; the reply is applied over the start case like the app does; scored for
+solving, balances, files changed outside the declared set, the Revisions entry,
+and each declared key read from the case).  Three problems, one run each,
+`claude -p --model haiku`, brief + all packs: p14 a number (heat exchanger area
+10 -> 15 m2), p15 a structure (a heater and a stream added before a flash), p16 a
+request Choupo cannot satisfy (a packed-bed column).
+
+First run (brief as first written): p14 and p15 solve, balances close, ONE file
+changed besides `DESIGN.md`, the Revisions entry quotes the feedback, checks 2/2
+and 4/4; p16 says plainly that there is no packed-bed model and no HETP or
+pressure-drop key, offers a labelled 12-stage approximation, invents no key
+(checked) - and then did not solve, because the removed `0/liquid` and `0/vapor`
+are orphans.  The assistant had told the student to delete them, which the
+harness did not model; it now simulates exactly that student step (an orphan is
+deleted only if `DESIGN.md` names it next to a delete word).  What the proxy got
+wrong, and the brief fixed: told that Complete 0/ never overwrites, it asked the
+student to delete stale generated seeds in p14 and p15 (unnecessary: the solver
+recomputes them); step 6 now says so.  Second run: p14, p15, p16 all solve with
+balances ok, the same file counts, checks 2/2, 4/4, 1/1, p16 states the
+limitation, no needless deletes.  One run per cell on a small model; the checker
+is the smallest honest one and was not tuned to pass; the student's own
+validation (reading the Streams table) is not simulated.
+
 ## 7. What is deliberately not done
 
 * No fine-tuning, no embeddings, no retrieval server: the site serves static
