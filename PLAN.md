@@ -53,18 +53,20 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | status | what | ref |
 |---|---|---|
 | todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says (the brief now names the defect) | C201 (2) |
+| todo | PIF easy wins, from the reports read in full: E2 HVAC cost from the supply air, E3 cleaning events -> CIP water and effluent volumes, E4 building cost from room areas, E5 economics hygiene (working capital three ways side by side, royalty inside a patent window), E6 per-machine utilisation and Gantt in the GUI, E7 and E8 two EduTools (how a PIF economics goes wrong; the demand forecast) | C195, docs/reviews/2026-11-02-pif-reports-synthesis.md |
 | todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag | C205 |
 | todo | C200 remaining packs (heat, electrolytes, membranes, solids, design-cost, drivers, batch-transient, props), the generated reference and `llms.txt` on the site; re-score the 2026-11-01 baseline with the -init0 step so the comparison is like for like | C200 |
 | todo | Newcomer surfaces: `runCase` shows the answer, the balance verdict and the caveat block; one "start here" path across doc, landing cards and the site folder | C201 (3), (4) |
 | todo | Tutorial texts the review found stale or false and the housekeeping list; moved goldens, if any, as a list | C201 (5), (6) |
 | todo | C199 leftovers: the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
-| todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
 
 ## Beyond a week
 
 | status | what | ref |
 |---|---|---|
+| todo | PIF long-term (L1-L10 of the synthesis): the sterile route (filling, lyophiliser, sterilising filtration, F0), full HVAC (latent and equipment loads, the pressure cascade's leakage), labour following the plan and multiproduct campaigns, quality calculations (blend uniformity, cleaning limits), utility networks (steam, compressed air, vacuum), equipment catalogue records, scale-up and solid-dosage unit models, the economics as a distribution | C195, docs/reviews/2026-11-02-pif-reports-synthesis.md |
+| todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
 | todo | A specification sheet for every routed pipe: length from the layout, bore from a velocity window or the economic diameter, total pressure drop (run + fittings + valves + head), the pump a line needs, the instruments from the loop declarations; and the pipe's cost | C207 |
 | todo | Two EduTools in Pareto mode: liquid effluent treatment and gaseous emission treatment (first the Pareto against the corpus plants' own boundary streams, then the scope to Vitor) | C206 |
 | blocked | Seawater boron on Pitzer: BOH4/CaBOH4/MgBOH4 formation and eight mixing records, each from its primary (blocked on reading Felmy & Weare 1986) | C198 |

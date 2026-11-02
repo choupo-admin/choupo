@@ -2333,8 +2333,25 @@ accepts today, and that is a policy call.
 > so the page pastes a volume ramp plus one discounted-volume-weighted price.
 > `--gui` 42/0.  STILL OPEN: (3) blend uniformity, (5) a sterile route, and the
 > compaction bench (waits for the groups' data).
-> STATUS: COMMISSIONED 2026-11-02; (1)(2) DONE; (4) with a general; (3), (5)
-> and the compaction bench wait.
+> VERIFIED 2026-11-02 night (Vitor: "Mas eu mandei-te ler anteriormente os
+> indices ... com isto fizeste uma lista"): the list above came from chapter
+> lists and keyword counts, so four readers READ the body of the 18 readable
+> projects, page by page; the aggregate and the recount are in
+> `docs/reviews/2026-11-02-pif-reports-synthesis.md`, and the per-project
+> evidence stays in the git-ignored `data/local/pif-reports/` (student
+> coursework; the repository is public -- an architect's decision, Vitor can
+> reverse it).  Result: 14 of 18 reach process design (4 stop at market, as
+> the scan said); Gantt 14 (scan: 10), break-even 14 (scan: 12), CAPEX-NPV
+> 14, sensitivity 11 + 2 partial; and **0 of 14 compute an air change** -- the
+> scan's HVAC claim stands, now with pages.  The gaps (1)-(5) stand; the
+> reading adds: the capacity loop is never closed, effluent is qualitative
+> everywhere, the layout is drawn by hand, the economics' inputs are arbitrary
+> and often inconsistent, and 3 of 14 design projects are sterile.  The
+> synthesis classifies the work as EASY (E1-E9, each inside an existing home)
+> and IMPORTANT LONG-TERM (L1-L10); both are placed in PLAN.md.
+> STATUS: COMMISSIONED 2026-11-02; (1)(2) DONE; (4) DONE; the compaction
+> bench with a general (deadline 2026-11-03 12:00); (3), (5) wait; the
+> verification above is DONE.
 
 > **C194. THE CAMPO DE DALIAS SEAWATER DESALINATION PLANT (THE "SEA OF
 > PLASTIC"), FROM A PUBLIC CASE STUDY, WITH ITS WHOLE LAYOUT (Vitor,
