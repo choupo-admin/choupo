@@ -134,6 +134,61 @@ A document's quality is what a model DOES with it, so it is measured.
   re-runs the harness and reports the same table; a phase that does not
   improve it is not finished.
 
+### 5.1 Baseline (2026-11-01)
+
+Tool: `bin/curate/llm_brief_eval.py` (stdlib Python; a tool, wired into no gate
+because it calls a paid model).  Problems: `bin/curate/llm_eval/problems/p01..p10`.
+Proxy: `claude -p --model haiku --tools "" --no-session-persistence
+--system-prompt "<one line>" --output-format json` from a neutral directory
+(the CLI adds about 11.3 k input tokens of its own, measured by a trivial call
+and subtracted below).  Engine: the primary checkout's build, commit d102180c9;
+one run per (brief, problem), 20 proxy calls, no retries needed.
+
+```
+python3 bin/curate/llm_brief_eval.py --out <scratch>/baseline          # both briefs, 10 problems
+python3 bin/curate/llm_brief_eval.py --rescore --out <scratch>/baseline # re-score, no model call
+```
+
+Brief (a) `core` = `bin/llmctx --core` (505 kB); brief (b) `bridge` = the nine
+files `gui/src/agent/authoringGuide.ts` concatenates, in its order (536 kB).
+
+| brief | runs | DESIGN.md present | mean items /7 | lint ok | solves | balances ok | tokens in (net) | tokens out |
+|---|---|---|---|---|---|---|---|---|
+| core   | 10 | 10/10 | 4.1 | 7/10 | 7/10 | 6/10 | 2 340 292 | 119 215 |
+| bridge | 10 | 10/10 | 3.9 | 0/10 | 0/10 | 0/10 | 2 582 583 | 106 598 |
+
+Per problem (core): p02 ethanol/water flash, p04 recycle flash, p05 reactor +
+flash, p06 column, p08 compressor train, p09 high-pressure gas, p10 brine flash
+solve; p01 (component `pentane` does not exist: the catalogue name differs),
+p03 (a malformed `Q` value) and p07 (absorber: the two product streams have no
+`0/` file) fail lint.  Every `bridge` run fails at the same place: the `0/`
+completeness check (a graph stream with no state file), because the bridge
+guide omits `start-here` and `stream-state`, which `--core` carries.  Full
+per-run table: the tool's `summary.md`.
+
+Findings, each measured:
+
+1. **Both briefs are about 200-280 k tokens, not 60 k.**  Section 2's "about
+   245 kB" for `--core` is wrong by a factor of two (505 kB measured today);
+   the CLI reports 205-254 k input tokens for `core` and 234-283 k for `bridge`
+   (the same brief reads about 49 k higher from p05 on for `core` and from p03
+   on for `bridge`; the CLI's accounting was not investigated).  Neither fits a 200 k window.  The proxy's window is
+   1 M, so nothing was truncated; a student's assistant with 128-200 k could
+   not take either.
+2. **The bridge guide ships an unrunnable case 10 times out of 10**, and the
+   comment in `authoringGuide.ts` still says "~97 KB" for 536 kB.
+3. **Near-copy of the corpus**: the flowsheetDict is 0.52-0.93 similar to a
+   tutorial's (mostly 0.7-0.9), the thermoPhysPropDict 0.92-1.00 (that file is
+   short and largely boilerplate, so it is a weak signal alone). 
+4. **DESIGN.md is present 20/20 but thin**: item 5 (degrees of freedom) is
+   missing in 19/20, item 1 (goal with numbers) in 16/20, item 7 in 13/20.
+   The detector is lenient keyword presence (documented in the script), so
+   these are upper bounds.
+5. A solved case is not a right one: core p10 (brine flash) solves with a
+   -39.1 kW energy residual and the mass/element balances at 100 %; nothing
+   here scores whether the numbers match the problem.  Hand-checkable values
+   are the next refinement of the scorer.
+
 ## 6. Phases
 
 * **A** -- the harness and the baseline (a general).
