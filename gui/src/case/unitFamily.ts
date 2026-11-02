@@ -305,7 +305,13 @@ export const SYMBOLS: readonly UnitSymbolSpec[] = [
   { cls: "StorageTank", label: "storage tank",
     //  A tank with a ROOF and a level: nothing splits here.
     path: "M12 16h24v24H12z M12 16l12-7 12 7 M12 30h24"
-        + " M3 22h9 M24 40v5" },
+        + " M3 22h9 M24 40v5", tag: "SS" },
+  { cls: "DynamicTank", label: "storage tank with a level, transient",
+    //  THE SAME EQUIPMENT as the steady storage tank (roof, level line,
+    //  inlet and bottom outlet); the integrated inventory is a SOLUTION
+    //  MODE, tagged, not a different drawing (the DynamicCSTR precedent).
+    path: "M12 16h24v24H12z M12 16l12-7 12 7 M12 30h24"
+        + " M3 22h9 M24 40v5", tag: "d/dt" },
 
   //  ---- BATCH VESSELS (choupoBatch) and the ONE lumped benchmark.
   //  These are NOT the steady units with a tag: a batch vessel is CLOSED to
@@ -407,6 +413,7 @@ export const UNIT_CLASS: { readonly [type: string]: string } = {
   cstr: "CSTR",
   //  DynamicUnitOperation's registry (choupoCtrl + choupoSemiContinuous).
   dynamicCSTR: "DynamicCSTR",
+  dynamicTank: "DynamicTank",
   williamsOttoPlant: "WilliamsOttoPlant",
   //  The quasi-steady seam (2026-09-30): an ADAPTER around a steady unit.
   //  Its class has no symbol of its own ON PURPOSE -- the honest picture is

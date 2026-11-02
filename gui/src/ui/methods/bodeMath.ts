@@ -112,7 +112,7 @@ export function gainResponse(K: number): Response {
  *  THIS IS THE ONE ELEMENT THE ENGINE JUDGES.  It is the tracer dynamics of
  *  a constant-volume stirred tank: the engine integrates
  *  `dn_i/dt = F_in z_in_i - F_out (n_i/Sum n)` with `F_out = F_in`
- *  (src/unitOperations/dynamic/DynamicCSTR.cpp:670-673), whose single time
+ *  (src/unitOperations/dynamic/DynamicCSTR.cpp:648-651), whose single time
  *  constant is the residence time `nTot / F_in` the same unit computes at
  *  :377.  Put a sinusoid in and the closed forms below come out; the
  *  measured plane checks them. */

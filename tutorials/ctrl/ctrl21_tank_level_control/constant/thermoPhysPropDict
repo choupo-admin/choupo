@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- water alone, ideal.  A tank with a level needs
+  only the liquid density (the record's Vliq anchored by Rackett) and the
+  liquid enthalpy on the elements datum.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

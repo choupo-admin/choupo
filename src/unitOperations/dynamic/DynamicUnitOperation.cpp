@@ -28,6 +28,7 @@ License
 
 #include "DynamicUnitOperation.H"
 #include "DynamicCSTR.H"
+#include "DynamicTank.H"
 #include "WilliamsOttoPlant.H"
 #include "QuasiSteadyUnit.H"
 
@@ -111,6 +112,9 @@ void DynamicUnitOperation::registerBuiltins()
     registerType("dynamicCSTR",
         []() -> std::unique_ptr<DynamicUnitOperation>
         { return std::make_unique<DynamicCSTR>(); });
+    registerType("dynamicTank",
+        []() -> std::unique_ptr<DynamicUnitOperation>
+        { return std::make_unique<DynamicTank>(); });
     registerType("williamsOttoPlant",
         []() -> std::unique_ptr<DynamicUnitOperation>
         { return std::make_unique<WilliamsOttoPlant>(); });

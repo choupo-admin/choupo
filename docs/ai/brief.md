@@ -99,7 +99,9 @@ verbosity     3;                  // 3 = Newton iterations visible
 
 Other binaries: `choupoBatch` (batch recipes), `choupoSemiContinuous`
 (transient flowsheet), `choupoCtrl` (transient + control loops),
-`choupoProps` (property bench).
+`choupoProps` (property bench).  The time-integrated units (`dynamicCSTR`,
+`dynamicTank` with a LEVEL, `quasiSteady`) are taught in `docs/ai/unit-ops.md`
+("choupoCtrl / choupoSemiContinuous").
 
 ### flowsheetDict
 

@@ -2762,6 +2762,45 @@ jacket (both refused), e.g. the recirculation tank of a feed-and-bleed loop
 whose solute carries no heat capacity (`unsteady04_uf_feed_and_bleed_startup`).
 Absent, the energy equation is chosen by probing, as before.
 
+### `dynamicTank` — a liquid tank with a LEVEL (inventory)
+A vertical-cylinder tank whose liquid volume moves: state = the inventory `n_i`
+and the stored enthalpy `H` (elements datum, the package's mixture liquid
+surface; `T` is a readout), so the first-law ledger CLAIMS closure.  Volume =
+`sum n_i MW_i / rho` from the CASE's package (a package that cannot price a
+liquid density refuses by name; declare `Vliq` + critical constants), level =
+volume over the declared cross-section.  A tank that runs dry or overflows is
+REFUSED at that instant (never clamped).  No reaction (a `reaction(s)` key
+refuses).  ONE feed face (merge several feeds with a `quasiSteady` mixer).
+The outflow is DECLARED, one of two behaviours:
+- `mode flow; F <kmol/s>;` -- a manipulated flow (`mv F_out`): the level
+  INTEGRATES (a constant imbalance drains or floods it).
+- `mode valve; opening <0..1>; valve { Cv <m2>; downstreamPressure <Pa>; }` --
+  `Q = Cv * opening * sqrt(dP/rho)`, `dP = P + rho g h - P_down`, `F_out =
+  Q rho / MW` (`mv opening`): the level SELF-REGULATES to
+  `h* = (Q/(Cv opening))^2/g - (P - P_down)/(rho g)`.  `Cv` is an effective flow
+  AREA in m2 (the orifice equation's Cd A), not the US gpm coefficient.
+MV: `F_in`, `T_in`, `T_jacket`, `componentMolarFlow.<c>`, and `F_out` (flow) or
+`opening` (valve) -- the other mode's key refuses by name.  CV: `level` [m],
+`volume`, `density`, `T`, `F_in`, `F_out`, `n_total`, `x_<c>`, `opening`.
+A level controller on `F_out` is REVERSE acting: with the direct-acting PID
+(`error = setpoint - level`) the gains are NEGATIVE.  Initial holdup
+(`0/internalStates/<unit>`, `equipment dynamicTank;`): `T`, `P` (Pa over the
+liquid), `molarComposition {..}` and EITHER `totalMoles`/`holdupMolar` OR
+`level <m>`.  Optional `UA` (W/K) and `T_jacket` in `operation`.  Examples:
+`unsteady05_tank_valve_drain` (self-regulating, no controller) and
+`ctrl21_tank_level_control` (PI on `F_out`; Ki = 0 settles 0.05 m off).
+
+```
+{ name tank;  type dynamicTank;  in feed;  outputs ( drain );
+  operation
+  { geometry { shape verticalCylinder; diameter 2.0 m; height 4.0 m; }
+    outflow  { mode valve; opening 0.5;
+               valve { Cv 2.3e-3 m2; downstreamPressure 101325.0 Pa; } } }
+}
+// 0/internalStates/tank :  holdup { T 293.15; P 101325.0; level 1.0;
+//                                   molarComposition { water 1.0; } }
+```
+
 ### `quasiSteady` — a steady unit inside a transient
 Wraps ANY steady unit (a membrane module, an ED stack, a mixer, a splitter)
 and re-solves it on its inlets at every accepted state -- the unit holds NO

@@ -1,0 +1,13 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/feed -- the state of stream 'feed' at t = 0: ONE file per stream.
+  The NEW inflow, 0.30 kmol/s (5.4 L/s of water); the tank starts at the
+  steady level of the OLD one, 0.20 kmol/s -- that is the step.
+\*-----------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    water  0.30 kmol/s;
+}
+
+T               293.15 K;
+P               101325.0 Pa;
