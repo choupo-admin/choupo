@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/heatExchanger.schema.json",
   "title": "heatExchanger operation",
-  "description": "Two-stream heat exchanger. THREE modes via `model`: epsNTU (default) rates from a given U + area; geometry COMPUTES U + area + pressure drop from the tube bundle (Gnielinski/Kern); design SIZES the bundle from a duty target. In geometry/design the U and area below are RESULTS, not inputs.",
+  "description": "Two-stream heat exchanger. FOUR modes via `model`: epsNTU (default) rates from a given U + area; geometry COMPUTES U + area + pressure drop from the tube bundle (Gnielinski/Kern); design SIZES the bundle from a duty target; BellDelaware rates the declared bundle with the Bell-Delaware shell side (the baffle-cut, leakage and bypass factors; JL, JB, RL, RB are Bell's chart readings and are declared). In geometry/design/BellDelaware the U and area below are RESULTS, not inputs.",
   "type": "object",
   "properties": {
     "area": {
@@ -137,6 +137,104 @@
           "title": "What is being solved for"
         }
       }
+    },
+    "bellDelaware": {
+      "type": "object",
+      "title": "Bell-Delaware shell side",
+      "description": "Used with `model BellDelaware;`. Hewitt, Shires & Bott, Process Heat Transfer, Section 6.3.2. The leakage and bypass factors JL, JB (and RL, RB for the pressure drop) are read from Bell's charts and DECLARED, as the textbook does; JL and JB are required, RL and RB both or neither.",
+      "properties": {
+        "baffleCutPercent": {
+          "type": "number",
+          "title": "Baffle cut",
+          "exclusiveMinimum": 0,
+          "description": "Percent of the shell diameter; 15 to 45 (the window of the linear Jc fit).",
+          "unit": "%"
+        },
+        "bundleShellClearance": {
+          "type": "number",
+          "title": "Bundle-to-shell diametral clearance",
+          "exclusiveMinimum": 0,
+          "unit": "m"
+        },
+        "tubeBaffleClearance": {
+          "type": "number",
+          "title": "Tube-to-baffle diametral clearance",
+          "exclusiveMinimum": 0,
+          "unit": "m"
+        },
+        "shellBaffleClearance": {
+          "type": "number",
+          "title": "Shell-to-baffle diametral clearance",
+          "exclusiveMinimum": 0,
+          "unit": "m"
+        },
+        "sealingStripRatio": {
+          "type": "number",
+          "title": "Sealing strips per cross-flow row",
+          "description": "N_ss/N_c, the chart parameter of Hewitt Fig 6.9.",
+          "unit": "-"
+        },
+        "sealingStripPairs": {
+          "type": "number",
+          "title": "Pairs of sealing strips",
+          "description": "Alternative to the ratio; N_ss/N_c is then derived.",
+          "unit": "-"
+        },
+        "baffleThickness": {
+          "type": "number",
+          "title": "Baffle thickness",
+          "description": "With the tube length gives the number of baffles.",
+          "unit": "m"
+        },
+        "nBaffles": {
+          "type": "integer",
+          "minimum": 1,
+          "title": "Number of baffles",
+          "description": "Overrides the count derived from the tube length.",
+          "unit": "-"
+        },
+        "idealBank": {
+          "type": "string",
+          "title": "Ideal tube-bank correlation",
+          "description": "Hewitt (Table 2.5, default) or Serth (Table 6.1).",
+          "enum": [
+            "Hewitt",
+            "Serth"
+          ]
+        },
+        "JL": {
+          "type": "number",
+          "title": "Leakage correction JL",
+          "description": "Read from Hewitt Fig 6.8; required.",
+          "unit": "-"
+        },
+        "JB": {
+          "type": "number",
+          "title": "Bypass correction JB",
+          "description": "Read from Hewitt Fig 6.9; required.",
+          "unit": "-"
+        },
+        "RL": {
+          "type": "number",
+          "title": "Leakage pressure-drop factor RL",
+          "description": "Read from Hewitt Fig 6.10; with RB turns on the shell pressure drop.",
+          "unit": "-"
+        },
+        "RB": {
+          "type": "number",
+          "title": "Bypass pressure-drop factor RB",
+          "description": "Read from Hewitt Fig 6.11.",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "baffleCutPercent",
+        "bundleShellClearance",
+        "tubeBaffleClearance",
+        "shellBaffleClearance",
+        "JL",
+        "JB"
+      ]
     }
   },
   "required": [],

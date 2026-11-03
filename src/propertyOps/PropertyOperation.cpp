@@ -40,6 +40,7 @@ License
 #include "SolubilityParameter.H"
 #include "HansenMixture.H"
 #include "HeatTransferBench.H"
+#include "BellDelawareBench.H"
 #include "Kinetics1D.H"
 #include "Exergy.H"
 #include "ExplainProperty.H"
@@ -209,6 +210,7 @@ void PropertyOperation::registerBuiltins()
     reg("vaporPressureFit", []{ return std::make_unique<VaporPressureFit>(); });
     reg("heatCapacityFit", []{ return std::make_unique<HeatCapacityFit>(); });
     reg("heatTransferBench", []{ return std::make_unique<HeatTransferBench>(); });
+    reg("bellDelawareBench", []{ return std::make_unique<BellDelawareBench>(); });
     reg("frictionBench", []{ return std::make_unique<FrictionBench>(); });
     //  A RATE LAW WRITTEN IN THE CASE, ON THE BENCH (`type expression;` in
     //  constant/reactions; DEV.md 4c C67).  It replaced the ammonia-only

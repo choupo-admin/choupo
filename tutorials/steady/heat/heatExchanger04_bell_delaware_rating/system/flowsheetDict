@@ -1,0 +1,91 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  heatExchanger04_bell_delaware_rating
+  ====================================
+
+  A shell-and-tube exchanger RATED with the Bell-Delaware method
+  (`model BellDelaware;`) -- the design-course method for the shell side.
+  Where heatExchanger02 uses Kern's one-line shell correlation, this case
+  asks what the tube bank, the baffle cut and the leaks do to it:
+
+      h_shell = h_ideal x Jc x JL x JB
+
+  h_ideal is the cross-flow tube bank (Hewitt, Shires & Bott, *Process Heat
+  Transfer*, Eq 2.218 / Table 2.5, in-line square pitch); Jc the baffle-cut
+  factor from the fraction of tubes in cross-flow (Eqs 6.13-6.14); JL and JB
+  are BELL'S CHART READINGS (Figs 6.8, 6.9) and are DECLARED, exactly as the
+  textbook takes them -- Choupo carries no equation for them and refuses by
+  name when they are absent.  RL and RB (Figs 6.10, 6.11) are declared the
+  same way and turn on the shell-side pressure drop (Eqs 6.20-6.31).
+
+  GEOMETRY: the bundle of Hewitt's Example 6.1 (shell 0.5398 m, 158 tubes of
+  25.4 mm OD on a 31.75 mm square pitch, 127 mm baffle spacing, 25 % cut,
+  four tube passes).  The chart coordinates -- (Ssb+Stb)/Sm, Ssb/(Ssb+Stb),
+  Fbp, Nss/Nc -- depend on the geometry alone, so the book's readings
+  (0.58, 0.92, 0.33, 0.76) hold here for water: the run PUBLISHES the
+  coordinates (BD_leakageRatio, BD_leakageSplit, BD_Fbp) so a student can
+  check them against the charts.  The textbook example itself (a light
+  hydrocarbon) is reproduced digit by digit by the props bench
+  tutorials/props/heat/bellDelaware01_hewitt_example62.
+
+  Properties are the package's, evaluated at each stream's inlet
+  temperature.  The tube side is Gnielinski; the overall U and the eps-NTU
+  duty are unchanged from `model geometry;`.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        hx;
+        type        heatExchanger;
+        model       BellDelaware;
+        inputs      ( hotShell  coldTube );
+        outputs     ( hotOut  coldOut );
+
+        operation
+        {
+            flow        counter;
+            tubeStream  coldTube;        // which inlet is inside the tubes
+
+            geometry
+            {
+                tubeID         0.020574 m;
+                tubeOD         0.0254 m;
+                tubeLength     4.8768 m;
+                nTubes         158;
+                passes         4;
+                shellID        0.5398 m;
+                baffleSpacing  0.1270 m;
+                tubePitch      0.03175 m;
+                tubePattern    square;
+                wallMaterial   carbonSteel;   // -> k = 50 W/(m.K)
+            }
+
+            tubeSide  { model Gnielinski; }
+
+            //  The shell side (Hewitt Section 6.3.2).  JL, JB, RL, RB are
+            //  READ FROM BELL'S CHARTS, as the textbook does, and declared.
+            bellDelaware
+            {
+                baffleCutPercent     25;
+                bundleShellClearance 0.035 m;
+                tubeBaffleClearance  0.0008 m;
+                shellBaffleClearance 0.005 m;
+                sealingStripRatio    0.2;     // N_ss/N_c, chart parameter
+                baffleThickness      0.005 m;
+                idealBank            Hewitt;
+                JL 0.58;  JB 0.92;            // Hewitt Figs 6.8, 6.9
+                RL 0.33;  RB 0.76;            // Hewitt Figs 6.10, 6.11
+            }
+        }
+    }
+);

@@ -7051,6 +7051,48 @@ STRUCTURAL WITNESS, NOT A VALIDATION. Every number here comes from this case's o
 \end{tutgolden}
 
 \clearpage
+\tutentry{heatExchanger04\_bell\_delaware\_rating}{tutorials/steady/heat/heatExchanger04\_bell\_delaware\_rating}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (hx) at (0.0,-0.0) {\textbf{hx}\\[-1pt]{\tiny heatExchanger}};
+  \draw[->] ($(hx.west)+(-1.05,-0.17)$) -- ($(hx.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {hotShell};
+  \draw[->] ($(hx.west)+(-1.05,0.17)$) -- ($(hx.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {coldTube};
+  \draw[->] ($(hx.east)+(0,-0.17)$) -- ($(hx.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {hotOut};
+  \draw[->] ($(hx.east)+(0,0.17)$) -- ($(hx.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {coldOut};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Shell-and-tube RATING by the Bell-Delaware method: shell-side film and pressure drop from the declared TEMA geometry (Hewitt Example 6.1 bundle), the leakage and bypass factors read from Bell's charts and declared. Water-water, clean service.}
+\begin{tutnarrative}
+A shell-and-tube exchanger RATED with the Bell-Delaware method (`model BellDelaware;`) -- the design-course method for the shell side. Where heatExchanger02 uses Kern's one-line shell correlation, this case asks what the tube bank, the baffle cut and the leaks do to it:
+
+h\_shell = h\_ideal x Jc x JL x JB
+
+h\_ideal is the cross-flow tube bank (Hewitt, Shires \& Bott, $\ast$Process Heat Transfer$\ast$, Eq 2.218 / Table 2.5, in-line square pitch); Jc the baffle-cut factor from the fraction of tubes in cross-flow (Eqs 6.13-6.14); JL and JB are BELL'S CHART READINGS (Figs 6.8, 6.9) and are DECLARED, exactly as the textbook takes them -- Choupo carries no equation for them and refuses by name when they are absent. RL and RB (Figs 6.10, 6.11) are declared the same way and turn on the shell-side pressure drop (Eqs 6.20-6.31).
+
+GEOMETRY: the bundle of Hewitt's Example 6.1 (shell 0.5398 m, 158 tubes of 25.4 mm OD on a 31.75 mm square pitch, 127 mm baffle spacing, 25 \% cut, four tube passes). The chart coordinates -- (Ssb+Stb)/Sm, Ssb/(Ssb+Stb), Fbp, Nss/Nc -- depend on the geometry alone, so the book's readings (0.58, 0.92, 0.33, 0.76) hold here for water: the run PUBLISHES the coordinates (BD\_leakageRatio, BD\_leakageSplit, BD\_Fbp) so a student can check them against the charts. The textbook example itself (a light hydrocarbon) is reproduced digit by digit by the props bench tutorials/props/heat/bellDelaware01\_hewitt\_example62.
+
+Properties are the package's, evaluated at each stream's inlet temperature. The tube side is Gnielinski; the overall U and the eps-NTU duty are unchanged from `model geometry;`.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{coldOut}{F}{0.443888888889}
+\goldrow{stream}{coldOut}{T}{316.501250255}
+\goldrow{stream}{coldTube}{F}{0.443888888889}
+\goldrow{stream}{coldTube}{T}{293.15}
+\goldrow{stream}{hotOut}{F}{0.306333333333}
+\goldrow{stream}{hotOut}{T}{309.32246054}
+\goldrow{stream}{hotShell}{F}{0.306333333333}
+\goldrow{stream}{hotShell}{T}{343.15}
+\goldrow{kpi}{hx}{BD\_Fbp}{0.267420537897}
+\goldrow{kpi}{hx}{BD\_Fc}{0.646768246556}
+\goldrow{kpi}{hx}{BD\_JB}{0.92}
+\goldrow{kpi}{hx}{BD\_JL}{0.58}
+\goldrow{kpi}{hx}{BD\_J\_combined}{0.541963186181}
+\goldrow{kpi}{hx}{BD\_Jc}{1.01567313752}
+\goldmore{48}
+\end{tutgolden}
+
+\clearpage
 \tutentry{heatlink01\_condenser\_to\_heater}{tutorials/steady/heat/heatlink01\_condenser\_to\_heater}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

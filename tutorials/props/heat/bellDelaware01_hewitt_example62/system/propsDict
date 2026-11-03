@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  bellDelaware01_hewitt_example62 --- the Bell-Delaware shell-side rating on
+  the textbook's own worked example.
+
+  SOURCE.  G. F. Hewitt, G. L. Shires, T. R. Bott, *Process Heat Transfer*
+  (CRC Press, 1994), Example 6.1 (the geometry and the light-hydrocarbon
+  stream) and Example 6.2 (the Bell-Delaware solution, pp. 280-285), with the
+  method of Section 6.3.2 (Eqs 6.8-6.19, 6.20, 6.22, 6.26-6.31) and the ideal
+  bank of Eq 2.218 / Table 2.5.
+
+  WHAT IS DECLARED, AS THE BOOK DOES.  Bell's J_L, J_B (Figs 6.8, 6.9) and
+  R_L, R_B (Figs 6.10, 6.11) are CHART READINGS in this method; the book reads
+  J_L = 0.58, J_B = 0.92, R_L = 0.33, R_B = 0.76 and so does this case.
+  Choupo carries no equation for them and refuses by name when they are
+  absent.  The fluid properties are the book's too (the bench is the
+  textbook's inputs, not a package's), which is why this is a props bench.
+
+  WHAT THE BOOK PRINTS, AND WHAT THIS RUN GIVES (the gate holds every row):
+      S_m   0.01667 m2  (book)   0.016622 from Eq 6.9 as written: the book's
+                                  S_m is 0.3 % high.  Op `book` starts from
+                                  the PRINTED S_m and reproduces every digit;
+                                  op `exact` starts from the geometry
+      Re    2.097e4      Pr 7.481     ideal h 1418 W/m2K    F_c 0.6470
+      J_c   1.016       (S_sb+S_tb)/S_m 0.4187     F_bp 0.2666
+      h     769 W/m2K   K_f 0.3657    N_c 8.5    dp_c 233 Pa
+      dp_w  165 Pa      shell dP 4501 Pa
+\*---------------------------------------------------------------------------*/
+operations
+(
+    //  1. The book's arithmetic from the book's PRINTED S_m: every step
+    //     reproduces the printed digits.
+    {
+        name   book;
+        type   bellDelawareBench;
+
+        geometry
+        {
+            shellID        0.5398 m;
+            tubeOD         0.0254 m;
+            tubePitch      0.03175 m;
+            tubePattern    square;
+            baffleSpacing  0.1270 m;
+            nTubes         158;
+            tubeLength     4.8768 m;
+        }
+        bellDelaware
+        {
+            baffleCutPercent     25;
+            bundleShellClearance 0.035 m;
+            tubeBaffleClearance  0.0008 m;
+            shellBaffleClearance 0.005 m;
+            sealingStripRatio    0.2;
+            baffleThickness      0.005 m;
+            idealBank            Hewitt;
+            SmPrinted            0.01667 m2;   // the book's PRINTED S_m (bench only)
+            // Bell's charts, read by the book (Example 6.2 steps 2(ii), 2(iii), 6):
+            JL 0.58;  JB 0.92;
+            RL 0.33;  RB 0.76;
+        }
+        shellFluid
+        {
+            mdot    5.5188 kg/s;
+            rho     730;
+            mu      401e-6;
+            lambda  0.1324;
+            cp      2470;
+        }
+    }
+    //  2. The same method from Eq 6.9 as written: S_m = 0.016622 m2 (the book
+    //     prints 0.01667), so the S_m-dependent steps sit about 0.3-0.7 % off.
+    {
+        name   exact;
+        type   bellDelawareBench;
+
+        geometry
+        {
+            shellID        0.5398 m;
+            tubeOD         0.0254 m;
+            tubePitch      0.03175 m;
+            tubePattern    square;
+            baffleSpacing  0.1270 m;
+            nTubes         158;
+            tubeLength     4.8768 m;
+        }
+        bellDelaware
+        {
+            baffleCutPercent     25;
+            bundleShellClearance 0.035 m;
+            tubeBaffleClearance  0.0008 m;
+            shellBaffleClearance 0.005 m;
+            sealingStripRatio    0.2;
+            baffleThickness      0.005 m;
+            idealBank            Hewitt;
+            // Bell's charts, read by the book (Example 6.2 steps 2(ii), 2(iii), 6):
+            JL 0.58;  JB 0.92;
+            RL 0.33;  RB 0.76;
+        }
+        shellFluid
+        {
+            mdot    5.5188 kg/s;
+            rho     730;
+            mu      401e-6;
+            lambda  0.1324;
+            cp      2470;
+        }
+    }
+);

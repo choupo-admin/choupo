@@ -5067,6 +5067,23 @@ PYEOF
     fi
     rm -f /tmp/friction.$$
 
+    # Bell-Delaware gate (2026-11-04, DEV.md 4c C214 W2).  `heatExchanger`
+    # `model BellDelaware;` rates the shell side by Hewitt, Shires & Bott
+    # Section 6.3.2; the gate reproduces their Example 6.2 step by step
+    # (every printed digit from the printed S_m, the 0.3 % slip in that S_m
+    # stated), fires nine refusals through the real reader, and holds the
+    # unit's h_outer to h_ideal x Jc x JL x JB.  JL/JB/RL/RB are declared
+    # chart readings.
+    if gate_exec "$ROOT/bin/curate/check_bell_delaware.py" > /tmp/belldelaware.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "bell-delaware-gate" "$(head -1 /tmp/belldelaware.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_bell_delaware.py)\n" "bell-delaware-gate"
+        cat /tmp/belldelaware.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/belldelaware.$$
+
     # rate-expression gate (2026-10-12, DEV.md 4c C67).  A rate law written in
     # the case is compiled, dimension-checked, printed back as parsed and
     # evaluated as declared; the C++ route (a law registered from code/) and

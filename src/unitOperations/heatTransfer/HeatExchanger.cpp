@@ -30,6 +30,7 @@ License
 
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "unitOperations/heatTransfer/htc/ShellTubeDesign.H"
+#include "unitOperations/heatTransfer/htc/BellDelaware.H"
 #include "materials/MaterialRegistry.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/ThermoAnnounce.H"
@@ -188,17 +189,19 @@ int HeatExchanger::solve(const DictPtr& dict,
     //  that also carries U and area ran the wrong model to exit 0 (measured:
     //  heatExchanger01 with `model geometri;` inserted, parent build).
     const std::string model = dict->lookupWordOrDefault("model", "epsNTU");
-    if (model != "epsNTU" && model != "geometry" && model != "design")
+    if (model != "epsNTU" && model != "geometry" && model != "design"
+        && model != "BellDelaware")
         throw std::runtime_error("HeatExchanger: "
             + registryRefusal::message("heat exchanger model", model,
-                  {"epsNTU", "geometry", "design"}, "Accepted"));
+                  {"epsNTU", "geometry", "design", "BellDelaware"},
+                  "Accepted"));
     scalar A = 0.0, U = 0.0;
     int    tubePasses = 1;   // 1 = counter/co; >=2 -> 1-shell/2-tube-pass eps-NTU
     std::string controllingResistance = "n/a";
     // Geometry-mode KPIs are stashed here and merged AFTER the eps-NTU KPI
     // block (which clears kpis_); empty in the epsNTU default path.
     std::map<std::string, scalar> geomKpis;
-    if (model == "geometry" || model == "design")
+    if (model == "geometry" || model == "design" || model == "BellDelaware")
     {
         // mass-specific cp [J/(kg.K)] of a stream at T: molar Cp / MW_avg.
         auto streamMassCp = [&](const Stream& s, scalar Teval) -> scalar
@@ -256,6 +259,7 @@ int HeatExchanger::solve(const DictPtr& dict,
         const scalar tubeOD  = g->lookupScalar("tubeOD",  Dims::length);
         const scalar tubeL   = g->lookupScalar("tubeLength", Dims::length);
         const bool   isDesign = (model == "design");
+        const bool   isBell   = (model == "BellDelaware");
         int          nTubes  = isDesign ? 0
                              : static_cast<int>(g->lookupScalar("nTubes"));
         const int    passes  = static_cast<int>(g->lookupScalarOrDefault("passes", 1.0));
@@ -462,7 +466,26 @@ int HeatExchanger::solve(const DictPtr& dict,
         const scalar G_s = sside.G;                       // crossflow mass flux
         const scalar u_s = sside.u;                       // shell crossflow velocity
         const HeatTransferResult rs = sside.film;
-        const scalar h_o = rs.h;
+        //  `model BellDelaware;` REPLACES the Kern shell side (film and
+        //  pressure drop) by the Bell-Delaware rating of the same declared
+        //  bundle, at this stream's properties (evaluated at the inlet
+        //  temperature, as `model geometry;` does).  The arithmetic lives in
+        //  `htc/BellDelaware`; the tube side and the overall U are unchanged.
+        bellDelaware::Result bdRes;
+        if (isBell)
+        {
+            if (!oper->found("bellDelaware"))
+                throw std::runtime_error("HeatExchanger(BellDelaware): the"
+                    " operation needs a `bellDelaware { ... }` block (baffle"
+                    " cut, the three diametral clearances, sealing strips and"
+                    " the chart readings JL, JB) -- see docs/ai/unit-ops.md.");
+            bellDelaware::Fluid bf;
+            bf.mdot = fsr.mdot;  bf.rho = fsr.rho;  bf.mu = fsr.mu;
+            bf.lambda = fsr.lambda;  bf.cp = fsr.cp;
+            bdRes = bellDelaware::rate(
+                bellDelaware::readSpec(g, oper->subDict("bellDelaware")), bf);
+        }
+        const scalar h_o = isBell ? bdRes.h : rs.h;
 
         // --- Overall U on the OUTSIDE area, with the cylindrical wall -----
         //   1/U_o = 1/h_o + r_o ln(r_o/r_i)/k_wall + r_o/(r_i h_i)
@@ -496,9 +519,10 @@ int HeatExchanger::solve(const DictPtr& dict,
         const shellTubeDesign::ShellPressureDrop sdp =
             shellTubeDesign::shellPressureDrop(bundle, shellID, baffle,
                                                fsr.rho, G_s, D_e, rs.Re);
-        const int    nBaffles = sdp.nBaffles;
+        const bool   shellDp  = !isBell || bdRes.hasDp;
+        const int    nBaffles = isBell ? bdRes.nBaffles : sdp.nBaffles;
         const scalar f_shell  = sdp.f;
-        const scalar dP_shell = sdp.dP;                                 // Pa
+        const scalar dP_shell = isBell ? bdRes.dP : sdp.dP;             // Pa
 
         //  THE PRESSURE DROP IS COMPUTED, PUBLISHED -- AND NOT APPLIED.
         //
@@ -534,14 +558,56 @@ int HeatExchanger::solve(const DictPtr& dict,
 
         // --- KPIs (geometry-mode) -----------------------------------------
         geomKpis["dP_tube_kPa"]  = dP_tube  / 1000.0;
-        geomKpis["dP_shell_kPa"] = dP_shell / 1000.0;
+        if (shellDp)
+        {
+            geomKpis["dP_shell_kPa"] = dP_shell / 1000.0;
+            geomKpis["nBaffles"]     = static_cast<scalar>(nBaffles);
+            if (!isBell) geomKpis["f_shell"] = f_shell;
+        }
         geomKpis["f_tube"]       = f_tube;
-        geomKpis["f_shell"]      = f_shell;
-        geomKpis["nBaffles"]     = static_cast<scalar>(nBaffles);
+        if (isBell)
+        {
+            geomKpis["BD_Sm"] = bdRes.Sm;        geomKpis["BD_Vmax"] = bdRes.Vmax;
+            geomKpis["BD_Re"] = bdRes.Re;        geomKpis["BD_Pr"] = bdRes.Pr;
+            geomKpis["BD_h_ideal"] = bdRes.h_ideal;
+            geomKpis["BD_Fc"] = bdRes.Fc;        geomKpis["BD_Jc"] = bdRes.Jc;
+            geomKpis["BD_JL"] = bdRes.JL;        geomKpis["BD_JB"] = bdRes.JB;
+            geomKpis["BD_leakageRatio"] = bdRes.leakageRatio;
+            geomKpis["BD_leakageSplit"] = bdRes.leakageSplit;
+            geomKpis["BD_Fbp"] = bdRes.Fbp;      geomKpis["BD_Nc"] = bdRes.Nc;
+            geomKpis["BD_J_combined"] = bdRes.combined;
+            if (bdRes.hasDp)
+            {
+                geomKpis["BD_Kf"] = bdRes.Kf;        geomKpis["BD_dp_cross_Pa"] = bdRes.dpc;
+                geomKpis["BD_dp_window_Pa"] = bdRes.dpw;
+                geomKpis["BD_RL"] = bdRes.RL;        geomKpis["BD_RB"] = bdRes.RB;
+            }
+            for (const auto& a : bdRes.assumptions)
+            {
+                const std::string locus = "unit "
+                    + (dict->name().empty() ? std::string("heatExchanger")
+                                            : dict->name());
+                if (AdvisoryLog::instance().add("model", "info", locus,
+                        "Bell-Delaware: " + a) && verbosity >= 2)
+                    std::cout << "  [BellDelaware] " << locus << ": " << a << "\n";
+            }
+            if (!bdRes.hasDp)
+            {
+                const std::string locus = "unit "
+                    + (dict->name().empty() ? std::string("heatExchanger")
+                                            : dict->name());
+                AdvisoryLog::instance().add("model", "info", locus,
+                    "Bell-Delaware: no RL/RB declared, so no shell-side"
+                    " pressure drop is rated (Hewitt Figs 6.10-6.11 are chart"
+                    " readings); dP_shell_kPa is not published");
+            }
+        }
         geomKpis["Re_tube"]   = rt.Re;  geomKpis["Pr_tube"] = rt.Pr;
         geomKpis["Nu_tube"]   = rt.Nu;  geomKpis["h_inner"] = h_i;
-        geomKpis["Re_shell"]  = rs.Re;  geomKpis["Pr_shell"] = rs.Pr;
-        geomKpis["Nu_shell"]  = rs.Nu;  geomKpis["h_outer"] = h_o;
+        geomKpis["Re_shell"]  = isBell ? bdRes.Re : rs.Re;
+        geomKpis["Pr_shell"]  = isBell ? bdRes.Pr : rs.Pr;
+        if (!isBell) geomKpis["Nu_shell"] = rs.Nu;
+        geomKpis["h_outer"] = h_o;
         geomKpis["R_wall"]    = R_wall;
         geomKpis["R_inner"]   = R_inner;
         geomKpis["R_outer"]   = R_outer;
@@ -575,6 +641,14 @@ int HeatExchanger::solve(const DictPtr& dict,
                       << (rt.inValidity ? " : ok]" : " : WARN]") << "\n";
             if (!rt.inValidity) std::cout << "     WARN: " << rt.validityNote << "\n";
             std::cout << "     h_i = " << std::setprecision(1) << h_i << " W/(m^2.K)\n";
+            if (isBell)
+                std::cout << "  SHELL side (Bell-Delaware, " << pattern
+                          << " pitch):  Re_cross = " << std::setprecision(0)
+                          << bdRes.Re << ",  h_ideal = " << std::setprecision(1)
+                          << bdRes.h_ideal << " x Jc " << std::setprecision(3)
+                          << bdRes.Jc << " x JL " << bdRes.JL << " x JB "
+                          << bdRes.JB << "\n";
+            else
             std::cout << "  SHELL side (" << shellCorr->type() << ", Kern method, "
                       << pattern << " pitch):\n"
                       << "     v = " << std::setprecision(3) << u_s
@@ -585,7 +659,7 @@ int HeatExchanger::solve(const DictPtr& dict,
                       << ",  Nu = " << std::setprecision(1) << rs.Nu
                       << "   [" << shellCorr->validityWindow()
                       << (rs.inValidity ? " : ok]" : " : WARN]") << "\n";
-            if (!rs.inValidity) std::cout << "     WARN: " << rs.validityNote << "\n";
+            if (!isBell && !rs.inValidity) std::cout << "     WARN: " << rs.validityNote << "\n";
             std::cout << "     h_o = " << std::setprecision(1) << h_o
                       << " W/(m^2.K)   ((mu/mu_w)^0.14 = 1, isothermal-wall v1)\n";
             std::cout << "  Resistances (on outside area):\n"
@@ -604,14 +678,23 @@ int HeatExchanger::solve(const DictPtr& dict,
                       << "  U  = " << std::setprecision(1) << U
                       << " W/(m^2.K)  (RESULT),   area = " << std::setprecision(2)
                       << A << " m^2 (RESULT)\n";
-            std::cout << "  Pressure drop (Kern):\n"
+            std::cout << (isBell ? "  Pressure drop (tube side Kern; shell side Bell-Delaware):\n"
+                                 : "  Pressure drop (Kern):\n")
                       << "     tube side : f = " << std::setprecision(4) << f_tube
                       << ",  dP = " << std::setprecision(1) << dP_tube / 1000.0
                       << " kPa  (" << passes << " pass"
-                      << (passes == 1 ? "" : "es") << ", friction + returns)\n"
-                      << "     shell side: f = " << std::setprecision(4) << f_shell
-                      << ",  " << nBaffles << " baffles,  dP = "
-                      << std::setprecision(1) << dP_shell / 1000.0 << " kPa\n"
+                      << (passes == 1 ? "" : "es") << ", friction + returns)\n";
+            if (!isBell)
+                std::cout << "     shell side: f = " << std::setprecision(4) << f_shell
+                          << ",  " << nBaffles << " baffles,  dP = "
+                          << std::setprecision(1) << dP_shell / 1000.0 << " kPa\n";
+            else if (shellDp)
+                std::cout << "     shell side: " << nBaffles << " baffles,  dP = "
+                          << std::setprecision(1) << dP_shell / 1000.0
+                          << " kPa  (cross-flow + window zones, RL/RB declared)\n";
+            else
+                std::cout << "     shell side: not rated (declare RL and RB)\n";
+            std::cout
                       << "     (RESULTS; the duty-vs-pumping-cost trade-off lives here)\n"
                       << "===============================================================\n";
         }

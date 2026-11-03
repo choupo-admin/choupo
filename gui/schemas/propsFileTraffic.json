@@ -11,6 +11,10 @@
     }
    ]
   },
+  "bellDelawareBench": {
+   "reads": [],
+   "writes": []
+  },
   "compactionFit": {
    "reads": [
     {

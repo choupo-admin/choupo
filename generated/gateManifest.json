@@ -1520,6 +1520,11 @@
       "exit": 0,
       "claim": "check_capability_index: OK: 114 typed name(s) resolved against their registries, 52 path(s) present (48 witness case(s)), 18 untyped name(s) found in the tree; every concept names a typed name and a witness (names only -- the prose about them is not checked)",
       "seconds": 0.3
+    },
+    "check_bell_delaware": {
+      "exit": 0,
+      "claim": "check_bell_delaware: OK -- Hewitt Example 6.2 reproduced (20 printed steps reproduced from the printed S_m within the book's own rounding of its intermediates (<= 0.25 %), and every printed downstream digit EXACTLY when its rounded intermediates are replayed independently; the geometry-only run agrees on the S_m-free steps and within 1 % on the rest, the book's S_m being 0.29 % above its own Eq 6.9); JL/JB/RL/RB are declared chart readings and absent ones refuse by name; 9 refusals fire through the real reader; the unit publishes the J factors and h_outer = h_ideal x Jc x JL x JB; the Serth bank is an arithmetic anchor, said so",
+      "seconds": 0.1
     }
   }
 }

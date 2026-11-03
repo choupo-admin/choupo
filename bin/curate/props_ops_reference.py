@@ -60,7 +60,7 @@ GROUPS = [
         "fitParameters", "vaporPressureFit", "heatCapacityFit",
         "estimateComponent", "dataReconciliation")),
     ("Benches", (
-        "kinetics1D", "heatTransferBench", "isothermEval",
+        "kinetics1D", "heatTransferBench", "bellDelawareBench", "isothermEval",
         "elementalComposition")),
 ]
 

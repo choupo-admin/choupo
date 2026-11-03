@@ -2749,6 +2749,43 @@ The "$^\circ$" fixes the standard state (1 bar, ideal gas); it does not fix the 
 \subsection{heat}
 \grouptheory{heat}
 \clearpage
+\tutentry{bellDelaware01\_hewitt\_example62}{tutorials/props/heat/bellDelaware01\_hewitt\_example62}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{book}\\[-1pt]{\tiny bellDelawareBench}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{exact}\\[-1pt]{\tiny bellDelawareBench}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Bell-Delaware shell side -- Hewitt, Shires \& Bott Example 6.2 reproduced step by step at the book's own declared fluid and geometry (J\_L, J\_B, R\_L, R\_B read from Bell's charts and declared, as the textbook does).}
+\begin{tutnarrative}
+the Bell-Delaware shell-side rating on the textbook's own worked example.
+
+SOURCE. G. F. Hewitt, G. L. Shires, T. R. Bott, $\ast$Process Heat Transfer$\ast$ (CRC Press, 1994), Example 6.1 (the geometry and the light-hydrocarbon stream) and Example 6.2 (the Bell-Delaware solution, pp. 280-285), with the method of Section 6.3.2 (Eqs 6.8-6.19, 6.20, 6.22, 6.26-6.31) and the ideal bank of Eq 2.218 / Table 2.5.
+
+WHAT IS DECLARED, AS THE BOOK DOES. Bell's J\_L, J\_B (Figs 6.8, 6.9) and R\_L, R\_B (Figs 6.10, 6.11) are CHART READINGS in this method; the book reads J\_L = 0.58, J\_B = 0.92, R\_L = 0.33, R\_B = 0.76 and so does this case. Choupo carries no equation for them and refuses by name when they are absent. The fluid properties are the book's too (the bench is the textbook's inputs, not a package's), which is why this is a props bench.
+
+WHAT THE BOOK PRINTS, AND WHAT THIS RUN GIVES (the gate holds every row): S\_m 0.01667 m2 (book) 0.016622 from Eq 6.9 as written: the book's S\_m is 0.3 \% high. Op `book` starts from the PRINTED S\_m and reproduces every digit; op `exact` starts from the geometry Re 2.097e4 Pr 7.481 ideal h 1418 W/m2K F\_c 0.6470 J\_c 1.016 (S\_sb+S\_tb)/S\_m 0.4187 F\_bp 0.2666 h 769 W/m2K K\_f 0.3657 N\_c 8.5 dp\_c 233 Pa dp\_w 165 Pa shell dP 4501 Pa
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{book}{Fbp}{0.266646670666}
+\goldrow{diag}{book}{Fc}{0.646768246556}
+\goldrow{diag}{book}{JB}{0.92}
+\goldrow{diag}{book}{JL}{0.58}
+\goldrow{diag}{book}{J\_combined}{0.541963186181}
+\goldrow{diag}{book}{Jc}{1.01567313752}
+\goldrow{diag}{book}{Kf}{0.365744906832}
+\goldrow{diag}{book}{Nc}{8.50078740157}
+\goldrow{diag}{book}{Ncw}{3.40031496063}
+\goldrow{diag}{book}{Pr}{7.48089123867}
+\goldrow{diag}{book}{Re}{20969.998519}
+\goldrow{diag}{book}{Sm}{0.01667}
+\goldrow{diag}{book}{Ssb}{0.00282638619068}
+\goldrow{diag}{book}{Stb}{0.0041524379945}
+\goldmore{34}
+\end{tutgolden}
+
+\clearpage
 \tutentry{htbench01\_correlations}{tutorials/props/heat/htbench01\_correlations}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
