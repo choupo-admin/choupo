@@ -2012,6 +2012,23 @@ accepts today, and that is a policy call.
 > dominant-eigenvalue recycle acceleration; Beggs-Brill pipe; a Cv-rated
 > control valve with a characteristic; IF97 region 3 + the verification gate;
 > a water electrolyser unit.  Nothing from breadth or platform.
+> **W2 BUILT (2026-11-04, branch c214-w2 on its way in): the Bell-Delaware shell side.**
+> Source for the gate: Hewitt, Shires & Bott, *Process Heat Transfer* (CRC
+> 1994), section 6.3.2 and Example 6.2 (pp. 280-285), supplied by Vitor from
+> his own library (the OCR text lives in the git-ignored `data/local/books/`).
+> The book's JL and JB come from CHARTS, so the unit takes them as declared
+> chart readings and refuses by name without them (no correlation invented);
+> Example 6.2 is reproduced step by step to the book's own rounding (worst
+> 0.17 %), and the book's own slip was found on the way: its Sm 0.01667 m2
+> against its own Eq 6.9 -> 0.016622 m2.  Findings left OPEN, not decided:
+> (1) Serth Table 6.1, 45 deg, Re 10-100: the page Vitor photographed prints
+> a1 = **0.498**, an independent code transcription says 1.498, and the
+> neighbouring angles' pattern (0.730 -> ? -> 1.550) points to 1.498 -- a
+> probable misprint; that sub-range REFUSES by name until Taborek/HEDH or the
+> errata settles it; (2) the Hewitt rotated layouts (Table 2.4 is an image in
+> the scan) and the staggered Re 10-300 exponent ("O.3fiO") refuse by name;
+> (3) Serth's own JL/JB/Jr/Rl/Rb/Rs equations (his Eqs 6.5ff) would replace
+> the declared chart readings -- pages requested from Vitor.
 
 > **THE STACK, AND THE ONE FULL SWEEP (the architect, 2026-11-03 06:00):** five
 > of the seven builds are now in the local branch `staging` (C208, S1, S2,
