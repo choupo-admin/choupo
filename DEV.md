@@ -16212,3 +16212,5 @@ index gets its row as part of the slice.
   files touched.  Before writing WHY/WHO prose, cross-check standing facts.
 - New feature ⇒ also the theory-guide + tutorials-guide + catalogue entry.
 - Deploying the dev site / cutting a release: `RELEASING.md`.
+
+**2026-11-03 08:30 -- THE STACK IS LANDED (`ebe0e3a51`).**  The calendar shows the two PIF tutorials at 17:00 and 17:30 (end 18:00), not at noon; the students ask their assistants to use the site BEFORE that, so the freeze decided on 2026-11-02 was lifted and the stack merged (merge commit, five doc gates exit 0, push as its own command).  Staging had passed `--fast` 78/0, `--gui` 43/0 and a second full sweep 822/0.  To verify after the publish: the site serves the PFD sheet, the equipment list, the utilisation table, the compaction EduTool and `/llm/packs/*`.
