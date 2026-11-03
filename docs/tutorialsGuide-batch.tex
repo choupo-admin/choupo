@@ -1556,36 +1556,34 @@ GREEN WITNESS for the EulerSI integrator: batch01's mild isothermal esterificati
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny batchReactor}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Adiabatic batch esterification (AcOH + EtOH $\to$ EtOAc + H2O), exothermic, starting cold (320 K); thermal runaway to \textasciitilde{}428 K then plateau as ethanol is consumed}
+\tutwhat{Adiabatic batch esterification (AcOH + EtOH $\to$ EtOAc + H2O), starting cold (320 K); the nearly thermoneutral liquid reaction warms the batch only \textasciitilde{}2 K in 600 s and is \textasciitilde{}22 \% complete (thermal runaway needs an exothermic reaction; replacement case planned)}
 \begin{tutnarrative}
-exothermic pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O) in an adiabatic batch reactor. Designed to show thermal runaway:
+pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O) in an adiabatic batch reactor, starting cold.
 
-T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' standardThermochemistry (elements datum); lifts T \textasciitilde{}108 K at full conversion (320 $\to$ 428 K), enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
+T\_0 = 320 K (k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -2.43 kJ/mol of ethanol at 320 K, computed from the species' standardThermochemistry (elements datum; the engine's own `[reaction heat]` line). It is about ten times smaller than the -26.06 kJ/mol this case used to print: the acetic-acid correction (docs/design/acetic-acid-latent-heat-closure.md) made the liquid esterification nearly thermoneutral. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean. Result: T rises only 320 $\to$ 322.2 K in the 600 s window, and the reaction is only \textasciitilde{}22 \% complete at the end (it used to reach 428 K and complete conversion). There is no runaway and no plateau; the rate barely accelerates because T barely moves. The adiabatic ODE conserves a frozen-dH surrogate (dH\_rxn pinned at the charge T), which the run announces.
 
-Expected qualitative trajectory:
-
-T | \_\_\_\_\_\_\_ plateau (\textasciitilde{}428 K) | \_/ | \_/ | \_/ | \_/ | / T\_0 |\_\_/ +------------------$\to$ t induction runaway
+The original teaching point of this case (thermal runaway: induction, then a sharp temperature rise, then a plateau) needs a genuinely exothermic reaction; a replacement case on such a reaction is planned. No parameter was changed to recover the runaway.
 
 The energy balance is just:
 
 dT/dt = - r $\ast$ V $\ast$ dH\_rxn / (n\_A $\ast$ Cp\_A + n\_B $\ast$ Cp\_B)
 
-Constant-Cp here (polynomial degree 0 for both ethanol and water in the database), so the result extrapolates linearly above the nominal liquidHeatCapacity Trange (280-373 K) without numerical pathology --- consistent with a pedagogical demonstration, not a quantitative prediction at 428 K.
+Constant-Cp here (polynomial degree 0 for both ethanol and water in the database), so the result extrapolates linearly above the nominal liquidHeatCapacity Trange (280-373 K) without numerical pathology.
 
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{reactor}{P\_final}{101300}
-\goldrow{kpi}{reactor}{T\_final}{428.2212252}
-\goldrow{kpi}{reactor}{n\_aceticAcid\_final}{9.87885051063e-31}
-\goldrow{kpi}{reactor}{n\_ethanol\_final}{9.87885051063e-31}
-\goldrow{kpi}{reactor}{n\_ethylAcetate\_final}{0.00925}
-\goldrow{kpi}{reactor}{n\_water\_final}{0.00925}
+\goldrow{kpi}{reactor}{T\_final}{322.248040531}
+\goldrow{kpi}{reactor}{n\_aceticAcid\_final}{0.00722392816212}
+\goldrow{kpi}{reactor}{n\_ethanol\_final}{0.00722392816212}
+\goldrow{kpi}{reactor}{n\_ethylAcetate\_final}{0.00202607183788}
+\goldrow{kpi}{reactor}{n\_water\_final}{0.00202607183788}
 \goldrow{kpi}{reactor}{t\_end}{600}
 \goldrow{kpi}{reactor}{totalMoles\_final}{0.0185}
-\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{0}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{0}
-\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{0}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{3.75075346157e-16}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{3.00060276926e-16}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{3.75075346157e-16}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{3.75075346157e-16}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{0}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
 \goldmore{12}
@@ -1678,38 +1676,36 @@ The forward A is the illustrative value tuned for stable RK4 (see constant/react
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny batchReactor}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Adiabatic batch esterification with OpenFOAM-style REAL-TIME instant dirs: watch conversion climb 0 $\to$ 1 and T runaway 320 $\to$ \textasciitilde{}428 K by scrubbing 0/ 30/ 60/ ... s}
+\tutwhat{Adiabatic batch esterification with OpenFOAM-style REAL-TIME instant dirs: scrub 0/ 30/ 60/ ... s to watch conversion climb to \textasciitilde{}0.22 while T rises only 320 $\to$ 322 K (the runaway of the old exotherm is gone; replacement case planned)}
 \begin{tutnarrative}
-the batch02\_adiabatic runaway re-run with REAL-TIME instant directories: the integrator dumps 0/ 30/ 60/ ... s snapshots (OpenFOAM-style) so the trajectory -- conversion 0 $\to$ 1, T 320 $\to$ \textasciitilde{}428 K -- can be scrubbed frame by frame in the GUI.
+the batch02\_adiabatic case re-run with REAL-TIME instant directories: the integrator dumps 0/ 30/ 60/ ... s snapshots (OpenFOAM-style) so the trajectory -- conversion 0 $\to$ \textasciitilde{}0.22, T 320 $\to$ 322.2 K -- can be scrubbed frame by frame in the GUI.
 
-The physics below is inherited from batch02\_adiabatic, unchanged: exothermic pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O) in an adiabatic batch reactor. Designed to show thermal runaway:
+The physics below is inherited from batch02\_adiabatic, unchanged: pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O) in an adiabatic batch reactor.
 
-T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' standardThermochemistry (elements datum); lifts T \textasciitilde{}108 K at full conversion, enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
+T\_0 = 320 K (k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -2.43 kJ/mol of ethanol at 320 K, computed from the species' standardThermochemistry (elements datum; the engine's own `[reaction heat]` line). It is about ten times smaller than the -26.06 kJ/mol this case used to print: the acetic-acid correction (docs/design/acetic-acid-latent-heat-closure.md) made the liquid esterification nearly thermoneutral. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean. Result: T rises only 320 $\to$ 322.2 K in the 600 s window, and the reaction is only \textasciitilde{}22 \% complete at the end (it used to reach 428 K and complete conversion). There is no runaway and no plateau; the rate barely accelerates because T barely moves. The adiabatic ODE conserves a frozen-dH surrogate (dH\_rxn pinned at the charge T), which the run announces.
 
-Expected qualitative trajectory:
-
-T | \_\_\_\_\_\_\_ plateau (\textasciitilde{}428 K) | \_/ | \_/ | \_/ | \_/ | / T\_0 |\_\_/ +------------------$\to$ t induction runaway
+The original teaching point of this case (thermal runaway: induction, then a sharp temperature rise, then a plateau) needs a genuinely exothermic reaction; a replacement case on such a reaction is planned. No parameter was changed to recover the runaway.
 
 The energy balance is just:
 
 dT/dt = - r $\ast$ V $\ast$ dH\_rxn / (n\_A $\ast$ Cp\_A + n\_B $\ast$ Cp\_B)
 
-Constant-Cp here (polynomial degree 0 for both ethanol and water in the database), so the result extrapolates linearly above the nominal liquidHeatCapacity Trange (280-373 K) without numerical pathology --- consistent with a pedagogical demonstration, not a quantitative prediction at \textasciitilde{}430 K.
+Constant-Cp here (polynomial degree 0 for both ethanol and water in the database), so the result extrapolates linearly above the nominal liquidHeatCapacity Trange (280-373 K) without numerical pathology.
 
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{reactor}{P\_final}{101300}
-\goldrow{kpi}{reactor}{T\_final}{428.2212252}
-\goldrow{kpi}{reactor}{n\_aceticAcid\_final}{9.87885051063e-31}
-\goldrow{kpi}{reactor}{n\_ethanol\_final}{9.87885051063e-31}
-\goldrow{kpi}{reactor}{n\_ethylAcetate\_final}{0.00925}
-\goldrow{kpi}{reactor}{n\_water\_final}{0.00925}
+\goldrow{kpi}{reactor}{T\_final}{322.248040531}
+\goldrow{kpi}{reactor}{n\_aceticAcid\_final}{0.00722392816212}
+\goldrow{kpi}{reactor}{n\_ethanol\_final}{0.00722392816212}
+\goldrow{kpi}{reactor}{n\_ethylAcetate\_final}{0.00202607183788}
+\goldrow{kpi}{reactor}{n\_water\_final}{0.00202607183788}
 \goldrow{kpi}{reactor}{t\_end}{600}
 \goldrow{kpi}{reactor}{totalMoles\_final}{0.0185}
-\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{0}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{0}
-\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{0}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{3.75075346157e-16}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{3.00060276926e-16}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{3.75075346157e-16}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{3.75075346157e-16}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{0}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
 \goldmore{12}
@@ -1752,38 +1748,36 @@ Single closed vessel. Charge: \textasciitilde{}500 kg water + \textasciitilde{}1
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny batchReactor}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Adiabatic esterification runaway (AcOH+EtOH); ADAPTIVE Rosenbrock23 time-stepping --- the step grows after the fast transient (glass-box step history)}
+\tutwhat{Adiabatic esterification (AcOH+EtOH), nearly thermoneutral after the acetic-acid correction; ADAPTIVE Rosenbrock23 time-stepping --- the step grows as the transient settles (glass-box step history; the thermal runaway of the old exotherm is gone, replacement case planned)}
 \begin{tutnarrative}
-the batch02\_adiabatic runaway integrated with ADAPTIVE Rosenbrock23 time-stepping: the step shrinks through the fast runaway and GROWS again on the plateau, and the step history is printed glass-box so the student sees the controller at work.
+the batch02\_adiabatic esterification integrated with ADAPTIVE Rosenbrock23 time-stepping, the step history printed glass-box so the student sees the controller at work. (The directory name keeps "runaway" from the old exotherm; there is no runaway any more.)
 
-The physics below is inherited from batch02\_adiabatic, unchanged: exothermic pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O) in an adiabatic batch reactor. Designed to show thermal runaway:
+The physics below is inherited from batch02\_adiabatic, unchanged: pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O) in an adiabatic batch reactor.
 
-T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' standardThermochemistry (elements datum); lifts T \textasciitilde{}108 K at full conversion, enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
+T\_0 = 320 K (k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -2.43 kJ/mol of ethanol at 320 K, computed from the species' standardThermochemistry (elements datum; the engine's own `[reaction heat]` line). It is about ten times smaller than the -26.06 kJ/mol this case used to print: the acetic-acid correction (docs/design/acetic-acid-latent-heat-closure.md) made the liquid esterification nearly thermoneutral. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean. Result: T rises only 320 $\to$ 322.2 K in the 600 s window, and the reaction is only \textasciitilde{}22 \% complete at the end (it used to reach 428 K and complete conversion). There is no runaway and no plateau; the rate barely accelerates because T barely moves. The adiabatic ODE conserves a frozen-dH surrogate (dH\_rxn pinned at the charge T), which the run announces.
 
-Expected qualitative trajectory:
-
-T | \_\_\_\_\_\_\_ plateau (\textasciitilde{}428 K) | \_/ | \_/ | \_/ | \_/ | / T\_0 |\_\_/ +------------------$\to$ t induction runaway
+The original teaching point of this case (thermal runaway: induction, then a sharp temperature rise, then a plateau) needs a genuinely exothermic reaction; a replacement case on such a reaction is planned. No parameter was changed to recover the runaway.
 
 The energy balance is just:
 
 dT/dt = - r $\ast$ V $\ast$ dH\_rxn / (n\_A $\ast$ Cp\_A + n\_B $\ast$ Cp\_B)
 
-Constant-Cp here (polynomial degree 0 for both ethanol and water in the database), so the result extrapolates linearly above the nominal liquidHeatCapacity Trange (280-373 K) without numerical pathology --- consistent with a pedagogical demonstration, not a quantitative prediction at \textasciitilde{}428 K.
+Constant-Cp here (polynomial degree 0 for both ethanol and water in the database), so the result extrapolates linearly above the nominal liquidHeatCapacity Trange (280-373 K) without numerical pathology.
 
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{reactor}{P\_final}{101300}
-\goldrow{kpi}{reactor}{T\_final}{428.221319512}
-\goldrow{kpi}{reactor}{n\_aceticAcid\_final}{8.88140514762e-19}
-\goldrow{kpi}{reactor}{n\_ethanol\_final}{1.10133235387e-34}
-\goldrow{kpi}{reactor}{n\_ethylAcetate\_final}{0.00925}
-\goldrow{kpi}{reactor}{n\_water\_final}{0.00925}
+\goldrow{kpi}{reactor}{T\_final}{322.248042017}
+\goldrow{kpi}{reactor}{n\_aceticAcid\_final}{0.00722392679638}
+\goldrow{kpi}{reactor}{n\_ethanol\_final}{0.00722392679638}
+\goldrow{kpi}{reactor}{n\_ethylAcetate\_final}{0.00202607320362}
+\goldrow{kpi}{reactor}{n\_water\_final}{0.00202607320362}
 \goldrow{kpi}{reactor}{t\_end}{600}
 \goldrow{kpi}{reactor}{totalMoles\_final}{0.0185}
-\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{1.87537673079e-16}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.50030138463e-16}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{3.75075346157e-16}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{3.00060276926e-16}
 \goldrow{kpi}{campaign}{element\_O\_closure\_rel}{2.50050230771e-16}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{2.50050230771e-16}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{3.75075346157e-16}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{0}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
 \goldmore{12}

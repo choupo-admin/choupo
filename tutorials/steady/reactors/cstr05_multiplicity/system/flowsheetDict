@@ -17,9 +17,12 @@
   the textbook "heat generated equals heat removed".  The generation curve G(T)
   is a sigmoid (the rate saturates once the reactant is gone); the removal line
   R(T) = F cp (T - T_in) is straight (adiabatic: the only sink is the sensible
-  heat that leaves with the product).  A straight line can cut a sigmoid up to
-  THREE times -- IF the sigmoid is tall enough, i.e. IF the reaction releases
-  enough heat.
+  heat that leaves with the product).  A straight line can cut a sigmoid THREE
+  times: the extinguished state, an unstable middle state, and the ignited state
+  -- IF the sigmoid is tall enough, i.e. IF the reaction releases enough heat.
+  Choupo scans, finds them all, prints them, and reports the one nearest
+  `T_guess`.  Change T_guess and the reactor moves to another branch -- when
+  there is more than one.
 
   This case was written for exactly that: a 300 K feed, a negligible rate
   there, and an ignited branch reached by `T_guess`.  It no longer shows it.

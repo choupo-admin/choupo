@@ -1616,13 +1616,15 @@ species and recovers $T(V)$ by inversion --- a hot spot is something you
 see in the axial profile.
 
 \begin{tryit}
-Run \file{tutorials/steady/reactors/cstr05\_multiplicity}: three steady
-states at 300.4 / 348.4 / 391.3~K, all printed, the \code{steadyStates}
-KPI counting them.  Change \code{T\_guess} and the same reactor answers
-differently --- that is the physics of ignition and extinction, not a
-numerical defect.  Then run \file{cstr04\_adiabatic} and
-\file{pfr04\_adiabatic} on the same esterification: +82~K vs +83~K ---
-the difference is the back-mixing the CSTR pays for.
+Run \file{tutorials/steady/reactors/cstr05\_multiplicity}: the scan
+finds and prints every steady state and the \code{steadyStates} KPI
+counts them.  With the shipped liquid esterification, which is nearly
+thermoneutral (about $-2.7$~kJ/mol), there is only \emph{one}, at
+300.0~K; the three-root ignition and extinction picture needs a
+genuinely exothermic reaction, and a replacement case is planned.  Then
+run \file{cstr04\_adiabatic} and \file{pfr04\_adiabatic} on the same
+esterification: $+5.3$~K vs $+6.6$~K --- the difference is the
+back-mixing the CSTR pays for.
 \end{tryit}
 
 % ---------------------------------------------------------------------
@@ -3405,8 +3407,9 @@ variable, one row per \code{writeInterval}).
 
 \code{mode isothermal} holds $T$; \code{adiabatic} integrates the
 energy balance alongside the species --- \file{batch02\_adiabatic} shows
-a cold start, a slow induction, then thermal runaway from 345 to
-482~K in a hundred seconds.  The kinetics vocabulary is shared with the
+a cold start with the nearly thermoneutral liquid esterification warming
+only 320 to 322~K in 600~s (the thermal runaway this case was written
+for needs a genuinely exothermic reaction; a replacement is planned).  The kinetics vocabulary is shared with the
 steady reactors: \code{Arrhenius}, the gas-kinetics forms
 (\code{modifiedArrhenius}, \code{thirdBody}, \code{falloff} --- real
 combustion mechanisms run here, see \file{ignition02\_h2air\_slack}),
@@ -3418,7 +3421,7 @@ about what an adsorption denominator means.
 the fixed-step RK4 loop.  Add \code{timeStepping adaptive;} to
 \file{controlDict} and the stiff, error-controlled Rosenbrock23
 integrator takes over --- the step starts low (\code{deltaT0}), grows
-through quiet stretches, and shrinks through the runaway, with the step
+through quiet stretches, and shrinks through a sharp transient, with the step
 history printed at verbosity 3.  Trajectory rows still land on the
 clean \code{writeInterval} grid.  If the integrator gives up inside an
 interval --- the step driven below its floor, or the per-interval guard
@@ -4196,7 +4199,7 @@ pick the one closest to what you want to do and edit from there.
 \multicolumn{2}{@{}l}{\emph{steady/reactors, steady/gibbs}} \\
 \code{cstr01\_first\_order} / \code{pfr01\_first\_order} & Newton on the extent; RK4 by hand vs the analytic $X = 1 - e^{-k\tau}$. \\
 \code{cstr03} / \code{pfr03\_series\_selectivity} & Series selectivity: back-mixing eats the intermediate (53\,\% vs 79\,\%). \\
-\code{cstr04\_adiabatic} / \code{cstr05\_multiplicity} & Non-isothermal CSTR; three steady states, all printed. \\
+\code{cstr04\_adiabatic} / \code{cstr05\_multiplicity} & Non-isothermal CSTR; every steady state found is printed (one for this nearly thermoneutral esterification). \\
 \code{cstr07\_lhhw\_methylAcetate}      & A published LHHW law on UNIQUAC activities (\S\ref{sec:lhhw}). \\
 \code{conversion01\_hda}                & Specified per-pass conversion + recycle --- the honest gas-phase reactor. \\
 \code{equil01\_reforming}               & Reforming + shift driven to simultaneous $K_p(T)$ equilibrium. \\
@@ -4249,7 +4252,7 @@ pick the one closest to what you want to do and edit from there.
 \textbf{Tutorial} & \textbf{What you learn} \\
 \midrule
 \multicolumn{2}{@{}l}{\emph{batch/, ctrl/, unsteady/, plant/}} \\
-\code{batch01\_first\_order} / \code{batch02\_adiabatic} & RK4 vs the analytic decay; thermal runaway. \\
+\code{batch01\_first\_order} / \code{batch02\_adiabatic} & RK4 vs the analytic decay; adiabatic energy balance (nearly thermoneutral). \\
 \code{still01} / \code{still04} / \code{still05} & Rayleigh; constant-$R$ rectifier; constant-$x_D$ policy at the reflux ceiling. \\
 \code{recipe01\_react\_then\_distill}   & A scripted transfer between vessels. \\
 \code{ctrl01\_cstr\_temp\_control} / \code{ctrl02\_disturbance\_rejection} & PID tracking; step-disturbance rejection. \\
