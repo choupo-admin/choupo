@@ -102,3 +102,20 @@ liquid Cp's slope is the remaining uncertainty (0.4-1.4 kJ/mol) until Martin
    recomputes the stored constant from the formation properties the record
    cites, so a gate arm holding logK25 = log Kf(dimer) - 2 log Kf(monomer)
    with the ethanoic table values is part of the slice.
+
+## 7. Done (2026-11-03): item 1, 2 and 4 of §6
+
+* `logK25 3.107` in the standards record and its five case mirrors (flash10,
+  11, 12, 13, 17); the 2026-08-24 note is corrected in place.
+* Moved rows, all from 3.5x more dimer: `dimer_share` and `p_dimer_atm` x3-3.5
+  on every case, `p_eq_sum_atm` +0.05-1.2 %; flash13 V/F 0.5766 -> 0.5790, duty
+  665.82 -> 667.95 kW, pH 4.981 -> 5.009; flash17 duty 0.08625 -> 0.08470 kW.
+* Gate `check_dimerisation_constants` (item 4): the stored pair is recomputed
+  from the ethanoic Tables 11/12; a mirror that drifts, or the formic 2.555,
+  fails (sabotage: one mirror set back to 2.555 -> exit 1, two findings).
+* **What it exposed:** flash17's first law, 0.6 W open under the wrong K, is
+  2.2 W (2.546 % of its 0.085 kW exchange) under the right one.  Measured:
+  with logK25 -9 (no dimer) it closes at 100.00 %.  The unit prices the
+  dimer's association heat in its duty, the report prices the stream without
+  it -- the seam §6 item 3 (the associated-vapour slice) closes.  Pinned in
+  `check_energy_closure.KNOWN_OPEN` with that reason, so it may not grow.

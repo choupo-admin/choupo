@@ -12,10 +12,10 @@ kpi     flash01                Q                0                1e-4
 kpi     flash01                Q_kW             0                1e-4
 kpi     flash01                T                358.15           1e-4
 kpi     flash01                V_over_F         0                1e-4
-kpi     flash01                dimer_share      0.0226239722903  1e-4
+kpi     flash01                dimer_share      0.0762211005883  1e-4
 kpi     flash01                pH               4.6182465052     1e-4
-kpi     flash01                p_dimer_atm      0.000106738278327 1e-4
-kpi     flash01                p_eq_sum_atm     0.556586046278   1e-4
+kpi     flash01                p_dimer_atm      0.000380469802896 1e-4
+kpi     flash01                p_eq_sum_atm     0.556859777803   1e-4
 kpi     flash01                p_ethanol_atm    0.0133741386148  1e-4
 kpi     flash01                p_mono_atm       0.00461118998632 1e-4
 kpi     flash01                phaseSet         0                1e-4

@@ -569,8 +569,17 @@ def ratchet_kW(pin: float) -> float:
 #  mixer's outlet is now the state of equal enthalpy RESOLVED at its own
 #  equilibrium (269.67 K, V/F 0.7788; 273.62 K, V/F 0.6169).
 #    cavett01_recycle_train  88.0220 % -> 0.0000 % (+0.0019 kW)   LEFT
+#  flash17_two_liquids_reactive (2.5460 % = 0.0022 kW of a 0.085 kW exchange,
+#  pinned 2026-11-03): the reactive flash prices the vapour DIMER's association
+#  heat in its duty and the report prices the stream without it.  MEASURED, not
+#  argued: with logK25 -9 (no dimer) the case closes at 100.00 %; with the
+#  corrected 3.107 the gap is 2.2 W, 3.5x the 0.6 W the wrong constant (2.555)
+#  had been hiding.  Closed by the associated-vapour slice
+#  (backup/c201-acetic-vapour), which makes the dimer a property of the vapour
+#  model the report reads too.  DEV.md 4c C201.
 KNOWN_OPEN = {
     "tutorials/plant/esterification2sector": 170.9790,
+    "tutorials/steady/flash/flash17_two_liquids_reactive": 2.5460,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,

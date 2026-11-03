@@ -6685,6 +6685,19 @@ PYEOF
     fi
     rm -f /tmp/rcgate.$$
 
+    # Dimerisation-constant gate (DEV.md 4c C201): the stored vapour-dimerisation
+    # K is held to the formation properties of the ETHANOIC acid tables; the
+    # formic acid constant (2.555) had been carried for 2026-08-24..11-03.
+    if gate_exec "$ROOT/bin/curate/check_dimerisation_constants.py" > /tmp/dcgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "dimerisation-constants-gate" "$(head -1 /tmp/dcgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_dimerisation_constants.py)\n" "dimerisation-constants-gate"
+        cat /tmp/dcgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/dcgate.$$
+
     # Aqueous-solvent home gate (DEV.md 4c C188): the declared aqueous
     # solvent has ONE home on the package, every unit reads it, no "water"
     # literal names it in src/ outside that home, and an undeclared

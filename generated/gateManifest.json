@@ -1510,6 +1510,11 @@
       "exit": 0,
       "claim": "check_dynamic_cstr_level: OK -- variable-volume dynamicCSTR: fill-and-react equals its closed form (n, V, h), the second-order rate uses the CURRENT volume, both witnesses CLAIM and close mass AND energy, PI level + PI temperature hold one unit after an inflow step, the jacket area follows the wetted wall, the mixture-H and Cp routes are announced and ledgered as probed, dry / overflow / unknown mode / V beside level / mv F_out on a constant vessel are refused by name, arithmetic called from the shared home [fill: n err 3.9e-09, V err 3.8e-09, h 0.020->0.740 m, n_A 1.1511 (closed 1.1511); 2nd order: vs independent RK4 1.5e-08; frozen-heel volume would differ 73%; loops: end h-SP +1.9e-06 m, peak 0.0099 m (bound 0.0147), end T-SP -0.008 K; mixture-H route: ledgers closed; Cp route: mass closes, energy withheld]",
       "seconds": 9.4
+    },
+    "check_dimerisation_constants": {
+      "exit": 0,
+      "claim": "check_dimerisation_constants: OK -- logK25 3.107 = ethanoic Tables 11/12 (3.107) and dH -63180 J/mol = -63180; 5 case mirror(s) carry the same pair.  NOT checked: the table values themselves (page-checked 2026-11-02), nor any dimerisation record other than acetic acid's",
+      "seconds": 0.3
     }
   }
 }
