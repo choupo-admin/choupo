@@ -1908,6 +1908,16 @@ accepts today, and that is a policy call.
 > relative density, porosity, tensile strength, from the declared
 > `compactionFit` parameters; the property of the blend by a DECLARED mixing
 > rule, never a silent one).
+> BUILT 2026-11-03 (a)-(d): `docs/ai/capabilities.md` (typed names
+> `unit:`/`op:`/`pass:`/`sizer:`/`kind:`/`key:`/..., every witness by full
+> path), served first in `llms.txt` under "Does Choupo do X?";
+> `bin/curate/llm_site.py` inserts the version line (read from
+> `generated/releaseInventory.json`) after the H1 of every served document and
+> writes `/llm/models.md` from the catalogue, its own note naming the release;
+> `--verify` holds both.  `AGENTS.md`: capability -> index, design -> brief.
+> Gate `check_capability_index` resolves every typed name against the source
+> that registers it (sabotaged: five renamed names and a bare case name, all
+> six caught).  NOT checked by it: whether the prose about a name is true.
 
 > **THE STACK, AND THE ONE FULL SWEEP (the architect, 2026-11-03 06:00):** five
 > of the seven builds are now in the local branch `staging` (C208, S1, S2,

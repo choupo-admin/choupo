@@ -1,0 +1,188 @@
+#!/usr/bin/env python3
+"""Every name the capability index gives an assistant must exist in the tree.
+
+    bin/curate/check_capability_index.py [--index <file>]
+
+Design record: DEV.md 4c C211.
+
+`docs/ai/capabilities.md` answers "does Choupo do X?" for a student's AI
+assistant (served at /llm/capabilities.md, first in /llms.txt).  The question
+it was written for (2026-11-03) was answered wrongly because the only thing a
+search found was a unit CALLED `tabletPress` that is a `splitter`.  An index
+that names a unit type, an operation or a case that does not exist would be
+the same failure in a more confident register, so every name in it is typed
+and each type is resolved against the source that REGISTERS it:
+
+  unit:<t>        reg("<t>" ...) in src/unitOperations/UnitOperation.cpp
+  batchUnit:<t>   ... src/unitOperations/batch/BatchUnitOperation.cpp
+  dynUnit:<t>     ... src/unitOperations/dynamic/DynamicUnitOperation.cpp
+  op:<t>          ... src/propertyOps/PropertyOperation.cpp
+  pass:<n>        ... src/postProcessing/PostProcessor.cpp
+  sizer:<t>       ... src/postProcessing/sizing/EquipmentSize.cpp
+  controller:<t>  ... src/control/Controller.cpp
+  kind:<w>        the string literal "<w>" in src/postProcessing/sizing/RatedMachineSize.cpp
+  key:<k>         the string literal "<k>" somewhere under src/ (the engine
+                  reads a key by its quoted name)
+  pack:<p>        docs/ai/packs/<p>.md exists
+
+and, besides the typed names:
+
+  PATHS       every backticked `tutorials/...`, `src/...`, `docs/...`,
+              `bin/...`, `data/...`, `gui/...` path exists; a `tutorials/`
+              path must be a CASE (it holds system/controlDict) -- a witness
+              is something the student can open and run.
+  FULL PATHS  a backticked bare case name (`flash01_benzene_toluene`) is
+              refused: the index gives every case by its full path (the
+              2026-11-03 report named a case the reader could not find).
+  ROWS        every '### ' concept of the index names at least one typed
+              name and at least one witness case.
+  UNTYPED     any other backticked identifier must be a quoted string
+              literal under src/ or gui/src, or a word of some tutorial dict
+              (a CLI binary name, a result key, a chamber model word).
+
+NOT CHECKED, said plainly: whether the prose about a name is TRUE (that the
+spray dryer computes what the row says).  The rows were each verified against
+the source when written; this gate keeps the NAMES from drifting, never the
+claims.  Exit 0 = OK; 1 = a dead name, listed."""
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+INDEX = ROOT / "docs" / "ai" / "capabilities.md"
+
+REGISTRIES = {
+    "unit": "src/unitOperations/UnitOperation.cpp",
+    "batchUnit": "src/unitOperations/batch/BatchUnitOperation.cpp",
+    "dynUnit": "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+    "op": "src/propertyOps/PropertyOperation.cpp",
+    "pass": "src/postProcessing/PostProcessor.cpp",
+    "sizer": "src/postProcessing/sizing/EquipmentSize.cpp",
+    "controller": "src/control/Controller.cpp",
+}
+KIND_SOURCE = "src/postProcessing/sizing/RatedMachineSize.cpp"
+PATH_PREFIXES = ("tutorials/", "src/", "docs/", "bin/", "data/", "gui/")
+CASE_NAME = re.compile(r"^[A-Za-z]+\d{2}[a-z]?_[A-Za-z0-9_]+$")
+IDENT = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
+
+
+def registered(rel):
+    text = (ROOT / rel).read_text(encoding="utf-8")
+    return set(re.findall(r'\b(?:reg|registerType)\(\s*"([A-Za-z0-9_]+)"', text))
+
+
+def literals(paths):
+    out = set()
+    for base in paths:
+        for p in (ROOT / base).rglob("*"):
+            if p.suffix in (".cpp", ".H", ".h", ".ts", ".tsx") and p.is_file():
+                out.update(re.findall(r'"([A-Za-z][A-Za-z0-9_]*)"',
+                                      p.read_text(encoding="utf-8", errors="replace")))
+    return out
+
+
+def dict_words():
+    words = set()
+    for p in (ROOT / "tutorials").rglob("*"):
+        if p.is_file() and (p.parent.name in ("system", "constant")
+                            or p.parent.parent.name == "system"):
+            try:
+                words.update(re.findall(r"[A-Za-z][A-Za-z0-9_]*",
+                                        p.read_text(encoding="utf-8")))
+            except (UnicodeDecodeError, OSError):
+                pass
+    return words
+
+
+def main():
+    index = INDEX
+    if "--index" in sys.argv:
+        index = Path(sys.argv[sys.argv.index("--index") + 1]).resolve()
+    if not index.is_file() or index.stat().st_size == 0:
+        print("check_capability_index: FAIL: %s is missing or empty -- a gate "
+              "with nothing to read must not pass" % index)
+        return 1
+    text = index.read_text(encoding="utf-8")
+    regs = {k: registered(v) for k, v in REGISTRIES.items()}
+    for k, v in regs.items():
+        if not v:
+            print("check_capability_index: FAIL: no registration found in %s "
+                  "-- the pattern no longer reads it" % REGISTRIES[k])
+            return 1
+    kinds = set(re.findall(r'"([A-Za-z]+)"',
+                           (ROOT / KIND_SOURCE).read_text(encoding="utf-8")))
+    src_lits = literals(["src"])
+    loose_lits = src_lits | literals(["gui/src"])
+    words = None
+
+    bad = []
+    counts = {"typed": 0, "paths": 0, "cases": 0, "untyped": 0}
+    tokens = re.findall(r"`([^`\n]+)`", text)
+    for tok in tokens:
+        m = re.match(r"^([A-Za-z]+):([A-Za-z0-9_]+)$", tok)
+        if m and (m.group(1) in regs or m.group(1) in ("kind", "key", "pack")):
+            t, n = m.group(1), m.group(2)
+            counts["typed"] += 1
+            ok = (n in regs[t] if t in regs else
+                  n in kinds if t == "kind" else
+                  n in src_lits if t == "key" else
+                  (ROOT / "docs" / "ai" / "packs" / (n + ".md")).is_file())
+            if not ok:
+                bad.append("`%s`: no %s named '%s' in the tree" % (tok, t, n))
+            continue
+        if tok.startswith(PATH_PREFIXES):
+            counts["paths"] += 1
+            p = ROOT / tok.rstrip("/")
+            if not p.exists():
+                bad.append("`%s`: path does not exist" % tok)
+            elif tok.startswith("tutorials/"):
+                if not (p / "system" / "controlDict").is_file():
+                    bad.append("`%s`: not a case (no system/controlDict)" % tok)
+                else:
+                    counts["cases"] += 1
+            continue
+        if CASE_NAME.match(tok):
+            bad.append("`%s`: a bare case name -- give its full tutorials/ path" % tok)
+            continue
+        if IDENT.match(tok):
+            counts["untyped"] += 1
+            if tok in loose_lits:
+                continue
+            if words is None:
+                words = dict_words()
+            if tok not in words and not (ROOT / "src" / "applications" / tok).is_dir():
+                bad.append("`%s`: not a string literal in src/ or gui/src, nor a "
+                           "word of any tutorial dict" % tok)
+
+    #  ROWS: every concept names a typed name and a witness case.
+    for sec in re.split(r"(?m)^### ", text)[1:]:
+        head = sec.splitlines()[0].strip()
+        if not re.search(r"`(?:%s):[A-Za-z0-9_]+`" % "|".join(
+                list(regs) + ["kind", "key", "pack"]), sec):
+            bad.append("concept '%s': names no typed unit/op/pass/key" % head)
+        if not re.search(r"`tutorials/[^`]+`", sec):
+            bad.append("concept '%s': names no witness case" % head)
+    #  The table rows of the general section (section 2), likewise.
+    general = text.split("\n## 2.", 1)[1] if "\n## 2." in text else ""
+    for line in general.splitlines():
+        if line.startswith("| ") and "`tutorials/" not in line and \
+           re.search(r"`(?:unit|op|batchUnit|dynUnit|pass):", line):
+            bad.append("table row without a witness case: %s" % line[:60])
+
+    if bad:
+        print("check_capability_index: FAIL: %d dead or incomplete reference(s) "
+              "in %s:" % (len(bad), index.relative_to(ROOT) if
+                          str(index).startswith(str(ROOT)) else index))
+        for b in bad:
+            print("  " + b)
+        return 1
+    print("check_capability_index: OK: %d typed name(s) resolved against their "
+          "registries, %d path(s) present (%d witness case(s)), %d untyped "
+          "name(s) found in the tree; every concept names a typed name and a "
+          "witness (names only -- the prose about them is not checked)"
+          % (counts["typed"], counts["paths"], counts["cases"], counts["untyped"]))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

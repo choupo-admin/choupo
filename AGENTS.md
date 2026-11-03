@@ -8,13 +8,28 @@ repository.  There are TWO audiences, with different docs.
 (A student, an engineer, anyone composing a `flowsheetDict` /
 `propsDict` for this simulator.)
 
-→ Read **[`docs/ai/start-here.md`](docs/ai/start-here.md)** first, then use
-[`docs/ai/overview.md`](docs/ai/overview.md) and the reference files below as
-needed.  `docs/ai/` is a reference library; do not load the whole directory
-when one or two focused files answer the question.
+Two questions, one path each (the site serves the same two documents at
+https://www.choupo.org/llms.txt):
+
+* **"Does Choupo do X?"** (a unit, a calculation, a check) → read
+  **[`docs/ai/capabilities.md`](docs/ai/capabilities.md)**, the capability
+  index: per concept it says what Choupo computes, what it only balances,
+  what it only checks and what is missing, with a witness case by its full
+  path.  A unit NAMED like a machine in a tutorial is not a model of it; the
+  index says which is which.
+* **"Design a process / write a case"** → read
+  **[`docs/ai/brief.md`](docs/ai/brief.md)** first and all of it; it is the
+  contract for a case and ends with an index of the task packs
+  (`docs/ai/packs/`).
+
+The reference files below are for lookups the brief or a pack points to.
+`docs/ai/` is a reference library; do not load the whole directory when one
+or two focused files answer the question.
 
 | File | Read when |
 |---|---|
+| `capabilities.md` | A capability question: does Choupo do X, and how far (computes / balances / checks / missing). |
+| `brief.md`        | A design task: the contract for a case, then the task packs. |
 | `start-here.md`   | First run and the canonical files of a minimal case. |
 | `overview.md`     | What Choupo is, the 5 binaries, and the governing contracts. |
 | `dict-syntax.md`  | Before writing any dict.  Dict syntax, units, `$variables`. |
