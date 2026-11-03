@@ -28,7 +28,7 @@ header names the PLAN.md commit it reflects, so a stale view shows itself.
    row of Next day starts and the first row of the next column moves up.
 5. **Done rows stay one week**, then leave this file (DEV.md keeps them).
 
-Last reviewed: 2026-11-03 01:00 (reorganised by C210, PIF first: Now holds only what runs, the document set and the PIF wins placed by their dependencies; earlier reviews in git).
+Last reviewed: 2026-11-03 08:40 (stack landed; reorganised by C210, PIF first: Now holds only what runs, the document set and the PIF wins placed by their dependencies; earlier reviews in git).
 
 Status words: `todo` · `queued` (built by a general, waiting its turn to integrate) · `integrating` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
@@ -36,8 +36,8 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| decide | FREEZE until the tutoring class of 2026-11-03 ends: nothing is integrated into main, so nothing reaches the site; main and the site move once, after the class, by fast-forwarding main to `staging` | C200, C210 |
-| running | THE STACK IS COMPLETE in the local branch `staging` (seven builds) and its ONE full sweep ran: 819 pass, 3 fail, all three already red on main before the stack (a census number and a missing write guard, both fixed on staging; five unsealed membrane cases, a general is sealing them, report due 09:30). Landing: after the class, merge staging into main, re-run the doc gates, push, read the site | C208, C207, C195, C205, C210 |
+| done | THE STACK IS LANDED on main and the site (2026-11-03 08:30, `ebe0e3a51`): the freeze was lifted because the tutorials are at 17:00 and 17:30, not noon; staging passed --fast 78/0, --gui 43/0, a second full sweep 822/0; the live bundle carries the compaction fits, the utilisation table and the equipment tags, the packs answer 200 | C200, C210 |
+| todo | what the two PIF groups report from the 17:00/17:30 tutorials goes ahead of everything | C210 |
 | todo | Watch the tutoring class (2026-11-03 12:00): the students' reports reach Vitor and come here; each is recorded in DEV.md 4c the turn it arrives, then fixed (it goes ahead of everything else) | C200, C195, C210 |
 
 ## Next day (at most 5)
