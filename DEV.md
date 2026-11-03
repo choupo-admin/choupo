@@ -1983,6 +1983,23 @@ accepts today, and that is a policy call.
 > (c) Ince, Benyahia & Vile 2025 (CC BY) stays a citation: its cost tables
 > are in an unread SI.
 
+> **C214. THE COMPUTATIONAL KERNEL OF CHOUPO AGAINST DWSIM'S (Vitor, 2026-11-03
+> evening: an assistant he was using measured DWSIM's kernel at about twice
+> Choupo's size and listed what DWSIM has that Choupo lacks; "Eu gostava que
+> tu fizesses uma comparacao dos dois kernels e me sugerisses coisas para na
+> proxima semana aproximar substancialmente o Choupo do DWSIM").**  A
+> strategy study, so written on Fable (asked for and given).  Rule from the
+> project's own doctrine: "approach" is NOT "copy the breadth" -- the
+> philosophy rejects breadth parity; the study measures the two kernels BY
+> AREA (thermodynamics, unit operations, solvers, data, interfaces,
+> extensibility), separates the size that is capability from the size that
+> is platform (.NET, GUI, CAPE-OPEN, Windows) and from the size that Choupo
+> chose not to have, and proposes for the next week only what serves a
+> student designing a plant with Choupo.  Written in `docs/design/` (a
+> developer record, never a manual -- the competitor ban covers user-facing
+> surfaces only, CLAUDE.md §10); the measurements by Sonnet generals reading
+> the public DWSIM sources; the judgement the architect's.
+
 > **THE STACK, AND THE ONE FULL SWEEP (the architect, 2026-11-03 06:00):** five
 > of the seven builds are now in the local branch `staging` (C208, S1, S2,
 > E2+E3, dynamic slice 2), each validated by `bin/integrate --base staging` on
