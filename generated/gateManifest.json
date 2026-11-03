@@ -1523,7 +1523,7 @@
     },
     "check_recycle_acceleration": {
       "exit": 0,
-      "claim": "check_recycle_acceleration: OK  one-step exact on a linear map (err 5.687e-15), oscillating mode exact (4.518e-16), fallbacks announced (several-modes, lambda>bound), 40 vs 104 direct steps on the two-mode map; witness recycle02_dominant_eigenvalue iterations Newton/Wegstein/DominantEigenvalue = 2/9/6.  NOT checked: nonlinear maps beyond the one witness, the energy-feedback tear (forces Wegstein).",
+      "claim": "check_recycle_acceleration: OK  one-step exact on a linear map (err 4.9650683064945462e-16), oscillating mode exact (4.4840504702113621e-16), fallbacks announced (several-modes, lambda>bound), 47 vs 104 direct steps on the two-mode map; witness recycle02_dominant_eigenvalue iterations Newton/Wegstein/DominantEigenvalue = 2/9/6.  NOT checked: nonlinear maps beyond the one witness, the energy-feedback tear (forces Wegstein).",
       "seconds": 0.9
     }
   }
