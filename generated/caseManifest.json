@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 511,
+  "cases": 512,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -1601,6 +1601,21 @@
     "expectedFail"
    ],
    "hasGolden": false
+  },
+  "tutorials/props/compare/aceticWater01_txy_association": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
   },
   "tutorials/props/compare/acetone01_ipa_water_azeotrope": {
    "application": "choupoProps",
@@ -7620,6 +7635,7 @@
     "tutorials/props/adsorption/isotherm01_eval_13x_co2",
     "tutorials/props/adsorption/isotherm02_fit_jaschik",
     "tutorials/props/adsorption/isotherm03_fit_refusals",
+    "tutorials/props/compare/aceticWater01_txy_association",
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/compare/compare_activity_etoh_water",
@@ -8816,6 +8832,7 @@
    "UNIFAC": [
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
+    "tutorials/props/compare/aceticWater01_txy_association",
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
@@ -9429,6 +9446,7 @@
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008"
    ],
    "propertyPoint": [
+    "tutorials/props/compare/aceticWater01_txy_association",
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/hydraulics/letdown02_valve_fluid_properties",
@@ -9445,6 +9463,7 @@
     "tutorials/props/thermo/temperature02_engineers_ladder"
    ],
    "propertyScan1D": [
+    "tutorials/props/compare/aceticWater01_txy_association",
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/compare/compare_activity_etoh_water",
