@@ -36,31 +36,32 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| decide | FREEZE: nothing is integrated into main (and so nothing reaches the site) until the tutoring class of 2026-11-03 ends; the generals' work stays on their branches -- the C208 refusals may make cases that run today refuse | C200, C195 |
-| todo | Watch the tutoring class (2026-11-03 12:00): students' reports reach Vitor and come here; each is recorded in DEV.md 4c the turn it arrives, then fixed | C200, C195 |
+| decide | FREEZE: nothing is integrated into main (and so nothing reaches the site) until the tutoring class of 2026-11-03 ends | C200, C195 |
+| running | Validation, in an integration worktree and not in main, of the C208 fixes + the repaired flagship and sugar-sweep economics (branch `worktree-c208-cases`, d8d606744): 66 cases, `--fast`, the gates | C208 |
+| todo | Watch the tutoring class (2026-11-03 12:00): the students' reports reach Vitor and come here; each is recorded in DEV.md 4c the turn it arrives, then fixed (it goes ahead of everything below) | C200, C195, C210 |
 
 ## Next day (at most 5)
 
 | status | what | ref |
 |---|---|---|
-| todo | Engine defects found writing the packs, the quiet ones first: a missing raw-material price, a missing labourRate and a failed sizer all end at exit 0 (REFUSE or fail the run); `choupo-init0` writes `T 0 K` for solids-only streams; then the `adiabaticFlash` stall and the layout with no sized item | C208 |
-| todo | Acetic acid: correct the record's vapour dimerisation constant (log K25 2.555 is FORMIC acid's; acetic acid's own is 3.107 atm^-1, docs/design/acetic-acid-latent-heat-closure.md), reseal its mirrors, the moved rows in the commit; then rebase `backup/c201-acetic-vapour` on it and re-measure | C201 (1) |
-| todo | (Opus) Acetic acid, after the reading: choose the anchor the slice honours, then the column's dew-point distillate (aceticAcid02_plant +8.69 kW), the Gibbs / three-phase / binaryTxy readers, the association record's identity (not by formula); land `backup/c201-acetic-vapour` with its moved rows; the seven exotherm tutorials to Vitor as a content list | C201 (1) |
-| todo | Dynamic units, slice 2: the CSTR with a variable volume, on slice 1's holdup home | C205 |
-| todo | The control-placement EduTool, pages 1-5 (inventory, pressure, flow and ratio, temperature, composition: rule + exception + a case that runs; the level page says what cannot run until slices 1-3 land) and the plant method page | C204 |
+| todo | PRIORITY C210, PIF first. Land C208 after the class (the quiet exit-0 failures, `choupo-init0` for solids-only streams, the flagship's and the sugar sweep's economics restored with real declarations); the global sweep decided with its reason | C208, C210 |
+| todo | (Opus) Acetic acid, ONE slice: the corrected dimerisation constant (5bed50aeb) + the associated vapour (`backup/c201-acetic-vapour`) rebased on it and re-measured (latent heat at Tb near the measured 24.4), the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; then the seven exotherm tutorials to Vitor | C201 (1) |
+| todo | PIF easy wins from the reports read in full, one general each: E2 HVAC cost from the supply air, E3 cleaning events -> CIP water and effluent, E4 building cost from room areas, E5 economics hygiene, E6 utilisation and Gantt in the GUI, E7 and E8 two EduTools | C195, C210 |
+| todo | The site's own WASM build, then one browser run each of what reached main without one: Complete 0/, the pressure exchanger, the boron split, the dynamic tank; confirm C178 and C182 there | C196, C200 B', C178, C182 |
+| todo | Fix the seal-drift finding: `check_seal_drift` lists 9 damaged sucrose / H2SO4 mirrors and 1809 moved-value records (measure against main first) | C201 |
 
 ## Next three days (at most 8)
 
 | status | what | ref |
 |---|---|---|
-| todo | The site's own WASM build, then one browser run each of what reached main without one: Complete 0/, the pressure exchanger, the boron split, the dynamic tank; confirm C178 and C182 there | C196, C200 B', C178, C182 |
 | todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says (the brief now names the defect) | C201 (2) |
-| todo | PIF easy wins, from the reports read in full: E2 HVAC cost from the supply air, E3 cleaning events -> CIP water and effluent volumes, E4 building cost from room areas, E5 economics hygiene (working capital three ways side by side, royalty inside a patent window), E6 per-machine utilisation and Gantt in the GUI, E7 and E8 two EduTools (how a PIF economics goes wrong; the demand forecast) | C195, docs/reviews/2026-11-02-pif-reports-synthesis.md |
 | todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag | C205 |
 | todo | C200 remaining packs (heat, electrolytes, membranes, solids, drivers, transient, props), the generated reference (the site serves docs/ai as it stands); re-score the 2026-11-01 baseline with the -init0 step so the comparison is like for like | C200 |
 | todo | Newcomer surfaces: `runCase` shows the answer, the balance verdict and the caveat block; one "start here" path across doc, landing cards and the site folder | C201 (3), (4) |
 | todo | Tutorial texts the review found stale or false and the housekeeping list; moved goldens, if any, as a list | C201 (5), (6) |
 | todo | C199 leftovers: the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
+| todo | The control-placement EduTool, pages 1-5 and the plant method page (the Pareto is in C204) | C204 |
+| todo | Dynamic units, slice 2: the CSTR with a variable volume, on slice 1's holdup home | C205 |
 
 ## Beyond a week
 
