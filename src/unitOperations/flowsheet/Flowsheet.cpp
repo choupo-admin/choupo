@@ -3258,25 +3258,35 @@ int Flowsheet::solve(const DictPtr& dict,
             const scalar qmax = recScalar("recycleWegsteinQmax",  0.0);
             sVector x = packTears(tears, streams_);
             solver::Wegstein accel(x.size(), qmin, qmax);
-            //  Dominant-eigenvalue aid (opt-in): declared numbers, defaults
-            //  ANNOUNCED.  Orbach & Crowe 1971; derivation in the header.
+            //  Dominant-eigenvalue aid (opt-in): the paper's method (Orbach &
+            //  Crowe 1971, derived in solver/DominantEigenvalue.H); every
+            //  number is declared in solverDict and a defaulted one is
+            //  ANNOUNCED as such.
             std::unique_ptr<solver::FixedPointAccelerator> deAccel;
             if (recDE)
             {
-                const bool dL = !(solverDict_ && solverDict_->found("recycleDELambdaMax"));
-                const bool dC = !(solverDict_ && solverDict_->found("recycleDEMinCosine"));
-                const bool dI = !(solverDict_ && solverDict_->found("recycleDEInterval"));
-                const scalar lamMax = recScalar("recycleDELambdaMax", 0.9);
-                const scalar minCos = recScalar("recycleDEMinCosine", 0.9);
-                const int    interv = static_cast<int>(recScalar("recycleDEInterval", 3));
-                deAccel = std::make_unique<solver::DominantEigenvalue>(
-                    x.size(), lamMax, minCos, interv);
-                std::cout << "  [aid] dominant-eigenvalue extrapolation: lambda = <d_k,d_k-1>/<d_k-1,d_k-1>,"
-                             " x <- g + lambda/(1-lambda) d_k; |lambda| <= "
-                          << lamMax << (dL ? " (default)" : "") << ", |cos| >= "
-                          << minCos << (dC ? " (default)" : "") << ", at most every "
-                          << interv + 1 << " iterations" << (dI ? " (default)" : "")
-                          << "; falls back to direct substitution, announced.\n";
+                auto isDefault = [&](const char* k) {
+                    return !(solverDict_ && solverDict_->found(k));
+                };
+                solver::DominantEigenvalueOptions o;
+                o.lambdaMax = recScalar("recycleDELambdaMax", o.lambdaMax);
+                o.minCosine = recScalar("recycleDEMinCosine", o.minCosine);
+                o.lambdaTol = recScalar("recycleDELambdaTol", o.lambdaTol);
+                o.alpha     = recScalar("recycleDEDamping",   o.alpha);
+                if (!(o.alpha > 0.0 && o.alpha <= 1.0))
+                    throw std::runtime_error("recycleDEDamping must lie in (0, 1] (Orbach & Crowe Eq 18); got "
+                                             + std::to_string(o.alpha) + ".");
+                if (!(o.lambdaMax > 0.0 && o.lambdaMax < 1.0))
+                    throw std::runtime_error("recycleDELambdaMax must lie in (0, 1) (Orbach & Crowe Eq 11); got "
+                                             + std::to_string(o.lambdaMax) + ".");
+                deAccel = solver::FixedPointAccelerator::New("DominantEigenvalue", x.size(), o);
+                std::cout << "  [aid] dominant-eigenvalue method (Orbach & Crowe 1971): lambda = ||dX_n||/||dX_n-1|| (Eq 17); "
+                             "move X <- X_n-1 + alpha dX_n/(1-lambda) (Eq 18) once two successive lambda agree within "
+                          << o.lambdaTol * 100.0 << " %" << (isDefault("recycleDELambdaTol") ? " (default)" : "")
+                          << "; alpha = " << o.alpha << (isDefault("recycleDEDamping") ? " (default)" : "")
+                          << "; |lambda| <= " << o.lambdaMax << (isDefault("recycleDELambdaMax") ? " (default)" : "")
+                          << ", |cos| >= " << o.minCosine << (isDefault("recycleDEMinCosine") ? " (default)" : "")
+                          << "; at least three iterations between moves; a refused move falls back to direct substitution, announced.\n";
             }
             // Energy-tear values ride via unitKpis_ (plain successive
             // substitution, not accelerated): the column overwrites its duty
