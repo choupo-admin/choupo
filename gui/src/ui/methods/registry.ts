@@ -74,7 +74,8 @@ export type MethodToolId =
   | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
   | "plant-layout" | "gmp-layout" | "pool-fire" | "bund" | "materials" | "syngas"
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
-  | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry";
+  | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
+  | "economics-errors";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1808,6 +1809,29 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "discounted-volume-weighted price), with the revenue at risk if the "
       + "entry is a year or two late or the erosion deeper.  Not a "
       + "freedom-to-operate analysis.",
+    theory: "ch:economics",
+  },
+  //  COMMISSIONED 2026-11-02 (DEV.md 4c C210, synthesis items E7 and E8 of
+  //  docs/reviews/2026-11-02-pif-reports-synthesis.md).  Two NOTES pages for
+  //  the pharmaceutical-plant project groups, no engine run, beside
+  //  `patent-expiry`: the arithmetic of the economics chapter and the
+  //  demand forecast upstream of it.
+  {
+    id: "economics-errors",
+    label: "Ways a pharmaceutical-plant economics goes wrong",
+    discipline: "Process design & economics", kind: "notes",
+    status: "live",
+    origins: ["page", "assumption"],
+    teaches: "Eight mistakes that recur in a plant-design economics "
+      + "chapter -- a sold quantity that is not the plant's production, a "
+      + "break-even on another revenue than the NPV's, tax charged on sales "
+      + "instead of taxable income, a royalty outside its patent window, "
+      + "three working capitals that differ by an order of magnitude, a "
+      + "discount rate mistaken for the cause of an IRR, a utility bill in "
+      + "the wrong units, an undeclared cost per square metre -- each as the "
+      + "wrong and the right calculation side by side on the same editable "
+      + "inputs, with what Choupo does about it read from the engine, and "
+      + "where it does nothing, the statement that you must check it.",
     theory: "ch:economics",
   },
   //  WHICH SOLVENT, OR WHICH SOLVENT MIXTURE (2026-10-21, DEV.md 4c C128,

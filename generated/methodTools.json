@@ -33,8 +33,8 @@
       "meaning": "an input -- a value you set with a control, or one the example's author declared -- not a result"
     }
   ],
-  "liveTools": 68,
-  "registryTools": 68,
+  "liveTools": 69,
+  "registryTools": 69,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -813,6 +813,17 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=patent-expiry"
+    },
+    {
+      "id": "economics-errors",
+      "label": "Ways a pharmaceutical-plant economics goes wrong",
+      "discipline": "Process design & economics",
+      "teaches": "Eight mistakes that recur in a plant-design economics chapter -- a sold quantity that is not the plant's production, a break-even on another revenue than the NPV's, tax charged on sales instead of taxable income, a royalty outside its patent window, three working capitals that differ by an order of magnitude, a discount rate mistaken for the cause of an IRR, a utility bill in the wrong units, an undeclared cost per square metre -- each as the wrong and the right calculation side by side on the same editable inputs, with what Choupo does about it read from the engine, and where it does nothing, the statement that you must check it.",
+      "origins": [
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=economics-errors"
     },
     {
       "id": "solvent-mixture",

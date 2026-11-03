@@ -1618,6 +1618,76 @@ The molecule's volume is held constant and the originator's reply
 The sensitivities move one thing at a time on the same curves and carry no
 probability.
 
+\subsection{Ways a pharmaceutical-plant economics goes wrong}\label{sec:edu-economics-errors}
+
+\declaredanchor{ch:economics}
+
+\noindent\textit{\small Tool:} \code{tool=economics-errors}.  \textit{\small
+Case it starts from:} none (one illustrative plant of round numbers); no
+engine run.
+
+\subsubsection*{The question}
+
+\emph{My group has written the economics chapter of a plant design.  Before
+we hand it in, which of the mistakes that recur in such chapters are in ours,
+and which of them would Choupo have caught?}
+
+The page takes eight error classes met in earlier plant-design reports
+(none is named here, or on the page) and shows, for each, the wrong
+calculation and the right one on the same editable inputs, side by side.
+The classes are: a sold quantity that is not the plant's production,
+$N=\min(Q,Ds)$ against a quantity raised by an unargued factor; a
+break-even computed on another revenue than the NPV's, tested by putting the
+break-even back into the NPV; the tax charged on sales instead of on taxable
+income, $T=t(S-K-d)$; a royalty charged outside the years in which a
+licensed patent is in force; three working capitals (a fraction of the fixed
+capital, a fraction of the sales, a build-up from days) that can differ by
+more than an order of magnitude; a discount rate mistaken for the cause of
+an internal rate of return, drawn as the NPV against the rate with the IRR
+where the curve crosses zero; a utility bill out by a unit conversion, with
+energy and volume refused as a mixture; and a cost per square metre that is
+a bare number instead of a declaration with a source and a reason.
+
+\subsubsection*{The guard under each class}
+
+Under every example is the answer to \emph{what does Choupo do about this?},
+read from the engine and quoted with the file it was read in, in one of four
+words: it \emph{refuses} (the run stops), \emph{announces} (the run goes on
+and prints it), \emph{constructs} (the engine's own calculation is done the
+right way in one place and published, but nothing compares it with yours),
+or does \emph{nothing}, and then the page says so in those words.  Choupo has
+no royalty line and no patent calendar, computes no break-even quantity,
+does not choose a working-capital method for you and does not judge a
+discount rate or a unit cost.  The test of the page opens the source files it
+cites and holds each guard sentence to the text it rests on, so a guard that
+disappears from the engine fails the test instead of staying on the page.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+In the sold-quantity example set the factor to one and then to six: the
+quantity booked goes from the market share to several times the plant's
+production, and the page marks it impossible.  Switch the series to
+thousands read as millions and watch the same.  In the discount-rate example
+raise the rate to sixty per cent: the NPV of a sound ten-year project turns
+negative, while the IRR does not move; then multiply the cash flow by six
+and read an IRR above one hundred per cent that no rate chose.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That a green run is a correct economics.}  The engine's chain is
+consistent; it does not know whether the quantity, the price, the royalty or
+the unit cost you declared are those of the plant you described.  Every
+number on this page is an illustration, none is a market study, and nothing
+on it is financial or legal advice.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+A year-end discounted cash flow with straight-line depreciation, no
+inflation, no financing and no construction period; the engine's own appraisal
+has more than that, and the page does not reproduce it.
+
 \section{Constructions not yet documented here}\label{sec:edu-stubs}
 
 %  No count here.  This sentence used to say "Six live tools", against a
