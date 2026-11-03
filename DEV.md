@@ -1925,6 +1925,16 @@ accepts today, and that is a policy call.
 > SURGICALLY (44 rows, a whole-case `--record` re-pinned 900 rows of in-tolerance
 > drift and was discarded).
 
+> **THE STACK IS COMPLETE (2026-11-03 06:30):** all seven builds are in the local
+> branch `staging`, each validated by `bin/integrate --base staging` on top of the
+> previous ones, the EduTools (E7+E8) last and without a conflict.  The ONE full
+> sweep (decided above) runs on that tip now; `--fast` and `--gui` (43/0) passed
+> on it, and the whole GUI suite passed (6845 tests in 265 files).  Landing, the
+> architect's plan: AFTER the class, merge `staging` into `main` (main has
+> documentation commits that staging lacks, so a merge), re-run the doc gates on
+> the result, push, and read the site's publication; if the sweep finds
+> anything, fix it on `staging` first.
+
 > **C209. A SECTOR THAT SAYS HOW MANY TIMES IT IS REPEATED (Vitor, 2026-11-02
 > night, about swro01_campoDalias: "no flowsheet devia haver forma de
 > notificar isso ... qualquer envolucro que dissesse quantas vezes se tem de
