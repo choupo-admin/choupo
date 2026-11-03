@@ -40,7 +40,7 @@ import {
   PLANT_COST_LIMITS, PLANT_COST_QUIZ, PLANT_COST_STEPS,
 } from "./plantCostLesson.js";
 import {
-  DIRECT_ROWS, EXAMPLES, INDIRECT_ROWS, LANG_FACTORS, PROCESS_TYPE_LABEL,
+  DIRECT_ROWS, EXAMPLES, INDIRECT_ROWS, LANG_FACTORS, PROCESS_TYPE_LABEL, paperLang,
   bareModule, directDefaults, factored, fciFractionFromTciShare, indirectDefaults,
   langFci, loanDefaults, loanSchedule, outsideRange, threeRoutes, wcDefaults,
   workingCapitals,
@@ -81,6 +81,8 @@ export function PlantCostTool(): JSX.Element {
   const [items, setItems] = useState<EquipItem[]>(EXAMPLES.tablets.items.map((x) => ({ ...x })));
   const [type, setType] = useState<ProcessType>(EXAMPLES.tablets.type);
   const cbe = useMemo(() => items.reduce((s, x) => s + x.cp, 0), [items]);
+  const paper = EXAMPLES[exId].paper;
+  const pl = paper ? paperLang(items, paper) : null;
   const pickExample = (id: ExampleId) => {
     setExId(id);
     setItems(EXAMPLES[id].items.map((x) => ({ ...x })));
@@ -125,7 +127,7 @@ export function PlantCostTool(): JSX.Element {
           </Text>
           <Alert mt="sm" color="yellow" variant="light" title="Illustrations, not a quotation" data-illustrations="">
             The equipment, its costs, the factors, the days and the loan terms are
-            round numbers chosen to be followed by hand.  Lang&apos;s three factors
+            round numbers chosen to be followed by hand, except the third example list, which is Table 3 of a published paper (cited, with its licence, under the list).  Lang&apos;s three factors
             and the engine&apos;s constants are cited; no typical range is printed;
             beside each fraction is a pointer to the chapter that tabulates it.
           </Alert>
@@ -150,7 +152,7 @@ export function PlantCostTool(): JSX.Element {
           </Group>
           <PanTable>
             <Table.Thead><Table.Tr>
-              <Table.Th>item (illustration)</Table.Th><Table.Th>purchased cost C_p, M EUR</Table.Th>
+              <Table.Th>{paper ? "item (from the paper)" : "item (illustration)"}</Table.Th><Table.Th>purchased cost C_p, M EUR</Table.Th>
               <Table.Th>bare-module factor F_BM</Table.Th>
             </Table.Tr></Table.Thead>
             <Table.Tbody>
@@ -169,6 +171,27 @@ export function PlantCostTool(): JSX.Element {
             Purchased equipment C_Be = <b>{f(cbe, 2)} M EUR</b>.  Lang: F_L = {LANG_FACTORS[type].toFixed(2)} x {f(cbe, 2)} ={" "}
             <b>{f(lang, 2)} M EUR</b>.
           </Text>
+          {paper && pl ? (
+            <Box mt={6} data-paper-lang="">
+              <Text size="xs" c="dimmed">
+                Source: {paper.citation}.  Licence: {paper.licence}.
+              </Text>
+              <Text size="sm" mt={4}>
+                The paper totals the list at <b>{f(paper.printedTotal, 3)} M EUR</b> (this list sums to{" "}
+                {f(pl.sum, 5)}) and applies its own multiplier, K = <b>{f(paper.langK, 1)}</b>: {paper.where}.{" "}
+                {f(paper.langK, 1)} x {f(pl.sum, 5)} = <b>{f(pl.product, 3)} M EUR</b>, printed by the paper as{" "}
+                <b>{f(paper.printedPlant, 2)} M EUR</b> (&quot;Costs of establishing the plant&quot;, Table 3):{" "}
+                {pl.reproduces ? "the arithmetic reproduces the paper's figure."
+                  : "the arithmetic does NOT reproduce the paper's figure."}
+                {" "}The page&apos;s own fluids factor, {LANG_FACTORS.fluids.toFixed(2)}, would give{" "}
+                {f(LANG_FACTORS.fluids * pl.sum, 2)} M EUR: Lang&apos;s 1947 value and the 4.7 the paper takes
+                from its reference [50] differ by 1 %, within the spread the lesson is about.
+              </Text>
+            </Box>
+          ) : null}
+          {EXAMPLES[exId].note ? (
+            <Text size="xs" c="dimmed" mt={4} data-example-note="">{EXAMPLES[exId].note}</Text>
+          ) : null}
           <Text size="xs" c="dimmed" mt={4}>
             Choupo prints this as its Lang cross-check (default K = 3.63, <code>EconomicsPass.cpp:2696-2697</code>),
             a reconciliation line that is never fed into its fixed capital.
