@@ -516,6 +516,19 @@ $q_{\min} = q_{\max} = 0$ degenerates to plain direct substitution
 for cases where acceleration is unsafe (flash regime switches,
 strongly non-linear recycles).
 
+\noindent A third closure, \texttt{recycleSolver DominantEigenvalue;}, extrapolates along
+the dominant eigenvector of the substitution map (Orbach and Crowe, 1971).
+Near the fixed point the differences of successive iterates are the
+power-method sequence of the map's Jacobian, so
+$\lambda=\langle d_k,d_{k-1}\rangle/\langle d_{k-1},d_{k-1}\rangle$
+estimates the dominant eigenvalue and
+$x\leftarrow g(x)+\lambda/(1-\lambda)\,(g(x)-x)$ sums the geometric tail
+(exact in one step on a linear map with one mode excited).  It is a solver aid
+and reports aloud: each extrapolation prints its $\lambda$, and a fall-back
+to direct substitution (|\,$\lambda$\,| above its bound, or successive
+differences not parallel) prints its reason.  Tutorial:
+\file{tutorials/steady/flowsheets/recycle02\_dominant\_eigenvalue}.
+
 \begin{intuition}
 Why does a flowsheet of hundreds of unit operations, each resting on its
 own assumptions, end up \emph{consistent}?  A student once put this very

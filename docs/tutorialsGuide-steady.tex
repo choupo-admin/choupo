@@ -5808,6 +5808,51 @@ feed      M1 mixer     recycle1 (hot)                              recycle2 (col
 \end{tutgolden}
 
 \clearpage
+\tutentry{recycle02\_dominant\_eigenvalue}{tutorials/steady/flowsheets/recycle02\_dominant\_eigenvalue}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (29.0,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (31.9,-0.0) {\textbf{reactor}\\[-1pt]{\tiny cstr}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (34.8,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(mixer.west)+(-1.05,0.00)$) -- ($(mixer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {freshFeed};
+  \draw[->, dashed] (column.south) .. controls +(0,-1.0) and +(0,-1.0) .. (mixer.south) node[midway, below, font=\tiny] {recycle};
+  \draw[->] (mixer) -- (reactor) node[midway, above, font=\tiny] {mixed};
+  \draw[->] (reactor) -- (column) node[midway, above, font=\tiny] {reactorOut};
+  \draw[->] ($(column.east)+(0,0.00)$) -- ($(column.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Isomerization recycle closed by the dominant-eigenvalue extrapolation (Orbach-Crowe) -- iterations vs Newton, Wegstein, direct substitution}
+\begin{tutnarrative}
+The recycle of process05\_isomerization\_recycle closed by `recycleSolver DominantEigenvalue;` (see system/solverDict for the iteration comparison). Reactor + distillation with recycle of the unconverted reactant --- the canonical flowsheet for exercising the reports\{\} layer (stream table, mass balance with closure, energy balance) on a non-trivial topology with a tear stream.
+
+freshFeed (neoPentane)      [mixer]               recycle (neoPentane)             [reactor] neoPentane $\to$ nPentane (CSTR)           [column] (distillation, alpha \textasciitilde{} 2.5)         distillate           bottoms   (neoPentane, (nPentane,   recycled)                                      (recycle) the PRODUCT
+
+Chemistry: neoPentane $\to$ nPentane is an isomerization --- 1:1 in moles AND mass (identical MW 72.15). So at steady state the fresh feed (1 kmol/h neoPentane) equals the product (1 kmol/h nPentane in the bottoms), and the overall MASS BALANCE CLOSES TO 100 \%. The recycle carries per-pass unconverted neoPentane back to the reactor, so the OVERALL conversion is \textasciitilde{}100 \% (product is 99 \% nPentane) even though the per-pass conversion is only \textasciitilde{}80 \%.
+
+Tuning notes (honest): The loop runs at 5 bar so every neoPentane/nPentane stream is a genuine LIQUID at its temperature. neoPentane's Antoine here boils at \textasciitilde{}275 K at 1 bar (Psat(320 K) \textasciitilde{}4.3 bar), so a 1 bar loop would flash the feed + recycle to VAPOUR --- the phase is a CONSEQUENCE of (T,P,z) (Duhem), not a silent liquid default. At 5 bar the bubble point clears \textasciitilde{}326 K, so the warm reactor (\textasciitilde{}327 K) and the recycled distillate stay liquid, as the flowsheet intends. The reaction uses a LOW activation energy on purpose --- a high-Ea rate would make the per-pass conversion collapse against the recycle temperature and destabilise the loop. Low Ea decouples conversion from the recycle temperature. `distillateRate` is FIXED here (the column's spec). It cannot perfectly track the per-pass unconverted neoPentane, so the recycle carries some nPentane (product) along --- exactly why real recycle loops need a purge. Closing the recycle PURITY would be a DesignSpec manipulating distillateRate; left out here to keep the case a single pass for reviewing the reports.
+
+This is the case to open in the GUI and to read the reports/ CSVs from: streamTable.csv, massBalance.csv (+ \_byUnit), energyBalance\_byUnit.csv.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.000277777777778}
+\goldrow{stream}{freshFeed}{F}{0.000277777777778}
+\goldrow{stream}{mixed}{F}{0.000363888888889}
+\goldrow{stream}{reactorOut}{F}{0.000363888888889}
+\goldrow{stream}{recycle}{F}{8.61111111111e-05}
+\goldrow{kpi}{column}{B}{0.000277777777778}
+\goldrow{kpi}{column}{D}{8.61111111111e-05}
+\goldrow{kpi}{column}{L\_rect}{0.000172222222222}
+\goldrow{kpi}{column}{L\_strip}{0.000618116666279}
+\goldrow{kpi}{column}{R}{2}
+\goldrow{kpi}{column}{T\_bottom}{365.015972007}
+\goldrow{kpi}{column}{T\_top}{348.431788793}
+\goldrow{kpi}{column}{V\_rect}{0.000258333333333}
+\goldrow{kpi}{column}{V\_strip}{0.000340338888501}
+\goldmore{44}
+\end{tutgolden}
+
+\clearpage
 \tutentry{recycle\_autoinit\_tear}{tutorials/steady/flowsheets/recycle\_autoinit\_tear}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

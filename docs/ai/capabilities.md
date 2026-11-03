@@ -266,7 +266,7 @@ batch plan, sizing, clean utilities, costing and economics on top
 | Property bench (phase diagrams, steam tables, psychrometry, parameter fitting) | properties, envelopes, fits | `op:phaseEnvelope`, `op:steamTables`, `op:psychrometricChart`, `op:fitParameters`, `op:speciate` | `tutorials/props/steam/steam01_if97_verification`, `tutorials/props/heat/psychro01_n2_water` |
 | Process control (PID, step response, loops) | closed-loop dynamics | `dynUnit:dynamicCSTR`, `controller:PID` | `tutorials/ctrl/ctrl01_cstr_temp_control` |
 | Dynamics without control (start-up, feed and bleed) | transients of connected units | `dynUnit:quasiSteady`, `dynUnit:dynamicTank` | `tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup` |
-| Recycles (tear streams) | converged recycle | `pack:recycles` | `tutorials/plant/hda` |
+| Recycles (tear streams) | converged recycle; `recycleSolver` Newton, Wegstein or the opt-in dominant-eigenvalue extrapolation (announced, with fallbacks) | `pack:recycles`, `key:recycleSolver`, `key:recycleDELambdaMax` | `tutorials/plant/hda` |
 
 The full list of unit operations, with their keys, is
 `docs/ai/unit-ops.md`.  The catalogue of thermodynamic and property models is

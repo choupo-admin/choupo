@@ -26,11 +26,14 @@ A flowsheet with NO loop needs no `solverDict`, no tear, no seed.
 
 ```
 tearStreams      ( recycle );     // REQUIRED when a loop exists; list of stream names
-recycleSolver    Newton;          // Newton (default) | Wegstein
+recycleSolver    Newton;          // Newton (default) | Wegstein | DominantEigenvalue
 recycleTol       1e-8;            // relative tolerance; default 1e-5
 recycleMaxIter   50;              // default 100
 recycleWegsteinQmin  -1.0;        // Wegstein only; default -1.0; -0.7 = more damping
 recycleWegsteinQmax   0.0;        // Wegstein only; default 0.0
+recycleDELambdaMax   0.9;         // DominantEigenvalue only; |lambda| bound; default 0.9
+recycleDEMinCosine   0.9;         // DominantEigenvalue only; parallel-differences bound; default 0.9
+recycleDEInterval    3;           // DominantEigenvalue only; direct steps between extrapolations; default 3
 ```
 
 * `Newton`: unknowns are, per tear stream, every component molar flow, T and
@@ -40,6 +43,16 @@ recycleWegsteinQmax   0.0;        // Wegstein only; default 0.0
   cascades with several tears, or when Newton wanders; lower
   `recycleWegsteinQmin` to damp over-shoot.  An energy heat-link feedback
   (see the energy documentation) forces Wegstein, announced.
+* `DominantEigenvalue`: direct substitution with an extrapolation along the
+  dominant eigenvector (Orbach & Crowe 1971): lambda is estimated from two
+  consecutive differences, then x <- g(x) + lambda/(1-lambda) (g(x) - x).
+  It is exact in one step on a linear map with one mode excited.  A solver
+  aid, so it reports aloud: the three numbers above are announced (defaults
+  marked "(default)"), every extrapolation prints its lambda, and a fallback to
+  direct substitution (|lambda| above the bound, or successive differences not
+  parallel because several modes are alive) prints its reason.  Opt-in; try it
+  where Wegstein needs many iterations on a smooth, slowly contracting loop.
+  A recycleSolver word that is none of the three REFUSES, naming them.
 * The tolerance is RELATIVE (flows scaled by the tear's total flow, T and P
   by their own value).  `1e-5` is loose; `1e-8` is a good report value.
 * These keys live in `solverDict`; do not scatter them elsewhere.
