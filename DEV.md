@@ -1726,7 +1726,7 @@ accepts today, and that is a policy call.
 > Two gates failed in the integration worktree and are the same two as in the
 > earlier integrations, for the same reason: `check_element_closure` reads the
 > run outputs of membrane08, a case outside the scope that the worktree never
-> ran, and `check_method_tools` needs `gui/node_modules`; neither touches the
+> ran, and `check_method_tools` needs the installed GUI packages; neither touches the
 > diff.  The full sweep the tool flags (`main.cpp`, `PostProcessor.H`,
 > `Flowsheet.cpp` are shared paths) is dispensed with, the written reason: the
 > new run-failure rule is opt-in per pass (`nonzeroFailsRun()` is true for the
