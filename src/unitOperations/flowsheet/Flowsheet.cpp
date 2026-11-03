@@ -49,6 +49,7 @@ License
 #include "solver/NewtonRaphson.H"
 #include "solver/NewtonND.H"
 #include "solver/Wegstein.H"
+#include "solver/DominantEigenvalue.H"
 #include "streams/Composition.H"
 #include "streams/StreamMass.H"
 #include "thermo/utility/UtilityCatalogue.H"
@@ -3129,6 +3130,14 @@ int Flowsheet::solve(const DictPtr& dict,
             recSolver = "Wegstein";
         }
 
+        //  The selector was a two-way if whose ELSE took any other word as
+        //  Newton; a misspelt solver ran the default in silence.  Refuse.
+        const bool recDE = (recSolver == "DominantEigenvalue");
+        if (recSolver != "Newton" && recSolver != "Wegstein" && !recDE)
+            throw std::runtime_error(
+                "recycleSolver '" + recSolver + "' is not known.  Accepted: "
+                "Newton, Wegstein, DominantEigenvalue.");
+
         // One SM sweep through every unit (quiet during iteration).
         g_trialPressureClamps = 0;
         g_trialPressureFirst.clear();
@@ -3238,9 +3247,10 @@ int Flowsheet::solve(const DictPtr& dict,
             }
         };
 
-        if (recSolver == "Wegstein")
+        if (recSolver == "Wegstein" || recDE)
         {
-            std::cout << "Recycle outer loop (Wegstein over "
+            const std::string accName = recDE ? "DominantEigenvalue" : "Wegstein";
+            std::cout << "Recycle outer loop (" << accName << " over "
                       << tears.size() << " tear stream(s)):\n"
                       << "   it    |Δtear|2     |F_tear|                      γ-info\n"
                       << "  ----  -----------  ----------\n";
@@ -3248,6 +3258,26 @@ int Flowsheet::solve(const DictPtr& dict,
             const scalar qmax = recScalar("recycleWegsteinQmax",  0.0);
             sVector x = packTears(tears, streams_);
             solver::Wegstein accel(x.size(), qmin, qmax);
+            //  Dominant-eigenvalue aid (opt-in): declared numbers, defaults
+            //  ANNOUNCED.  Orbach & Crowe 1971; derivation in the header.
+            std::unique_ptr<solver::FixedPointAccelerator> deAccel;
+            if (recDE)
+            {
+                const bool dL = !(solverDict_ && solverDict_->found("recycleDELambdaMax"));
+                const bool dC = !(solverDict_ && solverDict_->found("recycleDEMinCosine"));
+                const bool dI = !(solverDict_ && solverDict_->found("recycleDEInterval"));
+                const scalar lamMax = recScalar("recycleDELambdaMax", 0.9);
+                const scalar minCos = recScalar("recycleDEMinCosine", 0.9);
+                const int    interv = static_cast<int>(recScalar("recycleDEInterval", 3));
+                deAccel = std::make_unique<solver::DominantEigenvalue>(
+                    x.size(), lamMax, minCos, interv);
+                std::cout << "  [aid] dominant-eigenvalue extrapolation: lambda = <d_k,d_k-1>/<d_k-1,d_k-1>,"
+                             " x <- g + lambda/(1-lambda) d_k; |lambda| <= "
+                          << lamMax << (dL ? " (default)" : "") << ", |cos| >= "
+                          << minCos << (dC ? " (default)" : "") << ", at most every "
+                          << interv + 1 << " iterations" << (dI ? " (default)" : "")
+                          << "; falls back to direct substitution, announced.\n";
+            }
             // Energy-tear values ride via unitKpis_ (plain successive
             // substitution, not accelerated): the column overwrites its duty
             // KPI each sweep, resolveEnergyInputs reads the previous one.
@@ -3300,7 +3330,9 @@ int Flowsheet::solve(const DictPtr& dict,
                                imb.mass, imb.energy,
                                false, streams_, tears, topology_);
                 if (lastDelta < tearTol && eConv) { converged = true; ++outerIt; break; }
-                sVector x_next = accel.step(x, gx);
+                sVector x_next = deAccel ? deAccel->step(x, gx) : accel.step(x, gx);
+                if (deAccel && !deAccel->note().empty())
+                    std::cout << "        -> " << deAccel->note() << "\n";
                 // announce: this is an ACCEPTED extrapolated step, so a clip
                 // here is a real event (overshoot), not a silent crutch.
                 unpackTears(tears, streams_, x_next, thermo.n(), /*announce=*/true, &streamBounds);
@@ -3310,7 +3342,7 @@ int Flowsheet::solve(const DictPtr& dict,
             std::cout << "  ----  -----------  ----------\n";
             if (converged)
                 std::cout << "Recycle converged in " << outerIt
-                          << " Wegstein iteration(s)  (|Δtear|2 = "
+                          << " " << accName << " iteration(s)  (|Δtear|2 = "
                           << std::scientific << std::setprecision(3) << lastDelta << ").\n";
             else
                 std::cout << "WARNING: recycle did NOT converge in " << maxOuter
@@ -3330,7 +3362,7 @@ int Flowsheet::solve(const DictPtr& dict,
             // marched iteration (both would land on the same x and the residual
             // plot shows two values at one iteration / a vertical plunge).
             finalIteration = itBase + outerIt + 1;
-            finalSolver    = "wegstein";
+            finalSolver    = recDE ? "dominantEigenvalue" : "wegstein";
         }
         else   // Newton-on-tears  (the EO-flavoured step: r(x) = G(x) − x = 0)
         {
