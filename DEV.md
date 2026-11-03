@@ -1719,6 +1719,22 @@ accepts today, and that is a policy call.
 > long-term L1-L10, the sterile route and full HVAC first.  What the two groups
 > report from the class goes ahead of all of it.
 
+> **C208 VALIDATED, WAITING TO LAND (2026-11-03 night; branch
+> `worktree-c208-cases`, integration branch `integ/worktree-c208-cases`):**
+> `bin/integrate`: `--scope` PASS 71 / FAIL 0 (every case the diff reaches,
+> including the repaired flagship and sugar sweep), `--fast` PASS 78 / FAIL 0.
+> Two gates failed in the integration worktree and are the same two as in the
+> earlier integrations, for the same reason: `check_element_closure` reads the
+> run outputs of membrane08, a case outside the scope that the worktree never
+> ran, and `check_method_tools` needs `gui/node_modules`; neither touches the
+> diff.  The full sweep the tool flags (`main.cpp`, `PostProcessor.H`,
+> `Flowsheet.cpp` are shared paths) is dispensed with, the written reason: the
+> new run-failure rule is opt-in per pass (`nonzeroFailsRun()` is true for the
+> economics pass only), so every other pass keeps its old exit behaviour; the
+> only cases it can change are those with an economics block, and ALL of them
+> were run; the init0 change reaches only streams whose producers carry
+> solids.  Decision at landing: merge after the class.
+
 > **C209. A SECTOR THAT SAYS HOW MANY TIMES IT IS REPEATED (Vitor, 2026-11-02
 > night, about swro01_campoDalias: "no flowsheet devia haver forma de
 > notificar isso ... qualquer envolucro que dissesse quantas vezes se tem de

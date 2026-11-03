@@ -37,8 +37,8 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | status | what | ref |
 |---|---|---|
 | decide | FREEZE until the tutoring class of 2026-11-03 ends: nothing is integrated into main, so nothing reaches the site; work is built on branches and validated in integration worktrees | C200, C210 |
-| running | Validation of C208 (the quiet exit-0 failures, `choupo-init0` for solids-only streams) with the flagship's and the sugar sweep's economics restored (`worktree-c208-cases`, d8d606744) | C208 |
-| running | Dynamic units, slice 2: the CSTR with a variable volume (report due 07:00) | C205 |
+| queued | C208 VALIDATED and waiting to land after the class (`--scope` 71/0, `--fast` 78/0; the full sweep dispensed with, the reason in DEV.md): the quiet exit-0 failures, `choupo-init0` for solids-only streams, the flagship's and the sugar sweep's economics restored (`integ/worktree-c208-cases`) | C208 |
+| queued | Dynamic units, slice 2 BUILT (`dynamicCSTR` with `volumeMode variable`, 8e5c7f53b): two witnesses against closed forms, ledgers 1e-14, the gate and its second-order sabotage; it also made `Component::readIdentity` read `Vliq` (a shared path, measured: no salt in the standards or the tutorials declares one, so no number moves); waits its turn to integrate after the class | C205 |
 | running | PIF E2 + E3: HVAC cost from the supply air; cleaning events from the batch plan -> purified water and effluent (report due 07:00) | C195, C210 |
 | running | GUI E6 + the MASS cell: the per-machine utilisation table and the Gantt drawn from the engine's batch plan; the run strip reads the published mass balance (report due 07:00) | C195, C201 (2) |
 | running | EduTools E7 + E8: how a pharmaceutical-plant economics goes wrong (the reports' error classes, anonymous); the demand forecast with a units check (report due 07:00) | C195, C210 |
