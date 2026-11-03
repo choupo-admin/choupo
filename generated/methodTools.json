@@ -33,8 +33,8 @@
       "meaning": "an input -- a value you set with a control, or one the example's author declared -- not a result"
     }
   ],
-  "liveTools": 72,
-  "registryTools": 72,
+  "liveTools": 73,
+  "registryTools": 73,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -859,6 +859,17 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=plant-running-cost"
+    },
+    {
+      "id": "site-process-price",
+      "label": "Where to build it, what to make, and what it sells for",
+      "discipline": "Process design & economics",
+      "teaches": "The market-side decisions that come before the cost pages: a weighted-criteria matrix for choosing a site, with the weight at which the ranking changes for each criterion; a method for reading patents for a route, and a patent example turned into a mass basis per kilogram of product, a yield and a cycle time; and the margin chain between the shelf price and the ex-factory price, computed down and back up from stages the student declares. A pharmaceutical product is the example. No weight, margin or tax rate is shipped, and nothing here is legal advice or a market study.",
+      "origins": [
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=site-process-price"
     },
     {
       "id": "solvent-mixture",

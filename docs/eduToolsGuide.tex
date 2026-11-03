@@ -1819,6 +1819,69 @@ it does not measure risk.  The numbers on the page are illustrations, and
 nothing on it is financial or legal advice.
 \end{pitfall}
 
+\subsection{Where to build it, what to make, and what it sells for}\label{sec:edu-site-process-price}
+
+\declaredanchor{ch:economics}
+
+\noindent\textit{\small Tool:} \code{tool=site-process-price}.  \textit{\small
+Case it starts from:} none (invented illustrations); no engine run.
+
+\subsubsection*{The question}
+
+\emph{Before I cost a plant: where does it go, which patented route does it
+run, and what does the product earn at the plant gate?}
+
+The page does the three pieces of arithmetic that the other economics pages
+leave out, and ships no figure about any place, patent or market.  The
+\emph{site} is chosen with a weighted matrix: the page lists prompts
+(proximity to raw materials and customers, utilities, labour, transport,
+climate, incentives, land), the student declares the criteria, the weights
+and a score from 0 to 10 for each candidate, and the page computes
+$S_i=\sum_j w_j s_{ij}/\sum_j w_j$.  It then shows how fragile the ranking
+is: holding the other weights, two sites tie at exactly one weight of a given
+criterion, $x^{*}=(R_a-R_b)/(s_{bj}-s_{aj})$, and the page reports, for each
+criterion, the nearest weight at which the current leader is overtaken, and
+plots every site's score against that weight.
+
+The \emph{process} is chosen from patents with a method given as a checklist:
+start from the patents cited in an encyclopedia entry, group them by owner,
+separate industrial examples from laboratory ones, read the Examples section
+for temperatures, pressures, times and yields, and check that one patent
+covers the whole route.  A small calculator then turns an example (quantities
+charged, product isolated, times) into kilograms charged per kilogram of
+product, the process mass intensity, the E-factor, the yield against the
+theoretical amount, the cycle time, the product per hour and a scale factor
+to a target batch.  The page cites no patent and invents no number.
+
+The \emph{price} is the margin chain between the shelf and the plant gate.
+Each stage (a tax, a pharmacy, a wholesaler, a fixed fee) is the student's
+declared input, in one of four forms that are not interchangeable: a share of
+the price the stage sells at, a markup on the price it pays, a tax added on
+top, or a fixed amount per pack.  The page ships no margin and no tax rate:
+the instruction is to read the regulation of the market and declare each stage
+with its source.  The arithmetic runs from the shelf price down to the
+ex-factory price and back up from the price the plant needs, and the round
+trip must return the starting price.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+Raise the weight of one criterion until the leader changes and read the
+weight at which it did; compare with the weight the page reported.  Swap the
+fixed fee with the pharmacy and watch the ex-factory price move, then swap the
+tax with the pharmacy and watch it not move.
+Change a pharmacy margin from a share of its selling price to a markup on its
+cost with the same number and read the difference.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That the matrix decides, or that a patent example is a design.}  The
+weights and scores are the student's judgements and the example is one
+inventor's experiment; neither is a fact about a site or a plant.  Nothing on
+the page is legal advice, a market study or a freedom-to-operate opinion, and
+every starting value is an illustration.
+\end{pitfall}
+
 \subsection{Demand forecast for a drug product}\label{sec:edu-demand-forecast}
 
 \declaredanchor{ch:economics}
