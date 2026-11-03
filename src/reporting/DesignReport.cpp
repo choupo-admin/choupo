@@ -151,7 +151,7 @@ void DesignReport::run(const DictPtr& dict, const ReportContext& ctx)
     f << "unit";
     if (anySector) f << ",sector";
     if (anyTag)    f << ",equipmentTag";
-    f << ",equipmentType,material,basis";
+    f << ",tag,equipmentType,material,basis";
     for (const auto& k : keys) f << "," << k;
     f << "\n";
     for (const auto& row : rows)
@@ -162,7 +162,7 @@ void DesignReport::run(const DictPtr& dict, const ReportContext& ctx)
             f << "," << (sz.sector.empty() ? std::string("(no sector)") : sz.sector);
         if (anyTag)
             f << "," << (sz.equipmentTag.empty() ? sz.equipmentType : sz.equipmentTag);
-        f << "," << sz.equipmentType << "," << sz.material << ","
+        f << "," << sz.tagNo << "," << sz.equipmentType << "," << sz.material << ","
           << csvField(sz.basis.empty() ? std::string("(not stated)") : sz.basis);
         for (const auto& k : keys)
         {

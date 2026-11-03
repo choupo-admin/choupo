@@ -255,6 +255,13 @@ equipment waterCooler          values.weight    41300.9062588      1e-4
 equipment waterCooler          cost.purchased   182940.544383      1e-4
 equipment waterCooler          cost.bareModule  793785.272781      1e-4
 equipment waterCooler          cost.totalModule 936666.621881      1e-4
+equipment FEHE                   tagNo            E-101            exact
+equipment converter              tagNo            V-101            exact
+equipment letdown                tagNo            V-103            exact
+equipment makeupComp             tagNo            C-101            exact
+equipment recycleComp            tagNo            C-102            exact
+equipment separator              tagNo            V-102            exact
+equipment waterCooler            tagNo            E-102            exact
 boundary global               H_feeds_kW       -39777909.9013     1e-4
 boundary global               Q_boundary_kW    -9633.12459567     1e-4
 boundary global               H_products_kW    -39787541.4977     1e-4

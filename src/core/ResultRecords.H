@@ -441,6 +441,44 @@ struct EquipmentSizing
     //  changes.
     std::vector<std::string>                     encloses;
 
+    //  THE PLANT TAG (2026-11-03, DEV.md 4c C203/C210, slice S1 of
+    //  `docs/design/the-plant-document-set.md`): `P-101A`, the name a student
+    //  calls this item in the PFD, the equipment list, the cost table and the
+    //  P&ID.  NOT `equipmentTag`, which is the legacy word for WHICH ITEM OF A
+    //  UNIT this is (`shell`, `train1`) and is part of `itemId()`; the two
+    //  coexist and are never mixed -- hence `tagNo` in code, `tag` on every
+    //  surface a reader opens.
+    //
+    //  Stamped ONCE by `equipmentTags::assign` (sizing/EquipmentTag.H), the
+    //  ONE home of the rule and of the kind-letter table.  Empty only before
+    //  that call.  `tagBy` says whether the rule generated it or the CASE
+    //  declared it (`declaredTag`, read from the postDict entry's `tag` /
+    //  `itemTags`); a declared tag wins and is announced.
+    std::string                                  tagNo;
+    std::string                                  tagBy;          // generated | declared
+    std::string                                  declaredTag;    // the entry's own word, pre-assignment
+
+    //  WHAT THE TAG RULE NEEDS AND NO OTHER FACT SUPPLIES.  `machineKind` is
+    //  the `kind` of a `ratedMachine` (volumeRate is a pump, the others are
+    //  process machines): the sizer's equipmentType is `ratedMachine` for
+    //  both, and a letter chosen from the unit's NAME would be name identity.
+    //  `installed` is how many machines this item stands for in parallel
+    //  (running + the declared spares), 1 where the sizer says nothing.
+    //  `ordinal` is the order the item entered `result.sizings`, so the tag
+    //  numbers by declaration order and not by the map's alphabetical one.
+    std::string                                  machineKind;
+    std::string                                  sizerType;      // the postDict entry's `type` word (the sizer that made it)
+    int                                          installed = 1;
+    int                                          ordinal   = 0;
+
+    //  ONE OF N IDENTICAL PARALLEL ITEMS (a train of a trained plant, one of
+    //  a tank bank): `parallelOf` > 1 and `parallelIndex` 1..N.  The tag rule
+    //  gives the N items ONE number and the letters A, B, ... (Turton's
+    //  "parallel units"); 0 on every item that stands alone.
+    int                                          parallelIndex = 0;
+    int                                          parallelOf    = 0;
+    std::string                                  parallelGroup;  // which family of parallel items (a header role); empty where one family
+
     void assume(const std::string& key)
     {
         for (const auto& k : assumed) if (k == key) return;

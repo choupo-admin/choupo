@@ -67,6 +67,7 @@ import type { CaseFiles } from "../case/types.js";
 import type { JsonDict } from "../dict/index.js";
 import type { PairOrigin, ValidityDomain, PromotionOverride,
   EquipmentItem,
+  EquipmentListBlock,
   GlobalEnergyBoundary,
   GlobalMassBoundary,
 } from "./SolverAdapter.js";
@@ -190,7 +191,7 @@ export class WasmAdapter implements SolverAdapter {
         settled = true;
         if (signal) signal.removeEventListener("abort", onAbort);
         worker.terminate();
-        const { displayLog, streams, streamAliases, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, kpis,
+        const { displayLog, streams, streamAliases, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, equipmentList, kpis,
           utilityAllocation, globalEnergyBoundary, globalMassBoundary, computed, timeline, transfers, energyLedger, advisories, divergences, modelBoundaries, closuresByConstruction, recycleLoops, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics, layout, building, phaseSplitScans,
           postProcessing, batchPlan, converged } =
@@ -203,6 +204,7 @@ export class WasmAdapter implements SolverAdapter {
         if (componentMolarMass) result.componentMolarMass = componentMolarMass;
         if (unitSectors && Object.keys(unitSectors).length > 0) result.unitSectors = unitSectors;
         if (equipment && equipment.length > 0) result.equipment = equipment;
+        if (equipmentList && equipmentList.rows.length > 0) result.equipmentList = equipmentList;
         if (utilityAllocation && utilityAllocation.length > 0) result.utilityAllocation = utilityAllocation;
         if (globalEnergyBoundary) result.globalEnergyBoundary = globalEnergyBoundary;
         if (globalMassBoundary) result.globalMassBoundary = globalMassBoundary;
@@ -434,6 +436,7 @@ export function extractStructured(log: string,
   componentMolarMass?: { [comp: string]: number };
   unitSectors?: { [unitName: string]: string };
   equipment?: EquipmentItem[];
+  equipmentList?: EquipmentListBlock;
   /** Per-unit KPIs (yield, supersaturation, Q_removed,...) -- empty {} when
    *  no JSON block or no kpis object in it. */
   kpis: { [unitName: string]: { [k: string]: number } };
@@ -688,6 +691,9 @@ export function extractStructured(log: string,
       : {}),
 ...(parsed.equipment && parsed.equipment.length > 0
       ? { equipment: parsed.equipment }
+      : {}),
+    ...(parsed.equipmentList && parsed.equipmentList.rows?.length > 0
+      ? { equipmentList: parsed.equipmentList }
       : {}),
     ...(parsed.componentMolarMass
       ? { componentMolarMass: {...parsed.componentMolarMass } }
@@ -1207,6 +1213,7 @@ interface ResultPayload {
   componentMolarMass?: { [comp: string]: number };
   unitSectors?: { [unitName: string]: string };
   equipment?: EquipmentItem[];
+  equipmentList?: EquipmentListBlock;
   streams: {
     [name: string]: {
       F: number;

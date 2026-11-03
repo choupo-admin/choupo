@@ -142,6 +142,8 @@ EquipmentSizing bankVessel(const Bank& b, int k, const std::string& basis)
 {
     EquipmentSizing it = b.proto;
     it.equipmentTag = "vessel" + std::to_string(k);
+    it.parallelIndex = k;                  // the plant tag: one number, letters A..
+    it.parallelOf    = b.nV;
     it.basis        = basis;
     it.set("V_R",             b.V_each,         "m3");
     it.set("D",               b.D,              "m");

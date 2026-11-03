@@ -29,6 +29,7 @@ License
 #include "result/ResultEmitter.H"
 #include "result/BatchPlanJson.H"
 #include "result/BuildingJson.H"
+#include "result/EquipmentList.H"
 #include "thermo/SealCheck.H"
 #include "core/Citation.H"
 
@@ -826,6 +827,12 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                 else if (!sz.basis.empty())
                     os << ", \"basis\": " << esc(sz.basis);
             }
+            //  THE PLANT TAG (EquipmentTag.H), a NEW key beside the legacy `tag`
+            //  (the item word inside a unit): P-101A.  Written after the header
+            //  words and before `values`, so readers that match `"item": ..,
+            //  "type": ..` as adjacent keys keep matching.
+            if (!sz.tagNo.empty())
+                os << ", \"tagNo\": " << esc(sz.tagNo);
             os << ", \"values\": {";
             bool firstV = true;
             for (const auto& [k, v] : sz.values)
@@ -937,6 +944,48 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             os << " } }";
         }
         os << "\n  ]";
+    }
+
+    //  THE EQUIPMENT LIST (slice S1 of the plant document set): the rows of
+    //  `reports/equipment/equipmentList.csv`, built by the ONE builder
+    //  (`result/EquipmentList`), so the GUI draws and prints the list and
+    //  computes none of it.  Only when a sizing pass produced items.  The row's
+    //  item key is `itemId` (the CSV column is `item`): several readers match a
+    //  line by `"item": "..."` to find the equipment block's rows, and a second
+    //  line carrying that key would be counted as a second item.
+    if (!r.sizings.empty())
+    {
+        const auto rows = equipmentList::rows(r);
+        os << ",\n  \"equipmentList\": {";
+        os << "\n    \"columns\": [";
+        const auto& cols = equipmentList::columns();
+        for (std::size_t i = 0; i < cols.size(); ++i)
+            os << (i ? ", " : "") << esc(cols[i]);
+        os << "],\n    \"rows\": [";
+        for (std::size_t i = 0; i < rows.size(); ++i)
+        {
+            const auto& w = rows[i];
+            os << (i ? ",\n" : "\n") << "      { \"tag\": " << esc(w.tag)
+               << ", \"itemId\": " << esc(w.item)
+               << ", \"unit\": " << esc(w.unit)
+               << ", \"sector\": " << esc(w.sector)
+               << ", \"equipment\": " << esc(w.equipment)
+               << ", \"installed\": " << w.installed
+               << ", \"sizeKey\": " << esc(w.sizeKey)
+               << ", \"sizeValue\": " << (w.haveSize ? num(w.sizeValue) : std::string("null"))
+               << ", \"sizeUnit\": " << esc(w.sizeUnit)
+               << ", \"dimensions\": " << esc(w.dimensions)
+               << ", \"pressureDesign\": " << (w.havePressure ? num(w.pressureDesign) : std::string("null"))
+               << ", \"pressureUnit\": " << esc(w.havePressure ? w.pressureUnit : std::string())
+               << ", \"material\": " << esc(w.material)
+               << ", \"currency\": " << esc(w.costed ? w.currency : std::string())
+               << ", \"purchased\": " << (w.costed ? num(w.purchased) : std::string("null"))
+               << ", \"bareModule\": " << (w.costed ? num(w.bareModule) : std::string("null"))
+               << ", \"totalModule\": " << (w.costed ? num(w.totalModule) : std::string("null"))
+               << ", \"costNote\": " << esc(w.costNote)
+               << ", \"tagBy\": " << esc(w.tagBy) << " }";
+        }
+        os << "\n    ]\n  }";
     }
 
     // ---- which SECTOR owns each unit ------------------------------------

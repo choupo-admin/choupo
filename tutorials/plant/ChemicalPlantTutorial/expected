@@ -108,6 +108,11 @@ equipment CONCENTRATION.Evap1    basis            A_=_declared_operation.area_(r
 equipment CONCENTRATION.Evap2    basis            A_=_declared_operation.area_(rating_model;_pass-through) exact
 equipment DRYING.SD              basis            W_evap_=_water_evaporated_(unit_result;_pass-through) exact
 equipment FERMENTATION.Fermentor basis            V_R_=_declared_operation.V_R_(pass-through);_D_and_H_from_L_over_D;_t_wall_ASME_thin-wall exact
+equipment CONCENTRATION.Cryst    tagNo            CR-201           exact
+equipment CONCENTRATION.Evap1    tagNo            EV-201           exact
+equipment CONCENTRATION.Evap2    tagNo            EV-202           exact
+equipment DRYING.SD              tagNo            D-301            exact
+equipment FERMENTATION.Fermentor tagNo            R-401            exact
 boundary global                 H_feeds_kW       -20869.1538199   1e-4
 boundary global                 Q_boundary_kW    -223.152899486   1e-4
 boundary global                 H_products_kW    -21092.3063814   1e-4

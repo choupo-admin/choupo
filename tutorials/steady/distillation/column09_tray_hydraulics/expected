@@ -102,3 +102,8 @@ kpi     column09               diameterDesigned 1                1e-4
 equipment column09/trays         cost.purchased   28357.7235313    1e-4
 equipment column09/trays         cost.bareModule  37252.8117041    1e-4
 equipment column09/trays         cost.totalModule 43958.3178108    1e-4
+equipment column09/condenser     tagNo            E-101            exact
+equipment column09/reboiler      tagNo            E-102            exact
+equipment column09/refluxDrum    tagNo            V-101            exact
+equipment column09/shell         tagNo            T-101            exact
+equipment column09/trays         tagNo            TR-101           exact

@@ -288,6 +288,7 @@ std::vector<EquipmentSizing> PipeHeaderSize::size(const std::string& unitName,
             EquipmentSizing t = d;
             trainSplit::stamp(t, k, N);
             t.equipmentTag = "train" + std::to_string(k) + "." + role;
+            t.parallelGroup = role;
             out.push_back(std::move(t));
         }
     }

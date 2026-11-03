@@ -102,6 +102,9 @@ equipment separator            values.weight    33920.0681926      1e-4
 equipment separator            cost.purchased   23995.7757173      1e-4
 equipment separator            cost.bareModule  3308190.17989      1e-4
 equipment separator            cost.totalModule 3903664.41227      1e-4
+equipment converter              tagNo            V-101            exact
+equipment letdown                tagNo            V-103            exact
+equipment separator              tagNo            V-102            exact
 boundary global               H_feeds_kW       104.859286489      1e-4
 boundary global               Q_boundary_kW    -72403.120272      1e-4
 boundary global               H_products_kW    -72298.2617608     1e-4

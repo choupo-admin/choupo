@@ -719,7 +719,7 @@ def check_case(rel, expect_sector, problems, notes, all_units):
 
         # ---------------------------------------------------------------- (b)
         for k in head:
-            if k in ("unit", "sector", "equipmentTag", "equipmentType",
+            if k in ("unit", "sector", "equipmentTag", "tag", "equipmentType",
                      "material", "basis"):
                 continue
             cell = r[head.index(k)] if head.index(k) < len(r) else ""

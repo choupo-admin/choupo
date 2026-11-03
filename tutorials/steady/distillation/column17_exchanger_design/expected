@@ -184,6 +184,11 @@ equipment column17/trays       values.traySpacing 0.5                1e-4
 equipment column17/trays       cost.purchased   28357.7235313      1e-4
 equipment column17/trays       cost.bareModule  37252.8117041      1e-4
 equipment column17/trays       cost.totalModule 43958.3178108      1e-4
+equipment column17/condenser     tagNo            E-101            exact
+equipment column17/reboiler      tagNo            E-102            exact
+equipment column17/refluxDrum    tagNo            V-101            exact
+equipment column17/shell         tagNo            T-101            exact
+equipment column17/trays         tagNo            TR-101           exact
 boundary global               H_feeds_kW       1779.54082551      1e-4
 boundary global               Q_boundary_kW    -635.777316814     1e-4
 boundary global               H_products_kW    1143.76350869      1e-4

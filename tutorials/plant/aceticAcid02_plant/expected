@@ -501,6 +501,17 @@ equipment methanolTank/tank1     inventory.freshMethanol.rho 785.116627225    1e
 equipment methanolTank/tank1     inventory.freshMethanol.mass 1076611.2        1e-4
 equipment methanolTank/tank1     inventory.mass.methanol 1076611.2        1e-4
 equipment methanolTank/tank1     inventory.mass.total 1076611.2        1e-4
+equipment acidCooler             tagNo            E-104            exact
+equipment acidTank/tank1         tagNo            TK-102           exact
+equipment condenser              tagNo            V-102            exact
+equipment degasser               tagNo            V-103            exact
+equipment lightsColumn/condenser tagNo            E-102            exact
+equipment lightsColumn/reboiler  tagNo            E-103            exact
+equipment lightsColumn/shell     tagNo            T-101            exact
+equipment lightsColumn/trays     tagNo            TR-101           exact
+equipment methanolTank/tank1     tagNo            TK-101           exact
+equipment preheater              tagNo            E-101            exact
+equipment reactor                tagNo            V-101            exact
 layout  acidCooler             shape            box              exact
 layout  acidCooler             orientation      alongX           exact
 layout  acidCooler             footprintFrom    declared         exact
