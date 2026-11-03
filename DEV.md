@@ -1775,6 +1775,36 @@ accepts today, and that is a policy call.
 > (history, population, plant) are invented illustrations and labelled so; one
 > quiz question was dropped (a table limit of seven per tool).
 
+> **PIF E2 + E3 BUILT (2026-11-03 night; branch
+> `worktree-agent-a6192f2d0e1c74a02`: 4ac1a9ae2 E2, 3dc77e601 E3; not merged):**
+> E2 an HVAC cost from the supply air: a `quotes` entry `{ hvacGrade <G>;
+> valuePerSupplyAir ... }` priced as a third identity beside `unit` and `item`
+> (DeclaredQuote.cpp; EconomicsPass untouched); a served grade with no quote is
+> FAILED and the capital total reads INCOMPLETE; donepezil 111 340 m3/h, C_BM
+> 1.244 M EUR, C_TM 1.468 M EUR, apalutamide CNC 65 670 m3/h, C_BM 0.328 M EUR
+> -- on ASSUMED author-set prices (grade D 12 EUR per m3/h, CNC 5; the README
+> flags the CNC 5 as probably low for a contained suite).  The building quote
+> lost what is now quoted apart (its own text said the 6000 EUR/m2 included
+> HVAC): donepezil 9.5 -> 8.3 M EUR, apalutamide 11 -> 10.7 M EUR, still
+> author-set placeholders, said so.  E3 cleaning events from the batch plan:
+> `batchPlan { cleaning ( { unit; waterPerLotClean; waterPerChangeover;
+> effluentFraction; source; reason; } ) }`, cleans per year = N x N_ip +
+> campaigns x N_ip x N_op; donepezil 966 cleans, 560 m3 water, 532 m3
+> effluent a year; apalutamide 149 cleans, 110 m3, 105 m3; ONE water ledger
+> (the old 3 m3 lump removed so cleans are not counted twice); effluent is a
+> VOLUME only (no load).  MOVED ROWS on the two tablet cases (both fail their
+> goldens until the list is accepted): the economics KPIs (FCI 19.75 -> 19.80
+> M EUR donepezil, NPV -18.58 -> -18.67 M; apalutamide FCI 23.75 -> 23.78 M,
+> NPV 128.17 -> 128.12 M, IRR 0.708 -> 0.707), the building cost rows, and the
+> purified-water generator and tank (donepezil V_year 448.5 -> 579.9 m3,
+> capacity 3.93 -> 1.67 m3/h) -- each with its cause above; the full lists are
+> in the two commit messages.  DECISION AT LANDING (the architect's): these
+> rows move for stated reasons that are the point of the slice, so they are
+> re-recorded WITH the list in the commit; the class of 2026-11-03 therefore
+> runs on the numbers before them.  Gate `check_tablet_machines` arms (b2),
+> (c2) and three sabotages.  CUT: multiproduct cleaning, effluent load,
+> costing of the generator and tank.
+
 > **C209. A SECTOR THAT SAYS HOW MANY TIMES IT IS REPEATED (Vitor, 2026-11-02
 > night, about swro01_campoDalias: "no flowsheet devia haver forma de
 > notificar isso ... qualquer envolucro que dissesse quantas vezes se tem de
