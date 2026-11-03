@@ -264,11 +264,13 @@ describe("a sectored plant: one sheet per sector, the canvas's numbers, an engin
 });
 
 describe("equipment tags: drawn where the result carries one, else the unit name", () => {
-  const eq = (unit: string, tag?: string) =>
-    ({ unit, item: unit, type: "pump", material: "x", values: {}, ...(tag ? { tag } : {}) }) as never;
-  it("reads a tag of the process-industry form and ignores the sub-item word", () => {
+  const eq = (unit: string, tagNo?: string, tag?: string) =>
+    ({ unit, item: unit, type: "pump", material: "x", values: {}, ...(tagNo ? { tagNo } : {}), ...(tag ? { tag } : {}) }) as never;
+  it("reads the engine's tagNo as written and ignores the sub-item word `tag`", () => {
     expect(tagOfUnit([eq("HPpump", "P-101A")], "HPpump")).toBe("P-101A");
-    expect(tagOfUnit([eq("col", "train1")], "col")).toBeUndefined();
+    expect(tagOfUnit([eq("HPpump", "P-101A-D")], "HPpump")).toBe("P-101A-D");
+    expect(tagOfUnit([eq("RO", "MB-101A..F")], "RO")).toBe("MB-101A..F");
+    expect(tagOfUnit([eq("col", undefined, "train1")], "col")).toBeUndefined();
     expect(tagOfUnit([eq("HPpump")], "HPpump")).toBeUndefined();
     expect(tagOfUnit(undefined, "HPpump")).toBeUndefined();
   });
