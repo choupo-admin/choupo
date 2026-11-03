@@ -74,7 +74,7 @@ const std::map<std::string, OpSlots>& table()
                                 "steamTables" })
             m[ty] = { {}, outFile };
         //  ops that name no file by a key
-        for (const char* ty : { "elementalComposition", "exergy",
+        for (const char* ty : { "elementalComposition", "exergy", "flashSpec",
                                 "explainProperty", "hConsistency",
                                 "mixingRules", "propertyPoint",
                                 "transportBench" })

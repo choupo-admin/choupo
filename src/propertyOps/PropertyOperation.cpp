@@ -42,6 +42,7 @@ License
 #include "HeatTransferBench.H"
 #include "Kinetics1D.H"
 #include "Exergy.H"
+#include "FlashSpec.H"
 #include "ExplainProperty.H"
 #include "MixingRules.H"
 #include "PropertyPoint.H"
@@ -158,6 +159,7 @@ void PropertyOperation::registerBuiltins()
     reg("explainProperty", []{ return std::make_unique<ExplainProperty>(); });
     reg("mixingRules",     []{ return std::make_unique<MixingRules>();     });
     reg("exergy",          []{ return std::make_unique<Exergy>();          });
+    reg("flashSpec",       []{ return std::make_unique<FlashSpec>();       });
     reg("propertyScan1D", []{ return std::make_unique<PropertyScan1D>(); });
     reg("propertyScan2D", []{ return std::make_unique<PropertyScan2D>(); });
     reg("propertyScanTernary", []{ return std::make_unique<PropertyScanTernary>(); });
