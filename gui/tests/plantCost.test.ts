@@ -28,7 +28,7 @@ import { MantineProvider } from "@mantine/core";
 import { describe, expect, it } from "vitest";
 
 import {
-  DIRECT_ROWS, ENGINE_SOURCES, EXAMPLES, INDIRECT_ROWS, LANG_FACTORS,
+  DIRECT_ROWS, ENGINE_SOURCES, EXAMPLES, INDIRECT_ROWS, LANG_FACTORS, paperLang,
   bareModule, directDefaults, factored, fciFractionFromTciShare, indirectDefaults,
   langFci, loanDefaults, loanSchedule, outsideRange, threeRoutes, wcDefaults,
   workingCapitals,
@@ -139,6 +139,17 @@ describe("step 4: three numbers for one list", () => {
     near(EXAMPLES.fluids.items.reduce((s, x) => s + x.cp, 0), 1.67);
     expect(EXAMPLES.fluids.type).toBe("fluids");
     expect(EXAMPLES.tablets.type).toBe("solids");
+  });
+  it("Asgharian et al. 2024, Table 3 (p. 12): eight rows total 0.887 and x4.7 gives 4.17", () => {
+    const ex = EXAMPLES.asgharian;
+    expect(ex.items.map((x) => x.cp)).toEqual([0.19, 0.00187, 0.183, 0.242, 0.005, 0.08, 0.17, 0.015]);
+    const r = paperLang(ex.items, ex.paper!);
+    near(r.sum, 0.88687);
+    near(r.product, 4.168289, 1e-6);
+    expect(r.reproduces).toBe(true);
+    expect(ex.paper!.langK).toBe(4.7);
+    expect(ex.paper!.licence).toContain("CC BY");
+    expect(ex.type).toBe("fluids");
   });
   it("the engine multipliers can be declared", () => {
     near(bareModule(EXAMPLES.tablets.items, 1.0, 0.0).fci, 12.79);

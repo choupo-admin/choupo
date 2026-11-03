@@ -180,23 +180,51 @@ export function threeRoutes(lang: number, fac: number, bm: number): ThreeRoutes 
   return { lang, factored: fac, bareModule: bm, min, max, spread: min > 0 ? max / min : NaN };
 }
 
-/** Invented equipment lists, labelled illustrations (purchased cost in M EUR,
- *  bare-module multiplier F_BM).  No vendor, no quotation. */
-export const EXAMPLES = {
+export type ExampleId = "fluids" | "tablets" | "asgharian";
+
+/** A worked example taken from a paper: the citation, the licence words, the
+ *  multiplier the authors apply and the figures they print. */
+export interface PaperExample {
+  citation: string;
+  licence: string;
+  /** Lang multiplier as the paper applies it */
+  langK: number;
+  /** the paper's printed total of the component costs, M EUR */
+  printedTotal: number;
+  /** the paper's printed cost of establishing the plant, M EUR */
+  printedPlant: number;
+  where: string;
+}
+
+export interface ExampleDef {
+  label: string;
+  type: ProcessType;
+  items: EquipItem[];
+  /** present only for a list read from a paper */
+  paper?: PaperExample;
+  /** a sentence shown under the list when something in it is not the paper's */
+  note?: string;
+}
+
+/** Equipment lists.  `fluids` and `tablets` are invented, labelled
+ *  illustrations (purchased cost in M EUR, bare-module multiplier F_BM; no
+ *  vendor, no quotation).  `asgharian` is Table 3 of a CC BY paper, re-typed
+ *  as numbers (no figure, no table image copied). */
+export const EXAMPLES: Readonly<Record<ExampleId, ExampleDef>> = {
   fluids: {
     label: "Fluid-processing plant (generic illustration)",
-    type: "fluids" as ProcessType,
+    type: "fluids",
     items: [
       { name: "Reactor (stirred tank)", cp: 0.45, fbm: 4.0 },
       { name: "Heat exchangers (2)", cp: 0.30, fbm: 3.2 },
       { name: "Distillation column with trays", cp: 0.55, fbm: 4.2 },
       { name: "Pumps (4)", cp: 0.12, fbm: 3.3 },
       { name: "Storage tanks (3)", cp: 0.25, fbm: 3.0 },
-    ] as EquipItem[],
+    ],
   },
   tablets: {
     label: "Pharmaceutical tablet plant (solids, illustration)",
-    type: "solids" as ProcessType,
+    type: "solids",
     items: [
       { name: "High-shear granulator", cp: 0.60, fbm: 3.2 },
       { name: "Fluid-bed dryer", cp: 0.80, fbm: 3.6 },
@@ -204,10 +232,55 @@ export const EXAMPLES = {
       { name: "Tablet press", cp: 0.90, fbm: 2.8 },
       { name: "Film coater", cp: 0.50, fbm: 3.2 },
       { name: "Blister packaging line", cp: 1.20, fbm: 2.6 },
-    ] as EquipItem[],
+    ],
   },
-} as const;
-export type ExampleId = keyof typeof EXAMPLES;
+  asgharian: {
+    label: "Green ammonia, 8.5 kg/h (Asgharian et al. 2024, Table 3)",
+    type: "fluids",
+    // Table 3, p. 12 of the printed article, column "Costs (M EUR)".
+    // The paper gives no bare-module multiplier: F_BM is a PLACEHOLDER of 1.0.
+    items: [
+      { name: "AEL (alkaline electrolyser)", cp: 0.19, fbm: 1.0 },
+      { name: "Catalyst and sorbent material", cp: 0.00187, fbm: 1.0 },
+      { name: "Reactors and containers for sorbent material", cp: 0.183, fbm: 1.0 },
+      { name: "Compressors", cp: 0.242, fbm: 1.0 },
+      { name: "Pumps", cp: 0.005, fbm: 1.0 },
+      { name: "Heat exchangers", cp: 0.08, fbm: 1.0 },
+      { name: "Distillation columns", cp: 0.17, fbm: 1.0 },
+      { name: "Flash tank", cp: 0.015, fbm: 1.0 },
+    ],
+    paper: {
+      citation: "H. Asgharian et al., \"Exceeding equilibrium limitations: Enhanced "
+        + "temperature control for sustainable decentralized green ammonia production "
+        + "- a techno-economic analysis\", Energy Conversion and Management 315 "
+        + "(2024) 118764, doi 10.1016/j.enconman.2024.118764, Table 3 (p. 12)",
+      licence: "\"This is an open access article under the CC BY license "
+        + "(http://creativecommons.org/licenses/by/4.0/)\" (article footer, p. 1); "
+        + "only the numbers of Table 3 are re-typed here, no figure is copied",
+      langK: 4.7,
+      printedTotal: 0.887,
+      printedPlant: 4.17,
+      where: "Section 3.3: \"one can estimate the establishment costs of the plant using "
+        + "a Lang factor, which has a value of 4.7 according to reference [50] for "
+        + "fluid processing plants\"",
+    },
+    note: "The paper gives costs only (estimated, as the paper states, with a commercial "
+      + "cost-estimating program); the bare-module factor F_BM of 1.0 is a placeholder "
+      + "of this page, not the paper's, so step 4 shows the engine's route on the "
+      + "purchased costs alone.",
+  },
+};
+
+/** Lang's multiplier as a paper applies it: its K on the summed list.  Returns
+ *  the unrounded product, the product rounded to the paper's two decimals and
+ *  whether that reproduces the paper's printed figure. */
+export function paperLang(items: readonly EquipItem[], p: PaperExample) {
+  const sum = items.reduce((t, x) => t + x.cp, 0);
+  const product = p.langK * sum;
+  const reproduces = Math.abs(Math.round(product * 100) / 100 - p.printedPlant) < 1e-9
+    && Math.abs(Math.round(sum * 1000) / 1000 - p.printedTotal) < 1e-9;
+  return { sum, product, reproduces };
+}
 
 // ---- 5. working capital -----------------------------------------------------------
 
