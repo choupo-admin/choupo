@@ -1873,6 +1873,42 @@ accepts today, and that is a policy call.
 > merging staging (main has later documentation commits, so a merge, not a
 > fast-forward) and pushing, and reports after.
 
+> **C211. A CAPABILITY QUESTION IS NOT A DESIGN TASK (an assistant's report
+> that Vitor passed on, 2026-11-03: "recomendacoes, nao instrucoes";
+> ChatGPT was asked whether Choupo has a tablet-compression operation).**
+> VERIFIED against the tree: `tabletPress` in `apalutamide01_tablets` is a
+> `splitter` (99 % product, 1 % rejects, a mass balance and no physics);
+> `ratedMachine kind tabletPress` checks the press's capacity against the
+> batch plan; `compactionFit` fits Heckel, Kawakita and Ryshkewitch-Duckworth to
+> one material's data, no mixture rule; **what is missing is the PHYSICAL unit
+> that links compression conditions to the tablet** (relative density, tensile
+> strength, hardness) in the flowsheet.  The reader's failures are the
+> documents', in part: (1) a "does Choupo do X?" question has no entry path
+> (llms.txt points to the brief, which opens with 'write DESIGN.md first');
+> (2) the capability is spread over four places and a search for the unit name
+> `tabletPress` finds only the splitter; (3) `/models/` is empty without
+> JavaScript and is the Choupo-2608 catalogue while the app and the AI
+> documents describe the development line, and nothing on the page says which
+> one a reader is looking at; (4) two orientation paths, `AGENTS.md` ->
+> start-here and `llms.txt` -> brief; (5) a case named without its full path
+> (`tutorials/batch/plant/...`).  DECIDED, the architect's, none of it urgent
+> for the class: (a) a CAPABILITY INDEX, served at
+> `/llm/` and first in `llms.txt` under 'Does Choupo do X?': per concept (with
+> synonyms) what it COMPUTES, what it only BALANCES, what it only CHECKS and
+> what is MISSING, with the unit/operation/pack/case and the case's FULL path;
+> a gate holds every named unit, key and path to the tree (the references gate
+> pattern) so the index cannot drift; first the pharmaceutical-plant concepts
+> (C210); (b) every document the site serves for assistants states its
+> version line in its first lines (the development line, with the stable
+> release named and the page that differs); (c) a static, readable
+> `/llm/models.md` generated from `generated/modelsCatalogue.json` by
+> `llm_site.py`; (d) `AGENTS.md` sends a capability question to the index and a
+> design task to the brief, one path each.  And the missing physics goes to the
+> plan as a PIF item: a physical `tabletPress` (force or pressure, die, mass ->
+> relative density, porosity, tensile strength, from the declared
+> `compactionFit` parameters; the property of the blend by a DECLARED mixing
+> rule, never a silent one).
+
 > **C209. A SECTOR THAT SAYS HOW MANY TIMES IT IS REPEATED (Vitor, 2026-11-02
 > night, about swro01_campoDalias: "no flowsheet devia haver forma de
 > notificar isso ... qualquer envolucro que dissesse quantas vezes se tem de

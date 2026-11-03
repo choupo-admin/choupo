@@ -54,18 +54,20 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| todo | The capability path for assistants (C211): a capability index beside the brief (does Choupo do X? computes / balances / checks / missing, with full case paths, held to the tree by a gate), the version line on every served document, `/llm/models.md` readable without JavaScript, `AGENTS.md` with one path per question; the pharmaceutical concepts first | C211, C210 |
+| todo | A PHYSICAL `tabletPress` (today a splitter): compression force or pressure, die and mass -> relative density, porosity, tensile strength, from the declared `compactionFit` parameters; the blend's property by a declared mixing rule | C195, C210, C211 |
 | todo | Document set S7: the economic pipe diameter and the pipe cost (new physics, a cited correlation) | C207 |
 | todo | The control-placement EduTool, pages 1-5 and the plant method page (the Pareto is in C204); its loops use the instrument grammar above | C204 |
 | todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag (they feed the digital twin) | C205 |
 | todo | State checks: measure the seal-drift finding against main (9 sucrose / H2SO4 mirrors, 1809 moved values); one browser run on the site of each unit that reached main without one (Complete 0/, pressure exchanger, boron split, dynamic tank; C178, C182) | C201, C196 |
 | todo | The C200 packs still missing (heat, electrolytes, membranes, solids, drivers, transient, props) and the generated reference; re-score the 2026-11-01 baseline with the -init0 step | C200 |
-| todo | Newcomer surfaces (`runCase` shows the answer, the balance verdict and the caveat block; one start-here path) and the stale tutorial texts the review listed | C201 (3)-(6) |
-| todo | The p10 finding: NaCl in water has no enthalpy datum the default energy report can use (refused by the engine): curate it | C200 5.2 |
 
 ## Beyond a week
 
 | status | what | ref |
 |---|---|---|
+| todo | Newcomer surfaces (`runCase` shows the answer, the balance verdict and the caveat block; one start-here path) and the stale tutorial texts the review listed | C201 (3)-(6) |
+| todo | The p10 finding: NaCl in water has no enthalpy datum the default energy report can use (refused by the engine): curate it | C200 5.2 |
 | todo | PIF long-term (L1-L10 of the synthesis), in this order: the sterile route (filling, lyophiliser, sterilising filtration, F0), full HVAC (latent and equipment loads, the pressure cascade's leakage), labour following the plan and multiproduct campaigns, blend uniformity and cleaning limits, utility networks (steam, compressed air, vacuum), equipment catalogue records, scale-up and solid-dosage unit models, the economics as a distribution; open lactose compaction data when one appears | C195, C210 |
 | todo | A sector that says how many times it repeats (`repeat N;`): ONE train in the flowsheet, plant totals split and summed at its boundary, shared services outside, tags A..F beside the "x N" box; replaces `trains { count }` | C209 |
 | todo | `digitalTwin/`, its own tutorials folder (a designed plant in operation: continuous on choupoCtrl, then batch; layout required) -- needs the dynamic slices, the instrument grammar and the P&ID; the P&ID PDF sized by content (A3-A1) as the PFD; then the OPERATOR PANEL by Gall's law: the Pareto loops only, one screen per sector, alarms only where an action exists, grown only from a simpler panel that works | C203, docs/design/the-plant-document-set.md |
