@@ -57,11 +57,11 @@ is **not** stored: it arrives by pipeline at the plant pressure.
 | | |
 |---|---|
 | feeds | 100 kmol/h methanol, 105 kmol/h CO |
-| `acidProduct` | **98.39 kmol/h**, 99.89 mol % acetic acid (methyl acetate 0.05 %, water 0.06 %) |
-| acid lost | `lightsOut` 0.89, `offgas` 0.66, `purge` 0.015 kmol/h; the rest is accounted for |
-| yield on methanol | ~98.4 % to product |
-| first-law residual of the plant | +6.17 kW, 0.10 % of the energy exchanged -- 3.28 kW of it is the methanol pump's (section 3); the product cooler closes to 1e-13 kW |
-| product cooler | 306.1 kW to cooling water, 404.14 -> 313.15 K |
+| `acidProduct` | **98.00 kmol/h**, 99.87 mol % acetic acid (methyl acetate 0.06 %, water 0.07 %) |
+| acid lost | `lightsOut` 0.91, `offgas` 1.04, `purge` 0.024 kmol/h; the rest is accounted for |
+| yield on methanol | ~97.9 % to product |
+| first-law residual of the plant | +3.40 kW, 0.05 % of the energy exchanged -- 3.28 kW of it is the methanol pump's (section 3), 0.10 kW the mixer M1's and 0.02 kW the degasser's; the lights column and the product cooler close to 1e-4 kW |
+| product cooler | 304.9 kW to cooling water, 404.14 -> 313.15 K |
 | inventory held in the two tanks | 1077 t of methanol + 992 t of acetic acid (section 8) |
 
 ## 3. What is modelled, and what is not
@@ -139,7 +139,7 @@ methanol cost minus utilities (the condenser, degasser and column duties are in
 described in `docs/ai/outer-drivers.md`; this case ships without an `outerDict`
 on purpose.
 
-**Measured sensitivities on this base case** (one variable moved at a time):
+**Measured sensitivities on this base case** (one variable moved at a time; measured before the vapour was made associated on 2026-11-03 and NOT re-measured since -- the base case now gives 98.00 kmol/h at 99.87 mol %):
 
 | change | acid product | purity |
 |---|---|---|

@@ -376,14 +376,14 @@ describe("the numbers the lesson quotes are the ones the engine prints", () => {
 
   it("flash13's five numbers (step 4)", () => {
     const t = runNative(byId("verdict"), 3).out;
-    expect(t).toContain("raw   |r|1   initial 1.1964e+00  ->  final 8.3135e-13");
-    expect(t).toContain("normalized   initial 7.4889e-02  ->  final 5.1947e-14");
-    expect(t).toContain("reduction    normFinal/normInitial = 6.9365e-13");
+    expect(t).toContain("raw   |r|1   initial 1.5741e+00  ->  final 2.9005e-12");
+    expect(t).toContain("normalized   initial 7.0351e-02  ->  final 1.8432e-13");
+    expect(t).toContain("reduction    normFinal/normInitial = 2.6199e-12");
     expect(t).toContain("criterion    absolute tolerance (normalized residual <= tolerance)");
-    expect(t).toContain("verdict      CONVERGED after 4 outer iterations");
-    expect((5.1947e-14 / 7.4889e-2).toExponential(3)).toBe("6.937e-13");
+    expect(t).toContain("verdict      CONVERGED after 7 outer iterations");
+    expect((1.8432e-13 / 7.0351e-2).toExponential(3)).toBe("2.620e-12");
     const s4 = JSON.stringify(RUN_LOG_STEPS[3]);
-    for (const n of ["7.4889", "5.1947", "6.94", "1.1964"]) expect(s4).toContain(n);
+    for (const n of ["7.0351", "1.8432", "2.62", "1.5741"]) expect(s4).toContain(n);
   });
 
   it("the recycle: the units stay quiet until the loop has converged (step 5)", () => {
@@ -391,7 +391,7 @@ describe("the numbers the lesson quotes are the ones the engine prints", () => {
     const firstUnit = lines.find((l) => l.marker?.id === "unitBanner" && l.via === "marker")!;
     const conv = lines.find((l) => l.marker?.id === "recycleConverged")!;
     const pass = lines.find((l) => l.marker?.id === "finalPass")!;
-    expect(conv.text).toMatch(/^Recycle converged in 3 Newton iteration\(s\)/);
+    expect(conv.text).toMatch(/^Recycle converged in 2 Newton iteration\(s\)/);
     expect(conv.n).toBeLessThan(pass.n);
     expect(pass.n).toBeLessThan(firstUnit.n);
     //  The rule just above the loop belongs to the topology table it closes.

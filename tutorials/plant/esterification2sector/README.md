@@ -42,7 +42,7 @@ not the 2nd-order fit this case's own property evidence supports (see
 `CLAUDE.md`, "Pending").  The flash at 355 K, 1.013 bar splits
 the product into a vapour rich in ethyl acetate (bp 350 K) and ethanol, and a
 liquid rich in water and the unconverted acid.  Mass closes exactly:
-34.18 + 65.82 = 100.00 kmol/h.
+50.80 kmol/h of vapour + 49.20 of liquid = 100.00 kmol/h.
 
 ## History
 

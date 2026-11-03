@@ -58,11 +58,11 @@ outlets
     {
         global      "hotStream";
         bc          interior;
-        T           361.87991 K;
+        T           361.94625 K;
         P           101325 Pa;
         F           0.00027777778 kmol/s;
         mdot        0.014739028 kg/s;
-        vapourFraction 0.0002220006;
+        vapourFraction 0;
     }
 }
 

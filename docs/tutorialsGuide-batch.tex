@@ -1498,19 +1498,19 @@ n\_A(t) = n\_A(0) $\cdot$ exp(-k t)
 The simulator integrates dn\_A/dt = -k $\cdot$ (n\_A / V) $\cdot$ V = -k n\_A with RK4 at dt = 1 s; final t = 600 s gives X\_A $\approx$ 1 - exp(-k$\cdot$600) $\approx$ 1 - exp(-2.14) $\approx$ 0.882
 
 \end{tutnarrative}
-\tutreadme{18.5 mol of an equimolar ethanol / acetic-acid charge (about a litre) is held at 350 K in a closed vessel for 600 s and the Fischer esterification runs --- the kinetics of cstr01, now integrated in time by RK4 at 1 s steps. The golden: ethanol falls from 9.25 mol to 1.083 mol (X = 88.3 \%), 8.167 mol of ethyl acetate made, and the jacket has supplied only +1.48 kJ to hold the temperature --- exactly +0.18 kJ/mol of reaction at 350 K, the elements-datum heat every reactor in Choupo prices on. The real liquid esterification is only mildly exothermic (about -3 to -4 kJ/mol); Choupo reads about -0.4 kJ/mol at 298 K because of Watson errors on the four liquid enthalpies, so the jacket duty here is a small number of either sign, not a cooling load.}
-\tutreadme{1. choupoBatch, not choupoSolve. A batch vessel has no steady state; the case declares endTime 600; deltaT 1.0; writeInterval 30; in controlDict and the engine integrates dn/dt = $\nu$ r V. The Log tab prints a snapshot every 30 s: four inventories and T. 2. First order means an exponential, and you can check it. With k = 3.575e-3 s?$^1$ at 350 K (the same Arrhenius pair as cstr01), n(600 s) = 9.25$\cdot$e\textasciicircum{}(-2.145) = 1.083 mol. The table is that curve, sampled. 3. The campaign ledger closes at machine precision. [campaign] mass balance ? closure 4.5e-16, energy balance: dH\_vessels = +1.48 kJ ? = Q\_ledger +1.48 kJ, closure 0 --- every joule the jacket took is a state difference on the charge, never a quadrature, which is why the closure is zero and not merely small. 4. A CSTR at the same $\tau$ does worse. 600 s here gives 88 \%; the continuous reactor at $\tau$ = 310 s gave 53 \% and a PFR 67 \%. Three reactors, one rate law, three answers --- the batch one is the upper envelope, because nothing leaves early.}
-\tutreadme{Set T\_setpoint 370 K;: k roughly triples, the exponential steepens, and the ledger's Q follows the extent (small, because the reaction is nearly thermoneutral). Then batch02\_adiabatic removes the jacket, and T becomes one more state on the trajectory.}
+\tutreadme{18.5 mol of an equimolar ethanol / acetic-acid charge (about a litre) is held at 350 K in a closed vessel for 600 s and the Fischer esterification runs --- the kinetics of cstr01, now integrated in time by RK4 at 1 s steps. The golden: ethanol falls from 9.25 mol to 1.083 mol (X = 88.3 \%), 8.167 mol of ethyl acetate made, and the jacket has removed only 17.18 kJ to hold the temperature --- exactly -2.10 kJ/mol of reaction at 350 K, the elements-datum heat every reactor in Choupo prices on. The liquid esterification is only mildly exothermic (calorimetry: about -3 to -4 kJ/mol), so the jacket duty here is small, not the cooling load an exotherm of tens of kJ/mol would need.}
+\tutreadme{1. choupoBatch, not choupoSolve. A batch vessel has no steady state; the case declares endTime 600; deltaT 1.0; writeInterval 30; in controlDict and the engine integrates dn/dt = $\nu$ r V. The Log tab prints a snapshot every 30 s: four inventories and T. 2. First order means an exponential, and you can check it. With k = 3.575e-3 s?$^1$ at 350 K (the same Arrhenius pair as cstr01), n(600 s) = 9.25$\cdot$e\textasciicircum{}(-2.145) = 1.083 mol. The table is that curve, sampled. 3. The campaign ledger closes at machine precision. [campaign] mass balance ? closure 4.5e-16, energy balance: dH\_vessels = -17.18 kJ ? = Q\_ledger -17.18 kJ, closure 0 --- every joule the jacket took is a state difference on the charge, never a quadrature, which is why the closure is zero and not merely small. 4. A CSTR at the same $\tau$ does worse. 600 s here gives 88 \%; the continuous reactor at $\tau$ = 310 s gave 53 \% and a PFR 67 \%. Three reactors, one rate law, three answers --- the batch one is the upper envelope, because nothing leaves early.}
+\tutreadme{Set T\_setpoint 370 K;: k roughly triples, the exponential steepens, and the ledger's Q follows the extent (small, because the reaction is only mildly exothermic). Then batch02\_adiabatic removes the jacket, and T becomes one more state on the trajectory.}
 \begin{tutgolden}
 \goldrow{kpi}{campaign}{element\_C\_closure\_rel}{3.75075346157e-16}
 \goldrow{kpi}{campaign}{element\_H\_closure\_rel}{3.00060276926e-16}
 \goldrow{kpi}{campaign}{element\_O\_closure\_rel}{2.50050230771e-16}
 \goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{3.75075346157e-16}
 \goldrow{kpi}{campaign}{energy\_H\_external\_kJ}{0}
-\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-210.150638715}
+\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-17.1846198661}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{1}
 \goldrow{kpi}{campaign}{energy\_closure\_rel}{0}
-\goldrow{kpi}{campaign}{energy\_dH\_vessels\_kJ}{-210.150638715}
+\goldrow{kpi}{campaign}{energy\_dH\_vessels\_kJ}{-17.1846198661}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
 \goldrow{kpi}{campaign}{energy\_records\_valid}{1}
 \goldrow{kpi}{campaign}{energy\_residual\_kJ}{0}
@@ -1537,10 +1537,10 @@ GREEN WITNESS for the EulerSI integrator: batch01's mild isothermal esterificati
 \goldrow{kpi}{campaign}{element\_O\_closure\_rel}{2.50050230771e-16}
 \goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{4.50090415389e-16}
 \goldrow{kpi}{campaign}{energy\_H\_external\_kJ}{0}
-\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-210.043853155}
+\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-17.1758877049}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{1}
 \goldrow{kpi}{campaign}{energy\_closure\_rel}{0}
-\goldrow{kpi}{campaign}{energy\_dH\_vessels\_kJ}{-210.043853155}
+\goldrow{kpi}{campaign}{energy\_dH\_vessels\_kJ}{-17.1758877049}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
 \goldrow{kpi}{campaign}{energy\_records\_valid}{1}
 \goldrow{kpi}{campaign}{energy\_residual\_kJ}{0}
@@ -1833,7 +1833,7 @@ The vessel runs isothermal at 333.15 K, the top of the authors' data range. Do n
 \goldrow{kpi}{campaign}{element\_O\_closure\_rel}{2.12542696156e-15}
 \goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{2.12542696156e-15}
 \goldrow{kpi}{campaign}{energy\_H\_external\_kJ}{0}
-\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-218.009898425}
+\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-50.6006288442}
 \goldmore{26}
 \end{tutgolden}
 
@@ -2032,13 +2032,13 @@ Events fire at the next time-loop step boundary after t\_trigger; the trajectory
 \goldrow{kpi}{campaign}{element\_O\_closure\_rel}{5.00100461543e-16}
 \goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{5.00100461543e-16}
 \goldrow{kpi}{campaign}{energy\_H\_external\_kJ}{0}
-\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-145.006283394}
+\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{26.3188405082}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{1}
 \goldrow{kpi}{campaign}{energy\_closure\_rel}{7.81829067932e-11}
-\goldrow{kpi}{campaign}{energy\_dH\_vessels\_kJ}{-145.006282333}
+\goldrow{kpi}{campaign}{energy\_dH\_vessels\_kJ}{26.318841196}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
 \goldrow{kpi}{campaign}{energy\_records\_valid}{4}
-\goldrow{kpi}{campaign}{energy\_residual\_kJ}{1.06158961444e-06}
+\goldrow{kpi}{campaign}{energy\_residual\_kJ}{6.87760234541e-07}
 \goldrow{kpi}{campaign}{mass\_closure\_rel}{2.26202374215e-16}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
 \goldmore{66}
@@ -2072,10 +2072,10 @@ Demonstrates the recipe layer's `setParameter` action without inter-unit transfe
 \goldrow{kpi}{campaign}{element\_O\_closure\_rel}{2.50050230771e-16}
 \goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{3.75075346157e-16}
 \goldrow{kpi}{campaign}{energy\_H\_external\_kJ}{0}
-\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-104.365240634}
+\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{114.181240335}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{1}
 \goldrow{kpi}{campaign}{energy\_closure\_rel}{0}
-\goldrow{kpi}{campaign}{energy\_dH\_vessels\_kJ}{-104.365240634}
+\goldrow{kpi}{campaign}{energy\_dH\_vessels\_kJ}{114.181240335}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
 \goldrow{kpi}{campaign}{energy\_records\_valid}{5}
 \goldrow{kpi}{campaign}{energy\_residual\_kJ}{0}
@@ -2115,7 +2115,7 @@ Here the reactor runs the esterification (ethanol + acetic acid $\to$ ethyl acet
 \goldrow{kpi}{reactor}{t\_end}{1200}
 \goldrow{kpi}{reactor}{totalMoles\_final}{0.00925}
 \goldrow{kpi}{still}{P\_final}{101300}
-\goldrow{kpi}{still}{T\_final}{390.833339675}
+\goldrow{kpi}{still}{T\_final}{390.241703035}
 \goldrow{kpi}{still}{n\_aceticAcid\_final}{0}
 \goldrow{kpi}{still}{n\_ethanol\_final}{0}
 \goldrow{kpi}{still}{n\_ethylAcetate\_final}{0}

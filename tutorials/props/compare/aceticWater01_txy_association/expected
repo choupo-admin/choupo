@@ -2,13 +2,13 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 diag    bp_aceticAcid          Cp_ig            80.6641982498      1e-4
-diag    bp_aceticAcid          H_R              -16491.5601143     1e-4
+diag    bp_aceticAcid          H_R              -22841.7769643   1e-4
 diag    bp_aceticAcid          H_ig             -425398.226035     1e-4
-diag    bp_aceticAcid          H_real           -441889.786149     1e-4
+diag    bp_aceticAcid          H_real           -448240.002999   1e-4
 diag    bp_aceticAcid          P                101325             1e-4
-diag    bp_aceticAcid          S_R              -38.5548095549     1e-4
+diag    bp_aceticAcid          S_R              -51.4737821304   1e-4
 diag    bp_aceticAcid          S_ig             302.310579052      1e-4
-diag    bp_aceticAcid          S_real           263.755769497      1e-4
+diag    bp_aceticAcid          S_real           250.836796922    1e-4
 diag    bp_aceticAcid          T                391                1e-4
 diag    bp_aceticAcid          T_bubble         391.008522453      1e-4
 diag    bp_aceticAcid          Z                1                  1e-4

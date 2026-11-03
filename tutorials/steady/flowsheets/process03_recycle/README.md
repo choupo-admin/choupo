@@ -3,9 +3,9 @@
 `process01` with a loop: reactor → flash → **splitter**, and 60 % of the
 flash liquid is sent *back* to a mixer ahead of the reactor.  The reactor
 is four times larger (20 litres).  The golden: the reactor now sees
-**1.497 kmol/h** (1.0 fresh + 0.497 recycle), converts **80.9 %** per
-pass at **τ = 870 s**, and the loop closes with the recycle stream at
-**0.4967 kmol/h, 364 K**.
+**1.758 kmol/h** (1.0 fresh + 0.758 recycle), converts **79.8 %** per
+pass at **τ = 740 s**, and the loop closes with the recycle stream at
+**0.7582 kmol/h, 364 K**.
 
 ## The lesson
 
@@ -25,7 +25,7 @@ pass at **τ = 870 s**, and the loop closes with the recycle stream at
    split01 --recycle--> mixer01` — read that line first; it is the
    whole topology in one sentence.
 4. **The recycle changes what the reactor is asked to do.**  Conversion
-   per pass is 80.9 % because the reactor is larger and the feed is
+   per pass is 79.8 % because the reactor is larger and the feed is
    richer in what came back; overall, less ethanol leaves in `liqProd`.
    Compare the Streams tab against `process01` line by line.
 

@@ -6,8 +6,10 @@ costing**.  The chain runs from `system/postDict`; `reports { design {}
 economics {} }` in the controlDict *serialise* what it produced into
 `reports/design/sizing.csv` and `reports/economics/costs.csv`.
 
-The golden (process side): heater 0.4 kW → **361.88 K**; reactor
-X = 0.526; flash at 361.88 K with V/F 0.0562.  The design side, from the
+The golden (process side): heater 0.4 kW → **361.95 K**; reactor
+X = 0.526; flash at 361.95 K with V/F 0 -- below this liquid's bubble
+point, so nothing vaporises (acetic acid's vapour is associated, which
+lowers the volatility an ideal monomer vapour would give it).  The design side, from the
 run: reactor **V_R = 0.005 m³**, wall 3.15 mm, 3.7 kg of SS316; heater
 **A = 0.0667 m²** of SS304; costing totals **€155,475 purchased /
 €917,756 bare module / €1,082,952 total module**, CEPCI 820/397 = 2.0655,

@@ -81,7 +81,7 @@ Published (KPIs, kW): `Q_condenser_kW` (negative), `Q_reboiler_kW`, `D`, `B`, `T
 Feed state: a stream is read for what it means (subcooled liquid q>1, two-phase q = 1−vf, vapour q<0); announced as `[column] … CMO q = …`. Never also write `feedQuality`; if you do and it disagrees with the stream it is refused.
 
 Refusals you will meet:
-- `feedStage (n) must lie in 1..N-1 (strictly above the bottom stage …)` (DistillationColumn.cpp:1344); simultaneous: stage 1 refused by name.
+- `feedStage (n) must lie in 1..N-1 (strictly above the bottom stage …)` (DistillationColumn.cpp:1383); simultaneous: stage 1 refused by name.
 - `multiple feeds (inputs/feeds), side draws, or reactive distillation require model simultaneous;` (:1288).
 - `distillateRate AND distillateRecovery are BOTH declared` (:1961).
 - `murphreeEfficiency is not implemented for method simultaneous` (:2235).
@@ -243,24 +243,24 @@ Result (WangHenke, 333 passes, converged): benzene in distillate 0.99392, toluen
  runs at feed P, ports distillate/bottoms ......... ShortcutColumn.cpp:73-76,276-283
  KPIs (no duties) .................................. ShortcutColumn.cpp:305-316
  Underwood / bubble-point refusals ................. ShortcutColumn.cpp:117,205
- column model word + default WangHenke ............. DistillationColumn.cpp:1260-1261,2212-2213
- model refusal (accepted words) .................... DistillationColumn.cpp:1276-1281
- multiple feeds / sideDraws need simultaneous ...... DistillationColumn.cpp:1288
- nStages / feedStage / refluxRatio / distillateRate  DistillationColumn.cpp:1315-1320
- P default = feed P ................................ DistillationColumn.cpp:1299; multi-feed P required :2248
- feedStage range WH 1..N-1 ......................... DistillationColumn.cpp:1343-1346; sim 2..N :2374; recovery :1999
- maxOuterIter 200, compositionTol 1e-6 (unit level)  DistillationColumn.cpp:1406-1407
- murphreeEfficiency default 1, simultaneous refuses  DistillationColumn.cpp:1475,2235
+ column model word + default WangHenke ............. DistillationColumn.cpp:1299-1300,2212-2213
+ model refusal (accepted words) .................... DistillationColumn.cpp:1315-1320
+ multiple feeds / sideDraws need simultaneous ...... DistillationColumn.cpp:1327
+ nStages / feedStage / refluxRatio / distillateRate  DistillationColumn.cpp:1354-1359
+ P default = feed P ................................ DistillationColumn.cpp:1338; multi-feed P required :2248
+ feedStage range WH 1..N-1 ......................... DistillationColumn.cpp:1382-1385; sim 2..N :2374; recovery :1999
+ maxOuterIter 200, compositionTol 1e-6 (unit level)  DistillationColumn.cpp:1445-1446
+ murphreeEfficiency default 1, simultaneous refuses  DistillationColumn.cpp:1514,2235
  condenser { type total|partial } .................. DistillationColumn.cpp:136-160
- feeds {stream; stage; quality}, sideDraws {stage; rate; phase} ..  DistillationColumn.cpp:2333-2365,2416-2432
- distillateRecovery {component; fraction}, XOR rate  DistillationColumn.cpp:1957-1969,2085-2087
- KPIs Q_condenser_kW, Q_reboiler_kW, D, B, T_top ... DistillationColumn.cpp:1816-1884
- fullMESH aliases MESH/NaphtaliSandholm ............ DistillationColumn.cpp:1267-1269
+ feeds {stream; stage; quality}, sideDraws {stage; rate; phase} ..  DistillationColumn.cpp:2378-2410,2416-2432
+ distillateRecovery {component; fraction}, XOR rate  DistillationColumn.cpp:2002-2014,2085-2087
+ KPIs Q_condenser_kW, Q_reboiler_kW, D, B, T_top ... DistillationColumn.cpp:1855-1929
+ fullMESH aliases MESH/NaphtaliSandholm ............ DistillationColumn.cpp:1306-1308
  absorber ports (gas, solvent)->(cleanGas, richLiquid), key stages ... src/unitOperations/separation/Absorber.cpp:70-100,282-289
  absorber solute rule (role solute + Henry pair) ... Absorber.cpp:111-114
  stripper ports (liquid, gas)->(strippedLiquid, richGas) ... Stripper.cpp:70-100,271-276
  extractor inputs/outputs, stages, solvent, temperature ... Extractor.cpp:466,525-549,726-731; header Extractor.H
  extractor needs >=2 liquid phases ................. Extractor.cpp:537-540
- flash phaseSet VL|LL|VLLE|auto, alphaRich/betaRich, model words ... src/unitOperations/flash/IsothermalFlash.cpp:1936-1941,2031-2034,2129-2160
+ flash phaseSet VL|LL|VLLE|auto, alphaRich/betaRich, model words ... src/unitOperations/flash/IsothermalFlash.cpp:1947-1952,2031-2034,2129-2160
  decanter grammar example .......................... tutorials/steady/flash/vlle01_waterButanol (read for grammar only)
 -->

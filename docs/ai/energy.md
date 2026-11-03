@@ -309,10 +309,12 @@ reactors' own vapour chemical potentials (`gibbsReactor`, `equilibriumReactor`
 call `eos().phi` directly) and the named-phase `VaporPhase::fEffective`
 (three-phase answers) -- they see a monomer ideal gas.  What a case author
 should expect: the latent heat the package prices for pure acetic acid at its
-boiling point is about 33 kJ/mol against the measured 24.4 (the record's own
-legs -- a Watson-extrapolated 298 K bridge, a constant liquid Cp and Chao's
-dimerisation -- do not close at Tb; docs/design/one-record-two-vapours-acetic-
-acid.md section 7), so an acetic-acid condenser duty reads high by that much.
+boiling point is the record's measured 24.39 kJ/mol BY CONSTRUCTION -- the
+liquid is bridged to the datum's monomer by putting HvapTb on the monomer
+basis at Tb and carrying it to 298.15 K by Kirchhoff on the record's own
+Cp's, the arithmetic the package undoes (DEV.md 4c C201 item 3; the record
+is docs/design/one-record-two-vapours-acetic-acid.md section 7, and the
+Theory Guide's paragraph "Which vapour the latent heat speaks").
 
 ## Balance diagnostics (2607)
 

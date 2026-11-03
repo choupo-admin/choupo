@@ -236,8 +236,8 @@ describe("solvent-mixture: the lesson text", () => {
     };
     const cited = new Set([...all.matchAll(/([A-Za-z]+\.(?:cpp|H)):(\d+)(?:-(\d+))?/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string | RegExp> = {
-      "Component.cpp:246": 'if (!h->found("Tref"))',
-      "Component.cpp:262": 'if (h->found("R0"))',
+      "Component.cpp:247": 'if (!h->found("Tref"))',
+      "Component.cpp:263": 'if (h->found("R0"))',
       "HansenMixture.cpp:121": "return std::sqrt(4.0 * a * a + b * b + c * c);",
       "HansenMixture.cpp:279": "the Hansen parameters are held constant at their reference",
       "HansenMixture.cpp:346": 'if (checkModel == "ideal")',

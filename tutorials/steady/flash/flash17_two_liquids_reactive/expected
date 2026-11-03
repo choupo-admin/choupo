@@ -8,8 +8,8 @@ kpi     flash01                F_alpha          0.0165443840142  1e-4
 kpi     flash01                F_beta           0.007927838208   1e-4
 kpi     flash01                F_in             0.0244722222222  1e-4
 kpi     flash01                P                35463.75         1e-4
-kpi     flash01                Q                84.7004372905    1e-4
-kpi     flash01                Q_kW             0.0847004372905  1e-4
+kpi     flash01                Q                86.8677617756    1e-4
+kpi     flash01                Q_kW             0.0868677617756  1e-4
 kpi     flash01                T                313.15           1e-4
 kpi     flash01                V_over_F         0.323952526093   1e-4
 kpi     flash01                dimer_share      0.0232924752345  1e-4
@@ -20,10 +20,10 @@ kpi     flash01                p_eq_sum_atm     0.35             1e-4
 kpi     flash01                p_ethanol_atm    0.0490830598763  1e-4
 kpi     flash01                p_mono_atm       6.31893686833e-05 1e-4
 kpi     flash01                phaseSet         0                1e-4
-utility flash01                heating.steamLP.duty_kW 0.0847004372905  1e-4
+utility flash01                heating.steamLP.duty_kW 0.0868677617756  1e-4
 utility flash01                heating.steamLP.T 313.15           1e-4
-utility flash01                heating.steamLP.kg_s 3.87467691174e-05 1e-4
-utility flash01                heating.steamLP.eur_h 0.00365905889095 1e-4
+utility flash01                heating.steamLP.kg_s 3.97382258809e-05 1e-4
+utility flash01                heating.steamLP.eur_h 0.0037526873087  1e-4
 kpi     flash01                K_aceticAcid     0.119086919066   1e-4
 kpi     flash01                K_benzene        37.5457208913    1e-4
 kpi     flash01                K_ethanol        2.08936340481    1e-4
@@ -31,7 +31,7 @@ kpi     flash01                K_water          0.214213497436   1e-4
 stream  feed                   T                313.15           1e-4
 stream  liquid                 T                313.15           1e-4
 stream  vapor                  T                313.15           1e-4
-boundary global                 H_feeds_kW       -4807.54001072   1e-4
-boundary global                 Q_boundary_kW    0.0847004372905  1e-4
-boundary global                 H_products_kW    -4807.45315388   1e-4
-boundary global                 residual_kW      -0.00215639473208 1e-4
+boundary global                 H_feeds_kW       -4808.16305819   1e-4
+boundary global                 Q_boundary_kW    0.0868677617756  1e-4
+boundary global                 H_products_kW    -4808.07619059   1e-4
+boundary global                 residual_kW      1.55672751134e-07 1e-4

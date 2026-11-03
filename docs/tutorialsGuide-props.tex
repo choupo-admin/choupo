@@ -84,6 +84,40 @@ Two ADVERSARIAL fitParameters(kind isotherm) operations -- see the controlDict h
 \subsection{compare}
 \grouptheory{compare}
 \clearpage
+\tutentry{aceticWater01\_txy\_association}{tutorials/props/compare/aceticWater01\_txy\_association}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{bp\_aceticAcid}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{bp\_water}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{txy\_calvar2005}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Acetic acid/water T-x-y at 1 atm on UNIFAC with the ASSOCIATED ideal-gas vapour (monomer + dimer), against Calvar, Dominguez \& Tojo (2005)}
+\begin{tutnarrative}
+WHAT A DIMERISED VAPOUR DOES TO A T-x-y DIAGRAM. Acetic acid's vapour is largely dimers near its boiling point, so the acid is LESS volatile than its vapour pressure alone suggests: the dimers take up partial pressure that the monomer -- the species in equilibrium with the liquid -- does not. This case evaluates the bubble temperature and the vapour composition at the 24 liquid compositions Calvar, Dominguez \& Tojo measured at 101.325 kPa (constant/experimental/calvar2005\_txy.csv), plus the two pure boiling points, on UNIFAC (predictive, no fitted pair) and the associated ideal-gas vapour. The gate check\_reference\_rung arm (k) holds the pure limit and the latent heat at Tb and prints the comparison with these measurements; the numbers are recorded in docs/design/one-record-two-vapours-acetic-acid.md section 7. Nothing here is tuned.
+
+WHAT IS NOT IN IT: no regressed acetic-acid/water pair (the catalogue holds none); the measured points were read from the NIST ThermoML archive copy of the article and NOT checked against the article itself.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{bp\_aceticAcid}{Cp\_ig}{80.6641982498}
+\goldrow{diag}{bp\_aceticAcid}{H\_R}{-22841.7769643}
+\goldrow{diag}{bp\_aceticAcid}{H\_ig}{-425398.226035}
+\goldrow{diag}{bp\_aceticAcid}{H\_real}{-448240.002999}
+\goldrow{diag}{bp\_aceticAcid}{P}{101325}
+\goldrow{diag}{bp\_aceticAcid}{S\_R}{-51.4737821304}
+\goldrow{diag}{bp\_aceticAcid}{S\_ig}{302.310579052}
+\goldrow{diag}{bp\_aceticAcid}{S\_real}{250.836796922}
+\goldrow{diag}{bp\_aceticAcid}{T}{391}
+\goldrow{diag}{bp\_aceticAcid}{T\_bubble}{391.008522453}
+\goldrow{diag}{bp\_aceticAcid}{Z}{1}
+\goldrow{diag}{bp\_aceticAcid}{gamma}{1.11492042846}
+\goldrow{diag}{bp\_aceticAcid}{v\_molar}{0.0320844301371}
+\goldrow{diag}{bp\_water}{Cp\_ig}{34.2425437543}
+\goldmore{15}
+\end{tutgolden}
+
+\clearpage
 \tutentry{acetone01\_ipa\_water\_azeotrope}{tutorials/props/compare/acetone01\_ipa\_water\_azeotrope}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
