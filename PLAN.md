@@ -28,7 +28,7 @@ header names the PLAN.md commit it reflects, so a stale view shows itself.
    row of Next day starts and the first row of the next column moves up.
 5. **Done rows stay one week**, then leave this file (DEV.md keeps them).
 
-Last reviewed: 2026-11-03 22:00 (acetic item 3 landed; C212 landed; acetic item 1 landed, item 3 running; stack landed; reorganised by C210, PIF first: Now holds only what runs, the document set and the PIF wins placed by their dependencies; earlier reviews in git).
+Last reviewed: 2026-11-03 23:30 (the C214 week placed; acetic item 3 landed; C212 landed; acetic item 1 landed, item 3 running; stack landed; reorganised by C210, PIF first: Now holds only what runs, the document set and the PIF wins placed by their dependencies; earlier reviews in git).
 
 Status words: `todo` · `queued` (built by a general, waiting its turn to integrate) · `integrating` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
@@ -47,26 +47,31 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| todo | A PHYSICAL `tabletPress` (today a splitter): compression force or pressure, die and mass -> relative density, porosity, tensile strength, from the declared `compactionFit` parameters; the blend's property by a declared mixing rule | C195, C210, C211 |
+| todo | (Opus) C214 W1: a GENERAL flash specification -- (P,H), (P,S), (T,V/F), (P,V/F) as first-class, one dispatcher on the existing Michelsen stability test and nested Newton; PS is the isentropic reference every compressor/turbine computes privately, PH what the valve, the mixer and the adiabatic flash do under three names: ONE home; the props bench asks any pair | C214 |
+| todo | C214 W2: shell-and-tube RATING by Bell-Delaware as a `method` of `heatExchanger` beside eps-NTU (shell-side h, dP, the five correction factors; TEMA geometry declared); the one design-course method missing | C214 |
 | todo | Acetic acid, the rest: the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; the seven exotherm tutorials to Vitor | C201 (1) |
 | todo | The replacement for the seven exotherm tutorials (their honest repair is in the integration branch): a genuinely exothermic reaction -- the ethylene-oxide hydration to ethylene glycol, data already in the catalogue -- giving runaway, multiplicity (three steady states) and jacket control back; the Van Heerden EduTool still names `cstr05_multiplicity` as its witness and will draw ONE root: re-point it to the new case | C201 |
 | todo | Document set S3 (line list per routed pipe, declared window, declared fittings, pressure deficit and the pump it needs) and S4 (the instrument and loop declaration, the instrument index), both after S1 lands; then S5 the P&ID and S6 the control narrative | C207, C203, C204, C210 |
-| todo | PIF E4 + E5 (C208 landed 2026-11-03; both touch EconomicsPass): E4 building cost from the rooms' areas; E5 a BREAK-EVEN analysis (14 of 14 reports computed one, Choupo has none), a ROYALTY line with a declared patent window, the three working-capital methods side by side | C195, C210 |
 
 ## Next three days (at most 8)
 
 | status | what | ref |
 |---|---|---|
-| todo | Document set S7: the economic pipe diameter and the pipe cost (new physics, a cited correlation) | C207 |
+| todo | C214 W3: dominant-eigenvalue recycle acceleration beside Wegstein, announced like every solver aid (Orbach & Crowe 1971) | C214 |
+| todo | C214 W4: Beggs-Brill two-phase pipe as `twoPhase { model BeggsBrill; }` beside Lockhart-Martinelli, with inclination (Beggs & Brill 1973) | C214 |
+| todo | C214 W5: a Cv-rated control valve with an inherent characteristic (linear / equal-percentage), the opening as the manipulated variable -- what the digital twin's controllers move (ISA-75.01 form) | C214, C203 |
+| todo | (Opus) C214 W6: IF97 region 3 (Helmholtz f(rho,T); the engine refuses it today) and a gate holding regions 1-4 to the IAPWS release's own verification tables | C214 |
+| todo | C214 W7: a water electrolyser unit (declared cell-voltage curve, Faraday efficiency, stack power -> H2, O2, heat; Ulleberg 2003); the green-ammonia plant declares its H2 as a feed today | C214 |
+| todo | PIF E4 + E5 (C208 landed 2026-11-03; both touch EconomicsPass): E4 building cost from the rooms' areas; E5 a BREAK-EVEN analysis (14 of 14 reports computed one, Choupo has none), a ROYALTY line with a declared patent window, the three working-capital methods side by side | C195, C210 |
 | todo | The control-placement EduTool, pages 1-5 and the plant method page (the Pareto is in C204); its loops use the instrument grammar above | C204 |
 | todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag (they feed the digital twin) | C205 |
-| todo | State checks: measure the seal-drift finding against main (9 sucrose / H2SO4 mirrors, 1809 moved values); one browser run on the site of each unit that reached main without one (Complete 0/, pressure exchanger, boron split, dynamic tank; C178, C182) | C201, C196 |
-| todo | The C200 packs still missing (heat, electrolytes, membranes, solids, drivers, transient, props) and the generated reference; re-score the 2026-11-01 baseline with the -init0 step | C200 |
 
 ## Beyond a week
 
 | status | what | ref |
 |---|---|---|
+| todo | State checks: measure the seal-drift finding against main (9 sucrose / H2SO4 mirrors, 1809 moved values); one browser run on the site of each unit that reached main without one (Complete 0/, pressure exchanger, boron split, dynamic tank; C178, C182) | C201, C196 |
+| todo | The C200 packs still missing (heat, electrolytes, membranes, solids, drivers, transient, props) and the generated reference; re-score the 2026-11-01 baseline with the -init0 step | C200 |
 | todo | Newcomer surfaces (`runCase` shows the answer, the balance verdict and the caveat block; one start-here path) and the stale tutorial texts the review listed | C201 (3)-(6) |
 | todo | The p10 finding: NaCl in water has no enthalpy datum the default energy report can use (refused by the engine): curate it | C200 5.2 |
 | todo | PIF long-term (L1-L10 of the synthesis), in this order: the sterile route (filling, lyophiliser, sterilising filtration, F0), full HVAC (latent and equipment loads, the pressure cascade's leakage), labour following the plan and multiproduct campaigns, blend uniformity and cleaning limits, utility networks (steam, compressed air, vacuum), equipment catalogue records, scale-up and solid-dosage unit models, the economics as a distribution; open lactose compaction data when one appears | C195, C210 |
