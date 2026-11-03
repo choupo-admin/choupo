@@ -34,6 +34,7 @@ License
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 #include <sstream>
 
 namespace fs = std::filesystem;
