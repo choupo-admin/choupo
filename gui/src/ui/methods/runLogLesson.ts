@@ -135,19 +135,19 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
       + "). flash13 is such a flash — pick it in the viewer and click the "
       + "block.",
     derivation: [
-      { step: "flash13's raw residual fell from 1.1964 to 8.3e-13; the "
-          + "normalised one from 7.4889e-02 to 5.1947e-14.",
-        eq: String.raw`\frac{\tilde r_\mathrm{final}}{\tilde r_\mathrm{initial}} = \frac{5.1947\times10^{-14}}{7.4889\times10^{-2}}` },
+      { step: "flash13's raw residual fell from 1.5741 to 2.9e-12; the "
+          + "normalised one from 7.0351e-02 to 1.8432e-13.",
+        eq: String.raw`\frac{\tilde r_\mathrm{final}}{\tilde r_\mathrm{initial}} = \frac{1.8432\times10^{-13}}{7.0351\times10^{-2}}` },
       { step: "That quotient is the reduction the block prints, "
-          + "6.9365e-13.",
-        eq: String.raw`\frac{\tilde r_\mathrm{final}}{\tilde r_\mathrm{initial}} = 6.94\times10^{-13}` },
+          + "2.6199e-12.",
+        eq: String.raw`\frac{\tilde r_\mathrm{final}}{\tilde r_\mathrm{initial}} = 2.62\times10^{-12}` },
       { step: "The absolute test is taken on the normalised residual, against "
           + "the tolerance (" + at("absoluteTest") + "); a relative test on "
           + "the reduction, against relTol, is the second way to pass ("
           + at("relativeTest") + "). Here relTol is 0, so only the first can "
           + "decide, and it does — the block says \"criterion absolute "
           + "tolerance\".",
-        eq: String.raw`\tilde r_\mathrm{final} = 5.1947\times10^{-14} \le \tau = 10^{-12}` },
+        eq: String.raw`\tilde r_\mathrm{final} = 1.8432\times10^{-13} \le \tau = 10^{-12}` },
     ],
     formula: String.raw`\tilde r = \frac{\sum_k |r_k|}{\sum_j |t_j - \bar t| + \epsilon}`,
     where: [
