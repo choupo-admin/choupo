@@ -1735,6 +1735,26 @@ accepts today, and that is a policy call.
 > were run; the init0 change reaches only streams whose producers carry
 > solids.  Decision at landing: merge after the class.
 
+> **GUI E6 + THE MASS CELL BUILT (2026-11-03 night; branch
+> `worktree-agent-aabf4fd23de485edd`: b4bd9858c the MASS cell, f1ac4602b the
+> utilisation table; not merged):** (a) the Gantt of the first campaign
+> ALREADY existed (`BatchPlanSection.tsx`, `case/batchGantt.ts`, C110 G5), so
+> only the per-machine UTILISATION table is new -- drawn from the engine's
+> `ratedMachine` sheets, never recomputed, bottleneck first (apalutamide01:
+> finalBlender 95.2 %; donepezil01: granulator 92.8 %); (b) the MASS cell reads
+> the TOTAL scope from the boundary streams when `globalMassBoundary` is absent
+> (the engine emits it only when a utility circuit is declared,
+> `ResultEmitter.cpp:1229`).  DECIDED, the architect's: keep the GUI fallback
+> and do NOT change the emitter now -- emitting it always would change the
+> result JSON of every case and so every pinned `boundary` row; revisit with a
+> measured list.  FOLLOW-UP, small and engine-side: publish the machine `kind`
+> and the `announceAbove` threshold as sheet values, so the table stops
+> inferring the kind from which keys are present and can draw the 0.85 tick.
+> NOT looked at in a browser (the only WASM bundle in the primary checkout
+> predates `ratedMachine`); the integration must run `--gui` and the site gets
+> a look after the push.  Unexplained, to check at integration: 6808 GUI tests
+> passed in the general's final run and 6864 in an earlier one.
+
 > **C209. A SECTOR THAT SAYS HOW MANY TIMES IT IS REPEATED (Vitor, 2026-11-02
 > night, about swro01_campoDalias: "no flowsheet devia haver forma de
 > notificar isso ... qualquer envolucro que dissesse quantas vezes se tem de
