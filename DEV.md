@@ -1805,6 +1805,32 @@ accepts today, and that is a policy call.
 > (c2) and three sabotages.  CUT: multiproduct cleaning, effluent load,
 > costing of the generator and tank.
 
+> **DOCUMENT SET S2 BUILT: THE PFD AS A SHEET AND A PDF (2026-11-03 night;
+> branch `worktree-agent-a1cd26c71a9f539ee`, 886f461d1; not merged):** the
+> figure is the canvas's own graph drawn through `flowsheetSvg`, with the stream
+> numbers from `streamNumbering`; the stream table has one column per physical
+> stream (T, P, phase, F in kmol/h and kg/h, solids, the published mole
+> fractions; a dash where unpublished); the utilities legend from the duty
+> stubs; the title block with the engine version and commit (new
+> `RunResult.engine`, from the result's `citation` block); one sheet per sector
+> plus the overview.  Opened from the Reports workspace ("PFD (PDF)", with an
+> Auto/A3/A2/A1 selector) and from the canvas export.  PAGE SIZE by content,
+> `choosePageSize` (pure): 2.5 mm printed text floor, a 15 mm stream column,
+> the table at most 42 % of the free height; A3 -> A2 -> A1 landscape, then
+> continuation sheets: swro01_campoDalias 24 streams -> A3 (exactly A3's
+> capacity), donepezil01_tablets 30 streams, 14 components + a solids row ->
+> A2.  The equipment tag is drawn only when it has the `XX-YZZ A/B` form (the
+> existing `EquipmentItem.tag` is the sub-item word `train1`/`shell`, ignored);
+> S1's key must be matched in `tagOfUnit`, one line.  swro01 now declares
+> `reports { streamTable {} }` (0 rows moved, 0 added).  `pfdSheet.test.ts`
+> 19 tests.  NOT looked at in a browser; the wire numbers are small at A3; the
+> figure's wires are redrawn orthogonal and grey (the canvas's phase colours
+> and dragged bends do not carry over); `@page` sizes tested in Chromium only.
+> To CHECK at integration: `numericsLessons.test.ts` fails on a stale
+> `main.cpp:309` citation that the general believes comes from its base commit,
+> and an earlier `--gui` run reported 26 failures where a plain vitest run
+> reported 1 -- unexplained.
+
 > **C209. A SECTOR THAT SAYS HOW MANY TIMES IT IS REPEATED (Vitor, 2026-11-02
 > night, about swro01_campoDalias: "no flowsheet devia haver forma de
 > notificar isso ... qualquer envolucro que dissesse quantas vezes se tem de

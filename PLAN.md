@@ -42,7 +42,8 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | queued | PIF E2 + E3 BUILT (4ac1a9ae2, 3dc77e601): HVAC cost from the supply air on declared prices; cleaning events -> purified water and effluent (donepezil 966 cleans, 560 m3 a year); moves rows of the two tablet cases, to be re-recorded WITH the list after the class | C195, C210 |
 | queued | GUI E6 + the MASS cell BUILT (b4bd9858c, f1ac4602b): the per-machine utilisation table (the Gantt already existed) and the MASS cell reading the TOTAL scope; waits its turn after the class; follow-up: publish the machine `kind` and `announceAbove` in the sheets | C195, C201 (2) |
 | queued | EduTools E7 + E8 BUILT (d572ed8a5 `economics-errors`, 79f998c9c `demand-forecast`): each error class names the real engine guard; five classes have none (royalty, break-even, the working-capital method, the discount-rate size, production vs market); not seen in a browser; waits its turn after the class | C195, C210 |
-| running | Document set S1 + S2 (decided in docs/design/the-plant-document-set.md): S1 equipment tags (generated Turton XX-YZZ A/B, a declared tag wins) and the equipment list; S2 the PFD as a printable sheet/PDF with its stream table, tags, utilities legend and title block (reports due 07:00) | C207, C203, C210 |
+| queued | Document set S2 BUILT (886f461d1): the PFD sheet and PDF, sized A3-A1 by content (swro01 A3, donepezil A2); waits its turn after the class; to check at integration: a stale `main.cpp:309` citation in `numericsLessons.test.ts` | C207, C203, C210 |
+| running | Document set S1 (decided in docs/design/the-plant-document-set.md): equipment tags (generated Turton XX-YZZ A/B, a declared tag wins) and the equipment list (report due 08:00) | C207, C203, C210 |
 
 ## Next day (at most 5)
 
