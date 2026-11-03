@@ -346,3 +346,22 @@ HV - HL = 31.3 kJ/mol x 0.278 mol/s = 8.69 kW).  The defect is the published
 state (a liquid at its dew temperature), not the vapour model; the fix is the
 column's (a partial condenser or a vent for the noncondensable), and it was
 not invented here.
+
+**CLOSED 2026-11-03 (DEV.md 4c C201 item 3), on the other side of the seam.**
+The published state was left as it is -- unpinned, at the top tray's
+temperature, ANNOUNCED -- because that is the honest statement of what the
+column did not solve; what was wrong was the column pricing that same stream
+as a LIQUID at that temperature, in its product enthalpy and in the
+condensate its condenser duty removes.  `distillateEnthalpy` now prices an
+unpinned distillate through `flashState::priceState`, the report's own rule,
+and the total condenser removes `Vtop hV - (Vtop - D) hL(reflux) - H(D)`:
+it condenses the reflux it returns and the distillate it actually publishes.
+A pinned (bubble-point) distillate is priced exactly as before.  Measured
+(the rebased slice, logK25 3.107, the Kirchhoff bridge): the lightsColumn
+closes to 0.0000 kW unattributed (it was +6.43); its condenser duty is
+-32.16 kW against -38.59 before (the distillate leaves uncondensed, 6.43
+kW); its reboiler is unchanged; the plant residual goes -3.03 -> +3.40 kW,
+which is the pump's shaft work against its fluid dH and M1's small gap, the
+same +3.38 the golden already carries.  Every other case that runs a
+distillationColumn (32 in the scope, the three reactive columns included)
+passes its golden, and column05's moved rows are those of the slice alone.

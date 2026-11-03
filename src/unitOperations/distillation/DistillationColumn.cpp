@@ -282,6 +282,13 @@ struct CondenserTop
     scalar  T2    = 0.0;   // partial: stage 2 temperature
     scalar  L1    = 0.0;   // partial: the reflux, the liquid leaving stage 1
     sVector x1;            // partial: its composition
+    //  total, when the distillate is NOT a declared liquid (its bubble point
+    //  was not solved): the distillate's enthalpy [kW] priced on the state
+    //  the stream CARRIES, so the condenser condenses only the reflux it
+    //  returns and the distillate it actually publishes (DEV.md 4c C201
+    //  item 3, `distillateEnthalpy`).
+    bool    distillateCarried = false;
+    scalar  Hdist = 0.0;
 };
 
 //  ONE ENTHALPY SURFACE FOR THE WHOLE COLUMN, AND IT IS THE STREAMS' ONE
@@ -422,7 +429,35 @@ scalar condenserDuty(const ColumnEnthalpy& h, CondenserType condenser,
         return -( t.Vin * h.hV(t.y2, t.T2)
                 - t.L1  * h.hL(t.x1, t.T1)
                 - t.D   * h.hV(t.yD, t.T1));
+    if (t.distillateCarried)
+        return -( t.Vtop * h.hV(t.yD, t.T1)
+                - (t.Vtop - t.D) * h.hL(t.yD, t.Tcond)
+                - t.Hdist);
     return -t.Vtop * (h.hV(t.yD, t.T1) - h.hL(t.yD, t.Tcond));
+}
+
+//  THE DISTILLATE IS PRICED ON THE STATE IT CARRIES (DEV.md 4c C201 item 3).
+//  A distillate whose bubble point was SOLVED is a declared liquid
+//  (`makeDistillate` pins it), and its quality blend at vf = 0 is that
+//  liquid's own enthalpy -- unchanged.  One whose bubble point was NOT solved
+//  (it did not converge, or the package resolves reactive equilibrium) is
+//  published UNPINNED at the top tray's temperature, which with a total
+//  condenser is its DEW point; an unpinned (T, P, z) MEANS its own
+//  equilibrium (R-E2), and the energy report prices it so.  The column used
+//  to price that same stream as a LIQUID at that temperature -- in its
+//  product enthalpy and in the condensate its condenser duty removes -- so
+//  the unit's balance and the report's parted by the distillate's latent
+//  heat (aceticAcid02_plant's lightsColumn: a distillate carrying 7 % CO
+//  that no liquid at 1.5 bar can hold, 6.43 kW unattributed).  Here it goes
+//  through the ONE home the report's rule lives in, `flashState::priceState`;
+//  the sensible fallback surface keeps the blend, as every term does there.
+scalar distillateEnthalpy(const ProcessStream& d, const ColumnEnthalpy& hs,
+                          const ThermoPackage& thermo)
+{
+    if (d.phasePinned || !hs.formation)
+        return d.F * hs.hQuality(d.vf, d.z, d.T);
+    return flashState::priceState(d.T, d.P, d.z, d.F, false, d.vf, thermo,
+                                  "distillationColumn distillate", nullptr);
 }
 
 //  y = K x at a stage, normalised -- the composition a duty is priced at.
@@ -1854,6 +1889,12 @@ int DistillationColumn::solve(const DictPtr& dict,
         top.D = D;  top.yD = xD;  top.T1 = T[0];
         top.Tcond = dStream.T;                  // the condensate's bubble point
         top.Vtop  = (R + 1.0) * D;              // overhead vapour [kmol/s]
+        const scalar Hdist = distillateEnthalpy(dStream, hs, thermo);
+        if (!partialCond && !dStream.phasePinned)
+        {
+            top.distillateCarried = true;
+            top.Hdist = Hdist;
+        }
         if (partialCond)
         {
             top.Vin = Vl;                       // NF >= 2 under a partial condenser
@@ -1882,7 +1923,7 @@ int DistillationColumn::solve(const DictPtr& dict,
         //  `dStream` is built above, so its temperature is the one this
         //  column actually hands downstream.  Nobody recomputes it here: a
         //  second bubble point would be a second home for the same answer.
-        const scalar dH = (H(D, dStream.T, dStream.vf, xD) + H(B, T[N-1], 0.0, x[N-1]))
+        const scalar dH = (Hdist + H(B, T[N-1], 0.0, x[N-1]))
                         -  feedEnthalpy(feedState, F, Tf, P, z, thermo, hs);
         kpis_["Q_condenser_kW"] = Q_cond;
         kpis_["Q_reboiler_kW"]  = dH - Q_cond;                          // closes the balance
@@ -3430,6 +3471,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         top.D = D;  top.yD = xD;  top.T1 = T[0];
         top.Tcond = dStream.T;                  // the condensate's bubble point
         top.Vtop  = fullMesh ? V[0] : (R + 1.0) * D;
+        const scalar Hdist = distillateEnthalpy(dStream, hs, thermo);
+        if (!partialCond && !dStream.phasePinned)
+        {
+            top.distillateCarried = true;
+            top.Hdist = Hdist;
+        }
         if (partialCond)
         {
             top.Vin = V[1];
@@ -3448,7 +3495,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         //  the twin comment on the Wang-Henke duty block; one defect, two
         //  transcriptions, and a fix applied to either alone would have been
         //  right on half the corpus.
-        scalar Hout = H(D, dStream.T, dStream.vf, xD) + H(Bf, T[N-1], 0.0, x[N-1]);
+        scalar Hout = Hdist + H(Bf, T[N-1], 0.0, x[N-1]);
         for (std::size_t j = 0; j < N; ++j)
         {
             if (Udraw[j] > 0.0) Hout += H(Udraw[j], T[j], 0.0, x[j]);
