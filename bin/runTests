@@ -5996,6 +5996,20 @@ PYEOF
     fi
     rm -f /tmp/docref.$$
 
+    # Capability-index gate (DEV.md 4c C211): every unit type, op, pass, sizer,
+    # kind, key and witness case docs/ai/capabilities.md names -- the page an
+    # assistant reads to answer "does Choupo do X?" -- resolves against the
+    # source that registers it, and every case is given by its full path.
+    if gate_exec "$ROOT/bin/curate/check_capability_index.py" > /tmp/capidx.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "capability-index-gate" "$(tail -1 /tmp/capidx.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_capability_index.py)\n" "capability-index-gate"
+        cat /tmp/capidx.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/capidx.$$
+
     # Generated-doc drift: docs/ai/components.md and schemas-reference.md are
     # RENDERED from data/standards/components/ and gui/schemas/operations/.
     # bin/regen-llm-docs has carried a --check mode since it was written and it

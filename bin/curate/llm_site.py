@@ -12,11 +12,25 @@ browsing assistant looks for first is /llms.txt (llmstxt.org): a title, a
 one-sentence summary, then links with a line each.
 
 DERIVED, NEVER HAND-KEPT.  The files served are the files that exist:
-    docs/ai/brief.md            -> /llm/brief.md
+    docs/ai/capabilities.md     -> /llm/capabilities.md       ("does Choupo do X?")
+    docs/ai/brief.md            -> /llm/brief.md              ("design a process")
     docs/ai/packs/*.md          -> /llm/packs/<name>.md
     docs/ai/*.md (the rest)     -> /llm/reference/<name>.md   (the long references)
+    generated/modelsCatalogue.json -> /llm/models.md          (static, no JavaScript)
 and every line of llms.txt is built from the H1 of the file it links.  A pack
 added tomorrow appears in llms.txt tomorrow with no edit here.
+
+ONE QUESTION, ONE PATH (DEV.md 4c C211).  A capability question and a design
+task are different questions: llms.txt lists the capability index FIRST, under
+"Does Choupo do X?", and the brief under "Design a process".
+
+EVERY SERVED DOCUMENT STATES ITS VERSION LINE (C211 b), in its first lines,
+inserted HERE after the H1 -- never typed into each source, where it would
+drift file by file.  The line is read from generated/releaseInventory.json
+(`line`, `latestRelease`): the documents describe the development line, which
+https://www.choupo.org/app runs; the ONE page that describes the stable release
+instead is the model catalogue (/models/ and its static copy /llm/models.md),
+whose own note names the release the catalogue declares.
 
 A CHECK THAT CANNOT RUN MUST NOT PASS.  No brief, an empty brief, or no pack
 is an ERROR (exit 1), not a site without an llms.txt: the publish step that
@@ -25,6 +39,7 @@ documents is the 404 this script exists to end.
 
 Pure standard library.  Exit 0 = written / verified; 1 = a defect.
 """
+import json
 import os
 import re
 import shutil
@@ -32,17 +47,26 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 AI = os.path.join(ROOT, "docs", "ai")
+INVENTORY = os.path.join(ROOT, "generated", "releaseInventory.json")
+CATALOGUE = os.path.join(ROOT, "generated", "modelsCatalogue.json")
+TUTORIALS = os.path.join(ROOT, "tutorials")
 SITE = "https://www.choupo.org"
+VERSION_MARK = "> **Version.**"
 
 TITLE = "Choupo"
 SUMMARY = ("Choupo is an open-source, glass-box chemical process simulator "
            "(C++17, GPL-3.0-or-later) that runs in the browser at "
            "https://www.choupo.org/app; the documents below teach an AI "
            "assistant to design a process and write it as a Choupo case.")
-INTRO = ("Read the brief first and all of it: it is the contract for a case "
-         "and ends with an index of task packs.  Read only the packs the "
-         "design needs.  The reference documents are long and are for lookups "
-         "a pack points to, not for reading end to end.")
+INTRO = ("Two questions, one path each.  To answer whether Choupo does "
+         "something (a unit, a calculation, a check), read the capability "
+         "index: per concept it says what Choupo computes, what it only "
+         "balances, what it only checks and what is missing, with a witness "
+         "case.  To DESIGN a process, read the brief first and all of it: it "
+         "is the contract for a case and ends with an index of task packs.  "
+         "Read only the packs the design needs.  The reference documents are "
+         "long and are for lookups a pack points to, not for reading end to "
+         "end.")
 
 
 def fail(msg):
@@ -60,6 +84,87 @@ def h1(path):
     return ""
 
 
+def versions():
+    """-> (development line, latest stable release) from the release inventory."""
+    with open(INVENTORY, encoding="utf-8") as f:
+        inv = json.load(f)
+    return inv["line"], inv["latestRelease"]
+
+
+def dev_note():
+    line, rel = versions()
+    return ("%s This document describes the development line `%s`, which "
+            "%s/app runs and which every assistant document here describes.  "
+            "The latest stable release is `%s`; the one page that describes "
+            "that release instead of the development line is the model "
+            "catalogue, %s/models/ (static copy: %s/llm/models.md)."
+            % (VERSION_MARK, line, SITE, rel, SITE, SITE))
+
+
+def with_version(text, note):
+    """Insert the version note right after the first H1 (or at the top)."""
+    lines = text.split("\n")
+    for i, l in enumerate(lines):
+        if re.match(r"#\s+\S", l):
+            return "\n".join(lines[:i + 1] + ["", note] + lines[i + 1:])
+    return note + "\n\n" + text
+
+
+def copy_versioned(src, dst, note):
+    with open(src, encoding="utf-8") as f:
+        text = f.read()
+    with open(dst, "w", encoding="utf-8") as f:
+        f.write(with_version(text, note))
+
+
+def case_path(name):
+    """A catalogue's bare case name -> its full tutorials/ path ('' if none)."""
+    for dirpath, dirnames, _ in os.walk(TUTORIALS):
+        dirnames.sort()
+        if os.path.basename(dirpath) == name and os.path.isfile(
+                os.path.join(dirpath, "system", "controlDict")):
+            return os.path.relpath(dirpath, ROOT)
+    return ""
+
+
+def models_md():
+    """generated/modelsCatalogue.json as a readable, static markdown page."""
+    with open(CATALOGUE, encoding="utf-8") as f:
+        cat = json.load(f)
+    line, _ = versions()
+    out = ["# Choupo model catalogue", "",
+           ("%s This catalogue describes the stable release `%s`, NOT the "
+            "development line `%s` that %s/app and the other assistant "
+            "documents describe: a model added since that release may be "
+            "missing here.  For the development line, read %s/llm/reference/"
+            "thermo.md and %s/llm/reference/unit-ops.md."
+            % (VERSION_MARK, cat.get("release", "?"), line, SITE, SITE, SITE)),
+           "", "Generated from `generated/modelsCatalogue.json` (the same data "
+           "the interactive page %s/models/ draws).  Note of the catalogue: "
+           "%s" % (SITE, one_line(cat.get("note", ""))), ""]
+    for cname, entries in cat["categories"].items():
+        out += ["## " + cname, ""]
+        if entries and "count" in entries[0]:
+            out += ["| key | name | records | source |", "|---|---|---|---|"]
+            for e in entries:
+                out.append("| `%s` | %s | %s | `%s` |" % (
+                    e.get("key", ""), e.get("name", ""), e.get("count", ""),
+                    e.get("source", "")))
+        else:
+            out += ["| key | name | engine | phases | source | tutorials |",
+                    "|---|---|---|---|---|---|"]
+            for e in entries:
+                cases = []
+                for t in e.get("tutorials", []) or []:
+                    cases.append("`%s`" % (case_path(t) or t))
+                out.append("| `%s` | %s | %s | %s | `%s` | %s |" % (
+                    e.get("key", ""), e.get("name", ""), e.get("engine", ""),
+                    e.get("phases", ""), e.get("source", ""),
+                    ", ".join(cases)))
+        out.append("")
+    return "\n".join(out)
+
+
 def one_line(text):
     return re.sub(r"\s+", " ", text).strip()
 
@@ -71,7 +176,7 @@ def sources():
     packs = sorted(os.path.join(packs_dir, n) for n in os.listdir(packs_dir)
                    if n.endswith(".md")) if os.path.isdir(packs_dir) else []
     refs = sorted(os.path.join(AI, n) for n in os.listdir(AI)
-                  if n.endswith(".md") and n != "brief.md")
+                  if n.endswith(".md") and n not in ("brief.md", "capabilities.md"))
     return brief, packs, refs
 
 
@@ -82,37 +187,55 @@ def entry(url_path, src):
 
 def build(dist):
     brief, packs, refs = sources()
+    caps = os.path.join(AI, "capabilities.md")
     if not os.path.isfile(brief) or os.path.getsize(brief) == 0:
         return fail("docs/ai/brief.md is missing or empty -- the site would serve "
                     "no brief; refusing to assemble /llm")
+    if not os.path.isfile(caps) or os.path.getsize(caps) == 0:
+        return fail("docs/ai/capabilities.md is missing or empty -- a capability "
+                    "question would have no entry path; refusing to assemble /llm")
     if not packs:
         return fail("docs/ai/packs/ holds no pack -- refusing to assemble /llm")
+    for need in (INVENTORY, CATALOGUE):
+        if not os.path.isfile(need):
+            return fail("%s is missing -- the version line or the model "
+                        "catalogue cannot be written" % need)
+    note = dev_note()
     out = os.path.join(dist, "llm")
     shutil.rmtree(out, ignore_errors=True)
     os.makedirs(os.path.join(out, "packs"))
     os.makedirs(os.path.join(out, "reference"))
-    shutil.copyfile(brief, os.path.join(out, "brief.md"))
+    copy_versioned(caps, os.path.join(out, "capabilities.md"), note)
+    copy_versioned(brief, os.path.join(out, "brief.md"), note)
     for p in packs:
-        shutil.copyfile(p, os.path.join(out, "packs", os.path.basename(p)))
+        copy_versioned(p, os.path.join(out, "packs", os.path.basename(p)), note)
     for r in refs:
-        shutil.copyfile(r, os.path.join(out, "reference", os.path.basename(r)))
+        copy_versioned(r, os.path.join(out, "reference", os.path.basename(r)), note)
+    with open(os.path.join(out, "models.md"), "w", encoding="utf-8") as f:
+        f.write(models_md())
 
-    lines = ["# " + TITLE, "", "> " + SUMMARY, "", INTRO, "",
-             "## Start here", "",
+    models_entry = ("- [models.md](%s/llm/models.md): Choupo model catalogue "
+                    "(static; describes the stable release it names, not the "
+                    "development line)" % SITE)
+    lines = ["# " + TITLE, "", "> " + SUMMARY, "", note, "", INTRO, "",
+             "## Does Choupo do X?", "",
+             entry("/llm/capabilities.md", caps), "",
+             "## Design a process: start here", "",
              entry("/llm/brief.md", brief), "",
              "## Task packs", ""]
     lines += [entry("/llm/packs/" + os.path.basename(p), p) for p in packs]
     lines += ["", "## Optional: reference documents", ""]
     lines += [entry("/llm/reference/" + os.path.basename(r), r) for r in refs]
+    lines += [models_entry]
     lines += ["", "## Optional: the project", "",
               "- [Repository](https://github.com/choupo-admin/choupo): "
               "source, tutorial cases and data (GPL-3.0-or-later)",
               "- [The app](%s/app/): run a case in the browser" % SITE, ""]
     with open(os.path.join(dist, "llms.txt"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
-    print("llm_site: /llm/brief.md, %d pack(s), %d reference document(s), "
-          "/llms.txt (%d links)" % (len(packs), len(refs),
-                                    len(packs) + len(refs) + 3))
+    print("llm_site: /llm/capabilities.md, /llm/brief.md, %d pack(s), %d "
+          "reference document(s), /llm/models.md, /llms.txt (%d links)"
+          % (len(packs), len(refs), len(packs) + len(refs) + 5))
     return 0
 
 
@@ -147,10 +270,39 @@ def verify(dist):
             print("llm_site: ERROR: pack %s is served but llms.txt does not "
                   "list it" % n, file=sys.stderr)
             bad += 1
+    #  One path per question: the capability index is the FIRST link.
+    if links[0] != "/llm/capabilities.md":
+        print("llm_site: ERROR: llms.txt's first link is %s, not "
+              "/llm/capabilities.md (a capability question must find the index "
+              "first)" % links[0], file=sys.stderr)
+        bad += 1
+    if "/llm/models.md" not in links:
+        print("llm_site: ERROR: llms.txt does not list /llm/models.md",
+              file=sys.stderr)
+        bad += 1
+    #  Every served document states its version line in its first lines.
+    served = 0
+    for dirpath, _, names in os.walk(os.path.join(dist, "llm")):
+        for n in names:
+            if not n.endswith(".md"):
+                continue
+            served += 1
+            p = os.path.join(dirpath, n)
+            head = open(p, encoding="utf-8").read().split("\n")[:6]
+            if not any(l.startswith(VERSION_MARK) for l in head):
+                print("llm_site: ERROR: %s does not state its version line in "
+                      "its first lines" % os.path.relpath(p, dist), file=sys.stderr)
+                bad += 1
+    if not any(l.startswith(VERSION_MARK) for l in text.split("\n")[:8]):
+        print("llm_site: ERROR: llms.txt does not state its version line in its "
+              "first lines", file=sys.stderr)
+        bad += 1
     if bad:
         return 1
-    print("llm_site: OK: llms.txt lists %d link(s), all served; brief and %d "
-          "pack(s) present and non-empty" % (len(links), len(packs)))
+    print("llm_site: OK: llms.txt lists %d link(s), all served, the capability "
+          "index first; brief and %d pack(s) present and non-empty; %d served "
+          "document(s) and llms.txt state their version line"
+          % (len(links), len(packs), served))
     return 0
 
 
