@@ -1952,6 +1952,20 @@ accepts today, and that is a policy call.
 > itemised operating cost, break-even) stay in the plan as E5 and a new
 > engine row, decided after the pages show what the students use.
 
+> **C213. DOCUMENTED ECONOMIC CASE STUDIES FROM THE OPEN LITERATURE (Vitor,
+> 2026-11-03: "Se conseguires por case studies open source documentados da
+> literatura relacionados com analise economica era mesmo fixe").**  Step 1
+> (a general, research only): a shortlist of published techno-economic case
+> studies whose text and numbers may be REUSED -- US-government works (NREL
+> design reports, DOE H2A, NETL baselines: public domain) and CC BY / CC0
+> open-access papers -- each with its licence read from the document itself,
+> the plant, what it tabulates (equipment list with purchased costs, factors,
+> operating cost, cash-flow assumptions, NPV/IRR/MSP) and how far a Choupo
+> case could reproduce it.  Step 2 (the architect's, after reading the
+> shortlist): which become an EduTools worked example and which a tutorial
+> case pinned on the source's own numbers (the external-reference battery
+> pattern: one coherent primary source end to end, never a blend).
+
 > **THE STACK, AND THE ONE FULL SWEEP (the architect, 2026-11-03 06:00):** five
 > of the seven builds are now in the local branch `staging` (C208, S1, S2,
 > E2+E3, dynamic slice 2), each validated by `bin/integrate --base staging` on
