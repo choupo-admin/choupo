@@ -28,7 +28,7 @@ header names the PLAN.md commit it reflects, so a stale view shows itself.
    row of Next day starts and the first row of the next column moves up.
 5. **Done rows stay one week**, then leave this file (DEV.md keeps them).
 
-Last reviewed: 2026-11-02 evening (the resume list closed; today's asks C203-C205 placed; earlier reviews in git).
+Last reviewed: 2026-11-03 01:00 (reorganised by C210, PIF first: Now holds only what runs, the document set and the PIF wins placed by their dependencies; earlier reviews in git).
 
 Status words: `todo` · `queued` (built by a general, waiting its turn to integrate) · `integrating` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
@@ -36,53 +36,54 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| decide | FREEZE: nothing is integrated into main (and so nothing reaches the site) until the tutoring class of 2026-11-03 ends; everything below is built on branches and validated in integration worktrees | C200, C195 |
-| running | Validation of the C208 fixes + the repaired flagship and sugar-sweep economics (`worktree-c208-cases`, d8d606744) | C208 |
-| running | Four builds on branches, reports due 07:00: dynamic units slice 2 (CSTR with a variable volume); PIF E2+E3 (HVAC cost from the supply air, cleaning events -> water and effluent); GUI E6 + the MASS cell (utilisation table, Gantt); EduTools E7+E8 (how a PIF economics goes wrong; the demand forecast) | C205, C195, C201 |
-| running | A survey and design draft of the plant DOCUMENT SET: PFD as a PDF with its stream table, equipment list, line list per routed pipe, instrument index, P&ID as a PDF, control narrative, then the digital twin; what exists, the gap, the order | C203, C204, C207, C210 |
-| todo | Watch the tutoring class (2026-11-03 12:00): the students' reports reach Vitor and come here; each is recorded in DEV.md 4c the turn it arrives, then fixed (it goes ahead of everything below) | C200, C195, C210 |
+| decide | FREEZE until the tutoring class of 2026-11-03 ends: nothing is integrated into main, so nothing reaches the site; work is built on branches and validated in integration worktrees | C200, C210 |
+| running | Validation of C208 (the quiet exit-0 failures, `choupo-init0` for solids-only streams) with the flagship's and the sugar sweep's economics restored (`worktree-c208-cases`, d8d606744) | C208 |
+| running | Dynamic units, slice 2: the CSTR with a variable volume (report due 07:00) | C205 |
+| running | PIF E2 + E3: HVAC cost from the supply air; cleaning events from the batch plan -> purified water and effluent (report due 07:00) | C195, C210 |
+| running | GUI E6 + the MASS cell: the per-machine utilisation table and the Gantt drawn from the engine's batch plan; the run strip reads the published mass balance (report due 07:00) | C195, C201 (2) |
+| running | EduTools E7 + E8: how a pharmaceutical-plant economics goes wrong (the reports' error classes, anonymous); the demand forecast with a units check (report due 07:00) | C195, C210 |
+| running | Survey and design draft of the plant DOCUMENT SET: PFD as a PDF with its stream table, equipment list, line list per routed pipe, instrument index, P&ID as a PDF, control narrative, then the digital twin (report due 07:00) | C203, C204, C207, C210 |
 
 ## Next day (at most 5)
 
 | status | what | ref |
 |---|---|---|
-| todo | PRIORITY C210, PIF first. Land C208 after the class (the quiet exit-0 failures, `choupo-init0` for solids-only streams, the flagship's and the sugar sweep's economics restored with real declarations); the global sweep decided with its reason | C208, C210 |
-| todo | (Opus) Acetic acid, ONE slice: the corrected dimerisation constant (5bed50aeb) + the associated vapour (`backup/c201-acetic-vapour`) rebased on it and re-measured (latent heat at Tb near the measured 24.4), the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; then the seven exotherm tutorials to Vitor | C201 (1) |
-| todo | PIF easy wins still to build: E4 building cost from the rooms' areas and E5 economics hygiene (they touch EconomicsPass, so after C208 lands) | C195, C210 |
-| todo | The plant document set, first slices from the survey (the PFD as a PDF with its stream table and the equipment list are the cheapest); then the line list per pipe and the instrument index / P&ID -- these are the deliverables a design project hands in and that no old report had | C207, C203, C204, C210 |
-| todo | The site's own WASM build, then one browser run each of what reached main without one: Complete 0/, the pressure exchanger, the boron split, the dynamic tank; confirm C178 and C182 there | C196, C200 B', C178, C182 |
+| todo | The tutoring class (12:00): what the two groups hit reaches Vitor and comes here; recorded in DEV.md 4c the turn it arrives and fixed AHEAD of every row below | C210 |
+| todo | Land C208 after the class (wrong answers at exit 0 first); the full sweep its main.cpp/PostProcessor reach flags is decided with a written reason; then the four branch builds, ONE integration at a time, in this order: E2+E3, E6+MASS, E7+E8, dynamic slice 2; the site checked after each push | C208, C195, C205 |
+| todo | (Opus) Acetic acid, ONE slice (a wrong reaction heat at exit 0 on start-here step 6): the corrected constant (5bed50aeb) + the associated vapour rebased on it, the latent heat at Tb re-measured (near the measured 24.4), the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; the seven exotherm tutorials to Vitor | C201 (1) |
+| todo | (Opus) The document set: decide the slices from the survey and dispatch the first two -- the PFD as a PDF (stream table, equipment tags, utilities legend, title block) and the equipment list -- the deliverables no old report had | C207, C203, C204, C210 |
+| todo | PIF E4 + E5: building cost from the rooms' areas; economics hygiene (working capital by three methods side by side, royalty only inside a patent window) -- AFTER C208 lands (both touch EconomicsPass) | C195, C210 |
 
 ## Next three days (at most 8)
 
 | status | what | ref |
 |---|---|---|
-| todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag | C205 |
-| todo | C200 remaining packs (heat, electrolytes, membranes, solids, drivers, transient, props), the generated reference (the site serves docs/ai as it stands); re-score the 2026-11-01 baseline with the -init0 step so the comparison is like for like | C200 |
-| todo | Newcomer surfaces: `runCase` shows the answer, the balance verdict and the caveat block; one "start here" path across doc, landing cards and the site folder | C201 (3), (4) |
-| todo | Tutorial texts the review found stale or false and the housekeeping list; moved goldens, if any, as a list | C201 (5), (6) |
-| todo | C199 leftovers: the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
-| todo | The control-placement EduTool, pages 1-5 and the plant method page (the Pareto is in C204) | C204 |
-| todo | Whatever the Next-day column pushed: the site's WASM build and browser runs, the seal-drift measurement | C196, C201 |
+| todo | Document set, line list: a specification sheet per routed pipe (length from the layout, bore from a velocity window or the economic diameter, fittings and valves declared, total pressure drop, the pump the line needs) -- after the survey | C207, C210 |
+| todo | Document set, instruments: the loop and instrument declaration (one grammar, read by choupoCtrl), the instrument index, then the P&ID as a PDF and the control narrative generated from it | C203, C204, C210 |
+| todo | The control-placement EduTool, pages 1-5 and the plant method page (the Pareto is in C204); its loops use the instrument grammar above | C204 |
+| todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag (they feed the digital twin) | C205 |
+| todo | State checks: measure the seal-drift finding against main (9 sucrose / H2SO4 mirrors, 1809 moved values); one browser run on the site of each unit that reached main without one (Complete 0/, pressure exchanger, boron split, dynamic tank; C178, C182) | C201, C196 |
+| todo | The C200 packs still missing (heat, electrolytes, membranes, solids, drivers, transient, props) and the generated reference; re-score the 2026-11-01 baseline with the -init0 step | C200 |
+| todo | Newcomer surfaces (`runCase` shows the answer, the balance verdict and the caveat block; one start-here path) and the stale tutorial texts the review listed | C201 (3)-(6) |
+| todo | The p10 finding: NaCl in water has no enthalpy datum the default energy report can use (refused by the engine): curate it | C200 5.2 |
 
 ## Beyond a week
 
 | status | what | ref |
 |---|---|---|
-| todo | A sector that says how many times it repeats (`repeat N;`): ONE train in the flowsheet, plant-total streams across its boundary split and summed by the engine, shared services outside, the stream table per train and total, the GUI box "x N"; replaces `trains { count }` in the postDict; witness swro01_campoDalias | C209 |
-| todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
-| todo | PIF long-term (L1-L10 of the synthesis): the sterile route (filling, lyophiliser, sterilising filtration, F0), full HVAC (latent and equipment loads, the pressure cascade's leakage), labour following the plan and multiproduct campaigns, quality calculations (blend uniformity, cleaning limits), utility networks (steam, compressed air, vacuum), equipment catalogue records, scale-up and solid-dosage unit models, the economics as a distribution | C195, docs/reviews/2026-11-02-pif-reports-synthesis.md |
-| todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
-| todo | A specification sheet for every routed pipe: length from the layout, bore from a velocity window or the economic diameter, total pressure drop (run + fittings + valves + head), the pump a line needs, the instruments from the loop declarations; and the pipe's cost | C207 |
-| todo | Two EduTools in Pareto mode: liquid effluent treatment and gaseous emission treatment (first the Pareto against the corpus plants' own boundary streams, then the scope to Vitor) | C206 |
-| blocked | Seawater boron on Pitzer: BOH4/CaBOH4/MgBOH4 formation and eight mixing records, each from its primary (blocked on reading Felmy & Weare 1986) | C198 |
+| todo | PIF long-term (L1-L10 of the synthesis), in this order: the sterile route (filling, lyophiliser, sterilising filtration, F0), full HVAC (latent and equipment loads, the pressure cascade's leakage), labour following the plan and multiproduct campaigns, blend uniformity and cleaning limits, utility networks (steam, compressed air, vacuum), equipment catalogue records, scale-up and solid-dosage unit models, the economics as a distribution; open lactose compaction data when one appears | C195, C210 |
+| todo | A sector that says how many times it repeats (`repeat N;`): ONE train in the flowsheet, plant totals split and summed at its boundary, shared services outside, tags A..F beside the "x N" box; replaces `trains { count }` | C209 |
+| todo | `digitalTwin/`, its own tutorials folder (a designed plant in operation: continuous on choupoCtrl, then batch; layout required) -- needs the dynamic slices, the instrument grammar and the P&ID; then the operator panel (pedagogical scope to Vitor first) | C203 |
 | todo | Dynamic units, slices 5 and 6: the RO train's pressure and recovery, the column's inventories on a quasiSteady column; the full dynamic MESH last | C205 |
-| todo | `digitalTwin/`, its own tutorials folder (operation of a designed plant, continuous on choupoCtrl then batch on choupoBatch, layout REQUIRED): loops/instruments with a generated P&ID after the unit dynamics, then the operator panel (pedagogical scope to Vitor first) | C203 |
-| todo | The control EduTool, phase 2: the engine counts the control degrees of freedom and the inventory direction on the case's own topology and publishes them; the GUI draws | C204 |
-| todo | Boron Stage 2: the pH along the channel, the seawater feed as major ions, a dosing unit (caustic before pass 2), and a recycle solver that refuses the trivial fixed point by name | C198 |
-| todo | NaCl in water has no enthalpy datum the default energy report can use (the harness's p10, REFUSED by the engine): curate it | C200 5.2 |
+| todo | The control EduTool, phase 2: the engine counts the control degrees of freedom and the inventory direction on the case's topology and publishes them; the GUI draws | C204 |
+| todo | Two EduTools in Pareto mode: liquid effluent treatment and gaseous emission treatment (the Pareto first, against the corpus plants' boundary streams; then the scope to Vitor) | C206 |
+| todo | C199 leftovers: the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
+| todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
+| blocked | Seawater boron on Pitzer: BOH4/CaBOH4/MgBOH4 formation and eight mixing records, each from its primary (blocked on reading Felmy & Weare 1986) | C198 |
+| todo | Boron Stage 2: the pH along the channel, the seawater feed as major ions, a dosing unit, and a recycle solver that refuses the trivial fixed point by name | C198 |
+| todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | A cumene case (the graph's three cumene routes link nothing) | C191 |
 | todo | Verify and fix the Gibbs review's three open items and the SpeciationSolver outer convergence | C187 (1)(2) |
-| todo | Pharmaceutical groups: blend uniformity; a sterile route if a group picks one; open lactose compaction data (none found) | C195 |
 | todo | Distillation P0 (step contract, singular-Jacobian diagnostic); re-run and classify Vítor's DME plant | C184 |
 | todo | aceticAcid02: the subcooled-feed q in the simultaneous column branch | C174, C175 |
 | todo | Seeded crystallisation, cake filtration and washing, a linear chromatography column (pedagogical scope first) | C190 |
@@ -112,6 +113,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| waits-Vitor | The Eucreas PIF folder holds two files of 0 bytes: a readable copy, if the review should count it | C195 |
 | waits-Vitor | Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771 (the seawater boron Pitzer parameters' primary): a copy through IST's library | C198 |
 | waits-Vitor | Open swro01_campoDalias in the browser: does the 3D start, are the 2D drawings legible? | C199 |
 | waits-Vitor | Reactive full MESH and the multi-ion NF dataset: the reference PDFs | C175, C176 |
