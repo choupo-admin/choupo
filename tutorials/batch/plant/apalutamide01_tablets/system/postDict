@@ -36,7 +36,7 @@
   no machine model for any of them, and it does not invent one.  Since DEV.md
   4c C195 each IS checked for FIT -- a `ratedMachine` entry below divides the
   lot's load by a rating the case declares (utilisation, not a size or a
-  price).  Neither is the GMP BUILDING costed -- clean rooms, HVAC -- which in a drug-product plant is usually
+  price).  Neither is the GMP BUILDING costed (clean rooms, services; its HVAC is priced apart from the supply air, DEV.md 4c C210) -- which in a drug-product plant is usually
   the largest single capital item.  They enter the capital as DECLARED
   QUOTES (`costing { quotes ( ... ); }` below, DEV.md 4c C98): one price per
   item, each an AUTHOR-SET PLACEHOLDER said so on its own line, for the group
@@ -122,6 +122,37 @@ batchPlan
             source  "author-set assumption (DEV.md 4c C99)";
             reason  "a solid-dose suite on two day shifts, a product campaign of six lots between full cleans";
         }
+    );
+
+    //  THE CLEANING OF THE MACHINES (DEV.md 4c C210, E3).  The plan counts the
+    //  cleans -- one after every lot of each instance the lot is split over, and
+    //  one of every installed instance at each campaign changeover -- and the
+    //  CASE declares the purified water of ONE clean of ONE instance and the
+    //  fraction of it that leaves as effluent.  EVERY NUMBER IS AN AUTHOR-SET
+    //  ASSUMPTION, round figures of the right order, to be replaced by the
+    //  group's cleaning procedure (a rinse volume per wet-cleaned item).  The
+    //  mill, the press and the packaging line are DRY-cleaned (vacuum and
+    //  wipe-down): they carry no water and are not listed.  The purified-water
+    //  demand of `cleanUtilities` reads these cleans (one ledger: the old lump
+    //  `uses` entry `cleaning` is gone), and the effluent is published as a
+    //  VOLUME in m3 a year (`kpis.cleaning`), its load is not computed.
+    cleaning
+    (
+        { unit solutionPrep;          waterPerLotClean 0.8 m3;  waterPerChangeover 2.0 m3;  effluentFraction 0.95;
+          source "author-set assumption (DEV.md 4c C210, E3), to be replaced by the group's cleaning procedure";
+          reason "the rinse of the dispersion solution tank and its lines after each lot (after the solvent flush); a full clean at a changeover"; }
+        { unit blender;               waterPerLotClean 0.4 m3;  waterPerChangeover 1.0 m3;  effluentFraction 0.95;
+          source "author-set assumption (DEV.md 4c C210, E3), to be replaced by the group's cleaning procedure";
+          reason "the wash of the intragranular blender after a lot; a full clean at a changeover"; }
+        { unit finalBlender;          waterPerLotClean 0.4 m3;  waterPerChangeover 1.0 m3;  effluentFraction 0.95;
+          source "author-set assumption (DEV.md 4c C210, E3), to be replaced by the group's cleaning procedure";
+          reason "the wash of the final blender after a lot; a full clean at a changeover"; }
+        { unit coatingSuspensionPrep; waterPerLotClean 0.4 m3;  waterPerChangeover 1.0 m3;  effluentFraction 0.95;
+          source "author-set assumption (DEV.md 4c C210, E3), to be replaced by the group's cleaning procedure";
+          reason "a rinse of the coating suspension tank and the spray lines after each lot; a full clean at a changeover"; }
+        { unit coatingPan;            waterPerLotClean 1.0 m3;  waterPerChangeover 2.5 m3;  effluentFraction 0.95;
+          source "author-set assumption (DEV.md 4c C210, E3), to be replaced by the group's cleaning procedure";
+          reason "the wash of the perforated pan, the spray guns and the lines after a coated lot; a full clean at a changeover"; }
     );
 
     //  In RECIPE order; each stage feeds the next of its train unless it
@@ -390,6 +421,98 @@ sizing
     );
 }
 
+//  ===================== THE CLEAN UTILITIES (DEV.md 4c C195) ==================
+//  The air and the purified water of the building, sized from the building the
+//  layout checked (system/layoutDict) and the batch plan above.  Run BEFORE the
+//  costing, so the supply air of each grade is a priced item (`costing { quotes
+//  ( { hvacGrade ...; valuePerSupplyAir ...; } ) }`, DEV.md 4c C210 E2); the
+//  generator and the tank are not costed (the building and utilities quotes
+//  carry them).  EVERY NUMBER IN
+//  THIS BLOCK IS AN AUTHOR-SET ASSUMPTION for the group to replace; none is
+//  from a standard's table (the published air-change tables are no-grant
+//  documents and are not shipped).  The air is SENSIBLE only: no humidity, no
+//  latent load, no room heat gain -- the run says so.
+cleanUtilities
+{
+    hvac
+    {
+        air
+        {
+            density       1.2 kg/m3;
+            heatCapacity  1006 J/kg/K;
+            source "author-set assumption (DEV.md 4c C195): dry air near 20 degC, rounded";
+            reason "the density and heat capacity that turn a volume flow into a heat duty";
+        }
+        //  Air changes per hour of each GRADE of the building, and why.
+        changesPerHour
+        (
+            { grade D;    perHour 20;
+              source "author-set assumption (DEV.md 4c C195), not from a standard's table";
+              reason "an order of magnitude for a graded oral-solid-dose room; the group replaces it with the rate its own contamination and cleanliness argument supports"; }
+            { grade CNC;  perHour 6;
+              source "author-set assumption (DEV.md 4c C195), not from a standard's table";
+              reason "an order of magnitude for a controlled-not-classified room (comfort and dust control); the group replaces it"; }
+        );
+        fan
+        {
+            pressureRise  1000 Pa;
+            efficiency    0.6;
+            source "author-set assumption (DEV.md 4c C195)";
+            reason "filters (to the final HEPA), coils, silencers and ducting of an air-handling unit, lumped; the fan and drive efficiency of a medium centrifugal fan";
+        }
+        outdoor
+        {
+            winter  2 degC;
+            summer  32 degC;
+            source "author-set assumption (DEV.md 4c C195): no site is declared for this plant";
+            reason "design temperatures of a temperate site; the group replaces them with its site's design values";
+        }
+        supply
+        {
+            temperature       20 degC;
+            freshAirFraction  0.2;
+            source "author-set assumption (DEV.md 4c C195)";
+            reason "a recirculating air-handling unit takes a fifth of its flow fresh; a contained room with an open API would take 100 % fresh air, a question for the group";
+        }
+        //  The technical floor houses the air plant and the utilities: it is
+        //  not served by it.
+        unserved
+        {
+            rooms ( hvacPlant utilities electrical techLanding );
+            source "system/layoutDict: the technical floor (AHUs, utilities, switchgear)";
+            reason "plant rooms are not conditioned by the air plant they house";
+        }
+    }
+
+    purifiedWater
+    {
+        fluid
+        {
+            density 998 kg/m3;
+            source "author-set assumption (DEV.md 4c C195): water near 20 degC, rounded";
+            reason "turns the water mass of the balance into a volume";
+        }
+        uses
+        (
+            { name coatingSuspensionWater;  stream coatWater;  stage suspensionPreparation;  drawTime 0.5 h;  when start;
+              source "the flowsheet stream coatWater (the water of the coating suspension), read from the converged balance";
+              reason "purified water is the solvent of an aqueous film-coat suspension"; }
+        );
+        generator
+        {
+            margin  0.25;
+            source "author-set assumption (DEV.md 4c C195)";
+            reason "a quarter above the peak draw: demand growth and the loop's own return flow";
+        }
+        storage
+        {
+            holdTime  4 h;
+            source "author-set assumption (DEV.md 4c C195)";
+            reason "four hours of the peak draw without the generator: a shutdown or a sanitisation";
+        }
+    }
+}
+
 costing
 {
     method    Turton;
@@ -417,6 +540,20 @@ costing
     //  not (it IS a facility).
     quotes
     (
+        //  THE HVAC, PRICED FROM THE SUPPLY AIR (DEV.md 4c C210, E2): the
+        //  `cleanUtilities` pass above sizes the supply air of each grade; the
+        //  case DECLARES an installed cost per m3/h of it.  BOTH VALUES ARE
+        //  ASSUMED, author-set, and to be replaced by a quote -- no vendor
+        //  price and no published table stands behind them.  For orientation
+        //  ONLY (not a source): design reports of tablet plants carried HVAC
+        //  as a lump of the order of 0.6 to 2.5 MEUR; the figure this value
+        //  gives is in the README beside that range, and is not validated by
+        //  it.  `kind facility;` as the building's, which carried the HVAC
+        //  before (see the building quote below).
+        { hvacGrade CNC;  valuePerSupplyAir 5;  currency EUR;  year 2026;
+          basis installed;  kind facility;
+          source "assumed, author-set, to be replaced by a quote (DEV.md 4c C210)";
+          reason "air handling and ducting per m3/h of supply air of a controlled-not-classified room (no terminal HEPA), a round figure"; }
         { unit tabletPress;  value 1000000;  currency EUR;  year 2026;
           basis installed;  kind equipment;
           scaling { referenceSize 100 kg/h;  exponent 0.6;
@@ -459,10 +596,10 @@ costing
                     exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
           source "author-set placeholder (DEV.md 4c C98), not a quotation: the dossier found machine SIZES but no prices (docs/design/apalutamide-design-basis-dossier.md sections 4.3 and 6, question 5)";
           reason "a bottle or blister line with serialisation, a round figure; replace with a vendor quotation"; }
-        { item productionBuilding;  value 11000000;  currency EUR;  year 2026;
+        { item productionBuilding;  value 10700000;  currency EUR;  year 2026;
           basis installed;  kind facility;
           source "author-set placeholder (DEV.md 4c C98), not a quotation or a building estimate; cross-checked against the one public benchmark the dossier found (docs/design/apalutamide-design-basis-dossier.md section 4.5): Mayne Pharma's Greenville NC oral-solid-dose plant with potent-compound containment, 80 M USD for 11 700 m2, about 6 800 USD (6 260 EUR at 0.92) per m2 ALL-IN, building AND equipment; a building-only cost per m2 was NOT found (ask an EPCM contractor)";
-          reason "the GMP building of the whole plant, the layout's 62 m x 36 m `productionBuilding` box (2232 m2 of footprint, 3710 m2 of rooms on two floors), clean rooms, HVAC and services: 11 MEUR is 4 930 EUR per m2 of footprint, below the benchmark's all-in figure as a building alone should be; replace with a contractor's estimate for the group's own building"; }
+          reason "the GMP building of the whole plant, the layout's 62 m x 36 m `productionBuilding` box (2232 m2 of footprint, 3710 m2 of rooms on two floors), clean rooms and services EXCLUDING the HVAC (priced from the supply air by the `hvacGrade` quote above; the building carried it before, DEV.md 4c C210): 10.7 MEUR is 4 794 EUR per m2 of footprint, below the benchmark's all-in figure as a building alone should be; replace with a contractor's estimate for the group's own building"; }
     );
 }
 
@@ -565,99 +702,6 @@ economics
         price   80;      // EUR per m2 of plot
         source  "placeholder for the groups' site; not a market quotation";
         reason  "a round number so that the land appears in the capital and the cash flow; replace it with the price of the site the group chooses";
-    }
-}
-
-//  ===================== THE CLEAN UTILITIES (DEV.md 4c C195) ==================
-//  The air and the purified water of the building, sized from the building the
-//  layout checked (system/layoutDict) and the batch plan above.  Run AFTER the
-//  economics, so no item here reaches the capital: every item is `not costed`
-//  and the building quote carries HVAC and the utilities.  EVERY NUMBER IN
-//  THIS BLOCK IS AN AUTHOR-SET ASSUMPTION for the group to replace; none is
-//  from a standard's table (the published air-change tables are no-grant
-//  documents and are not shipped).  The air is SENSIBLE only: no humidity, no
-//  latent load, no room heat gain -- the run says so.
-cleanUtilities
-{
-    hvac
-    {
-        air
-        {
-            density       1.2 kg/m3;
-            heatCapacity  1006 J/kg/K;
-            source "author-set assumption (DEV.md 4c C195): dry air near 20 degC, rounded";
-            reason "the density and heat capacity that turn a volume flow into a heat duty";
-        }
-        //  Air changes per hour of each GRADE of the building, and why.
-        changesPerHour
-        (
-            { grade D;    perHour 20;
-              source "author-set assumption (DEV.md 4c C195), not from a standard's table";
-              reason "an order of magnitude for a graded oral-solid-dose room; the group replaces it with the rate its own contamination and cleanliness argument supports"; }
-            { grade CNC;  perHour 6;
-              source "author-set assumption (DEV.md 4c C195), not from a standard's table";
-              reason "an order of magnitude for a controlled-not-classified room (comfort and dust control); the group replaces it"; }
-        );
-        fan
-        {
-            pressureRise  1000 Pa;
-            efficiency    0.6;
-            source "author-set assumption (DEV.md 4c C195)";
-            reason "filters (to the final HEPA), coils, silencers and ducting of an air-handling unit, lumped; the fan and drive efficiency of a medium centrifugal fan";
-        }
-        outdoor
-        {
-            winter  2 degC;
-            summer  32 degC;
-            source "author-set assumption (DEV.md 4c C195): no site is declared for this plant";
-            reason "design temperatures of a temperate site; the group replaces them with its site's design values";
-        }
-        supply
-        {
-            temperature       20 degC;
-            freshAirFraction  0.2;
-            source "author-set assumption (DEV.md 4c C195)";
-            reason "a recirculating air-handling unit takes a fifth of its flow fresh; a contained room with an open API would take 100 % fresh air, a question for the group";
-        }
-        //  The technical floor houses the air plant and the utilities: it is
-        //  not served by it.
-        unserved
-        {
-            rooms ( hvacPlant utilities electrical techLanding );
-            source "system/layoutDict: the technical floor (AHUs, utilities, switchgear)";
-            reason "plant rooms are not conditioned by the air plant they house";
-        }
-    }
-
-    purifiedWater
-    {
-        fluid
-        {
-            density 998 kg/m3;
-            source "author-set assumption (DEV.md 4c C195): water near 20 degC, rounded";
-            reason "turns the water mass of the balance into a volume";
-        }
-        uses
-        (
-            { name coatingSuspensionWater;  stream coatWater;  stage suspensionPreparation;  drawTime 0.5 h;  when start;
-              source "the flowsheet stream coatWater (the water of the coating suspension), read from the converged balance";
-              reason "purified water is the solvent of an aqueous film-coat suspension"; }
-            { name cleaning;  volumePerLot 3 m3;  stage coating;  drawTime 1 h;  when end;
-              source "author-set assumption (DEV.md 4c C195): the wash of the pan, the suspension tank and the hoses after a lot";
-              reason "cleaning between lots is the second use of purified water in a tablet plant; replace with the group's cleaning procedure"; }
-        );
-        generator
-        {
-            margin  0.25;
-            source "author-set assumption (DEV.md 4c C195)";
-            reason "a quarter above the peak draw: demand growth and the loop's own return flow";
-        }
-        storage
-        {
-            holdTime  4 h;
-            source "author-set assumption (DEV.md 4c C195)";
-            reason "four hours of the peak draw without the generator: a shutdown or a sanitisation";
-        }
     }
 }
 

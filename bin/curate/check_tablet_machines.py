@@ -30,10 +30,30 @@ the run's own stream masses (never read back from the item it is compared to):
       and the sensible winter heating and summer cooling of the fresh-air
       share agree with the published items to 1e-6; `unserved` rooms are
       left out.
+  (b2) HVAC COST (DEV.md 4c C210, E2).  Every `hvacGrade` quote of the case
+      is recomputed -- the declared `valuePerSupplyAir` x the supply air this
+      gate recomputed from the rooms (never read back from the item), basis
+      installed, the costing year's own money -- and must equal the bare-module
+      and total-module cost the costing published for `hvac/grade<G>` (C_TM =
+      1.18 C_BM) and the `hvac` KPIs (per grade and the total); a grade present
+      in the building with NO quote must not exist (the total would read
+      INCOMPLETE, arm (d)).
   (c) WATER.  The demand per lot (declared streams over the declared density
       plus the declared volumes), the year, the PEAK from the plan's own
       Gantt rows with the declared draw windows, the generator rating
       (peak x (1 + margin)) and the storage volume (hold x peak) agree.
+  (c2) CLEANING (DEV.md 4c C210, E3).  The plan's `cleaning` entries are
+      recomputed from the declarations and the plan's own lots and campaigns
+      (never read back): per machine the cleans a year (a clean after every
+      lot of each of the N_ip instances the lot is split over, and of every
+      installed instance N_ip N_op at each campaign changeover), the purified
+      water and the effluent (the declared fraction), and per train the cleans,
+      water and effluent of a FULL campaign, against `kpis.cleaning`; the
+      totals; and the water arm (c) is held to the same cleans: the demand per
+      lot includes the lot cleans, the year includes the changeover cleans, and
+      the Gantt peak includes the draws of the cleans (a lot clean over the
+      stage's `cleanTime` ending with its bar, a changeover clean over the
+      train's changeover bar) -- ONE water ledger.
   (d) NEUTRALITY.  The capital total is not INCOMPLETE; the layout summary
       still reads unplaced 0 / internal 0 (the machines are neither left out
       nor internal: `notPlacedBecause`); the quotes beside the sized machines
@@ -44,7 +64,14 @@ the run's own stream masses (never read back from the item it is compared to):
       same machine with a declared `installed` count (legal, and the
       utilisation is the base one divided by the count), an unknown `kind`, a
       unit in no stage of the plan, an HVAC grade with no declared rate, an
-      `unserved` name that is no room, and a water use in no stage.
+      `unserved` name that is no room, and a water use in no stage; the supply
+      air of a grade with NO `hvacGrade` quote (refuses by name, the total
+      INCOMPLETE), an `hvacGrade` quote for a grade the building does not
+      have, and one that declares `value` instead of `valuePerSupplyAir`; a
+      `cleaning` entry for a unit in no stage, one with no `effluentFraction`,
+      and one beside a multiproduct plan; and, with no `cleaning` declared, the
+      once-announced "cleaning water is not counted" and a run whose purified-
+      water items carry no cleaning keys.
 
 NOT CHECKED: the vendor numbers (they are the case's, declared assumptions),
 whether the air-change rates are right for a product (a risk assessment), and
@@ -59,6 +86,13 @@ message of the slice for the outputs.
   S4  CleanUtilitiesPass.cpp: fan power without the efficiency
   S5  CleanUtilitiesPass.cpp: peak = the largest single draw (not the sum)
   S6  PlantLayout.cpp: drop the `notPlacedBecause` skip in the unplaced loop
+  S7  DeclaredQuote.cpp (C210 E2): the hvacGrade value = valuePerSupplyAir
+      alone (drop `* hvacQ`, the supply air)
+  S8  BatchPlanPass.cpp (C210 E3): the lot cleans count the campaigns, not
+      the lots (`double(plan.lotsPerYear)` -> `double(t.campaigns)`)
+  S9  BatchPlanPass.cpp (C210 E3): the changeover cleans count the instances
+      of ONE lot (`c.instances` -> `c.instancesPerLot`); the shipped cases run
+      one instance of each so only the parallelClean fixture sees it
 Exit 1 listing failures."""
 import json
 import math
@@ -79,7 +113,8 @@ CASES = [ROOT / "tutorials" / "batch" / "plant" / n
 REL = 1e-6
 
 fails = []
-counts = {"machines": 0, "rooms": 0, "grades": 0, "uses": 0, "refusals": 0}
+counts = {"machines": 0, "rooms": 0, "grades": 0, "uses": 0, "refusals": 0,
+          "hvacCosts": 0, "cleaning": 0}
 
 
 def fail(msg):
@@ -343,11 +378,44 @@ def arm_case(case):
             need("%s %s %s" % (case.name, k, key), items[k][key], w)
     counts["grades"] += len(byg)
 
+    # (b2) HVAC cost ------------------------------------------------------
+    quotes = post["costing"].get("quotes", [])
+    hq = {q["hvacGrade"][0]: q for q in quotes if isinstance(q, dict) and "hvacGrade" in q}
+    for g in byg:
+        if g not in hq:
+            fail("%s: grade %s is in the building and has no hvacGrade quote" % (case.name, g))
+    sumBM = 0.0
+    for g, q in hq.items():
+        Qg = byg[g][2] if g in byg else 0.0
+        if q["basis"][0] != "installed" or q["currency"][0] != "EUR":
+            fail("%s: the gate recomputes installed EUR quotes only" % case.name)
+        cbm = float(q["valuePerSupplyAir"][0]) * Qg
+        sumBM += cbm
+        m = re.search(r'"item": "hvac/grade%s".*?"bareModule": ([0-9.eE+-]+), "totalModule": ([0-9.eE+-]+)' % g, out)
+        if not m:
+            fail("%s: no priced hvac/grade%s item" % (case.name, g))
+            continue
+        need("%s hvac/grade%s C_BM" % (case.name, g), float(m.group(1)), cbm)
+        need("%s hvac/grade%s C_TM" % (case.name, g), float(m.group(2)), 1.18 * cbm)
+        mk = re.search(r'"hvac": \{[^}]*"C_BM_grade%s": ([0-9.eE+-]+)' % g, out)
+        if not mk:
+            fail("%s: no hvac KPI C_BM_grade%s" % (case.name, g))
+        else:
+            need("%s KPI hvac.C_BM_grade%s" % (case.name, g), float(mk.group(1)), cbm)
+        counts["hvacCosts"] += 1
+    mt = re.search(r'"hvac": \{[^}]*"C_BM_total": ([0-9.eE+-]+)', out)
+    if not mt:
+        fail("%s: no hvac KPI C_BM_total" % case.name)
+    else:
+        need("%s KPI hvac.C_BM_total" % case.name, float(mt.group(1)), sumBM)
+
     # (c) water ---------------------------------------------------------
     w = post["cleanUtilities"]["purifiedWater"]
     rhow = val(w["fluid"], "density")
     gantt = [(g["stage"], g["start"], g["end"]) for g in js["batchPlan"]["gantt"]
              if g.get("lot", 0) != 0]
+    changeover_bars = {g["train"]: (g["start"], g["end"]) for g in js["batchPlan"]["gantt"]
+                       if g["stage"] == "changeover"}
     draws, Vlot = [], 0.0
     for u in w["uses"]:
         V = (rates[u["stream"][0]] * lot_hours / rhow if "stream" in u
@@ -360,6 +428,69 @@ def arm_case(case):
             st0 = s0 if u["when"][0] == "start" else s1 - dt
             draws.append((st0, st0 + dt, V / dt))
         counts["uses"] += 1
+    # (c2) the plan's cleaning, recomputed -------------------------------
+    VcleanChg = 0.0
+    cl = plan.get("cleaning", [])
+    trains_js = {t["name"]: t for t in js["batchPlan"]["trains"]}
+    stage_of = {}
+    for st_ in plan["stages"]:
+        for u_ in st_["units"]:
+            stage_of[u_] = st_
+    stage_train = {st_["stage"][0]: st_["train"][0] for st_ in plan["stages"]}
+    lots_ = js["batchPlan"]["summary"]["lotsPerYear"]
+    kc = None
+    mkc = re.search(r'"cleaning": (\{[^}]*\})', out)
+    if mkc:
+        kc = json.loads(mkc.group(1))
+    if cl and kc is None:
+        fail("%s: the plan declares cleaning and kpis.cleaning is not published" % case.name)
+    if not cl and kc is not None:
+        fail("%s: kpis.cleaning is published with no cleaning declared" % case.name)
+    totC = totW = totE = 0.0
+    perTrain = {}
+    for c in cl:
+        unit = c["unit"][0]
+        st_ = stage_of[unit]
+        tn = st_["train"][0]
+        nip = int(float(st_["inPhase"][0])) if "inPhase" in st_ else 1
+        nop = int(float(st_["outOfPhase"][0])) if "outOfPhase" in st_ else 1
+        wl, wc = val(c, "waterPerLotClean"), val(c, "waterPerChangeover")
+        fr = float(c["effluentFraction"][0])
+        camp = trains_js[tn]["campaigns"]
+        nc = min(int(trains_js[tn]["lotsPerCampaign"]), lots_)
+        cleansY = lots_ * nip + camp * nip * nop
+        waterY = lots_ * nip * wl + camp * nip * nop * wc
+        cleansC = nc * nip + nip * nop
+        waterC = nc * nip * wl + nip * nop * wc
+        if kc is not None:
+            need("%s cleaning %s cleans_year" % (case.name, unit), kc[unit + "_cleans_year"], cleansY)
+            need("%s cleaning %s water_m3_year" % (case.name, unit), kc[unit + "_water_m3_year"], waterY)
+            need("%s cleaning %s effluent_m3_year" % (case.name, unit), kc[unit + "_effluent_m3_year"], fr * waterY)
+        totC += cleansY; totW += waterY; totE += fr * waterY
+        a = perTrain.setdefault(tn, [0.0, 0.0, 0.0])
+        a[0] += cleansC; a[1] += waterC; a[2] += fr * waterC
+        # the same cleans in the water ledger
+        Vl = wl * nip
+        if Vl > 0:
+            dt = val(st_, "cleanTime")
+            Vlot += Vl
+            for (stg, s0, s1) in gantt:
+                if stg == st_["stage"][0]:
+                    draws.append((s1 - dt, s1, Vl / dt))
+        if wc > 0:
+            Vc = wc * nip * nop
+            b0, b1 = changeover_bars[tn]
+            draws.append((b0, b1, Vc / (b1 - b0)))
+            VcleanChg += Vc * camp
+        counts["cleaning"] += 1
+    if kc is not None:
+        for tn, a in perTrain.items():
+            need("%s cleaning train %s cleans_campaign" % (case.name, tn), kc["train_%s_cleans_campaign" % tn], a[0])
+            need("%s cleaning train %s water_campaign" % (case.name, tn), kc["train_%s_water_m3_campaign" % tn], a[1])
+            need("%s cleaning train %s effluent_campaign" % (case.name, tn), kc["train_%s_effluent_m3_campaign" % tn], a[2])
+        need("%s cleaning cleans_year" % case.name, kc["cleans_year"], totC)
+        need("%s cleaning water_m3_year" % case.name, kc["water_m3_year"], totW)
+        need("%s cleaning effluent_m3_year" % case.name, kc["effluent_m3_year"], totE)
     peak = max(sum(r for (a0, a1, r) in draws if a0 <= s + 1e-12 < a1 - 1e-12)
                for (s, _e, _r) in draws)
     lots = js["batchPlan"]["summary"]["lotsPerYear"]
@@ -370,7 +501,9 @@ def arm_case(case):
         fail("%s: no purified-water items" % case.name)
     else:
         need("%s V_lot" % case.name, g_it["V_lot"], Vlot)
-        need("%s V_year" % case.name, g_it["V_year"], Vlot * lots)
+        need("%s V_year" % case.name, g_it["V_year"], Vlot * lots + VcleanChg)
+        if not cl and "V_cleaning_lot" in g_it:
+            fail("%s: the generator carries cleaning keys with no cleaning declared" % case.name)
         need("%s draw_peak" % case.name, g_it["draw_peak"], peak)
         need("%s capacity" % case.name, g_it["capacity"], peak * (1 + margin))
         need("%s tank V_R" % case.name, t_it["V_R"], hold * peak)
@@ -432,9 +565,55 @@ def arm_refusals():
             "is in no stage")
         expect_text("noGrade", pd(lambda t: sub(
             t, "{ grade CNC;  perHour 6;", "{ grade A;  perHour 6;")), "declares no rate for that grade")
+        dropq = lambda t: re.sub(r'\{ hvacGrade CNC;.*?"; \}\n', '', t, count=1, flags=re.S)
+        out, err, rc = expect_text("noHvacQuote", pd(dropq),
+                                   "no cost is declared for the supply air of this grade")
+        if "INCOMPLETE" not in out:
+            fail("refusal noHvacQuote: the capital total does not read INCOMPLETE")
+        expect_text("hvacGradeAbsent", pd(lambda t: sub(t, "hvacGrade CNC;", "hvacGrade A;")),
+                    "no supply air was sized for that grade")
+        expect_text("hvacValue", pd(lambda t: sub(t, "valuePerSupplyAir 5;", "valuePerSupplyAir 5;  value 7;")),
+                    "declares `valuePerSupplyAir")
+        # (c2) cleaning refusals, and the absent declaration ------------------
+        dropcl = lambda t: re.sub(r"    cleaning\n    \(.*?\n    \);\n", "", t, count=1, flags=re.S)
+        expect_text("cleaningNoStage", pd(lambda t: sub(t, "{ unit coatingPan;", "{ unit acetoneTank;")),
+                    "is in no stage of the plan")
+        expect_text("cleaningNoFraction", pd(lambda t: sub(t, "effluentFraction 0.95;", "", )),
+                    "`effluentFraction` is not declared")
+        expect_text("cleaningTwice", pd(lambda t: sub(t, "{ unit blender;", "{ unit finalBlender;")),
+                    "declared twice")
+        out, err, rc = fixture(td, case, "noCleaning", pd(dropcl))
+        counts["refusals"] += 1
+        if rc != 0 or "cleaning the machines is not counted" not in out + err:
+            fail("fixture noCleaning: rc %s, or the once-announcement is missing:\n%s" % (rc, (out + err)[-500:]))
+        if '"cleaning": {' in out or "V_cleaning_lot" in out:
+            fail("fixture noCleaning: cleaning keys are published with nothing declared")
+        elif "(the plan's cleaning)" in out:
+            fail("fixture noCleaning: the water table carries cleaning rows")
+        # (c2) parallel instances: a lot is split over N_ip and every installed
+        # instance is cleaned at a changeover -- the shipped cases run ONE of
+        # each, so this fixture is the only arm that can tell N_ip from N_ip N_op.
+        out, err, rc = fixture(td, case, "parallelClean", pd(lambda t: sub(
+            t, "stage  blending;  train solidDose;  type batch;",
+            "stage  blending;  train solidDose;  type batch;  inPhase 2;  outOfPhase 2;")))
+        counts["refusals"] += 1
+        jsx = result_json(out)
+        mk = re.search(r'"cleaning": (\{[^}]*\})', out)
+        if rc != 0 or jsx is None or not mk:
+            fail("fixture parallelClean did not run with cleaning published:\n" + (out + err)[-600:])
+        else:
+            kcx = json.loads(mk.group(1))
+            postx = read_dict(case / "system" / "postDict")
+            cb = next(c for c in postx["batchPlan"]["cleaning"] if c["unit"] == ["blender"])
+            lotsx = jsx["batchPlan"]["summary"]["lotsPerYear"]
+            campx = next(t for t in jsx["batchPlan"]["trains"] if t["name"] == "solidDose")["campaigns"]
+            wl, wc = val(cb, "waterPerLotClean"), val(cb, "waterPerChangeover")
+            need("parallelClean blender cleans_year", kcx["blender_cleans_year"], lotsx * 2 + campx * 4)
+            need("parallelClean blender water_m3_year", kcx["blender_water_m3_year"],
+                 lotsx * 2 * wl + campx * 4 * wc)
         expect_text("badRoom", pd(lambda t: sub(t, "rooms ( hvacPlant", "rooms ( noSuchRoom hvacPlant")),
                     "is not a room of the building")
-        expect_text("badStage", pd(lambda t: sub(t, "stage coating;  drawTime 1 h;", "stage nowhere;  drawTime 1 h;")),
+        expect_text("badStage", pd(lambda t: sub(t, "stage suspensionPreparation;  drawTime 0.5 h;", "stage nowhere;  drawTime 0.5 h;")),
                     "is not a stage of the batch plan")
 
 
@@ -457,16 +636,23 @@ def main():
           "to 1e-6; %d rooms of the two buildings, re-read from layoutDict by an "
           "independent reader, give %d grade items and two totals whose volume, supply "
           "flow, fan power and sensible winter/summer duty agree; the %d water uses give "
-          "the demand per lot, the year, the Gantt peak, the generator and the tank; the "
-          "capital total stays complete, the layout stays unplaced 0 / internal 0 and the "
+          "the demand per lot, the year, the Gantt peak, the generator and the tank; %d "
+          "hvacGrade quote(s) recompute to the published bare-module and total-module "
+          "cost and KPIs (declared cost per m3/h x the supply air recomputed from the rooms); the "
+          "%d plan cleaning entries recompute (cleans, purified water and effluent a year and "
+          "per full campaign of the train, the water ledger's lot demand, year and Gantt "
+          "peak carrying the same cleans); the capital total stays complete, the layout stays unplaced 0 / internal 0 and the "
           "quotes beside the sized machines stay priced; %d refusals/fixtures fire by name "
           "(a missing rating key or source, a machine that does not fit and the declared "
           "second unit that makes it legal, an unknown kind, a unit in no stage, a grade "
           "with no air-change rate, an unserved name that is no room, a water use in no "
-          "stage).  NOT CHECKED: the vendor numbers and air-change rates (the case's own "
+          "stage; a grade with no hvacGrade quote, a quote for an absent grade, "
+          "`value` beside `valuePerSupplyAir`; a cleaning unit in no stage, with no effluent "
+          "fraction, declared twice; the absent declaration announced once and publishing "
+          "nothing).  NOT CHECKED: the vendor numbers and air-change rates (the case's own "
           "assumptions), any machine physics (there is none)."
           % (counts["machines"], counts["rooms"], counts["grades"], counts["uses"],
-             counts["refusals"]))
+             counts["hvacCosts"], counts["cleaning"], counts["refusals"]))
     return 0
 
 

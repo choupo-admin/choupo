@@ -239,6 +239,28 @@ Description
     `lowUtilisation:<stage>` is a stage that limits NO product and whose
     largest utilisation is below the threshold.
 
+    THE CLEANING OF THE MACHINES (2026-11-03, DEV.md 4c C210, E3; single-
+    product plans only).  The plan knows the lots, the campaigns and the
+    units installed, so it can COUNT the cleans; the case declares what one
+    costs:
+
+        cleaning ( { unit granulator;  waterPerLotClean 0.8 m3;
+                     waterPerChangeover 2 m3;  effluentFraction 0.95;
+                     source "...";  reason "..."; } ... );
+
+    A clean follows every lot on each of the N_ip instances the lot is split
+    over, and every installed instance (N_ip N_op) is cleaned at each campaign
+    changeover:  cleans/yr = N N_ip + campaigns N_ip N_op;  water = the cleans
+    x the declared volumes;  effluent = the declared fraction of the water.
+    Published per machine and per year, per FULL campaign of the machine's
+    train, and in total, as `kpis.cleaning` (and a table in the log).  The
+    purified-water ledger of `cleanUtilities` draws these cleans in the Gantt
+    (ONE water ledger).  The effluent is a VOLUME -- its load is not computed.
+    REFUSED: a unit in no stage, declared twice, no `effluentFraction`, water
+    for a lot clean on a stage with `cleanTime 0 h`, water for a changeover
+    clean on a train with `changeover 0 h`, `cleaning` beside `products`.
+    Absent: nothing runs and nothing moves.
+
     WHAT IS NOT DONE, said: the intermediate store is not sized; every lot
     of a product is identical and every campaign repeats its first; the
     campaigns of two products never overlap on a train (the next product
