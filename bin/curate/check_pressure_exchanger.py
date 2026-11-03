@@ -314,6 +314,12 @@ def arm_b(tmp: Path):
                   "componentMolarFlows { water 440 kmol/h; NaCl 4.7 kmol/h; }\nT 400 K;\nP 0.5 bar;\nphase gas;\n"),
                   ["is not a liquid", "checked before any unit runs"]))
     def nonaqueous(d):
+        #  The witness (membrane27) is SEALED since 2026-11-03, and a sealed
+        #  case refuses a component its constant/components does not carry --
+        #  which would fire BEFORE the contract this arm exists to hit.  The
+        #  probe is about the acceptance contract, not the seal, so the staged
+        #  copy reads the live catalogue (no manifest), as it did unsealed.
+        (d / "constant" / "propertyManifest").unlink(missing_ok=True)
         direct_case(d, "componentMolarFlows { benzene 440 kmol/h; NaCl 4.7 kmol/h; }\nT 298.15 K;\nP 2 bar;\n",
                     comps=("benzene", "NaCl"))
         sub_file(d / "constant" / "thermoPhysPropDict", "components       ( water  NaCl );",
