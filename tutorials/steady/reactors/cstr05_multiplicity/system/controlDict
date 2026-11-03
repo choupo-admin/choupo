@@ -11,7 +11,7 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description   "CSTR multiplicity: three steady states -- the reactor prints them all, T_guess picks the branch";
+description   "CSTR steady-state scan: with the corrected (nearly thermoneutral) liquid esterification the reactor has ONE steady state (~300 K); the three-state multiplicity needs an exothermic reaction (replacement case planned)";
 
 verbosity     3;
 

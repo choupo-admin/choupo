@@ -227,11 +227,10 @@ lands on the one root — leaving a single function of temperature,
 removed* balance, and it can have **three** roots.  Choupo does not hide that: it
 **scans** the bracket, prints every steady state it finds, and reports the one nearest
 `T_guess`.  Requires `standardThermochemistry` on every reacting species.  Example:
-`cstr04_adiabatic` (esterification, +104 K; the PFR on the same reaction reaches +105 K,
-the difference being the back-mixing the CSTR pays for) · `cstr05_multiplicity` (three
-steady states — `T_guess` picks the branch, and the shipped case converges the ignited
-one at 405.9 K; KPI `steadyStates`
-counts them) · `cstr06_jacketed` (`Q_kW` equals `UA (T_coolant − T_out)` to the digit).
+`cstr04_adiabatic` (esterification, +5.3 K — nearly thermoneutral after the acetic-acid
+correction; the PFR on the same reaction reaches +6.6 K) · `cstr05_multiplicity` (the scan
+counts the steady states in KPI `steadyStates`; the shipped nearly thermoneutral case has
+ONE, 300.04 K — a case with three needs a genuinely exothermic reaction, planned) · `cstr06_jacketed` (`Q_kW` equals `UA (T_coolant − T_out)` to the digit).
 
 ### `pfr`
 Plug-flow reactor.  Manual RK4 along the axial coordinate; supports reversible
@@ -259,7 +258,7 @@ march is resolved at its own (T, P, z) -- local phase equilibrium along the bed 
 is recovered on the surface the outlet is published and priced on, see `cstr`).
 `T(V)` lands in the axial profile — a hot spot is something you
 *see*.  Requires `standardThermochemistry` on every reacting species (a fictitious toy has no
-elements datum → refused, loudly).  Example: `pfr04_adiabatic` (esterification, +105 K).
+elements datum → refused, loudly).  Example: `pfr04_adiabatic` (esterification, +6.6 K).
 **A packed bed's geometry and pressure drop** (multi-reaction path, opt-in, C66):
 ```
 operation

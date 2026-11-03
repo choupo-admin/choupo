@@ -278,6 +278,44 @@ gas in one compressor; the ethanol-water azeotrope in a recovery column whose
 plant otherwise runs an electrolyte model).  When you do, expect the printed
 `H` to step at the boundary — that step is information, not a bug.
 
+## The liquid rung of an associating vapour (acetic acid)
+
+The formation datum is the ideal-gas monomer; the record's `HvapTb` is the
+calorimetric heat to the real vapour.  For a component whose gas formula has a
+curated `vapourDimerisation { logK25; dH; }` in a `chemistry/` record, the
+liquid is bridged to the datum by the DERIVED heat (calorimetric + the
+dissociation heat of the dimers in the saturated vapour at 298.15 K), read from
+that one record and announced once per run
+(`[thermo] aceticAcid: liquid bridged to the datum's ideal-gas MONOMER ...`).
+A sealed case must carry that chemistry record (`bin/choupo-import` adds it);
+without one, the plain Watson bridge applies.  Do not "fix" the liquid enthalpy
+of such an acid by editing `HvapTb` — the other readers need the measured value.
+
+**The vapour side is the same record's (DEV.md 4c C201 item 1, piece 2).**  On
+an IDEAL-GAS vapour, that component's vapour is the equilibrium monomer + dimer
+mixture -- the chemical theory of vapour imperfection -- in every unit, because
+it lives in the package (`ThermoPackage::Kvec`, `stageK`, `BubblePoint`, the
+flash, `H_real`/`S_real` and so `H_stream_formation`): the fugacity is the
+MONOMER partial pressure, the liquid is referenced to the monomer saturation
+pressure (solved from the same K and the apparent Psat, so pure acetic acid
+still boils at its Antoine root), and the vapour enthalpy carries the dimer
+heat (`h_dim = 2 h_mono + dH`).  Announced once per run (`[thermo] vapour
+association of aceticAcid priced ...`).  The reactive flash no longer adds the
+dimer heat to its duty: it is in the vapour enthalpy, once.  An EoS vapour
+(SRK, PR, phi-phi) keeps its EoS and ANNOUNCES that the association is not
+priced; the sensible-datum vapour (`Hvapour`, no pressure) keeps the
+calorimetric latent heat and says so.  Not reached, and named: the Gibbs
+reactors' own vapour chemical potentials (`gibbsReactor`, `equilibriumReactor`
+call `eos().phi` directly) and the named-phase `VaporPhase::fEffective`
+(three-phase answers) -- they see a monomer ideal gas.  What a case author
+should expect: the latent heat the package prices for pure acetic acid at its
+boiling point is the record's measured 24.39 kJ/mol BY CONSTRUCTION -- the
+liquid is bridged to the datum's monomer by putting HvapTb on the monomer
+basis at Tb and carrying it to 298.15 K by Kirchhoff on the record's own
+Cp's, the arithmetic the package undoes (DEV.md 4c C201 item 3; the record
+is docs/design/one-record-two-vapours-acetic-acid.md section 7, and the
+Theory Guide's paragraph "Which vapour the latent heat speaks").
+
 ## Balance diagnostics (2607)
 
 Three levels, engine-owned: total MASS, per-ELEMENT atoms (the true

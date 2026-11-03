@@ -18,15 +18,20 @@ resolve as ordinary `unit.kpi` responses. A sweep can finally *see cost*:
 
 | V_R [m³] | IRR | NPV [EUR] | disc. payback [yr] | FCI [EUR] |
 |---|---|---|---|---|
-| 4  | 47.1% | 890 924 | 2.46 | 388 673 |
-| 6  | 37.7% | 708 069 | 3.10 | 426 108 |
-| 8  | 31.3% | 575 086 | 3.76 | 460 663 |
-| 10 | 26.5% | 468 186 | 4.45 | 493 402 |
-| 12 | 22.8% | 376 792 | 5.17 | 524 867 |
+| 4  | undefined | −991.2 M | none | 376 094 |
+| 6  | undefined | −980.3 M | none | 413 528 |
+| 8  | undefined | −972.1 M | none | 448 084 |
+| 10 | undefined | −965.8 M | none | 480 822 |
+| 12 | undefined | −960.8 M | none | 512 288 |
 
-A bigger reactor raises conversion (more product, more revenue) but raises
-CAPEX and feed throughput — the IRR falls monotonically over this range, a
-trade-off invisible from a single CAPEX number.
+On this case's declared price basis every point LOSES money: the yearly
+cash flow is negative, so there is no rate at which the NPV is zero (the
+IRR is published as `null`, never as a number) and no payback.  The sweep
+still shows the trade-off: a bigger reactor raises conversion and CAPEX
+together, and over this range the NPV becomes less negative as the reactor
+grows.  (This table was regenerated 2026-11-03 from the run; the one it
+replaced showed a profitable plant that the golden had stopped describing
+before then.)
 
 > The range floors at 4 m³ on purpose: below ~3 m³ the lower conversion
 > drops the mixture bubble point and the fixed-duty heater would cross the

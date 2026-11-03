@@ -722,12 +722,136 @@ bool ThermoPackage::isHenrySolute(std::size_t i) const
         && HenrysLawRegistry::has(components_[i].name(), solventName_);
 }
 
+// ---- VAPOUR ASSOCIATION (DEV.md 4c C201 item 1, piece 2) ----------------
+//
+//  Which component associates is resolved ONCE per package, from the
+//  component's own formula against the chemistry/ records the case's
+//  resolver sees (`vapourAssociation::find`, the ONE parser -- the same call
+//  `Component::datumBridge298` makes, so the liquid bridge and the vapour can
+//  never disagree about whether a substance dimerises).
+std::size_t ThermoPackage::associatingComponent() const
+{
+    if (!associationResolved_)
+    {
+        associationResolved_ = true;
+        associationIndex_    = n();
+        for (std::size_t i = 0; i < n(); ++i)
+        {
+            const std::string& f = components_[i].formula();
+            if (f.empty() || !components_[i].hasVaporPressure()) continue;
+            if (auto d = vapourAssociation::find(f))
+            {
+                if (associationIndex_ != n())
+                    throw std::runtime_error("ThermoPackage: two components"
+                        " carry a curated vapour dimerisation ('"
+                        + components_[associationIndex_].name() + "' and '"
+                        + components_[i].name() + "').  The associated"
+                        " ideal-gas vapour is built for ONE (cross-"
+                        "association is a later, deliberate slice).");
+                associationIndex_ = i;
+                associationDim_   = *d;
+            }
+        }
+    }
+    return associationIndex_;
+}
+
+bool ThermoPackage::vapourAssociationPriced() const
+{
+    const std::size_t a = associatingComponent();
+    if (a >= n() || !eos_) return false;
+    const std::string& nm = components_[a].name();
+    if (vleWorld_ == "phiPhi" || !eos_->isIdeal())
+    {
+        //  An EoS vapour keeps its EoS: the association is NOT added on top
+        //  of a model that was never fitted with it (no silent double
+        //  treatment) -- and that is said, once per run.
+        const std::string key = "vapourAssociationNotPriced:" + nm;
+        if (!AdvisoryLog::instance().passHas(key)
+            && AdvisoryLog::instance().addAnnouncedOnce(key, "thermo",
+                   "warning", "vapour association " + nm,
+                   "the vapour of '" + nm + "' associates (" +
+                   associationDim_.record + ") but this package's vapour is "
+                   + eos_->modelName() + ", which keeps its own fugacity and"
+                   " enthalpy: the dimerisation is NOT priced in this vapour"
+                   " (the liquid stays bridged to the monomer datum)."))
+            std::cerr << "[thermo] vapour association of " << nm
+                      << " NOT priced: the vapour model is "
+                      << eos_->modelName() << " (an equation of state keeps"
+                         " its own fugacity and enthalpy)\n";
+        return false;
+    }
+    const std::string key = "vapourAssociationPriced:" + nm;
+    if (!AdvisoryLog::instance().passHas(key)
+        && AdvisoryLog::instance().addAnnouncedOnce(key, "thermo", "info",
+               "vapour association " + nm,
+               "ideal-gas vapour of '" + nm + "' is the equilibrium monomer +"
+               " dimer mixture (logK25 = "
+               + std::to_string(associationDim_.logK25) + " atm^-1, dH = "
+               + std::to_string(associationDim_.dH / 1000.0)
+               + " kJ/mol dimer, " + associationDim_.record + ", source: "
+               + associationDim_.source + "): fugacity = the monomer partial"
+               " pressure, liquid referenced to the monomer saturation"
+               " pressure, vapour enthalpy carries the association heat."))
+        std::cerr << "[thermo] vapour association of " << nm
+                  << " priced in the ideal-gas vapour (chemical theory:"
+                     " monomer + dimer at equilibrium; "
+                  << associationDim_.record << ")\n";
+    return true;
+}
+
+scalar ThermoPackage::PsatLiquidReference(std::size_t i, scalar T) const
+{
+    const scalar ps = Psat(i, T);
+    if (i != associatingComponent() || !vapourAssociationPriced()
+        || !(ps > 0.0))
+        return ps;
+    constexpr scalar atm = 101325.0;
+    return vapourAssociation::saturated(associationDim_, T, ps / atm)
+               .pMonoAtm * atm;
+}
+
+vapourAssociation::AssociationResidual
+ThermoPackage::vapourAssociationResidual(scalar T, scalar P,
+                                         const sVector& y) const
+{
+    vapourAssociation::AssociationResidual r;
+    const std::size_t a = associatingComponent();
+    if (a >= n() || !vapourAssociationPriced()) return r;
+    scalar s = 0.0;
+    for (std::size_t i = 0; i < n() && i < y.size(); ++i)
+        if (y[i] > 0.0) s += y[i];
+    if (!(s > 0.0)) return r;
+    const scalar yA = (a < y.size() && y[a] > 0.0) ? y[a] / s : 0.0;
+    return vapourAssociation::idealGasResidual(associationDim_, T, P, yA);
+}
+
+sVector ThermoPackage::vapourAssociationLnPhi(scalar T, scalar P,
+                                              const sVector& y) const
+{
+    sVector lp(n(), 0.0);
+    const std::size_t a = associatingComponent();
+    if (a >= n() || !vapourAssociationPriced()) return lp;
+    const auto r = vapourAssociationResidual(T, P, y);
+    for (std::size_t i = 0; i < n(); ++i)
+        lp[i] = (i == a) ? r.lnPhiA : r.lnPhiOther;
+    return lp;
+}
+
+bool ThermoPackage::vapourFugacityDependsOnComposition() const
+{
+    return (eos_ && !eos_->isIdeal()) || vapourAssociationPriced();
+}
+
 scalar ThermoPackage::K(std::size_t i, scalar T, scalar P,
                         const sVector& x, const sVector& y) const
 {
     auto gam = activity_->gamma(T, x);
     auto phi = eos_     ->phi  (T, P, y);
-    return gam[i] * Psat(i, T) / (phi[i] * P);
+    //  The associated ideal-gas vapour (one home: PsatLiquidReference +
+    //  vapourAssociationLnPhi); byte-identical when nothing associates.
+    const scalar lnPhiA = vapourAssociationLnPhi(T, P, y)[i];
+    return gam[i] * PsatLiquidReference(i, T) / (phi[i] * std::exp(lnPhiA) * P);
 }
 
 sVector ThermoPackage::Kvec(scalar T, scalar P,
@@ -827,6 +951,29 @@ sVector ThermoPackage::Kvec(scalar T, scalar P,
         }
 
         K[i] = gam[i] * Psat(i, T) / (phi[i] * P);
+    }
+    //  THE ASSOCIATED IDEAL-GAS VAPOUR (DEV.md 4c C201 item 1, piece 2):
+    //  K_i = gamma_i Psat_ref,i / (phi_i phi_assoc,i P), with the associating
+    //  component referenced to its MONOMER saturation pressure.  Applied to
+    //  every volatile (the dimer changes the true mole count every partial
+    //  pressure is taken over); a Henry solute takes the vapour factor only,
+    //  its liquid side is the Henry constant.  Skipped entirely -- not
+    //  multiplied by 1 -- when nothing associates, so every other package is
+    //  byte-identical.
+    if (associatingComponent() < n() && vapourAssociationPriced())
+    {
+        const std::size_t a = associatingComponent();
+        const sVector lp = vapourAssociationLnPhi(T, P, y);
+        for (std::size_t i = 0; i < n(); ++i)
+        {
+            if (K[i] == 0.0) continue;
+            K[i] /= std::exp(lp[i]);
+            if (i == a && !isHenrySolute(i))
+            {
+                const scalar ps = Psat(i, T);
+                if (ps > 0.0) K[i] *= PsatLiquidReference(i, T) / ps;
+            }
+        }
     }
     return K;
 }
@@ -1079,6 +1226,29 @@ scalar ThermoPackage::Hvapour(scalar T, const sVector& y, scalar Tref) const
             return m.h_molar(T, ps * (1.0 - 1.0e-9));
         }
 
+    //  THE SENSIBLE DATUM HAS NO PRESSURE, so it cannot price the dimer split
+    //  of an associated vapour (DEV.md 4c C201 item 1): its latent heat is
+    //  the calorimetric one, to the real vapour at saturation, and that is
+    //  what this surface keeps.  Said once, because the formation surface
+    //  (H_real) does price it and the two then describe different vapours.
+    {
+        const std::size_t a = associatingComponent();
+        if (a < n() && a < y.size() && y[a] > 0.0 && vapourAssociationPriced())
+        {
+            const std::string nm = components_[a].name();
+            const std::string key = "vapourAssociationSensible:" + nm;
+            if (!AdvisoryLog::instance().passHas(key)
+                && AdvisoryLog::instance().addAnnouncedOnce(key, "thermo",
+                       "warning", "vapour association " + nm,
+                       "the sensible-datum vapour enthalpy (Hvapour, no"
+                       " pressure) cannot price the dimer split of '" + nm
+                       + "': it keeps the calorimetric latent heat; the"
+                       " formation surface (H_real) prices the association."))
+                std::cerr << "[thermo] " << nm << ": sensible-datum vapour"
+                             " enthalpy keeps the calorimetric latent heat"
+                             " (no pressure to split the dimer at)\n";
+        }
+    }
     scalar h = 0.0;
     for (std::size_t i = 0; i < n(); ++i)
     {
@@ -1197,6 +1367,26 @@ scalar ThermoPackage::Cp_ig(scalar T, const sVector& y) const
     return cp;
 }
 
+//  The association residual of the ideal-gas vapour, scaled by the amount
+//  the caller handed in (H_stream_formation passes the vapour half with its
+//  nonvolatile share zeroed, so sum(y) need not be one).  Exactly 0 -- not a
+//  computed zero -- when nothing associates.
+scalar ThermoPackage::associationResidualTotal(scalar T, scalar P_Pa,
+                                               const sVector& y,
+                                               bool enthalpy) const
+{
+    const ThermoPackage& tp = *this;
+    const std::size_t a = tp.associatingComponent();
+    if (a >= tp.n() || a >= y.size() || !(y[a] > 0.0)
+        || !tp.vapourAssociationPriced())
+        return 0.0;
+    scalar s = 0.0;
+    for (std::size_t i = 0; i < tp.n() && i < y.size(); ++i)
+        if (y[i] > 0.0) s += y[i];
+    const auto r = tp.vapourAssociationResidual(T, P_Pa, y);
+    return s * (enthalpy ? r.H : r.S);
+}
+
 scalar ThermoPackage::H_real(scalar T, scalar P_Pa, const sVector& y) const
 {
     // Pure-fluid override (IF97 et al.): a phase effectively pure in a flagged
@@ -1213,7 +1403,8 @@ scalar ThermoPackage::H_real(scalar T, scalar P_Pa, const sVector& y) const
             return pureFluid_.at(*i)->h_molar(T, P_Pa);
 
     return H_ig(T, y)
-         + (eos_ ? eos_->H_residual(T, P_Pa, y) : 0.0);
+         + (eos_ ? eos_->H_residual(T, P_Pa, y) : 0.0)
+         + associationResidualTotal(T, P_Pa, y, /*enthalpy*/ true);
 }
 
 // Default-solvent resolver for the aqueous-solution tier.  A DISSOLVED
@@ -1657,7 +1848,8 @@ scalar ThermoPackage::S_real(scalar T, scalar P_Pa, const sVector& y) const
             return pureFluid_.at(*i)->s_molar(T, P_Pa);
 
     return S_ig(T, P_Pa, y)
-         + (eos_ ? eos_->S_residual(T, P_Pa, y) : 0.0);
+         + (eos_ ? eos_->S_residual(T, P_Pa, y) : 0.0)
+         + associationResidualTotal(T, P_Pa, y, /*enthalpy*/ false);
 }
 
 scalar ThermoPackage::viscosityGas(scalar T, const sVector& y) const

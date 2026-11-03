@@ -39,6 +39,16 @@ Description
         HV T P z...       H_stream_formation(T, P, 1, z)   [J/mol]  a vapour
         K  T P x... y...  Kvec(T, P, x, y)                 the K-values at
                                                              the PUBLISHED y
+        HS T P z... pinned vf
+                          the molar enthalpy [J/mol] of a (T, P, z) priced AS
+                          THE STREAM IT IS, by the rule the energy report
+                          applies to every stream (2026-11-03): resolve the
+                          state (`flashState::twoPhaseSplit`, a pinned stream
+                          only where its pin is a saturation quality), price
+                          the equilibrium phases (`hOfState`), else the state
+                          the stream carries (`H_stream_formation` at `vf`)
+                          -- `flashState::priceState`, the one home, which
+                          `reporting/BalanceMath.H::streamH_elements` mirrors
         SAT T P z...      bubble and dew temperatures of z at P, from the
                           package-level routines BubblePoint::compute and
                           DewPoint::compute (not the column's own helper)
@@ -78,6 +88,7 @@ Description
 #include "thermo/transport/ThermalConductivityModel.H"
 #include "thermo/transport/TransportModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
 #include "unitOperations/saturation/BubblePoint.H"
 #include "unitOperations/saturation/DewPoint.H"
 
@@ -164,7 +175,8 @@ int main(int argc, char** argv)
             std::string op;
             scalar T = 0.0, P = 0.0;
             ls >> op >> T >> P;
-            const std::size_t m = (op == "K") ? 2 * n : n;
+            const std::size_t m = (op == "K") ? 2 * n
+                                : (op == "HS") ? n + 2 : n;
             sVector v(m, 0.0);
             for (std::size_t k = 0; k < m; ++k) ls >> v[k];
             try
@@ -176,6 +188,15 @@ int main(int argc, char** argv)
                     //  not land on a line that already says OK.
                     const scalar h = thermo.H_stream_formation(
                         T, P, op == "HV" ? 1.0 : 0.0, z);
+                    out << "OK " << h << "\n";
+                }
+                else if (op == "HS")
+                {
+                    const sVector z(v.begin(), v.begin() + n);
+                    const bool pinned = v[n] != 0.0;
+                    const scalar h = flashState::priceState(
+                        T, P, z, 1.0, pinned, v[n + 1], thermo,
+                        "columnThermoProbe", nullptr);
                     out << "OK " << h << "\n";
                 }
                 else if (op == "K")

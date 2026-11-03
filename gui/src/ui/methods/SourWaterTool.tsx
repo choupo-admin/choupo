@@ -88,7 +88,7 @@ export const SOURWATER_STEPS = [
     assumes: "That the case DECLARES which networks exist.  A component with "
       + "no declared bridge is refused rather than guessed at by name — a "
       + "species called `S` is not automatically sulfide.",
-    cites: "SpeciationSolver.cpp:681-692",
+    cites: "SpeciationSolver.cpp:685-696",
   },
   {
     n: 2,
@@ -120,7 +120,7 @@ export const SOURWATER_STEPS = [
       + "reported as not activated, with the master species that was "
       + "missing — the closure shows its work rather than assembling itself "
       + "silently.",
-    cites: "SpeciationSolver.cpp:704-709, SpeciationSolver.cpp:1692-1699",
+    cites: "SpeciationSolver.cpp:708-713, SpeciationSolver.cpp:1696-1703",
   },
   {
     n: 3,
@@ -147,7 +147,7 @@ export const SOURWATER_STEPS = [
     assumes: "That equilibrium holds on each stage.  This is a rigorous MESH "
       + "column, not a shortcut — but it is still an EQUILIBRIUM column, and "
       + "no tray efficiency is applied anywhere.",
-    cites: "ThermoPackage.cpp:811-815",
+    cites: "ThermoPackage.cpp:935-939",
   },
   {
     n: 4,

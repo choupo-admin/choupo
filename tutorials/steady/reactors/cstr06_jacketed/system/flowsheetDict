@@ -15,19 +15,23 @@
       H_out(T) = H_in + UA (T_coolant - T_out)
 
   There is still NO dH_rxn source: on the elements datum the heat of reaction is
-  already inside H.  What the jacket does is remove some of it, so the outlet
-  settles BELOW the adiabatic 454.2 K of cstr04.
+  already inside H.  What the jacket does is remove heat, so the outlet settles
+  at 338.8 K -- BELOW the 350 K feed, because the reaction (dH_rxn about
+  -2.7 kJ/mol after the acetic-acid correction, docs/design/acetic-acid-latent-heat-closure.md)
+  releases far less heat than the 25 W/K jacket takes from a stream 30 K above
+  the coolant.  (Before the correction the reaction heated the contents to
+  394 K against a 454 K adiabatic limit; that was the wrong exotherm.)
 
   Check it by hand from the printed KPIs:  Q_kW should equal UA (T_c - T_out),
-  and it is NEGATIVE -- heat leaves the reactor.  Cool harder (raise UA, lower
-  T_coolant) and the outlet slides down the generation curve; cool too hard and
-  the reactor extinguishes.  Nothing here is switched on by a flag; it is the
-  same one equation in T, with one more term.
+  and it is NEGATIVE -- heat leaves the reactor (-0.470 kW).  The scan finds
+  ONE steady state.  Nothing here is switched on by a flag; it is the same one
+  equation in T, with one more term.
 
-  A liquid-phase esterification at 394-454 K must be pressurised to stay liquid:
-  at 1 atm this product boils inside the reactor (the balance stops near 362 K,
-  part vapour), so the feed is declared at 15 bar, where the product holds the
-  liquid.
+  The original teaching point of this case (a jacket pulling a hot, ignited
+  reactor down the generation curve, and extinction when it cools too hard)
+  needs a genuinely exothermic reaction; a replacement case on such a reaction
+  is planned.  No parameter was changed.  The feed pressure (15 bar) is a
+  leftover of the old design; the outlet is liquid at 1 atm as well.
 \*---------------------------------------------------------------------------*/
 
 units

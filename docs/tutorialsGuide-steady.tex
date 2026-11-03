@@ -1091,16 +1091,16 @@ Both feeds are FLOWSHEET STREAMS (`inputs ( feed acidFeed )`) -- so the plant-bo
 \goldrow{stream}{feed}{F}{8.94444444444e-06}
 \goldrow{kpi}{rdColumn}{B}{9.13888888889e-06}
 \goldrow{kpi}{rdColumn}{D}{8.36111111111e-06}
-\goldrow{kpi}{rdColumn}{Q\_condenser\_kW}{-0.803105498577}
-\goldrow{kpi}{rdColumn}{Q\_reboiler\_kW}{0.639899841099}
+\goldrow{kpi}{rdColumn}{Q\_condenser\_kW}{-0.803941040437}
+\goldrow{kpi}{rdColumn}{Q\_reboiler\_kW}{0.834961079318}
 \goldrow{kpi}{rdColumn}{R}{2.1}
-\goldrow{kpi}{rdColumn}{T\_bottom}{363.229492539}
-\goldrow{kpi}{rdColumn}{T\_top}{330.062558898}
-\goldrow{kpi}{rdColumn}{conversion}{0.958132888349}
+\goldrow{kpi}{rdColumn}{T\_bottom}{363.715464674}
+\goldrow{kpi}{rdColumn}{T\_top}{330.01210931}
+\goldrow{kpi}{rdColumn}{conversion}{0.955249509215}
 \goldrow{kpi}{rdColumn}{feedStage}{20}
 \goldrow{kpi}{rdColumn}{nFeeds}{2}
 \goldrow{kpi}{rdColumn}{nSideDraws}{0}
-\goldmore{21}
+\goldmore{22}
 \end{tutgolden}
 
 \clearpage
@@ -2558,15 +2558,15 @@ Prices (product/raw-material/labour) live in constant/economics, each dated and 
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.138888888889}
 \goldrow{stream}{hotStream}{F}{0.138888888889}
-\goldrow{stream}{liqProd}{F}{0.126899267211}
+\goldrow{stream}{liqProd}{F}{0.129188220152}
 \goldrow{stream}{reactorOut}{F}{0.138888888889}
-\goldrow{stream}{vapProd}{F}{0.011989621678}
-\goldrow{kpi}{economics}{COM\_d}{221256824.865}
+\goldrow{stream}{vapProd}{F}{0.00970066873646}
+\goldrow{kpi}{economics}{COM\_d}{221216158.676}
 \goldrow{kpi}{economics}{FCI}{395275.413492}
-\goldrow{kpi}{economics}{NPV}{-964600319.112}
+\goldrow{kpi}{economics}{NPV}{-985322163.869}
 \goldrow{kpi}{economics}{TCI}{454566.725516}
 \goldrow{kpi}{economics}{WC}{59291.3120238}
-\goldrow{kpi}{economics}{revenue}{22620564.309}
+\goldrow{kpi}{economics}{revenue}{18311056.5908}
 \goldrow{kpi}{heater}{F}{0.138888888889}
 \goldrow{kpi}{heater}{P}{101325}
 \goldrow{kpi}{heater}{Q}{300000}
@@ -2600,20 +2600,20 @@ Prices (product/raw-material/labour) live in constant/economics, each dated and 
 \end{tutnarrative}
 \tutreadme{The same esterification plant as economics01, but driven by a sensitivity sweep over the reactor volume that reads economic responses at every point:}
 \tutreadme{The SweepDriver now runs the full post-processing chain (sizing $\to$ costing $\to$ economics) on each converged point, so the headline economic scalars the EconomicsPass publishes into result.kpis["economics"] resolve as ordinary unit.kpi responses. A sweep can finally $\ast$see cost$\ast$:}
-\tutreadme{A bigger reactor raises conversion (more product, more revenue) but raises CAPEX and feed throughput --- the IRR falls monotonically over this range, a trade-off invisible from a single CAPEX number.}
+\tutreadme{On this case's declared price basis every point LOSES money: the yearly cash flow is negative, so there is no rate at which the NPV is zero (the IRR is published as null, never as a number) and no payback. The sweep still shows the trade-off: a bigger reactor raises conversion and CAPEX together, and over this range the NPV becomes less negative as the reactor grows. (This table was regenerated 2026-11-03 from the run; the one it replaced showed a profitable plant that the golden had stopped describing before then.)}
 \tutreadme{> The range floors at 4 m$^3$ on purpose: below \textasciitilde{}3 m$^3$ the lower conversion > drops the mixture bubble point and the fixed-duty heater would cross the > saturation dome (a heater is sensible-only) --- the deliberate validity edge.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.138888888889}
 \goldrow{stream}{hotStream}{F}{0.138888888889}
-\goldrow{stream}{liqProd}{F}{0.125841050463}
+\goldrow{stream}{liqProd}{F}{0.127980647247}
 \goldrow{stream}{reactorOut}{F}{0.138888888889}
-\goldrow{stream}{vapProd}{F}{0.013047838426}
-\goldrow{kpi}{economics}{COM\_d}{221281761.453}
+\goldrow{stream}{vapProd}{F}{0.010908241642}
+\goldrow{kpi}{economics}{COM\_d}{221239267.448}
 \goldrow{kpi}{economics}{FCI}{448083.733462}
-\goldrow{kpi}{economics}{NPV}{-952468385.29}
+\goldrow{kpi}{economics}{NPV}{-972143541.209}
 \goldrow{kpi}{economics}{TCI}{515296.293481}
 \goldrow{kpi}{economics}{WC}{67212.5600193}
-\goldrow{kpi}{economics}{revenue}{25155181.8032}
+\goldrow{kpi}{economics}{revenue}{21059471.3188}
 \goldrow{kpi}{heater}{F}{0.138888888889}
 \goldrow{kpi}{heater}{P}{101325}
 \goldrow{kpi}{heater}{Q}{300000}
@@ -4449,8 +4449,8 @@ On the NRTL backbone the feed's bubble pressure is \textasciitilde{}1.1 atm (gam
 \goldrow{kpi}{flash01}{F\_beta}{0.0160836771137}
 \goldrow{kpi}{flash01}{F\_in}{0.0277777777778}
 \goldrow{kpi}{flash01}{P}{65861.25}
-\goldrow{kpi}{flash01}{Q}{667947.647281}
-\goldrow{kpi}{flash01}{Q\_kW}{667.947647281}
+\goldrow{kpi}{flash01}{Q}{671656.06605}
+\goldrow{kpi}{flash01}{Q\_kW}{671.65606605}
 \goldrow{kpi}{flash01}{T}{358.15}
 \goldrow{kpi}{flash01}{V\_over\_F}{0.579012376094}
 \goldrow{kpi}{flash01}{dimer\_share}{0.0870838206127}
@@ -4558,8 +4558,8 @@ KPIs: V/F, pH, p\_benzene\_atm, p\_ethanol\_atm, p\_eq\_sum\_atm (= P, two-phase
 \goldrow{kpi}{flash01}{F\_beta}{0.007927838208}
 \goldrow{kpi}{flash01}{F\_in}{0.0244722222222}
 \goldrow{kpi}{flash01}{P}{35463.75}
-\goldrow{kpi}{flash01}{Q}{84.7004372905}
-\goldrow{kpi}{flash01}{Q\_kW}{0.0847004372905}
+\goldrow{kpi}{flash01}{Q}{86.8677617756}
+\goldrow{kpi}{flash01}{Q\_kW}{0.0868677617756}
 \goldrow{kpi}{flash01}{T}{313.15}
 \goldrow{kpi}{flash01}{V\_over\_F}{0.323952526093}
 \goldrow{kpi}{flash01}{dimer\_share}{0.0232924752345}
@@ -5511,18 +5511,18 @@ Reaction kinetics are in constant/reactions Solver defaults are in system/solver
 
 \end{tutnarrative}
 \tutreadme{A 1 kmol/h equimolar ethanol / acetic-acid feed enters a 5-litre CSTR at 350 K; the reactor outlet goes straight into a flash held at 365 K and 1 bar. Two units, three streams, and one idea: a flowsheet is a graph of streams, and information follows them.}
-\tutreadme{The golden: conversion of ethanol X = 0.5259 at a residence time of 310.3 s (Damk?hler number 1.109, k = 3.575e-3 s?$^1$ from the Arrhenius law), the reactor removing 1.88 kW; the separator flashes 45.2 \% of what arrives (0.452 kmol/h vapour, 0.548 kmol/h liquid) with K\_ethanol 1.696, K\_ethylAcetate 1.608, K\_aceticAcid 0.428, K\_water 0.767, taking 4.98 kW to hold 365 K.}
-\tutreadme{1. The topology is the whole of flowsheetDict. Two units, each naming its in and outputs; the stream reactorOut is produced by one and consumed by the other, and that is what makes it internal. No stream values live there --- they live in 0/, one file per stream. 2. The reaction is a named record, constant/reactions (esterification\_etac): stoichiometry, which reactant is limiting, and an Arrhenius A/Ea. Its own header says the kinetics are ILLUSTRATIVE pseudo-first-order --- read that before quoting a rate. 3. Units run in declared order, reactor first. Reverse the two entries and the engine refuses, naming the stream that would be read before it was produced. 4. Every balance is drawn from the engine, by default. The Reports tab carries the mass closure and the plant-boundary first law (Q\_boundary 3.1026 kW --- the NET heat crossing the boundary, not either unit's duty); the flash's 4.98 kW appears there under Utilities, as the steamLP that serves it. The per-element closure is drawn in the Plots tab, not in Reports. The reactor's -1.88 kW is in neither: it is a per-unit duty, and the engine writes it to reports/balances/energyBalance\_byUnit.csv, which the CLI leaves in the case directory. Three numbers, three surfaces --- worth knowing before you go looking for one in the wrong place.}
+\tutreadme{The golden: conversion of ethanol X = 0.5259 at a residence time of 310.3 s (Damk?hler number 1.109, k = 3.575e-3 s?$^1$ from the Arrhenius law), the reactor removing a small 0.154 kW (the liquid esterification is only mildly exothermic); the separator flashes 23.8 \% of what arrives (0.238 kmol/h vapour, 0.762 kmol/h liquid) with K\_ethanol 1.660, K\_ethylAcetate 1.573, K\_aceticAcid 0.302, K\_water 0.751, taking 2.93 kW to hold 365 K. Acetic acid's K is the low one: its liquid is referenced to the monomer's saturation pressure, because its vapour associates into dimers (the theory guide's paragraph $\ast$Which vapour the latent heat speaks$\ast$).}
+\tutreadme{1. The topology is the whole of flowsheetDict. Two units, each naming its in and outputs; the stream reactorOut is produced by one and consumed by the other, and that is what makes it internal. No stream values live there --- they live in 0/, one file per stream. 2. The reaction is a named record, constant/reactions (esterification\_etac): stoichiometry, which reactant is limiting, and an Arrhenius A/Ea. Its own header says the kinetics are ILLUSTRATIVE pseudo-first-order --- read that before quoting a rate. 3. Units run in declared order, reactor first. Reverse the two entries and the engine refuses, naming the stream that would be read before it was produced. 4. Every balance is drawn from the engine, by default. The Reports tab carries the mass closure and the plant-boundary first law (Q\_boundary 2.7793 kW --- the NET heat crossing the boundary, not either unit's duty); the flash's 2.93 kW appears there under Utilities, as the steamLP that serves it. The per-element closure is drawn in the Plots tab, not in Reports. The reactor's -0.154 kW is in neither: it is a per-unit duty, and the engine writes it to reports/balances/energyBalance\_byUnit.csv, which the CLI leaves in the case directory. Three numbers, three surfaces --- worth knowing before you go looking for one in the wrong place.}
 \tutreadme{Double the reactor volume (operation \{ V\_R 0.010; \}): conversion rises, the flash feed changes, and the separator's duty follows --- one edit, three consequences, all visible in Streams. Then open process03\_recycle, where a stream loops back and the solver has to iterate the whole graph.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.000277777777778}
-\goldrow{stream}{liqProd}{F}{0.000152263837157}
+\goldrow{stream}{liqProd}{F}{0.000211795205482}
 \goldrow{stream}{reactorOut}{F}{0.000277777777778}
-\goldrow{stream}{vapProd}{F}{0.00012551394062}
+\goldrow{stream}{vapProd}{F}{6.59825722955e-05}
 \goldrow{kpi}{reactor}{Da\_kTau}{1.10929132154}
 \goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
 \goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
-\goldrow{kpi}{reactor}{Q\_kW}{-1.87948262728}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.153690679658}
 \goldrow{kpi}{reactor}{T}{350}
 \goldrow{kpi}{reactor}{V\_R}{0.005}
 \goldrow{kpi}{reactor}{X\_limiting}{0.52590711876}
@@ -5558,18 +5558,18 @@ The flash inherits T from its input stream (no explicit operation.T) --- propaga
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.000277777777778}
 \goldrow{stream}{hotStream}{F}{0.000277777777778}
-\goldrow{stream}{liqProd}{F}{0.000262168078511}
+\goldrow{stream}{liqProd}{F}{0.000251250707192}
 \goldrow{stream}{reactorOut}{F}{0.000277777777778}
-\goldrow{stream}{vapProd}{F}{1.56096992667e-05}
+\goldrow{stream}{vapProd}{F}{2.65270705859e-05}
 \goldrow{kpi}{heater}{F}{0.000277777777778}
 \goldrow{kpi}{heater}{P}{101325}
-\goldrow{kpi}{heater}{Q}{400}
-\goldrow{kpi}{heater}{Q\_kW}{0.4}
-\goldrow{kpi}{heater}{Q\_per\_mol}{1440}
+\goldrow{kpi}{heater}{Q}{1000}
+\goldrow{kpi}{heater}{Q\_kW}{1}
+\goldrow{kpi}{heater}{Q\_per\_mol}{3600}
 \goldrow{kpi}{heater}{T\_in}{350}
-\goldrow{kpi}{heater}{T\_out}{361.879907822}
-\goldrow{kpi}{heater}{dT}{11.8799078219}
-\goldrow{kpi}{heater}{vf\_out}{0.00022200059932}
+\goldrow{kpi}{heater}{T\_out}{363.644080563}
+\goldrow{kpi}{heater}{dT}{13.6440805633}
+\goldrow{kpi}{heater}{vf\_out}{0.0529680604206}
 \goldmore{44}
 \end{tutgolden}
 
@@ -5597,25 +5597,25 @@ The flash inherits T from its input stream (no explicit operation.T) --- propaga
 
 \end{tutnarrative}
 \tutreadme{process01 with a heater between the reactor and the flash, and the two reports a project needs most: equipment sizing and Turton costing. The chain runs from system/postDict; reports \{ design \{\} economics \{\} \} in the controlDict $\ast$serialise$\ast$ what it produced into reports/design/sizing.csv and reports/economics/costs.csv.}
-\tutreadme{The golden (process side): heater 0.4 kW $\to$ 361.88 K; reactor X = 0.526; flash at 361.88 K with V/F 0.0562. The design side, from the run: reactor V\_R = 0.005 m$^3$, wall 3.15 mm, 3.7 kg of SS316; heater A = 0.0667 m$^2$ of SS304; costing totals ?155,475 purchased / ?917,756 bare module / ?1,082,952 total module, CEPCI 820/397 = 2.0655, 0.92 EUR/USD.}
+\tutreadme{The golden (process side): heater 0.4 kW $\to$ 361.95 K; reactor X = 0.526; flash at 361.95 K with V/F 0 -- below this liquid's bubble point, so nothing vaporises (acetic acid's vapour is associated, which lowers the volatility an ideal monomer vapour would give it). The design side, from the run: reactor V\_R = 0.005 m$^3$, wall 3.15 mm, 3.7 kg of SS316; heater A = 0.0667 m$^2$ of SS304; costing totals ?155,475 purchased / ?917,756 bare module / ?1,082,952 total module, CEPCI 820/397 = 2.0655, 0.92 EUR/USD.}
 \tutreadme{1. The rules are declared, once, in postDict. sizing \{ units ( \{ unitName reactor; type stirredTank; material SS316; designRules \{ L\_over\_D 2.5; pressureDesign 3.0; ? \} \} ? ) \} and costing \{ method Turton; year 2026; cepci 820; cepci2001 397; usdToEur 0.92; \}. Every number in the tables descends from those lines and the run's own results --- nothing else. 2. The costing table prints its own arithmetic. Below the totals: the log-quadratic correlation, K1--K3 per item, B1/B2, F\_M, the CEPCI ratio, the currency, the 1.18 contingency --- and the source (Turton App. A). Recompute one line; check\_cost\_provenance does exactly that on every suite run and requires 0.1 \%. 3. READ THE TWO WARNINGS --- they are the real lesson of this case. [validity] WARNING: stirredTank 'reactor': size V\_R = 0.005 is OUTSIDE the correlation range [0.3, 520] and the heater's 0.0667 m$^2$ against [10, 1000]. A 1 kmol/h process is laboratory scale; Turton's correlations were fitted to plant scale, and the engine $\ast$extrapolates and says so$\ast$ rather than clamping. The ?1.06 M for a 0.4 kW exchanger is what an extrapolated correlation returns --- a number to distrust because you were told to. 4. A report draws, it does not recompute. Until 2026-09-02 this case carried the rules inside the report blocks (an older grammar), the reports failed by name on every run, and the golden --- which pins only the process KPIs --- never noticed. The README you are reading is why it was found.}
 \tutreadme{Scale the feed to 100 kmol/h in 0/feed: the reactor volume the design rule wants lands inside the correlation window and the warning goes away. Then open economics01\_esterification\_dcf, where the same chain continues into OPEX, NPV and payback.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.000277777777778}
 \goldrow{stream}{hotStream}{F}{0.000277777777778}
-\goldrow{stream}{liqProd}{F}{0.000262168078511}
+\goldrow{stream}{liqProd}{F}{0.000277777777778}
 \goldrow{stream}{reactorOut}{F}{0.000277777777778}
-\goldrow{stream}{vapProd}{F}{1.56096992667e-05}
+\goldrow{stream}{vapProd}{F}{0}
 \goldrow{kpi}{heater}{F}{0.000277777777778}
 \goldrow{kpi}{heater}{P}{101325}
 \goldrow{kpi}{heater}{Q}{400}
 \goldrow{kpi}{heater}{Q\_kW}{0.4}
 \goldrow{kpi}{heater}{Q\_per\_mol}{1440}
 \goldrow{kpi}{heater}{T\_in}{350}
-\goldrow{kpi}{heater}{T\_out}{361.879907822}
-\goldrow{kpi}{heater}{dT}{11.8799078219}
-\goldrow{kpi}{heater}{vf\_out}{0.00022200059932}
-\goldmore{67}
+\goldrow{kpi}{heater}{T\_out}{361.946251976}
+\goldrow{kpi}{heater}{dT}{11.9462519763}
+\goldrow{kpi}{heater}{vf\_out}{0}
+\goldmore{59}
 \end{tutgolden}
 
 \clearpage
@@ -5648,24 +5648,24 @@ Tear stream: `recycle` --- declared explicitly; the Flowsheet runs NEWTON on the
 The CSTR converts \textasciitilde{}81\% per pass at the converged tear (k.tau \textasciitilde{} 4.2 in 0.020 m3); the splitter returns 60\% of liqProd, so the ethanol that escapes one pass gets further passes instead of leaving in liqProd, and the overall conversion is higher than the per-pass figure.
 
 \end{tutnarrative}
-\tutreadme{process01 with a loop: reactor $\to$ flash $\to$ splitter, and 60 \% of the flash liquid is sent $\ast$back$\ast$ to a mixer ahead of the reactor. The reactor is four times larger (20 litres). The golden: the reactor now sees 1.497 kmol/h (1.0 fresh + 0.497 recycle), converts 80.9 \% per pass at $\tau$ = 870 s, and the loop closes with the recycle stream at 0.4967 kmol/h, 364 K.}
-\tutreadme{1. A cycle needs a cut, and the author declares it. system/solverDict says tearStreams ( recycle ); --- the engine detects cycles, but $\ast$which$\ast$ stream to tear is a choice, so it is written down. Reverse the units or forget the tear and the run refuses by name (INVALID ORDER, MISSING TEAR), never silently. 2. The tear starts from 0/recycle, a guess, and the log says so. Tear streams (initial guesses): recycle F = 0.7876 kmol/h ? --- then a Newton over five variables (F, three compositions, T). The Log tab prints 2 per iteration: 1.34e-1 $\to$ 4.25e-3 $\to$ converged in 2 iterations at 3.9e-6. The seed was 60 \% too high and it did not matter. 3. [plan] announces the cut before anything runs. material recycle: tear 'recycle' cuts mixer01 $\to$ reactor $\to$ separator $\to$ split01 --recycle-$\to$ mixer01 --- read that line first; it is the whole topology in one sentence. 4. The recycle changes what the reactor is asked to do. Conversion per pass is 80.9 \% because the reactor is larger and the feed is richer in what came back; overall, less ethanol leaves in liqProd. Compare the Streams tab against process01 line by line.}
+\tutreadme{process01 with a loop: reactor $\to$ flash $\to$ splitter, and 60 \% of the flash liquid is sent $\ast$back$\ast$ to a mixer ahead of the reactor. The reactor is four times larger (20 litres). The golden: the reactor now sees 1.758 kmol/h (1.0 fresh + 0.758 recycle), converts 79.8 \% per pass at $\tau$ = 740 s, and the loop closes with the recycle stream at 0.7582 kmol/h, 364 K.}
+\tutreadme{1. A cycle needs a cut, and the author declares it. system/solverDict says tearStreams ( recycle ); --- the engine detects cycles, but $\ast$which$\ast$ stream to tear is a choice, so it is written down. Reverse the units or forget the tear and the run refuses by name (INVALID ORDER, MISSING TEAR), never silently. 2. The tear starts from 0/recycle, a guess, and the log says so. Tear streams (initial guesses): recycle F = 0.7876 kmol/h ? --- then a Newton over five variables (F, three compositions, T). The Log tab prints 2 per iteration: 1.34e-1 $\to$ 4.25e-3 $\to$ converged in 2 iterations at 3.9e-6. The seed was 60 \% too high and it did not matter. 3. [plan] announces the cut before anything runs. material recycle: tear 'recycle' cuts mixer01 $\to$ reactor $\to$ separator $\to$ split01 --recycle-$\to$ mixer01 --- read that line first; it is the whole topology in one sentence. 4. The recycle changes what the reactor is asked to do. Conversion per pass is 79.8 \% because the reactor is larger and the feed is richer in what came back; overall, less ethanol leaves in liqProd. Compare the Streams tab against process01 line by line.}
 \tutreadme{Change fractions ( 0.6 0.4 ) to ( 0.8 0.2 ): more recycle, a bigger loop flow, and watch whether the Newton still closes in two steps. recycle\_autoinit\_tear shows what happens when you give it $\ast$no$\ast$ guess at all.}
 \begin{tutgolden}
 \goldrow{stream}{freshFeed}{F}{0.000277777777778}
-\goldrow{stream}{liqOut}{F}{0.000229958363658}
-\goldrow{stream}{liqProd}{F}{9.19833454634e-05}
-\goldrow{stream}{mixed}{F}{0.000415752593523}
-\goldrow{stream}{reactorOut}{F}{0.000415752593523}
-\goldrow{stream}{recycle}{F}{0.000137975018195}
-\goldrow{stream}{vapProd}{F}{0.000185794229864}
-\goldrow{kpi}{mixer01}{F\_out}{0.000415752593523}
+\goldrow{stream}{liqOut}{F}{0.000351011838293}
+\goldrow{stream}{liqProd}{F}{0.000140404735317}
+\goldrow{stream}{mixed}{F}{0.000488384602904}
+\goldrow{stream}{reactorOut}{F}{0.000488384602904}
+\goldrow{stream}{recycle}{F}{0.000210607102976}
+\goldrow{stream}{vapProd}{F}{0.000137372764611}
+\goldrow{kpi}{mixer01}{F\_out}{0.000488384602904}
 \goldrow{kpi}{mixer01}{P\_out}{100000}
-\goldrow{kpi}{mixer01}{T\_out}{354.51289855}
+\goldrow{kpi}{mixer01}{T\_out}{355.958546044}
 \goldrow{kpi}{mixer01}{n\_in}{2}
 \goldrow{kpi}{mixer01}{vf}{0}
-\goldrow{kpi}{reactor}{Da\_kTau}{4.22484004006}
-\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1.49670933668}
+\goldrow{kpi}{reactor}{Da\_kTau}{3.95873112738}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1.75818457045}
 \goldmore{40}
 \end{tutgolden}
 
@@ -5843,19 +5843,19 @@ The CSTR converts \textasciitilde{}25\% per pass (small volume); without recycle
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{freshFeed}{F}{0.000277777777778}
-\goldrow{stream}{liqOut}{F}{0.000229958363961}
-\goldrow{stream}{liqProd}{F}{9.19833455844e-05}
-\goldrow{stream}{mixed}{F}{0.000415752593881}
-\goldrow{stream}{reactorOut}{F}{0.000415752593881}
-\goldrow{stream}{recycle}{F}{0.000137975018377}
-\goldrow{stream}{vapProd}{F}{0.00018579422992}
-\goldrow{kpi}{mixer01}{F\_out}{0.000415752593881}
+\goldrow{stream}{liqOut}{F}{0.000351011838141}
+\goldrow{stream}{liqProd}{F}{0.000140404735256}
+\goldrow{stream}{mixed}{F}{0.000488384602712}
+\goldrow{stream}{reactorOut}{F}{0.000488384602712}
+\goldrow{stream}{recycle}{F}{0.000210607102884}
+\goldrow{stream}{vapProd}{F}{0.000137372764571}
+\goldrow{kpi}{mixer01}{F\_out}{0.000488384602712}
 \goldrow{kpi}{mixer01}{P\_out}{100000}
-\goldrow{kpi}{mixer01}{T\_out}{354.512898558}
+\goldrow{kpi}{mixer01}{T\_out}{355.958546039}
 \goldrow{kpi}{mixer01}{n\_in}{2}
 \goldrow{kpi}{mixer01}{vf}{0}
-\goldrow{kpi}{reactor}{Da\_kTau}{4.2248400393}
-\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1.49670933797}
+\goldrow{kpi}{reactor}{Da\_kTau}{3.95873112774}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1.75818456976}
 \goldmore{40}
 \end{tutgolden}
 
@@ -9210,18 +9210,18 @@ Initial guesses are placeholders -- overwritten by Nelder-Mead.
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.000277777777778}
 \goldrow{stream}{hotStream}{F}{0.000277777777778}
-\goldrow{stream}{liqProd}{F}{0.000257419353963}
+\goldrow{stream}{liqProd}{F}{0.000261961581415}
 \goldrow{stream}{reactorOut}{F}{0.000277777777778}
-\goldrow{stream}{vapProd}{F}{2.03584238147e-05}
+\goldrow{stream}{vapProd}{F}{1.58161963624e-05}
 \goldrow{kpi}{heater}{F}{0.000277777777778}
 \goldrow{kpi}{heater}{P}{101325}
 \goldrow{kpi}{heater}{Q}{500}
 \goldrow{kpi}{heater}{Q\_kW}{0.5}
 \goldrow{kpi}{heater}{Q\_per\_mol}{1800}
 \goldrow{kpi}{heater}{T\_in}{350}
-\goldrow{kpi}{heater}{T\_out}{361.533466984}
-\goldrow{kpi}{heater}{dT}{11.5334669843}
-\goldrow{kpi}{heater}{vf\_out}{0.0112269153032}
+\goldrow{kpi}{heater}{T\_out}{362.582514603}
+\goldrow{kpi}{heater}{dT}{12.582514603}
+\goldrow{kpi}{heater}{vf\_out}{0.00752893531985}
 \goldmore{64}
 \end{tutgolden}
 
@@ -9332,15 +9332,15 @@ So this case still demonstrates constrained SQP, shadow prices and a KKT certifi
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.138888888889}
 \goldrow{stream}{hotStream}{F}{0.138888888889}
-\goldrow{stream}{liqProd}{F}{0.126262849909}
+\goldrow{stream}{liqProd}{F}{0.128000396484}
 \goldrow{stream}{reactorOut}{F}{0.138888888889}
-\goldrow{stream}{vapProd}{F}{0.01262603898}
-\goldrow{kpi}{economics}{COM\_d}{221267902.107}
+\goldrow{stream}{vapProd}{F}{0.0108884924051}
+\goldrow{kpi}{economics}{COM\_d}{221226973.083}
 \goldrow{kpi}{economics}{FCI}{509710.813033}
-\goldrow{kpi}{economics}{NPV}{-632915704.984}
+\goldrow{kpi}{economics}{NPV}{-651375292.92}
 \goldrow{kpi}{economics}{TCI}{586167.434987}
 \goldrow{kpi}{economics}{WC}{76456.6219549}
-\goldrow{kpi}{economics}{revenue}{90983516.5487}
+\goldrow{kpi}{economics}{revenue}{87139786.3507}
 \goldrow{kpi}{heater}{F}{0.138888888889}
 \goldrow{kpi}{heater}{P}{101325}
 \goldrow{kpi}{heater}{Q}{200000}
@@ -9853,8 +9853,8 @@ This is the honest reactor when you have neither rate data (cstr/pfr) nor an equ
 CSTR single-reaction tutorial. The reaction kinetics live in constant/reactions; here the unit references it by name.
 
 \end{tutnarrative}
-\tutreadme{A 1 kmol/h equimolar ethanol / acetic-acid feed at 350 K enters a 5-litre CSTR. One reaction (Fischer esterification), pseudo-first-order in ethanol, Arrhenius kinetics from constant/reactions. The golden: X = 52.59 \% conversion of ethanol, extent ? = 0.0730 mol/s, residence time $\tau$ = 310.3 s, rate constant k = 3.575e-3 s?$^1$ at 350 K, and the reactor removing 1.88 kW to stay isothermal.}
-\tutreadme{1. One equation, one unknown, and the unknown is the extent. The Log tab prints Newton in extent ? (?\_max = 1.389e-01 mol/s) and a two-row table: from a guess of ?\_max/2 the residual goes -7.6e-3 $\to$ -2.4e-13 in one step --- a first-order rate law in a CSTR is linear in ?, so Newton lands exactly. 2. Damk?hler is the whole design in one number. Da = k$\tau$ = 1.109, and for first order X = Da/(1 + Da) = 0.526. Do that division by hand; it is the golden to three figures. 3. k comes from A and Ea, at this T. The reaction record says the pair is ILLUSTRATIVE. Read the Arrhenius line in the log (k\_fwd: 3.5750e-03) and reproduce it from A exp(-Ea/RT). 4. Isothermal means somebody removes the heat. The reaction is exothermic; Q\_kW = -1.88 is what the jacket must take away. cstr04\_adiabatic removes nothing and lets T answer.}
+\tutreadme{A 1 kmol/h equimolar ethanol / acetic-acid feed at 350 K enters a 5-litre CSTR. One reaction (Fischer esterification), pseudo-first-order in ethanol, Arrhenius kinetics from constant/reactions. The golden: X = 52.59 \% conversion of ethanol, extent ? = 0.0730 mol/s, residence time $\tau$ = 310.3 s, rate constant k = 3.575e-3 s?$^1$ at 350 K, and the reactor removing only 0.154 kW to stay isothermal (the reaction is only mildly exothermic; see lesson 4).}
+\tutreadme{1. One equation, one unknown, and the unknown is the extent. The Log tab prints Newton in extent ? (?\_max = 1.389e-01 mol/s) and a two-row table: from a guess of ?\_max/2 the residual goes -7.6e-3 $\to$ -2.4e-13 in one step --- a first-order rate law in a CSTR is linear in ?, so Newton lands exactly. 2. Damk?hler is the whole design in one number. Da = k$\tau$ = 1.109, and for first order X = Da/(1 + Da) = 0.526. Do that division by hand; it is the golden to three figures. 3. k comes from A and Ea, at this T. The reaction record says the pair is ILLUSTRATIVE. Read the Arrhenius line in the log (k\_fwd: 3.5750e-03) and reproduce it from A exp(-Ea/RT). 4. Isothermal means somebody removes the heat. The liquid-phase esterification is only mildly exothermic: calorimetry puts it at about -3 to -4 kJ/mol, and Choupo prices it from the four liquid formation enthalpies at about -2.1 kJ/mol at 350 K (dHrxn\_kJ\_per\_mol in the log; Q\_kW = -0.154). Acetic acid's liquid is bridged to the ideal-gas monomer datum through the heat of vaporising to the MONOMER (the measured latent heat at Tb plus the dissociation of the dimers its vapour carries, carried to 298 K on the record's own heat capacities; announced in the log); with the calorimetric heat alone the reaction would read -25.7 kJ/mol, which is the heat of making dimers, not of esterifying. cstr04\_adiabatic removes nothing and lets T answer.}
 \tutreadme{Double V\_R to 0.010: $\tau$ doubles, Da doubles, and X moves to Da/(1+Da) --- check it before you run. Then open pfr01\_first\_order: the same volume, the same kinetics, and a different answer.}
 \begin{tutgolden}
 \goldrow{kpi}{reactor}{X\_limiting}{0.52590711876}
@@ -9867,7 +9867,7 @@ CSTR single-reaction tutorial. The reaction kinetics live in constant/reactions;
 \goldrow{kpi}{reactor}{Da\_kTau}{1.10929132154}
 \goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
 \goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
-\goldrow{kpi}{reactor}{Q\_kW}{-1.87948262728}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.153690679658}
 \goldrow{kpi}{reactor}{V\_R}{0.005}
 \goldrow{kpi}{reactor}{minus\_r\_ethanol}{14.6085310767}
 \goldrow{kpi}{reactor}{tau\_s}{310.291329081}
@@ -9957,7 +9957,7 @@ Feed: pure A at 350 K. Try sweeping V\_R (an outerDict sweep) and watch the B yi
   \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {reactorOut};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{ADIABATIC CSTR: T\_out solved WITH the extents; Q=0 by construction (elements datum)}
+\tutwhat{ADIABATIC CSTR: T\_out solved WITH the extents; Q=0 by construction (elements datum); the liquid esterification is nearly thermoneutral, T\_out only \textasciitilde{}5 K above the feed}
 \begin{tutnarrative}
 an ADIABATIC continuous stirred-tank reactor.
 
@@ -9967,27 +9967,30 @@ xi\_j = r\_j(xi, T) V\_R (R design equations) H\_out(T, xi) = H\_in (one enthalp
 
 There is NO dH\_rxn source term. With the enthalpy on the ELEMENTS datum, the heat of reaction already lives inside H: as reactants become products the formation enthalpies differ and T rises on its own. Q\_kW = 0 by construction.
 
-A non-isothermal CSTR can have up to THREE steady states (multiplicity). The Newton lands on ONE of them, selected by `T\_guess` -- sweep it to find the ignited and extinguished branches. That honesty is the point: the reactor reports which root it found, it does not pretend there is only one.
+Since the acetic-acid correction (docs/design/acetic-acid-latent-heat-closure.md) this LIQUID esterification is nearly thermoneutral (dH\_rxn about -2.7 kJ/mol at 298 K, NBS-consistent; the engine used to print about -25.7 kJ/mol), so the adiabatic rise is a few K (T\_out 355.3 K from the 350 K feed) and the energy balance has ONE steady state: the scan finds one. A non-isothermal CSTR CAN have up to three steady states, but that needs a strongly exothermic reaction; this one does not. `T\_guess` is kept (it is the declared aid that selects the branch where there are several) and here it cannot matter.
+
+The original teaching point of this case (an adiabatic reactor that heats itself by \textasciitilde{}100 K) needs a genuinely exothermic reaction; a replacement case on such a reaction is planned. No parameter was changed to recover the old rise.
 
 \end{tutnarrative}
-\tutreadme{The cstr01 reactor with no heat removal. The exothermic esterification heats its own contents until the energy balance closes: the golden lands at T\_out = 454.15 K, a 104.2 K rise from the 350 K feed, with the extent ? = 0.1384 mol/s --- essentially complete conversion (?\_max is 0.1389 mol/s) because the rate constant at 454 K is 0.889 s?$^1$, 250 times its value at 350 K.}
-\tutreadme{A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm this product boils inside the reactor (the energy balance, which carries the latent heat, stops near 362 K with part of the product vapour), so the feed is declared at 15 bar, where the product holds the liquid.}
-\tutreadme{1. Two unknowns now, solved together. The extent from the design equation and T from H\_out(T, ?) = H\_in: the dict says so in its own header, and Q\_kW in the golden is 4.7e-12 --- zero by construction, not by declaration. 2. An adiabatic CSTR can have more than one answer. Before solving, the engine $\ast$scans$\ast$ the energy balance across T (the Log line [cstr] scanning the energy balance on T in [325.0, 479.5] K for steady states) and reports how many it found --- 1 here. The scan is the van Heerden diagram; cstr05\_multiplicity is the case with three. 3. T\_guess is a declared aid, and the log says where it landed from. operation \{ T\_guess 350; \} picks the branch the Newton starts on; the result line prints landed from T\_guess = 350.00 K. With one steady state it cannot matter; with three it decides the answer, which is why it is in the dict and not hidden. 4. Read the two caveats the run prints. Acetic acid's Cp polynomial is declared to 390 K and this reactor asks it at 450 K: the enthalpy path is $\ast$extrapolated$\ast$, announced, and still returned. The 454 K answer stands with that stated --- as with adiabaticFlash01, a warned number is a defensible one. 5. "Newton 882 it" is the scan's total, not the answer's. The log now says so on the line. Every trial temperature of the scan re-enters the extent Newton; the final solve took a handful.}
-\tutreadme{Set T\_guess 460; --- same single answer, from the other side. Then run cstr06\_jacketed, where a coolant stream carries the heat away and the outlet T sits between the two extremes you have now seen.}
+\tutreadme{The cstr01 reactor with no heat removal. The esterification is only mildly exothermic in the liquid (dH\_rxn about -2.7 kJ/mol at 298 K, after the acetic-acid correction recorded in docs/design/acetic-acid-latent-heat-closure.md), so the contents heat only a little: the golden lands at T\_out = 355.34 K, a 5.34 K rise from the 350 K feed, with the extent ? = 0.0853 mol/s (?\_max is 0.1389 mol/s, so conversion is about 61 \%) at a rate constant of 5.1e-3 s?$^1$.}
+\tutreadme{Earlier versions of this case printed a 104 K rise and complete conversion; they were written around a liquid heat of reaction about ten times too large. The original teaching point (an adiabatic reactor heating itself by \textasciitilde{}100 K) needs a genuinely exothermic reaction; a replacement case is planned. Nothing in this case was tuned to recover it.}
+\tutreadme{The feed is still declared at 15 bar, a leftover from the old design, where a 454 K product had to be held liquid. At the corrected 355 K the outlet is liquid even at 1 atm.}
+\tutreadme{1. Two unknowns now, solved together. The extent from the design equation and T from H\_out(T, ?) = H\_in: the dict says so in its own header, and Q\_kW in the golden is \textasciitilde{}1e-11 --- zero by construction, not by declaration. 2. An adiabatic CSTR can have more than one answer --- here it has one. Before solving, the engine $\ast$scans$\ast$ the energy balance across T (the Log line [cstr] scanning the energy balance on T in [325.0, 383.5] K for steady states) and reports how many it found --- 1. The scan is the van Heerden diagram; with a nearly thermoneutral reaction the generation curve is too small to cut the removal line more than once. 3. T\_guess is a declared aid, and the log says where it landed from. operation \{ T\_guess 350; \} picks the branch the Newton starts on; the result line prints landed from T\_guess = 350.00 K. With one steady state it cannot matter; with several it would decide the answer, which is why it is in the dict and not hidden. 4. Read the caveats the run prints. Acetic acid's Cp polynomial is declared to 390 K and the ethanol vapour-pressure fit to 369 K; the scan's upper end asks for slightly more, so the path is $\ast$extrapolated$\ast$, announced, and still returned --- a warned number is a defensible one. 5. "Newton 742 it" is the scan's total, not the answer's. The log says so on the line. Every trial temperature of the scan re-enters the extent Newton; the final solve took a handful.}
+\tutreadme{Set T\_guess 360; --- same single answer. Then run cstr06\_jacketed, where a coolant stream carries heat away and the outlet T sits below the feed.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.000277777777778}
 \goldrow{stream}{reactorOut}{F}{0.000277777777778}
 \goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
 \goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
-\goldrow{kpi}{reactor}{Q\_kW}{4.70379291073e-12}
-\goldrow{kpi}{reactor}{T}{454.152948902}
+\goldrow{kpi}{reactor}{Q\_kW}{-9.63495949691e-12}
+\goldrow{kpi}{reactor}{T}{355.339972307}
 \goldrow{kpi}{reactor}{T\_guess}{350}
-\goldrow{kpi}{reactor}{T\_out}{454.152948902}
+\goldrow{kpi}{reactor}{T\_out}{355.339972307}
 \goldrow{kpi}{reactor}{V\_R}{0.005}
-\goldrow{kpi}{reactor}{dT\_rise}{104.152948902}
-\goldrow{kpi}{reactor}{k\_esterification\_etac}{0.88934531923}
+\goldrow{kpi}{reactor}{dT\_rise}{5.33997230743}
+\goldrow{kpi}{reactor}{k\_esterification\_etac}{0.00513176885398}
 \goldrow{kpi}{reactor}{nReactions}{1}
-\goldrow{kpi}{reactor}{newtonResidual}{3.5527136788e-15}
+\goldrow{kpi}{reactor}{newtonResidual}{1.38777878078e-17}
 \goldrow{kpi}{reactor}{tau\_s}{310.291329081}
 \goldmore{7}
 \end{tutgolden}
@@ -10001,21 +10004,19 @@ A non-isothermal CSTR can have up to THREE steady states (multiplicity). The New
   \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {reactorOut};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{CSTR multiplicity: three steady states -- the reactor prints them all, T\_guess picks the branch}
+\tutwhat{CSTR steady-state scan: with the corrected (nearly thermoneutral) liquid esterification the reactor has ONE steady state (\textasciitilde{}300 K); the three-state multiplicity needs an exothermic reaction (replacement case planned)}
 \begin{tutnarrative}
-an ADIABATIC CSTR with THREE steady states.
+an ADIABATIC CSTR fed COLD, scanned for steady states.
 
 Eliminate the extents (at a fixed T the design equations are monotone) and what remains is ONE equation in the temperature:
 
 phi(T) = H\_out(T) - H\_in - Q\_ext(T) = 0
 
-the textbook "heat generated equals heat removed". The generation curve G(T) is a sigmoid (the rate saturates once the reactant is gone); the removal line R(T) = F cp (T - T\_in) is straight (adiabatic: the only sink is the sensible heat that leaves with the product). A straight line can cut a sigmoid THREE times: the extinguished state, an unstable middle state, and the ignited state.
+the textbook "heat generated equals heat removed". The generation curve G(T) is a sigmoid (the rate saturates once the reactant is gone); the removal line R(T) = F cp (T - T\_in) is straight (adiabatic: the only sink is the sensible heat that leaves with the product). A straight line can cut a sigmoid THREE times: the extinguished state, an unstable middle state, and the ignited state -- IF the sigmoid is tall enough, i.e. IF the reaction releases enough heat. Choupo scans, finds them all, prints them, and reports the one nearest `T\_guess`. Change T\_guess and the reactor moves to another branch -- when there is more than one.
 
-The feed enters COLD (300 K), where the rate is negligible. Nothing forces this reactor to ignite -- and nothing forces it to stay cold either.
+This case was written for exactly that: a 300 K feed, a negligible rate there, and an ignited branch reached by `T\_guess`. It no longer shows it. After the acetic-acid correction (docs/design/acetic-acid-latent-heat-closure.md) the liquid esterification is nearly thermoneutral (dH\_rxn about -2.7 kJ/mol, where the engine used to print about -25.7), the complete-conversion adiabatic temperature is only 310.7 K, and G(T) is far too small to cut the removal line more than once: the scan finds ONE steady state, 300.04 K, whatever `T\_guess` is (380 here, and the log says it landed from it).
 
-Choupo scans, finds them all, prints them, and reports the one nearest `T\_guess`. Change T\_guess and the reactor moves to another branch -- the same equipment, the same feed, a different answer. That is not a numerical defect; it is the physics, and it is why real reactors need a start-up procedure.
-
-A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm this product boils inside the reactor (the ignited branch drops to \textasciitilde{}361 K, part vapour), so the feed is declared at 15 bar, where the product holds the liquid.
+The original teaching point (multiplicity, ignition and extinction, a start-up procedure) needs a genuinely exothermic reaction; a replacement case on such a reaction is planned. No parameter was changed to recover the three states. The van Heerden construction itself is unchanged: the engine still scans, counts and prints every root it finds.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -10023,16 +10024,16 @@ A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: a
 \goldrow{stream}{reactorOut}{F}{0.000277777777778}
 \goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
 \goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
-\goldrow{kpi}{reactor}{Q\_kW}{8.68283223099e-12}
-\goldrow{kpi}{reactor}{T}{405.903598573}
+\goldrow{kpi}{reactor}{Q\_kW}{8.78230821399e-12}
+\goldrow{kpi}{reactor}{T}{300.040632256}
 \goldrow{kpi}{reactor}{T\_guess}{380}
-\goldrow{kpi}{reactor}{T\_out}{405.903598573}
+\goldrow{kpi}{reactor}{T\_out}{300.040632256}
 \goldrow{kpi}{reactor}{V\_R}{0.005}
-\goldrow{kpi}{reactor}{dT\_rise}{105.903598573}
-\goldrow{kpi}{reactor}{k\_esterification\_etac}{0.406108484365}
+\goldrow{kpi}{reactor}{dT\_rise}{0.0406322555593}
+\goldrow{kpi}{reactor}{k\_esterification\_etac}{1.17023320484e-05}
 \goldrow{kpi}{reactor}{nReactions}{1}
-\goldrow{kpi}{reactor}{newtonResidual}{8.32667268469e-16}
-\goldrow{kpi}{reactor}{steadyStates}{3}
+\goldrow{kpi}{reactor}{newtonResidual}{5.0990028172e-16}
+\goldrow{kpi}{reactor}{steadyStates}{1}
 \goldmore{7}
 \end{tutgolden}
 
@@ -10045,7 +10046,7 @@ A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: a
   \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {reactorOut};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{JACKETED CSTR: the coolant carries the reaction heat away -- Q = UA (T\_c - T\_out)}
+\tutwhat{JACKETED CSTR: the coolant carries heat away -- Q = UA (T\_c - T\_out); the nearly thermoneutral esterification leaves the outlet below the feed (replacement exothermic case planned)}
 \begin{tutnarrative}
 the same esterification as cstr04, now with a COOLING JACKET instead of an adiabatic wall.
 
@@ -10053,11 +10054,11 @@ The energy balance gains one term, and only one:
 
 H\_out(T) = H\_in + UA (T\_coolant - T\_out)
 
-There is still NO dH\_rxn source: on the elements datum the heat of reaction is already inside H. What the jacket does is remove some of it, so the outlet settles BELOW the adiabatic 454.2 K of cstr04.
+There is still NO dH\_rxn source: on the elements datum the heat of reaction is already inside H. What the jacket does is remove heat, so the outlet settles at 338.8 K -- BELOW the 350 K feed, because the reaction (dH\_rxn about -2.7 kJ/mol after the acetic-acid correction, docs/design/acetic-acid-latent-heat-closure.md) releases far less heat than the 25 W/K jacket takes from a stream 30 K above the coolant. (Before the correction the reaction heated the contents to 394 K against a 454 K adiabatic limit; that was the wrong exotherm.)
 
-Check it by hand from the printed KPIs: Q\_kW should equal UA (T\_c - T\_out), and it is NEGATIVE -- heat leaves the reactor. Cool harder (raise UA, lower T\_coolant) and the outlet slides down the generation curve; cool too hard and the reactor extinguishes. Nothing here is switched on by a flag; it is the same one equation in T, with one more term.
+Check it by hand from the printed KPIs: Q\_kW should equal UA (T\_c - T\_out), and it is NEGATIVE -- heat leaves the reactor (-0.470 kW). The scan finds ONE steady state. Nothing here is switched on by a flag; it is the same one equation in T, with one more term.
 
-A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm this product boils inside the reactor (the balance stops near 362 K, part vapour), so the feed is declared at 15 bar, where the product holds the liquid.
+The original teaching point of this case (a jacket pulling a hot, ignited reactor down the generation curve, and extinction when it cools too hard) needs a genuinely exothermic reaction; a replacement case on such a reaction is planned. No parameter was changed. The feed pressure (15 bar) is a leftover of the old design; the outlet is liquid at 1 atm as well.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -10065,15 +10066,15 @@ A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: a
 \goldrow{stream}{reactorOut}{F}{0.000277777777778}
 \goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
 \goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
-\goldrow{kpi}{reactor}{Q\_kW}{-1.85832125175}
-\goldrow{kpi}{reactor}{T}{394.33285007}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.469673699205}
+\goldrow{kpi}{reactor}{T}{338.786947968}
 \goldrow{kpi}{reactor}{T\_guess}{400}
-\goldrow{kpi}{reactor}{T\_out}{394.33285007}
+\goldrow{kpi}{reactor}{T\_out}{338.786947968}
 \goldrow{kpi}{reactor}{V\_R}{0.005}
-\goldrow{kpi}{reactor}{dT\_rise}{44.3328500695}
-\goldrow{kpi}{reactor}{k\_esterification\_etac}{0.0534254733127}
+\goldrow{kpi}{reactor}{dT\_rise}{-11.2130520322}
+\goldrow{kpi}{reactor}{k\_esterification\_etac}{0.00161255283829}
 \goldrow{kpi}{reactor}{nReactions}{1}
-\goldrow{kpi}{reactor}{newtonResidual}{1.38777878078e-16}
+\goldrow{kpi}{reactor}{newtonResidual}{6.93889390391e-18}
 \goldrow{kpi}{reactor}{steadyStates}{1}
 \goldmore{11}
 \end{tutgolden}
@@ -10107,7 +10108,7 @@ The plateau is not asserted anywhere in the dict. It is where k1 a'\_HOAc a'\_Me
 \goldrow{stream}{reactorOut}{F}{0.000277777777778}
 \goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
 \goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
-\goldrow{kpi}{reactor}{Q\_kW}{-1.29936595639}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.0517242743531}
 \goldrow{kpi}{reactor}{T}{333.15}
 \goldrow{kpi}{reactor}{T\_out}{333.15}
 \goldrow{kpi}{reactor}{V\_R}{0.005}
@@ -10368,7 +10369,7 @@ PFR with the same kinetics and conditions as cstr01. For a first-order reaction 
 
 \end{tutnarrative}
 \tutreadme{The reactor of cstr01 rebuilt as a plug-flow tube: the same 5 litres, the same 1 kmol/h feed at 350 K, the same Arrhenius pair. The golden: X = 67.02 \% against the CSTR's 52.59 \%, at the same $\tau$ = 310.3 s and the same Da = 1.109.}
-\tutreadme{1. No back-mixing is the whole difference. In the CSTR every molecule reacts at the $\ast$outlet$\ast$ concentration, the lowest in the vessel. In the tube the concentration falls along V, so most of the volume works at a higher rate. For first order: CSTR X = Da/(1+Da) = 0.526; PFR X = 1 - e\textasciicircum{}(-Da) = 0.670. Both from the same Da; both in the goldens. 2. The profile is printed, not just the endpoint. nSteps 100; writeInterval 10; in operation \{\} --- the Log tab shows the axial table, eleven rows from V = 0 to 5e-3 m$^3$, each component's molar flow falling or rising along the tube. The integrator is named (RK4, 100 uniform steps, dV = 5.0e-05 m$^3$); halve nSteps and see what moves. 3. The heat of reaction is a KPI here. dHrxn\_kJ\_per\_mol = -25.73 is computed from the species' formation enthalpies (the elements datum --- the one base every reactor in Choupo prices on), and the tube's isothermal duty Q\_kW = -2.40 follows from it and the extent. 4. Same Da, different X, is the pedagogical point of the pair. Put the two READMEs side by side; the numbers are the lecture.}
+\tutreadme{1. No back-mixing is the whole difference. In the CSTR every molecule reacts at the $\ast$outlet$\ast$ concentration, the lowest in the vessel. In the tube the concentration falls along V, so most of the volume works at a higher rate. For first order: CSTR X = Da/(1+Da) = 0.526; PFR X = 1 - e\textasciicircum{}(-Da) = 0.670. Both from the same Da; both in the goldens. 2. The profile is printed, not just the endpoint. nSteps 100; writeInterval 10; in operation \{\} --- the Log tab shows the axial table, eleven rows from V = 0 to 5e-3 m$^3$, each component's molar flow falling or rising along the tube. The integrator is named (RK4, 100 uniform steps, dV = 5.0e-05 m$^3$); halve nSteps and see what moves. 3. The heat of reaction is a KPI here. dHrxn\_kJ\_per\_mol = -2.10 (at 350 K) is computed from the species' formation enthalpies (the elements datum --- the one base every reactor in Choupo prices on), and the tube's isothermal duty Q\_kW = -0.196 follows from it and the extent. The real liquid esterification is only mildly exothermic (about -3 to -4 kJ/mol at 298 K, where Choupo reads -2.7). 4. Same Da, different X, is the pedagogical point of the pair. Put the two READMEs side by side; the numbers are the lecture.}
 \tutreadme{Set nSteps 10 and rerun: X barely moves, because RK4 is fourth order and the profile is smooth. Then try pfr04\_adiabatic, where the tube heats itself and T(V) becomes part of the profile.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.000277777777778}
@@ -10377,14 +10378,14 @@ PFR with the same kinetics and conditions as cstr01. For a first-order reaction 
 \goldrow{stream}{reactorOut}{T}{350}
 \goldrow{kpi}{reactor}{Da\_kTau}{1.10929132154}
 \goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
-\goldrow{kpi}{reactor}{Q\_kW}{-2.39518182773}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.195860880897}
 \goldrow{kpi}{reactor}{T}{350}
 \goldrow{kpi}{reactor}{V\_R}{0.005}
 \goldrow{kpi}{reactor}{X\_limiting}{0.670207404765}
-\goldrow{kpi}{reactor}{dHrxn\_kJ\_per\_mol}{-25.7313020373}
+\goldrow{kpi}{reactor}{dHrxn\_kJ\_per\_mol}{-2.10412229473}
 \goldrow{kpi}{reactor}{tau\_s}{310.291329081}
-\goldrow{boundary}{global}{H\_feeds\_kW}{-100.850423911}
-\goldrow{boundary}{global}{Q\_boundary\_kW}{-2.39518182773}
+\goldrow{boundary}{global}{H\_feeds\_kW}{-104.131976653}
+\goldrow{boundary}{global}{Q\_boundary\_kW}{-0.195860880897}
 \goldmore{5}
 \end{tutgolden}
 
@@ -10472,17 +10473,19 @@ The PFR converts far more A AND keeps far more of the intermediate B: with no ba
   \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {reactorOut};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{ADIABATIC PFR: the exothermic esterification heats its own stream -- T(V) is a RESULT}
+\tutwhat{ADIABATIC PFR: T(V) is a RESULT; the nearly thermoneutral liquid esterification warms the stream only \textasciitilde{}6.6 K (replacement exothermic case planned)}
 \begin{tutnarrative}
 an ADIABATIC plug-flow reactor. The temperature is a RESULT, marched with the species by the same RK4:
 
 dF\_i/dV = SUM\_j nu\_ij r\_j(F,T) dT/dV = SUM\_j (-dH\_j(T)) r\_j / SUM\_i F\_i cp\_i(T)
 
-The exothermic esterification heats its own stream, which accelerates the Arrhenius rate, which releases more heat -- the positive feedback every reactor engineer must see. T(V) is in the axial profile: plot it.
+The esterification is only mildly exothermic in the liquid (dH\_rxn about -2.7 kJ/mol after the acetic-acid correction, docs/design/acetic-acid-latent-heat-closure.md), so the stream warms by only 6.6 K (356.6 K out, the hot spot is the outlet). The Arrhenius feedback is present but weak. T(V) is in the axial profile: plot it.
+
+The original teaching point of this case (positive feedback, a hot spot \textasciitilde{}100 K above the feed) needs a genuinely exothermic reaction; a replacement case on such a reaction is planned. No parameter was changed.
 
 `thermalMode` takes `isothermal` (default -- T imposed, duty a result), `adiabatic` (here), or `heatExchange` (a jacket: U, areaPerVolume, T\_coolant). A non-isothermal reactor needs the heat of reaction, so every reacting species must carry `standardThermochemistry` -- a fictitious toy species cannot be used.
 
-A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm this product boils inside the bed (the march, which carries the latent heat, leaves near 362 K, part vapour), so the feed is declared at 15 bar, where the product holds the liquid.
+The feed is declared at 15 bar, a leftover of the old design (a 454 K product had to be held liquid); at the corrected \textasciitilde{}357 K the outlet is liquid at 1 atm too.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -10492,12 +10495,12 @@ A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: a
 \goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
 \goldrow{kpi}{reactor}{Q\_kW}{-1.42108547152e-14}
 \goldrow{kpi}{reactor}{T}{350}
-\goldrow{kpi}{reactor}{T\_max}{454.513818186}
+\goldrow{kpi}{reactor}{T\_max}{356.618955495}
 \goldrow{kpi}{reactor}{T\_min}{350}
-\goldrow{kpi}{reactor}{T\_out}{454.513818186}
+\goldrow{kpi}{reactor}{T\_out}{356.618955495}
 \goldrow{kpi}{reactor}{V\_R}{0.005}
-\goldrow{kpi}{reactor}{dT\_rise}{104.513818186}
-\goldrow{kpi}{reactor}{hotSpot\_dT}{104.513818186}
+\goldrow{kpi}{reactor}{dT\_rise}{6.61895549509}
+\goldrow{kpi}{reactor}{hotSpot\_dT}{6.61895549509}
 \goldrow{kpi}{reactor}{k\_esterification\_etac}{0.00357499942014}
 \goldrow{kpi}{reactor}{nReactions}{1}
 \goldmore{7}

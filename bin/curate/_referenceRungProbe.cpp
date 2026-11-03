@@ -8,6 +8,7 @@
 //  is meant to stop a curator from making).  So the gate builds one.
 #include "core/Dictionary.H"
 #include "thermo/Component.H"
+#include "thermo/Database.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 #include <cstdlib>
@@ -270,6 +271,38 @@ int main()
         std::cout << "  \"waterLiquidCrossing\": {\"result\": \"" << esc
                   << "\", \"h\": " << h << ", \"s\": " << s
                   << ", \"g\": " << g << "}";
+    }
+
+    //  (10) THE LIQUID RUNG OF THE ESTERIFICATION FOUR, from the catalogue
+    //       (DEV.md 4c C201 item 1).  Acetic acid's liquid is bridged to the
+    //       ideal-gas MONOMER datum through the DERIVED vaporisation heat
+    //       (calorimetric + dimer dissociation); the other three through
+    //       Watson alone.  Emits h_formation(298.15, liquid) and g.
+    //  The derived bridge reads chemistry/ through the resolver, which roots
+    //  at the active Database -- constructing one is what a case run does.
+    Database db("");
+    for (const char* nm : {"aceticAcid", "ethanol", "ethylAcetate", "water"})
+    {
+        const char* home = std::getenv("CHOUPO_HOME");
+        std::string path = std::string(home ? home : ".")
+                         + "/data/standards/components/" + nm + ".dat";
+        std::string what = "ok";
+        double h = 0.0, g = 0.0;
+        try
+        {
+            Component c;
+            c.readFromDict(Dictionary::fromFile(path));
+            h = c.h_formation(298.15, "liquid");
+            g = c.g_formation(298.15, "liquid");
+        }
+        catch (const std::exception& e) { what = e.what(); }
+        std::string esc;
+        for (char ch : what) { if (ch=='"'||ch=='\\') { esc+='\\'; esc+=ch; }
+                               else if (ch=='\n') esc += "\\n"; else esc += ch; }
+        if (!first) std::cout << ",\n";
+        first = false;
+        std::cout << "  \"liquidRung_" << nm << "\": {\"result\": \"" << esc
+                  << "\", \"h\": " << h << ", \"g\": " << g << "}";
     }
 
     //  (7) The REMEDY the refusal names must actually work.

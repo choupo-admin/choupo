@@ -636,6 +636,19 @@ public:
     scalar Hvap_pure   (scalar T_K, scalar Tref_K = 298.15) const;
     scalar Hvap_latent (scalar T_K) const;
 
+    //  THE BRIDGE FROM THE LIQUID TO THE DATUM'S OWN VAPOUR (DEV.md 4c C201
+    //  item 1).  `Hvap_latent` is the CALORIMETRIC latent heat, to the real
+    //  vapour; the formation datum is the ideal-gas MONOMER.  For a gas with
+    //  a curated vapour dimerisation (chemistry/ `vapourDimerisation`) the
+    //  heat to the monomer is DERIVED at 298.15 K: Hvap_latent + xi*(-dH_dim),
+    //  xi the dimers per mole vaporised in the saturated vapour.  `pRefPa` is
+    //  the pressure the liquid is in equilibrium with AS MONOMER (pM, not
+    //  Psat) -- the Gibbs term of the entropy leg.  A component with no
+    //  declared association returns Hvap_latent(298.15) and Psat unchanged
+    //  (byte-identical).  Announced once per run when the derivation is used.
+    struct DatumBridge298 { scalar H = 0.0; scalar pRefPa = 0.0; bool associated = false; };
+    const DatumBridge298& datumBridge298() const;
+
 
     // ---- Absolute (ideal-gas) thermo at T -- Gibbs reactor consumers --------
     //   h_pure_ig(T)  = Hf298 + ∫_{298.15}^{T} cp_ig(T') dT'             [J/mol]
@@ -756,6 +769,8 @@ private:
     scalar      omega_   = 0.0;
     scalar      Tb_      = 0.0;
     scalar      Hvap_Tb_ = 0.0;
+    mutable bool           bridgeResolved_ = false;   // datumBridge298 cache
+    mutable DatumBridge298 bridge_;
     scalar      K_b_anchor_ = 0.0;   // declared value, kept as a cross-check
     scalar      K_f_anchor_  = 0.0;  // ditto for the cryoscopic twin
     bool        K_f_derived_ = false;

@@ -38,6 +38,25 @@ License
 
 namespace Choupo {
 
+namespace {
+//  The K-values a bubble point of liquid x reads at T.  On a vapour whose
+//  fugacity does not depend on its own composition this is K(T, P, x, x),
+//  unchanged.  On an ASSOCIATED ideal-gas vapour (DEV.md 4c C201 item 1) the
+//  dimer split depends on y, so the K is the package's at the liquid's own
+//  incipient vapour (`incipientPhase::vapour`, the one home of that
+//  iteration).  An EoS vapour keeps the y = x form it always had here -- the
+//  column and the relief sizer iterate it themselves; changing this kernel
+//  for them is outside this slice and is not done silently.
+sVector bubbleK(const ThermoPackage& thermo, scalar T, scalar P,
+                const sVector& x)
+{
+    const sVector K0 = thermo.Kvec(T, P, x, x);
+    if (!thermo.vapourAssociationPriced()) return K0;
+    const auto r = incipientPhase::vapour(thermo, T, P, x, K0);
+    return r.K.empty() ? K0 : r.K;
+}
+} // namespace
+
 // -----------------------------------------------------------------------
 //  Static helper: programmatic bubble-T evaluation, no I/O.
 //
@@ -63,7 +82,7 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
             T0 += x[i] * (thermo.comp(i).Tb() > 0 ? thermo.comp(i).Tb() : 350.0);
     }
 
-    auto K_at = [&](scalar T) { return thermo.Kvec(T, P, x, x); };
+    auto K_at = [&](scalar T) { return bubbleK(thermo, T, P, x); };
     auto f = [&](scalar T)
     {
         auto K = K_at(T);
@@ -248,7 +267,7 @@ int BubblePoint::solve(const DictPtr& dict,
             for (std::size_t i = 0; i < n; ++i)
                 T0 += x[i] * (thermo.comp(i).Tb() > 0 ? thermo.comp(i).Tb() : 350.0);
 
-        auto K_at = [&](scalar T) { return thermo.Kvec(T, P, x, x); };
+        auto K_at = [&](scalar T) { return bubbleK(thermo, T, P, x); };
         auto f = [&](scalar T)
         {
             auto K = K_at(T);
@@ -302,7 +321,7 @@ int BubblePoint::solve(const DictPtr& dict,
 
     if (!r.converged)
     {
-        const auto Kt = thermo.Kvec(r.T, P, x, x);
+        const auto Kt = bubbleK(thermo, r.T, P, x);
         if (trivialSaturationRoot(thermo, r.T, P, x, Kt))
             std::cout << "  [bubbleT] the root found is TRIVIAL: every present"
                          " K = 1 at T = " << std::fixed << std::setprecision(4)
@@ -327,7 +346,7 @@ int BubblePoint::solve(const DictPtr& dict,
               << "  Final |f|:     " << std::scientific << std::setprecision(3)
               << r.residual << "\n\n";
 
-    auto K_final = thermo.Kvec(r.T, P, x, x);
+    auto K_final = bubbleK(thermo, r.T, P, x);
     std::cout << "  Component         x          y          K\n"
               << "  -------------------------------------------------\n";
     for (std::size_t i = 0; i < n; ++i)

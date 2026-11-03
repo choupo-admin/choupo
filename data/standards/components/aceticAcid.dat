@@ -27,10 +27,14 @@ HvapTb      24390;
 //  molecules dimerised at 298 K by chemistry/aceticAcid-dissolution.dat),
 //  while dHf_298 below is the ideal-gas MONOMER (NBS TN 270-3, -103.31
 //  kcal/mol).  The liquid rung derived from the pair therefore sits ~24 kJ/mol
-//  above NBS's liquid (-460.4 against -484.5 kJ/mol).  NOT changed here: the
-//  value is right for the readers that need the measured heat and wrong only
-//  for the liquid rung -- docs/design/one-record-two-vapours-acetic-acid.md
-//  measures both, and the fix is an engine decision reserved for Vitor.
+//  above NBS's liquid (-460.4 against -484.5 kJ/mol) IF bridged with this
+//  number alone.  Since DEV.md 4c C201 item 1 the engine DERIVES the bridge to
+//  the datum's own vapour: Component::datumBridge298 adds the heat of
+//  dissociating the dimers present in the saturated vapour (K and dH read from
+//  chemistry/aceticAcid-dissolution.dat's vapourDimerisation -- the ONE home,
+//  nothing is copied here), announced once per run.  HvapTb itself stays the
+//  measured value, which the other readers need
+//  (docs/design/one-record-two-vapours-acetic-acid.md).
 Vliq       5.752e-5;          // 57.52 cm³/mol at 25°C
 //  ANCHOR, never an input.  The engine DERIVES the Hildebrand
 //  parameter from HvapTb and Vliq (the tree stores no derivative);

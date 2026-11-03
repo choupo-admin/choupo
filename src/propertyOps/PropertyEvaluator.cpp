@@ -255,8 +255,10 @@ scalar evaluateProperty(const std::string& propKey,
     //  catalogue, both spellings.
     if (propKey == "v_molar" || propKey == "molarVolume")
         return thermo.eos().molarVolume(T, P_Pa, xLiquid);
-    if (propKey == "H_R")      return thermo.eos().H_residual(T, P_Pa, xLiquid);
-    if (propKey == "S_R")      return thermo.eos().S_residual(T, P_Pa, xLiquid);
+    if (propKey == "H_R")      return thermo.eos().H_residual(T, P_Pa, xLiquid)
+                                    + thermo.associationResidualTotal(T, P_Pa, xLiquid, true);
+    if (propKey == "S_R")      return thermo.eos().S_residual(T, P_Pa, xLiquid)
+                                    + thermo.associationResidualTotal(T, P_Pa, xLiquid, false);
     if (propKey == "H_real")   return thermo.H_real(T, P_Pa, xLiquid);
     if (propKey == "S_real")   return thermo.S_real(T, P_Pa, xLiquid);
     if (propKey == "viscosity" || propKey == "viscosity_gas" || propKey == "mu")
