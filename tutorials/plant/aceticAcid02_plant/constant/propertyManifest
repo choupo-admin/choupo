@@ -28,10 +28,10 @@ propertyManifest
         "chemistry/aceticAcid-dissolution.dat"
         {
             type          imported;
-            sha256        "5dd5da8910aceb5934b692bf2e5a8bccc1d33e8dbd0749b7ffa4a46d0c0216e5";
-            computationalSha256 "c0e418eac12766196055d39ae71b405d83b45136db6c66b08dc77557876e0394";
+            sha256        "86e724173f17b5c4a6b1d0cacf4fb95af1424e63d4dcee701728141ebe3edbdb";
+            computationalSha256 "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
             origin        "data/standards/chemistry/aceticAcid-dissolution.dat";
-            originSha256  "54181e6669c954ee42578e9876c86878288961ac1888a7a1a1619236427b881b";
+            originSha256  "933aad5f3a1cdc3b42de91e2e6ac0cf3d6660139e3d87c267519a76d2a000709";
             release       Choupo-2608;
         }
         "assets/SS316.dat"

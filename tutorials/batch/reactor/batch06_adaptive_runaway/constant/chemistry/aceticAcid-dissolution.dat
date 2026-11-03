@@ -25,11 +25,11 @@ reaction "CH3COOH(g) = CH3COOH";
 
 // VAPOUR dimerisation of acetic acid (the carboxylic-acid signature):
 //   2 CH3COOH(g) = (CH3COOH)2(g),  K_dim = p_D/p_M^2 [atm^-1]
-// K25 = 10^2.555 = 359 atm^-1, dH = -63.18 kJ/mol (Chao & Zwolinski 1978,
-// adopted 2026-08-24 -- the note in the block below records what moved).
+// K25 = 10^3.107 = 1280 atm^-1, dH = -63.18 kJ/mol (Chao & Zwolinski 1978,
+// Tables 11/12 ETHANOIC acid; corrected 2026-11-03 -- the note below).
 vapourDimerisation
 {
-    logK25  2.555;
+    logK25  3.107;
     dH      -63180;
     //  ADOPTED FROM THE PRIMARY, 2026-08-24.  This block asked for a
     //  re-check; the re-check was done with the paper in hand and the
@@ -58,6 +58,14 @@ vapourDimerisation
     //  inside the spread of ten studies the same Table 14 lists (11.4 to
     //  17.0 kcal/mol).  It was simply never this paper's, and this record
     //  said it was.
+    //  CORRECTED 2026-11-03 (docs/design/acetic-acid-latent-heat-closure.md):
+    //  the 2026-08-24 logK 2.555 and the dfG cross-check above were read from
+    //  the METHANOIC (formic) tables 4/6/8 of the same paper -- the record
+    //  carried acetic acid's dH with formic acid's K, 3.5x too small.  The
+    //  ETHANOIC tables give log K = 134.265 (dimer, Table 12) - 2 x 65.579
+    //  (monomer, Table 11) = 3.107 atm^-1; Table 16 (Keq 1.26e3 at 298.15 K,
+    //  dimer fraction 0.972 at 1 atm) reproduces only with it.  dH is
+    //  unchanged (-927.68 - 2 x -432.25 = -63.18 kJ/mol, exactly).
     source  "Chao & Zwolinski, J. Phys. Chem. Ref. Data 7 (1978) 363, Table 14 (dH, 'This work' row) and the tabulated ideal-gas properties of the ethanoic acid monomer and dimer (logK) -- PRIMARY PAGES READ 2026-08-24; record: docs/design/interim-review-2026-08-24.md";
 }
 

@@ -582,17 +582,16 @@ def ratchet_kW(pin: float) -> float:
 #  -869.1 -> -760.1 kW (the reactor-outlet vapour leg now carries the dimer
 #  heat on both sides of the boundary), and the percentage rose only because
 #  the energy-exchanged denominator moved with it (225.4 kW of boundary duty).
-#  flash17_two_liquids_reactive (2.5460 % = 0.0022 kW of a 0.085 kW exchange,
-#  pinned 2026-11-03): the reactive flash prices the vapour DIMER's association
-#  heat in its duty and the report prices the stream without it.  MEASURED, not
-#  argued: with logK25 -9 (no dimer) the case closes at 100.00 %; with the
-#  corrected 3.107 the gap is 2.2 W, 3.5x the 0.6 W the wrong constant (2.555)
-#  had been hiding.  Closed by the associated-vapour slice
-#  (backup/c201-acetic-vapour), which makes the dimer a property of the vapour
-#  model the report reads too.  DEV.md 4c C201.
+#  flash17_two_liquids_reactive LEFT 2026-11-03 (DEV.md 4c C201 item 3): pinned
+#  at 2.5460 % the same day (the reactive flash priced the vapour dimer's
+#  association heat in its duty, the report priced the stream without it);
+#  with the associated vapour the dimer heat is in H_real, read by both, and
+#  the case closes at 0.0000 % (residual 1.6e-7 kW).
+#  esterification2sector RE-PINNED 329.1840 -> 296.5170 the same day, when the
+#  slice was rebased onto the corrected logK25 3.107: MEASURED by the scoped
+#  run, the same model-boundary step, the debt still unpaid.
 KNOWN_OPEN = {
-    "tutorials/plant/esterification2sector": 329.1840,
-    "tutorials/steady/flash/flash17_two_liquids_reactive": 2.5460,
+    "tutorials/plant/esterification2sector": 296.5170,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,
