@@ -42,7 +42,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | running | PIF E2 + E3: HVAC cost from the supply air; cleaning events from the batch plan -> purified water and effluent (report due 07:00) | C195, C210 |
 | running | GUI E6 + the MASS cell: the per-machine utilisation table and the Gantt drawn from the engine's batch plan; the run strip reads the published mass balance (report due 07:00) | C195, C201 (2) |
 | running | EduTools E7 + E8: how a pharmaceutical-plant economics goes wrong (the reports' error classes, anonymous); the demand forecast with a units check (report due 07:00) | C195, C210 |
-| running | Survey and design draft of the plant DOCUMENT SET: PFD as a PDF with its stream table, equipment list, line list per routed pipe, instrument index, P&ID as a PDF, control narrative, then the digital twin (report due 07:00) | C203, C204, C207, C210 |
+| running | Document set S1 + S2 (decided in docs/design/the-plant-document-set.md): S1 equipment tags (generated Turton XX-YZZ A/B, a declared tag wins) and the equipment list; S2 the PFD as a printable sheet/PDF with its stream table, tags, utilities legend and title block (reports due 07:00) | C207, C203, C210 |
 
 ## Next day (at most 5)
 
@@ -51,15 +51,14 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | todo | The tutoring class (12:00): what the two groups hit reaches Vitor and comes here; recorded in DEV.md 4c the turn it arrives and fixed AHEAD of every row below | C210 |
 | todo | Land C208 after the class (wrong answers at exit 0 first); the full sweep its main.cpp/PostProcessor reach flags is decided with a written reason; then the four branch builds, ONE integration at a time, in this order: E2+E3, E6+MASS, E7+E8, dynamic slice 2; the site checked after each push | C208, C195, C205 |
 | todo | (Opus) Acetic acid, ONE slice (a wrong reaction heat at exit 0 on start-here step 6): the corrected constant (5bed50aeb) + the associated vapour rebased on it, the latent heat at Tb re-measured (near the measured 24.4), the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; the seven exotherm tutorials to Vitor | C201 (1) |
-| todo | (Opus) The document set: decide the slices from the survey and dispatch the first two -- the PFD as a PDF (stream table, equipment tags, utilities legend, title block) and the equipment list -- the deliverables no old report had | C207, C203, C204, C210 |
+| todo | Document set S3 (line list per routed pipe, declared window, declared fittings, pressure deficit and the pump it needs) and S4 (the instrument and loop declaration, the instrument index), both after S1 lands; then S5 the P&ID and S6 the control narrative | C207, C203, C204, C210 |
 | todo | PIF E4 + E5: building cost from the rooms' areas; economics hygiene (working capital by three methods side by side, royalty only inside a patent window) -- AFTER C208 lands (both touch EconomicsPass) | C195, C210 |
 
 ## Next three days (at most 8)
 
 | status | what | ref |
 |---|---|---|
-| todo | Document set, line list: a specification sheet per routed pipe (length from the layout, bore from a velocity window or the economic diameter, fittings and valves declared, total pressure drop, the pump the line needs) -- after the survey | C207, C210 |
-| todo | Document set, instruments: the loop and instrument declaration (one grammar, read by choupoCtrl), the instrument index, then the P&ID as a PDF and the control narrative generated from it | C203, C204, C210 |
+| todo | Document set S7: the economic pipe diameter and the pipe cost (new physics, a cited correlation) | C207 |
 | todo | The control-placement EduTool, pages 1-5 and the plant method page (the Pareto is in C204); its loops use the instrument grammar above | C204 |
 | todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag (they feed the digital twin) | C205 |
 | todo | State checks: measure the seal-drift finding against main (9 sucrose / H2SO4 mirrors, 1809 moved values); one browser run on the site of each unit that reached main without one (Complete 0/, pressure exchanger, boron split, dynamic tank; C178, C182) | C201, C196 |

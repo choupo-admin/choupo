@@ -253,6 +253,28 @@ sheet, so run them after S1 to reuse the tag; S5 waits for both.
 | Q9 | Stream table on the PFD: always the engine's `streamTable`, with `reports { streamTable {} }` turned on by default for plant cases? | Yes. Reason: the SWRO flagship publishes none today; a PFD without a stream table is the deficiency the reports show |
 | Q10 | Where do the generated documents live: `reports/documents/` of the case (regenerated whole, git-ignored like `design/`) or the GUI only? | `reports/documents/` for CSV and the data; the PDF is made by the GUI from the same data. Reason: one engine home for the numbers, the GUI draws (the 2026-09-05 first-law rule) |
 
+## 8. Decisions (the architect, 2026-11-03, rule 00; Vitor may reverse any)
+
+The ten questions of §6 are architecture and are decided here, each by its
+recommended answer, with ONE change:
+
+* Q1 both: the generated tag (Turton's `XX-YZZ A/B`) is the default and a
+  declared `tag` wins, announced.  Q2 the print route.  Q3 an indoor line's
+  length is DECLARED or the line is listed "length not declared" with what
+  needs no length computed.  Q4 K values declared by the case; a shipped table
+  only after its primaries are read.  Q5 the declared velocity window in S3;
+  the economic diameter is S7.  Q6 our own ISA-like letter table, called a
+  convention, the standard cited by title only.  Q7 yes, with the footer
+  saying the loops do not run.  Q8 describe declared loops only.  Q10
+  `reports/documents/` for the data; the GUI makes the PDF from it.
+* Q9 CHANGED: the stream table is turned on in the WITNESS cases by
+  declaration (`reports { streamTable {} }`); making it the default for every
+  plant case is not decided until what it moves in the published results is
+  measured (a default that changes output is a corpus change).
+
+Order: S1 and S2 now, on branches (they touch different homes); S3 and S4
+after S1; S5 after S3 and S4; S6; S7; S8 is the digital twin (C203).
+
 ## 7. What this note does not claim
 
 * No file, key or number above was changed or added; the line list is a
