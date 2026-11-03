@@ -226,6 +226,8 @@ std::vector<EquipmentSizing> StorageTankSize::size(const std::string& name,
         it.unitName      = name;
         it.equipmentType = type_;
         it.equipmentTag  = "tank" + std::to_string(k);
+        it.parallelIndex = k;
+        it.parallelOf    = nTanks;
         it.material      = material.name;
         it.stream        = stream;
         it.basis         = basis;

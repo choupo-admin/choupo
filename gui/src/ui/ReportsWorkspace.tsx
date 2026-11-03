@@ -88,6 +88,8 @@ import { allSheets } from "../case/hallSet.js";
 import { TrainsAndRacks } from "./TrainsAndRacks.js";
 import { hasBankSheet } from "../case/withBanks.js";
 import { ExportLayoutButton } from "./ExportLayoutButton.js";
+import { equipmentListHtml } from "../case/equipmentListSheet.js";
+import { fetchEngineVersion, engineVersionLabel } from "../case/engineVersion.js";
 import {
   parseDesignSheet, unitDesignSheets, type DesignPort, type DesignSheet,
 } from "../case/designSheet.js";
@@ -103,7 +105,7 @@ import {
   panelBoxProps, usePanel, usePanelShortcut,
 } from "./panelContract.js";
 import type { UnitSpec } from "../case/types.js";
-import type { EquipmentItem, RunResult } from "../adapters/SolverAdapter.js";
+import type { EquipmentItem, EquipmentListRow, RunResult } from "../adapters/SolverAdapter.js";
 
 export function ReportsWorkspace() {
   const runResult = useStore((s) => s.runResult);
@@ -182,7 +184,8 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
   //  order; this map only knows how to draw each.  A body that reaches here
   //  for a fact that is false cannot happen: the list did not include it.
   const body: Record<ReportSectionId, () => React.ReactNode> = {
-    equipment:  () => <EquipmentDesign items={runResult.equipment ?? []} />,
+    equipment:  () => <EquipmentDesign items={runResult.equipment ?? []}
+                         list={runResult.equipmentList?.rows} caseName={caseName} />,
     sheets:     () => <EquipmentSheets designFiles={runResult.designFiles} tree={tree} />,
     utilities:  () => <UtilitiesBody rows={runResult.utilityAllocation ?? []} />,
     mass:       () => <MassBody runResult={runResult} />,
@@ -961,7 +964,19 @@ function PortTable({ label, ports }: { label: string; ports: DesignPort[] }) {
  *  INSIDE a plant that has them keeps its own honest heading rather than being
  *  absorbed into a neighbour.
  */
-function EquipmentDesign({ items }: { items: EquipmentItem[] }) {
+function EquipmentDesign({ items, list, caseName }: {
+  items: EquipmentItem[]; list?: EquipmentListRow[]; caseName: string;
+}) {
+  //  THE PRINTABLE EQUIPMENT LIST (slice S1 of the plant document set): the
+  //  engine's own rows, laid out on a page that carries its own Print button.
+  //  The engine version is read from the stamp beside the binaries; unread,
+  //  the page says so.
+  const openList = async () => {
+    if (!list || list.length === 0) return;
+    const v = await fetchEngineVersion(import.meta.env.BASE_URL);
+    openInTab(equipmentListHtml(list, caseName || "case",
+      v ? engineVersionLabel(v) : null));
+  };
   const anySector = items.some((i) => !!i.sector);
   //  Group in the engine's own order.  A Map preserves insertion order, which
   //  is the flowsheet's declared order -- a plant reads in the order it was
@@ -991,13 +1006,21 @@ function EquipmentDesign({ items }: { items: EquipmentItem[] }) {
 
   return (
     <>
-      <Text size="xs" c="dimmed" mb={6}>
-        {anySector
-          ? `${items.length} item(s) across ${groups.size} sector(s) — size, material, design basis and capital cost`
-          : `${items.length} item(s) — size, material, design basis and capital cost`}
-      </Text>
+      <Group justify="space-between" align="center" mb={6} wrap="nowrap">
+        <Text size="xs" c="dimmed">
+          {anySector
+            ? `${items.length} item(s) across ${groups.size} sector(s) — size, material, design basis and capital cost`
+            : `${items.length} item(s) — size, material, design basis and capital cost`}
+        </Text>
+        {list && list.length > 0 && (
+          <Button size="compact-xs" variant="light" onClick={openList}>
+            Open equipment list (print)
+          </Button>
+        )}
+      </Group>
       <Table striped withTableBorder fz="sm" ff="monospace">
         <Table.Thead><Table.Tr>
+          <Table.Th>tag</Table.Th>
           <Table.Th>unit</Table.Th>
           <Table.Th>equipment</Table.Th>
           <Table.Th>material</Table.Th>
@@ -1015,7 +1038,7 @@ function EquipmentDesign({ items }: { items: EquipmentItem[] }) {
               <Fragment key={sector || "flat"}>
                 {sector && (
                   <Table.Tr key={`h-${sector}`}>
-                    <Table.Td colSpan={4}>
+                    <Table.Td colSpan={5}>
                       <Text fw={700} c="accent.3" tt="uppercase" size="xs"
                         style={{ letterSpacing: 0.5 }}>{sector}</Text>
                     </Table.Td>
@@ -1042,6 +1065,9 @@ function EquipmentDesign({ items }: { items: EquipmentItem[] }) {
                     //  column emits five rows under one unit name and React
                     //  would see five duplicate keys.
                     <Table.Tr key={it.item}>
+                      {/*  THE PLANT TAG, as the engine stamped it: the name
+                           this item answers to in every other document. */}
+                      <Table.Td><Text span fw={700} ff="monospace">{it.tagNo ?? "—"}</Text></Table.Td>
                       <Table.Td pl={sector ? "lg" : undefined} title={it.item}>{leaf}</Table.Td>
                       {/*  THE ITEM, where the unit realises several.  Two of a
                            column five items are `shellTubeHX` and two are
@@ -1068,7 +1094,7 @@ function EquipmentDesign({ items }: { items: EquipmentItem[] }) {
             );
           })}
           <Table.Tr>
-            <Table.Td colSpan={4}><Text fw={700}>TOTAL</Text></Table.Td>
+            <Table.Td colSpan={5}><Text fw={700}>TOTAL</Text></Table.Td>
             <Table.Td ta="right"><Text fw={700}>{eur(totalCTM)}</Text></Table.Td>
             <Table.Td ta="right"><Text fw={700}>{totalCTM > 0 ? "100.0 %" : "—"}</Text></Table.Td>
           </Table.Tr>

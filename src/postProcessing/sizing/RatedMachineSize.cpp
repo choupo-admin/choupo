@@ -201,6 +201,11 @@ std::vector<EquipmentSizing> sizeVolumeRate(const std::string& unitName,
     d.unitName      = unitName;
     d.equipmentType = typeName;
     d.material      = material.name;
+    //  The plant tag's inputs (EquipmentTag.H): a pump, and how many machines
+    //  this item stands for -- the parallel pumps of a train, or, at a single
+    //  station, the running pumps plus the declared stand-by.
+    d.machineKind   = "volumeRate";
+    d.installed     = (N > 0) ? installed : installed + spare;
     d.set("Q_plant",           Qplant,                      "m3/h");
     //  The per-train numbers exist only where the plant is built in trains; a
     //  single station (the intake) publishes the plant's and no "train".
@@ -471,6 +476,8 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
     const int needed = std::max(1, static_cast<int>(std::ceil(load / perMachine - 1e-9)));
     d.set("utilisation",       util,            "-");
     d.set("machinesNeeded",    needed,          "-");
+    d.machineKind = kind;
+    d.installed   = installed;
     d.set("machinesInstalled", installed,       "-");
     d.set("machinesInPlan",    stage->unitsInstalled, "-");
     d.set("cycleTime_plan",    stage->cycleTime, "h");

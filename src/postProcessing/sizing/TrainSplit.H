@@ -94,6 +94,8 @@ inline int wholePerTrain(int plantCount, int trains, const std::string& what,
 inline void stamp(EquipmentSizing& d, int k, int N)
 {
     d.equipmentTag = "train" + std::to_string(k);
+    d.parallelIndex = k;                 // the plant tag: one number, letters A..
+    d.parallelOf    = N;
     d.set("trains",     static_cast<scalar>(N), "-");
     d.set("trainIndex", static_cast<scalar>(k), "-");
 }

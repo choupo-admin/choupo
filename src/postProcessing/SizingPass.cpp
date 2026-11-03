@@ -30,6 +30,7 @@ License
 #include "core/Advisory.H"
 #include "materials/MaterialRegistry.H"
 #include "sizing/EquipmentSize.H"
+#include "sizing/EquipmentTag.H"
 #include "sizing/MaterialLimits.H"
 #include "sizing/Inventory.H"
 #include "sizing/StorageTankSize.H"
@@ -519,7 +520,60 @@ int SizingPass::run(SimulationResult& result)
         //  for how that key is formed, and it is the unit's own name
         //  whenever the unit realises a single item -- so every case that
         //  existed before this change keys exactly as it did.
+        //  The plant tag's inputs (EquipmentTag.H): the sizer that made the
+        //  item and the order it entered, so tags number by declaration.
+        dims.sizerType = utype;
+        dims.ordinal   = static_cast<int>(result.sizings.size());
         result.sizings[dims.itemId()] = std::move(dims);
+    };
+
+    //  A TAG THE CASE DECLARES ON A SIZING ENTRY (`tag <word>;` or, for a
+    //  unit that realises several items, `itemTags { <item> <word>; }`).  Its
+    //  one home is the postDict entry, which describes the physical object;
+    //  the tag itself is stamped later, once, by `equipmentTags::assign`.
+    auto declareTags = [&](const DictPtr& entry, const std::string& who,
+                           std::vector<EquipmentSizing>& list)
+    {
+        const bool haveTag  = entry->found("tag");
+        const bool haveItem = entry->found("itemTags");
+        if (!haveTag && !haveItem) return;
+        if (haveTag && haveItem)
+            throw std::runtime_error(who + ": declares both `tag` and"
+                " `itemTags`.  `tag` names a unit that is one item (or one"
+                " family of identical parallel items); `itemTags` names the"
+                " items of a unit that realises several.  Keep one.");
+        if (haveTag)
+        {
+            const std::string w = entry->lookupWord("tag");
+            bool family = list.size() > 1;
+            for (const auto& d : list)
+                if (!(d.parallelOf > 1)) family = false;
+            if (list.size() > 1 && !family)
+                throw std::runtime_error(who + ": declares `tag " + w + ";` but"
+                    " the unit realises " + std::to_string(list.size()) + " items;"
+                    " one word cannot name them all.  Declare `itemTags { <item>"
+                    " <tag>; }` with the items' own words (shell, condenser, ...).");
+            for (auto& d : list) d.declaredTag = w;
+            return;
+        }
+        const DictPtr it = entry->subDict("itemTags");
+        std::set<std::string> used;
+        for (auto& d : list)
+        {
+            const std::string key = d.equipmentTag.empty() ? std::string("item")
+                                                           : d.equipmentTag;
+            if (it->found(key)) { d.declaredTag = it->lookupWord(key); used.insert(key); }
+        }
+        for (const auto& k : it->keys())
+            if (!used.count(k))
+            {
+                std::string have;
+                for (const auto& d : list)
+                    have += " " + (d.equipmentTag.empty() ? std::string("item")
+                                                          : d.equipmentTag);
+                throw std::runtime_error(who + ": `itemTags` names '" + k
+                    + "', which is not an item of this unit.  Its items:" + have + ".");
+            }
     };
 
     std::string shown;              // the sector heading currently printed
@@ -577,6 +631,7 @@ int SizingPass::run(SimulationResult& result)
                         inventoryRefused.push_back(e.what());
                     }
             }
+            declareTags(u, "sizing '" + uname + "'", itemList);
             for (auto& dims : itemList)
             {
                 //  ONE SHELL AROUND OTHER ITEMS (C69): the members' own
@@ -632,7 +687,9 @@ int SizingPass::run(SimulationResult& result)
             const std::string matName = st->lookupWord("material");
             const auto& material = MaterialRegistry::byName(matName);
             StorageTankSize sizer;
-            for (auto& dims : sizer.size(sname, result, material, st))
+            auto tanks = sizer.size(sname, result, material, st);
+            declareTags(st, "storage '" + sname + "'", tanks);
+            for (auto& dims : tanks)
             {
                 try {
                     dims.inventory = inventory::ofTank(dims, result,
@@ -700,6 +757,7 @@ int SizingPass::run(SimulationResult& result)
                 std::vector<EquipmentSizing> vessels = pl.liquid
                     ? LiquefiedGasStoreSize().size(sname, result, material, st)
                     : GasStoreSize().size(sname, result, material, st);
+                declareTags(st, std::string(pl.noun) + " '" + sname + "'", vessels);
                 for (auto& dims : vessels)
                 {
                     const std::string kind = dims.equipmentType;
@@ -735,6 +793,10 @@ int SizingPass::run(SimulationResult& result)
     std::cout << "=====================================================================\n\n";
 
     reportInventory(result, inventoryRefused);
+
+    //  THE PLANT TAGS, stamped once now that every item of this pass is in
+    //  (a later pass that adds items calls it again; the rule is idempotent).
+    equipmentTags::assign(result);
     return failures;
 }
 

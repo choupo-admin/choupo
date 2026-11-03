@@ -266,6 +266,12 @@ equipment waterCooler          values.Q_kW      66246.8193416      1e-4
 equipment waterCooler          values.U         700                1e-4
 equipment waterCooler          values.pressureDesign 200                1e-4
 equipment waterCooler          values.weight    23858.3983223      1e-4
+equipment FEHE                   tagNo            E-101            exact
+equipment letdown                tagNo            V-102            exact
+equipment makeupComp             tagNo            C-101            exact
+equipment recycleComp            tagNo            C-102            exact
+equipment separator              tagNo            V-101            exact
+equipment waterCooler            tagNo            E-102            exact
 boundary global               H_feeds_kW       -39777909.9013     1e-4
 boundary global               Q_boundary_kW    -5045.14980823     1e-4
 boundary global               H_products_kW    -39782956.7541     1e-4

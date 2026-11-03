@@ -166,6 +166,7 @@ equipment PX                   values.pressureDesign 70                 1e-4
 equipment PX                   values.ratedFlowPerUnit 60                 1e-4
 equipment PX                   values.rotors    1                  1e-4
 equipment PX                   values.salinityIncrease 0.0283175895758    1e-4
+equipment PX                     tagNo            PX-101           exact
 utility Booster                power.electricity.duty_kW 0.488866652535     1e-4
 utility Booster                power.electricity.T -1                 1e-4
 utility Booster                power.electricity.kg_s 0                  1e-4

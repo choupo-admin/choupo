@@ -426,6 +426,39 @@ export interface EquipmentCost {
   factors?: { [k: string]: number };
 }
 
+/** One row of the engine's equipment list (`result/EquipmentList`), the rows of
+ *  `reports/equipment/equipmentList.csv`.  The GUI draws and prints these and
+ *  computes none of them; `null` is a number the item does not have (no
+ *  pressure on its sheet, no cost). */
+export interface EquipmentListRow {
+  tag: string;
+  /** The item id (the CSV column is `item`; the JSON key differs so a reader
+   *  matching `"item":` finds only the equipment block's rows). */
+  itemId: string;
+  unit: string;
+  sector: string;
+  equipment: string;
+  installed: number;
+  sizeKey: string;
+  sizeValue: number | null;
+  sizeUnit: string;
+  dimensions: string;
+  pressureDesign: number | null;
+  pressureUnit: string;
+  material: string;
+  currency: string;
+  purchased: number | null;
+  bareModule: number | null;
+  totalModule: number | null;
+  costNote: string;
+  tagBy: string;
+}
+
+export interface EquipmentListBlock {
+  columns: string[];
+  rows: EquipmentListRow[];
+}
+
 export interface EquipmentItem {
   unit: string;
   /** THE PHYSICAL ITEM this row is, as the engine identifies it
@@ -438,6 +471,11 @@ export interface EquipmentItem {
    *  `refluxDrum`.  Absent where the unit realises one item, so its ABSENCE is
    *  the positive statement "this unit is one piece of equipment". */
   tag?: string;
+  /** THE PLANT TAG (`P-101A`, the engine's `EquipmentTags` rule), the name
+   *  this item answers to in the equipment list, the cost table and the
+   *  sheets.  NOT `tag` above, which is the item word inside a unit.  Absent
+   *  only from a result of an engine before the tags existed. */
+  tagNo?: string;
   /** Absent for a flat case, which has no hierarchy to report. */
   sector?: string;
   type: string;
@@ -570,6 +608,9 @@ export interface RunResult {
    *  by name -- the cost that follows from it.
    *  ABSENT unless the case declares a `sizing {}` block in system/postDict. */
   equipment?: EquipmentItem[];
+  /** The equipment list as the engine built it (slice S1 of the plant
+   *  document set); absent when the case declares no sizing. */
+  equipmentList?: EquipmentListBlock;
   txy?: TxyData;
   trajectory?: TrajectoryData;
   /** OpenFOAM-style real-time INSTANTS harvested from MEMFS after a dynamic run

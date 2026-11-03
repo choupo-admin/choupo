@@ -32,6 +32,7 @@ License
 #include "core/Dimensions.H"
 #include "core/RegistryRefusal.H"
 #include "result/ResultEmitter.H"   // overallMassFlow: the one home
+#include "sizing/EquipmentTag.H"
 
 #include <algorithm>
 #include <cmath>
@@ -256,6 +257,7 @@ void sizeHvac(const DictPtr& h, SimulationResult& result)
             " temperature, filter pressure drop beyond the declared rise",
             "no cost correlation exists for air handling; the building quote"
             " carries HVAC (`costing { quotes }`)");
+        d.ordinal = static_cast<int>(result.sizings.size());
         result.sizings[d.itemId()] = std::move(d);
     };
 
@@ -438,6 +440,7 @@ void sizeWater(const DictPtr& w, SimulationResult& result)
         " distribution loop, WFI",
         "no cost correlation exists for a water generator; the building and"
         " utilities quotes carry it (`costing { quotes }`)");
+    g.ordinal = static_cast<int>(result.sizings.size());
     result.sizings[g.itemId()] = std::move(g);
 
     EquipmentSizing t;
@@ -450,6 +453,7 @@ void sizeWater(const DictPtr& w, SimulationResult& result)
         " recirculation or its sanitisation",
         "no cost correlation exists for a purified-water tank here; a quote"
         " carries it (`costing { quotes }`)");
+    t.ordinal = static_cast<int>(result.sizings.size());
     result.sizings[t.itemId()] = std::move(t);
 }
 
@@ -462,6 +466,8 @@ int CleanUtilitiesPass::run(SimulationResult& result)
             " and/or `purifiedWater { }`; neither is.");
     if (dict_->found("hvac"))          sizeHvac(dict_->subDict("hvac"), result);
     if (dict_->found("purifiedWater")) sizeWater(dict_->subDict("purifiedWater"), result);
+    //  The plant tags of the items just added (the rule is idempotent).
+    equipmentTags::assign(result);
     return 0;
 }
 

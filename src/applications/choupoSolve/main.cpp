@@ -75,6 +75,7 @@ Description
 #include "thermo/utility/UtilityCatalogue.H"
 #include "outerDriver/OuterDriver.H"
 #include "io/DesignSheetWriter.H"
+#include "io/EquipmentListWriter.H"
 #include "postProcessing/layout/PlantLayout.H"
 #include "postProcessing/layout/BuildingLayout.H"
 #include "io/InternalStateIO.H"
@@ -1229,6 +1230,10 @@ try
             tp = ThermoPackageBuilder::build(packageDict, db, chemPtr);
             DesignSheetWriter::write(fs::current_path().string(), result,
                                      tp, verbosity);
+            //  THE EQUIPMENT LIST, beside the sheets it recounts: it needs
+            //  the costs a later pass adds, so it is written here too.
+            EquipmentListWriter::write(fs::current_path().string(), result,
+                                       verbosity);
         } catch (const std::exception& e) {
             //  A sheet that cannot be written must SAY so and must not kill
             //  the run: the answer is already computed and the reports are

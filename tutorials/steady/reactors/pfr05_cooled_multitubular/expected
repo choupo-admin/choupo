@@ -86,6 +86,8 @@ equipment reactor/reactor      values.weight    21049.5704351      1e-4
 equipment reactor/reactor      cost.purchased   114709.458661      1e-4
 equipment reactor/reactor      cost.bareModule  632553.838838      1e-4
 equipment reactor/reactor      cost.totalModule 746413.529829      1e-4
+equipment reactor/catalystCharge tagNo            CAT-101          exact
+equipment reactor/reactor        tagNo            R-101            exact
 boundary global               H_feeds_kW       675.894433289      1e-4
 boundary global               Q_boundary_kW    -639.082703919     1e-4
 boundary global               H_products_kW    36.8117293701      1e-4

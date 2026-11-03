@@ -110,7 +110,7 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
     f << "unit";
     if (anySector) f << ",sector";
     if (anyTag)    f << ",equipmentTag";
-    f << ",purchased_" << currency
+    f << ",tag,purchased_" << currency
       << ",bareModule_" << currency
       << ",totalModule_" << currency
       << ",correlation,sizeKey,S,K1_or_CpRef,K2_or_SRef,K3_or_n,"
@@ -169,6 +169,14 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
         if (anyTag)
             f << "," << (c.equipmentTag.empty() ? std::string("(single item)")
                                                 : c.equipmentTag);
+        //  THE PLANT TAG is read off the SIZING this cost prices (the one
+        //  home), never kept on the cost record; a cost no sizing owns (a
+        //  quote on a unit with no item) has none.
+        {
+            auto sit = ctx.result.sizings.find(unit);
+            f << "," << (sit == ctx.result.sizings.end() ? std::string()
+                                                         : sit->second.tagNo);
+        }
         f << "," << std::fixed << std::setprecision(2)
           << c.purchasedCost << "," << c.bareModuleCost
           << "," << c.totalModuleCost
@@ -202,12 +210,12 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
     for (const auto& s : sectorOrder)
     {
         const auto& acc = bySector.at(s);
-        f << "SUBTOTAL," << s << "," << std::fixed << std::setprecision(2)
+        f << "SUBTOTAL," << s << ",," << std::fixed << std::setprecision(2)
           << acc[0] << "," << acc[1] << "," << acc[2] << "\n";
     }
     f << "TOTAL";
     if (anySector) f << ",";
-    f << "," << std::fixed << std::setprecision(2)
+    f << ",," << std::fixed << std::setprecision(2)       // (the `tag` column is empty)
       << tp << "," << tb << "," << tt << "\n";
     f.close();
 
