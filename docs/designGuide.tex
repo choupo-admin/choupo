@@ -244,8 +244,10 @@ Heat removal sets the geometry. Estimate \textbf{adiabatic \(\Delta\)T\_ad =
 go to cooled multitube, CSTR with coil/jacket, or dilute/recycle. Jacket
 U for stirred liquids \(\approx\) \textbf{300--1000 W/m\textsuperscript{2}K}; internal coils
 \textbf{500--1500}. Keep the \textbf{adiabatic-temperature-rise /
-runaway} margin honest: \texttt{batch06\_adaptive\_runaway} demonstrates
-thermal runaway when cooling can\textquotesingle t keep up.
+runaway} margin honest: the batch cases \texttt{batch26\_cooling\_failure} and
+\texttt{batch27\_semibatch\_dosing} demonstrate thermal runaway when cooling
+can\textquotesingle t keep up (\texttt{batch06\_adaptive\_runaway} no longer
+does: its esterification is nearly thermoneutral).
 
 \hypertarget{sizing-rules}{%
 \subsection{Sizing rules}\label{sizing-rules}}

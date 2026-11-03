@@ -7,16 +7,22 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  batch06_adaptive_runaway -- the SAME adiabatic esterification runaway as
+  batch06_adaptive_runaway -- the SAME adiabatic esterification as
   batch02_adiabatic, but solved with OPT-IN ADAPTIVE time-stepping.
+
+  Note: this case was written around a thermal runaway.  After the acetic-acid
+  correction (docs/design/acetic-acid-latent-heat-closure.md) the liquid
+  esterification is nearly thermoneutral (T 320 -> 322 K, ~22 % converted in
+  the window), so there is no runaway for the step to resolve; the adaptive
+  mechanism below is unchanged.  A case with a genuine runaway is planned.
 
   THE IDEA (like OpenFOAM's adjustTimeStep, but the criterion is the
   integrator's LOCAL ERROR, not a Courant number --- there is no mesh here):
   the step starts LOW (deltaT0) and the stiff Rosenbrock23 integrator GROWS or
   SHRINKS it automatically to hold the rtol/atol tolerance.  In the cold
   induction the temperature barely moves, so the step grows toward deltaTmax;
-  through the thermal runaway the step shrinks to resolve the sharp dT/dt, then
-  grows again on the plateau.  At verbosity 3 the adaptive step HISTORY is
+  where dT/dt is sharp (a runaway, which this particular case no longer has)
+  the step would shrink to resolve it, then grow again on the plateau.  At verbosity 3 the adaptive step HISTORY is
   printed --- the student SEES h adapt.
 
   The trajectory rows + the time directories (on by default) still land on the
@@ -29,7 +35,7 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoBatch;
-description   "Adiabatic esterification runaway (AcOH+EtOH); ADAPTIVE Rosenbrock23 time-stepping --- the step grows after the fast transient (glass-box step history)";
+description   "Adiabatic esterification (AcOH+EtOH), nearly thermoneutral after the acetic-acid correction; ADAPTIVE Rosenbrock23 time-stepping --- the step grows as the transient settles (glass-box step history; the thermal runaway of the old exotherm is gone, replacement case planned)";
 
 verbosity     3;
 

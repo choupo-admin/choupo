@@ -12,7 +12,7 @@
 
 tier          tutorial;
 application   choupoSolve;
-description   "ADIABATIC CSTR: T_out solved WITH the extents; Q=0 by construction (elements datum)";
+description   "ADIABATIC CSTR: T_out solved WITH the extents; Q=0 by construction (elements datum); the liquid esterification is nearly thermoneutral, T_out only ~5 K above the feed";
 
 verbosity     3;
 

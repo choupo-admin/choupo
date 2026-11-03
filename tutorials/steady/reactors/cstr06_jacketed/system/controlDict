@@ -11,7 +11,7 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description   "JACKETED CSTR: the coolant carries the reaction heat away -- Q = UA (T_c - T_out)";
+description   "JACKETED CSTR: the coolant carries heat away -- Q = UA (T_c - T_out); the nearly thermoneutral esterification leaves the outlet below the feed (replacement exothermic case planned)";
 
 verbosity     3;
 

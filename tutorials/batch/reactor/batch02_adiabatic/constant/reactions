@@ -38,6 +38,7 @@ esterification_etac_exo
     }
 
     // Heat of reaction: from the species' standardThermochemistry (elements datum) --
-    // the engine computes -26.06 kJ/mol of ethanol, the authoritative value.
+    // the engine computes about -2.4 kJ/mol of ethanol at 320 K (liquid basis,
+    // after the acetic-acid correction; it used to print -26.06), the authoritative value.
     // No dict dH_rxn override here: all four species carry formation data.
 }

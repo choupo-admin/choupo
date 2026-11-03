@@ -2,17 +2,17 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 kpi     reactor                P_final          101300           1e-4
-kpi     reactor                T_final          428.2212252      1e-4
-kpi     reactor                n_aceticAcid_final 9.87885051063e-31 1e-4
-kpi     reactor                n_ethanol_final  9.87885051063e-31 1e-4
-kpi     reactor                n_ethylAcetate_final 0.00925          1e-4
-kpi     reactor                n_water_final    0.00925          1e-4
+kpi     reactor                T_final          322.248040531    1e-4
+kpi     reactor                n_aceticAcid_final 0.00722392816212 1e-4
+kpi     reactor                n_ethanol_final  0.00722392816212 1e-4
+kpi     reactor                n_ethylAcetate_final 0.00202607183788 1e-4
+kpi     reactor                n_water_final    0.00202607183788 1e-4
 kpi     reactor                t_end            600              1e-4
 kpi     reactor                totalMoles_final 0.0185           1e-4
-kpi     campaign               element_C_closure_rel 0                1e-4
-kpi     campaign               element_H_closure_rel 0                1e-4
-kpi     campaign               element_O_closure_rel 0                1e-4
-kpi     campaign               element_worst_closure_rel 0                1e-4
+kpi     campaign               element_C_closure_rel 3.75075346157e-16 1e-4
+kpi     campaign               element_H_closure_rel 3.00060276926e-16 1e-4
+kpi     campaign               element_O_closure_rel 3.75075346157e-16 1e-4
+kpi     campaign               element_worst_closure_rel 3.75075346157e-16 1e-4
 kpi     campaign               energy_balance_available 0                1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
 kpi     campaign               energy_records_valid 0                1e-4

@@ -233,19 +233,20 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
              `reactorOutlet::temperatureOfEnthalpy`, neither prices an
              enthalpy on the inlet's rung (`H_stream_formation(..., vf_in,
              ...)`), and `announceEnergyRungMismatch` exists nowhere in
-             src/.  OUTPUT, three copies at 1 atm of corpus cases whose
-             product boils there: cstr04_adiabatic and pfr04_adiabatic must
-             publish |Q_kW| <= 1e-6 kW with a TWO-PHASE outlet (0 < vf < 1:
-             the boiling inside the balance is what holds T down), and
-             cstr06_jacketed must publish Q_kW = UA (T_coolant - T_out) to
-             1e-6 kW, also two-phase; none may announce an unmatched
-             enthalpy or a rung mismatch, and each plant's first law closes
-             to 1e-6 kW.  A fourth copy, cstr05_multiplicity at 1 atm, must
-             ALSO find its three steady states: the scan's ceiling (the
-             complete-conversion temperature) is a Newton on the same
-             surface, the boiling puts a kink in it, and the first C77 cut
-             stalled there at the feed's T -- the ceiling sat below the
-             ignited branch and the run reported ONE steady state at exit 0.
+             src/.  OUTPUT (revised 2026-11-03, the acetic-acid correction
+             made the liquid esterification nearly thermoneutral, so the
+             corpus cases no longer boil at 1 atm): copies of cstr04_adiabatic
+             and pfr04_adiabatic at 0.7 bar must publish |Q_kW| <= 1e-6 kW
+             with a TWO-PHASE outlet (0 < vf < 1: the boiling inside the
+             balance is what holds T down), and a copy of cstr06_jacketed at
+             0.7 bar with a 400 K HEATING coolant must publish Q_kW = UA
+             (T_coolant - T_out) to 1e-6 kW, also two-phase; none may announce
+             an unmatched enthalpy or a rung mismatch, and each plant's first
+             law closes to 1e-6 kW.  A fourth copy, cstr05_multiplicity at
+             1 atm (a 300 K feed that never boils), is the single-phase
+             control: one steady state, vf = 0, Q_kW = 0.  (The old text
+             required three steady states for cstr05; they belonged to the
+             retired -25.7 kJ/mol exotherm.)
   (o) A LIQUID BELOW ITS BUBBLE PRESSURE IS FOUND TWO-PHASE -- THE
       INCIPIENT PHASE IS ITERATED (2026-10-20, DEV.md 4c C110 G7; the C92
       finding).  The flash's phase test evaluated every K at x = y = z: the
@@ -1627,12 +1628,30 @@ def main() -> int:
                 fail.append(f"(n5) {p.relative_to(ROOT)} still carries "
                             "`announceEnergyRungMismatch` -- the gap it "
                             "announced is closed (C77)")
-        # (fixture, case, want "adiabatic" or "jacketed")
-        for tag, src_case, kind in (
-                ("cstr04_1atm", ADIABATIC_SRC, "adiabatic"),
-                ("pfr04_1atm", ADIABATIC_PFR_SRC, "adiabatic"),
-                ("cstr05_1atm", MULTIPLICITY_SRC, "adiabatic"),
-                ("cstr06_1atm", JACKETED_SRC, "jacketed")):
+        # (fixture, case, want "adiabatic" or "jacketed", P in bar, T_coolant
+        # override, expected: "twoPhase" or "liquid")
+        #
+        # 2026-11-03: the acetic-acid correction (K = 3.107, Kirchhoff
+        # liquid bridge) made the liquid esterification nearly thermoneutral
+        # (dH_rxn ~ -2.7 kJ/mol), so these cases no longer heat themselves to
+        # 394-454 K and their 1 atm copies no longer boil.  The arm's purpose
+        # -- the T-solve balances the enthalpy of the outlet's OWN equilibrium
+        # -- needs a boiling outlet, so the fixtures are now run at 0.7 bar,
+        # where the product boils near 352 K (measured: vf 0.008 / 0.016 /
+        # 0.118); the jacketed copy gets a HEATING coolant (400 K) because
+        # its declared 320 K coolant only cools.  cstr05 starts from a 300 K
+        # feed and can never reach a boiling range at any sensible pressure:
+        # it stays at 1 atm as the single-phase, single-steady-state control
+        # (its three steady states belonged to the old exotherm).
+        for tag, src_case, kind, p_bar, t_cool, want_phase in (
+                ("cstr04_lowP", ADIABATIC_SRC, "adiabatic", "0.7", None,
+                 "twoPhase"),
+                ("pfr04_lowP", ADIABATIC_PFR_SRC, "adiabatic", "0.7", None,
+                 "twoPhase"),
+                ("cstr05_1atm", MULTIPLICITY_SRC, "adiabatic", "1.01325",
+                 None, "liquid"),
+                ("cstr06_lowP", JACKETED_SRC, "jacketed", "0.7", "400",
+                 "twoPhase")):
             ad = tmp / tag
             shutil.copytree(ROOT / src_case, ad,
                             ignore=shutil.ignore_patterns("converged", "reports",
@@ -1640,7 +1659,11 @@ def main() -> int:
             for f in (ad / "0").iterdir():
                 if f.is_file():
                     f.write_text(re.sub(r"(?m)^P\s+[^;]*;", "P               "
-                                        "101325 Pa;", f.read_text()))
+                                        f"{p_bar} bar;", f.read_text()))
+            if t_cool is not None:
+                fdp = ad / "system" / "flowsheetDict"
+                fdp.write_text(re.sub(r"(?m)^(\s*T_coolant\s+)[^;]*;",
+                                      rf"\g<1>{t_cool};", fdp.read_text()))
             rc, alog = run(ad)
             if rc != 0:
                 fail.append(f"(n5) the 1 atm copy of {src_case} did not run "
@@ -1648,11 +1671,16 @@ def main() -> int:
                 continue
             m = re.search(r'"reactorOut":\s*\{[^}]*"vf":\s*([-0-9.eE+]+)', alog)
             vf = float(m.group(1)) if m else None
-            if vf is None or not (1e-6 < vf < 1.0 - 1e-6):
+            if want_phase == "twoPhase" and (
+                    vf is None or not (1e-6 < vf < 1.0 - 1e-6)):
                 fail.append(f"(n5) {tag} published its product at vf = {vf}, "
-                            "expected a two-phase outlet: at 1 atm the "
+                            "expected a two-phase outlet: at 0.7 bar the "
                             "product boils, and a balance that sees the "
                             "latent heat stops inside the boiling range")
+            if want_phase == "liquid" and (vf is None or vf > 1e-6):
+                fail.append(f"(n5) {tag} published its product at vf = {vf}, "
+                            "expected a single-phase liquid (a 300 K outlet "
+                            "at 1 atm)")
             kq = re.search(r'"reactor":\s*\{[^}]*"Q_kW":\s*([-0-9.eE+]+)', alog)
             kt = re.search(r'"reactor":\s*\{[^}]*"T_out":\s*([-0-9.eE+]+)', alog)
             q = float(kq.group(1)) if kq else None
@@ -1674,12 +1702,14 @@ def main() -> int:
             if tag == "cstr05_1atm":
                 ks = re.search(r'"reactor":\s*\{[^}]*"steadyStates":\s*'
                                r'([-0-9.eE+]+)', alog)
-                if not ks or float(ks.group(1)) != 3.0:
+                if not ks or float(ks.group(1)) != 1.0:
                     fail.append("(n5) cstr05 at 1 atm found "
                                 f"{ks.group(1) if ks else None} steady "
-                                "state(s), expected 3 -- the scan's ceiling "
-                                "must clear the boiling plateau, or the "
-                                "ignited branch falls outside the scan")
+                                "state(s), expected 1 -- with the corrected "
+                                "(nearly thermoneutral) liquid esterification "
+                                "the removal line cuts the generation curve "
+                                "once; its old three states were the wrong "
+                                "exotherm")
             if re.search(r"energy balance that set T_out|found no outlet "
                          r"temperature at which", alog):
                 fail.append(f"(n5) {tag} announced a rung mismatch or an "
