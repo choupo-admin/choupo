@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  solverDict  --  numerical strategy: the recycle plan (tear cuts + solver)
+                  and per-unit-op-type solver options
+\*---------------------------------------------------------------------------*/
+
+// ---- Recycle plan: the tear CUT + the dominant-eigenvalue extrapolation ----
+//
+//  This case is process05_isomerization_recycle with ONE change: the recycle
+//  is closed by `recycleSolver DominantEigenvalue;` (Orbach & Crowe, Can. J.
+//  Chem. Eng. 49 (1971) 509; the formulas and every safeguard are derived in
+//  src/solver/DominantEigenvalue.H).  The map "tear in -> tear out" of a
+//  recycle contracts along a dominant eigenvector, so the differences of
+//  successive direct-substitution iterates shrink by a factor lambda per
+//  pass.  The aid estimates lambda from two consecutive differences and
+//  steps to  x = g(x) + lambda/(1-lambda) (g(x) - x), the sum of the
+//  geometric tail.  It REPORTS ALOUD (a solver aid is the student's, never a
+//  crutch): the three numbers below are announced, every extrapolation
+//  prints its lambda, and a fall-back to plain direct substitution prints its
+//  reason (|lambda| above the bound, or the differences not parallel because
+//  several modes are alive).
+//
+//  MEASURED on this flowsheet, iterations to |dtear|2 < 1e-5:
+//      Newton on tears          2
+//      Wegstein (q in [-1,0])   9
+//      direct substitution      10   (Wegstein with q = 0)
+//      DominantEigenvalue       6    (one extrapolation, lambda = 0.214)
+//  On the same recycle the first-order estimate is exact once the second
+//  mode has died: the extrapolation cut the residual 2.2e-3 -> 1.7e-5 in one
+//  step.  It is not a better default than Newton here; it is a different
+//  tool for a loop where a Jacobian is expensive and Wegstein is erratic.
+//  It does NOT rescue every loop: cavett01_recycle_train, which defeats
+//  Wegstein, defeats it too (the differences are not parallel, the fall-backs
+//  are announced) -- a recorded limit, not a defect.
+tearStreams           ( recycle );
+recycleSolver          DominantEigenvalue;
+recycleTol             1e-5;
+recycleMaxIter         150;
+// The aid's own numbers, left at their defaults (and announced as such):
+// recycleDELambdaMax     0.9;     // |lambda| bound; the extrapolation factor lambda/(1-lambda) is 9 at most
+// recycleDEMinCosine     0.9;     // |cos| of successive differences required for "one mode dominates"
+// recycleDEInterval      3;       // direct steps between two extrapolations (the power method needs them)
