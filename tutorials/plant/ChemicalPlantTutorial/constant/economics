@@ -1,0 +1,129 @@
+/*---------------------------------------------------------------------------*\
+  ChemicalPlantTutorial / constant/economics  --  the CASE-SCOPED market tier.
+
+  POLICY (the glass-box price rule, mirroring data/standards/utilities/*.dat):
+    Market- and time-specific economic data (product/feed prices, labour rate,
+    FX, tax rate, target CEPCI) lives ONLY here -- never as a literal in the
+    C++.  Each value carries its costYear and a provenance{} block naming the
+    PRIMARY source (an index / bulletin / agency), so the figure is auditable
+    and refreshable.  EconomicsPass REFUSES to run if a required price is
+    absent (set economics.refuseOnMissingPrice 0; in the postDict to switch to
+    defaulted-but-loud).
+
+  These are DATED EXAMPLE values from citable primary sources -- representative
+  teaching figures, NOT a live appraisal.  Refresh the value + costYear (and
+  the matching CEPCI/FX in system/postDict) before any real costing run.
+  Currency: EUR per kg unless noted.
+
+  --- SCALE NOTE -------------------------------------------------------------
+  This proxy plant processes RawJuice = 150 kmol/h (~2.7 t/h, ~21 kt/yr feed)
+  and makes ~0.6 kg/s of dried sugar powder (~17 kt/yr) -- a small/pilot-scale
+  beet line.  The numbers below are sized to that throughput.
+
+  --- RESTORED 2026-11-02 (C208 follow-up) ------------------------------------
+  Deleted by 96abd3572 (2026-06-29, "drop the old") while system/postDict
+  kept running economics.  Names checked against the current sectored
+  flowsheetDict: RawJuice and Powder still exist unchanged -- no name was
+  renamed.  The other boundary inlets (PlantSteam, DryingAir, BdAir) are
+  raw-material inlets under the C208 rule, so they are declared: the air free
+  (ambient), the steam priced from the steamLP utility record (same number).
+\*---------------------------------------------------------------------------*/
+
+// ---- Products (revenue) ----------------------------------------------------
+products
+(
+    {
+        stream      Powder;           // dried crystalline white-sugar powder
+        price       0.557;            // EUR/kg  (= 557 EUR/tonne)
+        costYear    2025;
+        provenance
+        {
+            origin  "EU Commission Sugar Market Observatory -- EU average white-sugar price, Jan 2025 (557 EUR/t)";
+            method  "EU-average regional price bulletin; representative teaching figure";
+        }
+    }
+);
+
+// ---- Raw materials (purchased feeds) ---------------------------------------
+//   RawJuice is a dilute (6 mol% sucrose, ~94 mol% water) beet juice.  Priced
+//   from the EU sugar-beet farm-gate value, scaled by the juice sucrose
+//   content -- a derived figure, provenance states the derivation explicitly.
+rawMaterials
+(
+    {
+        stream      RawJuice;         // dilute beet juice feed (94% water, 6% sucrose mol)
+        price       0.018;            // EUR/kg of juice
+        costYear    2024;
+        provenance
+        {
+            origin  "EU Commission / USDA FAS EU Sugar Annual 2024 -- sugar-beet farm-gate ~40 EUR/t";
+            method  "derived: beet value pro-rated to the juice sucrose content (~6 mol%, ~18 wt% sugar carried) -> ~0.018 EUR/kg juice";
+        }
+    }
+    {
+        stream      PlantSteam;       // LP saturated steam to the evaporator chest (condensate leaves as EvapCondensate1)
+        price       0.026232;         // EUR/kg condensed = 12 EUR/GJ x 2186000 J/kg (dutyPerKg)
+        costYear    2022;
+        provenance
+        {
+            origin  "constant/utilities/steamLP.dat (= data/standards/utilities/steamLP.dat): cost 12 EUR/GJ delivered, costYear 2022; Sinnott & Towler 6th ed. 2022 Sec. 6.5.3";
+            method  "the SAME utility record's price on its own dutyPerKg (latent heat 2186 kJ/kg at 2.5 bar): 12/1e9 x 2.186e6 = 0.026232 EUR/kg; no new number";
+        }
+    }
+    {
+        stream      DryingAir;        // spray-dryer air
+        price       0;
+        costYear    2024;
+        provenance
+        {
+            origin  "ambient air, drawn from the atmosphere, not purchased";
+            method  "declared free; the fan/heating energy is a unit duty, not a purchase of the air";
+        }
+    }
+    {
+        stream      BdAir;            // belt-dryer air
+        price       0;
+        costYear    2024;
+        provenance
+        {
+            origin  "ambient air, drawn from the atmosphere, not purchased";
+            method  "declared free; the heating energy is a unit duty, not a purchase of the air";
+        }
+    }
+);
+
+// ---- Labour ----------------------------------------------------------------
+labourRate      35.0;                 // EUR/h, fully-loaded operating-labour rate
+labourRateYear  2024;
+labourProvenance
+{
+    origin  "Eurostat chemical-sector labour cost (EU-27), 2024";
+    method  "fully-loaded hourly rate (teaching figure); cross-check Turton 5th ed. Sec. 8 (~66 kUSD/yr/operator, 2018)";
+}
+
+// ---- FX (recorded for audit; the costing pass applies usdToEur itself) -----
+usdToEur        0.924;                // = 1 / 1.0822  (ECB 2024 average EUR/USD)
+usdToEurDate    "2024-average";
+fxProvenance
+{
+    origin  "ECB euro foreign-exchange reference rates -- 2024 annual average EUR/USD = 1.0822";
+    method  "inverse of the ECB annual-average EUR per USD";
+}
+
+// ---- Target CEPCI (recorded for audit; applied in system/postDict costing) -
+cepciTarget     800;                  // 2024 annual ~ 800
+cepciTargetYear 2024;
+cepciProvenance
+{
+    origin  "Chemical Engineering magazine -- CEPCI, 2024 (~800, hovering near 800 through Aug 2024)";
+    method  "annual-average plant cost index; refresh from the published monthly value";
+}
+
+// ---- Corporate tax rate (recorded for audit; applied in postDict) ----------
+taxRate         0.21;                 // statutory federal rate
+taxYear         2024;
+taxProvenance
+{
+    origin  "US federal statutory corporate income-tax rate, 21% (TCJA 2018, in force 2024)";
+    method  "statutory headline rate; substitute the local jurisdiction's rate for a sited plant";
+}
