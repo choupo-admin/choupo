@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 509,
+  "cases": 511,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -1204,6 +1204,23 @@
     "PID",
     "Signal",
     "dynamicTank",
+    "step"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl22_reactor_level_and_temperature": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "PID",
+    "Signal",
+    "dynamicCSTR",
     "step"
    ],
    "thermo": {
@@ -7499,6 +7516,20 @@
    },
    "roles": [],
    "hasGolden": true
+  },
+  "tutorials/unsteady/unsteady06_reactor_fill_and_react": {
+   "application": "choupoSemiContinuous",
+   "unitTypes": [
+    "dynamicCSTR"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
   }
  },
  "indices": {
@@ -7581,7 +7612,8 @@
     "tutorials/ctrl/ctrl18_rtd_pulse_cstr",
     "tutorials/ctrl/ctrl19_freq_response_cstr",
     "tutorials/ctrl/ctrl20_bode_cstr",
-    "tutorials/ctrl/ctrl21_tank_level_control"
+    "tutorials/ctrl/ctrl21_tank_level_control",
+    "tutorials/ctrl/ctrl22_reactor_level_and_temperature"
    ],
    "choupoProps": [
     "tutorials/plant/polycaprolactonePlant/properties",
@@ -7725,7 +7757,8 @@
     "tutorials/unsteady/unsteady02_tanks_in_series",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup",
-    "tutorials/unsteady/unsteady05_tank_valve_drain"
+    "tutorials/unsteady/unsteady05_tank_valve_drain",
+    "tutorials/unsteady/unsteady06_reactor_fill_and_react"
    ],
    "choupoSolve": [
     "tutorials/batch/plant/apalutamide01_tablets",
@@ -8037,7 +8070,8 @@
     "tutorials/ctrl/ctrl11_esterification_jacket",
     "tutorials/ctrl/ctrl14_williams_otto_pi",
     "tutorials/ctrl/ctrl17_signal_shapes",
-    "tutorials/ctrl/ctrl21_tank_level_control"
+    "tutorials/ctrl/ctrl21_tank_level_control",
+    "tutorials/ctrl/ctrl22_reactor_level_and_temperature"
    ],
    "Schedule": [
     "tutorials/ctrl/ctrl02_disturbance_rejection",
@@ -8055,7 +8089,8 @@
     "tutorials/ctrl/ctrl18_rtd_pulse_cstr",
     "tutorials/ctrl/ctrl19_freq_response_cstr",
     "tutorials/ctrl/ctrl20_bode_cstr",
-    "tutorials/ctrl/ctrl21_tank_level_control"
+    "tutorials/ctrl/ctrl21_tank_level_control",
+    "tutorials/ctrl/ctrl22_reactor_level_and_temperature"
    ],
    "absorber": [
     "tutorials/plant/acetonePlant",
@@ -8277,10 +8312,12 @@
     "tutorials/ctrl/ctrl18_rtd_pulse_cstr",
     "tutorials/ctrl/ctrl19_freq_response_cstr",
     "tutorials/ctrl/ctrl20_bode_cstr",
+    "tutorials/ctrl/ctrl22_reactor_level_and_temperature",
     "tutorials/unsteady/unsteady01_startup_transient",
     "tutorials/unsteady/unsteady02_tanks_in_series",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
-    "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
+    "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup",
+    "tutorials/unsteady/unsteady06_reactor_fill_and_react"
    ],
    "dynamicTank": [
     "tutorials/ctrl/ctrl21_tank_level_control",
@@ -8682,7 +8719,8 @@
    ],
    "step": [
     "tutorials/ctrl/ctrl09_stream_disturbance",
-    "tutorials/ctrl/ctrl21_tank_level_control"
+    "tutorials/ctrl/ctrl21_tank_level_control",
+    "tutorials/ctrl/ctrl22_reactor_level_and_temperature"
    ],
    "storageTank": [
     "tutorials/batch/plant/apalutamide01_tablets",
@@ -8945,6 +8983,7 @@
     "tutorials/ctrl/ctrl19_freq_response_cstr",
     "tutorials/ctrl/ctrl20_bode_cstr",
     "tutorials/ctrl/ctrl21_tank_level_control",
+    "tutorials/ctrl/ctrl22_reactor_level_and_temperature",
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/aceticAcid01_gibbsReactor",
     "tutorials/plant/ammoniaRoutes01_screening",
@@ -9239,7 +9278,8 @@
     "tutorials/unsteady/unsteady02_tanks_in_series",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup",
-    "tutorials/unsteady/unsteady05_tank_valve_drain"
+    "tutorials/unsteady/unsteady05_tank_valve_drain",
+    "tutorials/unsteady/unsteady06_reactor_fill_and_react"
    ],
    "pitzerHMW": [
     "tutorials/props/electrolyte/davies01_band_edge",

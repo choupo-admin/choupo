@@ -30,8 +30,10 @@ Class
 
 Description
     Continuous-flow Stirred Tank Reactor as a dynamic unit op.
-    Constant volume (incompressible liquid; F_out = F_in by overall
-    mass balance).  State variables:
+    CONSTANT volume by default (incompressible liquid; F_out = F_in by overall
+    mass balance); `operation { volumeMode variable; }` (DEV.md 4c C205, slice
+    2) makes the liquid inventory a state with a LEVEL -- see the VARIABLE
+    VOLUME section below.  State variables:
 
         n_i  [kmol]   — moles of component i in the tank
         T    [K]      — tank temperature (perfectly mixed)
@@ -60,6 +62,29 @@ Description
         T            current tank temperature
         n_total      total moles in the tank
         x_<name>     mole fraction of named species
+
+    VARIABLE VOLUME (`operation { volumeMode variable; geometry {..};
+    outflow {..}; }`, the default is `constant`, byte-identical):
+    the vessel is the dynamicTank's liquid inventory WITH a reaction.  The
+    arithmetic of volume, level, valve, dry/overflow refusal and the mixture
+    enthalpy is VariableVolumeHoldup's (decision D4), called, not copied:
+
+        V = sum n_i MW_i / rho(T, P, x)      (the case's package)
+        h = V / (pi D^2/4)                   (declared vertical cylinder)
+        dn_i/dt = ndot_in,i - F_out x_i + sum_r nu_i,r r_r V
+        r_r evaluated at c_i = n_i / V  with the CURRENT V
+        F_out = the manipulated flow (mode flow, mv F_out) or the valve
+                F = Cv x opening sqrt(dP/rho) rho/MW  (mode valve, mv opening)
+        UA(h) = UA x A_w(h)/A_w(H),  A_w(h) = pi D h + pi D^2/4  (a jacket
+                over the whole vessel; `UAScaling fixed;` keeps UA constant)
+
+    The energy equation keeps whichever of its three routes the probe chose:
+    the OUTLET term still cancels on the canonical and Cp/convective routes
+    (the stream leaves at the vessel's T, whatever F_out is), so only the
+    mixture-H route's Hout = F_out h(x,T) and the jacket's UA(h) change.  A
+    vessel that runs dry or overflows REFUSES by name at that instant.  An
+    EMPTY start is a declared HEEL (initial level or moles > 0): at zero
+    volume T has no meaning, so zero is refused, not clamped.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -90,7 +115,10 @@ public:
     //   Clean ODE on (n_0..n_{N-1}, T) with the MVs (T_jacket, T_in, F_in)
     //   held constant across the sub-step, so choupoCtrl can sub-step the
     //   plant between controller samples with the stiff integrator.
-    bool    hasOdeForm() const override { return true; }
+    //  The variable-volume vessel keeps its own fixed RK4 step(): its dry /
+    //  overflow refusals and the no-clamp rule belong to the accepted step,
+    //  which the stiff integrator's trial states would bypass.
+    bool    hasOdeForm() const override { return !variableVolume_; }
     sVector odeState()   const override;
     void    setOdeState(const sVector& y) override;
     sVector odeDerivative(const sVector& y) const override { return derivatives_(y); }
@@ -111,7 +139,8 @@ public:
     //  feed is the stream file beside this record; neither is the vessel's.)
     bool holdupRecord(HoldupRecord& h) const override
     {
-        h.T = T_;  h.P = P_;  h.V = V_;  h.n = n_;
+        h.T = T_;  h.P = P_;  h.n = n_;
+        h.V = variableVolume_ ? resolveVariable_(n_, T_, false).liquid.volume : V_;
         h.notRestored.clear();
         return true;
     }
@@ -133,6 +162,7 @@ public:
     bool acceptsRoutedInlet() const override { return true; }
     void setInletStream(const ContinuousStream& s) override;
 
+    bool   variableVolume() const { return variableVolume_; }
     scalar T_in()       const { return T_in_; }
     scalar F_in()       const { return F_in_; }
     const sVector& n()  const { return n_; }
@@ -235,6 +265,31 @@ private:
 
     //- Recover T from the stored H for holdup n: solve n_tot*hMix(n,T) = H.
     scalar TfromH_(const sVector& n, scalar H, scalar Tguess) const;
+
+    // ---- VARIABLE VOLUME (C205 slice 2) -------------------------------------
+    //  Everything below is inert while `volumeMode constant` (the default).
+    bool   variableVolume_ = false;
+    VariableVolumeHoldup::VerticalCylinder geom_;
+    enum class Outflow { flow, valve };
+    Outflow outflow_ = Outflow::flow;
+    scalar  F_out_set_ = 0;          // kmol/s (mode flow; the MV)
+    scalar  opening_   = 1;          // 0..1   (mode valve; the MV)
+    VariableVolumeHoldup::Valve valve_;
+    bool    UAwetted_ = true;        // UA scales with the wetted area
+    scalar  t_ = 0;                  // last accepted instant (for refusals)
+
+    //- Everything the right-hand side needs from a state (n, T).
+    struct Resolved
+    {
+        VariableVolumeHoldup::LiquidState liquid;
+        scalar F_out = 0;            // kmol/s
+        scalar UA    = 0;            // W/K at the current level
+    };
+    Resolved resolveVariable_(const sVector& n, scalar T, bool strict) const;
+    //- Refuse a dry / overflowing / reversing ACCEPTED state at instant t.
+    void     checkAccepted_(scalar t) const;
+    //- The pressure over the liquid in Pa (variable mode stores it in Pa).
+    scalar   P_Pa_() const { return variableVolume_ ? P_ : P_ * 1.0e5; }
 
     // ---- Helpers ----------------------------------------------------
     scalar rateOfReaction_(const ReactionSpec& rxn,

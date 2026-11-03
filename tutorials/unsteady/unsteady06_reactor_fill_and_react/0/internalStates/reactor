@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/reactor -- the initial HOLDUP of 'reactor'.
+  An "empty" vessel is a declared HEEL: 0.02 m of pure isobutanol at 300 K.
+  Exactly zero is refused by name (at zero volume the temperature, the
+  concentrations and the level have no meaning).  The engine turns the level
+  into moles with the package's own liquid density.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "reactor";
+equipment   dynamicCSTR;
+
+holdup
+{
+    T           300.0;
+    P           101325.0;
+    level       0.02;
+    molarComposition { 2Methyl1Propanol 1.0; 2Butanol 0.0; }
+}

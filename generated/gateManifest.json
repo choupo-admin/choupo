@@ -1500,6 +1500,11 @@
       "exit": 0,
       "claim": "check_compaction_bench: OK -- 13 model fit(s) in 5 compactionFit op(s) of 2 witnesses recomputed from each case's own dataset and window (Heckel, Kawakita, Ryshkewitch-Duckworth, 1e-6); three refusals fire by name (3 points, an empty window, no window).  Not checked: the transcription from the source, or whether the declared window is the right one.",
       "seconds": 0.1
+    },
+    "check_dynamic_cstr_level": {
+      "exit": 0,
+      "claim": "check_dynamic_cstr_level: OK -- variable-volume dynamicCSTR: fill-and-react equals its closed form (n, V, h), the second-order rate uses the CURRENT volume, both witnesses CLAIM and close mass AND energy, PI level + PI temperature hold one unit after an inflow step, the jacket area follows the wetted wall, the mixture-H and Cp routes are announced and ledgered as probed, dry / overflow / unknown mode / V beside level / mv F_out on a constant vessel are refused by name, arithmetic called from the shared home [fill: n err 3.9e-09, V err 3.8e-09, h 0.020->0.740 m, n_A 1.1511 (closed 1.1511); 2nd order: vs independent RK4 1.5e-08; frozen-heel volume would differ 73%; loops: end h-SP +1.9e-06 m, peak 0.0099 m (bound 0.0147), end T-SP -0.008 K; mixture-H route: ledgers closed; Cp route: mass closes, energy withheld]",
+      "seconds": 11.1
     }
   }
 }

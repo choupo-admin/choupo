@@ -1,0 +1,126 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl22_reactor_level_and_temperature -- TWO loops, ONE unit.
+
+  A jacketed reactor with a LEVEL (dynamicCSTR, `volumeMode variable`, C205
+  slice 2): isobutanol -> 2-butanol, first order, exothermic, fed at 300 K and
+  run at 340 K.  Its outflow is a MANIPULATED FLOW (as in ctrl21), so the level
+  INTEGRATES the flow imbalance and needs a controller; its temperature is
+  held by the jacket (as in ctrl01).  The two loops act on different
+  manipulated variables of the same vessel:
+
+      LC1  PI   cv level   -> mv F_out      reverse acting (Kp, Ki < 0)
+      TC1  PI   cv T       -> mv T_jacket   direct acting on the error T_SP - T
+
+  and they are COUPLED through the vessel, which is the lesson:
+
+    * the level sets the volume, so the jacket's wetted area -- the declared
+      UA is the value with the vessel FULL, UA(h) = UA A_w(h)/A_w(H) with
+      A_w = pi D h + pi D^2/4 -- and the reaction heat r V both follow it;
+    * the outflow leaves at the vessel's temperature, so it carries enthalpy
+      away; the canonical energy route (announced at start-up) lets that term
+      cancel exactly, and the ledger closes for the whole run.
+
+  The inflow steps from 1.0e-3 to 1.5e-3 kmol/s at t = 1200 s (a Signal on
+  the inlet face).  Level plant gain a = v/A = 0.47 m per kmol (liquid molar
+  volume 0.093 m3/kmol over 0.196 m2); with wn = 0.01 1/s, zeta = 0.8 the PI
+  gains are Kp = -2 zeta wn / a = -0.034, Ki = -wn^2 / a = -2.1e-4 kmol/s per
+  m(s).  Bias 1.0e-3 kmol/s is the outflow that balances the old inflow.
+
+  The cold feed lowers the temperature as the inflow rises; the jacket
+  absorbs it.  Read trajectory.csv: `level`, `T`, `F_out`, `volume`, and the
+  controllers' MV columns.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+        in          feed;
+        outputs     ( product );
+
+        operation
+        {
+            volumeMode  variable;
+            UA          300.0;                  // W/K, with the vessel full
+            T_jacket    340.0 K;                // initial; the controller takes over
+
+            geometry
+            {
+                shape       verticalCylinder;
+                diameter    0.5 m;              // area 0.19635 m2
+                height      1.0 m;              // the overflow level
+            }
+
+            outflow
+            {
+                mode        flow;
+                F           1.0e-3 kmol/s;      // initial; the level controller takes over
+            }
+        }
+
+        reaction    isobutanol_to_2butanol;
+    }
+);
+
+controllers
+(
+    {
+        name         FeedStep;
+        type         Signal;
+        actuator     { unit reactor;  inletField F; }
+        signal
+        {
+            type        step;
+            mean        1.0e-3;            // kmol/s
+            step        0.5e-3;            // +50 % at tStep
+            tStep       1200.0;            // s
+        }
+    }
+    {
+        name         LC1;
+        type         PID;
+        measurement  { unit reactor;  cv level; }
+        actuator     { unit reactor;  mv F_out; }
+        setpoint     0.50;                 // m
+        gains
+        {
+            Kp       -0.034;               // kmol/s per m  (negative: reverse acting)
+            Ki       -2.1e-4;              // kmol/s per (m s)
+            Kd       0.0;
+        }
+        output
+        {
+            min      0.0;
+            max      5.0e-3;
+            bias     1.0e-3;               // the outflow that balances the old inflow
+        }
+    }
+    {
+        name         TC1;
+        type         PID;
+        measurement  { unit reactor;  cv T; }
+        actuator     { unit reactor;  mv T_jacket; }
+        setpoint     340.0;                // K
+        gains
+        {
+            Kp       5.0;
+            Ki       0.02;
+            Kd       0.0;
+        }
+        output
+        {
+            min      280.0;
+            max      420.0;
+            bias     345.0;                // K
+        }
+    }
+);

@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/feed -- the state of stream 'feed' at t = 0: ONE file per stream.
+  Pure isobutanol at 300 K, 1.0e-3 kmol/s.  A domain inlet: its state for the
+  run, except that the FeedStep signal in flowsheetDict steps F at 1200 s.
+\*-----------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    2Methyl1Propanol  1.0e-3 kmol/s;
+    2Butanol          0.0 kmol/s;
+}
+T               300.0 K;
+P               101325.0 Pa;
