@@ -1909,6 +1909,22 @@ accepts today, and that is a policy call.
 > `compactionFit` parameters; the property of the blend by a DECLARED mixing
 > rule, never a silent one).
 
+> **THE STACK, AND THE ONE FULL SWEEP (the architect, 2026-11-03 06:00):** five
+> of the seven builds are now in the local branch `staging` (C208, S1, S2,
+> E2+E3, dynamic slice 2), each validated by `bin/integrate --base staging` on
+> top of the previous ones.  The tool flags the full sweep on three of them
+> (shared paths: `main.cpp`, `PostProcessor.H`, `Flowsheet.cpp`,
+> `Component.cpp`).  Decision: not once per slice, ONCE on the final `staging`
+> tip, after the last build is in -- the written reason: five slices touch
+> shared paths, a sweep per slice would cost five hours for the same
+> information, and what a sweep can see is the SUM.  Manual work the stack
+> needed, all recorded in the commits: `<stdexcept>` in `EquipmentListWriter.cpp`
+> (emscripten's libc++), 10 + 9 GUI citations re-pointed by their claims
+> (`Flowsheet.cpp` moved 63 lines), the PFD sheet reading `tagNo`, the adapter
+> conflict kept as the union, and the two tablet cases' goldens re-recorded
+> SURGICALLY (44 rows, a whole-case `--record` re-pinned 900 rows of in-tolerance
+> drift and was discarded).
+
 > **C209. A SECTOR THAT SAYS HOW MANY TIMES IT IS REPEATED (Vitor, 2026-11-02
 > night, about swro01_campoDalias: "no flowsheet devia haver forma de
 > notificar isso ... qualquer envolucro que dissesse quantas vezes se tem de
