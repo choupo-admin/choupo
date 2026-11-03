@@ -293,7 +293,16 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   {
     caseDir: "tutorials/batch/plant/apalutamide01_tablets",
     file: "log.choupoSolve",
-    readBy: ["batchGantt.test.ts", "citation.test.ts"],
+    readBy: ["batchGantt.test.ts", "citation.test.ts", "machineUtilisation.test.ts"],
+    stdout: true,
+  },
+  //  The per-machine utilisation table (DEV.md 4c C195/C210): the two tablet
+  //  plants' run logs (apalutamide01's is the entry above), whose result blocks carry `equipment` (the
+  //  `ratedMachine` sheets) and the sizing advisories.
+  {
+    caseDir: "tutorials/batch/plant/donepezil01_tablets",
+    file: "log.choupoSolve",
+    readBy: ["machineUtilisation.test.ts"],
     stdout: true,
   },
   //  THE DESALINATION PLANT'S SHEETS AND RESULT (DEV.md 4c C199 phase B): the
