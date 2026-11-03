@@ -84,6 +84,10 @@ import { TREE_QUIZ, TREE_STEPS } from "../src/ui/methods/treeOfChemistryLesson.j
 import { TreeOfChemistryTool } from "../src/ui/methods/TreeOfChemistryTool.js";
 import { PATENT_QUIZ, PATENT_STEPS } from "../src/ui/methods/patentExpiryLesson.js";
 import { PatentExpiryTool } from "../src/ui/methods/PatentExpiryTool.js";
+import { ECON_ERRORS_QUIZ, ECON_ERRORS_STEPS } from "../src/ui/methods/economicsErrorsLesson.js";
+import { EconomicsErrorsTool } from "../src/ui/methods/EconomicsErrorsTool.js";
+import { DEMAND_QUIZ, DEMAND_STEPS } from "../src/ui/methods/demandForecastLesson.js";
+import { DemandForecastTool } from "../src/ui/methods/DemandForecastTool.js";
 
 const GUI = new URL("../", import.meta.url);
 const read = (rel: string): string => readFileSync(new URL(rel, GUI), "utf-8");
@@ -147,6 +151,14 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "patent-expiry": {
     quiz: PATENT_QUIZ, quizName: "PATENT_QUIZ", lesson: PATENT_STEPS, lessonName: "PATENT_STEPS",
     file: "src/ui/methods/PatentExpiryTool.tsx", tool: PatentExpiryTool,
+  },
+  "economics-errors": {
+    quiz: ECON_ERRORS_QUIZ, quizName: "ECON_ERRORS_QUIZ", lesson: ECON_ERRORS_STEPS, lessonName: "ECON_ERRORS_STEPS",
+    file: "src/ui/methods/EconomicsErrorsTool.tsx", tool: EconomicsErrorsTool,
+  },
+  "demand-forecast": {
+    quiz: DEMAND_QUIZ, quizName: "DEMAND_QUIZ", lesson: DEMAND_STEPS, lessonName: "DEMAND_STEPS",
+    file: "src/ui/methods/DemandForecastTool.tsx", tool: DemandForecastTool,
   },
 };
 
