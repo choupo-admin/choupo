@@ -224,9 +224,24 @@ and the purified water from the building of `system/layoutDict`: 29 served
 rooms, 7 100 m3 (4 910 m3 of grade D at 20 air changes an hour, 2 190 m3 of
 CNC at 6), a supply of 111 340 m3/h, a 51.5 kW fan, 134 kW of winter heating
 and 90 kW of summer cooling of the fresh-air share -- SENSIBLE only, no
-humidity, no latent load, no room heat gain -- and 3.1 m3 of purified water a
-lot, a peak of 3.14 m3/h, a 3.93 m3/h generator and a 12.6 m3 tank at 4 h.
+humidity, no latent load, no room heat gain -- and 3.14 m3 of purified water a
+lot (0.07 + 0.07 m3 of process water and 3.0 m3 of machine cleans), 580 m3 a
+year, a peak of 1.33 m3/h, a 1.67 m3/h generator and a 5.3 m3 tank at 4 h.
 Every number is an author-set assumption; no standard's table is shipped.
+**The cleaning is counted by the plan (DEV.md 4c C210, E3).**  `batchPlan {
+cleaning }` declares, for the six wet-cleaned machines (binder tank, granulator,
+fluid-bed dryer, final blender, coating-suspension tank, coating pan), the
+purified water of one clean (0.2-0.9 m3 after a lot, 0.5-2.0 m3 at a changeover)
+and an effluent fraction of 0.95 -- ASSUMED, round, to be replaced by the group's
+cleaning procedure; the mill, press and packaging line are dry-cleaned.  The plan
+counts **966 cleans a year** (6 machines x (143 lots + 18 campaigns)), hence
+**560 m3 of purified water and 532 m3 of effluent a year**; a full campaign of the
+granulation train is 36 cleans, 18.9 m3 of water and 18.0 m3 of effluent, of the
+tableting train 18 cleans, 12.4 m3 and 11.8 m3.  They replace the old lump of 3 m3
+a lot in the water demand, so the peak falls from a 3 m3/h hour at the end of the
+coater to 1.33 m3/h spread over each stage's clean time.  The effluent is a
+volume: its load (API, excipients) is not computed.
+
 **The air is priced from the supply air (DEV.md 4c C210).**  Two `hvacGrade`
 quotes declare an installed cost per m3/h of supply air -- ASSUMED, author-set,
 to be replaced by a quote: 12 EUR per m3/h for grade D, 5 for CNC -- so the

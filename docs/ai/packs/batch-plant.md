@@ -52,6 +52,8 @@ batchPlan
                changeover 24 h; source "..."; reason "..."; } );
     stages ( { stage <s>; train <t>; type batch|semicontinuous; units ( <u> ... );
                holds <stream>; ... source "..."; reason "..."; } ... );
+    cleaning ( { unit <u>; waterPerLotClean 0.4 m3; waterPerChangeover 1.2 m3;   // optional
+                 effluentFraction 0.95; source "..."; reason "..."; } ... );
 }
 ```
 * Every time, mass and density carries its unit; a bare number is refused.
@@ -85,6 +87,26 @@ batchPlan
   cannot be run.  Remedies: an out-of-phase unit (...), a larger lot, or more
   available hours.`  ANNOUNCED: a stage busy < `lowUtilisation` of the cycle
   (oversized), an idle train.
+* `cleaning` (optional, DEV.md 4c C210): one entry per WET-cleaned machine
+  (`unit` must be in a stage; once each; dry-cleaned machines are left out).
+  YOU declare the purified water of ONE clean of ONE instance -- after a lot
+  (`waterPerLotClean`) and at a campaign changeover (`waterPerChangeover`),
+  both volumes WITH a unit (0 m3 allowed) -- and `effluentFraction` (0..1) of
+  it that leaves as effluent.  THE PLAN counts the cleans: a clean after
+  every lot of each of the N_ip instances the lot is split over, and of every
+  installed instance (N_ip x N_op) at each changeover, so cleans a year =
+  N x N_ip + campaigns x N_ip x N_op.  A positive `waterPerLotClean` needs the
+  stage's `cleanTime` > 0 and a positive `waterPerChangeover` the train's
+  `changeover` > 0 (refused otherwise); single-product plans only (refused
+  beside `products`).  Published (a table in the log and `kpis.cleaning`):
+  per machine `<unit>_cleans_year`, `<unit>_water_m3_year`,
+  `<unit>_effluent_m3_year`; per train, for a FULL campaign,
+  `train_<t>_cleans_campaign`, `train_<t>_water_m3_campaign`,
+  `train_<t>_effluent_m3_campaign`; totals `cleans_year`, `water_m3_year`,
+  `effluent_m3_year`.  The effluent is a VOLUME (its load is not computed,
+  announced).  `cleanUtilities { purifiedWater }` reads these cleans (section
+  5): do NOT also declare them as a `uses` lump.  Absent: the water of
+  cleaning is not counted by the plan, announced once.
 * Published: `reports/batchPlan/gantt.csv`, the table in the log, the
   result JSON `batchPlan`.
 
@@ -180,7 +202,12 @@ cleanUtilities
   the balance / density) + `volumePerLot`; each use is drawn over `drawTime`
   at the start or end of its stage; the PEAK is the largest overlap in the
   plan's Gantt (first campaign, trains started together); generator =
-  peak x (1+margin); storage = peak x holdTime.  Published under `design/hvac`
+  peak x (1+margin); storage = peak x holdTime.  With `batchPlan { cleaning }`
+  declared, the plan's cleans join the SAME ledger with no `uses` entry: the
+  lot demand includes the lot cleans (drawn over the stage's `cleanTime`,
+  ending with its bar), the year (`V_year`) adds the changeover cleans (drawn
+  over the train's changeover bar), and the generator also publishes
+  `V_cleaning_lot` and `V_cleaning_changeover_year`.  Published under `design/hvac`
   and `design/purifiedWater`.  Not costed, not placed.
 * HVAC COST (DEV.md 4c C210).  The grade items are PRICED, not correlated:
   declare in `costing { quotes ( ... ) }` one entry per grade that is SERVED
@@ -317,6 +344,13 @@ batchPlan
         { train solidDose;  availableTime 3840 h;  lotsPerCampaign 8;  changeover 24 h;
           source "assumed";  reason "two day shifts; eight lots between full cleans"; }
     );
+    cleaning
+    (
+        { unit binderPrep;  waterPerLotClean 0.1 m3;  waterPerChangeover 0.3 m3;  effluentFraction 0.95;
+          source "assumed";  reason "a rinse of the binder tank after each lot"; }
+        { unit blender;     waterPerLotClean 0.4 m3;  waterPerChangeover 1.0 m3;  effluentFraction 0.95;
+          source "assumed";  reason "the wash of the bin blender after a lot; a full clean at a changeover"; }
+    );
     stages
     (
         { stage binderPreparation;  train solidDose;  type batch;
@@ -392,8 +426,6 @@ cleanUtilities
         (
             { name binderWater;  stream granWater;  stage binderPreparation;  drawTime 0.5 h;  when start;
               source "flowsheet stream granWater, read from the balance";  reason "the granulating liquid"; }
-            { name cleaning;  volumePerLot 0.5 m3;  stage blending;  drawTime 0.5 h;  when end;
-              source "assumed";  reason "the wash of the blender after a lot"; }
         );
         generator { margin 0.25;  source "assumed";  reason "a quarter above the peak draw"; }
         storage { holdTime 4 h;  source "assumed";  reason "four hours of peak draw without the generator"; }
@@ -488,8 +520,10 @@ mass closure 100.000 %; lot B = 49.5 kg of product, N = 405 lots a year, 51
 campaigns, T_L = 3 h set by `binderPreparation`, train occupancy 69.5 %;
 binder tank 0.0066 m3; utilisation blender 0.833, press 0.823 (66 667
 tablets/h on 81 000), blister line 0.737; HVAC 4 rooms 560 m3, 11 200 m3/h,
-fan 5.19 kW, heating 13.5 kW, cooling 9.0 kW; purified water peak 1.01 m3/h,
-generator 1.26 m3/h, tank 4.04 m3; HVAC capital 134 400 EUR (11 200 m3/h of
+fan 5.19 kW, heating 13.5 kW, cooling 9.0 kW; cleaning 912 cleans a year (456 per
+wet-cleaned machine: 405 lots + 51 campaigns), 268.8 m3 of purified water and
+255.4 m3 of effluent a year; purified water 0.505 m3 a lot, peak 0.5 m3/h,
+generator 0.625 m3/h, tank 2.0 m3; HVAC capital 134 400 EUR (11 200 m3/h of
 grade D at the quoted 12 EUR per m3/h); FCI 2.00 M EUR, NPV 14.5 M EUR.
 Variants run: 100 000 kg/yr -> `ERROR: batchPlan: stage 'binderPreparation' is
 busy 1.214e+04 h ... occupancy 316 %`, exit 2; blender `nominalVolume 0.1 m3`

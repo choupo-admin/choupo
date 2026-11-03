@@ -2912,7 +2912,7 @@ source and reason}: supply flow, fan power and the sensible heating and
 cooling of the fresh-air share. The air is sensible only --- no
 humidity, no latent load, no room heat gain, and the run says so ---
 and the purified-water generator and storage follow from the water the
-batch plan draws and a declared cleaning volume. No table of air
+batch plan draws and the cleans the plan counts (below). No table of air
 changes is shipped (the published ones are standards that grant no
 redistribution), so the rates in the two tablet witnesses are
 author-set and marked so.
@@ -3002,6 +3002,18 @@ from the case with its source, refuses an impossible plan and announces
 a poor one; a vessel may take its volume from it, a quoted machine's
 price may scale with its size (the cost-capacity exponent is the
 case's), and the economics takes the year's flows from its production.
+\textbf{Cleaning, counted by the plan.} A plan may declare, for each
+wet-cleaned machine, the purified water of \emph{one clean of one instance}
+(after a lot, and at a campaign changeover) and the fraction of that water that
+leaves as effluent (\texttt{cleaning}, each with its source and reason). The
+plan itself counts the cleans --- one after every lot of each instance the lot
+is split over, and one of every installed instance at each changeover --- and
+publishes, per machine, per full campaign of each train and per year, the
+cleans, the purified water and the \emph{volume} of effluent (m$^3$ a year;
+its load is not computed). The purified-water generator and tank of
+\texttt{cleanUtilities} draw these cleans in the plan's Gantt: there is one
+water ledger, so a lump ``cleaning'' use beside them would count it twice.
+Without a \texttt{cleaning} declaration nothing is counted, and the run says so.
 A \texttt{ratedMachine} entry then asks, of each machine the flowsheet
 carries as a mass balance only, \emph{does it fit the lot and the
 shift}: the load (working volume, kg/h, tablets/h or packs/h) read from

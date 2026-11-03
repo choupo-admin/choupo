@@ -124,6 +124,37 @@ batchPlan
         }
     );
 
+    //  THE CLEANING OF THE MACHINES (DEV.md 4c C210, E3).  The plan counts the
+    //  cleans -- one after every lot of each instance the lot is split over, and
+    //  one of every installed instance at each campaign changeover -- and the
+    //  CASE declares the purified water of ONE clean of ONE instance and the
+    //  fraction of it that leaves as effluent.  EVERY NUMBER IS AN AUTHOR-SET
+    //  ASSUMPTION, round figures of the right order, to be replaced by the
+    //  group's cleaning procedure (a rinse volume per wet-cleaned item).  The
+    //  mill, the press and the packaging line are DRY-cleaned (vacuum and
+    //  wipe-down): they carry no water and are not listed.  The purified-water
+    //  demand of `cleanUtilities` reads these cleans (one ledger: the old lump
+    //  `uses` entry `cleaning` is gone), and the effluent is published as a
+    //  VOLUME in m3 a year (`kpis.cleaning`), its load is not computed.
+    cleaning
+    (
+        { unit solutionPrep;          waterPerLotClean 0.8 m3;  waterPerChangeover 2.0 m3;  effluentFraction 0.95;
+          source "author-set assumption (DEV.md 4c C210, E3), to be replaced by the group's cleaning procedure";
+          reason "the rinse of the dispersion solution tank and its lines after each lot (after the solvent flush); a full clean at a changeover"; }
+        { unit blender;               waterPerLotClean 0.4 m3;  waterPerChangeover 1.0 m3;  effluentFraction 0.95;
+          source "author-set assumption (DEV.md 4c C210, E3), to be replaced by the group's cleaning procedure";
+          reason "the wash of the intragranular blender after a lot; a full clean at a changeover"; }
+        { unit finalBlender;          waterPerLotClean 0.4 m3;  waterPerChangeover 1.0 m3;  effluentFraction 0.95;
+          source "author-set assumption (DEV.md 4c C210, E3), to be replaced by the group's cleaning procedure";
+          reason "the wash of the final blender after a lot; a full clean at a changeover"; }
+        { unit coatingSuspensionPrep; waterPerLotClean 0.4 m3;  waterPerChangeover 1.0 m3;  effluentFraction 0.95;
+          source "author-set assumption (DEV.md 4c C210, E3), to be replaced by the group's cleaning procedure";
+          reason "a rinse of the coating suspension tank and the spray lines after each lot; a full clean at a changeover"; }
+        { unit coatingPan;            waterPerLotClean 1.0 m3;  waterPerChangeover 2.5 m3;  effluentFraction 0.95;
+          source "author-set assumption (DEV.md 4c C210, E3), to be replaced by the group's cleaning procedure";
+          reason "the wash of the perforated pan, the spray guns and the lines after a coated lot; a full clean at a changeover"; }
+    );
+
     //  In RECIPE order; each stage feeds the next of its train unless it
     //  says otherwise.  `holds` names the stream whose flowsheet mass the
     //  stage handles per lot -- the mass is READ, never typed here.
@@ -466,9 +497,6 @@ cleanUtilities
             { name coatingSuspensionWater;  stream coatWater;  stage suspensionPreparation;  drawTime 0.5 h;  when start;
               source "the flowsheet stream coatWater (the water of the coating suspension), read from the converged balance";
               reason "purified water is the solvent of an aqueous film-coat suspension"; }
-            { name cleaning;  volumePerLot 3 m3;  stage coating;  drawTime 1 h;  when end;
-              source "author-set assumption (DEV.md 4c C195): the wash of the pan, the suspension tank and the hoses after a lot";
-              reason "cleaning between lots is the second use of purified water in a tablet plant; replace with the group's cleaning procedure"; }
         );
         generator
         {

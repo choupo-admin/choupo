@@ -399,6 +399,67 @@ void sizeWater(const DictPtr& w, SimulationResult& result)
             throw std::runtime_error(W + " use `" + u.name + "`: the plan's"
                 " Gantt has no bar for stage '" + u.stage + "'.");
     }
+    //  THE CLEANING OF THE MACHINES, FROM THE BATCH PLAN (DEV.md 4c C210, E3).
+    //  The plan counts the cleans (`batchPlan { cleaning }`) and this pass
+    //  only DRAWS them in the Gantt it already reads -- ONE water ledger.  A
+    //  clean after a lot draws over the stage's `cleanTime`, ending with the
+    //  stage's bar; a clean at a changeover draws over the train's changeover
+    //  bar.  Every instance the lot is split over (N_ip) is cleaned after each
+    //  lot, every installed instance (N_ip N_op) at each changeover.
+    scalar VcleanLot = 0.0, VcleanChangeoverYear = 0.0;
+    if (!plan.cleaning.empty())
+    {
+        for (const auto& c : plan.cleaning)
+        {
+            const BatchStage* st = plan.stageOfUnit(c.unit);
+            if (c.waterPerLotClean > 0.0)
+            {
+                const scalar V = c.waterPerLotClean * c.instancesPerLot;       // m3 per lot
+                const scalar dt = st->cleanTime;                               // h
+                VcleanLot += V;
+                bool any = false;
+                for (const auto& g : plan.gantt)
+                {
+                    if (g.stage != c.stage || g.lot == 0) continue;
+                    any = true;
+                    Draw d;  d.use = "clean:" + c.unit;  d.rate = V / dt;
+                    d.start = g.end - dt;  d.end = g.end;
+                    draws.push_back(d);
+                }
+                if (!any)
+                    throw std::runtime_error(W + " cleaning of `" + c.unit + "`: the"
+                        " plan's Gantt has no bar for stage '" + c.stage + "'.");
+            }
+            if (c.waterPerChangeover > 0.0)
+            {
+                const scalar V = c.waterPerChangeover * c.instances;           // m3 per changeover
+                bool any = false;
+                for (const auto& g : plan.gantt)
+                {
+                    if (g.stage != "changeover" || g.train != c.train) continue;
+                    any = true;
+                    Draw d;  d.use = "changeover:" + c.unit;
+                    d.start = g.start;  d.end = g.end;  d.rate = V / (g.end - g.start);
+                    draws.push_back(d);
+                }
+                if (!any)
+                    throw std::runtime_error(W + " cleaning of `" + c.unit + "`: the"
+                        " plan's Gantt has no changeover bar for train '" + c.train + "'.");
+                for (const auto& t : plan.trains)
+                    if (t.name == c.train) VcleanChangeoverYear += V * t.campaigns;
+            }
+        }
+    }
+    else
+    {
+        const std::string msg = "the batch plan declares no `cleaning`: the water of"
+            " cleaning the machines is not counted by the plan (a `uses` entry may"
+            " still carry a lump per lot)";
+        if (AdvisoryLog::instance().addAnnouncedOnce("cleanUtilities:cleaningNotCounted",
+                "sizing", "info", "cleanUtilities purifiedWater", msg))
+            std::cerr << "[cleanUtilities] " << msg << "\n";
+    }
+
     scalar peak = 0.0;
     for (const auto& a : draws)
     {
@@ -420,7 +481,21 @@ void sizeWater(const DictPtr& w, SimulationResult& result)
                   << std::setw(14) << fmt(u.V, 5) << std::setw(10) << fmt(u.draw, 4)
                   << std::setw(12) << fmt(u.V / u.draw, 5) << "\n";
     }
-    const scalar Vyear   = Vlot * plan.lotsPerYear;                      // m3
+    //  The plan's cleaning joins the same ledger: the water of the cleans
+    //  after a lot is part of the lot's demand, the changeover cleans are
+    //  counted over the year's campaigns.
+    for (const auto& c : plan.cleaning)
+    {
+        const scalar V = c.waterPerLotClean * c.instancesPerLot;
+        if (!(V > 0.0)) continue;
+        std::cout << "  " << std::left << std::setw(26) << ("clean:" + c.unit) << " "
+                  << std::setw(24) << c.stage << std::setw(14) << fmt(V, 5)
+                  << std::setw(10) << fmt(plan.stageOfUnit(c.unit)->cleanTime, 4)
+                  << std::setw(12) << fmt(V / plan.stageOfUnit(c.unit)->cleanTime, 5)
+                  << "  (the plan's cleaning)\n";
+    }
+    Vlot += VcleanLot;
+    const scalar Vyear   = Vlot * plan.lotsPerYear + VcleanChangeoverYear;   // m3
     const scalar rating  = peak * (1.0 + margin);                        // m3/h
     const scalar Vtank   = hold * peak;                                  // m3
     std::cout << "  per lot " << fmt(Vlot, 6) << " m3, " << plan.lotsPerYear
@@ -435,6 +510,13 @@ void sizeWater(const DictPtr& w, SimulationResult& result)
     g.set("draw_peak",       peak,    "m3/h");
     g.set("margin",          margin,  "-");
     g.set("capacity",        rating,  "m3/h");
+    if (!plan.cleaning.empty())
+    {
+        //  Published only when the plan declares cleaning, so every other case
+        //  carries exactly the keys it carried.
+        g.set("V_cleaning_lot",             VcleanLot,            "m3");
+        g.set("V_cleaning_changeover_year", VcleanChangeoverYear, "m3/yr");
+    }
     finishItem(g, "purifiedWater", "generator", "waterGenerator",
         "demand per lot = the declared water streams (kg per lot from the"
         " converged balance and the plan's lot hours, over the declared density)"

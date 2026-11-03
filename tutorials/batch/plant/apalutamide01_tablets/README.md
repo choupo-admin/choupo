@@ -331,10 +331,22 @@ and the purified water from the building of `system/layoutDict`: 36 served
 rooms, 10 945 m3, a supply of 65 670 m3/h at the declared 6 air changes an
 hour (CNC), a 30.4 kW fan, 79 kW of winter heating and 53 kW of summer
 cooling of the fresh-air share -- SENSIBLE only (no humidity, no latent
-load, no room heat gain) -- and 3.0 m3 of purified water a lot (the cleaning
-dominates: the coating suspension needs 0.048 m3), a peak of 3.0 m3/h, a
-3.75 m3/h generator and a 12 m3 tank at 4 h.  Every air-change rate and
+load, no room heat gain) -- and 3.05 m3 of purified water a lot (the cleaning
+dominates: the coating suspension needs 0.048 m3), 112 m3 a year, a peak of
+1.0 m3/h, a 1.25 m3/h generator and a 4.0 m3 tank at 4 h.  Every air-change rate and
 water number is an author-set assumption; no standard's table is shipped.
+**The cleaning is counted by the plan (DEV.md 4c C210, E3).**  `batchPlan {
+cleaning }` declares, for the five wet-cleaned machines (dispersion solution
+tank, the two blenders, coating-suspension tank, coating pan), the purified water
+of one clean (0.4-1.0 m3 after a lot, 1.0-2.5 m3 at a changeover) and an effluent
+fraction of 0.95 -- ASSUMED, to be replaced by the group's cleaning procedure; the
+dry granulation, mill, press and packaging are dry-cleaned.  The plan counts
+**149 cleans a year** (25 lots + the train's campaigns, per machine), hence
+**110.5 m3 of purified water and 105 m3 of effluent a year**; a full campaign of
+the solid-dose train is 7 cleans of each of four machines.  They replace the old
+lump of 3 m3 a lot.  The effluent is a volume: its load (acetone residues, API)
+is not computed.
+
 **The air is priced from the supply air (DEV.md 4c C210).**  One `hvacGrade CNC`
 quote declares an installed cost per m3/h of supply air -- ASSUMED, author-set,
 to be replaced by a quote: 5 EUR per m3/h -- so the HVAC capital is 65 670 m3/h

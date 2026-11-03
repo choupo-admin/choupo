@@ -703,6 +703,8 @@ def strip_rated_machines(t):
         t = t[:s] + t[k + 1:]
     # ... and the `hvacGrade` quotes that price its supply air (DEV.md 4c C210).
     t = re.sub(r'[ \t]*\{ hvacGrade \w+;.*?"; \}\n', "", t, flags=re.S)
+    # ... and the plan's `cleaning` table, which a multiproduct plan refuses by name (C210 E3).
+    t = re.sub(r"\n    cleaning\n    \(.*?\n    \);\n", "\n", t, count=1, flags=re.S)
     return t
 
 
