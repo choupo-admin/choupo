@@ -11,6 +11,6 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description   "ADIABATIC PFR: the exothermic esterification heats its own stream -- T(V) is a RESULT";
+description   "ADIABATIC PFR: T(V) is a RESULT; the nearly thermoneutral liquid esterification warms the stream only ~6.6 K (replacement exothermic case planned)";
 
 verbosity     3;

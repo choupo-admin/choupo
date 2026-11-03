@@ -18,10 +18,18 @@
   heat of reaction already lives inside H: as reactants become products the
   formation enthalpies differ and T rises on its own.  Q_kW = 0 by construction.
 
-  A non-isothermal CSTR can have up to THREE steady states (multiplicity).  The
-  Newton lands on ONE of them, selected by `T_guess` -- sweep it to find the
-  ignited and extinguished branches.  That honesty is the point: the reactor
-  reports which root it found, it does not pretend there is only one.
+  Since the acetic-acid correction (docs/design/acetic-acid-latent-heat-closure.md)
+  this LIQUID esterification is nearly thermoneutral (dH_rxn about -2.7 kJ/mol
+  at 298 K, NBS-consistent; the engine used to print about -25.7 kJ/mol), so the
+  adiabatic rise is a few K (T_out 355.3 K from the 350 K feed) and the energy
+  balance has ONE steady state: the scan finds one.  A non-isothermal CSTR CAN
+  have up to three steady states, but that needs a strongly exothermic reaction;
+  this one does not.  `T_guess` is kept (it is the declared aid that selects the
+  branch where there are several) and here it cannot matter.
+
+  The original teaching point of this case (an adiabatic reactor that heats
+  itself by ~100 K) needs a genuinely exothermic reaction; a replacement case on
+  such a reaction is planned.  No parameter was changed to recover the old rise.
 \*---------------------------------------------------------------------------*/
 
 units

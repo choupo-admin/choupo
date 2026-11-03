@@ -7,28 +7,29 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  batch02_adiabatic  --  exothermic pseudo-first-order esterification
-  (AcOH + EtOH -> EtOAc + H2O) in an adiabatic batch reactor.  Designed
-  to show thermal runaway:
+  batch02_adiabatic  --  pseudo-first-order esterification
+  (AcOH + EtOH -> EtOAc + H2O) in an adiabatic batch reactor, starting cold.
 
-    * T_0 = 320 K (kinetics very slow: k_0 ~ 3.7e-4 s^-1, tau_0 ~ 2700 s).
-    * dH_rxn = -26.06 kJ/mol of ethanol, computed from the species'
-      standardThermochemistry (elements datum); lifts T ~108 K at full conversion
-      (320 -> 428 K), enough to show the runaway.
+    * T_0 = 320 K (k_0 ~ 3.7e-4 s^-1, tau_0 ~ 2700 s).
+    * dH_rxn = -2.43 kJ/mol of ethanol at 320 K, computed from the species'
+      standardThermochemistry (elements datum; the engine's own
+      `[reaction heat]` line).  It is about ten times smaller than the
+      -26.06 kJ/mol this case used to print: the acetic-acid correction
+      (docs/design/acetic-acid-latent-heat-closure.md) made the liquid
+      esterification nearly thermoneutral.
     * Equimolar ethanol + acetic acid charge; ethyl acetate + water are
       the products.  Mass-conserving, so the energy balance is clean.
+    * Result: T rises only 320 -> 322.2 K in the 600 s window, and the
+      reaction is only ~22 % complete at the end (it used to reach 428 K
+      and complete conversion).  There is no runaway and no plateau; the
+      rate barely accelerates because T barely moves.
+    * The adiabatic ODE conserves a frozen-dH surrogate (dH_rxn pinned at the
+      charge T), which the run announces.
 
-  Expected qualitative trajectory:
-
-         T |          _______ plateau (~428 K)
-           |        _/
-           |      _/
-           |    _/
-           |  _/
-           | /
-       T_0 |__/
-           +-------------------> t
-              induction  runaway
+  The original teaching point of this case (thermal runaway: induction, then
+  a sharp temperature rise, then a plateau) needs a genuinely exothermic
+  reaction; a replacement case on such a reaction is planned.  No parameter
+  was changed to recover the runaway.
 
   The energy balance is just:
 
@@ -36,9 +37,7 @@
 
   Constant-Cp here (polynomial degree 0 for both ethanol and water in
   the database), so the result extrapolates linearly above the nominal
-  liquidHeatCapacity Trange (280-373 K) without numerical pathology
-  --- consistent with a pedagogical demonstration, not a quantitative
-  prediction at 428 K.
+  liquidHeatCapacity Trange (280-373 K) without numerical pathology.
 \*---------------------------------------------------------------------------*/
 
 units

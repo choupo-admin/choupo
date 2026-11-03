@@ -7,13 +7,13 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoBatch;
-description   "Adiabatic batch esterification with OpenFOAM-style REAL-TIME instant dirs: watch conversion climb 0 -> 1 and T runaway 320 -> ~428 K by scrubbing 0/ 30/ 60/ ... s";
+description   "Adiabatic batch esterification with OpenFOAM-style REAL-TIME instant dirs: scrub 0/ 30/ 60/ ... s to watch conversion climb to ~0.22 while T rises only 320 -> 322 K (the runaway of the old exotherm is gone; replacement case planned)";
 
 verbosity     3;
 
 // ---- Time integration ----
 startTime       0;        // s
-endTime         600;      // s   (10 min --- induction + runaway + plateau)
+endTime         600;      // s   (10 min)
 deltaT          0.5;      // s
 writeInterval   30;       // s   (one time directory every 30 s -> 0/ 30/ 60/ ... 600/)
 
