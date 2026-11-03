@@ -1860,6 +1860,19 @@ accepts today, and that is a policy call.
 > the order C208, S1, S2, E2+E3, dynamic 2, GUI E6+MASS, EduTools; main and the
 > site move only after the class, by fast-forwarding main to staging.
 
+> **INTEGRATION NOTES FOR THE STACK (2026-11-03 02:30, to do at S2's turn):**
+> S2's `tagOfUnit` (in the PFD sheet module of the GUI) matches `^[A-Z]{1,3}-\d{3}[A-Z]?$`
+> on `EquipmentItem.tag`; S1's tags live in `tagNo` and include forms that
+> regex refuses (`P-101A-D`, `MB-101A..F`, `P-101A/B`).  The fix, made on
+> staging AFTER S1 is merged (so the `tagNo` field exists on `EquipmentItem`
+> and no conflict arises): read `tagNo` as the engine wrote it, no regex.
+> Likewise S1 and S2 both re-pointed stale GUI test citations (runLog,
+> numericsLessons, wegsteinMath): take the union, then re-run the lesson tests.
+> The architect (Vitor asleep, "podes tomar as decisoes que achares necessarias"
+> -- standing authority, rule 00) lands staging into main AFTER the class by
+> merging staging (main has later documentation commits, so a merge, not a
+> fast-forward) and pushing, and reports after.
+
 > **C209. A SECTOR THAT SAYS HOW MANY TIMES IT IS REPEATED (Vitor, 2026-11-02
 > night, about swro01_campoDalias: "no flowsheet devia haver forma de
 > notificar isso ... qualquer envolucro que dissesse quantas vezes se tem de
