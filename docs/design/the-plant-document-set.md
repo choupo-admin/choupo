@@ -283,6 +283,21 @@ recommended answer, with ONE change:
   student may force a size.  The engine publishes the data; the GUI lays the
   sheet out and prints it (the flowsheet's layout lives in the GUI).
 
+* S5 AMENDED (Vitor, 2026-11-03: "quando se faz o P&ID em modo de controlo,
+  tambem devia de aparecer o pdf do P&ID no tamanho A adequado"): the P&ID PDF
+  is a report under the SAME size rule as the PFD (A3 to A1 by content, sheets
+  continued past A1).  Later, with S5.
+* THE CONTROL PANEL (Vitor, same message: "criar o painel de controlo ...
+  usar a ideologia de John Gall, de modo a garantir que o painel e simples,
+  facil de entender e que ha minimizacao da complexidade de controlo"): the
+  digital twin's operator panel follows Gall's law (Systemantics, 1975: a
+  complex system that works has evolved from a simple system that worked; one
+  designed complex from scratch does not work) -- it starts with the C204
+  Pareto loops only (inventory, pressure, flow, temperature) and only the
+  DECLARED loops, one screen per sector, an alarm only where an action exists,
+  and each element added only after the simpler panel works.  Later, with the
+  digital twin (S8, C203).
+
 Order: S1 and S2 now, on branches (they touch different homes); S3 and S4
 after S1; S5 after S3 and S4; S6; S7; S8 is the digital twin (C203).
 
