@@ -63,73 +63,91 @@ std::string FixedPointAccelerator::registeredList()
 
 std::unique_ptr<FixedPointAccelerator>
 FixedPointAccelerator::New(const std::string& name, std::size_t n,
-                           scalar a, scalar b)
+                           const DominantEigenvalueOptions& o)
 {
     auto it = table().find(name);
     if (it == table().end())
         throw std::runtime_error("FixedPointAccelerator::New: unknown '" + name
                                  + "'.  Registered: " + registeredList());
-    return it->second(n, a, b);
+    return it->second(n, o);
 }
 
 void FixedPointAccelerator::registerBuiltins()
 {
     registerType("DominantEigenvalue",
-        [](std::size_t n, scalar a, scalar b) {
-            return std::make_unique<DominantEigenvalue>(n, a, b);
+        [](std::size_t n, const DominantEigenvalueOptions& o) {
+            return std::make_unique<DominantEigenvalue>(n, o);
         });
 }
 
-DominantEigenvalue::DominantEigenvalue(std::size_t n, scalar lambdaMax,
-                                       scalar minCosine, int interval)
-:   n_(n), lambdaMax_(lambdaMax), minCosine_(minCosine),
-    interval_(interval < 1 ? 1 : interval), dPrev_(n, 0.0)
+DominantEigenvalue::DominantEigenvalue(std::size_t n,
+                                       const DominantEigenvalueOptions& o)
+:   n_(n), o_(o), dPrev_(n, 0.0)
 {}
 
 sVector DominantEigenvalue::step(const sVector& x, const sVector& gx)
 {
     note_.clear();
+    // d = X_n - X_{n-1} in the paper's notation (X_{n-1} = x, X_n = gx).
     sVector d(n_);
     scalar dd = 0.0;
     for (std::size_t i = 0; i < n_; ++i) { d[i] = gx[i] - x[i]; dd += d[i]*d[i]; }
 
+    ++count_;
     auto direct = [&](const std::string& why) {
         if (!why.empty()) { ++nFallback_; note_ = "direct substitution (" + why + ")"; }
-        dPrev_ = d; havePrev_ = true; ++sinceExtrap_;
+        dPrev_ = d;
         return gx;
     };
 
-    if (!havePrev_) return direct("");
-    if (sinceExtrap_ < interval_) return direct("");
+    if (count_ < 2) return direct("");
 
     scalar pp = 0.0, pd = 0.0;
     for (std::size_t i = 0; i < n_; ++i) { pp += dPrev_[i]*dPrev_[i]; pd += dPrev_[i]*d[i]; }
-    std::ostringstream m; m.precision(4);
     if (pp < 1.0e-300 || dd < 1.0e-300)
+    {
+        haveLambda_ = false;
         return direct("differences vanish, lambda undefined");
-    const scalar lambda = pd / pp;
-    const scalar cosv = std::abs(pd) / std::sqrt(pp * dd);
-    lambda_ = lambda;
-    if (std::abs(lambda) > lambdaMax_)
+    }
+    // Eq 17 (norm ratio) with the sign of the projection (rule (b)).
+    const scalar mag    = std::sqrt(dd / pp);
+    const scalar lambda = (pd < 0.0 ? -mag : mag);
+    const scalar cosv   = std::abs(pd) / std::sqrt(pp * dd);
+
+    const bool   hadLambda  = haveLambda_;
+    const scalar lambdaPrev = lambdaPrev_;
+    haveLambda_ = true;
+    lambdaPrev_ = lambda;
+
+    // Eq 15 holds when successive apparent lambda are close; needs two
+    // lambda, i.e. three differences = the paper's "three more iterations".
+    if (!hadLambda) return direct("");
+    std::ostringstream m; m.precision(4);
+    if (std::abs(lambda - lambdaPrev) > o_.lambdaTol * std::abs(lambda))
+        return direct("");   // Eq 15 not yet obeyed: not an event, keep iterating
+    if (std::abs(lambda) > o_.lambdaMax)
     {
-        m << "lambda=" << lambda << " outside +-" << lambdaMax_;
+        m << "lambda=" << lambda << " outside +-" << o_.lambdaMax;
         return direct(m.str());
     }
-    if (cosv < minCosine_)
+    if (cosv < o_.minCosine)
     {
-        m << "lambda=" << lambda << ", |cos(d_k,d_k-1)|=" << cosv
-          << " < " << minCosine_ << ": several modes alive";
+        m << "lambda=" << lambda << ", |cos(dX_n,dX_n-1)|=" << cosv
+          << " < " << o_.minCosine << ": differences not parallel (complex or several modes)";
         return direct(m.str());
     }
-    const scalar f = lambda / (1.0 - lambda);
+    // Eq 18:  X_s' = X_{n-1} + alpha (X_n - X_{n-1}) / (1 - lambda).
+    const scalar f = o_.alpha / (1.0 - lambda);
     sVector xn(n_);
-    for (std::size_t i = 0; i < n_; ++i) xn[i] = gx[i] + f * d[i];
+    for (std::size_t i = 0; i < n_; ++i) xn[i] = x[i] + f * d[i];
     ++nExtrap_;
-    m << "dominant-eigenvalue extrapolation: lambda=" << lambda
-      << ", lambda/(1-lambda)=" << f << ", |cos|=" << cosv;
+    m << "dominant-eigenvalue move (Orbach-Crowe Eq 18): lambda=" << lambda
+      << ", alpha=" << o_.alpha << ", |cos|=" << cosv;
+    if (lambda > 0.0)   // Eq 21; the paper's lambda<0 example does not follow from it
+        m << ", estimated true error = " << lambda / (1.0 - lambda) << " x |dX|";
     note_ = m.str();
-    // History restarts: the extrapolated point is off the direct trajectory.
-    havePrev_ = false; sinceExtrap_ = 0;
+    // The moved point is off the direct trajectory: restart the count (rule (d)).
+    count_ = 0; haveLambda_ = false;
     return xn;
 }
 
