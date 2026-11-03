@@ -108,6 +108,17 @@ scalar level(const VerticalCylinder& g, scalar volume)
     return volume / g.area();
 }
 
+scalar staticHead(scalar rho, scalar lvl)
+{
+    return rho * gravity * std::max<scalar>(lvl, 0.0);
+}
+
+scalar wettedArea(const VerticalCylinder& g, scalar lvl)
+{
+    const scalar h = std::max<scalar>(0.0, std::min<scalar>(lvl, g.height));
+    return pi_ * g.diameter * h + g.area();
+}
+
 void refuseDryOrOverflow(const VerticalCylinder& g, const LiquidState& s,
                          scalar t, const std::string& who)
 {

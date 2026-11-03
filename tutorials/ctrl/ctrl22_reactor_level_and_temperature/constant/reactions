@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------*\
+  Reaction library for ctrl22.  A first-order isomerisation
+
+      isobutanol  ->  2-butanol          r = k(T) c_A      [kmol/(m3 s)]
+
+      k(T) = A exp(-Ea / R T),   A = 4.8e4 1/s,  Ea = 50 kJ/mol
+      k(340 K) = 1.0e-3 1/s  (tau = 1000 s, the vessel's residence time at
+                              the setpoint level and the starting inflow)
+
+  A pedagogical law, not a measured one: nothing here is fitted to data.  Both
+  species carry formation data, so the heat of reaction is DERIVED
+  (sum nu_i h_i(T) on the elements datum), never declared.
+\*---------------------------------------------------------------------------*/
+
+isobutanol_to_2butanol
+{
+    limitingReactant   2Methyl1Propanol;
+
+    stoichiometry
+    (
+        { component 2Methyl1Propanol;  nu -1;  order 1; }
+        { component 2Butanol;          nu  1;  order 0; }
+    );
+
+    kinetics
+    {
+        type   Arrhenius;
+        A      4.8e4;
+        Ea     5.0e4;
+    }
+}

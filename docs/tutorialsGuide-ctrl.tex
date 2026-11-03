@@ -776,3 +776,50 @@ ENERGY. H on the elements datum, T a readout; the ledger claims mass and energy 
 \goldmore{19}
 \end{tutgolden}
 
+\clearpage
+\tutentry{ctrl22\_reactor\_level\_and\_temperature}{tutorials/ctrl/ctrl22\_reactor\_level\_and\_temperature}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Reactor with a level: a PI level loop on the outflow and a PI temperature loop on the jacket act on ONE unit while the inflow steps +50 \% -- the level returns to its setpoint, the temperature holds, the jacket area follows the liquid}
+\begin{tutnarrative}
+A jacketed reactor with a LEVEL (dynamicCSTR, `volumeMode variable`, C205 slice 2): isobutanol $\to$ 2-butanol, first order, exothermic, fed at 300 K and run at 340 K. Its outflow is a MANIPULATED FLOW (as in ctrl21), so the level INTEGRATES the flow imbalance and needs a controller; its temperature is held by the jacket (as in ctrl01). The two loops act on different manipulated variables of the same vessel:
+
+LC1 PI cv level $\to$ mv F\_out reverse acting (Kp, Ki < 0) TC1 PI cv T $\to$ mv T\_jacket direct acting on the error T\_SP - T
+
+and they are COUPLED through the vessel, which is the lesson:
+
+the level sets the volume, so the jacket's wetted area -- the declared UA is the value with the vessel FULL, UA(h) = UA A\_w(h)/A\_w(H) with A\_w = pi D h + pi D\textasciicircum{}2/4 -- and the reaction heat r V both follow it; the outflow leaves at the vessel's temperature, so it carries enthalpy away; the canonical energy route (announced at start-up) lets that term cancel exactly, and the ledger closes for the whole run.
+
+The inflow steps from 1.0e-3 to 1.5e-3 kmol/s at t = 1200 s (a Signal on the inlet face). Level plant gain a = v/A = 0.47 m per kmol (liquid molar volume 0.093 m3/kmol over 0.196 m2); with wn = 0.01 1/s, zeta = 0.8 the PI gains are Kp = -2 zeta wn / a = -0.034, Ki = -wn\textasciicircum{}2 / a = -2.1e-4 kmol/s per m(s). Bias 1.0e-3 kmol/s is the outflow that balances the old inflow.
+
+The cold feed lowers the temperature as the inflow rises; the jacket absorbs it. Read trajectory.csv: `level`, `T`, `F\_out`, `volume`, and the controllers' MV columns.
+
+\end{tutnarrative}
+\tutreadme{A jacketed reactor with a level (dynamicCSTR with volumeMode variable, D = 0.5 m, H = 1.0 m): isobutanol $\to$ 2-butanol, first order, exothermic, fed at 300 K and run at 340 K. Two PI controllers act on DIFFERENT manipulated variables of the SAME vessel:}
+\tutreadme{$\ast$ LC1 --- level on the outflow F\_out, reverse acting (Kp = -0.034, Ki = -2.1e-4); $\ast$ TC1 --- temperature on the jacket T\_jacket (Kp = 5, Ki = 0.02).}
+\tutreadme{The inflow steps from 1.0e-3 to 1.5e-3 kmol/s at t = 1200 s; 3600 s run, 2 s steps. Run it: runCase tutorials/ctrl/ctrl22\_reactor\_level\_and\_temperature (it runs under choupoCtrl). Its sibling unsteady06\_reactor\_fill\_and\_react fills the same reactor from a heel with no controller.}
+\tutreadme{1. The level loop rejects the inflow step. Plot reactor.level: the peak excursion is 0.010 m (the P-only bound would be dF/ = 0.015 m) and the level is back on 0.50 m at the end (< 2e-6 m). 2. The temperature loop holds 340 K against a colder, larger feed: T dips about 2 K after the step and returns; the jacket temperature (TC1.MV) rises from about 367 K to about 387 K. 3. The loops are coupled through the vessel. The declared UA = 300 W/K is the value with the vessel FULL; the engine scales it with the wetted wall, UA(h) = UA$\cdot$A\_w(h)/A\_w(H), A\_w = $\pi$Dh + $\pi$D$^2$/4 (166.7 W/K at the starting 0.5 m, announced). The reaction heat r$\cdot$V follows the volume too. 4. The ledger claims mass and energy and closes (\textasciitilde{}1e-10 or better): both species carry a formation datum, so the vessel takes the canonical energy route, which the run announces.}
+\tutreadme{check\_dynamic\_cstr\_level re-runs this case and holds these numbers.}
+\begin{tutgolden}
+\goldrow{kpi}{FeedStep}{MV\_final}{0.0015}
+\goldrow{kpi}{FeedStep}{PV\_final}{0}
+\goldrow{kpi}{FeedStep}{SP\_final}{0.0015}
+\goldrow{kpi}{LC1}{MV\_final}{0.00150002945263}
+\goldrow{kpi}{LC1}{PV\_final}{0.5000019311}
+\goldrow{kpi}{LC1}{SP\_final}{0.5}
+\goldrow{kpi}{TC1}{MV\_final}{386.663508487}
+\goldrow{kpi}{TC1}{PV\_final}{339.991752771}
+\goldrow{kpi}{TC1}{SP\_final}{340}
+\goldrow{kpi}{balance}{element\_C\_closure\_rel}{1.66272359835e-14}
+\goldrow{kpi}{balance}{element\_H\_closure\_rel}{1.65023582724e-14}
+\goldrow{kpi}{balance}{element\_O\_closure\_rel}{1.66272359835e-14}
+\goldrow{kpi}{balance}{element\_worst\_closure\_rel}{1.66272359835e-14}
+\goldrow{kpi}{balance}{energy\_balance\_available}{1}
+\goldmore{26}
+\end{tutgolden}
+

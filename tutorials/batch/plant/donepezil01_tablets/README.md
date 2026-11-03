@@ -187,11 +187,11 @@ Mass balance 100.000 %; first law closes (residual below 0.0001 kW).
 | Air heaters | 72.1 kW each (LP steam), 21.6 m2 each |
 | Coated tablets | 206.88 kg/h = 712 800 tablets/h at the flowsheet basis (**0.2902 g** each) |
 | Batch plan (section 2a) | lot 305.9 kg of product (300 kg of blend), 143 lots a year; `T_L` 4.25 h (granulation, the fluid bed) and 11 h (tableting, packaging) |
-| Fixed capital (the two heaters, the two tanks, the quoted machines scaled with the batch plan, and the building, see 6) | 19.75 MEUR (of it, 14.19 MEUR of bare-module cost is QUOTED placeholders; the building alone 9.5) |
+| Fixed capital (the two heaters, the two tanks, the quoted machines scaled with the batch plan, and the building, see 6) | 19.80 MEUR (of it, the building alone 8.3 and the HVAC from the supply air 1.24 MEUR of bare-module cost, see below; the machines are QUOTED placeholders) |
 | Land (the layout's plot, 12 321 m2 at 80 EUR/m2) | 0.99 MEUR |
 | Operating labour (the DECLARED crew, 10 a shift) | 45 operating positions, 3.70 MEUR/yr (Turton's correlation, for comparison: 152.5 positions, 12.55 MEUR/yr) |
 | Revenue / raw materials / COM_d | 15.0 / 0.93 / 14.8 MEUR/yr (150 million tablets: 210 equivalent hours of the flowsheet) |
-| NPV (10 %, 10 yr) / IRR | −18.6 MEUR / none (the plant never breaks even) — **not decision-grade, see 6** |
+| NPV (10 %, 10 yr) / IRR | −18.7 MEUR / none (the plant never breaks even) — **not decision-grade, see 6** |
 
 **The two dryers are over-aired.**  Each exhaust leaves at a quarter of
 saturation and 17 K below its inlet: most of the heat bought goes out of
@@ -219,14 +219,39 @@ utilisation = load / (machines x rating), refused above 1, announced above
 0.30, **final blender 0.86**, tablet press 0.77, coating pan 0.61, packaging
 line 0.70.  A rating is the group's to replace; a changed rating changes the
 verdict.  The items are neither costed (the quotes below) nor placed.
-**The clean utilities** (`cleanUtilities`, last in `postDict`) size the air
+**The clean utilities** (`cleanUtilities`, before `costing` in `postDict`) size the air
 and the purified water from the building of `system/layoutDict`: 29 served
 rooms, 7 100 m3 (4 910 m3 of grade D at 20 air changes an hour, 2 190 m3 of
 CNC at 6), a supply of 111 340 m3/h, a 51.5 kW fan, 134 kW of winter heating
 and 90 kW of summer cooling of the fresh-air share -- SENSIBLE only, no
-humidity, no latent load, no room heat gain -- and 3.1 m3 of purified water a
-lot, a peak of 3.14 m3/h, a 3.93 m3/h generator and a 12.6 m3 tank at 4 h.
+humidity, no latent load, no room heat gain -- and 3.14 m3 of purified water a
+lot (0.07 + 0.07 m3 of process water and 3.0 m3 of machine cleans), 580 m3 a
+year, a peak of 1.33 m3/h, a 1.67 m3/h generator and a 5.3 m3 tank at 4 h.
 Every number is an author-set assumption; no standard's table is shipped.
+**The cleaning is counted by the plan (DEV.md 4c C210, E3).**  `batchPlan {
+cleaning }` declares, for the six wet-cleaned machines (binder tank, granulator,
+fluid-bed dryer, final blender, coating-suspension tank, coating pan), the
+purified water of one clean (0.2-0.9 m3 after a lot, 0.5-2.0 m3 at a changeover)
+and an effluent fraction of 0.95 -- ASSUMED, round, to be replaced by the group's
+cleaning procedure; the mill, press and packaging line are dry-cleaned.  The plan
+counts **966 cleans a year** (6 machines x (143 lots + 18 campaigns)), hence
+**560 m3 of purified water and 532 m3 of effluent a year**; a full campaign of the
+granulation train is 36 cleans, 18.9 m3 of water and 18.0 m3 of effluent, of the
+tableting train 18 cleans, 12.4 m3 and 11.8 m3.  They replace the old lump of 3 m3
+a lot in the water demand, so the peak falls from a 3 m3/h hour at the end of the
+coater to 1.33 m3/h spread over each stage's clean time.  The effluent is a
+volume: its load (API, excipients) is not computed.
+
+**The air is priced from the supply air (DEV.md 4c C210).**  Two `hvacGrade`
+quotes declare an installed cost per m3/h of supply air -- ASSUMED, author-set,
+to be replaced by a quote: 12 EUR per m3/h for grade D, 5 for CNC -- so the
+HVAC capital is 98 200 m3/h x 12 = 1.178 MEUR for grade D and 13 140 x 5 = 0.066
+MEUR for CNC, **1.244 MEUR of bare-module cost** (C_TM 1.468 MEUR).  The
+building quote used to carry it at 6000 EUR/m2 (9.5 MEUR); it is now 8.3 MEUR
+(5240 EUR/m2) WITHOUT the HVAC, so the capital moves by +0.05 MEUR.  For
+orientation only: design reports of tablet plants carry the HVAC as a lump of
+0.6-2.5 MEUR; this plant's air (a grade-D building at 20 changes an hour) lands
+in that range, which is the round figures' doing and not a validation.
 
 **Quoted, not correlated (DEV.md 4c C98).**  Choupo has no cost
 correlation for the solid-dose machines or the GMP building, and it does not
@@ -243,7 +268,8 @@ quotes ( ... ); }`, scaled with the batch plan by the six-tenths rule
 | `tabletPress` | 1 000 000 at 100 kg/h | equipment | 42.9 kg/h: 601 470 |
 | `coatingPan` (with the `coatingDryer`, its drying half) | 800 000 at 1 m3 | equipment | 0.61 m3: 594 236 |
 | `packagingLine` | 1 500 000 at 50 kg/h | equipment | 34.0 kg/h: 1 189 791 |
-| `productionBuilding` (the GMP building, 44 m x 36 m) | 9 500 000 | facility | not scaled |
+| `productionBuilding` (the GMP building, 44 m x 36 m, WITHOUT the HVAC) | 8 300 000 | facility | not scaled |
+| `hvacGrade D` / `hvacGrade CNC` (the supply air, see the clean utilities above) | 12 / 5 EUR per m3/h | facility | 98 200 / 13 140 m3/h: 1 178 400 / 65 700 |
 
 **Every one of these numbers is an AUTHOR-SET PLACEHOLDER** — a round figure
 of the right order — and each says so in its `source` and `reason`, which

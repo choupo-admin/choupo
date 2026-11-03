@@ -290,11 +290,11 @@ Mass balance 100.000 %; first law closes (residual below 0.001 kW).
 | Coated tablets | 11.222 kg/h = 15 468.75 tablets/h at the flowsheet basis (0.72546 g each: 700 mg core, 21 mg coat); they keep 0.069 kg/h of water, 0.61 % of their mass (1.49 % on the cellulose, the isotherm's basis) |
 | Coating dryer | exhaust 321.6 K; 1.230 kg/h of the coat's 1.299 kg/h of water evaporated |
 | Batch plan (section 2a) | lot 410.4 kg of product (400 kg of blend), 25 lots a year; `T_L` 42.6 h (spray drying, the solution tank) and 10 h (solid dose, packaging); both trains announced idle most of the year |
-| Fixed capital (the solvent section + the quoted solid-dose train, scaled with the batch plan, and the building, see 6) | 23.75 MEUR (of it, 15.78 MEUR of bare-module cost is QUOTED placeholders) |
+| Fixed capital (the solvent section + the quoted solid-dose train, scaled with the batch plan, and the building, see 6) | 23.78 MEUR (of it, the HVAC from the supply air 0.33 MEUR, the quoted machines 15.78 MEUR of bare-module cost is QUOTED placeholders) |
 | Land (the layout's plot, 16 056 m2 at 80 EUR/m2) | 1.28 MEUR |
 | Operating labour (the DECLARED crew, 11 a shift, see 6) | 49.5 operating positions, 4.07 MEUR/yr (Turton's correlation, for comparison: 152.5 positions, 12.55 MEUR/yr) |
 | Revenue / raw materials / COM_d | 56.0 / 6.88 / 23.9 MEUR/yr (10 156 kg of tablets: 905 equivalent hours of the flowsheet) |
-| NPV (10 %, 10 yr, at launch) / IRR | **+128.2 MEUR / 70.8 %** (discounted payback 1.6 yr); at the 2-competitor price, 8.8 EUR a tablet, +447.6 MEUR / 162 % — **not decision-grade, see 6** |
+| NPV (10 %, 10 yr, at launch) / IRR | **+128.1 MEUR / 70.7 %** (discounted payback 1.6 yr); at the 2-competitor price, 8.8 EUR a tablet, +447.6 MEUR / 162 % — **not decision-grade, see 6** |
 
 **Why it now makes money, and why that is not the end of the argument.**  A
 tablet sells for 4.0 EUR and costs about 1.70 EUR to make (COM_d per kg of
@@ -326,15 +326,35 @@ needed against 162 000), coating pan 0.81, **packaging line 0.88** (631 packs
 of 112 an hour against 720).  A rating is the group's to replace; a changed
 rating changes the verdict, which is the exercise.  These items are neither
 costed (the quotes below carry the money) nor placed (their room is).
-**The clean utilities** (`cleanUtilities`, last in `postDict`) size the air
+**The clean utilities** (`cleanUtilities`, before `costing` in `postDict`) size the air
 and the purified water from the building of `system/layoutDict`: 36 served
 rooms, 10 945 m3, a supply of 65 670 m3/h at the declared 6 air changes an
 hour (CNC), a 30.4 kW fan, 79 kW of winter heating and 53 kW of summer
 cooling of the fresh-air share -- SENSIBLE only (no humidity, no latent
-load, no room heat gain) -- and 3.0 m3 of purified water a lot (the cleaning
-dominates: the coating suspension needs 0.048 m3), a peak of 3.0 m3/h, a
-3.75 m3/h generator and a 12 m3 tank at 4 h.  Every air-change rate and
+load, no room heat gain) -- and 3.05 m3 of purified water a lot (the cleaning
+dominates: the coating suspension needs 0.048 m3), 112 m3 a year, a peak of
+1.0 m3/h, a 1.25 m3/h generator and a 4.0 m3 tank at 4 h.  Every air-change rate and
 water number is an author-set assumption; no standard's table is shipped.
+**The cleaning is counted by the plan (DEV.md 4c C210, E3).**  `batchPlan {
+cleaning }` declares, for the five wet-cleaned machines (dispersion solution
+tank, the two blenders, coating-suspension tank, coating pan), the purified water
+of one clean (0.4-1.0 m3 after a lot, 1.0-2.5 m3 at a changeover) and an effluent
+fraction of 0.95 -- ASSUMED, to be replaced by the group's cleaning procedure; the
+dry granulation, mill, press and packaging are dry-cleaned.  The plan counts
+**149 cleans a year** (25 lots + the train's campaigns, per machine), hence
+**110.5 m3 of purified water and 105 m3 of effluent a year**; a full campaign of
+the solid-dose train is 7 cleans of each of four machines.  They replace the old
+lump of 3 m3 a lot.  The effluent is a volume: its load (acetone residues, API)
+is not computed.
+
+**The air is priced from the supply air (DEV.md 4c C210).**  One `hvacGrade CNC`
+quote declares an installed cost per m3/h of supply air -- ASSUMED, author-set,
+to be replaced by a quote: 5 EUR per m3/h -- so the HVAC capital is 65 670 m3/h
+x 5 = **0.328 MEUR** of bare-module cost (C_TM 0.387 MEUR).  The building quote
+used to carry it (11 MEUR); it is now 10.7 MEUR WITHOUT the HVAC.  For
+orientation only: design reports of tablet plants carry the HVAC as a lump of
+0.6-2.5 MEUR; this all-CNC plant's air sits BELOW that range, a sign that 5 EUR
+per m3/h is probably too low for a contained suite -- the group's question.
 
 **Quoted, not correlated (DEV.md 4c C98).**  Choupo has no cost
 correlation for the solid-dose machines or the GMP building, and it does not
@@ -349,7 +369,8 @@ invent one.  So `system/postDict` DECLARES a price for each, in
 | `rollerCompactor` | 600 000 at 100 kg/h | equipment | 125.5 kg/h: 687 570 |
 | `blender` / `finalBlender` | 300 000 at 1 m3 each | equipment | 1.19 m3: 332 196 / 1.33 m3: 356 520 |
 | `mill` (with the `screen`) | 150 000 at 100 kg/h | equipment | 125.5 kg/h: 171 893 |
-| `productionBuilding` (the GMP building, 62 m x 36 m) | 11 000 000 | facility | not scaled |
+| `productionBuilding` (the GMP building, 62 m x 36 m, WITHOUT the HVAC) | 10 700 000 | facility | not scaled |
+| `hvacGrade CNC` (the supply air, see the clean utilities above) | 5 EUR per m3/h | facility | 65 670 m3/h: 328 350 |
 
 **The machines scale with the batch plan** (`scaling { referenceSize;
 exponent; exponentSource; }` on each quote): the item costs units x value x
@@ -368,8 +389,8 @@ section 6, question 5).  For the building it found ONE public benchmark
 (section 4.5): Mayne Pharma's oral-solid-dose plant with potent-compound
 containment, 80 MUSD for about 11 700 m2, about 6 800 USD (6 260 EUR) per m2
 **all-in, building and equipment**; a building-only cost per m2 was **not
-found**.  The case's 11 MEUR over the building's 2 232 m2 of footprint is
-4 930 EUR/m2, below that all-in figure as a building alone should be — of
+found**.  The case's 10.7 MEUR (without the HVAC, priced apart from its supply air) over the building's 2 232 m2 of footprint is
+4 794 EUR/m2, below that all-in figure as a building alone should be — of
 the right order, and still a placeholder.  Replace each with a vendor's
 dated quotation (vendor, reference and date in `source`).  A quote is
 entered as its **installed**

@@ -78,6 +78,9 @@ import { layoutScene, type LayoutScene } from "../case/plantLayout.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
 import { GmpBuildingSection, useBuildingOverlay } from "./GmpBuildingSection.js";
 import { BatchPlanSection } from "./BatchPlanSection.js";
+import { downloadPfdSvgs, openPfdTab, pfdSetOfRun } from "./pfdReport.js";
+import { PAGE_SIZES, type PageSizeName } from "../case/pfdSheet.js";
+import { machineUtilisation } from "../case/machineUtilisation.js";
 import { PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
 import { popOutCaseLayout } from "../state/useLayoutPopOut.js";
 import { useStaleResult } from "../state/useStaleResult.js";
@@ -88,6 +91,8 @@ import { allSheets } from "../case/hallSet.js";
 import { TrainsAndRacks } from "./TrainsAndRacks.js";
 import { hasBankSheet } from "../case/withBanks.js";
 import { ExportLayoutButton } from "./ExportLayoutButton.js";
+import { equipmentListHtml } from "../case/equipmentListSheet.js";
+import { fetchEngineVersion, engineVersionLabel } from "../case/engineVersion.js";
 import {
   parseDesignSheet, unitDesignSheets, type DesignPort, type DesignSheet,
 } from "../case/designSheet.js";
@@ -103,7 +108,7 @@ import {
   panelBoxProps, usePanel, usePanelShortcut,
 } from "./panelContract.js";
 import type { UnitSpec } from "../case/types.js";
-import type { EquipmentItem, RunResult } from "../adapters/SolverAdapter.js";
+import type { EquipmentItem, EquipmentListRow, RunResult } from "../adapters/SolverAdapter.js";
 
 export function ReportsWorkspace() {
   const runResult = useStore((s) => s.runResult);
@@ -143,6 +148,9 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     .filter((c) => c.n > 0);
   const tree = useMemo(() => designSheetTree(runResult.designFiles), [runResult.designFiles]);
   const hasBanks = useMemo(() => hasBankSheet(runResult.designFiles), [runResult.designFiles]);
+  const machines = useMemo(
+    () => machineUtilisation(runResult.equipment, runResult.advisories),
+    [runResult.equipment, runResult.advisories]);
   const econ = runResult.economics;
   //  The tornado, built ONCE from the engine's sensitivity rows; null when
   //  the case declared no sensitivity -- and then there is no section.
@@ -164,6 +172,7 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     layout: scene !== null,
     trains: hasBanks,
     batchPlan: !!runResult.batchPlan,
+    pfd: runResult.streams.length > 0,
   };
   const sections = reportSections(facts);
   const caseName = useStore((s) => s.tutorialName);
@@ -182,11 +191,13 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
   //  order; this map only knows how to draw each.  A body that reaches here
   //  for a fact that is false cannot happen: the list did not include it.
   const body: Record<ReportSectionId, () => React.ReactNode> = {
-    equipment:  () => <EquipmentDesign items={runResult.equipment ?? []} />,
+    equipment:  () => <EquipmentDesign items={runResult.equipment ?? []}
+                         list={runResult.equipmentList?.rows} caseName={caseName} />,
     sheets:     () => <EquipmentSheets designFiles={runResult.designFiles} tree={tree} />,
     utilities:  () => <UtilitiesBody rows={runResult.utilityAllocation ?? []} />,
     mass:       () => <MassBody runResult={runResult} />,
     energy:     () => <EnergyBody gb={runResult.globalEnergyBoundary} />,
+    pfd:        () => <PfdBody runResult={runResult} />,
     columns:    () => <ColumnsBody runResult={runResult} columns={columnUnits} />,
     exchangers: () => <ExchangersBody runResult={runResult} units={hxUnits} />,
     economics:  () => (econ ? <EconomicsBody econ={econ} /> : null),
@@ -195,7 +206,7 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     layout:     () => (scene && layout ? <LayoutBody layout={layout} scene={scene}
                                                     building={runResult.building} /> : null),
     batchPlan:  () => (runResult.batchPlan
-      ? <BatchPlanSection plan={runResult.batchPlan} caseName={caseName} /> : null),
+      ? <BatchPlanSection plan={runResult.batchPlan} caseName={caseName} machines={machines} /> : null),
   };
 
   return (
@@ -452,6 +463,46 @@ function EnergyBody({ gb }: { gb: RunResult["globalEnergyBoundary"] }) {
         is already inside Σ H feeds; an internal exchange is not boundary heat).
       </Text>
     </>
+  );
+}
+
+/*  ---- PFD sheets (S2) --------------------------------------------------- */
+function PfdBody({ runResult }: { runResult: RunResult }) {
+  const [size, setSize] = useState<PageSizeName | "auto">("auto");
+  //  Built from the run on demand; nothing is computed that the engine did
+  //  not publish (case/pfdSheet.ts).
+  const set = useMemo(() => {
+    try { return pfdSetOfRun(runResult, size === "auto" ? undefined : size); }
+    catch { return null; }
+  }, [runResult, size]);
+  if (!set) return <Text size="sm" c="dimmed">No flowsheet to draw.</Text>;
+  return (
+    <Stack gap={6}>
+      {set.sheets.map((s) => (
+        <Text key={s.n} size="sm" ff="monospace">
+          sheet {s.n} of {s.N} — {s.size} — {s.kind === "figure" ? s.caption : `${s.caption}, stream table continued`}
+          {" "}({s.to - s.from} of {s.table.columns.length} stream column{s.table.columns.length === 1 ? "" : "s"})
+        </Text>
+      ))}
+      <Group gap={8}>
+        <Text size="xs" c="dimmed">Page size</Text>
+        {(["auto", ...PAGE_SIZES] as const).map((z) => (
+          <Button key={z} size="compact-xs" variant={size === z ? "filled" : "default"}
+            onClick={() => setSize(z)}>{z === "auto" ? "Auto" : z}</Button>
+        ))}
+        <Button size="compact-xs" variant="light" onClick={() => openPfdTab(set)}>
+          Open PFD (print / save as PDF)
+        </Button>
+        <Button size="compact-xs" variant="default" onClick={() => downloadPfdSvgs(set)}>
+          SVG per sheet
+        </Button>
+      </Group>
+      <Text size="xs" c="dimmed">
+        Each sheet is a real ISO page (A3, A2 or A1 landscape) chosen so the stream table keeps its
+        text at 2.5 mm printed; a larger table continues on the next sheet. In the browser's print
+        dialog choose “Save as PDF”.
+      </Text>
+    </Stack>
   );
 }
 
@@ -961,7 +1012,19 @@ function PortTable({ label, ports }: { label: string; ports: DesignPort[] }) {
  *  INSIDE a plant that has them keeps its own honest heading rather than being
  *  absorbed into a neighbour.
  */
-function EquipmentDesign({ items }: { items: EquipmentItem[] }) {
+function EquipmentDesign({ items, list, caseName }: {
+  items: EquipmentItem[]; list?: EquipmentListRow[]; caseName: string;
+}) {
+  //  THE PRINTABLE EQUIPMENT LIST (slice S1 of the plant document set): the
+  //  engine's own rows, laid out on a page that carries its own Print button.
+  //  The engine version is read from the stamp beside the binaries; unread,
+  //  the page says so.
+  const openList = async () => {
+    if (!list || list.length === 0) return;
+    const v = await fetchEngineVersion(import.meta.env.BASE_URL);
+    openInTab(equipmentListHtml(list, caseName || "case",
+      v ? engineVersionLabel(v) : null));
+  };
   const anySector = items.some((i) => !!i.sector);
   //  Group in the engine's own order.  A Map preserves insertion order, which
   //  is the flowsheet's declared order -- a plant reads in the order it was
@@ -991,13 +1054,21 @@ function EquipmentDesign({ items }: { items: EquipmentItem[] }) {
 
   return (
     <>
-      <Text size="xs" c="dimmed" mb={6}>
-        {anySector
-          ? `${items.length} item(s) across ${groups.size} sector(s) — size, material, design basis and capital cost`
-          : `${items.length} item(s) — size, material, design basis and capital cost`}
-      </Text>
+      <Group justify="space-between" align="center" mb={6} wrap="nowrap">
+        <Text size="xs" c="dimmed">
+          {anySector
+            ? `${items.length} item(s) across ${groups.size} sector(s) — size, material, design basis and capital cost`
+            : `${items.length} item(s) — size, material, design basis and capital cost`}
+        </Text>
+        {list && list.length > 0 && (
+          <Button size="compact-xs" variant="light" onClick={openList}>
+            Open equipment list (print)
+          </Button>
+        )}
+      </Group>
       <Table striped withTableBorder fz="sm" ff="monospace">
         <Table.Thead><Table.Tr>
+          <Table.Th>tag</Table.Th>
           <Table.Th>unit</Table.Th>
           <Table.Th>equipment</Table.Th>
           <Table.Th>material</Table.Th>
@@ -1015,7 +1086,7 @@ function EquipmentDesign({ items }: { items: EquipmentItem[] }) {
               <Fragment key={sector || "flat"}>
                 {sector && (
                   <Table.Tr key={`h-${sector}`}>
-                    <Table.Td colSpan={4}>
+                    <Table.Td colSpan={5}>
                       <Text fw={700} c="accent.3" tt="uppercase" size="xs"
                         style={{ letterSpacing: 0.5 }}>{sector}</Text>
                     </Table.Td>
@@ -1042,6 +1113,9 @@ function EquipmentDesign({ items }: { items: EquipmentItem[] }) {
                     //  column emits five rows under one unit name and React
                     //  would see five duplicate keys.
                     <Table.Tr key={it.item}>
+                      {/*  THE PLANT TAG, as the engine stamped it: the name
+                           this item answers to in every other document. */}
+                      <Table.Td><Text span fw={700} ff="monospace">{it.tagNo ?? "—"}</Text></Table.Td>
                       <Table.Td pl={sector ? "lg" : undefined} title={it.item}>{leaf}</Table.Td>
                       {/*  THE ITEM, where the unit realises several.  Two of a
                            column five items are `shellTubeHX` and two are
@@ -1068,7 +1142,7 @@ function EquipmentDesign({ items }: { items: EquipmentItem[] }) {
             );
           })}
           <Table.Tr>
-            <Table.Td colSpan={4}><Text fw={700}>TOTAL</Text></Table.Td>
+            <Table.Td colSpan={5}><Text fw={700}>TOTAL</Text></Table.Td>
             <Table.Td ta="right"><Text fw={700}>{eur(totalCTM)}</Text></Table.Td>
             <Table.Td ta="right"><Text fw={700}>{totalCTM > 0 ? "100.0 %" : "—"}</Text></Table.Td>
           </Table.Tr>

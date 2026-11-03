@@ -40,6 +40,12 @@ describe("reportSections: which reports exist, decided once", () => {
     ]);
   });
 
+  it("the PFD sheet (S2) is earned by a run that published streams, after the energy balance", () => {
+    expect(reportSections(NONE).map((s) => s.id)).not.toContain("pfd");
+    expect(reportSections({ ...NONE, pfd: true }).map((s) => s.id))
+      .toEqual(["utilities", "mass", "energy", "pfd"]);
+  });
+
   it("each earned section is gated by ITS OWN fact and no other", () => {
     for (const k of Object.keys(ALL) as (keyof ReportFacts)[]) {
       const only = { ...NONE, [k]: true };

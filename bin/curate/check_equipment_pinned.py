@@ -19,7 +19,8 @@ WHAT THIS CHECKS, per case whose system/postDict declares a `sizing {}` pass
 and that carries a golden:
   (a) PUBLISHED IS PINNED.  Every (unit, key) the run emits under `equipment`
       -- following the generator's OWN emission rule: `basis` when the sizer
-      states one, every `values.<k>`, and the three `cost.*` totals when a
+      states one, the plant `tagNo` (a word; slice S1 of the plant document
+      set), every `values.<k>`, and the three `cost.*` totals when a
       costing pass ran -- has an `equipment` row in `expected`.  `cost.factors`
       are deliberately NOT emitted and therefore not required: they are the
       costing PROVENANCE, which `check_cost_provenance` recomputes the total
@@ -115,6 +116,9 @@ def published(case: Path):
         u = m.group(1)
         if re.search(r'"basis": "[^"]*"', line):
             keys.add((u, "basis"))
+        #  THE PLANT TAG (slice S1): published implies pinned, as a word.
+        if re.search(r'"tagNo": "[^"]*"', line):
+            keys.add((u, "tagNo"))
         mv = re.search(r'"values": \{([^}]*)\}', line)
         if mv:
             for k in re.findall(r'"([A-Za-z_][A-Za-z0-9_]*)": *-?[0-9]', mv.group(1)):

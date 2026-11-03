@@ -27369,6 +27369,80 @@ returns to the 2.0\,m setpoint; with $K_i=0$ it settles 0.050\,m high.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{The CSTR with a level: reaction on a moving volume}\label{ch:dyn-cstr-level}
+
+Two vessels are now on the table: the constant-volume \code{dynamicCSTR}
+of Section~\ref{ch:dyn-cstr}, which reacts but cannot hold a level, and the
+\code{dynamicTank} of Section~\ref{ch:dyn-tank}, which holds a level but
+reacts nothing.  Declaring \code{volumeMode variable} on the CSTR joins
+them: the liquid inventory is the state, the volume and the level are
+derived from it exactly as in the tank (\eqref{eq:tank-level}, the same
+\code{VariableVolumeHoldup} functions, called and not copied), and every
+rate law is evaluated on the \emph{current} volume:
+\begin{align}
+  \frac{dn_i}{dt} &= \dot n_{\mathrm{in},i} - F_{\mathrm{out}}\,x_i
+        + \sum_r \nu_{i,r}\, r_r\!\left(T,\; c_j = \frac{n_j}{V}\right) V,
+        \label{eq:cstrv-mass}\\
+  V &= \sum_i \frac{n_i M_i}{\rho(T,P,\xv)},\qquad
+  h = \frac{V}{\pi D^{2}/4}.
+\end{align}
+The outflow is one of the tank's two declared modes (a manipulated flow, or
+a valve on the outlet), and a vessel that runs dry or overflows is refused.
+A first-order law makes the extent rate $r V = k\,n_A$ independent of $V$ --- the
+volume matters through the concentration only for orders other than one,
+which is why the check of this slice integrates a second-order law
+independently.
+
+\paragraph{Energy.}  The route is still probed and announced.  On the
+canonical (per-species) route the stored enthalpy is $H=\sum_i n_i h_i(T)$ and
+\begin{equation}
+  \Bigl(\sum_i n_i C_{p,i}\Bigr)\frac{dT}{dt}
+  = \sum_i \dot n_{\mathrm{in},i}\,[h_i(T_{\mathrm{in}})-h_i(T)]
+  + \frac{UA(h)}{1000}\,(T_j - T) - \sum_r r_r V\,\Delta H_r(T),
+  \label{eq:cstrv-energy}
+\end{equation}
+which is \emph{the same equation} as at constant volume: the stream leaves
+at the vessel's temperature, so the outlet term $F_{\mathrm{out}}h$ cancels
+against the same term inside $dH/dt$ whatever $F_{\mathrm{out}}$ is.  Only the
+mixture-$H$ route carries $F_{\mathrm{out}}\,h(\xv,T)$ explicitly, and only the
+jacket changes.
+
+\paragraph{The jacket follows the liquid.}  A jacket on the whole vessel
+exchanges heat through the \emph{wetted} wall.  For the vertical cylinder
+the wetted area is the side wall up to the liquid plus the flat bottom,
+$A_w(h)=\pi D h+\pi D^{2}/4$, and the declared $UA$ is the value with the
+vessel full,
+\begin{equation}
+  UA(h) \;=\; UA\;\frac{A_w(h)}{A_w(H_v)}.
+  \label{eq:cstrv-ua}
+\end{equation}
+The rule is announced at start-up with the starting value; \code{UAScaling
+fixed} keeps $UA$ constant.  Coupling is the lesson: a level loop that
+raises the volume also raises the jacket area and the reaction heat
+$r V$, so the temperature loop sees a plant whose gain moves with the level.
+
+\paragraph{Starting from ``empty''.}  At zero volume the temperature, the
+concentrations and the level have no meaning, so exactly zero is refused;
+the vessel starts from a declared heel (a level or a mole inventory above
+zero).
+
+\begin{tutoriallink}{unsteady/unsteady06\_reactor\_fill\_and\_react}
+A reactor filling from a $0.02$\,m heel with $F=1.0\times10^{-3}$\,kmol/s of
+isobutanol while the isomerisation to 2-butanol runs with $k=4\times10^{-4}$\,s$^{-1}$.
+Because the reaction changes no moles and is first order,
+$n_A(t)=F/k+(n_{A0}-F/k)\,e^{-kt}$ exactly, and $V(t)=M(t)/\rho$ with
+$M(t)=M_0+M_{\mathrm{w}}Ft$; the run reproduces both to $10^{-6}$.
+\end{tutoriallink}
+
+\begin{tutoriallink}{ctrl/ctrl22\_reactor\_level\_and\_temperature}
+The same reactor with a PI level loop on $F_{\mathrm{out}}$ (reverse acting,
+$K_p=-0.034$, $K_i=-2.1\times10^{-4}$) and a PI temperature loop on
+$T_{\mathrm{jacket}}$, two loops on one unit, after a $+50\,\%$ inflow step.
+The level returns to its setpoint, the temperature holds, and the ledgers
+close.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
 \section{Feedback control: the ideal PID, derivative-on-PV, anti-windup}\label{ch:pid}
 
 \begin{whatyoulllearn}

@@ -70,6 +70,17 @@ Description
     are items; neither is costed (no correlation) and neither is placed (the
     layout is already checked).
 
+    THE AIR IS PRICED, THE WATER PLANT IS NOT (DEV.md 4c C210, E2).  The pass
+    runs BEFORE `costing`, and each `hvac/grade<G>` item is priced by the
+    case's own declared installed cost per m3/h of supply air -- a
+    `costing { quotes }` entry `hvacGrade <G>; valuePerSupplyAir <price>;
+    currency; year; basis; kind; source; reason;` read by
+    `costing/DeclaredQuote` (the same arithmetic as any quote: escalation,
+    currency, installed or purchased, C_TM = 1.18 C_BM).  A grade with no such
+    entry REFUSES in the costing pass by name and the capital total reads
+    INCOMPLETE -- no default, no table is shipped.  `hvac/total` is the sum of
+    the grades and is not priced twice.
+
     The items are `ratedMachine`-like in spirit: `notCostedBecause`,
     `notPlacedBecause`, units on every value, a `basis`.
 \*---------------------------------------------------------------------------*/

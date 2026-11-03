@@ -36,6 +36,7 @@ License
 #include "costing/CostingModel.H"
 #include "sizing/EquipmentSize.H"
 
+#include <iostream>
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -46,6 +47,25 @@ std::map<std::string, PostProcessor::Factory>& PostProcessor::registry()
 {
     static std::map<std::string, Factory> r;
     return r;
+}
+
+bool PostProcessor::failsRunOn(const PostProcessor& pass, int rc)
+{
+    if (rc == 0 || !pass.nonzeroFailsRun()) return false;
+    std::cout.flush();
+    std::cerr << "\nERROR: the '" << pass.type() << "' post-processing pass reported "
+              << rc << " failure(s) (printed above, each with its reason) -- a "
+                 "pass that did not do what the case asked is a FAILED RUN, not a "
+                 "quiet exit 0.  Fix the cause named above; the tables above are "
+                 "kept so you can read them.\n";
+    return true;
+}
+
+void PostProcessor::runOrThrow(PostProcessor& pass, SimulationResult& result)
+{
+    if (failsRunOn(pass, pass.run(result)))
+        throw std::runtime_error("the '" + pass.type()
+            + "' post-processing pass failed at this point (see the message above)");
 }
 
 void PostProcessor::registerType(const std::string& name, Factory f)

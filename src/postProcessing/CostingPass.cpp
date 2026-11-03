@@ -163,6 +163,23 @@ int CostingPass::run(SimulationResult& result)
     for (const auto& [item, dim] : result.sizings)
     {
         if (!dim.notCostedBecause.empty()) { outOfScope.push_back(&dim); continue; }
+        //  THE AIR OF A CLEAN-ROOM GRADE (DEV.md 4c C210, E2) has no cost
+        //  correlation: it is priced by the case's declared `hvacGrade` quote
+        //  (already priced above, printed with the quotes) or it REFUSES by
+        //  name, and the total reads INCOMPLETE -- the tray rule, no default.
+        if (dim.equipmentType == "airHandling")
+        {
+            if (quotes.count(item)) continue;
+            std::cerr << "  " << item << "  FAILED: no cost is declared for"
+                         " the supply air of this grade -- add `costing {"
+                         " quotes ( { hvacGrade "
+                      << dim.equipmentTag.substr(5)
+                      << "; valuePerSupplyAir <price per m3/h>; currency;"
+                         " year; basis; kind; source; reason; } ) }`.\n";
+            ++failures;
+            notCosted.push_back(item);
+            continue;
+        }
         try {
             //  AN ITEM WITH NO CONSTRUCTION MATERIAL IS NOT A REGISTRY
             //  ERROR (2026-09-26): a catalyst charge is not built of one,
@@ -237,6 +254,45 @@ int CostingPass::run(SimulationResult& result)
         totalBareMod   += q.bareModuleCost;
         totalModule    += q.totalModuleCost;
         result.costs[kv.first] = q;
+    }
+
+    //  THE HVAC CAPITAL, per grade and in total (DEV.md 4c C210, E2): the
+    //  grade rows above are the priced items; this is their sum and the
+    //  supply air it buys, published as KPIs so a golden can pin them.
+    {
+        scalar sumBM = 0.0, sumTM = 0.0, sumQ = 0.0;
+        std::vector<std::string> lines;
+        for (const auto& kv : quotes)
+        {
+            const CostBreakdown& q = kv.second;
+            if (q.unitName != "hvac") continue;
+            const std::string g = q.equipmentTag.substr(5);
+            auto& k = result.kpis["hvac"];
+            k["C_BM_grade" + g]       = q.bareModuleCost;
+            k["Q_supply_grade" + g]   = q.factors.at("hvacSupplyAir");
+            sumBM += q.bareModuleCost;  sumTM += q.totalModuleCost;
+            sumQ  += q.factors.at("hvacSupplyAir");
+            std::ostringstream l;
+            l << "    grade " << g << ": " << std::fixed << std::setprecision(0)
+              << q.factors.at("hvacSupplyAir") << " m3/h x "
+              << std::setprecision(3) << q.factors.at("hvacPricePerSupplyAir")
+              << " EUR per m3/h = " << std::setprecision(0) << q.bareModuleCost
+              << " EUR (C_BM)";
+            lines.push_back(l.str());
+        }
+        if (!lines.empty())
+        {
+            auto& k = result.kpis["hvac"];
+            k["C_BM_total"] = sumBM;
+            k["C_TM_total"] = sumTM;
+            k["Q_supply_total"] = sumQ;
+            std::cout << "\n  HVAC capital from the supply air (the case's own"
+                         " cost per m3/h, by grade):\n";
+            for (const auto& l : lines) std::cout << l << "\n";
+            std::cout << "    TOTAL: " << std::fixed << std::setprecision(0)
+                      << sumQ << " m3/h, C_BM " << sumBM << " EUR, C_TM "
+                      << sumTM << " EUR\n";
+        }
     }
 
     std::cout << "  " << std::string(88 + wName - 14, '-') << "\n  "

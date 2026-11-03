@@ -75,6 +75,7 @@ Description
 #include "thermo/utility/UtilityCatalogue.H"
 #include "outerDriver/OuterDriver.H"
 #include "io/DesignSheetWriter.H"
+#include "io/EquipmentListWriter.H"
 #include "postProcessing/layout/PlantLayout.H"
 #include "postProcessing/layout/BuildingLayout.H"
 #include "io/InternalStateIO.H"
@@ -1229,6 +1230,10 @@ try
             tp = ThermoPackageBuilder::build(packageDict, db, chemPtr);
             DesignSheetWriter::write(fs::current_path().string(), result,
                                      tp, verbosity);
+            //  THE EQUIPMENT LIST, beside the sheets it recounts: it needs
+            //  the costs a later pass adds, so it is written here too.
+            EquipmentListWriter::write(fs::current_path().string(), result,
+                                       verbosity);
         } catch (const std::exception& e) {
             //  A sheet that cannot be written must SAY so and must not kill
             //  the run: the answer is already computed and the reports are
@@ -1478,6 +1483,7 @@ try
         //  way.  A case with no layoutDict is untouched (`applyLayout`
         //  returns at once), and the sizing it reads is complete by then.
         bool layoutApplied = false;
+        bool postChainFailed = false;
         if (postDict)
         {
             auto chain = PostProcessor::buildChain(postDict);
@@ -1491,7 +1497,14 @@ try
                     applyLayout(result);
                     layoutApplied = true;
                 }
-                pp->run(result);
+                //  The count a pass returns used to be DISCARDED here (C208):
+                //  a missing REQUIRED PRICE ended at exit 0 with no appraisal (a refused
+                //  SIZER does not fail the run: see PostProcessor.H).
+                //  Exit 2 is the refusal code this binary already uses; the
+                //  chain still runs on, so every table the case asked for
+                //  is printed before the run is declared failed.
+                if (PostProcessor::failsRunOn(*pp, pp->run(result)))
+                    postChainFailed = true;
             }
         }
         if (!layoutApplied) applyLayout(result);
@@ -1541,6 +1554,7 @@ try
         if (!validate0(result)) finalRc = 1;
         writeConverged(result);
         writeDesignSheets(result);
+        if (postChainFailed && finalRc == 0) finalRc = 2;
 
         // (utility allocation now done inside `simulate` -- carried on every
         // pass, direct + outer -- so the GUI always has it.)

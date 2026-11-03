@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+tier          tutorial;
+application   choupoCtrl;
+description   "Reactor with a level: a PI level loop on the outflow and a PI temperature loop on the jacket act on ONE unit while the inflow steps +50 % -- the level returns to its setpoint, the temperature holds, the jacket area follows the liquid";
+verbosity     3;
+startTime       0;        // s
+endTime         3600;     // s
+deltaT          2.0;      // s
+writeInterval   100;      // s
+solutionControl
+{
+    write           true;
+    flushEach       true;
+}

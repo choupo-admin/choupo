@@ -259,6 +259,10 @@ std::size_t write(const std::string&                       caseRoot,
         o << "unit        \"" << uname << "\";\n";
         if (!sz.sector.empty())
             o << "sector      " << sz.sector << ";\n";
+        //  THE PLANT TAG, the name this item answers to on every surface
+        //  (EquipmentTag.H).  `tagBy` says whether the rule or the case chose.
+        if (!sz.tagNo.empty())
+            o << "tag         " << sz.tagNo << ";\n";
         o << "equipment   " << (sz.equipmentType.empty()
                                     ? std::string("(not stated)")
                                     : sz.equipmentType) << ";\n";

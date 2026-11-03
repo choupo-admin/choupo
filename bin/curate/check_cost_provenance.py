@@ -326,6 +326,29 @@ S34 -- the published `operatorsPerShift` written from the correlation.  Arm
 S35 -- the whole-operator refusal turned into `&&`.  Arm (v3) twice: the
 fractional AND the zero crew both ran to exit 0.
 
+ARM (x), 2026-11-02 (DEV.md 4c C208 (2a), (2b)), three by-hand sabotages,
+each rebuilt, observed, reverted and rebuilt.  Before the fix, on
+apalutamide01_tablets: no `labourRate` -> `REQUIRED PRICE MISSING` and exit 0;
+the `acetoneFeed` entry deleted -> exit 0 and C_RM short by it.
+
+S36 -- `nonzeroFailsRun()` of the economics pass made false.  Arm (x), four
+times: (x1) the missing labourRate ended at exit 0, (x1) the run's own
+failure line absent, (x2) the unpriced inlet ended at exit 0, and the (x5)
+source check "lacks nonzeroFailsRun() = true".
+S37 -- the unpriced-inlet check disabled (`if (false && priceFilePresent)`).
+Arm (x2), twice: exit 0, and the refusal does not name `feed` and the
+`price 0;` remedy.
+S38 -- the call to `PostProcessor::failsRunOn` taken out of choupoSolve's main
+(the return discarded again, as before the fix).  Arm (x), four times:
+(x1) twice, (x2), and the (x5) source test "the count is discarded again" --
+the output arms and the callable source test agree, which is the point of
+having both.
+
+WHAT (x) DELIBERATELY DOES NOT DO: a refused SIZER does not fail the run.
+`check_design_sheet` arm (n) and the plot plan (C79) hold the contract "the
+ITEM is refused, never the run"; (x5) holds that `SizingPass` and
+`CostingPass` do NOT say `nonzeroFailsRun`.
+
 AND A DEFECT IN THIS GATE, found by running the new arms.  They were first
 inserted AFTER the `finally: shutil.rmtree(tmp)` -- so they checked for files
 in a directory that had already been deleted, and reported "the design report
@@ -1854,6 +1877,127 @@ def check_contingency_printed(fails):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+ECON01 = ROOT / "tutorials/steady/economics/economics01_esterification_dcf"
+
+
+def check_required_prices(fails):
+    """(x) A REQUIRED PRICE THAT IS MISSING FAILS THE RUN, AND A RAW-MATERIAL
+    INLET NOBODY PRICED IS NOT QUIETLY LEFT OUT OF C_RM (2026-11-02, DEV.md 4c
+    C208 (2)).
+
+    Two quiet failures, each measured at exit 0 before the fix on
+    apalutamide01_tablets: (2b) a missing `labourRate` printed `REQUIRED
+    PRICE MISSING` and ended with no appraisal at exit 0 (the pass returned 1
+    and the caller discarded it); (2a) deleting the `acetoneFeed` entry from
+    `rawMaterials` moved nothing and refused nothing -- C_RM was the sum of
+    the entries, so a boundary inlet with no entry was simply not in it.
+
+      w0  economics01 as shipped: exit 0, an appraisal (NPV in the result).
+      w1  no `labourRate`: exit != 0 (2), `REQUIRED PRICE MISSING --
+          labourRate` AND the pass-failed ERROR line; no `NPV` published.
+      w2  the `rawMaterials` list deleted: exit != 0 and the refusal NAMES
+          the unpriced inlet `feed` and the remedy (`price 0;`).
+      w3  that entry declared FREE (`price 0;` + provenance): exit 0, an
+          appraisal, C_RM = 0 -- the grammar that already existed is the way
+          out, nothing new was invented.
+      w4  `refuseOnMissingPrice 0;` with the list deleted: exit 0, the
+          unnamed inlet ANNOUNCED as left out of C_RM (the loud default).
+      w5  SOURCE: the caller reads the pass's return through
+          `PostProcessor::failsRunOn`, the economics pass says yes, and the
+          sizing and costing passes do NOT (their FAILED is an ITEM refused,
+          never the run -- check_design_sheet arm (n))."""
+    if not ECON01.is_dir():
+        fails.append("(x) %s is missing -- this arm CANNOT RUN and must not pass"
+                     % ECON01.name)
+        return
+    tmp = tempfile.mkdtemp(prefix="cost_reqprice_")
+    try:
+        def make(name, econ_edit=None, post_edit=None):
+            d = _copy_case(ECON01, tmp, name)
+            if econ_edit:
+                f = d / "constant" / "economics"
+                f.write_text(econ_edit(f.read_text()))
+            if post_edit:
+                f = d / "system" / "postDict"
+                f.write_text(post_edit(f.read_text()))
+            return d
+
+        no_rm = lambda t: re.sub(r"rawMaterials\s*\(.*?\n\);", "", t, flags=re.S)
+        assert re.search(r"rawMaterials\s*\(.*?\n\);",
+                         (ECON01 / "constant/economics").read_text(), re.S)
+
+        # ---- w0
+        rc, out = _run(make("w0"))
+        if rc != 0 or _econ_kpi(out, "NPV") is None:
+            fails.append("(x0) economics01 as shipped no longer runs to an "
+                         "appraisal (rc=%d) -- the arms below mean nothing.\n%s"
+                         % (rc, out[-600:]))
+            return
+        base_rm = _econ_kpi(out, "C_RM")
+
+        # ---- w1  no labourRate
+        rc, out = _run(make("w1", lambda t: re.sub(r"(?m)^labourRate\s+[^;]*;", "", t)))
+        if rc == 0:
+            fails.append("(x1) a missing labourRate ended at exit 0 -- the "
+                         "required price is missing and NO appraisal was made, "
+                         "which is a failed run, not a quiet one.")
+        if "REQUIRED PRICE MISSING -- labourRate" not in out:
+            fails.append("(x1) the refusal does not name `labourRate`.")
+        if "the 'economics' post-processing pass" not in out:
+            fails.append("(x1) the run's own failure line is absent -- the pass "
+                         "printed its message and nothing said the RUN failed.")
+        if _econ_kpi(out, "NPV") is not None:
+            fails.append("(x1) an NPV was published with a required price "
+                         "missing.")
+
+        # ---- w2  the unpriced inlet
+        rc, out = _run(make("w2", no_rm))
+        if rc == 0:
+            fails.append("(x2) a boundary inlet with no `rawMaterials` entry "
+                         "ended at exit 0 -- C_RM silently leaves it out.")
+        if not re.search(r"boundary inlet\(s\) feed\b", out) or "price 0;" not in out:
+            fails.append("(x2) the refusal does not name the unpriced inlet "
+                         "`feed` and the `price 0;` remedy.\n" + out[-700:])
+
+        # ---- w3  declared free
+        free = ("rawMaterials\n(\n    { stream feed; price 0; costYear 2024;\n"
+                "      provenance { origin \"free by declaration (gate fixture)\";"
+                " method \"price 0\"; } }\n);\n")
+        rc, out = _run(make("w3", lambda t: no_rm(t) + "\n" + free))
+        rm = _econ_kpi(out, "C_RM")
+        if rc != 0 or rm is None or abs(rm) > 1e-9:
+            fails.append("(x3) the inlet declared FREE (`price 0;`) did not run "
+                         "to an appraisal with C_RM = 0 (rc=%d, C_RM=%s; base "
+                         "C_RM=%s).\n%s" % (rc, rm, base_rm, out[-500:]))
+
+        # ---- w4  the loud default
+        rc, out = _run(make("w4", no_rm,
+                            lambda t: re.sub(r"refuseOnMissingPrice\s+1;",
+                                             "refuseOnMissingPrice 0;", t)))
+        if rc != 0 or "inlets are left out of C_RM" not in out:
+            fails.append("(x4) with refuseOnMissingPrice 0 the unnamed inlet "
+                         "must run and be ANNOUNCED as left out of C_RM "
+                         "(rc=%d).\n%s" % (rc, out[-500:]))
+
+        # ---- w5  source
+        main = strip_comments((ROOT / "src/applications/choupoSolve/main.cpp").read_text())
+        if not re.search(r"PostProcessor::failsRunOn\s*\(", main):
+            fails.append("(x5) choupoSolve no longer reads a post-processing "
+                         "pass's return through PostProcessor::failsRunOn -- the "
+                         "count is discarded again.")
+        for f, want in (("EconomicsPass.H", True), ("SizingPass.H", False),
+                        ("CostingPass.H", False)):
+            h = strip_comments((ROOT / "src/postProcessing" / f).read_text())
+            has = bool(re.search(r"nonzeroFailsRun\s*\(\s*\)\s*const\s*override\s*\{\s*return\s+true", h))
+            if has != want:
+                fails.append("(x5) %s %s nonzeroFailsRun() = true; it %s (a "
+                             "refused sizer is an ITEM refused, never the run)."
+                             % (f, "lacks" if want else "declares",
+                                "must" if want else "must not"))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def main():
     if not BIN.exists():
         print("check_cost_provenance: FAIL -- choupoSolve missing; run `make all`")
@@ -2156,6 +2300,7 @@ def main():
     check_declared_quotes(fails)
     check_operating_crew(fails)
     check_contingency_printed(fails)
+    check_required_prices(fails)
 
     if fails:
         print("check_cost_provenance: FAIL")

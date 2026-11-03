@@ -221,3 +221,50 @@ ENERGY. The tank stores H on the elements datum (the package's mixture liquid su
 \goldmore{13}
 \end{tutgolden}
 
+\clearpage
+\tutentry{unsteady06\_reactor\_fill\_and\_react}{tutorials/unsteady/unsteady06\_reactor\_fill\_and\_react}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A reactor that starts as a heel and FILLS while a first-order isomerisation runs: volume and level follow the holdup, n\_A(t) = F/k + (n0 - F/k) exp(-kt) in closed form}
+\begin{tutnarrative}
+a reactor with a LEVEL fills from a heel while it reacts (C205, slice 2: dynamicCSTR with `volumeMode variable`).
+
+The constant-volume dynamicCSTR cannot start empty: its volume is a number you type and F\_out = F\_in. Here the liquid inventory is the state, the volume is derived from it on the case's package and the level is that volume over a declared vertical cylinder (D = 0.5 m, H = 1.0 m):
+
+dn\_i/dt = ndot\_in,i - F\_out x\_i + sum\_r nu\_i r\_r V V = sum n\_i MW\_i / rho(T, P, x) h = V / (pi D\textasciicircum{}2 / 4)
+
+The outflow is DECLARED: `mode flow`, F\_out = 0, so the vessel only fills. Feed: pure isobutanol, F = 1.0e-3 kmol/s, k = 4.0e-4 1/s (constant: Ea = 0), starting from a 0.02 m heel. An isomerisation changes no moles, and a first-order law makes the extent rate k n\_A independent of the volume, so the mole numbers have an EXACT closed form while the volume keeps growing:
+
+n\_A(t) = F/k + (n\_A0 - F/k) exp(-k t) n\_B(t) = n\_A0 + n\_B0 + F t - n\_A(t) M(t) = M0 + MW F t (both isomers have the same MW) V(t) = M(t) / rho h(t) = V(t) / area c\_A = n\_A / V
+
+check\_dynamic\_cstr\_level recomputes these from the declared numbers and holds the run to them (the density is the run's own column: it moves a little with T, because the isomerisation is mildly exothermic).
+
+ENERGY. Both species carry a formation datum, so the vessel takes the CANONICAL route (announced at start-up): it stores H on the elements datum, the heat of reaction is a consequence of it, the outlet term cancels, and the ledger CLAIMS mass and energy and closes. Compare ctrl22, the same reactor with a level loop and a temperature loop together.
+
+\end{tutnarrative}
+\tutreadme{dynamicCSTR with volumeMode variable (D = 0.5 m, H = 1.0 m) starts from a heel (0.02 m of isobutanol at 300 K, an "empty" vessel --- exactly zero is refused by name), is fed 1.0e-3 kmol/s of pure isobutanol, has no outflow, and isomerises it to 2-butanol with a first-order law, k = 4.0e-4 1/s (Ea = 0, so k cannot move with the small temperature rise). 1500 s, 5 s steps; runs under choupoSemiContinuous (no controller).}
+\tutreadme{1. The closed form. The reaction changes no moles and its extent rate k$\cdot$n\_A does not depend on the volume, so the mole numbers are exact: n\_A(t) = F/k + (n\_A0 - F/k)$\cdot$exp(-kt), n\_B = n\_A0 + n\_B0 + F$\cdot$t - n\_A. The volume is V = M(t)/? with M(t) = M0 + MW$\cdot$F$\cdot$t, and the level is V over the 0.196 m$^2$ cross-section. The run reproduces all of them to \textasciitilde{}4e-9 (check\_dynamic\_cstr\_level recomputes them). 2. The rate uses the current volume. A first-order law cannot show it; the gate runs a second-order variant (r$\cdot$V = k$\cdot$n\_A$^2$/V) against an independent integration --- a vessel that kept the heel's volume in the rate would be off by 73 \%. 3. The ledger claims mass and energy and closes (\textasciitilde{}1e-14): the canonical route is announced at start-up (the vessel stores H on the elements datum; the heat of reaction is a consequence of it). 4. Change outflow \{ F 0.0 kmol/s; \} to 0.5 and the heel runs dry in the first step (RAN DRY); set endTime to 4000 and it overflows. Both are refused by name, never clamped.}
+\tutreadme{The same reactor under a level loop and a temperature loop is ctrl22\_reactor\_level\_and\_temperature.}
+\begin{tutgolden}
+\goldrow{kpi}{balance}{element\_C\_closure\_rel}{6.33533060921e-15}
+\goldrow{kpi}{balance}{element\_H\_closure\_rel}{6.22014277995e-15}
+\goldrow{kpi}{balance}{element\_O\_closure\_rel}{6.33533060921e-15}
+\goldrow{kpi}{balance}{element\_worst\_closure\_rel}{6.33533060921e-15}
+\goldrow{kpi}{balance}{energy\_balance\_available}{1}
+\goldrow{kpi}{balance}{energy\_closure\_rel}{4.02406944735e-14}
+\goldrow{kpi}{balance}{energy\_functional\_H}{1}
+\goldrow{kpi}{balance}{energy\_kJ\_final}{-512056.569424}
+\goldrow{kpi}{balance}{energy\_kJ\_heat\_cum}{0}
+\goldrow{kpi}{balance}{energy\_kJ\_in\_cum}{-498064.493979}
+\goldrow{kpi}{balance}{energy\_kJ\_initial}{-13992.0754455}
+\goldrow{kpi}{balance}{energy\_kJ\_out\_cum}{0}
+\goldrow{kpi}{balance}{energy\_residual\_kJ}{-2.06055119634e-08}
+\goldrow{kpi}{balance}{mass\_closure\_rel}{6.34047758513e-15}
+\goldmore{17}
+\end{tutgolden}
+

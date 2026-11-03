@@ -109,6 +109,7 @@ verbosity     3;                  // 3 = Newton iterations visible
 Other binaries: `choupoBatch` (batch recipes), `choupoSemiContinuous`
 (transient flowsheet), `choupoCtrl` (transient + control loops),
 `choupoProps` (property bench).  The time-integrated units (`dynamicCSTR`,
+`dynamicCSTR` with `volumeMode variable` -- a reactor with a LEVEL,
 `dynamicTank` with a LEVEL, `quasiSteady`) are taught in `docs/ai/unit-ops.md`
 ("choupoCtrl / choupoSemiContinuous").
 
@@ -333,7 +334,12 @@ closes it -- a known display defect; trust the log) — check they close
 before trusting a number,
 and compare each key result with the estimate in `DESIGN.md` §6.  The
 solution is written to `converged/`; never edit it — change `0/` or the
-operation block and run again.
+operation block and run again.  The app's **Reports -> PFD (PDF)** (or
+Colours -> Export figure -> PFD sheet) draws the process flow diagram as a
+printable sheet with its stream table, tags, utilities legend and title
+block (A3, stepping up to A2/A1 with the content); the student opens it and
+chooses *Print / Save as PDF*.  Declare `reports { streamTable {} }` in
+`controlDict` to also get the engine's `reports/streams/streamTable.csv`.
 
 Solver aids (initial guesses, tear seeds, bounds) are part of the case and
 are announced aloud when used.  Choupo never hides what it did to converge.

@@ -57,6 +57,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
+import { openPfdTab, pfdSetOfRun } from "./pfdReport.js";
 import {
   ActionIcon,
   Box,
@@ -360,6 +361,15 @@ export function ColoursMenu() {
                     {f.toUpperCase()}
                   </Button>
                 ))}
+                <Button size="compact-xs" variant="default"
+                  title="The printable PFD sheet: figure, stream table, tags, utilities and title block (also in Reports)"
+                  onClick={() => {
+                    const r = useStore.getState().runResult;
+                    const set = r ? pfdSetOfRun(r) : null;
+                    if (set) openPfdTab(set);
+                  }}>
+                  PFD sheet
+                </Button>
               </Group>
             </Group>
           </Stack>

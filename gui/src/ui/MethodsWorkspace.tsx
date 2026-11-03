@@ -303,6 +303,12 @@ const TreeOfChemistryTool = lazy(() =>
 const PatentExpiryTool = lazy(() =>
   import("./methods/PatentExpiryTool.js")
     .then((m) => ({ default: m.PatentExpiryTool })));
+const EconomicsErrorsTool = lazy(() =>
+  import("./methods/EconomicsErrorsTool.js")
+    .then((m) => ({ default: m.EconomicsErrorsTool })));
+const DemandForecastTool = lazy(() =>
+  import("./methods/DemandForecastTool.js")
+    .then((m) => ({ default: m.DemandForecastTool })));
 const ProcessSafetyTool = lazy(() =>
   import("./methods/ProcessSafetyTool.js")
     .then((m) => ({ default: m.ProcessSafetyTool })));
@@ -582,6 +588,8 @@ export function MethodsWorkspace() {
             : tool === "ip-strategy" ? <IpStrategyTool />
             : tool === "tree-of-chemistry" ? <TreeOfChemistryTool />
             : tool === "patent-expiry" ? <PatentExpiryTool />
+            : tool === "economics-errors" ? <EconomicsErrorsTool />
+            : tool === "demand-forecast" ? <DemandForecastTool />
             : tool === "process-safety" ? <ProcessSafetyTool />
             : tool === "overpressure" ? <OverpressureTool />
             : tool === "pool-fire" ? <PoolFireTool />

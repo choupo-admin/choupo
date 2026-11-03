@@ -1,0 +1,43 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     FeedStep               MV_final         0.0015             1e-4
+kpi     FeedStep               PV_final         0                  1e-4
+kpi     FeedStep               SP_final         0.0015             1e-4
+kpi     LC1                    MV_final         0.00150002945263   1e-4
+kpi     LC1                    PV_final         0.5000019311       1e-4
+kpi     LC1                    SP_final         0.5                1e-4
+kpi     TC1                    MV_final         386.663508487      1e-4
+kpi     TC1                    PV_final         339.991752771      1e-4
+kpi     TC1                    SP_final         340                1e-4
+kpi     balance                element_C_closure_rel 1.66272359835e-14  1e-4
+kpi     balance                element_H_closure_rel 1.65023582724e-14  1e-4
+kpi     balance                element_O_closure_rel 1.66272359835e-14  1e-4
+kpi     balance                element_worst_closure_rel 1.66272359835e-14  1e-4
+kpi     balance                energy_balance_available 1                  1e-4
+kpi     balance                energy_closure_rel 2.51445476769e-10  1e-4
+kpi     balance                energy_functional_H 1                  1e-4
+kpi     balance                energy_kJ_final  -326734.528922     1e-4
+kpi     balance                energy_kJ_heat_cum 23926.8081269      1e-4
+kpi     balance                energy_kJ_in_cum -1593806.38073     1e-4
+kpi     balance                energy_kJ_initial -327734.452472     1e-4
+kpi     balance                energy_kJ_out_cum -1570879.49656     1e-4
+kpi     balance                energy_residual_kJ -0.000400755405281 1e-4
+kpi     balance                mass_closure_rel 1.64932562313e-14  1e-4
+kpi     balance                mass_kg_final    74.092624133       1e-4
+kpi     balance                mass_kg_in_cum   355.78368          1e-4
+kpi     balance                mass_kg_initial  74.1563835384      1e-4
+kpi     balance                mass_kg_out_cum  355.847439405      1e-4
+kpi     balance                mass_residual_kg -5.86908299738e-12 1e-4
+kpi     balance                material_available 1                  1e-4
+kpi     reactor                F_in_final       0.0015             1e-4
+kpi     reactor                F_out_final      0.00150002945263   1e-4
+kpi     reactor                T_final          339.991761719      1e-4
+kpi     reactor                density_final    754.698379438      1e-4
+kpi     reactor                level_final      0.500001916472     1e-4
+kpi     reactor                n_2Butanol_final 0.39991687214      1e-4
+kpi     reactor                n_2Methyl1Propanol_final 0.599692204472     1e-4
+kpi     reactor                t_end            3600               1e-4
+kpi     reactor                volume_final     0.098175146723     1e-4
+kpi     reactor                z_in_2Butanol_final 0                  1e-4
+kpi     reactor                z_in_2Methyl1Propanol_final 1                  1e-4

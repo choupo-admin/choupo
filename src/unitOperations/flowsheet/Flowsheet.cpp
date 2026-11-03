@@ -4189,6 +4189,7 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
         if (streams_.count(nm)) known.insert(nm);      // authored + tear seeds
 
     std::set<std::string> generated;
+    std::map<std::string, std::string> noEstimate;   // stream -> producing unit
     bool progress = true;
     while (progress)
     {
@@ -4206,15 +4207,35 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
             if (!anyUnknown) continue;
 
             // Mixed inlet state: flows add, T flow-weighted, P the lowest inlet.
+            //  THE SOLIDS COUNT (DEV.md 4c C208 (1)).  The mix used to read only
+            //  the FLUID flow F: a stream carrying nothing but solids (a powder,
+            //  the tablets of a tablet plant) has F = 0, so the mix had no flow,
+            //  no weight for T and an empty composition, and the file written
+            //  was `componentMolarFlows {}` with `T 0 K`, which the run then
+            //  refuses.  The solid molar flows s[] are summed beside the fluid
+            //  ones and T is weighted by them when no inlet has a fluid flow;
+            //  where any inlet carries fluid, T stays the fluid-weighted mean it
+            //  always was (so every case with a fluid estimate is unchanged).
+            //  An outlet whose inlets carry NO material at all has no honest
+            //  state to estimate and is REFUSED below, never written at T 0 K.
             ProcessStream mix;
             mix.z.assign(thermo.n(), 0.0);
-            scalar Tw = 0.0, Pmin = 0.0;
+            mix.s.assign(thermo.n(), 0.0);
+            scalar Tw = 0.0, Pmin = 0.0, Ts = 0.0, Fsolid = 0.0;
             for (const auto& si : ins)
             {
                 const auto& st = streams_.at(si);
                 for (std::size_t i = 0; i < st.z.size() && i < mix.z.size(); ++i)
                     mix.z[i] += st.F * st.z[i];
+                scalar sTot = 0.0;
+                for (std::size_t i = 0; i < st.s.size() && i < mix.s.size(); ++i)
+                {
+                    mix.s[i] += st.s[i];
+                    sTot     += st.s[i];
+                }
                 Tw    += st.F * st.T;
+                Ts    += sTot * st.T;
+                Fsolid += sTot;
                 mix.F += st.F;
                 mix.vf += st.F * st.vf;
                 Pmin = (Pmin <= 0.0) ? st.P : std::min(Pmin, st.P);
@@ -4225,15 +4246,28 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
                 mix.T  = Tw / mix.F;
                 mix.vf = std::min(1.0, std::max(0.0, mix.vf / mix.F));
             }
+            else if (Fsolid > 0.0)
+                mix.T = Ts / Fsolid;        // solids only: their own T
             mix.P = (Pmin > 0.0) ? Pmin : 101325.0;
 
-            const scalar Fout = (outs.empty() ? 0.0 : mix.F / scalar(outs.size()));
+            if (mix.F <= 0.0 && Fsolid <= 0.0)
+            {
+                //  Nothing flows in: there is no state to estimate.
+                for (const auto& so : outs)
+                    if (!known.count(so) && !noEstimate.count(so))
+                        noEstimate[so] = u->lookupWordOrDefault("name", "unit");
+                continue;
+            }
+
+            const scalar nOut = scalar(outs.size());
+            const scalar Fout = (outs.empty() ? 0.0 : mix.F / nOut);
             for (const auto& so : outs)
             {
                 if (known.count(so)) continue;
                 ProcessStream est = mix;
                 est.name = so;
                 est.F    = Fout;
+                for (auto& si : est.s) si /= nOut;
                 //  SCREEN THE ESTIMATE THE MOMENT IT EXISTS.  See
                 //  screenPermanentGas: the resolver's pass ran long before
                 //  this propagation, so without this the files init0 writes
@@ -4244,6 +4278,35 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
                 generated.insert(so);
                 progress = true;
             }
+        }
+    }
+
+    // ---- A stream whose producer receives NO material has no state ---------
+    //  (DEV.md 4c C208 (1)): the tool used to write it with `T 0 K` and an
+    //  empty composition, which the run then refuses.  Refused HERE, by name,
+    //  with the one remedy -- write the file by hand.
+    {
+        std::vector<std::string> unestimable;
+        for (const auto& [nm, producer] : noEstimate)
+            if (!known.count(nm)) unestimable.push_back(nm + "|" + producer);
+        if (!unestimable.empty())
+        {
+            std::cerr << "\nERROR: choupo-init0: these streams cannot be "
+                         "estimated -- every inlet of the unit that produces "
+                         "them carries NO material (no fluid flow and no solid "
+                         "flow), so there is no flow, composition or "
+                         "temperature to propagate.  Writing one anyway would "
+                         "be a state at T 0 K, which the run refuses.  Write "
+                         "the file yourself:\n";
+            for (const auto& e : unestimable)
+            {
+                const auto bar = e.find('|');
+                const std::string nm = e.substr(0, bar);
+                std::cerr << "  NO ESTIMATE  " << pathOf(nm).generic_string()
+                          << "  (stream '" << nm << "', produced by unit '"
+                          << e.substr(bar + 1) << "')\n";
+            }
+            return 1;
         }
     }
 

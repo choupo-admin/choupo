@@ -217,6 +217,32 @@ struct BatchProductTrain
     std::string next;
 };
 
+//  One MACHINE's cleaning (2026-11-03, DEV.md 4c C210, E3): the case declares
+//  the purified water of one clean of ONE instance of the machine -- after a
+//  lot (`waterPerLotClean`) and at a campaign changeover (`waterPerChangeover`)
+//  -- and the fraction of that water that leaves as effluent; the PLAN counts
+//  the cleans (it knows the lots, the campaigns and the units installed).
+//  Absent (no `cleaning` declared), the list is empty and nothing moves.
+struct BatchCleaning
+{
+    std::string unit, stage, train;
+    std::string source, reason;
+    scalar waterPerLotClean   = 0;   // [m3] one instance, after one lot
+    scalar waterPerChangeover = 0;   // [m3] one instance, at one changeover
+    scalar effluentFraction   = 0;   // [-]  of the water, declared
+    int    instancesPerLot    = 1;   // N_ip: the instances a lot is split over (each is cleaned)
+    int    instances          = 1;   // N_ip N_op: every installed instance (the changeover cleans all)
+
+    //  A FULL campaign of the machine's train (the last may hold fewer lots).
+    int    lotsPerCampaign    = 0;
+    scalar lotCleansPerCampaign = 0, changeoverCleansPerCampaign = 0;
+    scalar cleansPerCampaign = 0, waterPerCampaign = 0, effluentPerCampaign = 0;   // [-], [m3], [m3]
+
+    //  The YEAR (lots a year, campaigns a year).
+    scalar lotCleansPerYear = 0, changeoverCleansPerYear = 0;
+    scalar cleansPerYear = 0, waterPerYear = 0, effluentPerYear = 0;               // [-], [m3/yr], [m3/yr]
+};
+
 struct BatchFinding
 {
     std::string id;       // <kind>:<subject>
@@ -255,6 +281,7 @@ struct BatchPlanRecord
     std::vector<BatchGanttRow> gantt;
     std::vector<BatchFinding>  findings;
     std::vector<std::string>   unplannedUnits;   // flowsheet units in no stage
+    std::vector<BatchCleaning> cleaning;         // declared `cleaning`, empty when absent
 
     //  MULTIPRODUCT (empty for one product; then `production` holds Q).
     std::vector<std::string>       campaignOrder;

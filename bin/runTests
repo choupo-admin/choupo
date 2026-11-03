@@ -1831,6 +1831,13 @@ auto_generate() {
                     gsub(/[ \t]+/, "_", b)
                     printf "equipment %-20s %-16s %-18s %s\n", u, "basis", b, "exact"
                 }
+                #  THE PLANT TAG (slice S1 of the plant document set): a NEW
+                #  header word, `tagNo`, beside the legacy `tag` (the item
+                #  word inside a unit), pinned as a word.
+                if (match($0, /"tagNo": "[^"]*"/)) {
+                    t = substr($0, RSTART+10, RLENGTH-11)
+                    printf "equipment %-20s %-16s %-18s %s\n", u, "tagNo", t, "exact"
+                }
                 if (match($0, /"values": \{[^}]*\}/)) {
                     v = substr($0, RSTART+11, RLENGTH-11)
                     n = split(v, kv, /, */)
@@ -6824,6 +6831,21 @@ PYEOF
     fi
     rm -f /tmp/dtgate.$$
 
+    # Variable-volume CSTR gate (DEV.md 4c C205 slice 2): `dynamicCSTR` with
+    # `volumeMode variable` -- fill-and-react equals its closed form, the rate
+    # uses the CURRENT volume (independent second-order integration), both
+    # witnesses claim and close mass AND energy, two loops hold one unit, the
+    # jacket follows the wetted wall, and a dry / overflowing vessel is refused.
+    if gate_exec "$ROOT/bin/curate/check_dynamic_cstr_level.py" > /tmp/dclgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "dynamic-cstr-level-gate" "$(head -1 /tmp/dclgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_dynamic_cstr_level.py)\n" "dynamic-cstr-level-gate"
+        cat /tmp/dclgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/dclgate.$$
+
     # Flash-model gate: the machine that solves a flash has a NAME (`model`,
     # the distillation convention) -- and a name that cannot lie.  Four
     # refusals, including the one that matters: a REACTIVE package's machine
@@ -7593,6 +7615,21 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/equippin.$$
+
+    # Equipment-list gate (2026-11-03, slice S1 of the plant document set):
+    # every sized item has exactly one unique plant tag, the same in its design
+    # sheet, the result JSON, the equipment list (JSON and CSV) and, on the
+    # flagship, sizing.csv and costs.csv; the list is the recount of design/;
+    # a declared tag wins and is announced, a declared duplicate refuses.
+    if gate_exec "$ROOT/bin/curate/check_equipment_list.py" > /tmp/equiplist.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "equipment-list-gate" "$(gate_claim check_equipment_list /tmp/equiplist.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_equipment_list.py)\n" "equipment-list-gate"
+        cat /tmp/equiplist.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/equiplist.$$
 
     # Relief-valve gate (2026-10-11, DEV.md 4c C62): the `reliefValve` sizer's
     # arithmetic is the overpressure EduTool's (a probe against

@@ -18,11 +18,18 @@ pack `layout`.
   (`assumed ( ... )` on the design sheet), a declared value announces nothing.
 * The estimate is AACE class 5 by default (-50 %/+100 %): it says where its
   numbers come from and carries no more accuracy than that.
-* Failures are quiet in the exit code.  A sizer that cannot size prints
-  `<unit>  FAILED: <reason>` in the Sizing table and the run still exits 0;
-  the unit is then absent from costing.  A missing economics price prints
-  `EconomicsPass: REQUIRED PRICE MISSING -- <name>` and exits 0 without an
-  appraisal.  Grep the log for `FAILED`, `MISSING`, `ERROR`, `INCOMPLETE`.
+* A SIZER that cannot size is refused as an ITEM, never as the run: it prints
+  `<unit>  FAILED: <reason>` in the Sizing table, the unit is then absent from
+  costing, the totals read INCOMPLETE and the caveat block carries
+  `incomplete-sizing`; the run still exits 0 (the documented contract, held by
+  `check_design_sheet` arm (n)).  So read the Sizing table and grep the log
+  for `FAILED`, `INCOMPLETE`.  A REQUIRED economics price that is missing
+  (`labourRate`, a product price, a `rawMaterials` entry for a boundary
+  inlet) is different: the run FAILS (`EconomicsPass: REQUIRED PRICE MISSING
+  -- <name>`, then `ERROR: the 'economics' post-processing pass ...`, exit 2)
+  and no appraisal is made.  Every boundary inlet the plant consumes needs a
+  `rawMaterials` entry, priced or declared free with `price 0;` and its
+  `provenance`; utility-circuit supplies are exempt.
 
 ## 2. `sizing { units ( ... ) }`
 
@@ -56,7 +63,61 @@ SIZER, not always the unit type.
   residence time (+ 20-50 % margin); compare with the table printed.
 * Output: the Sizing table (size, wall, weight), `design/<unit>/<item>` (one
   dictionary per physical item, regenerated each run: inlets, outlets, sizes with
-  units, `basis`, `assumed`), `sizing.csv`.
+  units, `basis`, `assumed`), `sizing.csv`; each item's plant TAG (`P-101A`) and the equipment list (§2b).
+
+### 2b. The plant tag and the equipment list
+
+Every sized item gets a TAG, the name it answers to in the design sheet, the
+cost table and the list (Turton's `XX-YZZ A/B` form, ONE rule in
+`src/postProcessing/sizing/EquipmentTag.cpp`, generated unless you declare it):
+
+* `XX` the kind letters (our own convention, not a standard): `P` pump (a
+  `ratedMachine` of kind `volumeRate`), `C` compressor, `E` exchanger
+  (`shellTubeHX`; a column's condenser and reboiler), `EV` evaporator, `V`
+  vessel (drum, reflux drum, gas store), `T` tower shell, `TR` tray stack, `R`
+  reactor (`stirredTank`, a `pfr`/`converterShell` shell), `CAT` catalyst
+  charge, `TK` tank, `D` spray dryer, `CR` crystalliser, `CY` cyclone, `PX`
+  pressure exchanger, `MB` membrane bank, `PSV` relief valve, `PH` header pipe,
+  `AH` air handling, `WG` water generator, `M` process machine (kinds
+  `batchVolume`, `massRate`), `TP` tablet press, `PK` packaging line.
+* `Y` the sector number in the order the flowsheet declares its top-level
+  sectors; `1` for a flat case; `0` for an item of a sectored plant that
+  belongs to no sector.
+* `ZZ` a running number within (sector, letters) in declaration order
+  (flowsheet unit order, then the order the sizing produced the items).
+* The suffix: N identical parallel items (`perTrain yes;` trains, a tank bank,
+  the vessels of a gas store) share ONE number and take `A`, `B`, ...
+  (`P-102A` .. `P-102F`); one item standing for several machines in parallel
+  (`installed { count 3; }` plus `spare`) is `A/B` (two) or `A-D` (more).
+* Declare it: `tag P-201;` in the `sizing` entry (also in a `storage` /
+  `gasStorage` / `liquefiedGasStorage` entry).  It wins and the run says
+  `[tag] ...` once; on a train family it is the base and the letters follow.
+  A unit that realises several items (a column) needs
+  `itemTags { shell T-101; condenser E-101; reboiler E-102; trays TR-101;
+  refluxDrum V-101; }` (the item words of its sheets); `tag` there is refused.
+  A generated number skips the numbers you declared.  Two items with the same
+  final tag REFUSE: `tag: items 'A' and 'B' would both be tagged 'V-901'`.
+
+What it writes: a `tag` line on every `design/` sheet; a `tag` column in
+`sizing.csv` and `costs.csv`; `"tagNo"` per item (and the `equipmentList`
+block) in the result JSON; the golden `equipment` kind pins `tagNo`.  THE
+EQUIPMENT LIST is `reports/equipment/equipmentList.csv`, regenerated whole each
+run, one row per item: `tag,item,unit,sector,equipment,installed,sizeKey,
+sizeValue,sizeUnit,dimensions,pressureDesign,pressureUnit,material,currency,
+purchased,bareModule,totalModule,costNote,tagBy` (design temperature is not in
+it: no sheet carries one).  The app prints it from Reports (Open equipment list,
+A3 landscape).  RUN (`tutorials/plant/swro01_campoDalias`, six trains):
+
+```
+tag,item,unit,...,equipment,installed,...
+P-101A-D,IntakePump,IntakePump,,ratedMachine,4,utilisation,0.782,...   // 3 running + 1 spare
+P-102A,HPpump/train1,HPpump,,ratedMachine,1,utilisation,0.499,...      // ... P-102F = train6
+PX-101A,PX/train1,PX,,pressureExchanger,1,...,pressureDesign 75 bar
+TK-101,Remineralisation/tank1,...                                      // one tank: no letter
+```
+and `tutorials/batch/plant/donepezil01_tablets` (flat; `M-101` granulator ..
+`TP-101` tablet press, `V-101` binder tank with `D 0.434 m; H 0.652 m`, `E-101`
+air heater with 21.6 m2 and its cost).
 
 ## 3. `costing`
 
@@ -268,7 +329,7 @@ point, not a case error).  Use `isothermalFlash` at the heater outlet T.
 Variants run: `residenceTime 300 s` on the drum -> `flashDrum FAILED: Vessel:
 unit 'flashDrum' has no 'N_out_mol_s' KPI needed to size it ... give the volume
 directly`, exit 0; `constant/economics` without `labourRate` -> `REQUIRED PRICE
-MISSING -- labourRate`, exit 0; a 1.5 kW heater -> `[validity] WARNING ...
+MISSING -- labourRate`, exit 2 and no appraisal; a 1.5 kW heater -> `[validity] WARNING ...
 OUTSIDE the correlation range [10, 1000] -- cost EXTRAPOLATED`.
 
 ## 6. What a student should still decide (write it in DESIGN.md)

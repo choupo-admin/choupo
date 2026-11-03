@@ -433,18 +433,18 @@ describe("every file:line these pages cite into the engine resolves", () => {
     //  288-291 and still covers it; this list holds the ONE line that must
     //  carry the string.  (Drift found 2026-09-16 by an unrelated slice --
     //  a pre-existing red that had nothing to do with it.)
-    ["src/applications/choupoSolve/main.cpp", 309, "Mass balance (global)"],
+    ["src/applications/choupoSolve/main.cpp", 310, "Mass balance (global)"],
     ["src/streams/ProcessStream.H", 80, "kmol/s"],
     // --- tear streams: the plan contract
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4438, "Flowsheet::validateSequentialPlan"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4529, "MISSING TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4537, "INVALID ORDER"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4565, "INLET TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4572, "UNCONSUMED TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4583, "FORWARD TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4639, "OFF-CYCLE TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4696, "[plan] material recycle"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4580, "c <= p->second"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4501, "Flowsheet::validateSequentialPlan"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4592, "MISSING TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4600, "INVALID ORDER"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4628, "INLET TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4635, "UNCONSUMED TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4646, "FORWARD TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4702, "OFF-CYCLE TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4759, "[plan] material recycle"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4643, "c <= p->second"],
     // --- the QP
     ["src/solver/ActiveSetQP.cpp", 152, "N&W Algorithm 16.3"],
     ["src/solver/ActiveSetQP.cpp", 409, "N&W eq. 16.41"],
