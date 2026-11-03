@@ -1052,9 +1052,18 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         sVector lnPoverPsat(n, 0.0);
         for (std::size_t i : act)
             lnPoverPsat[i] = std::log(in.P
-                / std::max<scalar>(thermo.Psat(i, in.T), 1.0e-30));
+                / std::max<scalar>(thermo.PsatLiquidReference(i, in.T), 1.0e-30));
+        //  The associated ideal-gas vapour (DEV.md 4c C201 item 1) enters the
+        //  vapour term the same way an EoS phi does; PsatLiquidReference is
+        //  Psat itself when nothing associates (bit-identical).
+        const bool assocVapour = thermo.vapourAssociationPriced();
         auto lnPhiVap = [&](const sVector& y) -> sVector {
             sVector lp(n, 0.0);
+            if (assocVapour)
+            {
+                const sVector la = thermo.vapourAssociationLnPhi(in.T, in.P, y);
+                for (std::size_t i : act) lp[i] = la[i];
+            }
             if (!realVapour) return lp;
             const sVector phi = thermo.eos().phi(in.T, in.P, y);
             for (std::size_t i : act)
@@ -1501,7 +1510,9 @@ IsothermalFlash::solveCore(const FlashInput&    in,
     const bool isIdeal =
         (opts.phaseSet == PhaseSet::VL)
         && (thermo.activity().modelName() == "ideal")
-        && (thermo.eos     ().modelName() == "idealGas");
+        && (thermo.eos     ().modelName() == "idealGas")
+        //  An associated ideal-gas vapour's K depends on y (DEV.md 4c C201).
+        && !thermo.vapourAssociationPriced();
     const bool useWegstein =
         (opts.accelerator == OuterAccelerator::Wegstein) && !isIdeal;
 
@@ -2487,18 +2498,18 @@ int IsothermalFlash::solve(const DictPtr& dict,
                 H_in = thermo.Hliquid(T_feed, in.z, T_feed);   // sensible datum @ T_feed
         }
         Q_W = in.F * 1000.0 * (H_out - H_in);                // kmol/s -> mol/s; J/mol -> W
-        if (sol.dimerHeat_J_per_molFeed != 0.0)
-        {
-            //  Vapour dimerisation: the association enthalpy is EXACTLY
-            //  priceable on top of the apparent (monomer-basis) vapour
-            //  enthalpy -- included, announced.
-            Q_W += in.F * 1000.0 * sol.dimerHeat_J_per_molFeed;
-            if (opts.verbosity >= 2)
-                std::cout << "  [duty] vapour dimer association heat"
-                             " included: "
-                          << in.F * sol.dimerHeat_J_per_molFeed
-                          << " kW (h_dim = 2 h_mono + dH, exact)\n";
-        }
+        //  Vapour dimerisation: the association enthalpy is priced ONCE, in
+        //  the vapour's own enthalpy (ThermoPackage::H_real, the associated
+        //  ideal-gas vapour, DEV.md 4c C201 item 1) -- which H_out above
+        //  already read.  It used to be added here on top of a liquid derived
+        //  from the apparent latent heat, which already contained it: the
+        //  latent double count of docs/design/one-record-two-vapours-acetic-
+        //  acid.md section 6.  Said, not added.
+        if (sol.dimerHeat_J_per_molFeed != 0.0 && opts.verbosity >= 2)
+            std::cout << "  [duty] vapour dimer association heat "
+                      << in.F * sol.dimerHeat_J_per_molFeed
+                      << " kW is inside the vapour enthalpy (h_dim = 2 h_mono"
+                         " + dH, ThermoPackage::H_real) -- not added again\n";
         //  R-E3 (docs/design/tp-stream-energy-coherence.md): ONE solid rung
         //  everywhere.  H_out above priced sol.x with any crystallised
         //  share still inside as APPARENT dissolved/liquid material (the

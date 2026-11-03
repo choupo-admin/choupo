@@ -601,6 +601,19 @@ def closure_of(pp_path, caseDir, std, AQ):
                 " into the case's own constant/components/." % (c, c, c))
         want("components/" + cstem + ".dat")
         csrc = std / "components" / (cstem + ".dat")
+        #  The liquid-to-datum bridge of an ASSOCIATING vapour is DERIVED from
+        #  the chemistry/ record that curates its dimerisation (DEV.md 4c C201
+        #  item 1; Component::datumBridge298 reads it through the resolver).
+        #  A sealed case that omitted it would silently price the calorimetric
+        #  bridge -- taught to the closure in the same commit as the reader.
+        _fm = re.search(r'^\s*formula\s+([^\s;]+)\s*;', read(csrc) or "", re.M)
+        if _fm and (std / "chemistry").is_dir():
+            for _cf in sorted((std / "chemistry").glob("*.dat")):
+                _ct = read(_cf) or ""
+                if ("vapourDimerisation" in _ct
+                        and re.search(r'^\s*(?:gasSpecies|gas)\s+%s\s*;'
+                                      % re.escape(_fm.group(1)), _ct, re.M)):
+                    want("chemistry/" + _cf.name)
         loc = walk_up_local("components/" + cstem + ".dat")
         # component-basis ion map: UNIFIED component.speciesMap or the legacy
         # top-level dissociatesTo (speciesMapOf, builder-identical).  Read it

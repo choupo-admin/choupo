@@ -33,6 +33,7 @@ License
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // electrolyte::ionCharge (dissociatesTo -> cation/anion)
 
 #include "thermo/Database.H"
+#include "thermo/VapourAssociation.H"
 #include "core/Constants.H"
 #include "core/Dimensions.H"
 
@@ -1172,7 +1173,7 @@ scalar Component::h_formation(scalar T, const std::string& targetPhase) const
 
     // Hvap_latent at 298 K (when needed).  Sucrose-like solids never need
     // it (they never go through a gas leg); volatile species always have it.
-    auto hvap298 = [&]() -> scalar { return Hvap_latent(298.15); };
+    auto hvap298 = [&]() -> scalar { return datumBridge298().H; };
 
     if (naturalPhase_ == targetPhase)
     {
@@ -1292,14 +1293,14 @@ scalar Component::s_formation(scalar T_K, const std::string& targetPhase) const
                 "': s_formation crosses a vaporisation leg, which needs a"
                 " vaporPressure model -- a nonvolatile has no such leg and"
                 " must be asked for its own phase instead.");
-        const scalar Psat = vp().Psat_Pa(298.15);
+        const scalar Psat = datumBridge298().pRefPa;   // = Psat unless associated
         if (!(Psat > 0.0))
             throw std::runtime_error("Component '" + name_ +
                 "': non-positive Psat(298.15 K); the vaporisation entropy"
                 " leg cannot be taken.");
         const scalar dG = -constant::R * 298.15
                         * std::log(Psat / constant::Pref);
-        return (Hvap_latent(298.15) - dG) / 298.15;
+        return (datumBridge298().H - dG) / 298.15;
     };
 
     if (naturalPhase_ == targetPhase)
@@ -1347,6 +1348,82 @@ scalar Component::Hvap_latent(scalar T) const
     const scalar num = Tc_ - T;
     const scalar den = Tc_ - Tb_;
     return Hvap_Tb_ * std::pow(num / den, 0.38);
+}
+
+const Component::DatumBridge298& Component::datumBridge298() const
+{
+    if (bridgeResolved_) return bridge_;
+    bridge_.H = Hvap_latent(298.15);
+    bridge_.pRefPa = vp_ ? vp().Psat_Pa(298.15) : 0.0;
+    bridge_.associated = false;
+    if (vp_ && bridge_.pRefPa > 0.0 && !formula_.empty())
+    {
+        if (auto dim = vapourAssociation::find(formula_))
+        {
+            //  THE BRIDGE IS THE ARITHMETIC THE ENGINE WILL UNDO (DEV.md 4c
+            //  C201 item 3).  The record's HvapTb is the APPARENT heat
+            //  measured at Tb, to a vapour that is mostly dimer.  It is put on
+            //  the MONOMER basis where it was measured (Tb, at Psat(Tb), the
+            //  same saturated-vapour split the vapour model uses), and the
+            //  monomer heat is carried to 298.15 K by KIRCHHOFF on this
+            //  record's OWN heat capacities -- the very Cp_ig and liquid Cp
+            //  the package prices the two phases with, called here, never
+            //  re-transcribed.  So the latent heat the package prices at Tb
+            //  is the record's HvapTb by construction: one surface, one
+            //  arithmetic.  Watson was tried first and rejected on
+            //  measurement: on the apparent heat it gave a bridge of 56.7
+            //  kJ/mol (NBS 52.25) and 29.3 at Tb (24.38); on the monomer 54.6
+            //  and 27.15 -- an empirical slope the package's own Cp's then
+            //  contradict.  A record with no liquid Cp keeps Watson on the
+            //  monomer, ANNOUNCED, because there is no Cp to integrate.
+            const scalar atm = 101325.0;
+            const auto svTb = vapourAssociation::saturated(
+                *dim, Tb_, vp().Psat_Pa(Tb_) / atm);
+            const scalar assocTb = -dim->dH * svTb.xi;
+            const scalar hMonoTb = Hvap_Tb_ + assocTb;
+            const bool kirchhoff = hasCpLiquid() && hasCpIdealGas();
+            scalar hMono298 = 0.0;
+            std::string rule;
+            if (kirchhoff)
+            {
+                const scalar dCpInt = cpIdealGas().H(Tb_, 298.15)
+                                    - cpLiquid().H(Tb_, 298.15);
+                hMono298 = hMonoTb - dCpInt;
+                rule = "Kirchhoff on the record's own Cp_ig and liquid Cp"
+                       " (Tb -> 298.15 K adds " + std::to_string(-dCpInt / 1000.0)
+                       + " kJ/mol)";
+            }
+            else
+            {
+                hMono298 = (298.15 >= Tc_) ? 0.0
+                    : hMonoTb * std::pow((Tc_ - 298.15) / (Tc_ - Tb_), 0.38);
+                rule = "Watson on the monomer (exponent 0.38): the record"
+                       " carries no liquid or ideal-gas heat capacity to"
+                       " integrate, so the latent heat priced at Tb will not"
+                       " equal HvapTb";
+            }
+            const auto sv = vapourAssociation::saturated(*dim, 298.15,
+                                                         bridge_.pRefPa / atm);
+            bridge_.H = hMono298;
+            bridge_.pRefPa = sv.pMonoAtm * atm;
+            bridge_.associated = true;
+            const std::string msg = "liquid bridged to the datum's ideal-gas"
+                " MONOMER: Hvap_mono(Tb = " + std::to_string(Tb_)
+                + " K) = apparent " + std::to_string(Hvap_Tb_ / 1000.0)
+                + " + dimer dissociation " + std::to_string(assocTb / 1000.0)
+                + " (xi = " + std::to_string(svTb.xi)
+                + " dimer per mol vaporised) = " + std::to_string(hMonoTb / 1000.0)
+                + " kJ/mol; carried to 298.15 K by " + rule + " = "
+                + std::to_string(bridge_.H / 1000.0)
+                + " kJ/mol  (from " + dim->record
+                + ", source: " + dim->source + ")";
+            if (AdvisoryLog::instance().add("thermo", "info",
+                    "datumBridge " + name_, msg))
+                std::cerr << "[thermo] " << name_ << ": " << msg << "\n";
+        }
+    }
+    bridgeResolved_ = true;
+    return bridge_;
 }
 
 void Component::requireWatsonSlopeLiquidFallback(const char* leg) const

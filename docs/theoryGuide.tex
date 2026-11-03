@@ -1403,6 +1403,77 @@ $P^{\mathrm{sat}}(T)$ validity ceiling          & $T_c$ as the upper bound on An
 \end{tabularx}
 \end{center}
 
+\paragraph{Which vapour the latent heat speaks.}
+A record's \code{HvapTb} is the calorimetric heat, to the \emph{real}
+vapour.  The formation datum the liquid rung hangs from is the
+ideal-gas \emph{monomer}.  For a non-associating fluid the two vapours
+coincide and Watson alone bridges the liquid to the datum.  For a
+carboxylic acid they do not: 82~\% of the acetic-acid molecules in its
+saturated vapour at $298\,\mathrm{K}$ are hydrogen-bonded dimers, and
+at $T_b$ each mole vaporised still forms 0.36~mol of dimer.  The latent heat
+is therefore first put on the monomer basis \emph{where it was measured},
+at $T_b$ and $P^{\mathrm{sat}}(T_b)$,
+$\Delta h^{\mathrm{vap}}_{\mathrm{mono}}(T_b) = \Delta h^{\mathrm{vap}}_{T_b}
++ \xi(T_b)\,(-\Delta h_{\mathrm{dim}})$, with $\xi$ the moles of dimer per
+mole vaporised from $K_{\mathrm{dim}} = p_{\mathrm{D}}/p_{\mathrm{M}}^{2}$
+at $p_{\mathrm{M}} + p_{\mathrm{D}} = P^{\mathrm{sat}}$, and then carried to
+the datum temperature by Kirchhoff on the record's \emph{own} heat
+capacities,
+\[
+  \Delta h^{\mathrm{vap}}_{\mathrm{mono}}(298.15) =
+  \Delta h^{\mathrm{vap}}_{\mathrm{mono}}(T_b)
+  - \int_{298.15}^{T_b}\bigl(c_p^{\mathrm{ig}} - c_p^{\mathrm{L}}\bigr)\,dT .
+\]
+Why Kirchhoff and not Watson: the package prices the liquid at $T_b$ by
+integrating exactly that $c_p^{\mathrm{L}}$ from the $298\,\mathrm{K}$
+rung, and the monomer vapour by integrating that $c_p^{\mathrm{ig}}$; a
+bridge built by any other arithmetic is undone by this one, and the
+difference reappears as a latent heat at $T_b$ that is not the record's.
+One surface, one arithmetic: the latent heat priced at $T_b$ is
+\code{HvapTb} by construction.  Watson was measured and rejected
+(2026-11-03, DEV.md 4c C201): applied to the apparent heat --- nearly flat
+in $T$, because the association offsets the vaporisation --- it gave
+$29.3\,\mathrm{kJ/mol}$ at $T_b$ against $24.39$; applied to the monomer,
+which is the normal fluid Watson describes, $27.1$, the remainder being
+the disagreement between Watson's empirical slope and the record's
+$c_p$'s.  The pair ($\log K$, $\Delta h_{\mathrm{dim}}$) is read from the
+chemistry record that curates the vapour dimerisation --- the same record
+the reactive flash uses --- and the derived bridge is announced once per
+run (\code{Component::datumBridge298}).  For acetic acid it is about
+$51.8\,\mathrm{kJ/mol}$ (the NBS liquid and monomer formation enthalpies
+give $52.25$); the liquid's formation enthalpy comes out
+$-484.06\,\mathrm{kJ/mol}$ against the NBS $-484.3$, and the liquid-phase
+esterification heat about $-2.7\,\mathrm{kJ/mol}$ at $298\,\mathrm{K}$
+(measured calorimetry: about $-3$ to $-4$; with the calorimetric heat alone
+it would read $-26$, the heat of making dimers).  A record with no liquid
+heat capacity keeps Watson on the monomer and says so.  A component with
+no curated association keeps the plain Watson bridge.
+
+The same record makes the \emph{vapour} associated, wherever the vapour
+model is an ideal gas: the chemical theory of vapour imperfection treats
+it as the equilibrium mixture of monomer and dimer.  Per mole of apparent
+vapour of composition $y$, with $t_{\mathrm{M}}+2t_{\mathrm{D}}=y_a$ and
+$\tau = 1-t_{\mathrm{D}}$ the true mole count,
+$t_{\mathrm{D}}/\tau = K_{\mathrm{dim}}P\,(t_{\mathrm{M}}/\tau)^2$.  The
+acid's fugacity is the monomer partial pressure
+($\phi_a = t_{\mathrm{M}}/(\tau y_a)$, $\phi_j = 1/\tau$ for the
+others), its liquid is referenced to the monomer saturation pressure
+$p^{\mathrm{sat}}_{\mathrm{M}}$, the root of
+$K_{\mathrm{dim}}p^2 + p = P^{\mathrm{sat}}$ (so the pure acid still boils
+where its vapour-pressure correlation says), and the vapour enthalpy and
+entropy carry the departure $h-h^{\mathrm{ig}} = t_{\mathrm{D}}\,\Delta
+h_{\mathrm{dim}}$, $(g-g^{\mathrm{ig}})/RT = \sum_i y_i\ln\phi_i$.  This
+lives in the package (K-values and $H_{\mathrm{real}}$), so every unit sees
+one vapour; an equation-of-state vapour keeps its own and says that the
+association is not priced.  On acetic acid + water at 1~atm it brings the
+UNIFAC T-x-y closer to Calvar et al.\ (2005) (AAD in $T$ from 3.5 to
+1.5~K).  The latent heat it prices at the normal boiling point is the
+record's 24.39~kJ/mol, by the construction of the bridge above; what
+remains approximate is the record's liquid $c_p$ (held constant) and the
+van't Hoff extrapolation of $K_{\mathrm{dim}}$, recorded in
+\file{docs/design/one-record-two-vapours-acetic-acid.md} and
+\file{docs/design/acetic-acid-latent-heat-closure.md}.
+
 \begin{intuition}
 A practical sanity check when staring at the numbers in a fresh
 \file{.dat} file: $T_b/T_c$ should sit in roughly the range

@@ -76,6 +76,27 @@ remedy that does not work).
       that does not work is worse than no advice, and nothing else in the tree
       would have caught it.
 
+  (j) THE LIQUID RUNG OF AN ASSOCIATING ACID (DEV.md 4c C201 item 1, finding
+      F9 of docs/reviews/2026-11-02-newcomer-tutorial-review.md).  Real
+      aceticAcid / ethanol / ethylAcetate / water crossed gas -> liquid must
+      land within a band of the liquid formation enthalpies (-484.3 +-5,
+      -277.0 +-2, -479.3 +-2, -285.83 +-2 kJ/mol), and the esterification
+      heat they give within +-5 kJ/mol of -3.83.  Measured with the derived
+      bridge: acetic acid -486.34 (-2.04), ethanol -277.90, ethyl acetate
+      -478.22, water -286.40; reaction -0.38 kJ/mol at 298 K.  Without it
+      acetic acid sat at -460.43 (+23.87) and the reaction at -26.3 (cstr01
+      published Q = -1.879 kW at 0.07304 mol/s = -25.7 kJ/mol).  The band is
+      wide on purpose: the residual is Watson's extrapolation to 298 K, which
+      this arm does not claim to fix.  SABOTAGE (by hand, 2026-11-02): the
+      `vapourDimerisation` key of chemistry/aceticAcid-dissolution.dat
+      renamed -> arm (j) FAILED naming aceticAcid +23.87 kJ/mol; record
+      restored.  (Only the acetic-acid enthalpy band fires in that case; the
+      reaction-heat band is reached only when all four enthalpies pass.)
+
+  (k) THE ASSOCIATED IDEAL-GAS VAPOUR (DEV.md 4c C201 item 1, piece 2): the
+      pure limit, the latent heat at Tb against a closed form, and the
+      acetic acid/water T-x-y against a measured dataset -- see `arm_k`.
+
 WHAT IS NOT CHECKED, deliberately:
 
   * whether a record's DECLARED rung is the right one for its numbers.  That
@@ -98,13 +119,21 @@ Exit 1 naming the arm that failed.
 import json
 import os
 import math
+import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PROBE = ROOT / "build" / "linux64Gcc" / "referenceRungProbe"
 SRC = ROOT / "bin" / "curate" / "_referenceRungProbe.cpp"
+#  Arm (k) asks the PACKAGE (not the component) through the auditor probe
+#  check_column_thermo_consistency already uses -- built under its own name so
+#  the two gates never race on one binary.
+PKG_PROBE = ROOT / "build" / "linux64Gcc" / "columnThermoProbe_rung"
+PKG_SRC = ROOT / "bin" / "curate" / "_columnThermoProbe.cpp"
+WITNESS = ROOT / "tutorials" / "props" / "compare" / "aceticWater01_txy_association"
 
 
 def build_probe():
@@ -296,6 +325,53 @@ def main() -> int:
                            f"and {ds:+.2f} J/(mol K) out -- the cancellation "
                            "that makes a potential the right interface")
 
+    # ---- (j) the LIQUID RUNG of the esterification four (DEV.md 4c C201) ---
+    #  The liquid heat of an associating acid is bridged to the datum's own
+    #  ideal-gas MONOMER by a DERIVED heat (calorimetric + dimer dissociation).
+    #  Bridged with the calorimetric heat alone, acetic acid's liquid sat 23.9
+    #  kJ/mol above its liquid formation enthalpy and the liquid-phase
+    #  esterification heat came out -26 kJ/mol against about -4 measured
+    #  (cstr01 published Q = -1.879 kW at 0.07304 mol/s).  Primary values:
+    #  NIST WebBook / NBS liquid dHf: acetic acid -484.3, ethanol -277.0,
+    #  ethyl acetate -479.3, water -285.83 kJ/mol.
+    LIQ = {"aceticAcid": (-484.3e3, 5.0e3), "ethanol": (-277.0e3, 2.0e3),
+           "ethylAcetate": (-479.3e3, 2.0e3), "water": (-285.83e3, 2.0e3)}
+    hl, ok_liq = {}, True
+    for nm, (ref, band) in LIQ.items():
+        e = got.get("liquidRung_" + nm, {})
+        if e.get("result") != "ok":
+            fail.append(f"(j) {nm}: liquid rung unreadable: {e.get('result')}")
+            ok_liq = False
+            continue
+        hl[nm] = e["h"]
+        if abs(e["h"] - ref) > band:
+            fail.append(f"(j) {nm}: h_formation(298.15 K, liquid) = "
+                        f"{e['h']/1e3:.2f} kJ/mol is {(e['h']-ref)/1e3:+.2f} "
+                        f"from the liquid formation enthalpy {ref/1e3:.2f} "
+                        f"(band +-{band/1e3:.1f}).")
+            ok_liq = False
+    if ok_liq:
+        rxn = hl["ethylAcetate"] + hl["water"] - hl["aceticAcid"] - hl["ethanol"]
+        REF_RXN = (-479.3 - 285.83 + 484.3 + 277.0) * 1e3     # -3.83 kJ/mol
+        if abs(rxn - REF_RXN) > 5.0e3:
+            fail.append(f"(j) liquid esterification heat {rxn/1e3:.2f} kJ/mol "
+                        f"is {(rxn-REF_RXN)/1e3:+.2f} from the value the four "
+                        f"liquid formation enthalpies give ({REF_RXN/1e3:.2f}), "
+                        "band +-5 kJ/mol.  A bridge to the wrong vapour shifts "
+                        "this by the dimer dissociation heat (~26 kJ/mol).")
+        else:
+            checked.append(f"the liquid esterification heat is {rxn/1e3:.2f} "
+                           f"kJ/mol against {REF_RXN/1e3:.2f} from the liquid "
+                           "formation enthalpies (acetic acid bridged to the "
+                           "datum's monomer, "
+                           f"{(hl['aceticAcid']+484.3e3)/1e3:+.2f} kJ/mol out)")
+
+
+    # ---- (k) the ASSOCIATED VAPOUR: pure limit + latent heat at Tb --------
+    fail_k, checked_k = arm_k()
+    fail += fail_k
+    checked += checked_k
+
     # ---- (g) the named remedy actually works ------------------------------
     for key, target in (("formationSolidToSolid", "solid"),
                         ("formationSolidToLiquid", "liquid")):
@@ -320,6 +396,192 @@ def main() -> int:
 
     print("check_reference_rung: OK -- " + "; ".join(checked))
     return 0
+
+
+def _num(text, key):
+    m = re.search(r"^\s*" + key + r"\s+([-+0-9.eE]+)\s*;", text, re.M)
+    return float(m.group(1)) if m else None
+
+
+def _coeffs(text, block):
+    m = re.search(block + r"\s*\{[^}]*?coefficients\s*\(([^)]*)\)", text, re.S)
+    return [float(t) for t in m.group(1).split()] if m else None
+
+
+def arm_k():
+    """(k) THE ASSOCIATED IDEAL-GAS VAPOUR (DEV.md 4c C201 item 1, piece 2).
+
+    Asked of the PACKAGE of the witness aceticWater01_txy_association through
+    the auditor probe (H_stream_formation, BubblePoint/DewPoint, Kvec), and
+    held to a closed form recomputed HERE from the witness's own sealed
+    records (no engine arithmetic reused):
+      * pure limit: the bubble AND dew temperature of pure acetic acid at
+        1 atm equal the root of the record's Antoine (the chemical theory
+        makes p_m + p_d = Psat_apparent exact) to 1e-4 K, and that root is
+        within 0.1 K of the record's Tb (391.05 K, Antoine's own residual);
+        K = 1 there at x = y = pure;
+      * the latent heat the package prices between the saturated liquid and
+        the saturated ASSOCIATED vapour at that T reproduces the closed form
+        (monomer bridge at 298.15 K + Kirchhoff on the record's Cp's + the
+        dimer heat at Tb) to 1 J/mol, and equals the record's measured
+        HvapTb 24.39 to 0.1 kJ/mol -- BY CONSTRUCTION since 2026-11-03
+        (DEV.md 4c C201 item 3): the bridge is the monomer heat at Tb carried
+        to 298.15 K by Kirchhoff on the same Cp's the package prices with, so
+        a miss here means a phase is priced on a different surface;
+      * the association is IN the vapour: HV at Tb sits below the monomer
+        ideal gas by the dimer heat (xi * 63.18 kJ/mol, xi ~ 0.36).
+      * the T-x-y of the witness, run here, against Calvar, Dominguez & Tojo
+        (2005) at 101.325 kPa: AAD T <= 2.6 K and AAD y_water <= 0.031.
+        Measured: associated vapour 2.187 K / 0.0272, monomer ideal gas
+        3.486 K / 0.0355 -- the ceiling sits between, nothing was tuned.
+    SABOTAGE (by hand, 2026-11-02): `associationResidualTotal` made to return
+    0 (the vapour loses its dimer heat, the K-values keep the association) ->
+    arm (k) FAILED: "latent heat at Tb priced 49.5137 kJ/mol, the closed form
+    from the records gives 33.0246"; restored, rebuilt, OK.
+    """
+    fail, checked = [], []
+    lib = ROOT / "build" / "linux64Gcc" / "libchoupo.so"
+    p = subprocess.run(
+        ["g++", "-std=c++17", "-O2", "-I" + str(ROOT / "src"), "-I" + str(ROOT),
+         str(PKG_SRC), str(lib), "-Wl,-rpath," + str(lib.parent),
+         "-o", str(PKG_PROBE)], capture_output=True, text=True)
+    if p.returncode != 0:
+        return ["(k) the package probe did not compile:\n" + p.stderr[-800:]], []
+    comp = (WITNESS / "constant" / "components" / "aceticAcid.dat").read_text()
+    chem = (WITNESS / "constant" / "chemistry" / "aceticAcid-dissolution.dat").read_text()
+    A, B, C = _coeffs(comp, "vaporPressure")
+    cpg = _coeffs(comp, "idealGasHeatCapacity")
+    cpl = _coeffs(comp, "liquidHeatCapacity")
+    Tb_rec, Hb, Tc = _num(comp, "Tb"), _num(comp, "HvapTb"), _num(comp, "Tc")
+    vd = chem[chem.index("vapourDimerisation"):]
+    logK, dH = _num(vd, "logK25"), _num(vd, "dH")
+    P = 101325.0
+    psat = lambda T: 10 ** (A - B / (T + C)) * 1e5
+    T = Tb_rec
+    for _ in range(60):
+        T -= (psat(T) - P) / ((psat(T + 1e-4) - psat(T - 1e-4)) / 2e-4)
+    T_ant = T
+    Kd = lambda T: 10 ** (logK - (dH / (math.log(10) * 8.31446)) * (1 / T - 1 / 298.15))
+
+    def sat(T, Patm):
+        k = Kd(T)
+        pm = (-1 + math.sqrt(1 + 4 * k * Patm)) / (2 * k)
+        pd = k * pm * pm
+        return pd / (pm + 2 * pd)
+
+    def poly_int(c, a, b):
+        return sum(ci / (i + 1) * (b ** (i + 1) - a ** (i + 1)) for i, ci in enumerate(c))
+    #  The bridge is the MONOMER's latent heat at 298.15 K: the apparent
+    #  HvapTb put on the monomer basis at Tb (where it was measured, at
+    #  Psat(Tb)), then carried to 298.15 K by Kirchhoff on the record's OWN
+    #  Cp_ig and liquid Cp -- the arithmetic the package undoes when it prices
+    #  the liquid, so the latent heat at Tb is HvapTb by construction (DEV.md
+    #  4c C201 item 3; Watson, on the apparent heat or on the monomer, was
+    #  measured and rejected: 29.3 and 27.15 kJ/mol against 24.39).
+    hMonoTb = Hb + sat(Tb_rec, psat(Tb_rec) / 101325.0) * (-dH)
+    bridge = hMonoTb - (poly_int(cpg, 298.15, Tb_rec) - poly_int(cpl, 298.15, Tb_rec))
+    xiTb = sat(T_ant, P / 101325.0)
+    latent_cf = (bridge + poly_int(cpg, 298.15, T_ant) - poly_int(cpl, 298.15, T_ant)
+                 + xiTb * dH)
+
+    req = [f"SAT {T_ant} {P} 1 0",
+           f"HL {T_ant} {P} 1 0",
+           f"HV {T_ant} {P} 1 0",
+           f"K {T_ant} {P} 1 0 1 0"]
+    with tempfile.NamedTemporaryFile("w", suffix=".req", delete=False) as f:
+        f.write("\n".join(req) + "\n")
+        rp = f.name
+    try:
+        r = subprocess.run([str(PKG_PROBE), str(WITNESS), rp], capture_output=True,
+                           text=True, timeout=300, env=dict(os.environ, CHOUPO_HOME=str(ROOT)))
+    finally:
+        os.unlink(rp)
+    m = re.search(r"<<<PROBE\n(.*)PROBE>>>", r.stdout, re.S)
+    if r.returncode != 0 or not m:
+        return [f"(k) the package probe gave no answer (exit {r.returncode}): "
+                + (r.stdout + r.stderr)[-600:]], []
+    lines = m.group(1).splitlines()
+    vals = []
+    for l in lines:
+        if not l.startswith("OK"):
+            return [f"(k) the package refused a request: {l}"], []
+        vals.append([float(t) for t in l.split()[1:]])
+    (Tbub, Tdew), (hl,), (hv,), K = vals
+    if abs(Tbub - T_ant) > 1e-4 or abs(Tdew - T_ant) > 1e-4:
+        fail.append(f"(k) pure acetic acid at 1 atm: bubble {Tbub:.6f} K / dew "
+                    f"{Tdew:.6f} K, the record's Antoine root is {T_ant:.6f} K -- "
+                    "the associated vapour must leave the pure limit exact.")
+    elif abs(T_ant - Tb_rec) > 0.1:
+        fail.append(f"(k) the Antoine root {T_ant:.4f} K is not within 0.1 K "
+                    f"of the record's Tb {Tb_rec}")
+    elif abs(K[0] - 1.0) > 1e-6:
+        fail.append(f"(k) K(pure acetic acid, Tb) = {K[0]:.9f}, not 1")
+    else:
+        checked.append(f"pure acetic acid boils at {Tbub:.4f} K (bubble = dew = "
+                       f"the record's Antoine root; record Tb {Tb_rec}) on the "
+                       "associated vapour, K = 1")
+    lat = hv - hl
+    if abs(lat - latent_cf) > 1.0:
+        fail.append(f"(k) latent heat at Tb priced {lat/1e3:.4f} kJ/mol, the "
+                    f"closed form from the records gives {latent_cf/1e3:.4f}: "
+                    "the vapour or the liquid is not on the surface this arm "
+                    "derives (bridge + Kirchhoff + dimer heat at Tb).")
+    elif abs(lat - Hb) > 0.1e3:
+        #  0.1 kJ/mol covers only the two anchors' gap: the record's Tb
+        #  (391.05 K, at Psat(Tb) = 1.0145 bar) against the Antoine root at
+        #  1 atm (391.0085 K) where the package is asked.  Measured: a few J.
+        fail.append(f"(k) latent heat at Tb {lat/1e3:.4f} kJ/mol is not the "
+                    f"record's HvapTb {Hb/1e3:.2f} -- the bridge is built to "
+                    "close on it, so the liquid and the vapour are not on the "
+                    "surface the bridge was derived on")
+    elif not (abs((hv - hl) - (bridge + poly_int(cpg, 298.15, T_ant)
+                               - poly_int(cpl, 298.15, T_ant))) > 10.0e3):
+        fail.append("(k) the vapour at Tb carries no association heat")
+    else:
+        checked.append(f"latent heat at Tb {lat/1e3:.3f} kJ/mol on the "
+                       f"associated vapour (closed form {latent_cf/1e3:.3f}; "
+                       f"record HvapTb {Hb/1e3:.2f}, {(lat-Hb)/1e3:+.2f}; dimer "
+                       f"heat in the vapour {xiTb*dH/1e3:.2f} kJ/mol)")
+
+    # ---- the T-x-y against the MEASUREMENT (Calvar et al. 2005) ----------
+    import csv
+    import shutil
+    with tempfile.TemporaryDirectory() as td:
+        case = Path(td) / WITNESS.name
+        shutil.copytree(WITNESS, case, ignore=shutil.ignore_patterns(
+            "*.csv", "log.*", "reports", "converged"))
+        shutil.copytree(WITNESS / "constant" / "experimental",
+                        case / "constant" / "experimental", dirs_exist_ok=True)
+        rr = subprocess.run([str(ROOT / "choupoProps"), "."], cwd=case,
+                            capture_output=True, text=True, timeout=600,
+                            env=dict(os.environ, CHOUPO_HOME=str(ROOT)))
+        out = case / "txy_calvar2005.csv"
+        if rr.returncode != 0 or not out.exists():
+            fail.append("(k) the witness T-x-y did not run: "
+                        + (rr.stdout + rr.stderr)[-400:])
+            return fail, checked
+        mod = list(csv.reader(out.open()))[1:]
+        exp = list(csv.reader(l for l in (WITNESS / "constant" / "experimental"
+                   / "calvar2005_txy.csv").open() if not l.startswith("#")))[1:]
+    if len(mod) != len(exp) or any(abs(float(m[0]) - float(e[0])) > 1e-9
+                                   for m, e in zip(mod, exp)):
+        fail.append("(k) the witness T-x-y is not evaluated at the measured "
+                    "liquid compositions")
+        return fail, checked
+    aadT = sum(abs(float(m[1]) - float(e[1])) for m, e in zip(mod, exp)) / len(exp)
+    aadY = sum(abs(float(m[2]) - float(e[2])) for m, e in zip(mod, exp)) / len(exp)
+    #  Measured 2026-11-02: monomer ideal gas (main before C201) AAD T 3.486 K,
+    #  y 0.0355; associated vapour 2.187 K, 0.0272.  The ceiling sits between
+    #  the two: losing the association fails this arm.  Nothing was tuned.
+    if aadT > 2.6 or aadY > 0.031:
+        fail.append(f"(k) T-x-y against Calvar et al. 2005: AAD T {aadT:.3f} K, "
+                    f"y_water {aadY:.4f} -- above the associated-vapour ceiling "
+                    "(2.6 K, 0.031; the monomer ideal gas read 3.49 K, 0.0355)")
+    else:
+        checked.append(f"acetic acid/water T-x-y at 1 atm (UNIFAC + associated "
+                       f"vapour) against Calvar et al. 2005: AAD T {aadT:.3f} K, "
+                       f"y_water {aadY:.4f} (monomer ideal gas: 3.486 K, 0.0355)")
+    return fail, checked
 
 
 if __name__ == "__main__":

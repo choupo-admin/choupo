@@ -19,10 +19,12 @@ and the same **Da = 1.109**.
    molar flow falling or rising along the tube.  The integrator is named
    (`RK4, 100 uniform steps, dV = 5.0e-05 m³`); halve `nSteps` and see
    what moves.
-3. **The heat of reaction is a KPI here.**  `dHrxn_kJ_per_mol = −25.73`
-   is computed from the species' formation enthalpies (the elements
+3. **The heat of reaction is a KPI here.**  `dHrxn_kJ_per_mol = −2.10`
+   (at 350 K) is computed from the species' formation enthalpies (the elements
    datum — the one base every reactor in Choupo prices on), and the
-   tube's isothermal duty `Q_kW = −2.40` follows from it and the extent.
+   tube's isothermal duty `Q_kW = −0.196` follows from it and the extent.
+   The real liquid esterification is only mildly exothermic (about −3 to
+   −4 kJ/mol at 298 K, where Choupo reads −2.7).
 4. **Same Da, different X, is the pedagogical point of the pair.**  Put
    the two READMEs side by side; the numbers are the lecture.
 

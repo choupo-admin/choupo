@@ -1,0 +1,32 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    bp_aceticAcid          Cp_ig            80.6641982498      1e-4
+diag    bp_aceticAcid          H_R              -22841.7769643   1e-4
+diag    bp_aceticAcid          H_ig             -425398.226035     1e-4
+diag    bp_aceticAcid          H_real           -448240.002999   1e-4
+diag    bp_aceticAcid          P                101325             1e-4
+diag    bp_aceticAcid          S_R              -51.4737821304   1e-4
+diag    bp_aceticAcid          S_ig             302.310579052      1e-4
+diag    bp_aceticAcid          S_real           250.836796922    1e-4
+diag    bp_aceticAcid          T                391                1e-4
+diag    bp_aceticAcid          T_bubble         391.008522453      1e-4
+diag    bp_aceticAcid          Z                1                  1e-4
+diag    bp_aceticAcid          gamma            1.11492042846      1e-4
+diag    bp_aceticAcid          v_molar          0.0320844301371    1e-4
+diag    bp_water               Cp_ig            34.2425437543      1e-4
+diag    bp_water               H_R              0                  1e-4
+diag    bp_water               H_ig             -239285.246811     1e-4
+diag    bp_water               H_real           -239285.246811     1e-4
+diag    bp_water               P                101325             1e-4
+diag    bp_water               S_R              0                  1e-4
+diag    bp_water               S_ig             196.325092589      1e-4
+diag    bp_water               S_real           196.325092589      1e-4
+diag    bp_water               T                373                1e-4
+diag    bp_water               T_bubble         372.453622433      1e-4
+diag    bp_water               Z                1                  1e-4
+diag    bp_water               gamma            1.32067404349      1e-4
+diag    bp_water               v_molar          0.0306073975476    1e-4
+diag    txy_calvar2005         n_emptyCurves    0                  1e-4
+diag    txy_calvar2005         n_failures       0                  1e-4
+diag    txy_calvar2005         n_points         24                 1e-4

@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SpeciationSolver.H"
+#include "thermo/VapourAssociation.H"
 
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -399,10 +400,13 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                     if (e->found("vapourDimerisation"))
                     {
                         auto vd = e->subDict("vapourDimerisation");
+                        //  ONE parse (thermo/VapourAssociation.H) shared with
+                        //  the component's liquid-to-datum bridge.
+                        const auto dm = vapourAssociation::dimerisationFrom(vd);
                         g.hasDimer  = true;
-                        g.dimLogK25 = vd->lookupScalar("logK25");
-                        g.dimDH     = vd->lookupScalarOrDefault("dH", 0.0);
-                        g.dimSource = vd->lookupWordOrDefault("source", "undeclared");
+                        g.dimLogK25 = dm.logK25;
+                        g.dimDH     = dm.dH;
+                        g.dimSource = dm.source;
                     }
                     const std::string dissolved = legacyKeys
                         ? e->lookupWord("dissolved")

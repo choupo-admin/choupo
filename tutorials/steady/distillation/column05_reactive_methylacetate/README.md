@@ -32,9 +32,9 @@ K_a(298) ≈ 38.7, Δh°_r ≈ −5.67 kJ/mol → **K_a ≈ 29 in the reactive z
 
 | quantity | **Choupo (equilibrium)** | **Pöpken S-1 (measured)** |
 |---|---|---|
-| methanol/HOAc conversion | **96.1 %** | 87.6 % |
+| methanol/HOAc conversion | **95.5 %** | 87.6 % |
 | x_D (methyl acetate) | ≈ 0.99 | 0.877 |
-| x_B (water) | 0.888 | 0.824 |
+| x_B (water) | 0.881 | 0.824 |
 | T_top | 330 K | ≈ 328 K |
 
 This is **not** a tight match, and the reason is physically important: with the
