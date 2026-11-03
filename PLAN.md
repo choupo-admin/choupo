@@ -28,7 +28,7 @@ header names the PLAN.md commit it reflects, so a stale view shows itself.
    row of Next day starts and the first row of the next column moves up.
 5. **Done rows stay one week**, then leave this file (DEV.md keeps them).
 
-Last reviewed: 2026-11-03 15:00 (C212 landed; acetic item 1 landed, item 3 running; stack landed; reorganised by C210, PIF first: Now holds only what runs, the document set and the PIF wins placed by their dependencies; earlier reviews in git).
+Last reviewed: 2026-11-03 22:00 (acetic item 3 landed; C212 landed; acetic item 1 landed, item 3 running; stack landed; reorganised by C210, PIF first: Now holds only what runs, the document set and the PIF wins placed by their dependencies; earlier reviews in git).
 
 Status words: `todo` · `queued` (built by a general, waiting its turn to integrate) · `integrating` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
@@ -38,7 +38,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 |---|---|---|
 | done | THE STACK IS LANDED on main and the site (2026-11-03 08:30, `ebe0e3a51`): the freeze was lifted because the tutorials are at 17:00 and 17:30, not noon; staging passed --fast 78/0, --gui 43/0, a second full sweep 822/0; the live bundle carries the compaction fits, the utilisation table and the equipment tags, the packs answer 200 | C200, C210 |
 | todo | what the two PIF groups report from the 17:00/17:30 tutorials goes ahead of everything | C210 |
-| running | (Opus) Acetic acid, item 3: the associated-vapour slice rebased on the corrected constant; its liquid bridge moved from Watson on the APPARENT heat (29.3 kJ/mol at Tb, esterification +2.3) to Kirchhoff on the record's own Cps over the MONOMER (expected 24.39 at Tb by construction, liquid ~-484.1 against NBS -484.3); a general measures, nothing recorded before the list is read | C201 (3) |
+| done | Acetic acid item 3 (`1d25dd6de`, full sweep 825/0): the corrected constant, the Kirchhoff liquid bridge (latent heat at Tb 24.39 by construction, liquid -484.06 against NBS -484.3), the associated vapour, the distillate priced as its stream, 735 golden rows moved (by group, in the commit), the seven exotherm tutorials repaired honestly, the column gate's condenser arm fixed | C201 (3) |
 | done | Two economics EduTools (C212, `349baa4a7`): what a plant costs to build (Lang, factored estimate, Choupo's bare module, working capital x3, loan) and to run (itemised cost vs Turton COM_d, shifts, depreciation by class, break-even, NPV/IRR/payback, elasticity, market arithmetic); every factor the student's input with a pointer to its table, no recalled range shipped | C212 |
 | done | The capability index for assistants (C211, `7d1e9217d`): `/llm/capabilities.md` first in llms.txt under 'Does Choupo do X?' (computes / balances / checks / missing per concept, pharmaceutical plant first, witness cases by full path), the version line on every served document, a static `/llm/models.md`, AGENTS.md one path per question; gate `check_capability_index` (sabotage-verified) | C211 |
 | done | Acetic acid item 1 (`7f8e5348b`): logK25 2.555 (formic) -> 3.107 (ethanoic, Chao & Zwolinski Tables 11/12) in the record and five mirrors, 54 golden rows re-recorded from 3.5x more dimer, gate `check_dimerisation_constants`; it exposed flash17's dimer-heat seam, pinned | C201 (1) |
@@ -48,7 +48,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | status | what | ref |
 |---|---|---|
 | todo | A PHYSICAL `tabletPress` (today a splitter): compression force or pressure, die and mass -> relative density, porosity, tensile strength, from the declared `compactionFit` parameters; the blend's property by a declared mixing rule | C195, C210, C211 |
-| todo | Acetic acid, after item 3: the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; the seven exotherm tutorials to Vitor | C201 (1) |
+| todo | Acetic acid, the rest: the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; the seven exotherm tutorials to Vitor | C201 (1) |
 | todo | The replacement for the seven exotherm tutorials (their honest repair is in the integration branch): a genuinely exothermic reaction -- the ethylene-oxide hydration to ethylene glycol, data already in the catalogue -- giving runaway, multiplicity (three steady states) and jacket control back; the Van Heerden EduTool still names `cstr05_multiplicity` as its witness and will draw ONE root: re-point it to the new case | C201 |
 | todo | Document set S3 (line list per routed pipe, declared window, declared fittings, pressure deficit and the pump it needs) and S4 (the instrument and loop declaration, the instrument index), both after S1 lands; then S5 the P&ID and S6 the control narrative | C207, C203, C204, C210 |
 | todo | PIF E4 + E5 (C208 landed 2026-11-03; both touch EconomicsPass): E4 building cost from the rooms' areas; E5 a BREAK-EVEN analysis (14 of 14 reports computed one, Choupo has none), a ROYALTY line with a declared patent window, the three working-capital methods side by side | C195, C210 |
