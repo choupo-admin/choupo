@@ -47,8 +47,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| todo | (Opus) C214 W1: a GENERAL flash specification -- (P,H), (P,S), (T,V/F), (P,V/F) as first-class, one dispatcher on the existing Michelsen stability test and nested Newton; PS is the isentropic reference every compressor/turbine computes privately, PH what the valve, the mixer and the adiabatic flash do under three names: ONE home; the props bench asks any pair | C214 |
-| todo | C214 W2: shell-and-tube RATING by Bell-Delaware as a `method` of `heatExchanger` beside eps-NTU (shell-side h, dP, the five correction factors; TEMA geometry declared); the one design-course method missing | C214 |
+| running | (Opus) C214 W1: a GENERAL flash specification -- (P,H), (P,S), (T,V/F), (P,V/F) as first-class, one dispatcher on the existing Michelsen stability test and nested Newton; PS is the isentropic reference every compressor/turbine computes privately, PH what the valve, the mixer and the adiabatic flash do under three names: ONE home; the props bench asks any pair | C214 |
 | todo | Acetic acid, the rest: the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; the seven exotherm tutorials to Vitor | C201 (1) |
 | todo | The replacement for the seven exotherm tutorials (their honest repair is in the integration branch): a genuinely exothermic reaction -- the ethylene-oxide hydration to ethylene glycol, data already in the catalogue -- giving runaway, multiplicity (three steady states) and jacket control back; the Van Heerden EduTool still names `cstr05_multiplicity` as its witness and will draw ONE root: re-point it to the new case | C201 |
 | todo | Document set S3 (line list per routed pipe, declared window, declared fittings, pressure deficit and the pump it needs) and S4 (the instrument and loop declaration, the instrument index), both after S1 lands; then S5 the P&ID and S6 the control narrative | C207, C203, C204, C210 |
@@ -57,7 +56,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| todo | C214 W3: dominant-eigenvalue recycle acceleration beside Wegstein, announced like every solver aid (Orbach & Crowe 1971) | C214 |
+| running | C214 W3: dominant-eigenvalue recycle acceleration beside Wegstein, announced like every solver aid (Orbach & Crowe 1971) | C214 |
 | todo | C214 W4: Beggs-Brill two-phase pipe as `twoPhase { model BeggsBrill; }` beside Lockhart-Martinelli, with inclination (Beggs & Brill 1973) | C214 |
 | todo | C214 W5: a Cv-rated control valve with an inherent characteristic (linear / equal-percentage), the opening as the manipulated variable -- what the digital twin's controllers move (ISA-75.01 form) | C214, C203 |
 | todo | (Opus) C214 W6: IF97 region 3 (Helmholtz f(rho,T); the engine refuses it today) and a gate holding regions 1-4 to the IAPWS release's own verification tables | C214 |
@@ -70,6 +69,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| waits-Vitor | C214 W2 (Bell-Delaware rating): the general STOPPED before building, rightly -- the coefficient tables exist only second-hand (a GPL code transcription that contradicts itself between two functions, e.g. one coefficient -0.123 against -0.12) and no worked example is readable, so nothing could be held to printed digits.  Needs ONE readable source: Serth, *Process Heat Transfer* ch. 6 (Table 6.1 and its worked example), or Kakac & Liu, or Taborek's HEDH 3.3.9 B with its geometry; then the build is a day | C214 |
 | todo | State checks: measure the seal-drift finding against main (9 sucrose / H2SO4 mirrors, 1809 moved values); one browser run on the site of each unit that reached main without one (Complete 0/, pressure exchanger, boron split, dynamic tank; C178, C182) | C201, C196 |
 | todo | The C200 packs still missing (heat, electrolytes, membranes, solids, drivers, transient, props) and the generated reference; re-score the 2026-11-01 baseline with the -init0 step | C200 |
 | todo | Newcomer surfaces (`runCase` shows the answer, the balance verdict and the caveat block; one start-here path) and the stale tutorial texts the review listed | C201 (3)-(6) |
