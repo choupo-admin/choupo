@@ -28,7 +28,7 @@ header names the PLAN.md commit it reflects, so a stale view shows itself.
    row of Next day starts and the first row of the next column moves up.
 5. **Done rows stay one week**, then leave this file (DEV.md keeps them).
 
-Last reviewed: 2026-11-03 08:40 (stack landed; reorganised by C210, PIF first: Now holds only what runs, the document set and the PIF wins placed by their dependencies; earlier reviews in git).
+Last reviewed: 2026-11-03 10:00 (acetic item 1 landed, item 3 running; stack landed; reorganised by C210, PIF first: Now holds only what runs, the document set and the PIF wins placed by their dependencies; earlier reviews in git).
 
 Status words: `todo` · `queued` (built by a general, waiting its turn to integrate) · `integrating` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
@@ -38,24 +38,23 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 |---|---|---|
 | done | THE STACK IS LANDED on main and the site (2026-11-03 08:30, `ebe0e3a51`): the freeze was lifted because the tutorials are at 17:00 and 17:30, not noon; staging passed --fast 78/0, --gui 43/0, a second full sweep 822/0; the live bundle carries the compaction fits, the utilisation table and the equipment tags, the packs answer 200 | C200, C210 |
 | todo | what the two PIF groups report from the 17:00/17:30 tutorials goes ahead of everything | C210 |
-| todo | Watch the tutoring class (2026-11-03 12:00): the students' reports reach Vitor and come here; each is recorded in DEV.md 4c the turn it arrives, then fixed (it goes ahead of everything else) | C200, C195, C210 |
+| running | (Opus) Acetic acid, item 3: a general rebases the associated-vapour slice (`backup/c201-acetic-vapour`) on the corrected constant and re-measures the latent heat at Tb (expected near 25 kJ/mol, measured 24.38), aceticAcid02_plant's duties and flash17's first law (pinned at 2.546 % until this closes it); moved rows listed, nothing re-recorded before the list is read | C201 (3) |
+| running | The capability path for assistants (C211): a capability index beside the brief (does Choupo do X? computes / balances / checks / missing, with full case paths, held to the tree by a gate), the version line on every served document, `/llm/models.md` readable without JavaScript, `AGENTS.md` with one path per question; the pharmaceutical concepts first | C211, C210 |
+| done | Acetic acid item 1 (`7f8e5348b`): logK25 2.555 (formic) -> 3.107 (ethanoic, Chao & Zwolinski Tables 11/12) in the record and five mirrors, 54 golden rows re-recorded from 3.5x more dimer, gate `check_dimerisation_constants`; it exposed flash17's dimer-heat seam, pinned | C201 (1) |
 
 ## Next day (at most 5)
 
 | status | what | ref |
 |---|---|---|
-| todo | The tutoring class (12:00): what the two groups hit reaches Vitor and comes here; recorded in DEV.md 4c the turn it arrives and fixed AHEAD of every row below | C210 |
-| todo | Land C208 after the class (wrong answers at exit 0 first); the full sweep its main.cpp/PostProcessor reach flags is decided with a written reason; then the four branch builds, ONE integration at a time, in this order: E2+E3, E6+MASS, E7+E8, dynamic slice 2; the site checked after each push | C208, C195, C205 |
-| todo | (Opus) Acetic acid, ONE slice (a wrong reaction heat at exit 0 on start-here step 6): the corrected constant (5bed50aeb) + the associated vapour rebased on it, the latent heat at Tb re-measured (near the measured 24.4), the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; the seven exotherm tutorials to Vitor | C201 (1) |
+| todo | A PHYSICAL `tabletPress` (today a splitter): compression force or pressure, die and mass -> relative density, porosity, tensile strength, from the declared `compactionFit` parameters; the blend's property by a declared mixing rule | C195, C210, C211 |
+| todo | Acetic acid, after item 3: the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; the seven exotherm tutorials to Vitor | C201 (1) |
 | todo | Document set S3 (line list per routed pipe, declared window, declared fittings, pressure deficit and the pump it needs) and S4 (the instrument and loop declaration, the instrument index), both after S1 lands; then S5 the P&ID and S6 the control narrative | C207, C203, C204, C210 |
-| todo | PIF E4 + E5 (after C208 lands; both touch EconomicsPass): E4 building cost from the rooms' areas; E5 a BREAK-EVEN analysis (14 of 14 reports computed one, Choupo has none), a ROYALTY line with a declared patent window, the three working-capital methods side by side | C195, C210 |
+| todo | PIF E4 + E5 (C208 landed 2026-11-03; both touch EconomicsPass): E4 building cost from the rooms' areas; E5 a BREAK-EVEN analysis (14 of 14 reports computed one, Choupo has none), a ROYALTY line with a declared patent window, the three working-capital methods side by side | C195, C210 |
 
 ## Next three days (at most 8)
 
 | status | what | ref |
 |---|---|---|
-| todo | The capability path for assistants (C211): a capability index beside the brief (does Choupo do X? computes / balances / checks / missing, with full case paths, held to the tree by a gate), the version line on every served document, `/llm/models.md` readable without JavaScript, `AGENTS.md` with one path per question; the pharmaceutical concepts first | C211, C210 |
-| todo | A PHYSICAL `tabletPress` (today a splitter): compression force or pressure, die and mass -> relative density, porosity, tensile strength, from the declared `compactionFit` parameters; the blend's property by a declared mixing rule | C195, C210, C211 |
 | todo | Document set S7: the economic pipe diameter and the pipe cost (new physics, a cited correlation) | C207 |
 | todo | The control-placement EduTool, pages 1-5 and the plant method page (the Pareto is in C204); its loops use the instrument grammar above | C204 |
 | todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag (they feed the digital twin) | C205 |
