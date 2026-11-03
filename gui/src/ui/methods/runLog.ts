@@ -84,7 +84,7 @@ export const CITES = {
     contains: 'FAILED (exit $rc) -- last 20 lines of log:' },
   resultJson: { file: MAIN, line: 1584,
     contains: "emitResultJson(std::cout, result);" },
-  displayLogCut: { file: ADAPTER, line: 504,
+  displayLogCut: { file: ADAPTER, line: 506,
     contains: "const displayLog = log.slice(0, cutStart) + log.slice(cutEnd);" },
   verbosityRead: { file: MAIN, line: 644,
     contains: 'lookupScalarOrDefault("verbosity", 3)' },
