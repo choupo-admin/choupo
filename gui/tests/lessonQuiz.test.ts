@@ -86,6 +86,8 @@ import { PATENT_QUIZ, PATENT_STEPS } from "../src/ui/methods/patentExpiryLesson.
 import { PatentExpiryTool } from "../src/ui/methods/PatentExpiryTool.js";
 import { ECON_ERRORS_QUIZ, ECON_ERRORS_STEPS } from "../src/ui/methods/economicsErrorsLesson.js";
 import { EconomicsErrorsTool } from "../src/ui/methods/EconomicsErrorsTool.js";
+import { PLANT_RUN_QUIZ, PLANT_RUN_STEPS } from "../src/ui/methods/plantRunLesson.js";
+import { PlantRunTool } from "../src/ui/methods/PlantRunTool.js";
 import { DEMAND_QUIZ, DEMAND_STEPS } from "../src/ui/methods/demandForecastLesson.js";
 import { DemandForecastTool } from "../src/ui/methods/DemandForecastTool.js";
 
@@ -155,6 +157,10 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "economics-errors": {
     quiz: ECON_ERRORS_QUIZ, quizName: "ECON_ERRORS_QUIZ", lesson: ECON_ERRORS_STEPS, lessonName: "ECON_ERRORS_STEPS",
     file: "src/ui/methods/EconomicsErrorsTool.tsx", tool: EconomicsErrorsTool,
+  },
+  "plant-running-cost": {
+    quiz: PLANT_RUN_QUIZ, quizName: "PLANT_RUN_QUIZ", lesson: PLANT_RUN_STEPS, lessonName: "PLANT_RUN_STEPS",
+    file: "src/ui/methods/PlantRunTool.tsx", tool: PlantRunTool,
   },
   "demand-forecast": {
     quiz: DEMAND_QUIZ, quizName: "DEMAND_QUIZ", lesson: DEMAND_STEPS, lessonName: "DEMAND_STEPS",

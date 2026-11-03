@@ -33,8 +33,8 @@
       "meaning": "an input -- a value you set with a control, or one the example's author declared -- not a result"
     }
   ],
-  "liveTools": 70,
-  "registryTools": 70,
+  "liveTools": 71,
+  "registryTools": 71,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -835,6 +835,18 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=demand-forecast"
+    },
+    {
+      "id": "plant-running-cost",
+      "label": "What a plant costs to run, and when it pays",
+      "discipline": "Process design & economics",
+      "teaches": "How the balances and the investment of one plant become a verdict: the cost of production itemised (direct, indirect, fixed, general) with each factor a declared input and a pointer to the book that tabulates it, set against Choupo's three-term COM_d on the same bills; the crew from shifts and hours; depreciation by asset class against one straight line; fixed and variable costs and the break-even capacity; the cash flow with a discount rate built from components, NPV, IRR and discounted payback; a one-at-a-time sensitivity with elasticities; and the market arithmetic (price index, currency, apparent consumption, FOB and CIF, unit margin). Each engine statement carries the line it was read at, and what Choupo does not compute is said.",
+      "origins": [
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=plant-running-cost"
     },
     {
       "id": "solvent-mixture",

@@ -75,7 +75,7 @@ export type MethodToolId =
   | "plant-layout" | "gmp-layout" | "pool-fire" | "bund" | "materials" | "syngas"
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
-  | "economics-errors" | "demand-forecast";
+  | "economics-errors" | "demand-forecast" | "plant-running-cost";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1849,6 +1849,30 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "made explicit as an assumption beside the sold quantity and the "
       + "market, and the yearly volume in the keys and units the batch "
       + "plan's economics reads (streamFactor, rampUp).",
+    theory: "ch:economics",
+  },
+  //  COMMISSIONED 2026-11-03 (DEV.md 4c C212, item B): the economic
+  //  evaluation of a plant, for chemical engineering with a pharmaceutical
+  //  plant as one example.  A NOTES page, no engine run, beside
+  //  `economics-errors`.
+  {
+    id: "plant-running-cost",
+    label: "What a plant costs to run, and when it pays",
+    discipline: "Process design & economics", kind: "notes",
+    status: "live",
+    origins: ["page", "reference", "assumption"],
+    teaches: "How the balances and the investment of one plant become a "
+      + "verdict: the cost of production itemised (direct, indirect, fixed, "
+      + "general) with each factor a declared input and a pointer "
+      + "to the book that tabulates it, set against Choupo's three-term COM_d "
+      + "on the same bills; the crew from shifts and hours; depreciation by "
+      + "asset class against one straight line; fixed and variable costs "
+      + "and the break-even capacity; the cash flow with a discount rate "
+      + "built from components, NPV, IRR and discounted payback; a "
+      + "one-at-a-time sensitivity with elasticities; and the market "
+      + "arithmetic (price index, currency, apparent consumption, FOB and "
+      + "CIF, unit margin). Each engine statement carries the line it was "
+      + "read at, and what Choupo does not compute is said.",
     theory: "ch:economics",
   },
   //  WHICH SOLVENT, OR WHICH SOLVENT MIXTURE (2026-10-21, DEV.md 4c C128,

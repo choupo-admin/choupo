@@ -1688,6 +1688,63 @@ A year-end discounted cash flow with straight-line depreciation, no
 inflation, no financing and no construction period; the engine's own appraisal
 has more than that, and the page does not reproduce it.
 
+\subsection{What a plant costs to run, and when it pays}\label{sec:edu-plant-running-cost}
+
+\declaredanchor{ch:economics}
+
+\noindent\textit{\small Tool:} \code{tool=plant-running-cost}.  \textit{\small
+Case it starts from:} none (one illustrative plant of round numbers); no
+engine run.
+
+\subsubsection*{The question}
+
+\emph{I have the mass and energy balance of a plant and an investment.  What
+does it cost to run, at what capacity does it break even, and does it pay?}
+
+The page carries one plant through seven short calculations.  The cost of
+production is itemised in four groups, direct, indirect, fixed and general,
+with every factor an input and, beside it, a pointer without numbers to the
+book that tabulates it (Peters, Timmerhaus and West, chapter~6): the student
+reads it there and declares the value with that source.  The raw materials are the balance's quantity times a price,
+never a percentage.  The same bills are then priced in Choupo's three terms,
+$\mathrm{COM}_d = 0.180\,I + 2.73\,C_{OL} + 1.23\,(C_{RM}+C_{UT}+C_{WT})$,
+with the difference explained term by term.  The crew is derived from the
+hours a post is staffed and the hours one operator is paid; depreciation is
+set by asset class against one straight line; the break-even capacity is
+drawn three ways (accounting, cash, and NPV equal to zero); the cash flow
+gives NPV, IRR and discounted payback with a discount rate built as
+$(1+T_1)(1+T_2)-1$; a one-at-a-time sensitivity gives a tornado and the
+elasticities; and the last step does the market arithmetic (price index,
+currency, apparent consumption, FOB and CIF, unit margin).
+
+\subsubsection*{What Choupo does and does not do}
+
+Every engine statement on the page carries the line of
+\code{EconomicsPass.cpp} it was read at, and the test of the page opens the
+file and holds each to its text.  Choupo has the three-term cost, a crew from
+a correlation or a declaration, straight-line depreciation over one life, the
+cash flow with its NPV, IRR and paybacks, and a one-at-a-time sensitivity.
+It has no itemised cost of production, no royalty line, no depreciation by
+asset class and no break-even capacity.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+Change the shifts per day from three to one and watch the people per post
+fall and the labour bill with them; then change the maintenance factor and read
+the NPV move.  Put the NPV break-even fraction back into the
+cash flow and read a net present value of zero.  Raise the step of the
+sensitivity from ten to thirty per cent and see which bar changes length
+faster than the others.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That a starting value is your plant's value.}  The starting values
+are illustrations, and a one-at-a-time tornado ranks levers;
+it does not measure risk.  The numbers on the page are illustrations, and
+nothing on it is financial or legal advice.
+\end{pitfall}
+
 \subsection{Demand forecast for a drug product}\label{sec:edu-demand-forecast}
 
 \declaredanchor{ch:economics}
