@@ -470,8 +470,12 @@ def arm_k():
 
     def poly_int(c, a, b):
         return sum(ci / (i + 1) * (b ** (i + 1) - a ** (i + 1)) for i, ci in enumerate(c))
-    watson298 = Hb * ((1 - 298.15 / Tc) / (1 - Tb_rec / Tc)) ** 0.38
-    bridge = watson298 + sat(298.15, psat(298.15) / 101325.0) * (-dH)
+    #  The bridge is the MONOMER's latent heat at 298.15 K: the apparent
+    #  HvapTb put on the monomer basis at Tb (where it was measured, at
+    #  Psat(Tb)), then carried by Watson -- the law of a normal fluid, and the
+    #  normal fluid here is the monomer (DEV.md 4c C201 item 3).
+    hMonoTb = Hb + sat(Tb_rec, psat(Tb_rec) / 101325.0) * (-dH)
+    bridge = hMonoTb * ((1 - 298.15 / Tc) / (1 - Tb_rec / Tc)) ** 0.38
     xiTb = sat(T_ant, P / 101325.0)
     latent_cf = (bridge + poly_int(cpg, 298.15, T_ant) - poly_int(cpl, 298.15, T_ant)
                  + xiTb * dH)

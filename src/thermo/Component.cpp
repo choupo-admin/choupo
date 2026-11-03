@@ -1360,20 +1360,39 @@ const Component::DatumBridge298& Component::datumBridge298() const
     {
         if (auto dim = vapourAssociation::find(formula_))
         {
+            //  WATSON IS A LAW OF A NORMAL FLUID, and for an associating acid
+            //  the normal fluid is the MONOMER (DEV.md 4c C201 item 3).  The
+            //  record's HvapTb is the APPARENT heat measured at Tb, to a
+            //  vapour that is mostly dimer; the association offsets the
+            //  vaporisation, so the apparent heat is nearly flat in T and
+            //  Watson applied to it over-extrapolates (measured: the bridge
+            //  56.7 kJ/mol against the NBS pair's 52.25, the latent heat at
+            //  Tb 29.3 against 24.38).  So the heat is put on the monomer
+            //  basis WHERE IT WAS MEASURED (Tb, at Psat(Tb), the same
+            //  saturated-vapour split), and the MONOMER is carried to
+            //  298.15 K by Watson with this record's own Tc, Tb and the
+            //  exponent Hvap_latent uses (0.38).
             const scalar atm = 101325.0;
+            const auto svTb = vapourAssociation::saturated(
+                *dim, Tb_, vp().Psat_Pa(Tb_) / atm);
+            const scalar assocTb = -dim->dH * svTb.xi;
+            const scalar hMonoTb = Hvap_Tb_ + assocTb;
+            const scalar hMono298 = (298.15 >= Tc_) ? 0.0
+                : hMonoTb * std::pow((Tc_ - 298.15) / (Tc_ - Tb_), 0.38);
             const auto sv = vapourAssociation::saturated(*dim, 298.15,
                                                          bridge_.pRefPa / atm);
-            const scalar assoc = -dim->dH * sv.xi;
-            bridge_.H += assoc;
+            bridge_.H = hMono298;
             bridge_.pRefPa = sv.pMonoAtm * atm;
             bridge_.associated = true;
             const std::string msg = "liquid bridged to the datum's ideal-gas"
-                " MONOMER: Hvap(298.15 K) = calorimetric "
-                + std::to_string(Hvap_latent(298.15) / 1000.0)
-                + " + dimer dissociation " + std::to_string(assoc / 1000.0)
-                + " = " + std::to_string(bridge_.H / 1000.0)
-                + " kJ/mol  (xi = " + std::to_string(sv.xi)
-                + " dimer per mol vaporised, from " + dim->record
+                " MONOMER: Hvap_mono(Tb = " + std::to_string(Tb_)
+                + " K) = apparent " + std::to_string(Hvap_Tb_ / 1000.0)
+                + " + dimer dissociation " + std::to_string(assocTb / 1000.0)
+                + " (xi = " + std::to_string(svTb.xi)
+                + " dimer per mol vaporised) = " + std::to_string(hMonoTb / 1000.0)
+                + " kJ/mol; Watson on the monomer to 298.15 K = "
+                + std::to_string(bridge_.H / 1000.0)
+                + " kJ/mol  (from " + dim->record
                 + ", source: " + dim->source + ")";
             if (AdvisoryLog::instance().add("thermo", "info",
                     "datumBridge " + name_, msg))
