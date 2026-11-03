@@ -33,8 +33,8 @@
       "meaning": "an input -- a value you set with a control, or one the example's author declared -- not a result"
     }
   ],
-  "liveTools": 70,
-  "registryTools": 70,
+  "liveTools": 71,
+  "registryTools": 71,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -835,6 +835,18 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=demand-forecast"
+    },
+    {
+      "id": "plant-cost",
+      "label": "What a plant costs to build",
+      "discipline": "Process design & economics",
+      "teaches": "How to put a number on the capital to build a plant from a list of equipment, and why the methods disagree: Lang's multiplier (his three factors, cited), a factored estimate in which every fraction is the student's input with a pointer to the book that tabulates it beside it, and Choupo's bare-module route read from the engine, side by side with their spread; the working capital by three methods with the spread printed; and a loan year by year with the interest during construction.  A pharmaceutical tablet plant is one of the two example lists.  Not a risk analysis, and a factor is not a quote.",
+      "origins": [
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=plant-cost"
     },
     {
       "id": "solvent-mixture",
