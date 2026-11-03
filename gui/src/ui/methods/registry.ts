@@ -75,7 +75,7 @@ export type MethodToolId =
   | "plant-layout" | "gmp-layout" | "pool-fire" | "bund" | "materials" | "syngas"
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
-  | "economics-errors" | "demand-forecast";
+  | "economics-errors" | "demand-forecast" | "plant-cost";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1849,6 +1849,24 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "made explicit as an assumption beside the sold quantity and the "
       + "market, and the yearly volume in the keys and units the batch "
       + "plan's economics reads (streamFactor, rampUp).",
+    theory: "ch:economics",
+  },
+  {
+    id: "plant-cost",
+    label: "What a plant costs to build",
+    discipline: "Process design & economics", kind: "notes",
+    status: "live",
+    origins: ["page", "reference", "assumption"],
+    teaches: "How to put a number on the capital to build a plant from a "
+      + "list of equipment, and why the methods disagree: Lang's "
+      + "multiplier (his three factors, cited), a factored estimate in "
+      + "which every fraction is the student's input with a pointer "
+      + "to the book that tabulates it beside it, and Choupo's bare-module route read "
+      + "from the engine, side by side with their spread; the working "
+      + "capital by three methods with the spread printed; and a loan "
+      + "year by year with the interest during construction.  A pharmaceutical "
+      + "tablet plant is one of the two example lists.  Not a risk "
+      + "analysis, and a factor is not a quote.",
     theory: "ch:economics",
   },
   //  WHICH SOLVENT, OR WHICH SOLVENT MIXTURE (2026-10-21, DEV.md 4c C128,

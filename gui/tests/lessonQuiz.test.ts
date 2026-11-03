@@ -88,6 +88,8 @@ import { ECON_ERRORS_QUIZ, ECON_ERRORS_STEPS } from "../src/ui/methods/economics
 import { EconomicsErrorsTool } from "../src/ui/methods/EconomicsErrorsTool.js";
 import { DEMAND_QUIZ, DEMAND_STEPS } from "../src/ui/methods/demandForecastLesson.js";
 import { DemandForecastTool } from "../src/ui/methods/DemandForecastTool.js";
+import { PlantCostTool } from "../src/ui/methods/PlantCostTool.js";
+import { PLANT_COST_QUIZ, PLANT_COST_STEPS } from "../src/ui/methods/plantCostLesson.js";
 
 const GUI = new URL("../", import.meta.url);
 const read = (rel: string): string => readFileSync(new URL(rel, GUI), "utf-8");
@@ -159,6 +161,10 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "demand-forecast": {
     quiz: DEMAND_QUIZ, quizName: "DEMAND_QUIZ", lesson: DEMAND_STEPS, lessonName: "DEMAND_STEPS",
     file: "src/ui/methods/DemandForecastTool.tsx", tool: DemandForecastTool,
+  },
+  "plant-cost": {
+    quiz: PLANT_COST_QUIZ, quizName: "PLANT_COST_QUIZ", lesson: PLANT_COST_STEPS, lessonName: "PLANT_COST_STEPS",
+    file: "src/ui/methods/PlantCostTool.tsx", tool: PlantCostTool,
   },
 };
 

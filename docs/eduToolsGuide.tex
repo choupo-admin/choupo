@@ -1688,6 +1688,64 @@ A year-end discounted cash flow with straight-line depreciation, no
 inflation, no financing and no construction period; the engine's own appraisal
 has more than that, and the page does not reproduce it.
 
+\subsection{What a plant costs to build}\label{sec:edu-plant-cost}
+
+\declaredanchor{ch:economics}
+
+\noindent\textit{\small Tool:} \code{tool=plant-cost}.  \textit{\small
+Case it starts from:} none (two invented equipment lists, one of them a
+pharmaceutical tablet plant); no engine run.
+
+\subsubsection*{The question}
+
+\emph{I have a list of equipment.  What number do I put on the capital to
+build the plant, on the money that keeps it running, and on a loan that pays
+for part of it, and why do the methods disagree?}
+
+The page builds the fixed capital three ways from one equipment list:
+Lang's multiplier, $F_{\mathrm{L}}=K\,C_{\mathrm{Be}}$, with his three
+factors (3.10 for solids, 3.63 for solids with fluids, 4.74 for fluids;
+H.~J.~Lang, \emph{Chem.\ Eng.}\ \textbf{54}(10) 117 (1947) and
+\textbf{55}(6) 112 (1948)); a factored estimate,
+$D=C_{\mathrm{Be}}(1+\sum f_i)$ and $F_{\mathrm{f}}=D+D\sum g_j$, in which
+every fraction is the student's input, with a pointer (no number) to the
+book chapter that tabulates it beside it, because a range not checked
+against its book is not printed; and the
+bare-module route Choupo itself uses, $1.18\,C_{\mathrm{BM}}$ plus a site
+factor of $0.50$ on the base-case sum.  The three are printed side by side
+with their spread, and the page says that the spread is the lesson.  The
+working capital follows by three methods (itemised in days, a fraction of
+the sales, a fraction of the fixed capital) with their spread, and a loan is
+drawn year by year with its interest during construction.
+
+\subsubsection*{What the engine says}
+
+Every engine claim on the page is quoted with the line it was read at
+(\code{EconomicsPass.cpp}, \code{Turton.cpp}, \code{CostingModel.H}), and the
+test of the page opens those files and holds each quoted line to its text.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+Switch from the tablet plant to the fluid-processing list and watch Lang's
+number move with its factor while the bare-module number moves with the
+items.  Move the piping fraction up and down and read how far the factored
+estimate moves.  In the loan, lengthen the construction by
+a year and watch the interest during construction grow.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That a factor is a quotation.}  Every default is an illustration and
+the page prints no typical range; neither replaces a vendor's price or your
+own declared value with its source.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+No risk analysis, no cost index or location factor, and none of the engine's
+per-item material and pressure factors; the equity cash flow and the tax
+effect of the loan are the engine's and are not drawn.
+
 \subsection{Demand forecast for a drug product}\label{sec:edu-demand-forecast}
 
 \declaredanchor{ch:economics}
