@@ -36,8 +36,10 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| decide | FREEZE: nothing is integrated into main (and so nothing reaches the site) until the tutoring class of 2026-11-03 ends | C200, C195 |
-| running | Validation, in an integration worktree and not in main, of the C208 fixes + the repaired flagship and sugar-sweep economics (branch `worktree-c208-cases`, d8d606744): 66 cases, `--fast`, the gates | C208 |
+| decide | FREEZE: nothing is integrated into main (and so nothing reaches the site) until the tutoring class of 2026-11-03 ends; everything below is built on branches and validated in integration worktrees | C200, C195 |
+| running | Validation of the C208 fixes + the repaired flagship and sugar-sweep economics (`worktree-c208-cases`, d8d606744) | C208 |
+| running | Four builds on branches, reports due 07:00: dynamic units slice 2 (CSTR with a variable volume); PIF E2+E3 (HVAC cost from the supply air, cleaning events -> water and effluent); GUI E6 + the MASS cell (utilisation table, Gantt); EduTools E7+E8 (how a PIF economics goes wrong; the demand forecast) | C205, C195, C201 |
+| running | A survey and design draft of the plant DOCUMENT SET: PFD as a PDF with its stream table, equipment list, line list per routed pipe, instrument index, P&ID as a PDF, control narrative, then the digital twin; what exists, the gap, the order | C203, C204, C207, C210 |
 | todo | Watch the tutoring class (2026-11-03 12:00): the students' reports reach Vitor and come here; each is recorded in DEV.md 4c the turn it arrives, then fixed (it goes ahead of everything below) | C200, C195, C210 |
 
 ## Next day (at most 5)
@@ -46,22 +48,21 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 |---|---|---|
 | todo | PRIORITY C210, PIF first. Land C208 after the class (the quiet exit-0 failures, `choupo-init0` for solids-only streams, the flagship's and the sugar sweep's economics restored with real declarations); the global sweep decided with its reason | C208, C210 |
 | todo | (Opus) Acetic acid, ONE slice: the corrected dimerisation constant (5bed50aeb) + the associated vapour (`backup/c201-acetic-vapour`) rebased on it and re-measured (latent heat at Tb near the measured 24.4), the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; then the seven exotherm tutorials to Vitor | C201 (1) |
-| todo | PIF easy wins from the reports read in full, one general each: E2 HVAC cost from the supply air, E3 cleaning events -> CIP water and effluent, E4 building cost from room areas, E5 economics hygiene, E6 utilisation and Gantt in the GUI, E7 and E8 two EduTools | C195, C210 |
+| todo | PIF easy wins still to build: E4 building cost from the rooms' areas and E5 economics hygiene (they touch EconomicsPass, so after C208 lands) | C195, C210 |
+| todo | The plant document set, first slices from the survey (the PFD as a PDF with its stream table and the equipment list are the cheapest); then the line list per pipe and the instrument index / P&ID -- these are the deliverables a design project hands in and that no old report had | C207, C203, C204, C210 |
 | todo | The site's own WASM build, then one browser run each of what reached main without one: Complete 0/, the pressure exchanger, the boron split, the dynamic tank; confirm C178 and C182 there | C196, C200 B', C178, C182 |
-| todo | Fix the seal-drift finding: `check_seal_drift` lists 9 damaged sucrose / H2SO4 mirrors and 1809 moved-value records (measure against main first) | C201 |
 
 ## Next three days (at most 8)
 
 | status | what | ref |
 |---|---|---|
-| todo | The GUI's MASS cell reads "not published" on almost every case: read the massBalance report's TOTAL scope when `globalMassBoundary` is absent, as the emitter says (the brief now names the defect) | C201 (2) |
 | todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag | C205 |
 | todo | C200 remaining packs (heat, electrolytes, membranes, solids, drivers, transient, props), the generated reference (the site serves docs/ai as it stands); re-score the 2026-11-01 baseline with the -init0 step so the comparison is like for like | C200 |
 | todo | Newcomer surfaces: `runCase` shows the answer, the balance verdict and the caveat block; one "start here" path across doc, landing cards and the site folder | C201 (3), (4) |
 | todo | Tutorial texts the review found stale or false and the housekeeping list; moved goldens, if any, as a list | C201 (5), (6) |
 | todo | C199 leftovers: the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
 | todo | The control-placement EduTool, pages 1-5 and the plant method page (the Pareto is in C204) | C204 |
-| todo | Dynamic units, slice 2: the CSTR with a variable volume, on slice 1's holdup home | C205 |
+| todo | Whatever the Next-day column pushed: the site's WASM build and browser runs, the seal-drift measurement | C196, C201 |
 
 ## Beyond a week
 
