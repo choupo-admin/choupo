@@ -6831,6 +6831,21 @@ PYEOF
     fi
     rm -f /tmp/dtgate.$$
 
+    # Variable-volume CSTR gate (DEV.md 4c C205 slice 2): `dynamicCSTR` with
+    # `volumeMode variable` -- fill-and-react equals its closed form, the rate
+    # uses the CURRENT volume (independent second-order integration), both
+    # witnesses claim and close mass AND energy, two loops hold one unit, the
+    # jacket follows the wetted wall, and a dry / overflowing vessel is refused.
+    if gate_exec "$ROOT/bin/curate/check_dynamic_cstr_level.py" > /tmp/dclgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "dynamic-cstr-level-gate" "$(head -1 /tmp/dclgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_dynamic_cstr_level.py)\n" "dynamic-cstr-level-gate"
+        cat /tmp/dclgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/dclgate.$$
+
     # Flash-model gate: the machine that solves a flash has a NAME (`model`,
     # the distillation convention) -- and a name that cannot lie.  Four
     # refusals, including the one that matters: a REACTIVE package's machine

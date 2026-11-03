@@ -47,6 +47,8 @@ License
 
 namespace Choupo {
 
+namespace VVH = VariableVolumeHoldup;
+
 void DynamicCSTR::initialise(const DictPtr&        unitDict,
                              const ThermoPackage&  thermo,
                              const DictPtr&        reactionsDict)
@@ -57,15 +59,110 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
     // ---- Initial state ------------------------------------------------
     auto initDict = unitDict->subDict("initial");
     T_  = initDict->lookupScalar("T");
-    P_  = initDict->lookupScalarOrDefault("P", 1.0);
-    V_  = initDict->lookupScalar("V");
-    const scalar nTot = initDict->lookupScalar("totalMoles");
 
+    // ---- THE VOLUME MODE (C205 slice 2) -------------------------------------
+    //  `operation { volumeMode constant|variable; }`.  Absent = constant, the
+    //  historical vessel, byte-identical.  A word nobody reads refuses by name.
     {
+        const std::string vm = unitDict->subDict("operation")
+                                   ->lookupWordOrDefault("volumeMode", "constant");
+        if (vm == "variable")      variableVolume_ = true;
+        else if (vm == "constant") variableVolume_ = false;
+        else
+            throw std::runtime_error("DynamicCSTR '" + name_ + "': volumeMode '"
+                + vm + "' is not one this vessel reads -- the two are `constant`"
+                " (V fixed, F_out = F_in; the default) and `variable` (the"
+                " liquid inventory is a state with a level)");
+    }
+    const std::string whoVV = "dynamicCSTR '" + name_ + "'";
+
+    if (!variableVolume_)
+    {
+        P_  = initDict->lookupScalarOrDefault("P", 1.0);
+        V_  = initDict->lookupScalar("V");
+        const scalar nTot = initDict->lookupScalar("totalMoles");
+
         const sVector x = readComposition(initDict, thermo,
             "DynamicCSTR '" + name_ + "' init");
         n_.assign(N, 0.0);
         for (std::size_t i = 0; i < N; ++i) n_[i] = nTot * x[i];
+    }
+    else
+    {
+        //  The inventory is the state; the volume is DERIVED from it on the
+        //  case's package.  P is the pressure over the liquid, in Pa.
+        P_ = initDict->lookupScalarOrDefault("P", 101325.0);
+        auto op = unitDict->subDict("operation");
+        geom_ = VVH::VerticalCylinder::read(
+            op->found("geometry") ? op->subDict("geometry") : nullptr, whoVV);
+
+        if (!op->found("outflow"))
+            throw std::runtime_error(whoVV + ": volumeMode variable needs an"
+                " `outflow {}` -- the outflow is DECLARED: `mode flow; F ..;`"
+                " (a manipulated flow) or `mode valve; opening ..; valve { Cv"
+                " ..; downstreamPressure ..; }`");
+        auto of = op->subDict("outflow");
+        const std::string mode = of->lookupWordOrDefault("mode", "");
+        if (mode == "flow")
+        {
+            outflow_   = Outflow::flow;
+            F_out_set_ = of->lookupScalar("F");
+            if (F_out_set_ < 0.0)
+                throw std::runtime_error(whoVV + ": outflow.F must be >= 0");
+        }
+        else if (mode == "valve")
+        {
+            outflow_ = Outflow::valve;
+            opening_ = of->lookupScalar("opening");
+            if (opening_ < 0.0 || opening_ > 1.0)
+                throw std::runtime_error(whoVV + ": outflow.opening must lie in"
+                    " [0, 1] (got " + std::to_string(opening_) + ")");
+            valve_ = VVH::Valve::read(
+                of->found("valve") ? of->subDict("valve") : nullptr, whoVV);
+        }
+        else
+            throw std::runtime_error(whoVV + ": outflow.mode '" + mode + "' is"
+                " not one this vessel reads -- the two are `flow` (a"
+                " manipulated flow, the level integrates) and `valve` (a valve"
+                " on the outlet, the level self-regulates)");
+
+        const std::string us = op->lookupWordOrDefault("UAScaling", "wetted");
+        if (us == "wetted")     UAwetted_ = true;
+        else if (us == "fixed") UAwetted_ = false;
+        else
+            throw std::runtime_error(whoVV + ": UAScaling '" + us + "' is not"
+                " one this vessel reads -- `wetted` (UA x A_w(h)/A_w(H), the"
+                " default) or `fixed`");
+
+        const sVector x = readComposition(initDict, thermo, whoVV + " init");
+        n_.assign(N, 0.0);
+        if (initDict->found("level"))
+        {
+            if (initDict->found("totalMoles") || initDict->found("V"))
+                throw std::runtime_error(whoVV + ": the initial inventory is"
+                    " stated TWICE (`level` and `totalMoles`/`V`) -- keep one");
+            const scalar h0 = initDict->lookupScalar("level");
+            const auto ls = VVH::liquidState(thermo, x, T_, P_, whoVV);
+            const scalar nT = h0 * geom_.area() * ls.density / ls.meanMW;
+            for (std::size_t i = 0; i < N; ++i) n_[i] = nT * x[i];
+        }
+        else
+        {
+            const scalar nT = initDict->lookupScalar("totalMoles");
+            for (std::size_t i = 0; i < N; ++i) n_[i] = nT * x[i];
+        }
+        V_ = VVH::liquidState(thermo, n_, T_, P_, whoVV).volume;   // m3 (derived)
+        if (initDict->found("V"))
+        {
+            const scalar Vd = initDict->lookupScalar("V");
+            if (std::abs(Vd - V_) > 1.0e-4 * std::max(Vd, V_))
+                throw std::runtime_error(whoVV + ": the declared V = "
+                    + std::to_string(Vd) + " m3 disagrees with the volume of"
+                    " the declared inventory on this package ("
+                    + std::to_string(V_) + " m3) -- in `volumeMode variable`"
+                    " the volume is DERIVED (sum n MW / rho); declare the"
+                    " inventory or the level, not a volume beside it");
+        }
     }
 
     // ---- Inlet --------------------------------------------------------
@@ -146,6 +243,7 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
         //  case is about; what is false is a long-time "steady state".  The
         //  constant-volume outflow is a proposal in
         //  docs/design/review-c131-reactors.md (W8).
+        if (!variableVolume_)   // a variable-volume vessel follows its holdup
         {
             scalar sumNu = 0.0;
             for (auto v : r.nu) sumNu += v;
@@ -406,6 +504,11 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
     //                           never a fabricated constant (no silent crutch).
     const std::string start =
         initDict->lookupWordOrDefault("start", "explicit");
+    if (variableVolume_ && start != "explicit")
+        throw std::runtime_error(whoVV + ": initial.start '" + start + "' with"
+            " volumeMode variable -- the steady seed relaxes a vessel whose"
+            " volume is held; a variable-volume vessel starts from its declared"
+            " inventory or level (a heel), which is the point of it");
     if (start == "steadyState" || start == "steady")
     {
         std::cout << "  DynamicCSTR '" << name_
@@ -424,6 +527,41 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
         throw std::runtime_error("DynamicCSTR '" + name_ + "': unknown"
             " initial.start '" + start + "' (expected `explicit` or"
             " `steadyState`)");
+
+    if (variableVolume_)
+    {
+        checkAccepted_(0.0);
+        const auto r0 = resolveVariable_(n_, T_, true);
+        std::cout << "  [dynamicCSTR] '" << name_ << "': VARIABLE VOLUME --"
+                     " vertical cylinder D = " << geom_.diameter << " m, H = "
+                  << geom_.height << " m (area " << geom_.area() << " m2);"
+                     " initial level " << r0.liquid.level << " m (V = "
+                  << r0.liquid.volume << " m3, rho = " << r0.liquid.density
+                  << " kg/m3 from the case's package).  Reactions use the"
+                     " CURRENT volume (c_i = n_i/V); a dry or overflowing"
+                     " vessel is REFUSED, never clamped.\n";
+        if (outflow_ == Outflow::flow)
+            std::cout << "  [dynamicCSTR] '" << name_ << "': outflow = MANIPULATED"
+                         " FLOW (F_out = " << F_out_set_ << " kmol/s, mv F_out):"
+                         " the level INTEGRATES -- no self-regulation.\n";
+        else
+            std::cout << "  [dynamicCSTR] '" << name_ << "': outflow = VALVE (Cv = "
+                      << valve_.Cv << " m2, opening " << opening_
+                      << ", downstream " << valve_.P_downstream_Pa
+                      << " Pa; Q = Cv x opening x sqrt(dP/rho), dP = P + rho g h"
+                         " - P_down): the level SELF-REGULATES.\n";
+        if (UA_ != 0.0)
+            std::cout << "  [dynamicCSTR] '" << name_ << "': jacket "
+                      << (UAwetted_
+                          ? std::string("UA scales with the WETTED area, UA(h) = UA x"
+                            " A_w(h)/A_w(H), A_w(h) = pi D h + pi D^2/4, UA declared"
+                            " at the FULL height H (`UAScaling fixed;` keeps it"
+                            " constant)")
+                          : "UA held FIXED at " + std::to_string(UA_) + " W/K"
+                            " (UAScaling fixed) -- a jacket whose area does not"
+                            " follow the liquid")
+                      << " -- now UA = " << r0.UA << " W/K.\n";
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -585,7 +723,7 @@ scalar DynamicCSTR::hLiq_(std::size_t i, scalar T) const
         //  P_ is held in bar here (the liquid balance never used it); the
         //  package's API is SI, so convert rather than hand it a number that
         //  is 1e5 times too small and hope the liquid leg ignores it.
-        i, T, P_ * 1.0e5, "liquid",
+        i, T, P_Pa_(), "liquid",
         ThermoPackage::ReferenceContext::StandardPhase);
 }
 
@@ -665,11 +803,27 @@ sVector DynamicCSTR::derivatives_(const sVector& packed) const
 
     sVector dydt(N + 1, 0.0);
 
+    //  The volume, the outflow and the jacket area are CONSTANTS of the
+    //  constant-volume vessel and FUNCTIONS OF THE STATE of the variable one.
+    scalar V     = V_;
+    scalar F_out = F_in_;   // constant-volume assumption
+    scalar UAnow = UA_;
+    if (variableVolume_)
+    {
+        const Resolved rv = resolveVariable_(n, T, false);
+        V     = rv.liquid.volume > 0.0 ? rv.liquid.volume : 1.0;  // no moles => no rate
+        F_out = rv.F_out;
+        UAnow = rv.UA;
+    }
+
     // ---- Mass balance per component -----------------------------------
-    const scalar F_out = F_in_;   // constant-volume assumption
     for (std::size_t i = 0; i < N; ++i)
     {
-        const scalar x_i = (nTot > 0) ? n[i] / nTot : 0.0;
+        //  a trial stage may carry a negative mole number: the variable-volume
+        //  vessel clamps it in the composition it draws (the step itself is
+        //  refused, never clamped, when it ACCEPTS one)
+        const scalar x_i = (nTot > 0)
+            ? (variableVolume_ ? std::max<scalar>(n[i], 0.0) : n[i]) / nTot : 0.0;
         dydt[i] = F_in_ * z_in_[i] - F_out * x_i;
     }
 
@@ -677,14 +831,14 @@ sVector DynamicCSTR::derivatives_(const sVector& packed) const
     scalar heatRxn = 0.0;   // kJ/s released (signed: + means absorbed)
     for (const auto& rxn : reactions_)
     {
-        const scalar rr = rateOfReaction_(rxn, T, n, V_);   // kmol/(m³·s)
+        const scalar rr = rateOfReaction_(rxn, T, n, V);    // kmol/(m³·s)
         for (std::size_t s = 0; s < rxn.comps.size(); ++s)
-            dydt[rxn.comps[s]] += rxn.nu[s] * rr * V_;       // kmol/s
+            dydt[rxn.comps[s]] += rxn.nu[s] * rr * V;        // kmol/s
         //  ΔH_r AT THE CURRENT T on the canonical route.  Frozen at the
         //  initial T it is a constant that no stored H has as a derivative --
         //  and on a reactor that swings 40 K it is also simply wrong.
         const scalar dHr = canonicalEnergy_ ? reactionEnthalpyAtT_(rxn, T) : rxn.dH;
-        heatRxn += dHr * rr * V_;                            // kJ/s (dH J/mol · kmol/s = kJ/s)
+        heatRxn += dHr * rr * V;                             // kJ/s (dH J/mol · kmol/s = kJ/s)
     }
 
     // ---- Energy balance ----------------------------------------------
@@ -700,8 +854,8 @@ sVector DynamicCSTR::derivatives_(const sVector& packed) const
         //  carries it inside H) and no partial-molar terms (they live
         //  implicitly in the state).
         const scalar Hin  = F_in_ * hMix_(nDotIn_.empty() ? z_in_ : z_in_, T_in_);  // kW
-        const scalar Hout = F_in_ * hMix_(n, T);                                    // kW
-        const scalar Q    = (UA_ / 1000.0) * (T_jacket_ - T);                       // kW
+        const scalar Hout = F_out * hMix_(n, T);                                    // kW
+        const scalar Q    = (UAnow / 1000.0) * (T_jacket_ - T);                     // kW
         dydt[N] = Hin - Hout + Q;                                                   // kJ/s
         return dydt;
     }
@@ -735,13 +889,13 @@ sVector DynamicCSTR::derivatives_(const sVector& packed) const
                 CpInAvg += z_in_[i] * thermo_->comp(i).cpLiquid().Cp(T);
             convective = F_in_ * CpInAvg * (T_in_ - T);            // kJ/s
         }
-        const scalar jacket = (UA_ / 1000.0) * (T_jacket_ - T);    // kJ/s
+        const scalar jacket = (UAnow / 1000.0) * (T_jacket_ - T);  // kJ/s
         dydt[N] = (convective + jacket - heatRxn) / CpTot;         // K/s
     }
     return dydt;
 }
 
-void DynamicCSTR::step(scalar /*t*/, scalar dt)
+void DynamicCSTR::step(scalar t, scalar dt)
 {
     const std::size_t N = n_.size();
     sVector y(N + 1);
@@ -767,8 +921,28 @@ void DynamicCSTR::step(scalar /*t*/, scalar dt)
     //  is clipped to zero here -- ANNOUNCED with the amount it invents, never
     //  silent (2026-10-31, DEV.md 4c C185 item 8).  The adaptive path has no
     //  clip: its per-row mask rejects the step instead (setOdeState below).
+    if (variableVolume_)
+    {
+        scalar total = 0.0;
+        for (std::size_t i = 0; i < N; ++i) total += y[i];
+        if (!(total > 0.0))
+            throw std::runtime_error("dynamicCSTR '" + name_ + "': the vessel"
+                " RAN DRY at t = " + std::to_string(t + dt) + " s (the step"
+                " drove the total inventory to " + std::to_string(total)
+                + " kmol).  Refused, not clamped: lower the outflow, raise the"
+                " inflow or the setpoint (or reduce deltaT if the step"
+                " overshot the empty vessel)");
+    }
     for (std::size_t i = 0; i < N; ++i)
     {
+        if (variableVolume_ && y[i] < 0.0)
+            throw std::runtime_error("dynamicCSTR '" + name_ + "': the step"
+                " drove n_" + thermo_->comp(i).name() + " to "
+                + std::to_string(y[i]) + " kmol at t = "
+                + std::to_string(t + dt) + " s.  Refused, not clamped (a"
+                " variable-volume vessel that empties is a case that no longer"
+                " describes what it declares) -- reduce deltaT, or lower the"
+                " outflow");
         if (y[i] < 0.0)
         {
             std::ostringstream m;
@@ -788,6 +962,11 @@ void DynamicCSTR::step(scalar /*t*/, scalar dt)
     }
     if (mixtureH_) { H_ = y[N];  T_ = TfromH_(n_, H_, T_); }
     else           T_ = y[N];
+    if (variableVolume_)
+    {
+        t_ = t + dt;
+        checkAccepted_(t_);
+    }
 }
 
 // ---- Packed-ODE form (the adaptive driver) ------------------------------
@@ -842,6 +1021,14 @@ sVector DynamicCSTR::stateVector() const
     s.push_back(T_);
     s.push_back(F_in_);
     for (auto z : z_in_) s.push_back(z);
+    if (variableVolume_)
+    {
+        const Resolved r = resolveVariable_(n_, T_, false);
+        s.push_back(r.liquid.level);
+        s.push_back(r.liquid.volume);
+        s.push_back(r.liquid.density);
+        s.push_back(r.F_out);
+    }
     return s;
 }
 
@@ -858,6 +1045,9 @@ std::vector<std::string> DynamicCSTR::stateLabels() const
     labels.push_back("F_in");
     for (std::size_t i = 0; i < n_.size(); ++i)
         labels.push_back("z_in_" + thermo_->comp(i).name());
+    if (variableVolume_)
+        for (const char* l : { "level", "volume", "density", "F_out" })
+            labels.push_back(l);
     return labels;
 }
 
@@ -867,6 +1057,13 @@ ContinuousStream DynamicCSTR::outletStream() const
     s.F = F_in_;                              // constant volume → F_out = F_in
     s.T = T_;
     s.P = P_;
+    if (variableVolume_)
+    {
+        const Resolved r = resolveVariable_(n_, T_, false);
+        s.F = r.F_out;
+        //  the pressure at the outlet nozzle: the vessel pressure plus the head
+        s.P = P_ + VVH::staticHead(r.liquid.density, r.liquid.level);
+    }
     s.z.assign(n_.size(), 0.0);
     scalar nTot = 0;
     for (auto v : n_) nTot += v;
@@ -897,6 +1094,14 @@ BalanceSnapshot DynamicCSTR::balanceSnapshot() const
         return bs;
     }
     const std::size_t N = n_.size();
+    scalar Fout = F_in_;          // constant volume: F_out = F_in
+    scalar UAnow = UA_;
+    if (variableVolume_)
+    {
+        const Resolved rv = resolveVariable_(n_, T_, false);
+        Fout  = rv.F_out;
+        UAnow = rv.UA;
+    }
     bs.componentNames.reserve(N);
     for (std::size_t i = 0; i < N; ++i)
         bs.componentNames.push_back(thermo_->comp(i).name());
@@ -914,7 +1119,8 @@ BalanceSnapshot DynamicCSTR::balanceSnapshot() const
             in.enthalpyFlow_kW += nDotIn_[i] * hLiq_(i, T_in_);   // kmol/s·J/mol = kW
     bs.faces.push_back(std::move(in));
 
-    // Outlet face: constant volume => F_out = F_in at the tank composition.
+    // Outlet face: constant volume => F_out = F_in at the tank composition
+    // (variable volume: the declared outflow at the current state).
     BalanceFace outF;
     outF.id = name_ + ".out";
     outF.direction = BalanceFace::Direction::out;
@@ -924,7 +1130,7 @@ BalanceSnapshot DynamicCSTR::balanceSnapshot() const
     for (auto v : n_) nTot += v;
     if (nTot > 0.0)
         for (std::size_t i = 0; i < N; ++i)
-            outF.molarFlows[i] = F_in_ * n_[i] / nTot;
+            outF.molarFlows[i] = Fout * n_[i] / nTot;
     //  The outlet leaves AT THE TANK'S STATE -- that is the CSTR assumption,
     //  and it is why the outlet term cancels out of the temperature ODE.  The
     //  ledger still needs it explicitly: the ODE's cancellation is between
@@ -954,7 +1160,7 @@ BalanceSnapshot DynamicCSTR::balanceSnapshot() const
         bs.physicalEnergyAvailable = true;
         bs.energyReason.clear();
         bs.storedEnergy_kJ = storedEnthalpy_();
-        bs.heatInput_kW    = (UA_ / 1000.0) * (T_jacket_ - T_);   // kW
+        bs.heatInput_kW    = (UAnow / 1000.0) * (T_jacket_ - T_);   // kW
     }
     else if (mixtureH_)
     {
@@ -964,13 +1170,13 @@ BalanceSnapshot DynamicCSTR::balanceSnapshot() const
         bs.physicalEnergyAvailable = true;
         bs.energyReason.clear();
         bs.storedEnergy_kJ = H_;
-        bs.heatInput_kW    = (UA_ / 1000.0) * (T_jacket_ - T_);   // kW
+        bs.heatInput_kW    = (UAnow / 1000.0) * (T_jacket_ - T_);   // kW
         for (auto& fc : bs.faces)
         {
             if (fc.direction == BalanceFace::Direction::in)
                 fc.enthalpyFlow_kW = F_in_ * hMix_(z_in_, T_in_);
             else
-                fc.enthalpyFlow_kW = F_in_ * hMix_(n_, T_);
+                fc.enthalpyFlow_kW = Fout * hMix_(n_, T_);
         }
     }
     else
@@ -986,6 +1192,39 @@ BalanceSnapshot DynamicCSTR::balanceSnapshot() const
               " a physical first-law closure requires the model reformulation";
     }
     return bs;
+}
+
+// ---------------------------------------------------------------------------
+//  VARIABLE VOLUME (C205 slice 2).  Every number below is VariableVolumeHoldup's
+//  (decision D4): this vessel only CALLS it.
+// ---------------------------------------------------------------------------
+DynamicCSTR::Resolved DynamicCSTR::resolveVariable_(const sVector& n, scalar T,
+                                                    bool strict) const
+{
+    const std::string who = "dynamicCSTR '" + name_ + "'";
+    Resolved r;
+    r.liquid = VVH::liquidState(*thermo_, n, T, P_, who);
+    r.liquid.level = VVH::level(geom_, r.liquid.volume);
+    if (outflow_ == Outflow::flow)
+        r.F_out = F_out_set_;
+    else
+    {
+        const scalar Q = VVH::valveVolumetricFlow(valve_, opening_,
+            r.liquid.density, P_, r.liquid.level, strict, who);        // m3/s
+        r.F_out = (r.liquid.meanMW > 0.0) ? Q * r.liquid.density / r.liquid.meanMW
+                                          : 0.0;                       // kmol/s
+    }
+    r.UA = UAwetted_
+        ? UA_ * VVH::wettedArea(geom_, r.liquid.level)
+              / VVH::wettedArea(geom_, geom_.height)
+        : UA_;
+    return r;
+}
+
+void DynamicCSTR::checkAccepted_(scalar t) const
+{
+    const Resolved r = resolveVariable_(n_, T_, true);
+    VVH::refuseDryOrOverflow(geom_, r.liquid, t, "dynamicCSTR '" + name_ + "'");
 }
 
 void DynamicCSTR::applyInletFlows_()
@@ -1004,6 +1243,36 @@ void DynamicCSTR::setMV(const std::string& key, scalar value)
 {
     if (key == "T_jacket") { T_jacket_ = value; return; }
     if (key == "T_in")     { T_in_     = value; return; }
+    if (key == "F_out" || key == "opening")
+    {
+        if (!variableVolume_)
+            throw std::runtime_error("DynamicCSTR '" + name_ + "': mv " + key
+                + " needs `operation { volumeMode variable; }` -- this vessel"
+                " is constant-volume, its outflow IS its inflow (F_out = F_in)");
+        if (key == "F_out")
+        {
+            if (outflow_ != Outflow::flow)
+                throw std::runtime_error("DynamicCSTR '" + name_ + "': mv F_out"
+                    " is the manipulated flow of `mode flow`; this vessel is in"
+                    " `mode valve`, whose manipulated variable is `opening`");
+            if (value < 0.0)
+                throw std::runtime_error("DynamicCSTR '" + name_ + "': F_out"
+                    " must be >= 0 (got " + std::to_string(value) + ")");
+            F_out_set_ = value;
+        }
+        else
+        {
+            if (outflow_ != Outflow::valve)
+                throw std::runtime_error("DynamicCSTR '" + name_ + "': mv"
+                    " opening is the valve of `mode valve`; this vessel is in"
+                    " `mode flow`, whose manipulated variable is `F_out`");
+            if (value < 0.0 || value > 1.0)
+                throw std::runtime_error("DynamicCSTR '" + name_ + "': opening"
+                    " must lie in [0, 1] (got " + std::to_string(value) + ")");
+            opening_ = value;
+        }
+        return;
+    }
     if (key == "F_in")
     {
         if (value < 0.0)
@@ -1096,6 +1365,17 @@ scalar DynamicCSTR::getCV(const std::string& key) const
         for (auto v : n_) s += v;
         return s;
     }
+    if (variableVolume_ && (key == "level" || key == "volume"
+                            || key == "density" || key == "F_out"))
+    {
+        const Resolved r = resolveVariable_(n_, T_, false);
+        if (key == "level")   return r.liquid.level;
+        if (key == "volume")  return r.liquid.volume;
+        if (key == "density") return r.liquid.density;
+        return r.F_out;
+    }
+    if (variableVolume_ && key == "opening" && outflow_ == Outflow::valve)
+        return opening_;
     // Try x_<name>
     if (key.rfind("x_", 0) == 0)
     {
@@ -1110,6 +1390,7 @@ scalar DynamicCSTR::getCV(const std::string& key) const
 std::vector<std::string> DynamicCSTR::availableMVs() const
 {
     std::vector<std::string> v = { "T_jacket", "T_in", "F_in" };
+    if (variableVolume_) v.push_back(outflow_ == Outflow::flow ? "F_out" : "opening");
     for (std::size_t i = 0; i < n_.size(); ++i)
     {
         v.push_back("moleFraction." + thermo_->comp(i).name());
@@ -1121,6 +1402,11 @@ std::vector<std::string> DynamicCSTR::availableMVs() const
 std::vector<std::string> DynamicCSTR::availableCVs() const
 {
     std::vector<std::string> v = { "T", "T_jacket", "F_in", "T_in", "n_total" };
+    if (variableVolume_)
+    {
+        for (const char* k : { "level", "volume", "density", "F_out" }) v.push_back(k);
+        if (outflow_ == Outflow::valve) v.push_back("opening");
+    }
     for (std::size_t i = 0; i < n_.size(); ++i)
         v.push_back("x_" + thermo_->comp(i).name());
     return v;

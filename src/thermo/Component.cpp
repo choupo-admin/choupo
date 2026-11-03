@@ -119,6 +119,13 @@ void Component::readIdentity(const DictPtr& d)
     if (d->found("aliases")) aliases_ = d->lookupWordList("aliases");
     formula_ = d->lookupWordOrDefault("formula", "");
     cas_     = d->lookupWordOrDefault("CAS", "");
+    //  The liquid molar volume is a declared fact of the same kind: a vessel
+    //  with a LEVEL (dynamicTank, dynamicCSTR `volumeMode variable`, C205)
+    //  derives its volume from the package's liquid density, and a salt
+    //  minted by identity() would otherwise refuse as "declares no Vliq" about
+    //  a record that does.  No standard-catalogue salt declares one, so no
+    //  existing case reads a different number.
+    Vliq_    = d->lookupScalarOrDefault("Vliq", 0.0);
 }
 
 // The component -> aqueous-species bridge, TYPED AT LOAD (the loader

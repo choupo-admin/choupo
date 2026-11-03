@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/reactor -- the initial HOLDUP of 'reactor'.
+  Declared by LEVEL: 0.50 m of a half-converted liquor at 340 K (the
+  temperature setpoint), close to the operating point of the inflow the loops
+  start with, so the first thing to happen in the run is the inflow step.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "reactor";
+equipment   dynamicCSTR;
+
+holdup
+{
+    T           340.0;
+    P           101325.0;
+    level       0.50;
+    molarComposition { 2Methyl1Propanol 0.5; 2Butanol 0.5; }
+}

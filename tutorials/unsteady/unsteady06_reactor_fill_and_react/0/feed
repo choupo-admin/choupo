@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/feed -- the state of stream 'feed' at t = 0: ONE file per stream.
+  Pure isobutanol (2-methyl-1-propanol), 1.0e-3 kmol/s (about 0.09 L/s), at the
+  vessel's own temperature.
+\*-----------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    2Methyl1Propanol  1.0e-3 kmol/s;
+    2Butanol          0.0 kmol/s;
+}
+T               300.0 K;
+P               101325.0 Pa;

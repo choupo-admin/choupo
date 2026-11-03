@@ -2781,6 +2781,46 @@ setpoint against a shrinking disturbance.
   reactions ( a_to_b );
 }
 ```
+
+**`dynamicCSTR` with a LEVEL -- `operation { volumeMode variable; }`** (C205 slice
+2; the default `constant` is the vessel above, byte-identical).  The liquid
+inventory becomes a state with a level, exactly as in `dynamicTank` (same
+geometry, same `outflow {}`, same refusals, same arithmetic -- it is
+`VariableVolumeHoldup`'s, called and not copied), and the vessel REACTS:
+`V = sum n_i MW_i / rho` (the case's package), `h = V/(pi D^2/4)`, and every
+rate law is evaluated at `c_i = n_i / V` with the CURRENT volume.  Declare
+```
+operation
+{ volumeMode variable;
+  geometry { shape verticalCylinder; diameter 0.5 m; height 1.0 m; }
+  outflow  { mode flow; F 0.0 kmol/s; }        // or: mode valve; opening ..; valve { Cv ..; downstreamPressure .. Pa; }
+  UA 300.0;  UAScaling wetted;                 // optional jacket; wetted is the default
+}
+```
+`outflow` is REQUIRED (no default: the outflow is what the student decides).
+`mode flow` -> `mv F_out` (the level integrates); `mode valve` -> `mv opening`
+(it self-regulates); the other mode's key, and either key on a `constant`
+vessel, refuse by name.  CV additionally: `level`, `volume`, `density`,
+`F_out`, `opening` (valve).  trajectory.csv gains `level`, `volume`,
+`density`, `F_out` after the inlet columns (constant-volume cases unchanged).
+**The jacket rule:** a declared `UA` is the value with the vessel FULL and
+scales with the wetted area, `UA(h) = UA A_w(h)/A_w(H)`, `A_w(h) = pi D h +
+pi D^2/4` (side wall plus flat bottom), announced at start-up with the
+starting value; `UAScaling fixed;` keeps it constant.  **Energy:** the route
+is still PROBED and announced (canonical per species / mixture-H / Cp-
+convective); on the canonical and Cp routes the outlet term cancels whatever
+`F_out` is, on the mixture-H route `Hout = F_out h(x,T)`; the ledger claims
+mass and energy on the first two as before.  **Start-up from "empty":** a
+declared HEEL -- `0/internalStates/<unit>` gives `level <m>` (or
+`totalMoles`/`holdupMolar`) > 0; exactly zero, running dry and overflowing are
+REFUSED by name at that instant (no clamp), as is a declared `V` that
+disagrees with the inventory's volume and `start steadyState`.  A step that
+drives a mole number negative is refused too (the constant-volume vessel
+clips and announces).  The variable vessel keeps its own fixed RK4 step even
+under `timeStepping adaptive`.  Examples: `unsteady06_reactor_fill_and_react`
+(fills from a heel while a first-order isomerisation runs; closed form) and
+`ctrl22_reactor_level_and_temperature` (PI level on `F_out` + PI temperature
+on `T_jacket`, one unit, after an inflow step).
 `operation { energy isothermal; }` holds T and solves no energy equation
 (announced; the first law is withheld) -- for a vessel with NO reaction and NO
 jacket (both refused), e.g. the recirculation tank of a feed-and-bleed loop

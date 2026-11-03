@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSemiContinuous;
+description   "A reactor that starts as a heel and FILLS while a first-order isomerisation runs: volume and level follow the holdup, n_A(t) = F/k + (n0 - F/k) exp(-kt) in closed form";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         1500;     // s
+deltaT          5.0;      // s
+writeInterval   100;      // s

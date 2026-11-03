@@ -105,6 +105,18 @@ LiquidState liquidState(const ThermoPackage& thermo, const sVector& n,
 //- Level from volume.
 scalar level(const VerticalCylinder& g, scalar volume);
 
+//- Static head rho g h [Pa] of a liquid column: the pressure at the outlet
+//  nozzle above the pressure over the liquid.
+scalar staticHead(scalar rho, scalar level);
+
+//- Wetted wall area of the vertical cylinder at `level` [m^2]:  the side wall
+//  up to the liquid plus the flat bottom,  A_w = pi D h + pi D^2/4.  A jacket
+//  that covers the whole vessel exchanges heat through exactly this area, so a
+//  variable-volume vessel scales its UA by A_w(h)/A_w(H) (UA declared at the
+//  FULL height H).  The level is clamped to [0, H] here: the area of a wall
+//  that is not there is not a number (the overflow itself is refused apart).
+scalar wettedArea(const VerticalCylinder& g, scalar level);
+
 //- REFUSE (throw, by name, with the instant) a vessel that is dry
 //  (volume <= 0) or over its declared height.  Never clamps.
 void refuseDryOrOverflow(const VerticalCylinder& g, const LiquidState& s,

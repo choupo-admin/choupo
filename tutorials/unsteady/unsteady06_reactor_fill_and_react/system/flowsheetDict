@@ -1,0 +1,72 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  unsteady06_reactor_fill_and_react -- a reactor with a LEVEL fills from a
+  heel while it reacts (C205, slice 2: dynamicCSTR with `volumeMode variable`).
+
+  The constant-volume dynamicCSTR cannot start empty: its volume is a number
+  you type and F_out = F_in.  Here the liquid inventory is the state, the
+  volume is derived from it on the case's package and the level is that
+  volume over a declared vertical cylinder (D = 0.5 m, H = 1.0 m):
+
+      dn_i/dt = ndot_in,i - F_out x_i + sum_r nu_i r_r V
+      V = sum n_i MW_i / rho(T, P, x)         h = V / (pi D^2 / 4)
+
+  The outflow is DECLARED: `mode flow`, F_out = 0, so the vessel only fills.
+  Feed: pure isobutanol, F = 1.0e-3 kmol/s, k = 4.0e-4 1/s (constant: Ea = 0),
+  starting from a 0.02 m heel.  An isomerisation changes no moles, and a
+  first-order law makes the extent rate k n_A independent of the volume, so
+  the mole numbers have an EXACT closed form while the volume keeps growing:
+
+      n_A(t) = F/k + (n_A0 - F/k) exp(-k t)
+      n_B(t) = n_A0 + n_B0 + F t - n_A(t)
+      M(t)   = M0 + MW F t        (both isomers have the same MW)
+      V(t)   = M(t) / rho         h(t) = V(t) / area
+      c_A    = n_A / V
+
+  check_dynamic_cstr_level recomputes these from the declared numbers and
+  holds the run to them (the density is the run's own column: it moves a
+  little with T, because the isomerisation is mildly exothermic).
+
+  ENERGY.  Both species carry a formation datum, so the vessel takes the
+  CANONICAL route (announced at start-up): it stores H on the elements datum,
+  the heat of reaction is a consequence of it, the outlet term cancels, and
+  the ledger CLAIMS mass and energy and closes.  Compare ctrl22, the same
+  reactor with a level loop and a temperature loop together.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+        in          feed;
+        outputs     ( product );
+
+        operation
+        {
+            volumeMode  variable;
+
+            geometry
+            {
+                shape       verticalCylinder;
+                diameter    0.5 m;              // area 0.19635 m2
+                height      1.0 m;              // the overflow level
+            }
+
+            outflow
+            {
+                mode        flow;
+                F           0.0 kmol/s;         // nothing leaves: the vessel FILLS
+            }
+        }
+
+        reaction    isobutanol_to_2butanol;
+    }
+);

@@ -223,6 +223,7 @@ KNOWN_UNCITED = {
     "ch:cstr",
     "ch:drying-overview",
     "ch:dyn-cstr",
+    "ch:dyn-cstr-level",
     "ch:dyn-tank",
     "ch:evap-mode2",
     "ch:extractor",
