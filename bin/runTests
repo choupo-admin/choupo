@@ -5610,6 +5610,24 @@ PYEOF
     fi
     rm -f /tmp/phsplit.$$
 
+    # Flash-specification gate (2026-11-03, DEV.md 4c C214 W1): a flash
+    # specified by (P,H), (P,S), (T,V/F) or (P,V/F) from ONE home
+    # (flashState::specifiedFlash, the `flashSpec` props op).  The four pairs
+    # round-trip against the isothermal flash on flash01/02/09's sealed
+    # constant/ to 1e-8; the bubble/dew edge is the flash's own; the witness's
+    # wet isentropic expansion matches the IF97 steam table; the entropy is
+    # the enthalpy's partner (dH = T dS, mixing, latent); eight refusals by
+    # name; the convergence verdict announced; a source arm (one flash home).
+    if gate_exec "$ROOT/bin/curate/check_flash_specification.py" > /tmp/flashspec.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "flash-specification-gate" "$(gate_claim check_flash_specification /tmp/flashspec.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_flash_specification.py)\n" "flash-specification-gate"
+        cat /tmp/flashspec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/flashspec.$$
+
     # Heavy-water gate (2026-11-02): heavyWater.dat is DERIVED from the IAPWS
     # R16-17(2018) Helmholtz formulation and Herrig et al. 2018 Eq. (1).  The
     # script transcription reproduces R16-17 Tables 6-8; the record's Wagner

@@ -1520,6 +1520,11 @@
       "exit": 0,
       "claim": "check_capability_index: OK: 114 typed name(s) resolved against their registries, 52 path(s) present (48 witness case(s)), 18 untyped name(s) found in the tree; every concept names a typed name and a witness (names only -- the prose about them is not checked)",
       "seconds": 0.3
+    },
+    "check_flash_specification": {
+      "exit": 0,
+      "claim": "check_flash_specification: OK -- (P,H) and (P,S) recover T on 7 states of 3 corpus mixtures (flash01 ideal, flash02 NRTL, flash09 SRK; liquid, vapour and 3 two-phase), (P,V/F) and (T,V/F) recover T and P on each two-phase state, worst relative error 1.3e-11 (<= 1e-8); the bubble/dew edge is the flash's (Tb 367.8458 K, Td 374.1877 K, probed at 1e-7); the witness's wet isentropic expansion, throttle, Tsat and Psat match the IF97 steam table; the entropy is the enthalpy's partner (dH = T dS single-phase to 1.1e-07, the ideal mixing entropy exact, benzene's latent T dS/dH within 3.7e-03); 8 refusals by name; the convergence verdict announced; source arm (one flash home).  NOT checked: any measured entropy; the two-phase MIXTURE entropy blend beyond its round trip; a VLLE specification; the units that keep their own search (adiabaticFlash, valve, compressor, turbine).",
+      "seconds": 0.5
     }
   }
 }
