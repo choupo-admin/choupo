@@ -78,6 +78,8 @@ import { layoutScene, type LayoutScene } from "../case/plantLayout.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
 import { GmpBuildingSection, useBuildingOverlay } from "./GmpBuildingSection.js";
 import { BatchPlanSection } from "./BatchPlanSection.js";
+import { downloadPfdSvgs, openPfdTab, pfdSetOfRun } from "./pfdReport.js";
+import { PAGE_SIZES, type PageSizeName } from "../case/pfdSheet.js";
 import { PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
 import { popOutCaseLayout } from "../state/useLayoutPopOut.js";
 import { useStaleResult } from "../state/useStaleResult.js";
@@ -166,6 +168,7 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     layout: scene !== null,
     trains: hasBanks,
     batchPlan: !!runResult.batchPlan,
+    pfd: runResult.streams.length > 0,
   };
   const sections = reportSections(facts);
   const caseName = useStore((s) => s.tutorialName);
@@ -190,6 +193,7 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     utilities:  () => <UtilitiesBody rows={runResult.utilityAllocation ?? []} />,
     mass:       () => <MassBody runResult={runResult} />,
     energy:     () => <EnergyBody gb={runResult.globalEnergyBoundary} />,
+    pfd:        () => <PfdBody runResult={runResult} />,
     columns:    () => <ColumnsBody runResult={runResult} columns={columnUnits} />,
     exchangers: () => <ExchangersBody runResult={runResult} units={hxUnits} />,
     economics:  () => (econ ? <EconomicsBody econ={econ} /> : null),
@@ -455,6 +459,46 @@ function EnergyBody({ gb }: { gb: RunResult["globalEnergyBoundary"] }) {
         is already inside Σ H feeds; an internal exchange is not boundary heat).
       </Text>
     </>
+  );
+}
+
+/*  ---- PFD sheets (S2) --------------------------------------------------- */
+function PfdBody({ runResult }: { runResult: RunResult }) {
+  const [size, setSize] = useState<PageSizeName | "auto">("auto");
+  //  Built from the run on demand; nothing is computed that the engine did
+  //  not publish (case/pfdSheet.ts).
+  const set = useMemo(() => {
+    try { return pfdSetOfRun(runResult, size === "auto" ? undefined : size); }
+    catch { return null; }
+  }, [runResult, size]);
+  if (!set) return <Text size="sm" c="dimmed">No flowsheet to draw.</Text>;
+  return (
+    <Stack gap={6}>
+      {set.sheets.map((s) => (
+        <Text key={s.n} size="sm" ff="monospace">
+          sheet {s.n} of {s.N} — {s.size} — {s.kind === "figure" ? s.caption : `${s.caption}, stream table continued`}
+          {" "}({s.to - s.from} of {s.table.columns.length} stream column{s.table.columns.length === 1 ? "" : "s"})
+        </Text>
+      ))}
+      <Group gap={8}>
+        <Text size="xs" c="dimmed">Page size</Text>
+        {(["auto", ...PAGE_SIZES] as const).map((z) => (
+          <Button key={z} size="compact-xs" variant={size === z ? "filled" : "default"}
+            onClick={() => setSize(z)}>{z === "auto" ? "Auto" : z}</Button>
+        ))}
+        <Button size="compact-xs" variant="light" onClick={() => openPfdTab(set)}>
+          Open PFD (print / save as PDF)
+        </Button>
+        <Button size="compact-xs" variant="default" onClick={() => downloadPfdSvgs(set)}>
+          SVG per sheet
+        </Button>
+      </Group>
+      <Text size="xs" c="dimmed">
+        Each sheet is a real ISO page (A3, A2 or A1 landscape) chosen so the stream table keeps its
+        text at 2.5 mm printed; a larger table continues on the next sheet. In the browser's print
+        dialog choose “Save as PDF”.
+      </Text>
+    </Stack>
   );
 }
 

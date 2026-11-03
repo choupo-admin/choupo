@@ -37,7 +37,7 @@
 
 export type ReportSectionId =
   | "equipment" | "sheets" | "utilities" | "mass" | "energy"
-  | "layout" | "trains" | "columns" | "exchangers" | "economics" | "sensitivity" | "batchPlan";
+  | "layout" | "trains" | "pfd" | "columns" | "exchangers" | "economics" | "sensitivity" | "batchPlan";
 
 export interface ReportSection {
   id: ReportSectionId;
@@ -68,6 +68,10 @@ export interface ReportFacts {
   /** A `batchPlan {}` pass ran and published at least one stage (DEV.md 4c
    *  C99, C110 G2): the batch plant designed on the steady balance. */
   batchPlan: boolean;
+  /** The run published streams and the case has a flowsheet: the PFD sheet
+   *  (case/pfdSheet.ts) can be drawn.  OPTIONAL so a caller that predates S2
+   *  keeps its section list. */
+  pfd?: boolean;
 }
 
 /** The sections, in page order.  ONE list: the rail lists it, the page
@@ -97,6 +101,9 @@ export function reportSections(f: ReportFacts): ReportSection[] {
     subtitle: "plant boundary — feeds vs products (kg/h)" });
   out.push({ id: "energy", title: "Global energy balance",
     subtitle: "flow enthalpy at the boundary (kW)" });
+  if (f.pfd)
+    out.push({ id: "pfd", title: "PFD (PDF)",
+      subtitle: "the process flow diagram with its stream table, tags, utilities and title block — print to PDF" });
   if (f.columns)
     out.push({ id: "columns", title: "Column datasheets",
       subtitle: "tray columns the sizing pass sized — the tower schematic + its five items" });

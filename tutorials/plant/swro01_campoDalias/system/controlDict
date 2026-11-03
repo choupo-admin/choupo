@@ -18,3 +18,12 @@ citations
     "R. L. Stover, Seawater reverse osmosis with isobaric energy recovery devices, Desalination 203 (2007) 168-175"
     "DuPont FilmTec SW30HR-380 Element Product Data Sheet, Form No. 45-D00971-en, Rev. 7, January 2026 (the assumed standard test conditions)"
 );
+
+//  The stream table is OPT-IN (the engine writes reports/streams/streamTable.csv
+//  only when asked), and the PFD sheet of the app draws its stream table
+//  from the run's streams; the line is declared HERE, in the witness, and not
+//  made a default for every plant (the plant document set, section 8, Q9).
+reports
+{
+    streamTable {}
+}

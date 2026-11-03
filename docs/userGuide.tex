@@ -2871,6 +2871,28 @@ into the case's \file{reports/} directory and announces the file:
 \end{tabularx}
 \end{center}
 
+\paragraph{The PFD as a printable sheet.}\label{sec:pfd-sheet}
+Exporting the flowsheet has two forms.  The canvas \emph{Colours} menu,
+\emph{Export figure}, saves the coloured drawing as SVG or PNG.  The
+\emph{PFD (PDF)} report (the Reports workspace, or the \emph{PFD sheet}
+button beside the export) builds the document a design project hands in:
+the flowsheet figure with the wire numbers of the canvas, the
+\emph{stream table} along the bottom (one column per physical stream,
+headed by that same number: $T$, $P$, phase, total flow and the mole
+fractions, exactly what the run published, a dash where it published
+nothing), the equipment tags where the case carries them, the utilities
+the duty stubs name, and a title block with the case, the date, the engine
+version and commit and \emph{sheet $n$ of $N$}.  A sectored plant gets the
+plant overview and one sheet per sector.  The page follows the content: A3
+landscape, stepping up to A2 and A1 when the stream table would otherwise
+need text below 2.5~mm printed; beyond A1 the table continues on the next
+sheet (same title block).  A small selector forces a size.  The page opens
+in a new tab with a \emph{Print / Save as PDF} button (no PDF library is
+involved: use the browser's print dialog, margins ``None''); the SVG of each
+sheet can be saved as well.  The stream table is read from the run, so
+declare \code{reports \{ streamTable \{\} \}} in \file{controlDict} when you
+also want the engine's own \file{reports/streams/streamTable.csv}.
+
 \paragraph{The element balance is a default diagnostic.}\label{sec:element-balance}
 Species moles may change legally through reactions; the invariant of a
 reacting flowsheet is the \emph{atoms}.  Every converged
