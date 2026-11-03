@@ -43,6 +43,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { RunResult, StreamResult } from "../adapters/SolverAdapter.js";
+import { massBalance } from "./balances.js";
 
 export interface RunSummary {
   /** The engine's `converged`; null when the result carries none. */
@@ -63,12 +64,27 @@ const finiteOrNull = (v: unknown): number | null =>
 
 export function runSummary(r: RunResult): RunSummary {
   const gm = r.globalMassBoundary;
-  const mass: RunSummary["mass"] = gm
-    ? gm.declared
+  //  THE ENGINE EMITS `globalMassBoundary` ONLY WHEN A UTILITY CIRCUIT IS
+  //  DECLARED (ResultEmitter.cpp: its comment says a reader that does not find
+  //  it reads the massBalance report's single TOTAL scope, which is then the
+  //  whole balance).  The report's CSV does not travel to the browser, so the
+  //  TOTAL scope is drawn from the same boundary streams the engine stamped
+  //  (`role` feed / product, observed feeds excluded) through the one
+  //  `massBalance` the Mass-balance plot uses: out / in, as the report's
+  //  `closure_pct`.  No streams -> nothing was published -> null; streams but
+  //  no mass entering the boundary (a closed cycle) -> `pct: null`, which the
+  //  strip says is unavailable, as the report's own `n/a` does.
+  let mass: RunSummary["mass"] = null;
+  if (gm) {
+    mass = gm.declared
       ? { pct: finiteOrNull(gm.process_closure_pct), scope: "process",
           utilityExcludedPct: finiteOrNull(gm.utility_fraction_pct) }
-      : { pct: finiteOrNull(gm.total_closure_pct), scope: "total", utilityExcludedPct: null }
-    : null;
+      : { pct: finiteOrNull(gm.total_closure_pct), scope: "total", utilityExcludedPct: null };
+  } else if (r.streams.length > 0) {
+    const mb = massBalance(r.streams, r.componentMolarMass);
+    mass = { pct: mb.totalInSum > 0 ? 100 * mb.totalOutSum / mb.totalInSum : null,
+             scope: "total", utilityExcludedPct: null };
+  }
   const ge = r.globalEnergyBoundary;
   //  A percentage exists only where the engine says it has a scale
   //  (`residual_pct_available`, then a non-null `residual_pct`).
