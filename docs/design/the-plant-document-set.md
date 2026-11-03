@@ -272,6 +272,17 @@ recommended answer, with ONE change:
   plant case is not decided until what it moves in the published results is
   measured (a default that changes output is a corpus change).
 
+* S2 AMENDED the same night (Vitor: "No report o pdf do PFD devia ser gerado
+  ... em formato A3, ou mesmo A1 para poderem aparecer uma tabela com as
+  correntes todas"): the PFD PDF is a REPORT, listed in the app's Reports
+  workspace beside the datasheets (the canvas export stays as a second way
+  in); the PAGE SIZE follows the content, as an industrial PFD does: A3
+  landscape at least, stepping to A2 and A1 when the stream table does not fit
+  at a printed text height of 2.5 mm; beyond A1 the table continues on a
+  following sheet with the same title block; never shrunk below legibility; a
+  student may force a size.  The engine publishes the data; the GUI lays the
+  sheet out and prints it (the flowsheet's layout lives in the GUI).
+
 Order: S1 and S2 now, on branches (they touch different homes); S3 and S4
 after S1; S5 after S3 and S4; S6; S7; S8 is the digital twin (C203).
 
