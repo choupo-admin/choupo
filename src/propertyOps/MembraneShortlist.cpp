@@ -30,6 +30,7 @@ License
 
 #include "core/Constants.H"
 #include "core/Dimensions.H"
+#include "thermo/RecordResolver.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/membrane/Membrane.H"
 #include "thermo/membrane/MembraneModule.H"
@@ -462,6 +463,7 @@ int MembraneShortlist::run(const DictPtr& dict, const ThermoPackage& thermo,
     if (dict->found("output") && dict->subDict("output")->found("file"))
     {
         const std::string f = dict->subDict("output")->lookupWord("file");
+        records::refuseStandardsWrite("membraneShortlist", "file", f);
         std::ofstream csv(f);
         if (!csv) throw std::runtime_error(site + ": cannot open " + f);
         csv << "module,status,reason,R_int,A_w_LMH_per_bar,R_obs,recovery,permeateFlow_m3d,"
