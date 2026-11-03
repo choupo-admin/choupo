@@ -306,6 +306,9 @@ const PatentExpiryTool = lazy(() =>
 const PlantRunTool = lazy(() =>
   import("./methods/PlantRunTool.js")
     .then((m) => ({ default: m.PlantRunTool })));
+const SiteProcessPriceTool = lazy(() =>
+  import("./methods/SiteProcessPriceTool.js")
+    .then((m) => ({ default: m.SiteProcessPriceTool })));
 const EconomicsErrorsTool = lazy(() =>
   import("./methods/EconomicsErrorsTool.js")
     .then((m) => ({ default: m.EconomicsErrorsTool })));
@@ -596,6 +599,7 @@ export function MethodsWorkspace() {
             : tool === "patent-expiry" ? <PatentExpiryTool />
             : tool === "economics-errors" ? <EconomicsErrorsTool />
             : tool === "plant-running-cost" ? <PlantRunTool />
+            : tool === "site-process-price" ? <SiteProcessPriceTool />
             : tool === "demand-forecast" ? <DemandForecastTool />
             : tool === "plant-cost" ? <PlantCostTool />
             : tool === "process-safety" ? <ProcessSafetyTool />

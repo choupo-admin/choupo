@@ -88,6 +88,8 @@ import { ECON_ERRORS_QUIZ, ECON_ERRORS_STEPS } from "../src/ui/methods/economics
 import { EconomicsErrorsTool } from "../src/ui/methods/EconomicsErrorsTool.js";
 import { PLANT_RUN_QUIZ, PLANT_RUN_STEPS } from "../src/ui/methods/plantRunLesson.js";
 import { PlantRunTool } from "../src/ui/methods/PlantRunTool.js";
+import { SITE_PROCESS_PRICE_QUIZ, SITE_PROCESS_PRICE_STEPS } from "../src/ui/methods/siteProcessPriceLesson.js";
+import { SiteProcessPriceTool } from "../src/ui/methods/SiteProcessPriceTool.js";
 import { DEMAND_QUIZ, DEMAND_STEPS } from "../src/ui/methods/demandForecastLesson.js";
 import { DemandForecastTool } from "../src/ui/methods/DemandForecastTool.js";
 import { PlantCostTool } from "../src/ui/methods/PlantCostTool.js";
@@ -163,6 +165,10 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "plant-running-cost": {
     quiz: PLANT_RUN_QUIZ, quizName: "PLANT_RUN_QUIZ", lesson: PLANT_RUN_STEPS, lessonName: "PLANT_RUN_STEPS",
     file: "src/ui/methods/PlantRunTool.tsx", tool: PlantRunTool,
+  },
+  "site-process-price": {
+    quiz: SITE_PROCESS_PRICE_QUIZ, quizName: "SITE_PROCESS_PRICE_QUIZ", lesson: SITE_PROCESS_PRICE_STEPS, lessonName: "SITE_PROCESS_PRICE_STEPS",
+    file: "src/ui/methods/SiteProcessPriceTool.tsx", tool: SiteProcessPriceTool,
   },
   "demand-forecast": {
     quiz: DEMAND_QUIZ, quizName: "DEMAND_QUIZ", lesson: DEMAND_STEPS, lessonName: "DEMAND_STEPS",

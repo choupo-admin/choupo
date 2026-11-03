@@ -75,7 +75,8 @@ export type MethodToolId =
   | "plant-layout" | "gmp-layout" | "pool-fire" | "bund" | "materials" | "syngas"
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
-  | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost";
+  | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
+  | "site-process-price";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1891,6 +1892,26 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "arithmetic (price index, currency, apparent consumption, FOB and "
       + "CIF, unit margin). Each engine statement carries the line it was "
       + "read at, and what Choupo does not compute is said.",
+    theory: "ch:economics",
+  },
+  //  COMMISSIONED 2026-11-03 (DEV.md 4c C212, the market side): where to
+  //  build, which route, and what the product sells for at the plant gate.
+  //  A NOTES page, no engine run; ships no weight, margin or tax rate.
+  {
+    id: "site-process-price",
+    label: "Where to build it, what to make, and what it sells for",
+    discipline: "Process design & economics", kind: "notes",
+    status: "live",
+    origins: ["page", "assumption"],
+    teaches: "The market-side decisions that come before the cost pages: a "
+      + "weighted-criteria matrix for choosing a site, with the weight at "
+      + "which the ranking changes for each criterion; a method for reading "
+      + "patents for a route, and a patent example turned into a mass basis "
+      + "per kilogram of product, a yield and a cycle time; and the margin "
+      + "chain between the shelf price and the ex-factory price, computed "
+      + "down and back up from stages the student declares. A "
+      + "pharmaceutical product is the example. No weight, margin or tax "
+      + "rate is shipped, and nothing here is legal advice or a market study.",
     theory: "ch:economics",
   },
   //  WHICH SOLVENT, OR WHICH SOLVENT MIXTURE (2026-10-21, DEV.md 4c C128,
