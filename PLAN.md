@@ -37,7 +37,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | status | what | ref |
 |---|---|---|
 | decide | FREEZE until the tutoring class of 2026-11-03 ends: nothing is integrated into main, so nothing reaches the site; main and the site move once, after the class, by fast-forwarding main to `staging` | C200, C210 |
-| running | STACKING into the local branch `staging`, one `bin/integrate --base staging` at a time (about an hour each; the log of each in DEV.md 4c). The SEVEN BUILT branches, in order: C208 (quiet exit-0 failures + the repaired flagship and sugar-sweep economics) -> S1 (equipment tags and list, d09c5cb7b) -> S2 (the PFD sheet and PDF A3-A1, 886f461d1; reads `tagNo`) -> PIF E2+E3 (HVAC cost, cleaning events, 4ac1a9ae2, 3dc77e601) -> dynamic slice 2 (variable-volume CSTR, 8e5c7f53b) -> GUI E6+MASS (b4bd9858c, f1ac4602b) -> EduTools E7+E8 (d572ed8a5, 79f998c9c) | C208, C207, C195, C205 |
+| running | THE STACK IS COMPLETE in the local branch `staging` (seven builds) and its ONE full sweep ran: 819 pass, 3 fail, all three already red on main before the stack (a census number and a missing write guard, both fixed on staging; five unsealed membrane cases, a general is sealing them, report due 09:30). Landing: after the class, merge staging into main, re-run the doc gates, push, read the site | C208, C207, C195, C205, C210 |
 | todo | Watch the tutoring class (2026-11-03 12:00): the students' reports reach Vitor and come here; each is recorded in DEV.md 4c the turn it arrives, then fixed (it goes ahead of everything else) | C200, C195, C210 |
 
 ## Next day (at most 5)

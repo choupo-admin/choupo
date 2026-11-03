@@ -1935,6 +1935,24 @@ accepts today, and that is a policy call.
 > the result, push, and read the site's publication; if the sweep finds
 > anything, fix it on `staging` first.
 
+> **THE FULL SWEEP OF THE STACK (2026-11-03 07:00): PASS 819 / FAIL 3 /
+> KNOWN-BROKEN 0 / EXPECTED-FAIL 6.**  The three FAILs are all gates, and all
+> three also fail on `main` BEFORE the stack (measured in the primary checkout),
+> hidden because no scoped integration reached them: (1) `check_origin_census`:
+> a census sentence in the provenance record said 2394 per-value forms, the
+> recount is 2401 -- sentence corrected; (2) `check_standards_write_guard`:
+> `MembraneShortlist.cpp` (C189) wrote its CSV from a dict path without
+> `refuseStandardsWrite` -- the guard added, and with it the gate passes under
+> the tree's own CHOUPO_HOME and PATH (run bare, its symlink probe is
+> environmental); (3) `check_sealed_corpus`: five membrane cases (swro01,
+> shortlist01, membrane26/27/28) carry no `propertyManifest` -- a general is
+> sealing them with `bin/choupo-import` (its agreement-with-the-golden check
+> refuses to freeze a wrong answer; no golden is re-recorded).  Everything else
+> in the 819 passes, among it every closure gate (mass 271 cases, energy 114,
+> elements 253), the energy-T1/T2 plant validators, and the wasm-dialect gate
+> over 403 sources.  Landing waits for (3) or, if it cannot be done honestly by
+> 10:00, lands with (3) recorded as a debt that was already on main.
+
 > **C209. A SECTOR THAT SAYS HOW MANY TIMES IT IS REPEATED (Vitor, 2026-11-02
 > night, about swro01_campoDalias: "no flowsheet devia haver forma de
 > notificar isso ... qualquer envolucro que dissesse quantas vezes se tem de
