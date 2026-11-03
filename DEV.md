@@ -1919,6 +1919,39 @@ accepts today, and that is a policy call.
 > that registers it (sabotaged: five renamed names and a bare case name, all
 > six caught).  NOT checked by it: whether the prose about a name is true.
 
+> **C212. THE ECONOMIC EVALUATION OF A PLANT, AS EDUTOOLS (Vitor, 2026-11-03:
+> "Usa isso como guia, mas usa material que tu conheces, ou material livre
+> online, e faz os Edutools que achares bem").**  He handed over the four
+> PIF/MEFARM 2024-25 lecture decks of a colleague (market analysis; CAPEX;
+> OPEX; profitability) as a GUIDE; the material is generic chemical-plant
+> economics with a pharmaceutical example.  Read against the EduTools and the
+> engine (the comparison is in this session's transcript): the EduTools cover
+> the demand forecast, the patent expiry and the error classes; NOT the
+> factored capital estimate, the structure of the cost of production, the
+> depreciation by class, the break-even, the discount-rate composition, the
+> elasticity, constant prices, apparent consumption, FOB/CIF.  The engine
+> prices capital by Turton's bare module, not by percentage factors on the
+> purchased equipment, and has no royalty, break-even or itemised operating
+> cost.  DECIDED (the architect's): two EduTools, for chemical engineering
+> with the pharmaceutical case as one example, written in our own words from
+> open or primary sources -- NOTHING copied from the decks (they are the
+> colleague's work), every range cited to a primary or openly licensed
+> source, every factor a student input with the cited range beside it, never
+> a hidden default.  (A) "What a plant costs to build": Lang's factors (Lang,
+> Chem. Eng. 1947/1948), the factored (percentage) estimate on the purchased
+> equipment, and Choupo's own bare-module route side by side on one equipment
+> list; the working capital by three methods with their spread; the loan,
+> the grace years and the interest during construction.  (B) "What a plant
+> costs to run, and when it pays": the cost of production itemised (direct,
+> indirect, fixed, general), depreciation by asset class, fixed and variable
+> costs and the break-even capacity, the discount rate built from a
+> risk-free rate and a risk premium, NPV / IRR / payback, and the elasticity
+> of NPV to each input above ~10 % of the cost; plus the market arithmetic
+> (constant prices through a price index, apparent consumption, FOB vs CIF,
+> unit gross margin).  The engine items (a factor route, royalties, an
+> itemised operating cost, break-even) stay in the plan as E5 and a new
+> engine row, decided after the pages show what the students use.
+
 > **THE STACK, AND THE ONE FULL SWEEP (the architect, 2026-11-03 06:00):** five
 > of the seven builds are now in the local branch `staging` (C208, S1, S2,
 > E2+E3, dynamic slice 2), each validated by `bin/integrate --base staging` on
