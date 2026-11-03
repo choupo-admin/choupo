@@ -31,9 +31,13 @@ economics in general.
   `economics` / `cleanUtilities`.
 * A pass that refuses prints `ERROR:` and exits 2 (batchPlan, a quote on a
   refused unit).  A SIZER that refuses is printed as `FAILED` in the Sizing
-  table and the run can still exit 0: read that table.  A missing economics
-  price prints `REQUIRED PRICE MISSING` and ALSO exits 0 with no appraisal.
-  Grep the log for `ERROR`, `FAILED`, `MISSING` before trusting a number.
+  table and the run still exits 0 (the item is refused, never the run; the
+  totals read INCOMPLETE): read that table.  A missing REQUIRED economics
+  price (`labourRate`, a product price, a boundary inlet with no
+  `rawMaterials` entry -- priced, or free with `price 0;` and a
+  `provenance`) prints `REQUIRED PRICE MISSING` and the run FAILS, exit 2,
+  with no appraisal.  Grep the log for `FAILED` and `INCOMPLETE` before
+  trusting a number.
 
 ## 2. `batchPlan`
 
@@ -189,15 +193,15 @@ cleanUtilities
 
 ## 6. Minimal example (RUN; copy, then change)
 
-KNOWN LIMITATION (measured 2026-11-02): `bin/choupo-init0` cannot estimate
-a stream that carries ONLY solids (no fluid phase at all).  It writes an
-EMPTY `componentMolarFlows {}` and `T 0 K`, and the run refuses with `stream
-state 'X': T = 0.000000 K is at or below absolute zero`.  So in a solids-only
-chain (powders blended and pressed with no liquid) WRITE EVERY STREAM YOURSELF,
-sums and splits done by hand, in the authored form shown for `0/lactoseFeed`
-below (molar flows twice: overall and inside `phases { solid {} }`; T; P).
-Streams that carry a fluid (water in a binder, the example's chain) are
-estimated normally.
+`bin/choupo-init0` estimates a stream that carries ONLY solids too (powders
+blended and pressed with no liquid): the solid molar flows of the producing
+unit's inlets are summed (split equally over its outlets) and T is their
+flow-weighted mean.  Where a unit's inlets carry no material at all it writes
+nothing and REFUSES by name (`NO ESTIMATE  0/<stream>`): write that file
+yourself, in the authored form shown for `0/lactoseFeed` below (molar flows
+twice: overall and inside `phases { solid {} }`; T; P).  The estimate is a
+seed the solver overwrites; a press with rejects or a splitter still needs
+its split fixed by the solve, not by init0.
 
 A four-unit tablet line: binder tank, blender, press (1 % rejects), blister
 line, with a 3-room suite.  Solids are declared in `phases { solid { ... } }`
@@ -473,7 +477,7 @@ Variants run: 100 000 kg/yr -> `ERROR: batchPlan: stage 'binderPreparation' is
 busy 1.214e+04 h ... occupancy 316 %`, exit 2; blender `nominalVolume 0.1 m3`
 -> `FAILED ... utilisation 1.66667 ... 2 machine(s)` then the quote on it stops
 the run with exit 2; `constant/economics` without `labourRate` ->
-`REQUIRED PRICE MISSING -- labourRate`, exit 0, no appraisal.
+`REQUIRED PRICE MISSING -- labourRate`, exit 2, no appraisal.
 
 ## 7. What a student should still decide (write it in DESIGN.md)
 

@@ -404,7 +404,7 @@ int DesignSpec::run()
     if (postDict_)
     {
         auto chain = PostProcessor::buildChain(postDict_);
-        for (auto& pp : chain) pp->run(finalResult);
+        for (auto& pp : chain) PostProcessor::runOrThrow(*pp, finalResult);
     }
     setFinalResult(finalResult);          // expose for the reports{} chain
     //  The result block is written by main.cpp AFTER the reports{} chain has

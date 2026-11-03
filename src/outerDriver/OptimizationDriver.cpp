@@ -396,7 +396,7 @@ int OptimizationDriver::runNelderMead()
             else {
                 if (needPost) {
                     auto chain = PostProcessor::buildChain(postDict_);
-                    for (auto& pp : chain) pp->run(result);
+                    for (auto& pp : chain) PostProcessor::runOrThrow(*pp, result);
                 }
                 fval = extractObjective(result, objKind_, objPath_);
                 if (!std::isfinite(fval)) {
@@ -543,7 +543,7 @@ int OptimizationDriver::runNelderMead()
             " here and no result is published");
     if (needPost) {
         auto chain = PostProcessor::buildChain(postDict_);
-        for (auto& pp : chain) pp->run(finalResult);
+        for (auto& pp : chain) PostProcessor::runOrThrow(*pp, finalResult);
     }
     //  Publish the solution for programmatic consumers (the integer
     //  enumeration, paretoSweep): x in USER units, f in the USER sense.
@@ -714,7 +714,7 @@ int OptimizationDriver::runSqp()
                 if (needPost)
                 {
                     auto chain = PostProcessor::buildChain(postDict_);
-                    for (auto& pp : chain) pp->run(result);
+                    for (auto& pp : chain) PostProcessor::runOrThrow(*pp, result);
                 }
                 scalar f = extractObjective(result, objKind_, objPath_);
                 // SQP always MINIMISES; flip for a maximise objective.
@@ -994,7 +994,7 @@ int OptimizationDriver::runSqp()
     if (needPost)
     {
         auto chain = PostProcessor::buildChain(postDict_);
-        for (auto& pp : chain) pp->run(finalResult);
+        for (auto& pp : chain) PostProcessor::runOrThrow(*pp, finalResult);
     }
     setFinalResult(finalResult);
     if (emitJson_) emitResultJson(std::cout, finalResult);

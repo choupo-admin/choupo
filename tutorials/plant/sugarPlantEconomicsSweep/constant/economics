@@ -60,6 +60,36 @@ rawMaterials
             method  "derived: beet value pro-rated to the juice sucrose content (~6 mol%, ~18 wt% sugar carried) -> ~0.018 EUR/kg juice";
         }
     }
+    {
+        stream      PlantSteam;       // LP saturated steam to the evaporator chest (condensate leaves as EvapCondensate1)
+        price       0.026232;         // EUR/kg condensed = 12 EUR/GJ x 2186000 J/kg (dutyPerKg)
+        costYear    2022;
+        provenance
+        {
+            origin  "constant/utilities/steamLP.dat (= data/standards/utilities/steamLP.dat): cost 12 EUR/GJ delivered, costYear 2022; Sinnott & Towler 6th ed. 2022 Sec. 6.5.3";
+            method  "the SAME utility record's price on its own dutyPerKg (latent heat 2186 kJ/kg at 2.5 bar): 12/1e9 x 2.186e6 = 0.026232 EUR/kg; no new number";
+        }
+    }
+    {
+        stream      DryingAir;        // spray-dryer air
+        price       0;
+        costYear    2024;
+        provenance
+        {
+            origin  "ambient air, drawn from the atmosphere, not purchased";
+            method  "declared free; the fan/heating energy is a unit duty, not a purchase of the air";
+        }
+    }
+    {
+        stream      BdAir;            // belt-dryer air
+        price       0;
+        costYear    2024;
+        provenance
+        {
+            origin  "ambient air, drawn from the atmosphere, not purchased";
+            method  "declared free; the heating energy is a unit duty, not a purchase of the air";
+        }
+    }
 );
 
 // ---- Labour ----------------------------------------------------------------
