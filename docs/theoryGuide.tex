@@ -516,17 +516,21 @@ $q_{\min} = q_{\max} = 0$ degenerates to plain direct substitution
 for cases where acceleration is unsafe (flash regime switches,
 strongly non-linear recycles).
 
-\noindent A third closure, \texttt{recycleSolver DominantEigenvalue;}, extrapolates along
-the dominant eigenvector of the substitution map (Orbach and Crowe, 1971).
-Near the fixed point the differences of successive iterates are the
-power-method sequence of the map's Jacobian, so
-$\lambda=\langle d_k,d_{k-1}\rangle/\langle d_{k-1},d_{k-1}\rangle$
-estimates the dominant eigenvalue and
-$x\leftarrow g(x)+\lambda/(1-\lambda)\,(g(x)-x)$ sums the geometric tail
-(exact in one step on a linear map with one mode excited).  It is a solver aid
-and reports aloud: each extrapolation prints its $\lambda$, and a fall-back
-to direct substitution (|\,$\lambda$\,| above its bound, or successive
-differences not parallel) prints its reason.  Tutorial:
+\noindent A third closure, \texttt{recycleSolver DominantEigenvalue;}, is the
+dominant eigenvalue method of Orbach and Crowe (Can.\ J.\ Chem.\ Eng.\ 49
+(1971) 509).  Near the solution the iteration is a geometric progression,
+$X_n-X_s=c_1Z_1\lambda_1^n$ (their Eq.~15), so the ratio of the norms of two
+successive differences, $\|\Delta X_n\|/\|\Delta X_{n-1}\|=|\lambda_1|$
+(Eq.~17), estimates the dominant eigenvalue; once two successive estimates
+agree the iterate moves to
+$X'_s=X_{n-1}+\alpha\,(X_n-X_{n-1})/(1-\lambda_1)$ (Eq.~18, $0<\alpha\le1$
+a damping factor) and iterates at least three more passes.  It is exact in
+one step for $\alpha=1$ on a linear map with one mode excited.  It is a
+solver aid and reports aloud: each move prints its $\lambda$, and a refused
+move (|\,$\lambda$\,| above Choupo's bound, or successive differences not
+parallel, as for a complex dominant pair, which the paper treats with
+iterates half a period apart and Choupo does not) falls back to direct
+substitution and prints its reason.  Tutorial:
 \file{tutorials/steady/flowsheets/recycle02\_dominant\_eigenvalue}.
 
 \begin{intuition}
