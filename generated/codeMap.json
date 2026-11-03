@@ -159,6 +159,9 @@
   "BatchAdsorber": [
    "src/unitOperations/batch/BatchAdsorber.H"
   ],
+  "BatchCleaning": [
+   "src/core/BatchPlanRecords.H"
+  ],
   "BatchCrystalliser": [
    "src/unitOperations/batch/BatchCrystalliser.H"
   ],
@@ -1657,6 +1660,7 @@
    "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
   ],
   "Resolved": [
+   "src/unitOperations/dynamic/DynamicCSTR.H",
    "src/unitOperations/dynamic/DynamicTank.H"
   ],
   "ResolvedComponentDict": [
