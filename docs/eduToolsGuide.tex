@@ -1688,6 +1688,72 @@ A year-end discounted cash flow with straight-line depreciation, no
 inflation, no financing and no construction period; the engine's own appraisal
 has more than that, and the page does not reproduce it.
 
+\subsection{Demand forecast for a drug product}\label{sec:edu-demand-forecast}
+
+\declaredanchor{ch:economics}
+
+\noindent\textit{\small Tool:} \code{tool=demand-forecast}.  \textit{\small
+Case it starts from:} none (an invented illustrative history); no engine run.
+
+\subsubsection*{The question}
+
+\emph{What yearly volume should our plant's economics read, how sure are we,
+and how much of it is the market's and how much is our assumption?}
+
+Three methods run on one editable history of the market, in packs or in
+defined daily doses.  \emph{A}, a straight line fitted by least squares, with
+the slope, the intercept, $R^{2}$, the standard error, the $t$ statistic and
+$p$ value of the slope and the prediction interval of a future year
+$\hat y_0\pm t_{\nu}\,s\sqrt{1+1/n+(t_0-\bar t)^2/S_{tt}}$.  \emph{B}, a dose
+count $P=N\,p\,q\,m\,c\,u\,365/D_{\mathrm{pack}}$ from the population, the
+prevalence, the treated fraction, the treatment share, the adherence and the
+doses in a pack, reconciled against the last observed year.  \emph{C}, the
+market volume times a logistic share $S(j)=S_{\max}/(1+e^{-k(j-j_{1/2})})$.
+
+\subsubsection*{Units, and the capacity factor}
+
+The page asks the unit of the series and of the answer (units, thousands,
+millions) and computes nothing until both are said; it refuses a series
+whose adjacent years differ by a factor of ten or more, which is how
+thousands pasted among millions looks, unless the jump is confirmed; and it
+warns when the plant and the forecast are two orders of magnitude apart.
+What the plant sells is the market volume times the share it holds times a
+\emph{capacity factor}.  The factor is shown as a line, together with the
+factor that would fill the plant and the sold quantity as a fraction of the
+whole market; a year in which the plant would have to sell more than the whole
+forecast market is marked.  The factor is an assumption about the world, not a
+property of the plant.
+
+\subsubsection*{What the case reads}
+
+The output is the pair the batch plan's economics reads
+(\file{src/postProcessing/EconomicsPass.cpp}): \code{rampUp}, the fraction of
+the design production sold in each operating year with each entry in
+$[0,1]$ (a year the market would exceed the plant is capped at one and marked
+plant-limited), the design production in kilograms through the tablets in a
+pack and the mass of a packaged tablet, and \code{streamFactor fromBatchPlan}.
+The price by year is not here; it is the subject of the patent-expiry tool.
+
+\begin{tryit}
+Fit the default history and read $R^{2}$ and the band: a good fit to ten years
+says the line describes them, and the band says how far a new year can sit
+from it.  Change the capacity factor from one to six and read the sold
+quantity as a fraction of the market.  Then change one number of the series
+by a factor of a thousand and watch the page refuse.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That a forecast is a measurement.}  The trend assumes the cause of the
+past continues, the dose count assumes five factors you estimated, and the
+S-curve assumes a ceiling and a speed; none of the three is tested by any
+statistic on the page.  The three disagreeing is the finding.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Only the volume is forecast, not the price; the history on the page is invented
+and must be replaced by a series you can cite.
+
 \section{Constructions not yet documented here}\label{sec:edu-stubs}
 
 %  No count here.  This sentence used to say "Six live tools", against a

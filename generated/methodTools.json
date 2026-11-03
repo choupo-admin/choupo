@@ -33,8 +33,8 @@
       "meaning": "an input -- a value you set with a control, or one the example's author declared -- not a result"
     }
   ],
-  "liveTools": 69,
-  "registryTools": 69,
+  "liveTools": 70,
+  "registryTools": 70,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -824,6 +824,17 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=economics-errors"
+    },
+    {
+      "id": "demand-forecast",
+      "label": "Demand forecast for a drug product",
+      "discipline": "Process design & economics",
+      "teaches": "That a demand forecast is an assumption with a method behind it, not a measurement: three methods side by side from one editable history -- a trend regression with its fit statistics and prediction band, daily doses times prevalence times treatment share, and a market-share penetration curve -- with a units check that refuses to mix thousands and millions, the capacity factor made explicit as an assumption beside the sold quantity and the market, and the yearly volume in the keys and units the batch plan's economics reads (streamFactor, rampUp).",
+      "origins": [
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=demand-forecast"
     },
     {
       "id": "solvent-mixture",

@@ -75,7 +75,7 @@ export type MethodToolId =
   | "plant-layout" | "gmp-layout" | "pool-fire" | "bund" | "materials" | "syngas"
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
-  | "economics-errors";
+  | "economics-errors" | "demand-forecast";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1832,6 +1832,23 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "wrong and the right calculation side by side on the same editable "
       + "inputs, with what Choupo does about it read from the engine, and "
       + "where it does nothing, the statement that you must check it.",
+    theory: "ch:economics",
+  },
+  {
+    id: "demand-forecast",
+    label: "Demand forecast for a drug product",
+    discipline: "Process design & economics", kind: "notes",
+    status: "live",
+    origins: ["page", "assumption"],
+    teaches: "That a demand forecast is an assumption with a method behind "
+      + "it, not a measurement: three methods side by side from one "
+      + "editable history -- a trend regression with its fit statistics and "
+      + "prediction band, daily doses times prevalence times treatment "
+      + "share, and a market-share penetration curve -- with a units check "
+      + "that refuses to mix thousands and millions, the capacity factor "
+      + "made explicit as an assumption beside the sold quantity and the "
+      + "market, and the yearly volume in the keys and units the batch "
+      + "plan's economics reads (streamFactor, rampUp).",
     theory: "ch:economics",
   },
   //  WHICH SOLVENT, OR WHICH SOLVENT MIXTURE (2026-10-21, DEV.md 4c C128,
