@@ -4556,6 +4556,47 @@ WHAT THIS IS AND IS NOT. The mixture is ideal BY DEFINITION (the substances are 
 \end{tutgolden}
 
 \clearpage
+\tutentry{flashSpec01\_wet\_steam\_expansion}{tutorials/props/thermo/flashSpec01\_wet\_steam\_expansion}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{expand}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{throttle}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{halfBoil}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{dewP}\\[-1pt]{\tiny flashSpec}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The general flash specification (DEV.md 4c C214 W1): steam at 80 bar and 500 C expanded isentropically to 0.1 bar on IAPWS-IF97 ends WET (vapour fraction about 0.81, checkable against the steam table); a subcooled liquid throttled at constant enthalpy flashes; a vapour-fraction specification on a pure fluid lands on its saturation curve -- the (P,S), (P,H), (P,V/F) and (T,V/F) pairs through one home}
+\begin{tutnarrative}
+A FLASH SPECIFIED BY A PAIR OTHER THAN (T, P) (DEV.md 4c C214 W1; docs/design/a-general-flash-specification.md).
+
+A state of a fluid of known composition has two degrees of freedom. The isothermal flash fixes them as (T, P); a turbine knows its outlet PRESSURE and, ideally, its ENTROPY; a valve knows its pressure and its ENTHALPY; a condenser drum knows its pressure and how much of the stream is VAPOUR. Each op below asks one of those pairs of ONE home (flashState::specifiedFlash), and every answer is the state the isothermal flash publishes there -- except a pure fluid ON its saturation curve, where no flash can decide the split and the saturated legs price it.
+
+THE HAND CHECK (IAPWS-IF97 steam table, per kg): expand 80 bar, 500 C: s = 6.7262 kJ/(kg K), h = 3399.4 kJ/kg 0.1 bar saturated: Tsat = 45.81 C, s\_f = 0.6492, s\_g = 8.1501, h\_f = 191.81, h\_g = 2583.9 quality x = (6.7262 - 0.6492)/(8.1501 - 0.6492) = 0.8102 h\_out = 191.81 + 0.8102 (2583.9 - 191.81) = 2129.8 kJ/kg isentropic work = 3399.4 - 2129.8 = 1269.6 kJ/kg throttle 10 bar, 450 K (subcooled liquid): h = 749.3 kJ/kg 1 bar saturated: h\_f = 417.4, h\_g = 2674.9 flash fraction x = (749.3 - 417.4)/(2674.9 - 417.4) = 0.147 halfBoil 1 atm, half vapour: T = Tsat(1 atm) = 373.124 K dewP 373.15 K, all vapour: P = Psat(100 C) = 101.418 kPa
+
+WHAT THE STUDENT WATCHES. `expand` lands on the saturation PLATEAU: for a pure fluid T and P are one condition there, so the state's coordinate is the vapour fraction, found by the lever rule on the saturated legs (no search). An isentropic search over a single-phase VAPOUR of fixed composition -- what Choupo's turbine does today -- has no root here: below s\_g at 0.1 bar no vapour carries that entropy (the vapour entropy jumps by the whole latent entropy at Tsat), so that search cannot land on this answer. That gap is what this op makes visible.
+
+NOT MODELLED, said plainly: any non-equilibrium (a real turbine's supersaturated "Wilson line" expansion is a kinetic effect); the irreversibility of a real expansion (the isentropic state is the ideal reference an efficiency is measured against). No number here is fitted: every value is an IF97 evaluation, a STRUCTURAL witness checkable by hand.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{expand}{H}{38374.9393008}
+\goldrow{diag}{expand}{H\_per\_mass}{2130.16593399}
+\goldrow{diag}{expand}{P}{10000}
+\goldrow{diag}{expand}{S}{121.175719105}
+\goldrow{diag}{expand}{S\_per\_mass}{6.72637907882}
+\goldrow{diag}{expand}{T}{318.957548207}
+\goldrow{diag}{expand}{dH\_fromReference}{-22864.7579963}
+\goldrow{diag}{expand}{flashes}{0}
+\goldrow{diag}{expand}{iterations}{0}
+\goldrow{diag}{expand}{onSaturationPlateau}{1}
+\goldrow{diag}{expand}{ref\_H}{61239.6972971}
+\goldrow{diag}{expand}{ref\_P}{8000000}
+\goldrow{diag}{expand}{ref\_S}{121.175719105}
+\goldrow{diag}{expand}{ref\_T}{773.15}
+\goldmore{53}
+\end{tutgolden}
+
+\clearpage
 \tutentry{heavyWater01\_isotope\_effect}{tutorials/props/thermo/heavyWater01\_isotope\_effect}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

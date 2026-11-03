@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application  choupoProps;
+tier         witness;
+description  "The general flash specification (DEV.md 4c C214 W1): steam at 80 bar and 500 C expanded isentropically to 0.1 bar on IAPWS-IF97 ends WET (vapour fraction about 0.81, checkable against the steam table); a subcooled liquid throttled at constant enthalpy flashes; a vapour-fraction specification on a pure fluid lands on its saturation curve -- the (P,S), (P,H), (P,V/F) and (T,V/F) pairs through one home";
+verbosity    3;

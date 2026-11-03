@@ -1,0 +1,96 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flashSpec01_wet_steam_expansion -- A FLASH SPECIFIED BY A PAIR OTHER THAN
+  (T, P) (DEV.md 4c C214 W1; docs/design/a-general-flash-specification.md).
+
+  A state of a fluid of known composition has two degrees of freedom.  The
+  isothermal flash fixes them as (T, P); a turbine knows its outlet
+  PRESSURE and, ideally, its ENTROPY; a valve knows its pressure and its
+  ENTHALPY; a condenser drum knows its pressure and how much of the stream
+  is VAPOUR.  Each op below asks one of those pairs of ONE home
+  (flashState::specifiedFlash), and every answer is the state the isothermal
+  flash publishes there -- except a pure fluid ON its saturation curve,
+  where no flash can decide the split and the saturated legs price it.
+
+  THE HAND CHECK (IAPWS-IF97 steam table, per kg):
+    expand    80 bar, 500 C:      s = 6.7262 kJ/(kg K), h = 3399.4 kJ/kg
+              0.1 bar saturated:  Tsat = 45.81 C, s_f = 0.6492, s_g = 8.1501,
+                                  h_f = 191.81, h_g = 2583.9
+              quality  x = (6.7262 - 0.6492)/(8.1501 - 0.6492) = 0.8102
+              h_out    = 191.81 + 0.8102 (2583.9 - 191.81) = 2129.8 kJ/kg
+              isentropic work = 3399.4 - 2129.8 = 1269.6 kJ/kg
+    throttle  10 bar, 450 K (subcooled liquid): h = 749.3 kJ/kg
+              1 bar saturated:    h_f = 417.4, h_g = 2674.9
+              flash fraction x = (749.3 - 417.4)/(2674.9 - 417.4) = 0.147
+    halfBoil  1 atm, half vapour: T = Tsat(1 atm) = 373.124 K
+    dewP      373.15 K, all vapour: P = Psat(100 C) = 101.418 kPa
+
+  WHAT THE STUDENT WATCHES.  `expand` lands on the saturation PLATEAU: for a
+  pure fluid T and P are one condition there, so the state's coordinate is
+  the vapour fraction, found by the lever rule on the saturated legs (no
+  search).  An isentropic search over a single-phase VAPOUR of fixed
+  composition -- what Choupo's turbine does today -- has no root here: below
+  s_g at 0.1 bar no vapour carries that entropy (the vapour entropy jumps by
+  the whole latent entropy at Tsat), so that search cannot land on this
+  answer.  That gap is what this op makes visible.
+
+  NOT MODELLED, said plainly: any non-equilibrium (a real turbine's
+  supersaturated "Wilson line" expansion is a kinetic effect); the
+  irreversibility of a real expansion (the isentropic state is the ideal
+  reference an efficiency is measured against).  No number here is fitted:
+  every value is an IF97 evaluation, a STRUCTURAL witness checkable by hand.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name          expand;
+        type          flashSpec;
+        composition   { water 1; }
+        spec
+        {
+            pair        PS;
+            P           0.1 bar;
+            targetFrom  { T 773.15 K;  P 80 bar; }   // the turbine inlet
+        }
+    }
+    {
+        name          throttle;
+        type          flashSpec;
+        composition   { water 1; }
+        spec
+        {
+            pair        PH;
+            P           1 bar;
+            targetFrom  { T 450 K;  P 10 bar; }      // a subcooled liquid
+        }
+    }
+    {
+        name          halfBoil;
+        type          flashSpec;
+        composition   { water 1; }
+        spec
+        {
+            pair           PVF;
+            P              1 atm;
+            vaporFraction  0.5;
+        }
+    }
+    {
+        name          dewP;
+        type          flashSpec;
+        composition   { water 1; }
+        spec
+        {
+            pair           TVF;
+            T              373.15 K;
+            vaporFraction  1;
+        }
+    }
+);

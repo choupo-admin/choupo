@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 512,
+  "cases": 513,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -3186,6 +3186,20 @@
    "application": "choupoProps",
    "ops": [
     "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/thermo/flashSpec01_wet_steam_expansion": {
+   "application": "choupoProps",
+   "ops": [
+    "flashSpec"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -7755,6 +7769,7 @@
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
+    "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
     "tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP",
@@ -9088,6 +9103,7 @@
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
+    "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
@@ -9369,6 +9385,9 @@
     "tutorials/steady/membranes/membrane24_fit_then_simulate",
     "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
     "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars"
+   ],
+   "flashSpec": [
+    "tutorials/props/thermo/flashSpec01_wet_steam_expansion"
    ],
    "freezingPoint": [
     "tutorials/props/electrolyte/fpd01_nacl_freezing"
