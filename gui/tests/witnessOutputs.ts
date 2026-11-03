@@ -107,6 +107,13 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file: "trajectory.csv",
     readBy: ["batchStaircase.test.ts"],
   },
+  //  The PFD sheet (S2): the engine's own stream table, which the sheet's
+  //  columns are held to row by row.
+  {
+    caseDir: "tutorials/batch/plant/donepezil01_tablets",
+    file: "reports/streams/streamTable.csv",
+    readBy: ["pfdSheet.test.ts"],
+  },
   {
     caseDir: "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     file: "sweep_pumpSystem.csv",

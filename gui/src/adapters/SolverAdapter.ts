@@ -626,6 +626,9 @@ export interface RunResult {
    *  when the report did not run (or refused): say so, never recompute. */
   globalEnergyBoundary?: GlobalEnergyBoundary;
   globalMassBoundary?: GlobalMassBoundary;
+  /** The engine that wrote this result: the `citation` block's version and
+   *  commit.  The PFD sheet's title block names it; absent = not published. */
+  engine?: { version: string; commit?: string };
   /** Batch campaign timeline: every recipe action that FIRED (with the
    *  trigger that fired it -- the scheduled time or the tripped `when`
    *  condition, verbatim) plus unit status events (a rectifier hitting

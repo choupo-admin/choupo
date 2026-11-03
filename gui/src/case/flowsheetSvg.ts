@@ -70,6 +70,9 @@ export interface SvgEdge {
   dash?: string;
   opacity?: number;
   arrow: boolean;
+  /** The PFD stream number drawn as a badge on the wire (the PFD sheet,
+   *  case/pfdSheet.ts); absent = no badge, as the coloured export has none. */
+  label?: string;
 }
 
 export interface FlowsheetSvgInput {
@@ -78,6 +81,9 @@ export interface FlowsheetSvgInput {
   nodes: SvgNode[];
   edges: SvgEdge[];
   legends: ColourLegend[];
+  /** The figure alone: no title, subtitle or legend band -- the PFD sheet
+   *  supplies its own title block and legend around it. */
+  bare?: boolean;
 }
 
 /** Escape text for an SVG text node / attribute. */
@@ -160,10 +166,10 @@ export function buildFlowsheetSvg(inp: FlowsheetSvgInput): string {
   //  figure is fitted to a report page -- so the title and the legend are
   //  drawn at a scale `k` that keeps them about a ninth of the width.
   const k = legendScale(x1 - x0);
-  const head = 40 * k;
-  const legendH = inp.legends.length * LEGEND_ROW * k;
+  const head = inp.bare ? 0 : 40 * k;
+  const legendH = inp.bare ? 0 : inp.legends.length * LEGEND_ROW * k;
   const W = Math.max(x1 - x0 + 2 * PAD, 560);
-  const H = y1 - y0 + 2 * PAD + head + legendH + PAD;
+  const H = y1 - y0 + 2 * PAD + head + legendH + (inp.bare ? 0 : PAD);
   const ox = PAD - x0, oy = PAD + head - y0;
 
   const body: string[] = [];
@@ -176,11 +182,13 @@ export function buildFlowsheetSvg(inp: FlowsheetSvgInput): string {
   const defs = [...markers.entries()].map(([c, id]) =>
     `<marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="6" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0,0 L10,5 L0,10 z" fill="${c}"/></marker>`).join("");
 
-  body.push(`<g transform="translate(${PAD},0) scale(${fmtN(k)})">`);
-  body.push(`<text x="0" y="24" font-family="${FONT}" font-size="15" font-weight="700" fill="#111">${xmlEscape(inp.title)}</text>`);
-  if (inp.subtitle)
-    body.push(`<text x="0" y="38" font-family="${FONT}" font-size="10" fill="#555">${xmlEscape(inp.subtitle)}</text>`);
-  body.push(`</g>`);
+  if (!inp.bare) {
+    body.push(`<g transform="translate(${PAD},0) scale(${fmtN(k)})">`);
+    body.push(`<text x="0" y="24" font-family="${FONT}" font-size="15" font-weight="700" fill="#111">${xmlEscape(inp.title)}</text>`);
+    if (inp.subtitle)
+      body.push(`<text x="0" y="38" font-family="${FONT}" font-size="10" fill="#555">${xmlEscape(inp.subtitle)}</text>`);
+    body.push(`</g>`);
+  }
 
   body.push(`<g transform="translate(${fmtN(ox)},${fmtN(oy)})">`);
   for (const e of inp.edges) {
@@ -212,13 +220,26 @@ export function buildFlowsheetSvg(inp: FlowsheetSvgInput): string {
       body.push(`<text x="${fmtN(tx)}" y="${fmtN(cy + 14)}" font-family="${MONO}" font-size="10" fill="#333">${xmlEscape(n.sub)}</text>`);
     body.push(`</g>`);
   }
+  //  The stream-number badges, over the boxes so a wire running behind a
+  //  node still shows its number.
+  for (const e of inp.edges) {
+    if (!e.label) continue;
+    const pts = pathPoints(e.d);
+    const m = pts[Math.floor(pts.length / 2)];
+    if (!m) continue;
+    const r = 6 + 3.5 * Math.max(0, e.label.length - 1);
+    body.push(`<g><rect x="${fmtN(m.x - r)}" y="${fmtN(m.y - 8)}" width="${fmtN(2 * r)}" height="16" rx="8" fill="#374151" stroke="#fff" stroke-width="1"/>`
+      + `<text x="${fmtN(m.x)}" y="${fmtN(m.y + 4)}" text-anchor="middle" font-family="${MONO}" font-size="11" font-weight="700" fill="#fff">${xmlEscape(e.label)}</text></g>`);
+  }
   body.push(`</g>`);
 
-  const ly = y1 - y0 + 2 * PAD + head;
-  body.push(`<g transform="translate(${PAD},${fmtN(ly)}) scale(${fmtN(k)})">`);
-  let ry = 0;
-  inp.legends.forEach((lg, i) => { ry += legendSvg(lg, 0, ry, i, body); });
-  body.push(`</g>`);
+  if (!inp.bare) {
+    const ly = y1 - y0 + 2 * PAD + head;
+    body.push(`<g transform="translate(${PAD},${fmtN(ly)}) scale(${fmtN(k)})">`);
+    let ry = 0;
+    inp.legends.forEach((lg, i) => { ry += legendSvg(lg, 0, ry, i, body); });
+    body.push(`</g>`);
+  }
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${fmtN(W)}" height="${fmtN(H)}" viewBox="0 0 ${fmtN(W)} ${fmtN(H)}">`
     + `<defs>${defs}</defs>`
