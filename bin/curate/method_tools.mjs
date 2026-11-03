@@ -224,7 +224,11 @@ async function main()
 
     if (process.argv.includes("--emit"))
     {
-        process.stdout.write(text);
+        //  writeSync, not process.stdout.write: on a PIPE the latter is
+        //  asynchronous, and the process.exit() below cuts it at the pipe
+        //  buffer (64 KiB).  The document passed that size on 2026-11-03
+        //  (C212's two pages) and check_method_tools read a truncated JSON.
+        fs.writeSync(1, text);
         return 0;
     }
 

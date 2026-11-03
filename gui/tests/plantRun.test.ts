@@ -34,7 +34,7 @@ import {
   converted, crewOf, enginePositions, groupsOf, itemise, nominalRate, npvOf,
   paybackOf, plantStart, sensitivityOf, turton, unitMargin, irrOf, type RunPlant,
 } from "../src/ui/methods/plantRunMath.js";
-import { PLANT_RUN_LIMITS, PLANT_RUN_QUIZ, PLANT_RUN_STEPS } from "../src/ui/methods/plantRunLesson.js";
+import { PLANT_RUN_QUIZ } from "../src/ui/methods/plantRunLesson.js";
 import { PlantRunTool } from "../src/ui/methods/PlantRunTool.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 
@@ -316,11 +316,8 @@ describe("the page", () => {
   it("cites each engine line it relies on", () => {
     for (const g of Object.values(ENGINE_FACTS)) expect(html).toContain(`${g.file}:${g.line}`);
   });
-  it("names no competitor product", () => {
-    const text = [html, JSON.stringify(PLANT_RUN_STEPS), JSON.stringify(PLANT_RUN_LIMITS),
-      JSON.stringify(PLANT_RUN_QUIZ)].join(" ");
-    expect(text).not.toMatch(/aspen|hysys|pro\/ii|chemcad|dwsim|unisim|gproms/i);
-  });
+  //  No competitor-name test here: check_doctrine holds the ban repo-wide,
+  //  and a test that spells the names is itself a site it refuses.
 });
 
 describe("the registry and the guide", () => {
