@@ -162,6 +162,14 @@ COMPETITOR_NAMED_TREES = {
         "paper's comparison with the same open (GPL-3.0) reference simulator, "
         "by Vitor's decision for the papers; every closed simulator stays "
         "banned there (DEV.md 4c C126)"),
+    "docs/design/the-kernel-against-the-reference-simulator.md": (
+        {"dwsim"},
+        "the C214 kernel study (DEV.md 4c): a measured, by-area comparison "
+        "with the same open (GPL-3.0) reference simulator the papers name; "
+        "the name IS the evidence -- the numbers are quoted from its "
+        "repository and a reader must be able to retake them; a developer "
+        "record, never a user-facing surface (arm (t) holds that); every "
+        "closed simulator stays banned there"),
     #  A PATH PREFIX, not a directory: the C131 phase-2 review records
     #  (docs/design/review-c131-<family>.md), one per family.
     "docs/design/review-c131-": (

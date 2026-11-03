@@ -1983,11 +1983,11 @@ accepts today, and that is a policy call.
 > (c) Ince, Benyahia & Vile 2025 (CC BY) stays a citation: its cost tables
 > are in an unread SI.
 
-> **C214. THE COMPUTATIONAL KERNEL OF CHOUPO AGAINST DWSIM'S (Vitor, 2026-11-03
-> evening: an assistant he was using measured DWSIM's kernel at about twice
-> Choupo's size and listed what DWSIM has that Choupo lacks; "Eu gostava que
+> **C214. THE COMPUTATIONAL KERNEL OF CHOUPO AGAINST THE OPEN REFERENCE SIMULATOR'S (Vitor, 2026-11-03
+> evening: an assistant he was using measured the reference simulator's kernel at about twice
+> Choupo's size and listed what it has that Choupo lacks; "Eu gostava que
 > tu fizesses uma comparacao dos dois kernels e me sugerisses coisas para na
-> proxima semana aproximar substancialmente o Choupo do DWSIM").**  A
+> proxima semana aproximar substancialmente o Choupo [do simulador de referencia]").**  A
 > strategy study, so written on Fable (asked for and given).  Rule from the
 > project's own doctrine: "approach" is NOT "copy the breadth" -- the
 > philosophy rejects breadth parity; the study measures the two kernels BY
@@ -1998,7 +1998,20 @@ accepts today, and that is a policy call.
 > student designing a plant with Choupo.  Written in `docs/design/` (a
 > developer record, never a manual -- the competitor ban covers user-facing
 > surfaces only, CLAUDE.md §10); the measurements by Sonnet generals reading
-> the public DWSIM sources; the judgement the architect's.
+> its public sources; the judgement the architect's.
+> **WRITTEN (2026-11-03 night): `docs/design/the-kernel-against-the-reference-simulator.md`.**
+> The "2x" is a folder count: kernel against kernel Choupo is the LARGER
+> (252 k C++ against ~185 k hand-written VB/C#; its bulk is 212 k of
+> GUI, 127 k+ of vendored numerics, 433 k of XML/JSON data).  it is wider
+> (25 property packages, petroleum, hydrates, inside-out and universal
+> flashes, exchanger rating by Tinker, Beggs-Brill, CAPE-OPEN); Choupo is
+> deeper in its own domains (electrolytes, membranes, solids, batch, design,
+> 302 gates) and it has no conservation gate, no per-value provenance,
+> 25 commits in the last year.  THE WEEK (W1-W7, the architect's): a general
+> flash specification (P,H)/(P,S)/(T,V/F); Bell-Delaware exchanger rating;
+> dominant-eigenvalue recycle acceleration; Beggs-Brill pipe; a Cv-rated
+> control valve with a characteristic; IF97 region 3 + the verification gate;
+> a water electrolyser unit.  Nothing from breadth or platform.
 
 > **THE STACK, AND THE ONE FULL SWEEP (the architect, 2026-11-03 06:00):** five
 > of the seven builds are now in the local branch `staging` (C208, S1, S2,
