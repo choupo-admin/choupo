@@ -13659,10 +13659,41 @@ leaving two.)  You close those two by specifying \emph{any two} of:
 \midrule
 $T$ and $P$       & \emph{isothermal} flash --- Choupo's \code{isothermalFlash} \\
 $Q$ and $P$       & \emph{adiabatic} ($Q=0$) or fixed-duty flash; $T$ is found \\
+$H$ and $P$       & isenthalpic flash (a throttle); $T$ is found \\
+$S$ and $P$       & isentropic flash (an ideal turbine or compressor); $T$ is found \\
 $\beta$ and $P$   & fixed vapour fraction ($V/F$); $T$ is found \\
+$\beta$ and $T$   & fixed vapour fraction at a temperature; $P$ is found \\
 \bottomrule
 \end{tabular}
 \end{center}
+
+\paragraph{One home for the pairs other than $(T,P)$.}  The props-bench
+operation \code{flashSpec} asks any of $(P,H)$, $(P,S)$, $(T,\beta)$ and
+$(P,\beta)$ of \emph{one} function, \code{flashState::specifiedFlash}
+(\code{src/unitOperations/flash/SpecifiedFlash.H}), and every trial state it
+visits is the isothermal flash above: the search is a one-dimensional root in
+$T$ (or $\ln P$) of the property of the equilibrium state, bracketed and
+refined by Newton.  Two cases are worth seeing.  A \emph{pure} fluid at fixed
+$P$ has $H(T)$ and $S(T)$ that \emph{jump} by the latent heat and the latent
+entropy at $T_{\mathrm{sat}}(P)$, so a target between the two saturated legs
+has no root in $T$ at all: the state is two-phase at $T_{\mathrm{sat}}$ and
+its coordinate is the vapour fraction, found by the lever rule,
+\[
+  \beta \;=\; \frac{S^{*}-s_L(T_{\mathrm{sat}})}{s_V(T_{\mathrm{sat}})-s_L(T_{\mathrm{sat}})}
+\]
+--- the quality of wet steam leaving an isentropic expansion
+(\code{tutorials/props/thermo/flashSpec01\_wet\_steam\_expansion}: 80~bar and
+500\,\textdegree C to 0.1~bar ends at $\beta = 0.810$, the steam table's
+answer).  And a bubble or dew point ($\beta = 0$ or $1$) is located as the
+edge of the two-phase band \emph{as the flash draws it}, never by a second
+equation.  The entropy of a liquid is the partner of the liquid enthalpy the
+energy balance prices: per species the same 298~K bridge, plus the ideal
+mixing term and the excess entropy $S^E=(H^E-G^E)/T$, with $G^E$ the one the
+flash equilibrates and $H^E$ the one the enthalpy carries (zero unless the
+activity pairs are calorimetrically fitted).  The units \code{adiabaticFlash},
+\code{valve}, \code{compressor} and \code{turbine} still run their own
+searches; the turbine's is over a single-phase vapour and cannot land inside
+the dome.
 
 \begin{figure}[ht]
 \centering
