@@ -80,6 +80,7 @@ import { GmpBuildingSection, useBuildingOverlay } from "./GmpBuildingSection.js"
 import { BatchPlanSection } from "./BatchPlanSection.js";
 import { downloadPfdSvgs, openPfdTab, pfdSetOfRun } from "./pfdReport.js";
 import { PAGE_SIZES, type PageSizeName } from "../case/pfdSheet.js";
+import { machineUtilisation } from "../case/machineUtilisation.js";
 import { PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
 import { popOutCaseLayout } from "../state/useLayoutPopOut.js";
 import { useStaleResult } from "../state/useStaleResult.js";
@@ -147,6 +148,9 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     .filter((c) => c.n > 0);
   const tree = useMemo(() => designSheetTree(runResult.designFiles), [runResult.designFiles]);
   const hasBanks = useMemo(() => hasBankSheet(runResult.designFiles), [runResult.designFiles]);
+  const machines = useMemo(
+    () => machineUtilisation(runResult.equipment, runResult.advisories),
+    [runResult.equipment, runResult.advisories]);
   const econ = runResult.economics;
   //  The tornado, built ONCE from the engine's sensitivity rows; null when
   //  the case declared no sensitivity -- and then there is no section.
@@ -202,7 +206,7 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     layout:     () => (scene && layout ? <LayoutBody layout={layout} scene={scene}
                                                     building={runResult.building} /> : null),
     batchPlan:  () => (runResult.batchPlan
-      ? <BatchPlanSection plan={runResult.batchPlan} caseName={caseName} /> : null),
+      ? <BatchPlanSection plan={runResult.batchPlan} caseName={caseName} machines={machines} /> : null),
   };
 
   return (

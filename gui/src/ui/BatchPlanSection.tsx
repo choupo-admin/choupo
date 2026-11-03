@@ -58,6 +58,8 @@ import {
   type GanttBarGeom, type GanttFigure,
 } from "../case/batchGantt.js";
 import { downloadTextFile } from "../case/saveCase.js";
+import type { MachineRow } from "../case/machineUtilisation.js";
+import { MachineUtilisationTable } from "./MachineUtilisationTable.js";
 import { useNarrowViewport } from "./methods/methodsChrome.js";
 
 //  Paper and ink: a drawing is read on white, in the app and on paper.
@@ -531,7 +533,8 @@ function MultiTables({ plan }: { plan: MultiProductPlan }) {
 
 /** The Reports section: summary, Gantt (with download), the tables, the
  *  findings. */
-export function BatchPlanSection({ plan, caseName = "" }: { plan: BatchPlan; caseName?: string }) {
+export function BatchPlanSection({ plan, caseName = "", machines = [] }:
+  { plan: BatchPlan; caseName?: string; machines?: MachineRow[] }) {
   const fig = useMemo(() => ganttFigure(plan), [plan]);
   const svgRef = useRef<SVGSVGElement>(null);
   const narrow = useNarrowViewport();
@@ -573,9 +576,10 @@ export function BatchPlanSection({ plan, caseName = "" }: { plan: BatchPlan; cas
           {plan.missing.length > 12 ? `, and ${plan.missing.length - 12} more` : ""}.
         </Text>
       )}
+      <MachineUtilisationTable rows={machines} />
       {fig && (
         <>
-          <Group gap="sm" mb={6} align="center">
+          <Group gap="sm" mb={6} mt="md" align="center">
             <Text size="sm" fw={600}>
               {plan.multiProduct ? "Gantt chart — the year, then each product's first campaign"
                 : "Gantt chart — first campaign"}

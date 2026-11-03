@@ -108,6 +108,20 @@ describe("3. the run summary is read off the result, never computed", () => {
       residual_pct: null, residual_pct_available: false } });
     expect(noScale.energy).toEqual({ residualKW: -1.376, pct: null });
   });
+  it("without globalMassBoundary the cell reads the TOTAL scope from the boundary streams", () => {
+    const { globalMassBoundary: _g, ...noGm } = r;
+    const t = runSummary({ ...noGm, componentMolarMass: { w: 18 },
+      streams: [stream("in", "feed", { F: 2, composition: { w: 1 } }),
+                stream("out", "product", { F: 1.5, composition: { w: 1 } })] } as RunResult);
+    expect(t.mass?.scope).toBe("total");
+    expect(t.mass?.pct).toBeCloseTo(75, 9);
+    //  a closed cycle: streams, but nothing crosses the boundary
+    const closed = runSummary({ ...noGm, componentMolarMass: { w: 18 },
+      streams: [stream("a", "intermediate", { composition: { w: 1 } })] } as RunResult);
+    expect(closed.mass).toEqual({ pct: null, scope: "total", utilityExcludedPct: null });
+    //  no streams at all: the engine published nothing
+    expect(runSummary({ ...noGm, streams: [] } as RunResult).mass).toBeNull();
+  });
   it("the status sentence says which state the run is in", () => {
     expect(runSummarySentence(null, "idle")).toBe("Not run yet.");
     expect(runSummarySentence(runSummary(r), "done")).toMatch(/^Run complete: converged; 1 advisory\.$/);
