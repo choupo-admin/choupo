@@ -36,8 +36,19 @@ typed: every flowsheetDict under tutorials/ that declares a
 `distillationColumn`), plus two probes built here:
 
   (a) THE CONDENSER, on the streams' surface, every column.  Total
-      condenser: Q = -V_1 [ H_V(T_1, P, y_1) - H_L(T_D, P, x_D) ] with
-      V_1 = (R + 1) D, T_D the PUBLISHED distillate temperature.  Partial:
+      condenser: Q = -[ V_1 H_V(T_1, P, y_1) - R D H_L(T_D, P, x_D)
+      - D H_D ] with V_1 = (R + 1) D, T_D the PUBLISHED distillate
+      temperature: the reflux R D returns as the liquid x_D at T_D and the
+      distillate D leaves in the state ITS STREAM CARRIES, H_D priced by the
+      energy report's own rule (probe op `HS`: `flashState::priceState`,
+      StreamEquilibrium.H).  For a distillate pinned at its bubble point
+      H_D = H_L(T_D, P, x_D) and this is the old
+      -V_1 [ H_V - H_L(T_D) ]; for one with no bubble point (the
+      lightsColumn of aceticAcid02_plant carries 7 % CO at 1.5 bar) the
+      engine publishes it UNPINNED at the top tray's T and the report
+      prices its own equilibrium, so the old form -- which priced it as a
+      liquid -- held a second copy of a rule the column no longer applies
+      (b46333f33; difference -6.43 kW, 2026-11-03).  Partial:
       Q = -[ V_2 H_V(y_2, T_2) - R D H_L(x_1, T_1) - D H_V(y_1, T_1) ].
       Held to the published `Q_condenser_kW`.
 
@@ -298,6 +309,13 @@ def check_column(case, name, block, d, info, log=""):
     iHL = [pr.add("HL", T[j], P, x[j]) for j in range(N)]
     iHV = [pr.add("HV", T[j], P, y[j]) for j in range(N)]
     iHLD = pr.add("HL", TD, P, xD)
+    #  The distillate PRICED AS THE STREAM IT IS (2026-11-03).  The result
+    #  JSON does not say whether a stream is pinned, so the gate reads it off
+    #  the physics: a distillate the column pinned liquid sits AT its bubble
+    #  point (T_D = T_bubble to 1e-4 K, probe op SAT); one with no bubble
+    #  point at P (a non-condensable fraction) or at another temperature is
+    #  UNPINNED and means its own equilibrium, which is what the report
+    #  prices.  Where the two readings price the same state they agree.
     iK = [pr.add("K", T[j], P, x[j], y[j]) for j in range(N)]
     res = pr.run()
     for i in iK:
@@ -321,6 +339,13 @@ def check_column(case, name, block, d, info, log=""):
     hL = [res[i] for i in iHL]
     hV = [res[i] for i in iHV]
     hLD = res[iHLD]
+    sat = Probe(case, comps)
+    sat.add("SAT", TD, P, xD)
+    sat = sat.run()[0]
+    pinnedD = (not isinstance(sat, str)) and abs(sat[0] - TD) < 1e-4
+    pr2 = Probe(case, comps)
+    pr2.add("HS", TD, P, xD, [1.0 if pinnedD else 0.0, dist.get("vf", 0.0)])
+    hDS = pr2.run()[0]
     kW = 1.0   # J/mol x kmol/s
 
     def etol(terms):
@@ -353,7 +378,7 @@ def check_column(case, name, block, d, info, log=""):
             terms = [(R + 1.0) * D * hV[1], -R * D * hL[0], -D * hV[0]]
         else:
             V1 = (R + 1.0) * D
-            terms = [V1 * hV[0], -V1 * hLD]
+            terms = [V1 * hV[0], -R * D * hLD, -D * hDS]
         Qc = -sum(terms) * kW
         dq = Qc - k["Q_condenser_kW"]
         out.append(("a", abs(dq) <= etol(terms),
