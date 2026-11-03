@@ -76,6 +76,33 @@ public:
     // resolved at construction time from the postDict.
     virtual int run(SimulationResult& result) = 0;
 
+    //  DOES A NONZERO RETURN OF `run` FAIL THE RUN?  (DEV.md 4c C208, 2026-11-02.)
+    //  The count `run` returns was DISCARDED by every call site, so an
+    //  economics pass with a REQUIRED PRICE missing ended at exit 0 with no
+    //  appraisal.  A pass whose nonzero return means "the appraisal the case
+    //  asked for was NOT made" says yes here; ONE rule, read by the callers
+    //  through `failsRunOn`.  The SIZING and COSTING passes say no, ON
+    //  PURPOSE: the sizing count is the items a sizer REFUSED BY NAME (a
+    //  catalyst charge with no declared price, a machine that does not fit),
+    //  and the documented contract is "the ITEM is refused, never the run" --
+    //  the table says FAILED, the totals read INCOMPLETE, the caveat block
+    //  carries `incomplete-sizing`, the plot plan (DEV.md 4c C79) and
+    //  `check_design_sheet` arm (n) rely on the run going on.  The costing
+    //  count is the items its model could not price: the same channel.
+    virtual bool nonzeroFailsRun() const { return false; }
+
+    //  The ONE reading of the rule: print the failure by name and return true
+    //  when this pass's return `rc` must make the run fail.
+    static bool failsRunOn(const PostProcessor& pass, int rc);
+
+    //  The same rule for the OUTER DRIVERS, which run the chain once per
+    //  point: run the pass and, when `failsRunOn` says its return fails the
+    //  run, THROW, so the point lands in the driver's own channel for a
+    //  failed point (the sweep's "[sweep] post-processing FAILED at this
+    //  point", the optimiser's counted-and-said penalty) instead of the
+    //  count being thrown away there as it was in `choupoSolve`'s main.
+    static void runOrThrow(PostProcessor& pass, SimulationResult& result);
+
     // ---- Factory (explicit registry) ---------------------------------------
     using Factory = std::function<std::unique_ptr<PostProcessor>(const DictPtr&)>;
 

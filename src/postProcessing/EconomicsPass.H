@@ -130,6 +130,8 @@ public:
     explicit EconomicsPass(const DictPtr& economicsDict);
 
     const std::string& type() const override { return type_; }
+    //  A failed sizer / a missing required price is a failed run (C208).
+    bool nonzeroFailsRun() const override { return true; }
     int                run(SimulationResult& result) override;
 
 private:

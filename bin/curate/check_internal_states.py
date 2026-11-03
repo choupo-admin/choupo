@@ -434,6 +434,28 @@ rule).  Observed, verbatim:
           the file choupo-init0 writes and the state the run starts from would
           then be two different guesses."
 
+  ADDED 2026-11-02 with arm (w) (DEV.md 4c C208 (1)) -- `choupo-init0` on a
+  stream that carries ONLY solids.  Observed BEFORE the fix, on a copy of
+  apalutamide01_tablets with six powder streams deleted: all six written as
+  `componentMolarFlows {}` + `T 0 K`, which the next run refuses (the mix read
+  the fluid flow F only, and a powder has F = 0).  Arm (w1) holds the six to
+  T > 0, a non-empty overall composition, and `intraBlend` to the sum of its
+  four AUTHORED inlets read here, not from the engine; arm (w2) rewrites those
+  four inlets to zero flow and requires exit 1 with `NO ESTIMATE
+  0/intraBlend ... blender` and no file.  Two by-hand sabotages, rebuilt
+  between each, each reverted and rebuilt (the gate's other arms then show
+  only the ChemicalPlantTutorial refusal that C208 (2b) made visible):
+
+  S27 the solids-only temperature branch set to 0 (`mix.T = 0.0`)
+      -> "(w1) 0/intraBlend was written with T = 0.0 K -- the state the run
+          refuses." on all six streams, and "(w1) intraBlend's T (0 K) lies
+          outside its inlets' range [298.15, 319.24] K."
+  S28 the no-material refusal block disabled (`if (false && ...)`)
+      -> "(w2) choupo-init0 refused (rc=1) but did not name `intraBlend` and
+          its producer `blender` under NO ESTIMATE." -- the run still stopped,
+          at the generic UNREACHED list, which is the refusal for a different
+          cause; the arm tells the two apart.
+
   ARM (p) HAS NO POST-FIX SABOTAGE, said plainly.  It runs the real binary, so
   nothing short of rebuilding a broken engine reaches it -- and rebuilding is
   the tree-poisoning shape only `check_gate_selftest` may take.  Its evidence
@@ -1798,6 +1820,122 @@ def check_init0_interiors(problems, notes):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+APALUTAMIDE = "tutorials/batch/plant/apalutamide01_tablets"
+
+
+def stream_T(path):
+    """`T` [K] out of a `0/<stream>` file, read independently of the engine."""
+    t = strip_comments(path.read_text(errors="replace"))
+    m = re.search(r'^\s*T\s+([-\d.eE+]+)\s*(K|degC)\s*;', t, re.M)
+    if not m:
+        return None
+    v = float(m.group(1))
+    return v + 273.15 if m.group(2) == "degC" else v
+
+
+def check_init0_solids(problems, notes):
+    """(w) `choupo-init0` ESTIMATES A STREAM THAT CARRIES ONLY SOLIDS, OR
+    REFUSES IT BY NAME -- NEVER A `T 0 K` FILE (DEV.md 4c C208 (1),
+    2026-11-02).
+
+    The propagation mixed only the FLUID flow F, so a powder stream (F = 0)
+    got no flow, no composition and no T: the tool wrote
+    `componentMolarFlows {}` + `T 0 K` and the next run refused the file.
+    Measured on apalutamide01_tablets before the fix: all six regenerated
+    streams (intraBlend, ribbons, milledGranules, granules, finalBlend,
+    tabletCores) were written that way.
+
+    (w1) On a copy of apalutamide01_tablets with those six streams deleted:
+         the tool exits 0; each of them is written with T > 0 and a
+         non-empty overall componentMolarFlows; and `intraBlend` -- a
+         `mixer` of four AUTHORED solid inlets -- equals, component by
+         component, the sum of those four files' flows (read here, not from
+         the engine), at a T inside the inlets' range.
+    (w2) On a copy whose four blender inlets are rewritten with zero flows:
+         the tool exits 1 and names `intraBlend` (`NO ESTIMATE`) and its
+         producer, and writes NO file for it -- never a T 0 K state."""
+    src = ROOT / APALUTAMIDE
+    if not src.is_dir():
+        problems.append("(w) %s is missing -- this arm CANNOT RUN and must not "
+                        "pass" % APALUTAMIDE)
+        return
+    gone = ["intraBlend", "ribbons", "milledGranules", "granules",
+            "finalBlend", "tabletCores"]
+    ins = ["asdPowder", "mccFeed", "ccsIntraFeed", "silicaIntraFeed"]
+    tmp = Path(tempfile.mkdtemp(prefix="choupo_init0_solids_"))
+    try:
+        # ---- (w1)
+        case = copy_any(APALUTAMIDE, tmp / "w1")
+        for g in gone:
+            (case / "0" / g).unlink()
+        rc, out, err = run_init0(case)
+        if rc != 0:
+            problems.append("(w1) choupo-init0 failed on a copy of %s (rc=%d).\n"
+                            "    %s" % (APALUTAMIDE, rc, err.strip()[:400]))
+            return
+        for g in gone:
+            f = case / "0" / g
+            if not f.is_file():
+                problems.append("(w1) choupo-init0 wrote no 0/%s" % g)
+                continue
+            flows = stream_state(f)
+            T = stream_T(f)
+            if not flows or sum(flows.values()) <= 0.0:
+                problems.append("(w1) 0/%s was written with an EMPTY (or zero) "
+                                "componentMolarFlows -- a solids-only stream "
+                                "must keep the solids' flows." % g)
+            if T is None or T <= 0.0:
+                problems.append("(w1) 0/%s was written with T = %s K -- the "
+                                "state the run refuses." % (g, T))
+        want, Ts = {}, []
+        for n in ins:
+            fl = stream_state(case / "0" / n)
+            Ts.append(stream_T(case / "0" / n))
+            for k, v in (fl or {}).items():
+                want[k] = want.get(k, 0.0) + v
+        got = stream_state(case / "0" / "intraBlend") or {}
+        for k, v in want.items():
+            if not close(got.get(k, 0.0), v, 1e-6):
+                problems.append("(w1) intraBlend carries %g kmol/s of %s; the "
+                                "sum of its four authored inlets is %g."
+                                % (got.get(k, 0.0), k, v))
+        Tb = stream_T(case / "0" / "intraBlend")
+        if Tb is not None and None not in Ts and not (min(Ts) - 1e-6 <= Tb <= max(Ts) + 1e-6):
+            problems.append("(w1) intraBlend's T (%g K) lies outside its inlets'"
+                            " range [%g, %g] K." % (Tb, min(Ts), max(Ts)))
+
+        # ---- (w2)
+        case2 = copy_any(APALUTAMIDE, tmp / "w2")
+        for g in gone:
+            (case2 / "0" / g).unlink()
+        for n in ins:
+            f = case2 / "0" / n
+            t = f.read_text(errors="replace")
+            t = re.sub(r'(componentMolarFlows\s*\{)[^}]*(\})',
+                       lambda m: m.group(1) + "\n    apalutamide 0 kmol/h;\n" + m.group(2),
+                       t)
+            t = re.sub(r'\n\s*phases\s*\{.*\Z', "\n", t, flags=re.S)
+            f.write_text(t)
+        rc2, out2, err2 = run_init0(case2)
+        both = out2 + err2
+        if rc2 == 0:
+            problems.append("(w2) choupo-init0 exited 0 on a blender whose four "
+                            "inlets carry no material -- it must REFUSE the "
+                            "stream it cannot estimate.")
+        elif not re.search(r"NO ESTIMATE\s+0/intraBlend[^\n]*intraBlend[^\n]*blender", both):
+            problems.append("(w2) choupo-init0 refused (rc=%d) but did not name "
+                            "`intraBlend` and its producer `blender` under NO "
+                            "ESTIMATE.\n    %s" % (rc2, both.strip()[-400:]))
+        if (case2 / "0" / "intraBlend").exists():
+            problems.append("(w2) a 0/intraBlend was written for a stream with no "
+                            "material to estimate it from -- the T 0 K file.")
+        notes.append("init0 solids: six powder streams estimated (T > 0, flows "
+                     "kept, intraBlend = sum of its four inlets); no-material "
+                     "case refused by name")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def check_interior_completeness(problems, notes):
     """(u)  A DECLARED INTERIOR TREE MUST BE COMPLETE for the units that read
     one -- a SEPARATE check from the stream completeness contract, which counts
@@ -2005,6 +2143,7 @@ def main() -> int:
     check_round_trip_crystalliser(problems, notes)
     check_extractor_round_trip(problems, notes)
     check_init0_interiors(problems, notes)
+    check_init0_solids(problems, notes)
     check_interior_completeness(problems, notes)
     check_header_sentence(problems, notes)
     check_writer_refusal(problems, notes)

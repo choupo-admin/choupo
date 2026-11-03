@@ -31,6 +31,7 @@ License
 #include "costing/CostingModel.H"
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
+#include "streams/UtilityCircuit.H"
 
 #include "core/Dictionary.H"
 #include "core/Dimensions.H"
@@ -119,6 +120,76 @@ DictPtr loadPriceFile(bool& present)
     present = fs::exists(p);
     if (!present) return nullptr;
     return Dictionary::fromFile(p.string());
+}
+
+// =========================================================================
+//  EVERY RAW-MATERIAL INLET IS PRICED, OR DECLARED FREE (DEV.md 4c C208 (2a),
+//  2026-11-02).
+//
+//  `C_RM` was the sum of the `rawMaterials` ENTRIES, so a boundary inlet with
+//  no entry simply was not in it: the stream entered the plant, the appraisal
+//  ran, NPV and IRR were printed, and the raw-material bill was short by that
+//  stream -- at exit 0, with no line saying so (an acetone feed deleted from
+//  `constant/economics` moved C_RM by nothing and refused nothing).  The
+//  grammar to say "this one is free" already exists -- an entry with
+//  `price 0;` and its `provenance` (the coating air of the tablet plants) --
+//  so no new key is needed: the pass lists the plant's raw-material inlets,
+//  and each must be named by an entry, priced or free.
+//
+//  WHAT COUNTS AS A RAW-MATERIAL INLET: a stream some unit consumes and no
+//  unit produces (read off the flattened topology, the one home), minus
+//  (a) the supply side of a DECLARED utility circuit (cooling water that
+//  returns is a utility, billed by the utility allocation, not a purchase)
+//  and (b) a feed only OBSERVER units consume (a unit with inputs and no
+//  material outputs transforms nothing; `reporting::Topology` makes the same
+//  call for the balances).  Names are matched through the declared alias
+//  bridge, never by a tail.  Returns the unnamed inlets, sorted.
+std::vector<std::string> unpricedRawMaterialInlets(
+    const SimulationResult& r, const std::vector<std::string>& named)
+{
+    std::set<std::string> produced, consumed, byTransformer;
+    for (const auto& fu : r.topology)
+    {
+        for (const auto& o : fu.outs) produced.insert(o);
+        for (const auto& i : fu.ins)  consumed.insert(i);
+        if (!fu.outs.empty())
+            for (const auto& i : fu.ins) byTransformer.insert(i);
+    }
+
+    //  declared utility circuits (root flowsheetDict `utilities`); a file
+    //  that cannot be read declares none -- which only makes the check
+    //  STRICTER (an unreadable declaration cannot excuse an inlet).
+    std::set<std::string> utilityStreams;
+    try
+    {
+        if (fs::exists("system/flowsheetDict"))
+        {
+            const DictPtr fd = Dictionary::fromFile("system/flowsheetDict");
+            const auto circuits = utilityCircuits::read(fd);
+            for (const auto& kv :
+                 utilityCircuits::circuitOfStream(circuits, r.boundaryAliasOf))
+                utilityStreams.insert(kv.first);
+        }
+    }
+    catch (const std::exception&) {}
+
+    std::set<std::string> covered(named.begin(), named.end());
+    for (const auto& n : named)
+    {
+        const auto a = r.boundaryAliasOf.find(n);
+        if (a != r.boundaryAliasOf.end()) covered.insert(a->second);
+        for (const auto& kv : r.boundaryAliasOf)
+            if (kv.second == n) covered.insert(kv.first);
+    }
+
+    std::vector<std::string> out;
+    for (const auto& in : consumed)
+    {
+        if (produced.count(in) || !byTransformer.count(in)) continue;
+        if (utilityStreams.count(in) || covered.count(in)) continue;
+        out.push_back(in);
+    }
+    return out;     // std::set iteration order: already sorted
 }
 
 // =========================================================================
@@ -2928,9 +2999,31 @@ int EconomicsPass::run(SimulationResult& result)
             baseIn.rawMats.push_back(std::move(ps));
         }
     }
-    else if (refuseOnMissing && !priceFilePresent)
+    //  (2a) Every raw-material inlet must be NAMED by an entry (priced, or
+    //  free with `price 0;` and its provenance) -- see
+    //  `unpricedRawMaterialInlets`.  Only when a price file exists: its
+    //  absence was handled above, and with `refuseOnMissingPrice 0` the
+    //  unnamed inlets are announced and left out, as every other loud default.
+    if (priceFilePresent)
     {
-        // already handled by the file-missing branch above
+        std::vector<std::string> named;
+        for (const auto& ps : baseIn.rawMats) named.push_back(ps.stream);
+        const auto unnamed = unpricedRawMaterialInlets(result, named);
+        if (!unnamed.empty())
+        {
+            std::string list;
+            for (const auto& u : unnamed) list += (list.empty() ? "" : ", ") + u;
+            const std::string what =
+                "the raw-material price of boundary inlet(s) " + list
+                + ".\n  These streams enter the plant and no `rawMaterials` entry names them, so"
+                  " C_RM would silently leave them out.\n  Declare each in constant/economics:"
+                  " `{ stream <name>; price <EUR/kg>; costYear <y>; provenance { origin \"...\";"
+                  " method \"...\"; } }`,\n  or, if it is genuinely free (air, process water on"
+                  " site), the same entry with `price 0;` and the provenance saying why.";
+            if (refuseOnMissing) return missing(what);
+            std::cerr << "EconomicsPass: " << what << "\n  refuseOnMissingPrice=0 -- these"
+                         " inlets are left out of C_RM (LOUD).\n";
+        }
     }
 
     // ---- 5.  Revenue ----------------------------------------------------
