@@ -36,14 +36,9 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| decide | FREEZE until the tutoring class of 2026-11-03 ends: nothing is integrated into main, so nothing reaches the site; work is built on branches and validated in integration worktrees | C200, C210 |
-| queued | C208 VALIDATED and waiting to land after the class (`--scope` 71/0, `--fast` 78/0; the full sweep dispensed with, the reason in DEV.md): the quiet exit-0 failures, `choupo-init0` for solids-only streams, the flagship's and the sugar sweep's economics restored (`integ/worktree-c208-cases`) | C208 |
-| queued | Dynamic units, slice 2 BUILT (`dynamicCSTR` with `volumeMode variable`, 8e5c7f53b): two witnesses against closed forms, ledgers 1e-14, the gate and its second-order sabotage; it also made `Component::readIdentity` read `Vliq` (a shared path, measured: no salt in the standards or the tutorials declares one, so no number moves); waits its turn to integrate after the class | C205 |
-| queued | PIF E2 + E3 BUILT (4ac1a9ae2, 3dc77e601): HVAC cost from the supply air on declared prices; cleaning events -> purified water and effluent (donepezil 966 cleans, 560 m3 a year); moves rows of the two tablet cases, to be re-recorded WITH the list after the class | C195, C210 |
-| queued | GUI E6 + the MASS cell BUILT (b4bd9858c, f1ac4602b): the per-machine utilisation table (the Gantt already existed) and the MASS cell reading the TOTAL scope; waits its turn after the class; follow-up: publish the machine `kind` and `announceAbove` in the sheets | C195, C201 (2) |
-| queued | EduTools E7 + E8 BUILT (d572ed8a5 `economics-errors`, 79f998c9c `demand-forecast`): each error class names the real engine guard; five classes have none (royalty, break-even, the working-capital method, the discount-rate size, production vs market); not seen in a browser; waits its turn after the class | C195, C210 |
-| queued | Document set S2 BUILT (886f461d1): the PFD sheet and PDF, sized A3-A1 by content (swro01 A3, donepezil A2); waits its turn after the class; to check at integration: a stale `main.cpp:309` citation in `numericsLessons.test.ts` | C207, C203, C210 |
-| running | Document set S1 (decided in docs/design/the-plant-document-set.md): equipment tags (generated Turton XX-YZZ A/B, a declared tag wins) and the equipment list (report due 08:00) | C207, C203, C210 |
+| decide | FREEZE until the tutoring class of 2026-11-03 ends: nothing is integrated into main, so nothing reaches the site; main and the site move once, after the class, by fast-forwarding main to `staging` | C200, C210 |
+| running | STACKING into the local branch `staging`, one `bin/integrate --base staging` at a time (about an hour each; the log of each in DEV.md 4c). The SEVEN BUILT branches, in order: C208 (quiet exit-0 failures + the repaired flagship and sugar-sweep economics) -> S1 (equipment tags and list, d09c5cb7b) -> S2 (the PFD sheet and PDF A3-A1, 886f461d1; reads `tagNo`) -> PIF E2+E3 (HVAC cost, cleaning events, 4ac1a9ae2, 3dc77e601) -> dynamic slice 2 (variable-volume CSTR, 8e5c7f53b) -> GUI E6+MASS (b4bd9858c, f1ac4602b) -> EduTools E7+E8 (d572ed8a5, 79f998c9c) | C208, C207, C195, C205 |
+| todo | Watch the tutoring class (2026-11-03 12:00): the students' reports reach Vitor and come here; each is recorded in DEV.md 4c the turn it arrives, then fixed (it goes ahead of everything else) | C200, C195, C210 |
 
 ## Next day (at most 5)
 

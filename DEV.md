@@ -1831,6 +1831,35 @@ accepts today, and that is a policy call.
 > and an earlier `--gui` run reported 26 failures where a plain vitest run
 > reported 1 -- unexplained.
 
+> **DOCUMENT SET S1 BUILT: EQUIPMENT TAGS AND THE EQUIPMENT LIST (2026-11-03
+> night; branch `worktree-agent-ae54dce9aacf55151`, d09c5cb7b; not merged):**
+> one generated tag per sized item, Turton's `XX-YZZ A/B` (`EquipmentTag.cpp`,
+> our own letter table: P pump, C compressor, E exchanger, EV evaporator, V
+> vessel, T tower, TR trays, R reactor, TK tank, D dryer, CR crystalliser, CY
+> cyclone, PX pressure exchanger, MB membrane bank, PSV relief valve, PH header,
+> AH air handling, WG water generator, M process machine, TP tablet press, PK
+> packaging line; an unknown kind gets `X` and a warning); Y = the sector
+> number (1 flat, 0 for the plant level of a sectored case), ZZ per (sector,
+> letters) in declaration order; trains and banks share one number and take the
+> letters A, B..; a declared `tag` / `itemTags` on the postDict entry wins and
+> is announced; equal tags refuse by name.  The JSON key is `tagNo` (the legacy
+> `tag` means the sub-item word `train1`/`shell`), so S2's `tagOfUnit` must read
+> `tagNo` -- ONE line, done at S2's integration.  Written to every design
+> sheet, `sizing.csv`, `costs.csv`, `reports/equipment/equipmentList.csv`, the
+> result JSON, and a printable A3 sheet in Reports ("Open equipment list").
+> swro01_campoDalias: 102 items (MB-101A..F, P-102A..F, PX-101A..F, TK-101);
+> donepezil01_tablets: 16 items (AH-101..103, E-101/102, M-101..105, PK-101,
+> TP-101, V-101).  Goldens: 306 `equipment <item> tagNo <word> exact` rows
+> appended over 25 sizing cases, none moved.  Gate `check_equipment_list` (the
+> letter table covers every sizer kind; uniqueness and identity on three
+> witnesses; a declared duplicate refuses; sabotage caught).  Cut: membrane
+> banks and header pipes show no canonical size in the list (their sizers
+> publish none of the keys the list looks for); the full sweep not run.  STACK
+> (the architect, 2026-11-03 02:00): the seven branches are integrated one after
+> another into a LOCAL branch `staging` with `bin/integrate --base staging`,
+> the order C208, S1, S2, E2+E3, dynamic 2, GUI E6+MASS, EduTools; main and the
+> site move only after the class, by fast-forwarding main to staging.
+
 > **C209. A SECTOR THAT SAYS HOW MANY TIMES IT IS REPEATED (Vitor, 2026-11-02
 > night, about swro01_campoDalias: "no flowsheet devia haver forma de
 > notificar isso ... qualquer envolucro que dissesse quantas vezes se tem de
