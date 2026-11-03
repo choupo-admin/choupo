@@ -131,6 +131,17 @@ struct SaturationLegs
     scalar latent() const { return hVapour - hLiquid; }
 };
 
+//  The translation itself, ONE copy for both properties: `lo` and `hi` are
+//  the blend at q = eps and q = 1 - eps.
+inline SaturationLegs legsFromInteriorBlend(scalar lo, scalar hi, scalar eps)
+{
+    const scalar L = (hi - lo) / (1.0 - 2.0 * eps);
+    SaturationLegs legs;
+    legs.hLiquid = lo - eps * L;
+    legs.hVapour = hi + eps * L;
+    return legs;
+}
+
 inline SaturationLegs pureSaturationLegs(scalar               T,
                                          scalar               P,
                                          const sVector&       z,
@@ -139,11 +150,23 @@ inline SaturationLegs pureSaturationLegs(scalar               T,
 {
     const scalar h_lo = thermo.H_stream_formation(T, P, eps,       z);
     const scalar h_hi = thermo.H_stream_formation(T, P, 1.0 - eps, z);
-    const scalar L    = (h_hi - h_lo) / (1.0 - 2.0 * eps);
-    SaturationLegs legs;
-    legs.hLiquid = h_lo - eps * L;
-    legs.hVapour = h_hi + eps * L;
-    return legs;
+    return legsFromInteriorBlend(h_lo, h_hi, eps);
+}
+
+//  The same two ends on the ENTROPY surface (`S_stream_formation`, the
+//  companion of the enthalpy blend; DEV.md 4c C214 W1).  `hLiquid` /
+//  `hVapour` then carry s_L and s_V [J/(mol K)] -- the struct names the
+//  enthalpy because that was its first reader; the arithmetic is the same
+//  translation, because the entropy blend is linear in q on every route too.
+inline SaturationLegs pureSaturationEntropyLegs(scalar               T,
+                                                scalar               P,
+                                                const sVector&       z,
+                                                const ThermoPackage& thermo,
+                                                scalar               eps = 1.0e-4)
+{
+    const scalar s_lo = thermo.S_stream_formation(T, P, eps,       z);
+    const scalar s_hi = thermo.S_stream_formation(T, P, 1.0 - eps, z);
+    return legsFromInteriorBlend(s_lo, s_hi, eps);
 }
 
 //  The vapour fraction at which a pure stream at (T, P) carries `hTarget`,

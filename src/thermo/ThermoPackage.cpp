@@ -1784,6 +1784,112 @@ scalar ThermoPackage::H_stream_formation(scalar T, scalar P_Pa,
          + vapFrac * (hNonvol + H_real(T, P_Pa, zV));
 }
 
+//  ---- THE ENTROPY COMPANIONS (DEV.md 4c C214 W1, 2026-11-03) ---------------
+//
+//  Leg for leg beside H_liquid_formation / H_stream_formation (the header
+//  states the formulas).  Every refusal names the rung the ENTHALPY has and
+//  the entropy does not, because the alternative -- pricing the entropy on a
+//  neighbouring rung -- would hand a (P, S) specification a state on a
+//  surface no energy balance in the tree uses.
+scalar ThermoPackage::S_liquid_formation(scalar T, const sVector& x) const
+{
+    if (!pureFluid_.empty())
+        if (auto i = pureFluidRoute(pureFluid_, components_, x))
+        {
+            const PureFluidModel& m = *pureFluid_.at(*i);
+            return m.s_molar(T, m.p_sat(T));     // the saturated liquid, as h
+        }
+
+    if (hasElectrolyte())
+        throw std::runtime_error("S_liquid_formation: an ELECTROLYTE liquid"
+            " has no entropy on the surface the energy report prices -- its"
+            " enthalpy reads the aqueous ion reference and L_phi, and neither"
+            " has an entropy partner in this tree.  A (P, S) specification on"
+            " this package is refused rather than priced on a neighbouring"
+            " rung.");
+
+    scalar s = 0.0;
+    for (std::size_t i = 0; i < n(); ++i)
+    {
+        if (x[i] <= 0.0) continue;
+        const Component& c = components_[i];
+        if (dHsolnForSolute(i))
+            throw std::runtime_error("S_liquid_formation: component '"
+                + c.name() + "' is a DISSOLVED solute priced on the"
+                " crystalline rung (Hf_crystal + dHsoln); the solution record"
+                " carries no entropy of solution, so its liquid entropy is not"
+                " defined on this surface.");
+        if (c.hasCpLiquid())
+            s += x[i] * c.s_formation(T, "liquid");
+        else
+        {
+            //  The partner of the Watson-slope enthalpy fallback: the same
+            //  refusal decides whether that leg may be taken at all.
+            c.requireWatsonSlopeLiquidFallback("formation-datum entropy");
+            const scalar Ps = Psat(i, T);
+            if (!(Ps > 0.0))
+                throw std::runtime_error("S_liquid_formation: component '"
+                    + c.name() + "' has no positive saturation pressure at T = "
+                    + std::to_string(T) + " K; the Watson-slope liquid entropy"
+                    " s_ig - R ln(Psat/P0) - Hvap/T cannot be taken.");
+            s += x[i] * (c.s_pure_ig(T)
+                         - constant::R * std::log(Ps / constant::Pref)
+                         - c.Hvap_latent(T) / T);
+        }
+        s -= constant::R * x[i] * std::log(x[i]);         // ideal mixing
+    }
+    //  The excess entropy the enthalpy surface IMPLIES: G^E = RT sum x ln
+    //  gamma from the activity model the flash equilibrates with, H^E the
+    //  fitted excess enthalpy where H_liquid_formation adds one, else 0.
+    if (activity_)
+    {
+        const sVector g = activity_->gamma(T, x);
+        scalar gE_RT = 0.0;
+        for (std::size_t i = 0; i < n() && i < g.size(); ++i)
+            if (x[i] > 0.0 && g[i] > 0.0) gE_RT += x[i] * std::log(g[i]);
+        const scalar hE = activity_->calorimetricFit()
+                        ? activity_->excessEnthalpy(T, x) : 0.0;
+        s += hE / T - constant::R * gE_RT;
+    }
+    return s;
+}
+
+scalar ThermoPackage::S_stream_formation(scalar T, scalar P_Pa,
+                                         scalar vapFrac,
+                                         const sVector& z) const
+{
+    if (!pureFluid_.empty())
+    {
+        if (auto i = pureFluidRoute(pureFluid_, components_, z))
+        {
+            const PureFluidModel& m = *pureFluid_.at(*i);
+            if (vapFrac <= 0.0 || vapFrac >= 1.0)
+                return m.s_molar(T, P_Pa);
+            //  Two-phase pure fluid: split on the saturation line, the same
+            //  two evaluation points H_stream_formation uses.
+            return (1.0 - vapFrac) * m.s_molar(T, m.p_sat(T))
+                 +        vapFrac  * m.s_molar(T, m.p_sat(T) * (1.0 - 1.0e-9));
+        }
+    }
+
+    if (vapFrac <= 0.0) return S_liquid_formation(T, z);
+
+    for (std::size_t i = 0; i < n() && i < z.size(); ++i)
+        if (z[i] > 0.0 && (!components_[i].hasCpIdealGas()
+                           || !components_[i].datumOnIdealGasRung()))
+            throw std::runtime_error("S_stream_formation: component '"
+                + components_[i].name() + "' has no ideal-gas leg, and the"
+                " stream carries a vapour fraction " + std::to_string(vapFrac)
+                + ".  The enthalpy moves such a species to the liquid leg at"
+                " full weight; an entropy would need its mixing term in a"
+                " phase it is not in, so the entropy of this carried state is"
+                " refused.  Price the EQUILIBRIUM phases instead (sOfState).");
+
+    if (vapFrac >= 1.0) return S_real(T, P_Pa, z);
+    return (1.0 - vapFrac) * S_liquid_formation(T, z)
+         + vapFrac * S_real(T, P_Pa, z);
+}
+
 scalar ThermoPackage::H_blendPerNaturalPhase(scalar T, scalar P_Pa,
                                scalar vapFrac, const sVector& z) const
 {
