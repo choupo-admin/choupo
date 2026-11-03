@@ -423,12 +423,13 @@ def arm_k():
       * the latent heat the package prices between the saturated liquid and
         the saturated ASSOCIATED vapour at that T reproduces the closed form
         (monomer bridge at 298.15 K + Kirchhoff on the record's Cp's + the
-        dimer heat at Tb) to 1 J/mol, and lies in the band [20, 36] kJ/mol
-        around the record's measured HvapTb 24.39 -- the band is the
-        MEASURED disagreement of the record's own legs (see the record's
-        section 7), not a tolerance chosen to pass;
+        dimer heat at Tb) to 1 J/mol, and equals the record's measured
+        HvapTb 24.39 to 0.1 kJ/mol -- BY CONSTRUCTION since 2026-11-03
+        (DEV.md 4c C201 item 3): the bridge is the monomer heat at Tb carried
+        to 298.15 K by Kirchhoff on the same Cp's the package prices with, so
+        a miss here means a phase is priced on a different surface;
       * the association is IN the vapour: HV at Tb sits below the monomer
-        ideal gas by the dimer heat (xi * 63.18 kJ/mol, xi ~ 0.26).
+        ideal gas by the dimer heat (xi * 63.18 kJ/mol, xi ~ 0.36).
       * the T-x-y of the witness, run here, against Calvar, Dominguez & Tojo
         (2005) at 101.325 kPa: AAD T <= 2.6 K and AAD y_water <= 0.031.
         Measured: associated vapour 2.187 K / 0.0272, monomer ideal gas
@@ -472,10 +473,13 @@ def arm_k():
         return sum(ci / (i + 1) * (b ** (i + 1) - a ** (i + 1)) for i, ci in enumerate(c))
     #  The bridge is the MONOMER's latent heat at 298.15 K: the apparent
     #  HvapTb put on the monomer basis at Tb (where it was measured, at
-    #  Psat(Tb)), then carried by Watson -- the law of a normal fluid, and the
-    #  normal fluid here is the monomer (DEV.md 4c C201 item 3).
+    #  Psat(Tb)), then carried to 298.15 K by Kirchhoff on the record's OWN
+    #  Cp_ig and liquid Cp -- the arithmetic the package undoes when it prices
+    #  the liquid, so the latent heat at Tb is HvapTb by construction (DEV.md
+    #  4c C201 item 3; Watson, on the apparent heat or on the monomer, was
+    #  measured and rejected: 29.3 and 27.15 kJ/mol against 24.39).
     hMonoTb = Hb + sat(Tb_rec, psat(Tb_rec) / 101325.0) * (-dH)
-    bridge = hMonoTb * ((1 - 298.15 / Tc) / (1 - Tb_rec / Tc)) ** 0.38
+    bridge = hMonoTb - (poly_int(cpg, 298.15, Tb_rec) - poly_int(cpl, 298.15, Tb_rec))
     xiTb = sat(T_ant, P / 101325.0)
     latent_cf = (bridge + poly_int(cpg, 298.15, T_ant) - poly_int(cpl, 298.15, T_ant)
                  + xiTb * dH)
@@ -522,9 +526,14 @@ def arm_k():
                     f"closed form from the records gives {latent_cf/1e3:.4f}: "
                     "the vapour or the liquid is not on the surface this arm "
                     "derives (bridge + Kirchhoff + dimer heat at Tb).")
-    elif not (20.0e3 <= lat <= 36.0e3):
-        fail.append(f"(k) latent heat at Tb {lat/1e3:.3f} kJ/mol is outside "
-                    f"[20, 36] around the record's HvapTb {Hb/1e3:.2f}")
+    elif abs(lat - Hb) > 0.1e3:
+        #  0.1 kJ/mol covers only the two anchors' gap: the record's Tb
+        #  (391.05 K, at Psat(Tb) = 1.0145 bar) against the Antoine root at
+        #  1 atm (391.0085 K) where the package is asked.  Measured: a few J.
+        fail.append(f"(k) latent heat at Tb {lat/1e3:.4f} kJ/mol is not the "
+                    f"record's HvapTb {Hb/1e3:.2f} -- the bridge is built to "
+                    "close on it, so the liquid and the vapour are not on the "
+                    "surface the bridge was derived on")
     elif not (abs((hv - hl) - (bridge + poly_int(cpg, 298.15, T_ant)
                                - poly_int(cpl, 298.15, T_ant))) > 10.0e3):
         fail.append("(k) the vapour at Tb carries no association heat")

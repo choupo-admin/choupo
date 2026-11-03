@@ -587,11 +587,14 @@ def ratchet_kW(pin: float) -> float:
 #  association heat in its duty, the report priced the stream without it);
 #  with the associated vapour the dimer heat is in H_real, read by both, and
 #  the case closes at 0.0000 % (residual 1.6e-7 kW).
-#  esterification2sector RE-PINNED 329.1840 -> 296.5170 the same day, when the
-#  slice was rebased onto the corrected logK25 3.107: MEASURED by the scoped
-#  run, the same model-boundary step, the debt still unpaid.
+#  esterification2sector RE-PINNED 329.1840 -> 310.4440 the same day (DEV.md
+#  4c C201 item 3): the slice rebased onto the corrected logK25 3.107 and the
+#  liquid bridge built by Kirchhoff on the record's own Cp's.  MEASURED by
+#  the scoped run: the same model-boundary step, -760.1 -> -715.7 kW; the
+#  percentage moved with the energy-exchanged denominator (230.5 kW of
+#  boundary duty).  The debt is still unpaid.
 KNOWN_OPEN = {
-    "tutorials/plant/esterification2sector": 296.5170,
+    "tutorials/plant/esterification2sector": 310.4440,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,

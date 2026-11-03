@@ -1360,25 +1360,48 @@ const Component::DatumBridge298& Component::datumBridge298() const
     {
         if (auto dim = vapourAssociation::find(formula_))
         {
-            //  WATSON IS A LAW OF A NORMAL FLUID, and for an associating acid
-            //  the normal fluid is the MONOMER (DEV.md 4c C201 item 3).  The
-            //  record's HvapTb is the APPARENT heat measured at Tb, to a
-            //  vapour that is mostly dimer; the association offsets the
-            //  vaporisation, so the apparent heat is nearly flat in T and
-            //  Watson applied to it over-extrapolates (measured: the bridge
-            //  56.7 kJ/mol against the NBS pair's 52.25, the latent heat at
-            //  Tb 29.3 against 24.38).  So the heat is put on the monomer
-            //  basis WHERE IT WAS MEASURED (Tb, at Psat(Tb), the same
-            //  saturated-vapour split), and the MONOMER is carried to
-            //  298.15 K by Watson with this record's own Tc, Tb and the
-            //  exponent Hvap_latent uses (0.38).
+            //  THE BRIDGE IS THE ARITHMETIC THE ENGINE WILL UNDO (DEV.md 4c
+            //  C201 item 3).  The record's HvapTb is the APPARENT heat
+            //  measured at Tb, to a vapour that is mostly dimer.  It is put on
+            //  the MONOMER basis where it was measured (Tb, at Psat(Tb), the
+            //  same saturated-vapour split the vapour model uses), and the
+            //  monomer heat is carried to 298.15 K by KIRCHHOFF on this
+            //  record's OWN heat capacities -- the very Cp_ig and liquid Cp
+            //  the package prices the two phases with, called here, never
+            //  re-transcribed.  So the latent heat the package prices at Tb
+            //  is the record's HvapTb by construction: one surface, one
+            //  arithmetic.  Watson was tried first and rejected on
+            //  measurement: on the apparent heat it gave a bridge of 56.7
+            //  kJ/mol (NBS 52.25) and 29.3 at Tb (24.38); on the monomer 54.6
+            //  and 27.15 -- an empirical slope the package's own Cp's then
+            //  contradict.  A record with no liquid Cp keeps Watson on the
+            //  monomer, ANNOUNCED, because there is no Cp to integrate.
             const scalar atm = 101325.0;
             const auto svTb = vapourAssociation::saturated(
                 *dim, Tb_, vp().Psat_Pa(Tb_) / atm);
             const scalar assocTb = -dim->dH * svTb.xi;
             const scalar hMonoTb = Hvap_Tb_ + assocTb;
-            const scalar hMono298 = (298.15 >= Tc_) ? 0.0
-                : hMonoTb * std::pow((Tc_ - 298.15) / (Tc_ - Tb_), 0.38);
+            const bool kirchhoff = hasCpLiquid() && hasCpIdealGas();
+            scalar hMono298 = 0.0;
+            std::string rule;
+            if (kirchhoff)
+            {
+                const scalar dCpInt = cpIdealGas().H(Tb_, 298.15)
+                                    - cpLiquid().H(Tb_, 298.15);
+                hMono298 = hMonoTb - dCpInt;
+                rule = "Kirchhoff on the record's own Cp_ig and liquid Cp"
+                       " (Tb -> 298.15 K adds " + std::to_string(-dCpInt / 1000.0)
+                       + " kJ/mol)";
+            }
+            else
+            {
+                hMono298 = (298.15 >= Tc_) ? 0.0
+                    : hMonoTb * std::pow((Tc_ - 298.15) / (Tc_ - Tb_), 0.38);
+                rule = "Watson on the monomer (exponent 0.38): the record"
+                       " carries no liquid or ideal-gas heat capacity to"
+                       " integrate, so the latent heat priced at Tb will not"
+                       " equal HvapTb";
+            }
             const auto sv = vapourAssociation::saturated(*dim, 298.15,
                                                          bridge_.pRefPa / atm);
             bridge_.H = hMono298;
@@ -1390,7 +1413,7 @@ const Component::DatumBridge298& Component::datumBridge298() const
                 + " + dimer dissociation " + std::to_string(assocTb / 1000.0)
                 + " (xi = " + std::to_string(svTb.xi)
                 + " dimer per mol vaporised) = " + std::to_string(hMonoTb / 1000.0)
-                + " kJ/mol; Watson on the monomer to 298.15 K = "
+                + " kJ/mol; carried to 298.15 K by " + rule + " = "
                 + std::to_string(bridge_.H / 1000.0)
                 + " kJ/mol  (from " + dim->record
                 + ", source: " + dim->source + ")";
