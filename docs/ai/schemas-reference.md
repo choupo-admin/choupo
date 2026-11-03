@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*104 of 104 registered operations carry a schema and are documented below.*
+*105 of 105 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -136,6 +136,16 @@ A RECIRCULATING BATCH electrodialysis rig (choupoBatch): two well-mixed tanks --
 | `membrane` |   | string | - | A `kind IEM` record (e.g. CMX_AMX) supplying the area resistances and counter-ion transport numbers. A stack record whose own source name… |
 | `limitingCurrent` |   | object | — | Optional, and there is one route: `GeraldesAfonso2010`, the prediction from the ion diffusivities and the diluate composition. `CowanBrow… |
 | `overLimiting` |   | object | — | OPTIONAL, and the default is `none` -- announced. `none`: the current efficiency stays at xi; if i crosses i_lim the run WARNS that the a… |
+
+## `bellDelawareBench`  (bellDelawareBench operation)
+
+The Bell-Delaware shell-side rating run at DECLARED fluid properties and geometry, printing every step of the textbook method (S_m, V_max, Re, ideal coefficient, Fc, Jc, the leakage and bypass areas, Fbp, the corrected coefficient, and with RL/RB the cross-flow and window pressure drops). Reproduces Hewitt, Shires & Bott Example 6.2 digit by digit. JL, JB, RL, RB are Bell's chart readings and are declared.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `geometry` | ✓ | object | — | shellID, tubeOD, tubePitch, tubePattern (square \| triangular \| rotatedSquare), baffleSpacing, nTubes, tubeLength. |
+| `bellDelaware` | ✓ | object | — | As the unit's bellDelaware block, plus the bench-only SmPrinted (the textbook's printed S_m). |
+| `shellFluid` | ✓ | object | — | mdot, rho, mu, lambda, cp at the declared state. |
 
 ## `boiler`  (boiler operation)
 
@@ -653,7 +663,7 @@ Least-squares polynomial fit of measured heat-capacity data, producing the `coef
 
 ## `heatExchanger`  (heatExchanger operation)
 
-Two-stream heat exchanger. THREE modes via `model`: epsNTU (default) rates from a given U + area; geometry COMPUTES U + area + pressure drop from the tube bundle (Gnielinski/Kern); design SIZES the bundle from a duty target. In geometry/design the U and area below are RESULTS, not inputs.
+Two-stream heat exchanger. FOUR modes via `model`: epsNTU (default) rates from a given U + area; geometry COMPUTES U + area + pressure drop from the tube bundle (Gnielinski/Kern); design SIZES the bundle from a duty target; BellDelaware rates the declared bundle with the Bell-Delaware shell side (the baffle-cut, leakage and bypass factors; JL, JB, RL, RB are Bell's chart readings and are declared). In geometry/design/BellDelaware the U and area below are RESULTS, not inputs.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
@@ -666,6 +676,7 @@ Two-stream heat exchanger. THREE modes via `model`: epsNTU (default) rates from 
 | `shellSide` |   | object | — | Which correlation prices the shell-side film coefficient. |
 | `tubeSide` |   | object | — | Which correlation prices the tube-side film coefficient. |
 | `design` |   | object | — | Turns the geometry pass into a DESIGN: solve the hardware for a declared target instead of rating what is given. |
+| `bellDelaware` |   | object | — | Used with `model BellDelaware;`. Hewitt, Shires & Bott, Process Heat Transfer, Section 6.3.2. The leakage and bypass factors JL, JB (and … |
 
 ## `heatTransferBench`  (heatTransferBench operation)
 

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/bellDelawareBench.schema.json",
+  "title": "bellDelawareBench operation",
+  "x-choupo": {
+    "discipline": "Transport",
+    "activity": "compare"
+  },
+  "description": "The Bell-Delaware shell-side rating run at DECLARED fluid properties and geometry, printing every step of the textbook method (S_m, V_max, Re, ideal coefficient, Fc, Jc, the leakage and bypass areas, Fbp, the corrected coefficient, and with RL/RB the cross-flow and window pressure drops). Reproduces Hewitt, Shires & Bott Example 6.2 digit by digit. JL, JB, RL, RB are Bell's chart readings and are declared.",
+  "type": "object",
+  "properties": {
+    "geometry": {
+      "type": "object",
+      "title": "Bundle geometry",
+      "description": "shellID, tubeOD, tubePitch, tubePattern (square | triangular | rotatedSquare), baffleSpacing, nTubes, tubeLength."
+    },
+    "bellDelaware": {
+      "type": "object",
+      "title": "Bell-Delaware inputs",
+      "description": "As the unit's bellDelaware block, plus the bench-only SmPrinted (the textbook's printed S_m)."
+    },
+    "shellFluid": {
+      "type": "object",
+      "title": "Shell-side fluid",
+      "description": "mdot, rho, mu, lambda, cp at the declared state."
+    }
+  },
+  "required": [
+    "geometry",
+    "bellDelaware",
+    "shellFluid"
+  ],
+  "additionalProperties": false
+}

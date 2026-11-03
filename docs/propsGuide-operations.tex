@@ -581,6 +581,22 @@ Self-check of the heat-transfer correlation library against its own textbook wor
 \quad (and 1 more)
 \end{tutoriallink}
 
+\paragraph{\code{bellDelawareBench}}\label{op:bellDelawareBench}
+The Bell-Delaware shell-side rating run at DECLARED fluid properties and geometry, printing every step of the textbook method (S\_m, V\_max, Re, ideal coefficient, Fc, Jc, the leakage and bypass areas, Fbp, the corrected coefficient, and with RL/RB the cross-flow and window pressure drops). Reproduces Hewitt, Shires \& Bott Example 6.2 digit by digit. JL, JB, RL, RB are Bell's chart readings and are declared.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{bellDelaware}\textbf{*} & Bell-Delaware inputs \\
+\code{geometry}\textbf{*} & Bundle geometry \\
+\code{shellFluid}\textbf{*} & Shell-side fluid \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/heat/bellDelaware01\_hewitt\_example62}
+\end{tutoriallink}
+
 \paragraph{\code{isothermEval}}\label{op:isothermEval}
 Evaluates a curated adsorption isotherm — the loading of one adsorbate on one adsorbent as a function of pressure and temperature — from the adsorbent record's own parameters. The glass-box surface of what a fixed-bed or TSA unit uses internally, so the isotherm a breakthrough case runs on can be plotted and checked before the bed is ever solved.
 
