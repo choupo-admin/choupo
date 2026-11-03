@@ -41,7 +41,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | queued | Dynamic units, slice 2 BUILT (`dynamicCSTR` with `volumeMode variable`, 8e5c7f53b): two witnesses against closed forms, ledgers 1e-14, the gate and its second-order sabotage; it also made `Component::readIdentity` read `Vliq` (a shared path, measured: no salt in the standards or the tutorials declares one, so no number moves); waits its turn to integrate after the class | C205 |
 | running | PIF E2 + E3: HVAC cost from the supply air; cleaning events from the batch plan -> purified water and effluent (report due 07:00) | C195, C210 |
 | queued | GUI E6 + the MASS cell BUILT (b4bd9858c, f1ac4602b): the per-machine utilisation table (the Gantt already existed) and the MASS cell reading the TOTAL scope; waits its turn after the class; follow-up: publish the machine `kind` and `announceAbove` in the sheets | C195, C201 (2) |
-| running | EduTools E7 + E8: how a pharmaceutical-plant economics goes wrong (the reports' error classes, anonymous); the demand forecast with a units check (report due 07:00) | C195, C210 |
+| queued | EduTools E7 + E8 BUILT (d572ed8a5 `economics-errors`, 79f998c9c `demand-forecast`): each error class names the real engine guard; five classes have none (royalty, break-even, the working-capital method, the discount-rate size, production vs market); not seen in a browser; waits its turn after the class | C195, C210 |
 | running | Document set S1 + S2 (decided in docs/design/the-plant-document-set.md): S1 equipment tags (generated Turton XX-YZZ A/B, a declared tag wins) and the equipment list; S2 the PFD as a printable sheet/PDF with its stream table, tags, utilities legend and title block (reports due 07:00) | C207, C203, C210 |
 
 ## Next day (at most 5)
@@ -52,7 +52,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | todo | Land C208 after the class (wrong answers at exit 0 first); the full sweep its main.cpp/PostProcessor reach flags is decided with a written reason; then the four branch builds, ONE integration at a time, in this order: E2+E3, E6+MASS, E7+E8, dynamic slice 2; the site checked after each push | C208, C195, C205 |
 | todo | (Opus) Acetic acid, ONE slice (a wrong reaction heat at exit 0 on start-here step 6): the corrected constant (5bed50aeb) + the associated vapour rebased on it, the latent heat at Tb re-measured (near the measured 24.4), the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; the seven exotherm tutorials to Vitor | C201 (1) |
 | todo | Document set S3 (line list per routed pipe, declared window, declared fittings, pressure deficit and the pump it needs) and S4 (the instrument and loop declaration, the instrument index), both after S1 lands; then S5 the P&ID and S6 the control narrative | C207, C203, C204, C210 |
-| todo | PIF E4 + E5: building cost from the rooms' areas; economics hygiene (working capital by three methods side by side, royalty only inside a patent window) -- AFTER C208 lands (both touch EconomicsPass) | C195, C210 |
+| todo | PIF E4 + E5 (after C208 lands; both touch EconomicsPass): E4 building cost from the rooms' areas; E5 a BREAK-EVEN analysis (14 of 14 reports computed one, Choupo has none), a ROYALTY line with a declared patent window, the three working-capital methods side by side | C195, C210 |
 
 ## Next three days (at most 8)
 

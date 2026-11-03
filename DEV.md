@@ -1755,6 +1755,26 @@ accepts today, and that is a policy call.
 > a look after the push.  Unexplained, to check at integration: 6808 GUI tests
 > passed in the general's final run and 6864 in an earlier one.
 
+> **EDUTOOLS E7 + E8 BUILT, AND WHAT THEIR GUARD SEARCH FOUND (2026-11-03
+> night; branch `worktree-agent-aaf751c224ab2c0c9`: d572ed8a5 `economics-errors`,
+> 79f998c9c `demand-forecast`; not merged; not looked at in a browser):** each of
+> the eight error classes names the REAL engine guard, found by the test
+> opening the cited source.  Classes with NO engine guard at all: **a royalty
+> (EconomicsPass has no royalty line and no patent calendar), a break-even
+> (Choupo has no break-even calculation, and 14 of 14 design reports computed
+> one), the choice of the working-capital method (it prints the FCI-fraction
+> figure beside the build-up and does not judge the choice), the size of the
+> discount rate (it warns above an IRR of 200 % and never looks at the rate),
+> and production against the market.**  So E5 widens, the architect's
+> decision: E5 = (a) a BREAK-EVEN analysis in the economics (the production
+> or price at which the NPV or the annual cash flow is zero, from the case's
+> own cost structure, one home in `appraise`, published and pinned), (b) a
+> ROYALTY line with a declared patent window (rate, start, end, source and
+> reason; zero outside it) -- both NEW rows, appended only -- and (c) the three
+> working-capital methods side by side.  The default numbers on both pages
+> (history, population, plant) are invented illustrations and labelled so; one
+> quiz question was dropped (a table limit of seven per tool).
+
 > **C209. A SECTOR THAT SAYS HOW MANY TIMES IT IS REPEATED (Vitor, 2026-11-02
 > night, about swro01_campoDalias: "no flowsheet devia haver forma de
 > notificar isso ... qualquer envolucro que dissesse quantas vezes se tem de
