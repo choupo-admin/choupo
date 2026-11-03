@@ -1965,6 +1965,23 @@ accepts today, and that is a policy call.
 > shortlist): which become an EduTools worked example and which a tutorial
 > case pinned on the source's own numbers (the external-reference battery
 > pattern: one coherent primary source end to end, never a blend).
+> **Step 2, DECIDED (the architect, 2026-11-03), on the general's shortlist
+> (8 accepted, its notes kept in the session scratchpad):** (a) the NREL
+> design reports (Humbird et al. 2011, NREL/TP-5100-47764, the best teaching
+> case found: every equipment item with purchased and installed cost, the
+> installation factors, the operating cost and the DCF worksheet) are written
+> by a CONTRACTOR (Alliance for Sustainable Energy), carry the DOE "prepared as
+> an account of work" notice and NO open grant: under §10 that is no-grant,
+> so NOTHING from them enters the tree until NREL states in writing that the
+> report may be reused -- a request only Vitor can send (waits-Vitor); (b) the
+> two CC BY 4.0 studies are taken now: Asgharian et al. 2024 (Energy Convers.
+> Manage. 315:118764, green ammonia, Table 3 equipment and a Lang factor of
+> 4.7) becomes a worked example on the "What a plant costs to build" page;
+> Rueda Ordonez et al. 2026 (ACS Omega 11:30431, a batch API plant, 33 t/y,
+> Table 2 operating cost) becomes a tutorial case pinned on its own numbers
+> IF its Supporting Information carries the same licence and is readable;
+> (c) Ince, Benyahia & Vile 2025 (CC BY) stays a citation: its cost tables
+> are in an unread SI.
 
 > **THE STACK, AND THE ONE FULL SWEEP (the architect, 2026-11-03 06:00):** five
 > of the seven builds are now in the local branch `staging` (C208, S1, S2,
