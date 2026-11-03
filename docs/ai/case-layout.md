@@ -781,7 +781,8 @@ No rating is ever defaulted.  Worked cases:
 `tutorials/batch/plant/apalutamide01_tablets`, `donepezil01_tablets`.
 
 **THE CLEAN UTILITIES -- the `cleanUtilities` pass (DEV.md 4c C195).**  Declared
-AFTER `economics`, it runs after the layout and reads the building the layout
+BEFORE `costing` (so its supply air can be priced; it was AFTER `economics` until
+DEV.md 4c C210), it runs after the layout and reads the building the layout
 checked (`result.building`): `hvac { air {}; changesPerHour ( { grade; perHour;
 source; reason; } ); fan {}; outdoor {}; supply {}; unserved { rooms (...); } }`
 and `purifiedWater { fluid {}; uses ( { name; stream | volumePerLot; stage;
@@ -789,7 +790,12 @@ drawTime; when start|end; } ); generator { margin; }; storage { holdTime; } }`.
 Every number is the case's, with a `source` and a `reason`; no air-change table
 is shipped.  HVAC is SENSIBLE only (no humidity, no latent load, no room heat
 gain), said on every run.  Items: `hvac/grade<G>`, `hvac/total`,
-`purifiedWater/generator`, `purifiedWater/storage` -- not costed, not placed.
+`purifiedWater/generator`, `purifiedWater/storage`.  The generator, the tank
+and `hvac/total` are not costed; each `hvac/grade<G>` is PRICED by the case's
+declared cost per m3/h of its supply air, a `costing { quotes }` entry
+`{ hvacGrade <G>; valuePerSupplyAir <price>; currency; year; basis; kind;
+source; reason; }` (C210) -- absent, the grade refuses by name and the capital
+total reads INCOMPLETE.  The grades' capital is published as `kpis.hvac`.
 
 **ONE PRESSURE SHELL AROUND A SECTOR'S EQUIPMENT -- `type converterShell`
 (DEV.md 4c C69).**  A multibed converter is one pressure vessel holding its

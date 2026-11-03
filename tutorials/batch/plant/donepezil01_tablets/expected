@@ -1022,3 +1022,16 @@ equipment tabletPress            values.t_operating_plan 7                1e-4
 equipment tabletPress            values.turretSpeed 60               1e-4
 equipment tabletPress            values.utilisation 0.773036487322   1e-4
 equipment tabletPress            values.utilisation_plan 0.909090909091   1e-4
+kpi     hvac                   C_BM_gradeCNC    65700            1e-4
+kpi     hvac                   C_BM_gradeD      1178400          1e-4
+kpi     hvac                   C_BM_total       1244100          1e-4
+kpi     hvac                   C_TM_total       1468038          1e-4
+kpi     hvac                   Q_supply_gradeCNC 13140            1e-4
+kpi     hvac                   Q_supply_gradeD  98200            1e-4
+kpi     hvac                   Q_supply_total   111340           1e-4
+equipment hvac/gradeCNC          cost.purchased   65700            1e-4
+equipment hvac/gradeCNC          cost.bareModule  65700            1e-4
+equipment hvac/gradeCNC          cost.totalModule 77526            1e-4
+equipment hvac/gradeD            cost.purchased   1178400          1e-4
+equipment hvac/gradeD            cost.bareModule  1178400          1e-4
+equipment hvac/gradeD            cost.totalModule 1390512          1e-4

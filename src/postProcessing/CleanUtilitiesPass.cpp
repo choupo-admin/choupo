@@ -254,8 +254,15 @@ void sizeHvac(const DictPtr& h, SimulationResult& result)
             " temperature to the supply temperature.  NOT here: humidity, latent"
             " load, room heat gains, return-air state other than the supply"
             " temperature, filter pressure drop beyond the declared rise",
-            "no cost correlation exists for air handling; the building quote"
-            " carries HVAC (`costing { quotes }`)");
+            //  A grade item is PRICED, by the case's own declared cost per
+            //  m3/h of supply air (`costing { quotes ( { hvacGrade <g>; ...
+            //  valuePerSupplyAir ...; } ) }`, DEV.md 4c C210 E2); with no such
+            //  quote the costing pass REFUSES it by name and the total reads
+            //  INCOMPLETE.  The total item is the sum of the grades.
+            tag == "total"
+              ? "the total is the SUM of the grade items, which are the priced"
+                " ones (costing it too would count the air twice)"
+              : "");
         result.sizings[d.itemId()] = std::move(d);
     };
 

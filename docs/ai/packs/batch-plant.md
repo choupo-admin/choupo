@@ -25,9 +25,13 @@ economics in general.
   quote, with its source.  `economics` prices the year's production
   (`streamFactor fromBatchPlan;`).
 * `cleanUtilities` sizes the HVAC and the purified water from the building
-  (`layoutDict building {}`) and the plan.
-* postDict blocks run IN FILE ORDER.  Write: batchPlan, sizing, costing,
-  economics, cleanUtilities.  The layout is checked automatically before
+  (`layoutDict building {}`) and the plan.  The supply air of each grade is
+  PRICED by a `costing { quotes }` entry of the form `hvacGrade <G>;
+  valuePerSupplyAir <EUR per m3/h>;` -- with none, the grade REFUSES by
+  name and the capital total reads INCOMPLETE.
+* postDict blocks run IN FILE ORDER.  Write: batchPlan, sizing,
+  cleanUtilities, costing, economics (cleanUtilities BEFORE costing, so its
+  supply air can be priced).  The layout is checked automatically before
   `economics` / `cleanUtilities`.
 * A pass that refuses prints `ERROR:` and exits 2 (batchPlan, a quote on a
   refused unit).  A SIZER that refuses is printed as `FAILED` in the Sizing
@@ -178,6 +182,21 @@ cleanUtilities
   plan's Gantt (first campaign, trains started together); generator =
   peak x (1+margin); storage = peak x holdTime.  Published under `design/hvac`
   and `design/purifiedWater`.  Not costed, not placed.
+* HVAC COST (DEV.md 4c C210).  The grade items are PRICED, not correlated:
+  declare in `costing { quotes ( ... ) }` one entry per grade that is SERVED
+  (a grade whose rooms are all `unserved` has no item, and a quote for it is
+  refused: `no supply air was sized for that grade`):
+  `{ hvacGrade D;  valuePerSupplyAir 12;  currency EUR;  year 2026;
+  basis installed;  kind facility;  source "..."; reason "..."; }` -- the item's
+  price is `valuePerSupplyAir` (currency per m3/h) x the supply air the pass
+  sized for that grade; `value` beside it is refused; every other key is a
+  quote's (year/cepci, installed|purchased + bareModuleFactor, kind
+  equipment|facility, source, reason).  Without the quote the grade prints
+  `FAILED: no cost is declared for the supply air of this grade` and the
+  capital total reads INCOMPLETE; nothing is defaulted.  The `hvac/total`
+  item is the sum and is not priced twice.  Published: `kpis.hvac`
+  (`C_BM_grade<G>`, `Q_supply_grade<G>`, `C_BM_total`, `C_TM_total`,
+  `Q_supply_total`).  Do NOT also leave the HVAC inside your building quote.
 * Declare at least `hvac` or `purifiedWater`.  The batch plan must exist and
   be single-product.
 * A `layoutDict` (hence the building, hence `cleanUtilities`) needs at least
@@ -351,6 +370,35 @@ sizing
           } }
     );
 }
+cleanUtilities
+{
+    hvac
+    {
+        air { density 1.2 kg/m3;  heatCapacity 1006 J/kg/K;  source "assumed";  reason "dry air near 20 degC"; }
+        changesPerHour
+        (
+            { grade D;   perHour 20;  source "assumed";  reason "an order of magnitude for a graded oral-solid-dose room"; }
+            { grade CNC; perHour 6;   source "assumed";  reason "an order of magnitude for a controlled-not-classified room"; }
+        );
+        fan { pressureRise 1000 Pa;  efficiency 0.6;  source "assumed";  reason "a medium centrifugal fan and its filters, lumped"; }
+        outdoor { winter 2 degC;  summer 32 degC;  source "assumed";  reason "a temperate site"; }
+        supply { temperature 20 degC;  freshAirFraction 0.2;  source "assumed";  reason "a recirculating air-handling unit"; }
+        unserved { rooms ( plantRoom );  source "layoutDict";  reason "plant rooms are not conditioned by the plant they house"; }
+    }
+    purifiedWater
+    {
+        fluid { density 998 kg/m3;  source "assumed";  reason "water near 20 degC"; }
+        uses
+        (
+            { name binderWater;  stream granWater;  stage binderPreparation;  drawTime 0.5 h;  when start;
+              source "flowsheet stream granWater, read from the balance";  reason "the granulating liquid"; }
+            { name cleaning;  volumePerLot 0.5 m3;  stage blending;  drawTime 0.5 h;  when end;
+              source "assumed";  reason "the wash of the blender after a lot"; }
+        );
+        generator { margin 0.25;  source "assumed";  reason "a quarter above the peak draw"; }
+        storage { holdTime 4 h;  source "assumed";  reason "four hours of peak draw without the generator"; }
+    }
+}
 costing
 {
     method    Turton;
@@ -360,6 +408,8 @@ costing
     usdToEur  0.92;
     quotes
     (
+        { hvacGrade D;  valuePerSupplyAir 12;  currency EUR;  year 2026;  basis installed;  kind facility;
+          source "assumed, author-set, to be replaced by a quote";  reason "air-handling, ducting, terminal filters and controls per m3/h of supply air of a graded room"; }
         { unit blender;  value 80000;  currency EUR;  year 2026;  basis installed;  kind equipment;
           source "author-set placeholder, not a quotation";  reason "a bin blender, installed"; }
         { unit tabletPress;  value 400000;  currency EUR;  year 2026;  basis installed;  kind equipment;
@@ -392,35 +442,6 @@ economics
     accuracyBand        ( -50 100 );
     refuseOnMissingPrice 1;
     workingCapital { rawMaterialStock 60 day;  receivables 60 day;  payables 30 day;  minimumCash 15 day; }
-}
-cleanUtilities
-{
-    hvac
-    {
-        air { density 1.2 kg/m3;  heatCapacity 1006 J/kg/K;  source "assumed";  reason "dry air near 20 degC"; }
-        changesPerHour
-        (
-            { grade D;   perHour 20;  source "assumed";  reason "an order of magnitude for a graded oral-solid-dose room"; }
-            { grade CNC; perHour 6;   source "assumed";  reason "an order of magnitude for a controlled-not-classified room"; }
-        );
-        fan { pressureRise 1000 Pa;  efficiency 0.6;  source "assumed";  reason "a medium centrifugal fan and its filters, lumped"; }
-        outdoor { winter 2 degC;  summer 32 degC;  source "assumed";  reason "a temperate site"; }
-        supply { temperature 20 degC;  freshAirFraction 0.2;  source "assumed";  reason "a recirculating air-handling unit"; }
-        unserved { rooms ( plantRoom );  source "layoutDict";  reason "plant rooms are not conditioned by the plant they house"; }
-    }
-    purifiedWater
-    {
-        fluid { density 998 kg/m3;  source "assumed";  reason "water near 20 degC"; }
-        uses
-        (
-            { name binderWater;  stream granWater;  stage binderPreparation;  drawTime 0.5 h;  when start;
-              source "flowsheet stream granWater, read from the balance";  reason "the granulating liquid"; }
-            { name cleaning;  volumePerLot 0.5 m3;  stage blending;  drawTime 0.5 h;  when end;
-              source "assumed";  reason "the wash of the blender after a lot"; }
-        );
-        generator { margin 0.25;  source "assumed";  reason "a quarter above the peak draw"; }
-        storage { holdTime 4 h;  source "assumed";  reason "four hours of peak draw without the generator"; }
-    }
 }
 ```
 `system/layoutDict`
@@ -468,7 +489,8 @@ campaigns, T_L = 3 h set by `binderPreparation`, train occupancy 69.5 %;
 binder tank 0.0066 m3; utilisation blender 0.833, press 0.823 (66 667
 tablets/h on 81 000), blister line 0.737; HVAC 4 rooms 560 m3, 11 200 m3/h,
 fan 5.19 kW, heating 13.5 kW, cooling 9.0 kW; purified water peak 1.01 m3/h,
-generator 1.26 m3/h, tank 4.04 m3; FCI 1.84 M EUR, NPV 14.8 M EUR.
+generator 1.26 m3/h, tank 4.04 m3; HVAC capital 134 400 EUR (11 200 m3/h of
+grade D at the quoted 12 EUR per m3/h); FCI 2.00 M EUR, NPV 14.5 M EUR.
 Variants run: 100 000 kg/yr -> `ERROR: batchPlan: stage 'binderPreparation' is
 busy 1.214e+04 h ... occupancy 316 %`, exit 2; blender `nominalVolume 0.1 m3`
 -> `FAILED ... utilisation 1.66667 ... 2 machine(s)` then the quote on it stops
@@ -490,6 +512,7 @@ the run with exit 2; `constant/economics` without `labourRate` ->
   trains :1012-1043 (availableTime :1029, lotsPerCampaign :1032), lot rule declared|largestEquipment :240-265 and :1052, stages :1210-1440 (type :1237, units :1245-1263, holds :1270, bulkDensity/fillFraction :1290-1297, maxVolume :1303, batch vs semicontinuous keys :1314-1360, throughFedStage :1384-1434), refusals :1739-1775.
   every time/mass/density needs a unit: :98-131; source+reason required: :85.
  ratedMachine: sizing/RatedMachineSize.H:31-110 and .cpp: kind list :294-302, rating block :305-310 (source/reason :81), installed :316, batchVolume keys :368-370, massRate :404, tabletPress :416-427, packagingLine :446-448, refusal :481, announceAbove :500, shift :512.
+ hvacGrade quote: costing/DeclaredQuote.cpp (identity block, `hvacGrade`/`valuePerSupplyAir`), CostingPass.cpp (airHandling refusal, HVAC KPIs).
  cleanUtilities: CleanUtilitiesPass.H:31-70 and .cpp: hvac :120-170 (grades A B C D CNC :148), unserved :170-180, purifiedWater :300-366 (uses :319-366), run :460-464.
  postDict order and layout-before-economics: src/applications/choupoSolve/main.cpp:1478-1494.
  quotes: CostingPass.cpp:133; economics keys: EconomicsPass.H:28-120, fromBatchPlan DEV.md 4c C99.

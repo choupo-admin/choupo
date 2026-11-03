@@ -84,22 +84,62 @@ price(const DictPtr& costingDict, const CostingModel& model,
         std::string where = at.str();
 
         //  ---- identity: exactly one of `unit` / `item` -------------------
+        //  A THIRD IDENTITY (DEV.md 4c C210, E2): `hvacGrade <A|B|C|D|CNC>;`
+        //  prices the supply air the `cleanUtilities` pass sized for that
+        //  grade, at the case's declared cost per m3/h of supply air.
+        const bool hasHvac = q->found("hvacGrade");
         const bool hasUnit = q->found("unit");
         const bool hasItem = q->found("item");
-        if (hasUnit == hasItem)
+        if (hasHvac)
+        {
+            if (hasUnit || hasItem)
+                throw std::runtime_error(where + ": `hvacGrade` prices the air"
+                    " of a grade, and names neither a `unit` nor an `item`.");
+        }
+        else if (hasUnit == hasItem)
             throw std::runtime_error(where + ": a quote names EXACTLY ONE of"
                 " `unit <flowsheet unit>;` (it prices that unit, which has no"
-                " sized item) or `item <name>;` (it prices something that is"
-                " not a unit, e.g. a building) -- this entry names "
+                " sized item), `item <name>;` (it prices something that is"
+                " not a unit, e.g. a building) or `hvacGrade <grade>;` (the"
+                " supply air of a clean-room grade) -- this entry names "
                 + std::string(hasUnit ? "both" : "neither") + ".");
-        const std::string name = q->lookupWord(hasUnit ? "unit" : "item");
+        const std::string name = hasHvac
+            ? "hvac/grade" + q->lookupWord("hvacGrade")
+            : q->lookupWord(hasUnit ? "unit" : "item");
         where += " ('" + name + "')";
+        scalar hvacQ = 0.0;      // m3/h of supply air, from the sized item
+        if (hasHvac)
+        {
+            auto it = result.sizings.find(name);
+            if (it == result.sizings.end())
+            {
+                std::string known;
+                for (const auto& [k, sz] : result.sizings)
+                {
+                    (void)k;
+                    if (sz.unitName == "hvac" && sz.equipmentTag != "total")
+                        known += " " + sz.equipmentTag.substr(5);
+                }
+                throw std::runtime_error(where + ": no supply air was sized for"
+                    " that grade.  Declare `cleanUtilities { hvac { ... } }`"
+                    " ABOVE `costing { ... }` in system/postDict (the passes run"
+                    " in the order they are written); grades sized:"
+                    + (known.empty() ? std::string(" none") : known) + ".");
+            }
+            hvacQ = it->second.values.at("Q_supply");
+        }
         if (out.count(name))
             throw std::runtime_error(where + ": a second quote on the same"
                 " name -- one item, one price.  Merge the two entries.");
 
         std::string sector;
-        if (hasUnit)
+        if (hasHvac)
+        {
+            if (q->found("scaling"))
+                throw std::runtime_error(where + ": `scaling` belongs to a"
+                    " machine quote; the air's price is per m3/h already.");
+        }
+        else if (hasUnit)
         {
             auto it = units.find(name);
             if (it == units.end())
@@ -166,10 +206,20 @@ price(const DictPtr& costingDict, const CostingModel& model,
         cb.quoteKind  = requireWord("kind",  { "equipment", "facility" });
 
         //  ---- the number -------------------------------------------------
-        if (!q->found("value"))
+        if (hasHvac)
+        {
+            if (q->found("value") || !q->found("valuePerSupplyAir"))
+                throw std::runtime_error(where + ": an `hvacGrade` quote declares"
+                    " `valuePerSupplyAir <price per m3/h of supply air>;` (in"
+                    " `currency`, money of `year`) and no `value`: the item's"
+                    " price is that unit price x the supply air the pass sized.");
+        }
+        else if (!q->found("value"))
             throw std::runtime_error(where + ": `value` is not declared -- the"
                 " quoted price, in `currency`, money of `year`.");
-        const scalar value = q->lookupScalar("value");
+        const scalar value = hasHvac
+            ? q->lookupScalar("valuePerSupplyAir") * hvacQ
+            : q->lookupScalar("value");
         if (!std::isfinite(value) || !(value > 0.0))
         {
             std::ostringstream m;
@@ -354,6 +404,16 @@ price(const DictPtr& costingDict, const CostingModel& model,
         const scalar Cbm = Fbm * Cp;
 
         cb.unitName        = name;
+        if (hasHvac)
+        {
+            //  The identity fields come from the sized item priced, as in
+            //  CostingPass: never by splitting the key.
+            const EquipmentSizing& sz = result.sizings.at(name);
+            cb.unitName     = sz.unitName;
+            cb.equipmentTag = sz.equipmentTag;
+            cb.factors["hvacSupplyAir"]         = hvacQ;
+            cb.factors["hvacPricePerSupplyAir"] = q->lookupScalar("valuePerSupplyAir");
+        }
         cb.sector          = sector;
         cb.purchasedCost   = Cp;
         cb.bareModuleCost  = Cbm;

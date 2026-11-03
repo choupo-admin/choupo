@@ -330,149 +330,13 @@ sizing
     );
 }
 
-costing
-{
-    method    Turton;
-    year      2026;
-    cepci     820;        // a projection -- AUTHOR-SET (apalutamide01's)
-    cepci2001 397;        // the correlations' own basis year
-    usdToEur  0.92;
-
-    //  THE DECLARED QUOTES (DEV.md 4c C98).  EVERY VALUE BELOW IS AN
-    //  AUTHOR-SET PLACEHOLDER -- a round number of the right order chosen so
-    //  that the solid-dose machines and their building are not ZERO in the
-    //  capital -- and none is a vendor's price.  A group replaces each one
-    //  with a dated quotation (vendor, reference, date in `source`).  THE
-    //  MACHINES SCALE WITH THE BATCH PLAN (DEV.md 4c C99): each `value` is the
-    //  price of ONE machine of its `referenceSize`, and the item costs
-    //  units x value x (the stage's size per unit / referenceSize)^0.6.  The
-    //  building does not scale.  All are in 2026 money, the costing year.
-    quotes
-    (
-        { unit granulator;  value 700000;  currency EUR;  year 2026;
-          basis installed;  kind equipment;
-          scaling { referenceSize 1 m3;  exponent 0.6;
-                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
-          reason "a high-shear granulator with its binder-dosing pump and wet mill, installed, a round figure; replace with a vendor quotation"; }
-        { unit fluidBedDryer;  value 900000;  currency EUR;  year 2026;
-          basis installed;  kind equipment;
-          scaling { referenceSize 1 m3;  exponent 0.6;
-                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
-          reason "a fluid-bed dryer with its air-handling unit, filters and explosion protection -- the flowsheet's `fbdAirHeater` is sized and costed apart -- a round figure; replace with a vendor quotation"; }
-        { unit mill;  value 150000;  currency EUR;  year 2026;
-          basis installed;  kind equipment;
-          scaling { referenceSize 100 kg/h;  exponent 0.6;
-                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
-          reason "a conical screen mill, a round figure; replace with a vendor quotation"; }
-        { unit finalBlender;  value 300000;  currency EUR;  year 2026;
-          basis installed;  kind equipment;
-          scaling { referenceSize 1 m3;  exponent 0.6;
-                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
-          reason "a bin blender and its bins, a round figure; replace with a vendor quotation"; }
-        { unit tabletPress;  value 1000000;  currency EUR;  year 2026;
-          basis installed;  kind equipment;
-          scaling { referenceSize 100 kg/h;  exponent 0.6;
-                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
-          reason "a rotary tablet press installed in its suite, a round figure; replace with the press vendor's quotation for the chosen model and its tooling"; }
-        { unit coatingPan;  value 800000;  currency EUR;  year 2026;
-          basis installed;  kind equipment;
-          scaling { referenceSize 1 m3;  exponent 0.6;
-                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
-          reason "a perforated pan coater with its spray system -- the flowsheet's `coatingDryer` is the drying half of the same machine and carries no quote of its own, and its air heater is sized and costed apart -- a round figure; replace with a vendor quotation"; }
-        { unit packagingLine;  value 1500000;  currency EUR;  year 2026;
-          basis installed;  kind equipment;
-          scaling { referenceSize 50 kg/h;  exponent 0.6;
-                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
-          reason "a blister line with cartoning and serialisation, a round figure; replace with a vendor quotation"; }
-        { item productionBuilding;  value 9500000;  currency EUR;  year 2026;
-          basis installed;  kind facility;
-          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation or a building estimate";
-          reason "the GMP building, the layout's 44 m x 36 m `productionBuilding` box (1584 m2) at a round 6000 EUR per m2 of footprint for clean rooms, HVAC and services; replace with a contractor's estimate for the group's own building"; }
-    );
-}
-
-economics
-{
-    method              discountedCashFlow;
-    projectLife         10;          // yr -- ASSUMED
-    constructionPeriod  1;
-    discountRate        0.10;        // ASSUMED
-    taxRate             0.21;        // ASSUMED (a corporate rate, no country chosen)
-    depreciation        straightLine;
-    depreciableLife     7;           // yr -- ASSUMED
-    salvageFraction     0.0;
-    //  THE YEAR'S FLOWS COME FROM THE BATCH PLAN (DEV.md 4c C99): every
-    //  annual flow is the hourly flow x Q / r_P (the "equivalent hours").
-    streamFactor        fromBatchPlan;
-    siteFactor          0.50;
-    contingencyFee      1.18;
-    //  Non-particulate processing steps (Turton's operator count): the two
-    //  air heaters.  The PARTICULATE steps are counted apart, below.
-    N_np                2;
-    particulateSteps
-    {
-        count   6;
-        source  "the case's own count (DEV.md 4c C98, C110): granulation, fluid-bed drying, milling, final blending, tableting, coating -- packaging folded into its neighbour";
-        reason  "Turton's P counts the processing steps that handle particulate solids; this plant's train is six of them.  With the crew below declared, P drives only the printed COMPARISON";
-    }
-
-    //  THE OPERATING CREW, DECLARED (DEV.md 4c C98 round 2).  The labour is
-    //  priced from THIS crew, not from Turton's correlation (a regression
-    //  over CONTINUOUS chemical plants).  EVERY NUMBER BELOW IS AN
-    //  AUTHOR-SET ASSUMPTION: replace it with the group's own staffing plan.
-    //  The 4.5 positions per operator-per-shift the engine applies assumes
-    //  round-the-clock cover; both trains here run TWO shifts -- the
-    //  group's question (README section 6).
-    operatingCrew
-    {
-        areas
-        (
-            { area "dispensing";             operatorsPerShift 1; }
-            { area "granulation and drying"; operatorsPerShift 2; }  // binder, high-shear granulator, fluid bed
-            { area "milling and blending";   operatorsPerShift 1; }
-            { area "compression";            operatorsPerShift 1; }
-            { area "coating";                operatorsPerShift 1; }
-            { area "packaging";              operatorsPerShift 3; }
-            { area "material handling";      operatorsPerShift 1; }  // bins, IPC samples, warehouse runs
-        );
-        source  "author-set assumption (DEV.md 4c C110), not a staffing study";
-        reason  "a campaign oral-solid-dose suite is staffed per room and per running machine; round figures of the right order for ONE line -- replace them with the group's staffing plan";
-    }
-    estimateClass       5;           // concept screening: the solids train is priced on placeholders
-    accuracyBand        ( -50 100 ); // Class 5, the wide corner -- chosen
-    refuseOnMissingPrice 1;
-
-    workingCapital
-    {
-        //  60 days of raw materials in the warehouse: quarantine, sampling
-        //  and QC release of every incoming lot before use (GMP) plus the
-        //  supply cycle -- ASSUMED.
-        rawMaterialStock   60 day;
-        receivables        60 day;   // ASSUMED: wholesaler terms
-        payables           30 day;   // ASSUMED
-        minimumCash        15 day;
-    }
-
-    land
-    {
-        price   80;      // EUR per m2 of plot
-        source  "placeholder for the groups' site; not a market quotation";
-        reason  "a round number so that the land appears in the capital and the cash flow; replace it with the price of the site the group chooses";
-    }
-}
-
 //  ===================== THE CLEAN UTILITIES (DEV.md 4c C195) ==================
 //  The air and the purified water of the building, sized from the building the
-//  layout checked (system/layoutDict) and the batch plan above.  Run AFTER the
-//  economics, so no item here reaches the capital: every item is `not costed`
-//  and the building quote carries HVAC and the utilities.  EVERY NUMBER IN
+//  layout checked (system/layoutDict) and the batch plan above.  Run BEFORE the
+//  costing, so the supply air of each grade is a priced item (`costing { quotes
+//  ( { hvacGrade ...; valuePerSupplyAir ...; } ) }`, DEV.md 4c C210 E2); the
+//  generator and the tank are not costed (the building and utilities quotes
+//  carry them).  EVERY NUMBER IN
 //  THIS BLOCK IS AN AUTHOR-SET ASSUMPTION for the group to replace; none is
 //  from a standard's table (the published air-change tables are no-grant
 //  documents and are not shipped).  The air is SENSIBLE only: no humidity, no
@@ -561,6 +425,162 @@ cleanUtilities
             source "author-set assumption (DEV.md 4c C195)";
             reason "four hours of the peak draw without the generator: a shutdown or a sanitisation";
         }
+    }
+}
+
+costing
+{
+    method    Turton;
+    year      2026;
+    cepci     820;        // a projection -- AUTHOR-SET (apalutamide01's)
+    cepci2001 397;        // the correlations' own basis year
+    usdToEur  0.92;
+
+    //  THE DECLARED QUOTES (DEV.md 4c C98).  EVERY VALUE BELOW IS AN
+    //  AUTHOR-SET PLACEHOLDER -- a round number of the right order chosen so
+    //  that the solid-dose machines and their building are not ZERO in the
+    //  capital -- and none is a vendor's price.  A group replaces each one
+    //  with a dated quotation (vendor, reference, date in `source`).  THE
+    //  MACHINES SCALE WITH THE BATCH PLAN (DEV.md 4c C99): each `value` is the
+    //  price of ONE machine of its `referenceSize`, and the item costs
+    //  units x value x (the stage's size per unit / referenceSize)^0.6.  The
+    //  building does not scale.  All are in 2026 money, the costing year.
+    quotes
+    (
+        //  THE HVAC, PRICED FROM THE SUPPLY AIR (DEV.md 4c C210, E2): the
+        //  `cleanUtilities` pass above sizes the supply air of each grade; the
+        //  case DECLARES an installed cost per m3/h of it.  BOTH VALUES ARE
+        //  ASSUMED, author-set, and to be replaced by a quote -- no vendor
+        //  price and no published table stands behind them.  For orientation
+        //  ONLY (not a source): design reports of tablet plants carried HVAC
+        //  as a lump of the order of 0.6 to 2.5 MEUR; the figure these two
+        //  values give is in the README beside that range, and is not
+        //  validated by it.  `kind facility;` as the building's, which carried the
+        //  HVAC before (see the building quote below).
+        { hvacGrade D;  valuePerSupplyAir 12;  currency EUR;  year 2026;
+          basis installed;  kind facility;
+          source "assumed, author-set, to be replaced by a quote (DEV.md 4c C210)";
+          reason "air handling, ducting, terminal filters and controls per m3/h of supply air of a graded (D) oral-solid-dose room, a round figure"; }
+        { hvacGrade CNC;  valuePerSupplyAir 5;  currency EUR;  year 2026;
+          basis installed;  kind facility;
+          source "assumed, author-set, to be replaced by a quote (DEV.md 4c C210)";
+          reason "air handling and ducting per m3/h of supply air of a controlled-not-classified room (no terminal HEPA), a round figure"; }
+        { unit granulator;  value 700000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 1 m3;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a high-shear granulator with its binder-dosing pump and wet mill, installed, a round figure; replace with a vendor quotation"; }
+        { unit fluidBedDryer;  value 900000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 1 m3;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a fluid-bed dryer with its air-handling unit, filters and explosion protection -- the flowsheet's `fbdAirHeater` is sized and costed apart -- a round figure; replace with a vendor quotation"; }
+        { unit mill;  value 150000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 100 kg/h;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a conical screen mill, a round figure; replace with a vendor quotation"; }
+        { unit finalBlender;  value 300000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 1 m3;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a bin blender and its bins, a round figure; replace with a vendor quotation"; }
+        { unit tabletPress;  value 1000000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 100 kg/h;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a rotary tablet press installed in its suite, a round figure; replace with the press vendor's quotation for the chosen model and its tooling"; }
+        { unit coatingPan;  value 800000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 1 m3;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a perforated pan coater with its spray system -- the flowsheet's `coatingDryer` is the drying half of the same machine and carries no quote of its own, and its air heater is sized and costed apart -- a round figure; replace with a vendor quotation"; }
+        { unit packagingLine;  value 1500000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 50 kg/h;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a blister line with cartoning and serialisation, a round figure; replace with a vendor quotation"; }
+        { item productionBuilding;  value 8300000;  currency EUR;  year 2026;
+          basis installed;  kind facility;
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation or a building estimate";
+          reason "the GMP building, the layout's 44 m x 36 m `productionBuilding` box (1584 m2) at a round 5240 EUR per m2 of footprint for the shell, clean-room finishes and services EXCLUDING the HVAC (priced from the supply air by the `hvacGrade` quotes above; it was 6000 EUR per m2 with the HVAC inside, DEV.md 4c C210); replace with a contractor's estimate for the group's own building"; }
+    );
+}
+
+economics
+{
+    method              discountedCashFlow;
+    projectLife         10;          // yr -- ASSUMED
+    constructionPeriod  1;
+    discountRate        0.10;        // ASSUMED
+    taxRate             0.21;        // ASSUMED (a corporate rate, no country chosen)
+    depreciation        straightLine;
+    depreciableLife     7;           // yr -- ASSUMED
+    salvageFraction     0.0;
+    //  THE YEAR'S FLOWS COME FROM THE BATCH PLAN (DEV.md 4c C99): every
+    //  annual flow is the hourly flow x Q / r_P (the "equivalent hours").
+    streamFactor        fromBatchPlan;
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    //  Non-particulate processing steps (Turton's operator count): the two
+    //  air heaters.  The PARTICULATE steps are counted apart, below.
+    N_np                2;
+    particulateSteps
+    {
+        count   6;
+        source  "the case's own count (DEV.md 4c C98, C110): granulation, fluid-bed drying, milling, final blending, tableting, coating -- packaging folded into its neighbour";
+        reason  "Turton's P counts the processing steps that handle particulate solids; this plant's train is six of them.  With the crew below declared, P drives only the printed COMPARISON";
+    }
+
+    //  THE OPERATING CREW, DECLARED (DEV.md 4c C98 round 2).  The labour is
+    //  priced from THIS crew, not from Turton's correlation (a regression
+    //  over CONTINUOUS chemical plants).  EVERY NUMBER BELOW IS AN
+    //  AUTHOR-SET ASSUMPTION: replace it with the group's own staffing plan.
+    //  The 4.5 positions per operator-per-shift the engine applies assumes
+    //  round-the-clock cover; both trains here run TWO shifts -- the
+    //  group's question (README section 6).
+    operatingCrew
+    {
+        areas
+        (
+            { area "dispensing";             operatorsPerShift 1; }
+            { area "granulation and drying"; operatorsPerShift 2; }  // binder, high-shear granulator, fluid bed
+            { area "milling and blending";   operatorsPerShift 1; }
+            { area "compression";            operatorsPerShift 1; }
+            { area "coating";                operatorsPerShift 1; }
+            { area "packaging";              operatorsPerShift 3; }
+            { area "material handling";      operatorsPerShift 1; }  // bins, IPC samples, warehouse runs
+        );
+        source  "author-set assumption (DEV.md 4c C110), not a staffing study";
+        reason  "a campaign oral-solid-dose suite is staffed per room and per running machine; round figures of the right order for ONE line -- replace them with the group's staffing plan";
+    }
+    estimateClass       5;           // concept screening: the solids train is priced on placeholders
+    accuracyBand        ( -50 100 ); // Class 5, the wide corner -- chosen
+    refuseOnMissingPrice 1;
+
+    workingCapital
+    {
+        //  60 days of raw materials in the warehouse: quarantine, sampling
+        //  and QC release of every incoming lot before use (GMP) plus the
+        //  supply cycle -- ASSUMED.
+        rawMaterialStock   60 day;
+        receivables        60 day;   // ASSUMED: wholesaler terms
+        payables           30 day;   // ASSUMED
+        minimumCash        15 day;
+    }
+
+    land
+    {
+        price   80;      // EUR per m2 of plot
+        source  "placeholder for the groups' site; not a market quotation";
+        reason  "a round number so that the land appears in the capital and the cash flow; replace it with the price of the site the group chooses";
     }
 }
 

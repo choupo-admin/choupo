@@ -701,6 +701,8 @@ def strip_rated_machines(t):
                     break
             k += 1
         t = t[:s] + t[k + 1:]
+    # ... and the `hvacGrade` quotes that price its supply air (DEV.md 4c C210).
+    t = re.sub(r'[ \t]*\{ hvacGrade \w+;.*?"; \}\n', "", t, flags=re.S)
     return t
 
 
@@ -1428,6 +1430,8 @@ def arm_one_product(work):
     eqm = {e["item"]: e["cost"]["purchased"] for e in j.get("equipment", [])
            if (e.get("cost") or {}).get("purchased") is not None}
     for k, v in eqs.items():
+        if k.startswith("hvac/"):
+            continue    # the probe drops `cleanUtilities` (multiproduct refuses it), and the quotes of its air
         if k not in eqm or not close(eqm[k], v, 1e-9):
             bad.append(f"C_p {k} {eqm.get(k)} != {v}")
     if bad:

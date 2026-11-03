@@ -2917,6 +2917,18 @@ changes is shipped (the published ones are standards that grant no
 redistribution), so the rates in the two tablet witnesses are
 author-set and marked so.
 
+\textbf{The air has a price.} Design reports typically carry the HVAC as
+one lump; here its capital follows from the supply air just computed. The
+case \emph{declares an installed cost per m$^3$/h of supply air for each
+grade} (a \texttt{costing \{ quotes \}} entry \texttt{hvacGrade},
+\texttt{valuePerSupplyAir}, with its currency, year, source and reason), and
+the costing multiplies it by the supply air the pass sized for that grade:
+the HVAC capital is published per grade and in total. A grade with no
+declared cost is refused by name and the capital total reads incomplete ---
+nothing is defaulted, and the two witnesses' figures are author-set
+placeholders, to be replaced by a quotation. The building quote must not
+carry the HVAC as well.
+
 \textbf{Not checked --- yours to do.} The air-change rate each grade
 needs, HVAC zoning and
 the filter classes behind each grade; particle and microbial limits;
