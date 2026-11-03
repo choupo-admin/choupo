@@ -856,6 +856,16 @@ def closure_of(pp_path, caseDir, std, AQ):
         ft = re.sub(r'(^|\s)//.*$', '', ft, flags=re.M)
         if re.search(r'\bscaling\s*\{', ft):
             speciates = True
+        # a membrane `aqueousSplit {}` asks the PACKAGE for the acid/base
+        # fraction (the curated pKa record of chemistry/, the case's declared
+        # aqueous activity model): the speciation network must be sealed, and
+        # the acid is its seed (swro01_campoDalias: BOH4-formation; the case's
+        # boron declares an aqueousMapping but no aqueousSpeciation).
+        for sm in re.finditer(r'\baqueousSplit\s*\{', ft):
+            speciates = True
+            body = block(ft[sm.start():], "aqueousSplit") or ""
+            for am_ in re.finditer(r'\bacid\s+([A-Za-z0-9_]+)\s*;', body):
+                ions.add(am_.group(1))
         # an ionExchanger unit runs the exchange network on the module bulk
         if re.search(r'\bionExchanger\b|\bresin\s+[A-Za-z0-9_]+\s*;', ft):
             speciates = True
