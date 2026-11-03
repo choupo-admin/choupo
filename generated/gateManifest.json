@@ -1520,6 +1520,11 @@
       "exit": 0,
       "claim": "check_capability_index: OK: 114 typed name(s) resolved against their registries, 52 path(s) present (48 witness case(s)), 18 untyped name(s) found in the tree; every concept names a typed name and a witness (names only -- the prose about them is not checked)",
       "seconds": 0.3
+    },
+    "check_recycle_acceleration": {
+      "exit": 0,
+      "claim": "check_recycle_acceleration: OK  one-step exact on a linear map (err 5.687e-15), oscillating mode exact (4.518e-16), fallbacks announced (several-modes, lambda>bound), 40 vs 104 direct steps on the two-mode map; witness recycle02_dominant_eigenvalue iterations Newton/Wegstein/DominantEigenvalue = 2/9/6.  NOT checked: nonlinear maps beyond the one witness, the energy-feedback tear (forces Wegstein).",
+      "seconds": 0.9
     }
   }
 }
