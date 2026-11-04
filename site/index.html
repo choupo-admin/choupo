@@ -281,6 +281,17 @@
     letter-spacing: .06em; text-transform: uppercase; color: var(--teal-ink); }
   .edutool-shelf:hover, .edutool-shelf:focus-visible { background: #eef8f5; }
   .edutool-n { margin-left: 8px; color: var(--muted); font-weight: 600; letter-spacing: 0; }
+  .edutool-paths:empty { display: none; }
+  .edutool-paths { margin: 0 0 22px; border: 1px solid var(--line); background: var(--white); padding: 16px 20px; }
+  .edutool-paths h3 { margin: 0 0 4px; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--teal-ink); }
+  .edutool-paths > p { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+  .edutool-path { border-top: 1px solid var(--line); }
+  .edutool-path > summary { cursor: pointer; padding: 10px 0; font-size: 16px; font-weight: 700; color: var(--ink); }
+  .edutool-path > summary span { margin-left: 8px; color: var(--muted); font-size: 14px; font-weight: 400; }
+  .edutool-path ol { margin: 0 0 12px; padding-left: 22px; }
+  .edutool-path li { margin: 0 0 8px; color: var(--muted); font-size: 14px; }
+  .edutool-path li a { color: var(--teal-ink); font-weight: 700; text-decoration: none; }
+  .edutool-path li a:hover { text-decoration: underline; }
   .edutool-filter { margin: 0 0 14px; }
   .edutool-filter input { width: 100%; max-width: 440px; box-sizing: border-box;
     padding: 10px 14px; font: inherit; font-size: 15px; color: var(--ink);
@@ -473,6 +484,10 @@
       </div>
       <!-- The text filter is revealed by the script below; without JavaScript
            the shelves are simply the full list, every one open. -->
+      <!-- THE PATHS (DEV.md 4c C221), from the artefact's `paths`: ordered
+           walks through the tools below.  Empty here; buildSite writes the
+           static version and the script below redraws it. -->
+      <div class="edutool-paths" id="edutoolsPaths"></div>
       <div class="edutool-filter" id="edutoolsFilterBox" hidden>
         <input type="search" id="edutoolsFilter" placeholder="Filter the tools: McCabe, psychro, Gibbs&hellip;" aria-label="Filter the EduTools by name or topic" autocomplete="off">
         <p class="edutool-filter-note" id="edutoolsFilterNote" role="status" aria-live="polite"></p>
@@ -891,6 +906,20 @@ https://www.choupo.org/app/
         ? (shown ? shown + " of " + cards.length + " tools match."
                  : "No tool matches. Try a method, a model or a quantity.") : "";
     }
+    var pathHost = document.getElementById("edutoolsPaths");
+    function drawPaths(paths) {
+      if (!pathHost || !Array.isArray(paths) || !paths.length) return;
+      pathHost.innerHTML = '<h3>Paths</h3><p>Walk several tools in a teaching order.</p>'
+        + paths.map(function (p) {
+          return '<details class="edutool-path"><summary>' + esc(p.title)
+            + '<span>' + p.steps.length + ' steps</span></summary>'
+            + '<p style="margin:0 0 8px;color:var(--muted);font-size:14px">' + esc(p.intro) + '</p><ol>'
+            + p.steps.map(function (s) {
+              return '<li><a href="' + esc(s.href) + '" target="_blank" rel="noopener">'
+                + esc(s.label) + '</a> &mdash; ' + esc(s.why) + '</li>';
+            }).join("") + '</ol></details>';
+        }).join("");
+    }
     if (box && input) {
       box.hidden = false;
       input.addEventListener("input", applyFilter);
@@ -953,6 +982,7 @@ https://www.choupo.org/app/
           host.innerHTML = '<div class="edutool-cards">' + tools.map(card).join("") + '</div>';
         }
         applyFilter();
+        drawPaths(doc.paths);
         var count = document.getElementById("edutoolsCount");
         if (count) count.textContent = tools.length;
         var blurb = document.getElementById("edutoolsBlurb");

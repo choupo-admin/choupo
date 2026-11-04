@@ -130,6 +130,7 @@ import { ChapterIndex } from "./methods/ChapterIndex.js";
 import { OriginLegend, OriginMark } from "./methods/origin.js";
 import { EngineCaveats } from "./methods/EngineCaveats.js";
 import { EduToolsFind, openEduToolsFind } from "./methods/EduToolsFind.js";
+import { PathBar } from "./methods/PathBar.js";
 
 import { resolveAdapter } from "../adapters/index.js";
 import {
@@ -490,6 +491,9 @@ export function MethodsWorkspace() {
     // strip.
     <Box style={{ position: "absolute", inset: 0, display: "flex",
       flexDirection: "column", minWidth: 0, minHeight: 0, overflow: "hidden" }}>
+      {/* THE PATHS (DEV.md 4c C221): one compact row above the chooser, on
+          every tab kind -- a reading order over the same tools, no panel. */}
+      <PathBar />
       {!chromeLeadsWithTheTool && <ToolChooser tool={tool} />}
       {/* The pedagogy line (teaches + the Theory Guide link) is rendered HERE
           for EVERY tool — every tool states its theory destination or it is

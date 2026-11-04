@@ -205,6 +205,39 @@ def main():
             fails.append(f"'{tid}': blurb equals its label -- it must say what "
                          "the tool lets a student do or see")
 
+    #  THE PATHS (DEV.md 4c C221).  METHOD_PATHS is the one home; the artefact
+    #  must carry exactly what the registry derives, and each path must be a
+    #  walk worth taking: >= 3 steps, every step a LIVE tool, no tool twice,
+    #  a sentence for every step and for the path.
+    live_paths = live.get("paths") or []
+    if not live_paths:
+        fails.append("the registry yields no METHOD_PATHS -- the paths section "
+                     "would be empty")
+    if published.get("paths") != live_paths:
+        fails.append(f"{ARTEFACT.relative_to(ROOT)} `paths` is not what the "
+                     "registry's METHOD_PATHS derives")
+    seen_path_ids = set()
+    for p in live_paths:
+        pid = p.get("id")
+        if pid in seen_path_ids:
+            fails.append(f"path id '{pid}' is declared twice")
+        seen_path_ids.add(pid)
+        steps = p.get("steps") or []
+        if len(steps) < 3:
+            fails.append(f"path '{pid}' has {len(steps)} step(s); a path needs "
+                         "at least 3")
+        if not (p.get("title") or "").strip() or not (p.get("intro") or "").strip():
+            fails.append(f"path '{pid}' lacks a title or an intro sentence")
+        ids = [s.get("tool") for s in steps]
+        for dup in sorted({i for i in ids if ids.count(i) > 1}):
+            fails.append(f"path '{pid}' repeats the tool '{dup}'")
+        for s in steps:
+            if s.get("tool") not in live_tools:
+                fails.append(f"path '{pid}' names '{s.get('tool')}', which is "
+                             "not a live tool in the registry")
+            if not (s.get("why") or "").strip():
+                fails.append(f"path '{pid}' step '{s.get('tool')}' has no `why`")
+
     #  The landing itself.
     if not LANDING.exists():
         fails.append("site/index.html is missing")
@@ -233,6 +266,10 @@ def main():
             if tool.get("teaches") and tool["teaches"] in html:
                 fails.append(f"site/index.html writes '{tid}'s blurb into the "
                              "page -- same defect")
+        for p in live_paths:
+            if p.get("intro") and p["intro"] in html:
+                fails.append(f"site/index.html writes the intro of path "
+                             f"'{p.get('id')}' into the page -- same defect")
         #  The plane's own one-paragraph blurb (EDUTOOLS_BLURB) is registry
         #  prose too: copied into the page it becomes the version a reader sees
         #  whenever the fetch fails, and it drifts silently.

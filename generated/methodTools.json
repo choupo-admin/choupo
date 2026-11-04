@@ -33,6 +33,137 @@
       "meaning": "an input -- a value you set with a control, or one the example's author declared -- not a result"
     }
   ],
+  "paths": [
+    {
+      "id": "distillation",
+      "title": "Distillation",
+      "intro": "From what a standard state means to the cost of the column: one separation, seen six ways.",
+      "steps": [
+        {
+          "tool": "standard-state",
+          "label": "Enthalpy, standard state and equilibrium (what ° means)",
+          "why": "Fixes what the enthalpies and equilibrium constants behind every later page are measured from.",
+          "href": "/app/?workspace=methods&tool=standard-state&path=distillation"
+        },
+        {
+          "tool": "flash-operating-line",
+          "label": "Flash (operating line)",
+          "why": "One equilibrium stage: the material balance line meets the equilibrium curve, the building block of a column.",
+          "href": "/app/?workspace=methods&tool=flash-operating-line&path=distillation"
+        },
+        {
+          "tool": "mccabe",
+          "label": "Distillation (McCabe-Thiele)",
+          "why": "Stacks those stages: reflux ratio and feed quality decide how many are needed.",
+          "href": "/app/?workspace=methods&tool=mccabe&path=distillation"
+        },
+        {
+          "tool": "ponchon-savarit",
+          "label": "Ponchon-Savarit, derived (the enthalpy diagram)",
+          "why": "Drops the constant-molar-overflow assumption by putting enthalpy on the diagram.",
+          "href": "/app/?workspace=methods&tool=ponchon-savarit&path=distillation"
+        },
+        {
+          "tool": "fug",
+          "label": "Distillation shortcut (FUG)",
+          "why": "Shortcut estimate of minimum stages, minimum reflux and the feed stage before a rigorous column.",
+          "href": "/app/?workspace=methods&tool=fug&path=distillation"
+        },
+        {
+          "tool": "plant-cost",
+          "label": "What a plant costs to build",
+          "why": "Turns the sized equipment into what the plant costs to build.",
+          "href": "/app/?workspace=methods&tool=plant-cost&path=distillation"
+        }
+      ]
+    },
+    {
+      "id": "thermodynamics",
+      "title": "Thermodynamics",
+      "intro": "From the meaning of the degree sign to how a Gibbs reactor finds its answer.",
+      "steps": [
+        {
+          "tool": "standard-state",
+          "label": "Enthalpy, standard state and equilibrium (what ° means)",
+          "why": "What the degree sign fixes, and what it leaves open.",
+          "href": "/app/?workspace=methods&tool=standard-state&path=thermodynamics"
+        },
+        {
+          "tool": "four-ways-mixture",
+          "label": "Four ways to price a mixture (NRTL · UNIFAC · COSMO-SAC · PC-SAFT)",
+          "why": "Four ways to price one mixture, ordered by what each model knew beforehand.",
+          "href": "/app/?workspace=methods&tool=four-ways-mixture&path=thermodynamics"
+        },
+        {
+          "tool": "local-composition",
+          "label": "Local composition, derived (Wilson · NRTL · UNIQUAC)",
+          "why": "Wilson, NRTL and UNIQUAC derived as one idea carried three distances.",
+          "href": "/app/?workspace=methods&tool=local-composition&path=thermodynamics"
+        },
+        {
+          "tool": "equilibrium-landscapes",
+          "label": "Equilibrium landscapes (what an approach can reach)",
+          "why": "What an equilibrium can reach, read from the thermicity and the mole change.",
+          "href": "/app/?workspace=methods&tool=equilibrium-landscapes&path=thermodynamics"
+        },
+        {
+          "tool": "element-potential",
+          "label": "How a Gibbs reactor solves (element potentials)",
+          "why": "How the engine solves it: one potential per element instead of one unknown per species.",
+          "href": "/app/?workspace=methods&tool=element-potential&path=thermodynamics"
+        }
+      ]
+    },
+    {
+      "id": "reaction-engineering",
+      "title": "Reaction engineering",
+      "intro": "From the heat a reaction releases to the reactor that keeps it under control.",
+      "steps": [
+        {
+          "tool": "reaction-enthalpy",
+          "label": "Reaction enthalpy and temperature (Kirchhoff)",
+          "why": "The heat of reaction, and how it moves with temperature.",
+          "href": "/app/?workspace=methods&tool=reaction-enthalpy&path=reaction-engineering"
+        },
+        {
+          "tool": "reactor-ladder",
+          "label": "The reactor ladder (stoichiometry, limit, rate)",
+          "why": "The order of questions: what the atoms allow, what thermodynamics allows, then what the rate delivers.",
+          "href": "/app/?workspace=methods&tool=reactor-ladder&path=reaction-engineering"
+        },
+        {
+          "tool": "limiting-reactant",
+          "label": "Limiting reactant and feed ratio in a recycle loop",
+          "why": "Feed ratios and the limiting reactant once a recycle closes the loop.",
+          "href": "/app/?workspace=methods&tool=limiting-reactant&path=reaction-engineering"
+        },
+        {
+          "tool": "levenspiel",
+          "label": "Reactor sizing (Levenspiel)",
+          "why": "Sizing: the PFR integral against the CSTR rectangle for the same conversion.",
+          "href": "/app/?workspace=methods&tool=levenspiel&path=reaction-engineering"
+        },
+        {
+          "tool": "approach-to-equilibrium",
+          "label": "Approach to equilibrium (Gibbs reactor)",
+          "why": "How close a reactor can get to equilibrium, and what a Gibbs reactor assumes.",
+          "href": "/app/?workspace=methods&tool=approach-to-equilibrium&path=reaction-engineering"
+        },
+        {
+          "tool": "declared-pathways",
+          "label": "Declared pathways (equilibrium over the reactions you allow)",
+          "why": "Equilibrium over the reactions you allow, against every pathway the species permit.",
+          "href": "/app/?workspace=methods&tool=declared-pathways&path=reaction-engineering"
+        },
+        {
+          "tool": "vanheerden",
+          "label": "Ignition / extinction (Van Heerden)",
+          "why": "The hazard: heat generated against heat removed gives three steady states and an ignition.",
+          "href": "/app/?workspace=methods&tool=vanheerden&path=reaction-engineering"
+        }
+      ]
+    }
+  ],
   "liveTools": 73,
   "registryTools": 73,
   "tools": [

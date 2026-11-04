@@ -173,6 +173,73 @@ export const METHOD_DISCIPLINES = [
 
 export type MethodDiscipline = typeof METHOD_DISCIPLINES[number];
 
+/** PEDAGOGICAL PATHS (DEV.md 4c C221, the architect's decision): an ordered
+ *  walk through tools that already exist, one sentence per step saying what
+ *  that step adds.  A path is a READING ORDER and nothing else -- it owns no
+ *  tool, no page and no state beyond "which path, which step".  ONE HOME,
+ *  beside the disciplines: the app's path bar, the landing's paths section
+ *  (via methodTools.json) and the gate all read this array.
+ *
+ *  Three paths are shipped.  Steps the architect asked for that have no tool
+ *  were DROPPED, not faked: distillation has no dedicated T-x-y tool (the
+ *  equilibrium curve is drawn by the flash and McCabe-Thiele pages), no
+ *  rigorous-column page and no tray-hydraulics page; the single-tool pages
+ *  those would be stay in the roadmap, not here.  check_method_tools holds
+ *  that every step names a live tool, a path has at least three steps and no
+ *  tool repeats inside one. */
+export interface MethodPathStep { tool: MethodToolId; why: string }
+export interface MethodPath {
+  id: string;
+  title: string;
+  intro: string;
+  steps: MethodPathStep[];
+}
+
+export const METHOD_PATHS: MethodPath[] = [
+  {
+    id: "distillation",
+    title: "Distillation",
+    intro: "From what a standard state means to the cost of the column: one separation, seen six ways.",
+    steps: [
+      { tool: "standard-state", why: "Fixes what the enthalpies and equilibrium constants behind every later page are measured from." },
+      { tool: "flash-operating-line", why: "One equilibrium stage: the material balance line meets the equilibrium curve, the building block of a column." },
+      { tool: "mccabe", why: "Stacks those stages: reflux ratio and feed quality decide how many are needed." },
+      { tool: "ponchon-savarit", why: "Drops the constant-molar-overflow assumption by putting enthalpy on the diagram." },
+      { tool: "fug", why: "Shortcut estimate of minimum stages, minimum reflux and the feed stage before a rigorous column." },
+      { tool: "plant-cost", why: "Turns the sized equipment into what the plant costs to build." },
+    ],
+  },
+  {
+    id: "thermodynamics",
+    title: "Thermodynamics",
+    intro: "From the meaning of the degree sign to how a Gibbs reactor finds its answer.",
+    steps: [
+      { tool: "standard-state", why: "What the degree sign fixes, and what it leaves open." },
+      { tool: "four-ways-mixture", why: "Four ways to price one mixture, ordered by what each model knew beforehand." },
+      { tool: "local-composition", why: "Wilson, NRTL and UNIQUAC derived as one idea carried three distances." },
+      { tool: "equilibrium-landscapes", why: "What an equilibrium can reach, read from the thermicity and the mole change." },
+      { tool: "element-potential", why: "How the engine solves it: one potential per element instead of one unknown per species." },
+    ],
+  },
+  {
+    id: "reaction-engineering",
+    title: "Reaction engineering",
+    intro: "From the heat a reaction releases to the reactor that keeps it under control.",
+    steps: [
+      { tool: "reaction-enthalpy", why: "The heat of reaction, and how it moves with temperature." },
+      { tool: "reactor-ladder", why: "The order of questions: what the atoms allow, what thermodynamics allows, then what the rate delivers." },
+      { tool: "limiting-reactant", why: "Feed ratios and the limiting reactant once a recycle closes the loop." },
+      { tool: "levenspiel", why: "Sizing: the PFR integral against the CSTR rectangle for the same conversion." },
+      { tool: "approach-to-equilibrium", why: "How close a reactor can get to equilibrium, and what a Gibbs reactor assumes." },
+      { tool: "declared-pathways", why: "Equilibrium over the reactions you allow, against every pathway the species permit." },
+      { tool: "vanheerden", why: "The hazard: heat generated against heat removed gives three steady states and an ignition." },
+    ],
+  },
+];
+
+export const pathById = (id: string | null | undefined): MethodPath | null =>
+  METHOD_PATHS.find((p) => p.id === id) ?? null;
+
 export interface MethodTool {
   id: MethodToolId;
   label: string;
@@ -2105,4 +2172,48 @@ export function setActiveMethodTool(id: MethodToolId): void {
  *  workspace body and the top-bar dropdown's check mark). */
 export function useActiveMethodTool(): MethodToolId {
   return useSyncExternalStore(subscribe, getActiveMethodTool, getActiveMethodTool);
+}
+
+// ---- The active path (DEV.md 4c C221) --------------------------------------
+// Which pedagogical path is being walked, or none.  Module state like the
+// tool, for the same reason (the path bar and the menus are siblings), and
+// written to the address as `&path=<id>` so a link carries it; the STEP is
+// not stored -- it is where the active tool sits in the path.
+
+/** Boot path from the URL: `&path=<id>` of a path that exists. */
+export function bootPath(): string | null {
+  if (typeof window === "undefined") return null;
+  const id = new URLSearchParams(window.location.search).get("path");
+  return pathById(id) ? id : null;
+}
+
+let activePath: string | null = bootPath();
+
+export function getActivePath(): string | null {
+  return activePath;
+}
+
+/** Choose a path (or null to leave it).  Choosing a path whose steps do not
+ *  include the open tool opens its first step; the open tool is otherwise
+ *  left alone, so picking the path you are already inside moves nothing. */
+export function setActivePath(id: string | null): void {
+  const p = pathById(id);
+  activePath = p ? p.id : null;
+  if (typeof window !== "undefined"
+    && typeof window.history?.replaceState === "function") {
+    try {
+      const url = new URL(window.location.href);
+      if (activePath) url.searchParams.set("path", activePath);
+      else url.searchParams.delete("path");
+      window.history.replaceState(window.history.state, "", url.toString());
+    } catch { /* opaque URL / blocked history */ }
+  }
+  if (p && !p.steps.some((s) => s.tool === activeTool))
+    setActiveMethodTool(p.steps[0]!.tool);
+  else for (const fn of listeners) fn();
+}
+
+/** The active path id as React state. */
+export function useActivePath(): string | null {
+  return useSyncExternalStore(subscribe, getActivePath, getActivePath);
 }
