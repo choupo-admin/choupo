@@ -243,19 +243,22 @@ tools = doc.get("tools") or []
 if not tools:
     sys.exit(0)
 e = lambda s: html.escape(str(s or ""), quote=True)
-card = lambda t: ('<a class="edutool" href="%s" target="_blank" rel="noopener">'
+card = lambda t: ('<a class="edutool" href="%s" data-q="%s" target="_blank" rel="noopener">'
                   '<h3>%s</h3><p class="edutool-blurb">%s</p><p class="edutool-teaches">%s</p>'
                   '<span class="edutool-go">Open in Choupo &rarr;</span></a>'
-                  % (e(t.get("href")), e(t.get("label")), e(t.get("blurb")), e(t.get("teaches"))))
+                  % (e(t.get("href")), e(" ".join(str(t.get(k) or "") for k in ("label", "blurb", "teaches")).lower()),
+                     e(t.get("label")), e(t.get("blurb")), e(t.get("teaches"))))
 discs = doc.get("disciplines") or []
 shelved = [(d, [t for t in tools if t.get("discipline") == d]) for d in discs]
 shelved = [(d, items) for d, items in shelved if items]
 off = [t for t in tools if t.get("discipline") not in discs]
 if shelved and not off:
-    body = "".join('<h3 class="edutool-shelf">%s</h3>' % e(d) + "".join(map(card, items))
+    body = "".join('<details class="edutool-box" open><summary class="edutool-shelf">%s'
+                   '<span class="edutool-n">%d</span></summary><div class="edutool-cards">%s</div></details>'
+                   % (e(d), len(items), "".join(map(card, items)))
                    for d, items in shelved)
 else:
-    body = "".join(map(card, tools))
+    body = '<div class="edutool-cards">%s</div>' % "".join(map(card, tools))
 src = open(page, encoding="utf-8").read()
 hook = '<p class="edutool-msg" id="edutoolsLoading">Loading the EduTools…</p>'
 if hook in src:

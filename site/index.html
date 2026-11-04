@@ -272,11 +272,22 @@
 
   /* EduTools — the classical-method constructions, rendered from
      /methodTools.json (generated from the app's own registry). */
-  .edutool-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
-    background: var(--line); border: 1px solid var(--line); }
-  .edutool-shelf { grid-column: 1 / -1; margin: 0; padding: 12px 20px 10px;
+  .edutool-grid { background: var(--line); border: 1px solid var(--line); }
+  .edutool-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+    background: var(--line); }
+  .edutool-box + .edutool-box { margin-top: 1px; }
+  .edutool-shelf { display: block; cursor: pointer; margin: 0; padding: 12px 20px 10px;
     background: var(--white); font-size: 13px; font-weight: 800;
     letter-spacing: .06em; text-transform: uppercase; color: var(--teal-ink); }
+  .edutool-shelf:hover, .edutool-shelf:focus-visible { background: #eef8f5; }
+  .edutool-n { margin-left: 8px; color: var(--muted); font-weight: 600; letter-spacing: 0; }
+  .edutool-filter { margin: 0 0 14px; }
+  .edutool-filter input { width: 100%; max-width: 440px; box-sizing: border-box;
+    padding: 10px 14px; font: inherit; font-size: 15px; color: var(--ink);
+    background: var(--white); border: 1px solid var(--line); border-radius: 6px; }
+  .edutool-filter input:focus-visible { outline: 2px solid var(--teal); outline-offset: 1px; }
+  .edutool-filter-note { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+  .edutool[hidden], .edutool-box[hidden], .edutool-filter[hidden] { display: none; }
   .edutool { display: block; padding: 22px 20px; background: var(--white); text-decoration: none; }
   .edutool:hover, .edutool:focus-visible { background: #eef8f5; }
   .edutool h3 { margin: 0 0 8px; font-size: 17px; }
@@ -288,7 +299,7 @@
   .edutool-origin b { color: var(--ink); font-weight: 700; }
   .edutool-legend { margin: 10px 0 0; color: var(--muted); font-size: 13px; }
   .edutool-note { margin: 22px 0 0; color: var(--muted); font-size: 14px; }
-  .edutool-msg { grid-column: 1 / -1; margin: 0; padding: 30px 20px; color: var(--muted); background: var(--white); }
+  .edutool-msg { margin: 0; padding: 30px 20px; color: var(--muted); background: var(--white); }
 
   /* "Choose how to run" tabs + cards */
   .run-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
@@ -317,7 +328,7 @@
     .proof:nth-child(4) { border-top: 1px solid rgba(255, 255, 255, 0.14); }
     .principle-grid, .evidence-grid, .install-grid, .about, .run-grid { grid-template-columns: 1fr; gap: 34px; }
     .included-grid { grid-template-columns: repeat(2, 1fr); }
-    .edutool-grid { grid-template-columns: repeat(2, 1fr); }
+    .edutool-cards { grid-template-columns: repeat(2, 1fr); }
     .workflow { grid-template-columns: 100px 1fr; }
     .workflow p { grid-column: 2; }
     .resource-grid { grid-template-columns: 1fr; }
@@ -343,7 +354,7 @@
     .proof strong { font-size: 23px; }
     .proof span { font-size: 12px; }
     .capability-grid { grid-template-columns: 1fr; }
-    .edutool-grid { grid-template-columns: 1fr; }
+    .edutool-cards { grid-template-columns: 1fr; }
     .capability { min-height: 0; }
     .capability .number { margin-bottom: 24px; }
     .workflow { grid-template-columns: 1fr; gap: 8px; }
@@ -459,6 +470,12 @@
              `origins` for that tool, so the claim is made per tool, from the
              one home the app's pages draw their origin marks from. -->
         <p class="lede">None of them needs a case open first. Most run Choupo's engine on their own worked example in your browser and set the method beside the engine's answer; others work a closed form on the page, quote a cited source or a recorded run, or start from assumptions you set. Each card says where its numbers come from, and in the app every result carries the same mark.</p>
+      </div>
+      <!-- The text filter is revealed by the script below; without JavaScript
+           the shelves are simply the full list, every one open. -->
+      <div class="edutool-filter" id="edutoolsFilterBox" hidden>
+        <input type="search" id="edutoolsFilter" placeholder="Filter the tools: McCabe, psychro, Gibbs&hellip;" aria-label="Filter the EduTools by name or topic" autocomplete="off">
+        <p class="edutool-filter-note" id="edutoolsFilterNote" role="status" aria-live="polite"></p>
       </div>
       <div class="edutool-grid" id="edutoolsGrid">
         <p class="edutool-msg" id="edutoolsLoading">Loading the EduTools…</p>
@@ -837,6 +854,47 @@ https://www.choupo.org/app/
         return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
       });
     }
+    //  THE TEXT FILTER (DEV.md 4c C221).  It works on whatever cards are in
+    //  the grid -- the static ones buildSite wrote or the ones drawn below --
+    //  by their data-q (label, blurb and teaches, lower-cased), every typed
+    //  word having to occur.  A shelf with no match hides; while a filter is
+    //  on, a matching shelf is forced open and the reader's own fold is put
+    //  back when the box is emptied.  Without JavaScript none of this exists
+    //  and the page is the full list.
+    var box = document.getElementById("edutoolsFilterBox");
+    var input = document.getElementById("edutoolsFilter");
+    var note = document.getElementById("edutoolsFilterNote");
+    var folded = null;
+    function applyFilter() {
+      if (!input) return;
+      var words = input.value.toLowerCase().split(/\s+/).filter(Boolean);
+      var boxes = host.querySelectorAll(".edutool-box");
+      if (words.length && !folded) {
+        folded = [];
+        Array.prototype.forEach.call(boxes, function (b) { folded.push(b.open); });
+      }
+      var shown = 0, cards = host.querySelectorAll(".edutool");
+      Array.prototype.forEach.call(cards, function (c) {
+        var q = c.getAttribute("data-q") || "";
+        var ok = words.every(function (w) { return q.indexOf(w) >= 0; });
+        c.hidden = !ok;
+        if (ok) shown++;
+      });
+      Array.prototype.forEach.call(boxes, function (b, i) {
+        var any = b.querySelector(".edutool:not([hidden])");
+        b.hidden = !any;
+        if (words.length) b.open = true;
+        else if (folded) b.open = folded[i];
+      });
+      if (!words.length) folded = null;
+      if (note) note.textContent = words.length
+        ? (shown ? shown + " of " + cards.length + " tools match."
+                 : "No tool matches. Try a method, a model or a quantity.") : "";
+    }
+    if (box && input) {
+      box.hidden = false;
+      input.addEventListener("input", applyFilter);
+    }
     fetch("/methodTools.json", { cache: "no-cache" })
       .then(function (r) { if (!r.ok) throw 0; return r.json(); })
       .then(function (doc) {
@@ -863,6 +921,7 @@ https://www.choupo.org/app/
           //  against.  Two tabs side by side is also how a tool is meant to be
           //  used -- consulted while the case stays where it was.
           return '<a class="edutool" href="' + esc(t.href)
+            + '" data-q="' + esc([t.label, t.blurb, t.teaches].join(" ").toLowerCase())
             + '" target="_blank" rel="noopener">'
             + '<h3>' + esc(t.label) + '</h3>'
             + '<p class="edutool-blurb">' + esc(t.blurb) + '</p>'
@@ -885,12 +944,15 @@ https://www.choupo.org/app/
           return discs.indexOf(t.discipline) < 0; });
         if (shelved.length && !offShelf.length) {
           host.innerHTML = shelved.map(function (g) {
-            return '<h3 class="edutool-shelf">' + esc(g.d) + '</h3>'
-              + g.items.map(card).join("");
+            return '<details class="edutool-box" open><summary class="edutool-shelf">'
+              + esc(g.d) + '<span class="edutool-n">' + g.items.length + '</span></summary>'
+              + '<div class="edutool-cards">' + g.items.map(card).join("")
+              + '</div></details>';
           }).join("");
         } else {
-          host.innerHTML = tools.map(card).join("");
+          host.innerHTML = '<div class="edutool-cards">' + tools.map(card).join("") + '</div>';
         }
+        applyFilter();
         var count = document.getElementById("edutoolsCount");
         if (count) count.textContent = tools.length;
         var blurb = document.getElementById("edutoolsBlurb");
