@@ -2166,6 +2166,22 @@ accepts today, and that is a policy call.
 > `extractor` validated against Perry's Table 15-8), so the page can end on
 > a column the engine ran.
 
+> **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
+> not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
+> ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
+> HETS/HTU tables, valves with Cv and equal-percentage characteristics, Monod
+> / fed-batch / kLa material in the bioreactor sections), Treybal 3rd ed.
+> (Ch. 7 transfer units, Ch. 8 NTU, Ch. 10 Illustrations 10.1-10.10),
+> Levenspiel 3rd ed. (from the epub: reversible reactions and the optimum
+> temperature progression -- the source for C218), Ulleberg 2003 (the
+> alkaline electrolyser model for W7: the I-U curve with overvoltages and the
+> Faraday efficiency), Hewitt-Shires-Bott (Bell-Delaware, Ex. 6.2), the
+> Beggs-Brill OCR, and in `/home/vitor/Choupo-Literature/` Orbach-Crowe and
+> Wagner (IF97).  NOT yet supplied: Serth's own pages beyond Table 6.1 and
+> Eqs 6.1-6.4 (the file named "Process Heat Transfer" is Hewitt's, same
+> title).  Consequence: Doran, the ISA valve standard and Fogler are no
+> longer needed.
+
 > **C221. THE EDUTOOLS LIBRARY, REORGANISED (an external UX review relayed
 > by Vitor, 2026-11-04 -- "recomendacoes de organizacao e UX, nao
 > instrucoes").**  MEASURED before judging: 73 tools on 10 disciplines with
