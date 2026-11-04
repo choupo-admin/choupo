@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/extractionShortcut.schema.json",
+  "title": "extractionShortcut operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "evaluate"},
+  "description": "The Kremser-Souders-Brown shortcut for a dilute liquid-liquid extraction cascade (Perry's 9th ed. Eq. 15-43, Treybal Eq. 10.38) evaluated on declared solute-free ratios: the stage count, the fraction taken, the transfer units, and with a `pseudoSolute` block the case-B pseudo-feed and pseudo-solvent of Eqs. 15-90/15-91. A CHECK on a straight equilibrium line, not a design; it reads no property.",
+  "type": "object",
+  "properties": {
+    "inputs": {
+      "type": "object",
+      "title": "Ratios",
+      "description": "`Xf`, `Xr`, `Ys` (solute per solvent, solute-free), `K` (equilibrium slope Y/X) and EITHER `extractionFactor` OR `slopes { m1 mr S F }`."
+    },
+    "pseudoSolute": {
+      "type": "object",
+      "title": "Case B (partly miscible solvents)",
+      "description": "`{ S; E; F; R; Ye; }` — the flows and extract ratio of Perry's Eqs. 15-90 and 15-91."
+    }
+  },
+  "required": ["inputs"],
+  "additionalProperties": false
+}

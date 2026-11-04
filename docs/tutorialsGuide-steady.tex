@@ -243,6 +243,46 @@ Record: docs/design/a-state-directory-is-a-restartable-snapshot.md
 \end{tutgolden}
 
 \clearpage
+\tutentry{extract03\_acetic\_acid\_mibk\_perry}{tutorials/steady/absorption/extract03\_acetic\_acid\_mibk\_perry}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (extractor01) at (0.0,-0.0) {\textbf{extractor01}\\[-1pt]{\tiny extractor}};
+  \draw[->] ($(extractor01.west)+(-1.05,-0.17)$) -- ($(extractor01.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
+  \draw[->] ($(extractor01.west)+(-1.05,0.17)$) -- ($(extractor01.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {solvent};
+  \draw[->] ($(extractor01.east)+(0,-0.17)$) -- ($(extractor01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {extract};
+  \draw[->] ($(extractor01.east)+(0,0.17)$) -- ($(extractor01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {raffinate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Counter-current LL extraction of acetic acid from water with MIBK (Perry Example 15-1 problem)}
+\begin{tutnarrative}
+Perry's Example 15-1 on the extractor
+
+WHAT IT IS. The problem of Perry's Chemical Engineers' Handbook (9th ed., Example 15-1, p. 15-48): 100 kg/h of 20 wt\% acetic acid in water extracted with 200 kg/h of recycle methyl isobutyl ketone (0.1 wt\% acid, 0.01 wt\% water) at 25 C, in a countercurrent cascade of theoretical stages. Perry reads 4.3 stages from his shortcut (Eq. 15-43) and from a McCabe-Thiele plot on the MEASURED equilibrium of Table 15-8 (raffinate to 1 wt\% acid).
+
+WHAT THE ENGINE DOES WITH IT. Five stages, each the liquid-liquid flash of the case's package (UNIFAC, nothing fitted). The unit prints its own Kremser-Souders-Brown CHECK beside the rigorous count (KPIs N\_shortcut, E\_shortcut, Kp\_$\ast$): Perry's formula on K' = Y/X read from the two end stages the cascade itself solved. And a DECLARED HETS turns the stage count into a column height (KPI height\_m) -- a rating on the case's own number.
+
+WHAT IT IS NOT. Not a validation of the cascade: the case that holds the package against Perry's measured tie lines is tutorials/props/compare/lle01\_acetic\_mibk\_perry, and it finds UNIFAC over-predicts the acid taken up by the MIBK and the water that dissolves in it, so this cascade removes MORE acid than Perry's measured system would at the same N. The HETS below is an ILLUSTRATIVE number to show the arithmetic, declared as such; no source ships it (Perry's Sec. 15 tabulates HETS by column type -- read the one for the column you mean).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{extract}{F}{0.000910597679242}
+\goldrow{stream}{extract}{T}{298.15}
+\goldrow{stream}{feed}{F}{0.00132606666667}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{raffinate}{F}{0.000970757892776}
+\goldrow{stream}{raffinate}{T}{298.15}
+\goldrow{stream}{solvent}{F}{0.000555288888889}
+\goldrow{stream}{solvent}{T}{298.15}
+\goldrow{kpi}{extractor01}{E\_shortcut}{2.88255294562}
+\goldrow{kpi}{extractor01}{F\_extract}{0.000910597679242}
+\goldrow{kpi}{extractor01}{F\_feed}{0.00132606666667}
+\goldrow{kpi}{extractor01}{F\_raffinate}{0.000970757892776}
+\goldrow{kpi}{extractor01}{F\_solvent}{0.000555288888889}
+\goldrow{kpi}{extractor01}{Kp\_feedEnd}{6.6711613772}
+\goldmore{22}
+\end{tutgolden}
+
+\clearpage
 \tutentry{extraction01\_waterButanol}{tutorials/steady/absorption/extraction01\_waterButanol}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

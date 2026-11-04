@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/lleTieLines.schema.json",
+  "title": "lleTieLines operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "scan", "package": true},
+  "description": "The conjugate-phase curve of a ternary liquid-liquid system at one (T, P): the feed walks a straight line in the triangle (the solute's mass fraction sweeps, the rest split carrier : extractant in a declared ratio) and every feed that splits through the liquid-liquid flash writes one row, raffinate and extract in MASS fractions. Laid beside measured tie lines by an `experimental {}` overlay it is a validation reading, never a fit; a feed that does not split is counted and not written.",
+  "type": "object",
+  "properties": {
+    "state": {
+      "type": "object",
+      "title": "Held state",
+      "properties": {
+        "T": {"type": "number", "exclusiveMinimum": 0, "title": "Temperature", "unit": "K"},
+        "P": {"type": "number", "exclusiveMinimum": 0, "title": "Pressure", "unit": "Pa"}
+      }
+    },
+    "solute": {"type": "string", "title": "Solute", "description": "The component carried from the carrier into the extract."},
+    "carrier": {"type": "string", "title": "Carrier", "description": "The component that defines the raffinate (the feed's solvent)."},
+    "extractant": {"type": "string", "title": "Extractant", "description": "The component that defines the extract (the extracting solvent)."},
+    "feed": {
+      "type": "object",
+      "title": "Feed line",
+      "description": "`soluteMassFraction { from; to; n; }` and `carrierToExtractant` (kg carrier per kg extractant of the rest)."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — one row per splitting feed, abscissa first.",
+      "properties": {"file": {"type": "string", "title": "CSV file name"}},
+      "required": ["file"]
+    }
+  },
+  "required": ["state", "solute", "carrier", "extractant", "feed", "output"],
+  "additionalProperties": false
+}

@@ -493,6 +493,81 @@ WHAT IS NOT CLAIMED. Nothing is fitted here. Part of every residual is the catal
 \goldmore{4}
 \end{tutgolden}
 
+\clearpage
+\tutentry{extractionShortcut01\_perry\_example15\_1}{tutorials/props/compare/extractionShortcut01\_perry\_example15\_1}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{ex15\_1\_caseA}\\[-1pt]{\tiny extractionShortcut}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{ex15\_1\_E\_from\_slopes}\\[-1pt]{\tiny extractionShortcut}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{ex15\_2\_caseB}\\[-1pt]{\tiny extractionShortcut}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Extraction shortcut (Perry Eq. 15-43) on Examples 15-1 to 15-3}
+\begin{tutnarrative}
+WHAT IT IS. The Kremser-Souders-Brown shortcut for a dilute liquid-liquid extraction cascade, run on the numbers of two worked examples in Perry's Chemical Engineers' Handbook, 9th ed., Section 15, p. 15-48:
+
+Example 15-1 (case A, immiscible solvents). 100 kg/h of 20 wt\% acetic acid in water, extracted by 200 kg/h of recycle MIBK, raffinate down to 1 wt\% acid. Perry reads the ratios X' = 0.25, 0.01 (feed, raffinate) and Y' = 0.001 (solvent), the equilibrium slope K' = 0.656 at the dilute end, and the extraction factor E = sqrt(m1' mr') S'/F' = 0.739 x 199.8/80 = 1.85, and prints N = 4.3 theoretical stages from Eq. (15-43). Example 15-2 (case B, partly miscible solvents). The same problem with the mutual solubilities of water and MIBK accounted for by the pseudo-solute concentrations of Eqs. (15-90) and (15-91): X\_f\textasciicircum{}B = 0.251, Y\_s\textasciicircum{}B = 0.0016, N = 4.5. Example 15-3. The transfer units of Example 15-2: N\_or = 6.0.
+
+WHAT IT IS NOT. No property package is read -- the op evaluates a formula on declared numbers, and the package in constant/ is only what the props driver requires of a case. The answers are held to the PRINTED numbers, to the digits Perry prints (the `anchor` rows of `expected`); that is a check of Choupo's transcription of the equations, not a validation of the shortcut against an extractor. Treybal, Mass-Transfer Operations 3rd ed., Eq. (10.38) is the same cascade written as a fraction taken, and the `fractionTaken` / `fractionRequired` pair printed beside N is the agreement of the two books' forms.
+
+The `extractor` unit prints the same shortcut beside its rigorous stage count (KPI N\_shortcut), as a CHECK on a straight equilibrium line, never a design.
+
+Source: Perry's Chemical Engineers' Handbook, 9th ed., Examples 15-1 to 15-3, read from the page image (p. 15-48); Treybal 3rd ed., Eq. (10.38).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{ex15\_1\_caseA}{E}{1.85}
+\goldrow{diag}{ex15\_1\_caseA}{N}{4.3}
+\goldrow{diag}{ex15\_1\_caseA}{N\_or}{5.74543214891}
+\goldrow{diag}{ex15\_1\_caseA}{fractionRequired}{0.965889570552}
+\goldrow{diag}{ex15\_1\_caseA}{fractionTaken}{0.965889570552}
+\goldrow{diag}{ex15\_1\_E\_from\_slopes}{E}{1.85}
+\goldrow{diag}{ex15\_1\_E\_from\_slopes}{N}{4.3}
+\goldrow{diag}{ex15\_1\_E\_from\_slopes}{N\_or}{5.75445508328}
+\goldrow{diag}{ex15\_1\_E\_from\_slopes}{fractionRequired}{0.965889570552}
+\goldrow{diag}{ex15\_1\_E\_from\_slopes}{fractionTaken}{0.965889570552}
+\goldrow{diag}{ex15\_2\_caseB}{E}{1.85}
+\goldrow{diag}{ex15\_2\_caseB}{N}{4.5}
+\goldrow{diag}{ex15\_2\_caseB}{N\_caseB}{4.48053341968}
+\goldrow{diag}{ex15\_2\_caseB}{N\_or}{6.0}
+\goldmore{4}
+\end{tutgolden}
+
+\clearpage
+\tutentry{lle01\_acetic\_mibk\_perry}{tutorials/props/compare/lle01\_acetic\_mibk\_perry}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{tie\_unifac}\\[-1pt]{\tiny lleTieLines}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{LLE validation: water + acetic acid + MIBK, 25 C, UNIFAC against Perry Table 15-8}
+\begin{tutnarrative}
+WHAT IT IS. The first VALIDATION READING of the liquid-liquid flash that the `extractor` runs at every stage: the catalogue's UNIFAC, with no parameter touched, laid beside the six measured tie lines of water + acetic acid + methyl isobutyl ketone (MIBK) at 25 C, 1 atm (constant/experiments: Sherwood, Evans \& Longcor 1939, as printed in Perry's Chemical Engineers' Handbook 9th ed., Table 15-8, p. 15-48).
+
+HOW IT READS. `lleTieLines` feeds the flash along a straight line in the triangle (acid mass fraction 0.005 $\to$ 0.40, the rest water : MIBK 1 : 1), and writes the conjugate pair (raffinate, extract) of every feed that splits, in MASS fractions. The overlay interpolates the model's extract composition at each MEASURED raffinate acid fraction (the abscissa) and reports the average absolute deviation per column. Nothing is fitted: this is a reading, pinned by `aad` rows, not a calibration.
+
+WHAT IT FOUND (mass fractions, AAD over the six tie lines):
+
+raffinate water 0.036 extract acetic acid 0.031 raffinate MIBK 0.036 extract water 0.043 extract MIBK 0.056
+
+UNIFAC DOES split the system and has the right shape of the binodal, but it MISSES the measurements by 3 to 6 mass percent -- a miss, and the verdict word the gate holds is `misses` (band declared here, a priori and for every column: AAD <= 0.01 `agrees`, <= 0.03 `approximate`, above `misses`). The misses have a direction: the model puts too much acetic acid in the MIBK (extract acid 0.130 against the measured 0.089 at the raffinate's 0.117, and 0.222 against 0.173 at 0.205), dissolves about twice the measured water in the dilute extract (0.088 against 0.054 at 0.117), and keeps the two liquids apart up to a raffinate acid fraction of about 0.395, past the last measured tie line (0.346, where the measured extract is still 0.31 water). This is the corpus UNIFAC, the VLE parameter table (CLAUDE.md sec. 6: the same table keeps water / 1-butanol miscible); a curated LLE parameter set, or NRTL pairs fitted on a held-out design, is the remedy and is NOT done here. Consequence for a student: a countercurrent cascade on this package (tutorials/steady/absorption/extract03\_$\ast$) takes more acid out per stage than the real system does.
+
+NOT IN THE READING. The all-binary row of Table 15-8 (water / MIBK mutual solubility) is not carried; the data are transcribed from the table's page image and NOT checked against the 1939 article; the MIBK vapour pressure advisory in the log is about a property the LLE never uses.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{tie\_unifac}{n\_feeds}{80}
+\goldrow{diag}{tie\_unifac}{n\_refused}{0}
+\goldrow{diag}{tie\_unifac}{n\_single}{0}
+\goldrow{diag}{tie\_unifac}{n\_split}{80}
+\goldrow{diag}{tie\_unifac}{wR\_solute\_max}{0.395303060021}
+\goldrow{aad}{perry\_table15\_8}{tie\_unifac.wR\_water.aadAbs}{0.0362145055063}
+\goldrow{aad}{perry\_table15\_8}{tie\_unifac.wR\_methylIsobutylKetone.aadAbs}{0.0361978386946}
+\goldrow{aad}{perry\_table15\_8}{tie\_unifac.wE\_aceticAcid.aadAbs}{0.0310105107019}
+\goldrow{aad}{perry\_table15\_8}{tie\_unifac.wE\_water.aadAbs}{0.0432948894869}
+\goldrow{aad}{perry\_table15\_8}{tie\_unifac.wE\_methylIsobutylKetone.aadAbs}{0.0561117991127}
+\end{tutgolden}
+
 \subsection{curation}
 \grouptheory{curation}
 \clearpage
