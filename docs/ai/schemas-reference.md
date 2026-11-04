@@ -522,6 +522,8 @@ Liquid-liquid extraction column — the SAME unit as `extractor` under its short
 | `stages` | ✓ | integer | - | Number of theoretical counter-current stages. |
 | `solvent` |   | string | — | The component that identifies the extract phase. Naming it removes the ambiguity of which of the two liquids is which. |
 | `temperature` |   | number | K | Isothermal column temperature; defaults to the feed temperature. |
+| `hets` |   | number | m | Height equivalent to a theoretical stage, the case's own number: the column height is published as stages x HETS, a rating. Requires hets… |
+| `hetsSource` |   | string | — | Where the declared HETS comes from (required with hets; a height is only as good as the number behind it). |
 
 ## `extractionShortcut`  (extractionShortcut operation)
 
@@ -541,6 +543,8 @@ Counter-current multistage liquid-liquid extraction column. Each stage is a liqu
 | `stages` | ✓ | integer | - | Number of theoretical counter-current stages. |
 | `solvent` |   | string | — | The component that identifies the extract phase. Naming it removes the ambiguity of which of the two liquids is which. |
 | `temperature` |   | number | K | Isothermal column temperature; defaults to the feed temperature. |
+| `hets` |   | number | m | Height equivalent to a theoretical stage, the case's own number: the column height is published as stages x HETS, a rating. Requires hets… |
+| `hetsSource` |   | string | — | Where the declared HETS comes from (required with hets; a height is only as good as the number behind it). |
 
 ## `fitParameters`  (fitParameters operation)
 
