@@ -1,0 +1,56 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  solverDict  --  numerical strategy: the recycle plan (tear cuts + solver)
+                  and per-unit-op-type solver options
+\*---------------------------------------------------------------------------*/
+
+// ---- Recycle plan: the tear CUT + the dominant eigenvalue method ----
+//
+//  This case is process05_isomerization_recycle with ONE change: the recycle
+//  is closed by `recycleSolver DominantEigenvalue;`, the dominant eigenvalue
+//  method of O. Orbach and C. M. Crowe, Can. J. Chem. Eng. 49 (1971) 509
+//  (formulas, safeguards and what is Choupo's own addition are listed in
+//  src/solver/DominantEigenvalue.H).  Near the solution the differences of
+//  successive direct-substitution iterates shrink by a factor lambda per
+//  pass (the paper's Eq 15-17).  The aid estimates lambda from the norm
+//  ratio of two consecutive differences, waits until two successive
+//  estimates agree, and then MOVES to the apparent solution
+//  X_n-1 + alpha (X_n - X_n-1)/(1 - lambda)   (the paper's Eq 18).
+//  It REPORTS ALOUD: the numbers below are announced (defaults marked), each
+//  move prints its lambda, and a refused move falls back to direct
+//  substitution and prints why.
+//
+//  The damping alpha is declared 1.0 HERE.  The paper's value, 0.7, is the
+//  default: it "suppresses oscillation" and costs speed where there is none.
+//  On this loop lambda = 0.21 is small and positive, nothing oscillates, and
+//  the undamped move lands on the solution.
+//
+//  MEASURED on this flowsheet, iterations to |dtear|2 < 1e-5:
+//      Newton on tears            2
+//      Wegstein (q in [-1,0])     9
+//      direct substitution        10   (Wegstein with q = 0)
+//      DominantEigenvalue a=1.0   6    (the case as declared)
+//      DominantEigenvalue a=0.7   10   (the paper's damping: no gain here)
+//  HONEST LIMITS, measured the same way on the corpus: on a loop with a
+//  small lambda there is little to promote, and the method is built for
+//  lambda near 1 (the paper's loops have lambda 0.9 to 0.98).  Where this
+//  corpus's loops converge in a handful of passes, DominantEigenvalue
+//  matches or trails Wegstein (membrane27: 15 against 7; acetonePlant: 6
+//  against 4), and cavett01_recycle_train, which defeats Wegstein, defeats it
+//  too.  It is an opt-in aid for slow geometric loops, not a better default.
+tearStreams           ( recycle );
+recycleSolver          DominantEigenvalue;
+recycleTol             1e-5;
+recycleMaxIter         150;
+recycleDEDamping       1.0;     // the paper's Eq 18 alpha; its default is 0.7
+// Left at their defaults (and announced as such):
+// recycleDELambdaTol     0.01;   // two successive lambda within 1 % (paper: 0.5-1 %)
+// recycleDELambdaMax     0.9;    // refuse a move when |lambda| is above this (Choupo's own bound)
+// recycleDEMinCosine     0.9;    // refuse a move when the differences are not parallel (Choupo's own guard)

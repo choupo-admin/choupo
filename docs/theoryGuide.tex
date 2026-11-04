@@ -516,6 +516,23 @@ $q_{\min} = q_{\max} = 0$ degenerates to plain direct substitution
 for cases where acceleration is unsafe (flash regime switches,
 strongly non-linear recycles).
 
+\noindent A third closure, \texttt{recycleSolver DominantEigenvalue;}, is the
+dominant eigenvalue method of Orbach and Crowe (Can.\ J.\ Chem.\ Eng.\ 49
+(1971) 509).  Near the solution the iteration is a geometric progression,
+$X_n-X_s=c_1Z_1\lambda_1^n$ (their Eq.~15), so the ratio of the norms of two
+successive differences, $\|\Delta X_n\|/\|\Delta X_{n-1}\|=|\lambda_1|$
+(Eq.~17), estimates the dominant eigenvalue; once two successive estimates
+agree the iterate moves to
+$X'_s=X_{n-1}+\alpha\,(X_n-X_{n-1})/(1-\lambda_1)$ (Eq.~18, $0<\alpha\le1$
+a damping factor) and iterates at least three more passes.  It is exact in
+one step for $\alpha=1$ on a linear map with one mode excited.  It is a
+solver aid and reports aloud: each move prints its $\lambda$, and a refused
+move (|\,$\lambda$\,| above Choupo's bound, or successive differences not
+parallel, as for a complex dominant pair, which the paper treats with
+iterates half a period apart and Choupo does not) falls back to direct
+substitution and prints its reason.  Tutorial:
+\file{tutorials/steady/flowsheets/recycle02\_dominant\_eigenvalue}.
+
 \begin{intuition}
 Why does a flowsheet of hundreds of unit operations, each resting on its
 own assumptions, end up \emph{consistent}?  A student once put this very

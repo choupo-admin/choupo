@@ -26,11 +26,15 @@ A flowsheet with NO loop needs no `solverDict`, no tear, no seed.
 
 ```
 tearStreams      ( recycle );     // REQUIRED when a loop exists; list of stream names
-recycleSolver    Newton;          // Newton (default) | Wegstein
+recycleSolver    Newton;          // Newton (default) | Wegstein | DominantEigenvalue
 recycleTol       1e-8;            // relative tolerance; default 1e-5
 recycleMaxIter   50;              // default 100
 recycleWegsteinQmin  -1.0;        // Wegstein only; default -1.0; -0.7 = more damping
 recycleWegsteinQmax   0.0;        // Wegstein only; default 0.0
+recycleDEDamping     0.7;         // DominantEigenvalue only; Orbach-Crowe Eq 18 alpha in (0,1]; default 0.7 (the paper's)
+recycleDELambdaTol   0.01;        // DominantEigenvalue only; two successive lambda agree within this fraction; default 0.01
+recycleDELambdaMax   0.9;         // DominantEigenvalue only; refuse a move when |lambda| is above; default 0.9 (Choupo's bound)
+recycleDEMinCosine   0.9;         // DominantEigenvalue only; refuse a move when differences are not parallel; default 0.9 (Choupo's guard)
 ```
 
 * `Newton`: unknowns are, per tear stream, every component molar flow, T and
@@ -40,6 +44,21 @@ recycleWegsteinQmax   0.0;        // Wegstein only; default 0.0
   cascades with several tears, or when Newton wanders; lower
   `recycleWegsteinQmin` to damp over-shoot.  An energy heat-link feedback
   (see the energy documentation) forces Wegstein, announced.
+* `DominantEigenvalue`: the dominant eigenvalue method of Orbach & Crowe,
+  Can. J. Chem. Eng. 49 (1971) 509.  Direct substitution; lambda is the
+  ratio of norms of two consecutive differences (their Eq 17); once two
+  successive lambda agree it MOVES to X_n-1 + alpha (X_n - X_n-1)/(1 - lambda)
+  (Eq 18), then iterates at least three more passes.  With alpha = 1 the move
+  is exact in one step on a linear map with one mode excited; the default
+  alpha = 0.7 is the paper's damping.  A solver aid, so it reports aloud: the
+  numbers above are announced (defaults marked "(default)"), each move prints
+  its lambda, and a refused move (|lambda| above the bound, or differences
+  not parallel -- a complex dominant pair, which the paper handles with
+  iterates half a period apart and Choupo does NOT) falls back to direct
+  substitution and prints why.  Opt-in, and honest about its reach: it is
+  built for slow geometric loops (lambda near 1); on loops that already
+  converge in a handful of passes it matches or trails Wegstein.  A
+  recycleSolver word that is none of the three REFUSES, naming them.
 * The tolerance is RELATIVE (flows scaled by the tear's total flow, T and P
   by their own value).  `1e-5` is loose; `1e-8` is a good report value.
 * These keys live in `solverDict`; do not scatter them elsewhere.

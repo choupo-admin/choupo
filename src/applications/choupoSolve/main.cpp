@@ -85,6 +85,7 @@ Description
 #include "thermo/PropertyContext.H"
 #include "io/SolutionWriter.H"
 #include "solver/Convergence.H"
+#include "solver/DominantEigenvalue.H"
 #include "thermo/Database.H"
 #include "thermo/SealCheck.H"
 #include "thermo/ThermoAnnounce.H"
@@ -501,6 +502,7 @@ try
     //  every other model family here.
     SizeDistribution::registerBuiltins();
     VaporPressureModel::registerBuiltins();
+    solver::FixedPointAccelerator::registerBuiltins();   // recycle accelerators beside Wegstein
     ActivityModel   ::registerBuiltins();
     electrolyte::AqueousActivity::registerBuiltins();   // aqueous per-ion gamma (Davies)
     electrolyte::AqueousVolumetricModel::registerBuiltins();   // the volumetric-model slot (rung 0/1)

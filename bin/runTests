@@ -4847,6 +4847,19 @@ PYEOF
         fail=$((fail+1))
     fi
 
+    # recycle-acceleration gate (2026-11-03, C214 W3).  `recycleSolver
+    # DominantEigenvalue;` extrapolates the tear along the dominant eigenvector;
+    # the gate holds it to a linear map (exact in one step), announced
+    # fallbacks, the witness case and the refusal of a misspelt solver.
+    if gate_exec "$ROOT/bin/curate/check_recycle_acceleration.py" > /tmp/recycleaccel.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "recycle-acceleration-gate" "$(head -1 /tmp/recycleaccel.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_recycle_acceleration.py)\n" "recycle-acceleration-gate"
+        cat /tmp/recycleaccel.$$
+        fail=$((fail+1))
+    fi
+
     # ODE block-structure gate (2026-10-21, C125).  The fixed bed declares
     # its Rosenbrock23 Jacobian block-tridiagonal with a ledger border; the
     # declaration is audited on the first step, the colored evaluation

@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+// ---------------------------------------------------------------------------
+// TEAR SEED -- an author-owned INITIAL GUESS for this recycle stream.  A recycle
+// loop has no upstream to propagate from, so the student seeds the tear; the
+// solver (Wegstein/Newton on the tear) CONVERGES it -- the values below are a
+// starting estimate, NOT a specification.  The no-silent-crutch credo: the seed
+// is visible and yours to own.
+// ---------------------------------------------------------------------------
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+componentMolarFlows
+{
+    neoPentane    0.1583946304 kmol/h;
+    nPentane    0.1516053696 kmol/h;
+}
+
+T               350.3662125 K;
+P               500000 Pa;
