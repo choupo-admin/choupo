@@ -2071,6 +2071,40 @@ accepts today, and that is a policy call.
 > fed-batch fermentation with every parameter printed, found by a research
 > general first.  Plan rows follow.
 
+> **C217 STEP 1 RESULT (2026-11-04, a research general; report in the session
+> scratchpad `c217-fedbatch.md`).**  NO published study carries everything
+> (growth kinetics, an oxygen/kLa model, printed time-course tables).  The
+> closest, all CC BY quoted from the full text: Mazzoleni et al. 2015,
+> *Microb. Cell Fact.* (PMC4518646, doi 10.1186/s12934-015-0295-4), four S.
+> cerevisiae strains in aerobic batch and fed-batch on glucose: seven mass
+> balances (Eq 1-7), rate laws in Table 1, auxiliaries in Table 2, ALL
+> parameters in Table 4, initial conditions and exponential feeds in Table 3
+> (feed 0.1-0.3 1/h, 100 or 500 g/l glucose), V(t) in Table 2; the measured
+> data only as FIGURES (Figs 4-5, new experiments with mass, glucose and
+> ethanol).  Its model is process-based (uptake, respiration, fermentation,
+> reserves, ethanol and inhibitor effects, death), NOT Monod and with no
+> maintenance term; no O2, kLa, heat or biomass formula.  Second: Mazzoleni
+> 2020 (E. coli, B. subtilis, CC BY, Table 4; data figures taken from older
+> papers of unchecked licence).  Third: *M. aphidis* MEL production (CC BY,
+> Monod with double limitation, Table 4, and the only biomass formula found,
+> CH1.77N0.112O0.597).  Rejected: IndPenSim (Elsevier, no CC BY), the Posch /
+> Herwig Penicillium paper (parameters deferred to other papers, data on
+> request).  DESIGN CONSEQUENCE, the architect's: the bioreactor with growth
+> may NOT need a new unit.  Choupo already has the pieces: `batchReactor` and
+> `dynamicCSTR`, the variable-volume holdup home (`VariableVolumeHoldup`), a
+> feed profile through the recipe layer, and rate laws WRITTEN in the case
+> (`expression`, userOp03) over declared parameters with units.  So step 2 is
+> a CASE, not a unit: Mazzoleni's seven balances and Table 1 rate laws as
+> `expression` kinetics on a fed-batch `batchReactor`, pinned on Table 4 and
+> on the digitised Figs 4-5 (cited, tolerance stated), with the biomass as a
+> declared pseudo-component; what the engine then shows it LACKS is the
+> finding that decides whether a unit is needed (a biomass component with an
+> elemental formula; the oxygen balance).  Oxygen transfer and metabolic
+> heat have no acceptable published witness: anchored by closed-form checks
+> (OTR = kLa (C* - C), heat from the elements datum) until a CC BY source
+> turns up.  The unchecked leads are in the report (Pichia, Benavides 2024,
+> PMC6833213, PMC9559308).
+
 > **C218 / C219 / C220 (Vitor, 2026-11-04).**  C218 (EduTool): why a reaction
 > is "reversible" or "irreversible", and when quenching works.  Findings
 > recorded: no reaction is irreversible (microscopic reversibility, K =
