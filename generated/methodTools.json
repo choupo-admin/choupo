@@ -33,12 +33,144 @@
       "meaning": "an input -- a value you set with a control, or one the example's author declared -- not a result"
     }
   ],
+  "paths": [
+    {
+      "id": "distillation",
+      "title": "Distillation",
+      "intro": "From what a standard state means to the cost of the column: one separation, seen six ways.",
+      "steps": [
+        {
+          "tool": "standard-state",
+          "label": "Enthalpy, standard state and equilibrium (what ° means)",
+          "why": "Fixes what the enthalpies and equilibrium constants behind every later page are measured from.",
+          "href": "/app/?workspace=methods&tool=standard-state&path=distillation"
+        },
+        {
+          "tool": "flash-operating-line",
+          "label": "Flash (operating line)",
+          "why": "One equilibrium stage: the material balance line meets the equilibrium curve, the building block of a column.",
+          "href": "/app/?workspace=methods&tool=flash-operating-line&path=distillation"
+        },
+        {
+          "tool": "mccabe",
+          "label": "Distillation (McCabe-Thiele)",
+          "why": "Stacks those stages: reflux ratio and feed quality decide how many are needed.",
+          "href": "/app/?workspace=methods&tool=mccabe&path=distillation"
+        },
+        {
+          "tool": "ponchon-savarit",
+          "label": "Ponchon-Savarit, derived (the enthalpy diagram)",
+          "why": "Drops the constant-molar-overflow assumption by putting enthalpy on the diagram.",
+          "href": "/app/?workspace=methods&tool=ponchon-savarit&path=distillation"
+        },
+        {
+          "tool": "fug",
+          "label": "Distillation shortcut (FUG)",
+          "why": "Shortcut estimate of minimum stages, minimum reflux and the feed stage before a rigorous column.",
+          "href": "/app/?workspace=methods&tool=fug&path=distillation"
+        },
+        {
+          "tool": "plant-cost",
+          "label": "What a plant costs to build",
+          "why": "Turns the sized equipment into what the plant costs to build.",
+          "href": "/app/?workspace=methods&tool=plant-cost&path=distillation"
+        }
+      ]
+    },
+    {
+      "id": "thermodynamics",
+      "title": "Thermodynamics",
+      "intro": "From the meaning of the degree sign to how a Gibbs reactor finds its answer.",
+      "steps": [
+        {
+          "tool": "standard-state",
+          "label": "Enthalpy, standard state and equilibrium (what ° means)",
+          "why": "What the degree sign fixes, and what it leaves open.",
+          "href": "/app/?workspace=methods&tool=standard-state&path=thermodynamics"
+        },
+        {
+          "tool": "four-ways-mixture",
+          "label": "Four ways to price a mixture (NRTL · UNIFAC · COSMO-SAC · PC-SAFT)",
+          "why": "Four ways to price one mixture, ordered by what each model knew beforehand.",
+          "href": "/app/?workspace=methods&tool=four-ways-mixture&path=thermodynamics"
+        },
+        {
+          "tool": "local-composition",
+          "label": "Local composition, derived (Wilson · NRTL · UNIQUAC)",
+          "why": "Wilson, NRTL and UNIQUAC derived as one idea carried three distances.",
+          "href": "/app/?workspace=methods&tool=local-composition&path=thermodynamics"
+        },
+        {
+          "tool": "equilibrium-landscapes",
+          "label": "Equilibrium landscapes (what an approach can reach)",
+          "why": "What an equilibrium can reach, read from the thermicity and the mole change.",
+          "href": "/app/?workspace=methods&tool=equilibrium-landscapes&path=thermodynamics"
+        },
+        {
+          "tool": "element-potential",
+          "label": "How a Gibbs reactor solves (element potentials)",
+          "why": "How the engine solves it: one potential per element instead of one unknown per species.",
+          "href": "/app/?workspace=methods&tool=element-potential&path=thermodynamics"
+        }
+      ]
+    },
+    {
+      "id": "reaction-engineering",
+      "title": "Reaction engineering",
+      "intro": "From the heat a reaction releases to the reactor that keeps it under control.",
+      "steps": [
+        {
+          "tool": "reaction-enthalpy",
+          "label": "Reaction enthalpy and temperature (Kirchhoff)",
+          "why": "The heat of reaction, and how it moves with temperature.",
+          "href": "/app/?workspace=methods&tool=reaction-enthalpy&path=reaction-engineering"
+        },
+        {
+          "tool": "reactor-ladder",
+          "label": "The reactor ladder (stoichiometry, limit, rate)",
+          "why": "The order of questions: what the atoms allow, what thermodynamics allows, then what the rate delivers.",
+          "href": "/app/?workspace=methods&tool=reactor-ladder&path=reaction-engineering"
+        },
+        {
+          "tool": "limiting-reactant",
+          "label": "Limiting reactant and feed ratio in a recycle loop",
+          "why": "Feed ratios and the limiting reactant once a recycle closes the loop.",
+          "href": "/app/?workspace=methods&tool=limiting-reactant&path=reaction-engineering"
+        },
+        {
+          "tool": "levenspiel",
+          "label": "Reactor sizing (Levenspiel)",
+          "why": "Sizing: the PFR integral against the CSTR rectangle for the same conversion.",
+          "href": "/app/?workspace=methods&tool=levenspiel&path=reaction-engineering"
+        },
+        {
+          "tool": "approach-to-equilibrium",
+          "label": "Approach to equilibrium (Gibbs reactor)",
+          "why": "How close a reactor can get to equilibrium, and what a Gibbs reactor assumes.",
+          "href": "/app/?workspace=methods&tool=approach-to-equilibrium&path=reaction-engineering"
+        },
+        {
+          "tool": "declared-pathways",
+          "label": "Declared pathways (equilibrium over the reactions you allow)",
+          "why": "Equilibrium over the reactions you allow, against every pathway the species permit.",
+          "href": "/app/?workspace=methods&tool=declared-pathways&path=reaction-engineering"
+        },
+        {
+          "tool": "vanheerden",
+          "label": "Ignition / extinction (Van Heerden)",
+          "why": "The hazard: heat generated against heat removed gives three steady states and an ignition.",
+          "href": "/app/?workspace=methods&tool=vanheerden&path=reaction-engineering"
+        }
+      ]
+    }
+  ],
   "liveTools": 73,
   "registryTools": 73,
   "tools": [
     {
       "id": "what-is-temperature",
       "label": "What is a temperature?",
+      "blurb": "See what temperature really decides: the direction of heat.",
       "discipline": "Thermodynamics",
       "teaches": "First, what a temperature IS: the property that decides the direction of heat between two bodies in thermal contact, intensive, and not an amount of energy; equal temperatures define thermal equilibrium where heat can pass.  Then that a temperature reading is the END OF A MEASUREMENT CHAIN, not a number nature printed on the system: a thermometer measures T through a signal, a calibration and its assumptions, and decimal places are not uncertainty.  The entropy definition, K vs T90 and pyrometry are an optional third part.",
       "origins": [
@@ -51,6 +183,7 @@
     {
       "id": "what-is-entropy",
       "label": "What is entropy?",
+      "blurb": "Balance entropy on two blocks: transfer in, generation never negative.",
       "discipline": "Thermodynamics",
       "teaches": "The entropy BALANCE first -- variation, transfer (with heat or matter, never with work) and generation (never negative), worked on two blocks exchanging heat -- then that an entropy value in a simulator is a LEDGER: a measured third-law datum (s_298), a temperature line (integral cp/T), a pressure line (-R ln P/P0), a mixing line (-R sum y ln y) and a model line (s_R) -- each computed in one named place.  The floor on the work of a complete ideal-gas separation (T times the mixing line) with its conditions, how an adiabatic machine GENERATES entropy (dS_gen), and which lines cancel when two states are compared.",
       "origins": [
@@ -63,6 +196,7 @@
     {
       "id": "what-is-exergy",
       "label": "What is exergy?",
+      "blurb": "See why the same heat buys different work at different temperatures.",
       "discipline": "Thermodynamics",
       "teaches": "That energy is conserved but the capacity to produce work is not: the same heat from two reservoirs, B_Q = Q(1 - T0/T), buys different work.  Then PHYSICAL flow exergy prices a stream in work, b_ph = (h - h0) - T0*(s - s0), its entropy leg SIGNED, against a restricted dead state the case DECLARES (the engine refuses to choose your environment; chemical exergy is refused, never silently zeroed).  Why the two LEGS re-add on screen, why b_ph at the restricted dead state is zero identically, why b is datum-independent but NOT model-independent, and Gouy-Stodola: every dS_gen an adiabatic machine publishes costs T0 times itself in exergy destroyed.",
       "origins": [
@@ -75,6 +209,7 @@
     {
       "id": "thermometer-trust",
       "label": "How do we know a thermometer is right?",
+      "blurb": "Judge when a thermometer reading deserves your trust.",
       "discipline": "Thermodynamics",
       "teaches": "That a thermometer is never right by itself -- it is right the way a witness is credible: agreeing with itself (Regnault's comparability), agreeing with others (convergence), and being cross-examined by something that does not share its errors.  The gas thermometer solved live by the engine (and why its idealised reading is Z times T), ITS-90's own fixed points and the instruments that DEFINE the scale (not the only ones that measure on it), what a quoted platinum melting point is worth, and Hasok Chang's four circles, labelled as his interpretation.",
       "origins": [
@@ -88,6 +223,7 @@
     {
       "id": "property-origins",
       "label": "Where do properties come from? (estimation, Joback)",
+      "blurb": "Trace each property value to measured, fitted or estimated.",
       "discipline": "Thermodynamics",
       "teaches": "That every number in a component's data file has a PROVENANCE -- measured, fitted, or estimated -- and the reflex question to ask of each: measured by whom, fitted over what window, estimated from which groups at what typical error.  The anatomy of a .dat file by what CONSUMES each field, and the standing rule that estimation is a curation-time act, never a runtime one.",
       "origins": [
@@ -100,6 +236,7 @@
     {
       "id": "property-trust",
       "label": "When a property database lies to you",
+      "blurb": "Test a property record for consistency before you believe it.",
       "discipline": "Thermodynamics",
       "teaches": "Never trust a thermophysical record merely because it exists: test its internal consistency and read its declared validity.  Thirteen records cross-examined against themselves, live -- water's own file disagrees with itself by 0.70 K, and a predictive glycerol correlation that asked to be validated misses by a factor of 19.",
       "origins": [
@@ -112,6 +249,7 @@
     {
       "id": "four-ways-mixture",
       "label": "Four ways to price a mixture (NRTL · UNIFAC · COSMO-SAC · PC-SAFT)",
+      "blurb": "Compare four ways of pricing one mixture, by what each knew.",
       "discipline": "Thermodynamics",
       "teaches": "That every mixture model answers one question -- what did it KNOW about this pair before it priced it: nothing (ideal), the pair's own measured data (Wilson/NRTL), the groups (UNIFAC), the quantum charge surface (COSMO-SAC), or molecular theory with association (PC-SAFT).  The engine grades four of them against 12 measured ethanol/water points live; a fit wins where its evidence was taken and loses where it was not, and the predictive rungs buy reach at a price the page shows in kelvin.",
       "origins": [
@@ -123,6 +261,7 @@
     {
       "id": "cosmo-sac-theory",
       "label": "COSMO-SAC, derived (σ-profiles → activity coefficient)",
+      "blurb": "Follow COSMO-SAC from sigma-profile to activity coefficient.",
       "discipline": "Thermodynamics",
       "teaches": "The full derivation of COSMO-SAC 2002 as the engine runs it: the quantum charge surface, the σ-profile, the misfit and hydrogen-bond exchange energy, the IMPLICIT segment activity coefficient solved as a damped fixed point, the residual as a move between environments, and Staverman-Guggenheim for size.  Every equation cited to the line of CosmoSac.cpp that runs it, every constant quoted with its units, every assumption named where it is made — and the licence honesty that the shipped σ-profiles are synthetic teaching surrogates.",
       "origins": [
@@ -134,6 +273,7 @@
     {
       "id": "local-composition",
       "label": "Local composition, derived (Wilson · NRTL · UNIQUAC)",
+      "blurb": "See Wilson, NRTL and UNIQUAC as one idea at three distances.",
       "discipline": "Thermodynamics",
       "teaches": "That Wilson, NRTL and UNIQUAC are one idea carried three distances -- a molecule's neighbourhood is not the bulk composition -- and that each exists because of something the previous one could not do: Wilson STRUCTURALLY cannot produce a liquid-liquid split, NRTL buys that with a third parameter, UNIQUAC separates size from energy and opens the door UNIFAC walks through.  Every equation cited to the engine line that runs it, every assumption named where it is made -- including the one an implementation has to make, that a pair with no parameters does not fail but runs on a SUBSTITUTED neutral value (tau = 0 in NRTL, Lambda = 1 set directly in Wilson, which zero energy alone would not give), whose binary is then ideal -- announced and refused unless the case authorised it.",
       "origins": [
@@ -144,6 +284,7 @@
     {
       "id": "unifac-theory",
       "label": "UNIFAC, derived (a pair nobody has measured)",
+      "blurb": "Predict a binary pair nobody measured, from its groups.",
       "discipline": "Thermodynamics",
       "teaches": "That UNIFAC is not a new theory but UNIQUAC's residual term moved one level down, from molecules to their groups: r and q assembled from group counts, a liquid treated as a solution OF GROUPS, one interaction number per ordered main-group pair, and the pure-minus-mixture subtraction that makes a group activity into an activity coefficient.  And that its ideal fallback is a DIFFERENT failure from NRTL's despite identical arithmetic -- NRTL's gap is nobody fitted your pair and closes with data, UNIFAC's is a hole in the published table and does not.",
       "origins": [],
@@ -152,6 +293,7 @@
     {
       "id": "pcsaft-theory",
       "label": "PC-SAFT, derived (chains, dispersion, association)",
+      "blurb": "Build a PC-SAFT surface from chain, dispersion and association.",
       "discipline": "Thermodynamics",
       "teaches": "That PC-SAFT builds a residual HELMHOLTZ energy from named contributions -- hard chain, dispersion, association -- so one surface yields both phases and their densities (an activity model needs a separate vapour model, and a Henry standard state for a dissolved supercritical gas).  The temperature-dependent segment diameter, the four zeta moments, the perturbation series in packing fraction, van der Waals one-fluid mixing with k_ij as a CORRECTION rather than the whole interaction, and Wertheim TPT1's site-fraction fixed point closed into a_assoc; then the derivatives that give Z, P and ln phi, and why two density roots are candidate phases, not an equilibrium.  And the lesson this repository paid for: the association SCHEME is part of the fit -- water curated as 4C instead of the paper's 2B passed a pure-density anchor by coincidence while the mixture flash collapsed.",
       "origins": [
@@ -162,6 +304,7 @@
     {
       "id": "ponchon-savarit",
       "label": "Ponchon-Savarit, derived (the enthalpy diagram)",
+      "blurb": "Solve distillation on the enthalpy diagram with a difference point.",
       "discipline": "Separations & phase equilibria",
       "teaches": "That putting ENTHALPY on the vertical axis turns the energy balance into a point on the diagram: the difference point, whose enthalpy is a net flow over a flow and belongs to no stream, and from which every operating line is a ray.  The lever rule then reads the internal reflux off the page with a ruler, total reflux is the difference point at infinity, and minimum reflux is a ray coinciding with a tie line.  Above all: two parallel straight enthalpy curves are a sufficient condition for constant molar overflow, so a departure from them shows where the internal flows can vary -- how much that moves the reflux or the stage count needs both models solved for the same specifications, which this page (one ray, no staircase) does not do.",
       "origins": [
@@ -174,6 +317,7 @@
     {
       "id": "claus-gibbs",
       "label": "The allotrope nobody declared (a Claus plant)",
+      "blurb": "Find the sulfur allotropes a Claus plant needs but nobody declared.",
       "discipline": "Reaction engineering",
       "teaches": "That a Claus stoichiometry CANNOT be written by hand, because '3/x S_x' contains an unknown that is itself an equilibrium -- and that the way out is to stop specifying reactions: declare the atoms and the candidate species and minimise G subject to A n = b, which collapses N unknowns into one element potential per ELEMENT plus a total.  That an adiabatic temperature is a RESULT of the air rate, not a specification.  That the 2 : 1 H2S : SO2 a conventional Claus plant is controlled to is never entered as a ratio: the declared air rate forces it through the O and H balances, while the furnace's 1.04 is explained by the hydrogen on the same line.  And that a species with no formation data has no Gibbs energy and cannot play at all -- which is why the case writes two components of its own, one new and one an overlay filling a gap the catalogue record honestly declares.",
       "origins": [
@@ -184,6 +328,7 @@
     {
       "id": "sour-water",
       "label": "The same sulfur, one unit earlier (sour water)",
+      "blurb": "Watch dissolved H2S split into species as the pH moves.",
       "discipline": "Separations & phase equilibria",
       "teaches": "That a dissolved acid gas is not one substance: H2S(aq), HS- and S2- coexist and the pH decides the split, so a stream carries BOTH bases -- the apparent components that close the mass balance and a declared speciation of the liquid.  That the equilibrium is a small Newton (mass action, master balances, electroneutrality when the pH is solved) whose K's move with temperature by van't Hoff on each record's own enthalpy.  That a reactive TRAY is just that flash, reached through one K-value entry point, so the column's Jacobian never sees an ion.  And the prediction a reader gets wrong: stripping the acid gas makes the pH FALL, because the ammonia leaves too and the sulfide does not follow the carbonate out.",
       "origins": [
@@ -194,6 +339,7 @@
     {
       "id": "rules-of-thumb",
       "label": "Rules of thumb (what equipment do I even pick?)",
+      "blurb": "Pick starting equipment from process-design rules of thumb.",
       "discipline": "Heat transfer & energy",
       "teaches": "Where to start when the problem stops being 'solve this flash' and becomes 'what equipment do I even choose?' -- twenty-six chapters of process-design heuristics, from flowsheet structure and reactor type through separation trains, membranes, solids, exchangers and pinch to hydraulics, relief and cost, each one click from the chapter that states it.  And the posture that makes a heuristic useful rather than dangerous: a rule is a starting bet, not a verdict, this simulator is glass-box so you can falsify it in an afternoon, and anything that could touch safety follows the named standard instead.",
       "origins": [
@@ -204,6 +350,7 @@
     {
       "id": "flash-operating-line",
       "label": "Flash (operating line)",
+      "blurb": "Find a single flash stage where the operating line meets equilibrium.",
       "discipline": "Separations & phase equilibria",
       "teaches": "The single equilibrium stage, and the two curves that decide it: the material balance is a straight line that PIVOTS about the feed on the diagonal with slope -L/V, and where it cuts the equilibrium curve is the flash. Every other construction in this list is this step repeated, moved to other axes, or integrated.",
       "origins": [
@@ -216,6 +363,7 @@
     {
       "id": "bjerrum",
       "label": "Speciation vs pH (Bjerrum)",
+      "blurb": "Plot speciation against pH from real equilibrium calculations.",
       "discipline": "Thermodynamics",
       "teaches": "That in this case the pH axis of a speciation diagram is a RESULT, not a knob: 44 separate equilibrium calculations, each a real neutral mixture, each landing wherever its own charge balance puts it -- and the two crossovers arriving near the two pK's without either crossover having been imposed (the K's are data the case reads).  An imposed-pH diagram is a different, valid specification that must say what carries the charge.  Also the two things the hand-drawn version cannot show: the three fractions of the total carbon do not sum to one, because the titrant is not a spectator (the plotted curves are renormalised onto the three and the shortfall is printed beneath them), and the crossovers sit below the thermodynamic pK because the engine works in activities.",
       "origins": [
@@ -228,6 +376,7 @@
     {
       "id": "mccabe",
       "label": "Distillation (McCabe-Thiele)",
+      "blurb": "Count the stages a reflux ratio buys.",
       "discipline": "Separations & phase equilibria",
       "teaches": "Operating lines, the q-line and the staircase: how reflux R and feed quality q set the number of ideal stages.",
       "origins": [
@@ -240,6 +389,7 @@
     {
       "id": "fug",
       "label": "Distillation shortcut (FUG)",
+      "blurb": "Estimate minimum stages, minimum reflux and stages before a rigorous column.",
       "discipline": "Separations & phase equilibria",
       "teaches": "Where the first number you type into a rigorous column comes from: total reflux fixes N_min, minimum reflux fixes R_min, and Gilliland — a fit, not a derivation — interpolates N(R) between those two asymptotes, with the rigorous MESH column's own stage count for the same separation drawn beside it.",
       "origins": [
@@ -251,6 +401,7 @@
     {
       "id": "psychro",
       "label": "Psychrometric chart",
+      "blurb": "Locate humid-air states and drying paths on a psychrometric chart.",
       "discipline": "Heat transfer & energy",
       "teaches": "The humid-gas state map: saturation, relative-humidity and adiabatic-saturation / wet-bulb lines locate the common drying and conditioning paths.",
       "origins": [
@@ -262,6 +413,7 @@
     {
       "id": "kremser",
       "label": "Absorption (Kremser)",
+      "blurb": "See how stage count sets solute recovery in an absorber.",
       "discipline": "Separations & phase equilibria",
       "teaches": "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight in the same basis — judged against the engine's stagewise absorber, which is itself a model (Henry's law, constant total flows), not a general rigorous absorber.",
       "origins": [
@@ -274,6 +426,7 @@
     {
       "id": "pinch-composite",
       "label": "Pinch composite curves",
+      "blurb": "Find the pinch and the minimum hot and cold utility.",
       "discipline": "Heat transfer & energy",
       "teaches": "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
       "origins": [
@@ -286,6 +439,7 @@
     {
       "id": "entu",
       "label": "Heat exchanger (ε-NTU)",
+      "blurb": "See when more heat-exchanger area stops paying.",
       "discipline": "Heat transfer & energy",
       "teaches": "Effectiveness vs NTU at a capacity ratio: why counter-current wins and when extra area stops paying — the run's exchanger placed on its own curve.",
       "origins": [
@@ -298,6 +452,7 @@
     {
       "id": "pump-system",
       "label": "Pump vs system curve",
+      "blurb": "Find a pump's operating point where it meets the system curve.",
       "discipline": "Hydraulics & control",
       "teaches": "The operating point is an intersection: the pump model's rise falling with flow (a constant-power model, not a centrifugal pump's measured curve, and no basis for selecting one) against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
       "origins": [
@@ -310,6 +465,7 @@
     {
       "id": "correlation-simplicity",
       "label": "Why engineering correlations are simple",
+      "blurb": "Understand why engineering correlations stay simple.",
       "discipline": "Modelling & scale-up",
       "teaches": "That the Buckingham Pi theorem only REDUCES the number of variables -- f = Phi(Re, eps/D) is still an arbitrary function -- and that the simplicity of a correlation comes from elsewhere: asymptotic regimes where a group drops out or enters as a power (laminar 64/Re, fully rough flow), the separation of scales in which a fast slave follows a slow master (Haken's two-variable model, the boundary layer), and the narrow range and generous tolerance a power law is fitted with -- the dimensional matrix reduced exactly, the Moody plane and its local slopes, a one-decade fit whose exponent drifts, and Churchill's expression rebuilt from its two asymptotes as the interpolation it is, every curve the engine's own -- and why the laminar-turbulent transition band is a region of instability where Re alone does not decide the regime, from Reynolds' 1883 apparatus to the measured onset of sustained turbulence.",
       "origins": [
@@ -322,6 +478,7 @@
     {
       "id": "letdown",
       "label": "Large pressure letdown: choked flow, cavitation, flashing and noise",
+      "blurb": "See what a large pressure letdown does: choking, cavitation, flashing.",
       "discipline": "Hydraulics & control",
       "teaches": "What a valve taking a large pressure drop does to the stream, and why its severity depends on the fluid's state, its vapour pressure, the valve's F_L and x_T, its geometry and the flow: the green-ammonia separator liquid let down 140 -> 20 -> 1 bar through the engine's isenthalpic valve -- the dissolved gas first, then the ammonia flashing, the temperature falling to the two-phase equilibrium state at the outlet pressure and the volume growing about forty times; the purge gas's mass flow choked at a pressure ratio of 70; the vena contracta against the vapour pressure (cavitation versus flashing, F_L yours) and the liquid choke; staged and tortuous-path trims, where the valve is installed, hardened trims, and power-recovery turbines instead of a valve; and why the noise follows the dissipated power.",
       "origins": [
@@ -334,6 +491,7 @@
     {
       "id": "merkel",
       "label": "Cooling tower (Merkel)",
+      "blurb": "Read a cooling tower's driving force off Merkel's diagram.",
       "discipline": "Heat transfer & energy",
       "teaches": "Merkel's one diagram: saturated-air enthalpy above, the operating line below, and the shaded gap between them is the driving force the packing must buy.",
       "origins": [
@@ -346,6 +504,7 @@
     {
       "id": "rayleigh",
       "label": "Batch still (Rayleigh)",
+      "blurb": "Integrate a batch still's composition history graphically.",
       "discipline": "Separations & phase equilibria",
       "teaches": "The graphical Rayleigh integration for a simple still: the area under 1/(y*−x) between the charge and the pot IS ln(W0/W) — drawn from the engine's own equilibrium curve, judged against the engine's time integration of the same still.",
       "origins": [
@@ -358,6 +517,7 @@
     {
       "id": "levenspiel",
       "label": "Reactor sizing (Levenspiel)",
+      "blurb": "Compare PFR and CSTR volumes for the same conversion.",
       "discipline": "Reaction engineering",
       "teaches": "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
       "origins": [
@@ -370,6 +530,7 @@
     {
       "id": "reactor-ladder",
       "label": "The reactor ladder (stoichiometry, limit, rate)",
+      "blurb": "Climb from stoichiometry to equilibrium to what the rate delivers.",
       "discipline": "Reaction engineering",
       "teaches": "That a design climbs from what the atoms allow to what thermodynamics allows and only then to what the rate delivers, each rung needing more information than the last; that a declared conversion is accepted even when equilibrium forbids it, because nothing on that rung knows K; that the equilibrium and Gibbs reactors agree when the species permit one reaction; that the temperature approach places a design short of the limit before any rate law exists; and that a plug-flow bed rises toward the limit and cannot cross it, reaching it when hot and falling short when cool — on one water-gas-shift feed at 10 bar.",
       "origins": [
@@ -381,6 +542,7 @@
     {
       "id": "approach-to-equilibrium",
       "label": "Approach to equilibrium (Gibbs reactor)",
+      "blurb": "See how close a Gibbs reactor can get to equilibrium.",
       "discipline": "Reaction engineering",
       "teaches": "That a Gibbs reactor declares NO reactions — it minimises G subject to the element balances, which is its power and its trap in one sentence; that it sits early because nobody has the KINETICS yet, not because of the project stage; that the approach to equilibrium evaluates the CHEMISTRY at T + ΔT while enthalpy, Psat and the energy balance stay at the physical T; and THE SIGN — positive is conservative only for an EXOTHERMIC reaction, which is why the author declares a MAGNITUDE and the ENGINE assigns the direction from the reaction's thermicity and announces it: a reformer gets T − ΔT without anyone typing a minus.",
       "origins": [
@@ -392,6 +554,7 @@
     {
       "id": "reaction-enthalpy",
       "label": "Reaction enthalpy and temperature (Kirchhoff)",
+      "blurb": "Move a reaction enthalpy across temperature with Kirchhoff.",
       "discipline": "Reaction engineering",
       "teaches": "That the degree sign of a standard reaction enthalpy fixes the standard STATE (1 bar, each species in its reference phase), not the temperature, so there is a standard value at every temperature and the table's is the one at 298.15 K; that Kirchhoff's law moves it by the reaction heat capacity; that for ammonia the engine prices −45.9 kJ per mole of NH₃ at 25 °C and −53.4 at 500 °C, so the 25 °C value under-states a converter's heat by about 14 %; and that an energy balance on the elements datum never needs a reaction enthalpy at all.",
       "origins": [
@@ -404,6 +567,7 @@
     {
       "id": "standard-state",
       "label": "Enthalpy, standard state and equilibrium (what ° means)",
+      "blurb": "See what the degree sign means for enthalpy and equilibrium.",
       "discipline": "Thermodynamics",
       "teaches": "That the enthalpy of real hydrogen rises 20.6 kJ/mol from 300 to 1000 K at 1 bar and 1.3 kJ/mol from 1 to 1000 bar at 300 K — small against temperature, never zero; that the degree sign names a RULE OF REFERENCE (the standard pressure and the reference phase) and not a temperature, so a standard property is a function of T; that a process at 150 bar uses the standard property plus the equation of state's residual, without assuming an ideal gas; that the zero of enthalpy is a third, separate choice, and a datum built from conserved quantities (the elements, the usual one) makes species' zeros consistent across every reaction; and why equilibrium is a minimum of G, not G = 0, with Kirchhoff, Gibbs–Helmholtz and van 't Hoff kept apart.",
       "origins": [
@@ -417,6 +581,7 @@
     {
       "id": "limiting-reactant",
       "label": "Limiting reactant and feed ratio in a recycle loop",
+      "blurb": "Find the limiting reactant in a recycle loop's two ratios.",
       "discipline": "Reaction engineering",
       "teaches": "That a plant with a recycle has TWO ratios: the fresh-feed ratio, which the steady-state plant balance ties to the stoichiometry, the extent and the losses, and the reactor-inlet ratio, which the loop sets — a fresh-feed error divided by the purge fraction, so one part in ten thousand moves the ammonia converter's H₂/N₂ visibly; that a SELECTIVE loss (gas dissolved in the product) shifts it even with a stoichiometric feed; and that which reactant is limiting is decided by safety, selectivity, cost or equilibrium, in that order, leaving one variable to optimise.",
       "origins": [
@@ -428,6 +593,7 @@
     {
       "id": "equilibrium-landscapes",
       "label": "Equilibrium landscapes (what an approach can reach)",
+      "blurb": "Read what equilibrium can reach from thermicity and mole change.",
       "discipline": "Reaction engineering",
       "teaches": "That an ideal-gas equilibrium landscape is fixed by two signs you can read off the reaction — the thermicity (van 't Hoff) and the mole change (pressure) — and the engine draws the five cases of that table from the same Gibbs kernel; that a temperature approach is a HORIZONTAL move along the curve whose effect is the local slope, so one magnitude is a large shortfall on ammonia and nothing on a combustion plateau; that the sign is assigned per cell from the feed's OVERALL thermicity, so a minor endothermic product inside an exothermic feed (thermal NO) is moved BEYOND its equilibrium — the GLOBAL caveat as a curve; and that the three overall routes to fixed nitrogen — a sugar as the electron donor, water as the donor, hydrogen as the donor — price on ONE formation surface with every species on a declared standard state (`reactionGibbs`), the biological routes carrying no H₂ at all; the equilibrium limit and the extent bookkeeping transfer to an enzyme, the temperature approach does not.",
       "origins": [
@@ -440,6 +606,7 @@
     {
       "id": "declared-pathways",
       "label": "Declared pathways (equilibrium over the reactions you allow)",
+      "blurb": "Compare equilibrium over every pathway against the reactions you allow.",
       "discipline": "Reaction engineering",
       "teaches": "That \"equilibrium\" answers two different questions: a Gibbs reactor is told SPECIES and opens every pathway they permit, an equilibrium reactor is told REACTIONS and moves only along them; that declaring every independent reaction (R = N − rank A) reproduces the Gibbs reactor, so leaving ONE off the list is a claim about the catalyst — on one syngas at 525 K and 50 bar, methane with every pathway open and methanol with methanation closed; that the declared answer is a constrained minimum of the same Gibbs energy, the Gibbs answer its bound; and that the approach temperature is the second knob, its sign assigned PER REACTION from the way each one runs — a shift running backward takes its K below T while the synthesis beside it takes its K above.",
       "origins": [
@@ -451,6 +618,7 @@
     {
       "id": "syngas",
       "label": "Synthesis gas: one gas, many products",
+      "blurb": "See what H2/CO ratio and carbon content make syngas good for.",
       "discipline": "Reaction engineering",
       "teaches": "That syngas is a PLATFORM -- carbon, hydrogen and oxygen handed to a catalyst as CO and H2 -- and that two numbers decide what it is good for: H2/CO and the module (H2 - CO2)/(CO + CO2); the four ways to make it (steam reforming, partial oxidation, autothermal reforming, gasification) and what each gives; why reforming is run hot and at low pressure, and why industry still compresses the feed instead; carbon on the catalyst at low steam-to-carbon; the water-gas shift as the ratio knob, and why two stages when equilibrium needs one; the ratio each product asks (methanol, Fischer-Tropsch, oxo, ammonia) and why the module is fixed by the atoms of the feed, not by the shift; cleaning the gas and pure hydrogen by PSA; water gas, producer gas, town gas, and CO2 plus green hydrogen -- each part run by the engine in the browser, and what the equilibrium model does not do.",
       "origins": [
@@ -463,6 +631,7 @@
     {
       "id": "vanheerden",
       "label": "Ignition / extinction (Van Heerden)",
+      "blurb": "Find the three steady states of one reactor and its ignition.",
       "discipline": "Reaction engineering",
       "teaches": "Heat generated against heat removed: a straight line can cut a sigmoid three times, so in this example the same reactor with the same feed has three steady states — and the middle one fails the open-loop slope test, a necessary condition only: the page computes no dynamics.",
       "origins": [
@@ -475,6 +644,7 @@
     {
       "id": "drying",
       "label": "Drying curve (batch tray)",
+      "blurb": "Read the constant- and falling-rate periods off a drying curve.",
       "discipline": "Heat transfer & energy",
       "teaches": "The two classical drying plots: X against time, and the rate against moisture — where, for a material with a constant-rate period (not every material has one), the critical moisture is VISIBLE as the corner at which a flat rate starts to fall toward the isotherm's equilibrium.",
       "origins": [
@@ -486,6 +656,7 @@
     {
       "id": "breakthrough",
       "label": "Adsorption breakthrough",
+      "blurb": "Watch a bed's mass-transfer zone eat capacity before saturation.",
       "discipline": "Separations & phase equilibria",
       "teaches": "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
       "origins": [
@@ -497,6 +668,7 @@
     {
       "id": "lub-scaleup",
       "label": "Sizing a bed from a breakthrough curve (LUB)",
+      "blurb": "Size a plant bed from a laboratory breakthrough curve.",
       "discipline": "Separations & phase equilibria",
       "teaches": "How a laboratory breakthrough curve sizes a plant bed: t_b and t_st read off the data, the capacity they imply checked against the isotherm, LUB = L(1 − t_b/t_st) carried to full scale at the same velocity — L_full = L_es + LUB, the diameter from the design flow, and why a longer bed wastes a smaller fraction.",
       "origins": [
@@ -509,6 +681,7 @@
     {
       "id": "batch-membrane",
       "label": "Batch membrane filtration (UF/NF)",
+      "blurb": "Compare concentration and diafiltration modes for a UF/NF batch.",
       "discipline": "Separations & phase equilibria",
       "teaches": "The two pure batch operations behind a UF/NF membrane and the one line that differs between them (Q_d = 0 or Q_d = Q_p): each mode's own clock -- the volume concentration factor and the diavolume, never seconds -- the closed forms a student integrates by hand for each, and why they part from the run.  Every one of them pulls the rejection out of the integral, and the engine publishes the observed rejection at every instant to show it moving.  Hermia fouling as a claim about a MECHANISM, on a twin case that differs by nothing else, and the wash-time trade whose optimum is read off the engine's own flux rather than borrowed from a gel model this engine does not carry.",
       "origins": [
@@ -522,6 +695,7 @@
     {
       "id": "hunter-nash",
       "label": "Extraction (Hunter-Nash)",
+      "blurb": "Step off extraction stages from one difference point.",
       "discipline": "Separations & phase equilibria",
       "teaches": "One point rules the whole column: the difference point Δ = F − E₁ = R_j − E_{j+1} lies on every operating line, so the triangle alternates tie-lines with lines through Δ — and the rigorous cascade's own stages are laid on it as the test.",
       "origins": [
@@ -534,6 +708,7 @@
     {
       "id": "thiele",
       "label": "Catalyst pellet (Thiele modulus)",
+      "blurb": "Watch concentration collapse inside a pellet as the Thiele modulus grows.",
       "discipline": "Reaction engineering",
       "teaches": "The concentration field INSIDE one pellet: turn the rate constant and watch it go from nearly flat — the whole pellet working — to a boundary layer hugging the surface over a dead core, with the effectiveness factor beside it as the consequence, and the closed form drawn over the numerical answer so the method is watched being checked.",
       "origins": [
@@ -545,6 +720,7 @@
     {
       "id": "column-control",
       "label": "Column control (structure & instruments)",
+      "blurb": "See which measurements a column's composition loops can use.",
       "discipline": "Hydraulics & control",
       "teaches": "Five valves around a two-product column with a total condenser, three inventories, two left for composition: the cross-section shows which measurement drives which valve, the cited authorities disagree in the open, and the sensor tray is computed from the column's own profile — the slope criterion and the sensitivity criterion, which pick different trays.",
       "origins": [
@@ -558,6 +734,7 @@
     {
       "id": "bode",
       "label": "Frequency response (Bode diagram)",
+      "blurb": "Check a loop's stability and margins before switching it on.",
       "discipline": "Hydraulics & control",
       "teaches": "Whether a loop will be stable BEFORE it is switched on, and how much room is left, under the conditions the page states (a linear, time-invariant, stable open loop whose phase crosses −180° once): the engine sweeps a real tank one frequency per run and publishes the measured amplitude ratio and phase lag, the first-order closed form is laid over those points as the test, and then gain, lag, integrator, dead time and the PID terms are stacked into an open loop whose two crossover frequencies give the gain and phase margins.  The page states which half Choupo computes and which half it does not.",
       "origins": [
@@ -570,6 +747,7 @@
     {
       "id": "data-reconciliation",
       "label": "Data reconciliation, and how Bayes helps",
+      "blurb": "Make noisy plant meters close a mass balance, with Bayes.",
       "discipline": "Hydraulics & control",
       "teaches": "Why noisy plant meters do not close a mass balance, and what to believe instead -- read through Bayes from the first page: a prior (what was known, at least the exact balances), a likelihood (what the meters say) and a posterior (what is believed now), whose most probable point is the weighted least squares answer and whose width is narrower than its own meter's.  Then plant a gross error on any meter and watch the frequentist chi-square and measurement tests reject the snapshot and point at the meter, and the error smear over its neighbours until the meter is taken out of service; add yesterday's estimate as a prior; and set three answers side by side -- classical, Bayes with a flat prior, Bayes with yesterday's prior -- to see that Bayes represents and updates what is known.",
       "origins": [
@@ -581,6 +759,7 @@
     {
       "id": "tear-streams",
       "label": "Tear streams (where to cut a recycle)",
+      "blurb": "Choose which stream to cut when a flowsheet recycles.",
       "discipline": "Flowsheeting & numerics",
       "teaches": "A recycle has no first unit, so one stream must be assumed -- and WHICH one is decided by the order you declared the units in, not by how many loops you can see.  Move a unit and watch the streams flip from forward to backward, watch the tear count fall when a reorder lets one cut open two cycles, and then read Choupo's own refusal when the declaration is withdrawn: it finds the cycle, names every unit on it, and still will not choose the cut for you.",
       "origins": [
@@ -593,6 +772,7 @@
     {
       "id": "wegstein",
       "label": "Wegstein acceleration (closing a recycle)",
+      "blurb": "Watch Wegstein accelerate a mixed tear vector, variable by variable.",
       "discipline": "Flowsheeting & numerics",
       "teaches": "How one accelerator serves a tear vector holding a molar flow, a set of mole fractions and a temperature at once: it never compares them.  Each variable gets its OWN secant slope and its own coefficient, both dimensionless, both unchanged if you re-express the variable -- and the page lets you check that on screen.  The price is drawn beside it: n scalar secants are blind to the coupling Newton's Jacobian sees, and the convergence TEST, unlike the step, is not scale-free.",
       "origins": [
@@ -605,6 +785,7 @@
     {
       "id": "active-set-qp",
       "label": "Quadratic programming with constraints (active set)",
+      "blurb": "Follow the working set of a constrained quadratic program.",
       "discipline": "Flowsheeting & numerics",
       "teaches": "The hard part of a constrained quadratic is not the algebra -- it is guessing which constraints the answer is pressed against.  Watch the working set change: a constraint ADDED when a step runs into it, DROPPED when its multiplier goes negative, on the very problem Choupo asserts to 1e-9 before every constrained optimisation.  Then meet it for real, reconciling a laboratory water analysis that does not balance on charge, where each law's Lagrange multiplier IS the number of standard deviations it moved each measurement.",
       "origins": [
@@ -617,6 +798,7 @@
     {
       "id": "least-squares",
       "label": "Least squares: what a fitted parameter is worth",
+      "blurb": "See what a fitted parameter is worth, and when it is not.",
       "discipline": "Flowsheeting & numerics",
       "teaches": "That Levenberg-Marquardt is the easy half.  Watch the damping being repriced up and down on a real NRTL fit -- and then meet the apparatus that makes the answer worth quoting: three measurements withheld from the fitter by data flow rather than by rule, an acceptance band declared with its reason BEFORE anything was fitted, and a verdict published as a WORD.  Turn the band and watch that word change while the residual does not move -- which is exactly why a real curation declares it first.  The same run is `validated` and NOT individually identifiable at once.",
       "origins": [
@@ -629,6 +811,7 @@
     {
       "id": "element-potential",
       "label": "How a Gibbs reactor solves (element potentials)",
+      "blurb": "See how a Gibbs reactor solves with one potential per element.",
       "discipline": "Flowsheeting & numerics",
       "teaches": "That Choupo's Gibbs reactor never solves for its amounts: it solves for ONE potential per element and the log of the total, M + 1 unknowns however many species, with every species' stationarity built into the change of variables -- so no amount can ever go negative.  Watch the engine's own Newton, iterate by iterate: its first step cut to 1/64 by the line search, then the digits doubling.  Check by hand that each species' chemical potential is the sum of its atoms' potentials, which puts every reaction at equilibrium at once.  See a liquid and a solid added not by a bigger Newton but by a test on the gas answer and a one-dimensional search.  And meet the feed on which the least-squares seed makes the Jacobian singular at iteration 0, and the primal re-seed the engine announces.",
       "origins": [
@@ -640,6 +823,7 @@
     {
       "id": "case-assembly",
       "label": "How dictionaries assemble a case",
+      "blurb": "See how the dictionaries of a case assemble on disk.",
       "discipline": "How Choupo works",
       "teaches": "What a Choupo case is on disk and how the engine puts it together, on the real flash01 case: system/ says HOW, constant/ says WITH WHAT, 0/ says FROM WHERE.  Click any file to see what it says and the line of the engine that reads it, follow the assembly move by move against the run's own log, see that topology is not state and that a stream is fixed by N_c + 2 numbers, see what a run writes back -- then break a copy of the case and read Choupo's refusal in its own words.",
       "origins": [
@@ -651,6 +835,7 @@
     {
       "id": "run-log",
       "label": "How to read a run's log",
+      "blurb": "Read a run's log: its header, iterations and verdict.",
       "discipline": "How Choupo works",
       "teaches": "Where a run's log goes and how loud it is (verbosity 0 to 4, measured), then the log itself, read on real runs in the browser: the header and what was assembled, a unit's Newton iterations, a convergence verdict in five numbers, a recycle whose units stay quiet until the tear converges, the balances, and the two blocks at the end.  Every line is coloured by the marker the engine printed it with, and a click names the line of the engine that printed it.  And the three messages a student must tell apart -- an advisory, a divergence, a refusal -- with the exit codes 0, 1 and 2 and what each asks you to do.",
       "origins": [
@@ -662,6 +847,7 @@
     {
       "id": "front-end-loading",
       "label": "Front-End Loading: how industry stages a design",
+      "blurb": "See how industry stages a design behind decision gates.",
       "discipline": "Process design & economics",
       "teaches": "How an owner buys a process design in stages separated by gates (Front-End Loading, FEL), with FEED / basic engineering as the engineering work inside FEL-3, and why sources number the stages differently; what each stage decides, at what simulation fidelity, with which deliverables and which AACE 18R-97 estimate class; the range of ranges drawn as overlapping bands around your own point estimate; why separated bands are sufficient, not necessary, to choose between two options (correlated errors, the difference estimated directly, expected cost and risk); and where Choupo stands at each stage, from the ammonia ladder to the green-ammonia base case.",
       "origins": [
@@ -674,6 +860,7 @@
     {
       "id": "process-safety",
       "label": "Process safety: remove the hazard before you add a layer",
+      "blurb": "Remove the hazard before you pile protective layers on it.",
       "discipline": "Process safety",
       "teaches": "Why every protective layer is itself a system that can fail (Gall, a paediatrician, beside Kletz, a chemist: 'what you don't have, can't leak'), read through the Flixborough Court of Inquiry and the Bhopal protection that was out of service; Stoessel's cooling-failure scenario run by the engine on a reaction that is fictitious by declaration -- the accumulation, the MTSR with the dosed reactor's mass correction, the worst instant right after a dose, the class of one scenario against the class of the process, the margin to the reaction mass's bubble point along the run and an assumed T_D24 -- on a batch, the same reaction dosed, and a dosing vessel sized so that its whole content cannot take the reactor past its limits (a pump limits the rate, not the total); and a 50 bar ammonia loop that converts less per pass, passes about four times the volume of gas, carries about four times as much ammonia in the recycle stream, and earns less, so that the engine cannot call it safer without sizing the equipment and the release scenarios.",
       "origins": [
@@ -687,6 +874,7 @@
     {
       "id": "overpressure",
       "label": "Designing for overpressure: scenarios, devices and relief sizing",
+      "blurb": "Pick the credible overpressure scenario that sizes a relief device.",
       "discipline": "Process safety",
       "teaches": "Why a relief device is sized for the credible cause (blocked outlet, external fire, cooling or reflux failure, runaway, tube rupture, thermal expansion) that needs the largest required relief area, not the largest flow; operating, design pressure, MAWP and set pressure kept apart, and the allowed accumulation; the devices and the back pressure behind them; the published gas, liquid and fire-case equations worked on fluid properties the engine computes, and where the liquid one stops holding -- an acetone drum in a fire, and an ammonia loop whose 50 bar version, on the same declared blocked-outlet flow, needs a relief valve about four and a half times larger in the sizing arithmetic (a comparison under one teaching hypothesis, not of two real relief systems) -- where the relief goes after the valve, and why a runaway vent is often two-phase and, under a restricted energy estimate, must pass more mass.",
       "origins": [
@@ -700,6 +888,7 @@
     {
       "id": "pool-fire",
       "label": "Pool-fire radiation and the distance it sets",
+      "blurb": "Compute how far a pool fire's radiation reaches.",
       "discipline": "Process safety",
       "teaches": "How far a pool fire's radiation reaches, built from the fuel up: the heat of combustion from the catalogue's formation enthalpies, the Burgess burning rate calibrated on one public-domain NIST measurement and checked on another, the flame height by Thomas and by Heskestad against measured heights, the emissive power by energy and by Mudan and Croce's smoke correlation (and why it does not fit a methanol flame), the point-source and solid-flame models side by side -- apart near the fire, the same law far away -- and the still-air distance to four published thresholds, each with the receiver and exposure its source states, set beside the separation the acetic-acid plant's layout declares -- a consequence for one scenario, not a risk and not a certified siting distance.",
       "origins": [
@@ -712,6 +901,7 @@
     {
       "id": "bund",
       "label": "Secondary containment: designing a bund",
+      "blurb": "Size a bund as a passive barrier among the protection layers.",
       "discipline": "Process safety",
       "teaches": "Why a chemical plant is designed to limit the consequences when something goes wrong: the bund as a passive barrier and its place among the layers of protection (it does not prevent the failure, it stops its propagation); every cubic metre of a spill accounted for -- in the tank, in the bund, over the wall, through the drain; the geometric capacity kept apart from the net volume Choupo's layout check computes and from the useful capacity, in which the failing tank's own footprint is free; the volume the tanks displace, a sloped floor, a freeboard and rain; the 110 % / 25 % rule as a teaching example traced to HSE guidance and an English regulation, with their limits, never as a universal obligation; a rupture, a leak, rain first and a drain left open, integrated in time and drawn in section until the bund overtops; low and wide against high and narrow, and how a badly conceived bund raises some risks; the pool a flammable liquid makes, qualitatively; local or remote containment; construction, linings and compatibility without an invented table; and an exercise on three tanks of 20, 15 and 10 m3, dry and after rain.",
       "origins": [
@@ -724,6 +914,7 @@
     {
       "id": "plant-layout",
       "label": "Plant layout: where each item stands, and why",
+      "blurb": "Decide where each item stands by safety, access and pipe.",
       "discipline": "Process design & economics",
       "teaches": "That a plot plan is a set of decisions about distance -- safety (the domino effect), pipe and access (a tube bundle must be pulled out along its own axis); what a separation distance is, why it is keyed on pairs of equipment kinds and must say whether it is measured edge to edge or centre to centre, and why Choupo ships no spacing table (the published ones grant no redistribution, so the case declares its own, with a source); a guided exercise on the ammonia loop's declared plan, checked by the engine in the browser: a short distance announced, an overlap refused; the prevailing wind (ignition sources upwind of releases) and the hazardous-area zones 0, 1 and 2 as envelopes the case declares; and what the model does not do -- pipe cost and pressure drop (the engine routes and measures the pipes, and the page shows their lengths), structures, drainage.",
       "origins": [
@@ -735,6 +926,7 @@
     {
       "id": "gmp-layout",
       "label": "The GMP interior of a tablet plant: rooms, air and the ways through them",
+      "blurb": "Lay out a tablet plant's rooms, air grades and routes.",
       "discipline": "Process design & economics",
       "teaches": "That a pharmaceutical plant is laid out inside a building: the cleanliness grades of EU GMP Annex 1 and how this example declares its oral-solid-dose rooms grade D by analogy or controlled not classified (a declared choice, not a universal requirement); the pressure cascade (air from clean to less clean with the doors closed, the case's declared step -- a control, not a proof that nothing crosses); cascade, bubble and sink airlocks, and why a contained room's airlock is a sink; gowning for the grade one enters; containment of a potent ingredient (negative pressure, the exposure band Choupo does not know); the personnel, material and waste flows, one way each and kept apart as this example organises them; the solvent suite as a DECLARED ATEX zone checked geometrically against ignition rooms (a classification needs the sources, their grade and the ventilation); and escape as reachability (a lift is not an exit) -- each as an exercise on a teaching building the engine checks in the browser, a broken rule announced and an impossible building refused; and what the model does not do (air changes, doors, travel distances).",
       "origins": [
@@ -746,6 +938,7 @@
     {
       "id": "materials",
       "label": "Materials of construction, seals and gaskets: the Pareto, and how to choose",
+      "blurb": "Choose materials of construction, seals and gaskets by the Pareto.",
       "discipline": "Process design & economics",
       "teaches": "Why the material of every wall decides a plant -- corrosion, strength at temperature, toughness, cost; the Pareto of the materials chemical plants are built from, as a teaching ordering: carbon steel first and why, austenitic stainless (304/316, molybdenum against chlorides), duplex, nickel alloys, titanium, copper alloys in exchangers, aluminium in the cold, linings, non-metallics and refractories; the metallurgy behind it -- ferrite and austenite, carbon in iron, the ductile-brittle transition, creep, the weld and its heat-affected zone, sensitisation and the L grades, passivity; how a material is chosen -- corrosion allowance and the wall, the temperature window, chloride stress-corrosion cracking, pitting, hydrogen embrittlement and high temperature hydrogen attack, ammonia stress-corrosion cracking of carbon steel, and the material factor in the cost; pump seals, gaskets, packing and elastomer compatibility; and what Choupo does with a material, on a bench where the engine re-sizes and re-prices one vessel for every material record in the tree.",
       "origins": [
@@ -757,6 +950,7 @@
     {
       "id": "route-screening",
       "label": "Screening routes to a product (methanol)",
+      "blurb": "Screen routes to a product cheapest filter first.",
       "discipline": "Process design & economics",
       "teaches": "That routes to a product are screened on paper in order of cost, cheapest filter first: the stoichiometric gross margin, the atom economy, the equilibrium limit at the catalyst's temperature, the heat to remove, and whether the product is where the atoms go when every species is allowed; that direct oxidation of methane wins the first four and fails the fifth, because the combustion products lie far below methanol in Gibbs energy; that the remaining questions (Safety, Environmental, Legal, Economics, Control, Throughput) need no rate constant; and that the rate law is bought last, for the one route that survives.",
       "origins": [
@@ -769,6 +963,7 @@
     {
       "id": "sines-pta",
       "label": "Economic appraisal and project risk: lessons from the Sines PTA plant",
+      "blurb": "Read the risks of a real plant's appraisal from public documents.",
       "discipline": "Process design & economics",
       "teaches": "The importance of economic appraisal, contractual robustness and downside analysis, read from risks and outcomes recorded in public documents on a world-scale PTA plant: why the price of PTA, the paraxylene it is made from and the conversion cost are analysed together, with the spread as the central measure of the margin; a capital cost stated seven times with different perimeters; an offtake contract whose 450 kt/yr is a maximum, not a guaranteed purchase, against a 700 kt/yr plant; a simplified pre-tax, unfinanced appraisal you move, with its break-even spread and a tornado, labelled an illustrative teaching scenario; the risks the lender's risk department recorded, each read as risk identified, condition recommended, what the documents record about the decision, and later outcome; and ten loss and price figures, each defined, that overlap and must not be added.",
       "origins": [
@@ -781,6 +976,7 @@
     {
       "id": "ip-strategy",
       "label": "Intellectual property as competitive strategy",
+      "blurb": "Decide between a patent and a trade secret.",
       "discipline": "Process design & economics",
       "teaches": "Patent or trade secret as a decision you take -- can it be reverse-engineered, can infringement be detected, how long it lasts against the 20-year term, what filing costs, whether the secret survives staff turnover -- and why a catalyst recipe and a new molecule land on opposite sides; the clock a filing starts (priority year, publication at 18 months, the PCT's 30 months, divisionals); intellectual property as a weapon (blocking and fencing, thickets, decoys, continuations, evergreening, utility models), defensive publication as the end of novelty for everyone, prior-user rights and dated deposits, and the counter-moves (freedom-to-operate searches, third-party observations, opposition); cross-licences, pools, standard-essential patents and assertion entities; employee inventions; the limits (sham litigation, abuse of dominance, inequitable conduct, misappropriation); worked cases on a process patent whose recipe does not work, a turbine whose blades melt, Whittle's turbojet patent and the Wright and Watt patents; a case study of the reverse-osmosis membrane, from Loeb and Sourirajan's cellulose acetate to Cadotte's composite and the FilmTec litigation, told from the patents and the Federal Circuit opinions; and an exercise against a rival who reads your filings.  Not legal advice.",
       "origins": [
@@ -793,6 +989,7 @@
     {
       "id": "tree-of-chemistry",
       "label": "The tree of chemistry: a hundred products, eleven roots",
+      "blurb": "See commodity chemicals as one tree from eleven roots.",
       "discipline": "Process design & economics",
       "teaches": "That the commodity chemicals are one tree: seven organic roots (ethylene, propylene, the C4s, benzene, toluene, the xylenes, synthesis gas with methanol) and four inorganic ones (ammonia, sulfuric acid, chlorine with caustic, the nitric and phosphoric acids), read three ways from one graph of balanced routes: depth (the kilograms of each raw material behind a kilogram of PVC, phenol or methanol, as a band, never a point), convergence and forced co-production (the acetone that follows every phenol, the slate a cracker cannot refuse), and the tree of 2050 (hydrogen per carbon derived from the stoichiometry) -- and that the sustainable transition replaces the roots, not the leaves.  Every yield band is the curator's estimate and the page draws it as one.",
       "origins": [
@@ -805,6 +1002,7 @@
     {
       "id": "patent-expiry",
       "label": "Patent expiry and generic entry",
+      "blurb": "See how patent expiry and generic entry reshape price.",
       "discipline": "Process design & economics",
       "teaches": "That a generic drug plant is designed for a market its originator's patent calendar creates: the price falls with the number of generic producers (or with time), the volume moves to the generics along a second curve, and the newcomer wins a share of it -- all declared as editable curves whose points are marked stated (a published study gives that number) or assumed -- and what the case's economics reads from them (a rampUp list and one discounted-volume-weighted price), with the revenue at risk if the entry is a year or two late or the erosion deeper.  Not a freedom-to-operate analysis.",
       "origins": [
@@ -817,6 +1015,7 @@
     {
       "id": "economics-errors",
       "label": "Ways a pharmaceutical-plant economics goes wrong",
+      "blurb": "Spot eight recurring mistakes in a plant economics chapter.",
       "discipline": "Process design & economics",
       "teaches": "Eight mistakes that recur in a plant-design economics chapter -- a sold quantity that is not the plant's production, a break-even on another revenue than the NPV's, tax charged on sales instead of taxable income, a royalty outside its patent window, three working capitals that differ by an order of magnitude, a discount rate mistaken for the cause of an IRR, a utility bill in the wrong units, an undeclared cost per square metre -- each as the wrong and the right calculation side by side on the same editable inputs, with what Choupo does about it read from the engine, and where it does nothing, the statement that you must check it.",
       "origins": [
@@ -828,6 +1027,7 @@
     {
       "id": "demand-forecast",
       "label": "Demand forecast for a drug product",
+      "blurb": "Compare three forecast methods on one editable demand history.",
       "discipline": "Process design & economics",
       "teaches": "That a demand forecast is an assumption with a method behind it, not a measurement: three methods side by side from one editable history -- a trend regression with its fit statistics and prediction band, daily doses times prevalence times treatment share, and a market-share penetration curve -- with a units check that refuses to mix thousands and millions, the capacity factor made explicit as an assumption beside the sold quantity and the market, and the yearly volume in the keys and units the batch plan's economics reads (streamFactor, rampUp).",
       "origins": [
@@ -839,6 +1039,7 @@
     {
       "id": "plant-cost",
       "label": "What a plant costs to build",
+      "blurb": "Estimate what a plant costs to build and why methods disagree.",
       "discipline": "Process design & economics",
       "teaches": "How to put a number on the capital to build a plant from a list of equipment, and why the methods disagree: Lang's multiplier (his three factors, cited), a factored estimate in which every fraction is the student's input with a pointer to the book that tabulates it beside it, and Choupo's bare-module route read from the engine, side by side with their spread; the working capital by three methods with the spread printed; and a loan year by year with the interest during construction.  A pharmaceutical tablet plant is one of the two example lists.  Not a risk analysis, and a factor is not a quote.",
       "origins": [
@@ -851,6 +1052,7 @@
     {
       "id": "plant-running-cost",
       "label": "What a plant costs to run, and when it pays",
+      "blurb": "Turn balances and investment into a cost of production and verdict.",
       "discipline": "Process design & economics",
       "teaches": "How the balances and the investment of one plant become a verdict: the cost of production itemised (direct, indirect, fixed, general) with each factor a declared input and a pointer to the book that tabulates it, set against Choupo's three-term COM_d on the same bills; the crew from shifts and hours; depreciation by asset class against one straight line; fixed and variable costs and the break-even capacity; the cash flow with a discount rate built from components, NPV, IRR and discounted payback; a one-at-a-time sensitivity with elasticities; and the market arithmetic (price index, currency, apparent consumption, FOB and CIF, unit margin). Each engine statement carries the line it was read at, and what Choupo does not compute is said.",
       "origins": [
@@ -863,6 +1065,7 @@
     {
       "id": "site-process-price",
       "label": "Where to build it, what to make, and what it sells for",
+      "blurb": "Rank sites and processes before the cost pages begin.",
       "discipline": "Process design & economics",
       "teaches": "The market-side decisions that come before the cost pages: a weighted-criteria matrix for choosing a site, with the weight at which the ranking changes for each criterion; a method for reading patents for a route, and a patent example turned into a mass basis per kilogram of product, a yield and a cycle time; and the margin chain between the shelf price and the ex-factory price, computed down and back up from stages the student declares. A pharmaceutical product is the example. No weight, margin or tax rate is shipped, and nothing here is legal advice or a market study.",
       "origins": [
@@ -874,6 +1077,7 @@
     {
       "id": "solvent-mixture",
       "label": "Choosing a solvent, or a solvent mixture",
+      "blurb": "Choose a solvent or blend by Hansen distance.",
       "discipline": "Thermodynamics",
       "teaches": "Which solvent, or which blend of two, for a given substance: Hansen's three parameters with the temperature they were placed at, the distance of a solvent from the solute's sphere and the relative energy difference where a radius was measured, the volume-fraction mixture rule as a checked rule of thumb, and the phase check that refuses to average a pair the activity model finds two-phase -- the student predicts the best composition before the engine's curve is shown, on a synthetic pair whose minimum sits at 50:50 by construction, then meets Hansen's own polystyrene with hexane + acetone (better than either) and hexane + nitromethane (the rule likes it, UNIFAC refuses it), beside the dissolution ratings he recorded; and the sentence that a small distance is a compatibility indicator, never a saturation concentration.",
       "origins": [

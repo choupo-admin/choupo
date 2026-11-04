@@ -173,9 +173,80 @@ export const METHOD_DISCIPLINES = [
 
 export type MethodDiscipline = typeof METHOD_DISCIPLINES[number];
 
+/** PEDAGOGICAL PATHS (DEV.md 4c C221, the architect's decision): an ordered
+ *  walk through tools that already exist, one sentence per step saying what
+ *  that step adds.  A path is a READING ORDER and nothing else -- it owns no
+ *  tool, no page and no state beyond "which path, which step".  ONE HOME,
+ *  beside the disciplines: the app's path bar, the landing's paths section
+ *  (via methodTools.json) and the gate all read this array.
+ *
+ *  Three paths are shipped.  Steps the architect asked for that have no tool
+ *  were DROPPED, not faked: distillation has no dedicated T-x-y tool (the
+ *  equilibrium curve is drawn by the flash and McCabe-Thiele pages), no
+ *  rigorous-column page and no tray-hydraulics page; the single-tool pages
+ *  those would be stay in the roadmap, not here.  check_method_tools holds
+ *  that every step names a live tool, a path has at least three steps and no
+ *  tool repeats inside one. */
+export interface MethodPathStep { tool: MethodToolId; why: string }
+export interface MethodPath {
+  id: string;
+  title: string;
+  intro: string;
+  steps: MethodPathStep[];
+}
+
+export const METHOD_PATHS: MethodPath[] = [
+  {
+    id: "distillation",
+    title: "Distillation",
+    intro: "From what a standard state means to the cost of the column: one separation, seen six ways.",
+    steps: [
+      { tool: "standard-state", why: "Fixes what the enthalpies and equilibrium constants behind every later page are measured from." },
+      { tool: "flash-operating-line", why: "One equilibrium stage: the material balance line meets the equilibrium curve, the building block of a column." },
+      { tool: "mccabe", why: "Stacks those stages: reflux ratio and feed quality decide how many are needed." },
+      { tool: "ponchon-savarit", why: "Drops the constant-molar-overflow assumption by putting enthalpy on the diagram." },
+      { tool: "fug", why: "Shortcut estimate of minimum stages, minimum reflux and the feed stage before a rigorous column." },
+      { tool: "plant-cost", why: "Turns the sized equipment into what the plant costs to build." },
+    ],
+  },
+  {
+    id: "thermodynamics",
+    title: "Thermodynamics",
+    intro: "From the meaning of the degree sign to how a Gibbs reactor finds its answer.",
+    steps: [
+      { tool: "standard-state", why: "What the degree sign fixes, and what it leaves open." },
+      { tool: "four-ways-mixture", why: "Four ways to price one mixture, ordered by what each model knew beforehand." },
+      { tool: "local-composition", why: "Wilson, NRTL and UNIQUAC derived as one idea carried three distances." },
+      { tool: "equilibrium-landscapes", why: "What an equilibrium can reach, read from the thermicity and the mole change." },
+      { tool: "element-potential", why: "How the engine solves it: one potential per element instead of one unknown per species." },
+    ],
+  },
+  {
+    id: "reaction-engineering",
+    title: "Reaction engineering",
+    intro: "From the heat a reaction releases to the reactor that keeps it under control.",
+    steps: [
+      { tool: "reaction-enthalpy", why: "The heat of reaction, and how it moves with temperature." },
+      { tool: "reactor-ladder", why: "The order of questions: what the atoms allow, what thermodynamics allows, then what the rate delivers." },
+      { tool: "limiting-reactant", why: "Feed ratios and the limiting reactant once a recycle closes the loop." },
+      { tool: "levenspiel", why: "Sizing: the PFR integral against the CSTR rectangle for the same conversion." },
+      { tool: "approach-to-equilibrium", why: "How close a reactor can get to equilibrium, and what a Gibbs reactor assumes." },
+      { tool: "declared-pathways", why: "Equilibrium over the reactions you allow, against every pathway the species permit." },
+      { tool: "vanheerden", why: "The hazard: heat generated against heat removed gives three steady states and an ignition." },
+    ],
+  },
+];
+
+export const pathById = (id: string | null | undefined): MethodPath | null =>
+  METHOD_PATHS.find((p) => p.id === id) ?? null;
+
 export interface MethodTool {
   id: MethodToolId;
   label: string;
+  /** TWELVE WORDS, NOT SIXTY (DEV.md 4c C221): what the tool lets a student
+   *  DO or SEE, never the label.  The landing card prints it large;
+   *  `teaches` (which the Find index reads) stays below, dimmed. */
+  blurb: string;
   kind: MethodToolKind;
   /** The curriculum shelf this tool sits on (grouped pickers, landing). */
   discipline: MethodDiscipline;
@@ -252,7 +323,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  moved to `property-trust`; the gas thermometer, ITS-90's own fixed
     //  points and the Chang/epistemology material moved to the deep dive
     //  `thermometer-trust`; the Newton-iteration analogy was deleted.
-    id: "what-is-temperature", label: "What is a temperature?",
+    id: "what-is-temperature", blurb: "See what temperature really decides: the direction of heat.", label: "What is a temperature?",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
     origins: ["page", "reference", "assumption"],
@@ -274,7 +345,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  ledger line cites the code computing it; the live centre runs the
     //  entropy01_air_ledger witness and RE-ADDS the engine's own published
     //  lines in front of the reader.
-    id: "what-is-entropy", label: "What is entropy?",
+    id: "what-is-entropy", blurb: "Balance entropy on two blocks: transfer in, generation never negative.", label: "What is entropy?",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
     origins: ["engine", "page", "assumption"],
@@ -297,7 +368,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  published legs (dh and T0*ds); the structural zero at the dead state
     //  is on screen.  Built the day the `exergy` bench op landed, so every
     //  claim has an engine surface to cite (the citation-first rule).
-    id: "what-is-exergy", label: "What is exergy?",
+    id: "what-is-exergy", blurb: "See why the same heat buys different work at different temperatures.", label: "What is exergy?",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
     origins: ["engine", "page", "assumption"],
@@ -319,7 +390,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  metrology and the epistemology after the engineering -- split out so
     //  nobody has to cross the philosophy of science to learn to interrogate
     //  a Pt100.
-    id: "thermometer-trust", label: "How do we know a thermometer is right?",
+    id: "thermometer-trust", blurb: "Judge when a thermometer reading deserves your trust.", label: "How do we know a thermometer is right?",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
     origins: ["engine", "page", "reference", "assumption"],
@@ -342,7 +413,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  runs the Joback estimation of acetone beside the case's own cited
     //  reference values, so the method's error is on screen, computed on
     //  the page from the engine's published numbers.
-    id: "property-origins",
+    id: "property-origins", blurb: "Trace each property value to measured, fitted or estimated.",
     label: "Where do properties come from? (estimation, Joback)",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
@@ -360,7 +431,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  page, teaching the right words in the wrong place: the ladder's
     //  subject is not what a temperature is, it is when a database can be
     //  believed.
-    id: "property-trust", label: "When a property database lies to you",
+    id: "property-trust", blurb: "Test a property record for consistency before you believe it.", label: "When a property database lies to you",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
     origins: ["engine", "page", "reference"],
@@ -379,7 +450,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  own validation block; PC-SAFT and COSMO-SAC carry their honest
     //  cards (the twin-flash cost; the synthetic-surrogate licence
     //  posture) instead of rows an AAD table could not defend.
-    id: "four-ways-mixture",
+    id: "four-ways-mixture", blurb: "Compare four ways of pricing one mixture, by what each knew.",
     //  THE MODELS ARE IN THE LABEL, not only in `teaches`.  "Four ways to
     //  price a mixture" is a good title and a bad index entry: a reader
     //  looking for PC-SAFT scanned the Thermodynamics shelf, saw no model
@@ -405,7 +476,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  answers "which rung, and what did it know", this answers "where does
     //  the number come from".  Growing the derivation inside a card would
     //  have made one page answer two questions badly.
-    id: "cosmo-sac-theory",
+    id: "cosmo-sac-theory", blurb: "Follow COSMO-SAC from sigma-profile to activity coefficient.",
     label: "COSMO-SAC, derived (σ-profiles → activity coefficient)",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
@@ -438,7 +509,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  Wilson, NRTL and UNIQUAC share a trunk (local composition, Boltzmann
     //  weighting); three pages would repeat it three times and bury what
     //  actually separates them, which is what each is willing to pay for.
-    id: "local-composition",
+    id: "local-composition", blurb: "See Wilson, NRTL and UNIQUAC as one idea at three distances.",
     label: "Local composition, derived (Wilson · NRTL · UNIQUAC)",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
@@ -464,7 +535,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  re-deriving the lattice a third time would teach that they are
     //  unrelated.  Points at sec:unifac, which already exists -- checked
     //  before writing the field, after the COSMO-SAC draft invented one.
-    id: "unifac-theory",
+    id: "unifac-theory", blurb: "Predict a binary pair nobody measured, from its groups.",
     label: "UNIFAC, derived (a pair nobody has measured)",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
@@ -484,7 +555,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  THE FIRST EQUATION OF STATE on this shelf, and the page opens on
     //  that difference rather than on a formula: the other four build an
     //  excess Gibbs energy and cannot say what a density is.
-    id: "pcsaft-theory",
+    id: "pcsaft-theory", blurb: "Build a PC-SAFT surface from chain, dispersion and association.",
     label: "PC-SAFT, derived (chains, dispersion, association)",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
@@ -510,7 +581,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  molar overflow to get straight operating lines, and until this page
     //  that assumption could only be BELIEVED -- nothing let a reader see
     //  what it costs.  Ordered by the owner, 2026-08-31.
-    id: "ponchon-savarit",
+    id: "ponchon-savarit", blurb: "Solve distillation on the enthalpy diagram with a difference point.",
     label: "Ponchon-Savarit, derived (the enthalpy diagram)",
     discipline: "Separations & phase equilibria",
     kind: "notes", status: "live",
@@ -535,7 +606,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  minimised twice, 900 K apart, and the sulfur allotrope flips.  A
     //  one-unit page could not show it, which is why it is not a method
     //  page with a worked example.
-    id: "claus-gibbs",
+    id: "claus-gibbs", blurb: "Find the sulfur allotropes a Claus plant needs but nobody declared.",
     label: "The allotrope nobody declared (a Claus plant)",
     discipline: "Reaction engineering",
     kind: "notes", status: "live",
@@ -566,7 +637,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  It does NOT claim the two streams join, and its last box says so --
     //  a rich-amine acid gas is not a sour-water overhead, and the tidy
     //  story would be worth less than the distinction.
-    id: "sour-water",
+    id: "sour-water", blurb: "Watch dissolved H2S split into species as the pH moves.",
     label: "The same sulfur, one unit earlier (sour water)",
     discipline: "Separations & phase equilibria",
     kind: "notes", status: "live",
@@ -596,7 +667,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  row deep-links into the guide's own chapter.  What it adds is a filter
     //  across all sixty titles at once and the guide's framing kept in front
     //  of the reader.
-    id: "rules-of-thumb",
+    id: "rules-of-thumb", blurb: "Pick starting equipment from process-design rules of thumb.",
     label: "Rules of thumb (what equipment do I even pick?)",
     discipline: "Heat transfer & energy",
     kind: "notes", status: "live",
@@ -619,7 +690,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  student met the STAIRCASE before ever meeting one STEP -- which is how
     //  people end up able to draw the construction without being able to say
     //  what either line means.
-    id: "flash-operating-line", label: "Flash (operating line)",
+    id: "flash-operating-line", blurb: "Find a single flash stage where the operating line meets equilibrium.", label: "Flash (operating line)",
     discipline: "Separations & phase equilibria",
     kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
@@ -641,7 +712,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  being solutions anybody could make.  The witness declares `pH solve;`,
     //  so every point had to be a beaker and the abscissa came back out of
     //  charge.  The diagram is the same; the lesson is not.
-    id: "bjerrum", label: "Speciation vs pH (Bjerrum)",
+    id: "bjerrum", blurb: "Plot speciation against pH from real equilibrium calculations.", label: "Speciation vs pH (Bjerrum)",
     discipline: "Thermodynamics",
     kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
@@ -660,7 +731,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:electrolytes",
   },
   {
-    id: "mccabe", label: "Distillation (McCabe-Thiele)",
+    id: "mccabe", blurb: "Count the stages a reflux ratio buys.", label: "Distillation (McCabe-Thiele)",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
     teaches: "Operating lines, the q-line and the staircase: how reflux R and feed quality q set the number of ideal stages.",
@@ -689,7 +760,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  are spelled out one line below, in `teaches`, where there is room for
   //  them.  Do not lengthen it back without re-running bin/checkGui.
   {
-    id: "fug", label: "Distillation shortcut (FUG)",
+    id: "fug", blurb: "Estimate minimum stages, minimum reflux and stages before a rigorous column.", label: "Distillation shortcut (FUG)",
     discipline: "Separations & phase equilibria",
     kind: "construction", status: "live",
     origins: ["engine", "assumption"],
@@ -701,35 +772,35 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:fug",
   },
   {
-    id: "psychro", label: "Psychrometric chart",
+    id: "psychro", blurb: "Locate humid-air states and drying paths on a psychrometric chart.", label: "Psychrometric chart",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
     origins: ["engine", "assumption"],
     teaches: "The humid-gas state map: saturation, relative-humidity and adiabatic-saturation / wet-bulb lines locate the common drying and conditioning paths.",
     theory: "ch:drying",
   },
   {
-    id: "kremser", label: "Absorption (Kremser)",
+    id: "kremser", blurb: "See how stage count sets solute recovery in an absorber.", label: "Absorption (Kremser)",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
     teaches: "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight in the same basis — judged against the engine's stagewise absorber, which is itself a model (Henry's law, constant total flows), not a general rigorous absorber.",
     theory: "ch:absorber",
   },
   {
-    id: "pinch-composite", label: "Pinch composite curves",
+    id: "pinch-composite", blurb: "Find the pinch and the minimum hot and cold utility.", label: "Pinch composite curves",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
     teaches: "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
     theory: "ch:pinch",
   },
   {
-    id: "entu", label: "Heat exchanger (ε-NTU)",
+    id: "entu", blurb: "See when more heat-exchanger area stops paying.", label: "Heat exchanger (ε-NTU)",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
     teaches: "Effectiveness vs NTU at a capacity ratio: why counter-current wins and when extra area stops paying — the run's exchanger placed on its own curve.",
     theory: "ch:hx-entu",
   },
   {
-    id: "pump-system", label: "Pump vs system curve",
+    id: "pump-system", blurb: "Find a pump's operating point where it meets the system curve.", label: "Pump vs system curve",
     discipline: "Hydraulics & control", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
     teaches: "The operating point is an intersection: the pump model's rise falling with flow (a constant-power model, not a centrifugal pump's measured curve, and no basis for selecting one) against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
@@ -749,7 +820,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  Nusselt are only its two examples.  `theory` is the Theory Guide's
   //  transport chapter.
   {
-    id: "correlation-simplicity",
+    id: "correlation-simplicity", blurb: "Understand why engineering correlations stay simple.",
     label: "Why engineering correlations are simple",
     discipline: "Modelling & scale-up", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
@@ -789,7 +860,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  an adiabatic flash), the closest chapter it has.  First version, for
   //  Vitor's review.
   {
-    id: "letdown",
+    id: "letdown", blurb: "See what a large pressure letdown does: choking, cavitation, flashing.",
     label: "Large pressure letdown: choked flow, cavitation, flashing and noise",
     discipline: "Hydraulics & control", kind: "construction",
     status: "live",
@@ -811,21 +882,21 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:bubble-dew-ref",
   },
   {
-    id: "merkel", label: "Cooling tower (Merkel)",
+    id: "merkel", blurb: "Read a cooling tower's driving force off Merkel's diagram.", label: "Cooling tower (Merkel)",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
     teaches: "Merkel's one diagram: saturated-air enthalpy above, the operating line below, and the shaded gap between them is the driving force the packing must buy.",
     theory: "ch:coolingTower",
   },
   {
-    id: "rayleigh", label: "Batch still (Rayleigh)",
+    id: "rayleigh", blurb: "Integrate a batch still's composition history graphically.", label: "Batch still (Rayleigh)",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
     teaches: "The graphical Rayleigh integration for a simple still: the area under 1/(y*−x) between the charge and the pot IS ln(W0/W) — drawn from the engine's own equilibrium curve, judged against the engine's time integration of the same still.",
     theory: "ch:rayleigh",
   },
   {
-    id: "levenspiel", label: "Reactor sizing (Levenspiel)",
+    id: "levenspiel", blurb: "Compare PFR and CSTR volumes for the same conversion.", label: "Reactor sizing (Levenspiel)",
     discipline: "Reaction engineering", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
     teaches: "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
@@ -836,7 +907,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  its approach temperature), the rate law -- in the order industry climbs
   //  them rather than the order a rate-first course teaches them.
   {
-    id: "reactor-ladder",
+    id: "reactor-ladder", blurb: "Climb from stoichiometry to equilibrium to what the rate delivers.",
     label: "The reactor ladder (stoichiometry, limit, rate)",
     discipline: "Reaction engineering", kind: "notes", status: "live",
     origins: ["engine", "assumption"],
@@ -868,7 +939,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  construction here.  It is a chapter you scroll with the engine running
   //  inside it, which is the shape `what-is-temperature` established.
   {
-    id: "approach-to-equilibrium",
+    id: "approach-to-equilibrium", blurb: "See how close a Gibbs reactor can get to equilibrium.",
     label: "Approach to equilibrium (Gibbs reactor)",
     discipline: "Reaction engineering", kind: "notes", status: "live",
     origins: ["engine", "assumption"],
@@ -888,7 +959,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  enthalpy is a 25 C number and no reactor runs there -- "isso é
   //  realmente importante".
   {
-    id: "reaction-enthalpy",
+    id: "reaction-enthalpy", blurb: "Move a reaction enthalpy across temperature with Kirchhoff.",
     label: "Reaction enthalpy and temperature (Kirchhoff)",
     discipline: "Reaction engineering", kind: "notes", status: "live",
     origins: ["engine", "page", "assumption"],
@@ -908,7 +979,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  moves with T against P, priced by the engine), then the reference and
   //  its correction, only then the degree sign.
   {
-    id: "standard-state",
+    id: "standard-state", blurb: "See what the degree sign means for enthalpy and equilibrium.",
     label: "Enthalpy, standard state and equilibrium (what ° means)",
     discipline: "Thermodynamics", kind: "notes", status: "live",
     origins: ["engine", "page", "reference", "assumption"],
@@ -931,7 +1002,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  the architect "because it introduces many variables".  The page shows
   //  it introduces fewer than it seems.
   {
-    id: "limiting-reactant",
+    id: "limiting-reactant", blurb: "Find the limiting reactant in a recycle loop's two ratios.",
     label: "Limiting reactant and feed ratio in a recycle loop",
     discipline: "Reaction engineering", kind: "notes", status: "live",
     origins: ["page", "assumption"],
@@ -958,7 +1029,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  GLOBAL caveat drawn on thermal NO, and the enzyme-versus-converter
   //  contrast read off the ammonia witness's own anchor cells.
   {
-    id: "equilibrium-landscapes",
+    id: "equilibrium-landscapes", blurb: "Read what equilibrium can reach from thermicity and mole change.",
     label: "Equilibrium landscapes (what an approach can reach)",
     discipline: "Reaction engineering", kind: "notes", status: "live",
     origins: ["engine", "page", "assumption"],
@@ -991,7 +1062,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  nothing, because nothing in the tree documents a catalyst's
   //  selectivity.
   {
-    id: "declared-pathways",
+    id: "declared-pathways", blurb: "Compare equilibrium over every pathway against the reactions you allow.",
     label: "Declared pathways (equilibrium over the reactions you allow)",
     discipline: "Reaction engineering", kind: "notes", status: "live",
     origins: ["engine", "assumption"],
@@ -1021,7 +1092,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  the reverse shift on CO2 and H2) and psa01 (pure hydrogen).  `theory`
   //  is the Gibbs-reactor chapter: the Theory Guide has no syngas section.
   {
-    id: "syngas",
+    id: "syngas", blurb: "See what H2/CO ratio and carbon content make syngas good for.",
     label: "Synthesis gas: one gas, many products",
     discipline: "Reaction engineering", kind: "notes", status: "live",
     origins: ["engine", "page", "assumption"],
@@ -1041,21 +1112,21 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:gibbs-reactor",
   },
   {
-    id: "vanheerden", label: "Ignition / extinction (Van Heerden)",
+    id: "vanheerden", blurb: "Find the three steady states of one reactor and its ignition.", label: "Ignition / extinction (Van Heerden)",
     discipline: "Reaction engineering", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
     teaches: "Heat generated against heat removed: a straight line can cut a sigmoid three times, so in this example the same reactor with the same feed has three steady states — and the middle one fails the open-loop slope test, a necessary condition only: the page computes no dynamics.",
     theory: "ch:cstr",
   },
   {
-    id: "drying", label: "Drying curve (batch tray)",
+    id: "drying", blurb: "Read the constant- and falling-rate periods off a drying curve.", label: "Drying curve (batch tray)",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
     origins: ["engine", "assumption"],
     teaches: "The two classical drying plots: X against time, and the rate against moisture — where, for a material with a constant-rate period (not every material has one), the critical moisture is VISIBLE as the corner at which a flat rate starts to fall toward the isotherm's equilibrium.",
     theory: "ch:drying",
   },
   {
-    id: "breakthrough", label: "Adsorption breakthrough",
+    id: "breakthrough", blurb: "Watch a bed's mass-transfer zone eat capacity before saturation.", label: "Adsorption breakthrough",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
     origins: ["engine", "assumption"],
     teaches: "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
@@ -1072,7 +1143,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  Arrives live AND mounted in one change, as every tool after hunter-nash
   //  must.
   {
-    id: "lub-scaleup", label: "Sizing a bed from a breakthrough curve (LUB)",
+    id: "lub-scaleup", blurb: "Size a plant bed from a laboratory breakthrough curve.", label: "Sizing a bed from a breakthrough curve (LUB)",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
     teaches: "How a laboratory breakthrough curve sizes a plant bed: t_b and t_st read off the data, the capacity they imply checked against the isotherm, LUB = L(1 − t_b/t_st) carried to full scale at the same velocity — L_full = L_es + LUB, the diameter from the design flow, and why a longer bed wastes a smaller fraction.",
@@ -1090,7 +1161,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  `washoutIdeal_<s>` built from THIS run's own initial R, so the gap
   //  cannot have been arranged.
   {
-    id: "batch-membrane", label: "Batch membrane filtration (UF/NF)",
+    id: "batch-membrane", blurb: "Compare concentration and diafiltration modes for a UF/NF batch.", label: "Batch membrane filtration (UF/NF)",
     discipline: "Separations & phase equilibria", kind: "construction",
     status: "live",
     origins: ["engine", "page", "reference", "assumption"],
@@ -1119,7 +1190,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  the id — and the fallback itself REFUSES BY NAME, so the trap that made
   //  the caution necessary is closed for every tool after this one.
   {
-    id: "hunter-nash", label: "Extraction (Hunter-Nash)",
+    id: "hunter-nash", blurb: "Step off extraction stages from one difference point.", label: "Extraction (Hunter-Nash)",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
     teaches: "One point rules the whole column: the difference point Δ = F − E₁ = R_j − E_{j+1} lies on every operating line, so the triangle alternates tie-lines with lines through Δ — and the rigorous cascade's own stages are laid on it as the test.",
@@ -1141,7 +1212,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  MethodsWorkspace refuses an unmounted id by name now, so a `planned`
   //  placeholder here would have helped nobody.
   {
-    id: "thiele", label: "Catalyst pellet (Thiele modulus)",
+    id: "thiele", blurb: "Watch concentration collapse inside a pellet as the Thiele modulus grows.", label: "Catalyst pellet (Thiele modulus)",
     discipline: "Reaction engineering", kind: "construction",
     status: "live",
     origins: ["engine", "assumption"],
@@ -1161,7 +1232,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  heuristics in TypeScript, the standing "zero physics in TS" rule applied
   //  to guidance.
   {
-    id: "column-control", label: "Column control (structure & instruments)",
+    id: "column-control", blurb: "See which measurements a column's composition loops can use.", label: "Column control (structure & instruments)",
     discipline: "Hydraulics & control",
     kind: "selection", status: "live",
     origins: ["engine", "page", "reference", "assumption"],
@@ -1186,7 +1257,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  leaving a reader to find it by following the link.  Writing the guide
   //  section is the remedy and it is not a gui/ change.
   {
-    id: "bode", label: "Frequency response (Bode diagram)",
+    id: "bode", blurb: "Check a loop's stability and margins before switching it on.", label: "Frequency response (Bode diagram)",
     discipline: "Hydraulics & control", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
     teaches: "Whether a loop will be stable BEFORE it is switched on, and how "
@@ -1208,7 +1279,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  witness reconcile01_recycle_loop runs in the browser and every number
     //  is the engine's `dataReconciliation` op, which hands its weighted least
     //  squares to the one home the active-set page already teaches.
-    id: "data-reconciliation",
+    id: "data-reconciliation", blurb: "Make noisy plant meters close a mass balance, with Bayes.",
     label: "Data reconciliation, and how Bayes helps",
     discipline: "Hydraulics & control", kind: "construction", status: "live",
     origins: ["engine", "assumption"],
@@ -1243,7 +1314,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  anchor is an honest mismatch its own limits block declares):
   //  ch:newton-tears, ch:wegstein and ch:active-set-qp all exist.
   {
-    id: "tear-streams", label: "Tear streams (where to cut a recycle)",
+    id: "tear-streams", blurb: "Choose which stream to cut when a flowsheet recycles.", label: "Tear streams (where to cut a recycle)",
     discipline: "Flowsheeting & numerics", kind: "construction",
     status: "live",
     origins: ["engine", "page", "assumption"],
@@ -1257,7 +1328,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:newton-tears",
   },
   {
-    id: "wegstein", label: "Wegstein acceleration (closing a recycle)",
+    id: "wegstein", blurb: "Watch Wegstein accelerate a mixed tear vector, variable by variable.", label: "Wegstein acceleration (closing a recycle)",
     discipline: "Flowsheeting & numerics", kind: "construction",
     status: "live",
     origins: ["engine", "page", "assumption"],
@@ -1272,7 +1343,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:wegstein",
   },
   {
-    id: "active-set-qp",
+    id: "active-set-qp", blurb: "Follow the working set of a constrained quadratic program.",
     label: "Quadratic programming with constraints (active set)",
     discipline: "Flowsheeting & numerics", kind: "construction",
     status: "live",
@@ -1289,7 +1360,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:active-set-qp",
   },
   {
-    id: "least-squares",
+    id: "least-squares", blurb: "See what a fitted parameter is worth, and when it is not.",
     label: "Least squares: what a fitted parameter is worth",
     discipline: "Flowsheeting & numerics", kind: "construction",
     status: "live",
@@ -1311,7 +1382,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  how the simulator arrives at an answer.  Every iterate it draws is a row
   //  of the engine's own `newtonLog` (GibbsReactor.cpp / GibbsLog.cpp).
   {
-    id: "element-potential",
+    id: "element-potential", blurb: "See how a Gibbs reactor solves with one potential per element.",
     label: "How a Gibbs reactor solves (element potentials)",
     discipline: "Flowsheeting & numerics", kind: "construction",
     status: "live",
@@ -1336,7 +1407,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  reader break a copy and read the refusal.  First version, for Vitor's
   //  review ("Avanca que eu depois revejo e dou te feedback").
   {
-    id: "case-assembly",
+    id: "case-assembly", blurb: "See how the dictionaries of a case assemble on disk.",
     label: "How dictionaries assemble a case",
     discipline: "How Choupo works", kind: "notes",
     status: "live",
@@ -1360,7 +1431,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  the browser, every line classified by the marker the engine printed it
   //  with.  First version, for Vitor's review ("Faz esse!").
   {
-    id: "run-log",
+    id: "run-log", blurb: "Read a run's log: its header, iterations and verdict.",
     label: "How to read a run's log",
     discipline: "How Choupo works", kind: "notes",
     status: "live",
@@ -1386,7 +1457,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  to the engine's one home (src/postProcessing/EstimateClass.H) by its
   //  test.  First version, for Vitor's review.
   {
-    id: "front-end-loading",
+    id: "front-end-loading", blurb: "See how industry stages a design behind decision gates.",
     label: "Front-End Loading: how industry stages a design",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
@@ -1414,7 +1485,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  bubble points (bubble01), the two C57 feasibility loops and Z at each
   //  converter feed (relief01).  Corrected twice on reviews Vitor relayed.
   {
-    id: "process-safety",
+    id: "process-safety", blurb: "Remove the hazard before you pile protective layers on it.",
     label: "Process safety: remove the hazard before you add a layer",
     discipline: "Process safety", kind: "notes",
     status: "live",
@@ -1450,7 +1521,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  Design Guide's relief chapter is deep-linked from the page itself.
   //  First version, for Vitor's review.
   {
-    id: "overpressure",
+    id: "overpressure", blurb: "Pick the credible overpressure scenario that sizes a relief device.",
     label: "Designing for overpressure: scenarios, devices and relief sizing",
     discipline: "Process safety", kind: "construction",
     status: "live",
@@ -1486,7 +1557,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  the Theory Guide has no fire chapter.  First version, for Vitor's
   //  review.
   {
-    id: "pool-fire",
+    id: "pool-fire", blurb: "Compute how far a pool fire's radiation reaches.",
     label: "Pool-fire radiation and the distance it sets",
     discipline: "Process safety", kind: "construction",
     status: "live",
@@ -1519,7 +1590,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  containment chapter (the Design Guide's section is linked from the
   //  page).  First version, for Vitor's review.
   {
-    id: "bund",
+    id: "bund", blurb: "Size a bund as a passive barrier among the protection layers.",
     label: "Secondary containment: designing a bund",
     discipline: "Process safety", kind: "construction",
     status: "live",
@@ -1556,7 +1627,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  Guide has no layout chapter, and a vessel's D and H -- the footprint the
   //  layout reads -- are what that section derives.
   {
-    id: "plant-layout",
+    id: "plant-layout", blurb: "Decide where each item stands by safety, access and pipe.",
     label: "Plant layout: where each item stands, and why",
     discipline: "Process design & economics", kind: "construction",
     status: "live",
@@ -1587,7 +1658,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  layout chapter (the Design Guide's GMP section is the prose home, and it
   //  names this tool).
   {
-    id: "gmp-layout",
+    id: "gmp-layout", blurb: "Lay out a tablet plant's rooms, air grades and routes.",
     label: "The GMP interior of a tablet plant: rooms, air and the ways through them",
     discipline: "Process design & economics", kind: "construction",
     status: "live",
@@ -1626,7 +1697,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  tenant is what the shelf rule forbids.  `theory` is the vessel-sizing
   //  section, where the wall the bench changes is derived.
   {
-    id: "materials",
+    id: "materials", blurb: "Choose materials of construction, seals and gaskets by the Pareto.",
     label: "Materials of construction, seals and gaskets: the Pareto, and how to choose",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
@@ -1661,7 +1732,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  under.  Its reaction-engineering filters (equilibrium, heat,
   //  selectivity) are the content of that screening, not its question.
   {
-    id: "route-screening",
+    id: "route-screening", blurb: "Screen routes to a product cheapest filter first.",
     label: "Screening routes to a product (methanol)",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
@@ -1689,7 +1760,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  `theory` is the discounted-cash-flow section, the appraisal the page
   //  uses.
   {
-    id: "sines-pta",
+    id: "sines-pta", blurb: "Read the risks of a real plant's appraisal from public documents.",
     label: "Economic appraisal and project risk: lessons from the Sines PTA plant",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
@@ -1722,7 +1793,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  exclusive period or a licence enters a project only through the
   //  appraisal.
   {
-    id: "ip-strategy",
+    id: "ip-strategy", blurb: "Decide between a patent and a trade secret.",
     label: "Intellectual property as competitive strategy",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
@@ -1764,7 +1835,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  balances chapter: the page's one equation is the element balance and
   //  the mass arithmetic built on it.
   {
-    id: "tree-of-chemistry",
+    id: "tree-of-chemistry", blurb: "See commodity chemicals as one tree from eleven roots.",
     label: "The tree of chemistry: a hundred products, eleven roots",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
@@ -1795,7 +1866,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  `rampUp` and the one `price` of the case should be.  `theory` is the
   //  discounted-cash-flow chapter, whose present value the page uses.
   {
-    id: "patent-expiry",
+    id: "patent-expiry", blurb: "See how patent expiry and generic entry reshape price.",
     label: "Patent expiry and generic entry",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
@@ -1818,7 +1889,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  `patent-expiry`: the arithmetic of the economics chapter and the
   //  demand forecast upstream of it.
   {
-    id: "economics-errors",
+    id: "economics-errors", blurb: "Spot eight recurring mistakes in a plant economics chapter.",
     label: "Ways a pharmaceutical-plant economics goes wrong",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
@@ -1836,7 +1907,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:economics",
   },
   {
-    id: "demand-forecast",
+    id: "demand-forecast", blurb: "Compare three forecast methods on one editable demand history.",
     label: "Demand forecast for a drug product",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
@@ -1853,7 +1924,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:economics",
   },
   {
-    id: "plant-cost",
+    id: "plant-cost", blurb: "Estimate what a plant costs to build and why methods disagree.",
     label: "What a plant costs to build",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
@@ -1875,7 +1946,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  plant as one example.  A NOTES page, no engine run, beside
   //  `economics-errors`.
   {
-    id: "plant-running-cost",
+    id: "plant-running-cost", blurb: "Turn balances and investment into a cost of production and verdict.",
     label: "What a plant costs to run, and when it pays",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
@@ -1898,7 +1969,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  build, which route, and what the product sells for at the plant gate.
   //  A NOTES page, no engine run; ships no weight, margin or tax rate.
   {
-    id: "site-process-price",
+    id: "site-process-price", blurb: "Rank sites and processes before the cost pages begin.",
     label: "Where to build it, what to make, and what it sells for",
     discipline: "Process design & economics", kind: "notes",
     status: "live",
@@ -1924,7 +1995,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  three parameters are, beside the Hildebrand lesson.  `theory` is the
   //  Theory Guide subsection written for it.
   {
-    id: "solvent-mixture",
+    id: "solvent-mixture", blurb: "Choose a solvent or blend by Hansen distance.",
     label: "Choosing a solvent, or a solvent mixture",
     discipline: "Thermodynamics", kind: "selection", status: "live",
     origins: ["engine", "reference", "assumption"],
@@ -2101,4 +2172,48 @@ export function setActiveMethodTool(id: MethodToolId): void {
  *  workspace body and the top-bar dropdown's check mark). */
 export function useActiveMethodTool(): MethodToolId {
   return useSyncExternalStore(subscribe, getActiveMethodTool, getActiveMethodTool);
+}
+
+// ---- The active path (DEV.md 4c C221) --------------------------------------
+// Which pedagogical path is being walked, or none.  Module state like the
+// tool, for the same reason (the path bar and the menus are siblings), and
+// written to the address as `&path=<id>` so a link carries it; the STEP is
+// not stored -- it is where the active tool sits in the path.
+
+/** Boot path from the URL: `&path=<id>` of a path that exists. */
+export function bootPath(): string | null {
+  if (typeof window === "undefined") return null;
+  const id = new URLSearchParams(window.location.search).get("path");
+  return pathById(id) ? id : null;
+}
+
+let activePath: string | null = bootPath();
+
+export function getActivePath(): string | null {
+  return activePath;
+}
+
+/** Choose a path (or null to leave it).  Choosing a path whose steps do not
+ *  include the open tool opens its first step; the open tool is otherwise
+ *  left alone, so picking the path you are already inside moves nothing. */
+export function setActivePath(id: string | null): void {
+  const p = pathById(id);
+  activePath = p ? p.id : null;
+  if (typeof window !== "undefined"
+    && typeof window.history?.replaceState === "function") {
+    try {
+      const url = new URL(window.location.href);
+      if (activePath) url.searchParams.set("path", activePath);
+      else url.searchParams.delete("path");
+      window.history.replaceState(window.history.state, "", url.toString());
+    } catch { /* opaque URL / blocked history */ }
+  }
+  if (p && !p.steps.some((s) => s.tool === activeTool))
+    setActiveMethodTool(p.steps[0]!.tool);
+  else for (const fn of listeners) fn();
+}
+
+/** The active path id as React state. */
+export function useActivePath(): string | null {
+  return useSyncExternalStore(subscribe, getActivePath, getActivePath);
 }

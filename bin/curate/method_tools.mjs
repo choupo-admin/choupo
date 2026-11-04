@@ -181,6 +181,7 @@ async function main()
         .map((t) => ({
             id: t.id,
             label: t.label,
+            blurb: t.blurb,
             discipline: t.discipline,
             teaches: t.teaches,
             //  WHERE THE PAGE'S NUMBERS COME FROM (DEV.md 4c C112): the
@@ -200,6 +201,23 @@ async function main()
         return 1;
     }
 
+    //  THE PATHS (DEV.md 4c C221): METHOD_PATHS carried with each step's label
+    //  and deep link resolved, so the landing draws them from the artefact and
+    //  keeps no list of its own.  The link is the app's `tool=` contract plus
+    //  `&path=`, so a click arrives inside the path.
+    const labelOf = new Map(all.map((t) => [t.id, t.label]));
+    const paths = (mod.METHOD_PATHS ?? []).map((p) => ({
+        id: p.id,
+        title: p.title,
+        intro: p.intro,
+        steps: p.steps.map((s) => ({
+            tool: s.tool,
+            label: labelOf.get(s.tool) ?? null,
+            why: s.why,
+            href: `${hrefFor(s.tool)}&path=${p.id}`,
+        })),
+    }));
+
     const doc = {
         note: "DERIVED by transpiling and importing gui/src/ui/methods/"
             + "registry.ts -- the array this file lists is the array the "
@@ -215,6 +233,7 @@ async function main()
         //  home (originKinds.ts) the app's legend reads.
         origins: (mod.ORIGIN_KINDS ?? []).map((k) => ({
             word: k, meaning: mod.ORIGIN_MEANING?.[k] ?? null })),
+        paths,
         liveTools: tools.length,
         registryTools: all.length,
         tools,

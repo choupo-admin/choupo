@@ -152,6 +152,27 @@ built around: a tool that cannot name its derivation is not finished, and
 a test in the application refuses an anchor the Theory Guide does not
 define.
 
+\subsection{Paths, and finding a tool}
+
+Above the chooser sits one compact row, \emph{Path}.  A path is a reading
+order over tools that already exist --- three ship: distillation,
+thermodynamics and reaction engineering --- and choosing one shows its
+steps as a numbered strip with the current step marked, a sentence saying
+what that step adds, and Previous and Next buttons.  A path adds no page
+and no panel: it only moves between the same tools, and its address,
+
+\begin{lstlisting}[language=shell]
+?workspace=methods&tool=<id>&path=<path id>
+\end{lstlisting}
+
+\noindent
+carries both, so a teacher can send a student the third step of a path as
+one link.  Each tool also has a one-line blurb of at most twelve words,
+which is what the public landing page prints large on its cards (the longer
+description sits below it).  The landing page also has a text filter
+over the tools, and its discipline shelves fold; without JavaScript it is
+simply the full list.
+
 \subsection{Classroom, or your own run}
 
 Most tools default to \textbf{Classroom}: the tool clones a bundled

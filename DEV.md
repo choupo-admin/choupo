@@ -2164,6 +2164,14 @@ accepts today, and that is a policy call.
 > (distillation, thermodynamics, reaction engineering) is proposed by the
 > architect and reviewed by Vitor before code.  Rejected: new menus, panels
 > or sub-menus (the review's own rule 8 and the GUI credo agree).
+> **BUILT (2026-11-04, branch c221, three commits).**  (1) `blurb` on all 73
+> tools, gate-held (<= 12 words, never the label); (2) the landing's text
+> filter over label + blurb + teaches and `<details>` shelves, the full list
+> without JavaScript; (3) `METHOD_PATHS` (distillation 6 steps, thermodynamics
+> 5, reaction engineering 7), the app's path bar above the chooser, `&path=`
+> deep link, the landing's paths section.  Steps DROPPED because no tool
+> exists: a dedicated T-x-y page, a rigorous-column page, a tray-hydraulics
+> page (the flash page stands in for the equilibrium step).
 
 > **THE STACK, AND THE ONE FULL SWEEP (the architect, 2026-11-03 06:00):** five
 > of the seven builds are now in the local branch `staging` (C208, S1, S2,
