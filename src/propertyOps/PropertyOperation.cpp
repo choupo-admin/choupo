@@ -50,6 +50,7 @@ License
 #include "PropertyScan1D.H"
 #include "PropertyScan2D.H"
 #include "PropertyScanTernary.H"
+#include "LleTieLines.H"
 #include "PropertyScanBinary.H"
 #include "PhaseEnvelope.H"
 #include "PhaseSplitScan.H"
@@ -164,6 +165,7 @@ void PropertyOperation::registerBuiltins()
     reg("propertyScan1D", []{ return std::make_unique<PropertyScan1D>(); });
     reg("propertyScan2D", []{ return std::make_unique<PropertyScan2D>(); });
     reg("propertyScanTernary", []{ return std::make_unique<PropertyScanTernary>(); });
+    reg("lleTieLines", []{ return std::make_unique<LleTieLines>(); });
     reg("propertyScanBinary",  []{ return std::make_unique<PropertyScanBinary>(); });
     //  THE ENTHALPY-CONCENTRATION LOCUS -- the first surface in the engine
     //  that publishes SATURATED-PHASE ENTHALPY against composition, with the

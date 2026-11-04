@@ -66,7 +66,7 @@ const std::map<std::string, OpSlots>& table()
                                 "enthalpyConcentration", "exchange", "gibbsMap",
                                 "hansenMixture", "isothermEval", "membraneShortlist",
                                 "phaseEnvelope",
-                                "phaseSplitScan", "propertyScan1D",
+                                "lleTieLines", "phaseSplitScan", "propertyScan1D",
                                 "propertyScan2D", "propertyScanBinary",
                                 "propertyScanTernary", "psychrometricChart",
                                 "purePhaseDiagram", "scalingScan",

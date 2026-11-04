@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Measured tie lines of water + acetic acid + methyl isobutyl ketone (MIBK)
+  at 25 C: the six ternary rows of Perry's Table 15-8 (the printed weight
+  percents, divided by 100).  The seventh, all-binary row (no acetic acid:
+  the mutual solubility of water and MIBK) is NOT carried: the model's
+  conjugate curve starts at a small positive solute fraction, so a zero
+  abscissa could only be excluded.
+
+  Each row is one tie line: raffinate (aqueous) phase wR_*, extract (MIBK)
+  phase wE_*, MASS fractions.  The abscissa is the raffinate acetic-acid
+  fraction.
+
+  Primary source: Sherwood, Evans and Longcor, Ind. Eng. Chem. 31(9) (1939)
+  1144-1150.  Read through Perry's Chemical Engineers' Handbook, 9th ed.,
+  Table 15-8, p. 15-48, from the page image.  Not checked against the 1939
+  article.  The printed rows sum to 100 within the table's own rounding.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    source   "Sherwood, Evans & Longcor, Ind. Eng. Chem. 31(9) (1939) 1144-1150, as tabulated in Perry's Handbook 9th ed., Table 15-8";
+    citation "Water + acetic acid + methyl isobutyl ketone, 25 C: six ternary tie lines (weight fractions).  Transcribed from the printed table; not checked against the 1939 article.";
+}
+
+columns
+(
+    { name wR_aceticAcid;              unit -; }
+    { name wR_water;                   unit -; }
+    { name wR_methylIsobutylKetone;    unit -; }
+    { name wE_aceticAcid;              unit -; }
+    { name wE_water;                   unit -; }
+    { name wE_methylIsobutylKetone;    unit -; }
+);
+
+data
+(
+    0.0285  0.9546  0.0170    0.0187  0.0280  0.9533
+    0.1170  0.8580  0.0250    0.0890  0.0540  0.8570
+    0.2050  0.7570  0.0380    0.1730  0.0920  0.7350
+    0.2620  0.6780  0.0600    0.2460  0.1450  0.6090
+    0.3280  0.5500  0.1220    0.3080  0.2200  0.4720
+    0.3460  0.4290  0.2250    0.3360  0.3100  0.3540
+);

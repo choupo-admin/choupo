@@ -1,0 +1,8 @@
+/*  VALIDATION READING, not a fit.  The liquid-liquid flash the `extractor`
+    runs at every stage, laid beside six MEASURED tie lines of water + acetic
+    acid + methyl isobutyl ketone at 25 C (Perry's Handbook 9th ed., Table
+    15-8, from Sherwood, Evans & Longcor 1939).  The activity model is the
+    catalogue's UNIFAC, no parameter touched. */
+application   choupoProps;
+description   "LLE validation: water + acetic acid + MIBK, 25 C, UNIFAC against Perry Table 15-8";
+verbosity     2;

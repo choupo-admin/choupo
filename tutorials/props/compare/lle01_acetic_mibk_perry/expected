@@ -1,0 +1,13 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    tie_unifac             n_feeds          80                 1e-4
+diag    tie_unifac             n_refused        0                  1e-4
+diag    tie_unifac             n_single         0                  1e-4
+diag    tie_unifac             n_split          80                 1e-4
+diag    tie_unifac             wR_solute_max    0.395303060021     1e-4
+aad     perry_table15_8        tie_unifac.wR_water.aadAbs 0.0362145055063    1e-4
+aad     perry_table15_8        tie_unifac.wR_methylIsobutylKetone.aadAbs 0.0361978386946    1e-4
+aad     perry_table15_8        tie_unifac.wE_aceticAcid.aadAbs 0.0310105107019    1e-4
+aad     perry_table15_8        tie_unifac.wE_water.aadAbs 0.0432948894869    1e-4
+aad     perry_table15_8        tie_unifac.wE_methylIsobutylKetone.aadAbs 0.0561117991127    1e-4
