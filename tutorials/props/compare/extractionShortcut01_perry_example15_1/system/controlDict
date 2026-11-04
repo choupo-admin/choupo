@@ -1,0 +1,6 @@
+/*  The Kremser-Souders-Brown extraction shortcut on the numbers of Perry's
+    Handbook (9th ed.) Examples 15-1 to 15-3: arithmetic held to the printed
+    digits.  No property is read; see system/propsDict. */
+application   choupoProps;
+description   "Extraction shortcut (Perry Eq. 15-43) on Examples 15-1 to 15-3";
+verbosity     2;

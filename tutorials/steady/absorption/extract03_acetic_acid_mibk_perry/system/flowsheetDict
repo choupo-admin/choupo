@@ -1,0 +1,55 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  extract03_acetic_acid_mibk_perry  --  Perry's Example 15-1 on the extractor
+
+  WHAT IT IS.  The problem of Perry's Chemical Engineers' Handbook (9th ed.,
+  Example 15-1, p. 15-48): 100 kg/h of 20 wt% acetic acid in water extracted
+  with 200 kg/h of recycle methyl isobutyl ketone (0.1 wt% acid, 0.01 wt%
+  water) at 25 C, in a countercurrent cascade of theoretical stages.  Perry
+  reads 4.3 stages from his shortcut (Eq. 15-43) and from a McCabe-Thiele plot
+  on the MEASURED equilibrium of Table 15-8 (raffinate to 1 wt% acid).
+
+  WHAT THE ENGINE DOES WITH IT.  Five stages, each the liquid-liquid flash of
+  the case's package (UNIFAC, nothing fitted).  The unit prints its own
+  Kremser-Souders-Brown CHECK beside the rigorous count (KPIs N_shortcut,
+  E_shortcut, Kp_*): Perry's formula on K' = Y/X read from the two end stages
+  the cascade itself solved.  And a DECLARED HETS turns the stage count into
+  a column height (KPI height_m) -- a rating on the case's own number.
+
+  WHAT IT IS NOT.  Not a validation of the cascade: the case that holds the
+  package against Perry's measured tie lines is
+  tutorials/props/compare/lle01_acetic_mibk_perry, and it finds UNIFAC
+  over-predicts the acid taken up by the MIBK and the water that dissolves in
+  it, so this cascade removes MORE acid than Perry's measured system would at
+  the same N.  The HETS below is an ILLUSTRATIVE number to show the arithmetic,
+  declared as such; no source ships it (Perry's Sec. 15 tabulates HETS by
+  column type -- read the one for the column you mean).
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        extractor01;
+        type        extractor;
+        inputs      ( feed  solvent );        // feed at stage 1, solvent at stage N
+        outputs     ( extract  raffinate );   // extract leaves stage 1, raffinate stage N
+
+        operation
+        {
+            stages       5;
+            solvent      methylIsobutylKetone;
+            temperature  25 degC;
+            hets         1.5 m;
+            hetsSource   "ILLUSTRATIVE value declared by the tutorial to show N x HETS; not a design number";
+        }
+    }
+);

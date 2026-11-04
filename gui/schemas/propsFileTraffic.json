@@ -154,6 +154,10 @@
    "reads": [],
    "writes": []
   },
+  "extractionShortcut": {
+   "reads": [],
+   "writes": []
+  },
   "fitParameters": {
    "reads": [
     {
@@ -303,6 +307,16 @@
      "default": ""
     }
    ],
+   "writes": [
+    {
+     "key": "output.file",
+     "kind": "file",
+     "default": ""
+    }
+   ]
+  },
+  "lleTieLines": {
+   "reads": [],
    "writes": [
     {
      "key": "output.file",

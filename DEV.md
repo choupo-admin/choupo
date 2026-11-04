@@ -2141,6 +2141,26 @@ accepts today, and that is a policy call.
 > component Kremser-type count, no data needed), then a research general for
 > ONE open-access separation (Nd/Pr or Dy/Tb) with printed constants and
 > cascade, and only then the mass-action extractor.
+>
+> **C219 phase 1, BUILT (2026-11-04, branch c219; Perry's 9th ed. Sec. 15
+> and Treybal Ch. 10, numbers only).**  (A) `op:lleTieLines` +
+> `props/compare/lle01_acetic_mibk_perry`: the extractor's LL flash against
+> the six measured tie lines of Perry's Table 15-8 (Sherwood, Evans &
+> Longcor 1939), UNIFAC, nothing fitted.  RESULT: it splits, the shape is
+> right, and it MISSES by 3-6 mass percent (AAD 0.031-0.056 per column);
+> it over-extracts the acid and dissolves about twice the measured water in
+> the dilute extract, and the plait lies near 0.395 raffinate acid.  The
+> miss is pinned (`aad` rows), the verdict word `misses` is held by the gate;
+> the remedy (curated LLE parameters) is NOT taken.  (B) the Kremser-
+> Souders-Brown shortcut, ONE home `src/unitOperations/separation/ExtractionShortcut.H`,
+> published by the extractor as `N_shortcut` beside the rigorous count, and
+> `op:extractionShortcut` holding Examples 15-1..15-3 (4.3, 4.5, 6.0) to the
+> printed digits as anchors; Treybal Eq. (10.38) is the same cascade (agrees
+> at 1e-12).  (C) `hets` + `hetsSource` on the extractor -> `height_m`,
+> refused without its source.  Gate `check_extractor_validation`.  NOT
+> done: stage efficiency (the LL definition needs its own page), flooding
+> and diameter (a later phase), packed / disc / pulsed / mixer-settler
+> models.
 
 > **C222 (Vitor, 2026-11-04): AN EDUTOOL ON WHY THE TRANSFER UNIT WAS INVENTED
 > ("porque raio inventaram a unidade de transferencia ... nunca ninguem me

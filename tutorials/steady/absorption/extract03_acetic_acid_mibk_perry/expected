@@ -1,0 +1,39 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  extract                F                0.000910597679242  1e-4
+stream  extract                T                298.15             1e-4
+stream  feed                   F                0.00132606666667   1e-4
+stream  feed                   T                298.15             1e-4
+stream  raffinate              F                0.000970757892776  1e-4
+stream  raffinate              T                298.15             1e-4
+stream  solvent                F                0.000555288888889  1e-4
+stream  solvent                T                298.15             1e-4
+kpi     extractor01            E_shortcut       2.88255294562      1e-4
+kpi     extractor01            F_extract        0.000910597679242  1e-4
+kpi     extractor01            F_feed           0.00132606666667   1e-4
+kpi     extractor01            F_raffinate      0.000970757892776  1e-4
+kpi     extractor01            F_solvent        0.000555288888889  1e-4
+kpi     extractor01            Kp_feedEnd       6.6711613772       1e-4
+kpi     extractor01            Kp_raffinateEnd  6.17396180982      1e-4
+kpi     extractor01            N_shortcut       5.17930366779      1e-4
+kpi     extractor01            P                101325             1e-4
+kpi     extractor01            T                298.15             1e-4
+kpi     extractor01            converged        1                  1e-4
+kpi     extractor01            distribution_aceticAcid 216.622002981      1e-4
+kpi     extractor01            distribution_methylIsobutylKetone 147.490578903      1e-4
+kpi     extractor01            distribution_water 0.295154572632     1e-4
+kpi     extractor01            height_m         7.5                1e-4
+kpi     extractor01            hets_m           1.5                1e-4
+kpi     extractor01            massClosure      8.75060939855e-09  1e-4
+kpi     extractor01            recovery_aceticAcid 0.995102842101     1e-4
+kpi     extractor01            recovery_methylIsobutylKetone 0.992823837513     1e-4
+kpi     extractor01            recovery_water   0.216830704803     1e-4
+kpi     extractor01            soluteDistribution 216.622002981      1e-4
+kpi     extractor01            soluteRecovery   0.995102842101     1e-4
+kpi     extractor01            solventToFeed    0.418748847888     1e-4
+kpi     extractor01            splitStages      5                  1e-4
+kpi     extractor01            stages           5                  1e-4
+boundary global               H_feeds_kW       -580.334444698     1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    -580.334450613     1e-4

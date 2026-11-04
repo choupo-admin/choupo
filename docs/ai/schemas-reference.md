@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*106 of 106 registered operations carry a schema and are documented below.*
+*108 of 108 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -522,6 +522,17 @@ Liquid-liquid extraction column — the SAME unit as `extractor` under its short
 | `stages` | ✓ | integer | - | Number of theoretical counter-current stages. |
 | `solvent` |   | string | — | The component that identifies the extract phase. Naming it removes the ambiguity of which of the two liquids is which. |
 | `temperature` |   | number | K | Isothermal column temperature; defaults to the feed temperature. |
+| `hets` |   | number | m | Height equivalent to a theoretical stage, the case's own number: the column height is published as stages x HETS, a rating. Requires hets… |
+| `hetsSource` |   | string | — | Where the declared HETS comes from (required with hets; a height is only as good as the number behind it). |
+
+## `extractionShortcut`  (extractionShortcut operation)
+
+The Kremser-Souders-Brown shortcut for a dilute liquid-liquid extraction cascade (Perry's 9th ed. Eq. 15-43, Treybal Eq. 10.38) evaluated on declared solute-free ratios: the stage count, the fraction taken, the transfer units, and with a `pseudoSolute` block the case-B pseudo-feed and pseudo-solvent of Eqs. 15-90/15-91. A CHECK on a straight equilibrium line, not a design; it reads no property.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `inputs` | ✓ | object | — | `Xf`, `Xr`, `Ys` (solute per solvent, solute-free), `K` (equilibrium slope Y/X) and EITHER `extractionFactor` OR `slopes { m1 mr S F }`. |
+| `pseudoSolute` |   | object | — | `{ S; E; F; R; Ye; }` — the flows and extract ratio of Perry's Eqs. 15-90 and 15-91. |
 
 ## `extractor`  (extractor operation)
 
@@ -532,6 +543,8 @@ Counter-current multistage liquid-liquid extraction column. Each stage is a liqu
 | `stages` | ✓ | integer | - | Number of theoretical counter-current stages. |
 | `solvent` |   | string | — | The component that identifies the extract phase. Naming it removes the ambiguity of which of the two liquids is which. |
 | `temperature` |   | number | K | Isothermal column temperature; defaults to the feed temperature. |
+| `hets` |   | number | m | Height equivalent to a theoretical stage, the case's own number: the column height is published as stages x HETS, a rating. Requires hets… |
+| `hetsSource` |   | string | — | Where the declared HETS comes from (required with hets; a height is only as good as the number behind it). |
 
 ## `fitParameters`  (fitParameters operation)
 
@@ -757,6 +770,19 @@ One-dimensional batch kinetics bench: integrates c(t) for an nth-order rate, ove
 | `dataset` |   | string | — | Path to a self-describing kinetic dataset to overlay and, with `fit`, regress against. |
 | `fit` |   | array[string] | — | Which rate parameters to regress from the dataset — `( k )` or `( k0 Ea )` for the Arrhenius pair. |
 | `output` | ✓ | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `lleTieLines`  (lleTieLines operation)
+
+The conjugate-phase curve of a ternary liquid-liquid system at one (T, P): the feed walks a straight line in the triangle (the solute's mass fraction sweeps, the rest split carrier : extractant in a declared ratio) and every feed that splits through the liquid-liquid flash writes one row, raffinate and extract in MASS fractions. Laid beside measured tie lines by an `experimental {}` overlay it is a validation reading, never a fit; a feed that does not split is counted and not written.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `state` | ✓ | object | — |  |
+| `solute` | ✓ | string | — | The component carried from the carrier into the extract. |
+| `carrier` | ✓ | string | — | The component that defines the raffinate (the feed's solvent). |
+| `extractant` | ✓ | string | — | The component that defines the extract (the extracting solvent). |
+| `feed` | ✓ | object | — | `soluteMassFraction { from; to; n; }` and `carrierToExtractant` (kg carrier per kg extractant of the rest). |
+| `output` | ✓ | object | — | `{ file <name>.csv; }` — one row per splitting feed, abscissa first. |
 
 ## `membraneSW`  (membraneSW operation)
 

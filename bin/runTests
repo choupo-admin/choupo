@@ -5640,6 +5640,21 @@ PYEOF
     fi
     rm -f /tmp/phsplit.$$
 
+    # Extractor validation gate (2026-11-04, DEV.md 4c C219): the lle01 AADs
+    # against Perry's Table 15-8 recomputed from the measured data and the
+    # model CSV (verdict word `misses` held), Perry Examples 15-1..15-3 and
+    # Treybal Eq. (10.38) recomputed, the extractor's shortcut KPIs and HETS
+    # height recomputed, two HETS refusals fired, source arm.
+    if gate_exec "$ROOT/bin/curate/check_extractor_validation.py" > /tmp/exval.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "extractor-validation-gate" "$(gate_claim check_extractor_validation /tmp/exval.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_extractor_validation.py)\n" "extractor-validation-gate"
+        cat /tmp/exval.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/exval.$$
+
     # Flash-specification gate (2026-11-03, DEV.md 4c C214 W1): a flash
     # specified by (P,H), (P,S), (T,V/F) or (P,V/F) from ONE home
     # (flashState::specifiedFlash, the `flashSpec` props op).  The four pairs
