@@ -2190,6 +2190,33 @@ accepts today, and that is a policy call.
 > against an independent source; C219's extractor against Perry's Table
 > 15-8 is one step).
 
+> **C224 (Vitor, 2026-11-04 night): HOW WILL CHATGPT, THE STUDENTS' USUAL
+> INTERFACE, CREATE NEW BINARY PAIRS "FROM NIST"?  -- MEASURED, AND A GAP
+> FOUND.**  It will not: a chat has no access to the ThermoML archive and the
+> WebBook carries no binary VLE pairs; it will TYPE NRTL numbers from memory
+> with a plausible citation.  And Choupo INVITES it: `docs/ai/brief.md` l.209
+> says "for any other pair use UNIFAC, or give the NRTL parameters inline
+> with their literature source", and the engine accepts them SILENTLY --
+> `ThermoPackageBuilder.cpp` (~l.2240) copies an inline coefficient block
+> "verbatim", `PairAudit.H` l.~178 states that inline pairs carry no
+> provenance, hence no span guard, and no `[unreviewed]` line is raised for
+> them: a fabricated source passes exactly as a true one (CLAUDE.md §6: "a
+> field the engine cannot see is a comment"; "a visible gap is strictly
+> better than an invisible falsehood").  DECIDED, the architect's: (1) the
+> ENGINE announces every INLINE binary pair in the caveat block and the
+> result JSON ("pair NRTL ethanol-water: values and source typed in the
+> case, NOT reviewed by Choupo"), once per pair per run, and a gate holds it;
+> (2) the BRIEF drops l.209 and says, in order: the pair is in the catalogue
+> (listed); else UNIFAC and SAY it is an estimate; else, where UNIFAC is weak
+> (azeotropes, partial miscibility), the assistant ASKS the student for
+> MEASURED data from a paper he has read, writes a `fitParameters` case and
+> lets Choupo fit and validate on held-out data -- the assistant never
+> writes a parameter it has no data for, and says "I do not know it" instead
+> (the p01-p16 evaluation harness gets a probe for it: a prompt asking for a
+> pair that is in no catalogue must NOT return typed numbers); (3) never a
+> value taken from a no-grant database.  This goes BEFORE the C223 pilot:
+> the pilot would feed a hole.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
