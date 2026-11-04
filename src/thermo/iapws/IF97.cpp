@@ -27,7 +27,10 @@ License
 -------------------------------------------------------------------------------
     IAPWS-IF97 kernel.  Every coefficient table below is transcribed from
     IAPWS R7-97(2012) with the release table number cited above it -- full
-    published precision, no rounding.  verify() cross-checks the lot against
+    published precision, no rounding.  The region-3 table was read from the
+    page image of Wagner et al., J. Eng. Gas Turbines Power 122 (2000)
+    150-182, Table A9 (= the release's Table 30), and every digit is held by
+    that paper's Table A10.  verify() cross-checks the lot against
     the release's computer-program verification tables.
 \*---------------------------------------------------------------------------*/
 
@@ -186,6 +189,132 @@ constexpr double nB[5] =
      0.57254459862746e3,     0.13918839778870e2
 };
 
+// ============================================================================
+// Region 3 -- basic equation f(rho,T)/(RT) = phi(delta,tau)
+//   = n_1 ln delta + sum_{i=2..40} n_i delta^I_i tau^J_i,
+// delta = rho / rho_c, tau = T_c / T.        (Wagner et al. 2000, Eq. 25)
+// Coefficients: Wagner et al. (2000), Table A9 (40 terms) = IAPWS
+// R7-97(2012), Table 30.  Entry 0 below is n_1 (the ln delta term; its I, J
+// are 0 and unused).
+// ============================================================================
+constexpr int    I3[40] =
+{
+     0,  0,  0,  0,  0,  0,  0,  0,
+     1,  1,  1,  1,
+     2,  2,  2,  2,  2,  2,
+     3,  3,  3,  3,  3,
+     4,  4,  4,  4,
+     5,  5,  5,
+     6,  6,  6,
+     7,
+     8,
+     9,  9,
+    10, 10,
+    11
+};
+constexpr int    J3[40] =
+{
+     0,  0,  1,  2,  7, 10, 12, 23,
+     2,  6, 15, 17,
+     0,  2,  6,  7, 22, 26,
+     0,  2,  4, 16, 26,
+     0,  2,  4, 26,
+     1,  3, 26,
+     0,  2, 26,
+     2,
+    26,
+     2, 26,
+     0,  1,
+    26
+};
+constexpr double n3[40] =
+{
+     0.10658070028513e1,    -0.15732845290239e2,     0.20944396974307e2,
+    -0.76867707878716e1,     0.26185947787954e1,    -0.28080781148620e1,
+     0.12053369696517e1,    -0.84566812812502e-2,   -0.12654315477714e1,
+    -0.11524407806681e1,     0.88521043984318,      -0.64207765181607,
+     0.38493460186671,      -0.85214708824206,       0.48972281541877e1,
+    -0.30502617256965e1,     0.39420536879154e-1,    0.12558408424308,
+    -0.27999329698710,       0.13899799569460e1,    -0.20189915023570e1,
+    -0.82147637173963e-2,   -0.47596035734923,       0.43984074473500e-1,
+    -0.44476435428739,       0.90572070719733,       0.70522450087967,
+     0.10770512626332,      -0.32913623258954,      -0.50871062041158,
+    -0.22175400873096e-1,    0.94260751665092e-1,    0.16436278447961,
+    -0.13503372241348e-1,   -0.14834345352472e-1,    0.57922953628084e-3,
+     0.32308904703711e-2,    0.80964802996215e-4,   -0.16557679795037e-3,
+    -0.44923899061815e-4
+};
+
+// The dimensionless Helmholtz energy and the five derivatives Table 10 of
+// Wagner et al. (2000) lists, at one (delta, tau).
+struct Phi3
+{
+    double f, d, dd, t, tt, dt;   // phi, phi_delta, phi_deltadelta,
+                                  // phi_tau, phi_tautau, phi_deltatau
+};
+
+Phi3 phi3(double delta, double tau)
+{
+    // Table 10: the n_1 ln(delta) term contributes to phi, phi_delta and
+    // phi_deltadelta only; the 39-term sum to all six.
+    Phi3 r{n3[0] * std::log(delta), n3[0] / delta,
+           -n3[0] / (delta * delta), 0.0, 0.0, 0.0};
+    for (int i = 1; i < 40; ++i)
+    {
+        const double Ii = I3[i], Ji = J3[i];
+        const double dI  = std::pow(delta, Ii);
+        const double dI1 = std::pow(delta, Ii - 1.0);
+        const double tJ  = std::pow(tau, Ji);
+        const double tJ1 = std::pow(tau, Ji - 1.0);
+        r.f  += n3[i] * dI * tJ;
+        r.d  += n3[i] * Ii * dI1 * tJ;
+        r.dd += n3[i] * Ii * (Ii - 1.0) * std::pow(delta, Ii - 2.0) * tJ;
+        r.t  += n3[i] * dI * Ji * tJ1;
+        r.tt += n3[i] * dI * Ji * (Ji - 1.0) * std::pow(tau, Ji - 2.0);
+        r.dt += n3[i] * Ii * dI1 * Ji * tJ1;
+    }
+    return r;
+}
+
+// Region-3 pressure [Pa] and (dp/drho)_T [Pa m3/kg] -- Table 9:
+//   p / (rho R T) = delta phi_delta;
+//   (dp/drho)_T  = R T (2 delta phi_delta + delta^2 phi_deltadelta).
+double p3(double rho, double T)
+{
+    const double delta = rho / rhocrit;
+    return rho * R_J * T * delta * phi3(delta, Tcrit / T).d;
+}
+
+double dp3drho(double rho, double T)
+{
+    const double delta = rho / rhocrit;
+    const Phi3 f = phi3(delta, Tcrit / T);
+    return R_J * T * (2.0 * delta * f.d + delta * delta * f.dd);
+}
+
+// The density bracket the backward iteration searches.  Measured on Eq. 25
+// over 623.15 K <= T <= 863.15 K (docs/design/if97-region-3.md): (dp/drho)_T
+// > 0 from 10 kg/m3 up to the vapour spinodal and from the liquid spinodal
+// up to >= 824 kg/m3; p(10 kg/m3) < 4.2 MPa (below every region-3 pressure,
+// p_B23 >= 16.53 MPa) and p(800 kg/m3) > 140.5 MPa (above 100 MPa).  Above
+// ~820 kg/m3 the polynomial turns over -- outside region 3, never searched.
+constexpr double rho3Lo = 10.0;     // kg/m3
+constexpr double rho3Hi = 800.0;    // kg/m3
+
+// The zero of (dp/drho)_T in [a, b], given opposite signs at the ends.
+double spinodal(double a, double b, double T)
+{
+    double fa = dp3drho(a, T);
+    for (int k = 0; k < 200 && (b - a) > 1.0e-13 * b; ++k)
+    {
+        const double m  = 0.5 * (a + b);
+        const double fm = dp3drho(m, T);
+        if ((fm > 0.0) == (fa > 0.0)) { a = m; fa = fm; }
+        else                          { b = m; }
+    }
+    return 0.5 * (a + b);
+}
+
 // Crystal-clear refusal text helper: state names the input, message the box.
 [[noreturn]] void refuse(const std::string& what, double p, double T,
                          const std::string& box)
@@ -275,10 +404,11 @@ double TB23(double p)
 int pT_region(double p, double T)
 {
     static const std::string validBox =
-        "valid regions in this slice: region 1 (273.15 K <= T <= 623.15 K, "
+        "valid regions: region 1 (273.15 K <= T <= 623.15 K, "
         "psat(T) <= p <= 100 MPa), region 2 (273.15 K <= T <= 623.15 K with "
         "p <= psat(T); 623.15 K < T <= 863.15 K with p <= pB23(T); up to "
-        "1073.15 K with p <= 100 MPa), region 4 (the saturation line)";
+        "1073.15 K with p <= 100 MPa), region 3 (623.15 K < T <= TB23(p), "
+        "pB23(T) < p <= 100 MPa), region 4 (the saturation line)";
 
     if (!(p > 0.0 && p <= pmax))
         refuse("pressure outside the IF97 box (0 < p <= 100 MPa)", p, T,
@@ -290,7 +420,7 @@ int pT_region(double p, double T)
     {
         if (T <= 2273.15 && p <= 50.0e6)
             refuse("IF97 region 5 (1073.15 K < T <= 2273.15 K, p <= 50 MPa) "
-                   "not implemented in this slice", p, T, validBox);
+                   "is not implemented", p, T, validBox);
         refuse("temperature above the IF97 box (T <= 2273.15 K, and p <= "
                "50 MPa above 1073.15 K)", p, T, validBox);
     }
@@ -298,10 +428,12 @@ int pT_region(double p, double T)
     if (T <= Tmax1)
         return p >= psat(T) ? 1 : 2;          // saturation line -> liquid side
 
-    // 623.15 K < T <= 1073.15 K: region 2 below B23, region 3 above it.
+    // 623.15 K < T <= 1073.15 K: region 2 below B23, region 3 above it
+    // (Wagner et al. 2000, Section 5.5.3: 623.15 K <= T <= T_B23(p),
+    // p_B23(T) <= p <= 100 MPa; the boundary itself stays region 2, the
+    // convention this router has always had).
     if (T <= 863.15 && p > pB23(T))
-        refuse("IF97 region 3 (623.15 K < T < T_B23, near-critical) not "
-               "implemented in this slice", p, T, validBox);
+        return 3;
     return 2;
 }
 
@@ -332,6 +464,7 @@ Props region1(double p, double T)
     // release Table 3: the property relations for a Gibbs-form region
     Props r;
     r.region = 1;
+    r.p   = p;
     r.v   = R_J * T * pi * gp / p;
     r.rho = 1.0 / r.v;
     r.h   = Rspec * T * tau * gt;
@@ -383,6 +516,7 @@ Props region2(double p, double T)
     // release Table 12/13: properties from gamma = gamma0 + gammar
     Props r;
     r.region = 2;
+    r.p   = p;
     r.v   = R_J * T / p * (1.0 + pi * grp);   // pi*gamma0_pi = 1
     r.rho = 1.0 / r.v;
     r.h   = Rspec * T * tau * (g0t + grt);
@@ -399,9 +533,93 @@ Props region2(double p, double T)
 }
 
 // ----------------------------------------------------------------------------
+Props region3(double rho, double T)
+{
+    const double delta = rho / rhocrit;       // Wagner et al. 2000, Eq. 25
+    const double tau   = Tcrit / T;
+    const Phi3 f = phi3(delta, tau);
+
+    // Table 9: the property relations for the Helmholtz form.
+    Props r;
+    r.region = 3;
+    r.rho = rho;
+    r.v   = 1.0 / rho;
+    r.p   = rho * R_J * T * delta * f.d;                    // p/(rho R T) = delta phi_delta
+    r.u   = Rspec * T * tau * f.t;                          // u/(RT) = tau phi_tau
+    r.s   = Rspec * (tau * f.t - f.f);                      // s/R = tau phi_tau - phi
+    r.h   = Rspec * T * (tau * f.t + delta * f.d);          // h/(RT) = tau phi_tau + delta phi_delta
+    r.cv  = -Rspec * tau * tau * f.tt;                      // cv/R = -tau^2 phi_tautau
+    const double x  = delta * f.d - delta * tau * f.dt;     // (delta phi_delta - delta tau phi_deltatau)
+    const double y  = 2.0 * delta * f.d + delta * delta * f.dd;
+    r.cp  = Rspec * (-tau * tau * f.tt + x * x / y);        // cp/R
+    r.w   = std::sqrt(R_J * T * (y - x * x / (tau * tau * f.tt)));   // w^2/(RT)
+    return r;
+}
+
+// ----------------------------------------------------------------------------
+double rho3(double p, double T, Root root)
+{
+    // The monotone branch of the isotherm the root lives on, [a, b].
+    double a = rho3Lo, b = rho3Hi;
+    const char* branch = "supercritical";
+    if (T < Tcrit && dp3drho(rhocrit, T) < 0.0)
+    {
+        // A van der Waals loop: (dp/drho)_T < 0 at rho_c below Tc, so one
+        // spinodal lies on each side of rho_c.  The liquid branch starts at
+        // the liquid spinodal, the vapour branch ends at the vapour one.
+        bool liquid;
+        if (root == Root::Auto) liquid = (p >= psat(T));
+        else                    liquid = (root == Root::Liquid);
+        if (liquid) { a = spinodal(rhocrit, rho3Hi, T); branch = "liquid"; }
+        else        { b = spinodal(rho3Lo, rhocrit, T); branch = "vapour"; }
+    }
+
+    double fa = p3(a, T) - p, fb = p3(b, T) - p;
+    if (!(fa <= 0.0 && fb >= 0.0))
+    {
+        std::ostringstream os;
+        os << "IF97 region 3: no density on the " << branch
+           << " branch of the T = " << T << " K isotherm gives p = "
+           << p / 1.0e6 << " MPa (the branch spans " << p3(a, T) / 1.0e6
+           << " .. " << p3(b, T) / 1.0e6 << " MPa over rho = " << a
+           << " .. " << b << " kg/m3) -- the state is not a single-phase "
+              "region-3 state";
+        throw std::runtime_error(os.str());
+    }
+    if (fa == 0.0) return a;
+    if (fb == 0.0) return b;
+
+    // Bracketed Newton: a Newton step from the current iterate, replaced by
+    // bisection whenever it leaves the bracket.  The bracket is kept by sign.
+    double r = 0.5 * (a + b);
+    for (int k = 0; k < 200; ++k)
+    {
+        const double f = p3(r, T) - p;
+        if (f == 0.0) return r;
+        if (f < 0.0) a = r; else b = r;
+        const double dfdr = dp3drho(r, T);
+        double rn = r - f / dfdr;
+        if (!(dfdr > 0.0) || !(rn > a && rn < b)) rn = 0.5 * (a + b);
+        if (std::fabs(rn - r) <= 1.0e-14 * r || (b - a) <= 1.0e-14 * r)
+            return rn;
+        r = rn;
+    }
+    std::ostringstream os;
+    os << "IF97 region 3: the backward density did not converge at p = "
+       << p / 1.0e6 << " MPa, T = " << T << " K (bracket " << a << " .. "
+       << b << " kg/m3 after 200 steps)";
+    throw std::runtime_error(os.str());
+}
+
+// ----------------------------------------------------------------------------
 Props props(double p, double T)
 {
-    return pT_region(p, T) == 1 ? region1(p, T) : region2(p, T);
+    switch (pT_region(p, T))
+    {
+        case 1:  return region1(p, T);
+        case 3:  return region3(rho3(p, T), T);
+        default: return region2(p, T);
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -441,6 +659,24 @@ double verify()
     state(region2(30.0e6, 700.0),
           0.542946619e-2, 0.263149474e4, 0.246861076e4,
           0.517540298e1,  0.103505092e2, 0.480386523e3);
+
+    // Region 3 -- Wagner et al. (2000), Table A10 (= release Table 33):
+    // p [MPa], h, u, s, cp, w at three (T, rho) states.
+    auto state3 = [&dev](const Props& r, double pMPa, double h, double u,
+                         double s, double cp, double w)
+    {
+        dev(r.p / 1.0e6, pMPa); dev(r.h, h); dev(r.u, u);
+        dev(r.s, s); dev(r.cp, cp); dev(r.w, w);
+    };
+    state3(region3(500.0, 650.0),
+           0.255837018e2,  0.186343019e4, 0.181226279e4,
+           0.405427273e1,  0.138935717e2, 0.502005554e3);
+    state3(region3(200.0, 650.0),
+           0.222930643e2,  0.237512401e4, 0.226365868e4,
+           0.485438792e1,  0.446579342e2, 0.383444594e3);
+    state3(region3(500.0, 750.0),
+           0.783095639e2,  0.225868845e4, 0.210206932e4,
+           0.446971906e1,  0.634165359e1, 0.760696041e3);
 
     // Region 4 forward -- release Table 35 (psat in MPa)
     dev(psat(300.0) / 1.0e6, 0.353658941e-2);
