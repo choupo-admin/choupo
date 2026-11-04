@@ -23,6 +23,8 @@ kpi     extractor01            converged        1                  1e-4
 kpi     extractor01            distribution_aceticAcid 216.622002981      1e-4
 kpi     extractor01            distribution_methylIsobutylKetone 147.490578903      1e-4
 kpi     extractor01            distribution_water 0.295154572632     1e-4
+kpi     extractor01            height_m         7.5                1e-4
+kpi     extractor01            hets_m           1.5                1e-4
 kpi     extractor01            massClosure      8.75060939855e-09  1e-4
 kpi     extractor01            recovery_aceticAcid 0.995102842101     1e-4
 kpi     extractor01            recovery_methylIsobutylKetone 0.992823837513     1e-4

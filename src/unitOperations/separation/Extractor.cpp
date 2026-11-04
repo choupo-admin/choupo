@@ -816,6 +816,31 @@ int Extractor::solve(const DictPtr& dict,
         }
     }
 
+    // ---- Height from a DECLARED HETS (a rating on the case's own number) --
+    //  height = N x HETS.  The number is the case's and so is its source;
+    //  Perry's Sec. 15 tabulates HETS by column type, and none is shipped.
+    //  A stage here is a THEORETICAL stage, so no stage efficiency enters.
+    scalar hetsHeight = std::numeric_limits<scalar>::quiet_NaN();
+    scalar hetsDeclared = hetsHeight;
+    std::string hetsSource;
+    if (oper->found("hets"))
+    {
+        if (!oper->found("hetsSource") || oper->lookupWord("hetsSource").empty())
+            throw std::runtime_error("Extractor: `hets` is declared without "
+                "`hetsSource \"...\";` -- a height is only as good as the number"
+                " behind it, so the number must say where it comes from"
+                " (Perry's Sec. 15 tabulates HETS by column type; none is shipped).");
+        hetsDeclared = oper->lookupScalar("hets", Dims::length);
+        if (!(hetsDeclared > 0.0))
+            throw std::runtime_error("Extractor: `hets` must be > 0");
+        hetsSource = oper->lookupWord("hetsSource");
+        hetsHeight = static_cast<scalar>(N) * hetsDeclared;
+        kpis_["hets_m"]   = hetsDeclared;
+        kpis_["height_m"] = hetsHeight;
+    }
+    else if (oper->found("hetsSource"))
+        throw std::runtime_error("Extractor: `hetsSource` is declared without `hets`.");
+
     // ---- Stage profile -------------------------------------------------
     //  The same rendering `choupo-init0` writes for the SEED: one home, so
     //  what `converged/` publishes and what `0/` may declare are two
@@ -867,6 +892,10 @@ int Extractor::solve(const DictPtr& dict,
                       << "   (rigorous N = " << N << ";  a check, not a design)\n";
         else if (!shortcutWhy.empty())
             std::cout << "  Shortcut check not published: " << shortcutWhy << ".\n";
+        if (!std::isnan(hetsHeight))
+            std::cout << "  Height = N x HETS = " << N << " x " << std::setprecision(3)
+                      << hetsDeclared << " m = " << hetsHeight
+                      << " m  [RATING on the case's own HETS; source: " << hetsSource << "]\n";
         std::cout << "  Assumptions: counter-current, N equilibrium stages, isothermal,\n"
                   << "               per-stage split via the shared Gibbs-min LL flash.\n"
                   << "======================================================================\n\n";

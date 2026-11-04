@@ -23,6 +23,18 @@
       "title": "Operating temperature",
       "description": "Isothermal column temperature; defaults to the feed temperature.",
       "unit": "K"
+    },
+    "hets": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "HETS (declared)",
+      "description": "Height equivalent to a theoretical stage, the case's own number: the column height is published as stages x HETS, a rating. Requires hetsSource; none is shipped.",
+      "unit": "m"
+    },
+    "hetsSource": {
+      "type": "string",
+      "title": "HETS source",
+      "description": "Where the declared HETS comes from (required with hets; a height is only as good as the number behind it)."
     }
   },
   "required": [

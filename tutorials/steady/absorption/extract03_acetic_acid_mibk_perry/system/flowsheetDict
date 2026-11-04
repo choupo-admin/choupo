@@ -48,6 +48,8 @@ units
             stages       5;
             solvent      methylIsobutylKetone;
             temperature  25 degC;
+            hets         1.5 m;
+            hetsSource   "ILLUSTRATIVE value declared by the tutorial to show N x HETS; not a design number";
         }
     }
 );
