@@ -31,6 +31,7 @@ License
 #include "thermo/iapws/IF97.H"
 
 #include "thermo/RecordResolver.H"
+#include <cmath>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -105,10 +106,50 @@ int SteamTables::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
     if (hasPoint)
     {
         auto pt = dict->subDict("point");
-        const double p = pt->lookupScalar("P");   // canonical SI [Pa]
         const double T = pt->lookupScalar("T");   // canonical SI [K]
+        const bool hasP   = pt->found("P");
+        const bool hasRho = pt->found("rho");
+        if (hasP == hasRho)
+            throw std::runtime_error("steamTables.point: give exactly ONE of "
+                "P (any region, routed) or rho (region 3 only, the variable "
+                "its Helmholtz equation is written in) beside T");
 
-        const IF97::Props r = IF97::props(p, T);  // routed; refuses 3/5 loudly
+        IF97::Props r;
+        double p = 0.0;
+        if (hasP)
+        {
+            p = pt->lookupScalar("P");            // canonical SI [Pa]
+            r = IF97::props(p, T);                // routed; refuses region 5
+        }
+        else
+        {
+            // (rho, T): Eq. 25 evaluated directly -- and REFUSED unless the
+            // pressure it gives routes back to region 3, so a density on a
+            // region-1/2 state, or inside the two-phase dome, is never
+            // reported as a region-3 answer.
+            const double rho = pt->lookupScalar("rho");   // [kg/m3]
+            r = IF97::region3(rho, T);
+            p = r.p;
+            const int routed = (p > 0.0 && p <= IF97::pmax && T >= IF97::Tmin
+                                && T <= IF97::Tmax12)
+                                   ? IF97::pT_region(p, T) : 0;
+            const bool sameRoot = routed == 3
+                && std::fabs(IF97::rho3(p, T) - rho) <= 1.0e-9 * rho;
+            if (!sameRoot)
+            {
+                std::ostringstream os;
+                os << "steamTables.point: (rho = " << rho << " kg/m3, T = "
+                   << T << " K) is not a single-phase IF97 region-3 state -- "
+                      "Eq. 25 gives p = " << p / 1.0e6 << " MPa, which "
+                   << (routed == 3 ? "routes to region 3 on the other "
+                                     "branch of the isotherm (the state is "
+                                     "inside the two-phase dome or "
+                                     "metastable)"
+                                   : "does not route to region 3")
+                   << "; give point { P ...; T ...; } for regions 1/2";
+                throw std::runtime_error(os.str());
+            }
+        }
 
         if (verbosity >= 2)
         {
@@ -131,6 +172,14 @@ int SteamTables::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
         diag_["v"]  = r.v;   diag_["h"]  = r.h;  diag_["u"] = r.u;
         diag_["s"]  = r.s;   diag_["cp"] = r.cp; diag_["cv"] = r.cv;
         diag_["w"]  = r.w;
+        // Region 3 is written in (rho, T): publish the variable the input
+        // did not give, so a (p,T) point shows the density the backward
+        // iteration found and a (rho,T) point the pressure Eq. 25 gives.
+        if (r.region == 3)
+        {
+            diag_["p_MPa"] = p / 1.0e6;
+            diag_["rho"]   = r.rho;
+        }
         // psat at this T is a free verification pin whenever T is on the
         // region-4 range (release Table 35 speaks MPa, so the diag does too).
         if (T >= IF97::Tmin && T <= IF97::Tcrit)
@@ -157,13 +206,13 @@ int SteamTables::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
         const int    n    = static_cast<int>(sd->lookupScalar("n"));
         if (n < 2)
             throw std::runtime_error("steamTables.saturation: n must be >= 2");
-        if (!(from >= IF97::Tmin && to <= IF97::Tmax1 && from < to))
-            throw std::runtime_error("steamTables.saturation: the f/g columns "
-                "come from regions 1/2 evaluated ON the saturation line, valid "
-                "273.15 K (0 degC) <= T <= 623.15 K (350 degC) only -- above "
-                "that the liquid side is IF97 region 3 (not in this slice). "
-                "Requested from = " + std::to_string(from) + " K, to = "
-                + std::to_string(to) + " K.");
+        if (!(from >= IF97::Tmin && to <= IF97::Tcrit && from < to))
+            throw std::runtime_error("steamTables.saturation: the saturation "
+                "line runs from the triple point to the critical point, "
+                "273.15 K (0 degC) <= T <= 647.096 K (373.946 degC) -- above "
+                "Tc there is no saturation.  Requested from = "
+                + std::to_string(from) + " K, to = " + std::to_string(to)
+                + " K.");
 
         auto csv = openCsv(dict);
         csv << "T,psat,v_f,v_g,h_f,h_g,s_f,s_g,h_fg\n";   // canonical SI
@@ -171,10 +220,20 @@ int SteamTables::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
         {
             const double T  = gridT(from, to, n, i);
             const double ps = IF97::psat(T);
-            // Regions 1/2 evaluated AT the saturation pressure: the
-            // IAPWS-sanctioned way to tabulate the saturated states.
-            const IF97::Props f = IF97::region1(ps, T);
-            const IF97::Props g = IF97::region2(ps, T);
+            // Up to 623.15 K: regions 1/2 evaluated AT the saturation
+            // pressure, the IAPWS-sanctioned way to tabulate the saturated
+            // states.  Above it the saturated states are region 3's: Eq. 25
+            // on its liquid and vapour branches at psat (Wagner et al. 2000,
+            // Section 5.5.4 -- v' and v'' "from the intersection of the
+            // saturation pressure from Eq. (28) with the pressure from the
+            // Helmholtz free energy equation").
+            const bool r3 = T > IF97::Tmax1;
+            const IF97::Props f = r3
+                ? IF97::region3(IF97::rho3(ps, T, IF97::Root::Liquid), T)
+                : IF97::region1(ps, T);
+            const IF97::Props g = r3
+                ? IF97::region3(IF97::rho3(ps, T, IF97::Root::Vapour), T)
+                : IF97::region2(ps, T);
             csv << T << "," << ps << ","
                 << f.v << "," << g.v << ","
                 << f.h * 1.0e3 << "," << g.h * 1.0e3 << ","
@@ -227,7 +286,7 @@ int SteamTables::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
     for (int i = 0; i < n; ++i)
     {
         const double T = gridT(from, to, n, i);
-        const IF97::Props r = IF97::props(p, T);   // router refuses 3/5 loudly
+        const IF97::Props r = IF97::props(p, T);   // router refuses region 5 loudly
         csv << T << "," << r.region << "," << r.v << "," << r.h * 1.0e3 << ","
             << r.s * 1.0e3 << "," << r.cp * 1.0e3 << "\n";
     }
