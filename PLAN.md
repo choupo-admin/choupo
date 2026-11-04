@@ -28,7 +28,7 @@ header names the PLAN.md commit it reflects, so a stale view shows itself.
    row of Next day starts and the first row of the next column moves up.
 5. **Done rows stay one week**, then leave this file (DEV.md keeps them).
 
-Last reviewed: 2026-11-04 03:00 (W1, W2, W3 landed; the C214 week placed; acetic item 3 landed; C212 landed; acetic item 1 landed, item 3 running; stack landed; reorganised by C210, PIF first: Now holds only what runs, the document set and the PIF wins placed by their dependencies; earlier reviews in git).
+Last reviewed: 2026-11-04 11:45 (E4+E5, C221 landed; W1, W2, W3 landed; the C214 week placed; acetic item 3 landed; C212 landed; acetic item 1 landed, item 3 running; stack landed; reorganised by C210, PIF first: Now holds only what runs, the document set and the PIF wins placed by their dependencies; earlier reviews in git).
 
 Status words: `todo` · `queued` (built by a general, waiting its turn to integrate) · `integrating` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
@@ -69,7 +69,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| todo | C221 EduTools library: a short gate-held `blurb` per tool; text filter + collapsible shelves on the LANDING (the app already has Find and shelves); PEDAGOGICAL PATHS as one registry home, drawn in app and landing -- the first three (distillation, thermodynamics, reactions) proposed to Vitor for review BEFORE code | C221 |
+| done | C221 EduTools library (`c961da62f`): a gate-held `blurb` per tool (73), a text filter and collapsible shelves on the landing (browser-verified at 390 px), and three pedagogical paths (distillation 6 steps, thermodynamics 5, reactions 7; a dropped step where no tool exists) as one registry home, drawn in the app above the chooser and on the landing | C221 |
 | todo | C220 (Vitor's wish, LATER): a rare-earth separation case from the open literature -- first an EduTool on why a separation factor of 1.5 needs so many stages (no data), then a research general for ONE open-access Nd/Pr or Dy/Tb separation with printed constants and cascade, then a mass-action reactive extractor | C220 |
 | todo | C219 liquid-liquid extraction COLUMNS: stage efficiency declared; sizing by a declared HETS with its source; flooding and diameter only on a readable source (Vitor supplies Treybal, Perry's, Seader, or Lo-Baird-Hanson) | C219 |
 | todo | C218 EduTool: reversible vs irreversible, and when quenching works (K(T) and equilibrium conversion computed from the catalogue; a declared rate and a cooling rate; the freezing temperature; cracking against ammonia) | C218 |
