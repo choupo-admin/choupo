@@ -69,6 +69,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| todo | C221 EduTools library: a short gate-held `blurb` per tool; text filter + collapsible shelves on the LANDING (the app already has Find and shelves); PEDAGOGICAL PATHS as one registry home, drawn in app and landing -- the first three (distillation, thermodynamics, reactions) proposed to Vitor for review BEFORE code | C221 |
 | todo | C220 (Vitor's wish, LATER): a rare-earth separation case from the open literature -- first an EduTool on why a separation factor of 1.5 needs so many stages (no data), then a research general for ONE open-access Nd/Pr or Dy/Tb separation with printed constants and cascade, then a mass-action reactive extractor | C220 |
 | todo | C219 liquid-liquid extraction COLUMNS: stage efficiency declared; sizing by a declared HETS with its source; flooding and diameter only on a readable source (Vitor supplies Treybal, Perry's, Seader, or Lo-Baird-Hanson) | C219 |
 | todo | C218 EduTool: reversible vs irreversible, and when quenching works (K(T) and equilibrium conversion computed from the catalogue; a declared rate and a cooling rate; the freezing temperature; cracking against ammonia) | C218 |

@@ -2108,6 +2108,29 @@ accepts today, and that is a policy call.
 > ONE open-access separation (Nd/Pr or Dy/Tb) with printed constants and
 > cascade, and only then the mass-action extractor.
 
+> **C221. THE EDUTOOLS LIBRARY, REORGANISED (an external UX review relayed
+> by Vitor, 2026-11-04 -- "recomendacoes de organizacao e UX, nao
+> instrucoes").**  MEASURED before judging: 73 tools on 10 disciplines with
+> ONE home (`METHOD_DISCIPLINES`), the app's chooser grouped by discipline
+> since 2026-08-30, a full-text Find since C113 (name, shelf, teaches, every
+> lesson chapter, opens at the chapter), the public landing's catalogue
+> GENERATED from `generated/methodTools.json` and written into the static
+> page, a "How Choupo works" shelf first since C53, `leadsTo` chains on 12
+> lessons, narrow-viewport rules in the chrome.  So seven of the ten
+> recommendations describe what exists; the reviewer most likely saw the
+> LANDING (73 long cards, no search) and not the app.  What is TRUE and
+> taken (the architect's): (1) a short `blurb` field per tool (<= 12 words,
+> gate-held) beside `teaches`, which had grown to 60-90 words and is what
+> the cards print; (2) the landing gets a text filter and collapsible
+> shelves over the same artefact, no new layer; (3) PEDAGOGICAL PATHS
+> (`METHOD_PATHS`, one home beside the disciplines, each an ordered list of
+> tool ids with one sentence per step, gate-held, drawn in the app above the
+> chooser and on the landing before the shelves) -- the one new idea, and
+> the one that is pedagogy, so the ORDER of the first three paths
+> (distillation, thermodynamics, reaction engineering) is proposed by the
+> architect and reviewed by Vitor before code.  Rejected: new menus, panels
+> or sub-menus (the review's own rule 8 and the GUI credo agree).
+
 > **THE STACK, AND THE ONE FULL SWEEP (the architect, 2026-11-03 06:00):** five
 > of the seven builds are now in the local branch `staging` (C208, S1, S2,
 > E2+E3, dynamic slice 2), each validated by `bin/integrate --base staging` on
