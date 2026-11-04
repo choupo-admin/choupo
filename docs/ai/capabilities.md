@@ -226,7 +226,14 @@ batch plan, sizing, clean utilities, costing and economics on top
   simple payback, the cash flow table; `key:sensitivity` moves one declared
   input at a time (a tornado, not an uncertainty analysis); optional
   `key:land`, `key:financing`, start-up years.
+* Also computes, each opt-in and declared with its source: a building cost
+  from the GMP interior's room areas priced by grade (`key:buildings`), the
+  operating and the NPV break-even capacity (`key:breakEven`), a royalty
+  inside a declared patent window (`key:royalty`) and the working capital by
+  three methods side by side (`key:workingCapitalMethods`).  Not computed:
+  depreciation by asset class (straight line only).
 * Witnesses: `tutorials/batch/plant/apalutamide01_tablets` (sensitivity),
+  `tutorials/steady/economics/economics04_building_royalty_breakeven`,
   `tutorials/steady/economics/economics01_esterification_dcf`,
   `tutorials/steady/economics/economics03_startup_years`.
 

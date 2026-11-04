@@ -1,0 +1,113 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  system/layoutDict of economics04 -- the GMP interior whose ROOM AREAS the
+  economics `buildings {}` block prices.  It is the clean probe of the gate
+  check_gmp_layout (a small oral-solid-dose block round the sized spray
+  dryer: 17 rooms on two floors, grades D and CNC), reused unchanged so that
+  the interior is a checked one.  Every position, size and pressure is an
+  AUTHOR-SET assumption for the group to replace; nothing here is a design.
+\*---------------------------------------------------------------------------*/
+
+items
+(
+    { item "dryer"; x 28 m; y 15 m; orientation vertical; }
+    { nonProcess "blender"; kind blender; x 41 m; y 15 m; orientation alongX;
+      footprint { length 2 m; width 2 m; height 2.5 m; }
+      source "probe"; reason "a bin blender, a probe's box"; }
+    { nonProcess "press"; kind tabletPress; x 49 m; y 15 m; orientation alongX;
+      footprint { length 2 m; width 1.5 m; height 2 m; }
+      source "probe"; reason "a rotary press, a probe's box"; }
+    { nonProcess "coater"; kind panCoater; x 57 m; y 15 m; orientation alongX;
+      footprint { length 3 m; width 2 m; height 2.5 m; }
+      source "probe"; reason "a pan coater, a probe's box"; }
+);
+plot { margin 30 m; reason "the probe's building lies beyond its items"; }
+
+building
+{
+    name   "probe OSD block";
+    source "gate probe (check_gmp_layout)";
+    reason "every rule's clean case at once";
+
+    cascade
+    {
+        minimumStep 10 Pa;
+        source "EU GMP Annex 1 (2022) para 4.14: a minimum of 10 Pa between adjacent rooms of different grades (guidance value)";
+        reason "the guidance value, taken as the design step";
+    }
+    atexSeparation { distance 6 m; source "probe"; reason "a probe distance"; }
+
+    floors
+    (
+        { floor ground; elevation 0 m; height 6 m; }
+        { floor upper;  elevation 7 m; height 4 m; }
+    );
+
+    rooms
+    (
+        { room warehouse;   floor ground; xMin 0 m;  xMax 8 m;  yMin 10 m; yMax 20 m; grade CNC; pressure 5 Pa;  relativeTo outside; }
+        { room MAL;         floor ground; xMin 8 m;  xMax 11 m; yMin 10 m; yMax 20 m; grade D;   role materialAirlock; regime cascade; pressure 15 Pa; relativeTo outside; }
+        { room dispensing;  floor ground; xMin 11 m; xMax 19 m; yMin 10 m; yMax 20 m; grade D;   pressure 25 Pa; relativeTo outside; occupancy 2; }
+        { room sdIn;        floor ground; xMin 19 m; xMax 22 m; yMin 10 m; yMax 20 m; grade D;   role materialAirlock; regime sink; pressure -20 Pa; relativeTo dispensing; }
+        { room sprayDrying; floor ground; xMin 22 m; xMax 34 m; yMin 10 m; yMax 20 m; grade D;   pressure 15 Pa; relativeTo outside;
+          containment yes; equipment ( dryer ); occupancy 1;
+          atex { zone 1; source "probe"; reason "an organic solvent is evaporated here"; } }
+        { room sdOut;       floor ground; xMin 34 m; xMax 37 m; yMin 10 m; yMax 20 m; grade D;   role materialAirlock; regime sink; pressure 5 Pa; relativeTo outside; }
+        { room blending;    floor ground; xMin 37 m; xMax 45 m; yMin 10 m; yMax 20 m; grade D;   pressure 25 Pa; relativeTo outside; equipment ( blender ); }
+        { room compression; floor ground; xMin 45 m; xMax 53 m; yMin 10 m; yMax 20 m; grade D;   pressure 25 Pa; relativeTo outside; equipment ( press ); occupancy 2; }
+        { room coating;     floor ground; xMin 53 m; xMax 61 m; yMin 10 m; yMax 20 m; grade D;   pressure 25 Pa; relativeTo outside; equipment ( coater ); }
+        { room exitMAL;     floor ground; xMin 61 m; xMax 64 m; yMin 10 m; yMax 20 m; grade D;   role materialAirlock; regime cascade; pressure 15 Pa; relativeTo outside; }
+        { room packaging;   floor ground; xMin 64 m; xMax 72 m; yMin 10 m; yMax 20 m; grade CNC; pressure 5 Pa;  relativeTo outside; occupancy 3; }
+        { room corridor;    floor ground; xMin 8 m;  xMax 64 m; yMin 6 m;  yMax 10 m; grade D;   pressure 25 Pa; relativeTo outside; }
+        { room lobby;       floor ground; xMin 10 m; xMax 16 m; yMin 0 m;  yMax 6 m;  grade CNC; pressure 5 Pa;  relativeTo outside; }
+        { room gowning;     floor ground; xMin 16 m; xMax 20 m; yMin 0 m;  yMax 6 m;  grade D;   role gowning; regime cascade; pressure 10 Pa; relativeTo lobby; }
+        { room wasteAL;     floor ground; xMin 40 m; xMax 44 m; yMin 0 m;  yMax 6 m;  grade D;   role materialAirlock; regime cascade; pressure 15 Pa; relativeTo outside; }
+        { room wasteRoom;   floor ground; xMin 44 m; xMax 50 m; yMin 0 m;  yMax 6 m;  grade CNC; pressure 5 Pa;  relativeTo outside; }
+        { room electrical;  floor upper;  xMin 10 m; xMax 16 m; yMin 0 m;  yMax 6 m;  grade CNC; pressure 0 Pa;  relativeTo outside;
+          ignition "switchgear and motor control centres"; }
+    );
+
+    connections
+    (
+        { between ( warehouse outside );     type door; }
+        { between ( warehouse MAL );         type door; }
+        { between ( MAL dispensing );        type door; }
+        { between ( dispensing sdIn );       type door; }
+        { between ( sdIn sprayDrying );      type door; }
+        { between ( sprayDrying sdOut );     type door; }
+        { between ( sdOut blending );        type door; }
+        { between ( blending compression );  type door; }
+        { between ( compression coating );   type door; }
+        { between ( coating exitMAL );       type door; }
+        { between ( exitMAL packaging );     type door; }
+        { between ( packaging outside );     type door; }
+        { between ( dispensing corridor );   type door; }
+        { between ( blending corridor );     type door; }
+        { between ( compression corridor );  type door; }
+        { between ( coating corridor );      type door; }
+        { between ( lobby outside );         type door; }
+        { between ( lobby gowning );         type door; }
+        { between ( gowning corridor );      type door; }
+        { between ( corridor wasteAL );      type door; }
+        { between ( wasteAL wasteRoom );     type door; }
+        { between ( wasteRoom outside );     type door; }
+        { between ( lobby electrical );      type stair; }
+    );
+
+    flows
+    (
+        { flow "product"; kind material; reason "raw API and excipients to packed tablets";
+          path ( outside warehouse MAL dispensing sdIn sprayDrying sdOut blending compression coating exitMAL packaging outside ); }
+        { flow "operators"; kind personnel; reason "the press operators' way in";
+          path ( outside lobby gowning corridor compression ); }
+        { flow "rejects"; kind waste; reason "rejected tablets out";
+          path ( compression corridor wasteAL wasteRoom outside ); }
+    );
+}

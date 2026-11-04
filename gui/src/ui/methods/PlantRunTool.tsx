@@ -336,7 +336,8 @@ export function PlantRunTool(): JSX.Element {
             labour is the hired crew of step 2.
           </Text>
           <EngineBox id="comD" facts={[ENGINE_FACTS.comD, ENGINE_FACTS.wasteZero]} />
-          <AbsenceBox ids={["itemised", "royalty"]} />
+          <AbsenceBox ids={["itemised"]} />
+          <EngineBox id="royalty" facts={[ENGINE_FACTS.royalty]} />
         </Box>
 
         {/* ---------------------------------------------------------------- 2 */}
@@ -427,7 +428,7 @@ export function PlantRunTool(): JSX.Element {
             The sold quantity in step 1 is {pc(p.load, 0)} of the design production: the plant sits{" "}
             {be.npv !== null && p.load > be.npv ? "above" : "below"} its NPV break-even.
           </Text>
-          <AbsenceBox ids={["breakEven"]} />
+          <EngineBox id="breakEven" facts={[ENGINE_FACTS.breakEven]} />
         </Box>
 
         {/* ---------------------------------------------------------------- 5 */}

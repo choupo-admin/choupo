@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  economics04_building_royalty_breakeven -- THE FOUR ECONOMIC EXTENSIONS OF
+  THE PIF REPORTS (DEV.md 4c C195, items E4 and E5), in one small plant.
+
+  THE PLANT is sprayDryer07_design's: one sized spray dryer (100 kg/h of a
+  40 wt% sugar liquor dried by hot air) standing in the 17-room, two-floor
+  oral-solid-dose block of system/layoutDict (the gate check_gmp_layout's
+  clean probe).  THE ECONOMICS is new: the dryer is costed, and the
+  `economics {}` block of system/postDict declares
+
+      buildings               E4   the building cost, from the rooms' areas,
+                                   priced per room GRADE
+      breakEven               E5a  the operating break-even and the NPV one
+      royalty                 E5b  a royalty inside a declared patent window
+      workingCapitalMethods   E5c  the three working-capital methods side by
+                                   side
+
+  EVERY NUMBER IN THEM IS AN AUTHOR-SET TEACHING ASSUMPTION, not a datum: a
+  price per m2, a royalty rate and a fraction of sales are exactly the
+  quantities the engine refuses to ship, and each block says so in its own
+  `source` / `reason`.  The product is sold at a round price and the plant is
+  small, so the appraisal is a demonstration of the arithmetic, not a
+  business case; read the run's own printed ladders against
+  bin/curate/check_economic_extensions.py, which recomputes each figure from
+  the case's declarations.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Economic extensions: a building priced by room grade, the two break-evens, a royalty with a patent window, three working-capital methods";
+
+verbosity     3;
+
+reports
+{
+    streamTable    {}
+    massBalance    {}
+    energyBalance  {}
+}

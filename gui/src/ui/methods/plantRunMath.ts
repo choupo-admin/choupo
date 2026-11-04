@@ -49,67 +49,77 @@ export interface EngineFact {
 
 export const ENGINE_FACTS = {
   comD: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1535,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1781,
     needle: "const scalar COM_d = 0.180 * FCI",
     says: "the engine's cost of manufacture without depreciation is COM_d = 0.180 FCI + 2.73 C_OL + 1.23 (C_RM + C_UT + C_WT).",
   },
   wasteZero: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1534,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1780,
     needle: "const scalar C_WT = 0.0;",
     says: "waste treatment C_WT is set to zero: not costed, and the run says so.",
   },
   positions: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 2952,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 3226,
     needle: "constexpr scalar positionsPerOperatorPerShift = 4.5;",
     says: "about 4.5 shift-positions cover one operating position round the clock; the operators per shift come from Turton's N_OL or from a declared `operatingCrew`.",
   },
   operatorHours: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1469,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1715,
     needle: "scalar  operatorAnnualHours    = 1960.0;",
     says: "one operator is paid for 1960 h per year by default (49 weeks x 40 h); `operatorAnnualHours` overrides it.",
   },
   crew: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 2810,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 3084,
     needle: 'if (econDict_->found("operatingCrew"))',
     says: "a case may declare its own crew in `economics { operatingCrew { ... } }` in place of Turton's correlation.",
   },
   straightLine: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1559,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1805,
     needle: "const scalar d_annual = (in.depreciableLife > 0.0) ? (FCI / in.depreciableLife) : 0.0;",
     says: "depreciation is the fixed capital over ONE depreciable life, straight line; one life for the whole plant, no asset classes.",
   },
   otherDepreciation: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 2618,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 2886,
     needle: 'if (deprMethod != "straightLine")',
     says: "any other `depreciation` word is announced as not implemented and straight line is used.",
   },
   taxable: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1611,
-    needle: "projectTaxable[at(t)] = revenueAt(t) - comAt(t) - startupAt(t) - d_t;",
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1867,
+    needle: "projectTaxable[at(t)] = revenueAt(t) - comAt(t) - royaltyAt(t) - startupAt(t) - d_t;",
     says: "taxable income is revenue less cost of manufacture less depreciation; the cash flow is taxable x (1 - rate) + depreciation.",
   },
   wcSalvage: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1615,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1871,
     needle: "cashFlow[at(Nlife)] += WC + salvage * (1.0 - taxRate);",
     says: "in the last year the working capital comes back untaxed and the salvage comes back taxed.",
   },
   appraise: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1500,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1746,
     needle: "AppraisalOutcome appraise(const AppraisalInputs& in,",
     says: "`appraise` is the one home of the cash flow; the base case and every sensitivity bar call it.",
   },
   paybackDisc: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1840,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 2096,
     needle: "auto discPaybackOf =",
     says: "the discounted payback is the year in which the cumulative discounted cash flow first reaches zero, interpolated within that year.",
   },
   irrWarning: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1829,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 2085,
     needle: "is EXTREME (>200%)",
     says: "an IRR above 200 % is printed with a warning: the cash flow dwarfs the investment, which points to a scale error.",
   },
+  breakEven: {
+    file: "src/postProcessing/EconomicsPass.cpp", line: 4000,
+    needle: "x = F / (R - V) = ",
+    says: "with `breakEven {}` declared, the engine prints the operating break-even x = F/(R - V) (fixed: 0.180 FCI + 2.73 C_OL + depreciation; variable: 1.23 (C_RM + C_UT + C_WT)) and the NPV break-even, the production fraction at which `appraise` on a copy returns NPV = 0; the two are published separately.",
+  },
+  royalty: {
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1513,
+    needle: "if (!d->found(\"expiry\"))",
+    says: "with `royalty {}` declared, a royalty on sales or on the cost of manufacture is charged in operating years 1..expiry only; a royalty with no declared expiry year stops the run.",
+  },
   sensitivity: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 2379,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 2647,
     needle: "Economic sensitivity (one input at a time)",
     says: "the `sensitivity {}` block (C68) moves one declared input at a time and prices the base appraisal again; it is not an uncertainty analysis.",
   },
@@ -117,12 +127,8 @@ export const ENGINE_FACTS = {
 
 /** Things the engine does NOT have, each stated with the search that showed it. */
 export const ENGINE_ABSENCES: readonly { id: string; says: string }[] = [
-  { id: "breakEven",
-    says: "Choupo computes no break-even capacity: EconomicsPass.cpp has no function or key for it (a search for 'break-even' finds only a sentence about an IRR with no root and one about a sensitivity that lands on exactly zero)." },
   { id: "itemised",
     says: "Choupo has no itemised cost of production (supervision, maintenance, overhead, administration, selling, research as separate lines): COM_d is Turton's three-term form." },
-  { id: "royalty",
-    says: "Choupo has no royalty line in the economics (see the patent-expiry page for the calendar)." },
   { id: "classes",
     says: "Choupo has no depreciation by asset class; straight line over one life is the only method." },
 ];

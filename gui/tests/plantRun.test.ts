@@ -68,11 +68,11 @@ describe("the engine statements are held to the engine source at the line the pa
       expect(lines[g.line - 1] ?? "", `line ${g.line}`).toContain(g.needle);
     });
   }
-  it("the absences are stated for the four things the engine lacks", () => {
-    expect(ENGINE_ABSENCES.map((a) => a.id).sort()).toEqual(["breakEven", "classes", "itemised", "royalty"]);
+  it("the absences are stated for the two things the engine lacks (the break-even and the royalty are now facts, held to their lines above)", () => {
+    expect(ENGINE_ABSENCES.map((a) => a.id).sort()).toEqual(["classes", "itemised"]);
     const src = read("src/postProcessing/EconomicsPass.cpp");
-    // no function or key for a break-even capacity or an asset class
-    expect(src).not.toMatch(/breakEvenCapacity|assetClass|royaltyRate/);
+    // no function or key for an asset class (a break-even and a royalty exist since 2026-11-04)
+    expect(src).not.toMatch(/assetClass/);
   });
 });
 

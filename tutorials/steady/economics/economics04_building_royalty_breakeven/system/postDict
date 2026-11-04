@@ -1,0 +1,105 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Post-processing chain of economics04: sizing -> costing -> economics, the
+  spray dryer's sizing being sprayDryer07_design's.  The four blocks at the
+  end of `economics {}` (buildings, breakEven, royalty, workingCapitalMethods)
+  are the case's subject; each is OPT-IN and carries its own source and
+  reason, and none of its numbers is a datum of the engine.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        {
+            unitName    dryer;
+            type        sprayDryer;
+            material    SS304;
+            designRules
+            {
+                pressureDesign 1.0;   // bar -- atmospheric chamber
+                design
+                {
+                    targetSize       40;      // um -- target powder Sauter mean d32
+                    residenceFactor  3.0;     // chamber residence >= 3 x drying time
+                }
+            }
+        }
+    );
+}
+
+costing
+{
+    method      Turton;
+    year        2026;
+    cepci       820;
+    cepci2001   397;
+    usdToEur    0.92;
+}
+
+economics
+{
+    method              discountedCashFlow;
+
+    projectLife         10;
+    constructionPeriod  1;
+    discountRate        0.10;
+    taxRate             0.21;
+    depreciation        straightLine;
+    depreciableLife     9;
+    salvageFraction     0.0;
+    workingCapital      0.15;         // x FCI -- the method the APPRAISAL uses
+    streamFactor        0.90;
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    langFactor          3.63;
+    N_np                1;
+    estimateClass       4;
+
+    refuseOnMissingPrice 1;
+
+    //  E4 -- the building, from the GMP interior's rooms (system/layoutDict).
+    //  A clean room does not cost what a warehouse costs: grade D rooms are
+    //  priced apart, every other grade at `price`.
+    buildings
+    {
+        price       1800;             // EUR per m2 of room area -- grade CNC, and any grade not listed
+        gradePrice
+        {
+            D       2800;             // EUR per m2 -- grade D (clean, HVAC-classified)
+        }
+        source      "author-set teaching assumption (round numbers); replace with a quote or a local construction-cost index";
+        reason      "the group's own building is a controlled-environment block, so its grade D rooms cost more than its unclassified ones";
+    }
+
+    //  E5a -- the break-evens, with the cost classification printed.
+    breakEven {}
+
+    //  E5b -- a royalty on sales, for a patent window of the first six
+    //  operating years of the ten.
+    royalty
+    {
+        rate        0.03;
+        basis       sales;
+        expiry      6;
+        source      "author-set teaching assumption: a licence of the process at 3 % of sales";
+        reason      "the process is licensed while its patent runs; the patent is taken to expire at the end of operating year 6, after which nothing is paid";
+    }
+
+    //  E5c -- the other two ways a project report takes its working capital,
+    //  beside the 0.15 x FCI above that the appraisal uses.
+    workingCapitalMethods
+    {
+        fractionOfSales         0.10;
+        fractionOfFixedCapital  0.20;
+        source      "author-set teaching assumptions (round numbers); replace with the group's own";
+        reason      "to show the spread between three accepted methods on one plant";
+    }
+}
