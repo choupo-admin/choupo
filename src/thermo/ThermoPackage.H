@@ -336,6 +336,39 @@ public:
     scalar H_stream_formation(scalar T_K, scalar P_Pa, scalar vapFrac,
                               const sVector& z) const;
 
+    // ---- THE ENTROPY COMPANIONS of the two above (DEV.md 4c C214 W1) -----
+    //
+    // The energy report prices a liquid on the per-species rung of
+    // `speciesPhaseEnthalpy` and a vapour on `H_real`; until 2026-11-03 the
+    // tree had the vapour ENTROPY (`S_real`) and no liquid one, so a (P, S)
+    // specification could not see a wet state.  These are built leg for leg
+    // beside the enthalpy, so that g = h - T s on one phase is one potential:
+    //
+    //   S_liquid_formation(T, x) = sum x_i s_liq_i(T) - R sum x_i ln x_i
+    //                              + S^E,
+    //     s_liq_i = Component::s_formation(T, "liquid")   (declared liquid Cp:
+    //               the partner of h_formation(T, "liquid"))
+    //             = s_pure_ig(T) - R ln(Psat_i(T)/P0) - Hvap_i(T)/T
+    //               (the partner of the Watson-slope fallback
+    //               h_pure_ig - Hvap: vaporisation entropy Hvap/T at
+    //               saturation, and y P = gamma x Psat the equality of the
+    //               two potentials),
+    //     S^E = (H^E - R T sum x ln gamma)/T, H^E the fitted excess enthalpy
+    //           where H_liquid_formation adds one and 0 where it does not;
+    //     no pressure term (the liquid enthalpy carries none);
+    //   S_stream_formation(T, P, vf, z) = the same blend H_stream_formation
+    //     makes, with S_real as the vapour leg (a quality blend at z: exact
+    //     for a pure fluid only, as the enthalpy's is).
+    //
+    // A pureFluids{} method routes exactly as the enthalpy does.  REFUSED by
+    // name where the enthalpy has a rung the entropy does not: an electrolyte
+    // liquid, a dissolved molecular solute (dHsoln without dSsoln), a
+    // nonvolatile at vf > 0.  Record:
+    // docs/design/a-general-flash-specification.md §3.
+    scalar S_liquid_formation(scalar T_K, const sVector& x) const;
+    scalar S_stream_formation(scalar T_K, scalar P_Pa, scalar vapFrac,
+                              const sVector& z) const;
+
     // ---- THE canonical per-species phase leg (forum #103/#105) ----------
     //
     // ONE function owns the species -> phase -> elements-datum enthalpy

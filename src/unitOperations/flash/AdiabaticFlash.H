@@ -34,9 +34,21 @@ Description
 
         H_out(T, V(T), x(T), y(T))  =  H_in + Q / F
 
-    H_in is the inlet molar enthalpy at (T_feed, P_feed) treated as a
-    sub-cooled liquid feed.  The outlet is the equilibrium two-phase
-    state at (T, P_out).
+    H_in is the inlet molar enthalpy at (T_feed, P_feed), priced as the
+    energy report prices it (`flashState::priceState`: the inlet's own
+    equilibrium when it is unpinned, its declared state when pinned --
+    since 2026-10-24; this sentence said "treated as a sub-cooled liquid
+    feed" until 2026-11-03, which had stopped being true that day).  The
+    outlet is the equilibrium two-phase state at (T, P_out).
+
+    The same (P, H) question, asked of any feed and on the props bench, is
+    `flashState::specifiedFlash` (SpecifiedFlash.H, DEV.md 4c C214 W1).
+    This unit keeps its own search for now: routed through that home its
+    T_out would move in the last printed digits (a tighter tolerance, a
+    different bracket and seed) and its declared high-side rule for an
+    unanswerable reactive trial would become a refusal -- a migration that
+    must carry its own list of moved rows
+    (docs/design/a-general-flash-specification.md §6).
 
     Algorithm:  nested 1-D Newton in T (outer) over isothermal-flash
     inner calls.  Each inner call already iterates on composition; the

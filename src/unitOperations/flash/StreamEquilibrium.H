@@ -76,6 +76,7 @@ Description
 #include <iostream>
 #include <limits>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -628,6 +629,45 @@ inline scalar hOfState(const FlashSolution& fs,
                     - thermo.H_liquid_formation(T, e));
     }
     return h;
+}
+
+//  Per-mole ENTROPY [J/(mol K)] of a resolved state -- the companion of
+//  `hOfState`, phase for phase (DEV.md 4c C214 W1, 2026-11-03).
+//
+//  Each phase at its OWN composition on `ThermoPackage::S_stream_formation`,
+//  whose liquid leg is the entropy partner of the liquid enthalpy the report
+//  prices and whose vapour leg is `S_real`; the phases are summed with their
+//  fractions and no mixing term BETWEEN them (two phases in equilibrium do not
+//  mix).  A state carrying a precipitate is REFUSED: `hOfState` moves each
+//  crystallised mole onto the solid formation rung, and the matching entropy
+//  move is not written -- pricing the crystal as dissolved would hand an
+//  isentropic search a state on a surface no balance uses.
+inline scalar sOfState(const FlashSolution& fs,
+                       scalar               T,
+                       scalar               P,
+                       const sVector&       z,
+                       const ThermoPackage& thermo)
+{
+    for (const scalar s_i : fs.solidFlows)
+        if (s_i > 0.0)
+            throw std::runtime_error("sOfState: the state carries a"
+                " precipitated solid; its entropy on the solid rung is not"
+                " written beside hOfState's enthalpy rung, so the entropy of"
+                " this state is refused rather than priced as dissolved.");
+    const scalar bV = fs.V_over_F;
+    if (fs.threePhase || fs.liquidLiquid)
+    {
+        const auto ports = vllePorts(fs, thermo.n());
+        scalar s = 0.0;
+        for (const VllePhase* ph : { &ports.vapour, &ports.alpha, &ports.beta })
+            if (ph->beta > 0.0)
+                s += ph->beta * thermo.S_stream_formation(T, P, ph->vf, ph->z);
+        return s;
+    }
+    if (bV <= 1.0e-9)       return thermo.S_stream_formation(T, P, 0.0, z);
+    if (bV >= 1.0 - 1.0e-9) return thermo.S_stream_formation(T, P, 1.0, z);
+    return (1.0 - bV) * thermo.S_stream_formation(T, P, 0.0, fs.x)
+         +        bV  * thermo.S_stream_formation(T, P, 1.0, fs.y);
 }
 
 //  IS THIS STREAM'S EFFECTIVE STATE A TWO-PHASE SPLIT?  (2026-09-12)

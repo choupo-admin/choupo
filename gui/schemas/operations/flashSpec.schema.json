@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/flashSpec.schema.json",
+  "title": "flashSpec operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "evaluate", "package": true},
+  "description": "A flash SPECIFIED by a pair other than (T, P): (P, H), (P, S), (T, V/F) or (P, V/F), solved by ONE home (flashState::specifiedFlash) -- the one a unit that needs such a state is to call; none does yet: adiabaticFlash, valve, compressor and turbine keep their own searches. Every trial state is ONE isothermal flash (its stability test and supercritical discard included), priced on the energy report's own surface (hOfState / sOfState; the entropy's liquid leg is the partner of the liquid enthalpy). A pure fluid inside its latent jump lands on the saturation plateau (T = Tsat, the vapour fraction by the lever rule) — the wet isentropic expansion a single-phase vapour model cannot see. A specification no state satisfies inside the search window REFUSES by name; nothing is clamped. Convergence is solver/Convergence.H's one decision (the degenerate one-equation case: the raw residual, said so).",
+  "type": "object",
+  "properties": {
+    "composition": {
+      "type": "object",
+      "title": "Feed (moles, normalised)",
+      "description": "The ONE overall composition the state is a property of."
+    },
+    "spec": {
+      "type": "object",
+      "title": "The specification",
+      "description": "`pair` names the two variables fixed; the held one (P, or T for TVF) and the specified value (H, S or vaporFraction) — or, for PH / PS, `targetFrom { T; P; }`, the H or S of a reference state of the same feed. Declaring the pair's UNKNOWN is refused (use `seed`).",
+      "properties": {
+        "pair": {
+          "type": "string",
+          "enum": ["PH", "PS", "TVF", "PVF"],
+          "title": "Specification pair"
+        },
+        "P": {"type": "number", "exclusiveMinimum": 0, "title": "Pressure (held)", "unit": "Pa"},
+        "T": {"type": "number", "exclusiveMinimum": 0, "title": "Temperature (held, TVF)", "unit": "K"},
+        "H": {"type": "number", "title": "Specified enthalpy (PH)", "unit": "J/mol"},
+        "S": {"type": "number", "title": "Specified entropy (PS)", "unit": "J/(mol K)"},
+        "vaporFraction": {"type": "number", "minimum": 0, "maximum": 1, "title": "Specified vapour fraction (TVF, PVF)"},
+        "targetFrom": {
+          "type": "object",
+          "title": "Reference state whose H or S is the target",
+          "properties": {
+            "T": {"type": "number", "exclusiveMinimum": 0, "title": "Temperature", "unit": "K"},
+            "P": {"type": "number", "exclusiveMinimum": 0, "title": "Pressure", "unit": "Pa"}
+          },
+          "required": ["T", "P"]
+        },
+        "seed": {"type": "number", "exclusiveMinimum": 0, "title": "Where the search starts (T, or P for TVF)"}
+      },
+      "required": ["pair"]
+    },
+    "window": {
+      "type": "object",
+      "title": "Search window",
+      "description": "Defaults 50-1500 K and 100 Pa - 1000 bar. A target the window cannot reach is refused naming both ends.",
+      "properties": {
+        "Tmin": {"type": "number", "exclusiveMinimum": 0, "unit": "K"},
+        "Tmax": {"type": "number", "exclusiveMinimum": 0, "unit": "K"},
+        "Pmin": {"type": "number", "exclusiveMinimum": 0, "unit": "Pa"},
+        "Pmax": {"type": "number", "exclusiveMinimum": 0, "unit": "Pa"}
+      }
+    },
+    "convergence": {
+      "type": "object",
+      "title": "Convergence controls (the OpenFOAM triple)",
+      "description": "Defaults per pair: 1e-6 J/mol (PH), 1e-9 J/(mol K) (PS), 1e-11 on the vapour fraction; maxIter 100. Announced when defaulted.",
+      "properties": {
+        "tolerance": {"type": "number", "exclusiveMinimum": 0},
+        "relTol": {"type": "number", "minimum": 0},
+        "maxIter": {"type": "integer", "minimum": 1}
+      }
+    }
+  },
+  "required": [
+    "composition",
+    "spec"
+  ],
+  "additionalProperties": false
+}

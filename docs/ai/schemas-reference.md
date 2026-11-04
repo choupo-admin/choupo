@@ -560,6 +560,17 @@ Two-phase (or three-phase) equilibrium flash at a declared temperature and press
 | `alphaRich` |   | string | — | Labels which of two liquids is which, for a liquid-liquid split. A label, not a constraint: it names the phases in the report without ste… |
 | `betaRich` |   | string | — | The counterpart of alphaRich. |
 
+## `flashSpec`  (flashSpec operation)
+
+A flash SPECIFIED by a pair other than (T, P): (P, H), (P, S), (T, V/F) or (P, V/F), solved by ONE home (flashState::specifiedFlash) -- the one a unit that needs such a state is to call; none does yet: adiabaticFlash, valve, compressor and turbine keep their own searches. Every trial state is ONE isothermal flash (its stability test and supercritical discard included), priced on the energy report's own surface (hOfState / sOfState; the entropy's liquid leg is the partner of the liquid enthalpy). A pure fluid inside its latent jump lands on the saturation plateau (T = Tsat, the vapour fraction by the lever rule) — the wet isentropic expansion a single-phase vapour model cannot see. A specification no state satisfies inside the search window REFUSES by name; nothing is clamped. Convergence is solver/Convergence.H's one decision (the degenerate one-equation case: the raw residual, said so).
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `composition` | ✓ | object | — | The ONE overall composition the state is a property of. |
+| `spec` | ✓ | object | — | `pair` names the two variables fixed; the held one (P, or T for TVF) and the specified value (H, S or vaporFraction) — or, for PH / PS, `… |
+| `window` |   | object | — | Defaults 50-1500 K and 100 Pa - 1000 bar. A target the window cannot reach is refused naming both ends. |
+| `convergence` |   | object | — | Defaults per pair: 1e-6 J/mol (PH), 1e-9 J/(mol K) (PS), 1e-11 on the vapour fraction; maxIter 100. Announced when defaulted. |
+
 ## `freezingPoint`  (Freezing-point curve (ice witness))
 
 Freezing-point curve T_f(m) of a single salt in water, solved as chemical-potential equality between an actual crystallising SolidPhase (ice) and the Pitzer surface's water activity: f_solid(T) = a_w(m,T)*Psat(T). The first case-reachable consumer of the crystal; its announced approximations (no dCp term, sub-freezing Psat extrapolation) fire on every run. Diagnostics: T_f and depression at the grid end, the dilute-limit slope against nu*K_f (the derived cryoscopic constant), and the depression AAD against a measured dataset via the standard validation block.

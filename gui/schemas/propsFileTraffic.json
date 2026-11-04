@@ -200,6 +200,10 @@
     }
    ]
   },
+  "flashSpec": {
+   "reads": [],
+   "writes": []
+  },
   "freezingPoint": {
    "reads": [
     {

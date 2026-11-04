@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict -- pure water on IAPWS-IF97 (steam02's package).
+
+  Raoult declared (gamma = 1; one component makes it moot) and an ideal-gas
+  vapour for the K-value -- and water flagged as a PURE FLUID, so every
+  enthalpy and entropy of a water phase is read from the IF97 fundamental
+  equations on THEIR datum (the triple-point liquid), and the saturation
+  curve every K-value asks for is IF97's region 4 (ThermoPackage::Psat, the
+  one door).  That is why the per-mass numbers this case prints read a
+  steam table directly.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+pureFluids
+{
+    water { method IF97; }
+}
