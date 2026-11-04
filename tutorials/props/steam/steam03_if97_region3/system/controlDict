@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  steam03_if97_region3 --- run control.  See system/propsDict for what the
+  case evaluates and what is and is not validated.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "IAPWS-IF97 region 3 (near-critical and supercritical water, the Helmholtz form f(rho,T)). The three verification states printed in Wagner et al. 2000 Table A10 evaluated at (T, rho) as printed, one of them again from its printed pressure through the backward density, a 20 MPa drum boiler's water and steam on either side of the saturation line, a 25 MPa supercritical once-through point, the saturation line up to the critical point and a 25 MPa isobar crossing regions 1, 3 and 2.";
+verbosity     2;
