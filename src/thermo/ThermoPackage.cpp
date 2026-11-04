@@ -532,14 +532,14 @@ void ThermoPackage::readPureFluids(const DictPtr& pf)
     //  package's K-values do (C39): hand every phase the methods.
     for (auto& p : phases_) if (p) p->rebindPureFluids(&pureFluid_);
     // Glass-box: announce the override as loudly as the per-unit thermo
-    // cascade.  IF97 carries the IAPWS triple-point datum, regions 1/2/4.
+    // cascade.  IF97 carries the IAPWS triple-point datum, regions 1/2/3/4.
     for (std::size_t i = 0; i < n(); ++i)
         if (pureFluid_.count(i))
         {
             const std::string t = pureFluid_.at(i)->type();
             std::cout << components_[i].name() << ": PureFluidModel " << t;
             if (t == "IF97")
-                std::cout << " (IAPWS-IF97, triple-point datum, regions 1/2/4)";
+                std::cout << " (IAPWS-IF97, triple-point datum, regions 1/2/3/4)";
             std::cout << '\n';
         }
 }
@@ -1191,7 +1191,9 @@ scalar ThermoPackage::Hliquid(scalar T, const sVector& x, scalar Tref) const
     // Pure-fluid override (IF97 et al.): a phase effectively pure in a flagged
     // component reads the fundamental-equation package on its own datum.  No
     // pressure is supplied here (sensible-datum convenience path), so we take
-    // the saturated-liquid state p = psat(T) -- region 1.  The package datum
+    // the saturated-liquid state p = psat(T) -- region 1, or region 3's liquid
+    // branch above 623.15 K (the router's liquid-side convention on the line).
+    // The package datum
     // cancels in h_out - h_in, exactly as the per-component sensible zero does.
     if (!pureFluid_.empty())
         if (auto i = pureFluidRoute(pureFluid_, components_, x))
@@ -1215,13 +1217,14 @@ scalar ThermoPackage::Hliquid(scalar T, const sVector& x, scalar Tref) const
 
 scalar ThermoPackage::Hvapour(scalar T, const sVector& y, scalar Tref) const
 {
-    // Pure-fluid override: saturated-vapour state p = psat(T) -- region 2.
+    // Pure-fluid override: saturated-vapour state p = psat(T) -- region 2, or
+    // region 3's vapour branch above 623.15 K.
     if (!pureFluid_.empty())
         if (auto i = pureFluidRoute(pureFluid_, components_, y))
         {
             const PureFluidModel& m = *pureFluid_.at(*i);
-            // Just inside region 2: evaluate marginally below psat so the
-            // router lands on the vapour side of the saturation line.
+            // Just below psat, so the router lands on the vapour side of the
+            // saturation line (region 2, or region 3's vapour branch).
             const scalar ps = m.p_sat(T);
             return m.h_molar(T, ps * (1.0 - 1.0e-9));
         }
@@ -1732,7 +1735,7 @@ scalar ThermoPackage::H_stream_formation(scalar T, scalar P_Pa,
 {
     // Pure-fluid override: here the actual stream pressure IS known, so route
     // the whole stream through the fundamental-equation package at (T, P_Pa).
-    // The IF97 router picks region 1/2 from (p,T); a single-phase pure-water
+    // The IF97 router picks region 1/2/3 from (p,T); a single-phase pure-water
     // stream gets its absolute h directly.  (A genuinely two-phase pure-water
     // stream on the saturation line is handled by the per-phase liquid/vapour
     // routing in H_liquid_formation / Hvapour; the well-conditioned default

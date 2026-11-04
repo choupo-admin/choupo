@@ -29,7 +29,7 @@ Class
     Choupo::IF97WaterFluid
 
 Description
-    A THIN PureFluidModel wrapper over the FROZEN Choupo::IF97 kernel
+    A THIN PureFluidModel wrapper over the Choupo::IF97 kernel
     (src/thermo/iapws/IF97.{H,cpp}).  It does exactly ONE thing the kernel
     does not: the unit bridge from the kernel's table units (per unit MASS,
     on the IAPWS triple-point datum) to Choupo's per-mole canonical units.
@@ -44,9 +44,10 @@ Description
         v_molar  [m³/mol]     = v_m3kg  * MW / 1000   (m³/kg · kg/mol)
 
     The datum is the IF97 triple-point reference state; regions 1 (compressed
-    liquid), 2 (superheated vapour) and 4 (saturation line) are covered by
-    this kernel slice.  The kernel stays byte-frozen; verify() delegates to
-    IF97::verify().
+    liquid), 2 (superheated vapour), 3 (near-critical and supercritical, the
+    Helmholtz form reached by a backward density) and 4 (saturation line)
+    are covered by the kernel; region 5 refuses by name.  This wrapper adds
+    no physics; verify() delegates to IF97::verify().
 
 SourceFiles
     PureFluidModel.cpp   (this wrapper is small; it lives with the factory)

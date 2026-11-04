@@ -109,7 +109,7 @@ describe("the lesson", () => {
   it("cites the engine where it prices the three terms", () => {
     const s = all(7);
     expect(s).toContain("src/thermo/Component.cpp:1554");
-    expect(s).toContain("src/thermo/ThermoPackage.cpp:1390");
+    expect(s).toContain("src/thermo/ThermoPackage.cpp:1393");
     expect(s).toContain("src/propertyOps/PropertyPoint.cpp:85");
   });
 

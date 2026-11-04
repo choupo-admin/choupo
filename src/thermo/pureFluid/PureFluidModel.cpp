@@ -39,7 +39,7 @@ License
 namespace Choupo {
 
 // ===========================================================================
-//  IF97WaterFluid -- the unit bridge over the frozen kernel
+//  IF97WaterFluid -- the unit bridge over the kernel
 // ===========================================================================
 //
 // Kernel table units -> Choupo per-mole units.  MW in g/mol (== kg/kmol):
