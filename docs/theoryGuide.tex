@@ -25806,7 +25806,11 @@ DesignSpec / OptimizationDriver wraps outside.
 \bibitem{IAPWS_R797} IAPWS R7-97(2012).  Every coefficient table in
 \file{src/thermo/iapws/IF97.cpp} is transcribed from this release at
 full published precision, and its \code{verify()} cross-checks them
-against the release's own computer-program verification tables.
+against the release's own computer-program verification tables.  The region-3 coefficients (the near-critical Helmholtz equation) were
+read from Wagner, W.\ et al., ``The IAPWS Industrial Formulation 1997 for
+the Thermodynamic Properties of Water and Steam'', \emph{J.\ Eng.\ Gas
+Turbines Power} \textbf{122}, 150--182, 2000, Table~A9, and are held by its
+Table~A10.
 
 \bibitem{Nusselt1916} Nusselt, W., ``Die Oberfl\"achenkondensation des
 Wasserdampfes'', \emph{Z. Ver. Dt. Ing.}\ \textbf{60}, 541--575, 1916.

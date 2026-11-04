@@ -1233,7 +1233,10 @@ $k_{ij}$).
 \subsection{Pure fluids: IAPWS-IF97 steam}
 
 For water-dominated power cycles the package can route a pure component
-through the hand-rolled IAPWS-IF97 steam kernel:
+through the hand-rolled IAPWS-IF97 steam kernel (regions 1, 2 and 4, and
+region~3 -- the near-critical and supercritical states a boiler drum near
+20\,MPa or a once-through boiler reaches -- by the Helmholtz equation of
+Wagner et al.\ 2000; region~5, above 1073.15\,K, is refused by name):
 
 \begin{lstlisting}[language=dict]
 pureFluids { water { method IF97; } }
