@@ -69,6 +69,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| todo | C222 EduTool: why the transfer unit was invented (Z = H x N: the difficulty of the separation against what the equipment delivers; the link to the stage and to the Murphree efficiency; Perry's 15-3 and Treybal's 10.10 reproduced); after C219's first phase | C222 |
 | done | C221 EduTools library (`c961da62f`): a gate-held `blurb` per tool (73), a text filter and collapsible shelves on the landing (browser-verified at 390 px), and three pedagogical paths (distillation 6 steps, thermodynamics 5, reactions 7; a dropped step where no tool exists) as one registry home, drawn in the app above the chooser and on the landing | C221 |
 | todo | C220 (Vitor's wish, LATER): a rare-earth separation case from the open literature -- first an EduTool on why a separation factor of 1.5 needs so many stages (no data), then a research general for ONE open-access Nd/Pr or Dy/Tb separation with printed constants and cascade, then a mass-action reactive extractor | C220 |
 | todo | C219 liquid-liquid extraction COLUMNS: stage efficiency declared; sizing by a declared HETS with its source; flooding and diameter only on a readable source (Vitor supplies Treybal, Perry's, Seader, or Lo-Baird-Hanson) | C219 |

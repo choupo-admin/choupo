@@ -2142,6 +2142,30 @@ accepts today, and that is a policy call.
 > ONE open-access separation (Nd/Pr or Dy/Tb) with printed constants and
 > cascade, and only then the mass-action extractor.
 
+> **C222 (Vitor, 2026-11-04): AN EDUTOOL ON WHY THE TRANSFER UNIT WAS INVENTED
+> ("porque raio inventaram a unidade de transferencia ... nunca ninguem me
+> explicou bem").**  Sources now local and readable: Treybal, *Mass-Transfer
+> Operations* 3rd ed. (Ch. 7 defines N_tG and H_tG, Eqs 7.59-7.60, and ties
+> them to the Murphree efficiency E = 1 - exp(-N_tG) for constant-equilibrium
+> contacting; Ch. 8 Fig. 8.20 and the absorber NTU; Ch. 10 Illustration 10.10
+> for liquid extraction), Perry's 9th ed. Sec. 15 Example 15-3 (NTU for an
+> extractor) and its HTU/HETS tables; the origin cited by Treybal for the
+> concept is Chilton & Colburn, Ind. Eng. Chem. 27, 255 (1935) (to be read
+> before the page names it).  The lesson, in one line: Z = H x N -- the
+> integral of dy/(y - y*) is the DIFFICULTY of the separation (equilibrium
+> and material balance only, independent of the packing) and H = G/(K a) is
+> what the EQUIPMENT delivers per unit of difficulty (mass transfer and
+> hydrodynamics only, independent of the separation): a continuous contactor
+> has no stages to count.  The page: the differential balance, the two
+> numbers drawn apart, N for a straight operating and equilibrium line in
+> closed form and for a curved one by quadrature of the ENGINE's own
+> equilibrium (no physics in TS: the curve arrives from the engine run), the
+> relation to the equilibrium stage (HETS = H_OG ln(A)/(A-1) for straight
+> lines) and to the stage efficiency, and the worked example of Perry's 15-3
+> and Treybal's 10.10 reproduced.  When: after C219's first phase (the
+> `extractor` validated against Perry's Table 15-8), so the page can end on
+> a column the engine ran.
+
 > **C221. THE EDUTOOLS LIBRARY, REORGANISED (an external UX review relayed
 > by Vitor, 2026-11-04 -- "recomendacoes de organizacao e UX, nao
 > instrucoes").**  MEASURED before judging: 73 tools on 10 disciplines with
