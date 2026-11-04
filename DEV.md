@@ -2190,6 +2190,50 @@ accepts today, and that is a policy call.
 > against an independent source; C219's extractor against Perry's Table
 > 15-8 is one step).
 
+> **C225. AUTOMATIC PROMOTION OF REGRESSED BINARIES, WITH A NOTE THAT NO HUMAN
+> HAS CHECKED THEM, AND A VERIFICATION CARD IN THE EXPLORER (Vitor,
+> 2026-11-04: "Se for legal, eu quero que a promocao seja automatica, mas com
+> uma nota a dizer que ainda nao foi verificada humanamente. De qualquer modo,
+> cada binario acaba por ter info de verificacao e comparacao que pode ser
+> visualizado no explorer do choupo"; and "recomendacoes para automatizar o
+> processo de criacao de base de dados standard de componentes e binarios ...
+> aumentar a base de dados e reduzir o custo dos utilizadores").**  TO DO,
+> a stated default, NOT built.  It changes one standing rule on purpose: the
+> CLAUDE.md line that promoting an `interim` record is Vitor's primary review
+> alone becomes "automatic promotion is allowed for a record that passes every
+> gate below, marked as not human-reviewed", at his request and with the
+> technical reason that review is the bottleneck of widening the catalogue.
+> LEGAL READING (C16, not legal advice): the catalogue holds Choupo's OWN
+> regressions to measurements the NIST ThermoML archive locates -- numbers,
+> citation, provenance; tables from DECHEMA or ChemSep stay excluded and
+> `check_source_licence` refuses them before any record enters.  ONE OPEN
+> POINT: promoting in bulk would put each pair's measured series in the tree
+> (so the reproduction gate can re-run), which is the bulk redistribution of
+> archive data that C16 left unanswered (the TRC page says "with permission of
+> the journal publishers"); the safe form keeps only DOI, archive sha256 and
+> the extraction filter, and regenerates the series from the local cache.
+> THE NOTE already exists: `reviewStatus interim` is voiced on every run as
+> `[unreviewed] pair` and rides the caveat block; add `humanReviewed false`
+> and a state `autoPromoted` so "fitted by a machine" and "fitted and read by a
+> person" are told apart.  AUTOMATIC PROMOTION STILL REQUIRES: verdict
+> `validated` against a band declared before the fit; `check_regressed_pairs`
+> (arm f, or a liquid-liquid form once a liquid-liquid residual exists); the
+> outlier screen (a study that disagrees with the others is set aside, named,
+> before the fit -- Rojas 2016 sits 3-4 K from five other ethanol + water
+> series at x < 0.05); never overwriting a literature or a reviewed record; one
+> command to revoke.  THE EXPLORER gets a verification card per pair (fit and
+> held-out studies, AAD against the band, identifiability, curves against the
+> data, UNIFAC and ideal, the `autoPromoted` badge), extending the estimate
+> and dossier marks it already draws.  OWES, in order: (1) the C202/C225 asks
+> to the engine -- a liquid-liquid residual in `fitParameters`, UNIQUAC and
+> Wilson proposals and records, `choupo-curate pair A B` chaining identity,
+> search, partition by the declared rule, band, case from a template, all
+> models in one cycle (analysis in this session's reply of 2026-11-04);
+> (2) the catalogue audit of every component record against ThermoML pure data
+> (the water Antoine boils 0.5-0.7 K low); (3) the card.  Butanol + water
+> cannot be promoted by this route until (1) exists: the fit reads bubble
+> temperatures only and arm (f) refuses a pair that splits a liquid.
+
 > **C224 (Vitor, 2026-11-04 night): HOW WILL CHATGPT, THE STUDENTS' USUAL
 > INTERFACE, CREATE NEW BINARY PAIRS "FROM NIST"?  -- MEASURED, AND A GAP
 > FOUND.**  It will not: a chat has no access to the ThermoML archive and the
