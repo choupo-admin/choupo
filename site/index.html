@@ -281,6 +281,8 @@
   .edutool:hover, .edutool:focus-visible { background: #eef8f5; }
   .edutool h3 { margin: 0 0 8px; font-size: 17px; }
   .edutool p { margin: 0; color: var(--muted); font-size: 14px; }
+  .edutool p.edutool-blurb { color: var(--ink); font-size: 16px; font-weight: 600; line-height: 1.35; }
+  .edutool p.edutool-teaches { margin-top: 8px; color: var(--muted); opacity: .8; font-size: 12px; line-height: 1.45; }
   .edutool-go { display: inline-block; margin-top: 14px; color: var(--teal-ink); font-size: 13px; font-weight: 800; }
   .edutool-origin { margin: 10px 0 0; color: var(--muted); font-size: 12px; }
   .edutool-origin b { color: var(--ink); font-weight: 700; }
@@ -863,7 +865,8 @@ https://www.choupo.org/app/
           return '<a class="edutool" href="' + esc(t.href)
             + '" target="_blank" rel="noopener">'
             + '<h3>' + esc(t.label) + '</h3>'
-            + '<p>' + esc(t.teaches) + '</p>'
+            + '<p class="edutool-blurb">' + esc(t.blurb) + '</p>'
+            + '<p class="edutool-teaches">' + esc(t.teaches) + '</p>'
             + originLine(t)
             + '<span class="edutool-go">Open in Choupo &rarr;</span></a>';
         };

@@ -244,8 +244,9 @@ if not tools:
     sys.exit(0)
 e = lambda s: html.escape(str(s or ""), quote=True)
 card = lambda t: ('<a class="edutool" href="%s" target="_blank" rel="noopener">'
-                  '<h3>%s</h3><p>%s</p><span class="edutool-go">Open in Choupo &rarr;</span></a>'
-                  % (e(t.get("href")), e(t.get("label")), e(t.get("teaches"))))
+                  '<h3>%s</h3><p class="edutool-blurb">%s</p><p class="edutool-teaches">%s</p>'
+                  '<span class="edutool-go">Open in Choupo &rarr;</span></a>'
+                  % (e(t.get("href")), e(t.get("label")), e(t.get("blurb")), e(t.get("teaches"))))
 discs = doc.get("disciplines") or []
 shelved = [(d, [t for t in tools if t.get("discipline") == d]) for d in discs]
 shelved = [(d, items) for d, items in shelved if items]

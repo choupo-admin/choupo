@@ -181,6 +181,7 @@ async function main()
         .map((t) => ({
             id: t.id,
             label: t.label,
+            blurb: t.blurb,
             discipline: t.discipline,
             teaches: t.teaches,
             //  WHERE THE PAGE'S NUMBERS COME FROM (DEV.md 4c C112): the

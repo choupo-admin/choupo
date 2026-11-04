@@ -178,7 +178,7 @@ def main():
                      "tool the app has.")
 
     for tid in sorted(set(pub_tools) & set(live_tools)):
-        for field in ("label", "teaches", "origins", "href"):
+        for field in ("label", "blurb", "teaches", "origins", "href"):
             if pub_tools[tid].get(field) != live_tools[tid].get(field):
                 fails.append(
                     f"'{tid}': published {field} {pub_tools[tid].get(field)!r} "
@@ -189,6 +189,21 @@ def main():
                 f"'{tid}': href {pub_tools[tid].get('href')!r} is not the app's "
                 f"deep-link contract {want!r} -- a landing-only route is exactly "
                 "what condition 2 of the ruling forbids")
+
+    #  THE BLURB (DEV.md 4c C221): at most 12 words, present on every tool,
+    #  never the label.  `teaches` has grown to 60-90 words and is what the
+    #  Find index reads; the card prints the blurb big and `teaches` below.
+    for tid, tool in sorted(live_tools.items()):
+        b = tool.get("blurb")
+        if not isinstance(b, str) or not b.strip():
+            fails.append(f"'{tid}' has no blurb -- every tool needs a short "
+                         "one-line `blurb` in the registry (<= 12 words)")
+            continue
+        if len(b.split()) > 12:
+            fails.append(f"'{tid}': blurb has {len(b.split())} words (> 12): {b!r}")
+        if b.strip().lower() == str(tool.get("label", "")).strip().lower():
+            fails.append(f"'{tid}': blurb equals its label -- it must say what "
+                         "the tool lets a student do or see")
 
     #  The landing itself.
     if not LANDING.exists():
