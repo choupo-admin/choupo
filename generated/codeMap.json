@@ -222,6 +222,9 @@
   "BedWallHeatTransfer": [
    "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H"
   ],
+  "BellDelawareBench": [
+   "src/propertyOps/BellDelawareBench.H"
+  ],
   "BinaryTxy": [
    "src/thermo/SaturationCurves.H"
   ],
@@ -510,6 +513,12 @@
   "Divergence": [
    "src/core/ProblemDivergence.H"
   ],
+  "DominantEigenvalue": [
+   "src/solver/DominantEigenvalue.H"
+  ],
+  "DominantEigenvalueOptions": [
+   "src/solver/DominantEigenvalue.H"
+  ],
   "DropletResult": [
    "src/unitOperations/heatTransfer/atomizer/Atomizer.H"
   ],
@@ -750,6 +759,9 @@
   "FixedBedAdsorber": [
    "src/unitOperations/batch/FixedBedAdsorber.H"
   ],
+  "FixedPointAccelerator": [
+   "src/solver/DominantEigenvalue.H"
+  ],
   "FlashInput": [
    "src/unitOperations/flash/IsothermalFlash.H"
   ],
@@ -770,6 +782,9 @@
   ],
   "Flowsheet": [
    "src/unitOperations/flowsheet/Flowsheet.H"
+  ],
+  "Fluid": [
+   "src/unitOperations/heatTransfer/htc/BellDelaware.H"
   ],
   "FluidActivity": [
    "src/unitOperations/reactor/PureSolidPhase.H"
@@ -1682,6 +1697,7 @@
    "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/unitOperations/distillation/TrayHydraulics.H",
    "src/unitOperations/flash/IncipientPhase.H",
+   "src/unitOperations/heatTransfer/htc/BellDelaware.H",
    "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H",
    "src/unitOperations/saturation/BubblePoint.H",
    "src/unitOperations/saturation/DewPoint.H"
@@ -1857,6 +1873,9 @@
   ],
   "Span": [
    "src/thermo/PairAudit.H"
+  ],
+  "Spec": [
+   "src/unitOperations/heatTransfer/htc/BellDelaware.H"
   ],
   "Speciate": [
    "src/propertyOps/Speciate.H"
@@ -2551,6 +2570,10 @@
     "type": "HeatTransferBench"
    },
    {
+    "key": "bellDelawareBench",
+    "type": "BellDelawareBench"
+   },
+   {
     "key": "frictionBench",
     "type": "FrictionBench"
    },
@@ -2647,6 +2670,12 @@
    {
     "key": "spreadsheet",
     "type": "SpreadsheetReport"
+   }
+  ],
+  "src/solver/DominantEigenvalue.cpp": [
+   {
+    "key": "DominantEigenvalue",
+    "type": "DominantEigenvalue"
    }
   ],
   "src/solver/ODE/ODEIntegrator.cpp": [
@@ -3412,6 +3441,7 @@
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
+   "src/solver/DominantEigenvalue.H",
    "src/streams/ProcessStream.H",
    "src/streams/StreamMass.H",
    "src/streams/StreamOverrides.H",
@@ -5405,6 +5435,15 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H"
   ],
+  "src/propertyOps/BellDelawareBench.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/PublishedTable.H",
+   "src/core/Types.H",
+   "src/propertyOps/BellDelawareBench.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/unitOperations/heatTransfer/htc/BellDelaware.H"
+  ],
   "src/propertyOps/CompactionFit.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -6171,6 +6210,7 @@
    "src/core/Origin.H",
    "src/core/PublishedTable.H",
    "src/core/Types.H",
+   "src/propertyOps/BellDelawareBench.H",
    "src/propertyOps/CompactionFit.H",
    "src/propertyOps/DataReconciliation.H",
    "src/propertyOps/ENRTLMixedSolventOp.H",
@@ -7311,6 +7351,10 @@
    "src/core/Types.H",
    "src/solver/BlockTridiagonal.H",
    "src/solver/LU.H"
+  ],
+  "src/solver/DominantEigenvalue.cpp": [
+   "src/core/Types.H",
+   "src/solver/DominantEigenvalue.H"
   ],
   "src/solver/LU.cpp": [
    "src/core/Types.H",
@@ -9669,6 +9713,7 @@
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
+   "src/solver/DominantEigenvalue.H",
    "src/solver/NewtonND.H",
    "src/solver/NewtonRaphson.H",
    "src/solver/Wegstein.H",
@@ -9908,6 +9953,7 @@
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/HeatExchanger.H",
+   "src/unitOperations/heatTransfer/htc/BellDelaware.H",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
    "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
   ],
@@ -10082,6 +10128,12 @@
    "src/core/Types.H",
    "src/unitOperations/heatTransfer/atomizer/Atomizer.H",
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.H"
+  ],
+  "src/unitOperations/heatTransfer/htc/BellDelaware.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/unitOperations/heatTransfer/htc/BellDelaware.H"
   ],
   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp": [
    "src/core/Dictionary.H",
@@ -12228,6 +12280,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/BellDelawareBench.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/DataReconciliation.cpp",
@@ -12445,6 +12498,7 @@
    "src/unitOperations/heatTransfer/atomizer/Atomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/PressureSwirlAtomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.cpp",
+   "src/unitOperations/heatTransfer/htc/BellDelaware.cpp",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp",
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp",
    "src/unitOperations/heatTransfer/htc/ShellTubeDesign.cpp",
@@ -12592,6 +12646,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/BellDelawareBench.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/DataReconciliation.cpp",
@@ -12809,6 +12864,7 @@
    "src/unitOperations/heatTransfer/atomizer/Atomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/PressureSwirlAtomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.cpp",
+   "src/unitOperations/heatTransfer/htc/BellDelaware.cpp",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp",
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp",
    "src/unitOperations/heatTransfer/htc/ShellTubeDesign.cpp",
@@ -13684,6 +13740,7 @@
   "src/core/PublishedTable.H": [
    "src/applications/choupoProps/main.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/BellDelawareBench.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -14066,6 +14123,7 @@
    "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/BellDelawareBench.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/DataReconciliation.cpp",
@@ -14146,6 +14204,7 @@
    "src/result/ResultEmitter.cpp",
    "src/solver/ActiveSetQP.cpp",
    "src/solver/BlockTridiagonal.cpp",
+   "src/solver/DominantEigenvalue.cpp",
    "src/solver/LU.cpp",
    "src/solver/NelderMead.cpp",
    "src/solver/NewtonND.cpp",
@@ -14302,6 +14361,7 @@
    "src/unitOperations/heatTransfer/atomizer/Atomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/PressureSwirlAtomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.cpp",
+   "src/unitOperations/heatTransfer/htc/BellDelaware.cpp",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp",
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp",
    "src/unitOperations/heatTransfer/htc/ShellTubeDesign.cpp",
@@ -14791,6 +14851,10 @@
    "src/applications/choupoProps/main.cpp",
    "src/postProcessing/views/Views.cpp"
   ],
+  "src/propertyOps/BellDelawareBench.H": [
+   "src/propertyOps/BellDelawareBench.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/CasePackage.H": [
    "src/applications/choupoProps/main.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -14974,6 +15038,7 @@
   ],
   "src/propertyOps/PropertyOperation.H": [
    "src/applications/choupoProps/main.cpp",
+   "src/propertyOps/BellDelawareBench.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -15871,6 +15936,11 @@
    "src/unitOperations/separation/TSATwinBed.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
+  ],
+  "src/solver/DominantEigenvalue.H": [
+   "src/applications/choupoSolve/main.cpp",
+   "src/solver/DominantEigenvalue.cpp",
+   "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/solver/LU.H": [
    "src/propertyOps/DataReconciliation.cpp",
@@ -19414,6 +19484,11 @@
   "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.H": [
    "src/unitOperations/heatTransfer/atomizer/Atomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.cpp"
+  ],
+  "src/unitOperations/heatTransfer/htc/BellDelaware.H": [
+   "src/propertyOps/BellDelawareBench.cpp",
+   "src/unitOperations/heatTransfer/HeatExchanger.cpp",
+   "src/unitOperations/heatTransfer/htc/BellDelaware.cpp"
   ],
   "src/unitOperations/heatTransfer/htc/DittusBoelter.H": [
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp"

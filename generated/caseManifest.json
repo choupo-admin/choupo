@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 513,
+  "cases": 516,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -2538,6 +2538,20 @@
    "application": "choupoProps",
    "ops": [
     "reactionGibbs"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/heat/bellDelaware01_hewitt_example62": {
+   "application": "choupoProps",
+   "ops": [
+    "bellDelawareBench"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -5344,6 +5358,22 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "distillationColumn",
+    "mixer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/flowsheets/recycle_autoinit_tear": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5824,6 +5854,23 @@
    "unitTypes": [
     "heatExchanger",
     "heater"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/heat/heatExchanger04_bell_delaware_rating": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heatExchanger"
+   ],
+   "unitModels": [
+    "BellDelaware"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -7721,6 +7768,7 @@
     "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways",
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff",
+    "tutorials/props/heat/bellDelaware01_hewitt_example62",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/heat/psychro02_air_water",
@@ -7950,6 +7998,7 @@
     "tutorials/steady/flowsheets/process04_research_workflow",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
+    "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/gas-solid/bagFilter01_dust",
     "tutorials/steady/gas-solid/cyclone01_dust_removal",
@@ -7982,6 +8031,7 @@
     "tutorials/steady/heat/heatExchanger01_water_water",
     "tutorials/steady/heat/heatExchanger02_geometry_U",
     "tutorials/steady/heat/heatExchanger03_pure_water_plateau",
+    "tutorials/steady/heat/heatExchanger04_bell_delaware_rating",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
@@ -8269,6 +8319,7 @@
     "tutorials/steady/flowsheets/process02_with_design",
     "tutorials/steady/flowsheets/process03_recycle",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
+    "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/optimisation/optim02_process_cost",
     "tutorials/steady/optimisation/optim05_reactor_npv",
@@ -8319,6 +8370,7 @@
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
+    "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/optimisation/optim01_column_reflux",
@@ -8469,6 +8521,7 @@
     "tutorials/steady/heat/heatExchanger01_water_water",
     "tutorials/steady/heat/heatExchanger02_geometry_U",
     "tutorials/steady/heat/heatExchanger03_pure_water_plateau",
+    "tutorials/steady/heat/heatExchanger04_bell_delaware_rating",
     "tutorials/steady/heat/hxWorkflow1_design_from_duty",
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/power/combined01_brayton_rankine",
@@ -8589,6 +8642,7 @@
     "tutorials/steady/flowsheets/process03_recycle",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
+    "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/gibbs/claus01_thermal_stage",
     "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
@@ -9075,6 +9129,7 @@
     "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways",
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff",
+    "tutorials/props/heat/bellDelaware01_hewitt_example62",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/heat/psychro02_air_water",
@@ -9178,6 +9233,7 @@
     "tutorials/steady/flowsheets/process03_recycle",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
+    "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/gas-solid/bagFilter01_dust",
     "tutorials/steady/gas-solid/cyclone01_dust_removal",
@@ -9210,6 +9266,7 @@
     "tutorials/steady/heat/heatExchanger01_water_water",
     "tutorials/steady/heat/heatExchanger02_geometry_U",
     "tutorials/steady/heat/heatExchanger03_pure_water_plateau",
+    "tutorials/steady/heat/heatExchanger04_bell_delaware_rating",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
@@ -9325,6 +9382,9 @@
   "byOp": {
    "activityCoefficients": [
     "tutorials/props/molecular/nrtl01_ethanol_water_package"
+   ],
+   "bellDelawareBench": [
+    "tutorials/props/heat/bellDelaware01_hewitt_example62"
    ],
    "compactionFit": [
     "tutorials/props/powder/compaction01_mcc",
