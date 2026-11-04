@@ -55,7 +55,7 @@ describe("every engine claim is held to the line it cites", () => {
   });
   it("the lesson text cites the same lines (the numbers in the prose are not a second home)", () => {
     const text = JSON.stringify(PLANT_COST_STEPS);
-    for (const cite of ["2696-2697", "2690", "2553", "69", "722", "240", "216", "2505", "548", "1640", "1652", "1673"])
+    for (const cite of ["2970-2971", "2963", "2821", "69", "722", "240", "216", "2773", "555", "1896", "1908", "1929"])
       expect(text, cite).toContain(cite);
   });
   it("the engine's constants are the ones the page defaults to", () => {

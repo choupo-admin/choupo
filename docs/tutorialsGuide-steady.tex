@@ -2692,6 +2692,50 @@ HONEST SIMPLIFICATIONS. (1) The converter is a SINGLE adiabatic bed, so it runs 
 \goldmore{305}
 \end{tutgolden}
 
+\clearpage
+\tutentry{economics04\_building\_royalty\_breakeven}{tutorials/steady/economics/economics04\_building\_royalty\_breakeven}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (dryer) at (0.0,-0.0) {\textbf{dryer}\\[-1pt]{\tiny sprayDryer}};
+  \draw[->] ($(dryer.west)+(-1.05,-0.17)$) -- ($(dryer.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
+  \draw[->] ($(dryer.west)+(-1.05,0.17)$) -- ($(dryer.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {dryingAir};
+  \draw[->] ($(dryer.east)+(0,-0.17)$) -- ($(dryer.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {powder};
+  \draw[->] ($(dryer.east)+(0,0.17)$) -- ($(dryer.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {exhaustAir};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Economic extensions: a building priced by room grade, the two break-evens, a royalty with a patent window, three working-capital methods}
+\begin{tutnarrative}
+sprayDryer07\_design -- spray dryer: DESIGN mode -- targets in, the sizing pass inverts to geometry.
+
+feed: 100 kg/h of a 40 wt\% sucrose solution at 25 $^\circ$C. 40 kg/h sucrose / 342.30 = 0.11686 kmol/h 60 kg/h water / 18.015 = 3.33056 kmol/h total 3.4474 kmol/h ; z\_sucrose = 0.03390
+
+dryingAir: 50 kmol/h of hot air (real air (N2/O2/Ar)) at 200 $^\circ$C, 1 bar. Dry air (no inlet humidity) for a clean wet-bulb demo.
+
+The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
+
+\end{tutnarrative}
+\tutreadme{The four economic extensions of the plant-design (PIF) reports, in one small plant: a building cost from the GMP rooms' areas, the two break-evens, a royalty inside a declared patent window, and the working capital by three methods.}
+\tutreadme{The plant is sprayDryer07\_design (one sized spray dryer, 100 kg/h of a 40 wt\% sugar liquor) standing in the 17-room, two-floor oral-solid-dose block of system/layoutDict. The dryer is costed and the economics \{\} block of system/postDict declares, each opt-in and each with its own source and reason:}
+\tutreadme{$\ast$ buildings -- area = the sum of every declared room's floor area (a lower bound: walls and corridors not listed as rooms are not counted); grade D rooms are priced apart from the rest. The building is an installed facility: 1.18 x C\_BM enters the FCI, nothing enters the site-factor base, and it is depreciated with the plant. $\ast$ breakEven -- the operating break-even x = F / (R - V) with the fixed and variable costs it used printed, and the NPV break-even (the production fraction at which NPV = 0, found by pricing the same appraisal again). They differ, and the run says why. $\ast$ royalty -- 3 \% of sales for operating years 1-6 of the 10; nothing after the patent window. A royalty with no declared window is refused. $\ast$ workingCapitalMethods -- 10 \% of sales and 20 \% of the fixed capital beside the 15 \% of FCI the appraisal uses; the spread is printed.}
+\tutreadme{Every price, rate and fraction is an author-set teaching round number, not a datum. bin/curate/check\_economic\_extensions.py recomputes each published number from the case's declarations.}
+\begin{tutgolden}
+\goldrow{stream}{dryingAir}{F}{0.0138888888889}
+\goldrow{stream}{dryingAir}{T}{473.15}
+\goldrow{stream}{exhaustAir}{F}{0.0148043580604}
+\goldrow{stream}{exhaustAir}{T}{366.288022769}
+\goldrow{stream}{feed}{F}{0.000957611111111}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{powder}{F}{4.2141939629e-05}
+\goldrow{stream}{powder}{T}{366.288022769}
+\goldrow{kpi}{dryer}{Nu}{2.24583682227}
+\goldrow{kpi}{dryer}{Pr}{0.746977616919}
+\goldrow{kpi}{dryer}{Re}{0.203916784363}
+\goldrow{kpi}{dryer}{Sc}{0.6026290984}
+\goldrow{kpi}{dryer}{Sh}{2.22885536787}
+\goldrow{kpi}{dryer}{T\_out}{366.288022769}
+\goldmore{298}
+\end{tutgolden}
+
 \subsection{electrodialysis}
 \grouptheory{electrodialysis}
 \clearpage

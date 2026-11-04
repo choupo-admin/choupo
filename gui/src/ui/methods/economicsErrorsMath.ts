@@ -114,8 +114,12 @@ export const GUARDS: Readonly<Record<ClassId, readonly Guard[]>> = {
       needle: "R += ps.price * ps.massFlow * 3600.0 * H",
       says: "the revenue of the NPV is computed in one place from the product stream and its price, and the economics sensitivity re-prices through the same function (never a second copy of the cash flow).",
       gate: "check_economic_sensitivity" },
+    { kind: "constructs", file: "src/postProcessing/EconomicsPass.cpp",
+      needle: "x = F / (R - V) = ",
+      says: "with `breakEven {}` declared, the engine prints the operating break-even and the NPV one (found by pricing the same appraisal again) from the SAME revenue as the NPV, with its fixed and variable costs shown.",
+      gate: "check_economic_extensions" },
     { kind: "none", file: "", needle: "",
-      says: "Choupo computes no break-even quantity. Choupo does not catch a break-even computed by hand on another revenue; you must check it against the revenue line of the cash flow." },
+      says: "Choupo does not catch a break-even computed by hand on another revenue; you must check it against the revenue line of the cash flow." },
   ],
   taxBase: [
     { kind: "constructs", file: "src/postProcessing/EconomicsPass.cpp",
@@ -126,8 +130,12 @@ export const GUARDS: Readonly<Record<ClassId, readonly Guard[]>> = {
       says: "Nothing refuses a tax rate applied to sales in YOUR spreadsheet; the engine's rows are the thing to compare it with." },
   ],
   royalty: [
+    { kind: "refuses", file: "src/postProcessing/EconomicsPass.cpp",
+      needle: "if (!d->found(\"expiry\"))",
+      says: "a `royalty {}` without the last operating year that carries it stops the run, and the royalty is charged in years 1..expiry only; a royalty with no end is the error.",
+      gate: "check_economic_extensions" },
     { kind: "none", file: "", needle: "",
-      says: "Choupo has no royalty line in the economics and no patent calendar. Choupo does not catch a royalty charged after the patent expired, or a royalty paid for a licence you do not hold; you must check it (and see the patent-expiry tool for the calendar)." },
+      says: "Choupo does not catch a royalty whose window you declared wrongly against the patent, nor one paid for a licence you do not hold; you must check it (and see the patent-expiry tool for the calendar)." },
   ],
   workingCapital: [
     { kind: "refuses", file: "src/postProcessing/EconomicsPass.cpp",
@@ -168,8 +176,12 @@ export const GUARDS: Readonly<Record<ClassId, readonly Guard[]>> = {
     { kind: "refuses", file: "src/postProcessing/EconomicsPass.cpp",
       needle: "a land price is an assumption the case owes its",
       says: "the land price per m2 likewise needs its source and its reason." },
+    { kind: "refuses", file: "src/postProcessing/EconomicsPass.cpp",
+      needle: "a building price is an assumption the case owes",
+      says: "a `buildings {}` price per m2 (or per room grade) without its source and reason stops the run; the area is the GMP rooms' own.",
+      gate: "check_economic_extensions" },
     { kind: "none", file: "", needle: "",
-      says: "Choupo has no building-cost-per-m2 line and does not compare your unit cost with another's. Choupo does not catch a cost per m2 five times another's; the declared source and reason are what make the spread visible." },
+      says: "Choupo does not compare your unit cost with another's. Choupo does not catch a cost per m2 five times another's; the declared source and reason are what make the spread visible." },
   ],
 };
 

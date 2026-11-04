@@ -70,11 +70,13 @@ describe("the guards are held to the engine source they cite", () => {
     }
     expect(checked).toBeGreaterThanOrEqual(10);
   });
-  it("the classes Choupo does not catch say so (royalty entirely; the break-even)", () => {
-    expect(GUARDS.royalty.every((g) => g.kind === "none")).toBe(true);
+  it("the classes Choupo does not catch say so (the royalty window against a patent; a hand break-even)", () => {
+    // since 2026-11-04 the engine refuses a royalty with no declared window (a guard), and still
+    // cannot check the window against a patent: the none-guard says so
+    expect(GUARDS.royalty.some((g) => g.kind === "refuses")).toBe(true);
+    expect(GUARDS.royalty.some((g) => g.kind === "none" && /royalty/.test(g.says))).toBe(true);
     expect(GUARDS.twoRevenues.some((g) => g.kind === "none" && /break-even/.test(g.says))).toBe(true);
-    // and no engine source mentions a royalty, so the claim is true today
-    expect(/royalt/i.test(read("src/postProcessing/EconomicsPass.cpp"))).toBe(false);
+    expect(/royaltyAt/.test(read("src/postProcessing/EconomicsPass.cpp"))).toBe(true);
   });
 });
 

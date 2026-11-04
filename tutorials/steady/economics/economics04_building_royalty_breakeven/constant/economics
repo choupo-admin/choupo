@@ -1,0 +1,69 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  constant/economics of economics04 -- the CASE-SCOPED market tier.  Every
+  price below is an AUTHOR-SET TEACHING ROUND NUMBER, not a market quote
+  (the provenance blocks say so): the case demonstrates the arithmetic of
+  the building, the break-evens, the royalty and the working-capital
+  methods, not a business.
+\*---------------------------------------------------------------------------*/
+
+products
+(
+    {
+        stream      powder;
+        price       20.0;             // EUR/kg
+        costYear    2026;
+        provenance
+        {
+            origin  "author-set teaching assumption";
+            method  "a round price for a specialty spray-dried powder";
+        }
+    }
+);
+
+rawMaterials
+(
+    {
+        stream      feed;
+        price       1.50;             // EUR/kg of the 40 wt% liquor
+        costYear    2026;
+        provenance
+        {
+            origin  "author-set teaching assumption";
+            method  "a round price for the liquor feed";
+        }
+    }
+    {
+        stream      dryingAir;
+        price       0.0;              // ambient air; its heating is not priced here
+        costYear    2026;
+        provenance
+        {
+            origin  "author-set teaching assumption";
+            method  "free ambient air; the heater duty is outside this plant's utilities";
+        }
+    }
+);
+
+labourRate      30.0;                 // EUR/h, loaded
+labourRateYear  2026;
+labourProvenance
+{
+    origin  "author-set teaching assumption";
+    method  "a round loaded hourly rate";
+}
+
+usdToEur        0.92;
+usdToEurDate    "2024-06-03";
+fxProvenance
+{
+    origin  "ECB euro reference exchange rate";
+    method  "daily reference rate";
+}

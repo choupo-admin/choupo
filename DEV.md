@@ -2984,6 +2984,24 @@ accepts today, and that is a policy call.
 > and 1/b swapped, caught on all four Kawakita fits).  NOT done: lactose data
 > (a group can digitise a CC BY figure into the same grammar), any mixture
 > rule, Johanson roller compaction.
+> DONE 2026-11-04, E4 and E5 of the synthesis (branch pif-e4e5, a general): in
+> `economics {}`, all OPT-IN, no number shipped, each with source and reason:
+> `buildings` (area = the sum of the layout's room areas, a lower bound; a
+> price per m2 and optionally per room GRADE; an installed facility like a
+> `kind facility` quote: 1.18 C_BM in FCI, nothing in the siteFactor base,
+> depreciated with the plant), `breakEven` (operating x = F/(R-V), F = 0.180
+> FCI + 2.73 C_OL + depreciation, V = 1.23 (C_RM + C_UT + C_WT), classification
+> printed; and the NPV break-even by `appraise` on a copy -- the cash flow
+> keeps its one home), `royalty` (charged in operating years 1..expiry only,
+> refused without an expiry; deducted before the tax; `royalty.rate` is a
+> sensitivity input), `workingCapitalMethods` (itemised / % of sales / % of
+> fixed capital side by side, the one USED named). Witness
+> `economics04_building_royalty_breakeven`; gate `check_economic_extensions`.
+> No golden moved (the 18 economics cases PASS; the witness's 84 rows are new).
+> Re-pointed the EduTool citations into EconomicsPass.cpp by content; the
+> plant-run and economics-errors pages no longer say the engine lacks a
+> break-even or a royalty line. NOT done: depreciation by asset class; a
+> building price as a sensitivity input; the break-even under a ramp-up.
 > STATUS: COMMISSIONED 2026-11-02; (1)(2)(4) and the compaction bench DONE; the
 > verification of the list against the reports read in full is DONE; (3), (5) wait.
 

@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 516,
+  "cases": 517,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -4245,6 +4245,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/economics/economics04_building_royalty_breakeven": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "sprayDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/electrodialysis/ed01_nacl_desalination": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -7925,6 +7939,7 @@
     "tutorials/steady/economics/economics01_esterification_dcf",
     "tutorials/steady/economics/economics02_irr_sweep",
     "tutorials/steady/economics/economics03_startup_years",
+    "tutorials/steady/economics/economics04_building_royalty_breakeven",
     "tutorials/steady/electrodialysis/ed01_nacl_desalination",
     "tutorials/steady/electrodialysis/ed02_over_limiting_current",
     "tutorials/steady/electrodialysis/ed03_stack_record",
@@ -8797,7 +8812,8 @@
     "tutorials/steady/drying/sprayDryer04_profiles",
     "tutorials/steady/drying/sprayDryer05_whey",
     "tutorials/steady/drying/sprayDryer06_rea",
-    "tutorials/steady/drying/sprayDryer07_design"
+    "tutorials/steady/drying/sprayDryer07_design",
+    "tutorials/steady/economics/economics04_building_royalty_breakeven"
    ],
    "staircase": [
     "tutorials/ctrl/ctrl17_signal_shapes"
@@ -9198,6 +9214,7 @@
     "tutorials/steady/drying/sprayDryer07_design",
     "tutorials/steady/economics/economics01_esterification_dcf",
     "tutorials/steady/economics/economics02_irr_sweep",
+    "tutorials/steady/economics/economics04_building_royalty_breakeven",
     "tutorials/steady/electrodialysis/ed01_nacl_desalination",
     "tutorials/steady/electrodialysis/ed02_over_limiting_current",
     "tutorials/steady/electrodialysis/ed03_stack_record",

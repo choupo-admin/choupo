@@ -135,8 +135,10 @@ export const PLANT_RUN_STEPS: readonly LessonStep[] = [
       + "at which the NPV is zero. Quote which. The last one must use the "
       + "SAME revenue and costs as the NPV (this is class 2 of the page on "
       + "ways an economics goes wrong): put the break-even back in the NPV "
-      + "and it must return zero, which the page does. Choupo computes no "
-      + "break-even capacity today.",
+      + "and it must return zero, which the page does. Choupo computes both "
+      + "when the case declares `breakEven {}`: the operating one, with the "
+      + "fixed and variable costs it used printed, and the NPV one, found by "
+      + "pricing the same appraisal again; it ships no verdict.",
     formula: String.raw`x^{*}=\frac{F}{S-V}\qquad F=C(0)\qquad V=C(1)-C(0)`,
     where: [
       { sym: "x^{*}", means: "break-even capacity: the fraction of the design production at which sales equal the total cost" },
@@ -379,8 +381,11 @@ export const PLANT_RUN_LIMITS: readonly LessonLimit[] = [
     body: "Choupo has Turton's three-term cost of manufacture, a crew from "
       + "a correlation or a declaration, straight-line depreciation over "
       + "one life, the cash flow, NPV, IRR, paybacks and a one-at-a-time "
-      + "sensitivity. It has no itemised cost of production, no royalty "
-      + "line, no depreciation by asset class and no break-even capacity.",
+      + "sensitivity, and, when the case declares them, a break-even, a "
+      + "royalty charged inside a declared patent window, a building cost "
+      + "from the rooms' areas and the working capital by three methods. "
+      + "It has no itemised cost of production and no depreciation by "
+      + "asset class.",
   },
   {
     id: "not-advice",

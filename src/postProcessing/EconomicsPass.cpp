@@ -435,11 +435,13 @@ void writeCashFlowCsv(const EconomicsSummary& e)
              " invested; years 1.." << e.projectLife << ": operation\n";
     //  THE LAND (C82): a column of its own, and only when declared.
     const bool hasLand = e.landPresent;
+    const bool hasRoyalty = e.royaltyPresent;
     f << "year,investment_" << cur;
     if (hasLand) f << ",land_" << cur;
     if (ext) f << ",productionFraction";
     f << ",revenue_"        << cur
       << ",operatingCost_"  << cur;
+    if (hasRoyalty) f << ",royalty_" << cur;
     if (ext) f << ",startupCost_" << cur;
     f << ",depreciation_"   << cur
       << ",taxableIncome_"  << cur
@@ -458,6 +460,7 @@ void writeCashFlowCsv(const EconomicsSummary& e)
         if (ext) f << "," << csvNum(r.productionFraction, 4);
         f << "," << csvNum(r.revenue,        0)
           << "," << csvNum(r.operatingCost,  0);
+        if (hasRoyalty) f << "," << csvNum(r.royalty, 0);
         if (ext) f << "," << csvNum(r.startupCost, 0);
         f << "," << csvNum(r.depreciation,   0)
           << "," << csvNum(r.taxableIncome,  0)
@@ -483,6 +486,10 @@ void writeCashFlowCsv(const EconomicsSummary& e)
         f << "landInvestedAtYear," << e.landInvestedAtYear << "\n";
         f << "landRecoveredAtYear," << e.landRecoveredAtYear << "\n";
     }
+    //  E4/E5: the building, the royalty, the break-even and the working-capital
+    //  methods, as `key,value` lines -- present only when the case declares
+    //  them, so every other case writes this file as it did.
+    for (const auto& kv : e.extensions) f << kv.first << "," << kv.second << "\n";
     f << "COM_d,"        << csvNum(e.COM_d, 0) << "\n";
     f << "revenue,"      << csvNum(e.revenue, 0) << "\n";
     f << "NPV,"          << csvNum(e.NPV,   0) << "\n";
@@ -652,6 +659,8 @@ void writeCashFlowOds(const EconomicsSummary& e)
         ods.textCell("Production fraction",    OdsWriter::Header);
     ods.textCell("Revenue",                    OdsWriter::Header);
     ods.textCell("OPEX (COM_d)",               OdsWriter::Header);
+    if (e.royaltyPresent)
+        ods.textCell("Royalty",                OdsWriter::Header);
     if (e.timelineExtended)
         ods.textCell("Start-up cost",          OdsWriter::Header);
     ods.textCell("Depreciation",               OdsWriter::Header);
@@ -684,6 +693,8 @@ void writeCashFlowOds(const EconomicsSummary& e)
             ods.numberCell(r.productionFraction, 4, rowSt);
         ods.numberCell(r.revenue,         0, rowSt);
         ods.numberCell(r.operatingCost,   0, rowSt);
+        if (e.royaltyPresent)
+            ods.numberCell(r.royalty,     0, rowSt);
         if (e.timelineExtended)
             ods.numberCell(r.startupCost, 0, rowSt);
         ods.numberCell(r.depreciation,    0, rowSt);
@@ -1410,6 +1421,237 @@ FinancingDeclaration readFinancing(const DictPtr& econ, int projectLife,
 }
 
 // =========================================================================
+//  THE ECONOMIC EXTENSIONS OF THE PIF REPORTS (2026-11-04, DEV.md 4c C195
+//  items E4 and E5; docs/reviews/2026-11-02-pif-reports-synthesis.md §3).
+//  Of eighteen previous-year plant-design reports fourteen computed a
+//  break-even, all took the working capital from whichever of three methods
+//  suited, the royalty was charged after the patent had expired, and the
+//  building cost varied fivefold.  Each of the four items below is OPT-IN:
+//  a case that declares none of them computes, prints, publishes and writes
+//  exactly what it did (measured on every economics case of the corpus), and
+//  NO NUMBER IS SHIPPED -- every price, fraction and year is the case's own,
+//  with a source and a reason.
+//
+//  E4  `buildings { price; gradePrice { A..CNC }; source; reason; }`
+//      A building cost from the GMP interior's ROOM AREAS.
+//          area_building = SUM of `room.area` over EVERY room the case's
+//                          `building {}` declares, on every floor.
+//      A room belongs to ONE floor, so a multi-floor building is the sum of
+//      its floors' rooms; a double-height room counts its plan once; the
+//      walls, corridors and stairwells the case does not list as rooms are
+//      NOT counted, so the area is a LOWER bound, said on every run.  A
+//      room is priced at its grade's price when `gradePrice` declares that
+//      grade, else at `price`; a room whose grade has neither REFUSES by name
+//      (a clean room does not cost what a warehouse costs, and the engine
+//      will not pick the one that is cheaper).
+//      WHERE IT SITS: the building is an installed FACILITY, exactly as a
+//      declared `kind facility` quote (DeclaredQuote.H): C_BM = area x price
+//      enters the FCI ladder as a bare module, FCI gains contingencyFee x
+//      C_BM, and it adds NOTHING to the siteFactor base (a building IS an
+//      auxiliary facility).  It is therefore depreciated WITH THE PLANT
+//      (straight line is the only schedule this pass has), inside FCI, TCI
+//      and COM_d's 0.180 FCI.  ONE home: no second building line is added.
+//
+//  E5a `breakEven {}` -- two break-evens from the base appraisal, which say
+//      different things and the output says why.
+//      (1) OPERATING: the fraction x of nameplate production at which the
+//      year's sales equal the year's cost of production at full production,
+//          x = F / (R - V)
+//      with a CLASSIFICATION that is a modelling choice the student sees:
+//          VARIABLE V = 1.23 (C_RM + C_UT + C_WT)         (scales with x)
+//          FIXED    F = 0.180 FCI + 2.73 C_OL + depreciation
+//      (a royalty carried by operating year 1 is added on its basis: on sales
+//      it lowers the revenue slope, on the cost of manufacture it multiplies
+//      the cash cost).  The start-up cost, the ramp-up and the tax are not in
+//      it.
+//      (2) NPV: the fraction s of nameplate production (the stream factor
+//      scaled by s, the capital and the labour fixed) at which NPV = 0,
+//      found by `appraise` on a copy -- the cash flow has ONE home.  It
+//      differs from (1) because it carries the capital charge, the tax, the
+//      working capital, the ramp-up, the royalty window and discounting.
+//      Both use the SAME revenue as the NPV.  No threshold, no verdict.
+//
+//  E5b `royalty { rate; basis sales|costOfManufacture; expiry <year>; ...}`
+//      A cost of the operating years 1..expiry only (the patent window), on
+//      the year's sales or its COM_d, deducted before the tax like the other
+//      costs of manufacture.  REFUSED without a window (a royalty with no end
+//      is the error the reports make) and without source and reason.
+//
+//  E5c `workingCapitalMethods { fractionOfSales; fractionOfFixedCapital; }`
+//      The three methods side by side -- the itemised build-up (when the
+//      case declares `workingCapital {}`), a fraction of the annual sales and
+//      a fraction of the fixed capital -- each from a DECLARED fraction; a
+//      method without its input is named, not defaulted.  The spread is
+//      printed.  The method the APPRAISAL uses stays the case's own choice
+//      (`workingCapital`), and the table says which one it was.
+// =========================================================================
+struct RoyaltyDeclaration
+{
+    bool        present = false;
+    scalar      rate    = 0.0;     // fraction of the basis
+    std::string basis;             // sales | costOfManufacture
+    int         expiry  = 0;       // the last operating year that carries it
+    std::string source, reason;
+};
+
+RoyaltyDeclaration readRoyalty(const DictPtr& econ)
+{
+    RoyaltyDeclaration Ry;
+    if (!econ->found("royalty")) return Ry;
+    const std::string where = "economics { royalty { ... } }";
+    if (!std::holds_alternative<DictPtr>(econ->entryValue("royalty")))
+        throw std::runtime_error("economics: `royalty` must be a block --"
+            " `royalty { rate 0.03; basis sales; expiry 8; source \"...\";"
+            " reason \"...\"; }`.");
+    const DictPtr d = econ->subDict("royalty");
+    const std::vector<std::string> known
+        { "rate", "basis", "expiry", "source", "reason" };
+    for (const auto& k : d->keys())
+        if (std::find(known.begin(), known.end(), k) == known.end())
+            throw std::runtime_error("economics: "
+                + registryRefusal::message("royalty key", k, known, "Accepted"));
+    if (!d->found("expiry"))
+        throw std::runtime_error(where + ": `expiry <project year>;` is not"
+            " declared.  A royalty is paid for a patent window, and a royalty"
+            " with no end is the error previous plant designs made (charged"
+            " after the patent had expired).  Declare the last operating year"
+            " that carries it; no window is assumed.");
+    for (const char* k : { "rate", "basis", "source", "reason" })
+        if (!d->found(k))
+            throw std::runtime_error(where + ": `" + k + "` is not declared."
+                "  Declare rate (a fraction), basis (sales | costOfManufacture),"
+                " expiry, source and reason; none is defaulted.");
+    for (const char* k : { "source", "reason" })
+        if (d->lookupWord(k).empty())
+            throw std::runtime_error(where + ": `" + k + "` is empty -- a"
+                " royalty is an assumption the case owes its reader.");
+    Ry.rate = d->lookupScalar("rate");
+    if (!(Ry.rate > 0.0) || !(Ry.rate < 1.0))
+    {
+        std::ostringstream m;
+        m << where << ": `rate " << Ry.rate << ";` must lie strictly between"
+             " 0 and 1 -- a fraction of the basis (0.03 is 3 %).";
+        throw std::runtime_error(m.str());
+    }
+    Ry.basis = d->lookupWord("basis");
+    if (Ry.basis != "sales" && Ry.basis != "costOfManufacture")
+        throw std::runtime_error("economics: " + registryRefusal::message(
+            "royalty basis", Ry.basis,
+            std::vector<std::string>{ "sales", "costOfManufacture" },
+            "Accepted"));
+    const scalar ex = d->lookupScalar("expiry");
+    if (!(ex >= 1.0) || std::fabs(ex - std::round(ex)) > 1e-9)
+    {
+        std::ostringstream m;
+        m << where << ": `expiry " << ex << ";` must be a whole operating year"
+             " >= 1 (year 1 is the first year of operation).";
+        throw std::runtime_error(m.str());
+    }
+    Ry.expiry = static_cast<int>(std::lround(ex));
+    Ry.source = d->lookupWord("source");
+    Ry.reason = d->lookupWord("reason");
+    Ry.present = true;
+    return Ry;
+}
+
+struct BuildingsDeclaration
+{
+    bool        present = false;
+    bool        havePrice = false;
+    scalar      price   = 0.0;                  // currency per m2, every grade
+    std::map<std::string, scalar> gradePrice;   // grade -> currency per m2
+    std::string source, reason;
+    scalar      area = 0.0, cost = 0.0;         // m2, C_BM in currency
+    int         nRooms = 0;
+    std::map<std::string, scalar> areaByGrade, costByGrade;
+};
+
+BuildingsDeclaration readBuildings(const DictPtr& econ,
+                                   const SimulationResult& result)
+{
+    BuildingsDeclaration B;
+    if (!econ->found("buildings")) return B;
+    const std::string where = "economics { buildings { ... } }";
+    if (!std::holds_alternative<DictPtr>(econ->entryValue("buildings")))
+        throw std::runtime_error("economics: `buildings` must be a block --"
+            " `buildings { price 800; gradePrice { C 2500; CNC 600; } source"
+            " \"...\"; reason \"...\"; }`.");
+    const DictPtr d = econ->subDict("buildings");
+    const std::vector<std::string> known
+        { "price", "gradePrice", "source", "reason" };
+    for (const auto& k : d->keys())
+        if (std::find(known.begin(), known.end(), k) == known.end())
+            throw std::runtime_error("economics: "
+                + registryRefusal::message("buildings key", k, known, "Accepted"));
+    for (const char* k : { "source", "reason" })
+        if (!d->found(k) || d->lookupWord(k).empty())
+            throw std::runtime_error(where + ": `" + k + " \"...\";` is not"
+                " declared -- a building price is an assumption the case owes"
+                " its reader: where it comes from (`source`) and why it is"
+                " this plant's (`reason`).");
+    B.source = d->lookupWord("source");
+    B.reason = d->lookupWord("reason");
+    const std::vector<std::string> grades { "A", "B", "C", "D", "CNC" };
+    if (d->found("price"))
+    {
+        B.price = d->lookupScalar("price", Dimensions(0, -2, 0, 0, 0));
+        if (!(B.price >= 0.0))
+            throw std::runtime_error(where + ": `price` cannot be negative.");
+        B.havePrice = true;
+    }
+    if (d->found("gradePrice"))
+    {
+        if (!std::holds_alternative<DictPtr>(d->entryValue("gradePrice")))
+            throw std::runtime_error(where + ": `gradePrice` must be a block"
+                " of `<grade> <currency per m2>;` lines, grades A B C D CNC.");
+        const DictPtr g = d->subDict("gradePrice");
+        for (const auto& k : g->keys())
+        {
+            if (std::find(grades.begin(), grades.end(), k) == grades.end())
+                throw std::runtime_error("economics: "
+                    + registryRefusal::message("room grade", k, grades, "Accepted"));
+            const scalar v = g->lookupScalar(k, Dimensions(0, -2, 0, 0, 0));
+            if (!(v >= 0.0))
+                throw std::runtime_error(where + ": `gradePrice { " + k
+                    + " ... }` cannot be negative.");
+            B.gradePrice[k] = v;
+        }
+    }
+    if (!B.havePrice && B.gradePrice.empty())
+        throw std::runtime_error(where + ": declares no price -- give `price"
+            " <currency per m2>;` for every room, a `gradePrice {}` per grade,"
+            " or both.  No price is invented.");
+    if (!result.building.present)
+        throw std::runtime_error(where + ": a building price is declared and"
+            " this run has no building to price -- the case declares no"
+            " `building {}` in system/layoutDict, or (under an outer driver)"
+            " the layout is checked only after the post-processing chain."
+            "  Declare the GMP interior and its room areas are used; no area"
+            " is invented.");
+    for (const auto& r : result.building.rooms)
+    {
+        const auto gp = B.gradePrice.find(r.grade);
+        scalar p = 0.0;
+        if (gp != B.gradePrice.end()) p = gp->second;
+        else if (B.havePrice)         p = B.price;
+        else
+            throw std::runtime_error(where + ": room '" + r.name + "' is grade "
+                + (r.grade.empty() ? std::string("(none)") : r.grade)
+                + " and the block declares neither a `gradePrice { "
+                + r.grade + " ...}` nor a general `price`.  A clean room does"
+                " not cost what a warehouse costs, and the engine will not"
+                " choose the cheaper.");
+        B.area += r.area;
+        B.cost += r.area * p;
+        B.areaByGrade[r.grade] += r.area;
+        B.costByGrade[r.grade] += r.area * p;
+        ++B.nRooms;
+    }
+    B.present = true;
+    return B;
+}
+
+// =========================================================================
 //  ONE APPRAISAL, ONE HOME (2026-10-12, DEV.md 4c C68).
 //
 //  Everything from the annual bills to the NPV, the IRR and the paybacks is
@@ -1458,6 +1700,10 @@ struct AppraisalInputs
     //  `fin.debtFraction` (`financing.debtFraction`); they move the EQUITY
     //  view only -- the project's cash flow does not see them.
     FinancingDeclaration fin;
+    //  THE ROYALTY (E5b): absent unless the case declares `royalty {}`.  A
+    //  sensitivity may move `rate` (`royalty.rate`); the basis and the
+    //  expiry year are the case's and are never moved.
+    RoyaltyDeclaration royalty;
 
     //  ---- what it never moves -----------------------------------------
     scalar  projectLife            = 10.0;
@@ -1590,6 +1836,16 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
                           : 0.180 * FCI + 2.73 * C_OL + 1.23 * (p * C_var);
     };
     auto startupAt  = [&](int t) { return (t == 1) ? startupCost : 0.0; };
+    //  THE ROYALTY (E5b): a cost of the operating years up to the declared
+    //  expiry, on the year's sales or on the year's COM_d -- taxed like the
+    //  other costs of manufacture (deducted before the tax).  Zero, exactly,
+    //  when absent or past the window.
+    auto royaltyAt  = [&](int t) -> scalar
+    {
+        if (!in.royalty.present || t > in.royalty.expiry) return 0.0;
+        return in.royalty.rate
+             * (in.royalty.basis == "sales" ? revenueAt(t) : comAt(t));
+    };
 
     std::vector<scalar> cashFlow(static_cast<std::size_t>(Nrows), 0.0);
     std::vector<scalar> capitalOut(static_cast<std::size_t>(Nrows), 0.0);
@@ -1608,7 +1864,7 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
     for (int t = 1; t <= Nlife; ++t)
     {
         const scalar d_t  = (t <= Ndepr) ? d_annual : 0.0;
-        projectTaxable[at(t)] = revenueAt(t) - comAt(t) - startupAt(t) - d_t;
+        projectTaxable[at(t)] = revenueAt(t) - comAt(t) - royaltyAt(t) - startupAt(t) - d_t;
         const scalar CF_t = projectTaxable[at(t)] * (1.0 - taxRate) + d_t;
         cashFlow[at(t)] = CF_t;
     }
@@ -1868,14 +2124,14 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
     const scalar afterTaxOpCF = (R - COM_d - d_annual) * (1.0 - taxRate) + d_annual;
     scalar simplePayback = (afterTaxOpCF > 0.0) ? (FCI / afterTaxOpCF)
                                                 : std::nan("");
-    if (!timeline.rampUp.empty() || startupCost != 0.0)
+    if (!timeline.rampUp.empty() || startupCost != 0.0 || in.royalty.present)
     {
         simplePayback = std::nan("");
         scalar cum = 0.0;
         for (int t = 1; t <= Nlife; ++t)
         {
             const scalar d_t  = (t <= Ndepr) ? d_annual : 0.0;
-            const scalar CF_t = (revenueAt(t) - comAt(t) - startupAt(t) - d_t)
+            const scalar CF_t = (revenueAt(t) - comAt(t) - royaltyAt(t) - startupAt(t) - d_t)
                               * (1.0 - taxRate) + d_t;
             if (CF_t > 0.0 && cum + CF_t >= FCI)
             {
@@ -1912,9 +2168,10 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
                 row.revenue       = revenueAt(t);
                 row.operatingCost = comAt(t);
                 row.startupCost   = startupAt(t);
+                row.royalty       = royaltyAt(t);
                 row.depreciation  = d_t;
                 row.taxableIncome = row.revenue - row.operatingCost
-                                  - row.startupCost - d_t;
+                                  - row.royalty - row.startupCost - d_t;
                 row.tax           = taxRate * row.taxableIncome;
                 row.afterTaxProfit = row.taxableIncome - row.tax;
             }
@@ -2063,6 +2320,7 @@ scalar sensitivityValue(const AppraisalInputs& in, const std::string& key)
     if (key == "streamFactor") return in.streamFactor;
     if (key == "labourRate")   return in.labourRate;
     if (key == "land.price")   return in.landPrice;
+    if (key == "royalty.rate") return in.royalty.rate;
     if (key == "financing.rate")         return in.fin.rate;
     if (key == "financing.debtFraction") return in.fin.debtFraction;
     if (key.rfind("price.", 0) == 0)
@@ -2091,6 +2349,7 @@ AppraisalInputs withSensitivityValue(AppraisalInputs in, const std::string& key,
     else if (key == "streamFactor") in.streamFactor = v;
     else if (key == "labourRate")   in.labourRate   = v;
     else if (key == "land.price")   in.landPrice    = v;
+    else if (key == "royalty.rate") in.royalty.rate = v;
     else if (key == "financing.rate")         in.fin.rate         = v;
     else if (key == "financing.debtFraction") in.fin.debtFraction = v;
     else if (key.rfind("price.", 0) == 0)
@@ -2130,6 +2389,7 @@ std::vector<SensitivityInput> readSensitivity(const DictPtr& block,
     for (const auto& s : pricedStreams)   accepted.push_back("price." + s);
     for (const auto& u : pricedUtilities) accepted.push_back("utility." + u);
     if (base.landPresent) accepted.push_back("land.price");
+    if (base.royalty.present) accepted.push_back("royalty.rate");
     if (base.fin.present)
     {
         accepted.push_back("financing.debtFraction");
@@ -2161,6 +2421,12 @@ std::vector<SensitivityInput> readSensitivity(const DictPtr& block,
                     " of the land, and this economics block declares none (no"
                     " `land { price; source; reason; }`).  A sensitivity moves a"
                     " price the case DECLARES; it never invents one.");
+            if (key == "royalty.rate")
+                throw std::runtime_error(where + ": `royalty.rate` moves the"
+                    " rate of a royalty, and this economics block declares none"
+                    " (no `royalty { rate; basis; expiry; source; reason; }`)."
+                    "  A sensitivity moves a term the case DECLARES; it never"
+                    " invents one.");
             if (key == "financing.rate" || key == "financing.debtFraction")
                 throw std::runtime_error(where + ": `" + key + "` moves a term"
                     " of the loan, and this economics block declares no loan (no"
@@ -2311,6 +2577,8 @@ void resolveSensitivityEnds(SensitivityInput& s, scalar accLoPct, scalar accHiPc
         refuse("a tax rate lies in [0, 1).");
     if (s.key == "streamFactor" && !(s.lo > 0.0 && s.hi <= 1.0))
         refuse("a stream factor is a fraction of the year, in (0, 1].");
+    if (s.key == "royalty.rate" && !(s.lo >= 0.0 && s.hi < 1.0))
+        refuse("a royalty rate is a fraction in [0, 1).");
     if (s.key == "financing.rate" && !(s.lo >= 0.0 && s.hi < 1.0))
         refuse("a loan's interest rate is a fraction in [0, 1).");
     if (s.key == "financing.debtFraction" && !(s.lo > 0.0 && s.hi < 1.0))
@@ -2687,7 +2955,13 @@ int EconomicsPass::run(SimulationResult& result)
         quoted_C_BM0 += fBase->second;
     }
 
-    const scalar FCI = contingencyFee * sum_C_BM + siteFactor * sum_C_BM0;
+    //  THE BUILDING (E4), when declared: an installed facility, C_BM = the
+    //  rooms' areas x their prices, entering the ladder like a `kind facility`
+    //  quote -- contingencyFee x C_BM in the FCI, NOTHING in the siteFactor
+    //  base.  Zero, and the sum unchanged to the last bit, when absent.
+    const BuildingsDeclaration bldg = readBuildings(econDict_, result);
+    const scalar FCI = contingencyFee * (sum_C_BM + bldg.cost)
+                     + siteFactor * sum_C_BM0;
     //  WC = workingCapital x FCI, or the NET working capital when a model
     //  is declared, and TCI = FCI + WC: both computed in `appraise`.
 
@@ -3061,6 +3335,10 @@ int EconomicsPass::run(SimulationResult& result)
         baseIn.landArea    = landDecl.area;
     }
 
+    // ---- 5a''. THE ROYALTY (E5b), read and checked BEFORE any number is
+    //  printed.  Absent, nothing is read and nothing said.
+    baseIn.royalty = readRoyalty(econDict_);
+
     // ---- 5a'. THE FINANCING (G4), read and checked BEFORE any number is
     //  printed.  Absent, nothing is read and nothing said.  See
     //  `readFinancing` for the grammar and every convention.
@@ -3190,6 +3468,32 @@ int EconomicsPass::run(SimulationResult& result)
                      " SC_BM " << quoted_C_BM << " EUR, SC_BM_base "
                   << quoted_C_BM0 << " EUR  (a facility adds nothing to the"
                      " base; see the costing table)\n";
+    if (bldg.present)
+    {
+        //  THE BUILDING (E4): its arithmetic, its placement, its lower bound.
+        const std::ios::fmtflags keep = std::cout.flags();
+        std::cout << "    Building (" << bldg.nRooms << " room(s), "
+                  << std::setprecision(1) << bldg.area << " m2 of room area)"
+                  << "  C_BM = " << std::setprecision(0) << std::right
+                  << std::setw(12) << bldg.cost << " EUR\n";
+        for (const auto& kv : bldg.areaByGrade)
+            std::cout << "      grade " << std::left << std::setw(4)
+                      << (kv.first.empty() ? std::string("-") : kv.first)
+                      << std::right << std::setw(10) << std::setprecision(1)
+                      << kv.second << " m2  ->  " << std::setprecision(0)
+                      << std::setw(12) << bldg.costByGrade.at(kv.first)
+                      << " EUR\n";
+        std::cout << "      an installed FACILITY: in SC_BM (x " << std::setprecision(2)
+                  << contingencyFee << " = " << std::setprecision(0)
+                  << contingencyFee * bldg.cost << " EUR in the FCI), nothing in"
+                     " SC_BM_base; depreciated WITH THE PLANT (straight line),"
+                     " inside FCI, TCI and 0.180 FCI\n"
+                  << "      area = the sum of the declared rooms' floor areas on"
+                     " every floor (walls, corridors and stairwells not listed"
+                     " as rooms are NOT counted: a lower bound)\n"
+                  << "      price: " << bldg.source << "\n";
+        std::cout.flags(keep);
+    }
     if (!wcb.present)
         std::cout << "    WC  = " << std::setprecision(2) << workingCapital
                   << "*FCI              = "
@@ -3443,7 +3747,9 @@ int EconomicsPass::run(SimulationResult& result)
                   << std::setw(15) << "capital";
         if (landDecl.present) std::cout << std::setw(15) << "land";
         std::cout << std::setw(15) << "revenue"
-                  << std::setw(15) << "COM_d,t" << std::setw(14) << "start-up"
+                  << std::setw(15) << "COM_d,t";
+        if (baseIn.royalty.present) std::cout << std::setw(14) << "royalty";
+        std::cout << std::setw(14) << "start-up"
                   << std::setw(14) << "deprec." << std::setw(14) << "tax"
                   << std::setw(15) << "cash flow" << std::setw(11) << "1/(1+i)^t"
                   << std::setw(16) << "cumulative DCF" << "\n";
@@ -3455,7 +3761,9 @@ int EconomicsPass::run(SimulationResult& result)
                       << std::setw(15) << r.investment;
             if (landDecl.present) std::cout << std::setw(15) << r.land;
             std::cout << std::setw(15) << r.revenue
-                      << std::setw(15) << r.operatingCost << std::setw(14) << r.startupCost
+                      << std::setw(15) << r.operatingCost;
+            if (baseIn.royalty.present) std::cout << std::setw(14) << r.royalty;
+            std::cout << std::setw(14) << r.startupCost
                       << std::setw(14) << r.depreciation << std::setw(14) << r.tax
                       << std::setw(15) << r.cashFlow
                       << std::setw(11) << std::setprecision(4) << r.discountFactor
@@ -3559,6 +3867,269 @@ int EconomicsPass::run(SimulationResult& result)
     }
     if (!sensitivity.empty()) printSensitivity(sensitivity, base, sensCurrency, fin.present);
 
+    // ---- 9b.  THE ECONOMIC EXTENSIONS (E4/E5), each opt-in --------------
+    //  Everything below is a reading of `base` (and of `appraise` on a copy
+    //  for the NPV break-even); nothing here is a second copy of the cash
+    //  flow.  Published as KPIs (so the golden `kpi` kind pins them) and as
+    //  `key,value` lines in reports/economics.
+    std::vector<std::pair<std::string, scalar>>      extKpis;
+    std::vector<std::pair<std::string, std::string>> extCsv;
+    const std::string curStr = result.costs.empty() ? std::string("EUR")
+                             : result.costs.begin()->second.currency;
+    if (bldg.present)
+    {
+        extKpis.emplace_back("building_area_m2", bldg.area);
+        extKpis.emplace_back("building_C_BM", bldg.cost);
+        extKpis.emplace_back("building_inFCI", contingencyFee * bldg.cost);
+        extCsv.emplace_back("building_area_m2", csvNum(bldg.area, 3));
+        extCsv.emplace_back("building_C_BM", csvNum(bldg.cost, 0));
+        extCsv.emplace_back("building_inFCI", csvNum(contingencyFee * bldg.cost, 0));
+        extCsv.emplace_back("building_rooms", std::to_string(bldg.nRooms));
+        for (const auto& kv : bldg.areaByGrade)
+        {
+            const std::string g = kv.first.empty() ? std::string("none") : kv.first;
+            extKpis.emplace_back("building_area_m2_grade" + g, kv.second);
+            extKpis.emplace_back("building_C_BM_grade" + g, bldg.costByGrade.at(kv.first));
+        }
+    }
+    if (baseIn.royalty.present)
+    {
+        const RoyaltyDeclaration& ry = baseIn.royalty;
+        scalar total = 0.0;
+        int nYears = 0;
+        for (const auto& r : cashFlowRows)
+            if (r.year >= 1) { total += r.royalty; if (r.royalty != 0.0) ++nYears; }
+        const int lastYear = std::min(ry.expiry, Nlife);
+        std::cout << std::fixed << std::setprecision(4)
+                  << "\n  -- ROYALTY (declared patent window) -------------------------\n"
+                  << "    rate " << ry.rate << " of "
+                  << (ry.basis == "sales" ? "the year's sales"
+                                          : "the year's COM_d (cost of manufacture)")
+                  << "; carried by operating years 1.." << lastYear
+                  << (ry.expiry >= Nlife
+                        ? " -- the window OUTLASTS the project life (" + std::to_string(Nlife)
+                          + " yr): every operating year carries it"
+                        : "; years " + std::to_string(ry.expiry + 1) + ".."
+                          + std::to_string(Nlife) + " do not (the patent has expired)")
+                  << "\n    a cost of manufacture: deducted before the tax like"
+                     " COM_d; NOT inside COM_d above; total over the project "
+                  << std::setprecision(0) << total << " " << curStr << "\n"
+                  << "    source: " << ry.source << "\n";
+        extKpis.emplace_back("royalty_total", total);
+        extKpis.emplace_back("royalty_years", static_cast<scalar>(nYears));
+        extCsv.emplace_back("royalty_rate", csvNum(ry.rate, 6));
+        extCsv.emplace_back("royalty_basis", ry.basis);
+        extCsv.emplace_back("royalty_expiryYear", std::to_string(ry.expiry));
+        extCsv.emplace_back("royalty_yearsCharged", std::to_string(nYears));
+        extCsv.emplace_back("royalty_total", csvNum(total, 0));
+    }
+    //  ---- E5a: the break-evens -------------------------------------------
+    bool breakEvenOn = false;
+    if (econDict_->found("breakEven"))
+    {
+        if (std::holds_alternative<DictPtr>(econDict_->entryValue("breakEven")))
+            breakEvenOn = true;
+        else
+        {
+            const std::string w = econDict_->lookupWord("breakEven");
+            if (w != "on" && w != "true" && w != "yes")
+                throw std::runtime_error("economics: `breakEven " + w + ";` --"
+                    " write `breakEven on;` or a block `breakEven {}` to"
+                    " publish the break-evens; delete the line for none.");
+            breakEvenOn = true;
+        }
+    }
+    if (breakEvenOn)
+    {
+        const RoyaltyDeclaration& ry = baseIn.royalty;
+        const scalar rS = (ry.present && ry.basis == "sales") ? ry.rate : 0.0;
+        const scalar rC = (ry.present && ry.basis == "costOfManufacture") ? ry.rate : 0.0;
+        const scalar F0 = 0.180 * FCI + 2.73 * C_OL;
+        const scalar Vc = 1.23 * (C_RM + C_UT + C_WT);
+        const scalar slopeRev = R * (1.0 - rS);
+        const scalar slopeVar = Vc * (1.0 + rC);
+        const scalar Fx       = F0 * (1.0 + rC) + d_annual;
+        const bool   haveOp   = slopeRev > slopeVar;
+        const scalar xOp      = haveOp ? Fx / (slopeRev - slopeVar) : std::nan("");
+        //  the NPV break-even: the capacity scale s with NPV(s) = 0
+        auto npvAt = [&](scalar sc)
+        {
+            AppraisalInputs in = baseIn;
+            in.streamFactor = baseIn.streamFactor * sc;
+            return appraise(in, result, false).NPV;
+        };
+        scalar sNpv = std::nan("");
+        std::string npvNote;
+        {
+            const scalar f0 = npvAt(0.0);
+            if (f0 >= 0.0) { sNpv = 0.0; npvNote = "NPV >= 0 even with no production"; }
+            else
+            {
+                scalar lo = 0.0, hi = 1.0;
+                bool bracketed = false;
+                for (int k = 0; k < 11; ++k)
+                {
+                    if (npvAt(hi) >= 0.0) { bracketed = true; break; }
+                    lo = hi;  hi *= 2.0;
+                }
+                if (!bracketed)
+                    npvNote = "NPV stays negative up to 1024 x the nameplate production";
+                else
+                {
+                    for (int it = 0; it < 100; ++it)
+                    {
+                        const scalar mid = 0.5 * (lo + hi);
+                        if (npvAt(mid) >= 0.0) hi = mid; else lo = mid;
+                    }
+                    sNpv = 0.5 * (lo + hi);
+                }
+            }
+        }
+        const scalar npvAtFound = std::isfinite(sNpv) ? npvAt(sNpv) : std::nan("");
+        std::cout << std::fixed << std::setprecision(0)
+                  << "\n  -- BREAK-EVEN (two answers, two questions) -----------------\n"
+                  << "    (1) OPERATING: the fraction x of nameplate production at which"
+                     " sales = cost of production, year at full production\n"
+                  << "        FIXED    F = 0.180 FCI + 2.73 C_OL + depreciation = "
+                  << std::setw(14) << Fx << " " << curStr << "/yr"
+                  << (rC > 0.0 ? "  (x (1 + royalty) on the cash part)" : "") << "\n"
+                  << "        VARIABLE V = 1.23 (C_RM + C_UT + C_WT) at x = 1      = "
+                  << std::setw(14) << slopeVar << " " << curStr << "/yr\n"
+                  << "        SALES    R = " << std::setw(14) << slopeRev << " " << curStr
+                  << "/yr at x = 1" << (rS > 0.0 ? "  (net of the royalty on sales)" : "")
+                  << "\n        x = F / (R - V) = ";
+        if (haveOp)
+            std::cout << std::setprecision(4) << xOp << "  (sales at break-even "
+                      << std::setprecision(0) << xOp * R << " " << curStr << "/yr; margin"
+                      << " of safety " << std::setprecision(4) << 1.0 - xOp << ")\n";
+        else
+            std::cout << "(none: at full production the sales do not exceed the variable"
+                         " cost; no volume covers the fixed cost)\n";
+        std::cout << "        start-up cost, ramp-up, tax and the capital charge are NOT"
+                     " in it; the classification (fixed / variable) is the modelling"
+                     " choice above\n"
+                  << "    (2) NPV: the fraction s of nameplate production (capital and"
+                     " labour fixed) at which NPV = 0, by `appraise` on a copy: ";
+        if (std::isfinite(sNpv))
+            std::cout << std::setprecision(4) << sNpv << "  (NPV there "
+                      << std::setprecision(0) << (std::fabs(npvAtFound) < 0.5 ? 0.0 : npvAtFound)
+                      << " " << curStr << ")\n";
+        else
+            std::cout << "(none: " << npvNote << ")\n";
+        std::cout << "    They differ because (2) carries the capital charge, the tax, the"
+                     " working capital, the ramp-up, the royalty window and discounting,"
+                     " and (1) is one year's operating cost against its sales.\n"
+                  << "    Both use the SAME revenue R as the NPV (the products priced"
+                     " in constant/economics).\n";
+        extKpis.emplace_back("breakEven_operating_fraction", xOp);
+        extKpis.emplace_back("breakEven_operating_fixed", Fx);
+        extKpis.emplace_back("breakEven_operating_variable", slopeVar);
+        extKpis.emplace_back("breakEven_operating_sales", slopeRev);
+        extKpis.emplace_back("breakEven_npv_fraction", sNpv);
+        extCsv.emplace_back("breakEven_operating_fraction", csvNum(xOp, 6));
+        extCsv.emplace_back("breakEven_operating_fixed", csvNum(Fx, 0));
+        extCsv.emplace_back("breakEven_operating_variable", csvNum(slopeVar, 0));
+        extCsv.emplace_back("breakEven_operating_sales", csvNum(slopeRev, 0));
+        extCsv.emplace_back("breakEven_npv_fraction", csvNum(sNpv, 6));
+    }
+    //  ---- E5c: the working capital by three methods ----------------------
+    if (econDict_->found("workingCapitalMethods"))
+    {
+        const std::string where = "economics { workingCapitalMethods { ... } }";
+        if (!std::holds_alternative<DictPtr>(econDict_->entryValue("workingCapitalMethods")))
+            throw std::runtime_error("economics: `workingCapitalMethods` must be a"
+                " block -- `workingCapitalMethods { fractionOfSales 0.10;"
+                " fractionOfFixedCapital 0.15; source \"...\"; reason \"...\"; }`.");
+        const DictPtr d = econDict_->subDict("workingCapitalMethods");
+        const std::vector<std::string> known
+            { "fractionOfSales", "fractionOfFixedCapital", "source", "reason" };
+        for (const auto& k : d->keys())
+            if (std::find(known.begin(), known.end(), k) == known.end())
+                throw std::runtime_error("economics: " + registryRefusal::message(
+                    "workingCapitalMethods key", k, known, "Accepted"));
+        for (const char* k : { "source", "reason" })
+            if (!d->found(k) || d->lookupWord(k).empty())
+                throw std::runtime_error(where + ": `" + k + " \"...\";` is not"
+                    " declared -- a working-capital fraction is an assumption the"
+                    " case owes its reader.");
+        if (!d->found("fractionOfSales") && !d->found("fractionOfFixedCapital"))
+            throw std::runtime_error(where + ": declares no fraction -- give"
+                " `fractionOfSales` and/or `fractionOfFixedCapital`; no number is"
+                " shipped.");
+        auto frac = [&](const char* k) -> scalar
+        {
+            const scalar v = d->lookupScalar(k);
+            if (!(v > 0.0) || !(v < 1.0))
+                throw std::runtime_error(where + ": `" + k + "` must lie strictly"
+                    " between 0 and 1.");
+            return v;
+        };
+        const bool haveS = d->found("fractionOfSales");
+        const bool haveF = d->found("fractionOfFixedCapital");
+        const scalar fS = haveS ? frac("fractionOfSales") : 0.0;
+        const scalar fF = haveF ? frac("fractionOfFixedCapital") : 0.0;
+        const scalar wcSales = fS * R, wcFixed = fF * FCI;
+        std::vector<scalar> avail;
+        std::cout << std::fixed
+                  << "\n  -- WORKING CAPITAL BY THREE METHODS ---------------------------\n";
+        std::cout << std::setprecision(0);
+        if (wcb.present)
+        {
+            std::cout << "    itemised build-up            = " << std::setw(14) << wcb.net
+                      << " " << curStr << "\n";
+            avail.push_back(wcb.net);
+            extKpis.emplace_back("WCm_itemised", wcb.net);
+            extCsv.emplace_back("WCm_itemised", csvNum(wcb.net, 0));
+        }
+        else
+            std::cout << "    itemised build-up            : NOT computed -- no"
+                         " `workingCapital {}` block is declared\n";
+        if (haveS)
+        {
+            std::cout << "    " << std::setprecision(4) << fS << " x annual sales       = "
+                      << std::setprecision(0) << std::setw(14) << wcSales << " " << curStr << "\n";
+            avail.push_back(wcSales);
+            extKpis.emplace_back("WCm_sales", wcSales);
+            extCsv.emplace_back("WCm_sales", csvNum(wcSales, 0));
+        }
+        else
+            std::cout << "    % of annual sales            : NOT computed -- no"
+                         " `fractionOfSales` is declared\n";
+        if (haveF)
+        {
+            std::cout << "    " << std::setprecision(4) << fF << " x fixed capital      = "
+                      << std::setprecision(0) << std::setw(14) << wcFixed << " " << curStr << "\n";
+            avail.push_back(wcFixed);
+            extKpis.emplace_back("WCm_fixedCapital", wcFixed);
+            extCsv.emplace_back("WCm_fixedCapital", csvNum(wcFixed, 0));
+        }
+        else
+            std::cout << "    % of fixed capital           : NOT computed -- no"
+                         " `fractionOfFixedCapital` is declared\n";
+        const std::string used = wcb.present
+            ? std::string("itemised build-up (`workingCapital {}`)")
+            : "a fraction of the fixed capital (`workingCapital "
+              + std::to_string(workingCapital) + ";`)";
+        std::cout << "    USED IN THE APPRAISAL        = " << std::setw(14) << WC
+                  << " " << curStr << "  <- " << used << "\n";
+        extKpis.emplace_back("WCm_used", WC);
+        extCsv.emplace_back("WCm_usedMethod", wcb.present ? "itemised" : "fractionOfFixedCapital");
+        if (avail.size() >= 2)
+        {
+            const scalar mx = *std::max_element(avail.begin(), avail.end());
+            const scalar mn = *std::min_element(avail.begin(), avail.end());
+            std::cout << "    spread (max - min)           = " << std::setw(14) << mx - mn
+                      << " " << curStr << "  (max / min = " << std::setprecision(2)
+                      << (mn > 0.0 ? mx / mn : std::nan("")) << ")\n";
+            extKpis.emplace_back("WCm_spread", mx - mn);
+            extCsv.emplace_back("WCm_spread", csvNum(mx - mn, 0));
+        }
+        else
+            std::cout << "    spread                       : needs at least two methods"
+                         " with inputs\n";
+        std::cout << "    fractions: " << d->lookupWord("source") << "\n";
+    }
+
     // ---- 10.  Publish headline KPIs (the differentiator) ----------------
     auto& econ = result.kpis["economics"];
     econ["FCI"]          = FCI;
@@ -3600,6 +4171,9 @@ int EconomicsPass::run(SimulationResult& result)
         econ["land"]     = base.land;
         econ["landArea"] = landDecl.area;
     }
+    //  THE E4/E5 EXTENSIONS, only when declared (building, royalty,
+    //  break-even, working-capital methods).
+    for (const auto& kv : extKpis) econ[kv.first] = kv.second;
     //  THE FINANCING (G4), only when declared, so every other case publishes
     //  exactly what it did.  The PROJECT's NPV / IRR / paybackYears above are
     //  untouched; these are the loan and the EQUITY view beside them, each a
@@ -3687,6 +4261,8 @@ int EconomicsPass::run(SimulationResult& result)
                           : result.costs.begin()->second.currency;
 
     summary.cashFlow      = cashFlowRows;
+    summary.royaltyPresent = baseIn.royalty.present;
+    summary.extensions    = extCsv;
     summary.timelineExtended   = timeline.extended;
     summary.constructionPeriod = Nc;
     summary.capitalSchedule    = timeline.capitalSchedule;

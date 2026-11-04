@@ -703,6 +703,9 @@ struct CashFlowYear
     scalar land             = 0.0;  // the land (C82): -cost at the start of
                                     // construction, +cost (recovered) at N;
                                     // written only when a land price is declared
+    scalar royalty          = 0.0;  // the royalty (E5b): a cost of the year,
+                                    // inside the declared patent window only;
+                                    // written only when a royalty is declared
     scalar discountFactor   = 0.0;  // 1/(1+i)^t
     scalar discountedCF     = 0.0;  // CF_t * discountFactor
     scalar cumulativeDCF    = 0.0;  // running sum of discountedCF
@@ -844,6 +847,12 @@ struct EconomicsSummary
     int                       landRecoveredAtYear = 0;
     std::string               landSource;
     std::string               landReason;
+    //  THE ROYALTY (E5b): a column of the year-by-year table, only when
+    //  declared.  `extensions` is the footer of reports/economics: the
+    //  building cost, the break-even and the working-capital methods write
+    //  `key,value` lines there when the case declares them (E4/E5).
+    bool                      royaltyPresent = false;
+    std::vector<std::pair<std::string, std::string>> extensions;
     //  THE SENSITIVITY (C68), empty unless the case declared the block; in
     //  tornado order (largest NPV swing first, a tie in declared order).
     std::vector<EconomicSensitivityRow> sensitivity;

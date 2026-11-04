@@ -1,0 +1,31 @@
+// [imported] origin "data/standards/mixtures/air.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*---------------------------------------------------------------------------*\
+  Predefined MIXTURE: dry atmospheric air.
+
+  A mixture file is NOT a component -- it carries no properties of its own.
+  It is an EXPANSION TABLE: when a thermoPackage lists `air` in its
+  `components ( ... )`, the loader splices it open into its member
+  components (which DO have curated .dat files) and seeds a feed stream's
+  composition with the member mole fractions below.
+
+  Glass-box: the splice is announced LOUDLY on stderr, e.g.
+      [mixture] 'air' -> N2 (0.7808) + O2 (0.2095) + Ar (0.0093)
+
+  Trace species (CO2 ~400 ppm, Ne, He, ...) are dropped; the three retained
+  members carry > 99.9 % of dry air and the fractions are renormalised to 1.
+\*---------------------------------------------------------------------------*/
+
+mixture     air;
+
+members
+(
+    { component N2;   x 0.7808; }      // nitrogen
+    { component O2;   x 0.2095; }      // oxygen
+    { component Ar;   x 0.0093; }      // argon
+);
+
+provenance
+{
+    origin   standard;
+    note     "dry air, US Standard Atmosphere 1976 mole fractions (N2/O2/Ar; trace species omitted)";
+}

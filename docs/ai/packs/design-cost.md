@@ -164,6 +164,7 @@ economics
     estimateClass 5;  accuracyBand ( -50 100 );
     refuseOnMissingPrice 1;
     [sensitivity { ... }]  [land { price 80; source; reason; }]  [financing { ... }]
+    [buildings { ... }] [breakEven {}] [royalty { ... }] [workingCapitalMethods { ... }]
     [capitalSchedule (...)] [rampUp (...)] [startupCostFraction 0.1]
     [operatingCrew {...}]  [particulateSteps {...}]
 }
@@ -199,6 +200,37 @@ economics
 * Optional: `land { price; source; reason; }` prices the plot area of the
   layout (non-depreciable); `financing { debtFraction; basis; rate; graceYears;
   termYears; repayment annuity|linear; source; reason; }` adds equity NPV/IRR.
+* Opt-in extensions (every number is the CASE's, none is shipped; witness
+  `tutorials/steady/economics/economics04_building_royalty_breakeven`):
+  - `buildings { price <EUR per m2>; gradePrice { A|B|C|D|CNC <EUR per m2>; };
+    source; reason; }`: the building cost from the rooms of the layout's
+    `building {}`: area = the sum of every declared room's floor area on every
+    floor (walls, corridors and stairwells not listed as rooms are NOT counted:
+    a lower bound), priced at the room's grade price else `price`.  It is an
+    installed FACILITY (like a `kind facility` quote): contingencyFee x C_BM
+    enters FCI, nothing enters the siteFactor base, it is depreciated with the
+    plant.  Refused: no `building {}` declared, no source or reason, a room
+    whose grade has no price.  KPIs `building_area_m2`, `building_C_BM`,
+    `building_inFCI`, `building_area_m2_grade<g>`.
+  - `breakEven {}` (or `breakEven on;`): the OPERATING break-even
+    x = F/(R - V), fixed F = 0.180 FCI + 2.73 C_OL + depreciation, variable
+    V = 1.23 (C_RM + C_UT + C_WT) (the classification is printed), and the NPV
+    break-even s (the production fraction at which NPV = 0, found by the same
+    `appraise` on a copy); they differ (capital charge, tax, working capital,
+    ramp-up, royalty window, discounting) and the output says so.  KPIs
+    `breakEven_operating_fraction`, `breakEven_npv_fraction`.  No verdict.
+  - `royalty { rate <fraction>; basis sales|costOfManufacture; expiry <year>;
+    source; reason; }`: a cost of operating years 1..expiry only, deducted
+    before the tax; refused without `expiry` (a royalty with no end), source
+    or reason; `royalty.rate` is a sensitivity input; KPIs `royalty_total`,
+    `royalty_years`; a `royalty_<cur>` column in cashFlow.csv.
+  - `workingCapitalMethods { fractionOfSales; fractionOfFixedCapital; source;
+    reason; }`: the itemised build-up (if `workingCapital {}` is declared), a
+    fraction of annual sales and a fraction of fixed capital side by side with
+    the spread and the method the appraisal USES (the case's own
+    `workingCapital`); a method without its input is named, not defaulted.
+    KPIs `WCm_itemised`, `WCm_sales`, `WCm_fixedCapital`, `WCm_spread`,
+    `WCm_used`.
 * KPIs `economics.NPV`, `.IRR`, `.FCI`, `.COM_d` feed a sweep or optimisation.
 
 ## 5. Example: heat an ethanol-water feed and flash it

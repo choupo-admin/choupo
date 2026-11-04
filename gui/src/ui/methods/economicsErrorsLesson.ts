@@ -297,8 +297,10 @@ export const ECON_ERRORS_QUIZ: readonly QuizQuestion[] = [
     ],
     correct: 1,
     feedback: "A royalty is paid for a licensed right that is still in force. "
-      + "Choupo has no royalty line and no patent calendar to catch the "
-      + "mistake in either direction.",
+      + "Choupo charges a declared royalty only in the years of the "
+      + "window you declare and refuses a royalty with no end, but it has "
+      + "no patent calendar to catch a window declared wrongly or a "
+      + "licence you do not hold.",
     steps: [5, 10],
     origins: ["assumption"],
   },
