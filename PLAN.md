@@ -69,6 +69,9 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| todo | C220 (Vitor's wish, LATER): a rare-earth separation case from the open literature -- first an EduTool on why a separation factor of 1.5 needs so many stages (no data), then a research general for ONE open-access Nd/Pr or Dy/Tb separation with printed constants and cascade, then a mass-action reactive extractor | C220 |
+| todo | C219 liquid-liquid extraction COLUMNS: stage efficiency declared; sizing by a declared HETS with its source; flooding and diameter only on a readable source (Vitor supplies Treybal, Perry's, Seader, or Lo-Baird-Hanson) | C219 |
+| todo | C218 EduTool: reversible vs irreversible, and when quenching works (K(T) and equilibrium conversion computed from the catalogue; a declared rate and a cooling rate; the freezing temperature; cracking against ammonia) | C218 |
 | todo | C217 bio, step 1 (a research general): ONE openly licensed (CC BY) published fed-batch fermentation with every parameter printed (mu_max, Ks, Y, kLa, feed profile) and the elemental formula of the biomass; then the bioreactor with growth on `batchReactor`/`dynamicCSTR` (Monod, maintenance, yields, death), oxygen transfer, metabolic heat, thermal sterilisation (D, z, F0) | C217 |
 | todo | C216 EduTool, biorefinery key reactions on the carbon-and-oxygen-removal lesson; FIRST measure which species carry formation data in the catalogue | C216 |
 | todo | C215 EduTool, the fundamental organic reaction classes as what the engine needs (enthalpy computed, K from DeltaG, kinetic form, reactor, hazard); the liquid esterification (C201) first | C215 |

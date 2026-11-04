@@ -2071,6 +2071,43 @@ accepts today, and that is a policy call.
 > fed-batch fermentation with every parameter printed, found by a research
 > general first.  Plan rows follow.
 
+> **C218 / C219 / C220 (Vitor, 2026-11-04).**  C218 (EduTool): why a reaction
+> is "reversible" or "irreversible", and when quenching works.  Findings
+> recorded: no reaction is irreversible (microscopic reversibility, K =
+> k_f/k_r = exp(-DeltaG/RT)); "irreversible" means K large enough at THESE
+> conditions, and it changes with temperature; "irreversible" collides with
+> the thermodynamic sense (entropy production) -- the root of a common
+> confusion; quenching is kinetic trapping and applies to ENDOTHERMIC,
+> metastable products (steam cracking, NO, acetylene), is NOT universal (the
+> exothermic reversible ones want the lowest T with a rate: ammonia, methanol,
+> SO3) and "quench" also names a cold-shot that moves along the equilibrium
+> curve, which is a different act.  The page computes K(T) and the
+> equilibrium conversion from the catalogue (ethane, ethylene, acetylene and
+> NO carry formation data), overlays a declared rate and a cooling rate and
+> shows the freezing temperature (cooling time RT^2/E against 1/k).  C219:
+> liquid-liquid extraction COLUMNS: the engine has the countercurrent
+> cascade of equilibrium stages (`extractor`, an LL flash per stage, two
+> tutorials) but not the equipment -- no packed, rotating-disc, pulsed or
+> mixer-settler model, no HETS, no flooding or diameter, no stage efficiency;
+> steps: (1) a declared stage efficiency as the distillation has, (2) sizing
+> by a DECLARED HETS with its source, (3) flooding and diameter only on a
+> readable source with a worked example (Treybal, Perry's, Seader, or Lo,
+> Baird & Hanson) -- Vitor supplies the books.  C220 (WAITS, "para mais
+> tarde"): a RARE-EARTH separation case, if the data can be taken from the
+> open literature.  State of the ground: lithium has the sectored brine plant
+> (Pitzer, NRTL LLE, carbonation, hot air, finishing) and wants solar
+> evaporation ponds and direct extraction; rare earths have NO lanthanide in
+> the catalogue, and the separation is mass-action solvent extraction (D2EHPA
+> / PC88A) in cascades of hundreds of stages with adjacent separation factors
+> of only 1.5 to 3, which the Gibbs-minimising LL flash with an activity model
+> cannot represent -- it needs a reactive extraction with one equilibrium
+> constant per element and its pH and extractant dependence, and those
+> constants live in scattered, partly paywalled papers that disagree.  Order:
+> an EduTool first (why a factor of 1.5 needs so many stages, from a two-
+> component Kremser-type count, no data needed), then a research general for
+> ONE open-access separation (Nd/Pr or Dy/Tb) with printed constants and
+> cascade, and only then the mass-action extractor.
+
 > **THE STACK, AND THE ONE FULL SWEEP (the architect, 2026-11-03 06:00):** five
 > of the seven builds are now in the local branch `staging` (C208, S1, S2,
 > E2+E3, dynamic slice 2), each validated by `bin/integrate --base staging` on
