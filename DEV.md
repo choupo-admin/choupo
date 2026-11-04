@@ -2030,6 +2030,47 @@ accepts today, and that is a policy call.
 > (3) Serth's own JL/JB/Jr/Rl/Rb/Rs equations (his Eqs 6.5ff) would replace
 > the declared chart readings -- pages requested from Vitor.
 
+> **C215 / C216 / C217. THREE COMMISSIONS FROM THE SAME NIGHT (Vitor,
+> 2026-11-04): reaction classes in EduTools; the biorefinery's key
+> reactions; and a brainstorm on the unit operations biotechnology needs.**
+> C215 (EduTool): the fundamental ORGANIC reaction classes as "what the
+> engine needs" -- per class the enthalpy COMPUTED from the catalogue, the
+> equilibrium K from DeltaG and its temperature dependence, the kinetic form,
+> the reactor the class asks for, the typical hazard, each row pointing at a
+> case that runs; typical conditions only with a primary or free source.  First
+> worked example: the liquid esterification (near-thermoneutral, and why --
+> the C201 finding).  C216 (EduTool): the biorefinery's key reactions
+> (cellulose and hemicellulose hydrolysis, glucose fermentation with the 51 %
+> theoretical ethanol yield, transesterification, hydrodeoxygenation,
+> pyrolysis and gasification, water-gas shift, anaerobic digestion, lactic
+> acid, HMF and levulinic acid) on the carbon-and-oxygen-removal lesson; FIRST
+> a measurement of how many of the species carry formation data in the
+> catalogue (glucose, glycerol, furfural and methyl oleate exist; cellulose,
+> xylose, HMF, levulinic acid and the biomass are to be checked), and a page
+> says where data is missing instead of inventing it.  C217 (brainstorm, by
+> the architect): the engine has NOTHING biological in its calculation today
+> (the sugar plant's "fermentor" is a CSTR with a declared conversion; no
+> Monod kinetics, no biomass or protein component, no oxygen transfer).  The
+> units a biotechnology user needs, in value order: A) the BIOREACTOR with
+> growth (Monod with substrate and product inhibition, maintenance, yields,
+> death) in batch, fed-batch and chemostat on the existing batchReactor /
+> dynamicCSTR; oxygen transfer (kLa, OUR against OTR, power per volume);
+> metabolic heat through the elements datum with a declared elemental formula
+> for the biomass; thermal sterilisation (D and z, F0) -- the one link to the
+> sterile route the PIF review lists as a gap; B) downstream: cell
+> centrifugation and filtration, homogenisation, protein ultrafiltration and
+> diafiltration (the membrane and diafilter exist), chromatography on the
+> existing adsorption/ion-exchange units, lyophilisation and spray drying;
+> C) components and data: biomass (CHON), protein, DNA, lipid pseudo-
+> components, media and buffers on the existing speciation engine; D) the
+> carbon/nitrogen/electron balance with the theoretical yield from half
+> reactions as an EduTool.  THE LIMIT, said plainly: biological parameters
+> (mu_max, Ks, Y, kLa) are not computed and must be declared with their source
+> per organism; validating them needs published experimental data, so the
+> first slice is the bioreactor (A1) pinned on ONE openly licensed published
+> fed-batch fermentation with every parameter printed, found by a research
+> general first.  Plan rows follow.
+
 > **THE STACK, AND THE ONE FULL SWEEP (the architect, 2026-11-03 06:00):** five
 > of the seven builds are now in the local branch `staging` (C208, S1, S2,
 > E2+E3, dynamic slice 2), each validated by `bin/integrate --base staging` on

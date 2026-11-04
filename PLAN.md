@@ -69,6 +69,9 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| todo | C217 bio, step 1 (a research general): ONE openly licensed (CC BY) published fed-batch fermentation with every parameter printed (mu_max, Ks, Y, kLa, feed profile) and the elemental formula of the biomass; then the bioreactor with growth on `batchReactor`/`dynamicCSTR` (Monod, maintenance, yields, death), oxygen transfer, metabolic heat, thermal sterilisation (D, z, F0) | C217 |
+| todo | C216 EduTool, biorefinery key reactions on the carbon-and-oxygen-removal lesson; FIRST measure which species carry formation data in the catalogue | C216 |
+| todo | C215 EduTool, the fundamental organic reaction classes as what the engine needs (enthalpy computed, K from DeltaG, kinetic form, reactor, hazard); the liquid esterification (C201) first | C215 |
 | waits-Vitor | C214 W2 (Bell-Delaware rating): the general STOPPED before building, rightly -- the coefficient tables exist only second-hand (a GPL code transcription that contradicts itself between two functions, e.g. one coefficient -0.123 against -0.12) and no worked example is readable, so nothing could be held to printed digits.  Needs ONE readable source: Serth, *Process Heat Transfer* ch. 6 (Table 6.1 and its worked example), or Kakac & Liu, or Taborek's HEDH 3.3.9 B with its geometry; then the build is a day | C214 |
 | todo | State checks: measure the seal-drift finding against main (9 sucrose / H2SO4 mirrors, 1809 moved values); one browser run on the site of each unit that reached main without one (Complete 0/, pressure exchanger, boron split, dynamic tank; C178, C182) | C201, C196 |
 | todo | The C200 packs still missing (heat, electrolytes, membranes, solids, drivers, transient, props) and the generated reference; re-score the 2026-11-01 baseline with the -init0 step | C200 |
