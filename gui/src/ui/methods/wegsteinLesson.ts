@@ -102,7 +102,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "The WEGSTEIN branch packs the total flow, every mole "
           + "fraction, the temperature and the pressure — per torn stream "
-          + "(src/unitOperations/flowsheet/Flowsheet.cpp:1774-1785).",
+          + "(src/unitOperations/flowsheet/Flowsheet.cpp:1775-1786).",
         eq: String.raw`x = ( F,\ z_1,\ z_2,\ \ldots,\ z_{N_c},\ T,\ P )`},
       { step: "That is one number more than the stream has independent "
           + "content, because the fractions must sum to one. The redundant "
@@ -324,7 +324,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "of them and they are not the same number. The Wegstein CLASS "
       + "defaults to [-5, 0] (src/solver/Wegstein.H:73-74); the RECYCLE loop "
       + "constructs it with [-1, 0] "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3247-3248). A Choupo "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3257-3258). A Choupo "
       + "recycle that declares nothing therefore runs at the gentler clamp.",
   },
   {
@@ -379,7 +379,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "norm of the change in the packed tear vector falls below the "
       + "declared tolerance — a flow in kmol/s, a handful of mole fractions "
       + "and a temperature in kelvin, added in quadrature with no scaling "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3267, the norm at "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3307, the norm at "
       + ":2043-2052). A temperature near 360 dominates a flow near 1e-4 by "
       + "six orders of magnitude, so a run can satisfy that test with the "
       + "temperature pinned to six digits and the recycle flow still several "
@@ -477,13 +477,13 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
     title: "The tear carries a flow, a composition and a temperature — and "
       + "not the rest of the stream's state",
     body: "The pack and unpack move exactly those three things "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:1774-1785 and "
-      + "src/unitOperations/flowsheet/Flowsheet.cpp:1801-1842). The pressure "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:1775-1786 and "
+      + "src/unitOperations/flowsheet/Flowsheet.cpp:1802-1843). The pressure "
       + "and the phase split are NOT torn: pressure is set by the units, and "
       + "the vapour fraction sitting on the torn stream is whatever the "
       + "previous sweep left there — the engine says so in its own words on "
       + "the Newton side, calling it the phase proxy "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3365-3368). So the state "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3407-3410). So the state "
       + "handed to the first consumer of a tear is an assumption about three "
       + "quantities carrying a fourth along for the ride, and only at "
       + "convergence, when the assumption and its image agree, is it a state "
