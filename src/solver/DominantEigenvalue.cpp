@@ -29,8 +29,10 @@ License
 
 #include "DominantEigenvalue.H"
 
+#include <algorithm>
 #include <cmath>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 
