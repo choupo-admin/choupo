@@ -2166,6 +2166,30 @@ accepts today, and that is a policy call.
 > `extractor` validated against Perry's Table 15-8), so the page can end on
 > a column the engine ran.
 
+> **C223 (Vitor, 2026-11-04): MORE COMPONENTS AND BINARY PAIRS FROM "THE NIST
+> DATABASE", AND A SENSITIVITY TO SEE WHICH PARAMETERS MATTER.**  The
+> architect's answer, recorded: (1) NIST's WebBook and SRD stay OUT (no-grant,
+> CLAUDE.md §10; the 2026-07-14 legal scrub took the public pairs from 120 to
+> 5 on purpose); (2) the NIST ThermoML ARCHIVE is different -- published
+> measurements, each with its article -- and its C16 route already exists
+> (`bin/choupo-thermoml`, joined by InChIKey): fit on one study, hold out on
+> another, band declared BEFORE the fit, promote only when `validated` as
+> `reviewStatus interim` naming the case, a gate re-running that case, and
+> arm (f)'s one-liquid test over the validity span (a held-out bubble-T
+> verdict cannot see a pair that splits the liquid); promotion to the public
+> tier is Vitor's review ALONE; (3) components are never downloaded: primary
+> source per value, or an honest estimate from the group lake, marked; (4)
+> the sensitivity he asks for is the `fitParameters` identifiability verdict
+> (structural: factors the data cannot determine are marked) run BEFORE the
+> curation time is spent; (5) the pilot: about ten pairs chosen by DEMAND
+> (the PIF reports' actives and solvents, the pairs the tutorials use on
+> unvalidated values), measuring time per pair and the fraction that
+> validates -- a pair that does not validate stays a recorded finding; the
+> limit is Vitor's review time, not code.  PRECONDITION named: do it after
+> the validation subset has grown (today 7 of 516 cases check an answer
+> against an independent source; C219's extractor against Perry's Table
+> 15-8 is one step).
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
