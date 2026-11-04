@@ -61,7 +61,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | todo | C214 W5: a Cv-rated control valve with an inherent characteristic (linear / equal-percentage), the opening as the manipulated variable -- what the digital twin's controllers move (ISA-75.01 form) | C214, C203 |
 | todo | (Opus) C214 W6: IF97 region 3 (Helmholtz f(rho,T); the engine refuses it today) and a gate holding regions 1-4 to the IAPWS release's own verification tables | C214 |
 | todo | C214 W7: a water electrolyser unit (declared cell-voltage curve, Faraday efficiency, stack power -> H2, O2, heat; Ulleberg 2003); the green-ammonia plant declares its H2 as a feed today | C214 |
-| done | PIF E4 + E5 (2026-11-04, branch pif-e4e5, awaiting integration): `economics { buildings, breakEven, royalty, workingCapitalMethods }`, all opt-in, no number shipped; witness `economics04_building_royalty_breakeven`, gate `check_economic_extensions`; the asset-class depreciation stays absent | C195, C210 |
+| done | PIF E4 + E5 (2026-11-04, merged to main; pushed once its gate has run on the integrated tree): `economics { buildings, breakEven, royalty, workingCapitalMethods }`, all opt-in, no number shipped; witness `economics04_building_royalty_breakeven`, gate `check_economic_extensions`; the asset-class depreciation stays absent | C195, C210 |
 | todo | The control-placement EduTool, pages 1-5 and the plant method page (the Pareto is in C204); its loops use the instrument grammar above | C204 |
 | todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag (they feed the digital twin) | C205 |
 
