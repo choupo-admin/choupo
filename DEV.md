@@ -2152,7 +2152,7 @@ accepts today, and that is a policy call.
 > the dilute extract, and the plait lies near 0.395 raffinate acid.  The
 > miss is pinned (`aad` rows), the verdict word `misses` is held by the gate;
 > the remedy (curated LLE parameters) is NOT taken.  (B) the Kremser-
-> Souders-Brown shortcut, ONE home `separation/ExtractionShortcut.H`,
+> Souders-Brown shortcut, ONE home `src/unitOperations/separation/ExtractionShortcut.H`,
 > published by the extractor as `N_shortcut` beside the rigorous count, and
 > `op:extractionShortcut` holding Examples 15-1..15-3 (4.3, 4.5, 6.0) to the
 > printed digits as anchors; Treybal Eq. (10.38) is the same cascade (agrees

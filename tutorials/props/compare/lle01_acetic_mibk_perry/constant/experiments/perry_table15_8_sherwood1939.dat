@@ -24,8 +24,18 @@
   article.  The printed rows sum to 100 within the table's own rounding.
 \*---------------------------------------------------------------------------*/
 
+property     ternaryLLE.massFractions;
+system       ( water aceticAcid methylIsobutylKetone );
+temperature  25 degC;
+pressure     101.325 kPa;
+
 provenance
 {
+    // sha256 is of the `data ( );` block of THIS file as transcribed (the
+    // text from the line `data` to its closing `);`), because the source is
+    // a printed table, not an archive file: it tells this transcription from
+    // a corrected one.
+    sha256   "3e1fa40152266e2751e4e50365b50ea076136b2397996a52a3e38d16fef5f9d9";
     source   "Sherwood, Evans & Longcor, Ind. Eng. Chem. 31(9) (1939) 1144-1150, as tabulated in Perry's Handbook 9th ed., Table 15-8";
     citation "Water + acetic acid + methyl isobutyl ketone, 25 C: six ternary tie lines (weight fractions).  Transcribed from the printed table; not checked against the 1939 article.";
 }

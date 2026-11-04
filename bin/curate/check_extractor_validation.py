@@ -127,7 +127,7 @@ def treybal_fraction(N, E):
 def parse_dataset(path):
     txt = path.read_text()
     cols = re.findall(r"name\s+(\w+);", txt)
-    body = txt[txt.index("data"):]
+    body = txt[re.search(r"^data\s*$", txt, re.M).start():]
     nums = [float(x) for x in re.findall(r"-?\d+\.\d+", body)]
     n = len(cols)
     rows = [nums[i:i + n] for i in range(0, len(nums), n)]

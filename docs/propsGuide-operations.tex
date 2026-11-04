@@ -671,6 +671,21 @@ The saturated-liquid and saturated-vapour enthalpy loci of a BINARY at ONE press
 \file{tutorials/props/scan/hxy01\_ethanol\_water\_1atm}
 \end{tutoriallink}
 
+\paragraph{\code{extractionShortcut}}\label{op:extractionShortcut}
+The Kremser-Souders-Brown shortcut for a dilute liquid-liquid extraction cascade (Perry's 9th ed. Eq. 15-43, Treybal Eq. 10.38) evaluated on declared solute-free ratios: the stage count, the fraction taken, the transfer units, and with a \code{pseudoSolute} block the case-B pseudo-feed and pseudo-solvent of Eqs. 15-90/15-91. A CHECK on a straight equilibrium line, not a design; it reads no property.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{inputs}\textbf{*} & Ratios \\
+\code{pseudoSolute} & Case B (partly miscible solvents) \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/compare/extractionShortcut01\_perry\_example15\_1}
+\end{tutoriallink}
+
 \paragraph{\code{flashSpec}}\label{op:flashSpec}
 A flash SPECIFIED by a pair other than (T, P): (P, H), (P, S), (T, V/F) or (P, V/F), solved by ONE home (flashState::specifiedFlash) -- the one a unit that needs such a state is to call; none does yet: adiabaticFlash, valve, compressor and turbine keep their own searches. Every trial state is ONE isothermal flash (its stability test and supercritical discard included), priced on the energy report's own surface (hOfState / sOfState; the entropy's liquid leg is the partner of the liquid enthalpy). A pure fluid inside its latent jump lands on the saturation plateau (T = Tsat, the vapour fraction by the lever rule) — the wet isentropic expansion a single-phase vapour model cannot see. A specification no state satisfies inside the search window REFUSES by name; nothing is clamped. Convergence is solver/Convergence.H's one decision (the degenerate one-equation case: the raw residual, said so).
 
@@ -742,6 +757,25 @@ The Hansen distance Ra\textasciicircum{}2 = 4(dD - dD,t)\textasciicircum{}2 + (d
 \begin{tutoriallink}
 \file{tutorials/props/solvents/solvent01\_synthetic\_mixture}
 \quad (and 2 more)
+\end{tutoriallink}
+
+\paragraph{\code{lleTieLines}}\label{op:lleTieLines}
+The conjugate-phase curve of a ternary liquid-liquid system at one (T, P): the feed walks a straight line in the triangle (the solute's mass fraction sweeps, the rest split carrier : extractant in a declared ratio) and every feed that splits through the liquid-liquid flash writes one row, raffinate and extract in MASS fractions. Laid beside measured tie lines by an \code{experimental \{\}} overlay it is a validation reading, never a fit; a feed that does not split is counted and not written.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{carrier}\textbf{*} & Carrier \\
+\code{extractant}\textbf{*} & Extractant \\
+\code{feed}\textbf{*} & Feed line \\
+\code{output}\textbf{*} & CSV output \\
+\code{solute}\textbf{*} & Solute \\
+\code{state}\textbf{*} & Held state \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/compare/lle01\_acetic\_mibk\_perry}
 \end{tutoriallink}
 
 \paragraph{\code{membraneShortlist}}\label{op:membraneShortlist}
