@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  extract03_acetic_acid_mibk_perry -- meta-control
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Counter-current LL extraction of acetic acid from water with MIBK (Perry Example 15-1 problem)";
+
+verbosity     3;

@@ -1,0 +1,79 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  extractionShortcut01_perry_example15_1
+  ======================================
+
+  WHAT IT IS.  The Kremser-Souders-Brown shortcut for a dilute
+  liquid-liquid extraction cascade, run on the numbers of two worked examples
+  in Perry's Chemical Engineers' Handbook, 9th ed., Section 15, p. 15-48:
+
+    Example 15-1 (case A, immiscible solvents).  100 kg/h of 20 wt% acetic
+        acid in water, extracted by 200 kg/h of recycle MIBK, raffinate down
+        to 1 wt% acid.  Perry reads the ratios X' = 0.25, 0.01 (feed,
+        raffinate) and Y' = 0.001 (solvent), the equilibrium slope
+        K' = 0.656 at the dilute end, and the extraction factor
+        E = sqrt(m1' mr') S'/F' = 0.739 x 199.8/80 = 1.85, and prints
+        N = 4.3 theoretical stages from Eq. (15-43).
+    Example 15-2 (case B, partly miscible solvents).  The same problem with
+        the mutual solubilities of water and MIBK accounted for by the
+        pseudo-solute concentrations of Eqs. (15-90) and (15-91):
+        X_f^B = 0.251, Y_s^B = 0.0016, N = 4.5.
+    Example 15-3.  The transfer units of Example 15-2: N_or = 6.0.
+
+  WHAT IT IS NOT.  No property package is read -- the op evaluates a
+  formula on declared numbers, and the package in constant/ is only what the
+  props driver requires of a case.  The answers are held to the PRINTED
+  numbers, to the digits Perry prints (the `anchor` rows of `expected`); that
+  is a check of Choupo's transcription of the equations, not a validation of
+  the shortcut against an extractor.  Treybal, Mass-Transfer Operations 3rd
+  ed., Eq. (10.38) is the same cascade written as a fraction taken, and the
+  `fractionTaken` / `fractionRequired` pair printed beside N is the
+  agreement of the two books' forms.
+
+  The `extractor` unit prints the same shortcut beside its rigorous stage
+  count (KPI N_shortcut), as a CHECK on a straight equilibrium line, never a
+  design.
+
+  Source: Perry's Chemical Engineers' Handbook, 9th ed., Examples 15-1 to
+  15-3, read from the page image (p. 15-48); Treybal 3rd ed., Eq. (10.38).
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name   ex15_1_caseA;
+        type   extractionShortcut;
+        inputs
+        {
+            Xf 0.25;  Xr 0.01;  Ys 0.001;  K 0.656;
+            extractionFactor 1.85;
+        }
+    }
+    {
+        // E from the slopes, as Perry builds it: sqrt(0.833 x 0.656) x 199.8/80
+        // (Perry prints 0.739 and 0.740 for the root, and E = 1.85 either way).
+        name   ex15_1_E_from_slopes;
+        type   extractionShortcut;
+        inputs
+        {
+            Xf 0.25;  Xr 0.01;  Ys 0.001;  K 0.656;
+            slopes { m1 0.833;  mr 0.656;  S 199.8;  F 80; }
+        }
+    }
+    {
+        name   ex15_2_caseB;
+        type   extractionShortcut;
+        inputs
+        {
+            Xf 0.25;  Xr 0.01;  Ys 0.001;  K 0.656;
+            extractionFactor 1.85;
+        }
+        pseudoSolute { S 199.8;  E 198.7;  F 80;  R 67.5;  Ye 0.0983; }
+    }
+);

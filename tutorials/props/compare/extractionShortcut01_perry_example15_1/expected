@@ -1,0 +1,21 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    ex15_1_caseA           E                1.85               1e-4
+diag    ex15_1_caseA           N                4.3                1.2e-2  anchor
+diag    ex15_1_caseA           N_or             5.74543214891      1e-4
+diag    ex15_1_caseA           fractionRequired 0.965889570552     1e-4
+diag    ex15_1_caseA           fractionTaken    0.965889570552     1e-4
+diag    ex15_1_E_from_slopes   E                1.85               3e-3    anchor
+diag    ex15_1_E_from_slopes   N                4.3                1.2e-2  anchor
+diag    ex15_1_E_from_slopes   N_or             5.75445508328      1e-4
+diag    ex15_1_E_from_slopes   fractionRequired 0.965889570552     1e-4
+diag    ex15_1_E_from_slopes   fractionTaken    0.965889570552     1e-4
+diag    ex15_2_caseB           E                1.85               1e-4
+diag    ex15_2_caseB           N                4.5                1.2e-2  anchor
+diag    ex15_2_caseB           N_caseB          4.48053341968      1e-4
+diag    ex15_2_caseB           N_or             6.0                1.2e-2  anchor
+diag    ex15_2_caseB           XfB              0.251              2e-3    anchor
+diag    ex15_2_caseB           YsB              0.0016             2e-2    anchor
+diag    ex15_2_caseB           fractionRequired 0.969776167278     1e-4
+diag    ex15_2_caseB           fractionTaken    0.969776167278     1e-4

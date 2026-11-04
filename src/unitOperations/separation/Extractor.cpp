@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Extractor.H"
+#include "ExtractionShortcut.H"
 #include "unitOperations/flash/IsothermalFlash.H"
 
 #include <algorithm>
@@ -766,6 +767,55 @@ int Extractor::solve(const DictPtr& dict,
         kpis_["distribution_" + nm] = distribution[i];  // z_E / z_R
     }
 
+    // ---- Kremser-Souders-Brown shortcut: a CHECK beside the rigorous N ---
+    //  Perry's 9th ed. Eq. (15-43) (Example 15-1) on the solute-free mole
+    //  ratios, with K' = Y/X read from the stage equilibria THIS cascade
+    //  solved at its two ends and E = sqrt(K'_1 K'_r) S'/F' (Perry's own
+    //  geometric mean).  It is a straight-line, immiscible-solvent (case A)
+    //  estimate -- partial miscibility (Perry's pseudo-solute cases B/C) is
+    //  NOT applied -- so it is printed beside the rigorous count and decides
+    //  nothing.  Not published when a stage did not split or a ratio is
+    //  undefined, and it says why.
+    scalar shortcutN = std::numeric_limits<scalar>::quiet_NaN();
+    scalar shortcutE = shortcutN, shortcutK1 = shortcutN, shortcutKr = shortcutN;
+    std::string shortcutWhy;
+    if (iSolute < n && converged)
+    {
+        const scalar Fc = feedMol[iCarrier], Sx = solvMol[iSolvent];
+        const bool ratiosOk = Fc > 0.0 && Sx > 0.0 && raffinateMol[iCarrier] > 0.0
+            && xR[0][iCarrier] > 0.0 && xR[N - 1][iCarrier] > 0.0
+            && xE[0][iSolvent] > 0.0 && xE[N - 1][iSolvent] > 0.0;
+        if (splitStages != N)
+            shortcutWhy = "not every stage split into two liquids";
+        else if (!ratiosOk)
+            shortcutWhy = "a carrier or extractant ratio is undefined";
+        else
+        {
+            const auto Kp = [&](int j)
+            {
+                return (xE[j][iSolute] / xE[j][iSolvent])
+                     / std::max<scalar>(xR[j][iSolute] / xR[j][iCarrier], 1.0e-300);
+            };
+            shortcutK1 = Kp(0);
+            shortcutKr = Kp(N - 1);
+            shortcutE  = std::sqrt(shortcutK1 * shortcutKr) * Sx / Fc;
+            const scalar Xf = feedMol[iSolute] / Fc;
+            const scalar Ys = solvMol[iSolute] / Sx;
+            const scalar Xr = raffinateMol[iSolute] / raffinateMol[iCarrier];
+            shortcutN = extractionShortcut::stages(Xf, Xr, Ys, shortcutKr, shortcutE);
+            if (std::isnan(shortcutN))
+                shortcutWhy = "the shortcut has no finite answer here (E or the "
+                              "driving force is not positive)";
+        }
+        if (!std::isnan(shortcutN))
+        {
+            kpis_["N_shortcut"] = shortcutN;
+            kpis_["E_shortcut"] = shortcutE;
+            kpis_["Kp_feedEnd"] = shortcutK1;
+            kpis_["Kp_raffinateEnd"] = shortcutKr;
+        }
+    }
+
     // ---- Stage profile -------------------------------------------------
     //  The same rendering `choupo-init0` writes for the SEED: one home, so
     //  what `converged/` publishes and what `0/` may declare are two
@@ -808,6 +858,15 @@ int Extractor::solve(const DictPtr& dict,
                       << "   z_raffinate = " << std::setprecision(4) << zRaffinate[i]
                       << "   recovery = " << std::setprecision(1) << (100.0 * recovery[i]) << " %\n";
         }
+        if (!std::isnan(shortcutN))
+            std::cout << "  Shortcut CHECK (Perry Eq. 15-43, case A, straight line):  N = "
+                      << std::fixed << std::setprecision(2) << shortcutN
+                      << " from K'(feed end) = " << std::setprecision(4) << shortcutK1
+                      << ", K'(raffinate end) = " << shortcutKr
+                      << ", E = " << std::setprecision(3) << shortcutE
+                      << "   (rigorous N = " << N << ";  a check, not a design)\n";
+        else if (!shortcutWhy.empty())
+            std::cout << "  Shortcut check not published: " << shortcutWhy << ".\n";
         std::cout << "  Assumptions: counter-current, N equilibrium stages, isothermal,\n"
                   << "               per-stage split via the shared Gibbs-min LL flash.\n"
                   << "======================================================================\n\n";

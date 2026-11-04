@@ -76,7 +76,7 @@ const std::map<std::string, OpSlots>& table()
         //  ops that name no file by a key
         for (const char* ty : { "bellDelawareBench", "elementalComposition", "exergy",
                                 "flashSpec",
-                                "explainProperty", "hConsistency",
+                                "explainProperty", "extractionShortcut", "hConsistency",
                                 "mixingRules", "propertyPoint",
                                 "transportBench" })
             m[ty] = {};

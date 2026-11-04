@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- 100 kg/h of 20 wt% acetic acid in water (Perry's Handbook 9th ed.,
+     Example 15-1): 20 kg/h acid = 0.33304 kmol/h, 80 kg/h water = 4.4408 kmol/h. ---*/
+
+componentMolarFlows
+{
+    water                  4.4408 kmol/h;
+    aceticAcid             0.33304 kmol/h;
+}
+
+T               298.15 K;
+P               101325 Pa;

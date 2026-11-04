@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- 200 kg/h of recycle MIBK carrying 0.1 wt% acetic acid and 0.01 wt% water
+     (Perry's Handbook 9th ed., Example 15-1): MIBK 199.78 kg/h = 1.9946 kmol/h,
+     acid 0.2 kg/h = 0.003330 kmol/h, water 0.02 kg/h = 0.001110 kmol/h. ---*/
+
+componentMolarFlows
+{
+    methylIsobutylKetone   1.9946 kmol/h;
+    aceticAcid             0.003330 kmol/h;
+    water                  0.001110 kmol/h;
+}
+
+T               298.15 K;
+P               101325 Pa;
