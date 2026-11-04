@@ -1,0 +1,385 @@
+#!/usr/bin/env python3
+"""Gate: the economic extensions of the PIF reports -- a building cost from the
+GMP rooms, the two break-evens, a royalty inside a patent window, and the
+working capital by three methods -- are READ BACK against the case's own
+declarations.
+
+    bin/curate/check_economic_extensions.py
+    bin/curate/check_economic_extensions.py --keep DIR    run, keep the runs in DIR, check
+    bin/curate/check_economic_extensions.py --reuse DIR   check the runs kept in DIR (no run)
+
+WHY THIS EXISTS (2026-11-04, DEV.md 4c C195 items E4/E5).  Of eighteen
+previous-year plant-design reports fourteen computed a break-even, all took the
+working capital from whichever of three methods suited, the royalty was
+charged after the patent had expired, and the building cost varied fivefold.
+`economics { buildings {} breakEven {} royalty {} workingCapitalMethods {} }`
+(src/postProcessing/EconomicsPass.cpp) are OPT-IN, ship no number, and a
+number the run publishes that nobody recomputes is a number nobody checks.
+Every arm below recomputes from the CASE'S DECLARATIONS (postDict, layoutDict)
+and the published cash flow, never from the engine's source.
+
+  (a) THE BUILDING.  Area = the sum of the layoutDict rooms' box areas, price
+      = the room's grade price else the general price, both read from the
+      dicts: `building_area_m2`, `building_C_BM` and `building_inFCI` equal
+      them, and a TWIN run with the `buildings` block deleted has an FCI lower
+      by exactly contingencyFee x C_BM (the facility sits in the FCI ladder at
+      1.18 and adds nothing to the siteFactor base).
+  (b) THE OPERATING BREAK-EVEN recomputes from the published economics KPIs
+      and the declared depreciation life: x = F / (R(1-rS) - V(1+rC)), F =
+      (0.180 FCI + 2.73 C_OL)(1+rC) + FCI/Ndepr, V = 1.23 (C_RM + C_UT); at x
+      the year's sales equal the year's cost of production.
+  (c) THE NPV BREAK-EVEN is a root of the real pipeline: a TWIN run with the
+      stream factor scaled by the published fraction has |NPV| < 1 EUR, and
+      the twins at +-0.5 % of it have opposite signs.  It differs from (b).
+  (d) THE ROYALTY.  cashFlow.csv carries a royalty column equal to
+      rate x revenue in operating years 1..expiry and ZERO after, the taxable
+      income of every year is revenue - operatingCost - royalty -
+      depreciation, `royalty_total` is their sum.  The costOfManufacture basis
+      is the same on the operatingCost column.
+  (e) THE THREE WORKING CAPITALS: fractionOfSales x R, fractionOfFixedCapital
+      x FCI, the used one is the appraisal's WC, the spread is max - min; a
+      block with one fraction prints the other as NOT computed and publishes
+      no spread.
+  (f) THE REFUSALS fire through the real reader, each required to exit
+      non-zero and NAME its defect: a building price without a building, a
+      building with no source, a room grade without a price, a royalty with
+      no expiry, with a fractional expiry, an unknown basis, a working-capital
+      block with no fraction, a royalty sensitivity without a royalty.
+  (g) ABSENCE IS SILENCE: the twin with all four blocks deleted publishes none
+      of the extension KPIs, writes no royalty column and no extension line.
+  (h) PUBLISHED => PINNED: the witness's expected file carries a row for every
+      extension KPI the run publishes.
+
+NOT CHECKED, said plainly: that the classification of the cost into fixed and
+variable is the right one (it is a modelling choice, printed); that a price per
+m2 is realistic (the case's); and the royalty/break-even interaction beyond the
+sales and costOfManufacture bases.  Exit 0 = OK; 1 = a failure, listed."""
+import argparse
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+BIN = ROOT / "choupoSolve"
+WIT = ROOT / "tutorials/steady/economics/economics04_building_royalty_breakeven"
+fails = []
+
+
+def fail(m):
+    fails.append(m)
+
+
+# ------------------------------------------------------------- dict reading --
+def block(text, word):
+    """The text inside `word { ... }` (first occurrence, brace-matched)."""
+    ms = list(re.finditer(r"(?<![`\w])" + re.escape(word) + r"\s*\{(?!\})", text))
+    if not ms:
+        return None
+    m = ms[-1]
+    i = m.end()
+    d = 1
+    while d:
+        d += {"{": 1, "}": -1}.get(text[i], 0)
+        i += 1
+    return text[m.end():i - 1]
+
+
+def val(text, key):
+    m = re.search(r"\b" + re.escape(key) + r"\s+(-?[0-9.eE+-]+)\s*;", text)
+    return float(m.group(1)) if m else None
+
+
+def word(text, key):
+    m = re.search(r"\b" + re.escape(key) + r"\s+(\w+)\s*;", text)
+    return m.group(1) if m else None
+
+
+def rooms(layout_text):
+    out = []
+    for m in re.finditer(
+            r"\{\s*room\s+(\w+);\s*floor\s+(\w+);\s*xMin\s+(-?[\d.]+)\s*m;\s*xMax\s+(-?[\d.]+)\s*m;"
+            r"\s*yMin\s+(-?[\d.]+)\s*m;\s*yMax\s+(-?[\d.]+)\s*m;\s*grade\s+(\w+);", layout_text):
+        n, f, x0, x1, y0, y1, g = m.groups()
+        out.append((n, g, (float(x1) - float(x0)) * (float(y1) - float(y0))))
+    return out
+
+
+def decl(d):
+    post = (d / "system/postDict").read_text()
+    eco = block(post, "economics")
+    return post, eco
+
+
+# ---------------------------------------------------------------- running ----
+def prepare(work, name, edit=None, layout_edit=None):
+    d = work / name
+    if d.exists():
+        shutil.rmtree(d)
+    shutil.copytree(WIT, d, ignore=shutil.ignore_patterns("reports", "converged", "design", "iterations"))
+    if edit:
+        p = d / "system/postDict"
+        p.write_text(edit(p.read_text()))
+    if layout_edit:
+        p = d / "system/layoutDict"
+        p.write_text(layout_edit(p.read_text()))
+    return d
+
+
+def run(d):
+    p = subprocess.run([str(BIN), str(d)], capture_output=True, text=True, cwd=str(ROOT), timeout=900)
+    out = p.stdout + p.stderr
+    (d.parent / (d.name + ".out")).write_text(out + f"\n__rc={p.returncode}\n")
+    return out, p.returncode
+
+
+def stored(d):
+    t = (d.parent / (d.name + ".out")).read_text()
+    m = re.search(r"\n__rc=(-?\d+)\n$", t)
+    return t[:m.start()], int(m.group(1))
+
+
+def kpis(out):
+    m = re.search(r'"economics": \{([^{}]*)\}', out)
+    kv = {}
+    if m:
+        for k, v in re.findall(r'"(\w+)":\s*(-?[0-9][0-9.eE+-]*|null)', m.group(1)):
+            kv[k] = float("nan") if v == "null" else float(v)
+    return kv
+
+
+def cashflow(d):
+    rows, foot, header = [], {}, None
+    for l in (d / "reports/economics/cashFlow.csv").read_text().splitlines():
+        if not l or l.startswith("#"):
+            continue
+        if l.startswith("year,"):
+            header = l.split(",")
+            continue
+        f = l.split(",")
+        if header and re.fullmatch(r"-?\d+", f[0]) and len(f) == len(header):
+            rows.append({h: float(v) for h, v in zip(header, f)})
+        else:
+            foot[f[0]] = f[1:]
+    return rows, foot, header
+
+
+def close(a, b, tol=1.0, rel=1e-9):
+    return abs(a - b) <= max(tol, rel * max(abs(a), abs(b)))
+
+
+def drop_block(post, word_):
+    """The economics sub-block `word_ { ... }` (and a bare `word_ {}` ) removed."""
+    m = re.search(r"\n[ \t]*" + re.escape(word_) + r"\s*\{", post)
+    if not m:
+        return post
+    i = m.end()
+    d = 1
+    while d:
+        d += {"{": 1, "}": -1}.get(post[i], 0)
+        i += 1
+    return post[:m.start()] + post[i:]
+
+
+# ------------------------------------------------------------------- arms ----
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--keep")
+    ap.add_argument("--reuse")
+    a = ap.parse_args()
+    if not BIN.exists():
+        print("check_economic_extensions: FAIL -- no choupoSolve build; run `make all`")
+        return 1
+    if a.reuse:
+        work = Path(a.reuse)
+        reuse = True
+    else:
+        work = Path(a.keep) if a.keep else Path(tempfile.mkdtemp(prefix="econext."))
+        work.mkdir(parents=True, exist_ok=True)
+        reuse = False
+    go = (lambda d: stored(d)) if reuse else run
+
+    base = prepare(work, "base") if not reuse else work / "base"
+    out, rc = go(base)
+    if rc != 0:
+        print(f"check_economic_extensions: FAIL -- the witness did not run (rc {rc})\n{out[-1500:]}")
+        return 1
+    K = kpis(out)
+    post, eco = decl(base)
+    layout = (base / "system/layoutDict").read_text()
+    bl = block(eco, "buildings")
+    ry = block(eco, "royalty")
+    wm = block(eco, "workingCapitalMethods")
+    cf, foot, header = cashflow(base)
+    fci = K["FCI"]
+    cont = val(eco, "contingencyFee")
+    ndepr = val(eco, "depreciableLife")
+
+    # (a) the building ------------------------------------------------------
+    gp = block(bl, "gradePrice") or ""
+    price_general = val(bl, "price")
+    area = cost = 0.0
+    for n, g, ar in rooms(layout):
+        p = val(gp, g) if val(gp, g) is not None else price_general
+        area += ar
+        cost += ar * p
+    if len(rooms(layout)) != 17:
+        fail(f"(a) parsed {len(rooms(layout))} rooms from the layoutDict, expected 17")
+    for k, v in (("building_area_m2", area), ("building_C_BM", cost), ("building_inFCI", cont * cost)):
+        if k not in K or not close(K[k], v):
+            fail(f"(a) {k}: published {K.get(k)} vs recomputed from the dicts {v}")
+    twin = prepare(work, "noBuilding", lambda s: drop_block(s, "buildings")) if not reuse else work / "noBuilding"
+    o2, r2 = go(twin)
+    K2 = kpis(o2)
+    if r2 != 0 or "building_C_BM" in K2:
+        fail("(a) the twin without `buildings` did not run clean or still publishes a building")
+    elif not close(fci - K2["FCI"], cont * cost):
+        fail(f"(a) FCI with the building minus FCI without = {fci - K2['FCI']}, expected contingencyFee x C_BM = {cont * cost}")
+
+    # (b) the operating break-even -------------------------------------------
+    rate = val(ry, "rate")
+    basis = word(ry, "basis")
+    expiry = int(val(ry, "expiry"))
+    rS = rate if basis == "sales" else 0.0
+    rC = rate if basis == "costOfManufacture" else 0.0
+    F = (0.180 * fci + 2.73 * K["C_OL"]) * (1 + rC) + fci / ndepr
+    V = 1.23 * (K["C_RM"] + K["C_UT"]) * (1 + rC)
+    Rn = K["revenue"] * (1 - rS)
+    x = F / (Rn - V)
+    if not close(K["breakEven_operating_fraction"], x, tol=1e-9, rel=1e-9):
+        fail(f"(b) operating break-even published {K['breakEven_operating_fraction']} vs recomputed {x}")
+    for k, v in (("breakEven_operating_fixed", F), ("breakEven_operating_variable", V), ("breakEven_operating_sales", Rn)):
+        if not close(K[k], v):
+            fail(f"(b) {k}: published {K[k]} vs recomputed {v}")
+    if not close(x * Rn, F + V * x):
+        fail("(b) at the break-even the sales do not equal the cost of production")
+
+    # (c) the NPV break-even --------------------------------------------------
+    s = K["breakEven_npv_fraction"]
+    sf = val(eco, "streamFactor")
+
+    def npv_at(name, scale):
+        def e(p):
+            return re.sub(r"streamFactor\s+[0-9.]+;", f"streamFactor {sf * scale:.12f};", p)
+        d = prepare(work, name, e) if not reuse else work / name
+        o, r = go(d)
+        return kpis(o).get("NPV", float("nan"))
+    n0 = npv_at("npvRoot", s)
+    nlo = npv_at("npvLo", s * 0.995)
+    nhi = npv_at("npvHi", s * 1.005)
+    if not abs(n0) < 1.0:
+        fail(f"(c) NPV at the published break-even fraction {s} is {n0}, not 0")
+    if not (nlo < 0.0 < nhi):
+        fail(f"(c) NPV is not a sign change across the break-even: {nlo} .. {nhi}")
+    if close(s, K["breakEven_operating_fraction"], tol=1e-3, rel=0):
+        fail("(c) the NPV and the operating break-even coincide, which they cannot (capital charge, tax, WC)")
+
+    # (d) the royalty ---------------------------------------------------------
+    if "royalty_EUR" not in header:
+        fail("(d) cashFlow.csv carries no royalty column")
+    else:
+        tot = 0.0
+        for r in cf:
+            t = int(r["year"])
+            if t < 1:
+                continue
+            exp = rate * r["revenue_EUR"] if t <= expiry else 0.0
+            if not close(r["royalty_EUR"], exp, tol=1.0):
+                fail(f"(d) year {t}: royalty {r['royalty_EUR']} vs {exp}")
+            tax_inc = r["revenue_EUR"] - r["operatingCost_EUR"] - r["royalty_EUR"] - r["depreciation_EUR"]
+            if not close(r["taxableIncome_EUR"], tax_inc, tol=2.0):
+                fail(f"(d) year {t}: taxable income {r['taxableIncome_EUR']} vs {tax_inc}")
+            tot += r["royalty_EUR"]
+        if not close(K["royalty_total"], tot, tol=6.0):
+            fail(f"(d) royalty_total {K['royalty_total']} vs the column's sum {tot}")
+        if K["royalty_years"] != expiry:
+            fail(f"(d) royalty_years {K['royalty_years']} vs declared expiry {expiry}")
+    twc = prepare(work, "royaltyCost", lambda p: p.replace("basis       sales;", "basis       costOfManufacture;")) if not reuse else work / "royaltyCost"
+    oc, rcx = go(twc)
+    cfc, _, _ = cashflow(twc)
+    for r in cfc:
+        t = int(r["year"])
+        if t < 1:
+            continue
+        exp = rate * r["operatingCost_EUR"] if t <= expiry else 0.0
+        if not close(r["royalty_EUR"], exp, tol=1.0):
+            fail(f"(d) costOfManufacture basis, year {t}: royalty {r['royalty_EUR']} vs {exp}")
+
+    # (e) the working capital by three methods -------------------------------
+    fs, ff = val(wm, "fractionOfSales"), val(wm, "fractionOfFixedCapital")
+    ms, mf = fs * K["revenue"], ff * fci
+    # the three here are: sales, fixed capital, and the itemised build-up (absent); the used one is the
+    # appraisal's fraction-of-FCI WC, which is not one of the compared ones when no build-up is declared
+    for k, v in (("WCm_sales", ms), ("WCm_fixedCapital", mf), ("WCm_spread", abs(ms - mf)), ("WCm_used", K["WC"])):
+        if k not in K or not close(K[k], v):
+            fail(f"(e) {k}: published {K.get(k)} vs recomputed {v}")
+    if "itemised build-up            : NOT computed" not in out:
+        fail("(e) the missing itemised method is not named as NOT computed")
+    one = prepare(work, "oneFraction", lambda p: re.sub(r"\n\s*fractionOfFixedCapital\s+[0-9.]+;", "", p)) if not reuse else work / "oneFraction"
+    o1, r1 = go(one)
+    K1 = kpis(o1)
+    if r1 != 0 or "WCm_spread" in K1 or "% of fixed capital           : NOT computed" not in o1:
+        fail("(e) one declared fraction must name the other as NOT computed and publish no spread")
+
+    # (f) the refusals --------------------------------------------------------
+    refusals = {
+        "noBuildingDeclared": (lambda p: p, "UNLINK",
+                               "no `building {}`"),
+        "buildingNoSource": (lambda p: p.replace('source      "author-set teaching assumption (round numbers); replace with a quote or a local construction-cost index";', ""), None,
+                             "`source"),
+        "gradeNoPrice": (lambda p: p.replace("price       1800;", ""), None, "neither a `gradePrice"),
+        "royaltyNoExpiry": (lambda p: p.replace("expiry      6;", ""), None, "expiry"),
+        "royaltyFractionalExpiry": (lambda p: p.replace("expiry      6;", "expiry 6.5;"), None, "whole operating year"),
+        "royaltyBadBasis": (lambda p: p.replace("basis       sales;", "basis profit;"), None, "royalty basis"),
+        "wcmNoFraction": (lambda p: re.sub(r"\n\s*fractionOf\w+\s+[0-9.]+;", "", p), None, "declares no fraction"),
+        "sensNoRoyalty": (lambda p: drop_block(p, "royalty").replace("breakEven {}", "breakEven {}\n    sensitivity { royalty.rate { relative ( -0.2 0.2 ); } }"), None, "royalty.rate"),
+    }
+    for name, (pe, le, needle) in refusals.items():
+        d = prepare(work, name, pe, None if le == "UNLINK" else le) if not reuse else work / name
+        if le == "UNLINK" and not reuse:
+            (d / "system/layoutDict").unlink()
+        o, r = go(d)
+        if r == 0:
+            fail(f"(f) {name}: expected a refusal, the run exited 0")
+        elif needle not in o:
+            fail(f"(f) {name}: refused but the message does not name `{needle}`")
+
+    # (g) absence is silence ---------------------------------------------------
+    def strip(p):
+        for w in ("buildings", "breakEven", "royalty", "workingCapitalMethods"):
+            p = drop_block(p, w)
+        return p
+    ab = prepare(work, "absent", strip) if not reuse else work / "absent"
+    oa, ra = go(ab)
+    Ka = kpis(oa)
+    bad = [k for k in Ka if k.startswith(("building_", "breakEven_", "royalty_", "WCm_"))]
+    _, fa, ha = cashflow(ab) if ra == 0 else ([], {}, [])
+    if ra != 0 or bad or any("royalty" in h for h in ha) or any(k.startswith(("building", "royalty", "breakEven", "WCm")) for k in fa):
+        fail(f"(g) the twin without the four blocks is not silent: rc {ra}, {bad}")
+    if ra == 0 and not close(Ka["FCI"], K2["FCI"]):
+        fail("(g) FCI without any extension differs from the twin without the building")
+
+    # (h) published => pinned ---------------------------------------------------
+    exp = (WIT / "expected").read_text()
+    for k in K:
+        if k.startswith(("building_", "breakEven_", "royalty_", "WCm_")) and not re.search(r"\b" + k + r"\b", exp):
+            fail(f"(h) `economics.{k}` is published and no row of the witness's expected file pins it")
+
+    if a.keep is None and not a.reuse:
+        shutil.rmtree(work, ignore_errors=True)
+    if fails:
+        print("check_economic_extensions: FAIL")
+        for f in fails:
+            print("  - " + f)
+        return 1
+    print("check_economic_extensions: OK -- the building (area x grade price, FCI +1.18 C_BM), both break-evens "
+          "(operating recomputed, NPV a root of the real pipeline), the royalty window (years 1.." + str(expiry) +
+          ", both bases), the three working capitals, 8 refusals, absence silent, all pinned.  NOT CHECKED: the "
+          "fixed/variable classification, any price's realism")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

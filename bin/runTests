@@ -7533,6 +7533,23 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/econsens.$$
 
+    # Economic-extensions gate (2026-11-04, DEV.md 4c C195 E4/E5): the opt-in
+    # `economics { buildings {} breakEven {} royalty {}
+    # workingCapitalMethods {} }` are read back against the case's own
+    # declarations -- the building area x grade price (and its 1.18 in the
+    # FCI), the operating break-even recomputed, the NPV break-even a root of
+    # the real pipeline, the royalty window year by year, the three working
+    # capitals, the refusals fired, absence silent, published implies pinned.
+    if gate_exec "$ROOT/bin/curate/check_economic_extensions.py" > /tmp/econext.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "economic-extensions-gate" "$(tail -1 /tmp/econext.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_economic_extensions.py)\n" "economic-extensions-gate"
+        cat /tmp/econext.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/econext.$$
+
     # Debt-financing gate (2026-10-20, revived 2026-10-25, DEV.md 4c C110
     # G4): the opt-in `economics { financing {} }` loan adds the EQUITY view
     # BESIDE the project's and changes none of it -- on probes built from
