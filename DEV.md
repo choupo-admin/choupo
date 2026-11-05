@@ -2029,6 +2029,33 @@ accepts today, and that is a policy call.
 > the scan) and the staggered Re 10-300 exponent ("O.3fiO") refuse by name;
 > (3) Serth's own JL/JB/Jr/Rl/Rb/Rs equations (his Eqs 6.5ff) would replace
 > the declared chart readings -- pages requested from Vitor.
+> **W2b BUILT (2026-11-05, branch c214-w2b): CLOSES finding (3), and the
+> chart readings stay as a declared override.**  Each of JL, JB, RL, RB is a
+> declared number or the word `auto` (Taborek's closed form, HEDH 3.3, as
+> printed in Goncalves/Costa/Bagajewicz 2019 and Mohammadi et al. and
+> identically in Serth Eqs 6.48-6.53; absent still refuses: the choice is the
+> student's).  On Hewitt's Example 6.2 geometry `auto` gives 0.555 / 0.916 /
+> 0.327 / 0.771 against the book's chart readings 0.58 / 0.92 / 0.33 / 0.76,
+> h -4.6 % and shell dP +0.3 % from the printed 769 / 4501 (measured, not
+> tuned).  `form Serth;` adds Serth's own geometry (F_c through D_ctl, Eqs
+> 6.22/6.36), J_S, R_S (with the 0.5 that the research report could not
+> settle: Serth Eq 6.55 prints it and R_S = 1 for equal spacing), J_R and the
+> Eq 6.15 end zone, and REPRODUCES Serth Example 6.1 (20 printed steps, worst
+> 0.08 % against the book's rounded intermediates; props bench
+> `bellDelaware02_serth_example61`).  DECISIONS (architect, 2026-11-05):
+> (a) the clearance basis of Serth's S_sb/S_tb is a REQUIRED declared key
+> `clearanceBasis radial|diametral` -- Serth uses d_tb/d_sb as the gap itself
+> while inserting TEMA's diametral values; only `radial` reproduces his
+> example, `diametral` does not (the gate holds both); (b) the printed
+> summary Eq 6.16 omits R_L on the central spaces; Eq 6.9 and the example's
+> arithmetic (159.4 lbf/ft2) include it and are the numerical authority --
+> Eq 6.16 is a CANDIDATE ERRATUM (as printed it gives 361, not 159.4).  READ
+> from the page image, not typed: Serth Table 6.1 b1-b4 (the 90 degree
+> 1e3-1e4 b2 is -0.220, its minus lost in the text layer).  STILL REFUSED by
+> name: the 45 degree Re 10-100 row (printed a1 0.498, pattern says 1.498; the
+> example is square and cannot arbitrate), the laminar window drop (Eq 6.12)
+> and the Hewitt form's J_r/J_s/R_s (not applied there, announced).  NOT
+> done: a unit-level witness in form Serth (the bench carries the anchor).
 
 > **C215 / C216 / C217. THREE COMMISSIONS FROM THE SAME NIGHT (Vitor,
 > 2026-11-04): reaction classes in EduTools; the biorefinery's key
