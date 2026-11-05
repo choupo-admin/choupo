@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 523,
+  "cases": 525,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 14
@@ -2780,6 +2780,17 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/molecular/componentLookup01_catalogue_ladder": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/molecular/cosmoSAC01_water_ethanol": {
    "application": "choupoProps",
    "thermo": {
@@ -2905,6 +2916,17 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/pairLookup01_catalogue_ladder": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
     ]
    },
    "roles": [],
@@ -7887,6 +7909,7 @@
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/membrane/shortlist01_class_to_modules",
+    "tutorials/props/molecular/componentLookup01_catalogue_ladder",
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/envelope01_natural_gas",
@@ -7897,6 +7920,7 @@
     "tutorials/props/molecular/flash01_operating_line",
     "tutorials/props/molecular/mixrules01_natural_gas",
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
+    "tutorials/props/molecular/pairLookup01_catalogue_ladder",
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
@@ -9258,9 +9282,11 @@
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/membrane/shortlist01_class_to_modules",
+    "tutorials/props/molecular/componentLookup01_catalogue_ladder",
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_root_jump",
     "tutorials/props/molecular/flash01_operating_line",
+    "tutorials/props/molecular/pairLookup01_catalogue_ladder",
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
     "tutorials/props/powder/compaction01_mcc",
     "tutorials/props/powder/compaction02_dcpd_brittle",
