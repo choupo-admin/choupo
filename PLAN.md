@@ -59,18 +59,20 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | status | what | ref |
 |---|---|---|
 | done | C214 W3 (`46bf7f942`): dominant-eigenvalue recycle acceleration (Orbach & Crowe 1971, read from the paper), opt-in and announced; MEASURED LIMIT: it targets a dominant eigenvalue near 1 and this corpus sits near 0.2 (process05 6 iterations against Wegstein 9; membrane27 and acetonePlant worse), so it is a teaching aid, not a default; a misspelt `recycleSolver` now refuses | C214 |
+| todo | THE C16 CHAIN, first slice (C226 + C225): a liquid-liquid residual kind in `fitParameters` (on `IsothermalFlash::solveCore`, additive to `T_bubble`) with arm (f) of `check_regressed_pairs` accepting a declared gap against a band set before the fit; confirm by ONE RUN whether UNIQUAC/Wilson already fit by path; study triage (leave one study out); component audit against ThermoML (water vapour pressure 0.5-0.7 K low is the first known finding). Unblocks butanol-water. The ThermoML cache (4.2 GB) lives only in the cloud container: settle where this runs before dispatch | C226, C225 |
 | todo | C214 W4: Beggs-Brill two-phase pipe as `twoPhase { model BeggsBrill; }` beside Lockhart-Martinelli, with inclination (Beggs & Brill 1973) | C214 |
 | todo | C214 W5: a Cv-rated control valve with an inherent characteristic (linear / equal-percentage), the opening as the manipulated variable -- what the digital twin's controllers move (ISA-75.01 form) | C214, C203 |
 | todo | (Opus) C214 W6: IF97 region 3 (Helmholtz f(rho,T); the engine refuses it today) and a gate holding regions 1-4 to the IAPWS release's own verification tables | C214 |
 | todo | C214 W7: a water electrolyser unit (declared cell-voltage curve, Faraday efficiency, stack power -> H2, O2, heat; Ulleberg 2003); the green-ammonia plant declares its H2 as a feed today | C214 |
 | done | PIF E4 + E5 (2026-11-04, merged to main; pushed once its gate has run on the integrated tree): `economics { buildings, breakEven, royalty, workingCapitalMethods }`, all opt-in, no number shipped; witness `economics04_building_royalty_breakeven`, gate `check_economic_extensions`; the asset-class depreciation stays absent | C195, C210 |
 | todo | The control-placement EduTool, pages 1-5 and the plant method page (the Pareto is in C204); its loops use the instrument grammar above | C204 |
-| todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag (they feed the digital twin) | C205 |
 
 ## Beyond a week
 
 | status | what | ref |
 |---|---|---|
+| todo | C16 chain, rest (C226): `choupo-curate pair A B` writing the declaration first; several models per cycle; `autoPromoted` / `humanReviewed false` with one-command revert; a verification card in the Explorer; coverage map; standing audit of catalogue pairs; Antoine/Cp from pure ThermoML data; CAS->InChIKey bridge file; in-browser fitting (last). Profile one fit before any analytic Jacobian or parallel points (a speed claim nobody measured) | C226, C225 |
+| todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag (they feed the digital twin) | C205 |
 | todo | C223 pilot: ~10 binary pairs / components by DEMAND (PIF actives and solvents; tutorials on unvalidated values) through the existing ThermoML route (fit on one study, held out on another, band before the fit, identifiability first), measuring time per pair and the fraction that validates; NIST WebBook/SRD stay out; promotion is Vitor's review; after the validation subset has grown | C223 |
 | todo | C222 EduTool: why the transfer unit was invented (Z = H x N: the difficulty of the separation against what the equipment delivers; the link to the stage and to the Murphree efficiency; Perry's 15-3 and Treybal's 10.10 reproduced); after C219's first phase | C222 |
 | done | C221 EduTools library (`c961da62f`): a gate-held `blurb` per tool (73), a text filter and collapsible shelves on the landing (browser-verified at 390 px), and three pedagogical paths (distillation 6 steps, thermodynamics 5, reactions 7; a dropped step where no tool exists) as one registry home, drawn in the app above the chooser and on the landing | C221 |
