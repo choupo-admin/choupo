@@ -729,12 +729,12 @@
     "check_pinch_p1": {
       "exit": 0,
       "claim": "check_pinch_p1: OK -- witness targets equal the independent cascade (107.5 / 40 / 353.15), CSV coherent, negative silent, dTmin<=0 refused; the population is published and labelled -- an excluded Q_kW duty is listed and the targets say NOT the plant's, and a two-stream exchanger enters as both sides with its duty in neither current-utility total (no duty is ADDED to the population: columns, reactors and crystallisers stay excluded)",
-      "seconds": 0.2
+      "seconds": 0.1
     },
     "check_pinch_p2": {
       "exit": 0,
       "claim": "check_pinch_p2: OK -- 6 exhaustive pairs equal the independent duty bound, CP-rule wording exact, no 'optimal' anywhere, violations 120+260 == the 380 kW excess over target",
-      "seconds": 0.1
+      "seconds": 0.0
     },
     "check_polarisation_coupling": {
       "exit": 0,
@@ -1559,6 +1559,11 @@
     "check_lle_residual": {
       "exit": 0,
       "claim": "check_lle_residual: OK -- the mixed T_bubble+LLE fit of the SYNTHETIC water + 1-butanol witness recovers the generating b_ij and b_ji to 1e-5 from two starts and validates against held-out bubble temperatures and tie lines; 13 tie lines recomputed by an independent convex hull agree with the datasets; six refusals fire by name on probes built here (ideal start, weighting equal, no sigma, no band, one liquid phase, kind LLE alone); a held-out tie line the model leaves as ONE liquid is named, counted, and a notValidated miss.  NOT checked: any real water + 1-butanol measurement, the dilute-branch accuracy below the flash's 1e-4 floor.",
+      "seconds": 0.2
+    },
+    "check_pinch_utility": {
+      "exit": 0,
+      "claim": "check_pinch_utility: OK -- ammonia02's cooling water (declared circuit CW1) is a utility row, not a stream: targets equal the independent cascade over the 5 process segments (Q_H,min 0, Q_C,min 95454.3 kW, no pinch); the same case with the circuit deleted counts the water and gives the old pinch, so the gate tells them apart (the exclusion reads the declared circuit and category, never a stream name)",
       "seconds": 0.2
     }
   }

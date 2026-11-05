@@ -3284,6 +3284,22 @@ PYEOF
     fi
     rm -f /tmp/pnc2.$$
 
+    # Pinch UTILITY gate (DEV.md 4c C230): a service is not a process
+    # stream.  ammonia02's cooling water (declared circuit) is left out of
+    # the population and the targets equal an independent cascade (threshold
+    # problem, no pinch); the same case with the circuit deleted gives the
+    # old pinch, so the two are told apart; sabotage-verified (exclusion
+    # disabled, utility side swapped -> RIGHT probes fail by value).
+    if gate_exec "$ROOT/bin/curate/check_pinch_utility.py" > /tmp/pncu.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pinch-utility-gate" "$(tail -1 /tmp/pncu.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pinch_utility.py)\n" "pinch-utility-gate"
+        cat /tmp/pncu.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pncu.$$
+
     # P-swing gate (P1 outlet-pressure switch + P2 feed-valve closure over
     # the section-9 expansion widening, ratified battery 2026-08-03):
     # witness A pins the analytic inventory ratio, witness B the blowdown

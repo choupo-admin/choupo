@@ -87,6 +87,17 @@
   (system/layoutDict).  A gas is a costly thing to store, and that is the
   lesson of the two numbers.
 \*---------------------------------------------------------------------------*/
+//  THE ENERGY TARGETS (DEV.md 4c C230).  The plant's one real recovery is the
+//  FEHE; the water cooler's cooling water (`cw` -> `cwOut`, the declared
+//  circuit CW1 in flowsheetDict) is a SERVICE, so the pass takes the cooler's
+//  process side (the hot effluent) as a stream and leaves the water out.
+//  The answer is a THRESHOLD problem: every cold stream is served by the hot
+//  effluent, Q_H,min is about 0 and there is no pinch; the cold utility the
+//  plant must carry is about 95 MW.  dTmin is author-set.
+pinchPass
+{
+    dTmin   20 K;
+}
 sizing
 {
     units

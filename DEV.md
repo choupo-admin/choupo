@@ -2704,6 +2704,38 @@ accepts today, and that is a policy call.
 > credits) puts it first on Saturday, ahead of everything, because it is a
 > wrong number at exit 0 that a student reads on the live site.
 
+> **C230 BUILT (2026-11-05, branch `c230-pinch`; not integrated).**  MEASURED
+> before: the engine on `ammonia02_full_plant` + `pinchPass { dTmin 20 K; }`
+> counted the cooling water as a 6th, cold process segment: Q_H,min 2158.34 kW,
+> Q_C,min 39 791.4 kW, pinch at T* = 308.15 K.  MEASURED after: 5 segments, the
+> water a `utility` row; Q_H,min = 0, Q_C,min = 95 454.26 kW (the hand value
+> 95 454.3), `pinch_exists 0`, the console says THRESHOLD problem; the gate's own
+> Python cascade over the units' published temperatures reproduces both
+> variants.  (1) ENGINE: the population leaves out a side whose inlet/outlet
+> streams belong to a declared `utilities` circuit (`utilityCircuits::
+> circuitOfStream`, read from system/flowsheetDict as EconomicsPass does) or
+> carry `category utility`; the service side is chosen by the service stream's
+> temperature against the two sides' terminal temperatures, never by name; the
+> process side enters as an ordinary segment counted as current utility use.
+> The circuit CW1 already existed in the case, so nothing was invented.  New
+> KPIs `utility_sides`, `pinch_exists`; population.csv role `utility`.
+> (2) GUI: ONE home.  `gui/src/case/pinch.ts` lost `thermalStreams`,
+> `computePinch` and the composite/GCC/match code; it now parses the engine's
+> population.csv, candidateMatches.csv and KPIs (`pinchFromEngine`);
+> `PinchView` is a shell over `PinchCompositeTool` (new prop `fixedSource`) and
+> the grid diagram, and a run without `pinchPass` says to declare
+> `pinchPass { dTmin 20 K; }`.  The Pinch tab is greyed only before a run.
+> (3) CASE: `ammonia02_full_plant` declares `pinchPass { dTmin 20 K; }`; 17 NEW
+> golden rows (`kpi pinch ...`), none moved; `pinch_exists`/`utility_sides`
+> appended to the three other pinch cases.  (4) GATE `check_pinch_utility`
+> (wired in `bin/runTests`): independent cascade, right vs the same case with
+> the circuit deleted (old numbers reproduced), sabotage by hand: exclusion
+> disabled and utility side swapped, both caught.  NOT proved: a browser
+> render of the tab (no Chromium by order), the full sweep, `--gui`; a pinch
+> VIOLATION line on a threshold problem still prints (`letdown` "heater below
+> the pinch", 16.48 kW) because the pass puts the pinch at the top of the
+> range when none exists -- named, not changed.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,

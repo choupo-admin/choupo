@@ -10,7 +10,6 @@ import {
   LANE_TOP, LANE_HEIGHT, GROUP_GAP, UTIL_LANE_HEIGHT, AXIS_STRIP, PLOT_RIGHT,
   MIN_MATCH_SEP, MIN_SEG_PX, MIN_LEFT, MAX_LEFT, NAME_CHAR_PX,
 } from "../src/ui/plotting/pinchGridLayout.js";
-import { computePinch } from "../src/case/pinch.js";
 import type { ThermalStream, HeatMatch } from "../src/case/pinch.js";
 
 const st = (o: Partial<ThermalStream>): ThermalStream => ({
@@ -264,47 +263,5 @@ describe("gridMatchLines", () => {
       expect(m.x).toBeGreaterThanOrEqual(xLeft);
       expect(m.x).toBeLessThanOrEqual(xRight);
     }
-  });
-});
-
-// Hermetic regression distilled from plant/ChemicalPlantTutorial (the case in
-// the forum-#93 screenshot; duties/temperatures from its converged run): every
-// heat SOURCE (~313-315 K) is colder than every heat SINK (~320-396 K), so the
-// screening's empty match list is PHYSICALLY CORRECT (not a rendering bug) and
-// the utility targets equal today's duties -- exactly what the grid must
-// annotate.  Also pins the announced Pareto omission (FERMENTATION.Flash).
-describe("ChemicalPlantTutorial-shaped case (zero-recovery, no matches)", () => {
-  const runResult = {
-    status: "done", log: "", streams: [],
-    kpis: {
-      "CONCENTRATION.Cryst": { Q_kW: -132.3, T: 313.15 },
-      "CONCENTRATION.Evap1": { Q_kW: 651.3, T: 395.37 },
-      "CONCENTRATION.Evap2": { Q_kW: 357.6, T: 392.05 },
-      "DRYING.SD": { Q_kW: 342.8, T: 333.65 },
-      "FERMENTATION.Fermentor": { Q_kW: -147.1, T: 314.95 },
-      "FERMENTATION.Flash": { Q_kW: 59.9, T: 320.0 },
-    },
-  } as never;
-  const flowsheet = { units: [] } as never;
-
-  it("no candidate matches AND the targets equal the current duties", () => {
-    const p = computePinch(runResult, flowsheet, 10)!;
-    expect(p.streams).toHaveLength(6);
-    expect(p.matches).toEqual([]);
-    expect(p.QhMin).toBeCloseTo(p.QhNow, 6);     // zero composite overlap
-    expect(p.QcMin).toBeCloseTo(p.QcNow, 6);
-    expect(p.QhNow).toBeCloseTo(1411.6, 1);
-    expect(p.QcNow).toBeCloseTo(279.4, 1);
-    expect(p.pinchHot).toBeCloseTo(329.5, 1);
-    expect(p.pinchCold).toBeCloseTo(319.5, 1);
-  });
-
-  it("the default 5 % Pareto cutoff omits exactly FERMENTATION.Flash, announced", () => {
-    const p = computePinch(runResult, flowsheet, 10)!;
-    const f = paretoFilter(p.streams, 5);        // ref ~1691 kW -> cutoff ~84.6 kW
-    expect(f.refKW).toBeCloseTo(1691.0, 1);
-    expect(f.omitted.map((s) => s.unit)).toEqual(["FERMENTATION.Flash"]);
-    expect(f.omittedKW).toBeCloseTo(59.9, 1);
-    expect(f.kept).toHaveLength(5);
   });
 });
