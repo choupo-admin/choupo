@@ -2298,6 +2298,27 @@ accepts today, and that is a policy call.
 > `fitParameters`, partially miscible pairs (butanol-water) are not
 > promotable.
 
+> **C226 addendum (Vitor pasted the other session's full request, 2026-11-05):
+> THE CORE REQUESTS, JUDGED.**  VERIFIED at `FitParameters.cpp:406`: only
+> `T_bubble`/`P_bubble` exist; parameters are addressed by dictionary path
+> (so UNIQUAC `a_ij` / Wilson `A_ij` may already fit -- to be confirmed by a
+> run, not assumed); finite-difference Jacobian with `fdStep`; 3 UNIQUAC
+> records and no `parameters/Wilson/`.  DECISIONS: (A1) a liquid-liquid
+> residual kind, built on `IsothermalFlash::solveCore`, additive to
+> `T_bubble` in one fit -- FIRST, it unblocks butanol-water, a pedagogical
+> pair; (A2) arm (f) of `check_regressed_pairs` accepts a pair declaring
+> `liquidLiquid true` with measured gap evidence and a gap band declared
+> before the fit, in the same slice; (A3) confirm UNIQUAC/Wilson by a run
+> before building anything; (A4) the analytic Jacobian and parallel points
+> are SPEED claims nobody measured: profile one fit first, build only what
+> the profile shows (the stated principle: no optimisation without a
+> measurement); caching pure-component properties is the cheap first try;
+> (A5-A7) more evidence kinds, bubbleT inside the gap and `extract-lle`
+> follow A1; (A8) the water vapour pressure 0.52-0.70 K low at 1 atm is
+> item 7 of C226 (component audit). The 4.2 GB ThermoML cache lives only
+> in the cloud container (`thirdParty/thermoml`), so the pilot must run
+> there or the cache be rebuilt locally -- a fact to settle before dispatch.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
