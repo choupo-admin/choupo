@@ -45,7 +45,7 @@
   (CLAUDE.md sec. 6: the same table keeps water / 1-butanol miscible); a
   curated LLE parameter set, or NRTL pairs fitted on a held-out design, is
   the remedy and is NOT done here.  Consequence for a student: a countercurrent
-  cascade on this package (tutorials/steady/absorption/extract03_*) takes
+  cascade on this package (tutorials/steady/absorption/extract03_acetic_acid_mibk_perry) takes
   more acid out per stage than the real system does.
 
   NOT IN THE READING.  The all-binary row of Table 15-8 (water / MIBK mutual
