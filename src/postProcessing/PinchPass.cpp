@@ -446,6 +446,16 @@ int PinchPass::run(SimulationResult& result)
               << " kW, pinch at T* = " << Tpinch
               << " K (hot " << Tpinch - hs << " K / cold "
               << Tpinch - cs << " K)\n";
+    //  A THRESHOLD problem has no pinch: the cascade never goes below zero,
+    //  Q_H,min is 0 and the temperature printed above is only the top of the
+    //  range, where the cascade starts.  Say so (DEV.md 4c C230), because a
+    //  "pinch at T*" line beside Q_H,min = 0 reads as a located pinch.
+    const bool thresholdProblem = QHmin <= 1.0e-9;
+    if (thresholdProblem)
+        std::cout << "[pinch] THRESHOLD problem: the cascade never closes"
+                     " below zero, so there is NO pinch (the T* above is the"
+                     " top of the range) -- no hot utility is needed and the"
+                     " cold-utility target is the whole surplus\n";
     //  The current duties are the UTILITY-served ones: an exchanger's duty is
     //  heat already recovered and is in neither sum.
     std::cout << "[pinch] current (unintegrated) utility duties of the"
@@ -633,6 +643,7 @@ int PinchPass::run(SimulationResult& result)
     k["segments"]          = static_cast<scalar>(segs.size());
     k["duties_excluded"]   = static_cast<scalar>(nExcluded);
     k["utility_sides"]     = static_cast<scalar>(nUtilitySides);
+    k["pinch_exists"]      = thresholdProblem ? 0.0 : 1.0;
     k["Q_excluded_kW"]     = excludedW / 1.0e3;
     k["candidates_total"]      = static_cast<scalar>(rows.size());
     k["candidates_admissible"] = static_cast<scalar>(admissible);
