@@ -2704,21 +2704,21 @@ accepts today, and that is a policy call.
 > credits) puts it first on Saturday, ahead of everything, because it is a
 > wrong number at exit 0 that a student reads on the live site.
 
-> **C231 (Vitor, 2026-11-05): THE MTBE REACTIVE COLUMN OF HIS ASPEN CASE
+> **C231 (Vitor, 2026-11-05): THE MTBE REACTIVE COLUMN OF HIS REFERENCE-SIMULATOR CASE
 > CANNOT BE SIMULATED TODAY -- A MOLE-CHANGING REACTION IN A REACTIVE
-> COLUMN.**  His case, `~/Avitor/2026-2027/Aulas/PEQ/AspenChoupo/
-> MTBE_Intensified_30 pratos.bkp`: ONE rigorous reactive column `T901`
+> COLUMN.**  His case, a backup file `MTBE_Intensified_30 pratos.bkp` kept under his
+> course folder (outside the repository): ONE rigorous reactive column `T901`
 > (`RADFRAC`, `NSTAGE = 15` -- the file name says 30 trays and the file has
 > 15 stages --, partial-vapour condenser, reactive stages 6 to 10, reaction
 > set `R-1`), methanol + a C4 cut -> MTBE.  A previous session left two Choupo
-> cases beside it (`mtbe01_reativa_direta`, `mtbe02_reator_mais_coluna`) and a
-> README.  MEASURED here: `mtbe01` is REFUSED by `DistillationColumn` --
+> cases beside it (a direct translation and a reactor-plus-column approximation, both outside the repository) and a
+> README.  MEASURED here: the direct translation is REFUSED by `DistillationColumn` --
 > "reactive distillation here supports mole-conserving (Sum nu = 0) reactions
 > only ... A Sum nu != 0 reaction changes the internal flows and needs the
 > full-MESH energy balance, which this method does not yet carry" -- and
-> methanol + isobutene <-> MTBE has Sum nu = -1.  `mtbe02` (a conversion
-> reactor at the Aspen conversion, 98.87 %, followed by a non-reactive
-> `fullMESH` column) converges and reproduces the Aspen temperatures within
+> methanol + isobutene <-> MTBE has Sum nu = -1.  the approximation (a conversion
+> reactor at the reference simulator's conversion, 98.87 %, followed by a non-reactive
+> `fullMESH` column) converges and reproduces its temperatures within
 > 1 K and the bottoms flow within 0.1 %, but the conversion is IMPOSED, so it
 > shows the separation and none of the intensification; its energy balance
 > leaves 166 kW (about 2 % of the duties) unexplained, cause not
@@ -2727,12 +2727,12 @@ accepts today, and that is a policy call.
 > the rigorous solver that carries the reaction extent at each reactive stage
 > with variable molar flows and the heat of reaction in the stage energy
 > balance (the elements datum already carries it), the equilibrium constant
-> K_a(T) of the reaction as a case record (never a number from the Aspen
-> file's value), and a column witness that reproduces his case; the
+> K_a(T) of the reaction as a case record (never a number taken from
+> the reference file), and a column witness that reproduces his case; the
 > esterification columns that run today (Sum nu = 0) are the precedent and
 > must stay byte-identical.  It is a flagship of process intensification,
 > which a chemical-project class meets, so it is worth building; and it
-> belongs ahead of a second look at `mtbe02`, whose 166 kW residual is the
+> belongs ahead of a second look at that approximation, whose 166 kW residual is the
 > first thing to understand, because it may be a defect that exists today.
 
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
