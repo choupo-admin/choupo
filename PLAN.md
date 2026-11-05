@@ -8,6 +8,15 @@ points at its DEV.md 4c entry, the register of record.  Vítor's private
 Portuguese view is https://claude.ai/artifact/JnokFGgoNMTAWvu9fkgyoQ; its
 header names the PLAN.md commit it reflects, so a stale view shows itself.
 
+> **USAGE FREEZE (Vitor, 2026-11-05: 96 % of the credits spent).**  Everything
+> that needs Opus or Fable WAITS FOR SATURDAY 2026-11-07: the C229 (A) port
+> review, C227 slice (b) (the pair index), the C223 pilot's decisions, the
+> C228 distillation and cracking cases, and any new physics.  Until then only
+> cheap work: integrations that run on their own (`bin/integrate`), reading
+> logs, registering.  No new general is dispatched; the two C229 generals were
+> told to commit WIP and stop.  Lifted by Vitor, never by the assistant.
+
+
 ## How the plan is kept (the architect's rule, 2026-11-01)
 
 1. **Capacity, not hope.**  Up to 7 generals at once (CLAUDE.md rule 4:
