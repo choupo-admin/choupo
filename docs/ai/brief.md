@@ -205,8 +205,22 @@ Activity model: replace the `liquid` block with
 NRTL pairs shipped in the public catalogue are few (ethanol-water,
 methanol-water, isopropanol-water, 1Propanol-water, acetonitrile-water,
 acetone-ethanol, benzene-toluene, ethanol-ethylAcetate,
-methanol-methylAcetate).  For any other pair use UNIFAC, or give the
-NRTL parameters inline with their literature source:
+methanol-methylAcetate).  `ls data/standards/parameters/NRTL/` lists them.
+For a pair NOT in the catalogue, in this order:
+
+1. UNIFAC (`activityModel { model UNIFAC; }`), and SAY to the student that it
+   is an ESTIMATE from group contributions, not a measured pair.
+2. Where UNIFAC is weak (azeotropes, partial miscibility), ASK the student for
+   MEASURED data from a paper he has read, write a `fitParameters` case on it
+   and let Choupo fit and validate on held-out points.
+3. NEVER write a parameter you have no data for: say "I do not know it".
+   Numbers recalled from memory with a plausible citation are the failure this
+   rule exists to stop.
+4. NEVER take a value from a database without a redistribution licence.
+
+The engine accepts coefficients typed in the case, but ANNOUNCES every such
+pair as `[unreviewed] pair` (values and source not reviewed by Choupo); only
+write one when the student hands you the numbers from a paper he is reading:
 
 ```
         activityModel

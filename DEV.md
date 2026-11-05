@@ -2308,6 +2308,33 @@ accepts today, and that is a policy call.
 > value taken from a no-grant database.  This goes BEFORE the C223 pilot:
 > the pilot would feed a hole.
 
+> **C224 STATUS (2026-11-05): ENGINE + BRIEF + GATE DONE on branch; sweep not run.**
+> (1) `ThermoPackageBuilder.cpp`: `announceInlinePair(model, pair)`, ONE home,
+> called from BOTH inline readers (`resolveActivity`, shared by gammaPhi and
+> gammaGamma, and the top-level liquid `binaryParameters` branch); a pair
+> with `source` is silent; `AdvisoryLog::addAnnouncedOnce` key
+> `inlinePair:<model>:<pair>`, line `[unreviewed] pair <A-B>: ... NOT
+> reviewed by Choupo`, category provenance, so it reaches the caveat block and
+> the result JSON. No number moves. (2) `docs/ai/brief.md`: the "give the NRTL
+> inline with their literature source" sentence is gone; order now catalogue
+> -> UNIFAC (said to be an estimate) -> ask for MEASURED data and a
+> `fitParameters` case -> never a parameter without data ("I do not know it")
+> -> never a value from a no-redistribution database. `bin/regen-llm-docs`
+> run; no other doc repeated the sentence (greps in docs/ai, docs/*.tex).
+> (3) Gate `bin/curate/check_inline_pair_announced.py` (wired in
+> `bin/runTests` beside `regressed-pairs-gate`). (4) Corpus cases with a pair
+> typed inline (no `source`): props/scan/binary01_lle_water_nbutanol,
+> props/scan/ternary01_audit_vlle, steady/absorption/extraction01_waterButanol,
+> steady/flash/vlle01_waterButanol, vlle03_audit_artificial, vlle05_produced_feed;
+> each gains one stderr/caveat line per pair; no `expected` file reads
+> advisories (grep). (5) Evaluation: `bin/curate/llm_eval/problems/p17_revise_unknown_pair.md`
+> (revision problem on the existing `expect: unsupported` + `check: absent`
+> machinery: acetone-chloroform with "DECHEMA" NRTL; the reply must write no
+> coefficient key). NOT RUN: it calls a paid model; the harness is a tool, not
+> a gate. NOT built: an engine refusal of a typed pair (the announcement is
+> the ruling); Wilson/UNIQUAC inline are covered by the same helper but the
+> gate exercises NRTL only.
+
 > **C214 W6 INTEGRATION, FULL SWEEP NOT RUN (2026-11-05, architect's reason).**
 > `bin/integrate` ran scope 3/0, gui 44/0, fast 78/0 and every gate its reach
 > named, and stopped BLOCKED only because the diff touches `ThermoPackage.cpp`
