@@ -1550,6 +1550,11 @@
       "exit": 0,
       "claim": "check_if97_regions: OK -- IF97 regions 1, 2, 3, 4 and B23 reproduce every verification value printed in Wagner et al. 2000 (Tables A3, A6, A10, A12, A29, B23 point; worst = 0.97 of half a unit in the last printed digit); rho3(p,T) returns the Table A10 densities; region 5 refuses by name in the kernel and the engine; boundaries within the Prague values (1/3 max dcp 0.195 %, dw 0.282 %; 2/3 max dcp 0.351 %, dw 0.403 %); the engine reaches region 3 at (rho,T) and (p,T). Does NOT check IF97 against IAPWS-95, region 5, or metastable states.",
       "seconds": 0.5
+    },
+    "check_petroleum_cuts": {
+      "exit": 0,
+      "claim": "check_petroleum_cuts: OK -- the TBP curve of Riazi Table 3.6 cut into 5 and 3 pseudo-components equals an independent Python recomputation (feed SG, cut Tb, bulk Watson K, cut SG, API, Watson K, the three fraction bases summing to 1, VABP/MABP/CABP/MeABP, blend SG/API/Watson K, closure miss to 1e-9; MW/Tc/Pc/Vc to 5e-4, the Rankine-form rounding of the book's Kelvin-form constants); Eq. 3.17 gives the printed 0.7863 against 0.7862 (the book adds 273, the engine 273.15) and Example 2.11's Kw 11.08 and API 12.23 are reproduced -- ARITHMETIC anchors, the book prints no cut Tb/SG/MW/Tc for the curve; 12 refusals fire through the real reader; the closure miss is announced and never adjusted; every record is read by the engine once promoted.  NOT covered: nothing here is measured, constant Watson K is the op's assumption, D86 -> TBP is not implemented, Kesler-Lee Cp and Lee-Kesler omega are reused as shipped and not held to the book.",
+      "seconds": 0.2
     }
   }
 }

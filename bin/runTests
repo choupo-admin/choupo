@@ -5097,6 +5097,22 @@ PYEOF
     fi
     rm -f /tmp/belldelaware.$$
 
+    # Petroleum-cuts gate (2026-11-05, DEV.md 4c C228).  `petroleumCuts` cuts a
+    # TBP curve into pseudo-components by Riazi (ASTM MNL50): the gate
+    # recomputes the chain in independent Python, holds the book's printed
+    # arithmetic (Eq. 3.17's 0.7862, Example 2.11's Kw and API), fires twelve
+    # refusals through the real reader and checks the closure is announced and
+    # never adjusted.  Nothing in it is a measurement.
+    if gate_exec "$ROOT/bin/curate/check_petroleum_cuts.py" > /tmp/petcuts.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "petroleum-cuts-gate" "$(head -1 /tmp/petcuts.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_petroleum_cuts.py)\n" "petroleum-cuts-gate"
+        cat /tmp/petcuts.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/petcuts.$$
+
     # rate-expression gate (2026-10-12, DEV.md 4c C67).  A rate law written in
     # the case is compiled, dimension-checked, printed back as parsed and
     # evaluated as declared; the C++ route (a law registered from code/) and
