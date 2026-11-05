@@ -79,10 +79,11 @@ same vapour root).  Implemented by:
   (T,ρ) residual, without the +R·ln Z conversion** to the (T,P)
   convention SRK/PR use.  See §6 (owner flag) -- the conversion was added
   on 2026-10-25, and §6 says how it is held.
-* **IF97** (`IF97.cpp:339, 390`): region-1/2 Gibbs-equation entropies,
+* **IF97** (`IF97.cpp:472, 524`): region-1/2 Gibbs-equation entropies,
   s = R(τγ_τ − γ), verified digit-for-digit against the release's
-  verification tables by `IF97::verify()`.  Regions 3/5 (and therefore
-  wet steam) refuse by name.
+  verification tables by `IF97::verify()`.  Region 5 refuses by name;
+  region 3 (since 2026-11-04, `docs/design/if97-region-3.md`) is the
+  Helmholtz form, s = R(tau phi_tau - phi), held to its own printed table.
 
 ## 3. The consumers: where an entropy value actually decides something
 

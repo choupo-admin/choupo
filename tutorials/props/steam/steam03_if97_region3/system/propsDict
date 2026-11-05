@@ -1,0 +1,108 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  steam03_if97_region3 --- IAPWS-IF97 region 3, where the boiler drum and the
+  supercritical once-through boiler live.
+
+  Region 3 is IF97's near-critical region: 623.15 K < T <= T_B23(p) and
+  p_B23(T) < p <= 100 MPa.  Its equation is a Helmholtz energy f(rho, T)
+  (Wagner et al., J. Eng. Gas Turbines Power 122 (2000) 150-182, Eq. 25,
+  40 coefficients in Table A9), so the engine reaches it from (p, T) by
+  solving p(rho, T) = p for the density on ONE branch of the isotherm --
+  below Tc the liquid branch when p >= psat(T), the vapour branch below.
+
+  VALIDATED (the golden rows of the four Table A10 operations ARE the
+  paper's printed values, not a recording, at reltol 1e-8 -- the printed
+  precision; the engine's own 1e-8 tripwire is IF97::verify(), which every
+  steamTables run executes and which refuses the run above it):
+    * r3_T650_rho500, r3_T650_rho200, r3_T750_rho500 -- Table A10 at the
+      printed (T, rho): p, h, u, s, cp, w;
+    * r3_T650_p25p58MPa -- the first state again, from its PRINTED pressure:
+      the backward density must return rho = 500 kg/m3.
+  NOT VALIDATED against any printed value (self-recorded goldens; they pin
+  that the answer has not moved, never that it is right):
+    * drum_water / drum_steam -- a 20 MPa drum boiler (Tsat = 638.9 K):
+      water 4 K subcooled, steam 6 K superheated, both region 3;
+    * oncethrough_25MPa_650K -- supercritical pressure, just below the
+      pseudo-critical temperature, where cp peaks;
+    * satline_near_critical -- the saturation line 600 K .. Tc: regions 1/2
+      on the line up to 623.15 K, region 3's two branches above it, h_fg
+      falling to zero at Tc;
+    * isobar_25MPa -- 600 .. 900 K: region 1, then region 3 (the cp peak),
+      then region 2 above T_B23(25 MPa).
+  IF97's own stated uncertainty against IAPWS-95 near the critical point is
+  large (cp up to -53 % near 648 K and 22.3 MPa; the paper's Fig. 16b) -- a
+  near-critical cp from this case is the industrial formulation's number,
+  not the scientific one.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    // --- Wagner et al. 2000, Table A10: region 3 at the printed (T, rho) --
+    {
+        name   r3_T650_rho500;
+        type   steamTables;
+        source "Wagner et al. 2000, Table A10";
+        point  { rho 500 kg/m3; T 650 K; }
+    }
+    {
+        name   r3_T650_rho200;
+        type   steamTables;
+        source "Wagner et al. 2000, Table A10";
+        point  { rho 200 kg/m3; T 650 K; }
+    }
+    {
+        name   r3_T750_rho500;
+        type   steamTables;
+        source "Wagner et al. 2000, Table A10";
+        point  { rho 500 kg/m3; T 750 K; }
+    }
+
+    // --- the same first state from its PRINTED pressure (backward density) -
+    {
+        name   r3_T650_p25p58MPa;
+        type   steamTables;
+        source "Wagner et al. 2000, Table A10";
+        point  { P 25.5837018 MPa; T 650 K; }
+    }
+
+    // --- a 20 MPa drum boiler: subcooled water and superheated steam ------
+    {
+        name   drum_water;
+        type   steamTables;
+        point  { P 20 MPa; T 635 K; }
+    }
+    {
+        name   drum_steam;
+        type   steamTables;
+        point  { P 20 MPa; T 645 K; }
+    }
+
+    // --- a supercritical once-through boiler point ------------------------
+    {
+        name   oncethrough_25MPa_650K;
+        type   steamTables;
+        point  { P 25 MPa; T 650 K; }
+    }
+
+    // --- the saturation line up to the critical point ---------------------
+    {
+        name   satline_near_critical;
+        type   steamTables;
+        saturation { from 600 K; to 647.096 K; n 20; }
+        output { file saturation_near_critical.csv; }
+    }
+
+    // --- a supercritical isobar through regions 1 -> 3 -> 2 ---------------
+    {
+        name   isobar_25MPa;
+        type   steamTables;
+        isobar { P 25 MPa; from 600 K; to 900 K; n 61; }
+        output { file isobar_25MPa.csv; }
+    }
+);

@@ -4631,6 +4631,48 @@ The (rho,T) viscosity / conductivity kernels get their density from the IF97 the
 \goldmore{49}
 \end{tutgolden}
 
+\clearpage
+\tutentry{steam03\_if97\_region3}{tutorials/props/steam/steam03\_if97\_region3}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{r3\_T650\_rho500}\\[-1pt]{\tiny steamTables}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{r3\_T650\_rho200}\\[-1pt]{\tiny steamTables}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{r3\_T750\_rho500}\\[-1pt]{\tiny steamTables}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{r3\_T650\_p25p58MPa}\\[-1pt]{\tiny steamTables}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{drum\_water}\\[-1pt]{\tiny steamTables}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{drum\_steam}\\[-1pt]{\tiny steamTables}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{oncethrough\_25MPa\_650K}\\[-1pt]{\tiny steamTables}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{satline\_near\_critical}\\[-1pt]{\tiny steamTables}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{isobar\_25MPa}\\[-1pt]{\tiny steamTables}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{IAPWS-IF97 region 3 (near-critical and supercritical water, the Helmholtz form f(rho,T)). The three verification states printed in Wagner et al. 2000 Table A10 evaluated at (T, rho) as printed, one of them again from its printed pressure through the backward density, a 20 MPa drum boiler's water and steam on either side of the saturation line, a 25 MPa supercritical once-through point, the saturation line up to the critical point and a 25 MPa isobar crossing regions 1, 3 and 2.}
+\begin{tutnarrative}
+IAPWS-IF97 region 3, where the boiler drum and the supercritical once-through boiler live.
+
+Region 3 is IF97's near-critical region: 623.15 K < T <= T\_B23(p) and p\_B23(T) < p <= 100 MPa. Its equation is a Helmholtz energy f(rho, T) (Wagner et al., J. Eng. Gas Turbines Power 122 (2000) 150-182, Eq. 25, 40 coefficients in Table A9), so the engine reaches it from (p, T) by solving p(rho, T) = p for the density on ONE branch of the isotherm -- below Tc the liquid branch when p >= psat(T), the vapour branch below.
+
+VALIDATED (the golden rows of the four Table A10 operations ARE the paper's printed values, not a recording, at reltol 1e-8 -- the printed precision; the engine's own 1e-8 tripwire is IF97::verify(), which every steamTables run executes and which refuses the run above it): r3\_T650\_rho500, r3\_T650\_rho200, r3\_T750\_rho500 -- Table A10 at the printed (T, rho): p, h, u, s, cp, w; r3\_T650\_p25p58MPa -- the first state again, from its PRINTED pressure: the backward density must return rho = 500 kg/m3. NOT VALIDATED against any printed value (self-recorded goldens; they pin that the answer has not moved, never that it is right): drum\_water / drum\_steam -- a 20 MPa drum boiler (Tsat = 638.9 K): water 4 K subcooled, steam 6 K superheated, both region 3; oncethrough\_25MPa\_650K -- supercritical pressure, just below the pseudo-critical temperature, where cp peaks; satline\_near\_critical -- the saturation line 600 K .. Tc: regions 1/2 on the line up to 623.15 K, region 3's two branches above it, h\_fg falling to zero at Tc; isobar\_25MPa -- 600 .. 900 K: region 1, then region 3 (the cp peak), then region 2 above T\_B23(25 MPa). IF97's own stated uncertainty against IAPWS-95 near the critical point is large (cp up to -53 \% near 648 K and 22.3 MPa; the paper's Fig. 16b) -- a near-critical cp from this case is the industrial formulation's number, not the scientific one.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{r3\_T650\_rho500}{region}{3}
+\goldrow{diag}{r3\_T650\_rho500}{p\_MPa}{0.255837018e2}
+\goldrow{diag}{r3\_T650\_rho500}{h}{0.186343019e4}
+\goldrow{diag}{r3\_T650\_rho500}{u}{0.181226279e4}
+\goldrow{diag}{r3\_T650\_rho500}{s}{0.405427273e1}
+\goldrow{diag}{r3\_T650\_rho500}{cp}{0.138935717e2}
+\goldrow{diag}{r3\_T650\_rho500}{w}{0.502005554e3}
+\goldrow{diag}{r3\_T650\_rho200}{region}{3}
+\goldrow{diag}{r3\_T650\_rho200}{p\_MPa}{0.222930643e2}
+\goldrow{diag}{r3\_T650\_rho200}{h}{0.237512401e4}
+\goldrow{diag}{r3\_T650\_rho200}{u}{0.226365868e4}
+\goldrow{diag}{r3\_T650\_rho200}{s}{0.485438792e1}
+\goldrow{diag}{r3\_T650\_rho200}{cp}{0.446579342e2}
+\goldrow{diag}{r3\_T650\_rho200}{w}{0.383444594e3}
+\goldmore{34}
+\end{tutgolden}
+
 \subsection{thermo}
 \grouptheory{thermo}
 \clearpage

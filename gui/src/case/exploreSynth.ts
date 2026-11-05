@@ -196,7 +196,8 @@ export interface ExploreSpec {
   };
   /** Steam tables via the steamTables engine op (IAPWS-IF97, R7-97(2012)) —
    *  water ONLY (IF97 is the water formulation).  `saturation` scans the
-   *  region-4 line (from/to in K, regions 1/2 evaluated ON the line);
+   *  region-4 line (from/to in K, regions 1/2 evaluated ON the line up to
+   *  623.15 K, region 3's two branches above it, to Tc);
    *  `isobar` scans h,s,v,cp vs T at fixed P (Pa) — the engine announces the
    *  Tsat crossing.  All values canonical SI, like every synthesized scalar. */
   steam?: { mode: "saturation" | "isobar"; from: number; to: number; n: number; P?: number };

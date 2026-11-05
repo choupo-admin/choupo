@@ -1,0 +1,65 @@
+# Reference KPIs (golden master) for IAPWS-IF97 region 3.
+#
+# THE FIRST FOUR OPERATIONS' ROWS ARE THE PUBLISHED NUMBERS, NOT A RECORDING:
+# p, h, u, s, cp and w of the three region-3 verification states are copied
+# digit for digit from Wagner et al., J. Eng. Gas Turbines Power 122 (2000)
+# 150-182, Table A10 (= IAPWS R7-97(2012), Table 33), read from the paper's
+# page image.  reltol 1e-8 is the printed precision: half a unit in the ninth
+# significant digit is at most 5e-9 relative.  r3_T650_p25p58MPa is the first
+# state again from its printed PRESSURE, and its rho row pins the backward
+# density to the printed 500 kg/m3.
+#
+# The rows from drum_water on are SELF-RECORDED (2026-11-04, this build):
+# they pin that the answer has not moved, never that it is right -- no
+# printed value exists at those states.  The engine's own tripwire is
+# IF97::verify(), which every steamTables run executes and which refuses the
+# run above 1e-8.
+# kind   name      key         expected        reltol
+diag    r3_T650_rho500         region           3                  1e-9
+diag    r3_T650_rho500         p_MPa            0.255837018e2      1e-8
+diag    r3_T650_rho500         h                0.186343019e4      1e-8
+diag    r3_T650_rho500         u                0.181226279e4      1e-8
+diag    r3_T650_rho500         s                0.405427273e1      1e-8
+diag    r3_T650_rho500         cp               0.138935717e2      1e-8
+diag    r3_T650_rho500         w                0.502005554e3      1e-8
+diag    r3_T650_rho200         region           3                  1e-9
+diag    r3_T650_rho200         p_MPa            0.222930643e2      1e-8
+diag    r3_T650_rho200         h                0.237512401e4      1e-8
+diag    r3_T650_rho200         u                0.226365868e4      1e-8
+diag    r3_T650_rho200         s                0.485438792e1      1e-8
+diag    r3_T650_rho200         cp               0.446579342e2      1e-8
+diag    r3_T650_rho200         w                0.383444594e3      1e-8
+diag    r3_T750_rho500         region           3                  1e-9
+diag    r3_T750_rho500         p_MPa            0.783095639e2      1e-8
+diag    r3_T750_rho500         h                0.225868845e4      1e-8
+diag    r3_T750_rho500         u                0.210206932e4      1e-8
+diag    r3_T750_rho500         s                0.446971906e1      1e-8
+diag    r3_T750_rho500         cp               0.634165359e1      1e-8
+diag    r3_T750_rho500         w                0.760696041e3      1e-8
+diag    r3_T650_p25p58MPa      region           3                  1e-9
+diag    r3_T650_p25p58MPa      rho              500                1e-8
+diag    r3_T650_p25p58MPa      h                0.186343019e4      1e-8
+diag    r3_T650_p25p58MPa      s                0.405427273e1      1e-8
+diag    drum_water             region           3                  1e-9
+diag    drum_water             rho              534.089761712      1e-8
+diag    drum_water             h                1762.6589466       1e-8
+diag    drum_water             s                3.91423751842      1e-8
+diag    drum_water             cp               13.0081414434      1e-8
+diag    drum_water             w                512.045113734      1e-8
+diag    drum_water             psat_MPa         19.0868448913      1e-8
+diag    drum_steam             region           3                  1e-9
+diag    drum_steam             rho              138.275407221      1e-8
+diag    drum_steam             h                2558.05332297      1e-8
+diag    drum_steam             s                5.15855880152      1e-8
+diag    drum_steam             cp               15.7054870566      1e-8
+diag    drum_steam             w                430.934357454      1e-8
+diag    drum_steam             psat_MPa         21.514139292       1e-8
+diag    oncethrough_25MPa_650K region           3                  1e-9
+diag    oncethrough_25MPa_650K rho              488.875052079      1e-8
+diag    oncethrough_25MPa_650K h                1876.35912252      1e-8
+diag    oncethrough_25MPa_650K s                4.07597900031      1e-8
+diag    oncethrough_25MPa_650K cp               15.7310241409      1e-8
+diag    oncethrough_25MPa_650K w                478.980254655      1e-8
+diag    satline_near_critical  n_points         20                 1e-9
+diag    satline_near_critical  psat_to_Pa       22064000.0003      1e-8
+diag    isobar_25MPa           n_points         61                 1e-9

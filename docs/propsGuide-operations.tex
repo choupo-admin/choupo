@@ -192,13 +192,13 @@ Psychrometric chart for ANY carrier + condensable pair, generated from the packa
 \end{tutoriallink}
 
 \paragraph{\code{steamTables}}\label{op:steamTables}
-IAPWS-IF97 industrial water/steam properties. This is a propsDict operation under choupoProps (like propertyPoint), NOT a flowsheet unit. At startup it self-checks the transcribed coefficients against the release verification tables and REFUSES the run on any deviation above 1e-8. Give exactly ONE mode block per operation: point, saturation or isobar. CSV columns are canonical SI (h, u, s, cp, cv in J/kg-based units). Tutorial tutorials/props/steam/steam01\_if97\_verification locks every release verification table as a golden KPI at reltol 1e-8.
+IAPWS-IF97 industrial water/steam properties. This is a propsDict operation under choupoProps (like propertyPoint), NOT a flowsheet unit. At startup it self-checks the transcribed coefficients against the release verification tables and REFUSES the run on any deviation above 1e-8. Give exactly ONE mode block per operation: point, saturation or isobar. CSV columns are canonical SI (h, u, s, cp, cv in J/kg-based units). Regions 1, 2, 3 (near-critical and supercritical, the Helmholtz form f(rho,T), reached from (p,T) by a backward density iteration) and 4 are covered; region 5 (above 1073.15 K) is refused by name. Tutorials tutorials/props/steam/steam01\_if97\_verification and steam03\_if97\_region3 lock the published verification tables (Wagner et al. 2000, Tables A3, A6, A10, A12, A29) as golden KPIs.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
 \hline
 \code{isobar} & Isobaric scan \\
 \code{output} & CSV output \\
-\code{point} & Single (p,T) state \\
+\code{point} & Single (p,T) or region-3 (rho,T) state \\
 \code{saturation} & Saturation-line scan \\
 \hline
 \end{tabular}
@@ -206,6 +206,7 @@ IAPWS-IF97 industrial water/steam properties. This is a propsDict operation unde
 
 \begin{tutoriallink}
 \file{tutorials/props/steam/steam01\_if97\_verification}
+\quad (and 1 more)
 \end{tutoriallink}
 
 \subsection{Mixtures and activity}

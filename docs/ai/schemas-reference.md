@@ -1272,12 +1272,12 @@ Single-stage rotary-atomiser spray dryer producing powder and exhaust air. Compu
 
 ## `steamTables`  (steamTables operation)
 
-IAPWS-IF97 industrial water/steam properties. This is a propsDict operation under choupoProps (like propertyPoint), NOT a flowsheet unit. At startup it self-checks the transcribed coefficients against the release verification tables and REFUSES the run on any deviation above 1e-8. Give exactly ONE mode block per operation: point, saturation or isobar. CSV columns are canonical SI (h, u, s, cp, cv in J/kg-based units). Tutorial tutorials/props/steam/steam01_if97_verification locks every release verification table as a golden KPI at reltol 1e-8.
+IAPWS-IF97 industrial water/steam properties. This is a propsDict operation under choupoProps (like propertyPoint), NOT a flowsheet unit. At startup it self-checks the transcribed coefficients against the release verification tables and REFUSES the run on any deviation above 1e-8. Give exactly ONE mode block per operation: point, saturation or isobar. CSV columns are canonical SI (h, u, s, cp, cv in J/kg-based units). Regions 1, 2, 3 (near-critical and supercritical, the Helmholtz form f(rho,T), reached from (p,T) by a backward density iteration) and 4 are covered; region 5 (above 1073.15 K) is refused by name. Tutorials tutorials/props/steam/steam01_if97_verification and steam03_if97_region3 lock the published verification tables (Wagner et al. 2000, Tables A3, A6, A10, A12, A29) as golden KPIs.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `point` |   | object | — | One state point. Reports v, rho, h, u, s, cp, cv, w and the IF97 region, printed and stored as diagnostics (psat at T rides along as a fr… |
-| `saturation` |   | object | — | Temperature scan along the saturation line: psat plus the saturated liquid/vapour pairs (v, h, s) and h_fg per row. Valid over 273.15-623… |
+| `point` |   | object | — | One state point, given as (P, T) on any region or as (rho, T) on region 3 only -- the variable its Helmholtz equation is written in; a (r… |
+| `saturation` |   | object | — | Temperature scan along the saturation line: psat plus the saturated liquid/vapour pairs (v, h, s) and h_fg per row. Valid from the triple… |
 | `isobar` |   | object | — | h, s, v and cp versus temperature at fixed pressure. A subcritical isobar's saturation crossing is ANNOUNCED before the scan, so the h/s/… |
 | `output` |   | object | — | `{ file <name>.csv; }` — required by the `saturation` and `isobar` scans, optional for `point` (it writes a one-row CSV). |
 

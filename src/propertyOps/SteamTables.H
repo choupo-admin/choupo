@@ -59,11 +59,18 @@ License
   IF97::verify() once, and REFUSES to run on a failed self-check.
 
   Diagnostics: point -> region, v, h, u, s, cp, cv, w (+ psat_MPa when T is
-  on the region-4 range); saturation -> n_points, psat_from_Pa, psat_to_Pa;
-  isobar -> n_points (+ Tsat_K when the isobar is subcritical).
+  on the region-4 range; + p_MPa and rho on a region-3 state); saturation ->
+  n_points, psat_from_Pa, psat_to_Pa; isobar -> n_points (+ Tsat_K when the
+  isobar is subcritical).
 
-  Region 3 / region 5 states are refused loudly by the kernel's router --
-  the refusal names the input and the valid box (no silent extrapolation).
+  A point is (P, T) on any region, or (rho, T) on region 3 only -- the
+  variable its Helmholtz equation is written in, so the published (T, rho)
+  verification table can be evaluated as printed; a (rho, T) that is not a
+  single-phase region-3 state is REFUSED by name.  The saturation scan runs
+  to the critical point (regions 1/2 on the line up to 623.15 K, region 3's
+  two branches above it).  Region 5 states are refused loudly by the
+  kernel's router -- the refusal names the input and the valid box (no
+  silent extrapolation).
 \*---------------------------------------------------------------------------*/
 
 #pragma once

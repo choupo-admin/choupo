@@ -367,7 +367,8 @@ export function ExploreWorkspace() {
   const [recFrom, setRecFrom] = useState(0);
   const [recTo, setRecTo] = useState(0.85);
   // Steam tables (IF97): mode + per-mode T range (canonical SI, K) + isobar P.
-  // Saturation defaults span the region-1/2-on-the-line validity (0.01–350 °C);
+  // Saturation defaults span regions 1/2 on the line (0.01–350 °C); the op
+  // itself runs to the critical point (region 3's two branches above 350 °C);
   // the isobar defaults match the tutorial's 1 bar / 20–300 °C scan.
   const [steamMode, setSteamMode] = useState<SteamMode>("saturation");
   const [steamProp, setSteamProp] = useState("h");   // display-side column pick
@@ -1271,7 +1272,7 @@ export function ExploreWorkspace() {
       + `${familyById(bjFamily).note}.`
     : plotType === "steam"
     ? steamMode === "saturation"
-      ? `Saturated-steam table — IAPWS-IF97 (R7-97(2012)), the industrial water formulation; regions 1/2 evaluated ON the region-4 saturation line (valid 0.01–350 °C). Mass-basis SI columns; pick the property family above.`
+      ? `Saturated-steam table — IAPWS-IF97 (R7-97(2012)), the industrial water formulation; regions 1/2 evaluated ON the region-4 saturation line up to 350 °C, region 3's liquid and vapour branches above it (valid 0.01 °C to the critical point, 373.946 °C). Mass-basis SI columns; pick the property family above.`
       : `Steam isobar at ${paToDisplay(steamP, Pu)} ${pressureLabel(Pu)} — IAPWS-IF97 (R7-97(2012)), the industrial water formulation; h, s, v, cp vs T (mass-basis SI). A subcritical isobar jumps at the Tsat crossing — the engine announces it.`
     : plotType === "binaryLle"
     // WHAT THE PICTURE CLAIMS, and what is simply not in it.  This branch was
@@ -1815,7 +1816,7 @@ export function ExploreWorkspace() {
             const propPick = steamViewKey(steamMode, steamProp);
             return (
               <>
-                <Tooltip label="saturation curve: the region-4 line with the f/g property pairs (regions 1/2 evaluated on the line, valid 0.01–350 °C).  isobar: h, s, v, cp vs T at fixed P — crossing Tsat jumps the properties." multiline w={280} withArrow>
+                <Tooltip label="saturation curve: the region-4 line with the f/g property pairs (regions 1/2 evaluated on the line to 350 °C, region 3 above it, valid to the critical point 373.946 °C).  isobar: h, s, v, cp vs T at fixed P — crossing Tsat jumps the properties." multiline w={280} withArrow>
                   <Box>
                     <SegmentedControl size="xs" color="accent" value={steamMode}
                       onChange={(v) => setSteamMode((v as SteamMode) ?? "saturation")}

@@ -5689,6 +5689,23 @@ PYEOF
     fi
     rm -f /tmp/heavyw.$$
 
+    # IF97-regions gate (2026-11-04, DEV.md 4c C214 W6): the IAPWS-IF97 kernel
+    # -- regions 1, 2, 3 (the Helmholtz form, new), 4 and B23 -- reproduces
+    # every verification value PRINTED in Wagner et al. 2000 (Tables A3, A6,
+    # A10, A12, A29, the B23 point) to half a unit in the last printed digit;
+    # the region-3 backward density returns the printed densities; region 5
+    # refuses by name; the 1/3 and 2/3 boundaries stay within the Prague
+    # values and the paper's own Table 13 maxima; the engine reaches region 3.
+    if gate_exec "$ROOT/bin/curate/check_if97_regions.py" > /tmp/if97reg.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "if97-regions-gate" "$(gate_claim check_if97_regions /tmp/if97reg.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_if97_regions.py)\n" "if97-regions-gate"
+        cat /tmp/if97reg.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/if97reg.$$
+
     # Data-reconciliation gate (2026-10-20, DEV.md 4c C121): the
     # `dataReconciliation` props op reconciles plant flow readings under the
     # node balances through analysis::reconcileWeightedLeastSquares (the one
