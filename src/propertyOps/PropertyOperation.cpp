@@ -51,6 +51,7 @@ License
 #include "PropertyScan2D.H"
 #include "PropertyScanTernary.H"
 #include "LleTieLines.H"
+#include "CatalogueLookup.H"
 #include "ExtractionShortcutOp.H"
 #include "PropertyScanBinary.H"
 #include "PhaseEnvelope.H"
@@ -167,6 +168,10 @@ void PropertyOperation::registerBuiltins()
     reg("propertyScan2D", []{ return std::make_unique<PropertyScan2D>(); });
     reg("propertyScanTernary", []{ return std::make_unique<PropertyScanTernary>(); });
     reg("lleTieLines", []{ return std::make_unique<LleTieLines>(); });
+    //  ONE TOOL CALL, ONE EVIDENCE CARD (DEV.md 4c C227): the catalogue asked
+    //  about a pair / a compound, answered in a fixed byte budget.
+    reg("pairLookup",      []{ return std::make_unique<PairLookup>();      });
+    reg("componentLookup", []{ return std::make_unique<ComponentLookup>(); });
     reg("extractionShortcut", []{ return std::make_unique<ExtractionShortcutOp>(); });
     reg("propertyScanBinary",  []{ return std::make_unique<PropertyScanBinary>(); });
     //  THE ENTHALPY-CONCENTRATION LOCUS -- the first surface in the engine
