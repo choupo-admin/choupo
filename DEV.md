@@ -2449,6 +2449,108 @@ accepts today, and that is a policy call.
 > a ternary system (the ternary scan costs 6.6 s for 21 tie lines) and the
 > neighbourhood of a plait point.
 
+> **C226 ANSWERED (2026-11-05, the cloud session replied through Vitor).**
+> (1) The "liquid-liquid residual and UNIQUAC/Wilson in `fitParameters`"
+> request was only SAID in a chat and never written to a file or branch;
+> its UNIQUAC/Wilson half was an inference the cloud session had not checked
+> in the code, so it stands as the C16 first slice, built from the laptop
+> session's own measurement.  (2) Nobody else is building it.  (3) The cloud
+> session said the ThermoML cache is not on the laptop; MEASURED false: the
+> laptop already holds the official NIST archive in
+> `thirdParty/thermoml/` (4.1 GB, 11 923 XML files, `index.json`, SYNC.json
+> naming DOI 10.18434/mds2-2422 with its sha256 verified, synced 2026-08-26).
+> What is missing here is only the two DERIVED files, `identity.json` (CAS ->
+> InChIKey bridge: needs the network and minutes) and the VLE index
+> (`vle-index`); the pilot therefore runs on the laptop after those two
+> commands, with no 189 MB download.  Not copied from the cloud container.
+
+> **C227 (Vitor, 2026-11-05): ONE TOOL CALL, ONE EVIDENCE CARD -- the
+> students' assistant spends tokens on Choupo's answer, never on reasoning
+> about a pair.**  "Eu quero uma forma extremamente eficiente de poupar
+> tokens, usando o kernel do choupo de forma a que o aluno quando usa o
+> chatGPT, tudo e feito atraves do choupo ... para gerar pares binarios e
+> componentes ... e o que for necessario para servir de apoio ao 'Evidence
+> for this pair' do explorer."  DESIGN (architect's decision, rule 00):
+> (1) TWO props operations, `pairLookup { components (A B); }` and
+> `componentLookup { name ...; }`, answer in at most a fixed byte budget
+> (a gate holds it) with an honesty LADDER and never a number invented: a
+> curated catalogue record (paste-ready `source "file"` line, never typed
+> coefficients) -> an `autoPromoted`/regressed record (C225, with its
+> review state) -> UNIFAC, SAID to be an estimate -> servable from the
+> measurement archive but not yet fitted (the DOIs and the number of
+> independent laboratories, what the student can supply) -> unknown, "I do
+> not have it".  (2) ONE EVIDENCE CARD per pair, a small derived record
+> (studies by DOI, laboratories, T/P span, points, the archive sha256 and the
+> extraction filter, models tried with fit and held-out AAD against the band
+> declared before the fit, identifiability, review state) -- never the
+> measured series themselves (C226: DOI + sha256 + filter); the Explorer's
+> "Evidence for this pair" DRAWS the same card, and the lookup prints it; a
+> second home for either would be the arity sin.  (3) The student's machine
+> has no 4 GB archive, so what ships is the small derived INDEX of the pairs
+> the archive can serve (names, laboratories, spans, DOIs; built from
+> `vle-index` once `identity` has run) plus the cards of promoted pairs.
+> (4) The brief shrinks to one rule -- "for any pair or compound, call the
+> lookup and paste what it returns" -- because the knowledge moves into the
+> tool's output, where it is generated and cannot drift from the engine.
+> (5) The saving is MEASURED, not claimed: bytes of the brief and packs the
+> assistant must read today (brief 21 KB, capabilities 20 KB, packs 129 KB)
+> against the lookup's answer, and later the p01-p17 harness for the
+> assistant's own token use.  SLICES: (a) the two operations and the card
+> for what exists today (catalogue records, UNIFAC availability, regressed
+> records) with the byte-budget gate; (b) the pair index from the archive;
+> (c) the brief rewrite and the Explorer reading the card; (d) `autoPromoted`
+> pairs land through the C16 chain.  The curator's side (fit, validate,
+> promote) stays on the laptop; the student's side is read-only.
+
+> **C227 slice (b) PREREQUISITES RUN (2026-11-05, Vitor approved the network
+> use).**  `bin/choupo-thermoml identity` resolved 483 of the 517 catalogue
+> components to an InChIKey (two independent resolvers agreed); the other
+> 34 were REFUSED, none guessed: 17 where the resolvers DISAGREED (the
+> radicals and atoms: CS, H, H2, HO2, N, NH ...), 4 whose resolved formula
+> did not match the record's, and 13 for which a resolver gave no answer
+> (e.g. 2Methoxy2MethylHeptane, C6H5).  `vle-index` indexed 12 993 binary
+> vapour-liquid blocks from the 11 923 archive files, writing
+> `thirdParty/thermoml/identity.json` and `vleIndex.json` (both git-ignored,
+> derived); two archive files (`j.fluid.2018.07.020.xml`, `...021.xml`) are
+> not well-formed XML and were REFUSED by name.  This is the input of the
+> pair index (slice b).
+
+> **C228 (Vitor, 2026-11-05, relayed from another session): THE PETROCHEMISTRY
+> GAP, MEASURED BEFORE IT WAS ACCEPTED.**  The relay said there is "no
+> petroleum characterisation".  MEASURED false in part: `RiaziDaubert`
+> (`src/propertyOps/RiaziDaubert.{H,cpp}`, a registered `ConstantEstimator`)
+> already turns (Tb, SG) into MW, Tc, Pc, Vc with omega by Lee-Kesler and a
+> Kesler-Lee ideal-gas Cp, prints the Watson K factor, and
+> `props/estimate/estimate_petroleum_cut` + `steady/flash/
+> flash_pseudoComponent_petCut` flash such a lump and close its energy
+> balance.  What is TRULY missing (grep of src, docs/ai and tutorials): (1) a
+> TBP curve cut into several pseudo-components; (2) API gravity and the
+> Watson factor on STREAM properties; (3) a naphtha or crude atmospheric
+> distillation reference case; (4) a thermal-cracking case with published
+> kinetics; (5) SRK/PR kij for hydrocarbon gas pairs -- the catalogue holds
+> ONE record (`parameters/SRK/N2-CH4.dat`).  Components are not the gap: 609
+> records incl. n-pentane to n-decane, the xylenes, cumene, styrene,
+> naphthalene.  DECISIONS (architect, rule 00): the Pareto frame stands (no
+> breadth race; FCC, reforming, hydrotreating, CAPE-OPEN, hydrates and
+> black-oil stay out); an ESTIMATED pseudo-component record lives in the
+> CASE, never in `data/standards/` (an estimate is a proposal the student
+> promotes, as `estimateComponent` already writes it); correlations from the
+> books are used as formulas and coefficients, never copied tables
+> (`check_source_licence`).  ORDER: first the TBP cutter as a props operation
+> on `RiaziDaubert` with API gravity, SG and Watson K per cut and for the
+> blend (items 1-2, started); then kij of SRK/PR by the C16 chain with
+> `P_bubble` (its first slice is built, the pair fit waits on the archive
+> index); then the distillation case (needs the cutter and a source with a
+> unit's data, not a textbook example); then the cracking case (kinetics
+> from Sundaram & Froment 1977/1978 -- which of the two carries the measured
+> tables is to be CONFIRMED by reading them, not assumed).  LITERATURE
+> LOCATION (correcting the relay, which said `data/local`): Riazi (ASTM MNL50)
+> is `~/Downloads/MNL50.pdf` and
+> `~/Choupo-Literature/characterization-of-petroleum-products-by-riazi.pdf`,
+> Sundaram & Froment are `~/Choupo-Literature/sundaram1977.pdf` and
+> `sundaram1978.pdf`; Poling-Prausnitz-O'Connell is not in either place (the
+> curator's own copy that `verify_against_poling.py` reads).
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
