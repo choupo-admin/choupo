@@ -2475,6 +2475,18 @@ accepts today, and that is a policy call.
 > pairs land through the C16 chain.  The curator's side (fit, validate,
 > promote) stays on the laptop; the student's side is read-only.
 
+> **C227 slice (b) PREREQUISITES RUN (2026-11-05, Vitor approved the network
+> use).**  `bin/choupo-thermoml identity` resolved 483 of the 517 catalogue
+> components to an InChIKey (two independent resolvers agreed); 17 were
+> REFUSED because the resolvers DISAGREED (the radicals and atoms: CS, H, H2,
+> HO2, N, NH ...) and the rest stay unresolved -- as designed, a compound is
+> refused rather than guessed.  `vle-index` indexed 12 993 binary
+> vapour-liquid blocks from the 11 923 archive files, writing
+> `thirdParty/thermoml/identity.json` and `vleIndex.json` (both git-ignored,
+> derived); two archive files (`j.fluid.2018.07.020.xml`, `...021.xml`) are
+> not well-formed XML and were REFUSED by name.  This is the input of the
+> pair index (slice b).
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
