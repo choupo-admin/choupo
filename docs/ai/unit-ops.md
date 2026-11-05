@@ -3108,6 +3108,12 @@ Writes `fit_log.csv` (chi² + parameter trajectory) and `parity.csv`
       data ( 0.05 361.95   0.10 359.95   0.20 358.05...  );
   } }
 ```
+Residual kinds: `T_bubble`, `P_bubble`, `T_bubble+LLE` (bubble temperatures
+AND measured binodal tie lines in one fit, for a partially miscible binary --
+needs `weighting uncertainty`, `residual.liquidLiquid { sigma; origin }`, a
+package with two liquid phases and, for held-out tie lines, `acceptance {
+maxLLE }`; see `patterns.md`), `isotherm`, `membrane`.  The pair models are
+NRTL, UNIQUAC and Wilson; the proposal record carries each model's own keys.
 
 Supported property keywords (in `propertyPoint.state` selectors and
 in `propertyScanND.properties`): `T`, `P`, `Psat_<comp>`, `T_bubble`,

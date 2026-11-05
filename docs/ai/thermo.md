@@ -576,7 +576,8 @@ You have four ways forward, and the refusal prints all of them:
 1. **Add the record** under `constant/parameters/<MODEL>/<a>-<b>.dat` (or the
    sealed snapshot) — the best answer when a curated pair exists.
 2. **Fit it** from experimental data: `fitParameters`, residual kind
-   `T_bubble` (see `tutorials/props/curation/`).
+   `T_bubble` (or `T_bubble+LLE` when the pair is partially miscible and tie
+   lines are measured; see `tutorials/props/curation/`).
 3. **Declare a predictive model that needs no pair** — UNIFAC, if every
    component carries group decompositions.
 4. **Authorise the approximation.**  It then runs, and every ideal-defaulted
