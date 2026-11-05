@@ -115,17 +115,17 @@ export const CITES = {
     contains: '"\\nsolverDict:        "' },
   reactionsLine: { file: MAIN, line: 941,
     contains: '"\\nreactions library: "' },
-  v2GammaPhi: { file: BUILDER, line: 2732,
+  v2GammaPhi: { file: BUILDER, line: 2752,
     contains: '"[v2 native] equilibrium gammaPhi: liquid activity."' },
-  v2Reactive: { file: BUILDER, line: 1914,
+  v2Reactive: { file: BUILDER, line: 1931,
     contains: '"[v2 native] equilibrium electrolyteGammaPhi (REACTIVE"' },
-  resolverNotes: { file: BUILDER, line: 1060,
+  resolverNotes: { file: BUILDER, line: 1077,
     contains: "std::cout << line << \"\\n\";" },
-  chemistryMasters: { file: BUILDER, line: 1193,
+  chemistryMasters: { file: BUILDER, line: 1210,
     contains: '"[chemistry] masters DERIVED from the declared"' },
-  basisMap: { file: BUILDER, line: 1642,
+  basisMap: { file: BUILDER, line: 1659,
     contains: '"[basis] component -> master map: "' },
-  builderBackbone: { file: BUILDER, line: 1786,
+  builderBackbone: { file: BUILDER, line: 1803,
     contains: '"[builder] molecular backbone pair "' },
   sealedMirror: { file: "src/core/RegistryScan.cpp", line: 96,
     contains: 'std::cerr << "[sealed] " << noun_' },
@@ -946,7 +946,7 @@ export function blockLines(lines: readonly LogLine[], markerId: string):
 // ---- The witnesses ------------------------------------------------------------
 
 export type RunId =
-  | "flash" | "quiet" | "recycle" | "verdict" | "divergence" | "capped"
+  | "flash" | "bubble" | "quiet" | "recycle" | "verdict" | "divergence" | "capped"
   | "refused";
 
 export interface RunWitness {
@@ -977,11 +977,17 @@ export const RUNS: readonly RunWitness[] = [
       "flashModel", "rrNewton", "compositionLoop", "flashResult", "reportMass",
       "reportElement", "reportEnergyBoundary", "convergedWritten",
       "divergenceNone", "caveatsBlock", "psat", "cp", "unmarked"] },
-  { id: "quiet", case: "steady/flash/bubbleT01_ethanol_water", exit: 0,
-    label: "bubbleT01 · nothing raised",
+  { id: "bubble", case: "steady/flash/bubbleT01_ethanol_water", exit: 0,
+    label: "bubbleT01 · a bubble point",
+    shows: "the bubble-T Newton and its result -- and, since C224, the "
+      + "[unreviewed] pair line this case earns by typing its NRTL "
+      + "coefficients in the case instead of naming a catalogue record",
+    prints: ["bubbleNewton", "bubbleResult", "caveatsBlock"] },
+  { id: "quiet", case: "steady/heat/heatExchanger01_water_water", exit: 0,
+    label: "heatExchanger01 · nothing raised",
     shows: "a run whose caveat block says \"none raised\" — and the "
       + "[unmarked] lines it does not repeat",
-    prints: ["bubbleNewton", "bubbleResult", "caveatsNone", "unmarked"] },
+    prints: ["caveatsNone", "unmarked"] },
   { id: "recycle", case: PROCESS03, exit: 0,
     label: "process03 · a recycle",
     shows: "the [plan] line, the tear's guess, the recycle iterations while "
