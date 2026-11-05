@@ -2380,6 +2380,27 @@ accepts today, and that is a policy call.
 > in the cloud container (`thirdParty/thermoml`), so the pilot must run
 > there or the cache be rebuilt locally -- a fact to settle before dispatch.
 
+> **C226 MEASURED (2026-11-05, Vitor: "resolve ja a questao do jacobiano"):
+> THE FITTING JACOBIAN IS NOT A PROBLEM; NOTHING ANALYTIC IS BUILT.**  Two
+> measurements on the curation cases, run from the shipped binary.  SPEED:
+> `curate04` (methanol-water, 54 points, 7 iterations) takes 0.12 s,
+> `curate12` 0.08 s, `curate02` (29 iterations) 0.05 s; extrapolated to 269
+> points it is below one second, so the analytic Jacobian and the parallel
+> points that C226 A4 proposed would buy nothing a student or an assistant
+> could feel.  ACCURACY OF THE IDENTIFIABILITY: the third `curate04` fit is
+> the ill-conditioned one (four parameters, cond(JtJ) about 1.4e9); varying
+> its `fdStep` over six decades (1e-2 ... 1e-7) leaves the verdict "NOT
+> individually identifiable" unchanged every time, the condition number
+> between 1.23e9 and 1.36e9, and b_ij between -1652 and -1687; the shipped
+> 1e-4 is within 0.002 % of the h -> 0 limit (-1686.63 against -1686.98),
+> and only the coarsest step, 1e-2, moves a parameter by 2 %.  So the finite
+> difference noise does not decide any verdict and the argument for the
+> analytic form that C226 recorded as stronger than speed is NOT borne out.
+> What C226 A4 should have named instead is where a chain of fits spends its
+> time: the CAS -> InChIKey `identity` step (minutes, network), not the
+> fit.  Reopen the analytic Jacobian only if a fit of a different kind (the
+> liquid-liquid residual, thousands of points) measures slow.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
