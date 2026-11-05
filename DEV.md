@@ -2261,7 +2261,7 @@ accepts today, and that is a policy call.
 > value taken from a no-grant database.  This goes BEFORE the C223 pilot:
 > the pilot would feed a hole.
 
-> **C225 (relayed by Vitor from another session, 2026-11-05): AUTOMATING
+> **C226 (relayed by Vitor from another session, 2026-11-05): AUTOMATING
 > THE C16 CHAIN -- nine proposals, judged by content.**  MEASURED first:
 > `src/propertyOps/FitParameters.cpp` names no UNIQUAC, Wilson or
 > liquid-liquid residual, so the dependency the proposal cites ("the
@@ -2285,7 +2285,18 @@ accepts today, and that is a policy call.
 > table beside the DOI) is the way to make that review fast, and is added
 > to (1). Guarantees kept: `check_source_licence` before any record, no
 > record without quality evidence. This FEEDS the C223 pilot; the C224
-> correction still goes before it.
+> correction still goes before it.  ARCHITECT'S DECISION ON C225 (rule 00;
+> technical reason): automatic promotion is ACCEPTED, as a new state
+> `autoPromoted` with `humanReviewed false`, never as a silent `interim`;
+> it requires `validated` against a band declared before the fit, arm (f),
+> the study triage of item 3, never overwrites a literature or reviewed
+> record, and reverts with one command. The measured series are NOT copied
+> into the repository in bulk: a promoted pair stores the DOI, the sha256
+> and the extraction filter, and the data are regenerated from the local
+> archive (the redistribution question C16 left open stays unanswered, so
+> it is not walked into). Until a liquid-liquid residual exists in
+> `fitParameters`, partially miscible pairs (butanol-water) are not
+> promotable.
 
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
