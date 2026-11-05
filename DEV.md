@@ -2410,8 +2410,17 @@ accepts today, and that is a policy call.
 > benzene`: 105 nodes, 21 tie lines, 6.6 s), which no pair fit uses.  If the
 > residual is later built on `IsothermalFlash::solveCore` (the
 > multi-start Nelder-Mead path) instead of the binary common-tangent
-> solution, that cost changes by orders of magnitude and must be measured
-> again then; choose the common-tangent route first.
+> solution, that cost changes by orders of magnitude -- MEASURED the same
+> day and FALSE: a sweep of `vlle01_waterButanol`'s decanter, a binary
+> liquid-liquid flash through `IsothermalFlash::solveCore` (the multi-start
+> path) at every point, takes 0.01 s for 2 points, 0.03 s for 40 and 0.29 s
+> for 400, i.e. LINEAR at about 0.7 ms per flash; with the feed moved OUT of
+> the gap (99.5 % water, the search finds no split and says so) 400 points
+> take 0.23 s.  At 78 points and five evaluations per Jacobian that is about
+> 0.3 s per iteration, so the residual may be built on `solveCore` directly;
+> the common-tangent route is no longer required for speed.  Not measured:
+> a ternary system (the ternary scan costs 6.6 s for 21 tie lines) and the
+> neighbourhood of a plait point.
 
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
