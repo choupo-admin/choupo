@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 217 records already exist
+## 1. Why an index, when 218 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 217 design records, **155 state a rejected alternative and 62 do not** —
+- Of 218 design records, **156 state a rejected alternative and 62 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -88,6 +88,7 @@ direction is an error.
 | [`acetic-acid-latent-heat-closure.md`](../design/acetic-acid-latent-heat-closure.md) | study | yes | **DECIDED 2026-11-02** -- C201 item 1: the 6.7 kJ/mol gap between the NBS liquid and the measured latent heat at Tb is a transcription error, the record's vapour dimerisation constant (log K25 2.555) is formic acid's; acetic acid's own (Chao & Zwolinski Tables 11/12) is 3.107 atm^-1 and closes the latent heat to within 1 kJ/mol; corrected as its own slice before the associated vapour is rebased on it.  Rejected: blaming Watson (tested), adjusting the liquid Cp or the latent heat to fit. |
 | [`c201-item1-moved-rows.md`](../design/c201-item1-moved-rows.md) | finding | no | **RECORDED 2026-11-02, SUPERSEDED the same day** -- C201 item 1: the mechanical list of golden rows that move with the acetic-acid liquid bridge (bridge alone, piece 1), kept as the evidence the two-piece slice's grouped list (section 7.2 of `one-record-two-vapours-acetic-acid.md`) was read from; it NOT re-recorded anything. |
 | [`the-kernel-against-the-reference-simulator.md`](../design/the-kernel-against-the-reference-simulator.md) | study | yes | **DECIDED 2026-11-03** -- C214: the "2x" is a folder count (kernel against kernel Choupo is the larger); approach the reference simulator only in capability a plant-design student reaches for (the week W1-W7: general flash specification, Bell-Delaware rating, dominant-eigenvalue acceleration, Beggs-Brill, a Cv-rated valve, IF97 region 3 + gate, a water electrolyser); REJECTED: breadth (cubic variants, petroleum, GERG, more compounds) and platform (CAPE-OPEN, COM, a Python unit). |
+| [`a-tbp-curve-cut-into-pseudo-components.md`](../design/a-tbp-curve-cut-into-pseudo-components.md) | slice record | yes | **BUILT 2026-11-05** -- C228 items 1-2: props op `petroleumCuts` cuts a TBP curve (basis declared; D86/D1160 refuse by name) into pseudo-components, Tb at the cut mid-point, SG by one declared method (constant Watson K, Riazi Eq. 2.13, an assumption of the op), characterised by the unchanged RiaziDaubert estimator, one ESTIMATE record per cut in the case; API, SG, Watson K per cut and for the blend; the density closure within a declared tolerance is announced, never adjusted; REJECTED: forcing Kw to close the density, a default tolerance, API/Watson K on the stream report (moves every golden). |
 | [`a-general-flash-specification.md`](../design/a-general-flash-specification.md) | slice record | yes | **BUILT 2026-11-03** -- C214 W1: one home, `flashState::specifiedFlash`, for the specifications (P,H), (P,S), (T,V/F), (P,V/F) on the Michelsen stability test and the nested Newton, with the props op `flashSpec`; the liquid and mixture entropy is a NEW surface paired leg for leg with the enthalpy (S^E = (H^E - G^E)/T keeps G = H - TS equal to the flash's); NOT migrated, by the byte-identical rule, `adiabaticFlash`, `valve`, `compressor`, `turbine` (the adiabatic V/F row would move by 1.2e-6 against a 1e-6 tolerance). |
 | [`if97-region-3.md`](../design/if97-region-3.md) | slice record | yes | **BUILT 2026-11-04** -- C214 W6: IAPWS-IF97 region 3, the Helmholtz f(rho,T) of Wagner et al. 2000 Eq. 25 (Table A9 read from the page images, held by Table A10), reached from (p,T) by a bracketed Newton on ONE monotone branch of the isotherm (below Tc the liquid branch when p >= psat(T), the vapour branch below; spinodals bisected on either side of rho_c); `pT_region` routes to 3, region 5 still refused by name; gate `check_if97_regions` holds regions 1-4 and B23 to the paper's printed tables at half a unit in the last digit and the 1/3, 2/3 boundaries to its Table 13; witness `steam03_if97_region3`. |
 | [`the-plant-document-set.md`](../design/the-plant-document-set.md) | ADR | yes | **DECIDED 2026-11-03** -- C207/C203/C204/C210: the document set of a designed plant (equipment tags and list, the PFD as a PDF with its stream table, the line list per routed pipe, the instrument index, the P&ID, the control narrative), measured against what exists and what fourteen student design reports delivered; ten questions decided (generated Turton tags with a declared override; print-to-PDF; no invented indoor length; declared fittings; the stream table on by declaration, not by default).  Rejected: a PDF library in the GUI; a shipped fittings table before its primaries are read. |
@@ -371,7 +372,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**62 of 217 records state no rejected alternative.**  For a FORUM or a STUDY
+**62 of 218 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
