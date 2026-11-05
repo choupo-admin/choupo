@@ -2602,8 +2602,11 @@ accepts today, and that is a policy call.
 > ANNOUNCED as a conventional position, not a vendor's nozzle schedule; the
 > `layout` golden rows of pipe length move, listed in the commit.  (B) THE
 > VIEWER gains the guided tour (generated from the sectors and units, never
-> hand-written per plant), orbit/walk/drone, go-to, colour by temperature, the
-> minimap, and a click card reading the stream and sheet the engine published.
+> hand-written per plant), orbit/walk/drone, go-to, colour by phase,
+> temperature, pressure and the CONCENTRATION of a chosen component (Vitor: the
+> students' page does this too; every value read from the published stream,
+> never computed in the GUI), the minimap, and a click card reading the stream
+> and sheet the engine published.
 
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
