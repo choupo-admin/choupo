@@ -4368,6 +4368,7 @@
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/streams/ProcessStream.H",
+   "src/streams/UtilityCircuit.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/PackageAudit.H",
@@ -16411,6 +16412,7 @@
   ],
   "src/streams/UtilityCircuit.H": [
    "src/postProcessing/EconomicsPass.cpp",
+   "src/postProcessing/PinchPass.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/MassBalanceReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
