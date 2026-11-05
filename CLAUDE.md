@@ -2550,6 +2550,23 @@ and a compound is joined to a catalogue component BY INCHIKEY, never by
 name: the archive carries no CAS, so a CAS -> InChIKey bridge is built from
 two resolvers that must agree.
 
+**A PARTIALLY MISCIBLE PAIR IS FITTED ON BUBBLE TEMPERATURES AND TIE LINES
+TOGETHER (2026-11-05, DEV.md 4c C226).**  `fitParameters` `residual.kind
+T_bubble+LLE` adds measured binodal compositions (`property binaryLLE.binodal`
+datasets: T, mole fraction of the first named component in each liquid) to the
+bubble rows in ONE least-squares problem, through the liquid-liquid flash
+`propertyScanBinary` uses; the package must carry two liquid phases
+(`gammaGamma` + `liquidPhases`), `weighting uncertainty` and `liquidLiquid {
+sigma; origin }` are REQUIRED, a start that splits no tie line is REFUSED, a
+tie line the fitted model leaves as one liquid is a held-out MISS, and the band
+is `acceptance.maxLLE` declared before the fit.  Arm (f) of
+`check_regressed_pairs` accepts a pair declaring `liquidLiquid true;` with a
+`gap {}` block the measured tie lines support and still refuses every other
+pair that splits its liquid.  The only witness is SYNTHETIC
+(`curate13_synthetic_lle_butanol_water`); the real water + 1-butanol pair
+needs measured tie lines this tree does not hold.  Gate `check_lle_residual`.
+Record: `docs/design/binary-pairs-from-open-measurements.md` section 7.
+
 **A PAIR CHOUPO REGRESSES IS A RECORD THAT NAMES ITS CASE, AND A SHIPPED
 TABLE IS NOT RELICENSED BY ITS COURIER (2026-09-28, C16).**  Catalogue NRTL
 pairs may be Choupo's OWN regressions to measurements the ThermoML archive

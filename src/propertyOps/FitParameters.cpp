@@ -88,7 +88,7 @@ struct PairProposal
     std::string pairName;
     std::string ci, cj;
     scalar      alpha = 0.30;
-    scalar      a_ij = 0.0, b_ij = 0.0, a_ji = 0.0, b_ji = 0.0;
+    scalar      a_ij = 0.0, b_ij = 0.0, a_ji = 0.0, b_ji = 0.0; scalar c_ij = 0.0, c_ji = 0.0, A_ij = 0.0, A_ji = 0.0;   // UNIQUAC's T^2 term; Wilson's energies [J/mol]
     bool        eosPair = false;    // a cubic's kij (binaryInteractions path), not an activity pair
     scalar      kij  = 0.0;
     scalar      chi2 = 0.0;
@@ -153,7 +153,7 @@ scalar computeResiduals(const ThermoPackage& thermo,
     if (nFailed) *nFailed = 0;
 
     for (std::size_t k = 0; k < N; ++k)
-    {
+    {   if (lle::current && lle::current->isRow(k)) { residualsOut[k] = lle::row(thermo, *lle::current, k, i1, i2, weights); chi2 += residualsOut[k] * residualsOut[k]; if (nFailed && std::fabs(residualsOut[k]) >= 9.99e2) ++(*nFailed); continue; } 
         sVector x(n, 0.0);
         x[i1] = xData_first[k];
         x[i2] = 1.0 - xData_first[k];
@@ -403,9 +403,9 @@ int FitParameters::run(const DictPtr& dict,
     // -- residual block ----------------------------------------------------
     auto resDict = dict->subDict("residual");
     const std::string kind = resDict->lookupWord("kind");
-    if (kind != "T_bubble" && kind != "P_bubble")
+    if (kind != "T_bubble" && kind != "P_bubble" && kind != lle::kindMixed)
         throw std::runtime_error("fitParameters: kind must be T_bubble,"
-                                 " P_bubble or isotherm  (got '" + kind + "')");
+                                 " P_bubble or T_bubble+LLE  (got '" + kind + "')");
     //  THE TWO BUBBLE-POINT KINDS ARE ONE ENGINE WITH THE ROLES SWAPPED
     //  (P_bubble since 2026-10-21, DEV.md 4c C123).  A binary bubble point is
     //  (x, P, T); the experimenter fixes one coordinate and measures the
@@ -420,7 +420,7 @@ int FitParameters::run(const DictPtr& dict,
     //  MEASURED one (T or P); the names are the T_bubble engine's, and the
     //  swap is said once here rather than renamed in a thousand lines.
     const bool  kindP    = (kind == "P_bubble");
-    s_bubbleP = kindP;
+    s_bubbleP = kindP; const bool lleMode = lle::isMixed(kind); lle::requireFitMode(kind, evalMode, resDict->lookupWordOrDefault("weighting", "equal"));
     const char* fixedKey = kindP ? "T" : "P";
     const std::string yUnit = kindP ? "rel" : "K";     // the residual's unit
     //  `residual.P` (or `residual.T` for P_bubble) is CONDITIONAL: it is the
@@ -542,7 +542,7 @@ int FitParameters::run(const DictPtr& dict,
         //  touch a validation point; it is never given one.
         std::size_t nWithP = 0;
         for (const auto& pt : EvidencePartition::loadAll(
-                 part.fit(), xNames, yNames,
+                 lle::vleSets(part.fit(), lleMode), xNames, yNames,
                  "fitParameters(" + kind + ")", zNames))
         {
             xExp.push_back(pt.x); tExp.push_back(pt.y);
@@ -583,7 +583,7 @@ int FitParameters::run(const DictPtr& dict,
             tExp[k] = flat[2*k + 1];
         }
     }
-    const std::size_t N = xExp.size();
+    std::size_t N = xExp.size();
 
     // -- THE PRESSURE: one scalar, or one per point, never both ------------
     //
@@ -656,7 +656,7 @@ int FitParameters::run(const DictPtr& dict,
            << " .. " << (pHi/1.0e5) << " bar";
         return os.str();
     };
-
+    lle::Rows lleFit, lleVal; if (lleMode) { if (!partPtr) throw std::runtime_error("fitParameters(T_bubble+LLE): needs the `evidence ( )` form (tie-line datasets are routed by their `property`)."); const scalar sg = lle::readSigma(resDict); lleFit = lle::load(lle::lleSets(partPtr->fit()), comp1Name, sg, xExp.size(), "fitParameters(T_bubble+LLE)"); if (!lleFit.active()) throw std::runtime_error("fitParameters(T_bubble+LLE): no `role fit` dataset carries `property binaryLLE.binodal;` -- without tie lines this is a plain T_bubble fit; declare `kind T_bubble;`."); lleVal = lle::load(lle::lleSets(partPtr->validation()), comp1Name, sg, 0, "fitParameters(T_bubble+LLE)"); lle::requireBands(*partPtr, !lle::vleSets(partPtr->validation(), true).empty(), lleVal.active()); lle::append(lleFit, xExp, tExp, pExp); N = xExp.size(); }
     // -- options -----------------------------------------------------------
     int    maxIter = 40;
     scalar tol     = 1.0e-4;
@@ -943,7 +943,7 @@ int FitParameters::run(const DictPtr& dict,
         if (nOutside > 0) headline_.push_back("n_outside_validity");
         return 0;
     }
-    const sVector wExp = fitWeights(resDict, partPtr.get(), xNames, yNames, zNames, verbosity); const sVector* wPtr = wExp.empty() ? nullptr : &wExp;
+    const sVector wExp = lle::withRows(fitWeights(resDict, partPtr.get(), xNames, yNames, zNames, verbosity), lleFit); const sVector* wPtr = wExp.empty() ? nullptr : &wExp;
     // -- LM loop -----------------------------------------------------------
     //
     //  THE SEARCH IS FRAMED, because a regression WALKS.  Levenberg-Marquardt
@@ -958,12 +958,12 @@ int FitParameters::run(const DictPtr& dict,
     //  really does qualify the answer is raised again by the final residual
     //  pass and the held-out pass below, with the frame CLOSED, and a matching
     //  trial entry is promoted rather than duplicated.
-    AdvisoryFrame search("fitParameters: Levenberg-Marquardt parameter search");
+    AdvisoryFrame search("fitParameters: Levenberg-Marquardt parameter search"); lle::Scope lleScope(&lleFit);
     sVector r_curr;
     ThermoPackage thermo = buildThermo(params);
     const auto [iF1, iF2] = pairIdx(thermo);
     scalar chi2 = computeResiduals(thermo, pExp, xExp, tExp, r_curr,
-                                   nullptr, iF1, iF2, wPtr);
+                                   nullptr, iF1, iF2, wPtr); lle::requireSplitAtStart(lleFit, r_curr);
 
     auto logIter = [&](int iter)
     {
@@ -1077,8 +1077,8 @@ int FitParameters::run(const DictPtr& dict,
     //  lines by number (gui/tests/numericsLessons.test.ts holds them), and
     //  a slice that moves them breaks a lesson for no gain to the engine.
     tables_.clear();
-    tables_.push_back(bubbleFitPoints(thermo, xExp, pExp, tExp, iF1, iF2,
-                                      kindP, parityPath));
+    tables_.push_back(bubbleFitPoints(thermo, lle::head(xExp, lleFit), lle::head(pExp, lleFit), lle::head(tExp, lleFit), iF1, iF2,
+                                      kindP, parityPath)); if (lleFit.active()) tables_.push_back(lle::fitPointsTable(thermo, lleFit, iF1, iF2));
     //  The parameters' PATHS, so the default parameter table names
     //  fit.<i>.value by what it varied (diagnosticLabel); recorded here,
     //  beside the points, so the two descriptions of one fit are taken in
@@ -1116,7 +1116,7 @@ int FitParameters::run(const DictPtr& dict,
     //  another register: the console says it, the file that outlives the
     //  console does not.
     PairProposal proposal;
-    int nFailed = 0;
+    int nFailed = 0; lle::Stats lleIn;
     {
         sVector r_final;
         computeResiduals(thermo, pExp, xExp, tExp, r_final, &nFailed, iF1, iF2, wPtr);
@@ -1194,9 +1194,9 @@ int FitParameters::run(const DictPtr& dict,
         // regions; folding (1e3)^2 into sigma^2 = chi2/dof would silently wreck
         // every standard error / CI whenever a row is infeasible (a no-silent-
         // crutch violation).  Score sigma^2 + rms on the FEASIBLE rows only.
-        scalar chi2Feasible = 0.0, sseKelvin = 0.0; int nGood = 0;
+        scalar chi2Feasible = 0.0, sseKelvin = 0.0; int nGood = 0, nGoodK = 0;
         for (std::size_t k = 0; k < N; ++k)
-            if (std::abs(r_kelvin[k]) < 9.99e2) { chi2Feasible += r_final[k] * r_final[k]; sseKelvin += r_kelvin[k] * r_kelvin[k]; ++nGood; }
+            if (std::abs(r_kelvin[k]) < 9.99e2) { chi2Feasible += r_final[k] * r_final[k]; if (!lle::inRows(lleFit, k)) { sseKelvin += r_kelvin[k] * r_kelvin[k]; ++nGoodK; } ++nGood; }
         const int dof = nGood - static_cast<int>(P);
         const scalar sigma2 = (dof > 0) ? chi2Feasible / static_cast<scalar>(dof) : 0.0;
         const scalar tcrit  = tCrit95(dof);
@@ -1259,13 +1259,13 @@ int FitParameters::run(const DictPtr& dict,
         // propsDict it already holds), plus path-keyed value (CLI readback).
         scalar maxAbsResid = 0.0;
         for (std::size_t k = 0; k < N; ++k)
-            maxAbsResid = std::max(maxAbsResid, std::abs(r_kelvin[k]));
+            if (!lle::inRows(lleFit, k)) maxAbsResid = std::max(maxAbsResid, std::abs(r_kelvin[k]));
         diag_["chi2"]             = chi2Feasible;   // feasible rows only (honest); weighted iff `weighted`
-        diag_["rms"]              = (nGood > 0) ? std::sqrt(sseKelvin / static_cast<scalar>(nGood))
+        diag_["rms"]              = (nGoodK > 0) ? std::sqrt(sseKelvin / static_cast<scalar>(nGoodK))
                                                 : std::numeric_limits<scalar>::quiet_NaN();   // K, always
         diag_["max_abs_resid"]    = maxAbsResid;
         diag_["penalised_points"] = static_cast<scalar>(nFailed);
-        diag_["weighted"]         = wPtr ? 1.0 : 0.0;
+        diag_["weighted"]         = wPtr ? 1.0 : 0.0; lle::publish(diag_, lleFit, r_kelvin); lleIn = lle::statsOf(lleFit, r_kelvin);
         int atBound = 0;
         for (std::size_t i = 0; i < P; ++i)
         {
@@ -1431,11 +1431,11 @@ int FitParameters::run(const DictPtr& dict,
                 proposal.a_ij         = co("a_ij");
                 proposal.b_ij         = co("b_ij");
                 proposal.a_ji         = co("a_ji");
-                proposal.b_ji         = co("b_ji");
+                proposal.b_ji         = co("b_ji"); proposal.c_ij = co("c_ij"); proposal.c_ji = co("c_ji"); proposal.A_ij = co("A_ij"); proposal.A_ji = co("A_ji");
                 proposal.eosPair      = eosKey;
                 proposal.kij          = co("kij");
                 proposal.chi2         = chi2;
-                proposal.rmsK         = wPtr ? ((nGood > 0) ? std::sqrt(sseKelvin / static_cast<scalar>(nGood)) : 0.0) : std::sqrt(chi2 / static_cast<scalar>(N));
+                proposal.rmsK         = wPtr ? ((nGoodK > 0) ? std::sqrt(sseKelvin / static_cast<scalar>(nGoodK)) : 0.0) : std::sqrt(chi2 / static_cast<scalar>(N));
                 proposal.nFit         = N;
                 proposal.identifiable = identifiable;
                 proposal.corrComputed = corrComputed;
@@ -1479,14 +1479,14 @@ int FitParameters::run(const DictPtr& dict,
     scalar aadHeldOutK_ = 0.0;   // the same residual in kelvin
     scalar heldOutXmin = 0.0, heldOutXmax = 0.0;
     std::size_t nHeldOut = 0;
-    std::string heldOutSets;
+    std::string heldOutSets; lle::Stats lleHeld;
     if (engaged)
     {
         const EvidencePartition& part = *partPtr;
         sVector xVal, tVal, pVal;
         std::size_t nValWithP = 0;
         for (const auto& pt : EvidencePartition::loadAll(
-                 part.validation(), xNames, yNames,
+                 lle::vleSets(part.validation(), lleMode), xNames, yNames,
                  "fitParameters(" + kind + ")", zNames))
         {
             xVal.push_back(pt.x); tVal.push_back(pt.y); pVal.push_back(pt.z);
@@ -1504,7 +1504,7 @@ int FitParameters::run(const DictPtr& dict,
                 + std::to_string(xVal.size()) + " points carry a pressure"
                   " column.  Give every `role validation` dataset one, or"
                   " none.");
-        if (nValWithP == 0)
+        if (nValWithP == 0 && !xVal.empty())
         {
             if (evidenceCarriesP)
                 throw std::runtime_error("fitParameters(T_bubble): the fit"
@@ -1518,7 +1518,7 @@ int FitParameters::run(const DictPtr& dict,
         }
 
         //  R4: the caller is the only one that knows how many survived.
-        part.requireNonEmptyValidation(xVal.size(),
+        part.requireNonEmptyValidation(xVal.size() + lleVal.ties.size(),
                                        "fitParameters(" + kind + ")");
         for (const auto& ds : part.validation())
             heldOutSets += (heldOutSets.empty() ? "" : ", ") + ds.path;
@@ -1528,7 +1528,7 @@ int FitParameters::run(const DictPtr& dict,
             //  The fitted parameters meet evidence the fitter was never
             //  handed.  Same residual routine as the fit -- one evaluator, so
             //  a difference between the two cannot look like a model error.
-            ThermoPackage thV = buildThermo(params);
+            ThermoPackage thV = buildThermo(params); lleScope.set(nullptr);
             sVector rV;
             computeResiduals(thV, pVal, xVal, tVal, rV, nullptr, iF1, iF2);
             for (std::size_t k = 0; k < rV.size(); ++k)
@@ -1551,7 +1551,7 @@ int FitParameters::run(const DictPtr& dict,
             nHeldOut = rV.size();
             heldOutXmin = *std::min_element(xVal.begin(), xVal.end());
             heldOutXmax = *std::max_element(xVal.begin(), xVal.end());
-        }
+        } if (lleVal.active()) { ThermoPackage thL = buildThermo(params); lleHeld = lle::heldOut(thL, lleVal, iF1, iF2, verbosity, partPtr->lleBand()); lle::publishHeldOut(diag_, lleHeld); }
     }
 
     //  ===================================================================
@@ -1573,7 +1573,7 @@ int FitParameters::run(const DictPtr& dict,
     //  show it and no golden could pin it.  `validation()` below publishes
     //  exactly this word, plus the band it was judged against.
     const std::string curationVerdict = engaged
-        ? CurationDossier::verdictOf(*partPtr, nHeldOut > 0, aadHeldOut)
+        ? lle::verdict(*partPtr, CurationDossier::verdictOf(*partPtr, nHeldOut > 0, aadHeldOut), nHeldOut > 0, lleVal.active(), lleHeld)
         : std::string("notClaimed");
 
     if (verbosity >= 2)
@@ -1781,11 +1781,26 @@ int FitParameters::run(const DictPtr& dict,
                   << "    i           " << proposal.ci << ";\n"
                   << "    j           " << proposal.cj << ";\n"
                   << std::fixed << std::setprecision(8)
-                  << "    a_ij        " << proposal.a_ij << ";\n"
-                  << "    b_ij        " << proposal.b_ij << ";\n"
-                  << "    a_ji        " << proposal.a_ji << ";\n"
-                  << "    b_ji        " << proposal.b_ji << ";\n"
-                  << "    alpha       " << proposal.alpha << ";\n"
+                  //  THE RECORD CARRIES THE KEYS OF ITS OWN MODEL (A3, C226).
+                  //  This block wrote NRTL's five keys for every model: a
+                  //  Wilson fit published its A_ij/A_ji nowhere (the record
+                  //  read a_ij = 0, b_ij = 0 -- the ideal pair) and a UNIQUAC
+                  //  one carried an `alpha` no UNIQUAC reads.
+                  << (proposal.model == "Wilson"
+                        ? "    A_ij        " + lle::fmt8(proposal.A_ij) + ";   // J/mol\n"
+                          "    A_ji        " + lle::fmt8(proposal.A_ji) + ";   // J/mol\n"
+                        : proposal.model == "UNIQUAC"
+                        ? "    a_ij        " + lle::fmt8(proposal.a_ij) + ";\n"
+                          "    b_ij        " + lle::fmt8(proposal.b_ij) + ";\n"
+                          "    c_ij        " + lle::fmt8(proposal.c_ij) + ";\n"
+                          "    a_ji        " + lle::fmt8(proposal.a_ji) + ";\n"
+                          "    b_ji        " + lle::fmt8(proposal.b_ji) + ";\n"
+                          "    c_ji        " + lle::fmt8(proposal.c_ji) + ";\n"
+                        : "    a_ij        " + lle::fmt8(proposal.a_ij) + ";\n"
+                          "    b_ij        " + lle::fmt8(proposal.b_ij) + ";\n"
+                          "    a_ji        " + lle::fmt8(proposal.a_ji) + ";\n"
+                          "    b_ji        " + lle::fmt8(proposal.b_ji) + ";\n"
+                          "    alpha       " + lle::fmt8(proposal.alpha) + ";\n")
                   << "}\n\n";
             f << std::fixed << std::setprecision(8)
               << "provenance\n{\n"
@@ -1871,6 +1886,8 @@ int FitParameters::run(const DictPtr& dict,
                   << std::setprecision(6) << aadHeldOutK_ << ";\n"
                   << "        domain_x1   ( " << heldOutXmin << " " << heldOutXmax << " );\n"
                   << "    }\n";
+            else if (engaged && lleHeld.ties > 0)
+                f << "\n    heldOut     none;   // no bubble temperature was held out; the held-out tie lines are under `gap`\n";
             else if (engaged)
                 f << "\n    heldOut     none;   // every declared dataset carried `role fit`\n";
             if (engaged && partPtr->hasAcceptance())
@@ -1882,10 +1899,12 @@ int FitParameters::run(const DictPtr& dict,
                   //  subject, and it is spelt out because one file now
                   //  carries both.
                   << "        origin      \"" << partPtr->acceptanceOrigin() << "\";\n"
+                  << (partPtr->hasLleBand() ? "        maxLLE      " + std::to_string(partPtr->lleBand()) + ";   // mole fraction, the binodal band\n" : std::string())
                   << "    }\n";
             else if (engaged)
                 f << "\n    acceptance  none;   // no band was declared before the fit, so no\n"
                      "                        // pass/fail may be read out of the residual above\n";
+            if (engaged) f << lle::recordBlock(*partPtr, lleFit, lleIn, lleHeld.ties > 0 ? &lleHeld : nullptr, engaged ? partPtr->lleBand() : 0.0);
             f << "}\n";
 
             if (verbosity >= 2)
@@ -3084,6 +3103,8 @@ std::string FitParameters::diagnosticUnit(const std::string& key) const
     if (key == HeldOutStatistic::relativeAAD().key)
         return HeldOutStatistic::relativeAAD().unit;   // the unit its band is held to
     if (key == "aad_heldout_K")   return "K";
+    //  the binodal's statistics are mole fractions: dimensionless (T_bubble+LLE)
+    if (starts("lle_aad_dx") || key == "lle_max_abs_dx") return "-";
     if (isoTemperatures_.empty()) return {};
     if (starts("fit.q_max.")) return "mol/kg";
     if (starts("fit.b_ref.") || starts("fit.b_at_T.")) return "1/Pa";

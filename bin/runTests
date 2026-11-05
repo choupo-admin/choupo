@@ -5019,6 +5019,24 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/inlpair.$$
+    # lle-residual gate (2026-11-05, DEV.md 4c C226 A1).  `fitParameters`
+    # kind T_bubble+LLE adds measured binodal compositions to the bubble rows
+    # in ONE fit.  The SYNTHETIC witness (engine-generated data from known
+    # parameters) must be recovered to 1e-5 from two starts; its tie lines
+    # are recomputed by an independent convex hull; six refusals fire by name
+    # on probes the gate builds (ideal start, weighting equal, no sigma, no
+    # band, one liquid phase, kind LLE alone); a held-out tie line the model
+    # leaves as ONE liquid is named, counted and a notValidated miss.  Five
+    # by-hand sabotages, all caught.
+    if gate_exec "$ROOT/bin/curate/check_lle_residual.py" > /tmp/lleres.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "lle-residual-gate" "$(head -1 /tmp/lleres.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lle_residual.py)\n" "lle-residual-gate"
+        cat /tmp/lleres.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lleres.$$
 
     # evidence-records gate (2026-10-20, DEV.md 4c C117).  Every measured
     # DATASET the tree ships (tutorials/**/constant/experiments/*.dat, and

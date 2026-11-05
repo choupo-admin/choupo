@@ -57,7 +57,7 @@
         "kind": {
           "type": "string",
           "title": "Residual kind",
-          "description": "T_bubble (isobaric VLE: the bubble temperature at a fixed P, residual in K), P_bubble (isothermal VLE: the bubble PRESSURE at a fixed T, residual RELATIVE -- for a cubic's kij against high-pressure solubilities; since 2026-10-21, DEV.md 4c C123), isotherm (adsorption). membrane (a membrane record's transport parameters against measured rejections / fluxes, one operating point per dataset row; since 2026-10-25, DEV.md 4c C149/C152)."
+          "description": "T_bubble (isobaric VLE: the bubble temperature at a fixed P, residual in K), P_bubble (isothermal VLE: the bubble PRESSURE at a fixed T, residual RELATIVE -- for a cubic's kij against high-pressure solubilities; since 2026-10-21, DEV.md 4c C123), isotherm (adsorption). T_bubble+LLE (bubble temperatures AND measured binodal compositions of a partially miscible binary in ONE fit: tie-line datasets `property binaryLLE.binodal;`, `weighting uncertainty` and `liquidLiquid { sigma; origin; }` required, the case's package must declare two liquid phases; since 2026-11-05, DEV.md 4c C226). membrane (a membrane record's transport parameters against measured rejections / fluxes, one operating point per dataset row; since 2026-10-25, DEV.md 4c C149/C152)."
         },
         "T": {
           "type": "number",
@@ -119,6 +119,25 @@
           ],
           "title": "Which rejection the data are (kind membrane)",
           "description": "intrinsic: R = 1 - c_p/c_wall (the data were corrected for concentration polarisation); observed: R = 1 - c_p/c_bulk. REQUIRED for kind membrane -- there is no default."
+        },
+        "liquidLiquid": {
+          "type": "object",
+          "title": "Weight of the tie-line rows (kind T_bubble+LLE)",
+          "description": "REQUIRED with `kind T_bubble+LLE`. `sigma` is the mole fraction judged equivalent to one standard uncertainty of a binodal measurement: each tie-line row is (x_model - x_measured)/sigma, a dimensionless number added to the bubble rows (dT/U) in one chi2. `origin` says where that weight came from; a weight with no provenance cannot be told from one tuned after the fit.",
+          "properties": {
+            "sigma": {
+              "type": "number",
+              "title": "Mole-fraction scale of one binodal measurement"
+            },
+            "origin": {
+              "type": "string",
+              "title": "Where the weight came from"
+            }
+          },
+          "required": [
+            "sigma",
+            "origin"
+          ]
         },
         "weighting": {
           "type": "string",
@@ -288,6 +307,10 @@
             "string"
           ],
           "description": "the band, e.g. `0.1 percent`"
+        },
+        "maxLLE": {
+          "type": "number",
+          "description": "the band of the BINODAL, declared before the fit (kind T_bubble+LLE): the mean absolute deviation of the held-out tie-line mole fractions, dimensionless. REQUIRED when a held-out tie-line dataset is declared; a held-out tie line the fitted model leaves as ONE liquid is a miss of the verdict, never a skip."
         },
         "origin": {
           "type": "string",

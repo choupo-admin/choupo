@@ -340,6 +340,12 @@ public:
 
     //  FNV-1a over the canonical declaration (role|path|doi|sha256, sorted).
     const std::string& fingerprint() const { return fingerprint_; }
+    //  The band of the liquid-liquid residual (`acceptance { maxLLE <x>; }`,
+    //  a mean absolute deviation of binodal mole fractions, dimensionless;
+    //  fitParameters kind T_bubble+LLE, DEV.md 4c C226).  Part of the
+    //  fingerprint when declared; absent, every fingerprint is unchanged.
+    bool   hasLleBand() const { return lleBand_ > 0.0; }
+    scalar lleBand() const { return lleBand_; }
 
     //  The partition and the identity-level independence facts.
     void announce(const std::string& opLabel, int verbosity) const;
@@ -403,6 +409,7 @@ private:
     std::string                  acceptanceOrigin_;
     std::string                  acceptanceUnit_;
     scalar                       maxAADPct_ = 0.0;
+    scalar                       lleBand_ = 0.0;
     mutable bool                 bandUnitChecked_ = false;
     std::vector<EvidenceDataset> fit_;
     std::vector<EvidenceDataset> validation_;
