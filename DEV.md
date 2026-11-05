@@ -2399,7 +2399,19 @@ accepts today, and that is a policy call.
 > What C226 A4 should have named instead is where a chain of fits spends its
 > time: the CAS -> InChIKey `identity` step (minutes, network), not the
 > fit.  Reopen the analytic Jacobian only if a fit of a different kind (the
-> liquid-liquid residual, thousands of points) measures slow.
+> liquid-liquid residual, thousands of points) measures slow.  CHECKED THE SAME DAY (Vitor: "verifica se esse caso e lento primeiro"):
+> the liquid-liquid residual does not exist yet, so what was measured is its
+> unit cost.  A BINARY liquid-liquid flash (`binary01_lle_water_nbutanol`,
+> a 41-node grid plus both binodal points) runs under the 10 ms resolution
+> of `time` (three runs, 0.00 s), i.e. as cheap as a bubble point; at 78
+> butanol-water points and five evaluations per Jacobian that is at most
+> seconds per iteration, so the binary pairs this chain is for are NOT slow.
+> The slow LL path is the TERNARY scan (`ternary03_lle_water_ethanol_
+> benzene`: 105 nodes, 21 tie lines, 6.6 s), which no pair fit uses.  If the
+> residual is later built on `IsothermalFlash::solveCore` (the
+> multi-start Nelder-Mead path) instead of the binary common-tangent
+> solution, that cost changes by orders of magnitude and must be measured
+> again then; choose the common-tangent route first.
 
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
