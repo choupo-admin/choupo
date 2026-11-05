@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 517,
+  "cases": 520,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 13
+  "anchored": 14
  },
  "cases": {
   "tutorials/batch/adsorber/batch09_adsorber_co2": {
@@ -1772,6 +1772,36 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/compare/extractionShortcut01_perry_example15_1": {
+   "application": "choupoProps",
+   "ops": [
+    "extractionShortcut"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/props/compare/lle01_acetic_mibk_perry": {
+   "application": "choupoProps",
+   "ops": [
+    "lleTieLines"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/curation/curate01_water_evidence_partition": {
    "application": "choupoProps",
    "ops": [
@@ -3402,6 +3432,20 @@
    "hasGolden": true
   },
   "tutorials/steady/absorption/extract02_declared_interior": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "extractor"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/absorption/extract03_acetic_acid_mibk_perry": {
    "application": "choupoSolve",
    "unitTypes": [
     "extractor"
@@ -7722,6 +7766,8 @@
     "tutorials/props/compare/compare_visc_liquid_water",
     "tutorials/props/compare/compare_vle_etoh_water",
     "tutorials/props/compare/evidence01_methanol_water_points",
+    "tutorials/props/compare/extractionShortcut01_perry_example15_1",
+    "tutorials/props/compare/lle01_acetic_mibk_perry",
     "tutorials/props/curation/curate01_water_evidence_partition",
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate03_thermoml_fixture_bubble",
@@ -7886,6 +7932,7 @@
     "tutorials/steady/absorption/acetone05_luyben_absorber",
     "tutorials/steady/absorption/extract01_ethanol_water_benzene",
     "tutorials/steady/absorption/extract02_declared_interior",
+    "tutorials/steady/absorption/extract03_acetic_acid_mibk_perry",
     "tutorials/steady/absorption/extraction01_waterButanol",
     "tutorials/steady/absorption/stripper01_NH3_water",
     "tutorials/steady/crystallisation/crystalliser01_sugar",
@@ -8477,7 +8524,8 @@
    ],
    "extractor": [
     "tutorials/steady/absorption/extract01_ethanol_water_benzene",
-    "tutorials/steady/absorption/extract02_declared_interior"
+    "tutorials/steady/absorption/extract02_declared_interior",
+    "tutorials/steady/absorption/extract03_acetic_acid_mibk_perry"
    ],
    "fixedBedAdsorber": [
     "tutorials/batch/adsorber/batch13_breakthrough_co2",
@@ -8920,10 +8968,12 @@
     "tutorials/props/compare/aceticWater01_txy_association",
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
+    "tutorials/props/compare/lle01_acetic_mibk_perry",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
     "tutorials/props/solvents/solvent02_polystyrene_hexane_blends",
     "tutorials/steady/absorption/extract01_ethanol_water_benzene",
     "tutorials/steady/absorption/extract02_declared_interior",
+    "tutorials/steady/absorption/extract03_acetic_acid_mibk_perry",
     "tutorials/steady/distillation/acetone06_luyben_column_C1",
     "tutorials/steady/distillation/acetone07_luyben_column_C2",
     "tutorials/steady/distillation/column05_reactive_methylacetate",
@@ -9109,6 +9159,7 @@
     "tutorials/props/compare/compare_visc_liquid_water",
     "tutorials/props/compare/compare_vle_etoh_water",
     "tutorials/props/compare/evidence01_methanol_water_points",
+    "tutorials/props/compare/extractionShortcut01_perry_example15_1",
     "tutorials/props/curation/curate01_water_evidence_partition",
     "tutorials/props/curation/curate04_nrtl_methanol_water",
     "tutorials/props/curation/curate05_nrtl_acetone_methanol",
@@ -9443,6 +9494,9 @@
    "explainProperty": [
     "tutorials/props/molecular/entropy01_air_ledger"
    ],
+   "extractionShortcut": [
+    "tutorials/props/compare/extractionShortcut01_perry_example15_1"
+   ],
    "fitParameters": [
     "tutorials/props/adsorption/isotherm02_fit_jaschik",
     "tutorials/props/adsorption/isotherm03_fit_refusals",
@@ -9505,6 +9559,9 @@
    ],
    "linearTbEstimate": [
     "tutorials/props/estimate/userEstimate01_linear_tb"
+   ],
+   "lleTieLines": [
+    "tutorials/props/compare/lle01_acetic_mibk_perry"
    ],
    "membraneShortlist": [
     "tutorials/props/membrane/shortlist01_class_to_modules"
