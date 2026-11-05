@@ -2475,6 +2475,68 @@ accepts today, and that is a policy call.
 > pairs land through the C16 chain.  The curator's side (fit, validate,
 > promote) stays on the laptop; the student's side is read-only.
 
+> **C227 SLICE (a) BUILT (2026-11-05, branch of the c227a general).**  The two
+> operations `pairLookup` and `componentLookup`
+> (`src/propertyOps/CatalogueLookup.{H,cpp}`, registered in
+> `PropertyOperation::registerBuiltins`), the evidence card
+> (`docs/design/the-evidence-card.md`, indexed in `decision-records.md`),
+> witnesses `tutorials/props/molecular/pairLookup01_catalogue_ladder` and
+> `componentLookup01_catalogue_ladder` (new goldens: `diag` byte counts and
+> `verdict` tier words, appended by hand to the recorded `expected`; no
+> existing row moved), gate `bin/curate/check_lookup_budget.py` wired into
+> `bin/runTests` and recorded in `generated/gateManifest.json` (`--only`).
+> DECISIONS TAKEN (rule 00, recorded so they can be audited): the budget is
+> **2048 bytes of card text** (`kLookupCardBudgetBytes`, one home; the largest
+> card measured is 842 bytes, so the number is headroom for a pair with three
+> records, not a fit); over budget the card sheds lowest-priority LEAF lines
+> and says `droppedFields N;`, it never truncates mid-structure; the top-level
+> `tier` of a pair is the BEST class among its records (`curated` beats
+> `regressed`), and records are ordered NRTL/UNIQUAC/Wilson before other
+> families (a Henry/van't Hoff entry sharing the pair's name is listed, after);
+> the lookups read the INSTALLATION catalogue (`$CHOUPO_HOME/data/standards`
+> then `data/local`), not the case's `constant/`, and refuse by name where there
+> is none; a component resolves by file name, alias, CAS (record), then the lake
+> (file stem, or an EXACT name/CAS/alias in `compounds.csv`) -- never by
+> similarity; the lake gives identity + UNIFAC groups + which estimated columns
+> exist, no estimated value; the C16 fields (`laboratories`, `archiveSha256`,
+> `extractionFilter`, `fitAAD`, and `studies`/`validationAAD`/`identifiability`/
+> `fittedInCase` where a record lacks them) are listed in `announcedAbsent`
+> and never filled; the archive rung is said, on the `none` tier, to be slice (b).
+> **MEASURED (bytes only; no token claim).**  What an assistant must read today
+> to answer "what do you have for this pair?": `docs/ai/brief.md` 21 327 +
+> `docs/ai/capabilities.md` 20 886 + `docs/ai/packs/*` 129 006 (seven packs) =
+> **171 219 bytes** (and that text cannot answer a specific pair at all: the
+> pair is in the catalogue).  One card: **curated pair (ethanol + water, two
+> records) 832; regressed (acetone + ethanol) 842; UNIFAC-only (acetone +
+> cyclohexane) 685; unknown pair (1Pentadecanol + water) 664; component outside
+> the catalogue (1Pentadecanol, lake) 548 and a wholly unknown compound 420**;
+> catalogue component (ethanol) 692.  The card alone is 0.4-0.5 % of the
+> reading above, but the RAW tool output is larger than the card: a one-op
+> `choupoProps` run prints 5 275 bytes on stdout (banner, the card, and the
+> result JSON, which carries the card a second time plus the citation text)
+> and 620 on stderr, so an assistant that reads the whole output pays ~5.9 KB
+> for one pair.  A card-only output mode (`--card`) is proposed for slice (c)
+> and NOT built.  The assistant's own token use is not measured.
+> **VALIDATED:** `make -j1 all`; both witnesses via `bin/runTests --scope`
+> (PASS 3 / FAIL 0); `check_lookup_budget` OK (8 cards, largest 842 of 2048);
+> `check_capability_index`, `check_doc_references`, `check_doctrine`,
+> `check_decision_index`, `check_schema_coverage`, `check_type_coverage`,
+> `check_props_order` OK; `case_manifest`, `release_inventory`, `code_map`,
+> `regen-llm-docs`, `gen_tutorials_guide` regenerated (their `--check` OK);
+> `propsGuide.pdf` and `tutorialsGuide.pdf` rebuilt.  The gate's by-hand
+> sabotages, each rebuilt and restored: S1 "ESTIMATE" removed from the UNIFAC
+> tier (caught by (e)); S2 a number appended to the unknown-pair sentence
+> (caught by (d)); S3 the record's `b_ij` printed in the curated and regressed
+> cards (caught by (b) and (c), the comparison being NUMERIC so a respelling
+> is caught too).  NOT PROVEN: the full sweep (not run: no shared path
+> touched beyond a props-op registration); `--gui` (no `gui/src` change and no
+> cited `src/` line moved: the new file is new and the two edits to existing
+> files are registration lines in `PropertyOperation.cpp`/`PropsPlan.cpp`,
+> whose line numbers an EduTool lesson could cite -- not checked); WASM
+> (`make wasm`) not rebuilt, so the browser bench does not have the ops yet;
+> the sealed-corpus gate was not run on the two new (unsealed) cases.
+> NOT DONE: slices (b), (c), (d); the Explorer reading; `autoPromoted`.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
