@@ -1550,6 +1550,11 @@
       "exit": 0,
       "claim": "check_if97_regions: OK -- IF97 regions 1, 2, 3, 4 and B23 reproduce every verification value printed in Wagner et al. 2000 (Tables A3, A6, A10, A12, A29, B23 point; worst = 0.97 of half a unit in the last printed digit); rho3(p,T) returns the Table A10 densities; region 5 refuses by name in the kernel and the engine; boundaries within the Prague values (1/3 max dcp 0.195 %, dw 0.282 %; 2/3 max dcp 0.351 %, dw 0.403 %); the engine reaches region 3 at (rho,T) and (p,T). Does NOT check IF97 against IAPWS-95, region 5, or metastable states.",
       "seconds": 0.5
+    },
+    "check_inline_pair_announced": {
+      "exit": 0,
+      "claim": "check_inline_pair_announced: OK inline ethanol-water NRTL announced once per run (stderr + result JSON), catalogue pair silent, gammas identical; arms (a)-(d); NOT checked: correctness of typed numbers, Wilson/UNIQUAC inline (same code path, not exercised)",
+      "seconds": 0.0
     }
   }
 }
