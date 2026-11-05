@@ -1550,6 +1550,11 @@
       "exit": 0,
       "claim": "check_if97_regions: OK -- IF97 regions 1, 2, 3, 4 and B23 reproduce every verification value printed in Wagner et al. 2000 (Tables A3, A6, A10, A12, A29, B23 point; worst = 0.97 of half a unit in the last printed digit); rho3(p,T) returns the Table A10 densities; region 5 refuses by name in the kernel and the engine; boundaries within the Prague values (1/3 max dcp 0.195 %, dw 0.282 %; 2/3 max dcp 0.351 %, dw 0.403 %); the engine reaches region 3 at (rho,T) and (p,T). Does NOT check IF97 against IAPWS-95, region 5, or metastable states.",
       "seconds": 0.5
+    },
+    "check_lookup_budget": {
+      "exit": 0,
+      "claim": "check_lookup_budget: OK  8 cards from the two witnesses, largest 842 of 2048 bytes; curated pair returns its source line and no coefficient, the unknown pair and unknown compound return no number, UNIFAC says ESTIMATE, the lake compound prints no estimated value; NOT checked: the GUI reading, the archive rung (slice b), the truth of a record's provenance",
+      "seconds": 0.2
     }
   }
 }
