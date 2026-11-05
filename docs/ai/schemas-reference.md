@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*108 of 108 registered operations carry a schema and are documented below.*
+*109 of 109 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -850,6 +850,19 @@ Multi-stream heat exchanger: several hot and cold streams exchanging in one bloc
 |---|:-:|---|---|---|
 | `outlet` | ✓ | object | — | One sub-dict per stream NAME, each `{ T ...; vf ...; }`. The vapour fraction defaults to the inlet's, so a sensible-only stream needs onl… |
 | `tolerance` |   | number | - | Fractional imbalance allowed between the total hot and cold duties; defaults to 0.01. Exceeding it REFUSES the run rather than reporting … |
+
+## `petroleumCuts`  (petroleumCuts operation)
+
+Cut a TRUE-BOILING-POINT curve into petroleum PSEUDO-COMPONENTS (Riazi, ASTM MNL50, 2005).  Each cut's Tb is the TBP temperature at the mid-point of its distilled interval; its SG is one declared method (constantWatsonK, or declared per cut); the pair (Tb, SG) goes to the same Riazi-Daubert estimator estimateComponent uses (MW, Tc, Pc, Vc; omega by Lee-Kesler; Cp by Kesler-Lee).  One ESTIMATE record per cut is written into the CASE, marked lumped and NOT a real species -- a proposal the student reviews and promotes, never a standard record.  API gravity, SG (60/60 F) and Watson K are published per cut and for the blend; the re-blended cuts must reproduce the feed SG within a DECLARED tolerance, and a miss is announced, never adjusted.  The curve type is TBP: ASTM D86, D1160, D2887 and EFV refuse by name (the conversion is not implemented).
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `curve` | ✓ | object | — | `{ type TBP; basis volume\|mass; points ( { fraction f; T <value> C; } ... ); }` -- the distilled fraction in [0, 1] on the DECLARED basi… |
+| `feed` | ✓ | object | — | Exactly one of `specificGravity <SG 60/60 F>;` or `specificGravityFrom TBP;` (Riazi Eq. 3.17, TBP row of Table 3.4: SG = 0.10431 T10^0.12… |
+| `cuts` | ✓ | object | — | `boundaries ( 0 0.1 ... 1 );` -- increasing distilled fractions from exactly 0 to exactly 1 (the cuts partition the whole feed; a differe… |
+| `specificGravity` | ✓ | object | — | `method constantWatsonK;` -- SG_i = (1.8 Tb_i)^(1/3)/Kw with ONE Kw for the feed (Riazi Eq. 2.13 rearranged; Kw at the feed SG and the fe… |
+| `closure` | ✓ | object | — | `specificGravityTolerance <relative>;` -- REQUIRED.  The tolerance within which the cuts re-blended by Eq. 3.45 must reproduce the feed S… |
+| `output` |   | object | — | `proposal auto;` writes one constant/components/<prefix>_NN.estimated.dat per cut (or `proposal <directory>;`); `prefix <word>;` names th… |
 
 ## `pfr`  (pfr operation)
 

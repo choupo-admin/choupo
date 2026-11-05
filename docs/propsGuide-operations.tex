@@ -523,6 +523,25 @@ Group-contribution estimation of a component's constants — curation made visib
 \quad (and 6 more)
 \end{tutoriallink}
 
+\paragraph{\code{petroleumCuts}}\label{op:petroleumCuts}
+Cut a TRUE-BOILING-POINT curve into petroleum PSEUDO-COMPONENTS (Riazi, ASTM MNL50, 2005).  Each cut's Tb is the TBP temperature at the mid-point of its distilled interval; its SG is one declared method (constantWatsonK, or declared per cut); the pair (Tb, SG) goes to the same Riazi-Daubert estimator estimateComponent uses (MW, Tc, Pc, Vc; omega by Lee-Kesler; Cp by Kesler-Lee).  One ESTIMATE record per cut is written into the CASE, marked lumped and NOT a real species -- a proposal the student reviews and promotes, never a standard record.  API gravity, SG (60/60 F) and Watson K are published per cut and for the blend; the re-blended cuts must reproduce the feed SG within a DECLARED tolerance, and a miss is announced, never adjusted.  The curve type is TBP: ASTM D86, D1160, D2887 and EFV refuse by name (the conversion is not implemented).
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{closure}\textbf{*} & Closure tolerance \\
+\code{curve}\textbf{*} & TBP curve \\
+\code{cuts}\textbf{*} & Cuts \\
+\code{feed}\textbf{*} & Feed specific gravity \\
+\code{output} & Output \\
+\code{specificGravity}\textbf{*} & Cut specific gravity \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/estimate/petroleumCuts01\_riazi\_table36\_tbp}
+\end{tutoriallink}
+
 \paragraph{\code{dataReconciliation}}\label{op:dataReconciliation}
 Steady-state data reconciliation of a flow network. Mass-flow readings, each with its meter's declared standard uncertainty, are adjusted as little as their uncertainties allow until every node mass balance closes: min Sum ((x - m)/sigma)\textasciicircum{}2 subject to A x = 0, solved by the engine's one weighted least squares (the reconciler built for the aqueous laboratory analysis). With Gaussian meter noise and a flat prior this is the Bayesian posterior mode; its covariance C - V, V = C A\textasciicircum{}T (A C A\textasciicircum{}T)\textasciicircum{}-1 A C, is published. Beside the answer: each balance's residual at the readings and its standard deviation, the chi-square global test with rank(A) degrees of freedom, the measurement test (each adjustment over its own standard deviation, against a Sidak-corrected two-sided normal critical value), and, for a meter taken out of service, the balances projected onto the remaining meters and the excluded reading's offset from what the rest of the plant says. An optional diagonal Gaussian prior per flow is combined with each reading by precision weighting, which is exact. Linear mass balances only.
 
