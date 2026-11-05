@@ -19,6 +19,7 @@ License
 #include "result/EnergyItems.H"   // unitHeatDuties, isProcessToProcessExchanger
 
 #include "core/Dictionary.H"
+#include "streams/UtilityCircuit.H"
 #include "result/SimulationResult.H"
 #include "core/Units.H"
 
@@ -28,6 +29,7 @@ License
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <set>
 #include <sstream>
 #include <stdexcept>
@@ -137,6 +139,31 @@ int PinchPass::run(SimulationResult& result)
     //  its sides -- the streams the pinch method extracts from an existing
     //  match -- and its duty is counted in neither current-utility sum, nor
     //  in the utility-placement violations below.
+    //  A UTILITY IS NOT A PROCESS STREAM (2026-11-05, DEV.md 4c C230).  The
+    //  streams that are a service, from the two sources the engine already
+    //  owns and no name test: a stream tagged `category` utility, and the
+    //  stream pairs of the case's declared `utilities` circuits
+    //  (`utilityCircuits::circuitOfStream`, the ONE home of that attribution).
+    std::map<std::string, std::string> serviceOf;       // stream -> label
+    for (const auto& kv : result.streams)
+        if (kv.second.category == "utility")
+            serviceOf[kv.first] = "category " + kv.second.category;
+    for (const auto& kv : result.utilityCircuitOf)
+        if (!kv.second.empty()) serviceOf[kv.first] = "circuit " + kv.second;
+    try
+    {
+        if (std::filesystem::exists("system/flowsheetDict"))
+        {
+            const DictPtr fd = Dictionary::fromFile("system/flowsheetDict");
+            const auto circuits = utilityCircuits::read(fd);
+            for (const auto& kv : utilityCircuits::circuitOfStream(
+                     circuits, result.boundaryAliasOf))
+                serviceOf[kv.first] = "circuit " + kv.second;
+        }
+    }
+    catch (const std::exception&) {}
+    int nUtilitySides = 0;
+
     struct PopRow
     {
         std::string unit, kpi, role, side, reason;
@@ -205,6 +232,50 @@ int PinchPass::run(SimulationResult& result)
         const bool exchanger = reporting::isProcessToProcessExchanger(u.type);
         if (hasQ && exchanger)
         {
+            //  Does one side of this exchanger run on a service?  The
+            //  service stream's own temperature says which side it is (the
+            //  closer of the two sides' terminal temperatures).
+            std::string svcIn, svcOut, svcWhy;
+            for (const auto& n : u.ins)
+            { auto it = serviceOf.find(n);
+              if (it != serviceOf.end() && svcIn.empty())
+              { svcIn = n; svcWhy = it->second; } }
+            for (const auto& n : u.outs)
+            { auto it = serviceOf.find(n);
+              if (it != serviceOf.end() && svcOut.empty()) svcOut = n; }
+            auto f0 = [&](const char* k) -> scalar
+            { auto it = kp.find(k); return it == kp.end() ? -1.0 : it->second; };
+            const scalar Thi0 = f0("T_hot_in"),  Tho0 = f0("T_hot_out");
+            const scalar Tci0 = f0("T_cold_in"), Tco0 = f0("T_cold_out");
+            if (!svcIn.empty() && !svcOut.empty() && Thi0 > 0.0 && Tho0 > 0.0
+                && Tci0 > 0.0 && Tco0 > 0.0)
+            {
+                const scalar Ts = result.streams.at(svcIn).T;
+                const bool utilIsCold =
+                    std::abs(Ts - Tci0) <= std::abs(Ts - Thi0);
+                const scalar Qabs = std::abs(q->second);
+                //  the PROCESS side enters as an ordinary segment, and its
+                //  duty is the current utility use (not recovered heat)
+                if (utilIsCold)
+                    addSegment(u.name + " [hot side]", Thi0, Tho0, Qabs,
+                               true, false, "hot");
+                else
+                    addSegment(u.name + " [cold side]", Tci0, Tco0, Qabs,
+                               false, false, "cold");
+                PopRow r;
+                r.unit = u.name + (utilIsCold ? " [cold side]" : " [hot side]");
+                r.kpi = "Q"; r.role = "utility";
+                r.side = utilIsCold ? "cold" : "hot";
+                r.Tin = utilIsCold ? Tci0 : Thi0;
+                r.Tout = utilIsCold ? Tco0 : Tho0;
+                r.Q = (utilIsCold ? 1.0 : -1.0) * Qabs;
+                r.reason = "served by a declared utility (" + svcWhy + ", stream "
+                           + svcIn + " -> " + svcOut + "): a utility is not a"
+                             " process stream, so it is not in the population";
+                population.push_back(r);
+                ++nUtilitySides;
+                continue;
+            }
             auto f = [&](const char* k) -> scalar
             { auto it = kp.find(k); return it == kp.end() ? -1.0 : it->second; };
             const scalar Thi = f("T_hot_in"),  Tho = f("T_hot_out");
@@ -258,6 +329,13 @@ int PinchPass::run(SimulationResult& result)
     for (const auto& r : population)
     {
         if (r.role == "excluded") continue;
+        if (r.role == "utility")
+        {
+            std::cout << "[pinch]   utility   " << r.unit << "  " << r.side
+                      << "  " << r.Tin << " -> " << r.Tout << " K  "
+                      << r.Q / 1.0e3 << " kW  (" << r.reason << ")\n";
+            continue;
+        }
         std::cout << "[pinch]   " << r.role << "  " << r.unit << "  "
                   << r.side << "  " << r.Tin << " -> " << r.Tout << " K  "
                   << r.Q / 1.0e3 << " kW  CP " << r.CP / 1.0e3 << " kW/K"
@@ -554,6 +632,7 @@ int PinchPass::run(SimulationResult& result)
     //  tell a plant target from the target of a partial population.
     k["segments"]          = static_cast<scalar>(segs.size());
     k["duties_excluded"]   = static_cast<scalar>(nExcluded);
+    k["utility_sides"]     = static_cast<scalar>(nUtilitySides);
     k["Q_excluded_kW"]     = excludedW / 1.0e3;
     k["candidates_total"]      = static_cast<scalar>(rows.size());
     k["candidates_admissible"] = static_cast<scalar>(admissible);
