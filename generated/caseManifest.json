@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 521,
+  "cases": 523,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 14
@@ -2579,6 +2579,20 @@
    "hasGolden": true
   },
   "tutorials/props/heat/bellDelaware01_hewitt_example62": {
+   "application": "choupoProps",
+   "ops": [
+    "bellDelawareBench"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/heat/bellDelaware02_serth_example61": {
    "application": "choupoProps",
    "ops": [
     "bellDelawareBench"
@@ -5953,6 +5967,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/heat/heatExchanger05_bell_delaware_auto": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heatExchanger"
+   ],
+   "unitModels": [
+    "BellDelaware"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/heat/heatlink01_condenser_to_heater": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -7843,6 +7874,7 @@
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff",
     "tutorials/props/heat/bellDelaware01_hewitt_example62",
+    "tutorials/props/heat/bellDelaware02_serth_example61",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/heat/psychro02_air_water",
@@ -8109,6 +8141,7 @@
     "tutorials/steady/heat/heatExchanger02_geometry_U",
     "tutorials/steady/heat/heatExchanger03_pure_water_plateau",
     "tutorials/steady/heat/heatExchanger04_bell_delaware_rating",
+    "tutorials/steady/heat/heatExchanger05_bell_delaware_auto",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
@@ -8600,6 +8633,7 @@
     "tutorials/steady/heat/heatExchanger02_geometry_U",
     "tutorials/steady/heat/heatExchanger03_pure_water_plateau",
     "tutorials/steady/heat/heatExchanger04_bell_delaware_rating",
+    "tutorials/steady/heat/heatExchanger05_bell_delaware_auto",
     "tutorials/steady/heat/hxWorkflow1_design_from_duty",
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/power/combined01_brayton_rankine",
@@ -9212,6 +9246,7 @@
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff",
     "tutorials/props/heat/bellDelaware01_hewitt_example62",
+    "tutorials/props/heat/bellDelaware02_serth_example61",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/heat/psychro02_air_water",
@@ -9351,6 +9386,7 @@
     "tutorials/steady/heat/heatExchanger02_geometry_U",
     "tutorials/steady/heat/heatExchanger03_pure_water_plateau",
     "tutorials/steady/heat/heatExchanger04_bell_delaware_rating",
+    "tutorials/steady/heat/heatExchanger05_bell_delaware_auto",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
@@ -9468,7 +9504,8 @@
     "tutorials/props/molecular/nrtl01_ethanol_water_package"
    ],
    "bellDelawareBench": [
-    "tutorials/props/heat/bellDelaware01_hewitt_example62"
+    "tutorials/props/heat/bellDelaware01_hewitt_example62",
+    "tutorials/props/heat/bellDelaware02_serth_example61"
    ],
    "compactionFit": [
     "tutorials/props/powder/compaction01_mcc",
