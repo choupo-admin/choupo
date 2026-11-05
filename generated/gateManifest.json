@@ -813,8 +813,8 @@
     },
     "check_regressed_pairs": {
       "exit": 0,
-      "claim": "check_regressed_pairs: OK -- 10 regressed NRTL record(s) reproduced by re-running the case each names (1Propanol-water (catalogue, validated); acetone-ethanol (catalogue, validated); acetonitrile-water (catalogue, validated); ethanol-ethylAcetate (catalogue, validated); isopropanol-water (catalogue, validated); methanol-methylAcetate (catalogue, validated); methanol-water (catalogue, validated); acetone-methanol (case-local in curate05_nrtl_acetone_methanol, notValidated); cyclohexane-ethanol (case-local in curate12_nrtl_ethanol_cyclohexane, validated); cyclohexane-ethanol (case-local in vlle04_two_liquids_decanter, validated)): parameters, evidence identity, validity span and held-out verdict equal what the run regresses now; only validated fits are in the catalogue; `interim` is voiced at run time; every dataset carries DOI, archive sha256, CAS+InChIKey and per-point uncertainty; 7 catalogue pair(s) predict ONE liquid across their validity span (arm f, the record's NRTL recomputed); 3 water pair(s) used BELOW their span announce it once per run, into the caveat block, say nothing inside it, and publish the same gammas as a span-less inline twin (arm g).  NOT checked: whether the transcribed measurements agree with the articles (a curator's read-back), whether the band was well chosen, or phase stability below a validity span (it is announced, arm g, not judged).",
-      "seconds": 2.5
+      "claim": "check_regressed_pairs: OK -- 10 regressed NRTL record(s) reproduced by re-running the case each names (1Propanol-water (catalogue, validated); acetone-ethanol (catalogue, validated); acetonitrile-water (catalogue, validated); ethanol-ethylAcetate (catalogue, validated); isopropanol-water (catalogue, validated); methanol-methylAcetate (catalogue, validated); methanol-water (catalogue, validated); acetone-methanol (case-local in curate05_nrtl_acetone_methanol, notValidated); cyclohexane-ethanol (case-local in curate12_nrtl_ethanol_cyclohexane, validated); cyclohexane-ethanol (case-local in vlle04_two_liquids_decanter, validated)): parameters, evidence identity, validity span and held-out verdict equal what the run regresses now; only validated fits are in the catalogue; `interim` is voiced at run time; every dataset carries DOI, archive sha256, CAS+InChIKey and per-point uncertainty; 7 catalogue pair(s) predict ONE liquid across their validity span (arm f, the record's NRTL recomputed); 0 catalogue pair(s) declare a liquid-liquid gap and are held to the measured tie lines; arm (h) refused 6 of 6 wrong gap declarations by name and passed the right one (arm f, amended); 3 water pair(s) used BELOW their span announce it once per run, into the caveat block, say nothing inside it, and publish the same gammas as a span-less inline twin (arm g).  NOT checked: whether the transcribed measurements agree with the articles (a curator's read-back), whether the band was well chosen, or phase stability below a validity span (it is announced, arm g, not judged).",
+      "seconds": 1.6
     },
     "check_release_identity": {
       "exit": 0,
@@ -1550,6 +1550,11 @@
       "exit": 0,
       "claim": "check_if97_regions: OK -- IF97 regions 1, 2, 3, 4 and B23 reproduce every verification value printed in Wagner et al. 2000 (Tables A3, A6, A10, A12, A29, B23 point; worst = 0.97 of half a unit in the last printed digit); rho3(p,T) returns the Table A10 densities; region 5 refuses by name in the kernel and the engine; boundaries within the Prague values (1/3 max dcp 0.195 %, dw 0.282 %; 2/3 max dcp 0.351 %, dw 0.403 %); the engine reaches region 3 at (rho,T) and (p,T). Does NOT check IF97 against IAPWS-95, region 5, or metastable states.",
       "seconds": 0.5
+    },
+    "check_lle_residual": {
+      "exit": 0,
+      "claim": "check_lle_residual: OK -- the mixed T_bubble+LLE fit of the SYNTHETIC water + 1-butanol witness recovers the generating b_ij and b_ji to 1e-5 from two starts and validates against held-out bubble temperatures and tie lines; 13 tie lines recomputed by an independent convex hull agree with the datasets; six refusals fire by name on probes built here (ideal start, weighting equal, no sigma, no band, one liquid phase, kind LLE alone); a held-out tie line the model leaves as ONE liquid is named, counted, and a notValidated miss.  NOT checked: any real water + 1-butanol measurement, the dilute-branch accuracy below the flash's 1e-4 floor.",
+      "seconds": 0.3
     }
   }
 }
