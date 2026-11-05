@@ -2422,6 +2422,21 @@ accepts today, and that is a policy call.
 > a ternary system (the ternary scan costs 6.6 s for 21 tie lines) and the
 > neighbourhood of a plait point.
 
+> **C226 ANSWERED (2026-11-05, the cloud session replied through Vitor).**
+> (1) The "liquid-liquid residual and UNIQUAC/Wilson in `fitParameters`"
+> request was only SAID in a chat and never written to a file or branch;
+> its UNIQUAC/Wilson half was an inference the cloud session had not checked
+> in the code, so it stands as the C16 first slice, built from the laptop
+> session's own measurement.  (2) Nobody else is building it.  (3) The cloud
+> session said the ThermoML cache is not on the laptop; MEASURED false: the
+> laptop already holds the official NIST archive in
+> `thirdParty/thermoml/` (4.1 GB, 11 923 XML files, `index.json`, SYNC.json
+> naming DOI 10.18434/mds2-2422 with its sha256 verified, synced 2026-08-26).
+> What is missing here is only the two DERIVED files, `identity.json` (CAS ->
+> InChIKey bridge: needs the network and minutes) and the VLE index
+> (`vle-index`); the pilot therefore runs on the laptop after those two
+> commands, with no 189 MB download.  Not copied from the cloud container.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
