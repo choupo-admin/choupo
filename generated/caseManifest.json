@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 520,
+  "cases": 521,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 14
@@ -3216,6 +3216,20 @@
    "ops": [
     "propertyPoint",
     "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/steam/steam03_if97_region3": {
+   "application": "choupoProps",
+   "ops": [
+    "steamTables"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -7876,6 +7890,7 @@
     "tutorials/props/solvents/solvent03_polystyrene_observed",
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
+    "tutorials/props/steam/steam03_if97_region3",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
@@ -9224,6 +9239,7 @@
     "tutorials/props/solvents/solvent03_polystyrene_observed",
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
+    "tutorials/props/steam/steam03_if97_region3",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
@@ -9699,7 +9715,8 @@
     "tutorials/props/thermoTest/model4_speciation_scaling"
    ],
    "steamTables": [
-    "tutorials/props/steam/steam01_if97_verification"
+    "tutorials/props/steam/steam01_if97_verification",
+    "tutorials/props/steam/steam03_if97_region3"
    ],
    "table": [
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008"
