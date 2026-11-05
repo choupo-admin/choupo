@@ -1736,6 +1736,9 @@
   "RowlinsonBondi": [
    "src/thermo/heatCapacity/RowlinsonBondi.H"
   ],
+  "Rows": [
+   "src/propertyOps/LleResidual.H"
+  ],
   "SDEM": [
    "src/unitOperations/membrane/transport/SDEM.H"
   ],
@@ -1789,6 +1792,9 @@
   ],
   "SchockMiquelDrop": [
    "src/unitOperations/membrane/pressureDrop/SchockMiquelDrop.H"
+  ],
+  "Scope": [
+   "src/propertyOps/LleResidual.H"
   ],
   "Selection": [
    "src/thermo/PricedDensity.H"
@@ -1948,6 +1954,9 @@
   ],
   "State": [
    "src/thermo/electrolyte/ENRTLMultiSalt.H"
+  ],
+  "Stats": [
+   "src/propertyOps/LleResidual.H"
   ],
   "SteamTables": [
    "src/propertyOps/SteamTables.H"
@@ -5714,6 +5723,7 @@
    "src/propertyOps/FitAlgebra.H",
    "src/propertyOps/FitParameters.H",
    "src/propertyOps/FitWeighting.H",
+   "src/propertyOps/LleResidual.H",
    "src/propertyOps/PropertyOperation.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -5748,6 +5758,7 @@
    "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/FitAlgebra.H",
    "src/propertyOps/FitParameters.H",
+   "src/propertyOps/LleResidual.H",
    "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropsPlan.H",
    "src/solver/Convergence.H",
@@ -5768,9 +5779,11 @@
   "src/propertyOps/FitWeighting.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
+   "src/core/PublishedTable.H",
    "src/core/Types.H",
    "src/propertyOps/EvidencePartition.H",
-   "src/propertyOps/FitWeighting.H"
+   "src/propertyOps/FitWeighting.H",
+   "src/propertyOps/LleResidual.H"
   ],
   "src/propertyOps/FlashSpec.cpp": [
    "src/core/Advisory.H",
@@ -5990,6 +6003,31 @@
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/RecordResolver.H"
+  ],
+  "src/propertyOps/LleResidual.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/PublishedTable.H",
+   "src/core/Types.H",
+   "src/propertyOps/EvidencePartition.H",
+   "src/propertyOps/LleResidual.H",
+   "src/result/ClosureVariable.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H"
   ],
   "src/propertyOps/LleTieLines.cpp": [
    "src/core/Constants.H",
@@ -6282,6 +6320,7 @@
    "src/propertyOps/HeatTransferBench.H",
    "src/propertyOps/IsothermEval.H",
    "src/propertyOps/Kinetics1D.H",
+   "src/propertyOps/LleResidual.H",
    "src/propertyOps/LleTieLines.H",
    "src/propertyOps/MembraneShortlist.H",
    "src/propertyOps/MixingRules.H",
@@ -11660,6 +11699,7 @@
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HansenMixture.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -12065,6 +12105,7 @@
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -12360,6 +12401,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -12728,6 +12770,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -13187,6 +13230,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -13490,6 +13534,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -13812,6 +13857,7 @@
    "src/propertyOps/ExtractionShortcutOp.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitParametersMembrane.cpp",
+   "src/propertyOps/FitWeighting.cpp",
    "src/propertyOps/FlashSpec.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
@@ -13822,6 +13868,7 @@
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -14211,6 +14258,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -14981,6 +15029,7 @@
    "src/propertyOps/FitWeighting.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/VaporPressureFit.cpp"
@@ -15057,6 +15106,13 @@
   ],
   "src/propertyOps/Kinetics1D.H": [
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
+  "src/propertyOps/LleResidual.H": [
+   "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
+   "src/propertyOps/FitWeighting.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
   "src/propertyOps/LleTieLines.H": [
@@ -15416,6 +15472,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FlashSpec.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
@@ -15685,6 +15742,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FlashSpec.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
@@ -15859,6 +15917,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -16207,6 +16266,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FlashSpec.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
@@ -16468,6 +16528,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -16754,6 +16815,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -17034,6 +17096,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -17293,6 +17356,7 @@
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -17699,6 +17763,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -17932,6 +17997,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -19034,6 +19100,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FlashSpec.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
@@ -19123,6 +19190,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FlashSpec.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
@@ -19353,6 +19421,7 @@
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/propertyOps/FlashSpec.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",

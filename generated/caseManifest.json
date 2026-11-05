@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 523,
+  "cases": 524,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 14
@@ -1983,6 +1983,20 @@
     "activityModels": [
      "NRTL",
      "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/curation/curate13_synthetic_lle_butanol_water": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "NRTL"
     ]
    },
    "roles": [],
@@ -7825,6 +7839,7 @@
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
     "tutorials/props/electrolyte/bjerrum01_carbonate_pH",
     "tutorials/props/electrolyte/composition01_nacl",
@@ -8975,6 +8990,7 @@
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
@@ -9564,6 +9580,7 @@
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/steady/membranes/membrane24_fit_then_simulate",
