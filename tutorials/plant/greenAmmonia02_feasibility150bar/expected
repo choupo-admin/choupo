@@ -659,3 +659,5 @@ kpi     economics              operatorsPerShift 3.0083217913     1e-4
 kpi     pinch                  Q_excluded_kW    30949.3639662    1e-4
 kpi     pinch                  duties_excluded  1                1e-4
 kpi     pinch                  segments         10               1e-4
+kpi     pinch                  pinch_exists     0                1e-4
+kpi     pinch                  utility_sides    0                1e-4
