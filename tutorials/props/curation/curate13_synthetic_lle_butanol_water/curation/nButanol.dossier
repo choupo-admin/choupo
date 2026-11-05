@@ -1,0 +1,165 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      nButanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_mixed;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  150.000020567;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  1049.99992497;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3f2981e1dee0612e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/nButanol-water-bubble-synthetic-fit.dat";
+            sha256    "21868dbc2cf571b766106d47a62ffd8a2c360115eb5ac58438f2d4793b22ab80";
+            provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
+            system    "nButanol + water";
+            pressure  "101325.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/experiments/nButanol-water-lle-synthetic-fit.dat";
+            sha256    "348e22205f670ad57684d4ed931aa389f7f80e53aeb4dde01aa523d9ec66fafd";
+            provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-bubble-synthetic-validation.dat";
+            sha256    "7534ab34f87941888de2cc6f35ce187ff3699be04c34df7f1e46d6480a3b715b";
+            provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
+            system    "nButanol + water";
+            pressure  "101325.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-synthetic-validation.dat";
+            sha256    "544367edd5c8b3f0d37b8959dd8be72b4f0ca5e001b03308a5ab9c2261223c1d";
+            provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.004; max 0.98; n 28; }
+            validation  { min 0.006; max 0.97; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     6.47477872798e-07;
+        acceptanceMaxAADPct 0.1;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, for a SYNTHETIC zero-noise recovery: 0.1 % of T (about 0.4 K, twice the declared 0.2 K standard uncertainty of a bubble point) and 0.01 in mole fraction (twice the declared sigma of a binodal composition).  The data are generated from the model, so the true deviation is round-off; the bands are generous on purpose and the gate (check_lle_residual) holds the recovery to 1e-5, not these.";
+    }
+}
+
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_mixed_start2;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  150.000020589;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  1049.99992491;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "3f2981e1dee0612e";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/nButanol-water-bubble-synthetic-fit.dat";
+            sha256    "21868dbc2cf571b766106d47a62ffd8a2c360115eb5ac58438f2d4793b22ab80";
+            provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
+            system    "nButanol + water";
+            pressure  "101325.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/experiments/nButanol-water-lle-synthetic-fit.dat";
+            sha256    "348e22205f670ad57684d4ed931aa389f7f80e53aeb4dde01aa523d9ec66fafd";
+            provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-bubble-synthetic-validation.dat";
+            sha256    "7534ab34f87941888de2cc6f35ce187ff3699be04c34df7f1e46d6480a3b715b";
+            provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
+            system    "nButanol + water";
+            pressure  "101325.000000 Pa";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/nButanol-water-lle-synthetic-validation.dat";
+            sha256    "544367edd5c8b3f0d37b8959dd8be72b4f0ca5e001b03308a5ab9c2261223c1d";
+            provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
+            system    "nButanol + water";
+            property  binaryLLE.binodal;
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.004; max 0.98; n 28; }
+            validation  { min 0.006; max 0.97; n 10; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     6.47435737471e-07;
+        acceptanceMaxAADPct 0.1;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, for a SYNTHETIC zero-noise recovery: 0.1 % of T (about 0.4 K, twice the declared 0.2 K standard uncertainty of a bubble point) and 0.01 in mole fraction (twice the declared sigma of a binodal composition).  The data are generated from the model, so the true deviation is round-off; the bands are generous on purpose and the gate (check_lle_residual) holds the recovery to 1e-5, not these.";
+    }
+}
+
+);

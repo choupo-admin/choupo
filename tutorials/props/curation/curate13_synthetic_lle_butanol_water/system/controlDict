@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*  curate13_synthetic_lle_butanol_water: a SYNTHETIC end-to-end check of the
+    mixed bubble-temperature + liquid-liquid residual of fitParameters.
+    See system/propsDict for the whole story.  */
+
+application   choupoProps;
+description   "SYNTHETIC water + 1-butanol: NRTL recovered from engine-generated bubble temperatures AND tie lines in ONE fit (kind T_bubble+LLE), held out against other compositions and temperatures";
+verbosity     2;

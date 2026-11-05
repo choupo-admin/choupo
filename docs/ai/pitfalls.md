@@ -210,7 +210,7 @@ carrying on — the answer would be to a different problem from the one your
 case describes.
 
 The refusal names every affected pair and prints four ways forward: add the
-record, fit it (`fitParameters`, kind `T_bubble`), declare a predictive model
+record, fit it (`fitParameters`, kind `T_bubble`, or `T_bubble+LLE` for a partially miscible pair), declare a predictive model
 that needs no pair (UNIFAC), or **authorise the approximation** with a
 paste-ready block at the TOP LEVEL of `constant/thermoPhysPropDict`:
 

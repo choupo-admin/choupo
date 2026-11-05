@@ -109,6 +109,17 @@ void CurationDossier::writeEvidenceSets(std::ostream& f, const char* role,
             f << in2 << "system    \"" << d.system << "\";\n";
         if (!d.pressure.empty())
             f << in2 << "pressure  \"" << d.pressure << "\";\n";
+        //  A TIE-LINE dataset says so (fitParameters kind T_bubble+LLE): the
+        //  record's reader must tell the binodal evidence from the bubble
+        //  points without opening the files.  Bubble-point datasets write no
+        //  such line, so every record that predates the kind is unchanged.
+        try
+        {
+            if (Dictionary::fromFile(d.path)->lookupWordOrDefault("property", "")
+                == "binaryLLE.binodal")
+                f << in2 << "property  binaryLLE.binodal;\n";
+        }
+        catch (const std::exception&) { /* an unreadable file is refused where it is loaded */ }
         f << indent << "}\n";
     }
 }

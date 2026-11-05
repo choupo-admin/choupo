@@ -139,6 +139,7 @@ Description
 #pragma once
 
 #include "PropertyOperation.H"
+#include "LleResidual.H"
 
 #include <map>
 #include <string>

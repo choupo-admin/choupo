@@ -2572,6 +2572,47 @@ accepts today, and that is a policy call.
 > worktree has been exercised / has its `node_modules`, and the whole GUI
 > suite passes (271 files, 7074 tests).  Reversible by `git revert`.
 
+> **C226 FIRST SLICE BUILT (2026-11-05, branch worktree-agent-ab19459fd2263d5f6,
+> not yet merged).**  A3 first, by ONE RUN: a copy of curate04 with the model
+> swapped fits UNIQUAC (`a_ij a_ji`: held-out AAD 0.146 %, validated) and
+> Wilson (`A_ij A_ji`: 0.149 %, validated) through the dictionary path with no
+> engine change -- so those were never missing.  What WAS wrong, found by the
+> run: the PROPOSAL record wrote NRTL's five keys for every model (a Wilson fit
+> published `a_ij 0, b_ij 0`, the ideal pair, and a UNIQUAC one an `alpha`);
+> fixed (each model's own keys).  The arm-(f), `proposal` and unit-ops
+> statements that the kinds are "T_bubble only" were false already (P_bubble,
+> isotherm, membrane) and are corrected in docs/ai/patterns.md.  A1:
+> `residual.kind T_bubble+LLE` (`src/propertyOps/LleResidual.{H,cpp}`), mixed
+> evidence in one least-squares problem; the flash is `IsothermalFlash::
+> solveCore` with `PhaseSet::LL` (what `propertyScanBinary` uses), which
+> needs TWO LIQUID PHASES in the package -- the fitting case declares
+> `formulation gammaGamma` with `liquidPhases`, NOT the `gammaPhi` the curate
+> cases use, and the fit refuses a one-liquid package by name (the premise
+> "solveCore directly" held for the cost, not for the package).  Decisions
+> taken (rule 00, technical reasons): the tie line is (T, x of the FIRST
+> named component in each liquid), two rows per tie, branches matched by
+> order; sigma is DECLARED with its origin and mixing REQUIRES `weighting
+> uncertainty` (kelvin and mole fraction are not summable unweighted);
+> a model that leaves ONE liquid where two were measured takes the bubble
+> rows' 1e3 penalty, is announced tie by tie, and is a MISS in the held-out
+> verdict; a start that splits no measured tie line is REFUSED (the penalty is
+> flat, no gradient); the held-out band is `acceptance.maxLLE` (mole
+> fraction), inside the fingerprint.  Only `T_bubble+LLE` is built: `LLE`
+> alone is refused by name (the pressure arity logic assumes bubble rows).  A2:
+> arm (f) of `check_regressed_pairs` accepts `liquidLiquid true;` + `gap {}`
+> (tie-line evidence of role fit, band = acceptance.maxLLE, validity covering
+> the measured T, the record's NRTL recomputed by the Gibbs hull reproducing
+> every measured tie within the band); the prohibition is unchanged for every
+> other pair; arm (h) holds a right record and six wrong ones.  WITNESS
+> `curate13_synthetic_lle_butanol_water`: SYNTHETIC (engine-generated from
+> NRTL b_ij 150 K, b_ji 1050 K; labelled in every header and announced at
+> run time) because the tree holds NO measured butanol-water data and the
+> ThermoML cache is not here; recovery 1.4e-7 relative.  THE REAL PAIR IS
+> STILL TO DO and needs measured tie lines.  Gate `check_lle_residual`
+> (5 by-hand sabotages caught + 2 on arm (f)/(h)).  Not built: study triage
+> (leave one study out), the component audit, `autoPromoted`, the Wilson
+> catalogue home, tie lines inside a ternary.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
