@@ -2572,6 +2572,39 @@ accepts today, and that is a policy call.
 > worktree has been exercised / has its `node_modules`, and the whole GUI
 > suite passes (271 files, 7074 tests).  Reversible by `git revert`.
 
+> **C229 (Vitor, 2026-11-05, after a class): A STUDENT GROUP'S HAND-MADE 3D PAGE
+> BEATS THE ENGINE'S LAYOUT, AND THE PIPE CONNECTIONS ARE WHY.**  Group G9
+> built an interactive 3D page of a green-ammonia loop in a Claude artifact,
+> from a commercial simulator's results: a 12-step guided tour, orbit / walk /
+> drone cameras, a "go to" list, colour by temperature or phase, flow
+> particles at each line's design velocity, a KPI panel, a site minimap, a
+> click card on every item and pipe, and unmodelled items labelled as such.
+> Vitor: "ate fiquei envergonhado ... as ligacoes dos tubos aos equipamentos
+> estao muito mais precisas!".  MEASURED, and he is right:
+> `PlantLayout.cpp:705-712` sends EVERY pipe into and out of an item at its
+> PLAN CENTRE, AT ITS TOP ("Stylised: no nozzle schedule is published by any
+> sizer"), so a column's feed, reflux and bottoms all meet at one point on
+> the head; a stream with several consumers is not routed at all
+> (`PlantLayout.cpp:812-826`); `equipmentModel.ts` draws nozzles as decoration
+> and exposes no port.  The viewer (`layoutRenderer.ts`) has orbit, phase
+> colours, quality levels, tooltips and particles, and NO tour, walk or
+> drone camera, go-to list, temperature colour, minimap or click card.  What
+> the page cannot do and Choupo does: it is authored for ONE plant, its own
+> legend says the dimensions are indicative and the routing "not modelled",
+> and nothing checks it; Choupo's is generated from any case and checked
+> (separations, zones, roads, pipe clashes).  So the target is the union, not
+> a defence.  DECISIONS (architect, rule 00): (A) THE ENGINE PUBLISHES PORTS:
+> each pipe end lands on a port derived from the item's kind, its sized
+> dimensions and the stream's ROLE (a column: feed at its stage's height,
+> vapour at the head, bottoms at the sump; an exchanger: shell and tube
+> in/out; a drum: inlet on the side, vapour on top, liquid at the bottom; a
+> compressor or pump: suction and discharge), with a case override, and
+> ANNOUNCED as a conventional position, not a vendor's nozzle schedule; the
+> `layout` golden rows of pipe length move, listed in the commit.  (B) THE
+> VIEWER gains the guided tour (generated from the sectors and units, never
+> hand-written per plant), orbit/walk/drone, go-to, colour by temperature, the
+> minimap, and a click card reading the stream and sheet the engine published.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
