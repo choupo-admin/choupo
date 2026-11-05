@@ -2210,6 +2210,50 @@ accepts today, and that is a policy call.
 > against an independent source; C219's extractor against Perry's Table
 > 15-8 is one step).
 
+> **C225. AUTOMATIC PROMOTION OF REGRESSED BINARIES, WITH A NOTE THAT NO HUMAN
+> HAS CHECKED THEM, AND A VERIFICATION CARD IN THE EXPLORER (Vitor,
+> 2026-11-04: "Se for legal, eu quero que a promocao seja automatica, mas com
+> uma nota a dizer que ainda nao foi verificada humanamente. De qualquer modo,
+> cada binario acaba por ter info de verificacao e comparacao que pode ser
+> visualizado no explorer do choupo"; and "recomendacoes para automatizar o
+> processo de criacao de base de dados standard de componentes e binarios ...
+> aumentar a base de dados e reduzir o custo dos utilizadores").**  TO DO,
+> a stated default, NOT built.  It changes one standing rule on purpose: the
+> CLAUDE.md line that promoting an `interim` record is Vitor's primary review
+> alone becomes "automatic promotion is allowed for a record that passes every
+> gate below, marked as not human-reviewed", at his request and with the
+> technical reason that review is the bottleneck of widening the catalogue.
+> LEGAL READING (C16, not legal advice): the catalogue holds Choupo's OWN
+> regressions to measurements the NIST ThermoML archive locates -- numbers,
+> citation, provenance; tables from DECHEMA or ChemSep stay excluded and
+> `check_source_licence` refuses them before any record enters.  ONE OPEN
+> POINT: promoting in bulk would put each pair's measured series in the tree
+> (so the reproduction gate can re-run), which is the bulk redistribution of
+> archive data that C16 left unanswered (the TRC page says "with permission of
+> the journal publishers"); the safe form keeps only DOI, archive sha256 and
+> the extraction filter, and regenerates the series from the local cache.
+> THE NOTE already exists: `reviewStatus interim` is voiced on every run as
+> `[unreviewed] pair` and rides the caveat block; add `humanReviewed false`
+> and a state `autoPromoted` so "fitted by a machine" and "fitted and read by a
+> person" are told apart.  AUTOMATIC PROMOTION STILL REQUIRES: verdict
+> `validated` against a band declared before the fit; `check_regressed_pairs`
+> (arm f, or a liquid-liquid form once a liquid-liquid residual exists); the
+> outlier screen (a study that disagrees with the others is set aside, named,
+> before the fit -- Rojas 2016 sits 3-4 K from five other ethanol + water
+> series at x < 0.05); never overwriting a literature or a reviewed record; one
+> command to revoke.  THE EXPLORER gets a verification card per pair (fit and
+> held-out studies, AAD against the band, identifiability, curves against the
+> data, UNIFAC and ideal, the `autoPromoted` badge), extending the estimate
+> and dossier marks it already draws.  OWES, in order: (1) the C202/C225 asks
+> to the engine -- a liquid-liquid residual in `fitParameters`, UNIQUAC and
+> Wilson proposals and records, `choupo-curate pair A B` chaining identity,
+> search, partition by the declared rule, band, case from a template, all
+> models in one cycle (analysis in this session's reply of 2026-11-04);
+> (2) the catalogue audit of every component record against ThermoML pure data
+> (the water Antoine boils 0.5-0.7 K low); (3) the card.  Butanol + water
+> cannot be promoted by this route until (1) exists: the fit reads bubble
+> temperatures only and arm (f) refuses a pair that splits a liquid.
+
 > **C224 (Vitor, 2026-11-04 night): HOW WILL CHATGPT, THE STUDENTS' USUAL
 > INTERFACE, CREATE NEW BINARY PAIRS "FROM NIST"?  -- MEASURED, AND A GAP
 > FOUND.**  It will not: a chat has no access to the ThermoML archive and the
@@ -2236,6 +2280,64 @@ accepts today, and that is a policy call.
 > pair that is in no catalogue must NOT return typed numbers); (3) never a
 > value taken from a no-grant database.  This goes BEFORE the C223 pilot:
 > the pilot would feed a hole.
+
+> **C226 (relayed by Vitor from another session, 2026-11-05): AUTOMATING
+> THE C16 CHAIN -- nine proposals, judged by content.**  MEASURED first:
+> `src/propertyOps/FitParameters.cpp` names no UNIQUAC, Wilson or
+> liquid-liquid residual, so the dependency the proposal cites ("the
+> request passed to the laptop") is NOT in this tree; proposals 1-2 wait
+> for it to land and nobody builds on a claim. DECISIONS: (3) study triage
+> by leave-one-study-out and (7) a component audit against ThermoML are
+> taken FIRST, because they find real errors at low cost and move no
+> number until Vitor promotes; (1) `choupo-curate pair A B` as a tool that
+> writes the DECLARATION (partition, band) before any fit and produces a
+> dossier, never a promotion; (2) several models per cycle only after
+> `fitParameters` has them; (4) a generated coverage map, (5) a standing
+> audit of the existing catalogue pairs, (9) a CAS->InChIKey bridge file
+> (resolver licences checked first) follow; (8) fitting Antoine/Cp from
+> pure ThermoML data under the same protocol with per-value provenance,
+> after (7); (6) in-browser fitting that downloads a case-local record is
+> the highest value for students and the last to build -- it needs the GUI
+> credo read first (the GUI is a runner, not an editor: a download of a
+> local record is consistent with it, an in-place edit is not). The
+> reading of data against the article stays marked
+> `transcribedNotCheckedAgainstArticle`; a generated checklist (extracted
+> table beside the DOI) is the way to make that review fast, and is added
+> to (1). Guarantees kept: `check_source_licence` before any record, no
+> record without quality evidence. This FEEDS the C223 pilot; the C224
+> correction still goes before it.  ARCHITECT'S DECISION ON C225 (rule 00;
+> technical reason): automatic promotion is ACCEPTED, as a new state
+> `autoPromoted` with `humanReviewed false`, never as a silent `interim`;
+> it requires `validated` against a band declared before the fit, arm (f),
+> the study triage of item 3, never overwrites a literature or reviewed
+> record, and reverts with one command. The measured series are NOT copied
+> into the repository in bulk: a promoted pair stores the DOI, the sha256
+> and the extraction filter, and the data are regenerated from the local
+> archive (the redistribution question C16 left open stays unanswered, so
+> it is not walked into). Until a liquid-liquid residual exists in
+> `fitParameters`, partially miscible pairs (butanol-water) are not
+> promotable.
+
+> **C226 addendum (Vitor pasted the other session's full request, 2026-11-05):
+> THE CORE REQUESTS, JUDGED.**  VERIFIED at `FitParameters.cpp:406`: only
+> `T_bubble`/`P_bubble` exist; parameters are addressed by dictionary path
+> (so UNIQUAC `a_ij` / Wilson `A_ij` may already fit -- to be confirmed by a
+> run, not assumed); finite-difference Jacobian with `fdStep`; 3 UNIQUAC
+> records and no `parameters/Wilson/`.  DECISIONS: (A1) a liquid-liquid
+> residual kind, built on `IsothermalFlash::solveCore`, additive to
+> `T_bubble` in one fit -- FIRST, it unblocks butanol-water, a pedagogical
+> pair; (A2) arm (f) of `check_regressed_pairs` accepts a pair declaring
+> `liquidLiquid true` with measured gap evidence and a gap band declared
+> before the fit, in the same slice; (A3) confirm UNIQUAC/Wilson by a run
+> before building anything; (A4) the analytic Jacobian and parallel points
+> are SPEED claims nobody measured: profile one fit first, build only what
+> the profile shows (the stated principle: no optimisation without a
+> measurement); caching pure-component properties is the cheap first try;
+> (A5-A7) more evidence kinds, bubbleT inside the gap and `extract-lle`
+> follow A1; (A8) the water vapour pressure 0.52-0.70 K low at 1 atm is
+> item 7 of C226 (component audit). The 4.2 GB ThermoML cache lives only
+> in the cloud container (`thirdParty/thermoml`), so the pilot must run
+> there or the cache be rebuilt locally -- a fact to settle before dispatch.
 
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
