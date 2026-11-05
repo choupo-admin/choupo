@@ -2477,10 +2477,11 @@ accepts today, and that is a policy call.
 
 > **C227 slice (b) PREREQUISITES RUN (2026-11-05, Vitor approved the network
 > use).**  `bin/choupo-thermoml identity` resolved 483 of the 517 catalogue
-> components to an InChIKey (two independent resolvers agreed); 17 were
-> REFUSED because the resolvers DISAGREED (the radicals and atoms: CS, H, H2,
-> HO2, N, NH ...) and the rest stay unresolved -- as designed, a compound is
-> refused rather than guessed.  `vle-index` indexed 12 993 binary
+> components to an InChIKey (two independent resolvers agreed); the other
+> 34 were REFUSED, none guessed: 17 where the resolvers DISAGREED (the
+> radicals and atoms: CS, H, H2, HO2, N, NH ...), 4 whose resolved formula
+> did not match the record's, and 13 for which a resolver gave no answer
+> (e.g. 2Methoxy2MethylHeptane, C6H5).  `vle-index` indexed 12 993 binary
 > vapour-liquid blocks from the 11 923 archive files, writing
 > `thirdParty/thermoml/identity.json` and `vleIndex.json` (both git-ignored,
 > derived); two archive files (`j.fluid.2018.07.020.xml`, `...021.xml`) are
