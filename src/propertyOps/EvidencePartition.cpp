@@ -300,6 +300,15 @@ EvidencePartition EvidencePartition::read(const DictPtr& opDict,
         //  band was written for.  requireBandInUnitOf holds it to one.
         p.acceptanceUnit_ = acc->unitWordOf("maxAAD");
         p.maxAADPct_ = acc->lookupScalar("maxAAD") * 100.0;   // x 1e-2 -> the number as written
+        if (acc->found("maxLLE"))
+        {
+            p.lleBand_ = acc->lookupScalar("maxLLE");
+            if (!(p.lleBand_ > 0.0 && p.lleBand_ < 1.0))
+                throw std::runtime_error(opLabel + ": `acceptance.maxLLE` must"
+                    " be a mole fraction in (0, 1); a band that can never be"
+                    " met would fail every validation for a reason that is not"
+                    " the model's.");
+        }
         if (p.maxAADPct_ <= 0.0)
             throw std::runtime_error(opLabel + ": `acceptance.maxAAD` must be"
                 " positive; a band of zero or less can never be met and would"
@@ -383,6 +392,8 @@ EvidencePartition EvidencePartition::read(const DictPtr& opDict,
     //  blind to it would let the band move after the residuals were seen.
     if (p.hasAcceptance_)
         canon += "acceptance|maxAAD=" + std::to_string(p.maxAADPct_) + "\n";
+    if (p.lleBand_ > 0.0)
+        canon += "acceptance|maxLLE=" + std::to_string(p.lleBand_) + "\n";
     p.fingerprint_ = fnv1a(canon);
 
     return p;
