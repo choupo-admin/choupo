@@ -2671,6 +2671,39 @@ accepts today, and that is a policy call.
 > by dictionary path, what failed was the proposal writing NRTL keys for every
 > model (fixed).
 
+> **C230 (Vitor, 2026-11-05, looking at the live site): THE PINCH CURVE OF
+> `ammonia02_full_plant` IS WRONG, IN TWO HOMES.**  Measured on the case
+> (a copy with `pinchPass { dTmin 20 K; }`, scratchpad).  The process has ONE
+> real heat recovery: the FEHE, hot side 839.6 -> 485.6 K, cold side 339.1 ->
+> 683.0 K, 117 170 kW (hot-end approach 156.6 K, cold-end 146.5 K), then the
+> water cooler takes 485.6 -> 311.7 K (57 821 kW) and the separator 311.7 ->
+> 250 K (37 650 kW).  Done by hand that is a THRESHOLD problem: every cold
+> stream is served by the hot effluent, Q_H,min about 0 (16 kW at 250 K), a
+> cold utility of about 95 MW, and NO pinch.  (1) THE GUI (`gui/src/case/
+> pinch.ts`, `thermalStreams`) builds ONE stream per unit duty from `Q_kW`'s
+> SIGN and the max inlet/outlet temperatures: the FEHE (two sides, both
+> published as `T_hot_in/out`, `T_cold_in/out`, ignored) becomes a single
+> "cold" stream running 839.6 -> 683.0 K, i.e. cooling, and the water cooler,
+> whose `Q_kW` is a positive duty MAGNITUDE (57 821), becomes a "cold" stream
+> too although it removes heat; the main hot stream is missing.  This is the
+> second home of a calculation the engine already owns (`PinchPass`, held by
+> `check_pinch_p1/p2`), against the doctrine "the engine decides, the GUI
+> draws".  Not run end to end here (a code reading plus the published KPIs);
+> reproduce with the Pinch tab before fixing.  (2) THE ENGINE's pass is also
+> wrong on this plant: it counts the water cooler's COOLING WATER (298.15 ->
+> 303.66 K, CP 10 486 kW/K) as a cold PROCESS stream ("recovered ... cold
+> side"), which manufactures the pinch it reports (T* = 308.15 K, Q_H,min =
+> 2158 kW, Q_C,min = 39 791 kW): a utility is not a process stream.
+> DECISION (architect): ONE HOME -- the GUI draws `reports/pinch/
+> compositeCurves.csv` and the targets the engine publishes and computes
+> nothing; the engine's population excludes a side served by a declared
+> utility (the case's `utilities` circuits and the `utilityAllocation`
+> record already say which stream is the service) and ANNOUNCES it; the
+> witness is this very plant, whose answer is the threshold above; a gate
+> recomputes it independently.  FIXED NOWHERE YET: the usage freeze (the
+> credits) puts it first on Saturday, ahead of everything, because it is a
+> wrong number at exit 0 that a student reads on the live site.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,

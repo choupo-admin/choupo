@@ -58,6 +58,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| todo | C230 FIRST ON SATURDAY: the pinch of `ammonia02_full_plant` is wrong in two homes -- the GUI builds one stream per duty from the sign of `Q_kW` (the FEHE becomes one 'cold' stream that cools, the water cooler a 'cold' one), and the engine counts the COOLING WATER as a process stream and so invents the pinch; the right answer is a threshold problem with no pinch. One home: the GUI draws the engine's curves, the engine drops utility sides | C230 |
 | todo | C229 (Vitor, a student group's 3D page beat ours): (A) the engine publishes PORTS, so pipes land on the right nozzle instead of the item's top centre (`PlantLayout.cpp:705`); (B) the viewer gains a generated guided tour, walk/drone cameras, go-to, colour by temperature, a minimap and a click card | C229 |
 | done | C214 W1 (`46bf7f942`): a GENERAL flash specification -- (P,H), (P,S), (T,V/F), (P,V/F) from one home `flashState::specifiedFlash`, with the props op `flashSpec`; the wet steam expansion matches the IF97 table (quality 0.8103 against 0.8102); a new liquid and mixture entropy surface paired with the enthalpy; `adiabaticFlash`, `valve`, `compressor`, `turbine` NOT migrated (byte-identical rule), listed in the record | C214 |
 | todo | Acetic acid, the rest: the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; the seven exotherm tutorials to Vitor | C201 (1) |
