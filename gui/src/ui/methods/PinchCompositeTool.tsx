@@ -102,6 +102,7 @@ import {
   KnobField, KnobNumber, PanelNote,
 } from "./knobPanel.js";
 import { PINCH_LIMITS, PINCH_STEPS } from "./pinchLesson.js";
+import { PINCH_PASS_EXCERPT } from "../../case/pinch.js";
 import { OriginMark } from "./origin.js";
 
 // ---- Where the engine's pinch artefacts live in the run result --------------
@@ -599,13 +600,15 @@ export function pinchOverrides(
 type Pane = "composite" | "gcc" | "matches";
 type Source = "classroom" | "current";
 
-export function PinchCompositeTool(): JSX.Element {
+export function PinchCompositeTool(
+  { fixedSource }: { fixedSource?: "current" } = {},
+): JSX.Element {
   // ---- The app's own run — the "Current run" source. -----------------------
   const appRun = useStore((s) => s.runResult);
   const appHasPinch = !!(appRun?.csvFiles?.[COMPOSITE_CURVES_CSV_PATH]
     || appRun?.kpis?.["pinch"]);
 
-  const [source, setSource] = useState<Source>("classroom");
+  const [source, setSource] = useState<Source>(fixedSource ?? "classroom");
   const [pane, setPane] = useState<Pane>("composite");
 
   // ---- Classroom knobs (values are session state; collapse persists). ------
@@ -647,7 +650,7 @@ export function PinchCompositeTool(): JSX.Element {
   // The toggle appears when the app run carries pinch artefacts (or the user
   // is already on "Current run" and needs the way back); the old empty state
   // lives ONLY under "Current run" — Classroom feeds itself.
-  const showSourceToggle = appHasPinch || source === "current";
+  const showSourceToggle = !fixedSource && (appHasPinch || source === "current");
   const emptyCurrentRun = source === "current" && !curves && !kpis;
 
   const hot = curves?.["hot"];
@@ -862,7 +865,8 @@ export function PinchCompositeTool(): JSX.Element {
                 <Text size="sm" c="dimmed" ta="center" maw={520}>
                   No pinch targets in this run.  This tool reads the
                   engine&apos;s own pinch pass: declare <code>pinchPass</code>{" "}
-                  in the case&apos;s <code>system/postDict</code> chain and run
+                  in the case&apos;s <code>system/postDict</code> chain
+                  (<code>{PINCH_PASS_EXCERPT}</code>) and run
                   a converged steady case — the engine then writes{" "}
                   <code>reports/pinch/compositeCurves.csv</code> +{" "}
                   <code>candidateMatches.csv</code> and publishes the{" "}

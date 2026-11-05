@@ -206,7 +206,7 @@ export interface WorkspaceContext {
    *  working and says what is missing -- only the menu stops offering it. */
   /** The case declares $variables or a designSpec target (Variables). */
   hasVariables?: boolean;
-  /** A completed run published heat duties (Pinch, case/pinch.ts). */
+  /** A run exists (Pinch draws the engine's pinchPass artefacts, case/pinch.ts). */
   pinchReady?: boolean;
   /** The reader's local literature mirror answered (Literature). */
   hasLiteratureMirror?: boolean;
