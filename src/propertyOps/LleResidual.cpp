@@ -39,6 +39,7 @@ Description
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <stdexcept>
 
