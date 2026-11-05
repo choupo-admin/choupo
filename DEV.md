@@ -2281,6 +2281,20 @@ accepts today, and that is a policy call.
 > value taken from a no-grant database.  This goes BEFORE the C223 pilot:
 > the pilot would feed a hole.
 
+> **C214 W6 INTEGRATION, FULL SWEEP NOT RUN (2026-11-05, architect's reason).**
+> `bin/integrate` ran scope 3/0, gui 44/0, fast 78/0 and every gate its reach
+> named, and stopped BLOCKED only because the diff touches `ThermoPackage.cpp`
+> and `IF97.H`.  What changed on the shared path: `ThermoPackage.cpp` holds
+> comments and one console banner string ("regions 1/2/3/4"; no golden holds
+> it); `IF97.H`/`IF97.cpp` add region 3 where the router refused before and
+> leave regions 1, 2, 4 and B23 on unchanged code; no corpus case or
+> EXPECTED-FAIL depends on region 3 being refused (grep of tutorials and
+> `bin/runTests`); the general's own scope covered 26 IF97 cases, 30 PASS.
+> The new gate `check_if97_regions` holds the 48 printed values of Wagner et
+> al. 2000.  The targeted checks therefore reach everything the change can
+> reach, and a full sweep would test code this change did not touch.
+> Reversible by `git revert` of the merge.
+
 > **C226 (relayed by Vitor from another session, 2026-11-05): AUTOMATING
 > THE C16 CHAIN -- nine proposals, judged by content.**  MEASURED first:
 > `src/propertyOps/FitParameters.cpp` names no UNIQUAC, Wilson or
