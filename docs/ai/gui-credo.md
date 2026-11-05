@@ -121,7 +121,7 @@ second doing little.  The layout of a flowsheet case is:
   the full set, and a blank boot shows no tabs at all.  And an entry with
   NOTHING behind it on the open case is hidden, not greyed (C172):
   Variables only when the case declares a $variable or a designSpec
-  target, Pinch only once a run has published heat duties, Literature
+  target, Pinch once a run exists (it draws the engine's `pinchPass` artefacts; without the pass it says what to declare), Literature
   only when the reader's local mirror answers.  A process case has no
   Workflow: its thermo readiness is shown where the thermo is declared
   (the Case tab, at `constant/thermoPhysPropDict`).

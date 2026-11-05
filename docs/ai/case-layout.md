@@ -577,6 +577,17 @@ NOT extracted: the pass lists it as excluded (console,
 the plant's.  It only TARGETS — it never rewrites the network — and its
 method hypotheses (constant CP per segment, the latent slice, first
 non-utility stream pairing) are stated in `src/postProcessing/PinchPass.H`.
+A side served by a SERVICE is not a process stream: when an exchanger's
+inlet and outlet on one side belong to a declared `utilities` circuit of
+`system/flowsheetDict` (or carry `category utility`), that side is left out
+of the population (population.csv role `utility`, console line
+`[pinch]   utility`, KPI `utility_sides`) and the exchanger's other side
+enters as an ordinary segment whose duty counts as current utility use,
+not as recovered heat.  Declare the circuit for the cooling water, or the
+water is counted as a cold process stream and the targets are wrong
+(`tutorials/plant/ammonia02_full_plant`: a threshold problem, no pinch).  The Pinch tab of the GUI DRAWS
+these artefacts and computes nothing; a run with no `pinchPass` makes it
+say to declare `pinchPass { dTmin 20 K; }` in `system/postDict`.
 Its `dTmin` is the process–process approach of the targeting exercise, a
 separate declaration from the `utilityAllocation` report's duty-to-utility
 approach.  Exemplar: `tutorials/steady/heat/pinch01_four_stream_classic`.
