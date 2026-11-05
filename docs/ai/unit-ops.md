@@ -3090,6 +3090,32 @@ renders it.  NO composition under `state` — the grid IS the composition.
 ```
 Tutorial: `tutorials/props/scan/ternary01_audit_vlle`.
 
+### `pairLookup`  /  `componentLookup`  (ONE TOOL CALL, ONE EVIDENCE CARD)
+Ask the INSTALLATION catalogue what it holds, in at most 2048 bytes, and
+paste what it returns instead of reasoning about the pair:
+```
+{ name p1; type pairLookup;      components ( ethanol water ); }
+{ name c1; type componentLookup;  component  ethanol; }      // or a CAS
+```
+`pairLookup` walks an honesty ladder, first rung wins, never a number
+invented: tier `curated` (a catalogue pair record: the paste-ready
+`source` entry, model, validity, reviewStatus, citation) -> `regressed`
+(Choupo's own regression: plus `fittedInCase`, the held-out verdict, the
+studies by DOI) -> `estimate` (no record, both components carry UNIFAC
+groups: the line `activityModel { model UNIFAC; }`, SAID to be an ESTIMATE,
+weak for azeotropes and partial miscibility) -> `none` ("I do not have this
+pair" and what to bring: measured data from a paper you read, for a
+`fitParameters` case).  The archive rung (servable but not fitted) does not
+exist yet.  `componentLookup` resolves by catalogue name, alias or CAS (never
+by similarity): tier `catalogue` (which properties the record has and which
+it lacks, never their values), `estimateLake` (identity and UNIFAC groups
+only, "not reviewed", no estimated value) or `none`.  Fields the C16 chain
+will add are listed under `announcedAbsent`, never filled.  The result JSON
+block `lookupCards` carries the same card text.  Reads `$CHOUPO_HOME`'s
+catalogue, not the case's `constant/`.  Witnesses
+`pairLookup01_catalogue_ladder`, `componentLookup01_catalogue_ladder`.
+Record: `docs/design/the-evidence-card.md`.
+
 ### `fitParameters`
 LM regression of property-package scalars against experimental data.
 Writes `fit_log.csv` (chi² + parameter trajectory) and `parity.csv`
