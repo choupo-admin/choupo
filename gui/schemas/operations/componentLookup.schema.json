@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/componentLookup.schema.json",
+  "title": "componentLookup operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "evaluate", "package": false},
+  "description": "ONE TOOL CALL, ONE EVIDENCE CARD for a compound: whether the installation catalogue has it (by file name, declared alias or CAS -- never by similarity), which properties its record carries and which are missing, in a fixed byte budget (2048 bytes). A compound only in the group-estimate lake is reported as identity + groups, 'not reviewed', with NO estimated values; otherwise 'I do not have this compound'. The card lists what exists and never prints the values.",
+  "type": "object",
+  "properties": {
+    "component": {
+      "type": "string",
+      "title": "Compound",
+      "description": "A catalogue file name, a declared alias or a CAS number."
+    }
+  },
+  "required": ["component"],
+  "additionalProperties": false
+}
