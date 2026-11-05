@@ -49,14 +49,25 @@ Description
       * Serth, *Process Heat Transfer* (Academic Press, 2007), Table 6.1 and
         Eqs 6.1-6.4, as the SECOND selectable ideal bank (`idealBank Serth`).
 
-    WHAT IS DECLARED INSTEAD OF COMPUTED -- AS THE TEXTBOOK DOES.  In
-    Hewitt's method J_L (leakage) and J_B (bypass), and R_L and R_B for the
-    pressure drop, are READ FROM BELL'S CHARTS (Figs 6.8-6.11); the book
-    prints no equation for them.  Choupo invents none: the case DECLARES
-    `JL`, `JB`, `RL`, `RB` ("read from the chart"), the run announces that,
-    and publishes the chart coordinates (the leakage ratios, F_bp, Nss/Nc)
-    a student needs to read the chart.  A case that declares none of JL/JB
-    REFUSES by name.  The laminar adverse-gradient factor J_r is not applied
+    CHART READING OR CLOSED FORM, THE STUDENT'S CHOICE.  In Hewitt's method
+    J_L (leakage) and J_B (bypass), and R_L and R_B for the pressure drop,
+    are READ FROM BELL'S CHARTS (Figs 6.8-6.11); the book prints no equation
+    for them.  Each of `JL`, `JB`, `RL`, `RB` is either a DECLARED number (the
+    chart reading) or the word `auto`, which computes Taborek's closed form
+    (HEDH 3.3), as printed identically in Goncalves, Costa & Bagajewicz
+    (AIChE J. 2019) and Mohammadi et al. (arXiv:1810.02243, Eqs 22-27):
+      J_L = 0.44(1-r_s) + [1-0.44(1-r_s)] exp(-2.2 r_lm)
+      J_B = exp[-C F_sbp (1-(2 N_ss/N_c)^(1/3))], C = 1.35 (Re <= 100) or
+            1.25, and 1 for N_ss/N_c >= 1/2
+      R_L = exp[-1.33 (1+r_s) r_lm^p], p = 0.8 - 0.15 (1+r_s)
+      R_B = exp[-C_bp F_sbp (1-(2 N_ss/N_c)^(1/3))], C_bp = 4.5 (Re <= 100)
+            or 3.7, and 1 for N_ss/N_c >= 1/2
+    with r_s = S_sb/(S_sb+S_tb), r_lm = (S_sb+S_tb)/S_m.  Absent, the factor
+    REFUSES by name; the run announces which route each took.  On Example 6.2
+    the closed forms land on the chart readings within the reading error
+    (gate).  NOT carried: J_r and J_s (Hewitt applies neither), and R_s with
+    the end-zone term of Serth/Taborek (the sources disagree on a factor 0.5;
+    Hewitt's Eq 6.31 end zones carry R_B only, which is what is used).  The laminar adverse-gradient factor J_r is not applied
     (Hewitt: "doubtful validity in laminar flow ... not included").
 
     WHAT IS CARRIED, AND WHAT REFUSES BY NAME (the unreadable is not typed):
@@ -109,8 +120,21 @@ struct Spec
     scalar baffleThickness = 0.0;
     scalar tubeLength     = 0.0;
     std::string idealBank = "Hewitt";   // Hewitt | Serth
+    //  The FORM of the method: `Hewitt` (the default, the book of W2: J_s = 1,
+    //  J_r not applied, clearances diametral) or `Serth` (Serth, Process Heat
+    //  Transfer 2007, Section 6.3-6.6 as printed: his flow areas, J_S, J_R,
+    //  R_S and the end-zone assembly of Eqs 6.15-6.16).
+    std::string form = "Hewitt";
+    //  Serth form only: chart readings of the ideal bank (Serth Fig 6.1, as
+    //  Example 6.1 reads them) in place of Eqs 6.1-6.4, -1 when not declared.
+    scalar jIdeal = -1.0, fIdeal = -1.0;
+    bool   clearanceRadial = true;   // Serth form: declared `clearanceBasis`
+    //  Serth form only: inlet / outlet baffle spacings (default: B).
+    scalar baffleSpacingIn = -1.0, baffleSpacingOut = -1.0;
     //  Chart readings, NaN when not declared.
     scalar JL = -1.0, JB = -1.0, RL = -1.0, RB = -1.0;
+    //  `auto`: the factor is COMPUTED by Taborek's closed form (HEDH 3.3).
+    bool autoJL = false, autoJB = false, autoRL = false, autoRB = false;
     //  BENCH ONLY (refused by the unit): the textbook's PRINTED S_m, so that
     //  every later printed step can be reproduced from the book's own
     //  intermediate value (Hewitt Example 6.2 prints S_m = 0.01667 m2, 0.3 %
@@ -134,6 +158,10 @@ struct Result
     scalar Ssb = 0, Stb = 0, leakageRatio = 0, leakageSplit = 0;
     scalar Fbp = 0, Nc = 0, NssOverNc = -1.0;
     scalar JL = 0, JB = 0, h = 0, combined = 0;
+    //  Serth form only (1 otherwise): J_S, J_R, R_S, and the ideal-bank
+    //  friction factor f; dpEnd = the end-zone drop (Eq 6.15).
+    scalar JS = 1, JR = 1, RS = 1, fIdeal = 0, dpEnd = 0, jIdeal = 0;
+    bool   serthForm = false;
     //  Pressure drop (valid only when `hasDp`).
     bool   hasDp = false;
     scalar Kf = 0, dpc = 0, Ncw = 0, Sw = 0, dpw = 0, dP = 0, dPcross = 0;
