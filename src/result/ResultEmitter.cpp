@@ -1644,8 +1644,20 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"fromUnit\": " << esc(p.fromUnit)
                << ", \"toKind\": " << esc(p.toKind)
                << ", \"to\": " << esc(p.to)
-               << ", \"toUnit\": " << esc(p.toUnit)
-               << ", \"routedBy\": " << esc(p.routedBy)
+               << ", \"toUnit\": " << esc(p.toUnit);
+            //  C229: where each end lands on its item -- a conventional port.
+            auto portJson = [&](const char* key, const LayoutPort& pt) {
+                if (pt.item.empty() || pt.point.size() != 3) return;
+                os << ", \"" << key << "\": { \"item\": " << esc(pt.item)
+                   << ", \"port\": " << esc(pt.port)
+                   << ", \"origin\": " << esc(pt.origin)
+                   << ", \"role\": " << esc(pt.role)
+                   << ", \"point\": [" << num(pt.point[0]) << ", "
+                   << num(pt.point[1]) << ", " << num(pt.point[2]) << "] }";
+            };
+            portJson("fromPort", p.fromPort);
+            portJson("toPort", p.toPort);
+            os << ", \"routedBy\": " << esc(p.routedBy)
                << ", \"lane\": " << p.lane
                << ", \"length\": " << num(p.length);
             auto st = r.streams.find(p.stream);
@@ -1662,7 +1674,10 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                    << num(p.route[q][1]) << ", " << num(p.route[q][2]) << "]";
             os << "] }";
         }
-        os << (L.pipes.empty() ? "]" : "\n    ]") << ",\n    \"notRouted\": [";
+        os << (L.pipes.empty() ? "]" : "\n    ]");
+        if (!L.portConvention.empty())
+            os << ",\n    \"portConvention\": " << esc(L.portConvention);
+        os << ",\n    \"notRouted\": [";
         for (std::size_t i = 0; i < L.notRouted.size(); ++i)
         {
             const auto& n = L.notRouted[i];

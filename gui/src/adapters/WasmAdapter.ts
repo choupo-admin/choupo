@@ -79,7 +79,7 @@ import type {
   ConvergenceCurve,
   Economics,
   EnergyRecord,
-  PlantLayout,
+  PlantLayout, LayoutPortInfo,
   LayoutBund,
   ExperimentalDataset,
   ValidationBlock,
@@ -1070,6 +1070,14 @@ function shapePipes(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayou
         tierSpacing: k.tierSpacing as number, xStart: k.xStart as number,
         xEnd: k.xEnd as number, reason: str(k.reason) } }
     : {};
+  //  A port (DEV.md 4c C229) is passed through as the engine published it;
+  //  one whose point is not three finite numbers is left out, not guessed.
+  const portOf = (key: "fromPort" | "toPort", v: LayoutPortInfo | undefined) =>
+    v && typeof v.item === "string" && Array.isArray(v.point) && v.point.length === 3
+      && v.point.every(fin)
+      ? { [key]: { item: v.item, port: str(v.port), origin: str(v.origin), role: str(v.role),
+                   point: [v.point[0], v.point[1], v.point[2]] as [number, number, number] } }
+      : {};
   const pipes = l.pipes
     .filter((p) => typeof p.stream === "string" && fin(p.length) && Array.isArray(p.route)
       && p.route.length >= 2
@@ -1079,6 +1087,7 @@ function shapePipes(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayou
       ...(typeof p.label === "string" && p.label ? { label: p.label } : {}),
       fromKind: str(p.fromKind), from: str(p.from), fromUnit: str(p.fromUnit),
       toKind: str(p.toKind), to: str(p.to), toUnit: str(p.toUnit),
+      ...portOf("fromPort", p.fromPort), ...portOf("toPort", p.toPort),
       routedBy: str(p.routedBy), lane: fin(p.lane) ? p.lane : -1,
       length: p.length as number,
       ...(fin(p.F_mass) ? { F_mass: p.F_mass } : {}),
@@ -1089,6 +1098,8 @@ function shapePipes(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayou
     }));
   return {
     ...rack,
+    ...(typeof l.portConvention === "string" && l.portConvention
+      ? { portConvention: l.portConvention } : {}),
     junctions: (Array.isArray(l.junctions) ? l.junctions : [])
       .filter((j) => [j.x, j.y, j.z].every(fin))
       .map((j) => ({ unit: str(j.unit), type: str(j.type),
@@ -1330,7 +1341,7 @@ interface ResultPayload {
     junctions?: { unit?: string; type?: string; x?: number; y?: number; z?: number }[];
     pipes?: { stream?: string; label?: string; fromKind?: string; from?: string;
       fromUnit?: string; toKind?: string; to?: string; toUnit?: string;
-      routedBy?: string; lane?: number; length?: number;
+      routedBy?: string; fromPort?: LayoutPortInfo; toPort?: LayoutPortInfo; lane?: number; length?: number;
       F_mass?: number; T?: number; P?: number; vf?: number;
       route?: number[][] }[];
     notRouted?: { stream?: string; reason?: string; fromUnit?: string; toUnit?: string;
@@ -1389,6 +1400,7 @@ interface ResultPayload {
       allowances?: unknown[][]; ruleSource?: string; ruleReason?: string;
       source?: string; reason?: string }[];
     bundRule?: string;
+    portConvention?: string;
   };
   economics?: {
     present?: boolean;

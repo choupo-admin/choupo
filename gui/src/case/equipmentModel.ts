@@ -122,6 +122,11 @@ interface PartBase {
   decoration: boolean;
   /** Centre of the part, relative to the envelope centre (three.js axes). */
   at: Vec3;
+  /** A drafting nozzle (DEV.md 4c C229): when the engine publishes the item's
+   *  PORTS, the recipe's own nozzles are dropped and one is drawn at each
+   *  published port instead, so a nozzle is never in one place and its pipe
+   *  in another.  Always decoration; the body is never touched. */
+  nozzle?: true;
 }
 
 /** A (possibly tapered) cylinder.  `axis` is a three.js axis or a unit
@@ -267,8 +272,24 @@ function verticalShellWithHeads({ R, H }: Vertical): { parts: Part[]; hd: number
 /** A nozzle with its flange, rising from `y0` (local) at plan (x, z). */
 function verticalNozzle(x: number, z: number, y0: number, r: number, rise: number): Part[] {
   return [
-    cyl("steel", true, [x, y0 + rise / 2, z], "y", rise, r),
-    cyl("steel", true, [x, y0 + rise - 0.03, z], "y", 0.06, 1.7 * r),
+    { ...cyl("steel", true, [x, y0 + rise / 2, z], "y", rise, r), nozzle: true },
+    { ...cyl("steel", true, [x, y0 + rise - 0.03, z], "y", 0.06, 1.7 * r), nozzle: true },
+  ];
+}
+
+/** Length of the drafting nozzle drawn at a published port (m): a view
+ *  convention, the same order as the stub the engine's pipe starts with. */
+export const PORT_NOZZLE_LENGTH = 0.35;
+
+/** A nozzle with its flange at a PUBLISHED port: from the point `at` on the
+ *  item's surface (local to the envelope centre) outward along the unit
+ *  direction `dir` (DEV.md 4c C229). */
+function portNozzle(at: Vec3, dir: Vec3, r: number): Part[] {
+  const L = PORT_NOZZLE_LENGTH;
+  const p = (t: number): Vec3 => [at[0] + dir[0] * t, at[1] + dir[1] * t, at[2] + dir[2] * t];
+  return [
+    { ...cyl("steel", true, p(L / 2), dir, L, r), nozzle: true },
+    { ...cyl("steel", true, p(L - 0.03), dir, 0.06, 1.7 * r), nozzle: true },
   ];
 }
 
@@ -368,6 +389,11 @@ export interface ModelInput {
   /** A `membraneBank` item's geometry, read from its sheet (membraneBank.ts);
    *  absent for every other kind and for a bank whose sheet could not be read. */
   bank?: MembraneBank;
+  /** The ports the engine published for this item (DEV.md 4c C229): the
+   *  nozzle point on its surface, LOCAL to the envelope centre, and the unit
+   *  direction the pipe leaves in (three.js axes).  Absent: the recipe's own
+   *  decorative nozzles stand. */
+  ports?: { at: Vec3; dir: Vec3 }[];
 }
 
 type Recipe = (m: ModelInput) => EquipmentDrawing | null;
@@ -936,12 +962,27 @@ export function plainDrawing(m: ModelInput): EquipmentDrawing {
  *  non-process item (a building, a control room) is the box its case
  *  declared. */
 export function equipmentDrawing(s: Pick<SceneSolid, "kind" | "shape" | "axis" | "size"
-  | "center" | "nonProcess"> & { bank?: MembraneBank }): EquipmentDrawing {
+  | "center" | "nonProcess"> & { bank?: MembraneBank; ports?: SceneSolid["ports"] }): EquipmentDrawing {
+  const local = (s.ports ?? []).map((q) => ({
+    at: [q.at[0] - s.center[0], q.at[1] - s.center[1], q.at[2] - s.center[2]] as Vec3,
+    dir: q.dir,
+  }));
   const m: ModelInput = { kind: s.kind, shape: s.shape, axis: s.axis, size: s.size,
                           base: s.center[1] - s.size[1] / 2,
-                          ...(s.bank ? { bank: s.bank } : {}) };
+                          ...(s.bank ? { bank: s.bank } : {}),
+                          ...(local.length ? { ports: local } : {}) };
   const recipe = s.nonProcess ? SITE_MODELS[s.kind] : EQUIPMENT_MODELS[s.kind];
-  return recipe?.(m) ?? plainDrawing(m);
+  const drawing = recipe?.(m) ?? plainDrawing(m);
+  if (!local.length) return drawing;
+  //  C229: the nozzles stand where the engine's pipes land.
+  const r = Math.min(0.3, Math.max(0.05, 0.05 * Math.min(s.size[0], s.size[2])));
+  return {
+    ...drawing,
+    parts: [...drawing.parts.filter((p) => !p.nozzle),
+            ...local.flatMap((q) => portNozzle(q.at, q.dir, r))],
+    describes: `${drawing.describes}; ${local.length} nozzle${local.length === 1 ? "" : "s"}`
+      + " at the engine's published ports",
+  };
 }
 
 //  ---- bounds (for the test, and for anyone asking where a part reaches) ----
