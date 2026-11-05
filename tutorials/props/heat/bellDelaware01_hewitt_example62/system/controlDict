@@ -7,5 +7,5 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoProps;
-description   "Bell-Delaware shell side -- Hewitt, Shires & Bott Example 6.2 reproduced step by step at the book's own declared fluid and geometry (J_L, J_B, R_L, R_B read from Bell's charts and declared, as the textbook does).";
+description   "Bell-Delaware shell side -- Hewitt, Shires & Bott Example 6.2 reproduced step by step at the book's own declared fluid and geometry (J_L, J_B, R_L, R_B read from Bell's charts and declared, as the textbook does; `auto` computes them instead).";
 verbosity     2;
