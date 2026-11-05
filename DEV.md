@@ -2488,6 +2488,42 @@ accepts today, and that is a policy call.
 > not well-formed XML and were REFUSED by name.  This is the input of the
 > pair index (slice b).
 
+> **C228 (Vitor, 2026-11-05, relayed from another session): THE PETROCHEMISTRY
+> GAP, MEASURED BEFORE IT WAS ACCEPTED.**  The relay said there is "no
+> petroleum characterisation".  MEASURED false in part: `RiaziDaubert`
+> (`src/propertyOps/RiaziDaubert.{H,cpp}`, a registered `ConstantEstimator`)
+> already turns (Tb, SG) into MW, Tc, Pc, Vc with omega by Lee-Kesler and a
+> Kesler-Lee ideal-gas Cp, prints the Watson K factor, and
+> `props/estimate/estimate_petroleum_cut` + `steady/flash/
+> flash_pseudoComponent_petCut` flash such a lump and close its energy
+> balance.  What is TRULY missing (grep of src, docs/ai and tutorials): (1) a
+> TBP curve cut into several pseudo-components; (2) API gravity and the
+> Watson factor on STREAM properties; (3) a naphtha or crude atmospheric
+> distillation reference case; (4) a thermal-cracking case with published
+> kinetics; (5) SRK/PR kij for hydrocarbon gas pairs -- the catalogue holds
+> ONE record (`parameters/SRK/N2-CH4.dat`).  Components are not the gap: 609
+> records incl. n-pentane to n-decane, the xylenes, cumene, styrene,
+> naphthalene.  DECISIONS (architect, rule 00): the Pareto frame stands (no
+> breadth race; FCC, reforming, hydrotreating, CAPE-OPEN, hydrates and
+> black-oil stay out); an ESTIMATED pseudo-component record lives in the
+> CASE, never in `data/standards/` (an estimate is a proposal the student
+> promotes, as `estimateComponent` already writes it); correlations from the
+> books are used as formulas and coefficients, never copied tables
+> (`check_source_licence`).  ORDER: first the TBP cutter as a props operation
+> on `RiaziDaubert` with API gravity, SG and Watson K per cut and for the
+> blend (items 1-2, started); then kij of SRK/PR by the C16 chain with
+> `P_bubble` (its first slice is built, the pair fit waits on the archive
+> index); then the distillation case (needs the cutter and a source with a
+> unit's data, not a textbook example); then the cracking case (kinetics
+> from Sundaram & Froment 1977/1978 -- which of the two carries the measured
+> tables is to be CONFIRMED by reading them, not assumed).  LITERATURE
+> LOCATION (correcting the relay, which said `data/local`): Riazi (ASTM MNL50)
+> is `~/Downloads/MNL50.pdf` and
+> `~/Choupo-Literature/characterization-of-petroleum-products-by-riazi.pdf`,
+> Sundaram & Froment are `~/Choupo-Literature/sundaram1977.pdf` and
+> `sundaram1978.pdf`; Poling-Prausnitz-O'Connell is not in either place (the
+> curator's own copy that `verify_against_poling.py` reads).
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
