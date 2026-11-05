@@ -2604,6 +2604,24 @@ accepts today, and that is a policy call.
 > VIEWER gains the guided tour (generated from the sectors and units, never
 > hand-written per plant), orbit/walk/drone, go-to, colour by temperature, the
 > minimap, and a click card reading the stream and sheet the engine published.
+>
+> **C229 (B) BUILT (branch of the viewer general, 2026-11-05).**  One DOM layer,
+> `gui/src/ui/plotting/layoutInteract.ts`, mounted by `mountLayoutScene`, so the app, the
+> `?layout=` tab and the exported page share it; the logic is pure and tested
+> (`layoutFacts`, `layoutTour`, `layoutColour`, `layoutCamera`, `layoutCards`,
+> `tests/layoutInteraction.test.ts`).  Built: the generated tour (every sentence
+> carries its result field, shown on hover), orbit / walk / drone with "Go to...",
+> colour by phase / temperature / pressure / mole fraction of a chosen component
+> (the last added by Vitor's request the same day; mass fraction is NOT offered: the
+> stream table publishes mole fractions only and the GUI computes no conversion), the
+> minimap with click-to-jump, the item and pipe cards, the collapsible headline and the
+> "not modelled" mark (an item the layout places but the sizing pass did not size).
+> MEASURED, said in the legend: the engine publishes NO line velocity (a layout pipe
+> has T, P, vf and F_mass, no diameter or speed), so the particles stay stylised.
+> LIMITS: the exported page and the pop-out tab hold only the layout block, so they
+> lack the sheets, the costs and the colour by composition; the walk camera has no
+> collision with the equipment; touch look is a one-finger drag with on-screen pads,
+> not a joystick.  Visual proof: images in the viewer general's report.
 
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th

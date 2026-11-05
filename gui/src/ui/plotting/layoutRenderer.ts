@@ -108,6 +108,10 @@ import type { GTAOPass as GTAOPassT } from "three/examples/jsm/postprocessing/GT
 import type { OutlinePass as OutlinePassT } from "three/examples/jsm/postprocessing/OutlinePass.js";
 import type { OutputPass as OutputPassT } from "three/examples/jsm/postprocessing/OutputPass.js";
 
+import type { PlantLayout } from "../../adapters/SolverAdapter.js";
+import { notModelled } from "../../case/layoutCards.js";
+import type { LayoutFacts } from "../../case/layoutFacts.js";
+import { mountInteraction, type InteractionHandle } from "./layoutInteract.js";
 import {
   equipmentDrawing, type InstancedCylinderPart, type Part, type PartRole,
 } from "../../case/equipmentModel.js";
@@ -219,6 +223,15 @@ export interface MountOptions {
   quality?: RenderQuality;
   /** Another drawing in the SAME scene (the GMP interior, DEV.md 4c C97). */
   extend?: SceneExtension;
+  /** The engine's layout block and what the result published beside it (DEV.md
+   *  4c C229): the tour, the cards, the headline and the colour by composition
+   *  read them.  Both optional; without them the view offers what the scene
+   *  alone carries. */
+  layout?: PlantLayout;
+  facts?: LayoutFacts | null;
+  /** Mount the interaction layer (tour, cameras, colour, minimap, cards).
+   *  Default true. */
+  interactive?: boolean;
 }
 
 /** THE ONE HOOK (DEV.md 4c C97): a module that draws something more in this
@@ -623,8 +636,11 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
   const flaggedMeshes: T3.Object3D[] = [];
   for (const s of scene.solids) {
     const drawing = equipmentDrawing(s);
+    const nm = notModelled(s, opts.facts);
     const tooltip = [...s.tooltip.slice(0, 2), `drawn as: ${drawing.describes}`,
-                     ...s.tooltip.slice(2)];
+                     ...s.tooltip.slice(2),
+                     ...(nm ? ["NOT MODELLED: declared by the case, not sized by the engine"] : [])];
+    const pick = { kind: "item", id: s.id, shell: !!s.shell };
     //  The material of a part: a FLAGGED item's envelope parts are safety
     //  orange whatever they are made of (its decoration keeps its own);
     //  otherwise the role's, `body` being the item's own.
@@ -663,6 +679,7 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       mesh.castShadow = !s.shell;
       mesh.receiveShadow = true;
       mesh.userData.tooltip = tooltip;
+      mesh.userData.pick = pick;
       group.add(mesh);
       pickables.push(mesh);
       //  A shell's glow would fill the glass and hide the rooms: its finding
@@ -683,6 +700,7 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       im.castShadow = true;
       im.receiveShadow = true;
       im.userData.tooltip = tooltip;
+      im.userData.pick = pick;
       keep(im);
       group.add(im);
       pickables.push(im);
@@ -702,7 +720,8 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       group.add(edges);
     }
     world.add(group);
-    label(s.label, [s.center[0], s.center[1] + s.size[1] / 2 + 0.6, s.center[2]],
+    label(nm && !s.nonProcess ? `${s.label} · not modelled` : s.label,
+      [s.center[0], s.center[1] + s.size[1] / 2 + 0.6, s.center[2]],
       s.flagged ? LABEL_PRIORITY.finding : LABEL_PRIORITY.item, s.flagged);
   }
 
@@ -1282,15 +1301,21 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
   const cubeG = keep(new THREE.BoxGeometry(0.32, 0.32, 0.32));
   const want = new Map<string, { geo: T3.BufferGeometry; phase: Phase; n: number }>();
   const plan: { key: string; s: number; speed: number; points: Vec3[] }[] = [];
+  //  One material per pipe, so a colour mode (C229) can paint each its own.
+  const pipeMats: (T3.MeshStandardMaterial | null)[] = [];
   for (const p of scene.pipes) {
     const geo = pipeGeometry(p.points, p.radius);
     if (geo) {
       keep(geo);
-      const tube = new THREE.Mesh(geo, tubeMat.get(p.phase)!);
+      const own = keep(new THREE.MeshStandardMaterial({ color: PHASE_COLOURS[p.phase],
+        transparent: true, opacity: 0.45, roughness: 0.2, metalness: 0.1, depthWrite: false }));
+      pipeMats.push(own);
+      const tube = new THREE.Mesh(geo, own);
+      tube.userData.pick = { kind: "pipe", id: p.id };
       tube.userData.tooltip = p.tooltip;
       pipeGroup.add(tube);
       pickables.push(tube);
-    }
+    } else pipeMats.push(null);
     //  Particles: one per ~2.5 m of drawn route, 3 to 60, evenly spaced.
     let drawn = 0;
     for (let i = 1; i < p.points.length; i++) {
@@ -1426,12 +1451,14 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     for (const b of boxes)
       lbls[Number(b.key)]!.el.style.visibility = keepLbl.has(b.key) ? "visible" : "hidden";
   };
+  const frameHooks: Array<() => void> = [];
   const draw = () => {
     if (quality === "high") composer ??= buildComposer();
     if (quality === "high" && composer) composer.render();
     else renderer.render(world, camera);
     labels.render(world, camera);
     declutterLabels();
+    for (const f of frameHooks) f();
   };
 
   const fit = (preset: ViewPreset) => {
@@ -1502,15 +1529,24 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
   //  ---- hover ------------------------------------------------------
   const ray = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
+  const visibleHits = (nx: number, ny: number) => {
+    mouse.set(nx, ny);
+    ray.setFromCamera(mouse, camera);
+    return ray.intersectObjects(pickables, false).filter((x) => {
+      for (let o: T3.Object3D | null = x.object; o; o = o.parent) if (!o.visible) return false;
+      return true;
+    });
+  };
+  /** The nearest clickable thing (an item or a pipe) under the pointer; a
+   *  building's glass shell only when nothing inside it is under the pointer. */
+  const raycast = (nx: number, ny: number): T3.Object3D | null => {
+    const hits = visibleHits(nx, ny).filter((x) => x.object.userData.pick);
+    return (hits.find((x) => !x.object.userData.pick.shell) ?? hits[0])?.object ?? null;
+  };
   const onMove = (e: PointerEvent) => {
     const r = renderer.domElement.getBoundingClientRect();
-    mouse.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-    ray.setFromCamera(mouse, camera);
-    const hit = ray.intersectObjects(pickables, false)
-      .find((x) => {
-        for (let o: T3.Object3D | null = x.object; o; o = o.parent) if (!o.visible) return false;
-        return true;
-      });
+    const hit = visibleHits(((e.clientX - r.left) / r.width) * 2 - 1,
+                            -((e.clientY - r.top) / r.height) * 2 + 1)[0];
     const lines = hit?.object.userData.tooltip as string[] | undefined;
     if (!lines) { tip.style.display = "none"; return; }
     tip.replaceChildren(...lines.map((t, i) => {
@@ -1534,12 +1570,41 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
   opts.extend?.({ THREE, world, pickables, redraw: () => draw(),
                   label: (t, at, p, strong) => { label(t, at, p, strong);
                                                  return lbls[lbls.length - 1]!.obj; } });
+  //  ---- the interaction layer (C229): tour, cameras, colour, cards --------
+  let selectedPipe: number | null = null;
+  const paintPipes = (colours: number[], solid: boolean) => {
+    pipeMats.forEach((mat, i) => {
+      if (!mat) return;
+      mat.color.setHex(colours[i] ?? PHASE_COLOURS.unknown);
+      mat.opacity = solid ? 0.85 : 0.45;
+    });
+  };
+  const selectPipe = (i: number | null) => {
+    const set = (k: number | null, on: boolean) => {
+      const mat = k === null ? null : pipeMats[k];
+      if (!mat) return;
+      mat.emissive.setHex(on ? 0x00b4d8 : 0x000000);
+      mat.emissiveIntensity = on ? 0.9 : 0;
+    };
+    set(selectedPipe, false);
+    selectedPipe = i;
+    set(i, true);
+  };
+  let interaction: InteractionHandle | null = null;
+  if (opts.interactive !== false)
+    interaction = mountInteraction({
+      THREE, el, dom: renderer.domElement, camera, controls, world, scene,
+      ...(opts.layout ? { layout: opts.layout } : {}),
+      facts: opts.facts ?? null,
+      pickables, fov: FOV, heightOf, draw, paintPipes, selectPipe, raycast, onFrame: frameHooks,
+    });
   fit(opts.view);
   apply(opts.toggles);
 
   const dispose = () => {
     if (raf) cancelAnimationFrame(raf);
     ro.disconnect();
+    interaction?.dispose();
     renderer.domElement.removeEventListener("pointermove", onMove);
     renderer.domElement.removeEventListener("pointerleave", onLeave);
     controls.dispose();

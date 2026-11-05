@@ -84,6 +84,8 @@ import {
   type LayoutScene, type RenderQuality, type ViewPreset,
 } from "../../case/plantLayout.js";
 import { fullscreenMode, type FullscreenMode } from "../../case/layoutPanels.js";
+import type { PlantLayout } from "../../adapters/SolverAdapter.js";
+import type { LayoutFacts } from "../../case/layoutFacts.js";
 import {
   FILL_MIN_HEIGHT, mountLayoutScene, type LayoutModules, type LayoutView, type SceneExtension,
   type Toggles,
@@ -119,8 +121,14 @@ async function loadLayoutModules(): Promise<LayoutModules> {
  *  view is placed in (the `?layout=` pop-out tab, DEV.md 4c C78) and follow
  *  it when the window is resized.  Either way three.js is imported only when
  *  a layout is first shown. */
-export function PlantLayout3D({ scene, height: declaredHeight = 520, extend, toolbarExtra }: {
+export function PlantLayout3D({ scene, height: declaredHeight = 520, extend, toolbarExtra,
+                                layout, facts }: {
   scene: LayoutScene; height?: number | "fill";
+  /** The engine's layout block and the result's facts (DEV.md 4c C229): the
+   *  guided tour, the click cards, the headline and the colour by
+   *  composition read them.  Optional: without them the view offers what the
+   *  scene alone carries. */
+  layout?: PlantLayout; facts?: LayoutFacts | null;
   /** Another drawing in the same scene (the GMP interior, DEV.md 4c C97). */
   extend?: SceneExtension;
   /** Its controls, on the same toolbar. */
@@ -180,7 +188,8 @@ export function PlantLayout3D({ scene, height: declaredHeight = 520, extend, too
         if (disposed || !el) return;
         api.current = mountLayoutScene(modules, el, scene,
           { height, toggles: togglesRef.current, view: viewRef.current,
-            quality: qualityRef.current, ...(extend ? { extend } : {}) });
+            quality: qualityRef.current, ...(extend ? { extend } : {}),
+            ...(layout ? { layout } : {}), facts: facts ?? null });
       } catch (e) {
         if (!disposed)
           setError(e instanceof Error ? e.message : String(e));
@@ -191,7 +200,7 @@ export function PlantLayout3D({ scene, height: declaredHeight = 520, extend, too
       api.current?.dispose();
       api.current = null;
     };
-  }, [scene, height, extend]);
+  }, [scene, height, extend, layout, facts]);
 
   if (error)
     return (
