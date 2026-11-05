@@ -2551,6 +2551,27 @@ accepts today, and that is a policy call.
 > `sundaram1978.pdf`; Poling-Prausnitz-O'Connell is not in either place (the
 > curator's own copy that `verify_against_poling.py` reads).
 
+> **C224 INTEGRATION (2026-11-05): the report's case list was INCOMPLETE and
+> the full sweep was judged not needed.**  The general listed SIX cases that
+> type pairs inline; counting the thermoPhysPropDict files that carry
+> `a_ij`/`b_ij`/`tau`/`alpha` outside `parameters/` finds about 27 (the whole
+> curate* series, bubbleT01/02, dewT01, flash02/03, fitNRTL01/02,
+> still02, column03, ...), each of which now earns one `[unreviewed] pair`
+> line.  The integration found what the list hid: the GUI cites
+> `ThermoPackageBuilder.cpp` by line and the 20 added lines moved eight
+> citations (re-pointed in `caseAssembly.ts` and `runLog.ts`), and the
+> `runLog` page's "nothing raised" witness, `bubbleT01_ethanol_water`, is one
+> of the inline cases; it stays as the bubble-point witness (a new `bubble`
+> run, it TEACHES the inline form) and the quiet witness is now
+> `heatExchanger01_water_water` (one [unmarked] line, so the test's count
+> moved from 2 to 1).  The shared-path flag on `ThermoPackageBuilder.cpp`
+> (a FULL sweep) is judged NOT needed: the engine change is one helper that
+> announces and moves no number (gammas identical to the catalogue run,
+> the general's arm d), the scoped cases pass (PASS 10 / FAIL 0), 157
+> gates ran, `check_element_closure` and `check_method_tools` pass once the
+> worktree has been exercised / has its `node_modules`, and the whole GUI
+> suite passes (271 files, 7074 tests).  Reversible by `git revert`.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
