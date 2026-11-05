@@ -2261,6 +2261,32 @@ accepts today, and that is a policy call.
 > value taken from a no-grant database.  This goes BEFORE the C223 pilot:
 > the pilot would feed a hole.
 
+> **C225 (relayed by Vitor from another session, 2026-11-05): AUTOMATING
+> THE C16 CHAIN -- nine proposals, judged by content.**  MEASURED first:
+> `src/propertyOps/FitParameters.cpp` names no UNIQUAC, Wilson or
+> liquid-liquid residual, so the dependency the proposal cites ("the
+> request passed to the laptop") is NOT in this tree; proposals 1-2 wait
+> for it to land and nobody builds on a claim. DECISIONS: (3) study triage
+> by leave-one-study-out and (7) a component audit against ThermoML are
+> taken FIRST, because they find real errors at low cost and move no
+> number until Vitor promotes; (1) `choupo-curate pair A B` as a tool that
+> writes the DECLARATION (partition, band) before any fit and produces a
+> dossier, never a promotion; (2) several models per cycle only after
+> `fitParameters` has them; (4) a generated coverage map, (5) a standing
+> audit of the existing catalogue pairs, (9) a CAS->InChIKey bridge file
+> (resolver licences checked first) follow; (8) fitting Antoine/Cp from
+> pure ThermoML data under the same protocol with per-value provenance,
+> after (7); (6) in-browser fitting that downloads a case-local record is
+> the highest value for students and the last to build -- it needs the GUI
+> credo read first (the GUI is a runner, not an editor: a download of a
+> local record is consistent with it, an in-place edit is not). The
+> reading of data against the article stays marked
+> `transcribedNotCheckedAgainstArticle`; a generated checklist (extracted
+> table beside the DOI) is the way to make that review fast, and is added
+> to (1). Guarantees kept: `check_source_licence` before any record, no
+> record without quality evidence. This FEEDS the C223 pilot; the C224
+> correction still goes before it.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
