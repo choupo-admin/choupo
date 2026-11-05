@@ -19,8 +19,10 @@
   WHAT IS DECLARED, AS THE BOOK DOES.  Bell's J_L, J_B (Figs 6.8, 6.9) and
   R_L, R_B (Figs 6.10, 6.11) are CHART READINGS in this method; the book reads
   J_L = 0.58, J_B = 0.92, R_L = 0.33, R_B = 0.76 and so does this case.
-  Choupo carries no equation for them and refuses by name when they are
-  absent.  The fluid properties are the book's too (the bench is the
+  Each factor is a declared number (the chart reading) or the word `auto`
+  (Taborek's closed form, HEDH 3.3; the gate runs this geometry with `auto`
+  and holds the four values to the book's readings within the reading error);
+  an absent one refuses by name.  The fluid properties are the book's too (the bench is the
   textbook's inputs, not a package's), which is why this is a props bench.
 
   WHAT THE BOOK PRINTS, AND WHAT THIS RUN GIVES (the gate holds every row):

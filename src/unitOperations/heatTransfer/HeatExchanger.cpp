@@ -478,7 +478,7 @@ int HeatExchanger::solve(const DictPtr& dict,
                 throw std::runtime_error("HeatExchanger(BellDelaware): the"
                     " operation needs a `bellDelaware { ... }` block (baffle"
                     " cut, the three diametral clearances, sealing strips and"
-                    " the chart readings JL, JB) -- see docs/ai/unit-ops.md.");
+                    " the factors JL, JB: a chart reading or `auto`) -- see docs/ai/unit-ops.md.");
             bellDelaware::Fluid bf;
             bf.mdot = fsr.mdot;  bf.rho = fsr.rho;  bf.mu = fsr.mu;
             bf.lambda = fsr.lambda;  bf.cp = fsr.cp;
@@ -576,9 +576,20 @@ int HeatExchanger::solve(const DictPtr& dict,
             geomKpis["BD_leakageSplit"] = bdRes.leakageSplit;
             geomKpis["BD_Fbp"] = bdRes.Fbp;      geomKpis["BD_Nc"] = bdRes.Nc;
             geomKpis["BD_J_combined"] = bdRes.combined;
+            if (bdRes.serthForm)
+            {
+                geomKpis["BD_JS"] = bdRes.JS;    geomKpis["BD_JR"] = bdRes.JR;
+                if (bdRes.hasDp)
+                {
+                    geomKpis["BD_RS"] = bdRes.RS;
+                    geomKpis["BD_f_ideal"] = bdRes.fIdeal;
+                    geomKpis["BD_dp_end_Pa"] = bdRes.dpEnd;
+                }
+            }
             if (bdRes.hasDp)
             {
-                geomKpis["BD_Kf"] = bdRes.Kf;        geomKpis["BD_dp_cross_Pa"] = bdRes.dpc;
+                if (!bdRes.serthForm) geomKpis["BD_Kf"] = bdRes.Kf;
+                geomKpis["BD_dp_cross_Pa"] = bdRes.dpc;
                 geomKpis["BD_dp_window_Pa"] = bdRes.dpw;
                 geomKpis["BD_RL"] = bdRes.RL;        geomKpis["BD_RB"] = bdRes.RB;
             }
@@ -598,8 +609,9 @@ int HeatExchanger::solve(const DictPtr& dict,
                                             : dict->name());
                 AdvisoryLog::instance().add("model", "info", locus,
                     "Bell-Delaware: no RL/RB declared, so no shell-side"
-                    " pressure drop is rated (Hewitt Figs 6.10-6.11 are chart"
-                    " readings); dP_shell_kPa is not published");
+                    " pressure drop is rated (chart readings, Hewitt Figs"
+                    " 6.10-6.11, or the word `auto`); dP_shell_kPa is not"
+                    " published");
             }
         }
         geomKpis["Re_tube"]   = rt.Re;  geomKpis["Pr_tube"] = rt.Pr;
@@ -691,9 +703,9 @@ int HeatExchanger::solve(const DictPtr& dict,
             else if (shellDp)
                 std::cout << "     shell side: " << nBaffles << " baffles,  dP = "
                           << std::setprecision(1) << dP_shell / 1000.0
-                          << " kPa  (cross-flow + window zones, RL/RB declared)\n";
+                          << " kPa  (cross-flow + window zones, RL/RB declared or auto)\n";
             else
-                std::cout << "     shell side: not rated (declare RL and RB)\n";
+                std::cout << "     shell side: not rated (declare RL and RB, or `auto`)\n";
             std::cout
                       << "     (RESULTS; the duty-vs-pumping-cost trade-off lives here)\n"
                       << "===============================================================\n";

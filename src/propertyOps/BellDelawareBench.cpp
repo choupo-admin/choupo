@@ -60,9 +60,22 @@ int BellDelawareBench::run(const DictPtr& dict,
     diag_["Fbp"] = r.Fbp;        diag_["Nc"] = r.Nc;
     diag_["JL"] = r.JL;          diag_["JB"] = r.JB;
     diag_["h_shell"] = r.h;      diag_["J_combined"] = r.combined;
+    if (r.serthForm)
+    {
+        diag_["JS"] = r.JS;      diag_["JR"] = r.JR;
+        diag_["j_ideal"] = r.jIdeal;
+    }
     if (r.hasDp)
     {
-        diag_["Kf"] = r.Kf;      diag_["dp_cross"] = r.dpc;
+        if (r.serthForm)
+        {
+            diag_["RS"] = r.RS;
+            diag_["f_ideal"] = r.fIdeal;  diag_["dp_end"] = r.dpEnd;
+        }
+        if (r.serthForm || spec.autoRL) diag_["RL"] = r.RL;
+        if (r.serthForm || spec.autoRB) diag_["RB"] = r.RB;
+        if (!r.serthForm) diag_["Kf"] = r.Kf;
+        diag_["dp_cross"] = r.dpc;
         diag_["Ncw"] = r.Ncw;    diag_["Sw"] = r.Sw;
         diag_["dp_window"] = r.dpw;
         diag_["nBaffles"] = r.nBaffles;
@@ -84,8 +97,8 @@ int BellDelawareBench::run(const DictPtr& dict,
            << "   S_sb/(S_sb+S_tb) = " << r.leakageSplit << "\n"
            << "  F_bp = " << r.Fbp << "   N_c = " << r.Nc
            << "   N_ss/N_c = " << r.NssOverNc << "\n"
-           << "  J_L = " << r.JL << " (declared)   J_B = " << r.JB
-           << " (declared)\n"
+           << "  J_L = " << r.JL << "   J_B = " << r.JB
+           << "   (see the assumptions for declared / computed)\n"
            << "  h = " << r.h << " W/m2K\n";
         if (r.hasDp)
             os << "  K_f = " << r.Kf << "   dp_cross = " << r.dpc

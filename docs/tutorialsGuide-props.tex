@@ -2831,13 +2831,13 @@ The "$^\circ$" fixes the standard state (1 bar, ideal gas); it does not fix the 
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{exact}\\[-1pt]{\tiny bellDelawareBench}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Bell-Delaware shell side -- Hewitt, Shires \& Bott Example 6.2 reproduced step by step at the book's own declared fluid and geometry (J\_L, J\_B, R\_L, R\_B read from Bell's charts and declared, as the textbook does).}
+\tutwhat{Bell-Delaware shell side -- Hewitt, Shires \& Bott Example 6.2 reproduced step by step at the book's own declared fluid and geometry (J\_L, J\_B, R\_L, R\_B read from Bell's charts and declared, as the textbook does; `auto` computes them instead).}
 \begin{tutnarrative}
 the Bell-Delaware shell-side rating on the textbook's own worked example.
 
 SOURCE. G. F. Hewitt, G. L. Shires, T. R. Bott, $\ast$Process Heat Transfer$\ast$ (CRC Press, 1994), Example 6.1 (the geometry and the light-hydrocarbon stream) and Example 6.2 (the Bell-Delaware solution, pp. 280-285), with the method of Section 6.3.2 (Eqs 6.8-6.19, 6.20, 6.22, 6.26-6.31) and the ideal bank of Eq 2.218 / Table 2.5.
 
-WHAT IS DECLARED, AS THE BOOK DOES. Bell's J\_L, J\_B (Figs 6.8, 6.9) and R\_L, R\_B (Figs 6.10, 6.11) are CHART READINGS in this method; the book reads J\_L = 0.58, J\_B = 0.92, R\_L = 0.33, R\_B = 0.76 and so does this case. Choupo carries no equation for them and refuses by name when they are absent. The fluid properties are the book's too (the bench is the textbook's inputs, not a package's), which is why this is a props bench.
+WHAT IS DECLARED, AS THE BOOK DOES. Bell's J\_L, J\_B (Figs 6.8, 6.9) and R\_L, R\_B (Figs 6.10, 6.11) are CHART READINGS in this method; the book reads J\_L = 0.58, J\_B = 0.92, R\_L = 0.33, R\_B = 0.76 and so does this case. Each factor is a declared number (the chart reading) or the word `auto` (Taborek's closed form, HEDH 3.3; the gate runs this geometry with `auto` and holds the four values to the book's readings within the reading error); an absent one refuses by name. The fluid properties are the book's too (the bench is the textbook's inputs, not a package's), which is why this is a props bench.
 
 WHAT THE BOOK PRINTS, AND WHAT THIS RUN GIVES (the gate holds every row): S\_m 0.01667 m2 (book) 0.016622 from Eq 6.9 as written: the book's S\_m is 0.3 \% high. Op `book` starts from the PRINTED S\_m and reproduces every digit; op `exact` starts from the geometry Re 2.097e4 Pr 7.481 ideal h 1418 W/m2K F\_c 0.6470 J\_c 1.016 (S\_sb+S\_tb)/S\_m 0.4187 F\_bp 0.2666 h 769 W/m2K K\_f 0.3657 N\_c 8.5 dp\_c 233 Pa dp\_w 165 Pa shell dP 4501 Pa
 
@@ -2858,6 +2858,45 @@ WHAT THE BOOK PRINTS, AND WHAT THIS RUN GIVES (the gate holds every row): S\_m 0
 \goldrow{diag}{book}{Ssb}{0.00282638619068}
 \goldrow{diag}{book}{Stb}{0.0041524379945}
 \goldmore{34}
+\end{tutgolden}
+
+\clearpage
+\tutentry{bellDelaware02\_serth\_example61}{tutorials/props/heat/bellDelaware02\_serth\_example61}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{chart}\\[-1pt]{\tiny bellDelawareBench}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{equations}\\[-1pt]{\tiny bellDelawareBench}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Bell-Delaware shell side, form Serth -- Serth Example 6.1 with every correction factor computed (J\_L, J\_B, R\_L, R\_B auto) and the ideal bank read from Fig 6.1 (op chart) or from Eqs 6.1-6.4 (op equations).}
+\begin{tutnarrative}
+the Bell-Delaware shell side, FORM SERTH, on the textbook's own worked example.
+
+SOURCE. R. W. Serth, $\ast$Process Heat Transfer: Principles, Applications and Rules of Thumb$\ast$ (Academic Press / Elsevier, 2007), Example 6.1 (the final kerosene/crude-oil exchanger of Example 5.1, 124 tubes of 1.0 in OD on a 1.25 in square pitch in a 19.25 in shell), with Sections 6.4-6.7 (Eqs 6.6-6.57) and Table 6.1. Inputs below are the book's, converted to SI (1 in = 0.0254 m exactly; 1 lb = 0.45359237 kg; 1 Btu/lb F = 4186.8 J/kg K).
+
+UNLIKE HEWITT'S EXAMPLE, every correction factor here is COMPUTED (`auto`): J\_L, J\_B, R\_L, R\_B from Eqs 6.48-6.53, J\_S = R\_S = 1 (equal spacing, Eqs 6.54-6.55) and J\_R = 1 (Re > 100, Eq 6.57). Op `chart` declares the ideal bank as the book's example reads it from Fig 6.1 (j = 0.0060, f = 0.09); op `equations` computes j and f from Eqs 6.1-6.4 (the book prints 0.0063 and 0.089 for them).
+
+CLEARANCES. Serth's Eqs 6.22 and 6.36 use d\_tb and d\_sb as the gap itself and his Example 6.1 inserts the TEMA values (0.4 mm; 0.8 + 0.002 D\_s mm plus a 0.75 mm allowance) in them, so `clearanceBasis radial;` is the reading that reproduces his printed S\_tb, S\_sb, J\_L and R\_L; `diametral` would halve both areas and the gate shows it does NOT reproduce them.
+
+PRESSURE DROP. The printed summary Eq 6.16 omits R\_L on the central spaces while Eq 6.9 has it; the example's own arithmetic (dP\_f = 159.4 lbf/ft2) needs it, so Eq 6.9 is used and Eq 6.16 is a candidate erratum.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{chart}{Fbp}{0.283778060144}
+\goldrow{diag}{chart}{Fc}{0.796270244553}
+\goldrow{diag}{chart}{JB}{0.863052673184}
+\goldrow{diag}{chart}{JL}{0.479455411602}
+\goldrow{diag}{chart}{JR}{1}
+\goldrow{diag}{chart}{JS}{1}
+\goldrow{diag}{chart}{J\_combined}{0.464822263533}
+\goldrow{diag}{chart}{Jc}{1.12331457608}
+\goldrow{diag}{chart}{Nc}{9.24}
+\goldrow{diag}{chart}{Ncw}{2.464}
+\goldrow{diag}{chart}{Pr}{7.23999985478}
+\goldrow{diag}{chart}{RB}{0.64665168579}
+\goldrow{diag}{chart}{RL}{0.265542709084}
+\goldrow{diag}{chart}{RS}{1}
+\goldmore{48}
 \end{tutgolden}
 
 \clearpage

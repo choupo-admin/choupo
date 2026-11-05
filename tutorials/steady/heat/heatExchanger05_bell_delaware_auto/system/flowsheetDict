@@ -1,0 +1,93 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  heatExchanger05_bell_delaware_auto
+  ==================================
+
+  The SAME exchanger as heatExchanger04_bell_delaware_rating, with the four
+  chart readings replaced by the word `auto`: JL, JB, RL and RB are COMPUTED
+  by Taborek's closed forms (HEDH 3.3, as printed in Goncalves, Costa &
+  Bagajewicz, AIChE J. 2019, and Mohammadi et al., arXiv:1810.02243):
+
+      JL = 0.44(1-rs) + [1-0.44(1-rs)] exp(-2.2 rlm)
+      JB = exp[-C Fsbp (1-(2 Nss/Nc)^(1/3))]        C = 1.25 (Re > 100)
+      RL = exp[-1.33 (1+rs) rlm^p]                  p = 0.8 - 0.15 (1+rs)
+      RB = exp[-Cbp Fsbp (1-(2 Nss/Nc)^(1/3))]      Cbp = 3.7 (Re > 100)
+
+  with rs = Ssb/(Ssb+Stb) and rlm = (Ssb+Stb)/Sm.  The glass-box choice is
+  the student's: each factor is a declared chart number or `auto`, and the
+  run says which it took.  Against the book's chart readings (0.58, 0.92,
+  0.33, 0.76) the forms give 0.556, 0.916, 0.327, 0.771 on this geometry:
+  JL is the weakest, 4 % low, so h falls by about the same amount.  J_r and
+  J_s are not applied (Hewitt applies neither); R_s is not used.
+
+  GEOMETRY: the bundle of Hewitt's Example 6.1 (shell 0.5398 m, 158 tubes of
+  25.4 mm OD on a 31.75 mm square pitch, 127 mm baffle spacing, 25 % cut,
+  four tube passes).  The chart coordinates -- (Ssb+Stb)/Sm, Ssb/(Ssb+Stb),
+  Fbp, Nss/Nc -- depend on the geometry alone, so the book's readings
+  (0.58, 0.92, 0.33, 0.76) hold here for water: the run PUBLISHES the
+  coordinates (BD_leakageRatio, BD_leakageSplit, BD_Fbp) so a student can
+  check them against the charts.  The textbook example itself (a light
+  hydrocarbon) is reproduced digit by digit by the props bench
+  tutorials/props/heat/bellDelaware01_hewitt_example62.
+
+  Properties are the package's, evaluated at each stream's inlet
+  temperature.  The tube side is Gnielinski; the overall U and the eps-NTU
+  duty are unchanged from `model geometry;`.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        hx;
+        type        heatExchanger;
+        model       BellDelaware;
+        inputs      ( hotShell  coldTube );
+        outputs     ( hotOut  coldOut );
+
+        operation
+        {
+            flow        counter;
+            tubeStream  coldTube;        // which inlet is inside the tubes
+
+            geometry
+            {
+                tubeID         0.020574 m;
+                tubeOD         0.0254 m;
+                tubeLength     4.8768 m;
+                nTubes         158;
+                passes         4;
+                shellID        0.5398 m;
+                baffleSpacing  0.1270 m;
+                tubePitch      0.03175 m;
+                tubePattern    square;
+                wallMaterial   carbonSteel;   // -> k = 50 W/(m.K)
+            }
+
+            tubeSide  { model Gnielinski; }
+
+            //  The shell side (Hewitt Section 6.3.2).  JL, JB, RL, RB are
+            //  COMPUTED (`auto`) instead of read from Bell's charts.
+            bellDelaware
+            {
+                baffleCutPercent     25;
+                bundleShellClearance 0.035 m;
+                tubeBaffleClearance  0.0008 m;
+                shellBaffleClearance 0.005 m;
+                sealingStripRatio    0.2;     // N_ss/N_c, chart parameter
+                baffleThickness      0.005 m;
+                idealBank            Hewitt;
+                JL auto;  JB auto;            // Taborek closed forms
+                RL auto;  RB auto;
+            }
+        }
+    }
+);

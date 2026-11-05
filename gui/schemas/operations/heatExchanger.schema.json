@@ -141,7 +141,7 @@
     "bellDelaware": {
       "type": "object",
       "title": "Bell-Delaware shell side",
-      "description": "Used with `model BellDelaware;`. Hewitt, Shires & Bott, Process Heat Transfer, Section 6.3.2. The leakage and bypass factors JL, JB (and RL, RB for the pressure drop) are read from Bell's charts and DECLARED, as the textbook does; JL and JB are required, RL and RB both or neither.",
+      "description": "Used with `model BellDelaware;`. Form Hewitt (default): Hewitt, Shires & Bott, Process Heat Transfer, Section 6.3.2. Form Serth: Serth, Process Heat Transfer (2007), Sections 6.3-6.7. Each of JL, JB (and RL, RB for the pressure drop) is Bell's chart reading DECLARED as a number, or the word `auto` for Taborek's closed form (HEDH 3.3); JL and JB are required (the choice is the student's), RL and RB both or neither.",
       "properties": {
         "baffleCutPercent": {
           "type": "number",
@@ -203,28 +203,110 @@
           ]
         },
         "JL": {
-          "type": "number",
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "enum": [
+                "auto"
+              ]
+            }
+          ],
           "title": "Leakage correction JL",
-          "description": "Read from Hewitt Fig 6.8; required.",
+          "description": "A number read from Hewitt Fig 6.8, or `auto`: 0.44(1-r_s) + [1-0.44(1-r_s)] exp(-2.2 r_lm). Required.",
           "unit": "-"
         },
         "JB": {
-          "type": "number",
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "enum": [
+                "auto"
+              ]
+            }
+          ],
           "title": "Bypass correction JB",
-          "description": "Read from Hewitt Fig 6.9; required.",
+          "description": "A number read from Hewitt Fig 6.9, or `auto`: exp[-C F_sbp (1-(2 N_ss/N_c)^(1/3))], C = 1.35 (Re <= 100) or 1.25, 1 for N_ss/N_c >= 1/2. Required.",
           "unit": "-"
         },
         "RL": {
-          "type": "number",
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "enum": [
+                "auto"
+              ]
+            }
+          ],
           "title": "Leakage pressure-drop factor RL",
-          "description": "Read from Hewitt Fig 6.10; with RB turns on the shell pressure drop.",
+          "description": "A number read from Hewitt Fig 6.10, or `auto`: exp[-1.33 (1+r_s) r_lm^p], p = 0.8 - 0.15 (1+r_s). With RB turns on the shell pressure drop.",
           "unit": "-"
         },
         "RB": {
-          "type": "number",
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "enum": [
+                "auto"
+              ]
+            }
+          ],
           "title": "Bypass pressure-drop factor RB",
-          "description": "Read from Hewitt Fig 6.11.",
+          "description": "A number read from Hewitt Fig 6.11, or `auto`: exp[-C_bp F_sbp (1-(2 N_ss/N_c)^(1/3))], C_bp = 4.5 (Re <= 100) or 3.7, 1 for N_ss/N_c >= 1/2.",
           "unit": "-"
+        },
+        "form": {
+          "type": "string",
+          "title": "Form of the method",
+          "description": "Hewitt (default: J_s = 1, J_r not applied, diametral clearances) or Serth (Serth Sections 6.3-6.7 as printed: his flow areas, J_S, J_R, R_S computed, the end-zone assembly of Eq 6.15; needs idealBank Serth and clearanceBasis; a laminar shell flow, Re < 100, is refused for the pressure drop).",
+          "enum": [
+            "Hewitt",
+            "Serth"
+          ]
+        },
+        "clearanceBasis": {
+          "type": "string",
+          "title": "Clearance basis (form Serth)",
+          "description": "Required with form Serth, never defaulted: `radial` uses tubeBaffleClearance and shellBaffleClearance as the gap itself (Serth Eqs 6.22, 6.36 as his Example 6.1 inserts them; reproduces the example), `diametral` halves them.",
+          "enum": [
+            "radial",
+            "diametral"
+          ]
+        },
+        "jIdeal": {
+          "type": "number",
+          "title": "Ideal-bank j (form Serth)",
+          "unit": "-",
+          "description": "Optional chart reading of the Colburn j (Serth Fig 6.1) in place of Eqs 6.1-6.4."
+        },
+        "fIdeal": {
+          "type": "number",
+          "title": "Ideal-bank f (form Serth)",
+          "unit": "-",
+          "description": "Optional chart reading of the ideal-bank friction factor in place of Eqs 6.2, 6.4."
+        },
+        "baffleSpacingInlet": {
+          "type": "number",
+          "title": "Inlet baffle spacing (form Serth)",
+          "unit": "m",
+          "description": "Default: the central spacing; drives J_S and R_S (Eqs 6.54-6.55)."
+        },
+        "baffleSpacingOutlet": {
+          "type": "number",
+          "title": "Outlet baffle spacing (form Serth)",
+          "unit": "m",
+          "description": "Default: the central spacing."
         }
       },
       "required": [

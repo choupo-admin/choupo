@@ -33,7 +33,8 @@ lower).  The bench therefore runs TWICE: op `book` starts from the PRINTED S_m
 digit; op `exact` starts from the geometry and must agree with the book on
 every step that does not depend on S_m, and sit within 1 % on those that do.
 J_L = 0.58, J_B = 0.92, R_L = 0.33, R_B = 0.76 are Bell's CHART readings in
-this method (Figs 6.8-6.11) and are declared; the book prints no equation.
+this method (Figs 6.8-6.11); the book prints no equation.  Each factor is a
+declared number or the word `auto` (Taborek's closed form, W2b, 2026-11-05).
 
 ARMS.
   (a) `book` reproduces every printed step (S_m taken as printed) within the
@@ -59,10 +60,25 @@ ARMS.
   (f) THE ANCHOR CAN FAIL: a 1 % change of Jc is rejected by the comparator
       of arm (a) (negative control), and the source documents its citations.
 
+  (g) `auto` on the Example 6.2 geometry: the four closed forms equal an
+      independent Python recomputation from the geometry to 1e-9; against
+      the book's CHART readings (the reference, read by eye) |J_L-0.58| <=
+      0.03, |J_B-0.92| <= 0.01, |R_L-0.33| <= 0.01, |R_B-0.76| <= 0.02; the
+      downstream h and shell dP are MEASURED against the printed 769 and
+      4501 (bounds 8 % and 5 %, reported in the OK line, never tuned).
+  (h) SERTH EXAMPLE 6.1 (props bench bellDelaware02_serth_example61, every
+      factor computed): 20 printed steps within the larger of the printed
+      half-unit and 0.25 %; Eqs 6.1/6.2 give the book's 0.0063 / 0.089;
+      the replay of the book's chain from its own rounded intermediates;
+      `clearanceBasis` absent refuses, `diametral` does NOT reproduce J_L,
+      Eq 6.16 as printed does NOT reproduce 159.4 (erratum candidate; Eq 6.9
+      does); the 45 degree Re 10-100 row and the laminar window refuse.
+
 NOT COVERED, stated so the OK line cannot imply it: nothing here is a
 measurement.  The example fixes the method's ARITHMETIC against the book;
 that the method predicts a real exchanger is the literature's claim (Bell
-1963, Taborek 1983), not this gate's.  J_L/J_B/R_L/R_B are not computed.
+1963, Taborek 1983), not this gate's.  J_r/J_s/R_s are not applied in the
+Hewitt form (announced).
 The triangular K_f, the laminar window equation and Eq 6.21 are not carried.
 
 SABOTAGE-VERIFIED 2026-11-04, by hand on BellDelaware.cpp (each restored
@@ -78,6 +94,15 @@ dropped and only the example's arithmetic fixes):
 
     (a) book: Kf: computed 0.407906 vs printed 0.3657 (tolerance 0.00091425)
     (a) book: dP_shell: computed 4801.73 vs printed 4501 (tolerance 11.2525)
+
+SABOTAGE-VERIFIED 2026-11-05 (W2b), by hand on BellDelaware.cpp, restored and
+rebuilt, gate green again:
+
+S3 -- the 0.44 of the auto J_L changed to 0.45 (both occurrences):
+
+    (g) auto JL: engine 0.558491 != independent recomputation 0.554904
+    (h) Serth 6.1: JL computed 0.483369 vs printed 0.4794 (tolerance 0.0012)
+    (h) Serth 6.1: h_shell computed 897.152 vs printed 889.216 (tolerance 2.22)
 """
 import json
 import re
@@ -191,6 +216,193 @@ def exact_python():
     return Sm, Fc
 
 
+BENCH2 = ROOT / "tutorials/props/heat/bellDelaware02_serth_example61"
+LBF_FT2 = 47.88025898      # Pa per lbf/ft2
+FT2 = 0.09290304           # m2 per ft2
+BTU_HFT2F = 5.678263       # W/m2K per Btu/h ft2 F
+
+#  Serth Example 6.1 (pp. 212-216), PRINTED values, (key, value, half-unit).
+#  Areas in ft2, h in Btu/h ft2 F, dP in lbf/ft2 -- converted here.
+SERTH_PRINTED = [
+    ("Sm",           0.1262 * FT2,        0.00005 * FT2),
+    ("Fc",           0.7963,              5e-5),
+    ("Stb",          0.03826 * FT2,       5e-6 * FT2),
+    ("Ssb",          0.02946 * FT2,       5e-6 * FT2),
+    ("Sw",           0.2189 * FT2,        5e-5 * FT2),
+    ("Re",           30634.0,             0.5),
+    ("h_ideal",      337.0 * BTU_HFT2F,   0.5 * BTU_HFT2F),
+    ("Jc",           1.1233,              5e-5),
+    ("leakageSplit", 0.43503,             5e-6),
+    ("leakageRatio", 0.53661,             5e-6),
+    ("JL",           0.4794,              5e-5),
+    ("RL",           0.2655,              5e-5),
+    ("JB",           0.8630,              5e-5),
+    ("RB",           0.6465,              5e-5),
+    ("h_shell",      156.6 * BTU_HFT2F,   0.05 * BTU_HFT2F),
+    ("Nc",           9.24,                0.005),
+    ("Ncw",          2.464,               5e-4),
+    ("dp_cross",     10.35 * LBF_FT2,     0.005 * LBF_FT2),
+    ("dp_window",    6.24 * LBF_FT2,      0.005 * LBF_FT2),
+    ("dP_shell",     159.4 * LBF_FT2,     0.05 * LBF_FT2),
+]
+
+
+def hewitt_auto_python():
+    """Taborek's four closed forms, recomputed here from the Example 6.1
+    geometry alone (Hewitt Eqs 6.15-6.18, diametral clearances)."""
+    import math
+    Ds, Do, PT, LB, NT = 0.5398, 0.0254, 0.03175, 0.1270, 158
+    Dotl = Ds - 0.035
+    Sm = LB * (Ds - Dotl + (Dotl - Do) / PT * (PT - Do))
+    Lc = 0.25 * Ds
+    x = (Ds - 2 * Lc) / Dotl
+    Fc = (math.pi + 2 * x * math.sin(math.acos(x)) - 2 * math.acos(x)) / math.pi
+    Ssb = Ds * 0.005 / 2 * (math.pi - math.acos(1 - 2 * Lc / Ds))
+    Stb = math.pi * Do * 0.0008 / 2 * NT * (1 + Fc) / 2
+    rs, rlm = Ssb / (Ssb + Stb), (Ssb + Stb) / Sm
+    Fbp = (Ds - Dotl) * LB / Sm
+    st = 1 - (2 * 0.2) ** (1 / 3)
+    p = 0.8 - 0.15 * (1 + rs)
+    return {
+        "JL": 0.44 * (1 - rs) + (1 - 0.44 * (1 - rs)) * math.exp(-2.2 * rlm),
+        "JB": math.exp(-1.25 * Fbp * st),
+        "RL": math.exp(-1.33 * (1 + rs) * rlm ** p),
+        "RB": math.exp(-3.7 * Fbp * st),
+    }
+
+
+def serth_and_auto_arms(fails, exact):
+    """Arms (g)-(h): the closed forms against Hewitt's chart readings, and
+    Serth's Example 6.1.  Returns the sentence the OK line appends."""
+    import math
+    # ---- (g) `auto` on Hewitt's Example 6.2 geometry ---------------------
+    def auto(t):
+        return (t.replace("JL 0.58;  JB 0.92;", "JL auto;  JB auto;")
+                 .replace("RL 0.33;  RB 0.76;", "RL auto;  RB auto;"))
+    rc, o = probe(BENCH, auto)
+    ad = bench_ops(o).get("exact", {}) if rc == 0 else {}
+    if rc != 0 or not ad:
+        fails.append("(g) `auto` did not run on the Example 6.2 bench: "
+                     + o[-300:])
+        return "auto/Serth arms not run"
+    py = hewitt_auto_python()
+    for k in ("JL", "JB", "RL", "RB"):
+        if abs(ad[k] - py[k]) > 1e-9:
+            fails.append(f"(g) auto {k}: engine {ad[k]:.12g} != independent "
+                         f"recomputation {py[k]:.12g}")
+    #  The book's CHART readings are the reference; the closed forms are
+    #  Taborek's fit of those charts, so agreement is to chart-reading error.
+    for k, ref, tol in (("JL", 0.58, 0.03), ("JB", 0.92, 0.01),
+                        ("RL", 0.33, 0.01), ("RB", 0.76, 0.02)):
+        if abs(ad[k] - ref) > tol:
+            fails.append(f"(g) coherence: computed {k} {ad[k]:.4f} vs the "
+                         f"book's chart reading {ref} (tolerance {tol})")
+    dh = 100 * (ad["h_shell"] - 769.0) / 769.0
+    dp = 100 * (ad["dP_shell"] - 4501.0) / 4501.0
+    if abs(dh) > 8.0:
+        fails.append(f"(g) auto h {ad['h_shell']:.1f} W/m2K is {dh:+.1f} % "
+                     "from the book's 769 (stated bound 8 %)")
+    if abs(dp) > 5.0:
+        fails.append(f"(g) auto shell dP {ad['dP_shell']:.0f} Pa is "
+                     f"{dp:+.1f} % from the book's 4501 (stated bound 5 %)")
+    rc, o = probe(BENCH, lambda t: t.replace("JL 0.58;  JB 0.92;",
+                                             "JL auto;  JB 0.92;"))
+    if rc != 0:
+        fails.append("(g) JL auto with a declared JB did not run: " + o[-200:])
+    rc, o = probe(BENCH, lambda t: t.replace("JB 0.92;", "JB banana;"))
+    if rc == 0 or "or `auto`" not in o:
+        fails.append("(g) a word other than `auto` for JB was not refused")
+
+    # ---- (h) Serth Example 6.1 ---------------------------------------------
+    rc, so = run(PROPS, BENCH2)
+    sops = bench_ops(so) if rc == 0 else {}
+    ch, eq = sops.get("chart", {}), sops.get("equations", {})
+    if not ch or not eq:
+        fails.append("(h) the Serth Example 6.1 bench did not run: "
+                     + so[-300:])
+        return "Serth arms not run"
+    worst = 0.0
+    for key, val, tol in SERTH_PRINTED:
+        got = ch.get(key)
+        if got is None:
+            fails.append(f"(h) Serth 6.1: {key} not published")
+            continue
+        band = max(tol, ROUNDING * abs(val))
+        worst = max(worst, abs(got - val) / abs(val))
+        if abs(got - val) > band:
+            fails.append(f"(h) Serth 6.1: {key} computed {got:.6g} vs "
+                         f"printed {val:.6g} (tolerance {band:.3g})")
+    for k in ("JS", "JR", "RS"):
+        if abs(ch.get(k, 0) - 1.0) > 1e-12:
+            fails.append(f"(h) Serth 6.1: {k} = {ch.get(k)}, printed 1.0")
+    if abs(eq["j_ideal"] - 0.0063) > 5e-5 or abs(eq["f_ideal"] - 0.089) > 5e-4:
+        fails.append(f"(h) Eqs 6.1/6.2 give j {eq['j_ideal']:.5f}, f "
+                     f"{eq['f_ideal']:.5f}; the book prints 0.0063 / 0.089")
+    # independent replay of the book's chain from its printed intermediates
+    rs, rl, Sb, Sm = 0.43503, 0.53661, 0.03583, 0.1262
+    JLb = 0.44 * (1 - rs) + (1 - 0.44 * (1 - rs)) * math.exp(-2.2 * rl)
+    RLb = math.exp(-1.33 * (1 + rs) * rl ** (0.8 - 0.15 * (1 + rs)))
+    st = 1 - (2 * 0.1) ** (1 / 3)
+    JBb = math.exp(-1.25 * Sb / Sm * st)
+    RBb = math.exp(-3.7 * Sb / Sm * st)
+    end = 2 * 10.35 * (1 + 2.464 / 9.24) * RBb
+    dP69 = (41 * 10.35 * RBb + 42 * 6.24) * RLb + end
+    dP616 = 41 * 10.35 * RBb + 42 * 6.24 * RLb + end
+    for tag, got, want, tol in (("J_L", JLb, 0.4794, 5e-5),
+                                ("R_L", RLb, 0.2655, 5e-5),
+                                ("J_B", JBb, 0.8630, 5e-5),
+                                ("R_B", RBb, 0.6465, 5e-5),
+                                ("h_o", 337 * 1.1233 * 0.4794 * 0.8630,
+                                 156.6, 0.1),
+                                ("dP_f (Eq 6.9)", dP69, 159.4, 0.05)):
+        if abs(got - want) > tol:
+            fails.append(f"(h) replay of the book's chain: {tag} = {got:.5g}, "
+                         f"printed {want}")
+    #  The printed summary Eq 6.16 (no R_L on the central spaces) does NOT
+    #  give the printed result: the recorded erratum candidate.
+    if abs(dP616 - 159.4) < 5:
+        fails.append("(h) Eq 6.16 as printed now reproduces 159.4: the "
+                     "erratum candidate is stale")
+    # the clearance basis is the student's, and the wrong one fails
+    rc, o = probe(BENCH2, lambda t: t.replace("clearanceBasis       radial;", ""),
+                  PROPS)
+    if rc == 0 or "clearanceBasis" not in o:
+        fails.append("(h) form Serth without `clearanceBasis` was not refused")
+    rc, o = probe(BENCH2, lambda t: t.replace("clearanceBasis       radial;",
+                                              "clearanceBasis       diametral;"),
+                  PROPS)
+    dj = bench_ops(o).get("chart", {}) if rc == 0 else {}
+    if not dj or abs(dj["JL"] - 0.4794) < 0.05:
+        fails.append("(h) the diametral reading reproduces Serth's J_L: the "
+                     "basis choice is not what decides the example")
+    rc, o = probe(BENCH2, lambda t: t.replace("form                 Serth;",
+                                              "form                 Hewitt;"),
+                  PROPS)
+    if rc == 0 or "belongs to `form Serth;`" not in o:
+        fails.append("(h) Serth-only keys under form Hewitt were not refused")
+    rc, o = probe(BENCH2, lambda t: t.replace("tubePattern    square;",
+                                              "tubePattern    rotatedSquare;")
+                  .replace("mdot    5.6699046 kg/s;", "mdot    0.0093 kg/s;"),
+                  PROPS)
+    if rc == 0 or "0.498" not in o:
+        fails.append("(h) the Serth 45-degree Re 10-100 row was not refused "
+                     "naming the printed 0.498")
+    rc, o = probe(BENCH2, lambda t: t.replace("mdot    5.6699046 kg/s;",
+                                              "mdot    0.0093 kg/s;"), PROPS)
+    if rc == 0 or "Eq 6.12" not in o:
+        fails.append("(h) the Serth laminar window drop was not refused")
+    return (f"closed forms J_L/J_B/R_L/R_B equal their independent "
+            f"recomputation to 1e-9 and Hewitt's chart readings to "
+            f"{abs(ad['JL']-0.58):.3f}/{abs(ad['JB']-0.92):.3f}/"
+            f"{abs(ad['RL']-0.33):.3f}/{abs(ad['RB']-0.76):.3f}; with `auto` "
+            f"h is {dh:+.1f} % and shell dP {dp:+.1f} % from the book's 769 / "
+            f"4501 (measured, not tuned); Serth Example 6.1 reproduced "
+            f"({len(SERTH_PRINTED)} printed steps, worst {100*worst:.2f} % "
+            "against the book's rounded intermediates; clearance basis "
+            "radial reproduces it, diametral does not; Eq 6.16 as printed "
+            "does not reproduce 159.4 while Eq 6.9 does)")
+
+
 def main():
     fails = []
     for b in (PROPS, SOLVE):
@@ -269,7 +481,7 @@ def main():
 
     cases = [
         ("JL/JB absent", sub("JL 0.58;  JB 0.92;", ""),
-         ["JL/JB correlation not carried", "Fig 6.8"]),
+         ["choose how J_L and J_B are obtained", "Fig 6.8"]),
         ("baffle cut 10 %", sub("baffleCutPercent     25;",
                                 "baffleCutPercent     10;"),
          ["15 to 45 %"]),
@@ -289,7 +501,7 @@ def main():
                                              .replace("mdot    5.5188 kg/s;",
                                                       "mdot    0.0131 kg/s;")
                                              .replace("SmPrinted            0.01667 m2;", ""),
-         ["Serth j-factor row", "0.498"]),
+         ["Serth row", "0.498"]),
         ("dP on triangular pitch", lambda t: t.replace("tubePattern    square;",
                                                        "tubePattern    triangular;")
                                              .replace("SmPrinted            0.01667 m2;", ""),
@@ -378,11 +590,10 @@ def main():
         if needle not in hdr:
             fails.append(f"(f) BellDelaware.H does not cite '{needle}'")
     src = KERNEL_C.read_text()
-    if "JL/JB correlation not carried" not in src:
-        fails.append("(f) the JL/JB refusal is gone from the kernel")
-    if re.search(r"\bJL\s*=\s*[^;]*(std::exp|std::pow)", src):
-        fails.append("(f) the kernel computes JL by a correlation nobody "
-                     "carried")
+    if "choose how J_L and J_B are obtained" not in src:
+        fails.append("(f) the JL/JB choice refusal is gone from the kernel")
+
+    extra = serth_and_auto_arms(fails, exact)
 
     if fails:
         print("check_bell_delaware: FAIL")
@@ -399,7 +610,8 @@ def main():
           "above its own Eq 6.9); JL/JB/RL/RB are declared chart readings "
           "and absent ones refuse by name; 9 refusals fire through the real "
           "reader; the unit publishes the J factors and h_outer = h_ideal x "
-          "Jc x JL x JB; the Serth bank is an arithmetic anchor, said so")
+          "Jc x JL x JB; the Serth bank is an arithmetic anchor, said so; "
+          + extra)
     return 0
 
 

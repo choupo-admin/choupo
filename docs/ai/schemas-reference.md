@@ -700,7 +700,7 @@ Two-stream heat exchanger. FOUR modes via `model`: epsNTU (default) rates from a
 | `shellSide` |   | object | — | Which correlation prices the shell-side film coefficient. |
 | `tubeSide` |   | object | — | Which correlation prices the tube-side film coefficient. |
 | `design` |   | object | — | Turns the geometry pass into a DESIGN: solve the hardware for a declared target instead of rating what is given. |
-| `bellDelaware` |   | object | — | Used with `model BellDelaware;`. Hewitt, Shires & Bott, Process Heat Transfer, Section 6.3.2. The leakage and bypass factors JL, JB (and … |
+| `bellDelaware` |   | object | — | Used with `model BellDelaware;`. Form Hewitt (default): Hewitt, Shires & Bott, Process Heat Transfer, Section 6.3.2. Form Serth: Serth, P… |
 
 ## `heatTransferBench`  (heatTransferBench operation)
 

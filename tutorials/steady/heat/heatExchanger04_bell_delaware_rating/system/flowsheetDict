@@ -20,9 +20,10 @@
   h_ideal is the cross-flow tube bank (Hewitt, Shires & Bott, *Process Heat
   Transfer*, Eq 2.218 / Table 2.5, in-line square pitch); Jc the baffle-cut
   factor from the fraction of tubes in cross-flow (Eqs 6.13-6.14); JL and JB
-  are BELL'S CHART READINGS (Figs 6.8, 6.9) and are DECLARED, exactly as the
-  textbook takes them -- Choupo carries no equation for them and refuses by
-  name when they are absent.  RL and RB (Figs 6.10, 6.11) are declared the
+  are BELL'S CHART READINGS (Figs 6.8, 6.9) and are DECLARED as the
+  textbook takes them (chart readings); the word `auto` computes Taborek's
+  closed form instead (see heatExchanger05_bell_delaware_auto), and an absent
+  factor refuses by name.  RL and RB (Figs 6.10, 6.11) are declared the
   same way and turn on the shell-side pressure drop (Eqs 6.20-6.31).
 
   GEOMETRY: the bundle of Hewitt's Example 6.1 (shell 0.5398 m, 158 tubes of

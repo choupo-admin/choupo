@@ -1,0 +1,114 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  bellDelaware02_serth_example61 --- the Bell-Delaware shell side, FORM
+  SERTH, on the textbook's own worked example.
+
+  SOURCE.  R. W. Serth, *Process Heat Transfer: Principles, Applications and
+  Rules of Thumb* (Academic Press / Elsevier, 2007), Example 6.1 (the final
+  kerosene/crude-oil exchanger of Example 5.1, 124 tubes of 1.0 in OD on a
+  1.25 in square pitch in a 19.25 in shell), with Sections 6.4-6.7 (Eqs
+  6.6-6.57) and Table 6.1.  Inputs below are the book's, converted to SI
+  (1 in = 0.0254 m exactly; 1 lb = 0.45359237 kg; 1 Btu/lb F = 4186.8 J/kg K).
+
+  UNLIKE HEWITT'S EXAMPLE, every correction factor here is COMPUTED (`auto`):
+  J_L, J_B, R_L, R_B from Eqs 6.48-6.53, J_S = R_S = 1 (equal spacing, Eqs
+  6.54-6.55) and J_R = 1 (Re > 100, Eq 6.57).  Op `chart` declares the ideal
+  bank as the book's example reads it from Fig 6.1 (j = 0.0060, f = 0.09);
+  op `equations` computes j and f from Eqs 6.1-6.4 (the book prints 0.0063 and
+  0.089 for them).
+
+  CLEARANCES.  Serth's Eqs 6.22 and 6.36 use d_tb and d_sb as the gap itself
+  and his Example 6.1 inserts the TEMA values (0.4 mm; 0.8 + 0.002 D_s mm
+  plus a 0.75 mm allowance) in them, so `clearanceBasis radial;` is the
+  reading that reproduces his printed S_tb, S_sb, J_L and R_L; `diametral`
+  would halve both areas and the gate shows it does NOT reproduce them.
+
+  PRESSURE DROP.  The printed summary Eq 6.16 omits R_L on the central
+  spaces while Eq 6.9 has it; the example's own arithmetic (dP_f = 159.4
+  lbf/ft2) needs it, so Eq 6.9 is used and Eq 6.16 is a candidate erratum.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name   chart;
+        type   bellDelawareBench;
+
+        geometry
+        {
+            shellID        0.48895 m;
+            tubeOD         0.0254 m;
+            tubePitch      0.03175 m;
+            tubePattern    square;
+            baffleSpacing  0.09779 m;
+            nTubes         124;
+            tubeLength     4.2672 m;
+        }
+        bellDelaware
+        {
+            form                 Serth;
+            clearanceBasis       radial;       // see the header
+            baffleCutPercent     20;
+            bundleShellClearance 0.034036 m;   // 1.34 in, Serth Fig 6.10
+            tubeBaffleClearance  0.0004 m;     // 0.4 mm (TEMA), Eq 6.22
+            shellBaffleClearance 0.0025279 m;  // 1.7779 + 0.75 mm, Eq 6.58
+            sealingStripRatio    0.1;
+            nBaffles             42;
+            idealBank            Serth;
+            jIdeal 0.0060;  fIdeal 0.09;     // Serth Fig 6.1, as Example 6.1 reads it
+            JL auto;  JB auto;
+            RL auto;  RB auto;
+        }
+        shellFluid
+        {
+            mdot    5.6699046 kg/s;
+            rho     784.90471;
+            mu      0.00040097751;
+            lambda  0.13680932;
+            cp      2470.212;
+        }
+    }
+    {
+        name   equations;
+        type   bellDelawareBench;
+
+        geometry
+        {
+            shellID        0.48895 m;
+            tubeOD         0.0254 m;
+            tubePitch      0.03175 m;
+            tubePattern    square;
+            baffleSpacing  0.09779 m;
+            nTubes         124;
+            tubeLength     4.2672 m;
+        }
+        bellDelaware
+        {
+            form                 Serth;
+            clearanceBasis       radial;       // see the header
+            baffleCutPercent     20;
+            bundleShellClearance 0.034036 m;   // 1.34 in, Serth Fig 6.10
+            tubeBaffleClearance  0.0004 m;     // 0.4 mm (TEMA), Eq 6.22
+            shellBaffleClearance 0.0025279 m;  // 1.7779 + 0.75 mm, Eq 6.58
+            sealingStripRatio    0.1;
+            nBaffles             42;
+            idealBank            Serth;
+            JL auto;  JB auto;
+            RL auto;  RB auto;
+        }
+        shellFluid
+        {
+            mdot    5.6699046 kg/s;
+            rho     784.90471;
+            mu      0.00040097751;
+            lambda  0.13680932;
+            cp      2470.212;
+        }
+    }
+);
