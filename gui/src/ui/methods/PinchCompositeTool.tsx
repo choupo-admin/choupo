@@ -787,9 +787,16 @@ export function PinchCompositeTool(
      steps must not be able to exist on one path and vanish on another (the
      empty states below are branches inside the SAME page, so the reader who
      has no curves still gets the whole argument). */
-  const lessonStep = lessonStepper(PINCH_STEPS);
+  //  The CASE's own Pinch tab (`fixedSource`) is an instrument, not a lecture:
+  //  the plant's curves and targets come FIRST, so the head and the argument
+  //  of steps 1-3 do not stand above them (Vitor, 2026-11-06: "aparece-me uma
+  //  especie de tutorial").  The EduTool, with no fixedSource, keeps the page.
+  //  ONE definition, one call site per step (pinchLesson.test.ts holds it):
+  //  the filter lives HERE, never at the call sites.
+  const stepOf = lessonStepper(PINCH_STEPS);
+  const lessonStep = (n: number) => (fixedSource && n <= 3 ? null : stepOf(n));
 
-  const lessonHead = (
+  const lessonHead = fixedSource ? null : (
     <Box>
       <Title order={3}>
         Pinch analysis, or how much energy the plant needs before you design it
