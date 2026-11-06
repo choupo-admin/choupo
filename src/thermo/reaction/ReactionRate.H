@@ -105,6 +105,7 @@ struct RateState
     const sVector* conc = nullptr;       // caller's amount unit per m3
     const sVector* x    = nullptr;       // mole fractions of the reacting fluid
     scalar         amountPerKmol = 1000.0;   // 1000: conc in mol/m3; 1: in kmol/m3
+    const sVector* act  = nullptr;       // activities gamma_i x_i (only the column supplies them)
 };
 
 //- What a reactor can hand a law.
@@ -114,6 +115,8 @@ struct RateOffer
     std::string pressureAbsent;          // why not, in words (a law reading P refuses with it)
     bool        concentration = true;
     std::string concentrationBasis;      // how the reactor forms c[i], in words
+    bool        activities    = false;   // a[i]: only the distillation column supplies them
+    std::string activitiesAbsent;        // why not, in words
 };
 
 class ReactionRate
