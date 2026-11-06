@@ -3763,6 +3763,21 @@ PYEOF
     fi
     rm -f /tmp/chestphase.$$
 
+    # reactive full-MESH gate (2026-11-06, DEV.md 4c C231).  A reaction that
+    # CHANGES THE NUMBER OF MOLES in a rigorous column: the gate recomputes the
+    # equilibrium residual from the published x, T and gamma, K_a(T) from the
+    # paper's Eq. 15 and from the records, the mole balance B + D = F + Sum(nu)
+    # Sum(xi), closure without a plug, and fires every refusal on cases it builds.
+    if gate_exec "$ROOT/bin/curate/check_reactive_mesh.py" > /tmp/reactmesh.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "reactive-mesh-gate" "$(gate_claim check_reactive_mesh /tmp/reactmesh.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_reactive_mesh.py)\n" "reactive-mesh-gate"
+        cat /tmp/reactmesh.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/reactmesh.$$
+
     # thiele-pellet gate (2026-08-19).  The owner's own number-one request:
     # the Thiele modulus with the intraparticle CONCENTRATION FIELD.  The
     # engine solves the pellet BVP by central differences on NewtonND and
