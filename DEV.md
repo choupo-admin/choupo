@@ -2852,6 +2852,27 @@ accepts today, and that is a policy call.
 > (Rehfinger & Hoffmann) and digitised figures with a checked calibration; it is
 > the next step of this line, not a task for the freeze.
 
+> **C233 (Vitor, 2026-11-06): KINETICS IN THE FULL MESH.**  "Sera que podes por
+> no plano CML implementar cinetica no full MESH?"  Why: C231 refuses `kinetics`
+> in `fullMESH` by name, and without it the MTBE column cannot be held against a
+> pilot column (C231 papers read: none of the four validates it).  Scope, from
+> what the code already carries: the CMO MESH has a kinetic mode
+> (`kinetic`, `rateAt`, `mCatPerStage`, `pseudoHomogeneous` and `adsorption`)
+> whose extent is COMPUTED from the rate and the catalyst mass of the stage, not
+> an unknown; the full MESH takes it the same way (extent per reactive stage =
+> r x m_cat), through the reaction factory (`Arrhenius`, `LHHW`, `expression`,
+> DEV.md C67) so a rate law's numbers live in the case, not in `src/`.  The
+> law to hold it against is Rehfinger & Hoffmann, Chem. Eng. Sci. 45 (1990) 1605,
+> doi 10.1016/0009-2509(90)80013-5 (rate in liquid-phase ACTIVITIES, in
+> `~/Choupo-Literature/`).  KEEP APART, said in the case: the pilot columns
+> (Mohl; Sundmacher & Hoffmann) are packed, catalyst-particle-limited columns;
+> a pseudo-homogeneous stage rate does not carry intraparticle diffusion
+> (the effectiveness factor), so the first witness must be a configuration where
+> that is plausible, and the comparison is announced as approximate.  ORDER:
+> design with Opus (how the computed extent enters the Newton and its
+> Jacobian, and the homotopy), build with Sonnet, then digitise a pilot-column
+> profile with a checked calibration.  Needs C231 integrated first.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
