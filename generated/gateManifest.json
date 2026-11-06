@@ -113,7 +113,7 @@
     },
     "check_case_tiers": {
       "exit": 0,
-      "claim": "check_case_tiers: OK -- 467 witness(es), 42 tutorial(s), 15 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or sectored flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
+      "claim": "check_case_tiers: OK -- 468 witness(es), 42 tutorial(s), 15 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or sectored flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
       "seconds": 0.2
     },
     "check_caveat_surface": {
@@ -223,7 +223,7 @@
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 217 design record(s) appear in the index, and its stated counts (155 state a rejected alternative, 62 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
+      "claim": "check_decision_index: OK -- all 218 design record(s) appear in the index, and its stated counts (156 state a rejected alternative, 62 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
       "seconds": 0.0
     },
     "check_default_reports": {
@@ -233,8 +233,8 @@
     },
     "check_degenerate_limits": {
       "exit": 0,
-      "claim": "check_degenerate_limits: OK -- a ONE-STAGE absorber (semi-lean solvent, NH3 in both feeds: 12 kmol/h, K 0.977054) and a ONE-STAGE stripper (5 kmol/h, K 0.977054) each reproduce the flash of their combined feeds to 1e-09 of the solute, both probes provably on the one-stage isothermal branch; a kinetic reactive column whose product adsorbs with K 0 reproduces the same column with no reverse rate EXACTLY at 1 g, every KPI and stream (Reaction: \u03a3\u03be = 2.491e-03 kmol/h,  conversion of aceticAcid = 8.1 %  (adsorption (LHHW) kinetics, 9 reactive stages)); a kinetic reactant with no `order` and an adsorbing product with no K both refuse by name; the kinetic column converges at 1 g and 10 g (conversion 0.08088 -> 0.4989), announces its balance scaling and closes every component balance to 1e-09 of the feed; all 17 MESH columns in 16 corpus cases (simultaneous and full-MESH, derived from the flowsheets) close every component balance to 1e-09 of their own feed, worst 4.41e-11 (stripper01_sour_water/tower, CO2); all 18 WANG-HENKE columns in 18 corpus cases publish the residuals their stop was taken on and close every component balance over their ports to 1e-09 of their own feed (worst 9.92e-10, column14_klemola_c4_splitter/splitter (nButane)) and every stage balance of their published profile likewise (worst 3.52e-10, column11_murphree/column11, benzene on stage 7); and column06_fullMESH (fullMESH), column05_reactive_methylacetate (simultaneous), column02_simultaneous (simultaneous, seeded with a converged interior at reflux x1.2), re-run with every flow x1e-08 (and the full-MESH x10000), reproduce their full-size compositions, temperatures and conversion to 1e-06.  NOT checked: N >= 2 (the goldens pin those), that a kinetic profile is RIGHT (nothing measured is reproduced), that a Wang-Henke stop is REACHED within maxOuterIter on a case the corpus does not ship, or a Newton trial crossing a zero activity.",
-      "seconds": 476.8
+      "claim": "check_degenerate_limits: OK -- a ONE-STAGE absorber (semi-lean solvent, NH3 in both feeds: 12 kmol/h, K 0.977054) and a ONE-STAGE stripper (5 kmol/h, K 0.977054) each reproduce the flash of their combined feeds to 1e-09 of the solute, both probes provably on the one-stage isothermal branch; a kinetic reactive column whose product adsorbs with K 0 reproduces the same column with no reverse rate EXACTLY at 1 g, every KPI and stream (Reaction: \u03a3\u03be = 2.491e-03 kmol/h,  conversion of aceticAcid = 8.1 %  (adsorption (LHHW) kinetics, 9 reactive stages)); a kinetic reactant with no `order` and an adsorbing product with no K both refuse by name; the kinetic column converges at 1 g and 10 g (conversion 0.08088 -> 0.4989), announces its balance scaling and closes every component balance to 1e-09 of the feed; all 18 MESH columns in 17 corpus cases (simultaneous and full-MESH, derived from the flowsheets) close every component balance to 1e-09 of their own feed, worst 4.41e-11 (stripper01_sour_water/tower, CO2); all 18 WANG-HENKE columns in 18 corpus cases publish the residuals their stop was taken on and close every component balance over their ports to 1e-09 of their own feed (worst 9.92e-10, column14_klemola_c4_splitter/splitter (nButane)) and every stage balance of their published profile likewise (worst 3.52e-10, column11_murphree/column11, benzene on stage 7); and column06_fullMESH (fullMESH), column05_reactive_methylacetate (simultaneous), column02_simultaneous (simultaneous, seeded with a converged interior at reflux x1.2), re-run with every flow x1e-08 (and the full-MESH x10000), reproduce their full-size compositions, temperatures and conversion to 1e-06.  NOT checked: N >= 2 (the goldens pin those), that a kinetic profile is RIGHT (nothing measured is reproduced), that a Wang-Henke stop is REACHED within maxOuterIter on a case the corpus does not ship, or a Newton trial crossing a zero activity.",
+      "seconds": 480.1
     },
     "check_derived_density": {
       "exit": 0,
@@ -253,7 +253,7 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 946 path mention(s) and 280 case name(s) across 24 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
+      "claim": "check_doc_references: OK -- 947 path mention(s) and 281 case name(s) across 24 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
       "seconds": 1.0
     },
     "check_doctrine": {
@@ -468,8 +468,8 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 12 of 311 gates, and the other 299 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
-      "seconds": 184.9
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 12 of 312 gates, and the other 300 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
+      "seconds": 213.5
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -493,8 +493,8 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 42021 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 43773 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
-      "seconds": 7.2
+      "claim": "check_glossary_bans: OK -- 42045 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 43798 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
+      "seconds": 7.9
     },
     "check_groups": {
       "exit": 0,
@@ -508,7 +508,7 @@
     },
     "check_guide_environments": {
       "exit": 0,
-      "claim": "check_guide_environments: OK -- 4137 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
+      "claim": "check_guide_environments: OK -- 4153 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
       "seconds": 0.1
     },
     "check_guide_menu": {
@@ -578,8 +578,8 @@
     },
     "check_ion_pins": {
       "exit": 0,
-      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 2688 component record(s) scanned (data/standards/components + every tutorial constant/components) the 92 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
-      "seconds": 0.1
+      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 2697 component record(s) scanned (data/standards/components + every tutorial constant/components) the 92 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
+      "seconds": 0.2
     },
     "check_layering": {
       "exit": 0,
@@ -868,8 +868,8 @@
     },
     "check_seal_drift": {
       "exit": 0,
-      "claim": "check_seal_drift: OK -- 523 sealed manifest(s) and 4684 embedded record(s) inspected; every sealed case still reproduces its own records under its declared sealSchema (9 cosmetic difference(s), which the parsed-content claim tolerates by design).  NOT CHECKED: whether any sealed value is RIGHT.  And divergence from the LIVE catalogue (1832 record(s), 330 case(s) worth a curator's eye) is HISTORY, not a verdict -- this gate reports it, never fails on it, and never re-seals to make the number smaller.",
-      "seconds": 14.4
+      "claim": "check_seal_drift: OK -- 524 sealed manifest(s) and 4694 embedded record(s) inspected; every sealed case still reproduces its own records under its declared sealSchema (9 cosmetic difference(s), which the parsed-content claim tolerates by design).  NOT CHECKED: whether any sealed value is RIGHT.  And divergence from the LIVE catalogue (1832 record(s), 330 case(s) worth a curator's eye) is HISTORY, not a verdict -- this gate reports it, never fails on it, and never re-seals to make the number smaller.",
+      "seconds": 14.6
     },
     "check_seal_growth": {
       "exit": 0,
@@ -1088,8 +1088,8 @@
     },
     "check_utility_allocation_pinned": {
       "exit": 0,
-      "claim": "check_utility_allocation_pinned: OK -- 1391 utility-allocation quantit(ies) pinned across 163 emitting case(s), in both directions (published implies pinned, pinned implies published), with the chosen utility's NAME in each row's key so a different pick reports MISSING rather than shifting a number.  2 emitting case(s) ship no golden and are exempt: tutorials/plant/sugarPlantEconomicsSweep, tutorials/steady/reactors/equil02_methanol_declared_pathways.  NOT CHECKED: whether a choice is GOOD (an expensive utility pins as happily as a cheap one), and whether a catalogue price may be quoted as a cost at all -- that is check_economics_honesty's.",
-      "seconds": 591.0
+      "claim": "check_utility_allocation_pinned: OK -- 1399 utility-allocation quantit(ies) pinned across 164 emitting case(s), in both directions (published implies pinned, pinned implies published), with the chosen utility's NAME in each row's key so a different pick reports MISSING rather than shifting a number.  2 emitting case(s) ship no golden and are exempt: tutorials/plant/sugarPlantEconomicsSweep, tutorials/steady/reactors/equil02_methanol_declared_pathways.  NOT CHECKED: whether a choice is GOOD (an expensive utility pins as happily as a cheap one), and whether a catalogue price may be quoted as a cost at all -- that is check_economics_honesty's.",
+      "seconds": 602.7
     },
     "check_utility_tag_symmetry": {
       "exit": 0,
@@ -1569,7 +1569,7 @@
     "check_reactive_mesh": {
       "exit": 0,
       "claim": "check_reactive_mesh: OK -- the full MESH carries a mole-changing reaction: on column19_mtbe_reactive_mesh (methanol + isobutene <=> MTBE, Sum nu = -1) it converges with |ln Q - ln K_a(T)| below 1e-8 on every reactive stage (x, T and gamma READ from the published profile, K_a from the paper's Eq. 15 evaluated here), closes mass, every element, the plant-boundary first law and the reboiler's own envelope WITHOUT a plug, satisfies B + D = F + Sum(nu) Sum(xi) overall and per component, reproduces the 21 runs of the paper's Table II with AAD 4.6 % (max 8.5 %), recomputes the `fromRecords` K_a(T) independently and prints its distance from Eq. 15 unadjusted, and refuses by name Sum nu != 0 under simultaneous, an invalid pair of specifications, a total condenser with bottomsRate, a kinetic reaction under the full MESH and a reacting species with no formation datum.  SCANNED: the witness and ten fixtures written by this gate, src/unitOperations/distillation/DistillationColumn.cpp.  NOT CHECKED: agreement with any measured column (nothing here is validated against a measurement); UNIFAC's accuracy; the sealed bytes.",
-      "seconds": 188.1
+      "seconds": 191.5
     }
   }
 }
