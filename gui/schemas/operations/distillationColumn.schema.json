@@ -2,11 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/distillationColumn.schema.json",
   "title": "distillationColumn operation",
-  "description": "Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.",
+  "description": "Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The column is specified by (`refluxRatio`, and then the distillate by rate or recovery) or by (`bottomsRate`, `boilupRatio`). The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.",
   "type": "object",
   "required": [
-    "nStages",
-    "refluxRatio"
+    "nStages"
   ],
   "properties": {
     "nStages": {
@@ -37,6 +36,20 @@
       "description": "Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one whose feed moves (a column inside a recycle).",
       "unit": "kmol/s",
       "default": 0.5
+    },
+    "bottomsRate": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Bottoms flow",
+      "description": "Bottom product molar flow rate. Specifies the column TOGETHER with `boilupRatio` (the pair replaces `refluxRatio` + `distillateRate`): the distillate is then an unknown closed by the top balance, D = F + Sum(nu) Sum(xi) - B. Needs `model fullMESH` and a PARTIAL condenser; the form a reactive column with a mole-changing reaction is usually specified in.",
+      "unit": "kmol/s"
+    },
+    "boilupRatio": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Boil-up ratio",
+      "description": "V/B, vapour leaving the reboiler over the bottoms withdrawn. Pairs with `bottomsRate` (see there).",
+      "default": 5.0
     },
     "distillateRecovery": {
       "type": "object",
