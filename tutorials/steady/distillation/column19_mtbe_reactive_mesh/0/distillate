@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+componentMolarFlows
+{
+    propane                3.2 kmol/h;
+    isoButane              304 kmol/h;
+    isoButene              3 kmol/h;
+    nButane                9.1 kmol/h;
+    1Butene                2.3 kmol/h;
+    cis2Butene             2.3 kmol/h;
+    trans2Butene           2.3 kmol/h;
+    methanol               1 kmol/h;
+    methylTertButylEther   1 kmol/h;
+}
+
+T               325 K;
+P               7 bar;

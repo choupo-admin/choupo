@@ -1969,9 +1969,13 @@ operation
 \end{lstlisting}
 
 \paragraph{A reaction on the stages.}  A \code{reaction \{\}} block
-turns the column reactive (\code{simultaneous} only; restricted to
-mole-conserving $\sum \nu = 0$ reactions so the flow profile is
-untouched).  The extent on each named catalytic stage is closed either
+turns the column reactive.  Under \code{simultaneous} the reaction must be
+mole-conserving ($\sum \nu = 0$) so the constant-molal-overflow profile is
+untouched; a reaction that changes the number of moles ($\sum \nu \neq 0$, e.g.
+methanol $+$ isobutene $\rightleftharpoons$ MTBE) needs \code{model fullMESH}, which carries the
+extents and the mole change in its total rows (the heat of reaction rides on the
+elements datum of the energy rows) and may be specified by \code{bottomsRate} and
+\code{boilupRatio}; see \file{column19\_mtbe\_reactive\_mesh}.  The extent on each named catalytic stage is closed either
 by chemical \code{equilibrium} (activity-based $K_a(T)$, van~'t~Hoff)
 or by \code{kinetics} (a rate law $\times$ catalyst mass).
 

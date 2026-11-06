@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 524,
+  "cases": 525,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 14
@@ -4063,6 +4063,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/distillation/column19_mtbe_reactive_mesh": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "fullMESH"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/distillation/shortcut01_benzene_toluene": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -8030,6 +8047,7 @@
     "tutorials/steady/distillation/column16_declared_interior",
     "tutorials/steady/distillation/column17_exchanger_design",
     "tutorials/steady/distillation/column18_partial_condenser",
+    "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
@@ -8492,6 +8510,7 @@
     "tutorials/steady/distillation/column16_declared_interior",
     "tutorials/steady/distillation/column17_exchanger_design",
     "tutorials/steady/distillation/column18_partial_condenser",
+    "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
@@ -9044,6 +9063,7 @@
     "tutorials/steady/distillation/column05_reactive_methylacetate",
     "tutorials/steady/distillation/column14_klemola_c4_splitter",
     "tutorials/steady/distillation/column15_klemola_ideal_trays",
+    "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
     "tutorials/steady/flash/flash17_two_liquids_reactive",
     "tutorials/steady/flash/flash19_organic_and_precipitate",
     "tutorials/steady/flash/marcilla01_lls_tie_triangle",

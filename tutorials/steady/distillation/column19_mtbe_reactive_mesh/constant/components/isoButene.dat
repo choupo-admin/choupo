@@ -1,0 +1,108 @@
+/*---------------------------------------------------------------------------*\
+  isoButene -- CASE-LOCAL COPY of the standard record (axiom 4) with ONE value
+  replaced: dHf_298.  A sealed case owns its records whole, so the rest is the
+  catalogue's, verbatim.
+
+  The standard record's dHf_298 (-10 250 J/mol) is a JOBACK estimate.  Here it
+  is derived from a measured heat of combustion:
+    Prosen, Maron & Rossini, J. Res. Natl. Bur. Stand. 46 (1951) 106,
+    doi 10.6028/jres.046.015:  Delta Hc (isobutene, gas, 25 C, H2O liquid)
+    = -645.19 +/- 0.25 kcal/mol  (1 cal = 4.184 J)  = -2699.47 kJ/mol.
+  With CO2(g) -393.51 and H2O(l) -285.83 kJ/mol (CODATA):
+    dHf = 4(-393.51) + 4(-285.83) + 2699.47 = -17.885 kJ/mol, +/- 1.1 kJ/mol.
+
+  Two things are NOT replaced and stay estimates: s_298 (303.05 J/mol/K, which
+  the catalogue DERIVED from the Joback dGf and dHf), and the Joback dGf_298
+  itself, dropped here because it no longer agrees with this dHf.  The column's
+  energy rows use enthalpies only and this case writes its K_a(T) itself, so
+  neither enters the answer; `equilibrium { fromRecords true; }` would use s_298.
+\*---------------------------------------------------------------------------*/
+name        isoButene;
+
+//  Review state, MACHINE-READABLE (AP2, 2026-08-05).  This used to
+//  live only in the banner above, which the parser discards -- so the
+//  engine could not announce it and a run said nothing.
+reviewStatus   interim;
+reviewReason   importedFromCoolProp720_notCheckedAgainstPrimaries;
+formula     C4H8;
+CAS         115-11-7;
+
+MW          56.1063;        // kg/kmol  [CoolProp]
+Tc          418.0898;        // K        [CoolProp EOS]
+Pc          40.15707;        // bar      [CoolProp EOS]
+omega       0.19259;        // [-]      [CoolProp EOS]
+Tb          266.1458;        // K  normal boiling [CoolProp]
+HvapTb      21973.4;        // J/mol  at Tb     [CoolProp]
+Vliq        9.5351e-05;        // m3/mol @298K     [CoolProp]
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 13660;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.06902   967.282   -28.229);
+    Trange        (188.14  409.73);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (12.5882  0.293076  -0.000120145  1.02185e-08);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (106.495  -0.0358866  0.000155193  8.93052e-07);
+    Trange        (209  266);
+}
+
+triplePoint
+{
+    T   132.4000;
+    P   0.6762;
+}
+
+standardThermochemistry
+{
+    dHf_298   -17885;      // J/mol ideal-gas -- Prosen, Maron & Rossini (1951), derived in the banner
+    s_298     303.05;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S]
+}
+
+groups { unifac ( { group CH3; count 2; } { group CH2=C; count 1; } ); joback ( { group CH3; count 2; } { group eCH2; count 1; } { group eC; count 1; } ); }
+
+provenance
+{
+    dHf_298
+    {
+        origin           literature;
+        method           "derived from the measured heat of combustion, Prosen-Maron-Rossini 1951 (doi 10.6028/jres.046.015), with CODATA CO2(g) and H2O(l)";
+        uncertainty      { status quantified; reason "+/- 1.1 kJ/mol"; }
+    }
+
+    constants      "CoolProp 7.2.0 -- Lemmon-FPE-2005";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.66%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 1.70%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+    preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0129-PROF.txt bundled in usnistgov/COSMOSAC; CAS 115-11-7";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+}

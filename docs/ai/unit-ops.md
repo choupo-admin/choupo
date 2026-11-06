@@ -1067,10 +1067,13 @@ is the package's at the vapour that stage sends up.
   CMO.  A two-phase feed enters each energy row at its own equilibrium
   (x, y), the same pricing the duty and the energy report use.  Same stage-1
   restriction.  Murphree efficiency is refused (Wang-Henke only).  With a
-  `reaction {}` block the full MESH is not implemented and the three names
-  are REFUSED by name (since 2026-10-26, C169; until then it silently ran
-  the `simultaneous` CMO model).  Use `model simultaneous;` for a reactive
-  column.
+  `reaction {}` block the full MESH carries the reaction (since C231): see
+  **Reactive distillation** below -- it is the model for a reaction that
+  CHANGES THE NUMBER OF MOLES (Σν ≠ 0).  A kinetic `reaction` under the full
+  MESH is refused by name.  The column may be specified by
+  (`bottomsRate`, `boilupRatio`) instead of (`refluxRatio`, `distillateRate`):
+  the distillate is then an unknown closed by the top balance (PARTIAL
+  condenser only; any mixture of the two pairs refuses by name).
 
 See theory: §Distillation (Wang-Henke) and §Rigorous MESH Newton.
 Reference: Wang & Henke, *Hydrocarbon Process.* 45 (1966) 155;
@@ -1213,16 +1216,43 @@ profile gains `floodApproach`, `dP_Pa`, `h_backup_mm`.
 Examples: `column09_tray_hydraulics` (design → D = 1.316 m) · `column10_flooding`
 (same column at 1.10 m: identical stream table, stage 14 at 114.5 % of flood).
 
-**Reactive distillation (`simultaneous` only).**  An equilibrium reaction on
-named catalytic stages.  Restricted to **mole-conserving (Σν = 0)** reactions
-(esterification, transesterification, metathesis) so the CMO flow profile is
-untouched; each reactive stage gains a molar extent ξ_j closed by the
-activity-based equilibrium `Σ_i ν_i ln(γ_i x_i) = ln K_a`.  Converged by homotopy
+**Reactive distillation.**  An equilibrium reaction on named catalytic stages.
+Under `model simultaneous;` it is restricted to **mole-conserving (Σν = 0)**
+reactions (esterification, transesterification, metathesis) so the CMO flow
+profile is untouched; a Σν ≠ 0 reaction there REFUSES by name and points to
+`model fullMESH;` (below).  Each reactive stage gains a molar extent ξ_j closed
+by the activity-based equilibrium `Σ_i ν_i ln(γ_i x_i) = ln K_a`.  Converged by homotopy
 (solve non-reactive, then switch the reaction on): every species in the quotient is
 seeded to at least 1e-4 on the reactive stages, and K_a is reached from the seed's
 own quotient in continuation steps (the full step first, halved on failure) —
-announced with the steps it took.  The reaction heat is not fed back into the
-flows — an honest bubble-point screening model.
+announced with the steps it took.  Under `simultaneous` the reaction heat is not
+fed back into the flows — an honest bubble-point screening model.
+
+**Reactive full MESH (`model fullMESH;`, C231) — a reaction that changes the
+number of moles.**  The extents are unknowns of the rigorous column: component
+rows carry `-ν_i ξ_j`, the stage TOTAL rows carry `-Σν ξ_j`, and the stage energy
+rows carry NO reaction-heat term because they price on the elements (formation)
+datum, which already holds the heat of reaction — every reacting species needs
+`standardThermochemistry`, else the column REFUSES by name.  The seed is the
+NON-reactive constant-molal-overflow column, then the non-reactive full MESH, and
+the reaction enters by the same K_a homotopy (announced, with its steps).
+`equilibrium {}` takes exactly ONE of: `Ka298` (+ `dHrxn`), `Ka`, `fromRecords
+true;` (ln K_a(T) = −Σν_i [g_ig,i(T)/RT + ln(Psat_i(T)/P0)] from the SAME records
+that price the energy rows; an ESTIMATED formation datum is announced) or
+`lnKa "<formula>"; parameters { ... }` (the law written in the case, dimension
+checked, `T` the only state symbol, optional `validity { Tmin; Tmax; }`
+announcing extrapolation).  Specification: `bottomsRate` + `boilupRatio` (partial
+condenser; D unknown, B + D = F + Σν Σξ) or `refluxRatio` + `distillateRate`
+(then B = F + Σν Σξ − D − draws).  Witness `column19_mtbe_reactive_mesh`
+(methanol + isobutene ⇌ MTBE, Σν = −1; nothing validated against a measurement);
+gate `check_reactive_mesh`.
+```
+operation { nStages 15; bottomsRate 240 kmol/h; boilupRatio 5; P 7 bar;
+            condenser { type partial; } feeds ( ... ); }
+reaction  { stoichiometry ( ... ); reactiveStages ( 6 7 8 9 10 );
+            equilibrium { lnKa "dSK / RK - dH / (RK * (T / Kelvin))";
+                          parameters { dH -39100 J/mol; dSK -85.3 J/mol; RK 8.314462 J/mol; Kelvin 1 K; } } }
+```
 
 **Every MESH row is dimensionless.**  Each component balance is divided by the
 column's total feed (and, under `fullMESH`, each energy row by the feed times the
@@ -1274,7 +1304,8 @@ unit activity).
 Caveat: for a **fast** rate (catalyst-rich, near-equilibrium) the explicit rate is
 stiff and the FD-Jacobian Newton is slow / may not converge — use `equilibrium {}`
 there; the kinetic mode is for genuinely rate-limited columns.  A Σν ≠ 0 reaction
-and VLLE on a tray still need the full-MESH energy balance.
+needs `model fullMESH;` with `equilibrium {}` (the kinetic form under the full
+MESH is refused by name); VLLE on a tray is not carried.
 
 **Heat ports.**  A column carries two intrinsic duties: a **reboiler**
 (heating, at the bottoms T) and a **condenser** (cooling, at the top T),
