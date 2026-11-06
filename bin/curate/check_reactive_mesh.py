@@ -43,8 +43,9 @@ MTBE, 15 stages, partial condenser, reactive stages 6-10):
       asserted -- it carries the Joback isobutene datum, announced.
   (f) REFUSALS BY NAME on constructed cases: Sum nu != 0 under `model
       simultaneous` (names fullMESH), an invalid pair of specifications, a
-      total condenser with bottomsRate/boilupRatio, a kinetic reaction under
-      the full MESH, and a reacting species with no formation datum.
+      total condenser with bottomsRate/boilupRatio, and a reacting species with no
+      formation datum.  (The kinetic form under the full MESH was refused here
+      until C233 built it; `check_kinetic_mesh` owns it now.)
   (g) SOURCE: the C169 refusal sentence is gone, the extents and the mole
       change are in the full-MESH rows, and the energy rows carry no
       reaction-heat term.
@@ -369,10 +370,6 @@ def main():
         expect_refusal("totalCondenser",
                        lambda c: edit(c, "system/flowsheetDict", "condenser      { type partial; }", ""),
                        ["PARTIAL condenser"])
-        expect_refusal("kineticFull",
-                       lambda c: edit(c, "system/flowsheetDict", "reactiveStages ( 6 7 8 9 10 );",
-                                      "reactiveStages ( 6 7 8 9 10 );\n            kinetics { }"),
-                       ["KINETIC", "simultaneous"])
 
         def ghost(c):
             (c / "constant" / "components" / "ghostEther.dat").write_text(
@@ -456,8 +453,8 @@ def report():
           "B + D = F + Sum(nu) Sum(xi) overall and per component, reproduces the 21 runs of the paper's Table II with "
           "AAD 4.6 % (max 8.5 %), recomputes the `fromRecords` K_a(T) independently and prints its distance from Eq. 15 "
           "unadjusted, and refuses by name Sum nu != 0 under simultaneous, an invalid pair of specifications, a total "
-          "condenser with bottomsRate, a kinetic reaction under the full MESH and a reacting species with no formation "
-          "datum.  SCANNED: the witness and ten fixtures written by this gate, "
+          "condenser with bottomsRate and a reacting species with no formation "
+          "datum.  SCANNED: the witness and nine fixtures written by this gate, "
           "src/unitOperations/distillation/DistillationColumn.cpp.  NOT CHECKED: agreement with any measured column "
           "(nothing here is validated against a measurement); UNIFAC's accuracy; the sealed bytes.")
     return 0
