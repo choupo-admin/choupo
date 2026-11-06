@@ -2817,6 +2817,22 @@ accepts today, and that is a policy call.
 > NEVER read off the source case's results.  Non-reactive columns must be
 > byte-identical (every golden unmoved).
 
+> **C231 DATA, READ (2026-11-06).**  K_a(T) of methanol + isobutene <-> MTBE:
+> Izquierdo, Cunill, Vila, Tejero, Iborra, J. Chem. Eng. Data 37 (1992) 339-343,
+> doi 10.1021/je00007a019 (in `~/Choupo-Literature/`), measured at 313-353 K, in
+> activities with UNIFAC.  THE PRINTED EQ. 16 IS UNUSABLE: its rounded constant
+> gives K about 7 times BELOW the paper's own Table IV (16 against 118 at 40 C;
+> checked, not assumed), and its Eq. 19 runs 19 % high.  Eq. 15, dH = -39.1
+> kJ/mol and dS = -85.3 J/mol/K, reproduces the 21 measurements of its Table II
+> at an AAD of 4.6 % (max 8.5 %), so that is the K of the witness.  Isobutene:
+> the catalogue's `dHf_298` is a Joback estimate, -10.25 kJ/mol, which puts the
+> gas-phase heat of reaction at -72.3 kJ/mol against the paper's -65.4.
+> Prosen, Maron, Rossini, J. Res. NBS 46 (1951) 106, doi 10.6028/jres.046.015,
+> give the heat of combustion, 645.19 +/- 0.25 kcal/mol, hence about -17.9 +/-
+> 1.1 kJ/mol with CODATA CO2 and H2O; used as a case-local overlay in the
+> witness, the catalogue record to be corrected in its own curation act (three
+> cases name it).
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
