@@ -2900,6 +2900,44 @@ accepts today, and that is a policy call.
 > reported against the measured range.  Internal diffusion (the effectiveness
 > factor) is NOT modelled and is said so.
 
+> **C234 (an external UX review of the `pinch-composite` EduTool, relayed by
+> Vitor, 2026-11-06): JUDGED BY CONTENT, MEASURED FIRST.**  The review's seven
+> points, against the tree: (1) THE STREAM TABLE -- the engine already writes
+> it: `reports/pinch/population.csv` carries side, T_in, T_out, Q, CP for every
+> segment (the classroom case: H1 180 kW at 2 kW/K, H2 240 kW at 8, C1 262.5 at
+> 2.5, C2 225 at 3); the page only has to DRAW it before the construction.
+> (2) THE WORKED CASCADE -- NOT published: the engine PRINTS the Linnhoff-Flower
+> table to the console and writes only the composite curves, the population and
+> the candidate matches; the page re-runs the cascade in TypeScript over the
+> published shifted curves (`computePinchFromCurves`, a "derived in view
+> cross-check"), which is the second home the review asks us not to grow.  A
+> `reports/pinch/problemTable.csv` (shifted T*, interval, sumCP hot and cold,
+> dH, initial and corrected cascade) is to be written by `PinchPass.cpp`, and
+> the page draws it.  (3) ANNOTATIONS on the curves (maximum recovery, the two
+> utility intervals, the vertical dTmin at the pinch) from the published
+> quantities, plus `Q_recovery,max` as a KPI.  (4) THRESHOLD, measured: at dTmin
+> 1 K the classroom case gives Q_H,min 67.5 kW and Q_C,min 0 and the console
+> still prints `pinch at T* = 293.65 K`; it is the same defect found on
+> `ammonia02` (C230).  The engine must CLASSIFY by the cascade -- interior pinch,
+> end-limited (threshold, either utility), several pinches, checking the
+> INTERIOR zeros too -- publish the word, and every surface (console, KPI, page,
+> the violation diagnostics) say it.  (5) CANDIDATE TABLE wording ("feasibility
+> assessment", Q_max are pairwise limits not to be added, CP_hot/CP_cold and the
+> CP inequalities).  (6) THE EXAMPLE'S THREE WARNINGS (sensible-only, no
+> standardThermochemistry for the synthetic fluid, a vapour pressure evaluated
+> at 150 K outside 280-620 K): to be INVESTIGATED, not hidden -- where the
+> 150 K comes from (a solver-internal trial or a real state), and the case says
+> plainly that its fluid is synthetic and constant-CP.  (7) the language:
+> |Q| in CP, the axis is a power, "the slope" is 1/CP.  MEASURED, and kept as a
+> gate: Q_H,min - Q_C,min = 67.5 kW at dTmin 1, 20 and 40 K (67.5-0,
+> 107.5-40, 217.5-150), i.e. the net of the cold and hot duties, whatever the
+> approach.  ORDER (the review's, accepted): the stream table + the worked
+> cascade + the annotations first, then the threshold classification, the
+> wording and the warnings; theory kept and interleaved with the numbers; the
+> distinction between energy targets and a realisable network kept explicit.
+> Doctrine: the C++ publishes, the page draws; the TypeScript cascade becomes
+> a labelled cross-check or goes.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
