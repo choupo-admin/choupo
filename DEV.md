@@ -2736,6 +2736,55 @@ accepts today, and that is a policy call.
 > the pinch", 16.48 kW) because the pass puts the pinch at the top of the
 > range when none exists -- named, not changed.
 
+> **C231 (Vitor, 2026-11-05): THE MTBE REACTIVE COLUMN OF HIS REFERENCE-SIMULATOR CASE
+> CANNOT BE SIMULATED TODAY -- A MOLE-CHANGING REACTION IN A REACTIVE
+> COLUMN.**  His case, a backup file `MTBE_Intensified_30 pratos.bkp` kept under his
+> course folder (outside the repository): ONE rigorous reactive column `T901`
+> (`RADFRAC`, `NSTAGE = 15` -- the file name says 30 trays and the file has
+> 15 stages --, partial-vapour condenser, reactive stages 6 to 10, reaction
+> set `R-1`), methanol + a C4 cut -> MTBE.  A previous session left two Choupo
+> cases beside it (a direct translation and a reactor-plus-column approximation, both outside the repository) and a
+> README.  MEASURED here: the direct translation is REFUSED by `DistillationColumn` --
+> "reactive distillation here supports mole-conserving (Sum nu = 0) reactions
+> only ... A Sum nu != 0 reaction changes the internal flows and needs the
+> full-MESH energy balance, which this method does not yet carry" -- and
+> methanol + isobutene <-> MTBE has Sum nu = -1.  the approximation (a conversion
+> reactor at the reference simulator's conversion, 98.87 %, followed by a non-reactive
+> `fullMESH` column) converges and reproduces its temperatures within
+> 1 K and the bottoms flow within 0.1 %, but the conversion is IMPOSED, so it
+> shows the separation and none of the intensification; its energy balance
+> leaves 166 kW (about 2 % of the duties) unexplained, cause not
+> investigated (the family of CLAUDE.md "the state a unit computes with").
+> WHAT IT WOULD TAKE (architect, Opus, Saturday or after): a reactive stage in
+> the rigorous solver that carries the reaction extent at each reactive stage
+> with variable molar flows and the heat of reaction in the stage energy
+> balance (the elements datum already carries it), the equilibrium constant
+> K_a(T) of the reaction as a case record (never a number taken from
+> the reference file), and a column witness that reproduces his case; the
+> esterification columns that run today (Sum nu = 0) are the precedent and
+> must stay byte-identical.  It is a flagship of process intensification,
+> which a chemical-project class meets, so it is worth building; and it
+> belongs ahead of a second look at that approximation, whose 166 kW residual is the
+> first thing to understand, because it may be a defect that exists today.
+
+> **C230 INTEGRATED (2026-11-06): the verification, and why the long run.**
+> `bin/integrate c230-pinch`: scope 8/0, the whole GUI 44/0, 162 gates, one
+> failing -- `check_element_closure`, the fresh-worktree artefact (passes
+> once `membrane08` has run; re-run here exit 0), and `check_standards_write_
+> guard` passes with `CHOUPO_HOME` at the worktree.  The shared-path flag
+> (`PinchPass.cpp`) is judged not to need a full sweep: the pass runs only
+> in cases that declare `pinchPass` (four), the exclusion rule changes only
+> a stream the case's own `utilities` circuit names, and the GUI lost
+> `computePinch`.  THE COST WAS A BRANCH THAT EDITED THIS FILE: a DEV.md edit
+> makes every gate that reads it reachable, so the run was ~160 gates
+> instead of a dozen and took an afternoon (Vitor, rightly furious).  From
+> now on a general's briefing says: do NOT edit DEV.md or PLAN.md in the
+> branch; the architect registers afterwards in a documentation-only commit.
+> Still open: the misleading `VIOLATION heater below the pinch` line a
+> threshold problem prints (letdown, 16.5 kW), and whether "a utility side
+> leaves the population" holds on other plants (water-cooled condensers,
+> steam heaters) -- the Saturday review.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
