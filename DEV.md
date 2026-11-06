@@ -2833,6 +2833,25 @@ accepts today, and that is a policy call.
 > witness, the catalogue record to be corrected in its own curation act (three
 > cases name it).
 
+> **C231 PAPERS READ (2026-11-06): NONE OF THE FOUR VALIDATES THE COLUMN.**
+> Mohl, Kienle, Gilles, Chem. Eng. Sci. 54 (1999) 1029 (doi 10.1016/s0009-2509(98)
+> 00327-3): two Clausthal pilot columns, MTBE and TAME, but its experimental
+> verification is TAME-centred and in FIGURES (3, 7), no tables; packed and
+> kinetic.  Sundmacher & Hoffmann, Chem. Eng. Sci. 51 (1996) 2359 (doi
+> 10.1016/0009-2509(96)00092-9): a laboratory MTBE column, but a NONEQUILIBRIUM
+> model with kinetics and intraparticle diffusion, comparisons in figures (8).
+> Nijhuis, Kerkhof, Mak, Ind. Eng. Chem. Res. 32 (1993) 2767 (doi
+> 10.1021/ie00023a045): a SIMULATION study run in the commercial package itself,
+> kinetic.  Jacobs & Krishna, Ind. Eng. Chem. Res. 32 (1993) 1706 (doi
+> 10.1021/ie00020a025): simulation.  The Mohl paper was chosen from its title; the
+> reading corrected that.  WHAT THE CASE MAY CLAIM: the thermodynamics is
+> validated (K_a(T) against Izquierdo's 21 measurements, AAD 4.6 %); the column is
+> verified against the reference simulator (temperatures within 0.3 K, duties 8 %
+> high, cause not investigated), which is agreement and not truth.  A real
+> column-level validation needs a KINETIC reactive stage in the full MESH
+> (Rehfinger & Hoffmann) and digitised figures with a checked calibration; it is
+> the next step of this line, not a task for the freeze.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
