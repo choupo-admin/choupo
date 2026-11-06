@@ -1,0 +1,124 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-06";
+    importerVersion    "3";
+    records
+    {
+        "components/1Butene.dat"
+        {
+            type          imported;
+            sha256        "8f8a98444e7cb4275897c343e9990aa7c85170dacdcab55b6a9b1c9c715eb785";
+            computationalSha256 "bb94bf01fda6fb9683d4c5f13b5d2c2f0ff964dcbec9de24eaa95b3c38a8d04e";
+            origin        "data/standards/components/1Butene.dat";
+            originSha256  "5aa5a3240905f85da7ae24e8178c73ff17e9ddf226affdedde5d8b18f8d0a8f1";
+            release       Choupo-2608;
+        }
+        "components/cis2Butene.dat"
+        {
+            type          imported;
+            sha256        "64a83083f2c908c17e6a6e6a6e6d4c27b80404d80f35ed6294d2fd428b809ea8";
+            computationalSha256 "6d60e0e944074a8f0e919ae5dee714804a2d73e7df39d14357dc663f9766437c";
+            origin        "data/standards/components/cis2Butene.dat";
+            originSha256  "013e38f34bdf47227cd10722e14e0a88d55bb63f74846b842ce2e72672350b21";
+            release       Choupo-2608;
+        }
+        "components/isoButane.dat"
+        {
+            type          imported;
+            sha256        "daad2d9fa257bb9803832182214f01e620b68ba41037273d0fd373fdde911874";
+            computationalSha256 "25e99f11a0ba2290bf73f87172b06e55ada442b1c9d3d79054958d56471e505a";
+            origin        "data/standards/components/isoButane.dat";
+            originSha256  "38b607b23d6e5e5041b6be87ef281f789d3e64273dfa1e3c04cf3c14c8379a0c";
+            release       Choupo-2608;
+        }
+        "components/isoButene.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-11-06";
+        }
+        "components/methanol.dat"
+        {
+            type          imported;
+            sha256        "8a5d7eada35ef18aafd03f99eaeaa45a0837da565ac71b4ffb3574e7a99df54a";
+            computationalSha256 "687725d9dfbbd996959983f08041d099f4b76c6b1a639d19d9a43a0209f04ab6";
+            origin        "data/standards/components/methanol.dat";
+            originSha256  "8cedd68cbab3194cfb72728ae31e42118e256931e9e166b4c53ace9dbbe27376";
+            release       Choupo-2608;
+        }
+        "components/methylTertButylEther.dat"
+        {
+            type          imported;
+            sha256        "3ab4fc9f9327983ed432deddaaf6061975e40ac5921def969bbda74ee79584d8";
+            computationalSha256 "b1298108ed625d2ded4bbb653cacef55bab384b4f0fbcebe9718c8c3de5d157a";
+            origin        "data/standards/components/methylTertButylEther.dat";
+            originSha256  "956b9c6cdfcb9eeaa8430150111c3743638477d7171c7b4271a1881802b0f0d5";
+            release       Choupo-2608;
+        }
+        "components/nButane.dat"
+        {
+            type          imported;
+            sha256        "106e919dd656d4a5d6a22e8d8ed59aeee0373f95fa17cd10f3f6378a113f01cc";
+            computationalSha256 "8c896f1ba030fb592e688814f32efff803ea47f47c1a768fd94beb358d2e5201";
+            origin        "data/standards/components/nButane.dat";
+            originSha256  "be782da19a6bc39e0730255a3c5ba655fd1b7374fafe93197f92ec89abd92f19";
+            release       Choupo-2608;
+        }
+        "components/propane.dat"
+        {
+            type          imported;
+            sha256        "6b1b032c7255b616513c67fa279071f7b029b97baf2ee816933b92f4f2d534cc";
+            computationalSha256 "000dd57b7f46ece67bd647113709a7d50535c415f9c650154d7406445a5e476a";
+            origin        "data/standards/components/propane.dat";
+            originSha256  "61db58c21bb50335767990b90703ba04649f37cca813b345a19e112603a6dbea";
+            release       Choupo-2608;
+        }
+        "components/trans2Butene.dat"
+        {
+            type          imported;
+            sha256        "c8d21d595e405d478dde685c7d9249ed7389fd951aa0d72bc6bb1defa5ad2a62";
+            computationalSha256 "939550f9b84533d9d0252dfd66062c5cf47e4e7eada6ec908317f1c72a4e3734";
+            origin        "data/standards/components/trans2Butene.dat";
+            originSha256  "5931935b62db55f5fecddd3bca7f24d0e907b12f9cdbab8952dd8b4178ef7d04";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+    }
+}
