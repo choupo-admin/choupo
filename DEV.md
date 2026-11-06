@@ -2785,6 +2785,38 @@ accepts today, and that is a policy call.
 > leaves the population" holds on other plants (water-cooled condensers,
 > steam heaters) -- the Saturday review.
 
+> **C231 DESIGN (architect, 2026-11-06, Vitor: "faz o que for preciso ... de
+> forma elegante").**  Read first: the extent machinery lives in the CMO MESH
+> (`solveSimultaneous`, `extentOf`, `xi`, the homotopy on `lnOffset`), the
+> variable flows and the stage energy rows live in the full MESH (`residualF`),
+> and `C169` refuses to join them.  So the column gains no new solver: the FULL
+> MESH gains the extents.  (1) One unknown per reactive stage appended to `w`;
+> component rows `-= nu[i]*xi_j`; TOTAL rows `-= sumNu*xi_j` (the whole of the
+> mole change); no heat term at all, because the energy rows price on the
+> elements datum and the heat of reaction is ALREADY there -- adding one would
+> count it twice; the equilibrium row is the CMO's `lnQ - ln K_a(T)`.  (2)
+> K_a(T) FROM THE RECORDS, the elegant half: `equilibrium { fromRecords; }`
+> gives ln K_a(T) = -Sum nu_i [g_ig,i(T)/(RT) + ln(Psat_i(T)/P0)], the same
+> datum that prices the energy rows, so a column cannot carry one heat of
+> reaction in its K and another in its energy balance; `equilibrium { lnKa
+> "<formula>"; ... }` through `core/Formula` (the C67 rule: a law WRITTEN in the
+> case, parsed once, dimension-checked) is the cited alternative; `Ka298` +
+> `dHrxn` stay for the CMO esterifications, byte-identical.  (3) The source
+> case's specs are BOTTOMS RATE and BOILUP RATIO (240 kmol/h, 5), and with a
+> mole change D is no longer F - B, so the MESH gains that spec pair, D
+> becoming an unknown closed by the top balance; `refluxRatio` +
+> `distillateRate` keep their rows, with B = F + sumNu Sum xi - D.  (4) The
+> seed is announced: a NON-REACTIVE CMO seeds the full MESH, and the reaction
+> enters by the existing homotopy (no silent crutch).  (5) `model simultaneous`
+> keeps refusing Sum nu != 0 by name and now names `fullMESH`.  THE DATA ARE THE
+> REAL RISK, not the solver: isobutene's `dHf_298` and `dGf_298` are JOBACK
+> estimates (`data/standards/components/isoButene.dat`, origin estimated), so
+> K_a(T) fromRecords and the heat of reaction inherit that error, announced.
+> The cure is a primary datum (a citable isobutene enthalpy of formation) and a
+> measured K_a(T) of the MTBE reaction to hold the result against; a value is
+> NEVER read off the source case's results.  Non-reactive columns must be
+> byte-identical (every golden unmoved).
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
