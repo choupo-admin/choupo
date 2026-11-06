@@ -83,6 +83,7 @@ Feed state: a stream is read for what it means (subcooled liquid q>1, two-phase 
 Refusals you will meet:
 - `feedStage (n) must lie in 1..N-1 (strictly above the bottom stage …)` (DistillationColumn.cpp:1383); simultaneous: stage 1 refused by name.
 - `multiple feeds (inputs/feeds), side draws, or reactive distillation require model simultaneous;` (:1288).
+- `a reaction with Sum nu != 0 ... changes the internal molar flows, which model simultaneous; holds constant` -- declare `model fullMESH;` (C231; the reactive full MESH carries the extents, the mole change and the heat of reaction on the elements datum). Specify it with `bottomsRate` + `boilupRatio` (partial condenser) or `refluxRatio` + `distillateRate`; a mixture of the two pairs, a kinetic `reaction` under `fullMESH` and a reacting species with no `standardThermochemistry` each refuse by name. Witness `column19_mtbe_reactive_mesh`.
 - `distillateRate AND distillateRecovery are BOTH declared` (:1961).
 - `murphreeEfficiency is not implemented for method simultaneous` (:2235).
 - unknown `model` word → lists the accepted words (:1261 region). Typos are refused, never defaulted.

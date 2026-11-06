@@ -176,14 +176,16 @@ Bubble-point temperature at fixed pressure: the T at which the first vapour bubb
 
 ## `column`  (column operation)
 
-Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.
+Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The column is specified by (`refluxRatio`, and then the distillate by rate or recovery) or by (`bottomsRate`, `boilupRatio`). The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `nStages` | ✓ | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
 | `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
-| `refluxRatio` | ✓ | number | — | L/D, liquid returned to the column over distillate withdrawn. |
+| `refluxRatio` |   | number | — | L/D, liquid returned to the column over distillate withdrawn. |
 | `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |
+| `bottomsRate` |   | number | kmol/s | Bottom product molar flow rate. Specifies the column TOGETHER with `boilupRatio` (the pair replaces `refluxRatio` + `distillateRate`): th… |
+| `boilupRatio` |   | number | — | V/B, vapour leaving the reboiler over the bottoms withdrawn. Pairs with `bottomsRate` (see there). |
 | `distillateRecovery` |   | object | — | Send this fraction of the named component's FEED overhead, instead of a fixed rate. Solved as an announced outer secant on the rate, so i… |
 | `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
 | `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
@@ -337,14 +339,16 @@ Dew-point temperature at fixed pressure: the T at which the first liquid droplet
 
 ## `distillationColumn`  (distillationColumn operation)
 
-Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.
+Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The column is specified by (`refluxRatio`, and then the distillate by rate or recovery) or by (`bottomsRate`, `boilupRatio`). The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `nStages` | ✓ | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
 | `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
-| `refluxRatio` | ✓ | number | — | L/D, liquid returned to the column over distillate withdrawn. |
+| `refluxRatio` |   | number | — | L/D, liquid returned to the column over distillate withdrawn. |
 | `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |
+| `bottomsRate` |   | number | kmol/s | Bottom product molar flow rate. Specifies the column TOGETHER with `boilupRatio` (the pair replaces `refluxRatio` + `distillateRate`): th… |
+| `boilupRatio` |   | number | — | V/B, vapour leaving the reboiler over the bottoms withdrawn. Pairs with `bottomsRate` (see there). |
 | `distillateRecovery` |   | object | — | Send this fraction of the named component's FEED overhead, instead of a fixed rate. Solved as an announced outer secant on the rate, so i… |
 | `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
 | `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
