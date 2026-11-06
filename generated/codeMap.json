@@ -9388,6 +9388,7 @@
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
+   "src/core/Formula.H",
    "src/core/Identifiers.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
@@ -13144,6 +13145,7 @@
    "src/propertyOps/RateLawBench.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/PFR.cpp"
   ],
