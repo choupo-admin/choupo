@@ -2873,6 +2873,33 @@ accepts today, and that is a policy call.
 > Jacobian, and the homotopy), build with Sonnet, then digitise a pilot-column
 > profile with a checked calibration.  Needs C231 integrated first.
 
+> **C233 DESIGN (architect, 2026-11-06, Vitor: "comeca ja").**  THE LAW, read
+> from the page image of Rehfinger & Hoffmann 1990: r = k [a_IB/a_MeOH - (1/K_a)
+> a_MTBE/a_MeOH^2] (Eq. 12), k in mmol/(s eq), k(90 C) = 243.8 +/- 27.0, E = 92.4
+> +/- 3.7 kJ/mol (Eq. 15, Table 4), K_a(25 C) = 300.5 +/- 22.8 (Table 4, fitted)
+> with ln[K_a(T)/K_a(T0)] = Eq. 6 (A1 = -1.49277e3 K, A2 = -7.74002e1, A3 =
+> 5.07563e-1 /K, A4 = -9.12739e-4 /K2, A5 = 1.10649e-6 /K3, A6 = -6.27996e-10
+> /K4; T0 298.15 K).  Eq. 6 CHECKED: with K_a(298) = 284 it reproduces the seven
+> Rehfinger values of Izquierdo's Table IV exactly.  Activities there are UNIQUAC
+> and the rate is per acid EQUIVALENT, so a case declares the resin's capacity.
+> THE LAW DOES NOT FIT `rateAt`: forward order -1 in methanol, and a reverse leg
+> with a_MeOH^-2 that is not mass action.  So the column takes it through the
+> reaction FACTORY (DEV.md C67): `reaction { kinetics { model expression; ... } }`
+> read by `ReactionRate::New`, with `a[i]` added to the state the law may read
+> (`RateState` gains the activities, `RateOffer` says who supplies them; a reactor
+> that does not refuses by name).  The native `pseudoHomogeneous` and `adsorption`
+> words stay byte-identical.  In the full MESH the extent is COMPUTED, r(T_j, x_j,
+> gamma_j) x m_cat_j, not an unknown (as in the CMO), the catalyst mass entering
+> by the existing ramp; the energy rows take nothing, as in C231.  THE GATE THAT
+> PROVES IT IS A LIMIT: with a law whose K is the equilibrium witness's K, a
+> growing catalyst mass must CONVERGE on column19's equilibrium answer; zero
+> catalyst must give the non-reactive column.  KNOWN HAZARD, said in the case: the
+> law diverges as a_MeOH -> 0 and the paper warns below x_MeOH about 0.3, while a
+> reactive zone runs lean in methanol; a floor, if any, is WRITTEN in the case's
+> law (`max(...)`), never hidden in the engine, and the reactive stages' a_MeOH is
+> reported against the measured range.  Internal diffusion (the effectiveness
+> factor) is NOT modelled and is said so.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
