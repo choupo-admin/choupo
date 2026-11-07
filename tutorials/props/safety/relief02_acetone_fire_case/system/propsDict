@@ -59,7 +59,7 @@ operations
         type        propertyPoint;
         state
         {
-            T            394.109436 K;
+            T            399.459968689 K;
             P            706325 Pa;
             composition  { acetone 1.0; }
         }

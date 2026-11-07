@@ -83,9 +83,9 @@ describe("the engine's twin: pinned examples (check_bund_arithmetic reads these 
     pin("green_box", displacedBox(34, 34, 0, 20, 4), 4624);
     pin("green_gross", grossVolume(7480, 4), 29920);
     pin("green_net", grossVolume(7480, 4) - 2 * displacedBox(34, 34, 0, 20, 4), 20672);
-    pin("green_term", termVolume(1.1, true, 17897.6025908, 35795.2051815), 19687.362849880003);
+    pin("green_term", termVolume(1.1, true, 17949.6505155, 35899.301031), 19744.61556705);
     pin("green_rain", depthAllowance(0.1, 7480), 748);
-    pin("green_required", requiredVolume(termVolume(1.1, true, 17897.6025908, 35795.2051815), depthAllowance(0.1, 7480)), 20435.362849880003);
+    pin("green_required", requiredVolume(termVolume(1.1, true, 17949.6505155, 35899.301031), depthAllowance(0.1, 7480)), 20492.61556705);
   });
   it("the rule's other branches", () => {
     pin("term_total", termVolume(0.25, false, 20, 45), 11.25);

@@ -3046,26 +3046,26 @@ THE TWO FLUID PROPERTIES A LETDOWN VALVE IS JUDGED BY (DEV.md 4c C64, the "Large
 
 The throttles themselves run in tutorials/steady/hydraulics/ letdown01\_ammonia\_flashing. A valve's hydraulic regime is decided by two more numbers, which a flowsheet unit does not publish, so this props case computes them at the two valve inlets of that case:
 
-the GAS: the loop purge at 140 bar and 253.15 K, let down to a fuel header. Whether its flow is choked is decided by the ratio of specific heats k = Cp/Cv -- propertyPoint's `gamma`, Cp\_ig/(Cp\_ig - R), the ideal-gas ratio the critical-pressure-ratio formula is derived with -- and the SRK compressibility Z. the LIQUID: the 20 bar drum liquid of letdown01, at the temperature its first throttle left it (253.0137962 K, copied from that case's converged/LetdownLiquid; gui/tests/letdown.test.ts holds it to the ValveHP T\_out golden). Whether its second throttle cavitates or flashes is judged by the ammonia's VAPOUR PRESSURE at that temperature, Psat\_NH3 (the record's Antoine curve), against the pressure at the valve's vena contracta -- the PURE ammonia's, so for a liquid holding dissolved gas a didactic approximation.
+the GAS: the loop purge at 140 bar and 253.15 K, let down to a fuel header. Whether its flow is choked is decided by the ratio of specific heats k = Cp/Cv -- propertyPoint's `gamma`, Cp\_ig/(Cp\_ig - R), the ideal-gas ratio the critical-pressure-ratio formula is derived with -- and the SRK compressibility Z. the LIQUID: the 20 bar drum liquid of letdown01, at the temperature its first throttle left it (253.01420618 K, copied from that case's converged/LetdownLiquid; gui/tests/letdown.test.ts holds it to the ValveHP T\_out golden). Whether its second throttle cavitates or flashes is judged by the ammonia's VAPOUR PRESSURE at that temperature, Psat\_NH3 (the record's Antoine curve), against the pressure at the valve's vena contracta -- the PURE ammonia's, so for a liquid holding dissolved gas a didactic approximation.
 
 Compositions are the component flows in kmol/h exactly as letdown01's converged streams print them; propertyPoint normalises them. The liquid's dissolved H2, N2 and Ar do not enter Psat\_NH3 -- that key is the pure ammonia's vapour pressure, the P\_v of the valve-sizing equations. The drum liquid is in equilibrium with its gas at 20 bar, so even a small drop below it can begin to release the gas it still holds, and that is letdown01's to show, not this case's.
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{diag}{purge}{Cp\_ig}{28.9239504326}
-\goldrow{diag}{purge}{H\_R}{-132.714805313}
-\goldrow{diag}{purge}{H\_ig}{-2297.81017849}
-\goldrow{diag}{purge}{H\_real}{-2430.46102009}
+\goldrow{diag}{purge}{Cp\_ig}{28.9429405633}
+\goldrow{diag}{purge}{H\_R}{-143.566682255}
+\goldrow{diag}{purge}{H\_ig}{-2457.83921394}
+\goldrow{diag}{purge}{H\_real}{-2601.40589619}
 \goldrow{diag}{purge}{P}{14000000}
-\goldrow{diag}{purge}{S\_R}{-0.999957721229}
-\goldrow{diag}{purge}{S\_ig}{103.584345511}
-\goldrow{diag}{purge}{S\_real}{102.584535008}
+\goldrow{diag}{purge}{S\_R}{-1.02704601342}
+\goldrow{diag}{purge}{S\_ig}{103.874258602}
+\goldrow{diag}{purge}{S\_real}{102.847212588}
 \goldrow{diag}{purge}{T}{253.15}
-\goldrow{diag}{purge}{Z}{1.06874405854}
-\goldrow{diag}{purge}{gamma}{1.40342888153}
-\goldrow{diag}{purge}{v\_molar}{0.000160678509513}
-\goldrow{diag}{liquidLP}{Cp\_ig}{34.2366654977}
-\goldrow{diag}{liquidLP}{H\_R}{-2189.645868}
+\goldrow{diag}{purge}{Z}{1.067126493}
+\goldrow{diag}{purge}{gamma}{1.40305749363}
+\goldrow{diag}{purge}{v\_molar}{0.00016043531937}
+\goldrow{diag}{liquidLP}{Cp\_ig}{34.2364932879}
+\goldrow{diag}{liquidLP}{H\_R}{-2189.62838136}
 \goldmore{13}
 \end{tutgolden}
 
@@ -4244,20 +4244,20 @@ WHAT IS COMPUTED. propertyPoint's base set: Z on the SRK vapour root, and gamma 
 \tutreadme{What the run gives the relief equation is Z (SRK vapour root, kij = 0, announced) and k = Cp/Cv (the ideal-gas ratio). The sizing itself is the EduTool's arithmetic: $\ast$Designing for overpressure$\ast$ (DEV.md 4c C61), where the 50 bar loop turns out to need a relief valve about four and a half times larger than the 150 bar one in the sizing arithmetic, on the same declared blocked-outlet flow hypothesis --- not a comparison of two real relief systems.}
 \tutreadme{Nothing here is a design pressure or a relief load for a real loop.}
 \begin{tutgolden}
-\goldrow{diag}{loop150}{Cp\_ig}{29.8985186167}
-\goldrow{diag}{loop150}{H\_R}{258.83362137}
-\goldrow{diag}{loop150}{H\_ig}{9770.2186076}
-\goldrow{diag}{loop150}{H\_real}{10029.052229}
-\goldrow{diag}{loop150}{P}{18240876.8436}
-\goldrow{diag}{loop150}{S\_R}{-0.122977107449}
-\goldrow{diag}{loop150}{S\_ig}{129.551194701}
-\goldrow{diag}{loop150}{S\_real}{129.428217594}
+\goldrow{diag}{loop150}{Cp\_ig}{29.9418368462}
+\goldrow{diag}{loop150}{H\_R}{256.573139636}
+\goldrow{diag}{loop150}{H\_ig}{9665.59492918}
+\goldrow{diag}{loop150}{H\_real}{9922.16806882}
+\goldrow{diag}{loop150}{P}{18216642.165}
+\goldrow{diag}{loop150}{S\_R}{-0.125249214427}
+\goldrow{diag}{loop150}{S\_ig}{129.797638756}
+\goldrow{diag}{loop150}{S\_real}{129.672389542}
 \goldrow{diag}{loop150}{T}{653.15}
-\goldrow{diag}{loop150}{Z}{1.06292561774}
-\goldrow{diag}{loop150}{gamma}{1.38521316932}
-\goldrow{diag}{loop150}{v\_molar}{0.000316449401973}
-\goldrow{diag}{loop50}{Cp\_ig}{30.1315777327}
-\goldrow{diag}{loop50}{H\_R}{64.6879856225}
+\goldrow{diag}{loop150}{Z}{1.06279185274}
+\goldrow{diag}{loop150}{gamma}{1.3844416123}
+\goldrow{diag}{loop150}{v\_molar}{0.000316830516475}
+\goldrow{diag}{loop50}{Cp\_ig}{30.1534149462}
+\goldrow{diag}{loop50}{H\_R}{64.0995153664}
 \goldmore{10}
 \end{tutgolden}
 
@@ -4291,20 +4291,20 @@ WHAT THIS CASE DOES NOT SAY. Nothing here is a relief-valve design: the sizing i
 \tutreadme{Why acetone and not toluene: toluene's Antoine record is fitted only from 273 to 380 K, below its own normal boiling point, so every boiling temperature of a pressurised toluene drum would be an extrapolated vapour pressure. Acetone's covers 259.16 to 507.60 K.}
 \tutreadme{The sizing is the EduTool's arithmetic: $\ast$Designing for overpressure$\ast$. Nothing here is a relief design for a real vessel.}
 \begin{tutgolden}
-\goldrow{diag}{relieving}{Cp\_ig}{90.7915819779}
-\goldrow{diag}{relieving}{H\_R}{-1286.05234531}
-\goldrow{diag}{relieving}{H\_ig}{-209206.764976}
-\goldrow{diag}{relieving}{H\_real}{-210492.817321}
-\goldrow{diag}{relieving}{Hvap\_acetone}{24520.5209741}
+\goldrow{diag}{relieving}{Cp\_ig}{91.7054083639}
+\goldrow{diag}{relieving}{H\_R}{-1250.60447353}
+\goldrow{diag}{relieving}{H\_ig}{-208718.53434}
+\goldrow{diag}{relieving}{H\_real}{-209969.138813}
+\goldrow{diag}{relieving}{Hvap\_acetone}{24076.6281528}
 \goldrow{diag}{relieving}{P}{706325}
-\goldrow{diag}{relieving}{S\_R}{-2.25049969273}
-\goldrow{diag}{relieving}{S\_ig}{301.885255534}
-\goldrow{diag}{relieving}{S\_real}{299.634755842}
-\goldrow{diag}{relieving}{T}{394.109436}
+\goldrow{diag}{relieving}{S\_R}{-2.16115539516}
+\goldrow{diag}{relieving}{S\_ig}{303.115727719}
+\goldrow{diag}{relieving}{S\_real}{300.954572324}
+\goldrow{diag}{relieving}{T}{399.459968689}
 \goldrow{diag}{relieving}{T\_bubble}{399.459968689}
-\goldrow{diag}{relieving}{Z}{0.87065495897}
-\goldrow{diag}{relieving}{Z\_liquid}{0.0242535783371}
-\goldrow{diag}{relieving}{gamma}{1.10080932363}
+\goldrow{diag}{relieving}{Z}{0.876603897883}
+\goldrow{diag}{relieving}{Z\_liquid}{0.0242807497275}
+\goldrow{diag}{relieving}{gamma}{1.09970462073}
 \goldmore{2}
 \end{tutgolden}
 

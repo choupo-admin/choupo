@@ -79,8 +79,8 @@ export const LOOP_PLANT: Readonly<Record<LoopOp, string>> = {
  *  test: the page needs the operating pressure to place the pressure ladder
  *  before any run has finished. */
 export const LOOP_OPERATING: Readonly<Record<LoopOp, { P_Pa: number; T_K: number }>> = {
-  loop150: { P_Pa: 15092690.16, T_K: 653.15 },
-  loop50: { P_Pa: 5000112.794, T_K: 593.15 },
+  loop150: { P_Pa: 15072661.5, T_K: 653.15 },
+  loop50: { P_Pa: 4995510.441, T_K: 593.15 },
 };
 
 /** The fire witness's operation and its one component. */
@@ -90,7 +90,7 @@ export const FIRE_COMPONENT = "acetone";
 /** The temperature the fire witness ships with [K]: its own boiling
  *  temperature at the default relieving pressure, which the test holds to
  *  the witness's T_bubble golden.  The page starts from it. */
-export const FIRE_SHIPPED_T_K = 394.109436;
+export const FIRE_SHIPPED_T_K = 399.459968689;
 
 /** The Design Guide's relief chapter, as its \label names it. */
 export const DESIGN_GUIDE_RELIEF = "pressure-relief-flare--safety-basics";
