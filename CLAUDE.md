@@ -113,8 +113,12 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    shown, a merge that `git revert` undoes) is TAKEN and reported, not
    asked: mission command -- act on the stated intent without further
    orders -- and the one-way / two-way door distinction.
-8. **THE CML PLAN IS `PLAN.md`, READ AT THE START OF EVERY SESSION, ALWAYS
-   IN ENGLISH** (Vítor, 2026-10-31: "qualquer sessão que eu inicie sabe esse
+8. **`BRAIN.md` IS READ FIRST (Vítor, 2026-11-07: a small model of Choupo
+   that answers "quase sem pensar" and evolves with it): one page, the state
+   of every area judged and dated, the answers to his recurring questions, a
+   generated FACTS block held fresh by `check_brain_fresh`; a landing that
+   changes an answer changes its row in the same commit.  THEN THE CML PLAN,
+   `PLAN.md`, READ AT THE START OF EVERY SESSION, ALWAYS IN ENGLISH** (Vítor, 2026-10-31: "qualquer sessão que eu inicie sabe esse
    plano"; horizons, 2026-11-01: "1 h, 1 dia e 3 dias ou mais ... o que não
    couber pode ficar para > 1 semana").  It holds what is done in the next
    hour, the next day, the next three days and beyond a week, plus the
