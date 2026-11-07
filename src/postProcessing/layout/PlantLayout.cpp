@@ -1257,7 +1257,7 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             e.at    = i.id;
             e.point = g.nozzle;
             e.lead  = g.lead;
-            e.port  = { i.id, q.port, q.role, q.origin, g.nozzle };
+            e.port  = { i.id, q.port, q.role, q.origin, g.nozzle, g.lead.back() };
             e.indoor = !i.room.empty();
             e.room   = i.room;
             return e;

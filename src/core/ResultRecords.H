@@ -1021,6 +1021,7 @@ struct LayoutPort
     std::string role;          // the sentence: what decided it
     std::string origin;        // convention | declared | default
     std::vector<scalar> point; // the nozzle on the item's surface {x, y, z}
+    std::vector<scalar> leaves; // where the one-metre stub ends: a declared route starts here {x, y, z}
 };
 
 struct LayoutPipe

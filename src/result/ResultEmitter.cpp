@@ -1653,7 +1653,11 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                    << ", \"origin\": " << esc(pt.origin)
                    << ", \"role\": " << esc(pt.role)
                    << ", \"point\": [" << num(pt.point[0]) << ", "
-                   << num(pt.point[1]) << ", " << num(pt.point[2]) << "] }";
+                   << num(pt.point[1]) << ", " << num(pt.point[2]) << "]";
+                if (pt.leaves.size() == 3)
+                    os << ", \"leaves\": [" << num(pt.leaves[0]) << ", "
+                       << num(pt.leaves[1]) << ", " << num(pt.leaves[2]) << "]";
+                os << " }";
             };
             portJson("fromPort", p.fromPort);
             portJson("toPort", p.toPort);
