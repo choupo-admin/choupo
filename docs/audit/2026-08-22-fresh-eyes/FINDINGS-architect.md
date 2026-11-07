@@ -268,7 +268,7 @@ very record the run loaded.  The simulator contradicts its own datasheet by
 7.6 K with no announcement.  Nobody notices, because the golden pins the flash
 result and not the record's self-consistency, and no gate evaluates Psat(`Tb`).
 The case is not hypothetical: the sealed
-`tutorials/plant/esterification2sector` mirrors the same ethyl-acetate record,
+`tutorials/steady/flowsheets/esterification2sector` mirrors the same ethyl-acetate record,
 and its separation sector is a flash whose split those coefficients set.
 
 **WHICH HALF IS WRONG IS NOT DECIDED HERE, deliberately.**  Determining whether

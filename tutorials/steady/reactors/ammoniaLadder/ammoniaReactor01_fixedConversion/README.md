@@ -169,20 +169,20 @@ converter starts from a three-times-richer inlet (3.5 mol% NH₃ against
   number.
 * **The converter is isothermal at 700 K.**  A real converter is a train of
   adiabatic beds with inter-bed cooling; see
-  `tutorials/plant/ammonia03_quench_converter`.
+  `tutorials/steady/reactors/ammonia03_quench_converter`.
 
 ## 7. Running it
 
 ```bash
-bin/choupo-lint  tutorials/plant/ammoniaReactor01_fixedConversion
-bin/choupo-init0 tutorials/plant/ammoniaReactor01_fixedConversion
-runCase          tutorials/plant/ammoniaReactor01_fixedConversion
+bin/choupo-lint  tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion
+bin/choupo-init0 tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion
+runCase          tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion
 ```
 
 ```bash
 # the one thing that moves between rungs 1 and 2
-diff tutorials/plant/ammoniaReactor01_fixedConversion/system/flowsheetDict \
-     tutorials/plant/ammoniaReactor02_equilibrium/system/flowsheetDict
+diff tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion/system/flowsheetDict \
+     tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium/system/flowsheetDict
 ```
 
 ## 8. Sources

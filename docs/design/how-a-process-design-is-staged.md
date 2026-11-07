@@ -1032,7 +1032,7 @@ commission were wrong and are corrected in place.
 * **`tutorials/plant/greenAmmoniaPlant` does not exist.**  The ammonia cases
   are `tutorials/plant/greenAmmoniaIndustrialN2` (the sectored plant, four
   sectors, three property packages), `tutorials/plant/ammonia02_full_plant`,
-  `tutorials/plant/ammonia03_quench_converter`,
+  `tutorials/steady/reactors/ammonia03_quench_converter`,
   `tutorials/steady/flowsheets/ammonia01_synthesis_loop`,
   `tutorials/steady/gibbs/gibbs10_ammonia_fugacity` and
   `tutorials/props/kinetics/ammoniaRate01_dyson_simon`.
@@ -1096,7 +1096,7 @@ is step (1) of §6's three-step answer, done by hand, outside the engine, and
 the engine cannot presently check it** — which is precisely the pedagogy the
 staged sequence would supply.
 
-`tutorials/plant/ammonia03_quench_converter` already names this gap in its
+`tutorials/steady/reactors/ammonia03_quench_converter` already names this gap in its
 own README, quoted in the Dyson-Simon case: it *"cannot size a bed, it cannot
 tell a good injection point from a bad one, and it rewards over-quenching
 into a region where a real catalyst is too slow to reach the equilibrium the

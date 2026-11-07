@@ -198,8 +198,8 @@ EXPECTED = {
     #  same inert cyclone.  Listed explicitly rather than matched by unit
     #  name: an exemption keyed on "any DRYING.CY anywhere" would silently
     #  cover a future case that has a real reason to fail.
-    ("tutorials/plant/sugarPlantEconomicsSweep", "DRYING.CY", "bodyDiameter"),
-    ("tutorials/plant/sugarPlantEconomicsSweep", "DRYING.CY", "numberOfTurns"),
+    ("tutorials/steady/economics/sugarPlantEconomicsSweep", "DRYING.CY", "bodyDiameter"),
+    ("tutorials/steady/economics/sugarPlantEconomicsSweep", "DRYING.CY", "numberOfTurns"),
 }
 
 seen = set()

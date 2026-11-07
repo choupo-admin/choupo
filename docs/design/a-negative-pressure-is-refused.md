@@ -37,8 +37,8 @@ clamp line, and the instrument only prints.
 with a negative P, on a trial or on an accepted pass.**  The units are
 the `cstr` (the large majority) and the `pfr`: they publish no pressure by design and rely on the inheritance.  The
 plants that do reach it with many trial hits are
-`plant/ammoniaReactor04_kineticSizing` (converter, pfr, 616 hits),
-`plant/sugarPlantEconomicsSweep` and `plant/ChemicalPlantTutorial`
+`steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing` (converter, pfr, 616 hits),
+`steady/economics/sugarPlantEconomicsSweep` and `plant/ChemicalPlantTutorial`
 (Fermentor, cstr), `steady/flowsheets/process03_recycle`,
 `recycle_autoinit_tear` and `process05_isomerization_recycle` (reactor, cstr);
 the others are one hit on an accepted pass (the reactor of a flash flowsheet,

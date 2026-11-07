@@ -32,11 +32,24 @@ plant/greenAmmoniaFeasibility        plant/greenAmmonia02_feasibility150bar
 plant/greenAmmoniaFeasibility50bar   plant/greenAmmonia02_feasibility50bar
 plant/greenAmmoniaBasicDesign        plant/greenAmmonia03_basicDesign
 plant/greenAmmoniaIndustrialN2       plant/greenAmmoniaPEQ_baseCase
-plant/ammoniaStaged01_yield          plant/ammoniaReactor01_fixedConversion
-plant/ammoniaStaged02_equilibrium    plant/ammoniaReactor02_equilibrium
-plant/ammoniaStaged03_approach       plant/ammoniaReactor03_equilibriumApproach
-plant/ammoniaStaged04_kinetic        plant/ammoniaReactor04_kineticSizing
+plant/ammoniaStaged01_yield          steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion
+plant/ammoniaStaged02_equilibrium    steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium
+plant/ammoniaStaged03_approach       steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach
+plant/ammoniaStaged04_kinetic        steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing
 
 # A PLANT RUN IN LOTS lives under batch/plant/ (Vitor, 2026-10-19, C106):
 # moved, not renamed -- the leaf name is unchanged, the discipline folder is.
 plant/apalutamide01_tablets          batch/plant/apalutamide01_tablets
+
+# MOVED OUT OF plant/ (Vitor, 2026-11-07, DEV.md 4c C244): one reference plant per
+# process; ladders, demos and variants live under steady/.  Moved, not renamed.
+plant/ammoniaReactor01_fixedConversion        steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion
+plant/ammoniaReactor02_equilibrium            steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium
+plant/ammoniaReactor03_equilibriumApproach    steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach
+plant/ammoniaReactor04_kineticSizing          steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing
+plant/ammonia03_quench_converter              steady/reactors/ammonia03_quench_converter
+plant/ammoniaRoutes01_screening               steady/reactors/ammoniaRoutes01_screening
+plant/aceticAcid01_gibbsReactor               steady/reactors/aceticAcid01_gibbsReactor
+plant/twoSectorDemo                           steady/flowsheets/twoSectorDemo
+plant/esterification2sector                   steady/flowsheets/esterification2sector
+plant/sugarPlantEconomicsSweep                steady/economics/sugarPlantEconomicsSweep

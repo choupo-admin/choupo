@@ -48,7 +48,7 @@ WHY A LEVEL FOR ONE UNIT (2026-09-05, amended 2026-09-07). Until 09-05 the Juice
 \end{tutnarrative}
 
 \clearpage
-\tutentry{aceticAcid01\_gibbsReactor}{tutorials/plant/aceticAcid01\_gibbsReactor}
+\tutentry{aceticAcid01\_gibbsReactor}{tutorials/steady/reactors/aceticAcid01\_gibbsReactor}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny gibbsReactor}};
@@ -327,7 +327,7 @@ HONEST SIMPLIFICATIONS. (1) The converter is a SINGLE adiabatic bed, so it runs 
 \end{tutgolden}
 
 \clearpage
-\tutentry{ammonia03\_quench\_converter}{tutorials/plant/ammonia03\_quench\_converter}
+\tutentry{ammonia03\_quench\_converter}{tutorials/steady/reactors/ammonia03\_quench\_converter}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T101) at (0.0,-0.0) {\textbf{T101}\\[-1pt]{\tiny storageTank}};
@@ -425,7 +425,7 @@ CHANGED, and each change is a consequence of the converter: the INTERCHANGER fal
 \end{tutgolden}
 
 \clearpage
-\tutentry{ammoniaReactor01\_fixedConversion}{tutorials/plant/ammoniaReactor01\_fixedConversion}
+\tutentry{ammoniaReactor01\_fixedConversion}{tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01\_fixedConversion}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (60.9,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
@@ -482,7 +482,7 @@ TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
 \end{tutgolden}
 
 \clearpage
-\tutentry{ammoniaReactor02\_equilibrium}{tutorials/plant/ammoniaReactor02\_equilibrium}
+\tutentry{ammoniaReactor02\_equilibrium}{tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02\_equilibrium}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (60.9,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
@@ -539,7 +539,7 @@ TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
 \end{tutgolden}
 
 \clearpage
-\tutentry{ammoniaReactor03\_equilibriumApproach}{tutorials/plant/ammoniaReactor03\_equilibriumApproach}
+\tutentry{ammoniaReactor03\_equilibriumApproach}{tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03\_equilibriumApproach}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (60.9,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
@@ -596,7 +596,7 @@ TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
 \end{tutgolden}
 
 \clearpage
-\tutentry{ammoniaReactor04\_kineticSizing}{tutorials/plant/ammoniaReactor04\_kineticSizing}
+\tutentry{ammoniaReactor04\_kineticSizing}{tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04\_kineticSizing}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (89.9,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
@@ -661,7 +661,7 @@ SCALE, TOPOLOGY, SEED: read rung 3's flowsheetDict; nothing about them moved. TO
 \end{tutgolden}
 
 \clearpage
-\tutentry{ammoniaRoutes01\_screening}{tutorials/plant/ammoniaRoutes01\_screening}
+\tutentry{ammoniaRoutes01\_screening}{tutorials/steady/reactors/ammoniaRoutes01\_screening}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (electrolytic) at (0.0,-0.0) {\textbf{electrolytic}\\[-1pt]{\tiny conversionReactor}};
@@ -722,7 +722,7 @@ THE MARGINS ARE IN THE README, NOT IN THE ENGINE. A level-1 margin is arithmetic
 \end{tutgolden}
 
 \clearpage
-\tutentry{esterification2sector}{tutorials/plant/esterification2sector}
+\tutentry{esterification2sector}{tutorials/steady/flowsheets/esterification2sector}
 \tutwhat{Esterification plant -- two sectors (REACTION + SEPARATION) sharing components; per-sector constant/ data (S1 kinetics, S2 NRTL pair); ethanol-water pair inherited from the standard library}
 \tutreadme{A two-sector plant that exists to prove one thing: data lives with the sector that owns it, and a whole-plant run finds it there.}
 \tutreadme{Components are shared across the plant. The kinetics belong to REACTION and are never copied to the root. The ethylAcetate-water NRTL pair belongs to SEPARATION --- a $\ast$particular$\ast$ datum, fitted for this separation --- while ethanol-water walks up to the standard catalogue. Three levels of ownership, one run.}
@@ -1071,7 +1071,7 @@ This is the same M0 = 114.14 the reactor's polymer\{\} block used for Mn = M0/(1
 \end{tutgolden}
 
 \clearpage
-\tutentry{sugarPlantEconomicsSweep}{tutorials/plant/sugarPlantEconomicsSweep}
+\tutentry{sugarPlantEconomicsSweep}{tutorials/steady/economics/sugarPlantEconomicsSweep}
 \tutwhat{Sugar plant ECONOMICS SWEEP -- IRR / payback / NPV vs RawJuice sucrose content (Phase-2 SweepDriver post-chain differentiator)}
 \begin{tutnarrative}
 / system/flowsheetDict (PLANT level -- COMPOSITE)
@@ -1224,7 +1224,7 @@ THE PLOT PLAN (system/layoutDict) is Choupo's design of a plant of this scale up
 \subsection{twoSectorDemo}
 \grouptheory{twoSectorDemo}
 \clearpage
-\tutentry{SECTOR\_R}{tutorials/plant/twoSectorDemo/SECTOR\_R}
+\tutentry{SECTOR\_R}{tutorials/steady/flowsheets/twoSectorDemo/SECTOR\_R}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (R1) at (0.0,-0.0) {\textbf{R1}\\[-1pt]{\tiny stoichReactor}};
@@ -1234,12 +1234,12 @@ THE PLOT PLAN (system/layoutDict) is Choupo's design of a plant of this scale up
 \end{tutscheme}
 \tutwhat{SECTOR\_R -- the reactor sector. Runs its OWN compiled unit op (stoichReactor) on the plant-level thermo (cascaded from ../constant).}
 \begin{tutnarrative}
-one custom reactor (compiled from code/). Build + run with: bin/buildCode tutorials/plant/twoSectorDemo/SECTOR\_R runCase tutorials/plant/twoSectorDemo/SECTOR\_R ---
+one custom reactor (compiled from code/). Build + run with: bin/buildCode tutorials/steady/flowsheets/twoSectorDemo/SECTOR\_R runCase tutorials/steady/flowsheets/twoSectorDemo/SECTOR\_R ---
 
 \end{tutnarrative}
 
 \clearpage
-\tutentry{SECTOR\_S}{tutorials/plant/twoSectorDemo/SECTOR\_S}
+\tutentry{SECTOR\_S}{tutorials/steady/flowsheets/twoSectorDemo/SECTOR\_S}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (C1) at (0.0,-0.0) {\textbf{C1}\\[-1pt]{\tiny sharpSplitColumn}};
@@ -1250,7 +1250,7 @@ one custom reactor (compiled from code/). Build + run with: bin/buildCode tutori
 \end{tutscheme}
 \tutwhat{SECTOR\_S -- the separation sector. Runs its OWN compiled unit op (sharpSplitColumn) on the plant-level thermo (cascaded from ../constant).}
 \begin{tutnarrative}
-one custom distillation (compiled from code/). Build + run: bin/buildCode tutorials/plant/twoSectorDemo/SECTOR\_S runCase tutorials/plant/twoSectorDemo/SECTOR\_S ---
+one custom distillation (compiled from code/). Build + run: bin/buildCode tutorials/steady/flowsheets/twoSectorDemo/SECTOR\_S runCase tutorials/steady/flowsheets/twoSectorDemo/SECTOR\_S ---
 
 \end{tutnarrative}
 

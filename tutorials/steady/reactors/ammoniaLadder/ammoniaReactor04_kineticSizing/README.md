@@ -29,8 +29,8 @@ Background: `docs/design/how-a-process-design-is-staged.md` §3.4, §6 and
 ## 2. What changed against rung 3 — TWO blocks, not one, and the measured diff
 
 ```bash
-diff <(grep -v '^ *//' tutorials/plant/ammoniaReactor03_equilibriumApproach/system/flowsheetDict) \
-     <(grep -v '^ *//' tutorials/plant/ammoniaReactor04_kineticSizing/system/flowsheetDict)
+diff <(grep -v '^ *//' tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach/system/flowsheetDict) \
+     <(grep -v '^ *//' tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing/system/flowsheetDict)
 ```
 
 Comments aside, the diff is exactly: a `variables { V_bed }` block, a
@@ -164,7 +164,7 @@ relative and the approach by 1e-6 K.
    carries away 16 % of the ammonia rung 3 made.  **The isothermal 700 K converter
    of rungs 2 and 3 is a fiction no single bed can be** — and that is
    precisely why an industrial converter is a train of adiabatic beds with
-   quench or intercooling between them (`tutorials/plant/ammonia03_quench_converter`,
+   quench or intercooling between them (`tutorials/steady/reactors/ammonia03_quench_converter`,
    whose beds are still equilibrium beds).
 
 ## 5. What the bed prices, and what it does not — every one announced
@@ -337,9 +337,9 @@ SAME bound in a third and invents no tighter one.
 ## 9. Running it
 
 ```bash
-bin/choupo-lint  tutorials/plant/ammoniaReactor04_kineticSizing
-runCase          tutorials/plant/ammoniaReactor04_kineticSizing       # the DesignSpec (13 loop solves)
-cat tutorials/plant/ammoniaReactor04_kineticSizing/designspec_history.csv
+bin/choupo-lint  tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing
+runCase          tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing       # the DesignSpec (13 loop solves)
+cat tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing/designspec_history.csv
 # rate ONE volume instead: move system/outerDict aside and set variables.V_bed
 ```
 

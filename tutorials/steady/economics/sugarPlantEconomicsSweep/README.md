@@ -6,7 +6,7 @@ one thing a single CAPEX number cannot: **how the project economics move when a
 process variable changes.**
 
 ```
-runCase tutorials/plant/sugarPlantEconomicsSweep
+runCase tutorials/steady/economics/sugarPlantEconomicsSweep
 ```
 
 The driver runs the FULL post-processing chain (`sizing → costing → economics`,

@@ -37,8 +37,8 @@ it.  Verbatim, before and after:
 
 | gate | recorded as the gate's claim (before) | the line the gate actually marks (after) |
 |---|---|---|
-| `check_equipment_pinned` | `[excused: a sweep with no golden -- which point is the answer is RESERVED, task #77] tutorials/plant/sugarPlantEconomicsSweep` | `check_equipment_pinned: OK -- 230 equipment key(s) across 8 sizing case(s) are pinned in their goldens, in both directions … NOT CHECKED: whether any size or cost is RIGHT …` |
-| `check_overlay_aad_pinned` | `[skipped, run-only tier] tutorials/plant/esterification2sector/sectors/REACTION` | `check_overlay_aad_pinned: OK -- 14 AAD statistic(s) across 3 overlay case(s) are pinned … NOT CHECKED: whether any AAD is GOOD …` |
+| `check_equipment_pinned` | `[excused: a sweep with no golden -- which point is the answer is RESERVED, task #77] tutorials/steady/economics/sugarPlantEconomicsSweep` | `check_equipment_pinned: OK -- 230 equipment key(s) across 8 sizing case(s) are pinned in their goldens, in both directions … NOT CHECKED: whether any size or cost is RIGHT …` |
+| `check_overlay_aad_pinned` | `[skipped, run-only tier] tutorials/steady/flowsheets/esterification2sector/sectors/REACTION` | `check_overlay_aad_pinned: OK -- 14 AAD statistic(s) across 3 overlay case(s) are pinned … NOT CHECKED: whether any AAD is GOOD …` |
 | `check_groups` | `[check_groups] tree: /home/user/choupo/data/standards/components` | `[check_groups] OK -- every enforced compound declares its groups.  NOT ENFORCED … 91 record(s) carry reviewStatus interim …` |
 | `check_ion_pins` | `NaOH   ions-solid =   -44.50 kJ/mol   anchor =   -44.51   OK` | `check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol … NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT …` (the gate had no claim line at all; this one was written) |
 | `check_seal_drift` | `SEALED CATALOGUE DRIFT SUMMARY` | `check_seal_drift: OK -- 397 sealed manifest(s) and 3622 embedded record(s) inspected … NOT CHECKED: whether any sealed value is RIGHT …` (also written here) |

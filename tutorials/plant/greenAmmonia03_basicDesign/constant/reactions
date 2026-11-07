@@ -24,7 +24,7 @@
       Chem. Fundam. 7 (1968) 605-610 -- Eqs 2, 3-8, 18 and 19.
 
   Each group of numbers below carries its equation number.  The same law is
-  written in tutorials/plant/ammoniaReactor04_kineticSizing and (with the
+  written in tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing and (with the
   paper's Eq 39 effectiveness factor added) in the props bench
   tutorials/props/kinetics/ammoniaRate01_dyson_simon -- read the bench
   first.  Three copies of one law in three cases is the price of a case

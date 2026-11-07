@@ -1,4 +1,4 @@
-# CLAUDE.md -- Choupo case: plant/esterification2sector
+# CLAUDE.md -- Choupo case: steady/flowsheets/esterification2sector
 
 You are helping AUTHOR this Choupo **case** (the dicts under `system/` +
 `constant/`), NOT editing the C++ engine.  The repo-root CLAUDE.md is about the

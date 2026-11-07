@@ -371,7 +371,7 @@ legs and an `equilibriumTemperatureWindow`, `T_eq_outlet_K` and `approach_K` (th
 effluent's approach to the LAW's own equilibrium, US 5,352,428's per-bed definition — not
 the package's Gibbs surface); with `fugacityCoefficients`, `phi_law_over_pkg_<i>_in`.
 Wire `V_R` to a DesignSpec on `approach_K` to SIZE the bed.  Example: the Dyson & Simon
-(1968) ammonia law, written in `tutorials/plant/ammoniaReactor04_kineticSizing` (rung 4
+(1968) ammonia law, written in `tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing` (rung 4
 of 4 of the ammonia reactor-model ladder: the engine SOLVES the bed volume),
 `greenAmmonia03_basicDesign`, and with Eq 39 in the props bench
 `tutorials/props/kinetics/ammoniaRate01_dyson_simon` (`rateLawBench`).
@@ -2329,7 +2329,7 @@ still counts every component).
 Worked examples: `tutorials/plant/ammonia02_full_plant` carries a product
 tank (T201, liquid ammonia, 48 h) -- its raw-material tank (T101, syngas,
 0.5 h) was removed in DEV.md 4c C93, the syngas arriving by pipeline -- and
-`tutorials/plant/ammonia03_quench_converter` still holds both.
+`tutorials/steady/reactors/ammonia03_quench_converter` still holds both.
 
 This unit has no sizer of its own.  The tank the plant BUYS is a postDict
 `storage ( ... )` item, sized, split into tanks and costed on the CAPCOST
