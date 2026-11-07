@@ -30,6 +30,8 @@ License
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
+#include "SaturatedVapour.H"
+#include "thermo/equationOfState/EquationOfState.H"
 #include <cmath>
 #include <iostream>
 #include "thermo/Component.H"
@@ -148,7 +150,14 @@ sVector SolidPhase::fEffective(scalar T, scalar, const sVector& x) const
         const auto it = pureFluids_->find(crystalIdx_);
         if (it != pureFluids_->end()) pf = it->second.get();
     }
-    f[crystalIdx_] = saturationPressure(c, pf, T)
+    //  The pure-liquid reference the crystal is measured against is the SAME
+    //  one LiquidPhase uses, phi_sat included for a real vapour, so the
+    //  solid/liquid ratio (freezing point) cannot move with the vapour.
+    const scalar psat = saturationPressure(c, pf, T);
+    const scalar phiSat = (vapourEos_ && !pf)
+        ? saturatedVapourPhi(*vapourEos_, c, crystalIdx_, x.size(), T, psat)
+        : 1.0;
+    f[crystalIdx_] = (phiSat == 1.0 ? psat : psat * phiSat)
                    * std::exp(-dGfus / (constant::R * T));
     return f;
 }

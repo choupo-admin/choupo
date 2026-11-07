@@ -35,6 +35,8 @@ License
 #include "thermo/activityCoefficient/UNIFAC.H"
 #include "thermo/activityCoefficient/UNIQUAC.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
+#include "thermo/equationOfState/EquationOfState.H"
+#include "SaturatedVapour.H"
 
 namespace Choupo {
 
@@ -76,10 +78,18 @@ sVector LiquidPhase::fEffective(scalar T, scalar /*P_Pa*/, const sVector& x) con
             const auto it = pureFluids_->find(i);
             if (it != pureFluids_->end()) pf = it->second.get();
         }
-        const scalar fRef = (pf || (*components_)[i].hasVaporPressure())
+        const bool hasPsat = pf || (*components_)[i].hasVaporPressure();
+        const scalar psat = hasPsat
             ? saturationPressure((*components_)[i], pf, T)
             : 1.0;
-        f[i] = gamma[i] * fRef;
+        //  phi_sat only for a real vapour and a volatile on a vapour-pressure
+        //  record (a declared pure-fluid method owns its own curve and keeps
+        //  the reference it had).
+        const scalar phiSat = (vapourEos_ && hasPsat && !pf
+                               && (*components_)[i].role() != "nonvolatile")
+            ? saturatedVapourPhi(*vapourEos_, (*components_)[i], i, n_, T, psat)
+            : 1.0;
+        f[i] = gamma[i] * (phiSat == 1.0 ? psat : psat * phiSat);
     }
     return f;
 }

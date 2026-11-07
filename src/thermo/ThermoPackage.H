@@ -246,6 +246,22 @@ public:
     bool   vapourAssociationPriced() const;                    // .cpp
     std::size_t associatingComponent() const;                  // n() when none
     scalar PsatLiquidReference(std::size_t i, scalar T_K) const;
+
+    //  THE gamma-phi REFERENCE FUGACITY OF A PURE LIQUID, ONE HOME (C235):
+    //      liquidReferenceFugacity = PsatLiquidReference * phiSat
+    //  phiSat(i, T) is the pure-vapour fugacity coefficient of this
+    //  package's own EoS at (T, Psat_i) -- 1 exactly (the code is not
+    //  entered) for an ideal vapour, a phi-phi package, an electrolyte
+    //  package, a component on a declared pure-fluid method, one with no
+    //  vapour pressure or a nonvolatile.  Every K route that reads a Psat
+    //  as a liquid reference (K, KvecAtGamma) calls this and nothing else;
+    //  LiquidPhase/SolidPhase reach the same function through the borrowed
+    //  EoS `bindVapourReference` hands them.  Poynting is not included
+    //  (thermo/phase/SaturatedVapour.H).
+    scalar phiSat(std::size_t i, scalar T_K) const;
+    scalar liquidReferenceFugacity(std::size_t i, scalar T_K) const;
+    bool   phiSatActive() const;
+    void   bindVapourReference();      // hand the condensed phases the EoS (or null)
     sVector vapourAssociationLnPhi(scalar T_K, scalar P_Pa,
                                    const sVector& y) const;    // zeros when not priced
     vapourAssociation::AssociationResidual

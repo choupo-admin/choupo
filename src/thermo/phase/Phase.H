@@ -46,7 +46,8 @@ Description
 
     Per phase type:
         VaporPhase :  f_i^eff = φ_i(T,P,y) · P
-        LiquidPhase:  f_i^eff = γ_i(T,x)   · P_i^sat(T)
+        LiquidPhase:  f_i^eff = γ_i(T,x)   · P_i^sat(T)   [· φ_i^sat(T) when
+                        the vapour is a real gas: SaturatedVapour.H]
         SolidPhase :  inert (does not equilibrate); crystallising solid
                         with f_i^eff = f_i^{0,S}(T) deferred.
 \*---------------------------------------------------------------------------*/
@@ -66,6 +67,7 @@ namespace Choupo {
 
 class Component;
 class PureFluidModel;
+class EquationOfState;
 
 class Phase
 {
@@ -105,6 +107,14 @@ public:
     // override it.
     using PureFluidMap = std::map<std::size_t, std::unique_ptr<PureFluidModel>>;
     virtual void rebindPureFluids(const PureFluidMap* /*pf*/) {}
+
+    // Point a condensed phase at the package's NON-IDEAL vapour EoS (C235),
+    // so its pure-liquid reference fugacity is phi_sat(T) Psat(T)
+    // (thermo/phase/SaturatedVapour.H).  nullptr = ideal vapour, no vapour,
+    // or a phi-phi package: the reference is Psat alone, bit-identical to
+    // before.  Borrowed, rebound whenever the package moves.  Default no-op;
+    // LiquidPhase and SolidPhase override it.
+    virtual void rebindVapourEos(const EquationOfState* /*eos*/) {}
 
     // ---- Factory (run-time selection) -------------------------------------
     using Factory = std::function<std::unique_ptr<Phase>(const DictPtr&,

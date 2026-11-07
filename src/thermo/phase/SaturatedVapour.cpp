@@ -1,0 +1,95 @@
+/*---------------------------------------------------------------------------*\
+       \|/       C hemicals     | Open-source, glass-box chemical process simulator
+      \\|//      H eat-transfer | https://choupo.org
+     \\\|///     O perations    |
+      \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+       \|/       P roperties    | Licence: GPL-3.0-or-later
+        |        O ptimization  |
+       /|\                      |
+-------------------------------------------------------------------------------
+License
+    This file is part of Choupo.
+
+    Choupo is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Choupo is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+    License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+
+    SPDX-License-Identifier: GPL-3.0-or-later
+
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
+\*---------------------------------------------------------------------------*/
+
+#include "SaturatedVapour.H"
+#include "core/Advisory.H"
+#include "thermo/Component.H"
+#include "thermo/equationOfState/EquationOfState.H"
+
+#include <cmath>
+#include <iostream>
+
+namespace Choupo {
+
+namespace {
+
+void announceReference(const EquationOfState& eos)
+{
+    const std::string key = "saturatedVapourPhi:" + eos.modelName();
+    if (!AdvisoryLog::instance().passHas(key)
+     && AdvisoryLog::instance().addAnnouncedOnce(key, "thermo", "info",
+            "gamma-phi reference fugacity",
+            "the pure-liquid reference of every volatile component is"
+            " phi_sat(T) Psat(T), phi_sat the pure-vapour fugacity"
+            " coefficient of " + eos.modelName() + " at (T, Psat), so the"
+            " vapour's non-ideality enters both sides of K.  Poynting is not"
+            " included."))
+        std::cerr << "[thermo] gamma-phi reference fugacity = phi_sat(T) Psat(T)"
+                     " with phi_sat from " << eos.modelName()
+                  << " (a non-ideal vapour is counted on both sides of K;"
+                     " Poynting not included)\n";
+}
+
+scalar factorOne(const EquationOfState& eos, const Component& c,
+                 const std::string& why)
+{
+    const std::string key = "saturatedVapourPhiOne:" + eos.modelName()
+                          + ":" + c.name();
+    if (!AdvisoryLog::instance().passHas(key)
+     && AdvisoryLog::instance().addAnnouncedOnce(key, "thermo", "warning",
+            "phi_sat of " + c.name(),
+            "no usable saturated-vapour fugacity coefficient for '"
+            + c.name() + "' (" + why + "): the reference fugacity keeps"
+            " phi_sat = 1 for this component."))
+        std::cerr << "[thermo] phi_sat of '" << c.name() << "' taken as 1: "
+                  << why << "\n";
+    return 1.0;
+}
+
+} // namespace
+
+scalar saturatedVapourPhi(const EquationOfState& eos, const Component& c,
+                          std::size_t i, std::size_t n,
+                          scalar T, scalar Psat)
+{
+    announceReference(eos);
+    if (!(T > 0.0) || !(Psat > 0.0) || !std::isfinite(Psat))
+        return factorOne(eos, c, "its saturation pressure is not a finite"
+                                 " positive number at the trial T");
+    sVector e(n, 0.0);
+    e[i] = 1.0;
+    scalar v = 0.0;
+    try { v = eos.phi(T, Psat, e)[i]; }
+    catch (const std::exception& ex)
+    { return factorOne(eos, c, std::string("the EoS refused: ") + ex.what()); }
+    if (!(v > 0.0) || !std::isfinite(v))
+        return factorOne(eos, c, "the EoS returned a non-finite coefficient");
+    return v;
+}
+
+} // namespace Choupo
