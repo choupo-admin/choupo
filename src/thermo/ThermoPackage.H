@@ -180,6 +180,18 @@ public:
     sVector Kvec(scalar T_K, scalar P_Pa,
                  const sVector& x, const sVector& y) const;
 
+    //  THE LIQUID SIDE OF K DOES NOT DEPEND ON THE VAPOUR.  In the gamma-phi
+    //  world gamma(T, x) is a function of the liquid alone, so a caller that
+    //  iterates the incipient vapour at a FIXED (T, x) -- incipientPhase::
+    //  vapour, which re-asks K at a new y per pass -- computes gamma once and
+    //  hands it to KvecAtGamma.  KvecAtGamma(T,P,x,y,gamma(T,x)) IS Kvec
+    //  (same arithmetic, bit for bit); only valid when
+    //  liquidGammaIndependentOfVapour() (a package with a vapour phase that is
+    //  not the phi-phi world, where the liquid's phi carries the vapour's y).
+    bool    liquidGammaIndependentOfVapour() const;
+    sVector gammaForK(scalar T_K, const sVector& x) const;
+    sVector KvecAtGamma(scalar T_K, scalar P_Pa, const sVector& x,
+                        const sVector& y, const sVector& gamma) const;
     sVector Kvec_Raoult(scalar T_K, scalar P_Pa) const;
 
     //  ---- STAGE EQUILIBRIUM: the K-values an EQUILIBRIUM STAGE sees -----
