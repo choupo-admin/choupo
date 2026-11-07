@@ -3132,6 +3132,36 @@ accepts today, and that is a policy call.
 > `git add .` refused by a PreToolUse hook; then "no edit of `bin/runTests`, `src/` or
 > `gui/` while a suite runs".
 
+> **C235 LANDED (2026-11-07, merge of integ/worktree-agent-a7c1125f4f65eeab1 at
+> 4174b9a05; branch tip 5d86eaf00).**  STATUS: done.  WHAT LANDED: the gamma-phi liquid
+> reference is f_ref = phi_sat Psat exp(V_L (P - Psat)/RT) (`ThermoPackage::
+> liquidReferenceFugacity`, `SaturatedVapour`), only below Tc, only with a non-ideal
+> vapour, Poynting only with a record `Vliq` (announced when absent), the solid phase on
+> the same factor; the Gibbs routes (`DirectMin`, `GibbsMethod`, `ElementPotential`,
+> `ReactiveFlash`, the VLLE search of `IsothermalFlash`) and the records-derived K_a of
+> the reactive column read one hook, `pureLiquidReference`; a feed is priced at its own
+> pressure; `column19` declares SRK as its source case does; `pureSaturationTemperature`
+> helper; `suite_timings.py` reads a decimal comma.  MEASURED: the MTBE column against
+> the reference simulator -- duties 7.59 / 7.75 MW against 7.40 / 7.64 (+2.5 % / +1.5 %,
+> from +8 %), T 323.92 / 400.67 K against 324.4 / 401.3, conversion 98.8 against
+> 98.87 %, first law 0 kW; NH3 K at the 250 K / 200 bar separator 0.020448 by hand
+> against 0.020448 (0.002 %; the reference correction is +24 % there); the engine's
+> alpha is Graboski-Daubert, which explained the earlier 0.5-1.2 % hand gaps.  GOLDENS:
+> 20 cases re-recorded then 4 again after their witness copies moved (ammonia01-03,
+> ammoniaReactor01-04, economics03, greenAmmonia02 x2 / 03 / PEQ, letdown01-02,
+> relief01-02, column14 / 15 / 19, envelope01-02, ammoniaRate01); every row's reason is
+> in a2cb391d6; no anchor row moved; the hand values of five gates re-derived, no
+> tolerance widened (pinch Q_C,min 95454.3 -> 95453.2 kW; greenAmmonia03 D_converter
+> 2.2283 -> 2.2427 m).  VALIDATION: full sweep on the tip 847/0 (34 min); scope 509/0,
+> --gui 44/0, --fast on the integrated tree; no second sweep, reason in the merge.
+> OPEN, found by the slice: (a) the Tc rule steps the factor to exactly 1 at T = Tc, so
+> a pressure-marched saturation solve cannot cross it and every envelope02 branch stops
+> at 366-369 K below propane's Tc 369.83 K -- the case is renamed
+> `envelope02_c3c4c5_branch_stop` and says so; a continuous variant (hold the Tc value
+> above Tc) is the candidate, to be judged on a measured envelope (C239 risk table);
+> (b) `column20` is the same system at the same pressure and still on the ideal vapour
+> (C239 first item); (c) three READMEs carry prose from the previous state, marked.
+
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
 > +10 %), and that stands: INSIDE the liquid Cp's declared `Trange` the rung is

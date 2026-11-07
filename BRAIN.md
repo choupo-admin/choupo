@@ -40,8 +40,8 @@ Measured 2026-11-07 on main `e42389669` (by hand; the generator is C241).
 
 ## MEASURED BY HAND (dated; retaken after each full sweep)
 
-- Last full sweep: 2026-11-07, branch C235 at `5d86eaf00`: 847 PASS, 0 FAIL,
-  6 EXPECTED-FAIL, 34 min at 8 jobs.  Being integrated into main.
+- Last full sweep: 2026-11-07, C235 tip `5d86eaf00` (landed as 4174b9a05): 847 PASS,
+  0 FAIL, 6 EXPECTED-FAIL, 34 min at 8 jobs.
 - Slowest jobs (real seconds, parallel run): swro01_campoDalias 289 (the golden
   CHECKER, not the solve: 0.5 s; C236 cuts it to 93), reaction-curve gate 247,
   gate-selftest 234, ctrl17 222 (fsync per instant; C236: 0.4 s), batch-plan
@@ -52,8 +52,8 @@ Measured 2026-11-07 on main `e42389669` (by hand; the generator is C241).
 
 | area | what works | held to | weak point | judged |
 |---|---|---|---|---|
-| Thermodynamics | gamma-phi and phi-phi, SRK/PR/PC-SAFT, NRTL/UNIQUAC/Wilson/UNIFAC/COSMO-SAC; liquid is Kirchhoff from the ideal-gas datum; since C235 the liquid reference carries phi_sat and Poynting | NH3 K at 250 K / 200 bar: 0.020448 hand vs engine 0.020448 | 34 of 36 column cases run an IDEAL vapour, 7 of them above 2.5 bar (C239); the Tc rule steps the reference factor to 1 and stalls phase envelopes near a component's Tc (open) | 2026-11-07, C235 report |
-| Distillation | CMO, Wang-Henke, simultaneous MESH, full MESH; reactive (equilibrium K_a and kinetic) in the full MESH; Murphree; tray hydraulics; sizing and cost | MTBE column vs the reference simulator: duties +2.5 %/+1.5 %, T within 0.6 K, conversion 98.8 vs 98.87 % (C235). NO column held to a measured plant | column14 (Klemola, industrial C4 splitter) has NO anchor rows though its record promised them; no `refluxRatio + bottomsRate` pair, no total condenser on the full MESH, no total-reflux mode | 2026-11-07, paper reading C239 |
+| Thermodynamics | gamma-phi and phi-phi, SRK/PR/PC-SAFT, NRTL/UNIQUAC/Wilson/UNIFAC/COSMO-SAC; liquid is Kirchhoff from the ideal-gas datum; the liquid reference carries phi_sat and Poynting (C235, landed 11-07) | NH3 K at 250 K / 200 bar: 0.020448 hand vs engine 0.020448 | 34 of 36 column cases run an IDEAL vapour, 7 of them above 2.5 bar (C239); the Tc rule steps the reference factor to 1 and stalls phase envelopes near a component's Tc (open) | 2026-11-07, C235 report |
+| Distillation | CMO, Wang-Henke, simultaneous MESH, full MESH; reactive (equilibrium K_a and kinetic) in the full MESH; Murphree; tray hydraulics; sizing and cost | MTBE column vs the reference simulator: duties +2.5 %/+1.5 %, T within 0.6 K, conversion 98.8 vs 98.87 % (C235, landed). NO column held to a measured plant | column14 (Klemola, industrial C4 splitter) has NO anchor rows though its record promised them; no `refluxRatio + bottomsRate` pair, no total condenser on the full MESH, no total-reflux mode | 2026-11-07, paper reading C239 |
 | Reactors and kinetics | 7 steady reactors, batch and dynamic vessels, case-carried rate laws (`expression`), effectiveness factor ANNOUNCED as 1, Gibbs on the package's own surface | Dyson & Simon anchors (check_ammonia_rate); Williams-Otto published x* (ctrl12) | no pellet model (eta = 1 everywhere); the seven exotherm tutorials repaired honestly, their replacement (ethylene glycol) not built | 2026-11-05 |
 | Flowsheets and recycle | sequential modular, declared tears, Wegstein, Newton-on-tears, dominant eigenvalue (teaching aid); every steady run reports mass, element and energy closure | cavett01 (Rosen & Pauls spec) | energy closure still open on 5 cases; two-liquid surfaces across a model boundary refused by name | 2026-11-07 |
 | Electrolytes | Davies, Pitzer HMW, Edwards-Pitzer, eNRTL; speciation, precipitation, ion-derived salt enthalpy; two bases on every stream | Hamer & Wu 6 salts (gamma AAD 0.1-0.7 %), Parker Phi_L, Edwards Table 7/8, Dickson boron pH | seawater boron on Pitzer blocked on Felmy & Weare; NaCl in water has no enthalpy datum the default report can use | 2026-11-05 |
@@ -108,8 +108,8 @@ are indoor by rule (C100) and the viewer marks them.
 
 ## QUESTIONS VÍTOR ASKS (answered from here)
 
-- **"Dá parecido com o Aspen?"**  The MTBE column: yes within 2.5 % on duties
-  and 0.6 K after C235 (on the branch; landing today).  Everything else:
+- **"Dá parecido com o Aspen?"**  The MTBE column: yes, within 2.5 % on duties
+  and 0.6 K (C235, on main since 11-07).  Everything else:
   compared to nothing commercial; see "held to".
 - **"Reproduz os artigos?"**  K_a(T) of Izquierdo (AAD 4.6 %) and Rehfinger's
   law: yes.  Jacobs & Krishna / Nijhuis: not yet, and both are SIMULATION
@@ -130,6 +130,6 @@ are indoor by rule (C100) and the viewer marks them.
 
 ## WHAT CHANGED LAST (newest first; keep ten lines)
 
-- 2026-11-07 C235 (branch, landing): real-vapour liquid reference; 20 cases
+- 2026-11-07 C235 LANDED (4174b9a05): real-vapour liquid reference; 20 cases
   re-recorded with reasons; C236 speed; C234 pinch; C229 3D; C183 props tree;
   C227 seal line decided; C239 column papers read; C240 layout judged; this file.
