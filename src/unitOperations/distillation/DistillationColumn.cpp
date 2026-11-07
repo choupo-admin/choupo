@@ -3222,21 +3222,30 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         //  returns the liquid-like root (phi ~ 0.05), so every K on the seed
         //  is a wild number and the CMO Newton starts in a nonphysical basin
         //  (column19 under SRK: stage temperatures of 140 K at iteration 4,
-        //  stopped NOT converged).  With a non-ideal vapour both ends are
-        //  moved to their Trouton saturation temperature at P (dHvap =
-        //  10.5 R Tb: 1/Tsat = 1/Tb - ln(P/Patm)/(10.5 Tb)); an ideal vapour
-        //  keeps the ramp it always had, byte-identical.
+        //  stopped NOT converged).  With a non-ideal vapour both ends move to
+        //  the coldest and hottest PURE SATURATION TEMPERATURE at P of the
+        //  package's own curves (`pureSaturationTemperature`, capped at each
+        //  Tc).  Measured on column19: a Trouton estimate overshot methanol's
+        //  by 18 K and a ramp end above the C4s' Tc failed the (R, D) form,
+        //  so the curve itself is read.  An ideal vapour keeps the ramp it
+        //  always had, byte-identical.
         if (tbMax > tbMin && thermo.vapourFugacityDependsOnComposition())
         {
-            const scalar f = 1.0 - std::log(std::max(P, 1.0) / 101325.0) / 10.5;
-            if (f > 0.2)
+            scalar tsMin = 1.0e9, tsMax = 0.0;
+            for (std::size_t i = 0; i < n; ++i)
             {
-                Ttop = tbMin / f;  Tbot = tbMax / f;
+                if (!(zAvg[i] > 0.0)) continue;
+                const scalar ts = pureSaturationTemperature(thermo, i, P);
+                if (ts > 0.0) { tsMin = std::min(tsMin, ts); tsMax = std::max(tsMax, ts); }
+            }
+            if (tsMax > tsMin)
+            {
+                Ttop = tsMin;  Tbot = tsMax;
                 if (verbosity >= 3)
                     std::cout << "  [seed] real-vapour package: the reactive T ramp is"
-                                 " taken at the column pressure's Trouton saturation ("
-                              << Ttop << " -> " << Tbot << " K) rather than at the"
-                                 " normal boiling points\n";
+                                 " taken between the components' own saturation"
+                                 " temperatures at P (" << Ttop << " -> " << Tbot
+                              << " K) rather than at the normal boiling points\n";
             }
         }
     }

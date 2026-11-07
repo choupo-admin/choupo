@@ -61,23 +61,26 @@ sVector bubbleK(const ThermoPackage& thermo, scalar T, scalar P,
 //  kernel reads K(T, P, x, x), the y = x vapour is a liquid at that state,
 //  the cubic returns its liquid root, f(T) turns non-monotone and the
 //  Newton walked down to its 200 K bracket (column14's feed at 8.93 bar).
-//  A vapour whose fugacity depends on composition therefore moves each Tb to
-//  its Trouton saturation temperature at P (dHvap = 10.5 R Tb); an ideal
-//  vapour keeps the plain weighted Tb, byte-identical.  ONE home, both
-//  Newtons (the silent helper and the traced unit) call it.
+//  A vapour whose fugacity depends on composition therefore uses each
+//  component's own saturation temperature at P
+//  (`pureSaturationTemperature`); an ideal vapour keeps the plain weighted
+//  Tb, byte-identical.  ONE helper, both Newtons call it.
 scalar weightedBoilingGuess(const ThermoPackage& thermo, const sVector& x,
                             scalar P)
 {
     const std::size_t n = thermo.n();
-    scalar f = 1.0;
-    if (thermo.hasEos() && thermo.vapourFugacityDependsOnComposition())
-    {
-        const scalar g = 1.0 - std::log(std::max(P, 1.0) / 101325.0) / 10.5;
-        if (g > 0.2) f = g;
-    }
+    const bool real = thermo.hasEos() && thermo.vapourFugacityDependsOnComposition();
     scalar T0 = 0.0;
     for (std::size_t i = 0; i < n; ++i)
-        T0 += x[i] * ((thermo.comp(i).Tb() > 0 ? thermo.comp(i).Tb() : 350.0) / f);
+    {
+        scalar t = (thermo.comp(i).Tb() > 0 ? thermo.comp(i).Tb() : 350.0);
+        if (real && x[i] > 0.0)
+        {
+            const scalar ts = pureSaturationTemperature(thermo, i, P);
+            if (ts > 0.0) t = ts;
+        }
+        T0 += x[i] * t;
+    }
     return T0;
 }
 } // namespace
