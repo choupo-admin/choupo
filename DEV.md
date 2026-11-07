@@ -3162,6 +3162,27 @@ accepts today, and that is a policy call.
 > (b) `column20` is the same system at the same pressure and still on the ideal vapour
 > (C239 first item); (c) three READMEs carry prose from the previous state, marked.
 
+> **C243 (Vitor, 2026-11-07: "os gráficos [dos casos de controlo] acabam por ter muitas
+> variáveis e ficam confusos!  Havia de haver no dicionário uma forma de especificar os
+> gráficos que o utilizador gostaria de ver, de uma forma simples"): THE CASE DECLARES
+> ITS FIGURES.**  STATUS: scheduled (Next three days; a builder when the integration
+> queue is under 3).  MEASURED: no case dict declares a plot today (`plot {}` exists only
+> as the layout's plot MARGIN); `ctrl22` writes 20 trajectory columns (moles, T, level,
+> volume, density, F, and SP/PV/MV of three controllers) and the GUI draws them as one
+> family.  DECISION (architect, rule 00): (1) DEFAULT without any declaration: the GUI
+> draws ONE figure per control loop (SP, PV on one axis; MV on a second axis, labelled)
+> and one figure for the vessel states, instead of everything on one plot -- the
+> controller names are already in the column headers, so no grammar is needed for this.
+> (2) DECLARED: `plots ( { name "..."; series ( LC1.SP LC1.PV ); axis2 ( LC1.MV ); } ... )`
+> in `system/controlDict`, for every binary that writes a trajectory, profile or scan;
+> a series name that no column carries REFUSES by name with the columns listed; the
+> engine writes the declaration it honoured into the result (`plots` block) and the GUI
+> draws exactly those figures first, every series still one click away under "all".
+> (3) The same block serves `choupoSolve` stage/axial profiles and props scans.  Gate:
+> the refusal, the default per-loop figures on ctrl22 (count of figures = loops + 1),
+> the declared block drawn as declared (a GUI test on a fixture).  Record in
+> `docs/ai/dict-syntax.md` and the user guide.
+
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
 > +10 %), and that stands: INSIDE the liquid Cp's declared `Trange` the rung is
