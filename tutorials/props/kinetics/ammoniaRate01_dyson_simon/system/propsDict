@@ -23,7 +23,7 @@
   rather than reporting an edge as a maximum.
 
   THE DECLARED STATES.  Three gases TRANSCRIBED from the converged answer of
-  tutorials/plant/ammonia03_quench_converter, at the digits that case's own
+  tutorials/steady/reactors/ammonia03_quench_converter, at the digits that case's own
   golden pins.  A transcription is a SECOND HOME for somebody else's number
   and it will go stale if that case moves, so `check_ammonia_rate` RUNS
   ammonia03 and holds these three blocks to its converged result.

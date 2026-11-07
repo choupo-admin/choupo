@@ -11,7 +11,7 @@ the reacting hot gas is cooled with a supply of cold gas *inside* the reactor.
 Run it:
 
 ```
-runCase tutorials/plant/ammonia03_quench_converter
+runCase tutorials/steady/reactors/ammonia03_quench_converter
 ```
 
 
@@ -202,7 +202,7 @@ equilibrium and no pressure drop anywhere in this case.  Consequently:
   this engine — `pfr` on the Dyson & Simon law written in the case
   (`kinetics { type expression; }`) with a
   DesignSpec on its approach-to-equilibrium KPI, see
-  `tutorials/plant/ammoniaReactor04_kineticSizing` — but not THIS case's beds,
+  `tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing` — but not THIS case's beds,
   which stay equilibrium beds by construction.)
 * **This case publishes NO cost and NO appraisal.**  There is no `costing` and
   no `economics` block.  With the converter unsized, a capital total would omit

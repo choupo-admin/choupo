@@ -243,6 +243,21 @@ of them for completeness' sake would bury the ones worth reading.
 
 | `ctrl16_williams_otto_optimal` | **Runs under `choupoCtrl`.**  The §5.3 combined optimisation of arXiv:2004.07614 — and the first `system/outerDict` over a DYNAMIC campaign: the same OuterDriver architecture every steady optimisation uses, Nelder-Mead over `controllers[i].schedule[j].value` (a piecewise-constant control profile IS a Schedule), objective read off the plant's `J_combined_klb_final` ODE-state integral.  MEASURED: **J = 546.8 vs the published collocation optimum 551.8 — 99.1 % from 10 shooting variables** (yield 605.4/608.3, waste 58.6/56.5), 530 campaign evaluations in ~7 s, optimiser directions matching the paper's Fig. 8; the missing 0.9 % is the bang-bang fine structure a K = 5 profile cannot draw, stated up front and measured instead of hidden.  The §5.2 path-constrained variant (SQP over a noisy functor) stays deferred, named |
 
+**Where the ammonia, sugar and demo cases live (DEV.md 4c C244: one reference
+plant per process under `tutorials/plant/`; ladders, demos and variants under
+`tutorials/steady/`).**  The old identifiers still resolve through
+`tutorials/ALIASES`; the paths are:
+
+- `tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion` ..
+  `ammoniaReactor04_kineticSizing`: the four-rung reactor-model teaching
+  sequence (that directory's README states it);
+- `tutorials/steady/reactors/ammonia03_quench_converter`,
+  `tutorials/steady/reactors/ammoniaRoutes01_screening`,
+  `tutorials/steady/reactors/aceticAcid01_gibbsReactor`;
+- `tutorials/steady/flowsheets/twoSectorDemo`,
+  `tutorials/steady/flowsheets/esterification2sector`;
+- `tutorials/steady/economics/sugarPlantEconomicsSweep`, the economic sweep over
+  the sucrose feed of the sugar plant (`tutorials/plant/ChemicalPlantTutorial`).
 
 ## Regression-focused cases
 

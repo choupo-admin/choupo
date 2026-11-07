@@ -179,7 +179,7 @@ PRE  | SERIAL | bin/curate/check_solubility_parameter.py           | writes gene
 PRE  | SERIAL | bin/curate/check_bashrc_path.py                    | runs make
 PRE  | SERIAL | bin/curate/check_friction_correlations.py          | exit 1 in the traced sweep: its writes are not known in full
 PRE  | SERIAL | bin/curate/check_rate_expression.py                | runs make
-PRE  | SERIAL | bin/curate/check_ammonia_rate.py                   | writes tutorials/plant/ammonia03_quench_converter/converged (+49 more)
+PRE  | SERIAL | bin/curate/check_ammonia_rate.py                   | writes tutorials/steady/reactors/ammonia03_quench_converter/converged (+49 more)
 PRE  | PAR    | bin/curate/check_pfr_ergun.py                      | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_cooled_pfr.py                     | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_transport_correlations.py         | exit 1 in the traced sweep: its writes are not known in full
@@ -296,7 +296,7 @@ PRE  | PAR    | bin/curate/check_h_surface.py                      | traced: wri
 
 # ---- POST ----------------------------------------------------------------------
 POST | SERIAL | bin/curate/check_degenerate_limits.py              | has its own pool of workers: it runs alone, with the machine
-POST | SERIAL | bin/curate/check_unread_keys.py                    | writes tutorials/plant/sugarPlantEconomicsSweep/reports/economics/cashFlow.csv (+16 more)
+POST | SERIAL | bin/curate/check_unread_keys.py                    | writes tutorials/steady/economics/sugarPlantEconomicsSweep/reports/economics/cashFlow.csv (+16 more)
 POST | PAR    | bin/curate/check_postdict_audit.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 POST | SERIAL | bin/curate/check_cost_provenance.py                | writes tutorials/plant/greenAmmoniaPEQ_baseCase/converged (+84 more)
 POST | PAR    | bin/curate/check_economic_sensitivity.py           | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
@@ -308,7 +308,7 @@ POST | SERIAL | bin/curate/check_estimate_class.py                 | writes tuto
 POST | PAR    | bin/curate/check_sector_hierarchy.py               | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 POST | SERIAL | bin/curate/check_design_sheet.py                   | writes docs/design/__gate_probe.md (+768 more)
 POST | SERIAL | bin/curate/check_internal_states.py                | writes docs/design/__gate_probe_internal.md (+540 more)
-POST | SERIAL | bin/curate/check_equipment_pinned.py               | writes tutorials/plant/sugarPlantEconomicsSweep/reports/economics/cashFlow.csv (+2 more)
+POST | SERIAL | bin/curate/check_equipment_pinned.py               | writes tutorials/steady/economics/sugarPlantEconomicsSweep/reports/economics/cashFlow.csv (+2 more)
 POST | SERIAL | bin/curate/check_relief_valve.py                   | writes reports (+2 more)
 POST | PAR    | bin/curate/check_bund_arithmetic.py                | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 POST | SERIAL | bin/curate/check_converter_shell.py                | not reached by the traced sweep

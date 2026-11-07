@@ -23,8 +23,8 @@ reactor model.**  Against rung 2 the difference is literally one line.
 | **4** `ammoniaReactor04_kineticSizing` | adiabatic `pfr` on the Dyson & Simon (1968) rate law, volume solved by a DesignSpec | a bed volume the engine computed | a pellet effectiveness factor (announced as unpriced); a cost |
 
 ```bash
-diff tutorials/plant/ammoniaReactor02_equilibrium/system/flowsheetDict \
-     tutorials/plant/ammoniaReactor03_equilibriumApproach/system/flowsheetDict
+diff tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium/system/flowsheetDict \
+     tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach/system/flowsheetDict
 ```
 
 Background: `docs/design/how-a-process-design-is-staged.md`, and DEV.md C8.
@@ -340,15 +340,15 @@ flowsheet's realistic per-pass conversion, not the ammonia industry's.**
 
 The converter is also isothermal at 700 K, where a real one is a train of
 adiabatic beds with inter-bed cooling — see
-`tutorials/plant/ammonia03_quench_converter`.
+`tutorials/steady/reactors/ammonia03_quench_converter`.
 
 ## 8. Running it
 
 ```bash
-bin/choupo-lint  tutorials/plant/ammoniaReactor03_equilibriumApproach
-bin/choupo-init0 tutorials/plant/ammoniaReactor03_equilibriumApproach
-runCase          tutorials/plant/ammoniaReactor03_equilibriumApproach
-cat tutorials/plant/ammoniaReactor03_equilibriumApproach/design/converter/vessel
+bin/choupo-lint  tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach
+bin/choupo-init0 tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach
+runCase          tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach
+cat tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach/design/converter/vessel
 ```
 
 ## 9. Sources

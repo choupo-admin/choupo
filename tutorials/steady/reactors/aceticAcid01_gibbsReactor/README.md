@@ -7,7 +7,7 @@ how fast, or with what catalyst, it gets there.
 
 ```bash
 source etc/bashrc
-runCase tutorials/plant/aceticAcid01_gibbsReactor
+runCase tutorials/steady/reactors/aceticAcid01_gibbsReactor
 ```
 
 ## 1. The chemistry, and what the reactor is (not) told

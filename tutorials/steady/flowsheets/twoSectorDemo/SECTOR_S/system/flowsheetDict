@@ -7,8 +7,8 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*--- SECTOR_S: one custom distillation (compiled from code/). Build + run:
-        bin/buildCode tutorials/plant/twoSectorDemo/SECTOR_S
-        runCase       tutorials/plant/twoSectorDemo/SECTOR_S                       ---*/
+        bin/buildCode tutorials/steady/flowsheets/twoSectorDemo/SECTOR_S
+        runCase       tutorials/steady/flowsheets/twoSectorDemo/SECTOR_S                       ---*/
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 units
 (

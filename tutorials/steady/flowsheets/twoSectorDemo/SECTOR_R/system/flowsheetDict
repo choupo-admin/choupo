@@ -7,8 +7,8 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*--- SECTOR_R: one custom reactor (compiled from code/). Build + run with:
-        bin/buildCode tutorials/plant/twoSectorDemo/SECTOR_R
-        runCase       tutorials/plant/twoSectorDemo/SECTOR_R                       ---*/
+        bin/buildCode tutorials/steady/flowsheets/twoSectorDemo/SECTOR_R
+        runCase       tutorials/steady/flowsheets/twoSectorDemo/SECTOR_R                       ---*/
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 units
 (

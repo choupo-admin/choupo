@@ -5,7 +5,7 @@ nothing from outside except the Choupo engine. Zip it, send it to a
 collaborator, they unzip + build + run.
 
 > **Run the SECTORS, not the umbrella.** The top-level
-> `tutorials/plant/twoSectorDemo` has no `connections` (the sectors are not
+> `tutorials/steady/flowsheets/twoSectorDemo` has no `connections` (the sectors are not
 > wired into one plant), so running it prints *"nothing to simulate — curation
 > phase"* and exits cleanly. The runnable cases are the two sub-sectors,
 > **`SECTOR_R`** and **`SECTOR_S`**, each of which builds its own custom unit op
@@ -22,10 +22,10 @@ collaborator, they unzip + build + run.
 
 ## Build + run (each sector runs on its own)
 ```
-bin/buildCode tutorials/plant/twoSectorDemo/SECTOR_R   # compiles StoichReactor
-runCase       tutorials/plant/twoSectorDemo/SECTOR_R
-bin/buildCode tutorials/plant/twoSectorDemo/SECTOR_S   # compiles SharpSplitColumn
-runCase       tutorials/plant/twoSectorDemo/SECTOR_S
+bin/buildCode tutorials/steady/flowsheets/twoSectorDemo/SECTOR_R   # compiles StoichReactor
+runCase       tutorials/steady/flowsheets/twoSectorDemo/SECTOR_R
+bin/buildCode tutorials/steady/flowsheets/twoSectorDemo/SECTOR_S   # compiles SharpSplitColumn
+runCase       tutorials/steady/flowsheets/twoSectorDemo/SECTOR_S
 ```
 `buildCode` links the sector's `code/` against the Choupo library into a
 per-case binary — the FLOWTRAN model: standard library + your own blocks,
@@ -35,7 +35,7 @@ linked at build time. Glass-box: the g++ command is printed, no runtime magic.
 Zip the folder (the compiled `code/.build/` and any logs are NOT needed — the
 collaborator rebuilds with `buildCode`):
 ```
-zip -r twoSectorDemo.zip tutorials/plant/twoSectorDemo \
+zip -r twoSectorDemo.zip tutorials/steady/flowsheets/twoSectorDemo \
     -x '*/code/.build/*' '*/log.*' '*/reports/*'
 ```
 

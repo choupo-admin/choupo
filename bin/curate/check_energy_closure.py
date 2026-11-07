@@ -594,7 +594,7 @@ def ratchet_kW(pin: float) -> float:
 #  percentage moved with the energy-exchanged denominator (230.5 kW of
 #  boundary duty).  The debt is still unpaid.
 KNOWN_OPEN = {
-    "tutorials/plant/esterification2sector": 310.4440,
+    "tutorials/steady/flowsheets/esterification2sector": 310.4440,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,
@@ -811,8 +811,8 @@ UNIT_WITNESSES = {
     ("tutorials/steady/flowsheets/cavett01_recycle_train", "M2"),
     ("tutorials/steady/flowsheets/cavett01_recycle_train", "M3"),
     ("tutorials/steady/distillation/column12_stage_is_a_flash", "recombine"),
-    ("tutorials/plant/ammonia03_quench_converter", "quench1Mix"),
-    ("tutorials/plant/ammonia03_quench_converter", "quench2Mix"),
+    ("tutorials/steady/reactors/ammonia03_quench_converter", "quench1Mix"),
+    ("tutorials/steady/reactors/ammonia03_quench_converter", "quench2Mix"),
     ("tutorials/steady/flowsheets/inletState01_undeclared_vapour", "M1"),
     #  The isothermal gibbsReactor (C112 point 6): a two-phase AUTHORED feed
     #  (the condensing WGS reactor, by each of its three methods) and a
