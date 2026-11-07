@@ -366,7 +366,7 @@ The same plant at two stages: [`greenAmmonia02_feasibility150bar`](../greenAmmon
 | purge, kmol/h | 11.61 | 12.31 | +0.70 | A declared fraction of the recycle in both, so it follows the recycle. |
 | catalyst volume, m³ | 21.88 | 61.64 | +39.76 | Rule → criterion. Feasibility: a vessel sized on an ASSUMED space velocity (20 000 Nm³/(m³ h), normal basis). Basic design: the three bed volumes SOLVED by the rate law against 515 °C and two 5 K approaches; the last bed alone is 32.45 m³, because the rate collapses near equilibrium. *Reactor model; the rule of thumb was optimistic here.* |
 | converter pressure vessel, m³ (D × H, m) | 21.88 (1.67 × 10.01) | 85.72 (2.24 × 21.70) | +63.84 | Feasibility: the space-velocity vessel at a declared L/D. Basic design: ONE shell holding the three beds and the two interbed coolers stacked at the beds' one diameter, which the DesignSpec solves so the largest bed drop meets its 1 bar budget (DEV.md 4c C69). *Reactor model + one-shell construction.* |
-| converter pressure drop, bar | 0.73 | 1.97 | +1.24 | Feasibility: no flow model — the number is the loop pressure minus the Gibbs reactor's DECLARED 150 bar. Basic design: Ergun integrated along each bed (0.34 + 0.63 + 1.00 bar). *Pressure-drop model.* |
+| converter pressure drop, bar | 0.73 | 1.97 | +1.25 | Feasibility: no flow model — the number is the loop pressure minus the Gibbs reactor's DECLARED 150 bar. Basic design: Ergun integrated along each bed (0.34 + 0.63 + 1.00 bar). *Pressure-drop model.* |
 | loop pressure drop, recycle compressor discharge → separator, bar | 10.73 | 10.80 | +0.08 | Set in BOTH by the separator's DECLARED 140 bar and the declared compressor powers. The exchangers' Kern pressure drops are computed on their design sheets and NOT applied to the streams, so only the converter's share of this drop is modelled, and only at the basic design. *No difference by construction — not a measured agreement.* |
 
 ### Investment
@@ -421,7 +421,7 @@ From -492.00 to -337.28 M EUR. The first step re-runs the feasibility case with 
 | LP steam (drum heating) | +0.01 | reactor model (flows) |
 | operating labour (N_np 12 → 15, a declared count) | -0.68 | count |
 | capital: compressors (4) | -0.23 | pressure-drop model |
-| capital: converter pressure vessel | -27.66 | reactor model + one shell |
+| capital: converter pressure vessel | -27.65 | reactor model + one shell |
 | capital: catalyst charge | -8.16 | **scope** (not costed before) |
 | capital: feed heating / effluent cooling exchangers | +0.12 | **heat recovery built** |
 | capital: interbed coolers | -2.33 | reactor model |

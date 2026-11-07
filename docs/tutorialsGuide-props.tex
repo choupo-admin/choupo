@@ -3184,18 +3184,18 @@ The catalyst particle is the law's own parameter (`dp 8 mm;` in constant/reactio
 \tutreadme{The same two letters, meaning opposite things. This case keeps the paper's convention because every number in it is read off the paper's own equations, and the engine says so at every surface that prints either letter. Carry $\eta$ across from the reactor side and you will read a conversion as an effectiveness factor.}
 \tutreadme{A correlation in this tree carries three things a reader can check, and this one carries them in the CASE:}
 \begin{tutgolden}
-\goldrow{diag}{dysonSimon}{bed1Inlet\_Eq40}{312.95744498}
-\goldrow{diag}{dysonSimon}{bed1Inlet\_V3}{929.247293094}
-\goldrow{diag}{dysonSimon}{bed1Inlet\_eta}{0.0251956498047}
-\goldrow{diag}{dysonSimon}{bed1Inlet\_xi}{0.336828294032}
-\goldrow{diag}{dysonSimon}{bed1Outlet\_Eq40}{4.6853092592}
-\goldrow{diag}{dysonSimon}{bed1Outlet\_V3}{9.34102880697}
-\goldrow{diag}{dysonSimon}{bed1Outlet\_eta}{0.219727948649}
-\goldrow{diag}{dysonSimon}{bed1Outlet\_xi}{0.501583857199}
-\goldrow{diag}{dysonSimon}{bed3Outlet\_Eq40}{0.769642159744}
-\goldrow{diag}{dysonSimon}{bed3Outlet\_V3}{1.0033709893}
-\goldrow{diag}{dysonSimon}{bed3Outlet\_eta}{0.337604123841}
-\goldrow{diag}{dysonSimon}{bed3Outlet\_xi}{0.76706008382}
+\goldrow{diag}{dysonSimon}{bed1Inlet\_Eq40}{264.250587753}
+\goldrow{diag}{dysonSimon}{bed1Inlet\_V3}{703.988392578}
+\goldrow{diag}{dysonSimon}{bed1Inlet\_eta}{0.0316601173463}
+\goldrow{diag}{dysonSimon}{bed1Inlet\_xi}{0.375362137415}
+\goldrow{diag}{dysonSimon}{bed1Outlet\_Eq40}{4.37776189}
+\goldrow{diag}{dysonSimon}{bed1Outlet\_V3}{8.56069133183}
+\goldrow{diag}{dysonSimon}{bed1Outlet\_eta}{0.224806233665}
+\goldrow{diag}{dysonSimon}{bed1Outlet\_xi}{0.511379480968}
+\goldrow{diag}{dysonSimon}{bed3Outlet\_Eq40}{0.682982714231}
+\goldrow{diag}{dysonSimon}{bed3Outlet\_V3}{0.873241374276}
+\goldrow{diag}{dysonSimon}{bed3Outlet\_eta}{0.342681969057}
+\goldrow{diag}{dysonSimon}{bed3Outlet\_xi}{0.78212363082}
 \goldrow{diag}{dysonSimon}{locus1\_Eq40}{-889.947776496}
 \goldrow{diag}{dysonSimon}{locus1\_T\_maxRate\_K}{900}
 \goldmore{14}
@@ -3554,23 +3554,23 @@ Nothing here is a validation against measurement: every number is the engine's o
 \begin{tutgolden}
 \goldrow{diag}{envelope}{bubble\_points}{0}
 \goldrow{diag}{envelope}{bubble\_stopped\_bar}{1}
-\goldrow{diag}{envelope}{dew\_cricondentherm\_K}{274.705}
+\goldrow{diag}{envelope}{dew\_cricondentherm\_K}{271.454972981}
 \goldrow{diag}{envelope}{dew\_points}{40}
 \end{tutgolden}
 
 \clearpage
-\tutentry{envelope02\_root\_jump}{tutorials/props/molecular/envelope02\_root\_jump}
+\tutentry{envelope02\_c3c4c5\_branch\_stop}{tutorials/props/molecular/envelope02\_c3c4c5\_branch\_stop}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{envelope}\\[-1pt]{\tiny phaseEnvelope}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{P-T envelope where the saturation solve jumps root: both branches stop AT the jump and report it as one, and no cricondentherm is claimed}
+\tutwhat{P-T envelope of a C3/C4/C5 feed where both branches stop just below propane's Tc: reported as STOPPED branches, never as a root jump, and no cricondentherm is claimed}
 \begin{tutgolden}
-\goldrow{diag}{envelope}{bubble\_points}{17}
-\goldrow{diag}{envelope}{bubble\_stopped\_bar}{18}
-\goldrow{diag}{envelope}{dew\_points}{25}
-\goldrow{diag}{envelope}{dew\_stopped\_bar}{26}
+\goldrow{diag}{envelope}{bubble\_points}{22}
+\goldrow{diag}{envelope}{bubble\_stopped\_bar}{23}
+\goldrow{diag}{envelope}{dew\_points}{15}
+\goldrow{diag}{envelope}{dew\_stopped\_bar}{16}
 \end{tutgolden}
 
 \clearpage
@@ -4301,7 +4301,7 @@ WHAT THIS CASE DOES NOT SAY. Nothing here is a relief-valve design: the sizing i
 \goldrow{diag}{relieving}{S\_ig}{301.885255534}
 \goldrow{diag}{relieving}{S\_real}{299.634755842}
 \goldrow{diag}{relieving}{T}{394.109436}
-\goldrow{diag}{relieving}{T\_bubble}{394.109436036}
+\goldrow{diag}{relieving}{T\_bubble}{399.459968689}
 \goldrow{diag}{relieving}{Z}{0.87065495897}
 \goldrow{diag}{relieving}{Z\_liquid}{0.0242535783371}
 \goldrow{diag}{relieving}{gamma}{1.10080932363}
