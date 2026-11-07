@@ -55,6 +55,13 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | done | The capability index for assistants (C211, `7d1e9217d`): `/llm/capabilities.md` first in llms.txt under 'Does Choupo do X?' (computes / balances / checks / missing per concept, pharmaceutical plant first, witness cases by full path), the version line on every served document, a static `/llm/models.md`, AGENTS.md one path per question; gate `check_capability_index` (sabotage-verified) | C211 |
 | done | Acetic acid item 1 (`7f8e5348b`): logK25 2.555 (formic) -> 3.107 (ethanoic, Chao & Zwolinski Tables 11/12) in the record and five mirrors, 54 golden rows re-recorded from 3.5x more dimer, gate `check_dimerisation_constants`; it exposed flash17's dimer-heat seam, pinned | C201 (1) |
 
+## Slowest cases (C236: kept, and a general investigates whenever there is room)
+
+Retaken after each full sweep from `build/suiteTimings.csv`.  A case that grew is a
+defect.  Not yet measured on a whole sweep: the first list comes from the sweep that
+lands C235.  Known so far: aceticAcid02_plant 46.5 s (2026-10-14) -> 391 s (2026-11-07,
+main `5c9c936af`, one run under load), under investigation.
+
 ## Next day (at most 5)
 
 | status | what | ref |

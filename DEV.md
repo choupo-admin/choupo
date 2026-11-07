@@ -2938,6 +2938,16 @@ accepts today, and that is a policy call.
 > Doctrine: the C++ publishes, the page draws; the TypeScript cascade becomes
 > a labelled cross-check or goes.
 
+> **C236 (Vitor, 2026-11-07, after UNIFAC gave 52x on column19 from one string-keyed
+> map in a triple loop, and a regression of 8x on aceticAcid02_plant passed unseen for
+> weeks): A TOP-10 OF THE SLOWEST CASES IS KEPT, AND A GENERAL INVESTIGATES IT WHENEVER
+> THERE IS ROOM.**  The measurement already exists (`build/suiteTimings.csv`, every
+> check-mode `bin/runTests`, ten slowest printed); what was missing was anyone reading
+> it.  The list lives in PLAN.md, section *Slowest cases*, with its date and the commit
+> it was measured on, and is retaken after each full sweep.  A case whose time grew
+> against its previous row is a defect, named in DEV.md.  The gates count: an
+> integration spent over 90 minutes mostly in gates re-running the slow case serially.
+
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
 > +10 %), and that stands: INSIDE the liquid Cp's declared `Trange` the rung is

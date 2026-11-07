@@ -3872,6 +3872,12 @@ Corollaries, each paid for:
 * **One general per working tree** (concurrent generals only in separate
   worktrees, on files that do not overlap), and **a commit lands only on
   FAIL 0** of the validation its slice requires (the rule below).
+* **THE TEN SLOWEST CASES ARE WATCHED (Vitor, 2026-11-07, DEV.md 4c C236).**
+  PLAN.md keeps the list from `build/suiteTimings.csv`, retaken after each full
+  sweep, and a general investigates it whenever a slot is free: one string-keyed
+  map in a triple loop had cost a factor of 52 in every UNIFAC case, and a
+  regression of 8 on one plant had slowed every gate that runs it.  Time is a
+  measurement like any other, and one nobody reads catches nothing.
 * **Launch a background suite under the harness's own supervision.**  A plain
   `nohup … &` from a tool call is killed when the call returns — it happened
   twice in one day, losing two 30-minute runs.
