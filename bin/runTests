@@ -7465,12 +7465,30 @@ for case_dir in "$1"; do
     # (3) reference KPIs
     if [ -f "$exp_file" ]; then
         bad=""; anchors_ok=0; golden_rows=0
+        #  SPEED (DEV.md 4c C236): `equipment` and `layout` rows each re-scan the
+        #  whole result text (1 MB on a plant) from a fresh awk; swro01 carries
+        #  ~2900 of them, which was minutes of wall clock.  The two readers begin
+        #  by selecting their own block with a state machine, so the block is cut
+        #  out ONCE with the same machine (marker and closing lines included) and
+        #  the reader is handed that -- the lines it can see are the lines it
+        #  saw, and the answer is unchanged.
+        eq_text="$out"; lay_text="$out"
+        if [ -n "$(awk '$1=="layout"{print 1; exit}' "$exp_file")" ]; then
+            lay_text=$(printf '%s\n' "$out" | awk '/^  "(layout|building)": \{/ { inblk = 1; print; next } inblk { print } inblk && /^  \}/ { inblk = 0 }')
+        fi
+        if [ -n "$(awk '$1=="equipment"{print 1; exit}' "$exp_file")" ]; then
+            eq_text=$(printf '%s\n' "$out" | awk '/"equipment": \[/ { inblk = 1; print; next } inblk { print } inblk && /^  \]/ { inblk = 0 }')
+        fi
         while read -r line; do
             case "$line" in ''|\#*) continue;; esac
             read -r kind name key exp_v tol claim _ <<< "$line"
             [ -z "${tol:-}" ] && continue
             golden_rows=$((golden_rows+1))
-            act=$(get_any "$out" "$kind" "$name" "$key" "$case_dir")
+            case "$kind" in
+                equipment) act=$(get_any "$eq_text" "$kind" "$name" "$key" "$case_dir") ;;
+                layout)    act=$(get_any "$lay_text" "$kind" "$name" "$key" "$case_dir") ;;
+                *)         act=$(get_any "$out" "$kind" "$name" "$key" "$case_dir") ;;
+            esac
             #  A VERDICT IS A WORD, and `exact` is REQUIRED in its tolerance
             #  column: a row that wrote a number there would read as though
             #  two verdicts could be close.
