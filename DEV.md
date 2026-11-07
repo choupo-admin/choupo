@@ -3183,6 +3183,39 @@ accepts today, and that is a policy call.
 > the declared block drawn as declared (a GUI test on a fixture).  Record in
 > `docs/ai/dict-syntax.md` and the user guide.
 
+> **C244 (Vitor, 2026-11-07: "não quero que tenhas tantas variações dos projetos base!!
+> Isso fica uma grande salganhada!"): ONE REFERENCE PLANT PER PROCESS; THE VARIANTS
+> BECOME SWEEPS, RUNGS OR FIXTURES.**  STATUS: to measure, then one slice after the
+> integration queue and before the demonstration; he has not chosen which projects he
+> will present.  MEASURED: `tutorials/plant/` holds 26 cases, 11 of them ammonia
+> (ammonia02, ammonia03, ammoniaReactor01-04, ammoniaRoutes01, greenAmmonia02 at 150
+> and at 50 bar, greenAmmonia03, greenAmmoniaPEQ), two sugar (ChemicalPlantTutorial,
+> sugarPlantEconomicsSweep), two acetic, two demos (twoSectorDemo, esterification2sector).
+> The gates name them unevenly: ChemicalPlantTutorial 13, ammonia02 7, PEQ 7,
+> greenAmmonia03 5, ammonia03 3, the ladder rungs 0-3, the two feasibility cases 1 each;
+> docs and GUI name greenAmmonia03 10 times and ammoniaReactor03 9.  JUDGEMENT: he is
+> right about the shape -- a visitor running `listCases` sees eleven ammonias and cannot
+> tell the plant from its scaffolding -- and partly wrong about the cause: the
+> `ammoniaReactor01-04` ladder is a deliberate teaching sequence (fixed conversion ->
+> equilibrium -> approach -> kinetic sizing) and `greenAmmonia02/03/PEQ` are the design
+> STAGES of one project (feasibility -> basic design -> the course's reference).  The
+> mess is that stages, rungs, witnesses and the plant sit side by side with no rank.
+> DECISION (architect, rule 00): (1) `tutorials/plant/` keeps ONE reference plant per
+> process (green ammonia: PEQ; conventional loop: ammonia02; sugar: ChemicalPlantTutorial;
+> acetic: aceticAcid02; desalination: swro01; lithium; the tablet plants in batch/plant);
+> (2) a variant that differs by a parameter (50 vs 150 bar) becomes an `outerDict` sweep
+> or a second `system/` profile of the reference case, never a second case; (3) a
+> teaching ladder moves under `tutorials/steady/reactors/<process>Ladder/` with its
+> README stating the sequence; (4) a design-stage case (greenAmmonia03) stays only if a
+> guide walks through it, else its unique content (converter shell, pfr cooling) becomes
+> the reference plant's; (5) a case kept only as a gate witness leaves `tutorials/` for
+> the gate's fixtures; (6) the demos go under `steady/flowsheets/`.  Every move carries
+> its golden, its gate names and its doc citations in the same commit (the C196 tool
+> re-points lesson citations); nothing is deleted without its golden rows listed in the
+> commit.  First step: the inventory table per process (case, role, what cites it,
+> proposed fate), shown to Vitor before anything moves, because the choice of what he
+> presents is his.
+
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
 > +10 %), and that stands: INSIDE the liquid Cp's declared `Trange` the rung is
