@@ -139,6 +139,17 @@ UNIFAC::UNIFAC(const DictPtr& dict, const std::vector<std::string>& names)
     }
     const std::size_t G = subgroupList_.size();
 
+    // ---- a_mk per SUBGROUP pair, dense, so the hot path does no string lookups.
+    //      An absent pair is 0 (announced below), exactly as the map lookup
+    //      it replaces treated it.
+    aSub_.assign(G * G, 0.0);
+    for (std::size_t m = 0; m < G; ++m)
+        for (std::size_t k = 0; k < G; ++k)
+        {
+            const auto it = a_.find({ mainOf_[m], mainOf_[k] });
+            if (it != a_.end()) aSub_[m * G + k] = it->second;
+        }
+
     // ---- nu_, r_i, q_i, l_i, pure group composition X^(i) -------------------
     nu_.assign(N, std::vector<int>(G, 0));
     r_.assign(N, 0.0); q_.assign(N, 0.0); l_.assign(N, 0.0);
@@ -242,16 +253,25 @@ UNIFAC::UNIFAC(const DictPtr& dict, const std::vector<std::string>& names)
     }
 }
 
-std::vector<double> UNIFAC::lnGammaGroups(const std::vector<double>& X, scalar T) const
+std::vector<double> UNIFAC::psiMatrix(scalar T) const
+{
+    //  Psi(m,k) = exp(-a_{main(m),main(k)} / T), built ONCE per temperature
+    //  and shared by every lnGammaGroups call of one gamma() evaluation.
+    //  Same main group -> 1 (a = 0); absent pair -> a = 0 -> Psi = 1.
+    const std::size_t G = subgroupList_.size();
+    std::vector<double> psi(G * G, 1.0);
+    for (std::size_t m = 0; m < G; ++m)
+        for (std::size_t k = 0; k < G; ++k)
+            if (mainOf_[m] != mainOf_[k])
+                psi[m * G + k] = std::exp(-aSub_[m * G + k] / T);
+    return psi;
+}
+
+std::vector<double> UNIFAC::lnGammaGroups(const std::vector<double>& X,
+                                          const std::vector<double>& psi) const
 {
     const std::size_t G = subgroupList_.size();
-    auto Psi = [&](std::size_t m, std::size_t k) -> double
-    {
-        if (mainOf_[m] == mainOf_[k]) return 1.0;                 // a = 0
-        auto it = a_.find({ mainOf_[m], mainOf_[k] });
-        const double a = (it != a_.end()) ? it->second : 0.0;    // absent pair -> 0
-        return std::exp(-a / T);
-    };
+    auto Psi = [&](std::size_t m, std::size_t k) -> double { return psi[m * G + k]; };
 
     double qsum = 0.0;
     for (std::size_t m = 0; m < G; ++m) qsum += Qk_[m] * X[m];
@@ -290,7 +310,8 @@ sVector UNIFAC::gamma(scalar T, const sVector& x) const
         for (std::size_t k = 0; k < G; ++k) Xmix[k] += nu_[i][k] * x[i];
     for (std::size_t k = 0; k < G; ++k) gtot += Xmix[k];
     for (std::size_t k = 0; k < G; ++k) if (gtot > 0.0) Xmix[k] /= gtot;
-    const std::vector<double> lnGmix = lnGammaGroups(Xmix, T);
+    const std::vector<double> psi = psiMatrix(T);
+    const std::vector<double> lnGmix = lnGammaGroups(Xmix, psi);
 
     for (std::size_t i = 0; i < N; ++i)
     {
@@ -307,7 +328,7 @@ sVector UNIFAC::gamma(scalar T, const sVector& x) const
         }
 
         // residual
-        const std::vector<double> lnGpure = lnGammaGroups(Xpure_[i], T);
+        const std::vector<double> lnGpure = lnGammaGroups(Xpure_[i], psi);
         double lnR = 0.0;
         for (std::size_t k = 0; k < G; ++k)
             if (nu_[i][k] > 0) lnR += nu_[i][k] * (lnGmix[k] - lnGpure[k]);

@@ -80,7 +80,12 @@ public:
 private:
     // residual ln(Gamma_k) for a group-composition X (subgroup mole fractions,
     // parallel to subgroupList_) at temperature T.
-    std::vector<double> lnGammaGroups(const std::vector<double>& X, scalar T) const;
+    // `psi` is the dense G x G matrix of Psi(m,k) from psiMatrix(T).
+    std::vector<double> lnGammaGroups(const std::vector<double>& X,
+                                      const std::vector<double>& psi) const;
+
+    // Psi(m,k) = exp(-a_mk/T) for every subgroup pair, row-major, at one T.
+    std::vector<double> psiMatrix(scalar T) const;
 
     std::string name_;
     std::vector<std::string> names_;
@@ -93,6 +98,10 @@ private:
 
     // main-group interaction a_mn [K]; absent pair -> 0
     std::map<std::pair<std::string,std::string>, double> a_;
+
+    // the same a_mn per SUBGROUP pair (row m, column k), dense G x G, built
+    // once at construction; the hot path reads this, never `a_`.
+    std::vector<double> aSub_;
 
     // per component: subgroup counts (parallel to subgroupList_), and r,q,l
     std::vector<std::vector<int>> nu_;
