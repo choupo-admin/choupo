@@ -3283,6 +3283,22 @@ accepts today, and that is a policy call.
 > makes the published latent h_V(real) - h_L, not the rung's own number: to be
 > measured, not assumed.
 
+> **C228 ITEMS 1-2 BUILT (2026-11-05, branch of the C228 general):** the props
+> op `petroleumCuts` (`src/propertyOps/PetroleumCuts.{H,cpp}`), schema
+> `gui/schemas/operations/petroleumCuts.schema.json`, witness
+> `tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp` (the TBP curve of
+> Riazi Table 3.6, p. 103; the book prints no cut Tb/SG/MW/Tc, so ONLY
+> arithmetic anchors are reproduced -- Eq. 3.17's 0.7862, Example 2.11's Kw and
+> API -- and nothing is validated against a unit), gate `check_petroleum_cuts`,
+> record `docs/design/a-tbp-curve-cut-into-pseudo-components.md`.  It reuses
+> `RiaziDaubert` unchanged.  Cut SG by constant Watson K is an assumption of the
+> op, not the book's.  D86/D1160 refuse by name (Riazi Eq. 3.14/Table 3.2 are
+> legible and NOT carried).  API gravity and Watson K are published by the op
+> and in each record header ONLY; taking them to the stream report touches
+> `ResultEmitter` and every golden, and is a LATER decision.  Noted, not fixed:
+> `RiaziDaubert.cpp`'s header cites its constants to "Table 2.4"; in the book
+> they are Eqs. 2.50/2.63/2.64/2.98.  Items 3-5 of C228 remain open.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,

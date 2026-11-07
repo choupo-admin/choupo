@@ -2466,6 +2466,43 @@ Promote with the printed `mv`, then it FLASHES (see the sibling tutorial steady/
 \end{tutgolden}
 
 \clearpage
+\tutentry{petroleumCuts01\_riazi\_table36\_tbp}{tutorials/props/estimate/petroleumCuts01\_riazi\_table36\_tbp}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{cuts5}\\[-1pt]{\tiny petroleumCuts}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{cuts3}\\[-1pt]{\tiny petroleumCuts}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{CUT a TBP curve into petroleum PSEUDO-COMPONENTS (Riazi ASTM MNL50): Tb per cut, SG by constant Watson K, API and Watson K per cut and for the blend, one ESTIMATE record per cut}
+\begin{tutnarrative}
+CUT a TRUE-BOILING-POINT curve into PSEUDO-COMPONENTS. A crude fraction is a continuum of species; a process model needs a handful of lumps. The op `petroleumCuts` divides the curve into cuts, takes each cut's Tb at the mid-point of its distilled interval, gives it a specific gravity, and hands the pair (Tb, SG) to the SAME Riazi-Daubert estimator `estimateComponent` uses (MW, Tc, Pc, Vc; omega by Lee-Kesler; Cp by Kesler-Lee). One ESTIMATE record per cut is written into THIS case (constant/components/ petCut\_NN.estimated.dat, git-ignored: a proposal you review and promote with `mv`, never a standard record).
+
+THE CURVE AND WHAT IS -- AND IS NOT -- VALIDATED. The six TBP points are the naphtha-kerosene blend printed in Riazi, "Characterization and Properties of Petroleum Fractions" (ASTM MNL50, 2005), Table 3.6, p. 103 (a TBP column, vol\% distilled vs C, quoted there from the API Technical Data Book). The book prints NO cut Tb, cut SG, MW or Tc for it: it uses the curve to illustrate the D86/TBP/EFV interconversions (Example 3.2), and there it estimates the blend's SG as 0.7862 from Eq. 3.17 -- the one printed number this case can reproduce, and does (feed SG 0.7862 from `specificGravityFrom TBP`). EVERYTHING ELSE IS ILLUSTRATIVE: the cut boundaries are this case's choice, and no number is validated against a distillation unit or a measured cut. The ASTM D86 and EFV columns of the same table are NOT used (the op refuses D86 input: the conversion is not implemented).
+
+HOW EACH CUT IS CHARACTERISED (all equations are Riazi's, by number): Tb of a cut = the TBP temperature at the mid-point of its distilled interval (p. 83, footnote a: a mid-point temperature can serve as Tb for a narrow fraction), piecewise-linear between the curve points. SG of a cut = (1.8 Tb)\textasciicircum{}(1/3) / Kw with ONE Watson factor for the whole feed (Eq. 2.13 rearranged). THIS IS AN ASSUMPTION OF THE OP, NOT A RECOMMENDATION OF THE BOOK; `method declared;` lets you give the SG of each cut instead. Kw is Eq. 2.13 at the feed SG and the feed's MeABP (Eq. 3.3-3.5), solved by fixed point. API gravity (Eq. 2.4) and Watson K (Eq. 2.13) are published per cut and for the blend. CLOSURE: the cuts re-blended by volume (Eq. 3.45) must reproduce the declared feed SG within the DECLARED tolerance. A miss is announced, never adjusted. Both ops below re-blend about 1 \% above the feed SG (the curve is convex and the mid-point Tb is not the cut's mean); op `cuts5` declares 2 \% and closes, op `cuts3` declares 0.5 \% on purpose and prints the announcement. Note that the miss does NOT shrink monotonically with the number of cuts.
+
+SEE: the cut table, the blend line, the closure line, the records.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{cuts5}{closure\_SGdiff\_rel}{0.0100149194599}
+\goldrow{diag}{cuts5}{closure\_SGtolerance}{0.02}
+\goldrow{diag}{cuts5}{closure\_ok}{1}
+\goldrow{diag}{cuts5}{cut01\_API}{70.6831235495}
+\goldrow{diag}{cuts5}{cut01\_Cp298}{103.794999098}
+\goldrow{diag}{cuts5}{cut01\_MW}{72.5545199844}
+\goldrow{diag}{cuts5}{cut01\_Pc\_bar}{40.7350563483}
+\goldrow{diag}{cuts5}{cut01\_SG}{0.69986058933}
+\goldrow{diag}{cuts5}{cut01\_Tb\_K}{313.7}
+\goldrow{diag}{cuts5}{cut01\_Tc\_K}{493.845044921}
+\goldrow{diag}{cuts5}{cut01\_Vc\_cm3mol}{289.2234904}
+\goldrow{diag}{cuts5}{cut01\_WatsonK}{11.8100246242}
+\goldrow{diag}{cuts5}{cut01\_fraction}{0.1}
+\goldrow{diag}{cuts5}{cut01\_massFraction}{0.0881217698017}
+\goldmore{138}
+\end{tutgolden}
+
+\clearpage
 \tutentry{userEstimate01\_linear\_tb}{tutorials/props/estimate/userEstimate01\_linear\_tb}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
