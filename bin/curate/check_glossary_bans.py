@@ -128,8 +128,8 @@ NAMED_EXEMPT = {
         "teaches the ban to a contributor, quoting the deprecated form",
     "docs/architecture/electrolyte-data-architecture.md":
         "records the ratification debate that produced the rule, and says so",
-    "CLAUDE.md":
-        "states the rule in the data-tree section, quoting the deprecated form",
+    "docs/architecture/settled-contracts.md":
+        "relocated from CLAUDE.md (C241): states the rule in the data-tree section, quoting the deprecated form",
     "bin/curate/check_glossary_bans.py":
         "this gate -- the patterns ARE the deprecated forms",
     "bin/curate/check_doc_references.py":
