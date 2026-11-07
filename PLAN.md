@@ -57,9 +57,12 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 ## Slowest cases (C236: kept, and a general investigates whenever there is room)
 
-Retaken after each full sweep from `build/suiteTimings.csv`.  A case that grew is a
-defect.  Not yet measured on a whole sweep: the first list comes from the sweep that
-lands C235.  Found and fixed so far: aceticAcid02_plant 46.5 s (2026-10-14) -> 391 s (2026-11-07,
+Retaken after each full sweep from `build/suiteJobTimes.tsv` (real seconds per job;
+`suiteTimings.csv` holds gaps between result lines).  A case that grew is a defect.
+First list, the C235 sweep of 2026-11-07, a parallel run: swro01_campoDalias 284,
+ctrl17 210, ctrl19 113, greenAmmonia03_basicDesign 74, ctrl08 58,
+greenAmmoniaPEQ_baseCase 54, ctrl06 51, nanofiltran_geraldesAlves2008 50,
+apalutamide01_tablets 42; slowest gate check_schema_coverage 77.  Found and fixed so far: aceticAcid02_plant 46.5 s (2026-10-14) -> 391 s (2026-11-07,
 main `5c9c936af`, one run under load): gamma(T, x) re-evaluated on every pass of the
 incipient vapour since `31d4b7e6c` (a dimer makes K depend on y); 94 s after the fix,
 before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed map.

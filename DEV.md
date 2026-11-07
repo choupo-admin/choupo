@@ -2982,6 +2982,18 @@ accepts today, and that is a policy call.
 > run's `postProcessing/` in the GUI case tree (C183 item 1); (5) the architect's
 > decisions that need no code (C183 item 2, the trademark wording); (6) the plan's own
 > upkeep: the usage-freeze banner, Done rows past their week, the private page.
+> AMENDED THE SAME HOUR (Vitor: "O que puder ser feito em paralelo sem atrapalhar o
+> resto tem de avançar!"): the order above is NOT a queue behind C235.  Whatever does
+> not touch C235's files (`src/thermo/`, the column, the Gibbs methods) and fits the
+> laptop's budget runs now; only integration waits its turn, one at a time.
+
+> **C238 (Vitor, 2026-11-07: "No final do mês tenho de ter um simulador para impressionar
+> os meus colegas!"): A DEADLINE, 2026-11-30.**  STATUS: open.  The audience is
+> chemical-engineering colleagues, who judge by what a number can be defended against
+> and by what they see.  Priority for the month goes to what they will open: the column
+> against the reference simulator with its first law closed, the 3D plant (C229), the
+> pinch page (C234), and a demonstration path through those.  The rule of the project
+> does not change: no gate is traded for the date.
 
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
