@@ -3031,6 +3031,21 @@ accepts today, and that is a policy call.
 > figure and no feed flows; dropped as an anchor.  Decision: Klemola first, then the
 > spec pair and total condenser, useful beyond MTBE, then Nijhuis if the month holds.
 
+> **C240 (Vitor, 2026-11-07: "O layout da fábrica NH3 full plant continua uma
+> porcaria"): C229 DOES NOT CURE IT, THE CASE ITSELF IS THIN.**  STATUS: waits on the
+> C229 port fix, which edits the same case.  Seen on the plan drawn from the published
+> `layout` block of `ammonia02_full_plant` (2D; his 3D view not yet seen): the engine
+> reports 28 items, 17 pipes, one finding, and that says nothing about whether it looks
+> like a plant.  (1) The process block is about 70 m x 20 m on a 199 m x 111 m plot, smaller
+> than the car park and laydown.  (2) `cw`, `cwOut`, `purge` and `letdownGas` run to
+> the fence and stop: the plant has no cooling tower, no refrigeration, no flare, so
+> the utilities a colleague looks for are absent.  (3) One pipe reaches `T201/vessel1`
+> and the other six bullets connect to nothing: no manifold.  (4) `letdown` stands
+> against `separator` on purpose (a witness of the distance announcement), which on
+> the flagship reads as a mistake.  The slice is the case, not the engine: a compact
+> loop, utilities as declared items, a tank manifold, and the distance witness moved to
+> a fixture.  Judge it by a render, not by the absence of findings.
+
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
 > +10 %), and that stands: INSIDE the liquid Cp's declared `Trange` the rung is
