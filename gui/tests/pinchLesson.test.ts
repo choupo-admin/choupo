@@ -58,7 +58,7 @@ describe("the lesson runs end to end", () => {
     const s1 = prose(step(1).body);
     expect(s1).toContain("MINIMUM hot utility");
     expect(s1).toContain("before a single exchanger has been drawn");
-    expect(step(1).formula).toContain(String.raw`\mathrm{CP} = \dfrac{Q}{\lvert T_\mathrm{target} - T_\mathrm{supply} \rvert}`);
+    expect(step(1).formula).toContain(String.raw`\mathrm{CP} = \dfrac{\lvert Q \rvert}{\lvert T_\mathrm{target} - T_\mathrm{supply} \rvert}`);
   });
 
   it("says what a composite curve IS: every stream of one kind, merged", () => {
@@ -93,15 +93,15 @@ describe("the lesson runs end to end", () => {
   });
 
   it("admits that a problem need not have a pinch at all", () => {
-    //  The engine's cascade leaves T_pinch at the TOP of the temperature
-    //  range when it never dips below zero (PinchPass.cpp: Tpinch =
-    //  T.front(), updated only inside `cascade < minCascade`), and this
-    //  view's own cascade mirrors that convention.  A page that taught
-    //  "there is always a pinch" would send the reader to read a threshold
-    //  problem's chip as a physical temperature.
+    //  The engine CLASSIFIES the problem from the whole corrected cascade
+    //  (PinchPass.cpp, DEV.md 4c C234): an interior zero is a pinch, zeros
+    //  only at the ends are a threshold problem.  A page that taught "there
+    //  is always a pinch" would send the reader to read a threshold problem's
+    //  chip as a physical temperature.
     const n4 = prose(step(4).note!);
     expect(n4).toContain("THRESHOLD");
-    expect(n4).toContain("leaves its pinch temperature at the top");
+    expect(n4).toContain("classifies the problem from the whole cascade");
+    expect(n4).toContain("several pinches");
   });
 });
 
@@ -328,7 +328,8 @@ describe("the tool renders it as a scrolling lesson", () => {
     //  Each of these is a claim about where a number came from; losing one
     //  to a layout change would leave a derived number reading as engine
     //  output.
-    expect(TOOL_SRC).toContain("cross-check (derived in view)");
+    expect(TOOL_SRC).toContain("PINCH_CLASS_TEXT");
+    expect(TOOL_SRC).toContain("Q_recovery,max");
     expect(TOOL_SRC).toContain("engine targets · Q_H,min");
     expect(TOOL_SRC).toContain("thermodynamically admissible candidate");
     //  And the "Current run" empty state, which is the only branch that ever

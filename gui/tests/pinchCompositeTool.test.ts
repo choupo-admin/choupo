@@ -42,15 +42,15 @@ import { describe, expect, it } from "vitest";
 import { applyScalarOverride } from "../src/case/methodRun.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
 import {
+  PINCH_CLASS_TEXT, grandCompositeFromTable, parseProblemTable, parseStreamTable,
+  parseSummary, pinchFromEngine,
+} from "../src/case/pinch.js";
+import {
   CANDIDATE_MATCHES_CSV_PATH,
   COMPOSITE_CURVES_CSV_PATH,
-  CROSS_CHECK_TOL,
   PINCH_KNOBS,
   PINCH_WITNESS,
   candidateFlag,
-  computePinchFromCurves,
-  crossCheckAgainstKpis,
-  interpolateH,
   parseCandidateMatches,
   parseCompositeCurves,
   pinchOverrides,
@@ -86,17 +86,6 @@ belowPinch,coolerH2,heaterC1,yes,pinch match: CP_hot >= CP_cold holds,125,approa
 belowPinch,coolerH2,heaterC2,yes,pinch match: CP_hot >= CP_cold holds,135,approach dTmin binds at an exchanger end,thermodynamically admissible candidate
 `;
 
-// The engine's "pinch" KPI row for the witness, values from the case's golden
-// `expected` file (reltol 1e-4 there; exact here, straight from the run).
-const WITNESS_PINCH_KPIS = {
-  Q_H_min_kW: 107.5,
-  Q_C_min_kW: 40,
-  T_pinch_K: 353.15,
-  T_pinch_hot_K: 363.15,
-  T_pinch_cold_K: 343.15,
-  dTmin_K: 20,
-};
-
 // ---- parseCompositeCurves ---------------------------------------------------
 
 describe("parseCompositeCurves -- the engine's curve,T_K,H_kW contract", () => {
@@ -128,116 +117,97 @@ describe("parseCompositeCurves -- the engine's curve,T_K,H_kW contract", () => {
   });
 });
 
-// ---- interpolateH -----------------------------------------------------------
+// ---- The engine's worked cascade, summary and stream table (C234) -----------
+// Verbatim from the witness run (reports/pinch/problemTable.csv, summary.csv,
+// population.csv at dTmin 20 K).  The page draws these files; it computes none.
 
-describe("interpolateH -- clamped piecewise-linear read of a composite", () => {
-  const curve = [
-    { T_K: 323.15, H_kW: 0 },
-    { T_K: 353.15, H_kW: 300 },
-    { T_K: 413.15, H_kW: 420 },
-  ];
-  it("clamps below the cold end (nothing integrated) and above the hot end", () => {
-    expect(interpolateH(curve, 200)).toBe(0);
-    expect(interpolateH(curve, 500)).toBe(420);
+const WITNESS_TABLE_CSV = `interval,T_star_hi_K,T_star_lo_K,sumCP_hot_kW_K,sumCP_cold_kW_K,dH_kW,cascade_in_kW,cascade_out_kW,corrected_in_kW,corrected_out_kW,boundary_out,hot_streams,cold_streams
+1,413.15,408.15,2,0,10,0,10,107.5,117.5,,coolerH1,
+2,408.15,383.15,2,2.5,-12.5,10,-2.5,117.5,105,,coolerH1,heaterC1
+3,383.15,353.15,2,5.5,-105,-2.5,-107.5,105,0,pinch,coolerH1,heaterC1;heaterC2
+4,353.15,323.15,10,5.5,135,-107.5,27.5,0,135,,coolerH1;coolerH2,heaterC1;heaterC2
+5,323.15,308.15,0,5.5,-82.5,27.5,-55,135,52.5,,,heaterC1;heaterC2
+6,308.15,303.15,0,2.5,-12.5,-55,-67.5,52.5,40,bottom,,heaterC1
+`;
+const WITNESS_SUMMARY_CSV = `key,value
+class,interiorPinch
+n_pinches,1
+pinch_T_star_K,353.15
+H_pinch_kW,300
+cold_curve_offset_kW,40
+`;
+const WITNESS_POP_CSV = `unit,kpi,role,side,T_in_K,T_out_K,Q_kW,CP_kW_K,reason
+coolerH1,Q,segment,hot,423.15,333.15,-180,2,
+coolerH2,Q,segment,hot,363.15,333.15,-240,8,
+heaterC1,Q,segment,cold,293.15,398.15,262.5,2.5,
+heaterC2,Q,segment,cold,298.15,373.15,225,3,
+`;
+
+describe("the engine's problem table is read, not recomputed", () => {
+  const rows = parseProblemTable(WITNESS_TABLE_CSV);
+  it("reads all six intervals with the engine's own columns", () => {
+    expect(rows).toHaveLength(6);
+    expect(rows[2]!.tag).toBe("pinch");
+    expect(rows[2]!.corOut).toBe(0);
+    expect(rows[5]!.corOut).toBe(40);       // Q_C,min, the golden's 40
+    expect(rows[0]!.corIn).toBe(107.5);     // Q_H,min, the golden's 107.5
+    expect(rows[2]!.coldStreams).toBe("heaterC1;heaterC2");
   });
-  it("interpolates linearly inside a segment", () => {
-    // Midpoint of the first segment: 150 kW at 338.15 K.
-    expect(interpolateH(curve, 338.15)).toBeCloseTo(150, 9);
-    // 383.15 K sits halfway up the second segment: 300 + 120/2 = 360.
-    expect(interpolateH(curve, 383.15)).toBeCloseTo(360, 9);
+  it("the grand composite IS the corrected cascade against T*, zero at the pinch", () => {
+    const g = grandCompositeFromTable(rows);
+    expect(g).toHaveLength(7);
+    expect(g[0]).toEqual({ T: 413.15, H: 107.5 });
+    expect(g.find((q) => Math.abs(q.T - 353.15) < 1e-9)!.H).toBe(0);
+    for (const q of g) expect(q.H).toBeGreaterThanOrEqual(0);
   });
-});
-
-// ---- computePinchFromCurves: the cross-check cascade ------------------------
-
-describe("computePinchFromCurves -- the cascade over the engine's shifted curves", () => {
-  const curves = parseCompositeCurves(WITNESS_CURVES_CSV)!;
-  const derived = computePinchFromCurves(
-    curves["hotShifted"], curves["coldShifted"])!;
-
-  it("reproduces the witness golden's engine targets", () => {
-    // The exact numbers the case's `expected` file pins for the ENGINE:
-    //   kpi pinch Q_H_min_kW 107.5 / Q_C_min_kW 40 / T_pinch_K 353.15
-    expect(derived).not.toBeNull();
-    expect(derived.Q_H_min_kW).toBeCloseTo(107.5, 9);
-    expect(derived.Q_C_min_kW).toBeCloseTo(40, 9);
-    expect(derived.T_pinch_K).toBeCloseTo(353.15, 9);
-  });
-
-  it("derives a well-formed grand composite: T* descending, H >= 0, zero at the pinch", () => {
-    const gcc = derived.gcc;
-    expect(gcc.length).toBeGreaterThanOrEqual(2);
-    for (let i = 0; i + 1 < gcc.length; ++i) {
-      expect(gcc[i]!.T_K).toBeGreaterThan(gcc[i + 1]!.T_K);
-    }
-    for (const p of gcc) expect(p.H_kW).toBeGreaterThanOrEqual(-1e-9);
-    const atPinch = gcc.find((p) => Math.abs(p.T_K - derived.T_pinch_K) < 1e-9);
-    expect(atPinch).toBeDefined();
-    expect(atPinch!.H_kW).toBeCloseTo(0, 9);
-    // The two ends read the utility targets directly off the curve.
-    expect(gcc[0]!.H_kW).toBeCloseTo(derived.Q_H_min_kW, 9);
-    expect(gcc[gcc.length - 1]!.H_kW).toBeCloseTo(derived.Q_C_min_kW, 9);
-  });
-
-  it("pins the pocket levels by hand-worked cascade arithmetic", () => {
-    // Hand cascade over the shifted curves (released - absorbed above each
-    // level, plus Q_H_min = 107.5):
-    //   T* 408.15: hot released 10, cold absorbed 0        -> H = 117.5
-    //   T* 383.15: released 60, absorbed 62.5              -> H = 105
-    //   T* 323.15: released 420, absorbed 392.5            -> H = 135
-    //   T* 308.15: released 420, absorbed 475              -> H = 52.5
-    const at = (T: number) =>
-      derived.gcc.find((p) => Math.abs(p.T_K - T) < 1e-9)!.H_kW;
-    expect(at(408.15)).toBeCloseTo(117.5, 9);
-    expect(at(383.15)).toBeCloseTo(105, 9);
-    expect(at(323.15)).toBeCloseTo(135, 9);
-    expect(at(308.15)).toBeCloseTo(52.5, 9);
-  });
-
-  it("returns null when either shifted curve is missing or degenerate", () => {
-    expect(computePinchFromCurves(undefined, curves["coldShifted"])).toBeNull();
-    expect(computePinchFromCurves(curves["hotShifted"], undefined)).toBeNull();
-    expect(computePinchFromCurves(
-      [{ T_K: 300, H_kW: 0 }], curves["coldShifted"])).toBeNull();
+  it("refuses a foreign header", () => {
+    expect(parseProblemTable("a,b\n1,2")).toEqual([]);
   });
 });
 
-// ---- crossCheckAgainstKpis --------------------------------------------------
-
-describe("crossCheckAgainstKpis -- the engine's KPI row is the judge", () => {
-  const curves = parseCompositeCurves(WITNESS_CURVES_CSV)!;
-  const derived = computePinchFromCurves(
-    curves["hotShifted"], curves["coldShifted"])!;
-
-  it("agrees on the witness (all three targets inside the band)", () => {
-    const rows = crossCheckAgainstKpis(derived, WITNESS_PINCH_KPIS);
-    expect(rows).toHaveLength(3);
-    expect(rows.map((r) => r.key)).toEqual(
-      ["Q_H_min_kW", "Q_C_min_kW", "T_pinch_K"]);
-    for (const r of rows) {
-      expect(r.agrees).toBe(true);
-      expect(Math.abs(r.deviation))
-        .toBeLessThanOrEqual(CROSS_CHECK_TOL * Math.max(1, Math.abs(r.engine)));
+describe("the engine's classification reaches the page as a word", () => {
+  it("parses summary.csv", () => {
+    const s = parseSummary(WITNESS_SUMMARY_CSV)!;
+    expect(s.class).toBe("interiorPinch");
+    expect(s.nPinches).toBe(1);
+    expect(s.pinchStar).toEqual([353.15]);
+    expect(s.Hpinch).toBe(300);
+    expect(s.coldOffset).toBe(40);
+  });
+  it("a threshold summary carries no pinch heat flow", () => {
+    const s = parseSummary("key,value\nclass,thresholdNoHotUtility\nn_pinches,0\npinch_T_star_K,\nH_pinch_kW,\ncold_curve_offset_kW,95454.3\n")!;
+    expect(s.nPinches).toBe(0);
+    expect(s.pinchStar).toEqual([]);
+    expect(s.Hpinch).toBeNull();
+  });
+  it("every class the engine can publish has a sentence", () => {
+    for (const w of ["interiorPinch", "severalPinches", "thresholdNoHotUtility",
+                     "thresholdNoColdUtility", "thresholdNoUtility"]) {
+      expect(PINCH_CLASS_TEXT[w], w).toBeTruthy();
     }
+    expect(PINCH_CLASS_TEXT["thresholdNoColdUtility"]).toContain("no pinch");
   });
-
-  it("flags a real disagreement and leaves the engine's number in place", () => {
-    const rows = crossCheckAgainstKpis(derived,
-      { ...WITNESS_PINCH_KPIS, Q_H_min_kW: 108 });
-    const qh = rows.find((r) => r.key === "Q_H_min_kW")!;
-    expect(qh.agrees).toBe(false);
-    expect(qh.engine).toBe(108);              // the engine's value, untouched
-    expect(qh.derived).toBeCloseTo(107.5, 9); // the view's cascade, untouched
-    // The other two still agree -- the comparison is per target.
-    expect(rows.find((r) => r.key === "Q_C_min_kW")!.agrees).toBe(true);
-    expect(rows.find((r) => r.key === "T_pinch_K")!.agrees).toBe(true);
+  it("the engine's pinch_exists decides; the top-of-range geometry does not", () => {
+    const run = (k: object) => ({ status: "done", log: "", streams: [],
+      kpis: { pinch: { Q_H_min_kW: 67.5, Q_C_min_kW: 0, T_pinch_K: 300, dTmin_K: 1,
+        Q_heat_current_kW: 487.5, Q_cool_current_kW: 420, ...k } },
+      csvFiles: { "reports/pinch/population.csv": WITNESS_POP_CSV,
+        "reports/pinch/summary.csv": "key,value\nclass,thresholdNoColdUtility\nn_pinches,0\n" } }) as never;
+    expect(pinchFromEngine(run({ pinch_exists: 0 }))!.pinchShift).toBeNull();
+    expect(pinchFromEngine(run({ pinch_exists: 0 }))!.problemClass).toBe("thresholdNoColdUtility");
+    expect(pinchFromEngine(run({ pinch_exists: 1 }))!.pinchShift).toBe(300);
   });
-
-  it("compares only keys the engine published; no KPI row means no rows", () => {
-    expect(crossCheckAgainstKpis(derived, undefined)).toEqual([]);
-    const partial = crossCheckAgainstKpis(derived, { Q_H_min_kW: 107.5 });
-    expect(partial).toHaveLength(1);
-    expect(partial[0]!.key).toBe("Q_H_min_kW");
+  it("the stream table keeps every role, with the engine's CP", () => {
+    const r = parseStreamTable(WITNESS_POP_CSV);
+    expect(r).toHaveLength(4);
+    expect(r[1]!.CP).toBe(8);
+    expect(r[0]!.Q_kW).toBe(-180);
+  });
+  it("the page source recomputes no cascade", () => {
+    const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)),
+      "../src/ui/methods/PinchCompositeTool.tsx"), "utf-8")
+      .replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
+    expect(src).not.toMatch(/computePinchFromCurves|crossCheckAgainstKpis|interpolateH/);
   });
 });
 
