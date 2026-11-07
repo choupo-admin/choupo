@@ -3215,6 +3215,30 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         { const scalar tb = thermo.comp(i).Tb();
           if (tb > 0.0) { tbMin = std::min(tbMin, tb); tbMax = std::max(tbMax, tb); } }
         if (tbMax > tbMin) { Ttop = tbMin; Tbot = tbMax; }
+        //  A REAL VAPOUR IS SEEDED AT THE PRESSURE'S SATURATION, NOT AT 1 atm
+        //  (C235).  The ramp above spans the NORMAL boiling points, which at
+        //  the column's P are subcooled states: an ideal vapour prices them
+        //  smoothly (phi = 1), a cubic EoS has no vapour root there and
+        //  returns the liquid-like root (phi ~ 0.05), so every K on the seed
+        //  is a wild number and the CMO Newton starts in a nonphysical basin
+        //  (column19 under SRK: stage temperatures of 140 K at iteration 4,
+        //  stopped NOT converged).  With a non-ideal vapour both ends are
+        //  moved to their Trouton saturation temperature at P (dHvap =
+        //  10.5 R Tb: 1/Tsat = 1/Tb - ln(P/Patm)/(10.5 Tb)); an ideal vapour
+        //  keeps the ramp it always had, byte-identical.
+        if (tbMax > tbMin && thermo.vapourFugacityDependsOnComposition())
+        {
+            const scalar f = 1.0 - std::log(std::max(P, 1.0) / 101325.0) / 10.5;
+            if (f > 0.2)
+            {
+                Ttop = tbMin / f;  Tbot = tbMax / f;
+                if (verbosity >= 3)
+                    std::cout << "  [seed] real-vapour package: the reactive T ramp is"
+                                 " taken at the column pressure's Trouton saturation ("
+                              << Ttop << " -> " << Tbot << " K) rather than at the"
+                                 " normal boiling points\n";
+            }
+        }
     }
     //  The unit's OWN seed, built first and then offered to the case: linear T
     //  between the end guesses, `zGuess` on every stage.  A declared
