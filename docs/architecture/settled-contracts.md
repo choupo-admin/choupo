@@ -69,7 +69,7 @@ exactly as it did in `CLAUDE.md`.
   [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md)
   §9 (the layout) and §10 (the seed and the tool).
 
-### THE TIME-INTEGRATED CLASSES USE THE SAME LAYOUT, AND WRITE `<t>/` BY DEFAULT
+### THE TIME-INTEGRATED CLASSES USE THE SAME LAYOUT, AND WRITE `t/` BY DEFAULT
 
 * **THE TIME-INTEGRATED CLASSES USE THE SAME LAYOUT, AND WRITE `<t>/`
   BY DEFAULT** (2026-09-30, task #186, Vítor's ruling -- do NOT restore the
@@ -2103,7 +2103,7 @@ NO new gate (a gate over the tool that reads gates needs its own decision).
 Record:
 [`docs/design/which-line-is-a-gates-claim.md`](docs/design/which-line-is-a-gates-claim.md).
 
-### WHAT HAPPENS INSIDE THE EQUIPMENT IS A PROJECTION, NOT A RESULT (2026-09-05; SUPERSEDED IN LOCATION 2026-09-06 by the paragraph above — the address is now `<view>/internalStates/<SECTOR>/<unit>` inside `0/` and `converged/`, one file per unit with the kind as a block, and everything else below still holds)
+### WHAT HAPPENS INSIDE THE EQUIPMENT IS A PROJECTION, NOT A RESULT (2026-09-05; SUPERSEDED IN LOCATION 2026-09-06 by the paragraph above — the address is now `view/internalStates/SECTOR/unit` inside `0/` and `converged/`, one file per unit with the kind as a block, and everything else below still holds)
 
 **WHAT HAPPENS INSIDE THE EQUIPMENT IS A PROJECTION, NOT A RESULT
 (2026-09-05; SUPERSEDED IN LOCATION 2026-09-06 by the paragraph above — the

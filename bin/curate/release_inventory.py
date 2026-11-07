@@ -327,8 +327,6 @@ DOC_COUNT_ALLOW = [
      "check_review_status, which recounts it."),
     ("docs/architecture/settled-contracts.md", "kept 9 of its 28 pair parameters",
      "a measurement of ONE sealing defect, not a corpus size"),
-    ("CLAUDE.md", "kept 9 of its 28 pair parameters",
-     "the same one-defect measurement, in the first sentence of its pointer stub"),
     #  BOTH FOUND 2026-09-16, by the same road the two above were: the
     #  inventory had gone stale (11 cases behind), `--check` exits on
     #  staleness FIRST, and the prose scan met these two for the first time

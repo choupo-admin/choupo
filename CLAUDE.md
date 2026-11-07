@@ -313,20 +313,15 @@ case/
 
 * **A single isolated unit is just a `flowsheetDict` of length 1.**  No
   "standalone" mode — one consistent case format for everything.
-* **In a SECTORED case a CAPS folder is always a level of the plant's geography, and a plant-level unit lives in `MAIN/`** (2026-09-05; `MAIN/` is the DOMAIN'S OWN LEVEL rather than a sector like the others since 2026-09-07).
-  -> docs/architecture/settled-contracts.md#in-a-sectored-case-a-caps-folder-is-always-a-level-of-the-plants-geography-and-a-plant-level-unit-lives-in-main
-* **A STATE VIEW HOLDS BOTH HALVES: the streams as files, flat, and under `internalStates/` ONE file per unit** (2026-09-06, amended the same day).
-  -> docs/architecture/settled-contracts.md#a-state-view-holds-both-halves-the-streams-as-files-flat-and-under-internalstates-one-file-per-unit
-* **THE TIME-INTEGRATED CLASSES USE THE SAME LAYOUT, AND WRITE `<t>/` BY DEFAULT** (2026-09-30, task #186, Vítor's ruling -- do NOT restore the old shape).
-  -> docs/architecture/settled-contracts.md#the-time-integrated-classes-use-the-same-layout-and-write-t-by-default
-* **A STREAM IS FIXED BY TWO VARIABLES (2026-10-03, Vítor's rule on the landing case flash01 -- "Se especificas fração de vapor não podes especificar uma das outras variáveis na corrente de entrada!").**  By Duhem's theorem a stream of known component flows has TWO intensive degrees of freedom; for a MIXTURE (T, P) fix the split, so a `0/<stream>` declaring `T`, `P` AND `vaporFraction` on more than one present ...
-  -> docs/architecture/settled-contracts.md#a-stream-is-fixed-by-two-variables-2026-10-03-vítors-rule-on-the-landing-case-flash01----se-especificas-fração-de-vapor-não-podes-especificar-uma-das-outras-variáveis-na-corrente-de-entrada
+- In a SECTORED case a CAPS folder is always a level of the plant's geography, and a plant-level unit lives in `MAIN/` -> docs/architecture/settled-contracts.md#in-a-sectored-case-a-caps-folder-is-always-a-level-of-the-plants-geography-and-a-plant-level-unit-lives-in-main
+- A STATE VIEW HOLDS BOTH HALVES: the streams as files, flat, and under `internalStates/` ONE file per unit -> docs/architecture/settled-contracts.md#a-state-view-holds-both-halves-the-streams-as-files-flat-and-under-internalstates-one-file-per-unit
+- THE TIME-INTEGRATED CLASSES USE THE SAME LAYOUT, AND WRITE `t/` BY DEFAULT -> docs/architecture/settled-contracts.md#the-time-integrated-classes-use-the-same-layout-and-write-t-by-default
+- A STREAM IS FIXED BY TWO VARIABLES (2026-10-03, Vítor's rule on the landing case flash01 -- "Se especificas fração de vapor não podes especificar uma das outras variáveis na corrente de entrada!") -> docs/architecture/settled-contracts.md#a-stream-is-fixed-by-two-variables-2026-10-03-vítors-rule-on-the-landing-case-flash01----se-especificas-fração-de-vapor-não-podes-especificar-uma-das-outras-variáveis-na-corrente-de-entrada
 * **The `.cho` marker file** is the openable entity in the GUI (the CLI is
   unaffected; `runCase`/`choupoSolve` take the folder path).  Intentionally
   empty for now; future GUI-only metadata lives here without polluting the
   dicts the C++ solver reads.
-* **A top-level folder of `tutorials/` is a DISCIPLINE a student studies, NOT a binary (ruled 2026-09-20, Vítor; do NOT relitigate).**  `steady/` is steady-state process simulation (choupoSolve, plus the two choupoProps cases that were already there); `unsteady/` is TRANSIENT process simulation -- unit operations connected by streams whose internal states are non-stationary, with NO control loop ...
-  -> docs/architecture/settled-contracts.md#a-top-level-folder-of-tutorials-is-a-discipline-a-student-studies-not-a-binary-ruled-2026-09-20-vítor-do-not-relitigate
+- A top-level folder of `tutorials/` is a DISCIPLINE a student studies, NOT a binary (ruled 2026-09-20, Vítor; do NOT relitigate) -> docs/architecture/settled-contracts.md#a-top-level-folder-of-tutorials-is-a-discipline-a-student-studies-not-a-binary-ruled-2026-09-20-vítor-do-not-relitigate
 * Optional dicts are truly optional.  A minimal steady case has
   `controlDict`, `flowsheetDict`, `constant/thermoPhysPropDict`, and a complete `0/`
   directory.  `flowsheetDict` contains topology only; stream values live in
@@ -413,8 +408,7 @@ src/
 
 ### Language — **the repository is English (US)**
 
-**All repository artifacts are English: code, comments, identifiers, test and gate names, commit messages, documentation.  This holds regardless of the language used in conversation.**
--> docs/architecture/settled-contracts.md#all-repository-artifacts-are-english-code-comments-identifiers-test-and-gate-names-commit-messages-documentation--this-holds-regardless-of-the-language-used-in-conversation
+- All repository artifacts are English: code, comments, identifiers, test and gate names, commit messages, documentation.  This holds regardless of the language used in conversation -> docs/architecture/settled-contracts.md#all-repository-artifacts-are-english-code-comments-identifiers-test-and-gate-names-commit-messages-documentation--this-holds-regardless-of-the-language-used-in-conversation
 
 ### Factory pattern — **always explicit**
 
@@ -509,82 +503,23 @@ header, the stream tables and each unit's banner still print, and the
 stderr announcements do not depend on the level; level `1` adds the
 divergence and caveat blocks (`main.cpp`, `if (verbosity >= 1)`).
 
-### Heat of reaction — ONE enthalpy base (settled 2026-06-27, do NOT relitigate)
-
-The heat of reaction is **always** the elements/formation datum: `dH_rxn(T) = Σ νᵢ·hᵢ(T)`, where each `hᵢ` carries `ΔHf°(elements, 25 °C)` from the species' `standardThermochemistry{}` block — in **every** reactor, steady (`conversionReactor` / `cstr` / `pfr` / `gibbsReactor`) AND time-dependent (`batchReactor` / `dynamicCSTR`).
--> docs/architecture/settled-contracts.md#heat-of-reaction--one-enthalpy-base-settled-2026-06-27-do-not-relitigate
-
-### Salt formation — ION-DERIVED, never a component block (settled 2026-06-29, forum 5/6, do NOT relitigate)
-
-A dissolving / crystallising **salt's SOLID formation enthalpy is a DERIVATIVE**, not a stored input: `Hf_solid = Σνᵢ·hfAq_i − dH_soln`, from the aqueous ions (`data/standards/components/true/aqueous/` `hfAq`) **plus** the heat of solution (the component's `electrolyte { dissolutionEnthalpy }` block, primary-cited).
--> docs/architecture/settled-contracts.md#salt-formation--ion-derived-never-a-component-block-settled-2026-06-29-forum-56-do-not-relitigate
-
-### Aqueous chemistry: declared by the case, read by the units (settled 2026-07-25/26, do NOT relitigate)
-
-The `equilibrium { aqueous { activityModel {…} speciation {…} } }` block is readable with ANY formulation (it left `electrolyteGammaPhi`'s ownership) -- a liquid-only electrolyte case declares its chemistry there.
--> docs/architecture/settled-contracts.md#aqueous-chemistry-declared-by-the-case-read-by-the-units-settled-2026-07-2526-do-not-relitigate
-
-### THE TWO BASES, on EVERY stream the package can resolve (settled 2026-07-31)
-
-Where the package resolves ions, a stream carries BOTH bases: the apparent components (which ARE the state) and the `speciation {}` decomposition — **the INLET included**, because a feed nobody speciates is exactly the stream a student compares an outlet against.
--> docs/architecture/settled-contracts.md#the-two-bases-on-every-stream-the-package-can-resolve-settled-2026-07-31
-
-**THE REDUCED-IDENTITY RULE, generalised (it has now cost two bugs, one field apart).**  `Component::identity()` mints a salt with name + MW + role, and the electrolyte builder used it and stopped there — so EVERY fact the record declares beyond those three was silently absent at run time.
--> docs/architecture/settled-contracts.md#the-reduced-identity-rule-generalised-it-has-now-cost-two-bugs-one-field-apart
-
-### Typed identifiers + the F2 rename (EXECUTED 2026-07-26, three-way ratified)
-
-`ComponentId` / `SpeciesId` / `SolidId` (core/Identifiers.H) are strong types with NO implicit conversion; the component->species crossing goes ONLY through the declared stoichiometric bridge (`aqueousMapping (…)` on the component, or `dissociatesTo` converted at load -- NEVER name identity).
--> docs/architecture/settled-contracts.md#typed-identifiers--the-f2-rename-executed-2026-07-26-three-way-ratified
-
-### ThermoResolver / SystemClassifier (RATIFIED three-way 2026-07-26, do NOT relitigate)
-
-Components are classified from CANONICAL RECORD FACTS -- never from names, never from ad-hoc case lists (`spectators`/`molecularVolatiles`/ `nonreactiveMolecularComponents` were all REJECTED).
--> docs/architecture/settled-contracts.md#thermoresolver--systemclassifier-ratified-three-way-2026-07-26-do-not-relitigate
-
-### The SECOND LIQUID on the reactive path — SOLVED 2026-07-27 (do NOT relitigate the shape)
-
-Chemistry and two liquids AT ONCE: the reactive path carried one liquid, the molecular path carried two and no chemistry, and the fork is now closed.
--> docs/architecture/settled-contracts.md#the-second-liquid-on-the-reactive-path--solved-2026-07-27-do-not-relitigate-the-shape
-
-### Equilibrium-parameterisation identity — D2 migration EXECUTED 2026-07-26 (do NOT relitigate)
-
-Identity is per curated PARAMETERISATION; the physical family is DERIVED from typed references (`gasSpecies`/`dissolvedSpecies`/`solvent`) + a versioned immutable convention profile (`conventions/Sander-Hxp-v1`, `PHREEQC-gasMolal-v1`) — full ADR `docs/design/equilibrium-parameterisation-identity.md`.
--> docs/architecture/settled-contracts.md#equilibrium-parameterisation-identity--d2-migration-executed-2026-07-26-do-not-relitigate
-
-### COSMO / VT-2005 licence separation (EXECUTED 2026-07-26)
-
-The public tree ships NO VT-2005 values: every set is an external REFERENCE (`licence externalRestricted; installed false;` + full citation).
--> docs/architecture/settled-contracts.md#cosmo--vt-2005-licence-separation-executed-2026-07-26
-
-### Electrolyte activity selector keys — `pitzer` ≠ `pitzerHMW` (settled 2026-06-29, A3, do NOT re-clash)
-
-Two DIFFERENT Pitzer engines now carry two DISTINCT factory keys (the old `pitzer` name-collision across two factories is gone): * **`pitzer`** = `ElectrolyteActivity`, the salt-level single-salt VLE adapter, selected `activityModel { model pitzer; }` in a **thermoPhysPropDict** (eNRTL next).
--> docs/architecture/settled-contracts.md#electrolyte-activity-selector-keys--pitzer--pitzerhmw-settled-2026-06-29-a3-do-not-re-clash
-
-### NORMALIZED RESIDUAL — one convergence home (ruled 2026-08-09, do NOT relitigate)
-
-A dimensional residual is a MAGNITUDE, not a verdict: `1e-9` on a raw `||r||` is a number compared with nothing.
--> docs/architecture/settled-contracts.md#normalized-residual--one-convergence-home-ruled-2026-08-09-do-not-relitigate
-
-### A THIRD aqueous activity engine: `edwardsPitzer` (2026-08-04)
-
-Beside `davies` and `pitzerHMW` sits **`edwardsPitzer`** — the truncated Pitzer expansion of **Edwards, Maurer, Newman & Prausnitz, AIChE J.
--> docs/architecture/settled-contracts.md#a-third-aqueous-activity-engine-edwardspitzer-2026-08-04
-
-**The layering is the point, and it is enforced by the file split.** `EdwardsPitzer.{H,cpp}` is a PURE kernel: it computes Eqs 8/9/10 from a parameter set handed to it, reads no files, and is verified against two closed forms the paper supplies.
--> docs/architecture/settled-contracts.md#the-layering-is-the-point-and-it-is-enforced-by-the-file-split
-
-**Records** live under `data/standards/parameters/EdwardsPitzer/` and are keyed by the **runtime species name** (`CO2aq.dat`, `mi-NH3aq-NH4.dat`), never by a name a lookup would have to strip a suffix from — that would be the name-identity crossing the F2 contract bans.
--> docs/architecture/settled-contracts.md#records
-
-**THE SEAL MUST NOT CHANGE THE PHYSICS — and the importer now PROVES it, not merely that the case runs (2026-08-04).**  Adding an activity model without teaching `bin/choupo-import` about its parameter home broke exactly that invariant: the first sealed `edwards01` kept 9 of its 28 pair parameters (the Bronsted like-sign zeros, which need no record) and answered with 19 terms missing — it RAN, it CONVERGED, and it ...
--> docs/architecture/settled-contracts.md#the-seal-must-not-change-the-physics--and-the-importer-now-proves-it-not-merely-that-the-case-runs-2026-08-04
-
-### Electrolyte data tree — 5 HOMES, NO `apparent/`, NO `true` (SETTLED 2026-07-01; the count corrected 2026-07-28, do NOT relitigate the layout)
-
-A substance's ROLE (lumped / dissociated / multi-ion / molten) is chosen by the declared `thermoPhysPropDict` a case carries — **never stored on the substance** — via two ORTHOGONAL axes: **REPRESENTATION** (the declared system activates: lumped → complete dissociation → partial/ion-pair → multi-ion) × **REFERENCE** (the method selects one of 4 discrete rungs: solid · pure-liquid Raoult · aqueous-inf-dilution · ...
--> docs/architecture/settled-contracts.md#electrolyte-data-tree--5-homes-no-apparent-no-true-settled-2026-07-01-the-count-corrected-2026-07-28-do-not-relitigate-the-layout
+- Heat of reaction — ONE enthalpy base (settled 2026-06-27, do NOT relitigate) -> docs/architecture/settled-contracts.md#heat-of-reaction--one-enthalpy-base-settled-2026-06-27-do-not-relitigate
+- Salt formation — ION-DERIVED, never a component block (settled 2026-06-29, forum 5/6, do NOT relitigate) -> docs/architecture/settled-contracts.md#salt-formation--ion-derived-never-a-component-block-settled-2026-06-29-forum-56-do-not-relitigate
+- Aqueous chemistry: declared by the case, read by the units (settled 2026-07-25/26, do NOT relitigate) -> docs/architecture/settled-contracts.md#aqueous-chemistry-declared-by-the-case-read-by-the-units-settled-2026-07-2526-do-not-relitigate
+- THE TWO BASES, on EVERY stream the package can resolve (settled 2026-07-31) -> docs/architecture/settled-contracts.md#the-two-bases-on-every-stream-the-package-can-resolve-settled-2026-07-31
+- THE REDUCED-IDENTITY RULE, generalised (it has now cost two bugs, one field apart) -> docs/architecture/settled-contracts.md#the-reduced-identity-rule-generalised-it-has-now-cost-two-bugs-one-field-apart
+- Typed identifiers + the F2 rename (EXECUTED 2026-07-26, three-way ratified) -> docs/architecture/settled-contracts.md#typed-identifiers--the-f2-rename-executed-2026-07-26-three-way-ratified
+- ThermoResolver / SystemClassifier (RATIFIED three-way 2026-07-26, do NOT relitigate) -> docs/architecture/settled-contracts.md#thermoresolver--systemclassifier-ratified-three-way-2026-07-26-do-not-relitigate
+- The SECOND LIQUID on the reactive path — SOLVED 2026-07-27 (do NOT relitigate the shape) -> docs/architecture/settled-contracts.md#the-second-liquid-on-the-reactive-path--solved-2026-07-27-do-not-relitigate-the-shape
+- Equilibrium-parameterisation identity — D2 migration EXECUTED 2026-07-26 (do NOT relitigate) -> docs/architecture/settled-contracts.md#equilibrium-parameterisation-identity--d2-migration-executed-2026-07-26-do-not-relitigate
+- COSMO / VT-2005 licence separation (EXECUTED 2026-07-26) -> docs/architecture/settled-contracts.md#cosmo--vt-2005-licence-separation-executed-2026-07-26
+- Electrolyte activity selector keys — `pitzer` ≠ `pitzerHMW` (settled 2026-06-29, A3, do NOT re-clash) -> docs/architecture/settled-contracts.md#electrolyte-activity-selector-keys--pitzer--pitzerhmw-settled-2026-06-29-a3-do-not-re-clash
+- NORMALIZED RESIDUAL — one convergence home (ruled 2026-08-09, do NOT relitigate) -> docs/architecture/settled-contracts.md#normalized-residual--one-convergence-home-ruled-2026-08-09-do-not-relitigate
+- A THIRD aqueous activity engine: `edwardsPitzer` (2026-08-04) -> docs/architecture/settled-contracts.md#a-third-aqueous-activity-engine-edwardspitzer-2026-08-04
+- The layering is the point, and it is enforced by the file split -> docs/architecture/settled-contracts.md#the-layering-is-the-point-and-it-is-enforced-by-the-file-split
+- Records -> docs/architecture/settled-contracts.md#records
+- THE SEAL MUST NOT CHANGE THE PHYSICS — and the importer now PROVES it, not merely that the case runs (2026-08-04) -> docs/architecture/settled-contracts.md#the-seal-must-not-change-the-physics--and-the-importer-now-proves-it-not-merely-that-the-case-runs-2026-08-04
+- Electrolyte data tree — 5 HOMES, NO `apparent/`, NO `true` (SETTLED 2026-07-01; the count corrected 2026-07-28, do NOT relitigate the layout) -> docs/architecture/settled-contracts.md#electrolyte-data-tree--5-homes-no-apparent-no-true-settled-2026-07-01-the-count-corrected-2026-07-28-do-not-relitigate-the-layout
 
 ---
 
@@ -619,278 +554,97 @@ A substance's ROLE (lumped / dissociated / multi-ion / molten) is chosen by the 
   §10), `choupoCtrl` (the same integration + the control layer),
   `choupoProps` (property eval + the PROPS BENCH).
 
-**A SUITE'S PASS COVERS WHAT ITS GATES ASSERT, AND NOTHING ELSE (2026-09-08).** Vítor asked how it was possible to keep reporting a green suite while energy balances were violated, and the answer was structural rather than "too few tests": **conservation of energy had no gate that refused.**  A golden pins what a run PRINTS, so a stable wrong residual passes by construction (the 2026-09-04 dryer lesson, written down ...
--> docs/architecture/settled-contracts.md#a-suites-pass-covers-what-its-gates-assert-and-nothing-else-2026-09-08
-
-**THE SUBSET HAD ONE MORE MEMBER, AND THE WAY IT WAS FOUND IS THE DURABLE HALF (2026-09-25).**  `conversionReactor` summed `h_pure_ig` for BOTH terms of its duty while the stream it publishes is priced by the package.
--> docs/architecture/settled-contracts.md#the-subset-had-one-more-member-and-the-way-it-was-found-is-the-durable-half-2026-09-25
-
-**AND ONE MORE, WHERE THE TWO HOMES WERE TWO READERS OF ONE RESOLUTION (2026-09-26).**  `IsothermalFlash` re-resolved its feed through `solveCore` and ACCEPTED a two-phase root above every present component's Tc while the report, resolving the same feed through `flashState::equilibriumAt`, discarded it -- the whole -22 274.7 kW of `ammoniaReactor04_kineticSizing` on one separator; the discard is ONE home now ...
--> docs/architecture/settled-contracts.md#and-one-more-where-the-two-homes-were-two-readers-of-one-resolution-2026-09-26
-
-**A SPRAY DRYER FED SEVERAL SOLVENTS LOSES NONE (2026-10-20, DEV.md 4c C111).**  With several volatile solvents the outlet is the package's equilibrium of the air and every solvent at T_out (the exhaust on its dew point when the air cannot carry it all, announced), T_out closing H(out) = H(in) through `flashState::priceState`; the droplet KPIs on an announced pseudo-solvent; the sorption isotherm and the ...
--> docs/architecture/settled-contracts.md#a-spray-dryer-fed-several-solvents-loses-none-2026-10-20-devmd-4c-c111
-
-**THREE MORE, AND THE FLAGSHIP'S FIRST LAW (2026-09-27).**  The flagship's +34.41 kW was additive, and three of its four terms were this family: the `sprayDryer` solved `T_out` from a hand balance (constant-Cp air, a Watson latent heat) that charged the latent heat of the water its own isotherm left in the powder and omitted the solid, the superheat and the crystallisation (-70.85 kW); the `solidDryer` did the same ...
--> docs/architecture/settled-contracts.md#three-more-and-the-flagships-first-law-2026-09-27
-
-**AND THE COLUMN HALF OF IT IS NOW CLOSED, WITH A THIRD HOME NOBODY HAD NAMED (2026-09-12, same day).**  `column01`'s 631.956148 kW decomposed EXACTLY into three state mismatches, none of them a surface mismatch and none of them CMO — run under `model fullMESH`, which DROPS the CMO assumption, the residual was 632.127272 kW, so CMO is 0.027 % of it and points the wrong way.
--> docs/architecture/settled-contracts.md#and-the-column-half-of-it-is-now-closed-with-a-third-home-nobody-had-named-2026-09-12-same-day
-
-**AND THE EVAPORATOR HALF, WHERE THE SECOND HOME WAS A MISSING WORD (2026-09-12, same day).**  Rule: **a unit whose duty ASSERTS a phase must READ that phase off the stream and refuse a disagreement** — `Q = F_chest · ΔHvap(T_steam)` asserts a complete condensation, and the evaporator read only `T` and `F`.
--> docs/architecture/settled-contracts.md#and-the-evaporator-half-where-the-second-home-was-a-missing-word-2026-09-12-same-day
-
-**A RESULT BLOCK THE GOLDEN FORMAT CANNOT READ ARRIVES UNPINNED (2026-08-12).** An unreadable block does not fail — it just stops being checked, silently, with the suite green; so when you add a top-level result block carrying a number a reader would act on, add the row kind that reads it IN THE SAME COMMIT (published ⇒ pinned AND pinned ⇒ published).
--> docs/architecture/settled-contracts.md#a-result-block-the-golden-format-cannot-read-arrives-unpinned-2026-08-12
-
-**THE `aad` ROW (2026-08-12).**  An overlay's AAD against a MEASURED dataset is pinned by an `aad` kind row (`aad <dataset> <model>.<property>.<statistic>`), auto-generated in `--record`; they are self-recorded rows, never `anchor` rows — what they pin is that the agreement has not MOVED.
--> docs/architecture/settled-contracts.md#the-aad-row-2026-08-12
-
-**THE HONESTY SLICE — twelve gates in one day (2026-08-05), and what building them found.**  Three audits (arity, silent fallbacks, provenance) were acted on end to end.
--> docs/architecture/settled-contracts.md#the-honesty-slice--twelve-gates-in-one-day-2026-08-05-and-what-building-them-found
-
-**What was deliberately NOT done, and why it is the substantive half:** four NEVER-list records, the NF270 40× contradiction and eighteen missing citations are PINNED, not fixed.
--> docs/architecture/settled-contracts.md#what-was-deliberately-not-done-and-why-it-is-the-substantive-half
-
-**EVERY MANUAL GATE READS THE SOURCE; THE TREE SHIPS THE RENDER (2026-09-03).** `check_doctrine`, `check_guide_paths` and `check_lesson_symbols` scan `.tex`; a reader opens the committed `.pdf`, and the two are the SAME CLAIM only while the render is fresh.
--> docs/architecture/settled-contracts.md#every-manual-gate-reads-the-source-the-tree-ships-the-render-2026-09-03
-
-**THE RECORD A STUDENT PROMOTES MUST CARRY WHAT THE RUN CONCLUDED (2026-09-03).**  `fitParameters`' promotable pair `.dat` printed the evidence, the held-out AAD, the band declared before the fit and the verdict, and then wrote a file naming none of them — with the ORIGIN word (`source fitted;`) in the slot that says where the DATA came from, which `PairAudit` reads as a LEGACY source word and deprecates.
--> docs/architecture/settled-contracts.md#the-record-a-student-promotes-must-carry-what-the-run-concluded-2026-09-03
-
-**A VERDICT PUBLISHED TO A HUMAN AND PINNED BY NOTHING (2026-09-04).**  Three fit ops decide a CURATION verdict from a held-out pass against a band declared BEFORE the fit; it reached the console, the dossier and the promotable record and NOT the result JSON — so the GUI's fit panel drew the *identifiability* verdict instead (a different question) and no golden could pin it.
--> docs/architecture/settled-contracts.md#a-verdict-published-to-a-human-and-pinned-by-nothing-2026-09-04
-
-**A PLANT THAT CLOSED ON ITS COOLING WATER (2026-09-08).**  A case may DECLARE that a pair of boundary streams is an auxiliary circuit -- `utilities ( { name; service; supply; return; note } )` in `system/flowsheetDict` -- and the plant material summary then publishes TWO closures, the TOTAL one it always did and a PROCESS one with the declared circuits left out.
--> docs/architecture/settled-contracts.md#a-plant-that-closed-on-its-cooling-water-2026-09-08
-
-**A DRYER THAT ENDED WETTER THAN IT STARTED (2026-09-04).**  Vítor opened the flagship plant on the LIVE SITE and saw mass not conserved; a spray dryer was inventing water because its residual-moisture model is a RATIO carried by the dry solid and knows nothing about how much water the feed brought, while the only clamp protected the vapour from going negative.
--> docs/architecture/settled-contracts.md#a-dryer-that-ended-wetter-than-it-started-2026-09-04
-
-**THE SPECIFICATION SHEET A PROJECT IS AUDITED FROM (2026-09-04).**  A student hands in a final-year project and somebody must audit it PER UNIT OPERATION: what goes in, what comes out, what was sized, what it costs.
--> docs/architecture/settled-contracts.md#the-specification-sheet-a-project-is-audited-from-2026-09-04
-
-**THE DATASHEET FOLLOWS THE EQUIPMENT KIND, NOT THE UNIT TYPE (2026-09-07).** Of the column's five sheets the condenser and the reboiler needed no work at all — they are `shellTubeHX` items and the exchanger datasheet draws that kind — which is the rule stated as a consequence.
--> docs/architecture/settled-contracts.md#the-datasheet-follows-the-equipment-kind-not-the-unit-type-2026-09-07
-
-**EVERY SIZER STATES ITS BASIS, AND WRITING ONE FOUND A VOLUME IN KILOMOLES (2026-09-05).**  The Reports header promised a design basis for every item and one sizer in eight stated one.
--> docs/architecture/settled-contracts.md#every-sizer-states-its-basis-and-writing-one-found-a-volume-in-kilomoles-2026-09-05
-
-**A FIRST LAW THE GUI COMPUTED FOR ITSELF (2026-09-05).**  The live site showed the flagship plant violating the first law by 372.5 kW (1.79 %); the engine's own energyBalance report closes the same run at 34.4 kW (0.163 %).
--> docs/architecture/settled-contracts.md#a-first-law-the-gui-computed-for-itself-2026-09-05
-
-**A HIERARCHY THE ENGINE BUILT AND THREW AWAY (2026-09-04).**  `flattenNode` knows each leaf's owning sector exactly — `nsPrefix` IS the parent chain — and it concatenated that into the qualified name and kept only the string, so every reader downstream got a flat list of dotted names.
--> docs/architecture/settled-contracts.md#a-hierarchy-the-engine-built-and-threw-away-2026-09-04
-
-**A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT (2026-09-06, amended the same day to ONE FILE PER UNIT).**  In OpenFOAM one FIELD file carries `internalField` AND `boundaryField`; a state view here now carries both halves too — the streams as files, flat, and each unit's interior as ONE file at `<view>/internalStates/<SECTOR>/<unit>` with one block per kind — and the top-level `internalStates/` view of the day before ...
--> docs/architecture/settled-contracts.md#a-state-directory-is-a-restartable-snapshot-2026-09-06-amended-the-same-day-to-one-file-per-unit
-
-**A STREAM BELONGS TO THE GRAPH THAT CONTAINS BOTH ITS ENDS (2026-09-07, Vítor's rule; it REPLACES the producer rule of 2026-07-06 — do NOT restore that one).**  The old §2.4 read *an internal or inter-sector stream belongs to its PRODUCING sector; an external inlet to its CONSUMING sector* — four clauses, each picking ONE ENDPOINT OF AN EDGE and calling it the owner.
--> docs/architecture/settled-contracts.md#a-stream-belongs-to-the-graph-that-contains-both-its-ends-2026-09-07-vítors-rule-it-replaces-the-producer-rule-of-2026-07-06--do-not-restore-that-one
-
-**ONE PIPE, ONE ROW — the flagship's stream table printed 52 rows for 25 streams (2026-09-07).**  `result.streams` is keyed by every NAME a stream answers to (its qualified identity, the bare sector label the relabel pass mints, the plant's own boundary label), because a golden, a case file and a canvas edge each speak a different one and all three must resolve; the table emitted a row per KEY.
--> docs/architecture/settled-contracts.md#one-pipe-one-row--the-flagships-stream-table-printed-52-rows-for-25-streams-2026-09-07
-
-**A SECTOR IS READ FROM THE STAMP, NOT RECOVERED FROM A NAME — on the STREAM side too (2026-09-06).**  The 2026-09-04 hierarchy slice converted the four design/costing readers and left TWO copies of the rejected design alive where it costs more than a table heading: `StreamOwnership::sectorOf` decides WHICH SECTOR FOLDER a stream's state file lives in and `SolutionWriter::sectorOf` buckets the per-sector ...
--> docs/architecture/settled-contracts.md#a-sector-is-read-from-the-stamp-not-recovered-from-a-name--on-the-stream-side-too-2026-09-06
-
-**A DEFAULT NOBODY DECLARED, AND A BANNER THAT WAS ACCIDENTALLY TRUE (2026-09-06).**  A specification sheet said `L_over_D 3;` whether the case declared it or `VesselSize` did, and `corrosionAllow` / `jointEfficiency` decided the wall thickness of a 220 bar separator while appearing on no page at all.
--> docs/architecture/settled-contracts.md#a-default-nobody-declared-and-a-banner-that-was-accidentally-true-2026-09-06
-
-**THE ENGINE PROMISED TO REFUSE OR ANNOUNCE, AND IN THREE PLACES DID NEITHER (2026-09-07).**  Rule: **a DECLARED WORD the engine dispatches on must refuse a word it does not know** — a `model`/`phase`/`type` slot consumed by an if-chain whose ELSE IS A CATCH-ALL silently selects the default, and two of these were found by transposing ONE CHARACTER in a corpus case (`MSMRP` ran the equilibrium crystalliser; ...
--> docs/architecture/settled-contracts.md#the-engine-promised-to-refuse-or-announce-and-in-three-places-did-neither-2026-09-07
-
-**A SIZE DISTRIBUTION WITH NO SIZE AXIS, AND A HEADER THAT BROKE THE NEXT RUN (2026-09-07).**  Rule: **the axis a profile DECLARES is a column of it**, and the interior writer REFUSES one that is not — at the seam that partitions the profiles, to stderr and `AdvisoryLog`, and deliberately NOT by throwing (the call site has ruled a writer failure said-and-never-fatal, and a throw there takes every OTHER unit's ...
--> docs/architecture/settled-contracts.md#a-size-distribution-with-no-size-axis-and-a-header-that-broke-the-next-run-2026-09-07
-
-**ONE UNIT, FIVE ITEMS: THE COLUMN GETS A SIZE, A COST AND A SHEET (2026-09-07).**  The distillation column was the only major unit with no sizer, no cost and no specification sheet, and `TrayHydraulics` had computed its hydraulics all along into a console print that nothing downstream could see -- *a column cannot be SIZED from a printed table.*  The 2026-09-04 sheet writer chose ...
--> docs/architecture/settled-contracts.md#one-unit-five-items-the-column-gets-a-size-a-cost-and-a-sheet-2026-09-07
-
-**A SOLVER AID'S DIRECTION IS READ FROM THE ANSWER, NEVER FROM THE SEED (2026-10-03).**  `temperatureApproach` is a MAGNITUDE whose sign the engine reads off the thermicity of feed -> equilibrium (the 2026-09-26 ruling, `src/unitOperations/reactor/TemperatureApproach.H`).
--> docs/architecture/settled-contracts.md#a-solver-aids-direction-is-read-from-the-answer-never-from-the-seed-2026-10-03
-
-**A CATALYST BED IS SIZED BY ITS KINETICS, AND THE CHAIN NOW RUNS WHERE THE HEADER SAID IT DID (2026-09-26, commission C2).**  Rule: **a sizer for a RATING model READS the unit's own size and passes it through** -- the `pfr` sizer (`CatalystBedSize`, registered `pfr`) reads the bed's `V_R`, which is the outer driver's answer when a `designSpec` solves it, sizes the SHELL around it as a `vessel` on the EXISTING ...
--> docs/architecture/settled-contracts.md#a-catalyst-bed-is-sized-by-its-kinetics-and-the-chain-now-runs-where-the-header-said-it-did-2026-09-26-commission-c2
-
-**A CASE CARRIES ITS OWN KINETICS (2026-10-12, DEV.md 4c C67 -- Vítor's architecture decision, option 3; do NOT recompile a rate law's numbers into the engine).**  Rule: **a rate law's NUMBERS live in the case's `constant/`, never in `src/`** (axiom 3 of the property layout).
--> docs/architecture/settled-contracts.md#a-case-carries-its-own-kinetics-2026-10-12-devmd-4c-c67----vítors-architecture-decision-option-3-do-not-recompile-a-rate-laws-numbers-into-the-engine
-
-**A GAS IS STORED IN PRESSURE VESSELS, SIZED ON THE GAS IT GIVES BACK (2026-10-18, DEV.md 4c C89).**  `gasStorage ( ...
--> docs/architecture/settled-contracts.md#a-gas-is-stored-in-pressure-vessels-sized-on-the-gas-it-gives-back-2026-10-18-devmd-4c-c89
-
-**AN ITEM NO CORRELATION PRICES IS QUOTED BY THE CASE, AND A SOLIDS STEP IS COUNTED BY IT (2026-10-19, DEV.md 4c C98, Vitor's rulings).**  `costing { quotes ( { unit|item; value; currency; year; basis installed|purchased; kind equipment|facility; source; reason; } ); }` enters a declared price as the item's C_BM (purchased only with the CASE's own `bareModuleFactor`; no factor is ever supplied), C_TM = 1.18 C_BM, ...
--> docs/architecture/settled-contracts.md#an-item-no-correlation-prices-is-quoted-by-the-case-and-a-solids-step-is-counted-by-it-2026-10-19-devmd-4c-c98-vitors-rulings
-
-**A BATCH PLANT IS DESIGNED ON THE STEADY BALANCE, NOT BY A SECOND BINARY (2026-10-19, DEV.md 4c C99, on a stated default).**  A plant that runs in LOTS keeps its steady flowsheet as the MATERIAL BALANCE PER UNIT OF PRODUCT, and a `batchPlan {}` postDict pass (`postProcessing/BatchPlanPass`, declared ABOVE sizing/costing/economics) designs the batch plant on it by the single-product method: stages grouping units ...
--> docs/architecture/settled-contracts.md#a-batch-plant-is-designed-on-the-steady-balance-not-by-a-second-binary-2026-10-19-devmd-4c-c99-on-a-stated-default
-
-**SEVERAL PRODUCTS ON THE SAME STAGES (2026-10-20, DEV.md 4c C110 G2, on stated defaults).**  `products ( ...
--> docs/architecture/settled-contracts.md#several-products-on-the-same-stages-2026-10-20-devmd-4c-c110-g2-on-stated-defaults
-
-**A PHASE SPLIT SCANNED ALONG T OR P IS ONE FLASH PER POINT (2026-10-20, DEV.md 4c C118).**  The `phaseSplitScan` props op calls `IsothermalFlash::solveCore` at every grid point with the unit's own `readOptions` and writes no equilibrium of its own; a single-point scan reproduces flash21/16/19's goldens; a refused point is published by name and the scan continues, nothing substituted.
--> docs/architecture/settled-contracts.md#a-phase-split-scanned-along-t-or-p-is-one-flash-per-point-2026-10-20-devmd-4c-c118
-
-**A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md 4c C62, on a stated default).**  `type reliefValve` in the sizing pass: one more item (`psv`) of the PROTECTED unit, declared AFTER that unit's entry, its set pressure READ from the protected item's `pressureDesign` (one home, gauge), sized by API 520 Part I on DECLARED `blockedOutlet` / `fire` scenarios with the case's own Z, k and bubble ...
--> docs/architecture/settled-contracts.md#a-relief-valve-is-a-sized-item-of-the-unit-it-protects-2026-10-11-devmd-4c-c62-on-a-stated-default
-
-**A CONVERTER IS ONE SHELL, AND ITS BEDS SHARE ONE DIAMETER (2026-10-12, DEV.md 4c C69, on stated defaults).**  A `pfr` may be a COOLED MULTITUBULAR reactor (`tubes {}`, `coolant { arrangement coCurrent|counterCurrent| boiling; }`, `wallHeatTransfer { model LiFinlayson; }` -- the area and the bed volume from the geometry, the coolant's own energy balance on the same RK4, a packed-tube wall coefficient at the local ...
--> docs/architecture/settled-contracts.md#a-converter-is-one-shell-and-its-beds-share-one-diameter-2026-10-12-devmd-4c-c69-on-stated-defaults
-
-**A PLANT LAYOUT IS DECLARED, CHECKED AND DRAFTED (2026-10-17, DEV.md 4c C75 slice 1, on stated defaults).**  `system/layoutDict` places the SIZED items (identity `EquipmentSizing::itemId()`) on a plot plan; the footprint is the item's OWN published diameter-and-length pair or a box the case declares -- never invented -- and every separation, wind and hazardous-area zone is the CASE's, with `source`/`reason` (no ...
--> docs/architecture/settled-contracts.md#a-plant-layout-is-declared-checked-and-drafted-2026-10-17-devmd-4c-c75-slice-1-on-stated-defaults
-
-**AN ECONOMIC SENSITIVITY IS THE BASE APPRAISAL PRICED AGAIN, AND NOTHING ELSE (2026-10-12, DEV.md 4c C68, on a stated default).**  An opt-in `economics { sensitivity { <input> { relative|absolute ( lo hi ); } } }` block moves each declared input ALONE to two ends on the same converged run (every input enters after the flowsheet, so no re-solve): `FCI` (`relative accuracyBand;` reads the declared band, which until ...
--> docs/architecture/settled-contracts.md#an-economic-sensitivity-is-the-base-appraisal-priced-again-and-nothing-else-2026-10-12-devmd-4c-c68-on-a-stated-default
-
-**A GMP INTERIOR IS DECLARED AND CHECKED (2026-10-18, DEV.md 4c C97 phase B, on stated defaults).**  `building {}` in `system/layoutDict` declares floors, rooms (grade A|B|C|D|CNC, a pressure relative to a room or outside), airlocks AS ROOMS (`role`, `regime cascade|bubble|sink`), doors / stairs / lifts and the personnel, material and waste flows; rule: **a building that cannot exist is REFUSED, a building that ...
--> docs/architecture/settled-contracts.md#a-gmp-interior-is-declared-and-checked-2026-10-18-devmd-4c-c97-phase-b-on-stated-defaults
-
-**A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).** The doctrine says a check that cannot run must not PASS; the MIRROR is just as bad — **it must not FAIL either, it must REFUSE.**  `bin/drive-app` filed "no run control (absent)" against an app that works, because Chromium here cannot reach that host and a `querySelectorAll` over a blank document finds nothing.
--> docs/architecture/settled-contracts.md#a-tool-that-could-not-look-reported-what-it-did-not-see-2026-09-06
-
-**A GATE'S CLAIM IS THE LINE IT MARKS AS ONE (2026-09-06).**  *Which* line of a gate's output is its claim had TWO homes and they disagreed without anything noticing: `gate_manifest` took the FIRST line while `bin/runTests` captured a PASS row per site (`head -1` / `tail -1` / `grep -m1`), so a gate that prints detail before its verdict was described one way in the manifest and another way in the suite, in the same ...
--> docs/architecture/settled-contracts.md#a-gates-claim-is-the-line-it-marks-as-one-2026-09-06
-
-**WHAT HAPPENS INSIDE THE EQUIPMENT IS A PROJECTION, NOT A RESULT (2026-09-05; SUPERSEDED IN LOCATION 2026-09-06 by the paragraph above — the address is now `<view>/internalStates/<SECTOR>/<unit>` inside `0/` and `converged/`, one file per unit with the kind as a block, and everything else below still holds).**  It is written by `src/io/InternalStateIO.cpp` from `SimulationResult::profiles` — the record ...
--> docs/architecture/settled-contracts.md#what-happens-inside-the-equipment-is-a-projection-not-a-result-2026-09-05-superseded-in-location-2026-09-06-by-the-paragraph-above--the-address-is-now-viewinternalstatessectorunit-inside-0-and-converged-one-file-per-unit-with-the-kind-as-a-block-and-everything-else-below-still-holds
-
-**THE CATALOGUE READ BACK AGAINST A BOOK — a TOOL, deliberately not a gate (2026-08-25).**  `bin/curate/verify_against_poling.py` reads the CURATOR's own copy of Poling/Prausnitz/O'Connell App. A, matches by CAS never by name, and prints its report to `data/local/`; it is NOT wired into `bin/runTests` and never will be — a check that cannot run must not pass, and a skip-when-absent gate would be permanently green ...
--> docs/architecture/settled-contracts.md#the-catalogue-read-back-against-a-book--a-tool-deliberately-not-a-gate-2026-08-25
-
-**A DESTRUCTIVE GATE POISONED THE EVIDENCE (2026-08-18).**  `check_gate_selftest` restores inside `try/finally`, which is not death-safe against SIGKILL (a clean tree hides a poisoned binary from `check_build_fresh`), so `bin/curate/destructive_session.py` writes a disk JOURNAL before the first mutation, and `bin/runTests` (before `check_workspace_truth`), `--record` and both arms of `gate_manifest` REFUSE while a ...
--> docs/architecture/settled-contracts.md#a-destructive-gate-poisoned-the-evidence-2026-08-18
-
-**THE MESH DECLARES ITS STRUCTURE, AND THE SOLVER AUDITS THE DECLARATION (2026-08-25).**  `opts.blockTri = {N, nv}` buys Curtis-Powell-Reid finite differences and a block-Thomas solve; a declared structure is a solver aid, and aids report aloud — the first iteration measures the off-band maximum and REFUSES by name when the declaration is materially false.
--> docs/architecture/settled-contracts.md#the-mesh-declares-its-structure-and-the-solver-audits-the-declaration-2026-08-25
-
-**A BUBBLE POINT IS (x, P, T), AND THE FIT NOW READS ALL THREE (2026-08-25).** `EvidencePoint` carries a per-point pressure (a quiet NaN when undeclared, never zero — zero is a pressure), as a `Pressure` COLUMN or a held-constant SCALAR; `residual.P` beside evidence carrying its own, and a held-constant with no unit, REFUSE by name.
--> docs/architecture/settled-contracts.md#a-bubble-point-is-x-p-t-and-the-fit-now-reads-all-three-2026-08-25
-
-**ONE THERMOML TOOLCHAIN, NOT TWO (2026-08-25).**  `bin/choupo-thermoml` is the one tool (`sync` · `index` · `search [--online]` · `extract` · `extract-vle`); its cache lives in `thirdParty/thermoml/`, never `data/local/` (the loader RESOLVES that tree by name); an unresolvable component REFUSES rather than being guessed, and a multi-block article demands `--block N` because choosing is the curator's act.
--> docs/architecture/settled-contracts.md#one-thermoml-toolchain-not-two-2026-08-25
-
-**A PARTIALLY MISCIBLE PAIR IS FITTED ON BUBBLE TEMPERATURES AND TIE LINES TOGETHER (2026-11-05, DEV.md 4c C226).**  `fitParameters` `residual.kind T_bubble+LLE` adds measured binodal compositions (`property binaryLLE.binodal` datasets: T, mole fraction of the first named component in each liquid) to the bubble rows in ONE least-squares problem, through the liquid-liquid flash `propertyScanBinary` uses; the package ...
--> docs/architecture/settled-contracts.md#a-partially-miscible-pair-is-fitted-on-bubble-temperatures-and-tie-lines-together-2026-11-05-devmd-4c-c226
-
-**A PAIR CHOUPO REGRESSES IS A RECORD THAT NAMES ITS CASE, AND A SHIPPED TABLE IS NOT RELICENSED BY ITS COURIER (2026-09-28, C16).**  Catalogue NRTL pairs may be Choupo's OWN regressions to measurements the ThermoML archive LOCATES (each series cites its article and says `transcribedNotCheckedAgainstArticle` until someone reads it back): fitted on one study, held out on ANOTHER, band declared before the fit, ...
--> docs/architecture/settled-contracts.md#a-pair-choupo-regresses-is-a-record-that-names-its-case-and-a-shipped-table-is-not-relicensed-by-its-courier-2026-09-28-c16
-
-**THE WASM BUILD DIED WHERE THE NATIVE ONE PASSED, AND THE SITE WENT STALE (2026-08-27).**  A lambda captured a STRUCTURED BINDING — `for (const auto& [uname, cb] : …)` then `[&]{ … cb.factors … }` — which is illegal in C++17 and became legal only in C++20.
--> docs/architecture/settled-contracts.md#the-wasm-build-died-where-the-native-one-passed-and-the-site-went-stale-2026-08-27
-
-**A CITATION REQUIREMENT CHANGED WHAT THE READERS READ (2026-08-28/29).** Every EduTool lesson symbol needed a `file:line` citation into the ENGINE -- an AUTHORING constraint on the eleven drafting agents, verified by the parent at the time, ONCE.
--> docs/architecture/settled-contracts.md#a-citation-requirement-changed-what-the-readers-read-2026-08-2829
-
-**CAN THE STUDENT GET IT OUT? — leg 5 (2026-08-27).**  The `design` and `economics` reports SERIALISE `result` and refuse naming the remedy when it is empty (a report draws, it does not recompute); one failing report no longer kills every report after it — each is caught by name, the count raised on `AdvisoryLog`; `sizing.csv` carries the design BASIS and `costs.csv` reproduces its own total.  Making ...
--> docs/architecture/settled-contracts.md#can-the-student-get-it-out--leg-5-2026-08-27
-
-**A NUMBER YOU CANNOT TRACE IS A NUMBER YOU CANNOT DEFEND — leg 4 (2026-08-27).** `DictAudit` reaches `postDict`, `solverDict` and `outerDict` (PURE parameter files; the walker reads `entries_` DIRECTLY — never `subDict()`, which `note()`); `constructionPeriod` is HONOURED since 2026-10-11 (DEV.md 4c C63: a declared `capitalSchedule`, refused when N > 1 and absent, beside an opt-in `rampUp` and ...
--> docs/architecture/settled-contracts.md#a-number-you-cannot-trace-is-a-number-you-cannot-defend--leg-4-2026-08-27
-
-**A CORRELATION IS AN OBJECT, WITH A WINDOW, A CITATION AND AN ANCHOR (2026-08-25).**  `FrictionFactorCorrelation` (Blasius, Colebrook-White, Haaland, Churchill) joins `HeatTransferCorrelation`: declared validity window + `verify()` anchor + `citation()` — a correlation whose source is a comment is one the reader cannot check.
--> docs/architecture/settled-contracts.md#a-correlation-is-an-object-with-a-window-a-citation-and-an-anchor-2026-08-25
-
-**THE TRANSPORT CORRELATIONS ARE OBJECTS TOO, AND EVERY ANCHOR SAYS WHAT KIND IT IS (2026-09-05).**  The five transport families (gas μ/k/D, liquid μ/k — Chung, Eucken, Fuller, Andrade, Vogel, chemsepEq101, SatoRiedel, chemsepEq16) gained `validityWindow()` · `citation()` · `verify()` as PURE virtuals, and the Wilke φ_ij that `ThermoPackage.cpp` carried TWICE has one home (`src/thermo/transport/GasMixingRules.H`).
--> docs/architecture/settled-contracts.md#the-transport-correlations-are-objects-too-and-every-anchor-says-what-kind-it-is-2026-09-05
-
-**CHAPMAN-ENSKOG FROM SVEHLA'S CONSTANTS — the curation campaign the paragraph above named is RUN, and the second opinion exists (2026-09-06).** `ChapmanEnskog` (gas μ, Svehla 1962 eq.
--> docs/architecture/settled-contracts.md#chapman-enskog-from-svehlas-constants--the-curation-campaign-the-paragraph-above-named-is-run-and-the-second-opinion-exists-2026-09-06
-
-**A BATCH MEMBRANE, AND THE WASHOUT LAW FAILING WHERE A STUDENT CAN WATCH (2026-08-25).**  Everything a membrane needs was already here -- the solution-diffusion and DSPM-DE transport laws, van't Hoff and Pitzer osmotic, film polarisation, the asset records -- and ALL of it served exactly one unit, the steady spiral-wound module.
--> docs/architecture/settled-contracts.md#a-batch-membrane-and-the-washout-law-failing-where-a-student-can-watch-2026-08-25
-
-**FOULING FOLLOWED THE SAME DAY, and the "largest gap" sentence above is now PARTLY PAID.**  Resistance in series on the permeance the unit hands the transport law -- `1/A_eff = 1/A_w + r_f(v)`, `v = V_permeated/A`, `r_f` growing by one of HERMIA'S BLOCKING LAWS (Hermia 1982; `cake` and `intermediate` implemented).
--> docs/architecture/settled-contracts.md#fouling-followed-the-same-day-and-the-largest-gap-sentence-above-is-now-partly-paid
-
-**A STIFF PORE SOLVED AT ONCE -- the DSPM-DE pore by finite differences, NanoFiltran the reference and never the solver (2026-10-22/24, DEV.md 4c C138, C141, C142; Vítor: "faz um solver melhor ... deixa o nanofiltran resultados só para comparares").**  `DSPM-DE` SOLVES the pore by default: extended Nernst-Planck on a uniform grid (101 nodes), Scharfetter-Gummel fluxes, electroneutrality at every node, zero current, ...
--> docs/architecture/settled-contracts.md#a-stiff-pore-solved-at-once----the-dspm-de-pore-by-finite-differences-nanofiltran-the-reference-and-never-the-solver-2026-10-2224-devmd-4c-c138-c141-c142-vítor-faz-um-solver-melhor--deixa-o-nanofiltran-resultados-só-para-comparares
-
-**ELECTRONEUTRALITY WITHOUT A NEW PARAMETER — the `SDEM` transport law (2026-09-15, Vítor: "não se pode andar a aumentar o número de parâmetros porque o modelo fica melhor mas depois não há dados").**  `solutionDiffusion` on an ION-declared feed gives every ion its own `B_s` and couples nothing, so the permeate carries a net charge (measured on membrane07: −0.82 % of the cation equivalents; the engine SAID so only ...
--> docs/architecture/settled-contracts.md#electroneutrality-without-a-new-parameter--the-sdem-transport-law-2026-09-15-vítor-não-se-pode-andar-a-aumentar-o-número-de-parâmetros-porque-o-modelo-fica-melhor-mas-depois-não-há-dados
-
-**A STACK IS A RECORD, AND ITS LIMITING CURRENT IS A PREDICTION (2026-09-16).** Two DECLARED numbers the engine could not check became two it DERIVES and prints.
--> docs/architecture/settled-contracts.md#a-stack-is-a-record-and-its-limiting-current-is-a-prediction-2026-09-16
-
-**THE LIMITING CURRENT THAT FALLS WHILE YOU WATCH -- batch electrodialysis (2026-09-16, the same day).**  A PREDICTED i_lim evaluated at ONE fixed composition is only a better number; **in a batch desalination the diluate DEPLETES, so i_lim falls under a constant current until they cross**, and that crossing is the whole pedagogy of batch ED and cannot be shown by any model that reads a declared transport number.
--> docs/architecture/settled-contracts.md#the-limiting-current-that-falls-while-you-watch----batch-electrodialysis-2026-09-16-the-same-day
-
-**AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  An advisory carries `where` (the innermost open `AdvisoryFrame`) and `status` (`accepted` | `trial`), both stamped by the SINK, not by the sites that raise them; THE DEFAULT IS `accepted`, status only ever moves TOWARD the answer, and the block PARTITIONS on that stamped field — never on a similarity heuristic.
--> docs/architecture/settled-contracts.md#an-advisory-now-says-which-state-it-is-about-2026-08-24
-
-**THE PELLET IS A POINT, AND NOW THE ENGINE SAYS SO (2026-08-18).** `catalystLoading` is a unit conversion and never claimed to be more: a heterogeneous rate constant is reported per gram of dry catalyst and the bed makes it volumetric.
--> docs/architecture/settled-contracts.md#the-pellet-is-a-point-and-now-the-engine-says-so-2026-08-18
-
-**THE REFERENCE RUNG — a declared field the hot path did not honour (2026-08-06).**  `h_pure_ig` / `s_pure_ig` / `g_pure_ig` refuse on a non-gas `standardThermochemistry.referenceState` before the Cp check, quoting the record's own word and naming `h_formation` as the remedy — the old message was advice that creates the bug; `datumOnIdealGasRung()` is kept SEPARATE from `hasCpIdealGas()`.
--> docs/architecture/settled-contracts.md#the-reference-rung--a-declared-field-the-hot-path-did-not-honour-2026-08-06
-
-**ICE IS A PHASE, NOT A SPECIAL CASE (2026-08-07).**  `SolidPhase::fEffective` returning `Psat(T)·exp(−ΔG_fus/RT)` at the crystal's index — and ZERO at every other — is the entire implementation; freezing-point depression falls out of K = 1, derived and never declared.
--> docs/architecture/settled-contracts.md#ice-is-a-phase-not-a-special-case-2026-08-07
-
-**THE STRUCTURAL SLICE (2026-08-05/06) — the layering now HOLDS, and the machinery that enforces it got its own arity treatment.**
--> docs/architecture/settled-contracts.md#the-structural-slice-2026-08-0506--the-layering-now-holds-and-the-machinery-that-enforces-it-got-its-own-arity-treatment
-
-**A COLUMN OVER A CHEMISTRY — the effective stage K (built 2026-08-04).** `ThermoPackage::stageK(T, P, zStage, x, y)` is the ONE entry a tray asks for equilibrium: molecular → `Kvec`, byte-identical; reactive → an effective APPARENT K, the ions internal to the stage, the Jacobian never sees one.
--> docs/architecture/settled-contracts.md#a-column-over-a-chemistry--the-effective-stage-k-built-2026-08-04
-
-**Pinch — P1 targets + P2 analysis table (built 2026-08-03; P3 area-cost stays UNAUTHORISED).**  A `pinchPass` PostProcessor in the postDict chain: Linnhoff-Flower problem table printed cascade by cascade, `pinch.Q_H_min_kW / Q_C_min_kW / T_pinch_K` KPIs, `reports/pinch/compositeCurves.csv`; P2 (ratified 2026-08-03) adds the candidate-match ANALYSIS table `reports/pinch/candidateMatches.csv` (exhaustive hot×cold ...
--> docs/architecture/settled-contracts.md#pinch--p1-targets--p2-analysis-table-built-2026-08-03-p3-area-cost-stays-unauthorised
-
-**PC-SAFT association — built 2026-08-03 with the three ratified amendments** (extensible (nD,nA) site representation behind `siteCounts()`; nested tolerances X-fixed-point 1e-14 under the 1e-12 η bisection; widened validation: X^A echoed + closed-form oracle + non-associating corpus untouched at 1e-10).
--> docs/architecture/settled-contracts.md#pc-saft-association--built-2026-08-03-with-the-three-ratified-amendments
-
-**THE PROBLEM SOLVED IS NOT ALWAYS THE PROBLEM POSED (ruled 2026-08-11).**  An ADVISORY says the answer is qualified; a DIVERGENCE says the answer is to a DIFFERENT QUESTION — `core/ProblemDivergence.H`, printed ABOVE the caveats, emitted ABOVE the KPIs, written to `converged/problemDivergence`.
--> docs/architecture/settled-contracts.md#the-problem-solved-is-not-always-the-problem-posed-ruled-2026-08-11
-
-**THE MODEL-BOUNDARY STEP IS ACCOUNTED, NOT CHARGED TO THE UNIT (2026-08-09).** Three quantities travel apart and are never collapsed: the RAW imbalance · the declared STEP · what REMAINS; the verdict is taken on the third.
--> docs/architecture/settled-contracts.md#the-model-boundary-step-is-accounted-not-charged-to-the-unit-2026-08-09
-
-**Balance diagnostics, three levels (2026-07-19): total mass · per-element atoms · energy — engine-owned, GUI only draws.  ALL THREE run by DEFAULT on every converged steady run (2026-08-02, roadmap #7):** conservation is the curriculum, so none depends on a case declaring `reports {}`; a declared block keeps control (`enabled false;` opts out per report), and the refusal posture follows provenance — the *default* ...
--> docs/architecture/settled-contracts.md#balance-diagnostics-three-levels-2026-07-19-total-mass--per-element-atoms--energy--engine-owned-gui-only-draws--all-three-run-by-default-on-every-converged-steady-run-2026-08-02-roadmap-7
-
-**Ctrl FIRST LAW — three probed routes; the ledger CLAIMS (2026-08-01).** The dynamicCSTR's energy equation is chosen by PROBING the enthalpy surface (never by name): canonical per-species (stored H = Σnᵢhᵢ(T), the ODE its exact derivative — witness `ctrl11`, closure 1.4e-7, second-order in deltaT = the ledger's trapezoid, not the physics); **mixture-H** when the per-species leg cannot serve (the electrolyte salt is ...
--> docs/architecture/settled-contracts.md#ctrl-first-law--three-probed-routes-the-ledger-claims-2026-08-01
-
-**outerDict over choupoCtrl (2026-08-01).**  The ctrl campaign is a PURE FUNCTOR (fresh units/controllers per evaluation; `writeOutputs` gates every artefact), so `system/outerDict` wraps the dynamic path with the SAME OuterDriver architecture as choupoSolve — a piecewise-constant control profile IS a `Schedule`, varied via `controllers[i].schedule[j].value`.
--> docs/architecture/settled-contracts.md#outerdict-over-choupoctrl-2026-08-01
-
-**External-reference battery (2026-08-01).**  Beyond self-recorded goldens, cases pinned on PRIMARY published anchors, each stating what is and is not the portable part: `cavett01_recycle_train` and the Williams-Otto four (`ctrl12`-`ctrl14`, `ctrl16`).
--> docs/architecture/settled-contracts.md#external-reference-battery-2026-08-01
-
-**Batch campaign LEDGERS — material + energy (built 2026-07-11, forum #99/#101/#102).**  choupoBatch carries two structured ledgers: the MATERIAL ledger (one `TransferRecord` per material edge, per-package enthalpy at each package's own T, MONOTONIC H-validity — a poisoned record never resurrects) and the ENERGY ledger (one `EnergyRecord` per segment of constant physics).
--> docs/architecture/settled-contracts.md#batch-campaign-ledgers--material--energy-built-2026-07-11-forum-99101102
-
-**General heterogeneous-thermo solver — SETTLED 2026-07-06 (do NOT relitigate).** A flowsheet may run units in DIFFERENT thermo WORLDS on ONE global component set, each unit computing in its own world via a per-unit `thermo {}` override — including MANIFEST worlds (electrolyte Pitzer), not only flat activity/eos: `thermoFor` routes an electrolyte override through the `ThermoPackageBuilder` (subset-aware — it picks ...
--> docs/architecture/settled-contracts.md#general-heterogeneous-thermo-solver--settled-2026-07-06-do-not-relitigate
-
-**Sequential-plan contract (tears + order) — SETTLED 2026-07-25, do NOT relitigate.**  The solver executes the flattened units IN DECLARED ORDER (never a silent topo-sort), and the 0/ completeness pre-seeding retired the old "input stream not in registry" guard — so an undeclared recycle tear AND an out-of-order acyclic flowsheet both silently read stale 0/ seeds (wrong answer, exit 0; both reproduced before the ...
--> docs/architecture/settled-contracts.md#sequential-plan-contract-tears--order--settled-2026-07-25-do-not-relitigate
-
-**Stream-state directories + topological drill-in — RATIFIED 2026-07-06 (the constitutional spine; do NOT reopen the ontology unless a concrete case proves the contract fails).**  A stream's STATE lives in its OWN file on disk, OpenFOAM-style — never inside `flowsheetDict` (TOPOLOGY only): `0/` (COMPLETE initial state, N streams == N files, missing/orphan FATAL), `converged/` (steady solution), `iterations/` ...
--> docs/architecture/settled-contracts.md#stream-state-directories--topological-drill-in--ratified-2026-07-06-the-constitutional-spine-do-not-reopen-the-ontology-unless-a-concrete-case-proves-the-contract-fails
-
-**The `phases {}` decomposition names AQUEOUS · ORGANIC · SOLID (2026-07-30).** `componentMolarFlows` stays the OVERALL material and the apparent basis is NEVER disturbed; a `phases {}` block decomposes it and must sum back exactly.
--> docs/architecture/settled-contracts.md#the-phases--decomposition-names-aqueous--organic--solid-2026-07-30
-
-**A LABORATORY ANALYSIS IS AN INLET — `aqueousAnalysis {}`, the SEVENTH canonical form (A1 shipped 2026-08-09; do NOT fold it into `speciesMolarFlows`).**  *Inventory is not measurement.*  A `speciesMolarFlows … basis analytical;` block declares flows the author has ALREADY reconciled, and charge closure is a CONTRACT there — refusing a violation is right.
--> docs/architecture/settled-contracts.md#a-laboratory-analysis-is-an-inlet--aqueousanalysis--the-seventh-canonical-form-a1-shipped-2026-08-09-do-not-fold-it-into-speciesmolarflows
-
-**A2 SHIPPED 2026-08-09 — `method weightedLeastSquares;`, and the ruling's one-way arrow made STRUCTURAL.**  Minimise `Σ ((x−m)/σ)²` subject to the laws the case DECLARES in `enforce ( … )`, a convex QP on `solver/ActiveSetQP`; Vítor's boundary — *analysis → reconciliation → ONE admissible composition → equilibrium, never a coupled loop* — is enforced by a translation unit: `src/streams/AnalysisReconciler.{H,cpp}` ...
--> docs/architecture/settled-contracts.md#a2-shipped-2026-08-09--method-weightedleastsquares-and-the-rulings-one-way-arrow-made-structural
-
-**Three-axiom property layout** (referenced by `docs/ai/overview.md`): (1) INTRINSIC pure-compound props → `data/standards/components/<name>.dat`; (2) PAIR-dependent (NRTL/Wilson/Henry) → `data/standards/<feature>/<pair>.dat`; (3) EQUIPMENT-dependent kinetics → case `constant/`; (4) SAMPLE-specific measured data → case `constant/components/<name>.dat` (`Database` overlays it field-by-field over the standard entry).
--> docs/architecture/settled-contracts.md#three-axiom-property-layout
-
-**Property-model architecture — SETTLED 2026-06-05, do NOT relitigate.**  Full contract: **[`docs/property-architecture.md`](docs/property-architecture.md)**.
--> docs/architecture/settled-contracts.md#property-model-architecture--settled-2026-06-05-do-not-relitigate
-
-**THE LICENCE OF A SIGMA PROFILE (2026-09-06).**  Vítor asked whether the COSMO-SAC parameters could be included in the standard base "if it is legal"; the primary texts were read that day and the answer is no.
--> docs/architecture/settled-contracts.md#the-licence-of-a-sigma-profile-2026-09-06
-
-**COSMO-SAC — the rejection was REVERSED 2026-07-15 (Vítor), for a MINIMAL, glass-box version only.**  The original blanket rejection was against *bloat* (heavy deps, quantum chemistry, thousands of imported compounds, a new architecture).
--> docs/architecture/settled-contracts.md#cosmo-sac--the-rejection-was-reversed-2026-07-15-vítor-for-a-minimal-glass-box-version-only
-
-**Property architecture — consolidated; the authority is [`docs/architecture/property-architecture.md`](docs/architecture/property-architecture.md)** (level 2 under the Constitution — authority map: [`docs/architecture/README.md`](docs/architecture/README.md); it superseded `final-property-architecture.md` on 2026-07-14, kept as historical record).
--> docs/architecture/settled-contracts.md#property-architecture--consolidated-the-authority-is-docsarchitectureproperty-architecturemddocsarchitectureproperty-architecturemd
+- A SUITE'S PASS COVERS WHAT ITS GATES ASSERT, AND NOTHING ELSE (2026-09-08) -> docs/architecture/settled-contracts.md#a-suites-pass-covers-what-its-gates-assert-and-nothing-else-2026-09-08
+- THE SUBSET HAD ONE MORE MEMBER, AND THE WAY IT WAS FOUND IS THE DURABLE HALF (2026-09-25) -> docs/architecture/settled-contracts.md#the-subset-had-one-more-member-and-the-way-it-was-found-is-the-durable-half-2026-09-25
+- AND ONE MORE, WHERE THE TWO HOMES WERE TWO READERS OF ONE RESOLUTION (2026-09-26) -> docs/architecture/settled-contracts.md#and-one-more-where-the-two-homes-were-two-readers-of-one-resolution-2026-09-26
+- A SPRAY DRYER FED SEVERAL SOLVENTS LOSES NONE (2026-10-20, DEV.md 4c C111) -> docs/architecture/settled-contracts.md#a-spray-dryer-fed-several-solvents-loses-none-2026-10-20-devmd-4c-c111
+- THREE MORE, AND THE FLAGSHIP'S FIRST LAW (2026-09-27) -> docs/architecture/settled-contracts.md#three-more-and-the-flagships-first-law-2026-09-27
+- AND THE COLUMN HALF OF IT IS NOW CLOSED, WITH A THIRD HOME NOBODY HAD NAMED (2026-09-12, same day) -> docs/architecture/settled-contracts.md#and-the-column-half-of-it-is-now-closed-with-a-third-home-nobody-had-named-2026-09-12-same-day
+- AND THE EVAPORATOR HALF, WHERE THE SECOND HOME WAS A MISSING WORD (2026-09-12, same day) -> docs/architecture/settled-contracts.md#and-the-evaporator-half-where-the-second-home-was-a-missing-word-2026-09-12-same-day
+- A RESULT BLOCK THE GOLDEN FORMAT CANNOT READ ARRIVES UNPINNED (2026-08-12) -> docs/architecture/settled-contracts.md#a-result-block-the-golden-format-cannot-read-arrives-unpinned-2026-08-12
+- THE `aad` ROW (2026-08-12) -> docs/architecture/settled-contracts.md#the-aad-row-2026-08-12
+- THE HONESTY SLICE — twelve gates in one day (2026-08-05), and what building them found -> docs/architecture/settled-contracts.md#the-honesty-slice--twelve-gates-in-one-day-2026-08-05-and-what-building-them-found
+- What was deliberately NOT done, and why it is the substantive half: -> docs/architecture/settled-contracts.md#what-was-deliberately-not-done-and-why-it-is-the-substantive-half
+- EVERY MANUAL GATE READS THE SOURCE; THE TREE SHIPS THE RENDER (2026-09-03) -> docs/architecture/settled-contracts.md#every-manual-gate-reads-the-source-the-tree-ships-the-render-2026-09-03
+- THE RECORD A STUDENT PROMOTES MUST CARRY WHAT THE RUN CONCLUDED (2026-09-03) -> docs/architecture/settled-contracts.md#the-record-a-student-promotes-must-carry-what-the-run-concluded-2026-09-03
+- A VERDICT PUBLISHED TO A HUMAN AND PINNED BY NOTHING (2026-09-04) -> docs/architecture/settled-contracts.md#a-verdict-published-to-a-human-and-pinned-by-nothing-2026-09-04
+- A PLANT THAT CLOSED ON ITS COOLING WATER (2026-09-08) -> docs/architecture/settled-contracts.md#a-plant-that-closed-on-its-cooling-water-2026-09-08
+- A DRYER THAT ENDED WETTER THAN IT STARTED (2026-09-04) -> docs/architecture/settled-contracts.md#a-dryer-that-ended-wetter-than-it-started-2026-09-04
+- THE SPECIFICATION SHEET A PROJECT IS AUDITED FROM (2026-09-04) -> docs/architecture/settled-contracts.md#the-specification-sheet-a-project-is-audited-from-2026-09-04
+- THE DATASHEET FOLLOWS THE EQUIPMENT KIND, NOT THE UNIT TYPE (2026-09-07) -> docs/architecture/settled-contracts.md#the-datasheet-follows-the-equipment-kind-not-the-unit-type-2026-09-07
+- EVERY SIZER STATES ITS BASIS, AND WRITING ONE FOUND A VOLUME IN KILOMOLES (2026-09-05) -> docs/architecture/settled-contracts.md#every-sizer-states-its-basis-and-writing-one-found-a-volume-in-kilomoles-2026-09-05
+- A FIRST LAW THE GUI COMPUTED FOR ITSELF (2026-09-05) -> docs/architecture/settled-contracts.md#a-first-law-the-gui-computed-for-itself-2026-09-05
+- A HIERARCHY THE ENGINE BUILT AND THREW AWAY (2026-09-04) -> docs/architecture/settled-contracts.md#a-hierarchy-the-engine-built-and-threw-away-2026-09-04
+- A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT (2026-09-06, amended the same day to ONE FILE PER UNIT) -> docs/architecture/settled-contracts.md#a-state-directory-is-a-restartable-snapshot-2026-09-06-amended-the-same-day-to-one-file-per-unit
+- A STREAM BELONGS TO THE GRAPH THAT CONTAINS BOTH ITS ENDS (2026-09-07, Vítor's rule; it REPLACES the producer rule of 2026-07-06 — do NOT restore that one) -> docs/architecture/settled-contracts.md#a-stream-belongs-to-the-graph-that-contains-both-its-ends-2026-09-07-vítors-rule-it-replaces-the-producer-rule-of-2026-07-06--do-not-restore-that-one
+- ONE PIPE, ONE ROW — the flagship's stream table printed 52 rows for 25 streams (2026-09-07) -> docs/architecture/settled-contracts.md#one-pipe-one-row--the-flagships-stream-table-printed-52-rows-for-25-streams-2026-09-07
+- A SECTOR IS READ FROM THE STAMP, NOT RECOVERED FROM A NAME — on the STREAM side too (2026-09-06) -> docs/architecture/settled-contracts.md#a-sector-is-read-from-the-stamp-not-recovered-from-a-name--on-the-stream-side-too-2026-09-06
+- A DEFAULT NOBODY DECLARED, AND A BANNER THAT WAS ACCIDENTALLY TRUE (2026-09-06) -> docs/architecture/settled-contracts.md#a-default-nobody-declared-and-a-banner-that-was-accidentally-true-2026-09-06
+- THE ENGINE PROMISED TO REFUSE OR ANNOUNCE, AND IN THREE PLACES DID NEITHER (2026-09-07) -> docs/architecture/settled-contracts.md#the-engine-promised-to-refuse-or-announce-and-in-three-places-did-neither-2026-09-07
+- A SIZE DISTRIBUTION WITH NO SIZE AXIS, AND A HEADER THAT BROKE THE NEXT RUN (2026-09-07) -> docs/architecture/settled-contracts.md#a-size-distribution-with-no-size-axis-and-a-header-that-broke-the-next-run-2026-09-07
+- ONE UNIT, FIVE ITEMS: THE COLUMN GETS A SIZE, A COST AND A SHEET (2026-09-07) -> docs/architecture/settled-contracts.md#one-unit-five-items-the-column-gets-a-size-a-cost-and-a-sheet-2026-09-07
+- A SOLVER AID'S DIRECTION IS READ FROM THE ANSWER, NEVER FROM THE SEED (2026-10-03) -> docs/architecture/settled-contracts.md#a-solver-aids-direction-is-read-from-the-answer-never-from-the-seed-2026-10-03
+- A CATALYST BED IS SIZED BY ITS KINETICS, AND THE CHAIN NOW RUNS WHERE THE HEADER SAID IT DID (2026-09-26, commission C2) -> docs/architecture/settled-contracts.md#a-catalyst-bed-is-sized-by-its-kinetics-and-the-chain-now-runs-where-the-header-said-it-did-2026-09-26-commission-c2
+- A CASE CARRIES ITS OWN KINETICS (2026-10-12, DEV.md 4c C67 -- Vítor's architecture decision, option 3; do NOT recompile a rate law's numbers into the engine) -> docs/architecture/settled-contracts.md#a-case-carries-its-own-kinetics-2026-10-12-devmd-4c-c67----vítors-architecture-decision-option-3-do-not-recompile-a-rate-laws-numbers-into-the-engine
+- A GAS IS STORED IN PRESSURE VESSELS, SIZED ON THE GAS IT GIVES BACK (2026-10-18, DEV.md 4c C89) -> docs/architecture/settled-contracts.md#a-gas-is-stored-in-pressure-vessels-sized-on-the-gas-it-gives-back-2026-10-18-devmd-4c-c89
+- AN ITEM NO CORRELATION PRICES IS QUOTED BY THE CASE, AND A SOLIDS STEP IS COUNTED BY IT (2026-10-19, DEV.md 4c C98, Vitor's rulings) -> docs/architecture/settled-contracts.md#an-item-no-correlation-prices-is-quoted-by-the-case-and-a-solids-step-is-counted-by-it-2026-10-19-devmd-4c-c98-vitors-rulings
+- A BATCH PLANT IS DESIGNED ON THE STEADY BALANCE, NOT BY A SECOND BINARY (2026-10-19, DEV.md 4c C99, on a stated default) -> docs/architecture/settled-contracts.md#a-batch-plant-is-designed-on-the-steady-balance-not-by-a-second-binary-2026-10-19-devmd-4c-c99-on-a-stated-default
+- SEVERAL PRODUCTS ON THE SAME STAGES (2026-10-20, DEV.md 4c C110 G2, on stated defaults) -> docs/architecture/settled-contracts.md#several-products-on-the-same-stages-2026-10-20-devmd-4c-c110-g2-on-stated-defaults
+- A PHASE SPLIT SCANNED ALONG T OR P IS ONE FLASH PER POINT (2026-10-20, DEV.md 4c C118) -> docs/architecture/settled-contracts.md#a-phase-split-scanned-along-t-or-p-is-one-flash-per-point-2026-10-20-devmd-4c-c118
+- A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md 4c C62, on a stated default) -> docs/architecture/settled-contracts.md#a-relief-valve-is-a-sized-item-of-the-unit-it-protects-2026-10-11-devmd-4c-c62-on-a-stated-default
+- A CONVERTER IS ONE SHELL, AND ITS BEDS SHARE ONE DIAMETER (2026-10-12, DEV.md 4c C69, on stated defaults) -> docs/architecture/settled-contracts.md#a-converter-is-one-shell-and-its-beds-share-one-diameter-2026-10-12-devmd-4c-c69-on-stated-defaults
+- A PLANT LAYOUT IS DECLARED, CHECKED AND DRAFTED (2026-10-17, DEV.md 4c C75 slice 1, on stated defaults) -> docs/architecture/settled-contracts.md#a-plant-layout-is-declared-checked-and-drafted-2026-10-17-devmd-4c-c75-slice-1-on-stated-defaults
+- AN ECONOMIC SENSITIVITY IS THE BASE APPRAISAL PRICED AGAIN, AND NOTHING ELSE (2026-10-12, DEV.md 4c C68, on a stated default) -> docs/architecture/settled-contracts.md#an-economic-sensitivity-is-the-base-appraisal-priced-again-and-nothing-else-2026-10-12-devmd-4c-c68-on-a-stated-default
+- A GMP INTERIOR IS DECLARED AND CHECKED (2026-10-18, DEV.md 4c C97 phase B, on stated defaults) -> docs/architecture/settled-contracts.md#a-gmp-interior-is-declared-and-checked-2026-10-18-devmd-4c-c97-phase-b-on-stated-defaults
+- A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06) -> docs/architecture/settled-contracts.md#a-tool-that-could-not-look-reported-what-it-did-not-see-2026-09-06
+- A GATE'S CLAIM IS THE LINE IT MARKS AS ONE (2026-09-06) -> docs/architecture/settled-contracts.md#a-gates-claim-is-the-line-it-marks-as-one-2026-09-06
+- WHAT HAPPENS INSIDE THE EQUIPMENT IS A PROJECTION, NOT A RESULT (2026-09-05; SUPERSEDED IN LOCATION 2026-09-06 by the paragraph above — the address is now `view/internalStates/SECTOR/unit` inside `0/` and `converged/`, one file per unit with the kind as a block, and everything else below still holds) -> docs/architecture/settled-contracts.md#what-happens-inside-the-equipment-is-a-projection-not-a-result-2026-09-05-superseded-in-location-2026-09-06-by-the-paragraph-above--the-address-is-now-viewinternalstatessectorunit-inside-0-and-converged-one-file-per-unit-with-the-kind-as-a-block-and-everything-else-below-still-holds
+- THE CATALOGUE READ BACK AGAINST A BOOK — a TOOL, deliberately not a gate (2026-08-25) -> docs/architecture/settled-contracts.md#the-catalogue-read-back-against-a-book--a-tool-deliberately-not-a-gate-2026-08-25
+- A DESTRUCTIVE GATE POISONED THE EVIDENCE (2026-08-18) -> docs/architecture/settled-contracts.md#a-destructive-gate-poisoned-the-evidence-2026-08-18
+- THE MESH DECLARES ITS STRUCTURE, AND THE SOLVER AUDITS THE DECLARATION (2026-08-25) -> docs/architecture/settled-contracts.md#the-mesh-declares-its-structure-and-the-solver-audits-the-declaration-2026-08-25
+- A BUBBLE POINT IS (x, P, T), AND THE FIT NOW READS ALL THREE (2026-08-25) -> docs/architecture/settled-contracts.md#a-bubble-point-is-x-p-t-and-the-fit-now-reads-all-three-2026-08-25
+- ONE THERMOML TOOLCHAIN, NOT TWO (2026-08-25) -> docs/architecture/settled-contracts.md#one-thermoml-toolchain-not-two-2026-08-25
+- A PARTIALLY MISCIBLE PAIR IS FITTED ON BUBBLE TEMPERATURES AND TIE LINES TOGETHER (2026-11-05, DEV.md 4c C226) -> docs/architecture/settled-contracts.md#a-partially-miscible-pair-is-fitted-on-bubble-temperatures-and-tie-lines-together-2026-11-05-devmd-4c-c226
+- A PAIR CHOUPO REGRESSES IS A RECORD THAT NAMES ITS CASE, AND A SHIPPED TABLE IS NOT RELICENSED BY ITS COURIER (2026-09-28, C16) -> docs/architecture/settled-contracts.md#a-pair-choupo-regresses-is-a-record-that-names-its-case-and-a-shipped-table-is-not-relicensed-by-its-courier-2026-09-28-c16
+- THE WASM BUILD DIED WHERE THE NATIVE ONE PASSED, AND THE SITE WENT STALE (2026-08-27) -> docs/architecture/settled-contracts.md#the-wasm-build-died-where-the-native-one-passed-and-the-site-went-stale-2026-08-27
+- A CITATION REQUIREMENT CHANGED WHAT THE READERS READ (2026-08-28/29) -> docs/architecture/settled-contracts.md#a-citation-requirement-changed-what-the-readers-read-2026-08-2829
+- CAN THE STUDENT GET IT OUT? — leg 5 (2026-08-27) -> docs/architecture/settled-contracts.md#can-the-student-get-it-out--leg-5-2026-08-27
+- A NUMBER YOU CANNOT TRACE IS A NUMBER YOU CANNOT DEFEND — leg 4 (2026-08-27) -> docs/architecture/settled-contracts.md#a-number-you-cannot-trace-is-a-number-you-cannot-defend--leg-4-2026-08-27
+- A CORRELATION IS AN OBJECT, WITH A WINDOW, A CITATION AND AN ANCHOR (2026-08-25) -> docs/architecture/settled-contracts.md#a-correlation-is-an-object-with-a-window-a-citation-and-an-anchor-2026-08-25
+- THE TRANSPORT CORRELATIONS ARE OBJECTS TOO, AND EVERY ANCHOR SAYS WHAT KIND IT IS (2026-09-05) -> docs/architecture/settled-contracts.md#the-transport-correlations-are-objects-too-and-every-anchor-says-what-kind-it-is-2026-09-05
+- CHAPMAN-ENSKOG FROM SVEHLA'S CONSTANTS — the curation campaign the paragraph above named is RUN, and the second opinion exists (2026-09-06) -> docs/architecture/settled-contracts.md#chapman-enskog-from-svehlas-constants--the-curation-campaign-the-paragraph-above-named-is-run-and-the-second-opinion-exists-2026-09-06
+- A BATCH MEMBRANE, AND THE WASHOUT LAW FAILING WHERE A STUDENT CAN WATCH (2026-08-25) -> docs/architecture/settled-contracts.md#a-batch-membrane-and-the-washout-law-failing-where-a-student-can-watch-2026-08-25
+- FOULING FOLLOWED THE SAME DAY, and the "largest gap" sentence above is now PARTLY PAID -> docs/architecture/settled-contracts.md#fouling-followed-the-same-day-and-the-largest-gap-sentence-above-is-now-partly-paid
+- A STIFF PORE SOLVED AT ONCE -- the DSPM-DE pore by finite differences, NanoFiltran the reference and never the solver (2026-10-22/24, DEV.md 4c C138, C141, C142; Vítor: "faz um solver melhor ... deixa o nanofiltran resultados só para comparares") -> docs/architecture/settled-contracts.md#a-stiff-pore-solved-at-once----the-dspm-de-pore-by-finite-differences-nanofiltran-the-reference-and-never-the-solver-2026-10-2224-devmd-4c-c138-c141-c142-vítor-faz-um-solver-melhor--deixa-o-nanofiltran-resultados-só-para-comparares
+- ELECTRONEUTRALITY WITHOUT A NEW PARAMETER — the `SDEM` transport law (2026-09-15, Vítor: "não se pode andar a aumentar o número de parâmetros porque o modelo fica melhor mas depois não há dados") -> docs/architecture/settled-contracts.md#electroneutrality-without-a-new-parameter--the-sdem-transport-law-2026-09-15-vítor-não-se-pode-andar-a-aumentar-o-número-de-parâmetros-porque-o-modelo-fica-melhor-mas-depois-não-há-dados
+- A STACK IS A RECORD, AND ITS LIMITING CURRENT IS A PREDICTION (2026-09-16) -> docs/architecture/settled-contracts.md#a-stack-is-a-record-and-its-limiting-current-is-a-prediction-2026-09-16
+- THE LIMITING CURRENT THAT FALLS WHILE YOU WATCH -- batch electrodialysis (2026-09-16, the same day) -> docs/architecture/settled-contracts.md#the-limiting-current-that-falls-while-you-watch----batch-electrodialysis-2026-09-16-the-same-day
+- AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24) -> docs/architecture/settled-contracts.md#an-advisory-now-says-which-state-it-is-about-2026-08-24
+- THE PELLET IS A POINT, AND NOW THE ENGINE SAYS SO (2026-08-18) -> docs/architecture/settled-contracts.md#the-pellet-is-a-point-and-now-the-engine-says-so-2026-08-18
+- THE REFERENCE RUNG — a declared field the hot path did not honour (2026-08-06) -> docs/architecture/settled-contracts.md#the-reference-rung--a-declared-field-the-hot-path-did-not-honour-2026-08-06
+- ICE IS A PHASE, NOT A SPECIAL CASE (2026-08-07) -> docs/architecture/settled-contracts.md#ice-is-a-phase-not-a-special-case-2026-08-07
+- THE STRUCTURAL SLICE (2026-08-05/06) — the layering now HOLDS, and the machinery that enforces it got its own arity treatment -> docs/architecture/settled-contracts.md#the-structural-slice-2026-08-0506--the-layering-now-holds-and-the-machinery-that-enforces-it-got-its-own-arity-treatment
+- A COLUMN OVER A CHEMISTRY — the effective stage K (built 2026-08-04) -> docs/architecture/settled-contracts.md#a-column-over-a-chemistry--the-effective-stage-k-built-2026-08-04
+- Pinch — P1 targets + P2 analysis table (built 2026-08-03; P3 area-cost stays UNAUTHORISED) -> docs/architecture/settled-contracts.md#pinch--p1-targets--p2-analysis-table-built-2026-08-03-p3-area-cost-stays-unauthorised
+- PC-SAFT association — built 2026-08-03 with the three ratified amendments -> docs/architecture/settled-contracts.md#pc-saft-association--built-2026-08-03-with-the-three-ratified-amendments
+- THE PROBLEM SOLVED IS NOT ALWAYS THE PROBLEM POSED (ruled 2026-08-11) -> docs/architecture/settled-contracts.md#the-problem-solved-is-not-always-the-problem-posed-ruled-2026-08-11
+- THE MODEL-BOUNDARY STEP IS ACCOUNTED, NOT CHARGED TO THE UNIT (2026-08-09) -> docs/architecture/settled-contracts.md#the-model-boundary-step-is-accounted-not-charged-to-the-unit-2026-08-09
+- Balance diagnostics, three levels (2026-07-19): total mass · per-element atoms · energy — engine-owned, GUI only draws.  ALL THREE run by DEFAULT on every converged steady run (2026-08-02, roadmap #7): -> docs/architecture/settled-contracts.md#balance-diagnostics-three-levels-2026-07-19-total-mass--per-element-atoms--energy--engine-owned-gui-only-draws--all-three-run-by-default-on-every-converged-steady-run-2026-08-02-roadmap-7
+- Ctrl FIRST LAW — three probed routes; the ledger CLAIMS (2026-08-01) -> docs/architecture/settled-contracts.md#ctrl-first-law--three-probed-routes-the-ledger-claims-2026-08-01
+- outerDict over choupoCtrl (2026-08-01) -> docs/architecture/settled-contracts.md#outerdict-over-choupoctrl-2026-08-01
+- External-reference battery (2026-08-01) -> docs/architecture/settled-contracts.md#external-reference-battery-2026-08-01
+- Batch campaign LEDGERS — material + energy (built 2026-07-11, forum #99/#101/#102) -> docs/architecture/settled-contracts.md#batch-campaign-ledgers--material--energy-built-2026-07-11-forum-99101102
+- General heterogeneous-thermo solver — SETTLED 2026-07-06 (do NOT relitigate) -> docs/architecture/settled-contracts.md#general-heterogeneous-thermo-solver--settled-2026-07-06-do-not-relitigate
+- Sequential-plan contract (tears + order) — SETTLED 2026-07-25, do NOT relitigate -> docs/architecture/settled-contracts.md#sequential-plan-contract-tears--order--settled-2026-07-25-do-not-relitigate
+- Stream-state directories + topological drill-in — RATIFIED 2026-07-06 (the constitutional spine; do NOT reopen the ontology unless a concrete case proves the contract fails) -> docs/architecture/settled-contracts.md#stream-state-directories--topological-drill-in--ratified-2026-07-06-the-constitutional-spine-do-not-reopen-the-ontology-unless-a-concrete-case-proves-the-contract-fails
+- The `phases {}` decomposition names AQUEOUS · ORGANIC · SOLID (2026-07-30) -> docs/architecture/settled-contracts.md#the-phases--decomposition-names-aqueous--organic--solid-2026-07-30
+- A LABORATORY ANALYSIS IS AN INLET — `aqueousAnalysis {}`, the SEVENTH canonical form (A1 shipped 2026-08-09; do NOT fold it into `speciesMolarFlows`) -> docs/architecture/settled-contracts.md#a-laboratory-analysis-is-an-inlet--aqueousanalysis--the-seventh-canonical-form-a1-shipped-2026-08-09-do-not-fold-it-into-speciesmolarflows
+- A2 SHIPPED 2026-08-09 — `method weightedLeastSquares;`, and the ruling's one-way arrow made STRUCTURAL -> docs/architecture/settled-contracts.md#a2-shipped-2026-08-09--method-weightedleastsquares-and-the-rulings-one-way-arrow-made-structural
+- Three-axiom property layout -> docs/architecture/settled-contracts.md#three-axiom-property-layout
+- Property-model architecture — SETTLED 2026-06-05, do NOT relitigate -> docs/architecture/settled-contracts.md#property-model-architecture--settled-2026-06-05-do-not-relitigate
+- THE LICENCE OF A SIGMA PROFILE (2026-09-06) -> docs/architecture/settled-contracts.md#the-licence-of-a-sigma-profile-2026-09-06
+- COSMO-SAC — the rejection was REVERSED 2026-07-15 (Vítor), for a MINIMAL, glass-box version only -> docs/architecture/settled-contracts.md#cosmo-sac--the-rejection-was-reversed-2026-07-15-vítor-for-a-minimal-glass-box-version-only
+- Property architecture — consolidated; the authority is [`docs/architecture/property-architecture.md`](docs/architecture/property-architecture.md) -> docs/architecture/settled-contracts.md#property-architecture--consolidated-the-authority-is-docsarchitectureproperty-architecturemddocsarchitectureproperty-architecturemd
 
 ---
 
@@ -1149,16 +903,12 @@ clarity — can a student read the code and understand?; (2) source transparency
 — no hidden magic, macros, autogen; (3) licence purity (see the CODE-vs-DATA
 split below).
 
-**Licence policy — CODE vs DOCS vs DATA (clarified 2026-06-18, do NOT relitigate).** * **CODE:** GPL-3.0-or-later.
--> docs/architecture/settled-contracts.md#licence-policy--code-vs-docs-vs-data-clarified-2026-06-18-do-not-relitigate
+- Licence policy — CODE vs DOCS vs DATA (clarified 2026-06-18, do NOT relitigate) -> docs/architecture/settled-contracts.md#licence-policy--code-vs-docs-vs-data-clarified-2026-06-18-do-not-relitigate
 
 ### Decisions already made — do not relitigate
 
-* **C++17 — CLOSED 2026-08-27, with the argument that had been missing.**  The choice was registered in two places and argued in neither, and `property-architecture.md` §106 rejected C++20 because it *"contradicts settled decisions (C++17, …)"*, which is circular.
-  -> docs/architecture/settled-contracts.md#c17--closed-2026-08-27-with-the-argument-that-had-been-missing
-
-* **Sectored units + the MODEL-BOUNDARY rule — SETTLED 2026-06-08, forum 5/5, do NOT relitigate.**  The flowsheet is a plant and its sectors (composite sectors nest leaf units); `flattenNode` collapses the tree to ONE flat solver problem with `plant.sector.unit` names — the hierarchy is authoring/namespace only, never a recursive solver-within-a-solver.
-  -> docs/architecture/settled-contracts.md#sectored-units--the-model-boundary-rule--settled-2026-06-08-forum-55-do-not-relitigate
+- C++17 — CLOSED 2026-08-27, with the argument that had been missing -> docs/architecture/settled-contracts.md#c17--closed-2026-08-27-with-the-argument-that-had-been-missing
+- Sectored units + the MODEL-BOUNDARY rule — SETTLED 2026-06-08, forum 5/5, do NOT relitigate -> docs/architecture/settled-contracts.md#sectored-units--the-model-boundary-rule--settled-2026-06-08-forum-55-do-not-relitigate
 
 ### Things to NEVER do
 
@@ -1169,8 +919,7 @@ split below).
 cannot define policy that binds the project.  When the two disagree, the
 philosophy wins and this list is the stale copy.
 
-* **Never** suggest a Python rewrite or wrapper.
-  -> docs/architecture/settled-contracts.md#never
+- Never -> docs/architecture/settled-contracts.md#never
 
 ### When proposing features
 
@@ -1181,8 +930,7 @@ domains like membranes).
 
 ### When implementing
 
-* **Backwards-compat is mandatory** — existing tutorials must keep passing.
-  -> docs/architecture/settled-contracts.md#backwards-compat-is-mandatory
+- Backwards-compat is mandatory -> docs/architecture/settled-contracts.md#backwards-compat-is-mandatory
 
 ---
 
