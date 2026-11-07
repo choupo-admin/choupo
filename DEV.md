@@ -2965,6 +2965,24 @@ accepts today, and that is a policy call.
 > against its previous row is a defect, named in DEV.md.  The gates count: an
 > integration spent over 90 minutes mostly in gates re-running the slow case serially.
 
+> **C237 (Vitor, 2026-11-07: "Depois desta fase ataca o plano CML de forma a despachar
+> as coisas rápidas e fáceis de fazer"): ONCE C235 IS LANDED, THE PLAN IS CLEARED OF ITS
+> QUICK ITEMS BEFORE ANY NEW PHYSICS.**  STATUS: waits on C235.  An item qualifies when
+> it needs no new physics, no golden moved without a reason, and under an hour of a
+> general; one that outgrows that returns to its row, said in one line.  Order, a triage
+> and not a measurement of effort: (1) the `flushEach` default on the dynamic binaries,
+> after checking that no gate depends on it (C236; ctrl17 went 107.9 -> 0.39 s on branch
+> `worktree-agent-a0748a330baf8fe7f`); (2) the slowest list from the real per-job times
+> in `build/suiteJobTimes.tsv`, because `suiteTimings.csv` holds gaps between result
+> lines (C236); (3) the branches already built: C228's TBP cutter
+> (`worktree-agent-ab10187c08ec1b5a6`, 9 commits) and C227 slice (a)
+> (`worktree-agent-a98489e6761709cb3`, 8 commits; first understand why its lookups
+> bypass the seal); (4) small fixes: the console 'pinch at' on a threshold case (C234;
+> `PinchPass.cpp:452` already comments on it, so read before dispatching) and a props
+> run's `postProcessing/` in the GUI case tree (C183 item 1); (5) the architect's
+> decisions that need no code (C183 item 2, the trademark wording); (6) the plan's own
+> upkeep: the usage-freeze banner, Done rows past their week, the private page.
+
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
 > +10 %), and that stands: INSIDE the liquid Cp's declared `Trange` the rung is
