@@ -7158,6 +7158,18 @@ PYEOF
     fi
     rm -f /tmp/inventory.$$
 
+    # BRAIN.md gate (C241): its generated FACTS block must equal a fresh render
+    # from the tracked tree, and the page must stay a page.
+    if gate_exec "$ROOT/bin/curate/check_brain_fresh.py" > /tmp/brainfresh.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "brain-fresh-gate" "$(gate_claim check_brain_fresh /tmp/brainfresh.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/gen_brain_facts.py, or shorten BRAIN.md)\n" "brain-fresh-gate"
+        cat /tmp/brainfresh.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/brainfresh.$$
+
     # Release-identity gate (2026-08-08, website audit).  The dev inventory
     # above answers for the CURRENT tree; this one answers for the IMMUTABLE
     # releases: each generated/releases/<tag>.json must record the commit its

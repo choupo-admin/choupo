@@ -1,0 +1,3682 @@
+# Settled contracts -- the dated contracts relocated from CLAUDE.md
+
+These are the dated, settled contracts that `CLAUDE.md` carried inline until
+2026-11-07 (DEV.md 4c C241, the diet by relocation).  Every paragraph below is
+moved VERBATIM and nothing is deleted; each keeps its title.  The sections
+mirror `CLAUDE.md`'s 3, 5, 6 and 10, and within each section the paragraphs
+stay in the order they had there (the newest at the top of each section, as
+they were).  `CLAUDE.md` keeps each title, its first sentence and a pointer to
+the anchor here.  The policy home is
+`docs/architecture/project-philosophy.md`; this file is a level-4 record of
+what was settled, and why, read when a pointer in `CLAUDE.md` is followed, not
+at the start of every session.  A "do NOT relitigate" marker below binds
+exactly as it did in `CLAUDE.md`.
+
+
+## 3. Case directory layout (file-first)
+
+### In a SECTORED case a CAPS folder is always a level of the plant's geography, and a plant-level unit lives in `MAIN/`
+
+* **In a SECTORED case a CAPS folder is always a level of the plant's
+  geography, and a plant-level unit lives in `MAIN/`** (2026-09-05; `MAIN/`
+  is the DOMAIN'S OWN LEVEL rather than a sector like the others since
+  2026-09-07).  A sectored case is A PLANT AND ITS SECTORS -- two levels,
+  plus each unit's own folder; the layout was formerly called "fractal", a
+  name retired 2026-10-09 (Vítor: *"não chames 'fractais' ... Nós só temos
+  dois níveis"*) because it promises a recursion that does not exist.  Say
+  "a plant and its sectors" / "a sectored case"; gate
+  `check_glossary_bans`.  The STATE views (`0/`, `converged/`) repeat the one geography
+  `MAIN · <SECTORS>`; a DERIVATIVE view carries only the levels it has
+  something to say about, and its absence is a fact rather than a defect (a
+  `design/` has no level for a sector whose units realise no sized item, and
+  `iterations/` repeats the geography inside each INSTANT).  `system/` (HOW) and
+  `constant/` (WITH WHAT) sit at every level of the case and never inside
+  the geography.  A convention for humans, never inferred by the engine from
+  capitals, never forced on a flat case (its units ARE the plant).  A stream's
+  file goes at the lowest level containing every ENDPOINT of it — see the
+  2026-09-07 paragraph in §6.  Record:
+  [`docs/design/main-is-a-sector-and-the-views-repeat-the-plant.md`](docs/design/main-is-a-sector-and-the-views-repeat-the-plant.md).
+
+### A STATE VIEW HOLDS BOTH HALVES: the streams as files, flat, and under `internalStates/` ONE file per unit
+
+* **A STATE VIEW HOLDS BOTH HALVES: the streams as files, flat, and under
+  `internalStates/` ONE file per unit** (2026-09-06, amended the same day).
+  OpenFOAM's time directory carries a field's `internalField` AND its
+  `boundaryField` in one file, which is what makes it restartable; a Choupo
+  state view carries the streams (the boundary) as `<view>/<LEVEL>/<stream>`
+  and each unit's interior as `<view>/internalStates/<SECTOR>/<unit>`, one
+  block per kind (`stageProfile {}`, `axialProfile {}`, …).  The interior has
+  its own root because a unit and a stream MAY share a name — **identity is
+  (kind, sector, name), never name alone**; the homonym is announced, never
+  refused.  The reading: *the view shows the boundary directly; the interior
+  is namespaced inside the same view.*  `converged/` writes them; `0/` may
+  DECLARE them, tracked, and the unit then STARTS there instead of from a
+  seed it invents in code.  The completeness contract counts STREAMS and
+  skips the `internalStates/` subtree by name.  The layout is CLOSED; what
+  changes it next is a student, not a reflection.  **`bin/choupo-init0`
+  MATERIALISES the interior half too (2026-09-07), and what it writes is the
+  UNIT'S OWN seed** — published by the unit through the same function its
+  `solve()` starts from, so the file and the run can never be two different
+  guesses; a tool that quietly improves a seed hands back the crutch the
+  2026-05-30 rule forbids, and a unit that reads no interior gets no file.
+  A unit that reads one and finds none seeds itself and SAYS so (that rule
+  working, not a fault); but a case that DECLARES an interior tree must
+  declare one for every unit that reads one — a separate, separately named
+  check, because a snapshot that restores half a plant and re-invents the
+  rest is not a restart.  Making the missing half fatal in EVERY case is
+  RESERVED for Vítor: it is a corpus migration whose goldens all move.
+  Records:
+  [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md)
+  §9 (the layout) and §10 (the seed and the tool).
+
+### THE TIME-INTEGRATED CLASSES USE THE SAME LAYOUT, AND WRITE `t/` BY DEFAULT
+
+* **THE TIME-INTEGRATED CLASSES USE THE SAME LAYOUT, AND WRITE `<t>/`
+  BY DEFAULT** (2026-09-30, task #186, Vítor's ruling -- do NOT restore the
+  old shape).  `choupoBatch`, `choupoCtrl` and `choupoSemiContinuous` read
+  `0/<stream>` (one file per stream, named by the stream the unit declares:
+  `in` / `inputs` / `outputs`; the canonical grammar, `StreamStateIO`) and
+  `0/internalStates/<unit>` (one file per vessel, a `holdup {}` block --
+  `InternalStateIO::readHoldups`, the ONE reader both drivers call).  A
+  consumed stream with no file, a file naming no stream, an interior for a
+  unit that reads none each REFUSE by name; the retired `0/internalState` +
+  `0/streamFaces` REFUSE naming the one-shot migrator
+  (`bin/curate/migrate_state_layout.py`) -- NO dual reader.  Every
+  `writeInterval` a `<t>/` with the same layout is written, as OpenFOAM does
+  (`solutionControl { write false; }` opts out); renamed `0/` it restarts
+  the case from t -- EXCEPT for a vessel whose state is more than its holdup
+  (a crystal population, an adsorbed loading, a bed profile, the Williams-Otto
+  objective integrals), which writes `notRestored "<what>";` and whose
+  restart is REFUSED rather than re-invented.  A controller's memory is not
+  a unit's interior and is in no record (said at run start).  Gate:
+  `check_time_state_layout`.  Record:
+  [`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md)
+  §11.
+
+### A STREAM IS FIXED BY TWO VARIABLES (2026-10-03, Vítor's rule on the landing case flash01 -- "Se especificas fração de vapor não podes especificar uma das outras variáveis na corrente de entrada!")
+
+* **A STREAM IS FIXED BY TWO VARIABLES (2026-10-03, Vítor's rule on the
+  landing case flash01 -- "Se especificas fração de vapor não podes
+  especificar uma das outras variáveis na corrente de entrada!").**  By
+  Duhem's theorem a stream of known component flows has TWO intensive degrees
+  of freedom; for a MIXTURE (T, P) fix the split, so a `0/<stream>` declaring
+  `T`, `P` AND `vaporFraction` on more than one present component REFUSES by
+  name, quoting the rule, the three values and the two remedies (delete the
+  line and let (T, P) resolve -- an unpinned stream MEANS its own equilibrium;
+  or, if the quality IS the specification, the (T, q)/(P, q) closure must be
+  SOLVED, which the engine does not do today and says so).  `vaporFraction 0`
+  or `1` on a mixture refuses naming `phase liquid;`/`phase gas;`, the pin's
+  legible spelling.  The ONE exception is a PURE component in two phases,
+  whose (T, P) sit on its saturation curve and do not fix the split: its pin
+  stays, and the writer writes it back for nothing else -- a `converged/`
+  view or an init0 seed of a mixture carries T and P and no third value.
+  Its mirror refuses too (C36 item 1, 2026-10-05): a PURE authored stream
+  declaring NO phase whose (T, P) lie ON its saturation curve -- |ln K|
+  within the flash's own tolerance, `flashState::
+  undeterminedSaturationRefusal`, applied once where the authored inlets
+  are stamped -- is UNDETERMINED (its side would be the last digits of T)
+  and refuses naming `phase liquid;`/`phase gas;` (gate arm (g)); since C37
+  item 5 also in the own `thermo {}` world of each unit that consumes it,
+  and on the time-integrated binaries' authored inlets (arms (h), (i)).
+  The SURFACE draws the state the stream MEANS: after the solve every
+  unpinned stream no unit produces is resolved once through
+  `flashState::equilibriumAt` (the one home), and the stream table, the
+  result JSON, the energy report's label check and its pricing all read that
+  `vf` -- flash01 with the line removed had shown vf = 0.000 and a liquid
+  enthalpy 275 kW from the first law it was priced in.  Produced streams
+  keep their producer's answer.  DURING the solve, valve, adiabaticFlash,
+  heatExchanger and storageTank resolve an AUTHORED inlet (no unit produces
+  it; `ProcessStream::authoredInlet`, stamped once before the first unit
+  runs) through `flashState::resolvedInletVaporFraction`, single phase
+  included -- never a produced one (column12's mixer writes the right vf at
+  a fictitious T); since C34 (2026-10-04) every other inlet `vf` reader
+  does too, EXCEPT those DEV.md C33's audited table leaves with a reason --
+  the electrodialysis stack and a two-phase authored inlet into a `mixer`
+  (kept carried and announced, a stated default).  The distillation column
+  joined on 2026-10-05 (DEV.md §4d D1, decided in C35): both branches read
+  every stream feed by what it means, and `column03`/`acetone07`, whose
+  `feedQuality 1.0` beside a vapour T had hidden the latent heat of the
+  whole feed, now declare `phase liquid;` at their own bubble point.  Witness
+  `inletState01_undeclared_vapour`, gate `check_inlet_resolution` (i).  The
+  one-shot migrator is `bin/curate/migrate_overspecified_vf.py`.  Gate:
+  `check_overspecified_stream`.  Record:
+  [`docs/design/a-stream-is-fixed-by-two-variables.md`](docs/design/a-stream-is-fixed-by-two-variables.md).
+
+### A top-level folder of `tutorials/` is a DISCIPLINE a student studies, NOT a binary (ruled 2026-09-20, Vítor; do NOT relitigate)
+
+* **A top-level folder of `tutorials/` is a DISCIPLINE a student studies,
+  NOT a binary (ruled 2026-09-20, Vítor; do NOT relitigate).**  `steady/` is
+  steady-state process simulation (choupoSolve, plus the two choupoProps
+  cases that were already there); `unsteady/` is TRANSIENT process
+  simulation -- unit operations connected by streams whose internal states
+  are non-stationary, with NO control loop (`choupoSemiContinuous` since
+  2026-09-20 -- the fifth problem class, §10; choupoBatch later); `ctrl/` is process control -- the design of control loops -- one
+  course at IST and its own folder (choupoCtrl); `batch/` is batch
+  processes -- recipes, vessels, campaigns (choupoBatch), and since
+  2026-10-19 (Vitor's ruling, DEV.md 4c C106) `batch/plant/` holds the
+  design of a WHOLE plant that runs in lots (a pharmaceutical tablet plant
+  on a `batchPlan`, whatever binary it runs); `props/` is
+  thermophysical properties and the props bench (choupoProps); `plant/` is
+  integrated design of a CONTINUOUS plant, the capstone.  `electrochem/` is RETIRED --
+  electrochemistry is not a discipline the tutorials are organised by, and
+  its seven steady electrodialysis cases live under
+  `steady/electrodialysis/`, a subfolder named by OPERATION like every other
+  `steady/` subfolder.  Folder ≠ binary costs the engine nothing:
+  `bin/runCase` reads `controlDict.application` and dispatches; only the
+  prose that claimed folder = binary changed, and a session re-proposing this
+  taxonomy is exactly what the ruling ends.  The `ctrlNN_` prefix is a
+  course label, so a case moved out of `ctrl/` takes an `unsteadyNN_` one.
+
+
+## 5. Conventions
+
+### All repository artifacts are English: code, comments, identifiers, test and gate names, commit messages, documentation.  This holds regardless of the language used in conversation
+
+**All repository artifacts are English: code, comments, identifiers, test
+and gate names, commit messages, documentation.  This holds regardless of
+the language used in conversation.**
+
+Settled 2026-08-04.  Conversation with a maintainer may be in any language;
+what lands in the tree may not.  The reason is not style — it is that a
+contract nobody can read is not a contract.  This project's architecture
+lives in prose (the settled sections here, `docs/architecture/`, every
+refusal message), and a reader who cannot read that prose cannot check
+whether the engine honours it.  A gate named in one language and a contract
+written in another cannot be audited together.
+
+Three things are NOT covered by this rule, and must stay as they are:
+
+* **Proper nouns** — `Vítor Geraldes`, `TalentGround Lda.`, and *choupo*
+  itself (the poplar).  A name is not text to be translated.
+* **Third-party legal text** — `LICENSE`, `NOTICE`, `THIRD_PARTY_NOTICES`,
+  anything under `thirdParty/`.  Retranslating a licence changes it.
+* **Git history** — commit messages already written stay written.  The rule
+  binds what is authored from here on, not the record of what was.
+
+### Heat of reaction — ONE enthalpy base (settled 2026-06-27, do NOT relitigate)
+
+The heat of reaction is **always** the elements/formation datum:
+`dH_rxn(T) = Σ νᵢ·hᵢ(T)`, where each `hᵢ` carries `ΔHf°(elements, 25 °C)` from the
+species' `standardThermochemistry{}` block — in **every** reactor, steady
+(`conversionReactor` / `cstr` / `pfr` / `gibbsReactor`) AND time-dependent
+(`batchReactor` / `dynamicCSTR`).  Every reacting species needs `standardThermochemistry`.
+The reactions-dict **`dH_rxn` key is NOT a primary input** — it is an explicit,
+announced, cross-checked **override**, honoured only when a species deliberately
+lacks formation data (toy / lumped pedagogy); when both exist the engine warns on
+a mismatch, never silently overrides the curated value, and never runs silently
+thermally-neutral (the `dH_rxn = 0.0` default is gone).  Unified through a single
+shared `reactionHeat()` resolver so steady and dynamic can never diverge again —
+full rationale in [`docs/ai/energy.md`](docs/ai/energy.md).
+
+### Salt formation — ION-DERIVED, never a component block (settled 2026-06-29, forum 5/6, do NOT relitigate)
+
+A dissolving / crystallising **salt's SOLID formation enthalpy is a DERIVATIVE**,
+not a stored input: `Hf_solid = Σνᵢ·hfAq_i − dH_soln`, from the aqueous ions
+(`data/standards/components/true/aqueous/` `hfAq`) **plus** the heat of solution (the
+component's `electrolyte { dissolutionEnthalpy }` block, primary-cited).  It is
+**NEVER** written as a component-level `standardThermochemistry` block — that is a SECOND
+source of truth that silently drifts (the arity-1 sin; *trees never store
+derivatives*).  The crystalliser's **heat of crystallisation reads
+`dissolutionEnthalpy` directly** (single-sourced; the `dHcryst 0.0` placeholder
+is gone — a real, ion-derived duty even unfitted/mixed-solvent), and
+`bin/curate/check_ion_pins.py` **EXITS 1** if any component carrying
+`dissolutionEnthalpy` also carries `standardThermochemistry`.  A **nonvolatile salt must
+NEVER route its enthalpy through the ideal-gas reference** (`h_pure_ig` /
+`idealGasHeatCapacity`) — it takes the solid/aqueous rung.  Property-architecture
+(curation-time resolution) is for a MISSING datum; this one is present-via-
+derivation, so single-source (arity-1) controls.  Full rationale:
+[`docs/ai/energy.md`](docs/ai/energy.md) (the 2026-06-29 deliberation that
+settled it was a session forum and is NOT in the repository -- this
+paragraph and that doc are the record).
+
+### Aqueous chemistry: declared by the case, read by the units (settled 2026-07-25/26, do NOT relitigate)
+
+The `equilibrium { aqueous { activityModel {…} speciation {…} } }` block is
+readable with ANY formulation (it left `electrolyteGammaPhi`'s ownership) --
+a liquid-only electrolyte case declares its chemistry there.  A model's name
+may appear in exactly THREE places: the case declaration (process units READ
+it or refuse -- `ThermoPackage::speciateAqueous()` / `speciator()`; no unit
+constructs chemistry or defaults a model), a props-BENCH op (the model is the
+experiment's subject), or a model-prescribed internal (DSPM-DE's Davies,
+announced).  Solid phases: `constant/chemistryDict` says WHICH exist; the
+unit only holds policy (`reportMinerals`).  Gates: check_no_unit_chemistry,
+unit-chemistry in runTests.
+
+### THE TWO BASES, on EVERY stream the package can resolve (settled 2026-07-31)
+
+Where the package resolves ions, a stream carries BOTH bases: the apparent
+components (which ARE the state) and the `speciation {}` decomposition — **the
+INLET included**, because a feed nobody speciates is exactly the stream a
+student compares an outlet against.  The rule is the ARCHITECTURE's, not the
+reactive path's: the post-solve pass was written inside
+`if (hasReactiveEquilibrium())`, and a molality model (Pitzer / eNRTL)
+**resolves ions without carrying an equilibrium NETWORK**, so every
+crystalliser and evaporator brine in the corpus reported its apparent salt and
+not one ion while the reactive flashes reported both.  Without a network the
+block is COMPLETE DISSOCIATION through each component's declared bridge
+(`network ( completeDissociation ); basis stoichiometric;`, **no pH** — there
+is no H+ network to solve one from and a neutral 7 would be a number with no
+model behind it).  It decomposes the LIQUID: a precipitated crystal stays in
+the solid phase (dissolving `s` there is the flash16 error).  The READER
+verifies `m = A n` against the SAME declared bridges, so the block closes by
+construction; a case with neither a network nor any declared bridge is refused
+(names that answer to nothing).  A molecular case gets NO block — one basis is
+its whole structure.
+
+### THE REDUCED-IDENTITY RULE, generalised (it has now cost two bugs, one field apart)
+
+**THE REDUCED-IDENTITY RULE, generalised (it has now cost two bugs, one field
+apart).**  `Component::identity()` mints a salt with name + MW + role, and the
+electrolyte builder used it and stopped there — so EVERY fact the record
+declares beyond those three was silently absent at run time.  Two were, and
+both surfaced as the engine reporting a datum "missing" that its own input
+declares: `dissociatesTo` (no ions on any brine stream) and `formula` (the
+element balance publishing `refusedSpecies.NaCl,"no molecular formula
+declared"` about a record that says `formula NaCl;` three lines from the MW the
+same call had just read).  So: **a component minted by `identity()` must be
+handed every declared fact it will be asked for**, through the record it was
+minted FROM — `readIdentity()` and `readAqueousMapping()`, ONE parse each, two
+callers each, never a second copy of the parse.  When you add a field the
+runtime reads off a Component, ask whether the electrolyte salt can reach it.
+(A component that genuinely has no such fact — a petroleum cut with no
+molecular formula — keeps its honest refusal; the rule is about DECLARED facts
+being dropped, never about inventing one.)
+
+The other corollary, also paid for: a writer whose output the reader refuses is
+a bug in BOTH.  Gate: check_both_bases (2 fired refusals + the negative +
+the element-balance verdict).
+
+### Typed identifiers + the F2 rename (EXECUTED 2026-07-26, three-way ratified)
+
+`ComponentId` / `SpeciesId` / `SolidId` (core/Identifiers.H) are strong types
+with NO implicit conversion; the component->species crossing goes ONLY through
+the declared stoichiometric bridge (`aqueousMapping (…)` on the component, or
+`dissociatesTo` converted at load -- NEVER name identity).  The F2 campaign is
+DONE: p/m charge mangles are gone (CaOH, FeOH3, MgSO4_2), redox is roman
+(FeII/FeIII, CuI/CuII, MnII/MnIII), chemistry/ files are named by REACTION
+(`CaOH-formation.dat`, `CO2-dissolution.dat`, `water-dissociation.dat`),
+identity has ONE home (species/ file XOR inline `z`/`ion`), and all sealed
+cases were re-imported.  The `aq` suffix STAYS (interim lexical-disambiguation
+rule: a derived neutral homonymous with a component -- CaCO3aq vs the salt
+CaCO3 -- while RECORD references are bare strings); removal waits for typed
+record references, and typed means END-TO-END (ratified 2026-07-26): the
+typing must survive intact from the loader to the runtime with NO
+intermediate conversion through bare strings -- data files gaining typed
+references alone does NOT unlock removal.  Gates: check_species_identity, check_aq_disambiguation,
+check_typed_identifiers.
+
+### ThermoResolver / SystemClassifier (RATIFIED three-way 2026-07-26, do NOT relitigate)
+
+Components are classified from CANONICAL RECORD FACTS -- never from names,
+never from ad-hoc case lists (`spectators`/`molecularVolatiles`/
+`nonreactiveMolecularComponents` were all REJECTED).  The substance-level
+fact is **`aqueousSpeciation none|<setName>;`** (participation in the aqueous
+EQUILIBRIUM SPECIATION network only -- vapour reactions like the acetic dimer
+stay on the gas-liquid records, phase purity); ABSENT = UNKNOWN, refused
+inside an electrolyte system with the curation remedy.
+`src/thermo/SystemClassifier` classifies (solvent = the DECLARED
+`aqueous { solvent ...; }`, default water -- no `if (name == "water")`
+anywhere); the reactive builder announces every `[resolver]` conclusion,
+verifies the persisted declaration and refuses impossible ones.  The
+recommended package is PERSISTED in the case (`bin/choupo-resolve [--draft]`
+is where the recommendation is born; the runtime NEVER chooses freely).
+Approximations are DELIMITED per component -- `approximations {
+idealMolecularVLE { components ( ethanol ); } }` -- authorisation is the
+block's presence, applying it to anything unlisted refuses, listing anything
+the classifier did not find nonionising refuses.  The molecular backbone
+(solvent + nonionising co-volatiles, ion-free x-basis) has TWO declared
+routes: the authorised ideal (gamma = 1) and **composite mixed-solvent electrolyte v1**
+(`activityModel { ionic davies; molecular NRTL; }`, built same-day on
+Vitor's order): the FULL curated NRTL pair prices the backbone (never a
+clandestine gammaInfinity constant), the solvent activity decomposes
+multiplicatively (a_w = gamma_w*x_w * aw_ionic -- no double counting), ions
+stay Davies on water-referenced molality and the network K's stay
+water-referenced (the transfer term is the NAMED next slice).  An
+authorisation may not shadow a declared model (refused).  The TWO-PHASE
+reactive Newton is general (ln V + softmax vapour odds, n volatiles), the
+acetic vapour dimer re-weights the vapour balance (v = t_mono + 2 t_dim)
+with its association heat priced exactly into the duty.  Gates:
+check_resolver_coherence.  Reference cases:
+`flash12_nh3_acetic_ethanol_reactive` (ideal authorised, subsaturated) vs
+`flash13_acetic_ethanol_vacuum_flash` (NRTL backbone, V/F 0.58 -- the gamma
+is the difference between a flash and no flash).
+
+### The SECOND LIQUID on the reactive path — SOLVED 2026-07-27 (do NOT relitigate the shape)
+
+Chemistry and two liquids AT ONCE: the reactive path carried one liquid, the
+molecular path carried two and no chemistry, and the fork is now closed.  A
+case declares `equilibrium { organic { solvent …; members ( … ); activityModel
+…; reason "…"; } }`; the split resolves INSIDE each residual evaluation of the
+outer vapour Newton (mathematically simultaneous, numerically nested — the same
+posture as the speciation), by a Newton on the equality of ACTIVITY
+`ln(γ_org x_org) = ln(γ_aq x_aq)` to 1e-13.  **Gibbs DECIDES, the Newton
+SOLVES** — a Nelder-Mead answer is noise under the outer FD Jacobian.  Both
+liquids MUST share the molecular model (two models make the residual measure
+their disagreement, refused).  **The split does NOT change the stream table**:
+the two liquids leave as ONE apparent liquid, internal state like the ions,
+so the outer Newton keeps its dimension and the no-organic path is
+byte-identical.  Phase appearance/disappearance is an OUTER decision, tested
+on the feed, re-tested at the answer, announced both ways, with later passes
+CONTINUING from the previous one; a trial that does not admit the phase set
+being solved is reported unphysical (no silent fallback to one liquid — that
+reports a one-liquid answer under a two-liquid declaration).  Three numerics
+fixes rode with it and matter to every reactive case: the per-component cage
+was a CEILING at `0.9995*n` (a component that must almost entirely vaporise
+could not reach its answer, and the flat residual reads exactly like a
+rank-deficient Jacobian), the saturation pre-check computed Σp_eq on ONE
+liquid when two were declared (benzene at 16 atm instead of 0.23), and the
+seed set the vapour RATIO but never the AMOUNT — now Rachford-Rice on the
+equilibrium K's runs beside the flat 2 % seed and **the better of the two
+starts the Newton** (neither dominates).  Reference case:
+`flash17_two_liquids_reactive` (V/F 0.324, organic 1.68 % of the backbone
+liquid at 96 % benzene, pH 2.89, |r| 2e-15).  Full record incl. the three
+failed designs: [`docs/design/reactive-second-liquid-proposal.md`](docs/design/reactive-second-liquid-proposal.md) §14.
+**The organic may be WET (2026-08-10, §15 of the same record):** the aqueous
+solvent may be a declared member — its equality carries the ionic a_w factor
+(γ_org·x_org = γ_aq·x_aq·a_w,ionic, the multiplicative decomposition across
+the split), molality stays on the aqueous water alone, and the split ⇄
+speciation pair is resolved jointly inside each residual (dry paths
+byte-identical).  With the solvent a member, |f| gains two trivial
+attractors (clone manifold + all-organic cap corner, both at |f| = |ln a_w|
+with singular Jacobian), so the seed comes from a Gibbs grid + Nelder-Mead
+descent — Gibbs decides, the Newton solves.  Witness
+`marcilla01_lls_tie_triangle` (primary-anchor contact, Marcilla 1995): brine
++ solid halite reproduce; the organic vertex does NOT — the corpus UNIFAC is
+the VLE table and keeps water/1-butanol miscible at 25 °C — a recorded,
+never-tuned finding pinned both ways by `check_marcilla_lls` (its stale-pin
+arm fires the day a curated LLE set opens the gap).  Also paid for there:
+the speciation γ fixed point gained an announced oscillation guard (Davies
+out-of-band drives a period-2 I limit cycle around a genuine fixed point),
+and a SPECTATOR master (a fully dissociated salt's free ion, referenced by
+no equilibrium) is verified against the species catalogue
+(`SpeciationSolver::chargeOf`, now on the provider surface) — the old check
+passed only while an unrelated databank record happened to reference Na.
+
+### Equilibrium-parameterisation identity — D2 migration EXECUTED 2026-07-26 (do NOT relitigate)
+
+Identity is per curated PARAMETERISATION; the physical family is DERIVED
+from typed references (`gasSpecies`/`dissolvedSpecies`/`solvent`) + a
+versioned immutable convention profile (`conventions/Sander-Hxp-v1`,
+`PHREEQC-gasMolal-v1`) — full ADR
+`docs/design/equilibrium-parameterisation-identity.md`.  The CLOSED
+migration is DONE: all 205 `parameters/Henry/` pairs typed
+(`bin/curate/migrate_henry_identity.py` — deterministic, idempotent,
+fail-closed, explicit exception table for reactive/acid/base solutes,
+NEVER name/formula similarity), the 9 chemistry gas-liquid records are
+canonical `schemaVersion 2` (legacy `gas`/`dissolved` keys are GONE from
+the dev corpus).  The loader keeps a legacy adapter STRICTLY at its
+boundary (converted in memory, announced `[legacy] … re-import
+recommended`, never written back); `check_legacy_schema` refuses legacy
+schema anywhere in standards or sealed mirrors.  Cross-convention
+comparisons are curation DIAGNOSTICS (independent primaries = finding;
+same-source disagreement = the only error).  The D6 review dossier
+(`bin/curate/interim_review_dossier.py` → `generated/interimReviewDossier.md`)
+carries coverage + per-point validity marks; INTERIM promotion is Vítor's
+primary review ALONE.  The transfer-term contract (D3) is
+`docs/design/standard-state-transfer-adr.md` — contract only, no
+implementation authorised.
+
+### COSMO / VT-2005 licence separation (EXECUTED 2026-07-26)
+
+The public tree ships NO VT-2005 values: every set is an external REFERENCE
+(`licence externalRestricted; installed false;` + full citation).  The user's
+own copy installs via `bin/choupo-import-cosmo` into `data/local/cosmo/`
+(gitignored); absent, CosmoSac refuses by name with the install command.
+cosmoSAC01 regresses on SYNTHETIC teaching surrogates (labelled GPL).
+Gate: check_cosmo_scrub (0 restricted values, enforced; since 2026-09-06 it
+also refuses a `variant "2002"` label on a non-VT-2005 profile and `installed
+true;` on any VT2005 set — see THE LICENCE OF A SIGMA PROFILE in §6).
+
+### Electrolyte activity selector keys — `pitzer` ≠ `pitzerHMW` (settled 2026-06-29, A3, do NOT re-clash)
+
+Two DIFFERENT Pitzer engines now carry two DISTINCT factory keys (the old
+`pitzer` name-collision across two factories is gone):
+* **`pitzer`** = `ElectrolyteActivity`, the salt-level single-salt VLE adapter,
+  selected `activityModel { model pitzer; }` in a **thermoPhysPropDict** (eNRTL next).
+* **`pitzerHMW`** = `PitzerHMW`, the per-ion multi-ion Harvie-Møller-Weare
+  speciation engine, selected `activityModel pitzerHMW;` in a **propsDict
+  `speciate`** op (vs `davies`).
+
+The molality+charge surface is a PURE INTERFACE (`ElectrolyteModel`) reached via
+`ThermoPackage::electrolyte()` / `ActivityModel::asElectrolyte()` — there is **NO**
+`electrolyteModel {}` case block and **no RTTI downcast** in the package (the
+construction-time configure downcasts were removed in A1; the engine query is the
+`asElectrolyte()` virtual, A2).
+
+### NORMALIZED RESIDUAL — one convergence home (ruled 2026-08-09, do NOT relitigate)
+
+A dimensional residual is a MAGNITUDE, not a verdict: `1e-9` on a raw `||r||`
+is a number compared with nothing.  `src/solver/Convergence.H` is the ONE
+home — the OpenFOAM triple (`tolerance` · `relTol` · `maxIter`, declared per
+solver in `system/solverDict`, e.g. `reactiveEquilibrium { … }`), the ONE
+normalization, and the ONE decision (`normFinal <= tolerance` OR
+`normFinal/normInitial <= relTol`, subject to `maxIter`).  The normalization
+is OpenFOAM's `normFactor` with **cells → equations** and **{Ax, b} → the
+terms the equation balances**: `normFactor = Σ|t − mean(t)| + floor`,
+`normalized = Σ|r_k| / normFactor`.  Same structure, same intent, **NOT the
+same theorem** — the header states three limits rather than claiming identity,
+and the one that bites is that a SINGLE-equation system degenerates
+(`normFactor ≡ |r|`), which is DETECTED and falls back to the raw residual
+naming the criterion.  A solve reports FIVE numbers (raw initial/final,
+normalized initial/final, reduction) plus the criterion that decided;
+defaults are ANNOUNCED when used, and an unimplemented declared control
+REFUSES by name.  Two things paid for: acceptance now requires the
+convergence verdict (the per-leg joint check alone would wave a run that
+never met its DECLARED tolerance through as a silent pass), and a golden that
+pinned a **one-nanowatt** re-flash duty at 1e-4 relative was pinning
+cancellation round-off (`column13`, re-recorded with the measurement that
+shows it).  Wired: `ReactiveVLE`'s outer Newton.  NOT wired, each with its
+reason (§4 of the ADR): `IsothermalFlash`, `SpeciationSolver`'s inner Newton,
+`DistillationColumn`'s MESH.  Gate: `check_convergence_residual`
+(sabotage-verified twice).  Record:
+[`docs/design/normalized-residual-convergence.md`](docs/design/normalized-residual-convergence.md).
+
+### A THIRD aqueous activity engine: `edwardsPitzer` (2026-08-04)
+
+Beside `davies` and `pitzerHMW` sits **`edwardsPitzer`** — the truncated Pitzer
+expansion of **Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976
+(1978)**, selected `activityModel edwardsPitzer;` in a **propsDict `speciate`**
+op or declared `model EdwardsPitzer;` in a case's `aqueousProperties`.  It is
+here because neither of the other two can serve a sour-water fluid: Davies is
+charge-only and returns **exactly 1** for any neutral solute at any ionic
+strength (so it cannot express salting-out at all), and PitzerHMW is a
+DIFFERENT truncation with a different parameter set — using Edwards' numbers
+inside HMW's equation would be quoting him under someone else's model.
+
+### The layering is the point, and it is enforced by the file split
+
+**The layering is the point, and it is enforced by the file split.**
+`EdwardsPitzer.{H,cpp}` is a PURE kernel: it computes Eqs 8/9/10 from a
+parameter set handed to it, reads no files, and is verified against two closed
+forms the paper supplies.  `EdwardsCatalogue.{H,cpp}` is the CURATION
+arithmetic — Edwards measured ONE family (beta0 for like molecule pairs, Eq 14 /
+Table 4) and **estimated everything else** by Eqs 21/22/23/24 — plus the
+registered `EdwardsPitzerModel` adapter.  *The tree never stores a derivative*,
+so no estimated pair is written to disk; each is derived at assembly and
+**ANNOUNCED with the rule that produced it** (four of the five rules are
+estimates, and a reader must be able to tell which is which).  `beta1` is never
+an independent datum here: Eq 24 correlates it from beta0, and it is 0 on every
+pair involving a molecule.
+
+### Records
+
+**Records** live under `data/standards/parameters/EdwardsPitzer/` and are keyed
+by the **runtime species name** (`CO2aq.dat`, `mi-NH3aq-NH4.dat`), never by a
+name a lookup would have to strip a suffix from — that would be the name-identity
+crossing the F2 contract bans.  `Trange` is CHECKED where the record is read;
+extrapolation is announced and the run continues.
+
+Two traps this slice paid for, both worth generalising:
+
+* **An ActivityResult outlives the frame that made it**, so its closures must be
+  SELF-CONTAINED.  The kernel captured names and molalities by value and the
+  parameter set by reference; the asymmetry was invisible until a caller built
+  the model as a temporary, and then it segfaulted.
+* **A banner keyed on one model and defaulting for the rest describes a model
+  that is not running.**  The speciation banner was a two-way switch on
+  `pitzerHMW`, so Edwards inherited Davies' sentence — and both halves of it
+  were false (the "I ~ 0.5" band is Davies' own; the "a_w from phi = 1" claim
+  was contradicted by the run's own a_w).  Each model states its OWN scope.
+
+Gate: `check_edwards_model` (reachability through the engine, the neutral gamma
+with its exactly-1 Davies negative, all five rules announced, Eq 24 recomputed
+from the printed beta0, the banner).  Reference cases:
+`tutorials/props/electrolyte/edwards01_sour_water_activity` — a STRUCTURAL
+witness only; no number in it is validated against measurement — and, since
+2026-08-23, **`edwards02_table7_vle`**: the Table 7 comparison itself, the
+vapour side built as the speciate op's `vapour {}` block (Eqs 5/6/11 over the
+solved speciation; `fugacity ideal;` REQUIRED — the paper's own φ model is
+not transcribed), the carbamate curated case-locally, 18 anchor rows against
+the paper's prediction column I with bands sized to the measured residual
+(P within 3.2 %, the molecular molalities within 10 %, the residual
+concentrated where the carbamate share is largest and bracketed by a
+carbamate-free sensitivity op).  Record:
+`docs/design/sour-water-stripper-scope.md` §6c.
+
+### THE SEAL MUST NOT CHANGE THE PHYSICS — and the importer now PROVES it, not merely that the case runs (2026-08-04)
+
+**THE SEAL MUST NOT CHANGE THE PHYSICS — and the importer now PROVES it, not
+merely that the case runs (2026-08-04).**  Adding an activity model without
+teaching `bin/choupo-import` about its parameter home broke exactly that
+invariant: the first sealed `edwards01` kept 9 of its 28 pair parameters (the
+Bronsted like-sign zeros, which need no record) and answered with 19 terms
+missing — it RAN, it CONVERGED, and it reported two identical monovalent gammas
+and two neutral gammas of exactly 1, which is what a *Davies* run prints.
+Nothing refused.  The importer's own validation passed it, because that
+validation asked whether the staged case RUNS.  **Running is not agreeing.**
+`validate_staged_agrees` now compares the staged sealed run against the case's
+own `expected` golden with runTests' tolerances and REFUSES with the likely
+cause named, installing nothing; a case with no golden yet keeps the exit-code
+check and is TOLD its answer is unverified.  Catching it via the corpus golden
+one step later was luck: a case sealed BEFORE its golden was recorded would
+have frozen the damaged answer as the reference.  When you add a record home a
+model reads, add it to the importer's closure in the same commit.
+
+### Electrolyte data tree — 5 HOMES, NO `apparent/`, NO `true` (SETTLED 2026-07-01; the count corrected 2026-07-28, do NOT relitigate the layout)
+
+A substance's ROLE (lumped / dissociated / multi-ion / molten) is chosen by the
+declared `thermoPhysPropDict` a case carries — **never stored on the substance** — via two
+ORTHOGONAL axes: **REPRESENTATION** (the declared system activates: lumped → complete
+dissociation → partial/ion-pair → multi-ion) × **REFERENCE** (the method selects
+one of 4 discrete rungs: solid · pure-liquid Raoult · aqueous-inf-dilution ·
+fused-salt Temkin; mixed-solvent = aqueous + a transfer term in `parameters/`, NOT
+a 5th rung).  The same Na⁺ is aqueous-ref dissolved / fused-ref molten → `species/`
+is **medium-agnostic** (one file), the method picks the rung; molten salt is just
+another method, no special case.  **5 homes** — verify against `ls
+data/standards/` before quoting this list, it has drifted once:
+`components/` (identity **+ `dissociatesTo`** = formula-like ion stoichiometry,
+NOT the "saco"; **and the substance's own `solidPhases{}`** — ρ_p, k_v and the
+dissolution equilibrium of *its own* solid) · `species/` (model species +
+charge, medium-tagged `…Thermo{}`) · `chemistry/` (**FLAT**, no subfolders:
+REAL equilibria w/ K+ΔH that couple TWO families — dissolution, association) ·
+`parameters/` (per-model pair tables) · `conventions/` (the versioned immutable
+convention profiles the D2 identity references) — plus the property PACKAGE,
+which is not a directory at all: the manifest that SELECTS everything lives
+INLINE in each case's `constant/thermoPhysPropDict` (the shared
+`data/standards/propertyPackages/` catalogue + `package <name>;` selector were
+retired 2026-07-15, every case is self-contained).  **`methods/` and
+`phases/solid/` are RETIRED** — no such directory exists; a phase's reference
+rung is a consequence of the declared formulation (the one-knob rule) and solid
+particle data sits in the component's `solidPhases{}`.  The engine keeps a
+LEGACY `phases/solid/<phase>.dat` read for old external cases; do not write
+one.  (`propertySets/` was deleted 2026-07-01 — zero readers.)  **ONE component
+= ONE file: `components/apparent/*` is DELETED** (the builder reads salt
+identity+`dissociatesTo` from `components/` and the solid from that component's
+own `solidPhases{}`);
+**"true" is DEPRECATED as a substance or basis name** (ruled 2026-08-05 —
+`apparent` STAYS, it is an accepted architectural term with a precise meaning
+in electrolyte thermodynamics; it is "true" that misleads, because a student
+reads a philosophical claim where the code means *the species the equilibrium
+solver works in*).  Write **species**, or the concrete category — *aqueous
+species* / *gas species* / *solid species* (`recordType modelSpecies`,
+method `requires.ionSpecies`); gate `check_glossary_bans`; **NO top-level `basisMaps/`** (it is the K→∞ limit of
+dissociation + is per-(component,method)).  Rejected: two `NaCl.dat`, per-medium
+species duplication, mixed-solvent as a 5th rung.  Full contract + the 10 validating
+systems + implementation status (F1–F4 done, 202/0 byte-exact):
+[`docs/architecture/electrolyte-data-architecture.md`](docs/architecture/electrolyte-data-architecture.md).
+Supersedes the `basisMaps`/`apparent-true` layout in the older
+the two superseded architecture records under `docs/architecture/archive/`.
+
+
+## 6. Current state (summary -- detail in docs)
+
+### A SUITE'S PASS COVERS WHAT ITS GATES ASSERT, AND NOTHING ELSE (2026-09-08)
+
+**A SUITE'S PASS COVERS WHAT ITS GATES ASSERT, AND NOTHING ELSE (2026-09-08).**
+Vítor asked how it was possible to keep reporting a green suite while energy
+balances were violated, and the answer was structural rather than "too few
+tests": **conservation of energy had no gate that refused.**  A golden pins
+what a run PRINTS, so a stable wrong residual passes by construction (the
+2026-09-04 dryer lesson, written down and not applied here);
+`check_energy_boundary_pinned` requires the residual to be PUBLISHED and
+PINNED, never SMALL, so a 16 % violation satisfies it for ever; the per-unit
+alarm returns exit 0; and `energy-T1/T2:plant` held the RIGHT rule (global
+residual < 1 %) on ONE case — the same shape as `check_element_balance`,
+which asserts atom closure on one case.  `check_mass_closure` had NAMED the
+energy gap in its own "WHAT THIS DOES NOT CHECK" four days earlier: **an
+absence that is named and not scheduled is an absence.**  So: before quoting a
+PASS as reassurance about a class of defect, NAME the gate that would have
+failed; if you cannot name it, the PASS says nothing about it.
+`check_energy_closure` is T2's rule over every steady case — the residual READ
+from the engine's own report, a MEASURED pin list (`--seed`, never typed) that
+RATCHETS (a debt that grows fails, one that starts closing fails asking for
+its pin back, one neither closing nor pinned fails).  On the day it was built
+it found **32 of the 89 cases that have a global first law did not satisfy
+it** -- read the gate's own claim line for today's count, never this sentence.  Three defects were
+introduced the same day by the fix itself and are the durable half: **the
+numerical FLOOR is not a scale** (a plant with no declared duty published a
+real −6162.5 kW residual as −6.16e14 %; absent a scale the kW stands and the
+ratio is UNAVAILABLE everywhere); **a comment that describes an arithmetic the
+code does not do** (the scale summed duties ALGEBRAICALLY beside a sentence
+promising MAGNITUDES, recording a column that boils 1279 kW and condenses
+1281 kW as exchanging 1.74 kW); and **a basis changed without finding who
+reads it** (moving the denominator took the flagship from 0.163 % to 3.17 % on
+an unchanged residual and turned `energy-T2:plant` red unnoticed).  **THAT
+THIRD ONE IS MISFILED, and the correction is the durable half (2026-09-25):
+the basis change was the fix WORKING.**  Measured on the failing run, the
+plant's boundary residual and the SUM of its per-unit remaining imbalances are
+the same number, so the gap is real, localised and additive -- the spray dryer
+is the largest single contributor and the fermentor partly cancels it.  The
+old denominator divided that residual by the enthalpy THROUGHPUT, most of
+which is the formation datum passing through; the new one divides by the
+energy EXCHANGED, which is `solver/Convergence.H`'s own rule -- normalise by
+THE TERMS THE EQUATION BALANCES.  Normalising by throughput hid a real gap
+exactly as the cooling water hid the atom balance.  So `energy-T2:plant` was
+correctly red from 2026-09-08.  **It was acted on 2026-09-27 and is GREEN
+since 2026-10-05** -- see the paragraph *THREE MORE, AND THE FLAGSHIP'S FIRST
+LAW* below: the spray dryer, the solid dryer and the fermentor closed to
+0.0000 kW that day and left +10.79 kW (1.0298 %), the evaporators' Watson
+latent; Vítor ruled on it (DEV.md 4c C35 item 3, the evaporator paragraph
+below) and the flagship now closes at -0.0003 kW (0.0000 %).  The gate was
+never widened.  DEV.md 5, D-ET2.  The
+physics underneath was called ONE family: **a unit solves its energy equation
+on one enthalpy surface while its streams are priced on another** — ε-NTU on
+`cpIdealGas` against SRK-priced streams, the adiabatic `gibbsReactor` on
+`h_pure_ig`, and `column01` losing 631.96 kW (24.68 %).
+**TWO OF THOSE THREE WERE FIXED TEN MINUTES AFTER THIS PARAGRAPH WAS WRITTEN,
+AND IT WENT ON SAYING "NOT FIXED" FOR FOUR DAYS AND EIGHTEEN COMMITS
+(corrected 2026-09-12).**  The doc commit is `8b0630e27` at 09:24:52 UTC; the
+fix is Vítor's own `1298dc0d5` at 09:34:15 the same morning, and git says the
+first is the ancestor of the second.  Today all four enthalpy sites in
+`GibbsReactor.cpp` are on the package's own surface, `LOOP.Converter` in the
+green-ammonia plant closes at `dH = -0.0000 kW`, and the `ammonia02` FEHE at
++0.0505 kW.  **`column01` was the one still open, and it is CLOSED — see the
+paragraph below.**  This is §10's rule about
+this file being the next session's memory, caught doing exactly the damage it
+predicts: a general was sent to diagnose a seam that had been closed for four
+days, and the first half of its brief was spent proving the constitution
+wrong.  WHEN YOU FIX A THING THIS FILE CALLS BROKEN, FIX THE SENTENCE IN THE
+SAME COMMIT.
+**THE DEBT THAT WAS OWED IS PAID, and this sentence is the third time this
+month that fact had to be chased (corrected 2026-09-14).**  That fix
+deliberately re-recorded NOTHING ("per Vitor's standing instruction"), and
+this paragraph then recorded four cases as FAILING their goldens at HEAD for
+a correct engine.  `b9a61948a` — "the 2026-09-08 debt is paid" — re-recorded
+EIGHT goldens, the four named among them, and all four pass today (verified
+by running them, not by reading this file).  **A deferred re-record is a
+debt, and an undated debt is indistinguishable from a regression**: that
+rule is why the paragraph was written and it still holds.  What did not
+hold is the paragraph, which went on naming a paid debt — so a reader is
+told to fix something already fixed, which is the SAME failure the
+paragraph above this one describes about itself, one rung up.
+**AND THE FAMILY WAS NAMED ONE RUNG TOO LOW (2026-09-12).**  The heading above
+is a SUBSET, not the family -- and it was called a CLOSED subset for thirteen
+days while `conversionReactor` was still in it (corrected 2026-09-25; see the
+paragraph below).  A subset nobody ENUMERATED is not a subset anybody closed.  `column01` was filed under it and does not
+belong there at all: both sides price on `H_stream_formation`.  The family is:
+**THE STATE A UNIT COMPUTES WITH IS NOT THE STATE ITS STREAMS CARRY** — and the
+second home may be a dict key, a fixed correction applied to the stream and not
+to the duty, or an internal re-flash that ignores the carried label
+(`HeatExchanger.cpp:743` passes `pinned = false` always) — **or there may be NO
+home at all, and a DEFAULT supplies the answer** (the evaporator paragraph
+below; that shape is the hardest of the four to see, because a contradiction
+gives you two numbers to compare and an absence gives you none).
+WHAT PROVES THE HIGHER CUT, and it is a negative result: closing the
+exchanger's own enthalpy gap on 2026-09-08 made `combined02`'s plant residual
+WORSE, from -0.394 kW to +620.91 kW.  A surface-unification campaign predicts
+monotone improvement; unifying the surface while leaving two homes for the
+STATE merely moves which pair disagrees.  Record:
+[`docs/design/what-a-passing-suite-does-not-say.md`](docs/design/what-a-passing-suite-does-not-say.md).
+
+### THE SUBSET HAD ONE MORE MEMBER, AND THE WAY IT WAS FOUND IS THE DURABLE HALF (2026-09-25)
+
+**THE SUBSET HAD ONE MORE MEMBER, AND THE WAY IT WAS FOUND IS THE DURABLE HALF
+(2026-09-25).**  `conversionReactor` summed `h_pure_ig` for BOTH terms of its
+duty while the stream it publishes is priced by the package.  Nobody listed the
+units on the wrong surface when `GibbsReactor` was taken off it, so a reader of
+this file was told the subset was closed; **when you take one member off a
+family, ENUMERATE the rest in the same commit or say you did not.**  Both terms
+now go through the SAME resolve-then-price call the energy report applies to
+these very streams (`flashState::twoPhaseSplit` + `hOfState`, else
+`H_stream_formation` on the state the stream carries) -- NOT `GibbsReactor`'s
+plain `H_stream_formation`, because that is a quality blend at `z` and the
+report stopped using it for a split stream on 2026-09-12.  `dH_rxn` is
+untouched and is a DIFFERENT number by design (§5's rung); the `[rating]` line
+that announced the gap is deleted with the gap, and its guard could not have
+seen the witness anyway -- it required a non-vapour inlet, so a vapour priced
+by a cubic EoS was silent.  Three results, each measured.  (1) The witness, which is a staged ammonia
+synthesis case NOT IN THIS TREE (it is on the branch
+claude/choupo-simulator-new-session-s494v2, run here from a copy): its
+converter closed at 104.4687 % and its plant at -2278.1394 kW; the gap WAS the
+plant's first law to five decimals, the same case under `idealGas` closed
+both, and the plant now closes at +0.0064 kW.
+(2) Six of the ten corpus `conversionReactor` cases are unchanged to 1e-12 on
+every published number, measured against a build of the parent commit: three
+price ideal gas on an all-vapour inlet, which IS the sum the old code
+performed, and three publish no duty at all, so the suite says nothing about
+theirs either way.  (3) The negative result, again: `greenAmmoniaPEQ_baseCase` got
+WORSE (-12.70 -> -13.72 kW) BECAUSE its Deoxo now closes exactly and its
+1.0166 kW had been cancelling someone else's.  **And what the fix then made
+visible is not an engine defect at all**: `acetone02`/`acetone03` run no EoS --
+they declare NO PHASE on `0/Rin`, so `vf` defaults to 0 unpinned and the report
+has always priced a 623 K effluent as a liquid; one line (`phase gas;`) in a
+copy of each reproduces their shipped duty goldens to the last digit and closes
+acetone03's whole plant, separator included, from -602.18 to 0.0000 kW.  The
+unit's private answer was hiding which case was under-declared.  Both cases
+now DECLARE `phase gas;` on `0/Rin` (the same change, landed with this one),
+the four goldens were re-recorded with the list shown to Vitor first -- nine
+rows, two of them residuals going to exactly zero -- and `hda`, `acetone02`
+and `acetone03` all LEFT `check_energy_closure.KNOWN_OPEN` (0.825 %, 0.000 %
+and 0.000 %; the engine fix alone would have left acetone03 at 19.342 %, the
+phase declaration is what closed it).  Record:
+[`docs/design/a-duty-on-a-surface-its-streams-are-not-on.md`](docs/design/a-duty-on-a-surface-its-streams-are-not-on.md).
+
+### AND ONE MORE, WHERE THE TWO HOMES WERE TWO READERS OF ONE RESOLUTION (2026-09-26)
+
+**AND ONE MORE, WHERE THE TWO HOMES WERE TWO READERS OF ONE RESOLUTION
+(2026-09-26).**  `IsothermalFlash` re-resolved its feed through `solveCore`
+and ACCEPTED a two-phase root above every present component's Tc while the
+report, resolving the same feed through `flashState::equilibriumAt`,
+discarded it -- the whole -22 274.7 kW of `ammoniaReactor04_kineticSizing` on one
+separator; the discard is ONE home now (`flashState::supercriticalSplitDiscarded`,
+both readers call it, gate `check_inlet_resolution` arm (h)).  Enumerated in
+the same commit, per the 2026-09-25 rule: every reader that goes THROUGH
+`StreamEquilibrium.H` (report, model-boundary ledger, `heater`,
+`heatExchanger`, `conversionReactor`, column feed, evaporator chest) already
+discarded; the units that search their own OUTLET with a flash needed the
+other form of the rule -- the discarded root REPLACED by the single fluid
+phase, said once.  `phaseChanger` took it first (2026-10-01, its
+first inter-bed cooler 331.8 kW short the day the green-ammonia case
+existed), and on 2026-10-04 (C34) it moved to the one home
+(`flashState::flashDiscardingSupercriticalSplit`) and `pipe`'s inlet regime,
+the `valve`'s and `adiabaticFlash`'s outlet searches and the flash's own
+operating resolution all read it: a drum operated at 844.86 K published
+7.685 kmol/s of liquid and now publishes none (gate `check_inlet_resolution`
+arm (j); DEV.md §5, 2026-09-26).
+
+### A SPRAY DRYER FED SEVERAL SOLVENTS LOSES NONE (2026-10-20, DEV.md 4c C111)
+
+**A SPRAY DRYER FED SEVERAL SOLVENTS LOSES NONE (2026-10-20, DEV.md 4c
+C111).**  With several volatile solvents the outlet is the package's
+equilibrium of the air and every solvent at T_out (the exhaust on its dew
+point when the air cannot carry it all, announced), T_out closing
+H(out) = H(in) through `flashState::priceState`; the droplet KPIs on an
+announced pseudo-solvent; the sorption isotherm and the droplet-trajectory
+chamber models refuse a mixed-solvent feed by name.  Single-solvent
+byte-identical.  Gate `check_spray_dryer_solvents`; record
+`docs/design/a-spray-dryer-with-several-solvents.md`.
+
+### THREE MORE, AND THE FLAGSHIP'S FIRST LAW (2026-09-27)
+
+**THREE MORE, AND THE FLAGSHIP'S FIRST LAW (2026-09-27).**  The flagship's
++34.41 kW was additive, and three of its four terms were this family: the
+`sprayDryer` solved `T_out` from a hand balance (constant-Cp air, a Watson
+latent heat) that charged the latent heat of the water its own isotherm left
+in the powder and omitted the solid, the superheat and the crystallisation
+(-70.85 kW); the `solidDryer` did the same and, when the air could not pay,
+FLOORED `T_out` and evaporated the water anyway (+10.24 kW, heat from
+nowhere); the `cstr` priced its duty on a quality blend at the overall z where
+the report resolves the split (+37.00 kW on the fermentor's CO2).  One home
+now: `flashState::priceState` + `priceSolids` in `StreamEquilibrium.H`, moved
+verbatim out of `ConversionReactor.cpp`; all three units, and that one, call
+it, and each row closes at 0.0000 kW.  The spray dryer's kinetics are now
+evaluated at the exhaust it publishes, the unknown is the evaporation, and the
+root is BRACKETED -- a plain substitution cycled with period two near
+saturation, where the GAB isotherm is steeper than the energy balance.  The
+solid dryer keeps a floor and evaporates only what the air can pay for,
+ANNOUNCED -- the floor was the feed `T_w` then, and is the air's WET BULB
+since 2026-10-05 (DEV.md C35 item 7, both this unit and `evaporativeDryer`,
+through `psychrometry::gasWetBulb`) -- and only what its exhaust can carry
+without supersaturating at its own T_out (DEV.md C37 item 3: a fog had been
+priced at its condensed equilibrium and published as vf = 1; gate
+`check_evaporative_dryer` arm (g)).  The flagship read +10.79 kW (1.0298 %)
+after it: the evaporators, closed 2026-10-05 (the evaporator paragraph below).  **And a case gap rode with it, as it did on 2026-09-25:**
+`solidDryer01`'s 372.66 kW was 365.78 kW of humid hot air that declared no
+phase and was priced as a LIQUID (the permanent-gas screen does not fire on a
+stream carrying water) -- a unit that prices as the report does inherits the
+report's reading of an under-declared stream, so the case now declares
+`phase gas;`.  ENUMERATED, not fixed (none is in the flagship):
+`evaporativeDryer`, `coolingTower`, `absorber`,
+`stripper`, `phaseChanger`,
+(the ADIABATIC `mixer` was taken off 2026-10-25: every inlet priced
+through `priceState` + `priceSolids`, T_out the temperature at which the
+outlet, resolved at its own equilibrium, carries that enthalpy -- cavett01's
+plant residual -549 319 -> +0.002 kW; `adiabaticFlash`'s inlet priced the
+same way; its DECLARED-T form had closed 2026-10-17 by DEV.md 4c C74,
+`Q_kW = H(out) - SUM H(in)` through `priceState`), (and `evaporator`,
+taken off the list 2026-10-05;
+and `valve`, which this list had MISSED -- found by C64's letdown witness,
+38.66 kW, and closed 2026-10-11 by DEV.md 4c C65 item d, which is why an
+enumeration is a measurement to retake, not a list to trust;
+and the `pfr`'s and the CSTR's adiabatic/heatExchange T-solves, taken off
+2026-10-17 by DEV.md 4c C77: the outlet's enthalpy at each trial T is
+resolved and priced as it will be published, `reactorOutlet::pricedOutlet`
+/ `temperatureOfEnthalpy`, the `pfr` in local phase equilibrium at every
+point of its march -- their isothermal duty had been on the published
+outlet since C73; the time-integrated `batchReactor` and `dynamicCSTR` were
+NOT measured by that slice and are not claimed either way);
+and `src/reporting/BalanceMath.H` still holds its own
+copy of the rule `priceState` holds.  Gate: `check_energy_closure`'s UNIT ARM
+(an adiabatic dryer, an evaporator, a valve, and a cstr/conversionReactor
+or a declared-T mixer that publishes `Q_kW`, must leave <= 1e-4 kW
+unattributed; its witnesses must be read).  Record:
+[`docs/design/three-units-and-the-flagship-first-law.md`](docs/design/three-units-and-the-flagship-first-law.md).
+
+### AND THE COLUMN HALF OF IT IS NOW CLOSED, WITH A THIRD HOME NOBODY HAD NAMED (2026-09-12, same day)
+
+**AND THE COLUMN HALF OF IT IS NOW CLOSED, WITH A THIRD HOME NOBODY HAD NAMED
+(2026-09-12, same day).**  `column01`'s 631.956148 kW decomposed EXACTLY into
+three state mismatches, none of them a surface mismatch and none of them CMO —
+run under `model fullMESH`, which DROPS the CMO assumption, the residual was
+632.127272 kW, so CMO is 0.027 % of it and points the wrong way.  (It could not
+have been: `Q_reboiler = dH - Q_cond` is a PLUG that closes the column's own
+balance by construction, so a CMO column cannot emit a boundary residual at
+all.)  The three: the FEED priced as a saturated liquid against a stream
+carrying 69.7 % vapour (630.861080 kW); the DISTILLATE priced in the duty at
+the top tray's T while `makeDistillate` publishes it at its BUBBLE POINT
+(1.095541 kW, and it was live on every non-reactive column in the corpus); and
+the report's own re-flash of a bubble-point stream finding V/F = 1e-6 and
+pricing a vapour whisker (-0.000473 kW).  A FOURTH was latent and worth
+5.509232 kW the moment the first was fixed: the duty priced a two-phase feed
+with `H_stream_formation(T,P,vf,z)`, which blends BOTH legs at the OVERALL
+composition z — a quality blend, exact for a pure fluid and not the enthalpy of
+a two-phase mixture, while the report had always used the equilibrium x and y.
+**THE THIRD HOME IS THE DURABLE HALF.**  The feed's thermal state was thought to
+have two homes, `operation.feedQuality` and the stream's declared
+`vaporFraction`.  It has three: an UNPINNED (T, P, z) MEANS its own equilibrium
+(R-E2), so a stream that declares NOTHING still has a state, and the report
+resolves it.  `stripper01_sour_water` and `stripper02_sour_water_h2s` declare no
+`vaporFraction`, say `feedQuality 1.0`, and resolve two-phase — 12.794585 kW
+(10.4 %) and 17.480393 kW (13.6 %), the WHOLE of each plant's first law, with
+nothing in either case's text contradicting anything.  **A rule that reconciles
+a dict key against a DECLARED field passes both and looks complete**; the engine
+resolves instead, through `flashState::twoPhaseSplit` — the same call
+`src/reporting/BalanceMath.H` makes, promoted to `unitOperations/flash/` so both
+bands reach ONE sentence — and REFUSES a contradicting `feedQuality` naming both
+numbers and both remedies with their values filled in.  Thirteen cases refused;
+eleven had the stream right and lost the dict key, two had only ever said it in
+the dict and now say it in the stream.  Every distillation case in the corpus
+closes its first law at 0.000000 kW -- BY CONSTRUCTION on a CMO column, whose
+reboiler is the remainder (`Q_reb = dH - Q_cond`), so that zero is NOT evidence
+and a wrong condenser hid behind it on all 34 columns (C169); since C174 the
+plug is published as "closes by construction -- not verified", the full MESH's
+is checked against the reboiler's own envelope, and the CMO plug sits 1.7-23 %
+below that envelope on 28 of 31 columns (record:
+[`docs/design/no-closure-by-construction.md`](docs/design/no-closure-by-construction.md))
+-- the last two,
+`column04_multifeed_sidedraw` (-78.693876 kW) and
+`column08_radfrac_multidraw` (-891.980060 kW), both multi-feed, were not a
+column defect: each residual was exactly -(Q_reboiler + Q_condenser), because
+the energy report filed a unit with >= 2 process inlets and >= 2 outlets as an
+internal exchanger and dropped its duties from the plant boundary.  CLOSED
+2026-10-05 (DEV.md §4d D1, C35): **an internal exchanger is decided by what
+the unit IS, never by its port count** (`reporting::
+isProcessToProcessExchanger`, one home).  The `simultaneous` MULTI-feed
+branch has resolved each stream feed and priced a two-phase one at (x, y)
+since the same day.  Also NOT done, named rather than implied: the WIDE route
+for the quality blend — making `H_stream_formation` itself flash, which is the true
+one-home fix and whose blast radius nobody has measured.  412 golden rows moved
+across 28 cases, 0 added, 0 removed; nine entries left `check_energy_closure`'s
+KNOWN_OPEN.  Gate: `check_feed_thermal_state` (9 sabotages, all caught — and
+the discriminating one is S2, which narrows the rule to the declared field and
+leaves arm (a) PASSING, so only the arm whose fixture declares no vapour
+fraction can tell the two rules apart; arm (e) also found a THIRD reader while
+the fix was being written, `solveForRecovery` printing a `q` the column no
+longer used, which is the 2026-08-04 banner trap again).  Record:
+[`docs/design/the-state-a-unit-computes-with.md`](docs/design/the-state-a-unit-computes-with.md).
+
+### AND THE EVAPORATOR HALF, WHERE THE SECOND HOME WAS A MISSING WORD (2026-09-12, same day)
+
+**AND THE EVAPORATOR HALF, WHERE THE SECOND HOME WAS A MISSING WORD
+(2026-09-12, same day).**  Rule: **a unit whose duty ASSERTS a phase must READ
+that phase off the stream and refuse a disagreement** — `Q = F_chest ·
+ΔHvap(T_steam)` asserts a complete condensation, and the evaporator read only
+`T` and `F`.  Six cases declared a chest with no phase, the engine's default
+made it liquid, `H(chest in)` and `H(condensate out)` came out equal to the
+last printed digit, and the boundary credited **exactly 0.00 kW** of a
+487.49 kW duty.  **The trap is that those files are CORRECT and INCOMPLETE:** a
+saturated supply sits exactly ON the saturation curve — the case's own Antoine
+returns Psat(401.6288333 K) = 270000.72 Pa against a declared 270000 — and that
+is the one place where (T, P) cannot say which side of it you are on.  Three
+things this slice paid for, each a trap in its own right.  **A pure-component
+flash asked a question on the saturation curve has no answer**: K ≡ 1, so
+Rachford-Rice is satisfied for every V/F and the bisection returned its own
+midpoint, `V/F = 0.500000000`, on BOTH ends of one chest — *two wrong numbers
+that cancel are invisible*, and `fs.converged` was true.  **"Unmistakable" is
+not a channel the engine reads**: a converged SINGLE-phase resolution is not a
+split, so `twoPhaseSplit` returns nothing and the carried default stands — which
+is why `phasechange01_partial_condenser`, whose 50/50 benzene-toluene feed the
+engine's own resolution finds single-phase vapour at 390 K and 1 bar, was
+priced as a LIQUID and published a POSITIVE latent heat on a condenser; it closes at 0.0000 kW now and its pin is **out** of
+`check_energy_closure`, not re-measured.  And **a tear seed is an inlet on the
+first pass** — the new refusal caught `evaporator05`'s `0/V1`/`0/V2` starting a
+counter-current Wegstein loop from a liquid chest, in a case nobody had
+flagged, with its golden unmoved.  Also fixed: the condensate took its pressure
+from `Flowsheet.cpp`'s `P_inherit`, which is the FIRST input's — the process
+feed, not the chest.  ONE home for the reading
+(`flashState::resolveStreamThermalState`, moved beside `twoPhaseSplit` because
+the column had written it four days earlier).  **The +17.6…+18.4 kW that
+remained on five plants (and +134 on the triple effect) was the unit's Watson
+`Hvap_latent` against `H_stream_formation`, 3.30 % apart on water at
+401.63 K, and it is CLOSED (2026-10-05, Vítor's ruling, DEV.md 4c C35 item
+3):** the duty's latent heat is the enthalpy DIFFERENCE the report prices,
+`h(chest) - h(condensate)` through `flashState::priceState`, and the process
+side is priced on the same surface -- which the unit's row needed too (the
+sucrose of a sugar liquor had no liquid Cp and contributed nothing
+sensibly).  Every evaporator row now closes against the report to 1e-6 kW,
+eight pins left `check_energy_closure`, and `energy-T2:plant` is green.  A
+feed or chest with no enthalpy datum keeps the Watson balance, ANNOUNCED (the
+report is UNAVAILABLE there too).  A SUPERHEATED chest is read as the vapour
+it means (`resolvedInletVaporFraction`), on every package since C35
+(2026-10-05): a chest carrying zero of a K = 0 nonvolatile made the flash's
+dew test 0/0 = NaN, and **an absent component is not a term** in the flash's
+sums now (`IsothermalFlash.cpp` `RR`/`dRR_dV`/the phase test, `DewPoint`, the
+report's incipient-phase test).  What that made visible: an undeclared
+SATURATED chest is read by the last digits of T and P (DEV.md 4d D1), so
+`phase gas;` is still the one channel that does not depend on rounding.
+Gate: `check_evaporator_chest_phase` arms (c1),
+(c2), (i) (7 sabotages; two results did not
+match the prediction and are recorded as measured — S3 is caught STRUCTURALLY
+and not behaviourally, and a presence-based arm (e) was measured to survive S4
+at exit 0).  Record:
+[`docs/design/the-word-that-was-not-there.md`](docs/design/the-word-that-was-not-there.md).
+
+### A RESULT BLOCK THE GOLDEN FORMAT CANNOT READ ARRIVES UNPINNED (2026-08-12)
+
+**A RESULT BLOCK THE GOLDEN FORMAT CANNOT READ ARRIVES UNPINNED (2026-08-12).**
+An unreadable block does not fail — it just stops being checked, silently,
+with the suite green; so when you add a top-level result block carrying a
+number a reader would act on, add the row kind that reads it IN THE SAME
+COMMIT (published ⇒ pinned AND pinned ⇒ published).  **THE RULE HAS A SECOND
+HALF, found the day the two choupoBatch CAMPAIGN ledgers got their kind
+(2026-09-20): MEASURE WHETHER THE NUMBER ALREADY HAS A HOME BEFORE ADDING
+ONE.**  `transfers` and `energyLedger` were both unreadable by any row kind,
+but the ENERGY ledger's per-(unit, kind) total is mirrored by choupoBatch into
+a `kpi E_<kind>_total_kJ` row, and every case that publishes one already
+carried it — so a `ledger` row beside it would have been a second home for one
+number in one file, which is the arity sin in a golden.  The new `ledger` kind
+therefore pins the MATERIAL ledger's per-component `dn` and `H_kJ`, and both
+ledgers' VALIDITY as a WORD (`valid`/`partial`/`invalid`, on the `verdict`
+precedent — a pin carrying only the number passes while a ledger goes
+unpriceable and the campaign balance turns UNAVAILABLE); the energy NUMBERS
+stay in their one home and the gate requires the BLOCK to REPRODUCE it.  The
+key is the (subject, kind) AGGREGATE, and the usual argument for that is the
+wrong one: a record boundary here is a RECIPE EVENT, not an integrator step,
+and a 1000× tolerance tightening moved no boundary at all — what rules out a
+per-record key is that `tStart` is not a key (three corpus cases log two
+`feedAmendment` records on one edge at one instant).  What the aggregate
+cannot see is a REDISTRIBUTION across instants, which is said on the gate's
+claim line because the campaign TIMELINE is what will draw it.  Gates:
+`check_overlay_aad_pinned` · `check_closure_ledger_pinned` ·
+`check_utility_allocation_pinned` · `check_campaign_ledger_pinned`.  Record:
+[`docs/design/which-result-blocks-a-golden-can-read.md`](docs/design/which-result-blocks-a-golden-can-read.md).
+
+### THE `aad` ROW (2026-08-12)
+
+**THE `aad` ROW (2026-08-12).**  An overlay's AAD against a MEASURED dataset is
+pinned by an `aad` kind row (`aad <dataset> <model>.<property>.<statistic>`),
+auto-generated in `--record`; they are self-recorded rows, never `anchor` rows
+— what they pin is that the agreement has not MOVED.  Gate:
+`check_overlay_aad_pinned`.  Record:
+[`docs/architecture/verification-and-validation.md`](docs/architecture/verification-and-validation.md) §3b.
+
+### THE HONESTY SLICE — twelve gates in one day (2026-08-05), and what building them found
+
+**THE HONESTY SLICE — twelve gates in one day (2026-08-05), and what building
+them found.**  Three audits (arity, silent fallbacks, provenance) were acted
+on end to end.  The engine changes are small; the pattern is the point, and it
+is now doctrine (`project-philosophy.md` §3a, invariant I1):
+
+* **The arity doctrine covers DECISIONS, not only values.**  The forward
+  reaction `order` had FIVE readers with FIVE defaults, and a reactant with no
+  declared order silently left its own rate law (exponent 0) — exit 0,
+  plausible number.  One home now: `Reaction::forwardOrder`, refusing by name.
+  The *reverse* order defaults meaningfully because detailed balance fixes it;
+  the forward one is a fact about the MECHANISM and is not derivable.
+* **A CHECK THAT CANNOT RUN MUST NOT PASS.**  Found twice in one day:
+  `bin/buildSite` WARNed and published when `pdftotext` was absent (so the
+  guide-version gate never ran in CI, the only place that publishes), and
+  `check_true_ions` reported PASS on every run while both its inputs had been
+  deleted — a permanently-green gate is worse than none.  The first refuses
+  now; the second is retired.
+* **A field the engine cannot see is a comment.**  67 records carried
+  `PROPOSAL TIER -- UNVERIFIED` in a banner the parser discards, including 7
+  of the 16 in `cavett01`, the flagship external-reference case.
+  `reviewStatus` is parsed and ANNOUNCED now (`[unreviewed]`, beside `[local]`
+  and `[estimate]`).
+* **A declared validity window was parsed and DISCARDED.**  `PolynomialCp`
+  assigned `Tmin_`/`Tmax_` and never read them, so I4 was unimplemented on the
+  commonest Cp path — which is why six inverted windows did no visible harm.
+  *Harmless-because-unchecked is not safety.*
+* **K_b is DERIVED, and the derivation is OPT-IN.**  `R·Tb²·M/ΔHvap` from the
+  record's own inputs; the declared value stays as a validating anchor.  The
+  first version derived for every solvent and gave BPE to a case that models
+  without it — an absence must keep meaning what it meant.
+* **FOUR hand-compiled counts were wrong**, in both directions — the uncited-
+  species list was short by one, the unargued-founding-decision list long by
+  three, the upward-edge and cycle counts both short, the crossing-`../` count
+  short by one.  *A measurement taken once and then remembered is a derived
+  fact with a second home.*  The live numbers live in the gates that recount
+  them, and are deliberately not repeated here.
+
+### What was deliberately NOT done, and why it is the substantive half:
+
+**What was deliberately NOT done, and why it is the substantive half:** four
+NEVER-list records, the NF270 40× contradiction and eighteen missing citations
+are PINNED, not fixed.  Inventing a citation converts *unsourced* into
+*falsely sourced*, which no reader and no gate can detect.  **A visible gap is
+strictly better than an invisible falsehood.**  Every pin list fails if a name
+is removed without the record being fixed.
+
+Gates: `check_forward_order` · `check_review_status` · `check_ebullioscopic` ·
+`check_cp_range_announced` · `check_column_datum_downgrade` ·
+`check_glossary_bans` · `check_species_citation` · `check_source_licence` ·
+`check_validity_windows` · `check_record_self_consistency` ·
+`check_economics_honesty` · `check_layering`.  All sabotage-verified; three
+state coverage they do NOT have, because a gate that implies more is worse
+than one that reports less.
+
+### EVERY MANUAL GATE READS THE SOURCE; THE TREE SHIPS THE RENDER (2026-09-03)
+
+**EVERY MANUAL GATE READS THE SOURCE; THE TREE SHIPS THE RENDER (2026-09-03).**
+`check_doctrine`, `check_guide_paths` and `check_lesson_symbols` scan `.tex`;
+a reader opens the committed `.pdf`, and the two are the SAME CLAIM only while
+the render is fresh.  `check_guide_pdf_version` cannot see the gap (a stale
+render of a `Choupo-dev` source still prints `Choupo-dev`), so
+`check_guide_pdf_fresh` decides it by git ancestry over each guide's own
+`\input` closure, and refuses a top-level `docs/*.pdf` that no Makefile rule
+builds — **a sourceless binary is outside every source gate at once**, which is
+how a withdrawn v0.2.0 guide naming two competitors survived the doctrine rule
+that banned them.  Rebuild with `make -C docs all` and commit the PDFs beside
+the sources that moved.
+
+### THE RECORD A STUDENT PROMOTES MUST CARRY WHAT THE RUN CONCLUDED (2026-09-03)
+
+**THE RECORD A STUDENT PROMOTES MUST CARRY WHAT THE RUN CONCLUDED
+(2026-09-03).**  `fitParameters`' promotable pair `.dat` printed the evidence,
+the held-out AAD, the band declared before the fit and the verdict, and then
+wrote a file naming none of them — with the ORIGIN word (`source fitted;`) in
+the slot that says where the DATA came from, which `PairAudit` reads as a
+LEGACY source word and deprecates.  Now: `origin`/`method`/`methodVersion`
+typed INSIDE `provenance {}` (the axis is a RESPONSIBILITY, not a nesting
+level — a first draft put `origin` at top level, ran, and resolved
+`unattributed` silently), the evidence with each role and the partition
+fingerprint, and a `validation {}` block with the verdict.  The write MOVED
+after the held-out pass, because the verdict does not exist before it.  Found
+on the way: `ResultEmitter` emitted three keys BY HAND beside the ONE shared
+formatter that emits them (duplicate JSON keys on every pair), and a
+`.gitignore` rule outlived its directory rename by seven weeks.  NOT done: the
+~95-value corpus migration, which no record authorises.  Gate:
+`check_promoted_pair_record` (5 sabotages; the artefact is rebuilt, never
+tracked — its `fitDate` would go dirty daily).  **Slice 2, same day, one
+artefact along: the SCREEN must carry what the FILE declares.**
+`estimateComponent` writes per-value provenance (`origin`/`method`/
+`methodVersion`/`inputFingerprint`/`uncertainty`) and NOTHING read it, so a
+generated component drew in the Explorer exactly like a curated one — while
+the inspector's own model had carried an `estimate` mark kind that was never
+constructed anywhere.  The rule is STRUCTURAL on both sides (a sub-dict that
+declares `origin`; a field-name list would be a second home for the engine's
+vocabulary).  The writer is C++ and the reader TypeScript, and the GUI tests
+run on a TRANSCRIPTION because the generated file is gitignored — so the gate
+RUNS the generator and holds that transcription to it.  A reader sabotage
+SURVIVED first contact (every sub-dict in the fixture already declared
+`origin`, so the guard had no case); the fixture now carries a `validity {}`
+block beside a real one.  Gate: `check_estimate_visible`.  **Slice 3: THE CURATION DOSSIER WAS WRITTEN
+IN A GRAMMAR NO DICT PARSER HERE ACCEPTS** — a keyword-prefixed named block
+(`property <name>` then `{`) and the domain's COORDINATE LABEL sitting in the
+unit slot (`min 0.05 x1;`).  So `promote-from-dossier` hand-rolls regexes
+under a comment saying a second parser would be wrong, and the Explorer told
+every reader that "no dossier is attached" about components that have three:
+*an absence nobody checked is not a finding.*  The property list is now plain
+dict grammar — **a LIST, not a keyed block**, because `curate01` curates
+`vapourPressure` twice with opposite verdicts and a name-keyed collection
+drops the `validationRefused` half (measured: 4 blocks found where 5 verdicts
+are declared).  Both readers carry a count arm.  A sabotage SURVIVED TWICE:
+once because it reached only a witness whose coordinate is a real unit, once
+because the gate's pattern was anchored to the line start while the domain
+writes its intervals inline — *a pattern anchored where its subject does not
+live is a check that cannot fire.*  Gate: `check_dossier_grammar`.  Record:
+[`docs/design/what-a-promoted-record-must-carry.md`](docs/design/what-a-promoted-record-must-carry.md) (§6, §7 for the later slices).
+
+### A VERDICT PUBLISHED TO A HUMAN AND PINNED BY NOTHING (2026-09-04)
+
+**A VERDICT PUBLISHED TO A HUMAN AND PINNED BY NOTHING (2026-09-04).**  Three
+fit ops decide a CURATION verdict from a held-out pass against a band declared
+BEFORE the fit; it reached the console, the dossier and the promotable record
+and NOT the result JSON — so the GUI's fit panel drew the *identifiability*
+verdict instead (a different question) and no golden could pin it.  Now
+`PropertyOperation::curation()` — the maturity axis, as WORDS, kept apart from
+`diagnostics()` (numbers) and `provenance {}` (where the data came from), and
+named `curation` because `validation` already names this document's overlay AAD
+table.  The decision is taken ONCE (it had three call sites, one of them inside
+`if (verbosity >= 2)` — a verdict must not depend on how loudly the run was
+asked to speak).  New golden row kind `verdict`, compared as a WORD with
+`exact`.  Traps paid for: `--record-append` carries a hard-coded kind allowlist
+that DROPS an unknown kind in silence, and drawing the five verdicts in the fit
+panel made a FOURTH hand-written home for that vocabulary — added to
+`check_verdict_parity` in the same commit.  NOT unified: the two op families
+print the verdict in two different console shapes, recorded rather than papered
+over.  Gates: `check_fit_verdict_channel` (its strongest arm requires every op
+that CALLS `verdictOf` to publish one — `heatCapacityFit` has no witness and
+only that arm catches it) · `check_verdict_parity`.  Record:
+[`docs/design/the-verdict-that-reached-everyone-except-the-machine.md`](docs/design/the-verdict-that-reached-everyone-except-the-machine.md).
+
+### A PLANT THAT CLOSED ON ITS COOLING WATER (2026-09-08)
+
+**A PLANT THAT CLOSED ON ITS COOLING WATER (2026-09-08).**  A case may DECLARE
+that a pair of boundary streams is an auxiliary circuit -- `utilities ( { name;
+service; supply; return; note } )` in `system/flowsheetDict` -- and the plant
+material summary then publishes TWO closures, the TOTAL one it always did and a
+PROCESS one with the declared circuits left out.  It is TOPOLOGY (which EDGES
+form the circuit), so it is not in `0/<stream>` (state, rewritten by
+`converged/`) and not on a port (the producer rule replaced 2026-09-07).  **THE
+SEPARATION IS PRESENTATION, NEVER VALIDATION SCOPE** -- the per-unit balances,
+the element balance, the energy balance and every modelled boundary keep
+counting every stream, and that sentence heads both the header and the code
+that computes the scopes.  The criterion is *"transfers matter across the
+process boundary"*, never *"contacts the process"*: the first is checkable and
+the engine checks it (boundary inlet / boundary outlet / one served unit /
+component-wise conservation), which is also why there is NO mandatory `reason`
+-- the Hermia analogy is FALSE, that key states a mechanism nothing can verify,
+and mandatory prose where verification exists is friction rather than rigour.
+A pair that fails to conserve refuses the DECLARATION and not the plant: a
+cooling tower with makeup, evaporation, drift and blowdown is legitimate and
+simply has more than two boundary streams.  Traps paid for: a result handed out
+as POINTERS INTO A TEMPORARY crashed the flagship in `basic_string::_M_create`
+(the 2026-08-04 ActivityResult lesson, one band down); and an EMPTY registry is
+not evidence about a name -- run from a case directory with no `CHOUPO_HOME`
+every directory-scan registry loads nothing, so the first version refused a
+service that exists, and an unloaded catalogue now ANNOUNCES the word as
+unchecked (2026-09-06's rule, mirrored).  Published implies pinned with no new
+row kind: `boundary`'s `name` column stopped being the fixed word `global` and
+now SELECTS the ledger (`global` energy, `mass` material), so every row
+recorded before resolves unchanged -- and the same move had to reach
+`check_energy_boundary_pinned`, which read EVERY `boundary` row as a first-law
+row and would have failed the day someone recorded a mass one: **widening a
+shared vocabulary means finding every reader that assumed it was narrow.**
+NOT done: a branched header (one circuit is one supply, one return, ONE served
+unit -- anything else refuses by name),
+any second scope elsewhere, the `category` overlap (an aggregation LABEL, named
+in `docs/ai/dict-syntax.md`, not closed).  **THE GUI READER LANDED THE SAME DAY,
+and it needed ONE more engine fact.**  `gui/src/case/balances.ts` summed the
+material boundary itself -- the second home the first law was taken out of on
+2026-09-05 -- and Vitor saw the consequence on the LIVE SITE: the plot's axis
+held 9 007 500 kg/h of declared cooling water and every process component was a
+sliver.  The engine's two SCOPE TOTALS could not fix a per-component chart, so
+each stream now carries the circuit it belongs to (`utilityCircuitOf` ->
+`"utilityCircuit"` in the result JSON, stamped by the massBalance report from
+`utilityCircuits::circuitOfStream`, the ONE home from which `excludedStreams` is
+now derived).  **The GUI GROUPS BY THAT STAMP and reads no `utilities` block**,
+exactly as it applies `aliasOf` rather than working the equivalence out.  The
+bars are the PROCESS scope, what was set aside is NAMED with its share under the
+title, and the TOTAL scope stays beside it in Reports -- never on the same axis,
+because an axis holding 9 007 500 beside 70 637 shows one bar.  A case declaring
+no circuit emits byte-identical JSON and draws byte-identical bars, so the
+silence keeps meaning "nothing was declared"; and the plot lost its own private
+grouping (it had kept one beside the shared per-component conversion -- the 
+2026-08-10 flash21 shape), gaining the observed-feed filter it had been missing.
+Gate:
+`check_mass_closure` (extended, not multiplied -- it reads the process closure
+where one is published; 7 sabotages, one of which lands only through the
+MESSAGE because a later guard catches the same probe, and one of which proved a
+gate can go on PASSING while its own claim goes false).  Record:
+[`docs/design/a-plant-that-closed-on-its-cooling-water.md`](docs/design/a-plant-that-closed-on-its-cooling-water.md).
+
+### A DRYER THAT ENDED WETTER THAN IT STARTED (2026-09-04)
+
+**A DRYER THAT ENDED WETTER THAN IT STARTED (2026-09-04).**  Vítor opened the
+flagship plant on the LIVE SITE and saw mass not conserved; a spray dryer was
+inventing water because its residual-moisture model is a RATIO carried by the
+dry solid and knows nothing about how much water the feed brought, while the
+only clamp protected the vapour from going negative.  Fixed and **announced**,
+never silently clamped.  **The unit is one bug; the substance is three
+silences** — under an `outerDict` the declared balance reports did not run (now
+announced by name), the case ships no golden, and NOTHING looked at closure at
+all, because a golden pins what a run PRINTS and a stable wrong answer passes
+by construction.  Two durable rules came out of it: **reason from the case in
+front of you, never from its twin** (I called this a GUI defect first, from the
+non-sweep twin, and was wrong); and **a gate that accuses the innocent teaches
+the reader to ignore it** — the first `check_mass_closure` collapsed four
+states into two and flagged a closed Rankine cycle and two uncompilable
+userOps tutorials as violations.  Gate: `check_mass_closure`.  RESERVED for
+Vítor: whether a sweep reports on its final point.  Record:
+[`docs/design/a-dryer-that-ended-wetter-than-it-started.md`](docs/design/a-dryer-that-ended-wetter-than-it-started.md).
+
+### THE SPECIFICATION SHEET A PROJECT IS AUDITED FROM (2026-09-04)
+
+**THE SPECIFICATION SHEET A PROJECT IS AUDITED FROM (2026-09-04).**  A student
+hands in a final-year project and somebody must audit it PER UNIT OPERATION:
+what goes in, what comes out, what was sized, what it costs.  Those three
+answers lived in three unrelated places, none per unit and none where anybody
+audits — the ports only inside `iterations/` (opt-in, off by default,
+numerical history), the sizing in two flat CSVs, the cost beside it — and
+`design/` was a ratified directory NAME nothing had ever written.  Now
+`design/<SECTOR>/<unit>/<equipmentTag>`, ONE dictionary per physical item,
+regenerated whole every run like `converged/`.  **The shape is 1:N with N = 1**,
+which honours §2.8's "one unit may realise MANY items" without building the
+`system/designDict` it names (no reader anywhere): a column that one day
+yields five gains siblings and nothing above changes.  **The durable half is
+D4, and it is OpenFOAM's rule:** an object declares its own dimensions, so
+adding one touches no reader.  `EquipmentSizing::set(key, value, unit)` is the
+one door; the units had been living in `//` comments and in a hand-written
+table four call frames away inside the pass that PRINTS them — the fifth such
+home this project has closed — and the migration found that the values are
+**not all canonical SI** (`power`/`Q_kW` in kW, `pressureDesign` in bar,
+micrometres, rpm; six keys carrying their unit inside the KEY NAME).  Nothing
+was converted: rebasing on SI moves numbers in every golden that pins them.
+**A dimensionless value declares `[0 0 0 0 0]`**, because omitting the unit
+writes the grammar's raw-SI form and a reader cannot then tell a declared
+ratio from a forgotten declaration — the exact ambiguity the slice exists to
+end, found by the gate reporting a false positive that was really a format
+defect.  Traps paid for: a port mass computed as `F * Σ z_i MW_i` **drops the
+crystals** (437 kg/h on one stream, while that unit's own balance closed at
+100.0000 %) — `StreamMass::F_massTotal` is the home, and its header describes
+this very mistake, made before, by someone else; the first gate draft
+**patched a source and rebuilt the engine**, which is the 2026-08-18
+tree-poisoning shape that only `check_gate_selftest` may take, so the refusal
+was fired BY HAND under the journal instead — and that firing found a SECOND
+defect, a `throw` inside the per-unit loop leaving a PARTIAL tree that lies by
+omission; and **`**/design/` swallows `docs/design/`**, this project's own
+records, silently, for every NEW file.  The ignore rule is not tidiness: the
+GUI bundle is a Vite glob that inlines every tutorial file as a raw string, so
+a committable run output is one machine's stale sizing baked into the shipped
+site (second lock in the glob itself).  `bin/cleanCase` would have left the
+tree behind while announcing a removal count, and its `--help` printed the GPL
+notice instead of the usage.  NOT done: no `designDict`, no new sizing content
+(the sheet draws what `SizingPass` computes and invents no field).  **The GUI
+half shipped 2026-09-05:** the Case tree is RECURSIVE (`gui/src/ui/caseTree.ts`,
+pure and tested — it had grouped by the FIRST path segment and drawn the rest
+as one row, on every case), collapse state is keyed on the full path (keying
+on the segment folded the case's `system/` and a sector's `system/` together —
+name identity, applied to a UI), and the worker harvest selects run-output
+trees from ONE list (`OUTPUT_ROOTS`) instead of a hard-coded converged literal
+— the literal being exactly why the sheets did not reach the browser the day
+the engine wrote them.  `designFiles` is its own `RunResult` field: folding it
+into `convergedFiles` would make "no sizing pass" read as "did not solve".
+**Slice 3, same day:** the tree draws by KIND — `caseTree.kindOf()` is the
+ONE home for *declared / initial state / sector / run output* (the fact had
+five homes in the GUI and none in the tree, so `converged/` read as a fifth
+sector on the flagship); outputs dimmed with a `run output` badge, sectors
+with a glyph, order by kind; `CaseIntro` reads the same home.  Trap: a
+squashed label's kind is decided on its first OWN segment, never its tail.
+Gate:
+`check_design_sheet` (its load-bearing arm reads `massBalance_byUnit.csv`, a
+report this writer does not produce, which is what caught the crystals).
+Record:
+[`docs/design/the-specification-sheet-a-project-is-audited-from.md`](docs/design/the-specification-sheet-a-project-is-audited-from.md).
+
+### THE DATASHEET FOLLOWS THE EQUIPMENT KIND, NOT THE UNIT TYPE (2026-09-07)
+
+**THE DATASHEET FOLLOWS THE EQUIPMENT KIND, NOT THE UNIT TYPE (2026-09-07).**
+Of the column's five sheets the condenser and the reboiler needed no work at
+all — they are `shellTubeHX` items and the exchanger datasheet draws that kind
+— which is the rule stated as a consequence.  So the schematic is dispatched
+on the sheet's own `equipment` word, the SAME registered-type word the sizers
+use (`gui/src/case/equipmentSchematic.ts`, one entry per kind, no reader
+changes), and **a kind with no drawing gets a LABELLED BOX** with its ports and
+its sizing table: there is no generic outline that is nearly right for a
+crystalliser, a cyclone and a compressor, and **a labelled box beats a wrong
+picture**.  The TOWER is keyed on `sieveTrays` and NOT on `vessel` — `vessel`
+is the shell's own word AND the reflux drum's AND every flash drum's, so keying
+it there would put fourteen trays inside every drum in the corpus.  The
+substantive half is the provenance: **a number the CASE declared must not look
+like a number Choupo COMPUTED**, and a column is where that is easiest to get
+wrong (omit `hydraulics { diameter }` and the pass DESIGNS the tower; declare
+it and the pass RATES the trays against a tower the author chose), so the
+drawing reads the engine's own `diameterDesigned` KPI rather than inferring the
+mode, marks every dimension in TWO channels (ink AND the word — colour does not
+survive a greyscale print) and says *provenance not published* rather than
+guessing.  No transition cone is drawn in ANY case: `ColumnSize` sizes the
+shell STRAIGHT and publishes ONE `D`.  Three traps: **prose does not go in an
+SVG** (no reflow — two captions were rendered and silently cut mid-word); a
+connector's label is PLACED, never guessed from its midpoint; and a fixture
+search over a WHOLE test file goes blind the day one file holds three sheets
+with identical blocks (the sabotage SURVIVED, forcing a per-literal match).  A
+DEFERRAL EXPIRES THE DAY ITS REASON DOES: arm (l) deliberately did not hold the
+sheets' port blocks because no GUI reader read them, and the moment one did the
+stirred-tank fixture turned out to carry none.  NOT done: the mechanical /
+vendor-handoff block (task #142) and packed columns (no packing model exists
+anywhere in the engine — new physics, Vítor's).  Gate: `check_design_sheet`
+arm (l).  Record:
+[`docs/design/the-column-draws-itself.md`](docs/design/the-column-draws-itself.md).
+
+### EVERY SIZER STATES ITS BASIS, AND WRITING ONE FOUND A VOLUME IN KILOMOLES (2026-09-05)
+
+**EVERY SIZER STATES ITS BASIS, AND WRITING ONE FOUND A VOLUME IN KILOMOLES
+(2026-09-05).**  The Reports header promised a design basis for every item
+and one sizer in eight stated one.  Rule: a sizer states the rule that
+produced its Turton size key, AT the site where the rule is applied; a
+pass-through says it is one; `EquipmentSizing::basis` is the one home and
+`(not stated)` stays the rendering of an empty field on every surface, so a
+forgotten basis is visible rather than defaulted away.  Writing the string
+for `CrystalliserSize` required reading what its inputs ARE: it multiplied
+`liquorFlow` — the unit's MOLAR flow, kmol/s, labelled so in its own source —
+by the residence time and called the product m³, so the flagship plant's
+crystalliser was costed on a molar holdup an order of magnitude too large,
+at exit 0, with a golden pinning it to four decimals.  **A golden pins what
+a run PRINTS; only a recomputation from the DECLARATION can see a size that
+is wrong** — the MSMPR is a rating model, so the unit now publishes its
+declared volume and the sizer passes it through.  Deriving it as
+`throughput × residenceTime` was rejected: it reproduces the declaration to
+round-off and hides that it is one.  Gate: `check_design_sheet` arms (i)
+(source: every sizer assigns `d.basis`) and (j) (a crystalliser sheet's
+`V_magma` equals the case's declared `operation.volume`, read from the
+dicts).  NOT gated, said plainly: whether a basis string is TRUE of its
+sizer.  Record:
+[`docs/design/a-basis-nobody-stated-and-a-volume-in-kilomoles.md`](docs/design/a-basis-nobody-stated-and-a-volume-in-kilomoles.md).
+
+### A FIRST LAW THE GUI COMPUTED FOR ITSELF (2026-09-05)
+
+**A FIRST LAW THE GUI COMPUTED FOR ITSELF (2026-09-05).**  The live site
+showed the flagship plant violating the first law by 372.5 kW (1.79 %); the
+engine's own energyBalance report closes the same run at 34.4 kW (0.163 %).
+The GUI was summing utility-ALLOCATED duties itself, so every cooling duty no
+utility served was absent from its sum — a second home for a balance the
+2026-07-19 doctrine makes engine-owned, and the two disagreed by an order of
+magnitude.  Rule: **the plant-boundary first law travels on the result
+(`globalEnergyBoundary`, ONE object on ONE line) and the GUI DRAWS it**;
+absent, it says the report did not run and computes nothing in its place (a
+fallback computation is the second home under another name).  `boundary`
+golden kind, rows appended corpus-wide with `--record-append` (adds only — a
+`--record` sweep would silently re-pin any drift within tolerance); the
+residual is pinned only when ≥ 1 W, threshold in the generator alone (the
+column13 lesson).  Found on the way: the flagship's golden was NEVER in the
+full suite — sectored `children` cases were skipped on a reason settled
+2026-06-08 — and is in the walk now; and three of its units did not close
+that day (Evap1 98.45 %, Cryst 110.66 %, Fermentor 82.02 %), the engine's own
+stated finding, left as such.  (Cryst and the Fermentor close at 100.00 %
+today, the Fermentor since 2026-09-27, Evap1 since 2026-10-05 -- measured,
+not remembered.)  Gate: `check_energy_boundary_pinned`.  Record:
+[`docs/design/a-first-law-the-gui-computed-for-itself.md`](docs/design/a-first-law-the-gui-computed-for-itself.md).
+
+### A HIERARCHY THE ENGINE BUILT AND THREW AWAY (2026-09-04)
+
+**A HIERARCHY THE ENGINE BUILT AND THREW AWAY (2026-09-04).**  `flattenNode`
+knows each leaf's owning sector exactly — `nsPrefix` IS the parent chain — and
+it concatenated that into the qualified name and kept only the string, so
+every reader downstream got a flat list of dotted names.  The sector now
+TRAVELS AS DATA (`FlatUnit::sector` → `EquipmentSizing` → `CostBreakdown`),
+stamped once at the flatten seam: recovering it downstream by splitting the
+last dot is **name identity**, right on today's corpus and silently wrong for
+the first unit whose name carries a dot for another reason.  The design table
+groups by sector, both CSVs carry the column, and the costing console
+subtotals capital per sector with each one's share of C_TM.  **EMPTY IS NOT A
+SECTOR CALLED "root"**: a flat case gains no key, no banner, no column and no
+block, and that was verified byte-identical against a build of the previous
+commit rather than argued.  Gate: `check_sector_hierarchy` — its strongest arm
+is a SOURCE arm, because no output arm can tell a correct stamp from a correct
+split.  RESERVED for Vítor: making the `design`/`economics` REPORT KINDS run by
+default (they are declared in `controlDict`'s `reports {}`).  Not affected by
+the 2026-09-04 specification sheets, which ride the `sizing {}` PASS in
+`postDict` instead.
+Record:
+[`docs/design/the-hierarchy-that-only-existed-in-the-name.md`](docs/design/the-hierarchy-that-only-existed-in-the-name.md).
+
+### A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT (2026-09-06, amended the same day to ONE FILE PER UNIT)
+
+**A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT (2026-09-06, amended the same
+day to ONE FILE PER UNIT).**  In OpenFOAM one FIELD file carries
+`internalField` AND `boundaryField`; a state view here now carries both halves
+too — the streams as files, flat, and each unit's interior as ONE file at
+`<view>/internalStates/<SECTOR>/<unit>` with one block per kind — and the
+top-level `internalStates/` view of the day before is RETIRED: `design/` is a
+DERIVATIVE and a profile is STATE, so it was the wrong neighbour.  The
+morning's shape, a DIRECTORY per unit beside the stream files, was measured
+and corrected the same day (three-way reflection, Vítor/ChatGPT/assistant):
+every such directory held one file, and a unit file BESIDE the streams would
+collide in silence with a homonymous stream — so the interior has its own
+root, **identity is (kind, sector, name), never name alone**, and the homonym
+is ANNOUNCED, not refused.  The substantive half is the SEED:
+`DistillationColumn` invented its own starting interior in code and said
+nothing, the one solver aid that escaped the 2026-05-30 rule, so it now READS
+the `stageProfile` block of `0/internalStates/<...>/<unit>` when the case
+declares one, refuses by name a declaration that does not describe THIS
+column, and ANNOUNCES both routes — **a declared profile that does not satisfy
+the balances is a SEED, not an answer.**  `0/` stays authored and TRACKED (a
+case may commit the state it starts from); an ORPHAN unit file, an unknown
+BLOCK name, a kind NOBODY READS and a record MISFILED outside
+`internalStates/` (the retired shape, which both readers would otherwise skip
+in silence) each refuse.  Traps paid for: the completeness contract skips the
+`internalStates/` subtree BY NAME, not only by grammar, or a stream-looking
+file misfiled there becomes stream `internalStates.<x>`; a record must
+identify ITSELF (`recordType internalState;`); the GUI's keep-list read the
+KIND and would have listed `converged/internalStates/<unit>` as a file the
+student wrote — it reads the VIEW now (`caseTree.isRunOutput`); and
+`StreamOwnership::sectorOf` derived a stream's sector by SPLITTING the unit
+name where the interior uses the STAMP — two answers to one question, named
+and not fixed there, CLOSED the same day by the paragraph below.
+NOT done: the symmetric `streams/` form (a 299-case migration that reopens the
+2026-07-06 spine).  **The layout is CLOSED; what changes it next is a student,
+not a reflection.**  Gate: `check_internal_states` (same name, changed claim;
+arm (f) — two kinds on one unit — has NO live case, because
+`SimulationResult::profiles` carries one profile per unit).  Record:
+[`docs/design/a-state-directory-is-a-restartable-snapshot.md`](docs/design/a-state-directory-is-a-restartable-snapshot.md).
+
+### A STREAM BELONGS TO THE GRAPH THAT CONTAINS BOTH ITS ENDS (2026-09-07, Vítor's rule; it REPLACES the producer rule of 2026-07-06 — do NOT restore that one)
+
+**A STREAM BELONGS TO THE GRAPH THAT CONTAINS BOTH ITS ENDS (2026-09-07,
+Vítor's rule; it REPLACES the producer rule of 2026-07-06 — do NOT restore
+that one).**  The old §2.4 read *an internal or inter-sector stream belongs to
+its PRODUCING sector; an external inlet to its CONSUMING sector* — four
+clauses, each picking ONE ENDPOINT OF AN EDGE and calling it the owner.  A unit
+is a NODE and belongs to a sector; a stream is an EDGE, and an edge between two
+subgraphs belongs to neither.  Rule, one sentence and recursive at any depth:
+**a stream's state file lives at the LOWEST LEVEL of the case whose subtree
+contains EVERY ENDPOINT of that stream.**  Internal to a sector → that sector;
+crossing two → their common parent; a plant-boundary INLET → the plant's own
+level.  **`MAIN/` IS THE DOMAIN'S OWN LEVEL, not a sector like the others**
+(the architect's amendment, recorded as one): plant-level units live there
+(2026-09-05, unchanged) and plant-level streams now do too, so the name keeps
+ONE meaning; a FLAT case has no geography and its files stay flat.  A plant
+OUTLET does NOT rise, and the asymmetry is in the grammar rather than in the
+rule: the plant DECLARES its inlets (`PlantSteam` is the identity) and only
+LABELS its outlets (`Powder { from DRYING/DryPowder; }`), and a boundary alias
+is a label, not a second state file — read symmetrically, the flagship's
+`DRYING.Vapour` and `FERMENTATION.Vapour` both resolve to one file, which the
+manifest refuses by construction.  ONE home stays
+`streams/StreamOwnership.H`, and `choupoSolve --manifest` PUBLISHES its answer
+(streamId TAB path, before the 0/ completeness check) so a tool that must PLACE
+a file asks instead of re-deriving — `bin/choupo-drill` does, and could not
+drill 2 of the flagship's 4 sectors until it did.  Two durable lessons: **a
+RESTATEMENT of a rule goes quietly false the day the rule moves** (the stream
+table's `sector` column re-derived the old rule under a comment saying the two
+could not disagree, and disagreed immediately); and **the level is a function
+of the WHOLE topology**, so one new cross-sector consumer moves a file written
+correctly yesterday — measured at 51 of 78 corpus streams one edge away, which
+is acceptable ONLY because the engine ANNOUNCES the relocation by name with
+both addresses and refuses until it is made.  Gates:
+`check_sector_hierarchy` (h)-(k) · `check_drill_in`.  Record:
+[`docs/design/a-stream-belongs-to-the-graph-that-contains-both-ends.md`](docs/design/a-stream-belongs-to-the-graph-that-contains-both-ends.md).
+
+### ONE PIPE, ONE ROW — the flagship's stream table printed 52 rows for 25 streams (2026-09-07)
+
+**ONE PIPE, ONE ROW — the flagship's stream table printed 52 rows for 25
+streams (2026-09-07).**  `result.streams` is keyed by every NAME a stream
+answers to (its qualified identity, the bare sector label the relabel pass
+mints, the plant's own boundary label), because a golden, a case file and a
+canvas edge each speak a different one and all three must resolve; the table
+emitted a row per KEY.  Vítor saw it on the LIVE SITE as rows with no PFD
+number — measured, 15 of the 52 — and every one of them is a bare sector label
+no view's `connections {}` block mentions, so it belongs to no numbering class:
+*the numbering was right, the row list was wrong* (nothing in
+`streamNumbering.ts` was touched).  Rule: **the ROW is the QUALIFIED IDENTITY and the
+plant label is a COLUMN** — measured, it is the only candidate present for
+every stream (21 of 21) and colliding for none, where a plant label is absent
+on 12 and a bare label COLLIDES (`DRYING.Vapour` and `FERMENTATION.Vapour` are
+different pipes sharing one word).  The row set is then EXACTLY
+`choupoSolve --manifest`'s keys, so the table and the `0/` tree cannot
+disagree about how many streams a plant has.  ONE new fact was needed and
+`boundaryAliasOf` could not supply it: which alias is the PLANT'S own name
+(9 of 27; the other 18 are sector labels naming no boundary) —
+`boundaryOutletLabelOf`, identity -> the declared outlet name.  **THE ENGINE
+DECIDES, THE GUI DRAWS**: the result JSON marks each entry (`aliasOf` /
+`boundaryLabel`) and the adapter drops the label entries at ONE seam, so all
+eight surfaces that tabulate or sum streams count each pipe once without a
+filter of their own, and the dropped names become an alias MAP that
+`findRunStream` consults first (its leaf-match fallback would have sent
+`EthanolVapour` to whichever `*.Vapour` came first).  Traps paid for: a
+renamed product's ROLE lives on the LABEL in `reporting::Topology` — right for
+the balance reports, so nothing there moved — and the identity therefore had
+to learn that a declared outlet is a product, or nine products would have read
+`intermediate`; and the gate's first cut named a local `declared`, shadowing
+arm (a)'s SECTOR list, so it PASSED while its own OK line called the nine
+boundary outlets the plant's four sectors — *a gate's claim is the line it
+prints.*  NOT done, said plainly: `Topology`'s products set still holds the
+boundary NAME, so one stream is `DRYING.ExhaustClean` in the stream table and
+`Stack` in the balance reports (the `label` column is the join); and the
+CYCLONE recovering exactly zero dust is a separate finding RESERVED for Vítor.
+Gate: `check_sector_hierarchy` arm (l) (6 by-hand sabotages).  Record:
+[`docs/design/one-row-per-physical-stream.md`](docs/design/one-row-per-physical-stream.md).
+
+### A SECTOR IS READ FROM THE STAMP, NOT RECOVERED FROM A NAME — on the STREAM side too (2026-09-06)
+
+**A SECTOR IS READ FROM THE STAMP, NOT RECOVERED FROM A NAME — on the STREAM
+side too (2026-09-06).**  The 2026-09-04 hierarchy slice converted the four
+design/costing readers and left TWO copies of the rejected design alive where
+it costs more than a table heading: `StreamOwnership::sectorOf` decides WHICH
+SECTOR FOLDER a stream's state file lives in and `SolutionWriter::sectorOf`
+buckets the per-sector `converged/` views (and the instants).  Its gate arm
+could not see them — it looks for a LAST-dot substring and these split on the
+FIRST.  Rule: **`core/FlatUnit.H::topLevelSector` is the ONE home for reading
+a stamped chain's head**; `ownershipPath` takes a `SectorOfUnit` map and
+`runInit0` supplies it from the flattened dicts' own `sector` key.  Reading
+the CHAIN is not the banned act — the chain is the engine's own list of
+sector names, joined where it knew them; guessing a fact out of a NAME that
+never promised to carry it is.  Nothing moved, and that was the expectation
+(the two agree on every unit that exists today; the slice is about the day
+one does not).  A THIRD splitter is named rather than fixed:
+`gui/src/ui/LogWorkspace.tsx` parses the qualified name out of the run LOG
+and genuinely has only a name there — **where a caller has no unit, say so at
+the call site rather than splitting quietly.**  Riding with it:
+`streamTable.csv` gains `sector` and `crossing` (`FROM->TO`) on a SECTORED
+case only — the crossings had no home anywhere, because the wiring is in
+`connections {}` (topology, never in a state view) and the state is one
+folder per sector; a bare report label is resolved through the DECLARED alias
+bridge, never by matching its tail, and a stream the topology does not know
+gets an EMPTY cell rather than `(no sector)`, which is a fact about a UNIT at
+the plant root.  Trap paid for in the GATE: arm (g) holds three files in TWO
+ROLES (reads the head vs supplies the stamp) — requiring the CALL of the
+supplier failed the gate on correct code — and a `topLevelSector` named only
+in a BLOCK comment satisfied the "calls it" half until both comment forms
+were stripped: *prose is not a call.*  Gate: `check_sector_hierarchy` arm
+(g).  Record:
+[`docs/design/a-sector-recovered-by-splitting-a-name.md`](docs/design/a-sector-recovered-by-splitting-a-name.md).
+
+### A DEFAULT NOBODY DECLARED, AND A BANNER THAT WAS ACCIDENTALLY TRUE (2026-09-06)
+
+**A DEFAULT NOBODY DECLARED, AND A BANNER THAT WAS ACCIDENTALLY TRUE
+(2026-09-06).**  A specification sheet said `L_over_D 3;` whether the case
+declared it or `VesselSize` did, and `corrosionAllow` / `jointEfficiency`
+decided the wall thickness of a 220 bar separator while appearing on no page
+at all.  Rule: **a default that is USED is announced** (its site +
+`AdvisoryLog` + the caveat block + the result JSON, the CatalystPellet
+posture), **a DECLARED value announces nothing** so silence keeps meaning
+"nothing was assumed", **the surface a reader audits from says which**
+(`assumed ( ... )` on the design sheet, written only when something was), and
+**the costing header DRAWS what the model published** — `CostingModel::
+pricingFactors()`, the 2026-09-05 first-law rule, no fallback computation when
+a model publishes none.  It had printed `Year:`/`CEPCI:` by RE-READING the
+dict with its OWN defaults while the model read the same keys with ITS own and
+did the pricing: the literals agreed, so the banner was true by coincidence and
+would go false the day either copy moved.  **NOT DONE, and it is the
+substantive half: no value was chosen.**  `StirredTank` still assumes L/D 2.5
+and `VesselSize` 3.0 — same key, same question — and the ONE home
+(`sizing/DesignDefaults.{H,cpp}`) carries BOTH with the fact that they
+disagree, because reconciling them moves every un-declaring vessel's cost and
+is RESERVED for Vítor.  The 14 remaining `EconomicsPass` defaults are a
+CAMPAIGN, measured and stopped: fourteen announcements on one run is the wall
+of text the caveat block exists to prevent, and what an appraisal owes an
+undeclared `discountRate` is a decision nobody has taken.  Traps paid for: a
+guard whose only case satisfies it is a guard nothing tests (every shipped
+costing case declares all four price constants, so the probe had to stop
+declaring them), and a gate arm that matched `cepci` also matched `cepci2001`
+and accused the engine of announcing a key the case declared.  Gate:
+`check_cost_provenance` (+6 arms, 8 by-hand sabotages; arm (k) is a SOURCE arm
+because no output can separate a re-read from a draw when both find the same
+number).  Record:
+[`docs/design/a-default-nobody-declared.md`](docs/design/a-default-nobody-declared.md).
+
+### THE ENGINE PROMISED TO REFUSE OR ANNOUNCE, AND IN THREE PLACES DID NEITHER (2026-09-07)
+
+**THE ENGINE PROMISED TO REFUSE OR ANNOUNCE, AND IN THREE PLACES DID NEITHER
+(2026-09-07).**  Rule: **a DECLARED WORD the engine dispatches on must refuse a
+word it does not know** — a `model`/`phase`/`type` slot consumed by an if-chain
+whose ELSE IS A CATCH-ALL silently selects the default, and two of these were
+found by transposing ONE CHARACTER in a corpus case (`MSMRP` ran the
+equilibrium crystalliser; `langrishKocke` ran the lumped spray dryer with EVERY
+KPI BYTE-IDENTICAL, so **no golden could ever see it**).  All five sites refuse
+through `registryRefusal::message`, which gained one parameter — the list's
+LABEL, `Accepted` for an enumeration, `Registered` for a registry — so the
+sentence keeps ONE home.  Second: the end-of-run caveat block and the
+divergence banner both sat inside the `else` of `if (outerDict)`, so every case
+with an outer driver printed neither, which is the exact state
+`AdvisorySummary.H` forbids in its own words.  They RUN now and report **ONE
+NAMED PASS** (the representative pass where a driver has one, otherwise the
+LAST), never the union — the same header's *THE PATH IS NOT THE ANSWER* and *a
+PARTITION, NOT A DEDUPLICATION* both rule a union out.  Third: a `chemistryDict`
+solid phase **no record owns** REFUSES by name; the test is OWNERSHIP and not
+completeness, because it was MEASURED first and two corpus cases legitimately
+declare an owned phase with no calorimetric anchor (a mass-action Ksp), which
+is ANNOUNCED instead.  Traps paid for: a gate failure message that quoted one
+site's fact for all five, and a probe that could not reach exit 0 and so could
+not tell a silent acceptance from an unrelated refusal.  RESERVED for Vítor:
+whether a sweep writes `converged/` (task #77).  Gates EXTENDED, not
+multiplied: `check_model_default_registered` (arm d, closing the gap it named
+in its own blind-spot list) · `check_caveat_surface` (arm e — its arm (d) is a
+SOURCE check and cannot see an enclosing `if`) · `check_v2_refusals` (the
+solid-phase arm).  Record:
+[`docs/design/three-silences-at-exit-zero.md`](docs/design/three-silences-at-exit-zero.md).
+
+### A SIZE DISTRIBUTION WITH NO SIZE AXIS, AND A HEADER THAT BROKE THE NEXT RUN (2026-09-07)
+
+**A SIZE DISTRIBUTION WITH NO SIZE AXIS, AND A HEADER THAT BROKE THE NEXT RUN
+(2026-09-07).**  Rule: **the axis a profile DECLARES is a column of it**, and
+the interior writer REFUSES one that is not — at the seam that partitions the
+profiles, to stderr and `AdvisoryLog`, and deliberately NOT by throwing (the
+call site has ruled a writer failure said-and-never-fatal, and a throw there
+takes every OTHER unit's interior with it).  What settled the refusal: no CASE
+can reach it — only a unit's own C++ can publish an axis it does not carry —
+so it is a contract on unit authors and costs a student nothing.  The
+crystalliser built its size grid and never stored it, so `xAxis L_micron` was
+published with no `L_micron` in the result JSON, `profile.csv`, the
+spreadsheet AND the GUI plot (all four resolve the axis through
+`columns[xAxis]`), and the interior file it wrote was one the engine's own
+reader refuses.  Second rule: **an instruction a file carries must be true of
+the unit it is about** — every interior header told its reader to COPY the
+file into `0/internalStates/`, which is right for `distillationColumn` and
+exit 2 for every other type; the sentence is CONDITIONED now, on a fact asked
+of the CLASS (`UnitOperation::interiorKindsRead`, the ONE home) and handed to
+the writer as DATA, because `io` may not include `unitOperations`.  Corrected
+with it: *every view repeats the geography* was measured FALSE (a DERIVATIVE
+view carries only the levels it has something to say about), and the retired
+one-directory-per-unit shape plus the retired PRODUCER ownership rule were
+still being taught in `docs/ai/`, which `bin/llmctx` ships to an assistant
+authoring cases.  Two durable traps: **two incomplete projections of one
+incomplete record agree perfectly** (the gate's value-by-value arm compared
+the written block against the JSON and both were missing the axis EQUALLY),
+and **a gate that sweeps `converged/` trees is reading a gitignored run
+output** — whatever binary ran last — not today's engine.  NOT done: no golden
+row kind reads a profile column, so a published profile column is pinned by
+nothing.  Gate: `check_internal_states` arms (o)-(r) + the docs half of (k)
+(7 sabotages, ONE survived: a presence test satisfied by the second of two
+sites, so the arm COUNTS).  Record:
+[`docs/design/a-size-distribution-with-no-size-axis.md`](docs/design/a-size-distribution-with-no-size-axis.md).
+
+### ONE UNIT, FIVE ITEMS: THE COLUMN GETS A SIZE, A COST AND A SHEET (2026-09-07)
+
+**ONE UNIT, FIVE ITEMS: THE COLUMN GETS A SIZE, A COST AND A SHEET
+(2026-09-07).**  The distillation column was the only major unit with no sizer,
+no cost and no specification sheet, and `TrayHydraulics` had computed its
+hydraulics all along into a console print that nothing downstream could see --
+*a column cannot be SIZED from a printed table.*  The 2026-09-04 sheet writer
+chose `design/<SECTOR>/<unit>/<equipmentTag>` as 1:N with N = 1 and named this
+case in its own words; this is that day, and the promise held: **the directory
+gained siblings and nothing above it changed** except the one door's return type
+(`EquipmentSize::size()` now returns a VECTOR; every other sizer returns one
+element with an EMPTY tag).  Rule: **identity is `EquipmentSizing::itemId()`,
+the ONE home** -- the unit's own name where a unit realises one item, so every
+case that predates this keys, prints and pins exactly as before; a reader that
+wants the unit reads `unitName` and one that wants the item reads
+`equipmentTag`, and **nobody splits the id**.  NOT NEW PHYSICS: the diameter and
+the two SECTION diameters are the hydraulics' own rule applied per section, the
+duties are the column's own KPIs, `ShellTubeHX::sizeFromDuty` and
+`src/postProcessing/sizing/VesselMechanics.H` are the extracted one-homes for
+the exchanger rule and the ASME wall (the latter had been written out identically in two sizers and
+the column needed it twice more).  **Swaging is ECONOMIC, not thermodynamic:**
+the engine publishes both section diameters and their gap, states which way the
+15-20 % band points, builds the tower STRAIGHT at the wider section and prices
+no transition, because it has no correlation for one.  **The TRAYS refused by
+name and the total said INCOMPLETE** until a set could be READ rather than
+typed -- an invented set converts *uncosted* into *falsely costed*, which no
+reader and no gate can detect.  **Since 2026-10-05 (DEV.md 4c C38 item 1) they
+are costed by the tray** on Turton's sieve-tray set as the authors' CAPCOST 2017
+program carries it (`src/postProcessing/costing/Turton.cpp` names the cells, and that the book's
+own table was NOT read), the material CLASS declared as `trayMaterial` and
+never read off a material record's name; absent or unknown, the trays still
+refuse by name and the total still says INCOMPLETE.  Four traps paid for: the sizer's first
+tray count was `nStages - 2` and was WRONG BY ONE (this solver's stage list
+carries the reboiler and not the condenser), so **the count comes from the pass
+that ENUMERATES trays** -- the fact, not a rule about the fact; the golden
+`equipment` kind resolved on the UNIT, so five items collapsed to one row per
+key and the checker answered every row from whichever line came first (it
+resolves on `"item"` now, and a one-item unit is unaffected); **`sizing.csv` was
+not a CSV** -- the `basis` column is a SENTENCE and the first one carrying a
+comma shifted every numeric column after it (RFC 4180 quoting, only where
+needed); and `check_design_sheet` **arm (j) had never been able to fire**,
+reading a header key the sheet does not write, which is the `check_true_ions`
+shape found again in the only arm anywhere that can see a size that is WRONG.
+A witness must declare the pass or nobody meets the capability
+(`column09_tray_hydraulics` is the first column case with a `system/postDict`).
+Gates: `check_design_sheet` arm (m) (7 sabotages -- and the first attempt proved
+NOTHING, because the arm re-runs the case and `design/` is regenerated whole:
+**the sabotage has to land BETWEEN the run and the check**) ·
+`check_equipment_pinned` (+ arm (m)'s tray recomputation, tied to CAPCOST's
+own worked tower).  NOT
+DONE: the column schematic (task #134), deliberately after the cost rather than
+before it.  Record:
+[`docs/design/one-unit-five-items-the-column-gets-a-size.md`](docs/design/one-unit-five-items-the-column-gets-a-size.md).
+
+### A SOLVER AID'S DIRECTION IS READ FROM THE ANSWER, NEVER FROM THE SEED (2026-10-03)
+
+**A SOLVER AID'S DIRECTION IS READ FROM THE ANSWER, NEVER FROM THE SEED
+(2026-10-03).**  `temperatureApproach` is a MAGNITUDE whose sign the engine
+reads off the thermicity of feed -> equilibrium (the 2026-09-26 ruling,
+`src/unitOperations/reactor/TemperatureApproach.H`).  In `mode adiabatic` the physical T is
+itself the unknown, and the reading was taken at the outer Newton's SEED,
+`operation.T`: a bed whose feed already carries product, seeded hotter than
+the temperature at which that feed is itself at equilibrium, read the
+transformation as DECOMPOSITION, took T - |dT|, and ended MORE converted
+than its own equilibrium outlet -- the aid helping instead of hurting, and a
+colder seed on the SAME case taking the other sign, at exit 0, with the sign
+announced as if it were a fact about the chemistry.  Rule: **in adiabatic
+mode the bed is solved ONCE with no approach, the direction is read from the
+thermicity of feed -> THAT dT = 0 outlet (the state the bed itself reaches,
+which no seed can move), the announcement names that outlet temperature and
+the seed the probe started from, and the bed is re-solved from it with the
+signed magnitude**; the probe's cost is published
+(`approachProbeOuterIterations`).  Isothermal mode is untouched, because
+there the physical T is the declared one and the reading was at the answer
+all along.  The general form is the durable half: a seed is the one input
+the 2026-05-30 rule lets a solver own, and **a sign that a seed can move is
+a seed deciding the answer**.  Two traps paid for: the brief said the seed
+was the `0/<outlet>` file, and it is `operation.T` -- the unit is handed its
+FEED from the stream registry and nothing else, so a witness that edits the
+outlet file reproduces nothing; and a `file:line` citation can be stale
+before the lines move (a lesson cited the adiabatic energy residual at the
+lines of a retired key's refusal).  Witness
+`gibbs13_adiabatic_approach_direction` (seeded hot on purpose); gate
+`check_adiabatic_approach_direction` (3 by-hand sabotages; the one that
+drops the announcement is caught by a single arm, which is why that arm
+exists).  Record:
+[`docs/design/the-approach-direction-is-read-from-the-answer.md`](docs/design/the-approach-direction-is-read-from-the-answer.md).
+
+### A CATALYST BED IS SIZED BY ITS KINETICS, AND THE CHAIN NOW RUNS WHERE THE HEADER SAID IT DID (2026-09-26, commission C2)
+
+**A CATALYST BED IS SIZED BY ITS KINETICS, AND THE CHAIN NOW RUNS WHERE THE
+HEADER SAID IT DID (2026-09-26, commission C2).**  Rule: **a sizer for a
+RATING model READS the unit's own size and passes it through** -- the `pfr`
+sizer (`CatalystBedSize`, registered `pfr`) reads the bed's `V_R`, which is
+the outer driver's answer when a `designSpec` solves it, sizes the SHELL
+around it as a `vessel` on the EXISTING Turton vessel set, and prices the CATALYST
+CHARGE as a SECOND ITEM only from a DECLARED bulk density and unit price
+(`declared-unit-price`: the case's own money, NO index, NO F_BM, NO 1.18 --
+said on the printed line so the two cost shapes can be told apart; absent
+either input the charge REFUSES BY NAME through the one INCOMPLETE home the
+trays use).  No Turton set was invented and the basis claims only what the
+pass can see (*read from the unit*; the sizing pass has no view of the outer
+driver).  **The trap, and the measurement that stopped the slice first:**
+the post-processing chain did NOT run on a `designSpec`'s representative
+pass -- the driver stored the postDict and never read it, `main.cpp` built
+the chain only in the single-pass branch, and the run header printed
+`post-processing active` over a run that sized nothing (the 2026-08-04
+banner trap, again).  Taken on a stated default (Vítor can reverse it): the
+chain runs on the replay at the design point, in the DRIVER (the
+optimisation driver already ran its own; a generic call in `main.cpp` would
+run it twice); `OuterDriver::postDictPolicy()` is PURE VIRTUAL so every
+driver states its own policy on the header and `gridSweep` says NOT applied;
+the postDict `dictAudit` runs under an outer driver too.  Blast radius
+measured, not argued: zero corpus cases carry both a `designSpec` and a
+`postDict`; `SizingPass` dispatches on the postDict entry's `type` word, and
+no postDict named `pfr`.  A declared price is a COST INPUT, not a size
+(`EquipmentSizing::costInputs`; money has no dimension `core/Units.cpp` can
+spell, and a factor is what the model computes).  The witness's two catalyst
+numbers are author-set assumptions declared in those words -- a citation
+invented for a round number converts unsourced into falsely sourced.  Gate:
+`check_design_sheet` arm (n) (5 by-hand sabotages; the first probe deleted a
+whole postDict line and took the entry's braces with it, refusing the RUN --
+a probe must remove the statement, not the line).  Record:
+[`docs/design/a-catalyst-bed-is-sized-by-its-kinetics.md`](docs/design/a-catalyst-bed-is-sized-by-its-kinetics.md).
+
+### A CASE CARRIES ITS OWN KINETICS (2026-10-12, DEV.md 4c C67 -- Vítor's architecture decision, option 3; do NOT recompile a rate law's numbers into the engine)
+
+**A CASE CARRIES ITS OWN KINETICS (2026-10-12, DEV.md 4c C67 -- Vítor's
+architecture decision, option 3; do NOT recompile a rate law's numbers into
+the engine).**  Rule: **a rate law's NUMBERS live in the case's `constant/`,
+never in `src/`** (axiom 3 of the property layout).  Every law reaches a
+reactor through ONE explicit factory, `thermo/reaction/ReactionRate`
+(`registerType`/`New`/`registerBuiltins`, called from the mains before
+`registerUserTypes()`): `Arrhenius` and `LHHW` (`RateLaw`, arithmetic
+unchanged), `expression` (`ExpressionRate`: the law WRITTEN in
+constant/reactions as a formula over declared parameters WITH UNITS, the
+state the reactor supplies -- `T`, `P`, `x[i]`, `p[i]`, `c[i]` -- named
+definitions and declared 1-D tables; compiled ONCE by `core/Formula`, a
+dependency-free recursive-descent evaluator, dimension-checked, printed back AS
+PARSED, refusing by name an unknown symbol, a dimension mismatch, a definition
+cycle, a non-finite value, a table read outside its points), or a law a
+case's `code/` registers (local only: the site has no compiler).  The `cstr`
+and `pfr` multi-reaction paths take every law through the factory;
+`batchReactor`/`dynamicCSTR` keep their own native words (CHEMKIN forms,
+`Arrhenius`) and send every other word to it; the single-reaction paths read
+`Arrhenius` only and say so.  The compiled Dyson & Simon law
+(`reactor/kinetics/AmmoniaSynthesisRate`) is RETIRED: the three cases that use
+it write it (identical shared definitions, held together by
+`check_ammonia_rate`, which now holds the paper's anchors), and every number
+it published is reproduced -- the bench and every other kinetics case
+byte-identical against the parent build, the two kinetic beds to round-off.  A law declared `forward`/
+`reverse` with an `equilibriumTemperatureWindow` gets the pfr's `approach_K`
+for free; `fugacityCoefficients` its inlet ratio to the package's.  NOT done:
+package fugacities as symbols (a rate would then move with the EoS choice,
+silently), conditionals in the grammar (a branch is a choice of WHICH law to
+write), the C67 decision on Eq 39 at 148.9 atm (open; the table refuses, as
+before).  Gates: `check_rate_expression` · `check_ammonia_rate`.  Witnesses
+`tutorials/steady/userops/userOp03_case_rate_law` (one law, both routes) and
+`tutorials/props/kinetics/ammoniaRate01_dyson_simon` (`rateLawBench`).
+
+### A GAS IS STORED IN PRESSURE VESSELS, SIZED ON THE GAS IT GIVES BACK (2026-10-18, DEV.md 4c C89)
+
+**A GAS IS STORED IN PRESSURE VESSELS, SIZED ON THE GAS IT GIVES BACK
+(2026-10-18, DEV.md 4c C89).**  `gasStorage ( ... )` in the postDict's
+`sizing {}` -- its own list beside `storage` (the atmospheric tank, which
+refuses a gas) -- attaches a buffer to a stream: `V = autonomy x mdot /
+(rho(Pmax, T) - rho(Pmin, T))`, both densities from the CASE'S package
+(vapour route; a non-finite density REFUSES, never an ideal-gas fallback),
+split into standing `vessel` items wall-sized at Pmax as gauge, rated by
+`MaterialLimits`, each holding its full charge as inventory, and COSTED BY
+ITS STEEL MASS (Vitor's ruling): the shell `weight` x a DECLARED installed
+`steelPrice` (+ `steelPriceReason`), no index, no module factor, no 1.18
+(`costing/SteelMassCost`, routed by `CostingPass`); the Turton vessel cost is
+printed beside it as an announced extrapolation (F_P, t/R) and enters no
+total; no price refuses the COST by name and the total reads INCOMPLETE.  Every key is required; Pmin below the stream's own
+pressure refuses (the gas could not flow back into the line).  The charging
+compressor and any renewable profile behind the hours are NOT included and
+are announced on every run.  One home: `sizing/GasStoreSize`.  Gate:
+`check_design_sheet` arm (v).  Witness `greenAmmoniaPEQ_baseCase` (H2Buffer).
+**A PRESSURISED LIQUID is stored the same way (2026-10-18, DEV.md 4c C92):**
+`liquefiedGasStorage ( ... )` sizes it on a hold time and a fill fraction into
+the SAME vessel bank and steel-mass cost, and REFUSES a `designPressure` below
+the liquid's bubble pressure at its storage temperature (every dissolved
+component counted, `BubblePoint::pressure`); both pressure stores LINK a
+flowsheet `storageTank` unit by `unit <name>;` (the C87 one-home rule,
+`sizing/StorageLink`).  Gate: `check_design_sheet` arm (w).  Witness
+`ammonia02_full_plant` (T201; the gas link on a probe since C93 removed the
+syngas tank).
+
+### AN ITEM NO CORRELATION PRICES IS QUOTED BY THE CASE, AND A SOLIDS STEP IS COUNTED BY IT (2026-10-19, DEV.md 4c C98, Vitor's rulings)
+
+**AN ITEM NO CORRELATION PRICES IS QUOTED BY THE CASE, AND A SOLIDS STEP IS
+COUNTED BY IT (2026-10-19, DEV.md 4c C98, Vitor's rulings).**  `costing {
+quotes ( { unit|item; value; currency; year; basis installed|purchased;
+kind equipment|facility; source; reason; } ); }` enters a declared price as
+the item's C_BM (purchased only with the CASE's own `bareModuleFactor`; no
+factor is ever supplied), C_TM = 1.18 C_BM, shape word `declared-quote`; a
+`facility` adds nothing to the siteFactor base.  Turton's operator count
+carries its particulate term, `N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5`,
+with `P` DECLARED (`economics { particulateSteps { count; source; reason;
+} }`); absent, P = 0, ANNOUNCED only where the flowsheet holds a
+particulate-solids unit.  A case may DECLARE its crew in place of the
+correlation (`economics { operatingCrew { areas ( { area; operatorsPerShift;
+} ); source; reason; } }`, round 2): the same positions factor and wage
+price it, and the correlation is printed and published beside it as a
+COMPARISON that enters no total.  The labour is published
+(`kpis.economics.operatorsPerShift`, `operatingPositions`, `C_OL`).  One
+home: `costing/DeclaredQuote`.  Gate: `check_cost_provenance` arms (t), (u),
+(v).  Witness `apalutamide01_tablets`.
+Record:
+[`docs/design/a-quote-and-a-particulate-step.md`](docs/design/a-quote-and-a-particulate-step.md).
+
+### A BATCH PLANT IS DESIGNED ON THE STEADY BALANCE, NOT BY A SECOND BINARY (2026-10-19, DEV.md 4c C99, on a stated default)
+
+**A BATCH PLANT IS DESIGNED ON THE STEADY BALANCE, NOT BY A SECOND BINARY
+(2026-10-19, DEV.md 4c C99, on a stated default).**  A plant that runs in
+LOTS keeps its steady flowsheet as the MATERIAL BALANCE PER UNIT OF PRODUCT,
+and a `batchPlan {}` postDict pass (`postProcessing/BatchPlanPass`, declared
+ABOVE sizing/costing/economics) designs the batch plant on it by the
+single-product method: stages grouping units with a `holds` stream whose
+mass is READ (`overallMassFlow`, the one home), size factors S = f/(rho phi),
+the lot (declared on a stream, or `largestEquipment`), N = ceil(Q/B), cycles,
+T_L = max t/N_op per TRAIN (trains decoupled by intermediate stores),
+parallel units, campaigns, occupancy, the first campaign's Gantt as data.
+Every input declared with its unit (a bare number refused) and a
+source/reason per block.  Rule: **the year's production has ONE home** --
+`economics { streamFactor fromBatchPlan; }` scales the hourly flows by Q/r_P,
+and a numeric factor beside a plan REFUSES.  A rated unit (today the spray
+dryer, one list) runs at its flowsheet rate (`operatingTime fromFlowsheet`);
+a placeholder's rate is a basis.  An impossible plan refuses (a stage busier
+than its train's year, campaigns that do not fit); a poor one is announced
+(an under-used stage, an idle train, a declared time off a rated machine's
+rate).  Consumers: `volume fromBatchPlan` (one vessel per stage only), a
+quote's `scaling { referenceSize; exponent; exponentSource; }`.  NOT done:
+the intermediate store's size, multiproduct sequencing, labour following the
+plan, a GUI Gantt drawing.  Golden kind `batch`.  Gate: `check_batch_plan`.
+Record:
+[`docs/design/a-batch-plant-on-a-steady-balance.md`](docs/design/a-batch-plant-on-a-steady-balance.md).
+
+### SEVERAL PRODUCTS ON THE SAME STAGES (2026-10-20, DEV.md 4c C110 G2, on stated defaults)
+
+**SEVERAL PRODUCTS ON THE SAME STAGES (2026-10-20, DEV.md 4c C110 G2, on
+stated defaults).**  `products ( ... )` in place of `production {}` (both
+refuse), a REQUIRED `campaignOrder` (the student's decision; no optimiser)
+and a `productChangeover` on every stage make the `batchPlan` single-product
+campaigns run back to back in the declared order; a product changes at a
+stage only what is the product's, its balance is the flowsheet's ONE
+balance unless `massPerProduct` declares a stream's own (ANNOUNCED, because
+the economics prices every product on the one balance); a stage is sized
+for the product needing the most (`sizingProduct`); the clean before the
+next product REPLACES the same-product changeover; campaigns never overlap
+on a train.  One product through `products` IS the one-product plan (gate,
+1e-9).  Gate `check_batch_plan` (h)-(l); record section 6 of
+`docs/design/a-batch-plant-on-a-steady-balance.md`.
+
+### A PHASE SPLIT SCANNED ALONG T OR P IS ONE FLASH PER POINT (2026-10-20, DEV.md 4c C118)
+
+**A PHASE SPLIT SCANNED ALONG T OR P IS ONE FLASH PER POINT (2026-10-20,
+DEV.md 4c C118).**  The `phaseSplitScan` props op calls
+`IsothermalFlash::solveCore` at every grid point with the unit's own
+`readOptions` and writes no equilibrium of its own; a single-point scan
+reproduces flash21/16/19's goldens; a refused point is published by name
+and the scan continues, nothing substituted.  An op's own top-level result
+block goes through `PropertyOperation::resultBlock()`.  Gate
+`check_phase_split_scan`; record
+`docs/design/a-phase-split-scan-along-t-or-p.md`.
+
+### A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md 4c C62, on a stated default)
+
+**A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md
+4c C62, on a stated default).**  `type reliefValve` in the sizing pass: one
+more item (`psv`) of the PROTECTED unit, declared AFTER that unit's entry,
+its set pressure READ from the protected item's `pressureDesign` (one home,
+gauge), sized by API 520 Part I on DECLARED `blockedOutlet` / `fire`
+scenarios with the case's own Z, k and bubble point; the coefficients are
+`designDefault`s, announced when taken.  The REQUIRED area is published and
+NO API 526 letter is selected: the letter areas are a no-grant standard's
+table, not freed by the MIT library that carries them (C16's rule), and
+`check_source_licence` refuses them by their values.  NOT COSTED through
+`EquipmentSizing::notCostedBecause` -- listed apart, never a failure, so no
+total moves or reads INCOMPLETE; an item the model COULD price but lacks an
+input for still refuses (the tray rule).  The C++ arithmetic
+(`src/postProcessing/sizing/ReliefArithmetic.H`) and the EduTool's
+TypeScript are ONE procedure in two homes, so a gate holds each to the
+other's pinned examples.  Trap: a
+design-sheet key as long as the pad ran into its value -- `setw` is a
+minimum.  Gate: `check_relief_valve`.  Record:
+[`docs/design/a-relief-valve-is-a-sized-item.md`](docs/design/a-relief-valve-is-a-sized-item.md).
+
+### A CONVERTER IS ONE SHELL, AND ITS BEDS SHARE ONE DIAMETER (2026-10-12, DEV.md 4c C69, on stated defaults)
+
+**A CONVERTER IS ONE SHELL, AND ITS BEDS SHARE ONE DIAMETER (2026-10-12,
+DEV.md 4c C69, on stated defaults).**  A `pfr` may be a COOLED MULTITUBULAR
+reactor (`tubes {}`, `coolant { arrangement coCurrent|counterCurrent|
+boiling; }`, `wallHeatTransfer { model LiFinlayson; }` -- the area and the
+bed volume from the geometry, the coolant's own energy balance on the same
+RK4, a packed-tube wall coefficient at the local gas; absent, byte-identical),
+and a sector may be sized as ONE pressure shell (`type converterShell` in the
+postDict: the beds are uncosted baskets, ONE relief valve on the shell).
+Rule: **inside a converter the beds share ONE diameter, and its one home is
+the flowsheet variable the beds read** -- the Ergun drop is integrated WITH
+the reactions, so D must be known during the solve and a D declared on the
+shell in the postDict is REFUSED by name (it would size a converter whose
+drops are not the stream table's); each bed's length is V_R/(pi D^2/4), a
+bed's own `L_over_D` refuses there.  D is solved by a `designSpec` target
+`largestOf ( ... )` (the largest bed `dP_over_allowable` = 1, no bed named in
+advance); the shell sizer CHECKS it (`D_smallestAdmissible`, binding bed,
+bracket).  The first cut compared one shell at the widest bed with three
+shells at three diameters -- a comparison of different vessels; at EQUAL D
+the one shell costs MORE on greenAmmonia03 (its coolers sit inside it at full
+diameter and 167 bar).  NAMED, not fixed: the coolers' shells are counted
+twice.  Gates: `check_cooled_pfr` · `check_converter_shell` ·
+`check_pfr_ergun`.  Record:
+[`docs/design/a-converter-is-one-shell.md`](docs/design/a-converter-is-one-shell.md).
+
+### A PLANT LAYOUT IS DECLARED, CHECKED AND DRAFTED (2026-10-17, DEV.md 4c C75 slice 1, on stated defaults)
+
+**A PLANT LAYOUT IS DECLARED, CHECKED AND DRAFTED (2026-10-17, DEV.md 4c
+C75 slice 1, on stated defaults).**  `system/layoutDict` places the SIZED
+items (identity `EquipmentSizing::itemId()`) on a plot plan; the footprint is
+the item's OWN published diameter-and-length pair or a box the case declares
+-- never invented -- and every separation, wind and hazardous-area zone is the
+CASE's, with `source`/`reason` (no spacing or zoning table is shipped: the
+published ones are no-grant).  Rule: **an overlap is not a layout and
+REFUSES; a short distance IS a layout the student must defend and is
+ANNOUNCED** (stderr + caveat block + JSON), as is an ignition source in a
+zone or downwind of a release.  ONE home for the footprint rule
+(`postProcessing/layout/PlantLayout`); `bin/choupo-layout --draft` wraps
+`choupoSolve --layout-draft`, never overwrites without `--force`, and checks
+its own draft.  Golden kind `layout`.  The GUI draws the block in 3D
+(three.js and its own shipped addons only, lazy-loaded; since C88 each item
+BY ITS EQUIPMENT KIND on the envelope the engine published --
+`gui/src/case/equipmentModel.ts`, body = envelope, ladders/platforms/
+saddles flagged as decoration, access drawn by HEIGHT because a column
+shell is stamped `vessel` -- with a High/Fast quality toggle).  **Since C80 the engine also ROUTES THE PIPES**:
+every material stream is routed (item nozzle / junction on the rack /
+battery limit, orthogonally over a declared `pipeRack` or an announced stated
+default, `pipes { <stream> { waypoints } }` overriding one) or listed in
+`notRouted` with its reason, its length published and pinned by the `layout`
+kind; the GUI draws the routes with a stylised flow and computes none.
+**Since C82 it publishes the PLOT AREA** by one rule (`plotOf`: the envelope
+of the declared sector areas, the placed footprints and the routed pipes,
+grown by the case's `plot { margin; reason; }` -- absent, 0 m ANNOUNCED, a
+lower bound), with the footprints' own area and per-sector areas; the layout
+is checked BEFORE the economics so the economics can price that area.
+**Since C90 the case DECLARES its roads and site buildings**: a road is a
+centre line and a width, REFUSED through a footprint or under a rack or a
+pipe lower than the declared `headroom`, ANNOUNCED when no `gate` reaches
+it, when it enters a zone the case closes to traffic, or when a building
+or a process item has no reached road within the declared `access`
+distance; its paved area is published and inside the plot; non-process
+kinds are drawn by kind (`gate` the entrance, `weighbridge` drivable), and
+the draft never draws a road.  The 3D scene is always DAYLIGHT; only the
+page chrome follows the theme.  **Since C93 the case may DECLARE A FENCE**,
+derived from the published plot (moved `inset` inward), never typed: a road
+meets it only at a `gate` opening (else REFUSED), every boundary pipe
+crosses it at a PUBLISHED point carrying the case's `from`/`to` label (an
+unlabelled crossing ANNOUNCED), and an unrouted stream is marked in the 3D
+view at the end the engine reached -- a missing pipe never looks finished;
+a routed pipe that runs THROUGH a placed item is ANNOUNCED (`pipeClash`).
+**Since C96 a truck route is an ORDERED LIST OF ROADS the engine WALKS**
+(never waypoints: the roads' centre lines are the one home of the
+geometry) against a DECLARED design vehicle -- a reversal no turning area
+holds, a corner whose pavement edge is short of the vehicle's turning
+radius, two corners too close, a one-way road driven backwards, a
+weighbridge or stop missed, a route ending at no gate are ANNOUNCED; every
+road is carried on to its gate's fence opening (the approach, derived); a
+`carPark` declares its bays and the engine lays them out, REFUSING a count
+the footprint cannot hold and announcing bays left by reversing; a muster
+point or fire pump house in a zone or downwind, and a site with one
+entrance, are announced.
+NOT done: a pipe's pressure drop and cost (next slice), structures.
+Gate: `check_plant_layout`.  Record:
+[`docs/design/a-plant-layout-is-declared-and-checked.md`](docs/design/a-plant-layout-is-declared-and-checked.md).
+
+### AN ECONOMIC SENSITIVITY IS THE BASE APPRAISAL PRICED AGAIN, AND NOTHING ELSE (2026-10-12, DEV.md 4c C68, on a stated default)
+
+**AN ECONOMIC SENSITIVITY IS THE BASE APPRAISAL PRICED AGAIN, AND NOTHING
+ELSE (2026-10-12, DEV.md 4c C68, on a stated default).**  An opt-in
+`economics { sensitivity { <input> { relative|absolute ( lo hi ); } } }`
+block moves each declared input ALONE to two ends on the same converged run
+(every input enters after the flowsheet, so no re-solve): `FCI` (`relative
+accuracyBand;` reads the declared band, which until then was printed and
+reached no NPV), `price.<stream>`, `utility.<name>`, `labourRate`,
+`discountRate`, `taxRate`, `streamFactor`.  Rule: **the cash flow has ONE
+home, `appraise` in `EconomicsPass.cpp`** -- the base calls it once, each bar
+calls it on a copy of the inputs with one moved; a second copy of the
+arithmetic prints bars of the right size for the wrong plant, and is caught
+only by a SOURCE arm, because re-discounting the base cash flow is exactly
+right for the discount rate and wrong for everything that moves the working
+capital.  An unknown input, an undeclared price, a utility with no bill, a
+bare list or an impossible end REFUSE by name; absent, every economics case
+is byte-identical (measured, console + JSON + every reports/economics file).
+Every table says it is NOT an uncertainty analysis.  An outer `sweep` still
+varies flowsheet paths only.  **THE LAND (C82)** goes through the same home:
+an opt-in `land { price; source; reason; }` prices the layout's published
+plot area (a declared `area` only where there is no layout -- never both) as
+non-depreciable capital at the START of construction, recovered untaxed at
+its purchase value at end of life (CAPCOST 2017's placement), not in TCI;
+`land.price` is a sensitivity input.  Gates: `check_economic_sensitivity`
+(i)-(l), `check_cost_provenance` (s).  Gate: `check_economic_sensitivity`.  Witnesses:
+`greenAmmonia02_feasibility150bar` / `50bar`.
+
+### A GMP INTERIOR IS DECLARED AND CHECKED (2026-10-18, DEV.md 4c C97 phase B, on stated defaults)
+
+**A GMP INTERIOR IS DECLARED AND CHECKED (2026-10-18, DEV.md 4c C97 phase
+B, on stated defaults).**  `building {}` in `system/layoutDict` declares
+floors, rooms (grade A|B|C|D|CNC, a pressure relative to a room or outside),
+airlocks AS ROOMS (`role`, `regime cascade|bubble|sink`), doors / stairs /
+lifts and the personnel, material and waste flows; rule: **a building that
+cannot exist is REFUSED, a building that breaks a GMP rule is ANNOUNCED**
+(cascade, airlock regime, grade change without an airlock, gowning,
+containment, flows, ATEX against ignition, escape), every step and grade the
+case's with its source -- no table shipped, Annex 1 paraphrased and cited,
+ISPE by title only.  Engine `postProcessing/layout/BuildingLayout`, its own
+JSON block `building`, pinned by the `layout` kind.  **Since C100 an item a
+room lists STANDS IN IT, inside the `envelope` shell:** its base is the
+room's floor (one home, `indoorPlaces`; a declared `z` refused), its hazard
+the room's `atex {}` (a `release`/`ignition` on it refused), the shell
+clashes with nothing its rooms list and with everything else, the site sees
+it through its building (separation, access, clash, footprint), and indoor
+piping is NOT routed -- a pipe with an end indoors is drawn only up to a
+declared WALL PENETRATION on the shell.  Gate:
+`check_gmp_layout` (and `check_plant_layout` arm (o)).  Record:
+[`docs/design/a-gmp-interior-is-declared-and-checked.md`](docs/design/a-gmp-interior-is-declared-and-checked.md).
+
+### A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06)
+
+**A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).**
+The doctrine says a check that cannot run must not PASS; the MIRROR is just as
+bad — **it must not FAIL either, it must REFUSE.**  `bin/drive-app` filed "no
+run control (absent)" against an app that works, because Chromium here cannot
+reach that host and a `querySelectorAll` over a blank document finds nothing.
+Rule: **verify a POSITIVE SENTINEL before judging anything** (the app's own
+chrome in the rendered DOM — never the absence of an error, which a blank page
+also shows), and refuse by name with the URL, the browser's own navigation
+error and the remedy.  Its companion: **a stale result DIMS** — a fingerprint
+of the declared case, stamped on the run, ONE home
+(`gui/src/case/staleness.ts`), and it dims ALL result numbers or none, because
+a fingerprint is not a dependency analysis and a per-value staleness claim
+would invent a graph this project does not have.  Traps paid for: a sentinel
+that can be absent on a working app (the version badge) is a false refusal
+waiting to happen; and `drive-app`'s frozen-shell check is a claim about a
+`/vYYMM/app/` copy alone — applied to the development app's root-hosted layout
+it printed 22 accusations against correct behaviour.  NO gate (a browser and a
+served copy; the Poling precedent).  Record:
+[`docs/design/a-tool-that-reported-what-it-could-not-see.md`](docs/design/a-tool-that-reported-what-it-could-not-see.md).
+
+### A GATE'S CLAIM IS THE LINE IT MARKS AS ONE (2026-09-06)
+
+**A GATE'S CLAIM IS THE LINE IT MARKS AS ONE (2026-09-06).**  *Which* line of
+a gate's output is its claim had TWO homes and they disagreed without anything
+noticing: `gate_manifest` took the FIRST line while `bin/runTests` captured a
+PASS row per site (`head -1` / `tail -1` / `grep -m1`), so a gate that prints
+detail before its verdict was described one way in the manifest and another
+way in the suite, in the same run — and the manifest, which answers *"what
+does this project check?"*, filed detail lines as proofs, one of them naming
+precisely the case its gate had SKIPPED.  Rule: the claim is the line marked
+`<label>: OK …` or `[<label>] OK …` whose label answers to the gate;
+`bin/curate/gate_claim.py` is the ONE home (importable and runnable, so the
+shell can reach it), and **a gate that marks none GETS none** — never its
+heading, its first line or its last, because picking a line out of prose and
+filing it as a proof is the defect.  *First line and last line are the same
+guess pointing two ways.*  A claim states its DOMAIN: what was scanned and
+what was NOT.  NOT done, and named rather than implied: the gates that mark no
+claim are a measured campaign awaiting a decision, and only the confirmed
+`bin/runTests` sites read the shared home — the rest is still a second home.
+NO new gate (a gate over the tool that reads gates needs its own decision).
+Record:
+[`docs/design/which-line-is-a-gates-claim.md`](docs/design/which-line-is-a-gates-claim.md).
+
+### WHAT HAPPENS INSIDE THE EQUIPMENT IS A PROJECTION, NOT A RESULT (2026-09-05; SUPERSEDED IN LOCATION 2026-09-06 by the paragraph above — the address is now `view/internalStates/SECTOR/unit` inside `0/` and `converged/`, one file per unit with the kind as a block, and everything else below still holds)
+
+**WHAT HAPPENS INSIDE THE EQUIPMENT IS A PROJECTION, NOT A RESULT
+(2026-09-05; SUPERSEDED IN LOCATION 2026-09-06 by the paragraph above — the
+address is now `<view>/internalStates/<SECTOR>/<unit>` inside `0/` and
+`converged/`, one file per unit with the kind as a block, and everything else
+below still holds).**  It is written by
+`src/io/InternalStateIO.cpp` from `SimulationResult::profiles` — the
+record `UnitOperation::profile()` already publishes to the JSON, the Plot tab
+and `profile.csv` — on the `design/` precedent: sector as stamped data, no
+level on a flat case, rewritten whole, only when converged, gitignored with the
+view that holds it, riding the converged channel to the Case tab.  The
+kind is derived mechanically from the axis (`stageProfile` · `axialProfile` ·
+`sizeDistribution` · `swingTable`; anything else `profile`, announced).  **THE
+BOUNDARY (Vítor):** internal state is a field over a coordinate of the
+equipment (position, stage, particle size) or its inventory (loadings per
+component); a construction over a parameter sweep (van Heerden, Merkel) is
+an analysis and stays in the reports — so a `T_K` profile gets NO file and is
+announced, and the PSA/TSA swing table IS internal state.  Trap: a gate that
+re-runs the case cannot be fired by deleting a file beforehand — the run
+rewrites it — so the sabotage has to land BETWEEN the run and the check.
+Gate: `check_internal_states`.  Record:
+[`docs/design/internal-states-are-a-projection-of-profiles.md`](docs/design/internal-states-are-a-projection-of-profiles.md).
+
+### THE CATALOGUE READ BACK AGAINST A BOOK — a TOOL, deliberately not a gate (2026-08-25)
+
+**THE CATALOGUE READ BACK AGAINST A BOOK — a TOOL, deliberately not a gate
+(2026-08-25).**  `bin/curate/verify_against_poling.py` reads the CURATOR's own
+copy of Poling/Prausnitz/O'Connell App. A, matches by CAS never by name, and
+prints its report to `data/local/`; it is NOT wired into `bin/runTests` and
+never will be — a check that cannot run must not pass, and a skip-when-absent
+gate would be permanently green exactly where it matters.  Record:
+[`docs/design/verifying-the-catalogue-against-a-book.md`](docs/design/verifying-the-catalogue-against-a-book.md).
+
+### A DESTRUCTIVE GATE POISONED THE EVIDENCE (2026-08-18)
+
+**A DESTRUCTIVE GATE POISONED THE EVIDENCE (2026-08-18).**  `check_gate_selftest`
+restores inside `try/finally`, which is not death-safe against SIGKILL (a clean
+tree hides a poisoned binary from `check_build_fresh`), so
+`bin/curate/destructive_session.py` writes a disk JOURNAL before the first
+mutation, and `bin/runTests` (before `check_workspace_truth`), `--record` and
+both arms of `gate_manifest` REFUSE while a journal stands; `gate_manifest`
+refuses to write on any failure or timeout.  Deliberately NOT done: automatic
+repair, and reordering the walk.  Record:
+[`docs/design/destructive-gate-contamination.md`](docs/design/destructive-gate-contamination.md).
+
+### THE MESH DECLARES ITS STRUCTURE, AND THE SOLVER AUDITS THE DECLARATION (2026-08-25)
+
+**THE MESH DECLARES ITS STRUCTURE, AND THE SOLVER AUDITS THE DECLARATION
+(2026-08-25).**  `opts.blockTri = {N, nv}` buys Curtis-Powell-Reid finite
+differences and a block-Thomas solve; a declared structure is a solver aid,
+and aids report aloud — the first iteration measures the off-band maximum and
+REFUSES by name when the declaration is materially false.  The fullMESH keeps
+its dense solve (its structure is BORDERED).  Gate: `check_block_tridiagonal`.
+Record: [`docs/design/block-tridiagonal-mesh.md`](docs/design/block-tridiagonal-mesh.md).
+
+### A BUBBLE POINT IS (x, P, T), AND THE FIT NOW READS ALL THREE (2026-08-25)
+
+**A BUBBLE POINT IS (x, P, T), AND THE FIT NOW READS ALL THREE (2026-08-25).**
+`EvidencePoint` carries a per-point pressure (a quiet NaN when undeclared,
+never zero — zero is a pressure), as a `Pressure` COLUMN or a held-constant
+SCALAR; `residual.P` beside evidence carrying its own, and a held-constant
+with no unit, REFUSE by name.  A dataset's `reviewStatus` is announced, and
+`checked` MUST NOT BE SILENT; a guard scoped to an object the caller
+recreates in a loop guards nothing.  Gate: `check_held_out_pressure`.  Record:
+[`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md).
+
+### ONE THERMOML TOOLCHAIN, NOT TWO (2026-08-25)
+
+**ONE THERMOML TOOLCHAIN, NOT TWO (2026-08-25).**  `bin/choupo-thermoml` is
+the one tool (`sync` · `index` · `search [--online]` · `extract` ·
+`extract-vle`); its cache lives in `thirdParty/thermoml/`, never `data/local/`
+(the loader RESOLVES that tree by name); an unresolvable component REFUSES
+rather than being guessed, and a multi-block article demands `--block N`
+because choosing is the curator's act.  Record:
+[`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md) §8.
+Since 2026-09-28 (C16) it also has `identity` · `vle-index` · `vle-search`,
+and a compound is joined to a catalogue component BY INCHIKEY, never by
+name: the archive carries no CAS, so a CAS -> InChIKey bridge is built from
+two resolvers that must agree.
+
+### A PARTIALLY MISCIBLE PAIR IS FITTED ON BUBBLE TEMPERATURES AND TIE LINES TOGETHER (2026-11-05, DEV.md 4c C226)
+
+**A PARTIALLY MISCIBLE PAIR IS FITTED ON BUBBLE TEMPERATURES AND TIE LINES
+TOGETHER (2026-11-05, DEV.md 4c C226).**  `fitParameters` `residual.kind
+T_bubble+LLE` adds measured binodal compositions (`property binaryLLE.binodal`
+datasets: T, mole fraction of the first named component in each liquid) to the
+bubble rows in ONE least-squares problem, through the liquid-liquid flash
+`propertyScanBinary` uses; the package must carry two liquid phases
+(`gammaGamma` + `liquidPhases`), `weighting uncertainty` and `liquidLiquid {
+sigma; origin }` are REQUIRED, a start that splits no tie line is REFUSED, a
+tie line the fitted model leaves as one liquid is a held-out MISS, and the band
+is `acceptance.maxLLE` declared before the fit.  Arm (f) of
+`check_regressed_pairs` accepts a pair declaring `liquidLiquid true;` with a
+`gap {}` block the measured tie lines support and still refuses every other
+pair that splits its liquid.  The only witness is SYNTHETIC
+(`curate13_synthetic_lle_butanol_water`); the real water + 1-butanol pair
+needs measured tie lines this tree does not hold.  Gate `check_lle_residual`.
+Record: `docs/design/binary-pairs-from-open-measurements.md` section 7.
+
+### A PAIR CHOUPO REGRESSES IS A RECORD THAT NAMES ITS CASE, AND A SHIPPED TABLE IS NOT RELICENSED BY ITS COURIER (2026-09-28, C16)
+
+**A PAIR CHOUPO REGRESSES IS A RECORD THAT NAMES ITS CASE, AND A SHIPPED
+TABLE IS NOT RELICENSED BY ITS COURIER (2026-09-28, C16).**  Catalogue NRTL
+pairs may be Choupo's OWN regressions to measurements the ThermoML archive
+LOCATES (each series cites its article and says
+`transcribedNotCheckedAgainstArticle` until someone reads it back): fitted on
+one study, held out on ANOTHER, band declared before the fit, promoted only
+when `validated`, as `reviewStatus interim` (now VOICED for pair records,
+`[unreviewed] pair`), naming `fittedInCase`; `check_regressed_pairs` re-runs
+that case and holds the record to it.  **`validated` is necessary, not
+sufficient (2026-10-05, slice 2):** a bubble-temperature scan solves for ONE
+liquid by construction, so a held-out bubble-T verdict cannot see a pair that
+splits the liquid -- ethanol + cyclohexane passed its band and predicts two
+liquids across its whole validity span, so it stays in its case; arm (f) holds
+every catalogue pair to ONE liquid across its validity span, and below that
+span a two-parameter b/T pair may split a miscible liquid (its record says
+where), and since 2026-10-05 (C35 item 5) the ENGINE says so too: a pair
+record used outside its declared temperature span is ANNOUNCED
+(`[pair-span]`, once per pair per run, into the caveat block; NRTL, UNIQUAC
+and Wilson share `PairSpanGuard` in `thermo/PairAudit.H`), moving no number
+-- arm (g) holds it.  ChemSep's `.ipd` pair tables are NOT
+under the Artistic grant (the LITE licence gives it to the pure-component
+databank "and ONLY" that, and the tables say "DECHEMA" in their headers),
+and the `thermo` package's byte-identical copy is not freed by its MIT
+licence -- both LOCAL ONLY, enforced by `check_source_licence`
+(`EXCLUDED_TABLES`).  Record:
+[`docs/design/binary-pairs-from-open-measurements.md`](docs/design/binary-pairs-from-open-measurements.md).
+
+### THE WASM BUILD DIED WHERE THE NATIVE ONE PASSED, AND THE SITE WENT STALE (2026-08-27)
+
+**THE WASM BUILD DIED WHERE THE NATIVE ONE PASSED, AND THE SITE WENT STALE
+(2026-08-27).**  A lambda captured a STRUCTURED BINDING —
+`for (const auto& [uname, cb] : …)` then `[&]{ … cb.factors … }` — which is
+illegal in C++17 and became legal only in C++20.  **g++ accepts it as an
+extension and says nothing, even under `-Wall -Wextra -Wpedantic`**;
+emscripten's clang makes it an error.  So it built natively, passed the whole
+suite and every gate, and killed `make wasm`: `publish-site` failed on THREE
+consecutive pushes while www.choupo.org went on serving a bundle three commits
+old.  **A green suite is not evidence about the site** — the site is a
+different artefact from a different toolchain, and nothing in `bin/runTests`
+compiled it.  §13 says to rebuild WASM and it was not done.
+**What makes a LOCAL gate possible:** the two compilers do not disagree about
+the LANGUAGE, only about severity — ordinary clang reports the same constructs
+as `-Wc++20-extensions` where emscripten's older clang errors.  So
+`check_wasm_dialect` compiles every `src/**/*.cpp` with `clang++ -std=c++17
+-fsyntax-only` and those families promoted to errors, no emscripten needed;
+it carries a PROBE (the construct itself) that must still be rejected, and it
+FAILS rather than skips when clang is absent.  Swept, not assumed: that was
+the only instance in the tree.  **It is NOT `make wasm`** — local libstdc++
+headers, so it cannot see the libc++ differences `check_std_includes` exists
+for; the flag list is an enumeration; and emscripten's clang is OLDER, so a
+construct the local one accepts silently still passes.  4 sabotages, and
+**S2 SURVIVED**: `-Wc++2a-extensions` is an ALIAS of the same group, so
+disarming one flag leaves the other armed and the gate went on printing two
+claims that were false at that moment — any future sabotage must disarm the
+whole list.  **RESERVED for Vítor: the standard itself.**  The C++17 choice is
+registered in two places and ARGUED in neither (`property-architecture.md`
+§106 rejects C++20 because it *"contradicts settled decisions (C++17, …)"*,
+which is circular).  The code that broke the site is valid C++20.  Against
+moving: the WASM toolchain is pinned at **emscripten 3.1.6 (2022)** and the
+whole site is built from it — whether it does C++20 well enough is a
+MEASUREMENT nobody has taken, not a guess to make.
+
+### A CITATION REQUIREMENT CHANGED WHAT THE READERS READ (2026-08-28/29)
+
+**A CITATION REQUIREMENT CHANGED WHAT THE READERS READ (2026-08-28/29).**
+Every EduTool lesson symbol needed a `file:line` citation into the ENGINE --
+an AUTHORING constraint on the eleven drafting agents, verified by the parent
+at the time, ONCE.  **This sentence used to read "verified mechanically
+(waiver dict kept EMPTY)" and that was false (corrected 2026-09-25).**
+`check_lesson_symbols` checks ONE thing: that every symbol a `formula` or a
+`derivation[].eq` uses appears in a `where: [{sym, means, unit}]` list.  It
+has no citation field and no way to see one; the waiver dict is real and is
+empty, and the CITATION half is enforced nowhere -- `check_theory_citations`'s
+own docstring repeats the same false claim, a second home for it.  So: keep
+the drafting discipline, and do NOT tell the next author a gate stands behind
+it.  The reason the constraint worked is intact -- a missing definition is
+visible and a WRONG one is not, and a test over a false claim is worse than no
+test -- and it is exactly why an unenforced rule must not be described as
+enforced.  Where two prose homes cannot share a variable, a gate that recomputes
+is the only available single source.  The pump/pipe liquid-density split named
+there as NOT fixed was CLOSED 2026-08-29 (Rackett anchored on the record's own
+declared `Vliq`) — a stale ABSENCE outliving the gap it named.  Gates:
+`check_lesson_symbols` · `check_bjerrum_prose` · `check_shortcut_column_refusals`.
+Record:
+[`docs/design/what-a-citation-requirement-found.md`](docs/design/what-a-citation-requirement-found.md).
+
+### CAN THE STUDENT GET IT OUT? — leg 5 (2026-08-27)
+
+**CAN THE STUDENT GET IT OUT? — leg 5 (2026-08-27).**  The `design` and
+`economics` reports SERIALISE `result` and refuse naming the remedy when it is
+empty (a report draws, it does not recompute); one failing report no longer
+kills every report after it — each is caught by name, the count raised on
+`AdvisoryLog`; `sizing.csv` carries the design BASIS and `costs.csv` reproduces
+its own total.  Making `design`/`economics` default is RESERVED.  Gate:
+`check_cost_provenance`.  Record:
+[`docs/design/the-deliverable.md`](docs/design/the-deliverable.md).
+
+### A NUMBER YOU CANNOT TRACE IS A NUMBER YOU CANNOT DEFEND — leg 4 (2026-08-27)
+
+**A NUMBER YOU CANNOT TRACE IS A NUMBER YOU CANNOT DEFEND — leg 4 (2026-08-27).**
+`DictAudit` reaches `postDict`, `solverDict` and `outerDict` (PURE parameter
+files; the walker reads `entries_` DIRECTLY — never `subDict()`, which
+`note()`); `constructionPeriod` is HONOURED since 2026-10-11 (DEV.md 4c
+C63: a declared `capitalSchedule`, refused when N > 1 and absent, beside an
+opt-in `rampUp` and `startupCostFraction`; year 0 stays the end of
+construction, the placement is CAPCOST 2017's, a case declaring none of it
+is unchanged; record
+[`docs/design/the-start-up-years-of-a-cash-flow.md`](docs/design/the-start-up-years-of-a-cash-flow.md)); the costing
+table prints its own arithmetic (a provenance line too coarse to reproduce is
+worse than none); a missing-key refusal names the closest match.  NEVER EDIT
+`bin/runTests` WHILE IT RUNS; `bin/curate/runtests_verdict.py` is the ONE home
+for a harness verdict — *moved* only when a verdict was printed, anything else
+`could-not-run` (converted: `check_component_name_hint`,
+`check_friction_correlations`).  The costing model is NAMED for its numbers:
+`Turton` (class, files, the ONE registered key), every coefficient being
+Turton et al.'s App. A on Guthrie's bare-module form; `method Guthrie;` is
+REFUSED by name, naming `Turton` -- no alias (2026-10-05, DEV.md 4c C38 item
+2; arm (p)).  Gates:
+`check_postdict_audit` · `check_cost_provenance`.  Records:
+[`docs/design/the-key-nobody-read-in-the-postdict.md`](docs/design/the-key-nobody-read-in-the-postdict.md)
+and [`docs/design/a-cost-you-can-defend.md`](docs/design/a-cost-you-can-defend.md).
+
+### A CORRELATION IS AN OBJECT, WITH A WINDOW, A CITATION AND AN ANCHOR (2026-08-25)
+
+**A CORRELATION IS AN OBJECT, WITH A WINDOW, A CITATION AND AN ANCHOR
+(2026-08-25).**  `FrictionFactorCorrelation` (Blasius, Colebrook-White,
+Haaland, Churchill) joins `HeatTransferCorrelation`: declared validity window
++ `verify()` anchor + `citation()` — a correlation whose source is a comment
+is one the reader cannot check.  The bench never ranks them; the witness
+publishes two spreads and never one.  NOT ESTABLISHED: no correlation here is
+checked against MEASURED data.  Gate: `check_friction_correlations`.  Record:
+[`docs/design/correlations-as-objects.md`](docs/design/correlations-as-objects.md).
+
+### THE TRANSPORT CORRELATIONS ARE OBJECTS TOO, AND EVERY ANCHOR SAYS WHAT KIND IT IS (2026-09-05)
+
+**THE TRANSPORT CORRELATIONS ARE OBJECTS TOO, AND EVERY ANCHOR SAYS WHAT
+KIND IT IS (2026-09-05).**  The five transport families (gas μ/k/D, liquid
+μ/k — Chung, Eucken, Fuller, Andrade, Vogel, chemsepEq101, SatoRiedel,
+chemsepEq16) gained `validityWindow()` · `citation()` · `verify()` as PURE
+virtuals, and the Wilke φ_ij that `ThermoPackage.cpp` carried TWICE has one
+home (`src/thermo/transport/GasMixingRules.H`).  Rule: **the catalogue holds NO measured
+transport data, so a `verify()` anchor is either THEORY (an identity kinetic
+theory supplies — Eucken on a monatomic gas is exactly (15/4)Rμ/M, Wilke's
+φ_ii = 1) or ARITHMETIC (the closed form at a stated point, a literal), and
+the bench prints which** — a 0.000 % on an arithmetic anchor proves a
+transcription, never a physics.  Four silences closed with NO number moved:
+the Theory Guide showed `viscosityGas { model Sutherland; }` and
+`lennardJones {}` keys no engine ever read; Chung ANNOUNCES per present
+component that Vc is estimated from Zc(ω) and its polar/association terms are
+dropped (a spray dryer's suspended crystal is no longer named as a gas it
+priced); the spray dryer REFUSES without a transport model instead of
+reporting a drying time of ZERO at exit 0, and refuses a declared liquid model
+it cannot price instead of substituting water; the membrane module ANNOUNCES
+`[legacy] mu_feed 1e-3 / D_solute 1.6e-9` and honours a declared liquid
+transport model.  ChemSep's Artistic-2.0 acceptance is now a CONTRACT in
+`check_source_licence` (allowlist + importer cross-check), not an importer
+comment.  Witness `transport01_gas_bench`
+(nothing measured, its header says so); gate `check_transport_correlations`
+(4 by-hand sabotages on outputs/inputs; a sealed record edited under it ran to
+exit 0 — a FINDING for the seal, recorded not fixed).  Record:
+[`docs/design/transport-correlations-as-objects.md`](docs/design/transport-correlations-as-objects.md).
+
+### CHAPMAN-ENSKOG FROM SVEHLA'S CONSTANTS — the curation campaign the paragraph above named is RUN, and the second opinion exists (2026-09-06)
+
+**CHAPMAN-ENSKOG FROM SVEHLA'S CONSTANTS — the curation campaign the
+paragraph above named is RUN, and the second opinion exists (2026-09-06).**
+`ChapmanEnskog` (gas μ, Svehla 1962 eq. (1), `TransportModel`) and
+`modifiedEucken` (gas k, Svehla eq. (2), `ThermalConductivityModel`) are
+registered; the Neufeld Ω(2,2)* fit has ONE home
+(`src/thermo/transport/NeufeldOmega.H`), which Chung calls at its own T* with
+every Chung golden byte-identical.  Rule: **a Lennard-Jones pair is a
+RECORD fact with PER-VALUE origin** — `lennardJones { sigma [0 1 0 0 0] <m>;
+epsOverK <K> K; provenance { sigma {origin; method;} epsOverK {origin;
+method;} source; licence publicDomain; } }`, σ in the bracket form because
+ångström is not a named unit; the origin word follows Svehla's Table I(b)
+code (1–4 fitted to measured data → `measuredFit`, resolved to `regressed`
+in `core/Origin.H`; 20 → `measured`; else `estimated`) and the model
+ANNOUNCES both origins per component.  A record without the block REFUSES
+by name (no default σ); the bench LISTS such a component as "not evaluable"
+and its spread sentence keys on models EVALUATED, not registered.  The ONE
+committed home of the data is the page-image transcription
+`bin/curate/svehla1962/` (Table I(a), the method legend, the hand-written
+isomer table); `bin/curate/propose_lennard_jones.py` derives fragments into
+`data/local/lennardJones/` by parsed elemental formula + MW cross-check,
+never by name, deterministic, and REFUSES an `--out` under `data/standards/`
+— promotion is Vítor's review and NO block was written into the public
+catalogue; the witness `transport02_chapman_enskog` carries its seven blocks
+CASE-LOCALLY (adopted records, the edwards02 precedent).  Traps paid for:
+the `measuredFit` word would have resolved to `unattributed` in silence
+(`originFromWord` is tolerant) — a declared word must be registered where
+the vocabulary lives; Ω(2,2)* differs between Svehla's Hirschfelder 1954
+tables and the Neufeld 1972 fit by more than the fit's own claim, so the
+reproduction anchor DECLARES its tolerance and the bench prints it beside
+the row (`CorrelationVerify::tolerance`).  NOT built, said plainly:
+Chapman-Enskog binary DIFFUSIVITY — the Ω(1,1)* coefficients are not
+citable from any source in the tree, and Sutherland — Svehla gives no S.
+A US-government public-domain source is an accepted class in
+`check_source_licence` as a CONTRACT (the writing tool's licence word
+cross-checked, a citing record must declare `licence publicDomain;`).
+Gate: `check_transport_correlations` (extended, by-hand sabotages in its
+docstring).  Record:
+[`docs/design/transport-correlations-as-objects.md`](docs/design/transport-correlations-as-objects.md) §8.
+
+### A BATCH MEMBRANE, AND THE WASHOUT LAW FAILING WHERE A STUDENT CAN WATCH (2026-08-25)
+
+**A BATCH MEMBRANE, AND THE WASHOUT LAW FAILING WHERE A STUDENT CAN WATCH
+(2026-08-25).**  Everything a membrane needs was already here -- the
+solution-diffusion and DSPM-DE transport laws, van't Hoff and Pitzer osmotic,
+film polarisation, the asset records -- and ALL of it served exactly one unit,
+the steady spiral-wound module.  Diafiltration and batch concentration are how
+membranes are actually run at laboratory and pilot scale and how they are
+taught; `choupoBatch` had no membrane at all.  `batchDiafilter` adds NO
+architecture: it is a `BatchUnitOperation` asking `TransportModel::localFluxes`
+the same question the module asks, once per instant instead of once per channel
+node, in two modes (`concentration`, `constantVolume`).  **The lesson is the
+point.**  The hand derivation `c/c0 = exp(-(1-R)N)` assumes the rejection is
+CONSTANT; it is not (the solute leaves, the osmotic pressure falls, the flux
+climbs, the observed rejection rises), so the unit publishes `R_obs_<solute>`
+at every instant and, in constant-volume mode, `washoutActual_` beside
+`washoutIdeal_` **evaluated from THIS RUN's own initial R** -- an idealisation
+computed from the run, never declared, so the gap cannot have been arranged.
+Witness `diafilter01_nf_desalting` (5.44 diavolumes: NaCl to 50.2 %, MgSO4 held
+at 99.2 %, flux 233 -> 256 LMH, R 0.8714 -> 0.8748, actual 0.5015 vs ideal
+0.4970).  **Three things this slice paid for.**  (1) A vessel OPEN IN BOTH
+DIRECTIONS needs its intake declared: the first run reported 4996 kg
+unaccounted, and *the balance was right and the unit was wrong* -- hence
+`BatchUnitOperation::takeContinuousIntake`, the mirror of the discharge, drained
+per accepted step (`takeDatumAmendments` could not serve: it is drained only
+inside the recipe's `setParameter` handler because its subject is a CHANGED
+DECLARATION, not a flow) and recorded under its own kind word `externalIntake`
+so a wash-water make-up is not filed as a re-declared feed.  (2) **A LEDGER
+BUILT BY RE-INTEGRATING A FLUX DISAGREES WITH THE STATE THE INTEGRATOR
+ACCEPTED**, at O(dt): the first version closed at 1.9e-3 while its own comment
+claimed it read the inventory.  The permeated VOLUME is now an integrated state
+and every record is a DIFFERENCE against the accepted inventory -- closure
+1.2e-16, and the sabotage that restores the quadrature closes at 5e-4, which a
+careful-sounding 1e-3 tolerance would have waved through (which is why the gate
+pins MACHINE level, not a tolerance).  (3) **The printed balance equation must
+be the arithmetic that decided**: `[campaign] mass balance` omitted the drawn-in
+and returned amendment terms the verdict has always used, so an open campaign
+printed `m0 = mF + external` with tens of kilograms missing and then said
+"(closed)".  Also: `toBulk` left its anonymous namespace inside
+`SpiralWoundModule.cpp` for `src/unitOperations/membrane/BulkConversion.H` when the second caller
+arrived (11/11 membrane goldens unmoved), and `choupoBatch` now loads
+`MembraneRegistry` and the membrane sub-model factories -- *a unit is not
+installed until everything it constructs is*.  NOT modelled, said plainly:
+fouling and flux decline (the largest gap to a real rig), any k_film
+correlation (the case DECLARES it and the unit refuses without it rather than
+inventing a geometry), temperature transients, gel-layer/critical-flux
+behaviour, and the pump work (`energyLedgerGap` names it; the campaign energy
+balance is UNAVAILABLE rather than closed with a term quietly zero).  Gate:
+`check_diafiltration` (5 sabotages, two of which attack the driver and the unit
+separately because the declaration can be lost on either side of the hook).
+
+### FOULING FOLLOWED THE SAME DAY, and the "largest gap" sentence above is now PARTLY PAID
+
+**FOULING FOLLOWED THE SAME DAY, and the "largest gap" sentence above is now
+PARTLY PAID.**  Resistance in series on the permeance the unit hands the
+transport law -- `1/A_eff = 1/A_w + r_f(v)`, `v = V_permeated/A`, `r_f` growing
+by one of HERMIA'S BLOCKING LAWS (Hermia 1982; `cake` and `intermediate`
+implemented).  **Applied where the transport CONTEXT is assembled, not inside a
+transport law**: both `solutionDiffusion` and `DSPM_DE` read `ctx.A_w`, so ONE
+home serves both and neither is modified -- and fouling is a property of what
+the membrane has been asked to do OVER TIME, which is why the steady module
+cannot carry it and this unit is the only place in the tree that does.  **A
+BLOCKING LAW IS A CLAIM ABOUT A MECHANISM**, not a fitting exponent, so the
+block REQUIRES a `reason` (the engine cannot know whether a deposited layer or
+a covered pore describes a feed) and `standard`/`complete` REFUSE by name
+rather than being approximated by a neighbour their lumped permeance cannot
+represent.  Absent the block there is no fouling and the run is byte-identical.
+The constant is EQUIPMENT-AND-FEED data (axiom 3) and lives in the case -- **no
+catalogue record is touched, so no curation decision rides on it**.  Witness
+`diafilter02_fouling_decline`, the SAME operation as diafilter01 with only the
+fouling added, so the difference IS the fouling: the flux turns round (233 ->
+196 LMH where the clean twin rises to 256), permeance falls to 72.5 % of clean,
+and the same 160 s buys 4.74 diavolumes instead of 5.44, leaving 53.4 % of the
+NaCl behind against 50.2 %.  Its `k` is declared HYPOTHETICAL in its own header:
+a fully dissolved brine has nothing to deposit, so the case demonstrates the
+CONSEQUENCE of a declared decline, never this feed's fouling -- a structural
+witness on the `edwards01` precedent.  STILL not modelled: any MEASURED fouling
+(the tree carries no fouling data at all), critical flux, gel layers, cleaning
+or backwash cycles, and any prediction of `k` itself.  **Sabotage 8 SURVIVED its
+first run** -- it removed the `reason` requirement and the gate said OK, because
+the shipped witness declares one: *a guard whose only case satisfies it is a
+guard nothing tests.*  The gate now BUILDS the offending cases (reason stripped,
+`standard` requested, a law nobody implemented) and requires each to refuse AND
+name why.  8 sabotages total, two of which survived first contact.
+
+### A STIFF PORE SOLVED AT ONCE -- the DSPM-DE pore by finite differences, NanoFiltran the reference and never the solver (2026-10-22/24, DEV.md 4c C138, C141, C142; Vítor: "faz um solver melhor ... deixa o nanofiltran resultados só para comparares")
+
+**A STIFF PORE SOLVED AT ONCE -- the DSPM-DE pore by finite differences,
+NanoFiltran the reference and never the solver (2026-10-22/24, DEV.md 4c
+C138, C141, C142; Vítor: "faz um solver melhor ... deixa o nanofiltran
+resultados só para comparares").**  `DSPM-DE` SOLVES the pore by default:
+extended Nernst-Planck on a uniform grid (101 nodes), Scharfetter-Gummel
+fluxes, electroneutrality at every node, zero current, the law's partitions
+at both faces, and -- since C142 -- the WALL, its electroneutrality, the water
+flux J_v = A_w(ΔP − Δπ) and the face activities as rows of the SAME Newton,
+one per module station, with an ANALYTIC Jacobian (the CPR finite-difference
+one kept as a test oracle) on the declared block-tridiagonal structure,
+audited on an 11-node copy of the first station.  A failed Newton restarts
+from the exact no-flux state and ramps the drive, ANNOUNCED and counted; a
+station with no positive water-flux root publishes J_w = 0, said once.  ONE
+home for the pore (`membrane/transport/PoreNernstPlanck`) and one for the
+wall (`membrane::wallAtField`, `src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp`).  The
+CLOSED FORM IS RETIRED and `method closedForm;` refuses by name: with the
+honest K_d it transmits at K_c > 1 at low Péclet (−121.5 % rejection on
+membrane11).  `hindrance legacy;` refuses too: it took Dechadilok-Deen's H =
+Φ K_d as K_d and counted the steric partition twice; the default is
+`DechadilokDeen2006` (K_d = H/Φ).  The default wall is closed by the pore's
+own permeate (`wallClosure porePermeate`); `solutionDiffusion` (the salt's
+B_s) is a declared option, and membrane20 compares the two.  Measured, never
+assumed: order 2 against an ambipolar analytic limit; ‖F‖ ≤ 1e-12 on every
+station; membrane10 10.9 s → 0.27 s; and on NanoFiltran's own problems
+Choupo converges in 4-24 Newton iterations where NanoFiltran needs hundreds to
+thousands of under-relaxed iterations and STALLS at its cap on NaCl (ND 204)
+and Na2SO4.  A grid graded toward the faces was built (`grading`) and
+measured WORSE: the hardest profile's steep region is an INTERIOR
+ion-exchange front, not a face layer.  A solution-ADAPTIVE grid was then
+built (C144, `poreSolver { grid adaptive; }`, the monitor |psi''|^(1/3) --
+the measured local error follows the curvature of psi, and arc length of
+(ln c, psi) was measured WORSE than uniform) and kept OPT-IN: it sits at the
+computed bound for its node count (0.76x the uniform error on the interior
+front, which spreads over a third of the pore) and gains nothing on the
+corpus pores, so the default stays uniform 101 nodes and a case needing
+1e-6 declares its nodes.  NanoFiltran is VENDORED as received
+in `bin/curate/nanofiltran/` (Vítor's leave; held by `check_source_licence`
+ACCEPTED_VENDORED_CODE) and only RUN by `regenerate.py` to produce the 35
+anchors of `props/membrane/nanofiltran_geraldesAlves2008` (the
+`poreTransport` op: the law at imposed J_v); its own Davies applies exp() to
+a log10 constant, so the Davies anchors come from a copy with that ONE
+declared patch.  The 101-node goldens moved on C141 with the list shown to
+Vítor; C142 moved none.  NOT done: SDEM's march onto this solver;
+Richardson extrapolation of the published permeate (measured fourth order,
+a design decision: the result would match no published discrete profile).  Gates: `check_pore_solver` (analytic-vs-FD Jacobian arm,
+station arm; sabotage-verified), `check_nanofiltran_reference`.  Record:
+[`docs/design/a-stiff-pore-solved-at-once.md`](docs/design/a-stiff-pore-solved-at-once.md) §9-§12.
+
+### ELECTRONEUTRALITY WITHOUT A NEW PARAMETER — the `SDEM` transport law (2026-09-15, Vítor: "não se pode andar a aumentar o número de parâmetros porque o modelo fica melhor mas depois não há dados")
+
+**ELECTRONEUTRALITY WITHOUT A NEW PARAMETER — the `SDEM` transport law
+(2026-09-15, Vítor: "não se pode andar a aumentar o número de parâmetros
+porque o modelo fica melhor mas depois não há dados").**  `solutionDiffusion`
+on an ION-declared feed gives every ion its own `B_s` and couples nothing, so
+the permeate carries a net charge (measured on membrane07: −0.82 % of the
+cation equivalents; the engine SAID so only inside `scaling{}` — the
+2026-09-07 shape, an announcement inside a conditional that is not the
+condition of the fact; it is said on the law + the feed now).  Rule: **an
+ion-declared feed is coupled by ONE STATE VARIABLE, the electric potential
+across the active layer, fixed by ZERO CURRENT — never by a parameter.**
+`transport SDEM;` (solution-diffusion-electromigration, Yaroshchuk, Bruening
+& Licón Bernal 2013) integrates Nernst-Planck on virtual concentrations with
+virtual-solution electroneutrality — NOT a constant-field Goldman
+integration, and the difference is checkable: only this formulation reduces
+a single salt EXACTLY to `R = J_v/(J_v + P_s)` with the AMBIPOLAR
+`P_s = (z₊+|z₋|)P₊P₋/(z₊P₊+|z₋|P₋)`, which is what makes per-ion permeances
+CALIBRATABLE FROM SINGLE-SALT TESTS — the measurement manufacturers publish —
+and the four salt permeances of the source table reproduce from its own ion
+values to their rounding.  The partition coefficient is INSIDE `B` (the
+solution-diffusion definition `B = DK/δ`), so none is declared; a separate
+`K` is needed only under fixed charge (DSPM-DE) or under electroneutrality
+INSIDE the membrane (TMS), neither of which this law assumes.  Refuses by
+name: a solute with no aqueous bridge, an ion with no permeance, a feed that
+is not electroneutral (the FilmTec protocol's own precondition), fewer than
+two ions.  Announced, where the case leaves `polarisation { ionCoupling }`
+at its default: the per-ion, field-free polarisation film, naming the
+declaration that couples it (see THE FILM WITH A FIELD below).  Witnesses `membrane12`/`membrane13` (NF270,
+Fernández de Labastida & Yaroshchuk 2021, CC BY — its Table 1 ion
+permeances; NO₃⁻ negatively rejected under dominant MgSO₄ with the same
+permeances and no parameter for the effect).  **THE FIGURES WERE DIGITISED THE SAME DAY, AND THE SWEEP FOUND WHAT THE
+WITNESSES COULD NOT (2026-09-15).**  `bin/curate/digitise_fdl2021.py` reads
+the paper's eight panels (calibration VERIFIED against the tick labels,
+reading error per point, the images kept out of the tree) into
+membrane12's `constant/experimental/fdl2021_figures.csv`.  Driving the engine to each
+figure's flux: **the inner Newton converged at the two witnesses' operating
+points and almost nowhere else** — a witness at one operating point is not a
+sweep.  Rule: **SHOOT FROM THE FACE WHERE THE UNKNOWN IS.**  The shot ran
+from the wall toward the permeate, landing on values a hundred times smaller
+than it started from while dividing by an ionic strength that is smallest
+exactly there; from the permeate face the state is the unknown, the field is
+finite, and the profile GROWS toward the wall (28/28 (feed, flux) pairs, 3–7
+iterations).  Also paid for: 40 RK4 steps put a 1e-3 discretisation error
+under a 1e-4 golden (320 now; membrane13 moves four rows).  The lesson for a
+student: **in the trace limit the engine reproduces the authors' SDEM lines
+(2–8 %); at the paper's OWN 2e-4 M it does not, because a trace anion at
+42 µm/s carries more current than 0.01 M of sulfate at 0.13 µm/s** — the
+correction the authors' analytical fit neglects and their text names.  Two
+findings about the SOURCE are pinned rather than tuned: NH4⁺'s ">60" line is
+met only at ~1000 µm/s, and Fig 2a's MgCl2 line is not Eq. (1) with the
+table's own P_s (arm (j) asks for its pin back the day that closes).
+NOT done, named: the DSPM-DE `X_d = 0` branch that skips ψ_p (task #165);
+the batch vessel under SDEM; the measured SYMBOLS themselves (compared by
+nobody — the model is held to the authors' fit, not to their residual).
+**THE FILM WITH A FIELD IS DONE (2026-09-15, same day):** the wall
+concentration has ONE home for all three laws
+(`membrane/massTransfer/Polarisation`), the multi-ionic model of Geraldes &
+Afonso, J. Membr. Sci. 300 (2007) 20 — per-ion k on each ion's own D0,
+suction-corrected, ions coupled by one interface potential fixed by
+electroneutrality at the wall, no film thickness, no parameter — declared
+`polarisation { suctionCorrection GeraldesAfonso2006|filmTheory|none;
+ionCoupling electroneutral|none; }` in the unit's operation (defaults
+`filmTheory`/`none` = the old film to round-off, announced when used on an
+ion-declared feed).  Witnesses `membrane14_polarisation_multiionic` and the
+props bench `polarisation01_geraldes_afonso_table1` (the paper's Table 1);
+gate `check_polarisation_coupling`; record
+[`docs/design/polarisation-of-a-multi-ionic-solution.md`](docs/design/polarisation-of-a-multi-ionic-solution.md).  Gate: `check_sdem` (the negative arm runs the SAME feed
+under the uncoupled law and requires a CHARGED permeate; arms (h)–(j) hold
+the trace-limit lines, the not-a-trace ratio and the Fig 2a pin) ·
+`gen_sdem_validation --check` (the Tutorials Guide's validation section,
+written for the paper's authors, its tables GENERATED from the engine).
+Record:
+[`docs/design/electroneutrality-without-a-new-parameter.md`](docs/design/electroneutrality-without-a-new-parameter.md) (§7).
+**A MODULE IS A RECORD (2026-09-15, same day):** `module <name>;` in a
+`spiralWoundModule` names a `kind membraneModule` record in `assets/`
+(NF270-4040, SW30HR-380, the SEPA_CF laboratory cell — `format spiralWound
+| flatSheetCell`, the cell's channel has ONE membrane face, W = A/L) that
+supplies the geometry the case used to type, checks the manufacturer's
+`limits {}` against the run (announced, never refused) and carries the
+sheet's `ratedTest {}`; a value the sheet does not state is `origin
+estimated; reviewStatus unverified;` WITH a note saying how to verify it
+(Vítor's ruling, verbatim in the record) and is announced on every run
+that reads it; `module` beside inline geometry refuses by name.  Gate:
+`check_membrane_modules` (the two spirals' rated tests run and PRINTED
+beside the sheet as a measurement).  Record:
+[`docs/design/a-module-is-a-record.md`](docs/design/a-module-is-a-record.md).
+
+### A STACK IS A RECORD, AND ITS LIMITING CURRENT IS A PREDICTION (2026-09-16)
+
+**A STACK IS A RECORD, AND ITS LIMITING CURRENT IS A PREDICTION (2026-09-16).**
+Two DECLARED numbers the engine could not check became two it DERIVES and
+prints.  `stack <name>;` in an `electrodialysisStack` names a `kind edStack`
+record in `assets/` (`EUR2C-7P18`, the bench unit of Geraldes & Afonso,
+J. Membr. Sci. 360 (2010) 499-508) carrying the membrane pair, the cell pairs,
+the active area, the channel and spacer, the hydraulic passes, the stack's OWN
+Sherwood correlation and its limits; `membrane`, `N_cellpairs`,
+`membraneArea`, `channelThickness`, `channelLength`, `spacerPorosity`,
+`hydraulicPasses` or `linearVelocity` beside it REFUSE by name, and an unknown
+stack name refuses with the registered list.  **`linearVelocity` was a SECOND
+HOME** -- the unit already has the diluate flow on its inlet stream, so
+`u = Q/((cellPairs/passes) W h)` is a consequence, printed with its arithmetic
+and SUPERFICIAL because that is what the record's correlation was fitted on
+(`velocityBasis`, declared, never guessed).  Vitor's two rulings, verbatim in
+the record: **`activeArea` IS THE CELL-PAIR AREA** (a 50 m2 stack has 50 m2 of
+anionic membrane AND 50 m2 of cationic; the three other areas are derived and
+announced, and a record storing one is refused) and **THE PASS BELONGS TO THE
+EQUIPMENT**.  `limitingCurrent { model GeraldesAfonso2010 | CowanBrown; }`:
+the first **REMOVES A PARAMETER** -- the linearised Nernst-Planck film gives
+the limiting transport numbers explicitly from the ion diffusivities and the
+diluate composition (Eqs. 12/13) and i_lim in closed form (Eq. 15), per
+membrane, lowest absolute value applying, so no `t_cu` is read and the
+record's declared one is ANNOUNCED beside it (the `dH_rxn` posture).  The
+default is the prediction only where a stack record supplies the correlation
+AND every ion resolves a diffusivity -- otherwise the legacy route, ANNOUNCED
+with which of the three was missing, which is why ed01/ed02 are byte-identical.
+Three traps: **a guard whose only case satisfies it is a guard nothing tests**
+(the record has ONE hydraulic pass, so a sabotage dropping the pass division
+survived every witness until the gate built a 7-pass twin); a sabotage that
+changes no arithmetic proves nothing (an electroneutral feed has equal cation
+and anion equivalent totals); and **a tolerance tighter than the channel the
+number came through is measuring the serialiser** (an identity asserted at
+1e-12 against a KPI the result JSON carries to 12 figures).  Eq. A13's salt
+decomposition is NOT needed and is not unique from ions alone -- the
+ion-equivalent-fraction form is identical and the gate proves it.  TWO RECORDS, and the second's absences are FACTS: `EurodiaED-100P-50` is
+Vitor's OWN industrial unit (`origin measured; reviewStatus unverified;` --
+a recollection, not a data sheet), and because nobody stated its membrane pair
+or its channel width/length, `membranes` is OPTIONAL (**the RECORD decides
+which way the refusal points** -- a record naming a pair refuses a case that
+also does, one naming none refuses a case that does not) and **EXACTLY ONE of
+width and length is stored** (the width, as the estimate; the length is
+`activeArea/(cellPairs x channelWidth)`, derived and announced -- storing a
+back-calculated length beside a back-calculated width is two homes for one
+guess and the second reads like a declaration).  It declares NO `limits {}`:
+the only figure anyone stated is the DESIGN flow, and **a design point is not
+a ceiling** -- filing it as `flow_max` made the run accuse the stack of
+exceeding its rating while doing exactly what it was designed for.  It borrows
+the bench stack's correlation, and the justification is checkable and is in
+its header: Re is built on the channel height, the two spacer thicknesses very
+nearly coincide (0.70 vs 0.77 mm), so over the same velocity band the two Re
+bands do too (46-77 vs 51-84) and the fit is APPLIED INSIDE its own band, not
+extrapolated -- which is why the band is now EQUIPMENT DATA on the record
+(`massTransfer { validity { Re ( 50 86 ); } }`) and a run outside it is
+ANNOUNCED, never refused.  The permission is about the REYNOLDS NUMBER only:
+that spacer is zigZag and the fit's was mesh, and no correlation here selects
+on `spacerType`.  Witnesses
+`ed03_stack_record`, `ed05_industrial_stack` and
+`ed04_limiting_current_multiionic` (six anchors
+against the paper's Table 4, +1 to +12 %, 6.9 % average against its own
+reported 9 %; two findings recorded not tuned -- the paper's Re at its highest
+flow does not follow from its own flow rate, and the bias is HIGH here where
+the paper's is LOW on its single-salt rows).  This paragraph used to end "NOT
+done: batch (recirculating) electrodialysis and the stacks-in-series
+witnesses"; BOTH WERE BUILT THE SAME DAY and the sentence is corrected here
+rather than left to go stale (the 2026-09-12 rule: when you fix a thing this
+file calls broken, fix the sentence in the same commit).  See the paragraph
+below.  Gate: `check_ed_stack` (12 by-hand sabotages, two of which did not do
+what was predicted).  Record:
+[`docs/design/a-stack-is-a-record-and-its-limiting-current-is-predicted.md`](docs/design/a-stack-is-a-record-and-its-limiting-current-is-predicted.md).
+
+### THE LIMITING CURRENT THAT FALLS WHILE YOU WATCH -- batch electrodialysis (2026-09-16, the same day)
+
+**THE LIMITING CURRENT THAT FALLS WHILE YOU WATCH -- batch electrodialysis
+(2026-09-16, the same day).**  A PREDICTED i_lim evaluated at ONE fixed
+composition is only a better number; **in a batch desalination the diluate
+DEPLETES, so i_lim falls under a constant current until they cross**, and that
+crossing is the whole pedagogy of batch ED and cannot be shown by any model
+that reads a declared transport number.  `batchElectrodialysis` (choupoBatch)
+adds NO architecture -- it asks `edCell::predictiveLimitingCurrent` once per
+instant instead of once per pass -- and the extraction that made that possible
+is the durable half: `readIEMPair`, `buildChannel`, the mean activity ratio,
+the solution resistance and the whole Eq. A13/12/13/15/16 assembly LEFT
+`ElectrodialysisStack.cpp`'s anonymous namespace the day the second caller
+arrived (the `BulkConversion.H` precedent), verbatim, with every ed01-ed05
+golden byte-identical.  **THE UNIT HOLDS BOTH TANKS** (`state()` is the
+diluate, the concentrate is published internal state, `materialInventory()` is
+the SUM): a recirculating tank is not a discharge, and a unit that could not
+see the concentrate could not compute the Nernst term that sets its own
+voltage.  The rig is CLOSED, so the derivative writes ONE number with two
+signs and the campaign closes at machine level.  **THE IDEALISATION IS
+COMPUTED FROM THE RUN** (the diafilter's rule): `demin_ideal` is Faraday's law
+at THIS run's own initial current, never declared, and the run NAMES why it
+parts -- at constant current the crossing, at constant voltage the current
+itself decaying as the diluate loses conductivity.  `overLimiting { model
+saltFluxPlateau; }` (xi_eff = xi min(1, i_lim/i)) is OPT-IN and adds NO
+PARAMETER; the DEFAULT keeps xi and ANNOUNCES that it is then extrapolating
+past the crossing, and the current is never clamped either way.  **A
+MULTI-IONIC FEED RUNS, ON BOTH UNITS, SINCE C35 (Vitor's ruling of
+2026-10-05):** until then the batch rig REFUSED one and the steady stack gave
+every counter-ion the WHOLE current, xi I N/(|z_i| F), which is
+charge-balanced only with one counter-ion per membrane (ed04's ED1 diluate
+left carrying 1.8 % of its ion equivalents as net charge).  Now the
+counter-ions of each membrane SHARE its current by |z_i| D_i c_i -- the
+paper's Eqs. 12/13, applied at every current, NO new parameter -- in ONE
+home, `edCell::counterIonRates` (instantaneous, the batch) and
+`edCell::counterIonPassTransfer` (the same rule integrated in closed form
+along a pass, the steady stack), so each membrane moves exactly xi I N / F
+equivalents; a membrane with ONE counter-ion keeps the single-salt
+expression bit for bit (every single-salt result JSON byte-identical,
+measured).  The ruling's WORDS were "conductivity share" and its FORMULA z D
+c; the formula is what was built -- z^2 D c (the Hittorf number) differs from
+it only between counter-ions of different valence on one membrane, and is
+put to Vitor as a flag, not taken.  Not modelled: any selectivity the
+membranes add beyond the share.  Fixed on the way: an ISOTHERMAL `mixer`
+priced inlet enthalpies it was never going to read (the sum feeds only the
+ADIABATIC Newton's target), so a case DECLARING its outlet temperature was
+refused over an arithmetic the run does not perform -- no number moved.  **NOT
+done, said plainly:** back-diffusion, water transport, co-ion leakage and any
+thermal effect (the electrical work IS integrated exactly, but the heat it
+becomes is not, so the campaign first law is UNAVAILABLE rather than closed
+with a PLUG); and NOTHING here is validated against a measured rig.  Witnesses
+`edbatch01_constant_current` (i_lim 643.04 -> 88.26 A/m2, crossing at 1593 s,
+86.27 % against the hand calculation's 91.41 %), `edbatch02_constant_voltage`
+(I 4.365 -> 2.018 A, i/i_lim never 1, 61.59 % against 85.51 %),
+`ed06_stages_in_series` (four stages, i_lim falling 15.6x, ONE shared margin)
+and `ed07_feed_and_bleed` (the stack never sees the feed); and since C35
+`edbatch03_multiionic_split` (NaCl + K2SO4: ln(n/n0)/D0 is one number per
+membrane) and `ed09_wine_multiionic` (the thirteen-ion wine the split
+unblocked; ethanol still refuses).  Gates: `check_ed_batch` (11 by-hand
+sabotages, two of which did not do what was predicted; arm (j) the
+multi-ionic rig) and `check_ed_stack` arm (h) (charge balance and the rule,
+recomputed; three sabotages, one -- the z^2 share -- caught ONLY by the rule
+arms, because it is charge-balanced).  Record:
+[`docs/design/the-limiting-current-that-falls-while-you-watch.md`](docs/design/the-limiting-current-that-falls-while-you-watch.md).
+
+### AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24)
+
+**AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  An advisory
+carries `where` (the innermost open `AdvisoryFrame`) and `status` (`accepted`
+| `trial`), both stamped by the SINK, not by the sites that raise them; THE
+DEFAULT IS `accepted`, status only ever moves TOWARD the answer, and the block
+PARTITIONS on that stamped field — never on a similarity heuristic.  Frame the
+search where the search IS, not at every caller.  NOT covered: the recycle
+Wegstein, the Gibbs multi-start, Wang-Henke and both time integrators.  Gate:
+`check_advisory_attribution`.  Record:
+[`docs/design/advisory-attribution.md`](docs/design/advisory-attribution.md).
+
+### THE PELLET IS A POINT, AND NOW THE ENGINE SAYS SO (2026-08-18)
+
+**THE PELLET IS A POINT, AND NOW THE ENGINE SAYS SO (2026-08-18).**
+`catalystLoading` is a unit conversion and never claimed to be more: a
+heterogeneous rate constant is reported per gram of dry catalyst and the bed
+makes it volumetric.  But the four reactors that read it — `cstr`, `pfr`,
+`batchReactor`, `dynamicCSTR` — then evaluate the rate at BULK conditions,
+which is the **effectiveness factor taken as η = 1**, and nothing in the
+engine, the dicts or the output said so.  η MULTIPLIES the rate (the
+first-order sphere gives η = 0.1867 at φ = 5), so a bed sized on it can be
+undersized several-fold, silently, at exit 0.  The engine cannot decide
+whether that is the reader's case — a Weisz-Prater check needs the pellet
+dimension and a D_eff, and no case declares either — so it ANNOUNCES and
+judges nothing, the same posture as the extrapolated sub-273 K Antoine and
+the sub-band Davies.  ONE home (`unitOperations/reactor/CatalystPellet.{H,cpp}`,
+on the `ReactionHeat.H` precedent that `batch/` and `dynamic/` already
+include), riding `AdvisoryLog` so it reaches the reader in the end-of-run
+caveat block and not only at its site.  **Zero numbers moved; no golden
+moved.**  Two things this slice paid for, both in the GATE rather than the
+engine, both found by the sabotage protocol: (1) the first negative was
+`cstr01`, a SINGLE-reaction case, and `catalystLoading` is read inside
+`solveMultiReaction` — so its silence was a property of the control flow and
+**a negative that cannot fire pins nothing** (the `check_true_ions` shape,
+caught the same day rather than a year later); (2) the suppression sabotage
+`continue`d past the caveat-block arm, leaving it unproven, so a fourth
+sabotage keeps the log line and drops the advisory — *"announced" without the
+replay is the slightly-louder-form-of-silence the summary block exists to
+end.*  NOT built, and named rather than implied: the pellet itself (a
+`kind catalyst;` asset record mirroring `Adsorbent`, a D_eff arity ruling, a
+rate multiplier in the same four reactors) — scope in
+[`docs/design/edutools-curriculum-survey.md`](docs/design/edutools-curriculum-survey.md) §6.1.
+Gate: `check_pellet_announcement` (4 sabotages; states the reach it does NOT
+have — no corpus case declares `catalystLoading` on a `pfr`).
+
+### THE REFERENCE RUNG — a declared field the hot path did not honour (2026-08-06)
+
+**THE REFERENCE RUNG — a declared field the hot path did not honour
+(2026-08-06).**  `h_pure_ig` / `s_pure_ig` / `g_pure_ig` refuse on a non-gas
+`standardThermochemistry.referenceState` before the Cp check, quoting the
+record's own word and naming `h_formation` as the remedy — the old message was
+advice that creates the bug; `datumOnIdealGasRung()` is kept SEPARATE from
+`hasCpIdealGas()`.  `water.dat` carries ONE formation datum, the ideal gas's,
+BY RULE (`check_record_form`: one datum per component, the other phases
+derive) -- this sentence used to call it a MISSING SECOND DATUM, and a
+`pureLiquid {}` block added on that reading was taken out again.  What is
+open is the DERIVATION: the liquid rung crosses through the Watson latent
+heat, 0.57 kJ/mol off CODATA's H2O(l) at 298.15 K; the remedy is an Hvap(T)
+grammar, RESERVED for Vítor (record
+[`docs/design/what-water-dat-does-not-say.md`](docs/design/what-water-dat-does-not-say.md)).
+Gate: `check_reference_rung`.
+Record: [`docs/design/reference-rung-refusal.md`](docs/design/reference-rung-refusal.md).
+
+### ICE IS A PHASE, NOT A SPECIAL CASE (2026-08-07)
+
+**ICE IS A PHASE, NOT A SPECIAL CASE (2026-08-07).**  `SolidPhase::fEffective`
+returning `Psat(T)·exp(−ΔG_fus/RT)` at the crystal's index — and ZERO at every
+other — is the entire implementation; freezing-point depression falls out of
+K = 1, derived and never declared.  `component <name>;` is REQUIRED (solute
+inclusion is not modelled); `K_f` is derived from a cited `Hfus`, and a record
+with none keeps its declared value.  A status guard armed on one of two routes
+guards neither.  Prose staleness is deliberately NOT gated.  Gate:
+`check_ice_freezing`.  Record:
+[`docs/design/ice-as-a-solid-phase-of-the-solvent.md`](docs/design/ice-as-a-solid-phase-of-the-solvent.md).
+
+### THE STRUCTURAL SLICE (2026-08-05/06) — the layering now HOLDS, and the machinery that enforces it got its own arity treatment
+
+**THE STRUCTURAL SLICE (2026-08-05/06) — the layering now HOLDS, and the
+machinery that enforces it got its own arity treatment.**
+
+* **I17 and I18 are ASSERTED, not bounded** (`global-invariants.md`).  Every
+  pinned upward edge was the same defect — ONE shared concept filed inside a
+  consumer.  `PINNED_UP` is empty; the only cycle left is the ACCEPTED
+  `solver ↔ thermo` (§7.3).  Debts in
+  [`docs/architecture/module-boundaries.md`](docs/architecture/module-boundaries.md).
+* **`result/` and the tooling plane.**  `result` (the pipeline's output
+  records) and `io` (domain serialisation) are subsystems in the layering;
+  `curation` sits BESIDE the stack under a stronger rule — *a tool may read
+  the runtime, nothing in the runtime may read a tool, only `applications/`
+  joins the planes.*  A finding record is neutral data and belongs at the
+  bottom: [`docs/design/where-a-finding-record-lives.md`](docs/design/where-a-finding-record-lives.md).
+* **`bin/curate/debt_registry.py` — ONE home for every accepted violation.**
+  Waivers were scattered across eight of the 92 `check_*` scripts: the arity
+  doctrine broken by the machinery built to enforce it.  Each entry carries
+  why / remedy / blocker.  `check_debt_registry` keeps it the only home and
+  refuses an entry no gate reads; it does NOT judge whether a waiver is still
+  true — that is each gate's stale-pin arm.  (`check_ion_pins.PINS` was
+  renamed `ANCHORS`: a pinned *violation* and a pinned *anchor* are opposites.)
+* **`generated/gateManifest.json` — what each gate CLAIMS, derived by running
+  it** and capturing its own OK line, never transcribed from a docstring.  It
+  records the claim and stated blind spots; it does NOT record sabotages or
+  retirement conditions, because those are not visible in a gate's output.
+* **A DURABLE CAVEAT SURFACE.**  Extrapolations, unverified records and
+  estimates now ride `AdvisoryLog` into the result JSON AND are replayed once
+  at the end of every run, grouped (`core/AdvisorySummary.H`).  A run with
+  nothing to say says so — silence must mean "nothing raised", never "the
+  block did not run".  All five binaries emit it (the two dynamic ones
+  through `src/dynamicDriver/`, which is why `check_caveat_surface` arm (d)
+  scans each main AND the driver it includes).  **The log is per PASS; a
+  console line may be per PROCESS** (2026-09-27): a site that prints once
+  per run raises through `AdvisoryLog::addAnnouncedOnce(key, …)`, never an
+  `add()` behind a latch of its own — the per-pass clear erased such a fact
+  from every pass after the first, so a sweep's one-pass block listed NONE
+  of `cavett01`'s seven unreviewed records.  Arms (f)-(h); record
+  [`docs/design/a-fact-raised-once-per-process.md`](docs/design/a-fact-raised-once-per-process.md).
+* **`Trange unknown;` (AP3).**  Three states, not two: a declared window, a
+  DECLARED absence, or no key at all.  An impossible interval (`hi <= lo`)
+  now REFUSES at construction — extrapolation needs a real domain to
+  extrapolate from.  Six records migrated.
+* **`provenance fittedToCase;` (AP4).**  A record shipping transport
+  parameters must say where they came from, and a fitted set must NAME the
+  case it was fitted against.  NF270's header quoted permeabilities its cited
+  datasheet never published (it publishes rejections); the false KIND of claim
+  was removed rather than a number chosen, so no value and no golden moved.
+* **`bin/runTests` is the VERIFICATION AND REGRESSION corpus (G2)**, with a
+  named validation subset of seven cases —
+  [`docs/architecture/verification-and-validation.md`](docs/architecture/verification-and-validation.md).
+  A PASS proves an answer has not moved from a self-recorded golden, never
+  that it is right.
+* **The sealing closure is OBSERVED, not guessed (D3, first slice).**  The
+  resolver seam carries an opt-in consumption ledger, and `bin/choupo-import`
+  REFUSES an under-staged seal — verified by reproducing the 2026-08-04
+  Edwards defect, which it catches earlier than the golden did.  The
+  hand-written `want()` list STAYS: one run cannot see a record a model reads
+  only for other component sets.
+
+Gates added: `check_debt_registry` · `check_caveat_surface` · `gate_manifest
+--check`.  All sabotage-verified, and three sabotages found defects in the
+gates themselves rather than in the engine.
+
+### A COLUMN OVER A CHEMISTRY — the effective stage K (built 2026-08-04)
+
+**A COLUMN OVER A CHEMISTRY — the effective stage K (built 2026-08-04).**
+`ThermoPackage::stageK(T, P, zStage, x, y)` is the ONE entry a tray asks for
+equilibrium: molecular → `Kvec`, byte-identical; reactive → an effective
+APPARENT K, the ions internal to the stage, the Jacobian never sees one.  A
+K-VALUE IS AN INCIPIENT QUANTITY: a subsaturated or above-band trial is priced
+over the speciated liquid (a typed `NonConvergence` is absorbed, a REFUSAL
+never is); a trial leaving the simplex is projected and ANNOUNCED.
+`adiabaticFlash` reads the stream's `vf`.  Gate: `check_stage_identity`.
+Record: [`docs/design/sour-water-stripper-scope.md`](docs/design/sour-water-stripper-scope.md) §6a.
+
+### Pinch — P1 targets + P2 analysis table (built 2026-08-03; P3 area-cost stays UNAUTHORISED)
+
+**Pinch — P1 targets + P2 analysis table (built 2026-08-03; P3 area-cost
+stays UNAUTHORISED).**  A `pinchPass` PostProcessor in the postDict chain:
+Linnhoff-Flower problem table printed cascade by cascade,
+`pinch.Q_H_min_kW / Q_C_min_kW / T_pinch_K` KPIs,
+`reports/pinch/compositeCurves.csv`; P2 (ratified 2026-08-03) adds the
+candidate-match ANALYSIS table `reports/pinch/candidateMatches.csv`
+(exhaustive hot×cold pairs per region, the exact counter-current
+end-approach bound, the CP rule binding only AT the pinch — a violating
+pinch match keeps its away-from-pinch duty, said so) + the coursework
+violation diagnostics (heater below / cooler above the pinch, whose sum
+equals the current-vs-target excess).  **Every feasible row is a
+"thermodynamically admissible candidate" — the word "optimal" never
+appears (gate-enforced), and the pass never rewrites the network.**
+Method hypotheses stated in `PinchPass.H`.  Witness
+`pinch01_four_stream_classic` (hand-worked cascade + candidate table in
+its header); gates `check_pinch_p1` + `check_pinch_p2` (independent
+recomputation, both sabotage-verified).  Scope:
+`docs/design/pinch-programme-scope.md`.
+
+### PC-SAFT association — built 2026-08-03 with the three ratified amendments
+
+**PC-SAFT association — built 2026-08-03 with the three ratified amendments**
+(extensible (nD,nA) site representation behind `siteCounts()`; nested
+tolerances X-fixed-point 1e-14 under the 1e-12 η bisection; widened
+validation: X^A echoed + closed-form oracle + non-associating corpus
+untouched at 1e-10).  The trio `assocScheme/epsAB_K/kappaAB` extends the
+component's `pcsaft{}` block, all-or-nothing, Wolbach-Sandler cross rules,
+kij = 0 announced.  **THE SCHEME IS PART OF THE FIT** (paid for once: the
+G&S-2002 water set is 2B — the paper's own site count — and curated as 4C it
+passed a pure-density anchor by coincidence while the ethanol/water mixture
+flash collapsed; a mixture witness catches what a pure anchor cannot).
+Witnesses `pcsaft03_association_pure` + `flash20_ethanol_water_pcsaft`
+(predictive vs fitted NRTL side by side); gate `check_pcsaft_association`
+(independent Python closure, per-set anchors, sabotage-verified); theory
+guide `ch:pcsaft`.  Sealing note: per-unit `thermo{}` overrides ride the
+importer's dependency closure since flash20 (a sealed case must never change
+physics on sealing).
+
+### THE PROBLEM SOLVED IS NOT ALWAYS THE PROBLEM POSED (ruled 2026-08-11)
+
+**THE PROBLEM SOLVED IS NOT ALWAYS THE PROBLEM POSED (ruled 2026-08-11).**  An
+ADVISORY says the answer is qualified; a DIVERGENCE says the answer is to a
+DIFFERENT QUESTION — `core/ProblemDivergence.H`, printed ABOVE the caveats,
+emitted ABOVE the KPIs, written to `converged/problemDivergence`.  **The word
+here used to be "ALWAYS" and the engine did not do it (corrected 2026-09-07):**
+the banner and the caveat block both sat inside the `else` of `if (outerDict)`,
+so a case with an outer driver printed NEITHER, and the corpus ships plenty
+of them.  The banner and the block RUN under an outer driver now, describing ONE
+named pass — the representative pass where the driver has one, otherwise the
+LAST — and never a union across passes.  The FILE is a different question and
+is Vítor's (task #77): a driver with no representative pass still writes no
+`converged/` and so no `converged/problemDivergence`, and whether a sweep
+should write one at all is his decision, not the engine's to take by
+accident.  A substitution nobody authorised is REFUSED; a declared approximation is
+RECORDED, never refused.  The authorisation lives ONCE at the TOP LEVEL of the
+thermophysical system, parsed ONCE at `buildV2Dispatch`; the decision has ONE
+home (`resolveIdealPairSubstitution`).  NOT covered: only `shortcutColumn` and
+the three pair-parameter activity models are wired.  Gate:
+`check_problem_divergence`.  Record:
+[`docs/design/problem-divergence-contract.md`](docs/design/problem-divergence-contract.md).
+
+### THE MODEL-BOUNDARY STEP IS ACCOUNTED, NOT CHARGED TO THE UNIT (2026-08-09)
+
+**THE MODEL-BOUNDARY STEP IS ACCOUNTED, NOT CHARGED TO THE UNIT (2026-08-09).**
+Three quantities travel apart and are never collapsed: the RAW imbalance · the
+declared STEP · what REMAINS; the verdict is taken on the third.  The audit is
+INDEPENDENT (it never calls `Flowsheet::thermoFor` — an auditor that reuses
+the auditee's arithmetic checks nothing), and a step is credited only when
+DECLARED · UNAMBIGUOUS · PRICEABLE · READABLE · REPRODUCED under
+`solver/Convergence.H` (`modelBoundaryClosure`; `maxIter` refused).  Gate:
+`check_model_boundary_ledger`.  Record:
+[`docs/design/model-boundary-energy-ledger.md`](docs/design/model-boundary-energy-ledger.md).
+
+### Balance diagnostics, three levels (2026-07-19): total mass · per-element atoms · energy — engine-owned, GUI only draws.  ALL THREE run by DEFAULT on every converged steady run (2026-08-02, roadmap #7):
+
+**Balance diagnostics, three levels (2026-07-19): total mass · per-element
+atoms · energy — engine-owned, GUI only draws.  ALL THREE run by DEFAULT on
+every converged steady run (2026-08-02, roadmap #7):** conservation is the
+curriculum, so none depends on a case declaring `reports {}`; a declared
+block keeps control (`enabled false;` opts out per report), and the refusal
+posture follows provenance — the *default* energyBalance reports a missing
+enthalpy datum as UNAVAILABLE with the remedy (the `status,REFUSED` artefact
+still written), a *declared* one keeps the hard ERROR.  Gate:
+check_default_reports.  ONE shared formula parser
+(`src/thermo/ElementComposition`; `elementalComposition` props op = its
+glass-box surface); steady `elementBalance` report (boundary atoms, its own
+artefact beside massBalance); choupoCtrl accepted-step ledger
+(`BalanceSnapshot` contract, `balanceTrajectory.csv` + `.meta`); the
+dynamicCSTR physical-energy claim honestly refuses (Cp/convective ODE ≠
+derivative of canonical U/H) until the model is reformulated.  Gates:
+check_element_composition / check_element_balance / check_ctrl_balance.
+
+### Ctrl FIRST LAW — three probed routes; the ledger CLAIMS (2026-08-01)
+
+**Ctrl FIRST LAW — three probed routes; the ledger CLAIMS (2026-08-01).**
+The dynamicCSTR's energy equation is chosen by PROBING the enthalpy surface
+(never by name): canonical per-species (stored H = Σnᵢhᵢ(T), the ODE its
+exact derivative — witness `ctrl11`, closure 1.4e-7, second-order in deltaT
+= the ledger's trapezoid, not the physics); **mixture-H** when the
+per-species leg cannot serve (the electrolyte salt is mixture-level,
+`aqueousSaltEnthalpy(m,T)` — the vessel stores TOTAL H as a STATE,
+dH/dt = Ḣin−Ḣout+Q on `H_liquid_formation`, partial-molar terms implicit,
+reactions inside the datum, T a Newton readout — witness `ctrl10`, 7.9e-11);
+Cp/convective for the datum-less toys, refusing as ever.  The route is
+ANNOUNCED with its reason.  choupoCtrl's balance ledger carries the energy
+rung on the same accepted-state trapezoid as material.  Gate:
+`check_ctrl_balance` (claim + refusal + step-order + T-dependent-Cp fixture,
+sabotage-verified).
+
+### outerDict over choupoCtrl (2026-08-01)
+
+**outerDict over choupoCtrl (2026-08-01).**  The ctrl campaign is a PURE
+FUNCTOR (fresh units/controllers per evaluation; `writeOutputs` gates every
+artefact), so `system/outerDict` wraps the dynamic path with the SAME
+OuterDriver architecture as choupoSolve — a piecewise-constant control
+profile IS a `Schedule`, varied via `controllers[i].schedule[j].value`.
+Witness: `ctrl16_williams_otto_optimal`.  Trap learned: dict clones do NOT
+carry runtime-inserted blocks — the 0/-state seeding runs inside the
+functor, idempotent.
+
+### External-reference battery (2026-08-01)
+
+**External-reference battery (2026-08-01).**  Beyond self-recorded goldens,
+cases pinned on PRIMARY published anchors, each stating what is and is not
+the portable part: `cavett01_recycle_train` and the Williams-Otto four
+(`ctrl12`-`ctrl14`, `ctrl16`).  Pattern for future references: one coherent
+primary source end to end, never a blend; provenance of every number stated
+in the case.  Spec + anchors:
+[`docs/design/williams-otto-reference-case.md`](docs/design/williams-otto-reference-case.md).
+
+### Batch campaign LEDGERS — material + energy (built 2026-07-11, forum #99/#101/#102)
+
+**Batch campaign LEDGERS — material + energy (built 2026-07-11, forum
+#99/#101/#102).**  choupoBatch carries two structured ledgers: the MATERIAL
+ledger (one `TransferRecord` per material edge, per-package enthalpy at each
+package's own T, MONOTONIC H-validity — a poisoned record never resurrects)
+and the ENERGY ledger (one `EnergyRecord` per segment of constant physics).
+Every integral is an EXACT state difference on the elements datum, never a
+quadrature; `chargeFrom` solves T_mix by H-EQUALITY (fallback = molar
+average, announced + drained as a named gap).  The campaign energy balance
+claims a verdict ONLY when every piece is ledgered and priceable — otherwise
+UNAVAILABLE quoting each `energyLedgerGap()` verbatim.  Heat-of-crystallisation
+is SHARED steady↔batch (`CrystallisationHeat.{H,cpp}`).  **DATUM AMENDMENTS
+(A5, 2026-08-01):** a recipe that RE-DECLARES the feed jumps the datum — the
+jump is priced by the unit (`takeDatumAmendments()`) and ledgered as
+`feedAmendment` records against the external boundary (witness
+batch19_feed_switch_purge; gate check_feed_switch; T/u/P swings refuse by
+name).  **Phase (f) UTILITIES, both halves SHIPPED (temporal half
+2026-08-03):** every VALID ledger record with a service T is allocated by the
+SAME `pickForDuty` rule the steady report uses, unserved records LISTED never
+dropped; the demand STAIRCASE (`reports/utilities/utilityDemand.csv`) keeps
+the ledger as SOLE authority (a profile that does not reproduce its record is
+REFUSED and the record stands), impulses are an explicit class, ONE
+allocator.  `notifyStateWillChange()` closes the segment PRE-mutation, and
+`takeContinuousDischarge(tNow)` carries the committed time.  Gate:
+`check_temporal_utilities`.  Full record:
+[`docs/design/batch-temporal-utilities-proposal.md`](docs/design/batch-temporal-utilities-proposal.md) §8.
+
+### General heterogeneous-thermo solver — SETTLED 2026-07-06 (do NOT relitigate)
+
+**General heterogeneous-thermo solver — SETTLED 2026-07-06 (do NOT relitigate).**
+A flowsheet may run units in DIFFERENT thermo WORLDS on ONE global component set,
+each unit computing in its own world via a per-unit `thermo {}` override —
+including MANIFEST worlds (electrolyte Pitzer), not only flat activity/eos:
+`thermoFor` routes an electrolyte override through the `ThermoPackageBuilder`
+(subset-aware — it picks its active salt through the component record that OWNS
+the solid phase `constant/chemistryDict` declares, never by list order, refuses
+naming the candidates when nothing declares one, and announces the choice;
+other salts are spectators — 2026-09-27, record
+[`docs/design/the-salt-chosen-by-its-position.md`](docs/design/the-salt-chosen-by-its-position.md)).  The `IsothermalFlash` LL Gibbs minimisation
+restricts to the ACTIVE components (feed `z > 0`) so a sparse stream in a big
+flowsheet still splits — inactive species stay 0 in both phases (mass conserved
+exactly; identical to the full search when all species are active).  Reference
+case: **`tutorials/plant/lithiumBrinePlant`** — a SECTORED, WIRED plant, 5 sectors
+as composite boxes across 4 worlds (Pitzer / NRTL LLE / Gibbs / molecular), mass
+closes on every element.  Cases are SELF-CONTAINED via a SEALED `constant/propertyManifest`
++ mirrored `constant/` records (`bin/choupo-import` materialises the dependency closure + a per-record
+sha256 manifest; the runtime is FORBIDDEN the installation catalogue when sealed;
+versioned `Choupo-2607` per `data/standards/CATALOGUE.dat`).  The
+architecture is
+[`docs/architecture/property-architecture.md`](docs/architecture/property-architecture.md);
+the 2026-07-06 working notes were a session memory and are NOT in the
+repository, so this paragraph is the record of the decision.  **The seal is
+COMPUTATIONAL since 2026-08-03** (`sealSchema computational;` — a
+sealing-SCHEMA migration, never a scientific reseal): the claim is the PARSED
+content (`src/core/DictCanonical`), so comment/formatting/unit-spelling drift
+is COSMETIC (announced, verdict intact) while a moved value/dimension/key
+diverges and `onDivergence refuse` fires exactly as before.  Gate
+`check_seal_schema`; record:
+[`docs/design/computational-seal-migration.md`](docs/design/computational-seal-migration.md).
+
+### Sequential-plan contract (tears + order) — SETTLED 2026-07-25, do NOT relitigate
+
+**Sequential-plan contract (tears + order) — SETTLED 2026-07-25, do NOT
+relitigate.**  The solver executes the flattened units IN DECLARED ORDER
+(never a silent topo-sort), and the 0/ completeness pre-seeding retired the
+old "input stream not in registry" guard — so an undeclared recycle tear AND
+an out-of-order acyclic flowsheet both silently read stale 0/ seeds (wrong
+answer, exit 0; both reproduced before the fix).  The contract, validated at
+the flatten seam in `Flowsheet::validateSequentialPlan` (shared by choupoSolve
++ choupo-lint; `-init0` keeps its own UNREACHED accounting): **every material
+input = domain inlet ∨ EARLIER unit's output ∨ declared tear; every declared
+tear = a backward edge closing a REAL cycle.**  This SUBSUMES "graph−tears is
+acyclic" and validates the order itself.  SEVEN named refusals (MISSING TEAR
+with the cycle chain · INVALID ORDER with a paste-ready valid order · FORWARD
+/ OFF-CYCLE / UNKNOWN / INLET / UNCONSUMED tear), findings collected,
+remedy-bearing; a
+valid recycle plan ANNOUNCES its cuts (`[plan]`, verbosity ≥ 2).  Cycle
+*detection* is the engine's job; tear *choice* stays the author's (energy
+heat-link feedback stays auto-detected — the asymmetry material/energy is in
+the declaration of the CUT, not the detection).  A non-converged recycle now
+returns **exit 1** and `converged/` is NOT written (the name is a contract).
+Corpus evidence: 14/14 tear cases already satisfy it, 158 flat cases have
+valid order, 0 redundant tears.  Deferred, named: `tearSelection auto`
+(Phase 2, solverDict, loud heuristic), `laggedStreams` (deliberate lag is a
+separate feature, never a tear), stream freshness marks (batch/ctrl future).
+
+### Stream-state directories + topological drill-in — RATIFIED 2026-07-06 (the constitutional spine; do NOT reopen the ontology unless a concrete case proves the contract fails)
+
+**Stream-state directories + topological drill-in — RATIFIED 2026-07-06 (the
+constitutional spine; do NOT reopen the ontology unless a concrete case proves
+the contract fails).**  A stream's STATE lives in its OWN file on disk,
+OpenFOAM-style — never inside `flowsheetDict` (TOPOLOGY only): `0/` (COMPLETE
+initial state, N streams == N files, missing/orphan FATAL), `converged/`
+(steady solution), `iterations/` (numerical history, NEVER physical time),
+`0.01/` `0.02/`… (transient snapshots), `design/`, `economics/`.  Stream role
+is inferred from TOPOLOGY; drill-in changes the DOMAIN, not the stream (the
+child `0/` from `converged/` by default, never a silent "latest");
+`choupo-init0` never overwrites without `--force`; a `streams {}` block in any
+flowsheetDict is REFUSED loudly — no dual reader, no fallback.  Full contract:
+[`docs/architecture/stream-state-architecture.md`](docs/architecture/stream-state-architecture.md).
+
+### The `phases {}` decomposition names AQUEOUS · ORGANIC · SOLID (2026-07-30)
+
+**The `phases {}` decomposition names AQUEOUS · ORGANIC · SOLID (2026-07-30).**
+`componentMolarFlows` stays the OVERALL material and the apparent basis is
+NEVER disturbed; a `phases {}` block decomposes it and must sum back exactly.
+Three rules, each fixing a wrong answer every test had passed: (1) **the
+speciation attaches to the AQUEOUS material** — top level when there is one
+liquid (the stream IS that material), inside `phases.aqueous` when a second
+liquid or a solid is named, because the ions are there and nowhere else; (2)
+**a precipitate is a PHASE, not a species** — a mineral among the aqueous
+species reported a crystal as dissolved, and *closed*, which is why nobody
+saw it; the owning component comes from its own `solidPhases {}` record,
+never matched by name; (3) **a size distribution belongs to its POPULATION**
+— inside `phases.solid`, never at the top level where it could only describe
+"the combined solid".  **Names are checked against what they name:** outlets
+bind POSITIONALLY, so `outputs ( aqueous organic )` was right only while the
+solvent happened to be declared first — the engine refuses an `aqueous`
+outlet holding less solvent than the `organic` one, and refuses the name
+outright in a system with no solvent.  Splits close by SUBTRACTION (one side
+stored, the other derived) so two roundings cannot drift apart.  Reference
+cases: `flash17` (two liquids), `flash16` (precipitate), `flash19` (FOUR
+phases at once).  Gate: `check_phase_speciation` — seven refusals fired
+through the real reader, and **three of them passed with the fix reverted**
+(they test structure, not the check), which is worth knowing before trusting
+a green run.
+
+### A LABORATORY ANALYSIS IS AN INLET — `aqueousAnalysis {}`, the SEVENTH canonical form (A1 shipped 2026-08-09; do NOT fold it into `speciesMolarFlows`)
+
+**A LABORATORY ANALYSIS IS AN INLET — `aqueousAnalysis {}`, the SEVENTH
+canonical form (A1 shipped 2026-08-09; do NOT fold it into
+`speciesMolarFlows`).**  *Inventory is not measurement.*  A
+`speciesMolarFlows … basis analytical;` block declares flows the author has
+ALREADY reconciled, and charge closure is a CONTRACT there — refusing a
+violation is right.  A lab sheet is mg/L with uncertainties, reported partly
+on surrogate formulae, and it does NOT close; that is what is to be
+RECONCILED.  Keeping them apart made this an ADDITION and the corpus blast
+radius ZERO.  THREE LAYERS, THREE HOMES: the MEASUREMENT in `0/<stream>`,
+**never rewritten** (O1 — reconciling into the measurement destroys it and
+the next run reconciles the reconciliation); the RECONCILED conserved
+inventory in `converged/<stream>` under `calculated { analysisReconciliation
+{…} conservedInventory {…} }`, report-only and ignored by the reader (the
+same deletability test `speciation` passes); the EQUILIBRIUM in the answer.
+`as <formula>` resolves its MW through the ONE elemental-formula parser
+(`thermo/ElementComposition`) and its `perFormulaUnit` is DECLARED —
+"alkalinity as CaCO3 is 2 HCO3 per CaCO3" is a convention, not arithmetic to
+invent.  The DENSITY ROUTE is required and explicit (`provenance measured;`
+plus exactly one flow anchor); an ITERATIVE density is refused BY NAME as the
+declared gap.  The solvent is closed by the density AFTER the m = A n
+inversion, never on the ion masses — the bridges are not mass-conserving
+(CaCO3 → Ca + HCO3 borrows an H from the water), so closing on the ions
+leaves that hydrogen unowned.  ONE inverter: `collectBridges` /
+`requireDeclaredNetwork` / `invertMastersOntoComponents` were extracted and
+BOTH forms call them.  Reconciliation is `adjustSingleSpecies` (with
+`adjustChloride` as sugar, expanded aloud) under a MANDATORY
+`maximumCorrection`.  With no rule declared: inside `closureTolerance`
+(0.5 %, a NAMED DEFAULT, announced when it defaults) it passes through
+ANNOUNCED; outside it, it REFUSES naming the two remedies — **never a silent
+adjustment**.  Witness `analysis01_water_analysis_inlet` (+0.7813 % → 0,
+chloride +5.1208 %); gate `check_aqueous_analysis` (the balance recomputed
+independently from the authored mg/L; the charge-weighted adjustment
+identity, because moles and equivalents coincide only for a monovalent ion;
+nine refusals; the negative), sabotage-verified.  **Correction, 2026-08-09:
+this paragraph used to say the witness's own golden does NOT move under that
+sabotage.  It does** — pH 8.1349 against the recorded 7.9077 — and both the
+gate's docstring and the scope doc had recorded so from the day the sabotage
+was performed, while this copy said the opposite.  A doc is not exempt from
+arity: the observation has ONE home, and it is beside the gate that made it.
+
+### A2 SHIPPED 2026-08-09 — `method weightedLeastSquares;`, and the ruling's one-way arrow made STRUCTURAL
+
+**A2 SHIPPED 2026-08-09 — `method weightedLeastSquares;`, and the ruling's
+one-way arrow made STRUCTURAL.**  Minimise `Σ ((x−m)/σ)²` subject to the laws
+the case DECLARES in `enforce ( … )`, a convex QP on `solver/ActiveSetQP`;
+Vítor's boundary — *analysis → reconciliation → ONE admissible composition →
+equilibrium, never a coupled loop* — is enforced by a translation unit:
+`src/streams/AnalysisReconciler.{H,cpp}` includes NOTHING from `thermo/`.  A
+missing σ refuses (`genericWaterAnalysis-v1` was REFUSED, not shipped); pH
+stays refused — it is on the other side of the boundary.  Gate:
+`check_aqueous_reconciliation`.  Record:
+[`docs/design/aqueous-analysis-inlet-scope.md`](docs/design/aqueous-analysis-inlet-scope.md) §8 (A1) and §9 (A2).
+
+### Three-axiom property layout
+
+**Three-axiom property layout** (referenced by `docs/ai/overview.md`):
+(1) INTRINSIC pure-compound props → `data/standards/components/<name>.dat`;
+(2) PAIR-dependent (NRTL/Wilson/Henry) → `data/standards/<feature>/<pair>.dat`;
+(3) EQUIPMENT-dependent kinetics → case `constant/`;
+(4) SAMPLE-specific measured data → case `constant/components/<name>.dat`
+(`Database` overlays it field-by-field over the standard entry).
+
+The full capabilities narrative — props bench, recycle solver, energy streams,
+heat/utility credo, reports chain, multi-sector flowsheets, the
+database catalogue, known limitations, and the roadmap — lives in
+**[`docs/engine-capabilities.md`](docs/engine-capabilities.md)**.
+
+### Property-model architecture — SETTLED 2026-06-05, do NOT relitigate
+
+**Property-model architecture — SETTLED 2026-06-05, do NOT relitigate.**  Full
+contract: **[`docs/property-architecture.md`](docs/property-architecture.md)**.
+One-sentence stance: *property estimation is a RESOLUTION problem solved at
+CURATION time (a glass-box `.dat` the student reviews + promotes), not a
+calculation problem solved at runtime.*  Three layers kept apart (curated data
++ per-value provenance → existing model factories as the interfaces → curation
+tools where the resolver lives); provenance at data + validation boundaries
+only, never the hot path.  Rejected: structure-first/RDKit, `PropertyResult<T>`
+in the solver, a runtime resolver, a parallel interface taxonomy,
+C++20/CMake/Eigen/PC-SAFT/CAPE-OPEN/open-core.
+
+### THE LICENCE OF A SIGMA PROFILE (2026-09-06)
+
+**THE LICENCE OF A SIGMA PROFILE (2026-09-06).**  Vítor asked whether the
+COSMO-SAC parameters could be included in the standard base "if it is legal";
+the primary texts were read that day and the answer is no.  Rule, under §10's
+licence policy: **a dataset with NO licence statement is no-grant and stays
+out** (the VT-2005 page offers the files for download and says nothing about
+rights — silence is not permission); **a NonCommercial permission is out**
+(NIST's README: academic, non-commercial, by BioVia permission — and the UD
+folder forbids redistribution in its own words); **only a WRITTEN open-licence
+grant changes that**, from the dataset's authors, which is a human act nobody
+here can perform.  The 2026-07-26 separation stands.  Trap: two corrupted
+memories said the opposite — `CosmoSac.H` credited the profiles to "the LVPP
+open database" and this file called VT-2005 "US-gov public domain via the NIST
+bundle" — and a `variant "2002"` label is the only thing the engine's guard
+reads, so an LVPP profile pasted under it would run to a silently wrong gamma.
+Gate: `check_cosmo_scrub`, two arms — a `variant "2002"` set whose `source`
+names a foreign database or names neither VT-2005 nor a SYNTHETIC surrogate
+REFUSES; `installed true;` on any VT2005 set in the public tree REFUSES.
+Record:
+[`docs/design/the-licence-of-a-sigma-profile.md`](docs/design/the-licence-of-a-sigma-profile.md).
+
+### COSMO-SAC — the rejection was REVERSED 2026-07-15 (Vítor), for a MINIMAL, glass-box version only
+
+**COSMO-SAC — the rejection was REVERSED 2026-07-15 (Vítor), for a MINIMAL, glass-box
+version only.**  The original blanket rejection was against *bloat* (heavy deps, quantum
+chemistry, thousands of imported compounds, a new architecture).  A lean COSMO-SAC that
+adds NONE of that IS in: the 2002 (Lin & Sandler) variant, exactly the NIST benchmark
+(Bell et al., AIChE J. 2019; reference CODE usnistgov/COSMOSAC — MIT / not subject to US
+copyright; the profile folders it bundles are NOT, see the sigma-profile paragraph below), as a plain
+`ActivityModel` subclass (`src/thermo/activityCoefficient/CosmoSac.{H,cpp}`, model key
+`cosmoSAC`) — no new interface, no new deps, ~150 lines of self-contained C++.  Each
+compound carries its OWN COSMO surface data in its `component.dat` `cosmo { <setName> {
+variant; source; area; volume; sigmaProfile ( … ); } }` block — one or MORE named
+parameter SETS (unlike Joback's single set), 51-point grid −0.025..0.025 e/Å², step 0.001.
+The case PICKS a set: `activityModel { model cosmoSAC; source <setName>; }` (omit `source`
+when a component carries a single set — its lone set is the default; a multi-set component
+then REQUIRES an explicit `source`).  Each set declares its `variant` → the matching
+constants (only `cosmoSAC2002` implemented today; a set with another variant is a LOUD
+error — never mix a profile with the wrong variant's constants).  MULTIPLE SOURCES ARE
+ALLOWED as long as each set names its own (Vítor 2026-07-15): the standard components that
+carry a `VT2005` set carry it as an EXTERNAL REFERENCE ONLY (Mullins IECR 45 (2006) 4389,
+DFT-COSMO; NIST's own README says the bundled VT2005 folder is under a LESS PERMISSIVE
+licence than its code — academic, non-commercial, by BioVia permission — so the values are
+NOT shipped: `licence externalRestricted; installed false;`, the user's own copy via
+`bin/choupo-import-cosmo`; this sentence used to say "US-gov public domain via the NIST
+bundle", which was false — record
+[`docs/design/the-licence-of-a-sigma-profile.md`](docs/design/the-licence-of-a-sigma-profile.md));
+LVPP (MIT, ~2500) and CHAOS (CC-BY, ~53000) are licence-compatible additional sets a
+component may ALSO carry, each labelled — but LVPP's profiles are NOT usable under the
+2002 constants (a different QM protocol; `data/tmp/COSMO_VALIDATION_STUDY.md`), so an
+LVPP set is a NEW variant, reserved, never a `variant "2002"` label.  A component lacking a `cosmo` block, or
+the requested set, is a LOUD error.  NOT for the `data/groupEstimative/` lake (a name
+catalogue, not COSMO targets).  Validated: pure→lnγ=0 exact, water/hexane
+strongly non-ideal, and a bit-for-bit cross-check vs an independent implementation of the
+same equations+profiles.  Still rejected: profile GENERATION (quantum chemistry), bulk
+import of thousands, multiple variants, any new architecture.  Reference case:
+`tutorials/props/molecular/cosmoSAC01_water_ethanol`.
+
+### Property architecture — consolidated; the authority is [`docs/architecture/property-architecture.md`](docs/architecture/property-architecture.md)
+
+**Property architecture — consolidated; the authority is
+[`docs/architecture/property-architecture.md`](docs/architecture/property-architecture.md)**
+(level 2 under the Constitution — authority map:
+[`docs/architecture/README.md`](docs/architecture/README.md); it superseded
+`final-property-architecture.md` on 2026-07-14, kept as historical record).
+Layer-1 data detail in
+**[`docs/architecture/electrolyte-data-architecture.md`](docs/architecture/electrolyte-data-architecture.md)**
+(design record + implementation addendum; earlier iterations in
+`docs/architecture/archive/`).  **THE FLOW: the case's INLINE
+`constant/thermoPhysPropDict` declaration → `ThermoPackageBuilder`
+assembles → `ThermoPackage` computes → unit ops.**  The runtime
+assembly step is the BUILDER (loads + assembles, NEVER estimates); "resolver" is
+reserved for CURATION-time estimation.  The reference basis is a CONSEQUENCE of
+the declared formulation, not an independent selector: choosing `formulation`
+settles the activity model, the standard states and the Henry treatment
+TOGETHER (the **one-knob rule**), so nothing hardcodes "aqueous" and nothing
+picks a rung separately either.  **There is no `ReferenceRung` type** — the
+name appears in older notes as a planned resolver and was never built; do not
+go looking for it, and do not build one without a case that proves the one-knob
+rule insufficient.  Conceptual separation, glass-box — the kinds: components /
+model species / solid phases (a component's `solidPhases{}`) / chemistry sets /
+property methods / parameter databanks / **the INLINE manifest (the CENTRE — a
+case DECLARES its package, it does not merely list components; the shared
+catalogue + `package <name>;` selector were retired 2026-07-15)**.
+Basis vocabulary: **flowsheet/component basis** (equivalently the *apparent*
+basis — that word is accepted) vs **aqueous-species basis**; "true basis" is
+deprecated — see §data tree.  This is the
+DATA-layout half; root `docs/property-architecture.md` is the
+resolution/MODEL half (a deliberate name twin — root = level-3 deep reference);
+the **arity doctrine** (`docs/ai/data-doctrine.md`) is a SLICE under it
+(reference selection folds into the formulation, per the one-knob rule above).
+The flat-components O(1) lookup (§7 below,
+2026-06-07) survives because it needs no machinery to survive: `Database.cpp`
+resolves `components/<name>.dat` by exact-name path concatenation, so any basis
+split is SOURCE-layout, never a runtime directory-walk, and the two decisions do
+not conflict.  (This sentence used to credit `generated/indexes/` and
+`flatCaches/`, neither of which was ever built — a doc claiming machinery that
+does not exist sends the next reader looking for it.)  **General basis reconciliation — the vertical SPIKE is BUILT (2026-08-03),
+the MASS MIGRATION stays UNAUTHORISED.**  The two-unit chain
+(`tutorials/steady/thermo/basis01_two_unit_chain`) carries the species basis
+across a model boundary as MATTER — a `speciation {}` block stamped
+`origin "solved:<unit>"` or `"transported:<unit>"`, `solvedAtT` stated — and
+a block declaring no `network`/`basis` is REFUSED.  Gate `check_basis_spike`;
+record:
+[`docs/design/basis-reconciliation-spike.md`](docs/design/basis-reconciliation-spike.md).
+**Do NOT generalise to the corpus without Vítor's decision.**  **Grammar
+consolidated 2026-07-04** (professors+students fora, `docs/design/thermo-grammar-*`):
+per-GROUP reference rungs within a phase (A1), vapour/transport as method slots
+(A2), declared+verified parameters (A3); families implemented: electrolyte.*,
+activity.*, `solution.henryDilute` (KK/KI Henry); the five legal axes of
+heterogeneous thermo = models/PHASE, conventions/GROUP, correlations/COMPONENT,
+parameters/PAIR, packages/UNIT — one Gibbs surface per phase, never two.  Rejected: the
+"subtract / freeze the core" counter (the complexity is irreducible thermodynamics
+— EXPOSE it cleanly in explicit files, don't hide it in overloaded components).
+
+
+## 10. Conventions for AI assistants working on this code
+
+### Licence policy — CODE vs DOCS vs DATA (clarified 2026-06-18, do NOT relitigate)
+
+**Licence policy — CODE vs DOCS vs DATA (clarified 2026-06-18, do NOT relitigate).**
+* **CODE:** GPL-3.0-or-later. Dependencies should be permissive unless Vítor
+  explicitly accepts the GPL compatibility and redistribution consequences.
+  LGPL/GPL libraries are not added casually; this project favours readable,
+  local C++ over dependency expansion.
+* **DOCS / MANUALS:** the guides/manuals under `docs/` are a separate
+  documentary work authored, curated, and editorially maintained by Vítor
+  Geraldes and Pedro Mendes. **The AUTHORSHIP LINE OF EACH GUIDE IS DECIDED IN
+  ONE PLACE — `docs/preamble.tex`'s `\manualauthors`** (ruled 2026-08-18,
+  Vítor: *"fico só eu"*, on the EduTools Guide).  **Read `preamble.tex` for
+  the answer; it is deliberately NOT repeated here.**  A guide declares only
+  WHICH list it carries (`\propertyTheoryAuthors`, `\eduToolsAuthors`, or
+  nothing); the names themselves live in that one macro, so a person's
+  authorship of record cannot drift between a guide and the file that decides
+  it.  This paragraph learnt that twice: it once named the Developer Guide as
+  the sole sole-author exception when the macro already said otherwise, and it
+  then carried a verbatim copy of the macro's answer under a sentence telling
+  the reader not to copy the macro's answer — which went false the day a third
+  list arrived (2026-09-22, Mónica Faria on the EduTools Guide, at Vítor's
+  request, as its curator).  A second home for a fact about who answers for a
+  work is the worst kind to let drift. Their prose, figures, and explanatory text are
+  CC BY-SA 4.0. Code excerpts, Choupo case files, and other machine-readable
+  examples included in the guides remain GPL-3.0-or-later. Do not put the
+  manuals under GPL wholesale, and do not treat external project contributors
+  as guide authors.
+  **Authorship of record is not a drafting prohibition (ruled 2026-08-06,
+  Vítor: "you are fully authorized to make the development guide.  My role is
+  only as a curator").**  An assistant had read the sole-author line as a bar
+  on writing into `developerGuide.tex` and declined to, which is the wrong
+  reading and cost the guide a slice of material it needed: the line records
+  WHO answers for the work, and §1 already states that substantial parts of
+  the documentation were drafted with assistance under human curation.  Draft
+  freely; the attribution line does NOT change, and the model identifier never
+  appears in the tree.
+* **DATA** (`data/standards/` `.dat`, vendored case data): the repo is
+  **multi-licensed by component** — each data file/folder may carry **its own open
+  licence, INCLUDING copyleft / share-alike** (CC-BY-SA, GPL-as-data, etc.).
+  Bundled data is **aggregation**, not a derivative of the GPL-3.0-or-later code, so it does
+  NOT infect the code; the data keeps its licence (honour attribution + share-alike
+  on *that* data).  Ship a per-source licence manifest + NOTICE.
+* **Excluded regardless of copyleft** (these are NOT copyleft issues): **NonCommercial**
+  (CC-BY-NC, e.g. CAS Common Chemistry — restricts commercial use, against Choupo's
+  free-for-commercial ethos) and **no-grant / all-rights-reserved** (NIST SRD/WebBook,
+  Engineering Toolbox, DIPPR, Yaws, CRC, REFPROP — nothing to honour).  Also watch
+  **provenance laundering** (copyleft data that secretly contains proprietary data).
+* Cite the **PRIMARY** source per value, never the aggregator's arrangement.
+
+### C++17 — CLOSED 2026-08-27, with the argument that had been missing
+
+* **C++17 — CLOSED 2026-08-27, with the argument that had been missing.**  The
+  choice was registered in two places and argued in neither, and
+  `property-architecture.md` §106 rejected C++20 because it *"contradicts
+  settled decisions (C++17, …)"*, which is circular.  Three facts close it, and
+  they were MEASURED, not remembered:
+  (1) **`OpenFOAM-dev` compiles with `-std=c++14`** — checked at commit
+  `09951d6`, 2026-08-27, on every platform rule in the tree (g++, clang, icx,
+  ARM, PPC), not one `c++17` anywhere.  The project this one takes as its
+  model is a standard BEHIND us, with a far larger codebase and decades of
+  maintenance.
+  (2) The WASM toolchain is pinned at **emscripten 3.1.6 (2022)** and the whole
+  site is built from it.  In C++17 the gap between g++ 13 and that clang is
+  narrow; in C++20 it is wide, so **moving would make the site-breaking failure
+  of 2026-08-27 MORE likely, not less** — and it also widens the blind spot
+  `check_wasm_dialect` states about itself.
+  (3) Nothing here needs it.  This is hand-rolled numerics with no template
+  metaprogramming; C++20 would buy convenience, not capability.
+  Do not reopen.  If a concrete feature is ever genuinely blocked by C++17, the
+  prerequisite is upgrading emscripten FIRST and separately — never the two at
+  once.
+* **No external libs.**  No Boost/Eigen/Sundials — hand-rolled Newton,
+  Gauss, RK4, Michelsen.
+* **Make + custom rules.**  No CMake (`make/compiler.mk` + `rules.mk`).
+* **GPL-3.0-or-later source-code licence (settled 2026-06-18); documentation manuals under CC BY-SA 4.0.**
+  Contributors keep their copyright (`AUTHORS`, source headers, DCO sign-offs,
+  and git) for code, cases, tests, models, and executable examples; inbound =
+  outbound under GPL-3.0-or-later — **no CLA, no copyright assignment, no
+  commercial dual-licence**.  The guides/manuals are Vítor Geraldes + Pedro
+  Mendes only.  The *Choupo* name/marks are separate (no
+  open-source licence grants trademark) — REGISTERED trademark of
+  **TalentGround Lda.** (INPI PT 769805 MNA, classes 9 and 42).  **Do NOT
+  add** a CLA, commercial/dual-license, or closed proprietary modules.
+  Value is reputational/pedagogical, not commercial.  Detail: [`CONTRIBUTING.md`](CONTRIBUTING.md),
+  [`TRADEMARKS.md`](TRADEMARKS.md).
+* **Brand / NAME CASING — SETTLED 2026-06-04, do NOT reopen.**  Three registers
+  by surface: **`CHOUPO`** (uppercase) = visual product brand on BRAND/UI
+  surfaces (logo, banner art, GUI navbar/TopBar wordmark, splash, homepage
+  hero); **`Choupo`** (initial cap) = PROSE (README, docs, comments, commit
+  messages, licence text — never `CHOUPO` in running prose); **`choupo`** /
+  `CHOUPO_*` = CODE conventions (binaries, `Choupo::` namespace,
+  `CHOUPO_HOME`/`CHOUPO_VERSION` macros).  "Choupo" is a word (the poplar),
+  not an acronym — prose takes a single capital; the acrostic is a decorative
+  backronym, not the origin.
+* **File-first case layout** — dicts everywhere; **never** YAML/JSON/TOML.
+* **Explicit factory pattern, no auto-registration.**
+* **One binary per problem class** (steady root-finding vs DAE-with-control vs
+  recipe-driven batch vs property eval).  Do **not** split *within* a class for
+  numerical-strategy variants (no `flashFoam`/`cstrFoam`); all strategies
+  (Newton, Wegstein, RK4, Nelder-Mead, …) coexist inside each binary, selected
+  via dicts.
+  **THE FIFTH CLASS IS `choupoSemiContinuous` (ruled 2026-09-20, Vítor —
+  *"Como é que um aluno sabe que choupoCtrl simula um reactor feed and
+  bleed?!  Cria a classe semiContinuous!"* — do NOT relitigate, and do NOT
+  rename it to `unsteady`/`dynamic`/`transient`: the word is his).**  The
+  time-integrated flowsheet of unit operations connected by streams whose
+  internal states are non-stationary, WITHOUT a control loop: continuous
+  transients (start-up, disturbance), fed-batch, feed & bleed.  `choupoCtrl`
+  stays as a distinct class BY RULING — the same integration with the CONTROL
+  layer, because process control is a distinct discipline (one course, its
+  own `tutorials/ctrl/`).  MEASURED before it was built: a feed & bleed
+  reactor already ran (`dynamicCSTR`, continuous inlet and outlet, chained by
+  the router, controllers OPTIONAL) and the student could not find it because
+  the binary was called Ctrl — so the slice is a NAME and an EXTRACTION, not
+  new physics.  ONE home: `src/dynamicDriver/` (band 1 of the layering,
+  beside `outerDriver`); `choupoCtrl/main.cpp` is the driver + the Controller
+  and Signal factories, `choupoSemiContinuous/main.cpp` is the driver alone,
+  and the driver holds no `if (binary == …)` — the two differ only through
+  `DynamicDriverConfig` (name, banner, usage, instant tag, the class-boundary
+  policy).  THE BOUNDARY IS REFUSED ONE WAY AND ANNOUNCED THE OTHER:
+  `choupoSemiContinuous` REFUSES a `controllers` block by name (a control
+  loop is choupoCtrl's class); `choupoCtrl` with no controllers ANNOUNCES
+  `[class] no controllers declared …` and runs — `ctrl12_williams_otto` is
+  the open-loop plant of a reference battery and stays in `ctrl/`.  The
+  asymmetry is deliberate: a loop under the loopless binary is a category
+  error, a loopless case under the loop binary is merely the wrong door.
+  THE QUASI-STEADY SEAM (#185) IS BUILT (2026-09-30, Vítor's ruling: a
+  GENERIC adapter): `type quasiSteady;` wraps ANY steady unit, re-solved on
+  its inlets at every accepted state (`flowsheet/UnitInputs.H` is the ONE
+  home of how a unit is handed its inlets, shared with choupoSolve); units
+  gain PORTS (several outlets; several inlets on a unit with no inventory,
+  a vessel keeping ONE feed face); algebraic units are solved in
+  topological order within the instant and a loop with NO vessel on it is
+  REFUSED (it has no time constant -- it is a steady recycle).  Witness
+  `unsteady03_nf_feed_and_bleed_startup`, which must END on membrane18's
+  steady answer; gate `check_quasi_steady`.  THE OLD `0/` SHAPE IS GONE
+  (#186, 2026-09-30): the time-integrated binaries read and write the
+  ratified layout of §3 (`0/<stream>`, `0/internalStates/<unit>` with a
+  `holdup {}` block) and write `<t>/` time directories by default -- see
+  §3.  NOT done, named: the first law across a quasi-steady unit (the
+  adapter claims no stored functional, so the dynamic ledger withholds the
+  rung).
+  Record:
+  [`docs/design/a-class-a-student-can-name.md`](docs/design/a-class-a-student-can-name.md).
+* **No silent crutch (numerical honesty) — decided 2026-05-30.**  Every solver
+  aid (initial guess, tear estimate, bound) is first-class, explicit in the
+  dict, and the student's to own; the solver **announces** what it does to
+  converge, never disguises it (the anti-ASCEND stance).  Auto-init is allowed
+  but honest (propagate the *feeds* through the topology, never a magic
+  universal constant); bounds are optional aids that **report aloud when they
+  bind**; reject the universal solve-everything solver (that is the
+  equation-oriented dream deferred in the roadmap).  Box: *all models are
+  wrong, some are useful.*
+
+### Sectored units + the MODEL-BOUNDARY rule — SETTLED 2026-06-08, forum 5/5, do NOT relitigate
+
+* **Sectored units + the MODEL-BOUNDARY rule — SETTLED 2026-06-08, forum 5/5, do
+  NOT relitigate.**  The flowsheet is a plant and its sectors (composite
+  sectors nest leaf units); `flattenNode` collapses the tree to ONE flat solver problem with
+  `plant.sector.unit` names — the hierarchy is authoring/namespace only, never a
+  recursive solver-within-a-solver.  Per-unit `thermo {}` REPLACES models, keeps
+  components global (`thermoFor`).  Standalone "run one unit with frozen inlets"
+  is a GUI 1-unit-case construction (`unitFocus.ts`), NOT a native solver mode.
+  **THE RULE: `H` is the conserved truth, `T` is the model-dependent readout.**
+  A model boundary is NOT a physical device, so there is no real ΔT to absorb —
+  H-continuity is a CONVENTION, not a law.  **Default stays hold-T / let-H-jump**
+  (the discontinuity is VISIBLE in the printed enthalpy).  A silent "hold H, flex
+  T" is REJECTED (it hides energy in an invisible T-nudge that biases recycles —
+  worse than the honest jump; and eNRTL↔NRTL has no common composition basis).
+  The honest feature is an opt-in **model-boundary AUDIT**: print `ΔH =
+  H_down−H_up` at fixed (T,P,z) (kJ/mol + kW), sum into a "model-inconsistency"
+  line in the first-law ledger, **hard-refuse across any phase/vf/speciation
+  flip**.  Unit layout is FLEXIBLE — both forms are first-class (Vítor 2026-06-08):
+  a unit may be INLINE in the parent `flowsheetDict` (light cases) OR carry its
+  OWN dignified folder (`system/` + `constant/`) — the author picks per case, the
+  engine runs both, and there is NO forced mass-migration of existing flat
+  tutorials.  Dignity is for ALL units (any unit is ENTITLED to a folder, never
+  "earned" — Vítor OVERRULED the forum's "earned/inline-by-default"); the
+  all-folders form is the standard for research / multi-scale-debug cases.  A
+  unit's `constant/` is its local-data HOME (measured props, kinetics, PSD
+  accumulate there), inheriting the case `thermoPhysPropDict` via the cascade until
+  something local lands — *the house waiting for the data*, not ceremony: its
+  `README` states the folder's PURPOSE, never just "inherits via cascade", and it
+  must NOT carry a `thermoPhysPropDict` placeholder (that shadows the case default and
+  breaks the run).  The inheritance cascade must be LOUD (per-unit `thermo:
+  inherited (global)` vs `LOCAL override — …`, implemented in `runUnit`).  Full
+  rationale: [`docs/ai/energy.md`](docs/ai/energy.md) §model boundaries
+  (the 2026-06-08 forum that settled it was a session deliberation and is
+  NOT in the repository -- this paragraph is the record).
+
+### Never
+
+* **Never** suggest a Python rewrite or wrapper.
+* **Never** add macro magic for self-registration (RTS-style macros).
+* **Never** import a heavy CFD framework or any heavy dep.
+* **Never** joke about "$N in tokens replacing commercial software".
+* **Never trade a gate for speed (ruled 2026-09-04, Vítor).**  He raised the
+  question himself — *"não era melhor seguir a regra do Facebook, move fast &
+  break things?"* — and then closed it from experience: he had been burned by
+  exactly that on his company's own OpenFOAM simulator.  The same day paid for
+  it twice, in facts rather than argument: a spray dryer creating 2948 kg/h of
+  water on a case the suite PASSED (nothing looked at closure), and a missing
+  `#include <map>` that compiled natively, passed the whole corpus and every
+  gate, and would have killed `make wasm` on the next publish — leaving
+  www.choupo.org serving a stale bundle with nothing in the tree saying so.
+  **Neither was a case failing.  Both were gates seeing what no case can see.**
+  The permitted direction is FASTER gates, never fewer: `check_wasm_dialect`
+  419 s → 98 s and `check_impossible_phase_pins` 186 s → 0.08 s, both with
+  every arm intact.  Do not reopen.
+* **Never** skip alignment when proposing architecture changes — propose, wait
+  for confirmation, then code.  Amended 2026-08-08: DELEGATE-WITH-DEFAULT items
+  ship on a stated, recorded default (philosophy §4 carries the rule and the
+  reserved list; `docs/design/queue-ruling-2026-08-08.md` is the ruling).
+* **Never name a commercial competitor in the USER-FACING MANUALS** (settled
+  2026-07-03).  Scope, phrasing and the tolerated developer-facing exception:
+  philosophy §4.  Enforced by `check_doctrine`.
+
+### Backwards-compat is mandatory
+
+* **Backwards-compat is mandatory** — existing tutorials must keep passing.
+  Run the full regression after every meaningful change:
+  ```bash
+  bin/runTests                 # every tutorial, all five binaries + buildCode
+  bin/runTests tutorials/steady/flash/flash01_benzene_toluene   # one case
+  bin/runTests --record <case> # refresh a case's golden-master `expected`
+  ```
+  `runTests` does a **NaN/inf guard on every case** (an exit-code check passes
+  even on silent NaN — this caught the membrane bug) AND **reference-KPI
+  comparison** for any case shipping an `expected` file.  Never reintroduce the
+  bare `binary > /dev/null && PASS` check.
+* **A GOLDEN RE-RECORD IS A CLAIM, AND THE CLAIM IS THE LIST (Vítor's
+  standing instruction, written here 2026-09-26).**  A golden pins what a run
+  PRINTS, so an engine change followed by a blanket `--record` teaches the
+  suite to accept exactly the error the change introduced (the 2026-09-04
+  dryer shape).  So: `--record` is run only AFTER the list of moved rows has
+  been shown to Vítor, each row with the physical or numerical reason it
+  moved; the commit names them; a row that moves for a reason nobody can
+  state is a regression until proven otherwise, and stays unrecorded.
+  `--record-append` adds rows only and never moves one: the commander may
+  append the rows of a NEW witness or a new row kind with the list in the
+  commit message; any row that MOVES goes to Vítor first.  Never a
+  corpus-wide `--record` sweep, which re-pins any drift within tolerance in
+  silence.
+  The gates that can see a wrong-but-stable golden are the conservation
+  ones (`check_energy_closure` RATCHETS: a pinned debt that grows fails), and
+  the validation subset (`docs/architecture/verification-and-validation.md`
+  §3, recounted by `check_validation_subset`) is the only layer that says an
+  answer is RIGHT rather than unmoved -- keep both in mind before quoting a
+  green suite as evidence about physics.
+* **Add KPIs** when adding new unit ops (they feed sensitivity, optim, sizing,
+  costing).
+* **Update this CLAUDE.md** when adding a major capability (and the relevant
+  doc under `docs/`).
+* **A NEW CAPABILITY REACHES THE AI AGENTS IN THE SAME COMMIT, BESIDE THE
+  GUIDES** (Vítor, 2026-11-02, DEV.md 4c C200).  A unit, model, case form or
+  refusal that a student's own assistant could use is incomplete until the
+  documents that assistant reads carry it: the assistant brief
+  (`brief.md`, in docs/ai once it lands) and the task pack of its family
+  under `docs/ai/` (with its keys, ports, degrees of
+  freedom and a minimal example that was RUN), next to the theory and
+  tutorials guides and the catalogue.  Where the engine can state it
+  itself, it is GENERATED (`--describe-units`), never hand-copied, so the
+  completeness is a gate and not a promise; until that gate exists
+  (C200 phase D) the author of the slice greps the packs for the unit name
+  and says in the commit that it did.
+* **BURY THE ABSENCE YOU JUST FILLED — in the same commit (ruled
+  2026-08-31).**  A capability arriving silently falsifies every sentence,
+  test, ADR, comment and example whose truth depended on its NOT existing,
+  and nobody re-reads the "we do not have this" lists on the day the thing
+  ships.  Measured, not supposed: of the 43 defects a seven-way EduTools
+  audit found that night, four were exactly this, and all four were caused
+  by work from the preceding 72 hours — the `exergy` op falsified the
+  entropy page's own list of absences *and* its design trace;
+  `explainProperty` falsified "written explicitly exactly ONCE in the whole
+  engine" (and the second site is the op that page's witness runs); the
+  CSTR's new monotone-extent refusal falsified "Choupo can express an
+  autocatalytic law"; and giving `air.dat` its carrier key falsified "air
+  cannot be selected here today", twice over.  So when you ship a
+  capability, grep the tree for the phrases that name its absence — *does
+  not support*, *cannot*, *there is no*, *unavailable*, *not implemented*,
+  *no ... anywhere in Choupo* — and settle each against the code.  Delegate
+  it if you like: an agent whose ONLY mission is "this now exists; find
+  everything whose truth depended on it not existing" does the sweep
+  cheaply and has no blast radius.
+* **THIS FILE IS THE NEXT SESSION'S MEMORY, so a stale fact in it is not
+  untidiness — it is CORRUPTED MEMORY** (same ruling).  There is no
+  cross-session store: a session begins from this file and the tree, which
+  makes every sentence here something a successor will load as true without
+  any way to suspect it.  Keep to invariants, contracts, conventions and
+  the reasons behind them; a claim a single commit can falsify does not
+  belong here, and belongs even less in the form of a NUMBER.  The
+  paragraph that taught this said the pump and the pipe used liquid
+  densities 12 % apart — closed on 2026-08-29, still written here on
+  2026-08-31, in three homes at once, and read back off this file by a
+  session that then briefed an auditor with it.  The auditor read the
+  engine instead and returned the correction.  Prefer the durable form: not
+  *"X and Y differ by 12 %"* but *"when a document claims a current
+  limitation, verify it against the engine before repeating it."*
