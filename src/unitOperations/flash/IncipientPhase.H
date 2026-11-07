@@ -94,9 +94,16 @@ inline Result vapour(const ThermoPackage& thermo, scalar T, scalar P,
     }
     if (!(s > 0.0)) { r.S = 0.0; return r; }
     for (auto& v : r.trial) v /= s;
+    //  gamma(T, x) does not depend on the trial vapour, so it is computed
+    //  ONCE and each pass re-prices only what y moves (the vapour's fugacity
+    //  coefficients) -- the same K bit for bit (ThermoPackage::KvecAtGamma),
+    //  where it used to re-evaluate the activity model on every pass.
+    const bool fixedGamma = thermo.liquidGammaIndependentOfVapour();
+    const sVector gam = fixedGamma ? thermo.gammaForK(T, x) : sVector();
     for (int it = 0; it < maxIter; ++it)
     {
-        r.K = thermo.Kvec(T, P, x, r.trial);
+        r.K = fixedGamma ? thermo.KvecAtGamma(T, P, x, r.trial, gam)
+                         : thermo.Kvec(T, P, x, r.trial);
         r.iterations = it + 1;
         s = 0.0;
         for (std::size_t i = 0; i < n; ++i)

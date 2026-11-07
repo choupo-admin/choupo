@@ -900,7 +900,23 @@ sVector ThermoPackage::Kvec(scalar T, scalar P,
             Kpp[i] = (phiV[i] > 0.0) ? phiL[i] / phiV[i] : 0.0;
         return Kpp;
     }
-    auto gam = activity_->gamma(T, x);
+    return KvecAtGamma(T, P, x, y, activity_->gamma(T, x));
+}
+
+sVector ThermoPackage::gammaForK(scalar T, const sVector& x) const
+{
+    return activity_->gamma(T, x);
+}
+
+bool ThermoPackage::liquidGammaIndependentOfVapour() const
+{
+    return eos_ != nullptr && vleWorld_ != "phiPhi";
+}
+
+sVector ThermoPackage::KvecAtGamma(scalar T, scalar P,
+                                   const sVector& x, const sVector& y,
+                                   const sVector& gam) const
+{
     auto phi = eos_     ->phi  (T, P, y);
     sVector K(n());
     for (std::size_t i = 0; i < n(); ++i)
