@@ -55,7 +55,7 @@ LiquidPhase::LiquidPhase(const DictPtr& d,
     activity_ = ActivityModel::New(act, comps);
 }
 
-sVector LiquidPhase::fEffective(scalar T, scalar /*P_Pa*/, const sVector& x) const
+sVector LiquidPhase::fEffective(scalar T, scalar P_Pa, const sVector& x) const
 {
     auto gamma = activity_->gamma(T, x);
     sVector f(n_);
@@ -87,7 +87,8 @@ sVector LiquidPhase::fEffective(scalar T, scalar /*P_Pa*/, const sVector& x) con
         //  the reference it had).
         const scalar phiSat = (vapourEos_ && hasPsat && !pf
                                && (*components_)[i].role() != "nonvolatile")
-            ? saturatedVapourPhi(*vapourEos_, (*components_)[i], i, n_, T, psat)
+            ? liquidReferenceFactor(*vapourEos_, (*components_)[i], i, n_, T, P_Pa,
+                                  psat)
             : 1.0;
         f[i] = gamma[i] * (phiSat == 1.0 ? psat : psat * phiSat);
     }

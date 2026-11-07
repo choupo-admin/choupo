@@ -26,7 +26,7 @@ License
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
 Function
-    Choupo::saturatedVapourPhi
+    Choupo::liquidReferenceFactor
 
 Description
     THE gamma-phi REFERENCE FUGACITY HAS ONE HOME (C235, 2026-11-07).
@@ -34,29 +34,38 @@ Description
     With a real vapour the K-value is  K_i = gamma_i f_i^ref / (phi_i^V P)
     and the reference of the pure liquid is not Psat_i alone but
 
-        f_i^ref(T) = phi_i^sat(T) Psat_i(T),
-        phi_i^sat  = the PURE vapour fugacity coefficient of the vapour's
-                     own equation of state at (T, Psat_i).
+        f_i^ref(T, P) = phi_i^sat(T) * Psat_i(T) * exp(V_L (P - Psat_i)/(R T)),
 
-    Without phi_sat the vapour's departure from ideality is counted on one
-    side of the equilibrium only: at 401 K, ln phi_sat of a C4 is about
-    -0.14 and d ln P / dT = dHvap/(R T^2) turns that into a boiling
-    temperature about 7 K low (column19 under SRK, measured).  With an
-    ideal vapour phi_sat = 1 and this code is not entered.
+        phi_i^sat = the PURE vapour fugacity coefficient of the vapour's own
+                    equation of state at (T, Psat_i),
+        V_L       = the component record's declared `Vliq` (constant, m3/mol,
+                    its value at 25 C: the package publishes no better liquid
+                    molar volume on one home, and the Rackett closure is a
+                    derivative the record does not store).
 
-    NOT in this reference, and said here because it is a choice: the
-    Poynting factor exp(v_L (P - Psat)/RT).  At the pressures of the corpus
-    gamma-phi cases it is within a fraction of a percent of 1; a case at
-    hundreds of bar needs it, and it is the named next slice.
+    This function returns the FACTOR  phi_sat * Poynting, which multiplies
+    Psat.  Without phi_sat the vapour's departure from ideality is counted
+    on one side of the equilibrium only (column19 under SRK: T about 6 K
+    low); without Poynting phi_sat over-corrects at high pressure (NH3 at
+    313 K and 150 bar: phi_sat ~ 0.86 and Poynting ~ 1.15 nearly cancel).
+    With an ideal vapour this code is not entered.
 
-    Doors (as for saturationPressure): ThermoPackage::phiSat (every K route
-    that reads a Psat) and the phase layer's LiquidPhase / SolidPhase
+    A SATURATED VAPOUR EXISTS ONLY BELOW Tc.  For T >= the component's Tc,
+    or a component with no declared Tc, the factor is exactly 1, announced
+    once by name: above Tc there is no saturation for phi_sat to describe,
+    an extrapolated Psat is not one, and Poynting has no meaning there
+    either.  A component with no `Vliq` keeps phi_sat and gets Poynting = 1,
+    announced once by name.  A non-finite Psat or EoS value gives 1,
+    announced.  Never a silent fallback.
+
+    Doors (as for saturationPressure): ThermoPackage::refFactor (every K
+    route that reads a Psat) and the phase layer's LiquidPhase / SolidPhase
     (Kvec_phases), which hold the vapour's EoS by borrowed pointer, rebound
-    when the package moves.  Neither carries a copy of the rule.  The EoS
-    root is the vapour root; above Tc the EoS has one root and Psat is an
-    extrapolation, and what the EoS returns is taken if it is finite.  If it
-    is not (or Psat is not), the factor is 1 and that is ANNOUNCED once per
-    component -- never a silent fallback.
+    when the package moves.  Neither carries a copy of the rule.  Both
+    liquids of an LL pair are evaluated at the same (T, P), so the factor
+    cancels in their ratio; the solid carries the SAME factor as the liquid
+    it is measured against, so the freezing-point identity (f_S/f_L) cannot
+    move with the vapour.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -70,10 +79,10 @@ namespace Choupo {
 class Component;
 class EquationOfState;
 
-//  phi_i^sat(T) = phi_i(T, Psat, e_i) of `eos`; `n` is the component count
-//  of the package; `Psat_Pa` [Pa] is the package's saturation pressure of i.
-scalar saturatedVapourPhi(const EquationOfState& eos, const Component& c,
-                          std::size_t i, std::size_t n,
-                          scalar T_K, scalar Psat_Pa);
+//  phi_i^sat(T) * exp(V_L (P - Psat)/(R T)); `n` is the component count of
+//  the package; `Psat_Pa` [Pa] is the package's saturation pressure of i.
+scalar liquidReferenceFactor(const EquationOfState& eos, const Component& c,
+                             std::size_t i, std::size_t n,
+                             scalar T_K, scalar P_Pa, scalar Psat_Pa);
 
 } // namespace Choupo

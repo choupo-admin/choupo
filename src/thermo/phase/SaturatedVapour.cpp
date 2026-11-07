@@ -28,6 +28,7 @@ License
 
 #include "SaturatedVapour.H"
 #include "core/Advisory.H"
+#include "core/Constants.H"
 #include "thermo/Component.H"
 #include "thermo/equationOfState/EquationOfState.H"
 
@@ -44,15 +45,15 @@ void announceReference(const EquationOfState& eos)
     if (!AdvisoryLog::instance().passHas(key)
      && AdvisoryLog::instance().addAnnouncedOnce(key, "thermo", "info",
             "gamma-phi reference fugacity",
-            "the pure-liquid reference of every volatile component is"
-            " phi_sat(T) Psat(T), phi_sat the pure-vapour fugacity"
-            " coefficient of " + eos.modelName() + " at (T, Psat), so the"
-            " vapour's non-ideality enters both sides of K.  Poynting is not"
-            " included."))
+            "the pure-liquid reference of every volatile subcritical"
+            " component is phi_sat(T) Psat(T) exp(Vliq (P - Psat)/RT),"
+            " phi_sat the pure-vapour fugacity coefficient of "
+            + eos.modelName() + " at (T, Psat), so the vapour's"
+            " non-ideality enters both sides of K."))
         std::cerr << "[thermo] gamma-phi reference fugacity = phi_sat(T) Psat(T)"
-                     " with phi_sat from " << eos.modelName()
+                     " exp(Vliq (P - Psat)/RT), phi_sat from " << eos.modelName()
                   << " (a non-ideal vapour is counted on both sides of K;"
-                     " Poynting not included)\n";
+                     " subcritical components only)\n";
 }
 
 scalar factorOne(const EquationOfState& eos, const Component& c,
@@ -71,13 +72,35 @@ scalar factorOne(const EquationOfState& eos, const Component& c,
     return 1.0;
 }
 
+void poyntingOne(const EquationOfState& eos, const Component& c)
+{
+    const std::string key = "liquidReferencePoynting:" + eos.modelName()
+                          + ":" + c.name();
+    if (!AdvisoryLog::instance().passHas(key)
+     && AdvisoryLog::instance().addAnnouncedOnce(key, "thermo", "warning",
+            "Poynting of " + c.name(),
+            "'" + c.name() + "' declares no Vliq, so its Poynting factor is"
+            " taken as 1 (phi_sat is kept)."))
+        std::cerr << "[thermo] Poynting of '" << c.name() << "' taken as 1:"
+                     " no Vliq declared\n";
+}
+
 } // namespace
 
-scalar saturatedVapourPhi(const EquationOfState& eos, const Component& c,
-                          std::size_t i, std::size_t n,
-                          scalar T, scalar Psat)
+scalar liquidReferenceFactor(const EquationOfState& eos, const Component& c,
+                             std::size_t i, std::size_t n,
+                             scalar T, scalar P, scalar Psat)
 {
     announceReference(eos);
+    if (!(c.Tc() > 0.0))
+        return factorOne(eos, c, "no critical temperature is declared, so"
+                                 " whether a saturated vapour exists cannot"
+                                 " be told");
+    if (!(T < c.Tc()))
+        return factorOne(eos, c, "T = " + std::to_string(T) + " K is at or"
+                                 " above its Tc = " + std::to_string(c.Tc())
+                                 + " K: there is no saturation to describe,"
+                                   " and an extrapolated Psat is not one");
     if (!(T > 0.0) || !(Psat > 0.0) || !std::isfinite(Psat))
         return factorOne(eos, c, "its saturation pressure is not a finite"
                                  " positive number at the trial T");
@@ -89,7 +112,12 @@ scalar saturatedVapourPhi(const EquationOfState& eos, const Component& c,
     { return factorOne(eos, c, std::string("the EoS refused: ") + ex.what()); }
     if (!(v > 0.0) || !std::isfinite(v))
         return factorOne(eos, c, "the EoS returned a non-finite coefficient");
-    return v;
+    if (!(c.Vliq() > 0.0))
+    {
+        poyntingOne(eos, c);
+        return v;
+    }
+    return v * std::exp(c.Vliq() * (P - Psat) / (constant::R * T));
 }
 
 } // namespace Choupo

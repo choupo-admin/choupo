@@ -810,19 +810,21 @@ bool ThermoPackage::phiSatActive() const
         && !hasElectrolyte();
 }
 
-scalar ThermoPackage::phiSat(std::size_t i, scalar T) const
+scalar ThermoPackage::refFactor(std::size_t i, scalar T, scalar P) const
 {
     if (!phiSatActive()) return 1.0;
     if (pureFluid_.count(i) || !components_[i].hasVaporPressure()) return 1.0;
     const std::string& role = components_[i].role();
     if (role == "nonvolatile" || role == "radical") return 1.0;
-    return saturatedVapourPhi(*eos_, components_[i], i, n(), T, Psat(i, T));
+    return liquidReferenceFactor(*eos_, components_[i], i, n(), T, P,
+                                 Psat(i, T));
 }
 
-scalar ThermoPackage::liquidReferenceFugacity(std::size_t i, scalar T) const
+scalar ThermoPackage::liquidReferenceFugacity(std::size_t i, scalar T,
+                                              scalar P) const
 {
     const scalar ref = PsatLiquidReference(i, T);
-    return phiSatActive() ? ref * phiSat(i, T) : ref;
+    return phiSatActive() ? ref * refFactor(i, T, P) : ref;
 }
 
 void ThermoPackage::bindVapourReference()
@@ -882,7 +884,7 @@ scalar ThermoPackage::K(std::size_t i, scalar T, scalar P,
     //  The associated ideal-gas vapour (one home: PsatLiquidReference +
     //  vapourAssociationLnPhi); byte-identical when nothing associates.
     const scalar lnPhiA = vapourAssociationLnPhi(T, P, y)[i];
-    return gam[i] * liquidReferenceFugacity(i, T)
+    return gam[i] * liquidReferenceFugacity(i, T, P)
          / (phi[i] * std::exp(lnPhiA) * P);
 }
 
@@ -998,7 +1000,7 @@ sVector ThermoPackage::KvecAtGamma(scalar T, scalar P,
             continue;
         }
 
-        K[i] = gam[i] * (phiSatActive() ? Psat(i, T) * phiSat(i, T)
+        K[i] = gam[i] * (phiSatActive() ? Psat(i, T) * refFactor(i, T, P)
                                         : Psat(i, T)) / (phi[i] * P);
     }
     //  THE ASSOCIATED IDEAL-GAS VAPOUR (DEV.md 4c C201 item 1, piece 2):
