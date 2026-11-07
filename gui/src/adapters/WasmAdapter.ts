@@ -143,6 +143,7 @@ type WorkerMessage =
   | { type: "csvFiles"; files: { [relPath: string]: string } }
   | { type: "convergedFiles"; files: { [relPath: string]: string } }
   | { type: "designFiles"; files: { [relPath: string]: string } }
+  | { type: "postProcessingFiles"; files: { [relPath: string]: string } }
   | { type: "instants"; files: { [relPath: string]: string } }
   | { type: "proposals"; files: { [relPath: string]: string } }
   | { type: "caseWrites"; files: { [relPath: string]: string } }
@@ -162,6 +163,7 @@ export class WasmAdapter implements SolverAdapter {
       let csvFiles: { [relPath: string]: string } | null = null;
       let convergedFiles: { [relPath: string]: string } | null = null;
       let designFiles: { [relPath: string]: string } | null = null;
+      let postProcessingFiles: { [relPath: string]: string } | null = null;
       let instantFiles: { [relPath: string]: string } | null = null;
       let proposals: { [relPath: string]: string } | null = null;
       let caseWrites: { [relPath: string]: string } | null = null;
@@ -255,6 +257,11 @@ export class WasmAdapter implements SolverAdapter {
           //  `result.layout` then sees the bank, none reads a sheet.
           if (result.layout) result.layout = withBanks(result.layout, designFiles) ?? result.layout;
         }
+        //  Same rule again (C183): a props run's postProcessing/ tree has its
+        //  own field, so "no views" never reads as "did not solve".
+        if (postProcessingFiles && Object.keys(postProcessingFiles).length > 0) {
+          result.postProcessingFiles = postProcessingFiles;
+        }
         //  Same rule, third tree: a case whose units publish no profile must
         //  not read as a case that failed to solve.
         if (instantFiles && Object.keys(instantFiles).length > 0) {
@@ -311,6 +318,8 @@ export class WasmAdapter implements SolverAdapter {
           convergedFiles = msg.files;
         } else if (msg.type === "designFiles") {
           designFiles = msg.files;
+        } else if (msg.type === "postProcessingFiles") {
+          postProcessingFiles = msg.files;
         } else if (msg.type === "instants") {
           instantFiles = msg.files;
         } else if (msg.type === "proposals") {
