@@ -83,10 +83,12 @@ building { ... }                                           // §4
   a drum's side inlet, top vapour, bottom liquid; a reactor or machine at the
   ends of its axis; a tank's roof and low outlet.  A unit type with no rule
   keeps the item's top centre (`origin default`, announced).  Each pipe
-  publishes `fromPort`/`toPort` (item, port, origin, point); a `ports` block
+  publishes `fromPort`/`toPort` (item, port, origin, point, `leaves` = where the 1 m stub ends); a `ports` block
   moves one (`item` must be a placed item of a unit at an end of the stream:
   refused by name otherwise; `elevation` only on a side).  A `pipes`
-  override now begins at the port's 1 m stub, not at the top centre.
+  override now begins at the port's stub, not at the top centre: its first
+  waypoint must share two coordinates with the `leaves` point of `fromPort` (and its last
+  with `toPort.leaves`), because every segment is orthogonal.
 * The pipe router is deterministic: up from the port's stub to its
   lane, along the rack (plan x), down to the target's port.  Plant INLETS arrive at
   the rack's west end `xStart`, OUTLETS leave at the east end `xEnd`.  Every
