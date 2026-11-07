@@ -235,3 +235,54 @@ describe("the quality a view opens in (no WebGL needed)", () => {
     expect(defaultQuality({ coarsePointer: false, cores: 2 })).toBe("fast");
   });
 });
+
+describe("a nozzle stands where the engine's pipe lands (C229)", () => {
+  const vessel = standing("vessel", 2, 10);
+  // A feed on the side at mid-height and a bottoms port at the base, local to the centre.
+  const ports = [
+    { at: [1, 0, 0] as Vec3, dir: [1, 0, 0] as Vec3 },
+    { at: [0, -5, 0] as Vec3, dir: [0, 0, 1] as Vec3 },
+  ];
+  const nozzles = (parts: Part[]) => parts.filter((p) => p.nozzle);
+
+  it("with ports, the recipe's own nozzles are dropped and one is drawn at each port", () => {
+    const plain = equipmentDrawing(vessel);
+    expect(nozzles(plain.parts).length).toBeGreaterThan(0);
+    const d = equipmentDrawing({ ...vessel, ports });
+    // two parts (the pipe and its flange) per port, none of the recipe's own
+    expect(nozzles(d.parts).length).toBe(2 * ports.length);
+    const side = nozzles(d.parts).find((p) => p.prim === "cylinder" && Array.isArray(p.axis)
+      && p.axis[0] === 1)!;
+    expect(side.at[0]).toBeGreaterThan(1);       // it starts at the surface and goes outward
+    expect(d.describes).toMatch(/2 nozzles at the engine's published ports/);
+  });
+
+  it("the body is exactly what it was: only decoration moved", () => {
+    const a = equipmentDrawing(vessel), b = equipmentDrawing({ ...vessel, ports });
+    expect(body(b.parts)).toEqual(body(a.parts));
+    expect(boundsOf(body(b.parts))).toEqual(boundsOf(body(a.parts)));
+    expect(nozzles(b.parts).every((p) => p.decoration)).toBe(true);
+  });
+
+  it("an item with no port keeps its own decorative nozzles", () => {
+    expect(equipmentDrawing({ ...vessel, ports: [] }).parts).toEqual(equipmentDrawing(vessel).parts);
+  });
+
+  it("layoutScene hands each item the ports its pipes land on, from the published route", () => {
+    const item = LAYOUT.items.find((i) => !i.nonProcess)!;
+    const layout = { ...LAYOUT, pipes: [{
+      stream: "s1", fromKind: "item", from: item.id, fromUnit: "u", toKind: "batteryLimit",
+      to: "outlet", toUnit: "", routedBy: "rack", lane: 0, length: 10,
+      fromPort: { item: item.id, port: "feed", origin: "convention", role: "a role",
+                  point: [item.x + item.dx / 2, item.y, item.z + 1] as [number, number, number] },
+      route: [[item.x + item.dx / 2, item.y, item.z + 1], [item.x + item.dx / 2 + 1, item.y, item.z + 1],
+              [item.x + item.dx / 2 + 1, item.y, item.z + 6]] as [number, number, number][],
+    }] };
+    const s = layoutScene(layout)!.solids.find((x) => x.id === item.id)!;
+    expect(s.ports).toHaveLength(1);
+    expect(s.ports![0]!.port).toBe("feed");
+    // plan +x is three.js +X; the first segment leaves along it
+    close(s.ports![0]!.dir, [1, 0, 0]);
+    expect(s.tooltip.join("\n")).toMatch(/port feed \(s1\): a role/);
+  });
+});

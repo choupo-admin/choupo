@@ -7697,6 +7697,23 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/plantlayout.$$
 
+    # Pipe-port gate (2026-11-05, DEV.md 4c C229): every pipe end lands on a
+    # PORT of its item -- a column's feed on its shell at its stage's height,
+    # bottoms at the sump, distillate on the reflux drum; an exchanger's tube
+    # ends and shell nozzles; a drum's side inlet, top vapour, bottom liquid --
+    # recomputed from the published sheets; no two pipes end at one point; a
+    # declared port honoured; six refusals named; the convention said on
+    # stderr, in the advisories and in the layout block.
+    if gate_exec "$ROOT/bin/curate/check_pipe_ports.py" > /tmp/pipeports.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pipe-ports-gate" "$(gate_claim check_pipe_ports /tmp/pipeports.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pipe_ports.py)\n" "pipe-ports-gate"
+        cat /tmp/pipeports.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pipeports.$$
+
     # GMP-interior gate (2026-10-18, DEV.md 4c C97 phase B): the `building {}`
     # block of system/layoutDict -- rooms, grades, pressures, airlocks, flows
     # -- is checked by the engine, and every finding it publishes is EQUAL to

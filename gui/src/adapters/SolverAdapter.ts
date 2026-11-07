@@ -850,6 +850,9 @@ export interface PlantLayout {
   pipeRack?: LayoutPipeRack;
   junctions?: LayoutJunction[];
   pipes?: LayoutPipe[];
+  /** DEV.md 4c C229: the sentence that says the pipe ports are a drafting
+   *  convention, not a vendor's nozzle schedule (engine-written, once). */
+  portConvention?: string;
   notRouted?: LayoutNotRouted[];
   /** The engine's own counts (DEV.md 4c C81 carries them to the exported
    *  page); absent on a result written before the engine published them. */
@@ -1164,8 +1167,19 @@ export interface LayoutJunction { unit: string; type: string; x: number; y: numb
 /** One routed pipe.  `route` runs IN THE DIRECTION OF FLOW (plan x, plan y,
  *  elevation z, metres); `length` is the engine's own.  The stream's state
  *  (`F_mass` kg/s, `T` K, `P` Pa, `vf`) is the stream table's. */
+/** WHERE ONE END OF A PIPE LANDS ON ITS ITEM (DEV.md 4c C229): a port, the
+ *  engine's conventional position from the item's kind, its sized dimensions
+ *  and the stream's role in its unit.  `origin` is convention | declared |
+ *  default (the top centre, no rule for the unit type). */
+export interface LayoutPortInfo {
+  item: string; port: string; origin: string; role: string;
+  point: [number, number, number];
+}
+
 export interface LayoutPipe {
   stream: string;
+  fromPort?: LayoutPortInfo;
+  toPort?: LayoutPortInfo;
   label?: string;
   fromKind: string; from: string; fromUnit: string;
   toKind: string; to: string; toUnit: string;
