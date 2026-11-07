@@ -259,6 +259,12 @@ public:
     //  LiquidPhase/SolidPhase reach the same function through the borrowed
     //  EoS `bindVapourReference` hands them.
     scalar refFactor(std::size_t i, scalar T_K, scalar P_Pa) const;
+    //  Psat * refFactor, WITHOUT the association monomer reference: the
+    //  pure-liquid reference fugacity the Gibbs methods (DirectMin,
+    //  GibbsMethod, ElementPotential, ReactiveFlash) and a records-derived
+    //  K_a read where they assumed plain Psat.  Psat exactly for an ideal
+    //  vapour.
+    scalar pureLiquidReference(std::size_t i, scalar T_K, scalar P_Pa) const;
     scalar liquidReferenceFugacity(std::size_t i, scalar T_K, scalar P_Pa) const;
     bool   phiSatActive() const;
     void   bindVapourReference();      // hand the condensed phases the EoS (or null)

@@ -820,6 +820,13 @@ scalar ThermoPackage::refFactor(std::size_t i, scalar T, scalar P) const
                                  Psat(i, T));
 }
 
+scalar ThermoPackage::pureLiquidReference(std::size_t i, scalar T,
+                                          scalar P) const
+{
+    const scalar ps = Psat(i, T);
+    return phiSatActive() ? ps * refFactor(i, T, P) : ps;
+}
+
 scalar ThermoPackage::liquidReferenceFugacity(std::size_t i, scalar T,
                                               scalar P) const
 {

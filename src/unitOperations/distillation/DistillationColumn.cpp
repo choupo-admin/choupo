@@ -2869,13 +2869,18 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             return lnKaFormula->evaluate(std::vector<scalar>{T});
         if (kaForm == KaForm::records)
         {
+            //  The pure-liquid standard state of each species is the liquid
+            //  in equilibrium with its own ideal-gas datum:
+            //  mu_L = g_ig + RT ln(f_ref/P0), f_ref the package's reference
+            //  fugacity (Psat for an ideal vapour; phi_sat Psat exp(Vliq (P -
+            //  Psat)/RT) for a real one -- C235, the same factor K reads).
             const scalar Rg = 8.314462, P0 = 1.0e5;
             scalar acc = 0.0;
             for (std::size_t i = 0; i < n; ++i)
             {
                 if (nu[i] == 0.0) continue;
                 acc += nu[i] * (thermo.comp(i).g_pure_ig(T) / (Rg * T)
-                                + std::log(thermo.Psat(i, T) / P0));
+                                + std::log(thermo.pureLiquidReference(i, T, P) / P0));
             }
             return -acc;
         }
