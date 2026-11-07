@@ -344,3 +344,7 @@ generated/gitVersion.H
 # password manager and delete this file (see DEV.md / the session note).
 /github-recovery-codes.txt
 /.regout/
+# C242 rule 10: the project hooks and settings are tracked so every worktree inherits them
+!.claude/settings.json
+!.claude/hooks/
+!.claude/hooks/*.py
