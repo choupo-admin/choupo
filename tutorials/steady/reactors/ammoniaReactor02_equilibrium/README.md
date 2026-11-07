@@ -131,16 +131,16 @@ mass balance at 99.9973 %.
 ## 7. Running it
 
 ```bash
-bin/choupo-lint  tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium   # validate, no solve
-bin/choupo-init0 tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium   # materialise 0/
-runCase          tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium
-bin/runTests     tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium   # golden-master check
+bin/choupo-lint  tutorials/steady/reactors/ammoniaReactor02_equilibrium   # validate, no solve
+bin/choupo-init0 tutorials/steady/reactors/ammoniaReactor02_equilibrium   # materialise 0/
+runCase          tutorials/steady/reactors/ammoniaReactor02_equilibrium
+bin/runTests     tutorials/steady/reactors/ammoniaReactor02_equilibrium   # golden-master check
 ```
 
 ```bash
 # the sequence, as a diff
-diff tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium/system/flowsheetDict \
-     tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach/system/flowsheetDict
+diff tutorials/steady/reactors/ammoniaReactor02_equilibrium/system/flowsheetDict \
+     tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach/system/flowsheetDict
 ```
 
 ## 8. Sources

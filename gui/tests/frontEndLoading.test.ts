@@ -235,7 +235,7 @@ describe("the lesson", () => {
 
   it("the two reactor volumes step 7 quotes are the ladder's goldens", () => {
     const golden = (c: string, re: RegExp): number => {
-      const m = tree(`tutorials/steady/reactors/ammoniaLadder/${c}/expected`).match(re);
+      const m = tree(`tutorials/steady/reactors/${c}/expected`).match(re);
       expect(m, c).not.toBeNull();
       return Number(m![1]);
     };
@@ -246,9 +246,9 @@ describe("the lesson", () => {
     expect(step(7)).toContain(`${vC.toFixed(2)} m³`);
     expect(step(7)).toContain(`${vD.toFixed(2)} m³`);
     //  ... and rung 4's volume is solved to the 5 K approach the step names.
-    expect(tree("tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing/system/outerDict"))
+    expect(tree("tutorials/steady/reactors/ammoniaReactor04_kineticSizing/system/outerDict"))
       .toMatch(/path converter\.approach_K;\s+value 5\.0;/);
-    expect(tree("tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach/system/postDict"))
+    expect(tree("tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach/system/postDict"))
       .toMatch(/^\s*spaceVelocity\s/m);
   });
 });
@@ -303,8 +303,8 @@ describe("the stages are the research record's", () => {
 
   it("the claims about the cases hold", () => {
     //  Screening stages carry no cost: no postDict.
-    expect(inTree("tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion/system/postDict")).toBe(false);
-    expect(inTree("tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium/system/postDict")).toBe(false);
+    expect(inTree("tutorials/steady/reactors/ammoniaReactor01_fixedConversion/system/postDict")).toBe(false);
+    expect(inTree("tutorials/steady/reactors/ammoniaReactor02_equilibrium/system/postDict")).toBe(false);
     //  The base case declares Class 4, designs six exchangers by Kern, and
     //  its converter is a Gibbs reactor 5 K short of equilibrium.
     const pd = tree("tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict");

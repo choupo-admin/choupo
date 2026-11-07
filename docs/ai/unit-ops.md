@@ -371,7 +371,7 @@ legs and an `equilibriumTemperatureWindow`, `T_eq_outlet_K` and `approach_K` (th
 effluent's approach to the LAW's own equilibrium, US 5,352,428's per-bed definition — not
 the package's Gibbs surface); with `fugacityCoefficients`, `phi_law_over_pkg_<i>_in`.
 Wire `V_R` to a DesignSpec on `approach_K` to SIZE the bed.  Example: the Dyson & Simon
-(1968) ammonia law, written in `tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing` (rung 4
+(1968) ammonia law, written in `tutorials/steady/reactors/ammoniaReactor04_kineticSizing` (rung 4
 of 4 of the ammonia reactor-model ladder: the engine SOLVES the bed volume),
 `greenAmmonia03_basicDesign`, and with Eq 39 in the props bench
 `tutorials/props/kinetics/ammoniaRate01_dyson_simon` (`rateLawBench`).

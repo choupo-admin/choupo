@@ -179,7 +179,7 @@ what they mean is **the correction is unpriced**.  The authors priced it below
 ## 6. What is still missing — and it is much of a converter
 
 This is a rate law, not a reactor.  `pfr` integrates the same law along an
-adiabatic bed — written in `tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing`'s
+adiabatic bed — written in `tutorials/steady/reactors/ammoniaReactor04_kineticSizing`'s
 own `constant/reactions` (Eq 19 alone, its legs declared so the bed's
 approach to the law's own equilibrium can be reported), and that case sizes
 the bed from the effluent's approach (6.99 m³ at 5 K, on a loop whose earlier

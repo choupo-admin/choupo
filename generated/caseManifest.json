@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 526,
+  "cases": 527,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 14
@@ -2235,6 +2235,21 @@
    "application": "choupoProps",
    "ops": [
     "estimateComponent"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp": {
+   "application": "choupoProps",
+   "ops": [
+    "TBP",
+    "petroleumCuts"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -6914,7 +6929,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion": {
+  "tutorials/steady/reactors/ammoniaReactor01_fixedConversion": {
    "application": "choupoSolve",
    "unitTypes": [
     "conversionReactor",
@@ -6928,7 +6943,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium": {
+  "tutorials/steady/reactors/ammoniaReactor02_equilibrium": {
    "application": "choupoSolve",
    "unitTypes": [
     "gibbsReactor",
@@ -6942,7 +6957,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach": {
+  "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach": {
    "application": "choupoSolve",
    "unitTypes": [
     "gibbsReactor",
@@ -6956,7 +6971,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing": {
+  "tutorials/steady/reactors/ammoniaReactor04_kineticSizing": {
    "application": "choupoSolve",
    "unitTypes": [
     "isothermalFlash",
@@ -7908,6 +7923,7 @@
     "tutorials/props/estimate/estimate_acetone",
     "tutorials/props/estimate/estimate_ethanol_benzene",
     "tutorials/props/estimate/estimate_petroleum_cut",
+    "tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp",
     "tutorials/props/estimate/userEstimate01_linear_tb",
     "tutorials/props/estimate/vanKrevelen01_polystyrene_density",
     "tutorials/props/estimate/yang2020_Tg_polystyrene",
@@ -8246,10 +8262,10 @@
     "tutorials/steady/reactors/aceticAcid01_gibbsReactor",
     "tutorials/steady/reactors/acetone02_luyben_reactor",
     "tutorials/steady/reactors/ammonia03_quench_converter",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing",
+    "tutorials/steady/reactors/ammoniaReactor01_fixedConversion",
+    "tutorials/steady/reactors/ammoniaReactor02_equilibrium",
+    "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
     "tutorials/steady/reactors/ammoniaRoutes01_screening",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
@@ -8446,7 +8462,7 @@
     "tutorials/plant/acetonePlant",
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section",
     "tutorials/steady/reactors/acetone02_luyben_reactor",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion",
+    "tutorials/steady/reactors/ammoniaReactor01_fixedConversion",
     "tutorials/steady/reactors/ammoniaRoutes01_screening",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
@@ -8673,8 +8689,8 @@
     "tutorials/steady/power/combined01_brayton_rankine",
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
     "tutorials/steady/reactors/aceticAcid01_gibbsReactor",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach",
+    "tutorials/steady/reactors/ammoniaReactor02_equilibrium",
+    "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
@@ -8779,10 +8795,10 @@
     "tutorials/steady/hydraulics/letdown01_ammonia_flashing",
     "tutorials/steady/optimisation/optim02_process_cost",
     "tutorials/steady/optimisation/optim05_reactor_npv",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing",
+    "tutorials/steady/reactors/ammoniaReactor01_fixedConversion",
+    "tutorials/steady/reactors/ammoniaReactor02_equilibrium",
+    "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/thermo/basis01_two_unit_chain",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
@@ -8809,10 +8825,10 @@
     "tutorials/steady/gibbs/claus01_thermal_stage",
     "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
     "tutorials/steady/membranes/membrane27_swro_energy_recovery",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing",
+    "tutorials/steady/reactors/ammoniaReactor01_fixedConversion",
+    "tutorials/steady/reactors/ammoniaReactor02_equilibrium",
+    "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
@@ -8821,7 +8837,7 @@
    ],
    "pfr": [
     "tutorials/plant/polycaprolactonePlant",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing",
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
@@ -8836,7 +8852,7 @@
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
     "tutorials/steady/heat/phasechange02_saturated_mixture",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing"
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing"
    ],
    "pipe": [
     "tutorials/steady/hydraulics/pipe01_water_line",
@@ -8942,10 +8958,10 @@
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
     "tutorials/steady/membranes/membrane27_swro_energy_recovery",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing",
+    "tutorials/steady/reactors/ammoniaReactor01_fixedConversion",
+    "tutorials/steady/reactors/ammoniaReactor02_equilibrium",
+    "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
@@ -9283,6 +9299,7 @@
     "tutorials/props/estimate/estimate_acetone",
     "tutorials/props/estimate/estimate_ethanol_benzene",
     "tutorials/props/estimate/estimate_petroleum_cut",
+    "tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp",
     "tutorials/props/estimate/userEstimate01_linear_tb",
     "tutorials/props/estimate/vanKrevelen01_polystyrene_density",
     "tutorials/props/estimate/yang2020_Tg_polystyrene",
@@ -9557,6 +9574,9 @@
    ]
   },
   "byOp": {
+   "TBP": [
+    "tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp"
+   ],
    "activityCoefficients": [
     "tutorials/props/molecular/nrtl01_ethanol_water_package"
    ],
@@ -9679,6 +9699,9 @@
    ],
    "mixingRules": [
     "tutorials/props/molecular/mixrules01_natural_gas"
+   ],
+   "petroleumCuts": [
+    "tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp"
    ],
    "phaseEnvelope": [
     "tutorials/props/molecular/envelope01_natural_gas",

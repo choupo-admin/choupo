@@ -720,7 +720,7 @@ so whether the volume was solved or typed is said in the case, not by the
 sizer.  There is no Turton set for a catalyst bed and none is invented; a
 density or a price you cannot source is declared as an assumption in a
 comment, in those words.  Worked case:
-`tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing`.
+`tutorials/steady/reactors/ammoniaReactor04_kineticSizing`.
 
 **A PRESSURE-RELIEF VALVE IS ONE MORE ITEM OF THE UNIT IT PROTECTS
 (2026-10-11, DEV.md 4c C62).**  `type reliefValve` sizes a relief valve on the
@@ -886,7 +886,7 @@ the two differ by 77x, so the engine does not guess: a missing basis is
 refused by name with that ratio quoted, and any other word (`standard`
 included -- it means 15, 20 or 25 degC depending on the source) is refused
 naming the two accepted.  The run prints the conversion beside the volume.
-Worked case: `tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach`.
+Worked case: `tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach`.
 
 **A SHELL-AND-TUBE EXCHANGER CAN BE DESIGNED, NOT ONLY ESTIMATED (2026-10-07).**
 `type shellTubeHX` has four routes, chosen by what `designRules` declares:

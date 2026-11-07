@@ -1620,6 +1620,13 @@ else
             # kept IN the sweep and classified in the check loop so they are
             # COUNTED and NAMED in the summary (never silently dropped).  An
             # honest gate makes its exceptions visible.
+            #  A SECTOR folder that carries its own system/controlDict (the
+            #  "dignified unit" form) is part of the case above it, which runs
+            #  it through `children`; run alone it exits 2 by design.  It was
+            #  never walked while its plant sat under tutorials/plant/ (whose
+            #  walk looks one level deep); C244 moved twoSectorDemo to
+            #  steady/flowsheets/, so the rule is now stated where it is needed.
+            [ -f "$(dirname "$case_dir")/system/controlDict" ] && continue
             CASES+=("$case_dir")
         done < <(find "tutorials/$cat" -path '*/system/controlDict' 2>/dev/null | sort)
     done

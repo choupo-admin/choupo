@@ -484,12 +484,12 @@ COLUMN  = "tutorials/steady/distillation/column09_tray_hydraulics"
 #  the corpus where the post-processing chain runs on an outer driver's
 #  representative pass at all, and the only one whose second item is priced
 #  from a DECLARED unit price rather than a Turton correlation.
-KINETIC = "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing"
+KINETIC = "tutorials/steady/reactors/ammoniaReactor04_kineticSizing"
 
 #  THE SPACE-VELOCITY WITNESS (2026-10-05).  The one corpus case that sizes a
 #  catalyst vessel from a declared `spaceVelocity`, and so the one whose
 #  `spaceVelocityBasis` declaration reaches the arithmetic.
-SPACEV  = "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach"
+SPACEV  = "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach"
 
 #  THE EXCHANGER-ROUTES WITNESS (2026-10-07).  The one corpus case whose
 #  coolers declare a `utility` instead of an LMTD, and whose rated
@@ -3713,7 +3713,7 @@ def check_column_exchanger_design_on(case, post_nc, out, problems, notes):
     notes.append("column exchanger designs: %d sheet(s) recomputed" % checked)
 
 
-MATERIAL_WITNESS = "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach"
+MATERIAL_WITNESS = "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach"
 
 
 def _record_scalar(name: str, key: str) -> float:

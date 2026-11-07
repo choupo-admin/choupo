@@ -221,13 +221,13 @@ NO_GRANT_CASE_LOCAL = {
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
     "tutorials/steady/reactors/ammonia03_quench_converter/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion/constant/components/NH3.dat":
+    "tutorials/steady/reactors/ammoniaReactor01_fixedConversion/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor02_equilibrium/constant/components/NH3.dat":
+    "tutorials/steady/reactors/ammoniaReactor02_equilibrium/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach/constant/components/NH3.dat":
+    "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing/constant/components/NH3.dat":
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
     "tutorials/plant/greenAmmonia03_basicDesign/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",

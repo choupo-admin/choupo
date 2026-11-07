@@ -13,7 +13,7 @@ it, as `kinetics { type expression; }` in constant/reactions -- three
 copies:
 
     tutorials/props/kinetics/ammoniaRate01_dyson_simon      (+ Eq 39 / Table I)
-    tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing
+    tutorials/steady/reactors/ammoniaReactor04_kineticSizing
     tutorials/plant/greenAmmonia03_basicDesign
 
 A law with three homes is held together HERE, and the anchors that used to
@@ -124,7 +124,7 @@ PLANT = ROOT / "tutorials/steady/reactors/ammonia03_quench_converter"
 LAWS = {
     "bench": CASE / "constant/reactions",
     "ammoniaReactor04_kineticSizing":
-        ROOT / "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing/constant/reactions",
+        ROOT / "tutorials/steady/reactors/ammoniaReactor04_kineticSizing/constant/reactions",
     "greenAmmonia03_basicDesign":
         ROOT / "tutorials/plant/greenAmmonia03_basicDesign/constant/reactions",
 }

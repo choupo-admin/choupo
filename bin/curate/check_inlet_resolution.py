@@ -528,7 +528,7 @@ CONTROL = "tutorials/steady/flash/flash13_acetic_ethanol_vacuum_flash"
 BAND_KW = 0.5
 #  (h) the supercritical-feed witness: the first corpus case to put a stream
 #  above every component's Tc through an isothermalFlash on the duty path.
-SUPERCRITICAL = "tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing"
+SUPERCRITICAL = "tutorials/steady/reactors/ammoniaReactor04_kineticSizing"
 SUPERCRITICAL_UNIT = "separator"
 SUPERCRITICAL_FEED = "reacted"
 ONE_HOME = ROOT / "src/unitOperations/flash/StreamEquilibrium.H"

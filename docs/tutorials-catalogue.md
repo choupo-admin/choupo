@@ -249,7 +249,7 @@ plant per process under `tutorials/plant/`; ladders, demos and variants under
 `tutorials/steady/`).**  The old identifiers still resolve through
 `tutorials/ALIASES`; the paths are:
 
-- `tutorials/steady/reactors/ammoniaLadder/ammoniaReactor01_fixedConversion` ..
+- `tutorials/steady/reactors/ammoniaReactor01_fixedConversion` ..
   `ammoniaReactor04_kineticSizing`: the four-rung reactor-model teaching
   sequence (that directory's README states it);
 - `tutorials/steady/reactors/ammonia03_quench_converter`,

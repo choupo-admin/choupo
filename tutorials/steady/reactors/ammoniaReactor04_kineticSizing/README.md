@@ -29,8 +29,8 @@ Background: `docs/design/how-a-process-design-is-staged.md` §3.4, §6 and
 ## 2. What changed against rung 3 — TWO blocks, not one, and the measured diff
 
 ```bash
-diff <(grep -v '^ *//' tutorials/steady/reactors/ammoniaLadder/ammoniaReactor03_equilibriumApproach/system/flowsheetDict) \
-     <(grep -v '^ *//' tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing/system/flowsheetDict)
+diff <(grep -v '^ *//' tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach/system/flowsheetDict) \
+     <(grep -v '^ *//' tutorials/steady/reactors/ammoniaReactor04_kineticSizing/system/flowsheetDict)
 ```
 
 Comments aside, the diff is exactly: a `variables { V_bed }` block, a
@@ -337,9 +337,9 @@ SAME bound in a third and invents no tighter one.
 ## 9. Running it
 
 ```bash
-bin/choupo-lint  tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing
-runCase          tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing       # the DesignSpec (13 loop solves)
-cat tutorials/steady/reactors/ammoniaLadder/ammoniaReactor04_kineticSizing/designspec_history.csv
+bin/choupo-lint  tutorials/steady/reactors/ammoniaReactor04_kineticSizing
+runCase          tutorials/steady/reactors/ammoniaReactor04_kineticSizing       # the DesignSpec (13 loop solves)
+cat tutorials/steady/reactors/ammoniaReactor04_kineticSizing/designspec_history.csv
 # rate ONE volume instead: move system/outerDict aside and set variables.V_bed
 ```
 
