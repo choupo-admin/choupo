@@ -240,8 +240,8 @@ describe("a nozzle stands where the engine's pipe lands (C229)", () => {
   const vessel = standing("vessel", 2, 10);
   // A feed on the side at mid-height and a bottoms port at the base, local to the centre.
   const ports = [
-    { at: [1, 0, 0] as Vec3, dir: [1, 0, 0] as Vec3 },
-    { at: [0, -5, 0] as Vec3, dir: [0, 0, 1] as Vec3 },
+    { stream: "s1", port: "feed", origin: "convention", role: "feed", at: [1, 0, 0] as Vec3, dir: [1, 0, 0] as Vec3 },
+    { stream: "s2", port: "bottoms", origin: "convention", role: "bottoms", at: [0, -5, 0] as Vec3, dir: [0, 0, 1] as Vec3 },
   ];
   const nozzles = (parts: Part[]) => parts.filter((p) => p.nozzle);
 
