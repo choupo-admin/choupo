@@ -97,7 +97,7 @@ are indoor by rule (C100) and the viewer marks them.
 
 ## QUESTIONS VÍTOR ASKS (answered from here)
 
-- **"Dá parecido com o Aspen?"**  The MTBE column: yes within 2.5 % on duties
+- **"Dá parecido com o simulador de referência?"**  The MTBE column: yes within 2.5 % on duties
   and 0.6 K after C235 (on the branch; landing today).  Everything else:
   compared to nothing commercial; see "held to".
 - **"Reproduz os artigos?"**  K_a(T) of Izquierdo (AAD 4.6 %) and Rehfinger's
