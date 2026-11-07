@@ -29,5 +29,4 @@ writeInterval   5;        // s   (fine enough to resolve the 600 s sinusoid)
 solutionControl
 {
     write           true;
-    flushEach       true;
 }

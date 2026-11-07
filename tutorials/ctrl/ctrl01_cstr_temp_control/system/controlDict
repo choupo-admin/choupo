@@ -54,5 +54,4 @@ writeInterval   2;        // s   (75 frames — a smooth transient + scrubber)
 solutionControl
 {
     write           true;
-    flushEach       true;
 }
