@@ -59,8 +59,10 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 Retaken after each full sweep from `build/suiteTimings.csv`.  A case that grew is a
 defect.  Not yet measured on a whole sweep: the first list comes from the sweep that
-lands C235.  Known so far: aceticAcid02_plant 46.5 s (2026-10-14) -> 391 s (2026-11-07,
-main `5c9c936af`, one run under load), under investigation.
+lands C235.  Found and fixed so far: aceticAcid02_plant 46.5 s (2026-10-14) -> 391 s (2026-11-07,
+main `5c9c936af`, one run under load): gamma(T, x) re-evaluated on every pass of the
+incipient vapour since `31d4b7e6c` (a dimer makes K depend on y); 94 s after the fix,
+before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed map.
 
 ## Next day (at most 5)
 
