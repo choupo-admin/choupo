@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*-------------------------------*\
+  envelope02_c3c4c5_branch_stop -- where a pressure-marched saturation trace
+  ends, and what it says when it does.
+
+  HISTORY, kept because it is why the op carries its guards.  This case was
+  named envelope02_root_jump.  Both saturation solvers bracket T in 200-700 K
+  and are warm-started from the previous pressure step; with a wide bracket,
+  Newton can converge to a DIFFERENT root and report success.  On this
+  C3/C4/C5 feed the first version of the envelope traced the bubble branch
+  243 -> 332 K to 16 bar and then reported 268 K at 19 bar -- a bubble
+  temperature FALLING as pressure rises, which is thermodynamically
+  impossible -- and the cricondentherm detector read the resulting spike on
+  the dew branch as a maximum and published 371.492 K.  The op now rejects a
+  bubble step that lowers T and a dew step many times its neighbours, and
+  reports either as a ROOT JUMP.
+
+  WHAT CHANGED (DEV.md C235, 2026-11-07).  The jump WAS an artefact of the
+  liquid reference: with a real vapour, K = gamma Psat / (phi_V P) counted the
+  vapour's non-ideality on one side only, and the solver's second root was
+  that error's.  With the reference carrying phi_sat and Poynting, a search of
+  twelve neighbours of this case (six compositions x PengRobinson and SRK, to
+  60 bar) found NO root jump.  What the case shows now is the other ending,
+  and the report must say so:
+
+    * each branch stops without a jump -- a Newton that no longer converges --
+      at a temperature just below PROPANE's critical temperature (369.83 K;
+      last converged points 366-369 K);
+    * the run reports it as a STOPPED branch with its last converged point and
+      the sentence that the stopping pressure is a limit of the trace, and it
+      does NOT call it a root jump and claims no cricondentherm;
+    * why it stops there is stated, not hidden: above Tc a component has no
+      saturation, so the liquid reference of propane drops phi_sat and
+      Poynting there (factor exactly 1, announced), which is a STEP in K at
+      T = Tc that a pressure-marched solve cannot cross.  The stopping
+      pressure is therefore a property of that definition and of the feed's
+      propane content, not of the mixture's critical locus.
+
+  NOT VALIDATED: no number here is checked against a measured envelope.  This
+  is a STRUCTURAL witness for what a stopped branch says.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description  "P-T envelope of a C3/C4/C5 feed where both branches stop just below propane's Tc: reported as STOPPED branches, never as a root jump, and no cricondentherm is claimed";
+verbosity     3;

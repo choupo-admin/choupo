@@ -309,20 +309,20 @@ HONEST SIMPLIFICATIONS. (1) The converter is a SINGLE adiabatic bed, so it runs 
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{stream}{chilledEffluent}{F}{10.2992003164}
+\goldrow{stream}{chilledEffluent}{F}{10.3200709671}
 \goldrow{stream}{compMakeup}{F}{2.22222222222}
-\goldrow{stream}{compRecycle}{F}{9.04024011142}
-\goldrow{stream}{cooledEffluent}{F}{10.2992003164}
+\goldrow{stream}{compRecycle}{F}{9.06139671935}
+\goldrow{stream}{cooledEffluent}{F}{10.3200709671}
 \goldrow{stream}{cw}{F}{138.888888889}
 \goldrow{stream}{cwOut}{F}{138.888888889}
-\goldrow{stream}{hotEffluent}{F}{10.2991998088}
-\goldrow{stream}{letdownGas}{F}{0.00750227557924}
+\goldrow{stream}{hotEffluent}{F}{10.3200692644}
+\goldrow{stream}{letdownGas}{F}{0.00745939418301}
 \goldrow{stream}{makeup}{F}{2.22222222222}
-\goldrow{stream}{mixed}{F}{11.2624623336}
-\goldrow{stream}{preheatedFeed}{F}{11.2624623336}
-\goldrow{stream}{productNH3}{F}{0.971862875259}
-\goldrow{stream}{purge}{F}{0.279595054967}
-\goldrow{stream}{rawLiquid}{F}{0.979365150838}
+\goldrow{stream}{mixed}{F}{11.2836189416}
+\goldrow{stream}{preheatedFeed}{F}{11.2836189416}
+\goldrow{stream}{productNH3}{F}{0.970965489387}
+\goldrow{stream}{purge}{F}{0.280249382505}
+\goldrow{stream}{rawLiquid}{F}{0.97842488357}
 \goldmore{951}
 \end{tutgolden}
 
@@ -407,20 +407,20 @@ CHANGED, and each change is a consequence of the converter: the INTERCHANGER fal
 \tutreadme{A quench converter follows the locus instead --- in a staircase. Inside a bed the gas climbs its adiabatic line; at the cold shot it drops vertically (cold gas removes heat, and dilutes, but converts nothing). Up, down, up, down, up. That zigzag is the whole design.}
 \tutreadme{The picture is Dyson and Simon's. The rate contours in the conversion--temperature plane, the descending locus of maximum rate, and a cold-shot trajectory drawn as a zigzag about it, are Figure 2 of D. C. Dyson and J. M. Simon, $\ast$A kinetic expression with diffusion correction for ammonia synthesis on industrial catalyst$\ast$, Ind. Eng. Chem. Fundam. 7 (1968) 605--610. This case executes that figure with equilibrium beds. Their rate law is what would put the contours on it; see ?6.}
 \begin{tutgolden}
-\goldrow{stream}{bed1Out}{F}{3.17996753423}
-\goldrow{stream}{bed1Out}{T}{841.2767605}
-\goldrow{stream}{bed2Feed}{F}{5.03030532814}
-\goldrow{stream}{bed2Feed}{T}{682.045268453}
-\goldrow{stream}{bed2Out}{F}{4.69483355428}
-\goldrow{stream}{bed2Out}{T}{797.933843704}
-\goldrow{stream}{bed3Feed}{F}{6.76721188346}
-\goldrow{stream}{bed3Feed}{T}{680.610038848}
-\goldrow{stream}{chilledEffluent}{F}{6.38083264983}
-\goldrow{stream}{chilledEffluent}{T}{324.3024335}
+\goldrow{stream}{bed1Out}{F}{3.18681083805}
+\goldrow{stream}{bed1Out}{T}{837.930307027}
+\goldrow{stream}{bed2Feed}{F}{5.04038452758}
+\goldrow{stream}{bed2Feed}{T}{679.708233615}
+\goldrow{stream}{bed2Out}{F}{4.70433099213}
+\goldrow{stream}{bed2Out}{T}{795.349370609}
+\goldrow{stream}{bed3Feed}{F}{6.7803335244}
+\goldrow{stream}{bed3Feed}{T}{678.61841565}
+\goldrow{stream}{chilledEffluent}{F}{6.39361673578}
+\goldrow{stream}{chilledEffluent}{T}{323.660795509}
 \goldrow{stream}{compMakeup}{F}{2.22222222222}
 \goldrow{stream}{compMakeup}{T}{656.394257943}
-\goldrow{stream}{compRecycle}{F}{5.17912895342}
-\goldrow{stream}{compRecycle}{T}{274.060726539}
+\goldrow{stream}{compRecycle}{F}{5.1920725359}
+\goldrow{stream}{compRecycle}{T}{274.010097828}
 \goldmore{284}
 \end{tutgolden}
 
@@ -464,19 +464,19 @@ TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
 \tutreadme{A converged MATERIAL balance over the whole loop, and the consequences of one declared number.}
 \tutreadme{$\ast$ No reactor size. A declared conversion contains no length scale, no contact time and no catalyst. There is nothing here from which a volume follows. $\ast$ No cost --- and the reason is the METHODOLOGY, not squeamishness. This case carries no system/postDict. By METHODOLOGY, an estimate that has only a declared conversion to go on belongs to AACE 18R-97 Class 5 (the class itself is set by the standard's PRIMARY characteristic, the maturity of the project definition, which no reactor model decides -- methodology is a secondary one), whose methodology the standard states as $\ast$capacity factored, parametric models, judgment, or analogy$\ast$ --- the whole plant scaled from a reference plant, with no individual item sized at all. Choupo's costing chain is per-item Guthrie/Turton bare-module: equipment factored, which 18R-97 lists against Class 4, not Class 5. So the engine cannot produce the RIGHT KIND of cost at this stage. It could produce a $\ast$number$\ast$; the number would be a Class-4 answer wearing a Class-5 label. The class table is transcribed once, in src/postProcessing/EstimateClass.H --- read the bands there, never from prose. $\ast$ It does not claim the 25 \% is right. See section 5.}
 \begin{tutgolden}
-\goldrow{stream}{letdownGas}{F}{0.00738443277329}
+\goldrow{stream}{letdownGas}{F}{0.00733816135665}
 \goldrow{stream}{letdownGas}{T}{250}
 \goldrow{stream}{makeup}{F}{2.22222222222}
 \goldrow{stream}{makeup}{T}{300}
-\goldrow{stream}{mixed}{F}{7.92134251385}
-\goldrow{stream}{mixed}{T}{263.765269439}
-\goldrow{stream}{productNH3}{F}{0.961408970465}
+\goldrow{stream}{mixed}{F}{7.94584854922}
+\goldrow{stream}{mixed}{T}{263.676121413}
+\goldrow{stream}{productNH3}{F}{0.960141702783}
 \goldrow{stream}{productNH3}{T}{250}
-\goldrow{stream}{purge}{F}{0.299953699801}
+\goldrow{stream}{purge}{F}{0.301243491607}
 \goldrow{stream}{purge}{T}{250}
-\goldrow{stream}{rawLiquid}{F}{0.968793403238}
+\goldrow{stream}{rawLiquid}{F}{0.96747986414}
 \goldrow{stream}{rawLiquid}{T}{250}
-\goldrow{stream}{reacted}{F}{6.96786739925}
+\goldrow{stream}{reacted}{F}{6.99234969628}
 \goldrow{stream}{reacted}{T}{700}
 \goldmore{60}
 \end{tutgolden}
@@ -521,21 +521,21 @@ TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
 \tutreadme{One claim: the ceiling. With no conversion declared and no approach declared, the converter outlet is the composition that minimises the Gibbs energy of the four declared species at 700 K and 200 bar, subject to the feed's own element balance, with SRK fugacities.}
 \tutreadme{It also claims a converged heat and material balance, and here that claim holds: every unit closes at 100.00 \% and the plant boundary closes at 1.0e-6 \%.}
 \begin{tutgolden}
-\goldrow{stream}{letdownGas}{F}{0.00852264420893}
+\goldrow{stream}{letdownGas}{F}{0.0084712940232}
 \goldrow{stream}{letdownGas}{T}{250}
 \goldrow{stream}{makeup}{F}{2.22222222222}
 \goldrow{stream}{makeup}{T}{300}
-\goldrow{stream}{mixed}{F}{4.50147743743}
-\goldrow{stream}{mixed}{T}{274.381582952}
-\goldrow{stream}{productNH3}{F}{1.05400356221}
+\goldrow{stream}{mixed}{F}{4.53184856127}
+\goldrow{stream}{mixed}{T}{274.159376696}
+\goldrow{stream}{productNH3}{F}{1.05295021003}
 \goldrow{stream}{productNH3}{T}{250}
-\goldrow{stream}{purge}{F}{0.119960800861}
+\goldrow{stream}{purge}{F}{0.121559281066}
 \goldrow{stream}{purge}{T}{250}
-\goldrow{stream}{rawLiquid}{F}{1.06252620642}
+\goldrow{stream}{rawLiquid}{F}{1.06142150405}
 \goldrow{stream}{rawLiquid}{T}{250}
-\goldrow{stream}{reacted}{F}{3.46174222365}
+\goldrow{stream}{reacted}{F}{3.49260712538}
 \goldrow{stream}{reacted}{T}{700}
-\goldmore{65}
+\goldmore{66}
 \end{tutgolden}
 
 \clearpage
@@ -578,21 +578,21 @@ TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
 \tutreadme{The direction the engine assigns is the source's own, and the word that carries it is $\ast$above$\ast$. US 5,352,428 (M. L. Bhakta and B. J. Grotz, CF Braun and Co, issued 4 October 1994), $\ast$High conversion ammonia synthesis$\ast$, verbatim:}
 \tutreadme{The patent calls the 5 $^\circ$C example's conditions "typical and optimum in many commercial process designs", so 5 is a sourced value, not a round number. It is declared bare because it is a temperature $\ast$difference$\ast$: 5 K and 5 $^\circ$C are the same interval.}
 \begin{tutgolden}
-\goldrow{stream}{letdownGas}{F}{0.00848002672666}
+\goldrow{stream}{letdownGas}{F}{0.00842783334774}
 \goldrow{stream}{letdownGas}{T}{250}
 \goldrow{stream}{makeup}{F}{2.22222222222}
 \goldrow{stream}{makeup}{T}{300}
-\goldrow{stream}{mixed}{F}{4.61740426542}
-\goldrow{stream}{mixed}{T}{273.760779212}
-\goldrow{stream}{productNH3}{F}{1.05085761439}
+\goldrow{stream}{mixed}{F}{4.65039364035}
+\goldrow{stream}{mixed}{T}{273.533393157}
+\goldrow{stream}{productNH3}{F}{1.04972026379}
 \goldrow{stream}{productNH3}{T}{250}
-\goldrow{stream}{purge}{F}{0.126062212851}
+\goldrow{stream}{purge}{F}{0.127798495744}
 \goldrow{stream}{purge}{T}{250}
-\goldrow{stream}{rawLiquid}{F}{1.05933764112}
+\goldrow{stream}{rawLiquid}{F}{1.05814809714}
 \goldrow{stream}{rawLiquid}{T}{250}
-\goldrow{stream}{reacted}{F}{3.58058189813}
+\goldrow{stream}{reacted}{F}{3.61411801202}
 \goldrow{stream}{reacted}{T}{700}
-\goldmore{105}
+\goldmore{106}
 \end{tutgolden}
 
 \clearpage
@@ -643,19 +643,19 @@ SCALE, TOPOLOGY, SEED: read rung 3's flowsheetDict; nothing about them moved. TO
 \tutreadme{$\ast$ A heater takes a DUTY and returns T\_out. A fixed duty in front of a kinetic bed inside a recycle is open-loop unstable: a larger recycle is heated less, the colder bed converts less, the recycle grows again. With the Wegstein recycle solver the loop ran away in three passes --- recycle 12 998 $\to$ 15 378 $\to$ 23 475 kmol/h while the bed inlet fell 697 $\to$ 597 $\to$ 532 $\to$ 480 K --- and with the Newton solver a trial step fed the let-down drum an empty stream and the run stopped. That is real physics, and it is why an industrial loop preheats through a feed-effluent exchanger under temperature control, never through a fixed-duty heater. $\ast$ The phaseChanger's emergent role label reads boiler (Q > 0 on the vapour side); the gas enters and leaves as superheated vapour and the duty is entirely sensible (Q\_latent\_kW 0). The Tsat 150 K it prints is the bracket centre of its inverse solve on a gas far above every critical temperature, not a claim about anything boiling.}
 \tutreadme{The 700 K inlet is inherited from rung 3: it is the one thermal fact rung 3 states about its converter, and inheriting it keeps the ladder's rule --- one thing moves per rung --- as close as a kinetic bed allows. It was a declared assumption there and is one here.}
 \begin{tutgolden}
-\goldrow{stream}{letdownGas}{F}{0.00653101627192}
+\goldrow{stream}{letdownGas}{F}{0.0064549708016}
 \goldrow{stream}{letdownGas}{T}{250}
 \goldrow{stream}{makeup}{F}{2.22222222222}
 \goldrow{stream}{makeup}{T}{300}
-\goldrow{stream}{mixed}{F}{10.9531095178}
-\goldrow{stream}{mixed}{T}{259.9302829}
-\goldrow{stream}{preheated}{F}{10.9531095178}
+\goldrow{stream}{mixed}{F}{11.0991281882}
+\goldrow{stream}{mixed}{T}{259.761948499}
+\goldrow{stream}{preheated}{F}{11.0991281882}
 \goldrow{stream}{preheated}{T}{700}
-\goldrow{stream}{productNH3}{F}{0.879606224653}
+\goldrow{stream}{productNH3}{F}{0.87472137817}
 \goldrow{stream}{productNH3}{T}{250}
-\goldrow{stream}{purge}{F}{0.459520384245}
+\goldrow{stream}{purge}{F}{0.467205577517}
 \goldrow{stream}{purge}{T}{250}
-\goldrow{stream}{rawLiquid}{F}{0.886137240925}
+\goldrow{stream}{rawLiquid}{F}{0.881176348972}
 \goldrow{stream}{rawLiquid}{T}{250}
 \goldmore{134}
 \end{tutgolden}

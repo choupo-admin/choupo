@@ -238,7 +238,7 @@ describe("plant layout: each guided move says what the engine's rules give", () 
   it("move 2 clears it (about 4.4 m)", () => {
     expect(findings(byId("drum-moved").knobs)).toEqual([]);
     const it2 = itemsFor(byId("drum-moved").knobs);
-    expect(clear(it2.get("separator")!, it2.get(DRUM)!)).toBeCloseTo(4.386, 3);
+    expect(clear(it2.get("separator")!, it2.get(DRUM)!)).toBeCloseTo(4.3855, 3);
   });
   it("move 3 is an overlap, which the engine refuses", () => {
     expect(findings(byId("drum-overlap").knobs)).toContain("OVERLAP separator letdown");
@@ -271,9 +271,9 @@ const all = prose(PLANT_LAYOUT_STEPS.map((s) => `${s.title} ${s.body} ${s.note ?
 describe("plant layout: the numbers the lesson quotes", () => {
   const it0 = itemsFor(SHIPPED);
   const Dsep = golden("separator", "dx"), Ddrum = golden(DRUM, "dx");
-  it("1.886 m against 4 m", () => {
-    expect(all).toContain("1.886 m from the separator");
-    expect(golden("separation:separator:letdown", "value").toFixed(3)).toBe("1.886");
+  it("1.885 m against 4 m", () => {
+    expect(all).toContain("1.885 m from the separator");
+    expect(golden("separation:separator:letdown", "value").toFixed(3)).toBe("1.885");
     expect(golden("separation:separator:letdown", "limit")).toBe(4);
   });
   it("the drum must stand at about 61.61 m or more", () => {

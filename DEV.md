@@ -2548,8 +2548,12 @@ accepts today, and that is a policy call.
 > is `~/Downloads/MNL50.pdf` and
 > `~/Choupo-Literature/characterization-of-petroleum-products-by-riazi.pdf`,
 > Sundaram & Froment are `~/Choupo-Literature/sundaram1977.pdf` and
-> `sundaram1978.pdf`; Poling-Prausnitz-O'Connell is not in either place (the
-> curator's own copy that `verify_against_poling.py` reads).
+> `sundaram1978.pdf`; Poling-Prausnitz-O'Connell was not in either place then
+> (the curator's own copy that `verify_against_poling.py` reads).  CORRECTED
+> 2026-11-07: the fifth edition is at
+> `~/Choupo-Literature/poling-properties-of-gases-and-liquids-5ed.pdf`, and
+> `~/Choupo-Literature/INDEX.md` is the folder's index, read before any paper is
+> requested (it maps old names to new).
 
 > **C224 INTEGRATION (2026-11-05): the report's case list was INCOMPLETE and
 > the full sweep was judged not needed.**  The general listed SIX cases that
@@ -2964,6 +2968,199 @@ accepts today, and that is a policy call.
 > it was measured on, and is retaken after each full sweep.  A case whose time grew
 > against its previous row is a defect, named in DEV.md.  The gates count: an
 > integration spent over 90 minutes mostly in gates re-running the slow case serially.
+
+> **C237 (Vitor, 2026-11-07: "Depois desta fase ataca o plano CML de forma a despachar
+> as coisas rápidas e fáceis de fazer"): ONCE C235 IS LANDED, THE PLAN IS CLEARED OF ITS
+> QUICK ITEMS BEFORE ANY NEW PHYSICS.**  STATUS: waits on C235.  An item qualifies when
+> it needs no new physics, no golden moved without a reason, and under an hour of a
+> general; one that outgrows that returns to its row, said in one line.  Order, a triage
+> and not a measurement of effort: (1) the `flushEach` default on the dynamic binaries,
+> after checking that no gate depends on it (C236; ctrl17 went 107.9 -> 0.39 s on branch
+> `worktree-agent-a0748a330baf8fe7f`); (2) the slowest list from the real per-job times
+> in `build/suiteJobTimes.tsv`, because `suiteTimings.csv` holds gaps between result
+> lines (C236); (3) the branches already built: C228's TBP cutter
+> (`worktree-agent-ab10187c08ec1b5a6`, 9 commits) and C227 slice (a)
+> (`worktree-agent-a98489e6761709cb3`, 8 commits; first understand why its lookups
+> bypass the seal); (4) small fixes: the console 'pinch at' on a threshold case (C234;
+> `PinchPass.cpp:452` already comments on it, so read before dispatching) and a props
+> run's `postProcessing/` in the GUI case tree (C183 item 1); (5) the architect's
+> decisions that need no code (C183 item 2, the trademark wording); (6) the plan's own
+> upkeep: the usage-freeze banner, Done rows past their week, the private page.
+> AMENDED THE SAME HOUR (Vitor: "O que puder ser feito em paralelo sem atrapalhar o
+> resto tem de avançar!"): the order above is NOT a queue behind C235.  Whatever does
+> not touch C235's files (`src/thermo/`, the column, the Gibbs methods) and fits the
+> laptop's budget runs now; only integration waits its turn, one at a time.
+
+> **C238 (Vitor, 2026-11-07: "No final do mês tenho de ter um simulador para impressionar
+> os meus colegas!"): A DEADLINE, 2026-11-30.**  STATUS: open.  The audience is
+> chemical-engineering colleagues, who judge by what a number can be defended against
+> and by what they see.  Priority for the month goes to what they will open: the column
+> against the reference simulator with its first law closed, the 3D plant (C229), the
+> pinch page (C234), and a demonstration path through those.  The rule of the project
+> does not change: no gate is traded for the date.
+
+> **C239 (architect's reflection, 2026-11-07, measured on main `7cec264f0`): THE MTBE
+> DEFECT IS A FAMILY, AND VALIDATION DOES NOT REACH THE COLUMNS.**  STATUS: open.
+> (1) 34 of the 36 cases holding a `distillationColumn` declare `fugacityModel
+> idealGas`, the 2 others SRK (column14, column15).  Above 2.5 bar on an ideal vapour:
+> column08 16 bar, column19 and column20 7 bar, process05 and recycle02 5 bar,
+> acetonePlant 2.6 atm, aceticAcid02_plant 30 bar (that figure is the case's highest
+> declared P, not yet read as the column's).  C235 moves column19 only, so column20,
+> the same system at the same pressure, stays on the defect and must follow it at once.
+> The rest is the first target of the thermodynamic audit, each case judged by its own
+> species and pressure, not by this list.  (2) The validation subset holds 19 rows of
+> 526 runnable cases, 3 of them fit-consistency, and NO distillation column.  So
+> Jacobs & Krishna would be the first column held to a published result; whether
+> column14's source can serve as an earlier one is to be read.  (3) The public catalogue
+> carries 608 components and 9 NRTL + 3 UNIQUAC pairs: a colleague's own system falls
+> to UNIFAC or ideal.  Not closable this month; the demonstration uses systems with
+> defended pairs and says so.  (4) C227 (a): the lookups read the installation catalogue
+> by design, correct because their subject is the catalogue, but a sealed case then
+> prints a card from a release that is not its own, unsaid.  Decision: it lands with one
+> line on the card and in the JSON naming the source, the release and the case's seal.
+> READING OF THE FIVE COLUMN PAPERS (same day, a general, not yet re-read by the
+> architect): Klemola 1996 is the one measured column that can enter the subset now:
+> column14's `expected` carries no anchor row although its record promised them
+> (`docs/design/klemola-c4-splitter-reference-case.md:158`), and its header expects the
+> disagreement to be stated (distillate n-butane about 130x low).  It runs after C235
+> lands, because C235 re-records column14.  Jacobs 1993 and Nijhuis 1993 are simulations:
+> Nijhuis Table IV (98.5 % against 41.4 %) is the printed target, estimated 20-30 h,
+> needing a `refluxRatio + bottomsRate` pair and a total condenser on the full MESH,
+> UNIQUAC pairs (r and q are not printed), continuation in the feed stage.  Yanagi 1982:
+> measured tray profiles, but total reflux, a mode the column lacks.  Bessling 1998: a
+> figure and no feed flows; dropped as an anchor.  Decision: Klemola first, then the
+> spec pair and total condenser, useful beyond MTBE, then Nijhuis if the month holds.
+
+> **C240 (Vitor, 2026-11-07: "O layout da fábrica NH3 full plant continua uma
+> porcaria"): C229 DOES NOT CURE IT, THE CASE ITSELF IS THIN.**  STATUS: waits on the
+> C229 port fix, which edits the same case.  Seen on the plan drawn from the published
+> `layout` block of `ammonia02_full_plant` (2D; his 3D view not yet seen): the engine
+> reports 28 items, 17 pipes, one finding, and that says nothing about whether it looks
+> like a plant.  (1) The process block is about 70 m x 20 m on a 199 m x 111 m plot, smaller
+> than the car park and laydown.  (2) `cw`, `cwOut`, `purge` and `letdownGas` run to
+> the fence and stop: the plant has no cooling tower, no refrigeration, no flare, so
+> the utilities a colleague looks for are absent.  (3) One pipe reaches `T201/vessel1`
+> and the other six bullets connect to nothing: no manifold.  (4) `letdown` stands
+> against `separator` on purpose (a witness of the distance announcement), which on
+> the flagship reads as a mistake.  The slice is the case, not the engine: a compact
+> loop, utilities as declared items, a tank manifold, and the distance witness moved to
+> a fixture.  Judge it by a render, not by the absence of findings.
+
+> **C241 (Vitor, 2026-11-07: "devias ter um pequeno modelo LLM do Choupo em que, se eu
+> fizer uma pergunta, respondes quase sem pensar ... ia evoluindo à medida que o Choupo
+> evolui"; then "vai ver online quais são as boas práticas"): `BRAIN.md`, AND THE DIET OF
+> `CLAUDE.md` THAT THE PRACTICE DEMANDS.**  STATUS: BRAIN.md landed (`9a10a6861`), the
+> generator, the gate and the diet dispatched.  WHAT WAS READ (2026-11-07): the official
+> Claude Code memory page -- "target under 200 lines per CLAUDE.md file.  Longer files
+> consume more context and reduce adherence"; "if two instructions contradict each
+> other, Claude may pick one arbitrarily"; `@path` imports expand a file into context;
+> `.claude/rules/` holds path-scoped instructions; checkable rules belong in hooks, not
+> prose; auto memory loads its first 200 lines / 25 KB.  Community practice agrees
+> (HumanLayer: a root file under 60 lines, the consensus under 300; "roughly 150-200
+> instructions are followed reliably, and the system prompt already spends about 50";
+> alexop: "if a tool can enforce it, don't write prose about it"; a wrapped file whose
+> contents "may or may not be relevant" is discounted as a whole when most of it is
+> off-task).  On memory itself (PROJECTMEM, arXiv 2606.12329; memory-bank pattern): an
+> append-only log of decisions and failed attempts, a compact summary PROJECTED from it
+> and read first, supersede never delete, and stale detection against the code.  MEASURED
+> HERE: `CLAUDE.md` is 4375 lines / 303 KB, twenty times the official target; section 6
+> alone is 2630 lines of dated narrative, 117 titled paragraphs of which 80 already carry
+> a design record; 34 scripts mention CLAUDE.md (mostly as a citation string).  That size
+> is a cause of what Vitor sees: rules 0 and 00 sit among four thousand lines and are
+> discounted with the rest, and the session searches instead of knowing.  DECISIONS
+> (architect, rule 00): (1) `BRAIN.md` is the projected summary -- one page, every area
+> judged and dated, his recurring questions answered, a generated FACTS block held by
+> `check_brain_fresh`, imported by `@BRAIN.md` from CLAUDE.md so it loads without being
+> remembered.  (2) `DEV.md` 4c stays the append-only log (it already supersedes and never
+> deletes).  (3) `CLAUDE.md` goes on a DIET BY RELOCATION, not by deletion: every titled
+> paragraph of sections 5 and 6 moves VERBATIM to `docs/architecture/settled-contracts.md`
+> under the same title and date, and CLAUDE.md keeps the title, its first sentence and the
+> pointer; the mandate (section 0), build, git conventions, the factory pattern, the
+> never-list and section 10's rules stay; target 300 lines, every gate that reads
+> CLAUDE.md re-pointed or kept green.  Nothing is deleted and git keeps the diff, so the
+> door is two-way.  (4) Rules a tool can check leave prose for hooks later (a named
+> candidate list: no `git add -A`, no edit of `bin/runTests` while a suite runs).
+
+> **C242 (Vitor, 2026-11-07: "vê online o que tu precisas de fazer e a forma de te
+> organizares para gerir um software deste calibre"): THE OPERATING SYSTEM, READ FROM
+> THE PRACTICE AND MEASURED AGAINST OURS.**  STATUS: rules adopted below; they enter
+> CLAUDE.md section 10 when the C241 diet lands (one writer on that file at a time).
+> WHAT WAS READ: Osmani, *The code agent orchestra* ("verification is the bottleneck,
+> not generation"; 3-5 agents, 1 reviewer per 3-4 builders, "don't run more agents than
+> you can meaningfully review"; one file one owner; plan approved before code; stuck 3+
+> iterations on one error -> stop and reassign; hard caps on iterations, time and
+> tokens, pause at 85 %; the lead keeps architecture, scope and review, and approves
+> every line of the context file -- agent-written context files gave no benefit, ETH
+> Zurich); Augment, *multi-agent workspace* (a single-writer rule for hotspot files --
+> registries, configs; specs with acceptance criteria; tests plus automated gates before
+> every merge, merges sequential; "git detects textual conflicts, not semantic ones");
+> CFD Direct on OpenFOAM maintenance (Lehman: growth paced so users, trainers and
+> documentation keep up; small frequent changes stable, large infrequent ones not; a
+> maintainer needs enough time to stay familiar with the code); OpenFOAM's layered test
+> battery (daily units, weekly medium, release-time industrial); Ernst, Kazman & Delange,
+> *Technical Debt in Practice* (track it, 7-15 % of the backlog is normal; look beyond
+> code to tests and documentation) and arXiv 2603.20415 on SCIENTIFIC debt (a flawed
+> physical assumption in code, which code-debt tools miss); the risk-register and
+> WIP-limit literature (limits drift upward until they never trigger; a weekly flow
+> review).  MEASURED AGAINST CHOUPO: briefs carry measured claims but rarely an explicit
+> pass/fail list or an ownership list; the machine budget allows 7 generals and today 6
+> ran while integration -- the architect's serial lane -- was the bottleneck (five ready
+> branches queued behind one integration); no brief carried a time or token cap (the
+> C235 general ran 4.2 h and 736k tokens, well, but unbounded); no independent reviewer
+> read a slice before integration; the only hooks are a stop hook; technical debt is
+> registered (`debt_registry.py`, KNOWN_OPEN pins) but RISK is not; the full sweep runs
+> when a slice forces it, not on a cadence.  RULES ADOPTED (architect, rule 00):
+> (1) A BRIEF ENDS WITH `Accepts when:` (3-6 checkable lines) AND `Owns:` / `Does not
+> touch:` (paths); a general that must touch a path it does not own stops and asks.
+> (2) WIP: at most 4 BUILDERS in flight, and when 3 branches are `queued` for
+> integration no new builder starts -- the slot goes to integrating or to a reviewer.
+> (3) Every brief carries a BUDGET (wall time, and the largest change allowed: goldens,
+> files); the general reports at half and stops at the cap with its state; stuck 3
+> rounds on one error -> it stops and reports, with the reflection line "what failed,
+> what would fix it, am I repeating myself".  (4) A slice over ~2 h, or touching a shared
+> path, starts with a PLAN REPORT (<= 30 lines) the architect approves before code.
+> (5) A slice that moves goldens or touches a shared path gets a READ-ONLY REVIEWER
+> (brief + acceptance list, fresh context) before integration; its verdict is in the
+> commit.  (6) HOTSPOT FILES have one writer, the architect: CLAUDE.md, BRAIN.md,
+> DEV.md, PLAN.md; generated views regenerate at integration; `bin/runTests` and the
+> registries are edited by one general at a time.  (7) A CADENCE: every Saturday the
+> full sweep, the slowest list, the BRAIN rows, the risk table and the Done pruning,
+> whether or not a slice forced it; Wednesday a half-week check of the plan's caps.
+> (8) A RISK TABLE in BRAIN.md (likelihood, impact, mitigation, review date), scientific
+> debt named as a class.  (9) One builder slot in four goes to debt, speed or validation,
+> never to a feature.  (10) Checkable rules move to hooks: first `git add -A` and
+> `git add .` refused by a PreToolUse hook; then "no edit of `bin/runTests`, `src/` or
+> `gui/` while a suite runs".
+
+> **C235 LANDED (2026-11-07, merge of integ/worktree-agent-a7c1125f4f65eeab1 at
+> 4174b9a05; branch tip 5d86eaf00).**  STATUS: done.  WHAT LANDED: the gamma-phi liquid
+> reference is f_ref = phi_sat Psat exp(V_L (P - Psat)/RT) (`ThermoPackage::
+> liquidReferenceFugacity`, `SaturatedVapour`), only below Tc, only with a non-ideal
+> vapour, Poynting only with a record `Vliq` (announced when absent), the solid phase on
+> the same factor; the Gibbs routes (`DirectMin`, `GibbsMethod`, `ElementPotential`,
+> `ReactiveFlash`, the VLLE search of `IsothermalFlash`) and the records-derived K_a of
+> the reactive column read one hook, `pureLiquidReference`; a feed is priced at its own
+> pressure; `column19` declares SRK as its source case does; `pureSaturationTemperature`
+> helper; `suite_timings.py` reads a decimal comma.  MEASURED: the MTBE column against
+> the reference simulator -- duties 7.59 / 7.75 MW against 7.40 / 7.64 (+2.5 % / +1.5 %,
+> from +8 %), T 323.92 / 400.67 K against 324.4 / 401.3, conversion 98.8 against
+> 98.87 %, first law 0 kW; NH3 K at the 250 K / 200 bar separator 0.020448 by hand
+> against 0.020448 (0.002 %; the reference correction is +24 % there); the engine's
+> alpha is Graboski-Daubert, which explained the earlier 0.5-1.2 % hand gaps.  GOLDENS:
+> 20 cases re-recorded then 4 again after their witness copies moved (ammonia01-03,
+> ammoniaReactor01-04, economics03, greenAmmonia02 x2 / 03 / PEQ, letdown01-02,
+> relief01-02, column14 / 15 / 19, envelope01-02, ammoniaRate01); every row's reason is
+> in a2cb391d6; no anchor row moved; the hand values of five gates re-derived, no
+> tolerance widened (pinch Q_C,min 95454.3 -> 95453.2 kW; greenAmmonia03 D_converter
+> 2.2283 -> 2.2427 m).  VALIDATION: full sweep on the tip 847/0 (34 min); scope 509/0,
+> --gui 44/0, --fast on the integrated tree; no second sweep, reason in the merge.
+> OPEN, found by the slice: (a) the Tc rule steps the factor to exactly 1 at T = Tc, so
+> a pressure-marched saturation solve cannot cross it and every envelope02 branch stops
+> at 366-369 K below propane's Tc 369.83 K -- the case is renamed
+> `envelope02_c3c4c5_branch_stop` and says so; a continuous variant (hold the Tc value
+> above Tc) is the candidate, to be judged on a measured envelope (C239 risk table);
+> (b) `column20` is the same system at the same pressure and still on the ideal vapour
+> (C239 first item); (c) three READMEs carry prose from the previous state, marked.
 
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx

@@ -17,9 +17,17 @@ header names the PLAN.md commit it reflects, so a stale view shows itself.
 > told to commit WIP and stop.  Lifted by Vitor, never by the assistant.
 
 
+> **THE MONTH (C238, deadline 2026-11-30, the architect's plan).**  To 11-15: land
+> what is built, in the order C235, C228, C236, C183, C227 (a), C234, C229; no new
+> physics until that queue is empty.  To 11-22: reproduce Jacobs & Krishna (Nijhuis if
+> time allows) and write one short demonstration path: the column beside the
+> reference, the first law closed, the 3D plant, the pinch page.  Last week: fixes
+> only, WASM rebuild, publish, a full rehearsal in the browser.  What falls first if
+> the month runs short is what is least visible, never a gate.
+
 ## How the plan is kept (the architect's rule, 2026-11-01)
 
-1. **Capacity, not hope.**  Up to 7 generals at once (CLAUDE.md rule 4:
+1. **Capacity, not hope.**  Up to 7 generals by the machine (CLAUDE.md rule 4) but at most 4 BUILDERS at once and none started while 3 branches are `queued` for integration -- integration is the serial lane and the practice says verification, not generation, is the bottleneck (C242).  Every brief carries a budget and an acceptance list.  Saturday: full sweep, slowest list, BRAIN rows, risks, Done pruning.  Formerly: up to 7 generals at once (CLAUDE.md rule 4:
    each `make -j1`, at most 4 compiles or suites, one heavy job, 2 cores
    and 2 GB always left), each 30-60 minutes, integrations one at a time.  So: **Now** holds
    only what is RUNNING (at most 7 rows: Vítor ordered up to 7 generals on 2026-11-02); **Next day** at most 5 rows;
@@ -45,7 +53,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| todo | C235 (running): the MTBE duties: the ideal vapour is what is wrong (24.14 - 1.34 kJ/mol = 22.80 against 22.92); the Watson rung is RETRACTED (102 rows, dh/dT == Cp broken).  Slice: a feed priced at its own pressure, phi_sat in the gamma-phi liquid reference, column19 on an EoS vapour | C235 |
+| done | C235 LANDED (2026-11-07, 4174b9a05): phi_sat + Poynting in the liquid reference, feed at its own pressure, column19 on SRK; MTBE duties +8 % -> +2.5 % / +1.5 % against the reference simulator, T within 0.6 K, first law 0 kW; 24 cases re-recorded with reasons; sweep 847/0 on the tip | C235 |
 | done | THE THREE WAITING BRANCHES ARE LANDED (2026-11-05): `c219` (`0c922c989`, extractor against Perry's Table 15-8; UNIFAC MISSES by 3-6 mass percent), `c214-w6` (`ba851b667`, IF97 region 3, 48 printed values held), `c214-w2b` (`d59337fd2`, Bell-Delaware `auto` and `form Serth`; Serth Example 6.1 reproduced to 0.08 %; `clearanceBasis` declared, Eq 6.16 recorded as a candidate erratum; 45 degrees Re 10-100 stays refused). Full sweep not run for any of them, reasons in DEV.md | C214, C219 |
 | done | C224 (`a8e6ee7a8`): an INLINE binary pair is announced `[unreviewed] pair` (caveat block + result JSON, gate `check_inline_pair_announced`); the brief stops inviting numbers typed from memory (catalogue -> UNIFAC as an estimate -> measured data and `fitParameters` -> 'I do not know it'); the integration found 27 inline cases (not 6) and eight GUI citations to re-point. The p17 probe is written and NOT run (it calls a paid model) | C224 |
 | done | THE STACK IS LANDED on main and the site (2026-11-03 08:30, `ebe0e3a51`): the freeze was lifted because the tutorials are at 17:00 and 17:30, not noon; staging passed --fast 78/0, --gui 43/0, a second full sweep 822/0; the live bundle carries the compaction fits, the utilisation table and the equipment tags, the packs answer 200 | C200, C210 |
@@ -57,9 +65,12 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 ## Slowest cases (C236: kept, and a general investigates whenever there is room)
 
-Retaken after each full sweep from `build/suiteTimings.csv`.  A case that grew is a
-defect.  Not yet measured on a whole sweep: the first list comes from the sweep that
-lands C235.  Found and fixed so far: aceticAcid02_plant 46.5 s (2026-10-14) -> 391 s (2026-11-07,
+Retaken after each full sweep from `build/suiteJobTimes.tsv` (real seconds per job;
+`suiteTimings.csv` holds gaps between result lines).  A case that grew is a defect.
+First list, the C235 sweep of 2026-11-07, a parallel run: swro01_campoDalias 284,
+ctrl17 210, ctrl19 113, greenAmmonia03_basicDesign 74, ctrl08 58,
+greenAmmoniaPEQ_baseCase 54, ctrl06 51, nanofiltran_geraldesAlves2008 50,
+apalutamide01_tablets 42; slowest gate check_schema_coverage 77.  Found and fixed so far: aceticAcid02_plant 46.5 s (2026-10-14) -> 391 s (2026-11-07,
 main `5c9c936af`, one run under load): gamma(T, x) re-evaluated on every pass of the
 incipient vapour since `31d4b7e6c` (a dimer makes K depend on y); 94 s after the fix,
 before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed map.
@@ -68,6 +79,9 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
+| running | C241: BRAIN.md landed; a general builds `gen_brain_facts.py` + `check_brain_fresh` + the `@BRAIN.md` import, then the CLAUDE.md diet by relocation to `docs/architecture/settled-contracts.md` (4375 -> ~300 lines, verbatim, gates kept green) | C241 |
+| todo | C239: NOW, column20 on the same EoS vapour; then the thermodynamic audit starts from the columns above 2.5 bar on an ideal vapour; C227 (a) lands with its source line | C239 |
+| running | C237 (Vitor): beside C235, in parallel, clear the quick items before any new physics: `flushEach` on the dynamic binaries, the slowest list from real job times, the built C228 and C227 (a) branches, the 'pinch at' console line, props `postProcessing/` in the GUI tree, the no-code decisions, the plan's upkeep | C237 |
 | done | C230 LANDED (`e29bc7d34`): the pinch of `ammonia02_full_plant` is right -- the engine leaves a utility-served side out of the population (cooling water is not a process stream), the GUI Pinch tab draws the engine's artefacts and computes nothing; Q_H,min 0, Q_C,min 95454 kW, NO pinch (a threshold problem). Open for the Saturday review: a misleading 'heater below the pinch' line in a threshold problem, and the rule on other plants | C230 |
 | todo | C229 (Vitor, a student group's 3D page beat ours): (A) the engine publishes PORTS, so pipes land on the right nozzle instead of the item's top centre (`PlantLayout.cpp:705`); (B) the viewer gains a generated guided tour, walk/drone cameras, go-to, colour by temperature, a minimap and a click card | C229 |
 | done | C214 W1 (`46bf7f942`): a GENERAL flash specification -- (P,H), (P,S), (T,V/F), (P,V/F) from one home `flashState::specifiedFlash`, with the props op `flashSpec`; the wet steam expansion matches the IF97 table (quality 0.8103 against 0.8102); a new liquid and mixture entropy surface paired with the enthalpy; `adiabaticFlash`, `valve`, `compressor`, `turbine` NOT migrated (byte-identical rule), listed in the record | C214 |

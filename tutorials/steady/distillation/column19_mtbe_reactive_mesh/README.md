@@ -49,7 +49,7 @@ count it twice).  Atoms close although moles do not -- the element balance reads
 ## Honest limits
 
 **Nothing in this case is validated against a measurement of an MTBE column.**
-The vapour is ideal at 7 bar; UNIFAC is predictive; the heat of reaction is the
+The vapour is a real gas (SRK, kij = 0) because at 7 bar an ideal vapour prices the latent heat at the 400 K reboiler about 1.3 kJ/mol high (the case this one is compared with uses a Redlich-Kwong vapour); the liquid reference carries phi_sat and Poynting. UNIFAC is predictive; the heat of reaction is the
 difference of the formation enthalpies of the records above.  Compare with
 `equilibrium { fromRecords true; }`, which derives K_a(T) from the same records
 that price the energy rows (and so inherits the Joback isobutene datum, announced):

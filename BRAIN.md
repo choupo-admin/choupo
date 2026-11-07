@@ -1,0 +1,135 @@
+# BRAIN -- what Choupo is today, in one page, read before anything else
+
+The architect's working memory (Vítor, 2026-11-07: "devias ter um pequeno
+modelo do Choupo em que, se eu fizer uma pergunta, respondes quase sem pensar
+... esse modelo ia evoluindo à medida que o Choupo evolui").  `CLAUDE.md` is
+the constitution and `DEV.md` the register; both are archives.  This file is
+the VIEW: the state of every area, judged, with the number and the date, and
+the answers to the questions Vítor asks.  It is read at the start of every
+session before `PLAN.md`, and it is answered FROM, not searched.  A question it
+cannot answer gets "I do not know yet" and a measurement, never an improvisation.
+
+Rules that keep it alive:
+1. **A landing that changes an answer changes the row, in the same commit.**
+   A row older than the fact it states is corrupted memory (CLAUDE.md §10).
+2. **The FACTS block is generated** by `bin/curate/gen_brain_facts.py` from
+   tracked sources only, and `check_brain_fresh` fails the suite when the block
+   on disk differs from a fresh run.  Numbers outside that block carry a date.
+3. **A judgement is written by the architect, dated, and says what it was
+   judged on** (a render, a paper, a run) -- never on the absence of findings.
+4. Under ~250 lines.  What does not fit here lives in `DEV.md` with a pointer.
+
+## FACTS (generated; do not edit by hand)
+
+<!-- brain-facts:begin -->
+Measured 2026-11-07 on main `e42389669` (by hand; the generator is C241).
+- Line `Choupo-dev`; latest release `Choupo-2608` (2026-09-02).
+- Runnable cases 526: steady 275, props 140, batch 58, plant 26, ctrl 21,
+  unsteady 6.  By binary: choupoSolve 300, choupoProps 143, choupoBatch 56,
+  choupoCtrl 21, choupoSemiContinuous 6.  Golden-checked 509.
+- Engine: 53 unit operations, 52 property operations, 5 binaries, 313 gates,
+  57 EduTool lesson files.
+- Catalogue: 608 components, 53 aqueous species; pairs NRTL 9, UNIQUAC 3,
+  Wilson 0, Henry 206, Pitzer 55, eNRTL 3; 4 membranes, 3 adsorbents,
+  10 utilities.
+- Validation: 19 rows in the named subset (3 of them fit-consistency);
+  17 cases carry `anchor` rows; 0 of those are plants, 0 are distillation
+  columns.  `check_energy_closure` KNOWN_OPEN: 5 cases.
+- Layout cases: 7 (4 plants, 2 tablet plants, 1 economics witness).
+<!-- brain-facts:end -->
+
+## MEASURED BY HAND (dated; retaken after each full sweep)
+
+- Last full sweep: 2026-11-07, C235 tip `5d86eaf00` (landed as 4174b9a05): 847 PASS,
+  0 FAIL, 6 EXPECTED-FAIL, 34 min at 8 jobs.
+- Slowest jobs (real seconds, parallel run): swro01_campoDalias 289 (the golden
+  CHECKER, not the solve: 0.5 s; C236 cuts it to 93), reaction-curve gate 247,
+  gate-selftest 234, ctrl17 222 (fsync per instant; C236: 0.4 s), batch-plan
+  gate 130, ctrl19 130, schema-coverage gate 82, greenAmmonia03 76, ctrl08 68,
+  design-sheet gate 63.
+
+## STATE BY AREA (the architect's judgement)
+
+| area | what works | held to | weak point | judged |
+|---|---|---|---|---|
+| Thermodynamics | gamma-phi and phi-phi, SRK/PR/PC-SAFT, NRTL/UNIQUAC/Wilson/UNIFAC/COSMO-SAC; liquid is Kirchhoff from the ideal-gas datum; the liquid reference carries phi_sat and Poynting (C235, landed 11-07) | NH3 K at 250 K / 200 bar: 0.020448 hand vs engine 0.020448 | 34 of 36 column cases run an IDEAL vapour, 7 of them above 2.5 bar (C239); the Tc rule steps the reference factor to 1 and stalls phase envelopes near a component's Tc (open) | 2026-11-07, C235 report |
+| Distillation | CMO, Wang-Henke, simultaneous MESH, full MESH; reactive (equilibrium K_a and kinetic) in the full MESH; Murphree; tray hydraulics; sizing and cost | MTBE column vs the reference simulator: duties +2.5 %/+1.5 %, T within 0.6 K, conversion 98.8 vs 98.87 % (C235, landed). NO column held to a measured plant | column14 (Klemola, industrial C4 splitter) has NO anchor rows though its record promised them; no `refluxRatio + bottomsRate` pair, no total condenser on the full MESH, no total-reflux mode | 2026-11-07, paper reading C239 |
+| Reactors and kinetics | 7 steady reactors, batch and dynamic vessels, case-carried rate laws (`expression`), effectiveness factor ANNOUNCED as 1, Gibbs on the package's own surface | Dyson & Simon anchors (check_ammonia_rate); Williams-Otto published x* (ctrl12) | no pellet model (eta = 1 everywhere); the seven exotherm tutorials repaired honestly, their replacement (ethylene glycol) not built | 2026-11-05 |
+| Flowsheets and recycle | sequential modular, declared tears, Wegstein, Newton-on-tears, dominant eigenvalue (teaching aid); every steady run reports mass, element and energy closure | cavett01 (Rosen & Pauls spec) | energy closure still open on 5 cases; two-liquid surfaces across a model boundary refused by name | 2026-11-07 |
+| Electrolytes | Davies, Pitzer HMW, Edwards-Pitzer, eNRTL; speciation, precipitation, ion-derived salt enthalpy; two bases on every stream | Hamer & Wu 6 salts (gamma AAD 0.1-0.7 %), Parker Phi_L, Edwards Table 7/8, Dickson boron pH | seawater boron on Pitzer blocked on Felmy & Weare; NaCl in water has no enthalpy datum the default report can use | 2026-11-05 |
+| Membranes | solution-diffusion, SDEM, DSPM-DE pore SOLVED by FD (NanoFiltran the reference, never the solver); module and stack records; batch diafilter; ED and batch ED | NanoFiltran 35 anchors; FdL 2021 SDEM figures; Geraldes & Afonso polarisation Table 1 and ED Table 4 | nothing against a measured industrial rig; swro01 is a manufacturer's case study (1.88 vs 3.67 kWh/m3 with the PX) | 2026-11-05 |
+| Dynamic, control, batch | choupoCtrl / SemiContinuous / Batch on one driver, `<t>/` restartable; quasiSteady adapter; dynamicTank; batch plant design on the steady balance | Williams-Otto Figs 2 and 4 | flash drum and exchanger dynamics not built (C205 slices 3-4); digital twin not started | 2026-11-05 |
+| Layout and 3D | declared plot plan checked (separations, zones, roads, fence, bunds, trucks, GMP interiors), pipes routed on a rack, 3D viewer | its own rules (no spacing table shipped, by licence) | JUDGED ON RENDERS 2026-11-07: ammonia02 is a thin loop on a site that dwarfs it, utilities end at the fence, six of seven bullets connect to nothing (C240); PEQ reads as a plant but its 10 buffer vessels and 2 tanks hang unconnected; swro01 has 15 unrouted (indoor) pipes.  Pipes meet at each item's top centre until C229 lands (ports). | 2026-11-07, plan.png x3 |
+| Economics | Turton bare-module costing, declared quotes, steel-mass vessels, cash flow with construction schedule, sensitivity, land, batch plan, PIF tablet plants | CAPCOST 2017 worked tower; Serth / Hewitt examples for exchangers | every factor is the case's input; no economics case held to a published plant cost | 2026-11-05 |
+| EduTools and GUI | runner and visualiser (not an editor), 57 lessons with symbol glossing, three pedagogical paths, pinch page, 3D layout | lesson citations into the engine by file:line; `--gui` 44 PASS / 7083 tests | C234 (engine-classified pinch) and C229 (3D tour) built, not landed; the pinch page recomputed its cascade in TypeScript until C234 | 2026-11-07 |
+| Site and AI docs | www.choupo.org, WASM of all five binaries, llms.txt + brief + packs, capability index | the brief solves 10/10 harness cases at 7-30x less input | packs still missing: heat, electrolytes, membranes, solids, drivers, transient, props (C200) | 2026-11-03 |
+| Validation overall | 313 gates; conservation gates ratchet; a green suite proves "unmoved", not "right" | 19-row subset; 17 anchored cases | the two things a colleague opens first -- a plant and a column -- are held to NOTHING measured; first fix: Klemola anchors (C239) | 2026-11-07 |
+| Speed | UNIFAC 52x (C236), acetic plant 16x (K evaluations 134745 -> 8520) | `build/suiteJobTimes.tsv` | full sweep 34 min; dynamic cases fsync per instant until C236 lands | 2026-11-07 |
+
+## THE REFERENCE PLANT (decision, 2026-11-07, on three renders)
+
+**`greenAmmoniaPEQ_baseCase` is the plant Vítor's colleagues will be shown.**
+Reasons: it is the reference case of the PEQ 2026-27 project brief (the course
+they teach), it is the system the students' hand-made 3D page modelled (C229),
+it carries layout + economics + the most golden rows (1529), all 24 pipes
+route, and its plan already reads as a process line (N2 boost, two make-up
+compressors, recycle compressor, FEHE, water cooler, chiller, separator,
+let-down, HP storage flash).  What it lacks to look finished: the 10 H2 buffer
+vessels and the 2 ammonia tanks hang unconnected (a manifold), the substation
+sits in a zone 2 envelope and the tanks 12 m apart against 17 m (its own two
+findings), no roads/fence/gate (ammonia02 has the method), and the C229 ports.
+`ammonia02_full_plant` stays the SITE-method witness (roads, trucks, fence,
+tank farm, bunds); its loop is compacted later (C240).  `swro01_campoDalias`
+is the membrane plant from a manufacturer's case study; its 15 unrouted pipes
+are indoor by rule (C100) and the viewer marks them.
+
+## THE MONTH (C238, to 2026-11-30)
+
+1. To 11-15: land what is built, in order C235, C228, C236, C183, C227 (a),
+   C234, C229; no new physics until the queue is empty.
+2. To 11-22: Klemola anchors (first measured column in the subset), the
+   reference plant made complete (above), one demonstration path: the MTBE
+   column beside the reference simulator with its first law closed, the
+   green-ammonia plant in 3D with its costs, the pinch page.
+3. Last week: fixes, WASM rebuild, publish, a full rehearsal in the browser.
+   What falls first if short: the least visible; never a gate.
+
+## RISKS (reviewed every Saturday; C242)
+
+| risk | likelihood | impact | mitigation | review |
+|---|---|---|---|---|
+| The month ends without a demonstrable plant: the layout cases are thin and C229 moves 50+ golden rows | high | the colleagues see a toy | reference plant decided; C229 lands after C235; render before "done" | 11-15 |
+| Scientific debt: 34 column cases on an ideal vapour, 7 above 2.5 bar; the Tc rule stalls envelopes | certain | wrong duties at exit 0 | C239 audit case by case; column20 first; the Tc rule reconsidered with a measured envelope | 11-15 |
+| Validation gap: no plant and no column held to a measurement | certain | a colleague asks "validated against what?" | Klemola anchors (C239), then the spec pair for Nijhuis | 11-22 |
+| Integration is one serial lane and the queue grows | high | built work ages, merges collide | WIP rule (4 builders, queue <= 3), reviewer slot | weekly |
+| The architect's context: a session begins from the files, and the files were 4375 lines | certain | searching instead of knowing | BRAIN.md + the CLAUDE.md diet (C241) | 11-10 |
+| WASM toolchain (emscripten 3.1.6) breaks on a construct g++ accepts | medium | the site serves a stale bundle | `check_wasm_dialect`; rebuild before publish | release |
+| One laptop, 15 GB: a sweep plus two builds exhaust memory | medium | lost runs | the budget in CLAUDE.md rule 4; `free` before launching | ongoing |
+
+## QUESTIONS VÍTOR ASKS (answered from here)
+
+- **"Dá parecido com o Aspen?"**  The MTBE column: yes, within 2.5 % on duties
+  and 0.6 K (C235, on main since 11-07).  Everything else:
+  compared to nothing commercial; see "held to".
+- **"Reproduz os artigos?"**  K_a(T) of Izquierdo (AAD 4.6 %) and Rehfinger's
+  law: yes.  Jacobs & Krishna / Nijhuis: not yet, and both are SIMULATION
+  papers (Nijhuis Table IV is the target, 20-30 h, needs the spec pair and a
+  total condenser).  Klemola (measured plant): case exists, anchors missing.
+- **"O layout está bom?"**  No (judged on renders, see Layout row).  C229
+  fixes the pipe ends; the cases themselves need the work listed above.
+- **"Porque é lento?"**  Three causes found: a string-keyed map in UNIFAC
+  (fixed), gamma re-evaluated per incipient-vapour pass (fixed), fsync per
+  instant in the dynamic writer and a golden checker that rescans 1 MB per
+  row (C236, built).  The sweep: 34 min.
+- **"Há casos de referência?"**  Papers in `~/Choupo-Literature` (152 files,
+  `INDEX.md` maps them; READ IT before asking for a paper).  Measured columns
+  in hand: Klemola 1996 (industrial), Yanagi 1982 (FRI, total reflux).
+- **"O que está a correr?"**  `PLAN.md` section Now.  Integration is one at a
+  time; at most 4 builders, and none starts while 3 branches wait (C242).
+- **"Quantos casos / componentes / gates?"**  FACTS block above.
+
+## WHAT CHANGED LAST (newest first; keep ten lines)
+
+- 2026-11-07 C235 LANDED (4174b9a05): real-vapour liquid reference; 20 cases
+  re-recorded with reasons; C236 speed; C234 pinch; C229 3D; C183 props tree;
+  C227 seal line decided; C239 column papers read; C240 layout judged; this file.

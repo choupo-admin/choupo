@@ -12,10 +12,10 @@
 
 componentMolarFlows
 {
-    N2    2.438986298 kmol/h;
-    H2    9.471943445 kmol/h;
-    NH3    0.2640485138 kmol/h;
-    Ar    0.03852581841 kmol/h;
+    N2    2.453753697 kmol/h;
+    H2    9.509786724 kmol/h;
+    NH3    0.308777487 kmol/h;
+    Ar    0.03880994866 kmol/h;
 }
 
 T               253.15 K;

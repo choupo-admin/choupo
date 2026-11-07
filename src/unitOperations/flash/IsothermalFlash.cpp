@@ -1047,12 +1047,15 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             if (in.z[i] > 1.0e-10) act.push_back(i);
         const std::size_t nA = act.size();
 
-        //  ln(P/Psat_i), formed exactly as before (one log of the ratio), so
-        //  an ideal-gas package's objective is the same number, bit for bit.
+        //  ln(P/f_ref_i), formed exactly as before (one log of the ratio), so
+        //  an ideal-gas package's objective is the same number, bit for bit;
+        //  f_ref is the package's ONE liquid reference (Psat, the association
+        //  monomer reference, and phi_sat/Poynting on a real vapour -- C235),
+        //  so this Gibbs search and `Kvec` cannot disagree about one liquid.
         sVector lnPoverPsat(n, 0.0);
         for (std::size_t i : act)
             lnPoverPsat[i] = std::log(in.P
-                / std::max<scalar>(thermo.PsatLiquidReference(i, in.T), 1.0e-30));
+                / std::max<scalar>(thermo.liquidReferenceFugacity(i, in.T, in.P), 1.0e-30));
         //  The associated ideal-gas vapour (DEV.md 4c C201 item 1) enters the
         //  vapour term the same way an EoS phi does; PsatLiquidReference is
         //  Psat itself when nothing associates (bit-identical).
