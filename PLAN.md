@@ -17,6 +17,14 @@ header names the PLAN.md commit it reflects, so a stale view shows itself.
 > told to commit WIP and stop.  Lifted by Vitor, never by the assistant.
 
 
+> **THE MONTH (C238, deadline 2026-11-30, the architect's plan).**  To 11-15: land
+> what is built, in the order C235, C228, C236, C183, C227 (a), C234, C229; no new
+> physics until that queue is empty.  To 11-22: reproduce Jacobs & Krishna (Nijhuis if
+> time allows) and write one short demonstration path: the column beside the
+> reference, the first law closed, the 3D plant, the pinch page.  Last week: fixes
+> only, WASM rebuild, publish, a full rehearsal in the browser.  What falls first if
+> the month runs short is what is least visible, never a gate.
+
 ## How the plan is kept (the architect's rule, 2026-11-01)
 
 1. **Capacity, not hope.**  Up to 7 generals at once (CLAUDE.md rule 4:
@@ -71,7 +79,8 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
-| blocked | C237 (Vitor): once C235 lands, clear the quick items before any new physics: `flushEach` on the dynamic binaries, the slowest list from real job times, the built C228 and C227 (a) branches, the 'pinch at' console line, props `postProcessing/` in the GUI tree, the no-code decisions, the plan's upkeep | C237 |
+| blocked | C239: right after C235, column20 on the same EoS vapour; then the thermodynamic audit starts from the columns above 2.5 bar on an ideal vapour; C227 (a) lands with its source line | C239 |
+| running | C237 (Vitor): beside C235, in parallel, clear the quick items before any new physics: `flushEach` on the dynamic binaries, the slowest list from real job times, the built C228 and C227 (a) branches, the 'pinch at' console line, props `postProcessing/` in the GUI tree, the no-code decisions, the plan's upkeep | C237 |
 | done | C230 LANDED (`e29bc7d34`): the pinch of `ammonia02_full_plant` is right -- the engine leaves a utility-served side out of the population (cooling water is not a process stream), the GUI Pinch tab draws the engine's artefacts and computes nothing; Q_H,min 0, Q_C,min 95454 kW, NO pinch (a threshold problem). Open for the Saturday review: a misleading 'heater below the pinch' line in a threshold problem, and the rule on other plants | C230 |
 | todo | C229 (Vitor, a student group's 3D page beat ours): (A) the engine publishes PORTS, so pipes land on the right nozzle instead of the item's top centre (`PlantLayout.cpp:705`); (B) the viewer gains a generated guided tour, walk/drone cameras, go-to, colour by temperature, a minimap and a click card | C229 |
 | done | C214 W1 (`46bf7f942`): a GENERAL flash specification -- (P,H), (P,S), (T,V/F), (P,V/F) from one home `flashState::specifiedFlash`, with the props op `flashSpec`; the wet steam expansion matches the IF97 table (quality 0.8103 against 0.8102); a new liquid and mixture entropy surface paired with the enthalpy; `adiabaticFlash`, `valve`, `compressor`, `turbine` NOT migrated (byte-identical rule), listed in the record | C214 |

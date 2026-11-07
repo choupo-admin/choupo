@@ -2995,6 +2995,26 @@ accepts today, and that is a policy call.
 > pinch page (C234), and a demonstration path through those.  The rule of the project
 > does not change: no gate is traded for the date.
 
+> **C239 (architect's reflection, 2026-11-07, measured on main `7cec264f0`): THE MTBE
+> DEFECT IS A FAMILY, AND VALIDATION DOES NOT REACH THE COLUMNS.**  STATUS: open.
+> (1) 34 of the 36 cases holding a `distillationColumn` declare `fugacityModel
+> idealGas`, the 2 others SRK (column14, column15).  Above 2.5 bar on an ideal vapour:
+> column08 16 bar, column19 and column20 7 bar, process05 and recycle02 5 bar,
+> acetonePlant 2.6 atm, aceticAcid02_plant 30 bar (that figure is the case's highest
+> declared P, not yet read as the column's).  C235 moves column19 only, so column20,
+> the same system at the same pressure, stays on the defect and must follow it at once.
+> The rest is the first target of the thermodynamic audit, each case judged by its own
+> species and pressure, not by this list.  (2) The validation subset holds 19 rows of
+> 526 runnable cases, 3 of them fit-consistency, and NO distillation column.  So
+> Jacobs & Krishna would be the first column held to a published result; whether
+> column14's source can serve as an earlier one is to be read.  (3) The public catalogue
+> carries 608 components and 9 NRTL + 3 UNIQUAC pairs: a colleague's own system falls
+> to UNIFAC or ideal.  Not closable this month; the demonstration uses systems with
+> defended pairs and says so.  (4) C227 (a): the lookups read the installation catalogue
+> by design, correct because their subject is the catalogue, but a sealed case then
+> prints a card from a release that is not its own, unsaid.  Decision: it lands with one
+> line on the card and in the JSON naming the source, the release and the case's seal.
+
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
 > +10 %), and that stands: INSIDE the liquid Cp's declared `Trange` the rung is
