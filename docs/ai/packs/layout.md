@@ -124,7 +124,15 @@ building { ... }                                           // §4
   checks its own draft, and never overwrites a layoutDict without `--force`.
   It invents no distance, wind or zone.  Move every item to where you can
   defend it.
-* In the app: Reports -> "Plant layout (3D)".
+* In the app: Reports -> "Plant layout (3D)".  The viewer offers a guided TOUR
+  generated from the case's sectors and units (each sentence carries the result
+  field it was read from), orbit / walk / drone cameras, a "Go to..." list, a
+  minimap, a click card on every item and pipe (the sheet and the stream the engine
+  published), and colour by phase, temperature, pressure or the mole fraction of a
+  component you choose.  Every value is read from the published result; the viewer
+  computes nothing.  Pipes end on the item's ports, drawn as nozzles; a port is a
+  conventional position, not a vendor's nozzle schedule.  The engine publishes no
+  line velocity, so flow particles are stylised.
 
 ## 3. Example: a heater and a flash drum on a rack, a road, a gate, a fence
 
