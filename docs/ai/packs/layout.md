@@ -81,7 +81,7 @@ building { ... }                                           // §4
   bottoms at the sump, distillate on the reflux drum (else the condenser,
   else the head); an exchanger's tube ends and shell nozzles over and under;
   a drum's side inlet, top vapour, bottom liquid; a reactor or machine at the
-  ends of its axis; a tank's roof and low outlet.  A unit type with no rule
+  ends of its axis; a tank's roof and low outlet (a horizontal tank's nozzle takes the end of the axis nearer the other end of its pipe; a battery limit counts as lying on the side of the fence you declared for the stream).  A unit type with no rule
   keeps the item's top centre (`origin default`, announced).  Each pipe
   publishes `fromPort`/`toPort` (item, port, origin, point, `leaves` = where the 1 m stub ends); a `ports` block
   moves one (`item` must be a placed item of a unit at an end of the stream:

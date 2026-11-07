@@ -38,7 +38,7 @@ item's surface from three facts and nothing else:
 | flash drum | inlet on the side at mid-height, vapour on top, liquid at the bottom (horizontal: top, top and bottom, along the axis) |
 | reactor | inlet and outlet at the ends of the axis (top to bottom when vertical) |
 | compressor, pump, turbine | suction / inlet at the upstream end of the axis, discharge / exhaust on top over the downstream end |
-| storage tank | fill nozzle on the roof, outlet low on the shell |
+| storage tank | fill nozzle on the roof, outlet low on the shell; a HORIZONTAL tank's nozzle takes the end of its axis nearer the other end of its own pipe |
 | anything else | the item's top centre, `origin default`, and the run names the unit types |
 
 A side nozzle faces the other end of its pipe (east when the other end is to
@@ -67,6 +67,37 @@ does not have, an item that is not placed, an item of a unit at neither end
 of the stream, an unknown side, an elevation on a top or bottom port, an
 elevation outside the item.  A declared `pipes` route now begins at the port
 (its stub), not at the top centre.
+
+
+## 3a. Which end of a horizontal tank (review, 2026-11-07)
+
+With the outlet fixed at +0.3 of the axis, ammonia02's `productStored` left the
+far end of a bullet lying along y, climbed to the rack lane 42 m north and came
+back: 143.6 m for a 33 m run (the 36.7 m of the old rule was the collinear merge
+in `tidy()` cancelling the same excursion, not a short route).  Two rules, both
+decided BEFORE the first pipe is routed:
+
+* A horizontal tank's fill nozzle and outlet each take the end of the axis
+  nearer the other end of THEIR pipe.  The reference of an end is its unit's
+  placed centre (x, y), a junction's rack point, or, for a battery limit, the
+  side of the fence the case DECLARED for that stream (`fence { crossings (
+  { stream s; side south; ... } ); }`, read at the top of `routePipes`; no
+  declared side, or west / east: the rack's own y).  Every reference is an
+  input, so the choice is made once; there is no second routing pass.  Only the
+  tank is flipped: the axial end of an exchanger's shell or a machine's
+  discharge encodes the direction of flow and stays fixed.
+* A boundary pipe to a declared north or south fence crossing whose item
+  already stands BEYOND the rack lane on the fence's side runs from the stub's
+  departure point straight to the crossing at the lane's elevation; the lane
+  stays the route of every pipe whose item is on the other side of it.
+
+Not changed, and measured: two items on the SAME side of the lane still
+route by way of the lane (the rack model).  Their pipes grew by more than 50 %
+against the old goldens because the old ends, both at an item's top centre, were
+collinear and the excursion cancelled; with the nozzles apart the excursion is
+real.  Whether a pipe between two items on one side of the lane should run
+direct is the architect's decision; it moves lengths again and risks clashes
+with tall items at the lane's elevation.
 
 ## 4. Measured, and not done
 
