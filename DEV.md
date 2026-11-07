@@ -2938,6 +2938,28 @@ accepts today, and that is a policy call.
 > Doctrine: the C++ publishes, the page draws; the TypeScript cascade becomes
 > a labelled cross-check or goes.
 
+> **C235, CORRECTION (architect, 2026-11-07, same day; the entry below reads
+> the 8 % wrongly): THE DUTIES ARE A LIQUID Cp EXTRAPOLATED, NOT THE IDEAL VAPOUR.**
+> The liquid rung is Kirchhoff from 298 K on `liquidHeatCapacity` where the record
+> has one, not h_ig - Hvap(T).  MTBE's correlation ends at 328.35 K and the reboiler
+> is at 401 K (the C4s end at 261-277 K, methanol at 340 K): the extrapolation is
+> announced and legitimate (I4), and it makes the latent the column prices at 401 K
+> 24.14 kJ/mol against the record's own Watson 22.84.  Recomputed by hand from the
+> published stage 14-15 profile, this rung gives Q_reb 8282.4 kW, the engine's own
+> number to 0.1 kW, and the Watson rung 7846.3.  Measured on the whole column, in a
+> scratch copy of the catalogue with the nine `liquidHeatCapacity` blocks removed
+> (the first attempt moved nothing: a case record is overlaid field by field on the
+> standards, so deleting it from the case alone restores the catalogue's): Q_cond
+> 7.66 MW (+3.5 %), Q_reb 7.85 MW (+2.7 %), T_top 50.9 C, T_bottom 128.1 C, conversion
+> 99.21 %, ideal vapour.  The source case reads 7.40 / 7.64 MW.  So the "+2.5 % under
+> SRK" below is NOT evidence about the vapour: the liquid rung ignores the EoS, so an
+> EoS vapour publishes a latent of Hvap + H_res, lower than the record's, and that
+> reading came partly from this double count.  The remaining +3 % is not explained
+> yet.  NOT DONE: no engine change.  Removing liquid Cp is the measurement, never the
+> fix.  The fix has to say what a liquid above its Cp window reads, and it reaches
+> every case with a liquid above its window, so it takes the sweep and a shown list
+> of moved rows.  Defects (A) and (B) below stand as read in the code.
+
 > **C235 (architect, 2026-11-07, chasing the 8 % duties of the MTBE witness):
 > TWO ENGINE DEFECTS THE IDEAL VAPOUR HID.**  column19 under `idealGas` closes its
 > first law at 0.0 kW and reads Q_cond 8.02 / Q_reb 8.28 MW against the source
