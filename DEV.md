@@ -2938,6 +2938,23 @@ accepts today, and that is a policy call.
 > Doctrine: the C++ publishes, the page draws; the TypeScript cascade becomes
 > a labelled cross-check or goes.
 
+> **C235, THE DESIGN BELOW IS RETRACTED (architect, 2026-11-07, the sweep's 102 failures
+> sent it back to the physics).  THE LIQUID RUNG WAS RIGHT AND THE IDEAL VAPOUR WAS
+> WRONG.**  Kirchhoff from 298 K prices h_ig - h_L, not the latent heat: at 298 K the
+> vapour is near ideal, and the liquid's enthalpy has no reason to know about the
+> vapour's departure at 401 K.  So h_ig - h_L = 24.14 kJ/mol against a true latent of
+> about 22.8 is not an error of the rung: 24.14 - 1.34 (H_res of a Redlich-Kwong vapour
+> at 7 bar) = 22.80, on Watson's 22.84 and the source case's 22.92.  The "double count"
+> in the correction below does not exist: this rung never subtracted Watson, it was
+> read before the code that says so (`speciesPhaseEnthalpy`, "THE STATE IDENTITY #106").
+> Commit e149c478e (Watson slope above the window) broke dh/dT == Cp for every reader of
+> Cp, moved 102 rows of cases and gates (`check_ctrl_balance`, `check_reference_rung`,
+> `check_cp_range_announced`), and matched the source case by putting the vapour's
+> error into the liquid.  IT DOES NOT LAND.  The fix is the vapour: `column19` declares
+> an EoS as the source case does, with (B) the feed's own pressure, and (A) phi_sat in
+> the liquid reference so the temperatures hold.  The window remains a caveat, not a
+> defect: the extrapolation is announced.
+
 > **C236 (Vitor, 2026-11-07, after UNIFAC gave 52x on column19 from one string-keyed
 > map in a triple loop, and a regression of 8x on aceticAcid02_plant passed unseen for
 > weeks): A TOP-10 OF THE SLOWEST CASES IS KEPT, AND A GENERAL INVESTIGATES IT WHENEVER
