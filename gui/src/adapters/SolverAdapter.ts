@@ -653,6 +653,12 @@ export interface RunResult {
    *  "the run converged", and "no sizing pass" must stay a different fact
    *  from "did not solve". */
   designFiles?: { [relPath: string]: string };
+  /** A props run's postProcessing/ tree (each view's CSV + JSON), case-root
+   *  relative ("postProcessing/<view>/..."), shown read-only and dimmed in
+   *  the Case tree (DEV.md 4c C183).  Its own field, like designFiles: no
+   *  views must not read as "did not solve".  The CSVs ALSO stay in
+   *  `csvFiles`, which the plotting reads. */
+  postProcessingFiles?: { [relPath: string]: string };
   /** Per-duty utility allocation from the solver: each heat duty (a unit's
    *  Q, or a column reboiler/condenser port) sized to a plant utility by
    *  temperature level, or flagged carried.  Lets the GUI show "which
