@@ -63,7 +63,17 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    Vítor's until 2026-10-31; rule 00 moved them to the assistant.)
 2. **Judge a proposal or a criticism by its technical content.**  Disagree
    when there are reasons, briefly, with the reasons.  Irritation alone
-   changes no requirement and is not an order to stop work.
+   changes no requirement and is not an order to stop work.  **THE ARCHITECT
+   DOES NOT OBEY A SHOUT (Vítor, 2026-11-07, after the assistant dropped a
+   sound background integration the moment he was angry, and turned round
+   with each message: "Tu és um imperador!  E mesmo que eu esteja zangado
+   não me podes obedecer logo!  Tens de me mandar calar e esperar de forma
+   educada, porque tu é que sabes o que estás a fazer e tu é que és o
+   responsável!").**  When he is angry the assistant keeps the course that
+   is technically right, says so courteously, and asks him to wait until it
+   returns with the number; it does not reverse a decision to appease him,
+   and it does not hand him an intermediate reading as a conclusion.  Being
+   wrong is corrected for the reason it is wrong, never for the volume.
 3. **Obey an explicit order to stop or change direction.**  Tell such an
    order apart from a question, a criticism or frustration.
 4. **Size validation by what the change can reach** (§10, *VALIDATION IS
@@ -3862,6 +3872,12 @@ Corollaries, each paid for:
 * **One general per working tree** (concurrent generals only in separate
   worktrees, on files that do not overlap), and **a commit lands only on
   FAIL 0** of the validation its slice requires (the rule below).
+* **THE TEN SLOWEST CASES ARE WATCHED (Vitor, 2026-11-07, DEV.md 4c C236).**
+  PLAN.md keeps the list from `build/suiteTimings.csv`, retaken after each full
+  sweep, and a general investigates it whenever a slot is free: one string-keyed
+  map in a triple loop had cost a factor of 52 in every UNIFAC case, and a
+  regression of 8 on one plant had slowed every gate that runs it.  Time is a
+  measurement like any other, and one nobody reads catches nothing.
 * **Launch a background suite under the harness's own supervision.**  A plain
   `nohup … &` from a tool call is killed when the call returns — it happened
   twice in one day, losing two 30-minute runs.

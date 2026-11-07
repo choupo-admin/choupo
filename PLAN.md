@@ -45,7 +45,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
-| todo | C235 (running): two engine defects the ideal vapour hid on the MTBE column: gamma-phi with an EoS vapour has no phi_sat in the liquid reference (T 6-7 K low under SRK), and a feed above the column pressure is priced at the column pressure (first law open by 2693 kW under SRK) | C235 |
+| todo | C235 (running): MTBE duties: +8.4 % is a liquid Cp extrapolated 73 K past its window (Watson rung +2.7/+3.5 %, measured in a copy); the engine fix for a liquid above its Cp window is open.  Also open: no phi_sat in gamma-phi with an EoS vapour, and a feed above the column pressure priced at the column pressure | C235 |
 | done | THE THREE WAITING BRANCHES ARE LANDED (2026-11-05): `c219` (`0c922c989`, extractor against Perry's Table 15-8; UNIFAC MISSES by 3-6 mass percent), `c214-w6` (`ba851b667`, IF97 region 3, 48 printed values held), `c214-w2b` (`d59337fd2`, Bell-Delaware `auto` and `form Serth`; Serth Example 6.1 reproduced to 0.08 %; `clearanceBasis` declared, Eq 6.16 recorded as a candidate erratum; 45 degrees Re 10-100 stays refused). Full sweep not run for any of them, reasons in DEV.md | C214, C219 |
 | done | C224 (`a8e6ee7a8`): an INLINE binary pair is announced `[unreviewed] pair` (caveat block + result JSON, gate `check_inline_pair_announced`); the brief stops inviting numbers typed from memory (catalogue -> UNIFAC as an estimate -> measured data and `fitParameters` -> 'I do not know it'); the integration found 27 inline cases (not 6) and eight GUI citations to re-point. The p17 probe is written and NOT run (it calls a paid model) | C224 |
 | done | THE STACK IS LANDED on main and the site (2026-11-03 08:30, `ebe0e3a51`): the freeze was lifted because the tutorials are at 17:00 and 17:30, not noon; staging passed --fast 78/0, --gui 43/0, a second full sweep 822/0; the live bundle carries the compaction fits, the utilisation table and the equipment tags, the packs answer 200 | C200, C210 |
@@ -54,6 +54,13 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | done | Two economics EduTools (C212, `349baa4a7`): what a plant costs to build (Lang, factored estimate, Choupo's bare module, working capital x3, loan) and to run (itemised cost vs Turton COM_d, shifts, depreciation by class, break-even, NPV/IRR/payback, elasticity, market arithmetic); every factor the student's input with a pointer to its table, no recalled range shipped | C212 |
 | done | The capability index for assistants (C211, `7d1e9217d`): `/llm/capabilities.md` first in llms.txt under 'Does Choupo do X?' (computes / balances / checks / missing per concept, pharmaceutical plant first, witness cases by full path), the version line on every served document, a static `/llm/models.md`, AGENTS.md one path per question; gate `check_capability_index` (sabotage-verified) | C211 |
 | done | Acetic acid item 1 (`7f8e5348b`): logK25 2.555 (formic) -> 3.107 (ethanoic, Chao & Zwolinski Tables 11/12) in the record and five mirrors, 54 golden rows re-recorded from 3.5x more dimer, gate `check_dimerisation_constants`; it exposed flash17's dimer-heat seam, pinned | C201 (1) |
+
+## Slowest cases (C236: kept, and a general investigates whenever there is room)
+
+Retaken after each full sweep from `build/suiteTimings.csv`.  A case that grew is a
+defect.  Not yet measured on a whole sweep: the first list comes from the sweep that
+lands C235.  Known so far: aceticAcid02_plant 46.5 s (2026-10-14) -> 391 s (2026-11-07,
+main `5c9c936af`, one run under load), under investigation.
 
 ## Next day (at most 5)
 
