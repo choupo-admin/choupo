@@ -2938,6 +2938,34 @@ accepts today, and that is a policy call.
 > Doctrine: the C++ publishes, the page draws; the TypeScript cascade becomes
 > a labelled cross-check or goes.
 
+> **C235 (architect, 2026-11-07, chasing the 8 % duties of the MTBE witness):
+> TWO ENGINE DEFECTS THE IDEAL VAPOUR HID.**  column19 under `idealGas` closes its
+> first law at 0.0 kW and reads Q_cond 8.02 / Q_reb 8.28 MW against the source
+> case's 7.40 / 7.64 (+8.4 % on both), Q_reb - Q_cond = +0.26 against +0.24 MW.
+> The boil-up is fixed at 1200 kmol/h in both, so the gap is a latent heat, 24.84
+> against 22.92 kJ/mol.  The same case with `fugacityModel SRK` (a copy, unsealed,
+> nothing committed): Q_reb 7.83 MW (+2.5 %, the drop of 5.5 % is the 1.34 kJ/mol
+> a Redlich-Kwong vapour at 7 bar predicts by hand), BUT T_top 45.0 C, T_bottom
+> 120.9 C (-6 and -7 K) and Q_cond 10.54 MW, and the plant's FIRST LAW OPENS:
+> residual -2693 kW (14.7 %).  (A) THE PURE-LIQUID FUGACITY HAS NO phi_sat:
+> `LiquidPhase::fEffective` is gamma x Psat, so with an EoS vapour K = gamma Psat /
+> (phi_V P) counts the vapour non-ideality on one side only; at 401 K ln phi_V is
+> about -0.14, and d ln P/dT = dHvap/(R T^2) = 0.0186 /K gives -7.5 K, the shift
+> measured.  gamma-phi with an EoS vapour needs phi_i^sat(T) (and Poynting,
+> declared) in the reference fugacity.  (B) A FEED ABOVE THE COLUMN'S PRESSURE IS
+> PRICED AT THE COLUMN'S PRESSURE: `feedEnthalpy(*r.state, r.F, r.T, P, ...)`
+> resolves and prices the feed at (T_feed, P_column), while the stream and the
+> energy report carry it at its own P.  The C4 feed is a liquid at 323.15 K, 10
+> bar; at 7 bar it resolves past its bubble point (q = -0.02), so the column books
+> about 17 kJ/mol the stream never carried: the whole -2693 kW.  Under the ideal
+> vapour it stays subcooled at 7 bar and hides.  This is CLAUDE.md's family "the
+> state a unit computes with is not the state its streams carry".  The fix is
+> the conservation law: a feed enters with the enthalpy its stream carries, and
+> the letdown is an adiabatic flash at the stage.  A THIRD QUESTION for the same
+> slice: the liquid rung is the ideal gas minus the latent heat, so an EoS vapour
+> makes the published latent h_V(real) - h_L, not the rung's own number: to be
+> measured, not assumed.
+
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th
 > ed. (full text; Sec. 15 liquid-liquid extraction with Examples 15-1..15-5,
