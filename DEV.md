@@ -2938,6 +2938,23 @@ accepts today, and that is a policy call.
 > Doctrine: the C++ publishes, the page draws; the TypeScript cascade becomes
 > a labelled cross-check or goes.
 
+> **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
+> retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
+> +10 %), and that stands: INSIDE the liquid Cp's declared `Trange` the rung is
+> Kirchhoff.  The defect is only ABOVE it, where the rung integrates a correlation
+> past its data while the record holds a better statement of the same slope: the
+> ChemSep windows end at Tb, so above Tmax the latent-heat correlation is the only
+> thing the record says about the liquid.  RULE: for T > Tmax, h_L(T) = h_L(Tmax) +
+> [h_ig(T) - Hvap_W(T)] - [h_ig(Tmax) - Hvap_W(Tmax)], continuous in h, with a kink
+> in Cp, announced once per component.  The offset at Tmax is kept, never forced to
+> zero (a jump in h would be heat from nowhere).  Computed on column19's fixed
+> profile: Q_reb 7883.7 kW (+3.2 % on the source case); offsets -667..+115 J/mol, and
+> +1527 for methanol, whose +1.5 kJ/mol is a finding about its own record.  Reaches
+> every case with a liquid above its window, so the sweep and the moved-row list go
+> with it.  (B) the feed's state resolved and priced at the STREAM's pressure lands
+> in the same slice.  (A) phi_sat with H_res,sat in the liquid leg stays a separate
+> slice, after column19 reads right under the ideal vapour.
+
 > **C235, CORRECTION (architect, 2026-11-07, same day; the entry below reads
 > the 8 % wrongly): THE DUTIES ARE A LIQUID Cp EXTRAPOLATED, NOT THE IDEAL VAPOUR.**
 > The liquid rung is Kirchhoff from 298 K on `liquidHeatCapacity` where the record
