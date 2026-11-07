@@ -52,6 +52,10 @@ namespace Choupo
 namespace plantLayout
 {
 
+//  defined with the pipe-clash check, below; the fence's direct run reads it
+bool planInside(const LayoutItem& i, const std::vector<scalar>& a,
+                const std::vector<scalar>& b, scalar& t0, scalar& t1);
+
 namespace
 {
 
@@ -2821,7 +2825,25 @@ void fenceOf(const Dictionary& d, PlantLayoutRecord& rec,
                             nr = { C, across, up };
                             nr.insert(nr.end(), r.begin() + kdep, r.end());
                         }
-                        r = nr;
+                        //  The direct run must not cut through an item: a pipe
+                        //  at the lane's elevation through a tank or a vessel
+                        //  taller than that is a clash the rack route avoids,
+                        //  so then the rack route stays (swro01's product line
+                        //  would cross the next tank).
+                        bool clear = true;
+                        for (std::size_t m = 1; m < nr.size() && clear; ++m)
+                            for (const auto& it : rec.items)
+                            {
+                                if (it.id == ip.item || !it.room.empty()) continue;
+                                scalar t0, t1;
+                                if (!planInside(it, nr[m - 1], nr[m], t0, t1)) continue;
+                                const scalar za = nr[m - 1][2] + t0 * (nr[m][2] - nr[m - 1][2]);
+                                const scalar zb = nr[m - 1][2] + t1 * (nr[m][2] - nr[m - 1][2]);
+                                if (std::max(za, zb) > it.z + kTol
+                                    && std::min(za, zb) < it.z + it.dz - kTol)
+                                { clear = false; break; }
+                            }
+                        if (clear) r = nr;
                     }
                 }
             }
