@@ -728,8 +728,8 @@
     },
     "check_pinch_p1": {
       "exit": 0,
-      "claim": "check_pinch_p1: OK -- witness targets equal the independent cascade (107.5 / 40 / 353.15), CSV coherent, negative silent, dTmin<=0 refused; the population is published and labelled -- an excluded Q_kW duty is listed and the targets say NOT the plant's, and a two-stream exchanger enters as both sides with its duty in neither current-utility total (no duty is ADDED to the population: columns, reactors and crystallisers stay excluded)",
-      "seconds": 0.1
+      "claim": "check_pinch_p1: OK -- witness targets equal the independent cascade (107.5 / 40 / 353.15), CSV coherent, negative silent, dTmin<=0 refused; the cascade CLASSIFIES the problem (interior pinch, several pinches, threshold either utility or neither, Q_H,min - Q_C,min = 67.5 kW at dTmin 1/20/40, the worked table and summary.csv equal the independent cascade, ammonia02 is a threshold plant, no TypeScript cascade); the population is published and labelled -- an excluded Q_kW duty is listed and the targets say NOT the plant's, and a two-stream exchanger enters as both sides with its duty in neither current-utility total (no duty is ADDED to the population: columns, reactors and crystallisers stay excluded)",
+      "seconds": 0.3
     },
     "check_pinch_p2": {
       "exit": 0,

@@ -85,6 +85,18 @@ Description
         temperatures -- never from a name.  The water of ammonia02's
         cooler was counted as a cold process stream and manufactured its
         pinch.
+      * THE CASCADE CLASSIFIES THE PROBLEM (2026-11-07, DEV.md 4c C234).
+        The corrected cascade (Q_H,min fed in at the top) is >= 0 and touches
+        zero where the problem is limited: ONE interior zero is a pinch
+        (`interiorPinch`), several are `severalPinches`, and zeros only at the
+        ends are a threshold problem -- `thresholdNoHotUtility` (top),
+        `thresholdNoColdUtility` (bottom) or `thresholdNoUtility` (both) --
+        with NO pinch.  The word goes to reports/pinch/summary.csv, the
+        console, and the KPIs `n_pinches`, `problem_class` (1..5) and
+        `pinch_exists`; the diagnostics below the table call the duty on the
+        wrong side of a pinch a VIOLATION and, with no pinch, an EXCESS
+        utility.  The worked table is reports/pinch/problemTable.csv and
+        `Q_recovery_max_kW` = hot total - Q_C,min = cold total - Q_H,min.
       * The current-vs-target line sums the remaining units' raw
         heating/cooling duties -- heat recovered through a drawn
         heat-link is still counted at the units it touches.
