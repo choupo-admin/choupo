@@ -1,5 +1,8 @@
 # CLAUDE.md — Choupo project guide
 
+<!-- BRAIN.md is the one-page state of Choupo, judged and dated, read first; its FACTS block is generated and gated. -->
+@BRAIN.md
+
 This file briefs any AI assistant (or new human collaborator) on
 **what this project is, how it is structured, what conventions to follow,
 and which traps to avoid**.  Read it before touching code.  It is kept

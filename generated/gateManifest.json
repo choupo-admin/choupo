@@ -1575,6 +1575,11 @@
       "exit": 0,
       "claim": "check_kinetic_mesh: OK -- the full MESH carries a rate LAW written in the case: a mass-action law on column19's own K_a converges on column19's equilibrium as the catalyst mass grows (conversion rising and the profile distance falling monotonically over 100 to 1e6 kg), zero catalyst gives the non-reactive column, the Rehfinger & Hoffmann witness's rate is recomputed in Python from the published T, x and gamma of every reactive stage (and its a_MeOH printed against the paper's range), closure holds without a plug, Eq. 6 reproduces Izquierdo's Table IV, and a[i] in a cstr, an unknown component, a per-volume law, a misspelt word, the native word without legs, Sum nu != 0 under the CMO and a value-less law are each refused or announced by name.  SCANNED: column19, column20, userOp03 and nine fixtures written here, DistillationColumn.cpp.  NOT CHECKED: agreement with any measured column (nothing here is validated against a measurement); UNIFAC against the UNIQUAC the law was fitted on; the effectiveness factor.",
       "seconds": 205.0
+    },
+    "check_brain_fresh": {
+      "exit": 0,
+      "claim": "check_brain_fresh: OK -- FACTS block equals a fresh render from the tracked tree; BRAIN.md 124/250 lines; STATE BY AREA has a `judged` column.  Does NOT judge whether a dated judgement is still true.",
+      "seconds": 0.2
     }
   }
 }
