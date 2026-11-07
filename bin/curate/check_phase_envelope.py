@@ -128,7 +128,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BUILD = ROOT / "build" / "linux64Gcc"
 GAS = ROOT / "tutorials" / "props" / "molecular" / "envelope01_natural_gas"
-JUMP = ROOT / "tutorials" / "props" / "molecular" / "envelope02_root_jump"
+#  Named envelope02_root_jump until C235 (2026-11-07).  Its jump was an
+#  artefact of the one-sided liquid reference; with phi_sat and Poynting in
+#  it a search of twelve neighbours (six compositions x PengRobinson/SRK, to
+#  60 bar) found no root jump, so the case now witnesses a STOPPED branch.
+JUMP = ROOT / "tutorials" / "props" / "molecular" / "envelope02_c3c4c5_branch_stop"
 OP = ROOT / "src" / "propertyOps" / "PhaseEnvelope.cpp"
 
 
@@ -222,16 +226,28 @@ def main() -> int:
     else:
         notes.append("an empty branch is reported as never started")
 
-    if "DIFFERENT ROOT" not in jump:
-        fails.append("envelope02's branches jump root and the run does not say"
-                     " so -- a discarded point that is not explained reads as"
-                     " a mixture that simply ends there")
-    elif "not a feature of the mixture" not in jump:
-        fails.append("the root-jump report does not distinguish itself from a"
-                     " turning point, so the reader takes the stopping"
-                     " pressure for a property of the feed")
-    else:
-        notes.append("a root jump is reported as one, and not as a turning point")
+    #  envelope02 no longer jumps root.  What it shows -- and what this arm
+    #  holds -- is the honest ending: each branch is reported as STOPPED, with
+    #  its last converged point, and the run does NOT call it a root jump (a
+    #  jump has a different remedy and a different meaning).  The detector of
+    #  a jump is still in the op, but NO shipped case exercises it any more:
+    #  that direction is not checked here, and is said so in the closing line.
+    if "DIFFERENT ROOT" in jump:
+        fails.append("envelope02 is reported as a ROOT JUMP.  Its branches no"
+                     " longer jump (the saturation solve stops, it does not"
+                     " land on another root): a report that claims one is"
+                     " saying something the numbers do not")
+    for what in ("bubble", "dew"):
+        if not re.search(r"the " + what + r" branch stopped at [0-9.]+ bar;"
+                         r" the last converged point is [0-9.]+ K at [0-9.]+ bar",
+                         jump):
+            fails.append(f"envelope02's {what} branch stops and the run does not"
+                         " report where it stopped and its last converged point"
+                         " -- a branch that ends unexplained reads as a mixture"
+                         " that simply ends there")
+    if not fails or all("envelope02" not in f for f in fails):
+        notes.append("envelope02's two branches are reported as STOPPED (with"
+                     " the last converged point) and never as a root jump")
 
     # ---- (e) both directions -------------------------------------------
     if "CRICONDENTHERM" not in gas:
@@ -247,11 +263,11 @@ def main() -> int:
 
     if "CRICONDENTHERM" in jump:
         fails.append("envelope02 reports a cricondentherm.  Its highest kept"
-                     " dew point is the ENDPOINT left by the discarded jump,"
+                     " dew point is the ENDPOINT left by the stopped branch,"
                      " not an interior maximum -- this is exactly the false"
                      " 371.492 K the first version published")
     else:
-        notes.append("envelope02 claims no cricondentherm from a jump endpoint")
+        notes.append("envelope02 claims no cricondentherm from a branch endpoint")
 
     if "Michelsen" not in gas or "not a tolerance" not in gas:
         fails.append("the unclosed nose is not named with the algorithm that"
@@ -339,7 +355,12 @@ def main() -> int:
           " report.  The nose itself is not drawn and the critical point is"
           " not located.  The continuity thresholds are sized for the"
           " discontinuous kind of root jump; one inside the noise of the"
-          " branch's own steps would pass unseen.")
+          " branch's own steps would pass unseen.  A ROOT-JUMP REPORT IS NOT"
+          " EXERCISED BY ANY SHIPPED CASE since C235 (envelope02 stopped"
+          " jumping once the liquid reference carried phi_sat); the detector"
+          " is in the op and unwitnessed, and only the absence of a false"
+          " claim is held here.  Sabotage by hand (C235): the op marking every"
+          " stopped bubble branch as a root jump FAILS the envelope02 arm.")
     return 0
 
 

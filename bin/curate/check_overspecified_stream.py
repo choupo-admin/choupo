@@ -77,8 +77,8 @@ case this gate writes (never on a shipped case that someone may fix):
   (h) THE SAME RULE IN A UNIT'S OWN WORLD (DEV.md C37 item 5): a unit that
       consumes an authored pure inlet under its own `thermo {}` resolves it
       in THAT world, whose saturation curve need not be the global one's.
-      A splitter carrying `thermo { equilibrium { vapour { fugacityModel
-      SRK; } } }` over flash01's ideal package splits a pure benzene feed;
+      A splitter carrying `thermo { pureFluids { water { method IF97; } } }`
+      over a package that reads water's Antoine splits a pure water feed;
       the arm bisects T on the BRANCH's vf (the splitter's own reading, in
       its own world) and requires a refusal that names the unit's own world
       before the bracket closes below the band.  (h2) the SAME T in the SAME
@@ -103,8 +103,8 @@ WHAT THIS GATE DOES NOT CHECK, said plainly:
   * a pure-component flash AT saturation, which returns its bisection
     midpoint (docs/design/the-word-that-was-not-there.md) -- arm (b) checks
     that the pin is ACCEPTED, not that the degenerate flash is right;
-  * arm (h) reaches a unit's own world through ONE override (an SRK
-    vapour on a splitter); a property-context world (`propertyContextBase`,
+  * arm (h) reaches a unit's own world through ONE override (an IF97
+    saturation curve on a splitter); a property-context world (`propertyContextBase`,
     a sector's own constant/) goes through the same `thermoFor` call
     and is not exercised here;
   * choupoBatch, which reads no `0/<stream>` file (its vessels start from
@@ -292,7 +292,15 @@ units
 %(thermo)s    }
 );
 """
-OWN_WORLD = "        thermo { equilibrium { vapour { fugacityModel SRK; } } }\n"
+#  The unit's world differs from the global one by its SATURATION CURVE:
+#  pure water, whose global package reads the record's Antoine (372.09 K at
+#  1 bar) and whose splitter declares `pureFluids { water { method IF97; } }`
+#  (372.76 K).  (Until C235 this arm used an SRK vapour over an ideal one;
+#  with phi_sat in the liquid reference a pure component's K is 1 on its
+#  Psat curve in EVERY vapour model, so that override no longer moved the
+#  curve and the arm could not tell the unit's world from the global one.)
+OWN_WORLD = "        thermo { pureFluids { water { method IF97; } } }\n"
+WATER_FLOWS = "    water      40 kmol/h;\n"
 #  (i): the time-integrated witness whose feed is PURE compA.
 DYN = ROOT / "tutorials" / "unsteady" / "unsteady02_tanks_in_series"
 SPLIT_PROBE = """\
@@ -322,13 +330,22 @@ def build_own_world(root: Path, T: str, own: bool) -> Path:
         shutil.rmtree(case)
     (case / "system").mkdir(parents=True)
     (case / "0").mkdir()
-    shutil.copytree(FLASH01 / "constant", case / "constant")
+    shutil.copytree(PURE / "constant", case / "constant")
     (case / "constant" / "propertyManifest").unlink(missing_ok=True)
+    #  the GLOBAL package reads Antoine: the record's own IF97 declaration is
+    #  stripped from this copy, so only the unit's override carries it
+    tp = case / "constant" / "thermoPhysPropDict"
+    txt, nstrip = re.subn(r"pureFluids\s*\{[^}]*\{[^}]*\}\s*\}", "",
+                          tp.read_text())
+    if nstrip != 1:
+        raise SystemExit("check_overspecified_stream: fixture text moved -- "
+                         "condenser01 no longer declares one pureFluids block")
+    tp.write_text(txt)
     (case / "system" / "controlDict").write_text(CONTROL)
     (case / "system" / "flowsheetDict").write_text(
         SPLIT_OWN_WORLD % {"thermo": OWN_WORLD if own else ""})
     for nm in ("feed", "a", "b"):
-        (case / "0" / nm).write_text(FEED % {"flows": PURE_FLOWS, "pin": "",
+        (case / "0" / nm).write_text(FEED % {"flows": WATER_FLOWS, "pin": "",
                                              "T": T})
     return case
 
@@ -625,11 +642,11 @@ def main() -> int:
                 f"run (exit {rc3}) -- the negative is untested while this stands.")
         # ---- (h) the rule in a UNIT's own world (C37 item 5) ---------------
         T_h, rc, out, steps = bisect(lambda T: build_own_world(tmp, T, True),
-                                     stream_vf("a"), 340.0, 370.0, 1.0e-8)
+                                     stream_vf("a"), 365.0, 380.0, 1.0e-8)
         if "UNDETERMINED" not in out:
             failures.append(
-                f"(h) bisecting a PURE benzene feed's T on the reading of a "
-                f"splitter in its OWN thermo world (SRK vapour; {steps} runs, "
+                f"(h) bisecting a PURE water feed's T on the reading of a "
+                f"splitter in its OWN thermo world (IF97 curve; {steps} runs, "
                 f"last T = {T_h!r} K, exit {rc}) never met a refusal: the "
                 "unit's world classifies the stream by the last digits of T.")
         else:
