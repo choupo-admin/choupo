@@ -598,6 +598,7 @@ struct PortReq
     scalar      axial = 0.0;          // top/bottom: fraction of the axis length from the centre
     scalar      zAbs  = std::nan("");
     std::string origin = "convention";   // convention | declared | default
+    bool        facesOther = false;       // a storage tank's nozzle takes the axis end nearer its pipe's other end
 };
 
 struct PortGeom
@@ -1082,12 +1083,14 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             if (!sourceEnd)
             {
                 q.port = "inlet"; q.face = "top"; q.axial = horiz ? -0.3 : 0.0;
+                q.facesOther = horiz;
                 q.role = "tank fill nozzle on the roof";
             }
             else
             {
                 q.port = "outlet"; q.face = horiz ? "bottom" : "side";
                 q.frac = 0.1; q.axial = horiz ? 0.3 : 0.0;
+                q.facesOther = horiz;
                 q.role = "tank outlet low on the shell";
             }
             return true;
@@ -1189,13 +1192,39 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         return j != jx.end() ? j->second : kNaN;
     };
 
+    //  The same for y.  A battery limit stands where the case DECLARED its
+    //  fence crossing (`fence { crossings ( { stream s; side south|north; ...
+    //  } ); }`, read here, before any routing): beyond every item on that
+    //  side; with no declared side (or on the west / east sides) it is the
+    //  rack's own y.  The order is therefore: every unit's reference point
+    //  and the declared sides are inputs, so the end each nozzle faces is
+    //  decided once, before the first pipe is routed -- no second pass.
+    std::map<std::string, std::string> crossingSide;
+    if (d.found("fence") && d.subDict("fence")->found("crossings"))
+        for (const auto& cd : d.subDict("fence")->lookupDictList("crossings"))
+            if (cd->found("stream") && cd->found("side"))
+                crossingSide[cd->lookupWord("stream")] = cd->lookupWord("side");
+    auto refY = [&](const std::string& unit, bool sourceEnd, const std::string& stream) -> scalar {
+        if (unit.empty())
+        {
+            auto c = crossingSide.find(stream);
+            (void)sourceEnd;
+            if (c != crossingSide.end() && c->second == "south") return -1e18;
+            if (c != crossingSide.end() && c->second == "north") return  1e18;
+            return rack.y;
+        }
+        auto p = placedOf.find(unit);
+        if (p != placedOf.end() && !p->second.empty()) return p->second.front()->y;
+        return jx.count(unit) ? rack.y : kNaN;
+    };
+
     //  ---- one end of a stream ------------------------------------------
     //  `inlet` is true when this end is the stream's SOURCE (a battery limit
     //  there is the plant inlet); `sign` faces a side nozzle toward the other
     //  end (+1 east); `commit` counts the pipe on its port (a stream the
     //  layout does not route is only looked at, never counted).
     auto endOf = [&](const std::string& unit, bool inlet,
-                     const std::string& stream, int sign, bool commit) {
+                     const std::string& stream, int sign, bool commit, int signY = 1) {
         End e;
         if (unit.empty())
         {
@@ -1236,6 +1265,14 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
                 q.role = "no port rule for unit type `" + typeOf[unit]
                        + "`: the item's top centre (a default position)";
                 defaultedTypes.insert(typeOf[unit]);
+            }
+            if (q.facesOther && q.origin != "default")
+            {
+                //  a tank's fill nozzle and outlet each take the end of its
+                //  axis nearer the other end of THEIR pipe (a tank has no
+                //  flow direction; the two sit on different faces)
+                const scalar sg = q.item->orientation == "alongY" ? signY : sign;
+                q.axial = std::fabs(q.axial) * sg;
             }
             const LayoutItem& i = *q.item;
             int slot = 0;
@@ -1378,8 +1415,11 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         const scalar xa = refX(from, true), xb = refX(to, false);
         const int signA = (std::isnan(xb) || std::isnan(xa) || xb >= xa) ? 1 : -1;
         const int signB = (std::isnan(xb) || std::isnan(xa) || xa >= xb) ? 1 : -1;
-        const End a = endOf(from, true, s, signA, true);
-        const End b = endOf(to, false, s, signB, true);
+        const scalar ya = refY(from, true, s), yb = refY(to, false, s);
+        const int signYA = (std::isnan(yb) || std::isnan(ya) || yb >= ya) ? 1 : -1;
+        const int signYB = (std::isnan(yb) || std::isnan(ya) || ya >= yb) ? 1 : -1;
+        const End a = endOf(from, true, s, signA, true, signYA);
+        const End b = endOf(to, false, s, signB, true, signYB);
         if (a.kind.empty() || b.kind.empty())
         {
             const std::string why = a.kind.empty() ? a.why : b.why;
@@ -2744,6 +2784,47 @@ void fenceOf(const Dictionary& d, PlantLayoutRecord& rec,
             std::vector<std::vector<scalar>> r = p.route;
             if (in) { r.erase(r.begin()); r.insert(r.begin(), leg.begin(), leg.end()); }
             else    { r.pop_back();       r.insert(r.end(),   leg.begin(), leg.end()); }
+            //  THE DIRECT RUN (C229): when the item's own end already stands
+            //  BEYOND the rack lane on the fence's side (a tank farm south of
+            //  the rack, a south crossing), the pipe does not climb to the
+            //  lane and come back: from the stub's departure point it rises to
+            //  the lane's elevation, runs across and goes straight to the
+            //  crossing.  The rack lane stays the route of every pipe whose
+            //  item is on the other side of it.  (The tidy() of the old
+            //  version hid this detour only when the stub and the crossing
+            //  happened to share one x.)
+            if (alongX(c.side) && c.positionFrom == "declared")
+            {
+                const LayoutPort& ip = in ? p.toPort : p.fromPort;
+                if (ip.item.size() && ip.leaves.size() == 3)
+                {
+                    const scalar dy = ip.leaves[1];
+                    const bool beyond = c.side == "south" ? dy < ly - kTol : dy > ly + kTol;
+                    std::size_t kdep = r.size();
+                    for (std::size_t m = 0; m < r.size(); ++m)
+                        if (std::fabs(r[m][0] - ip.leaves[0]) < kTol
+                            && std::fabs(r[m][1] - dy) < kTol
+                            && std::fabs(r[m][2] - ip.leaves[2]) < kTol) { kdep = m; break; }
+                    if (beyond && kdep < r.size())
+                    {
+                        const std::vector<scalar> up{ ip.leaves[0], dy, lz };
+                        const std::vector<scalar> across{ c.x, dy, lz };
+                        const std::vector<scalar> C{ c.x, c.y, lz };
+                        std::vector<std::vector<scalar>> nr;
+                        if (!in)
+                        {
+                            nr.assign(r.begin(), r.begin() + kdep + 1);
+                            nr.push_back(up); nr.push_back(across); nr.push_back(C);
+                        }
+                        else
+                        {
+                            nr = { C, across, up };
+                            nr.insert(nr.end(), r.begin() + kdep, r.end());
+                        }
+                        r = nr;
+                    }
+                }
+            }
             p.route = tidy(r);
             p.length = 0;
             for (std::size_t i = 1; i < p.route.size(); ++i)

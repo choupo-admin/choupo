@@ -255,6 +255,43 @@ def arm_witness(work):
     return lay, out, err
 
 
+# --------------------------------------------------------------- (g) -----
+def arm_tank_ends(lay):
+    """A HORIZONTAL TANK's nozzles take the end of the axis nearer the other end
+    of their own pipe (C229 review: with the fixed end, ammonia02's `productStored`
+    left the bullet's far end, climbed 42 m to the rack lane and came back, 143.6 m
+    for a 33 m run).  The bullet T201/vessel1 lies along y at y = -54 m; its outlet
+    runs to a south fence crossing (declared `side south`), its fill comes from
+    the let-down at y = -6 m: the outlet must sit on the SOUTH end (-0.3 of the
+    axis), the fill on the NORTH end (+0.3), and the product pipe must not visit
+    the rack lane (it stands beyond it, on the fence's side) -- it is a direct
+    run, here under 60 m."""
+    if not lay:
+        return
+    it = next((i for i in lay["items"] if i["id"] == "T201/vessel1"), None)
+    out = (pipe_of(lay, "productStored") or {})
+    fil = (pipe_of(lay, "productNH3") or {})
+    if not it or it["orientation"] != "alongY" or not out or not fil:
+        fail("(g) the witness's T201/vessel1 (a bullet along y), its outlet or its fill is missing")
+        return
+    po = (out.get("fromPort") or {}).get("point")
+    pf = (fil.get("toPort") or {}).get("point")
+    if not po or abs(po[1] - (it["y"] - 0.3 * it["dy"])) > 1e-5:
+        fail(f"(g) the bullet's outlet must stand on its SOUTH end (the fence is south), at"
+             f" y = {it['y'] - 0.3 * it['dy']:.4f}; published {po}")
+    if not pf or abs(pf[1] - (it["y"] + 0.3 * it["dy"])) > 1e-5:
+        fail(f"(g) the bullet's fill must stand on its NORTH end (the let-down is north), at"
+             f" y = {it['y'] + 0.3 * it['dy']:.4f}; published {pf}")
+    lane = lay["pipeRack"]["y"]
+    if max(q[1] for q in out["route"]) >= lane or out["length"] > 60.0:
+        fail(f"(g) productStored must run straight to the south fence, not by way of the rack"
+             f" lane (y = {lane}): length {out['length']:.2f} m (the fixed-end rule gave"
+             f" 143.58 m), highest y of its route {max(q[1] for q in out['route']):.2f}")
+    claims.append(f"a horizontal tank's outlet and fill each take the axis end nearer their pipe's"
+                  f" other end (the bullet's outlet south, fill north) and the product pipe runs"
+                  f" {out['length']:.1f} m straight to the fence, not 143.6 m by way of the rack")
+
+
 # --------------------------------------------------------------- (c) -----
 def arm_unique(lay, tag):
     seen = {}
@@ -385,6 +422,7 @@ def main():
                 total += arm_unique(l, tag)
         if total:
             claims.append(f"no two of {total} port ends coincide on an item")
+        arm_tank_ends(lay)
         arm_declared(work)
         arm_refusals(work)
         arm_said(lay, out, err)
