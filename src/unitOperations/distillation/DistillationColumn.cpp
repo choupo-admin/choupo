@@ -908,7 +908,13 @@ struct CmoFeedQuality
     std::string why;                 //  the fall-back's reason
 };
 
-CmoFeedQuality cmoFeedQuality(const FeedThermalState& st, scalar T, scalar P,
+//  C235: THE FEED IS PRICED AT ITS OWN PRESSURE.  `Pfeed` is the stream's
+//  pressure (H_F is the enthalpy of what arrives), `P` the column's: the
+//  bubble and dew points are those of the stage the feed is let down onto, an
+//  adiabatic flash, so the q-line compares H_F(Pfeed) with H_L,sat and H_V,sat
+//  at the column's P.
+CmoFeedQuality cmoFeedQuality(const FeedThermalState& st, scalar T,
+                              scalar Pfeed, scalar P,
                               const sVector& z, const ThermoPackage& thermo,
                               const ColumnEnthalpy& h)
 {
@@ -952,7 +958,7 @@ CmoFeedQuality cmoFeedQuality(const FeedThermalState& st, scalar T, scalar P,
         const auto dew = DewPoint::compute(thermo, zVn, P, Tb);
         if (!dew.converged || !(dew.T >= Tb - 1.0e-6))
             throw std::runtime_error("its dew point did not converge");
-        const scalar HF = feedEnthalpy(st, 1.0, T, P, z, thermo, h);
+        const scalar HF = feedEnthalpy(st, 1.0, T, Pfeed, z, thermo, h);
         const scalar HL = h.hL(z, Tb);
         scalar HV = h.hV(zV, dew.T);                 // extensive: sV mol of vapour
         if (sN > 0.0)
@@ -1364,11 +1370,14 @@ int DistillationColumn::solve(const DictPtr& dict,
     //  home, defaulted, never reconciled.  See `resolveFeedThermalState` above
     //  for what that cost.  `feedQuality` is now a CROSS-CHECK only: present
     //  and agreeing, it is silent; present and disagreeing, it refuses.
+    //  C235: a stream feed is resolved and priced at ITS pressure, not the
+    //  column's (the letdown is the stage's adiabatic flash).
+    const scalar Pfeed = feedDict->lookupScalarOrDefault("P", P, Dims::pressure);
     const FeedThermalState feedState =
-        resolveFeedThermalState(feedDict, Tf, P, z, thermo, dict->name());
+        resolveFeedThermalState(feedDict, Tf, Pfeed, z, thermo, dict->name());
     //  The column's one enthalpy surface, and the CMO q read off it (C169).
     const ColumnEnthalpy hs = columnEnthalpySurface(thermo, P, {{Tf, z}});
-    const CmoFeedQuality feedQ = cmoFeedQuality(feedState, Tf, P, z, thermo, hs);
+    const CmoFeedQuality feedQ = cmoFeedQuality(feedState, Tf, Pfeed, P, z, thermo, hs);
     announceFeedQuality(dict->name(),
                         feedDict->lookupWordOrDefault("streamName", "the feed"),
                         feedState, feedQ, Tf, verbosity);
@@ -1926,7 +1935,7 @@ int DistillationColumn::solve(const DictPtr& dict,
         //  column actually hands downstream.  Nobody recomputes it here: a
         //  second bubble point would be a second home for the same answer.
         const scalar dH = (Hdist + H(B, T[N-1], 0.0, x[N-1]))
-                        -  feedEnthalpy(feedState, F, Tf, P, z, thermo, hs);
+                        -  feedEnthalpy(feedState, F, Tf, Pfeed, z, thermo, hs);
         kpis_["Q_condenser_kW"] = Q_cond;
         kpis_["Q_reboiler_kW"]  = dH - Q_cond;                          // closes the balance
 
@@ -2089,14 +2098,14 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
         zFeed[thermo.indexOf(key)] = compDict->lookupScalar(key);
     if (zsum > 0.0) for (auto& v : zFeed) v /= zsum;
     const scalar Tf0 = feedDict->lookupScalar("T", Dims::temperature);
-    const scalar Pf0 = (Pc > 0.0) ? Pc
-                                  : feedDict->lookupScalar("P", Dims::pressure);
+    const scalar Pfeed0 = feedDict->lookupScalar("P", Dims::pressure);
+    const scalar Pf0 = (Pc > 0.0) ? Pc : Pfeed0;   // the column's pressure
     const FeedThermalState recoveryFeed =
-        resolveFeedThermalState(feedDict, Tf0, Pf0, zFeed, thermo, dict->name());
+        resolveFeedThermalState(feedDict, Tf0, Pfeed0, zFeed, thermo, dict->name());
     const ColumnEnthalpy recoveryH =
         columnEnthalpySurface(thermo, Pf0, {{Tf0, zFeed}});
     const CmoFeedQuality recoveryQ =
-        cmoFeedQuality(recoveryFeed, Tf0, Pf0, zFeed, thermo, recoveryH);
+        cmoFeedQuality(recoveryFeed, Tf0, Pfeed0, Pf0, zFeed, thermo, recoveryH);
     refuseContradictoryFeedQuality(operDict, feedDict, recoveryFeed, recoveryQ,
                                    Tf0, dict->name());
     const scalar qF = recoveryQ.q;
@@ -2368,6 +2377,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     {
         std::size_t j = 0;
         scalar F = 0.0, q = 1.0, T = 0.0;
+        scalar P = 0.0;                        // the STREAM's pressure (C235); 0 = the column's
         sVector z;
         std::optional<FeedThermalState> state; // its resolution, when it is a stream
         std::string           name = "the feed";
@@ -2375,10 +2385,10 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     };
     std::vector<FeedRecord> feedRecords;
     auto addFeed = [&](std::size_t j, scalar Ff, scalar qf, scalar Tff, const sVector& zf,
-                       const FeedThermalState* st = nullptr) {
+                       const FeedThermalState* st = nullptr, scalar Pff = 0.0) {
         Ffeed[j] += Ff; feedLiq[j] += qf * Ff; feedTmol[j] += Ff * Tff;
         for (std::size_t i = 0; i < n; ++i) feedComp[j][i] += Ff * zf[i];
-        FeedRecord r; r.j = j; r.F = Ff; r.q = qf; r.T = Tff; r.z = zf;
+        FeedRecord r; r.j = j; r.F = Ff; r.q = qf; r.T = Tff; r.z = zf; r.P = Pff;
         if (st) r.state = *st;
         feedRecords.push_back(std::move(r));
     };
@@ -2436,11 +2446,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             // branch).  A redundant operation.feeds.quality that DISAGREES is
             // exactly the column08-class silent bug (a vapour feed declared
             // liquid) -> REFUSE it loudly.
+            const scalar Pfe = sd->lookupScalarOrDefault("P", P, Dims::pressure);
             const FeedThermalState fst =
-                resolveFeedThermalState(sd, Tfe, P, zf, thermo, dict->name());
+                resolveFeedThermalState(sd, Tfe, Pfe, zf, thermo, dict->name());
             //  q is set below, from the feed's enthalpy (C169), and a declared
             //  `quality` is cross-checked against THAT.
-            addFeed(st - 1, Ff, 1.0 - fst.vf, Tfe, zf, &fst);
+            addFeed(st - 1, Ff, 1.0 - fst.vf, Tfe, zf, &fst, Pfe);
             feedRecords.back().name = sName;
             if (fe->found("quality"))
                 feedRecords.back().qDeclared = fe->lookupScalar("quality");
@@ -2461,11 +2472,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         //  SAME RULE AS WANG-HENKE, and the same one home reached from both --
         //  this branch used to read `feedQuality` with its own default, which
         //  is how one defect came to have two transcriptions.
+        const scalar Pfp = feedDict->lookupScalarOrDefault("P", P, Dims::pressure);
         const FeedThermalState primaryFeedState =
-            resolveFeedThermalState(feedDict, Tf, P, z, thermo, dict->name());
+            resolveFeedThermalState(feedDict, Tf, Pfp, z, thermo, dict->name());
         //  Cross-checked below, against the q the column uses (C169).
         addFeed(NF - 1, feedDict->lookupScalar("F", Dims::molarFlow),
-                1.0 - primaryFeedState.vf, Tf, z, &primaryFeedState);
+                1.0 - primaryFeedState.vf, Tf, z, &primaryFeedState, Pfp);
         feedRecords.back().name =
             feedDict->lookupWordOrDefault("streamName", "the feed");
 
@@ -2536,7 +2548,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         if (r.state)
         {
             const CmoFeedQuality fq =
-                cmoFeedQuality(*r.state, r.T, P, r.z, thermo, hs);
+                cmoFeedQuality(*r.state, r.T, r.P > 0.0 ? r.P : P, P, r.z, thermo, hs);
             announceFeedQuality(dict->name(), r.name, *r.state, fq, r.T, verbosity);
             if (!multiFeed && k == 0)
                 refuseContradictoryFeedQuality(operDict, feedDict, *r.state, fq,
@@ -3482,7 +3494,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         std::vector<scalar> stageFeedEnthalpy(N, 0.0);
         for (const auto& r : feedRecords)
             stageFeedEnthalpy[r.j] += r.state
-                ? feedEnthalpy(*r.state, r.F, r.T, P, r.z, thermo, hs)
+                ? feedEnthalpy(*r.state, r.F, r.T, r.P > 0.0 ? r.P : P, r.z, thermo, hs)
                 : r.F * hs.hQuality(1.0 - r.q, r.z, r.T);
         if (verbosity >= 2)
         {
@@ -4087,7 +4099,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         {
             if (r.F <= 0.0) continue;
             if (r.state)
-                Hin += feedEnthalpy(*r.state, r.F, r.T, P, r.z, thermo, hs);
+                Hin += feedEnthalpy(*r.state, r.F, r.T, r.P > 0.0 ? r.P : P, r.z, thermo, hs);
             else
                 Hin += H(r.F, r.T, 1.0 - r.q, r.z);
         }
@@ -4118,7 +4130,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 {
                     if (fr.j != r || fr.F <= 0.0) continue;
                     hFr += fr.state
-                        ? feedEnthalpy(*fr.state, fr.F, fr.T, P, fr.z, thermo, hs)
+                        ? feedEnthalpy(*fr.state, fr.F, fr.T, fr.P > 0.0 ? fr.P : P, fr.z, thermo, hs)
                         : fr.F * hs.hQuality(1.0 - fr.q, fr.z, fr.T);
                 }
                 Q_own = hVN + hBN + hDr - hLN - hFr;
