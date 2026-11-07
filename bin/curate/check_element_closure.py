@@ -192,10 +192,23 @@ def main(argv):
                 f"being true, and it hides the next regression on this case.")
 
     stale = [c for c in KNOWN_OPEN if c not in found]
+    unrun = []
     for c in stale:
+        #  The gate READS run outputs (gitignored).  A pinned case this pass
+        #  never ran (no reports/balances/ at all -- a scoped integration that
+        #  did not reach it) is NOT a case that stopped publishing; failing it
+        #  accused the pin on every integration whose scope left it out
+        #  (2026-11-07).  A case that ran and wrote the balance folder without
+        #  an elementBalance still fails, which is the licence the rule names.
+        if not (ROOT / c / "reports" / "balances").is_dir():
+            unrun.append(c)
+            continue
         failures.append(
             f"{c}: pinned in KNOWN_OPEN but publishes no elementBalance.  A pin "
             f"on a case nobody measures is a licence.")
+    if unrun:
+        print("check_element_closure: NOTE -- pinned case(s) not run in this pass, "
+              "so not judged: " + ", ".join(unrun))
 
     if failures:
         print("check_element_closure: FAILED")
