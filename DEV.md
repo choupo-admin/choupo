@@ -3014,6 +3014,18 @@ accepts today, and that is a policy call.
 > by design, correct because their subject is the catalogue, but a sealed case then
 > prints a card from a release that is not its own, unsaid.  Decision: it lands with one
 > line on the card and in the JSON naming the source, the release and the case's seal.
+> READING OF THE FIVE COLUMN PAPERS (same day, a general, not yet re-read by the
+> architect): Klemola 1996 is the one measured column that can enter the subset now:
+> column14's `expected` carries no anchor row although its record promised them
+> (`docs/design/klemola-c4-splitter-reference-case.md:158`), and its header expects the
+> disagreement to be stated (distillate n-butane about 130x low).  It runs after C235
+> lands, because C235 re-records column14.  Jacobs 1993 and Nijhuis 1993 are simulations:
+> Nijhuis Table IV (98.5 % against 41.4 %) is the printed target, estimated 20-30 h,
+> needing a `refluxRatio + bottomsRate` pair and a total condenser on the full MESH,
+> UNIQUAC pairs (r and q are not printed), continuation in the feed stage.  Yanagi 1982:
+> measured tray profiles, but total reflux, a mode the column lacks.  Bessling 1998: a
+> figure and no feed flows; dropped as an anchor.  Decision: Klemola first, then the
+> spec pair and total condenser, useful beyond MTBE, then Nijhuis if the month holds.
 
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
