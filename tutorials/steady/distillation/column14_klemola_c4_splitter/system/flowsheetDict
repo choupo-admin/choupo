@@ -114,23 +114,27 @@
   CASE'S OWN thermo (the dict in constant/, no other model), by two throwaway
   runs whose numbers are reproduced here so a reader can repeat them:
 
-      bubbleT   of the feed composition at 892.67 kPa  ->  T = 334.4218 K
-      adiabaticFlash of that stream to 658.6 kPa       ->  V/F = 0.0929333445
-                                                           T   = 323.5875148 K
+      bubbleT   of the feed composition at 892.67 kPa  ->  T = 342.4354 K
+      adiabaticFlash of that stream to 658.6 kPa       ->  V/F = 0.113955
+                                                           T   = 329.5214 K
 
   Hence, at the feed tray,
 
-      feedQuality  q = 1 - V/F = 0.9070666555
+      feedQuality  q = 1 - V/F = 0.886045
 
-  and 0/feed carries the COLUMN-INLET state (323.5875148 K, 658600 Pa; the
+  and 0/feed carries the COLUMN-INLET state (329.5214 K, 658600 Pa; the
   V/F is not declared -- a mixture's (T, P) fix it, and the engine resolves
   it), not the line state.  The paper's 892.67 kPa therefore appears in this
-  case only as the premise of A1, stated above.  The `feedQuality` key below
-  is a CROSS-CHECK against the feed stream's resolved state, which the column
-  reads (2026-09-12): a key that contradicts it is refused by name, so the
-  two cannot drift apart in silence.  (Until 2026-10-03 the stream file also
-  declared `vaporFraction 0.0929333445` -- a third state variable beside T
-  and P, which the reader now refuses as over-specified.)
+  case only as the premise of A1, stated above.  A `feedQuality` key would be
+  a CROSS-CHECK against the feed stream's resolved state, which the column
+  reads (2026-09-12): a key that contradicts it is refused by name.  None is
+  declared since 2026-11-07 (C235): the old 0.9070666555 was this engine's
+  own A1 flash under a one-sided liquid reference, not Klemola's number, and
+  the A1 numbers above were RE-DERIVED under the corrected reference (phi_sat
+  and Poynting; before it: bubble T 334.4218 K, V/F 0.0929333445, inlet T
+  323.5875148 K).  (Until 2026-10-03 the stream file also declared
+  `vaporFraction`, a third state variable beside T and P, which the reader
+  refuses as over-specified.)
 
   Sensitivity, MEASURED rather than asserted -- the competing assumption was
   run.  Declaring instead "saturated liquid AT THE COLUMN PRESSURE" gives
