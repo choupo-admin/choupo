@@ -2548,8 +2548,12 @@ accepts today, and that is a policy call.
 > is `~/Downloads/MNL50.pdf` and
 > `~/Choupo-Literature/characterization-of-petroleum-products-by-riazi.pdf`,
 > Sundaram & Froment are `~/Choupo-Literature/sundaram1977.pdf` and
-> `sundaram1978.pdf`; Poling-Prausnitz-O'Connell is not in either place (the
-> curator's own copy that `verify_against_poling.py` reads).
+> `sundaram1978.pdf`; Poling-Prausnitz-O'Connell was not in either place then
+> (the curator's own copy that `verify_against_poling.py` reads).  CORRECTED
+> 2026-11-07: the fifth edition is at
+> `~/Choupo-Literature/poling-properties-of-gases-and-liquids-5ed.pdf`, and
+> `~/Choupo-Literature/INDEX.md` is the folder's index, read before any paper is
+> requested (it maps old names to new).
 
 > **C224 INTEGRATION (2026-11-05): the report's case list was INCOMPLETE and
 > the full sweep was judged not needed.**  The general listed SIX cases that
