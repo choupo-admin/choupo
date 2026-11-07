@@ -2832,7 +2832,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/props/molecular/envelope02_root_jump": {
+  "tutorials/props/molecular/envelope02_c3c4c5_branch_stop": {
    "application": "choupoProps",
    "ops": [
     "phaseEnvelope"
@@ -7940,7 +7940,7 @@
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/envelope01_natural_gas",
-    "tutorials/props/molecular/envelope02_root_jump",
+    "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/exergy01_air_dead_state",
@@ -9316,7 +9316,7 @@
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/membrane/shortlist01_class_to_modules",
     "tutorials/props/molecular/envelope01_natural_gas",
-    "tutorials/props/molecular/envelope02_root_jump",
+    "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
     "tutorials/props/molecular/flash01_operating_line",
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
     "tutorials/props/powder/compaction01_mcc",
@@ -9682,7 +9682,7 @@
    ],
    "phaseEnvelope": [
     "tutorials/props/molecular/envelope01_natural_gas",
-    "tutorials/props/molecular/envelope02_root_jump"
+    "tutorials/props/molecular/envelope02_c3c4c5_branch_stop"
    ],
    "phaseSplitScan": [
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol"

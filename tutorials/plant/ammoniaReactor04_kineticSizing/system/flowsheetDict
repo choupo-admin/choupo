@@ -98,7 +98,7 @@
 //  sixteen volumes.
 variables
 {
-    V_bed       6.0;        // m3 of catalyst bed; rung 3's space-velocity bed is 18.63 m3
+    V_bed       6.0;        // m3 of catalyst bed; rung 3's space-velocity bed is 18.76 m3
 }
 
 units
@@ -141,7 +141,7 @@ units
         //  IT.  The PFR is a rating model (it integrates a declared volume),
         //  so "the bed volume the engine computed" is the DesignSpec's answer:
         //  the volume at which the bed's outlet is 5 K short of the rate law's
-        //  own equilibrium.  Compare it with rung 3's 18.63 m3, which is
+        //  own equilibrium.  Compare it with rung 3's 18.76 m3, which is
         //  arithmetic on an assumed space velocity.
         //
         //  NO `catalystLoading`: Equation 19 is already per cubic metre of

@@ -55,6 +55,34 @@ sVector bubbleK(const ThermoPackage& thermo, scalar T, scalar P,
     const auto r = incipientPhase::vapour(thermo, T, P, x, K0);
     return r.K.empty() ? K0 : r.K;
 }
+//  THE T SEED IS THE WEIGHTED BOILING POINT AT THE PRESSURE (C235).  The
+//  mole-weighted NORMAL boiling point is a subcooled state at any pressure
+//  above 1 atm.  An ideal vapour prices it smoothly; on a cubic EoS this
+//  kernel reads K(T, P, x, x), the y = x vapour is a liquid at that state,
+//  the cubic returns its liquid root, f(T) turns non-monotone and the
+//  Newton walked down to its 200 K bracket (column14's feed at 8.93 bar).
+//  A vapour whose fugacity depends on composition therefore uses each
+//  component's own saturation temperature at P
+//  (`pureSaturationTemperature`); an ideal vapour keeps the plain weighted
+//  Tb, byte-identical.  ONE helper, both Newtons call it.
+scalar weightedBoilingGuess(const ThermoPackage& thermo, const sVector& x,
+                            scalar P)
+{
+    const std::size_t n = thermo.n();
+    const bool real = thermo.hasEos() && thermo.vapourFugacityDependsOnComposition();
+    scalar T0 = 0.0;
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        scalar t = (thermo.comp(i).Tb() > 0 ? thermo.comp(i).Tb() : 350.0);
+        if (real && x[i] > 0.0)
+        {
+            const scalar ts = pureSaturationTemperature(thermo, i, P);
+            if (ts > 0.0) t = ts;
+        }
+        T0 += x[i] * t;
+    }
+    return T0;
+}
 } // namespace
 
 // -----------------------------------------------------------------------
@@ -77,9 +105,7 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
     scalar T0 = T_init;
     if (T0 <= 0.0)
     {
-        T0 = 0.0;
-        for (std::size_t i = 0; i < n; ++i)
-            T0 += x[i] * (thermo.comp(i).Tb() > 0 ? thermo.comp(i).Tb() : 350.0);
+        T0 = weightedBoilingGuess(thermo, x, P);
     }
 
     auto K_at = [&](scalar T) { return bubbleK(thermo, T, P, x); };
@@ -252,7 +278,10 @@ int BubblePoint::solve(const DictPtr& dict,
     if (Tinit > 0.0)
         std::cout << "Initial T guess: " << Tinit << " K\n\n";
     else
-        std::cout << "Initial T guess: weighted Tb\n\n";
+        std::cout << "Initial T guess: weighted Tb"
+                  << (thermo.hasEos() && thermo.vapourFugacityDependsOnComposition()
+                          ? " at the pressure (Trouton, real vapour)" : "")
+                  << "\n\n";
 
     // The compute() helper is silent; for verbosity ≥ 3 we re-run the
     // Newton manually here so the iteration trace is visible.  At lower
@@ -263,9 +292,7 @@ int BubblePoint::solve(const DictPtr& dict,
         // Re-implement the Newton with trace echoing.  Same options as
         // compute() --- keep them in sync if compute() changes.
         scalar T0 = (Tinit > 0.0) ? Tinit : 0.0;
-        if (T0 <= 0.0)
-            for (std::size_t i = 0; i < n; ++i)
-                T0 += x[i] * (thermo.comp(i).Tb() > 0 ? thermo.comp(i).Tb() : 350.0);
+        if (T0 <= 0.0) T0 = weightedBoilingGuess(thermo, x, P);
 
         auto K_at = [&](scalar T) { return bubbleK(thermo, T, P, x); };
         auto f = [&](scalar T)

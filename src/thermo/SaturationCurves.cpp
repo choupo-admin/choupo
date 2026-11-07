@@ -64,6 +64,26 @@ scalar bubbleT(const ThermoPackage& thermo,
     return s.T;
 }
 
+scalar pureSaturationTemperature(const ThermoPackage& thermo, std::size_t i,
+                                 scalar P)
+{
+    if (!thermo.hasSaturationCurve(i)) return 0.0;
+    const scalar Tc = thermo.comp(i).Tc();
+    scalar lo = 100.0, hi = (Tc > 0.0) ? Tc : 1000.0;
+    auto above = [&](scalar T)            // Psat(T) >= P ?
+    {
+        const scalar ps = thermo.Psat(i, T);
+        return std::isfinite(ps) && ps >= P;
+    };
+    if (!above(hi)) return hi;            // does not saturate at P below Tc
+    for (int k = 0; k < 60; ++k)
+    {
+        const scalar mid = 0.5 * (lo + hi);
+        if (above(mid)) hi = mid; else lo = mid;
+    }
+    return 0.5 * (lo + hi);
+}
+
 BubbleTSolve bubbleTSolve(const ThermoPackage& thermo,
                           const sVector& x,
                           scalar P,

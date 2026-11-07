@@ -1,11 +1,18 @@
 /*---------------------------------------------------------------------------*\
-  thermoPhysPropDict (v2) -- gamma-phi, predictive UNIFAC liquid, ideal vapour.
+  thermoPhysPropDict (v2) -- gamma-phi, predictive UNIFAC liquid, SRK vapour.
 
   The MTBE system: methanol, isobutene, MTBE and the C4 cut.  Methanol is the
   strongly non-ideal member (it forms azeotropes with the C4 hydrocarbons and
   with MTBE), so the liquid is the predictive group-contribution UNIFAC; the
   Raoult datum (gamma -> 1 as x -> 1) is the standard state the reaction's K_a
-  is written in.  The vapour at 7 bar stays ideal (a stated simplification).
+  is written in.  The vapour at 7 bar is a REAL gas, SRK (kij = 0, announced): under an ideal
+  vapour the latent heat the column prices at its 400 K reboiler is about
+  1.3 kJ/mol too high (the vapour's departure, H_res of 1.34 kJ/mol at 7 bar,
+  is missing), which is most of the gap to the case this one is measured
+  against, whose vapour is a Redlich-Kwong equation of state.  SRK is
+  Choupo's cubic of that family.  The pure-liquid reference carries phi_sat
+  and Poynting (a real vapour counted on both sides of K), so the
+  temperatures hold as well as the duties.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
@@ -26,6 +33,6 @@ equilibrium
 
     vapour
     {
-        fugacityModel idealGas;
+        fugacityModel SRK;
     }
 }

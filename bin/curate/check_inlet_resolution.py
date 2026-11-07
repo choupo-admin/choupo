@@ -829,8 +829,18 @@ def arm_p(tmp: pathlib.Path, fail: list) -> str:
         "units\n(\n    { name P1; type pipe; in RawLiquid; outputs ( "
         "downstream ); operation { viscosity 1.4e-4 Pa.s; geometry { D 0.1 m; "
         "L 50 m; roughness 4.6e-5 m; dz 0 m; } } }\n);\n")
-    shutil.copy(srcc / "0" / "RawLiquid", case / "0" / "RawLiquid")
-    shutil.copy(srcc / "0" / "RawLiquid", case / "0" / "downstream")
+    #  The gate's OWN copy is held at 200 bar (the shipped letdown01 is left
+    #  at 140): the arm's subject is a pipe refusing on a dissolved gas's
+    #  liquid molar volume, so the stream must BE a single liquid, and with
+    #  the gamma-phi reference carrying phi_sat and Poynting (C235) the 140
+    #  bar stream sits on its bubble curve and resolves with a gas phase.
+    raw = (srcc / "0" / "RawLiquid").read_text()
+    raw, nsub = re.subn(r"(?m)^P\s+[^;]*;", "P               20000000 Pa;", raw)
+    if nsub != 1:
+        fail.append("(p2) fixture edit target missing: RawLiquid has no "
+                    "single `P` line to raise")
+    (case / "0" / "RawLiquid").write_text(raw)
+    (case / "0" / "downstream").write_text(raw)
     rc, log = run(case)
     if rc == 0:
         fail.append("(p2) a pipe carrying a liquid with dissolved H2/N2/Ar "

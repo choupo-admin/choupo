@@ -78,10 +78,10 @@ manipulate
     //  Bounds are advisory clips on the Newton step, not physics: below the
     //  lower bound a bed is so short its approach is hundreds of kelvin and
     //  the residual flat.
-    { variable V_Bed1;   initial  8.9510; min 2.0;   max  40.0; }   // m3 of catalyst bed
-    { variable V_Bed2;   initial 18.4115; min 4.0;   max  80.0; }
-    { variable V_Bed3;   initial 31.6971; min 6.0;   max 150.0; }
-    { variable D_converter; initial 2.2283; min 1.5; max  4.0; }   // m, the converter's one diameter
+    { variable V_Bed1;   initial 10.0321; min 2.0;   max  40.0; }   // m3 of catalyst bed
+    { variable V_Bed2;   initial 19.1578; min 4.0;   max  80.0; }
+    { variable V_Bed3;   initial 32.4468; min 6.0;   max 150.0; }
+    { variable D_converter; initial 2.2427; min 1.5; max  4.0; }   // m, the converter's one diameter
 );
 
 targets

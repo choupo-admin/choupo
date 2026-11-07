@@ -42,8 +42,9 @@ fails (a) (30.013 % against 32.387 %); IsothermalFlash.cpp's VLLE objective
 with ln phi removed fails (b) (compB 3.4 % off).
 
 NOT CHECKED, said plainly: the liquid side of the gamma-phi convention
-(no Poynting, no phi_sat -- the package's own K omits them too, so this
-gate holds the routes to the package, not to a measurement); and the
+against a measurement (phi_sat and Poynting are in the package's K and in
+the routes' condensed reference since C235, so this gate holds the routes
+to the package); and the
 elementPotential / reactiveFlash LIQUID tests, which read the gas fugacity
 as y_i P rather than y_i phi_i P (named, unestablished, in DEV.md C173).
 
@@ -143,6 +144,23 @@ def main():
         if s.count("fugacityModel idealGas;") != 1:
             raise SystemExit(LABEL + ": fixture text moved -- fix the GATE")
         tp.write_text(s.replace("fugacityModel idealGas;", "fugacityModel SRK;"))
+        #  The gate's own copy runs at 0.8 bar (the shipped vlle03 keeps its
+        #  1 bar, on an ideal vapour).  With phi_sat and Poynting in the
+        #  reference (C235) the SRK three-phase window of this artificial
+        #  system moved just below 1 bar (three-phase at 0.6-0.9 bar, a
+        #  liquid pair from 1.1 bar: measured), and the arm needs a state
+        #  that IS three-phase to say anything about y/x.
+        P_BAR = 0.8
+        fd = case / "system" / "flowsheetDict"
+        t, n1 = re.subn(r"(?m)^(\s*P\s+)1\.0 bar;", r"\g<1>%s bar;" % P_BAR,
+                        fd.read_text())
+        if n1 != 1:
+            raise SystemExit(LABEL + ": fixture text moved -- fix the GATE")
+        fd.write_text(t)
+        for f0 in (case / "0").iterdir():
+            f0.write_text(re.sub(r"(?m)^P\s+[^;]*;",
+                                 "P               %d Pa;" % round(P_BAR * 1.0e5),
+                                 f0.read_text()))
         rc, out = run(case)
         if rc != 0:
             failures.append("(b) VLLE/SRK: exit %d" % rc)
@@ -158,7 +176,7 @@ def main():
             xa = flows(case / "converged" / "liquidA")
             Y = [y.get(k, 0.0) for k in cnames]
             XA = [xa.get(k, 0.0) for k in cnames]
-            K = gap.ask(case, ["K 350 100000 %s %s" % (
+            K = gap.ask(case, ["K 350 %d %s %s" % (round(P_BAR * 1.0e5),
                 " ".join(map(repr, XA)), " ".join(map(repr, Y)))], tmp)[0]
             for k, yi, xi, Ki in zip(cnames, Y, XA, K):
                 ratio = (yi / xi) / Ki
@@ -178,9 +196,10 @@ def main():
           " condition gives (700 K, 200 bar, SRK; 2e-4 in y_NH3, against an"
           " ideal-gas answer 0.024 away), and a VLLE flash on an SRK vapour"
           " publishes y/x equal to the package's own K within 1 %.  NOT"
-          " checked: the liquid's Poynting / phi_sat (absent from the"
-          " package's K too), and the liquid-onset tests of the"
-          " element-potential and reactive-flash routes, which read y_i P.")
+          " checked: the liquid-onset tests of the element-potential and"
+          " reactive-flash routes, which read y_i P (the liquid's phi_sat"
+          " and Poynting are IN the package's K and in these routes'"
+          " condensed reference since C235).")
     return 0
 
 
