@@ -3046,6 +3046,41 @@ accepts today, and that is a policy call.
 > loop, utilities as declared items, a tank manifold, and the distance witness moved to
 > a fixture.  Judge it by a render, not by the absence of findings.
 
+> **C241 (Vitor, 2026-11-07: "devias ter um pequeno modelo LLM do Choupo em que, se eu
+> fizer uma pergunta, respondes quase sem pensar ... ia evoluindo à medida que o Choupo
+> evolui"; then "vai ver online quais são as boas práticas"): `BRAIN.md`, AND THE DIET OF
+> `CLAUDE.md` THAT THE PRACTICE DEMANDS.**  STATUS: BRAIN.md landed (`9a10a6861`), the
+> generator, the gate and the diet dispatched.  WHAT WAS READ (2026-11-07): the official
+> Claude Code memory page -- "target under 200 lines per CLAUDE.md file.  Longer files
+> consume more context and reduce adherence"; "if two instructions contradict each
+> other, Claude may pick one arbitrarily"; `@path` imports expand a file into context;
+> `.claude/rules/` holds path-scoped instructions; checkable rules belong in hooks, not
+> prose; auto memory loads its first 200 lines / 25 KB.  Community practice agrees
+> (HumanLayer: a root file under 60 lines, the consensus under 300; "roughly 150-200
+> instructions are followed reliably, and the system prompt already spends about 50";
+> alexop: "if a tool can enforce it, don't write prose about it"; a wrapped file whose
+> contents "may or may not be relevant" is discounted as a whole when most of it is
+> off-task).  On memory itself (PROJECTMEM, arXiv 2606.12329; memory-bank pattern): an
+> append-only log of decisions and failed attempts, a compact summary PROJECTED from it
+> and read first, supersede never delete, and stale detection against the code.  MEASURED
+> HERE: `CLAUDE.md` is 4375 lines / 303 KB, twenty times the official target; section 6
+> alone is 2630 lines of dated narrative, 117 titled paragraphs of which 80 already carry
+> a design record; 34 scripts mention CLAUDE.md (mostly as a citation string).  That size
+> is a cause of what Vitor sees: rules 0 and 00 sit among four thousand lines and are
+> discounted with the rest, and the session searches instead of knowing.  DECISIONS
+> (architect, rule 00): (1) `BRAIN.md` is the projected summary -- one page, every area
+> judged and dated, his recurring questions answered, a generated FACTS block held by
+> `check_brain_fresh`, imported by `@BRAIN.md` from CLAUDE.md so it loads without being
+> remembered.  (2) `DEV.md` 4c stays the append-only log (it already supersedes and never
+> deletes).  (3) `CLAUDE.md` goes on a DIET BY RELOCATION, not by deletion: every titled
+> paragraph of sections 5 and 6 moves VERBATIM to `docs/architecture/settled-contracts.md`
+> under the same title and date, and CLAUDE.md keeps the title, its first sentence and the
+> pointer; the mandate (section 0), build, git conventions, the factory pattern, the
+> never-list and section 10's rules stay; target 300 lines, every gate that reads
+> CLAUDE.md re-pointed or kept green.  Nothing is deleted and git keeps the diff, so the
+> door is two-way.  (4) Rules a tool can check leave prose for hooks later (a named
+> candidate list: no `git add -A`, no edit of `bin/runTests` while a suite runs).
+
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
 > +10 %), and that stands: INSIDE the liquid Cp's declared `Trange` the rung is

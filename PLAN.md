@@ -79,6 +79,7 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
+| running | C241: BRAIN.md landed; a general builds `gen_brain_facts.py` + `check_brain_fresh` + the `@BRAIN.md` import, then the CLAUDE.md diet by relocation to `docs/architecture/settled-contracts.md` (4375 -> ~300 lines, verbatim, gates kept green) | C241 |
 | blocked | C239: right after C235, column20 on the same EoS vapour; then the thermodynamic audit starts from the columns above 2.5 bar on an ideal vapour; C227 (a) lands with its source line | C239 |
 | running | C237 (Vitor): beside C235, in parallel, clear the quick items before any new physics: `flushEach` on the dynamic binaries, the slowest list from real job times, the built C228 and C227 (a) branches, the 'pinch at' console line, props `postProcessing/` in the GUI tree, the no-code decisions, the plan's upkeep | C237 |
 | done | C230 LANDED (`e29bc7d34`): the pinch of `ammonia02_full_plant` is right -- the engine leaves a utility-served side out of the population (cooling water is not a process stream), the GUI Pinch tab draws the engine's artefacts and computes nothing; Q_H,min 0, Q_C,min 95454 kW, NO pinch (a threshold problem). Open for the Saturday review: a misleading 'heater below the pinch' line in a threshold problem, and the rule on other plants | C230 |
