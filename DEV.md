@@ -3215,6 +3215,33 @@ accepts today, and that is a policy call.
 > commit.  First step: the inventory table per process (case, role, what cites it,
 > proposed fate), shown to Vitor before anything moves, because the choice of what he
 > presents is his.
+> APPROVED (Vitor, 2026-11-07 evening: "Avança", on the inventory table of 26 plant cases).
+> PHASE 1 dispatched (branch `c244-plants`, plan first, then the mechanical moves: the
+> ladder and the three reactor cases to `steady/reactors/`, the two demos to
+> `steady/flowsheets/`, the sugar sweep into its plant's `outerDict` if the flowsheets
+> are equal, the two feasibility cases into one pressure sweep if they differ only by
+> pressure).  PHASE 2, later and separately: greenAmmonia03's converter shell and
+> cooled PFR into the reference plant, a physics change that re-records it.
+
+> **C239 AUDIT DONE (2026-11-07, a read-only workflow: 12 assessors, 66 refuter votes,
+> one synthesis; 79 agents; report `docs/audits/2026-11-07-column-vapour-audit.md`).**
+> STATUS: slices S1-S4 to dispatch, S5 a measurement.  Of 36 cases holding a column:
+> 3 already on an EoS (column14, column15, column19), 6 questionable (1.4-2.7 %), 27
+> flagged wrong by the screen.  WHAT SURVIVES THE REFUTERS: four are real and large --
+> column08 at 16 bar (phi off by 21 %), process05 and recycle02 at 5 bar (16 %, one
+> flowsheet), column20 at 7 bar (14 %, the same system as column19); column05 is a
+> different defect, an acetic vapour with no dimer model where aceticAcid02 carries one.
+> The 1-atm benzene-toluene family (about 20 cases, phi off 3.3-5.1 %) is NOT an EoS
+> change on this evidence: since C235 phi and phi_sat largely cancel in K at 1 atm, and
+> the refuters said so for column01/11/16; it is settled by ONE measurement per family
+> member (slice S5: a scratch SRK copy, read x_D, T_top, Q_cond; an EoS only where a duty
+> moves > 1 %).  column07 stays ideal (the 1971 paper's own specification).  ORDER:
+> S1 column08 -> SRK; S2 process05 + recycle02 -> SRK; S3 column20 -> SRK (column19's
+> declaration); S4 column05 -> the C201 dimerisation; S5 the 1-atm measurement; S6 a
+> header sentence on the cases that stay ideal; S7 conditional on S5.  Every slice
+> lists its moved rows with the physical reason in its commit.  COST: 13.5 M subagent
+> tokens for 79 agents in 7.7 min -- dear for a screen; the next audit uses Haiku for
+> the assessors and one refuter, not two.
 
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
