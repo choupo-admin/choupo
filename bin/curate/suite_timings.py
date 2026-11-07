@@ -40,6 +40,14 @@ RESULT = re.compile(r"^(PASS|FAIL|KNOWN-BROKEN|EXPECTED-FAIL)\s+(\S+)")
 TALLY = re.compile(r"^PASS \d+ / FAIL \d+")     # the closing summary line is not an item
 
 
+def _num(text: str) -> float:
+    """A stamp is $EPOCHREALTIME, which prints a DECIMAL COMMA under a
+    comma-decimal LC_NUMERIC (pt_PT: 1794061110,865373).  float() refused it,
+    every line was skipped and the sweep ended "no result lines" with an empty
+    CSV (2026-11-07).  Read either separator."""
+    return float(text.strip().replace(",", "."))
+
+
 def case_names() -> set[str]:
     return {p.parent.parent.name for p in ROOT.glob("tutorials/**/system/controlDict")}
 
@@ -59,7 +67,7 @@ def main(argv: list[str]) -> int:
         for line in rp.read_text(errors="replace").splitlines():
             a, _, b = line.partition("\t")
             try:
-                replay.append((float(a), float(b)))
+                replay.append((_num(a), _num(b)))
             except ValueError:
                 continue
         replay.sort()
@@ -68,7 +76,7 @@ def main(argv: list[str]) -> int:
     for line in raw.read_text(errors="replace").splitlines():
         stamp, _, text = line.partition("\t")
         try:
-            t = float(stamp)
+            t = _num(stamp)
         except ValueError:
             continue
         if t_first is None:
