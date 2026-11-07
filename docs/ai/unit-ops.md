@@ -1246,6 +1246,25 @@ condenser; D unknown, B + D = F + Σν Σξ) or `refluxRatio` + `distillateRate`
 (then B = F + Σν Σξ − D − draws).  Witness `column19_mtbe_reactive_mesh`
 (methanol + isobutene ⇌ MTBE, Σν = −1; nothing validated against a measurement);
 gate `check_reactive_mesh`.
+
+**A RATE-LIMITED reaction in the full MESH (C233).**  `reaction { kinetics {
+model expression; catalystMass <kg>; <the law's own keys> } }` under `model
+fullMESH;` computes the extent of each reactive stage, xi_j = r(T_j, x_j,
+gamma_j) x m_cat,j (catalyst spread equally over `reactiveStages`), with no
+extent unknown and NO heat-of-reaction term (as for the equilibrium form).  The
+law is the `type expression` law of the reactors (formula over declared
+parameters with units, `basis catalystMass;`, `rateOf extent;`, `source`) plus
+the symbol `a[<component>]` = gamma_i x_i, the PACKAGE's activity at the stage;
+ONLY the column offers `a[i]` -- a cstr/pfr/batch law that reads it refuses by
+name.  The catalyst mass enters by an announced continuation (s = 0.01, 0.03,
+..., 1); a trial where the law has no value (a_MeOH -> 0 in a 1/a_MeOH law) is an
+ANNOUNCED infeasible trial, never a floor: a floor, if wanted, is written in the
+law with `max(...)`.  `pseudoHomogeneous` and `adsorption` (native words) are no longer
+refused under `fullMESH` (no case exercises them there); `model simultaneous` still refuses Sum nu != 0.  The
+profile publishes `gamma_`, `a_`, `r_mol_gcat_s` (mol per g catalyst per s) and
+`extent_kmol_h` per stage.  Witness `column20_mtbe_kinetic_mesh` (Rehfinger &
+Hoffmann 1990, activities UNIQUAC in the paper, UNIFAC here, catalyst mass
+illustrative, no effectiveness factor); gate `check_kinetic_mesh`.
 ```
 operation { nStages 15; bottomsRate 240 kmol/h; boilupRatio 5; P 7 bar;
             condenser { type partial; } feeds ( ... ); }
@@ -1304,8 +1323,8 @@ unit activity).
 Caveat: for a **fast** rate (catalyst-rich, near-equilibrium) the explicit rate is
 stiff and the FD-Jacobian Newton is slow / may not converge — use `equilibrium {}`
 there; the kinetic mode is for genuinely rate-limited columns.  A Σν ≠ 0 reaction
-needs `model fullMESH;` with `equilibrium {}` (the kinetic form under the full
-MESH is refused by name); VLLE on a tray is not carried.
+needs `model fullMESH;` (`equilibrium {}`, or `kinetics { model expression; }`
+-- C233, below; the native words are no longer refused there but no case exercises them); VLLE on a tray is not carried.
 
 **Heat ports.**  A column carries two intrinsic duties: a **reboiler**
 (heating, at the bottoms T) and a **condenser** (cooling, at the top T),

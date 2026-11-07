@@ -1,0 +1,145 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column20_mtbe_kinetic_mesh -- column19's problem with a RATE-LIMITED
+  reaction:   methanol + isobutene <=> MTBE   on an acid ion-exchange resin.
+
+  THE PROBLEM is column19's, unchanged: 15 equilibrium stages, stage 1 the
+  PARTIAL condenser, stage 15 the reboiler, P = 7 bar, reactive stages 6 to
+  10, both feeds on stage 10, bottoms rate 240 kmol/h and boil-up ratio 5,
+  UNIFAC liquid, ideal vapour, the same isobutene overlay.  What changes is
+  the reaction: where column19 closes an equilibrium quotient on each
+  reactive stage, here the extent of a stage is COMPUTED from a rate law and
+  the catalyst it holds,  xi_j = r(T_j, a_j) m_cat,j,  with no extent unknown
+  and still NO heat-of-reaction term (the energy rows price on the elements
+  datum, which already holds it).
+
+  THE LAW is Rehfinger & Hoffmann, Chem. Eng. Sci. 45 (1990) 1605-1617,
+  doi 10.1016/0009-2509(90)80013-5, Amberlyst 15 (their Eq. 12):
+
+      r = k ( a_IB / a_MeOH  -  a_MTBE / (K_a a_MeOH^2) )
+
+  in liquid-phase ACTIVITIES, r per acid equivalent.  k(T) is their Eq. 15
+  (k(90 C) = 243.8 mmol/(s eq), E = 92.4 kJ/mol, Table 4), K_a(T) their Eq. 6
+  with K_a(298.15 K) = 300.5 (Table 4, the value the three-parameter fit
+  returned, so that k and K_a are the PAIR the paper fitted; Eq. 6 with 284,
+  the value of its Fig. 9 caption, reproduces Izquierdo's Table IV and is the
+  better thermodynamics, and the difference is 5.8 %).  The capacity of
+  Amberlyst 15, 4.9 meq/g, is the paper's (p. 1606).
+  THE PAPER'S ACTIVITIES ARE UNIQUAC; THIS CASE'S ARE UNIFAC.  The law and the
+  activities were fitted together, so the pairing here is an approximation
+  that is stated, not repaired.
+
+  THE CATALYST MASS (catalystMass) IS ILLUSTRATIVE: it is not any real
+  column's loading.  It is spread equally over the five reactive stages, and
+  the conversion that follows (about 9 % of the methanol) is a property of
+  that choice AND of the law: the reactive stages run methanol-LEAN
+  (x_MeOH 0.05-0.18, below the 0.3 the law was measured down to), where 1/a_MeOH
+  is large but a_MeOH itself is small.  MEASURED while building the case: the
+  continuation in the catalyst mass converges up to about 270 kg and stops at
+  about 300 kg (s = 1 not reached), so this case does not claim a higher
+  conversion than the engine reached.
+
+  WHAT THE LAW DOES NOT CARRY: the effectiveness factor (internal diffusion
+  in the resin) -- the paper itself says the measured rates exceed the law's
+  below x_MeOH = 0.3, "caused by internal mass transfer".  The law diverges as
+  a_MeOH -> 0 (1/a_MeOH, and 1/a_MeOH^2 on the reverse leg); no floor is
+  hidden in the engine and none is written here: a trial that drives a_MeOH
+  to zero is an INFEASIBLE trial (announced) and the Newton shortens its
+  step.  The run publishes a_MeOH on every reactive stage (the `a_methanol`
+  profile column) so it can be read against the range the law was measured
+  over; `validity` announces a stage below x_MeOH = 0.3.
+
+  Nothing here was read off, or fitted to, any simulator's result.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        mtbeColumn;
+        type        distillationColumn;
+        model       fullMESH;
+        inputs      ( methanolFeed  c4Feed );
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        15;
+            bottomsRate    240 kmol/h;
+            boilupRatio    5;
+            P              7 bar;
+            condenser      { type partial; }
+
+            feeds
+            (
+                { stream methanolFeed; stage 10; }
+                { stream c4Feed;       stage 10; }
+            );
+        }
+
+        reaction
+        {
+            stoichiometry ( { component methanol;              nu -1; }
+                            { component isoButene;             nu -1; }
+                            { component methylTertButylEther;  nu  1; } );
+            reactiveStages ( 6 7 8 9 10 );
+            kinetics
+            {
+                model        expression;
+                catalystMass 220 kg;        // ILLUSTRATIVE, total, equal on the 5 stages
+                source       "Rehfinger & Hoffmann, Chem. Eng. Sci. 45 (1990) 1605-1617, Eq. 12 (rate), Eq. 15 (k), Eq. 6 (K_a), Table 4 (k90, E, Ka298); capacity 4.9 meq/g p. 1606; activities there UNIQUAC, here UNIFAC";
+                basis        catalystMass;
+                rateOf       extent;
+
+                parameters
+                {
+                    k90       0.2438    1/s;        // 243.8 mmol/(s eq) = 0.2438 mol per mol acid sites per s (Table 4)
+                    E         92400     J/mol;      // Table 4 / Eq. 15
+                    T90       363.15    K;          // Eq. 15 reference
+                    RgK       8.314462  J/mol;      // R x 1 K
+                    Kelvin    1         K;
+                    capacity  4.9       mol/kg;     // A15 acid capacity, 4.9 meq/g (p. 1606)
+                    Ka298     300.5     -;          // Table 4 (fitted with k and E)
+                    T0        298.15    K;          // Eq. 6 reference
+                    A1       -1492.77   K;          // Eq. 6
+                    A2       -77.4002   -;
+                    A3        [0 0 0 -1 0] 0.507563;
+                    A4        [0 0 0 -2 0] -9.12739e-4;
+                    A5        [0 0 0 -3 0] 1.10649e-6;
+                    A6        [0 0 0 -4 0] -6.27996e-10;
+                }
+
+                definitions
+                {
+                    aMeOH    "a[methanol]";
+                    aIB      "a[isoButene]";
+                    aMTBE    "a[methylTertButylEther]";
+                    xMeOH    "x[methanol]";
+                    lnKfac   "A1*(1/T - 1/T0) + A2*ln(T/T0) + A3*(T - T0) + A4*(T*T - T0*T0) + A5*(T*T*T - T0*T0*T0) + A6*(T*T*T*T - T0*T0*T0*T0)";
+                    Ka       "Ka298 * exp(lnKfac)";
+                    k        "k90 * exp(-E / RgK * Kelvin * (1/T - 1/T90))";
+                }
+
+                rate         "k * capacity * (aIB / aMeOH - aMTBE / (Ka * aMeOH * aMeOH))";
+
+                validity
+                {
+                    xMeOH { min 0.3;  outside announce; }
+                }
+
+                caveats
+                (
+                    "The law has no effectiveness factor: below x_MeOH = 0.3 the paper's measured rates exceed the law's (internal mass transfer), so the rate there is a lower bound."
+                    "The law diverges as a_MeOH -> 0; a trial that reaches it is an infeasible Newton trial, not a number."
+                );
+            }
+        }
+    }
+);

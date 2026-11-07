@@ -3778,6 +3778,22 @@ PYEOF
     fi
     rm -f /tmp/reactmesh.$$
 
+    # kinetic full-MESH gate (2026-11-06, DEV.md 4c C233).  A rate LAW written
+    # in the case, carried by the rigorous column: a mass-action law on
+    # column19's own K_a must converge on column19's equilibrium as the
+    # catalyst mass grows; zero catalyst is the non-reactive column; the
+    # Rehfinger & Hoffmann witness's rate is recomputed from the published
+    # T, x and gamma; closure without a plug; every refusal fired.
+    if gate_exec "$ROOT/bin/curate/check_kinetic_mesh.py" > /tmp/kinmesh.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "kinetic-mesh-gate" "$(gate_claim check_kinetic_mesh /tmp/kinmesh.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_kinetic_mesh.py)\n" "kinetic-mesh-gate"
+        cat /tmp/kinmesh.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/kinmesh.$$
+
     # thiele-pellet gate (2026-08-19).  The owner's own number-one request:
     # the Thiele modulus with the intraparticle CONCENTRATION FIELD.  The
     # engine solves the pellet BVP by central differences on NewtonND and
