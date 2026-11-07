@@ -3215,6 +3215,13 @@ accepts today, and that is a policy call.
 > commit.  First step: the inventory table per process (case, role, what cites it,
 > proposed fate), shown to Vitor before anything moves, because the choice of what he
 > presents is his.
+> APPROVED (Vitor, 2026-11-07 evening: "Avança", on the inventory table of 26 plant cases).
+> PHASE 1 dispatched (branch `c244-plants`, plan first, then the mechanical moves: the
+> ladder and the three reactor cases to `steady/reactors/`, the two demos to
+> `steady/flowsheets/`, the sugar sweep into its plant's `outerDict` if the flowsheets
+> are equal, the two feasibility cases into one pressure sweep if they differ only by
+> pressure).  PHASE 2, later and separately: greenAmmonia03's converter shell and
+> cooled PFR into the reference plant, a physics change that re-records it.
 
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
