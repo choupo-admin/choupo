@@ -79,7 +79,8 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
-| running | C241: BRAIN.md landed; a general builds `gen_brain_facts.py` + `check_brain_fresh` + the `@BRAIN.md` import, then the CLAUDE.md diet by relocation to `docs/architecture/settled-contracts.md` (4375 -> ~300 lines, verbatim, gates kept green) | C241 |
+| done | C241 LANDED (bab4dff30): BRAIN.md with its generator and `check_brain_fresh` (brain-fresh-gate), `@BRAIN.md` import, CLAUDE.md 4379 -> 1068 lines by relocation to `docs/architecture/settled-contracts.md` (119 units verbatim); the second cut (sections 0/2/10) is the architect's own editing, later | C241 |
+| done | C236 LANDED (14854376b): dynamic writers default `flushEach false` (ctrl17 141 -> 0.4 s, byte-identical), the golden checker reads equipment/layout blocks once per case (swro01 292 -> 93 s); the Saturday sweep covers its shared path | C236 |
 | todo | C239: NOW, column20 on the same EoS vapour; then the thermodynamic audit starts from the columns above 2.5 bar on an ideal vapour; C227 (a) lands with its source line | C239 |
 | running | C237 (Vitor): beside C235, in parallel, clear the quick items before any new physics: `flushEach` on the dynamic binaries, the slowest list from real job times, the built C228 and C227 (a) branches, the 'pinch at' console line, props `postProcessing/` in the GUI tree, the no-code decisions, the plan's upkeep | C237 |
 | done | C230 LANDED (`e29bc7d34`): the pinch of `ammonia02_full_plant` is right -- the engine leaves a utility-served side out of the population (cooling water is not a process stream), the GUI Pinch tab draws the engine's artefacts and computes nothing; Q_H,min 0, Q_C,min 95454 kW, NO pinch (a threshold problem). Open for the Saturday review: a misleading 'heater below the pinch' line in a threshold problem, and the rule on other plants | C230 |
