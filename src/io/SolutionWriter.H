@@ -107,7 +107,8 @@ Description
     then the directory is rename()'d atomically into `<caseRoot>/<it>/`.  What
     "atomic" buys depends on `flushEach`:
 
-      flushEach true  (default): the temp file's data is fsync()'d before the
+      flushEach true  (default on the STEADY path; the time-integrated
+        binaries default to false, DEV.md 4c C236): the temp file's data is fsync()'d before the
         rename, and the parent (case root) directory is fsync()'d after the
         rename.  An instant published this way survives BOTH a process abort
         (kill -9) AND a power loss / kernel panic --- on recovery the directory
@@ -242,7 +243,9 @@ public:
     // word REFUSES by name (a declared word the engine dispatches on must
     // not fall through to a default).  The decision is ANNOUNCED either way,
     // so a run that writes no <t>/ says why.  `binaryName` prefixes the
-    // refusal.
+    // refusal.  `flushEach` defaults to FALSE here (DEV.md 4c C236: per-instant
+    // fsync cost 108 s wall for 3 s CPU on ctrl17); the struct default (true)
+    // is the steady path's.
     static SolutionControl timeDirectoryControl(const Dictionary&   controlDict,
                                                 const std::string&  binaryName);
 

@@ -28,5 +28,4 @@ writeInterval   40;       // s   (one time directory every 40 s -> 0/ 40/ ... 20
 solutionControl
 {
     write           true;
-    flushEach       true;
 }

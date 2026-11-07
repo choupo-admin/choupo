@@ -92,6 +92,13 @@ SolutionControl SolutionWriter::timeDirectoryControl(
 {
     SolutionControl sc;
     sc.write = true;                         // the OpenFOAM default
+    //  DEV.md 4c C236: the time-integrated binaries do NOT fsync each instant
+    //  unless the case asks (`flushEach true;`).  An instant is still written
+    //  to a temp directory and rename()'d, so a process abort never leaves a
+    //  half-written one; what is given up is only POWER-LOSS durability.  The
+    //  fsync cost 108 s of wall clock for 3 s of CPU on 3001 instants (ctrl17).
+    //  The steady path keeps its own default (choupoSolve/main.cpp).
+    sc.flushEach = false;
     if (controlDict.found("solutionControl"))
     {
         auto blk = controlDict.subDict("solutionControl");
@@ -106,7 +113,7 @@ SolutionControl SolutionWriter::timeDirectoryControl(
                   " `false`.");
         };
         sc.write     = word("write", true);
-        sc.flushEach = word("flushEach", true);
+        sc.flushEach = word("flushEach", sc.flushEach);
     }
     if (sc.write)
         std::cout << "solutionControl:   time directories <t>/ at the case"
