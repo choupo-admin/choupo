@@ -203,6 +203,15 @@ export interface ScenePipe {
   length: number;
   /** Published mass flow (kg/s), when the run carries molar masses. */
   massFlow: number | null;
+  /** The stream's state as the engine published it on the pipe (C229): carried
+   *  for the colour modes and the click card, never computed.  Absent = the
+   *  engine did not publish it. */
+  T?: number;
+  P?: number;
+  vf?: number;
+  /** Both ends as the engine names them (`kind` item / junction / boundary). */
+  ends: { fromKind: string; from: string; toKind: string; to: string };
+  routedBy: string;
   /** Drawing radius (m) and particle speed (m/s): stylised, monotone in flow. */
   radius: number;
   speed: number;
@@ -525,6 +534,11 @@ function pipeOf(p: LayoutPipe): ScenePipe {
     id: `pipe:${p.stream}`, stream: p.stream, phase,
     points: p.route.map(([x, y, z]) => toThree(x, y, z)),
     length: p.length, massFlow,
+    ...(p.T !== undefined && Number.isFinite(p.T) ? { T: p.T } : {}),
+    ...(p.P !== undefined && Number.isFinite(p.P) ? { P: p.P } : {}),
+    ...(p.vf !== undefined && Number.isFinite(p.vf) ? { vf: p.vf } : {}),
+    ends: { fromKind: p.fromKind, from: p.from, toKind: p.toKind, to: p.to },
+    routedBy: p.routedBy,
     radius: tubeRadius(massFlow), speed: particleSpeed(massFlow),
     tooltip: lines,
   };

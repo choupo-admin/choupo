@@ -75,6 +75,7 @@ import {
 import { tornadoFigure, fmtMoney, type TornadoFigure } from "../case/tornado.js";
 import { TornadoPlot } from "./plotting/TornadoPlot.js";
 import { layoutScene, type LayoutScene } from "../case/plantLayout.js";
+import { layoutFactsOf, type LayoutFacts } from "../case/layoutFacts.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
 import { GmpBuildingSection, useBuildingOverlay } from "./GmpBuildingSection.js";
 import { BatchPlanSection } from "./BatchPlanSection.js";
@@ -159,6 +160,9 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
   //  the case declared no layout -- and then there is no section.
   const layout = runResult.layout;
   const scene = useMemo(() => layoutScene(layout), [layout]);
+  //  What the result published beside the layout (DEV.md 4c C229): the tour,
+  //  the click cards and the colour by composition read it.
+  const layoutFacts = useMemo(() => layoutFactsOf(runResult), [runResult]);
 
   //  THE FACTS, ONCE.  Everything below that decides whether a section exists
   //  reads `sections`; nothing gates inline.
@@ -204,7 +208,7 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     sensitivity: () => (tornado ? <SensitivityBody fig={tornado} /> : null),
     trains:     () => <TrainsAndRacks runResult={runResult} />,
     layout:     () => (scene && layout ? <LayoutBody layout={layout} scene={scene}
-                                                    building={runResult.building} /> : null),
+                                                    building={runResult.building} facts={layoutFacts} /> : null),
     batchPlan:  () => (runResult.batchPlan
       ? <BatchPlanSection plan={runResult.batchPlan} caseName={caseName} machines={machines} /> : null),
   };
@@ -777,8 +781,9 @@ function SensitivityBody({ fig }: { fig: TornadoFigure }) {
 //  (`&view=building`, DEV.md 4c C100).
 //  "Export as page" (DEV.md 4c C81) saves the same run as one self-contained
 //  HTML file; it is disabled while the result is stale (ExportLayoutButton).
-function LayoutBody({ layout, scene, building }: {
+function LayoutBody({ layout, scene, building, facts }: {
   layout: NonNullable<RunResult["layout"]>; scene: LayoutScene;
+  facts: LayoutFacts | null;
   /** The GMP interior (DEV.md 4c C97), drawn below the plot plan. */
   building?: RunResult["building"];
 }) {
@@ -804,7 +809,8 @@ function LayoutBody({ layout, scene, building }: {
             getStash={() => caseLayoutStash(useStore.getState())} />
         </Stack>
       </Group>
-      <PlantLayout3D scene={overlay.shown} extend={overlay.extend} toolbarExtra={overlay.toggles} />
+      <PlantLayout3D scene={overlay.shown} extend={overlay.extend} toolbarExtra={overlay.toggles}
+        layout={layout} facts={facts} />
       <PlantLayoutTables layout={layout} />
       {building && <GmpBuildingSection building={building} scene={scene} items={layout.items}
         caseName={caseName}

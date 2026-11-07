@@ -200,8 +200,10 @@ function boot(): void {
     error.hidden = false;
   };
   let scene;
+  let layoutBlock: PlantLayout | undefined;
   try {
-    scene = layoutScene(JSON.parse(data.textContent ?? "") as PlantLayout);
+    layoutBlock = JSON.parse(data.textContent ?? "") as PlantLayout;
+    scene = layoutScene(layoutBlock);
   } catch (e) {
     say(`The embedded layout could not be read (${e instanceof Error ? e.message : String(e)}).`);
     return;
@@ -263,7 +265,10 @@ function boot(): void {
   try {
     view = mountLayoutScene(MODULES, host, scene,
       { height: "fill", toggles: read(), view: presetNow(), quality: qualityNow(),
-        ...(gmp ? { extend: gmp.extend } : {}) });
+        ...(gmp ? { extend: gmp.extend } : {}),
+        //  The tour, the cameras, the colour modes, the minimap and the cards of
+        //  the app (DEV.md 4c C229), from the block this page embeds.
+        ...(layoutBlock ? { layout: layoutBlock } : {}) });
   } catch (e) {
     say(`The 3D view could not start (${e instanceof Error ? e.message : String(e)}).  It needs`
       + " WebGL; the tables below carry every position, pipe and finding the engine published.");
