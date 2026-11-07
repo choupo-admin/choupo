@@ -3081,6 +3081,57 @@ accepts today, and that is a policy call.
 > door is two-way.  (4) Rules a tool can check leave prose for hooks later (a named
 > candidate list: no `git add -A`, no edit of `bin/runTests` while a suite runs).
 
+> **C242 (Vitor, 2026-11-07: "vê online o que tu precisas de fazer e a forma de te
+> organizares para gerir um software deste calibre"): THE OPERATING SYSTEM, READ FROM
+> THE PRACTICE AND MEASURED AGAINST OURS.**  STATUS: rules adopted below; they enter
+> CLAUDE.md section 10 when the C241 diet lands (one writer on that file at a time).
+> WHAT WAS READ: Osmani, *The code agent orchestra* ("verification is the bottleneck,
+> not generation"; 3-5 agents, 1 reviewer per 3-4 builders, "don't run more agents than
+> you can meaningfully review"; one file one owner; plan approved before code; stuck 3+
+> iterations on one error -> stop and reassign; hard caps on iterations, time and
+> tokens, pause at 85 %; the lead keeps architecture, scope and review, and approves
+> every line of the context file -- agent-written context files gave no benefit, ETH
+> Zurich); Augment, *multi-agent workspace* (a single-writer rule for hotspot files --
+> registries, configs; specs with acceptance criteria; tests plus automated gates before
+> every merge, merges sequential; "git detects textual conflicts, not semantic ones");
+> CFD Direct on OpenFOAM maintenance (Lehman: growth paced so users, trainers and
+> documentation keep up; small frequent changes stable, large infrequent ones not; a
+> maintainer needs enough time to stay familiar with the code); OpenFOAM's layered test
+> battery (daily units, weekly medium, release-time industrial); Ernst, Kazman & Delange,
+> *Technical Debt in Practice* (track it, 7-15 % of the backlog is normal; look beyond
+> code to tests and documentation) and arXiv 2603.20415 on SCIENTIFIC debt (a flawed
+> physical assumption in code, which code-debt tools miss); the risk-register and
+> WIP-limit literature (limits drift upward until they never trigger; a weekly flow
+> review).  MEASURED AGAINST CHOUPO: briefs carry measured claims but rarely an explicit
+> pass/fail list or an ownership list; the machine budget allows 7 generals and today 6
+> ran while integration -- the architect's serial lane -- was the bottleneck (five ready
+> branches queued behind one integration); no brief carried a time or token cap (the
+> C235 general ran 4.2 h and 736k tokens, well, but unbounded); no independent reviewer
+> read a slice before integration; the only hooks are a stop hook; technical debt is
+> registered (`debt_registry.py`, KNOWN_OPEN pins) but RISK is not; the full sweep runs
+> when a slice forces it, not on a cadence.  RULES ADOPTED (architect, rule 00):
+> (1) A BRIEF ENDS WITH `Accepts when:` (3-6 checkable lines) AND `Owns:` / `Does not
+> touch:` (paths); a general that must touch a path it does not own stops and asks.
+> (2) WIP: at most 4 BUILDERS in flight, and when 3 branches are `queued` for
+> integration no new builder starts -- the slot goes to integrating or to a reviewer.
+> (3) Every brief carries a BUDGET (wall time, and the largest change allowed: goldens,
+> files); the general reports at half and stops at the cap with its state; stuck 3
+> rounds on one error -> it stops and reports, with the reflection line "what failed,
+> what would fix it, am I repeating myself".  (4) A slice over ~2 h, or touching a shared
+> path, starts with a PLAN REPORT (<= 30 lines) the architect approves before code.
+> (5) A slice that moves goldens or touches a shared path gets a READ-ONLY REVIEWER
+> (brief + acceptance list, fresh context) before integration; its verdict is in the
+> commit.  (6) HOTSPOT FILES have one writer, the architect: CLAUDE.md, BRAIN.md,
+> DEV.md, PLAN.md; generated views regenerate at integration; `bin/runTests` and the
+> registries are edited by one general at a time.  (7) A CADENCE: every Saturday the
+> full sweep, the slowest list, the BRAIN rows, the risk table and the Done pruning,
+> whether or not a slice forced it; Wednesday a half-week check of the plan's caps.
+> (8) A RISK TABLE in BRAIN.md (likelihood, impact, mitigation, review date), scientific
+> debt named as a class.  (9) One builder slot in four goes to debt, speed or validation,
+> never to a feature.  (10) Checkable rules move to hooks: first `git add -A` and
+> `git add .` refused by a PreToolUse hook; then "no edit of `bin/runTests`, `src/` or
+> `gui/` while a suite runs".
+
 > **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
 > retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
 > +10 %), and that stands: INSIDE the liquid Cp's declared `Trange` the rung is

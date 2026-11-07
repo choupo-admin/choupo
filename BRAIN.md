@@ -94,6 +94,18 @@ are indoor by rule (C100) and the viewer marks them.
 3. Last week: fixes, WASM rebuild, publish, a full rehearsal in the browser.
    What falls first if short: the least visible; never a gate.
 
+## RISKS (reviewed every Saturday; C242)
+
+| risk | likelihood | impact | mitigation | review |
+|---|---|---|---|---|
+| The month ends without a demonstrable plant: the layout cases are thin and C229 moves 50+ golden rows | high | the colleagues see a toy | reference plant decided; C229 lands after C235; render before "done" | 11-15 |
+| Scientific debt: 34 column cases on an ideal vapour, 7 above 2.5 bar; the Tc rule stalls envelopes | certain | wrong duties at exit 0 | C239 audit case by case; column20 first; the Tc rule reconsidered with a measured envelope | 11-15 |
+| Validation gap: no plant and no column held to a measurement | certain | a colleague asks "validated against what?" | Klemola anchors (C239), then the spec pair for Nijhuis | 11-22 |
+| Integration is one serial lane and the queue grows | high | built work ages, merges collide | WIP rule (4 builders, queue <= 3), reviewer slot | weekly |
+| The architect's context: a session begins from the files, and the files were 4375 lines | certain | searching instead of knowing | BRAIN.md + the CLAUDE.md diet (C241) | 11-10 |
+| WASM toolchain (emscripten 3.1.6) breaks on a construct g++ accepts | medium | the site serves a stale bundle | `check_wasm_dialect`; rebuild before publish | release |
+| One laptop, 15 GB: a sweep plus two builds exhaust memory | medium | lost runs | the budget in CLAUDE.md rule 4; `free` before launching | ongoing |
+
 ## QUESTIONS VÍTOR ASKS (answered from here)
 
 - **"Dá parecido com o Aspen?"**  The MTBE column: yes within 2.5 % on duties
@@ -113,7 +125,7 @@ are indoor by rule (C100) and the viewer marks them.
   `INDEX.md` maps them; READ IT before asking for a paper).  Measured columns
   in hand: Klemola 1996 (industrial), Yanagi 1982 (FRI, total reflux).
 - **"O que está a correr?"**  `PLAN.md` section Now.  Integration is one at a
-  time; generals run in parallel on disjoint files.
+  time; at most 4 builders, and none starts while 3 branches wait (C242).
 - **"Quantos casos / componentes / gates?"**  FACTS block above.
 
 ## WHAT CHANGED LAST (newest first; keep ten lines)

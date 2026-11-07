@@ -27,7 +27,7 @@ header names the PLAN.md commit it reflects, so a stale view shows itself.
 
 ## How the plan is kept (the architect's rule, 2026-11-01)
 
-1. **Capacity, not hope.**  Up to 7 generals at once (CLAUDE.md rule 4:
+1. **Capacity, not hope.**  Up to 7 generals by the machine (CLAUDE.md rule 4) but at most 4 BUILDERS at once and none started while 3 branches are `queued` for integration -- integration is the serial lane and the practice says verification, not generation, is the bottleneck (C242).  Every brief carries a budget and an acceptance list.  Saturday: full sweep, slowest list, BRAIN rows, risks, Done pruning.  Formerly: up to 7 generals at once (CLAUDE.md rule 4:
    each `make -j1`, at most 4 compiles or suites, one heavy job, 2 cores
    and 2 GB always left), each 30-60 minutes, integrations one at a time.  So: **Now** holds
    only what is RUNNING (at most 7 rows: Vítor ordered up to 7 generals on 2026-11-02); **Next day** at most 5 rows;
