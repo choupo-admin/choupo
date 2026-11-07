@@ -14,12 +14,11 @@
   NRTL files cover only methyl acetate with methanol, water or acetic acid).
   Every activity coefficient here is therefore an estimate from structure.
 
+  THE VAPOUR IS NOT A PLAIN IDEAL GAS FOR ACETIC ACID.  Since C201 the package
+  prices the association the acetic acid record declares (`vapourDimerisation`:
+  monomer + dimer at equilibrium) inside the ideal-gas vapour, so y enters K.
+
   WHAT THIS DOES NOT HAVE, stated rather than hidden:
-    * VAPOUR ASSOCIATION OF ACETIC ACID.  The vapour is an ideal gas.  Real
-      acetic acid vapour is largely dimerised (82 % of the molecules at 298 K,
-      aceticAcid-dissolution.dat), which lowers the vapour's apparent volatility
-      and raises its latent heat.  The engine has no vapour-dimerisation
-      fugacity model; this is a known gap, not a choice.
     * CO IN THE LIQUID.  No UNIFAC group exists for carbon monoxide, so it sits
       outside the activity model (gamma = 1, a Psat extrapolated far above its
       critical temperature) -- the same approximation, with the same sentence
