@@ -293,7 +293,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
     n: 7,
     title: "Read the announcement, then move the item until it goes",
     body: "Run the witness as shipped (move 1 in the bench below).  The "
-      + "let-down drum stands 1.886 m from the separator, edge to edge, "
+      + "let-down drum stands 1.885 m from the separator, edge to edge, "
       + "against the 4 m the case declares between two vessels.  The engine "
       + "does not stop: it ANNOUNCES the shortfall, with both distances, on "
       + "the run's error stream, again in the caveat block at the end of the "

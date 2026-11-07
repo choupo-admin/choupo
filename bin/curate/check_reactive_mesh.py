@@ -203,10 +203,38 @@ def psat_pa(name, T):
     return 10 ** (A - B / (T + C)) * 1.0e5
 
 
-def lnKa_records(T, nu, case_dir):
+def ref_fugacity_pa(name, T, P, case_dir):
+    """The pure-liquid reference fugacity of a species on a REAL (SRK) vapour,
+    recomputed here from the record's own Tc, Pc, omega and Vliq (C235):
+        f_ref = phi_sat(T) Psat(T) exp(Vliq (P - Psat)/(R T)),
+    phi_sat the pure SRK vapour fugacity coefficient at (T, Psat); above Tc
+    there is no saturation and the reference is Psat itself."""
+    ps = psat_pa(name, T)
+    Tc = pick(name, "Tc", case_dir)
+    if not T < Tc:
+        return ps
+    Pc = pick(name, "Pc", case_dir) * 1.0e5
+    w = pick(name, "omega", case_dir)
+    m = 0.48508 + 1.55171 * w - 0.15613 * w * w      # the engine's SRK alpha (Graboski-Daubert)
+    al = (1.0 + m * (1.0 - math.sqrt(T / Tc))) ** 2
+    a = 0.42747 * R_GAS ** 2 * Tc ** 2 / Pc * al
+    b = 0.08664 * R_GAS * Tc / Pc
+    A = a * ps / (R_GAS * T) ** 2
+    B = b * ps / (R_GAS * T)
+    Z = 1.0
+    for _ in range(200):
+        f = Z ** 3 - Z ** 2 + (A - B - B * B) * Z - A * B
+        Z -= f / (3 * Z * Z - 2 * Z + (A - B - B * B))
+    phisat = math.exp(Z - 1.0 - math.log(Z - B) - A / B * math.log(1.0 + B / Z))
+    vl = pick(name, "Vliq", case_dir)
+    return phisat * ps * math.exp(vl * (P - ps) / (R_GAS * T))
+
+
+def lnKa_records(T, nu, case_dir, P):
     acc = 0.0
     for name, v in nu.items():
-        acc += v * (g_ig(name, T, case_dir) / (R_GAS * T) + math.log(psat_pa(name, T) / 1.0e5))
+        acc += v * (g_ig(name, T, case_dir) / (R_GAS * T)
+                    + math.log(ref_fugacity_pa(name, T, P, case_dir) / 1.0e5))
     return -acc
 
 
@@ -326,7 +354,7 @@ def main():
             worst2 = 0.0
             diffs = []
             for j in RX_STAGES:
-                mine = lnKa_records(p2["T"][j], NU, fr)
+                mine = lnKa_records(p2["T"][j], NU, fr, 7.0e5)
                 worst2 = max(worst2, abs(mine - p2["lnKa"][j]))
                 diffs.append((p2["T"][j], mine, lnKa_eq15(p2["T"][j], -39100.0, -85.3, R_GAS)))
             if worst2 > 1.0e-6:

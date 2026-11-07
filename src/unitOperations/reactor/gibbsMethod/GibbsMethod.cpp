@@ -543,7 +543,7 @@ std::string supersaturatedCondensables(const GibbsProblem& p,
     {
         if (!p.condensable[i]) continue;
         if (i < condensed.size() && condensed[i]) continue;
-        const scalar Psat = thermo.Psat(p.compIdx[i], T);
+        const scalar Psat = thermo.pureLiquidReference(p.compIdx[i], T, p.P);
         const scalar yP   = eq.nGas[i] / eq.Ntotal_gas * p.P;
         if (!(yP > Psat * (1.0 + 1.0e-6))) continue;
         m += (m.empty() ? "" : ", ") + thermo.comp(p.compIdx[i]).name()
@@ -573,7 +573,7 @@ std::string supersaturatedCondensables(const GibbsProblem& p,
     for (std::size_t a = 0; a < cand.size(); ++a)
     {
         const std::size_t i = cand[a];
-        r[a] = eq.nGas[i] / eq.Ntotal_gas * p.P / thermo.Psat(p.compIdx[i], T);
+        r[a] = eq.nGas[i] / eq.Ntotal_gas * p.P / thermo.pureLiquidReference(p.compIdx[i], T, p.P);
     }
     sVector W(r);
     for (int it = 0; it < 100; ++it)

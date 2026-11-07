@@ -120,7 +120,7 @@ relative and the approach by 1e-6 K.
 | recycle / makeup (molar) | 2.565 | 1.0257 | 1.0778 | **3.9289** |
 | converter inlet, kmol/h | — | — | 16 622.66 | **39 431.19** (y(NH₃) 0.0127) |
 | product NH₃, kmol/h | — | — | 3 722.5 (1 521.5 t/d) | **3 127.0 (1 278 t/d)**, 98.75 mol% in 3 166.58 kmol/h |
-| bed volume | none | none | 18.6290 m³ from an ASSUMED 20 000 Nm³/(m³ h) | **6.9898 m³, SOLVED for a 5 K approach** |
+| bed volume | none | none | 18.7621 m³ from an ASSUMED 20 000 Nm³/(m³ h) | **7.5767 m³, SOLVED for a 5 K approach** |
 | GHSV on the normal basis | — | — | 20 000 (the assumption) | **126 442 Nm³/(m³ h)** (KPI, 0 °C / 1 atm ideal-gas convention, computed) |
 | actual-gas residence time | — | — | — | **2.057 s** (SRK molar volume at the inlet) |
 | approach to equilibrium of the effluent | — | 0 | 5 K, imposed on the whole converter | **5.0001 K, reached, on the law's own equilibrium** |
@@ -129,8 +129,8 @@ relative and the approach by 1e-6 K.
 
 **The two gaps are the lesson, and the second is larger than the first.**
 
-1. *The volume.*  The engine's bed at a 5 K approach is **6.99 m³ against
-   the 18.63 m³** rung 3 sized from an assumed 20 000 Nm³/(m³ h) — the
+1. *The volume.*  The engine's bed at a 5 K approach is **7.58 m³ against
+   the 18.76 m³** rung 3 sized from an assumed 20 000 Nm³/(m³ h) — the
    kinetic bed runs at 126 442 Nm³/(m³ h) on the same basis.  Read this with
    §5 in hand: it is a FRESH, CLEAN, FULLY REDUCED bed with the pellet
    correction UNPRICED, and both of those make it smaller than a real one.

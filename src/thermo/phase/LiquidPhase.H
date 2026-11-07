@@ -33,6 +33,10 @@ Description
 
         f_i^eff(T, x)  =  γ_i(T, x)  ·  P_i^sat(T)              [Pa]
 
+    and, when the package's vapour is a REAL gas (non-ideal EoS),
+    γ_i · φ_i^sat(T) · P_i^sat(T) (thermo/phase/SaturatedVapour.H).  The
+    factor is the same on every liquid, so it cancels in the LL ratio.
+
     Two such phases can coexist for LLE; the K-value between them is then
     K_i^{αβ} = γ_i^α / γ_i^β (the pure-component Psat cancels).
 
@@ -77,6 +81,8 @@ public:
     { components_ = comps; }
     void rebindPureFluids(const PureFluidMap* pf) override
     { pureFluids_ = pf; }
+    void rebindVapourEos(const EquationOfState* eos) override
+    { vapourEos_ = eos; }
 
 private:
     std::string name_;
@@ -84,6 +90,7 @@ private:
     std::unique_ptr<ActivityModel>      activity_;
     const std::vector<Component>*       components_ = nullptr;   // borrowed
     const PureFluidMap*                 pureFluids_ = nullptr;   // borrowed
+    const EquationOfState*              vapourEos_  = nullptr;   // borrowed; null = ideal
     std::size_t                         n_ = 0;
 };
 

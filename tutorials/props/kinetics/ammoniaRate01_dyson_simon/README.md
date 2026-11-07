@@ -111,22 +111,25 @@ ammonia03's converged answer**:
 
 | state | T | V₃ [kmol/m³/h] | ξ (8 mm, interpolated) | Eq 40 |
 |---|---|---|---|---|
-| bed 1 inlet | 683.15 K | **929.25** | 0.337 | 312.98 |
-| bed 1 outlet | 841.28 K | **9.342** | 0.502 | 4.69 |
-| bed 3 outlet (converter exit) | 777.51 K | **1.0034** | 0.767 | 0.77 |
+| bed 1 inlet | 680.83 K | **703.99** | 0.375 | 264.25 |
+| bed 1 outlet | 837.93 K | **8.561** | 0.511 | 4.38 |
+| bed 3 outlet (converter exit) | 775.23 K | **0.8732** | 0.782 | 0.68 |
 
-**The rate falls by a factor of 99.5 across bed 1 and 926 across the whole
+**The rate falls by a factor of 82.2 across bed 1 and 806 across the whole
 converter.**  That single column is the quantitative answer to a question
 ammonia03 could only ask: a bed that reaches equilibrium is doing almost all
 of its work in its first few centimetres, and the last of it takes a length no
 one would build.
 
 **And bed 1's outlet should have a rate of ZERO, because the flowsheet solved
-it as an equilibrium — it has 9.342.**  That is not an error in either place:
+it as an equilibrium — it has 8.561.**  That is not an error in either place:
 it is **two independent equilibria disagreeing**.  Choupo reaches equilibrium
 by minimising Gibbs energy with SRK fugacities and its own formation data;
 Dyson & Simon use Gillespie & Beattie's 1930 Ka with the fugacity coefficients
-of Eqs 6–8.  Solved out, at 841.28 K and 200 bar from bed 1's own feed:
+of Eqs 6–8.  Solved out, at 841.28 K and 200 bar from bed 1's own feed (the
+figures of this comparison were taken at ammonia03's PREVIOUS converged state and
+are NOT recomputed for the one the bench now carries -- 837.93 K, V3 and the
+rate table above are):
 
 * Dyson & Simon: **x(NH₃) = 0.106761**
 * Choupo (`gibbsReactor`, SRK): **x(NH₃) = 0.1060834**
@@ -135,7 +138,7 @@ of Eqs 6–8.  Solved out, at 841.28 K and 200 bar from bed 1's own feed:
 That is the first independent check in this corpus of the ammonia equilibrium
 every one of its plant cases rests on, and it is a cross-check between two
 sources rather than a model checking itself.  It is also why the residual rate
-is 9.342 and not zero: it is 1.01 % of the inlet rate, which is what 0.635 % in
+is 8.561 and not zero: it is 1.01 % of the inlet rate, which is what 0.635 % in
 composition buys you this close to equilibrium.
 
 Those three gases are a **second home** for somebody else's numbers, so

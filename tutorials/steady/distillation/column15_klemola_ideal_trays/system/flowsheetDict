@@ -125,7 +125,9 @@ units
 
             distillateRate 142.023556 kmol/h;   // 8115 kg/h / 57.13841
             refluxRatio    11.440296;           // 92838 / 8115
-            feedQuality    0.9070666555;        // 1 - V/F of the let-down
+            //  feedQuality 0.9070666555 REMOVED (C235): a derived cross-check of the
+            //  engine's own A1 flash, not Klemola's number (the paper gives no feed T).
+            //  The stream's resolved state decides; 0/feed T is the old derivation.
 
             murphreeEfficiency 1.0;             // <- THE ONLY DIFFERENCE
         }
