@@ -1010,8 +1010,24 @@ struct LayoutJunction
     scalar x = 0, y = 0, z = 0;
 };
 
+//  WHERE ONE END OF A PIPE LANDS ON AN ITEM (DEV.md 4c C229).  A CONVENTION
+//  derived from the item's kind, its sized dimensions and the stream's role in
+//  its unit -- not a vendor's nozzle schedule.  `origin` says which rule put
+//  it there: convention | declared | default (the top centre, no rule).
+struct LayoutPort
+{
+    std::string item;          // the placed item's id
+    std::string port;          // feed | distillate | bottoms | sideDraw | ...
+    std::string role;          // the sentence: what decided it
+    std::string origin;        // convention | declared | default
+    std::vector<scalar> point; // the nozzle on the item's surface {x, y, z}
+    std::vector<scalar> leaves; // where the one-metre stub ends: a declared route starts here {x, y, z}
+};
+
 struct LayoutPipe
 {
+    LayoutPort  fromPort, toPort;   // empty `item`: the end is no item
+
     std::string stream;        // the stream IDENTITY (one row per physical stream)
     std::string label;         // the plant's boundary name for it, if any
     //  Each end: `kind` item | junction | batteryLimit; `at` the item id, the
@@ -1377,6 +1393,8 @@ struct PlantLayoutRecord
     //  `envelope`), empty when none is declared (C100: an item a room lists
     //  stands inside it).  Read by the checks; published by the building.
     std::string                        shell;
+    //  C229: the sentence that says the ports are a convention (once per run).
+    std::string                        portConvention;
 
     bool present() const { return !items.empty(); }
 };

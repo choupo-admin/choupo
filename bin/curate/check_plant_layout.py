@@ -73,8 +73,9 @@ The risks such a feature carries are specific, and each arm names one:
       is routed or listed in `notRouted` with a reason, never both, never
       dropped; every route is ORTHOGONAL (each segment along one axis), its
       published length is the polyline's own (recomputed here), and its two
-      ends are where the published block puts them -- an item's top centre,
-      a junction's node, the rack's xStart/xEnd for a battery limit (with a
+      ends are where the published block puts them -- the PORT the pipe
+      publishes on its item (C229; the legacy top centre only where its
+      origin is `default`), a junction's node, the rack's xStart/xEnd for a battery limit (with a
       fence, the published crossing ON the fence); a rack route claims no
       override; the default rack (the probe) is published as such and
       ANNOUNCED on stderr, the caveat block and the advisories, a declared one
@@ -92,8 +93,9 @@ The risks such a feature carries are specific, and each arm names one:
       routes EVERY stream: its `notRouted` must be empty (Vitor, C93: "there
       are compressors that have no inlets").
   (i) A DECLARED ROUTE: on a copy of the witness, `pipes { rawLiquid {
-      waypoints (...) } }` is honoured (separator top -> two waypoints ->
-      let-down top, `routedBy waypoints`, no lane) and its length recomputed;
+      waypoints (...) } }` is honoured (separator port -> its stub -> two waypoints ->
+      the let-down's stub -> its port, `routedBy waypoints`, no lane; the
+      fixtures start at the published `leaves` points, C229) and its length recomputed;
       REFUSED, each exit 2 and naming its defect: a diagonal segment, an
       override naming no stream, an override on a stream with no routable end
       (`productNH3`, once T201's bullets are taken off the copy's plot plan: a
@@ -991,7 +993,7 @@ def stream_identities(j):
             if not v.get("aliasOf") and not v.get("boundaryLabel")}
 
 
-def end_point(lay, kind, at, first, stream=None):
+def end_point(lay, kind, at, first, stream=None, pipe=None):
     """Where a pipe end must lie, recomputed here from the published items,
     junctions and rack: an item's top centre, a junction's node, or (x only)
     the rack's end for a battery limit -- or, where the case declares a fence
@@ -1002,7 +1004,16 @@ def end_point(lay, kind, at, first, stream=None):
         return None if c is None else (c["x"], c["y"], c["z"])
     if kind == "item":
         i = next((x for x in lay["items"] if x["id"] == at), None)
-        return None if i is None else (i["x"], i["y"], i["z"] + i["dz"])
+        if i is None:
+            return None
+        #  C229: a pipe end on an item lands on the PORT the engine published
+        #  for it (its position and convention are held by check_pipe_ports);
+        #  a unit type with no port rule keeps the legacy top centre
+        #  (`origin default`).
+        port = (pipe or {}).get("fromPort" if first else "toPort")
+        if port and port.get("origin") != "default":
+            return tuple(port["point"])
+        return (i["x"], i["y"], i["z"] + i["dz"])
     if kind == "junction":
         jn = next((x for x in lay.get("junctions", []) if x["unit"] == at), None)
         return None if jn is None else (jn["x"], jn["y"], jn["z"])
@@ -1056,7 +1067,7 @@ def check_routes(tag, lay, require_rack_route=True):
                     fail(f"(h) {tag} pipe {p['stream']}: its end at {pt} enters the"
                          f" building for `{at}` and lies on no building's wall")
                 continue
-            want = end_point(lay, kind, at, first, p["stream"])
+            want = end_point(lay, kind, at, first, p["stream"], p)
             if want is None:
                 fail(f"(h) {tag} pipe {p['stream']}: its end `{at}` ({kind}) is nowhere"
                      " in the published block")
@@ -1483,35 +1494,62 @@ def drop_items(text, prefix):
     return "\n".join(out)
 
 
-OVERRIDE = """
-pipes
-{
-    rawLiquid
-    {
-        waypoints ( { x 56 m; y -6 m; z 10 m; } { x 59.5 m; y -6 m; z 10 m; } );
-    }
-}
-"""
+#  C229: a declared route starts where the port's one-metre STUB ends
+#  (`fromPort.leaves`) and ends where the target's stub begins
+#  (`toPort.leaves`); a junction end has no stub.  The fixtures below are
+#  written from those published points -- read off a plain run of the
+#  witness -- never from an item's centre, which is where a pipe used to
+#  land.
+LV = {}
+
+
+def load_leaves(work):
+    d = prepare(work, "leaves", WITNESS)
+    out, err, rc = solve(d)
+    lay = ((result_json(out) or {}).get("layout")) or {}
+    for p in lay.get("pipes", []):
+        a = (p.get("fromPort") or {}).get("leaves") or p["route"][0]
+        b = (p.get("toPort") or {}).get("leaves") or p["route"][-1]
+        LV[p["stream"]] = (a, b)
+    if rc != 0 or not LV:
+        fail(f"the witness's leave points could not be read (exit {rc})")
+
+
+def wps(*pts):
+    """`waypoints ( { x ..; y ..; z ..; } ... )` from (x, y, z) triples."""
+    return "waypoints ( " + " ".join(
+        "{ x %r m; y %r m; z %r m; }" % (float(x), float(y), float(z))
+        for x, y, z in pts) + " );"
+
+
+def override_text(z=10.0, diagonal=False):
+    (a, b) = LV["rawLiquid"]
+    pts = [(a[0], a[1], z), (b[0], b[1] + (4.0 if diagonal else 0.0), z)]
+    return "\npipes\n{\n    rawLiquid\n    {\n        " + wps(*pts) + "\n    }\n}\n"
 
 
 def arm_pipe_override(work):
-    d = prepare(work, "pipe_override", WITNESS, lambda t: t + OVERRIDE)
+    d = prepare(work, "pipe_override", WITNESS, lambda t: t + override_text())
     out, err, rc = solve(d)
     lay = ((result_json(out) or {}).get("layout")) or {}
     p = next((x for x in lay.get("pipes", []) if x["stream"] == "rawLiquid"), None)
     if rc != 0 or p is None:
         fail(f"(i) the waypoint override exited {rc} / published no rawLiquid pipe")
         return
-    items = {i["id"]: i for i in lay["items"]}
-    s, t = items["separator"], items["letdown"]
-    want = [[56, -6, s["z"] + s["dz"]], [56, -6, 10], [59.5, -6, 10],
-            [59.5, -6, t["z"] + t["dz"]]]
-    if p["routedBy"] != "waypoints" or p["lane"] != -1 or len(p["route"]) != 4 \
-            or any(abs(a - b) > TOL for q, w in zip(p["route"], want) for a, b in zip(q, w)):
-        fail(f"(i) the declared waypoints were not honoured: {p['routedBy']} {p['route']}")
-    L = (10 - want[0][2]) + 3.5 + (10 - want[3][2])
-    if abs(p["length"] - L) > 1e-9:
-        fail(f"(i) the override's length {p['length']} m, recomputed here {L} m")
+    (a, b) = LV["rawLiquid"]
+    want = [[a[0], a[1], 10], [b[0], b[1], 10]]
+    r = p["route"]
+    #  the route is: the nozzle, the stub, the DECLARED waypoints in order,
+    #  the target's stub, its nozzle -- the ends are the published ports.
+    pos = []
+    for w in want:
+        k = next((k for k, q in enumerate(r) if all(abs(u - v) <= TOL for u, v in zip(q, w))), None)
+        pos.append(k)
+    if p["routedBy"] != "waypoints" or p["lane"] != -1 or None in pos or pos != sorted(pos) \
+            or any(abs(u - v) > TOL for u, v in zip(r[0], p["fromPort"]["point"])) \
+            or any(abs(u - v) > TOL for u, v in zip(r[-1], p["toPort"]["point"])):
+        fail(f"(i) the declared waypoints were not honoured, or the route does not run"
+             f" port to port: {p['routedBy']} {r}")
     check_routes("override", lay, require_rack_route=False)
     nh3 = next((x for x in lay.get("pipes", []) if x["stream"] == "productNH3"), None)
     n = 1
@@ -1536,8 +1574,7 @@ def arm_pipe_override(work):
     else:
         n += 1
     refusals = {
-        "diagonal waypoint": (lambda t: t + OVERRIDE.replace("{ x 59.5 m; y -6 m; z 10 m; }",
-                                                             "{ x 59.5 m; y -2 m; z 10 m; }"),
+        "diagonal waypoint": (lambda t: t + override_text(diagonal=True),
                               [r"moves along more than one axis", r"ORTHOGONAL"]),
         "unknown stream": (lambda t: t + "\npipes { noSuchStream { waypoints ( { x 0 m;"
                            " y 0 m; z 9 m; } ); } }\n",
@@ -1572,7 +1609,7 @@ def arm_pipe_override(work):
     rack = ("\npipeRack { y -1 m; elevation 7 m; laneSpacing 0.5 m; lanesPerTier 4;"
             " tierSpacing 1.25 m; xStart -6 m; xEnd 70 m; reason \"the author's own\"; }\n")
     d = prepare(work, "pipe_draft", WITNESS,
-                lambda t: drop_block(t, "pipeRack") + rack + OVERRIDE)
+                lambda t: drop_block(t, "pipeRack") + rack + override_text())
     out, err, rc = run([str(TOOL), "--draft", "--force", str(d)])
     text = (d / "system/layoutDict").read_text()
     lay = ((result_json(out) or {}).get("layout")) or {}
@@ -1674,9 +1711,9 @@ ROAD_REFUSALS = {
     #  DECLARED rack line, y = -3 m (C93; the stated default's -22/7 m
     #  before the tank farm).
     "a pipe below the headroom over a road": (
-        lambda t: t + "\npipes { unreactedGas { waypoints ( { x 56 m; y -6 m; z 3 m; }"
-                      " { x 56 m; y -31 m; z 3 m; } { x 37 m; y -31 m; z 3 m; }"
-                      " { x 37 m; y -3 m; z 3 m; } ); } }\n",
+        lambda t: t + "\npipes { unreactedGas { " + wps(
+            (LV["unreactedGas"][0][0], LV["unreactedGas"][0][1], 3),
+            (LV["unreactedGas"][0][0], -31, 3), (37, -31, 3), (37, -3, 3)) + " } }\n",
         [r"pipe `unreactedGas` crosses road `main` 3 m above grade"]),
     "a diagonal road segment": (
         sub("waypoints ( { x -8 m; y -31 m; } { x -8 m; y 16 m; } );",
@@ -2241,18 +2278,21 @@ CLASH_WAREHOUSE = sub('''        nonProcess  "warehouse";
         y           -4 m;''')
 #  The second probe: rawLiquid routed by waypoints 5 m up through the
 #  converter -- a vertical cylinder, the disc rule.
-CLASH_CONVERTER = ("\npipes { rawLiquid { waypoints ( { x 56 m; y -6 m; z 5 m; }"
-                   " { x 40 m; y -6 m; z 5 m; } { x 40 m; y -3 m; z 5 m; }"
-                   " { x 59.5 m; y -3 m; z 5 m; } { x 59.5 m; y -6 m; z 5 m; } ); } }\n")
+def clash_converter():
+    (a, b) = LV["rawLiquid"]
+    return "\npipes { rawLiquid { " + wps(
+        (a[0], a[1], 5), (40, a[1], 5), (40, -3, 5), (b[0], -3, 5), (b[0], b[1], 5)) + " } }\n"
+
 
 #  The negative: rawLiquid turned at the converter's plan CORNER, 5 m up --
 #  inside the disc's bounding square, outside the disc itself (the turn sits
 #  0.95 R off the centre on both axes), so NO clash: a pipe beside a column
 #  does not run through it.
-CLASH_CORNER = ("\npipes { rawLiquid { waypoints ( { x 56 m; y -6 m; z 5 m; }"
-                " { x 56 m; y -4.989 m; z 5 m; } { x 41.011 m; y -4.989 m; z 5 m; }"
-                " { x 41.011 m; y -3 m; z 5 m; } { x 59.5 m; y -3 m; z 5 m; }"
-                " { x 59.5 m; y -6 m; z 5 m; } ); } }\n")
+def clash_corner():
+    (a, b) = LV["rawLiquid"]
+    return "\npipes { rawLiquid { " + wps(
+        (a[0], a[1], 5), (a[0], -4.989, 5), (41.011, -4.989, 5), (41.011, -3, 5),
+        (b[0], -3, 5), (b[0], b[1], 5)) + " } }\n"
 
 
 def arm_clash(work):
@@ -2272,7 +2312,7 @@ def arm_clash(work):
     for label, edit, want in (
             ("the warehouse moved onto the makeup line", CLASH_WAREHOUSE,
              ("makeup", "warehouse", 6.0, 7.0)),
-            ("rawLiquid routed through the converter", lambda t: t + CLASH_CONVERTER,
+            ("rawLiquid routed through the converter", lambda t: t + clash_converter(),
              ("rawLiquid", "converter", 5.0, None))):
         d = prepare(work, "clash_probe_" + re.sub(r"\W", "_", label), WITNESS, edit)
         out, err, rc, j, lay = layout_of(d)
@@ -2294,7 +2334,7 @@ def arm_clash(work):
                  " item's top, and the run must finish")
         else:
             n += 1
-    d = prepare(work, "clash_probe_corner", WITNESS, lambda t: t + CLASH_CORNER)
+    d = prepare(work, "clash_probe_corner", WITNESS, lambda t: t + clash_corner())
     out, err, rc, j, lay = layout_of(d)
     fs = [f["id"] for f in lay.get("findings", []) if f["kind"] == "pipeClash"]
     rec = clashes_recomputed(lay) if lay else {("no", "layout")}
@@ -2916,9 +2956,11 @@ def arm_indoor(work):
     for s_, tank in want.items():
         n, t = nr.get(s_), items.get(tank)
         if rc2 != 0 or not n or not n.get("indoor") or not t or not n.get("anchor") \
-                or any(abs(a - b) > TOL for a, b in zip(n["anchor"], (t["x"], t["y"], t["z"] + t["dz"]))):
-            fail(f"(o) with no declared legs, {s_} must be listed `indoor` and marked at"
-                 f" the top of {tank}; published {n}")
+                or not (t["x"] - t["dx"] / 2 - TOL <= n["anchor"][0] <= t["x"] + t["dx"] / 2 + TOL
+                        and t["y"] - t["dy"] / 2 - TOL <= n["anchor"][1] <= t["y"] + t["dy"] / 2 + TOL
+                        and t["z"] - TOL <= n["anchor"][2] <= t["z"] + t["dz"] + TOL):
+            fail(f"(o) with no declared legs, {s_} must be listed `indoor` and marked on"
+                 f" the surface of {tank} (its port); published {n}")
     n_ref = 0
     lay_text = (APALUTAMIDE / "system" / "layoutDict").read_text()
     for k, (label, needle, edit) in enumerate(INDOOR_REFUSALS):
@@ -3251,11 +3293,11 @@ def arm_bunds(work):
     #  The let-down liquid to the first bullet, declared to run at 0.1 m into
     #  the farm: it crosses the catch area's west kerb (x = 73 m) BELOW its
     #  0.3 m top.  Every point inside the published plot, so nothing else moves.
+    (pa, pb) = LV["productNH3"]
     d = prepare(work, "bund_pipe", WITNESS, lambda t: t + (
-        "\npipes { productNH3 { waypoints ( { x 59.5 m; y -6 m; z 9 m; }"
-        " { x 70 m; y -6 m; z 9 m; } { x 70 m; y -60 m; z 9 m; }"
-        " { x 70 m; y -60 m; z 0.1 m; } { x 78 m; y -60 m; z 0.1 m; }"
-        " { x 78 m; y -54 m; z 0.1 m; } ); } }\n"))
+        "\npipes { productNH3 { " + wps(
+            (pa[0], pa[1], 9), (70, pa[1], 9), (70, pb[1], 9), (70, pb[1], 0.1),
+            (pb[0], pb[1], 0.1)) + " } }\n"))
     out, err, rc, j, lay = layout_of(d)
     if rc != 0 or not finding(lay, "pipeThroughBund", "productNH3"):
         fail(f"(p) a pipe below the kerb's top through it must be announced"
@@ -3293,6 +3335,7 @@ def main():
     work = keep or Path(tempfile.mkdtemp(prefix="plantlayout."))
     work.mkdir(parents=True, exist_ok=True)
     try:
+        load_leaves(work)
         arm_witness(work)
         arm_refusals(work)
         arm_hazards(work)

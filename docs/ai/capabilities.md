@@ -162,7 +162,11 @@ batch plan, sizing, clean utilities, costing and economics on top
 
 ### Plot plan and site layout (plant layout, equipment spacing, pipe rack, roads)
 * Computes: in `system/layoutDict`, the routes and lengths of the pipes over
-  a declared `key:pipeRack`, the plot area, the paved road area.
+  a declared `key:pipeRack`, where each pipe lands on its item (a PORT: a
+  column's feed at its stage's height on the shell, bottoms at the sump,
+  distillate on the reflux drum; an exchanger's tube and shell nozzles; a
+  drum's inlet, vapour and liquid; movable with `key:ports`), the plot area,
+  the paved road area.
 * Checks: overlaps are refused; short separations, ignition sources in a
   hazardous zone or downwind of a release, roads without a gate, items out of
   reach of a road are announced; truck routes walked against a design
