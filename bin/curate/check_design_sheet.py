@@ -2435,7 +2435,7 @@ def check_storage(problems, notes):
     N = max(1, math.ceil(V_tanks / vmax - 1e-9))
     V_R = V_tanks / N
 
-    eq = [l for l in out.splitlines() if '"item": "%s/tank' % name in l]
+    eq = [l for l in out.splitlines() if '{ "unit": "%s", "item": "%s/tank' % (name, name) in l]
     if len(eq) != N:
         problems.append("check_design_sheet(q): %s should be %d tank(s) "
                         "(V_tanks %.6g m3 / at most %.6g m3), the result "
@@ -2507,7 +2507,7 @@ def check_storage(problems, notes):
     dst, rcp, outp, errp = _run_copy(case, edit_store(
         lambda e: re.sub(r'maxTankVolume\s+[^;]*;', 'maxTankVolume 50000;', e)),
         keep_layout=False)
-    one = [l for l in outp.splitlines() if '"item": "%s/tank' % name in l]
+    one = [l for l in outp.splitlines() if '{ "unit": "%s", "item": "%s/tank' % (name, name) in l]
     vr1 = re.search(r'"V_R": *([-0-9.eE+]+)', one[0]) if len(one) == 1 else None
     if rcp != 0 or len(one) != 1 or not vr1 or \
             not close(float(vr1.group(1)), V_tanks, 1e-6):
@@ -2714,7 +2714,7 @@ def check_storage_link(problems, notes):
         k = _json_line(out, '"%s": {' % u)
         tau, fill = _num(k, "residenceTime_s"), _num(k, "fillFraction")
         mdot_u, vv = _num(k, "massFlow_kg_s"), _num(k, "vesselVolume_m3")
-        eq = [l for l in out.splitlines() if '"item": "%s/tank' % u in l]
+        eq = [l for l in out.splitlines() if '{ "unit": "%s", "item": "%s/tank' % (u, u) in l]
         if None in (tau, fill, mdot_u, vv) or len(eq) != 1:
             problems.append("check_design_sheet(u): %s: unit KPIs or ONE tank "
                             "item missing (found %d items)." % (u, len(eq)))
@@ -2753,7 +2753,7 @@ def check_storage_link(problems, notes):
                             2.0 * base["methanolTank"]["V_stored"] / 0.80),
                            ("acidTank", base.get("acidTank", {}).get("V_tanks"))):
             ln = next((l for l in cout.splitlines()
-                       if '"item": "%s/tank1"' % u in l), "")
+                       if '{ "unit": "%s", "item": "%s/tank1"' % (u, u) in l), "")
             vt = _num(ln, "V_tanks")
             if want_vt is None or vt is None or not close(vt, want_vt):
                 problems.append("check_design_sheet(u): with methanolTank "
