@@ -1059,6 +1059,11 @@ is the package's at the vapour that stage sends up.
   no feed and no side draw on stage 1 -- `feedStage`, every `feeds` entry
   and every `sideDraws` entry take 2..nStages; stage 1 is refused by name
   (its balance carries no feed term, so the feed would be lost).
+  `newton bounded|legacy;` in `operation` picks the Newton it runs:
+  `bounded` (default) is the Armijo line search with bounds on x and T and
+  infeasible trials refused; `legacy` (monotone search, no bounds, clamped
+  residual) is declared only where the bounded one is known to stall --
+  stripper02, a heel case -- and is announced when declared.
 - `fullMESH`  (aliases `MESH`, `NaphtaliSandholm` -- they are NOT aliases of
   `simultaneous`: `DistillationColumn.cpp` runs all three names as the full
   MESH).  Converges the `simultaneous` CMO problem first, then promotes the

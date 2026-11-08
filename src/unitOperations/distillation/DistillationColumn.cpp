@@ -3082,10 +3082,20 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  NOT converged; at 0.05 they converge in 20 / 16 / 16.  What 0.05
     //  refuses is a composition no stage model could price.
     constexpr scalar kFractionRoom = 0.05;
-    //  The refusals below belong to the bounded contract; the packages that
-    //  keep the legacy Newton (aqueous chemistry per stage, see opts below)
-    //  keep their legacy residual too.
-    const bool meshBoxed = !thermo.hasReactiveEquilibrium();
+    //  The refusals below belong to the bounded contract.  A case may DECLARE
+    //  `newton legacy;` in the column's operation to keep the legacy Newton
+    //  and its legacy residual (DEV.md 4c C245 slice 3, C246 knob 1): the
+    //  default is the bounded Armijo contract for every package, aqueous
+    //  chemistry included -- stripper01 and column13 converge in 6 iterations
+    //  under it (measured 2026-11-08); stripper02, a heel case (NH4HS in the
+    //  liquid, V -> 1), stalls at |F| = 1.1e-2 and declares legacy.
+    const std::string newtonWord =
+        operDict->lookupWordOrDefault("newton", "bounded");
+    if (newtonWord != "bounded" && newtonWord != "legacy")
+        throw std::runtime_error("DistillationColumn(simultaneous): operation"
+            " `newton` must be `bounded` (default) or `legacy`, got '"
+            + newtonWord + "'");
+    const bool meshBoxed = (newtonWord != "legacy");
     //  Switched off for phase 1 of a reactive column (see there).
     bool refuseFractions = true;
     auto requireFractions = [&](const sVector& xj)
@@ -3352,22 +3362,20 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  at a bound.  (V and L are not unknowns of this MESH; they are the CMO
     //  flows.)  The residual refuses -- InfeasibleTrial -- a trial with a
     //  negative mole fraction or gamma x <= 0 in the reactive row.
-    //  EXCEPT where the package resolves aqueous chemistry per stage
-    //  (stripper01/02, column13): there the stage K is an incipient
-    //  construction whose surface is not continuous across the two-phase band
-    //  (kernel audit Rank 3e, slice 3), the merit function 0.5|F|^2 has a
-    //  local minimum, and the monotone Armijo search stopped NOT converged on
-    //  stripper02 (80 iterations, |F| = 1.1e-2; it converges in 43 under the
-    //  legacy search) -- with or without the box.  Those columns keep the
-    //  legacy Newton, announced, until Rank 3e lands.
+    //  EXCEPT where the case declares `newton legacy;` (stripper02: a heel
+    //  case -- NH3 bound as NH4HS leaves the vapour balance as V -> 1 -- on
+    //  which the monotone Armijo search stops NOT converged at |F| = 1.1e-2
+    //  after 80 iterations, with the old K surface and with a continuous one
+    //  alike, while the legacy search converges in 43; kernel audit Rank 3e,
+    //  slice 3, check_stagek_continuity's docstring has the diagnosis).  The
+    //  declaration is announced: a solver aid is visible and the student's.
     if (!meshBoxed)
     {
-        if (verbosity >= 2)
-            std::cout << "  [solver] simultaneous MESH: the package resolves"
-                         " reactive (aqueous) equilibrium per stage, whose K"
-                         " surface is not continuous across the two-phase band"
-                         " (kernel audit Rank 3e): the legacy Newton is kept,"
-                         " not the bounded Armijo contract\n";
+        if (verbosity >= 1)
+            std::cout << "  [solver] simultaneous MESH: `newton legacy;` is"
+                         " DECLARED by the case, so the legacy Newton (monotone"
+                         " line search, no bounds, clamped residual) is used"
+                         " instead of the bounded Armijo contract\n";
     }
     else
     {
