@@ -92,9 +92,26 @@ export function ConvergencePlot({
         ? `Recycle converged in ${nOuter} outer iteration${nOuter === 1 ? "" : "s"}: the global balance residual fell ${exp(r0)} → ${exp(rN)}. Each iteration re-runs the units with the updated tear stream; convergence is the tear stream no longer changing (the fixed point) — THIS is why the loop closes, not a number of passes you chose.`
         : `Recycle did NOT reach tolerance in ${nOuter} iterations (residual ${exp(rN)} > ${exp(tolerance)}): the tear loop is still moving. Watch for a residual that rises (a blow-up, marked) vs one that plateaus (a slow but stable march).`;
     }
-    // single pass: the inner solve
-    return `Single-pass case: no recycle loop. The curve is one unit's own inner solve (Newton/Wegstein) marching its residual ${exp(r0)} → ${exp(rN)} to the equation set's root — the ${conv ? "solve converged" : "solve is still moving"}. A steady flowsheet with a recycle would add a bold GLOBAL curve here.`;
+    // single pass: the inner solve.  A long march is read by its RATE: the
+    // mean error ratio per pass, from the end points of the log curve.  A
+    // straight line on the log axis is LINEAR convergence (a substitution
+    // method such as Wang-Henke: each pass removes the same fraction of the
+    // error); a Newton solve bends down and ends in a few passes.
+    const rate = (nOuter > 20 && r0 > 0 && rN > 0)
+      ? Math.pow(rN / r0, 1 / (nOuter - 1)) : null;
+    const rateNote = rate !== null && rate > 0.5
+      ? ` ${nOuter} passes at a nearly constant ratio of ${rate.toFixed(4)} per pass: a straight line on this log axis is LINEAR convergence -- a substitution method removing the same fraction of the error each pass (a tall, close-boiling column at high reflux is the classic slow case); a Newton (simultaneous) solve would bend down in a handful of passes.`
+      : "";
+    return `Single-pass case: no recycle loop. The curve is one unit's own inner solve marching its residual ${exp(r0)} → ${exp(rN)} to the equation set's root — the ${conv ? "solve converged" : "solve is still moving"}.${rateNote} A steady flowsheet with a recycle would add a bold GLOBAL curve here.`;
   })();
+
+  // Longest curve sets the x-extent the tolerance line spans.
+  const maxIter = curves.reduce((m, c) => Math.max(m, c.residuals.length), 0);
+  // A long march (a 74-tray Wang-Henke column runs ~10^3 outer passes) must
+  // not get one tick, one gridline and one marker per iteration: that drew
+  // thousands of overlapping labels and made the plot slow to render.
+  // Integer ticks only while they are few; markers only while they are legible.
+  const FEW_TICKS = 25, FEW_MARKERS = 200;
 
   const data = curves.map((c, i) => {
     const global = isGlobal(c.label);
@@ -105,7 +122,7 @@ export function ConvergencePlot({
       : PLOT_COLORS.series[i % PLOT_COLORS.series.length];
     return {
       type: "scatter" as const,
-      mode: "lines+markers" as const,
+      mode: (c.residuals.length <= FEW_MARKERS ? "lines+markers" : "lines") as "lines+markers" | "lines",
       name: global ? c.label : c.label + " (inner)",
       x: c.residuals.map((_, k) => k + 1),
       y,
@@ -123,8 +140,6 @@ export function ConvergencePlot({
     };
   });
 
-  // Longest curve sets the x-extent the tolerance line spans.
-  const maxIter = curves.reduce((m, c) => Math.max(m, c.residuals.length), 0);
   const showTol = tolerance > 0 && maxIter > 0;
 
   // Model-refinement restarts (e.g. CMO -> full-MESH, or non-reactive ->
@@ -192,7 +207,7 @@ export function ConvergencePlot({
             : `Convergence residuals — ${unit}`, font: {...darkLayout.font, size: 13 } },
         xaxis: {...darkLayout.xaxis,
           title: { text: "iteration  (pseudo-time — the march to the fixed point, not physical time)" },
-          dtick: 1 },
+          ...(maxIter <= FEW_TICKS ? { dtick: 1 } : { nticks: 12 }) },
         yaxis: {
 ...darkLayout.yaxis,
           title: { text: "residual (feed-normalised)" },
