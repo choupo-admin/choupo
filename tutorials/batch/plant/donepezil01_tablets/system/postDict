@@ -596,6 +596,42 @@ economics
     accuracyBand        ( -50 100 ); // Class 5, the wide corner -- chosen
     refuseOnMissingPrice 1;
 
+    //  THE THREE DELIVERABLES EVERY PIF REPORT CARRIES (DEV.md 4c C210, E5;
+    //  declared here 2026-11-08 so that a group sees them without editing
+    //  anything).  All three are REPORTING on the appraisal above: no number
+    //  of the base case moves.
+    //  (1) The break-even, two answers: the OPERATING fraction x of nameplate
+    //  production at which one year's sales equal its cost of production
+    //  (fixed = 0.180 FCI + 2.73 C_OL + depreciation, variable = 1.23 (C_RM +
+    //  C_UT + C_WT)), and the production fraction s at which NPV = 0, found by
+    //  the same appraisal on a copy.  On this case both are above 1: the
+    //  plant does not pay at nameplate (README section 6 says why).
+    breakEven {}
+    //  (2) The working capital by the three usual methods, side by side:
+    //  the itemised build-up (the `workingCapital {}` block below, the one the
+    //  appraisal USES), a fraction of annual sales, a fraction of the fixed
+    //  capital.  The two fractions are AUTHOR-SET textbook figures, not a
+    //  study: the lesson is the spread, and which method the group defends.
+    workingCapitalMethods
+    {
+        fractionOfSales        0.15;
+        fractionOfFixedCapital 0.15;
+        source  "author-set assumption (DEV.md 4c C210, E5): the textbook fractions, 15 % of sales and 15 % of FCI, rounded; no company figure read";
+        reason  "the earlier design reports took whichever of the three methods suited; printing the three together makes the choice visible";
+    }
+    //  (3) A SENSITIVITY, not an uncertainty analysis: each input moved ALONE
+    //  to its two ends on the same converged flowsheet.  The ends are
+    //  AUTHOR-SET round figures: the price is the one number this case does
+    //  not know (a generic sold against many competitors, README section 6),
+    //  the discount rate is the appraisal's own assumption bracketed, and the
+    //  labour rate is the largest term of COM_d.
+    sensitivity
+    {
+        price.packagedTablets { relative ( -0.3 0.3 ); }  // +-30 % of 0.10 EUR a tablet -- author-set
+        discountRate          { absolute ( 0.08 0.15 ); } // the appraisal's 10 % bracketed -- author-set
+        labourRate            { relative ( -0.2 0.2 ); }  // +-20 % of 42 EUR/h -- author-set
+    }
+
     workingCapital
     {
         //  60 days of raw materials in the warehouse: quarantine, sampling
