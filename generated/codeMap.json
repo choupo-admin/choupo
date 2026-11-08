@@ -9901,6 +9901,7 @@
    "src/core/ExprEval.H",
    "src/core/FlatUnit.H",
    "src/core/Identifiers.H",
+   "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/ProblemDivergence.H",
    "src/core/ResultRecords.H",
@@ -10774,6 +10775,7 @@
    "src/core/Dimensions.H",
    "src/core/Formula.H",
    "src/core/Identifiers.H",
+   "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
@@ -13565,8 +13567,10 @@
    "src/outerDriver/DesignSpec.cpp",
    "src/solver/NewtonND.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
-   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp"
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
+   "src/unitOperations/reactor/CSTR.cpp"
   ],
   "src/core/MiniZip.H": [
    "src/core/OdsWriter.cpp"

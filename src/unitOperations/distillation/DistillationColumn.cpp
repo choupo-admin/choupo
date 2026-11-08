@@ -3058,6 +3058,34 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         xj[n-1] = 1.0 - s;
         Tj = u[j*nv + (n-1)];
     };
+    //  A STATE WITH A NEGATIVE MOLE FRACTION IS NOT A STATE (C245 slice 2,
+    //  kernel audit Rank 1/2).  The box of the Newton (below) keeps every
+    //  carried x_i >= 0 by the fraction-to-boundary rule, but 1 - sum(x) is a
+    //  linear inequality a box cannot hold; a trial that breaks it is REFUSED
+    //  here -- the solver's own "shorten the step" -- instead of being priced
+    //  at a clamped composition.
+    //  The room is 0.05, not rounding: measured 2026-11-08, a refusal at
+    //  1e-9 (or 1e-6) makes the face 1 - sum(x) = 0 a WALL -- every Newton
+    //  step that points through it is shortened to nothing and column05
+    //  went from 17 to 285 iterations, column19/20's CMO seed stopped
+    //  NOT converged; at 0.05 they converge in 20 / 16 / 16.  What 0.05
+    //  refuses is a composition no stage model could price.
+    constexpr scalar kFractionRoom = 0.05;
+    //  The refusals below belong to the bounded contract; the packages that
+    //  keep the legacy Newton (aqueous chemistry per stage, see opts below)
+    //  keep their legacy residual too.
+    const bool meshBoxed = !thermo.hasReactiveEquilibrium();
+    //  Switched off for phase 1 of a reactive column (see there).
+    bool refuseFractions = true;
+    auto requireFractions = [&](const sVector& xj)
+    {
+        if (!meshBoxed || !refuseFractions) return;
+        for (std::size_t i = 0; i < n; ++i)
+            if (!(xj[i] >= -kFractionRoom))
+                throw InfeasibleTrial("DistillationColumn(simultaneous): a MESH"
+                    " trial has x_" + std::to_string(i) + " = "
+                    + std::to_string(xj[i]) + " < 0 (infeasible trial)");
+    };
 
     // Residual: n-1 component balances + bubble-point per stage (+ reaction).
     //  rxnActive is a HOMOTOPY switch: phase 1 solves the column with the
@@ -3145,6 +3173,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         sVector T(N);
         for (std::size_t j = 0; j < N; ++j) {
             unpack(u, j, x[j], T[j]);
+            requireFractions(x[j]);
             K[j] = stageKOnTrial(T[j], x[j]);
             y[j].assign(n, 0.0);
             for (std::size_t i = 0; i < n; ++i) y[j][i] = K[j][i] * x[j][i];
@@ -3191,7 +3220,17 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 scalar lnQ = 0.0;
                 for (std::size_t i = 0; i < n; ++i)
                     if (nu[i] != 0.0)
-                        lnQ += nu[i] * std::log(std::max(gam[i] * x[j][i], 1.0e-300));
+                    {
+                        //  gamma x <= 0 has no logarithm: a refused trial, not
+                        //  ln(1e-300) = -690.8 with a flat Jacobian column
+                        //  (C245 slice 2; the seed floor keeps the start > 0)
+                        const scalar a = gam[i] * x[j][i];
+                        if (meshBoxed && !(a > 0.0))
+                            throw InfeasibleTrial("DistillationColumn(simultaneous):"
+                                " a reactive-stage trial has gamma x <= 0 for '"
+                                + thermo.comp(i).name() + "' (infeasible trial)");
+                        lnQ += nu[i] * std::log(meshBoxed ? a : std::max(a, 1.0e-300));
+                    }
                 g[N*nv + k] = lnQ - lnKaAt(T[j])
                             - (1.0 - homotopyS) * lnOffset[k];
             }
@@ -3279,6 +3318,70 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     opts.maxIter   = 80;
     opts.parallel  = true;     // the MESH residual is a pure function (thread-safe)
 
+    //  THE SIMULTANEOUS MESH DECLARES ITS BOX AND TAKES THE ARMIJO CONTRACT
+    //  (DEV.md 4c C245 slice 2; the full MESH below was slice 1's proof
+    //  caller).  Every carried x_i in [0, 1]; every stage T in
+    //  [0.5 Tsat,min, 1.2 Tsat,max] of the components fed (pure saturation at
+    //  P), never so tight that the seed lies outside; the equilibrium extents
+    //  free.  typX per block (x 0.1, T 300 K, extent = the total feed) turns
+    //  the finite-difference step into h = sqrt(eps) max(|u|, typX), one-sided
+    //  at a bound.  (V and L are not unknowns of this MESH; they are the CMO
+    //  flows.)  The residual refuses -- InfeasibleTrial -- a trial with a
+    //  negative mole fraction or gamma x <= 0 in the reactive row.
+    //  EXCEPT where the package resolves aqueous chemistry per stage
+    //  (stripper01/02, column13): there the stage K is an incipient
+    //  construction whose surface is not continuous across the two-phase band
+    //  (kernel audit Rank 3e, slice 3), the merit function 0.5|F|^2 has a
+    //  local minimum, and the monotone Armijo search stopped NOT converged on
+    //  stripper02 (80 iterations, |F| = 1.1e-2; it converges in 43 under the
+    //  legacy search) -- with or without the box.  Those columns keep the
+    //  legacy Newton, announced, until Rank 3e lands.
+    if (!meshBoxed)
+    {
+        if (verbosity >= 2)
+            std::cout << "  [solver] simultaneous MESH: the package resolves"
+                         " reactive (aqueous) equilibrium per stage, whose K"
+                         " surface is not continuous across the two-phase band"
+                         " (kernel audit Rank 3e): the legacy Newton is kept,"
+                         " not the bounded Armijo contract\n";
+    }
+    else
+    {
+        scalar tsMin = 0.0, tsMax = 0.0;
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            bool fed = false;
+            for (std::size_t j = 0; j < N && !fed; ++j)
+                fed = Ffeed[j] > 0.0 && zfeed[j][i] > 0.0;
+            if (!fed) continue;
+            const scalar ts = pureSaturationTemperature(thermo, i, P);
+            if (!(ts > 0.0)) continue;
+            tsMin = (tsMin > 0.0) ? std::min(tsMin, ts) : ts;
+            tsMax = std::max(tsMax, ts);
+        }
+        constexpr scalar inf = std::numeric_limits<scalar>::infinity();
+        opts.lower.assign(nU, -inf);
+        opts.upper.assign(nU,  inf);
+        opts.typX.assign(nU, 1.0);
+        for (std::size_t j = 0; j < N; ++j)
+        {
+            for (std::size_t i = 0; i + 1 < n; ++i)
+            {
+                opts.lower[j*nv + i] = 0.0;
+                opts.upper[j*nv + i] = 1.0;
+                opts.typX[j*nv + i]  = 0.1;
+            }
+            opts.typX[j*nv + (n-1)] = 300.0;
+            if (tsMax > 0.0)
+            {
+                opts.lower[j*nv + (n-1)] = std::min(0.5 * tsMin, 0.9 * Tseed[j]);
+                opts.upper[j*nv + (n-1)] = std::max(1.2 * tsMax, 1.1 * Tseed[j]);
+            }
+        }
+        for (std::size_t k = 0; k < nExtents; ++k) opts.typX[N*nv + k] = totFeed;
+        opts.globalisation = solver::Globalisation::armijo;
+    }
+
     //  THE MESH JACOBIAN IS BLOCK-TRIDIAGONAL, AND THE SOLVER IS TOLD SO.
     //  Stage j's residual sees only stages j-1, j, j+1 (measured on the
     //  corpus before this was written: max off-band |J| = 0, exactly).
@@ -3321,7 +3424,35 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         "column '" + (dict->name().empty() ? type() : dict->name())
         + "' MESH search");
 
+    //  PHASE 1 OF A REACTIVE COLUMN KEEPS THE LEGACY NEWTON (C245 slice 2,
+    //  measured 2026-11-08 on column05 and the kinetic column05 probe).  With
+    //  the reaction off, the products nobody feeds (water, methyl acetate)
+    //  sit EXACTLY on x = 0, a degenerate face: the bounded Armijo search
+    //  stalls against it (|F| = 1.0 after 37 iterations, x_water = -0.05 on
+    //  the refusal wall) and the unconverged iterate then seeded phase 2 / the
+    //  full MESH, which failed.  Phase 1 only seeds, so it takes the legacy
+    //  search, without the box or the refusals; phase 2 -- where every species
+    //  of the quotient is lifted off zero -- takes the bounded contract.
+    //  Announced below.
+    const solver::NDOptions boxedOpts = opts;
+    if (reactive && meshBoxed)
+    {
+        opts.lower.clear();
+        opts.upper.clear();
+        opts.typX.clear();
+        opts.globalisation = solver::Globalisation::legacy;
+        refuseFractions = false;
+        if (verbosity >= 2)
+            std::cout << "  [solver] reactive column phase 1 (reaction off,"
+                         " products at x = 0): legacy Newton, no box; the"
+                         " bounded Armijo contract is taken from phase 2\n";
+    }
     auto res = solver::newtonND(residual, u0, opts);   // phase 1: reaction OFF (robust)
+    if (reactive && meshBoxed)
+    {
+        opts = boxedOpts;
+        refuseFractions = true;
+    }
     //  UNDER THE FULL MESH THE CMO IS ONLY THE SEED, and it is the NON-REACTIVE
     //  one: the reaction enters through the full MESH's own homotopy below
     //  (C231, announced).

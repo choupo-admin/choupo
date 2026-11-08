@@ -35,9 +35,16 @@ WHAT THIS GATE CHECKS.
       MESH's residual (not the CMO's).  The shipped column06 must print no
       such announcement and converge.
   (c) THE CORPUS THROUGH A STALLED STEP.  acetone06_luyben_column_C1 converges
-      through floor-damped steps (2 of 15 iterations when measured): it must
-      still converge and SAY how many it took; a strict default would have
-      turned it into a failure, which is why the allowance exists.
+      through floor-damped steps (2 of 15 iterations when measured 2026-11-01):
+      it must still converge and, if it takes any, SAY how many; a strict
+      default would have turned it into a failure, which is why the allowance
+      exists.  SINCE C245 SLICE 2 (2026-11-08) the simultaneous MESH takes the
+      bounded Armijo contract, whose Levenberg-Marquardt fallback replaces the
+      floor-damped step: acetone06 converges in 18 iterations with NONE.  The
+      arm now holds the invariant that survives -- converged, and any
+      floor-damped step taken is announced (a step taken silently fails; zero
+      steps is reported as zero) -- and the stalled-step mechanism itself
+      stays held by arm (a), whose probe runs the legacy search.
   (d) SOURCE.  The full-MESH block tests `!res.converged` before it seeds and
       does not combine the seed's flag with `&&`; newtonND tests
       `!(normFNew < normF)` before advancing and returns the best iterate on
@@ -189,11 +196,13 @@ def arm_corpus(tmp):
     m = re.search(r"MESH: (\d+) floor-damped line-search step", out)
     if rc != 0 or "Converged:   yes" not in out:
         fails.append(f"(c) acetone06 no longer converges (exit {rc})")
-    if not m or int(m.group(1)) < 1:
-        fails.append("(c) acetone06 converges through floor-damped steps and "
-                     "did not announce them")
+    if m:
+        return int(m.group(1))
+    if "floor-damped" in out:
+        fails.append("(c) acetone06 mentions floor-damped steps but the "
+                     "announcement does not carry the count")
         return None
-    return int(m.group(1))
+    return 0     # the Armijo contract took none; nothing to announce
 
 
 def arm_source():
@@ -245,7 +254,7 @@ def main():
           f"did not converge ({seed[0]} stages, {seed[1]} iterations, |F| = "
           f"{seed[2]}) seeds the full MESH only as an ANNOUNCED seed and the "
           f"verdict is the full MESH's own; acetone06 still converges through "
-          f"{n06} announced floor-damped step(s).  NOT covered: a seed the "
+          f"{n06} floor-damped step(s) (all announced; 0 under the Armijo contract).  NOT covered: a seed the "
           "full MESH converts (none found in the corpus), the singular-"
           "Jacobian stage/equation diagnostic (C184 P0), the allowance's "
           "default of 25.")

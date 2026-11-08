@@ -28,4 +28,4 @@ kpi     NF                     solute_closure_rel 0                1e-4
 boundary global                 H_feeds_kW       -15965.9347526   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -15965.8957458   1e-4
-boundary global                 residual_kW      -0.0390067630797 1e-4
+boundary global                 residual_kW      -0.0390157424372 1e-4

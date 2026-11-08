@@ -32,9 +32,11 @@
 #include "solver/NewtonND.H"
 #include "solver/LU.H"
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -158,6 +160,40 @@ void probeScale()
     std::cout << "scaleTypRelErr " << std::abs(a.r.x[0] / (1.0e-10 * std::exp(0.5)) - 1.0) << "\n";
 }
 
+//  (5) FD Jacobian at a trace mole fraction (C245 slice 2, Rank 2).  The 2x2
+//  residual F = (ln(x0/1e-10) + x1 - 1.2, x1 - 3 + 2e10 x0) at (1e-10, 1) has
+//  the analytic Jacobian ((1e10, 1), (2e10, 1)), hence the Newton step
+//  d = (-2e-11, 0.4).  One Newton iteration is taken under the contract
+//  (typX = (1e-10, 1), lower = (0, -inf)); the step it took, divided by the
+//  step length alpha it reports, is compared with d: a Jacobian that is wrong
+//  by 1e-4 relative moves d by about as much.  Printed: fdStepRelErr.
+void probeFdJacobian()
+{
+    auto F = [](const sVector& x) {
+        if (!(x[0] > 0.0)) throw std::runtime_error("x0 <= 0 evaluated");
+        return sVector{std::log(x[0] / 1.0e-10) + x[1] - 1.2,
+                       x[1] - 3.0 + 2.0e10 * x[0]};
+    };
+    NDOptions o; o.maxIter = 1; o.tolerance = 1.0e-30;
+    o.typX = {1.0e-10, 1.0};
+    o.lower = {0.0, -std::numeric_limits<scalar>::infinity()};
+    o.upper = {std::numeric_limits<scalar>::infinity(),
+               std::numeric_limits<scalar>::infinity()};
+    o.globalisation = Globalisation::armijo;
+    scalar alpha = 0.0;
+    o.onIter = [&](const NDTrace& t) { alpha = t.alpha; };
+    const sVector x0 = {1.0e-10, 1.0};
+    const NDResult r = newtonND(F, x0, o);
+    const sVector d = {-2.0e-11, 0.4};
+    scalar err = 0.0;
+    if (!(alpha > 0.0) || r.x.size() != 2) err = 1.0e30;
+    else
+        for (int i = 0; i < 2; ++i)
+            err = std::max(err, std::abs((r.x[i] - x0[i]) / alpha - d[i])
+                                / std::abs(d[i]));
+    std::cout << "fdStepAlpha " << alpha << "\nfdStepRelErr " << err << "\n";
+}
+
 } // namespace
 
 int main()
@@ -167,6 +203,7 @@ int main()
     probeBound();
     probeNaN();
     probeScale();
+    probeFdJacobian();
     std::cout << "probeDone 1\n";
     return 0;
 }

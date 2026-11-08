@@ -49,6 +49,8 @@ License
 #include "solver/NewtonRaphson.H"
 #include "solver/NewtonND.H"
 #include "solver/Wegstein.H"
+#include "core/InfeasibleTrial.H"
+#include <limits>
 #include "solver/DominantEigenvalue.H"
 #include "streams/Composition.H"
 #include "streams/StreamMass.H"
@@ -1214,6 +1216,16 @@ void runUnit(const DictPtr&                                          udict,
                         + outputs[k] + "' published " + std::to_string(s.P * 1.0e-5)
                         + " bar from an inlet at "
                         + std::to_string(P_inherit * 1.0e-5) + " bar";
+                //  A trial that publishes a negative pressure is an INFEASIBLE
+                //  trial, never the inlet's pressure standing in for it
+                //  (DEV.md 4c C245 slice 2, audit H16): the Newton line search
+                //  shortens the step, Wegstein falls back to direct
+                //  substitution, and a seed that is itself infeasible refuses.
+                throw InfeasibleTrial("unit '" + uname + "' (" + utype
+                    + "): outlet stream '" + outputs[k] + "' would have a"
+                    + " NEGATIVE pressure, P = "
+                    + std::to_string(s.P * 1.0e-5) + " bar, from an inlet at "
+                    + std::to_string(P_inherit * 1.0e-5) + " bar");
             }
             else
             {
@@ -3263,12 +3275,13 @@ int Flowsheet::solve(const DictPtr& dict,
             //  number is declared in solverDict and a defaulted one is
             //  ANNOUNCED as such.
             std::unique_ptr<solver::FixedPointAccelerator> deAccel;
+            solver::DominantEigenvalueOptions deOpts;
             if (recDE)
             {
                 auto isDefault = [&](const char* k) {
                     return !(solverDict_ && solverDict_->found(k));
                 };
-                solver::DominantEigenvalueOptions o;
+                solver::DominantEigenvalueOptions& o = deOpts;
                 o.lambdaMax = recScalar("recycleDELambdaMax", o.lambdaMax);
                 o.minCosine = recScalar("recycleDEMinCosine", o.minCosine);
                 o.lambdaTol = recScalar("recycleDELambdaTol", o.lambdaTol);
@@ -3294,6 +3307,14 @@ int Flowsheet::solve(const DictPtr& dict,
             sVector prevE = energyVec();
 
             bool converged = false; int outerIt = 0; scalar lastDelta = 0.0;
+            //  The last image G(x) a sweep returned, and whether the sweep that
+            //  produced it was the one just before: an extrapolated iterate
+            //  whose sweep is INFEASIBLE (a unit throws InfeasibleTrial) is a
+            //  rejected extrapolation -- direct substitution from that image
+            //  stands in, the aid's memory is cleared, and it is counted and
+            //  announced.  A seed, or a substitution step, that is itself
+            //  infeasible has nothing to fall back on and refuses by name.
+            sVector gPrev; bool haveImage = false; int rejectedExtrap = 0;
             for (outerIt = 0; outerIt < maxOuter; ++outerIt)
             {
                 // Snapshot the ASSUMED tear streams (pre-sweep) so the physical
@@ -3302,8 +3323,38 @@ int Flowsheet::solve(const DictPtr& dict,
                 // not just the (opt-in) solution-directory writer.
                 std::map<std::string, ProcessStream> assumedTears;
                 for (const auto& t : tears) assumedTears[t] = streams_.at(t);
-                sweep(/*quiet=*/true);
+                try { sweep(/*quiet=*/true); }
+                catch (const InfeasibleTrial& e)
+                {
+                    if (!haveImage)
+                    {
+                        //  An ACCEPTED pass from the same tear states the
+                        //  refusal by name when the reason is a negative
+                        //  pressure (the unit, the stream, the drop, the
+                        //  remedy); any other reason falls through to ours.
+                        sweep(/*quiet=*/false);
+                        throw std::runtime_error(
+                            std::string("Flowsheet: the recycle ")
+                            + (outerIt == 0 ? "seed" : "direct-substitution step")
+                            + " is infeasible and there is no earlier iterate"
+                              " to fall back on: " + e.what());
+                    }
+                    ++rejectedExtrap;
+                    std::cout << "  " << std::setw(4) << outerIt
+                              << "  [rejected extrapolation] " << e.what()
+                              << " -- direct substitution from the last image\n";
+                    unpackTears(tears, streams_, gPrev, thermo.n(),
+                                /*announce=*/false, &streamBounds);
+                    x = gPrev;
+                    haveImage = false;
+                    accel = solver::Wegstein(x.size(), qmin, qmax);
+                    if (recDE)
+                        deAccel = solver::FixedPointAccelerator::New(
+                            "DominantEigenvalue", x.size(), deOpts);
+                    continue;
+                }
                 sVector gx = packTears(tears, streams_);
+                gPrev = gx; haveImage = true;
                 lastDelta = normL2(gx, x);
                 const TearImbalance imb = computeTearImbalance(
                     assumedTears, streams_, tears, thermo, feedScales);
@@ -3349,6 +3400,10 @@ int Flowsheet::solve(const DictPtr& dict,
                 x = x_next;
                 prevE = curE;
             }
+            if (rejectedExtrap > 0)
+                std::cout << "  [recycle] " << rejectedExtrap
+                          << " extrapolated step(s) met an infeasible sweep and"
+                             " were replaced by direct substitution.\n";
             std::cout << "  ----  -----------  ----------\n";
             if (converged)
                 std::cout << "Recycle converged in " << outerIt
@@ -3360,9 +3415,17 @@ int Flowsheet::solve(const DictPtr& dict,
             if (!converged)
             {
                 sVector xl = packTears(tears, streams_);
-                sweep(/*quiet=*/true);
-                namePressureFailures(xl, packTears(tears, streams_),
-                                     thermo.n() + 3, 1.0);
+                try
+                {
+                    sweep(/*quiet=*/true);
+                    namePressureFailures(xl, packTears(tears, streams_),
+                                         thermo.n() + 3, 1.0);
+                }
+                catch (const InfeasibleTrial& e)
+                {
+                    std::cout << "  [recycle] the last iterate has no feasible image: "
+                              << e.what() << "\n";
+                }
             }
             finalConverged = converged;
             finalResidual  = lastDelta;
@@ -3401,13 +3464,22 @@ int Flowsheet::solve(const DictPtr& dict,
             // machinery, not a crutch.  A negative component flow AT the
             // converged solution is the meaningful signal (no-silent-crutch):
             // the spec is giving this tear a non-physical composition.
-            auto unpackFlow = [&](const sVector& v, bool announce = false) {
+            auto unpackFlow = [&](const sVector& v, bool announce = false,
+                                  bool trial = false) {
                 std::size_t off = 0;
                 for (const auto& name : tears) {
                     auto& s = streams_.at(name);
                     scalar F = 0.0; std::vector<scalar> Fi(nc);
                     for (std::size_t i = 0; i < nc; ++i) {
                         const scalar raw = v[off++];
+                        //  A TRIAL iterate with a negative flow is infeasible,
+                        //  not clipped (C245 slice 2, audit H14): the Newton
+                        //  shortens the step.  Only the final, announced
+                        //  unpack floors.
+                        if (trial && raw < 0.0)
+                            throw InfeasibleTrial("tear '" + name + "': "
+                                + thermo.comp(i).name() + " flow "
+                                + std::to_string(raw) + " < 0");
                         if (announce && raw < 0.0)
                             std::cout << "  [bound] tear '" << name << "': "
                                       << thermo.comp(i).name() << " flow "
@@ -3422,6 +3494,14 @@ int Flowsheet::solve(const DictPtr& dict,
                         std::cout << "  [bound] tear '" << name << "': temperature "
                                   << std::fixed << std::setprecision(2) << v[off]
                                   << " K is non-physical (T > 0) -- check the spec\n";
+                    if (trial && !(v[off] > 0.0))
+                        throw InfeasibleTrial("tear '" + name
+                            + "': temperature " + std::to_string(v[off])
+                            + " K <= 0");
+                    if (trial && v[off + 1] < 0.0)
+                        throw InfeasibleTrial("tear '" + name
+                            + "': pressure " + std::to_string(v[off + 1])
+                            + " Pa < 0");
                     s.T = v[off++];
                     s.P = v[off++];
                     // Author absolute bounds (after the physical floors).
@@ -3457,8 +3537,18 @@ int Flowsheet::solve(const DictPtr& dict,
                       << "   it    |r|2 (relative)  alpha\n"
                          "  ----  -----------  -----\n";
             auto residual = [&](const sVector& x) -> sVector {
-                unpackFlow(x);
-                sweep(/*quiet=*/true);
+                unpackFlow(x, /*announce=*/false, /*trial=*/true);
+                //  A unit that throws on a TRIAL iterate is an infeasible
+                //  trial: the Newton shortens the step.  Nothing is swallowed
+                //  -- the reason travels in the exception and the final,
+                //  accepted sweep below still raises its own error visibly.
+                try { sweep(/*quiet=*/true); }
+                catch (const InfeasibleTrial&) { throw; }
+                catch (const std::exception& e)
+                {
+                    throw InfeasibleTrial(std::string("a unit failed on a"
+                        " trial tear iterate: ") + e.what());
+                }
                 sVector gx = packFlow();
                 sVector r(x.size());
                 for (std::size_t i = 0; i < x.size(); ++i)
@@ -3468,6 +3558,24 @@ int Flowsheet::solve(const DictPtr& dict,
             solver::NDOptions ndo;
             ndo.tolerance = tearTol;
             ndo.maxIter   = maxOuter;
+            //  THE TEAR NEWTON TAKES THE ARMIJO CONTRACT (C245 slice 2): the
+            //  residual's own scale is typX, flows and P are boxed at >= 0
+            //  (P at a positive floor when it was seeded positive), T at a
+            //  tenth of its seed; a negative trial is an InfeasibleTrial.
+            {
+                constexpr scalar inf = std::numeric_limits<scalar>::infinity();
+                ndo.globalisation = solver::Globalisation::armijo;
+                ndo.typX  = scale;
+                ndo.lower.assign(x0.size(), 0.0);
+                ndo.upper.assign(x0.size(), inf);
+                for (std::size_t t = 0; t < tears.size(); ++t)
+                {
+                    const std::size_t kT = t * (nc + 2) + nc;
+                    ndo.lower[kT]     = 0.1 * std::max(x0[kT], 0.0);
+                    ndo.lower[kT + 1] = (x0[kT + 1] > 0.0)
+                                      ? std::min(1.0, 0.5 * x0[kT + 1]) : 0.0;
+                }
+            }
             ndo.onIter = [&](const solver::NDTrace& tr) {
                 //  alpha = the backtracking factor newtonND applied to the
                 //  step taken FROM this iterate (1 = the full Newton step).
@@ -3525,7 +3633,20 @@ int Flowsheet::solve(const DictPtr& dict,
                                tr.normF, imb.mass, imb.energy,
                                false, streams_, tears, topology_);
             };
-            auto res = solver::newtonND(residual, x0, ndo);
+            solver::NDResult res;
+            try { res = solver::newtonND(residual, x0, ndo); }
+            catch (const InfeasibleTrial& e)
+            {
+                //  The seed (or every probe around it) is infeasible: refuse
+                //  by name.  An ACCEPTED pass from the seed names a negative
+                //  pressure in full when that is the reason.
+                unpackFlow(x0, /*announce=*/false, /*trial=*/false);
+                sweep(/*quiet=*/false);
+                throw std::runtime_error(
+                    std::string("Flowsheet: the recycle Newton cannot start:"
+                                " the seed tear has no feasible neighbourhood: ")
+                    + e.what());
+            }
             unpackFlow(res.x, /*announce=*/true);   // accepted solution: clips here are real
             std::cout << "  ----  -----------\n";
             if (res.converged)
@@ -3537,8 +3658,16 @@ int Flowsheet::solve(const DictPtr& dict,
                           << " iterations (last |r|2 = " << std::scientific << res.residual << ").\n";
             if (!res.converged)
             {
-                residual(res.x);   // streams_ now at G(x)
-                namePressureFailures(res.x, packFlow(), nc + 2, 1.0e-5);
+                try
+                {
+                    residual(res.x);   // streams_ now at G(x)
+                    namePressureFailures(res.x, packFlow(), nc + 2, 1.0e-5);
+                }
+                catch (const InfeasibleTrial& e)
+                {
+                    std::cout << "  [recycle] the best iterate has no feasible image: "
+                              << e.what() << "\n";
+                }
             }
             finalConverged = res.converged;
             finalResidual  = res.residual;
@@ -3568,8 +3697,9 @@ int Flowsheet::solve(const DictPtr& dict,
             const std::string msg = "trial pressure clamped "
                 + std::to_string(g_trialPressureClamps)
                 + " time(s) during the recycle iteration (a unit published a"
-                  " negative outlet pressure on a trial sweep and the inlet"
-                  " pressure stood in for it); the accepted pass did not.  First: "
+                  " negative outlet pressure on a trial sweep, which was rejected"
+                  " as an infeasible trial -- never replaced by the inlet's"
+                  " pressure); the accepted pass did not.  First: "
                 + g_trialPressureFirst + ".";
             std::cout << "  [pressure] " << msg << "\n";
             AdvisoryLog::instance().add("pressure", "warning", "recycle solve", msg);
