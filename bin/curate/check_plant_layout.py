@@ -248,7 +248,7 @@ The risks such a feature carries are specific, and each arm names one:
       witnesses: greenAmmoniaPEQ_baseCase (a BUND round its two refrigerated
       tanks, declared boxes, and a kerbed IMPOUNDING slab under the loop's
       three liquid vessels) and ammonia02_full_plant (an IMPOUNDING area
-      under the seven T201 bullets, its pit remote).  For every published
+      under the eight T201 bullets, its pit remote).  For every published
       containment, recomputed HERE: the area (the outline's shoelace), the
       volume the enclosed footprints displace below the wall's top (disc,
       lying cylinder's circular segment, box -- an independent
@@ -548,7 +548,7 @@ def arm_witness(work):
     items = {i["id"]: i for i in lay["items"]}
     if len(items) != WITNESS_ITEMS:
         fail(f"(a) the witness places {len(items)} items, expected {WITNESS_ITEMS} (seven"
-             " process items and the product store's seven bullets, sized, and the"
+             " process items and the product store's eight bullets, sized, and the"
              f" {WITNESS_ITEMS - 14} site items -- control room, gates, buildings, car park,"
              " weighbridge, laydown, muster points, fire water, windsock)")
     #  The process vessels stand; the product store's bullets (DEV.md 4c
@@ -627,9 +627,9 @@ def chain(*fs):
 
 
 ITEMS_OPEN = "items\n(\n"
-#  The witness's placed items: seven process items, T201's seven bullets and
+#  The witness's placed items: seven process items, T201's eight bullets and
 #  (C96) fourteen site items.
-WITNESS_ITEMS = 28
+WITNESS_ITEMS = 29
 REFUSALS = {
     "unknown item": (sub(ITEMS_OPEN, ITEMS_OPEN
         + '    { item "noSuchItem"; x 200 m; y 0 m; z 0 m; orientation vertical; }\n'),
@@ -2524,14 +2524,14 @@ def _route_block(name, roads, extra=""):
             'reason "fixture"; }\n' % (name, roads, extra))
 
 
-#  The tank-farm road carried on to x 160 m with a turning area at its end,
+#  The tank-farm road carried on to x 168 m with a turning area at its end,
 #  and a second route that drives it to the end and back (a dead end visited).
 def _tank_farm_dead_end(diameter):
     return chain(
         sub("waypoints ( { x 68 m; y -31 m; } { x 146 m; y -31 m; } );",
-            "waypoints ( { x 68 m; y -31 m; } { x 160 m; y -31 m; } );"),
+            "waypoints ( { x 68 m; y -31 m; } { x 168 m; y -31 m; } );"),
         sub("    network\n    (\n",
-            "    turningAreas ( { area \"tankFarmEnd\"; x 160 m; y -31 m; diameter %s m;"
+            "    turningAreas ( { area \"tankFarmEnd\"; x 168 m; y -31 m; diameter %s m;"
             " reason \"fixture\"; } );\n    network\n    (\n" % diameter),
         _add_route(_route_block("tankers", "entrance main tankFarm tankFarm main entrance")))
 
@@ -2755,7 +2755,7 @@ def arm_site(work):
         t = next(x for x in l2["truckRoutes"] if x["route"] == "tankers")
         rev = [c for c in l2["routeCorners"] if c["route"] == "tankers" and c["turn"] == "reverse"]
         if t["verdict"] != "clear" or len(rev) != 1 or rev[0]["turningArea"] != "tankFarmEnd" \
-                or not close(rev[0]["x"], 160) or t["reversals"] != 1:
+                or not close(rev[0]["x"], 168) or t["reversals"] != 1:
             fail(f"(n) a dead end with a 26 m turning area: verdict {t['verdict']},"
                  f" reversals {rev}; it must turn in `tankFarmEnd` and stay clear")
             return False

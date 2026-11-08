@@ -15,7 +15,7 @@
   to place.  It was then moved by hand into the arrangement below: the two
   compressors in a compressor row to the south-west, the converter with its
   feed-effluent exchanger, the water cooler with the separator, the let-down
-  drum, and a control room as a NON-PROCESS item.  The product store's seven
+  drum, and a control room as a NON-PROCESS item.  The product store's eight
   bullets (DEV.md 4c C92) were placed by hand when they were sized, in a tank
   farm to the south-east, and the FENCE (C93) was declared round the plot.
 
@@ -192,7 +192,7 @@ items
     //  EXERCISE, like everything else in this file.  (There is no syngas
     //  store: the makeup arrives by pipeline, C93 -- see `fence` below.)
     //
-    //  T201, the product: seven insulated BULLETS side by side, lying
+    //  T201, the product: eight insulated BULLETS side by side, lying
     //  north-south in a tank farm south-east of the process area along the
     //  tank-farm road -- more than 30 m from every place the EduTool's
     //  guided moves put the control room, and more than the wind reach
@@ -285,6 +285,19 @@ items
     {
         item        "T201/vessel7";    // D and L from its own sizing
         x           138 m;
+        y           -54 m;
+        z           0 m;
+        orientation alongY;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "liquid ammonia under pressure with dissolved hydrogen: the bullet's nozzles, its vapour-space connections and its relief outlet";
+            zones   ( { zone 2; radius 3 m; height 8 m; } );
+        }
+    }
+    {
+        item        "T201/vessel8";    // D and L from its own sizing
+        x           148 m;
         y           -54 m;
         z           0 m;
         orientation alongY;
@@ -658,7 +671,7 @@ roads
 //  for this exercise, not taken from any spacing standard; the students
 //  replace it with their own site's.  The economics prices this plot area
 //  as land (system/postDict, `economics { land { ... } }`).
-//  SECONDARY CONTAINMENT (DEV.md 4c C134).  The seven T201 bullets hold
+//  SECONDARY CONTAINMENT (DEV.md 4c C134).  The eight T201 bullets hold
 //  liquid ammonia at about 22 bar.  A spill from a pressurised store flashes
 //  in part and the rest pools COLD; it must not lie under the bullets, where
 //  a fire on it would heat the vessels that feed it.  So the bullets stand on
@@ -681,8 +694,8 @@ bunds
         name        "tankFarm";
         kind        impounding;
         items       ( "T201/vessel1" "T201/vessel2" "T201/vessel3" "T201/vessel4"
-                      "T201/vessel5" "T201/vessel6" "T201/vessel7" );
-        region      { xMin 73 m; xMax 143 m; yMin -71 m; yMax -36 m; }
+                      "T201/vessel5" "T201/vessel6" "T201/vessel7" "T201/vessel8" );
+        region      { xMin 73 m; xMax 153 m; yMin -71 m; yMax -36 m; }
         wall        { height 0.3 m; }
         pit         { x 108 m; y -77 m; length 24 m; width 9 m; depth 3.5 m; }
         drain       sumpPump;
@@ -695,7 +708,7 @@ bunds
                 { name rain; depth 50 mm; reason "a design storm on the catch area and the open pit, as a round author-set number; the site's own rainfall statistics replace it"; }
             );
             source  "author-set assumption for this exercise: the case's reading of the usual form of an impounding rule for a pressurised liquefied gas (the largest vessel's liquid, plus rain); not a transcription of any code";
-            reason  "one bullet fails, not seven; the liquid it holds at its working level is what can run to the pit";
+            reason  "one bullet fails, not eight; the liquid it holds at its working level is what can run to the pit";
         }
         source      "author-set assumption for this exercise; not a civil design";
         reason      "the bullets stand on a 0.3 m-kerbed slab sloped south to a pit outside it, between the tank farm and the south fence, clear of every road";
