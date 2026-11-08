@@ -3205,6 +3205,21 @@ accepts today, and that is a policy call.
 > the refusal, the default per-loop figures on ctrl22 (count of figures = loops + 1),
 > the declared block drawn as declared (a GUI test on a fixture).  Record in
 > `docs/ai/dict-syntax.md` and the user guide.
+> AMENDED 2026-11-08 (Vitor: "devia ser possível criar user plots ... No caso da coluna
+> 14 até dava jeito ter um gráfico feito em pós-processamento em que se compara as
+> previsões da coluna com as ... do Klemola"): (4) a series may be a CITED DATASET, not
+> only a result column: `data "constant/data/<file>.csv"; source "<citation>";` drawn as
+> markers over the model's line, the file carrying its own header (what, units, table
+> or figure it was read from); a dataset with no source refuses.  (5) one figure KIND,
+> `parity`, built from the case's `anchor` rows with no declaration needed: computed
+> against measured, the 1:1 line and each row's band, the open (non-anchor) rows drawn
+> hollow -- the figure a colleague asks for first ("validated against what?").  The
+> first witness is column14: its four Table 2 key rows (two anchors, two open) as a
+> parity figure, and the stage profile with whatever the paper prints per tray (it
+> prints EFFICIENCY profiles, not composition profiles -- measured 11-08 by the anchor
+> slice -- so the per-tray overlay is the Murphree efficiency, the case's constant 1.191
+> against the paper's profile, read from its figure with the digitisation stated).
+> Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
 > **C244 (Vitor, 2026-11-07: "não quero que tenhas tantas variações dos projetos base!!
 > Isso fica uma grande salganhada!"): ONE REFERENCE PLANT PER PROCESS; THE VARIANTS
@@ -3256,7 +3271,7 @@ accepts today, and that is a policy call.
 > regenerated).  FOUR ARE THE PRIMARY CHECKOUT'S OWN FILES, not the tree: the GUI's
 > pair-tier test bundles Vitor's private `data/local/` pairs, `check_origin_vocabulary`
 > reads an untracked `MORNING.md`, `check_git_visibility` sees the local
-> two untracked local folders (`refs` under bin/curate, `dwsim-runner` under bin) -- the same gates and tests passed on the
+> two untracked local folders under bin/ (a references folder and a comparison runner) -- the same gates and tests passed on the
 > clean integration tree.  FINDING, to fix: a sweep run in the primary checkout judges
 > untracked local files; the Saturday sweep runs in a clean worktree from now on.
 > Slowest (real seconds): swro01 98 (was 289), check_schema_coverage 68, nanofiltran 62,
