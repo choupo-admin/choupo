@@ -286,6 +286,22 @@ is right**: it is the cover for round-the-clock operation, and both trains
 here run TWO day shifts.  Turton's correlation (P = 6 particulate steps
 declared) is printed beside it for comparison: 33.9 a shift.
 
+**Break-even, sensitivity and the three working capitals are NOT declared
+here -- add them (2026-11-08).**  `economics { breakEven {} }` prints the
+operating break-even x = F / (R - V) and the production fraction s at which
+NPV = 0 (on this case: x = 1.19 and s = 1.28 -- the plant breaks even only
+above its nameplate); `sensitivity { price.packagedTablets { relative ( 0.7
+1.3 ); } discountRate { absolute ( 0.08 0.15 ); } labourRate { relative ( 0.8
+1.2 ); } }` prints the tornado (the apalutamide case declares one);
+`workingCapitalMethods { fractionOfSales 0.15; fractionOfFixedCapital 0.15;
+source "..."; reason "..."; }` prints the itemised build-up beside the two
+fraction rules.  Grammar: `docs/ai/packs/design-cost.md` section 4; the route
+for a group: `docs/pif-student-path.md`.  **And the price is per kg of a
+RESULT stream**: `constant/economics` carries 344.55 EUR/kg because the run's
+`packagedTablets` is 206.879 kg/h for 712 800 tablets/h; change the formula,
+the coat or the reject fraction and that division is yours to redo -- nothing
+warns you.
+
 **Why the NPV is negative, and what it teaches.**  The gross margin
 R − C_RM is large (the API and the excipients cost little per tablet); what
 sinks the plant is the **fixed cost of a dedicated GMP line** — the
