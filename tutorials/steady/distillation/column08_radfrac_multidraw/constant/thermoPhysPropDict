@@ -21,7 +21,7 @@
   in T, announced once per component) instead of jumping to 1.
 
   The column starts from the converged profile of its own ideal-vapour
-  version (0/internalStates/radfrac, a declared SEED, not an answer): the
+  version (the stage profile declared in 0/, a SEED and not an answer): the
   full-MESH Newton from the built-in linear start overshoots to thousands
   of kelvin on this four-component 30-stage column and its line search
   stalls (|F| = 8.1 after 51 iterations); from the seed it converges in 4.
