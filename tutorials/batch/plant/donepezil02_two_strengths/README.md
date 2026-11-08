@@ -121,23 +121,26 @@ intermediate store is not sized.
 |---|---|
 | The multiproduct plan: lots, campaigns, `T_L`, limiting stage, clean per direction, occupancy | the `=== BATCH PLAN` block of the log; `reports/batchPlan/{products,productTrains,productStages,stages,trains}.csv`; the GUI's **Batch plan** section |
 | **The Gantt chart of the year**, every campaign, lot and clean | `reports/batchPlan/gantt.csv` (222 bars); the GUI's Batch plan section draws it |
-| The two preparation vessels sized on the plan, the two air heaters | `Equipment Sizing` block; `design/<unit>/` sheets; `reports/equipment/equipmentList.csv` |
+| The two preparation vessels sized on the plan, the two air heaters, **the seven machines checked against a rating for each strength**, **the cleaning water and effluent per product**, **the air of each grade and the purified water** | `Equipment Sizing` block; the `cleaning of the machines` table; `Clean utilities` blocks; `design/<unit>/` sheets; `reports/equipment/equipmentList.csv` |
 | Costing from declared, labelled quotes that scale with the plan | `Costing` block (`costing { quotes }` in `system/postDict`) |
 | Economics: capital, the declared **operating crew** (10 operators a shift), NPV, **working capital** (`reports/economics/workingCapital.csv`), **land** (priced on the layout's plot), cash flow | the `Economics` block; `reports/economics/cashFlow.csv` |
 | **Sensitivity** to the blended price | the table under the economics; `reports/economics/sensitivity.csv` |
 | The **GMP building** (33 rooms on 2 floors: grades, pressure cascade, airlocks, routes) and the site, with 0 findings | `system/layoutDict`; the `[building]` and `[layout]` lines; the GUI's Layout section |
 
-**What the other tablet cases show that this one cannot — and why.**  Three
-tools are *engine limits for a multiproduct plan today*, each refused by name,
-so they are not in this case (and the case says so in its `postDict`):
-`cleaning ( ... )` (the cleaning water per machine, `BatchPlanPass.H:261`),
-the `ratedMachine` sizers (each machine's fit to its rating,
-`RatedMachineSize.cpp:284-288`) and `cleanUtilities` (the HVAC air of each
-grade and the purified water, `CleanUtilitiesPass.cpp:312-314`).  Run
-`donepezil01_tablets` for them on the 10 mg product alone; the building here
-is priced at the earlier all-in 6 000 EUR/m2 that carried the HVAC inside it.
-Building them for a plan of several products is the next engine slice, and
-the group can ask for it.
+**The three tools of `donepezil01_tablets`, now over two products** (DEV.md
+4c C249 d; each ANNOUNCES that it ran over 2 products):
+
+| Tool | What it does for two strengths | Numbers (run it) |
+|---|---|---|
+| `cleaning ( ... )` in the plan | counts the cleans **per product**: a clean after every lot of each strength, at each campaign changeover of a product and at each **product** changeover; water and effluent summed | 780 cleans a year, 454.5 m3 of purified water, 431.8 m3 of effluent (97 + 33 cleans a machine for the 10 mg and the 5 mg at a one-instance machine, i.e. 86 + 29 lots plus the changeovers); per-product rows in the log and `kpis.cleaning` |
+| `ratedMachine` sizers | checks **each machine against each strength's lot and operating time**; the refusal names the strength that does not fit; `itemMassByProduct` gives the 5 mg its half-weight tablet | the granulator is the tightest (92.8 % for both strengths: the same 300 kg bin), then the dryer (89.1 %), the blender (85.7 %), the press (77.3 %: 14 h for the 5 mg at the same tablets an hour) |
+| `cleanUtilities` | the **HVAC is room-based**, so it does not depend on the product mix and is computed once; the **purified water** is drawn per lot of each strength and summed (86 + 29 lots) | 3.14 m3 a lot (the same bin for both), 470 m3 a year, peak 1.33 m3 h-1, generator 1.67 m3 h-1, tank 5.3 m3 |
+
+The building is priced as `donepezil01_tablets` prices it: 5 240 EUR/m2 for
+the shell plus the two `hvacGrade` supply-air quotes (the earlier all-in
+6 000 EUR/m2 is gone).  What is still not computed for a plan of several
+products: the wait for QC release between campaigns and any optimisation of
+the order (`BatchPlanPass.H`, WHAT IS NOT DONE).
 
 ## 5. What the group changes for its own drug
 
