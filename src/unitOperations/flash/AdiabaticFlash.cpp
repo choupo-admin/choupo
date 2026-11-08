@@ -146,12 +146,20 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     // Outer residual:  f(T) = H_out(T) - Hreq, where H_out comes from a
     // fully converged isothermal flash at (T, Pout, z).
     FlashOptions iopts;
+    //  C245 3g: the inner tolerance is on the composition step; H changes by
+    //  ~1e4 J/mol per unit of it, so 1e-9 puts the inner flash's H error at
+    //  ~1e-5 J/mol, 1e3 below the outer 0.01 J/mol.
     iopts.tolerance  = 1.0e-9;
     iopts.maxIter    = 60;
     iopts.verbosity  = (verbosity >= 4) ? 3 : 0;
     iopts.accelerator = OuterAccelerator::Wegstein;
 
     FlashSolution lastSol;
+    //  C245 3g: the inner flash's own `converged` is READ.  Every trial whose
+    //  inner flash stopped unconverged is counted and treated as unanswerable
+    //  (it is not a point of the surface H_out(T); differencing it would put
+    //  an arbitrary number into the Newton slope).
+    int innerFailedTrials = 0;
 
     //  A two-phase root above every present component's Tc is not a split:
     //  the outlet is the single fluid phase, and the discard is said once,
@@ -205,6 +213,19 @@ int AdiabaticFlash::solve(const DictPtr& dict,
                              " tightened\n";
             return 1.0e12;                      // f > 0: tightens the upper edge
         }
+        if (!lastSol.converged)
+        {
+            trialUnanswerable = true;
+            ++innerFailedTrials;
+            if (verbosity >= 1)
+                std::cout << "  [adiabaticFlash] trial T = " << std::fixed
+                          << std::setprecision(2) << T << " K: the inner"
+                          << " isothermal flash did NOT converge (residual "
+                          << std::scientific << std::setprecision(2)
+                          << lastSol.residual << ") -- trial refused,"
+                             " treated as ABOVE the answer\n";
+            return 1.0e12;
+        }
         trialUnanswerable = false;
         scalar Hout = splitH(T, Pout, lastSol);
         return Hout - Hreq;
@@ -231,7 +252,8 @@ int AdiabaticFlash::solve(const DictPtr& dict,
 
     solver::NROptions nro;
     nro.tolerance          = 0.01;         // J/mol; keeps published H-flow closure negligible
-    nro.maxIter            = 30;
+    nro.maxIter            = static_cast<int>(
+        operDict->lookupScalarOrDefault("maxOuterIter", 30.0));
     nro.lower              = 200.0;
     nro.upper              = 700.0;
     nro.bracket            = true;
@@ -315,7 +337,9 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     lastSol = flashAt(r.x);
     flashState::reportSupercriticalDiscard(scDiscarded, "adiabaticFlash",
                                            "adiabaticFlash outlet", verbosity);
+    const bool innerFinalOk = lastSol.converged;
     scalar Hout = splitH(r.x, Pout, lastSol);
+    const bool allOk = r.converged && innerFinalOk;
 
     // Outlet streams (liquid + vapor) at the converged T_out and the outlet P.
     // The products ARE the point of a flash -- emit them so the flowsheet
@@ -348,7 +372,10 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     kpis_["H_residual"] = Hout - Hin;                         // J/mol (~0, adiabatic)
 
     std::cout << "\n========================  Adiabatic Flash Result  ===================\n"
-              << "  Converged:     " << (r.converged ? "yes" : "NO") << "\n"
+              << "  Converged:     " << (allOk ? "yes" : "NO") << "\n"
+              << "  Outer T search converged:  " << (r.converged ? "yes" : "NO") << "\n"
+              << "  Inner flash converged:     " << (innerFinalOk ? "yes" : "NO")
+              << "  (" << innerFailedTrials << " trial(s) refused)\n"
               << "  Outer iter.:   " << r.iterations << "\n"
               << "  T_out:         " << std::fixed << std::setprecision(4)
               << r.x << "  K  ( " << (r.x - 273.15) << " °C )\n"
@@ -377,7 +404,7 @@ int AdiabaticFlash::solve(const DictPtr& dict,
                   << "\n";
     std::cout << "====================================================================\n\n";
 
-    return r.converged ? 0 : 1;
+    return allOk ? 0 : 1;
 }
 
 //  WHAT THE UNIT ACCEPTS (DEV.md 4c C188 item 5, slice D): the unit models

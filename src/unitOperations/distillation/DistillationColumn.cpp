@@ -518,7 +518,18 @@ sVector stageVapourK(const ThermoPackage& thermo, scalar T, scalar P,
     //  sends up is read off the physical liquid (negatives as absent).  At a
     //  converged state every fraction is non-negative and this is x itself.
     sVector xp(x.size(), 0.0);
-    for (std::size_t i = 0; i < x.size(); ++i) xp[i] = std::max(x[i], 0.0);
+    bool clipped = false;
+    scalar sp = 0.0;
+    for (std::size_t i = 0; i < x.size(); ++i)
+    {
+        if (x[i] < 0.0) clipped = true;
+        xp[i] = std::max(x[i], 0.0);
+        sp += xp[i];
+    }
+    //  C245 3d: a clipped composition no longer sums to what it did; the
+    //  activity model reads a mole-fraction vector, so it is renormalised
+    //  (only when something was clipped: a converged stage is untouched).
+    if (clipped && sp > 0.0) for (auto& v : xp) v /= sp;
     const sVector K0 = thermo.Kvec(T, P, xp, ySeed ? *ySeed : xp);
     const auto r = incipientPhase::vapour(thermo, T, P, xp, K0);
     if (converged) *converged = r.converged;
@@ -3120,7 +3131,20 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     std::mutex        trialRefusalLock;
     auto stageKOnTrial = [&](scalar Tj, const sVector& xj) -> sVector
     {
-        try { return stageVapourK(thermo, Tj, P, xj); }   // at its own vapour (C169)
+        try
+        {
+            //  C245 3d: the incipient-vapour iteration's verdict is read; a
+            //  trial whose vapour did not converge is REFUSED, not priced on
+            //  the last iterate.  (No warm start from a shared "last accepted
+            //  vapour": the MESH residual runs its FD columns in parallel and
+            //  must stay a pure function of its argument.)
+            bool vapOk = true;
+            const sVector Kj = stageVapourK(thermo, Tj, P, xj, nullptr, &vapOk);
+            if (!vapOk)
+                throw InfeasibleTrial("DistillationColumn: the incipient-"
+                    "vapour iteration did not converge on this MESH trial");
+            return Kj;                                    // at its own vapour (C169)
+        }
         catch (const InfeasibleTrial&) { throw; }
         catch (const std::exception& e)
         {
@@ -3750,8 +3774,18 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                     sVector yD = ys[0];
                     { scalar sy0 = 0.0; for (auto v : yD) sy0 += v;
                       if (sy0 > 0.0) for (auto& v : yD) v /= sy0; }
+                    //  C245 3c: the reflux temperature is an INNER bubble
+                    //  point.  Its verdict was dropped, so a trial whose
+                    //  bubble point did not converge fed an arbitrary T into
+                    //  the energy row; now such a trial is refused.
+                    bool refluxOk = true;
                     const scalar Treflux =
-                        bubbleTWithItsVapour(thermo, yD, P, Ts[0], 1.0e-12);
+                        bubbleTWithItsVapour(thermo, yD, P, Ts[0], 1.0e-12,
+                                             &refluxOk);
+                    if (!refluxOk)
+                        throw InfeasibleTrial("DistillationColumn: the reflux"
+                            " bubble point (total condenser) did not converge"
+                            " on this MESH trial");
                     g[j*mv + n+1] = energyScale * (
                           R*D*hL(yD, Treflux) + Vs[1]*hV(ys[1], Ts[1])
                         - Ls[0]*hL(xs[0], Ts[0]) - Vs[0]*hV(ys[0], Ts[0]));
