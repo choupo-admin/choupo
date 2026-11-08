@@ -418,16 +418,16 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/solver/Wegstein.H", 73, "qMin = -5.0"],
     ["src/solver/Wegstein.H", 86, "per-component q values"],
     // --- Wegstein: how the flowsheet drives it
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3250, "Wegstein"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3257, "recycleWegsteinQmin"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3258, "recycleWegsteinQmax"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3262, "Wegstein"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3269, "recycleWegsteinQmin"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3270, "recycleWegsteinQmax"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3307, "normL2(gx, x)"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 1782, "v.push_back(s.F)"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 1829, "z /= zsum"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 1794, "v.push_back(s.F)"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 1841, "z /= zsum"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3392, "s.F * (i < s.z.size()"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3437, "latent under-convergence"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3465, "/ scale[i]"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 1861, "mixes flows and"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 1873, "mixes flows and"],
     //  291, not 290: the engine gained a comment line above it and the
     //  anchor was left behind.  The lesson's own citation is the RANGE
     //  288-291 and still covers it; this list holds the ONE line that must
