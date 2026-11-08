@@ -3730,6 +3730,22 @@ PYEOF
     fi
     rm -f /tmp/colthermo.$$
 
+    # stage-K continuity gate (2026-11-08, DEV.md 4c C245 slice 3, audit H1).
+    # A reactive package's stageK chose its construction by whether an inner
+    # Newton converged; above the dew edge it priced the bubble-side
+    # hypothetical liquid (measured 0.51 relative step in K_CO2 over 1e-6 K on
+    # stripper01 tray 1).  The probe calls stageK at the converged tray liquids
+    # and bisects the worst interval of a T scan down to 1e-6 K.
+    if gate_exec "$ROOT/bin/curate/check_stagek_continuity.py" > /tmp/stagekc.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "stagek-continuity-gate" "$(gate_claim check_stagek_continuity /tmp/stagekc.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_stagek_continuity.py)\n" "stagek-continuity-gate"
+        cat /tmp/stagekc.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/stagekc.$$
+
     # over-specified stream gate (2026-10-03).  A stream of known component
     # flows is fixed by TWO intensive variables (Duhem); for a MIXTURE (T, P)
     # fix the split, so a `vaporFraction` beside them is refused by name --
