@@ -158,7 +158,7 @@ export const CAMPAIGN_PLAN_STEPS: readonly LessonStep[] = [
       + "TANK, not the dryer, is the stage that paces the train. The dryer "
       + "is not cleaned between lots but at the campaign changeover "
       + "(postDict:178 declares cleanTime 0 h; the changeover of 48 h is at "
-      + "postDict:113, seven lots a campaign at :112). What carries the "
+      + "postDict:113, seven lots a campaign at postDict:112). What carries the "
       + "lot's identity is the tank: the dryer's output over the run it takes "
       + "belongs to the lot in the tank. ICH Q13 on continuous manufacturing "
       + "lets a batch be defined by a quantity, a time or the input, and "
