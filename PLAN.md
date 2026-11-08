@@ -79,6 +79,7 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
+| running | C245 kernel numerical audit: slices 1, 4, part of 11 and the adsorber hot spots LANDED (6bceec76d); next slices 2-3 (callers declare bounds, residual purity), 5, 6 | C245 |
 | done | C241 LANDED (bab4dff30): BRAIN.md with its generator and `check_brain_fresh` (brain-fresh-gate), `@BRAIN.md` import, CLAUDE.md 4379 -> 1068 lines by relocation to `docs/architecture/settled-contracts.md` (119 units verbatim); the second cut (sections 0/2/10) is the architect's own editing, later | C241 |
 | done | C236 LANDED (14854376b): dynamic writers default `flushEach false` (ctrl17 141 -> 0.4 s, byte-identical), the golden checker reads equipment/layout blocks once per case (swro01 292 -> 93 s); the Saturday sweep covers its shared path | C236 |
 | running | C239 (2026-11-08): S1+S3 -- column08 (16 bar) and column20 (7 bar) on the SRK vapour, golden re-recorded with reasons; beside it the Klemola anchors on column14 (first column held to a measured plant) and its entry into the validation subset; then S2 process05/recycle02, S4 column05 dimer, S5 measure the 1-atm family | C239 |

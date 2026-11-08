@@ -3221,6 +3221,34 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C245 (Vitor, 2026-11-08, after the Tc step was found the slow way: "E se revisses o
+> kernel todo primeiro ... A lógica matemática pristine e as boas práticas numéricas podem
+> ser implementadas sem ter de andar a martelar código por tentativa e erro"): THE KERNEL
+> READ FOR NUMERICAL HYGIENE.**  A read-only audit, eight readers over ~37 000 lines, every
+> HIGH finding re-opened at its line: `docs/audits/2026-11-08-kernel-numerical-audit.md`
+> (16 HIGH confirmed, five classes, 12 slices).  The root: NewtonND had no globalisation
+> contract, so every caller compensated with clamps and seeds.  LANDED the same day
+> (`6bceec76d`, one batch, full sweep 860 / 3 before its three fixes, scope 144/0, --gui
+> 45/0, --fast 77/0 after): slice 1 (NDOptions typX/lower/upper/maxStep, Armijo with
+> cubic backtracking, Levenberg-Marquardt instead of an uphill step, opt-in; a pivot test
+> on the two-sided equilibrated matrix -- the row-relative first version refused
+> column05 at flows x1e-8, a column-units effect -- and a finite-column check, both
+> default; gate check_newton_globalisation; the full MESH opts in); slice 4 (one
+> CubicEoS base for SRK/PR, single-root side decided on the isotherm, a flagged
+> pseudo-root at the spinodal volume, PR gets its liquid root, Newton polish, PC-SAFT
+> kij refusal and relative density tolerance; column08 converges UNSEEDED and its seed
+> is deleted; envelope02 reaches 40 bar; FitParameters stops on a negligible rejected
+> step, which the continuous Jacobian exposed); slice 11 in part (Rodas4 beside
+> Rosenbrock23, opt-in, order gate; batch23 13.4 -> 7.0 s); the adsorber hot spots
+> (announceUse latch, a byte-keyed viscosity memo; byte-identical); C227 (a).  The full
+> sweep walked in 24 min (34 on 11-07).  OPEN: Rodas4's embedded-estimate constants are
+> unverified against rodas.f (unige.ch refuses automated access; Hairer & Wanner II,
+> IV.7 closes it); the Henry fit's LM loop has the same lambda-inflation pattern; PC-SAFT
+> has no pseudo-root; envelope02's 1.1 K dip at 35-36 bar is unexplained; parallel
+> recycle loops are a MEASURED candidate only (independent SCCs, ThermoPackage cache
+> safety, no threads in the browser).  NEXT: slices 2-3 (callers declare bounds and drop
+> their clamps; residual purity), then 5 (vapour-pressure continuity) and 6 (flash).
+
 > **C244 (Vitor, 2026-11-07: "não quero que tenhas tantas variações dos projetos base!!
 > Isso fica uma grande salganhada!"): ONE REFERENCE PLANT PER PROCESS; THE VARIANTS
 > BECOME SWEEPS, RUNGS OR FIXTURES.**  STATUS: to measure, then one slice after the

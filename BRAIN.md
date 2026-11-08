@@ -131,6 +131,7 @@ are indoor by rule (C100) and the viewer marks them.
 
 ## WHAT CHANGED LAST (newest first; keep ten lines)
 
+- 2026-11-08 C245: kernel audit (docs/audits/2026-11-08-kernel-numerical-audit.md); Newton contract, CubicEoS pseudo-root, Rodas4, adsorber 2x, column08 unseeded (6bceec76d); C239 Tc rule continuous, Ar on Henry, ammonia re-sealed 2608 (e5d7017b8); C227 (a).
 - 2026-11-08 C239: Klemola anchors on column14 (cfc70414d), column20 on SRK (021a66afa); column08 blocked by the Tc rule, fix decided (continuous factor) and running.
 - 2026-11-07 C241 (BRAIN generator + gate, CLAUDE.md diet) and C236 (speed) landed.
 - 2026-11-07 C235 LANDED (4174b9a05): real-vapour liquid reference; 20 cases
