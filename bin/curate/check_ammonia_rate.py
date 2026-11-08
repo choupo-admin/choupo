@@ -384,10 +384,10 @@ def main() -> int:
             "(e2) a 12 mm particle", fails, "outside refuse")
     refusal(lambda t: t.replace("pressure     300 atm", "pressure     400 atm"), same,
             "(e3) 400 atm", fails, "OUTSIDE its declared points")
-    refusal(lambda t: t.replace("NH3 0.0140133", "NH3 0.0000000").replace(
-            "N2 0.2386387", "N2 0.2526520"), same,
+    refusal(lambda t: t.replace("NH3 0.0162262", "NH3 0.0000000").replace(
+            "N2 0.2221019", "N2 0.2383281"), same,
             "(e4) a gas with no ammonia", fails, "definition `fwd`")
-    refusal(lambda t: t.replace("inert 0.0233473", "inert 0.0433473"), same,
+    refusal(lambda t: t.replace("inert 0.0888226", "inert 0.1088226"), same,
             "(e5) a composition that does not close", fails, "NOT normalised")
 
     # ---- (f) the interpolation is announced, and only when it happens ----

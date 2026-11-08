@@ -817,7 +817,8 @@ scalar ThermoPackage::refFactor(std::size_t i, scalar T, scalar P) const
     const std::string& role = components_[i].role();
     if (role == "nonvolatile" || role == "radical") return 1.0;
     return liquidReferenceFactor(*eos_, components_[i], i, n(), T, P,
-                                 Psat(i, T));
+                                 Psat(i, T),
+                                 [this, i](scalar Tx) { return Psat(i, Tx); });
 }
 
 scalar ThermoPackage::pureLiquidReference(std::size_t i, scalar T,

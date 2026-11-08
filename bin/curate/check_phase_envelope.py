@@ -131,7 +131,10 @@ GAS = ROOT / "tutorials" / "props" / "molecular" / "envelope01_natural_gas"
 #  Named envelope02_root_jump until C235 (2026-11-07).  Its jump was an
 #  artefact of the one-sided liquid reference; with phi_sat and Poynting in
 #  it a search of twelve neighbours (six compositions x PengRobinson/SRK, to
-#  60 bar) found no root jump, so the case now witnesses a STOPPED branch.
+#  60 bar) found no root jump, so the case then witnessed a STOPPED branch.
+#  Since C239 (2026-11-08) the reference factor is continuous in T and the
+#  branches cross propane's Tc: the bubble branch reaches the top of the range
+#  and the dew branch ends at a reported root jump.
 JUMP = ROOT / "tutorials" / "props" / "molecular" / "envelope02_c3c4c5_branch_stop"
 OP = ROOT / "src" / "propertyOps" / "PhaseEnvelope.cpp"
 
@@ -226,28 +229,39 @@ def main() -> int:
     else:
         notes.append("an empty branch is reported as never started")
 
-    #  envelope02 no longer jumps root.  What it shows -- and what this arm
-    #  holds -- is the honest ending: each branch is reported as STOPPED, with
-    #  its last converged point, and the run does NOT call it a root jump (a
-    #  jump has a different remedy and a different meaning).  The detector of
-    #  a jump is still in the op, but NO shipped case exercises it any more:
-    #  that direction is not checked here, and is said so in the closing line.
-    if "DIFFERENT ROOT" in jump:
-        fails.append("envelope02 is reported as a ROOT JUMP.  Its branches no"
-                     " longer jump (the saturation solve stops, it does not"
-                     " land on another root): a report that claims one is"
-                     " saying something the numbers do not")
-    for what in ("bubble", "dew"):
-        if not re.search(r"the " + what + r" branch stopped at [0-9.]+ bar;"
-                         r" the last converged point is [0-9.]+ K at [0-9.]+ bar",
-                         jump):
-            fails.append(f"envelope02's {what} branch stops and the run does not"
-                         " report where it stopped and its last converged point"
-                         " -- a branch that ends unexplained reads as a mixture"
-                         " that simply ends there")
+    #  envelope02 (C239, 2026-11-08): with the liquid reference CONTINUOUS in T
+    #  (held above 0.99 Tc) the branches cross propane's Tc instead of stopping
+    #  below it.  The bubble branch then reaches the top of the requested range
+    #  and the dew branch is ended, far above Tc, by the root-jump guard.  What
+    #  this arm holds: the bubble branch is NOT reported as stopped or as a
+    #  jump; the dew branch IS reported as a root jump, with where it stopped
+    #  and the last kept point -- so the detector, unwitnessed between C235 and
+    #  C239, is exercised again by a shipped case.
+    if "bubble branch reached the top of the requested range" not in jump:
+        fails.append("envelope02's bubble branch crosses propane's Tc and"
+                     " reaches the top of the requested range, and the run"
+                     " does not say so -- a branch that ends is not the same"
+                     " as one that was never stopped")
+    if "bubble branch stopped" in jump:
+        fails.append("envelope02's bubble branch is reported as STOPPED; it"
+                     " reaches the top of the requested range")
+    if "DIFFERENT ROOT" not in jump:
+        fails.append("envelope02's dew branch is ended by a root jump and the"
+                     " run does not call it one -- the guard's report is the"
+                     " only thing that tells a drawn curve from a solver that"
+                     " landed elsewhere")
+    if not re.search(r"the dew branch stopped at [0-9.]+ bar because the"
+                     r" saturation solve CONVERGED THERE TO A DIFFERENT ROOT"
+                     r".*The last kept point is [0-9.]+ K at [0-9.]+ bar",
+                     jump, re.S):
+        fails.append("envelope02's dew branch stops and the run does not"
+                     " report where it stopped and its last kept point"
+                     " -- a branch that ends unexplained reads as a mixture"
+                     " that simply ends there")
     if not fails or all("envelope02" not in f for f in fails):
-        notes.append("envelope02's two branches are reported as STOPPED (with"
-                     " the last converged point) and never as a root jump")
+        notes.append("envelope02's bubble branch crosses propane's Tc to the"
+                     " top of the range and its dew branch is ended by a"
+                     " REPORTED root jump (with the last kept point)")
 
     # ---- (e) both directions -------------------------------------------
     if "CRICONDENTHERM" not in gas:
@@ -355,12 +369,15 @@ def main() -> int:
           " report.  The nose itself is not drawn and the critical point is"
           " not located.  The continuity thresholds are sized for the"
           " discontinuous kind of root jump; one inside the noise of the"
-          " branch's own steps would pass unseen.  A ROOT-JUMP REPORT IS NOT"
-          " EXERCISED BY ANY SHIPPED CASE since C235 (envelope02 stopped"
-          " jumping once the liquid reference carried phi_sat); the detector"
-          " is in the op and unwitnessed, and only the absence of a false"
-          " claim is held here.  Sabotage by hand (C235): the op marking every"
-          " stopped bubble branch as a root jump FAILS the envelope02 arm.")
+          " branch's own steps would pass unseen.  THE ROOT-JUMP REPORT IS"
+          " EXERCISED AGAIN since C239 (envelope02's dew branch is ended by"
+          " it at 36 bar, far above propane's Tc, once the liquid reference"
+          " is continuous in T); it was unwitnessed between C235 and C239."
+          "  Whether that jump is an artefact of the held reference or of the"
+          " warm-started, bracketed solve is not decided here.  Sabotage by"
+          " hand (C235): the op marking every stopped bubble branch as a root"
+          " jump FAILS the envelope02 arm (its bubble branch must reach the"
+          " top of the range).")
     return 0
 
 

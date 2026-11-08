@@ -139,7 +139,7 @@ units
     //  convention.  Compare it with the half hour of syngas this case once
     //  stored (above): 80x the MASS here, in less volume.  The
     //  liquid is held as it leaves the let-down drum, at 250 K and above its
-    //  20 bar bubble pressure, so the vessel is a PRESSURE vessel: seven
+    //  20 bar bubble pressure, so the vessel is a PRESSURE vessel: eight
     //  insulated bullets, SIZED in system/postDict (`liquefiedGasStorage`,
     //  `unit T201;`, DEV.md 4c C92), which read the 48 h and the 0.80 fill
     //  fraction from here -- one home.

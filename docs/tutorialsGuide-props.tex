@@ -3221,18 +3221,18 @@ The catalyst particle is the law's own parameter (`dp 8 mm;` in constant/reactio
 \tutreadme{The same two letters, meaning opposite things. This case keeps the paper's convention because every number in it is read off the paper's own equations, and the engine says so at every surface that prints either letter. Carry $\eta$ across from the reactor side and you will read a conversion as an effectiveness factor.}
 \tutreadme{A correlation in this tree carries three things a reader can check, and this one carries them in the CASE:}
 \begin{tutgolden}
-\goldrow{diag}{dysonSimon}{bed1Inlet\_Eq40}{264.250587753}
-\goldrow{diag}{dysonSimon}{bed1Inlet\_V3}{703.988392578}
-\goldrow{diag}{dysonSimon}{bed1Inlet\_eta}{0.0316601173463}
-\goldrow{diag}{dysonSimon}{bed1Inlet\_xi}{0.375362137415}
-\goldrow{diag}{dysonSimon}{bed1Outlet\_Eq40}{4.37776189}
-\goldrow{diag}{dysonSimon}{bed1Outlet\_V3}{8.56069133183}
-\goldrow{diag}{dysonSimon}{bed1Outlet\_eta}{0.224806233665}
-\goldrow{diag}{dysonSimon}{bed1Outlet\_xi}{0.511379480968}
-\goldrow{diag}{dysonSimon}{bed3Outlet\_Eq40}{0.682982714231}
-\goldrow{diag}{dysonSimon}{bed3Outlet\_V3}{0.873241374276}
-\goldrow{diag}{dysonSimon}{bed3Outlet\_eta}{0.342681969057}
-\goldrow{diag}{dysonSimon}{bed3Outlet\_xi}{0.78212363082}
+\goldrow{diag}{dysonSimon}{bed1Inlet\_Eq40}{166.458716538}
+\goldrow{diag}{dysonSimon}{bed1Inlet\_V3}{386.705388618}
+\goldrow{diag}{dysonSimon}{bed1Inlet\_eta}{0.0365798726419}
+\goldrow{diag}{dysonSimon}{bed1Inlet\_xi}{0.430453573799}
+\goldrow{diag}{dysonSimon}{bed1Outlet\_Eq40}{2.87605463668}
+\goldrow{diag}{dysonSimon}{bed1Outlet\_V3}{5.33952792223}
+\goldrow{diag}{dysonSimon}{bed1Outlet\_eta}{0.224255825635}
+\goldrow{diag}{dysonSimon}{bed1Outlet\_xi}{0.53863462811}
+\goldrow{diag}{dysonSimon}{bed3Outlet\_Eq40}{0.374882283122}
+\goldrow{diag}{dysonSimon}{bed3Outlet\_V3}{0.466226453532}
+\goldrow{diag}{dysonSimon}{bed3Outlet\_eta}{0.336428411115}
+\goldrow{diag}{dysonSimon}{bed3Outlet\_xi}{0.804077675735}
 \goldrow{diag}{dysonSimon}{locus1\_Eq40}{-889.947776496}
 \goldrow{diag}{dysonSimon}{locus1\_T\_maxRate\_K}{900}
 \goldmore{14}
@@ -3591,7 +3591,7 @@ Nothing here is a validation against measurement: every number is the engine's o
 \begin{tutgolden}
 \goldrow{diag}{envelope}{bubble\_points}{0}
 \goldrow{diag}{envelope}{bubble\_stopped\_bar}{1}
-\goldrow{diag}{envelope}{dew\_cricondentherm\_K}{271.454972981}
+\goldrow{diag}{envelope}{dew\_cricondentherm\_K}{275.946403666}
 \goldrow{diag}{envelope}{dew\_points}{40}
 \end{tutgolden}
 
@@ -3602,12 +3602,11 @@ Nothing here is a validation against measurement: every number is the engine's o
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{envelope}\\[-1pt]{\tiny phaseEnvelope}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{P-T envelope of a C3/C4/C5 feed where both branches stop just below propane's Tc: reported as STOPPED branches, never as a root jump, and no cricondentherm is claimed}
+\tutwhat{P-T envelope of a C3/C4/C5 feed marched through propane's Tc: the reference factor is held continuous above 0.99 Tc, so both branches cross Tc; the dew branch is ended later by the root-jump guard, and no cricondentherm is claimed}
 \begin{tutgolden}
-\goldrow{diag}{envelope}{bubble\_points}{22}
-\goldrow{diag}{envelope}{bubble\_stopped\_bar}{23}
-\goldrow{diag}{envelope}{dew\_points}{15}
-\goldrow{diag}{envelope}{dew\_stopped\_bar}{16}
+\goldrow{diag}{envelope}{bubble\_points}{40}
+\goldrow{diag}{envelope}{dew\_points}{35}
+\goldrow{diag}{envelope}{dew\_stopped\_bar}{36}
 \end{tutgolden}
 
 \clearpage

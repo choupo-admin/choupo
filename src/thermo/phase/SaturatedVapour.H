@@ -50,11 +50,14 @@ Description
     313 K and 150 bar: phi_sat ~ 0.86 and Poynting ~ 1.15 nearly cancel).
     With an ideal vapour this code is not entered.
 
-    A SATURATED VAPOUR EXISTS ONLY BELOW Tc.  For T >= the component's Tc,
-    or a component with no declared Tc, the factor is exactly 1, announced
-    once by name: above Tc there is no saturation for phi_sat to describe,
-    an extrapolated Psat is not one, and Poynting has no meaning there
-    either.  A component with no `Vliq` keeps phi_sat and gets Poynting = 1,
+    A SATURATED VAPOUR EXISTS ONLY BELOW Tc, and the factor must be
+    CONTINUOUS in T (C239: a jump from ~0.7 to 1 at Tc stalled the MESH
+    Newton of column08).  Above T_cap = 0.99 Tc the factor is HELD at its
+    value at T_cap (phi_sat at (T_cap, Psat(T_cap)), Poynting at that
+    state), announced once per component; `psatAt` is the caller's own
+    Psat(T), so the held value comes from the same vapour-pressure model.
+    Without `psatAt` the old rule applies (factor 1 at T >= Tc).  A
+    component with no declared Tc has factor 1, announced.  A component with no `Vliq` keeps phi_sat and gets Poynting = 1,
     announced once by name.  A non-finite Psat or EoS value gives 1,
     announced.  Never a silent fallback.
 
@@ -73,6 +76,7 @@ Description
 #include "core/Types.H"
 
 #include <cstddef>
+#include <functional>
 
 namespace Choupo {
 
@@ -83,6 +87,7 @@ class EquationOfState;
 //  the package; `Psat_Pa` [Pa] is the package's saturation pressure of i.
 scalar liquidReferenceFactor(const EquationOfState& eos, const Component& c,
                              std::size_t i, std::size_t n,
-                             scalar T_K, scalar P_Pa, scalar Psat_Pa);
+                             scalar T_K, scalar P_Pa, scalar Psat_Pa,
+                             const std::function<scalar(scalar)>& psatAt = {});
 
 } // namespace Choupo

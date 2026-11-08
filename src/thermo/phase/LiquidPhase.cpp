@@ -88,7 +88,9 @@ sVector LiquidPhase::fEffective(scalar T, scalar P_Pa, const sVector& x) const
         const scalar phiSat = (vapourEos_ && hasPsat && !pf
                                && (*components_)[i].role() != "nonvolatile")
             ? liquidReferenceFactor(*vapourEos_, (*components_)[i], i, n_, T, P_Pa,
-                                  psat)
+                                  psat,
+                                  [&, i](scalar Tx)
+                                  { return saturationPressure((*components_)[i], pf, Tx); })
             : 1.0;
         f[i] = gamma[i] * (phiSat == 1.0 ? psat : psat * phiSat);
     }
