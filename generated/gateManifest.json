@@ -113,13 +113,13 @@
     },
     "check_case_tiers": {
       "exit": 0,
-      "claim": "check_case_tiers: OK -- 470 witness(es), 42 tutorial(s), 15 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or sectored flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
-      "seconds": 0.2
+      "claim": "check_case_tiers: OK -- 473 witness(es), 42 tutorial(s), 15 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or sectored flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
+      "seconds": 0.3
     },
     "check_caveat_surface": {
       "exit": 0,
-      "claim": "check_caveat_surface: OK -- 1 named extrapolation(s) listed (solidDryer01_sugar); all 7 block item(s) present in the result JSON; clean run states 'none raised' explicitly; outer-driver run gibbs04_wgs_temperature_sweep prints the block and names its pass (the LAST pass only); outer-driver run compressor02_designspec_pout prints the block and names its pass (the REPRESENTATIVE pass); a swept run's last-pass block lists all 7 once-per-process records its direct twin lists (cavett01_recycle_train); the dynamic driver's last-pass block keeps the once-per-process synthetic-record fact (ctrl20_bode_cstr); no advisory behind an announceOnce latch in 777 source files (source scan, probe passed); all 5 binaries CALL the summary (source check of each main and the driver it delegates to, not an observed run).  The gate checks the SURFACE (named, silent when empty, agreeing with the JSON, present in every binary), never whether an advisory is JUSTIFIED -- that is curation, and check_cp_range_announced and check_review_status own those judgements.  DOMAIN: choupoSolve's own output on five corpus cases (cavett01 both directly and under a scratch 2-point sweep), choupoCtrl's on one, a source scan of the five binaries' main.cpp (and the driver two of them delegate to), and a source scan of src/ for an advisory behind an announceOnce latch.  LIMITS: arm (d) is a source check and cannot see an enclosing `if` -- which is how the outerDict silence survived it -- and arm (e) requires the block to RUN under an outer driver and to name its pass, never that the pass it names is the right one to report (that is a stated decision, recorded in main.cpp and in docs/design/three-silences-at-exit-zero.md); arm (h) sees `announceOnce` latches only, not a `static bool` or a once_flag; arm (g) cannot see a MISSING per-pass clear in the dynamic driver, because on ctrl20 the union and the last pass hold the same entry (docs/design/a-fact-raised-once-per-process.md).",
-      "seconds": 2.3
+      "claim": "check_caveat_surface: OK -- 1 named extrapolation(s) listed (solidDryer01_sugar); all 7 block item(s) present in the result JSON; clean run states 'none raised' explicitly; outer-driver run gibbs04_wgs_temperature_sweep prints the block and names its pass (the LAST pass only); outer-driver run compressor02_designspec_pout prints the block and names its pass (the REPRESENTATIVE pass); a swept run's last-pass block lists all 7 once-per-process records its direct twin lists (cavett01_recycle_train); the dynamic driver's last-pass block keeps the once-per-process synthetic-record fact (ctrl20_bode_cstr); no advisory behind an announceOnce latch in 901 source files (source scan, probe passed); all 5 binaries CALL the summary (source check of each main and the driver it delegates to, not an observed run).  The gate checks the SURFACE (named, silent when empty, agreeing with the JSON, present in every binary), never whether an advisory is JUSTIFIED -- that is curation, and check_cp_range_announced and check_review_status own those judgements.  DOMAIN: choupoSolve's own output on five corpus cases (cavett01 both directly and under a scratch 2-point sweep), choupoCtrl's on one, a source scan of the five binaries' main.cpp (and the driver two of them delegate to), and a source scan of src/ for an advisory behind an announceOnce latch.  LIMITS: arm (d) is a source check and cannot see an enclosing `if` -- which is how the outerDict silence survived it -- and arm (e) requires the block to RUN under an outer driver and to name its pass, never that the pass it names is the right one to report (that is a stated decision, recorded in main.cpp and in docs/design/three-silences-at-exit-zero.md); arm (h) sees `announceOnce` latches only, not a `static bool` or a once_flag; arm (g) cannot see a MISSING per-pass clear in the dynamic driver, because on ctrl20 the union and the last pass hold the same entry (docs/design/a-fact-raised-once-per-process.md).",
+      "seconds": 3.1
     },
     "check_charge_balance": {
       "exit": 0,
@@ -148,8 +148,8 @@
     },
     "check_compile_clean": {
       "exit": 0,
-      "claim": "check_compile_clean: OK -- 346 translation unit(s) compile under -Wall -Wextra -Wpedantic with no warning.  NOT checked: optimiser-only warnings (-fsyntax-only skips codegen; `make STRICT=1` is the complete check), headers no TU includes, the separate WASM and gui/ toolchains, or any compiler but this one.",
-      "seconds": 112.6
+      "claim": "check_compile_clean: OK -- 415 translation unit(s) compile under -Wall -Wextra -Wpedantic with no warning.  NOT checked: optimiser-only warnings (-fsyntax-only skips codegen; `make STRICT=1` is the complete check), headers no TU includes, the separate WASM and gui/ toolchains, or any compiler but this one.",
+      "seconds": 44.9
     },
     "check_component_name_hint": {
       "exit": 0,
@@ -223,7 +223,7 @@
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 221 design record(s) appear in the index, and its stated counts (159 state a rejected alternative, 62 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
+      "claim": "check_decision_index: OK -- all 222 design record(s) appear in the index, and its stated counts (159 state a rejected alternative, 63 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
       "seconds": 0.0
     },
     "check_default_reports": {
@@ -253,8 +253,8 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 796 path mention(s) and 242 case name(s) across 24 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 10 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
-      "seconds": 1.4
+      "claim": "check_doc_references: OK -- 800 path mention(s) and 245 case name(s) across 24 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 10 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
+      "seconds": 1.2
     },
     "check_doctrine": {
       "exit": 0,
@@ -373,8 +373,8 @@
     },
     "check_equipment_pinned": {
       "exit": 0,
-      "claim": "check_equipment_pinned: OK -- 6030 equipment key(s) across 26 sizing case(s) are pinned in their goldens, in both directions (published implies pinned, pinned implies published), by the generator's own emission rule (basis when stated, every sizing value, every held-inventory quantity, the three cost totals; never the costing factors, which check_cost_provenance recomputes from).  1 golden-less sweep(s) excused by name.  NOT CHECKED: whether any size or cost is RIGHT, whether a sizer STATES a basis (task #78), or the pinned numbers' agreement with the run (bin/runTests' job for every row).",
-      "seconds": 345.4
+      "claim": "check_equipment_pinned: OK -- 6065 equipment key(s) across 26 sizing case(s) are pinned in their goldens, in both directions (published implies pinned, pinned implies published), by the generator's own emission rule (basis when stated, every sizing value, every held-inventory quantity, the three cost totals; never the costing factors, which check_cost_provenance recomputes from).  1 golden-less sweep(s) excused by name.  NOT CHECKED: whether any size or cost is RIGHT, whether a sizer STATES a basis (task #78), or the pinned numbers' agreement with the run (bin/runTests' job for every row).",
+      "seconds": 43.4
     },
     "check_estimate_class": {
       "exit": 0,
@@ -468,8 +468,8 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 12 of 316 gates, and the other 304 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
-      "seconds": 189.1
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 12 of 319 gates, and the other 307 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
+      "seconds": 239.6
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -493,8 +493,8 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 42087 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 43851 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
-      "seconds": 7.9
+      "claim": "check_glossary_bans: OK -- 42210 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 43978 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
+      "seconds": 8.7
     },
     "check_groups": {
       "exit": 0,
@@ -503,12 +503,12 @@
     },
     "check_guide_anchors": {
       "exit": 0,
-      "claim": "check_guide_anchors: OK -- all 194 guide anchor(s) the GUI links to resolve to a real \\label (OP_DEST 28 into per-entry guide, PROPS_DEST 5 into propsGuide, PROPS_MODEL_DEST 49 into per-entry guide, SLOT_MODEL_DEST 3 into per-entry guide, THEORY_DEST 56 into theoryGuide, op:<type> fallback 53 into propsGuide).  NOT CHECKED, and deliberately: whether a LIVE anchor is the RIGHT one.  That is the defect this gate was written after -- `adiabaticFlash` pointed at `ch:flash`, a label that exists, on a section titled \"Isothermal flash\" -- and every mechanical form of the check accuses innocent umbrella sections, so the judgement is written beside the entries instead.",
+      "claim": "check_guide_anchors: OK -- all 196 guide anchor(s) the GUI links to resolve to a real \\label (OP_DEST 28 into per-entry guide, PROPS_DEST 5 into propsGuide, PROPS_MODEL_DEST 49 into per-entry guide, SLOT_MODEL_DEST 3 into per-entry guide, THEORY_DEST 56 into theoryGuide, op:<type> fallback 55 into propsGuide).  NOT CHECKED, and deliberately: whether a LIVE anchor is the RIGHT one.  That is the defect this gate was written after -- `adiabaticFlash` pointed at `ch:flash`, a label that exists, on a section titled \"Isothermal flash\" -- and every mechanical form of the check accuses innocent umbrella sections, so the judgement is written beside the entries instead.",
       "seconds": 0.0
     },
     "check_guide_environments": {
       "exit": 0,
-      "claim": "check_guide_environments: OK -- 4157 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
+      "claim": "check_guide_environments: OK -- 4172 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
       "seconds": 0.1
     },
     "check_guide_menu": {
@@ -518,7 +518,7 @@
     },
     "check_guide_paths": {
       "exit": 0,
-      "claim": "check_guide_paths: OK -- 1440 path citations across the .tex manuals all resolve (9 allowed as paths the reader is told to create).  NOT checked: whether the PROSE about a path is true, any NUMBER stated in a manual, anything outside docs/*.tex, or run OUTPUTS (log/, converged/, reports/ ...), which a clean clone does not have.",
+      "claim": "check_guide_paths: OK -- 1442 path citations across the .tex manuals all resolve (9 allowed as paths the reader is told to create).  NOT checked: whether the PROSE about a path is true, any NUMBER stated in a manual, anything outside docs/*.tex, or run OUTPUTS (log/, converged/, reports/ ...), which a clean clone does not have.",
       "seconds": 0.1
     },
     "check_guide_pdf_fresh": {
@@ -578,7 +578,7 @@
     },
     "check_ion_pins": {
       "exit": 0,
-      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 2721 component record(s) scanned (data/standards/components + every tutorial constant/components) the 92 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
+      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 2722 component record(s) scanned (data/standards/components + every tutorial constant/components) the 92 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
       "seconds": 0.3
     },
     "check_layering": {
@@ -683,8 +683,8 @@
     },
     "check_origin_vocabulary": {
       "exit": 0,
-      "claim": "check_origin_vocabulary: OK -- 122 `origin <word>;` forms in 63 prose files all use a KNOWN word (15 words imported from check_origin_census, never copied), or one of 2 word(s) pinned in debt_registry with a stated exit (citedHeuristic, teachingSurrogate), or one of 6 sites exempt BY NAME (5 deliberate quotations, 1 English sentence).  SCANNED: docs, src, bin, gui/src, gui/schemas and the root *.md, every text file, read as one string so a line-wrapped form is seen.  NOT CHECKED: records under data/ (the census's domain) and case-local records under tutorials/ (nobody's); the engine's tolerance in core/Origin.H; whether a word is TRUE of its value; the backtick prose form with no semicolon.",
-      "seconds": 0.7
+      "claim": "check_origin_vocabulary: OK -- 123 `origin <word>;` forms in 64 prose files all use a KNOWN word (15 words imported from check_origin_census, never copied), or one of 2 word(s) pinned in debt_registry with a stated exit (citedHeuristic, teachingSurrogate), or one of 6 sites exempt BY NAME (5 deliberate quotations, 1 English sentence).  SCANNED: docs, src, bin, gui/src, gui/schemas and the root *.md, every text file, read as one string so a line-wrapped form is seen.  NOT CHECKED: records under data/ (the census's domain) and case-local records under tutorials/ (nobody's); the engine's tolerance in core/Origin.H; whether a word is TRUE of its value; the backtick prose form with no semicolon.",
+      "seconds": 0.8
     },
     "check_overlay_aad_pinned": {
       "exit": 0,
@@ -703,8 +703,8 @@
     },
     "check_pcsaft_association": {
       "exit": 0,
-      "claim": "check_pcsaft_association: OK -- engine X^D/X^A equal the independent closed form (1e-6), densities on the per-set anchors (water: the 2-site fit's own published trade-off), partial trio + unknown scheme refuse by name, non-associating corpus numerically untouched (1e-10), and a TRACE component's ln phi is continuous into infinite dilution (nHexane in liquid propane 1e-5, ethanol in water 1e-4) and equals the derivative of the package's own g_res on the vapour root (1e-6).  NOT checked: trace ln phi against a measurement (no infinite-dilution data is curated)",
-      "seconds": 3.0
+      "claim": "check_pcsaft_association: OK -- engine X^D/X^A equal the independent closed form (1e-6), densities on the per-set anchors (water: the 2-site fit's own published trade-off), partial trio + unknown scheme + a kij on an unknown component (C245) refuse by name, non-associating corpus numerically untouched (1e-10), and a TRACE component's ln phi is continuous into infinite dilution (nHexane in liquid propane 1e-5, ethanol in water 1e-4) and equals the derivative of the package's own g_res on the vapour root (1e-6).  NOT checked: trace ln phi against a measurement (no infinite-dilution data is curated)",
+      "seconds": 1.7
     },
     "check_pellet_announcement": {
       "exit": 0,
@@ -713,8 +713,8 @@
     },
     "check_phase_envelope": {
       "exit": 0,
-      "claim": "check_phase_envelope: OK -- the saturation residuals have one home; envelope01 dew steps within 10x their neighbour (worst 4.3x); envelope02 dew steps within 10x their neighbour (worst 1.0x); an empty branch is reported as never started; envelope02's bubble branch crosses propane's Tc to the top of the range and its dew branch is ended by a REPORTED root jump (with the last kept point); envelope01's interior maximum is reported, as bracketed; envelope02 claims no cricondentherm from a branch endpoint; the unclosed nose names Michelsen (1980); PR78: methanol (omega 0.565) gets the 1978 slope 1.16920, recomputed here, not the 1976 1.15985.  NOT COVERED: no number in either witness is checked against a MEASURED envelope (the feeds are plausible, not sampled, and the K-values are Peng-Robinson over an ideal liquid) -- both are STRUCTURAL witnesses for what the op reports and refuses to report.  The nose itself is not drawn and the critical point is not located.  The continuity thresholds are sized for the discontinuous kind of root jump; one inside the noise of the branch's own steps would pass unseen.  THE ROOT-JUMP REPORT IS EXERCISED AGAIN since C239 (envelope02's dew branch is ended by it at 36 bar, far above propane's Tc, once the liquid reference is continuous in T); it was unwitnessed between C235 and C239.  Whether that jump is an artefact of the held reference or of the warm-started, bracketed solve is not decided here.  Sabotage by hand (C235): the op marking every stopped bubble branch as a root jump FAILS the envelope02 arm (its bubble branch must reach the top of the range).",
-      "seconds": 0.1
+      "claim": "check_phase_envelope: OK -- the saturation residuals have one home; envelope01 dew steps within 10x their neighbour (worst 4.3x); envelope02 dew steps within 10x their neighbour (worst 2.3x); an empty branch is reported as never started; envelope02's branches cross propane's Tc to the top of the range (40 bar), the bubble one with no trivial plateau (worst slope collapse 1.5x); envelope01's interior maximum is reported, as bracketed; envelope02 claims no cricondentherm from a branch endpoint; the unclosed nose names Michelsen (1980); PR78: methanol (omega 0.565) gets the 1978 slope 1.16920, recomputed here, not the 1976 1.15985; propane on SRK at 0.98 Tc: the vapour root's pseudo flag flips between 38.2783 and 38.3358 bar, around the spinodal 38.3216 bar recomputed here; Z_vap 0.41574 -> 0.39702 across it (worst step 1.9x its neighbours); PengRobinson: the CO2 + ethane azeotrope (kij 0.13, 250 K, 21.400 bar, x_CO2 0.6659, Z_L 0.0539 / Z_V 0.7483) is accepted, not refused as a trivial root; SRK: the CO2 + ethane azeotrope (kij 0.13, 250 K, 21.263 bar, x_CO2 0.6745, Z_L 0.0602 / Z_V 0.7641) is accepted, not refused as a trivial root.  NOT COVERED: no number in either witness is checked against a MEASURED envelope (the feeds are plausible, not sampled, and the K-values are Peng-Robinson over an ideal liquid) -- both are STRUCTURAL witnesses for what the op reports and refuses to report.  The nose itself is not drawn and the critical point is not located.  The continuity thresholds are sized for the discontinuous kind of root jump; one inside the noise of the branch's own steps would pass unseen.  THE ROOT-JUMP REPORT IS UNWITNESSED AGAIN since C245: envelope02's dew branch, which it ended at 36 bar from C239, now runs to 40 bar on the pseudo-root, with a 1.1 K DIP between 35 and 36 bar that no arm here explains (a retrograde turn or a residual root swap; not decided).  The cubic's root polish (C245) is UNWITNESSED: the roots these arms read are already at round-off without it.  Sabotage by hand (C245): the vapour handed the liquid root past its spinodal FAILS (i) and the envelope02 slope arm; PR without hasLiquidRoot FAILS (j).",
+      "seconds": 1.6
     },
     "check_phase_speciation": {
       "exit": 0,
@@ -838,8 +838,8 @@
     },
     "check_review_status": {
       "exit": 0,
-      "claim": "check_review_status: OK -- 424 standard record(s) declare `reviewStatus interim` in a PARSED field (none in a banner only); the sealed cavett01_recycle_train voices all 7 of the ones it mirrors, with the remedy named, and a case with no interim record stays silent",
-      "seconds": 0.3
+      "claim": "check_review_status: OK -- 460 standard record(s) declare `reviewStatus interim` in a PARSED field (none in a banner only); the sealed cavett01_recycle_train voices all 7 of the ones it mirrors, with the remedy named, and a case with no interim record stays silent",
+      "seconds": 0.6
     },
     "check_rowlinson_bondi": {
       "exit": 0,
@@ -858,8 +858,8 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 106 registered operations carries a schema (102 exercised by the corpus over 1216 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
-      "seconds": 36.3
+      "claim": "check_schema_coverage: OK -- every one of the 108 registered operations carries a schema (104 exercised by the corpus over 1225 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
+      "seconds": 58.1
     },
     "check_sdem": {
       "exit": 0,
@@ -868,8 +868,8 @@
     },
     "check_seal_drift": {
       "exit": 0,
-      "claim": "check_seal_drift: OK -- 526 sealed manifest(s) and 4705 embedded record(s) inspected; every sealed case still reproduces its own records under its declared sealSchema (9 cosmetic difference(s), which the parsed-content claim tolerates by design).  NOT CHECKED: whether any sealed value is RIGHT.  And divergence from the LIVE catalogue (1833 record(s), 330 case(s) worth a curator's eye) is HISTORY, not a verdict -- this gate reports it, never fails on it, and never re-seals to make the number smaller.",
-      "seconds": 15.3
+      "claim": "check_seal_drift: OK -- 529 sealed manifest(s) and 4803 embedded record(s) inspected; every sealed case still reproduces its own records under its declared sealSchema (9 cosmetic difference(s), which the parsed-content claim tolerates by design).  NOT CHECKED: whether any sealed value is RIGHT.  And divergence from the LIVE catalogue (1787 record(s), 322 case(s) worth a curator's eye) is HISTORY, not a verdict -- this gate reports it, never fails on it, and never re-seals to make the number smaller.",
+      "seconds": 15.7
     },
     "check_seal_growth": {
       "exit": 0,
@@ -1138,8 +1138,8 @@
     },
     "check_wasm_dialect": {
       "exit": 0,
-      "claim": "check_wasm_dialect: OK -- all 413 source file(s) parse under clang with the C++14/17/20 extension families promoted to errors, and the probe (a lambda capturing a structured binding, the construct that broke the site on 2026-08-27) is still rejected.  NOT COVERED, and the distinction matters: this is NOT `make wasm`. It uses the LOCAL clang and the LOCAL libstdc++ headers, so it sees dialect extensions and not the libc++ header differences check_std_includes exists for; the warning list is an enumeration with that gate's own blind spot; nothing is linked or run; and emscripten's clang is OLDER than any local one, so a construct the local clang accepts silently would pass here.  `make wasm` remains the complete check.",
-      "seconds": 40.6
+      "claim": "check_wasm_dialect: OK -- all 415 source file(s) parse under clang with the C++14/17/20 extension families promoted to errors, and the probe (a lambda capturing a structured binding, the construct that broke the site on 2026-08-27) is still rejected.  NOT COVERED, and the distinction matters: this is NOT `make wasm`. It uses the LOCAL clang and the LOCAL libstdc++ headers, so it sees dialect extensions and not the libc++ header differences check_std_includes exists for; the warning list is an enumeration with that gate's own blind spot; nothing is linked or run; and emscripten's clang is OLDER than any local one, so a construct the local clang accepts silently would pass here.  `make wasm` remains the complete check.",
+      "seconds": 46.4
     },
     "check_witness_tier": {
       "exit": 0,
@@ -1228,8 +1228,8 @@
     },
     "check_ppr78_route": {
       "exit": 0,
-      "claim": "check_ppr78_route: OK -- the four source homes are in place; the op's kij(CO2,N2; 300 K) = -0.031748 reproduces Eq. 7 recomputed independently; the set reaches the PR and the run says at which T it was evaluated; an extrapolated pair is written as one and repeated on the run with its window; an inline kij refuses without variedBy and is announced with one; the P_bubble fit recovers a planted kij (0.0500 vs 0.05) with verdict validated and writes the pair record; a regressed pair record used with verdict notValidated is said, with its held-out AAD and band; a validated one is not; the compressor's P_out and W_shaft forms are inverses (20 bar <-> 5800 kW); a bubble pressure that jumps branch one FD step away enters J from its smooth side and is said (sigma 0.0034); a phaseChanger whose dominant component is a gas finds vf 0.9 at 374.95 K and says which window it searched.  NOT COVERED: no number is checked against a MEASURED equilibrium (the op is held to the equation it implements, the fit to what the engine planted); the 2010 / 2017 tables' values are not re-read here.",
-      "seconds": 0.7
+      "claim": "check_ppr78_route: OK -- the four source homes are in place; the op's kij(CO2,N2; 300 K) = -0.031748 reproduces Eq. 7 recomputed independently; the set reaches the PR and the run says at which T it was evaluated; an extrapolated pair is written as one and repeated on the run with its window; an inline kij refuses without variedBy and is announced with one; the P_bubble fit recovers a planted kij (0.0500 vs 0.05) with verdict validated and writes the pair record; a regressed pair record used with verdict notValidated is said, with its held-out AAD and band; a validated one is not; the compressor's P_out and W_shaft forms are inverses (20 bar <-> 5800 kW); the Brunner bubble pressures are continuous one FD step away (no row taken from one side; the PR vapour pseudo-root used and said; sigma 0.0034); a phaseChanger whose dominant component is a gas finds vf 0.9 at 374.95 K and says which window it searched.  NOT COVERED: no number is checked against a MEASURED equilibrium (the op is held to the equation it implements, the fit to what the engine planted); the 2010 / 2017 tables' values are not re-read here.",
+      "seconds": 0.5
     },
     "check_pore_solver": {
       "exit": 0,
@@ -1323,8 +1323,8 @@
     },
     "check_props_order": {
       "exit": 0,
-      "claim": "check_props_order: OK -- 53 registered op types each carry a file-traffic row; 53 guarded writes in their sources match a write slot; the GUI's published copy (gui/schemas/propsFileTraffic.json) is the engine's table and no op schema keeps its own writes; 53 op schemas' x-choupo data match the table; 148 corpus propsDicts in declared order (147 pass; 1 declaring a process-run input refuse, on a copy without run outputs, naming the Flowsheet run); a read of a later write, by path, default path, membrane name and by construction, refuses with the remedy and the right order passes; ctrl17's absent trajectory refuses before operation [0] naming the Flowsheet run, and four writtenBy misdeclarations refuse.  NOT checked: that the table lists every key an op reads (no single home for reads), computed paths, registry reads other than membranes, the package",
-      "seconds": 1.0
+      "claim": "check_props_order: OK -- 55 registered op types each carry a file-traffic row; 54 guarded writes in their sources match a write slot; the GUI's published copy (gui/schemas/propsFileTraffic.json) is the engine's table and no op schema keeps its own writes; 55 op schemas' x-choupo data match the table; 151 corpus propsDicts in declared order (150 pass; 1 declaring a process-run input refuse, on a copy without run outputs, naming the Flowsheet run); a read of a later write, by path, default path, membrane name and by construction, refuses with the remedy and the right order passes; ctrl17's absent trajectory refuses before operation [0] naming the Flowsheet run, and four writtenBy misdeclarations refuse.  NOT checked: that the table lists every key an op reads (no single home for reads), computed paths, registry reads other than membranes, the package",
+      "seconds": 2.3
     },
     "check_column_thermo_consistency": {
       "exit": 0,
@@ -1353,8 +1353,8 @@
     },
     "check_txy_bubble_verdict": {
       "exit": 0,
-      "claim": "check_txy_bubble_verdict: OK -- at 2 bar 2 of 29 unconverged compositions are dropped and counted, 27 drawn, none at the 200 K floor; at 1 bar 17 of 29 fail and the diagram is refused by name; flash01's 29-point diagram is drawn with no count; flash20 (PC-SAFT) draws all 29 points, 26 of them accepted at |f| <= 1e-5 short of the Newton's 1e-8 and announced (worst |f| = 2.69e-06); the column's bubbleTWithItsVapour reads the verdict of all 3 bubbleT calls and folds it into its flag; the guard reads xUnconverged and no 200 K constant; the count reaches the caveat block on both witnesses.  NOT checked: whether a point is RIGHT beyond its residual, and the Wang-Henke stage loop's bubbleT calls (judged by the column's stage test)",
-      "seconds": 13.5
+      "claim": "check_txy_bubble_verdict: OK -- at 2 bar 2 of 29 unconverged compositions are dropped and counted, 27 drawn, none at the 200 K floor; at 1 bar 17 of 29 fail and the diagram is refused by name; flash01's 29-point diagram is drawn with no count; flash20 (PC-SAFT) draws all 29 points, 18 of them accepted at |f| <= 1e-5 short of the Newton's 1e-8 and announced (worst |f| = 3.66e-06); the column's bubbleTWithItsVapour reads the verdict of all 3 bubbleT calls and folds it into its flag; the guard reads xUnconverged and no 200 K constant; the count reaches the caveat block on both witnesses.  NOT checked: whether a point is RIGHT beyond its residual, and the Wang-Henke stage loop's bubbleT calls (judged by the column's stage test)",
+      "seconds": 14.5
     },
     "check_membrane_feed_scope": {
       "exit": 0,
@@ -1518,8 +1518,8 @@
     },
     "check_capability_index": {
       "exit": 0,
-      "claim": "check_capability_index: OK: 134 typed name(s) resolved against their registries, 59 path(s) present (55 witness case(s)), 19 untyped name(s) found in the tree; every concept names a typed name and a witness (names only -- the prose about them is not checked)",
-      "seconds": 0.5
+      "claim": "check_capability_index: OK: 136 typed name(s) resolved against their registries, 61 path(s) present (57 witness case(s)), 20 untyped name(s) found in the tree; every concept names a typed name and a witness (names only -- the prose about them is not checked)",
+      "seconds": 0.7
     },
     "check_bell_delaware": {
       "exit": 0,
@@ -1594,12 +1594,17 @@
     "check_newton_globalisation": {
       "exit": 0,
       "claim": "check_newton_globalisation: OK -- the Newton's globalisation contract holds on four synthetic problems compiled against the solver sources: from a singular start the legacy default still stalls (26 uphill steps, the default unmoved) while Armijo + Levenberg-Marquardt converges in 12 iterations with ||F|| strictly decreasing (2 LM steps); a declared lower bound keeps every trial and probe of ln x inside x > 0 (legacy default: 13 evaluations at x <= 0); a NaN probe stops the solve naming its column and luFactor refuses a NaN pivot and a row dependent to working precision while factoring row- and column-scaled matrices and a 1e-31 matrix; typX = 1e-10 solves ln(x/1e-10) = 0.5 where the absolute step is refused; NewtonND.H defaults to legacy and the full MESH opts in.  NOT covered: whether corpus cases SHOULD converge (the goldens), callers that have not opted in, the MESH's sum(x) <= 1 constraint (slice 2).",
-      "seconds": 2.5
+      "seconds": 2.2
     },
     "check_rodas4_order": {
       "exit": 0,
       "claim": "check_rodas4_order: OK -- Rodas4 observed order 4.27, 4.16 (>= 3.8) at h = 3/40, 3/80 on a nonautonomous nonlinear pair; stiff probe (h*lambda = -100) within 3.7e-07 of cos t (<= 1e-06).  NOT covered: the embedded error estimate, the 2(3) pair's order.",
-      "seconds": 4.0
+      "seconds": 3.7
+    },
+    "check_lookup_budget": {
+      "exit": 0,
+      "claim": "check_lookup_budget: OK  8 cards from the two witnesses, largest 957 of 2048 bytes; curated pair returns its source line and no coefficient, the unknown pair and unknown compound return no number, UNIFAC says ESTIMATE, the lake compound prints no estimated value; NOT checked: the GUI reading, the archive rung (slice b), the truth of a record's provenance",
+      "seconds": 0.2
     }
   }
 }
