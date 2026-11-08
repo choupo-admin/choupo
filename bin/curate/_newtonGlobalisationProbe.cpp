@@ -21,7 +21,9 @@
 //                naming "non-finite Jacobian column 1" (a default), and
 //                luFactor must refuse a NaN pivot and a row dependent on the
 //                one above to working precision ((1, 2), (2, 4 + 1e-15)),
-//                while factoring a merely badly scaled diag(1, 1e-20) and a
+//                while factoring a merely badly scaled diag(1, 1e-20), a
+//                matrix whose second COLUMN is 1e15 times its first
+//                ((1e-2, 1e13), (2e-2, 1e13): an unknown in other units) and a
 //                matrix whose entries are all ~1e-31.
 //   (4) scale:   F = ln(x / 1e-10) - 0.5 from x = 1e-10.  The legacy step
 //                1e-7 * max(|x|, 1) probes x - 1e-7 < 0 (a NaN column); with
@@ -137,6 +139,7 @@ void probeNaN()
     std::cout << "luNaNPivotThrows "  << factorThrows({{1.0, 0.0}, {0.0, nan}}) << "\n"
               << "luRelPivotThrows "  << factorThrows({{1.0, 2.0}, {2.0, 4.0 + 1.0e-15}}) << "\n"
               << "luBadScaleThrows "  << factorThrows({{1.0, 0.0}, {0.0, 1.0e-20}}) << "\n"
+              << "luColScaleThrows "  << factorThrows({{1.0e-2, 1.0e13}, {2.0e-2, 1.0e13}}) << "\n"
               << "luTinyScaleThrows " << factorThrows({{2.0e-31, 1.0e-31}, {1.0e-31, 3.0e-31}}) << "\n";
 }
 

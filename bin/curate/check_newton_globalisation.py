@@ -40,9 +40,10 @@ HERE against the solver sources alone with -D_GLIBCXX_ASSERTIONS:
       solve naming "non-finite Jacobian column 1" (a default); luFactor must
       refuse a NaN pivot and a row dependent on the row above to working
       precision ((1, 2), (2, 4 + 1e-15): a pivot ~1e-16 of its row, which the
-      old absolute test factored), and must FACTOR diag(1, 1e-20) (badly
-      scaled, not singular: the test is relative to the pivot's own row as
-      given) and a well-conditioned matrix of entries ~1e-31 (the old
+      old absolute test factored), and must FACTOR diag(1, 1e-20) and
+      ((1e-2, 1e13), (2e-2, 1e13)) (badly scaled by row and by column, not
+      singular: the test reads the pivot in the two-sided equilibrated
+      matrix) and a well-conditioned matrix of entries ~1e-31 (the old
       absolute test refused it).
   (d) SCALE.  F = ln(x / 1e-10) - 0.5 from x = 1e-10: the legacy step probes
       x < 0 and is refused as a non-finite column (the Rank 2 defect, now
@@ -174,6 +175,11 @@ def main() -> int:
     need("c", num("luRelPivotThrows") == 1,
          "luFactor factored ((1, 2), (2, 4 + 1e-15)), whose second row is "
          "the first to working precision (the relative test is lost)")
+    need("c", num("luColScaleThrows") == 0,
+         "luFactor refused ((1e-2, 1e13), (2e-2, 1e13)), whose columns are "
+         "merely in different units (the pivot test is not column-scale "
+         "invariant: column05 at every flow x1e-8 stops, "
+         "check_degenerate_limits A8)")
     need("c", num("luBadScaleThrows") == 0,
          "luFactor refused diag(1, 1e-20), badly scaled but not singular (the "
          "pivot test is no longer row-relative)")
@@ -221,7 +227,7 @@ def main() -> int:
           f"default: {v['boundLegacyBelow']} evaluations at x <= 0); a NaN "
           "probe stops the solve naming its column and luFactor refuses a "
           "NaN pivot and a row dependent to working precision while "
-          "factoring diag(1, 1e-20) and a 1e-31 matrix; typX = 1e-10 solves ln(x/1e-10) = 0.5 where the absolute "
+          "factoring row- and column-scaled matrices and a 1e-31 matrix; typX = 1e-10 solves ln(x/1e-10) = 0.5 where the absolute "
           "step is refused; NewtonND.H defaults to legacy and the full MESH "
           "opts in.  NOT covered: whether corpus cases SHOULD converge (the "
           "goldens), callers that have not opted in, the MESH's sum(x) <= 1 "
