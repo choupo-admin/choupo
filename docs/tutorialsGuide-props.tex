@@ -3863,28 +3863,6 @@ HOW IT READS. The operations read the INSTALLATION catalogue (a question about t
 \end{tutgolden}
 
 \clearpage
-\tutentry{pairLookup02\_provenance\_unsealed}{tutorials/props/molecular/pairLookup02\_provenance\_unsealed}
-\begin{tutscheme}
-\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{p\_curated}\\[-1pt]{\tiny pairLookup}};
-\end{tikzpicture}
-\end{tutscheme}
-\tutwhat{pairLookup provenance line: case UNSEALED}
-\begin{tutnarrative}
-WHAT IT IS. Witness of the PROVENANCE LINE every lookup card carries (DEV.md 4c C227 (a), the architect's ruling). The lookups read the INSTALLATION catalogue by design -- their subject is the catalogue -- so each card, and the `catalogue` object of the result JSON, names the source, the installation's catalogue release (data/standards/CATALOGUE.dat) and the case's seal state.
-
-THIS CASE: UNSEALED (no constant/propertyManifest). The card reads `case unsealed`; there is no sealed release it could differ from. Its sibling pairLookup03\_provenance\_stale\_seal is sealed from an older release and the line says `differs`. Pinned: the tier word, the card bytes.
-
-\end{tutnarrative}
-\begin{tutgolden}
-\goldrow{diag}{p\_curated}{budget\_bytes}{2048}
-\goldrow{diag}{p\_curated}{card\_bytes}{922}
-\goldrow{diag}{p\_curated}{n\_records}{2}
-\goldrow{verdict}{p\_curated}{caseSeal}{unsealed}
-\goldrow{verdict}{p\_curated}{releaseDiffers}{false}
-\end{tutgolden}
-
-\clearpage
 \tutentry{pairLookup03\_provenance\_stale\_seal}{tutorials/props/molecular/pairLookup03\_provenance\_stale\_seal}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -3893,7 +3871,7 @@ THIS CASE: UNSEALED (no constant/propertyManifest). The card reads `case unseale
 \end{tutscheme}
 \tutwhat{pairLookup provenance line: case sealed from an OLDER release than the installation}
 \begin{tutnarrative}
-WHAT IT IS. Witness of the PROVENANCE LINE every lookup card carries (DEV.md 4c C227 (a)); see pairLookup02\_provenance\_unsealed for the rule.
+WHAT IT IS. Witness of the PROVENANCE LINE every lookup card carries (DEV.md 4c C227 (a)) (the card carries a provenance line and the JSON a `catalogue` object).
 
 THIS CASE: SEALED, and its manifest names Choupo-2607 -- a legitimate old seal (the catalogue identity a seal records is the catalogue as it stood when the case was frozen; CATALOGUE.dat explains why 394 manifests keep that name) -- while the installation is Choupo-2608. The lookups still read the installation, so the card is from a release that is NOT the case's own, and the provenance line SAYS so: `case sealed Choupo-2607; differs "..."`. The result JSON carries the same fact as `releaseDiffers true`. Pinned: the tier word, the card bytes.
 

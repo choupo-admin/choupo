@@ -40,8 +40,10 @@ JSON a `catalogue` object: `source` (the installation `data/standards`),
 `release` (`data/standards/CATALOGUE.dat`), `caseSeal` (`sealed` /
 `unsealed`), `caseRelease` (the manifest's `catalogueRelease`) and
 `releaseDiffers`.  When they differ the line says `differs "..."`.  Witnesses:
-`pairLookup02_provenance_unsealed`, `pairLookup03_provenance_stale_seal`
-(sealed from Choupo-2607 against an installation of Choupo-2608).
+`pairLookup03_provenance_stale_seal` (sealed from Choupo-2607 against an
+installation of Choupo-2608); the UNSEALED state is built by
+`check_lookup_budget` arm (j) in a temp dir (a shipped case must be sealed,
+so it is not a tutorial).
 
 
 ### The honesty ladder (`pairLookup`; the first rung that answers wins)

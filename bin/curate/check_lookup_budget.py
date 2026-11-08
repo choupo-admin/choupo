@@ -73,7 +73,6 @@ ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "choupoProps"
 PAIR = ROOT / "tutorials/props/molecular/pairLookup01_catalogue_ladder"
 COMP = ROOT / "tutorials/props/molecular/componentLookup01_catalogue_ladder"
-PROV_UNSEALED = ROOT / "tutorials/props/molecular/pairLookup02_provenance_unsealed"
 PROV_STALE = ROOT / "tutorials/props/molecular/pairLookup03_provenance_stale_seal"
 HDR = ROOT / "src/propertyOps/CatalogueLookup.H"
 SRC = ROOT / "src/propertyOps/CatalogueLookup.cpp"
@@ -310,7 +309,24 @@ def main():
             fail(f"(j) {name}: the result JSON carries no complete `catalogue` object")
         if not re.search(r"^  catalogue \{ source \"[^\"]+\"; release \S+; case (un)?sealed;", c["card"], re.M):
             fail(f"(j) {name}: the card carries no provenance line")
-    for case, seal, differs in ((PROV_UNSEALED, "unsealed", False), (PROV_STALE, "sealed", True)):
+    #  The UNSEALED witness is built here, never shipped (a shipped case must be
+    #  sealed -- check_sealed_corpus): a copy of the ladder case without its manifest.
+    with tempfile.TemporaryDirectory() as td:
+        unsealed = Path(td) / "unsealed"
+        shutil.copytree(PAIR, unsealed)
+        (unsealed / "constant" / "propertyManifest").unlink()
+        (unsealed / "system" / "propsDict").write_text(
+            "operations\n(\n    { name p_curated; type pairLookup; components ( ethanol water ); }\n);\n")
+        uc = cards_of(unsealed).get("p_curated")
+    if not uc:
+        fail("(j) the temp unsealed witness produced no card")
+    else:
+        ucat = uc.get("catalogue", {})
+        if ucat.get("caseSeal") != "unsealed" or "case unsealed;" not in uc["card"]:
+            fail(f"(j) unsealed witness: expected `case unsealed;` and caseSeal unsealed, got {ucat}")
+        if ucat.get("releaseDiffers") or "differs " in uc["card"]:
+            fail("(j) unsealed witness claims a release difference")
+    for case, seal, differs in ((PROV_STALE, "sealed", True),):
         cc = cards_of(case).get("p_curated")
         if not cc:
             continue

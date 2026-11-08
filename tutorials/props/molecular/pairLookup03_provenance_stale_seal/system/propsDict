@@ -11,7 +11,7 @@
   ==================================
 
   WHAT IT IS.  Witness of the PROVENANCE LINE every lookup card carries (DEV.md
-  4c C227 (a)); see pairLookup02_provenance_unsealed for the rule.
+  4c C227 (a)) (the card carries a provenance line and the JSON a `catalogue` object).
 
   THIS CASE: SEALED, and its manifest names Choupo-2607 -- a legitimate old
   seal (the catalogue identity a seal records is the catalogue as it stood

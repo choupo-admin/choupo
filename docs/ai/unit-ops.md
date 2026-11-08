@@ -3168,8 +3168,7 @@ and the JSON block a `catalogue` object: the source, the installation's
 release and the case's seal state; when a sealed case's manifest names a
 DIFFERENT release the line adds `differs "..."` (the card is not from the
 case's own release).  Witnesses `pairLookup01_catalogue_ladder`,
-`componentLookup01_catalogue_ladder`, `pairLookup02_provenance_unsealed`,
-`pairLookup03_provenance_stale_seal`.
+`componentLookup01_catalogue_ladder`, `pairLookup03_provenance_stale_seal`.
 Record: `docs/design/the-evidence-card.md`.
 
 ### `fitParameters`
