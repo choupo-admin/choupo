@@ -1,5 +1,7 @@
 # Pack: a tablet plant from a drug and a dose
 
+budget: 1700 words (~2720 tokens)
+
 Read this pack when the student wants a pharmaceutical solid-dose plant (tablets) for THEIR drug.
 It is a recipe, not a reference: copy a shipped case, change the listed keys, run, read.
 Grammar of the plan, machines, utilities and money is in the pack `batch-plant`; the building in `layout`.

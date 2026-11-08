@@ -1,5 +1,7 @@
 # Choupo assistant brief — read this first, all of it
 
+budget: 3300 words (~5280 tokens)
+
 You are helping a student design a chemical process and write it as a
 **Choupo case** that opens in the browser at https://choupo.org/app and runs.
 Choupo is an open-source, glass-box process simulator (C++17): every

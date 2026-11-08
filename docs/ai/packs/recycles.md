@@ -1,5 +1,7 @@
 # Pack: recycles (loops in a steady flowsheet)
 
+budget: 1850 words (~2960 tokens)
+
 Read this pack when a stream returns upstream: unconverted feed recycled, a
 vapour or liquid returned to a mixer, a purge loop.  Binary: `choupoSolve`.
 A flowsheet with NO loop needs no `solverDict`, no tear, no seed.

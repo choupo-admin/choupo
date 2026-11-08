@@ -94,6 +94,41 @@ def dict_words():
     return words
 
 
+PHARMA_MAX_WORDS = 2500
+
+
+def budget_findings():
+    """C250: every document an assistant is handed declares `budget: N words
+    (~T tokens)` in its header and stays under it.  Applies to docs/ai/brief.md
+    and every docs/ai/packs/*.md.  The student's assistant pays for every token
+    of these files on every task, so a file that grows past its declared size is
+    a regression of the product, not a style point.  Raising a budget is a
+    visible edit of the header line.  Words = whitespace-separated tokens of the
+    whole file (the budget line included); tokens are declared, not measured
+    here (the harness measures them)."""
+    bad = []
+    files = [ROOT / "docs" / "ai" / "brief.md"] + sorted(
+        (ROOT / "docs" / "ai" / "packs").glob("*.md"))
+    for f in files:
+        text = f.read_text(encoding="utf-8")
+        rel = f.relative_to(ROOT)
+        m = re.search(r"^budget:\s*(\d+) words \(~(\d+) tokens\)\s*$", "\n".join(
+            text.split("\n")[:8]), re.M)
+        if not m:
+            bad.append("%s: no `budget: N words (~T tokens)` line in its header" % rel)
+            continue
+        words, toks = int(m.group(1)), int(m.group(2))
+        n = len(text.split())
+        if n > words:
+            bad.append("%s: %d words, over its declared budget of %d" % (rel, n, words))
+        if not (1.2 * words <= toks <= 2.0 * words):
+            bad.append("%s: declared tokens %d are not 1.2-2.0 x the declared words %d"
+                       % (rel, toks, words))
+        if f.name == "pharmaceutical.md" and words > PHARMA_MAX_WORDS:
+            bad.append("%s: budget %d exceeds the %d-word ceiling" % (rel, words, PHARMA_MAX_WORDS))
+    return bad
+
+
 def main():
     index = INDEX
     if "--index" in sys.argv:
@@ -169,6 +204,9 @@ def main():
            re.search(r"`(?:unit|op|batchUnit|dynUnit|pass):", line):
             bad.append("table row without a witness case: %s" % line[:60])
 
+    if index == INDEX:
+        bad += budget_findings()
+
     if bad:
         print("check_capability_index: FAIL: %d dead or incomplete reference(s) "
               "in %s:" % (len(bad), index.relative_to(ROOT) if
@@ -179,7 +217,8 @@ def main():
     print("check_capability_index: OK: %d typed name(s) resolved against their "
           "registries, %d path(s) present (%d witness case(s)), %d untyped "
           "name(s) found in the tree; every concept names a typed name and a "
-          "witness (names only -- the prose about them is not checked)"
+          "witness (names only -- the prose about them is not checked); every "
+          "brief and pack within its declared word budget"
           % (counts["typed"], counts["paths"], counts["cases"], counts["untyped"]))
     return 0
 
