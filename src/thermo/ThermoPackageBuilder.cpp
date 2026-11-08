@@ -77,6 +77,23 @@ static std::filesystem::path resolveDeclared(const std::filesystem::path& repoRo
     return repoRoot / declared;
 }
 
+//  C224 (2026-11-05): an INLINE binary pair (no `source`) carries values and a
+//  citation nobody at Choupo has read -- ANNOUNCED once per pair per run
+//  through the one channel (stderr + AdvisoryLog -> caveat block + result
+//  JSON), moving no number.  A pair read from a curated record stays silent:
+//  silence means "nothing was assumed".  ONE home for both inline readers.
+static void announceInlinePair(const std::string& model, const std::string& pr)
+{
+    const std::string msg = model + " values and source typed in the case,"
+                            " NOT reviewed by Choupo";
+    if (AdvisoryLog::instance().addAnnouncedOnce(
+            "inlinePair:" + model + ":" + pr,
+            "provenance", "warning", "pair " + pr, msg))
+        std::cerr << "[unreviewed] pair " << pr << ": " << msg
+                  << ".  Check the numbers against the article, or fit them"
+                     " with `fitParameters`, before the result is cited.\n";
+}
+
 namespace {
 
 [[noreturn]] void absent(const std::string& field, const std::string& rec)
@@ -2263,6 +2280,8 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                     std::cout << "[builder] binary pair " << pr
                               << "  --- " << src << "\n";
             }
+            if (!pd->found("source"))
+                announceInlinePair(am->lookupWord("model"), pr);
             auto p = std::make_shared<Dictionary>(pr);
             for (const auto& k : coef->keys())
             {
@@ -2665,6 +2684,7 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                     else
                     {
                         anyInline = true;
+                        announceInlinePair(model, pr);
                         auto p = std::make_shared<Dictionary>(pr);
                         for (const auto& k : pd->keys())
                         {

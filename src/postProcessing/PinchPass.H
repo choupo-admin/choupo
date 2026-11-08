@@ -73,6 +73,30 @@ Description
         with its four terminal temperatures) is heat ALREADY recovered:
         both its sides enter as segments and its duty is counted in
         neither current-utility total nor in the violation diagnostics.
+      * A SERVICE IS NOT A PROCESS STREAM (2026-11-05, DEV.md 4c C230).
+        When an exchanger's inlet and outlet on one side are streams of
+        a declared `utilities` circuit (`streams/UtilityCircuit`, read
+        from system/flowsheetDict) or carry `category utility`, that side
+        is left OUT of the population (population.csv role `utility`,
+        KPI `utility_sides`, announced on the console) and the other side
+        enters as an ordinary segment whose duty counts as current
+        utility use.  Which side is the service is read from the service
+        stream's own temperature against the two sides' terminal
+        temperatures -- never from a name.  The water of ammonia02's
+        cooler was counted as a cold process stream and manufactured its
+        pinch.
+      * THE CASCADE CLASSIFIES THE PROBLEM (2026-11-07, DEV.md 4c C234).
+        The corrected cascade (Q_H,min fed in at the top) is >= 0 and touches
+        zero where the problem is limited: ONE interior zero is a pinch
+        (`interiorPinch`), several are `severalPinches`, and zeros only at the
+        ends are a threshold problem -- `thresholdNoHotUtility` (top),
+        `thresholdNoColdUtility` (bottom) or `thresholdNoUtility` (both) --
+        with NO pinch.  The word goes to reports/pinch/summary.csv, the
+        console, and the KPIs `n_pinches`, `problem_class` (1..5) and
+        `pinch_exists`; the diagnostics below the table call the duty on the
+        wrong side of a pinch a VIOLATION and, with no pinch, an EXCESS
+        utility.  The worked table is reports/pinch/problemTable.csv and
+        `Q_recovery_max_kW` = hot total - Q_C,min = cold total - Q_H,min.
       * The current-vs-target line sums the remaining units' raw
         heating/cooling duties -- heat recovered through a drawn
         heat-link is still counted at the units it touches.

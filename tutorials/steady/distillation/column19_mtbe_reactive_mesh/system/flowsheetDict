@@ -1,0 +1,88 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column19_mtbe_reactive_mesh -- a reactive column whose reaction CHANGES THE
+  NUMBER OF MOLES:   methanol + isobutene <=> MTBE   (Sum nu = -1).
+
+  THE PROBLEM.  15 equilibrium stages, stage 1 the PARTIAL condenser (the
+  distillate leaves as vapour), stage 15 the reboiler, P = 7 bar, reactive
+  stages 6 to 10 (the equilibrium reaction in the liquid), both feeds on
+  stage 10: methanol (240 kmol/h, 50 C, 10 bar) and a C4 cut (50 C, 10 bar).
+  The column is specified by its BOTTOMS RATE (240 kmol/h) and its BOIL-UP
+  RATIO (5), and the distillate is what the top balance leaves:
+  D = F + Sum(nu) Sum(xi) - B.
+
+  WHAT IT TAKES.  The constant-molal-overflow column holds the internal flows
+  fixed and so cannot carry a mole change; `model fullMESH;` solves the vapour
+  and liquid flows, the stage energy balances and, on each reactive stage, one
+  equilibrium extent.  The heat of reaction is NOT a term of the stage energy
+  rows: those price on the elements datum, which already holds it.
+
+  THE EQUILIBRIUM CONSTANT is the case's own record, written (constant K_a(T)
+  from Izquierdo et al.; see constant/experimental/ and the README).  Nothing
+  here was read off, or fitted to, any simulator's result.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        mtbeColumn;
+        type        distillationColumn;
+        model       fullMESH;
+        inputs      ( methanolFeed  c4Feed );
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        15;
+            bottomsRate    240 kmol/h;
+            boilupRatio    5;
+            P              7 bar;
+            condenser      { type partial; }
+
+            feeds
+            (
+                { stream methanolFeed; stage 10; }
+                { stream c4Feed;       stage 10; }
+            );
+        }
+
+        reaction
+        {
+            stoichiometry ( { component methanol;              nu -1; }
+                            { component isoButene;             nu -1; }
+                            { component methylTertButylEther;  nu  1; } );
+            reactiveStages ( 6 7 8 9 10 );
+            equilibrium
+            {
+                //  Izquierdo, Cunill, Vila, Tejero & Iborra, J. Chem. Eng.
+                //  Data 37 (1992) 339-343, Eq. 15:  ln K = dS/R - dH/(R T).
+                //  K in ACTIVITIES, pure-liquid standard state, the UNIFAC
+                //  gamma this case uses; measured over 313-353 K.  NOT their
+                //  Eq. 14 or 16 (printed with a rounded constant they sit
+                //  7 times below their own Table IV).
+                //  The grammar has no spelling for an entropy unit, so the two
+                //  per-kelvin constants are stated as energies PER MOLE TIMES
+                //  ONE KELVIN (dS x 1 K, R x 1 K) and T enters as T / Kelvin:
+                //  the dimension check then holds, and the numbers are the
+                //  paper's: dS = -85.3 J/(mol K), dH = -39100 J/mol.
+                lnKa  "dSK / RK - dH / (RK * (T / Kelvin))";
+                parameters
+                {
+                    dH   -39100 J/mol;
+                    dSK  -85.3     J/mol;     // dS x 1 K
+                    RK   8.314462  J/mol;     // R x 1 K
+                    Kelvin 1 K;
+                }
+                validity { Tmin 313 K; Tmax 353 K; }
+            }
+        }
+    }
+);

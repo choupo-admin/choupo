@@ -9,7 +9,7 @@
 /**
  * edgeDashes -- what a DASHED wire on the flowsheet means, in ONE home.
  *
- * WHY THIS EXISTS.  Vítor opened `plant/ammonia03_quench_converter` on the
+ * WHY THIS EXISTS.  Vítor opened `steady/reactors/ammonia03_quench_converter` on the
  * live site and asked why some streams are dashed when they are not
  * utilities.  The drawing was right -- they are the two declared tear cuts,
  * `recycle` and `hotEffluent` -- and the question is the finding: the canvas

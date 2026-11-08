@@ -528,7 +528,7 @@ CONTROL = "tutorials/steady/flash/flash13_acetic_ethanol_vacuum_flash"
 BAND_KW = 0.5
 #  (h) the supercritical-feed witness: the first corpus case to put a stream
 #  above every component's Tc through an isothermalFlash on the duty path.
-SUPERCRITICAL = "tutorials/plant/ammoniaReactor04_kineticSizing"
+SUPERCRITICAL = "tutorials/steady/reactors/ammoniaReactor04_kineticSizing"
 SUPERCRITICAL_UNIT = "separator"
 SUPERCRITICAL_FEED = "reacted"
 ONE_HOME = ROOT / "src/unitOperations/flash/StreamEquilibrium.H"
@@ -616,7 +616,7 @@ SAT_LOW_K, SAT_HIGH_K = 372.40, 372.95
 #  fixture borrows the routes screen's ideal-gas/Raoult package (water, H2,
 #  O2 on the formation datum).
 CONV_REACTOR = "reactor/ConversionReactor.cpp"
-CONV_SRC = "tutorials/plant/ammoniaRoutes01_screening"
+CONV_SRC = "tutorials/steady/reactors/ammoniaRoutes01_screening"
 #  (n) the ONE home of the rule since C73, and the two kinetic reactors
 OUTLET_HOME = "reactor/ReactorOutlet.cpp"
 KINETIC_REACTORS = ["reactor/CSTR.cpp", "reactor/PFR.cpp"]
@@ -829,8 +829,18 @@ def arm_p(tmp: pathlib.Path, fail: list) -> str:
         "units\n(\n    { name P1; type pipe; in RawLiquid; outputs ( "
         "downstream ); operation { viscosity 1.4e-4 Pa.s; geometry { D 0.1 m; "
         "L 50 m; roughness 4.6e-5 m; dz 0 m; } } }\n);\n")
-    shutil.copy(srcc / "0" / "RawLiquid", case / "0" / "RawLiquid")
-    shutil.copy(srcc / "0" / "RawLiquid", case / "0" / "downstream")
+    #  The gate's OWN copy is held at 200 bar (the shipped letdown01 is left
+    #  at 140): the arm's subject is a pipe refusing on a dissolved gas's
+    #  liquid molar volume, so the stream must BE a single liquid, and with
+    #  the gamma-phi reference carrying phi_sat and Poynting (C235) the 140
+    #  bar stream sits on its bubble curve and resolves with a gas phase.
+    raw = (srcc / "0" / "RawLiquid").read_text()
+    raw, nsub = re.subn(r"(?m)^P\s+[^;]*;", "P               20000000 Pa;", raw)
+    if nsub != 1:
+        fail.append("(p2) fixture edit target missing: RawLiquid has no "
+                    "single `P` line to raise")
+    (case / "0" / "RawLiquid").write_text(raw)
+    (case / "0" / "downstream").write_text(raw)
     rc, log = run(case)
     if rc == 0:
         fail.append("(p2) a pipe carrying a liquid with dissolved H2/N2/Ar "

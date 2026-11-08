@@ -128,8 +128,8 @@ NAMED_EXEMPT = {
         "teaches the ban to a contributor, quoting the deprecated form",
     "docs/architecture/electrolyte-data-architecture.md":
         "records the ratification debate that produced the rule, and says so",
-    "CLAUDE.md":
-        "states the rule in the data-tree section, quoting the deprecated form",
+    "docs/architecture/settled-contracts.md":
+        "relocated from CLAUDE.md (C241): states the rule in the data-tree section, quoting the deprecated form",
     "bin/curate/check_glossary_bans.py":
         "this gate -- the patterns ARE the deprecated forms",
     "bin/curate/check_doc_references.py":
@@ -180,7 +180,7 @@ SECTOR_NAMED_EXEMPT = {
     "tutorials/plant/ChemicalPlantTutorial/constant/components/sucrose.dat":
         "a SEALED record: editing its comment moves its sha256 against "
         "constant/propertyManifest, and a re-seal is a curation act",
-    "tutorials/plant/sugarPlantEconomicsSweep/constant/components/sucrose.dat":
+    "tutorials/steady/economics/sugarPlantEconomicsSweep/constant/components/sucrose.dat":
         "same: a SEALED record, re-sealing is a curation act",
 }
 

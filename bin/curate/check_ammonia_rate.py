@@ -3,7 +3,7 @@
 
     bin/curate/check_ammonia_rate.py
 
-WHY THIS EXISTS.  `tutorials/plant/ammonia03_quench_converter` draws the
+WHY THIS EXISTS.  `tutorials/steady/reactors/ammonia03_quench_converter` draws the
 cold-shot trajectory of Dyson & Simon's Figure 2 with EQUILIBRIUM beds and
 says, in its own README, what that cannot do; the rate law closes those
 seams.  Until 2026-10-12 the law was compiled into the engine
@@ -13,7 +13,7 @@ it, as `kinetics { type expression; }` in constant/reactions -- three
 copies:
 
     tutorials/props/kinetics/ammoniaRate01_dyson_simon      (+ Eq 39 / Table I)
-    tutorials/plant/ammoniaReactor04_kineticSizing
+    tutorials/steady/reactors/ammoniaReactor04_kineticSizing
     tutorials/plant/greenAmmonia03_basicDesign
 
 A law with three homes is held together HERE, and the anchors that used to
@@ -120,11 +120,11 @@ ROOT = Path(__file__).resolve().parents[2]
 PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 CASE = ROOT / "tutorials/props/kinetics/ammoniaRate01_dyson_simon"
-PLANT = ROOT / "tutorials/plant/ammonia03_quench_converter"
+PLANT = ROOT / "tutorials/steady/reactors/ammonia03_quench_converter"
 LAWS = {
     "bench": CASE / "constant/reactions",
     "ammoniaReactor04_kineticSizing":
-        ROOT / "tutorials/plant/ammoniaReactor04_kineticSizing/constant/reactions",
+        ROOT / "tutorials/steady/reactors/ammoniaReactor04_kineticSizing/constant/reactions",
     "greenAmmonia03_basicDesign":
         ROOT / "tutorials/plant/greenAmmonia03_basicDesign/constant/reactions",
 }
@@ -384,10 +384,10 @@ def main() -> int:
             "(e2) a 12 mm particle", fails, "outside refuse")
     refusal(lambda t: t.replace("pressure     300 atm", "pressure     400 atm"), same,
             "(e3) 400 atm", fails, "OUTSIDE its declared points")
-    refusal(lambda t: t.replace("NH3 0.0111202", "NH3 0.0000000").replace(
-            "N2 0.2393446", "N2 0.2504648"), same,
+    refusal(lambda t: t.replace("NH3 0.0140133", "NH3 0.0000000").replace(
+            "N2 0.2386387", "N2 0.2526520"), same,
             "(e4) a gas with no ammonia", fails, "definition `fwd`")
-    refusal(lambda t: t.replace("inert 0.0232896", "inert 0.0432896"), same,
+    refusal(lambda t: t.replace("inert 0.0233473", "inert 0.0433473"), same,
             "(e5) a composition that does not close", fails, "NOT normalised")
 
     # ---- (f) the interpolation is announced, and only when it happens ----

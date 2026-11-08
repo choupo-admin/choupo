@@ -178,7 +178,7 @@ ExpressionRate::ExpressionRate(const DictPtr&                  rxn,
     // ---- parameters --------------------------------------------------------
     std::vector<std::string> known = { "T", "P" };
     for (const auto& c : comps_)
-    { known.push_back("x[" + c + "]"); known.push_back("p[" + c + "]"); known.push_back("c[" + c + "]"); }
+    { known.push_back("x[" + c + "]"); known.push_back("p[" + c + "]"); known.push_back("c[" + c + "]"); known.push_back("a[" + c + "]"); }
 
     std::set<std::string> taken;
     auto claim = [&](const std::string& name, const std::string& kind)
@@ -295,7 +295,7 @@ ExpressionRate::ExpressionRate(const DictPtr&                  rxn,
         }
     }
 
-    const std::size_t firstDefSlot = 2 + 3 * n;
+    const std::size_t firstDefSlot = 2 + 4 * n;
     std::map<std::string, std::size_t> defSlot;      // compiled
     std::set<std::string>              inProgress;
     std::vector<std::string>           chain;
@@ -318,7 +318,7 @@ ExpressionRate::ExpressionRate(const DictPtr&                  rxn,
         {
             const std::string head = id.substr(0, lb);
             const std::string comp = id.substr(lb + 1, id.size() - lb - 2);
-            if (head != "x" && head != "p" && head != "c") return std::nullopt;
+            if (head != "x" && head != "p" && head != "c" && head != "a") return std::nullopt;
             const std::size_t i = indexOf(comp);
             if (i == n)
             {
@@ -330,6 +330,7 @@ ExpressionRate::ExpressionRate(const DictPtr&                  rxn,
             if (head == "x") { s.slot = slotX(i);  s.dims = Dims::dimensionless; }
             if (head == "p") { s.slot = slotPp(i); s.dims = Dims::pressure; }
             if (head == "c") { s.slot = slotC(i);  s.dims = Dims::concentration; }
+            if (head == "a") { s.slot = slotA(i);  s.dims = Dims::dimensionless; }
             return s;
         }
         for (const auto& p : params_)
@@ -404,6 +405,7 @@ ExpressionRate::ExpressionRate(const DictPtr&                  rxn,
         {
             if (s == slotP() || (s >= slotPp(0) && s < slotPp(0) + n)) usesPressure_ = true;
             if (s >= slotC(0) && s < slotC(0) + n) usesConcentration_ = true;
+            if (s >= slotA(0) && s < slotA(0) + n) usesActivity_ = true;
         }
     };
     for (const auto& d : defs_) scan(d.f);
@@ -420,6 +422,16 @@ ExpressionRate::ExpressionRate(const DictPtr&                  rxn,
     if (usesConcentration_ && !offer.concentration)
         throw std::runtime_error(who + ": the formula reads concentrations"
             " (c[i]), which this reactor does not form.");
+
+    if (usesActivity_ && !offer.activities)
+        throw std::runtime_error(who + ": the formula reads activities (a[i]),"
+            " and " + (offer.activitiesAbsent.empty()
+                ? std::string("this reactor does not form them: an activity is"
+                    " the PACKAGE's gamma_i x_i at the stage composition and"
+                    " temperature, which only the distillation column hands a"
+                    " rate law.  Write the law in x[i], c[i] or p[i].")
+                : offer.activitiesAbsent)
+            + "  No activity is assumed.");
 
     // ---- optional reporting declarations -----------------------------------
     auto knowsName = [&](const std::string& nm)
@@ -577,6 +589,7 @@ void ExpressionRate::fillState(const RateState& s, std::vector<scalar>& v) const
         v[slotX(i)]  = xi;
         v[slotPp(i)] = xi * s.P;
         v[slotC(i)]  = s.conc ? (*s.conc)[i] / s.amountPerKmol : 0.0;
+        v[slotA(i)]  = s.act ? (*s.act)[i] : 0.0;
     }
 }
 

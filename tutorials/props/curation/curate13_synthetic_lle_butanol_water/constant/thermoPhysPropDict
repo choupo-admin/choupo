@@ -1,0 +1,68 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  curate13_synthetic_lle_butanol_water -- the thermophysical system.
+
+  TWO LIQUIDS, ONE ACTIVITY MODEL.  The tie-line residual asks the
+  liquid-liquid flash, which needs two liquid phases in the package, so the
+  system is declared the way binary01_lle_water_nbutanol declares it:
+  `formulation gammaGamma` and `liquidPhases ( liquid1 liquid2 )`, both
+  liquids sharing the ONE activity model below -- so the pair being fitted
+  is one number, not two.  The bubble temperatures are asked of the same
+  package (ideal-gas vapour, the catalogue's own Antoine records).
+
+  The inline pair is the FIT'S STARTING POINT, not a result: b_ij = 0,
+  b_ji = 1000 K is a pair that DOES split the liquid at every measured tie
+  line (an all-zero start would be ideal mixing, split nothing, and give the
+  penalty no gradient -- the run refuses such a start by name).  The
+  parameters the evidence was generated from are in the datasets' headers.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( nButanol  water );
+
+equilibrium
+{
+    formulation gammaGamma;
+
+    liquid
+    {
+        activityModel
+        {
+            model NRTL;
+            binaryParameters   // the FIT'S starting point -- see the header
+            {
+                nButanol-water
+                {
+                    i nButanol;
+                    j water;
+                    a_ij 0;
+                    b_ij 0;
+                    a_ji 0;
+                    b_ji 1000;
+                    alpha 0.30;
+                }
+            }
+        }
+    }
+
+    liquidPhases
+    (
+        { name liquid1; }
+        { name liquid2; }
+    );
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

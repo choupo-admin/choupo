@@ -39,6 +39,7 @@ License
 #include "electrolyte/SpeciationSolver.H"
 #include "equationOfState/EquationOfState.H"
 #include "phase/Phase.H"
+#include "phase/SaturatedVapour.H"
 #include "pureFluid/PureFluidModel.H"
 #include "transport/GasMixingRules.H"
 #include "transport/TransportModel.H"
@@ -115,6 +116,7 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
         speciator_          = std::move(o.speciator_);
         for (auto& p : phases_) if (p) p->rebindComponents(&components_);
         for (auto& p : phases_) if (p) p->rebindPureFluids(&pureFluid_);
+        bindVapourReference();
     }
     return *this;
 }
@@ -362,6 +364,7 @@ void ThermoPackage::assembleTwoPhase(const std::vector<std::string>& namesIn,
     injectUniquacRQ(activityRef, names, components_);
     activity_ = ActivityModel::New(activityRef, components_);
     eos_      = EquationOfState::New(eosDict, components_);
+    bindVapourReference();
     if (vleWorld_ == "phiPhi")
     {
         if (!eos_ || eos_->isIdeal())
@@ -418,6 +421,7 @@ void ThermoPackage::assembleNamedPhases(const std::vector<std::string>& namesIn,
         activity_ = ActivityModel::New(activityRef, components_);
     }
     if (eosRef) eos_ = EquationOfState::New(eosRef, components_);
+    bindVapourReference();
 
     auditFindings_ = collectAuditFindings(components_, activity_.get(), eos_.get());
     auditPackage(components_, activity_.get(), eos_.get());
@@ -800,6 +804,42 @@ bool ThermoPackage::vapourAssociationPriced() const
     return true;
 }
 
+bool ThermoPackage::phiSatActive() const
+{
+    return eos_ && !eos_->isIdeal() && vleWorld_ != "phiPhi"
+        && !hasElectrolyte();
+}
+
+scalar ThermoPackage::refFactor(std::size_t i, scalar T, scalar P) const
+{
+    if (!phiSatActive()) return 1.0;
+    if (pureFluid_.count(i) || !components_[i].hasVaporPressure()) return 1.0;
+    const std::string& role = components_[i].role();
+    if (role == "nonvolatile" || role == "radical") return 1.0;
+    return liquidReferenceFactor(*eos_, components_[i], i, n(), T, P,
+                                 Psat(i, T));
+}
+
+scalar ThermoPackage::pureLiquidReference(std::size_t i, scalar T,
+                                          scalar P) const
+{
+    const scalar ps = Psat(i, T);
+    return phiSatActive() ? ps * refFactor(i, T, P) : ps;
+}
+
+scalar ThermoPackage::liquidReferenceFugacity(std::size_t i, scalar T,
+                                              scalar P) const
+{
+    const scalar ref = PsatLiquidReference(i, T);
+    return phiSatActive() ? ref * refFactor(i, T, P) : ref;
+}
+
+void ThermoPackage::bindVapourReference()
+{
+    const EquationOfState* e = phiSatActive() ? eos_.get() : nullptr;
+    for (auto& p : phases_) if (p) p->rebindVapourEos(e);
+}
+
 scalar ThermoPackage::PsatLiquidReference(std::size_t i, scalar T) const
 {
     const scalar ps = Psat(i, T);
@@ -851,7 +891,8 @@ scalar ThermoPackage::K(std::size_t i, scalar T, scalar P,
     //  The associated ideal-gas vapour (one home: PsatLiquidReference +
     //  vapourAssociationLnPhi); byte-identical when nothing associates.
     const scalar lnPhiA = vapourAssociationLnPhi(T, P, y)[i];
-    return gam[i] * PsatLiquidReference(i, T) / (phi[i] * std::exp(lnPhiA) * P);
+    return gam[i] * liquidReferenceFugacity(i, T, P)
+         / (phi[i] * std::exp(lnPhiA) * P);
 }
 
 sVector ThermoPackage::Kvec(scalar T, scalar P,
@@ -900,7 +941,23 @@ sVector ThermoPackage::Kvec(scalar T, scalar P,
             Kpp[i] = (phiV[i] > 0.0) ? phiL[i] / phiV[i] : 0.0;
         return Kpp;
     }
-    auto gam = activity_->gamma(T, x);
+    return KvecAtGamma(T, P, x, y, activity_->gamma(T, x));
+}
+
+sVector ThermoPackage::gammaForK(scalar T, const sVector& x) const
+{
+    return activity_->gamma(T, x);
+}
+
+bool ThermoPackage::liquidGammaIndependentOfVapour() const
+{
+    return eos_ != nullptr && vleWorld_ != "phiPhi";
+}
+
+sVector ThermoPackage::KvecAtGamma(scalar T, scalar P,
+                                   const sVector& x, const sVector& y,
+                                   const sVector& gam) const
+{
     auto phi = eos_     ->phi  (T, P, y);
     sVector K(n());
     for (std::size_t i = 0; i < n(); ++i)
@@ -950,7 +1007,8 @@ sVector ThermoPackage::Kvec(scalar T, scalar P,
             continue;
         }
 
-        K[i] = gam[i] * Psat(i, T) / (phi[i] * P);
+        K[i] = gam[i] * (phiSatActive() ? Psat(i, T) * refFactor(i, T, P)
+                                        : Psat(i, T)) / (phi[i] * P);
     }
     //  THE ASSOCIATED IDEAL-GAS VAPOUR (DEV.md 4c C201 item 1, piece 2):
     //  K_i = gamma_i Psat_ref,i / (phi_i phi_assoc,i P), with the associating

@@ -8,9 +8,26 @@ points at its DEV.md 4c entry, the register of record.  Vítor's private
 Portuguese view is https://claude.ai/artifact/JnokFGgoNMTAWvu9fkgyoQ; its
 header names the PLAN.md commit it reflects, so a stale view shows itself.
 
+> **USAGE FREEZE (Vitor, 2026-11-05: 96 % of the credits spent).**  Everything
+> that needs Opus or Fable WAITS FOR SATURDAY 2026-11-07: the C229 (A) port
+> review, C227 slice (b) (the pair index), the C223 pilot's decisions, the
+> C228 distillation and cracking cases, and any new physics.  Until then only
+> cheap work: integrations that run on their own (`bin/integrate`), reading
+> logs, registering.  No new general is dispatched; the two C229 generals were
+> told to commit WIP and stop.  Lifted by Vitor, never by the assistant.
+
+
+> **THE MONTH (C238, deadline 2026-11-30, the architect's plan).**  To 11-15: land
+> what is built, in the order C235, C228, C236, C183, C227 (a), C234, C229; no new
+> physics until that queue is empty.  To 11-22: reproduce Jacobs & Krishna (Nijhuis if
+> time allows) and write one short demonstration path: the column beside the
+> reference, the first law closed, the 3D plant, the pinch page.  Last week: fixes
+> only, WASM rebuild, publish, a full rehearsal in the browser.  What falls first if
+> the month runs short is what is least visible, never a gate.
+
 ## How the plan is kept (the architect's rule, 2026-11-01)
 
-1. **Capacity, not hope.**  Up to 7 generals at once (CLAUDE.md rule 4:
+1. **Capacity, not hope.**  Up to 7 generals by the machine (CLAUDE.md rule 4) but at most 4 BUILDERS at once and none started while 3 branches are `queued` for integration -- integration is the serial lane and the practice says verification, not generation, is the bottleneck (C242).  Every brief carries a budget and an acceptance list.  Saturday: full sweep, slowest list, BRAIN rows, risks, Done pruning.  Formerly: up to 7 generals at once (CLAUDE.md rule 4:
    each `make -j1`, at most 4 compiles or suites, one heavy job, 2 cores
    and 2 GB always left), each 30-60 minutes, integrations one at a time.  So: **Now** holds
    only what is RUNNING (at most 7 rows: Vítor ordered up to 7 generals on 2026-11-02); **Next day** at most 5 rows;
@@ -36,8 +53,9 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| done | C235 LANDED (2026-11-07, 4174b9a05): phi_sat + Poynting in the liquid reference, feed at its own pressure, column19 on SRK; MTBE duties +8 % -> +2.5 % / +1.5 % against the reference simulator, T within 0.6 K, first law 0 kW; 24 cases re-recorded with reasons; sweep 847/0 on the tip | C235 |
 | done | THE THREE WAITING BRANCHES ARE LANDED (2026-11-05): `c219` (`0c922c989`, extractor against Perry's Table 15-8; UNIFAC MISSES by 3-6 mass percent), `c214-w6` (`ba851b667`, IF97 region 3, 48 printed values held), `c214-w2b` (`d59337fd2`, Bell-Delaware `auto` and `form Serth`; Serth Example 6.1 reproduced to 0.08 %; `clearanceBasis` declared, Eq 6.16 recorded as a candidate erratum; 45 degrees Re 10-100 stays refused). Full sweep not run for any of them, reasons in DEV.md | C214, C219 |
-| todo | C224 (before the C223 pilot): an INLINE binary pair is announced as not reviewed (caveat block + result JSON, a gate); the brief stops inviting numbers typed from memory and routes a missing pair to the catalogue, UNIFAC-as-estimate, or `fitParameters` on the student's own measured data; a harness probe that a pair in no catalogue does not come back with typed numbers | C224 |
+| done | C224 (`a8e6ee7a8`): an INLINE binary pair is announced `[unreviewed] pair` (caveat block + result JSON, gate `check_inline_pair_announced`); the brief stops inviting numbers typed from memory (catalogue -> UNIFAC as an estimate -> measured data and `fitParameters` -> 'I do not know it'); the integration found 27 inline cases (not 6) and eight GUI citations to re-point. The p17 probe is written and NOT run (it calls a paid model) | C224 |
 | done | THE STACK IS LANDED on main and the site (2026-11-03 08:30, `ebe0e3a51`): the freeze was lifted because the tutorials are at 17:00 and 17:30, not noon; staging passed --fast 78/0, --gui 43/0, a second full sweep 822/0; the live bundle carries the compaction fits, the utilisation table and the equipment tags, the packs answer 200 | C200, C210 |
 | todo | what the two PIF groups report from the 17:00/17:30 tutorials goes ahead of everything | C210 |
 | done | Acetic acid item 3 (`1d25dd6de`, full sweep 825/0): the corrected constant, the Kirchhoff liquid bridge (latent heat at Tb 24.39 by construction, liquid -484.06 against NBS -484.3), the associated vapour, the distillate priced as its stream, 735 golden rows moved (by group, in the commit), the seven exotherm tutorials repaired honestly, the column gate's condenser arm fixed | C201 (3) |
@@ -45,10 +63,28 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | done | The capability index for assistants (C211, `7d1e9217d`): `/llm/capabilities.md` first in llms.txt under 'Does Choupo do X?' (computes / balances / checks / missing per concept, pharmaceutical plant first, witness cases by full path), the version line on every served document, a static `/llm/models.md`, AGENTS.md one path per question; gate `check_capability_index` (sabotage-verified) | C211 |
 | done | Acetic acid item 1 (`7f8e5348b`): logK25 2.555 (formic) -> 3.107 (ethanoic, Chao & Zwolinski Tables 11/12) in the record and five mirrors, 54 golden rows re-recorded from 3.5x more dimer, gate `check_dimerisation_constants`; it exposed flash17's dimer-heat seam, pinned | C201 (1) |
 
+## Slowest cases (C236: kept, and a general investigates whenever there is room)
+
+Retaken after each full sweep from `build/suiteJobTimes.tsv` (real seconds per job;
+`suiteTimings.csv` holds gaps between result lines).  A case that grew is a defect.
+List of 2026-11-08 (main f468736fd, parallel): swro01_campoDalias 98, check_schema_coverage 68, nanofiltran_geraldesAlves2008 62, greenAmmonia03 50, gen_sdem_validation 37, check_inlet_resolution 31, apalutamide01 28, check_plant_layout 27, checkHeaderSelfContained 26, dspmde01 24.  Previous list (C235 sweep, 11-07): swro01_campoDalias 284,
+ctrl17 210, ctrl19 113, greenAmmonia03_basicDesign 74, ctrl08 58,
+greenAmmoniaPEQ_baseCase 54, ctrl06 51, nanofiltran_geraldesAlves2008 50,
+apalutamide01_tablets 42; slowest gate check_schema_coverage 77.  Found and fixed so far: aceticAcid02_plant 46.5 s (2026-10-14) -> 391 s (2026-11-07,
+main `5c9c936af`, one run under load): gamma(T, x) re-evaluated on every pass of the
+incipient vapour since `31d4b7e6c` (a dimer makes K depend on y); 94 s after the fix,
+before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed map.
+
 ## Next day (at most 5)
 
 | status | what | ref |
 |---|---|---|
+| done | C241 LANDED (bab4dff30): BRAIN.md with its generator and `check_brain_fresh` (brain-fresh-gate), `@BRAIN.md` import, CLAUDE.md 4379 -> 1068 lines by relocation to `docs/architecture/settled-contracts.md` (119 units verbatim); the second cut (sections 0/2/10) is the architect's own editing, later | C241 |
+| done | C236 LANDED (14854376b): dynamic writers default `flushEach false` (ctrl17 141 -> 0.4 s, byte-identical), the golden checker reads equipment/layout blocks once per case (swro01 292 -> 93 s); the Saturday sweep covers its shared path | C236 |
+| running | C239 (2026-11-08): S1+S3 -- column08 (16 bar) and column20 (7 bar) on the SRK vapour, golden re-recorded with reasons; beside it the Klemola anchors on column14 (first column held to a measured plant) and its entry into the validation subset; then S2 process05/recycle02, S4 column05 dimer, S5 measure the 1-atm family | C239 |
+| done | C237 (Vitor) closed 2026-11-08: flushEach, the slowest list, C228, the pinch console line (C234), props results in the tree (C183) and the plan's upkeep all landed in the Saturday batch (f468736fd); C227 (a) still waits for its source/release/seal line | C237 |
+| done | C230 LANDED (`e29bc7d34`): the pinch of `ammonia02_full_plant` is right -- the engine leaves a utility-served side out of the population (cooling water is not a process stream), the GUI Pinch tab draws the engine's artefacts and computes nothing; Q_H,min 0, Q_C,min 95454 kW, NO pinch (a threshold problem). Open for the Saturday review: a misleading 'heater below the pinch' line in a threshold problem, and the rule on other plants | C230 |
+| done | C229 LANDED in the Saturday batch (f468736fd): ports, pipes on the right nozzle, the generated 3D tour; 52 layout rows re-recorded with causes. Browser check after `make wasm-gui` | C229 |
 | done | C214 W1 (`46bf7f942`): a GENERAL flash specification -- (P,H), (P,S), (T,V/F), (P,V/F) from one home `flashState::specifiedFlash`, with the props op `flashSpec`; the wet steam expansion matches the IF97 table (quality 0.8103 against 0.8102); a new liquid and mixture entropy surface paired with the enthalpy; `adiabaticFlash`, `valve`, `compressor`, `turbine` NOT migrated (byte-identical rule), listed in the record | C214 |
 | todo | Acetic acid, the rest: the column's dew-point distillate, the Gibbs / three-phase / binaryTxy readers, the record's identity; one moved-row list; the seven exotherm tutorials to Vitor | C201 (1) |
 | todo | The replacement for the seven exotherm tutorials (their honest repair is in the integration branch): a genuinely exothermic reaction -- the ethylene-oxide hydration to ethylene glycol, data already in the catalogue -- giving runaway, multiplicity (three steady states) and jacket control back; the Van Heerden EduTool still names `cstr05_multiplicity` as its witness and will draw ONE root: re-point it to the new case | C201 |
@@ -58,20 +94,27 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 | status | what | ref |
 |---|---|---|
+| running | C244: phase 1 LANDED (f468736fd, ten cases left tutorials/plant/, ladder flat under steady/reactors); phase 2 next: greenAmmonia03's content and the feasibility pair folded into PEQ | C244 |
+| todo | C243 (Vitor): the case declares its figures -- default one figure per control loop (SP/PV, MV on a second axis), a `plots ( ... )` block in controlDict honoured by the engine and drawn by the GUI, unknown series refused by name; ctrl22 has 20 columns on one plot today | C243 |
+| done | C234 LANDED in the Saturday batch (f468736fd): the engine publishes the problem table and classifies the case; the console line fixed. Browser check after `make wasm-gui` | C234 |
+| done | C233 LANDED: kinetics in the full MESH (the extent from the rate law and the catalyst, through the reaction factory; Rehfinger & Hoffmann, `column20_mtbe_kinetic_mesh`, illustrative catalyst mass, about 9 % conversion, no effectiveness factor, not validated against a pilot column).  Scope 124/0 plus conservation, GUI 44/0, no golden moved.  No full sweep: `ReactionRate.H` gained a symbol only the column binds, and every reactor kinetics case was in the scope; the C235 sweep follows | C233 |
+| done | C231 LANDED (`5c9c936af`): the reactive full MESH for a mole-changing reaction; scope 96/0, GUI 44/0, no golden moved; the MTBE case (conversion 99.22 %, tops 50.9 C, bottoms 128.1 C, duties ~8 % above the reference simulator, cause not investigated); K_a(T) from Izquierdo's Eq. 15 (21 measurements, AAD 4.6 %); the column only VERIFIED against the reference simulator, nothing validated against a measured column | C231 |
 | done | C214 W3 (`46bf7f942`): dominant-eigenvalue recycle acceleration (Orbach & Crowe 1971, read from the paper), opt-in and announced; MEASURED LIMIT: it targets a dominant eigenvalue near 1 and this corpus sits near 0.2 (process05 6 iterations against Wegstein 9; membrane27 and acetonePlant worse), so it is a teaching aid, not a default; a misspelt `recycleSolver` now refuses | C214 |
-| todo | C227 (Vitor): `pairLookup` and `componentLookup` props operations with a byte-budget gate and an honesty ladder (catalogue / autoPromoted / UNIFAC-as-estimate / servable-not-fitted / unknown); ONE evidence card per pair that the Explorer's 'Evidence for this pair' also draws; the brief shrinks to 'call the lookup'; the saving is measured. Slice (a) is running | C227 |
-| todo | THE C16 CHAIN, first slice (C226 + C225): a liquid-liquid residual kind in `fitParameters` (on `IsothermalFlash::solveCore`, additive to `T_bubble`) with arm (f) of `check_regressed_pairs` accepting a declared gap against a band set before the fit; confirm by ONE RUN whether UNIQUAC/Wilson already fit by path; study triage (leave one study out); component audit against ThermoML (water vapour pressure 0.5-0.7 K low is the first known finding). Unblocks butanol-water. The ThermoML cache (4.2 GB) lives only in the cloud container: settle where this runs before dispatch | C226, C225 |
-| todo | C214 W4: Beggs-Brill two-phase pipe as `twoPhase { model BeggsBrill; }` beside Lockhart-Martinelli, with inclination (Beggs & Brill 1973) | C214 |
-| todo | C214 W5: a Cv-rated control valve with an inherent characteristic (linear / equal-percentage), the opening as the manipulated variable -- what the digital twin's controllers move (ISA-75.01 form) | C214, C203 |
+| running | C228: the TBP cutter LANDED (f468736fd); next SRK/PR kij for hydrocarbon pairs through the C16 chain, then a crude/naphtha column with real unit data, then cracking (Sundaram & Froment) | C228 |
+| done | THE C16 CHAIN, first slice LANDED (`47604de18`): `fitParameters` kind `T_bubble+LLE` with arm (f) accepting a declared gap; the `proposal` now writes each model's own keys (a Wilson fit used to publish the ideal pair silently); UNIQUAC and Wilson already fitted by path. Witness SYNTHETIC; the real butanol-water pair, the study triage and the component audit remain | C226 |
 | done | C214 W6 (`ba851b667`): IF97 region 3 and `check_if97_regions`, which holds the 48 printed values of Wagner et al. 2000; no golden row moved | C214 |
-| todo | C214 W7: a water electrolyser unit (declared cell-voltage curve, Faraday efficiency, stack power -> H2, O2, heat; Ulleberg 2003); the green-ammonia plant declares its H2 as a feed today | C214 |
 | done | PIF E4 + E5 (2026-11-04, merged to main; pushed once its gate has run on the integrated tree): `economics { buildings, breakEven, royalty, workingCapitalMethods }`, all opt-in, no number shipped; witness `economics04_building_royalty_breakeven`, gate `check_economic_extensions`; the asset-class depreciation stays absent | C195, C210 |
-| todo | The control-placement EduTool, pages 1-5 and the plant method page (the Pareto is in C204); its loops use the instrument grammar above | C204 |
 
 ## Beyond a week
 
 | status | what | ref |
 |---|---|---|
+| todo | C227 (Vitor): `pairLookup` and `componentLookup` props operations with a byte-budget gate and an honesty ladder (catalogue / autoPromoted / UNIFAC-as-estimate / servable-not-fitted / unknown); ONE evidence card per pair that the Explorer's 'Evidence for this pair' also draws; the brief shrinks to 'call the lookup'; the saving is measured. Slice (a) is BUILT on a branch and awaits integration (the lookups bypass the seal: to be understood first) | C227 |
+| todo | C16 chain, the real butanol-water pair: needs MEASURED tie lines (a ThermoML LLE series or a published table read by a curator) and the study protocol of slice 2; then study triage (leave one study out) and the component audit against ThermoML (water vapour pressure 0.5-0.7 K low is the first known finding). The ThermoML cache (4.2 GB) lives only in the cloud container: settle where this runs | C226, C225 |
+| todo | C214 W4: Beggs-Brill two-phase pipe as `twoPhase { model BeggsBrill; }` beside Lockhart-Martinelli, with inclination (Beggs & Brill 1973) | C214 |
+| todo | C214 W5: a Cv-rated control valve with an inherent characteristic (linear / equal-percentage), the opening as the manipulated variable -- what the digital twin's controllers move (ISA-75.01 form) | C214, C203 |
+| todo | C214 W7: a water electrolyser unit (declared cell-voltage curve, Faraday efficiency, stack power -> H2, O2, heat; Ulleberg 2003); the green-ammonia plant declares its H2 as a feed today | C214 |
+| todo | The control-placement EduTool, pages 1-5 and the plant method page (the Pareto is in C204); its loops use the instrument grammar above | C204 |
 | todo | C16 chain, rest (C226): `choupo-curate pair A B` writing the declaration first; several models per cycle; `autoPromoted` / `humanReviewed false` with one-command revert; a verification card in the Explorer; coverage map; standing audit of catalogue pairs; Antoine/Cp from pure ThermoML data; CAS->InChIKey bridge file; in-browser fitting (last). The fitting Jacobian was MEASURED 2026-11-05 and needs nothing (a fit takes 0.05-0.12 s; the verdict is stable over six decades of fdStep) -- the real cost is the `identity` step | C226, C225 |
 | todo | Dynamic units, slices 3 and 4: the flash drum (liquid level, vapour pressure, T) and the exchanger/heater as quasiSteady plus a sensor lag (they feed the digital twin) | C205 |
 | todo | C223 pilot: ~10 binary pairs / components by DEMAND (PIF actives and solvents; tutorials on unvalidated values) through the existing ThermoML route (fit on one study, held out on another, band before the fit, identifiability first), measuring time per pair and the fraction that validates; NIST WebBook/SRD stay out; promotion is Vitor's review; after the validation subset has grown | C223 |

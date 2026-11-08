@@ -28,6 +28,7 @@ License
 
 #include "FitWeighting.H"
 #include "EvidencePartition.H"
+#include "LleResidual.H"
 
 #include <algorithm>
 #include <iostream>
@@ -57,7 +58,7 @@ sVector fitWeights(const DictPtr& residualDict,
             "uncertainty;` needs the evidence FILES, which carry the"
             " uncertainties; the inline `residual.data ( )` form carries none.");
 
-    for (const auto& ds : partition->fit())
+    for (const auto& ds : lle::vleSets(partition->fit(), lle::isMixed(residualDict->lookupWordOrDefault("kind", "T_bubble"))))
     {
         //  The same reader, the same names the fit loads its points with, so
         //  the count compared below is the count the fit will use.

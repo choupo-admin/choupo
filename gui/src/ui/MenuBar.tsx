@@ -173,7 +173,7 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   // The last-opened case (offered for a deliberate reopen now that the GUI
   // boots blank).  Recomputed on every case change (tutorialName subscription).
   const reopenLabel = !hasCaseOpen(tutorialName) ? lastCaseLabel() : null;
-  const pinchReady = canComputePinch(runResult, flowsheet);
+  const pinchReady = canComputePinch(runResult);
 
   // The top tabs are CONTEXT-DEPENDENT: each case TYPE exposes only the
   // workspaces that mean something for it, so a lit-but-dead button (the
@@ -310,9 +310,9 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   const isWorkspaceDisabled = (w: { key: WorkspaceKey | null }): boolean =>
     w.key === "pinch" && !pinchReady;
   //  ASK why, do not assert it: the reason lives beside the condition in
-  //  case/pinch.ts, because a converged adiabatic case was being told to
+  //  case/pinch.ts (the engine decides whether a pinch exists; the tab needs a run)
   //  "run the flowsheet first" after running it.
-  const PINCH_DISABLED_HINT = pinchDisabledReason(runResult, flowsheet) ?? "";
+  const PINCH_DISABLED_HINT = pinchDisabledReason(runResult) ?? "";
 
   const openWorkspace = (label: string, key: WorkspaceKey | null) => {
     if (label === "Flowsheet") {

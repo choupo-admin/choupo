@@ -836,7 +836,10 @@ def arm_absent(work, clean_json):
     #  pipes to them, its rack's stated default and its counts differ by
     #  construction (arm (i) holds them); the ITEMS are the same but for the
     #  room each one names.
-    for k in ("pipes", "notRouted", "junctions", "pipeRack", "summary"):
+    #  C229: the port convention sentence rides with the routed pipes, which
+    #  the clean probe (items indoors) does not route; it is pipe text.
+    for k in ("pipes", "notRouted", "junctions", "pipeRack", "summary",
+              "portConvention"):
         lay.pop(k, None)
         cl.pop(k, None)
     cl["items"] = [{k: v for k, v in i.items() if k != "room"} for i in cl.get("items", [])]

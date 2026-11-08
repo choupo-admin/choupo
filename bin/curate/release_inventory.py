@@ -281,7 +281,7 @@ DOC_COUNT_PAT = re.compile(
 #  narrow enough (a 2-5 digit number immediately before the noun) that the
 #  guides' legitimate numbers -- tube counts, stage counts, coefficients --
 #  do not trip it.
-DOC_SCAN = ["CLAUDE.md", "AGENTS.md", "README.md",
+DOC_SCAN = ["CLAUDE.md", "docs/architecture/settled-contracts.md", "AGENTS.md", "README.md",
             "docs/theoryGuide.tex", "docs/userGuide.tex",
             "docs/propsGuide.tex", "docs/developerGuide.tex"]
 
@@ -321,11 +321,11 @@ DOC_COUNT_ALLOW = [
     #  was regenerated.  A check placed after an exiting one is a check that
     #  does not run -- the same family as a permanently-green gate, by a
     #  different road.
-    ("CLAUDE.md", "67 records carried",
+    ("docs/architecture/settled-contracts.md", "67 records carried",
      "a CLOSED migration's size, fixed for ever -- not a corpus tally that "
      "can drift.  The live count of what remains unreviewed is in "
      "check_review_status, which recounts it."),
-    ("CLAUDE.md", "kept 9 of its 28 pair parameters",
+    ("docs/architecture/settled-contracts.md", "kept 9 of its 28 pair parameters",
      "a measurement of ONE sealing defect, not a corpus size"),
     #  BOTH FOUND 2026-09-16, by the same road the two above were: the
     #  inventory had gone stale (11 cases behind), `--check` exits on
@@ -333,14 +333,14 @@ DOC_COUNT_ALLOW = [
     #  the moment it was regenerated.  That is the third and fourth time this
     #  list has grown by regenerating rather than by anyone writing a number,
     #  which is the comment above this one, working.
-    ("CLAUDE.md", "32 of the 89 cases that have a global first law",
+    ("docs/architecture/settled-contracts.md", "32 of the 89 cases that have a global first law",
      "a DATED measurement taken on the day check_energy_closure was built, "
      "and the sentence it sits in says in its own words to read the gate's "
      "claim line for today's count rather than this one"),
-    ("CLAUDE.md", "across 28 cases, 0 added, 0 removed",
+    ("docs/architecture/settled-contracts.md", "across 28 cases, 0 added, 0 removed",
      "the blast radius of ONE golden re-record, fixed for ever -- how many "
      "cases a single 2026-09-12 commit moved, not how many the corpus has"),
-    ("CLAUDE.md", "14/14 tear cases already satisfy it",
+    ("docs/architecture/settled-contracts.md", "14/14 tear cases already satisfy it",
      "audit evidence dated in its own sentence, not a live tally"),
     ("docs/developerGuide.tex", "kept 9 of its 28 pair parameters",
      "the same one-defect measurement as CLAUDE.md"),

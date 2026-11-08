@@ -98,8 +98,10 @@ For a missing property / pair, the student may:
 
 1. **Cite or enter measured data** — best. A literature value (cite the primary
    source, §5) or the student's own measurement, entered as a curated field.
-2. **Fit experimental data** — `fitParameters` (e.g. an NRTL pair from the
-   student's Txy points; an Antoine from measured Psat). Visible RMS/AAD.
+2. **Fit experimental data** — `fitParameters` (e.g. an NRTL, UNIQUAC or
+   Wilson pair from the student's Txy points, plus tie lines for a partially
+   miscible pair with `kind T_bubble+LLE`; an Antoine from measured Psat).
+   Visible RMS/AAD.
 3. **Estimate by group contribution** — `estimateComponent` (Joback the default;
    another method if the student prefers and it exists). Honest, reproducible,
    tagged `origin=estimated`. The fallback when there is no data.

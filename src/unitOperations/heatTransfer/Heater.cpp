@@ -381,7 +381,21 @@ int Heater::solve(const DictPtr& dict,
             const auto& vp = thermo.comp(dom).vp();
             // Only attempt the inversion when P is within the curve's range to
             // avoid extrapolation noise; bisection on Psat(T) = P.
+            //  The bracket is the record's own declared window when it has one
+            //  (DEV.md 4c C234): a fixed 150-1200 K bracket evaluated the
+            //  correlation at 150 K on every heater of a datum-less fluid and
+            //  announced "vapour pressure evaluated at 150 K, OUTSIDE its
+            //  declared Trange" about a state no stream was in.  Psat is
+            //  monotone, so a root inside the window is THE root; only when
+            //  the window holds none does the wide bracket run, and its
+            //  extrapolation is then a real one and is announced.
             scalar lo = 150.0, hi = 1200.0;
+            const auto win = vp.range();
+            if (win.second > win.first && win.first > 0.0)
+            {
+                const scalar wl = vp.Psat_Pa(win.first), wh = vp.Psat_Pa(win.second);
+                if ((wl - P_in) * (wh - P_in) < 0.0) { lo = win.first; hi = win.second; }
+            }
             const scalar Plo = vp.Psat_Pa(lo), Phi = vp.Psat_Pa(hi);
             if ((Plo - P_in) * (Phi - P_in) < 0.0)
             {

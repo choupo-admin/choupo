@@ -162,7 +162,11 @@ batch plan, sizing, clean utilities, costing and economics on top
 
 ### Plot plan and site layout (plant layout, equipment spacing, pipe rack, roads)
 * Computes: in `system/layoutDict`, the routes and lengths of the pipes over
-  a declared `key:pipeRack`, the plot area, the paved road area.
+  a declared `key:pipeRack`, where each pipe lands on its item (a PORT: a
+  column's feed at its stage's height on the shell, bottoms at the sump,
+  distillate on the reflux drum; an exchanger's tube and shell nozzles; a
+  drum's inlet, vapour and liquid; movable with `key:ports`), the plot area,
+  the paved road area.
 * Checks: overlaps are refused; short separations, ignition sources in a
   hazardous zone or downwind of a release, roads without a gate, items out of
   reach of a road are announced; truck routes walked against a design
@@ -261,6 +265,7 @@ batch plan, sizing, clean utilities, costing and economics on top
 | Concept (synonyms) | Computes | Where | Witness |
 |---|---|---|---|
 | Flash, phase split (VLE, LLE, bubble/dew point) | equilibrium split, duty | `unit:isothermalFlash`, `unit:adiabaticFlash`, `unit:bubbleT`, `unit:dewT` | `tutorials/steady/flash/flash01_benzene_toluene` |
+| Petroleum fraction, TBP curve, pseudo-components (crude cuts, API gravity, Watson K) | a TBP curve cut into pseudo-components: Tb per cut (mid-point of the distilled interval), SG per cut by a declared method (constant Watson K, or declared), then MW, Tc, Pc, Vc, omega and Cp per cut by the Riazi-Daubert estimator; API gravity, SG and Watson K per cut and for the blend; one ESTIMATE record per cut written into the case (a proposal, never a standard record).  Checks: the re-blended cuts must reproduce the feed SG within a DECLARED tolerance (a miss is announced, not adjusted); fractions sum to 1.  One lump from (Tb, SG): `op:estimateComponent` with `model RiaziDaubert;`.  Missing: ASTM D86 / D1160 -> TBP conversion (refuses by name), API gravity and Watson K on the stream report, a crude-distillation reference case, kij for hydrocarbon gas pairs | `op:petroleumCuts`, `op:estimateComponent` | `tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp`, `tutorials/props/estimate/estimate_petroleum_cut` |
 | Specified flash (PH, PS, TV/F, PV/F; isentropic expansion, throttling, wet steam quality) | the equilibrium state at a (P, H), (P, S), (T, V/F) or (P, V/F) pair: T or P, vapour fraction, phases, H and S; a pure fluid inside its latent jump lands on the saturation plateau by the lever rule.  Checks: a specification no state meets inside the window is refused.  Missing: (T, H), (T, S), (U, V); the units (`unit:adiabaticFlash`, `unit:valve`, `unit:compressor`, `unit:turbine`) still run their own searches, and a turbine expands a single-phase vapour | `op:flashSpec` | `tutorials/props/thermo/flashSpec01_wet_steam_expansion` |
 | Distillation (column, MESH, shortcut, Fenske-Underwood-Gilliland) | rigorous column; shortcut design | `unit:distillationColumn`, `unit:shortcutColumn` | `tutorials/steady/distillation/column01_benzene_toluene` |
 | Absorption, stripping, extraction | outlet compositions of the contactor.  Extraction: a Kremser shortcut CHECK beside the rigorous stage count, a column height from a DECLARED HETS, the package's LLE read against measured tie lines (`op:lleTieLines`), the shortcut on declared numbers (`op:extractionShortcut`).  Missing: packed / rotating-disc / pulsed / mixer-settler models, flooding and diameter, stage efficiency | `unit:absorber`, `unit:stripper`, `unit:extractor`, `op:lleTieLines`, `op:extractionShortcut` | `tutorials/steady/absorption/stripper01_NH3_water`, `tutorials/steady/absorption/extract03_acetic_acid_mibk_perry`, `tutorials/props/compare/lle01_acetic_mibk_perry` |

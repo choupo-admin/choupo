@@ -56,13 +56,13 @@ const here = dirname(fileURLToPath(import.meta.url));
 const TANK_FARM = {
   id: "bund:tankFarm", bund: "tankFarm", containment: "bund", verdict: "adequate",
   regionFrom: "rectangle", area: 7480, wallHeight: 4, grossVolume: 29920,
-  displacedVolume: 9248, netVolume: 20672, requiredVolume: 20435.3628498,
-  largestHeld: 17897.6025908, totalHeld: 35795.2051815, basis: "vesselVolume",
+  displacedVolume: 9248, netVolume: 20672, requiredVolume: 20492.6155671,
+  largestHeld: 17949.6505155, totalHeld: 35899.301031, basis: "vesselVolume",
   governing: "largest", drain: "closedValve",
   items: ["NH3Storage/tank1", "NH3Storage/tank2"],
   outline: [[103, -69], [213, -69], [213, -1], [103, -1]],
-  held: [["NH3Storage/tank1", 17897.6025908, 4624], ["NH3Storage/tank2", 17897.6025908, 4624]],
-  terms: [[1.1, "largest", 19687.3628498]],
+  held: [["NH3Storage/tank1", 17949.6505155, 4624], ["NH3Storage/tank2", 17949.6505155, 4624]],
+  terms: [[1.1, "largest", 19744.6155671]],
   allowances: [["rain", "depth", 0.1, 748, "a design storm falling on the bund floor"]],
   ruleSource: "author-set assumption for this exercise", ruleReason: "the largest tank fails",
   source: "author-set assumption for this exercise; not a civil design",
@@ -104,9 +104,9 @@ describe("secondary containment (C134)", () => {
     const [b, k] = lay.bunds!;
     expect(b!.containment).toBe("bund");
     expect(b!.netVolume).toBe(20672);
-    expect(b!.requiredVolume).toBe(20435.3628498);
+    expect(b!.requiredVolume).toBe(20492.6155671);
     expect(b!.pit).toBeUndefined();
-    expect(b!.held[0]).toEqual({ item: "NH3Storage/tank1", volume: 17897.6025908, displaced: 4624 });
+    expect(b!.held[0]).toEqual({ item: "NH3Storage/tank1", volume: 17949.6505155, displaced: 4624 });
     expect(b!.allowances[0]!.volume).toBe(748);
     expect(k!.containment).toBe("impounding");
     expect(k!.pit).toEqual({ x: 70, y: 24, length: 4, width: 3, depth: 1.5 });
@@ -146,7 +146,7 @@ describe("secondary containment (C134)", () => {
     expect(v.headline).toContain("2 containments declared");
     expect(v.rows.map((r) => r.bund)).toEqual(["tankFarm", "loopKerb"]);
     expect(v.rows[0]!.holds).toContain("20672.0");
-    expect(v.rows[0]!.requires).toBe("20435.4");
+    expect(v.rows[0]!.requires).toBe("20492.6");
     expect(v.rows[0]!.verdict).toBe("adequate");
     expect(v.rows[1]!.holds).toContain("pit 4.0 x 3.0 x 1.50 m");
     expect(v.notes[0]).toContain("110 % of the largest");

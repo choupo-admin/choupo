@@ -2308,6 +2308,33 @@ accepts today, and that is a policy call.
 > value taken from a no-grant database.  This goes BEFORE the C223 pilot:
 > the pilot would feed a hole.
 
+> **C224 STATUS (2026-11-05): ENGINE + BRIEF + GATE DONE on branch; sweep not run.**
+> (1) `ThermoPackageBuilder.cpp`: `announceInlinePair(model, pair)`, ONE home,
+> called from BOTH inline readers (`resolveActivity`, shared by gammaPhi and
+> gammaGamma, and the top-level liquid `binaryParameters` branch); a pair
+> with `source` is silent; `AdvisoryLog::addAnnouncedOnce` key
+> `inlinePair:<model>:<pair>`, line `[unreviewed] pair <A-B>: ... NOT
+> reviewed by Choupo`, category provenance, so it reaches the caveat block and
+> the result JSON. No number moves. (2) `docs/ai/brief.md`: the "give the NRTL
+> inline with their literature source" sentence is gone; order now catalogue
+> -> UNIFAC (said to be an estimate) -> ask for MEASURED data and a
+> `fitParameters` case -> never a parameter without data ("I do not know it")
+> -> never a value from a no-redistribution database. `bin/regen-llm-docs`
+> run; no other doc repeated the sentence (greps in docs/ai, docs/*.tex).
+> (3) Gate `bin/curate/check_inline_pair_announced.py` (wired in
+> `bin/runTests` beside `regressed-pairs-gate`). (4) Corpus cases with a pair
+> typed inline (no `source`): props/scan/binary01_lle_water_nbutanol,
+> props/scan/ternary01_audit_vlle, steady/absorption/extraction01_waterButanol,
+> steady/flash/vlle01_waterButanol, vlle03_audit_artificial, vlle05_produced_feed;
+> each gains one stderr/caveat line per pair; no `expected` file reads
+> advisories (grep). (5) Evaluation: `bin/curate/llm_eval/problems/p17_revise_unknown_pair.md`
+> (revision problem on the existing `expect: unsupported` + `check: absent`
+> machinery: acetone-chloroform with "DECHEMA" NRTL; the reply must write no
+> coefficient key). NOT RUN: it calls a paid model; the harness is a tool, not
+> a gate. NOT built: an engine refusal of a typed pair (the announcement is
+> the ruling); Wilson/UNIQUAC inline are covered by the same helper but the
+> gate exercises NRTL only.
+
 > **C214 W6 INTEGRATION, FULL SWEEP NOT RUN (2026-11-05, architect's reason).**
 > `bin/integrate` ran scope 3/0, gui 44/0, fast 78/0 and every gate its reach
 > named, and stopped BLOCKED only because the diff touches `ThermoPackage.cpp`
@@ -2475,67 +2502,883 @@ accepts today, and that is a policy call.
 > pairs land through the C16 chain.  The curator's side (fit, validate,
 > promote) stays on the laptop; the student's side is read-only.
 
-> **C227 SLICE (a) BUILT (2026-11-05, branch of the c227a general).**  The two
-> operations `pairLookup` and `componentLookup`
-> (`src/propertyOps/CatalogueLookup.{H,cpp}`, registered in
-> `PropertyOperation::registerBuiltins`), the evidence card
-> (`docs/design/the-evidence-card.md`, indexed in `decision-records.md`),
-> witnesses `tutorials/props/molecular/pairLookup01_catalogue_ladder` and
-> `componentLookup01_catalogue_ladder` (new goldens: `diag` byte counts and
-> `verdict` tier words, appended by hand to the recorded `expected`; no
-> existing row moved), gate `bin/curate/check_lookup_budget.py` wired into
-> `bin/runTests` and recorded in `generated/gateManifest.json` (`--only`).
-> DECISIONS TAKEN (rule 00, recorded so they can be audited): the budget is
-> **2048 bytes of card text** (`kLookupCardBudgetBytes`, one home; the largest
-> card measured is 842 bytes, so the number is headroom for a pair with three
-> records, not a fit); over budget the card sheds lowest-priority LEAF lines
-> and says `droppedFields N;`, it never truncates mid-structure; the top-level
-> `tier` of a pair is the BEST class among its records (`curated` beats
-> `regressed`), and records are ordered NRTL/UNIQUAC/Wilson before other
-> families (a Henry/van't Hoff entry sharing the pair's name is listed, after);
-> the lookups read the INSTALLATION catalogue (`$CHOUPO_HOME/data/standards`
-> then `data/local`), not the case's `constant/`, and refuse by name where there
-> is none; a component resolves by file name, alias, CAS (record), then the lake
-> (file stem, or an EXACT name/CAS/alias in `compounds.csv`) -- never by
-> similarity; the lake gives identity + UNIFAC groups + which estimated columns
-> exist, no estimated value; the C16 fields (`laboratories`, `archiveSha256`,
-> `extractionFilter`, `fitAAD`, and `studies`/`validationAAD`/`identifiability`/
-> `fittedInCase` where a record lacks them) are listed in `announcedAbsent`
-> and never filled; the archive rung is said, on the `none` tier, to be slice (b).
-> **MEASURED (bytes only; no token claim).**  What an assistant must read today
-> to answer "what do you have for this pair?": `docs/ai/brief.md` 21 327 +
-> `docs/ai/capabilities.md` 20 886 + `docs/ai/packs/*` 129 006 (seven packs) =
-> **171 219 bytes** (and that text cannot answer a specific pair at all: the
-> pair is in the catalogue).  One card: **curated pair (ethanol + water, two
-> records) 832; regressed (acetone + ethanol) 842; UNIFAC-only (acetone +
-> cyclohexane) 685; unknown pair (1Pentadecanol + water) 664; component outside
-> the catalogue (1Pentadecanol, lake) 548 and a wholly unknown compound 420**;
-> catalogue component (ethanol) 692.  The card alone is 0.4-0.5 % of the
-> reading above, but the RAW tool output is larger than the card: a one-op
-> `choupoProps` run prints 5 275 bytes on stdout (banner, the card, and the
-> result JSON, which carries the card a second time plus the citation text)
-> and 620 on stderr, so an assistant that reads the whole output pays ~5.9 KB
-> for one pair.  A card-only output mode (`--card`) is proposed for slice (c)
-> and NOT built.  The assistant's own token use is not measured.
-> **VALIDATED:** `make -j1 all`; both witnesses via `bin/runTests --scope`
-> (PASS 3 / FAIL 0); `check_lookup_budget` OK (8 cards, largest 842 of 2048);
-> `check_capability_index`, `check_doc_references`, `check_doctrine`,
-> `check_decision_index`, `check_schema_coverage`, `check_type_coverage`,
-> `check_props_order` OK; `case_manifest`, `release_inventory`, `code_map`,
-> `regen-llm-docs`, `gen_tutorials_guide` regenerated (their `--check` OK);
-> `propsGuide.pdf` and `tutorialsGuide.pdf` rebuilt.  The gate's by-hand
-> sabotages, each rebuilt and restored: S1 "ESTIMATE" removed from the UNIFAC
-> tier (caught by (e)); S2 a number appended to the unknown-pair sentence
-> (caught by (d)); S3 the record's `b_ij` printed in the curated and regressed
-> cards (caught by (b) and (c), the comparison being NUMERIC so a respelling
-> is caught too).  NOT PROVEN: the full sweep (not run: no shared path
-> touched beyond a props-op registration); `--gui` (no `gui/src` change and no
-> cited `src/` line moved: the new file is new and the two edits to existing
-> files are registration lines in `PropertyOperation.cpp`/`PropsPlan.cpp`,
-> whose line numbers an EduTool lesson could cite -- not checked); WASM
-> (`make wasm`) not rebuilt, so the browser bench does not have the ops yet;
-> the sealed-corpus gate was not run on the two new (unsealed) cases.
-> NOT DONE: slices (b), (c), (d); the Explorer reading; `autoPromoted`.
+> **C227 slice (b) PREREQUISITES RUN (2026-11-05, Vitor approved the network
+> use).**  `bin/choupo-thermoml identity` resolved 483 of the 517 catalogue
+> components to an InChIKey (two independent resolvers agreed); the other
+> 34 were REFUSED, none guessed: 17 where the resolvers DISAGREED (the
+> radicals and atoms: CS, H, H2, HO2, N, NH ...), 4 whose resolved formula
+> did not match the record's, and 13 for which a resolver gave no answer
+> (e.g. 2Methoxy2MethylHeptane, C6H5).  `vle-index` indexed 12 993 binary
+> vapour-liquid blocks from the 11 923 archive files, writing
+> `thirdParty/thermoml/identity.json` and `vleIndex.json` (both git-ignored,
+> derived); two archive files (`j.fluid.2018.07.020.xml`, `...021.xml`) are
+> not well-formed XML and were REFUSED by name.  This is the input of the
+> pair index (slice b).
+
+> **C228 (Vitor, 2026-11-05, relayed from another session): THE PETROCHEMISTRY
+> GAP, MEASURED BEFORE IT WAS ACCEPTED.**  The relay said there is "no
+> petroleum characterisation".  MEASURED false in part: `RiaziDaubert`
+> (`src/propertyOps/RiaziDaubert.{H,cpp}`, a registered `ConstantEstimator`)
+> already turns (Tb, SG) into MW, Tc, Pc, Vc with omega by Lee-Kesler and a
+> Kesler-Lee ideal-gas Cp, prints the Watson K factor, and
+> `props/estimate/estimate_petroleum_cut` + `steady/flash/
+> flash_pseudoComponent_petCut` flash such a lump and close its energy
+> balance.  What is TRULY missing (grep of src, docs/ai and tutorials): (1) a
+> TBP curve cut into several pseudo-components; (2) API gravity and the
+> Watson factor on STREAM properties; (3) a naphtha or crude atmospheric
+> distillation reference case; (4) a thermal-cracking case with published
+> kinetics; (5) SRK/PR kij for hydrocarbon gas pairs -- the catalogue holds
+> ONE record (`parameters/SRK/N2-CH4.dat`).  Components are not the gap: 609
+> records incl. n-pentane to n-decane, the xylenes, cumene, styrene,
+> naphthalene.  DECISIONS (architect, rule 00): the Pareto frame stands (no
+> breadth race; FCC, reforming, hydrotreating, CAPE-OPEN, hydrates and
+> black-oil stay out); an ESTIMATED pseudo-component record lives in the
+> CASE, never in `data/standards/` (an estimate is a proposal the student
+> promotes, as `estimateComponent` already writes it); correlations from the
+> books are used as formulas and coefficients, never copied tables
+> (`check_source_licence`).  ORDER: first the TBP cutter as a props operation
+> on `RiaziDaubert` with API gravity, SG and Watson K per cut and for the
+> blend (items 1-2, started); then kij of SRK/PR by the C16 chain with
+> `P_bubble` (its first slice is built, the pair fit waits on the archive
+> index); then the distillation case (needs the cutter and a source with a
+> unit's data, not a textbook example); then the cracking case (kinetics
+> from Sundaram & Froment 1977/1978 -- which of the two carries the measured
+> tables is to be CONFIRMED by reading them, not assumed).  LITERATURE
+> LOCATION (correcting the relay, which said `data/local`): Riazi (ASTM MNL50)
+> is `~/Downloads/MNL50.pdf` and
+> `~/Choupo-Literature/characterization-of-petroleum-products-by-riazi.pdf`,
+> Sundaram & Froment are `~/Choupo-Literature/sundaram1977.pdf` and
+> `sundaram1978.pdf`; Poling-Prausnitz-O'Connell was not in either place then
+> (the curator's own copy that `verify_against_poling.py` reads).  CORRECTED
+> 2026-11-07: the fifth edition is at
+> `~/Choupo-Literature/poling-properties-of-gases-and-liquids-5ed.pdf`, and
+> `~/Choupo-Literature/INDEX.md` is the folder's index, read before any paper is
+> requested (it maps old names to new).
+
+> **C224 INTEGRATION (2026-11-05): the report's case list was INCOMPLETE and
+> the full sweep was judged not needed.**  The general listed SIX cases that
+> type pairs inline; counting the thermoPhysPropDict files that carry
+> `a_ij`/`b_ij`/`tau`/`alpha` outside `parameters/` finds about 27 (the whole
+> curate* series, bubbleT01/02, dewT01, flash02/03, fitNRTL01/02,
+> still02, column03, ...), each of which now earns one `[unreviewed] pair`
+> line.  The integration found what the list hid: the GUI cites
+> `ThermoPackageBuilder.cpp` by line and the 20 added lines moved eight
+> citations (re-pointed in `caseAssembly.ts` and `runLog.ts`), and the
+> `runLog` page's "nothing raised" witness, `bubbleT01_ethanol_water`, is one
+> of the inline cases; it stays as the bubble-point witness (a new `bubble`
+> run, it TEACHES the inline form) and the quiet witness is now
+> `heatExchanger01_water_water` (one [unmarked] line, so the test's count
+> moved from 2 to 1).  The shared-path flag on `ThermoPackageBuilder.cpp`
+> (a FULL sweep) is judged NOT needed: the engine change is one helper that
+> announces and moves no number (gammas identical to the catalogue run,
+> the general's arm d), the scoped cases pass (PASS 10 / FAIL 0), 157
+> gates ran, `check_element_closure` and `check_method_tools` pass once the
+> worktree has been exercised / has its `node_modules`, and the whole GUI
+> suite passes (271 files, 7074 tests).  Reversible by `git revert`.
+
+> **C226 FIRST SLICE BUILT (2026-11-05, branch worktree-agent-ab19459fd2263d5f6,
+> not yet merged).**  A3 first, by ONE RUN: a copy of curate04 with the model
+> swapped fits UNIQUAC (`a_ij a_ji`: held-out AAD 0.146 %, validated) and
+> Wilson (`A_ij A_ji`: 0.149 %, validated) through the dictionary path with no
+> engine change -- so those were never missing.  What WAS wrong, found by the
+> run: the PROPOSAL record wrote NRTL's five keys for every model (a Wilson fit
+> published `a_ij 0, b_ij 0`, the ideal pair, and a UNIQUAC one an `alpha`);
+> fixed (each model's own keys).  The arm-(f), `proposal` and unit-ops
+> statements that the kinds are "T_bubble only" were false already (P_bubble,
+> isotherm, membrane) and are corrected in docs/ai/patterns.md.  A1:
+> `residual.kind T_bubble+LLE` (`src/propertyOps/LleResidual.{H,cpp}`), mixed
+> evidence in one least-squares problem; the flash is `IsothermalFlash::
+> solveCore` with `PhaseSet::LL` (what `propertyScanBinary` uses), which
+> needs TWO LIQUID PHASES in the package -- the fitting case declares
+> `formulation gammaGamma` with `liquidPhases`, NOT the `gammaPhi` the curate
+> cases use, and the fit refuses a one-liquid package by name (the premise
+> "solveCore directly" held for the cost, not for the package).  Decisions
+> taken (rule 00, technical reasons): the tie line is (T, x of the FIRST
+> named component in each liquid), two rows per tie, branches matched by
+> order; sigma is DECLARED with its origin and mixing REQUIRES `weighting
+> uncertainty` (kelvin and mole fraction are not summable unweighted);
+> a model that leaves ONE liquid where two were measured takes the bubble
+> rows' 1e3 penalty, is announced tie by tie, and is a MISS in the held-out
+> verdict; a start that splits no measured tie line is REFUSED (the penalty is
+> flat, no gradient); the held-out band is `acceptance.maxLLE` (mole
+> fraction), inside the fingerprint.  Only `T_bubble+LLE` is built: `LLE`
+> alone is refused by name (the pressure arity logic assumes bubble rows).  A2:
+> arm (f) of `check_regressed_pairs` accepts `liquidLiquid true;` + `gap {}`
+> (tie-line evidence of role fit, band = acceptance.maxLLE, validity covering
+> the measured T, the record's NRTL recomputed by the Gibbs hull reproducing
+> every measured tie within the band); the prohibition is unchanged for every
+> other pair; arm (h) holds a right record and six wrong ones.  WITNESS
+> `curate13_synthetic_lle_butanol_water`: SYNTHETIC (engine-generated from
+> NRTL b_ij 150 K, b_ji 1050 K; labelled in every header and announced at
+> run time) because the tree holds NO measured butanol-water data and the
+> ThermoML cache is not here; recovery 1.4e-7 relative.  THE REAL PAIR IS
+> STILL TO DO and needs measured tie lines.  Gate `check_lle_residual`
+> (5 by-hand sabotages caught + 2 on arm (f)/(h)).  Not built: study triage
+> (leave one study out), the component audit, `autoPromoted`, the Wilson
+> catalogue home, tie lines inside a ternary.
+
+> **C229 (Vitor, 2026-11-05, after a class): A STUDENT GROUP'S HAND-MADE 3D PAGE
+> BEATS THE ENGINE'S LAYOUT, AND THE PIPE CONNECTIONS ARE WHY.**  Group G9
+> built an interactive 3D page of a green-ammonia loop in a Claude artifact,
+> from a commercial simulator's results: a 12-step guided tour, orbit / walk /
+> drone cameras, a "go to" list, colour by temperature or phase, flow
+> particles at each line's design velocity, a KPI panel, a site minimap, a
+> click card on every item and pipe, and unmodelled items labelled as such.
+> Vitor: "ate fiquei envergonhado ... as ligacoes dos tubos aos equipamentos
+> estao muito mais precisas!".  MEASURED, and he is right:
+> `PlantLayout.cpp:705-712` sends EVERY pipe into and out of an item at its
+> PLAN CENTRE, AT ITS TOP ("Stylised: no nozzle schedule is published by any
+> sizer"), so a column's feed, reflux and bottoms all meet at one point on
+> the head; a stream with several consumers is not routed at all
+> (`PlantLayout.cpp:812-826`); `equipmentModel.ts` draws nozzles as decoration
+> and exposes no port.  The viewer (`layoutRenderer.ts`) has orbit, phase
+> colours, quality levels, tooltips and particles, and NO tour, walk or
+> drone camera, go-to list, temperature colour, minimap or click card.  What
+> the page cannot do and Choupo does: it is authored for ONE plant, its own
+> legend says the dimensions are indicative and the routing "not modelled",
+> and nothing checks it; Choupo's is generated from any case and checked
+> (separations, zones, roads, pipe clashes).  So the target is the union, not
+> a defence.  DECISIONS (architect, rule 00): (A) THE ENGINE PUBLISHES PORTS:
+> each pipe end lands on a port derived from the item's kind, its sized
+> dimensions and the stream's ROLE (a column: feed at its stage's height,
+> vapour at the head, bottoms at the sump; an exchanger: shell and tube
+> in/out; a drum: inlet on the side, vapour on top, liquid at the bottom; a
+> compressor or pump: suction and discharge), with a case override, and
+> ANNOUNCED as a conventional position, not a vendor's nozzle schedule; the
+> `layout` golden rows of pipe length move, listed in the commit.  (B) THE
+> VIEWER gains the guided tour (generated from the sectors and units, never
+> hand-written per plant), orbit/walk/drone, go-to, colour by phase,
+> temperature, pressure and the CONCENTRATION of a chosen component (Vitor: the
+> students' page does this too; every value read from the published stream,
+> never computed in the GUI), the minimap, and a click card reading the stream
+> and sheet the engine published.
+
+> **C226 FIRST SLICE INTEGRATED (2026-11-05): the fails the tool printed, and
+> why none was a defect.**  `bin/integrate` ran scope 40/0 and the whole GUI
+> 44/0 and said NOT READY on two gates: `check_element_closure` (a fresh
+> worktree has not run `membrane08`; passes once exercised) and
+> `check_plant_layout` (`exit -15`, a SIGTERM at 695 s while a stray Chromium
+> of another general was being terminated; a re-run passes).  A third,
+> `check_standards_write_guard`, fails in ANY worktree because `CHOUPO_HOME`
+> points at the main checkout and the symlink probe compares against the wrong
+> catalogue; with `CHOUPO_HOME` at the worktree it passes -- a property of
+> the environment, to be fixed in the gate (derive the root from the binary,
+> not from the variable).  `check_guide_paths` was red on main from a truncated
+> `extract03_*` in a case comment (now the full case name, guide
+> regenerated).  The shared-path flag (`LleResidual.cpp` reached by two fit
+> files) is judged not to need a full sweep: the new kind is opt-in, no
+> existing case declares it, the 38 scoped fit cases pass with no moved row.
+> Two corrections of the report: the liquid-liquid residual needs a package
+> with TWO liquid phases (`gammaGamma` + `liquidPhases`), not the one-liquid
+> `gammaPhi` of the curate series, so the premise "straight on `solveCore`"
+> held for the cost and not for the package; and Wilson/UNIQUAC already fitted
+> by dictionary path, what failed was the proposal writing NRTL keys for every
+> model (fixed).
+
+> **C230 (Vitor, 2026-11-05, looking at the live site): THE PINCH CURVE OF
+> `ammonia02_full_plant` IS WRONG, IN TWO HOMES.**  Measured on the case
+> (a copy with `pinchPass { dTmin 20 K; }`, scratchpad).  The process has ONE
+> real heat recovery: the FEHE, hot side 839.6 -> 485.6 K, cold side 339.1 ->
+> 683.0 K, 117 170 kW (hot-end approach 156.6 K, cold-end 146.5 K), then the
+> water cooler takes 485.6 -> 311.7 K (57 821 kW) and the separator 311.7 ->
+> 250 K (37 650 kW).  Done by hand that is a THRESHOLD problem: every cold
+> stream is served by the hot effluent, Q_H,min about 0 (16 kW at 250 K), a
+> cold utility of about 95 MW, and NO pinch.  (1) THE GUI (`gui/src/case/
+> pinch.ts`, `thermalStreams`) builds ONE stream per unit duty from `Q_kW`'s
+> SIGN and the max inlet/outlet temperatures: the FEHE (two sides, both
+> published as `T_hot_in/out`, `T_cold_in/out`, ignored) becomes a single
+> "cold" stream running 839.6 -> 683.0 K, i.e. cooling, and the water cooler,
+> whose `Q_kW` is a positive duty MAGNITUDE (57 821), becomes a "cold" stream
+> too although it removes heat; the main hot stream is missing.  This is the
+> second home of a calculation the engine already owns (`PinchPass`, held by
+> `check_pinch_p1/p2`), against the doctrine "the engine decides, the GUI
+> draws".  Not run end to end here (a code reading plus the published KPIs);
+> reproduce with the Pinch tab before fixing.  (2) THE ENGINE's pass is also
+> wrong on this plant: it counts the water cooler's COOLING WATER (298.15 ->
+> 303.66 K, CP 10 486 kW/K) as a cold PROCESS stream ("recovered ... cold
+> side"), which manufactures the pinch it reports (T* = 308.15 K, Q_H,min =
+> 2158 kW, Q_C,min = 39 791 kW): a utility is not a process stream.
+> DECISION (architect): ONE HOME -- the GUI draws `reports/pinch/
+> compositeCurves.csv` and the targets the engine publishes and computes
+> nothing; the engine's population excludes a side served by a declared
+> utility (the case's `utilities` circuits and the `utilityAllocation`
+> record already say which stream is the service) and ANNOUNCES it; the
+> witness is this very plant, whose answer is the threshold above; a gate
+> recomputes it independently.  FIXED NOWHERE YET: the usage freeze (the
+> credits) puts it first on Saturday, ahead of everything, because it is a
+> wrong number at exit 0 that a student reads on the live site.
+
+> **C230 BUILT (2026-11-05, branch `c230-pinch`; not integrated).**  MEASURED
+> before: the engine on `ammonia02_full_plant` + `pinchPass { dTmin 20 K; }`
+> counted the cooling water as a 6th, cold process segment: Q_H,min 2158.34 kW,
+> Q_C,min 39 791.4 kW, pinch at T* = 308.15 K.  MEASURED after: 5 segments, the
+> water a `utility` row; Q_H,min = 0, Q_C,min = 95 454.26 kW (the hand value
+> 95 454.3), `pinch_exists 0`, the console says THRESHOLD problem; the gate's own
+> Python cascade over the units' published temperatures reproduces both
+> variants.  (1) ENGINE: the population leaves out a side whose inlet/outlet
+> streams belong to a declared `utilities` circuit (`utilityCircuits::
+> circuitOfStream`, read from system/flowsheetDict as EconomicsPass does) or
+> carry `category utility`; the service side is chosen by the service stream's
+> temperature against the two sides' terminal temperatures, never by name; the
+> process side enters as an ordinary segment counted as current utility use.
+> The circuit CW1 already existed in the case, so nothing was invented.  New
+> KPIs `utility_sides`, `pinch_exists`; population.csv role `utility`.
+> (2) GUI: ONE home.  `gui/src/case/pinch.ts` lost `thermalStreams`,
+> `computePinch` and the composite/GCC/match code; it now parses the engine's
+> population.csv, candidateMatches.csv and KPIs (`pinchFromEngine`);
+> `PinchView` is a shell over `PinchCompositeTool` (new prop `fixedSource`) and
+> the grid diagram, and a run without `pinchPass` says to declare
+> `pinchPass { dTmin 20 K; }`.  The Pinch tab is greyed only before a run.
+> (3) CASE: `ammonia02_full_plant` declares `pinchPass { dTmin 20 K; }`; 17 NEW
+> golden rows (`kpi pinch ...`), none moved; `pinch_exists`/`utility_sides`
+> appended to the three other pinch cases.  (4) GATE `check_pinch_utility`
+> (wired in `bin/runTests`): independent cascade, right vs the same case with
+> the circuit deleted (old numbers reproduced), sabotage by hand: exclusion
+> disabled and utility side swapped, both caught.  NOT proved: a browser
+> render of the tab (no Chromium by order), the full sweep, `--gui`; a pinch
+> VIOLATION line on a threshold problem still prints (`letdown` "heater below
+> the pinch", 16.48 kW) because the pass puts the pinch at the top of the
+> range when none exists -- named, not changed.
+
+> **C231 (Vitor, 2026-11-05): THE MTBE REACTIVE COLUMN OF HIS REFERENCE-SIMULATOR CASE
+> CANNOT BE SIMULATED TODAY -- A MOLE-CHANGING REACTION IN A REACTIVE
+> COLUMN.**  His case, a backup file `MTBE_Intensified_30 pratos.bkp` kept under his
+> course folder (outside the repository): ONE rigorous reactive column `T901`
+> (`RADFRAC`, `NSTAGE = 15` -- the file name says 30 trays and the file has
+> 15 stages --, partial-vapour condenser, reactive stages 6 to 10, reaction
+> set `R-1`), methanol + a C4 cut -> MTBE.  A previous session left two Choupo
+> cases beside it (a direct translation and a reactor-plus-column approximation, both outside the repository) and a
+> README.  MEASURED here: the direct translation is REFUSED by `DistillationColumn` --
+> "reactive distillation here supports mole-conserving (Sum nu = 0) reactions
+> only ... A Sum nu != 0 reaction changes the internal flows and needs the
+> full-MESH energy balance, which this method does not yet carry" -- and
+> methanol + isobutene <-> MTBE has Sum nu = -1.  the approximation (a conversion
+> reactor at the reference simulator's conversion, 98.87 %, followed by a non-reactive
+> `fullMESH` column) converges and reproduces its temperatures within
+> 1 K and the bottoms flow within 0.1 %, but the conversion is IMPOSED, so it
+> shows the separation and none of the intensification; its energy balance
+> leaves 166 kW (about 2 % of the duties) unexplained, cause not
+> investigated (the family of CLAUDE.md "the state a unit computes with").
+> WHAT IT WOULD TAKE (architect, Opus, Saturday or after): a reactive stage in
+> the rigorous solver that carries the reaction extent at each reactive stage
+> with variable molar flows and the heat of reaction in the stage energy
+> balance (the elements datum already carries it), the equilibrium constant
+> K_a(T) of the reaction as a case record (never a number taken from
+> the reference file), and a column witness that reproduces his case; the
+> esterification columns that run today (Sum nu = 0) are the precedent and
+> must stay byte-identical.  It is a flagship of process intensification,
+> which a chemical-project class meets, so it is worth building; and it
+> belongs ahead of a second look at that approximation, whose 166 kW residual is the
+> first thing to understand, because it may be a defect that exists today.
+
+> **C230 INTEGRATED (2026-11-06): the verification, and why the long run.**
+> `bin/integrate c230-pinch`: scope 8/0, the whole GUI 44/0, 162 gates, one
+> failing -- `check_element_closure`, the fresh-worktree artefact (passes
+> once `membrane08` has run; re-run here exit 0), and `check_standards_write_
+> guard` passes with `CHOUPO_HOME` at the worktree.  The shared-path flag
+> (`PinchPass.cpp`) is judged not to need a full sweep: the pass runs only
+> in cases that declare `pinchPass` (four), the exclusion rule changes only
+> a stream the case's own `utilities` circuit names, and the GUI lost
+> `computePinch`.  THE COST WAS A BRANCH THAT EDITED THIS FILE: a DEV.md edit
+> makes every gate that reads it reachable, so the run was ~160 gates
+> instead of a dozen and took an afternoon (Vitor, rightly furious).  From
+> now on a general's briefing says: do NOT edit DEV.md or PLAN.md in the
+> branch; the architect registers afterwards in a documentation-only commit.
+> Still open: the misleading `VIOLATION heater below the pinch` line a
+> threshold problem prints (letdown, 16.5 kW), and whether "a utility side
+> leaves the population" holds on other plants (water-cooled condensers,
+> steam heaters) -- the Saturday review.
+
+> **C231 DESIGN (architect, 2026-11-06, Vitor: "faz o que for preciso ... de
+> forma elegante").**  Read first: the extent machinery lives in the CMO MESH
+> (`solveSimultaneous`, `extentOf`, `xi`, the homotopy on `lnOffset`), the
+> variable flows and the stage energy rows live in the full MESH (`residualF`),
+> and `C169` refuses to join them.  So the column gains no new solver: the FULL
+> MESH gains the extents.  (1) One unknown per reactive stage appended to `w`;
+> component rows `-= nu[i]*xi_j`; TOTAL rows `-= sumNu*xi_j` (the whole of the
+> mole change); no heat term at all, because the energy rows price on the
+> elements datum and the heat of reaction is ALREADY there -- adding one would
+> count it twice; the equilibrium row is the CMO's `lnQ - ln K_a(T)`.  (2)
+> K_a(T) FROM THE RECORDS, the elegant half: `equilibrium { fromRecords; }`
+> gives ln K_a(T) = -Sum nu_i [g_ig,i(T)/(RT) + ln(Psat_i(T)/P0)], the same
+> datum that prices the energy rows, so a column cannot carry one heat of
+> reaction in its K and another in its energy balance; `equilibrium { lnKa
+> "<formula>"; ... }` through `core/Formula` (the C67 rule: a law WRITTEN in the
+> case, parsed once, dimension-checked) is the cited alternative; `Ka298` +
+> `dHrxn` stay for the CMO esterifications, byte-identical.  (3) The source
+> case's specs are BOTTOMS RATE and BOILUP RATIO (240 kmol/h, 5), and with a
+> mole change D is no longer F - B, so the MESH gains that spec pair, D
+> becoming an unknown closed by the top balance; `refluxRatio` +
+> `distillateRate` keep their rows, with B = F + sumNu Sum xi - D.  (4) The
+> seed is announced: a NON-REACTIVE CMO seeds the full MESH, and the reaction
+> enters by the existing homotopy (no silent crutch).  (5) `model simultaneous`
+> keeps refusing Sum nu != 0 by name and now names `fullMESH`.  THE DATA ARE THE
+> REAL RISK, not the solver: isobutene's `dHf_298` and `dGf_298` are JOBACK
+> estimates (`data/standards/components/isoButene.dat`, origin estimated), so
+> K_a(T) fromRecords and the heat of reaction inherit that error, announced.
+> The cure is a primary datum (a citable isobutene enthalpy of formation) and a
+> measured K_a(T) of the MTBE reaction to hold the result against; a value is
+> NEVER read off the source case's results.  Non-reactive columns must be
+> byte-identical (every golden unmoved).
+
+> **C231 DATA, READ (2026-11-06).**  K_a(T) of methanol + isobutene <-> MTBE:
+> Izquierdo, Cunill, Vila, Tejero, Iborra, J. Chem. Eng. Data 37 (1992) 339-343,
+> doi 10.1021/je00007a019 (in `~/Choupo-Literature/`), measured at 313-353 K, in
+> activities with UNIFAC.  THE PRINTED EQ. 16 IS UNUSABLE: its rounded constant
+> gives K about 7 times BELOW the paper's own Table IV (16 against 118 at 40 C;
+> checked, not assumed), and its Eq. 19 runs 19 % high.  Eq. 15, dH = -39.1
+> kJ/mol and dS = -85.3 J/mol/K, reproduces the 21 measurements of its Table II
+> at an AAD of 4.6 % (max 8.5 %), so that is the K of the witness.  Isobutene:
+> the catalogue's `dHf_298` is a Joback estimate, -10.25 kJ/mol, which puts the
+> gas-phase heat of reaction at -72.3 kJ/mol against the paper's -65.4.
+> Prosen, Maron, Rossini, J. Res. NBS 46 (1951) 106, doi 10.6028/jres.046.015,
+> give the heat of combustion, 645.19 +/- 0.25 kcal/mol, hence about -17.9 +/-
+> 1.1 kJ/mol with CODATA CO2 and H2O; used as a case-local overlay in the
+> witness, the catalogue record to be corrected in its own curation act (three
+> cases name it).
+
+> **C231 PAPERS READ (2026-11-06): NONE OF THE FOUR VALIDATES THE COLUMN.**
+> Mohl, Kienle, Gilles, Chem. Eng. Sci. 54 (1999) 1029 (doi 10.1016/s0009-2509(98)
+> 00327-3): two Clausthal pilot columns, MTBE and TAME, but its experimental
+> verification is TAME-centred and in FIGURES (3, 7), no tables; packed and
+> kinetic.  Sundmacher & Hoffmann, Chem. Eng. Sci. 51 (1996) 2359 (doi
+> 10.1016/0009-2509(96)00092-9): a laboratory MTBE column, but a NONEQUILIBRIUM
+> model with kinetics and intraparticle diffusion, comparisons in figures (8).
+> Nijhuis, Kerkhof, Mak, Ind. Eng. Chem. Res. 32 (1993) 2767 (doi
+> 10.1021/ie00023a045): a SIMULATION study run in the commercial package itself,
+> kinetic.  Jacobs & Krishna, Ind. Eng. Chem. Res. 32 (1993) 1706 (doi
+> 10.1021/ie00020a025): simulation.  The Mohl paper was chosen from its title; the
+> reading corrected that.  WHAT THE CASE MAY CLAIM: the thermodynamics is
+> validated (K_a(T) against Izquierdo's 21 measurements, AAD 4.6 %); the column is
+> verified against the reference simulator (temperatures within 0.3 K, duties 8 %
+> high, cause not investigated), which is agreement and not truth.  A real
+> column-level validation needs a KINETIC reactive stage in the full MESH
+> (Rehfinger & Hoffmann) and digitised figures with a checked calibration; it is
+> the next step of this line, not a task for the freeze.
+
+> **C233 (Vitor, 2026-11-06): KINETICS IN THE FULL MESH.**  "Sera que podes por
+> no plano CML implementar cinetica no full MESH?"  Why: C231 refuses `kinetics`
+> in `fullMESH` by name, and without it the MTBE column cannot be held against a
+> pilot column (C231 papers read: none of the four validates it).  Scope, from
+> what the code already carries: the CMO MESH has a kinetic mode
+> (`kinetic`, `rateAt`, `mCatPerStage`, `pseudoHomogeneous` and `adsorption`)
+> whose extent is COMPUTED from the rate and the catalyst mass of the stage, not
+> an unknown; the full MESH takes it the same way (extent per reactive stage =
+> r x m_cat), through the reaction factory (`Arrhenius`, `LHHW`, `expression`,
+> DEV.md C67) so a rate law's numbers live in the case, not in `src/`.  The
+> law to hold it against is Rehfinger & Hoffmann, Chem. Eng. Sci. 45 (1990) 1605,
+> doi 10.1016/0009-2509(90)80013-5 (rate in liquid-phase ACTIVITIES, in
+> `~/Choupo-Literature/`).  KEEP APART, said in the case: the pilot columns
+> (Mohl; Sundmacher & Hoffmann) are packed, catalyst-particle-limited columns;
+> a pseudo-homogeneous stage rate does not carry intraparticle diffusion
+> (the effectiveness factor), so the first witness must be a configuration where
+> that is plausible, and the comparison is announced as approximate.  ORDER:
+> design with Opus (how the computed extent enters the Newton and its
+> Jacobian, and the homotopy), build with Sonnet, then digitise a pilot-column
+> profile with a checked calibration.  Needs C231 integrated first.
+
+> **C233 DESIGN (architect, 2026-11-06, Vitor: "comeca ja").**  THE LAW, read
+> from the page image of Rehfinger & Hoffmann 1990: r = k [a_IB/a_MeOH - (1/K_a)
+> a_MTBE/a_MeOH^2] (Eq. 12), k in mmol/(s eq), k(90 C) = 243.8 +/- 27.0, E = 92.4
+> +/- 3.7 kJ/mol (Eq. 15, Table 4), K_a(25 C) = 300.5 +/- 22.8 (Table 4, fitted)
+> with ln[K_a(T)/K_a(T0)] = Eq. 6 (A1 = -1.49277e3 K, A2 = -7.74002e1, A3 =
+> 5.07563e-1 /K, A4 = -9.12739e-4 /K2, A5 = 1.10649e-6 /K3, A6 = -6.27996e-10
+> /K4; T0 298.15 K).  Eq. 6 CHECKED: with K_a(298) = 284 it reproduces the seven
+> Rehfinger values of Izquierdo's Table IV exactly.  Activities there are UNIQUAC
+> and the rate is per acid EQUIVALENT, so a case declares the resin's capacity.
+> THE LAW DOES NOT FIT `rateAt`: forward order -1 in methanol, and a reverse leg
+> with a_MeOH^-2 that is not mass action.  So the column takes it through the
+> reaction FACTORY (DEV.md C67): `reaction { kinetics { model expression; ... } }`
+> read by `ReactionRate::New`, with `a[i]` added to the state the law may read
+> (`RateState` gains the activities, `RateOffer` says who supplies them; a reactor
+> that does not refuses by name).  The native `pseudoHomogeneous` and `adsorption`
+> words stay byte-identical.  In the full MESH the extent is COMPUTED, r(T_j, x_j,
+> gamma_j) x m_cat_j, not an unknown (as in the CMO), the catalyst mass entering
+> by the existing ramp; the energy rows take nothing, as in C231.  THE GATE THAT
+> PROVES IT IS A LIMIT: with a law whose K is the equilibrium witness's K, a
+> growing catalyst mass must CONVERGE on column19's equilibrium answer; zero
+> catalyst must give the non-reactive column.  KNOWN HAZARD, said in the case: the
+> law diverges as a_MeOH -> 0 and the paper warns below x_MeOH about 0.3, while a
+> reactive zone runs lean in methanol; a floor, if any, is WRITTEN in the case's
+> law (`max(...)`), never hidden in the engine, and the reactive stages' a_MeOH is
+> reported against the measured range.  Internal diffusion (the effectiveness
+> factor) is NOT modelled and is said so.
+
+> **C234 (an external UX review of the `pinch-composite` EduTool, relayed by
+> Vitor, 2026-11-06): JUDGED BY CONTENT, MEASURED FIRST.**  The review's seven
+> points, against the tree: (1) THE STREAM TABLE -- the engine already writes
+> it: `reports/pinch/population.csv` carries side, T_in, T_out, Q, CP for every
+> segment (the classroom case: H1 180 kW at 2 kW/K, H2 240 kW at 8, C1 262.5 at
+> 2.5, C2 225 at 3); the page only has to DRAW it before the construction.
+> (2) THE WORKED CASCADE -- NOT published: the engine PRINTS the Linnhoff-Flower
+> table to the console and writes only the composite curves, the population and
+> the candidate matches; the page re-runs the cascade in TypeScript over the
+> published shifted curves (`computePinchFromCurves`, a "derived in view
+> cross-check"), which is the second home the review asks us not to grow.  A
+> `reports/pinch/problemTable.csv` (shifted T*, interval, sumCP hot and cold,
+> dH, initial and corrected cascade) is to be written by `PinchPass.cpp`, and
+> the page draws it.  (3) ANNOTATIONS on the curves (maximum recovery, the two
+> utility intervals, the vertical dTmin at the pinch) from the published
+> quantities, plus `Q_recovery,max` as a KPI.  (4) THRESHOLD, measured: at dTmin
+> 1 K the classroom case gives Q_H,min 67.5 kW and Q_C,min 0 and the console
+> still prints `pinch at T* = 293.65 K`; it is the same defect found on
+> `ammonia02` (C230).  The engine must CLASSIFY by the cascade -- interior pinch,
+> end-limited (threshold, either utility), several pinches, checking the
+> INTERIOR zeros too -- publish the word, and every surface (console, KPI, page,
+> the violation diagnostics) say it.  (5) CANDIDATE TABLE wording ("feasibility
+> assessment", Q_max are pairwise limits not to be added, CP_hot/CP_cold and the
+> CP inequalities).  (6) THE EXAMPLE'S THREE WARNINGS (sensible-only, no
+> standardThermochemistry for the synthetic fluid, a vapour pressure evaluated
+> at 150 K outside 280-620 K): to be INVESTIGATED, not hidden -- where the
+> 150 K comes from (a solver-internal trial or a real state), and the case says
+> plainly that its fluid is synthetic and constant-CP.  (7) the language:
+> |Q| in CP, the axis is a power, "the slope" is 1/CP.  MEASURED, and kept as a
+> gate: Q_H,min - Q_C,min = 67.5 kW at dTmin 1, 20 and 40 K (67.5-0,
+> 107.5-40, 217.5-150), i.e. the net of the cold and hot duties, whatever the
+> approach.  ORDER (the review's, accepted): the stream table + the worked
+> cascade + the annotations first, then the threshold classification, the
+> wording and the warnings; theory kept and interleaved with the numbers; the
+> distinction between energy targets and a realisable network kept explicit.
+> Doctrine: the C++ publishes, the page draws; the TypeScript cascade becomes
+> a labelled cross-check or goes.
+
+> **C235, THE DESIGN BELOW IS RETRACTED (architect, 2026-11-07, the sweep's 102 failures
+> sent it back to the physics).  THE LIQUID RUNG WAS RIGHT AND THE IDEAL VAPOUR WAS
+> WRONG.**  Kirchhoff from 298 K prices h_ig - h_L, not the latent heat: at 298 K the
+> vapour is near ideal, and the liquid's enthalpy has no reason to know about the
+> vapour's departure at 401 K.  So h_ig - h_L = 24.14 kJ/mol against a true latent of
+> about 22.8 is not an error of the rung: 24.14 - 1.34 (H_res of a Redlich-Kwong vapour
+> at 7 bar) = 22.80, on Watson's 22.84 and the source case's 22.92.  The "double count"
+> in the correction below does not exist: this rung never subtracted Watson, it was
+> read before the code that says so (`speciesPhaseEnthalpy`, "THE STATE IDENTITY #106").
+> Commit e149c478e (Watson slope above the window) broke dh/dT == Cp for every reader of
+> Cp, moved 102 rows of cases and gates (`check_ctrl_balance`, `check_reference_rung`,
+> `check_cp_range_announced`), and matched the source case by putting the vapour's
+> error into the liquid.  IT DOES NOT LAND.  The fix is the vapour: `column19` declares
+> an EoS as the source case does, with (B) the feed's own pressure, and (A) phi_sat in
+> the liquid reference so the temperatures hold.  The window remains a caveat, not a
+> defect: the extrapolation is announced.
+
+> **C236 (Vitor, 2026-11-07, after UNIFAC gave 52x on column19 from one string-keyed
+> map in a triple loop, and a regression of 8x on aceticAcid02_plant passed unseen for
+> weeks): A TOP-10 OF THE SLOWEST CASES IS KEPT, AND A GENERAL INVESTIGATES IT WHENEVER
+> THERE IS ROOM.**  The measurement already exists (`build/suiteTimings.csv`, every
+> check-mode `bin/runTests`, ten slowest printed); what was missing was anyone reading
+> it.  The list lives in PLAN.md, section *Slowest cases*, with its date and the commit
+> it was measured on, and is retaken after each full sweep.  A case whose time grew
+> against its previous row is a defect, named in DEV.md.  The gates count: an
+> integration spent over 90 minutes mostly in gates re-running the slow case serially.
+
+> **C237 (Vitor, 2026-11-07: "Depois desta fase ataca o plano CML de forma a despachar
+> as coisas rápidas e fáceis de fazer"): ONCE C235 IS LANDED, THE PLAN IS CLEARED OF ITS
+> QUICK ITEMS BEFORE ANY NEW PHYSICS.**  STATUS: waits on C235.  An item qualifies when
+> it needs no new physics, no golden moved without a reason, and under an hour of a
+> general; one that outgrows that returns to its row, said in one line.  Order, a triage
+> and not a measurement of effort: (1) the `flushEach` default on the dynamic binaries,
+> after checking that no gate depends on it (C236; ctrl17 went 107.9 -> 0.39 s on branch
+> `worktree-agent-a0748a330baf8fe7f`); (2) the slowest list from the real per-job times
+> in `build/suiteJobTimes.tsv`, because `suiteTimings.csv` holds gaps between result
+> lines (C236); (3) the branches already built: C228's TBP cutter
+> (`worktree-agent-ab10187c08ec1b5a6`, 9 commits) and C227 slice (a)
+> (`worktree-agent-a98489e6761709cb3`, 8 commits; first understand why its lookups
+> bypass the seal); (4) small fixes: the console 'pinch at' on a threshold case (C234;
+> `PinchPass.cpp:452` already comments on it, so read before dispatching) and a props
+> run's `postProcessing/` in the GUI case tree (C183 item 1); (5) the architect's
+> decisions that need no code (C183 item 2, the trademark wording); (6) the plan's own
+> upkeep: the usage-freeze banner, Done rows past their week, the private page.
+> AMENDED THE SAME HOUR (Vitor: "O que puder ser feito em paralelo sem atrapalhar o
+> resto tem de avançar!"): the order above is NOT a queue behind C235.  Whatever does
+> not touch C235's files (`src/thermo/`, the column, the Gibbs methods) and fits the
+> laptop's budget runs now; only integration waits its turn, one at a time.
+
+> **C238 (Vitor, 2026-11-07: "No final do mês tenho de ter um simulador para impressionar
+> os meus colegas!"): A DEADLINE, 2026-11-30.**  STATUS: open.  The audience is
+> chemical-engineering colleagues, who judge by what a number can be defended against
+> and by what they see.  Priority for the month goes to what they will open: the column
+> against the reference simulator with its first law closed, the 3D plant (C229), the
+> pinch page (C234), and a demonstration path through those.  The rule of the project
+> does not change: no gate is traded for the date.
+
+> **C239 (architect's reflection, 2026-11-07, measured on main `7cec264f0`): THE MTBE
+> DEFECT IS A FAMILY, AND VALIDATION DOES NOT REACH THE COLUMNS.**  STATUS: open.
+> (1) 34 of the 36 cases holding a `distillationColumn` declare `fugacityModel
+> idealGas`, the 2 others SRK (column14, column15).  Above 2.5 bar on an ideal vapour:
+> column08 16 bar, column19 and column20 7 bar, process05 and recycle02 5 bar,
+> acetonePlant 2.6 atm, aceticAcid02_plant 30 bar (that figure is the case's highest
+> declared P, not yet read as the column's).  C235 moves column19 only, so column20,
+> the same system at the same pressure, stays on the defect and must follow it at once.
+> The rest is the first target of the thermodynamic audit, each case judged by its own
+> species and pressure, not by this list.  (2) The validation subset holds 19 rows of
+> 526 runnable cases, 3 of them fit-consistency, and NO distillation column.  So
+> Jacobs & Krishna would be the first column held to a published result; whether
+> column14's source can serve as an earlier one is to be read.  (3) The public catalogue
+> carries 608 components and 9 NRTL + 3 UNIQUAC pairs: a colleague's own system falls
+> to UNIFAC or ideal.  Not closable this month; the demonstration uses systems with
+> defended pairs and says so.  (4) C227 (a): the lookups read the installation catalogue
+> by design, correct because their subject is the catalogue, but a sealed case then
+> prints a card from a release that is not its own, unsaid.  Decision: it lands with one
+> line on the card and in the JSON naming the source, the release and the case's seal.
+> READING OF THE FIVE COLUMN PAPERS (same day, a general, not yet re-read by the
+> architect): Klemola 1996 is the one measured column that can enter the subset now:
+> column14's `expected` carries no anchor row although its record promised them
+> (`docs/design/klemola-c4-splitter-reference-case.md:158`), and its header expects the
+> disagreement to be stated (distillate n-butane about 130x low).  It runs after C235
+> lands, because C235 re-records column14.  Jacobs 1993 and Nijhuis 1993 are simulations:
+> Nijhuis Table IV (98.5 % against 41.4 %) is the printed target, estimated 20-30 h,
+> needing a `refluxRatio + bottomsRate` pair and a total condenser on the full MESH,
+> UNIQUAC pairs (r and q are not printed), continuation in the feed stage.  Yanagi 1982:
+> measured tray profiles, but total reflux, a mode the column lacks.  Bessling 1998: a
+> figure and no feed flows; dropped as an anchor.  Decision: Klemola first, then the
+> spec pair and total condenser, useful beyond MTBE, then Nijhuis if the month holds.
+
+> **C240 (Vitor, 2026-11-07: "O layout da fábrica NH3 full plant continua uma
+> porcaria"): C229 DOES NOT CURE IT, THE CASE ITSELF IS THIN.**  STATUS: waits on the
+> C229 port fix, which edits the same case.  Seen on the plan drawn from the published
+> `layout` block of `ammonia02_full_plant` (2D; his 3D view not yet seen): the engine
+> reports 28 items, 17 pipes, one finding, and that says nothing about whether it looks
+> like a plant.  (1) The process block is about 70 m x 20 m on a 199 m x 111 m plot, smaller
+> than the car park and laydown.  (2) `cw`, `cwOut`, `purge` and `letdownGas` run to
+> the fence and stop: the plant has no cooling tower, no refrigeration, no flare, so
+> the utilities a colleague looks for are absent.  (3) One pipe reaches `T201/vessel1`
+> and the other six bullets connect to nothing: no manifold.  (4) `letdown` stands
+> against `separator` on purpose (a witness of the distance announcement), which on
+> the flagship reads as a mistake.  The slice is the case, not the engine: a compact
+> loop, utilities as declared items, a tank manifold, and the distance witness moved to
+> a fixture.  Judge it by a render, not by the absence of findings.
+
+> **C241 (Vitor, 2026-11-07: "devias ter um pequeno modelo LLM do Choupo em que, se eu
+> fizer uma pergunta, respondes quase sem pensar ... ia evoluindo à medida que o Choupo
+> evolui"; then "vai ver online quais são as boas práticas"): `BRAIN.md`, AND THE DIET OF
+> `CLAUDE.md` THAT THE PRACTICE DEMANDS.**  STATUS: BRAIN.md landed (`9a10a6861`), the
+> generator, the gate and the diet dispatched.  WHAT WAS READ (2026-11-07): the official
+> Claude Code memory page -- "target under 200 lines per CLAUDE.md file.  Longer files
+> consume more context and reduce adherence"; "if two instructions contradict each
+> other, Claude may pick one arbitrarily"; `@path` imports expand a file into context;
+> `.claude/rules/` holds path-scoped instructions; checkable rules belong in hooks, not
+> prose; auto memory loads its first 200 lines / 25 KB.  Community practice agrees
+> (HumanLayer: a root file under 60 lines, the consensus under 300; "roughly 150-200
+> instructions are followed reliably, and the system prompt already spends about 50";
+> alexop: "if a tool can enforce it, don't write prose about it"; a wrapped file whose
+> contents "may or may not be relevant" is discounted as a whole when most of it is
+> off-task).  On memory itself (PROJECTMEM, arXiv 2606.12329; memory-bank pattern): an
+> append-only log of decisions and failed attempts, a compact summary PROJECTED from it
+> and read first, supersede never delete, and stale detection against the code.  MEASURED
+> HERE: `CLAUDE.md` is 4375 lines / 303 KB, twenty times the official target; section 6
+> alone is 2630 lines of dated narrative, 117 titled paragraphs of which 80 already carry
+> a design record; 34 scripts mention CLAUDE.md (mostly as a citation string).  That size
+> is a cause of what Vitor sees: rules 0 and 00 sit among four thousand lines and are
+> discounted with the rest, and the session searches instead of knowing.  DECISIONS
+> (architect, rule 00): (1) `BRAIN.md` is the projected summary -- one page, every area
+> judged and dated, his recurring questions answered, a generated FACTS block held by
+> `check_brain_fresh`, imported by `@BRAIN.md` from CLAUDE.md so it loads without being
+> remembered.  (2) `DEV.md` 4c stays the append-only log (it already supersedes and never
+> deletes).  (3) `CLAUDE.md` goes on a DIET BY RELOCATION, not by deletion: every titled
+> paragraph of sections 5 and 6 moves VERBATIM to `docs/architecture/settled-contracts.md`
+> under the same title and date, and CLAUDE.md keeps the title, its first sentence and the
+> pointer; the mandate (section 0), build, git conventions, the factory pattern, the
+> never-list and section 10's rules stay; target 300 lines, every gate that reads
+> CLAUDE.md re-pointed or kept green.  Nothing is deleted and git keeps the diff, so the
+> door is two-way.  (4) Rules a tool can check leave prose for hooks later (a named
+> candidate list: no `git add -A`, no edit of `bin/runTests` while a suite runs).
+
+> **C242 (Vitor, 2026-11-07: "vê online o que tu precisas de fazer e a forma de te
+> organizares para gerir um software deste calibre"): THE OPERATING SYSTEM, READ FROM
+> THE PRACTICE AND MEASURED AGAINST OURS.**  STATUS: rules adopted below; they enter
+> CLAUDE.md section 10 when the C241 diet lands (one writer on that file at a time).
+> WHAT WAS READ: Osmani, *The code agent orchestra* ("verification is the bottleneck,
+> not generation"; 3-5 agents, 1 reviewer per 3-4 builders, "don't run more agents than
+> you can meaningfully review"; one file one owner; plan approved before code; stuck 3+
+> iterations on one error -> stop and reassign; hard caps on iterations, time and
+> tokens, pause at 85 %; the lead keeps architecture, scope and review, and approves
+> every line of the context file -- agent-written context files gave no benefit, ETH
+> Zurich); Augment, *multi-agent workspace* (a single-writer rule for hotspot files --
+> registries, configs; specs with acceptance criteria; tests plus automated gates before
+> every merge, merges sequential; "git detects textual conflicts, not semantic ones");
+> CFD Direct on OpenFOAM maintenance (Lehman: growth paced so users, trainers and
+> documentation keep up; small frequent changes stable, large infrequent ones not; a
+> maintainer needs enough time to stay familiar with the code); OpenFOAM's layered test
+> battery (daily units, weekly medium, release-time industrial); Ernst, Kazman & Delange,
+> *Technical Debt in Practice* (track it, 7-15 % of the backlog is normal; look beyond
+> code to tests and documentation) and arXiv 2603.20415 on SCIENTIFIC debt (a flawed
+> physical assumption in code, which code-debt tools miss); the risk-register and
+> WIP-limit literature (limits drift upward until they never trigger; a weekly flow
+> review).  MEASURED AGAINST CHOUPO: briefs carry measured claims but rarely an explicit
+> pass/fail list or an ownership list; the machine budget allows 7 generals and today 6
+> ran while integration -- the architect's serial lane -- was the bottleneck (five ready
+> branches queued behind one integration); no brief carried a time or token cap (the
+> C235 general ran 4.2 h and 736k tokens, well, but unbounded); no independent reviewer
+> read a slice before integration; the only hooks are a stop hook; technical debt is
+> registered (`debt_registry.py`, KNOWN_OPEN pins) but RISK is not; the full sweep runs
+> when a slice forces it, not on a cadence.  RULES ADOPTED (architect, rule 00):
+> (1) A BRIEF ENDS WITH `Accepts when:` (3-6 checkable lines) AND `Owns:` / `Does not
+> touch:` (paths); a general that must touch a path it does not own stops and asks.
+> (2) WIP: at most 4 BUILDERS in flight, and when 3 branches are `queued` for
+> integration no new builder starts -- the slot goes to integrating or to a reviewer.
+> (3) Every brief carries a BUDGET (wall time, and the largest change allowed: goldens,
+> files); the general reports at half and stops at the cap with its state; stuck 3
+> rounds on one error -> it stops and reports, with the reflection line "what failed,
+> what would fix it, am I repeating myself".  (4) A slice over ~2 h, or touching a shared
+> path, starts with a PLAN REPORT (<= 30 lines) the architect approves before code.
+> (5) A slice that moves goldens or touches a shared path gets a READ-ONLY REVIEWER
+> (brief + acceptance list, fresh context) before integration; its verdict is in the
+> commit.  (6) HOTSPOT FILES have one writer, the architect: CLAUDE.md, BRAIN.md,
+> DEV.md, PLAN.md; generated views regenerate at integration; `bin/runTests` and the
+> registries are edited by one general at a time.  (7) A CADENCE: every Saturday the
+> full sweep, the slowest list, the BRAIN rows, the risk table and the Done pruning,
+> whether or not a slice forced it; Wednesday a half-week check of the plan's caps.
+> (8) A RISK TABLE in BRAIN.md (likelihood, impact, mitigation, review date), scientific
+> debt named as a class.  (9) One builder slot in four goes to debt, speed or validation,
+> never to a feature.  (10) Checkable rules move to hooks: first `git add -A` and
+> `git add .` refused by a PreToolUse hook; then "no edit of `bin/runTests`, `src/` or
+> `gui/` while a suite runs".
+
+> **C235 LANDED (2026-11-07, merge of integ/worktree-agent-a7c1125f4f65eeab1 at
+> 4174b9a05; branch tip 5d86eaf00).**  STATUS: done.  WHAT LANDED: the gamma-phi liquid
+> reference is f_ref = phi_sat Psat exp(V_L (P - Psat)/RT) (`ThermoPackage::
+> liquidReferenceFugacity`, `SaturatedVapour`), only below Tc, only with a non-ideal
+> vapour, Poynting only with a record `Vliq` (announced when absent), the solid phase on
+> the same factor; the Gibbs routes (`DirectMin`, `GibbsMethod`, `ElementPotential`,
+> `ReactiveFlash`, the VLLE search of `IsothermalFlash`) and the records-derived K_a of
+> the reactive column read one hook, `pureLiquidReference`; a feed is priced at its own
+> pressure; `column19` declares SRK as its source case does; `pureSaturationTemperature`
+> helper; `suite_timings.py` reads a decimal comma.  MEASURED: the MTBE column against
+> the reference simulator -- duties 7.59 / 7.75 MW against 7.40 / 7.64 (+2.5 % / +1.5 %,
+> from +8 %), T 323.92 / 400.67 K against 324.4 / 401.3, conversion 98.8 against
+> 98.87 %, first law 0 kW; NH3 K at the 250 K / 200 bar separator 0.020448 by hand
+> against 0.020448 (0.002 %; the reference correction is +24 % there); the engine's
+> alpha is Graboski-Daubert, which explained the earlier 0.5-1.2 % hand gaps.  GOLDENS:
+> 20 cases re-recorded then 4 again after their witness copies moved (ammonia01-03,
+> ammoniaReactor01-04, economics03, greenAmmonia02 x2 / 03 / PEQ, letdown01-02,
+> relief01-02, column14 / 15 / 19, envelope01-02, ammoniaRate01); every row's reason is
+> in a2cb391d6; no anchor row moved; the hand values of five gates re-derived, no
+> tolerance widened (pinch Q_C,min 95454.3 -> 95453.2 kW; greenAmmonia03 D_converter
+> 2.2283 -> 2.2427 m).  VALIDATION: full sweep on the tip 847/0 (34 min); scope 509/0,
+> --gui 44/0, --fast on the integrated tree; no second sweep, reason in the merge.
+> OPEN, found by the slice: (a) the Tc rule steps the factor to exactly 1 at T = Tc, so
+> a pressure-marched saturation solve cannot cross it and every envelope02 branch stops
+> at 366-369 K below propane's Tc 369.83 K -- the case is renamed
+> `envelope02_c3c4c5_branch_stop` and says so; a continuous variant (hold the Tc value
+> above Tc) is the candidate, to be judged on a measured envelope (C239 risk table);
+> (b) `column20` is the same system at the same pressure and still on the ideal vapour
+> (C239 first item); (c) three READMEs carry prose from the previous state, marked.
+
+> **C239 S1/S3 + the Klemola anchors (2026-11-08, architect).**  LANDED: column14 carries
+> two anchor rows against Klemola & Ilme (1996) Table 2 (`cfc70414d`): i-butane overhead
+> 0.9233 vs 0.9192 measured (+0.45 %), n-butane bottoms 0.9820 vs 0.9797 (+0.24 %),
+> band 1 % relative.  DECISION on the band: it was chosen after the run, and it stands
+> because Table 2 fails its own key-component balance by about 1 % (i-butane 0.9 %), so a
+> tighter band asks the model to be more exact than the measurement; the printing band
+> (+/-0.05 wt %) would fail all four rows.  The two minor keys (n-butane overhead -44 %,
+> i-butane bottoms +54 %) are NOT anchor rows: they miss in opposite senses (so not an
+> efficiency effect), the paper's balance gives a negative n-butane distillate, and the
+> runner has no open-anchor state; they are pinned as self-recorded rows and explained in
+> `expected`.  These anchors certify the major split only (the ideal-tray column15 passes
+> them too).  column14 is row 20 of the V&V subset, labelled partial.  LANDED: column20 on
+> SRK (`021a66afa`): reboiler 8386 -> 7654 kW, condenser -5507 -> -4893 kW, T_bottom
+> 350.6 -> 344.3 K, conversion 8.8 -> 7.0 % (cooler reactive stages), rows listed in
+> the commit.  BLOCKED: column08 (16 bar) does not converge on SRK (51 Newton iterations,
+> ||F|| 8.1; seeded from the ideal profile 0.149): its iterates cross the Tc of C3/C4/C5
+> and the Tc rule (`SaturatedVapour.cpp` liquidReferenceFactor) steps the factor from ~0.7
+> to 1.  DECISION (architect, rule 00; this closes the open Tc-rule item above): the
+> factor is made CONTINUOUS -- above a cap T_cap near Tc it is held at its value there,
+> announced once per component; T_cap chosen by measurement.  It reaches every
+> EoS-vapour gamma-phi case, so its validation is every such case plus --fast; only cases
+> evaluating above T_cap may move.  envelope02 is its witness.  A builder is on it.
+
+> **C243 (Vitor, 2026-11-07: "os gráficos [dos casos de controlo] acabam por ter muitas
+> variáveis e ficam confusos!  Havia de haver no dicionário uma forma de especificar os
+> gráficos que o utilizador gostaria de ver, de uma forma simples"): THE CASE DECLARES
+> ITS FIGURES.**  STATUS: scheduled (Next three days; a builder when the integration
+> queue is under 3).  MEASURED: no case dict declares a plot today (`plot {}` exists only
+> as the layout's plot MARGIN); `ctrl22` writes 20 trajectory columns (moles, T, level,
+> volume, density, F, and SP/PV/MV of three controllers) and the GUI draws them as one
+> family.  DECISION (architect, rule 00): (1) DEFAULT without any declaration: the GUI
+> draws ONE figure per control loop (SP, PV on one axis; MV on a second axis, labelled)
+> and one figure for the vessel states, instead of everything on one plot -- the
+> controller names are already in the column headers, so no grammar is needed for this.
+> (2) DECLARED: `plots ( { name "..."; series ( LC1.SP LC1.PV ); axis2 ( LC1.MV ); } ... )`
+> in `system/controlDict`, for every binary that writes a trajectory, profile or scan;
+> a series name that no column carries REFUSES by name with the columns listed; the
+> engine writes the declaration it honoured into the result (`plots` block) and the GUI
+> draws exactly those figures first, every series still one click away under "all".
+> (3) The same block serves `choupoSolve` stage/axial profiles and props scans.  Gate:
+> the refusal, the default per-loop figures on ctrl22 (count of figures = loops + 1),
+> the declared block drawn as declared (a GUI test on a fixture).  Record in
+> `docs/ai/dict-syntax.md` and the user guide.
+> AMENDED 2026-11-08 (Vitor: "devia ser possível criar user plots ... No caso da coluna
+> 14 até dava jeito ter um gráfico feito em pós-processamento em que se compara as
+> previsões da coluna com as ... do Klemola"): (4) a series may be a CITED DATASET, not
+> only a result column: `data "constant/data/<file>.csv"; source "<citation>";` drawn as
+> markers over the model's line, the file carrying its own header (what, units, table
+> or figure it was read from); a dataset with no source refuses.  (5) one figure KIND,
+> `parity`, built from the case's `anchor` rows with no declaration needed: computed
+> against measured, the 1:1 line and each row's band, the open (non-anchor) rows drawn
+> hollow -- the figure a colleague asks for first ("validated against what?").  The
+> first witness is column14: its four Table 2 key rows (two anchors, two open) as a
+> parity figure, and the stage profile with whatever the paper prints per tray (it
+> prints EFFICIENCY profiles, not composition profiles -- measured 11-08 by the anchor
+> slice -- so the per-tray overlay is the Murphree efficiency, the case's constant 1.191
+> against the paper's profile, read from its figure with the digitisation stated).
+> Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
+
+> **C244 (Vitor, 2026-11-07: "não quero que tenhas tantas variações dos projetos base!!
+> Isso fica uma grande salganhada!"): ONE REFERENCE PLANT PER PROCESS; THE VARIANTS
+> BECOME SWEEPS, RUNGS OR FIXTURES.**  STATUS: to measure, then one slice after the
+> integration queue and before the demonstration; he has not chosen which projects he
+> will present.  MEASURED: `tutorials/plant/` holds 26 cases, 11 of them ammonia
+> (ammonia02, ammonia03, ammoniaReactor01-04, ammoniaRoutes01, greenAmmonia02 at 150
+> and at 50 bar, greenAmmonia03, greenAmmoniaPEQ), two sugar (ChemicalPlantTutorial,
+> sugarPlantEconomicsSweep), two acetic, two demos (twoSectorDemo, esterification2sector).
+> The gates name them unevenly: ChemicalPlantTutorial 13, ammonia02 7, PEQ 7,
+> greenAmmonia03 5, ammonia03 3, the ladder rungs 0-3, the two feasibility cases 1 each;
+> docs and GUI name greenAmmonia03 10 times and ammoniaReactor03 9.  JUDGEMENT: he is
+> right about the shape -- a visitor running `listCases` sees eleven ammonias and cannot
+> tell the plant from its scaffolding -- and partly wrong about the cause: the
+> `ammoniaReactor01-04` ladder is a deliberate teaching sequence (fixed conversion ->
+> equilibrium -> approach -> kinetic sizing) and `greenAmmonia02/03/PEQ` are the design
+> STAGES of one project (feasibility -> basic design -> the course's reference).  The
+> mess is that stages, rungs, witnesses and the plant sit side by side with no rank.
+> DECISION (architect, rule 00): (1) `tutorials/plant/` keeps ONE reference plant per
+> process (green ammonia: PEQ; conventional loop: ammonia02; sugar: ChemicalPlantTutorial;
+> acetic: aceticAcid02; desalination: swro01; lithium; the tablet plants in batch/plant);
+> (2) a variant that differs by a parameter (50 vs 150 bar) becomes an `outerDict` sweep
+> or a second `system/` profile of the reference case, never a second case; (3) a
+> teaching ladder moves under `tutorials/steady/reactors/<process>Ladder/` with its
+> README stating the sequence; (4) a design-stage case (greenAmmonia03) stays only if a
+> guide walks through it, else its unique content (converter shell, pfr cooling) becomes
+> the reference plant's; (5) a case kept only as a gate witness leaves `tutorials/` for
+> the gate's fixtures; (6) the demos go under `steady/flowsheets/`.  Every move carries
+> its golden, its gate names and its doc citations in the same commit (the C196 tool
+> re-points lesson citations); nothing is deleted without its golden rows listed in the
+> commit.  First step: the inventory table per process (case, role, what cites it,
+> proposed fate), shown to Vitor before anything moves, because the choice of what he
+> presents is his.
+> APPROVED (Vitor, 2026-11-07 evening: "Avança", on the inventory table of 26 plant cases).
+> PHASE 1 dispatched (branch `c244-plants`, plan first, then the mechanical moves: the
+> ladder and the three reactor cases to `steady/reactors/`, the two demos to
+> `steady/flowsheets/`, the sugar sweep into its plant's `outerDict` if the flowsheets
+> are equal, the two feasibility cases into one pressure sweep if they differ only by
+> pressure).  PHASE 2, later and separately: greenAmmonia03's converter shell and
+> cooled PFR into the reference plant, a physics change that re-records it.
+
+> **THE SATURDAY BATCH LANDED (2026-11-07/08, f468736fd): C228, C183, C234, C229, C244
+> phase 1, validated as ONE tree** (C242's batch rule, taken the first time): four
+> integration rounds -- the pinch rows recorded before C235, three gates C229's ports
+> fooled, a fourth path level the GUI registry cannot read (the ammonia ladder now sits
+> flat in steady/reactors), a sector sub-case walked alone, an element-closure gate
+> that accused an unrun case -- then scope 58/0, --gui 45/0, --fast 77/0.  THE FULL
+> SWEEP on main: 851 PASS, 5 FAIL.  One real (codeMap stale after the moves,
+> regenerated).  FOUR ARE THE PRIMARY CHECKOUT'S OWN FILES, not the tree: the GUI's
+> pair-tier test bundles Vitor's private `data/local/` pairs, `check_origin_vocabulary`
+> reads an untracked `MORNING.md`, `check_git_visibility` sees the local
+> two untracked local folders under bin/ (a references folder and a comparison runner) -- the same gates and tests passed on the
+> clean integration tree.  FINDING, to fix: a sweep run in the primary checkout judges
+> untracked local files; the Saturday sweep runs in a clean worktree from now on.
+> Slowest (real seconds): swro01 98 (was 289), check_schema_coverage 68, nanofiltran 62,
+> greenAmmonia03 50, gen_sdem_validation 37; ctrl17 and ctrl19 left the list (C236).
+
+> **C239 AUDIT DONE (2026-11-07, a read-only workflow: 12 assessors, 66 refuter votes,
+> one synthesis; 79 agents; report `docs/audits/2026-11-07-column-vapour-audit.md`).**
+> STATUS: slices S1-S4 to dispatch, S5 a measurement.  Of 36 cases holding a column:
+> 3 already on an EoS (column14, column15, column19), 6 questionable (1.4-2.7 %), 27
+> flagged wrong by the screen.  WHAT SURVIVES THE REFUTERS: four are real and large --
+> column08 at 16 bar (phi off by 21 %), process05 and recycle02 at 5 bar (16 %, one
+> flowsheet), column20 at 7 bar (14 %, the same system as column19); column05 is a
+> different defect, an acetic vapour with no dimer model where aceticAcid02 carries one.
+> The 1-atm benzene-toluene family (about 20 cases, phi off 3.3-5.1 %) is NOT an EoS
+> change on this evidence: since C235 phi and phi_sat largely cancel in K at 1 atm, and
+> the refuters said so for column01/11/16; it is settled by ONE measurement per family
+> member (slice S5: a scratch SRK copy, read x_D, T_top, Q_cond; an EoS only where a duty
+> moves > 1 %).  column07 stays ideal (the 1971 paper's own specification).  ORDER:
+> S1 column08 -> SRK; S2 process05 + recycle02 -> SRK; S3 column20 -> SRK (column19's
+> declaration); S4 column05 -> the C201 dimerisation; S5 the 1-atm measurement; S6 a
+> header sentence on the cases that stay ideal; S7 conditional on S5.  Every slice
+> lists its moved rows with the physical reason in its commit.  COST: 13.5 M subagent
+> tokens for 79 agents in 7.7 min -- dear for a screen; the next audit uses Haiku for
+> the assessors and one refuter, not two.
+
+> **C235, DESIGN OF THE LIQUID RUNG (architect, 2026-11-07).**  `speciesPhaseEnthalpy`
+> retired the Watson-slope liquid because it overrode a DECLARED Cp (the mheatx
+> +10 %), and that stands: INSIDE the liquid Cp's declared `Trange` the rung is
+> Kirchhoff.  The defect is only ABOVE it, where the rung integrates a correlation
+> past its data while the record holds a better statement of the same slope: the
+> ChemSep windows end at Tb, so above Tmax the latent-heat correlation is the only
+> thing the record says about the liquid.  RULE: for T > Tmax, h_L(T) = h_L(Tmax) +
+> [h_ig(T) - Hvap_W(T)] - [h_ig(Tmax) - Hvap_W(Tmax)], continuous in h, with a kink
+> in Cp, announced once per component.  The offset at Tmax is kept, never forced to
+> zero (a jump in h would be heat from nowhere).  Computed on column19's fixed
+> profile: Q_reb 7883.7 kW (+3.2 % on the source case); offsets -667..+115 J/mol, and
+> +1527 for methanol, whose +1.5 kJ/mol is a finding about its own record.  Reaches
+> every case with a liquid above its window, so the sweep and the moved-row list go
+> with it.  (B) the feed's state resolved and priced at the STREAM's pressure lands
+> in the same slice.  (A) phi_sat with H_res,sat in the liquid leg stays a separate
+> slice, after column19 reads right under the ideal vapour.
+
+> **C235, CORRECTION (architect, 2026-11-07, same day; the entry below reads
+> the 8 % wrongly): THE DUTIES ARE A LIQUID Cp EXTRAPOLATED, NOT THE IDEAL VAPOUR.**
+> The liquid rung is Kirchhoff from 298 K on `liquidHeatCapacity` where the record
+> has one, not h_ig - Hvap(T).  MTBE's correlation ends at 328.35 K and the reboiler
+> is at 401 K (the C4s end at 261-277 K, methanol at 340 K): the extrapolation is
+> announced and legitimate (I4), and it makes the latent the column prices at 401 K
+> 24.14 kJ/mol against the record's own Watson 22.84.  Recomputed by hand from the
+> published stage 14-15 profile, this rung gives Q_reb 8282.4 kW, the engine's own
+> number to 0.1 kW, and the Watson rung 7846.3.  Measured on the whole column, in a
+> scratch copy of the catalogue with the nine `liquidHeatCapacity` blocks removed
+> (the first attempt moved nothing: a case record is overlaid field by field on the
+> standards, so deleting it from the case alone restores the catalogue's): Q_cond
+> 7.66 MW (+3.5 %), Q_reb 7.85 MW (+2.7 %), T_top 50.9 C, T_bottom 128.1 C, conversion
+> 99.21 %, ideal vapour.  The source case reads 7.40 / 7.64 MW.  So the "+2.5 % under
+> SRK" below is NOT evidence about the vapour: the liquid rung ignores the EoS, so an
+> EoS vapour publishes a latent of Hvap + H_res, lower than the record's, and that
+> reading came partly from this double count.  The remaining +3 % is not explained
+> yet.  NOT DONE: no engine change.  Removing liquid Cp is the measurement, never the
+> fix.  The fix has to say what a liquid above its Cp window reads, and it reaches
+> every case with a liquid above its window, so it takes the sweep and a shown list
+> of moved rows.  Defects (A) and (B) below stand as read in the code.
+
+> **C235 (architect, 2026-11-07, chasing the 8 % duties of the MTBE witness):
+> TWO ENGINE DEFECTS THE IDEAL VAPOUR HID.**  column19 under `idealGas` closes its
+> first law at 0.0 kW and reads Q_cond 8.02 / Q_reb 8.28 MW against the source
+> case's 7.40 / 7.64 (+8.4 % on both), Q_reb - Q_cond = +0.26 against +0.24 MW.
+> The boil-up is fixed at 1200 kmol/h in both, so the gap is a latent heat, 24.84
+> against 22.92 kJ/mol.  The same case with `fugacityModel SRK` (a copy, unsealed,
+> nothing committed): Q_reb 7.83 MW (+2.5 %, the drop of 5.5 % is the 1.34 kJ/mol
+> a Redlich-Kwong vapour at 7 bar predicts by hand), BUT T_top 45.0 C, T_bottom
+> 120.9 C (-6 and -7 K) and Q_cond 10.54 MW, and the plant's FIRST LAW OPENS:
+> residual -2693 kW (14.7 %).  (A) THE PURE-LIQUID FUGACITY HAS NO phi_sat:
+> `LiquidPhase::fEffective` is gamma x Psat, so with an EoS vapour K = gamma Psat /
+> (phi_V P) counts the vapour non-ideality on one side only; at 401 K ln phi_V is
+> about -0.14, and d ln P/dT = dHvap/(R T^2) = 0.0186 /K gives -7.5 K, the shift
+> measured.  gamma-phi with an EoS vapour needs phi_i^sat(T) (and Poynting,
+> declared) in the reference fugacity.  (B) A FEED ABOVE THE COLUMN'S PRESSURE IS
+> PRICED AT THE COLUMN'S PRESSURE: `feedEnthalpy(*r.state, r.F, r.T, P, ...)`
+> resolves and prices the feed at (T_feed, P_column), while the stream and the
+> energy report carry it at its own P.  The C4 feed is a liquid at 323.15 K, 10
+> bar; at 7 bar it resolves past its bubble point (q = -0.02), so the column books
+> about 17 kJ/mol the stream never carried: the whole -2693 kW.  Under the ideal
+> vapour it stays subcooled at 7 bar and hides.  This is CLAUDE.md's family "the
+> state a unit computes with is not the state its streams carry".  The fix is
+> the conservation law: a feed enters with the enthalpy its stream carries, and
+> the letdown is an adiabatic flash at the stage.  A THIRD QUESTION for the same
+> slice: the liquid rung is the ideal gas minus the latent heat, so an EoS vapour
+> makes the published latent h_V(real) - h_L, not the rung's own number: to be
+> measured, not assumed.
+
+> **C228 ITEMS 1-2 BUILT (2026-11-05, branch of the C228 general):** the props
+> op `petroleumCuts` (`src/propertyOps/PetroleumCuts.{H,cpp}`), schema
+> `gui/schemas/operations/petroleumCuts.schema.json`, witness
+> `tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp` (the TBP curve of
+> Riazi Table 3.6, p. 103; the book prints no cut Tb/SG/MW/Tc, so ONLY
+> arithmetic anchors are reproduced -- Eq. 3.17's 0.7862, Example 2.11's Kw and
+> API -- and nothing is validated against a unit), gate `check_petroleum_cuts`,
+> record `docs/design/a-tbp-curve-cut-into-pseudo-components.md`.  It reuses
+> `RiaziDaubert` unchanged.  Cut SG by constant Watson K is an assumption of the
+> op, not the book's.  D86/D1160 refuse by name (Riazi Eq. 3.14/Table 3.2 are
+> legible and NOT carried).  API gravity and Watson K are published by the op
+> and in each record header ONLY; taking them to the stream report touches
+> `ResultEmitter` and every golden, and is a LATER decision.  Noted, not fixed:
+> `RiaziDaubert.cpp`'s header cites its constants to "Table 2.4"; in the book
+> they are Eqs. 2.50/2.63/2.64/2.98.  Items 3-5 of C228 remain open.
 
 > **SOURCES NOW LOCAL (2026-11-04 evening), recorded so the next session does
 > not ask Vitor again.**  Git-ignored under `data/local/books/`: Perry's 9th

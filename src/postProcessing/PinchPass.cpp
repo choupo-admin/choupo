@@ -19,6 +19,7 @@ License
 #include "result/EnergyItems.H"   // unitHeatDuties, isProcessToProcessExchanger
 
 #include "core/Dictionary.H"
+#include "streams/UtilityCircuit.H"
 #include "result/SimulationResult.H"
 #include "core/Units.H"
 
@@ -28,6 +29,7 @@ License
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <set>
 #include <sstream>
 #include <stdexcept>
@@ -137,6 +139,31 @@ int PinchPass::run(SimulationResult& result)
     //  its sides -- the streams the pinch method extracts from an existing
     //  match -- and its duty is counted in neither current-utility sum, nor
     //  in the utility-placement violations below.
+    //  A UTILITY IS NOT A PROCESS STREAM (2026-11-05, DEV.md 4c C230).  The
+    //  streams that are a service, from the two sources the engine already
+    //  owns and no name test: a stream tagged `category` utility, and the
+    //  stream pairs of the case's declared `utilities` circuits
+    //  (`utilityCircuits::circuitOfStream`, the ONE home of that attribution).
+    std::map<std::string, std::string> serviceOf;       // stream -> label
+    for (const auto& kv : result.streams)
+        if (kv.second.category == "utility")
+            serviceOf[kv.first] = "category " + kv.second.category;
+    for (const auto& kv : result.utilityCircuitOf)
+        if (!kv.second.empty()) serviceOf[kv.first] = "circuit " + kv.second;
+    try
+    {
+        if (std::filesystem::exists("system/flowsheetDict"))
+        {
+            const DictPtr fd = Dictionary::fromFile("system/flowsheetDict");
+            const auto circuits = utilityCircuits::read(fd);
+            for (const auto& kv : utilityCircuits::circuitOfStream(
+                     circuits, result.boundaryAliasOf))
+                serviceOf[kv.first] = "circuit " + kv.second;
+        }
+    }
+    catch (const std::exception&) {}
+    int nUtilitySides = 0;
+
     struct PopRow
     {
         std::string unit, kpi, role, side, reason;
@@ -205,6 +232,50 @@ int PinchPass::run(SimulationResult& result)
         const bool exchanger = reporting::isProcessToProcessExchanger(u.type);
         if (hasQ && exchanger)
         {
+            //  Does one side of this exchanger run on a service?  The
+            //  service stream's own temperature says which side it is (the
+            //  closer of the two sides' terminal temperatures).
+            std::string svcIn, svcOut, svcWhy;
+            for (const auto& n : u.ins)
+            { auto it = serviceOf.find(n);
+              if (it != serviceOf.end() && svcIn.empty())
+              { svcIn = n; svcWhy = it->second; } }
+            for (const auto& n : u.outs)
+            { auto it = serviceOf.find(n);
+              if (it != serviceOf.end() && svcOut.empty()) svcOut = n; }
+            auto f0 = [&](const char* k) -> scalar
+            { auto it = kp.find(k); return it == kp.end() ? -1.0 : it->second; };
+            const scalar Thi0 = f0("T_hot_in"),  Tho0 = f0("T_hot_out");
+            const scalar Tci0 = f0("T_cold_in"), Tco0 = f0("T_cold_out");
+            if (!svcIn.empty() && !svcOut.empty() && Thi0 > 0.0 && Tho0 > 0.0
+                && Tci0 > 0.0 && Tco0 > 0.0)
+            {
+                const scalar Ts = result.streams.at(svcIn).T;
+                const bool utilIsCold =
+                    std::abs(Ts - Tci0) <= std::abs(Ts - Thi0);
+                const scalar Qabs = std::abs(q->second);
+                //  the PROCESS side enters as an ordinary segment, and its
+                //  duty is the current utility use (not recovered heat)
+                if (utilIsCold)
+                    addSegment(u.name + " [hot side]", Thi0, Tho0, Qabs,
+                               true, false, "hot");
+                else
+                    addSegment(u.name + " [cold side]", Tci0, Tco0, Qabs,
+                               false, false, "cold");
+                PopRow r;
+                r.unit = u.name + (utilIsCold ? " [cold side]" : " [hot side]");
+                r.kpi = "Q"; r.role = "utility";
+                r.side = utilIsCold ? "cold" : "hot";
+                r.Tin = utilIsCold ? Tci0 : Thi0;
+                r.Tout = utilIsCold ? Tco0 : Tho0;
+                r.Q = (utilIsCold ? 1.0 : -1.0) * Qabs;
+                r.reason = "served by a declared utility (" + svcWhy + ", stream "
+                           + svcIn + " -> " + svcOut + "): a utility is not a"
+                             " process stream, so it is not in the population";
+                population.push_back(r);
+                ++nUtilitySides;
+                continue;
+            }
             auto f = [&](const char* k) -> scalar
             { auto it = kp.find(k); return it == kp.end() ? -1.0 : it->second; };
             const scalar Thi = f("T_hot_in"),  Tho = f("T_hot_out");
@@ -258,6 +329,13 @@ int PinchPass::run(SimulationResult& result)
     for (const auto& r : population)
     {
         if (r.role == "excluded") continue;
+        if (r.role == "utility")
+        {
+            std::cout << "[pinch]   utility   " << r.unit << "  " << r.side
+                      << "  " << r.Tin << " -> " << r.Tout << " K  "
+                      << r.Q / 1.0e3 << " kW  (" << r.reason << ")\n";
+            continue;
+        }
         std::cout << "[pinch]   " << r.role << "  " << r.unit << "  "
                   << r.side << "  " << r.Tin << " -> " << r.Tout << " K  "
                   << r.Q / 1.0e3 << " kW  CP " << r.CP / 1.0e3 << " kW/K"
@@ -326,18 +404,36 @@ int PinchPass::run(SimulationResult& result)
     scalar cascade = 0.0, minCascade = 0.0;
     scalar Tpinch = T.empty() ? 0.0 : T.front();
     std::vector<scalar> cum;      // cascade AFTER each interval
+    //  One row of the published problem table (reports/pinch/problemTable.csv):
+    //  the console prints the same numbers, the page draws THIS file.
+    struct TableRow
+    {
+        scalar Thi = 0.0, Tlo = 0.0, cpH = 0.0, cpC = 0.0, dH = 0.0;
+        scalar casIn = 0.0, casOut = 0.0;
+        std::string hotUnits, coldUnits;
+    };
+    std::vector<TableRow> table;
     for (std::size_t i = 0; i + 1 < T.size(); ++i)
     {
         const scalar mid = 0.5 * (T[i] + T[i + 1]);
         scalar cpH = 0.0, cpC = 0.0;
+        TableRow tr;
         for (const auto& s : segs)
         {
             const scalar sh = s.hot ? hs : cs;
             if (s.Tlo + sh <= mid && mid <= s.Thi + sh)
+            {
                 (s.hot ? cpH : cpC) += s.CP;
+                std::string& names = s.hot ? tr.hotUnits : tr.coldUnits;
+                names += (names.empty() ? "" : ";") + s.unit;
+            }
         }
         const scalar dH = (cpH - cpC) * (T[i] - T[i + 1]);   // surplus > 0
+        tr.Thi = T[i]; tr.Tlo = T[i + 1]; tr.cpH = cpH; tr.cpC = cpC;
+        tr.dH = dH; tr.casIn = cascade;
         cascade += dH;
+        tr.casOut = cascade;
+        table.push_back(std::move(tr));
         cum.push_back(cascade);
         std::cout << "[pinch]   " << std::setw(8) << (i + 1)
                   << std::fixed << std::setprecision(2)
@@ -354,8 +450,86 @@ int PinchPass::run(SimulationResult& result)
         }
     }
     std::cout.precision(6);                           // the table's setprecision(2) must not leak
-    const scalar QHmin = -minCascade;                 // >= 0
+    const scalar QHmin = -minCascade + 0.0;           // >= 0 (+0.0: never "-0")
     const scalar QCmin = cascade + QHmin;
+
+    //  THE CASCADE DECIDES WHAT KIND OF PROBLEM THIS IS (DEV.md 4c C234).  The
+    //  corrected cascade (the heat flow at each interval boundary once
+    //  Q_H,min is fed in at the top) is >= 0 everywhere and touches zero where
+    //  the problem is limited.  A zero at an INTERIOR boundary is a pinch (two
+    //  or more: several pinches); zeros only at the two ENDS mean no pinch --
+    //  a THRESHOLD problem, no hot utility (top zero) or no cold utility
+    //  (bottom zero) -- and a "pinch at T*" line there would only be the top
+    //  or the bottom of the range.  The interior zeros are looked for in the
+    //  whole corrected cascade, never read off the single minimum.
+    const std::size_t nB = T.size();                  // boundaries 0..nB-1
+    scalar throughput = 0.0;
+    for (const auto& tr : table) throughput += std::abs(tr.dH);
+    const scalar zeroTol = 1.0e-9 * throughput + 1.0e-6;     // [W]
+    auto corrected = [&](std::size_t k) -> scalar
+    { return (k == 0 ? 0.0 : cum[k - 1]) + QHmin; };
+    std::vector<std::size_t> interiorZeros;
+    for (std::size_t k = 1; k + 1 < nB; ++k)
+        if (std::abs(corrected(k)) <= zeroTol) interiorZeros.push_back(k);
+    const bool topZero    = QHmin <= zeroTol;
+    const bool bottomZero = nB >= 2 && std::abs(corrected(nB - 1)) <= zeroTol;
+    const int nPinches = static_cast<int>(interiorZeros.size());
+    std::string problemClass;
+    int classCode = 0;
+    if (nPinches == 1)      { problemClass = "interiorPinch";   classCode = 1; }
+    else if (nPinches > 1)  { problemClass = "severalPinches";  classCode = 2; }
+    else if (topZero && bottomZero)
+                            { problemClass = "thresholdNoUtility";      classCode = 5; }
+    else if (topZero)       { problemClass = "thresholdNoHotUtility";   classCode = 3; }
+    else                    { problemClass = "thresholdNoColdUtility";  classCode = 4; }
+    const bool hasPinch = nPinches > 0;
+    //  With a pinch, T_pinch is the first (hottest) interior zero; the single
+    //  minimum alone would put it at the top of the range whenever Q_H,min = 0.
+    if (hasPinch) Tpinch = T[interiorZeros.front()];
+
+    {
+        namespace fs = std::filesystem;
+        fs::create_directories("reports/pinch");
+        std::ofstream tcsv("reports/pinch/problemTable.csv");
+        tcsv << "interval,T_star_hi_K,T_star_lo_K,sumCP_hot_kW_K,"
+                "sumCP_cold_kW_K,dH_kW,cascade_in_kW,cascade_out_kW,"
+                "corrected_in_kW,corrected_out_kW,boundary_out,hot_streams,"
+                "cold_streams\n" << std::setprecision(10);
+        for (std::size_t i = 0; i < table.size(); ++i)
+        {
+            const auto& tr = table[i];
+            std::string tag;
+            if (i + 2 == nB) tag = bottomZero ? "bottomZero" : "bottom";
+            else if (std::abs(corrected(i + 1)) <= zeroTol) tag = "pinch";
+            tcsv << i + 1 << "," << tr.Thi << "," << tr.Tlo << ","
+                 << tr.cpH / 1.0e3 << "," << tr.cpC / 1.0e3 << ","
+                 << tr.dH / 1.0e3 << "," << tr.casIn / 1.0e3 << ","
+                 << tr.casOut / 1.0e3 << ","
+                 << corrected(i) / 1.0e3 << "," << corrected(i + 1) / 1.0e3
+                 << "," << tag << "," << tr.hotUnits << ","
+                 << tr.coldUnits << "\n";
+        }
+    }
+
+    scalar sumHot = 0.0, sumCold = 0.0;                    // [W]
+    for (const auto& s : segs)
+        (s.hot ? sumHot : sumCold) += s.CP * (s.Thi - s.Tlo);
+    const scalar QrecMax = sumHot - QCmin;                 // = sumCold - QHmin
+    if (std::abs((sumCold - QHmin) - QrecMax) > 1.0e-6 * (1.0 + sumHot))
+        AdvisoryLog::instance().add("validity", "warning", "pinchPass",
+            "the two readings of the maximum heat recovery disagree"
+            " (hot total - Q_C,min vs cold total - Q_H,min): the cascade does"
+            " not close, which is a defect of the pass.");
+    std::cout << "[pinch] CLASS: " << problemClass << " (" << nPinches
+              << " interior pinch" << (nPinches == 1 ? "" : "es")
+              << "; Q_H,min " << (topZero ? "= 0" : "> 0") << ", Q_C,min "
+              << (bottomZero ? "= 0" : "> 0") << ") -> reports/pinch/"
+                 "problemTable.csv, summary.csv\n";
+    std::cout << "[pinch] maximum heat recovery Q_recovery,max = "
+              << QrecMax / 1.0e3 << " kW (hot total " << sumHot / 1.0e3
+              << " - Q_C,min = cold total " << sumCold / 1.0e3
+              << " - Q_H,min); Q_H,min - Q_C,min = "
+              << (QHmin - QCmin) / 1.0e3 << " kW = cold total - hot total\n";
     std::cout << "[pinch] targets of the " << segs.size() << " extracted"
                  " segment" << (segs.size() == 1 ? "" : "s")
               << (nExcluded > 0 ? " (NOT the plant's: " + std::to_string(nExcluded)
@@ -364,10 +538,39 @@ int PinchPass::run(SimulationResult& result)
                                 : std::string(" (every boundary heat duty is"
                                               " in the population)"))
               << ": Q_H,min = " << QHmin / 1.0e3
-              << " kW, Q_C,min = " << QCmin / 1.0e3
-              << " kW, pinch at T* = " << Tpinch
-              << " K (hot " << Tpinch - hs << " K / cold "
-              << Tpinch - cs << " K)\n";
+              << " kW, Q_C,min = " << QCmin / 1.0e3 << " kW";
+    if (hasPinch)
+    {
+        std::cout << ", pinch at T* = " << Tpinch << " K (hot " << Tpinch - hs
+                  << " K / cold " << Tpinch - cs << " K)";
+        if (nPinches > 1)
+        {
+            std::cout << "; further pinches at T* =";
+            for (std::size_t j = 1; j < interiorZeros.size(); ++j)
+                std::cout << " " << T[interiorZeros[j]];
+            std::cout << " K -- the problem splits into independent sub-problems";
+        }
+        std::cout << "\n";
+    }
+    else
+        std::cout << "; NO pinch (the cascade touches zero only at the "
+                  << (topZero && bottomZero ? "top and the bottom of the range"
+                      : topZero ? "top of the range" : "bottom of the range")
+                  << ")\n";
+    //  A THRESHOLD problem has no pinch (DEV.md 4c C230, C234).
+    if (!hasPinch)
+        std::cout << "[pinch] THRESHOLD problem (" << problemClass << "): "
+                  << (topZero && bottomZero
+                        ? "the streams exchange all their heat with each other"
+                        : topZero
+                        ? "no hot utility is needed and the cold-utility"
+                          " target is the whole surplus"
+                        : "no cold utility is needed and the hot-utility"
+                          " target is the whole deficit")
+                  << "; the temperature the candidate table and the"
+                     " diagnostics below are measured from is only the "
+                  << (topZero ? "top" : "bottom") << " of the range, not a"
+                     " pinch\n";
     //  The current duties are the UTILITY-served ones: an exchanger's duty is
     //  heat already recovered and is in neither sum.
     std::cout << "[pinch] current (unintegrated) utility duties of the"
@@ -497,9 +700,22 @@ int PinchPass::run(SimulationResult& result)
     //  The coursework violation diagnostics, applied to the P1 population:
     //  heating demanded below the pinch / cooling demanded above it.
     scalar heatBelow = 0.0, coolAbove = 0.0;
-    std::cout << "[pinch] candidate matches (" << rows.size()
-              << " pair(s), " << admissible << " admissible) ->"
-                 " reports/pinch/candidateMatches.csv\n";
+    //  The table is a FEASIBILITY ASSESSMENT of each hot x cold pair on its
+    //  own (DEV.md 4c C234): Q_max is the limit of THAT pair alone, so the
+    //  column is not additive, and the CP rule compares CP_hot with CP_cold.
+    std::cout << "[pinch] candidate matches: feasibility assessment of "
+              << rows.size() << " hot x cold pair(s), " << admissible
+              << " temperature-feasible; each Q_max is the limit of its own"
+                 " pair, NOT additive -> reports/pinch/candidateMatches.csv\n";
+    //  Without a pinch the two lines below are not the coursework violations
+    //  (the temperature they are measured from is an end of the range): they
+    //  are the utility duty the TARGET says the problem does not need.
+    const char* vioCool = hasPinch ? "VIOLATION cooler above the pinch:"
+                                   : "EXCESS cold utility (threshold problem,"
+                                     " no pinch):";
+    const char* vioHeat = hasPinch ? "VIOLATION heater below the pinch:"
+                                   : "EXCESS hot utility (threshold problem,"
+                                     " no pinch):";
     for (std::size_t si = 0; si < segs.size(); ++si)
     {
         const Segment& s = segs[si];
@@ -510,8 +726,8 @@ int PinchPass::run(SimulationResult& result)
             if (!ok) continue;
             const scalar Q = A.CP * (A.Thi - A.Tlo);
             coolAbove += Q;
-            std::cout << "[pinch]   VIOLATION cooler above the pinch:"
-                         " unit '" << s.unit << "' rejects "
+            std::cout << "[pinch]   " << vioCool
+                      << " unit '" << s.unit << "' rejects "
                       << Q / 1.0e3 << " kW above " << TpHot
                       << " K -- the design method serves this by process"
                          " recovery, never a cold utility\n";
@@ -522,8 +738,8 @@ int PinchPass::run(SimulationResult& result)
             if (!ok) continue;
             const scalar Q = B.CP * (B.Thi - B.Tlo);
             heatBelow += Q;
-            std::cout << "[pinch]   VIOLATION heater below the pinch:"
-                         " unit '" << s.unit << "' draws "
+            std::cout << "[pinch]   " << vioHeat
+                      << " unit '" << s.unit << "' draws "
                       << Q / 1.0e3 << " kW below " << TpCold
                       << " K -- the design method serves this by process"
                          " recovery, never a hot utility\n";
@@ -538,6 +754,34 @@ int PinchPass::run(SimulationResult& result)
         mcsv << r.region << "," << r.hotU << "," << r.coldU << ","
              << r.feas << "," << r.rule << "," << r.Qmax / 1.0e3 << ","
              << r.limit << "," << r.rec << "\n";
+
+    // ---- 4b. the classification, as a WORD, and what the page annotates ----
+    //  H_pinch is the heat flow at the pinch on the slid composite axis (the
+    //  cold curve slid right by Q_C,min), read here on the hot curve so the
+    //  page draws the pinch gap without interpolating anything itself.
+    scalar Hpinch = 0.0;
+    if (hasPinch)
+    {
+        const auto hc = composite(segs, true, 0.0);
+        for (const auto& pt : hc) if (pt.first <= TpHot + 1.0e-9) Hpinch = pt.second;
+        for (std::size_t i = 0; i + 1 < hc.size(); ++i)
+            if (hc[i].first < TpHot && TpHot < hc[i + 1].first)
+                Hpinch = hc[i].second + (hc[i + 1].second - hc[i].second)
+                       * (TpHot - hc[i].first) / (hc[i + 1].first - hc[i].first);
+    }
+    {
+        std::ofstream scsv("reports/pinch/summary.csv");
+        scsv << "key,value\n" << std::setprecision(10)
+             << "class," << problemClass << "\n"
+             << "n_pinches," << nPinches << "\n"
+             << "pinch_T_star_K,";
+        for (std::size_t j = 0; j < interiorZeros.size(); ++j)
+            scsv << (j ? ";" : "") << T[interiorZeros[j]];
+        scsv << "\n"
+             << "H_pinch_kW," << (hasPinch ? num(Hpinch / 1.0e3) : std::string())
+             << "\n"
+             << "cold_curve_offset_kW," << QCmin / 1.0e3 << "\n";
+    }
 
     // ---- 5. KPIs ------------------------------------------------------------
     auto& k = result.kpis["pinch"];
@@ -554,6 +798,17 @@ int PinchPass::run(SimulationResult& result)
     //  tell a plant target from the target of a partial population.
     k["segments"]          = static_cast<scalar>(segs.size());
     k["duties_excluded"]   = static_cast<scalar>(nExcluded);
+    k["utility_sides"]     = static_cast<scalar>(nUtilitySides);
+    k["pinch_exists"]      = hasPinch ? 1.0 : 0.0;
+    //  The cascade's classification (DEV.md 4c C234): the WORD is published in
+    //  reports/pinch/summary.csv; the code is its KPI twin (1 interiorPinch,
+    //  2 severalPinches, 3 thresholdNoHotUtility, 4 thresholdNoColdUtility,
+    //  5 thresholdNoUtility).
+    k["n_pinches"]         = static_cast<scalar>(nPinches);
+    k["problem_class"]     = static_cast<scalar>(classCode);
+    k["Q_recovery_max_kW"] = QrecMax / 1.0e3;
+    k["Q_hot_total_kW"]    = sumHot / 1.0e3;
+    k["Q_cold_total_kW"]   = sumCold / 1.0e3;
     k["Q_excluded_kW"]     = excludedW / 1.0e3;
     k["candidates_total"]      = static_cast<scalar>(rows.size());
     k["candidates_admissible"] = static_cast<scalar>(admissible);

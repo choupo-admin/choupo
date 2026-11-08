@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- SECTOR_S: one custom distillation (compiled from code/). Build + run:
+        bin/buildCode tutorials/steady/flowsheets/twoSectorDemo/SECTOR_S
+        runCase       tutorials/steady/flowsheets/twoSectorDemo/SECTOR_S                       ---*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+units
+(
+    { name C1;  type sharpSplitColumn;  in feed;  outputs ( top bottom );
+      operation { topComponents ( compA compB compC );  recovery 0.95; } }
+);

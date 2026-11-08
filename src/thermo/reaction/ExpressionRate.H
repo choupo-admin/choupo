@@ -74,6 +74,10 @@ Description
         x[i]     mole fraction of component i in the
                  reacting fluid                           [-]
         p[i]     partial pressure x[i] * P                [Pa]
+        a[i]     activity gamma_i x_i of component i, as the
+                 PACKAGE prices it at the stage -- supplied
+                 ONLY by the distillation column (a reactor
+                 that does not refuses the law by name)   [-]
         c[i]     molar concentration, as the REACTOR
                  forms it (the pfr and cstr: F_i / Q on
                  the liquid basis Q = F * sum z_i Vliq_i;
@@ -82,7 +86,8 @@ Description
     plus every declared parameter (a constant, with its unit), every
     definition (a named formula, evaluated in dependency order, a cycle
     refused), and every column of a declared table.  NOT supplied, said
-    plainly: fugacities or activities from the PACKAGE.  A law fitted with
+    plainly: fugacities from the PACKAGE (activities a[i] only where the
+    reactor offers them -- the reactive distillation column).  A law fitted with
     its own fugacity coefficients writes them as definitions (Dyson & Simon
     do, Eqs 6-8); a law fitted on the package's activities is the built-in
     `LHHW` with `basis activity`.  A rate that read the package's fugacity
@@ -225,6 +230,7 @@ private:
     bool        legs_ = false;
     bool        usesConcentration_ = false;
     bool        usesPressure_ = false;
+    bool        usesActivity_ = false;
 
     std::vector<std::string> comps_;
     sVector                  nu_;
@@ -247,6 +253,7 @@ private:
     std::size_t slotX(std::size_t i) const { return 2 + i; }
     std::size_t slotPp(std::size_t i) const { return 2 + comps_.size() + i; }
     std::size_t slotC(std::size_t i) const { return 2 + 2 * comps_.size() + i; }
+    std::size_t slotA(std::size_t i) const { return 2 + 3 * comps_.size() + i; }
 
     void fillState(const RateState& s, std::vector<scalar>& v) const;
     void evaluateDefinitions(std::vector<scalar>& v, Formula::Trace* tr) const;

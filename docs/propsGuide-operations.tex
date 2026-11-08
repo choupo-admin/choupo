@@ -459,7 +459,7 @@ Levenberg-Marquardt regression of thermophysical-model parameters against experi
 
 \begin{tutoriallink}
 \file{tutorials/props/adsorption/isotherm02\_fit\_jaschik}
-\quad (and 17 more)
+\quad (and 18 more)
 \end{tutoriallink}
 
 \paragraph{\code{vaporPressureFit}}\label{op:vaporPressureFit}
@@ -521,6 +521,25 @@ Group-contribution estimation of a component's constants — curation made visib
 \begin{tutoriallink}
 \file{tutorials/plant/polycaprolactonePlant/properties}
 \quad (and 6 more)
+\end{tutoriallink}
+
+\paragraph{\code{petroleumCuts}}\label{op:petroleumCuts}
+Cut a TRUE-BOILING-POINT curve into petroleum PSEUDO-COMPONENTS (Riazi, ASTM MNL50, 2005).  Each cut's Tb is the TBP temperature at the mid-point of its distilled interval; its SG is one declared method (constantWatsonK, or declared per cut); the pair (Tb, SG) goes to the same Riazi-Daubert estimator estimateComponent uses (MW, Tc, Pc, Vc; omega by Lee-Kesler; Cp by Kesler-Lee).  One ESTIMATE record per cut is written into the CASE, marked lumped and NOT a real species -- a proposal the student reviews and promotes, never a standard record.  API gravity, SG (60/60 F) and Watson K are published per cut and for the blend; the re-blended cuts must reproduce the feed SG within a DECLARED tolerance, and a miss is announced, never adjusted.  The curve type is TBP: ASTM D86, D1160, D2887 and EFV refuse by name (the conversion is not implemented).
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{closure}\textbf{*} & Closure tolerance \\
+\code{curve}\textbf{*} & TBP curve \\
+\code{cuts}\textbf{*} & Cuts \\
+\code{feed}\textbf{*} & Feed specific gravity \\
+\code{output} & Output \\
+\code{specificGravity}\textbf{*} & Cut specific gravity \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/estimate/petroleumCuts01\_riazi\_table36\_tbp}
 \end{tutoriallink}
 
 \paragraph{\code{dataReconciliation}}\label{op:dataReconciliation}

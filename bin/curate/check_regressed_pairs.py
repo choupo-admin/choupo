@@ -49,6 +49,25 @@ case-local one that did not earn promotion):
       announces; the arm does not look there (1-propanol + water splits
       below 355.5 K, and its record says so).
 
+      AMENDED (DEV.md 4c C226 A2, 2026-11-05): arm (f) is no longer only a
+      prohibition.  A pair that DECLARES `liquidLiquid true;` (in its
+      `validation {}` block, with a `gap {}` block) is held to a different
+      question: does the equation reproduce the GAP its evidence measured?
+      The declaration is accepted only with ALL of: tie-line evidence listed
+      in the record (`property binaryLLE.binodal;` entries, at least one of
+      `role fit`); a gap band `acceptance.maxLLE` declared before the fit and
+      equal to `gap.band_dx`; the recorded gap error not above that band; the
+      measured temperatures inside the record's validity span; and, at every
+      measured tie line of that evidence (fit and held-out), the record's own
+      NRTL equation (the Gibbs-energy-of-mixing lower hull, recomputed here
+      -- no call into the engine) splits the liquid with both binodal
+      compositions within the band.  The prohibition is UNCHANGED for every
+      pair that does not carry the identical declaration: one liquid across
+      its validity span, or it stays in its case.  Arm (h) builds the right
+      record and six wrong ones and requires the right to pass and each wrong
+      to be refused by name -- a guard whose only case satisfies it tests
+      nothing.
+
   (g) A PAIR USED OUTSIDE ITS SPAN IS ANNOUNCED (C35 item 5, 2026-10-05).
       Arm (f) looks only INSIDE a span; below it the three water pairs the
       C16 report named (1-propanol, acetonitrile, isopropanol + water) split
@@ -175,6 +194,140 @@ def nrtl_liquid_split(T, a12, b12, a21, b21, alpha, n=4000):
                 for x, g in pts if xa < x < xb):
             return (xa, xb)
     return None
+
+
+def evidence_entries(text):
+    """Every `{ ... }` evidence entry of the record's provenance: (role,
+    dataset, property)."""
+    prov = block(text, "provenance") or ""
+    m = re.search(r"evidence\s*\((.*?)\n    \);", prov, re.S)
+    out = []
+    for b in re.finditer(r"\{([^{}]*)\}", m.group(1) if m else ""):
+        d = b.group(1)
+        out.append((word(d, "role"), word(d, "dataset"), word(d, "property")))
+    return out
+
+
+def ll_facts(text):
+    t = strip_comments(text)
+    val = block(t, "validation") or ""
+    gap = block(val, "gap") or ""
+    acc = block(val, "acceptance") or ""
+    return {
+        "declared": word(val, "liquidLiquid"),
+        "ties": num(gap, "ties"), "band": num(gap, "band_dx"),
+        "aad": num(gap, "aad_dx"), "basis": word(gap, "basis"),
+        "maxLLE": num(acc, "maxLLE"),
+        "evidence": [e for e in evidence_entries(t) if e[2] == "binaryLLE.binodal"],
+    }
+
+
+def read_ties(path, comp_i, comp_j):
+    """The tie lines of a binaryLLE.binodal dataset as (T, x_i_lo, x_i_hi),
+    x_i the mole fraction of the RECORD's first component."""
+    t = path.read_text()
+    m = re.search(r"name\s+x_(\w+?)_phase1", t)
+    if not m or "binaryLLE.binodal" not in t:
+        return None, "is not a binaryLLE.binodal dataset with x_<comp>_phase1 columns"
+    comp = m.group(1)
+    if comp not in (comp_i, comp_j):
+        return None, f"names component {comp!r}, which is neither of the pair"
+    d = t[t.index("\ndata"):]
+    rows = [l.split() for l in d.splitlines() if l.strip() and l.strip()[0].isdigit()]
+    out = []
+    for r in rows:
+        T, a, b = float(r[0]), float(r[1]), float(r[2])
+        if comp == comp_j:               # the dataset's component is the pair's j
+            a, b = 1.0 - b, 1.0 - a
+        out.append((T, min(a, b), max(a, b)))
+    return out, None
+
+
+def check_liquid_liquid(rec, rf, case, tag, fails):
+    """Arm (f), the declared-gap branch.  Returns True when the record
+    declares `liquidLiquid true;` (its checks are then done HERE and the
+    one-liquid prohibition does not apply), False when it declares nothing.
+    Every refusal is appended to `fails`, by name."""
+    lf = ll_facts(rec)
+    if lf["declared"] is None:
+        return False
+    if lf["declared"] != "true":
+        fails.append(f"{tag}: `liquidLiquid {lf['declared']}` -- the only declaration "
+                     "is `liquidLiquid true;` (anything else is a word nobody reads)")
+        return True
+    why = []
+    if not lf["maxLLE"]:
+        why.append("no `acceptance.maxLLE` -- the gap band must be declared BEFORE "
+                   "the fit, in the validation block")
+    if not lf["band"] or (lf["maxLLE"] and not close(lf["band"], lf["maxLLE"], 1e-6, 1e-9)):
+        why.append(f"gap.band_dx {lf['band']} is not the declared acceptance.maxLLE {lf['maxLLE']}")
+    if lf["aad"] is None or (lf["band"] and lf["aad"] > lf["band"]):
+        why.append(f"gap.aad_dx {lf['aad']} is above its band {lf['band']} (or absent)")
+    if not any(role == "fit" for role, _, _ in lf["evidence"]):
+        why.append("no tie-line evidence of `role fit` (a `property binaryLLE.binodal;` "
+                   "entry under provenance.evidence) -- a gap with no measured gap "
+                   "behind it is a guess")
+    if case is None or not case.is_dir():
+        why.append("fittedInCase is not a case, so the tie lines cannot be read")
+    if why:
+        fails.append(f"{tag}: declares `liquidLiquid true;` but " + "; ".join(why))
+        return True
+    tlo, thi = validity_T(rf["T"])
+    err_sum, n = 0.0, 0
+    for role, ds, _ in lf["evidence"]:
+        path = case / ds
+        if not path.exists():
+            fails.append(f"{tag}: the tie-line evidence {ds} is not in {case.name}")
+            return True
+        rows, bad = read_ties(path, rf["i"], rf["j"])
+        if bad:
+            fails.append(f"{tag}: tie-line evidence {ds} {bad}")
+            return True
+        for T, xlo, xhi in rows:
+            if tlo is None or not (tlo <= T <= thi):
+                fails.append(f"{tag}: a tie line at {T} K lies outside the record's "
+                             f"validity span {tlo}-{thi} K -- the evidence and the "
+                             "span it supports disagree")
+                return True
+            cut = nrtl_liquid_split(T, rf["a_ij"], rf["b_ij"], rf["a_ji"], rf["b_ji"],
+                                    rf["alpha"])
+            if cut is None:
+                fails.append(f"{tag}: declares a gap but its own NRTL equation gives "
+                             f"ONE liquid at {T} K, where the evidence measured two "
+                             f"(x_{rf['i']} {xlo:.4f} | {xhi:.4f})")
+                return True
+            err_sum += (abs(cut[0] - xlo) + abs(cut[1] - xhi)) / 2.0
+            n += 1
+    mean = err_sum / n if n else float("inf")
+    if mean > lf["band"]:
+        fails.append(f"{tag}: the gap its equation predicts misses the measured tie "
+                     f"lines by {mean:.4f} (mean |dx| over {n} tie lines), above the "
+                     f"band {lf['band']} declared before the fit")
+    return True
+
+
+def one_liquid_failures(rf, tag):
+    """Arm (f), the prohibition: the refusals for a pair that declares no gap
+    and predicts a split inside its validity span."""
+    tlo, thi = validity_T(rf["T"])
+    if tlo is None or thi is None or None in (rf["a_ij"], rf["b_ij"],
+                                              rf["a_ji"], rf["b_ji"], rf["alpha"]):
+        return [f"{tag}: no readable validity temperature span or NRTL "
+                "parameters -- arm (f) cannot run, so it must not pass"]
+    for k in range(6):
+        T = tlo + (thi - tlo) * k / 5
+        cut = nrtl_liquid_split(T, rf["a_ij"], rf["b_ij"], rf["a_ji"],
+                                rf["b_ji"], rf["alpha"])
+        if cut:
+            return [
+                f"{tag}: predicts a LIQUID-LIQUID SPLIT at {T:.2f} K "
+                f"(x_{rf['i']} {cut[0]:.3f} .. {cut[1]:.3f}), inside its own "
+                f"validity span {tlo}-{thi} K -- its evidence is bubble "
+                "temperatures of ONE liquid, which a bubble scan cannot "
+                "contradict; a pair that splits that liquid stays in its "
+                "case, not the catalogue (or it DECLARES `liquidLiquid true;` "
+                "with tie-line evidence and a gap band)"]
+    return []
 
 
 def validity_T(tokens):
@@ -333,6 +486,81 @@ def check_span_announcement(tmp, fails):
     return held
 
 
+#  Arm (h): the declared-gap branch of arm (f), held to a RIGHT record and six
+#  WRONG ones built from the proposal the SYNTHETIC witness curate13 writes
+#  (nothing is added to the catalogue: the synthetic pair never enters it).
+LL_CASE = "tutorials/props/curation/curate13_synthetic_lle_butanol_water"
+
+
+def check_ll_arm(tmp, fails):
+    """Returns the number of wrong records refused (6) when the arm holds."""
+    case = ROOT / LL_CASE
+    if not (case / "system" / "propsDict").exists():
+        fails.append(f"arm (h): the witness {LL_CASE} is missing -- the arm "
+                     "cannot run, so it must not pass")
+        return 0
+    work = tmp / "arm-h"
+    shutil.copytree(case, work)
+    p = subprocess.run([str(PROPS), "."], cwd=str(work), capture_output=True,
+                       text=True, timeout=900)
+    prop = work / "nButanol-water.proposal.dat"
+    if p.returncode != 0 or not prop.exists():
+        fails.append(f"arm (h): the witness exited {p.returncode} / wrote no "
+                     "proposal -- the arm cannot run, so it must not pass")
+        return 0
+    good = prop.read_text()
+
+    def refusals(text, tag):
+        f = []
+        rf = facts(text)
+        if not check_liquid_liquid(text, rf, case, tag, f):
+            f.extend(one_liquid_failures(rf, tag))
+        return f
+
+    right = refusals(good, "arm (h) right")
+    if right:
+        fails.append("arm (h): the RIGHT record (declared gap, tie-line evidence, "
+                     "band declared before the fit, equation reproduces the "
+                     "measured gap) was refused: " + "; ".join(right))
+    sub = lambda pat, new, t: re.sub(pat, new, t, count=1)       # noqa: E731
+    wrongs = (
+        ("no declaration",
+         sub(r"\n\s*liquidLiquid true;", "", good),
+         "LIQUID-LIQUID SPLIT"),
+        ("gap moved (b_ij 150 -> 420)",
+         sub(r"b_ij\s+[0-9.]+;", "b_ij        420.0;", good),
+         "misses the measured tie lines"),
+        ("no band declared (maxLLE removed)",
+         sub(r"\n\s*maxLLE\s+[0-9.]+;[^\n]*", "", good),
+         "no `acceptance.maxLLE`"),
+        ("no tie-line evidence",
+         re.sub(r"\n\s*property\s+binaryLLE\.binodal;", "", good),
+         "no tie-line evidence of `role fit`"),
+        ("equation gives one liquid (b_ij = b_ji = 0)",
+         sub(r"b_ji\s+[0-9.]+;", "b_ji        0.0;", sub(r"b_ij\s+[0-9.]+;", "b_ij        0.0;", good)),
+         "gives ONE liquid at"),
+        ("recorded gap error above its band",
+         sub(r"aad_dx\s+[0-9.]+;", "aad_dx       0.5;", good),
+         "is above its band"),
+    )
+    held = 0
+    for name, text, needle in wrongs:
+        if text == good:
+            fails.append(f"arm (h) wrong record '{name}': the mutation changed nothing "
+                         "-- the probe is vacuous")
+            continue
+        r = refusals(text, "arm (h) wrong")
+        if not r:
+            fails.append(f"arm (h) wrong record '{name}': NOT refused -- the guard "
+                         "accepts a record it must refuse")
+        elif not any(needle in x for x in r):
+            fails.append(f"arm (h) wrong record '{name}': refused, but not by the "
+                         f"expected name {needle!r}: {r[0][:200]}")
+        else:
+            held += 1
+    return held
+
+
 def main():
     if not PROPS.exists():
         print("check_regressed_pairs: FAILED\n  choupoProps is not built -- "
@@ -352,7 +580,7 @@ def main():
     #  promotion.  Only the second kind is checked here on its own.
     std_names = {p.name for p in std}
     local = [p for p in local if p.name not in std_names]
-    fails, checked, stable_checked = [], [], []
+    fails, checked, stable_checked, ll_checked = [], [], [], []
     if len(std) < 7:
         fails.append(f"only {len(std)} regressed record(s) under {STD.relative_to(ROOT)} "
                      "-- the C16 floor is seven (four from slice 1, three from slice 2); "
@@ -384,25 +612,11 @@ def main():
                              "only a validated fit is promoted; a fit that missed its "
                              "band lives in its own case")
             if in_std:
-                tlo, thi = validity_T(rf["T"])
-                if tlo is None or thi is None or None in (rf["a_ij"], rf["b_ij"],
-                                                          rf["a_ji"], rf["b_ji"], rf["alpha"]):
-                    fails.append(f"{tag}: no readable validity temperature span or NRTL "
-                                 "parameters -- arm (f) cannot run, so it must not pass")
+                case_dir = (ROOT / case_rel) if case_rel else None
+                if check_liquid_liquid(rec, rf, case_dir, tag, fails):
+                    ll_checked.append(rec_path.stem)
                 else:
-                    for k in range(6):
-                        T = tlo + (thi - tlo) * k / 5
-                        cut = nrtl_liquid_split(T, rf["a_ij"], rf["b_ij"], rf["a_ji"],
-                                                rf["b_ji"], rf["alpha"])
-                        if cut:
-                            fails.append(
-                                f"{tag}: predicts a LIQUID-LIQUID SPLIT at {T:.2f} K "
-                                f"(x_{rf['i']} {cut[0]:.3f} .. {cut[1]:.3f}), inside its own "
-                                f"validity span {tlo}-{thi} K -- its evidence is bubble "
-                                "temperatures of ONE liquid, which a bubble scan cannot "
-                                "contradict; a pair that splits that liquid stays in its "
-                                "case, not the catalogue")
-                            break
+                    fails.extend(one_liquid_failures(rf, tag))
                     stable_checked.append(rec_path.stem)
             if not case_rel or not (ROOT / case_rel / "system" / "propsDict").exists():
                 fails.append(f"{tag}: fittedInCase `{case_rel}` is not a case")
@@ -458,6 +672,7 @@ def main():
                      else "case-local in " + rec_path.parents[3].name)
             checked.append(f"{rec_path.stem} ({where}, {rf['verdict']})")
         span_held = check_span_announcement(tmp, fails)
+        ll_held = check_ll_arm(tmp, fails)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -474,6 +689,9 @@ def main():
           "DOI, archive sha256, CAS+InChIKey and per-point uncertainty; "
           f"{len(stable_checked)} catalogue pair(s) predict ONE liquid across "
           "their validity span (arm f, the record's NRTL recomputed); "
+          f"{len(ll_checked)} catalogue pair(s) declare a liquid-liquid gap and are held to "
+          f"the measured tie lines; arm (h) refused {ll_held} of 6 wrong gap declarations "
+          "by name and passed the right one (arm f, amended); "
           f"{span_held} water pair(s) used BELOW their span announce it once "
           "per run, into the caveat block, say nothing inside it, and publish "
           "the same gammas as a span-less inline twin (arm g).  NOT "

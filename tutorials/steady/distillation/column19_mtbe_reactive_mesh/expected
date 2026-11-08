@@ -1,0 +1,38 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.0666666666667  1e-4
+stream  bottoms                T                400.672841011    1e-4
+stream  c4Feed                 F                0.156444444444   1e-4
+stream  c4Feed                 T                323.15           1e-4
+stream  distillate             F                0.0905976909784  1e-4
+stream  distillate             T                323.924151614    1e-4
+stream  methanolFeed           F                0.0666666666667  1e-4
+stream  methanolFeed           T                323.15           1e-4
+kpi     mtbeColumn             B                0.0666666666667  1e-4
+kpi     mtbeColumn             D                0.0905976909784  1e-4
+kpi     mtbeColumn             Q_condenser_kW   -7587.68095505   1e-4
+kpi     mtbeColumn             Q_reboiler_kW    7751.68440801    1e-4
+kpi     mtbeColumn             Q_reboiler_ownEnvelope_kW 7751.68440801    1e-4
+kpi     mtbeColumn             R                4.95294631758    1e-4
+kpi     mtbeColumn             T_bottom         400.672841011    1e-4
+kpi     mtbeColumn             T_top            323.924151614    1e-4
+kpi     mtbeColumn             conversion       0.98770130199    1e-4
+kpi     mtbeColumn             feedStage        10               1e-4
+kpi     mtbeColumn             nFeeds           1                1e-4
+kpi     mtbeColumn             nSideDraws       0                1e-4
+kpi     mtbeColumn             nStages          15               1e-4
+kpi     mtbeColumn             reactionExtent   0.065846753466   1e-4
+kpi     mtbeColumn             x_B_HK           0.000544764156391 1e-4
+kpi     mtbeColumn             x_D_LK           0.00713472934662 1e-4
+boundary global                 H_feeds_kW       -30986.3707675   1e-4
+boundary global                 Q_boundary_kW    164.003452964    1e-4
+boundary global                 H_products_kW    -30822.3673146   1e-4
+utility mtbeColumn             heating.steamMP.duty_kW 7751.68440801    1e-4
+utility mtbeColumn             heating.steamMP.T 400.672841011    1e-4
+utility mtbeColumn             heating.steamMP.kg_s 3.89336233451    1e-4
+utility mtbeColumn             heating.steamMP.eur_h 418.590958033    1e-4
+utility mtbeColumn             cooling.coolingWater.duty_kW -7587.68095505   1e-4
+utility mtbeColumn             cooling.coolingWater.T 323.924151614    1e-4
+utility mtbeColumn             cooling.coolingWater.kg_s 181.523467824    1e-4
+utility mtbeColumn             cooling.coolingWater.eur_h 10.9262605753    1e-4

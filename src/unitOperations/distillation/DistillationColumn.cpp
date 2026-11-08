@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "core/InfeasibleTrial.H"
+#include "core/Formula.H"
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
 #include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
@@ -40,6 +41,7 @@ License
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "solver/NewtonND.H"
 #include "thermo/SaturationCurves.H"
+#include "thermo/reaction/ReactionRate.H"
 #include "thermo/reaction/Reaction.H"   // Reaction::forwardOrder -- the ONE home of the forward order
 
 #include <algorithm>
@@ -906,7 +908,13 @@ struct CmoFeedQuality
     std::string why;                 //  the fall-back's reason
 };
 
-CmoFeedQuality cmoFeedQuality(const FeedThermalState& st, scalar T, scalar P,
+//  C235: THE FEED IS PRICED AT ITS OWN PRESSURE.  `Pfeed` is the stream's
+//  pressure (H_F is the enthalpy of what arrives), `P` the column's: the
+//  bubble and dew points are those of the stage the feed is let down onto, an
+//  adiabatic flash, so the q-line compares H_F(Pfeed) with H_L,sat and H_V,sat
+//  at the column's P.
+CmoFeedQuality cmoFeedQuality(const FeedThermalState& st, scalar T,
+                              scalar Pfeed, scalar P,
                               const sVector& z, const ThermoPackage& thermo,
                               const ColumnEnthalpy& h)
 {
@@ -950,7 +958,7 @@ CmoFeedQuality cmoFeedQuality(const FeedThermalState& st, scalar T, scalar P,
         const auto dew = DewPoint::compute(thermo, zVn, P, Tb);
         if (!dew.converged || !(dew.T >= Tb - 1.0e-6))
             throw std::runtime_error("its dew point did not converge");
-        const scalar HF = feedEnthalpy(st, 1.0, T, P, z, thermo, h);
+        const scalar HF = feedEnthalpy(st, 1.0, T, Pfeed, z, thermo, h);
         const scalar HL = h.hL(z, Tb);
         scalar HV = h.hV(zV, dew.T);                 // extensive: sV mol of vapour
         if (sN > 0.0)
@@ -1362,11 +1370,14 @@ int DistillationColumn::solve(const DictPtr& dict,
     //  home, defaulted, never reconciled.  See `resolveFeedThermalState` above
     //  for what that cost.  `feedQuality` is now a CROSS-CHECK only: present
     //  and agreeing, it is silent; present and disagreeing, it refuses.
+    //  C235: a stream feed is resolved and priced at ITS pressure, not the
+    //  column's (the letdown is the stage's adiabatic flash).
+    const scalar Pfeed = feedDict->lookupScalarOrDefault("P", P, Dims::pressure);
     const FeedThermalState feedState =
-        resolveFeedThermalState(feedDict, Tf, P, z, thermo, dict->name());
+        resolveFeedThermalState(feedDict, Tf, Pfeed, z, thermo, dict->name());
     //  The column's one enthalpy surface, and the CMO q read off it (C169).
     const ColumnEnthalpy hs = columnEnthalpySurface(thermo, P, {{Tf, z}});
-    const CmoFeedQuality feedQ = cmoFeedQuality(feedState, Tf, P, z, thermo, hs);
+    const CmoFeedQuality feedQ = cmoFeedQuality(feedState, Tf, Pfeed, P, z, thermo, hs);
     announceFeedQuality(dict->name(),
                         feedDict->lookupWordOrDefault("streamName", "the feed"),
                         feedState, feedQ, Tf, verbosity);
@@ -1924,7 +1935,7 @@ int DistillationColumn::solve(const DictPtr& dict,
         //  column actually hands downstream.  Nobody recomputes it here: a
         //  second bubble point would be a second home for the same answer.
         const scalar dH = (Hdist + H(B, T[N-1], 0.0, x[N-1]))
-                        -  feedEnthalpy(feedState, F, Tf, P, z, thermo, hs);
+                        -  feedEnthalpy(feedState, F, Tf, Pfeed, z, thermo, hs);
         kpis_["Q_condenser_kW"] = Q_cond;
         kpis_["Q_reboiler_kW"]  = dH - Q_cond;                          // closes the balance
 
@@ -2087,14 +2098,14 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
         zFeed[thermo.indexOf(key)] = compDict->lookupScalar(key);
     if (zsum > 0.0) for (auto& v : zFeed) v /= zsum;
     const scalar Tf0 = feedDict->lookupScalar("T", Dims::temperature);
-    const scalar Pf0 = (Pc > 0.0) ? Pc
-                                  : feedDict->lookupScalar("P", Dims::pressure);
+    const scalar Pfeed0 = feedDict->lookupScalar("P", Dims::pressure);
+    const scalar Pf0 = (Pc > 0.0) ? Pc : Pfeed0;   // the column's pressure
     const FeedThermalState recoveryFeed =
-        resolveFeedThermalState(feedDict, Tf0, Pf0, zFeed, thermo, dict->name());
+        resolveFeedThermalState(feedDict, Tf0, Pfeed0, zFeed, thermo, dict->name());
     const ColumnEnthalpy recoveryH =
         columnEnthalpySurface(thermo, Pf0, {{Tf0, zFeed}});
     const CmoFeedQuality recoveryQ =
-        cmoFeedQuality(recoveryFeed, Tf0, Pf0, zFeed, thermo, recoveryH);
+        cmoFeedQuality(recoveryFeed, Tf0, Pfeed0, Pf0, zFeed, thermo, recoveryH);
     refuseContradictoryFeedQuality(operDict, feedDict, recoveryFeed, recoveryQ,
                                    Tf0, dict->name());
     const scalar qF = recoveryQ.q;
@@ -2245,29 +2256,18 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                                           int verbosity)
 {
     auto operDict = dict->subDict("operation");
-    //  A FULL MESH OVER A REACTION IS NOT WIRED, AND A DECLARED MODEL THAT IS
-    //  NOT RUN IS REFUSED (DEV.md 4c C169, C131 M9).  The full-MESH refinement
-    //  below carries no extent unknowns and no reaction heat, so it ran only
-    //  `if (!reactive)`: a reactive column declaring `model fullMESH;` was
-    //  solved by the CMO MESH and published, at exit 0, a result
-    //  byte-identical to `model simultaneous;` -- the problem solved was not
-    //  the problem posed, and nothing said so.  Refused here, before any feed
-    //  is read or any stage priced, so the refusal costs no solve.
-    {
+    //  A REACTIVE FULL MESH CARRIES THE REACTION (DEV.md 4c C231, C233).
+    //  C169 refused `model fullMESH;` over a `reaction {}` because the stage
+    //  rows carried no extent; they do now: the equilibrium extents as
+    //  unknowns (component rows -nu_i xi, total rows -sumNu xi, NO
+    //  heat-of-reaction term -- the energy rows price on the elements datum,
+    //  which already holds it), or, for a `kinetics {}` block, the extent
+    //  COMPUTED per reactive stage from the rate and the catalyst mass.
+    const bool fullMeshWord = [&] {
         const std::string m = dict->lookupWordOrDefault(
             "model", operDict->lookupWordOrDefault("method", "WangHenke"));
-        if (dict->found("reaction")
-            && (m == "fullMESH" || m == "MESH" || m == "NaphtaliSandholm"))
-            throw std::runtime_error("DistillationColumn '" + dict->name()
-                + "': `model " + m + ";` is declared on a REACTIVE column (it"
-                " carries a `reaction {}` block), and the full MESH is not"
-                " implemented with a reaction: its stage rows carry no reaction"
-                " extent and no heat of reaction.  The supported reactive model"
-                " is `model simultaneous;` -- the MESH under constant molar"
-                " overflow, with the extents (equilibrium or kinetic) as"
-                " unknowns of the stages declared in `reactiveStages`.  Declare"
-                " it, and read its duties as the CMO column's.");
-    }
+        return m == "fullMESH" || m == "MESH" || m == "NaphtaliSandholm";
+    }();
     // Murphree efficiency is implemented on the Wang-Henke path only (folded into
     // an effective K, with the vapour from below lagged one outer pass).  The MESH
     // Newton has no outer pass to lag against: the relation would have to enter the
@@ -2304,10 +2304,55 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     };
 
     const std::size_t N  = static_cast<std::size_t>(operDict->lookupScalar("nStages"));
-    const scalar R = operDict->lookupScalar("refluxRatio");
-    const scalar D = operDict->lookupScalar("distillateRate", Dims::molarFlow);
+    //  THE COLUMN'S TWO DEGREES OF FREEDOM (C231).  Either (refluxRatio,
+    //  distillateRate) -- the form every column here has always taken -- or
+    //  (bottomsRate, boilupRatio), the form a reactive column is usually
+    //  specified in: with a mole-changing reaction D is no longer F - B, so D
+    //  becomes an unknown of the full MESH closed by the top balance.  Any
+    //  other mixture of the four keys refuses by name.
+    const bool hasR  = operDict->found("refluxRatio");
+    const bool hasD  = operDict->found("distillateRate");
+    const bool hasBr = operDict->found("bottomsRate");
+    const bool hasBu = operDict->found("boilupRatio");
+    const bool specBoil = hasBr || hasBu;
     const CondenserType condenser = readCondenserType(operDict, dict->name(), verbosity);
     const bool partialCond = (condenser == CondenserType::partial);
+    scalar R = 0.0, D = 0.0, Bspec = 0.0, boilup = 0.0;
+    if (specBoil)
+    {
+        if (!(hasBr && hasBu) || hasR || hasD)
+            throw std::runtime_error("DistillationColumn '" + dict->name()
+                + "': the column's two specifications are either"
+                " (`refluxRatio`, `distillateRate`) or (`bottomsRate`,"
+                " `boilupRatio`) -- both keys of ONE pair and none of the"
+                " other.  Found:" + std::string(hasR ? " refluxRatio" : "")
+                + (hasD ? " distillateRate" : "") + (hasBr ? " bottomsRate" : "")
+                + (hasBu ? " boilupRatio" : "") + ".  A third specification"
+                " would over-determine the column; one missing leaves it"
+                " under-determined.");
+        if (!fullMeshWord)
+            throw std::runtime_error("DistillationColumn '" + dict->name()
+                + "': `bottomsRate` / `boilupRatio` close the top balance for"
+                " the distillate through the full MESH's total rows; declare"
+                " `model fullMESH;` (the constant-molal-overflow methods take"
+                " `refluxRatio` and `distillateRate`).");
+        if (!partialCond)
+            throw std::runtime_error("DistillationColumn '" + dict->name()
+                + "': `bottomsRate` / `boilupRatio` are implemented with a"
+                " PARTIAL condenser (`condenser { type partial; }`: stage 1 is"
+                " the condenser and the distillate leaves as vapour).  With a"
+                " total condenser declare `refluxRatio` and `distillateRate`.");
+        Bspec  = operDict->lookupScalar("bottomsRate", Dims::molarFlow);
+        boilup = operDict->lookupScalar("boilupRatio");
+        if (!(Bspec > 0.0) || !(boilup > 0.0))
+            throw std::runtime_error("DistillationColumn '" + dict->name()
+                + "': `bottomsRate` and `boilupRatio` must be positive.");
+    }
+    else
+    {
+        R = operDict->lookupScalar("refluxRatio");
+        D = operDict->lookupScalar("distillateRate", Dims::molarFlow);
+    }
 
     // ---- per-stage feed / side-draw maps -------------------------------
     //  General RadFrac-style staircase: any stage may receive a feed and/or
@@ -2332,6 +2377,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     {
         std::size_t j = 0;
         scalar F = 0.0, q = 1.0, T = 0.0;
+        scalar P = 0.0;                        // the STREAM's pressure (C235); 0 = the column's
         sVector z;
         std::optional<FeedThermalState> state; // its resolution, when it is a stream
         std::string           name = "the feed";
@@ -2339,10 +2385,10 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     };
     std::vector<FeedRecord> feedRecords;
     auto addFeed = [&](std::size_t j, scalar Ff, scalar qf, scalar Tff, const sVector& zf,
-                       const FeedThermalState* st = nullptr) {
+                       const FeedThermalState* st = nullptr, scalar Pff = 0.0) {
         Ffeed[j] += Ff; feedLiq[j] += qf * Ff; feedTmol[j] += Ff * Tff;
         for (std::size_t i = 0; i < n; ++i) feedComp[j][i] += Ff * zf[i];
-        FeedRecord r; r.j = j; r.F = Ff; r.q = qf; r.T = Tff; r.z = zf;
+        FeedRecord r; r.j = j; r.F = Ff; r.q = qf; r.T = Tff; r.z = zf; r.P = Pff;
         if (st) r.state = *st;
         feedRecords.push_back(std::move(r));
     };
@@ -2400,11 +2446,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             // branch).  A redundant operation.feeds.quality that DISAGREES is
             // exactly the column08-class silent bug (a vapour feed declared
             // liquid) -> REFUSE it loudly.
+            const scalar Pfe = sd->lookupScalarOrDefault("P", P, Dims::pressure);
             const FeedThermalState fst =
-                resolveFeedThermalState(sd, Tfe, P, zf, thermo, dict->name());
+                resolveFeedThermalState(sd, Tfe, Pfe, zf, thermo, dict->name());
             //  q is set below, from the feed's enthalpy (C169), and a declared
             //  `quality` is cross-checked against THAT.
-            addFeed(st - 1, Ff, 1.0 - fst.vf, Tfe, zf, &fst);
+            addFeed(st - 1, Ff, 1.0 - fst.vf, Tfe, zf, &fst, Pfe);
             feedRecords.back().name = sName;
             if (fe->found("quality"))
                 feedRecords.back().qDeclared = fe->lookupScalar("quality");
@@ -2425,11 +2472,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         //  SAME RULE AS WANG-HENKE, and the same one home reached from both --
         //  this branch used to read `feedQuality` with its own default, which
         //  is how one defect came to have two transcriptions.
+        const scalar Pfp = feedDict->lookupScalarOrDefault("P", P, Dims::pressure);
         const FeedThermalState primaryFeedState =
-            resolveFeedThermalState(feedDict, Tf, P, z, thermo, dict->name());
+            resolveFeedThermalState(feedDict, Tf, Pfp, z, thermo, dict->name());
         //  Cross-checked below, against the q the column uses (C169).
         addFeed(NF - 1, feedDict->lookupScalar("F", Dims::molarFlow),
-                1.0 - primaryFeedState.vf, Tf, z, &primaryFeedState);
+                1.0 - primaryFeedState.vf, Tf, z, &primaryFeedState, Pfp);
         feedRecords.back().name =
             feedDict->lookupWordOrDefault("streamName", "the feed");
 
@@ -2500,7 +2548,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         if (r.state)
         {
             const CmoFeedQuality fq =
-                cmoFeedQuality(*r.state, r.T, P, r.z, thermo, hs);
+                cmoFeedQuality(*r.state, r.T, r.P > 0.0 ? r.P : P, P, r.z, thermo, hs);
             announceFeedQuality(dict->name(), r.name, *r.state, fq, r.T, verbosity);
             if (!multiFeed && k == 0)
                 refuseContradictoryFeedQuality(operDict, feedDict, *r.state, fq,
@@ -2534,6 +2582,34 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
 
     // ---- CMO flow profile L[j] (down), V[j] (up) -----------------------
     std::vector<scalar> L(N, 0.0), V(N, 0.0);
+    if (specBoil)
+    {
+        //  The SEED's D and R from the two declared specs, ANNOUNCED (no silent
+        //  crutch): the non-reactive overall balance gives D = F - draws - B,
+        //  and the boil-up fixes the vapour leaving the reboiler, from which
+        //  the constant-molal vapour profile climbs to V_2 = (R+1) D.  The
+        //  full MESH then solves D and R as unknowns.
+        scalar tF = 0.0, tD = 0.0;
+        for (std::size_t j = 0; j < N; ++j) { tF += Ffeed[j]; tD += Udraw[j] + Wdraw[j]; }
+        D = tF - tD - Bspec;
+        if (!(D > 0.0))
+            throw InfeasibleTrial("DistillationColumn '" + dict->name()
+                + "': bottomsRate >= the feed less the draws -- no distillate"
+                " is left for the seed profile.");
+        scalar Vup = boilup * Bspec;               // vapour leaving the reboiler
+        for (std::size_t j = N - 2; j >= 1; --j)
+            Vup += (1.0 - qfeed[j]) * Ffeed[j] - Wdraw[j];
+        R = Vup / D - 1.0;
+        if (!(R > 0.0))
+            throw InfeasibleTrial("DistillationColumn '" + dict->name()
+                + "': the boil-up leaves no reflux in the seed profile"
+                " (R = " + std::to_string(R) + ").");
+        if (verbosity >= 2)
+            std::cout << "  [solver] bottomsRate/boilupRatio: the CMO seed"
+                         " takes D = F - B = " << D*3600.0 << " kmol/h and"
+                         " R = " << R << " from the boil-up; the full MESH"
+                         " solves D as an unknown\n";
+    }
     L[0] = R * D;                                  // reflux
     for (std::size_t j = 1; j < N; ++j) L[j] = L[j-1] + qfeed[j]*Ffeed[j] - Udraw[j];
     if (N > 1) V[1] = (R + 1.0) * D;               // vapour rising into stage 1
@@ -2549,7 +2625,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
 
     scalar totFeed = 0.0, totDraw = 0.0;
     for (std::size_t j = 0; j < N; ++j) { totFeed += Ffeed[j]; totDraw += Udraw[j] + Wdraw[j]; }
-    const scalar Bf = totFeed - D - totDraw;       // bottoms by overall balance
+    scalar Bf = totFeed - D - totDraw;             // bottoms by overall balance
     if (Bf <= 0.0)
         throw InfeasibleTrial("DistillationColumn(simultaneous): B = sumF - D - sumDraws <= 0 (infeasible trial)");
     for (std::size_t j = 1; j < N; ++j)
@@ -2568,7 +2644,16 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     sVector nu(n, 0.0);
     std::vector<std::size_t> rxStages;
     scalar Ka298 = 1.0, dHrxn = 0.0;               // K_a(T) = Ka298·exp(-dHrxn/R·(1/T − 1/298.15))
+    enum class KaForm { vantHoff, records, formula };
+    KaForm kaForm = KaForm::vantHoff;
+    std::shared_ptr<Formula> lnKaFormula;          // `equilibrium { lnKa "..."; }`
+    scalar kaTmin = 0.0, kaTmax = 0.0;             // its declared validity (0 = none)
     bool   kinetic = false, adsorption = false;    // kinetic (rate) vs equilibrium mode
+    //  `kinetics { model expression; }` (C233): the rate is a law WRITTEN in the
+    //  case and read by the reaction factory; the column hands it T, P, x and
+    //  the PACKAGE's activities a[i] = gamma_i x_i.
+    bool   kineticExpr = false;
+    std::unique_ptr<ReactionRate> exprLaw;
     scalar kfA = 0.0, kfEa = 0.0, krA = 0.0, krEa = 0.0, mCatPerStage = 0.0;
     sVector Kads(n, 0.0);                           // adsorption equilibrium constants
     sVector order(n, 0.0);                          // FORWARD order (kinetic mode only)
@@ -2579,11 +2664,15 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         for (const auto& s : rx->lookupDictList("stoichiometry"))
             nu[thermo.indexOf(s->lookupWord("component"))] = s->lookupScalar("nu");
         scalar sumNu = 0.0; for (auto v : nu) sumNu += v;
-        if (std::abs(sumNu) > 1.0e-9)
-            throw std::runtime_error("DistillationColumn: reactive distillation here "
-                "supports mole-conserving (Sum nu = 0) reactions only (e.g. esterification). "
-                "A Sum nu != 0 reaction changes the internal flows and needs the full-MESH "
-                "energy balance, which this method does not yet carry.");
+        if (std::abs(sumNu) > 1.0e-9 && !fullMeshWord)
+            throw std::runtime_error("DistillationColumn: a reaction with"
+                " Sum nu != 0 (" + std::to_string(sumNu) + ") changes the"
+                " internal molar flows, which `model simultaneous;` holds"
+                " constant (constant molal overflow).  Declare `model"
+                " fullMESH;`: its total rows carry the mole change"
+                " (-Sum nu xi) and its energy rows price the heat of reaction"
+                " on the elements datum.  Sum nu = 0 reactions (esterification)"
+                " run under either model.");
         for (auto v : rx->lookupList("reactiveStages"))
             rxStages.push_back(static_cast<std::size_t>(v) - 1);
         if (rx->found("kinetics"))                 // KINETIC (rate-limited) reactive distillation
@@ -2596,11 +2685,49 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             //  pseudo-homogeneous law.
             const std::string kinModel =
                 kin->lookupWordOrDefault("model", "pseudoHomogeneous");
-            if (kinModel != "pseudoHomogeneous" && kinModel != "adsorption")
+            if (kinModel != "pseudoHomogeneous" && kinModel != "adsorption"
+                && kinModel != "expression")
                 throw std::runtime_error("DistillationColumn: "
                     + registryRefusal::message("reaction kinetics model", kinModel,
-                        {"pseudoHomogeneous", "adsorption"}, "Accepted"));
+                        {"pseudoHomogeneous", "adsorption", "expression"}, "Accepted"));
             adsorption = (kinModel == "adsorption");
+            kineticExpr = (kinModel == "expression");
+            if (kineticExpr)
+            {
+                //  The law is read by the reaction FACTORY from a copy of the
+                //  block that holds only what the law reads: `model` and
+                //  `catalystMass` are the COLUMN's keys.
+                const std::string who = "DistillationColumn '" + dict->name()
+                    + "' (kinetics model expression)";
+                if (kin->found("forward") || kin->found("reverse") || kin->found("adsorption"))
+                    throw std::runtime_error(who + ": `forward`, `reverse` and"
+                        " `adsorption` belong to the native kinetics words; an"
+                        " expression law writes its own legs inside the law.");
+                DictPtr rxCopy = rx->deepCopy();
+                DictPtr kinCopy = rxCopy->subDict("kinetics");
+                kinCopy->erase("model");
+                kinCopy->erase("catalystMass");
+                kinCopy->insert("type", std::string("expression"));
+                RateOffer offer;
+                offer.pressure      = true;
+                offer.concentration = false;
+                offer.concentrationBasis = "the column forms no concentration";
+                offer.activities    = true;
+                exprLaw = ReactionRate::New(rxCopy, thermo, who, offer);
+                //  The law read the COPY; the keys it consumed are the
+                //  factory's reader's, and are declared so here (its own key
+                //  list already refuses a misspelt one by name).
+                for (const auto& key : kin->keys())
+                    if (key != "model" && key != "catalystMass")
+                        kin->noteForeignBlock(key);
+                if (exprLaw->declaredBasis() != "catalystMass")
+                    throw std::runtime_error(who + ": the column's kinetic stage"
+                        " carries a CATALYST MASS (`catalystMass` on the"
+                        " kinetics block), so the law must declare `basis"
+                        " catalystMass;` -- a rate per reactor volume has no"
+                        " volume on a stage to multiply.");
+            }
+            else {
             auto fwd = kin->subDict("forward"); kfA = fwd->lookupScalar("A"); kfEa = fwd->lookupScalar("Ea");
             auto rev = kin->subDict("reverse"); krA = rev->lookupScalar("A"); krEa = rev->lookupScalar("Ea");
             //  THE FORWARD ORDER HAS ONE HOME, and this reader had escaped it
@@ -2654,24 +2781,177 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                             + "; K <value>; }` to `kinetics.adsorption`"
                             " (an explicit `K 0;` is honoured as a claim).");
             }
+            }   // native words
             const scalar mCatTot = kin->lookupScalar("catalystMass", Dims::mass);   // kg total
             mCatPerStage = (!rxStages.empty()) ? mCatTot * 1000.0 / rxStages.size() : 0.0;  // g/stage
         }
         else                                       // EQUILIBRIUM reactive distillation
         {
             auto eq = rx->subDict("equilibrium");
+            const int nForms = (eq->found("Ka298") ? 1 : 0) + (eq->found("Ka") ? 1 : 0)
+                             + (eq->found("fromRecords") ? 1 : 0)
+                             + (eq->found("lnKa") ? 1 : 0);
+            if (nForms != 1)
+                throw std::runtime_error("DistillationColumn '" + dict->name()
+                    + "': `reaction.equilibrium` declares its K_a(T) in EXACTLY"
+                    " ONE form: `Ka298` (+ `dHrxn`), `Ka`, `fromRecords;` or"
+                    " `lnKa \"<formula>\";` (+ `parameters {}`); found "
+                    + std::to_string(nForms) + ".");
             if (eq->found("Ka298"))                // van't Hoff form
             { Ka298 = eq->lookupScalar("Ka298"); dHrxn = eq->lookupScalarOrDefault("dHrxn", 0.0); }
-            else                                   // constant K_a
+            else if (eq->found("Ka"))              // constant K_a
             { Ka298 = eq->lookupScalar("Ka"); dHrxn = 0.0; }
+            else if (eq->found("fromRecords"))
+                kaForm = KaForm::records;
+            else
+            {
+                kaForm = KaForm::formula;
+                //  ln K_a(T) WRITTEN in the case (the C67 rule): dimensionless,
+                //  T the only state symbol, every parameter with its unit.
+                const std::string text = eq->lookupWord("lnKa");
+                std::vector<std::string> known = { "T" };
+                std::vector<std::pair<std::string, std::pair<scalar, Dimensions>>> prm;
+                if (eq->found("parameters"))
+                {
+                    auto pd = eq->subDict("parameters");
+                    for (const auto& key : pd->keys())
+                    {
+                        if (!pd->hasDimensions(key))
+                            throw std::runtime_error("DistillationColumn: lnKa"
+                                " parameter `" + key + "` carries no unit"
+                                " (write `-` for a pure number).");
+                        prm.push_back({key, {pd->lookupScalar(key), pd->dimensionsOf(key)}});
+                        known.push_back(key);
+                    }
+                }
+                Formula::Resolver resolve = [&](const std::string& id)
+                    -> std::optional<Formula::Symbol>
+                {
+                    Formula::Symbol sy;
+                    if (id == "T") { sy.slot = 0; sy.dims = Dims::temperature; return sy; }
+                    for (const auto& pr : prm)
+                        if (pr.first == id)
+                        { sy.constant = true; sy.value = pr.second.first;
+                          sy.dims = pr.second.second; return sy; }
+                    return std::nullopt;
+                };
+                Formula::TableResolver noTables =
+                    [](const std::string&) -> std::shared_ptr<const Formula::Table>
+                    { return nullptr; };
+                lnKaFormula = std::make_shared<Formula>(Formula::compile(
+                    text, resolve, noTables,
+                    "DistillationColumn '" + dict->name() + "' reaction.equilibrium.lnKa",
+                    known));
+                if (lnKaFormula->dims() != Dims::dimensionless)
+                    throw std::runtime_error("DistillationColumn: `lnKa` must be"
+                        " dimensionless (it is the logarithm of an activity"
+                        " quotient); write the temperature as `T / Kelvin` with"
+                        " `Kelvin 1 K;` among the parameters.");
+                if (eq->found("validity"))
+                {
+                    auto vd = eq->subDict("validity");
+                    kaTmin = vd->lookupScalar("Tmin", Dims::temperature);
+                    kaTmax = vd->lookupScalar("Tmax", Dims::temperature);
+                }
+            }
         }
     }
-    auto KaAt = [&](scalar T) {                    // van't Hoff (constant Δh°_r)
-        return Ka298 * std::exp(-dHrxn / 8.314462 * (1.0/T - 1.0/298.15));
+    //  ln K_a(T): THE ONE HOME of the equilibrium constant, whatever form the
+    //  case declared.  `Ka298`/`dHrxn`/`Ka` keep their arithmetic exactly (the
+    //  logarithm of the same product), so the esterification columns are
+    //  byte-identical.  `fromRecords` is ln K_a = -Sum nu_i [g_ig,i(T)/(R T) +
+    //  ln(Psat_i(T)/P0)] on the SAME records that price the energy rows, so a
+    //  column cannot carry one heat of reaction in its K and another in its
+    //  energy balance; it needs no more than the records and refuses by name
+    //  where one lacks a datum.
+    auto lnKaAt = [&](scalar T) -> scalar {
+        if (kaForm == KaForm::formula)
+            return lnKaFormula->evaluate(std::vector<scalar>{T});
+        if (kaForm == KaForm::records)
+        {
+            //  The pure-liquid standard state of each species is the liquid
+            //  in equilibrium with its own ideal-gas datum:
+            //  mu_L = g_ig + RT ln(f_ref/P0), f_ref the package's reference
+            //  fugacity (Psat for an ideal vapour; phi_sat Psat exp(Vliq (P -
+            //  Psat)/RT) for a real one -- C235, the same factor K reads).
+            const scalar Rg = 8.314462, P0 = 1.0e5;
+            scalar acc = 0.0;
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                if (nu[i] == 0.0) continue;
+                acc += nu[i] * (thermo.comp(i).g_pure_ig(T) / (Rg * T)
+                                + std::log(thermo.pureLiquidReference(i, T, P) / P0));
+            }
+            return -acc;
+        }
+        return std::log(Ka298 * std::exp(-dHrxn / 8.314462 * (1.0/T - 1.0/298.15)));
     };
     const std::size_t nRx = rxStages.size();
     std::vector<int> extentOf(N, -1);
     for (std::size_t k = 0; k < nRx; ++k) extentOf[rxStages[k]] = static_cast<int>(k);
+
+    //  A REACTIVE FULL MESH PRICES THE HEAT OF REACTION ON THE ELEMENTS DATUM
+    //  AND ON NOTHING ELSE (C231): every species that reacts must carry its
+    //  formation datum, or the energy rows would silently lose the reaction
+    //  heat (the sensible-datum fallback deletes it).  Refused by name here.
+    if (reactive && fullMeshWord)
+    {
+        if (!hs.formation)
+            throw std::runtime_error("DistillationColumn '" + dict->name()
+                + "': a reactive full MESH needs the formation (elements)"
+                " datum, because the heat of reaction rides on it and the"
+                " stage energy rows carry no separate reaction term; the feeds"
+                " fall back to the sensible datum (see the enthalpy-GAP"
+                " announcement above).  Supply `standardThermochemistry` for"
+                " the species.");
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            if (nu[i] == 0.0) continue;
+            try { (void)thermo.comp(i).h_pure_ig(298.15);
+                  if (kaForm == KaForm::records)
+                      (void)thermo.comp(i).g_pure_ig(298.15); }
+            catch (const std::exception& e)
+            {
+                throw std::runtime_error("DistillationColumn '" + dict->name()
+                    + "': the reacting species '" + thermo.comp(i).name()
+                    + "' has no formation datum the reactive full MESH can"
+                    " price (" + std::string(e.what()).substr(0,
+                        std::string(e.what()).find('\n')) + ").  The heat of"
+                    " reaction is the difference of the species' formation"
+                    " enthalpies on the elements datum; declare"
+                    " `standardThermochemistry { dHf_298 ...; s_298 ...; }` in"
+                    " the component record (or a case-local overlay) -- no"
+                    " value is invented.");
+            }
+        }
+        if (kaForm == KaForm::records)
+        {
+            //  The announced origin of every datum that is an ESTIMATE: K_a and
+            //  the heat of reaction inherit its error.
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                if (nu[i] == 0.0) continue;
+                for (const char* fld : { "dHf_298", "dGf_298", "s_298" })
+                {
+                    const OriginInfo oi = thermo.comp(i).provenanceFor(fld);
+                    if (oi.origin != Origin::estimated) continue;
+                    const std::string msg = "column '" + dict->name()
+                        + "': K_a(T) `fromRecords` and the heat of reaction"
+                        " inherit the ESTIMATED " + std::string(fld)
+                        + " of '" + thermo.comp(i).name() + "' ("
+                        + (oi.method.empty() ? "estimate" : oi.method)
+                        + "); an error in it is an error in the equilibrium"
+                        " constant (exp of the Gibbs error / RT).  Hold the"
+                        " result against a measured K_a(T) before trusting it.";
+                    if (AdvisoryLog::instance().addAnnouncedOnce(
+                            "ka-estimated:" + thermo.comp(i).name() + ":" + fld,
+                            "approximation", "warning",
+                            "distillationColumn '" + dict->name() + "' K_a(T)", msg))
+                        std::cerr << "  [reaction] " << msg << "\n";
+                }
+            }
+        }
+    }
 
     const std::size_t nv = n;                      // vars per stage
     const std::size_t nExtents = kinetic ? 0 : nRx; // kinetic: extent is COMPUTED, not an unknown
@@ -2739,6 +3019,20 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  patched apart again.  For a > 0 and a mass-action order (order = |nu|)
     //  the arithmetic is unchanged.
     auto rateAt = [&](const sVector& xj, scalar Tj, const sVector& gam) -> scalar {
+        if (kineticExpr)
+        {
+            //  The law WRITTEN in the case (C233): T, P, x[i] and the activities
+            //  a[i] = gamma_i x_i the package prices at this stage.  Returns
+            //  kmol/(kg s), numerically mol/(g s) -- the unit the extent below
+            //  multiplies by the catalyst mass in grams.  A non-finite value
+            //  (a_MeOH -> 0) throws from the law; the trial wrapper turns it
+            //  into an infeasible trial, never a floor.
+            sVector act(n, 0.0);
+            for (std::size_t i = 0; i < n; ++i) act[i] = gam[i] * xj[i];
+            RateState st;
+            st.T = Tj; st.P = P; st.x = &xj; st.act = &act;
+            return exprLaw->netRate(thermo, st);
+        }
         const scalar Rg = 8.314462;
         const scalar kf = kfA * std::exp(-kfEa / (Rg * Tj));
         const scalar kr = krA * std::exp(-krEa / (Rg * Tj));
@@ -2813,6 +3107,28 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 " MESH trial: ") + e.what());
         }
     };
+    //  The kinetic extent of a stage on a Newton trial.  A law that has no
+    //  value at the trial (a_MeOH -> 0 under Rehfinger & Hoffmann's 1/a_MeOH,
+    //  a non-finite rate) is a fact about the TRIAL: it becomes an
+    //  InfeasibleTrial, announced, and the step is shortened.  No floor is
+    //  hidden here; a floor, if the case wants one, is WRITTEN in its law.
+    auto rateOnTrial = [&](const sVector& xj, scalar Tj) -> scalar
+    {
+        try { return rateAt(xj, Tj, thermo.activity().gamma(Tj, xj)); }
+        catch (const InfeasibleTrial&) { throw; }
+        catch (const std::exception& e)
+        {
+            if (!seedPriced.load()) throw;
+            if (!trialRefused.exchange(true))
+            {
+                std::lock_guard<std::mutex> g(trialRefusalLock);
+                const std::string w = e.what();
+                trialRefusal = w.substr(0, w.find('\n'));
+            }
+            throw InfeasibleTrial(std::string("the kinetic law has no value at"
+                " this MESH trial: ") + e.what());
+        }
+    };
     auto announceTrialRefusals = [&]()
     {
         if (!trialRefused.load() || verbosity < 1) return;
@@ -2841,8 +3157,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             {
                 if (kinetic)                               // computed from the rate × catalyst mass
                 {
-                    const sVector gam = thermo.activity().gamma(T[j], x[j]);
-                    xi = rateAt(x[j], T[j], gam) * mCatPerStage * mCatScale / 1000.0;
+                    xi = rateOnTrial(x[j], T[j]) * mCatPerStage * mCatScale / 1000.0;
                 }
                 else
                     xi = u[N*nv + ext];                    // equilibrium: a free unknown
@@ -2877,7 +3192,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 for (std::size_t i = 0; i < n; ++i)
                     if (nu[i] != 0.0)
                         lnQ += nu[i] * std::log(std::max(gam[i] * x[j][i], 1.0e-300));
-                g[N*nv + k] = lnQ - std::log(KaAt(T[j]))
+                g[N*nv + k] = lnQ - lnKaAt(T[j])
                             - (1.0 - homotopyS) * lnOffset[k];
             }
         seedPriced.store(true);
@@ -2905,6 +3220,39 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         { const scalar tb = thermo.comp(i).Tb();
           if (tb > 0.0) { tbMin = std::min(tbMin, tb); tbMax = std::max(tbMax, tb); } }
         if (tbMax > tbMin) { Ttop = tbMin; Tbot = tbMax; }
+        //  A REAL VAPOUR IS SEEDED AT THE PRESSURE'S SATURATION, NOT AT 1 atm
+        //  (C235).  The ramp above spans the NORMAL boiling points, which at
+        //  the column's P are subcooled states: an ideal vapour prices them
+        //  smoothly (phi = 1), a cubic EoS has no vapour root there and
+        //  returns the liquid-like root (phi ~ 0.05), so every K on the seed
+        //  is a wild number and the CMO Newton starts in a nonphysical basin
+        //  (column19 under SRK: stage temperatures of 140 K at iteration 4,
+        //  stopped NOT converged).  With a non-ideal vapour both ends move to
+        //  the coldest and hottest PURE SATURATION TEMPERATURE at P of the
+        //  package's own curves (`pureSaturationTemperature`, capped at each
+        //  Tc).  Measured on column19: a Trouton estimate overshot methanol's
+        //  by 18 K and a ramp end above the C4s' Tc failed the (R, D) form,
+        //  so the curve itself is read.  An ideal vapour keeps the ramp it
+        //  always had, byte-identical.
+        if (tbMax > tbMin && thermo.vapourFugacityDependsOnComposition())
+        {
+            scalar tsMin = 1.0e9, tsMax = 0.0;
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                if (!(zAvg[i] > 0.0)) continue;
+                const scalar ts = pureSaturationTemperature(thermo, i, P);
+                if (ts > 0.0) { tsMin = std::min(tsMin, ts); tsMax = std::max(tsMax, ts); }
+            }
+            if (tsMax > tsMin)
+            {
+                Ttop = tsMin;  Tbot = tsMax;
+                if (verbosity >= 3)
+                    std::cout << "  [seed] real-vapour package: the reactive T ramp is"
+                                 " taken between the components' own saturation"
+                                 " temperatures at P (" << Ttop << " -> " << Tbot
+                              << " K) rather than at the normal boiling points\n";
+            }
+        }
     }
     //  The unit's OWN seed, built first and then offered to the case: linear T
     //  between the end guesses, `zGuess` on every stage.  A declared
@@ -2974,7 +3322,10 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         + "' MESH search");
 
     auto res = solver::newtonND(residual, u0, opts);   // phase 1: reaction OFF (robust)
-    if (reactive)
+    //  UNDER THE FULL MESH THE CMO IS ONLY THE SEED, and it is the NON-REACTIVE
+    //  one: the reaction enters through the full MESH's own homotopy below
+    //  (C231, announced).
+    if (reactive && !fullMeshWord)
     {
         rxnActive = true;                              // phase 2: reaction ON, seeded from phase 1
         if (kinetic)                                   // ramp the catalyst mass (continuation):
@@ -3097,6 +3448,13 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     std::vector<sVector> x(N);
     sVector T(N);
     for (std::size_t j = 0; j < N; ++j) unpack(res.x, j, x[j], T[j]);
+    //  The converged extents [kmol/s] (equilibrium form), in one place for the
+    //  KPIs: the CMO's unknowns, replaced by the full MESH's when it runs.
+    sVector xiFinal(nRx, 0.0);
+    if (reactive && !kinetic)
+        for (std::size_t k = 0; k < nRx; ++k) xiFinal[k] = res.x[N*nv + k];
+    scalar sumNuAll = 0.0;
+    for (auto v : nu) sumNuAll += v;
 
 
     // ===== FULL-MESH refinement (Naphtali-Sandholm) =========================
@@ -3109,16 +3467,28 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     // energy balance like any tray, the reflux R D entering it at its own
     // bubble point and V_1 = (R+1) D leaving it; PARTIAL -- the condenser
     // itself, V_1 = 0 and L_1 = R D, its duty free.  Reboiler: L_{N-1} = B.
-    // The free duties are computed post hoc.  Reactive full-MESH is not wired:
-    // it is REFUSED at the top of this method (C169), so `!reactive` below is
-    // always true here and is kept only so the condition reads what it means.
+    // The free duties are computed post hoc.  A REACTIVE full MESH (C231) adds
+    // the equilibrium extents as unknowns after the stage blocks (and D, under
+    // bottomsRate/boilupRatio); see the row comments in residualF.
     const std::string fmModel = dict->lookupWordOrDefault(
         "model", operDict->lookupWordOrDefault("method", "WangHenke"));
-    if ((fmModel == "fullMESH" || fmModel == "MESH"
-         || fmModel == "NaphtaliSandholm") && !reactive)
+    if (fullMeshWord)
     {
         const std::size_t mv = n + 2;              // x_{0..n-2}, T, V, L per stage
-        const std::size_t mU = N * mv;
+        //  Unknown layout: N stage blocks, then the nRx equilibrium extents
+        //  [kmol/s], then (bottomsRate/boilupRatio) the distillate D.
+        const std::size_t iXi = N * mv;
+        //  The equilibrium form carries nRx extent unknowns; the kinetic form
+        //  COMPUTES each extent (rate x catalyst mass), so it carries none.
+        const std::size_t nXiU = kinetic ? 0 : nRx;
+        const std::size_t iD  = iXi + nXiU;
+        const std::size_t mU  = iD + (specBoil ? 1 : 0);
+        //  Reaction ON/OFF and the K_a continuation, as in the CMO MESH.
+        bool    rxnOnF = false;
+        scalar  sF = 1.0;
+        sVector lnOffF(nRx, 0.0);
+        scalar  totDrawF = 0.0;
+        for (std::size_t j = 0; j < N; ++j) totDrawF += Udraw[j] + Wdraw[j];
         auto unpackF = [&](const sVector& w, std::size_t j, sVector& xj,
                            scalar& Tj, scalar& Vj, scalar& Lj) {
             xj.assign(n, 0.0); scalar s = 0.0;
@@ -3162,7 +3532,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         std::vector<scalar> stageFeedEnthalpy(N, 0.0);
         for (const auto& r : feedRecords)
             stageFeedEnthalpy[r.j] += r.state
-                ? feedEnthalpy(*r.state, r.F, r.T, P, r.z, thermo, hs)
+                ? feedEnthalpy(*r.state, r.F, r.T, r.P > 0.0 ? r.P : P, r.z, thermo, hs)
                 : r.F * hs.hQuality(1.0 - r.q, r.z, r.T);
         if (verbosity >= 2)
         {
@@ -3186,11 +3556,32 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             auto hL = [&](const sVector& xx, scalar TT){ return hs.hL(xx, TT); };
             auto hV = [&](const sVector& yy, scalar TT){ return hs.hV(yy, TT); };
             sVector g(mU, 0.0);
+            //  D: a declared constant, or an unknown (bottomsRate/boilupRatio).
+            const scalar Dd = specBoil ? w[iD] : D;
+            //  The stage extents in force, and the whole mole change they make.
+            sVector xiKin(N, 0.0);                       // kinetic: xi_j = r(T_j, x_j, gamma_j) m_cat,j
+            if (kinetic && rxnOnF)
+                for (std::size_t k = 0; k < nRx; ++k)
+                {
+                    const std::size_t jr = rxStages[k];
+                    xiKin[jr] = rateOnTrial(xs[jr], Ts[jr]) * mCatPerStage
+                                * mCatScale / 1000.0;
+                }
+            auto xiOf = [&](std::size_t j) -> scalar {
+                if (kinetic) return xiKin[j];
+                const int e = reactive ? extentOf[j] : -1;
+                return (e >= 0 && rxnOnF) ? w[iXi + static_cast<std::size_t>(e)] : 0.0;
+            };
+            scalar xiSum = 0.0;
+            for (std::size_t j = 0; j < N; ++j) xiSum += xiOf(j);
+            const scalar BfF = specBoil ? Bspec
+                : (totFeed + sumNuAll*xiSum - Dd - totDrawF);
             for (std::size_t j = 0; j < N; ++j) {
+                const scalar xij = xiOf(j);
                 for (std::size_t i = 0; i + 1 < n; ++i) {        // component balances
                     scalar m;
                     if (j == 0)
-                        m = Ls[0]*xs[0][i] + D*ys[0][i] - Vs[1]*ys[1][i];
+                        m = Ls[0]*xs[0][i] + Dd*ys[0][i] - Vs[1]*ys[1][i];
                     else if (j == N-1)
                         m = Vs[N-1]*ys[N-1][i] + Ls[N-1]*xs[N-1][i]
                             + Udraw[N-1]*xs[N-1][i] + Wdraw[N-1]*ys[N-1][i]
@@ -3198,6 +3589,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                     else
                         m = (Ls[j]+Udraw[j])*xs[j][i] + (Vs[j]+Wdraw[j])*ys[j][i]
                             - Ls[j-1]*xs[j-1][i] - Vs[j+1]*ys[j+1][i] - Ffeed[j]*zfeed[j][i];
+                    if (xij != 0.0) m -= nu[i] * xij;            // generation nu_i xi_j
                     g[j*mv + i] = m * balanceScale;
                 }
                 scalar sy = 0.0; for (std::size_t i = 0; i < n; ++i) sy += ys[j][i];
@@ -3208,11 +3600,13 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                                   * balanceScale;
                 else if (j == N-1)
                     g[j*mv + n] = (Vs[N-1] + Ls[N-1] + Udraw[N-1] + Wdraw[N-1]
-                                - Ls[N-2] - Ffeed[N-1]) * balanceScale;
+                                - Ls[N-2] - Ffeed[N-1] - sumNuAll*xij) * balanceScale;
                 else
                     g[j*mv + n] = (Ls[j] + Vs[j] + Udraw[j] + Wdraw[j]
-                                - Ls[j-1] - Vs[j+1] - Ffeed[j]) * balanceScale;
-                if (j == 0 && partialCond)                         // energy / flow specs
+                                - Ls[j-1] - Vs[j+1] - Ffeed[j] - sumNuAll*xij) * balanceScale;
+                if (j == 0 && partialCond && specBoil)
+                    g[j*mv + n+1] = (Vs[N-1] - boilup*Bspec) * balanceScale;   // boil-up spec
+                else if (j == 0 && partialCond)                    // energy / flow specs
                     g[j*mv + n+1] = (Ls[0] - R*D) * balanceScale;  // reflux = condenser liquid
                 else if (j == 0)
                 {
@@ -3232,7 +3626,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                         - Ls[0]*hL(xs[0], Ts[0]) - Vs[0]*hV(ys[0], Ts[0]));
                 }
                 else if (j == N-1)
-                    g[j*mv + n+1] = (Ls[N-1] - Bf) * balanceScale; // bottoms spec
+                    g[j*mv + n+1] = (Ls[N-1] - BfF) * balanceScale; // bottoms spec
                 else {                                             // ENERGY balance (enthalpy residual)
                     g[j*mv + n+1] = energyScale * (
                           Ls[j-1]*hL(xs[j-1],Ts[j-1]) + Vs[j+1]*hV(ys[j+1],Ts[j+1])
@@ -3240,6 +3634,26 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                         - (Ls[j]+Udraw[j])*hL(xs[j],Ts[j]) - (Vs[j]+Wdraw[j])*hV(ys[j],Ts[j]));
                 }
             }
+            //  Rows beyond the stage blocks.
+            //  (1) the distillate, closed by stage 1's total balance:
+            //      L_1 + D - V_2 - sumNu xi_1 = 0   (bottomsRate/boilupRatio);
+            if (specBoil)
+                g[iD] = (Ls[0] + Dd - Vs[1] - sumNuAll*xiOf(0)) * balanceScale;
+            //  (2) one equilibrium row per reactive stage:
+            //      sum_i nu_i ln(gamma_i x_i) - ln K_a(T_j) = 0, K_a eased in
+            //      by the homotopy; with the reaction OFF the extent is held 0.
+            if (reactive && !kinetic)
+                for (std::size_t k = 0; k < nRx; ++k)
+                {
+                    if (!rxnOnF) { g[iXi + k] = w[iXi + k]; continue; }
+                    const std::size_t j = rxStages[k];
+                    const sVector gam = thermo.activity().gamma(Ts[j], xs[j]);
+                    scalar lnQ = 0.0;
+                    for (std::size_t i = 0; i < n; ++i)
+                        if (nu[i] != 0.0)
+                            lnQ += nu[i] * std::log(std::max(gam[i] * xs[j][i], 1.0e-300));
+                    g[iXi + k] = lnQ - lnKaAt(Ts[j]) - (1.0 - sF) * lnOffF[k];
+                }
             return g;
         };
         //  AN UNCONVERGED CMO PHASE SEEDS THE MESH ONLY AS AN ANNOUNCED SEED
@@ -3277,13 +3691,143 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             for (std::size_t i = 0; i + 1 < n; ++i) w0[j*mv+i] = x[j][i];
             w0[j*mv + (n-1)] = T[j];  w0[j*mv + n] = V[j];  w0[j*mv + n+1] = L[j];
         }
+        if (specBoil) w0[iD] = D;
         solver::NDOptions optsF;
         optsF.tolerance = 1.0e-9; optsF.maxIter = 60; optsF.parallel = true;
+        if (reactive) optsF.maxIter = 80;
         if (verbosity >= 3)
             optsF.onIter = [this](const solver::NDTrace& tr){ recordResidual(tr.normF); };
-        auto resF = solver::newtonND(residualF, w0, optsF);
+        auto resF = solver::newtonND(residualF, w0, optsF);   // reaction OFF (reactive) / the column
+        if (reactive && resF.converged)
+        {
+            //  THE REACTION ENTERS BY THE EXISTING HOMOTOPY, ANNOUNCED (C231):
+            //  the non-reactive full MESH just solved is the seed; every
+            //  species in the quotient is raised to >= 1e-4 on the reactive
+            //  stages (renormalised), then K_eff = K_a exp(-(1-s) lnOffset)
+            //  with lnOffset the seed's own quotient gap, s from 0 to 1 by
+            //  halving/doubling steps (the CMO's rule, 1/64 floor).
+            if (kinetic)
+            {
+                //  THE CATALYST MASS ENTERS BY CONTINUATION, ANNOUNCED (C233):
+                //  the non-reactive full MESH is the seed, the reaction is
+                //  switched on at a fraction s of the declared catalyst mass
+                //  (m_cat,j -> s m_cat,j) and s is raised by growth while the
+                //  Newton converges, bisected toward the last accepted s when
+                //  it does not (floor: a step of 1e-4).  s = 1 is the column
+                //  the case declared; the column is NOT converged unless it
+                //  is reached.
+                rxnOnF = true;
+                sVector wK = resF.x;
+                scalar sDone = 0.0, sTry = 0.01;
+                int itersTot = 0;
+                std::vector<scalar> acc;
+                const scalar sMin = 1.0e-4;
+                while (sDone < 1.0 && (sTry - sDone) >= sMin)
+                {
+                    mCatScale = sTry;
+                    auto r = solver::newtonND(residualF, wK, optsF);
+                    itersTot += r.iterations;
+                    resF = r;
+                    if (verbosity >= 3)
+                        std::cout << "  [solver] kinetic full MESH: catalyst fraction s = "
+                                  << sTry << (r.converged ? " converged in " : " NOT converged after ")
+                                  << r.iterations << " iterations (|F| = " << r.residual << ")\n";
+                    if (r.converged)
+                    {
+                        wK = r.x; sDone = sTry; acc.push_back(sDone);
+                        sTry = std::min(1.0, sDone * 3.0);
+                    }
+                    else sTry = sDone + 0.5 * (sTry - sDone);
+                }
+                mCatScale = 1.0;
+                resF.converged = resF.converged && sDone >= 1.0;
+                resF.iterations = itersTot;
+                if (verbosity >= 2)
+                {
+                    std::ostringstream m;
+                    m << "  [solver] kinetic full MESH: the non-reactive full MESH"
+                         " seeds it; the catalyst mass was raised to its declared"
+                         " value in " << acc.size() << " continuation step(s)"
+                         " (s =";
+                    for (scalar a : acc) m << " " << a;
+                    m << "; " << itersTot << " Newton iterations)"
+                      << (sDone >= 1.0 ? "" : " -- NOT reached: the step fell below 1e-4")
+                      << "\n";
+                    std::cout << m.str();
+                }
+            }
+            else {
+            constexpr scalar kFloor = 1.0e-4;
+            rxnOnF = true;
+            sVector wDone = resF.x;
+            for (std::size_t k = 0; k < nRx; ++k)
+            {
+                const std::size_t j = rxStages[k];
+                sVector xj; scalar Tj, Vj, Lj;
+                unpackF(wDone, j, xj, Tj, Vj, Lj);
+                scalar sx = 0.0;
+                for (std::size_t i = 0; i < n; ++i)
+                {
+                    if (nu[i] != 0.0) xj[i] = std::max(xj[i], kFloor);
+                    sx += xj[i];
+                }
+                for (std::size_t i = 0; i + 1 < n; ++i) wDone[j*mv + i] = xj[i] / sx;
+            }
+            sF = 1.0;
+            { const sVector g0 = residualF(wDone);
+              for (std::size_t k = 0; k < nRx; ++k) lnOffF[k] = g0[iXi + k]; }
+            scalar sDone = 0.0, ds = 1.0;
+            int    itersTot = 0;
+            std::vector<scalar> acc;
+            while (sDone < 1.0 && ds >= 1.0 / 64.0)
+            {
+                sF = std::min(1.0, sDone + ds);
+                auto r = solver::newtonND(residualF, wDone, optsF);
+                itersTot += r.iterations;
+                if (r.converged)
+                { wDone = r.x; sDone = sF; acc.push_back(sDone);
+                  ds = std::min(2.0 * ds, 1.0 - sDone); }
+                else ds *= 0.5;
+                resF = r;
+            }
+            sF = 1.0;
+            resF.converged = resF.converged && sDone >= 1.0;
+            resF.iterations = itersTot;
+            if (verbosity >= 2)
+            {
+                std::ostringstream m;
+                m << "  [solver] reactive full MESH: the non-reactive full MESH"
+                     " seeds it (the CMO seeds that one); K_a reached from the"
+                     " seed's own quotient (species floored at " << kFloor
+                  << " on the reactive stages) in " << acc.size()
+                  << " continuation step(s) (s =";
+                for (scalar a : acc) m << " " << a;
+                m << "; " << itersTot << " Newton iterations)"
+                  << (sDone >= 1.0 ? "" : " -- NOT reached: the step fell below 1/64")
+                  << "\n";
+                std::cout << m.str();
+            }
+            }   // equilibrium form
+        }
         announceTrialRefusals();
         for (std::size_t j = 0; j < N; ++j) unpackF(resF.x, j, x[j], T[j], V[j], L[j]);
+        if (reactive)
+        {
+            if (kinetic)
+                for (std::size_t k = 0; k < nRx; ++k)
+                {
+                    const std::size_t jr = rxStages[k];
+                    xiFinal[k] = rateAt(x[jr], T[jr], thermo.activity().gamma(T[jr], x[jr]))
+                                 * mCatPerStage * mCatScale / 1000.0;
+                }
+            else
+            for (std::size_t k = 0; k < nRx; ++k) xiFinal[k] = resF.x[iXi + k];
+            scalar xs2 = 0.0; for (auto v : xiFinal) xs2 += v;
+            if (specBoil) D = resF.x[iD];
+            Bf = specBoil ? Bspec : (totFeed + sumNuAll*xs2 - D - totDrawF);
+        }
+        else if (specBoil) { D = resF.x[iD]; Bf = Bspec; }
+        if (specBoil) R = L[0] / D;
         if (cmoSeedFailed) { res.converged = resF.converged; res.residual = resF.residual; }
         else if (!resF.converged) res.converged = false;
         if (resF.stalledSteps > 0 && verbosity >= 2)
@@ -3341,6 +3885,61 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         }
     }
     profile_.markers.push_back({static_cast<scalar>(NF), "feed"});
+
+    //  THE REACTIVE FULL MESH PUBLISHES WHAT ITS EQUILIBRIUM ROW IS MADE OF
+    //  (C231): the activity coefficient of every reacting species, the
+    //  ln K_a(T) the row was closed against, and the extent of each stage, so
+    //  a reader (and `check_reactive_mesh`) can recompute
+    //  sum nu_i ln(gamma_i x_i) - ln K_a(T) from the published numbers alone.
+    if (reactive && fullMeshWord && !kinetic)
+    {
+        std::vector<std::vector<scalar>> gcol(n);
+        std::vector<scalar> lnk(N, 0.0), xic(N, 0.0);
+        for (std::size_t j = 0; j < N; ++j)
+        {
+            const sVector gam = thermo.activity().gamma(T[j], x[j]);
+            for (std::size_t i = 0; i < n; ++i)
+                if (nu[i] != 0.0) gcol[i].push_back(gam[i]);
+            lnk[j] = lnKaAt(T[j]);
+            if (extentOf[j] >= 0)
+                xic[j] = xiFinal[static_cast<std::size_t>(extentOf[j])] * 3600.0;
+        }
+        for (std::size_t i = 0; i < n; ++i)
+            if (nu[i] != 0.0) profile_.columns["gamma_" + thermo.comp(i).name()] = gcol[i];
+        profile_.columns["lnKa"]          = lnk;
+        profile_.columns["extent_kmol_h"] = xic;
+    }
+    //  THE KINETIC FULL MESH PUBLISHES WHAT ITS EXTENT IS MADE OF (C233): the
+    //  activity coefficient and the activity a_i = gamma_i x_i of every
+    //  reacting species, the rate r [mol/(g_cat s)] the law returned and the
+    //  extent r x m_cat of each stage, so a reader (and `check_kinetic_mesh`)
+    //  can recompute the law from T, x and gamma alone and read the activities
+    //  the law was evaluated at against the range it was fitted over.
+    if (reactive && fullMeshWord && kinetic)
+    {
+        std::vector<std::vector<scalar>> gcol(n), acol(n);
+        std::vector<scalar> rcol(N, 0.0), xic(N, 0.0);
+        for (std::size_t j = 0; j < N; ++j)
+        {
+            const sVector gam = thermo.activity().gamma(T[j], x[j]);
+            for (std::size_t i = 0; i < n; ++i)
+                if (nu[i] != 0.0)
+                { gcol[i].push_back(gam[i]); acol[i].push_back(gam[i] * x[j][i]); }
+            if (extentOf[j] >= 0)
+            {
+                rcol[j] = rateAt(x[j], T[j], gam);
+                xic[j]  = rcol[j] * mCatPerStage / 1000.0 * 3600.0;
+            }
+        }
+        for (std::size_t i = 0; i < n; ++i)
+            if (nu[i] != 0.0)
+            {
+                profile_.columns["gamma_" + thermo.comp(i).name()] = gcol[i];
+                profile_.columns["a_" + thermo.comp(i).name()]     = acol[i];
+            }
+        profile_.columns["r_mol_gcat_s"]  = rcol;
+        profile_.columns["extent_kmol_h"] = xic;
+    }
 
     if (verbosity >= 2)
     {
@@ -3423,6 +4022,25 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     // Reactive distillation: total extent + conversion of the limiting reactant.
     if (reactive)
     {
+        if (kaForm == KaForm::formula && kaTmax > kaTmin)
+        {
+            scalar lo = 1e9, hi = 0.0;
+            for (std::size_t k = 0; k < nRx; ++k)
+            { lo = std::min(lo, T[rxStages[k]]); hi = std::max(hi, T[rxStages[k]]); }
+            if (lo < kaTmin || hi > kaTmax)
+            {
+                const std::string msg = "column '" + dict->name() + "': the"
+                    " declared ln K_a(T) is valid over " + std::to_string(kaTmin)
+                    + "-" + std::to_string(kaTmax) + " K (the range it was"
+                    " measured over) and the reactive stages run at "
+                    + std::to_string(lo) + "-" + std::to_string(hi)
+                    + " K: K_a is EXTRAPOLATED there.";
+                if (AdvisoryLog::instance().addAnnouncedOnce(
+                        "ka-extrapolated:" + dict->name(), "approximation",
+                        "warning", "distillationColumn '" + dict->name() + "' K_a(T)", msg))
+                    std::cerr << "  [reaction] " << msg << "\n";
+            }
+        }
         scalar extentTot = 0.0;
         for (std::size_t k = 0; k < nRx; ++k)
         {
@@ -3431,7 +4049,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 extentTot += rateAt(x[j], T[j], thermo.activity().gamma(T[j], x[j]))
                              * mCatPerStage / 1000.0;
             else
-                extentTot += res.x[N*nv + k];
+                extentTot += xiFinal[k];
         }
         // limiting reactant = the fed reactant (nu<0) with the least feed.
         std::size_t iLim = n; scalar fedLim = 0.0;
@@ -3451,7 +4069,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                       << thermo.comp(iLim).name() << " = " << std::fixed
                       << std::setprecision(1) << (100.0 * consumed / std::max(fedLim,1e-30))
                       << " %  ("
-                      << (kinetic ? (adsorption ? "adsorption (LHHW) kinetics"
+                      << (kinetic ? (kineticExpr ? "expression kinetics (the case's own law)"
+                                                 : adsorption ? "adsorption (LHHW) kinetics"
                                                 : "pseudo-homogeneous kinetics")
                                   : "equilibrium")
                       << ", " << nRx << " reactive stages)\n";
@@ -3465,8 +4084,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         //  point, so the duty is that envelope exactly and Q_reboiler then
         //  equals the reboiler's own balance.  Under CMO the traffic is
         //  (R+1) D, and the condensate leaves at the same bubble point.
-        const bool fullMesh = (fmModel == "fullMESH" || fmModel == "MESH"
-                               || fmModel == "NaphtaliSandholm") && !reactive;
+        const bool fullMesh = fullMeshWord;
         CondenserTop top;
         top.D = D;  top.yD = xD;  top.T1 = T[0];
         top.Tcond = dStream.T;                  // the condensate's bubble point
@@ -3519,7 +4137,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         {
             if (r.F <= 0.0) continue;
             if (r.state)
-                Hin += feedEnthalpy(*r.state, r.F, r.T, P, r.z, thermo, hs);
+                Hin += feedEnthalpy(*r.state, r.F, r.T, r.P > 0.0 ? r.P : P, r.z, thermo, hs);
             else
                 Hin += H(r.F, r.T, 1.0 - r.q, r.z);
         }
@@ -3550,7 +4168,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 {
                     if (fr.j != r || fr.F <= 0.0) continue;
                     hFr += fr.state
-                        ? feedEnthalpy(*fr.state, fr.F, fr.T, P, fr.z, thermo, hs)
+                        ? feedEnthalpy(*fr.state, fr.F, fr.T, fr.P > 0.0 ? fr.P : P, fr.z, thermo, hs)
                         : fr.F * hs.hQuality(1.0 - fr.q, fr.z, fr.T);
                 }
                 Q_own = hVN + hBN + hDr - hLN - hFr;

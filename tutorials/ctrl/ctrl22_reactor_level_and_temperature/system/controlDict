@@ -17,5 +17,4 @@ writeInterval   100;      // s
 solutionControl
 {
     write           true;
-    flushEach       true;
 }

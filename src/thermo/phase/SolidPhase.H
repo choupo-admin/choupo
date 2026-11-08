@@ -140,12 +140,15 @@ private:
     const std::vector<Component>* components_ = nullptr;
 
     const PureFluidMap* pureFluids_ = nullptr;   // borrowed, as above
+    const EquationOfState* vapourEos_ = nullptr; // borrowed; null = ideal vapour
 
 public:
     void rebindComponents(const std::vector<Component>* comps) override
     { components_ = comps; }
     void rebindPureFluids(const PureFluidMap* pf) override
     { pureFluids_ = pf; }
+    void rebindVapourEos(const EquationOfState* eos) override
+    { vapourEos_ = eos; }
 };
 
 } // namespace Choupo

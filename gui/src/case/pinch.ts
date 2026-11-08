@@ -25,239 +25,212 @@ License
     Credit and attribution: see AUTHORS
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
-
 /*---------------------------------------------------------------------------*\
-  Pinch analysis from a completed run.  Each heat DUTY in the flowsheet becomes
-  a thermal stream (a COLD stream that needs heating, Q>0; a HOT stream that
-  needs cooling, Q<0), with its supply/target temperatures taken from the run:
+  The GRID DIAGRAM's input, READ from the engine's pinch pass -- computed
+  nowhere in the browser.  (Until 2026-11-05 this file rebuilt the stream
+  population from each unit's `Q_kW` and ran its own Problem Table: a second
+  home of `PinchPass`, which drew one cold "stream" for a feed-effluent
+  exchanger and counted a water cooler's duty magnitude as a cold stream
+  (DEV.md 4c C230).  The engine decides, the GUI draws.)
 
-    - heater / cooler / heatExchanger : kpi Q_kW + T_in/T_out
-    - distillation column             : Q_reboiler_kW @ T_bottom (heating, ~iso),
-                                         Q_condenser_kW @ T_top   (cooling, ~iso)
-    - any other unit with kpi Q_kW     : T-range from its inlet/outlet stream
-                                         temperatures (runResult.streams)
+  What it reads, all written by `pinchPass` (postProcessing/PinchPass.cpp):
 
-  Then the Problem Table Algorithm gives the minimum hot/cold utility targets and
-  the pinch temperature, and the composite curves give the T-H picture.  All
-  GUI-side -- the engine already emitted the duties + temperatures.
+    reports/pinch/population.csv         the streams the targets were taken
+                                         from (role segment | recovered) and
+                                         the service sides left out (utility)
+    reports/pinch/candidateMatches.csv   the admissible candidate matches
+    reports/pinch/problemTable.csv       the worked Linnhoff-Flower cascade
+    reports/pinch/summary.csv            the CLASS word (interiorPinch |
+                                         severalPinches | threshold...), the
+                                         pinches and the pinch's heat flow
+    kpis.pinch                           Q_H_min_kW, Q_C_min_kW, T_pinch_K,
+                                         Q_heat_current_kW, Q_cool_current_kW
+
+  A run with no `pinchPass` yields NO pinch (`pinchFromEngine` returns null)
+  and the tab says what to declare; nothing is computed in its place.
 \*---------------------------------------------------------------------------*/
 
-import type { RunResult, StreamResult } from "../adapters/SolverAdapter.js";
-import type { JsonDict } from "../dict/json.js";
+import type { RunResult } from "../adapters/SolverAdapter.js";
 
-export interface ThermalStream { unit: string; kind: "hot" | "cold"; Ts: number; Tt: number; Q_kW: number; }
-// A candidate process-process match (screening): a hot stream that can heat a
-// cold one with >= dTmin driving force.  capKW = min duty of the pair (an upper
-// bound, not the network-optimal recovery).  `side` = which side of the pinch
-// the feasible overlap sits (the golden rule: don't match across the pinch).
-export interface HeatMatch { hot: string; cold: string; capKW: number; side: "above" | "below"; }
-export interface PinchResult {
-  streams: ThermalStream[];
-  dTmin: number;
-  QhMin: number;            // minimum hot utility (kW)
-  QcMin: number;            // minimum cold utility (kW)
-  QhNow: number;            // current hot utility = sum of heating duties
-  QcNow: number;            // current cold utility = sum of cooling duties
-  pinchHot: number | null;  // hot-side pinch temperature (K)
-  pinchCold: number | null;
-  pinchShift: number | null; // shifted pinch temperature (the GCC's y at H=0)
-  hotComposite: [number, number][];  // [H_kW, T_K]
-  coldComposite: [number, number][];
-  gcc: [number, number][];  // Grand Composite Curve: [net H_kW, T_shifted_K]
-  matches: HeatMatch[];     // candidate process-process exchanges (screening)
+export const POPULATION_CSV_PATH = "reports/pinch/population.csv";
+export const MATCHES_CSV_PATH = "reports/pinch/candidateMatches.csv";
+export const PROBLEM_TABLE_CSV_PATH = "reports/pinch/problemTable.csv";
+export const SUMMARY_CSV_PATH = "reports/pinch/summary.csv";
+
+/** The exact postDict excerpt that makes the engine write the pinch. */
+export const PINCH_PASS_EXCERPT = "pinchPass { dTmin 20 K; }";
+
+/** The classes the engine's cascade publishes (PinchPass.cpp, one place). */
+export const PINCH_CLASS_TEXT: { [word: string]: string } = {
+  interiorPinch: "interior pinch: the cascade touches zero at one interior temperature, so heat cannot cross it",
+  severalPinches: "several pinches: the cascade touches zero at more than one interior temperature, so the problem splits into independent sub-problems",
+  thresholdNoHotUtility: "threshold problem, no hot utility needed: the cascade touches zero only at the top of the range, so there is no pinch",
+  thresholdNoColdUtility: "threshold problem, no cold utility needed: the cascade touches zero only at the bottom of the range, so there is no pinch",
+  thresholdNoUtility: "threshold problem, no utility needed: the streams exchange all their heat with each other, so there is no pinch",
+};
+
+/** One row of reports/pinch/problemTable.csv, exactly as the engine wrote it. */
+export interface ProblemRow {
+  interval: number; Thi: number; Tlo: number;      // shifted T*, K
+  cpHot: number; cpCold: number;                   // kW/K
+  dH: number; casIn: number; casOut: number;       // kW
+  corIn: number; corOut: number;                   // kW, with Q_H,min fed in
+  tag: string; hotStreams: string; coldStreams: string;
 }
 
-const ISO_BAND = 0.5;       // half-width (K) for an isothermal phase-change duty
-
-// Build the thermal-stream list from the run.  Returns [] if nothing usable.
-export function thermalStreams(runResult: RunResult | null, flowsheet: JsonDict | undefined): ThermalStream[] {
-  if (!runResult || !flowsheet) return [];
-  const kpis = runResult.kpis ?? {};
-  const byName = new Map((runResult.streams ?? []).map((s: StreamResult) => [s.name, s]));
-  const units = Array.isArray(flowsheet["units"]) ? (flowsheet["units"] as JsonDict[]) : [];
-  const out: ThermalStream[] = [];
-  const num = (v: unknown) => (typeof v === "number" && isFinite(v) ? v : undefined);
-  const namesOf = (v: unknown): string[] =>
-    Array.isArray(v) ? (v as string[]).map(String) : v === undefined || v === null ? [] : [String(v)];
-
-  // The unit list is FLAT only at the top level; a sectored plant's root carries
-  // `children`, not `units`, so flowsheet["units"] is empty for it.  Iterate the
-  // run's KPIS instead (already flattened to plant.sector.unit) -- this works
-  // for BOTH flat and sectored cases.  flowsheet `units` (when present) only
-  // feeds the stream-temperature fallback below.  (`COLUMN`/`type` no longer
-  // needed: a column is detected by its reboiler/condenser kpis.)
-  const unitByName = new Map<string, JsonDict>(units.map((u) => [String(u["name"]), u]));
-  // Representative isothermal T when a duty has no T_in/T_out range: boiling /
-  // crystallising / flashing all happen at ~one T, carried in the kpi.
-  const reprT = (k: JsonDict): number | undefined =>
-    num(k["T_boil"]) ?? num(k["T_op"]) ?? num(k["T"]) ?? num(k["T_out"]) ?? num(k["T_in"]);
-
-  for (const [name, kRaw] of Object.entries(kpis)) {
-    const k = (kRaw ?? {}) as JsonDict;
-
-    // Column: reboiler (heating, base) + condenser (cooling, top), detected by
-    // the kpis themselves so it works on a flattened name too.
-    const qr = num(k["Q_reboiler_kW"]); const tb = num(k["T_bottom"]);
-    const qc = num(k["Q_condenser_kW"]); const tt = num(k["T_top"]);
-    if (qr !== undefined || qc !== undefined) {
-      if (qr && tb) out.push({ unit: `${name}.reboiler`, kind: "cold", Ts: tb - ISO_BAND, Tt: tb + ISO_BAND, Q_kW: Math.abs(qr) });
-      if (qc && tt) out.push({ unit: `${name}.condenser`, kind: "hot", Ts: tt + ISO_BAND, Tt: tt - ISO_BAND, Q_kW: Math.abs(qc) });
-      continue;
-    }
-
-    // Generic duty.  Q_kW carries a SIGN (+ heating/cold, - cooling/hot).  Units
-    // that report only `duty_kW`/`duty` (evaporator, dryer, boiler) are HEATING
-    // by construction -> a cold stream (q > 0).  Cooling devices (cooler,
-    // crystalliser) report a signed Q_kW, so this stays correct.
-    let q = num(k["Q_kW"]);
-    if (q === undefined) {
-      const dW = num(k["duty"]);
-      const d = num(k["duty_kW"]) ?? (dW !== undefined ? dW / 1000 : undefined);
-      if (d !== undefined) q = Math.abs(d);   // duty-only => heating
-    }
-    if (q === undefined || Math.abs(q) < 1e-9) continue;
-
-    // T-range: explicit kpi range, else a representative isothermal T (band),
-    // else the connected streams' run temperatures (flat cases only).
-    let Ts = num(k["T_in"]); let Tt = num(k["T_out"]);
-    if (Ts === undefined || Tt === undefined) {
-      const Tr = reprT(k);
-      if (Tr !== undefined) {
-        Ts = q >= 0 ? Tr - ISO_BAND : Tr + ISO_BAND;
-        Tt = q >= 0 ? Tr + ISO_BAND : Tr - ISO_BAND;
-      }
-    }
-    if ((Ts === undefined || Tt === undefined) && unitByName.has(name)) {
-      const u = unitByName.get(name)!;
-      const inT = namesOf(u["in"] ?? u["inputs"]).map((n) => byName.get(n)?.T).filter((x): x is number => typeof x === "number");
-      const outT = namesOf(u["outputs"]).map((n) => byName.get(n)?.T).filter((x): x is number => typeof x === "number");
-      if (inT.length) Ts = Math.max(...inT);
-      if (outT.length) Tt = q >= 0 ? Math.max(...outT) : Math.min(...outT);
-    }
-    if (Ts === undefined || Tt === undefined || Ts === Tt) continue;
-    out.push({ unit: name, kind: q >= 0 ? "cold" : "hot", Ts, Tt, Q_kW: Math.abs(q) });
+export function parseProblemTable(csv: string): ProblemRow[] {
+  const lines = csv.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
+  if (lines.length < 2 || !lines[0]!.startsWith("interval,T_star_hi_K,T_star_lo_K")) return [];
+  const out: ProblemRow[] = [];
+  for (const line of lines.slice(1)) {
+    const f = line.split(",");
+    if (f.length < 13) continue;
+    const n = f.slice(0, 10).map(Number);
+    if (!n.every(Number.isFinite)) continue;
+    out.push({ interval: n[0]!, Thi: n[1]!, Tlo: n[2]!, cpHot: n[3]!, cpCold: n[4]!,
+      dH: n[5]!, casIn: n[6]!, casOut: n[7]!, corIn: n[8]!, corOut: n[9]!,
+      tag: f[10]!, hotStreams: f[11]!, coldStreams: f[12]! });
   }
   return out;
 }
 
-/** Why the pinch view cannot be shown, or null when it can.
- *
- *  ONE HOME WITH THE CONDITION, deliberately.  The Pinch tab used to be
- *  greyed by `canComputePinch` while a CONSTANT in MenuBar.tsx explained it:
- *  "Run the flowsheet first -- pinch needs the converged duties".  That
- *  sentence is true for exactly one of the ways the tab can be disabled, and
- *  the commonest case in the corpus is the other one: the first tutorial a
- *  student meets is an ADIABATIC flash, which converges perfectly and has no
- *  duty at all, so the reader watches Newton converge and is then told to run
- *  the flowsheet.  A disabled control whose stated reason is not the actual
- *  reason sends the reader to fix the thing that was not wrong.
- *
- *  A condition in one file and its explanation in another is two homes for
- *  one fact, so the explanation is computed HERE, from the same streams the
- *  condition reads. */
-export function pinchDisabledReason(runResult: RunResult | null,
-                                    flowsheet: JsonDict | undefined): string | null {
-  if (!runResult) {
-    return "Run the flowsheet first — pinch needs the converged duties";
-  }
-  const s = thermalStreams(runResult, flowsheet);
-  const hot = s.some((x) => x.kind === "hot");
-  const cold = s.some((x) => x.kind === "cold");
-  if (hot && cold) return null;
-  if (!hot && !cold) {
-    return "This run has no heating or cooling duties to integrate — "
-         + "pinch needs at least one hot and one cold stream";
-  }
-  return hot
-    ? "This run has hot streams but no cold one — pinch needs at least one of each"
-    : "This run has cold streams but no hot one — pinch needs at least one of each";
+/** The grand composite curve = the corrected cascade against T*, READ from
+ *  the problem table (the engine's numbers; no arithmetic on them). */
+export function grandCompositeFromTable(rows: ProblemRow[]): { T: number; H: number }[] {
+  if (rows.length === 0) return [];
+  return [{ T: rows[0]!.Thi, H: rows[0]!.corIn },
+          ...rows.map((r) => ({ T: r.Tlo, H: r.corOut }))];
 }
 
-export function canComputePinch(runResult: RunResult | null, flowsheet: JsonDict | undefined): boolean {
-  return pinchDisabledReason(runResult, flowsheet) === null;
+export interface PinchSummary {
+  class: string; nPinches: number; pinchStar: number[];
+  Hpinch: number | null; coldOffset: number | null;
 }
 
-const CP = (s: ThermalStream) => s.Q_kW / Math.abs(s.Tt - s.Ts);
-
-// Composite curve for one set (hot or cold): list of [H_kW, T_K] ascending in T.
-function composite(streams: ThermalStream[]): [number, number][] {
-  if (!streams.length) return [];
-  const bks = Array.from(new Set(streams.flatMap((s) => [s.Ts, s.Tt]))).sort((a, b) => a - b);
-  const pts: [number, number][] = [[0, bks[0]!]];
-  let H = 0;
-  for (let i = 0; i < bks.length - 1; i++) {
-    const Tlo = bks[i]!, Thi = bks[i + 1]!;
-    let cp = 0;
-    for (const s of streams) {
-      const lo = Math.min(s.Ts, s.Tt), hi = Math.max(s.Ts, s.Tt);
-      if (lo <= Tlo && hi >= Thi) cp += CP(s);
-    }
-    H += cp * (Thi - Tlo);
-    pts.push([H, Thi]);
+export function parseSummary(csv: string): PinchSummary | null {
+  const m: { [k: string]: string } = {};
+  for (const line of csv.split(/\r?\n/).slice(1)) {
+    const i = line.indexOf(",");
+    if (i > 0) m[line.slice(0, i).trim()] = line.slice(i + 1).trim();
   }
-  return pts;
+  if (!m["class"]) return null;
+  const num = (v: string | undefined) =>
+    (v !== undefined && v !== "" && Number.isFinite(Number(v)) ? Number(v) : null);
+  return { class: m["class"]!, nPinches: Number(m["n_pinches"] ?? 0),
+    pinchStar: (m["pinch_T_star_K"] ?? "").split(";").filter((x) => x).map(Number),
+    Hpinch: num(m["H_pinch_kW"]), coldOffset: num(m["cold_curve_offset_kW"]) };
 }
 
-export function computePinch(runResult: RunResult | null, flowsheet: JsonDict | undefined,
-  dTmin = 10): PinchResult | null {
-  const streams = thermalStreams(runResult, flowsheet);
-  const hot = streams.filter((s) => s.kind === "hot");
-  const cold = streams.filter((s) => s.kind === "cold");
-  if (!hot.length || !cold.length) return null;
-
-  // ---- Problem Table Algorithm on shifted temperatures ----
-  const temps = new Set<number>();
-  for (const s of hot) { temps.add(s.Ts - dTmin / 2); temps.add(s.Tt - dTmin / 2); }
-  for (const s of cold) { temps.add(s.Ts + dTmin / 2); temps.add(s.Tt + dTmin / 2); }
-  const T = Array.from(temps).sort((a, b) => b - a);   // descending
-  const casc = [0];
-  for (let i = 0; i < T.length - 1; i++) {
-    const Thi = T[i]!, Tlo = T[i + 1]!;
-    let sumCP = 0;
-    for (const s of hot) { const lo = Math.min(s.Ts, s.Tt) - dTmin / 2, hi = Math.max(s.Ts, s.Tt) - dTmin / 2; if (lo <= Tlo && hi >= Thi) sumCP += CP(s); }
-    for (const s of cold) { const lo = Math.min(s.Ts, s.Tt) + dTmin / 2, hi = Math.max(s.Ts, s.Tt) + dTmin / 2; if (lo <= Tlo && hi >= Thi) sumCP -= CP(s); }
-    casc.push(casc[casc.length - 1]! + sumCP * (Thi - Tlo));
+/** Every population row, utility sides included, for the stream table. */
+export interface StreamRow {
+  unit: string; role: string; side: string;
+  Tin: number; Tout: number; Q_kW: number; CP: number; reason: string;
+}
+export function parseStreamTable(csv: string): StreamRow[] {
+  const lines = csv.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
+  if (lines.length < 2 || !lines[0]!.startsWith("unit,kpi,role,side,T_in_K,T_out_K,Q_kW")) return [];
+  const out: StreamRow[] = [];
+  for (const line of lines.slice(1)) {
+    const f = line.split(",");
+    if (f.length < 8 || f[2] === "excluded") continue;
+    const Tin = Number(f[4]), Tout = Number(f[5]), Q = Number(f[6]), CP = Number(f[7]);
+    if (![Tin, Tout, Q].every(Number.isFinite)) continue;
+    out.push({ unit: f[0]!, role: f[2]!, side: f[3]!, Tin, Tout, Q_kW: Q,
+      CP: Number.isFinite(CP) ? CP : NaN, reason: f.slice(8).join(",") });
   }
-  const deficit = Math.min(...casc);
-  const QhMin = deficit < 0 ? -deficit : 0;
-  const casc2 = casc.map((c) => c + QhMin);
-  const QcMin = casc2[casc2.length - 1]!;
-  // pinch = the shifted T where the cascade is zero (closest to 0)
-  let pi = 0; for (let i = 1; i < casc2.length; i++) if (Math.abs(casc2[i]!) < Math.abs(casc2[pi]!)) pi = i;
-  const pinchShift = T[pi] ?? null;
+  return out;
+}
 
-  // Grand Composite Curve: the net heat cascade vs shifted temperature -- the
-  // "pockets" are internal recovery, and it touches H=0 at the pinch.  Used to
-  // place utility levels (lowest steam grade above the pinch, etc.).
-  const gcc: [number, number][] = T.map((t, i) => [casc2[i]!, t]);
+export interface ThermalStream { unit: string; kind: "hot" | "cold"; Ts: number; Tt: number; Q_kW: number; }
+// A candidate process-process match the ENGINE admits (candidateMatches.csv).
+export interface HeatMatch { hot: string; cold: string; capKW: number; side: "above" | "below"; }
+export interface PinchResult {
+  streams: ThermalStream[];
+  dTmin: number;
+  QhMin: number;            // minimum hot utility (kW), engine
+  QcMin: number;            // minimum cold utility (kW), engine
+  QhNow: number;            // current hot utility (kW), engine
+  QcNow: number;            // current cold utility (kW), engine
+  pinchShift: number | null; // shifted pinch temperature; null = no pinch
+  pinchHot: number | null;   // T* + dTmin/2 (engine T_pinch_hot_K)
+  pinchCold: number | null;  // T* - dTmin/2 (engine T_pinch_cold_K)
+  matches: HeatMatch[];     // the engine's admissible candidates
+  problemClass: string | null;  // the engine's word, summary.csv
+}
 
-  // Candidate matches (screening): a hot stream can heat a cold one if it is
-  // >= dTmin hotter somewhere; classify the feasible overlap above/below the
-  // pinch.  An upper-bound kW per pair (the network achieves the targets above).
-  const matches: HeatMatch[] = [];
-  for (const h of hot) for (const c of cold) {
-    const hHi = Math.max(h.Ts, h.Tt), hLo = Math.min(h.Ts, h.Tt);
-    const cHi = Math.max(c.Ts, c.Tt), cLo = Math.min(c.Ts, c.Tt);
-    if (hHi < cLo + dTmin) continue;                       // no driving force anywhere
-    const ovLo = Math.max(hLo - dTmin / 2, cLo + dTmin / 2);
-    const ovHi = Math.min(hHi - dTmin / 2, cHi + dTmin / 2);
-    if (ovHi <= ovLo) continue;
-    const mid = (ovLo + ovHi) / 2;
-    const side: "above" | "below" = pinchShift == null || mid >= pinchShift ? "above" : "below";
-    matches.push({ hot: h.unit, cold: c.unit, capKW: Math.min(h.Q_kW, c.Q_kW), side });
+/** Why the Pinch tab is greyed: only the absence of a run.  Whether the run
+ *  carries a pinch is the engine's business and the tab says so itself. */
+export function pinchDisabledReason(runResult: RunResult | null): string | null {
+  return runResult ? null : "Run the flowsheet first — pinch needs the converged run";
+}
+
+export function canComputePinch(runResult: RunResult | null): boolean {
+  return pinchDisabledReason(runResult) === null;
+}
+
+/** population.csv rows -> the grid's streams.  Utility rows are NOT streams. */
+export function parsePopulation(csv: string): ThermalStream[] {
+  const lines = csv.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
+  if (lines.length < 2 || !lines[0]!.startsWith("unit,kpi,role,side,T_in_K,T_out_K,Q_kW")) return [];
+  const out: ThermalStream[] = [];
+  for (const line of lines.slice(1)) {
+    const f = line.split(",");
+    if (f.length < 8) continue;
+    const role = f[2]!;
+    if (role !== "segment" && role !== "recovered") continue;
+    const Ts = Number(f[4]), Tt = Number(f[5]), Q = Number(f[6]);
+    if (![Ts, Tt, Q].every(Number.isFinite)) continue;
+    out.push({ unit: f[0]!, kind: Q < 0 ? "hot" : "cold", Ts, Tt, Q_kW: Math.abs(Q) });
   }
-  matches.sort((a, b) => b.capKW - a.capKW);
+  return out;
+}
 
+/** candidateMatches.csv -> the grid's connections (temperature-feasible only). */
+export function parseMatches(csv: string): HeatMatch[] {
+  const lines = csv.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
+  if (lines.length < 2) return [];
+  const out: HeatMatch[] = [];
+  for (const line of lines.slice(1)) {
+    const f = line.split(",");
+    if (f.length !== 8 || f[3] !== "yes") continue;
+    const cap = Number(f[5]);
+    if (!Number.isFinite(cap)) continue;
+    out.push({ hot: f[1]!, cold: f[2]!, capKW: cap,
+               side: f[0]!.startsWith("above") ? "above" : "below" });
+  }
+  return out;
+}
+
+/** The engine's pinch for a run, or null when it declared no `pinchPass`. */
+export function pinchFromEngine(runResult: RunResult | null): PinchResult | null {
+  const k = runResult?.kpis?.["pinch"];
+  const pop = runResult?.csvFiles?.[POPULATION_CSV_PATH];
+  if (!k || pop === undefined || k["Q_H_min_kW"] == null) return null;
+  const streams = parsePopulation(pop);
+  if (streams.length === 0) return null;
+  const mcsv = runResult?.csvFiles?.[MATCHES_CSV_PATH];
+  // The engine leaves T_pinch at the top of the range when the cascade never
+  // closes (a threshold problem): that is "no pinch", and says so here.
+  const dT = k["dTmin_K"] ?? 0;
+  const Ttop = Math.max(...streams.map((s) =>
+    Math.max(s.Ts, s.Tt) + (s.kind === "hot" ? -0.5 : 0.5) * dT));
+  const Tp = k["T_pinch_K"];
+  //  The engine's classification decides (pinch_exists, from the whole
+  //  corrected cascade); the top-of-range geometry is only for a run that
+  //  predates that KPI.
+  const hasPinch = k["pinch_exists"] != null
+    ? k["pinch_exists"] === 1
+    : Tp != null && Number.isFinite(Tp) && Tp < Ttop - 1.0e-6;
+  const sum = runResult?.csvFiles?.[SUMMARY_CSV_PATH];
   return {
-    streams, dTmin, QhMin, QcMin,
-    QhNow: cold.reduce((a, s) => a + s.Q_kW, 0),
-    QcNow: hot.reduce((a, s) => a + s.Q_kW, 0),
-    pinchHot: pinchShift === null ? null : pinchShift + dTmin / 2,
-    pinchCold: pinchShift === null ? null : pinchShift - dTmin / 2,
-    pinchShift,
-    hotComposite: composite(hot),
-    coldComposite: composite(cold).map(([h, t]) => [h + QcMin, t]),  // shift so the gap = dTmin
-    gcc,
-    matches,
+    streams,
+    dTmin: k["dTmin_K"] ?? 10,
+    QhMin: k["Q_H_min_kW"]!, QcMin: k["Q_C_min_kW"] ?? 0,
+    QhNow: k["Q_heat_current_kW"] ?? 0, QcNow: k["Q_cool_current_kW"] ?? 0,
+    pinchShift: hasPinch ? Tp! : null,
+    pinchHot: hasPinch ? (k["T_pinch_hot_K"] ?? null) : null,
+    pinchCold: hasPinch ? (k["T_pinch_cold_K"] ?? null) : null,
+    matches: mcsv ? parseMatches(mcsv) : [],
+    problemClass: sum ? (parseSummary(sum)?.class ?? null) : null,
   };
 }

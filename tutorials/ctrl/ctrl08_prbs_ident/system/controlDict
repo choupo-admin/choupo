@@ -29,5 +29,4 @@ writeInterval   5;        // s   (24 rows per 120 s bit: edges resolved)
 solutionControl
 {
     write           true;
-    flushEach       true;
 }

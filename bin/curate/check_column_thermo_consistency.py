@@ -23,7 +23,7 @@ functions, and none of them visible to a passing suite:
     column15 (75 stages, SRK): the published state satisfied the equation
     implemented, not the package's equilibrium;
   * `model fullMESH;` on a reactive column ran the CMO model and said
-    nothing (C131 M9).
+    nothing (C131 M9; refused from then, solved since C231).
 
 A golden pins what a run PRINTS; this gate recomputes what the run CLAIMS,
 with the package's own functions, through a probe
@@ -75,9 +75,10 @@ typed: every flowsheetDict under tutorials/ that declares a
       `fugacityModel SRK;` (its `feedQuality` removed so the feed is read
       from the stream), which also carries arm (a2) onto a real-gas vapour.
 
-  (c) `model fullMESH|MESH|NaphtaliSandholm` on a REACTIVE column REFUSES
-      by name, naming the word and the supported reactive model
-      (`simultaneous`), and costs no solve: column05 copied three times.
+  (c) `model fullMESH|MESH|NaphtaliSandholm` on a REACTIVE column RUNS THE
+      MODEL IT DECLARES, read off the solver's own line and never off the
+      exit code: column05 copied three times.  (It refused until C231 gave
+      the full MESH reaction terms.)
 
   (d) THE CMO q OF A SUBCOOLED FEED IS ITS ENTHALPIC q (C169 item 4, C131
       W4): column01 under Wang-Henke with its feed moved to 300 K.  The q
@@ -632,18 +633,17 @@ def probe_reactive_refusals(tmp):
             continue
         fd.write_text(s2)
         rc, d, log = run_case(dst)
-        #  The refusal must name the declared word AND the supported model
-        #  in ONE sentence about a reaction -- words scattered across a log
-        #  that echoes the case would satisfy a looser test.
-        named = any(("model " + model) in l and "model simultaneous" in l
-                    and re.search(r"react", l, re.I)
-                    for l in log.splitlines())
-        verdict = ("ran to a converged answer -- the declared model was NOT"
-                   " refused" if rc == 0 else
-                   "refused, naming the model and `simultaneous`" if named
-                   else "refused, but the message does NOT name the model and"
-                        " the supported one")
-        out.append(("c", rc != 0 and named,
+        #  The defect this arm was built for (C131 M9) was the CMO model
+        #  running under a full-MESH word in silence, so the evidence is the
+        #  solver's own line, never the exit code.  C231 taught the full MESH
+        #  a reaction, so the arm now asks for the MODEL IT DECLARED, where it
+        #  used to ask for a refusal.
+        ran = any(l.lstrip().startswith("full-MESH (Naphtali-Sandholm):")
+                  and "converged in" in l for l in log.splitlines())
+        verdict = ("the full MESH it declared ran and converged" if ran else
+                   "exit 0 with NO full-MESH line -- the declared model did"
+                   " not run" if rc == 0 else "refused")
+        out.append(("c", rc == 0 and ran,
                     "column05 with `model %s;`: exit %d, %s"
                     % (model, rc, verdict)))
     return out

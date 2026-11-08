@@ -81,6 +81,17 @@ namespace Choupo {
 /// liquid that boils below 200 K comes back as T = 200 K with sum K x far
 /// from 1.  Every caller decides what that means for it (see
 /// docs/design/an-unconverged-bubble-point-is-not-a-point.md, section 3).
+//  THE TEMPERATURE AT WHICH PURE COMPONENT i SATURATES AT P, from the
+//  package's own saturation curve (`ThermoPackage::Psat`), bisected on
+//  ln Psat between 100 K and the component's Tc (1000 K when it declares
+//  none).  If even Tc does not reach P the answer is Tc (no saturation
+//  above it); a component with no saturation curve returns 0.  The ONE home
+//  of "where does this species boil at the column's pressure", read by the
+//  seeds of the MESH ramp and the bubble-T Newton on a REAL vapour, where the
+//  normal boiling point is a subcooled state (C235).
+scalar pureSaturationTemperature(const ThermoPackage& thermo, std::size_t i,
+                                 scalar P);
+
 scalar bubbleT(const ThermoPackage& thermo,
                const sVector& x,
                scalar P,

@@ -1072,6 +1072,9 @@
   "LayoutPlotSector": [
    "src/core/ResultRecords.H"
   ],
+  "LayoutPort": [
+   "src/core/ResultRecords.H"
+  ],
   "LayoutRackCrossing": [
    "src/core/ResultRecords.H"
   ],
@@ -1383,6 +1386,9 @@
   ],
   "PelletSolution": [
    "src/unitOperations/reactor/pellet/PelletDiffusion.H"
+  ],
+  "PetroleumCuts": [
+   "src/propertyOps/PetroleumCuts.H"
   ],
   "Phase": [
    "src/thermo/phase/Phase.H"
@@ -1745,6 +1751,9 @@
   "RowlinsonBondi": [
    "src/thermo/heatCapacity/RowlinsonBondi.H"
   ],
+  "Rows": [
+   "src/propertyOps/LleResidual.H"
+  ],
   "SDEM": [
    "src/unitOperations/membrane/transport/SDEM.H"
   ],
@@ -1798,6 +1807,9 @@
   ],
   "SchockMiquelDrop": [
    "src/unitOperations/membrane/pressureDrop/SchockMiquelDrop.H"
+  ],
+  "Scope": [
+   "src/propertyOps/LleResidual.H"
   ],
   "Selection": [
    "src/thermo/PricedDensity.H"
@@ -1957,6 +1969,9 @@
   ],
   "State": [
    "src/thermo/electrolyte/ENRTLMultiSalt.H"
+  ],
+  "Stats": [
+   "src/propertyOps/LleResidual.H"
   ],
   "SteamTables": [
    "src/propertyOps/SteamTables.H"
@@ -2607,6 +2622,10 @@
    {
     "key": "frictionBench",
     "type": "FrictionBench"
+   },
+   {
+    "key": "petroleumCuts",
+    "type": "PetroleumCuts"
    },
    {
     "key": "rateLawBench",
@@ -4376,6 +4395,7 @@
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/streams/ProcessStream.H",
+   "src/streams/UtilityCircuit.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/PackageAudit.H",
@@ -5749,6 +5769,7 @@
    "src/propertyOps/FitAlgebra.H",
    "src/propertyOps/FitParameters.H",
    "src/propertyOps/FitWeighting.H",
+   "src/propertyOps/LleResidual.H",
    "src/propertyOps/PropertyOperation.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -5783,6 +5804,7 @@
    "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/FitAlgebra.H",
    "src/propertyOps/FitParameters.H",
+   "src/propertyOps/LleResidual.H",
    "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropsPlan.H",
    "src/solver/Convergence.H",
@@ -5803,9 +5825,11 @@
   "src/propertyOps/FitWeighting.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
+   "src/core/PublishedTable.H",
    "src/core/Types.H",
    "src/propertyOps/EvidencePartition.H",
-   "src/propertyOps/FitWeighting.H"
+   "src/propertyOps/FitWeighting.H",
+   "src/propertyOps/LleResidual.H"
   ],
   "src/propertyOps/FlashSpec.cpp": [
    "src/core/Advisory.H",
@@ -6026,6 +6050,31 @@
    "src/thermo/Database.H",
    "src/thermo/RecordResolver.H"
   ],
+  "src/propertyOps/LleResidual.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/PublishedTable.H",
+   "src/core/Types.H",
+   "src/propertyOps/EvidencePartition.H",
+   "src/propertyOps/LleResidual.H",
+   "src/result/ClosureVariable.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H"
+  ],
   "src/propertyOps/LleTieLines.cpp": [
    "src/core/Constants.H",
    "src/core/Dictionary.H",
@@ -6113,6 +6162,23 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H"
+  ],
+  "src/propertyOps/PetroleumCuts.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/PublishedTable.H",
+   "src/core/Types.H",
+   "src/propertyOps/ConstantEstimator.H",
+   "src/propertyOps/PetroleumCuts.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/DerivedClosures.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/vaporPressure/AmbroseWalton.H",
+   "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/propertyOps/PhaseEnvelope.cpp": [
    "src/core/Advisory.H",
@@ -6318,10 +6384,12 @@
    "src/propertyOps/HeatTransferBench.H",
    "src/propertyOps/IsothermEval.H",
    "src/propertyOps/Kinetics1D.H",
+   "src/propertyOps/LleResidual.H",
    "src/propertyOps/LleTieLines.H",
    "src/propertyOps/MembraneShortlist.H",
    "src/propertyOps/MixingRules.H",
    "src/propertyOps/MolecularActivity.H",
+   "src/propertyOps/PetroleumCuts.H",
    "src/propertyOps/PhaseEnvelope.H",
    "src/propertyOps/PhaseSplitScan.H",
    "src/propertyOps/PitzerActivity.H",
@@ -7779,6 +7847,7 @@
    "src/thermo/henrysLaw/HenrysLaw.H",
    "src/thermo/henrysLaw/HenrysLawRegistry.H",
    "src/thermo/phase/Phase.H",
+   "src/thermo/phase/SaturatedVapour.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/pureFluid/SaturationCurve.H",
    "src/thermo/solution/SolutionPair.H",
@@ -8407,8 +8476,10 @@
    "src/thermo/activityCoefficient/UNIFAC.H",
    "src/thermo/activityCoefficient/UNIQUAC.H",
    "src/thermo/activityCoefficient/Wilson.H",
+   "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/phase/LiquidPhase.H",
    "src/thermo/phase/Phase.H",
+   "src/thermo/phase/SaturatedVapour.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/pureFluid/SaturationCurve.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
@@ -8428,6 +8499,18 @@
    "src/thermo/phase/SolidPhase.H",
    "src/thermo/phase/VaporPhase.H"
   ],
+  "src/thermo/phase/SaturatedVapour.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H",
+   "src/thermo/equationOfState/EquationOfState.H",
+   "src/thermo/phase/SaturatedVapour.H"
+  ],
   "src/thermo/phase/SolidPhase.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -8437,7 +8520,9 @@
    "src/core/Origin.H",
    "src/core/Types.H",
    "src/thermo/Component.H",
+   "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/phase/Phase.H",
+   "src/thermo/phase/SaturatedVapour.H",
    "src/thermo/phase/SolidPhase.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/pureFluid/SaturationCurve.H",
@@ -9384,6 +9469,7 @@
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
+   "src/core/Formula.H",
    "src/core/Identifiers.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
@@ -9407,6 +9493,7 @@
    "src/thermo/electrolyte/SpeciationSolver.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/reaction/Reaction.H",
+   "src/thermo/reaction/ReactionRate.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/distillation/DistillationColumn.H",
@@ -11696,6 +11783,7 @@
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HansenMixture.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -11757,6 +11845,7 @@
    "src/thermo/membrane/FittedRecord.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/phase/SaturatedVapour.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
@@ -12102,6 +12191,7 @@
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -12177,6 +12267,7 @@
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/Phase.cpp",
+   "src/thermo/phase/SaturatedVapour.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/reaction/RateLaw.cpp",
@@ -12398,10 +12489,12 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -12508,6 +12601,7 @@
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/Phase.cpp",
+   "src/thermo/phase/SaturatedVapour.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
@@ -12767,10 +12861,12 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -12877,6 +12973,7 @@
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/Phase.cpp",
+   "src/thermo/phase/SaturatedVapour.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
@@ -13139,6 +13236,7 @@
    "src/propertyOps/RateLawBench.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/PFR.cpp"
   ],
@@ -13227,10 +13325,12 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -13316,6 +13416,7 @@
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/Phase.cpp",
+   "src/thermo/phase/SaturatedVapour.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
@@ -13531,10 +13632,12 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -13625,6 +13728,7 @@
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/Phase.cpp",
+   "src/thermo/phase/SaturatedVapour.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
@@ -13854,6 +13958,7 @@
    "src/propertyOps/ExtractionShortcutOp.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitParametersMembrane.cpp",
+   "src/propertyOps/FitWeighting.cpp",
    "src/propertyOps/FlashSpec.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
@@ -13864,10 +13969,12 @@
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -14254,10 +14361,12 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -14381,6 +14490,7 @@
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/Phase.cpp",
+   "src/thermo/phase/SaturatedVapour.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
@@ -14978,6 +15088,7 @@
    "src/propertyOps/ConstantEstimator.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Joback.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/RiaziDaubert.cpp",
    "src/propertyOps/VanKrevelen.cpp",
    "src/propertyOps/Yang2020.cpp"
@@ -15028,6 +15139,7 @@
    "src/propertyOps/FitWeighting.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/VaporPressureFit.cpp"
@@ -15106,6 +15218,13 @@
    "src/propertyOps/Kinetics1D.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/LleResidual.H": [
+   "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
+   "src/propertyOps/FitWeighting.cpp",
+   "src/propertyOps/LleResidual.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/LleTieLines.H": [
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -15120,6 +15239,10 @@
   ],
   "src/propertyOps/MolecularActivity.H": [
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
+  "src/propertyOps/PetroleumCuts.H": [
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
   "src/propertyOps/PhaseEnvelope.H": [
@@ -15184,6 +15307,7 @@
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -15464,6 +15588,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FlashSpec.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
@@ -15733,6 +15858,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FlashSpec.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
@@ -15908,6 +16034,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -16256,6 +16383,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FlashSpec.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
@@ -16400,6 +16528,7 @@
   ],
   "src/streams/UtilityCircuit.H": [
    "src/postProcessing/EconomicsPass.cpp",
+   "src/postProcessing/PinchPass.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/MassBalanceReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
@@ -16518,10 +16647,12 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -16607,6 +16738,7 @@
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/Phase.cpp",
+   "src/thermo/phase/SaturatedVapour.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
@@ -16805,10 +16937,12 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -16986,6 +17120,7 @@
   "src/thermo/DerivedClosures.H": [
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Joback.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/RiaziDaubert.cpp",
    "src/thermo/ThermoPackage.cpp"
   ],
@@ -17086,6 +17221,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -17346,10 +17482,12 @@
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -17753,6 +17891,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -17987,6 +18126,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -18545,7 +18685,10 @@
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/SRK.cpp",
+   "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/Phase.cpp",
+   "src/thermo/phase/SaturatedVapour.cpp",
+   "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
@@ -18736,6 +18879,12 @@
    "src/thermo/phase/VaporPhase.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp"
   ],
+  "src/thermo/phase/SaturatedVapour.H": [
+   "src/thermo/ThermoPackage.cpp",
+   "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/phase/SaturatedVapour.cpp",
+   "src/thermo/phase/SolidPhase.cpp"
+  ],
   "src/thermo/phase/SolidPhase.H": [
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
@@ -18813,6 +18962,7 @@
    "src/thermo/reaction/ReactionRate.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
@@ -19027,6 +19177,7 @@
   ],
   "src/thermo/vaporPressure/AmbroseWalton.H": [
    "src/propertyOps/EstimateComponent.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/thermo/vaporPressure/AmbroseWalton.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp"
   ],
@@ -19042,6 +19193,7 @@
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
@@ -19089,6 +19241,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FlashSpec.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
@@ -19178,6 +19331,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FlashSpec.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
@@ -19408,6 +19562,7 @@
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/propertyOps/FlashSpec.cpp",
+   "src/propertyOps/LleResidual.cpp",
    "src/propertyOps/LleTieLines.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",

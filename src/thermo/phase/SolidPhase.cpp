@@ -30,6 +30,8 @@ License
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
+#include "SaturatedVapour.H"
+#include "thermo/equationOfState/EquationOfState.H"
 #include <cmath>
 #include <iostream>
 #include "thermo/Component.H"
@@ -89,7 +91,7 @@ SolidPhase::SolidPhase(const DictPtr& d,
 //
 //  which IS freezing-point depression -- derived, not declared.  See
 //  docs/design/ice-as-a-solid-phase-of-the-solvent.md.
-sVector SolidPhase::fEffective(scalar T, scalar, const sVector& x) const
+sVector SolidPhase::fEffective(scalar T, scalar P_Pa, const sVector& x) const
 {
     if (mode_ == Mode::Inert)
         throw std::runtime_error(
@@ -148,7 +150,15 @@ sVector SolidPhase::fEffective(scalar T, scalar, const sVector& x) const
         const auto it = pureFluids_->find(crystalIdx_);
         if (it != pureFluids_->end()) pf = it->second.get();
     }
-    f[crystalIdx_] = saturationPressure(c, pf, T)
+    //  The pure-liquid reference the crystal is measured against is the SAME
+    //  one LiquidPhase uses, phi_sat included for a real vapour, so the
+    //  solid/liquid ratio (freezing point) cannot move with the vapour.
+    const scalar psat = saturationPressure(c, pf, T);
+    const scalar phiSat = (vapourEos_ && !pf)
+        ? liquidReferenceFactor(*vapourEos_, c, crystalIdx_, x.size(), T, P_Pa,
+                              psat)
+        : 1.0;
+    f[crystalIdx_] = (phiSat == 1.0 ? psat : psat * phiSat)
                    * std::exp(-dGfus / (constant::R * T));
     return f;
 }

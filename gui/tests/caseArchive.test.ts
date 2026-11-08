@@ -137,7 +137,7 @@ describe("the zips students make", () => {
   });
 
   it("a sectored plant's own sector controlDicts do not make it several cases", () => {
-    const plant = tutorialFiles("tutorials/plant/twoSectorDemo");
+    const plant = tutorialFiles("tutorials/steady/flowsheets/twoSectorDemo");
     expect(Object.keys(plant).filter((p) => p.endsWith("system/controlDict"))).toHaveLength(3);
     const c = caseFromEntries(under("twoSectorDemo/", plant), "twoSectorDemo.zip");
     expect(c.root).toBe("twoSectorDemo");
@@ -295,7 +295,7 @@ describe("Open Case folder: the same rule as the .zip", () => {
   });
 
   it("a sectored plant's own sector controlDicts do not read as more cases", async () => {
-    const plant = tutorialFiles("tutorials/plant/twoSectorDemo");
+    const plant = tutorialFiles("tutorials/steady/flowsheets/twoSectorDemo");
     const c = await readFolderHandle(handleOf("twoSectorDemo", under("", plant)));
     expect(c.name).toBe("twoSectorDemo");
     expect(Object.keys(c.raw).sort()).toEqual(Object.keys(plant).sort());

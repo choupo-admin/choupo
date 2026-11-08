@@ -7,31 +7,87 @@ stream  feed                   F                0.125753043611   1e-4
 kpi     splitter               B                0.0863020558333  1e-4
 kpi     splitter               D                0.0394509877778  1e-4
 kpi     splitter               L_rect           0.45133097767    1e-4
-kpi     splitter               L_strip          0.565397368633   1e-4
-kpi     splitter               Q_condenser_kW   -8453.15398421   1e-4
-kpi     splitter               Q_reboiler_kW    8257.34269769    1e-4
+kpi     splitter               L_strip          0.562751441141   1e-4
+kpi     splitter               Q_condenser_kW   -8334.84552985   1e-4
+kpi     splitter               Q_reboiler_kW    8090.35298049    1e-4
 kpi     splitter               R                11.440296        1e-4
-kpi     splitter               T_bottom         329.436819763    1e-4
-kpi     splitter               T_top            314.249966091    1e-4
+kpi     splitter               T_bottom         335.078265625    1e-4
+kpi     splitter               T_top            319.783095841    1e-4
 kpi     splitter               V_rect           0.490781965448   1e-4
-kpi     splitter               V_strip          0.479095312799   1e-4
+kpi     splitter               V_strip          0.476449385308   1e-4
 kpi     splitter               feedStage        37               1e-4
 kpi     splitter               murphreeEfficiency 1.191            1e-4
 kpi     splitter               nStages          75               1e-4
-kpi     splitter               x_B_HK           0.00116916875085 1e-4
-kpi     splitter               x_D_LK           0.0627714459664  1e-4
-utility splitter               heating.steamLP.duty_kW 8257.34269769    1e-4
-utility splitter               heating.steamLP.T 329.436819763    1e-4
-utility splitter               heating.steamLP.kg_s 3.77737543353    1e-4
-utility splitter               heating.steamLP.eur_h 356.71720454    1e-4
-utility splitter               cooling.coolingWater.duty_kW -8453.15398421   1e-4
-utility splitter               cooling.coolingWater.T 314.249966091    1e-4
-utility splitter               cooling.coolingWater.kg_s 202.228564216     1e-4
-utility splitter               cooling.coolingWater.eur_h 12.1725417373    1e-4
-stream  bottoms                T                329.436819763    1e-4
-stream  distillate             T                312.209486222    1e-4
-stream  feed                   T                323.5875148      1e-4
-boundary global                 H_feeds_kW       -17793.6015407   1e-4
-boundary global                 Q_boundary_kW    -195.811286528   1e-4
-boundary global                 H_products_kW    -17989.4128273   1e-4
+kpi     splitter               x_B_HK           0.00116916875086 1e-4
+kpi     splitter               x_D_LK           0.0627714459655  1e-4
+utility splitter               heating.steamLP.duty_kW 8090.35298049    1e-4
+utility splitter               heating.steamLP.T 335.078265625    1e-4
+utility splitter               heating.steamLP.kg_s 3.70098489501    1e-4
+utility splitter               heating.steamLP.eur_h 349.503248757    1e-4
+utility splitter               cooling.coolingWater.duty_kW -8334.84552985   1e-4
+utility splitter               cooling.coolingWater.T 319.783095841    1e-4
+utility splitter               cooling.coolingWater.kg_s 199.398218417    1e-4
+utility splitter               cooling.coolingWater.eur_h 12.002177563     1e-4
+stream  bottoms                T                335.078265625    1e-4
+stream  distillate             T                318.064189292    1e-4
+stream  feed                   T                329.5214         1e-4
+boundary global                 H_feeds_kW       -17636.4019558   1e-4
+boundary global                 Q_boundary_kW    -244.492549358   1e-4
+boundary global                 H_products_kW    -17880.8945051   1e-4
 boundary global                 residual_kW      0                1e-4
+kpi     splitter               Q_reboiler_ownEnvelope_kW 8659.82302952    1e-4
+
+# =============================================================================
+#  THE KLEMOLA ANCHORS (C239, 2026-11-08).  Measured plant: Klemola & Ilme,
+#  Ind. Eng. Chem. Res. 35 (1996) 4579, Table 2 (product compositions, wt %).
+#  Rows are MOLE FRACTIONS (the quantity the result publishes), converted from
+#  the printed wt % with each component's own data/standards MW; bottoms wt %
+#  sum to 100.3 and are normalised.  Arithmetic: header section 14.
+#
+#  TOLERANCE, and why it is 1 % and not the printing resolution.  Table 2 prints
+#  0.1 wt % (a band of +/-5e-4 on a 93-98 wt % entry), but the table is
+#  INTERNALLY INCONSISTENT for the keys by ~1 %: i-butane in the products is 0.9 %
+#  of the feed's i-butane short (record 5.4).  A target that disagrees with its
+#  own paper by 0.9 % cannot be held tighter than 0.9 %, so 1e-2 (relative) is
+#  the source's demonstrated uncertainty, not a solver tolerance.  READ THIS
+#  HONESTLY: at the printing-resolution band these two rows would also miss
+#  (model +0.45 % and +0.24 %), and column15 (ideal trays) passes them too --
+#  they pin that the column's major split reproduces the plant, not that the
+#  efficiency is right.
+stream  distillate     isoButane        0.919174         1e-2     anchor
+stream  bottoms        nButane          0.979722         1e-2     anchor
+#
+#  TWO OPEN ANCHORS -- the measured minor key in each product.  They carry NO
+#  anchor row, by the precedent of pitzer_seawater_verify (an anchor that
+#  disagrees would commit a red suite over a gap that is explained, not fixed);
+#  the disagreement is written here and the MODEL's value is pinned below as a
+#  self-recorded row, so drifting is caught and nothing is laundered:
+#
+#      quantity (mole fraction)    measured (Table 2)  model        verdict
+#      distillate n-butane         0.001966  (0.2 wt%)  0.001098    LOW  by 44 %
+#      bottoms    i-butane         0.002996  (0.3 wt%)  0.004625    HIGH by 54 %
+#
+#  Rounding band (+/-0.05 wt %) would be 0.001475-0.002456 and 0.002498-0.003494:
+#  both model values lie OUTSIDE it.  Physical reading, none of it tuned:
+#   (1) the two rows disagree in OPPOSITE senses (rectifying section too clean,
+#       stripping section not clean enough), so the efficiency does not explain
+#       them; column15 (E_MV = 1) puts the same two at 0.7165 / 0.7357 mol %,
+#       i.e. the measurement sits BETWEEN the two arms (0.2 wt % lies between
+#       0.11 and 0.73; 0.3 lies below both 0.46 and 0.73).
+#   (2) the paper's own balance cannot resolve either number.  Feed i-butane
+#       7712.8 kg/h less the printed distillate i-butane (93.5 % of 8115 =
+#       7587.5) leaves 125 kg/h for the bottoms = 0.69 wt % of 18119 kg/h, not
+#       the printed 0.3: the printed bottoms value contradicts the printed feed
+#       and distillate, and the model (0.46) lies between the two.  For n-butane
+#       the feed minus the printed bottoms (98.1 % of 18119 = 17775) is -15
+#       kg/h for the distillate -- negative; the printed 16 kg/h (0.2 wt %) is
+#       inside the table's own n-butane closure error (30 kg/h).
+#   (3) declared model gaps that act on exactly these minors: single column
+#       pressure (A2: the stripping section runs colder than the plant), tray
+#       numbering direction (A0), the subcooled reflux (7), no stage energy
+#       balance (8), seven interim component records.
+#  Candidate next slice: a measured tray profile (Vogelpohl), not this paper.
+stream  distillate     nButane          0.00109800026542 1e-4
+stream  bottoms        isoButane        0.00462505382991 1e-4
+stream  distillate     isoButane        0.923298552147   1e-4
+stream  bottoms        nButane          0.982031744978   1e-4

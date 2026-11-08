@@ -9436,7 +9436,9 @@ simulator:
         \emph{homotopy}: solve the column non-reactive first, then switch
         the reaction on, seeded from that profile.  For a mole-conserving
         ($\sum_i\nu_i=0$) reaction the constant-molal-overflow flow
-        profile is undisturbed; the worked methyl-acetate case is in the
+        profile is undisturbed (a reaction with $\sum_i\nu_i\neq0$ needs the
+        full MESH, whose total rows carry $-\sum_i\nu_i\,\xi_j$ and whose
+        energy rows need no heat-of-reaction term, the elements datum holding it); the worked methyl-acetate case is in the
         User Guide, under \emph{Multiple feeds, side draws, reactive
         stages}.  (Named rather than numbered: \code{\\ref} cannot reach a
         label in another document, and this one rendered as \texttt{??}
@@ -23788,6 +23790,25 @@ original Naphtali \& Sandholm (1971) Problem~2 in
 latent heats), the small gap being exactly the energy-balance correction CMO
 drops.
 
+\paragraph{A reaction in the full MESH.}  A reaction with $\sum\nu_i\neq0$
+changes the internal flows, so only \code{fullMESH} carries it: component rows
+gain $-\nu_i\xi_j$, the stage total rows $-\sum_i\nu_i\,\xi_j$, and the energy
+rows gain \emph{no} reaction-heat term, because they price on the elements
+datum, which already holds it.  The extent $\xi_j$ of a reactive stage is either
+an unknown closed by $\sum_i\nu_i\ln(\gamma_i x_i)=\ln K_a(T_j)$
+(\code{equilibrium \{\}}, witness \file{column19\_mtbe\_reactive\_mesh}) or
+\emph{computed}, $\xi_j=r(T_j,\mathbf{x}_j,\boldsymbol\gamma_j)\,m_{\text{cat},j}$,
+from a rate law written in the case (\code{kinetics \{ model expression; \}},
+witness \file{column20\_mtbe\_kinetic\_mesh}).  The law may read the package's
+activities $a_i=\gamma_i x_i$ as \code{a[<component>]} --- only the column offers
+them.  The catalyst mass enters by an announced continuation, and a law with no
+value at a Newton trial (the Rehfinger--Hoffmann rate diverges as
+$a_{\text{MeOH}}\to0$) makes that trial infeasible, never a floor hidden in the
+engine.  The proof that the kinetic rows are right is a limit: a mass-action law
+on the same $K_a$ converges on the equilibrium column as $m_{\text{cat}}$ grows
+(\code{check\_kinetic\_mesh}).  Nothing here is validated against a measured
+column.
+
 \subsection{The warm-started ladder (switching model mid-solve)}
 
 A rigorous Newton from a cold start can fail (the linearization is only valid
@@ -23820,7 +23841,9 @@ C3--C6 mix four ways with two feeds and two side draws.
 \subsection{Reactive distillation}
 
 A \code{reaction\{\}} block makes named catalytic stages reactive.  For a
-mole-conserving ($\sum_i\nu_i=0$) reaction the CMO flows are undisturbed; the
+mole-conserving ($\sum_i\nu_i=0$) reaction the CMO flows are undisturbed (otherwise
+\code{model fullMESH}: total rows $-\sum_i\nu_i\,\xi_j$, no reaction-heat term because the
+energy rows price on the elements datum); the
 generation $\nu_i\,\xi_j$ enters each reactive stage's component balance with the
 molar extent $\xi_j$ fixed either by chemical \code{equilibrium}
 (an activity-based $K_a(T)$ via van't Hoff, residual

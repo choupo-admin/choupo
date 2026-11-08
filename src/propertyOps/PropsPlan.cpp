@@ -87,6 +87,8 @@ const std::map<std::string, OpSlots>& table()
             { F("output.streams"), F("output.balances"), F("output.covariance") } };
         //  EstimateComponent.cpp: a proposal (`auto` is computed, unchecked).
         m["estimateComponent"] = { {}, { P("output.proposal") } };
+        //  PetroleumCuts.cpp: one proposal per cut + an optional CSV.
+        m["petroleumCuts"] = { {}, { P("output.proposal"), F("output.file") } };
         //  FitParameters.cpp + EvidencePartition.cpp + FitParametersMembrane.cpp.
         {
             Slot rec = R("output.record");

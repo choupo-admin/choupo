@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 525,
+  "cases": 529,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 14
+  "anchored": 15
  },
  "cases": {
   "tutorials/batch/adsorber/batch09_adsorber_co2": {
@@ -1243,20 +1243,6 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/aceticAcid01_gibbsReactor": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "gibbsReactor"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [],
-   "hasGolden": true
-  },
   "tutorials/plant/aceticAcid02_plant": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -1308,97 +1294,6 @@
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/plant/ammonia03_quench_converter": {
-   "application": "choupoSolve",
-   "thermo": {
-    "formulation": "diluteSolution"
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/plant/ammoniaReactor01_fixedConversion": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "conversionReactor",
-    "isothermalFlash",
-    "mixer",
-    "splitter"
-   ],
-   "thermo": {
-    "formulation": "diluteSolution"
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/plant/ammoniaReactor02_equilibrium": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "gibbsReactor",
-    "isothermalFlash",
-    "mixer",
-    "splitter"
-   ],
-   "thermo": {
-    "formulation": "diluteSolution"
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/plant/ammoniaReactor03_equilibriumApproach": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "gibbsReactor",
-    "isothermalFlash",
-    "mixer",
-    "splitter"
-   ],
-   "thermo": {
-    "formulation": "diluteSolution"
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/plant/ammoniaReactor04_kineticSizing": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "isothermalFlash",
-    "mixer",
-    "pfr",
-    "phaseChanger",
-    "splitter"
-   ],
-   "thermo": {
-    "formulation": "diluteSolution"
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/plant/ammoniaRoutes01_screening": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "conversionReactor",
-    "equilibriumReactor"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/plant/esterification2sector": {
-   "application": "choupoSolve",
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
    },
    "roles": [],
    "hasGolden": true
@@ -1491,17 +1386,6 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/sugarPlantEconomicsSweep": {
-   "application": "choupoSolve",
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [],
-   "hasGolden": false
-  },
   "tutorials/plant/swro01_campoDalias": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -1536,27 +1420,6 @@
    },
    "roles": [],
    "hasGolden": true
-  },
-  "tutorials/plant/twoSectorDemo": {
-   "application": "choupoSolve",
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "NRTL"
-    ]
-   },
-   "roles": [],
-   "hasGolden": false
-  },
-  "tutorials/plant/twoSectorDemo/SECTOR_R": {
-   "application": "choupoSolve",
-   "roles": [],
-   "hasGolden": false
-  },
-  "tutorials/plant/twoSectorDemo/SECTOR_S": {
-   "application": "choupoSolve",
-   "roles": [],
-   "hasGolden": false
   },
   "tutorials/props/adsorption/isotherm01_eval_13x_co2": {
    "application": "choupoProps",
@@ -1988,6 +1851,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/curation/curate13_synthetic_lle_butanol_water": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/electrolyte/archer01_nacl_cold_to_hot": {
    "application": "choupoProps",
    "ops": [
@@ -2358,6 +2235,21 @@
    "application": "choupoProps",
    "ops": [
     "estimateComponent"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp": {
+   "application": "choupoProps",
+   "ops": [
+    "TBP",
+    "petroleumCuts"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -2829,7 +2721,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/props/molecular/envelope02_root_jump": {
+  "tutorials/props/molecular/envelope02_c3c4c5_branch_stop": {
    "application": "choupoProps",
    "ops": [
     "phaseEnvelope"
@@ -4009,7 +3901,9 @@
      "UNIFAC"
     ]
    },
-   "roles": [],
+   "roles": [
+    "anchored"
+   ],
    "hasGolden": true
   },
   "tutorials/steady/distillation/column15_klemola_ideal_trays": {
@@ -4066,6 +3960,41 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column19_mtbe_reactive_mesh": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "fullMESH"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column20_mtbe_kinetic_mesh": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "expression",
+    "fullMESH"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
     ]
    },
    "roles": [],
@@ -4352,6 +4281,17 @@
    },
    "roles": [],
    "hasGolden": true
+  },
+  "tutorials/steady/economics/sugarPlantEconomicsSweep": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
   },
   "tutorials/steady/electrodialysis/ed01_nacl_desalination": {
    "application": "choupoSolve",
@@ -5311,6 +5251,17 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/flowsheets/esterification2sector": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/flowsheets/inletState01_undeclared_vapour": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5498,6 +5449,27 @@
    },
    "roles": [],
    "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/twoSectorDemo": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/flowsheets/twoSectorDemo/SECTOR_R": {
+   "application": "choupoSolve",
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/flowsheets/twoSectorDemo/SECTOR_S": {
+   "application": "choupoSolve",
+   "roles": [],
+   "hasGolden": false
   },
   "tutorials/steady/gas-solid/bagFilter01_dust": {
    "application": "choupoSolve",
@@ -6945,10 +6917,104 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/aceticAcid01_gibbsReactor": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/reactors/acetone02_luyben_reactor": {
    "application": "choupoSolve",
    "unitTypes": [
     "conversionReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/ammonia03_quench_converter": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/ammoniaReactor01_fixedConversion": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "conversionReactor",
+    "isothermalFlash",
+    "mixer",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/ammoniaReactor02_equilibrium": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor",
+    "isothermalFlash",
+    "mixer",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor",
+    "isothermalFlash",
+    "mixer",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/ammoniaReactor04_kineticSizing": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash",
+    "mixer",
+    "pfr",
+    "phaseChanger",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/ammoniaRoutes01_screening": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "conversionReactor",
+    "equilibriumReactor"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -7847,6 +7913,7 @@
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
     "tutorials/props/electrolyte/bjerrum01_carbonate_pH",
     "tutorials/props/electrolyte/composition01_nacl",
@@ -7880,6 +7947,7 @@
     "tutorials/props/estimate/estimate_acetone",
     "tutorials/props/estimate/estimate_ethanol_benzene",
     "tutorials/props/estimate/estimate_petroleum_cut",
+    "tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp",
     "tutorials/props/estimate/userEstimate01_linear_tb",
     "tutorials/props/estimate/vanKrevelen01_polystyrene_density",
     "tutorials/props/estimate/yang2020_Tg_polystyrene",
@@ -7913,7 +7981,7 @@
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/envelope01_natural_gas",
-    "tutorials/props/molecular/envelope02_root_jump",
+    "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/exergy01_air_dead_state",
@@ -7974,17 +8042,9 @@
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/plant/ChemicalPlantTutorial",
-    "tutorials/plant/aceticAcid01_gibbsReactor",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammonia02_full_plant",
-    "tutorials/plant/ammonia03_quench_converter",
-    "tutorials/plant/ammoniaReactor01_fixedConversion",
-    "tutorials/plant/ammoniaReactor02_equilibrium",
-    "tutorials/plant/ammoniaReactor03_equilibriumApproach",
-    "tutorials/plant/ammoniaReactor04_kineticSizing",
-    "tutorials/plant/ammoniaRoutes01_screening",
-    "tutorials/plant/esterification2sector",
     "tutorials/plant/greenAmmonia02_feasibility150bar",
     "tutorials/plant/greenAmmonia02_feasibility50bar",
     "tutorials/plant/greenAmmonia03_basicDesign",
@@ -7992,12 +8052,8 @@
     "tutorials/plant/hda",
     "tutorials/plant/lithiumBrinePlant",
     "tutorials/plant/polycaprolactonePlant",
-    "tutorials/plant/sugarPlantEconomicsSweep",
     "tutorials/plant/swro01_campoDalias",
     "tutorials/plant/tartaricAcid",
-    "tutorials/plant/twoSectorDemo",
-    "tutorials/plant/twoSectorDemo/SECTOR_R",
-    "tutorials/plant/twoSectorDemo/SECTOR_S",
     "tutorials/steady/absorption/absorber01_NH3_water",
     "tutorials/steady/absorption/absorption01_CO2_water",
     "tutorials/steady/absorption/acetone05_luyben_absorber",
@@ -8039,6 +8095,8 @@
     "tutorials/steady/distillation/column16_declared_interior",
     "tutorials/steady/distillation/column17_exchanger_design",
     "tutorials/steady/distillation/column18_partial_condenser",
+    "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
+    "tutorials/steady/distillation/column20_mtbe_kinetic_mesh",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
@@ -8058,6 +8116,7 @@
     "tutorials/steady/economics/economics02_irr_sweep",
     "tutorials/steady/economics/economics03_startup_years",
     "tutorials/steady/economics/economics04_building_royalty_breakeven",
+    "tutorials/steady/economics/sugarPlantEconomicsSweep",
     "tutorials/steady/electrodialysis/ed01_nacl_desalination",
     "tutorials/steady/electrodialysis/ed02_over_limiting_current",
     "tutorials/steady/electrodialysis/ed03_stack_record",
@@ -8121,6 +8180,7 @@
     "tutorials/steady/flowsheets/cavett01_recycle_train",
     "tutorials/steady/flowsheets/composite01_two_flashes",
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",
+    "tutorials/steady/flowsheets/esterification2sector",
     "tutorials/steady/flowsheets/inletState01_undeclared_vapour",
     "tutorials/steady/flowsheets/plant01_two_sectors",
     "tutorials/steady/flowsheets/plant02_basename_twins",
@@ -8133,6 +8193,9 @@
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
+    "tutorials/steady/flowsheets/twoSectorDemo",
+    "tutorials/steady/flowsheets/twoSectorDemo/SECTOR_R",
+    "tutorials/steady/flowsheets/twoSectorDemo/SECTOR_S",
     "tutorials/steady/gas-solid/bagFilter01_dust",
     "tutorials/steady/gas-solid/cyclone01_dust_removal",
     "tutorials/steady/gas-solid/cyclone02_leith_licht",
@@ -8222,7 +8285,14 @@
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
     "tutorials/steady/power/rankine01_water",
     "tutorials/steady/power/rankine02_water",
+    "tutorials/steady/reactors/aceticAcid01_gibbsReactor",
     "tutorials/steady/reactors/acetone02_luyben_reactor",
+    "tutorials/steady/reactors/ammonia03_quench_converter",
+    "tutorials/steady/reactors/ammoniaReactor01_fixedConversion",
+    "tutorials/steady/reactors/ammoniaReactor02_equilibrium",
+    "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
+    "tutorials/steady/reactors/ammoniaRoutes01_screening",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
     "tutorials/steady/reactors/conversion02_parallel_selectivity",
@@ -8416,10 +8486,10 @@
    ],
    "conversionReactor": [
     "tutorials/plant/acetonePlant",
-    "tutorials/plant/ammoniaReactor01_fixedConversion",
-    "tutorials/plant/ammoniaRoutes01_screening",
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section",
     "tutorials/steady/reactors/acetone02_luyben_reactor",
+    "tutorials/steady/reactors/ammoniaReactor01_fixedConversion",
+    "tutorials/steady/reactors/ammoniaRoutes01_screening",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
     "tutorials/steady/reactors/conversion02_parallel_selectivity",
@@ -8501,6 +8571,8 @@
     "tutorials/steady/distillation/column16_declared_interior",
     "tutorials/steady/distillation/column17_exchanger_design",
     "tutorials/steady/distillation/column18_partial_condenser",
+    "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
+    "tutorials/steady/distillation/column20_mtbe_kinetic_mesh",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
@@ -8568,7 +8640,7 @@
     "tutorials/steady/electrodialysis/ed10_passthrough_benzene"
    ],
    "equilibriumReactor": [
-    "tutorials/plant/ammoniaRoutes01_screening",
+    "tutorials/steady/reactors/ammoniaRoutes01_screening",
     "tutorials/steady/reactors/equil01_reforming",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
@@ -8622,10 +8694,7 @@
     "tutorials/steady/gas-solid/gasSolidSplitter04_lognormal_psd"
    ],
    "gibbsReactor": [
-    "tutorials/plant/aceticAcid01_gibbsReactor",
     "tutorials/plant/aceticAcid02_plant",
-    "tutorials/plant/ammoniaReactor02_equilibrium",
-    "tutorials/plant/ammoniaReactor03_equilibriumApproach",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/gibbs/claus01_thermal_stage",
@@ -8645,6 +8714,9 @@
     "tutorials/steady/gibbs/gibbs13_adiabatic_approach_direction",
     "tutorials/steady/power/combined01_brayton_rankine",
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
+    "tutorials/steady/reactors/aceticAcid01_gibbsReactor",
+    "tutorials/steady/reactors/ammoniaReactor02_equilibrium",
+    "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
@@ -8695,10 +8767,6 @@
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
-    "tutorials/plant/ammoniaReactor01_fixedConversion",
-    "tutorials/plant/ammoniaReactor02_equilibrium",
-    "tutorials/plant/ammoniaReactor03_equilibriumApproach",
-    "tutorials/plant/ammoniaReactor04_kineticSizing",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/absorption/absorption01_CO2_water",
     "tutorials/steady/absorption/extraction01_waterButanol",
@@ -8753,6 +8821,10 @@
     "tutorials/steady/hydraulics/letdown01_ammonia_flashing",
     "tutorials/steady/optimisation/optim02_process_cost",
     "tutorials/steady/optimisation/optim05_reactor_npv",
+    "tutorials/steady/reactors/ammoniaReactor01_fixedConversion",
+    "tutorials/steady/reactors/ammoniaReactor02_equilibrium",
+    "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/thermo/basis01_two_unit_chain",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
@@ -8763,10 +8835,6 @@
     "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
-    "tutorials/plant/ammoniaReactor01_fixedConversion",
-    "tutorials/plant/ammoniaReactor02_equilibrium",
-    "tutorials/plant/ammoniaReactor03_equilibriumApproach",
-    "tutorials/plant/ammoniaReactor04_kineticSizing",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/plant/swro01_campoDalias",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
@@ -8783,6 +8851,10 @@
     "tutorials/steady/gibbs/claus01_thermal_stage",
     "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
     "tutorials/steady/membranes/membrane27_swro_energy_recovery",
+    "tutorials/steady/reactors/ammoniaReactor01_fixedConversion",
+    "tutorials/steady/reactors/ammoniaReactor02_equilibrium",
+    "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
@@ -8790,8 +8862,8 @@
     "tutorials/steady/heat/mheatx01_two_hot_one_cold"
    ],
    "pfr": [
-    "tutorials/plant/ammoniaReactor04_kineticSizing",
     "tutorials/plant/polycaprolactonePlant",
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
@@ -8805,8 +8877,8 @@
     "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
-    "tutorials/plant/ammoniaReactor04_kineticSizing",
-    "tutorials/steady/heat/phasechange02_saturated_mixture"
+    "tutorials/steady/heat/phasechange02_saturated_mixture",
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing"
    ],
    "pipe": [
     "tutorials/steady/hydraulics/pipe01_water_line",
@@ -8901,10 +8973,6 @@
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/plant/aceticAcid02_plant",
-    "tutorials/plant/ammoniaReactor01_fixedConversion",
-    "tutorials/plant/ammoniaReactor02_equilibrium",
-    "tutorials/plant/ammoniaReactor03_equilibriumApproach",
-    "tutorials/plant/ammoniaReactor04_kineticSizing",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/plant/swro01_campoDalias",
     "tutorials/steady/drying/convDryer01_sugar_curve",
@@ -8916,6 +8984,10 @@
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
     "tutorials/steady/membranes/membrane27_swro_energy_recovery",
+    "tutorials/steady/reactors/ammoniaReactor01_fixedConversion",
+    "tutorials/steady/reactors/ammoniaReactor02_equilibrium",
+    "tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach",
+    "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
@@ -8986,7 +9058,6 @@
   "byModel": {
    "NRTL": [
     "tutorials/batch/still/still02_ethanol_water_azeo",
-    "tutorials/plant/twoSectorDemo",
     "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate03_thermoml_fixture_bubble",
@@ -8999,6 +9070,7 @@
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
@@ -9017,6 +9089,7 @@
     "tutorials/steady/flash/vlle04_two_liquids_decanter",
     "tutorials/steady/flash/vlle05_produced_feed",
     "tutorials/steady/flowsheets/process04_research_workflow",
+    "tutorials/steady/flowsheets/twoSectorDemo",
     "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
     "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars",
     "tutorials/steady/thermoTest/model5_nrtl_flash"
@@ -9052,6 +9125,8 @@
     "tutorials/steady/distillation/column05_reactive_methylacetate",
     "tutorials/steady/distillation/column14_klemola_c4_splitter",
     "tutorials/steady/distillation/column15_klemola_ideal_trays",
+    "tutorials/steady/distillation/column19_mtbe_reactive_mesh",
+    "tutorials/steady/distillation/column20_mtbe_kinetic_mesh",
     "tutorials/steady/flash/flash17_two_liquids_reactive",
     "tutorials/steady/flash/flash19_organic_and_precipitate",
     "tutorials/steady/flash/marcilla01_lls_tie_triangle",
@@ -9210,14 +9285,10 @@
     "tutorials/ctrl/ctrl21_tank_level_control",
     "tutorials/ctrl/ctrl22_reactor_level_and_temperature",
     "tutorials/plant/ChemicalPlantTutorial",
-    "tutorials/plant/aceticAcid01_gibbsReactor",
-    "tutorials/plant/ammoniaRoutes01_screening",
-    "tutorials/plant/esterification2sector",
     "tutorials/plant/hda",
     "tutorials/plant/lithiumBrinePlant",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/plant/polycaprolactonePlant/properties",
-    "tutorials/plant/sugarPlantEconomicsSweep",
     "tutorials/plant/swro01_campoDalias",
     "tutorials/plant/tartaricAcid",
     "tutorials/props/adsorption/isotherm01_eval_13x_co2",
@@ -9254,6 +9325,7 @@
     "tutorials/props/estimate/estimate_acetone",
     "tutorials/props/estimate/estimate_ethanol_benzene",
     "tutorials/props/estimate/estimate_petroleum_cut",
+    "tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp",
     "tutorials/props/estimate/userEstimate01_linear_tb",
     "tutorials/props/estimate/vanKrevelen01_polystyrene_density",
     "tutorials/props/estimate/yang2020_Tg_polystyrene",
@@ -9284,7 +9356,7 @@
     "tutorials/props/membrane/shortlist01_class_to_modules",
     "tutorials/props/molecular/componentLookup01_catalogue_ladder",
     "tutorials/props/molecular/envelope01_natural_gas",
-    "tutorials/props/molecular/envelope02_root_jump",
+    "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
     "tutorials/props/molecular/flash01_operating_line",
     "tutorials/props/molecular/pairLookup01_catalogue_ladder",
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
@@ -9343,6 +9415,7 @@
     "tutorials/steady/economics/economics01_esterification_dcf",
     "tutorials/steady/economics/economics02_irr_sweep",
     "tutorials/steady/economics/economics04_building_royalty_breakeven",
+    "tutorials/steady/economics/sugarPlantEconomicsSweep",
     "tutorials/steady/electrodialysis/ed01_nacl_desalination",
     "tutorials/steady/electrodialysis/ed02_over_limiting_current",
     "tutorials/steady/electrodialysis/ed03_stack_record",
@@ -9369,6 +9442,7 @@
     "tutorials/steady/flash/leaf01_flash",
     "tutorials/steady/flowsheets/composite01_two_flashes",
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",
+    "tutorials/steady/flowsheets/esterification2sector",
     "tutorials/steady/flowsheets/inletState01_undeclared_vapour",
     "tutorials/steady/flowsheets/plant01_two_sectors",
     "tutorials/steady/flowsheets/plant02_basename_twins",
@@ -9468,7 +9542,9 @@
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
     "tutorials/steady/power/rankine01_water",
     "tutorials/steady/power/rankine02_water",
+    "tutorials/steady/reactors/aceticAcid01_gibbsReactor",
     "tutorials/steady/reactors/acetone02_luyben_reactor",
+    "tutorials/steady/reactors/ammoniaRoutes01_screening",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
     "tutorials/steady/reactors/conversion02_parallel_selectivity",
@@ -9526,6 +9602,9 @@
    ]
   },
   "byOp": {
+   "TBP": [
+    "tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp"
+   ],
    "activityCoefficients": [
     "tutorials/props/molecular/nrtl01_ethanol_water_package"
    ],
@@ -9590,6 +9669,7 @@
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/steady/membranes/membrane24_fit_then_simulate",
@@ -9648,9 +9728,12 @@
    "mixingRules": [
     "tutorials/props/molecular/mixrules01_natural_gas"
    ],
+   "petroleumCuts": [
+    "tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp"
+   ],
    "phaseEnvelope": [
     "tutorials/props/molecular/envelope01_natural_gas",
-    "tutorials/props/molecular/envelope02_root_jump"
+    "tutorials/props/molecular/envelope02_c3c4c5_branch_stop"
    ],
    "phaseSplitScan": [
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol"

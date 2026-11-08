@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*110 of 110 registered operations carry a schema and are documented below.*
+*109 of 109 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -176,14 +176,16 @@ Bubble-point temperature at fixed pressure: the T at which the first vapour bubb
 
 ## `column`  (column operation)
 
-Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.
+Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The column is specified by (`refluxRatio`, and then the distillate by rate or recovery) or by (`bottomsRate`, `boilupRatio`). The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `nStages` | ✓ | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
 | `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
-| `refluxRatio` | ✓ | number | — | L/D, liquid returned to the column over distillate withdrawn. |
+| `refluxRatio` |   | number | — | L/D, liquid returned to the column over distillate withdrawn. |
 | `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |
+| `bottomsRate` |   | number | kmol/s | Bottom product molar flow rate. Specifies the column TOGETHER with `boilupRatio` (the pair replaces `refluxRatio` + `distillateRate`): th… |
+| `boilupRatio` |   | number | — | V/B, vapour leaving the reboiler over the bottoms withdrawn. Pairs with `bottomsRate` (see there). |
 | `distillateRecovery` |   | object | — | Send this fraction of the named component's FEED overhead, instead of a fixed rate. Solved as an announced outer secant on the rate, so i… |
 | `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
 | `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
@@ -208,14 +210,6 @@ The COMPACTION BENCH (DEV.md 4c C195): the Heckel, Kawakita and Ryshkewitch-Duck
 | `ryshkewitch` |   | object | — | sigma_t = sigma_0 exp(-k_b eps), fitted on ln(sigma_t); sigma_t tabulated or computed as 2F/(pi d t) (Fell & Newton 1970). |
 | `reported` |   | object | — | The source's own fitted values (Py, A, a, invb, sigma0, kb), printed beside the fitted ones; never used to tune. |
 | `output` |   | object | — | `{ file <name>.csv; }` -- the published tables, one block per model. |
-
-## `componentLookup`  (componentLookup operation)
-
-ONE TOOL CALL, ONE EVIDENCE CARD for a compound: whether the installation catalogue has it (by file name, declared alias or CAS -- never by similarity), which properties its record carries and which are missing, in a fixed byte budget (2048 bytes). A compound only in the group-estimate lake is reported as identity + groups, 'not reviewed', with NO estimated values; otherwise 'I do not have this compound'. The card lists what exists and never prints the values.
-
-| Field | Required | Type | Unit | Description |
-|---|:-:|---|---|---|
-| `component` | ✓ | string | — | A catalogue file name, a declared alias or a CAS number. |
 
 ## `compressor`  (compressor operation)
 
@@ -345,14 +339,16 @@ Dew-point temperature at fixed pressure: the T at which the first liquid droplet
 
 ## `distillationColumn`  (distillationColumn operation)
 
-Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.
+Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The column is specified by (`refluxRatio`, and then the distillate by rate or recovery) or by (`bottomsRate`, `boilupRatio`). The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `nStages` | ✓ | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
 | `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
-| `refluxRatio` | ✓ | number | — | L/D, liquid returned to the column over distillate withdrawn. |
+| `refluxRatio` |   | number | — | L/D, liquid returned to the column over distillate withdrawn. |
 | `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |
+| `bottomsRate` |   | number | kmol/s | Bottom product molar flow rate. Specifies the column TOGETHER with `boilupRatio` (the pair replaces `refluxRatio` + `distillateRate`): th… |
+| `boilupRatio` |   | number | — | V/B, vapour leaving the reboiler over the bottoms withdrawn. Pairs with `bottomsRate` (see there). |
 | `distillateRecovery` |   | object | — | Send this fraction of the named component's FEED overhead, instead of a fixed rate. Solved as an announced outer secant on the rate, so i… |
 | `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
 | `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
@@ -859,13 +855,18 @@ Multi-stream heat exchanger: several hot and cold streams exchanging in one bloc
 | `outlet` | ✓ | object | — | One sub-dict per stream NAME, each `{ T ...; vf ...; }`. The vapour fraction defaults to the inlet's, so a sensible-only stream needs onl… |
 | `tolerance` |   | number | - | Fractional imbalance allowed between the total hot and cold duties; defaults to 0.01. Exceeding it REFUSES the run rather than reporting … |
 
-## `pairLookup`  (pairLookup operation)
+## `petroleumCuts`  (petroleumCuts operation)
 
-ONE TOOL CALL, ONE EVIDENCE CARD for a binary: what the installation catalogue holds for the pair, in a fixed byte budget (2048 bytes). The honesty ladder: a curated catalogue pair record (paste-ready `source` entry, validity, provenance) -> Choupo's own regression (`fittedInCase`, verdict) -> UNIFAC, said to be an ESTIMATE with its measured warning -> 'I do not have this pair' and what the student can bring. Never a number invented; the fields the C16 chain will add are listed as announced-absent. Reads the installation catalogue, not the case's constant/.
+Cut a TRUE-BOILING-POINT curve into petroleum PSEUDO-COMPONENTS (Riazi, ASTM MNL50, 2005).  Each cut's Tb is the TBP temperature at the mid-point of its distilled interval; its SG is one declared method (constantWatsonK, or declared per cut); the pair (Tb, SG) goes to the same Riazi-Daubert estimator estimateComponent uses (MW, Tc, Pc, Vc; omega by Lee-Kesler; Cp by Kesler-Lee).  One ESTIMATE record per cut is written into the CASE, marked lumped and NOT a real species -- a proposal the student reviews and promotes, never a standard record.  API gravity, SG (60/60 F) and Watson K are published per cut and for the blend; the re-blended cuts must reproduce the feed SG within a DECLARED tolerance, and a miss is announced, never adjusted.  The curve type is TBP: ASTM D86, D1160, D2887 and EFV refuse by name (the conversion is not implemented).
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `components` | ✓ | array[string] | — | Exactly TWO different components, by catalogue name, alias or CAS. |
+| `curve` | ✓ | object | — | `{ type TBP; basis volume\|mass; points ( { fraction f; T <value> C; } ... ); }` -- the distilled fraction in [0, 1] on the DECLARED basi… |
+| `feed` | ✓ | object | — | Exactly one of `specificGravity <SG 60/60 F>;` or `specificGravityFrom TBP;` (Riazi Eq. 3.17, TBP row of Table 3.4: SG = 0.10431 T10^0.12… |
+| `cuts` | ✓ | object | — | `boundaries ( 0 0.1 ... 1 );` -- increasing distilled fractions from exactly 0 to exactly 1 (the cuts partition the whole feed; a differe… |
+| `specificGravity` | ✓ | object | — | `method constantWatsonK;` -- SG_i = (1.8 Tb_i)^(1/3)/Kw with ONE Kw for the feed (Riazi Eq. 2.13 rearranged; Kw at the feed SG and the fe… |
+| `closure` | ✓ | object | — | `specificGravityTolerance <relative>;` -- REQUIRED.  The tolerance within which the cuts re-blended by Eq. 3.45 must reproduce the feed S… |
+| `output` |   | object | — | `proposal auto;` writes one constant/components/<prefix>_NN.estimated.dat per cut (or `proposal <directory>;`); `prefix <word>;` names th… |
 
 ## `pfr`  (pfr operation)
 

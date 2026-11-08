@@ -1,60 +1,55 @@
 /*---------------------------------------------------------------------------*\
-  Pinch analysis (acetic-acid case): the composite-curve targets, computed in
-  the browser from the run.  Pins the numbers against the reference computation
-  + the greyed-until-runnable gate.
+  The Pinch tab READS the engine's pinch pass (DEV.md 4c C230) and computes
+  nothing.  Fixture: the artefacts `pinchPass { dTmin 20 K; }` writes on
+  tutorials/plant/ammonia02_full_plant -- the FEHE as recovered heat (both
+  sides), the water cooler's PROCESS side as a segment, the cooling water as a
+  `utility` row that is NOT a stream, and a threshold answer (no pinch).
 \*---------------------------------------------------------------------------*/
 
 import { describe, it, expect } from "vitest";
-import { computePinch, canComputePinch } from "../src/case/pinch.js";
+import { pinchFromEngine, canComputePinch, parsePopulation, PINCH_PASS_EXCERPT } from "../src/case/pinch.js";
 
-const runResult = {
-  status: "done", log: "", streams: [
-    { name: "ReactorOut", F: 1, T: 450, P: 2e5, composition: {} },
-    { name: "CrudeAcid", F: 1, T: 330, P: 2e5, composition: {} },
-    { name: "OffGas", F: 1, T: 330, P: 2e5, composition: {} },
-  ],
-  kpis: {
-    PreheatCO: { Q_kW: 303.7, T_in: 298.15, T_out: 450 },
-    PreheatMeoh: { Q_kW: 406.81, T_in: 306.43, T_out: 450 },
-    Column: { Q_reboiler_kW: 889.56, Q_condenser_kW: -756.56, T_top: 337.97, T_bottom: 371.91 },
-    Flash: { Q_kW: -466.72 },
-  },
-} as never;
-const flowsheet = { units: [
-  { name: "PreheatCO", type: "heater", in: "freshCO", outputs: ["HotCO"] },
-  { name: "PreheatMeoh", type: "heater", in: "MeohMix", outputs: ["HotMethanol"] },
-  { name: "Column", type: "distillationColumn", in: "CrudeAcid", outputs: ["MeohRecycle", "Product"] },
-  { name: "Flash", type: "isothermalFlash", in: "ReactorOut", outputs: ["CrudeAcid", "OffGas"] },
-] } as never;
+const POP = [
+  "unit,kpi,role,side,T_in_K,T_out_K,Q_kW,CP_kW_K,reason",
+  "FEHE [hot side],Q,recovered,hot,839.64,485.64,-117169.6,331,",
+  "FEHE [cold side],Q,recovered,cold,339.12,683.01,117169.6,340,",
+  "waterCooler [hot side],Q,segment,hot,485.64,311.66,-57821.15,332,",
+  "waterCooler [cold side],Q,utility,cold,298.15,303.66,57821.15,10486,served by a declared utility",
+  "separator,Q,segment,hot,311.66,250,-37649.58,610,",
+  "letdown,Q,segment,cold,249.5,250.5,16.48,16.48,near-isothermal: a latent slice of latentWidth",
+].join("\n");
 
-describe("pinch", () => {
-  it("computes the minimum utility targets (dTmin = 10 K)", () => {
-    const p = computePinch(runResult, flowsheet, 10)!;
-    expect(p.QhMin).toBeCloseTo(1043.7, 0);
-    expect(p.QcMin).toBeCloseTo(666.9, 0);
-    expect(p.QhNow).toBeCloseTo(1600.1, 0);
-    expect(p.QcNow).toBeCloseTo(1223.3, 0);
-    // Grand composite curve: present, and it touches H=0 at the pinch
-    expect(p.gcc.length).toBeGreaterThan(2);
-    expect(p.pinchShift).not.toBeNull();
-    expect(Math.min(...p.gcc.map(([h]) => Math.abs(h)))).toBeCloseTo(0, 3);
+const run = (extra: object = {}) => ({
+  status: "done", log: "", streams: [],
+  kpis: { pinch: {
+    Q_H_min_kW: 0, Q_C_min_kW: 95454.3, T_pinch_K: 829.64, dTmin_K: 20,
+    Q_heat_current_kW: 16.48, Q_cool_current_kW: 95470.7, ...extra } },
+  csvFiles: { "reports/pinch/population.csv": POP },
+}) as never;
+
+describe("pinch tab reads the engine", () => {
+  it("a utility side is never a stream; the process side of the same exchanger is", () => {
+    const s = parsePopulation(POP);
+    expect(s.map((x) => x.unit)).toEqual(
+      ["FEHE [hot side]", "FEHE [cold side]", "waterCooler [hot side]", "separator", "letdown"]);
+    expect(s.find((x) => x.unit === "waterCooler [hot side]")!.kind).toBe("hot");
   });
-
-  it("derives a duty's T-range from its streams when kpis lack T_in/T_out", () => {
-    const flash = computePinch(runResult, flowsheet, 10)!.streams.find((s) => s.unit === "Flash")!;
-    expect(flash.kind).toBe("hot"); expect(flash.Ts).toBe(450); expect(flash.Tt).toBe(330);
+  it("draws the engine's targets and a threshold problem as no pinch", () => {
+    const p = pinchFromEngine(run())!;
+    expect(p.QhMin).toBe(0);
+    expect(p.QcMin).toBeCloseTo(95454.3, 1);
+    expect(p.pinchShift).toBeNull();
   });
-
-  it("suggests feasible matches and rejects the infeasible one", () => {
-    const m = computePinch(runResult, flowsheet, 10)!.matches;
-    // the hot Flash stream can heat a cold preheater
-    expect(m.some((x) => x.hot === "Flash" && x.cold === "PreheatMeoh")).toBe(true);
-    // the condenser (337 K) is COLDER than the reboiler (372 K) -> never a match
-    expect(m.some((x) => x.hot === "Column.condenser" && x.cold === "Column.reboiler")).toBe(false);
+  it("a pinch strictly inside the range is reported", () => {
+    const p = pinchFromEngine(run({ T_pinch_K: 308.15, T_pinch_hot_K: 318.15, T_pinch_cold_K: 298.15 }))!;
+    expect(p.pinchShift).toBeCloseTo(308.15, 6);
   });
-
-  it("is greyed (not computable) before a run / with no duties", () => {
-    expect(canComputePinch(null, flowsheet)).toBe(false);
-    expect(canComputePinch({ status: "done", log: "", streams: [], kpis: {} } as never, flowsheet)).toBe(false);
+  it("no pinchPass in the run: null, and the excerpt to declare is the exact one", () => {
+    expect(pinchFromEngine({ status: "done", log: "", streams: [], kpis: {} } as never)).toBeNull();
+    expect(PINCH_PASS_EXCERPT).toBe("pinchPass { dTmin 20 K; }");
+  });
+  it("the tab is greyed only before a run", () => {
+    expect(canComputePinch(null)).toBe(false);
+    expect(canComputePinch(run())).toBe(true);
   });
 });

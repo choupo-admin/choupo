@@ -323,7 +323,10 @@ describe("the three kinds of message, as the page draws them", () => {
     const none = textOf(blockLines(r.lines, "caveatsNone"));
     expect(none).toContain("ASSUMPTIONS AND CAVEATS: none raised.");
     expect(none).toContain("([unmarked] records, [override] precedence) stay at their site above");
-    expect(r.lines.filter((l) => l.marker?.id === "unmarked").length).toBe(2);
+    //  one [unmarked] line: heatExchanger01 carries one component (water); the
+    //  earlier witness, bubbleT01, carried two but now earns an [unreviewed]
+    //  pair line (C224) and so is no longer a "nothing raised" run.
+    expect(r.lines.filter((l) => l.marker?.id === "unmarked").length).toBe(1);
   });
 
   it("DIVERGENCE: shortcut01 prints the block, above the caveats, naming what was requested and what was solved", () => {

@@ -371,7 +371,7 @@ legs and an `equilibriumTemperatureWindow`, `T_eq_outlet_K` and `approach_K` (th
 effluent's approach to the LAW's own equilibrium, US 5,352,428's per-bed definition — not
 the package's Gibbs surface); with `fugacityCoefficients`, `phi_law_over_pkg_<i>_in`.
 Wire `V_R` to a DesignSpec on `approach_K` to SIZE the bed.  Example: the Dyson & Simon
-(1968) ammonia law, written in `tutorials/plant/ammoniaReactor04_kineticSizing` (rung 4
+(1968) ammonia law, written in `tutorials/steady/reactors/ammoniaReactor04_kineticSizing` (rung 4
 of 4 of the ammonia reactor-model ladder: the engine SOLVES the bed volume),
 `greenAmmonia03_basicDesign`, and with Eq 39 in the props bench
 `tutorials/props/kinetics/ammoniaRate01_dyson_simon` (`rateLawBench`).
@@ -1067,10 +1067,13 @@ is the package's at the vapour that stage sends up.
   CMO.  A two-phase feed enters each energy row at its own equilibrium
   (x, y), the same pricing the duty and the energy report use.  Same stage-1
   restriction.  Murphree efficiency is refused (Wang-Henke only).  With a
-  `reaction {}` block the full MESH is not implemented and the three names
-  are REFUSED by name (since 2026-10-26, C169; until then it silently ran
-  the `simultaneous` CMO model).  Use `model simultaneous;` for a reactive
-  column.
+  `reaction {}` block the full MESH carries the reaction (since C231): see
+  **Reactive distillation** below -- it is the model for a reaction that
+  CHANGES THE NUMBER OF MOLES (Σν ≠ 0).  A kinetic `reaction` under the full
+  MESH is refused by name.  The column may be specified by
+  (`bottomsRate`, `boilupRatio`) instead of (`refluxRatio`, `distillateRate`):
+  the distillate is then an unknown closed by the top balance (PARTIAL
+  condenser only; any mixture of the two pairs refuses by name).
 
 See theory: §Distillation (Wang-Henke) and §Rigorous MESH Newton.
 Reference: Wang & Henke, *Hydrocarbon Process.* 45 (1966) 155;
@@ -1213,16 +1216,62 @@ profile gains `floodApproach`, `dP_Pa`, `h_backup_mm`.
 Examples: `column09_tray_hydraulics` (design → D = 1.316 m) · `column10_flooding`
 (same column at 1.10 m: identical stream table, stage 14 at 114.5 % of flood).
 
-**Reactive distillation (`simultaneous` only).**  An equilibrium reaction on
-named catalytic stages.  Restricted to **mole-conserving (Σν = 0)** reactions
-(esterification, transesterification, metathesis) so the CMO flow profile is
-untouched; each reactive stage gains a molar extent ξ_j closed by the
-activity-based equilibrium `Σ_i ν_i ln(γ_i x_i) = ln K_a`.  Converged by homotopy
+**Reactive distillation.**  An equilibrium reaction on named catalytic stages.
+Under `model simultaneous;` it is restricted to **mole-conserving (Σν = 0)**
+reactions (esterification, transesterification, metathesis) so the CMO flow
+profile is untouched; a Σν ≠ 0 reaction there REFUSES by name and points to
+`model fullMESH;` (below).  Each reactive stage gains a molar extent ξ_j closed
+by the activity-based equilibrium `Σ_i ν_i ln(γ_i x_i) = ln K_a`.  Converged by homotopy
 (solve non-reactive, then switch the reaction on): every species in the quotient is
 seeded to at least 1e-4 on the reactive stages, and K_a is reached from the seed's
 own quotient in continuation steps (the full step first, halved on failure) —
-announced with the steps it took.  The reaction heat is not fed back into the
-flows — an honest bubble-point screening model.
+announced with the steps it took.  Under `simultaneous` the reaction heat is not
+fed back into the flows — an honest bubble-point screening model.
+
+**Reactive full MESH (`model fullMESH;`, C231) — a reaction that changes the
+number of moles.**  The extents are unknowns of the rigorous column: component
+rows carry `-ν_i ξ_j`, the stage TOTAL rows carry `-Σν ξ_j`, and the stage energy
+rows carry NO reaction-heat term because they price on the elements (formation)
+datum, which already holds the heat of reaction — every reacting species needs
+`standardThermochemistry`, else the column REFUSES by name.  The seed is the
+NON-reactive constant-molal-overflow column, then the non-reactive full MESH, and
+the reaction enters by the same K_a homotopy (announced, with its steps).
+`equilibrium {}` takes exactly ONE of: `Ka298` (+ `dHrxn`), `Ka`, `fromRecords
+true;` (ln K_a(T) = −Σν_i [g_ig,i(T)/RT + ln(Psat_i(T)/P0)] from the SAME records
+that price the energy rows; an ESTIMATED formation datum is announced) or
+`lnKa "<formula>"; parameters { ... }` (the law written in the case, dimension
+checked, `T` the only state symbol, optional `validity { Tmin; Tmax; }`
+announcing extrapolation).  Specification: `bottomsRate` + `boilupRatio` (partial
+condenser; D unknown, B + D = F + Σν Σξ) or `refluxRatio` + `distillateRate`
+(then B = F + Σν Σξ − D − draws).  Witness `column19_mtbe_reactive_mesh`
+(methanol + isobutene ⇌ MTBE, Σν = −1; nothing validated against a measurement);
+gate `check_reactive_mesh`.
+
+**A RATE-LIMITED reaction in the full MESH (C233).**  `reaction { kinetics {
+model expression; catalystMass <kg>; <the law's own keys> } }` under `model
+fullMESH;` computes the extent of each reactive stage, xi_j = r(T_j, x_j,
+gamma_j) x m_cat,j (catalyst spread equally over `reactiveStages`), with no
+extent unknown and NO heat-of-reaction term (as for the equilibrium form).  The
+law is the `type expression` law of the reactors (formula over declared
+parameters with units, `basis catalystMass;`, `rateOf extent;`, `source`) plus
+the symbol `a[<component>]` = gamma_i x_i, the PACKAGE's activity at the stage;
+ONLY the column offers `a[i]` -- a cstr/pfr/batch law that reads it refuses by
+name.  The catalyst mass enters by an announced continuation (s = 0.01, 0.03,
+..., 1); a trial where the law has no value (a_MeOH -> 0 in a 1/a_MeOH law) is an
+ANNOUNCED infeasible trial, never a floor: a floor, if wanted, is written in the
+law with `max(...)`.  `pseudoHomogeneous` and `adsorption` (native words) are no longer
+refused under `fullMESH` (no case exercises them there); `model simultaneous` still refuses Sum nu != 0.  The
+profile publishes `gamma_`, `a_`, `r_mol_gcat_s` (mol per g catalyst per s) and
+`extent_kmol_h` per stage.  Witness `column20_mtbe_kinetic_mesh` (Rehfinger &
+Hoffmann 1990, activities UNIQUAC in the paper, UNIFAC here, catalyst mass
+illustrative, no effectiveness factor); gate `check_kinetic_mesh`.
+```
+operation { nStages 15; bottomsRate 240 kmol/h; boilupRatio 5; P 7 bar;
+            condenser { type partial; } feeds ( ... ); }
+reaction  { stoichiometry ( ... ); reactiveStages ( 6 7 8 9 10 );
+            equilibrium { lnKa "dSK / RK - dH / (RK * (T / Kelvin))";
+                          parameters { dH -39100 J/mol; dSK -85.3 J/mol; RK 8.314462 J/mol; Kelvin 1 K; } } }
+```
 
 **Every MESH row is dimensionless.**  Each component balance is divided by the
 column's total feed (and, under `fullMESH`, each energy row by the feed times the
@@ -1274,7 +1323,8 @@ unit activity).
 Caveat: for a **fast** rate (catalyst-rich, near-equilibrium) the explicit rate is
 stiff and the FD-Jacobian Newton is slow / may not converge — use `equilibrium {}`
 there; the kinetic mode is for genuinely rate-limited columns.  A Σν ≠ 0 reaction
-and VLLE on a tray still need the full-MESH energy balance.
+needs `model fullMESH;` (`equilibrium {}`, or `kinetics { model expression; }`
+-- C233, below; the native words are no longer refused there but no case exercises them); VLLE on a tray is not carried.
 
 **Heat ports.**  A column carries two intrinsic duties: a **reboiler**
 (heating, at the bottoms T) and a **condenser** (cooling, at the top T),
@@ -2279,7 +2329,7 @@ still counts every component).
 Worked examples: `tutorials/plant/ammonia02_full_plant` carries a product
 tank (T201, liquid ammonia, 48 h) -- its raw-material tank (T101, syngas,
 0.5 h) was removed in DEV.md 4c C93, the syngas arriving by pipeline -- and
-`tutorials/plant/ammonia03_quench_converter` still holds both.
+`tutorials/steady/reactors/ammonia03_quench_converter` still holds both.
 
 This unit has no sizer of its own.  The tank the plant BUYS is a postDict
 `storage ( ... )` item, sized, split into tanks and costed on the CAPCOST
@@ -3134,6 +3184,12 @@ Writes `fit_log.csv` (chi² + parameter trajectory) and `parity.csv`
       data ( 0.05 361.95   0.10 359.95   0.20 358.05...  );
   } }
 ```
+Residual kinds: `T_bubble`, `P_bubble`, `T_bubble+LLE` (bubble temperatures
+AND measured binodal tie lines in one fit, for a partially miscible binary --
+needs `weighting uncertainty`, `residual.liquidLiquid { sigma; origin }`, a
+package with two liquid phases and, for held-out tie lines, `acceptance {
+maxLLE }`; see `patterns.md`), `isotherm`, `membrane`.  The pair models are
+NRTL, UNIQUAC and Wilson; the proposal record carries each model's own keys.
 
 Supported property keywords (in `propertyPoint.state` selectors and
 in `propertyScanND.properties`): `T`, `P`, `Psat_<comp>`, `T_bubble`,

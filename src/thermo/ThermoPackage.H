@@ -180,6 +180,18 @@ public:
     sVector Kvec(scalar T_K, scalar P_Pa,
                  const sVector& x, const sVector& y) const;
 
+    //  THE LIQUID SIDE OF K DOES NOT DEPEND ON THE VAPOUR.  In the gamma-phi
+    //  world gamma(T, x) is a function of the liquid alone, so a caller that
+    //  iterates the incipient vapour at a FIXED (T, x) -- incipientPhase::
+    //  vapour, which re-asks K at a new y per pass -- computes gamma once and
+    //  hands it to KvecAtGamma.  KvecAtGamma(T,P,x,y,gamma(T,x)) IS Kvec
+    //  (same arithmetic, bit for bit); only valid when
+    //  liquidGammaIndependentOfVapour() (a package with a vapour phase that is
+    //  not the phi-phi world, where the liquid's phi carries the vapour's y).
+    bool    liquidGammaIndependentOfVapour() const;
+    sVector gammaForK(scalar T_K, const sVector& x) const;
+    sVector KvecAtGamma(scalar T_K, scalar P_Pa, const sVector& x,
+                        const sVector& y, const sVector& gamma) const;
     sVector Kvec_Raoult(scalar T_K, scalar P_Pa) const;
 
     //  ---- STAGE EQUILIBRIUM: the K-values an EQUILIBRIUM STAGE sees -----
@@ -234,6 +246,28 @@ public:
     bool   vapourAssociationPriced() const;                    // .cpp
     std::size_t associatingComponent() const;                  // n() when none
     scalar PsatLiquidReference(std::size_t i, scalar T_K) const;
+
+    //  THE gamma-phi REFERENCE FUGACITY OF A PURE LIQUID, ONE HOME (C235):
+    //      liquidReferenceFugacity = PsatLiquidReference * refFactor
+    //  refFactor(i, T, P) = phi_sat * Poynting (thermo/phase/SaturatedVapour.H),
+    //  phi_sat the pure-vapour fugacity coefficient of this package's own EoS
+    //  at (T, Psat_i) -- 1 exactly (the code is not entered) for an ideal
+    //  vapour, a component at or above its Tc, a phi-phi package, an electrolyte
+    //  package, a component on a declared pure-fluid method, one with no
+    //  vapour pressure or a nonvolatile.  Every K route that reads a Psat
+    //  as a liquid reference (K, KvecAtGamma) calls this and nothing else;
+    //  LiquidPhase/SolidPhase reach the same function through the borrowed
+    //  EoS `bindVapourReference` hands them.
+    scalar refFactor(std::size_t i, scalar T_K, scalar P_Pa) const;
+    //  Psat * refFactor, WITHOUT the association monomer reference: the
+    //  pure-liquid reference fugacity the Gibbs methods (DirectMin,
+    //  GibbsMethod, ElementPotential, ReactiveFlash) and a records-derived
+    //  K_a read where they assumed plain Psat.  Psat exactly for an ideal
+    //  vapour.
+    scalar pureLiquidReference(std::size_t i, scalar T_K, scalar P_Pa) const;
+    scalar liquidReferenceFugacity(std::size_t i, scalar T_K, scalar P_Pa) const;
+    bool   phiSatActive() const;
+    void   bindVapourReference();      // hand the condensed phases the EoS (or null)
     sVector vapourAssociationLnPhi(scalar T_K, scalar P_Pa,
                                    const sVector& y) const;    // zeros when not priced
     vapourAssociation::AssociationResidual

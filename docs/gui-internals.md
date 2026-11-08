@@ -372,3 +372,30 @@ through the WASM adapter.
 Engine side (the ops it drives) → `docs/developerGuide.tex` §"Property
 operations"; the theory of the diagrams → `docs/theoryGuide.tex` §"Ternary phase
 diagrams".
+
+---
+
+## 7. The plot plan's interaction layer (DEV.md 4c C229)
+
+The 3D plot plan (`ui/plotting/layoutRenderer.ts`, mounted by `PlantLayout3D`, the
+`?layout=` tab and the exported page) carries one DOM layer on top of its canvas,
+`ui/plotting/layoutInteract.ts`, mounted by `mountLayoutScene` itself -- so the app and
+"Export as page" get the same tour, cameras, colours, minimap and cards from one piece
+of code.  Its LOGIC is in pure, tested modules (`tests/layoutInteraction.test.ts`):
+
+| Module | What it decides |
+|---|---|
+| `case/layoutFacts.ts` | what the RESULT published that the view may say: stream table (T, P, flow, composition), sized items (sheet rows with their units, cost), headline numbers.  A fact not published is absent. |
+| `case/layoutTour.ts` | the guided tour: an overview, one stop per sector in the order they first appear (a flat case: runs of the engine's item order, at most 8), a close; every sentence carries the result field it was read from (hover a line). |
+| `case/layoutColour.ts` | pipe colour by phase, temperature, pressure or the mole fraction of a chosen component; viridis scale, ends rounded outward, a pipe without the value is grey and the legend counts them. |
+| `case/layoutCamera.ts` | walk (eye height, WASD / arrows / pads, drag to look), drone, "Go to...", the minimap mapping. |
+| `case/layoutCards.ts` | the click card of an item (sheet, material, cost) or a pipe (stream, composition, length); no value, no line. |
+
+Rules kept: the engine decides and the GUI draws (nothing is computed; the only
+arithmetic is unit presentation: Pa to bar, K to deg C); the view stays a visualiser, not
+an editor; three.js and its own addons only, lazy-loaded.  The particles stay
+STYLISED: the engine publishes no line velocity (a pipe has no sized diameter), and the
+legend says so.  `LayoutFacts` is built from the run in Reports; the exported page and
+the pop-out tab hold only the layout block, so they offer the tour, cameras, T / P / phase
+colours, the minimap, the pipe cards and the layout headline, and not the sheets, the
+costs or the colour by composition.

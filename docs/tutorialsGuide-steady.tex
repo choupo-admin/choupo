@@ -1583,11 +1583,11 @@ Those kmol/h are what 0/feed carries.
 
 ASSUMPTION A1 -- THE FEED THERMAL STATE. Table 2 gives the feed PRESSURE (892.67 kPa) and no feed temperature; record Section 5.2 names this gap and names "saturated liquid at the feed pressure" as the natural assumption. That is what is assumed here, and it has a consequence the case must carry rather than hide: a liquid saturated at 892.67 kPa is NOT saturated on a tray at 658.6 kPa -- it flashes on the way in. Both steps were computed with THIS CASE'S OWN thermo (the dict in constant/, no other model), by two throwaway runs whose numbers are reproduced here so a reader can repeat them:
 
-bubbleT of the feed composition at 892.67 kPa $\to$ T = 334.4218 K adiabaticFlash of that stream to 658.6 kPa $\to$ V/F = 0.0929333445 T = 323.5875148 K
+bubbleT of the feed composition at 892.67 kPa $\to$ T = 342.4354 K adiabaticFlash of that stream to 658.6 kPa $\to$ V/F = 0.113955 T = 329.5214 K
 
-feedQuality q = 1 - V/F = 0.9070666555
+feedQuality q = 1 - V/F = 0.886045
 
-and 0/feed carries the COLUMN-INLET state (323.5875148 K, 658600 Pa; the V/F is not declared -- a mixture's (T, P) fix it, and the engine resolves it), not the line state. The paper's 892.67 kPa therefore appears in this case only as the premise of A1, stated above. The `feedQuality` key below is a CROSS-CHECK against the feed stream's resolved state, which the column reads (2026-09-12): a key that contradicts it is refused by name, so the two cannot drift apart in silence. (Until 2026-10-03 the stream file also declared `vaporFraction 0.0929333445` -- a third state variable beside T and P, which the reader now refuses as over-specified.)
+and 0/feed carries the COLUMN-INLET state (329.5214 K, 658600 Pa; the V/F is not declared -- a mixture's (T, P) fix it, and the engine resolves it), not the line state. The paper's 892.67 kPa therefore appears in this case only as the premise of A1, stated above. A `feedQuality` key would be a CROSS-CHECK against the feed stream's resolved state, which the column reads (2026-09-12): a key that contradicts it is refused by name. None is declared since 2026-11-07 (C235): the old 0.9070666555 was this engine's own A1 flash under a one-sided liquid reference, not Klemola's number, and the A1 numbers above were RE-DERIVED under the corrected reference (phi\_sat and Poynting; before it: bubble T 334.4218 K, V/F 0.0929333445, inlet T 323.5875148 K). (Until 2026-10-03 the stream file also declared `vaporFraction`, a third state variable beside T and P, which the reader refuses as over-specified.)
 
 Sensitivity, MEASURED rather than asserted -- the competing assumption was run. Declaring instead "saturated liquid AT THE COLUMN PRESSURE" gives T = 323.2706 K (bubble point at 658.6 kPa) and q = 1.0 exactly, and the whole column moves by:
 
@@ -1607,7 +1607,7 @@ TOTAL 100.0 8115.0000 142.023556 1.0000000
 
 mean distillate MW = 8115 / 142.023556 = 57.13841 kg/kmol $\to$ distillateRate 142.023556 kmol/h
 
-SAID PLAINLY: this input therefore borrows the measured distillate COMPOSITION, which is one of the quantities the case then predicts. A fully self-consistent conversion would iterate the mean MW against the predicted composition. It is not iterated here, and the size of what is left on the table is MEASURED rather than waved at: the run's own converged/distillate comes out at mean MW 57.2186, i.e. +0.14 \% on the 57.13841 used above, so the distillate leaves at 8126.4 kg/h against the Table-2 8115 kg/h. One iteration would close that; it is left open because the residue is smaller than the 0.1 wt \% resolution of the composition it came from. If a future edit moves the distillate composition materially, this number must be recomputed with it.
+SAID PLAINLY: this input therefore borrows the measured distillate COMPOSITION, which is one of the quantities the case then predicts. A fully self-consistent conversion would iterate the mean MW against the predicted composition. It is not iterated here, and the size of what is left on the table is MEASURED rather than waved at: the run's own converged/distillate comes out at mean MW 57.2147, i.e. +0.13 \% on the 57.13841 used above, so the distillate leaves at 8126.0 kg/h against the Table-2 8115 kg/h. One iteration would close that; it is left open because the residue is smaller than the 0.1 wt \% resolution of the composition it came from. If a future edit moves the distillate composition materially, this number must be recomputed with it.
 
 5. REFLUX RATIO -- why the MASS ratio IS the MOLAR ratio here
 
@@ -1619,7 +1619,7 @@ A NOTE ON A NUMBER IN CIRCULATION: 11.4441 has been quoted for this ratio. It is
 
 6. BOTTOMS -- an OUTPUT, and it does not land on 18119 kg/h
 
-B = F - D is the engine's mole balance: 452.710957 - 142.023556 = 310.687401 kmol/h. Priced at the PREDICTED bottoms composition that comes out at 18107.6 kg/h, 0.06 \% under the Table-2 18119 kg/h. It cannot land on it exactly: F's molar total is fixed by the feed mass and the feed's measured composition, D's by the distillate mass and the distillate's measured composition, and the paper's three compositions do not close per component (record Section 5.4 -- the wt \% columns sum to 100.1, 100.0 and 100.3). The mass residue is the printing, not the column. 18119 kg/h is therefore transcribed above and used by nothing.
+B = F - D is the engine's mole balance: 452.710957 - 142.023556 = 310.687401 kmol/h. Priced at the PREDICTED bottoms composition that comes out at 18108.0 kg/h, 0.06 \% under the Table-2 18119 kg/h. It cannot land on it exactly: F's molar total is fixed by the feed mass and the feed's measured composition, D's by the distillate mass and the distillate's measured composition, and the paper's three compositions do not close per component (record Section 5.4 -- the wt \% columns sum to 100.1, 100.0 and 100.3). The mass residue is the printing, not the column. 18119 kg/h is therefore transcribed above and used by nothing.
 
 7. REFLUX TEMPERATURE 18.5 C -- transcribed, NOT USED, and why
 
@@ -1627,13 +1627,13 @@ B = F - D is the engine's mole balance: 452.710957 - 142.023556 = 310.687401 kmo
 
 8. BOILER DUTY 10.240 MW -- transcribed, and NOT claimed as an anchor
 
-The run reports a reboiler duty of about 8.47 MW against the Table-2 10.240 MW. The case does NOT anchor on that, and the reason is in its own output rather than in an argument.
+The run reports a reboiler duty of about 8.09 MW against the Table-2 10.240 MW. The case does NOT anchor on that, and the reason is in its own output rather than in an argument.
 
 The Wang-Henke path solves M and E under CONSTANT MOLAR OVERFLOW: the internal traffic is fixed by R, D and q, and NO per-stage energy balance is solved. The duties are then reported by closing the column's overall enthalpy change, and the flowsheet's independent energy audit raises the first-law advisory on this run -- 98.42 \% closure, a residual of 2.96 kW, 0.017 \% of the boundary enthalpy. That is small, and it is NOT evidence that the duty is right: the ledger and the duty are computed from the same three stream states, so agreement between them says the arithmetic is consistent, not that a column with no energy equation found the right vapour traffic. The companion arm column15 makes the point unmissable -- the same three streams to within 0.8 kW of enthalpy, and its audit closes at -256.84 \% with a 670.7 kW residual. Two runs of one column, one ledger claim each, three orders of magnitude apart. The corpus's other Wang-Henke columns sit further out still (column01/09/11's own energyBalance\_byUnit.csv), so this is a property of the solver path and of the reporting around it, and it predates this case by a long way.
 
 Also unmodelled and worth naming beside the duty: the plant's subcooled reflux (7) and the condenser's own subcooling duty are not in this figure.
 
-A duty comparison resting on any of that would be a number pretending to be evidence. 10.240 MW is transcribed; 8.47 MW is reported; neither is an anchor row.
+A duty comparison resting on any of that would be a number pretending to be evidence. 10.240 MW is transcribed; 8.09 MW is reported; neither is an anchor row.
 
 9. THERMO -- mirroring the paper, not substituting for it
 
@@ -1681,37 +1681,37 @@ What a PASS would mean: that the MESH solve plus a declared efficiency reproduce
 
 14. THE ANCHOR TABLE -- observed, and it does NOT all agree
 
-Predicted product compositions, converted back to wt \% from this case's own converged/ streams, beside the Table-2 measurements. The "band" column is the measurement's OWN rounding: the paper prints to 0.1 wt \%, so a printed value v carries +/-0.05 wt \%.
+RE-MEASURED 2026-11-08 (C239) on the current engine. The table this section carried before (i-butane 94.033 / n-butane 0.0015 wt \% overhead) was taken BEFORE the C235 real-vapour liquid reference and had gone stale; the numbers below are the run's own converged/ streams. `expected` carries the rows (header block "THE KLEMOLA ANCHORS"); this section is the reading.
 
-DISTILLATE (predicted 8126.4 kg/h vs the 8115 kg/h spec -- see 4)
+Predicted product compositions, converted back to wt \% from this case's own converged/ streams, beside the Table-2 measurements. The printed band is the table's rounding (0.1 wt \%, so +/-0.05); the ANCHOR band is wider and is justified in `expected` (the table's own key closure, about 1 \%).
 
-component predicted measured band verdict
+DISTILLATE (predicted 8126.0 kg/h vs the 8115 kg/h spec -- see 4)
 
-i-butane 94.033 93.5 +/-0.05 +0.53 wt \% HIGH n-butane 0.0015 0.2 +/-0.05 LOW by \textasciitilde{}130x
+component predicted measured rounding anchor row
 
-BOTTOMS (predicted 18107.6 kg/h vs the Table-2 18119 kg/h -- see 6)
+i-butane 93.792 93.5 +/-0.05 ANCHOR, mole fraction 0.92330 vs 0.91917 (+0.45 \%, band 1 \%): IN n-butane 0.1115 0.2 +/-0.05 OPEN (-44 \%): no row, pinned self-recorded
 
-component predicted measured band verdict
+BOTTOMS (predicted 18108.0 kg/h vs the Table-2 18119 kg/h -- see 6)
 
-i-butane 0.351 0.3 +/-0.05 INSIDE the band n-butane 97.984 98.1 +/-0.05 -0.12 wt \%, just out
+component predicted measured rounding anchor row
 
-THREE OF THE FOUR KEY ROWS LAND WHERE A KEY-COMPONENT ANCHOR WANTS THEM, around the 1 \% level at which record section 5.4 says the keys close at all. THE FOURTH DOES NOT, and it is not a rounding argument: the model rejects n-butane overhead about two orders of magnitude harder than the plant did. 0.2 wt \% is at the printing resolution (+/-25 \% before any physics), but 130x is not a resolution effect.
+i-butane 0.461 0.3 +/-0.05 OPEN (+54 \%): no row, pinned self-recorded n-butane 97.932 98.1 +/-0.05 ANCHOR, mole fraction 0.98203 vs 0.97972 (+0.24 \%, band 1 \%): IN
 
-It is recorded, not explained and not tuned. What can be said without guessing: the disagreement is NOT the efficiency, because the control arm column15 at E\_MV = 1 gives 0.0144 wt \% -- still an order of magnitude below the measurement. Under this model 74 IDEAL trays already over-separate this key, which is the opposite direction from the paper's own finding that 74 real trays behave as 88 ideal ones. Candidates a future slice could test, each of which this case declares as an assumption or a caveat above: the single column pressure (A2), the tray-numbering direction (A0), the unmodelled subcooled reflux (7), the absent per-stage energy balance (8), and seven interim component records (thermo dict). Whichever it is, an anchor that disagreed and said so is worth more than one that agreed after something was adjusted to make it.
+TWO OF THE FOUR KEY ROWS AGREE, AT THE 1 \% LEVEL THE SOURCE ITSELF SUPPORTS; TWO DO NOT, AND THEY MISS IN OPPOSITE SENSES: the rectifying section is too clean (n-butane overhead 44 \% low) while the stripping section is not clean enough (i-butane in the bottoms 54 \% high). Neither is a rounding effect at the printing-resolution band. They are recorded, not tuned. What can be said without guessing: The efficiency does not explain the pair. Column15 (E\_MV = 1) gives 0.728 wt \% n-butane overhead and 0.734 wt \% i-butane in the bottoms -- the plant's 0.2 and 0.3 lie BETWEEN the two arms for the first and BELOW both for the second. The paper's own balance cannot resolve either number. Feed i-butane (7712.8 kg/h) less the printed distillate i-butane (7587.5) leaves 125 kg/h for the bottoms, 0.69 wt \% of 18119 kg/h, against the printed 0.3: the printed bottoms value contradicts the printed feed and distillate, and the model (0.46) lies between them. For n-butane the feed minus the printed bottoms is -15 kg/h for the distillate, so the printed 16 kg/h is inside the table's own 30 kg/h closure error. Two of the four measured numbers are therefore not usable as a target below \textasciitilde{}1 \%. Candidate model gaps acting on exactly these minors: the single column pressure (A2: the stripping section runs colder than the plant), the tray-numbering direction (A0), the unmodelled subcooled reflux (7), the absent per-stage energy balance (8), seven interim component records.
 
-THE OTHER FIVE COMPONENTS ARE NOT ANCHOR ROWS and are listed only so nobody reads their absence as concealment: propane 4.84 vs 5.3 wt \% overhead and 0.00 vs 0.3 in the bottoms; trans-2-butene 0.00 vs 0.6 overhead; i-butene 0.58 vs 0 overhead. Record section 5.4 already showed these do not close in the SOURCE -- propane +23 \%, i-butene -100 \%, trans-2-butene +155 \% between the feed and the two products as printed -- so a number computed here has nothing to be compared against. Anchoring on them would be measuring the printing.
+THE OTHER FIVE COMPONENTS ARE NOT ANCHOR ROWS and are listed only so nobody reads their absence as concealment: propane 4.84 vs 5.3 wt \% overhead and 0.00 vs 0.3 in the bottoms; trans-2-butene 0.001 vs 0.6 overhead; 1-butene / i-butene 0.63 / 0.63 against the printed 0.4 / 0.0. Record section 5.4 already showed these do not close in the SOURCE -- propane +23 \%, i-butene -100 \%, trans-2-butene +155 \% between the feed and the two products as printed -- so a number computed here has nothing to be compared against. Anchoring on them would be measuring the printing.
 
 15. THE TWO ARMS, side by side
 
-column14 (E\_MV = 1.191) against column15 (E\_MV = 1.0), everything else identical:
+column14 (E\_MV = 1.191) against column15 (E\_MV = 1.0), everything else identical (both re-run 2026-11-08):
 
 quantity E\_MV 1.191 E\_MV 1.0 measured
 
-distillate i-butane, wt \% 94.033 93.975 93.5 distillate n-butane, wt \% 0.0015 0.0144 0.2 bottoms i-butane, wt \% 0.351 0.378 0.3 bottoms n-butane, wt \% 97.984 97.977 98.1 top temperature, K 314.250 314.116 -- reboiler temperature, K 329.437 329.435 -- outer iterations 349 426 --
+distillate i-butane, wt \% 93.792 93.185 93.5 distillate n-butane, wt \% 0.1115 0.728 0.2 bottoms i-butane, wt \% 0.461 0.734 0.3 bottoms n-butane, wt \% 97.932 97.656 98.1 top temperature, K 319.783 319.755 -- reboiler temperature, K 335.078 335.036 -- outer iterations 762 289 --
 
-WHAT THE EFFICIENCY BUYS, read off that table: essentially nothing on the major components -- i-butane overhead moves 0.06 wt \%, n-butane in the bottoms 0.007 -- and a real factor on the MINOR key in each product: the n-butane carried overhead drops about 10x, and the i-butane lost to the bottoms falls 7 \%.
+WHAT THE EFFICIENCY BUYS, read off that table: the major components move by 0.3-0.6 wt \% and the MINOR key in each product by a factor of 6.5 (n-butane overhead) and 1.6 (i-butane in the bottoms). For n-butane overhead the ideal-tray arm sits above the measurement (0.73 vs 0.2) and the efficient arm below it (0.11 vs 0.2): the plant's 0.2 wt \% is bracketed by the two arms, which says that an efficiency of the measured order is the right order.
 
-That shape is worth more than a single number. At 74 trays and R = 11.4 this column is far past the point where separating power limits the major components; extra power goes entirely into the impurity that is left, which is exactly where a plant's money is. A student who expects a 19 \% efficiency bonus to show up as a 19 \% anything will not find it, and finding out why is the lesson.
+That shape is worth more than a single number. At 74 trays and R = 11.4 this column is far past the point where separating power limits the major components; extra power goes almost entirely into the impurity that is left, which is exactly where a plant's money is. A student who expects a 19 \% efficiency bonus to show up as a 19 \% anything will not find it, and finding out why is the lesson.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1721,15 +1721,15 @@ That shape is worth more than a single number. At 74 trays and R = 11.4 this col
 \goldrow{kpi}{splitter}{B}{0.0863020558333}
 \goldrow{kpi}{splitter}{D}{0.0394509877778}
 \goldrow{kpi}{splitter}{L\_rect}{0.45133097767}
-\goldrow{kpi}{splitter}{L\_strip}{0.565397368633}
-\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-8453.15398421}
-\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8257.34269769}
+\goldrow{kpi}{splitter}{L\_strip}{0.562751441141}
+\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-8334.84552985}
+\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8090.35298049}
 \goldrow{kpi}{splitter}{R}{11.440296}
-\goldrow{kpi}{splitter}{T\_bottom}{329.436819763}
-\goldrow{kpi}{splitter}{T\_top}{314.249966091}
+\goldrow{kpi}{splitter}{T\_bottom}{335.078265625}
+\goldrow{kpi}{splitter}{T\_top}{319.783095841}
 \goldrow{kpi}{splitter}{V\_rect}{0.490781965448}
-\goldrow{kpi}{splitter}{V\_strip}{0.479095312799}
-\goldmore{20}
+\goldrow{kpi}{splitter}{V\_strip}{0.476449385308}
+\goldmore{27}
 \end{tutgolden}
 
 \clearpage
@@ -1788,15 +1788,15 @@ ONE MORE OBSERVATION, and it is about the ENGINE rather than the column. These t
 \goldrow{kpi}{splitter}{B}{0.0863020558333}
 \goldrow{kpi}{splitter}{D}{0.0394509877778}
 \goldrow{kpi}{splitter}{L\_rect}{0.45133097767}
-\goldrow{kpi}{splitter}{L\_strip}{0.565397368633}
-\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-8446.257018}
-\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8250.44278944}
+\goldrow{kpi}{splitter}{L\_strip}{0.562751441141}
+\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-8333.69062551}
+\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8089.03144808}
 \goldrow{kpi}{splitter}{R}{11.440296}
-\goldrow{kpi}{splitter}{T\_bottom}{329.435277335}
-\goldrow{kpi}{splitter}{T\_top}{314.116313405}
+\goldrow{kpi}{splitter}{T\_bottom}{335.035644334}
+\goldrow{kpi}{splitter}{T\_top}{319.75463307}
 \goldrow{kpi}{splitter}{V\_rect}{0.490781965448}
-\goldrow{kpi}{splitter}{V\_strip}{0.479095312799}
-\goldmore{19}
+\goldrow{kpi}{splitter}{V\_strip}{0.476449385308}
+\goldmore{20}
 \end{tutgolden}
 
 \clearpage
@@ -1936,6 +1936,104 @@ THE STAGE COUNT. `nStages` counts EQUILIBRIUM stages, top to bottom, the reboile
 \goldrow{kpi}{column18}{R}{2}
 \goldrow{kpi}{column18}{T\_bottom}{381.514100345}
 \goldmore{18}
+\end{tutgolden}
+
+\clearpage
+\tutentry{column19\_mtbe\_reactive\_mesh}{tutorials/steady/distillation/column19\_mtbe\_reactive\_mesh}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mtbeColumn) at (0.0,-0.0) {\textbf{mtbeColumn}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(mtbeColumn.west)+(-1.05,-0.17)$) -- ($(mtbeColumn.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {methanolFeed};
+  \draw[->] ($(mtbeColumn.west)+(-1.05,0.17)$) -- ($(mtbeColumn.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {c4Feed};
+  \draw[->] ($(mtbeColumn.east)+(0,-0.17)$) -- ($(mtbeColumn.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(mtbeColumn.east)+(0,0.17)$) -- ($(mtbeColumn.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{MTBE reactive column: a mole-changing reaction in the rigorous (full MESH) column; nothing validated against a measurement}
+\begin{tutnarrative}
+a reactive column whose reaction CHANGES THE NUMBER OF MOLES: methanol + isobutene $\rightleftharpoons$ MTBE (Sum nu = -1).
+
+THE PROBLEM. 15 equilibrium stages, stage 1 the PARTIAL condenser (the distillate leaves as vapour), stage 15 the reboiler, P = 7 bar, reactive stages 6 to 10 (the equilibrium reaction in the liquid), both feeds on stage 10: methanol (240 kmol/h, 50 C, 10 bar) and a C4 cut (50 C, 10 bar). The column is specified by its BOTTOMS RATE (240 kmol/h) and its BOIL-UP RATIO (5), and the distillate is what the top balance leaves: D = F + Sum(nu) Sum(xi) - B.
+
+WHAT IT TAKES. The constant-molal-overflow column holds the internal flows fixed and so cannot carry a mole change; `model fullMESH;` solves the vapour and liquid flows, the stage energy balances and, on each reactive stage, one equilibrium extent. The heat of reaction is NOT a term of the stage energy rows: those price on the elements datum, which already holds it.
+
+THE EQUILIBRIUM CONSTANT is the case's own record, written (constant K\_a(T) from Izquierdo et al.; see constant/experimental/ and the README). Nothing here was read off, or fitted to, any simulator's result.
+
+\end{tutnarrative}
+\tutreadme{15 equilibrium stages (stage 1 the PARTIAL condenser, the distillate leaves as vapour; stage 15 the reboiler), P = 7 bar, reactive stages 6-10, both feeds on stage 10 (methanol 240 kmol/h and a C4 cut of 563.2 kmol/h, both at 50 C and 10 bar). The column is specified by its bottoms rate (240 kmol/h) and boil-up ratio (5); the distillate is whatever the top balance leaves, D = F + Sum(nu) Sum(xi) - B.}
+\tutreadme{The constant-molal-overflow column cannot carry a mole change. The full MESH solves the vapour and liquid flows, the stage energy balances and, on each reactive stage, one equilibrium extent: component rows -nu\_i xi, total rows -Sum(nu) xi. There is no heat-of-reaction term in the stage energy rows: they price on the elements datum, which already holds it (a second term would count it twice). Atoms close although moles do not -- the element balance reads 0.0000 \%.}
+\tutreadme{$\ast$ K\_a(T) -- the paper's Eq. 15, written in the case: Izquierdo, Cunill, Vila, Tejero \& Iborra, $\ast$J. Chem. Eng. Data$\ast$ 37 (1992) 339-343, doi 10.1021/je00007a019, ln K = dS/R - dH/(R T), dH = -39100 J/mol, dS = -85.3 J/(mol K); K in activities, pure-liquid standard state, UNIFAC gamma. Measured over 313-353 K -- the reactive stages run hotter and the run announces the extrapolation. Its 21 measurements are in constant/experimental/izquierdo1992\_tableII.csv (transcribed by hand) and check\_reactive\_mesh recomputes the fit's AAD (4.6 \%, max 8.5 \%). Not the paper's Eq. 14 or Eq. 16: printed with a rounded constant they sit about 7 times below the paper's own Table IV (16 against 118 at 40 C). $\ast$ Isobutene's enthalpy of formation -- constant/components/isoButene.dat (a case-local overlay): -17.885 kJ/mol, derived from the measured heat of combustion of Prosen, Maron \& Rossini, $\ast$J. Res. NBS$\ast$ 46 (1951) 106, 645.19 +/- 0.25 kcal/mol. The catalogue's value (-10.25 kJ/mol) is a Joback estimate. s\_298 is still the catalogue's, itself derived from the Joback dGf. $\ast$ The other components -- the catalogue's records, mostly interim (imported, not read back against primary sources); methanol's and the C4s' Antoine and Cp are extrapolated far outside their fitted ranges at the column's temperatures (announced).}
+\tutreadme{Nothing in this case is validated against a measurement of an MTBE column. The vapour is a real gas (SRK, kij = 0) because at 7 bar an ideal vapour prices the latent heat at the 400 K reboiler about 1.3 kJ/mol high (the case this one is compared with uses a Redlich-Kwong vapour); the liquid reference carries phi\_sat and Poynting. UNIFAC is predictive; the heat of reaction is the difference of the formation enthalpies of the records above. Compare with equilibrium \{ fromRecords true; \}, which derives K\_a(T) from the same records that price the energy rows (and so inherits the Joback isobutene datum, announced): the gate prints how far that is from Eq. 15.}
+\tutreadme{Gate: bin/curate/check\_reactive\_mesh.py. Design record: docs/design/a-reaction-that-changes-the-number-of-moles.md.}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.0666666666667}
+\goldrow{stream}{bottoms}{T}{400.672841011}
+\goldrow{stream}{c4Feed}{F}{0.156444444444}
+\goldrow{stream}{c4Feed}{T}{323.15}
+\goldrow{stream}{distillate}{F}{0.0905976909784}
+\goldrow{stream}{distillate}{T}{323.924151614}
+\goldrow{stream}{methanolFeed}{F}{0.0666666666667}
+\goldrow{stream}{methanolFeed}{T}{323.15}
+\goldrow{kpi}{mtbeColumn}{B}{0.0666666666667}
+\goldrow{kpi}{mtbeColumn}{D}{0.0905976909784}
+\goldrow{kpi}{mtbeColumn}{Q\_condenser\_kW}{-7587.68095505}
+\goldrow{kpi}{mtbeColumn}{Q\_reboiler\_kW}{7751.68440801}
+\goldrow{kpi}{mtbeColumn}{Q\_reboiler\_ownEnvelope\_kW}{7751.68440801}
+\goldrow{kpi}{mtbeColumn}{R}{4.95294631758}
+\goldmore{21}
+\end{tutgolden}
+
+\clearpage
+\tutentry{column20\_mtbe\_kinetic\_mesh}{tutorials/steady/distillation/column20\_mtbe\_kinetic\_mesh}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mtbeColumn) at (0.0,-0.0) {\textbf{mtbeColumn}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(mtbeColumn.west)+(-1.05,-0.17)$) -- ($(mtbeColumn.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {methanolFeed};
+  \draw[->] ($(mtbeColumn.west)+(-1.05,0.17)$) -- ($(mtbeColumn.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {c4Feed};
+  \draw[->] ($(mtbeColumn.east)+(0,-0.17)$) -- ($(mtbeColumn.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(mtbeColumn.east)+(0,0.17)$) -- ($(mtbeColumn.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{MTBE reactive column with a RATE-LIMITED reaction (Rehfinger \& Hoffmann law) in the rigorous (full MESH) column; the catalyst mass is illustrative, nothing validated against a measurement}
+\begin{tutnarrative}
+column19's problem with a RATE-LIMITED reaction: methanol + isobutene $\rightleftharpoons$ MTBE on an acid ion-exchange resin.
+
+THE PROBLEM is column19's, unchanged: 15 equilibrium stages, stage 1 the PARTIAL condenser, stage 15 the reboiler, P = 7 bar, reactive stages 6 to 10, both feeds on stage 10, bottoms rate 240 kmol/h and boil-up ratio 5, UNIFAC liquid, SRK vapour, the same isobutene overlay. What changes is the reaction: where column19 closes an equilibrium quotient on each reactive stage, here the extent of a stage is COMPUTED from a rate law and the catalyst it holds, xi\_j = r(T\_j, a\_j) m\_cat,j, with no extent unknown and still NO heat-of-reaction term (the energy rows price on the elements datum, which already holds it).
+
+THE LAW is Rehfinger \& Hoffmann, Chem. Eng. Sci. 45 (1990) 1605-1617, doi 10.1016/0009-2509(90)80013-5, Amberlyst 15 (their Eq. 12):
+
+r = k ( a\_IB / a\_MeOH - a\_MTBE / (K\_a a\_MeOH\textasciicircum{}2) )
+
+in liquid-phase ACTIVITIES, r per acid equivalent. k(T) is their Eq. 15 (k(90 C) = 243.8 mmol/(s eq), E = 92.4 kJ/mol, Table 4), K\_a(T) their Eq. 6 with K\_a(298.15 K) = 300.5 (Table 4, the value the three-parameter fit returned, so that k and K\_a are the PAIR the paper fitted; Eq. 6 with 284, the value of its Fig. 9 caption, reproduces Izquierdo's Table IV and is the better thermodynamics, and the difference is 5.8 \%). The capacity of Amberlyst 15, 4.9 meq/g, is the paper's (p. 1606). THE PAPER'S ACTIVITIES ARE UNIQUAC; THIS CASE'S ARE UNIFAC. The law and the activities were fitted together, so the pairing here is an approximation that is stated, not repaired.
+
+THE CATALYST MASS (catalystMass) IS ILLUSTRATIVE: it is not any real column's loading. It is spread equally over the five reactive stages, and the conversion that follows (about 9 \% of the methanol) is a property of that choice AND of the law: the reactive stages run methanol-LEAN (x\_MeOH 0.05-0.18, below the 0.3 the law was measured down to), where 1/a\_MeOH is large but a\_MeOH itself is small. MEASURED while building the case: the continuation in the catalyst mass converges up to about 270 kg and stops at about 300 kg (s = 1 not reached), so this case does not claim a higher conversion than the engine reached.
+
+WHAT THE LAW DOES NOT CARRY: the effectiveness factor (internal diffusion in the resin) -- the paper itself says the measured rates exceed the law's below x\_MeOH = 0.3, "caused by internal mass transfer". The law diverges as a\_MeOH $\to$ 0 (1/a\_MeOH, and 1/a\_MeOH\textasciicircum{}2 on the reverse leg); no floor is hidden in the engine and none is written here: a trial that drives a\_MeOH to zero is an INFEASIBLE trial (announced) and the Newton shortens its step. The run publishes a\_MeOH on every reactive stage (the `a\_methanol` profile column) so it can be read against the range the law was measured over; `validity` announces a stage below x\_MeOH = 0.3.
+
+Nothing here was read off, or fitted to, any simulator's result.
+
+\end{tutnarrative}
+\tutreadme{column19's problem (methanol + isobutene $\rightleftharpoons$ MTBE, Sum nu = -1; 15 stages, partial condenser, reactive stages 6-10, 7 bar, bottomsRate 240 kmol/h and boilupRatio 5, UNIFAC liquid, SRK vapour) with the reaction closed by a rate law instead of an equilibrium quotient. On each reactive stage the extent is $\ast$computed$\ast$, xi\_j = r(T\_j, a\_j) m\_cat,j, from the law and the catalyst the stage holds; there is no extent unknown, and still no heat-of-reaction term in the stage energy rows (they price on the elements datum, which already holds it).}
+\tutreadme{Rehfinger \& Hoffmann, $\ast$Chem. Eng. Sci.$\ast$ 45 (1990) 1605-1617, doi 10.1016/0009-2509(90)80013-5, Amberlyst 15:}
+\tutreadme{in liquid-phase activities, r per acid equivalent; k(90 C) = 243.8 mmol/(s eq) and E = 92.4 kJ/mol (Eq. 15, Table 4); K\_a(T) from their Eq. 6 with K\_a(298.15 K) = 300.5 (Table 4: the value the fit returned together with k and E, so the three are the pair the paper fitted -- Eq. 6 with 284, the value of its Fig. 9 caption, reproduces Izquierdo's Table IV and is 5.8 \% lower); acid capacity 4.9 meq/g (p. 1606). The law is written in the case with named definitions and a[<component>] = gamma\_i x\_i, the package's activity at the stage.}
+\tutreadme{$\ast$ The catalyst mass (220 kg) is illustrative, not any column's loading. $\ast$ The paper's activities are UNIQUAC; this case's are UNIFAC. The law and its activities were fitted together; the pairing here is an approximation. $\ast$ The reactive stages run methanol-lean (x\_MeOH 0.05-0.18), below the 0.3 the paper says its model under-predicts at ("measured rates are greater ... internal mass transfer"). The law has no effectiveness factor, so the rate here is a lower bound there. The run announces the excursion. $\ast$ The law diverges as a\_MeOH $\to$ 0; the engine hides no floor. A trial that reaches it is an announced infeasible trial. $\ast$ The conversion (about 9 \% of the methanol) is a property of the illustrative mass and of the methanol-lean stages. The mass continuation converges up to about 270 kg and stops near 300 kg (measured), so no higher conversion is claimed. $\ast$ Nothing here is validated against a measured MTBE column.}
+\tutreadme{Gate: bin/curate/check\_kinetic\_mesh.py (the proof is a limit: a mass-action twin on column19's own K\_a converges on column19's equilibrium as the mass grows). Design record: docs/design/a-rate-law-in-the-full-mesh.md.}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.0666666666667}
+\goldrow{stream}{bottoms}{T}{344.337012761}
+\goldrow{stream}{c4Feed}{F}{0.156444444444}
+\goldrow{stream}{c4Feed}{T}{323.15}
+\goldrow{stream}{distillate}{F}{0.151749537343}
+\goldrow{stream}{distillate}{T}{324.017928637}
+\goldrow{stream}{methanolFeed}{F}{0.0666666666667}
+\goldrow{stream}{methanolFeed}{T}{323.15}
+\goldrow{kpi}{mtbeColumn}{B}{0.0666666666667}
+\goldrow{kpi}{mtbeColumn}{D}{0.151749537343}
+\goldrow{kpi}{mtbeColumn}{Q\_condenser\_kW}{-4893.26452035}
+\goldrow{kpi}{mtbeColumn}{Q\_reboiler\_kW}{7653.73922804}
+\goldrow{kpi}{mtbeColumn}{Q\_reboiler\_ownEnvelope\_kW}{7653.73922804}
+\goldrow{kpi}{mtbeColumn}{R}{1.75594607919}
+\goldmore{21}
 \end{tutgolden}
 
 \clearpage
@@ -2715,20 +2813,20 @@ HONEST SIMPLIFICATIONS. (1) The converter is a SINGLE adiabatic bed, so it runs 
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{stream}{chilledEffluent}{F}{10.2992003164}
-\goldrow{stream}{chilledEffluent}{T}{311.655519488}
+\goldrow{stream}{chilledEffluent}{F}{10.3200709671}
+\goldrow{stream}{chilledEffluent}{T}{311.844816422}
 \goldrow{stream}{compMakeup}{F}{2.22222222222}
 \goldrow{stream}{compMakeup}{T}{656.394257943}
-\goldrow{stream}{compRecycle}{F}{9.04024011142}
-\goldrow{stream}{compRecycle}{T}{263.877015971}
-\goldrow{stream}{cooledEffluent}{F}{10.2992003164}
-\goldrow{stream}{cooledEffluent}{T}{485.640252687}
+\goldrow{stream}{compRecycle}{F}{9.06139671935}
+\goldrow{stream}{compRecycle}{T}{263.851092632}
+\goldrow{stream}{cooledEffluent}{F}{10.3200709671}
+\goldrow{stream}{cooledEffluent}{T}{484.740192777}
 \goldrow{stream}{cw}{F}{138.888888889}
 \goldrow{stream}{cw}{T}{298.15}
 \goldrow{stream}{cwOut}{F}{138.888888889}
-\goldrow{stream}{cwOut}{T}{303.664081245}
-\goldrow{stream}{hotEffluent}{F}{10.2991998088}
-\goldrow{stream}{hotEffluent}{T}{839.643638219}
+\goldrow{stream}{cwOut}{T}{303.654184522}
+\goldrow{stream}{hotEffluent}{F}{10.3200692644}
+\goldrow{stream}{hotEffluent}{T}{835.461851813}
 \goldmore{305}
 \end{tutgolden}
 
@@ -2775,6 +2873,26 @@ The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 \goldrow{kpi}{dryer}{T\_out}{366.288022769}
 \goldmore{298}
 \end{tutgolden}
+
+\clearpage
+\tutentry{sugarPlantEconomicsSweep}{tutorials/steady/economics/sugarPlantEconomicsSweep}
+\tutwhat{Sugar plant ECONOMICS SWEEP -- IRR / payback / NPV vs RawJuice sucrose content (Phase-2 SweepDriver post-chain differentiator)}
+\begin{tutnarrative}
+/ system/flowsheetDict (PLANT level -- COMPOSITE)
+
+The flagship sugar plant (the ChemicalPlantTutorial flowsheet, reused verbatim -- sectors and units included), here driven by system/outerDict: a SweepDriver walks the RawJuice sucrose fraction and runs the FULL post chain (sizing $\to$ costing $\to$ economics, system/postDict) on every point, so IRR / NPV / payback vs feed quality come out as sweep responses.
+
+A composite node: it has `children` (sub-flowsheets, here the sectors) and `connections` (the pipework between them). The same shape a sector uses to list its units -- one level up. This is the plant-and-sectors shape.
+
+Naming convention (see docs/ai/case-layout.md): SECTORS in CAPS : CONCENTRATION, DRYING, FERMENTATION Units in PascalCase : Cryst, Evap1, Evap2 Streams in PascalCase : RawJuice, Magma, Powder, EvapVapour Components in lowercase : water, sucrose, N2
+
+\end{tutnarrative}
+\tutreadme{This is the flagship sugar plant (tutorials/plant/ChemicalPlantTutorial) driven by a SweepDriver instead of a single pass. It exists to show the one thing a single CAPEX number cannot: how the project economics move when a process variable changes.}
+\tutreadme{The driver runs the FULL post-processing chain (sizing $\to$ costing $\to$ economics, in system/postDict) on every converged point, so economics.IRR, economics.paybackYears, economics.NPV, ? resolve as ordinary KPI look-ups (the Phase-2 SweepDriver post-chain wiring). The result lands in sweep\_results.csv.}
+\tutreadme{Sweeping the RawJuice sucrose content 0.09 $\to$ 0.16 mol fraction walks the plant from sub-economic, through break-even, to clearly profitable:}
+\tutreadme{(Measured 2026-10-06 from sweep\_results.csv, after the BD dryer's air was sized for the richest point -- the design basis is written in 0/MAIN/BdAir.)}
+\tutreadme{Richer juice $\to$ more crystalline sugar per unit feed $\to$ more revenue against an almost-unchanged plant cost $\to$ the IRR climbs and the payback appears and shortens. The NPV crosses zero between 0.090 and 0.104.}
+\tutreadme{Both use the same constant/economics prices (EU Sugar Market Observatory white sugar, ECB EUR/USD, $\ast$Chemical Engineering$\ast$ CEPCI, US statutory tax) and the same system/postDict cost chain --- only the run mode differs.}
 
 \subsection{electrodialysis}
 \grouptheory{electrodialysis}
@@ -5321,19 +5439,19 @@ HONEST SIMPLIFICATIONS. (1) The loop is isobaric at 200 bar; the makeup compress
 \tutreadme{1. The cut is declared, and the seed is yours. system/solverDict says tearStreams ( recycle ); with recycleSolver Newton;, recycleTol 1e-5;, recycleMaxIter 200; --- the topology stays in flowsheetDict and the numerical strategy sits here. 0/recycle carries the starting guess, and its own header says in so many words that it is an estimate and not a specification: the solver converges it and announces what it did. Nothing about closing this loop happens behind your back. 2. The recycle is visible in the arithmetic of the pinned numbers. One kmol/h of makeup enters, and the converter sees 2.02566484668 kmol/h. The difference is the recycle, and it is what turns a per-pass equilibrium of about 31 \% ammonia into a loop that recovers far more of the makeup than any single pass could. The reason the loop exists is a subtraction you can do in your head. 3. The converter is told elements, not a conversion. gibbsReactor takes elements ( N H Ar ) and a species list with their atom counts, and minimises Gibbs energy: no rate constant, no declared extent, no conversion specification anywhere. What comes back is y\_NH3 0.310807360284 plus the element potentials lambda\_N, lambda\_H, lambda\_Ar --- the Lagrange multipliers of the atom balances, printed because they are the answer's own arithmetic. 4. Two flashes, one temperature, two pressures. The separator at 250 K and 200 bar condenses ammonia out of the loop gas (K\_NH3 0.01626); the let-down drum holds the same 250 K at 20 bar and boils dissolved light gas back out of that liquid (K\_NH3 0.09469, V/F 0.008021). The liquid world is declared as a dilute solution --- ammonia as the solvent on the pure-liquid rung, N2 and H2 as Henry solutes on the infinite-dilution rung with their own pair files in constant/parameters/Henry/ --- while the vapour is fugacityModel SRK;, a real gas at 200 bar. Read constant/thermoPhysPropDict: one stream, two reference rungs in its liquid, and both of them declared. 5. The purge is a splitter and nothing else, and it is what makes the loop finite. Argon enters with the makeup at 0.01 kmol/h, takes part in no reaction, and would otherwise circulate for ever. fractions ( 0.05 0.95 ) is the entire mechanism. Then do the balance yourself: add the argon on every stream that leaves the plant boundary --- purge, letdownGas and productNH3 --- and check it against the 0.01 kmol/h that came in. It closes, and the exit carrying most of it may not be the one you would have guessed from the diagram.}
 \tutreadme{Change the splitter to fractions ( 0.02 0.98 ); --- a smaller purge. The recycle grows, the argon in the loop climbs, and the converter's y\_Ar rises at the expense of everything it is diluting. Push it far enough and the loop chokes on its own inert, which is the whole argument for spending reactants on a purge. Then open tutorials/plant/acetonePlant, the last case on this path: a published industrial process, closed, with a recycle, and a written account of where its errors come from.}
 \begin{tutgolden}
-\goldrow{stream}{letdownGas}{F}{1.06533052494e-06}
+\goldrow{stream}{letdownGas}{F}{1.05891175171e-06}
 \goldrow{stream}{makeup}{F}{0.000277777777778}
-\goldrow{stream}{mixed}{F}{0.000562684679632}
-\goldrow{stream}{productNH3}{F}{0.000131750445273}
-\goldrow{stream}{purge}{F}{1.49951001055e-05}
-\goldrow{stream}{rawLiquid}{F}{0.000132815775798}
-\goldrow{stream}{reacted}{F}{0.000432717777908}
-\goldrow{stream}{recycle}{F}{0.000284906902004}
-\goldrow{stream}{unreactedGas}{F}{0.000299902002109}
-\goldrow{kpi}{converter}{F\_in\_kmol\_h}{2.02566484668}
-\goldrow{kpi}{converter}{F\_out\_kmol\_h}{1.55778400047}
-\goldrow{kpi}{converter}{N\_in\_mol\_s}{0.562684679632}
-\goldrow{kpi}{converter}{N\_out\_mol\_s}{0.432717777908}
+\goldrow{stream}{mixed}{F}{0.000566481070111}
+\goldrow{stream}{productNH3}{F}{0.00013161877625}
+\goldrow{stream}{purge}{F}{1.5194910131e-05}
+\goldrow{stream}{rawLiquid}{F}{0.000132677688002}
+\goldrow{stream}{reacted}{F}{0.000436575890622}
+\goldrow{stream}{recycle}{F}{0.000288703292489}
+\goldrow{stream}{unreactedGas}{F}{0.00030389820262}
+\goldrow{kpi}{converter}{F\_in\_kmol\_h}{2.0393318524}
+\goldrow{kpi}{converter}{F\_out\_kmol\_h}{1.57167320624}
+\goldrow{kpi}{converter}{N\_in\_mol\_s}{0.566481070111}
+\goldrow{kpi}{converter}{N\_out\_mol\_s}{0.436575890622}
 \goldrow{kpi}{converter}{P}{20000000}
 \goldmore{65}
 \end{tutgolden}
@@ -5468,6 +5586,33 @@ Compare with flash01\_benzene\_toluene, where the same separation is asked as `i
 \goldrow{stream}{heated}{F}{0.0277777777778}
 \goldrow{stream}{heated}{T}{413.089781612}
 \goldmore{41}
+\end{tutgolden}
+
+\clearpage
+\tutentry{esterification2sector}{tutorials/steady/flowsheets/esterification2sector}
+\tutwhat{Esterification plant -- two sectors (REACTION + SEPARATION) sharing components; per-sector constant/ data (S1 kinetics, S2 NRTL pair); ethanol-water pair inherited from the standard library}
+\tutreadme{A two-sector plant that exists to prove one thing: data lives with the sector that owns it, and a whole-plant run finds it there.}
+\tutreadme{Components are shared across the plant. The kinetics belong to REACTION and are never copied to the root. The ethylAcetate-water NRTL pair belongs to SEPARATION --- a $\ast$particular$\ast$ datum, fitted for this separation --- while ethanol-water walks up to the standard catalogue. Three levels of ownership, one run.}
+\tutreadme{That perNode is the whole case. The sector's pair beat the standard library, and the log says so rather than leaving you to wonder which one it used.}
+\tutreadme{Feed 100 kmol/h equimolar acetic acid + ethanol at 360 K. The CSTR (V\_R = 0.5 m$^3$) reaches 34.2 \% conversion --- a PLACEHOLDER number: the kinetics in sectors/REACTION/constant/reactions are still the pseudo-first-order stand-in, not the 2nd-order fit this case's own property evidence supports (see CLAUDE.md, "Pending"). The flash at 355 K, 1.013 bar splits the product into a vapour rich in ethyl acetate (bp 350 K) and ethanol, and a liquid rich in water and the unconverted acid. Mass closes exactly: 50.80 kmol/h of vapour + 49.20 of liquid = 100.00 kmol/h.}
+\tutreadme{This case shipped for weeks marked .known-broken, and it earned the mark twice over. Its flash carried P 1.01325; with no unit, which is 1.01 pascal --- a hard vacuum --- so the K-values exploded and everything went to the vapour. And it was never wired: the sectors existed as thermo regions with the connections commented out, awaiting a "curation phase" that never ended.}
+\tutreadme{Fixing it surfaced two real engine bugs, both of the same shape --- data owned by a $\ast$sector$\ast$ was invisible from a whole-plant run:}
+\begin{tutgolden}
+\goldrow{stream}{Feed}{F}{0.0277777777778}
+\goldrow{stream}{liquid}{F}{0.01366691372}
+\goldrow{stream}{reactorOut}{F}{0.0277777777778}
+\goldrow{stream}{vapor}{F}{0.0141108640578}
+\goldrow{utility}{SEPARATION.flash}{cooling.coolingWater.duty\_kW}{-211.579232905}
+\goldrow{utility}{SEPARATION.flash}{cooling.coolingWater.T}{355}
+\goldrow{utility}{SEPARATION.flash}{cooling.coolingWater.kg\_s}{5.06170413649}
+\goldrow{utility}{SEPARATION.flash}{cooling.coolingWater.eur\_h}{0.304674095384}
+\goldrow{stream}{Feed}{T}{360}
+\goldrow{stream}{liquid}{T}{355}
+\goldrow{stream}{reactorOut}{T}{360}
+\goldrow{stream}{vapor}{T}{355}
+\goldrow{closure}{SEPARATION.flash}{raw\_kW}{715.698427712}
+\goldrow{closure}{SEPARATION.flash}{step\_kW}{715.698427712}
+\goldmore{45}
 \end{tutgolden}
 
 \clearpage
@@ -5987,6 +6132,20 @@ The CSTR converts \textasciitilde{}25\% per pass (small volume); without recycle
 \goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1.75818456976}
 \goldmore{40}
 \end{tutgolden}
+
+\clearpage
+\tutentry{twoSectorDemo}{tutorials/steady/flowsheets/twoSectorDemo}
+\tutwhat{Two-sector demo plant -- self-contained: 10 components, 10 NRTL pairs, 5 reactions, and TWO custom compiled unit ops (a reactor in SECTOR\_R, a column in SECTOR\_S). Zip the folder and send it.}
+\begin{tutnarrative}
+Two-sector demo plant. UMBRELLA holding two sectors that share the plant-level constant (components, pairs, reactions). Each sector RUNS on its own with its OWN compiled unit op (see each sector code folder). ---
+
+\end{tutnarrative}
+\tutreadme{A TWO-SECTOR plant that carries everything it needs inside the folder --- nothing from outside except the Choupo engine. Zip it, send it to a collaborator, they unzip + build + run.}
+\tutreadme{> Run the SECTORS, not the umbrella. The top-level > tutorials/steady/flowsheets/twoSectorDemo has no connections (the sectors are not > wired into one plant), so running it prints $\ast$"nothing to simulate --- curation > phase"$\ast$ and exits cleanly. The runnable cases are the two sub-sectors, > SECTOR\_R and SECTOR\_S, each of which builds its own custom unit op > and converges on its own (see $\ast$Build + run$\ast$ below).}
+\tutreadme{- 10 components --- constant/components/compA..compJ.dat (synthetic). - 10 NRTL binary pairs --- constant/parameters/NRTL/$\ast$.dat. - 5 reactions --- constant/reactions. - 2 custom unit operations, compiled from source in the case: - SECTOR\_R/code/StoichReactor --- a specified-conversion reactor. - SECTOR\_S/code/SharpSplitColumn --- a sharp-split distillation (2 outlets). - Shared thermo (constant/thermoPhysPropDict) cascades DOWN to both sectors.}
+\tutreadme{buildCode links the sector's code/ against the Choupo library into a per-case binary --- the FLOWTRAN model: standard library + your own blocks, linked at build time. Glass-box: the g++ command is printed, no runtime magic.}
+\tutreadme{Zip the folder (the compiled code/.build/ and any logs are NOT needed --- the collaborator rebuilds with buildCode):}
+\tutreadme{- The chemistry is synthetic (a structure demo, not a validated process). - compA/compB/compC happen to share names with the standard VLLE-audit components, so the engine prints a [overlay] notice when this case shadows them --- that is the no-silent-crutch honesty working, not an error. - The custom ops are black-box (algebraic), so they run regardless of the thermo; the 10 pairs are curated data for the props bench / activity-using ops, not evaluated by these two ops.}
 
 \subsection{gas-solid}
 \grouptheory{gas-solid}
@@ -7650,6 +7809,8 @@ Violation diagnostics (each unit is utility-served here, so every duty on the wr
 \tutreadme{Four streams, the textbook problem: two hot (H1 150 $\to$ 60 $^\circ$C at CP 2 kW/K, H2 90 $\to$ 60 $^\circ$C at CP 8 kW/K) and two cold (C1 20 $\to$ 125 $^\circ$C at CP 2.5 kW/K, C2 25 $\to$ 100 $^\circ$C at CP 3 kW/K), each modelled as a heater or cooler with a declared duty, on a synthetic constant-Cp fluid (hxFluid, 100 J/mol K, case-local) so that CP = F$\cdot$cp exactly. With $\Delta$T\_min = 20 K the pinch pass finds the targets the whole subject is named after: Q\_H,min = 107.5 kW, Q\_C,min = 40 kW, pinch at shifted T$\ast$ = 353.15 K (hot 363.15 K / cold 343.15 K). Today's unintegrated flowsheet buys 487.5 kW of heating and rejects 420 kW --- the gap is what integration could recover.}
 \tutreadme{1. The problem table is printed, interval by interval. Six shifted intervals, $\Sigma$CP hot and cold, $\Delta$H per interval and the cascade --- [pinch] lines in the Log tab. Redo the cascade by hand (start at 0, carry each $\Delta$H down, then add the most negative value back); the golden is what you get. 2. The targets are a consequence, not a design. Nothing was matched yet. reports/pinch/candidateMatches.csv lists every admissible hot--cold pair per region (6 candidates, 6 admissible) with its counter-current end-approach bound. The word $\ast$optimal$\ast$ never appears --- the pass recommends, it never rewrites the flowsheet. 3. The three violations name themselves. coolerH1 rejects 120 kW $\ast$above$\ast$ the pinch; heaterC1 and heaterC2 draw 125 + 135 kW $\ast$below$\ast$ it. Their sum is exactly the current-minus-target excess. Those are the coursework rules, read off your own flowsheet. 4. Composite curves are a file, not a claim. reports/pinch/compositeCurves.csv --- plot it; the two curves touch at $\Delta$T\_min and the overhangs are Q\_H,min and Q\_C,min.}
 \tutreadme{Change dTmin in system/postDict to 10 K and rerun: both targets fall and the pinch moves. Then look at energyBalance for this case --- it says UNAVAILABLE, because hxFluid carries no formation enthalpy on purpose: a pinch analysis needs only CP, and the case declares nothing it does not need.}
+\tutreadme{The fluid is synthetic and its heat capacity is constant (100 J/mol K); nothing about it is a measured property, and it carries no formation enthalpy on purpose. That is why the run says (1) the heaters invert their outlet temperature on the $\ast$sensible$\ast$ enthalpy path (no datum, so no latent heat can be priced -- harmless here, every stream stays subcooled liquid) and (2) hxFluid has no standardThermochemistry block (the energy balance is UNAVAILABLE, with the remedy). A third warning, a vapour pressure "evaluated at 150 K, outside 280-620 K", used to appear too; it was the heater's dome guard bracketing its search at a fixed 150 K, not a state any stream was in, and the guard now brackets inside the record's own declared window (DEV.md 4c C234).}
+\tutreadme{The pass classifies the problem from the whole cascade and prints the word (CLASS: interiorPinch; also reports/pinch/summary.csv). Try dTmin 1 K: Q\_H,min = 67.5 kW and Q\_C,min = 0 -- a $\ast$threshold$\ast$ problem with no pinch. Whatever dTmin you choose, Q\_H,min - Q\_C,min stays 67.5 kW: it is the cold total (487.5 kW) minus the hot total (420 kW), a first-law identity. reports/pinch/problemTable.csv is the worked cascade the page draws.}
 \begin{tutgolden}
 \goldrow{stream}{c1In}{F}{0.025}
 \goldrow{stream}{c1Out}{F}{0.025}
@@ -7665,7 +7826,7 @@ Violation diagnostics (each unit is utility-served here, so every duty on the wr
 \goldrow{kpi}{coolerH1}{Q\_kW}{-180}
 \goldrow{kpi}{coolerH1}{Q\_per\_mol}{-9000}
 \goldrow{kpi}{coolerH1}{T\_in}{423.15}
-\goldmore{69}
+\goldmore{76}
 \end{tutgolden}
 
 \clearpage
@@ -7748,19 +7909,19 @@ Package: the plant's own (Henry for the dissolved gases in ammonia, SRK for the 
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{stream}{FlashGas}{F}{0.0415445974779}
-\goldrow{stream}{FlashGas}{T}{238.884926778}
-\goldrow{stream}{FuelGas}{F}{0.00339264003654}
-\goldrow{stream}{FuelGas}{T}{248.677720887}
-\goldrow{stream}{LetdownGas}{F}{0.00354665692591}
-\goldrow{stream}{LetdownGas}{T}{253.01994131}
-\goldrow{stream}{LetdownLiquid}{F}{0.813252311193}
-\goldrow{stream}{LetdownLiquid}{T}{253.01994131}
-\goldrow{stream}{ProductNH3}{F}{0.771707755979}
-\goldrow{stream}{ProductNH3}{T}{238.884926778}
-\goldrow{stream}{Purge}{F}{0.00339264003654}
+\goldrow{stream}{FlashGas}{F}{0.0407307688084}
+\goldrow{stream}{FlashGas}{T}{239.184945702}
+\goldrow{stream}{FuelGas}{F}{0.00341975773796}
+\goldrow{stream}{FuelGas}{T}{248.310278169}
+\goldrow{stream}{LetdownGas}{F}{0.00353308844047}
+\goldrow{stream}{LetdownGas}{T}{253.01420618}
+\goldrow{stream}{LetdownLiquid}{F}{0.813232678042}
+\goldrow{stream}{LetdownLiquid}{T}{253.01420618}
+\goldrow{stream}{ProductNH3}{F}{0.772501909234}
+\goldrow{stream}{ProductNH3}{T}{239.184945702}
+\goldrow{stream}{Purge}{F}{0.00341975773796}
 \goldrow{stream}{Purge}{T}{253.15}
-\goldrow{stream}{RawLiquid}{F}{0.816798968119}
+\goldrow{stream}{RawLiquid}{F}{0.816765766483}
 \goldrow{stream}{RawLiquid}{T}{253.15}
 \goldmore{84}
 \end{tutgolden}
@@ -9899,6 +10060,53 @@ Contrast: rankine01\_water runs the SAME architecture on the ideal gas, in the g
 \subsection{reactors}
 \grouptheory{reactors}
 \clearpage
+\tutentry{aceticAcid01\_gibbsReactor}{tutorials/steady/reactors/aceticAcid01\_gibbsReactor}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny gibbsReactor}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,-0.17)$) -- ($(reactor.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {gas};
+  \draw[->] ($(reactor.east)+(0,0.17)$) -- ($(reactor.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {liquid};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{ACETIC ACID FROM CO + METHANOL -- a basic Gibbs-reactor tutorial. One gibbsReactor with the six species of the carbonylation chemistry (CO, methanol, acetic acid, dimethyl ether, methyl acetate, water) at 460 K and 30 bar, detuned by a 10 K approach to equilibrium. Thermodynamic ceiling only: no catalyst, no rate law.}
+\begin{tutnarrative}
+acetic acid from CO + methanol.
+
+CO + CH3OH $\to$ CH3COOH (the carbonylation) 2 CH3OH <$\to$ CH3OCH3 + H2O (dimethyl ether) CH3OH + CH3COOH <$\to$ CH3COOCH3 + H2O (methyl acetate)
+
+The reactor is a `gibbsReactor`: it is given the SPECIES and their atoms, never the reactions above. It finds the composition that minimises the Gibbs energy at 460 K and 30 bar, so every pathway the six species allow is open at once. `temperatureApproach 10` then detunes it: the engine evaluates the REACTION equilibrium 10 K away from the physical T (it reads the sign from the thermicity of this feed), so the outlet is 10 K short of equilibrium.
+
+feed (CO + methanol) -$\to$ [reactor] -$\to$ gas -$\to$ liquid
+
+TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
+
+\end{tutnarrative}
+\tutreadme{A basic tutorial: ONE gibbsReactor, six species, a 10 K approach to equilibrium. It answers a single question --- $\ast$what does thermodynamics alone allow when CO and methanol meet at 460 K and 30 bar?$\ast$ --- and says nothing about how fast, or with what catalyst, it gets there.}
+\tutreadme{The flowsheet never states these reactions. system/flowsheetDict lists the six species with their atoms (C, H, O) and the reactor minimises the Gibbs energy under the atom balances, so every pathway the six species allow is open at once. Species left out are pathways closed by decision: no CO2, H2, CH4, formaldehyde or iodides.}
+\tutreadme{The feed is declared phase gas; at the reactor temperature on purpose: a stream at 300 K with CO and methanol together has no honest single phase, and the energy report refuses to price it (found while writing this case).}
+\tutreadme{The lesson is that the by-products vanish. Carbonylation is so favourable (K \textasciitilde{} 2e5 bar\textasciicircum{}-1 at 470 K, from the formation data) that methanol is used up; methyl acetate and water exist only as the trace left in equilibrium with it, and DME is smaller still. In the real plant they are $\ast$intermediates$\ast$ whose level is set by kinetics and by the catalyst system, not by this equilibrium. A Gibbs reactor gives the ceiling, not the selectivity.}
+\tutreadme{Hand check (order of magnitude, ideal gas, 470 K): dG(carbonylation) \textasciitilde{} -48 kJ/mol gives y\_MeOH \textasciitilde{} 1e-8 to 1e-7 with p\_CO \textasciitilde{} 24 bar and p\_AcOH \textasciitilde{} 6 bar; the engine's 4e-8 agrees. Methyl acetate then follows from K \textasciitilde{} 60 for the esterification, giving \textasciitilde{}7e-4, which also agrees.}
+\tutreadme{temperatureApproach 10 is a MAGNITUDE. The engine reads the thermicity of this feed's transformation (exothermic, dH = -66 437 kJ per kmol of feed), assigns the sign, and evaluates the reaction equilibrium at T + 10 K = 470 K, announcing it. Compared with temperatureApproach 0:}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0583333333333}
+\goldrow{stream}{feed}{T}{460}
+\goldrow{stream}{gas}{F}{0.0034726940335}
+\goldrow{stream}{gas}{T}{460}
+\goldrow{stream}{liquid}{F}{0.0270854817667}
+\goldrow{stream}{liquid}{T}{460}
+\goldrow{kpi}{reactor}{F\_condensate\_kmol\_h}{97.5077343601}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{210}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{12.5016985206}
+\goldrow{kpi}{reactor}{N\_in\_mol\_s}{58.3333333333}
+\goldrow{kpi}{reactor}{N\_liq\_mol\_s}{27.0854817667}
+\goldrow{kpi}{reactor}{N\_out\_mol\_s}{30.5581758002}
+\goldrow{kpi}{reactor}{P}{3000000}
+\goldrow{kpi}{reactor}{Q\_kW}{-4577.90696264}
+\goldmore{23}
+\end{tutgolden}
+
+\clearpage
 \tutentry{acetone02\_luyben\_reactor}{tutorials/steady/reactors/acetone02\_luyben\_reactor}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -9944,6 +10152,401 @@ NOT MODELLED, and named rather than implied: the reactor's SIZE. Luyben specifie
 \goldrow{stream}{Rout}{water}{0.207264518777}
 \goldrow{kpi}{reactor}{Q\_reaction\_kW}{470.487527672}
 \goldmore{11}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ammonia03\_quench\_converter}{tutorials/steady/reactors/ammonia03\_quench\_converter}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T101) at (0.0,-0.0) {\textbf{T101}\\[-1pt]{\tiny storageTank}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (makeupComp) at (2.9,-0.0) {\textbf{makeupComp}\\[-1pt]{\tiny compressor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (recycleComp) at (327.7,-0.0) {\textbf{recycleComp}\\[-1pt]{\tiny compressor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (330.6,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (quenchSplit) at (333.5,-0.0) {\textbf{quenchSplit}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (FEHE) at (336.4,-0.0) {\textbf{FEHE}\\[-1pt]{\tiny heatExchanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bed1) at (339.3,-0.0) {\textbf{bed1}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (quench1Mix) at (342.2,-0.0) {\textbf{quench1Mix}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bed2) at (345.1,-0.0) {\textbf{bed2}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (quench2Mix) at (348.0,-0.0) {\textbf{quench2Mix}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bed3) at (350.9,-0.0) {\textbf{bed3}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (waterCooler) at (339.3,-1.7) {\textbf{waterCooler}\\[-1pt]{\tiny heatExchanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (342.2,-1.7) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (345.1,-1.7) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (345.1,-3.4) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T201) at (348.0,-1.7) {\textbf{T201}\\[-1pt]{\tiny storageTank}};
+  \draw[->] ($(T101.west)+(-1.05,0.00)$) -- ($(T101.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
+  \draw[->] (T101) -- (makeupComp) node[midway, above, font=\tiny] {makeupStored};
+  \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (recycleComp.south) node[midway, below, font=\tiny] {recycle};
+  \draw[->] (makeupComp) -- (mixer) node[midway, above, font=\tiny] {compMakeup};
+  \draw[->] (recycleComp) -- (mixer) node[midway, above, font=\tiny] {compRecycle};
+  \draw[->] (mixer) -- (quenchSplit) node[midway, above, font=\tiny] {mixed};
+  \draw[->, dashed] (bed3.south) .. controls +(0,-1.0) and +(0,-1.0) .. (FEHE.south) node[midway, below, font=\tiny] {hotEffluent};
+  \draw[->] (quenchSplit) -- (FEHE) node[midway, above, font=\tiny] {toFEHE};
+  \draw[->] (FEHE) -- (bed1) node[midway, above, font=\tiny] {preheatedFeed};
+  \draw[->] (bed1) -- (quench1Mix) node[midway, above, font=\tiny] {bed1Out};
+  \draw[->] (quenchSplit) -- (quench1Mix) node[midway, above, font=\tiny] {quench1};
+  \draw[->] (quench1Mix) -- (bed2) node[midway, above, font=\tiny] {bed2Feed};
+  \draw[->] (bed2) -- (quench2Mix) node[midway, above, font=\tiny] {bed2Out};
+  \draw[->] (quenchSplit) -- (quench2Mix) node[midway, above, font=\tiny] {quench2};
+  \draw[->] (quench2Mix) -- (bed3) node[midway, above, font=\tiny] {bed3Feed};
+  \draw[->] (FEHE) -- (waterCooler) node[midway, above, font=\tiny] {cooledEffluent};
+  \draw[->] ($(waterCooler.west)+(-1.05,0.00)$) -- ($(waterCooler.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {cw};
+  \draw[->] (waterCooler) -- (separator) node[midway, above, font=\tiny] {chilledEffluent};
+  \draw[->] (separator) -- (letdown) node[midway, above, font=\tiny] {rawLiquid};
+  \draw[->] (separator) -- (purgeSplit) node[midway, above, font=\tiny] {unreactedGas};
+  \draw[->] (letdown) -- (T201) node[midway, above, font=\tiny] {productNH3};
+  \draw[->] ($(waterCooler.east)+(0,0.00)$) -- ($(waterCooler.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {cwOut};
+  \draw[->] ($(letdown.east)+(0,0.00)$) -- ($(letdown.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {letdownGas};
+  \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
+  \draw[->] ($(T201.east)+(0,0.00)$) -- ($(T201.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {productStored};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Ammonia synthesis loop with a THREE-BED QUENCH CONVERTER: cold feed gas is taken off upstream of the feed-effluent exchanger and injected between adiabatic catalyst beds, so the gas zigzags about the locus of maximum rate instead of riding one adiabatic line to a single hot equilibrium. Same loop as ammonia02 (200 bar, 3:1 makeup, 3\% purge, Henry-law dissolved gases); the converter is the redesign. The quench split is the design variable.}
+\begin{tutnarrative}
+the SAME synthesis loop as ammonia02, with the converter redesigned as THREE ADIABATIC BEDS WITH COLD-SHOT QUENCH.
+
+makeup 25 bar  [T101] [makeupComp 25$\to$245]     recycle  [recycleComp]  [mixer]   mixed (26645 kmol/h, 386 K)   [quenchSplit] <-- THE DESIGN VARIABLE 47 \%  25 \%  28 \%  toFEHE  quench1  quench2        [FEHE]     hotEffluent (heat recovery)   preheatedFeed 683 K         [bed1]   841 K   [quench1Mix]        (682 K)   bed2Feed   [bed2]   798 K   [quench2Mix]          (681 K)   bed3Feed   [bed3]   778 K    hotEffluent     [FEHE] hot side
+
+[waterCooler]      [separator] 250 K / 200 bar     rawLiquid unreactedGas     [letdown] [purgeSplit]         productNH3 gas purge recycle (tear)
+
+WHY QUENCH. N2 + 3 H2 <$\to$ 2 NH3 is EXOTHERMIC and REVERSIBLE. Exothermic means an adiabatic bed heats itself as it converts; reversible means the equilibrium it is climbing towards RETREATS as it heats. A single adiabatic bed therefore runs up one straight line in the (conversion, temperature) plane until it meets the equilibrium curve, and stops there -- ammonia02 stops at 839.6 K and 10.75 \% NH3. A quench converter cuts the bed into pieces and drops the gas back down the temperature axis between them, with cold loop gas taken off upstream of the interchanger. The gas ZIGZAGS: up the adiabatic line inside a bed, vertically down at each cold shot.
+
+MEASURED, this run against ammonia02 (identical feed, pressure, purge and separator; only the converter and the interchanger differ):
+
+converter exit 10.75 \% NH3 @ 839.6 K $\to$ 17.28 \% NH3 @ 777.5 K per-pass N2 conv. 17.84 \% $\to$ 28.80 \% loop circulation 40545 kmol/h $\to$ 26645 kmol/h recycle 32545 kmol/h $\to$ 18645 kmol/h purge (3 \% of recycle) 1006 kmol/h $\to$ 577 kmol/h product 3498.7 kmol/h $\to$ 3719.8 kmol/h (+6.3 \%)
+
+The product gain is NOT the extra equilibrium conversion by itself: it is that a loop which converts more per pass recirculates less, so the 3 \% purge throws away 43 \% less hydrogen.
+
+THE SPLIT IS THE DESIGN. 47 / 25 / 28 is not a given; it is chosen. With the interchanger fixed at 375 m2, lowering the FEHE branch sends a smaller stream through the same area and preheats bed 1 MORE while cooling beds 2 and 3; raising it does the opposite. 47 \% is the value at which all three beds enter within 2.6 K of each other, at the 683 K that ammonia02's own converter already uses as its light-off inlet. Read README.md for the measurements, including what a BAD split costs and why a fourth bed is not obviously worth building.
+
+WHAT THIS MODEL DOES NOT CONTAIN -- read this before quoting any number. Every bed here is a `gibbsReactor`: it runs to FULL EQUILIBRIUM, which is the same as saying it is infinitely long. There is no rate law, no catalyst volume, no particle size and no approach to equilibrium anywhere in this case, so: no bed can be SIZED, and system/postDict declares all three so that the engine refuses them by name on every run; nothing here can tell a good injection POINT from a bad one. Measured: moving quench from 25/28 to 50/3 leaves the converter exit unchanged to five figures, because with the last bed at equilibrium the outlet depends only on the TOTAL cold shot, not on where it enters. That is an exact property of the model, not a numerical accident -- and it is exactly the question a real design has to answer.
+
+THE CONSTRUCTION IS DYSON AND SIMON'S. The rate contours in the conversion-temperature plane, the locus of maximum rate descending as conversion rises, and a cold-shot trajectory drawn as a zigzag about it, are Figure 2 of D. C. Dyson and J. M. Simon, "A kinetic expression with diffusion correction for ammonia synthesis on industrial catalyst", Ind. Eng. Chem. Fundam. 7 (1968) 605-610. This case executes that picture with equilibrium beds; their rate law is what would put the locus on it.
+
+UNCHANGED FROM ammonia02, deliberately: 200 bar synthesis, makeup 1980 kmol/h N2 + 5940 kmol/h H2 (exactly 3:1) + 80 kmol/h Ar, both compressors and their shaft powers, the water cooler, the 250 K / 200 bar refrigerated separator, the 20 bar let-down, the 3 \% purge, the two storage tanks, the declared cooling-water circuit, and the SRK + Henry thermophysical package with its cited N2-NH3 and H2-NH3 pairs.
+
+CHANGED, and each change is a consequence of the converter: the INTERCHANGER falls from 1500 m2 to 375 m2. It carries 47 \% of the loop gas instead of 100 \%, from an effluent 62 K cooler. Its duty falls from 117.2 MW to 31.2 MW. the WATER COOLER takes 66.2 MW instead of 57.8 MW: 8.4 MW that the interchanger no longer recovers leaves through the cooling water instead. A real plant puts a waste-heat boiler on that effluent. This case does not add one -- that is a separate design act, and inventing it here would change two things at once. the recycle TOLERANCE is 1e-8 instead of 1e-5. At 1e-5 this loop's element balance closed only to 0.05 \%; three reactors on one tear leave more room for a loose tear to show. NOT changed and worth seeing: the recycle compressor still takes 4000 kW on a circulation 43 \% smaller, so it now discharges at 258 bar into a mixer that runs at 245. The circulator is oversized for the converter it feeds -- a real consequence of the redesign, left visible rather than tuned away.
+
+\end{tutnarrative}
+\tutreadme{The same synthesis loop as ammonia02\_full\_plant --- 200 bar, makeup 1980 kmol/h N$_2$ + 5940 kmol/h H$_2$ (exactly 3:1) + 80 kmol/h Ar, refrigerated separator at 250 K, 3 \% purge, SRK fugacity with measured N$_2$--NH$_3$ and H$_2$--NH$_3$ Henry pairs --- with one thing changed: the converter. ammonia02 has a single adiabatic bed. This case has three adiabatic beds with cold-shot quench between them, which is what the BASF account of Haber--Bosch describes when it says the reacting hot gas is cooled with a supply of cold gas $\ast$inside$\ast$ the reactor.}
+\tutreadme{Ammonia synthesis is exothermic $\ast$and$\ast$ reversible, and those two facts pull in opposite directions.}
+\tutreadme{$\ast$ Exothermic $\to$ an adiabatic bed heats itself as it converts. Its state moves up a straight line in the (conversion, temperature) plane: every mole of NH$_3$ formed buys a fixed number of degrees. $\ast$ Reversible $\to$ the equilibrium conversion falls as the temperature rises. The target retreats as you chase it.}
+\tutreadme{Between them there is a locus of maximum rate: at any conversion there is one temperature where the forward and reverse rates are furthest apart, and that temperature descends as conversion rises. A single adiabatic bed crosses that locus early and then spends the rest of itself on the wrong side of it, running into a receding equilibrium.}
+\tutreadme{A quench converter follows the locus instead --- in a staircase. Inside a bed the gas climbs its adiabatic line; at the cold shot it drops vertically (cold gas removes heat, and dilutes, but converts nothing). Up, down, up, down, up. That zigzag is the whole design.}
+\tutreadme{The picture is Dyson and Simon's. The rate contours in the conversion--temperature plane, the descending locus of maximum rate, and a cold-shot trajectory drawn as a zigzag about it, are Figure 2 of D. C. Dyson and J. M. Simon, $\ast$A kinetic expression with diffusion correction for ammonia synthesis on industrial catalyst$\ast$, Ind. Eng. Chem. Fundam. 7 (1968) 605--610. This case executes that figure with equilibrium beds. Their rate law is what would put the contours on it; see ?6.}
+\begin{tutgolden}
+\goldrow{stream}{bed1Out}{F}{3.18681083805}
+\goldrow{stream}{bed1Out}{T}{837.930307027}
+\goldrow{stream}{bed2Feed}{F}{5.04038452758}
+\goldrow{stream}{bed2Feed}{T}{679.708233615}
+\goldrow{stream}{bed2Out}{F}{4.70433099213}
+\goldrow{stream}{bed2Out}{T}{795.349370609}
+\goldrow{stream}{bed3Feed}{F}{6.7803335244}
+\goldrow{stream}{bed3Feed}{T}{678.61841565}
+\goldrow{stream}{chilledEffluent}{F}{6.39361673578}
+\goldrow{stream}{chilledEffluent}{T}{323.660795509}
+\goldrow{stream}{compMakeup}{F}{2.22222222222}
+\goldrow{stream}{compMakeup}{T}{656.394257943}
+\goldrow{stream}{compRecycle}{F}{5.1920725359}
+\goldrow{stream}{compRecycle}{T}{274.010097828}
+\goldmore{284}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ammoniaReactor01\_fixedConversion}{tutorials/steady/reactors/ammoniaReactor01\_fixedConversion}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (60.9,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (converter) at (63.8,-0.0) {\textbf{converter}\\[-1pt]{\tiny conversionReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (66.7,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (69.6,-0.0) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (69.6,-1.7) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \draw[->] ($(mixer.west)+(-1.05,0.00)$) -- ($(mixer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
+  \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (mixer.south) node[midway, below, font=\tiny] {recycle};
+  \draw[->] (mixer) -- (converter) node[midway, above, font=\tiny] {mixed};
+  \draw[->] (converter) -- (separator) node[midway, above, font=\tiny] {reacted};
+  \draw[->] (separator) -- (letdown) node[midway, above, font=\tiny] {rawLiquid};
+  \draw[->] (separator) -- (purgeSplit) node[midway, above, font=\tiny] {unreactedGas};
+  \draw[->] ($(letdown.east)+(0,-0.17)$) -- ($(letdown.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {productNH3};
+  \draw[->] ($(letdown.east)+(0,0.17)$) -- ($(letdown.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {letdownGas};
+  \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{AMMONIA REACTOR-MODEL LADDER, rung 1 of 4 -- FIXED CONVERSION. The ammonia synthesis loop with a conversionReactor on a DECLARED single-pass conversion of 25 \% of the nitrogen. Claims a converged MATERIAL balance and nothing else: no reactor size, no equipment cost -- and NOT a converged heat balance, which this reactor cannot deliver against an SRK-priced stream (README section 4). Diff the flowsheetDict against ammoniaReactor02\_equilibrium and the only block that moves is the converter.}
+\begin{tutnarrative}
+THE AMMONIA REACTOR-MODEL LADDER -- flowsheet, SHARED BY RUNGS 1-3.
+
+Everything in this file except the `converter` block is BYTE-IDENTICAL across ammoniaReactor01\_fixedConversion, ammoniaReactor02\_equilibrium and ammoniaReactor03\_equilibriumApproach. Diff two of them and the only thing that moves is the reactor model -- which is the whole point: one rung of the fidelity ladder at a time, and nothing else.
+
+makeup (N2:H2 = 1:3 + 1 mol\% Ar) -+ v [mixer] <------- recycle <--------+ | | v | [converter] <-- THE ONLY | 700 K, 200 bar DIFFERENCE | v | [separator] isothermalFlash 250 K, 200 bar | | | | rawLiquid-+ +-- unreactedGas | | | | v [purgeSplit] splitter | [letdown] | | | flash 20 bar purge --+ +-- recycle ------------+ | | (5 \% bleed) (95 \%) productNH3+ +letdownGas
+
+SCALE. The makeup is 8000 kmol/h (N2 1980, H2 5940, Ar 80), which is 1 mol\% argon and H2:N2 exactly 3.0. This is NOT the scale of tutorials/steady/flowsheets/ammonia01\_synthesis\_loop, whose structure this flowsheet copies: that case runs 1 kmol/h of makeup, and at that rate the converter's catalyst charge is about 2 litres -- below the lower bound of every vessel cost correlation the engine carries, so rung 3 could not honestly cost it. The flowsheet is linear in flow (the flash and the reactor are both intensive), so the scale-up changes no intensive answer; compare this case's converter y\_NH3 against ammonia01's own golden and they agree.
+
+TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
+
+\end{tutnarrative}
+\tutreadme{<!-- The ammonia reactor-model ladder (C244, 2026-11-07): four cases, ammoniaReactor01..04, read in order. -$\to$}
+\tutreadme{Four cases over ONE unchanged ammonia synthesis loop. Between consecutive rungs exactly one thing moves: the reactor model. Feed, pressure, components, property package, recycle plan, tear seed, separator, let-down and purge are the same; diff two system/flowsheetDict files and the converter block is what differs (rung 4 also adds a V\_bed variable and a feed preheater).}
+\tutreadme{Read the rungs in order; each README says what its rung claims and what it cannot. Background: docs/design/how-a-process-design-is-staged.md and the props bench tutorials/props/kinetics/ammoniaRate01\_dyson\_simon for the rate law of rung 4.}
+\tutreadme{This is a TEACHING SEQUENCE, not a family of plants. The reference plants of the same process live in tutorials/plant/ (ammonia02\_full\_plant, the conventional loop; greenAmmoniaPEQ\_baseCase, the green-ammonia project). These cases moved here from tutorials/plant/ under DEV.md 4c C244 with their names, goldens and contents unchanged; the old identifiers resolve through tutorials/ALIASES.}
+\tutreadme{A DECLARED CONVERSION AND NOTHING ELSE. The reactor is a conversionReactor: it converts 25 \% of the inlet nitrogen because this case's dictionary says so, and it would do the same at any temperature and any pressure, whether or not equilibrium allows it. That is what a yield reactor $\ast$is$\ast$.}
+\tutreadme{READ SECTION 4 BEFORE QUOTING ANY DUTY FROM THIS CASE. DEV.md's C8 entry gives this stage exactly one claim --- $\ast$"Claims a mass balance"$\ast$ --- and that wording is load-bearing rather than loose. This case cannot honestly claim a converged HEAT balance, and the reason is the engine rather than the stage: its first law is out by 2 278.14 kW. The engine announces it loudly on every run, and section 4 diagnoses it with a probe.}
+\begin{tutgolden}
+\goldrow{stream}{letdownGas}{F}{0.00733816135665}
+\goldrow{stream}{letdownGas}{T}{250}
+\goldrow{stream}{makeup}{F}{2.22222222222}
+\goldrow{stream}{makeup}{T}{300}
+\goldrow{stream}{mixed}{F}{7.94584854922}
+\goldrow{stream}{mixed}{T}{263.676121413}
+\goldrow{stream}{productNH3}{F}{0.960141702783}
+\goldrow{stream}{productNH3}{T}{250}
+\goldrow{stream}{purge}{F}{0.301243491607}
+\goldrow{stream}{purge}{T}{250}
+\goldrow{stream}{rawLiquid}{F}{0.96747986414}
+\goldrow{stream}{rawLiquid}{T}{250}
+\goldrow{stream}{reacted}{F}{6.99234969628}
+\goldrow{stream}{reacted}{T}{700}
+\goldmore{60}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ammoniaReactor02\_equilibrium}{tutorials/steady/reactors/ammoniaReactor02\_equilibrium}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (60.9,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (converter) at (63.8,-0.0) {\textbf{converter}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (66.7,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (69.6,-0.0) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (69.6,-1.7) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \draw[->] ($(mixer.west)+(-1.05,0.00)$) -- ($(mixer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
+  \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (mixer.south) node[midway, below, font=\tiny] {recycle};
+  \draw[->] (mixer) -- (converter) node[midway, above, font=\tiny] {mixed};
+  \draw[->] (converter) -- (separator) node[midway, above, font=\tiny] {reacted};
+  \draw[->] (separator) -- (letdown) node[midway, above, font=\tiny] {rawLiquid};
+  \draw[->] (separator) -- (purgeSplit) node[midway, above, font=\tiny] {unreactedGas};
+  \draw[->] ($(letdown.east)+(0,-0.17)$) -- ($(letdown.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {productNH3};
+  \draw[->] ($(letdown.east)+(0,0.17)$) -- ($(letdown.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {letdownGas};
+  \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{AMMONIA REACTOR-MODEL LADDER, rung 2 of 4 -- THERMODYNAMIC CEILING. The same loop with a gibbsReactor at TRUE equilibrium (no approach declared), SRK fugacities at 700 K and 200 bar. The per-pass conversion it reports is a ceiling that no real converter reaches, so nothing downstream of it is sized or costed here.}
+\begin{tutnarrative}
+THE AMMONIA REACTOR-MODEL LADDER -- flowsheet, SHARED BY RUNGS 1-3.
+
+Everything in this file except the `converter` block is BYTE-IDENTICAL across ammoniaReactor01\_fixedConversion, ammoniaReactor02\_equilibrium and ammoniaReactor03\_equilibriumApproach. Diff two of them and the only thing that moves is the reactor model -- which is the whole point: one rung of the fidelity ladder at a time, and nothing else.
+
+makeup (N2:H2 = 1:3 + 1 mol\% Ar) -+ v [mixer] <------- recycle <--------+ | | v | [converter] <-- THE ONLY | 700 K, 200 bar DIFFERENCE | v | [separator] isothermalFlash 250 K, 200 bar | | | | rawLiquid-+ +-- unreactedGas | | | | v [purgeSplit] splitter | [letdown] | | | flash 20 bar purge --+ +-- recycle ------------+ | | (5 \% bleed) (95 \%) productNH3+ +letdownGas
+
+SCALE. The makeup is 8000 kmol/h (N2 1980, H2 5940, Ar 80), which is 1 mol\% argon and H2:N2 exactly 3.0. This is NOT the scale of tutorials/steady/flowsheets/ammonia01\_synthesis\_loop, whose structure this flowsheet copies: that case runs 1 kmol/h of makeup, and at that rate the converter's catalyst charge is about 2 litres -- below the lower bound of every vessel cost correlation the engine carries, so rung 3 could not honestly cost it. The flowsheet is linear in flow (the flash and the reactor are both intensive), so the scale-up changes no intensive answer; compare this case's converter y\_NH3 against ammonia01's own golden and they agree.
+
+TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
+
+\end{tutnarrative}
+\tutreadme{THE THERMODYNAMIC CEILING. The per-pass conversion this case reports is a ceiling that no real converter reaches, and sizing anything downstream against it produces a fiction. That sentence is the case; the numbers below are the evidence for it.}
+\tutreadme{Three cases form a ladder of reactor fidelity over one unchanged ammonia synthesis loop. Between consecutive stages exactly one thing moves: the reactor model. Everything else --- feed, pressure, components, property package, recycle plan, tear seed, separator, let-down, purge --- is byte-identical. Diff two system/flowsheetDict files and the only block that differs is converter.}
+\tutreadme{Rung 4 exists since 2026-09-26, and since 2026-10-12 (DEV.md 4c C67) its rate law is written in rung 4's own constant/reactions as kinetics \{ type expression; \} -- the engine carries no ammonia law of its own any more. Rung 4's README carries what the wiring found.}
+\tutreadme{Background: docs/design/how-a-process-design-is-staged.md, and DEV.md C8.}
+\tutreadme{One claim: the ceiling. With no conversion declared and no approach declared, the converter outlet is the composition that minimises the Gibbs energy of the four declared species at 700 K and 200 bar, subject to the feed's own element balance, with SRK fugacities.}
+\tutreadme{It also claims a converged heat and material balance, and here that claim holds: every unit closes at 100.00 \% and the plant boundary closes at 1.0e-6 \%.}
+\begin{tutgolden}
+\goldrow{stream}{letdownGas}{F}{0.0084712940232}
+\goldrow{stream}{letdownGas}{T}{250}
+\goldrow{stream}{makeup}{F}{2.22222222222}
+\goldrow{stream}{makeup}{T}{300}
+\goldrow{stream}{mixed}{F}{4.53184856127}
+\goldrow{stream}{mixed}{T}{274.159376696}
+\goldrow{stream}{productNH3}{F}{1.05295021003}
+\goldrow{stream}{productNH3}{T}{250}
+\goldrow{stream}{purge}{F}{0.121559281066}
+\goldrow{stream}{purge}{T}{250}
+\goldrow{stream}{rawLiquid}{F}{1.06142150405}
+\goldrow{stream}{rawLiquid}{T}{250}
+\goldrow{stream}{reacted}{F}{3.49260712538}
+\goldrow{stream}{reacted}{T}{700}
+\goldmore{66}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ammoniaReactor03\_equilibriumApproach}{tutorials/steady/reactors/ammoniaReactor03\_equilibriumApproach}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (60.9,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (converter) at (63.8,-0.0) {\textbf{converter}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (66.7,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (69.6,-0.0) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (69.6,-1.7) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \draw[->] ($(mixer.west)+(-1.05,0.00)$) -- ($(mixer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
+  \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (mixer.south) node[midway, below, font=\tiny] {recycle};
+  \draw[->] (mixer) -- (converter) node[midway, above, font=\tiny] {mixed};
+  \draw[->] (converter) -- (separator) node[midway, above, font=\tiny] {reacted};
+  \draw[->] (separator) -- (letdown) node[midway, above, font=\tiny] {rawLiquid};
+  \draw[->] (separator) -- (purgeSplit) node[midway, above, font=\tiny] {unreactedGas};
+  \draw[->] ($(letdown.east)+(0,-0.17)$) -- ($(letdown.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {productNH3};
+  \draw[->] ($(letdown.east)+(0,0.17)$) -- ($(letdown.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {letdownGas};
+  \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{AMMONIA REACTOR-MODEL LADDER, rung 3 of 4 -- REALISTIC OUTLET. The same loop with the gibbsReactor detuned by a 5 K approach to equilibrium, the rung nothing else in this corpus exercises. The outlet is realistic enough to size downstream units against and to cost the converter from a DECLARED space velocity (an estimate method; its AACE class is set by how far the whole project is defined, not by the reactor model).}
+\begin{tutnarrative}
+THE AMMONIA REACTOR-MODEL LADDER -- flowsheet, SHARED BY RUNGS 1-3.
+
+Everything in this file except the `converter` block is BYTE-IDENTICAL across ammoniaReactor01\_fixedConversion, ammoniaReactor02\_equilibrium and ammoniaReactor03\_equilibriumApproach. Diff two of them and the only thing that moves is the reactor model -- which is the whole point: one rung of the fidelity ladder at a time, and nothing else.
+
+makeup (N2:H2 = 1:3 + 1 mol\% Ar) -+ v [mixer] <------- recycle <--------+ | | v | [converter] <-- THE ONLY | 700 K, 200 bar DIFFERENCE | v | [separator] isothermalFlash 250 K, 200 bar | | | | rawLiquid-+ +-- unreactedGas | | | | v [purgeSplit] splitter | [letdown] | | | flash 20 bar purge --+ +-- recycle ------------+ | | (5 \% bleed) (95 \%) productNH3+ +letdownGas
+
+SCALE. The makeup is 8000 kmol/h (N2 1980, H2 5940, Ar 80), which is 1 mol\% argon and H2:N2 exactly 3.0. This is NOT the scale of tutorials/steady/flowsheets/ammonia01\_synthesis\_loop, whose structure this flowsheet copies: that case runs 1 kmol/h of makeup, and at that rate the converter's catalyst charge is about 2 litres -- below the lower bound of every vessel cost correlation the engine carries, so rung 3 could not honestly cost it. The flowsheet is linear in flow (the flash and the reactor are both intensive), so the scale-up changes no intensive answer; compare this case's converter y\_NH3 against ammonia01's own golden and they agree.
+
+TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
+
+\end{tutnarrative}
+\tutreadme{THE RUNG NOTHING ELSE IN THE CORPUS EXERCISES. gibbsReactor has read operation.temperatureApproach and announced it loudly since src/unitOperations/reactor/GibbsReactor.cpp (the [gibbs] temperatureApproach announcement), and before this case no flowsheet case in tutorials/ declared one --- only a props operation (tutorials/props/gibbs/nh3\_equilibrium\_map/system/propsDict) mentioned the key. A capability that exists, announces itself and is used by nothing is a capability no gate can see.}
+\tutreadme{Three cases form a ladder of reactor fidelity over one unchanged ammonia synthesis loop. Between consecutive stages exactly one thing moves: the reactor model. Against rung 2 the difference is literally one line.}
+\tutreadme{Background: docs/design/how-a-process-design-is-staged.md, and DEV.md C8.}
+\tutreadme{temperatureApproach 5; declares a MAGNITUDE. The engine reads the thermicity of the transformation from this feed to its equilibrium at 700 K, finds it exothermic, and evaluates the reaction equilibrium at 705 K while the physical state, the enthalpy and the energy balance stay at 700 K --- announcing that choice and the isothermal reaction enthalpy it read on every run (ruled 2026-09-26: $\ast$"O delta T ? dado sempre positivo e tu ? que vais atribuir sinal dependendo da reac??o qu?mica"$\ast$; a negative declaration is refused by name). Ammonia synthesis is exothermic, so equilibrium ammonia falls as temperature rises: evaluating the chemistry 5 K hot is exactly $\ast$"the outlet is 5 K short of equilibrium"$\ast$.}
+\tutreadme{The direction the engine assigns is the source's own, and the word that carries it is $\ast$above$\ast$. US 5,352,428 (M. L. Bhakta and B. J. Grotz, CF Braun and Co, issued 4 October 1994), $\ast$High conversion ammonia synthesis$\ast$, verbatim:}
+\tutreadme{The patent calls the 5 $^\circ$C example's conditions "typical and optimum in many commercial process designs", so 5 is a sourced value, not a round number. It is declared bare because it is a temperature $\ast$difference$\ast$: 5 K and 5 $^\circ$C are the same interval.}
+\begin{tutgolden}
+\goldrow{stream}{letdownGas}{F}{0.00842783334774}
+\goldrow{stream}{letdownGas}{T}{250}
+\goldrow{stream}{makeup}{F}{2.22222222222}
+\goldrow{stream}{makeup}{T}{300}
+\goldrow{stream}{mixed}{F}{4.65039364035}
+\goldrow{stream}{mixed}{T}{273.533393157}
+\goldrow{stream}{productNH3}{F}{1.04972026379}
+\goldrow{stream}{productNH3}{T}{250}
+\goldrow{stream}{purge}{F}{0.127798495744}
+\goldrow{stream}{purge}{T}{250}
+\goldrow{stream}{rawLiquid}{F}{1.05814809714}
+\goldrow{stream}{rawLiquid}{T}{250}
+\goldrow{stream}{reacted}{F}{3.61411801202}
+\goldrow{stream}{reacted}{T}{700}
+\goldmore{106}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ammoniaReactor04\_kineticSizing}{tutorials/steady/reactors/ammoniaReactor04\_kineticSizing}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (89.9,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (feedPreheat) at (92.8,-0.0) {\textbf{feedPreheat}\\[-1pt]{\tiny phaseChanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (converter) at (95.7,-0.0) {\textbf{converter}\\[-1pt]{\tiny pfr}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (98.6,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (101.5,-0.0) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (101.5,-1.7) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \draw[->] ($(mixer.west)+(-1.05,0.00)$) -- ($(mixer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
+  \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (mixer.south) node[midway, below, font=\tiny] {recycle};
+  \draw[->] (mixer) -- (feedPreheat) node[midway, above, font=\tiny] {mixed};
+  \draw[->] (feedPreheat) -- (converter) node[midway, above, font=\tiny] {preheated};
+  \draw[->] (converter) -- (separator) node[midway, above, font=\tiny] {reacted};
+  \draw[->] (separator) -- (letdown) node[midway, above, font=\tiny] {rawLiquid};
+  \draw[->] (separator) -- (purgeSplit) node[midway, above, font=\tiny] {unreactedGas};
+  \draw[->] ($(letdown.east)+(0,-0.17)$) -- ($(letdown.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {productNH3};
+  \draw[->] ($(letdown.east)+(0,0.17)$) -- ($(letdown.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {letdownGas};
+  \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{AMMONIA REACTOR-MODEL LADDER, rung 4 of 4 -- KINETIC SIZING: THE ENGINE SOLVES THE BED VOLUME. The same loop as rungs 1-3 with the converter as an ADIABATIC plug-flow catalyst bed on the Dyson \& Simon (1968) rate law, and the bed VOLUME computed by the engine: a DesignSpec solves V\_bed so the effluent is 5 K short of the rate law's own equilibrium (US 5,352,428's per-bed definition, the same source and value rung 3 imposed), with a preheater landing the loop gas at rung 3's 700 K by its own inverse solve. The volume the engine computes sits beside rung 3's space-velocity volume, and the per-pass conversion a single adiabatic bed can reach sits beside rung 3's isothermal 46.60 \% -- both gaps are the lesson.}
+\begin{tutnarrative}
+THE AMMONIA REACTOR-MODEL LADDER -- RUNG 4: THE KINETIC BED.
+
+The same loop as rungs 1, 2 and 3 (`ammoniaReactor01\_fixedConversion`, `ammoniaReactor02\_equilibrium`, `ammoniaReactor03\_equilibriumApproach`): the makeup, the pressure, the components, the property package, the recycle plan and the tear seed are byte-identical. What moves is the CONVERTER: it is now an ADIABATIC plug-flow catalyst bed integrating the Dyson \& Simon (1968) rate law, and its volume is what the engine COMPUTES (system/outerDict).
+
+TWO BLOCKS DIFFER FROM RUNG 3, NOT ONE, AND THE SECOND IS A CONSEQUENCE OF THE FIRST. Rung 3's `gibbsReactor` declares `T 700 K`: it IMPOSES the converter temperature, and the duty it reports silently includes heating the loop gas from the mixer's \textasciitilde{}274 K to 700 K. A kinetic bed cannot impose a temperature -- it integrates from the state it is fed -- so the preheat that rung 3 folded into the reactor's duty becomes a unit of its own here (`feedPreheat`), whose duty is a RESULT. Diff this file against rung 3's and that is what you will see: the converter block replaced, and one preheater inserted in front of it.
+
+makeup (N2:H2 = 1:3 + 1 mol\% Ar) -+ v [mixer] <------- recycle <--------+ | | v | [feedPreheat] <-- NEW: lands the | | loop gas at | v 700 K, Q result | [converter] <-- THE CHANGE: | adiabatic pfr, Dyson \& Simon | V solved by (1968), V a | the outer driver RESULT | v | [separator] isothermalFlash 250 K, 200 bar | | | | rawLiquid-+ +-- unreactedGas | | | | v [purgeSplit] splitter | [letdown] | | | flash 20 bar purge --+ +-- recycle ------------+ | | (5 \% bleed) (95 \%) productNH3+ +letdownGas
+
+WHY THE PREHEATER IS A `phaseChanger` AND NOT A `heater`, measured. The `heater` takes a DUTY and returns T\_out (docs/ai/unit-ops.md); a fixed duty in front of a kinetic bed inside a recycle is OPEN-LOOP UNSTABLE: a larger recycle is heated less, the colder bed converts less, the recycle grows again, and the loop runs away to extinction -- measured here with both recycle solvers (Newton: the letdown drum received an empty stream on a trial step; Wegstein: recycle 12 998 $\to$ 15 378 $\to$ 23 475 kmol/h in three passes while the bed inlet fell 697 $\to$ 597 $\to$ 480 K). That is real physics and it is why an industrial loop preheats through a feed-effluent exchanger with a temperature controller, never through a fixed-duty heater. The engine's unit that TAKES a target outlet temperature and RETURNS the duty is `phaseChanger \{ outletT \}` (a built-in inverse solve, announced as SELF-TARGET); the gas enters and leaves as superheated vapour, so the duty is entirely sensible (`Q\_latent\_kW 0`) and the unit's emergent role label ("boiler" for Q > 0 on the vapour side) is a label, not a claim that anything boils.
+
+WHAT THE OUTER DRIVER SOLVES (system/outerDict, a 1 x 1 DesignSpec): \$V\_bed so that converter.approach\_K = 5 K (US 5,352,428's per-bed approach, the SAME source and value as rung 3's) The manipulated volume lives in `variables \{\}` below; the unit reads it through `\$V\_bed`. Nothing here types a volume.
+
+WHY THE TARGET IS AN APPROACH AND NOT RUNG 3's 46.60 \% CONVERSION. Stage Rung 3's converter is ISOTHERMAL at 700 K. A single ADIABATIC bed heats itself as it converts, and ammonia equilibrium retreats as it heats, so the bed's conversion is capped where its adiabatic line meets the equilibrium curve -- far below what an isothermal converter at 700 K reaches. That cap is MEASURED in the README (a volume sweep), and it is why no volume of this bed can hit rung 3's number: the target would be unreachable, and a DesignSpec asked for it would diverge honestly. The reachable, sourced target is the one the patent states PER BED.
+
+SCALE, TOPOLOGY, SEED: read rung 3's flowsheetDict; nothing about them moved. TOPOLOGY ONLY here -- stream state lives on disk in 0/.
+
+\end{tutnarrative}
+\tutreadme{THE FIRST BED VOLUME IN THIS CORPUS THAT THE ENGINE COMPUTED. The same ammonia synthesis loop as rungs 1, 2 and 3, with the converter as an adiabatic plug-flow catalyst bed integrating the Dyson \& Simon (1968) rate law, and the bed volume the answer of a designSpec rather than a number anybody typed. The rate law is WRITTEN in this case's constant/reactions --- kinetics \{ type expression; \}, every constant of Eqs 2, 6--8, 18 and 19 beside the formula that uses it, with its unit and its equation number (DEV.md 4c C67, 2026-10-12: the kinetics live in the case; until then the law was compiled into the engine). The engine compiles the formula once, checks its dimensions, prints it back as PARSED in the run log, and pfr integrates it. Read the props bench first (tutorials/props/kinetics/ammoniaRate01\_dyson\_simon), which writes the same law and adds the paper's Eq 39.}
+\tutreadme{Background: docs/design/how-a-process-design-is-staged.md ?3.4, ?6 and ?7.3, and DEV.md C8.}
+\tutreadme{Comments aside, the diff is exactly: a variables \{ V\_bed \} block, a feedPreheat unit inserted between the mixer and the converter, and the converter block (gibbsReactor with T 700 K; P 200 bar; temperatureApproach 5; and its species list $\to$ pfr with V\_R \$V\_bed; nSteps 400; thermalMode adiabatic; and reactions ( ammoniaSynthesis )). Makeup, pressure, components, sealed property package, separator, let-down, purge, recycle plan (system/solverDict) and the tear seed (0/recycle) are byte-identical to rung 3, comments included (0/makeup, 0/recycle and system/solverDict say "all four rungs" in all four cases). Rung 4 adds two files rung 3 has no counterpart for --- constant/reactions (the rate law selection) and system/outerDict (the DesignSpec) --- and carries a system/postDict of its own, which since 2026-09-26 runs on the DesignSpec's representative pass and sizes the converter as a pfr (?6).}
+\tutreadme{Why the second block is a consequence of the first. Rung 3's gibbsReactor declares T 700 K: it IMPOSES the converter temperature, and the 3 287 kW duty it reports silently includes heating the loop gas from the mixer's 274 K to 700 K. A kinetic bed cannot impose a temperature --- it integrates from the state it is fed --- so the preheat rung 3 hid inside its reactor becomes a unit of its own here. It is a phaseChanger \{ outletT 700 K; \} (the engine's unit that TAKES a target outlet temperature and RETURNS the duty, a built-in inverse solve it announces as SELF-TARGET) and not a heater, and that choice was measured, not preferred:}
+\tutreadme{$\ast$ A heater takes a DUTY and returns T\_out. A fixed duty in front of a kinetic bed inside a recycle is open-loop unstable: a larger recycle is heated less, the colder bed converts less, the recycle grows again. With the Wegstein recycle solver the loop ran away in three passes --- recycle 12 998 $\to$ 15 378 $\to$ 23 475 kmol/h while the bed inlet fell 697 $\to$ 597 $\to$ 532 $\to$ 480 K --- and with the Newton solver a trial step fed the let-down drum an empty stream and the run stopped. That is real physics, and it is why an industrial loop preheats through a feed-effluent exchanger under temperature control, never through a fixed-duty heater. $\ast$ The phaseChanger's emergent role label reads boiler (Q > 0 on the vapour side); the gas enters and leaves as superheated vapour and the duty is entirely sensible (Q\_latent\_kW 0). The Tsat 150 K it prints is the bracket centre of its inverse solve on a gas far above every critical temperature, not a claim about anything boiling.}
+\tutreadme{The 700 K inlet is inherited from rung 3: it is the one thermal fact rung 3 states about its converter, and inheriting it keeps the ladder's rule --- one thing moves per rung --- as close as a kinetic bed allows. It was a declared assumption there and is one here.}
+\begin{tutgolden}
+\goldrow{stream}{letdownGas}{F}{0.0064549708016}
+\goldrow{stream}{letdownGas}{T}{250}
+\goldrow{stream}{makeup}{F}{2.22222222222}
+\goldrow{stream}{makeup}{T}{300}
+\goldrow{stream}{mixed}{F}{11.0991281882}
+\goldrow{stream}{mixed}{T}{259.761948499}
+\goldrow{stream}{preheated}{F}{11.0991281882}
+\goldrow{stream}{preheated}{T}{700}
+\goldrow{stream}{productNH3}{F}{0.87472137817}
+\goldrow{stream}{productNH3}{T}{250}
+\goldrow{stream}{purge}{F}{0.467205577517}
+\goldrow{stream}{purge}{T}{250}
+\goldrow{stream}{rawLiquid}{F}{0.881176348972}
+\goldrow{stream}{rawLiquid}{T}{250}
+\goldmore{134}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ammoniaRoutes01\_screening}{tutorials/steady/reactors/ammoniaRoutes01\_screening}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (electrolytic) at (0.0,-0.0) {\textbf{electrolytic}\\[-1pt]{\tiny conversionReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reforming) at (0.0,-1.7) {\textbf{reforming}\\[-1pt]{\tiny conversionReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (waterSplitting) at (0.0,-3.4) {\textbf{waterSplitting}\\[-1pt]{\tiny conversionReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (combustion) at (0.0,-5.1) {\textbf{combustion}\\[-1pt]{\tiny conversionReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (synthesis150) at (0.0,-6.8) {\textbf{synthesis150}\\[-1pt]{\tiny equilibriumReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (synthesis50) at (0.0,-8.5) {\textbf{synthesis50}\\[-1pt]{\tiny equilibriumReactor}};
+  \draw[->] ($(electrolytic.west)+(-1.05,0.00)$) -- ($(electrolytic.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedElectrolytic};
+  \draw[->] ($(reforming.west)+(-1.05,0.00)$) -- ($(reforming.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedReforming};
+  \draw[->] ($(waterSplitting.west)+(-1.05,0.00)$) -- ($(waterSplitting.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedWaterSplitting};
+  \draw[->] ($(combustion.west)+(-1.05,0.00)$) -- ($(combustion.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedCombustion};
+  \draw[->] ($(synthesis150.west)+(-1.05,0.00)$) -- ($(synthesis150.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedSynthesis150};
+  \draw[->] ($(synthesis50.west)+(-1.05,0.00)$) -- ($(synthesis50.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feedSynthesis50};
+  \draw[->] ($(electrolytic.east)+(0,0.00)$) -- ($(electrolytic.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outElectrolytic};
+  \draw[->] ($(reforming.east)+(0,0.00)$) -- ($(reforming.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outReforming};
+  \draw[->] ($(waterSplitting.east)+(0,0.00)$) -- ($(waterSplitting.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outWaterSplitting};
+  \draw[->] ($(combustion.east)+(0,0.00)$) -- ($(combustion.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outCombustion};
+  \draw[->] ($(synthesis150.east)+(0,0.00)$) -- ($(synthesis150.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outSynthesis150};
+  \draw[->] ($(synthesis50.east)+(0,0.00)$) -- ($(synthesis50.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {outSynthesis50};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Screening three production routes to ammonia on paper: overall stoichiometry, heat of reaction, the electrolysis floor and the synthesis equilibrium}
+\begin{tutnarrative}
+SCREENING THE PRODUCTION ROUTES TO AMMONIA, ON PAPER, BEFORE ANY FLOWSHEET EXISTS.
+
+The first rung of the ammonia ladder: Douglas' input-output level, the stage at which a route is kept or dropped on its gross margin. Three production routes make the same product by the same synthesis step, N2 + 3 H2 $\to$ 2 NH3, and differ in where the hydrogen and the nitrogen come from. GREEN: water electrolysis, air separation, synthesis. GREY: steam reforming of methane, the water-gas shift, air in a secondary reformer, synthesis; the CO2 is emitted. BLUE: grey, with the process CO2 captured and stored. Grey and blue share one overall equation; blue differs only in what is done with the CO2, which no reaction can show. Each route is sized to make 2936 kmol/h of NH3 (1200.0 t/day, the PEQ base case's design rate) from 1468 kmol/h of N2.
+
+The four route and heat units run at 298.15 K and 0.02 bar. That is the REFERENCE STATE, not a process condition: below the vapour pressure of water at 25 C every species is the ideal gas its formation datum is written for, and an ideal gas's enthalpy does not depend on pressure, so every heat below is a standard one, with water as vapour (the lower-heating-value basis). The same heats are NOT process duties: the utility allocation every steady run performs serves them with LP steam and chilled water at 25 C, and those rows are not a design.
+
+WHAT THE ENGINE ANSWERS, unit by unit; none needs a rate law. `electrolytic` and `reforming` are conversion reactors at X = 1 on the green and the grey/blue overall equations: their feeds are the raw materials per kg of NH3, and dHrxn\_kJ\_per\_mol is the heat of reaction on the ideal-gas rung, per 2 mol NH3. `waterSplitting` is the electrolyser alone, H2O $\to$ H2 + 1/2 O2, on the route's 4404 kmol/h of water: its duty Q\_kW is the least power a thermoneutral electrolyser fed STEAM can be supplied with, the FLOOR under the green route's assumed electricity (an electrolyser fed liquid water must also pay the water's enthalpy of vaporisation, the higher-heating-value basis, so its floor is higher). `combustion`, CH4 + 2 O2 $\to$ CO2 + 2 H2O, has a dHrxn\_kJ\_per\_mol that IS the lower heating value of methane, which turns a reformer's fuel, declared in GJ, into kilograms of methane and CO2. `synthesis150` and `synthesis50` hold the shared step at equilibrium at 700 K and 150 or 50 bar: the single-pass ceiling. It is the same for every route, so it decides nothing between them; it says what the next rung must add, a recycle loop.
+
+THE MARGINS ARE IN THE README, NOT IN THE ENGINE. A level-1 margin is arithmetic on these flows and a list of prices: product value minus raw materials per kg of NH3, then a SECOND margin after the energy each route needs (electricity, reformer fuel, CO2 compression and storage, a CO2 price), each an assumed specific consumption. The engine's economics pass prices ONE plant per run and needs costed equipment, so it cannot price three routes that have none; the README states every price (the three the PEQ base case declares, the rest author-set and labelled) and works the table from the numbers this run publishes.
+
+\end{tutnarrative}
+\tutreadme{The common entry to the ammonia cases. Before any flowsheet exists, three production routes to ammonia are compared on their input-output balance --- Douglas' first level --- and on the energy each one needs, so that only the routes worth a feasibility study go on to one.}
+\tutreadme{Illustrated design stage: screening (FEL-1 in a three-stage numbering). No equipment exists yet, so nothing here is sized or costed.}
+\tutreadme{The ammonia cases refine a simulation along two independent axes, and each case is named by its purpose on one of them. The project-stage axis follows one green-ammonia plant from screening to basic design: what the project must decide at each stage, and the detail that decision needs --- here the reactor model, the exchangers and the economics all move together. The reactor-model axis keeps one synthesis loop fixed and changes only the converter, from a declared conversion to a bed whose volume the engine solves. They are two ladders, not one: a project does not mature by swapping an equilibrium reactor for a kinetic one, and a kinetic reactor does not make a study a basic design. A stage column says "illustrated design stage" for the same reason: the AACE class of an estimate is set by how far the project is defined, never by the stage a case illustrates or by the model it runs, so where a case declares estimateClass it is the author's statement of maturity.}
+\tutreadme{The green-ammonia sequence (project stage; 1200 t/day, the PEQ 2026-27 base data):}
+\tutreadme{What changes between rungs 2 and 3 --- consumptions, investment and the NPV, each difference traced to what changed between the two stages --- is a section of the basic-design case's README, generated from the engine's runs of both: [From feasibility to basic design](../greenAmmonia03\_basicDesign/README.md\#from-feasibility-to-basic-design-what-changed-and-why).}
+\tutreadme{The reactor-model ladder (one 200 bar synthesis loop, nothing but the converter moves):}
+\begin{tutgolden}
+\goldrow{stream}{feedCombustion}{F}{0.000833333333333}
+\goldrow{stream}{feedCombustion}{T}{298.15}
+\goldrow{stream}{feedElectrolytic}{F}{1.63111111111}
+\goldrow{stream}{feedElectrolytic}{T}{298.15}
+\goldrow{stream}{feedReforming}{F}{1.38484100528}
+\goldrow{stream}{feedReforming}{T}{298.15}
+\goldrow{stream}{feedSynthesis150}{F}{1.63111111111}
+\goldrow{stream}{feedSynthesis150}{T}{700}
+\goldrow{stream}{feedSynthesis50}{F}{1.63111111111}
+\goldrow{stream}{feedSynthesis50}{T}{700}
+\goldrow{stream}{feedWaterSplitting}{F}{1.22333333333}
+\goldrow{stream}{feedWaterSplitting}{T}{298.15}
+\goldrow{stream}{outCombustion}{F}{0.000833333333333}
+\goldrow{stream}{outCombustion}{T}{298.15}
+\goldmore{93}
 \end{tutgolden}
 
 \clearpage

@@ -27,32 +27,36 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  PinchCompositeTool — the ENGINE's pinch targets, drawn.  Unlike PinchView
-  (which recomputes a pinch analysis in the browser from the run's KPIs), this
-  tool reads what the C++ PinchPass itself published:
+  PinchCompositeTool — the ENGINE's pinch analysis, drawn.  This tool reads
+  what the C++ PinchPass itself published and computes NOTHING (DEV.md 4c
+  C234; it used to re-run the cascade over the shifted curves, a second home
+  of the pass, and that is gone):
 
-    reports/pinch/compositeCurves.csv    curve,T_K,H_kW — curves "hot", "cold",
-                                         "hotShifted", "coldShifted" (verified
-                                         against PinchPass.cpp's emit calls; the
-                                         engine publishes NO grand-composite
-                                         curve, so the GCC here is derived)
+    reports/pinch/population.csv         the stream table (T_in, T_out, Q, CP
+                                         of every segment, recovered side and
+                                         service side)
+    reports/pinch/problemTable.csv       the worked Linnhoff-Flower cascade:
+                                         shifted intervals, sumCP, dH, the
+                                         initial and the corrected cascade
+    reports/pinch/summary.csv            the CLASS word (interiorPinch,
+                                         severalPinches, threshold...), the
+                                         pinches and the heat flow at the pinch
+    reports/pinch/compositeCurves.csv    curve,T_K,H_kW — "hot", "cold",
+                                         "hotShifted", "coldShifted"; the cold
+                                         curve is drawn slid right by
+                                         Q_C,min (the published offset)
     reports/pinch/candidateMatches.csv   region,hotStream,coldStream,
                                          temperatureFeasible,pinchRule,
                                          maximumCandidateDuty_kW,limitingReason,
                                          recommendation
-    KPI row "pinch"                      Q_H_min_kW, Q_C_min_kW, T_pinch_K
-                                         (shifted scale), T_pinch_hot_K,
-                                         T_pinch_cold_K, dTmin_K, ...
+    KPI row "pinch"                      Q_H_min_kW, Q_C_min_kW,
+                                         Q_recovery_max_kW, T_pinch_*_K,
+                                         n_pinches, dTmin_K, ...
 
-  The plane's standing rule is ZERO physics in TypeScript.  The ONE authorized
-  exception this tool carries is method GEOMETRY: the Linnhoff-Flower heat
-  cascade re-run over the engine's OWN published shifted composite curves —
-  pure arithmetic on the CSV, no stream data, no Cp, no dTmin of its own (the
-  shift is already inside the curves the engine wrote).  It feeds exactly two
-  surfaces, both labelled "derived in view": the cross-check chip (does the
-  cascade over the published curves reproduce the engine's KPI targets?) and
-  the grand composite curve.  The engine's KPI row is the judge — a
-  disagreement is a finding about this tool's reading, never a moved target.
+  The grand composite curve IS the corrected cascade column of the problem
+  table against T*; the annotations on the composites (the two utility
+  intervals, the maximum recovery, the vertical gap at the pinch) are
+  positions of published numbers.
 
   The candidate-match table renders the engine's own words.  Per the pinch
   pass's doctrine, every feasible row is a "thermodynamically admissible
@@ -84,7 +88,7 @@ License
   rules — come after them, because a reader who has not yet seen what the
   overlap means has nothing to read the plot with.  The knobs sit in a
   two-column grid beside the picture.  Every honesty surface the panel
-  carried is kept: the engine's targets chip, the derived-in-view cross-check,
+  carried is kept: the engine's targets chip, the engine's classification,
   the verbatim engine refusal, the candidate table's own wording and the
   limits list.
 \*---------------------------------------------------------------------------*/
@@ -93,7 +97,7 @@ import { useMemo, useState } from "react";
 import { lessonStepper } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Button, Group, Loader, SegmentedControl, Stack, Table,
-  Text, Title, Tooltip,
+  Text, Title,
 } from "@mantine/core";
 
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
@@ -102,6 +106,11 @@ import {
   KnobField, KnobNumber, PanelNote,
 } from "./knobPanel.js";
 import { PINCH_LIMITS, PINCH_STEPS } from "./pinchLesson.js";
+import {
+  PINCH_PASS_EXCERPT, PINCH_CLASS_TEXT, PROBLEM_TABLE_CSV_PATH, SUMMARY_CSV_PATH,
+  POPULATION_CSV_PATH, parseProblemTable, parseSummary, parseStreamTable,
+  grandCompositeFromTable, type ProblemRow, type StreamRow, type PinchSummary,
+} from "../../case/pinch.js";
 import { OriginMark } from "./origin.js";
 
 // ---- Where the engine's pinch artefacts live in the run result --------------
@@ -189,122 +198,12 @@ export function candidateFlag(m: CandidateMatch): "infeasible" | "cpRuleViolated
   return null;
 }
 
-// ---- The cascade over the engine's shifted curves (derived in view) ---------
-// The authorized method geometry: H(T*) of each shifted composite is the exact
-// integral of that population's interval CPs, so differencing the two curves
-// between temperature levels reproduces the problem table's per-interval
-// dH = (sumCP_hot - sumCP_cold) * dT without ever touching a stream.
-
-/** Piecewise-linear read of a composite H(T), clamped outside its domain
- *  (below the cold end the curve carries nothing; above the hot end it is
- *  fully integrated).  `curve` must be sorted ascending in T. */
-export function interpolateH(curve: CurvePoint[], T: number): number {
-  const first = curve[0]!;
-  const last = curve[curve.length - 1]!;
-  if (T <= first.T_K) return first.H_kW;
-  if (T >= last.T_K) return last.H_kW;
-  for (let i = 0; i + 1 < curve.length; ++i) {
-    const a = curve[i]!;
-    const b = curve[i + 1]!;
-    if (T <= b.T_K) {
-      const w = (T - a.T_K) / (b.T_K - a.T_K);
-      return a.H_kW + w * (b.H_kW - a.H_kW);
-    }
-  }
-  return last.H_kW;
-}
-
-export interface DerivedPinch {
-  Q_H_min_kW: number;
-  Q_C_min_kW: number;
-  /** Pinch on the SHIFTED scale — comparable to the engine's T_pinch_K KPI. */
-  T_pinch_K: number;
-  /** The grand composite: net cascade + Q_H_min at every shifted level,
-   *  descending T*.  H >= 0 everywhere, exactly 0 at the pinch. */
-  gcc: CurvePoint[];
-}
-
-/** The Linnhoff-Flower cascade re-run over the engine's published hotShifted /
- *  coldShifted curves.  ONE pass feeds both readouts (the cross-check chip and
- *  the GCC) so the two can never disagree with each other.  Mirrors the
- *  engine's own conventions: the cascade starts at 0 from the top level, the
- *  running minimum uses the same 1e-9 band, Q_H_min = -min(cascade),
- *  Q_C_min = cascade(bottom) + Q_H_min. */
-export function computePinchFromCurves(
-  hotShifted: CurvePoint[] | undefined,
-  coldShifted: CurvePoint[] | undefined,
-): DerivedPinch | null {
-  if (!hotShifted || !coldShifted
-      || hotShifted.length < 2 || coldShifted.length < 2) return null;
-  const hot = [...hotShifted].sort((a, b) => a.T_K - b.T_K);
-  const cold = [...coldShifted].sort((a, b) => a.T_K - b.T_K);
-  const levels = [...new Set([...hot, ...cold].map((p) => p.T_K))]
-    .sort((a, b) => b - a);
-  if (levels.length < 2) return null;
-
-  const top = levels[0]!;
-  const hTop = interpolateH(hot, top);
-  const cTop = interpolateH(cold, top);
-
-  // cascade(T*) = heat released by hot streams above T* minus heat absorbed
-  // by cold streams above T* — the problem table's running sum, read off the
-  // curves instead of the stream population.
-  const cascade = levels.map((T) =>
-    (hTop - interpolateH(hot, T)) - (cTop - interpolateH(cold, T)));
-
-  let minCascade = 0.0;
-  let Tpinch = top;
-  for (let i = 0; i < levels.length; ++i) {
-    if (cascade[i]! < minCascade - 1.0e-9) {
-      minCascade = cascade[i]!;
-      Tpinch = levels[i]!;
-    }
-  }
-  const QHmin = -minCascade;
-  const QCmin = cascade[cascade.length - 1]! + QHmin;
-  const gcc = levels.map((T, i) => ({ T_K: T, H_kW: cascade[i]! + QHmin }));
-  return { Q_H_min_kW: QHmin, Q_C_min_kW: QCmin, T_pinch_K: Tpinch, gcc };
-}
-
-// ---- The cross-check against the engine's KPI row ---------------------------
-
-export interface CrossCheckRow {
-  key: "Q_H_min_kW" | "Q_C_min_kW" | "T_pinch_K";
-  engine: number;
-  derived: number;
-  /** derived - engine. */
-  deviation: number;
-  agrees: boolean;
-}
-
-/** Relative agreement band (with an absolute floor of the same size) — the
- *  CSV carries 10 significant digits, so real agreement sits far inside it. */
-export const CROSS_CHECK_TOL = 1.0e-6;
-
-/** Compare the derived cascade targets against the engine's "pinch" KPI row.
- *  Only keys the engine actually published are compared; the engine's number
- *  is the judge and never moves. */
-export function crossCheckAgainstKpis(
-  derived: DerivedPinch,
-  kpis: { [key: string]: number } | undefined,
-): CrossCheckRow[] {
-  if (!kpis) return [];
-  const pairs: [CrossCheckRow["key"], number][] = [
-    ["Q_H_min_kW", derived.Q_H_min_kW],
-    ["Q_C_min_kW", derived.Q_C_min_kW],
-    ["T_pinch_K", derived.T_pinch_K],
-  ];
-  const rows: CrossCheckRow[] = [];
-  for (const [key, d] of pairs) {
-    const e = kpis[key];
-    if (typeof e !== "number" || !Number.isFinite(e)) continue;
-    const deviation = d - e;
-    const scale = Math.max(1.0, Math.abs(e));
-    rows.push({ key, engine: e, derived: d, deviation,
-      agrees: Math.abs(deviation) <= CROSS_CHECK_TOL * scale });
-  }
-  return rows;
-}
+// ---- THE CASCADE IS THE ENGINE'S (DEV.md 4c C234) ---------------------------
+// This file used to re-run the Linnhoff-Flower cascade over the published
+// shifted curves (`computePinchFromCurves`) and cross-check it against the KPI
+// row: a second home of PinchPass.  The engine now writes the worked table
+// (reports/pinch/problemTable.csv) and its classification (summary.csv); the
+// page draws them and computes nothing.
 
 // ---- WHAT THE TARGETS ARE THE TARGETS OF (C150 R16) --------------------------
 
@@ -411,62 +310,173 @@ function Axes({ frame, xLabel, yLabel }: {
   );
 }
 
-/** Hot + cold composite curves, straight from the engine's CSV (unshifted —
- *  the actual T scales), with the KPI pinch temperatures as dashed guides. */
-function CompositeSvg({ hot, cold, pinchHot, pinchCold }: {
+/** Hot + cold composite curves from the engine's CSV (actual T scales), the
+ *  cold curve slid right by the published Q_C,min so the overlap is the heat
+ *  the process can recover.  Annotated with the published quantities: the two
+ *  utility intervals, the maximum recovery, and the dTmin gap at the pinch. */
+function CompositeSvg({ hot, cold, offset, qh, qc, qrec, pinch }: {
   hot: CurvePoint[]; cold: CurvePoint[];
-  pinchHot?: number; pinchCold?: number;
+  offset: number; qh?: number; qc?: number; qrec?: number;
+  pinch?: { Thot: number; Tcold: number; H: number; dT: number };
 }): JSX.Element {
-  const frame = makeFrame([...hot, ...cold]);
+  const coldS = cold.map((p) => ({ T_K: p.T_K, H_kW: p.H_kW + offset }));
+  const frame = makeFrame([...hot, ...coldS]);
+  const hotEnd = hot[hot.length - 1]!.H_kW;
+  const yB = Y1 - 8;
+  const bracket = (h0: number, h1: number, label: string, col: string, row: number) => (
+    <g key={label}>
+      <line x1={frame.toX(h0)} y1={yB - 14 * row} x2={frame.toX(h1)} y2={yB - 14 * row}
+        stroke={col} strokeWidth={2} />
+      <line x1={frame.toX(h0)} y1={yB - 14 * row - 4} x2={frame.toX(h0)} y2={yB - 14 * row + 4}
+        stroke={col} strokeWidth={1.2} />
+      <line x1={frame.toX(h1)} y1={yB - 14 * row - 4} x2={frame.toX(h1)} y2={yB - 14 * row + 4}
+        stroke={col} strokeWidth={1.2} />
+      <text x={(frame.toX(h0) + frame.toX(h1)) / 2} y={yB - 14 * row - 6}
+        textAnchor="middle" fontSize={10} fill={col}>{label}</text>
+    </g>
+  );
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%"
       preserveAspectRatio="xMidYMid meet"
-      role="img" aria-label="hot and cold composite curves">
-      <Axes frame={frame} xLabel="cumulative enthalpy H (kW)" yLabel="T (K)" />
-      {pinchHot !== undefined && Number.isFinite(pinchHot) && (
-        <g>
-          <line x1={X0} y1={frame.toY(pinchHot)} x2={X1} y2={frame.toY(pinchHot)}
-            stroke={HOT} strokeWidth={0.9} strokeDasharray="4 4" />
-          <text x={X1 - 4} y={frame.toY(pinchHot) - 4} textAnchor="end"
-            fontSize={10} fill={HOT}>pinch (hot) {pinchHot.toFixed(2)} K</text>
-        </g>
-      )}
-      {pinchCold !== undefined && Number.isFinite(pinchCold) && (
-        <g>
-          <line x1={X0} y1={frame.toY(pinchCold)} x2={X1} y2={frame.toY(pinchCold)}
-            stroke={COLD} strokeWidth={0.9} strokeDasharray="4 4" />
-          <text x={X1 - 4} y={frame.toY(pinchCold) + 12} textAnchor="end"
-            fontSize={10} fill={COLD}>pinch (cold) {pinchCold.toFixed(2)} K</text>
-        </g>
-      )}
+      role="img" aria-label="hot and cold composite curves, cold curve slid by the cold-utility target">
+      <Axes frame={frame} xLabel="heat flow rate (kW), cold curve slid by Q_C,min" yLabel="T (K)" />
       <polyline points={polyline(frame, hot)} fill="none"
         stroke={HOT} strokeWidth={2.2} />
-      <polyline points={polyline(frame, cold)} fill="none"
+      <polyline points={polyline(frame, coldS)} fill="none"
         stroke={COLD} strokeWidth={2.2} />
+      {pinch && (
+        <g>
+          <line x1={frame.toX(pinch.H)} y1={frame.toY(pinch.Thot)}
+            x2={frame.toX(pinch.H)} y2={frame.toY(pinch.Tcold)}
+            stroke={PINCH} strokeWidth={2.4} />
+          <circle cx={frame.toX(pinch.H)} cy={frame.toY(pinch.Thot)} r={3.5} fill={PINCH} />
+          <circle cx={frame.toX(pinch.H)} cy={frame.toY(pinch.Tcold)} r={3.5} fill={PINCH} />
+          <text x={frame.toX(pinch.H) + 8} y={frame.toY((pinch.Thot + pinch.Tcold) / 2) + 4}
+            fontSize={10} fill={PINCH}>
+            pinch: ΔTmin = {pinch.dT.toFixed(0)} K ({pinch.Tcold.toFixed(1)} / {pinch.Thot.toFixed(1)} K)
+          </text>
+        </g>
+      )}
+      {qc !== undefined && qc > 0 && bracket(0, qc, `Q_C,min ${qc.toFixed(1)} kW (cold utility)`, COLD, 0)}
+      {qrec !== undefined && qrec > 0 && bracket(offset, hotEnd, `Q_recovery,max ${qrec.toFixed(1)} kW`, GCC, 1)}
+      {qh !== undefined && qh > 0 && bracket(hotEnd, hotEnd + qh, `Q_H,min ${qh.toFixed(1)} kW (hot utility)`, HOT, 0)}
       <text x={X0 + 8} y={Y0 + 14} fontSize={11} fill={HOT}>hot composite (sources)</text>
-      <text x={X0 + 8} y={Y0 + 28} fontSize={11} fill={COLD}>cold composite (sinks)</text>
+      <text x={X0 + 8} y={Y0 + 28} fontSize={11} fill={COLD}>cold composite (sinks, slid)</text>
     </svg>
   );
 }
 
-/** The grand composite curve — derived in view from the engine's shifted
- *  composite curves (the engine publishes no GCC of its own). */
-function GccSvg({ gcc, Tpinch }: { gcc: CurvePoint[]; Tpinch: number }): JSX.Element {
+/** The grand composite curve: the problem table's corrected cascade against
+ *  the shifted T*, as the engine wrote it; a dot at every interior pinch. */
+function GccSvg({ gcc, pinchStars }: { gcc: CurvePoint[]; pinchStars: number[] }): JSX.Element {
   const frame = makeFrame(gcc);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%"
       preserveAspectRatio="xMidYMid meet"
       role="img" aria-label="grand composite curve">
-      <Axes frame={frame} xLabel="net heat flow H (kW)" yLabel="shifted T* (K)" />
+      <Axes frame={frame} xLabel="net heat flow, corrected cascade (kW)" yLabel="shifted T* (K)" />
       <line x1={frame.toX(0)} y1={Y0} x2={frame.toX(0)} y2={Y1}
         stroke={INK} strokeWidth={1.1} />
       <polyline points={polyline(frame, gcc)} fill="none"
         stroke={GCC} strokeWidth={2.2} />
-      <circle cx={frame.toX(0)} cy={frame.toY(Tpinch)} r={5}
-        fill={PINCH} stroke="var(--mantine-color-body)" strokeWidth={1.5} />
-      <text x={frame.toX(0) + 8} y={frame.toY(Tpinch) - 6}
-        fontSize={11} fill={PINCH}>pinch · T* = {Tpinch.toFixed(2)} K</text>
+      {pinchStars.map((t) => (
+        <g key={t}>
+          <circle cx={frame.toX(0)} cy={frame.toY(t)} r={5}
+            fill={PINCH} stroke="var(--mantine-color-body)" strokeWidth={1.5} />
+          <text x={frame.toX(0) + 8} y={frame.toY(t) - 6}
+            fontSize={11} fill={PINCH}>pinch · T* = {t.toFixed(2)} K</text>
+        </g>
+      ))}
     </svg>
+  );
+}
+
+// ---- The stream table and the worked cascade (the engine's files, drawn) ---
+
+const kw = (v: number, d = 1) => (Number.isFinite(v) ? v.toFixed(d) : "—");
+
+function StreamTable({ rows, dTmin }: { rows: StreamRow[]; dTmin?: number }): JSX.Element {
+  return (
+    <Box style={{ overflow: "auto" }}>
+      <Table striped withTableBorder fz="xs">
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>stream</Table.Th><Table.Th>kind</Table.Th>
+            <Table.Th>T_in (K)</Table.Th><Table.Th>T_out (K)</Table.Th>
+            <Table.Th>|Q| (kW)</Table.Th><Table.Th>CP = |Q|/|ΔT| (kW/K)</Table.Th>
+            <Table.Th>role</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {rows.map((r, i) => (
+            <Table.Tr key={i} style={r.role === "utility" ? { opacity: 0.6 } : undefined}>
+              <Table.Td>{r.unit}</Table.Td>
+              <Table.Td>{r.side}</Table.Td>
+              <Table.Td>{kw(r.Tin, 2)}</Table.Td>
+              <Table.Td>{kw(r.Tout, 2)}</Table.Td>
+              <Table.Td>{kw(Math.abs(r.Q_kW))}</Table.Td>
+              <Table.Td>{kw(r.CP, 3)}</Table.Td>
+              <Table.Td>{r.role === "utility"
+                ? "service side — not a process stream (left out)"
+                : r.role === "recovered" ? "heat already recovered (an exchanger side)"
+                : "process stream"}</Table.Td>
+            </Table.Tr>
+          ))}
+        </Table.Tbody>
+      </Table>
+      <Text size="xs" c="dimmed" p="xs">
+        The stream population the targets are taken from, as the engine
+        extracted it (<code>{POPULATION_CSV_PATH}</code>).  A hot stream is
+        cooled, a cold stream is heated; each is one straight segment of
+        constant CP.{dTmin !== undefined ? ` The approach is ΔTmin = ${dTmin} K.` : ""}
+      </Text>
+    </Box>
+  );
+}
+
+function CascadeTable({ rows }: { rows: ProblemRow[] }): JSX.Element {
+  return (
+    <Box style={{ overflow: "auto" }}>
+      <Table striped withTableBorder fz="xs">
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>interval</Table.Th>
+            <Table.Th>T*_hi → T*_lo (K)</Table.Th>
+            <Table.Th>ΣCP hot</Table.Th><Table.Th>ΣCP cold</Table.Th>
+            <Table.Th>ΔH (kW)</Table.Th>
+            <Table.Th>cascade (kW)</Table.Th>
+            <Table.Th>corrected (kW)</Table.Th>
+            <Table.Th>streams (hot | cold)</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {rows.map((r) => (
+            <Table.Tr key={r.interval}>
+              <Table.Td>{r.interval}</Table.Td>
+              <Table.Td>{kw(r.Thi, 2)} → {kw(r.Tlo, 2)}</Table.Td>
+              <Table.Td>{kw(r.cpHot, 3)}</Table.Td>
+              <Table.Td>{kw(r.cpCold, 3)}</Table.Td>
+              <Table.Td>{kw(r.dH)}</Table.Td>
+              <Table.Td>{kw(r.casOut)}</Table.Td>
+              <Table.Td>
+                {kw(r.corOut)}
+                {r.tag === "pinch" && <Badge ml={6} size="xs" color="yellow" variant="light">pinch</Badge>}
+                {r.tag === "bottomZero" && <Badge ml={6} size="xs" color="gray" variant="light">end of range</Badge>}
+              </Table.Td>
+              <Table.Td>{r.hotStreams || "—"} | {r.coldStreams || "—"}</Table.Td>
+            </Table.Tr>
+          ))}
+        </Table.Tbody>
+      </Table>
+      <Text size="xs" c="dimmed" p="xs">
+        The engine&apos;s Linnhoff-Flower table (<code>{PROBLEM_TABLE_CSV_PATH}</code>),
+        row by row: ΔH = (ΣCP hot − ΣCP cold) ΔT* is a surplus when positive; the
+        cascade accumulates it from the top starting at 0; Q_H,min is minus its
+        lowest value; the corrected column is the cascade with Q_H,min fed in at
+        the top, so it is never negative and its last value is Q_C,min.  A zero
+        strictly inside the range is a pinch.
+      </Text>
+    </Box>
   );
 }
 
@@ -481,8 +491,8 @@ function MatchesTable({ matches }: { matches: CandidateMatch[] }): JSX.Element {
             <Table.Th>region</Table.Th>
             <Table.Th>hot</Table.Th>
             <Table.Th>cold</Table.Th>
-            <Table.Th>Q_max (kW)</Table.Th>
-            <Table.Th>pinch rule</Table.Th>
+            <Table.Th>Q_max, this pair alone (kW)</Table.Th>
+            <Table.Th>CP rule at the pinch (CP_hot ≤ CP_cold above, ≥ below)</Table.Th>
             <Table.Th>limiting reason</Table.Th>
             <Table.Th>engine&apos;s recommendation</Table.Th>
           </Table.Tr>
@@ -518,10 +528,13 @@ function MatchesTable({ matches }: { matches: CandidateMatch[] }): JSX.Element {
         </Table.Tbody>
       </Table>
       <Text size="xs" c="dimmed" p="xs">
-        The engine&apos;s own wording, verbatim: every feasible row is a
-        thermodynamically admissible candidate — the table ranks nothing and
-        recommends no network.  A VIOLATED CP rule keeps its away-from-pinch
-        duty; an infeasible row is listed, never dropped.
+        A feasibility assessment of each hot × cold pair on its own, in the
+        engine&apos;s words.  Each Q_max is the limit of THAT pair; the column
+        is not additive, because a stream can serve only its own duty once.
+        The CP rule compares CP_hot with CP_cold at the pinch only.  Every
+        feasible row is a thermodynamically admissible candidate — the table
+        ranks nothing and recommends no network.  A violated CP rule keeps its
+        away-from-pinch duty; an infeasible row is listed, never dropped.
       </Text>
     </Box>
   );
@@ -599,13 +612,15 @@ export function pinchOverrides(
 type Pane = "composite" | "gcc" | "matches";
 type Source = "classroom" | "current";
 
-export function PinchCompositeTool(): JSX.Element {
+export function PinchCompositeTool(
+  { fixedSource }: { fixedSource?: "current" } = {},
+): JSX.Element {
   // ---- The app's own run — the "Current run" source. -----------------------
   const appRun = useStore((s) => s.runResult);
   const appHasPinch = !!(appRun?.csvFiles?.[COMPOSITE_CURVES_CSV_PATH]
     || appRun?.kpis?.["pinch"]);
 
-  const [source, setSource] = useState<Source>("classroom");
+  const [source, setSource] = useState<Source>(fixedSource ?? "classroom");
   const [pane, setPane] = useState<Pane>("composite");
 
   // ---- Classroom knobs (values are session state; collapse persists). ------
@@ -635,31 +650,40 @@ export function PinchCompositeTool(): JSX.Element {
     () => (curvesCsv ? parseCompositeCurves(curvesCsv) : null), [curvesCsv]);
   const matches = useMemo(
     () => (matchesCsv ? parseCandidateMatches(matchesCsv) : []), [matchesCsv]);
-  const derived = useMemo(
-    () => (curves
-      ? computePinchFromCurves(curves["hotShifted"], curves["coldShifted"])
-      : null),
-    [curves]);
-  const checks = useMemo(
-    () => (derived ? crossCheckAgainstKpis(derived, kpis) : []),
-    [derived, kpis]);
+  const popCsv = active?.csvFiles?.[POPULATION_CSV_PATH];
+  const tableCsv = active?.csvFiles?.[PROBLEM_TABLE_CSV_PATH];
+  const summaryCsv = active?.csvFiles?.[SUMMARY_CSV_PATH];
+  const streamRows = useMemo<StreamRow[]>(
+    () => (popCsv ? parseStreamTable(popCsv) : []), [popCsv]);
+  const tableRows = useMemo<ProblemRow[]>(
+    () => (tableCsv ? parseProblemTable(tableCsv) : []), [tableCsv]);
+  const summary = useMemo<PinchSummary | null>(
+    () => (summaryCsv ? parseSummary(summaryCsv) : null), [summaryCsv]);
+  const gcc = useMemo<CurvePoint[]>(
+    () => grandCompositeFromTable(tableRows).map((q) => ({ T_K: q.T, H_kW: q.H })),
+    [tableRows]);
+  const pinchStars = useMemo(
+    () => tableRows.filter((r) => r.tag === "pinch").map((r) => r.Tlo), [tableRows]);
 
   // The toggle appears when the app run carries pinch artefacts (or the user
   // is already on "Current run" and needs the way back); the old empty state
   // lives ONLY under "Current run" — Classroom feeds itself.
-  const showSourceToggle = appHasPinch || source === "current";
+  const showSourceToggle = !fixedSource && (appHasPinch || source === "current");
   const emptyCurrentRun = source === "current" && !curves && !kpis;
 
   const hot = curves?.["hot"];
   const cold = curves?.["cold"];
-  const allAgree = checks.length > 0 && checks.every((c) => c.agrees);
-  const checkLines = checks.map((c) =>
-    `${c.key}: engine ${c.engine} · derived ${c.derived.toPrecision(10)}`
-    + `  (Δ = ${c.deviation.toExponential(2)})`);
+  const classText = summary ? (PINCH_CLASS_TEXT[summary.class] ?? summary.class) : null;
+  const hasPinch = (summary?.nPinches ?? 0) > 0;
+  const pinchGeom = hasPinch && kpis && summary?.Hpinch != null
+    && kpis["T_pinch_hot_K"] != null && kpis["T_pinch_cold_K"] != null
+    ? { Thot: kpis["T_pinch_hot_K"]!, Tcold: kpis["T_pinch_cold_K"]!,
+        H: summary.Hpinch, dT: kpis["dTmin_K"] ?? 0 }
+    : undefined;
 
   /* THE KNOBS AND THE VIEW SWITCH — the only surfaces here that SET anything.
      They sit in the page beside the curves, in a two-column grid; the engine's
-     targets and the cross-check chip stay above the picture, because they
+     targets and the classification chips stay above the picture, because they
      report and do not set.  ΔTmin spans both columns: it is the knob the
      lesson is about. */
   const controls = (
@@ -711,8 +735,8 @@ export function PinchCompositeTool(): JSX.Element {
     </>
   );
 
-  /* The reported numbers: the engine's targets, and the derived-in-view
-     cross-check that says whether this tool read them correctly. */
+  /* The reported numbers, all the engine's: the targets, the class of the
+     problem and the maximum recovery. */
   const chips = (
     <Group gap={8} align="center" wrap="wrap">
       {active && !emptyCurrentRun && (
@@ -721,7 +745,7 @@ export function PinchCompositeTool(): JSX.Element {
           {kpis
             ? `engine targets · Q_H,min ${fmt(kpis["Q_H_min_kW"])} kW · `
               + `Q_C,min ${fmt(kpis["Q_C_min_kW"])} kW · `
-              + `pinch T* ${fmt(kpis["T_pinch_K"], 2)} K · `
+              + (hasPinch ? `pinch T* ${fmt(kpis["T_pinch_K"], 2)} K · ` : "no pinch · ")
               + `ΔTmin ${fmt(kpis["dTmin_K"], 0)} K`
             : "no pinch KPI row in this run — curves shown, targets unverified"}
         </Badge>
@@ -755,26 +779,18 @@ export function PinchCompositeTool(): JSX.Element {
             + ` + ${fmt(kpis["violation_cool_above_pinch_kW"])} cooling above`}
         </Badge>
       )}
-      {derived && checks.length > 0 && (
-        <Tooltip withArrow multiline w={380}
-          label={"Derived in view: the Linnhoff-Flower cascade re-run over"
-            + " the engine's published hotShifted/coldShifted curves.\n"
-            + checkLines.join("\n")}
-          styles={{ tooltip: { whiteSpace: "pre-line" } }}>
-          <Badge variant="light" size="lg"
-            color={allAgree ? "teal" : "orange"}
-            styles={{ root: { textTransform: "none", cursor: "help" } }}>
-            {allAgree
-              ? "cross-check (derived in view): cascade reproduces the engine's targets"
-              : "cross-check (derived in view): DISAGREES — a finding about this"
-                + " tool's reading, the engine's targets stand"}
-          </Badge>
-        </Tooltip>
+      {classText && summary && (
+        <Badge variant="light" color={hasPinch ? "teal" : "yellow"} size="lg"
+          styles={{ root: { textTransform: "none", whiteSpace: "normal", height: "auto" } }}>
+          {`${summary.class} · ${classText}`}
+        </Badge>
       )}
-      {derived && checks.length === 0 && (
+      {kpis && kpis["Q_recovery_max_kW"] != null && (
         <Badge variant="light" color="gray" size="lg"
           styles={{ root: { textTransform: "none" } }}>
-          cross-check unavailable — no engine KPI row to compare against
+          {`Q_recovery,max ${fmt(kpis["Q_recovery_max_kW"])} kW`
+            + ` · Q_H,min − Q_C,min = ${fmt(kpis["Q_H_min_kW"]! - kpis["Q_C_min_kW"]!)} kW`
+            + ` = cold total − hot total (${fmt(kpis["Q_cold_total_kW"])} − ${fmt(kpis["Q_hot_total_kW"])})`}
         </Badge>
       )}
     </Group>
@@ -784,9 +800,16 @@ export function PinchCompositeTool(): JSX.Element {
      steps must not be able to exist on one path and vanish on another (the
      empty states below are branches inside the SAME page, so the reader who
      has no curves still gets the whole argument). */
-  const lessonStep = lessonStepper(PINCH_STEPS);
+  //  The CASE's own Pinch tab (`fixedSource`) is an instrument, not a lecture:
+  //  the plant's curves and targets come FIRST, so the head and the argument
+  //  of steps 1-3 do not stand above them (Vitor, 2026-11-06: "aparece-me uma
+  //  especie de tutorial").  The EduTool, with no fixedSource, keeps the page.
+  //  ONE definition, one call site per step (pinchLesson.test.ts holds it):
+  //  the filter lives HERE, never at the call sites.
+  const stepOf = lessonStepper(PINCH_STEPS);
+  const lessonStep = (n: number) => (fixedSource && n <= 3 ? null : stepOf(n));
 
-  const lessonHead = (
+  const lessonHead = fixedSource ? null : (
     <Box>
       <Title order={3}>
         Pinch analysis, or how much energy the plant needs before you design it
@@ -822,22 +845,41 @@ export function PinchCompositeTool(): JSX.Element {
         {lessonStep(2)}
         {lessonStep(3)}
 
+        {streamRows.length > 0 && (
+          <Box>
+            <Title order={5}>The streams</Title>
+            <StreamTable rows={streamRows} dTmin={kpis?.["dTmin_K"]} />
+          </Box>
+        )}
+
+        {tableRows.length > 0 && (
+          <Box>
+            <Title order={5}>The worked cascade</Title>
+            <CascadeTable rows={tableRows} />
+          </Box>
+        )}
+
         <Box>
           <Title order={5}>Now read the curves the engine published</Title>
           <Text size="sm" mt={4}>
             The two composites below are the engine&apos;s own, straight off{" "}
             <code>{COMPOSITE_CURVES_CSV_PATH}</code>: the horizontal gap
-            between their ends is what the process can recover from itself, and
-            the two overhangs are the targets in the chip above.  The grand
-            composite is the same cascade plotted against the shifted
-            temperature — it touches zero AT the pinch, and any bulge away from
-            the axis is heat the process passes down through itself rather than
-            to a utility.  The candidate table is the engine&apos;s exhaustive
-            hot × cold analysis, in its own words.
+            between their ends is what the process can recover from itself
+            (the green bracket), and the two overhangs are the utility targets
+            (the coloured brackets, Q_C,min at the cold end and Q_H,min at the
+            hot end).  The cold curve is drawn slid right by Q_C,min, which is
+            what makes the overlap the maximum recovery; the horizontal axis is
+            a heat flow rate in kW, and a stream of constant CP is a straight
+            line of slope 1/CP on it.  The yellow bar is the pinch, where the
+            curves are ΔTmin apart.  The grand composite is the corrected
+            cascade of the table above plotted against the shifted temperature:
+            it touches zero AT a pinch and only at an end of the range when
+            there is none.  The candidate table is the engine&apos;s
+            feasibility assessment of each hot × cold pair, in its own words.
           </Text>
         </Box>
 
-        <OriginMark of={["engine", "page"]} note="the targets, the composite curves and the candidate matches are the pinch pass run in this browser (choupoSolve); the grand composite and the cross-check are derived on this page from the engine's curves" />
+        <OriginMark of={["engine", "page"]} note="the targets, the composite curves and the candidate matches are the pinch pass run in this browser (choupoSolve); the stream table, the worked cascade, the grand composite and the classification are the engine's files, drawn here" />
         {chips}
 
         {source === "classroom" && method.err && (
@@ -862,7 +904,8 @@ export function PinchCompositeTool(): JSX.Element {
                 <Text size="sm" c="dimmed" ta="center" maw={520}>
                   No pinch targets in this run.  This tool reads the
                   engine&apos;s own pinch pass: declare <code>pinchPass</code>{" "}
-                  in the case&apos;s <code>system/postDict</code> chain and run
+                  in the case&apos;s <code>system/postDict</code> chain
+                  (<code>{PINCH_PASS_EXCERPT}</code>) and run
                   a converged steady case — the engine then writes{" "}
                   <code>reports/pinch/compositeCurves.csv</code> +{" "}
                   <code>candidateMatches.csv</code> and publishes the{" "}
@@ -890,7 +933,9 @@ export function PinchCompositeTool(): JSX.Element {
             {!emptyCurrentRun && active && (<>
             {pane === "composite" && (hot && cold ? (
               <CompositeSvg hot={hot} cold={cold}
-                pinchHot={kpis?.["T_pinch_hot_K"]} pinchCold={kpis?.["T_pinch_cold_K"]} />
+                offset={summary?.coldOffset ?? kpis?.["Q_C_min_kW"] ?? 0}
+                qh={kpis?.["Q_H_min_kW"]} qc={kpis?.["Q_C_min_kW"]}
+                qrec={kpis?.["Q_recovery_max_kW"]} pinch={pinchGeom} />
             ) : (
               <Box p="xl">
                 <Text size="sm" c="dimmed">
@@ -900,31 +945,27 @@ export function PinchCompositeTool(): JSX.Element {
                 </Text>
               </Box>
             ))}
-            {pane === "gcc" && (derived ? (
+            {pane === "gcc" && (gcc.length > 1 ? (
               <Stack gap={4} h="100%" style={{ minHeight: 0 }}>
                 <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
-                  Derived in view from the engine&apos;s shifted composite curves
-                  (<code>hotShifted</code>/<code>coldShifted</code> in{" "}
-                  <code>{COMPOSITE_CURVES_CSV_PATH}</code>) — the engine publishes
-                  no grand-composite curve of its own.  The temperature shift
-                  (±ΔTmin/2) is already inside those curves; nothing here re-applies
-                  it.
+                  The corrected-cascade column of the engine&apos;s problem table
+                  (<code>{PROBLEM_TABLE_CSV_PATH}</code>) against the shifted
+                  temperature T*.  It touches zero at a pinch, and only at an end
+                  of the range when there is none.
                 </Text>
                 <Box style={{ flex: 1, minHeight: 0 }}>
-                  <GccSvg gcc={derived.gcc} Tpinch={derived.T_pinch_K} />
+                  <GccSvg gcc={gcc} pinchStars={pinchStars} />
                 </Box>
               </Stack>
             ) : (
               <Box p="xl">
                 <Text size="sm" c="dimmed">
-                  The grand composite is derived from the engine&apos;s{" "}
-                  <code>hotShifted</code>/<code>coldShifted</code> curves and this
-                  run carries none — the pinch pass writes them beside the actual
-                  curves; re-run the case.
+                  This run carries no <code>{PROBLEM_TABLE_CSV_PATH}</code> — the
+                  pinch pass writes it with the targets; re-run the case.
                 </Text>
               </Box>
             ))}
-            {pane === "matches" && (matches.length > 0 ? (
+                        {pane === "matches" && (matches.length > 0 ? (
               <MatchesTable matches={matches} />
             ) : (
               <Box p="xl">
@@ -950,9 +991,10 @@ export function PinchCompositeTool(): JSX.Element {
 
         <Text size="xs" c="dimmed">
           Every target here is the engine&apos;s (PinchPass, whose problem table
-          is printed cascade row by cascade row in the run log); this view
-          re-reads its published curves and derives nothing but the grand
-          composite and the cross-check above, both labelled where they appear.
+          is printed cascade row by cascade row in the run log and written to
+          reports/pinch/problemTable.csv); this view draws the engine&apos;s
+          files and computes nothing.  The targets are an energy bound, not a
+          network: a design that reaches them is a separate problem.
           The pass analyses the network the case declares — it designs nothing
           and rewrites nothing.
         </Text>
