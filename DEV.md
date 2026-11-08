@@ -3162,6 +3162,29 @@ accepts today, and that is a policy call.
 > (b) `column20` is the same system at the same pressure and still on the ideal vapour
 > (C239 first item); (c) three READMEs carry prose from the previous state, marked.
 
+> **C239 S1/S3 + the Klemola anchors (2026-11-08, architect).**  LANDED: column14 carries
+> two anchor rows against Klemola & Ilme (1996) Table 2 (`cfc70414d`): i-butane overhead
+> 0.9233 vs 0.9192 measured (+0.45 %), n-butane bottoms 0.9820 vs 0.9797 (+0.24 %),
+> band 1 % relative.  DECISION on the band: it was chosen after the run, and it stands
+> because Table 2 fails its own key-component balance by about 1 % (i-butane 0.9 %), so a
+> tighter band asks the model to be more exact than the measurement; the printing band
+> (+/-0.05 wt %) would fail all four rows.  The two minor keys (n-butane overhead -44 %,
+> i-butane bottoms +54 %) are NOT anchor rows: they miss in opposite senses (so not an
+> efficiency effect), the paper's balance gives a negative n-butane distillate, and the
+> runner has no open-anchor state; they are pinned as self-recorded rows and explained in
+> `expected`.  These anchors certify the major split only (the ideal-tray column15 passes
+> them too).  column14 is row 20 of the V&V subset, labelled partial.  LANDED: column20 on
+> SRK (`021a66afa`): reboiler 8386 -> 7654 kW, condenser -5507 -> -4893 kW, T_bottom
+> 350.6 -> 344.3 K, conversion 8.8 -> 7.0 % (cooler reactive stages), rows listed in
+> the commit.  BLOCKED: column08 (16 bar) does not converge on SRK (51 Newton iterations,
+> ||F|| 8.1; seeded from the ideal profile 0.149): its iterates cross the Tc of C3/C4/C5
+> and the Tc rule (`SaturatedVapour.cpp` liquidReferenceFactor) steps the factor from ~0.7
+> to 1.  DECISION (architect, rule 00; this closes the open Tc-rule item above): the
+> factor is made CONTINUOUS -- above a cap T_cap near Tc it is held at its value there,
+> announced once per component; T_cap chosen by measurement.  It reaches every
+> EoS-vapour gamma-phi case, so its validation is every such case plus --fast; only cases
+> evaluating above T_cap may move.  envelope02 is its witness.  A builder is on it.
+
 > **C243 (Vitor, 2026-11-07: "os gráficos [dos casos de controlo] acabam por ter muitas
 > variáveis e ficam confusos!  Havia de haver no dicionário uma forma de especificar os
 > gráficos que o utilizador gostaria de ver, de uma forma simples"): THE CASE DECLARES
