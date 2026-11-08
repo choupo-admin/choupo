@@ -74,6 +74,9 @@ void ODEIntegrator::registerBuiltins()
         [] { return std::make_unique<EulerSI>(); });
     registerType("Rosenbrock23",
         [] { return std::make_unique<Rosenbrock23>(); });
+    registerType("Rodas4",
+        [] { return std::make_unique<Rosenbrock23>(
+                 Rosenbrock23::Scheme::Rodas4); });
 }
 
 } // namespace Choupo::solver

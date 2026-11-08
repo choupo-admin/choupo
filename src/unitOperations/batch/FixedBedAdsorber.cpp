@@ -118,6 +118,18 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             throw std::runtime_error("fixedBedAdsorber '" + name_
                 + "': solver.samplingInterval must be > 0 s (it is the"
                 " declared breakthrough-sampler resolution)");
+        //  The stiff integrator: the 2(3) Rosenbrock pair (default) or the
+        //  order-4 Rodas4 -- same Jacobian, same positivity guard.
+        {
+            const std::string m = solverDict->lookupWordOrDefault(
+                                      "method", "rosenbrock23");
+            if (m == "rosenbrock23")  method_ = "Rosenbrock23";
+            else if (m == "rodas4")   method_ = "Rodas4";
+            else
+                throw std::runtime_error("fixedBedAdsorber '" + name_ + "': "
+                    + registryRefusal::message("solver.method", m,
+                          {"rosenbrock23", "rodas4"}, "Accepted"));
+        }
         //  The Jacobian structure the unit declares to Rosenbrock23 -- a
         //  solver aid, so the student may switch it off and compare.
         jacobianDeclared_ = solverDict->found("jacobian");
@@ -862,8 +874,11 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
         }
         if (adaptive_)
             std::cout << "  [fixedBedAdsorber '" << name_ << "'] time"
-                         " integration: Rosenbrock23 (L-stable), sub-stepped"
-                         " by this unit in samplingInterval = "
+                         " integration: "
+                      << (method_ == "Rodas4"
+                              ? "Rodas4 (L-stable, order 4(3))"
+                              : "Rosenbrock23 (L-stable)")
+                      << ", sub-stepped by this unit in samplingInterval = "
                       << samplingInterval_ << " s chunks (declared"
                          " breakthrough-sampler resolution), rtol = " << rtol_
                       << ", atol per row (1e-9 c_in | 1e-9 q_ref | 1e-6"
@@ -1529,9 +1544,9 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
 
     // Adaptive: the stiff Rosenbrock23 sweeps [t, t+dt] in chunks of
     // samplingInterval so the breakthrough sampler sees every chunk end.
-    if (!solver::ODEIntegrator::known("Rosenbrock23"))
+    if (!solver::ODEIntegrator::known(method_))
         solver::ODEIntegrator::registerBuiltins();
-    auto integ = solver::ODEIntegrator::New("Rosenbrock23");
+    auto integ = solver::ODEIntegrator::New(method_);
 
     solver::DerivFn f =
         [this](scalar /*tt*/, const sVector& yy) { return rhs_(yy); };
@@ -1558,7 +1573,7 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
         if (!st.ok)
         {
             std::ostringstream os;
-            os << "fixedBedAdsorber '" << name_ << "': Rosenbrock23 gave up"
+            os << "fixedBedAdsorber '" << name_ << "': " << method_ << " gave up"
                   " at t = " << tl << " s (step below hMin or maxSteps) --"
                   " loosen rtol, refine the mesh, or reduce"
                   " samplingInterval";
@@ -1598,7 +1613,7 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
     }
     if (verbosity_ >= 3)
         std::cout << "  [fixedBedAdsorber '" << name_ << "'] t = "
-                  << std::setprecision(6) << tEnd << " s: Rosenbrock23 "
+                  << std::setprecision(6) << tEnd << " s: " << method_ << " "
                   << acc << " accepted, " << rej << " rejected sub-steps,"
                      " h_next = " << hCarry_ << " s"
                   << (odeStructure_.audited && jacobian_ == "blockTridiagonal"

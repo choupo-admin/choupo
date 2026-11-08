@@ -355,6 +355,9 @@ private:
     //  M_in/M_out (and Q_wall) ledger rows as the border.  Kept across the
     //  samplingInterval chunks so the integrator audits it ONCE per run.
     std::string                jacobian_ = "blockTridiagonal";
+    //  The stiff integrator (solver { method rosenbrock23 | rodas4; },
+    //  default rosenbrock23): the registry name it resolves to.
+    std::string                method_ = "Rosenbrock23";
     bool                       jacobianDeclared_ = false;
     solver::ODEBlockStructure  odeStructure_;
     bool                       structureAnnounced_ = false;

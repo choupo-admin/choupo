@@ -4935,6 +4935,20 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/odeblk.$$
+
+    # Rodas4 order gate (2026-11-08, DEV.md 4c C245 slice 11): the stiff
+    # integrator's ~50 coefficients were entered by hand, so its observed
+    # order (>= 3.8) and L-stability are measured by a probe compiled
+    # against the ODE sources alone.
+    if gate_exec "$ROOT/bin/curate/check_rodas4_order.py" > /tmp/rodas4.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "rodas4-order-gate" "$(head -1 /tmp/rodas4.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_rodas4_order.py)\n" "rodas4-order-gate"
+        cat /tmp/rodas4.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rodas4.$$
     rm -f /tmp/blocktri.$$
 
     # solver-failures gate (2026-10-27, DEV.md 4c C178).  A failed

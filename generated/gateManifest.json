@@ -1595,6 +1595,11 @@
       "exit": 0,
       "claim": "check_newton_globalisation: OK -- the Newton's globalisation contract holds on four synthetic problems compiled against the solver sources: from a singular start the legacy default still stalls (26 uphill steps, the default unmoved) while Armijo + Levenberg-Marquardt converges in 12 iterations with ||F|| strictly decreasing (2 LM steps); a declared lower bound keeps every trial and probe of ln x inside x > 0 (legacy default: 13 evaluations at x <= 0); a NaN probe stops the solve naming its column and luFactor refuses a NaN pivot and a row dependent to working precision while factoring row- and column-scaled matrices and a 1e-31 matrix; typX = 1e-10 solves ln(x/1e-10) = 0.5 where the absolute step is refused; NewtonND.H defaults to legacy and the full MESH opts in.  NOT covered: whether corpus cases SHOULD converge (the goldens), callers that have not opted in, the MESH's sum(x) <= 1 constraint (slice 2).",
       "seconds": 2.5
+    },
+    "check_rodas4_order": {
+      "exit": 0,
+      "claim": "check_rodas4_order: OK -- Rodas4 observed order 4.27, 4.16 (>= 3.8) at h = 3/40, 3/80 on a nonautonomous nonlinear pair; stiff probe (h*lambda = -100) within 3.7e-07 of cos t (<= 1e-06).  NOT covered: the embedded error estimate, the 2(3) pair's order.",
+      "seconds": 4.0
     }
   }
 }
