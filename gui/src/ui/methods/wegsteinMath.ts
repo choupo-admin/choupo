@@ -18,7 +18,7 @@
 
   PLANE A, THE MEASURED ONE, IS THE ENGINE'S.  `recycleSolver Wegstein;` in a
   case's `system/solverDict` puts the flowsheet's recycle on the accelerator
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3250), and the engine publishes
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3262), and the engine publishes
   the per-iteration PHYSICAL residuals — the recycle mass and energy imbalance
   as a fraction of what enters the plant — as convergence curves named
   "Mass balance (global)" and "Energy balance (global)"
@@ -64,20 +64,20 @@
   AND THE PRICE, which is the other half and must not blur.  The STOPPING
   TEST is a different question from the STEP, and it does not share the step's
   invariance.  The Wegstein branch converges on `normL2(gx, x)`
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3307, the norm itself at
-  :2043-2052) over the packed tear vector `[F, z_0..z_{nC-1}, T]`
-  (src/unitOperations/flowsheet/Flowsheet.cpp:1775-1786, renormalised onto the
-  simplex on the way back at src/unitOperations/flowsheet/Flowsheet.cpp:1829)
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3358, the norm itself at
+  :1858-1866) over the packed tear vector `[F, z_0..z_{nC-1}, T]`
+  (src/unitOperations/flowsheet/Flowsheet.cpp:1787-1798, renormalised onto the
+  simplex on the way back at src/unitOperations/flowsheet/Flowsheet.cpp:1841)
   — a plain Euclidean norm over a flow in kmol/s, mole fractions and a
   temperature in kelvin, with no per-variable scale.  The Newton branch of the
   same function does NOT do this: it tears on component molar flows plus T
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3387-3396) and divides each
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3445-3459) and divides each
   residual by a characteristic scale
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3383-3396, applied at
-  src/unitOperations/flowsheet/Flowsheet.cpp:3465), and its own comment names
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3515-3523, applied at
+  src/unitOperations/flowsheet/Flowsheet.cpp:3555), and its own comment names
   what the absence of that scaling costs — "the latent under-convergence the
   old Wegstein default also had"
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3437-3438).
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3515-3518).
 
   NOT HERE, deliberately: any tear-SELECTION heuristic (that is the
   tear-streams page, and the engine deliberately does not choose either), any
@@ -101,7 +101,7 @@ export const EPS_X = 1.0e-14;
 export const EPS_S = 1.0e-10;
 
 /** The engine's RECYCLE clamp defaults — read off the solverDict with these
- *  fallbacks at src/unitOperations/flowsheet/Flowsheet.cpp:3257-3258.
+ *  fallbacks at src/unitOperations/flowsheet/Flowsheet.cpp:3269-3270.
  *
  *  They are NOT the defaults of the `Wegstein` class, which are [-5, 0]
  *  (src/solver/Wegstein.H:73-74) and which the Theory Guide quotes as
@@ -389,7 +389,7 @@ export function driveDirect(m: ToyMap, o: DriveOptions): SolveTrace {
  *  tear variables — two full flowsheet sweeps per variable
  *  (Theory Guide §ch:newton-tears) — and tears on component molar flows
  *  rather than on (F, z, T, P)
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:3387-3396).  The cost per step
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:3445-3459).  The cost per step
  *  is the whole reason Wegstein is still on offer, and no toy can show it. */
 export function driveNewton(m: ToyMap, o: DriveOptions): SolveTrace {
   const units = o.units ?? SI;
@@ -463,7 +463,7 @@ export const RECYCLE_DEFAULTS: RecycleKnobs = {
  *
  *  WHAT IS NOT HERE, and it is the knob the owner asked for: the clamp.
  *  `recycleWegsteinQmin` / `Qmax` are read by the engine
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:3257-3258) but this witness
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:3269-3270) but this witness
  *  carries them COMMENTED OUT, and an override replaces a declared value — it
  *  does not add a key.  Measured on the corpus (2026-09-12): of the ten cases
  *  that select `recycleSolver Wegstein`, only two declare the clamp live, one
@@ -490,7 +490,7 @@ export const WITNESS_TEAR = "recycle";
  *  divided by a plant-inlet scale — which the engine computes precisely
  *  because the solvers' own `|Δtear|` mixes flows and temperatures into one
  *  dimensionless figure and it wanted two curves a student recognises
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:1860-1865).
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:1872-1877).
  *
  *  The engine already refuses to show a reader the mixed norm on this plot.
  *  Returning null rather than an empty array keeps "the run published no
