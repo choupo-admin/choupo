@@ -238,6 +238,57 @@ def main():
             if not (s.get("why") or "").strip():
                 fails.append(f"path '{pid}' step '{s.get('tool')}' has no `why`")
 
+    #  THE HOME (DEV.md 4c C251).  With no tool named the workspace opens on its
+    #  HOME, which must list every live tool exactly once (each on the shelf of
+    #  its discipline, so the discipline must be a declared shelf and the home
+    #  must draw the shelves from the registry, never from a list of its own)
+    #  and every guided sequence; and `bootTool()` must answer null when the
+    #  address names no tool (a hand-picked default tool is the defect this arm
+    #  holds shut).  The behaviour of the null boot is tested in
+    #  gui/tests/eduToolsHome.test.ts; the arms here read the sources, so a
+    #  home that stopped iterating the registry fails the gate.
+    shelves = live.get("disciplines") or []
+    for tid, tool in sorted(live_tools.items()):
+        if tool.get("discipline") not in shelves:
+            fails.append(f"live tool '{tid}' sits on the shelf "
+                         f"{tool.get('discipline')!r}, which is not in "
+                         "METHOD_DISCIPLINES -- the home would not list it")
+    if len(set(shelves)) != len(shelves):
+        fails.append("METHOD_DISCIPLINES repeats a shelf -- the home would "
+                     "list its tools twice")
+    home = ROOT / "gui" / "src" / "ui" / "methods" / "EduToolsHome.tsx"
+    if not home.exists():
+        fails.append("gui/src/ui/methods/EduToolsHome.tsx is missing -- the "
+                     "workspace has no home")
+    else:
+        h = home.read_text()
+        for needle, why in (
+                ("METHOD_DISCIPLINES.map(", "draw its shelves from METHOD_DISCIPLINES"),
+                ('m.discipline === d', "put each tool on the shelf of its discipline"),
+                ('m.status === "live"', "list live tools only"),
+                ("METHOD_PATHS.map(", "draw every guided sequence from METHOD_PATHS"),
+                ("startGuidedSequence(", "offer a Start button for each sequence"),
+                ("openToolFromHome(", "open a tool when its entry is clicked")):
+            if needle not in h:
+                fails.append(f"EduToolsHome.tsx does not {why} (`{needle}`)")
+        for tid in sorted(live_tools):
+            if re.search(r'["\']%s["\']' % re.escape(tid), h):
+                fails.append(f"EduToolsHome.tsx writes the tool id '{tid}' -- "
+                             "a second hand-written list")
+    reg = (ROOT / "gui" / "src" / "ui" / "methods" / "registry.ts").read_text()
+    m = re.search(r"export function bootTool\(\)[^{]*\{(.*?)\n\}\n", reg, re.S)
+    if not m:
+        fails.append("registry.ts has no `export function bootTool()`")
+    else:
+        body = m.group(1)
+        returns = re.findall(r"return\s+([^;]+);", body)
+        if not returns or returns[-1].strip() != "null":
+            fails.append("bootTool() does not end in `return null;` -- with an "
+                         "empty query the workspace would open on a tool, not "
+                         "on its home")
+    if not (ROOT / "gui" / "src" / "ui" / "MethodsWorkspace.tsx").read_text().count("<EduToolsHome />"):
+        fails.append("MethodsWorkspace.tsx never renders <EduToolsHome />")
+
     #  The landing itself.
     if not LANDING.exists():
         fails.append("site/index.html is missing")

@@ -102,7 +102,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconChevronDown, IconSearch } from "@tabler/icons-react";
+import { IconCheck, IconChevronDown, IconHome, IconSearch } from "@tabler/icons-react";
 
 import { useCaseMode } from "../state/useCaseMode.js";
 import { MODE_LABEL, type CaseMode } from "../case/caseModes.js";
@@ -115,7 +115,7 @@ import {
   selectedUnitIn, selectedUnitTypeIn, TAB_CHROME, tabHelp, tabKindFor,
 } from "./tabChrome.js";
 import {
-  METHOD_DISCIPLINES, METHOD_TOOLS, setActiveMethodTool, useActiveMethodTool,
+  METHOD_DISCIPLINES, METHOD_TOOLS, goToEduToolsHome, setActiveMethodTool, useActiveMethodTool,
   type MethodToolId,
 } from "./methods/registry.js";
 import { openEduToolsFind } from "./methods/EduToolsFind.js";
@@ -1109,13 +1109,13 @@ function ViewsMenu({ views, isActive, isDisabled, disabledHint, onPick, px }: {
  *  Select survives unchanged for the case tab that still hosts the chooser in
  *  its body, so nothing is deleted; the day the registry outgrows a menu, that
  *  is the shape to come back to. */
-function ToolMenu({ tool, px }: { tool: MethodToolId; px: number }) {
+function ToolMenu({ tool, px }: { tool: MethodToolId | null; px: number }) {
   const current = METHOD_TOOLS.find((m) => m.id === tool);
   const label = (
     <Text span fz={13} fw={400} c="dimmed">
       Tool:{" "}
       <Text span fz={13} fw={600} c="accent">
-        {current ? current.label : "none"}
+        {current ? current.label : "home"}
       </Text>
     </Text>
   );
@@ -1133,6 +1133,10 @@ function ToolMenu({ tool, px }: { tool: MethodToolId; px: number }) {
       <Menu.Item leftSection={<IconSearch size={14} />} onClick={openEduToolsFind}
         title="Search every EduTool and every chapter of its lessons">
         Find in EduTools…
+      </Menu.Item>
+      <Menu.Item leftSection={<IconHome size={14} />} onClick={goToEduToolsHome}
+        title="The EduTools home: guided sequences and every tool by discipline">
+        EduTools home
       </Menu.Item>
       <Menu.Divider />
       {/* GROUPED BY DISCIPLINE (owner, 2026-08-30: 23 tools had outgrown a

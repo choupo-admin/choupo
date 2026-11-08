@@ -262,7 +262,7 @@ else:
 src = open(page, encoding="utf-8").read()
 paths = doc.get("paths") or []
 if paths:
-    pbody = "<h3>Paths</h3><p>Walk several tools in a teaching order.</p>" + "".join(
+    pbody = "<h3>Guided sequences</h3><p>Each sequence walks several tools in a teaching order, with the reason for every step.</p>" + "".join(
         '<details class="edutool-path"><summary>%s<span>%d steps</span></summary>'
         '<p style="margin:0 0 8px;color:var(--muted);font-size:14px">%s</p><ol>%s</ol></details>'
         % (e(p.get("title")), len(p.get("steps") or []), e(p.get("intro")),

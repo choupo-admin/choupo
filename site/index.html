@@ -484,7 +484,7 @@
       </div>
       <!-- The text filter is revealed by the script below; without JavaScript
            the shelves are simply the full list, every one open. -->
-      <!-- THE PATHS (DEV.md 4c C221), from the artefact's `paths`: ordered
+      <!-- THE GUIDED SEQUENCES (DEV.md 4c C221, C251), from the artefact's `paths`: ordered
            walks through the tools below.  Empty here; buildSite writes the
            static version and the script below redraws it. -->
       <div class="edutool-paths" id="edutoolsPaths"></div>
@@ -909,7 +909,7 @@ https://www.choupo.org/app/
     var pathHost = document.getElementById("edutoolsPaths");
     function drawPaths(paths) {
       if (!pathHost || !Array.isArray(paths) || !paths.length) return;
-      pathHost.innerHTML = '<h3>Paths</h3><p>Walk several tools in a teaching order.</p>'
+      pathHost.innerHTML = '<h3>Guided sequences</h3><p>Each sequence walks several tools in a teaching order, with the reason for every step.</p>'
         + paths.map(function (p) {
           return '<details class="edutool-path"><summary>' + esc(p.title)
             + '<span>' + p.steps.length + ' steps</span></summary>'
