@@ -1,5 +1,6 @@
+# The ladder: The ammonia reactor-model ladder
+
 <!-- The ammonia reactor-model ladder (C244, 2026-11-07): four cases, ammoniaReactor01..04, read in order. -->
-## The ladder: The ammonia reactor-model ladder
 
 Four cases over ONE unchanged ammonia synthesis loop.  **Between consecutive
 rungs exactly one thing moves: the reactor model.**  Feed, pressure,

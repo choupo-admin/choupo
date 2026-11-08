@@ -1594,11 +1594,17 @@ if [ "$#" -gt 0 ]; then
     #  An instruction to run it in pieces is empty if pieces are awkward.
     for a in "$@"; do
         if [ -f "$a/system/controlDict" ]; then
+            #  A sector sub-case (its parent holds a system/controlDict) runs
+            #  inside its case; named alone it exits 2 by design (C244).
+            [ -f "$(dirname "$a")/system/controlDict" ] \
+                && { echo "[skip] $a is a sector of $(dirname "$a"), run through it"; continue; }
             CASES+=("$a")
         elif [ -d "$a" ]; then
             n=0
             while IFS= read -r cd; do
-                CASES+=("$(dirname "$(dirname "$cd")")"); n=$((n+1))
+                _c="$(dirname "$(dirname "$cd")")"
+                [ -f "$(dirname "$_c")/system/controlDict" ] && continue
+                CASES+=("$_c"); n=$((n+1))
             done < <(find "$a" -path '*/system/controlDict' 2>/dev/null | sort)
             [ "$n" -gt 0 ] \
                 && echo "[chunk] $a -> $n case(s)" \
