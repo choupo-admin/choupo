@@ -160,10 +160,10 @@ Sizing and costing (`system/postDict`):
 
 | item | size | basis the engine recorded | C_BM | C_TM |
 |---|---|---|---|---|
-| converter | V_R = **18.7621 m³**, D 1.5812 m, H 9.4871 m, wall 142.37 mm, 53 674 kg | `catalyst V = Q_normal/SV; SV declared on NORMAL gas volume …` | 4 204 147 € | 4 960 893 € |
-| separator | V_R = 11.7916 m³ | `drum V = Q*tau` | 3 292 176 € | 3 884 768 € |
-| let-down drum | V_R = 0.5288 m³ | `drum V = Q*tau` | 21 410 € | 25 264 € |
-| **total** | | | **7 517 733 €** | **8 870 925 €** |
+| converter | V_R = **20.8443 m³**, D 1.6415 m, H 9.8492 m, wall 147.69 mm, 60 011 kg | `catalyst V = Q_normal/SV; SV declared on NORMAL gas volume …` | 4 751 968 € | 5 607 322 € |
+| separator | V_R = 14.4948 m³ | `drum V = Q*tau` | 4 074 901 € | 4 808 383 € |
+| let-down drum | V_R = 0.4311 m³ | `drum V = Q*tau` | 19 642 € | 23 177 € |
+| **total** | | | **8 846 511 €** | **10 438 882 €** |
 
 **By METHODOLOGY this estimate sits in AACE 18R-97 Class 4** — the "study
 or feasibility" class, whose methodology 18R-97 states as *equipment factored
@@ -274,8 +274,8 @@ and check the sentence before quoting it onward.
 rate law is written in its own `constant/reactions` (`kinetics { type
 expression; }`, every constant with its unit) and integrated by `pfr`, and a
 DesignSpec on the bed's own
-approach-to-equilibrium KPI computes **7.5767 m³** for a 5 K per-bed approach
-— against this case's 18.76 m³ — at 16.60 % per-pass conversion, because a
+approach-to-equilibrium KPI computes **8.2013 m³** for a 5 K per-bed approach
+— against this case's 20.84 m³ — at 16.60 % per-pass conversion, because a
 single adiabatic bed cannot be the isothermal converter this case assumes.
 The pellet effectiveness factor is the rung beyond 4 (announced there as
 unpriced; the paper's own correction, switched on with an 8 mm particle, makes
@@ -284,7 +284,7 @@ to cost a vessel, not enough to build one.
 
 ## 5. What this case REFUSES to claim
 
-* **It does not claim a bed volume the engine computed.**  18.76 m³ is
+* **It does not claim a bed volume the engine computed.**  20.84 m³ is
   arithmetic on a declared space velocity and this run's own throughput.  It is
   the *first* of the three volumes a converter gets in a real project — space
   velocity at feasibility, an integrated rate law with an effectiveness factor

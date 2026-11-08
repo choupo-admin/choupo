@@ -1,10 +1,10 @@
-// [imported] origin "data/standards/assets/SS316.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+// [imported] origin "data/standards/assets/SS316.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Material: Stainless steel 316 (AISI 316 / UNS S31600,
   18Cr-10Ni-2Mo austenitic -- the Mo grade, better chloride resistance)
 
-  Costing + construction-limits record: F_M feeds the Guthrie module-
-  costing pass; sigma_y / maxT / maxP bound the design envelope;
+  Costing + construction-limits record: F_M feeds the Turton costing
+  pass (Guthrie's bare-module form); sigma_y / maxT / maxP bound the design envelope;
   thermalConductivity is the HX wall-conduction value.
 
   Sources
