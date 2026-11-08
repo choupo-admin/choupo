@@ -12,7 +12,7 @@ diag    fit_nrtl               corr_computed    1                  1e-4
 diag    fit_nrtl               dof              27                 1e-4
 diag    fit_nrtl               identifiable     1                  1e-4
 diag    fit_nrtl               invertible       1                  1e-4
-diag    fit_nrtl               iter             36                 1e-4
+diag    fit_nrtl               iter             21                 1e-4
 diag    fit_nrtl               max_abs_corr     0.89819126525      1e-4
 diag    fit_nrtl               max_abs_resid    1.65678230014      1e-4
 diag    fit_nrtl               n_data           29                 1e-4
@@ -35,7 +35,7 @@ diag    fit_nrtl_start2        corr_computed    1                  1e-4
 diag    fit_nrtl_start2        dof              27                 1e-4
 diag    fit_nrtl_start2        identifiable     1                  1e-4
 diag    fit_nrtl_start2        invertible       1                  1e-4
-diag    fit_nrtl_start2        iter             32                 1e-4
+diag    fit_nrtl_start2        iter             21                 1e-4
 diag    fit_nrtl_start2        max_abs_corr     0.898191467398     1e-4
 diag    fit_nrtl_start2        max_abs_resid    1.65678866314      1e-4
 diag    fit_nrtl_start2        n_data           29                 1e-4
