@@ -1,0 +1,183 @@
+# `donepezil02_two_strengths` — donepezil hydrochloride 5 mg and 10 mg tablets: ONE plant, TWO products, in campaigns
+
+A BASE CASE for a pharmaceutical-industry project group (DEV.md 4c C249).
+It takes the plant of `donepezil01_tablets` (wet granulation, an aqueous
+coat, the API bought) and asks the question that case could not answer:
+**how is a year divided between two strengths made on the same equipment,
+and what does it cost to change from one to the other?**  The answer is a
+**multiproduct batch plan** — single-product campaigns in a declared order,
+a clean between products that depends on the **direction** of the change,
+and a Gantt chart of the year.  **It runs (in seconds), it is deliberately
+NOT optimised**, and every number a group would change is a plain key, said
+to be an assumption where it is declared.
+
+```bash
+source etc/bashrc
+runCase tutorials/batch/plant/donepezil02_two_strengths
+```
+
+The case is sealed: everything it reads is in its own `constant/`.  The
+flowsheet, the components and the building are `donepezil01_tablets`'
+own, unchanged (read that README for the chemistry, the dryers and the
+questions about content uniformity); this one is about **the plan**.
+
+## 1. The two products, and where each fact comes from
+
+| Fact | Source | Verified? |
+|---|---|---|
+| **10 mg**: 10 mg of donepezil hydrochloride, 174.33 mg of lactose; **yellow**, debossed ARICEPT / 10 | UK SmPC, *ARICEPT 10 mg film coated tablets*, Eisai Ltd, emc, sections 2 and 3 | read for `donepezil01_tablets` |
+| **5 mg**: 5 mg of donepezil hydrochloride, 87.17 mg of lactose (half the 10 mg figures); **white**, debossed ARICEPT / 5 | UK SmPC, *ARICEPT 5 mg film coated tablets*, Eisai Ltd, emc; the Irish (HPRA) SmPC | read for `donepezil01_tablets` |
+| The 5 mg tablet is **the 10 mg tablet at half the weight** (one common blend pressed at two weights: 140 mg core against 280 mg) | an inference from the two SmPCs' lactose ratio, labelled so in `donepezil01_tablets` README section 1 | **inference** |
+| The 5 mg coat has **no yellow iron oxide** | the SmPCs' colours; the 1 % pigment share is the 10 mg coat's author-set composition | inference |
+| **Demand**: 90 million 10 mg and 60 million 5 mg tablets a year | **author-set market assumption**, not a market study.  150 million is `donepezil01_tablets`' total, split 3:2 as a dose-escalation pair is (start on 5 mg, most maintained on 10 mg) | **NOT verified** |
+| **Prices**: 0.10 EUR a 10 mg tablet, 0.06 EUR a 5 mg tablet | author-set placeholders (`constant/economics`) | **NOT verified** |
+| **Every time, density, fill, clean and crew number** | author-set assumptions, said so in each `source` | **NOT verified** |
+
+## 2. The production basis
+
+| Quantity | 10 mg | 5 mg |
+|---|---|---|
+| Packed tablet | 0.29023 g | 0.145115 g (half) |
+| Year | 90 million = **26 121 kg** | 60 million = **8 707 kg** |
+| Lot | 300 kg of final blend, **1.07 million cores** | the SAME 300 kg bin, **2.14 million cores** |
+| Lots a year | **86** | **29** |
+| Press and packaging time per lot | 7 h / 9 h | **14 h / 18 h** (same tablets an hour, twice the tablets) |
+
+**One steady flowsheet serves both**, because the 5 mg tablet is the same
+blend at half the weight: a kilogram of either carries the same kilograms of
+every ingredient, and the batch plan reads its balance **per kg of product**
+(`BatchPlanPass.H:189-193`).  The one thing that would differ — the 10 mg
+coat's 1 % yellow iron oxide, 0.03 % of the tablet — is ignored here and
+said so; a group that wants it declares a `massPerProduct` for the coating
+suspension and the plan announces `ownBalance`.
+
+## 3. The campaign plan (run it and read the BATCH PLAN block)
+
+Two trains decoupled by the final-blend store, as in `donepezil01_tablets`;
+`lotsPerCampaign 8` and a 24 h full clean between campaigns of ONE product.
+Between the two products every stage has its own clean (`productChangeover`)
+and the train waits for the slowest.  **The Gantt of the year**
+(`campaignOrder ( strength10 strength5 )`):
+
+| | granulation train | tableting train |
+|---|---|---|
+| 10 mg: lots, campaigns, hours | 86 lots, 11 campaigns, 661 h | 86 lots, 11 campaigns, 1 341 h |
+| limiting stage, `T_L` | fluid-bed dryer, 4.25 h | packaging line, 11 h |
+| clean, 10 mg then 5 mg | **6 h** (granulator wash) | **12 h** (the coating pan) |
+| 5 mg: lots, campaigns, hours | 29 lots, 4 campaigns, 219 h | 29 lots, 4 campaigns, 738 h |
+| limiting stage, `T_L` | fluid-bed dryer, 4.25 h (the lot is the same) | packaging line, **20 h** |
+| clean, 5 mg then 10 mg (the year repeats) | 6 h | **6 h** |
+| **The year** | 15 campaigns, 2 product changes, **880 h = 22.9 %** of 3 840 h | 15 campaigns, 2 product changes, **2 079 h = 54.1 %** |
+
+The tableting train is paced by the **packaging line for both products, but
+at 11 h a lot for one and 20 h for the other**: the limiting stage is a
+property of the product, not only of the plant.  Equipment is sized for the
+product that needs the most (the plan names it, `sizing by`): here the 10 mg
+for every stage, because the 5 mg lot is the same mass and only takes longer.
+
+**The clean depends on the direction (colour carry-over).**  A trace of
+yellow iron oxide left in the coating-suspension tank, the spray lines and the
+perforated pan shows as specks on a white tablet; a trace of white pigment in
+a yellow coat does not show.  So the clean *before the white 5 mg* is the
+long one — 8 h at the suspension tank and 12 h at the pan — and the clean
+before the yellow 10 mg the short one, 3 h and 6 h.  It is declared on the
+product that has just finished, `changeoverTo { strength5 12 h; }`
+(`BatchPlanPass.H:173-177` shows the grammar).  The hours are author-set
+placeholders, **not cleaning-validation results**: in a real plant they are
+the time to clean **and prove** the equipment clean (swab or rinse sampling
+against a limit set for the product that follows — EU GMP *Annex 15*,
+cleaning validation, cited by title).  Both strengths contain the **same
+API**, so the clean is about line clearance (no strength mixed up) and the
+coat's colour, not about one drug contaminating another: a different API in
+the second campaign would need a far longer one.
+
+### The decision, and why the order matters less than it looks
+
+`campaignOrder` is the student's decision; the engine never takes it.
+**With two products, in this plan, it does not change the year at all.**
+Swap it to `( strength5 strength10 )` and the hours are identical (880.2 h and
+2 079 h): the plan wraps the clean after the last campaign round to the
+first product, so both directions are paid once whichever product goes first,
+and only the Gantt chart — who is made first — changes.  **The order becomes
+a decision with three or more products, and then only through the
+direction-dependent cleans** (`BatchPlanPass.H:219-224`): a campaign order in
+which the products that stain follow the ones that do not.  Add a third
+product to see it (the 23 mg tablet exists; its data is not in this case).
+What justifies one order over the other here is not the clean but the
+business: make the high-volume 10 mg first so its stock is built while the
+5 mg waits, and end the year on the product whose next clean is the short one.
+
+**What this plan does not do**, said (`BatchPlanPass.H:264-275`): one
+rotation a year (each product's campaigns back to back, so the 10 mg stock is
+built over 17 weeks of the year; several rotations trade changeovers for
+inventory and are not built); the two products never overlap on a train (the
+next waits until the whole train is clean — a GMP line clearance, and
+conservative); no mixed-product campaigns; no optimiser of the order; the
+intermediate store is not sized.
+
+## 4. Where each deliverable appears
+
+| Deliverable | Where |
+|---|---|
+| The multiproduct plan: lots, campaigns, `T_L`, limiting stage, clean per direction, occupancy | the `=== BATCH PLAN` block of the log; `reports/batchPlan/{products,productTrains,productStages,stages,trains}.csv`; the GUI's **Batch plan** section |
+| **The Gantt chart of the year**, every campaign, lot and clean | `reports/batchPlan/gantt.csv` (222 bars); the GUI's Batch plan section draws it |
+| The two preparation vessels sized on the plan, the two air heaters | `Equipment Sizing` block; `design/<unit>/` sheets; `reports/equipment/equipmentList.csv` |
+| Costing from declared, labelled quotes that scale with the plan | `Costing` block (`costing { quotes }` in `system/postDict`) |
+| Economics: capital, the declared **operating crew** (10 operators a shift), NPV, **working capital** (`reports/economics/workingCapital.csv`), **land** (priced on the layout's plot), cash flow | the `Economics` block; `reports/economics/cashFlow.csv` |
+| **Sensitivity** to the blended price | the table under the economics; `reports/economics/sensitivity.csv` |
+| The **GMP building** (33 rooms on 2 floors: grades, pressure cascade, airlocks, routes) and the site, with 0 findings | `system/layoutDict`; the `[building]` and `[layout]` lines; the GUI's Layout section |
+
+**What the other tablet cases show that this one cannot — and why.**  Three
+tools are *engine limits for a multiproduct plan today*, each refused by name,
+so they are not in this case (and the case says so in its `postDict`):
+`cleaning ( ... )` (the cleaning water per machine, `BatchPlanPass.H:261`),
+the `ratedMachine` sizers (each machine's fit to its rating,
+`RatedMachineSize.cpp:284-288`) and `cleanUtilities` (the HVAC air of each
+grade and the purified water, `CleanUtilitiesPass.cpp:312-314`).  Run
+`donepezil01_tablets` for them on the 10 mg product alone; the building here
+is priced at the earlier all-in 6 000 EUR/m2 that carried the HVAC inside it.
+Building them for a plan of several products is the next engine slice, and
+the group can ask for it.
+
+## 5. What the group changes for its own drug
+
+1. **The products.**  Copy the folder; change `products ( ... )` — a name, a
+   `perYear` in kg, and the `source` of each.  A product with its own lot or
+   its own tablet weight declares `lot { ... }` and the `stages` that differ
+   (here the press and packaging times); one with its own mass balance
+   declares `massPerProduct`.
+2. **The demand.**  Replace the 90 / 60 million with a market study; redo the
+   blended price in `constant/economics` (its header shows the division).
+3. **The cleans.**  `productChangeover` per stage, and `changeoverTo` where
+   the direction matters (colour, a potent API after a non-potent one, an
+   allergen).  Replace every hour with your cleaning-validation protocol's.
+4. **The order.**  Try both; then add a third product and watch the year move.
+5. **The lot and the campaign length.**  `lot`, `lotsPerCampaign`, the
+   trains' `changeover` — and read which stage limits, and for which product.
+6. **The economics.**  Every price, quote and crew number is a placeholder to
+   replace with a dated quotation or your staffing plan (README of
+   `donepezil01_tablets`, section 9).
+
+## 6. The questions the group must answer
+
+1. Is the clean before the white product really longer than the one after it
+   — and by how much, for *your* pigment and *your* pan?  What does the
+   cleaning-validation limit for a visible residue look like?
+2. The granulation suite is idle 77 % of the year even with both strengths.
+   What else would the site make on it, and what would that do to the clean?
+3. The packaging line limits the tableting train for both products.  Add a
+   second line (out of phase: `outOfPhase 2`) or lengthen the shifts: which
+   moves the year more?
+4. With one rotation a year the 10 mg stock is built over 17 weeks.  What
+   inventory does that mean, and what does a second rotation cost in cleans?
+5. Is a 3:2 split right?  Move it and watch the year and the NPV move.
+6. Would a third strength change the order?  Which?
+
+## 7. Engine notes
+
+Built without any engine change: the multiproduct plan is C110 G2
+(`src/postProcessing/BatchPlanPass.{H,cpp}`), and the gate that recomputes
+every number it publishes is `bin/curate/check_batch_plan.py`, on a
+three-product fixture.  This is the first shipped case that declares
+`products`.  The golden `expected` pins the streams; the plan's numbers are
+pinned by the batch rows of the same file.
