@@ -33,6 +33,7 @@ License
 #include "thermo/equationOfState/EquationOfState.H"
 
 #include <cmath>
+#include <functional>
 #include <iostream>
 
 namespace Choupo {
@@ -85,22 +86,54 @@ void poyntingOne(const EquationOfState& eos, const Component& c)
                      " no Vliq declared\n";
 }
 
+//  T_cap / Tc (measured 2026-11-08, see the commit message).
+const scalar capFraction = 0.99;
+
+void holdAnnounce(const EquationOfState& eos, const Component& c,
+                  scalar T, scalar Tcap)
+{
+    const std::string key = "liquidReferenceHeld:" + eos.modelName()
+                          + ":" + c.name();
+    if (!AdvisoryLog::instance().passHas(key)
+     && AdvisoryLog::instance().addAnnouncedOnce(key, "thermo", "info",
+            "reference factor of " + c.name() + " held",
+            "T = " + std::to_string(T) + " K is above " + std::to_string(Tcap)
+            + " K (0.99 Tc of " + c.name() + "): the liquid is hypothetical"
+            " there, and phi_sat Poynting is HELD at its value at that"
+            " temperature so the reference fugacity is continuous in T."))
+        std::cerr << "[thermo] reference factor of '" << c.name()
+                  << "' held at its value at " << Tcap << " K (0.99 Tc) for"
+                     " T above it (continuity in T)\n";
+}
+
 } // namespace
 
 scalar liquidReferenceFactor(const EquationOfState& eos, const Component& c,
                              std::size_t i, std::size_t n,
-                             scalar T, scalar P, scalar Psat)
+                             scalar T, scalar P, scalar Psat,
+                             const std::function<scalar(scalar)>& psatAt)
 {
     announceReference(eos);
     if (!(c.Tc() > 0.0))
         return factorOne(eos, c, "no critical temperature is declared, so"
                                  " whether a saturated vapour exists cannot"
                                  " be told");
-    if (!(T < c.Tc()))
+    //  CONTINUITY IN T (C239).  Above T_cap = capFraction Tc the component is
+    //  a hypothetical liquid; its saturated-vapour coefficient is HELD at the
+    //  value it has at T_cap, with the caller's own Psat(T_cap).  The factor
+    //  is then continuous in T, so a MESH Newton iterate crossing Tc sees no
+    //  jump in the residual (the old rule jumped from ~0.7 to 1 at Tc).
+    const scalar Tcap = capFraction * c.Tc();
+    if (T > Tcap && psatAt)
+    {
+        holdAnnounce(eos, c, T, Tcap);
+        T = Tcap;
+        Psat = psatAt(Tcap);
+    }
+    else if (!(T < c.Tc()))
         return factorOne(eos, c, "T = " + std::to_string(T) + " K is at or"
                                  " above its Tc = " + std::to_string(c.Tc())
-                                 + " K: there is no saturation to describe,"
-                                   " and an extrapolated Psat is not one");
+                                 + " K and no saturation curve is supplied");
     if (!(T > 0.0) || !(Psat > 0.0) || !std::isfinite(Psat))
         return factorOne(eos, c, "its saturation pressure is not a finite"
                                  " positive number at the trial T");

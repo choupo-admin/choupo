@@ -156,7 +156,8 @@ sVector SolidPhase::fEffective(scalar T, scalar P_Pa, const sVector& x) const
     const scalar psat = saturationPressure(c, pf, T);
     const scalar phiSat = (vapourEos_ && !pf)
         ? liquidReferenceFactor(*vapourEos_, c, crystalIdx_, x.size(), T, P_Pa,
-                              psat)
+                              psat,
+                              [&](scalar Tx) { return saturationPressure(c, pf, Tx); })
         : 1.0;
     f[crystalIdx_] = (phiSat == 1.0 ? psat : psat * phiSat)
                    * std::exp(-dGfus / (constant::R * T));
