@@ -293,7 +293,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
     n: 7,
     title: "Read the announcement, then move the item until it goes",
     body: "Run the witness as shipped (move 1 in the bench below).  The "
-      + "let-down drum stands 1.895 m from the separator, edge to edge, "
+      + "let-down drum stands 1.894 m from the separator, edge to edge, "
       + "against the 4 m the case declares between two vessels.  The engine "
       + "does not stop: it ANNOUNCES the shortfall, with both distances, on "
       + "the run's error stream, again in the caveat block at the end of the "
@@ -324,7 +324,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       + "replay: src/postProcessing/layout/PlantLayout.cpp:87-88; the block's "
       + "heading is src/core/AdvisorySummary.H:117.  The overlap refusal: "
       + "PlantLayout.cpp:4627-4628.  On the witness the condition puts the drum "
-      + "at x of about 61.60 m or more; the bench's x = 62 m clears it.",
+      + "at x of about 61.61 m or more; the bench's x = 62 m clears it.",
   },
   {
     n: 8,
@@ -332,7 +332,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
     body: "Switch the table's measure word to centre to centre (move 4) and "
       + "nothing else.  The same pair is now 3.5 m apart, still short of the "
       + "same 4 m -- but the rule has changed under the number.  Between a "
-      + "separator 2.6 m across and a drum 0.6 m across, 4 m centre to centre "
+      + "separator 2.7 m across and a drum 0.5 m across, 4 m centre to centre "
       + "leaves about 2.4 m of clear ground; 4 m edge to edge needs about "
       + "5.6 m between the centres.  When you copy a distance from any table, "
       + "copy the word that says how it was measured with it, or you have "

@@ -108,6 +108,15 @@ propertyManifest
             originSha256  "88c0f73f76a12f0c277cddd933fe464e61b08e8b7c68d40105ce738c78da7852";
             release       Choupo-2607;
         }
+        "parameters/Henry/Ar-NH3.dat"
+        {
+            type          imported;
+            sha256        "1d84dfc52992d0a15a97404f5f6fe123efd7c83bc31d8d717277e631a3b61e27";
+            computationalSha256 "ffb5721c2fbe7b7c580256c3eed55b25ba2783ecf2093b18b1f8a080f46d2481";
+            origin        "data/standards/parameters/Henry/Ar-NH3.dat";
+            originSha256  "1d84dfc52992d0a15a97404f5f6fe123efd7c83bc31d8d717277e631a3b61e27";
+            release       Choupo-2607;
+        }
         "parameters/Henry/H2-NH3.dat"
         {
             type          imported;

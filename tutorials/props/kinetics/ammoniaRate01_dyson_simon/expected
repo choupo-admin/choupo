@@ -1,18 +1,18 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-diag    dysonSimon             bed1Inlet_Eq40   263.723702593    1e-4
-diag    dysonSimon             bed1Inlet_V3     702.141400544    1e-4
-diag    dysonSimon             bed1Inlet_eta    0.0316774961434  1e-4
-diag    dysonSimon             bed1Inlet_xi     0.375599134859   1e-4
-diag    dysonSimon             bed1Outlet_Eq40  4.36937057687    1e-4
-diag    dysonSimon             bed1Outlet_V3    8.54250297554    1e-4
-diag    dysonSimon             bed1Outlet_eta   0.224797661998   1e-4
-diag    dysonSimon             bed1Outlet_xi    0.511485988285   1e-4
-diag    dysonSimon             bed3Outlet_Eq40  0.681274339864   1e-4
-diag    dysonSimon             bed3Outlet_V3    0.87096586906    1e-4
-diag    dysonSimon             bed3Outlet_eta   0.342645849158   1e-4
-diag    dysonSimon             bed3Outlet_xi    0.782205553703   1e-4
+diag    dysonSimon             bed1Inlet_Eq40   170.989725785    1e-4
+diag    dysonSimon             bed1Inlet_V3     403.424527112    1e-4
+diag    dysonSimon             bed1Inlet_eta    0.0353946375425  1e-4
+diag    dysonSimon             bed1Inlet_xi     0.423845637271   1e-4
+diag    dysonSimon             bed1Outlet_Eq40  2.91239338794    1e-4
+diag    dysonSimon             bed1Outlet_V3    5.42709078392    1e-4
+diag    dysonSimon             bed1Outlet_eta   0.223302495858   1e-4
+diag    dysonSimon             bed1Outlet_xi    0.536639887538   1e-4
+diag    dysonSimon             bed3Outlet_Eq40  0.38613803777    1e-4
+diag    dysonSimon             bed3Outlet_V3    0.481869476582   1e-4
+diag    dysonSimon             bed3Outlet_eta   0.335481647175   1e-4
+diag    dysonSimon             bed3Outlet_xi    0.801333258352   1e-4
 diag    dysonSimon             locus1_Eq40      -889.947776496   1e-4
 diag    dysonSimon             locus1_T_maxRate_K 900              1e-4
 diag    dysonSimon             locus1_V3_max    9449.93142752    1e-4

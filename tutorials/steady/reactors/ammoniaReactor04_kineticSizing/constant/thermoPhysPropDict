@@ -34,13 +34,14 @@ equilibrium
         }
         solutes
         {
-            components    ( N2 H2 );
+            components    ( N2 H2 Ar );
             standardState infiniteDilution;    // the Henry rung
             solutionModel henryDilute;
             binaryParameters
             {
                 N2-NH3 { source "data/standards/parameters/Henry/N2-NH3.dat"; }
                 H2-NH3 { source "data/standards/parameters/Henry/H2-NH3.dat"; }
+                Ar-NH3 { source "data/standards/parameters/Henry/Ar-NH3.dat"; }
             }
         }
     }
