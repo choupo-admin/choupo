@@ -24,8 +24,8 @@
   diagonal.  Everything else on the page is a consequence.
 
   THE QUESTION IT WAS BUILT TO ANSWER.  The tear vector holds a molar flow,
-  a set of mole fractions, a temperature and a pressure, and the owner's standing doubt
-  was how one accelerator can serve them at once.  It never compares them:
+  a set of mole fractions, a temperature and a pressure, and the question a student
+  asks next is how one accelerator can serve them at once.  It never compares them:
   the acceleration is per variable, and the secant slope each variable gets
   is a ratio of two differences in that variable's own unit, so it is
   dimensionless and unchanged by any rescaling of it.  Steps 4 and 5 are
@@ -89,8 +89,8 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
   },
   {
     n: 2,
-    title: "What is actually in the vector — and it is not the same for both solvers",
-    body: "A process stream carries a total flow, a composition, a "
+    title: "What the tear vector holds, and where the two solvers differ",
+    body: "Before the method, one thing to see: what exactly is being iterated. A process stream carries a total flow, a composition, a "
       + "temperature, a pressure and a phase split. The phase split follows "
       + "from a flash and is not torn. The pressure IS torn, since a loop "
       + "whose units change the pressure has a steady state only if the "
@@ -214,14 +214,19 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
         + "second point the secant needs" },
       { sym: "x_k", means: "the assumption used on the current pass" },
     ],
-    note: "Note where q lives: between 0 and minus infinity for a "
+    note: "Where you meet it: Wegstein is the default recycle accelerator "
+      + "of every sequential-modular simulator. The source is Wegstein, "
+      + "J. H. (1958), Accelerating convergence of iterative processes, "
+      + "Comm. ACM 1(6), 9-13. Step 1 of the previous page, Relaxation, "
+      + "shows that this update is a relaxation x+ = (1 - w) x + w G(x) with "
+      + "w = 1 - q. Note where q lives: between 0 and minus infinity for a "
       + "contracting direction. A slope s of 0.9 gives q = -9, a step ten "
       + "times longer than direct substitution would take. Step 6 is about "
       + "why the engine does not let it.",
   },
   {
     n: 5,
-    title: "The answer to the question: it never compares a flow with a temperature",
+    title: "The question a student asks next: how can one accelerator serve a flow and a temperature?",
     body: "It never compares them. Here is the thing that is easy to assume "
       + "and wrong: Wegstein does "
       + "NOT form a step direction in the tear vector and scale it. It runs "
@@ -324,7 +329,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "of them and they are not the same number. The Wegstein CLASS "
       + "defaults to [-5, 0] (src/solver/Wegstein.H:73-74); the RECYCLE loop "
       + "constructs it with [-1, 0] "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3269-3270). A Choupo "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3332-3333). A Choupo "
       + "recycle that declares nothing therefore runs at the gentler clamp.",
   },
   {
@@ -379,7 +384,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "norm of the change in the packed tear vector falls below the "
       + "declared tolerance — a flow in kmol/s, a handful of mole fractions "
       + "and a temperature in kelvin, added in quadrature with no scaling "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3358, the norm at "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3421, the norm at "
       + ":1858-1866). A temperature near 360 dominates a flow near 1e-4 by "
       + "six orders of magnitude, so a run can satisfy that test with the "
       + "temperature pinned to six digits and the recycle flow still several "

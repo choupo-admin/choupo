@@ -43,7 +43,7 @@
   iteration actually visited, which is exact either way.
 
   That conditional is not a limitation being apologised for.  It is the
-  answer to the owner's question: Wegstein never needed a one-dimensional
+  answer to the question a student asks next: Wegstein never needed a one-dimensional
   map, because it only ever looks at two points it has already visited, one
   variable at a time.  A figure that drew a curve through a coupled map would
   be teaching a fixed point that does not exist.

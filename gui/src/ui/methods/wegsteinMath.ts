@@ -18,7 +18,7 @@
 
   PLANE A, THE MEASURED ONE, IS THE ENGINE'S.  `recycleSolver Wegstein;` in a
   case's `system/solverDict` puts the flowsheet's recycle on the accelerator
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3262), and the engine publishes
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3324), and the engine publishes
   the per-iteration PHYSICAL residuals — the recycle mass and energy imbalance
   as a fraction of what enters the plant — as convergence curves named
   "Mass balance (global)" and "Energy balance (global)"
@@ -49,7 +49,7 @@
   be made exactly: Newton on the tear residual solves a linear fixed point in
   a SINGLE step at any coupling, and Wegstein's two scalar secants do not.
 
-  THE QUESTION THIS PAGE WAS BUILT TO ANSWER, in the owner's own words: how
+  THE QUESTION THIS PAGE WAS BUILT TO ANSWER, the one a student asks next: how
   does one accelerator serve a tear vector that holds a molar flow AND a
   temperature?  The answer is that it never compares them.  Wegstein here is
   COMPONENT-WISE (src/solver/Wegstein.cpp:67-86): each entry of the vector
@@ -64,20 +64,20 @@
   AND THE PRICE, which is the other half and must not blur.  The STOPPING
   TEST is a different question from the STEP, and it does not share the step's
   invariance.  The Wegstein branch converges on `normL2(gx, x)`
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3358, the norm itself at
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3421, the norm itself at
   :1858-1866) over the packed tear vector `[F, z_0..z_{nC-1}, T]`
   (src/unitOperations/flowsheet/Flowsheet.cpp:1787-1798, renormalised onto the
   simplex on the way back at src/unitOperations/flowsheet/Flowsheet.cpp:1841)
   — a plain Euclidean norm over a flow in kmol/s, mole fractions and a
   temperature in kelvin, with no per-variable scale.  The Newton branch of the
   same function does NOT do this: it tears on component molar flows plus T
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3445-3459) and divides each
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3517-3531) and divides each
   residual by a characteristic scale
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3515-3523, applied at
-  src/unitOperations/flowsheet/Flowsheet.cpp:3555), and its own comment names
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3587-3595, applied at
+  src/unitOperations/flowsheet/Flowsheet.cpp:3627), and its own comment names
   what the absence of that scaling costs — "the latent under-convergence the
   old Wegstein default also had"
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3515-3518).
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3587-3590).
 
   NOT HERE, deliberately: any tear-SELECTION heuristic (that is the
   tear-streams page, and the engine deliberately does not choose either), any
@@ -101,14 +101,14 @@ export const EPS_X = 1.0e-14;
 export const EPS_S = 1.0e-10;
 
 /** The engine's RECYCLE clamp defaults — read off the solverDict with these
- *  fallbacks at src/unitOperations/flowsheet/Flowsheet.cpp:3269-3270.
+ *  fallbacks at src/unitOperations/flowsheet/Flowsheet.cpp:3332-3333.
  *
  *  They are NOT the defaults of the `Wegstein` class, which are [-5, 0]
  *  (src/solver/Wegstein.H:73-74) and which the Theory Guide quotes as
  *  "typical" (§ch:wegstein, eq:wegstein-clip).  The recycle loop constructs
  *  the accelerator with its own pair, so a Choupo recycle that declares
- *  nothing runs at q_min = -1: at most a 50/50 blend of the current iterate
- *  and its image, never the six-fold reach [-5, 0] allows.  Two numbers for
+ *  nothing runs at q_min = -1: at most a step twice the direct one (w = 1 - q
+ *  = 2), never the six-fold reach [-5, 0] allows.  Two numbers for
  *  one knob, in two places, and only one of them is what a flowsheet gets. */
 export const RECYCLE_QMIN_DEFAULT = -1.0;
 export const RECYCLE_QMAX_DEFAULT = 0.0;
@@ -187,7 +187,7 @@ export function normL2(a: readonly number[], b: readonly number[]): number {
 // ---- The declared toy map --------------------------------------------------
 
 /** THE TOY, STATED IN FULL.  Two tear variables chosen to carry the mismatch
- *  of magnitude and unit that the owner's question is about:
+ *  of magnitude and unit that the student's question is about:
  *
  *      x = [ F , T ]        F in kmol/s, of order 1e-4;  T in K, of order 360
  *
@@ -343,7 +343,7 @@ interface DriveOptions {
 }
 
 /** WEGSTEIN — the accelerator, driven exactly as `Flowsheet`'s recycle branch
- *  drives it (src/unitOperations/flowsheet/Flowsheet.cpp:3259-3351): pack,
+ *  drives it (src/unitOperations/flowsheet/Flowsheet.cpp:3322-3414): pack,
  *  sweep, measure `normL2(gx, x)`, test, then accelerate and unpack.  The
  *  test comes BEFORE the acceleration, which is why a converged run's last
  *  recorded step has no coefficients: the loop broke out of it. */
@@ -389,7 +389,7 @@ export function driveDirect(m: ToyMap, o: DriveOptions): SolveTrace {
  *  tear variables — two full flowsheet sweeps per variable
  *  (Theory Guide §ch:newton-tears) — and tears on component molar flows
  *  rather than on (F, z, T, P)
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:3445-3459).  The cost per step
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:3517-3531).  The cost per step
  *  is the whole reason Wegstein is still on offer, and no toy can show it. */
 export function driveNewton(m: ToyMap, o: DriveOptions): SolveTrace {
   const units = o.units ?? SI;
@@ -461,9 +461,9 @@ export const RECYCLE_DEFAULTS: RecycleKnobs = {
  *  nothing else.  Each is a key the shipped case already declares, so the
  *  same edits made by hand in the case directory give the same answer.
  *
- *  WHAT IS NOT HERE, and it is the knob the owner asked for: the clamp.
+ *  WHAT IS NOT HERE, and it is the knob a reader reaches for first: the clamp.
  *  `recycleWegsteinQmin` / `Qmax` are read by the engine
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:3269-3270) but this witness
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:3332-3333) but this witness
  *  carries them COMMENTED OUT, and an override replaces a declared value — it
  *  does not add a key.  Measured on the corpus (2026-09-12): of the ten cases
  *  that select `recycleSolver Wegstein`, only two declare the clamp live, one
