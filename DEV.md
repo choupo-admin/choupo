@@ -3221,6 +3221,41 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C246 (Vitor, 2026-11-08: "ao contrário do OpenFOAM, não deixa o utilizador especificar
+> os coeficientes de sub-relaxação ... podia haver valores default e depois o user podia
+> fazer tinkering ... ou a sub-relaxação não é a metodologia mais adequada"): THE SOLVER
+> KNOBS A CASE MAY TURN.**  MEASURED the same hour: `system/solverDict` already carries
+> the recycle plan (`recycleSolver Newton|Wegstein`, `recycleTol`, `recycleMaxIter`,
+> `recycleWegsteinQmin/Qmax` -- Wegstein's q IS a relaxation factor in disguise, q = 0
+> direct substitution, q = -1 a 50/50 average, q < -1 acceleration -- and the
+> dominant-eigenvalue options, every defaulted one announced; Flowsheet.cpp recScalar)
+> and per-unit-TYPE blocks reached through `buildAugmentedDict` (Flowsheet.cpp:1066,
+> 1126; `isothermalFlash { tolerance maxIter maxOuterIter outerAccelerator
+> compositionTol }` is read at IsothermalFlash.cpp:1940-1948).  What a case CANNOT set:
+> the Newton globalisation of a unit -- NDOptions maxStep (the per-unknown step cap,
+> which is Newton's honest analogue of a relaxation factor: "T moves at most 10 K per
+> iteration"), the T box, the line search, maxStalledSteps -- all fixed by each caller
+> since C245 slice 1-2; and no plain `relaxation` word exists anywhere, so a student who
+> knows OpenFOAM's `relaxationFactors` finds nothing.  Only `recycleWegsteinQmin` is
+> documented (docs/ai/patterns.md:327).  JUDGEMENT on the methodology: a FIXED
+> under-relaxation factor is the right tool for a segregated fixed-point scheme (SIMPLE,
+> and the tear loop of a sequential-modular simulator), and the wrong default for Newton,
+> where the line search damps only the iterates that need it and a fixed factor slows
+> every one; the step CAP, however, is legitimate in Newton and is what a user tinkers
+> with.  DECISION (architect, rule 00): (1) document the grammar that exists, in
+> docs/ai/dict-syntax.md and the user guide, with Wegstein's q read as relaxation;
+> (2) add `recycleRelaxation` (0 < w <= 1) for the direct-substitution tear loop and
+> make `recycleSolver directSubstitution` a named choice, so the three rungs read
+> relaxation -> Wegstein -> Newton; (3) per-unit-type Newton knobs in solverDict mapped
+> onto NDOptions -- `distillationColumn { maxStepT 10 K; maxStepX 0.1; lineSearch
+> armijo|none; maxIter; tolerance; }`, likewise `cstr`, `gibbsReactor`, the tear Newton
+> (`recycleMaxStep`) -- defaults as today, every override ANNOUNCED with its value (no
+> silent crutch: the aid is visible and the student's), a value outside its range refused
+> by name; (4) the GUI's run log shows the announced knobs beside the convergence plot.
+> Gate: a solverDict knob that the engine does not read is refused (the C235 class "a
+> declared field the hot path did not honour"), and one witness case per knob.  One
+> general after C245 slice 3; the slice-2 contract is its prerequisite and is landing.
+
 > **C245 (Vitor, 2026-11-08, after the Tc step was found the slow way: "E se revisses o
 > kernel todo primeiro ... A lógica matemática pristine e as boas práticas numéricas podem
 > ser implementadas sem ter de andar a martelar código por tentativa e erro"): THE KERNEL

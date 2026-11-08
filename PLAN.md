@@ -95,6 +95,7 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
+| todo | C246 (Vitor, 11-08): the solver knobs a case may turn -- document the solverDict grammar that exists (recycle keys, per-type blocks), `recycleRelaxation` + `recycleSolver directSubstitution`, per-type Newton knobs (maxStep, line search) mapped on NDOptions and announced; a knob the engine does not read is refused. After C245 slice 3 | C246 |
 | running | C244: phase 1 LANDED (f468736fd, ten cases left tutorials/plant/, ladder flat under steady/reactors); phase 2 next: greenAmmonia03's content and the feasibility pair folded into PEQ | C244 |
 | todo | C243 (Vitor): the case declares its figures -- default one figure per control loop (SP/PV, MV on a second axis), a `plots ( ... )` block in controlDict honoured by the engine and drawn by the GUI, unknown series refused by name; ctrl22 has 20 columns on one plot today | C243 |
 | done | C234 LANDED in the Saturday batch (f468736fd): the engine publishes the problem table and classifies the case; the console line fixed. Browser check after `make wasm-gui` | C234 |
