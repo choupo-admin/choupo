@@ -164,8 +164,8 @@
       ]
     }
   ],
-  "liveTools": 73,
-  "registryTools": 73,
+  "liveTools": 74,
+  "registryTools": 74,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -1073,6 +1073,20 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=site-process-price"
+    },
+    {
+      "id": "campaign-plan",
+      "label": "How a batch plant is organised: lots, campaigns and the Gantt chart",
+      "blurb": "Move a live Gantt chart: lots, campaigns, limiting stage and hours.",
+      "discipline": "Process design & economics",
+      "teaches": "How a plant makes several products in lots: the stages of a train, the lot as the unit QC releases, the cycle of each stage and the limiting one, parallel units in and out of phase, campaigns and changeovers against the year's available hours, a continuous spray dryer inside a lot regime, and the order of two or three products with cleans that depend on the direction. A toy plant redraws its Gantt chart as you move the sliders, and the plans the engine published for an apalutamide and a donepezil plant are drawn with the same bars. One train and no stores; the order is listed, never optimised.",
+      "origins": [
+        "page",
+        "engine",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=campaign-plan"
     },
     {
       "id": "solvent-mixture",

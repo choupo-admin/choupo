@@ -317,6 +317,9 @@ const EconomicsErrorsTool = lazy(() =>
 const DemandForecastTool = lazy(() =>
   import("./methods/DemandForecastTool.js")
     .then((m) => ({ default: m.DemandForecastTool })));
+const CampaignPlanTool = lazy(() =>
+  import("./methods/CampaignPlanTool.js")
+    .then((m) => ({ default: m.CampaignPlanTool })));
 const PlantCostTool = lazy(() =>
   import("./methods/PlantCostTool.js")
     .then((m) => ({ default: m.PlantCostTool })));
@@ -622,6 +625,7 @@ export function MethodsWorkspace() {
             : tool === "site-process-price" ? <SiteProcessPriceTool />
             : tool === "demand-forecast" ? <DemandForecastTool />
             : tool === "plant-cost" ? <PlantCostTool />
+            : tool === "campaign-plan" ? <CampaignPlanTool />
             : tool === "process-safety" ? <ProcessSafetyTool />
             : tool === "overpressure" ? <OverpressureTool />
             : tool === "pool-fire" ? <PoolFireTool />

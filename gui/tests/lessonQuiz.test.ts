@@ -94,6 +94,8 @@ import { DEMAND_QUIZ, DEMAND_STEPS } from "../src/ui/methods/demandForecastLesso
 import { DemandForecastTool } from "../src/ui/methods/DemandForecastTool.js";
 import { PlantCostTool } from "../src/ui/methods/PlantCostTool.js";
 import { PLANT_COST_QUIZ, PLANT_COST_STEPS } from "../src/ui/methods/plantCostLesson.js";
+import { CampaignPlanTool } from "../src/ui/methods/CampaignPlanTool.js";
+import { CAMPAIGN_PLAN_QUIZ, CAMPAIGN_PLAN_STEPS } from "../src/ui/methods/campaignPlanLesson.js";
 
 const GUI = new URL("../", import.meta.url);
 const read = (rel: string): string => readFileSync(new URL(rel, GUI), "utf-8");
@@ -173,6 +175,10 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "demand-forecast": {
     quiz: DEMAND_QUIZ, quizName: "DEMAND_QUIZ", lesson: DEMAND_STEPS, lessonName: "DEMAND_STEPS",
     file: "src/ui/methods/DemandForecastTool.tsx", tool: DemandForecastTool,
+  },
+  "campaign-plan": {
+    quiz: CAMPAIGN_PLAN_QUIZ, quizName: "CAMPAIGN_PLAN_QUIZ", lesson: CAMPAIGN_PLAN_STEPS, lessonName: "CAMPAIGN_PLAN_STEPS",
+    file: "src/ui/methods/CampaignPlanTool.tsx", tool: CampaignPlanTool,
   },
   "plant-cost": {
     quiz: PLANT_COST_QUIZ, quizName: "PLANT_COST_QUIZ", lesson: PLANT_COST_STEPS, lessonName: "PLANT_COST_STEPS",
