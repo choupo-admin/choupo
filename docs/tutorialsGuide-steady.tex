@@ -1607,7 +1607,7 @@ TOTAL 100.0 8115.0000 142.023556 1.0000000
 
 mean distillate MW = 8115 / 142.023556 = 57.13841 kg/kmol $\to$ distillateRate 142.023556 kmol/h
 
-SAID PLAINLY: this input therefore borrows the measured distillate COMPOSITION, which is one of the quantities the case then predicts. A fully self-consistent conversion would iterate the mean MW against the predicted composition. It is not iterated here, and the size of what is left on the table is MEASURED rather than waved at: the run's own converged/distillate comes out at mean MW 57.2186, i.e. +0.14 \% on the 57.13841 used above, so the distillate leaves at 8126.4 kg/h against the Table-2 8115 kg/h. One iteration would close that; it is left open because the residue is smaller than the 0.1 wt \% resolution of the composition it came from. If a future edit moves the distillate composition materially, this number must be recomputed with it.
+SAID PLAINLY: this input therefore borrows the measured distillate COMPOSITION, which is one of the quantities the case then predicts. A fully self-consistent conversion would iterate the mean MW against the predicted composition. It is not iterated here, and the size of what is left on the table is MEASURED rather than waved at: the run's own converged/distillate comes out at mean MW 57.2147, i.e. +0.13 \% on the 57.13841 used above, so the distillate leaves at 8126.0 kg/h against the Table-2 8115 kg/h. One iteration would close that; it is left open because the residue is smaller than the 0.1 wt \% resolution of the composition it came from. If a future edit moves the distillate composition materially, this number must be recomputed with it.
 
 5. REFLUX RATIO -- why the MASS ratio IS the MOLAR ratio here
 
@@ -1619,7 +1619,7 @@ A NOTE ON A NUMBER IN CIRCULATION: 11.4441 has been quoted for this ratio. It is
 
 6. BOTTOMS -- an OUTPUT, and it does not land on 18119 kg/h
 
-B = F - D is the engine's mole balance: 452.710957 - 142.023556 = 310.687401 kmol/h. Priced at the PREDICTED bottoms composition that comes out at 18107.6 kg/h, 0.06 \% under the Table-2 18119 kg/h. It cannot land on it exactly: F's molar total is fixed by the feed mass and the feed's measured composition, D's by the distillate mass and the distillate's measured composition, and the paper's three compositions do not close per component (record Section 5.4 -- the wt \% columns sum to 100.1, 100.0 and 100.3). The mass residue is the printing, not the column. 18119 kg/h is therefore transcribed above and used by nothing.
+B = F - D is the engine's mole balance: 452.710957 - 142.023556 = 310.687401 kmol/h. Priced at the PREDICTED bottoms composition that comes out at 18108.0 kg/h, 0.06 \% under the Table-2 18119 kg/h. It cannot land on it exactly: F's molar total is fixed by the feed mass and the feed's measured composition, D's by the distillate mass and the distillate's measured composition, and the paper's three compositions do not close per component (record Section 5.4 -- the wt \% columns sum to 100.1, 100.0 and 100.3). The mass residue is the printing, not the column. 18119 kg/h is therefore transcribed above and used by nothing.
 
 7. REFLUX TEMPERATURE 18.5 C -- transcribed, NOT USED, and why
 
@@ -1627,13 +1627,13 @@ B = F - D is the engine's mole balance: 452.710957 - 142.023556 = 310.687401 kmo
 
 8. BOILER DUTY 10.240 MW -- transcribed, and NOT claimed as an anchor
 
-The run reports a reboiler duty of about 8.47 MW against the Table-2 10.240 MW. The case does NOT anchor on that, and the reason is in its own output rather than in an argument.
+The run reports a reboiler duty of about 8.09 MW against the Table-2 10.240 MW. The case does NOT anchor on that, and the reason is in its own output rather than in an argument.
 
 The Wang-Henke path solves M and E under CONSTANT MOLAR OVERFLOW: the internal traffic is fixed by R, D and q, and NO per-stage energy balance is solved. The duties are then reported by closing the column's overall enthalpy change, and the flowsheet's independent energy audit raises the first-law advisory on this run -- 98.42 \% closure, a residual of 2.96 kW, 0.017 \% of the boundary enthalpy. That is small, and it is NOT evidence that the duty is right: the ledger and the duty are computed from the same three stream states, so agreement between them says the arithmetic is consistent, not that a column with no energy equation found the right vapour traffic. The companion arm column15 makes the point unmissable -- the same three streams to within 0.8 kW of enthalpy, and its audit closes at -256.84 \% with a 670.7 kW residual. Two runs of one column, one ledger claim each, three orders of magnitude apart. The corpus's other Wang-Henke columns sit further out still (column01/09/11's own energyBalance\_byUnit.csv), so this is a property of the solver path and of the reporting around it, and it predates this case by a long way.
 
 Also unmodelled and worth naming beside the duty: the plant's subcooled reflux (7) and the condenser's own subcooling duty are not in this figure.
 
-A duty comparison resting on any of that would be a number pretending to be evidence. 10.240 MW is transcribed; 8.47 MW is reported; neither is an anchor row.
+A duty comparison resting on any of that would be a number pretending to be evidence. 10.240 MW is transcribed; 8.09 MW is reported; neither is an anchor row.
 
 9. THERMO -- mirroring the paper, not substituting for it
 
@@ -1681,37 +1681,37 @@ What a PASS would mean: that the MESH solve plus a declared efficiency reproduce
 
 14. THE ANCHOR TABLE -- observed, and it does NOT all agree
 
-Predicted product compositions, converted back to wt \% from this case's own converged/ streams, beside the Table-2 measurements. The "band" column is the measurement's OWN rounding: the paper prints to 0.1 wt \%, so a printed value v carries +/-0.05 wt \%.
+RE-MEASURED 2026-11-08 (C239) on the current engine. The table this section carried before (i-butane 94.033 / n-butane 0.0015 wt \% overhead) was taken BEFORE the C235 real-vapour liquid reference and had gone stale; the numbers below are the run's own converged/ streams. `expected` carries the rows (header block "THE KLEMOLA ANCHORS"); this section is the reading.
 
-DISTILLATE (predicted 8126.4 kg/h vs the 8115 kg/h spec -- see 4)
+Predicted product compositions, converted back to wt \% from this case's own converged/ streams, beside the Table-2 measurements. The printed band is the table's rounding (0.1 wt \%, so +/-0.05); the ANCHOR band is wider and is justified in `expected` (the table's own key closure, about 1 \%).
 
-component predicted measured band verdict
+DISTILLATE (predicted 8126.0 kg/h vs the 8115 kg/h spec -- see 4)
 
-i-butane 94.033 93.5 +/-0.05 +0.53 wt \% HIGH n-butane 0.0015 0.2 +/-0.05 LOW by \textasciitilde{}130x
+component predicted measured rounding anchor row
 
-BOTTOMS (predicted 18107.6 kg/h vs the Table-2 18119 kg/h -- see 6)
+i-butane 93.792 93.5 +/-0.05 ANCHOR, mole fraction 0.92330 vs 0.91917 (+0.45 \%, band 1 \%): IN n-butane 0.1115 0.2 +/-0.05 OPEN (-44 \%): no row, pinned self-recorded
 
-component predicted measured band verdict
+BOTTOMS (predicted 18108.0 kg/h vs the Table-2 18119 kg/h -- see 6)
 
-i-butane 0.351 0.3 +/-0.05 INSIDE the band n-butane 97.984 98.1 +/-0.05 -0.12 wt \%, just out
+component predicted measured rounding anchor row
 
-THREE OF THE FOUR KEY ROWS LAND WHERE A KEY-COMPONENT ANCHOR WANTS THEM, around the 1 \% level at which record section 5.4 says the keys close at all. THE FOURTH DOES NOT, and it is not a rounding argument: the model rejects n-butane overhead about two orders of magnitude harder than the plant did. 0.2 wt \% is at the printing resolution (+/-25 \% before any physics), but 130x is not a resolution effect.
+i-butane 0.461 0.3 +/-0.05 OPEN (+54 \%): no row, pinned self-recorded n-butane 97.932 98.1 +/-0.05 ANCHOR, mole fraction 0.98203 vs 0.97972 (+0.24 \%, band 1 \%): IN
 
-It is recorded, not explained and not tuned. What can be said without guessing: the disagreement is NOT the efficiency, because the control arm column15 at E\_MV = 1 gives 0.0144 wt \% -- still an order of magnitude below the measurement. Under this model 74 IDEAL trays already over-separate this key, which is the opposite direction from the paper's own finding that 74 real trays behave as 88 ideal ones. Candidates a future slice could test, each of which this case declares as an assumption or a caveat above: the single column pressure (A2), the tray-numbering direction (A0), the unmodelled subcooled reflux (7), the absent per-stage energy balance (8), and seven interim component records (thermo dict). Whichever it is, an anchor that disagreed and said so is worth more than one that agreed after something was adjusted to make it.
+TWO OF THE FOUR KEY ROWS AGREE, AT THE 1 \% LEVEL THE SOURCE ITSELF SUPPORTS; TWO DO NOT, AND THEY MISS IN OPPOSITE SENSES: the rectifying section is too clean (n-butane overhead 44 \% low) while the stripping section is not clean enough (i-butane in the bottoms 54 \% high). Neither is a rounding effect at the printing-resolution band. They are recorded, not tuned. What can be said without guessing: The efficiency does not explain the pair. Column15 (E\_MV = 1) gives 0.728 wt \% n-butane overhead and 0.734 wt \% i-butane in the bottoms -- the plant's 0.2 and 0.3 lie BETWEEN the two arms for the first and BELOW both for the second. The paper's own balance cannot resolve either number. Feed i-butane (7712.8 kg/h) less the printed distillate i-butane (7587.5) leaves 125 kg/h for the bottoms, 0.69 wt \% of 18119 kg/h, against the printed 0.3: the printed bottoms value contradicts the printed feed and distillate, and the model (0.46) lies between them. For n-butane the feed minus the printed bottoms is -15 kg/h for the distillate, so the printed 16 kg/h is inside the table's own 30 kg/h closure error. Two of the four measured numbers are therefore not usable as a target below \textasciitilde{}1 \%. Candidate model gaps acting on exactly these minors: the single column pressure (A2: the stripping section runs colder than the plant), the tray-numbering direction (A0), the unmodelled subcooled reflux (7), the absent per-stage energy balance (8), seven interim component records.
 
-THE OTHER FIVE COMPONENTS ARE NOT ANCHOR ROWS and are listed only so nobody reads their absence as concealment: propane 4.84 vs 5.3 wt \% overhead and 0.00 vs 0.3 in the bottoms; trans-2-butene 0.00 vs 0.6 overhead; i-butene 0.58 vs 0 overhead. Record section 5.4 already showed these do not close in the SOURCE -- propane +23 \%, i-butene -100 \%, trans-2-butene +155 \% between the feed and the two products as printed -- so a number computed here has nothing to be compared against. Anchoring on them would be measuring the printing.
+THE OTHER FIVE COMPONENTS ARE NOT ANCHOR ROWS and are listed only so nobody reads their absence as concealment: propane 4.84 vs 5.3 wt \% overhead and 0.00 vs 0.3 in the bottoms; trans-2-butene 0.001 vs 0.6 overhead; 1-butene / i-butene 0.63 / 0.63 against the printed 0.4 / 0.0. Record section 5.4 already showed these do not close in the SOURCE -- propane +23 \%, i-butene -100 \%, trans-2-butene +155 \% between the feed and the two products as printed -- so a number computed here has nothing to be compared against. Anchoring on them would be measuring the printing.
 
 15. THE TWO ARMS, side by side
 
-column14 (E\_MV = 1.191) against column15 (E\_MV = 1.0), everything else identical:
+column14 (E\_MV = 1.191) against column15 (E\_MV = 1.0), everything else identical (both re-run 2026-11-08):
 
 quantity E\_MV 1.191 E\_MV 1.0 measured
 
-distillate i-butane, wt \% 94.033 93.975 93.5 distillate n-butane, wt \% 0.0015 0.0144 0.2 bottoms i-butane, wt \% 0.351 0.378 0.3 bottoms n-butane, wt \% 97.984 97.977 98.1 top temperature, K 314.250 314.116 -- reboiler temperature, K 329.437 329.435 -- outer iterations 349 426 --
+distillate i-butane, wt \% 93.792 93.185 93.5 distillate n-butane, wt \% 0.1115 0.728 0.2 bottoms i-butane, wt \% 0.461 0.734 0.3 bottoms n-butane, wt \% 97.932 97.656 98.1 top temperature, K 319.783 319.755 -- reboiler temperature, K 335.078 335.036 -- outer iterations 762 289 --
 
-WHAT THE EFFICIENCY BUYS, read off that table: essentially nothing on the major components -- i-butane overhead moves 0.06 wt \%, n-butane in the bottoms 0.007 -- and a real factor on the MINOR key in each product: the n-butane carried overhead drops about 10x, and the i-butane lost to the bottoms falls 7 \%.
+WHAT THE EFFICIENCY BUYS, read off that table: the major components move by 0.3-0.6 wt \% and the MINOR key in each product by a factor of 6.5 (n-butane overhead) and 1.6 (i-butane in the bottoms). For n-butane overhead the ideal-tray arm sits above the measurement (0.73 vs 0.2) and the efficient arm below it (0.11 vs 0.2): the plant's 0.2 wt \% is bracketed by the two arms, which says that an efficiency of the measured order is the right order.
 
-That shape is worth more than a single number. At 74 trays and R = 11.4 this column is far past the point where separating power limits the major components; extra power goes entirely into the impurity that is left, which is exactly where a plant's money is. A student who expects a 19 \% efficiency bonus to show up as a 19 \% anything will not find it, and finding out why is the lesson.
+That shape is worth more than a single number. At 74 trays and R = 11.4 this column is far past the point where separating power limits the major components; extra power goes almost entirely into the impurity that is left, which is exactly where a plant's money is. A student who expects a 19 \% efficiency bonus to show up as a 19 \% anything will not find it, and finding out why is the lesson.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1729,7 +1729,7 @@ That shape is worth more than a single number. At 74 trays and R = 11.4 this col
 \goldrow{kpi}{splitter}{T\_top}{319.783095841}
 \goldrow{kpi}{splitter}{V\_rect}{0.490781965448}
 \goldrow{kpi}{splitter}{V\_strip}{0.476449385308}
-\goldmore{21}
+\goldmore{27}
 \end{tutgolden}
 
 \clearpage
@@ -1998,7 +1998,7 @@ THE EQUILIBRIUM CONSTANT is the case's own record, written (constant K\_a(T) fro
 \begin{tutnarrative}
 column19's problem with a RATE-LIMITED reaction: methanol + isobutene $\rightleftharpoons$ MTBE on an acid ion-exchange resin.
 
-THE PROBLEM is column19's, unchanged: 15 equilibrium stages, stage 1 the PARTIAL condenser, stage 15 the reboiler, P = 7 bar, reactive stages 6 to 10, both feeds on stage 10, bottoms rate 240 kmol/h and boil-up ratio 5, UNIFAC liquid, ideal vapour, the same isobutene overlay. What changes is the reaction: where column19 closes an equilibrium quotient on each reactive stage, here the extent of a stage is COMPUTED from a rate law and the catalyst it holds, xi\_j = r(T\_j, a\_j) m\_cat,j, with no extent unknown and still NO heat-of-reaction term (the energy rows price on the elements datum, which already holds it).
+THE PROBLEM is column19's, unchanged: 15 equilibrium stages, stage 1 the PARTIAL condenser, stage 15 the reboiler, P = 7 bar, reactive stages 6 to 10, both feeds on stage 10, bottoms rate 240 kmol/h and boil-up ratio 5, UNIFAC liquid, SRK vapour, the same isobutene overlay. What changes is the reaction: where column19 closes an equilibrium quotient on each reactive stage, here the extent of a stage is COMPUTED from a rate law and the catalyst it holds, xi\_j = r(T\_j, a\_j) m\_cat,j, with no extent unknown and still NO heat-of-reaction term (the energy rows price on the elements datum, which already holds it).
 
 THE LAW is Rehfinger \& Hoffmann, Chem. Eng. Sci. 45 (1990) 1605-1617, doi 10.1016/0009-2509(90)80013-5, Amberlyst 15 (their Eq. 12):
 
@@ -2013,26 +2013,26 @@ WHAT THE LAW DOES NOT CARRY: the effectiveness factor (internal diffusion in the
 Nothing here was read off, or fitted to, any simulator's result.
 
 \end{tutnarrative}
-\tutreadme{column19's problem (methanol + isobutene $\rightleftharpoons$ MTBE, Sum nu = -1; 15 stages, partial condenser, reactive stages 6-10, 7 bar, bottomsRate 240 kmol/h and boilupRatio 5, UNIFAC liquid, ideal vapour) with the reaction closed by a rate law instead of an equilibrium quotient. On each reactive stage the extent is $\ast$computed$\ast$, xi\_j = r(T\_j, a\_j) m\_cat,j, from the law and the catalyst the stage holds; there is no extent unknown, and still no heat-of-reaction term in the stage energy rows (they price on the elements datum, which already holds it).}
+\tutreadme{column19's problem (methanol + isobutene $\rightleftharpoons$ MTBE, Sum nu = -1; 15 stages, partial condenser, reactive stages 6-10, 7 bar, bottomsRate 240 kmol/h and boilupRatio 5, UNIFAC liquid, SRK vapour) with the reaction closed by a rate law instead of an equilibrium quotient. On each reactive stage the extent is $\ast$computed$\ast$, xi\_j = r(T\_j, a\_j) m\_cat,j, from the law and the catalyst the stage holds; there is no extent unknown, and still no heat-of-reaction term in the stage energy rows (they price on the elements datum, which already holds it).}
 \tutreadme{Rehfinger \& Hoffmann, $\ast$Chem. Eng. Sci.$\ast$ 45 (1990) 1605-1617, doi 10.1016/0009-2509(90)80013-5, Amberlyst 15:}
 \tutreadme{in liquid-phase activities, r per acid equivalent; k(90 C) = 243.8 mmol/(s eq) and E = 92.4 kJ/mol (Eq. 15, Table 4); K\_a(T) from their Eq. 6 with K\_a(298.15 K) = 300.5 (Table 4: the value the fit returned together with k and E, so the three are the pair the paper fitted -- Eq. 6 with 284, the value of its Fig. 9 caption, reproduces Izquierdo's Table IV and is 5.8 \% lower); acid capacity 4.9 meq/g (p. 1606). The law is written in the case with named definitions and a[<component>] = gamma\_i x\_i, the package's activity at the stage.}
 \tutreadme{$\ast$ The catalyst mass (220 kg) is illustrative, not any column's loading. $\ast$ The paper's activities are UNIQUAC; this case's are UNIFAC. The law and its activities were fitted together; the pairing here is an approximation. $\ast$ The reactive stages run methanol-lean (x\_MeOH 0.05-0.18), below the 0.3 the paper says its model under-predicts at ("measured rates are greater ... internal mass transfer"). The law has no effectiveness factor, so the rate here is a lower bound there. The run announces the excursion. $\ast$ The law diverges as a\_MeOH $\to$ 0; the engine hides no floor. A trial that reaches it is an announced infeasible trial. $\ast$ The conversion (about 9 \% of the methanol) is a property of the illustrative mass and of the methanol-lean stages. The mass continuation converges up to about 270 kg and stops near 300 kg (measured), so no higher conversion is claimed. $\ast$ Nothing here is validated against a measured MTBE column.}
 \tutreadme{Gate: bin/curate/check\_kinetic\_mesh.py (the proof is a limit: a mass-action twin on column19's own K\_a converges on column19's equilibrium as the mass grows). Design record: docs/design/a-rate-law-in-the-full-mesh.md.}
 \begin{tutgolden}
 \goldrow{stream}{bottoms}{F}{0.0666666666667}
-\goldrow{stream}{bottoms}{T}{350.556632315}
+\goldrow{stream}{bottoms}{T}{344.337012761}
 \goldrow{stream}{c4Feed}{F}{0.156444444444}
 \goldrow{stream}{c4Feed}{T}{323.15}
-\goldrow{stream}{distillate}{F}{0.150594396524}
-\goldrow{stream}{distillate}{T}{324.585512535}
+\goldrow{stream}{distillate}{F}{0.151749537343}
+\goldrow{stream}{distillate}{T}{324.017928637}
 \goldrow{stream}{methanolFeed}{F}{0.0666666666667}
 \goldrow{stream}{methanolFeed}{T}{323.15}
 \goldrow{kpi}{mtbeColumn}{B}{0.0666666666667}
-\goldrow{kpi}{mtbeColumn}{D}{0.150594396524}
-\goldrow{kpi}{mtbeColumn}{Q\_condenser\_kW}{-5506.52555238}
-\goldrow{kpi}{mtbeColumn}{Q\_reboiler\_kW}{8385.50371895}
-\goldrow{kpi}{mtbeColumn}{Q\_reboiler\_ownEnvelope\_kW}{8385.50371895}
-\goldrow{kpi}{mtbeColumn}{R}{1.90172200581}
+\goldrow{kpi}{mtbeColumn}{D}{0.151749537343}
+\goldrow{kpi}{mtbeColumn}{Q\_condenser\_kW}{-4893.26452035}
+\goldrow{kpi}{mtbeColumn}{Q\_reboiler\_kW}{7653.73922804}
+\goldrow{kpi}{mtbeColumn}{Q\_reboiler\_ownEnvelope\_kW}{7653.73922804}
+\goldrow{kpi}{mtbeColumn}{R}{1.75594607919}
 \goldmore{21}
 \end{tutgolden}
 

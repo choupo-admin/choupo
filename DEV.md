@@ -3162,6 +3162,29 @@ accepts today, and that is a policy call.
 > (b) `column20` is the same system at the same pressure and still on the ideal vapour
 > (C239 first item); (c) three READMEs carry prose from the previous state, marked.
 
+> **C239 S1/S3 + the Klemola anchors (2026-11-08, architect).**  LANDED: column14 carries
+> two anchor rows against Klemola & Ilme (1996) Table 2 (`cfc70414d`): i-butane overhead
+> 0.9233 vs 0.9192 measured (+0.45 %), n-butane bottoms 0.9820 vs 0.9797 (+0.24 %),
+> band 1 % relative.  DECISION on the band: it was chosen after the run, and it stands
+> because Table 2 fails its own key-component balance by about 1 % (i-butane 0.9 %), so a
+> tighter band asks the model to be more exact than the measurement; the printing band
+> (+/-0.05 wt %) would fail all four rows.  The two minor keys (n-butane overhead -44 %,
+> i-butane bottoms +54 %) are NOT anchor rows: they miss in opposite senses (so not an
+> efficiency effect), the paper's balance gives a negative n-butane distillate, and the
+> runner has no open-anchor state; they are pinned as self-recorded rows and explained in
+> `expected`.  These anchors certify the major split only (the ideal-tray column15 passes
+> them too).  column14 is row 20 of the V&V subset, labelled partial.  LANDED: column20 on
+> SRK (`021a66afa`): reboiler 8386 -> 7654 kW, condenser -5507 -> -4893 kW, T_bottom
+> 350.6 -> 344.3 K, conversion 8.8 -> 7.0 % (cooler reactive stages), rows listed in
+> the commit.  BLOCKED: column08 (16 bar) does not converge on SRK (51 Newton iterations,
+> ||F|| 8.1; seeded from the ideal profile 0.149): its iterates cross the Tc of C3/C4/C5
+> and the Tc rule (`SaturatedVapour.cpp` liquidReferenceFactor) steps the factor from ~0.7
+> to 1.  DECISION (architect, rule 00; this closes the open Tc-rule item above): the
+> factor is made CONTINUOUS -- above a cap T_cap near Tc it is held at its value there,
+> announced once per component; T_cap chosen by measurement.  It reaches every
+> EoS-vapour gamma-phi case, so its validation is every such case plus --fast; only cases
+> evaluating above T_cap may move.  envelope02 is its witness.  A builder is on it.
+
 > **C243 (Vitor, 2026-11-07: "os gráficos [dos casos de controlo] acabam por ter muitas
 > variáveis e ficam confusos!  Havia de haver no dicionário uma forma de especificar os
 > gráficos que o utilizador gostaria de ver, de uma forma simples"): THE CASE DECLARES
@@ -3182,6 +3205,21 @@ accepts today, and that is a policy call.
 > the refusal, the default per-loop figures on ctrl22 (count of figures = loops + 1),
 > the declared block drawn as declared (a GUI test on a fixture).  Record in
 > `docs/ai/dict-syntax.md` and the user guide.
+> AMENDED 2026-11-08 (Vitor: "devia ser possível criar user plots ... No caso da coluna
+> 14 até dava jeito ter um gráfico feito em pós-processamento em que se compara as
+> previsões da coluna com as ... do Klemola"): (4) a series may be a CITED DATASET, not
+> only a result column: `data "constant/data/<file>.csv"; source "<citation>";` drawn as
+> markers over the model's line, the file carrying its own header (what, units, table
+> or figure it was read from); a dataset with no source refuses.  (5) one figure KIND,
+> `parity`, built from the case's `anchor` rows with no declaration needed: computed
+> against measured, the 1:1 line and each row's band, the open (non-anchor) rows drawn
+> hollow -- the figure a colleague asks for first ("validated against what?").  The
+> first witness is column14: its four Table 2 key rows (two anchors, two open) as a
+> parity figure, and the stage profile with whatever the paper prints per tray (it
+> prints EFFICIENCY profiles, not composition profiles -- measured 11-08 by the anchor
+> slice -- so the per-tray overlay is the Murphree efficiency, the case's constant 1.191
+> against the paper's profile, read from its figure with the digitisation stated).
+> Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
 > **C244 (Vitor, 2026-11-07: "não quero que tenhas tantas variações dos projetos base!!
 > Isso fica uma grande salganhada!"): ONE REFERENCE PLANT PER PROCESS; THE VARIANTS
@@ -3233,7 +3271,7 @@ accepts today, and that is a policy call.
 > regenerated).  FOUR ARE THE PRIMARY CHECKOUT'S OWN FILES, not the tree: the GUI's
 > pair-tier test bundles Vitor's private `data/local/` pairs, `check_origin_vocabulary`
 > reads an untracked `MORNING.md`, `check_git_visibility` sees the local
-> `bin/curate/refs/` and `bin/dwsim-runner/` -- the same gates and tests passed on the
+> two untracked local folders under bin/ (a references folder and a comparison runner) -- the same gates and tests passed on the
 > clean integration tree.  FINDING, to fix: a sweep run in the primary checkout judges
 > untracked local files; the Saturday sweep runs in a clean worktree from now on.
 > Slowest (real seconds): swro01 98 (was 289), check_schema_coverage 68, nanofiltran 62,

@@ -13,7 +13,7 @@
   THE PROBLEM is column19's, unchanged: 15 equilibrium stages, stage 1 the
   PARTIAL condenser, stage 15 the reboiler, P = 7 bar, reactive stages 6 to
   10, both feeds on stage 10, bottoms rate 240 kmol/h and boil-up ratio 5,
-  UNIFAC liquid, ideal vapour, the same isobutene overlay.  What changes is
+  UNIFAC liquid, SRK vapour, the same isobutene overlay.  What changes is
   the reaction: where column19 closes an equilibrium quotient on each
   reactive stage, here the extent of a stage is COMPUTED from a rate law and
   the catalyst it holds,  xi_j = r(T_j, a_j) m_cat,j,  with no extent unknown

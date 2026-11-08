@@ -2,7 +2,7 @@
 
 column19's problem (methanol + isobutene <=> MTBE, Sum nu = -1; 15 stages,
 partial condenser, reactive stages 6-10, 7 bar, `bottomsRate` 240 kmol/h and
-`boilupRatio` 5, UNIFAC liquid, ideal vapour) with the reaction closed by a
+`boilupRatio` 5, UNIFAC liquid, SRK vapour) with the reaction closed by a
 **rate law** instead of an equilibrium quotient.  On each reactive stage the
 extent is *computed*, `xi_j = r(T_j, a_j) m_cat,j`, from the law and the
 catalyst the stage holds; there is no extent unknown, and still no
