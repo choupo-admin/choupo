@@ -1133,147 +1133,32 @@ sVector ThermoPackage::stageK(scalar T, scalar P, const sVector& zStage,
         //  is why the hole was invisible).  Refusing to price the trial
         //  refuses to solve the column, exactly like the subsaturated case.
         //
-        //  Refusing to price the trial refuses to solve the column, so the
-        //  trial is priced -- on the dew side, see the next paragraph.  A
-        //  REFUSAL (missing record, unpriceable species) is NOT of this type
-        //  and is never absorbed here.
-        //
-        //  THE DEW-SIDE TEST, NOT THE FAILURE, CHOOSES THE K (C245 slice 3,
-        //  audit H1).  The old rule priced a failed Newton with the
-        //  BUBBLE-side hypothetical liquid (the whole feed as one speciated
-        //  liquid), a surface that is not the one the two-phase K has just
-        //  left at the dew point: measured on stripper01's tray-1 liquid,
-        //  K_CO2 30.4 -> 62.8 and K_NH3 12.41 -> 11.61 across 0.25 K at the
-        //  dew edge.  The construction that IS continuous there is the dew
-        //  one: the hypothetical liquid x* in equilibrium, at T, with a
-        //  vapour of composition z (y_i = p_i(x*)/sum p = z_i), and
-        //  K_i = z_i / x_i*.  At the dew point sum p = P and it is the
-        //  flash's own K; above it sum p > P (the dew
-        //  pressure rises with T), which is the TEST that the trial is
-        //  superheated vapour (a failed Newton with sum p < P is a
-        //  real failure inside the band, announced, and falls back to the
-        //  old surface).  Solved by the standard dew substitution
-        //  x_i <- z_i / K_i(x), each K from the speciated v = 0 liquid.
-        static bool dewAnnounced = false, fallbackAnnounced = false;
-        //  The Newton's own failure begins a hair BEFORE the dew point (V -> 1
-        //  corner: measured at sum p / P = 0.998 on stripper01 tray 1), so
-        //  the test accepts the dew liquid down to 0.95 P; below that the
-        //  failure is deep in the band and no V -> 1 limit describes it.
-        constexpr scalar kDewBand = 0.95;
-        sVector kDew;
+        //  So the SAME construction is used from the other side: the stage K
+        //  is taken INCIPIENT over the fully speciated v = 0 liquid --
+        //  hypothetical at this T, in precisely the sense gamma*Psat above
+        //  the bubble point is -- through the probe that skips the two-phase
+        //  Newton.  K_i = (p_i^eq/P)/x_i, the formula the subsaturated
+        //  branch below already applies; the K surface is then continuous
+        //  across the whole band and the MESH can walk home.  At a CONVERGED
+        //  stage the bubble-point residual pins the state to saturation,
+        //  where the incipient and two-phase constructions agree -- so this
+        //  aid shapes the path, never the answer.  Announced once (the
+        //  no-silent-crutch rule); a REFUSAL (missing record, unpriceable
+        //  species) is NOT of this type and is never absorbed here.
+        if (!stageIncipientAnnounced_)
         {
-            const scalar zs = [&]{ scalar t = 0.0; for (auto v : zTrial) t += v; return t; }();
-            sVector xs(zTrial);
-            for (auto& v : xs) v /= zs;
-            bool ok = false;
-            scalar Pp = 0.0;
-            sVector y(n(), 0.0);
-            try
-            {
-                //  A component with no equilibrium partial pressure (a
-                //  nonvolatile) has no vapour: it keeps its share of the
-                //  liquid, and the vapour is the volatiles' composition.
-                const auto q0 = equilibrate(T, P, 1.0, xs, 0, /*subsaturatedProbe*/ true);
-                if (q0.pEqAtm.size() >= n())
-                {
-                    scalar xnv = 0.0, zv = 0.0;
-                    std::vector<char> nv(n(), 0);
-                    for (std::size_t i = 0; i < n(); ++i)
-                    {
-                        if (xs[i] > 0.0 && q0.pEqAtm[i] <= 0.0)
-                        { nv[i] = 1; xnv += xs[i]; }
-                        else zv += xs[i];
-                    }
-                    for (std::size_t i = 0; i < n(); ++i)
-                        y[i] = nv[i] ? 0.0 : xs[i] / zv;
-                    //  A NONVOLATILE HEEL (a component with no partial
-                    //  pressure, here H2S) means the liquid never vanishes
-                    //  and the volatiles it binds (NH4HS) leave the vapour
-                    //  balance: the V -> 1 limit is then not "vapour = z".
-                    //  MEASURED (stripper02 tray 4): taking y = z over the
-                    //  volatiles, with the heel's share fixed OR free, lands
-                    //  on a different branch than the flash (K_NH3 0.73 vs
-                    //  12.9 at the failure), so no construction is offered
-                    //  there -- the old fallback below stays, announced,
-                    //  and the step it leaves is the open item.
-                    const bool heel = xnv > 0.0;
-                    if (heel) zv = 0.0;
-                    sVector nl(xs);
-                    scalar omega = 0.7, errPrev = 1.0e300;
-                    for (int it = 0; it < 800 && zv > 0.0; ++it)
-                    {
-                        scalar sn = 0.0;
-                        for (auto v : nl) sn += v;
-                        for (std::size_t i = 0; i < n(); ++i) xs[i] = nl[i] / sn;
-                        const auto q = equilibrate(T, P, 1.0, xs, 0, /*subsaturatedProbe*/ true);
-                        if (q.pEqAtm.size() < n()) break;
-                        Pp = 0.0;
-                        for (std::size_t i = 0; i < n(); ++i)
-                            Pp += q.pEqAtm[i] * 101325.0;
-                        if (!(Pp > 0.0)) break;
-                        const scalar Pt = heel ? P : Pp;
-                        scalar err = 0.0;
-                        sVector nn(nl);
-                        for (std::size_t i = 0; i < n(); ++i)
-                        {
-                            if (nv[i]) continue;
-                            const scalar pi = q.pEqAtm[i] * 101325.0;
-                            if (y[i] <= 0.0) nn[i] = 0.0;
-                            else if (pi > 0.0)
-                            {
-                                err = std::max(err, std::fabs(pi / Pt - y[i]));
-                                nn[i] = nl[i] * std::pow(y[i] * Pt / pi, omega);
-                            }
-                        }
-                        if (err > errPrev) omega = std::max(0.5 * omega, 1.0e-3);
-                        errPrev = err;
-                        nl = nn;
-                        if (err < 1.0e-11) { ok = true; break; }
-                    }
-                    if (ok)
-                    {
-                        scalar sn = 0.0;
-                        for (auto v : nl) sn += v;
-                        for (std::size_t i = 0; i < n(); ++i) xs[i] = nl[i] / sn;
-                        if (heel) Pp = P;
-                    }
-                }
-            }
-            catch (const std::exception&) { ok = false; }
-            if (ok && Pp >= P * kDewBand)
-            {
-                kDew.assign(n(), 0.0);
-                for (std::size_t i = 0; i < n(); ++i)
-                    kDew[i] = (xs[i] > 0.0 && y[i] > 0.0) ? y[i] / xs[i] : 0.0;
-            }
-        }
-        if (!kDew.empty())
-        {
-            if (!dewAnnounced)
-            {
-                dewAnnounced = true;
-                std::cout << "  [stageK] a trial state above the mixture's"
-                             " two-phase band (superheated vapour: the dew"
-                             " liquid's pressure is above P).  K taken over"
-                             " the hypothetical DEW liquid in equilibrium with"
-                             " a vapour of the trial composition, K = z/x*,"
-                             " which is the flash's own K at the dew point and"
-                             " continuous with it.\n"
-                             "           Announced once, and declared: this"
-                             " aid shapes the solver's path, never the answer"
-                             " -- a converged stage sits at saturation.\n";
-            }
-            return kDew;
-        }
-        if (!fallbackAnnounced)
-        {
-            fallbackAnnounced = true;
-            std::cout << "  [stageK] a trial state's two-phase equilibrium did"
-                         " not converge and the dew-side construction did not"
-                         " apply (no superheated dew liquid at this T).  K"
-                         " taken INCIPIENT over the hypothetical speciated"
-                         " liquid, as the subsaturated branch does -- a step"
-                         " in K may sit here.\n";
+            stageIncipientAnnounced_ = true;
+            std::cout << "  [stageK] a trial state's two-phase equilibrium"
+                         " did not converge (a trial T outside the mixture's"
+                         " two-phase band -- no interior V/F exists there)."
+                         "  K taken INCIPIENT over the hypothetical speciated"
+                         " liquid, the same construction the subsaturated"
+                         " branch uses, so the K surface is continuous and"
+                         " the MESH can walk home.\n"
+                         "           Announced once, and declared: this aid"
+                         " shapes the solver's path, never the answer -- a"
+                         " converged stage sits at saturation, where the two"
+                         " constructions agree.\n";
         }
         try
         {
@@ -1328,8 +1213,8 @@ sVector ThermoPackage::stageK(scalar T, scalar P, const sVector& zStage,
                 ? r.pEqAtm[i]
                 : (i < r.yApp.size() ? r.yApp[i] : 0.0);
             //  A volatile exhausted from the liquid has K -> infinity; the
-            //  stage K is a FINITE cap, announced once (audit H1: an inf
-            //  poisons a finite-difference Jacobian row).
+            //  stage K is a FINITE cap, announced once (audit H1, C245
+            //  slice 3: an inf poisons a finite-difference Jacobian row).
             constexpr scalar kCap = 1.0e12;
             if (up > 0.0)
             {

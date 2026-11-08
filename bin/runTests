@@ -3730,12 +3730,11 @@ PYEOF
     fi
     rm -f /tmp/colthermo.$$
 
-    # stage-K continuity gate (2026-11-08, DEV.md 4c C245 slice 3, audit H1).
-    # A reactive package's stageK chose its construction by whether an inner
-    # Newton converged; above the dew edge it priced the bubble-side
-    # hypothetical liquid (measured 0.51 relative step in K_CO2 over 1e-6 K on
-    # stripper01 tray 1).  The probe calls stageK at the converged tray liquids
-    # and bisects the worst interval of a T scan down to 1e-6 K.
+    # stage-K step gate (2026-11-08, DEV.md 4c C245 slice 3, audit H1).  A
+    # reactive package's stageK has a KNOWN step in T where the two-phase
+    # Newton's reach ends (0.507 on stripper01 tray 1, 0.0415 on tray 8); the
+    # gate measures it through a probe and pins it two-sided, and holds the
+    # identity and finiteness of K as hard requirements.
     if gate_exec "$ROOT/bin/curate/check_stagek_continuity.py" > /tmp/stagekc.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "stagek-continuity-gate" "$(gate_claim check_stagek_continuity /tmp/stagekc.$$)"
         pass=$((pass+1))

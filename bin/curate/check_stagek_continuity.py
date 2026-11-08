@@ -1,34 +1,45 @@
 #!/usr/bin/env python3
-"""Gate: the stage K of a reactive package is a continuous function of T.
+"""Gate: the stage K of a reactive package -- a MEASURED, PINNED step in T.
 
     bin/curate/check_stagek_continuity.py
 
 WHY THIS EXISTS (2026-11-08, DEV.md 4c C245 slice 3, audit finding H1).
-`ThermoPackage::stageK` for an aqueous-chemistry package used to choose its
-construction by whether an inner Newton CONVERGED.  Above the two-phase band's
-dew edge the Newton fails, and the K was then taken over the BUBBLE-side
-hypothetical liquid -- a different surface.  Measured on stripper01's tray-1
-liquid at 1.01325 bar: across 0.25 K at the dew edge (T = 372.0 -> 372.25 K)
-K_CO2 went 30.4 -> 62.8 and K_NH3 12.41 -> 11.61.  A column Newton that
-crosses that edge sees a step, not a slope.  The cure is the dew-side
-construction (the hypothetical liquid in equilibrium with a vapour of the trial
-composition, K = z / x*), which is the flash's own K at the dew point.
+`ThermoPackage::stageK` for an aqueous-chemistry package is NOT continuous in
+T.  Where the two-phase Newton fails (just inside the band's dew side, V ~
+0.998), the K is taken over the BUBBLE-side hypothetical liquid, a different
+surface.  Measured on stripper01 at 1.01325 bar, worst relative change of any
+K_i over a 1e-6 K interval:
+
+    tray 1 liquid (NH3 .0478 CO2 .0089 water .943): 0.507 at 372.0937 K
+        K_CO2 30.6 -> 62.2, K_NH3 12.44 -> 11.55
+    tray 8 liquid (NH3 .0087 CO2 .00043 water .991): 0.0415 at 373.43 K
+
+KNOWN_STEP (DEV.md 4c C245 slice 3).  The cause found: ReactiveVLE's outer
+Newton reach ends at V ~ 0.998 (sum p / P = 0.998 on tray 1), and stageK takes
+the bubble-side hypothetical liquid past that.  A dew-side construction (the
+hypothetical liquid in equilibrium with a vapour of the trial composition,
+K = z / x*) removed the step (tray 1: 0.507 -> 4e-3; tray 8: 4e-2 -> 4e-7)
+but was DROPPED: it BREAKS stripper01 (legacy Newton: bottom T runs to 748 K,
+"failed to converge"; bounded Armijo MESH: stalls at |F| = 3e-2), because the
+accidental wall the old surface gave the Newton disappears.  With the OLD K
+and the Armijo MESH, stripper01 and column13 converge in 6 iterations each.
+
+STRIPPER02 DIAGNOSIS (measured 2026-11-08).  Its stall under the bounded
+Armijo MESH (80 iterations, |F| = 1.078e-2) is IDENTICAL with the old K and
+with the dew-side K, so the K step is not its cause.  It is a HEEL case: H2S
+is nonvolatile (no partial pressure), the liquid never vanishes, and NH3 is
+bound with it as NH4HS, so the V -> 1 limit of the flash is not "vapour = z".
+Two constructions for that limit (heel share fixed; heel moles free with
+sum p = P) landed on another branch than the flash (tray 4: K_NH3 12.9 against
+0.73 at the failure).  Candidates: ReactiveVLE's outer Newton reach near V = 1
+on a heeled mixture, or a pH / heel feature of the MESH residual.
 
 WHAT THIS GATE CHECKS.  A probe (`_stageKProbe.cpp`, compiled HERE against
-libchoupo.so) calls `stageK` itself at the witness liquids, with two readings
-per witness:
-
-  (a) CONTINUITY.  K(T) is scanned across the band, the adjacent pair with the
-      largest relative change is bisected down to a width of 1e-6 K, and the
-      relative change of every K_i across that final interval must be below
-      1e-6 -- a jump of any size survives the bisection, a slope does not.
-  (b) ORDER INDEPENDENCE.  The same (T, z) asked after unrelated calls returns
-      the identical K, bit for bit; and no K is infinite or NaN.
-
-Witnesses: stripper01_sour_water tray 1 and tray 8 liquids (NH3 + CO2 + water,
-no nonvolatile).  NOT checked: a mixture with a nonvolatile heel (stripper02's
-H2S), whose dew-side limit is not offered (the old fallback stays, announced);
-that is the open item of the slice.
+libchoupo.so) calls `stageK` at the two liquids.  The T scan's worst adjacent
+interval is bisected to 1e-6 K and the relative step is held against its PIN,
+TWO-SIDED: a step that GROWS fails; one that SHRINKS fails asking for the pin
+to be moved.  HARD requirements: the same (T, z) after unrelated calls gives
+bit-identical K, and no K is infinite or NaN.
 """
 import os
 import subprocess
@@ -42,14 +53,14 @@ SRC = ROOT / "bin" / "curate" / "_stageKProbe.cpp"
 LABEL = "check_stagek_continuity"
 CASE = ROOT / "tutorials" / "steady" / "distillation" / "stripper01_sour_water"
 P = 101325.0
-TOL = 1.0e-2
+PIN_REL = 0.02   # a pin matches within 2 % of its value
 WIDTH = 1.0e-6
 
 #  (label, z in package order NH3 CO2 water, T0, T1): the converged tray
 #  liquids of stripper01, bracketing its dew edge.
 WITNESSES = [
-    ("stripper01 tray 1", [0.047811771, 0.0089001765, 0.94328805], 368.0, 378.0),
-    ("stripper01 tray 8", [0.0087392722, 0.00042640146, 0.99083433], 372.0, 384.0),
+    ("stripper01 tray 1", [0.047811771, 0.0089001765, 0.94328805], 368.0, 378.0, 5.07e-1),
+    ("stripper01 tray 8", [0.0087392722, 0.00042640146, 0.99083433], 372.0, 384.0, 4.15e-2),
 ]
 
 
@@ -92,7 +103,7 @@ def main():
         return 1
     fails = []
     notes = []
-    for label, z, t0, t1 in WITNESSES:
+    for label, z, t0, t1, pin in WITNESSES:
         n_pts = int(round((t1 - t0) / 0.05)) + 1
         Ts = [t0 + 0.05 * k for k in range(n_pts)]
         Ks = ask([req(T, z) for T in Ts])
@@ -120,9 +131,12 @@ def main():
         step = rel(kl, kh)
         notes.append("%s: scan %.1f-%.1f K, worst interval %.6f K, step over %.1e K = %.2e"
                      % (label, t0, t1, lo, hi - lo, step))
-        if step > TOL:
-            fails.append("%s: K(T) STEPS at T = %.6f K: relative change %.3e over %.1e K (K %s -> %s)"
-                         % (label, lo, step, hi - lo, kl, kh))
+        if step > pin * (1 + PIN_REL):
+            fails.append("%s: the K step GREW: %.3e against its pin %.3e (KNOWN_STEP, C245 slice 3)"
+                         % (label, step, pin))
+        elif step < pin * (1 - PIN_REL):
+            fails.append("%s: the K step SHRANK to %.3e from its pin %.3e -- good; move the pin"
+                         % (label, step, pin))
         # order independence
         a = ask([req(0.5 * (t0 + t1), z)])[0]
         ask([req(t0, z), req(t1, [z[0] * 0.5, z[1], 1 - 0.5 * z[0] - z[1]])])
@@ -136,10 +150,10 @@ def main():
         for n in notes:
             print("  " + n)
         return 1
-    print(LABEL + ": OK -- stageK is continuous in T across the two-phase band's dew edge "
-          "(relative step < %.0e over %.0e K; measured 4e-3 at the Newton's reach, 0.51 before the fix) and order-independent at %d witness liquids; "
-          "NOT checked: a mixture with a nonvolatile heel (stripper02's H2S)"
-          % (TOL, WIDTH, len(WITNESSES)))
+    print(LABEL + ": OK -- stageK's KNOWN_STEP in T is pinned two-sided at %d stripper01 tray liquids "
+          "(worst relative step over 1e-6 K: %s; DEV.md 4c C245 slice 3), the same (T, z) gives "
+          "bit-identical K, no K is infinite or NaN; NOT checked: a heeled mixture (stripper02's H2S)"
+          % (len(WITNESSES), ", ".join("%.2e" % w[4] for w in WITNESSES)))
     for n in notes:
         print("  " + n)
     return 0
