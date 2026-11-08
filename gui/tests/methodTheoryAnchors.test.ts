@@ -88,8 +88,9 @@ describe("EduTools registry — shape", () => {
     }
   });
 
-  it("the boot default is a LIVE tool", () => {
+  it("the boot choice is the HOME (null) or a LIVE tool", () => {
     const boot = bootTool();
+    if (boot === null) return;   // DEV.md 4c C251: no tool named -> the home
     const m = METHOD_TOOLS.find((t) => t.id === boot);
     expect(m, `bootTool() returned an unknown id: ${boot}`).toBeTruthy();
     expect(m!.status).toBe("live");

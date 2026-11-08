@@ -40,6 +40,7 @@ Description
 
 #include <functional>
 #include <string>
+#include <vector>
 
 namespace Choupo::solver {
 
@@ -85,6 +86,23 @@ NRResult newton1D(const std::function<scalar(scalar)>& f,
     const std::function<scalar(scalar)>& dfdx,
     scalar x0,
     const NROptions& opts
+);
+
+//- C245 3a.  A Newton for a residual that may REFUSE a trial (throws
+//  core/InfeasibleTrial.H) and whose derivative is a finite difference of
+//  step `fdStep`.  While every trial answers it is newton1D's iteration step
+//  for step (bracket = false semantics: lower/upper bind only the seed).  The
+//  residual is taken to RISE with x: each accepted point tightens a bracket;
+//  a step that leaves a COMPLETE bracket is replaced by its midpoint; an
+//  infeasible trial is never a bracket end nor a value -- the step is halved
+//  toward the last accepted x until a trial answers.  Every infeasible x
+//  (steps and probes) is appended to `*infeasible` when given.  Throws
+//  runtime_error when the seed itself is infeasible or no halving answers.
+NRResult newton1DSafeguarded(const std::function<scalar(scalar)>& f,
+    scalar x0,
+    scalar fdStep,
+    const NROptions& opts,
+    std::vector<scalar>* infeasible = nullptr
 );
 
 } // namespace Choupo::solver

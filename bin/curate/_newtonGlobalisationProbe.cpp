@@ -31,6 +31,8 @@
 
 #include "solver/NewtonND.H"
 #include "solver/LU.H"
+#include "solver/NewtonRaphson.H"
+#include "core/InfeasibleTrial.H"
 
 #include <algorithm>
 #include <cmath>
@@ -196,6 +198,39 @@ void probeFdJacobian()
 
 } // namespace
 
+//  (5) infeasible window (C245 slice 3a): g(T) = exp((T - 1100)/20) - 1, root
+//  1100, seed 1000.  The Newton step from the seed overshoots (slope e^-5/20)
+//  and is capped at 200 K -> T = 1200, where the residual REFUSES (an inner
+//  equilibrium that does not converge): every T > 1150 throws InfeasibleTrial.
+//  The safeguarded solve must backtrack, never evaluate a value there, never
+//  differentiate across it, and reach the root; the count of refusals is
+//  reported.
+void probeInfeasible()
+{
+    auto f = [&](double T) -> double
+    {
+        if (T > 1150.0) throw InfeasibleTrial("window");
+        return std::exp((T - 1100.0) / 20.0) - 1.0;
+    };
+    NROptions o;
+    o.tolerance = 1.0e-8; o.maxIter = 60;
+    o.lower = 250.0; o.upper = 5000.0; o.maxStep = 200.0;
+    std::vector<double> bad;
+    NRResult r = newton1DSafeguarded(f, 1000.0, 0.5, o, &bad);
+    std::cout << "infeasConverged " << (r.converged ? 1 : 0) << "\n";
+    std::cout << "infeasRootErr " << std::abs(r.x - 1100.0) << "\n";
+    std::cout << "infeasRefusals " << bad.size() << "\n";
+    //  a feasible problem is newton1D's iteration step for step
+    auto g = [](double x) { return x * x * x - 8.0; };
+    auto dg = [](double x) { return 3.0 * x * x; };
+    NROptions o2; o2.tolerance = 1e-12; o2.lower = 0.0; o2.upper = 10.0;
+    o2.bracket = false; o2.monotoneIncreasing = true; o2.maxStep = 1.0;
+    const NRResult a = newton1D(g, dg, 5.0, o2);
+    const NRResult b = newton1DSafeguarded(g, 5.0, 1.0e-6, o2, nullptr);
+    std::cout << "infeasFeasibleSameIters "
+              << ((a.iterations == b.iterations && b.converged) ? 1 : 0) << "\n";
+}
+
 int main()
 {
     std::cout.precision(10);
@@ -204,6 +239,7 @@ int main()
     probeNaN();
     probeScale();
     probeFdJacobian();
+    probeInfeasible();
     std::cout << "probeDone 1\n";
     return 0;
 }

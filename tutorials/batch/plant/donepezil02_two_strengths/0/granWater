@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  Purified water of the binder solution: 66.60 mg per tablet PRESSED (7.40 mg of HPC in 74 mg of a 10 wt % solution; 23.9 % of the dry intragranular mass) -- AUTHOR-SET granulation liquid, see README section 2.  Basis: 720 000 tablets/h, the flowsheet basis.  (47.952 kg/h.)
+
+componentMassFlows
+{
+    water                        47.952 kg/h;
+}
+
+T               298.15 K;
+P               1.01325 bar;
+phase           liquid;

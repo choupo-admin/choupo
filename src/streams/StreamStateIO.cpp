@@ -1133,6 +1133,28 @@ ProcessStream readStreamState(const fs::path&       file,
             std::cerr << "[units] " << msg << "\n";
     };
 
+    //  A COMPONENT NAMED IN A STATE FILE AND ABSENT FROM THE PACKAGE SAYS
+    //  WHICH FILE (2026-11-08, PIF readiness review).  `indexOf` throws
+    //  `ThermoPackage: component 'X' not loaded` and names no file; a group
+    //  that renamed its API met it at once, because the ESTIMATE files of the
+    //  internal streams (`0/finalBlend`, `0/wetMass`, ...) still carried the
+    //  old name, and nothing said which of thirty files to look in.  The
+    //  stream's name is known here, and so is the remedy.
+    auto indexOfNamed = [&](const std::string& comp) -> std::size_t
+    {
+        try { return thermo.indexOf(comp); }
+        catch (const std::exception&)
+        {
+            throw std::runtime_error("stream state '" + name + "': component '"
+                + comp + "' is not in the package (constant/thermoPhysPropDict"
+                " `components ( ... )`).  If you renamed or removed a component,"
+                " this file is a STALE ESTIMATE of an internal stream: delete it"
+                " and run `bin/choupo-init0 <case>` to rewrite it from the"
+                " inlets.  If it is an inlet you authored, declare the component"
+                " (the list, and its record under constant/components/).");
+        }
+    };
+
     auto readMolar = [&](const DictPtr& blk, bool mass)
     {
         noteBareUnits(blk, mass ? "componentMassFlows" : "componentMolarFlows",
@@ -1161,7 +1183,7 @@ ProcessStream readStreamState(const fs::path&       file,
                 }
                 continue;
             }
-            const std::size_t i = thermo.indexOf(comp);
+            const std::size_t i = indexOfNamed(comp);
             if (mass) v /= thermo.comp(i).MW();               // kg/s / (kg/kmol) = kmol/s
             overall[i] += v;
         }
@@ -1176,7 +1198,7 @@ ProcessStream readStreamState(const fs::path&       file,
         for (const auto& comp : fr->keys())
         {
             const scalar x = fr->lookupScalar(comp);
-            f[thermo.indexOf(comp)] = x; sum += x;
+            f[indexOfNamed(comp)] = x; sum += x;
         }
         if (std::abs(sum - 1.0) > 1e-6)
             throw std::runtime_error("stream state '" + name + "': " + std::string(fkey)
