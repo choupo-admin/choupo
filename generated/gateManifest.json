@@ -253,8 +253,8 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 800 path mention(s) and 245 case name(s) across 24 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 10 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
-      "seconds": 1.2
+      "claim": "check_doc_references: OK -- 801 path mention(s) and 245 case name(s) across 24 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 10 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
+      "seconds": 1.1
     },
     "check_doctrine": {
       "exit": 0,
@@ -1458,8 +1458,8 @@
     },
     "check_distillation_seed": {
       "exit": 0,
-      "claim": "check_distillation_seed: OK -- a Newton step no trial improves is counted and limited and the BEST iterate is returned (probe: x = 3, |F| = 2, not the uphill 2.99976 / 50; strict mode stops at the first); a CMO phase that did not converge (15 stages, 77 iterations, |F| = 4.586e+04) seeds the full MESH only as an ANNOUNCED seed and the verdict is the full MESH's own; acetone06 still converges through 2 announced floor-damped step(s).  NOT covered: a seed the full MESH converts (none found in the corpus), the singular-Jacobian stage/equation diagnostic (C184 P0), the allowance's default of 25.",
-      "seconds": 3.1
+      "claim": "check_distillation_seed: OK -- a Newton step no trial improves is counted and limited and the BEST iterate is returned (probe: x = 3, |F| = 2, not the uphill 2.99976 / 50; strict mode stops at the first); a CMO phase that did not converge (15 stages, 33 iterations, |F| = 7.297e+31) seeds the full MESH only as an ANNOUNCED seed and the verdict is the full MESH's own; acetone06 still converges through 0 floor-damped step(s) (all announced; 0 under the Armijo contract).  NOT covered: a seed the full MESH converts (none found in the corpus), the singular-Jacobian stage/equation diagnostic (C184 P0), the allowance's default of 25.",
+      "seconds": 2.3
     },
     "check_driver_convergence": {
       "exit": 0,
@@ -1483,8 +1483,8 @@
     },
     "check_negative_pressure": {
       "exit": 0,
-      "claim": "check_negative_pressure: OK -- a pipe whose drop exceeds its inlet pressure is refused by unit, stream, P and inlet on an accepted pass (feed-forward, and in a torn recycle under Newton and Wegstein; the same line with a small drop runs); a trial sweep that visits a negative pressure is announced (2 clamp(s), stdout and caveat block) and the loop still converges; P == 0 (cstr) is still the unit-did-not-set sentinel.  NOT covered: P == 0 as an error (kept on purpose), the time-integrated binaries, other units' reactions to a received pressure.",
-      "seconds": 0.2
+      "claim": "check_negative_pressure: OK -- a pipe whose drop exceeds its inlet pressure is refused by unit, stream, P and inlet on an accepted pass (feed-forward, and in a torn recycle under Newton and Wegstein; the same line with a small drop runs); a loop whose seed is infeasible is refused by name under Newton and Wegstein, never reported on P = P_in, and the same loop from a feasible seed converges cleanly (2 solvers); P == 0 (cstr) is still the unit-did-not-set sentinel.  NOT covered: P == 0 as an error (kept on purpose), the time-integrated binaries, other units' reactions to a received pressure.",
+      "seconds": 0.1
     },
     "check_boron_split": {
       "exit": 0,
@@ -1593,8 +1593,8 @@
     },
     "check_newton_globalisation": {
       "exit": 0,
-      "claim": "check_newton_globalisation: OK -- the Newton's globalisation contract holds on four synthetic problems compiled against the solver sources: from a singular start the legacy default still stalls (26 uphill steps, the default unmoved) while Armijo + Levenberg-Marquardt converges in 12 iterations with ||F|| strictly decreasing (2 LM steps); a declared lower bound keeps every trial and probe of ln x inside x > 0 (legacy default: 13 evaluations at x <= 0); a NaN probe stops the solve naming its column and luFactor refuses a NaN pivot and a row dependent to working precision while factoring row- and column-scaled matrices and a 1e-31 matrix; typX = 1e-10 solves ln(x/1e-10) = 0.5 where the absolute step is refused; NewtonND.H defaults to legacy and the full MESH opts in.  NOT covered: whether corpus cases SHOULD converge (the goldens), callers that have not opted in, the MESH's sum(x) <= 1 constraint (slice 2).",
-      "seconds": 2.2
+      "claim": "check_newton_globalisation: OK -- the Newton's globalisation contract holds on five synthetic problems compiled against the solver sources: from a singular start the legacy default still stalls (26 uphill steps, the default unmoved) while Armijo + Levenberg-Marquardt converges in 12 iterations with ||F|| strictly decreasing (2 LM steps); a declared lower bound keeps every trial and probe of ln x inside x > 0 (legacy default: 13 evaluations at x <= 0); a NaN probe stops the solve naming its column and luFactor refuses a NaN pivot and a row dependent to working precision while factoring row- and column-scaled matrices and a 1e-31 matrix; typX = 1e-10 solves ln(x/1e-10) = 0.5 where the absolute step is refused; NewtonND.H defaults to legacy and the full MESH opts in.  a 2x2 residual with x1 = 1e-10 inside ln x1 gets its analytic Newton step to 7.450580406e-09 relative (typX); the simultaneous MESH and the multi-reaction CSTR opt in too.  NOT covered: whether corpus cases SHOULD converge (the goldens), callers that have not opted in, the MESH sum(x) <= 1 constraint (refused only beyond 0.05 below zero, see DistillationColumn.cpp).",
+      "seconds": 2.5
     },
     "check_rodas4_order": {
       "exit": 0,
