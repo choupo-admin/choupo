@@ -1590,6 +1590,11 @@
       "exit": 0,
       "claim": "check_pipe_ports: OK -- a column's feed on stage 8 at z = 4.350 m of 9.2 m (recomputed from the sheet), its bottoms at the base, its distillate out of the reflux drum -- one unit, four placed items; the feed-effluent exchanger's four nozzles (tube ends, shell over/under at +/-0.35 L) and the separator's side inlet, top vapour and bottom liquid, recomputed from the published extents; no two of 25 port ends coincide on an item; a horizontal tank's outlet and fill each take the axis end nearer their pipe's other end (the bullet's outlet south, fill north) and the product pipe runs 39.8 m straight to the fence, not 143.6 m by way of the rack; a declared side and elevation honoured (`origin declared`); two streams on one declared port stand off each other by the published slot offset; 6 port refusals fired through the real reader and named; the convention said on stderr, in the advisories and in layout.portConvention; all 22 item ends of the witness publish a port.  NOT COVERED: that a nozzle position is right for a real vessel (it is a convention, no vendor schedule exists), a unit type with no port rule (it keeps the top centre and the run says which), a pipe's clash with another item (check_plant_layout), the GUI drawing of the nozzles (a vitest).",
       "seconds": 1.1
+    },
+    "check_newton_globalisation": {
+      "exit": 0,
+      "claim": "check_newton_globalisation: OK -- the Newton's globalisation contract holds on four synthetic problems compiled against the solver sources: from a singular start the legacy default still stalls (26 uphill steps, the default unmoved) while Armijo + Levenberg-Marquardt converges in 12 iterations with ||F|| strictly decreasing (2 LM steps); a declared lower bound keeps every trial and probe of ln x inside x > 0 (legacy default: 13 evaluations at x <= 0); a NaN probe stops the solve naming its column and luFactor refuses a NaN pivot and a row dependent to working precision while factoring diag(1, 1e-20) and a 1e-31 matrix; typX = 1e-10 solves ln(x/1e-10) = 0.5 where the absolute step is refused; NewtonND.H defaults to legacy and the full MESH opts in.  NOT covered: whether corpus cases SHOULD converge (the goldens), callers that have not opted in, the MESH's sum(x) <= 1 constraint (slice 2).",
+      "seconds": 2.3
     }
   }
 }

@@ -28,6 +28,7 @@ License
 
 #include "LU.H"
 
+#include <algorithm>
 #include <cmath>
 #include <stdexcept>
 #include <string>
@@ -51,6 +52,12 @@ void luFactor(std::vector<sVector>& A, std::vector<std::size_t>& piv)
     piv.assign(n, 0);
     for (std::size_t i = 0; i < n; ++i) piv[i] = i;
 
+    //  each row's largest |entry| as given (the pivot test's scale; indexed
+    //  by the ORIGINAL row, which piv tracks through the swaps)
+    sVector rowScale(n, 0.0);
+    for (std::size_t i = 0; i < n; ++i)
+        for (scalar a : A[i]) rowScale[i] = std::max(rowScale[i], std::abs(a));
+
     for (std::size_t k = 0; k < n; ++k)
     {
         // Partial pivot: largest |entry| in column k at or below the diagonal.
@@ -64,7 +71,21 @@ void luFactor(std::vector<sVector>& A, std::vector<std::size_t>& piv)
                 pivot = i;
             }
         }
-        if (best < 1.0e-30)
+        //  THE PIVOT TEST IS RELATIVE, AND IT CATCHES NaN (C245, from the
+        //  2026-11-08 kernel audit).  It was `best < 1e-30`: absolute, so a
+        //  well-conditioned matrix of entries ~1e-31 was "singular" while a
+        //  pivot of 1e-16 against rows of order 1 -- a row dependent on the
+        //  rows above it to working precision -- was factored; and a NaN
+        //  pivot PASSED it (NaN < x is false), so a non-finite matrix was
+        //  factored into a NaN step.  The pivot is now measured against the
+        //  largest entry its row had in the matrix AS GIVEN,
+        //  !(best > 1e-14 * rowScale): row-relative, not relative to max|A|,
+        //  because a residual's rows carry their own units and a global test
+        //  refuses a system that is merely badly scaled (measured 2026-11-08:
+        //  max|A| refused the stage speciation inside stripper02, whose rows
+        //  differ by more than 1e14).  Every comparison with NaN is false, so
+        //  NaN refuses.
+        if (!(best > 1.0e-14 * rowScale[piv[pivot]]))
             throw std::runtime_error("luFactor: matrix is singular at row "
                                      + std::to_string(k));
         if (pivot != k)

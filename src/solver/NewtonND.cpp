@@ -143,6 +143,49 @@ scalar normL2(const sVector& v)
     return std::sqrt(s);
 }
 
+//  THE FINITE-DIFFERENCE RULE (C245).  With nothing declared it is the rule
+//  this solver always had -- h = fdStep * max(|x_j|, 1), a central
+//  difference -- and every number below is what it was.  A declared typX
+//  replaces the absolute floor 1 by the unknown's own scale and the step by
+//  sqrt(eps) of it; declared bounds turn a probe that would leave the box
+//  into a one-sided difference pointing INTO it.
+struct FDRule
+{
+    scalar         h0   = 1.0e-7;
+    const sVector* typX = nullptr;    // null: the legacy absolute floor
+    const sVector* lo   = nullptr;    // null: no box
+    const sVector* hi   = nullptr;
+
+    scalar step(std::size_t j, scalar xj) const
+    {
+        if (typX)
+            return std::sqrt(std::numeric_limits<scalar>::epsilon())
+                 * std::max(std::abs(xj), (*typX)[j]);
+        return h0 * std::max(std::abs(xj), 1.0);
+    }
+    //  0 central, +1 forward (x - h would leave the box), -1 backward.
+    int side(std::size_t j, scalar xj, scalar h) const
+    {
+        const bool downOut = lo && xj - h < (*lo)[j];
+        const bool upOut   = hi && xj + h > (*hi)[j];
+        if (downOut && !upOut) return +1;
+        if (upOut && !downOut) return -1;
+        return 0;                       // free, or a box narrower than 2h
+    }
+};
+
+//  A Jacobian column that is not finite is REFUSED BY NAME (C245; it is a
+//  default, because a NaN or an infinite derivative is never a number to
+//  step on).  Before, a NaN slipped through the pivot test and surfaced as
+//  "the line search found no evaluable step", naming nothing.
+struct NonFiniteJacobian : public std::runtime_error
+{
+    explicit NonFiniteJacobian(std::size_t j)
+        : std::runtime_error("non-finite Jacobian column " + std::to_string(j)
+              + " (the residual returned NaN or inf at a finite-difference"
+              " probe of unknown " + std::to_string(j) + ")") {}
+};
+
 // Build Jacobian J[i][j] = ∂F_i/∂x_j via central finite differences.
 //  `F0` is the residual at the base point x (used to fall back to a one-sided
 //  difference when a perturbation lands on an INFEASIBLE trial point -- a unit
@@ -153,15 +196,39 @@ scalar normL2(const sVector& v)
 std::vector<sVector> fdJacobian(const std::function<sVector(const sVector&)>& F,
     const sVector&                                x,
     const sVector&                                F0,
-    scalar                                        h0,
+    const FDRule&                                 rule,
     bool                                          parallel)
 {
     const std::size_t n = x.size();
     std::vector<sVector> J(n, sVector(n, 0.0));
 
+    auto checkFinite = [&](std::size_t j)
+    {
+        for (std::size_t i = 0; i < n; ++i)
+            if (!std::isfinite(J[i][j])) throw NonFiniteJacobian(j);
+    };
     auto column = [&](std::size_t j)
     {
-        scalar h = h0 * std::max(std::abs(x[j]), 1.0);
+        scalar h = rule.step(j, x[j]);
+        const int sd = rule.side(j, x[j], h);
+        if (sd != 0)
+        {
+            //  a declared bound: one-sided, pointing into the box
+            for (int attempt = 0; attempt < 6; ++attempt)
+            {
+                sVector xs = x;
+                xs[j] = x[j] + sd * h;
+                sVector Fs;
+                try { Fs = F(xs); }
+                catch (const InfeasibleTrial&) { h *= 0.25; continue; }
+                for (std::size_t i = 0; i < n; ++i)
+                    J[i][j] = sd * (Fs[i] - F0[i]) / h;
+                checkFinite(j);
+                return;
+            }
+            throw InfeasibleTrial("fdJacobian: no feasible perturbation for variable "
+                                  + std::to_string(j) + " inside its declared bounds");
+        }
         for (int attempt = 0; attempt < 6; ++attempt)
         {
             sVector xp = x, xm = x;
@@ -175,18 +242,21 @@ std::vector<sVector> fdJacobian(const std::function<sVector(const sVector&)>& F,
             {
                 for (std::size_t i = 0; i < n; ++i)
                     J[i][j] = (Fp[i] - Fm[i]) / (2.0 * h);
+                checkFinite(j);
                 return;
             }
             if (okP)                 // forward one-sided (x+h feasible, x-h not)
             {
                 for (std::size_t i = 0; i < n; ++i)
                     J[i][j] = (Fp[i] - F0[i]) / h;
+                checkFinite(j);
                 return;
             }
             if (okM)                 // backward one-sided (x-h feasible, x+h not)
             {
                 for (std::size_t i = 0; i < n; ++i)
                     J[i][j] = (F0[i] - Fm[i]) / h;
+                checkFinite(j);
                 return;
             }
             h *= 0.25;               // both infeasible: shrink toward x and retry
@@ -250,7 +320,7 @@ struct ColoredResult { BlockBands bands; long evals = 0; long fallbacks = 0; };
 
 ColoredResult fdJacobianColoredBT(
     const std::function<sVector(const sVector&)>& F,
-    const sVector& x, const sVector& F0, scalar h0,
+    const sVector& x, const sVector& F0, const FDRule& rule,
     std::size_t N, std::size_t nv)
 {
     const std::size_t n = x.size();
@@ -267,14 +337,32 @@ ColoredResult fdJacobianColoredBT(
             auto& blk = out.bands.b[std::size_t(brow)]
                             [std::size_t(long(bcol) - brow + 1)];
             for (std::size_t i = 0; i < nv; ++i)
+            {
                 blk[i][k] = dFdx[std::size_t(brow) * nv + i];
+                if (!std::isfinite(blk[i][k])) throw NonFiniteJacobian(col);
+            }
         }
     };
 
     auto denseColumn = [&](std::size_t col)
     {
         // the dense builder's own ladder, one column
-        scalar h = h0 * std::max(std::abs(x[col]), 1.0);
+        scalar h = rule.step(col, x[col]);
+        const int sd = rule.side(col, x[col], h);
+        if (sd != 0)
+        {
+            for (int attempt = 0; attempt < 6; ++attempt)
+            {
+                sVector xs = x; xs[col] += sd * h; sVector Fs;
+                try { Fs = F(xs); ++out.evals; } catch (const InfeasibleTrial&) { h *= 0.25; continue; }
+                sVector d(n, 0.0);
+                for (std::size_t i = 0; i < n; ++i) d[i] = sd * (Fs[i] - F0[i]) / h;
+                depositColumn(col, d);
+                return;
+            }
+            throw InfeasibleTrial("fdJacobianColoredBT: no feasible perturbation for column "
+                                  + std::to_string(col) + " inside its declared bounds");
+        }
         for (int attempt = 0; attempt < 6; ++attempt)
         {
             sVector xp = x, xm = x;
@@ -296,19 +384,31 @@ ColoredResult fdJacobianColoredBT(
         for (std::size_t c = 0; c < 3; ++c)
         {
             //  one colored pass: slot k of every block with index % 3 == c
+            //  Each column of the pass keeps its own side: central, or one-
+            //  sided into a declared box (the other side's vector leaves it
+            //  unperturbed, so its rows read F0 -- the rows of one column
+            //  are disjoint from every other column's in the pass).
             sVector xp = x, xm = x;
             std::vector<scalar> hcol;
             std::vector<std::size_t> cols;
+            std::vector<int> sides;
+            bool anyP = false, anyM = false;
             for (std::size_t bblk = c; bblk < N; bblk += 3)
             {
                 const std::size_t col = bblk * nv + k;
-                const scalar h = h0 * std::max(std::abs(x[col]), 1.0);
-                xp[col] += h; xm[col] -= h;
-                hcol.push_back(h); cols.push_back(col);
+                const scalar h = rule.step(col, x[col]);
+                const int sd = rule.side(col, x[col], h);
+                if (sd >= 0) { xp[col] += h; anyP = true; }
+                if (sd <= 0) { xm[col] -= h; anyM = true; }
+                hcol.push_back(h); cols.push_back(col); sides.push_back(sd);
             }
             if (cols.empty()) continue;
-            bool ok = true; sVector Fp, Fm;
-            try { Fp = F(xp); ++out.evals; Fm = F(xm); ++out.evals; }
+            bool ok = true; sVector Fp = F0, Fm = F0;
+            try
+            {
+                if (anyP) { Fp = F(xp); ++out.evals; }
+                if (anyM) { Fm = F(xm); ++out.evals; }
+            }
             catch (const InfeasibleTrial&) { ok = false; }
             if (!ok)
             {
@@ -328,7 +428,9 @@ ColoredResult fdJacobianColoredBT(
                     for (std::size_t i = 0; i < nv; ++i)
                     {
                         const std::size_t r = std::size_t(brow) * nv + i;
-                        d[r] = (Fp[r] - Fm[r]) / (2.0 * hcol[m]);
+                        d[r] = (sides[m] == 0)
+                             ? (Fp[r] - Fm[r]) / (2.0 * hcol[m])
+                             : (Fp[r] - Fm[r]) / hcol[m];  // one side is F0
                     }
                 }
                 depositColumn(col, d);
@@ -388,11 +490,154 @@ std::string announceStop(const std::string& cause, int it, scalar normF)
 }
 } // namespace
 
+namespace
+{
+//  THE BOX AND THE STEP CAP (C245).  Given declared bounds or a maxStep, the
+//  step d is shaped so that no unknown moves past 0.99 of its distance to
+//  the bound it heads for, and none moves more than its maxStep:
+//
+//   - the WHOLE step is scaled by one factor tau <= 1 (fraction-to-boundary
+//     and the cap), so the direction the Newton computed is kept;
+//   - EXCEPT an unknown that alone would cut the whole step below kPin
+//     = 0.1 of itself: that unknown is PINNED -- it moves its own 0.99 of
+//     the way to the bound and leaves tau to the others.  Without this a
+//     single unknown the linearisation drives through its bound freezes
+//     the whole solve: tau shrinks a hundredfold every iteration as the
+//     unknown approaches the bound geometrically, and nothing else moves
+//     (measured 2026-11-08 on column08 from the built-in seed: L_1 driven
+//     to 5e-24 kmol/s over twenty iterations at a constant ||F|| = 9.54);
+//   - an unknown already ON a bound and pushed outward is held.
+//
+//  Pinning changes the direction, so the Armijo search measures its slope
+//  along the shaped step, not along the Newton step.  Returns true when d
+//  was changed.
+bool shapeStep(const sVector& x, sVector& d, const NDOptions& o)
+{
+    const bool lo = !o.lower.empty(), hi = !o.upper.empty(), cap = !o.maxStep.empty();
+    if (!lo && !hi && !cap) return false;
+    bool changed = false;
+    constexpr scalar kFraction = 0.99, kPin = 0.1;
+    const std::size_t n = x.size();
+    std::vector<bool> pinned(n, false);
+    for (std::size_t j = 0; j < n; ++j)
+    {
+        if ((lo && d[j] < 0.0 && x[j] <= o.lower[j])
+         || (hi && d[j] > 0.0 && x[j] >= o.upper[j]))
+        { d[j] = 0.0; changed = true; continue; }
+        //  this unknown's own fraction-to-boundary factor
+        scalar tj = 1.0;
+        if (lo && d[j] < 0.0 && std::isfinite(o.lower[j]))
+            tj = kFraction * (x[j] - o.lower[j]) / (-d[j]);
+        if (hi && d[j] > 0.0 && std::isfinite(o.upper[j]))
+            tj = std::min(tj, kFraction * (o.upper[j] - x[j]) / d[j]);
+        if (tj < kPin)
+        { d[j] *= tj; pinned[j] = true; changed = true; }
+    }
+    scalar tau = 1.0;
+    for (std::size_t j = 0; j < n; ++j)
+    {
+        if (pinned[j]) continue;
+        if (lo && d[j] < 0.0 && std::isfinite(o.lower[j]))
+            tau = std::min(tau, kFraction * (x[j] - o.lower[j]) / (-d[j]));
+        if (hi && d[j] > 0.0 && std::isfinite(o.upper[j]))
+            tau = std::min(tau, kFraction * (o.upper[j] - x[j]) / d[j]);
+    }
+    if (tau < 1.0)
+    {
+        for (std::size_t j = 0; j < n; ++j) if (!pinned[j]) d[j] *= tau;
+        changed = true;
+    }
+    //  the cap last, on the shaped step, scaling all of it (a shorter step
+    //  toward the interior stays inside the box)
+    if (cap)
+    {
+        scalar c = 1.0;
+        for (std::size_t j = 0; j < n; ++j)
+            if (std::abs(d[j]) > o.maxStep[j]) c = std::min(c, o.maxStep[j] / std::abs(d[j]));
+        if (c < 1.0) { for (auto& v : d) v *= c; changed = true; }
+    }
+    return changed;
+}
+
+std::vector<sVector> bandsToDense(const BlockBands& B)
+{
+    const std::size_t N = B.N, nv = B.nv, n = N * nv;
+    std::vector<sVector> J(n, sVector(n, 0.0));
+    for (std::size_t br = 0; br < N; ++br)
+        for (std::size_t pos = 0; pos < 3; ++pos)
+        {
+            const long bc = long(br) + long(pos) - 1;
+            if (bc < 0 || bc >= long(N)) continue;
+            for (std::size_t i = 0; i < nv; ++i)
+                for (std::size_t k = 0; k < nv; ++k)
+                    J[br*nv + i][std::size_t(bc)*nv + k] = B.b[br][pos][i][k];
+        }
+    return J;
+}
+
+scalar dot(const sVector& a, const sVector& b)
+{
+    scalar s = 0.0;
+    for (std::size_t i = 0; i < a.size(); ++i) s += a[i] * b[i];
+    return s;
+}
+
+sVector matVec(const std::vector<sVector>& J, const sVector& d)
+{
+    sVector r(J.size(), 0.0);
+    for (std::size_t i = 0; i < J.size(); ++i) r[i] = dot(J[i], d);
+    return r;
+}
+} // namespace
+
 NDResult newtonND(const std::function<sVector(const sVector&)>& F,
     sVector                                       x0,
     const NDOptions&                              opts)
 {
     sVector x = std::move(x0);
+    const std::size_t nX = x.size();
+
+    //  THE CONTRACT'S DECLARATIONS ARE CHECKED, NOT TRUSTED (C245).
+    auto checkSize = [&](const sVector& v, const char* name)
+    {
+        if (!v.empty() && v.size() != nX)
+            throw std::invalid_argument(std::string("newtonND: NDOptions::") + name
+                + " has " + std::to_string(v.size()) + " entries for "
+                + std::to_string(nX) + " unknowns");
+    };
+    checkSize(opts.typX, "typX");   checkSize(opts.lower, "lower");
+    checkSize(opts.upper, "upper"); checkSize(opts.maxStep, "maxStep");
+    for (std::size_t j = 0; j < opts.typX.size(); ++j)
+        if (!(opts.typX[j] > 0.0))
+            throw std::invalid_argument("newtonND: NDOptions::typX[" + std::to_string(j)
+                + "] = " + std::to_string(opts.typX[j]) + " is not a positive scale");
+    for (std::size_t j = 0; j < opts.maxStep.size(); ++j)
+        if (!(opts.maxStep[j] > 0.0))
+            throw std::invalid_argument("newtonND: NDOptions::maxStep[" + std::to_string(j)
+                + "] = " + std::to_string(opts.maxStep[j]) + " is not positive");
+    const bool armijo = opts.globalisation == Globalisation::armijo;
+
+    FDRule rule;
+    rule.h0   = opts.fdStep;
+    rule.typX = opts.typX.empty()  ? nullptr : &opts.typX;
+    rule.lo   = opts.lower.empty() ? nullptr : &opts.lower;
+    rule.hi   = opts.upper.empty() ? nullptr : &opts.upper;
+
+    //  An initial point outside a declared box is moved onto it, ANNOUNCED.
+    {
+        int moved = 0;
+        for (std::size_t j = 0; j < nX; ++j)
+        {
+            if (rule.lo && x[j] < opts.lower[j]) { x[j] = opts.lower[j]; ++moved; }
+            if (rule.hi && x[j] > opts.upper[j]) { x[j] = opts.upper[j]; ++moved; }
+        }
+        if (moved > 0)
+            AdvisoryLog::instance().add("solver", "info", "newtonND",
+                "the initial point lay outside the declared bounds"
+                " (NDOptions::lower/upper): " + std::to_string(moved)
+                + " unknown(s) moved onto the box before the first iteration.");
+    }
+
     sVector Fx = F(x);
     scalar  normF = normL2(Fx);
     scalar  offBand  = std::numeric_limits<scalar>::quiet_NaN();
@@ -404,11 +649,15 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
     //  every stop message says it returns.
     sVector bestX = x, bestF = Fx;
     scalar  bestNorm = normF;
-    int     stalled = 0;
+    int     stalled = 0, lmSteps = 0, refusals = 0, bounded = 0;
     auto restoreBest = [&]() {
         if (bestNorm < normF) { x = bestX; Fx = bestF; normF = bestNorm; }
     };
-    auto finish = [&](NDResult r) { r.stalledSteps = stalled; return r; };
+    auto finish = [&](NDResult r) {
+        r.stalledSteps = stalled; r.lmSteps = lmSteps;
+        r.trialRefusals = refusals; r.boundedSteps = bounded;
+        return r;
+    };
 
     int it = 0;
     for (; it < opts.maxIter; ++it)
@@ -422,8 +671,13 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
         for (std::size_t i = 0; i < Fx.size(); ++i) minusFx[i] = -Fx[i];
 
         sVector dx;
+        //  The Jacobian this iteration stepped on, kept (dense) only where the
+        //  Armijo contract needs it: the slope along the shaped step and the
+        //  Levenberg-Marquardt fallback.
+        std::vector<sVector> Jkeep;
         const bool bt = opts.blockTri.declared()
                      && x.size() == opts.blockTri.nBlocks * opts.blockTri.blockSize;
+        try {
         if (bt)
         {
             const std::size_t N  = opts.blockTri.nBlocks;
@@ -437,7 +691,7 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
             }
             else
             {
-                colored = fdJacobianColoredBT(F, x, Fx, opts.fdStep, N, nv);
+                colored = fdJacobianColoredBT(F, x, Fx, rule, N, nv);
                 jacEvals += colored.evals;
             }
 
@@ -448,7 +702,7 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
                 //  the largest entry OUTSIDE the three block bands.  A
                 //  materially false structure refuses by name -- a wrong
                 //  declaration must never become a silently wrong answer.
-                auto Jd = fdJacobian(F, x, Fx, opts.fdStep, opts.parallel);
+                auto Jd = fdJacobian(F, x, Fx, rule, opts.parallel);
                 jacEvals += 2 * long(x.size());
                 scalar off = 0.0, inBand = 0.0;
                 for (std::size_t i = 0; i < x.size(); ++i)
@@ -497,6 +751,7 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
                         "  Refusing -- a wrong structure must not become a"
                         " silently wrong answer.");
             }
+            if (armijo) Jkeep = bandsToDense(colored.bands);
             try { dx = blockThomasSolve(colored.bands, minusFx); }
             catch (const std::exception& e)
             {
@@ -510,7 +765,7 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
         }
         else
         {
-            auto J = fdJacobian(F, x, Fx, opts.fdStep, opts.parallel);
+            auto J = fdJacobian(F, x, Fx, rule, opts.parallel);
             jacEvals += 2 * long(x.size());
             try { dx = gaussSolve(J, minusFx); }
             catch (const std::exception& e)
@@ -523,7 +778,21 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
                             " the Newton step failed (") + e.what() + ")",
                             it, normF)});
             }
+            if (armijo) Jkeep = std::move(J);
         }
+        }
+        catch (const NonFiniteJacobian& e)
+        {
+            //  A non-finite derivative is never a number to step on (C245,
+            //  a default): stop, name the column, return the best iterate.
+            if (opts.onIter) opts.onIter({it, x, Fx, normF, 0.0});
+            restoreBest();
+            return finish({x, Fx, normF, it, false, offBand, jacEvals,
+                    announceStop(e.what(), it, normF), mismatch});
+        }
+
+        //  The declared box and step cap (C245; nothing declared, nothing done).
+        if (shapeStep(x, dx, opts)) ++bounded;
 
         // Backtracking line search
         scalar alpha = 1.0;
@@ -537,7 +806,124 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
         //  convergence test, the iteration hook and the returned residual are
         //  all reading memory nobody wrote.  Seeded here, detected below.
         scalar  normFNew = std::numeric_limits<scalar>::quiet_NaN();
-        if (opts.backtracking)
+        if (armijo)
+        {
+            //  THE ARMIJO CONTRACT (NewtonND.H, Globalisation).  f = 0.5|F|^2,
+            //  slope = f'(0) along the (possibly shaped) step = F . (J d).
+            constexpr scalar c1 = 1.0e-4;
+            const scalar f0    = 0.5 * normF * normF;
+            const scalar slope = dot(Fx, matVec(Jkeep, dx));
+            bool accepted = false;
+            if (slope < 0.0)
+            {
+                scalar a = 1.0, aPrev = 0.0, fPrev = 0.0;
+                bool havePrev = false;
+                while (a >= opts.minAlpha)
+                {
+                    for (std::size_t i = 0; i < x.size(); ++i)
+                        xNew[i] = x[i] + a * dx[i];
+                    sVector Ft;
+                    bool ok = true;
+                    try { Ft = F(xNew); }
+                    catch (const std::exception&) { ok = false; }
+                    const scalar nt = ok ? normL2(Ft) : 0.0;
+                    if (!ok || !std::isfinite(nt))
+                    {
+                        //  a refused trial: shortened, never taken
+                        ++refusals; havePrev = false; a *= 0.5; continue;
+                    }
+                    const scalar ft = 0.5 * nt * nt;
+                    if (ft <= f0 + c1 * a * slope)
+                    {
+                        FxNew = std::move(Ft); normFNew = nt; alpha = a;
+                        accepted = true; break;
+                    }
+                    //  the minimiser of a quadratic (first) or cubic (later)
+                    //  model of f along d, safeguarded to [0.1 a, 0.5 a]
+                    scalar aNew;
+                    if (!havePrev)
+                        aNew = -slope * a * a / (2.0 * (ft - f0 - slope * a));
+                    else
+                    {
+                        const scalar r1 = ft - f0 - slope * a;
+                        const scalar r2 = fPrev - f0 - slope * aPrev;
+                        const scalar A = (r1 / (a*a) - r2 / (aPrev*aPrev)) / (a - aPrev);
+                        const scalar B = (-aPrev * r1 / (a*a) + a * r2 / (aPrev*aPrev)) / (a - aPrev);
+                        if (A == 0.0) aNew = -slope / (2.0 * B);
+                        else
+                        {
+                            const scalar disc = B * B - 3.0 * A * slope;
+                            aNew = disc >= 0.0 ? (-B + std::sqrt(disc)) / (3.0 * A)
+                                               : 0.5 * a;
+                        }
+                    }
+                    if (!std::isfinite(aNew)) aNew = 0.5 * a;
+                    aNew = std::min(std::max(aNew, 0.1 * a), 0.5 * a);
+                    aPrev = a; fPrev = ft; havePrev = true;
+                    a = aNew;
+                }
+            }
+            if (!accepted)
+            {
+                //  THE SEARCH FAILED: a Levenberg-Marquardt step on the SAME
+                //  Jacobian, (J^T J + mu I) d = -J^T F, mu raised tenfold
+                //  until f decreases by the same Armijo fraction of the
+                //  predicted model decrease.  Never an uphill step.
+                const std::size_t n = x.size();
+                sVector g(n, 0.0);                  // J^T F
+                std::vector<sVector> JtJ(n, sVector(n, 0.0));
+                for (std::size_t r = 0; r < Jkeep.size(); ++r)
+                    for (std::size_t i = 0; i < n; ++i)
+                    {
+                        const scalar Jri = Jkeep[r][i];
+                        if (Jri == 0.0) continue;
+                        g[i] += Jri * Fx[r];
+                        for (std::size_t j = 0; j < n; ++j) JtJ[i][j] += Jri * Jkeep[r][j];
+                    }
+                scalar dmax = 0.0;
+                for (std::size_t i = 0; i < n; ++i) dmax = std::max(dmax, JtJ[i][i]);
+                scalar mu = 1.0e-3 * (dmax > 0.0 ? dmax : 1.0);
+                for (int t = 0; t < 12 && !accepted; ++t, mu *= 10.0)
+                {
+                    auto A = JtJ;
+                    for (std::size_t i = 0; i < n; ++i) A[i][i] += mu;
+                    sVector minusG(n);
+                    for (std::size_t i = 0; i < n; ++i) minusG[i] = -g[i];
+                    sVector dl;
+                    try { dl = gaussSolve(A, minusG); }
+                    catch (const std::exception&) { continue; }
+                    shapeStep(x, dl, opts);
+                    const scalar pred = dot(g, dl);      // f'(0) along dl, < 0
+                    if (!(pred < 0.0)) continue;
+                    for (std::size_t i = 0; i < n; ++i) xNew[i] = x[i] + dl[i];
+                    sVector Ft;
+                    try { Ft = F(xNew); }
+                    catch (const std::exception&) { ++refusals; continue; }
+                    const scalar nt = normL2(Ft);
+                    if (!std::isfinite(nt)) { ++refusals; continue; }
+                    if (0.5 * nt * nt <= f0 + c1 * pred)
+                    {
+                        FxNew = std::move(Ft); normFNew = nt; alpha = 1.0;
+                        accepted = true; ++lmSteps;
+                        AdvisoryLog::instance().add("solver", "info", "newtonND",
+                            "the Armijo line search exhausted and a Levenberg-"
+                            "Marquardt step on the same Jacobian was taken in"
+                            " its place (NDOptions::globalisation = armijo;"
+                            " counted in NDResult::lmSteps)");
+                    }
+                }
+            }
+            if (!accepted)
+            {
+                if (opts.onIter) opts.onIter({it, x, Fx, normF, 0.0});
+                restoreBest();
+                return finish({x, Fx, normF, it, false, offBand, jacEvals,
+                        announceStop("neither the Armijo line search nor the"
+                            " Levenberg-Marquardt fallback found a step that"
+                            " decreases 0.5|F|^2", it, normF), mismatch});
+            }
+        }
+        else if (opts.backtracking)
         {
             while (alpha >= opts.minAlpha)
             {
@@ -584,7 +970,7 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
         //  to advance to it unconditionally, contradicting the comment that
         //  promises the last good iterate.  It is counted, announced once,
         //  and limited; past the allowance the solve stops NOT converged.
-        if (opts.backtracking && !(normFNew < normF))
+        if (!armijo && opts.backtracking && !(normFNew < normF))
         {
             ++stalled;
             AdvisoryLog::instance().add("solver", "warning", "newtonND",
