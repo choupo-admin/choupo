@@ -3075,9 +3075,11 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  keep the legacy Newton (aqueous chemistry per stage, see opts below)
     //  keep their legacy residual too.
     const bool meshBoxed = !thermo.hasReactiveEquilibrium();
+    //  Switched off for phase 1 of a reactive column (see there).
+    bool refuseFractions = true;
     auto requireFractions = [&](const sVector& xj)
     {
-        if (!meshBoxed) return;
+        if (!meshBoxed || !refuseFractions) return;
         for (std::size_t i = 0; i < n; ++i)
             if (!(xj[i] >= -kFractionRoom))
                 throw InfeasibleTrial("DistillationColumn(simultaneous): a MESH"
@@ -3422,7 +3424,35 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         "column '" + (dict->name().empty() ? type() : dict->name())
         + "' MESH search");
 
+    //  PHASE 1 OF A REACTIVE COLUMN KEEPS THE LEGACY NEWTON (C245 slice 2,
+    //  measured 2026-11-08 on column05 and the kinetic column05 probe).  With
+    //  the reaction off, the products nobody feeds (water, methyl acetate)
+    //  sit EXACTLY on x = 0, a degenerate face: the bounded Armijo search
+    //  stalls against it (|F| = 1.0 after 37 iterations, x_water = -0.05 on
+    //  the refusal wall) and the unconverged iterate then seeded phase 2 / the
+    //  full MESH, which failed.  Phase 1 only seeds, so it takes the legacy
+    //  search, without the box or the refusals; phase 2 -- where every species
+    //  of the quotient is lifted off zero -- takes the bounded contract.
+    //  Announced below.
+    const solver::NDOptions boxedOpts = opts;
+    if (reactive && meshBoxed)
+    {
+        opts.lower.clear();
+        opts.upper.clear();
+        opts.typX.clear();
+        opts.globalisation = solver::Globalisation::legacy;
+        refuseFractions = false;
+        if (verbosity >= 2)
+            std::cout << "  [solver] reactive column phase 1 (reaction off,"
+                         " products at x = 0): legacy Newton, no box; the"
+                         " bounded Armijo contract is taken from phase 2\n";
+    }
     auto res = solver::newtonND(residual, u0, opts);   // phase 1: reaction OFF (robust)
+    if (reactive && meshBoxed)
+    {
+        opts = boxedOpts;
+        refuseFractions = true;
+    }
     //  UNDER THE FULL MESH THE CMO IS ONLY THE SEED, and it is the NON-REACTIVE
     //  one: the reaction enters through the full MESH's own homotopy below
     //  (C231, announced).
