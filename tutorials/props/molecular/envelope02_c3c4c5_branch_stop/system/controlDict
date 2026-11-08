@@ -19,26 +19,34 @@
   vapour's non-ideality on one side only, and the solver's second root was
   that error's.  With the reference carrying phi_sat and Poynting, a search of
   twelve neighbours of this case (six compositions x PengRobinson and SRK, to
-  60 bar) found NO root jump.  What the case shows now is the other ending,
-  and the report must say so:
+  60 bar) found NO root jump.
 
-    * each branch stops without a jump -- a Newton that no longer converges --
-      at a temperature just below PROPANE's critical temperature (369.83 K;
-      last converged points 366-369 K);
-    * the run reports it as a STOPPED branch with its last converged point and
-      the sentence that the stopping pressure is a limit of the trace, and it
-      does NOT call it a root jump and claims no cricondentherm;
-    * why it stops there is stated, not hidden: above Tc a component has no
-      saturation, so the liquid reference of propane drops phi_sat and
-      Poynting there (factor exactly 1, announced), which is a STEP in K at
-      T = Tc that a pressure-marched solve cannot cross.  The stopping
-      pressure is therefore a property of that definition and of the feed's
-      propane content, not of the mixture's critical locus.
+  WHAT CHANGED AGAIN (DEV.md C239, 2026-11-08): THE BRANCHES NOW CROSS Tc.
+  Until then every branch stopped, without a jump, just below PROPANE's
+  critical temperature (369.83 K; last converged points 366-369 K): above Tc
+  the liquid reference dropped phi_sat and Poynting (factor exactly 1), a STEP
+  in K at T = Tc that a pressure-marched solve cannot cross.  The factor is
+  now CONTINUOUS in T: above 0.99 Tc it is HELD at its value at 0.99 Tc
+  (announced once, "reference factor of propane held"), so there is no step.
+  What the case shows now:
+
+    * the bubble branch passes propane's Tc (near 22 bar) and reaches the top
+      of the requested range, 40 bar, in 40 points -- it no longer stops;
+    * the dew branch passes Tc (near 16 bar) and runs to 35 bar; at 36 bar
+      (401.5 K at the last kept point) the saturation solve converges to a
+      DIFFERENT ROOT, the op's guard discards that point and reports a ROOT
+      JUMP, and no cricondentherm is claimed.  That stop is a limit of the
+      warm-started, bracketed solve far above Tc, NOT of the mixture;
+    * the held factor is an extrapolation for a hypothetical liquid: it
+      removes the step, it does not make the hypothetical liquid real.
+
+  The case keeps its name (a branch still stops, now at 36 bar on the dew
+  side by the root-jump guard); its counts are the golden rows.
 
   NOT VALIDATED: no number here is checked against a measured envelope.  This
-  is a STRUCTURAL witness for what a stopped branch says.
+  is a STRUCTURAL witness for what a trace does across a component's Tc.
 \*---------------------------------------------------------------------------*/
 
 application   choupoProps;
-description  "P-T envelope of a C3/C4/C5 feed where both branches stop just below propane's Tc: reported as STOPPED branches, never as a root jump, and no cricondentherm is claimed";
+description  "P-T envelope of a C3/C4/C5 feed marched through propane's Tc: the reference factor is held continuous above 0.99 Tc, so both branches cross Tc; the dew branch is ended later by the root-jump guard, and no cricondentherm is claimed";
 verbosity     3;

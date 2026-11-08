@@ -7,10 +7,24 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture.
-  Raoult DECLARED, not defaulted (gamma = 1 identically).
-  Migrated mechanically from the v1 flat form (physics identical);
-  v2 contract 2026-07-17.
+  thermoPhysPropDict (v2) -- gamma-phi, ideal liquid (gamma = 1, DECLARED),
+  SRK vapour.
+
+  The column runs at 16 bar.  There the vapour is not ideal: the 2026-11-07
+  audit (C239) measured phi of the light key about 21 % below 1, so an
+  ideal-gas vapour misprices both K and the latent heats.  The vapour is
+  therefore SRK (kij = 0, announced -- hydrocarbon pairs, no interaction
+  data declared).  The pure-liquid reference carries phi_sat and Poynting.
+  The MESH iterates visit temperatures above the critical temperature of
+  propane (369.8 K) and butane (425.1 K), where a saturated vapour does not
+  exist: the reference factor is HELD at its value at 0.99 Tc (continuous
+  in T, announced once per component) instead of jumping to 1.
+
+  The column starts from the converged profile of its own ideal-vapour
+  version (the stage profile declared in 0/, a SEED and not an answer): the
+  full-MESH Newton from the built-in linear start overshoots to thousands
+  of kelvin on this four-component 30-stage column and its line search
+  stalls (|F| = 8.1 after 51 iterations); from the seed it converges in 4.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
@@ -30,6 +44,6 @@ equilibrium
 
     vapour
     {
-        fugacityModel idealGas;
+        fugacityModel SRK;
     }
 }

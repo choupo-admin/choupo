@@ -80,7 +80,7 @@ export interface LayoutPreset {
 
 export const PRESETS: readonly LayoutPreset[] = [
   { id: "shipped", label: "1 · as shipped", knobs: SHIPPED,
-    expect: "one separation finding: the let-down drum 1.885 m from the "
+    expect: "one separation finding: the let-down drum 1.894 m from the "
       + "separator, edge to edge, against the 4 m the case declares between "
       + "two vessels.  Announced; the run finishes." },
   { id: "drum-moved", label: "2 · drum to x = 62 m", knobs: { ...SHIPPED, drumX: 62 },
