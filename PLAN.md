@@ -78,6 +78,7 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
+| running | C248 (Vitor, 11-08 night): PIF readiness for the 11-09 tutorial -- a Fable general walks the two tablet cases as a student, fixes the cheap blockers, writes docs/reviews/2026-11-08-pif-readiness.md and docs/pif-student-path.md; site republished after it lands | C248 |
 | running | C245 kernel numerical audit: slices 1, 2, 4, part of 11 and the adsorber hot spots LANDED (6bceec76d; slice 2 in the merge after 43c60cd15: tear Newton, simultaneous MESH and CSTR declare bounds, infeasible trials instead of clips; 17 closure rows re-recorded); next slice 3 (residual purity: aqueous columns and reactive phase 1 back on the bounded Newton), then 5, 6 | C245 |
 | done | C241 LANDED (bab4dff30): BRAIN.md with its generator and `check_brain_fresh` (brain-fresh-gate), `@BRAIN.md` import, CLAUDE.md 4379 -> 1068 lines by relocation to `docs/architecture/settled-contracts.md` (119 units verbatim); the second cut (sections 0/2/10) is the architect's own editing, later | C241 |
 | done | C236 LANDED (14854376b): dynamic writers default `flushEach false` (ctrl17 141 -> 0.4 s, byte-identical), the golden checker reads equipment/layout blocks once per case (swro01 292 -> 93 s); the Saturday sweep covers its shared path | C236 |

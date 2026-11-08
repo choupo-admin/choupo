@@ -3221,6 +3221,24 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C248 (Vitor, 2026-11-08 night: "lançar um general em Fable 5.1 a rever tudo o que faz
+> falta para os meus alunos de projeto em engenharia farmacêutica ... tenho um tutorial com
+> os dois grupos amanhã e gostava que o Choupo já estivesse a ser útil"): PIF READINESS
+> FOR THE 2026-11-09 TUTORIAL.**  Dispatched the same hour, one general on Fable 5.1 (his
+> choice of model), fresh worktree: (A) the walk-through AS A STUDENT, donepezil01 then
+> apalutamide01, every output read, then the case copied and changed to another API,
+> dose, batch size and route, every refusal and missing record logged; the synthesis's
+> deliverables (C195) tabulated as produces / half / not; (B) cheap fixes only -- prose,
+> units, origins, refusal messages that do not say what to write, an authoring doc for a
+> tablet case under docs/ai/ -- no physics, no re-record; (C) two documents,
+> `docs/reviews/2026-11-08-pif-readiness.md` (the log, the table, the blockers ranked by
+> how much they hurt a student tomorrow, each with its fix size) and
+> `docs/pif-student-path.md` (the one-page path a student follows: open, run, where each
+> deliverable appears, how to adapt it to their drug, and the honest "do it by hand"
+> list).  What it finds that is larger than a cheap fix goes to C210's queue, ahead of
+> everything that is not a kernel debt.  Lands tonight if its gates pass; the site is
+> republished after, so the groups open www.choupo.org tomorrow on it.
+
 > **STRANDED BRANCHES, FOUND 2026-11-08 EVENING (the worktree sweep Vitor asked for on the
 > spot rather than "next Saturday": 82 worktrees, 51 whose work was entirely in main, 31
 > inspected one by one against main with `git cherry`).**  Three hold work that is in NO
