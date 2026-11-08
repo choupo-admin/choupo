@@ -2060,15 +2060,20 @@ export const theoryUrl = (dest: string): string =>
 /** Boot tool from the URL: `?workspace=methods&tool=<id>` (the contract), or
  *  the legacy Explorer deep-link `?explore=mccabe` WITHOUT a `&key=` stash
  *  (with a key it is the analyzer pop-out tab, which AppShell routes first). */
-export function bootTool(): MethodToolId {
+export function bootTool(): MethodToolId | null {
   if (typeof window !== "undefined") {
     const q = new URLSearchParams(window.location.search);
     if (q.get("explore") === "mccabe" && !q.has("key")) return "mccabe";
     const t = q.get("tool");
     if (METHOD_TOOLS.some((m) => m.id === t && m.status === "live"))
       return t as MethodToolId;
+    // `&path=<id>` without a tool opens that sequence's first step.
+    const p = pathById(q.get("path"));
+    if (p) return p.steps[0]!.tool;
   }
-  return "mccabe";
+  // No tool named: the workspace opens on its HOME (DEV.md 4c C251), not on
+  // whichever tool happened to be first.
+  return null;
 }
 
 /** Boot chapter from the URL: `&step=<chapter key>` (DEV.md 4c C113), read
@@ -2083,7 +2088,7 @@ export function bootChapter(): string | null {
 
 // ---- The selection (one home, two readers) ---------------------------------
 
-let activeTool: MethodToolId = bootTool();
+let activeTool: MethodToolId | null = bootTool();
 const listeners = new Set<() => void>();
 
 /* THE CHAPTER REQUEST (DEV.md 4c C113).  A Find hit, a `&step=` deep link or
@@ -2092,7 +2097,7 @@ const listeners = new Set<() => void>();
  * until the chapter index (ChapterIndex.tsx) finds the heading and takes it.
  * A sequence number makes two requests for the same chapter two requests. */
 let chapterRequest: { tool: MethodToolId; key: string; seq: number } | null =
-  (() => { const k = bootChapter(); return k ? { tool: activeTool, key: k, seq: 0 } : null; })();
+  (() => { const k = bootChapter(); return k && activeTool ? { tool: activeTool, key: k, seq: 0 } : null; })();
 let chapterSeq = 0;
 
 export function getMethodChapterRequest(): typeof chapterRequest {
@@ -2135,7 +2140,7 @@ export function useMethodChapterRequest(): typeof chapterRequest {
   return useSyncExternalStore(subscribe, getMethodChapterRequest, getMethodChapterRequest);
 }
 
-export function getActiveMethodTool(): MethodToolId {
+export function getActiveMethodTool(): MethodToolId | null {
   return activeTool;
 }
 
@@ -2149,7 +2154,7 @@ function subscribe(fn: () => void): () => void {
  *  shareable bookmark of what is on screen; bootTool() reads it back.  The
  *  legacy `?explore=mccabe` param is dropped on the way (it would otherwise
  *  out-vote `tool=` on the next boot). */
-export function setActiveMethodTool(id: MethodToolId): void {
+export function setActiveMethodTool(id: MethodToolId | null): void {
   activeTool = id;
   // A plain tool switch carries no chapter: a pending request for another
   // tool is dropped, and so is a `&step=` that described the previous page.
@@ -2159,7 +2164,8 @@ export function setActiveMethodTool(id: MethodToolId): void {
     try {
       const url = new URL(window.location.href);
       url.searchParams.set("workspace", "methods");
-      url.searchParams.set("tool", id);
+      if (id) url.searchParams.set("tool", id);
+      else url.searchParams.delete("tool");
       url.searchParams.delete("explore");
       url.searchParams.delete("step");
       window.history.replaceState(window.history.state, "", url.toString());
@@ -2170,7 +2176,7 @@ export function setActiveMethodTool(id: MethodToolId): void {
 
 /** The active tool as React state, for any component that renders it (the
  *  workspace body and the top-bar dropdown's check mark). */
-export function useActiveMethodTool(): MethodToolId {
+export function useActiveMethodTool(): MethodToolId | null {
   return useSyncExternalStore(subscribe, getActiveMethodTool, getActiveMethodTool);
 }
 
@@ -2208,7 +2214,7 @@ export function setActivePath(id: string | null): void {
       window.history.replaceState(window.history.state, "", url.toString());
     } catch { /* opaque URL / blocked history */ }
   }
-  if (p && !p.steps.some((s) => s.tool === activeTool))
+  if (p && (!activeTool || !p.steps.some((s) => s.tool === activeTool)))
     setActiveMethodTool(p.steps[0]!.tool);
   else for (const fn of listeners) fn();
 }
@@ -2216,4 +2222,25 @@ export function setActivePath(id: string | null): void {
 /** The active path id as React state. */
 export function useActivePath(): string | null {
   return useSyncExternalStore(subscribe, getActivePath, getActivePath);
+}
+
+/** Return to the EduTools HOME (DEV.md 4c C251): leave any guided sequence and
+ *  close the open tool, so the workspace shows its home again. */
+export function goToEduToolsHome(): void {
+  setActivePath(null);
+  setActiveMethodTool(null);
+}
+
+/** Start a guided sequence at its first step (the home's "Start" button). */
+export function startGuidedSequence(id: string): void {
+  const p = pathById(id);
+  if (!p) return;
+  setActiveMethodTool(p.steps[0]!.tool);
+  setActivePath(p.id);
+}
+
+/** Open one tool from the home's shelves: no sequence is being walked. */
+export function openToolFromHome(id: MethodToolId): void {
+  setActivePath(null);
+  setActiveMethodTool(id);
 }

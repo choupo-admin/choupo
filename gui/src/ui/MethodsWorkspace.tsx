@@ -131,6 +131,7 @@ import { OriginLegend, OriginMark } from "./methods/origin.js";
 import { EngineCaveats } from "./methods/EngineCaveats.js";
 import { EduToolsFind, openEduToolsFind } from "./methods/EduToolsFind.js";
 import { PathBar } from "./methods/PathBar.js";
+import { EduToolsHome } from "./methods/EduToolsHome.js";
 
 import { resolveAdapter } from "../adapters/index.js";
 import {
@@ -481,9 +482,24 @@ export function MethodsWorkspace() {
   const localUnifac = useMemo(() => buildLocalUnifac(caseRaw), [caseRaw]);
   const componentFiles = useMemo(() => caseComponentFiles(caseRaw), [caseRaw]);
 
-  const active = METHOD_TOOLS.find((m) => m.id === tool) ?? METHOD_TOOLS[0]!;
   // The tool's page: the chapter index reads its headings and scrolls it.
   const pageRef = useRef<HTMLDivElement>(null);
+
+  /* NO TOOL OPEN: THE HOME (DEV.md 4c C251).  The workspace used to open on
+   * McCabe-Thiele whenever the address named no tool; it now opens on the
+   * home -- what an EduTool is, the guided sequences, the shelves.  The home
+   * is the LAST element child, as the tool's page is (the exposure probe). */
+  if (tool === null) {
+    return (
+      <Box style={{ position: "absolute", inset: 0, display: "flex",
+        flexDirection: "column", minWidth: 0, minHeight: 0, overflow: "hidden" }}>
+        {!chromeLeadsWithTheTool && <ToolChooser tool={null} />}
+        <EduToolsFind />
+        <EduToolsHome />
+      </Box>
+    );
+  }
+  const active = METHOD_TOOLS.find((m) => m.id === tool) ?? METHOD_TOOLS[0]!;
 
   return (
     // The active tool gets the WHOLE WIDTH of the workspace: the chooser is one
@@ -676,7 +692,7 @@ const TOOL_CHOOSER_MAX_PX = 340;
  *  than implied.  Picking writes through `setActiveMethodTool`, which is also
  *  what updates the `?workspace=methods&tool=<id>` address — so the tab's URL
  *  goes on being a shareable bookmark of what is on screen. */
-function ToolChooser({ tool }: { tool: MethodToolId }) {
+function ToolChooser({ tool }: { tool: MethodToolId | null }) {
   // The pointer decides TARGET SIZE and nothing else (methodsChrome.tsx: the
   // fit question and the pointer question are separate).  One Mantine size
   // step up under a finger; the lineup is identical either way.
@@ -708,6 +724,7 @@ function ToolChooser({ tool }: { tool: MethodToolId }) {
         size={coarse ? "sm" : "xs"}
         aria-label="choose an EduTools construction"
         data={data}
+        placeholder="Pick a tool, or start from the home"
         value={tool}
         onChange={(v) => { if (v) setActiveMethodTool(v as MethodToolId); }}
         allowDeselect={false}
