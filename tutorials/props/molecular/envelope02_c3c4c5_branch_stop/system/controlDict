@@ -40,13 +40,28 @@
     * the held factor is an extrapolation for a hypothetical liquid: it
       removes the step, it does not make the hypothetical liquid real.
 
-  The case keeps its name (a branch still stops, now at 36 bar on the dew
-  side by the root-jump guard); its counts are the golden rows.
+  WHAT CHANGED A THIRD TIME (DEV.md C245 slice 4, 2026-11-08): THE VAPOUR
+  ROOT IS NOT SWAPPED.  Above 28 bar the bubble branch had been drawn with
+  the incipient vapour past its spinodal, where Peng-Robinson has no vapour
+  root, and the cubic handed the vapour the LIQUID root, unflagged: the line
+  kinked from ~2 K/bar to a straight 0.42 K/bar to 40 bar.  The cubic now
+  returns a flagged PSEUDO-ROOT there (the vapour spinodal volume, announced
+  "PR vapour pseudo-root"), and:
+
+    * the bubble branch runs on its own curvature to 40 bar (393.3 K, not
+      385.4 K), 40 points;
+    * the dew branch is no longer stopped: it runs to 40 bar, 40 points,
+      with a 1.1 K DIP between 35 and 36 bar (402.8 -> 401.7 K) that is NOT
+      explained here (a retrograde turn or a residual root swap of the
+      warm-started solve; the flash slice of C245 is where it is decided).
+
+  The case keeps its name (it witnessed a stopped branch from C239 to
+  C245); its counts are the golden rows.
 
   NOT VALIDATED: no number here is checked against a measured envelope.  This
   is a STRUCTURAL witness for what a trace does across a component's Tc.
 \*---------------------------------------------------------------------------*/
 
 application   choupoProps;
-description  "P-T envelope of a C3/C4/C5 feed marched through propane's Tc: the reference factor is held continuous above 0.99 Tc, so both branches cross Tc; the dew branch is ended later by the root-jump guard, and no cricondentherm is claimed";
+description  "P-T envelope of a C3/C4/C5 feed marched through propane's Tc: the reference factor is held continuous above 0.99 Tc, so both branches cross Tc; with the cubic's vapour pseudo-root both reach 40 bar (C245), and no cricondentherm is claimed";
 verbosity     3;

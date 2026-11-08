@@ -295,8 +295,13 @@ public:
             units[u].commit(yu);
         }
 
-        // Carry the step into the next interval (warm restart).
-        if (st.hLast > 0.0) hCarry_ = st.hLast;
+        // Carry the step into the next interval (warm restart): the step the
+        // controller PROPOSED (hNext), not the one it grew out of the step
+        // shortened to land on t1 (hLast), which overshoots and pays a
+        // rejected step -- and a Jacobian -- at the start of every interval
+        // (the same fix FixedBedAdsorber made, see ODEStats::hNext).
+        if (st.hNext > 0.0)      hCarry_ = st.hNext;
+        else if (st.hLast > 0.0) hCarry_ = st.hLast;
         return st;
     }
 

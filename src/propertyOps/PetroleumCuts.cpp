@@ -416,6 +416,10 @@ int PetroleumCuts::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
         ? dict->subDict("output")->lookupWordOrDefault("prefix", "petCut") : std::string("petCut");
     if (!proposalDir.empty())
     {
+        //  REFUSE FIRST: a refused proposal must leave nothing behind, not even
+        //  the directory (check_empty_dirs found data/standards/zz_probe).
+        records::refuseStandardsWrite("petroleumCuts '" + op + "'", "proposal",
+            (std::filesystem::path(proposalDir) / (prefix + "_01.estimated.dat")).string());
         std::error_code ec; std::filesystem::create_directories(proposalDir, ec);
         for (size_t i = 0; i < cuts.size(); ++i)
         {

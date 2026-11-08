@@ -46,6 +46,10 @@
     }
    ]
   },
+  "componentLookup": {
+   "reads": [],
+   "writes": []
+  },
   "dataReconciliation": {
    "reads": [
     {
@@ -336,6 +340,10 @@
    ]
   },
   "mixingRules": {
+   "reads": [],
+   "writes": []
+  },
+  "pairLookup": {
    "reads": [],
    "writes": []
   },

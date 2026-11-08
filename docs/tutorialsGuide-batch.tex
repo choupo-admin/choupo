@@ -540,6 +540,8 @@ ending EXACTLY at the third cycle boundary (21600 s), so the FINAL KPIs are end-
 
 The A6 QUESTION this case makes visible (and does not yet verdict): does the bed state at successive cycle ends approach a fixed point -- the cyclic steady state? MEASURED (this case's own run): qbar\_CO2 at the three cycle ends is 0.3151 $\to$ 0.2415 $\to$ 0.1748 mol/kg -- a slow geometric approach (ratio \textasciitilde{}0.9; each purge leaves residual heat, the next load starts warmer and holds less), NOT yet converged in three cycles. That unfinished convergence IS the pedagogical point: eyes on a trajectory can see it, and only the A6 verdict machinery could CLAIM it. The golden pins the third-cycle end. A first-class CSS verdict (declared cycles, per- cycle state snapshots, an invariance tolerance the case declares) is an ARCHITECTURE feature -- proposed in docs/design/fixed-bed-thermal-a5.md section 7, awaiting Vitor's decision; this case is deliberately its cheap, grammar-free witness.
 
+TIME INTEGRATION: `solver \{ method rodas4; \}` selects the order-4 stiff integrator (Hairer \& Wanner's RODAS4) instead of the default 2(3) Rosenbrock pair. Same rtol, same Jacobian, same golden: 2.4x fewer steps and about half the wall clock on this case (it is the witness for that option; the other adsorber cases keep the default).
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{bed}{P\_final}{100030.094422}

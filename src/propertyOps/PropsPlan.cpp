@@ -77,7 +77,7 @@ const std::map<std::string, OpSlots>& table()
         for (const char* ty : { "bellDelawareBench", "elementalComposition", "exergy",
                                 "flashSpec",
                                 "explainProperty", "extractionShortcut", "hConsistency",
-                                "mixingRules", "propertyPoint",
+                                "mixingRules", "pairLookup", "componentLookup", "propertyPoint",
                                 "transportBench" })
             m[ty] = {};
 

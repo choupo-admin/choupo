@@ -3695,6 +3695,71 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         solver::NDOptions optsF;
         optsF.tolerance = 1.0e-9; optsF.maxIter = 60; optsF.parallel = true;
         if (reactive) optsF.maxIter = 80;
+        //  THE FULL MESH DECLARES ITS BOX AND TAKES THE ARMIJO CONTRACT
+        //  (DEV.md 4c C245 slice 1, the proof caller of NDOptions'
+        //  globalisation contract).  Without it the Newton took the whole
+        //  step: from the built-in seed column08 visited thousands of kelvin
+        //  and stalled at |F| = 8.4 after 60 iterations and 20 uphill steps.
+        //  With it the descent is monotone (11.3 -> 0.37 in 60) but column08
+        //  STILL does not converge unseeded, and the reason is the seed, not
+        //  this Newton: the CMO phase converges there to a trivial SRK
+        //  profile (T 287-300 K at 16 bar, mean latent heat 930 kJ/kmol
+        //  against 16067 from its declared seed) -- an EoS-root defect
+        //  (kernel audit Rank 4/5), which is why column08 keeps its seed.
+        //  Measured 2026-11-08 on the five full-MESH cases: no golden row
+        //  moved; column19/20 take 24/35 iterations against 19/26.
+        //  Declared here, every stage temperature stays in
+        //  [0.5 Tsat,min, 1.2 Tsat,max] -- the coldest and hottest pure
+        //  saturation temperatures at P of the components fed -- every
+        //  carried fraction in [0, 1], every V and L >= 0 and a distillate
+        //  unknown >= 0, each by the fraction-to-boundary rule on the whole
+        //  step; the line search is a true Armijo test, and when it fails the
+        //  step is a Levenberg-Marquardt step, never an uphill one.  The
+        //  eliminated fraction 1 - sum(x) is NOT boxed here (a linear
+        //  inequality; slice 2).  Extents carry no bound.
+        {
+            scalar tsMin = 0.0, tsMax = 0.0;
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                bool fed = false;
+                for (std::size_t j = 0; j < N && !fed; ++j)
+                    fed = Ffeed[j] > 0.0 && zfeed[j][i] > 0.0;
+                if (!fed) continue;
+                const scalar ts = pureSaturationTemperature(thermo, i, P);
+                if (!(ts > 0.0)) continue;
+                tsMin = (tsMin > 0.0) ? std::min(tsMin, ts) : ts;
+                tsMax = std::max(tsMax, ts);
+            }
+            constexpr scalar inf = std::numeric_limits<scalar>::infinity();
+            optsF.lower.assign(mU, -inf);
+            optsF.upper.assign(mU,  inf);
+            for (std::size_t j = 0; j < N; ++j)
+            {
+                for (std::size_t i = 0; i + 1 < n; ++i)
+                { optsF.lower[j*mv + i] = 0.0; optsF.upper[j*mv + i] = 1.0; }
+                if (tsMax > 0.0)
+                {
+                    //  never so tight that the seed itself lies outside
+                    optsF.lower[j*mv + (n-1)] = std::min(0.5 * tsMin, 0.9 * T[j]);
+                    optsF.upper[j*mv + (n-1)] = std::max(1.2 * tsMax, 1.1 * T[j]);
+                }
+                optsF.lower[j*mv + n]   = 0.0;               // V_j
+                optsF.lower[j*mv + n+1] = 0.0;               // L_j
+            }
+            if (specBoil) optsF.lower[iD] = 0.0;
+            optsF.globalisation = solver::Globalisation::armijo;
+            if (verbosity >= 2)
+            {
+                std::cout << "  [solver] full-MESH: bounded Newton (Armijo line"
+                             " search, Levenberg-Marquardt when it fails): ";
+                if (tsMax > 0.0)
+                    std::cout << "T in [0.5 x " << tsMin << ", 1.2 x " << tsMax
+                              << "] K (pure saturation at P), ";
+                else
+                    std::cout << "T unbounded (no saturation curve), ";
+                std::cout << "fractions in [0, 1], V and L >= 0\n";
+            }
+        }
         if (verbosity >= 3)
             optsF.onIter = [this](const solver::NDTrace& tr){ recordResidual(tr.normF); };
         auto resF = solver::newtonND(residualF, w0, optsF);   // reaction OFF (reactive) / the column

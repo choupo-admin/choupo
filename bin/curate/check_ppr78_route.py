@@ -56,17 +56,24 @@ WHAT THIS GATE CHECKS.
       are inverses to that and no closer (measured 6.5e-5).  Both keys, or
       neither, must refuse by name.
 
-  (g) A JUMP IS NOT A DERIVATIVE.  The identifiability Jacobian of a fit
-      at its answer: on the Brunner CO2-methanol isotherms the benchmark
-      fits, one row's bubble pressure takes another branch one FD step
-      away (4.19 -> 22.7 MPa at 298.15 K), and a one-sided difference gave
-      it a slope of 4.5e4 and every standard error 0.0000.  The row's slope
-      must come from the side that stays on the answer's branch, the
-      printed sigma must be finite (~3.4e-3), and the run must say so.
-      NOT covered: the LM search's own Jacobian keeps the one-sided
-      difference (the penalty there STEERS the search; changing it moves
-      every corpus fit's path), so a jump can still stall a search -- the
-      benchmark's CO fit spent 16 rejected steps at its answer.
+  (g) THE BUBBLE PRESSURE IS CONTINUOUS ONE FD STEP AWAY (rewritten
+      2026-11-08, C245 slice 4).  The identifiability Jacobian of a fit at
+      its answer, on the Brunner CO2-methanol isotherms the benchmark fits.
+      Until C245 two 298.15 K rows (x_CO2 0.2792, 0.3323) took another
+      branch one FD step away -- at kij 0.0602 their bubble pressures were
+      290.5 and 32.9 MPa against 3.73 and 4.19 MPa at 0.0601 -- because the
+      PR vapour of the incipient phase had no root of its own and the cubic
+      handed it the LIQUID root: a trivial bubble point.  The C190 guard
+      took those rows' slopes from the smooth side and said so ("taken from
+      ONE side only"), and this arm pinned that sentence.  The cause is now
+      removed at the EoS: the vapour gets its flagged pseudo-root, and the
+      same rows at 0.0602 give 3.731 and 4.191 MPa.  What is held now: sigma
+      finite (~3.4e-3, unchanged); NO row taken from one side (the
+      neighbourhood is continuous); and the run's advisories say the PR
+      vapour pseudo-root was used.  NOT covered any more: the one-side
+      guard itself has no shipped witness (it stays in the code for a jump
+      of another cause), and S10 below is no longer caught.  Nor is the LM
+      search's own one-sided Jacobian.
 
 SABOTAGES (by hand, 2026-10-21, each restored by copy + touch + make):
   S1  Ppr78Kij.cpp: the (delta_i - delta_j)^2 term left in Pa beside E in
@@ -90,10 +97,18 @@ SABOTAGES (by hand, 2026-10-21, each restored by copy + touch + make):
       check_phase_envelope arm (h) (m = 1.15985 where the cubic gives
       1.16920 at omega 0.565).
   S10 FitParameters.cpp: the identifiability slope one-sided forward again
-      -- caught by (g) (sigma 0.0000).
+      -- caught by (g) (sigma 0.0000) UNTIL C245; since the pseudo-root
+      removed the jump it is NOT caught (2026-11-08, stated in (g)).
   S11 PhaseChanger.cpp: the gas-dominant window never taken -- caught by (h).
   S12 ThermoPackageBuilder.cpp: the pair-verdict announcement dropped --
       caught by (i).
+  S13 (C245, 2026-11-08) CubicEoS.cpp: the vapour handed the liquid's root
+      past its spinodal again (the pre-C245 picker) -- caught by the
+      rewritten (g) ("a Brunner 298.15 K row was taken from ONE side").
+  S14 (C245) FitParameters.cpp: the negligible-step stop removed -- caught
+      by (e): the planted fit reaches its chi2 floor (7.5e-12) at iteration
+      4, every later step is rejected, lambda is inflated past 1e12 and the
+      run dies "lambda diverged" with the right answer (0.0500) in hand.
   Before any sabotage the gate's own first run failed three arms on CORRECT
   code: the set written at 6 figures (-0.031748 vs -0.03174846, so the op
   now writes 10), the fitted kij read from the header's initial value, and
@@ -515,9 +530,10 @@ def main() -> int:
         #  The Brunner (1987) CO2-methanol isotherms the benchmark fits
         #  (the benchmark case methanol01_co2_hydrogenation, its
         #  constant/experiments/, committed), at its fitted kij: one FD step away, the
-        #  bubble pressure of a 298.15 K row takes another sign change of S(P)
-        #  (4.19 -> 22.7 MPa), which a one-sided difference turns into a slope
-        #  of 4.5e4 and a printed sigma of 0.0000.  maxIter 1: the arm reads the
+        #  bubble pressure of a 298.15 K row USED TO take another sign change of
+        #  S(P) (4.19 -> 22.7 MPa) on a trivial root, which a one-sided
+        #  difference turned into a slope of 4.5e4 and a printed sigma of
+        #  0.0000; since C245 it is continuous.  maxIter 1: the arm reads the
         #  identifiability block at the start value, not a converged search.
         found = sorted((ROOT / "benchmarks").glob("*/methanol01_co2_hydrogenation/constant/experiments"))
         if not found:
@@ -552,11 +568,17 @@ def main() -> int:
         elif float(m.group(1)) < 1e-3:
             fails.append("(g) sigma(kij) = %s on the Brunner CO2-methanol probe: a row whose bubble pressure"
                          " jumps branch one FD step away entered J as its jump (expected ~3.4e-3)" % m.group(1))
-        elif "taken from ONE side only" not in out:
-            fails.append("(g) the probe's branch-jumping row was not said beside the statistics")
+        elif "taken from ONE side only" in out:
+            fails.append("(g) a Brunner 298.15 K row was taken from ONE side: its bubble pressure"
+                         " left the branch one FD step away -- the trivial-root jump the cubic's"
+                         " pseudo-root removed (C245) is back")
+        elif '"locus": "PR vapour pseudo-root"' not in out:
+            fails.append("(g) the Brunner probe's incipient vapour is past its spinodal at the"
+                         " answer, and the run did not say the PR vapour pseudo-root was used")
         else:
-            notes.append("a bubble pressure that jumps branch one FD step away enters J from its"
-                         " smooth side and is said (sigma %s)" % m.group(1))
+            notes.append("the Brunner bubble pressures are continuous one FD step away (no row taken"
+                         " from one side; the PR vapour pseudo-root used and said; sigma %s)"
+                         % m.group(1))
 
         # ---- (h) a phaseChanger whose dominant component is a gas ------------------
         #  A methanol-loop effluent (H2 0.73) condensed to vf 0.9 at 78 bar: the

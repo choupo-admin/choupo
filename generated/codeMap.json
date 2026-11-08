@@ -345,6 +345,9 @@
   "ComponentId": [
    "src/core/Identifiers.H"
   ],
+  "ComponentLookup": [
+   "src/propertyOps/CatalogueLookup.H"
+  ],
   "Compressor": [
    "src/unitOperations/rotating/Compressor.H"
   ],
@@ -1153,6 +1156,9 @@
   "LogNormalSize": [
    "src/core/distribution/LogNormalSize.H"
   ],
+  "LookupBase": [
+   "src/propertyOps/CatalogueLookup.H"
+  ],
   "Manipulate": [
    "src/outerDriver/DesignSpec.H"
   ],
@@ -1356,6 +1362,9 @@
   ],
   "PSA": [
    "src/unitOperations/separation/PSA.H"
+  ],
+  "PairLookup": [
+   "src/propertyOps/CatalogueLookup.H"
   ],
   "PairResolution": [
    "src/core/ThermoResolution.H"
@@ -2477,6 +2486,14 @@
    {
     "key": "lleTieLines",
     "type": "LleTieLines"
+   },
+   {
+    "key": "pairLookup",
+    "type": "PairLookup"
+   },
+   {
+    "key": "componentLookup",
+    "type": "ComponentLookup"
    },
    {
     "key": "extractionShortcut",
@@ -5478,6 +5495,24 @@
    "src/propertyOps/PropertyOperation.H",
    "src/unitOperations/heatTransfer/htc/BellDelaware.H"
   ],
+  "src/propertyOps/CatalogueLookup.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/PublishedTable.H",
+   "src/core/Types.H",
+   "src/propertyOps/CatalogueLookup.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H"
+  ],
   "src/propertyOps/CompactionFit.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -6324,6 +6359,7 @@
    "src/core/PublishedTable.H",
    "src/core/Types.H",
    "src/propertyOps/BellDelawareBench.H",
+   "src/propertyOps/CatalogueLookup.H",
    "src/propertyOps/CompactionFit.H",
    "src/propertyOps/DataReconciliation.H",
    "src/propertyOps/ENRTLMixedSolventOp.H",
@@ -12140,6 +12176,7 @@
    "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -12423,6 +12460,7 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
    "src/propertyOps/BellDelawareBench.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/DataReconciliation.cpp",
@@ -12794,6 +12832,7 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
    "src/propertyOps/BellDelawareBench.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/DataReconciliation.cpp",
@@ -13261,6 +13300,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -13567,6 +13607,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -13902,6 +13943,7 @@
    "src/applications/choupoProps/main.cpp",
    "src/postProcessing/views/Views.cpp",
    "src/propertyOps/BellDelawareBench.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -14290,6 +14332,7 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
    "src/propertyOps/BellDelawareBench.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/DataReconciliation.cpp",
@@ -15032,6 +15075,10 @@
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/Speciate.cpp"
   ],
+  "src/propertyOps/CatalogueLookup.H": [
+   "src/propertyOps/CatalogueLookup.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/CompactionFit.H": [
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -15231,6 +15278,7 @@
   "src/propertyOps/PropertyOperation.H": [
    "src/applications/choupoProps/main.cpp",
    "src/propertyOps/BellDelawareBench.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -15973,6 +16021,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -16573,6 +16622,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -16862,6 +16912,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -17157,6 +17208,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -17406,6 +17458,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -17825,6 +17878,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -18059,6 +18113,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",

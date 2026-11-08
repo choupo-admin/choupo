@@ -4935,6 +4935,20 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/odeblk.$$
+
+    # Rodas4 order gate (2026-11-08, DEV.md 4c C245 slice 11): the stiff
+    # integrator's ~50 coefficients were entered by hand, so its observed
+    # order (>= 3.8) and L-stability are measured by a probe compiled
+    # against the ODE sources alone.
+    if gate_exec "$ROOT/bin/curate/check_rodas4_order.py" > /tmp/rodas4.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "rodas4-order-gate" "$(head -1 /tmp/rodas4.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_rodas4_order.py)\n" "rodas4-order-gate"
+        cat /tmp/rodas4.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rodas4.$$
     rm -f /tmp/blocktri.$$
 
     # solver-failures gate (2026-10-27, DEV.md 4c C178).  A failed
@@ -4953,6 +4967,22 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/solvfail.$$
+
+    # newton-globalisation gate (2026-11-08, DEV.md 4c C245 slice 1).  The
+    # multivariate Newton has a declared globalisation contract (typX, bounds,
+    # maxStep, Armijo + Levenberg-Marquardt) whose defaults leave every
+    # undeclared caller where it was, a relative pivot test that refuses NaN
+    # and a finite check on every Jacobian column; four synthetic problems
+    # compiled against the solver sources, plus the full MESH's opt-in.
+    if gate_exec "$ROOT/bin/curate/check_newton_globalisation.py" > /tmp/newtglob.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "newton-globalisation-gate" "$(head -1 /tmp/newtglob.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_newton_globalisation.py)\n" "newton-globalisation-gate"
+        cat /tmp/newtglob.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/newtglob.$$
 
     # distillation-seed gate (2026-11-01, DEV.md 4c C184 A+B).  A CMO phase
     # that did not converge seeds the full MESH only as an ANNOUNCED seed and
@@ -5746,6 +5776,23 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/phsplit.$$
+
+    # One tool call, one evidence card (2026-11-05, DEV.md 4c C227 slice a):
+    # `pairLookup` / `componentLookup` run on their two witnesses; every card
+    # fits the declared byte budget (read from CatalogueLookup.H), a curated
+    # pair returns its `source` line and no coefficient, an unknown pair or
+    # compound returns no number, UNIFAC says ESTIMATE, a lake compound prints
+    # no estimated value, the C16 fields stay announced-absent, the grammar
+    # refuses a pair of one component.
+    if gate_exec "$ROOT/bin/curate/check_lookup_budget.py" > /tmp/lkpbud.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "lookup-budget-gate" "$(gate_claim check_lookup_budget /tmp/lkpbud.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lookup_budget.py)\n" "lookup-budget-gate"
+        cat /tmp/lkpbud.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lkpbud.$$
 
     # Extractor validation gate (2026-11-04, DEV.md 4c C219): the lle01 AADs
     # against Perry's Table 15-8 recomputed from the measured data and the

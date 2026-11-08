@@ -170,6 +170,7 @@ Description
 #include "BatchUnitOperation.H"
 #include "solver/ODE/ODEIntegrator.H"
 
+#include <unordered_map>
 #include <map>
 #include <string>
 #include <vector>
@@ -355,6 +356,9 @@ private:
     //  M_in/M_out (and Q_wall) ledger rows as the border.  Kept across the
     //  samplingInterval chunks so the integrator audits it ONCE per run.
     std::string                jacobian_ = "blockTridiagonal";
+    //  The stiff integrator (solver { method rosenbrock23 | rodas4; },
+    //  default rosenbrock23): the registry name it resolves to.
+    std::string                method_ = "Rosenbrock23";
     bool                       jacobianDeclared_ = false;
     solver::ODEBlockStructure  odeStructure_;
     bool                       structureAnnounced_ = false;
@@ -410,6 +414,7 @@ private:
     scalar cellT_(const sVector& y, std::size_t j) const;  // T_ unless thermal
     scalar cpgCell_(const sVector& y, std::size_t j) const; // mixture Cp_ig [J/mol/K]
     scalar pressureCell_(const sVector& y, std::size_t j) const;
+    mutable std::unordered_map<std::string, scalar> muMemo_;  // ergunVelocity_ gas-viscosity memo
     scalar ergunVelocity_(scalar pLeft, scalar pRight, scalar distance,
                           const sVector& cLeft, const sVector& cRight) const;
 };

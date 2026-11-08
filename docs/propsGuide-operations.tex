@@ -676,6 +676,18 @@ The COMPACTION BENCH (DEV.md 4c C195): the Heckel, Kawakita and Ryshkewitch-Duck
 \quad (and 1 more)
 \end{tutoriallink}
 
+\paragraph{\code{componentLookup}}\label{op:componentLookup}
+ONE TOOL CALL, ONE EVIDENCE CARD for a compound: whether the installation catalogue has it (by file name, declared alias or CAS -- never by similarity), which properties its record carries and which are missing, in a fixed byte budget (2048 bytes). A compound only in the group-estimate lake is reported as identity + groups, 'not reviewed', with NO estimated values; otherwise 'I do not have this compound'. The card lists what exists and never prints the values. Every card carries ONE provenance line (and the result JSON a catalogue object): the source (the installation catalogue), its release (data/standards/CATALOGUE.dat) and the case's seal state; a sealed case whose manifest names another release is told so with differs.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{component}\textbf{*} & Compound \\
+\hline
+\end{tabular}
+
+
+\emph{No tutorial case declares this operation yet.}
+
 \paragraph{\code{enthalpyConcentration}}\label{op:enthalpyConcentration}
 The saturated-liquid and saturated-vapour enthalpy loci of a BINARY at ONE pressure — the data an enthalpy-concentration (Ponchon-Savarit) construction is drawn on; the construction itself belongs to a drawing tool. Every row is one equilibrium: it carries BOTH ends of a tie line (the liquid x1 with h\_liquid, the vapour y1 with H\_vapour) at the ONE temperature they share, so a consumer never pairs rows by index and never interpolates one end of a tie. \code{role bubble} rows put x1 on the uniform grid, \code{role dew} rows put y1 on it; both are solved through the SAME bubble-point kernel, a dew node being the inversion y\_eq(x) = y1. The op REFUSES up front unless the thermophysical system has EXACTLY 2 components, and unless every component can be priced on the project's one enthalpy datum (the elements at 298.15 K): it names any component with no route to that datum, any component with no idealGasHeatCapacity\{\} block (no saturated-vapour leg), and any component whose standardThermochemistry.referenceState is off the ideal-gas rung — no private Cp integral is ever substituted. A node that cannot be solved (bubble Newton not converged, a non-monotonic y\_eq(x1) that has no single-valued dew inversion, a y1 outside the converged bubble image, an enthalpy kernel refusal) is PUBLISHED as a refusal row with its status, never dropped. Diagnostics headline lambda = H\_vapour $-$ h\_liquid over the locus, the spread of which measures what constant molar overflow costs.
 
@@ -818,6 +830,18 @@ FROM A FUNCTIONAL CLASS TO THE COMMERCIAL ELEMENTS THAT DO IT. Hard filters on e
 \begin{tutoriallink}
 \file{tutorials/props/membrane/shortlist01\_class\_to\_modules}
 \end{tutoriallink}
+
+\paragraph{\code{pairLookup}}\label{op:pairLookup}
+ONE TOOL CALL, ONE EVIDENCE CARD for a binary: what the installation catalogue holds for the pair, in a fixed byte budget (2048 bytes). The honesty ladder: a curated catalogue pair record (paste-ready \code{source} entry, validity, provenance) -> Choupo's own regression (\code{fittedInCase}, verdict) -> UNIFAC, said to be an ESTIMATE with its measured warning -> 'I do not have this pair' and what the student can bring. Never a number invented; the fields the C16 chain will add are listed as announced-absent. Reads the installation catalogue, not the case's constant/. Every card carries ONE provenance line (and the result JSON a catalogue object): the source (the installation catalogue), its release (data/standards/CATALOGUE.dat) and the case's seal state; a sealed case whose manifest names another release is told so with differs.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{components}\textbf{*} & The pair \\
+\hline
+\end{tabular}
+
+
+\emph{No tutorial case declares this operation yet.}
 
 \paragraph{\code{phaseEnvelope}}\label{op:phaseEnvelope}
 The P-T phase envelope of a MIXTURE at fixed feed composition: the bubble curve (V/F -> 0) and the dew curve (V/F -> 1) traced in the (T, P) plane and written as a long-form CSV (P\_Pa, T\_K, curve). An envelope is drawn to find the CRICONDENTHERM -- the highest temperature at which the feed can hold a liquid, what a pipeline is designed against -- and the retrograde region beside it, and both live at the nose, which no single-specification march can close: this trace does NOT close it, says so on every run, and names Michelsen's arc-length continuation with a switching specification (Fluid Phase Equilib. 4 (1980) 1) as the algorithm that would. The bubble and dew solves are BubblePoint::compute and DewPoint::compute -- the same routines the bubbleT and dewT units call, so neither saturation residual exists twice. Marching in pressure, the temperature maximum is not a turning point for the specification, so an INTERIOR maximum is reported as a BRACKETED cricondentherm naming the two pressures it lies between; an endpoint maximum is not reported, because it says where the range stops and not where the mixture peaks. A point that CONVERGED but is discontinuous with its branch is discarded and the branch ends there: the bubble curve is monotonically increasing in P up to the critical point (physics, not a heuristic) and the dew curve gets a continuity test, because both saturation solvers bracket T in 200-700 K and are warm-started, so Newton can land on a different root and report success -- which it did, drawing a bubble temperature FALLING with pressure and publishing a cricondentherm that was the resulting spike. A branch that produces no point at all is reported as never having started, which is a different finding from a branch that stopped, and has a different remedy.

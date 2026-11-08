@@ -61,8 +61,10 @@ Description
 
         Z³ − (1 − B) Z² + (A − 2B − 3B²) Z − (A·B − B² − B³) = 0
 
-    is solved by Cardano (analytic); the largest real root above B is the
-    vapour root.
+    is solved by the ONE root picker of the generic cubic (CubicEoS.H,
+    "THE ROOT PICKER"), shared with SRK: largest real root for the vapour,
+    smallest above B for the liquid, a FLAGGED pseudo-root where the
+    requested phase has none.
 
     Fugacity coefficient of component i (vapour root):
 
@@ -94,73 +96,27 @@ Description
 
 #pragma once
 
-#include "EquationOfState.H"
-#include "core/Constants.H"
-#include "thermo/Component.H"
+#include "CubicEoS.H"
 
 #include <memory>
-#include <string>
 #include <vector>
 
 namespace Choupo {
 
-class PR : public EquationOfState
+// The arithmetic (roots, phi, departures, mixing rule) lives in CubicEoS;
+// PR supplies its constants (eps = 1 - sqrt2, sigma = 1 + sqrt2, Omega_a,
+// Omega_b) and its PR78 slope.  It inherits hasLiquidRoot() == true from
+// the generic cubic (C245 slice 4): before, PR alone answered false, and a
+// genuine PR azeotrope (K = 1 on two distinct roots) was refused as a
+// trivial root by trivialSaturationRoot.
+class PR : public CubicEoS
 {
 public:
     PR(const std::vector<Component>& comps,
        const std::vector<std::vector<scalar>>& kij);
 
-    std::size_t n() const override { return n_; }
-
-    sVector phi(scalar T_K, scalar P_Pa, const sVector& y) const override;
-    sVector phiLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
-    scalar  molarVolume(scalar T_K, scalar P_Pa, const sVector& y) const override;
-    scalar  Z(scalar T_K, scalar P_Pa, const sVector& y) const override;
-
-    scalar  H_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
-    scalar  S_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
-
-    // The one-fluid decomposition, filled by the same buildAi/buildMix the
-    // hot path runs (see EquationOfState::MixingLedger).
-    bool mixingLedger(scalar T_K, const sVector& y,
-                      MixingLedger& out) const override;
-
-    const std::string& modelName() const override { return name_; }
-
-    // Cubic EoS: needs the critical constants + acentric factor per component.
-    std::vector<std::string> requiredComponentProperties() const override
-    {
-        return { "Tc", "Pc", "omega" };
-    }
-
     static std::unique_ptr<EquationOfState>
     fromDict(const DictPtr& eosDict, const std::vector<Component>& comps);
-
-private:
-    struct PureParams
-    {
-        scalar a_c;          // 0.45724 R² Tc² / Pc   [Pa·m^6/mol²]
-        scalar b;            // 0.07780 R Tc / Pc      [m³/mol]
-        scalar kappa;        // PR78 κ(ω), two branches at ω = 0.491
-        scalar Tc;           // [K]
-    };
-
-    void buildAi(scalar T,
-                 std::vector<scalar>& a,
-                 std::vector<scalar>& dadT) const;
-
-    void buildMix(scalar T, const sVector& y,
-                  scalar& a_mix, scalar& dadT_mix, scalar& b_mix,
-                  std::vector<scalar>* a_per_comp_out = nullptr,
-                  std::vector<std::vector<scalar>>* aij_out = nullptr) const;
-
-    // Real vapour root of the PR cubic; Cardano with branch selection.
-    scalar cardano_root(scalar A, scalar B, bool liquid) const;
-
-    std::size_t                            n_;
-    std::vector<PureParams>                pure_;
-    std::vector<std::vector<scalar>>       kij_;
-    inline static const std::string        name_ = "PR";
 };
 
 } // namespace Choupo

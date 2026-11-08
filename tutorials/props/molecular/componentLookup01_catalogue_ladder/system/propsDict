@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  componentLookup01_catalogue_ladder
+  ==================================
+
+  WHAT IT IS.  "Does Choupo have this compound, and what does its record
+  carry?" as ONE operation with a fixed byte budget (2048 bytes) and the same
+  evidence-card format as pairLookup (DEV.md 4c C227, slice a).  The query
+  resolves by RECORD -- a catalogue file name, a declared alias or a CAS --
+  never by name similarity.  Four operations:
+
+      c_name   ethanol          the catalogue record, by name
+      c_cas    64-17-5          the SAME record, by CAS
+      c_lake   1Pentadecanol    only in the group-estimate lake: identity and
+                                UNIFAC groups, NO values, "not reviewed"
+      c_none   unobtainium      "I do not have this compound"
+
+  The card lists which properties the record has and which it lacks; it never
+  prints the values (they are in the record, and a case uses the name).
+  Pinned: the tier word of each card and its byte count.  The
+  thermoPhysPropDict is a placeholder the bench requires; no op reads it.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    { name c_name; type componentLookup; component ethanol; }
+    { name c_cas;  type componentLookup; component 64-17-5; }
+    { name c_lake; type componentLookup; component 1Pentadecanol; }
+    { name c_none; type componentLookup; component unobtainium; }
+);

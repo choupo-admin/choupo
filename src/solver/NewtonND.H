@@ -36,7 +36,11 @@ Description
     Components:
         - finite-difference Jacobian (central differences)
         - Gauss elimination with partial pivoting (dense linear solve)
-        - backtracking line search (Armijo) for damping
+        - backtracking line search for damping: by default a SIMPLE-
+          DECREASE test (||F|| must fall) with halving; with
+          `globalisation = Globalisation::armijo` a true Armijo test on
+          0.5||F||^2 with quadratic/cubic backtracking and a Levenberg-
+          Marquardt step when the search exhausts (NDOptions below)
 
     Pedagogical implementation — every step is visible, no external
     linear-algebra dependency.  Scales fine up to a few hundred
@@ -97,8 +101,18 @@ struct NDResult
     //  is a number to ANNOUNCE (~1e-6 is agreement), not a refusal test.
     scalar    analyticMismatch = std::numeric_limits<scalar>::quiet_NaN();
     //- Steps taken although no backtracking trial reduced ||F|| (see
-    //  NDOptions::maxStalledSteps).  0 on a monotone solve.
+    //  NDOptions::maxStalledSteps).  0 on a monotone solve.  Always 0 under
+    //  Globalisation::armijo, which never takes such a step.
     int       stalledSteps = 0;
+    //- Globalisation::armijo only: Levenberg-Marquardt steps taken because
+    //  the Armijo search exhausted, and trial points whose evaluation threw
+    //  (any std::exception) or returned a non-finite residual and were
+    //  therefore shortened, never taken.
+    int       lmSteps        = 0;
+    int       trialRefusals  = 0;
+    //- Declared bounds only: iterations whose Newton step was shortened by
+    //  the fraction-to-boundary rule or by NDOptions::maxStep.
+    int       boundedSteps   = 0;
 };
 
 //- A DECLARED block-tridiagonal structure: unknowns grouped in nBlocks
@@ -139,6 +153,30 @@ struct BlockTri
     bool declared() const { return nBlocks > 1 && blockSize > 0; }
 };
 
+//- THE GLOBALISATION CONTRACT (DEV.md 4c C245 slice 1, from the 2026-11-08
+//  kernel numerical audit, Rank 1).
+//
+//  `legacy` is the line search this solver has always run: a trial is
+//  accepted when ||F|| merely falls, alpha is halved down to minAlpha, and
+//  an exhausted search still TAKES its last finite trial (counted, up to
+//  maxStalledSteps) -- an uphill step.  It stays the default so that no
+//  caller moves until it opts in.
+//
+//  `armijo` is the textbook contract (Dennis & Schnabel 1983, Alg. A6.3.1;
+//  Nocedal & Wright 2006, Sec. 3.5): with f = 0.5||F||^2 and the Newton
+//  direction d (J d = -F, so f'(0) = -||F||^2), a step a is accepted only
+//  when f(x + a d) <= f(x) + c1 a f'(0), c1 = 1e-4.  A rejected a is
+//  replaced by the minimiser of a quadratic (first backtrack) or cubic
+//  (later ones) model of f along d, safeguarded to [0.1 a, 0.5 a].  A trial
+//  that throws ANY std::exception, or returns a non-finite residual, is a
+//  refused trial: shortened by half, counted, never taken.  When a falls
+//  below minAlpha the search has failed, and the step is a Levenberg-
+//  Marquardt step on the SAME Jacobian, (J^T J + mu I) d = -J^T F, mu raised
+//  tenfold until f decreases (at most 12 tries); if none does the solve
+//  stops NOT converged and returns the best iterate.  No uphill step is
+//  ever taken, so maxStalledSteps is not consulted.
+enum class Globalisation { legacy, armijo };
+
 struct NDOptions
 {
     scalar    tolerance        = 1.0e-8;
@@ -164,6 +202,32 @@ struct NDOptions
     bool      parallel         = false;
     BlockTri  blockTri;        // declared structure; see above
     std::function<void(const NDTrace&)> onIter;
+
+    //  ---- The globalisation contract (C245).  Every field below is EMPTY
+    //  or `legacy` by default, and then the solve is bit-for-bit what it
+    //  was before the contract existed.  Each vector, when given, has one
+    //  entry per unknown (a size mismatch refuses by name).
+    Globalisation globalisation = Globalisation::legacy;
+    //- typX: the typical magnitude of each unknown.  Given, the finite-
+    //  difference step is h_j = sqrt(eps) * max(|x_j|, typX_j) (Dennis &
+    //  Schnabel Sec. 5.4) instead of fdStep * max(|x_j|, 1), which is an
+    //  absolute floor wrong for a mole fraction of 1e-6 or a pressure of 1e5.
+    sVector   typX;
+    //- lower / upper: a box the iterates must stay inside (use -inf / +inf
+    //  for a free unknown).  Declared, (a) an initial point outside is
+    //  moved onto the box and announced, (b) the WHOLE Newton step is
+    //  scaled by the fraction-to-boundary rule, tau = 0.99 of the distance
+    //  to the nearest bound it would cross -- except an unknown that alone
+    //  would cut the step below 0.1 of itself, which is PINNED (it moves
+    //  its own 0.99 of the way and leaves tau to the others), and an unknown
+    //  already ON its bound and pushed outward, which is held (NewtonND.cpp,
+    //  shapeStep, says why) -- and (c) a finite-difference probe that would
+    //  leave the box is taken one-sided, pointing into it.
+    sVector   lower;
+    sVector   upper;
+    //- maxStep: the largest |change| of each unknown in one step (the whole
+    //  step is scaled so that none exceeds it).
+    sVector   maxStep;
 };
 
 NDResult newtonND(const std::function<sVector(const sVector&)>& F,

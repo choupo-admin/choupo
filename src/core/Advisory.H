@@ -147,6 +147,7 @@ Description
 
 #include <mutex>
 #include <set>
+#include <atomic>
 #include <string>
 #include <utility>
 #include <vector>
@@ -181,6 +182,25 @@ public:
         entries_.clear();
         frames_.clear();
         passKeys_.clear();
+        generation_.fetch_add(1, std::memory_order_release);
+    }
+
+    //  PASS GENERATION: bumped by every `clear()`.  A hot-loop site that has
+    //  already recorded its advisory in THIS pass, with no frame open (so the
+    //  entry is `accepted`, which can no longer be promoted), may latch on
+    //  (generation) and skip the lock + string building on later calls: the
+    //  skipped `add()` would have found the entry and changed nothing.
+    unsigned long long generation() const
+    {
+        return generation_.load(std::memory_order_acquire);
+    }
+
+    //  True while any AdvisoryFrame is open (the entry would be stamped
+    //  from it, possibly as a trial).
+    bool anyFrameOpen() const
+    {
+        std::lock_guard<std::mutex> lk(mutex_);
+        return !frames_.empty();
     }
 
     // Returns true if the advisory was NEW (added), false if it was a
@@ -312,6 +332,7 @@ private:
     std::vector<Advisory> entries_;
     std::vector<Frame>    frames_;
     unsigned long long    nextFrameId_{0};
+    std::atomic<unsigned long long> generation_{1};
     std::set<std::string> passKeys_;      // keys raised in THIS pass
     std::set<std::string> processKeys_;   // keys whose line was printed; never cleared
 };

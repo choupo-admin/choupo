@@ -1,0 +1,47 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  pairLookup01_catalogue_ladder
+  =============================
+
+  WHAT IT IS.  The student's FIRST question about a binary -- "what does
+  Choupo have for this pair?" -- asked as ONE operation that answers in a
+  fixed byte budget (2048 bytes of card text, held by check_lookup_budget)
+  with an EVIDENCE CARD, never a number invented to fill a gap.  The four
+  operations walk the honesty ladder (DEV.md 4c C227, slice a):
+
+      p_curated    ethanol + water       a catalogue pair record: the
+                                         paste-ready source entry, validity,
+                                         provenance
+      p_regressed  acetone + ethanol     Choupo's own regression (fittedInCase,
+                                         interim) with its held-out verdict
+      p_estimate   acetone + cyclo-      no pair record, both carry UNIFAC
+                   hexane                groups: SAID to be an estimate, with
+                                         the measured warning (DEV.md C219)
+      p_none       1Pentadecanol +       a component only in the group-
+                   water                 estimate lake: "I do not have this
+                                         pair"
+
+  HOW IT READS.  The operations read the INSTALLATION catalogue (a question
+  about the catalogue), never the case's own constant/.  The card carries what
+  the records carry today; what the C16 chain will add (laboratories, archive
+  sha256, extraction filter, fit AAD) is listed under announcedAbsent and
+  never filled.  The rung "servable from the measurement archive but not yet
+  fitted" is slice (b) and the card says it does not exist yet.  Pinned: the
+  TIER WORD of each card and its byte count; the numbers a card quotes live in
+  the records, which have their own gates.  The thermoPhysPropDict is a
+  placeholder the bench requires; no op reads it.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    { name p_curated;   type pairLookup;  components ( ethanol water ); }
+    { name p_regressed; type pairLookup;  components ( acetone ethanol ); }
+    { name p_estimate;  type pairLookup;  components ( acetone cyclohexane ); }
+    { name p_none;      type pairLookup;  components ( 1Pentadecanol water ); }
+);

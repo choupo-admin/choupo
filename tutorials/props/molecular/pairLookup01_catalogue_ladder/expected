@@ -1,0 +1,20 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    p_curated              budget_bytes     2048             1e-4
+diag    p_curated              card_bytes       947              1e-4
+diag    p_curated              n_records        2                1e-4
+diag    p_regressed            budget_bytes     2048             1e-4
+diag    p_regressed            card_bytes       957              1e-4
+diag    p_regressed            n_records        1                1e-4
+diag    p_estimate             budget_bytes     2048             1e-4
+diag    p_estimate             card_bytes       800              1e-4
+diag    p_estimate             n_records        0                1e-4
+diag    p_none                 budget_bytes     2048             1e-4
+diag    p_none                 card_bytes       779              1e-4
+diag    p_none                 n_records        0                1e-4
+verdict p_curated              tier             curated          exact
+verdict p_regressed            tier             regressed        exact
+verdict p_estimate             tier             estimate         exact
+verdict p_none                 tier             none             exact
+verdict p_curated releaseDiffers false exact

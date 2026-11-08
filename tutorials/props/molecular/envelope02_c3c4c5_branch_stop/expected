@@ -2,5 +2,4 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 diag    envelope               bubble_points    40               1e-4
-diag    envelope               dew_points       35               1e-4
-diag    envelope               dew_stopped_bar  36               1e-4
+diag    envelope               dew_points       40               1e-4

@@ -1,0 +1,11 @@
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( ethanol  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model ideal; }  standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}

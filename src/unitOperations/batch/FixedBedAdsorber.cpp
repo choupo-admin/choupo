@@ -37,6 +37,7 @@ License
 #include "thermo/adsorbent/Adsorbent.H"
 #include "thermo/adsorbent/AdsorbentRegistry.H"
 
+#include <cstring>
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -118,6 +119,18 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             throw std::runtime_error("fixedBedAdsorber '" + name_
                 + "': solver.samplingInterval must be > 0 s (it is the"
                 " declared breakthrough-sampler resolution)");
+        //  The stiff integrator: the 2(3) Rosenbrock pair (default) or the
+        //  order-4 Rodas4 -- same Jacobian, same positivity guard.
+        {
+            const std::string m = solverDict->lookupWordOrDefault(
+                                      "method", "rosenbrock23");
+            if (m == "rosenbrock23")  method_ = "Rosenbrock23";
+            else if (m == "rodas4")   method_ = "Rodas4";
+            else
+                throw std::runtime_error("fixedBedAdsorber '" + name_ + "': "
+                    + registryRefusal::message("solver.method", m,
+                          {"rosenbrock23", "rodas4"}, "Accepted"));
+        }
         //  The Jacobian structure the unit declares to Rosenbrock23 -- a
         //  solver aid, so the student may switch it off and compare.
         jacobianDeclared_ = solverDict->found("jacobian");
@@ -862,8 +875,11 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
         }
         if (adaptive_)
             std::cout << "  [fixedBedAdsorber '" << name_ << "'] time"
-                         " integration: Rosenbrock23 (L-stable), sub-stepped"
-                         " by this unit in samplingInterval = "
+                         " integration: "
+                      << (method_ == "Rodas4"
+                              ? "Rodas4 (L-stable, order 4(3))"
+                              : "Rosenbrock23 (L-stable)")
+                      << ", sub-stepped by this unit in samplingInterval = "
                       << samplingInterval_ << " s chunks (declared"
                          " breakthrough-sampler resolution), rtol = " << rtol_
                       << ", atol per row (1e-9 c_in | 1e-9 q_ref | 1e-6"
@@ -1083,7 +1099,26 @@ scalar FixedBedAdsorber::ergunVelocity_(scalar pLeft, scalar pRight,
         //  (accepted) zero-gas cell cannot exist at P > 0: P_j = R T c.
         return 0.0;
     for (scalar& yi : yMix) yi /= cSum;
-    const scalar mu = muGas_ > 0.0 ? muGas_ : thermo_->viscosityGas(T_, yMix);
+    scalar mu = muGas_;
+    if (!(muGas_ > 0.0))
+    {
+        //  Memo of the gas viscosity on the EXACT (T_, y) the face saw.  A
+        //  Jacobian column perturbs a few cells, so most faces repeat the
+        //  last evaluation's composition bit for bit; the same inputs give
+        //  the same viscosityGas, so the result is byte-identical.
+        std::string key(sizeof(scalar) * (yMix.size() + 1), '\0');
+        std::memcpy(&key[0], &T_, sizeof(scalar));
+        std::memcpy(&key[sizeof(scalar)], yMix.data(),
+                    sizeof(scalar) * yMix.size());
+        auto it = muMemo_.find(key);
+        if (it == muMemo_.end())
+        {
+            if (muMemo_.size() >= 8192) muMemo_.clear();
+            it = muMemo_.emplace(std::move(key),
+                                 thermo_->viscosityGas(T_, yMix)).first;
+        }
+        mu = it->second;
+    }
     const scalar de = sphericity_ * dParticle_;
     const scalar a = 150.0 * std::pow(1.0 - eps_, 2) * mu
                    / (std::pow(eps_, 3) * de * de);
@@ -1529,9 +1564,9 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
 
     // Adaptive: the stiff Rosenbrock23 sweeps [t, t+dt] in chunks of
     // samplingInterval so the breakthrough sampler sees every chunk end.
-    if (!solver::ODEIntegrator::known("Rosenbrock23"))
+    if (!solver::ODEIntegrator::known(method_))
         solver::ODEIntegrator::registerBuiltins();
-    auto integ = solver::ODEIntegrator::New("Rosenbrock23");
+    auto integ = solver::ODEIntegrator::New(method_);
 
     solver::DerivFn f =
         [this](scalar /*tt*/, const sVector& yy) { return rhs_(yy); };
@@ -1558,7 +1593,7 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
         if (!st.ok)
         {
             std::ostringstream os;
-            os << "fixedBedAdsorber '" << name_ << "': Rosenbrock23 gave up"
+            os << "fixedBedAdsorber '" << name_ << "': " << method_ << " gave up"
                   " at t = " << tl << " s (step below hMin or maxSteps) --"
                   " loosen rtol, refine the mesh, or reduce"
                   " samplingInterval";
@@ -1598,7 +1633,7 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
     }
     if (verbosity_ >= 3)
         std::cout << "  [fixedBedAdsorber '" << name_ << "'] t = "
-                  << std::setprecision(6) << tEnd << " s: Rosenbrock23 "
+                  << std::setprecision(6) << tEnd << " s: " << method_ << " "
                   << acc << " accepted, " << rej << " rejected sub-steps,"
                      " h_next = " << hCarry_ << " s"
                   << (odeStructure_.audited && jacobian_ == "blockTridiagonal"
