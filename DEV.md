@@ -3221,6 +3221,30 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C250 (Vitor, 2026-11-08 night: "a interação com o Choupo é mediada por ti pelo ChatGPT
+> que os alunos subscrevem!  Por isso é muito importante que as instruções para agentes
+> fiquem muito boas, simples, rápidas e fáceis de seguir e que consumam o número mínimo
+> de tokens e tenham o máximo de eficácia"): THE AGENT-FACING INSTRUCTIONS ARE THE
+> STUDENT'S INTERFACE.**  The students do not read docs/ai/; their assistant does, and it
+> is not Claude.  So the brief and the packs are judged as a PRODUCT: tokens in, correct
+> case out, on a model Vitor does not control.  MEASURED: docs/ai/brief.md + 7 packs =
+> 22 545 words (batch-plant.md alone 4 507); the harness `bin/curate/llm_brief_eval.py`
+> (C200) scores a brief on problems with a proxy model and reports tokens; packs missing
+> for heat, electrolytes, membranes, solids, drivers, transient, props (C200); the
+> pharmaceutical authoring doc is being written by the C248 general tonight.  DECISION:
+> (1) a `pharmaceutical` pack (tablet plant from a drug and a dose: the files, the keys,
+> the order, one worked change), routed from the brief and from llms.txt; (2) EVERY pack
+> gets a token budget and a measured score: the harness runs with a second proxy that is
+> NOT Claude (an OpenAI-compatible endpoint behind an environment variable, so a student's
+> assistant class is what is measured; the tool stays a TOOL, never a gate), the problems
+> include the two tablet cases' revision problems (a dose change, a batch-size change, a
+> second strength), and the report prints tokens per solved problem; (3) the brief is cut
+> to what a first task needs, the rest moved behind "read pack X when" lines, measured
+> before and after on the same problems -- a cut that lowers the score is reverted;
+> (4) docs/ai/start-here.md is the ONE entry an assistant is pointed at, and llms.txt
+> says so in its first line.  One general after C248 lands (the pharmaceutical doc it
+> writes is the pack's seed); the harness runs are the acceptance test.
+
 > **C249 (Vitor, 2026-11-08 night: "tenho alguma dificuldade em explicar-lhes como organizo
 > uma fábrica multi-produto e como uso processos em contínuo como o spray drying num
 > processo de bateladas ... isso envolve diagrama de Gantt ... vê como se pode fazer com
@@ -3268,6 +3292,13 @@ accepts today, and that is a policy call.
 > show TOMORROW already: apalutamide01's Gantt and utilisation table in the GUI's Batch
 > plan section, and the spray-drying train's declaration in its postDict (lines 107-116,
 > 170-178) as the worked example of a continuous dryer inside a lot regime.
+> ORDERED (Vitor, the same night: "Faz um tutorial multi-produto com as tools todas que o
+> Choupo tem"): (a) is dispatched NOW, not after C248, and it carries EVERY declared tool
+> the tablet cases know -- batchPlan with `products`/`campaignOrder`/direction-dependent
+> cleans, cleaning and cleanUtilities (HVAC grades, purified water), sizing with rated
+> machines, costing with quotes, economics with crew, sensitivity, working capital and
+> land, a layoutDict with GMP rooms, the Gantt -- so one case shows the whole chain on a
+> two-product plant.
 
 > **C248 (Vitor, 2026-11-08 night: "lançar um general em Fable 5.1 a rever tudo o que faz
 > falta para os meus alunos de projeto em engenharia farmacêutica ... tenho um tutorial com
