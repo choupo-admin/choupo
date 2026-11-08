@@ -566,8 +566,18 @@ std::size_t write(const std::string&                       caseRoot,
             {
                 o << "    factors\n    {\n";
                 for (const auto& [fk, fv] : cb.factors)
-                    o << "        " << std::left << std::setw(20) << fk
-                      << num(fv) << ";\n";
+                {
+                    o << "        " << std::left << std::setw(20) << fk;
+                    //  The same guard as `entry()` above: `setw` is a
+                    //  minimum, and a factor key of 20 characters or more
+                    //  (`hvacPricePerSupplyAir`, 21) ran straight into its
+                    //  value (`hvacPricePerSupplyAir12;`), one token no
+                    //  dictionary parser reads as a key and a value.  Found
+                    //  on donepezil01's `design/hvac/gradeD` sheet
+                    //  (2026-11-08, PIF readiness review).
+                    if (fk.size() >= 20) o << ' ';
+                    o << num(fv) << ";\n";
+                }
                 o << "    }\n";
             }
             o << "}\n";

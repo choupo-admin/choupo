@@ -685,6 +685,29 @@ economics
     accuracyBand        ( -50 100 ); // Class 5, the wide corner -- chosen
     refuseOnMissingPrice 1;
 
+    //  TWO MORE DELIVERABLES EVERY PIF REPORT CARRIES (DEV.md 4c C210, E5;
+    //  declared here 2026-11-08 so that a group sees them without editing
+    //  anything; the sensitivity above is the third).  Both are REPORTING on
+    //  the appraisal: no number of the base case moves.
+    //  The break-even, two answers: the OPERATING fraction x of nameplate
+    //  production at which one year's sales equal its cost of production
+    //  (fixed = 0.180 FCI + 2.73 C_OL + depreciation, variable = 1.23 (C_RM +
+    //  C_UT + C_WT)), and the production fraction s at which NPV = 0, found by
+    //  the same appraisal on a copy.
+    breakEven {}
+    //  The working capital by the three usual methods, side by side: the
+    //  itemised build-up (the `workingCapital {}` block below, the one the
+    //  appraisal USES), a fraction of annual sales, a fraction of the fixed
+    //  capital.  The two fractions are AUTHOR-SET textbook figures, not a
+    //  study: the lesson is the spread, and which method the group defends.
+    workingCapitalMethods
+    {
+        fractionOfSales        0.15;
+        fractionOfFixedCapital 0.15;
+        source  "author-set assumption (DEV.md 4c C210, E5): the textbook fractions, 15 % of sales and 15 % of FCI, rounded; no company figure read";
+        reason  "the earlier design reports took whichever of the three methods suited; printing the three together makes the choice visible";
+    }
+
     workingCapital
     {
         //  60 days of raw materials in the warehouse: quarantine, sampling

@@ -544,6 +544,66 @@ the run with exit 2; `constant/economics` without `labourRate` ->
 * Left out: granulation, blending, compression and coating physics (no force,
   uniformity or granule size), dust zones, containment, the water plant's cost.
 
+## 8. Adapting a shipped tablet case to another drug: the traps, measured
+
+Measured on 2026-11-08 by turning a copy of
+`tutorials/batch/plant/donepezil01_tablets` into a 500 mg tablet with a 600 kg
+lot (the full route is `docs/pif-student-path.md`).  In the order they bite:
+
+* **Renaming or removing a component leaves STALE ESTIMATES in `0/`.**  The
+  internal streams' files (`0/finalBlend`, `0/wetMass`, `0/tabletCores`, ...
+  their header says "An ESTIMATE, not an input") still carry the old name and
+  the run refuses: `ERROR: stream state 'finalBlend': component 'X' is not in
+  the package ... delete it and run bin/choupo-init0 <case>`.  Delete every
+  estimate file (or run `bin/choupo-init0 <case> --force`, which regenerates
+  them) and run init0 before the solve.  Do this after EVERY change of a feed
+  file too: the estimates are seeds, the solve overwrites them, but a stale
+  seed naming a component that no longer exists is refused before the solve.
+* **`runCase` refuses a second run while `log.<app>` exists** (exit 1, the
+  old log kept): `runCase -f <case>`.
+* **The feed files do not follow the formula.**  A dose, a coat or a basis
+  rate changed means every `0/<feed>` rewritten: kmol/h = mg per item x 1e-6
+  x items per hour / MW, written twice for a solid (overall and in `phases {
+  solid {} }`); water inlets as `componentMassFlows { water ... kg/h; }
+  phase liquid;`; the drying air as N2 / O2 / water in kmol/h.  Write a
+  script; `0/` files are flat text.
+* **A price is per kg of a RESULT stream.**  `price` in `constant/economics`
+  is EUR/kg of `packagedTablets`, whose kg/h moves with the formula, the
+  coat and the reject split; nothing recomputes it.  After every change:
+  price per kg = price per item x accepted items per hour / kg per hour of
+  the product stream (read from the stream table), and say so in the
+  `provenance`.
+* **A bigger lot refuses the machines, with the remedy**: `ratedMachine
+  '<unit>': the machine does NOT fit the lot -- utilisation 1.86886 ... 2
+  machine(s) of this rating would carry it: declare installed { count 2; ... }
+  or a larger machine, or a longer stage`; a quote on a refused unit stops
+  the run (exit 2).  Raise the rating (a vendor's data sheet) or declare the
+  second machine.
+* **More water to dry is ANNOUNCED, not refused.**  Doubling the binder water
+  on the base case's 250 kmol/h of air gave `[SolidDryer] WARNING: the hot
+  air cannot pay for drying ... X_final = 2.832 kg/kg (73.90 wt% wet) ...
+  [heat-bound]` and an NPV at exit 0.  Read the dryer blocks; scale the air
+  (`0/fbdAirIn`, `0/coatingAirIn`) or the inlet temperature until the verdict
+  is `[isotherm-reached]`.  The batch plan's drying time is DECLARED and does
+  not move with it.
+* **The deliverables the base cases do not declare**: `breakEven {}`,
+  `workingCapitalMethods { ... }` and (donepezil01) `sensitivity { ... }` --
+  add them to `economics` (pack `design-cost`, section 4).  Until 2026-11-08
+  `breakEven {}` beside an itemised `workingCapital { ... }` stopped the run
+  at the s = 0 search point; fixed.
+* **A route change is a list of deletions in five files.**  Direct
+  compression from the wet-granulation case: the units in `flowsheetDict`
+  (and the final blender's `inputs` re-wired to the powders), their `0/`
+  files, their stages / cleaning entries / sizing entries / quotes / water
+  `uses` in `postDict`, their `items` and room `equipment` listings in
+  `layoutDict`, their inlet prices in `constant/economics`; then init0.  It
+  ran at the first attempt; the rooms of the removed train stay in the
+  building (and in the HVAC) until you remove them.
+* **No unit models a capsule filler, a filling line, a lyophiliser or a
+  sterilising filter**: a group with such a product declares `splitter`
+  placeholders rated as `massRate` machines, quotes them, and says in its
+  report that nothing of the machine is modelled.
+
 <!-- RUN: scratch case tabletMini (this example, verbatim); CHOUPO_HOME=/home/vitor/Choupo bin/choupo-init0 . ; choupoSolve .  -> exit 0, converged. -->
 <!-- SOURCES (src/postProcessing unless noted)
  batchPlan: header grammar and method BatchPlanPass.H:36-150 (declaration), BatchPlanPass.cpp: product :950-956, production :966-985, lowUtilisation :995,
