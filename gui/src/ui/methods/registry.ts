@@ -66,7 +66,7 @@ export type MethodToolId =
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
   | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
   | "sour-water" | "rules-of-thumb" | "bode"
-  | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup"
+  | "tear-streams" | "relaxation" | "wegstein" | "active-set-qp" | "lub-scaleup"
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
   | "declared-pathways" | "reactor-ladder" | "route-screening"
   | "least-squares" | "element-potential" | "limiting-reactant"
@@ -233,6 +233,16 @@ export const METHOD_PATHS: MethodPath[] = [
       { tool: "approach-to-equilibrium", why: "How close a reactor can get to equilibrium, and what a Gibbs reactor assumes." },
       { tool: "declared-pathways", why: "Equilibrium over the reactions you allow, against every pathway the species permit." },
       { tool: "vanheerden", why: "The hazard: heat generated against heat removed gives three steady states and an ignition." },
+    ],
+  },
+  {
+    id: "recycle-numerics",
+    title: "Recycle numerics",
+    intro: "From why a recycle is iterated to how the cut is chosen: relaxation, Wegstein, and the tear.",
+    steps: [
+      { tool: "relaxation", why: "Why a recycle must be iterated, and how a step factor tames an oscillating loop but never a runaway one." },
+      { tool: "wegstein", why: "The same factor, chosen for you per variable from the last two passes, on a tear that holds a flow and a temperature." },
+      { tool: "tear-streams", why: "Which stream to cut in the first place: the engine detects every cycle and leaves the cut to the author." },
     ],
   },
 ];
@@ -1326,6 +1336,23 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "own refusal when the declaration is withdrawn: it finds the cycle, "
       + "names every unit on it, and still will not choose the cut for you.",
     theory: "ch:newton-tears",
+  },
+  {
+    id: "relaxation", blurb: "Why a recycle is iterated, and how a step factor tames it.",
+    label: "Relaxation (the first rung of recycle numerics)",
+    discipline: "Flowsheeting & numerics", kind: "construction",
+    status: "live",
+    origins: ["engine", "page", "assumption"],
+    teaches: "A recycle is a fixed-point problem, and direct substitution "
+      + "converges only when the loop gain is below 1 in magnitude.  Take "
+      + "only a fraction w of each step and the slope becomes 1 - w + w a: "
+      + "a small w tames an oscillating loop, and NO w rescues a runaway one.  "
+      + "Drag the gain and the factor on four live figures -- the cobweb, "
+      + "the error per pass for direct, relaxed, Wegstein and Newton, the "
+      + "(a, w) map -- then watch the real process03_recycle solved under "
+      + "recycleRelaxation.  Wegstein is the same formula with the factor "
+      + "chosen for you; Newton uses the whole slope and a line search.",
+    theory: "ch:relaxation",
   },
   {
     id: "wegstein", blurb: "Watch Wegstein accelerate a mixed tear vector, variable by variable.", label: "Wegstein acceleration (closing a recycle)",

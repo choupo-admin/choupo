@@ -162,10 +162,35 @@
           "href": "/app/?workspace=methods&tool=vanheerden&path=reaction-engineering"
         }
       ]
+    },
+    {
+      "id": "recycle-numerics",
+      "title": "Recycle numerics",
+      "intro": "From why a recycle is iterated to how the cut is chosen: relaxation, Wegstein, and the tear.",
+      "steps": [
+        {
+          "tool": "relaxation",
+          "label": "Relaxation (the first rung of recycle numerics)",
+          "why": "Why a recycle must be iterated, and how a step factor tames an oscillating loop but never a runaway one.",
+          "href": "/app/?workspace=methods&tool=relaxation&path=recycle-numerics"
+        },
+        {
+          "tool": "wegstein",
+          "label": "Wegstein acceleration (closing a recycle)",
+          "why": "The same factor, chosen for you per variable from the last two passes, on a tear that holds a flow and a temperature.",
+          "href": "/app/?workspace=methods&tool=wegstein&path=recycle-numerics"
+        },
+        {
+          "tool": "tear-streams",
+          "label": "Tear streams (where to cut a recycle)",
+          "why": "Which stream to cut in the first place: the engine detects every cycle and leaves the cut to the author.",
+          "href": "/app/?workspace=methods&tool=tear-streams&path=recycle-numerics"
+        }
+      ]
     }
   ],
-  "liveTools": 73,
-  "registryTools": 73,
+  "liveTools": 74,
+  "registryTools": 74,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -768,6 +793,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=tear-streams"
+    },
+    {
+      "id": "relaxation",
+      "label": "Relaxation (the first rung of recycle numerics)",
+      "blurb": "Why a recycle is iterated, and how a step factor tames it.",
+      "discipline": "Flowsheeting & numerics",
+      "teaches": "A recycle is a fixed-point problem, and direct substitution converges only when the loop gain is below 1 in magnitude.  Take only a fraction w of each step and the slope becomes 1 - w + w a: a small w tames an oscillating loop, and NO w rescues a runaway one.  Drag the gain and the factor on four live figures -- the cobweb, the error per pass for direct, relaxed, Wegstein and Newton, the (a, w) map -- then watch the real process03_recycle solved under recycleRelaxation.  Wegstein is the same formula with the factor chosen for you; Newton uses the whole slope and a line search.",
+      "origins": [
+        "engine",
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=relaxation"
     },
     {
       "id": "wegstein",
