@@ -176,8 +176,8 @@
   self-consistent conversion would iterate the mean MW against the predicted
   composition.  It is not iterated here, and the size of what is left on the
   table is MEASURED rather than waved at: the run's own converged/distillate
-  comes out at mean MW 57.2186, i.e. +0.14 % on the 57.13841 used above, so the
-  distillate leaves at 8126.4 kg/h against the Table-2 8115 kg/h.  One
+  comes out at mean MW 57.2147, i.e. +0.13 % on the 57.13841 used above, so the
+  distillate leaves at 8126.0 kg/h against the Table-2 8115 kg/h.  One
   iteration would close that; it is left open because the residue is smaller
   than the 0.1 wt % resolution of the composition it came from.  If a future
   edit moves the distillate composition materially, this number must be
@@ -205,7 +205,7 @@
 
   B = F - D is the engine's mole balance: 452.710957 - 142.023556 =
   310.687401 kmol/h.  Priced at the PREDICTED bottoms composition that comes
-  out at 18107.6 kg/h, 0.06 % under the Table-2 18119 kg/h.  It cannot land on
+  out at 18108.0 kg/h, 0.06 % under the Table-2 18119 kg/h.  It cannot land on
   it exactly: F's molar total
   is fixed by the feed mass and the feed's measured composition, D's by the
   distillate mass and the distillate's measured composition, and the paper's
@@ -233,7 +233,7 @@
   8.  BOILER DUTY 10.240 MW -- transcribed, and NOT claimed as an anchor
   ---------------------------------------------------------------------------
 
-  The run reports a reboiler duty of about 8.47 MW against the Table-2
+  The run reports a reboiler duty of about 8.09 MW against the Table-2
   10.240 MW.  The case does NOT anchor on that, and the reason is in its own
   output rather than in an argument.
 
@@ -258,7 +258,7 @@
   reflux (7) and the condenser's own subcooling duty are not in this figure.
 
   A duty comparison resting on any of that would be a number pretending to be
-  evidence.  10.240 MW is transcribed; 8.47 MW is reported; neither is an
+  evidence.  10.240 MW is transcribed; 8.09 MW is reported; neither is an
   anchor row.
 
   ---------------------------------------------------------------------------
@@ -385,83 +385,98 @@
   14.  THE ANCHOR TABLE -- observed, and it does NOT all agree
   ---------------------------------------------------------------------------
 
+  RE-MEASURED 2026-11-08 (C239) on the current engine.  The table this section
+  carried before (i-butane 94.033 / n-butane 0.0015 wt % overhead) was taken
+  BEFORE the C235 real-vapour liquid reference and had gone stale; the
+  numbers below are the run's own converged/ streams.  `expected` carries the
+  rows (header block "THE KLEMOLA ANCHORS"); this section is the reading.
+
   Predicted product compositions, converted back to wt % from this case's own
-  converged/ streams, beside the Table-2 measurements.  The "band" column is
-  the measurement's OWN rounding: the paper prints to 0.1 wt %, so a printed
-  value v carries +/-0.05 wt %.
+  converged/ streams, beside the Table-2 measurements.  The printed band is the
+  table's rounding (0.1 wt %, so +/-0.05); the ANCHOR band is wider and is
+  justified in `expected` (the table's own key closure, about 1 %).
 
-    DISTILLATE (predicted 8126.4 kg/h vs the 8115 kg/h spec -- see 4)
+    DISTILLATE (predicted 8126.0 kg/h vs the 8115 kg/h spec -- see 4)
 
-      component     predicted   measured    band        verdict
+      component     predicted   measured    rounding     anchor row
       -------------------------------------------------------------------
-      i-butane        94.033       93.5    +/-0.05      +0.53 wt % HIGH
-      n-butane         0.0015       0.2    +/-0.05      LOW by ~130x
+      i-butane        93.792       93.5     +/-0.05      ANCHOR, mole fraction
+                                                         0.92330 vs 0.91917
+                                                         (+0.45 %, band 1 %): IN
+      n-butane         0.1115       0.2     +/-0.05      OPEN (-44 %): no row,
+                                                         pinned self-recorded
 
-    BOTTOMS (predicted 18107.6 kg/h vs the Table-2 18119 kg/h -- see 6)
+    BOTTOMS (predicted 18108.0 kg/h vs the Table-2 18119 kg/h -- see 6)
 
-      component     predicted   measured    band        verdict
+      component     predicted   measured    rounding     anchor row
       -------------------------------------------------------------------
-      i-butane         0.351        0.3    +/-0.05      INSIDE the band
-      n-butane        97.984       98.1    +/-0.05      -0.12 wt %, just out
+      i-butane         0.461        0.3     +/-0.05      OPEN (+54 %): no row,
+                                                         pinned self-recorded
+      n-butane        97.932       98.1     +/-0.05      ANCHOR, mole fraction
+                                                         0.98203 vs 0.97972
+                                                         (+0.24 %, band 1 %): IN
 
-  THREE OF THE FOUR KEY ROWS LAND WHERE A KEY-COMPONENT ANCHOR WANTS THEM,
-  around the 1 % level at which record section 5.4 says the keys close at all.
-  THE FOURTH DOES NOT, and it is not a rounding argument: the model rejects
-  n-butane overhead about two orders of magnitude harder than the plant did.
-  0.2 wt % is at the printing resolution (+/-25 % before any physics), but 130x
-  is not a resolution effect.
-
-  It is recorded, not explained and not tuned.  What can be said without
-  guessing: the disagreement is NOT the efficiency, because the control arm
-  column15 at E_MV = 1 gives 0.0144 wt % -- still an order of magnitude below
-  the measurement.  Under this model 74 IDEAL trays already over-separate this
-  key, which is the opposite direction from the paper's own finding that 74
-  real trays behave as 88 ideal ones.  Candidates a future slice could test,
-  each of which this case declares as an assumption or a caveat above: the
-  single column pressure (A2), the tray-numbering direction (A0), the
-  unmodelled subcooled reflux (7), the absent per-stage energy balance (8),
-  and seven interim component records (thermo dict).  Whichever it is, an
-  anchor that disagreed and said so is worth more than one that agreed after
-  something was adjusted to make it.
+  TWO OF THE FOUR KEY ROWS AGREE, AT THE 1 % LEVEL THE SOURCE ITSELF SUPPORTS;
+  TWO DO NOT, AND THEY MISS IN OPPOSITE SENSES: the rectifying section
+  is too clean (n-butane overhead 44 % low) while the stripping section is not
+  clean enough (i-butane in the bottoms 54 % high).  Neither is a rounding
+  effect at the printing-resolution band.  They are recorded, not tuned.  What
+  can be said without guessing:
+    * The efficiency does not explain the pair.  Column15 (E_MV = 1) gives
+      0.728 wt % n-butane overhead and 0.734 wt % i-butane in the bottoms --
+      the plant's 0.2 and 0.3 lie BETWEEN the two arms for the first and BELOW
+      both for the second.
+    * The paper's own balance cannot resolve either number.  Feed i-butane
+      (7712.8 kg/h) less the printed distillate i-butane (7587.5) leaves 125
+      kg/h for the bottoms, 0.69 wt % of 18119 kg/h, against the printed 0.3:
+      the printed bottoms value contradicts the printed feed and distillate,
+      and the model (0.46) lies between them.  For n-butane the feed minus the
+      printed bottoms is -15 kg/h for the distillate, so the printed 16 kg/h
+      is inside the table's own 30 kg/h closure error.  Two of the four
+      measured numbers are therefore not usable as a target below ~1 %.
+    * Candidate model gaps acting on exactly these minors: the single column
+      pressure (A2: the stripping section runs colder than the plant), the
+      tray-numbering direction (A0), the unmodelled subcooled reflux (7), the
+      absent per-stage energy balance (8), seven interim component records.
 
   THE OTHER FIVE COMPONENTS ARE NOT ANCHOR ROWS and are listed only so nobody
   reads their absence as concealment: propane 4.84 vs 5.3 wt % overhead and
-  0.00 vs 0.3 in the bottoms; trans-2-butene 0.00 vs 0.6 overhead; i-butene
-  0.58 vs 0 overhead.  Record section 5.4 already showed these do not close in
-  the SOURCE -- propane +23 %, i-butene -100 %, trans-2-butene +155 % between
-  the feed and the two products as printed -- so a number computed here has
-  nothing to be compared against.  Anchoring on them would be measuring the
-  printing.
+  0.00 vs 0.3 in the bottoms; trans-2-butene 0.001 vs 0.6 overhead;
+  1-butene / i-butene 0.63 / 0.63 against the printed 0.4 / 0.0.  Record section 5.4 already showed these do not close in the SOURCE --
+  propane +23 %, i-butene -100 %, trans-2-butene +155 % between the feed and
+  the two products as printed -- so a number computed here has nothing to be
+  compared against.  Anchoring on them would be measuring the printing.
 
   ---------------------------------------------------------------------------
   15.  THE TWO ARMS, side by side
   ---------------------------------------------------------------------------
 
   column14 (E_MV = 1.191) against column15 (E_MV = 1.0), everything else
-  identical:
+  identical (both re-run 2026-11-08):
 
       quantity                        E_MV 1.191    E_MV 1.0    measured
       -------------------------------------------------------------------
-      distillate i-butane, wt %          94.033      93.975       93.5
-      distillate n-butane, wt %           0.0015      0.0144       0.2
-      bottoms    i-butane, wt %           0.351       0.378        0.3
-      bottoms    n-butane, wt %          97.984      97.977       98.1
-      top temperature, K                314.250     314.116        --
-      reboiler temperature, K           329.437     329.435        --
-      outer iterations                      349         426         --
+      distillate i-butane, wt %          93.792      93.185       93.5
+      distillate n-butane, wt %           0.1115      0.728        0.2
+      bottoms    i-butane, wt %           0.461       0.734        0.3
+      bottoms    n-butane, wt %          97.932      97.656       98.1
+      top temperature, K                319.783     319.755        --
+      reboiler temperature, K           335.078     335.036        --
+      outer iterations                      762         289         --
 
-  WHAT THE EFFICIENCY BUYS, read off that table: essentially nothing on the
-  major components -- i-butane overhead moves 0.06 wt %, n-butane in the
-  bottoms 0.007 -- and a real factor on the MINOR key in each product: the
-  n-butane carried overhead drops about 10x, and the i-butane lost to the
-  bottoms falls 7 %.
+  WHAT THE EFFICIENCY BUYS, read off that table: the major components move by
+  0.3-0.6 wt % and the MINOR key in each product by a factor of 6.5 (n-butane
+  overhead) and 1.6 (i-butane in the bottoms).  For n-butane overhead the
+  ideal-tray arm sits above the measurement (0.73 vs 0.2) and the efficient arm
+  below it (0.11 vs 0.2): the plant's 0.2 wt % is bracketed by the two arms,
+  which says that an efficiency of the measured order is the right order.
 
   That shape is worth more than a single number.  At 74 trays and R = 11.4 this
   column is far past the point where separating power limits the major
-  components; extra power goes entirely into the impurity that is left, which
-  is exactly where a plant's money is.  A student who expects a 19 % efficiency
-  bonus to show up as a 19 % anything will not find it, and finding out why is
-  the lesson.
+  components; extra power goes almost entirely into the impurity that is left,
+  which is exactly where a plant's money is.  A student who expects a 19 %
+  efficiency bonus to show up as a 19 % anything will not find it, and finding
+  out why is the lesson.
 \*---------------------------------------------------------------------------*/
 
 units
