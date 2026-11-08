@@ -49,7 +49,10 @@ HERE against the solver sources alone with -D_GLIBCXX_ASSERTIONS:
       x < 0 and is refused as a non-finite column (the Rank 2 defect, now
       named); with typX = 1e-10 and lower = 0 the root 1e-10 e^0.5 is found
       to 1e-10 relative.
-  (e) THE DEFAULT AND THE ONE OPT-IN, read from the source.  NewtonND.H
+  (f) FD JACOBIAN AT A TRACE FRACTION (slice 2, Rank 2).  A 2x2 residual with
+      x1 = 1e-10 inside ln x1: the Newton step taken under typX/lower equals
+      the analytic one to 1e-4 relative.
+  (e) THE DEFAULT AND THE OPT-INS, read from the source.  NewtonND.H
       declares `Globalisation globalisation = Globalisation::legacy;`, and
       DistillationColumn.cpp's full MESH declares `Globalisation::armijo`
       with lower and upper bounds (slice 1's single proof caller).
@@ -196,6 +199,12 @@ def main() -> int:
          f"typX = 1e-10 did not find 1e-10 e^0.5: converged "
          f"{v.get('scaleTypConverged')}, relative error "
          f"{v.get('scaleTypRelErr')}")
+    # (f) FD Jacobian at a trace fraction (slice 2, Rank 2)
+    need("f", num("fdStepRelErr") < 1e-4,
+         "the Newton step on the 2x2 residual with x1 = 1e-10 inside ln x1 "
+         "differs from the analytic one by "
+         f"{v.get('fdStepRelErr')} relative (limit 1e-4): the finite-"
+         "difference Jacobian is not scaled by typX")
     # (e) source
     hdr = strip_comments((ROOT / "src/solver/NewtonND.H").read_text())
     need("e", re.search(r"Globalisation\s+globalisation\s*=\s*"
@@ -210,6 +219,21 @@ def main() -> int:
          and re.search(r"optsF\.upper(\.assign\(|\s*=)", col) is not None,
          "the full-MESH column no longer opts in (globalisation armijo with "
          "lower and upper bounds) -- slice 1's proof caller is gone")
+    #  slice 2: the simultaneous MESH and the multi-reaction CSTR opt in too
+    need("e", re.search(r"\bopts\.globalisation\s*=\s*solver::Globalisation::"
+                        r"armijo", col) is not None
+         and re.search(r"\bopts\.lower(\.assign\(|\s*=)", col) is not None
+         and re.search(r"\bopts\.upper(\.assign\(|\s*=)", col) is not None
+         and re.search(r"\bopts\.typX(\.assign\(|\s*=)", col) is not None,
+         "the simultaneous MESH no longer opts in (armijo, lower, upper, "
+         "typX) -- slice 2's column caller is gone")
+    cstr = strip_comments((ROOT / "src/unitOperations/reactor/CSTR.cpp"
+                           ).read_text())
+    need("e", re.search(r"\bo\.globalisation\s*=\s*solver::Globalisation::"
+                        r"armijo", cstr) is not None
+         and re.search(r"\bo\.typX(\.assign\(|\s*=)", cstr) is not None,
+         "the multi-reaction CSTR no longer opts in (armijo, typX) -- "
+         "slice 2's reactor caller is gone")
 
     if fails:
         print("check_newton_globalisation: FAILED")
@@ -217,7 +241,7 @@ def main() -> int:
             print("  " + f)
         return 1
     print("check_newton_globalisation: OK -- the Newton's globalisation "
-          "contract holds on four synthetic problems compiled against the "
+          "contract holds on five synthetic problems compiled against the "
           "solver sources: from a singular start the legacy default still "
           f"stalls ({v['uphillLegacyStalled']} uphill steps, the default "
           "unmoved) while Armijo + Levenberg-Marquardt converges in "
@@ -229,9 +253,12 @@ def main() -> int:
           "NaN pivot and a row dependent to working precision while "
           "factoring row- and column-scaled matrices and a 1e-31 matrix; typX = 1e-10 solves ln(x/1e-10) = 0.5 where the absolute "
           "step is refused; NewtonND.H defaults to legacy and the full MESH "
-          "opts in.  NOT covered: whether corpus cases SHOULD converge (the "
-          "goldens), callers that have not opted in, the MESH's sum(x) <= 1 "
-          "constraint (slice 2).")
+          "opts in.  a 2x2 residual with x1 = 1e-10 inside ln x1 gets its "
+          f"analytic Newton step to {v['fdStepRelErr']} relative (typX); the "
+          "simultaneous MESH and the multi-reaction CSTR opt in too.  "
+          "NOT covered: whether corpus cases SHOULD converge (the "
+          "goldens), callers that have not opted in, the MESH sum(x) <= 1 "
+          "constraint (refused only beyond 0.05 below zero, see DistillationColumn.cpp).")
     return 0
 
 

@@ -31,6 +31,7 @@ License
 #include "ReactorOutlet.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
+#include "core/InfeasibleTrial.H"
 #include "thermo/reaction/ExpressionRate.H"
 #include "thermo/reaction/ReactionRate.H"
 #include "thermo/reaction/Reaction.H"
@@ -679,6 +680,26 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     {
         auto res = [&](const sVector& xi) -> sVector
         {
+            //  A TRIAL EXTENT THAT DRIVES AN OUTLET FLOW BELOW ZERO IS NOT A
+            //  STATE (C245 slice 2, kernel audit Rank 2): the clamp inside
+            //  flowsOf made the rate law see a flat flow while the Jacobian
+            //  still moved.  The trial is REFUSED -- the Newton's own
+            //  "shorten the step" -- instead.  The tolerance, 1e-6 of the
+            //  feed, is the room a finite-difference probe needs at a VERTEX
+            //  of the feasible set: in A -> B -> C fed pure A, at xi = 0 the
+            //  second extent cannot move either way (B = 0, C = 0), and a
+            //  strict test leaves its Jacobian column unprobeable (measured
+            //  on cstr03, 2026-11-08).  A flow inside that room is read as
+            //  zero by flowsOf, as it always was.
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                scalar v = F_i_in[i];
+                for (std::size_t j = 0; j < R; ++j) v += nu[j][i] * xi[j];
+                if (!(v >= -1.0e-6 * std::max(F_in, 1.0)))
+                    throw InfeasibleTrial("CSTR: a trial extent makes the"
+                        " outlet flow of '" + thermo.comp(i).name()
+                        + "' negative (infeasible trial)");
+            }
             const sVector Fi = flowsOf(xi);
             sVector conc(n, 0.0), xx(n, 0.0);
             scalar Ftot = 0.0;
@@ -698,6 +719,12 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         solver::NDOptions o;
         o.tolerance = 1.0e-14 * std::max(F_in, 1.0);
         o.maxIter   = 200;
+        //  The Armijo contract with the extent's own scale (the feed, mol/s)
+        //  as typX, so the finite-difference step is not the absolute 1e-7 of
+        //  a flow of 1e-3 mol/s; the negative-flow refusal above is the
+        //  feasibility the contract's line search honours.
+        o.typX.assign(R, std::max(F_in, 1.0e-12));
+        o.globalisation = solver::Globalisation::armijo;
         const auto sl = solver::newtonND(res, sVector(R, 0.0), o);
         okOut = sl.converged;
         lastRes = sl.residual;
