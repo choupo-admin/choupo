@@ -78,6 +78,7 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
+| running | C251 (Vitor, 11-08 night): EduTools get a way in -- a home (what they are, the guided sequences as cards, the shelves), no tool opens by default, "Path" becomes "Guided sequence" with step and why visible; GUI general, lands with the PIF batch | C251 |
 | running | C248 (Vitor, 11-08 night): PIF readiness for the 11-09 tutorial -- a Fable general walks the two tablet cases as a student, fixes the cheap blockers, writes the readiness review (docs/reviews/) and the student path page (docs/); site republished after it lands | C248 |
 | running | C245 kernel numerical audit: slices 1, 2, 4, part of 11 and the adsorber hot spots LANDED (6bceec76d; slice 2 in the merge after 43c60cd15: tear Newton, simultaneous MESH and CSTR declare bounds, infeasible trials instead of clips; 17 closure rows re-recorded); next slice 3 (residual purity: aqueous columns and reactive phase 1 back on the bounded Newton), then 5, 6 | C245 |
 | done | C241 LANDED (bab4dff30): BRAIN.md with its generator and `check_brain_fresh` (brain-fresh-gate), `@BRAIN.md` import, CLAUDE.md 4379 -> 1068 lines by relocation to `docs/architecture/settled-contracts.md` (119 units verbatim); the second cut (sections 0/2/10) is the architect's own editing, later | C241 |
