@@ -151,6 +151,20 @@ public:
               " resolve a distinct liquid density root.");
     }
 
+    // PSEUDO-ROOT flags (C245 slice 4): true when the requested phase has NO
+    // root of its kind at (T, P, y) -- past that phase's spinodal -- and the
+    // value the EoS returns under that label is an extrapolation (the
+    // generic cubic's pseudo-root, CubicEoS.H).  Default false: a model that
+    // never extrapolates a root (ideal gas) or does not yet say so.
+    virtual bool vapourRootIsPseudo(scalar, scalar, const sVector&) const
+    {
+        return false;
+    }
+    virtual bool liquidRootIsPseudo(scalar, scalar, const sVector&) const
+    {
+        return false;
+    }
+
     virtual const std::string& modelName() const = 0;
 
     // Minimum-parameter-set MANIFEST (validation boundary, NOT the hot path):

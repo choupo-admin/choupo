@@ -8012,7 +8012,8 @@ coefficient $\hat\varphi_i$ that replaces the ideal-gas $\varphi_i =
 1$, and the enthalpy/entropy \emph{departure functions} $H^{\mathrm
 R}, S^{\mathrm R}$ that feed the energy balance at elevated pressure
 --- all in closed form, exactly as
-\file{src/thermo/equationOfState/SRK.cpp} computes them.  Then where
+\file{src/thermo/equationOfState/CubicEoS.cpp} computes them (SRK.cpp
+supplies only SRK's constants and slope).  Then where
 Peng-Robinson differs by one pair of constants.
 \end{whatyoulllearn}
 
@@ -8124,9 +8125,10 @@ Eq.~\eqref{eq:srk-pv} rearranges to the cubic
    \label{eq:srk-cubic}
 \end{equation}
 Choupo solves Eq.~\eqref{eq:srk-cubic} \emph{analytically} by
-Cardano's method (\code{cardano\_root}), not by iteration ---
-a cubic has a closed-form solution, so there is no Newton loop and no
-initial guess to get wrong.  The discriminant
+Cardano's method (\code{CubicEoS::pickRoot}), not by iteration ---
+a cubic has a closed-form solution, so there is no initial guess to
+get wrong (the chosen root then takes at most two Newton steps on the
+cubic itself, to recover digits Cardano loses near a double root).  The discriminant
 $\Delta = R_d^2/4 + Q_d^3/27$ of the depressed cubic decides the
 branch: $\Delta > 0$ gives one real root (single fluid phase);
 $\Delta \le 0$ gives three real roots, evaluated through the
@@ -8134,11 +8136,42 @@ trigonometric form $w_k = 2\sqrt[3]{r}\cos\!\bigl((\phi +
 2\pi k)/3\bigr)$.  When three roots exist the \emph{largest above
 $B$} is the vapour root (largest molar volume); the smallest is
 the liquid root.  The $\gamma$-$\varphi$ path keeps the \textbf{vapour
-root} (\code{SRK::phi}) as the $\hat\varphi_i$ supplier for the gas
+root} (\code{CubicEoS::phi}) as the $\hat\varphi_i$ supplier for the gas
 phase; the phi-phi world (\code{vleWorld phiPhi;},
 Chapter~\ref{ch:fugacity}) also takes the \textbf{liquid root}
-(\code{SRK::phiLiquid}) for its
+(\code{CubicEoS::phiLiquid}) for its
 $K_i=\hat\varphi_i^L/\hat\varphi_i^V$ ratio.
+
+\paragraph{When the requested root does not exist: the pseudo-root.}
+With \emph{one} real root the cubic still has a side.  In the reduced
+volume $u = v/b = Z/B$ and the reduced attraction $\beta = a/(b\Rgas T)
+= A/B$, the spinodal condition $\partial P/\partial v = 0$ reads
+$\beta = h(u) = (u+\epsilon)^2(u+\sigma)^2/\bigl[(2u+\epsilon+\sigma)
+(u-1)^2\bigr]$ (SRK: $\epsilon = 0$, $\sigma = 1$), and $h$ has one
+minimum $(u_c, \beta_c)$, the critical point of the cubic ($\beta_c =
+\Omega_a/\Omega_b = 4.934$, $u_c = 3.847$ for SRK).  If $\beta \le
+\beta_c$ the isotherm has no spinodal and the one root serves both
+phases.  Otherwise the root is liquid-like ($u < u_c$) or vapour-like
+($u > u_c$), and a phase asked for on the \emph{other} side has no
+root at this $(T, P, y)$: a vapour composition at a subcooled state, or
+a pressure past the vapour spinodal.  Handing that phase the other
+phase's root, as the engine did until C245 (2026-11-08), prices a
+``vapour'' on the liquid's own density: every $K$ comes out near 1 and
+a column can converge to a trivial profile (column08, unseeded, did).
+Choupo returns a \textbf{pseudo-root} instead: the requested phase's
+\emph{spinodal} volume, $Z = B\,u_V$ for a vapour and $B\,u_L$ for a
+liquid, which equals the vanishing root at the spinodal pressure (so
+$Z$ is continuous there) and holds the spinodal density beyond it.
+The run announces it once per pass (``SRK vapour pseudo-root'' or
+``PR liquid pseudo-root'' in the caveats), because any $K$ or property
+priced there is an extrapolation, not a state of that phase; callers
+can also ask \code{vapourRootIsPseudo} / \code{liquidRootIsPseudo}.
+The labelled pseudo-root is the idea of Poling, Grens \& Prausnitz,
+\emph{Ind.\ Eng.\ Chem.\ Process Des.\ Dev.} 20 (1981) 127;
+Mathias, Boston \& Watanasiri, \emph{AIChE J.} 30 (1984) 182
+extrapolate the density past the spinodal, where Choupo holds it at
+the spinodal value --- simpler, continuous in $P$, with a jump in
+$\partial Z/\partial P$ that is stated rather than hidden.
 
 \begin{figure}[ht]\centering
 \begin{tikzpicture}[
@@ -8266,8 +8299,10 @@ $\ln$ factor           & $\ln\!\dfrac{Z+B}{Z}$
 \end{center}
 In the code this is literally the difference between
 \file{SRK.cpp} and \file{PR.cpp}: the constants
-\code{OMEGA\_A}, \code{OMEGA\_B}, the slope function, and the single
-logarithm \code{ln\_genB}.  PR's third critical condition forces
+\code{OMEGA\_A}, \code{OMEGA\_B}, $(\epsilon, \sigma)$ and the slope
+function.  Everything else --- the roots, $\hat\varphi_i$, the
+departures --- is written once, for the generic $(\epsilon,\sigma)$
+cubic, in \file{CubicEoS.cpp}.  PR's third critical condition forces
 $Z_c = 0.307$ versus SRK's $0.333$ --- both above the true $Z_c
 \approx 0.27$ of most fluids, but PR's is closer, which is why PR
 gives better \emph{liquid} densities.  SRK is often marginally better

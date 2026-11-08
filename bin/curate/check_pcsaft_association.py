@@ -23,6 +23,11 @@ Probes, through the real choupoProps binary:
   REFUSAL-1    a record carrying the association trio PARTIALLY (kappaAB
                removed) refuses at load naming the trio.
   REFUSAL-2    an unknown assocScheme refuses listing the known schemes.
+  REFUSAL-3    a kij whose pair names a component the package does not
+               carry (pcsaft02 with `nButan`) refuses by name (C245 slice
+               4: it used to be DROPPED in silence, the mixture running
+               kij = 0).  By-hand sabotage 2026-11-08: the old silent
+               `if (a < n_ && b < n_)` restored -> this arm FAILS.
   NEGATIVE     pcsaft01_pure_nhexane runs with NO association output and
                its Z / v_molar agree with the pre-association golden at
                1e-10 -- the byte-identity half of the widened validation.
@@ -187,6 +192,39 @@ def main() -> int:
             failures.append("refusal-2: message lacks \"unknown assocScheme"
                             " '5X'\"")
 
+    # ---- REFUSAL-3: a kij on a component the package does not carry -------
+    #  (C245 slice 4).  PCSAFT's constructor used to resolve each declared
+    #  pair's names and, when one was not found, DROP the pair in silence:
+    #  a misspelt `nButan` ran the mixture at kij = 0 with the case's author
+    #  believing it was fitted.  It now refuses by name, as the cubics always
+    #  did.  The probe is pcsaft02 with one inline pair (the inline form the
+    #  builder accepts under regression, `variedBy`) whose j is misspelt.
+    with tempfile.TemporaryDirectory() as td:
+        r3 = Path(td) / "kij"
+        src = ROOT / "tutorials" / "props" / "molecular" / "pcsaft02_states_crosscheck"
+        shutil.copytree(src, r3, ignore=shutil.ignore_patterns(
+            "expected", "log.*", "converged", "reports"))
+        tp = r3 / "constant" / "thermoPhysPropDict"
+        txt = tp.read_text()
+        txt2 = txt.replace(
+            "equationOfState { model PCSAFT; }",
+            "equationOfState { model PCSAFT; binaryInteractions"
+            " { p1 { i propane; j nButan; kij 0.01; variedBy gateProbe; } } }")
+        if txt2 == txt:
+            failures.append("refusal-3: pcsaft02's equationOfState line moved;"
+                            " the probe could not insert its kij")
+        else:
+            tp.write_text(txt2)
+            rc, out = run(r3)
+            if rc == 0:
+                failures.append("refusal-3: a kij naming the unknown component"
+                                " 'nButan' was accepted -- the pair is dropped"
+                                " and the mixture runs kij = 0 in silence")
+            elif "unknown component 'nButan'" not in out:
+                failures.append("refusal-3: the run failed but not by naming"
+                                " the unknown component 'nButan': "
+                                + out.strip().splitlines()[-1][:200])
+
     # ---- NEGATIVE / byte-identity ----------------------------------------
     rc, out = run(NHEX)
     if rc != 0:
@@ -290,7 +328,8 @@ def main() -> int:
     print("check_pcsaft_association: OK -- engine X^D/X^A equal the"
           " independent closed form (1e-6), densities on the per-set"
           " anchors (water: the 2-site fit's own published trade-off),"
-          " partial trio + unknown scheme refuse by name,"
+          " partial trio + unknown scheme + a kij on an unknown"
+          " component (C245) refuse by name,"
           " non-associating corpus numerically untouched (1e-10),"
           " and a TRACE component's ln phi is continuous into infinite"
           " dilution (nHexane in liquid propane 1e-5, ethanol in water"

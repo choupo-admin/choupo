@@ -122,7 +122,7 @@ export const ANATOMY = [
   {
     field: "Tc, Pc, omega",
     question: "How does the REAL gas depart from ideal?",
-    cite: "src/thermo/equationOfState/SRK.cpp · a(T) = a_c·α(Tr; ω)",
+    cite: "src/thermo/equationOfState/CubicEoS.cpp:113 · a(T) = a_c·α(Tr; ω) (the slope m(ω): SRK.cpp:56, PR.cpp:73)",
     note: "Asleep under idealGas; they wake when a case declares a cubic. "
       + "ω is a PARAMETER OF A MODEL as much as a property of a substance "
       + "— it is DEFINED by the vapour pressure at T_r = 0.7, "

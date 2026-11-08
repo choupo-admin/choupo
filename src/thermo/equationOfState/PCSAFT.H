@@ -286,6 +286,14 @@ private:
     // eta; liquid: high eta).  Refuses (throws) outside the physical domain.
     scalar solveDensity(scalar T, scalar P, const sVector& x, bool liquidRoot) const;
 
+    // The bracketed root polished by Newton in ln rho (C245 slice 4): the
+    // bisection that finds it stops on a RELATIVE width, and at most three
+    // Newton steps on g(ln rho) = ln[P(rho)/P] follow, each kept only when
+    // it stays inside [rhoLo, rhoHi] and |g| falls.  On a dilute vapour the
+    // old ABSOLUTE stop on eta (1e-12) left the density ~1e-8 relative off.
+    scalar polishDensity(scalar T, scalar P, const sVector& x, scalar rho,
+                         scalar rhoLo, scalar rhoHi) const;
+
     // ln phi_i at a resolved density: central numeric d(n*aRes)/dn_i at fixed
     // (T,V).  hRel is the relative mole-number step (default the production
     // 1e-6; verify() sweeps it to measure the convergence plateau).

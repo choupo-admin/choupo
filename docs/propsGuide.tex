@@ -397,7 +397,9 @@ $T_c,P_c$ and the temperature shape fixed by $\omega$ (Soave/SRK):
 \alpha(T) = \bigl[\,1 + m(1-\sqrt{T_r})\,\bigr]^2,\quad
 m = 0.48508 + 1.55171\,\omega - 0.15613\,\omega^2,\quad T_r=\tfrac{T}{T_c}
 \]
-(\code{SRK.cpp}; Peng--Robinson uses the analogous $\kappa(\omega)$). This
+(the slope in \code{SRK.cpp}, $a(T)$ itself in \code{CubicEoS.cpp}, the one
+generic cubic both models share; Peng--Robinson uses the analogous
+$\kappa(\omega)$). This
 $a(T)$ is what produces the departure functions $H-H^\circ$, $S-S^\circ$ and the
 compressibility $Z$ --- the real-gas correction layered on top of the ideal-gas
 caloric result. The same $T_c,T_b$ also drive Watson's latent heat,
@@ -424,7 +426,8 @@ with $S^{\mathrm{R}}$ supplied by whichever equation of state the case
 declares: SRK carries the closed form
 $S^{\mathrm{R}} = R\ln(Z-B) + (\mathrm{d}a/\mathrm{d}T / b)\,
 \ln\!\bigl((Z+B)/Z\bigr)$ (Sandler's eq.~6.4-31, cited in
-\file{SRK.cpp}), Peng--Robinson its generalised-cubic analogue, and
+\file{CubicEoS.cpp}, written once for both cubics), Peng--Robinson its
+generalised-cubic analogue, and
 IF97 water evaluates its own fundamental-equation entropy directly.
 PC-SAFT computes its residual at constant density, $(T,\rho)$, and
 converts it to the $(T,P)$ departure the sum above needs with
