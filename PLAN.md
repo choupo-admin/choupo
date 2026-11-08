@@ -67,7 +67,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 Retaken after each full sweep from `build/suiteJobTimes.tsv` (real seconds per job;
 `suiteTimings.csv` holds gaps between result lines).  A case that grew is a defect.
-First list, the C235 sweep of 2026-11-07, a parallel run: swro01_campoDalias 284,
+List of 2026-11-08 (main f468736fd, parallel): swro01_campoDalias 98, check_schema_coverage 68, nanofiltran_geraldesAlves2008 62, greenAmmonia03 50, gen_sdem_validation 37, check_inlet_resolution 31, apalutamide01 28, check_plant_layout 27, checkHeaderSelfContained 26, dspmde01 24.  Previous list (C235 sweep, 11-07): swro01_campoDalias 284,
 ctrl17 210, ctrl19 113, greenAmmonia03_basicDesign 74, ctrl08 58,
 greenAmmoniaPEQ_baseCase 54, ctrl06 51, nanofiltran_geraldesAlves2008 50,
 apalutamide01_tablets 42; slowest gate check_schema_coverage 77.  Found and fixed so far: aceticAcid02_plant 46.5 s (2026-10-14) -> 391 s (2026-11-07,

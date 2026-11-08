@@ -3223,6 +3223,22 @@ accepts today, and that is a policy call.
 > pressure).  PHASE 2, later and separately: greenAmmonia03's converter shell and
 > cooled PFR into the reference plant, a physics change that re-records it.
 
+> **THE SATURDAY BATCH LANDED (2026-11-07/08, f468736fd): C228, C183, C234, C229, C244
+> phase 1, validated as ONE tree** (C242's batch rule, taken the first time): four
+> integration rounds -- the pinch rows recorded before C235, three gates C229's ports
+> fooled, a fourth path level the GUI registry cannot read (the ammonia ladder now sits
+> flat in steady/reactors), a sector sub-case walked alone, an element-closure gate
+> that accused an unrun case -- then scope 58/0, --gui 45/0, --fast 77/0.  THE FULL
+> SWEEP on main: 851 PASS, 5 FAIL.  One real (codeMap stale after the moves,
+> regenerated).  FOUR ARE THE PRIMARY CHECKOUT'S OWN FILES, not the tree: the GUI's
+> pair-tier test bundles Vitor's private `data/local/` pairs, `check_origin_vocabulary`
+> reads an untracked `MORNING.md`, `check_git_visibility` sees the local
+> `bin/curate/refs/` and `bin/dwsim-runner/` -- the same gates and tests passed on the
+> clean integration tree.  FINDING, to fix: a sweep run in the primary checkout judges
+> untracked local files; the Saturday sweep runs in a clean worktree from now on.
+> Slowest (real seconds): swro01 98 (was 289), check_schema_coverage 68, nanofiltran 62,
+> greenAmmonia03 50, gen_sdem_validation 37; ctrl17 and ctrl19 left the list (C236).
+
 > **C239 AUDIT DONE (2026-11-07, a read-only workflow: 12 assessors, 66 refuter votes,
 > one synthesis; 79 agents; report `docs/audits/2026-11-07-column-vapour-audit.md`).**
 > STATUS: slices S1-S4 to dispatch, S5 a measurement.  Of 36 cases holding a column:
