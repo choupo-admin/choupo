@@ -99,7 +99,7 @@ import { LayoutSectionBox, PlantLayoutLegend, PlantLayoutTables } from "./PlantL
 function PlotPlanView({ stash, scene }: { stash: LayoutPopOutStash; scene: LayoutScene }) {
   const overlay = useBuildingOverlay(stash.building, scene);
   return <PlantLayout3D scene={overlay.shown} height="fill" extend={overlay.extend}
-    toolbarExtra={overlay.toggles} />;
+    toolbarExtra={overlay.toggles} layout={stash.layout} />;
 }
 
 function readNow(key: string | null) {

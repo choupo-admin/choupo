@@ -1967,7 +1967,7 @@ BY ITS EQUIPMENT KIND on the envelope the engine published --
 `gui/src/case/equipmentModel.ts`, body = envelope, ladders/platforms/
 saddles flagged as decoration, access drawn by HEIGHT because a column
 shell is stamped `vessel` -- with a High/Fast quality toggle).  **Since C80 the engine also ROUTES THE PIPES**:
-every material stream is routed (item nozzle / junction on the rack /
+every material stream is routed (item port / junction on the rack /
 battery limit, orthogonally over a declared `pipeRack` or an announced stated
 default, `pipes { <stream> { waypoints } }` overriding one) or listed in
 `notRouted` with its reason, its length published and pinned by the `layout`
@@ -2003,11 +2003,35 @@ road is carried on to its gate's fence opening (the approach, derived); a
 the footprint cannot hold and announcing bays left by reversing; a muster
 point or fire pump house in a zone or downwind, and a site with one
 entrance, are announced.
-NOT done: a pipe's pressure drop and cost (next slice), structures.
-Gate: `check_plant_layout`.  Record:
+**Since C229 every pipe end lands on a PORT, not on the item's top centre
+(2026-11-05, Vitor, after a student group's hand-made 3D page had the pipe
+connections right).**  The port is a point on the item's surface from its
+KIND, its SIZED dimensions and the stream's ROLE in its unit, the role read
+off the unit's DECLARED ports (position in `in`/`inputs`/`outputs`, the
+`feeds`/`sideDraws` stages) and, for a drum, off the produced stream's own
+vapour fraction -- never off a stream's NAME: a column's feed on its SHELL at
+its stage's height (the free height split equally between head and sump),
+bottoms at the sump, distillate on the REFLUX DRUM when the case placed one
+(else the condenser, else the head); an exchanger's tube ends and its shell
+nozzles over and under; a drum's side inlet, top vapour, bottom liquid; a
+reactor's and a machine's inlet and outlet at the ends of the axis; a tank's
+roof and low outlet.  A unit type with no rule keeps the top centre, `origin
+default`, and the run names the types.  It is a drafting CONVENTION, said once
+per run (`AdvisoryLog::addAnnouncedOnce`, stderr, the caveat block, and
+`layout.portConvention`) and published per pipe (`fromPort`/`toPort`: item,
+port, origin, role, point); each port has a 1 m stub, so the route leaves from
+a point outside the footprint.  The case moves a port with `ports { <stream>
+{ item <id>; side <face>; [elevation <m>;] } }` (two streams on one port stand
+off by a slot offset; six refusals by name).  The GUI draws a nozzle at each
+published port and drops the recipe's own decorative ones
+(`equipmentModel.ts`); the body never changes.  A declared `pipes` route now
+begins at the port's lead, not at the top centre.  NOT done: a pipe's
+pressure drop and cost (next slice), structures, a stream with several
+consumers (still listed `notRouted`; MEASURED on the four plants with a
+layout: none has one), a nozzle size or a vendor nozzle schedule (no sizer
+publishes one).
+Gate: `check_plant_layout`, `check_pipe_ports`.  Record:
 [`docs/design/a-plant-layout-is-declared-and-checked.md`](docs/design/a-plant-layout-is-declared-and-checked.md).
-
-### AN ECONOMIC SENSITIVITY IS THE BASE APPRAISAL PRICED AGAIN, AND NOTHING ELSE (2026-10-12, DEV.md 4c C68, on a stated default)
 
 **AN ECONOMIC SENSITIVITY IS THE BASE APPRAISAL PRICED AGAIN, AND NOTHING
 ELSE (2026-10-12, DEV.md 4c C68, on a stated default).**  An opt-in

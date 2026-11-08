@@ -19,7 +19,7 @@
       Chem. Fundam. 7 (1968) 605-610 -- Eqs 2, 3-8, 18, 19, 39 + Table I, 40.
 
   The definitions Ka ... k19 are the SAME law the two reactor cases write
-  (tutorials/plant/ammoniaReactor04_kineticSizing and greenAmmonia03_
+  (tutorials/steady/reactors/ammoniaReactor04_kineticSizing and greenAmmonia03_
   basicDesign); `bin/curate/check_ammonia_rate.py` holds the three copies
   to each other and to the paper's anchors.  This copy adds what the
   reactors do not price -- the paper's EFFECTIVENESS FACTOR:

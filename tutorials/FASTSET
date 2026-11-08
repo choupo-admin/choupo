@@ -76,7 +76,8 @@
 #  than reading whatever an earlier sweep left on disk.)
 # EXCLUDED  tutorials/plant/acetonePlant  39.97 s -- over the 3 s per-case cap this list is built to; the tier is checked by the full sweep instead
 # EXCLUDED  tutorials/plant/greenAmmonia03_basicDesign  47.6 s measured on 2026-10-12 (one run) -- over the 3 s per-case cap, because it is the kinetic stage of the C57 ladder: three Dyson-Simon pfr beds with an Ergun drop whose volumes a 3x3 DesignSpec solves (C66; 3.03 s before it), and Kern on every exchanger.  Its two cheaper rungs (greenAmmonia02_feasibility150bar, ...50bar) are listed.  The full sweep meets it.  Re-measure before believing this line
-# EXCLUDED  tutorials/plant/ammonia03_quench_converter  5.7-5.8 s measured over three runs on 2026-09-21 -- over the 3 s per-case cap, and for a reason that is the case itself: three adiabatic gibbsReactor beds on a two-stream tear, each with its own outer Newton on temperature.  The full sweep meets it.  This line EXPIRES if the case ever comes in under the cap -- re-measure before believing it
+# NOTE  not listed, tutorials/steady/reactors/ammonia03_quench_converter (its family is represented by other lines)  5.7-5.8 s measured over three runs on 2026-09-21 -- over the 3 s per-case cap, and for a reason that is the case itself: three adiabatic gibbsReactor beds on a two-stream tear, each with its own outer Newton on temperature.  The full sweep meets it.  This line EXPIRES if the case ever comes in under the cap -- re-measure before believing it
+# EXCLUDED  tutorials/steady/flowsheets/twoSectorDemo  its two sector directories are branches of ONE plant, checked in the same job as the parent case and not runnable alone (SECTOR_R exits 2 standalone, measured 2026-11-07); the parent case is a smoke-only run in the family tutorials/steady/flowsheets, which has its own representative (plant01_two_sectors).  Moved here from tutorials/plant/ by C244, where it was never walked
 # EXCLUDED  tutorials/plant/aceticAcid02_plant  46.5 s measured on 2026-10-14 (one run, runCase) -- over the 3 s per-case cap: a Gibbs reactor inside a 46-iteration Wegstein CO recycle with a 20-stage simultaneous-MESH column re-solved on every pass.  Its rung 1, aceticAcid01_gibbsReactor (0.03 s), is listed.  The full sweep meets it.  Re-measure before believing this line
 #
 # THE FOUR CONSERVATION GATES, and why those four.  A golden pins what a run
@@ -120,14 +121,14 @@ tutorials/steady/electrodialysis/ed02_over_limiting_current
 tutorials/steady/electrodialysis/ed03_stack_record
 
 tutorials/plant/ChemicalPlantTutorial
-tutorials/plant/aceticAcid01_gibbsReactor
+tutorials/steady/reactors/aceticAcid01_gibbsReactor
 tutorials/plant/ammonia02_full_plant
-tutorials/plant/ammoniaReactor01_fixedConversion
-tutorials/plant/ammoniaReactor02_equilibrium
-tutorials/plant/ammoniaReactor03_equilibriumApproach
-tutorials/plant/ammoniaReactor04_kineticSizing
-tutorials/plant/ammoniaRoutes01_screening
-tutorials/plant/esterification2sector
+tutorials/steady/reactors/ammoniaReactor01_fixedConversion
+tutorials/steady/reactors/ammoniaReactor02_equilibrium
+tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach
+tutorials/steady/reactors/ammoniaReactor04_kineticSizing
+tutorials/steady/reactors/ammoniaRoutes01_screening
+tutorials/steady/flowsheets/esterification2sector
 tutorials/plant/greenAmmonia02_feasibility150bar
 tutorials/plant/greenAmmonia02_feasibility50bar
 tutorials/plant/greenAmmoniaPEQ_baseCase

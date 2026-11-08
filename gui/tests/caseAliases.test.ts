@@ -46,7 +46,7 @@ describe("tutorials/ALIASES -- a renamed case keeps its shared links", () => {
     const t = tutorialByName("plant/greenAmmoniaFeasibility");
     expect(t?.name).toBe("plant/greenAmmonia02_feasibility150bar");
     expect(tutorialByName("plant/ammoniaStaged04_kinetic")?.name)
-      .toBe("plant/ammoniaReactor04_kineticSizing");
+      .toBe("steady/reactors/ammoniaReactor04_kineticSizing");
     // the 50 bar name is not swallowed by the 150 bar prefix
     expect(canonicalCaseName("plant/greenAmmoniaFeasibility50bar"))
       .toBe("plant/greenAmmonia02_feasibility50bar");

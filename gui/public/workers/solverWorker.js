@@ -292,9 +292,16 @@ self.addEventListener("message", async (e) => {
               //  converged".  Folding a design tree into it would make an
               //  absent sizing pass indistinguishable from a failed solve.
               //
+              //  postProcessing/ (C183, a props run's view CSV + JSON) is the
+              //  third tree and has its own channel for the same reason: a
+              //  case with no views must not read as one that did not solve.
+              //  Its CSVs are ALSO copied to the plotting channel below,
+              //  because Studies/Reports read them there and that must not
+              //  change.
+              //
               //  Adding a tree (economics/ is the next one the architecture
               //  names) is one entry here plus one channel in the adapter.
-              const OUTPUT_ROOTS = ["converged", "design"];
+              const OUTPUT_ROOTS = ["converged", "design", "postProcessing"];
               const outputs = {};
               for (const r of OUTPUT_ROOTS) outputs[r] = {};
 
@@ -323,6 +330,9 @@ self.addEventListener("message", async (e) => {
                     try {
                       outputs[root][path.substring("/case/".length)] =
                         Module.FS.readFile(path, { encoding: "utf8" });
+                      if (root === "postProcessing" && name.endsWith(".csv"))
+                        csvFiles[path.substring("/case/".length)] =
+                          outputs[root][path.substring("/case/".length)];
                     } catch (_) {
                       /* ignore individual file failures */
                     }
@@ -404,6 +414,14 @@ self.addEventListener("message", async (e) => {
                 log("[worker] collected " + Object.keys(outputs.design).length
                     + " design/ specification sheet(s)");
                 self.postMessage({ type: "designFiles", files: outputs.design });
+              }
+
+              // A props run's postProcessing/ tree -> the Case tab, read-only,
+              // on its own channel (C183).
+              if (Object.keys(outputs.postProcessing).length > 0) {
+                log("[worker] collected " + Object.keys(outputs.postProcessing).length
+                    + " postProcessing/ file(s)");
+                self.postMessage({ type: "postProcessingFiles", files: outputs.postProcessing });
               }
 
               // Real-time instant files -> the time scrubber.  Carried on their

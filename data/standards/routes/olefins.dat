@@ -440,7 +440,7 @@ routes
             origin  assumed;
             reason  "equilibrium esterification with water removal; the curator's band";
         }
-        cases    ( "tutorials/plant/esterification2sector" "tutorials/steady/economics/economics01_esterification_dcf" "tutorials/ctrl/ctrl11_esterification_jacket" "tutorials/steady/optimisation/optim05_reactor_npv" );
+        cases    ( "tutorials/steady/flowsheets/esterification2sector" "tutorials/steady/economics/economics01_esterification_dcf" "tutorials/ctrl/ctrl11_esterification_jacket" "tutorials/steady/optimisation/optim05_reactor_npv" );
         provenance
         (
             { source ullmanns; locus "'Acetic Acid' -- esters"; }

@@ -52,7 +52,7 @@ export const PINCH_STEPS: readonly LessonStep[] = [
     formula: String.raw`\begin{array}{ll}
 \text{hot stream:} & \text{must be COOLED}, \quad T_\mathrm{supply} > T_\mathrm{target}\\
 \text{cold stream:} & \text{must be HEATED}, \quad T_\mathrm{supply} < T_\mathrm{target}\\[6pt]
-\mathrm{CP} = \dfrac{Q}{\lvert T_\mathrm{target} - T_\mathrm{supply} \rvert} & [\text{kW/K}]
+\mathrm{CP} = \dfrac{\lvert Q \rvert}{\lvert T_\mathrm{target} - T_\mathrm{supply} \rvert} & [\text{kW/K}]
 \end{array}`,
     where: [
       { sym: "T_\\mathrm{supply}",
@@ -66,7 +66,8 @@ export const PINCH_STEPS: readonly LessonStep[] = [
         + "(T_supply, T_target) is what decides the stream's kind: target "
         + "below supply means it is being cooled, so it is a heat SOURCE.",
         unit: "K" },
-      { sym: "Q", means: "The duty of one unit, taken from its converged run. "
+      { sym: "Q", means: "The duty of one unit, taken from its converged run; "
+        + "only its magnitude |Q| enters CP, the sign says hot or cold. "
         + " It is the only duty information this analysis has: a unit whose "
         + "duty is essentially zero is skipped, and each retained unit "
         + "becomes exactly one straight segment.", unit: "kW as printed" },
@@ -79,8 +80,9 @@ export const PINCH_STEPS: readonly LessonStep[] = [
         + "segment.", unit: "kW/K" },
     ],
     note: "CP is a heat-capacity FLOW (mass flow × cp), not a heat capacity, "
-      + "so on a temperature-enthalpy diagram a constant-CP stream is a "
-      + "straight line of slope 1/CP.  Choupo builds one such segment per "
+      + "so on a temperature against heat-flow diagram a constant-CP stream is a "
+      + "straight line whose slope dT/dQ is 1/CP (the horizontal axis is a "
+      + "power in kW, not an enthalpy per kilogram).  Choupo builds one such segment per "
       + "duty-carrying unit in the converged run; the hypotheses that go "
       + "into that are listed at the foot of this page.",
   },
@@ -249,12 +251,14 @@ Q_\mathrm{C,min} &= \sum \Delta H_\mathrm{hot} - Q_\mathrm{recovery}\\
       + "trade-off, said plainly rather than left to look like a balance "
       + "somebody struck.  And not every problem has a pinch: lower ΔT_min "
       + "far enough and one of the two targets reaches zero — a THRESHOLD "
-      + "problem, with no interior point of closest approach at all.  When "
-      + "it is the HOT target that vanishes the cascade never dips below "
-      + "zero, and the engine then leaves its pinch temperature at the top "
-      + "of the temperature range: that is the cascade's convention showing "
-      + "through rather than a pinch, and the target that went to zero is "
-      + "what carries the meaning there.",
+      + "problem, with no interior point of closest approach at all.  The "
+      + "engine classifies the problem from the whole cascade, interior zeros "
+      + "included: one interior zero is a pinch, several are several pinches "
+      + "(the problem splits into independent sub-problems), and zeros only "
+      + "at the top or the bottom of the range are a threshold problem with "
+      + "no hot or no cold utility.  Whatever it finds, it publishes the word "
+      + "(summary.csv) and every surface repeats it.  Check the identity on "
+      + "your own numbers: Q_H,min − Q_C,min is the same at every ΔT_min.",
   },
   {
     n: 5,

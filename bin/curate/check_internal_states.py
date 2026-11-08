@@ -1131,11 +1131,14 @@ def check_retired(problems, notes):
     #  The RECORD homes are exempt, and only they: a design record and the
     #  decision index exist to state what was decided AND what amended it, so
     #  they quote the retired shape with its amendment in the same sentence.
+    #  `settled-contracts.md` joined them on 2026-11-07 (C241): it holds the
+    #  dated contracts moved VERBATIM out of CLAUDE.md, amendments in place.
     #  Every TEACHING page is held.
     for f in sorted((ROOT / "docs").rglob("*.md")) + sorted((ROOT / "docs").rglob("*.tex")):
         rel = str(f.relative_to(ROOT))
         if (rel.startswith("docs/design/") or "/archive/" in rel
-                or rel == "docs/architecture/decision-records.md"):
+                or rel == "docs/architecture/decision-records.md"
+                or rel == "docs/architecture/settled-contracts.md"):
             continue
         body = f.read_text(errors="replace")
         for n, line in enumerate(body.splitlines(), 1):

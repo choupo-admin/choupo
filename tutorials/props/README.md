@@ -41,8 +41,8 @@ A composite plant curates **per sector** — each sector has its own `propsDict`
 and runs on its own (the `controlDict`/`thermoPhysPropDict` cascade UP the tree):
 
 ```bash
-./choupoProps tutorials/plant/esterification2sector/REACTION    # sector 1 (kinetics)
-./choupoProps tutorials/plant/esterification2sector/SEPARATION  # sector 2 (NRTL pair + consistency)
+./choupoProps tutorials/steady/flowsheets/esterification2sector/REACTION    # sector 1 (kinetics)
+./choupoProps tutorials/steady/flowsheets/esterification2sector/SEPARATION  # sector 2 (NRTL pair + consistency)
 ```
 
 ## Datasets (raw lab data)

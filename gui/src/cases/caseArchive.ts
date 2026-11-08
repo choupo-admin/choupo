@@ -44,7 +44,7 @@ License
   THE RULE, and this is its one home: THE CASE ROOT IS THE OUTERMOST FOLDER
   THAT CONTAINS `system/controlDict`.  Outermost, because a sectored plant
   carries further `system/controlDict` files inside its own sector folders
-  (measured: tutorials/plant/twoSectorDemo has three) and those are parts of
+  (measured: tutorials/steady/flowsheets/twoSectorDemo has three) and those are parts of
   the case, not other cases.  Zero roots refuses, and so do two roots that
   are not nested (the roots are named) -- the GUI opens one case at a time
   and choosing between them is the student's act, never a guess.

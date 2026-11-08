@@ -238,4 +238,35 @@ describe("caseTree: the wiring the pure functions cannot see", () => {
   it("the Case workspace merges the design channel for display", () => {
     expect(workspace).toContain("runResult?.designFiles");
   });
+
+  it("C183: a props run's postProcessing/ tree is harvested, on its OWN channel, and merged for display", () => {
+    const m = worker.match(/OUTPUT_ROOTS\s*=\s*\[([^\]]*)\]/);
+    const roots = m![1]!.split(",").map((x) => x.trim().replace(/"/g, "")).filter(Boolean);
+    expect(roots).toContain("postProcessing");
+    expect(worker).toContain('type: "postProcessingFiles"');
+    expect(adapter).toContain('msg.type === "postProcessingFiles"');
+    expect(adapter).toContain("result.postProcessingFiles = postProcessingFiles");
+    expect(workspace).toContain("runResult?.postProcessingFiles");
+    //  The plotting channel must still receive the view CSVs (Studies and
+    //  Reports read them there): the harvest copies, it does not divert.
+    expect(worker).toMatch(/root === "postProcessing" && name\.endsWith\("\.csv"\)/);
+  });
+
+  it("C183: a props case's run output draws dimmed beside its dictionaries", () => {
+    //  The file set the worker returned for polarisation01 (measured by
+    //  running the real worker against the real WASM), merged with the
+    //  authored case.
+    const files = [
+      "system/controlDict", "system/propsDict", "constant/thermoPhysPropDict",
+      "postProcessing/table1/gamma.csv", "postProcessing/table1/gamma.json",
+      "postProcessing/table1/rows.csv",
+    ];
+    const t = buildTree(files);
+    const pp = t.children.get("postProcessing")!;
+    expect(pp).toBeDefined();
+    expect(nodeKind(pp)).toBe("output");
+    expect(isRunOutput("postProcessing/table1")).toBe(true);
+    expect(kindOf("postProcessing/table1/gamma.csv")).toBe("output");
+    expect(isRunOutput("system")).toBe(false);
+  });
 });
