@@ -1998,7 +1998,7 @@ THE EQUILIBRIUM CONSTANT is the case's own record, written (constant K\_a(T) fro
 \begin{tutnarrative}
 column19's problem with a RATE-LIMITED reaction: methanol + isobutene $\rightleftharpoons$ MTBE on an acid ion-exchange resin.
 
-THE PROBLEM is column19's, unchanged: 15 equilibrium stages, stage 1 the PARTIAL condenser, stage 15 the reboiler, P = 7 bar, reactive stages 6 to 10, both feeds on stage 10, bottoms rate 240 kmol/h and boil-up ratio 5, UNIFAC liquid, ideal vapour, the same isobutene overlay. What changes is the reaction: where column19 closes an equilibrium quotient on each reactive stage, here the extent of a stage is COMPUTED from a rate law and the catalyst it holds, xi\_j = r(T\_j, a\_j) m\_cat,j, with no extent unknown and still NO heat-of-reaction term (the energy rows price on the elements datum, which already holds it).
+THE PROBLEM is column19's, unchanged: 15 equilibrium stages, stage 1 the PARTIAL condenser, stage 15 the reboiler, P = 7 bar, reactive stages 6 to 10, both feeds on stage 10, bottoms rate 240 kmol/h and boil-up ratio 5, UNIFAC liquid, SRK vapour, the same isobutene overlay. What changes is the reaction: where column19 closes an equilibrium quotient on each reactive stage, here the extent of a stage is COMPUTED from a rate law and the catalyst it holds, xi\_j = r(T\_j, a\_j) m\_cat,j, with no extent unknown and still NO heat-of-reaction term (the energy rows price on the elements datum, which already holds it).
 
 THE LAW is Rehfinger \& Hoffmann, Chem. Eng. Sci. 45 (1990) 1605-1617, doi 10.1016/0009-2509(90)80013-5, Amberlyst 15 (their Eq. 12):
 
@@ -2013,26 +2013,26 @@ WHAT THE LAW DOES NOT CARRY: the effectiveness factor (internal diffusion in the
 Nothing here was read off, or fitted to, any simulator's result.
 
 \end{tutnarrative}
-\tutreadme{column19's problem (methanol + isobutene $\rightleftharpoons$ MTBE, Sum nu = -1; 15 stages, partial condenser, reactive stages 6-10, 7 bar, bottomsRate 240 kmol/h and boilupRatio 5, UNIFAC liquid, ideal vapour) with the reaction closed by a rate law instead of an equilibrium quotient. On each reactive stage the extent is $\ast$computed$\ast$, xi\_j = r(T\_j, a\_j) m\_cat,j, from the law and the catalyst the stage holds; there is no extent unknown, and still no heat-of-reaction term in the stage energy rows (they price on the elements datum, which already holds it).}
+\tutreadme{column19's problem (methanol + isobutene $\rightleftharpoons$ MTBE, Sum nu = -1; 15 stages, partial condenser, reactive stages 6-10, 7 bar, bottomsRate 240 kmol/h and boilupRatio 5, UNIFAC liquid, SRK vapour) with the reaction closed by a rate law instead of an equilibrium quotient. On each reactive stage the extent is $\ast$computed$\ast$, xi\_j = r(T\_j, a\_j) m\_cat,j, from the law and the catalyst the stage holds; there is no extent unknown, and still no heat-of-reaction term in the stage energy rows (they price on the elements datum, which already holds it).}
 \tutreadme{Rehfinger \& Hoffmann, $\ast$Chem. Eng. Sci.$\ast$ 45 (1990) 1605-1617, doi 10.1016/0009-2509(90)80013-5, Amberlyst 15:}
 \tutreadme{in liquid-phase activities, r per acid equivalent; k(90 C) = 243.8 mmol/(s eq) and E = 92.4 kJ/mol (Eq. 15, Table 4); K\_a(T) from their Eq. 6 with K\_a(298.15 K) = 300.5 (Table 4: the value the fit returned together with k and E, so the three are the pair the paper fitted -- Eq. 6 with 284, the value of its Fig. 9 caption, reproduces Izquierdo's Table IV and is 5.8 \% lower); acid capacity 4.9 meq/g (p. 1606). The law is written in the case with named definitions and a[<component>] = gamma\_i x\_i, the package's activity at the stage.}
 \tutreadme{$\ast$ The catalyst mass (220 kg) is illustrative, not any column's loading. $\ast$ The paper's activities are UNIQUAC; this case's are UNIFAC. The law and its activities were fitted together; the pairing here is an approximation. $\ast$ The reactive stages run methanol-lean (x\_MeOH 0.05-0.18), below the 0.3 the paper says its model under-predicts at ("measured rates are greater ... internal mass transfer"). The law has no effectiveness factor, so the rate here is a lower bound there. The run announces the excursion. $\ast$ The law diverges as a\_MeOH $\to$ 0; the engine hides no floor. A trial that reaches it is an announced infeasible trial. $\ast$ The conversion (about 9 \% of the methanol) is a property of the illustrative mass and of the methanol-lean stages. The mass continuation converges up to about 270 kg and stops near 300 kg (measured), so no higher conversion is claimed. $\ast$ Nothing here is validated against a measured MTBE column.}
 \tutreadme{Gate: bin/curate/check\_kinetic\_mesh.py (the proof is a limit: a mass-action twin on column19's own K\_a converges on column19's equilibrium as the mass grows). Design record: docs/design/a-rate-law-in-the-full-mesh.md.}
 \begin{tutgolden}
 \goldrow{stream}{bottoms}{F}{0.0666666666667}
-\goldrow{stream}{bottoms}{T}{350.556632315}
+\goldrow{stream}{bottoms}{T}{344.337012761}
 \goldrow{stream}{c4Feed}{F}{0.156444444444}
 \goldrow{stream}{c4Feed}{T}{323.15}
-\goldrow{stream}{distillate}{F}{0.150594396524}
-\goldrow{stream}{distillate}{T}{324.585512535}
+\goldrow{stream}{distillate}{F}{0.151749537343}
+\goldrow{stream}{distillate}{T}{324.017928637}
 \goldrow{stream}{methanolFeed}{F}{0.0666666666667}
 \goldrow{stream}{methanolFeed}{T}{323.15}
 \goldrow{kpi}{mtbeColumn}{B}{0.0666666666667}
-\goldrow{kpi}{mtbeColumn}{D}{0.150594396524}
-\goldrow{kpi}{mtbeColumn}{Q\_condenser\_kW}{-5506.52555238}
-\goldrow{kpi}{mtbeColumn}{Q\_reboiler\_kW}{8385.50371895}
-\goldrow{kpi}{mtbeColumn}{Q\_reboiler\_ownEnvelope\_kW}{8385.50371895}
-\goldrow{kpi}{mtbeColumn}{R}{1.90172200581}
+\goldrow{kpi}{mtbeColumn}{D}{0.151749537343}
+\goldrow{kpi}{mtbeColumn}{Q\_condenser\_kW}{-4893.26452035}
+\goldrow{kpi}{mtbeColumn}{Q\_reboiler\_kW}{7653.73922804}
+\goldrow{kpi}{mtbeColumn}{Q\_reboiler\_ownEnvelope\_kW}{7653.73922804}
+\goldrow{kpi}{mtbeColumn}{R}{1.75594607919}
 \goldmore{21}
 \end{tutgolden}
 
