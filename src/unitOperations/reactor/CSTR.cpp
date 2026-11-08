@@ -676,6 +676,12 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     // (`auditExtentRoots` below): every root on the feasible interval is
     // found and announced with its stability, beside the one reported.  A
     // set of several reactions is not audited (said there).
+    //  C245 3b: the last extents a solve CONVERGED to, the warm start of a
+    //  retry at a neighbouring temperature.  The first attempt is still the
+    //  cold one from xi = 0 (which root a run reports is the cold start's,
+    //  see above); the warm start only rescues a cold start that failed.
+    sVector lastGoodXi(R, 0.0);
+    bool    haveGoodXi = false;
     auto extentsAt = [&](scalar Tk, bool& okOut)
     {
         auto res = [&](const sVector& xi) -> sVector
@@ -725,10 +731,17 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         //  feasibility the contract's line search honours.
         o.typX.assign(R, std::max(F_in, 1.0e-12));
         o.globalisation = solver::Globalisation::armijo;
-        const auto sl = solver::newtonND(res, sVector(R, 0.0), o);
+        auto sl = solver::newtonND(res, sVector(R, 0.0), o);
+        nIter  += sl.iterations;
+        if (!sl.converged && haveGoodXi)
+        {
+            auto sw = solver::newtonND(res, lastGoodXi, o);
+            nIter  += sw.iterations;
+            if (sw.converged) sl = std::move(sw);
+        }
+        if (sl.converged) { lastGoodXi = sl.x; haveGoodXi = true; }
         okOut = sl.converged;
         lastRes = sl.residual;
-        nIter  += sl.iterations;
         return sl.x;
     };
 
@@ -874,10 +887,15 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         // the path, and the outlet state below, resolved at the steady state
         // the run reports, is what speaks about the answer.
         AdvisoryFrame walk("cstr energy-balance T search", /*trial=*/true);
+        //  C245 3b: phi is a function of T only where the extents solve
+        //  CONVERGED.  Where it did not, the value is NaN -- never a number
+        //  built on unconverged extents -- and the root scan below refuses to
+        //  report a root next to it.  Every such temperature is counted.
         auto phi = [&](scalar Tk) -> scalar
         {
             bool ok = false;
             const sVector x = extentsAt(Tk, ok);
+            if (!ok) { return std::numeric_limits<scalar>::quiet_NaN(); }
             const sVector Fi = flowsOf(x);
             scalar Ftot = 0.0;
             for (std::size_t i = 0; i < n; ++i) Ftot += Fi[i];
@@ -1014,26 +1032,60 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         };
         pushVH(Tlo);
 
+        //  Bisect one sign change between two temperatures where phi is
+        //  DEFINED; a midpoint where the extents solve fails abandons the
+        //  root (it cannot be certified) and is counted.
+        auto bisectRoot = [&](scalar a, scalar b, scalar fa)
+        {
+            for (int it = 0; it < 100; ++it)
+            {
+                const scalar m = 0.5 * (a + b), fm = phi(m);
+                if (std::isnan(fm)) return;
+                if (fa * fm <= 0.0) b = m; else { a = m; fa = fm; }
+                if (b - a < 1.0e-9) break;
+            }
+            roots.push_back(0.5 * (a + b));
+        };
+        int phiFailedScan = 0;           // scan points (not bisection probes)
         scalar Tp = Tlo, fp = phi(Tlo);
+        if (std::isnan(fp)) ++phiFailedScan;
         for (int k = 1; k <= nScan; ++k)
         {
             const scalar Tq = Tlo + (Thi - Tlo) * scalar(k) / scalar(nScan);
             const scalar fq = phi(Tq);
+            if (std::isnan(fq)) ++phiFailedScan;
             pushVH(Tq);
-            if (fp == 0.0) roots.push_back(Tp);
-            else if (fp * fq < 0.0)
+            if (std::isnan(fp) || std::isnan(fq))
             {
-                scalar a = Tp, b = Tq, fa = fp;
-                for (int it = 0; it < 100; ++it)
+                //  SPLIT THE INTERVAL: sample it finely and test only
+                //  neighbouring points where phi is defined.
+                const int nSub = 16;
+                scalar Ta = Tp, fa = fp;
+                for (int m = 1; m <= nSub; ++m)
                 {
-                    const scalar m = 0.5 * (a + b), fm = phi(m);
-                    if (fa * fm <= 0.0) b = m; else { a = m; fa = fm; }
-                    if (b - a < 1.0e-9) break;
+                    const scalar Tb = (m == nSub) ? Tq
+                        : Tp + (Tq - Tp) * scalar(m) / scalar(nSub);
+                    const scalar fb = (m == nSub) ? fq : phi(Tb);
+                    if (!std::isnan(fa) && !std::isnan(fb))
+                    {
+                        if (fa == 0.0) roots.push_back(Ta);
+                        else if (fa * fb < 0.0) bisectRoot(Ta, Tb, fa);
+                    }
+                    Ta = Tb; fa = fb;
                 }
-                roots.push_back(0.5 * (a + b));
             }
+            else if (fp == 0.0) roots.push_back(Tp);
+            else if (fp * fq < 0.0) bisectRoot(Tp, Tq, fp);
             Tp = Tq; fp = fq;
         }
+        //  ANNOUNCED, whether or not it is zero (cstr05: 0).
+        if (verbosity >= 2 || phiFailedScan > 0)
+            std::cout << "  [cstr] extents solve failed at " << phiFailedScan
+                      << " of " << (nScan + 1) << " scan temperatures"
+                      << (phiFailedScan > 0
+                          ? " -- no root is reported inside or across them;"
+                            " intervals next to them were split" : "")
+                      << "\n";
         profile_ = std::move(vh);
 
         if (roots.empty())
