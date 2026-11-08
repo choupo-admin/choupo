@@ -3221,6 +3221,54 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C249 (Vitor, 2026-11-08 night: "tenho alguma dificuldade em explicar-lhes como organizo
+> uma fábrica multi-produto e como uso processos em contínuo como o spray drying num
+> processo de bateladas ... isso envolve diagrama de Gantt ... vê como se pode fazer com
+> que o Choupo faça isso de acordo com as boas práticas de projeto da indústria"): THE
+> MULTI-PRODUCT CAMPAIGN PLAN, TAUGHT.**  MEASURED the same hour: the ENGINE ALREADY HAS
+> THE METHOD.  `batchPlan {}` (C99, `src/postProcessing/BatchPlanPass.{H,cpp}`) designs
+> the batch plant on the steady balance: trains, batch and SEMICONTINUOUS stages (the
+> spray dryer is a stage with `operatingTime fromFlowsheet`, fed by a solution tank held
+> `dischargeTime throughFedStage`, cleaned at the campaign changeover and not between
+> lots -- which IS the industrial arrangement of a continuous unit inside a lot regime),
+> the limiting cycle T_L per train, parallel units in and out of phase, campaigns and
+> changeovers, utilisation findings, and the Gantt (GUI `BatchPlanSection.tsx`,
+> `batchGantt.ts`).  SEVERAL PRODUCTS on one set of equipment exist too (C110 G2,
+> BatchPlanPass.H:157-230): `products ( ... )`, `campaignOrder`, `productChangeover`,
+> `changeoverTo { <next> }`, the classical single-product-campaign flow-shop method,
+> equipment sized for the product that needs the most, the order a DECISION the engine
+> never takes; gate check_batch_plan covers it by fixture (36 mentions).  WHAT IS
+> MISSING is the teaching, and that is why he cannot show it: (1) NO shipped case
+> declares `products` -- not one tutorial exercises the multi-product plan; (2) the
+> design guide mentions the Gantt twice in passing and has no chapter on organising a
+> multi-product plant; (3) no EduTool teaches campaigns, changeovers, the limiting
+> stage, or the lot identity of a continuous stage.  DECISION (architect): (a) a
+> tutorial case, a second donepezil case (two strengths): the 5 mg and 10 mg strengths of donepezil
+> (the 5 mg is half the 10 mg figures, README of donepezil01) as two products in
+> campaigns on the same solid-dose train, `changeoverTo` cleans that differ by direction
+> (white after yellow needs the longer clean), the Gantt of the year; (b) a designGuide
+> chapter "Organising a multi-product plant": trains and stages, the lot as the unit QC
+> releases, cycle time and the limiting stage, campaigns and changeovers, single-product
+> campaigns vs mixed sequencing (why Choupo ships the former: the makespan depends on
+> the order only through the direction-dependent cleans), parallel units in and out of
+> phase, intermediate storage policies (ZW, NIS, UIS) named with what Choupo assumes,
+> and A CONTINUOUS UNIT IN A LOT REGIME: the lot of a continuous stage defined by its
+> feed lot or by a time window (ICH Q13 on continuous manufacturing: a batch is defined
+> by quantity, time or input -- the general cites the section), held in the tank that
+> feeds it, cleaned at the campaign; with the apalutamide spray dryer as the worked
+> example; every claim about the engine cited by file:line, the references (Biegler,
+> Grossmann & Westerberg ch. on batch; Douglas; ICH Q7/Q13; the EU GMP Annex 15 for
+> cleaning validation as the reason changeovers cost hours) cited by title and section;
+> (c) an EduTool `campaign-plan`: the Gantt LIVE -- sliders for lot size, lots per
+> campaign, changeover hours and the operating time of the semicontinuous stage; the
+> limiting stage recoloured as it moves, T_L, utilisation per stage, the year's required
+> hours against the available ones, and the order of two products as a drag; the engine
+> half reads the two cases' published plans.  Order: (a)+(b) one general after C248
+> lands (the PIF general is in the same cases tonight), (c) after (a).  What Vitor can
+> show TOMORROW already: apalutamide01's Gantt and utilisation table in the GUI's Batch
+> plan section, and the spray-drying train's declaration in its postDict (lines 107-116,
+> 170-178) as the worked example of a continuous dryer inside a lot regime.
+
 > **C248 (Vitor, 2026-11-08 night: "lançar um general em Fable 5.1 a rever tudo o que faz
 > falta para os meus alunos de projeto em engenharia farmacêutica ... tenho um tutorial com
 > os dois grupos amanhã e gostava que o Choupo já estivesse a ser útil"): PIF READINESS
