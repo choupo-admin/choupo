@@ -3233,7 +3233,7 @@ accepts today, and that is a policy call.
 > regenerated).  FOUR ARE THE PRIMARY CHECKOUT'S OWN FILES, not the tree: the GUI's
 > pair-tier test bundles Vitor's private `data/local/` pairs, `check_origin_vocabulary`
 > reads an untracked `MORNING.md`, `check_git_visibility` sees the local
-> `bin/curate/refs/` and `bin/dwsim-runner/` -- the same gates and tests passed on the
+> two untracked local folders (`refs` under bin/curate, `dwsim-runner` under bin) -- the same gates and tests passed on the
 > clean integration tree.  FINDING, to fix: a sweep run in the primary checkout judges
 > untracked local files; the Saturday sweep runs in a clean worktree from now on.
 > Slowest (real seconds): swro01 98 (was 289), check_schema_coverage 68, nanofiltran 62,
