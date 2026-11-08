@@ -170,6 +170,7 @@ PRE  | SERIAL | bin/curate/check_ed_stack.py                       | writes tuto
 PRE  | SERIAL | bin/curate/check_ed_batch.py                       | writes tutorials/batch/electrodialysis/edbatch01_constant_current/.tmp_100 (+635 more)
 PRE  | SERIAL | bin/curate/check_block_tridiagonal.py              | writes tutorials/steady/distillation/column02_simultaneous/converged (+17 more)
 PRE  | SERIAL | bin/curate/check_ode_block_structure.py            | writes 0 (+94 more)
+PRE  | PAR    | bin/curate/check_rodas4_order.py                   | writes only a temp dir (probe binary)
 PRE  | SERIAL | bin/curate/check_held_out_pressure.py              | writes generated/probes/heldOutPressure (+117 more)
 PRE  | SERIAL | bin/curate/check_promoted_pair_record.py           | writes curation/ethanol.dossier (+12 more)
 PRE  | SERIAL | bin/curate/check_regressed_pairs.py                | writes 1Propanol-water.proposal.dat (+66 more)
