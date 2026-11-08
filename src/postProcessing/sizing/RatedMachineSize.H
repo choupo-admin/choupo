@@ -46,14 +46,35 @@ Description
 
     WHAT IS READ, and from where (nothing is re-derived):
       * the stage the unit belongs to and its lot, cycle and times --
-        `result.batchPlan` (`BatchPlanPass`); a unit in no stage, a
-        MULTIPRODUCT plan, or a stage of the wrong type refuses by name;
+        `result.batchPlan` (`BatchPlanPass`); a unit in no stage or a stage
+        of the wrong type refuses by name;
       * the mass a RATE machine handles: the sum of its inlet streams
         (`overallMassFlow`, the one home) on the flowsheet's basis, scaled to
         the lot by the plan's own lot hours (lot size / product rate), and
         divided by the stage's operating time;
       * for a BATCH machine, the stage's mass per lot and the declared bulk
         density of the plan (`V_working = m_lot / rho_bulk`).
+
+    SEVERAL PRODUCTS (2026-11-08, DEV.md 4c C249 d).  In a MULTIPRODUCT plan
+    the fit is checked PER PRODUCT i, on its own numbers at this stage
+    (`BatchProductStage`): lot B_i = the product's lot, mass per lot f_ij B_i,
+    bulk density, operating time t_op,ij, and the lot hours B_i / r_P that
+    scale the inlet streams to the lot.  Then
+        util_i = load_i / capacity     (capacity does not depend on product)
+        the machine must fit EVERY product: util_i > 1 refuses, NAMING the
+        product, and the machines needed are the largest over products;
+        the published figures are those of the BINDING product (largest
+        util_i), `utilisation_<product>` and `load_<product>` carry each,
+        and `productsChecked` the count.  The pass ANNOUNCES the number of
+        products it ran over.  A single-product plan is the same code with
+        one view (the numbers do not move).  The inlet streams stay on the
+        flowsheet's balance (a product's own `massPerProduct` is read for a
+        batch stage's mass per lot, not for a rate machine's inlet).
+        A press or a packaging line counts TABLETS, and a strength with its
+        own tablet weight declares it beside the default:
+        `rating { itemMass 0.29 g; itemMassByProduct { strength5 0.145 g; } }`
+        (an entry naming no product, or the block in a one-product plan,
+        refuses by name); a product not listed uses `itemMass`.
 
     FOUR KINDS (`kind`, a declared word; an unknown one refuses):
       batchVolume   a bin blender, high-shear bowl, coating pan.  rating:

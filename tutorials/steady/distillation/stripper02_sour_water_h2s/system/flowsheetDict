@@ -54,6 +54,12 @@ units
             refluxRatio    0.5;
             distillateRate 5.0 kmol/h;
             P              1.01325 bar;
+            //  The legacy Newton, DECLARED (DEV.md 4c C245 slice 3): this
+            //  column is a heel case -- NH3 bound as NH4HS leaves the vapour
+            //  balance as V -> 1 -- on which the bounded Armijo MESH stops at
+            //  |F| = 1.1e-2 after 80 iterations while the legacy search
+            //  converges in 43.  Remove the line to try the default.
+            newton         legacy;
         }
     }
 );

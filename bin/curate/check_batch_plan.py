@@ -660,7 +660,7 @@ PRODUCTS = """
 """
 
 
-def strip_rated_machines(t):
+def strip_rated_machines(t, keep_cleaning=False):
     """The multiproduct probes test the BATCH PLAN, not the sizers: a
     `ratedMachine` entry and the `cleanUtilities` pass each refuse a
     multiproduct plan by name (DEV.md 4c C195, a stated limit of both), so
@@ -704,11 +704,13 @@ def strip_rated_machines(t):
     # ... and the `hvacGrade` quotes that price its supply air (DEV.md 4c C210).
     t = re.sub(r'[ \t]*\{ hvacGrade \w+;.*?"; \}\n', "", t, flags=re.S)
     # ... and the plan's `cleaning` table, which a multiproduct plan refuses by name (C210 E3).
-    t = re.sub(r"\n    cleaning\n    \(.*?\n    \);\n", "\n", t, count=1, flags=re.S)
+    if not keep_cleaning:
+        t = re.sub(r"\n    cleaning\n    \(.*?\n    \);\n", "\n", t, count=1, flags=re.S)
     return t
 
 
-def multi_edit(order="strengthA strengthB strengthC", products=PRODUCTS, pco=PCO, extra=None):
+def multi_edit(order="strengthA strengthB strengthC", products=PRODUCTS, pco=PCO, extra=None,
+               keep_cleaning=False):
     """The witness's postDict made multiproduct: `production {}` replaced by
     `products ( ... ); campaignOrder ( ... );`, and every stage given its
     clean between products."""
@@ -717,7 +719,7 @@ def multi_edit(order="strengthA strengthB strengthC", products=PRODUCTS, pco=PCO
         if not m:
             raise RuntimeError("production block not found")
         t = t[:m.start()] + "\n" + products.replace("ORDER", order) + t[m.end():]
-        t = strip_rated_machines(t)
+        t = strip_rated_machines(t, keep_cleaning)
         for st, v in (pco or {}).items():
             t = stage_edit(t, st, "source ", f"productChangeover {v};\n            source ")
         return extra(t) if extra else t
@@ -1436,6 +1438,27 @@ def arm_one_product(work):
             continue    # the probe drops `cleanUtilities` (multiproduct refuses it), and the quotes of its air
         if k not in eqm or not close(eqm[k], v, 1e-9):
             bad.append(f"C_p {k} {eqm.get(k)} != {v}")
+    # (j2) the CLEANING of the machines through the multiproduct path (C249 d): one
+    # product with the witness's own `cleaning` table counts the SAME cleans, water
+    # and effluent per machine and in total as the single-product plan.
+    d2 = copy_witness(work, "one_clean", multi_edit(
+        products=ONE_PRODUCT % witness_per_year(), pco=None, keep_cleaning=True))
+    out2, err2, rc2, j2 = solve(d2)
+    kc_s = re.search(r'"cleaning": (\{[^}]*\})', outs)
+    kc_m = re.search(r'"cleaning": (\{[^}]*\})', out2)
+    if rc2 != 0 or not kc_s or not kc_m:
+        bad.append(f"(j2) the one-product cleaning probe did not run (rc {rc2}) or publishes no cleaning")
+    else:
+        ks, km = json.loads(kc_s.group(1)), json.loads(kc_m.group(1))
+        nk = 0
+        for k, v in ks.items():
+            if "_campaign" in k:
+                continue    # a campaign belongs to one product: not published for several
+            if k not in km or not close(km[k], v, 1e-9):
+                bad.append(f"cleaning {k} {km.get(k)} != {v}")
+            nk += 1
+        claims.append(f"(j2) one product through the multiproduct path counts the plan's cleaning "
+                      f"identically ({nk} `kpis.cleaning` values, to 1e-9)")
     if bad:
         fail("(j) one product through the multiproduct path is not the single plan: "
              + "; ".join(bad[:8]))

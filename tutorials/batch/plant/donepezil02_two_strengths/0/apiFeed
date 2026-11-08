@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  Donepezil hydrochloride, BOUGHT: 10 mg per tablet PRESSED -- the strength, ARICEPT 10 mg SmPC section 2.  Basis: 720 000 tablets/h, the flowsheet basis.  (7.2 kg/h.)
+
+componentMolarFlows
+{
+    donepezilHydrochloride       0.0173094399 kmol/h;
+}
+
+T               298.15 K;
+P               1.01325 bar;
+
+phases
+{
+    solid
+    {
+        componentMolarFlows
+        {
+            donepezilHydrochloride 0.0173094399 kmol/h;
+        }
+    }
+}

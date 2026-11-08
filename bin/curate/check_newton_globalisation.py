@@ -80,7 +80,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 PROBE = ROOT / "bin" / "curate" / "_newtonGlobalisationProbe.cpp"
 SOURCES = ["src/solver/NewtonND.cpp", "src/solver/LU.cpp",
-           "src/solver/BlockTridiagonal.cpp"]
+           "src/solver/BlockTridiagonal.cpp", "src/solver/NewtonRaphson.cpp"]
 
 fails = []
 
@@ -234,6 +234,50 @@ def main() -> int:
          and re.search(r"\bo\.typX(\.assign\(|\s*=)", cstr) is not None,
          "the multi-reaction CSTR no longer opts in (armijo, typX) -- "
          "slice 2's reactor caller is gone")
+
+    #  (h) slice 3a: the safeguarded 1-D solve over an infeasible window
+    need("h", num("infeasConverged") == 1 and num("infeasRootErr") < 1e-6,
+         "newton1DSafeguarded did not reach the root past an infeasible "
+         f"window: converged {v.get('infeasConverged')}, error "
+         f"{v.get('infeasRootErr')}")
+    need("h", num("infeasRefusals") >= 1,
+         "the infeasible window was never probed "
+         f"(refusals {v.get('infeasRefusals')})")
+    need("h", num("infeasFeasibleSameIters") == 1,
+         "on a feasible problem newton1DSafeguarded is no longer newton1D's "
+         "iteration (every feasible Gibbs case would move)")
+    #  slice 3 (unit half, Rank 3): residuals that are not functions of the
+    #  state.  Source arms; the runtime witnesses are in check_reactor_limits
+    #  (R8 gibbs seed, R9 cstr scan, R10 adiabatic flash).
+    gib = strip_comments((ROOT / "src/unitOperations/reactor/GibbsReactor.cpp"
+                          ).read_text())
+    need("g", "1.0e30" not in gib and "InfeasibleTrial(" in gib
+         and "penalisedT" in gib,
+         "3a: GibbsReactor's adiabatic residual returns a 1e30 penalty again "
+         "(or no longer throws InfeasibleTrial / counts penalisedT)")
+    need("g", re.search(r"std::isnan\(f[pq]\)", cstr) is not None
+         and "extents solve failed at" in cstr,
+         "3b: the CSTR root scan no longer treats an unconverged extents "
+         "solve as NaN, or no longer announces the failed-point count")
+    need("g", re.search(r"bubbleTWithItsVapour\(thermo, yD, P, Ts\[0\], "
+                        r"1\.0e-12,\s*&refluxOk\)", col) is not None
+         and re.search(r"if \(!refluxOk\)\s*throw InfeasibleTrial", col),
+         "3c: the full-MESH reflux bubble point's verdict is dropped again")
+    need("g", re.search(r"stageVapourK\(thermo, Tj, P, xj, nullptr, &vapOk\)",
+                        col) is not None
+         and re.search(r"if \(!vapOk\)\s*throw InfeasibleTrial", col),
+         "3d: the MESH stage K's incipient-vapour verdict is dropped again")
+    adf = strip_comments((ROOT / "src/unitOperations/flash/AdiabaticFlash.cpp"
+                          ).read_text())
+    need("g", "lastSol.converged" in adf and "innerFailedTrials" in adf
+         and "maxOuterIter" in adf,
+         "3g: AdiabaticFlash no longer reads its inner flash's `converged`")
+    rout = strip_comments((ROOT / "src/unitOperations/reactor/ReactorOutlet.cpp"
+                           ).read_text())
+    need("g", re.search(r"hRes\s*<=\s*1\.0e-9\s*\*\s*std::max\(1\.0, "
+                        r"std::abs\(h\)\)", rout) is not None,
+         "3h: the single-phase T(H) inversion no longer checks its own "
+         "enthalpy residual before returning")
 
     if fails:
         print("check_newton_globalisation: FAILED")
