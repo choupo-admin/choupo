@@ -27,8 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "GibbsReactor.H"
-#include "core/InfeasibleTrial.H"
-
+#include "core/InfeasibleTrial.H"   // the adiabatic T search refuses a trial (C245 3a)
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "gibbsMethod/GibbsMethod.H"
