@@ -1038,8 +1038,8 @@ int FitParameters::run(const DictPtr& dict,
             if (rel < tol) { converged = true; break; }
         }
         else
-        {
-            // Reject, inflate damping.
+        {   // Reject, inflate damping -- unless the step is already below 1e-3 of the FD step, which the Jacobian cannot resolve: the search has CONVERGED there (C245; at a chi2 floor every step is rejected and lambda used to be inflated to a fatal "diverged").
+            { bool tiny = true; for (std::size_t j = 0; j < P; ++j) tiny = tiny && std::abs(dp[j]) < 1.0e-3 * fdStep * std::max(std::abs(params[j].value), 1.0); if (tiny) { logIter(iter); converged = true; break; } }
             lambda *= 2.5;
             if (lambda > 1.0e12)
                 throw std::runtime_error("FitParameters: lambda diverged --- "
