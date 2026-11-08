@@ -14,6 +14,7 @@ License
 #include "CatalogueLookup.H"
 #include "thermo/Database.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/RecordResolver.H"
 #include "core/Constants.H"
 
 #include <algorithm>
@@ -178,6 +179,57 @@ Paths catalogue(const Database* db, const char* op)
             " components/ and parameters/ -- a sealed case with no catalogue"
             " cannot be asked.  Run it from an installation (CHOUPO_HOME).");
     return p;
+}
+
+//  WHERE THIS CARD COMES FROM (DEV.md 4c C227 (a), architect's ruling).  The
+//  lookups read the INSTALLATION catalogue by design -- their subject is the
+//  catalogue -- so a SEALED case prints a card from a release that is not its
+//  own unless the card says so.  One mandatory line on the card (priority 0,
+//  never dropped) and one `catalogue` object in the result JSON carry: the
+//  source, the installation's release (data/standards/CATALOGUE.dat), and the
+//  case's seal state with the release its manifest names.
+struct Provenance
+{
+    std::string cardLine;   //  one line of the card
+    std::string json;       //  the `catalogue` JSON object
+    std::string seal;       //  "sealed" | "unsealed"
+    bool        differs = false;
+};
+
+Provenance provenanceOf(const Paths& P)
+{
+    std::string release = "undeclared";
+    const fs::path cat = P.standards / "CATALOGUE.dat";
+    if (fs::exists(cat))
+    {
+        try
+        {
+            DictPtr d = Dictionary::fromFile(cat.string());
+            if (d->found("catalogue"))
+                release = d->subDict("catalogue")->lookupWordOrDefault("release", "undeclared");
+        }
+        catch (const std::exception&) { /* stays undeclared: said, not hidden */ }
+    }
+    std::string seal = "unsealed", sealedRel;
+    DictPtr m = records::nearestManifest();
+    if (m && m->lookupWordOrDefault("sealed", "false") == "true")
+    {
+        seal = "sealed";
+        sealedRel = m->lookupWordOrDefault("catalogueRelease", "undeclared");
+    }
+    const bool differs = (seal == "sealed" && sealedRel != release);
+
+    Provenance r;
+    r.seal = seal; r.differs = differs;
+    r.cardLine = "  catalogue { source \"installation data/standards\"; release " + release
+               + "; case " + seal + ";" + (seal == "sealed" ? " sealedRelease " + sealedRel + ";" : std::string()) + (differs ? " differs \"this card is from release " + release
+                                  + ", NOT the release this case was sealed from\";" : std::string())
+               + " }";
+    r.json = "{ \"source\": \"" + jsonEsc(P.standards.string()) + "\", \"release\": \""
+           + jsonEsc(release) + "\", \"caseSeal\": \"" + seal + "\", \"caseRelease\": "
+           + (seal == "sealed" ? "\"" + jsonEsc(sealedRel) + "\"" : std::string("null"))
+           + ", \"releaseDiffers\": " + (differs ? "true" : "false") + " }";
+    return r;
 }
 
 //  First word after `CAS` in the head of a component record.
@@ -360,7 +412,12 @@ struct Cand
 };
 
 std::string pstr(const DictPtr& d, const char* k)
-{ return d->found(k) ? d->lookupWordOrDefault(k, "") : std::string(); }
+{
+    //  A record whose `k` is a block or a list (a private data/local record in
+    //  a richer shape) has no single word to show: absent here, never a throw.
+    try { return d->found(k) ? d->lookupWordOrDefault(k, "") : std::string(); }
+    catch (const std::exception&) { return std::string(); }
+}
 
 Cand readCand(const fs::path& f, const std::string& model, const std::string& relPath,
               bool isLocal)
@@ -485,7 +542,7 @@ void emitCandidate(Card& card, const Cand& c)
 
 void LookupBase::publish(const std::string& opName, const std::string& kind,
                          const std::string& tier, const std::string& card,
-                         int verbosity)
+                         const std::string& provJson, int verbosity)
 {
     //  The card must be a dictionary this engine reads back (the Explorer and
     //  any program read the same text): parse it before publishing.
@@ -499,6 +556,7 @@ void LookupBase::publish(const std::string& opName, const std::string& kind,
     block_ = "{ \"op\": \"" + jsonEsc(opName) + "\", \"kind\": \"" + kind
            + "\", \"tier\": \"" + tier + "\", \"bytes\": " + std::to_string(card.size())
            + ", \"budgetBytes\": " + std::to_string(kLookupCardBudgetBytes)
+           + ", \"catalogue\": " + provJson
            + ", \"card\": \"" + jsonEsc(card) + "\" }";
     if (verbosity >= 1) std::cout << card;
 }
@@ -553,6 +611,9 @@ int PairLookup::run(const DictPtr& dict, const ThermoPackage&, int verbosity)
     card.add(0, "evidenceCard");
     card.add(0, "{");
     card.add(0, "  schema 1; kind pair; pair " + pairWords + ";");
+    const Provenance prov = provenanceOf(P);
+    card.add(0, prov.cardLine);
+    caseSeal_ = prov.seal; releaseDiffers_ = prov.differs ? "true" : "false";
 
     std::string tier;
     std::vector<std::string> absent;
@@ -642,7 +703,7 @@ int PairLookup::run(const DictPtr& dict, const ThermoPackage&, int verbosity)
     card.add(1, ab + " );");
     card.add(0, "}");
 
-    publish(opName, "pair", tier, card.fit(kLookupCardBudgetBytes), verbosity);
+    publish(opName, "pair", tier, card.fit(kLookupCardBudgetBytes), prov.json, verbosity);
     diag_["n_records"] = static_cast<scalar>(cands.size());
     return 0;
 }
@@ -661,6 +722,9 @@ int ComponentLookup::run(const DictPtr& dict, const ThermoPackage&, int verbosit
     card.add(0, "{");
     card.add(0, "  schema 1; kind component; query \"" + clean(q, 60) + "\"; resolvedBy "
                 + (c.kind == Comp::Unknown ? std::string("none") : c.how) + ";");
+    const Provenance prov = provenanceOf(P);
+    card.add(0, prov.cardLine);
+    caseSeal_ = prov.seal; releaseDiffers_ = prov.differs ? "true" : "false";
     std::string tier;
 
     if (c.kind == Comp::Catalogue)
@@ -726,7 +790,7 @@ int ComponentLookup::run(const DictPtr& dict, const ThermoPackage&, int verbosit
     }
     card.add(0, "}");
 
-    publish(opName, "component", tier, card.fit(kLookupCardBudgetBytes), verbosity);
+    publish(opName, "component", tier, card.fit(kLookupCardBudgetBytes), prov.json, verbosity);
     return 0;
 }
 

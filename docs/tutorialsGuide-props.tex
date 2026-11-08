@@ -3533,13 +3533,13 @@ The card lists which properties the record has and which it lacks; it never prin
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{diag}{c\_name}{budget\_bytes}{2048}
-\goldrow{diag}{c\_name}{card\_bytes}{692}
+\goldrow{diag}{c\_name}{card\_bytes}{807}
 \goldrow{diag}{c\_cas}{budget\_bytes}{2048}
-\goldrow{diag}{c\_cas}{card\_bytes}{691}
+\goldrow{diag}{c\_cas}{card\_bytes}{806}
 \goldrow{diag}{c\_lake}{budget\_bytes}{2048}
-\goldrow{diag}{c\_lake}{card\_bytes}{548}
+\goldrow{diag}{c\_lake}{card\_bytes}{663}
 \goldrow{diag}{c\_none}{budget\_bytes}{2048}
-\goldrow{diag}{c\_none}{card\_bytes}{420}
+\goldrow{diag}{c\_none}{card\_bytes}{535}
 \goldrow{verdict}{c\_name}{tier}{catalogue}
 \goldrow{verdict}{c\_cas}{tier}{catalogue}
 \goldrow{verdict}{c\_lake}{tier}{estimateLake}
@@ -3848,20 +3848,64 @@ HOW IT READS. The operations read the INSTALLATION catalogue (a question about t
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{diag}{p\_curated}{budget\_bytes}{2048}
-\goldrow{diag}{p\_curated}{card\_bytes}{832}
+\goldrow{diag}{p\_curated}{card\_bytes}{947}
 \goldrow{diag}{p\_curated}{n\_records}{2}
 \goldrow{diag}{p\_regressed}{budget\_bytes}{2048}
-\goldrow{diag}{p\_regressed}{card\_bytes}{842}
+\goldrow{diag}{p\_regressed}{card\_bytes}{957}
 \goldrow{diag}{p\_regressed}{n\_records}{1}
 \goldrow{diag}{p\_estimate}{budget\_bytes}{2048}
-\goldrow{diag}{p\_estimate}{card\_bytes}{685}
+\goldrow{diag}{p\_estimate}{card\_bytes}{800}
 \goldrow{diag}{p\_estimate}{n\_records}{0}
 \goldrow{diag}{p\_none}{budget\_bytes}{2048}
-\goldrow{diag}{p\_none}{card\_bytes}{664}
+\goldrow{diag}{p\_none}{card\_bytes}{779}
 \goldrow{diag}{p\_none}{n\_records}{0}
 \goldrow{verdict}{p\_curated}{tier}{curated}
 \goldrow{verdict}{p\_regressed}{tier}{regressed}
-\goldmore{2}
+\goldmore{3}
+\end{tutgolden}
+
+\clearpage
+\tutentry{pairLookup02\_provenance\_unsealed}{tutorials/props/molecular/pairLookup02\_provenance\_unsealed}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{p\_curated}\\[-1pt]{\tiny pairLookup}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{pairLookup provenance line: case UNSEALED}
+\begin{tutnarrative}
+WHAT IT IS. Witness of the PROVENANCE LINE every lookup card carries (DEV.md 4c C227 (a), the architect's ruling). The lookups read the INSTALLATION catalogue by design -- their subject is the catalogue -- so each card, and the `catalogue` object of the result JSON, names the source, the installation's catalogue release (data/standards/CATALOGUE.dat) and the case's seal state.
+
+THIS CASE: UNSEALED (no constant/propertyManifest). The card reads `case unsealed`; there is no sealed release it could differ from. Its sibling pairLookup03\_provenance\_stale\_seal is sealed from an older release and the line says `differs`. Pinned: the tier word, the card bytes.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{p\_curated}{budget\_bytes}{2048}
+\goldrow{diag}{p\_curated}{card\_bytes}{922}
+\goldrow{diag}{p\_curated}{n\_records}{2}
+\goldrow{verdict}{p\_curated}{caseSeal}{unsealed}
+\goldrow{verdict}{p\_curated}{releaseDiffers}{false}
+\end{tutgolden}
+
+\clearpage
+\tutentry{pairLookup03\_provenance\_stale\_seal}{tutorials/props/molecular/pairLookup03\_provenance\_stale\_seal}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{p\_curated}\\[-1pt]{\tiny pairLookup}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{pairLookup provenance line: case sealed from an OLDER release than the installation}
+\begin{tutnarrative}
+WHAT IT IS. Witness of the PROVENANCE LINE every lookup card carries (DEV.md 4c C227 (a)); see pairLookup02\_provenance\_unsealed for the rule.
+
+THIS CASE: SEALED, and its manifest names Choupo-2607 -- a legitimate old seal (the catalogue identity a seal records is the catalogue as it stood when the case was frozen; CATALOGUE.dat explains why 394 manifests keep that name) -- while the installation is Choupo-2608. The lookups still read the installation, so the card is from a release that is NOT the case's own, and the provenance line SAYS so: `case sealed Choupo-2607; differs "..."`. The result JSON carries the same fact as `releaseDiffers true`. Pinned: the tier word, the card bytes.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{p\_curated}{budget\_bytes}{2048}
+\goldrow{diag}{p\_curated}{card\_bytes}{1039}
+\goldrow{diag}{p\_curated}{n\_records}{2}
+\goldrow{verdict}{p\_curated}{caseSeal}{sealed}
+\goldrow{verdict}{p\_curated}{releaseDiffers}{true}
 \end{tutgolden}
 
 \clearpage

@@ -3,7 +3,7 @@
   "$id": "https://choupo.org/schemas/operations/pairLookup.schema.json",
   "title": "pairLookup operation",
   "x-choupo": {"discipline": "Thermodynamics", "activity": "evaluate", "package": false},
-  "description": "ONE TOOL CALL, ONE EVIDENCE CARD for a binary: what the installation catalogue holds for the pair, in a fixed byte budget (2048 bytes). The honesty ladder: a curated catalogue pair record (paste-ready `source` entry, validity, provenance) -> Choupo's own regression (`fittedInCase`, verdict) -> UNIFAC, said to be an ESTIMATE with its measured warning -> 'I do not have this pair' and what the student can bring. Never a number invented; the fields the C16 chain will add are listed as announced-absent. Reads the installation catalogue, not the case's constant/.",
+  "description": "ONE TOOL CALL, ONE EVIDENCE CARD for a binary: what the installation catalogue holds for the pair, in a fixed byte budget (2048 bytes). The honesty ladder: a curated catalogue pair record (paste-ready `source` entry, validity, provenance) -> Choupo's own regression (`fittedInCase`, verdict) -> UNIFAC, said to be an ESTIMATE with its measured warning -> 'I do not have this pair' and what the student can bring. Never a number invented; the fields the C16 chain will add are listed as announced-absent. Reads the installation catalogue, not the case's constant/. Every card carries ONE provenance line (and the result JSON a catalogue object): the source (the installation catalogue), its release (data/standards/CATALOGUE.dat) and the case's seal state; a sealed case whose manifest names another release is told so with differs.",
   "type": "object",
   "properties": {
     "components": {

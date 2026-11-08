@@ -73,7 +73,8 @@ class LookupBase : public PropertyOperation
 public:
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
     std::map<std::string, std::string> curation() const override
-    { return { { "tier", tier_ } }; }
+    { return { { "tier", tier_ }, { "caseSeal", caseSeal_ },
+               { "releaseDiffers", releaseDiffers_ } }; }
     std::vector<std::string> headline() const override
     { return { "card_bytes", "budget_bytes" }; }
     std::pair<std::string, std::string> resultBlock() const override
@@ -82,10 +83,10 @@ public:
 protected:
     void publish(const std::string& opName, const std::string& kind,
                  const std::string& tier, const std::string& card,
-                 int verbosity);
+                 const std::string& provJson, int verbosity);
 
     std::map<std::string, scalar> diag_;
-    std::string                   tier_;
+    std::string                   tier_, caseSeal_, releaseDiffers_;
     std::string                   block_;
 };
 

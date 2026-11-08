@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  pairLookup02_provenance_unsealed
+  ================================
+
+  WHAT IT IS.  Witness of the PROVENANCE LINE every lookup card carries (DEV.md
+  4c C227 (a), the architect's ruling).  The lookups read the INSTALLATION
+  catalogue by design -- their subject is the catalogue -- so each card, and
+  the `catalogue` object of the result JSON, names the source, the
+  installation's catalogue release (data/standards/CATALOGUE.dat) and the
+  case's seal state.
+
+  THIS CASE: UNSEALED (no constant/propertyManifest).  The card reads
+  `case unsealed`; there is no sealed release it could differ from.  Its
+  sibling pairLookup03_provenance_stale_seal is sealed from an older release
+  and the line says `differs`.  Pinned: the tier word, the card bytes.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    { name p_curated; type pairLookup; components ( ethanol water ); }
+);

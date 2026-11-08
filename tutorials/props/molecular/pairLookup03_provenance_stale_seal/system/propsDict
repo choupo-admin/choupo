@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  pairLookup03_provenance_stale_seal
+  ==================================
+
+  WHAT IT IS.  Witness of the PROVENANCE LINE every lookup card carries (DEV.md
+  4c C227 (a)); see pairLookup02_provenance_unsealed for the rule.
+
+  THIS CASE: SEALED, and its manifest names Choupo-2607 -- a legitimate old
+  seal (the catalogue identity a seal records is the catalogue as it stood
+  when the case was frozen; CATALOGUE.dat explains why 394 manifests keep
+  that name) -- while the installation is Choupo-2608.  The lookups still read
+  the installation, so the card is from a release that is NOT the case's own,
+  and the provenance line SAYS so: `case sealed Choupo-2607; differs "..."`.
+  The result JSON carries the same fact as `releaseDiffers true`.
+  Pinned: the tier word, the card bytes.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    { name p_curated; type pairLookup; components ( ethanol water ); }
+);

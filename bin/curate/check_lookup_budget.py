@@ -73,6 +73,8 @@ ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "choupoProps"
 PAIR = ROOT / "tutorials/props/molecular/pairLookup01_catalogue_ladder"
 COMP = ROOT / "tutorials/props/molecular/componentLookup01_catalogue_ladder"
+PROV_UNSEALED = ROOT / "tutorials/props/molecular/pairLookup02_provenance_unsealed"
+PROV_STALE = ROOT / "tutorials/props/molecular/pairLookup03_provenance_stale_seal"
 HDR = ROOT / "src/propertyOps/CatalogueLookup.H"
 SRC = ROOT / "src/propertyOps/CatalogueLookup.cpp"
 NOTE = ROOT / "docs/design/the-evidence-card.md"
@@ -114,10 +116,11 @@ def cards_of(case):
 
 
 def no_identity(card):  # plus, at the call sites, the component names and the field `archiveSha256`
-    """The card without its identity line (names may carry digits)."""
+    """The card without its identity and provenance lines (names and release labels may carry digits)."""
     return "\n".join(l for l in card.splitlines()
                      if not l.strip().startswith("schema ")
                      and not l.strip().startswith("identity ")
+                     and not l.strip().startswith("catalogue {")   # the provenance line: a release label carries digits
                      and not l.strip().startswith("schema"))
 
 
@@ -193,7 +196,7 @@ def main():
     cur = pairs["p_curated"]["card"]
     if pairs["p_curated"]["tier"] != "curated":
         fail("(b) ethanol + water is not tier curated")
-    msrc = re.search(r'source "([^"]+)"', cur)
+    msrc = re.search(r'paste \{[^{]*\{ source "([^"]+)"', cur)
     if not msrc:
         fail("(b) the curated card carries no `source` line")
     else:
@@ -297,6 +300,25 @@ def main():
         rc, out, err = run(d)
         if rc == 0:
             fail("(h) components ( water water ) was accepted")
+
+    # ---- (j) the provenance line: source, release, seal state -------------------
+    #  DEV.md 4c C227 (a): every card names where it comes from, and a sealed
+    #  case whose manifest names ANOTHER release is told so.
+    for name, c in list(pairs.items()) + list(comps.items()):
+        cat = c.get("catalogue")
+        if not cat or not all(k in cat for k in ("source", "release", "caseSeal", "releaseDiffers")):
+            fail(f"(j) {name}: the result JSON carries no complete `catalogue` object")
+        if not re.search(r"^  catalogue \{ source \"[^\"]+\"; release \S+; case (un)?sealed;", c["card"], re.M):
+            fail(f"(j) {name}: the card carries no provenance line")
+    for case, seal, differs in ((PROV_UNSEALED, "unsealed", False), (PROV_STALE, "sealed", True)):
+        cc = cards_of(case).get("p_curated")
+        if not cc:
+            continue
+        cat = cc.get("catalogue", {})
+        if cat.get("caseSeal") != seal or bool(cat.get("releaseDiffers")) != differs:
+            fail(f"(j) {case.name}: expected caseSeal {seal} / releaseDiffers {differs}, got {cat}")
+        if differs != ("differs " in cc["card"]):
+            fail(f"(j) {case.name}: the card line and the JSON disagree about `differs`")
 
     # ---- (i) source -------------------------------------------------------------
     s = SRC.read_text()

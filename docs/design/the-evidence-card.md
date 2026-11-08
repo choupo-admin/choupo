@@ -32,6 +32,18 @@ output, where it is GENERATED from the records and cannot drift from them.
 `constant/`: a question *about* the catalogue.  With no catalogue they refuse
 by name.
 
+**Provenance line (architect's ruling, C227 (a)).**  Because the subject is
+the installation catalogue, a SEALED case would otherwise print a card from a
+release that is not its own, unsaid.  Every card therefore carries one
+mandatory line (priority 0, never dropped by the byte budget) and the result
+JSON a `catalogue` object: `source` (the installation `data/standards`),
+`release` (`data/standards/CATALOGUE.dat`), `caseSeal` (`sealed` /
+`unsealed`), `caseRelease` (the manifest's `catalogueRelease`) and
+`releaseDiffers`.  When they differ the line says `differs "..."`.  Witnesses:
+`pairLookup02_provenance_unsealed`, `pairLookup03_provenance_stale_seal`
+(sealed from Choupo-2607 against an installation of Choupo-2608).
+
+
 ### The honesty ladder (`pairLookup`; the first rung that answers wins)
 
 | tier | what answers | what the card carries |

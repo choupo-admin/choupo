@@ -3162,8 +3162,14 @@ it lacks, never their values), `estimateLake` (identity and UNIFAC groups
 only, "not reviewed", no estimated value) or `none`.  Fields the C16 chain
 will add are listed under `announcedAbsent`, never filled.  The result JSON
 block `lookupCards` carries the same card text.  Reads `$CHOUPO_HOME`'s
-catalogue, not the case's `constant/`.  Witnesses
-`pairLookup01_catalogue_ladder`, `componentLookup01_catalogue_ladder`.
+catalogue, not the case's `constant/`, so every card carries ONE line,
+`catalogue { source ...; release R; case sealed|unsealed; sealedRelease S; }`,
+and the JSON block a `catalogue` object: the source, the installation's
+release and the case's seal state; when a sealed case's manifest names a
+DIFFERENT release the line adds `differs "..."` (the card is not from the
+case's own release).  Witnesses `pairLookup01_catalogue_ladder`,
+`componentLookup01_catalogue_ladder`, `pairLookup02_provenance_unsealed`,
+`pairLookup03_provenance_stale_seal`.
 Record: `docs/design/the-evidence-card.md`.
 
 ### `fitParameters`
