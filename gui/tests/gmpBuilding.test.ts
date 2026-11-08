@@ -266,8 +266,10 @@ describe("the building drawn into the main plot plan (C100)", () => {
     const body = reports.slice(reports.indexOf("function LayoutBody"),
                                reports.indexOf("/*  ---- Equipment sheets"));
     expect(body).toContain("const overlay = useBuildingOverlay(building, scene);");
-    expect(body).toContain(
-      "<PlantLayout3D scene={overlay.shown} extend={overlay.extend} toolbarExtra={overlay.toggles} />");
+    //  C229 added `layout`/`facts` (the engine's block, for the tour and the cards);
+    //  the building overlay is still the one scene, extension and toolbar.
+    expect(body).toMatch(
+      /<PlantLayout3D scene=\{overlay\.shown\} extend=\{overlay\.extend\} toolbarExtra=\{overlay\.toggles\}\s+layout=\{layout\} facts=\{facts\} \/>/);
     expect(body).not.toContain("<PlantLayout3D scene={scene}");
     const section = readFileSync(new URL("../src/ui/GmpBuildingSection.tsx", import.meta.url), "utf-8");
     expect(section).toContain("useBuildingOverlay(building, scene);");
