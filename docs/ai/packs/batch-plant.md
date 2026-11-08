@@ -81,8 +81,8 @@ batchPlan
   `dischargeTime`, `cleanTime`; no density.
 * Parallel units: `inPhase n;` (a bigger lot) / `outOfPhase n;` (shorter
   limiting cycle).  Several products: `products ( ... )` + `campaignOrder (
-  ... )` + a `productChangeover` per stage (then `ratedMachine` refuses: single
-  product only).
+  ... )` + a `productChangeover` per stage (`cleaning`, `ratedMachine` and
+  `cleanUtilities` then run per product and say so; see their sections).
 * Cycle t_j = charge + process + discharge + clean.  T_L = max t_j/N_op.
   Occupancy = (N t_j/N_op + campaigns x changeover) / availableTime.
 * REFUSED (exit 2, with the numbers and remedies): a stage busy more hours
@@ -101,8 +101,10 @@ batchPlan
   installed instance (N_ip x N_op) at each changeover, so cleans a year =
   N x N_ip + campaigns x N_ip x N_op.  A positive `waterPerLotClean` needs the
   stage's `cleanTime` > 0 and a positive `waterPerChangeover` the train's
-  `changeover` > 0 (refused otherwise); single-product plans only (refused
-  beside `products`).  Published (a table in the log and `kpis.cleaning`):
+  `changeover` > 0 (refused otherwise).  With `products ( ... )` the cleans are
+  counted per product (its lots, its campaign changeovers, one product
+  changeover) and published also as `<unit>_<product>_*_year` and
+  `product_<p>_*_year` (no per-campaign keys).  Published (a table in the log and `kpis.cleaning`):
   per machine `<unit>_cleans_year`, `<unit>_water_m3_year`,
   `<unit>_effluent_m3_year`; per train, for a FULL campaign,
   `train_<t>_cleans_campaign`, `train_<t>_water_m3_campaign`,
@@ -141,6 +143,10 @@ batchPlan
   it: declare installed { count 2; ...}` (a second machine is a decision you
   state), or a bigger machine, or a longer stage.  Above `announceAbove`: an
   announcement.  `installed.count` differing from the plan's units: announced.
+* Several products: the fit is checked for EACH product (its lot, its stage
+  override); the refusal names the product; `utilisation` is the binding
+  product's and `utilisation_<p>` carries each.  A strength with its own tablet
+  weight: `rating { itemMass 0.28 g; itemMassByProduct { strength5 0.14 g; } }`.
 * `ratedMachine` is NOT costed (no correlation) and NOT placed on the plot
   plan; the money is a `quote`, the place is a room.  A `quote` on a unit
   whose sizer refused STOPS the run (`That refusal is the finding`).

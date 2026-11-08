@@ -3259,12 +3259,30 @@ $Q/r_P$ (\texttt{streamFactor fromBatchPlan}).
 
 \textbf{Not computed}: the intermediate store's size, mixed-product
 campaigns, several rotations a year, an optimiser of the order,
-stochastic QC release times, any labour or utility schedule following the
-plan, and (for a \emph{multiproduct} plan) the per-machine cleaning
-water, the machines' fit to their ratings and the clean-utilities pass
-(each refused by name; \file{BatchPlanPass.H}:261,
-\file{sizing/RatedMachineSize.cpp}:284--288,
-\file{CleanUtilitiesPass.cpp}:312--314).
+stochastic QC release times, and any labour or utility schedule following
+the plan.
+
+\textbf{The tools of a single-product plan, over several products}
+(\texttt{donepezil02\_two\_strengths}). The per-machine cleaning water,
+the machines' fit to their ratings and the clean-utilities pass all run
+on a multiproduct plan, each announcing that it ran over $N$ products.
+\emph{Cleaning} counts, for each product $i$ on a machine of $N_{ip}$
+instances in phase and $N_{op}$ out of phase: $N_i N_{ip}$ cleans after
+its lots, $(c_i-1)N_{ip}N_{op}$ at its campaign changeovers and
+$N_{ip}N_{op}$ at the one product changeover after its last campaign
+(a lone product: a changeover after every campaign); water and effluent
+are those counts times the declared volumes, summed over the products,
+and the log and \texttt{kpis.cleaning} carry one row per product beside
+the totals. The \emph{rated machine} is checked against the lot and the
+operating time of \emph{each} product; the refusal names the product
+that does not fit, the published utilisation is the binding product's,
+and a strength with its own tablet weight declares it
+(\texttt{itemMassByProduct}). The \emph{HVAC} is room-based, so it does
+not depend on the product mix and is computed once; the \emph{purified
+water} is drawn per lot of each product and summed over the year, the
+peak being the largest overlap of the multiproduct Gantt. What the case
+declares is still the case's: the volumes, the ratings and the air
+changes are assumptions to replace.
 
 \textbf{References} (by title; none transcribed). Biegler, Grossmann \&
 Westerberg, \emph{Systematic Methods of Chemical Process Design}
