@@ -9,7 +9,7 @@
   "cases": 527,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 14
+  "anchored": 15
  },
  "cases": {
   "tutorials/batch/adsorber/batch09_adsorber_co2": {
@@ -3879,7 +3879,9 @@
      "UNIFAC"
     ]
    },
-   "roles": [],
+   "roles": [
+    "anchored"
+   ],
    "hasGolden": true
   },
   "tutorials/steady/distillation/column15_klemola_ideal_trays": {
