@@ -103,8 +103,8 @@ PCSAFT::PCSAFT(const DictPtr& dict, const std::vector<Component>& comps)
                 if (comps[k].name() == ni) a = k;
                 if (comps[k].name() == nj) b = k;
             }
-            if (a < n_ && b < n_)
-            { kij_[a*n_+b] = kij_[b*n_+a] = p->lookupScalar("kij"); }
+            if (a == n_ || b == n_) throw std::runtime_error("PCSAFT: binaryInteractions references unknown component '" + (a == n_ ? ni : nj) + "' -- a kij is refused by name, never dropped in silence (C245)");
+            kij_[a*n_+b] = kij_[b*n_+a] = p->lookupScalar("kij");
         }
 
     // Self-consistency gate (glass-box, every construction -- mirrors
@@ -383,14 +383,14 @@ scalar PCSAFT::solveDensity(scalar T, scalar P, const sVector& x,
     // vapour = lowest-eta bracket, liquid = highest-eta bracket
     auto br = liquidRoot ? roots.back() : roots.front();
     scalar lo = br.first, hi = br.second;
-    for (int it = 0; it < 100; ++it)                       // bisection (robust)
+    for (int it = 0; it < 200; ++it)                       // bisection, RELATIVE stop
     {
         const scalar mid = 0.5*(lo+hi);
         const scalar f = Pof(mid) - P;
-        if (std::abs(hi-lo) < 1.0e-12) { lo = hi = mid; break; }
+        if (std::abs(hi-lo) <= 1.0e-10 * mid) { lo = hi = mid; break; }
         if ((Pof(lo)-P)*f <= 0.0) hi = mid; else lo = mid;
     }
-    return 0.5*(lo+hi) * rhoOfEta;
+    return polishDensity(T, P, x, 0.5*(lo+hi)*rhoOfEta, br.first*rhoOfEta, br.second*rhoOfEta);
 }
 
 // CONTRACT: the Z/molarVolume/H_residual/S_residual family reports ONE
@@ -539,8 +539,28 @@ scalar PCSAFT::verify(int verbosity) const
     //     recompute mu via lnPhiAt and confirm Sum x_i lnphi consistency vs the
     //     bulk residual Gibbs g_res/RT = a_res + (Z-1) - ln Z.
     const scalar P = 1.0e5;
+    //  THE STATE CHECKS RUN ON SOME ROOT, NEVER ON NONE (C245 slice 4).  They
+    //  ran on the root at (298.15 K, 1 bar) only, and a mixture whose density
+    //  solve found no root there SKIPPED them -- the check that refuses a
+    //  sign or index bug in a_res passed by not running.  The vapour root of
+    //  the dilute state (0.01 bar, where an ideal-gas-like root always exists)
+    //  is checked instead, and said; if even that does not resolve, the
+    //  construction refuses (maxDev = 1) rather than pass unverified.
+    scalar rhoChecked = -1.0;
+    try { rhoChecked = solveDensity(T, P, x, true); }
+    catch (const std::exception& e)
+    {
+        if (verbosity >= 3)
+            std::cout << "  [PCSAFT verify] no root at 1 bar (" << e.what()
+                      << "); the state checks run on the dilute vapour root"
+                         " (0.01 bar)\n";
+        try { rhoChecked = solveDensity(T, 1.0e3, x, false); }
+        catch (const std::exception&) { maxDev = std::max(maxDev, scalar(1)); }
+    }
     try {
-        const scalar rho = solveDensity(T, P, x, true);
+        if (rhoChecked < 0.0)
+            throw std::runtime_error("no density root at 1 bar nor 0.01 bar");
+        const scalar rho = rhoChecked;
         const scalar Zc = 1.0 + rho * daRes_dRho(T, rho, x);
         const scalar aR = aRes(T, rho, x);
         const scalar gRes = aR + (Zc - 1.0) - std::log(Zc);   // molar residual G/RT
@@ -668,6 +688,32 @@ scalar PCSAFT::verify(int verbosity) const
         }
     }
     return maxDev;
+}
+
+// Newton in ln rho on g = ln[P(rho)/P], from the bisected root, inside the
+// bracket (header).  dg/dln rho by a central difference of the same P(rho).
+scalar PCSAFT::polishDensity(scalar T, scalar P, const sVector& x, scalar rho,
+                             scalar rhoLo, scalar rhoHi) const
+{
+    const scalar kT = constant::kB * T;
+    auto g = [&](scalar r) {
+        const scalar Pr = r * kT * (1.0 + r * daRes_dRho(T, r, x));
+        return (Pr > 0.0) ? std::log(Pr / P) : -1.0e300;
+    };
+    scalar gr = g(rho);
+    for (int k = 0; k < 3 && std::isfinite(gr) && std::abs(gr) > 1.0e-14; ++k)
+    {
+        const scalar h = 1.0e-5;
+        const scalar dg = (g(rho * std::exp(h)) - g(rho * std::exp(-h))) / (2.0 * h);
+        if (!(std::abs(dg) > 0.0) || !std::isfinite(dg)) break;
+        const scalar rn = rho * std::exp(-gr / dg);
+        if (!(rn >= std::min(rhoLo, rhoHi) && rn <= std::max(rhoLo, rhoHi))) break;
+        const scalar gn = g(rn);
+        if (!(std::abs(gn) < std::abs(gr))) break;
+        rho = rn;
+        gr = gn;
+    }
+    return rho;
 }
 
 } // namespace Choupo

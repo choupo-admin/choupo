@@ -51,6 +51,12 @@ Description
                                       convex G, so it is monotone).  Prints
                                       the extent and the mole fractions.
         REACTIDEAL T P n0... nu...    the same with ln phi = 0.
+        ZROOT V|L T P y...            Z on the vapour / liquid root and 1 when
+                                      the EoS says that root is a PSEUDO-root
+                                      (no root of that kind there; C245)
+        TRIVIAL tol T P x...          the trivial-root verdict of
+                                      trivialSaturationRoot at x = y (K from
+                                      Kvec(T, P, x, x)): `OK 0|1 max|K-1|`
 
     Usage:  _gibbsAuditProbe <caseDir> <requestFile>
     Each request line answers `OK v...` or `ERR <message>`, in order, between
@@ -62,6 +68,7 @@ Description
 #include "core/distribution/SizeDistribution.H"
 #include "thermo/Database.H"
 #include "thermo/PropertyContext.H"
+#include "thermo/SaturationCurves.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/ThermoPackageBuilder.H"
@@ -83,6 +90,7 @@ Description
 #include "thermo/transport/TransportModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <filesystem>
@@ -198,6 +206,33 @@ int main(int argc, char** argv)
                     out << "OK";
                     for (auto v : K) out << " " << v;
                     out << "\n";
+                }
+                else if (op == "ZROOT")
+                {
+                    std::string root; scalar T = 0.0, P = 0.0;
+                    ls >> root >> T >> P;
+                    sVector y(n, 0.0);
+                    for (auto& v : y) ls >> v;
+                    const auto& eos = thermo.eos();
+                    const bool liq = (root == "L");
+                    const scalar v = liq ? eos.molarVolumeLiquid(T, P, y)
+                                         : eos.molarVolume(T, P, y);
+                    const bool ps = liq ? eos.liquidRootIsPseudo(T, P, y)
+                                        : eos.vapourRootIsPseudo(T, P, y);
+                    out << "OK " << P * v / (constant::R * T) << " "
+                        << (ps ? 1 : 0) << "\n";
+                }
+                else if (op == "TRIVIAL")
+                {
+                    scalar tol = 0.0, T = 0.0, P = 0.0;
+                    ls >> tol >> T >> P;
+                    sVector x(n, 0.0);
+                    for (auto& v : x) ls >> v;
+                    const sVector K = thermo.Kvec(T, P, x, x);
+                    scalar dev = 0.0;
+                    for (auto k : K) dev = std::max(dev, std::abs(k - 1.0));
+                    out << "OK " << (trivialSaturationRoot(thermo, T, P, x, K, tol)
+                                     ? 1 : 0) << " " << dev << "\n";
                 }
                 else if (op == "GRES")
                 {

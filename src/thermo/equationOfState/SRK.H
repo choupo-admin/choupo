@@ -55,10 +55,11 @@ Description
 
         Z³ − Z² + (A − B − B²) Z − A·B = 0
 
-    is solved by Cardano (analytic).  When three real roots exist, the
-    largest is taken as the vapour root and the smallest as the liquid
-    root; in two-phase or single-phase regions one real root is picked
-    directly.  This class returns the vapour root throughout.
+    is solved by the ONE root picker of the generic cubic (CubicEoS.H,
+    "THE ROOT PICKER"): three real roots give the liquid (smallest above
+    B) and the vapour (largest); one real root is returned for the side it
+    lies on, and the other side gets a FLAGGED pseudo-root (C245 slice 4 --
+    it used to get the same root, unflagged).
 
     Fugacity coefficient of component i in the mixture (vapour root):
 
@@ -99,83 +100,26 @@ Description
 
 #pragma once
 
-#include "EquationOfState.H"
-#include "core/Constants.H"
-#include "thermo/Component.H"
+#include "CubicEoS.H"
 
-#include <map>
 #include <memory>
-#include <string>
 #include <vector>
 
 namespace Choupo {
 
-class SRK : public EquationOfState
+// The arithmetic (roots, phi, departures, mixing rule) lives in CubicEoS;
+// SRK supplies its constants (eps = 0, sigma = 1, Omega_a, Omega_b) and its
+// slope m(omega).
+class SRK : public CubicEoS
 {
 public:
     SRK(const std::vector<Component>& comps,
         const std::vector<std::vector<scalar>>& kij);
 
-    std::size_t n() const override { return n_; }
-
-    // The vapour root of the cubic; for sub-critical low-P this is the
-    // gas-side answer.
-    sVector phi(scalar T_K, scalar P_Pa, const sVector& y) const override;
-    sVector phiLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
-    scalar  molarVolume(scalar T_K, scalar P_Pa, const sVector& y) const override;
-    bool    hasLiquidRoot() const override { return true; }
-    scalar  molarVolumeLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
-    scalar  Z(scalar T_K, scalar P_Pa, const sVector& y) const override;
-
-    scalar  H_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
-    scalar  S_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
-
-    // The one-fluid decomposition, filled by the same buildAi/buildMix the
-    // hot path runs (see EquationOfState::MixingLedger).
-    bool mixingLedger(scalar T_K, const sVector& y,
-                      MixingLedger& out) const override;
-
-    const std::string& modelName() const override { return name_; }
-
-    // Cubic EoS: needs the critical constants + acentric factor per component.
-    std::vector<std::string> requiredComponentProperties() const override
-    {
-        return { "Tc", "Pc", "omega" };
-    }
-
     // Convenience: factory from a dict block.  Reads optional
     // `binaryInteractions (... );` sub-list, defaulting to k_ij = 0.
     static std::unique_ptr<EquationOfState>
     fromDict(const DictPtr& eosDict, const std::vector<Component>& comps);
-
-private:
-    struct PureParams
-    {
-        scalar a_c;          // a_c = 0.42747 R² Tc² / Pc       [Pa·m^6/mol²]
-        scalar b;            // b   = 0.08664 R Tc / Pc          [m³/mol]
-        scalar m;            // Soave m(ω)
-        scalar Tc;           // [K]
-    };
-
-    // Compute a_i(T), da_i/dT for every component.
-    void buildAi(scalar T,
-                 std::vector<scalar>& a,
-                 std::vector<scalar>& dadT) const;
-
-    // Compute mixture a, da/dT, b at given T, y.
-    void buildMix(scalar T, const sVector& y,
-                  scalar& a_mix, scalar& dadT_mix, scalar& b_mix,
-                  std::vector<scalar>* a_per_comp_out = nullptr,
-                  std::vector<std::vector<scalar>>* aij_out = nullptr) const;
-
-    // Real vapour root of Z³ − Z² + (A − B − B²)Z − AB = 0.
-    // Cardano with explicit branch selection.
-    scalar cardano_root(scalar A, scalar B, bool liquid) const;
-
-    std::size_t                            n_;
-    std::vector<PureParams>                pure_;
-    std::vector<std::vector<scalar>>       kij_;     // [n × n], 0 default
-    inline static const std::string        name_ = "SRK";
 };
 
 } // namespace Choupo

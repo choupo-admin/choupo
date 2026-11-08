@@ -20,11 +20,16 @@
   exist: the reference factor is HELD at its value at 0.99 Tc (continuous
   in T, announced once per component) instead of jumping to 1.
 
-  The column starts from the converged profile of its own ideal-vapour
-  version (the stage profile declared in 0/, a SEED and not an answer): the
-  full-MESH Newton from the built-in linear start overshoots to thousands
-  of kelvin on this four-component 30-stage column and its line search
-  stalls (|F| = 8.1 after 51 iterations); from the seed it converges in 4.
+  No interior seed is declared (since 2026-11-08, DEV.md 4c C245 slice 4).
+  Until then the column started from a stage profile declared in 0/,
+  because from the built-in linear start the CMO phase that seeds the full
+  MESH converged (|F| 2.6e-14) to a TRIVIAL profile: T 287-300 K, x = y on
+  every stage.  A stage vapour at 287 K and 16 bar has ONE cubic root, a
+  liquid-like one, and SRK handed it to the vapour too: both phases on one
+  root, every K about 1.  The cubic now returns a flagged PSEUDO-ROOT for a
+  phase that has no root of its own (CubicEoS.H), and from the linear
+  start the CMO phase converges in 14 Newton iterations to the real
+  profile and the full MESH in 4 -- the same answer the seed gave.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
