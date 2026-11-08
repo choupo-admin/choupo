@@ -72,7 +72,7 @@ void registerUserTypes() {
 your unit's `operation { ... }`. Read what you need, fill `produced_` with the
 outlet stream(s), set `kpis_`. **Worked examples:**
 `tutorials/steady/userops/userOp01_yield_reactor`, `userOp02_component_splitter`, and the
-two ops in `tutorials/plant/twoSectorDemo` (a reactor + a column).
+two ops in `tutorials/steady/flowsheets/twoSectorDemo` (a reactor + a column).
 
 Build + run:
 ```
@@ -143,7 +143,7 @@ A case carries **everything it needs inside the folder** — its components,
 binary pairs, reactions, AND its `code/`. Zip the folder and send it to a
 collaborator; they `buildCode` + `runCase` it. The compiled `code/.build/` and
 logs are NOT needed in the zip (they rebuild). See
-`tutorials/plant/twoSectorDemo` for a two-sector case that ships 10 components,
+`tutorials/steady/flowsheets/twoSectorDemo` for a two-sector case that ships 10 components,
 10 NRTL pairs, 5 reactions, and two custom compiled ops.
 
 ---

@@ -38,7 +38,7 @@ WHAT THIS DOES NOT CHECK, said plainly:
   * VALIDATION.  An AAD is a statistic derived from the model and the dataset
     TOGETHER, so no primary published it and it is a self-recorded regression
     row, never an `anchor`.  Pinning it says the agreement has not MOVED.
-  * `tutorials/plant/` OVERLAYS.  The two esterification2sector sector dicts
+  * `tutorials/plant/` OVERLAYS (and esterification2sector, moved to steady/flowsheets by C244).  The two esterification2sector sector dicts
     carry overlays, and a sectored plant case is run-only in `bin/runTests` --
     demanding a checked golden there would demand a golden nothing checks.
     They are SKIPPED and NAMED below, so the exclusion is visible rather than
@@ -54,7 +54,8 @@ ROOT = Path(__file__).resolve().parents[2]
 #  A run-only tier, excluded on purpose (see the docstring).  Named, not
 #  pattern-matched, so a NEW plant overlay is a decision someone makes here
 #  rather than a case that quietly slips out of coverage.
-SKIP_PREFIXES = ("tutorials/plant/",)
+SKIP_PREFIXES = ("tutorials/plant/",
+                 "tutorials/steady/flowsheets/esterification2sector/")  # moved out of plant/ by C244
 
 
 def overlay_cases():

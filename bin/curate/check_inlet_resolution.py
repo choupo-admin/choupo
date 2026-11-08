@@ -528,7 +528,7 @@ CONTROL = "tutorials/steady/flash/flash13_acetic_ethanol_vacuum_flash"
 BAND_KW = 0.5
 #  (h) the supercritical-feed witness: the first corpus case to put a stream
 #  above every component's Tc through an isothermalFlash on the duty path.
-SUPERCRITICAL = "tutorials/plant/ammoniaReactor04_kineticSizing"
+SUPERCRITICAL = "tutorials/steady/reactors/ammoniaReactor04_kineticSizing"
 SUPERCRITICAL_UNIT = "separator"
 SUPERCRITICAL_FEED = "reacted"
 ONE_HOME = ROOT / "src/unitOperations/flash/StreamEquilibrium.H"
@@ -616,7 +616,7 @@ SAT_LOW_K, SAT_HIGH_K = 372.40, 372.95
 #  fixture borrows the routes screen's ideal-gas/Raoult package (water, H2,
 #  O2 on the formation datum).
 CONV_REACTOR = "reactor/ConversionReactor.cpp"
-CONV_SRC = "tutorials/plant/ammoniaRoutes01_screening"
+CONV_SRC = "tutorials/steady/reactors/ammoniaRoutes01_screening"
 #  (n) the ONE home of the rule since C73, and the two kinetic reactors
 OUTLET_HOME = "reactor/ReactorOutlet.cpp"
 KINETIC_REACTORS = ["reactor/CSTR.cpp", "reactor/PFR.cpp"]

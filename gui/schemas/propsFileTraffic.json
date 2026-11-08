@@ -339,6 +339,21 @@
    "reads": [],
    "writes": []
   },
+  "petroleumCuts": {
+   "reads": [],
+   "writes": [
+    {
+     "key": "output.proposal",
+     "kind": "proposal",
+     "default": ""
+    },
+    {
+     "key": "output.file",
+     "kind": "file",
+     "default": ""
+    }
+   ]
+  },
   "phaseEnvelope": {
    "reads": [],
    "writes": [

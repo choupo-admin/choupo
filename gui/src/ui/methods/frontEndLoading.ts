@@ -246,10 +246,10 @@ export const FEL_STAGES: readonly FelStage[] = [
       + "scaled from a reference one, and Choupo's costing is per item, which "
       + "is Class 4's method.",
     choupoCases: [
-      "plant/ammoniaRoutes01_screening",
+      "steady/reactors/ammoniaRoutes01_screening",
       "steady/reactors/screen01_methanol_routes",
-      "plant/ammoniaReactor01_fixedConversion",
-      "plant/ammoniaReactor02_equilibrium",
+      "steady/reactors/ammoniaReactor01_fixedConversion",
+      "steady/reactors/ammoniaReactor02_equilibrium",
     ],
     choupoTools: ["route-screening", "reactor-ladder"],
     notChoupo: "A capacity-factored whole-plant estimate.",
@@ -280,7 +280,7 @@ export const FEL_STAGES: readonly FelStage[] = [
       + "exchangers designed to the next stage's fidelity; its author "
       + "declares Class 4 too.",
     choupoCases: [
-      "plant/ammoniaReactor03_equilibriumApproach",
+      "steady/reactors/ammoniaReactor03_equilibriumApproach",
       "plant/greenAmmonia02_feasibility150bar",
       "plant/greenAmmonia02_feasibility50bar",
       "plant/greenAmmoniaPEQ_baseCase",
@@ -314,7 +314,7 @@ export const FEL_STAGES: readonly FelStage[] = [
       + "fidelity, but that does not make the project definition FEED, and "
       + "its capital estimate remains a study / Class-4-type estimate.",
     choupoCases: [
-      "plant/ammoniaReactor04_kineticSizing",
+      "steady/reactors/ammoniaReactor04_kineticSizing",
       "plant/greenAmmonia03_basicDesign",
       "plant/greenAmmoniaPEQ_baseCase",
     ],

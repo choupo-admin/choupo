@@ -228,7 +228,7 @@ routes
             origin  assumed;
             reason  "Rh (Monsanto) or Ir (Cativa) catalysed carbonylation selectivity > 99 % on methanol; the curator's band";
         }
-        cases    ( "tutorials/plant/aceticAcid01_gibbsReactor" "tutorials/plant/aceticAcid02_plant" );
+        cases    ( "tutorials/steady/reactors/aceticAcid01_gibbsReactor" "tutorials/plant/aceticAcid02_plant" );
         provenance
         (
             { source weissermelArpe2003; locus "ch. 7, 'Acetic acid' -- the Monsanto process"; }
@@ -399,7 +399,7 @@ routes
             { route "best available technology, coal"; band ( 36 36 ); unit "GJ per t NH3"; origin literature; locus "ieaAmmonia2021: 36 GJ/t for coal-based production"; }
             { route "direct CO2, global average"; band ( 2.4 2.4 ); unit "t CO2 per t NH3"; origin literature; locus "ieaAmmonia2021: 'around 2.4 t CO2 per tonne of production'"; }
         );
-        cases    ( "tutorials/plant/ammonia02_full_plant" "tutorials/plant/ammonia03_quench_converter" "tutorials/steady/flowsheets/ammonia01_synthesis_loop" "tutorials/plant/ammoniaReactor04_kineticSizing" "tutorials/plant/ammoniaRoutes01_screening" "tutorials/plant/greenAmmonia03_basicDesign" "tutorials/plant/greenAmmoniaPEQ_baseCase" "tutorials/props/gibbs/landscape01_ammonia_synthesis" "tutorials/props/kinetics/ammoniaRate01_dyson_simon" );
+        cases    ( "tutorials/plant/ammonia02_full_plant" "tutorials/steady/reactors/ammonia03_quench_converter" "tutorials/steady/flowsheets/ammonia01_synthesis_loop" "tutorials/steady/reactors/ammoniaReactor04_kineticSizing" "tutorials/steady/reactors/ammoniaRoutes01_screening" "tutorials/plant/greenAmmonia03_basicDesign" "tutorials/plant/greenAmmoniaPEQ_baseCase" "tutorials/props/gibbs/landscape01_ammonia_synthesis" "tutorials/props/kinetics/ammoniaRate01_dyson_simon" );
         provenance
         (
             { source ieaAmmonia2021; locus "executive summary: energy intensity, routes and emissions"; }

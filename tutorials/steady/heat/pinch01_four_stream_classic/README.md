@@ -38,3 +38,26 @@ and the pinch moves.  Then look at `energyBalance` for this case — it
 says UNAVAILABLE, because `hxFluid` carries no formation enthalpy on
 purpose: a pinch analysis needs only CP, and the case declares nothing
 it does not need.
+
+## The warnings this run prints, and why they are honest
+
+The fluid is **synthetic** and its heat capacity is **constant** (100 J/mol K);
+nothing about it is a measured property, and it carries no formation enthalpy
+on purpose.  That is why the run says (1) the heaters invert their outlet
+temperature on the *sensible* enthalpy path (no datum, so no latent heat can
+be priced -- harmless here, every stream stays subcooled liquid) and (2)
+`hxFluid` has no `standardThermochemistry` block (the energy balance is
+UNAVAILABLE, with the remedy).  A third warning, a vapour pressure
+"evaluated at 150 K, outside 280-620 K", used to appear too; it was the
+heater's dome guard bracketing its search at a fixed 150 K, not a state any
+stream was in, and the guard now brackets inside the record's own declared
+window (DEV.md 4c C234).
+
+## Classify before you read the pinch
+
+The pass classifies the problem from the whole cascade and prints the word
+(`CLASS: interiorPinch`; also `reports/pinch/summary.csv`).  Try `dTmin 1 K`:
+`Q_H,min` = 67.5 kW and `Q_C,min` = 0 -- a *threshold* problem with no pinch.
+Whatever `dTmin` you choose, `Q_H,min - Q_C,min` stays 67.5 kW: it is the cold
+total (487.5 kW) minus the hot total (420 kW), a first-law identity.
+`reports/pinch/problemTable.csv` is the worked cascade the page draws.

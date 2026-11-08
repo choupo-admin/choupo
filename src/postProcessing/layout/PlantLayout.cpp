@@ -52,6 +52,10 @@ namespace Choupo
 namespace plantLayout
 {
 
+//  defined with the pipe-clash check, below; the fence's direct run reads it
+bool planInside(const LayoutItem& i, const std::vector<scalar>& a,
+                const std::vector<scalar>& b, scalar& t0, scalar& t1);
+
 namespace
 {
 
@@ -557,7 +561,144 @@ struct End
     //  lists (`room` its room), or a junction piped only to such items.
     bool        indoor = false;
     std::string room;
+    //  C229: the port the pipe lands on, and the lead from the nozzle to the
+    //  departure point (outside the footprint) the rack route starts from.
+    LayoutPort       port;
+    std::vector<Pt>  lead;
 };
+
+//  ---- THE PORTS (DEV.md 4c C229) -------------------------------------------
+//  Every pipe end that lands on a placed item lands on a PORT: a point on the
+//  item's surface derived from (1) the item's KIND (the sheet's `equipment`
+//  word, which selects the geometry rule), (2) its SIZED dimensions (diameter,
+//  length, height, tray count and spacing -- never an invented one) and (3)
+//  the ROLE the stream plays in its unit, read off the unit's DECLARED ports
+//  (the position in `in`/`inputs`/`outputs`, the `feeds` and `sideDraws`
+//  stages) and, for a flash drum, off the produced stream's own vapour
+//  fraction -- never off the stream's NAME.  A convention, not a vendor's
+//  nozzle schedule: it is said once per run and published with every pipe.
+constexpr scalar kNozzleStub = 1.0;   // [m] a nozzle's stub, a drafting value
+const char* const kPortConvention =
+    "Pipe ends land on PORTS: a conventional position derived from the item's"
+    " kind, its sized dimensions and the stream's role in its unit (a column's"
+    " feed at its stage's height, overhead at the head, bottoms at the sump,"
+    " a side draw at its stage; an exchanger's shell and tube nozzles at the"
+    " right ends; a drum's inlet on the side, vapour on top, liquid at the"
+    " bottom; a reactor's and a machine's inlet and outlet at the ends of"
+    " its axis).  It is a drafting convention, NOT a vendor's nozzle"
+    " schedule: nozzle sizes, orientations and elevations are not published"
+    " by any sizer.  A unit type with no rule keeps the top centre, and the"
+    " run says which ones.  The case may move a port: `ports { <stream> {"
+    " item <id>; side <face>; [elevation <m>;] } }`.";
+
+//  A role before geometry.
+struct PortReq
+{
+    const LayoutItem* item = nullptr;
+    std::string port;                 // feed | overhead | bottoms | sideDraw | ...
+    std::string role;                 // the sentence: what decided it
+    std::string face = "top";         // top | bottom | east | west | north | south | side
+    scalar      frac  = 0.5;          // side faces: fraction of the height from the base
+    scalar      axial = 0.0;          // top/bottom: fraction of the axis length from the centre
+    scalar      zAbs  = std::nan("");
+    std::string origin = "convention";   // convention | declared | default
+    bool        facesOther = false;       // a storage tank's nozzle takes the axis end nearer its pipe's other end
+};
+
+struct PortGeom
+{
+    std::vector<scalar>              nozzle;
+    std::vector<std::vector<scalar>> lead;   // nozzle ... departure point, outside the footprint
+};
+
+//  The k-th pipe on one port stands off the first: 0, +, -, ++, -- ... a
+//  fifth of the item's narrow plan dimension apart (two pipes never meet).
+scalar slotOffset(int slot, const LayoutItem& i)
+{
+    if (slot <= 0) return 0.0;
+    const int k = (slot + 1) / 2;
+    return (slot % 2 ? 1.0 : -1.0) * scalar(k) * 0.2 * std::min(i.dx, i.dy);
+}
+
+PortGeom portGeometry(const LayoutItem& i, const PortReq& q, int sign, int slot)
+{
+    const scalar t  = slotOffset(slot, i);
+    const scalar hx = 0.5 * i.dx, hy = 0.5 * i.dy;
+    const scalar s  = kNozzleStub;
+    std::string face = q.face;
+    if (face == "side") face = sign > 0 ? "east" : "west";
+    const bool vertCyl = i.shape == "cylinder" && i.orientation == "vertical";
+    const scalar zz = std::isnan(q.zAbs) ? i.z + q.frac * i.dz : q.zAbs;
+    PortGeom g;
+    if (face == "east" || face == "west")
+    {
+        const scalar sg = face == "east" ? 1.0 : -1.0;
+        const scalar ex = vertCyl ? std::sqrt(std::max(hx * hx - t * t, 0.0)) : hx;
+        g.nozzle = { i.x + sg * ex, i.y + t, zz };
+        g.lead   = { g.nozzle, { g.nozzle[0] + sg * s, g.nozzle[1], zz } };
+    }
+    else if (face == "north" || face == "south")
+    {
+        const scalar sg = face == "north" ? 1.0 : -1.0;
+        const scalar ey = vertCyl ? std::sqrt(std::max(hy * hy - t * t, 0.0)) : hy;
+        g.nozzle = { i.x + t, i.y + sg * ey, zz };
+        g.lead   = { g.nozzle, { g.nozzle[0], g.nozzle[1] + sg * s, zz } };
+    }
+    else
+    {
+        const bool alongY = i.orientation == "alongY";
+        const scalar ax = q.axial * (alongY ? i.dy : i.dx);
+        const scalar px = alongY ? i.x + t  : i.x + ax;
+        const scalar py = alongY ? i.y + ax : i.y + t;
+        const scalar xd = i.x + scalar(sign) * (hx + s);
+        if (face == "top")
+        {
+            const scalar zt = i.z + i.dz;
+            g.nozzle = { px, py, zt };
+            g.lead   = { g.nozzle, { px, py, zt + s }, { xd, py, zt + s } };
+        }
+        else   // bottom: leaves under the footprint at the base elevation
+        {
+            g.nozzle = { px, py, i.z };
+            g.lead   = { g.nozzle, { xd, py, i.z } };
+        }
+    }
+    return g;
+}
+
+//  ONE stage's height on a column shell, as a fraction of the shell's height
+//  from its base.  The sized shell publishes nTrays, traySpacing and H; the
+//  FREE height H - (nTrays - 1) traySpacing (disengagement above, sump below)
+//  is split EQUALLY between head and sump (a convention: the two are not
+//  published separately).  Stage 1 is the top tray; a stage past the trays
+//  (the reboiler's) is the sump.
+scalar stageFraction(const EquipmentSizing* sz, const LayoutItem& shell,
+                     int stage, int nStagesDeclared)
+{
+    scalar n = std::nan(""), sp = std::nan("");
+    if (sz)
+    {
+        auto a = sz->values.find("nTrays");
+        auto b = sz->values.find("traySpacing");
+        if (a != sz->values.end()) n = a->second;
+        if (b != sz->values.end()) sp = b->second;
+    }
+    if (std::isfinite(n) && std::isfinite(sp) && n >= 1.0 && shell.dz > 0.0)
+    {
+        const scalar free = shell.dz - (n - 1.0) * sp;
+        if (free >= 0.0)
+        {
+            scalar zr;   // height above the base
+            if (scalar(stage) > n) zr = 0.5 * free;
+            else zr = shell.dz - 0.5 * free - scalar(stage - 1) * sp;
+            return std::min(1.0, std::max(0.0, zr / shell.dz));
+        }
+    }
+    if (nStagesDeclared > 0)
+        return std::min(0.95, std::max(0.05,
+                1.0 - (scalar(stage) - 0.5) / scalar(nStagesDeclared)));
+    return 0.5;
+}
 
 void routePipes(const Dictionary& d, const SimulationResult& r,
                 PlantLayoutRecord& rec)
@@ -689,8 +830,405 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             rec.junctions.push_back({ j, typeOf[j], jx[j], rack.y,
                                       rack.elevation });
 
+    //  ---- THE PORTS (DEV.md 4c C229): who plays which role ----------------
+    std::map<std::string, DictPtr> udict;
+    if (r.unitDicts.size() == r.topology.size())
+        for (std::size_t k = 0; k < r.topology.size(); ++k)
+            udict[r.topology[k].name] = r.unitDicts[k];
+    std::map<std::string, const FlatUnit*> fuOf;
+    for (const auto& u : r.topology) fuOf[u.name] = &u;
+    std::set<std::string> defaultedTypes;      // unit types left at the top centre
+    std::map<std::string, int> slotCount;      // pipes already on a port
+    const scalar kNaN = std::nan("");
+
+    auto sizingOf = [&](const LayoutItem* i) -> const EquipmentSizing* {
+        auto s = r.sizings.find(i->id);
+        return s == r.sizings.end() ? nullptr : &s->second;
+    };
+    auto itemByTag = [&](const std::string& unit, const std::string& tag)
+        -> const LayoutItem* {
+        auto p = placedOf.find(unit);
+        if (p == placedOf.end()) return nullptr;
+        for (const auto* i : p->second)
+        {
+            const auto* z = sizingOf(i);
+            if (z && z->equipmentTag == tag) return i;
+        }
+        return nullptr;
+    };
+    //  The words the case AUTHORED in a unit's port list (parallel to the
+    //  flattened ins / outs), empty when they cannot be read.
+    auto authored = [&](const std::string& unit, bool outs) {
+        std::vector<std::string> w;
+        auto u = udict.find(unit);
+        if (u == udict.end() || !u->second) return w;
+        const Dictionary& ud = *u->second;
+        const char* keys[2] = { outs ? "outputs" : "inputs", outs ? "out" : "in" };
+        for (const char* k : keys)
+            if (ud.found(k))
+            {
+                try { w = ud.lookupWordList(k); }
+                catch (const std::exception&) { w = { ud.lookupWord(k) }; }
+                break;
+            }
+        return w;
+    };
+    auto operationOf = [&](const std::string& unit) -> DictPtr {
+        auto u = udict.find(unit);
+        if (u == udict.end() || !u->second || !u->second->found("operation"))
+            return nullptr;
+        return u->second->subDict("operation");
+    };
+    //  The stage a column feed enters: `feeds ( { stream; stage; } )` matched
+    //  by the authored port word, else the single `feedStage`.  0 = unknown.
+    auto columnFeedStage = [&](const std::string& unit, std::size_t k, int& nSt) {
+        nSt = 0;
+        const auto op = operationOf(unit);
+        if (!op) return 0;
+        if (op->found("nStages")) nSt = int(op->lookupScalar("nStages"));
+        if (op->found("feeds"))
+        {
+            const auto w = authored(unit, false);
+            if (k < w.size())
+                for (const auto& dr : op->lookupDictList("feeds"))
+                    if (dr->found("stream") && dr->found("stage")
+                        && dr->lookupWord("stream") == w[k])
+                        return int(dr->lookupScalar("stage"));
+        }
+        if (op->found("feedStage")) return int(op->lookupScalar("feedStage"));
+        return 0;
+    };
+    auto sideDrawStage = [&](const std::string& unit, std::size_t k, int& nSt) {
+        nSt = 0;
+        const auto op = operationOf(unit);
+        if (!op) return 0;
+        if (op->found("nStages")) nSt = int(op->lookupScalar("nStages"));
+        if (!op->found("sideDraws")) return 0;
+        const auto dl = op->lookupDictList("sideDraws");
+        if (k < dl.size() && dl[k]->found("stage"))
+            return int(dl[k]->lookupScalar("stage"));
+        return 0;
+    };
+    //  The end of an item's axis: `plus` is the downstream end (east / north,
+    //  and the bottom of a vertical one, where the fluid leaves).
+    auto endFace = [](const LayoutItem& i, bool plus) -> std::string {
+        if (i.orientation == "alongX") return plus ? "east" : "west";
+        if (i.orientation == "alongY") return plus ? "north" : "south";
+        return plus ? "bottom" : "top";
+    };
+    auto isVertical = [](const LayoutItem& i) { return i.orientation == "vertical"; };
+
+    static const std::set<std::string> kFlashTypes =
+        { "isothermalFlash", "adiabaticFlash", "specifiedFlash" };
+    static const std::set<std::string> kReactorTypes =
+        { "pfr", "cstr", "gibbsReactor", "conversionReactor", "equilibriumReactor" };
+    static const std::set<std::string> kMachineTypes =
+        { "compressor", "pump", "turbine" };
+
+    //  THE ROLE OF ONE STREAM AT ONE UNIT.  False: no rule for this unit.
+    auto roleOf = [&](const std::string& unit, const std::string& stream,
+                      bool sourceEnd, PortReq& q) -> bool {
+        auto pI = placedOf.find(unit);
+        auto fI = fuOf.find(unit);
+        if (pI == placedOf.end() || pI->second.empty() || fI == fuOf.end())
+            return false;
+        const FlatUnit& fu = *fI->second;
+        const auto& names = sourceEnd ? fu.outs : fu.ins;
+        std::size_t k = 0;
+        while (k < names.size() && names[k] != stream) ++k;
+        if (k == names.size()) return false;
+        const LayoutItem* front = pI->second.front();
+        const std::string& type = typeOf[unit];
+        q = PortReq();
+        q.item = front;
+
+        if (type == "distillationColumn")
+        {
+            const LayoutItem* shell = itemByTag(unit, "shell");
+            if (!shell) shell = front;
+            int nSt = 0;
+            if (!sourceEnd)
+            {
+                const int stage = columnFeedStage(unit, k, nSt);
+                if (stage < 1) return false;
+                q.item = shell; q.port = "feed"; q.face = "side";
+                q.frac = stageFraction(sizingOf(shell), *shell, stage, nSt);
+                q.role = "column feed " + std::to_string(k + 1) + " enters on stage "
+                       + std::to_string(stage) + ", at that tray's height";
+                return true;
+            }
+            if (k == 0)
+            {
+                const LayoutItem* drum = itemByTag(unit, "refluxDrum");
+                const LayoutItem* cond = itemByTag(unit, "condenser");
+                if (drum)
+                {
+                    q.item = drum; q.port = "distillate"; q.face = "bottom";
+                    q.axial = isVertical(*drum) ? 0.0 : 0.3;
+                    q.role = "distillate leaves the reflux drum at its bottom";
+                }
+                else if (cond)
+                {
+                    q.item = cond; q.port = "distillate";
+                    q.face = endFace(*cond, true); q.frac = 0.5;
+                    q.role = "distillate leaves the condenser at its outlet end";
+                }
+                else
+                {
+                    q.item = shell; q.port = "overhead"; q.face = "top";
+                    q.role = "overhead leaves at the head of the shell";
+                }
+                return true;
+            }
+            if (k == 1)
+            {
+                q.item = shell; q.port = "bottoms"; q.face = "bottom";
+                q.role = "bottoms leave the sump, at the bottom of the shell";
+                return true;
+            }
+            const int stage = sideDrawStage(unit, k - 2, nSt);
+            if (stage < 1) return false;
+            q.item = shell; q.port = "sideDraw"; q.face = "side";
+            q.frac = stageFraction(sizingOf(shell), *shell, stage, nSt);
+            q.role = "side draw " + std::to_string(k - 1) + " leaves stage "
+                   + std::to_string(stage) + ", at that tray's height";
+            return true;
+        }
+
+        if (front->kind == "shellTubeHX")
+        {
+            const bool horiz = !isVertical(*front);
+            const bool twoSided = type == "heatExchanger"
+                                  && fu.ins.size() >= 2 && fu.outs.size() >= 2;
+            const bool shellSide = twoSided && k == 0;
+            if (!shellSide)
+            {
+                q.port = sourceEnd ? "tubeOutlet" : "tubeInlet";
+                q.face = endFace(*front, sourceEnd);
+                q.frac = 0.5;
+                q.role = std::string("tube-side ") + (sourceEnd ? "outlet" : "inlet")
+                       + " at the " + (sourceEnd ? "downstream" : "upstream")
+                       + " end of the axis";
+                return true;
+            }
+            q.port = sourceEnd ? "shellOutlet" : "shellInlet";
+            if (horiz)
+            {
+                //  counter-current: the shell fluid enters over the end the
+                //  tube fluid leaves, and leaves under the end it enters.
+                q.face = sourceEnd ? "bottom" : "top";
+                q.axial = sourceEnd ? -0.35 : 0.35;
+            }
+            else
+            {
+                q.face = "side"; q.frac = sourceEnd ? 0.15 : 0.85;
+            }
+            q.role = std::string("shell-side ") + (sourceEnd ? "outlet under" : "inlet over")
+                   + " the " + (sourceEnd ? "upstream" : "downstream")
+                   + " end of a counter-current exchanger";
+            return true;
+        }
+
+        if (kFlashTypes.count(type))
+        {
+            const bool horiz = !isVertical(*front);
+            if (!sourceEnd)
+            {
+                q.port = "inlet";
+                if (horiz) { q.face = "top"; q.axial = -0.3; }
+                else       { q.face = "side"; q.frac = 0.5; }
+                q.role = "drum inlet on the side (top of a horizontal drum, at the upstream end)";
+                return true;
+            }
+            auto st = r.streams.find(stream);
+            const bool vapour = st != r.streams.end() && st->second.vf >= 0.5;
+            q.port = vapour ? "vapour" : "liquid";
+            q.face = vapour ? "top" : "bottom";
+            q.axial = horiz ? 0.3 : 0.0;
+            q.role = vapour ? "vapour leaves at the top of the drum (the produced stream is vapour)"
+                            : "liquid leaves at the bottom of the drum (the produced stream is liquid)";
+            return true;
+        }
+
+        if (kReactorTypes.count(type))
+        {
+            q.port = sourceEnd ? "outlet" : "inlet";
+            q.face = endFace(*front, sourceEnd);
+            q.frac = 0.5;
+            q.role = std::string("reactor ") + (sourceEnd ? "outlet at the downstream" : "inlet at the upstream")
+                   + " end of its axis (top to bottom when vertical)";
+            return true;
+        }
+
+        if (kMachineTypes.count(type))
+        {
+            const bool turbine = type == "turbine";
+            const bool horiz = !isVertical(*front);
+            const bool suction = !sourceEnd;
+            if (suction)
+            {
+                q.port = turbine ? "inlet" : "suction";
+                if (horiz) { q.face = endFace(*front, false); q.frac = 0.5; }
+                else       { q.face = "side"; q.frac = 0.3; }
+                q.role = "machine inlet at the upstream end of its axis";
+            }
+            else
+            {
+                q.port = turbine ? "exhaust" : "discharge";
+                q.face = "top"; q.axial = horiz ? 0.3 : 0.0;
+                q.role = "machine outlet on top, over the downstream end";
+            }
+            return true;
+        }
+
+        if (type == "storageTank")
+        {
+            const bool horiz = !isVertical(*front);
+            if (!sourceEnd)
+            {
+                q.port = "inlet"; q.face = "top"; q.axial = horiz ? -0.3 : 0.0;
+                q.facesOther = horiz;
+                q.role = "tank fill nozzle on the roof";
+            }
+            else
+            {
+                q.port = "outlet"; q.face = horiz ? "bottom" : "side";
+                q.frac = 0.1; q.axial = horiz ? 0.3 : 0.0;
+                q.facesOther = horiz;
+                q.role = "tank outlet low on the shell";
+            }
+            return true;
+        }
+        return false;
+    };
+
+    //  ---- the declared ports (DEV.md 4c C229) ----------------------------
+    //  `ports { <stream> { item <id>; side top|bottom|east|west|north|south;
+    //  [elevation <m>;] } }`: the case moves a port.  REFUSED by name: a
+    //  stream the run does not have, an item that is not placed or does not
+    //  belong to a unit at one end of the stream, an unknown side, an
+    //  elevation outside a side face or on a top / bottom port.
+    struct DeclaredPort { std::string item, face; scalar elevation = std::nan(""); };
+    std::map<std::string, std::vector<DeclaredPort>> declPorts;
+    //  One declaration: the stream `s`, its `item`, `side`, optional `elevation`.
+    auto readDeclared = [&](const std::string& s, const Dictionary& od,
+                            const std::string& w) {
+        if (!seen.count(s))
+        {
+            std::vector<std::string> known(order.begin(), order.end());
+            refuse("ports: `" + s + "` -- " + registryRefusal::message(
+                   "stream", s, known, "Accepted"));
+        }
+        DeclaredPort dp;
+        dp.item = text(od, "item", w);
+        dp.face = text(od, "side", w);
+        const LayoutItem* it = nullptr;
+        for (const auto& i : rec.items)
+            if (!i.nonProcess && i.id == dp.item) it = &i;
+        if (!it)
+        {
+            std::vector<std::string> known;
+            for (const auto& i : rec.items) if (!i.nonProcess) known.push_back(i.id);
+            refuse(w + ": `item` -- " + registryRefusal::message(
+                   "placed item", dp.item, known, "Accepted"));
+        }
+        const auto sz = r.sizings.find(it->id);
+        const std::string un = sz == r.sizings.end() ? "" : sz->second.unitName;
+        bool atEnd = !un.empty() && producer.count(s) && producer[s] == un;
+        for (const auto& c : consumers[s]) if (c == un) atEnd = true;
+        if (!atEnd)
+            refuse(w + ": item `" + dp.item + "` belongs to unit `" + un
+                   + "`, which is not at either end of this stream -- a port"
+                   " is where a pipe lands on an item of the unit that"
+                   " produces or consumes it");
+        static const std::vector<std::string> faces =
+            { "top", "bottom", "east", "west", "north", "south" };
+        if (std::find(faces.begin(), faces.end(), dp.face) == faces.end())
+            refuse(w + ": `side` -- " + registryRefusal::message(
+                   "port side", dp.face, faces, "Accepted"));
+        if (od.found("elevation"))
+        {
+            if (dp.face == "top" || dp.face == "bottom")
+                refuse(w + ": `elevation` is for a side port; a " + dp.face
+                       + " port is at the item's " + dp.face);
+            dp.elevation = length(od, "elevation", w);
+            if (dp.elevation < it->z - kTol || dp.elevation > it->z + it->dz + kTol)
+                refuse(w + ": `elevation " + num(dp.elevation) + " m;` lies"
+                       " outside item `" + dp.item + "` (z " + num(it->z)
+                       + " .. " + num(it->z + it->dz) + " m)");
+        }
+        for (const auto& o : declPorts[s])
+            if (o.item == dp.item)
+                refuse(w + ": item `" + dp.item + "` is declared twice for this"
+                       " stream -- one port per end");
+        declPorts[s].push_back(dp);
+    };
+    //  Two spellings: `ports { <stream> { item ...; } }` (one end per stream)
+    //  and `ports ( { stream <s>; item ...; } ... )` (both ends of a stream).
+    if (d.found("ports"))
+    {
+        std::vector<DictPtr> lst;
+        bool isList = true;
+        try { lst = d.lookupDictList("ports"); }
+        catch (const std::exception&) { isList = false; }
+        if (isList)
+        {
+            std::size_t k = 0;
+            for (const auto& od : lst)
+            {
+                const std::string w = "ports entry " + std::to_string(++k);
+                readDeclared(text(*od, "stream", w), *od, w);
+            }
+        }
+        else
+        {
+            const auto pd = d.subDict("ports");
+            for (const auto& s : pd->keys())
+                readDeclared(s, *pd->subDict(s), "ports `" + s + "`");
+        }
+    }
+    //  Where a unit's reference x stands, to face a nozzle toward the other end.
+    auto refX = [&](const std::string& unit, bool sourceEnd) -> scalar {
+        if (unit.empty()) return sourceEnd ? rack.xStart : rack.xEnd;
+        auto p = placedOf.find(unit);
+        if (p != placedOf.end() && !p->second.empty()) return p->second.front()->x;
+        auto j = jx.find(unit);
+        return j != jx.end() ? j->second : kNaN;
+    };
+
+    //  The same for y.  A battery limit stands where the case DECLARED its
+    //  fence crossing (`fence { crossings ( { stream s; side south|north; ...
+    //  } ); }`, read here, before any routing): beyond every item on that
+    //  side; with no declared side (or on the west / east sides) it is the
+    //  rack's own y.  The order is therefore: every unit's reference point
+    //  and the declared sides are inputs, so the end each nozzle faces is
+    //  decided once, before the first pipe is routed -- no second pass.
+    std::map<std::string, std::string> crossingSide;
+    if (d.found("fence") && d.subDict("fence")->found("crossings"))
+        for (const auto& cd : d.subDict("fence")->lookupDictList("crossings"))
+            if (cd->found("stream") && cd->found("side"))
+                crossingSide[cd->lookupWord("stream")] = cd->lookupWord("side");
+    auto refY = [&](const std::string& unit, bool sourceEnd, const std::string& stream) -> scalar {
+        if (unit.empty())
+        {
+            auto c = crossingSide.find(stream);
+            (void)sourceEnd;
+            if (c != crossingSide.end() && c->second == "south") return -1e18;
+            if (c != crossingSide.end() && c->second == "north") return  1e18;
+            return rack.y;
+        }
+        auto p = placedOf.find(unit);
+        if (p != placedOf.end() && !p->second.empty()) return p->second.front()->y;
+        return jx.count(unit) ? rack.y : kNaN;
+    };
+
     //  ---- one end of a stream ------------------------------------------
-    auto endOf = [&](const std::string& unit, bool inlet) {
+    //  `inlet` is true when this end is the stream's SOURCE (a battery limit
+    //  there is the plant inlet); `sign` faces a side nozzle toward the other
+    //  end (+1 east); `commit` counts the pipe on its port (a stream the
+    //  layout does not route is only looked at, never counted).
+    auto endOf = [&](const std::string& unit, bool inlet,
+                     const std::string& stream, int sign, bool commit, int signY = 1) {
         End e;
         if (unit.empty())
         {
@@ -702,15 +1240,65 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         auto p = placedOf.find(unit);
         if (p != placedOf.end())
         {
-            //  THE NOZZLE: a unit realising several items is piped through
-            //  the FIRST of them the case placed (the order of `items`); the
-            //  pipe enters and leaves at that item's plan centre, at its TOP
-            //  (z + its height, standing or lying).  Stylised: no nozzle
-            //  schedule is published by any sizer.
-            const LayoutItem& i = *p->second.front();
+            //  THE NOZZLE (C229): the pipe lands on a PORT -- see THE PORTS
+            //  above.  The port names the ITEM of the unit the stream belongs
+            //  to (a column's feed on its shell, its distillate on the reflux
+            //  drum, not on the first item the case listed); a unit type
+            //  with no rule keeps the item's top centre (the legacy
+            //  position), said as a default.
+            PortReq q;
+            bool ruled = false;
+            auto dp = declPorts.find(stream);
+            if (dp != declPorts.end())
+                for (const auto& decl : dp->second)
+                    for (const auto* it : p->second)
+                        if (it->id == decl.item)
+                        {
+                            q.item = it; q.port = "declared"; q.face = decl.face;
+                            q.zAbs = decl.elevation; q.frac = 0.5;
+                            q.origin = "declared";
+                            q.role = "declared by the case: `ports` " + stream
+                                   + " -> item " + it->id + ", side " + decl.face;
+                            ruled = true;
+                        }
+            if (!ruled) ruled = roleOf(unit, stream, inlet, q);
+            if (!ruled)
+            {
+                q = PortReq();
+                q.item = p->second.front(); q.port = "top"; q.origin = "default";
+                q.role = "no port rule for unit type `" + typeOf[unit]
+                       + "`: the item's top centre (a default position)";
+                defaultedTypes.insert(typeOf[unit]);
+            }
+            if (q.facesOther && q.origin != "default")
+            {
+                //  a tank's fill nozzle and outlet each take the end of its
+                //  axis nearer the other end of THEIR pipe (a tank has no
+                //  flow direction; the two sit on different faces)
+                const scalar sg = q.item->orientation == "alongY" ? signY : sign;
+                q.axial = std::fabs(q.axial) * sg;
+            }
+            const LayoutItem& i = *q.item;
+            int slot = 0;
+            if (commit && q.origin != "default")
+            {
+                std::ostringstream key;
+                key << i.id << '|' << q.face << '|' << q.frac << '|' << q.axial
+                    << '|' << q.zAbs;
+                slot = slotCount[key.str()]++;
+            }
+            PortGeom g;
+            if (q.origin == "default")
+            {
+                g.nozzle = { i.x, i.y, i.z + i.dz };
+                g.lead   = { g.nozzle };
+            }
+            else g = portGeometry(i, q, sign, slot);
             e.kind  = "item";
             e.at    = i.id;
-            e.point = { i.x, i.y, i.z + i.dz };
+            e.point = g.nozzle;
+            e.lead  = g.lead;
+            e.port  = { i.id, q.port, q.role, q.origin, g.nozzle, g.lead.back() };
             e.indoor = !i.room.empty();
             e.room   = i.room;
             return e;
@@ -727,6 +1315,7 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             e.kind  = "junction";
             e.at    = unit;
             e.point = { jx[unit], rack.y, rack.elevation };
+            e.lead  = { e.point };
             return e;
         }
         auto sz = sizedOf.find(unit);
@@ -814,7 +1403,7 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             for (const auto& c : cs) who += (who.empty() ? "" : ", ") + c;
             //  The producer's nozzle is the one end the drawing can mark:
             //  a missing pipe must never look like a finished drawing.
-            const End a = endOf(from, true);
+            const End a = endOf(from, true, s, 1, false);
             //  An end INDOORS (C100) is no place to mark: indoor piping is
             //  not drawn, so nothing there looks finished -- the stream is
             //  listed, `indoor`, and marked nowhere.
@@ -826,8 +1415,15 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             continue;
         }
         const std::string to = cs.empty() ? "" : cs.front();
-        const End a = endOf(from, true);
-        const End b = endOf(to, false);
+        //  Each side nozzle faces the other end of the pipe (C229).
+        const scalar xa = refX(from, true), xb = refX(to, false);
+        const int signA = (std::isnan(xb) || std::isnan(xa) || xb >= xa) ? 1 : -1;
+        const int signB = (std::isnan(xb) || std::isnan(xa) || xa >= xb) ? 1 : -1;
+        const scalar ya = refY(from, true, s), yb = refY(to, false, s);
+        const int signYA = (std::isnan(yb) || std::isnan(ya) || yb >= ya) ? 1 : -1;
+        const int signYB = (std::isnan(yb) || std::isnan(ya) || ya >= yb) ? 1 : -1;
+        const End a = endOf(from, true, s, signA, true, signYA);
+        const End b = endOf(to, false, s, signB, true, signYB);
         if (a.kind.empty() || b.kind.empty())
         {
             const std::string why = a.kind.empty() ? a.why : b.why;
@@ -932,6 +1528,8 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         p.from = a.at; p.fromUnit = a.unit;
         p.toKind   = b.indoor ? "wallPenetration" : b.kind;
         p.to   = b.at; p.toUnit   = b.unit;
+        if (!a.indoor) p.fromPort = a.port;
+        if (!b.indoor) p.toPort   = b.port;
         //  An end indoors (C100) has no point of its own here: the route
         //  begins or ends at its wall penetration, the case's waypoint.
         const Pt aPt = a.indoor ? Pt{} : a.point;
@@ -944,9 +1542,10 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             //  target's anchor -- a battery limit has no anchor of its own,
             //  so there the route begins or ends at the case's own waypoint.
             p.routedBy = "waypoints";
-            if (!aPt.empty()) pts.push_back(aPt);
+            if (!aPt.empty()) for (const auto& q : a.lead) pts.push_back(q);
             for (const auto& q : ov->second) pts.push_back(q);
-            if (!bPt.empty()) pts.push_back(bPt);
+            if (!bPt.empty()) for (auto q = b.lead.rbegin(); q != b.lead.rend(); ++q)
+                pts.push_back(*q);
             for (std::size_t i = 1; i < pts.size(); ++i)
                 if (axesMoved(pts[i - 1], pts[i]) > 1)
                 {
@@ -959,10 +1558,10 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
                          " ORTHOGONAL; add the corner between them (the route"
                          " begins at ";
                     o << (aPt.empty() ? "the first waypoint"
-                          : "the top of `" + a.at + "`");
+                          : "the nozzle of `" + a.at + "` (" + a.port.port + ")");
                     o << " and ends at "
                       << (bPt.empty() ? "the last waypoint"
-                          : "the top of `" + b.at + "`") << ")";
+                          : "the nozzle of `" + b.at + "` (" + b.port.port + ")") << ")";
                     refuse(o.str());
                 }
         }
@@ -977,22 +1576,49 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             if (a.kind == "batteryLimit") pts.push_back({ rack.xStart, ly, lz });
             else
             {
-                pts.push_back(a.point);
-                pts.push_back({ a.point[0], a.point[1], lz });
-                pts.push_back({ a.point[0], ly, lz });
+                //  the lead (nozzle .. departure point) first, then down or
+                //  up from the departure point to the lane (C229)
+                for (const auto& q : a.lead) pts.push_back(q);
+                const Pt& dep = a.lead.back();
+                pts.push_back({ dep[0], dep[1], lz });
+                pts.push_back({ dep[0], ly, lz });
             }
             if (b.kind == "batteryLimit") pts.push_back({ rack.xEnd, ly, lz });
             else
             {
-                pts.push_back({ b.point[0], ly, lz });
-                pts.push_back({ b.point[0], b.point[1], lz });
-                pts.push_back(b.point);
+                const Pt& dep = b.lead.back();
+                pts.push_back({ dep[0], ly, lz });
+                pts.push_back({ dep[0], dep[1], lz });
+                for (auto q = b.lead.rbegin(); q != b.lead.rend(); ++q)
+                    pts.push_back(*q);
             }
         }
         p.route = tidy(pts);
         for (std::size_t i = 1; i < p.route.size(); ++i)
             p.length += segLength(p.route[i - 1], p.route[i]);
         rec.pipes.push_back(p);
+    }
+
+    //  ---- THE PORTS ARE A CONVENTION, SAID ONCE PER RUN (C229) ---------
+    bool anyPort = false;
+    for (const auto& p : rec.pipes)
+        anyPort = anyPort || !p.fromPort.item.empty() || !p.toPort.item.empty();
+    if (anyPort)
+    {
+        rec.portConvention = kPortConvention;
+        if (AdvisoryLog::instance().addAnnouncedOnce("layout:pipePorts",
+                "layout", "info", "layout", kPortConvention))
+            std::cerr << "[layout] " << kPortConvention << "\n";
+        if (!defaultedTypes.empty())
+        {
+            std::string ts;
+            for (const auto& t : defaultedTypes) ts += (ts.empty() ? "" : ", ") + t;
+            announce("info", "layout",
+                "pipe ports: unit type(s) " + ts + " have no port rule, so their"
+                " pipes land on the item's TOP CENTRE (a default position, marked"
+                " `default` in the layout block); declare `ports { <stream> {"
+                " item <id>; side <face>; } }` to place one");
+        }
     }
 
     if (!rack.declared)
@@ -2162,6 +2788,65 @@ void fenceOf(const Dictionary& d, PlantLayoutRecord& rec,
             std::vector<std::vector<scalar>> r = p.route;
             if (in) { r.erase(r.begin()); r.insert(r.begin(), leg.begin(), leg.end()); }
             else    { r.pop_back();       r.insert(r.end(),   leg.begin(), leg.end()); }
+            //  THE DIRECT RUN (C229): when the item's own end already stands
+            //  BEYOND the rack lane on the fence's side (a tank farm south of
+            //  the rack, a south crossing), the pipe does not climb to the
+            //  lane and come back: from the stub's departure point it rises to
+            //  the lane's elevation, runs across and goes straight to the
+            //  crossing.  The rack lane stays the route of every pipe whose
+            //  item is on the other side of it.  (The tidy() of the old
+            //  version hid this detour only when the stub and the crossing
+            //  happened to share one x.)
+            if (alongX(c.side) && c.positionFrom == "declared")
+            {
+                const LayoutPort& ip = in ? p.toPort : p.fromPort;
+                if (ip.item.size() && ip.leaves.size() == 3)
+                {
+                    const scalar dy = ip.leaves[1];
+                    const bool beyond = c.side == "south" ? dy < ly - kTol : dy > ly + kTol;
+                    std::size_t kdep = r.size();
+                    for (std::size_t m = 0; m < r.size(); ++m)
+                        if (std::fabs(r[m][0] - ip.leaves[0]) < kTol
+                            && std::fabs(r[m][1] - dy) < kTol
+                            && std::fabs(r[m][2] - ip.leaves[2]) < kTol) { kdep = m; break; }
+                    if (beyond && kdep < r.size())
+                    {
+                        const std::vector<scalar> up{ ip.leaves[0], dy, lz };
+                        const std::vector<scalar> across{ c.x, dy, lz };
+                        const std::vector<scalar> C{ c.x, c.y, lz };
+                        std::vector<std::vector<scalar>> nr;
+                        if (!in)
+                        {
+                            nr.assign(r.begin(), r.begin() + kdep + 1);
+                            nr.push_back(up); nr.push_back(across); nr.push_back(C);
+                        }
+                        else
+                        {
+                            nr = { C, across, up };
+                            nr.insert(nr.end(), r.begin() + kdep, r.end());
+                        }
+                        //  The direct run must not cut through an item: a pipe
+                        //  at the lane's elevation through a tank or a vessel
+                        //  taller than that is a clash the rack route avoids,
+                        //  so then the rack route stays (swro01's product line
+                        //  would cross the next tank).
+                        bool clear = true;
+                        for (std::size_t m = 1; m < nr.size() && clear; ++m)
+                            for (const auto& it : rec.items)
+                            {
+                                if (it.id == ip.item || !it.room.empty()) continue;
+                                scalar t0, t1;
+                                if (!planInside(it, nr[m - 1], nr[m], t0, t1)) continue;
+                                const scalar za = nr[m - 1][2] + t0 * (nr[m][2] - nr[m - 1][2]);
+                                const scalar zb = nr[m - 1][2] + t1 * (nr[m][2] - nr[m - 1][2]);
+                                if (std::max(za, zb) > it.z + kTol
+                                    && std::min(za, zb) < it.z + it.dz - kTol)
+                                { clear = false; break; }
+                            }
+                        if (clear) r = nr;
+                    }
+                }
+            }
             p.route = tidy(r);
             p.length = 0;
             for (std::size_t i = 1; i < p.route.size(); ++i)

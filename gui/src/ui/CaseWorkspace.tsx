@@ -291,13 +291,15 @@ export function CaseWorkspace() {
   //  the same read-only merge, from their own channel.  Same rule: display
   //  only, never into caseFiles.
   const designOut = useStore((s) => s.runResult?.designFiles);
+  //  A props run's postProcessing/ tree (C183), same read-only merge.
+  const postOut = useStore((s) => s.runResult?.postProcessingFiles);
   //  What happens inside each unit rides `convergedFiles` since 2026-09-06:
   //  a state directory is a RESTARTABLE SNAPSHOT, so
   //  `converged/internalStates/<SECTOR>/<unit>` (one file per unit) is part
   //  of the same view as the streams and arrives on the same channel.
   const raw = useMemo(
-    () => ({ ...(caseFiles.rawFiles ?? {}), ...(convergedOut ?? {}), ...(designOut ?? {}) }),
-    [caseFiles.rawFiles, convergedOut, designOut]);
+    () => ({ ...(caseFiles.rawFiles ?? {}), ...(convergedOut ?? {}), ...(designOut ?? {}), ...(postOut ?? {}) }),
+    [caseFiles.rawFiles, convergedOut, designOut, postOut]);
   const files = useMemo(() => orderFiles(Object.keys(raw)), [raw]);
   const [activePath, setActivePath] = useState<string | null>(null);
   //  0/ files the engine's own -init0 wrote (Case > Complete 0/): marked,

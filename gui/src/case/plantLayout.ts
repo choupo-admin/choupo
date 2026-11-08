@@ -104,13 +104,21 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type {
-  PlantLayout, LayoutAccess, LayoutItem, LayoutPipe, LayoutRoad,
+  PlantLayout, LayoutAccess, LayoutItem, LayoutPipe, LayoutPortInfo, LayoutRoad,
 } from "../adapters/SolverAdapter.js";
 import { bankProblems, type MembraneBank } from "./membraneBank.js";
 
 export type Vec3 = [number, number, number];
 
 /** One solid: a cylinder (along `axis`) or a box, in three.js coordinates. */
+/** One port of an item (DEV.md 4c C229), mapped from the pipe that lands on
+ *  it: `at` is the nozzle on the surface, `dir` the unit direction of the
+ *  pipe's first segment (the nozzle's stub), both in three.js axes. */
+export interface ScenePort {
+  stream: string; port: string; origin: string; role: string;
+  at: Vec3; dir: Vec3;
+}
+
 export interface SceneSolid {
   id: string;
   kind: string;
@@ -131,6 +139,10 @@ export interface SceneSolid {
   bank?: MembraneBank;
   ignition: boolean;
   release: boolean;
+  /** The ports the engine published on this item (DEV.md 4c C229): where each
+   *  pipe lands, in three.js axes, with the unit direction the pipe leaves in.
+   *  Absent when no pipe lands on it. */
+  ports?: ScenePort[];
   /** The engine published a finding naming this item. */
   flagged: boolean;
   /** The text drawn beside it: the item id, and nothing else. */
@@ -191,6 +203,15 @@ export interface ScenePipe {
   length: number;
   /** Published mass flow (kg/s), when the run carries molar masses. */
   massFlow: number | null;
+  /** The stream's state as the engine published it on the pipe (C229): carried
+   *  for the colour modes and the click card, never computed.  Absent = the
+   *  engine did not publish it. */
+  T?: number;
+  P?: number;
+  vf?: number;
+  /** Both ends as the engine names them (`kind` item / junction / boundary). */
+  ends: { fromKind: string; from: string; toKind: string; to: string };
+  routedBy: string;
   /** Drawing radius (m) and particle speed (m/s): stylised, monotone in flow. */
   radius: number;
   speed: number;
@@ -504,12 +525,20 @@ function pipeOf(p: LayoutPipe): ScenePipe {
   if (p.P !== undefined) tp.push(`P ${(p.P / 1e5).toFixed(2)} bar`);
   if (tp.length) lines.push(tp.join(" · "));
   if (massFlow !== null) lines.push(`ṁ ${massFlow.toPrecision(4)} kg/s`);
+  for (const [word, pt] of [["leaves", p.fromPort], ["lands on", p.toPort]] as const)
+    if (pt) lines.push(`${word} port ${pt.port} of ${pt.item}`
+      + (pt.origin === "convention" ? "" : ` (${pt.origin})`));
   lines.push(`length ${p.length.toFixed(1)} m (${p.routedBy === "waypoints"
     ? "declared waypoints" : "routed on the rack"})`);
   return {
     id: `pipe:${p.stream}`, stream: p.stream, phase,
     points: p.route.map(([x, y, z]) => toThree(x, y, z)),
     length: p.length, massFlow,
+    ...(p.T !== undefined && Number.isFinite(p.T) ? { T: p.T } : {}),
+    ...(p.P !== undefined && Number.isFinite(p.P) ? { P: p.P } : {}),
+    ...(p.vf !== undefined && Number.isFinite(p.vf) ? { vf: p.vf } : {}),
+    ends: { fromKind: p.fromKind, from: p.from, toKind: p.toKind, to: p.to },
+    routedBy: p.routedBy,
     radius: tubeRadius(massFlow), speed: particleSpeed(massFlow),
     tooltip: lines,
   };
@@ -696,6 +725,28 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
   const solids = layout.items.map((it) =>
     solidOf(it, flaggedIds.has(it.id), messagesOf.get(it.id) ?? [], accessOf.get(it.id)));
   const byId = new Map(layout.items.map((it) => [it.id, it]));
+  //  C229: hand each item the ports its pipes land on.
+  const solidById = new Map(solids.map((s) => [s.id, s]));
+  for (const p of layout.pipes ?? []) {
+    const ends: [LayoutPortInfo | undefined, number, number][] =
+      [[p.fromPort, 0, 1], [p.toPort, p.route.length - 1, p.route.length - 2]];
+    for (const [port, i0, i1] of ends) {
+      const solid = port ? solidById.get(port.item) : undefined;
+      const a = p.route[i0], b = p.route[i1];
+      if (!port || !solid || !a || !b) continue;
+      const at = toThree(a[0], a[1], a[2]);
+      const nb = toThree(b[0], b[1], b[2]);
+      const d: Vec3 = [nb[0] - at[0], nb[1] - at[1], nb[2] - at[2]];
+      const n = Math.hypot(d[0], d[1], d[2]);
+      if (!(n > 0)) continue;
+      (solid.ports ??= []).push({
+        stream: p.stream, port: port.port, origin: port.origin, role: port.role,
+        at, dir: [d[0] / n, d[1] / n, d[2] / n],
+      });
+      solid.tooltip.push(`port ${port.port} (${p.stream}): ${port.role}`
+        + (port.origin === "convention" ? "" : ` [${port.origin}]`));
+    }
+  }
 
   const zones: SceneZone[] = [];
   for (const it of layout.items)

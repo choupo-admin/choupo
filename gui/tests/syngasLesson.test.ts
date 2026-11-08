@@ -221,7 +221,7 @@ describe("syngas: what the lesson says the runs show", () => {
   }, 60_000);
   it("the pressures step 6 names are the ones the corpus cases declare", () => {
     expect(tree("tutorials/steady/reactors/screen01_methanol_routes/0/feedSyngas")).toMatch(/^P\s+50 bar;/m);
-    expect(tree("tutorials/plant/ammoniaRoutes01_screening/0/feedSynthesis150")).toMatch(/^P\s+150 bar;/m);
+    expect(tree("tutorials/steady/reactors/ammoniaRoutes01_screening/0/feedSynthesis150")).toMatch(/^P\s+150 bar;/m);
     expect(all).toContain("0/feedSyngas (P 50 bar)");
     expect(all).toContain("0/feedSynthesis150 (P 150 bar)");
   });

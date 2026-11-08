@@ -1069,6 +1069,9 @@
   "LayoutPlotSector": [
    "src/core/ResultRecords.H"
   ],
+  "LayoutPort": [
+   "src/core/ResultRecords.H"
+  ],
   "LayoutRackCrossing": [
    "src/core/ResultRecords.H"
   ],
@@ -1374,6 +1377,9 @@
   ],
   "PelletSolution": [
    "src/unitOperations/reactor/pellet/PelletDiffusion.H"
+  ],
+  "PetroleumCuts": [
+   "src/propertyOps/PetroleumCuts.H"
   ],
   "Phase": [
    "src/thermo/phase/Phase.H"
@@ -2599,6 +2605,10 @@
    {
     "key": "frictionBench",
     "type": "FrictionBench"
+   },
+   {
+    "key": "petroleumCuts",
+    "type": "PetroleumCuts"
    },
    {
     "key": "rateLawBench",
@@ -6118,6 +6128,23 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H"
   ],
+  "src/propertyOps/PetroleumCuts.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/PublishedTable.H",
+   "src/core/Types.H",
+   "src/propertyOps/ConstantEstimator.H",
+   "src/propertyOps/PetroleumCuts.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/DerivedClosures.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/vaporPressure/AmbroseWalton.H",
+   "src/thermo/vaporPressure/VaporPressureModel.H"
+  ],
   "src/propertyOps/PhaseEnvelope.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -6326,6 +6353,7 @@
    "src/propertyOps/MembraneShortlist.H",
    "src/propertyOps/MixingRules.H",
    "src/propertyOps/MolecularActivity.H",
+   "src/propertyOps/PetroleumCuts.H",
    "src/propertyOps/PhaseEnvelope.H",
    "src/propertyOps/PhaseSplitScan.H",
    "src/propertyOps/PitzerActivity.H",
@@ -12428,6 +12456,7 @@
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -12798,6 +12827,7 @@
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -13260,6 +13290,7 @@
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -13565,6 +13596,7 @@
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -13900,6 +13932,7 @@
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -14290,6 +14323,7 @@
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -15007,6 +15041,7 @@
    "src/propertyOps/ConstantEstimator.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Joback.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/RiaziDaubert.cpp",
    "src/propertyOps/VanKrevelen.cpp",
    "src/propertyOps/Yang2020.cpp"
@@ -15159,6 +15194,10 @@
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/PetroleumCuts.H": [
+   "src/propertyOps/PetroleumCuts.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/PhaseEnvelope.H": [
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -15220,6 +15259,7 @@
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -16562,6 +16602,7 @@
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -16850,6 +16891,7 @@
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -17027,6 +17069,7 @@
   "src/thermo/DerivedClosures.H": [
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Joback.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/RiaziDaubert.cpp",
    "src/thermo/ThermoPackage.cpp"
   ],
@@ -17391,6 +17434,7 @@
    "src/propertyOps/MembraneShortlist.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -19078,6 +19122,7 @@
   ],
   "src/thermo/vaporPressure/AmbroseWalton.H": [
    "src/propertyOps/EstimateComponent.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/thermo/vaporPressure/AmbroseWalton.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp"
   ],
@@ -19093,6 +19138,7 @@
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PsychrometricChart.cpp",

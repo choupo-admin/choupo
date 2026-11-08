@@ -115,9 +115,9 @@ the tree as it stood:
 | case | streams | moved | unchanged |
 |---|---|---|---|
 | `plant/ChemicalPlantTutorial` | 25 | **4** | 21 |
-| `plant/esterification2sector` | 4 | 2 | 2 |
+| `steady/flowsheets/esterification2sector` | 4 | 2 | 2 |
 | `plant/lithiumBrinePlant` | 15 | 7 | 8 |
-| `plant/sugarPlantEconomicsSweep` | 25 | 7 | 18 |
+| `steady/economics/sugarPlantEconomicsSweep` | 25 | 7 | 18 |
 | `steady/flowsheets/plant01_two_sectors` | 5 | 2 | 3 |
 | `steady/flowsheets/plant02_basename_twins` | 4 | 2 | 2 |
 | `steady/flowsheets/composite01_two_flashes` (flat) | 5 | **0** | 5 |
@@ -312,7 +312,7 @@ RULE, and arm (k) is the one that reads the refusal.
   `converged/CONCENTRATION/Magma` as a path string (it tests tree grouping, not
   ownership, so it is correct as a test and stale as an example).  Named, not
   fixed.
-* **`tutorials/plant/twoSectorDemo`'s two sub-cases** ship `0/<UNIT>/<stream>`
+* **`tutorials/steady/flowsheets/twoSectorDemo`'s two sub-cases** ship `0/<UNIT>/<stream>`
   trees — a unit-named directory in a FLAT case, which neither the old rule nor
   the new one produces.  They fail today for an unrelated reason (45 NRTL pairs
   with no parameters, refused before any state is read) and fail identically

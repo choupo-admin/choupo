@@ -58,7 +58,7 @@ GROUPS = [
         "enrtlMultiSalt", "enrtlMixedSolvent", "scalingScan", "exchange")),
     ("Fitting and estimating", (
         "fitParameters", "vaporPressureFit", "heatCapacityFit",
-        "estimateComponent", "dataReconciliation")),
+        "estimateComponent", "petroleumCuts", "dataReconciliation")),
     ("Benches", (
         "kinetics1D", "heatTransferBench", "bellDelawareBench", "isothermEval",
         "elementalComposition")),

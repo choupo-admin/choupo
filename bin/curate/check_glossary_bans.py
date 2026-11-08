@@ -180,7 +180,7 @@ SECTOR_NAMED_EXEMPT = {
     "tutorials/plant/ChemicalPlantTutorial/constant/components/sucrose.dat":
         "a SEALED record: editing its comment moves its sha256 against "
         "constant/propertyManifest, and a re-seal is a curation act",
-    "tutorials/plant/sugarPlantEconomicsSweep/constant/components/sucrose.dat":
+    "tutorials/steady/economics/sugarPlantEconomicsSweep/constant/components/sucrose.dat":
         "same: a SEALED record, re-sealing is a curation act",
 }
 

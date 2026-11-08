@@ -97,11 +97,27 @@ Description
     THE PIPES (2026-10-17, DEV.md 4c C80).  After placement every MATERIAL
     stream of the flowsheet is either ROUTED or listed as not routed with
     its reason -- never dropped in silence.  Its two ends:
-      * a PLACED ITEM -- the pipe meets it at its NOZZLE, the item's plan
-        centre at its TOP (z + its height, standing or lying); a unit that
-        realises several items is piped through the FIRST of them the case
-        placed (the order of `items`), so a column's overhead loop and a
-        second storage tank are not drawn;
+      * a PLACED ITEM -- the pipe lands on a PORT of the item (DEV.md 4c
+        C229): a point on its surface derived from its KIND, its SIZED
+        dimensions and the stream's ROLE in its unit (a column's feed on its
+        shell at its stage's height, bottoms at the sump, distillate on the
+        reflux drum; an exchanger's tube ends and its shell nozzles over and
+        under; a drum's side inlet, top vapour and bottom liquid; a reactor's
+        and a machine's ends; a tank's roof and low outlet), read off the
+        unit's declared ports and, for a drum, the produced stream's own
+        vapour fraction -- never a stream's name.  A drafting CONVENTION,
+        not a vendor's nozzle schedule, said once per run and published
+        with every pipe (`fromPort` / `toPort`: item, port, origin, point);
+        a unit type with no rule keeps the item's top centre (`origin
+        default`), and the run names the types.  The case moves a port with
+        `ports { <stream> { item <id>; side top|bottom|east|west|north|south;
+        [elevation <m>;] } }` (a side and an elevation; two streams on one
+        port stand off each other by 0.2 of the item's narrow plan
+        dimension, alternately); an unknown stream, an item that is not
+        placed or not of a unit at an end of the stream, an unknown side and
+        an elevation outside the item or on a top/bottom port are REFUSED.
+        Each port has a one-metre stub (a drafting value), so the rack route
+        leaves from a point outside the footprint;
       * a JUNCTION -- an UNSIZED mixer, splitter or valve, drawn as a node
         on the rack's centre line at its lowest tier, at the MEAN plan x of
         the placed items it is piped to (a junction piped only to other
@@ -123,7 +139,7 @@ Description
     whose streams are such is not a junction on the rack.  A slurry or a
     wet cake (a fluid phase beside the solid) is still a stream to route.
     THE ROUTE is deterministic and orthogonal: up (or down) from the source
-    nozzle to its LANE, across to the lane, along the rack (plan x), across
+    port's stub to its LANE, across to the lane, along the rack (plan x), across
     to the target, down to its nozzle.  The rack runs along plan x; the
     case declares it (`pipeRack { y; elevation; laneSpacing; lanesPerTier;
     tierSpacing; xStart; xEnd; reason; }`, every key) or the engine uses a
@@ -132,9 +148,10 @@ Description
     outlets), `lanesPerTier` across the rack centred on its line, the tiers
     stacked `tierSpacing` upward.  A case may override one pipe's route with
     declared WAYPOINTS (`pipes { <stream> { waypoints ( { x; y; z; } ... );
-    } }`): the route is then the source nozzle, the waypoints, the target
-    nozzle (a battery limit adds no point), each segment REQUIRED to run
-    along one axis.  The length published is the polyline's own.  NO
+    } }`): the route is then the source port's stub (nozzle to the point
+    outside the footprint), the waypoints, the target port's stub in reverse
+    (a battery limit adds no point), each segment REQUIRED to run along one
+    axis.  The length published is the polyline's own.  NO
     pressure drop and NO cost: the next slice.  THE ROUTER DOES NOT STEER
     ROUND ITEMS, so once every route is final (the fence legs included) a
     segment whose plan path crosses a placed item's footprint (a vertical

@@ -585,7 +585,20 @@ of the population (population.csv role `utility`, console line
 enters as an ordinary segment whose duty counts as current utility use,
 not as recovered heat.  Declare the circuit for the cooling water, or the
 water is counted as a cold process stream and the targets are wrong
-(`tutorials/plant/ammonia02_full_plant`: a threshold problem, no pinch).  The Pinch tab of the GUI DRAWS
+(`tutorials/plant/ammonia02_full_plant`: a threshold problem, no pinch).
+The pass CLASSIFIES the problem from the whole corrected cascade (interior
+zeros included) and publishes the word in `reports/pinch/summary.csv`
+(`interiorPinch`, `severalPinches`, `thresholdNoHotUtility`,
+`thresholdNoColdUtility`, `thresholdNoUtility`; KPIs `n_pinches`,
+`problem_class` 1-5, `pinch_exists`): a threshold problem has NO pinch and
+the console, the KPIs and the diagnostics say so (the "VIOLATION" lines
+become "EXCESS utility" lines there).  The worked Linnhoff-Flower table is
+`reports/pinch/problemTable.csv` (shifted intervals, sumCP hot/cold, dH,
+initial and corrected cascade, the streams in each interval), and
+`Q_recovery_max_kW` / `Q_hot_total_kW` / `Q_cold_total_kW` are KPIs;
+`Q_H,min - Q_C,min` equals cold total minus hot total at every dTmin.  The
+candidate table is a feasibility assessment of each hot x cold pair: every
+`Q_max` is the limit of that pair alone and the column is not additive.  The Pinch tab of the GUI DRAWS
 these artefacts and computes nothing; a run with no `pinchPass` makes it
 say to declare `pinchPass { dTmin 20 K; }` in `system/postDict`.
 Its `dTmin` is the process–process approach of the targeting exercise, a
@@ -707,7 +720,7 @@ so whether the volume was solved or typed is said in the case, not by the
 sizer.  There is no Turton set for a catalyst bed and none is invented; a
 density or a price you cannot source is declared as an assumption in a
 comment, in those words.  Worked case:
-`tutorials/plant/ammoniaReactor04_kineticSizing`.
+`tutorials/steady/reactors/ammoniaReactor04_kineticSizing`.
 
 **A PRESSURE-RELIEF VALVE IS ONE MORE ITEM OF THE UNIT IT PROTECTS
 (2026-10-11, DEV.md 4c C62).**  `type reliefValve` sizes a relief valve on the
@@ -873,7 +886,7 @@ the two differ by 77x, so the engine does not guess: a missing basis is
 refused by name with that ratio quoted, and any other word (`standard`
 included -- it means 15, 20 or 25 degC depending on the source) is refused
 naming the two accepted.  The run prints the conversion beside the volume.
-Worked case: `tutorials/plant/ammoniaReactor03_equilibriumApproach`.
+Worked case: `tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach`.
 
 **A SHELL-AND-TUBE EXCHANGER CAN BE DESIGNED, NOT ONLY ESTIMATED (2026-10-07).**
 `type shellTubeHX` has four routes, chosen by what `designRules` declares:

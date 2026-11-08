@@ -1594,11 +1594,17 @@ if [ "$#" -gt 0 ]; then
     #  An instruction to run it in pieces is empty if pieces are awkward.
     for a in "$@"; do
         if [ -f "$a/system/controlDict" ]; then
+            #  A sector sub-case (its parent holds a system/controlDict) runs
+            #  inside its case; named alone it exits 2 by design (C244).
+            [ -f "$(dirname "$a")/system/controlDict" ] \
+                && { echo "[skip] $a is a sector of $(dirname "$a"), run through it"; continue; }
             CASES+=("$a")
         elif [ -d "$a" ]; then
             n=0
             while IFS= read -r cd; do
-                CASES+=("$(dirname "$(dirname "$cd")")"); n=$((n+1))
+                _c="$(dirname "$(dirname "$cd")")"
+                [ -f "$(dirname "$_c")/system/controlDict" ] && continue
+                CASES+=("$_c"); n=$((n+1))
             done < <(find "$a" -path '*/system/controlDict' 2>/dev/null | sort)
             [ "$n" -gt 0 ] \
                 && echo "[chunk] $a -> $n case(s)" \
@@ -1620,6 +1626,13 @@ else
             # kept IN the sweep and classified in the check loop so they are
             # COUNTED and NAMED in the summary (never silently dropped).  An
             # honest gate makes its exceptions visible.
+            #  A SECTOR folder that carries its own system/controlDict (the
+            #  "dignified unit" form) is part of the case above it, which runs
+            #  it through `children`; run alone it exits 2 by design.  It was
+            #  never walked while its plant sat under tutorials/plant/ (whose
+            #  walk looks one level deep); C244 moved twoSectorDemo to
+            #  steady/flowsheets/, so the rule is now stated where it is needed.
+            [ -f "$(dirname "$case_dir")/system/controlDict" ] && continue
             CASES+=("$case_dir")
         done < <(find "tutorials/$cat" -path '*/system/controlDict' 2>/dev/null | sort)
     done
@@ -5175,6 +5188,22 @@ PYEOF
     fi
     rm -f /tmp/belldelaware.$$
 
+    # Petroleum-cuts gate (2026-11-05, DEV.md 4c C228).  `petroleumCuts` cuts a
+    # TBP curve into pseudo-components by Riazi (ASTM MNL50): the gate
+    # recomputes the chain in independent Python, holds the book's printed
+    # arithmetic (Eq. 3.17's 0.7862, Example 2.11's Kw and API), fires twelve
+    # refusals through the real reader and checks the closure is announced and
+    # never adjusted.  Nothing in it is a measurement.
+    if gate_exec "$ROOT/bin/curate/check_petroleum_cuts.py" > /tmp/petcuts.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "petroleum-cuts-gate" "$(head -1 /tmp/petcuts.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_petroleum_cuts.py)\n" "petroleum-cuts-gate"
+        cat /tmp/petcuts.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/petcuts.$$
+
     # rate-expression gate (2026-10-12, DEV.md 4c C67).  A rate law written in
     # the case is compiled, dimension-checked, printed back as parsed and
     # evaluated as declared; the C++ route (a law registered from code/) and
@@ -7726,6 +7755,23 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/plantlayout.$$
+
+    # Pipe-port gate (2026-11-05, DEV.md 4c C229): every pipe end lands on a
+    # PORT of its item -- a column's feed on its shell at its stage's height,
+    # bottoms at the sump, distillate on the reflux drum; an exchanger's tube
+    # ends and shell nozzles; a drum's side inlet, top vapour, bottom liquid --
+    # recomputed from the published sheets; no two pipes end at one point; a
+    # declared port honoured; six refusals named; the convention said on
+    # stderr, in the advisories and in the layout block.
+    if gate_exec "$ROOT/bin/curate/check_pipe_ports.py" > /tmp/pipeports.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pipe-ports-gate" "$(gate_claim check_pipe_ports /tmp/pipeports.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pipe_ports.py)\n" "pipe-ports-gate"
+        cat /tmp/pipeports.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pipeports.$$
 
     # GMP-interior gate (2026-10-18, DEV.md 4c C97 phase B): the `building {}`
     # block of system/layoutDict -- rooms, grades, pressures, airlocks, flows

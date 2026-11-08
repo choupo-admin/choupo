@@ -124,7 +124,7 @@ Fixed everywhere the word was taught, in the guides and in the tree:
   S ?; }"* — three key names at once that the parser does not read (the real
   ones are `referenceState`, `dHf_298`, `s_298`).  The three committed
   `.estimated.dat` records carrying that text were corrected too;
-* **ten live records**, `tutorials/plant/twoSectorDemo/constant/components/comp{A..J}.dat`,
+* **ten live records**, `tutorials/steady/flowsheets/twoSectorDemo/constant/components/comp{A..J}.dat`,
   which declared `phase gas;` inside `standardThermochemistry`.  They are the
   only records in any loadable tier that did.  Their answers do not move: the
   key was unread and the default is `idealGas`, which is what `phase gas` meant.

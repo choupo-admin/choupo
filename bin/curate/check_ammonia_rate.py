@@ -3,7 +3,7 @@
 
     bin/curate/check_ammonia_rate.py
 
-WHY THIS EXISTS.  `tutorials/plant/ammonia03_quench_converter` draws the
+WHY THIS EXISTS.  `tutorials/steady/reactors/ammonia03_quench_converter` draws the
 cold-shot trajectory of Dyson & Simon's Figure 2 with EQUILIBRIUM beds and
 says, in its own README, what that cannot do; the rate law closes those
 seams.  Until 2026-10-12 the law was compiled into the engine
@@ -13,7 +13,7 @@ it, as `kinetics { type expression; }` in constant/reactions -- three
 copies:
 
     tutorials/props/kinetics/ammoniaRate01_dyson_simon      (+ Eq 39 / Table I)
-    tutorials/plant/ammoniaReactor04_kineticSizing
+    tutorials/steady/reactors/ammoniaReactor04_kineticSizing
     tutorials/plant/greenAmmonia03_basicDesign
 
 A law with three homes is held together HERE, and the anchors that used to
@@ -120,11 +120,11 @@ ROOT = Path(__file__).resolve().parents[2]
 PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 CASE = ROOT / "tutorials/props/kinetics/ammoniaRate01_dyson_simon"
-PLANT = ROOT / "tutorials/plant/ammonia03_quench_converter"
+PLANT = ROOT / "tutorials/steady/reactors/ammonia03_quench_converter"
 LAWS = {
     "bench": CASE / "constant/reactions",
     "ammoniaReactor04_kineticSizing":
-        ROOT / "tutorials/plant/ammoniaReactor04_kineticSizing/constant/reactions",
+        ROOT / "tutorials/steady/reactors/ammoniaReactor04_kineticSizing/constant/reactions",
     "greenAmmonia03_basicDesign":
         ROOT / "tutorials/plant/greenAmmonia03_basicDesign/constant/reactions",
 }

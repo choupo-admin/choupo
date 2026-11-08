@@ -50,6 +50,8 @@ wind { from 270 deg; planNorth 0 deg; halfAngle 30 deg; reach 40 m; source; reas
 pipeRack { y 5 m; elevation 6 m; laneSpacing 0.5 m; lanesPerTier 4; tierSpacing 1 m;
            xStart -15 m; xEnd 25 m; reason; }
 pipes { <stream> { waypoints ( { x; y; z; } ... ); } }     // override one route
+ports { <stream> { item <id>; side top|bottom|east|west|north|south;
+                   [elevation 2 m;] } }                     // move one pipe end's port
 areas { <SECTOR> { xMin; xMax; yMin; yMax; } }             // sectored cases only
 plot { margin 5 m; reason; }
 roads { source; reason; headroom 5 m; access { distance 25 m; source; reason; }
@@ -70,8 +72,25 @@ building { ... }                                           // §4
   Separation tables match by KIND: equipment kinds are the sizing types
   (`vessel`, `shellTubeHX`, `storageTank`, ...), non-process kinds are your
   word.  A rule naming a kind no item carries is announced `deadRule`.
-* The pipe router is deterministic: up from the nozzle (item TOP) to its
-  lane, along the rack (plan x), down to the target.  Plant INLETS arrive at
+* Every pipe end lands on a PORT of its item (a drafting CONVENTION, said
+  once per run, NOT a vendor's nozzle schedule), from the item's kind, its
+  sized dimensions and the stream's ROLE in its unit, read off the unit's
+  declared ports (`in`/`inputs`/`outputs` position, `feeds`/`sideDraws`
+  stages; a drum's outlets by the produced stream's vapour fraction), never
+  off a stream's name: a column's feed on its SHELL at its stage's height,
+  bottoms at the sump, distillate on the reflux drum (else the condenser,
+  else the head); an exchanger's tube ends and shell nozzles over and under;
+  a drum's side inlet, top vapour, bottom liquid; a reactor or machine at the
+  ends of its axis; a tank's roof and low outlet (a horizontal tank's nozzle takes the end of the axis nearer the other end of its pipe; a battery limit counts as lying on the side of the fence you declared for the stream).  A unit type with no rule
+  keeps the item's top centre (`origin default`, announced).  Each pipe
+  publishes `fromPort`/`toPort` (item, port, origin, point, `leaves` = where the 1 m stub ends); a `ports` block
+  moves one (`item` must be a placed item of a unit at an end of the stream:
+  refused by name otherwise; `elevation` only on a side).  A `pipes`
+  override now begins at the port's stub, not at the top centre: its first
+  waypoint must share two coordinates with the `leaves` point of `fromPort` (and its last
+  with `toPort.leaves`), because every segment is orthogonal.
+* The pipe router is deterministic: up from the port's stub to its
+  lane, along the rack (plan x), down to the target's port.  Plant INLETS arrive at
   the rack's west end `xStart`, OUTLETS leave at the east end `xEnd`.  Every
   MATERIAL stream is routed or listed `notRouted` with its reason.  SOLIDS ARE
   NOT PIPED (powder, tablets: containers or conveyors), a unit with no placed
@@ -107,7 +126,15 @@ building { ... }                                           // §4
   checks its own draft, and never overwrites a layoutDict without `--force`.
   It invents no distance, wind or zone.  Move every item to where you can
   defend it.
-* In the app: Reports -> "Plant layout (3D)".
+* In the app: Reports -> "Plant layout (3D)".  The viewer offers a guided TOUR
+  generated from the case's sectors and units (each sentence carries the result
+  field it was read from), orbit / walk / drone cameras, a "Go to..." list, a
+  minimap, a click card on every item and pipe (the sheet and the stream the engine
+  published), and colour by phase, temperature, pressure or the mole fraction of a
+  component you choose.  Every value is read from the published result; the viewer
+  computes nothing.  Pipes end on the item's ports, drawn as nozzles; a port is a
+  conventional position, not a vendor's nozzle schedule.  The engine publishes no
+  line velocity, so flow particles are stylised.
 
 ## 3. Example: a heater and a flash drum on a rack, a road, a gate, a fence
 

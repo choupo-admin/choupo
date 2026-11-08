@@ -41,6 +41,7 @@ License
 #include "HansenMixture.H"
 #include "HeatTransferBench.H"
 #include "BellDelawareBench.H"
+#include "PetroleumCuts.H"
 #include "Kinetics1D.H"
 #include "Exergy.H"
 #include "FlashSpec.H"
@@ -218,6 +219,10 @@ void PropertyOperation::registerBuiltins()
     reg("heatTransferBench", []{ return std::make_unique<HeatTransferBench>(); });
     reg("bellDelawareBench", []{ return std::make_unique<BellDelawareBench>(); });
     reg("frictionBench", []{ return std::make_unique<FrictionBench>(); });
+    //  A TBP CURVE CUT INTO PSEUDO-COMPONENTS (DEV.md 4c C228): Tb per cut, SG by
+    //  constant Watson K, then the RiaziDaubert estimator per cut; one ESTIMATE
+    //  record per cut, written into the CASE.
+    reg("petroleumCuts", []{ return std::make_unique<PetroleumCuts>(); });
     //  A RATE LAW WRITTEN IN THE CASE, ON THE BENCH (`type expression;` in
     //  constant/reactions; DEV.md 4c C67).  It replaced the ammonia-only
     //  bench the day the Dyson-Simon law left the engine for the case; the

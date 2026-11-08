@@ -48,7 +48,7 @@ import type { EquipmentItem } from "../../adapters/SolverAdapter.js";
 import { tutorialByName } from "../../cases/tutorials.js";
 
 /** The witness, as `tutorialByName` keys it. */
-export const MATERIALS_WITNESS = "plant/ammoniaReactor03_equilibriumApproach";
+export const MATERIALS_WITNESS = "steady/reactors/ammoniaReactor03_equilibriumApproach";
 export const POST_DICT = "system/postDict";
 
 /** The three vessels the witness sizes, with what its own files say about

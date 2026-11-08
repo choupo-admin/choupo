@@ -41,7 +41,7 @@ routes
         (
             { route "alkaline / PEM electrolyser, system"; band ( 50 55 ); unit "kWh per kg H2"; origin assumed; reason "the specific electricity consumption usually quoted for today's alkaline and PEM systems; the IEA hydrogen report carries the figure in its technology annex, not read back here"; }
         );
-        cases    ( "tutorials/plant/greenAmmonia03_basicDesign" "tutorials/plant/greenAmmoniaPEQ_baseCase" "tutorials/plant/ammoniaRoutes01_screening" );
+        cases    ( "tutorials/plant/greenAmmonia03_basicDesign" "tutorials/plant/greenAmmoniaPEQ_baseCase" "tutorials/steady/reactors/ammoniaRoutes01_screening" );
         provenance
         (
             { source ieaHydrogen2019; locus "electrolytic hydrogen and its cost"; }

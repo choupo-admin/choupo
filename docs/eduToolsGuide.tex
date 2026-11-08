@@ -589,10 +589,20 @@ and the least cold utility this set of streams can possibly need?}
 
 \subsubsection*{What to vary, what to watch}
 
-The tool draws the engine's own published composite curves, reports its
-targets $Q_{H,\min}$ and $Q_{C,\min}$ and the pinch temperature, re-runs
-the heat cascade over the published curves as a cross-check, and renders
-the engine's candidate-match table verbatim.
+The tool draws what the engine's pinch pass published and computes
+nothing itself: the stream table (every segment's $T_{\mathrm{in}}$,
+$T_{\mathrm{out}}$, $|Q|$ and $CP = |Q|/|\Delta T|$), the worked
+Linnhoff--Flower cascade row by row, the composite curves (the cold curve
+slid by $Q_{C,\min}$, with the two utility intervals, the maximum recovery
+and the $\Delta T_{\min}$ gap at the pinch marked), the grand composite and
+the candidate table, a feasibility assessment of each hot--cold pair whose
+$Q_{\max}$ values are limits of single pairs and are not additive.  The
+engine also \emph{classifies} the problem from the whole cascade: an
+interior pinch, several pinches, or a threshold problem with no hot or no
+cold utility, in which case there is no pinch and none is drawn.  The
+net $Q_{H,\min}-Q_{C,\min}$ is the same at every $\Delta T_{\min}$ (it is
+the cold total minus the hot total), which is a check a student can make
+on paper.
 
 \begin{tryit}
 Change nothing but $\Delta T_{\min}$ --- from $20$~K down to $10$, then up

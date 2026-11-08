@@ -42,6 +42,15 @@ Probes, through the real choupoSolve binary:
                P3 entered the hot side alone with Q_cool_current 93.79 kW and
                Q_C,min 93.79 kW for a plant that needs no utility.
 
+  CLASS        (C234, 2026-11-07) the cascade CLASSIFIES the problem by its
+               whole corrected cascade, interior zeros included: the witness
+               swept at dTmin 1/20/40 K (net Q_H,min - Q_C,min = 67.5 kW at
+               every approach, the class word, KPIs, summary.csv, console and
+               problemTable.csv all equal the independent cascade; a threshold
+               prints no 'pinch at T*' and no VIOLATION), a two-pinch fixture,
+               a no-utility fixture, ammonia02_full_plant (threshold, no hot
+               utility) and a source arm: the page keeps no TypeScript cascade.
+
 Exit 1 listing failures."""
 import csv
 import json
@@ -116,6 +125,206 @@ def copy(tmp: Path, tag: str) -> Path:
 def kpi_block(out: str):
     m = re.search(r'"pinch":\s*({[^}]*})', out)
     return json.loads(m.group(1)) if m else None
+
+
+def classify(streams, dtmin):
+    """Independent CLASSIFICATION by the whole corrected cascade (DEV.md 4c
+    C234): returns (QH kW, QC kW, interior zeros, word, corrected cascade)."""
+    hs, cs = -dtmin / 2.0, +dtmin / 2.0
+    bounds = set()
+    for hot, ta, tb, _ in streams:
+        sh = hs if hot else cs
+        bounds.update((min(ta, tb) + sh, max(ta, tb) + sh))
+    T = sorted(bounds, reverse=True)
+    cas = [0.0]
+    dHs = []
+    for i in range(len(T) - 1):
+        mid = 0.5 * (T[i] + T[i + 1])
+        cph = cpc = 0.0
+        for hot, ta, tb, cp in streams:
+            sh = hs if hot else cs
+            if min(ta, tb) + sh <= mid <= max(ta, tb) + sh:
+                if hot:
+                    cph += cp
+                else:
+                    cpc += cp
+        dH = (cph - cpc) * (T[i] - T[i + 1])
+        dHs.append(dH)
+        cas.append(cas[-1] + dH)
+    qh = -min(cas)
+    cor = [c + qh for c in cas]
+    tol = 1e-9 * sum(abs(d) for d in dHs) + 1e-6
+    inner = [k for k in range(1, len(T) - 1) if abs(cor[k]) <= tol]
+    top, bot = qh <= tol, abs(cor[-1]) <= tol
+    if len(inner) == 1:
+        word = "interiorPinch"
+    elif len(inner) > 1:
+        word = "severalPinches"
+    elif top and bot:
+        word = "thresholdNoUtility"
+    elif top:
+        word = "thresholdNoHotUtility"
+    else:
+        word = "thresholdNoColdUtility"
+    return qh / 1e3, cor[-1] / 1e3, len(inner), word, cor, T
+
+
+def build_case(tmp: Path, tag: str, streams, dtmin):
+    """The witness with its four units re-declared as `streams` (hot, T_in,
+    T_out, CP W/K): units coolerH1, coolerH2, heaterC1, heaterC2 in order."""
+    case = copy(tmp, tag)
+    names = ["h1In", "h2In", "c1In", "c2In"]
+    for nm, (hot, ta, tb, cp) in zip(names, streams):
+        f = case / "0" / nm
+        txt = f.read_text()
+        txt = re.sub(r"hxFluid\s+[-0-9.eE+]+ mol/s;",
+                     f"hxFluid    {cp / 100.0:.10g} mol/s;", txt)
+        txt = re.sub(r"\nT\s+[-0-9.eE+]+ K;", f"\nT               {ta:.10g} K;", txt, 1)
+        f.write_text(txt)
+    fd = case / "system" / "flowsheetDict"
+    q = iter(cp * (tb - ta) for _, ta, tb, cp in streams)
+    fd.write_text(re.sub(r"operation   \{ Q  [-0-9.eE+]+ kW; \}",
+                         lambda m: f"operation   {{ Q  {next(q) / 1e3:.10g} kW; }}",
+                         fd.read_text()))
+    pd = case / "system" / "postDict"
+    pd.write_text(re.sub(r"dTmin\s+[0-9.eE+]+ K;", f"dTmin   {dtmin:g} K;",
+                         pd.read_text()))
+    return case
+
+
+def read_summary(case: Path):
+    p = case / "reports" / "pinch" / "summary.csv"
+    if not p.exists():
+        return {}
+    d = {}
+    for line in p.read_text().splitlines()[1:]:
+        k, _, v = line.partition(",")
+        d[k] = v
+    return d
+
+
+def class_arms(tmp: Path):
+    """THE CASCADE CLASSIFIES THE PROBLEM, AND EVERY SURFACE SAYS IT (C234)."""
+    codes = {"interiorPinch": 1, "severalPinches": 2, "thresholdNoHotUtility": 3,
+             "thresholdNoColdUtility": 4, "thresholdNoUtility": 5}
+    hot_total = sum(cp * abs(ta - tb) for h, ta, tb, cp in STREAMS if h) / 1e3
+    cold_total = sum(cp * abs(ta - tb) for h, ta, tb, cp in STREAMS if not h) / 1e3
+
+    # ---- (a) the sweep: the net of the duties is 67.5 kW at any approach ----
+    for d in (1.0, 20.0, 40.0):
+        case = build_case(tmp, f"cls{d:g}", STREAMS, d)
+        rc, out = run(case)
+        qh, qc, ni, word, cor, T = classify(STREAMS, d)
+        k = kpi_block(out) or {}
+        if rc != 0 or not k:
+            failures.append(f"class dTmin {d}: exit {rc} / no KPIs")
+            continue
+        if abs(k.get("Q_H_min_kW", 1e9) - k.get("Q_C_min_kW", 0.0) - 67.5) > 1e-6:
+            failures.append(f"class dTmin {d}: Q_H,min - Q_C,min ="
+                            f" {k.get('Q_H_min_kW')} - {k.get('Q_C_min_kW')}"
+                            " != 67.5 kW (cold total - hot total)")
+        if abs(qh - qc - 67.5) > 1e-9 or abs(cold_total - hot_total - 67.5) > 1e-9:
+            failures.append("class: the SCRIPT's own identity is wrong")
+        if abs(k.get("Q_recovery_max_kW", 1e9) - (hot_total - qc)) > 1e-6:
+            failures.append(f"class dTmin {d}: Q_recovery_max_kW"
+                            f" {k.get('Q_recovery_max_kW')} != hot total -"
+                            f" Q_C,min = {hot_total - qc}")
+        s = read_summary(case)
+        if s.get("class") != word or int(s.get("n_pinches", -1)) != ni:
+            failures.append(f"class dTmin {d}: summary.csv says"
+                            f" {s.get('class')}/{s.get('n_pinches')},"
+                            f" independent {word}/{ni}")
+        if k.get("problem_class") != codes[word] or \
+                k.get("pinch_exists") != (1.0 if ni else 0.0) or \
+                k.get("n_pinches") != ni:
+            failures.append(f"class dTmin {d}: KPIs problem_class/pinch_exists/"
+                            f"n_pinches {k.get('problem_class')}/"
+                            f"{k.get('pinch_exists')}/{k.get('n_pinches')}"
+                            f" disagree with {word}")
+        if f"CLASS: {word}" not in out:
+            failures.append(f"class dTmin {d}: the console does not say {word}")
+        if ni == 0:
+            #  THRESHOLD: no pinch line, no VIOLATION wording, the word THRESHOLD
+            if "pinch at T*" in out:
+                failures.append(f"class dTmin {d}: a threshold problem prints"
+                                " 'pinch at T*'")
+            if "THRESHOLD problem" not in out:
+                failures.append(f"class dTmin {d}: threshold not announced")
+            if "VIOLATION" in out:
+                failures.append(f"class dTmin {d}: threshold diagnostics still"
+                                " say VIOLATION")
+        elif "pinch at T*" not in out:
+            failures.append(f"class dTmin {d}: a pinch problem does not locate it")
+        if d == 20.0:
+            #  the worked table the page draws == the independent cascade
+            tp = case / "reports" / "pinch" / "problemTable.csv"
+            rows = list(csv.DictReader(open(tp))) if tp.exists() else []
+            if len(rows) != len(T) - 1:
+                failures.append(f"class: problemTable.csv has {len(rows)} rows,"
+                                f" independent {len(T) - 1}")
+            else:
+                for i, r in enumerate(rows):
+                    if abs(float(r["T_star_hi_K"]) - T[i]) > 1e-6 or \
+                            abs(float(r["T_star_lo_K"]) - T[i + 1]) > 1e-6 or \
+                            abs(float(r["corrected_out_kW"]) - cor[i + 1] / 1e3) > 1e-6:
+                        failures.append(f"class: problemTable.csv row {i + 1}"
+                                        " differs from the independent cascade")
+                        break
+            blob = out + (tp.read_text() if tp.exists() else "") + \
+                (case / "reports" / "pinch" / "summary.csv").read_text()
+            if "optimal" in blob.lower():
+                failures.append("class: the word 'optimal' appears")
+
+    # ---- (b) SEVERAL pinches: the interior zeros are looked for, not the
+    #      single minimum.  Shifted cascade -10, +20, -20, +5 (dTmin 20).
+    several = [(True, 340.0, 330.0, 2000.0), (True, 320.0, 310.0, 500.0),
+               (False, 320.0, 330.0, 1000.0), (False, 300.0, 310.0, 2000.0)]
+    qh, qc, ni, word, _, _ = classify(several, 20.0)
+    if (word, ni) != ("severalPinches", 2) or abs(qh - 10.0) > 1e-9 \
+            or abs(qc - 5.0) > 1e-9:
+        failures.append(f"class: the several-pinch fixture is wrong: {word},"
+                        f" {ni}, {qh}, {qc} -- fix the SCRIPT")
+    case = build_case(tmp, "several", several, 20.0)
+    rc, out = run(case)
+    s = read_summary(case)
+    if rc != 0 or s.get("class") != "severalPinches" or s.get("n_pinches") != "2":
+        failures.append(f"class several: summary {s} (expected severalPinches,"
+                        f" 2); exit {rc}")
+    if "further pinches at T*" not in out:
+        failures.append("class several: the console does not name the second pinch")
+
+    # ---- (c) a threshold with NEITHER utility (both ends zero) ---------------
+    nothing = [(True, 300.0, 200.0, 1000.0), (True, 300.0, 200.0, 1000.0),
+               (False, 180.0, 280.0, 1000.0), (False, 180.0, 280.0, 1000.0)]
+    word0 = classify(nothing, 20.0)[3]
+    if word0 != "thresholdNoUtility":
+        failures.append(f"class: the no-utility fixture is {word0} -- fix the SCRIPT")
+    case = build_case(tmp, "nothing", nothing, 20.0)
+    rc, out = run(case)
+    if rc != 0 or read_summary(case).get("class") != "thresholdNoUtility":
+        failures.append(f"class no-utility: {read_summary(case)}; exit {rc}")
+
+    # ---- (d) the plant that was misread: a threshold problem, no hot utility
+    am = tmp / "ammonia02"
+    shutil.copytree(ROOT / "tutorials" / "plant" / "ammonia02_full_plant", am,
+                    ignore=shutil.ignore_patterns("expected", "log.*",
+                                                  "reports", "converged"))
+    rc, out = run(am)
+    k = kpi_block(out) or {}
+    if rc != 0 or read_summary(am).get("class") != "thresholdNoHotUtility" \
+            or k.get("pinch_exists") != 0.0:
+        failures.append(f"class ammonia02: {read_summary(am)}, pinch_exists"
+                        f" {k.get('pinch_exists')}; exit {rc}")
+    if "pinch at T*" in out:
+        failures.append("class ammonia02: 'pinch at T*' on a threshold plant")
+
+    # ---- (e) the page draws the engine's table; it recomputes no cascade ----
+    for rel in ("gui/src/ui/methods/PinchCompositeTool.tsx", "gui/src/case/pinch.ts"):
+        src = re.sub(r"/\*.*?\*/", "", (ROOT / rel).read_text(), flags=re.S)
+        src = re.sub(r"//[^\n]*", "", src)
+        if re.search(r"computePinchFromCurves|crossCheckAgainstKpis|interpolateH", src):
+            failures.append(f"{rel}: a TypeScript cascade is back (the engine"
+                            " decides, the GUI draws)")
 
 
 def main() -> int:
@@ -315,6 +524,8 @@ def main() -> int:
                     failures.append(f"P3: pinch.{key} = {k.get(key)},"
                                     f" independent two-side cascade = {ref}")
 
+        class_arms(tmp)
+
     if failures:
         print("check_pinch_p1: FAIL")
         for f in failures:
@@ -322,7 +533,11 @@ def main() -> int:
         return 1
     print("check_pinch_p1: OK -- witness targets equal the independent"
           " cascade (107.5 / 40 / 353.15), CSV coherent, negative silent,"
-          " dTmin<=0 refused; the population is published and labelled --"
+          " dTmin<=0 refused; the cascade CLASSIFIES the problem (interior"
+          " pinch, several pinches, threshold either utility or neither,"
+          " Q_H,min - Q_C,min = 67.5 kW at dTmin 1/20/40, the worked table and"
+          " summary.csv equal the independent cascade, ammonia02 is a"
+          " threshold plant, no TypeScript cascade); the population is published and labelled --"
           " an excluded Q_kW duty is listed and the targets say NOT the"
           " plant's, and a two-stream exchanger enters as both sides with its"
           " duty in neither current-utility total (no duty is ADDED to the"
