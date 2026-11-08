@@ -8,7 +8,7 @@ contract for a steady case.  For anything deeper, read ONLY the pack the
 design needs (index at the end).  Do not load the long references unless a
 pack sends you there.  A BATCH plant (tablets, lots, campaigns), its building
 layout, machine sizing, costing and economics is the same kind of case plus a
-`system/postDict` (and `system/layoutDict`): read the packs `batch-plant`,
+`system/postDict` (and `system/layoutDict`): read the packs `pharmaceutical` (a drug and a dose), `batch-plant`,
 `layout` and `design-cost` before designing it.
 
 ## 1. The protocol — DESIGN first, files second
@@ -369,6 +369,7 @@ Each pack: keys, degrees of freedom, refusals and one minimal example.
 | `docs/ai/packs/separations.md` | columns, absorbers, strippers, extraction |
 | `docs/ai/packs/pressure.md` | pumps, compressors, valves, pipes, hydraulics |
 | `docs/ai/packs/batch-plant.md` | a plant that runs in lots (tablets): batch plan, machine ratings and utilisation, HVAC and purified water, quotes, crew |
+| `docs/ai/packs/pharmaceutical.md` | a tablet plant for the student's own drug and dose: copy a shipped case, the keys to change, the refusals, where each deliverable prints, two strengths |
 | `docs/ai/packs/layout.md` | plot plan (rack, roads, fence, zones), the GMP building: rooms, grades, airlocks, flows |
 | `docs/ai/packs/design-cost.md` | equipment sizing, costing, economics (CAPEX, OPEX, NPV, IRR, sensitivity) |
 
