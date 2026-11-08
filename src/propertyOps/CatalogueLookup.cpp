@@ -22,6 +22,7 @@ License
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
+#include <map>
 #include <iostream>
 #include <set>
 #include <sstream>
