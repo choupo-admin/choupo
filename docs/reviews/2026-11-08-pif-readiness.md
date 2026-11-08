@@ -54,9 +54,11 @@ What a student sees, section by section, and whether the number is explained:
   -18.67 M, IRR none, simple payback 26.9 yr.  Class 5 band printed.
 * **Caveat block**: every announcement repeated, grouped (batch plan,
   extrapolations, model assumptions, plant layout, unverified data).
-* **Not produced** on this case as shipped: no break-even (no `breakEven
-  {}`), no sensitivity (no `sensitivity {}`), no `workingCapitalMethods`,
-  no element balance (HPC and HPMC have no formula -- announced).
+* **Not produced** on this case as shipped at `5a912a62c`: no break-even
+  (no `breakEven {}`), no sensitivity (no `sensitivity {}`), no
+  `workingCapitalMethods` -- all three declared on both cases later the same
+  night (section 4, item 5) -- and no element balance (HPC and HPMC have no
+  formula -- announced).
 
 Wrong or confusing, found while reading:
 
@@ -142,8 +144,9 @@ section 1 says so; a group can only declare placeholders).
 | CAPEX with the arithmetic of every quote | PRODUCES | costing table, `costs.csv`, `equipmentList.csv` |
 | OPEX, crew, Turton comparison | PRODUCES | economics block |
 | NPV, IRR, payback, cash flow, working capital | PRODUCES | `cashFlow.csv`, `workingCapital.csv` |
-| Sensitivity (tornado) | PRODUCES when declared; donepezil01 does not declare one | apalutamide01; probe |
-| Break-even (operating and NPV) | PRODUCES when declared -- REFUSED on both base cases until tonight | fixed; donepezil01: x = 1.19, s = 1.28 |
+| Sensitivity (tornado) | PRODUCES; both base cases declare one since tonight (donepezil01: price +-30 %, discount rate 8-15 %, labour +-20 %) | apalutamide01; donepezil01 |
+| Break-even (operating and NPV) | PRODUCES; REFUSED on both base cases until tonight (fixed), now declared on both | donepezil01: x = 1.19, s = 1.28; apalutamide01: x = 0.40, s = 0.43 |
+| Working capital by three methods | PRODUCES; declared on both since tonight | donepezil01 spread x1.40, apalutamide01 x3.02 |
 | Royalty inside a patent window; building by room area | PRODUCES when declared | `economics04_building_royalty_breakeven` |
 | Staffing | HALF | a declared table priced; nothing derived from the Gantt |
 | Layout drawing | PRODUCES from a declaration | plot plan, 3D; indoor pipes not drawn |
@@ -163,7 +166,7 @@ section 1 says so; a group can only declare placeholders).
 | 4 | A heat-bound dryer (74 % wet granules) is announced, not refused, and the plan's drying time does not move | a wrong plant that passes with exit 0 | a `solidDryer` option to REFUSE below a declared outlet moisture (one key, the announcement already exists) -- engine, hours | NOT fixed; documented |
 | 5 | The `0/` feed files do not follow the formula: twelve files to rewrite by hand in kmol/h for a dose change | an hour of error-prone arithmetic per iteration | a per-tablet `formulation { ... }` table from which `choupo-init0` writes the inlets -- a tool slice, a general-day | NOT fixed; the student path gives the formula and the measured numbers |
 | 6 | `runCase` refuses to overwrite a log (exit 1) and the terminal shows no answers | confusion at the second run | prose (student path, README) | documented |
-| 7 | Neither base case declares `breakEven`, `sensitivity` (donepezil) or `workingCapitalMethods` | the student must know the grammar to get the deliverables | add the three blocks to both postDicts: new KPI rows appended, the goldens re-recorded with the list -- the commander's call | NOT done (no golden re-record tonight); the grammar is in the student path |
+| 7 | Neither base case declared `breakEven`, `sensitivity` (donepezil) or `workingCapitalMethods` | the student must know the grammar to get the deliverables | add the three blocks to both postDicts; new KPI rows appended | DONE on the commander's decision (same night): both postDicts declare them, goldens append-recorded (donepezil01 +25 rows, apalutamide01 +10), no existing row moved |
 | 8 | The 0-pipe `pipeRack` default announcement on a plant with no outdoor pipe | noise that reads as a defect | one condition in the layout announcement | NOT fixed |
 | 9 | The browser draws no clean-utilities, cleaning, break-even or WC-methods section | half the HVAC/water story is log-only in the GUI | GUI sections reading published KPIs and sheets -- a general-day | NOT fixed |
 | 10 | `machineUtilisation.ts` infers the machine kind from keys; `kind` and `announceAbove` not published on the sheet | fragile table | engine: two sheet values (C208 follow-up) | NOT fixed |
@@ -188,6 +191,17 @@ section 1 says so; a group can only declare placeholders).
    `docs/ai/packs/batch-plant.md` on adapting a tablet case and the traps
    measured, and a paragraph in the donepezil01 README on the break-even,
    the sensitivity and the price per kg.
+5. On the commander's decision, both base cases now DECLARE `breakEven {}`
+   and `workingCapitalMethods { ... }` (and donepezil01 a `sensitivity {}`
+   on the price, the discount rate and the labour rate), each end an
+   author-set assumption with `source`/`reason`; the goldens were
+   append-recorded (`bin/runTests --record-append`): donepezil01 +25 rows,
+   apalutamide01 +10, no existing row moved (the base NPVs are unchanged,
+   -18 672 735 and 128 116 741 EUR).  One lesson from doing it: `relative`
+   sensitivity ends are DEVIATIONS from the base (`( -0.3 0.3 )` is +-30 %),
+   not multipliers -- the first draft wrote `( 0.7 1.3 )` and got 1.7x and
+   2.3x the price; the engine's own table header ("`relative` ends are
+   fractions of the base value") reads either way.
 
 Validation: `bin/runTests --scope` on donepezil01, apalutamide01 and
 economics04: PASS 7 / FAIL 0 (no golden moved; the fixes change no printed

@@ -76,8 +76,9 @@ and `log.choupoSolve` are run outputs: regenerated whole, never edit them).
 | OPEX (COM_d: labour, raw materials, utilities) | log `Economic Appraisal`; crew declared and Turton's correlation beside it | produced |
 | NPV, IRR, payback, cash flow | log; `reports/economics/cashFlow.csv` and `.ods` | produced |
 | Working capital | built up (stock, receivables, cash, payables) in the log and `reports/economics/workingCapital.csv`; three methods side by side with `workingCapitalMethods {}` | produced |
-| Sensitivity | `economics { sensitivity { ... } }` -> log table + `reports/economics/sensitivity.csv` + GUI tornado | produced when DECLARED (apalutamide01 declares one; donepezil01 does not -- add it, section 3.4) |
-| Break-even | `economics { breakEven {} }` -> log `BREAK-EVEN (two answers ...)` | produced when DECLARED (neither base case declares it; it refused on both until 2026-11-08 -- fixed) |
+| Sensitivity | `economics { sensitivity { ... } }` -> log `Economic sensitivity (one input at a time)` + `reports/economics/sensitivity.csv` + GUI *Economic sensitivity (tornado)* | produced; BOTH base cases declare one since 2026-11-08 (donepezil01: price +-30 %, discount rate 8-15 %, labour rate +-20 %; apalutamide01: the price at 2 vs 4 competitors) |
+| Break-even | `economics { breakEven {} }` -> log `BREAK-EVEN (two answers, two questions)` (log only, not drawn by the GUI) | produced; both base cases declare it since 2026-11-08 (donepezil01: x = 1.19, s = 1.28; apalutamide01: x = 0.40, s = 0.43) |
+| Working capital by three methods | `economics { workingCapitalMethods { ... } }` -> log `WORKING CAPITAL BY THREE METHODS` (log only) | produced; both base cases declare it since 2026-11-08 (donepezil01 spread x1.40, apalutamide01 x3.02 between the three) |
 | Staffing | `operatingCrew { areas (...) }` priced; Turton's N_OL printed as a comparison | half: the crew is YOUR table; nothing derives it from the Gantt |
 | Layout | `system/layoutDict`: plot plan (roads, gates, buildings), the GMP interior with equipment in rooms; GUI 3D and plan | produced; the drawing is yours to declare, the engine checks and draws it |
 | Market forecast, patent window | EduTools *Patent expiry and generic entry* and *Demand forecast* (GUI, Methods); `royalty { ... expiry }` in the economics | half: the EduTools give a volume ramp and a price; the economics takes ONE price |
@@ -159,7 +160,7 @@ kg/h.  Then delete the estimate files and run `bin/choupo-init0` again.
 | Prices of the machines and the building | `costing { quotes ( ... ) }` (`value` at `referenceSize`, six-tenths scaling declared) | unchanged placeholders |
 | HVAC price per m3/h, air changes per grade | `quotes` entries `hvacGrade D/CNC`; `cleanUtilities { hvac { changesPerHour } }` | unchanged |
 | Crew | `economics { operatingCrew { areas ( ... ) } }` | unchanged |
-| Break-even, WC methods, sensitivity | `economics { breakEven {}  workingCapitalMethods { fractionOfSales 0.15; fractionOfFixedCapital 0.15; source; reason; }  sensitivity { price.packagedTablets { relative ( 0.7 1.3 ); } discountRate { absolute ( 0.08 0.15 ); } labourRate { relative ( 0.8 1.2 ); } } }` | added |
+| Break-even, WC methods, sensitivity | `economics { breakEven {}  workingCapitalMethods { fractionOfSales 0.15; fractionOfFixedCapital 0.15; source; reason; }  sensitivity { price.packagedTablets { relative ( -0.3 0.3 ); } discountRate { absolute ( 0.08 0.15 ); } labourRate { relative ( -0.2 0.2 ); } } }` | added |
 
 **What happened on the run with the 600 kg lot and the OLD ratings:** four
 machines refused, each with its remedy -- `granulator FAILED: the machine
@@ -235,8 +236,7 @@ Metformin 500 mg, wet granulation, 600 kg lots, 100 M tablets/yr at 0.03 EUR:
 lot 592 kg of product, 105 lots, T_L 4.25 h (fluid bed) / 11 h (packaging),
 trains 22 % / 44 % occupied; FCI 24.1 M EUR; revenue 2.96 M EUR/yr against
 COM_d 14.9 M EUR/yr; NPV -80 M EUR; operating break-even at x = 7.15 of
-nameplate; tornado: labour rate (swing 19.7 M), discount rate (14.7 M), price
-(8.4 M).  The lesson is the apalutamide README's: a dedicated GMP line does
+nameplate; the tornado (price, discount rate, labour rate) as declared in 3.4 -- `relative` ends are DEVIATIONS from the base (-0.3 0.3 is +-30 %), not multipliers; the probe first wrote 0.7 1.3 and got 1.7x and 2.3x the price.  The lesson is the apalutamide README's: a dedicated GMP line does
 not pay on a commodity generic; the base case's donepezil at 0.10 EUR gives
 NPV -18.7 M and breaks even (NPV) at 1.28 x nameplate.
 
