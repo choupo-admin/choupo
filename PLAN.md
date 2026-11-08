@@ -67,8 +67,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 Retaken after each full sweep from `build/suiteJobTimes.tsv` (real seconds per job;
 `suiteTimings.csv` holds gaps between result lines).  A case that grew is a defect.
-List of 2026-11-08 (main f468736fd, parallel): swro01_campoDalias 98, check_schema_coverage 68, nanofiltran_geraldesAlves2008 62, greenAmmonia03 50, gen_sdem_validation 37, check_inlet_resolution 31, apalutamide01 28, check_plant_layout 27, checkHeaderSelfContained 26, dspmde01 24.  Previous list (C235 sweep, 11-07): swro01_campoDalias 284,
-ctrl17 210, ctrl19 113, greenAmmonia03_basicDesign 74, ctrl08 58,
+List of 2026-11-08 evening (slice-2 tree 2fe509e2f, 862/0 in 27 min): gate-selftest 238, gui-tests 188, swro01_campoDalias 106, nanofiltran_geraldesAlves2008 76, design-sheet-gate 70, greenAmmonia03_basicDesign 67, batch-plan-gate 62, schema-coverage-gate 59, gates-judge-tracked-gate 55, wasm-dialect-gate 51. Earlier list of 2026-11-08 (main f468736fd, parallel): swro01_campoDalias 98, check_schema_coverage 68, nanofiltran_geraldesAlves2008 62, greenAmmonia03 50, gen_sdem_validation 37, check_inlet_resolution 31, ctrl17 210, ctrl19 113, greenAmmonia03_basicDesign 74, ctrl08 58,
 greenAmmoniaPEQ_baseCase 54, ctrl06 51, nanofiltran_geraldesAlves2008 50,
 apalutamide01_tablets 42; slowest gate check_schema_coverage 77.  Found and fixed so far: aceticAcid02_plant 46.5 s (2026-10-14) -> 391 s (2026-11-07,
 main `5c9c936af`, one run under load): gamma(T, x) re-evaluated on every pass of the
@@ -79,7 +78,7 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
-| running | C245 kernel numerical audit: slices 1, 4, part of 11 and the adsorber hot spots LANDED (6bceec76d); next slices 2-3 (callers declare bounds, residual purity), 5, 6 | C245 |
+| running | C245 kernel numerical audit: slices 1, 2, 4, part of 11 and the adsorber hot spots LANDED (6bceec76d; slice 2 in the merge after 43c60cd15: tear Newton, simultaneous MESH and CSTR declare bounds, infeasible trials instead of clips; 17 closure rows re-recorded); next slice 3 (residual purity: aqueous columns and reactive phase 1 back on the bounded Newton), then 5, 6 | C245 |
 | done | C241 LANDED (bab4dff30): BRAIN.md with its generator and `check_brain_fresh` (brain-fresh-gate), `@BRAIN.md` import, CLAUDE.md 4379 -> 1068 lines by relocation to `docs/architecture/settled-contracts.md` (119 units verbatim); the second cut (sections 0/2/10) is the architect's own editing, later | C241 |
 | done | C236 LANDED (14854376b): dynamic writers default `flushEach false` (ctrl17 141 -> 0.4 s, byte-identical), the golden checker reads equipment/layout blocks once per case (swro01 292 -> 93 s); the Saturday sweep covers its shared path | C236 |
 | running | C239 (2026-11-08): S1+S3 -- column08 (16 bar) and column20 (7 bar) on the SRK vapour, golden re-recorded with reasons; beside it the Klemola anchors on column14 (first column held to a measured plant) and its entry into the validation subset; then S2 process05/recycle02, S4 column05 dimer, S5 measure the 1-atm family | C239 |
@@ -95,7 +94,8 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
-| todo | C246 (Vitor, 11-08): the solver knobs a case may turn -- document the solverDict grammar that exists (recycle keys, per-type blocks), `recycleRelaxation` + `recycleSolver directSubstitution`, per-type Newton knobs (maxStep, line search) mapped on NDOptions and announced; a knob the engine does not read is refused. After C245 slice 3 | C246 |
+| todo | C247 (Vitor, 11-08): `stack-dispersion` EduTool -- Gaussian plume, Pasquill-Gifford classes (day/night, sun, wind), Briggs sigmas and plume rise, the least stack height under a declared limit, GEP downwash; four live figures; engine half reads a fired unit's flue gas. After C246 | C247 |
+| todo | C246 (Vitor, 11-08): the solver knobs a case may turn -- document the solverDict grammar that exists (recycle keys, per-type blocks), `recycleRelaxation` + `recycleSolver directSubstitution`, per-type Newton knobs (maxStep, line search) mapped on NDOptions and announced; a knob the engine does not read is refused; plus the `relaxation` EduTool (fixed-point, relaxation, Wegstein as adaptive relaxation, Newton line search, the step cap; engine half on `recycleRelaxation`). After C245 slice 3 | C246 |
 | running | C244: phase 1 LANDED (f468736fd, ten cases left tutorials/plant/, ladder flat under steady/reactors); phase 2 next: greenAmmonia03's content and the feasibility pair folded into PEQ | C244 |
 | todo | C243 (Vitor): the case declares its figures -- default one figure per control loop (SP/PV, MV on a second axis), a `plots ( ... )` block in controlDict honoured by the engine and drawn by the GUI, unknown series refused by name; ctrl22 has 20 columns on one plot today | C243 |
 | done | C234 LANDED in the Saturday batch (f468736fd): the engine publishes the problem table and classifies the case; the console line fixed. Browser check after `make wasm-gui` | C234 |

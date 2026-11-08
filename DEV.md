@@ -3221,6 +3221,45 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C247 (Vitor, 2026-11-08: "sabes que há um EduTool sobre projeto de chaminés? ... equações
+> gaussianas com coeficientes de dispersão e tabelas famosas em função das condições
+> meteorológicas, ser dia ou ser noite"): A STACK-DESIGN EDUTOOL.**  MEASURED the same
+> hour: there is NONE -- 76 tools in the registry, the safety ladder exists
+> (process-safety, overpressure, pool-fire, bund, plant-layout, gmp-layout) and nothing
+> touches atmospheric dispersion; "plume" appears only in the cooling-tower and pool-fire
+> prose.  So the question is read as a proposal, and it is accepted: the stack is the
+> one sized item of a fired unit that the layout page cannot place without it, and the
+> method is public-domain and self-contained.  DECISION: tool `stack-dispersion`, next
+> rung of the safety/environment ladder after `pool-fire`, theory chapter in the
+> theoryGuide.  THE SPINE: (1) the Gaussian plume for a continuous point source,
+> C(x,y,z) = Q/(2 pi u sigma_y sigma_z) exp(-y^2/2sigma_y^2) [exp(-(z-H)^2/2sigma_z^2) +
+> exp(-(z+H)^2/2sigma_z^2)], the reflection term derived, not asserted; (2) the
+> Pasquill-Gifford stability classes A-F read from a day/night, insolation and wind-speed
+> table (Pasquill 1961; Turner 1970 Workbook, US EPA, public domain) -- the "famous
+> table" he names, shown as the table and as a picker; (3) sigma_y(x), sigma_z(x) by
+> class, Briggs' rural and urban fits (Briggs 1973, Gifford 1976), drawn, with the
+> ORIGIN of each coefficient stated and the 100 m - 10 km window declared; (4) plume
+> rise: Briggs' buoyancy-flux formulae (F = g v_s d^2 (T_s - T_a)/(4 T_s), the two
+> regimes and the final rise), effective height H = h_s + delta h, momentum rise for a
+> cold jet; (5) the ground-level maximum and WHERE it falls, derived from dC/dx = 0 for
+> the class, and the DESIGN question inverted: the least stack height for which the
+> maximum GLC stays under a declared limit value, across the worst class of the
+> table; (6) the downwash rule (good-engineering-practice height = H_b + 1.5 L) as the
+> other constraint.  FOUR LIVE FIGURES: the class picker (day/night, sun, wind) that
+> recolours everything; the plume side view with the sigma envelopes and the reflected
+> image source; GLC along the axis with the maximum marked, a stack-height slider and
+> the limit line; the isopleth on a plan view with the fence, reusing the layout page's
+> drawing.  ENGINE HALF: a real fired unit's flue gas from a run (flow, T, composition
+> -> Q of SO2/NOx/CO2 and the buoyancy flux), read from the result and never
+> recomputed, so the exercise starts from Choupo's own plant; the dispersion itself is
+> the TOOL's arithmetic (as pool-fire does), declared on the page as such.  Debt
+> named up front: no terrain, no building wake beyond the GEP rule, no chemistry in the
+> plume, no averaging-time correction unless cited.  Sources: Turner 1970 (EPA AP-26),
+> Briggs 1969/1973, Pasquill 1961, Hanna, Briggs & Hosker 1982 (DOE/TIC-11223, public
+> domain); the limit values are the CASE's declared input, dated and cited, never
+> compiled into the tool (price-data doctrine, applied to a regulation).  One general,
+> Sonnet, after the C246 pair; every claim measured before the brief.
+
 > **C246 (Vitor, 2026-11-08: "ao contrário do OpenFOAM, não deixa o utilizador especificar
 > os coeficientes de sub-relaxação ... podia haver valores default e depois o user podia
 > fazer tinkering ... ou a sub-relaxação não é a metodologia mais adequada"): THE SOLVER
@@ -3255,6 +3294,57 @@ accepts today, and that is a policy call.
 > Gate: a solverDict knob that the engine does not read is refused (the C235 class "a
 > declared field the hot path did not honour"), and one witness case per knob.  One
 > general after C245 slice 3; the slice-2 contract is its prerequisite and is landing.
+> (5) AN EDUTOOL ON RELAXATION (Vitor, the same evening: "devia de haver um EduTool sobre a
+> questão da sub-relaxação onde tu explicas tudo o que disseste").  MEASURED: the Wegstein
+> lesson (gui/src/ui/methods/wegsteinLesson.ts, eight steps, a declared linear toy plus
+> the real engine on a recycle) and the tear-streams lesson exist; neither says the word
+> relaxation, and nothing explains WHEN a fixed factor is the right tool and when it is
+> not.  DECISION: a new tool `relaxation`, sibling of `wegstein` in the registry, theory
+> chapter in the theoryGuide (manuals are part of the unit).  THE SPINE: a recycle is a
+> fixed-point problem x = g(x); direct substitution converges when |g'| < 1 and crawls
+> or diverges otherwise; relaxation x+ = (1-w) x + w g(x) changes the slope to
+> 1 - w + w g', so a w < 1 tames a g' < -1 (the oscillating loop) and NO w rescues a
+> g' > 1 (the runaway loop) -- a slider on the lesson's toy shows both, with the
+> optimal w = 1/(1-g') for the linear case derived; Wegstein is that same formula with
+> w = 1 - q chosen per variable from the last two iterates (so its q is an adaptive
+> relaxation, the lesson states the identity and links to the Wegstein tool); Newton is
+> the limit where the whole slope is used, and its line search is the adaptive factor
+> on the merit function, which is why a FIXED factor is the wrong default for Newton
+> and a per-variable step CAP is the honest knob; last, the segregated CFD solvers the
+> students meet elsewhere (SIMPLE-type pressure-velocity coupling, OpenFOAM's
+> `relaxationFactors`) need a fixed factor because their inner problem is linearised
+> and segregated, and a sequential-modular flowsheet's tear loop is the same kind of
+> problem while a unit's Newton is not.  THE ENGINE HALF of the tool runs a real recycle
+> under `recycleSolver directSubstitution; recycleRelaxation w;` for three values of w
+> and plots the tear residual per pass, so it lands WITH item (2), never before (a page
+> must not teach a knob the engine lacks).  Every engine claim cited by file:line, every
+> symbol glossed, tests recompute the toy against the tool's own math.
+> READ BACK the same evening (Vitor: "no IST os meus alunos nunca ouviram falar disso"):
+> the Wegstein lesson DOES build from zero -- fixed point, direct substitution, the loop
+> gain, the secant, q -- and drives a cobweb toy; but its steps 2 and 5 are written to
+> answer "the owner's standing doubt" about a mixed tear vector, i.e. for Vitor, not for
+> a student meeting the word for the first time; it never says where the name comes
+> from (Wegstein, Comm. ACM 1 (1958) 9) nor that every sequential-modular simulator
+> runs it by default; and it has no rung below it.  So the `relaxation` tool is the
+> ENTRY page of the numerics path ("why a recycle must be iterated, and the three ways
+> to do it"), the Wegstein page is its second rung and gets the citation, a one-line
+> "where you meet it", and steps 2 and 5 retitled for a student (the mixed-vector
+> answer stays, as the thing a student would ask next, not as the owner's doubt).
+> AND THE INTUITION IS VISUAL (Vitor: "esquemas visuais com gráficos manobráveis para
+> eles terem uma boa intuição").  MEASURED: WegsteinCobweb.tsx already draws the toy as
+> a cobweb (y = G(x) against the diagonal, the staircase of iterates).  The relaxation
+> tool gets FOUR live figures, each driven by a slider or a drag, none a static picture:
+> (i) the cobweb with a DRAGGABLE slope of G (the loop gain a from -2 to +2) and a
+> relaxation slider w, so the student sees the staircase spiral in, oscillate, or run
+> away, and the relaxed effective slope 1 - w + w a drawn as a second line; (ii) the
+> error per pass on a log axis for direct substitution, relaxed, Wegstein and Newton
+> side by side, redrawn as the sliders move; (iii) the map of w against a: the band
+> where |1 - w + w a| < 1, the optimal w = 1/(1 - a) as a curve, the point the sliders
+> set, and the region a > 1 shaded "no w converges"; (iv) the engine half: the tear
+> residual per pass of a real recycle case for three w, read from the run, not
+> recomputed.  Every figure keeps the Wegstein tool's conventions (same toy, same
+> colours per method, same symbols as the glossary), and the Wegstein page's cobweb
+> gains the same draggable slope so the two pages feel like one instrument.
 
 > **C245 (Vitor, 2026-11-08, after the Tc step was found the slow way: "E se revisses o
 > kernel todo primeiro ... A lógica matemática pristine e as boas práticas numéricas podem
@@ -3283,6 +3373,42 @@ accepts today, and that is a policy call.
 > recycle loops are a MEASURED candidate only (independent SCCs, ThermoPackage cache
 > safety, no threads in the browser).  NEXT: slices 2-3 (callers declare bounds and drop
 > their clamps; residual purity), then 5 (vapour-pressure continuity) and 6 (flash).
+> SLICE 2 LANDED (2026-11-08, two generals plus one fix-up, validated as ONE tree: scope
+> 124/0, --gui 45/0, --fast 77/0, then the full sweep -- see the merge commit).  Tear
+> Newton: Armijo, typX = the tear scale, lower bounds (flows 0, T 0.1 x seed, P a floor),
+> a trial with a negative flow or P THROWS InfeasibleTrial instead of being clipped (the
+> clip stays only on the final, announced unpack), a unit exception during a trial sweep
+> becomes an infeasible trial (the final sweep's errors stay visible), and the quiet
+> sweep REJECTS a negative trial pressure instead of substituting the inlet's (H14-H16
+> closed; check_negative_pressure arm (c): a loop whose drop exceeds the inlet P is
+> refused by name under Newton and Wegstein, never reported on P = P_in); Wegstein and
+> the dominant-eigenvalue aid treat an infeasible extrapolation as rejected and fall
+> back to substitution, counted and announced.  Iteration counts unchanged on all 22
+> tear cases; 17 golden rows moved in 10 cases, ALL closure residuals (~1e-6 kW gaps,
+> W-scale boundary residuals on MW plants), re-recorded with the reason per row: the FD
+> step is now sqrt(eps) x typX, so each tear stops at a different point inside
+> recycleTol.  Simultaneous MESH: Armijo, x in [0,1], T in [0.5 Tsat,min, 1.2 Tsat,max],
+> typX 0.1 / 300 K / the feed for extents; gamma x <= 0 in the reactive row throws
+> instead of the 1e-300 clamp.  CSTR multi-reaction: Armijo, typX = feed, a negative
+> outlet flow throws.  Gate arm (f): a 2x2 residual with x1 = 1e-10 inside ln x1, the
+> FD step under typX matches the analytic one to 7.5e-9 (0.498 without typX).  column08
+> converges in the simultaneous phase too, column05 17 -> 14 iterations, cstr05 25 -> 0
+> floor-damped steps, acetone06 18 with none (check_distillation_seed (c) now reads
+> zero as zero).  No golden row moved on the column side.  THREE DEBTS, recorded rather
+> than hidden: (a) the aqueous-chemistry columns (stripper01/02, column13) KEEP the
+> legacy Newton, announced -- stripper02 stalls at |F| = 1.1e-2 under the monotone
+> Armijo search, hypothesis rank 3e (the K surface steps across the two-phase band),
+> re-opt-in after slice 3; (b) PHASE 1 of a reactive column (reaction OFF) keeps the
+> legacy Newton, announced -- the unfed products sit exactly on x = 0 and the bounded
+> search stalled against that face (column05 |F| = 1.0 after 37 iterations with x_water
+> at the -0.05 guard), which the simultaneous model hid because phase 2 recovered, and
+> fullMESH and the kinetic probe exposed (check_reactive_mesh (h), check_degenerate_limits
+> A4); the right fix is 1 - sum x as a linear constraint INSIDE the line search, and the
+> 0.05 composition guard is empirical until then (1e-9 and 1e-6 turned the face into a
+> wall: column05 17 -> 285 iterations); (c) column19/20's CMO seed phase 8 -> 16
+> iterations under Armijo.  Also found: Flowsheet.cpp moved 130 lines, 24 lesson
+> citations re-pointed by the tool and a dozen more by hand, and the ChemicalPlantTutorial
+> design-sheet fixture moved in its last digits (0.074074826 -> 0.074074825 kmol/s).
 
 > **C244 (Vitor, 2026-11-07: "não quero que tenhas tantas variações dos projetos base!!
 > Isso fica uma grande salganhada!"): ONE REFERENCE PLANT PER PROCESS; THE VARIANTS
