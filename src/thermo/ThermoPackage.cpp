@@ -1212,7 +1212,23 @@ sVector ThermoPackage::stageK(scalar T, scalar P, const sVector& zStage,
             const scalar up = incipient
                 ? r.pEqAtm[i]
                 : (i < r.yApp.size() ? r.yApp[i] : 0.0);
-            K[i] = (up > 0.0) ? std::numeric_limits<scalar>::infinity() : 0.0;
+            //  A volatile exhausted from the liquid has K -> infinity; the
+            //  stage K is a FINITE cap, announced once (audit H1, C245
+            //  slice 3: an inf poisons a finite-difference Jacobian row).
+            constexpr scalar kCap = 1.0e12;
+            if (up > 0.0)
+            {
+                static bool capAnnounced = false;
+                if (!capAnnounced)
+                {
+                    capAnnounced = true;
+                    std::cout << "  [stageK] a component absent from the"
+                                 " liquid but present in the vapour has no"
+                                 " finite K; priced at the cap K = 1e12"
+                                 " (announced once).\n";
+                }
+            }
+            K[i] = (up > 0.0) ? kCap : 0.0;
             continue;
         }
         K[i] = incipient

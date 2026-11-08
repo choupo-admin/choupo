@@ -83,6 +83,25 @@ Description
 
     The items are `ratedMachine`-like in spirit: `notCostedBecause`,
     `notPlacedBecause`, units on every value, a `basis`.
+
+    SEVERAL PRODUCTS (2026-11-08, DEV.md 4c C249 d).  Over a MULTIPRODUCT plan:
+      HVAC    is ROOM-based (volume x air changes, grade, outdoor design
+              temperatures): it does not depend on the product mix, so it is
+              computed ONCE and the plan is not read.
+      WATER   per lot of product i:  V_i = SUM_uses ( stream: kg/h x B_i / r_P
+              / rho ; or the declared volumePerLot ) + the plan's lot cleans
+              (the declared volume per instance, the same for every product);
+              each use is drawn on EVERY lot bar of its `stage` in the plan's
+              Gantt, at that product's own cycle (drawTime must fit it);
+              the plan's changeover cleans draw over the changeover bars and
+              the product-changeover bars of the train.
+              V_year = SUM_i N_i V_i + the changeover cleans of the year (the
+              plan's own count, both kinds); the peak is the largest overlap
+              of the draws in the Gantt (each product's FIRST campaign and
+              every changeover, trains started together: conservative).
+              Published: V_lot (the largest product's), V_lot_<product>,
+              lotsPerYear (all products), lotsPerYear_<product>, V_year.
+    The pass ANNOUNCES that it drew water over N products.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

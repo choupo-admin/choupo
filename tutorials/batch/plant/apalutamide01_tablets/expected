@@ -1489,3 +1489,13 @@ kpi     cleaning               train_sprayDrying_water_m3_campaign 7.6          
 kpi     cleaning               water_m3_year    110.5            1e-4
 equipment purifiedWater/generator values.V_cleaning_changeover_year 35.5             1e-4
 equipment purifiedWater/generator values.V_cleaning_lot 3                1e-4
+kpi     economics              WCm_fixedCapital 3567741.84374    1e-4
+kpi     economics              WCm_itemised     10781116.2737    1e-4
+kpi     economics              WCm_sales        8399722.92       1e-4
+kpi     economics              WCm_spread       7213374.42995    1e-4
+kpi     economics              WCm_used         10781116.2737    1e-4
+kpi     economics              breakEven_npv_fraction 0.429432559989   1e-4
+kpi     economics              breakEven_operating_fixed 18803452.7875    1e-4
+kpi     economics              breakEven_operating_fraction 0.395558234297   1e-4
+kpi     economics              breakEven_operating_sales 55998152.8       1e-4
+kpi     economics              breakEven_operating_variable 8461655.87713    1e-4

@@ -68,8 +68,10 @@ the run's own stream masses (never read back from the item it is compared to):
       air of a grade with NO `hvacGrade` quote (refuses by name, the total
       INCOMPLETE), an `hvacGrade` quote for a grade the building does not
       have, and one that declares `value` instead of `valuePerSupplyAir`; a
-      `cleaning` entry for a unit in no stage, one with no `effluentFraction`,
-      and one beside a multiproduct plan; and, with no `cleaning` declared, the
+      `cleaning` entry for a unit in no stage, one with no `effluentFraction`;
+      the SEVERAL-PRODUCTS arm on donepezil02_two_strengths (C249 d): the
+      fit per product, the cleaning per product, the water per product, a product
+      that does not fit named, an itemMassByProduct for no product; and, with no `cleaning` declared, the
       once-announced "cleaning water is not counted" and a run whose purified-
       water items carry no cleaning keys.
 
@@ -109,12 +111,14 @@ BIN = ROOT / "choupoSolve"
 _CACHE = os.environ.get("CHOUPO_SUITE_OUTPUTS")
 ENV = dict(os.environ, CHOUPO_HOME=str(ROOT))
 CASES = [ROOT / "tutorials" / "batch" / "plant" / n
-         for n in ("apalutamide01_tablets", "donepezil01_tablets")]
+         for n in ("apalutamide01_tablets", "donepezil01_tablets",
+                   "donepezil02_two_strengths")]
 REL = 1e-6
 
 fails = []
 counts = {"machines": 0, "rooms": 0, "grades": 0, "uses": 0, "refusals": 0,
-          "hvacCosts": 0, "cleaning": 0}
+          "hvacCosts": 0, "cleaning": 0, "productFits": 0, "productCleans": 0,
+          "productWater": 0}
 
 
 def fail(msg):
@@ -293,6 +297,29 @@ def arm_case(case):
     for s in plan["stages"]:
         for u in s["units"]:
             stages[u] = s
+    # SEVERAL PRODUCTS (DEV.md 4c C249 d): one view per product -- its lot (its
+    # own, or the plan's), its lot hours and its stage overrides, read from the
+    # declaration; a single-product plan is one view named "".
+    multi = "products" in plan
+    plist = [{"name": q["product"][0], "d": q} for q in plan["products"]] if multi \
+        else [{"name": "", "d": {}}]
+    for q in plist:
+        lt = q["d"]["lot"] if "lot" in q["d"] else plan["lot"]
+        q["lot_hours"] = val(lt, "mass") / rates[lt["stream"][0]]
+        q["over"] = {o["stage"][0]: o for o in q["d"].get("stages", [])} \
+            if isinstance(q["d"].get("stages", []), list) else {}
+    lot_hours = plist[0]["lot_hours"]
+
+    def im(q, r):
+        # a strength with its own tablet weight (`itemMassByProduct`), else `itemMass`
+        ib = r.get("itemMassByProduct")
+        if multi and isinstance(ib, dict) and q["name"] in ib:
+            return val(ib, q["name"])
+        return val(r, "itemMass")
+
+    def pval(q, st, key):
+        o = q["over"].get(st["stage"][0])
+        return val(o, key) if o is not None and key in o else val(st, key)
     items = {}
     for line in out.splitlines():
         m = re.search(r'"item": "([^"]*)"', line)
@@ -315,27 +342,39 @@ def arm_case(case):
         if it is None:
             fail("%s %s: no ratedMachine item published" % (case.name, u))
             continue
-        if kind == "batchVolume":
-            m_lot = rates[st["holds"][0]] * lot_hours
-            load = m_lot / val(st, "bulkDensity")
-            cap = n * val(r, "nominalVolume") * float(r["maxFill"][0])
-        else:
-            m_unit = sum(rates[s] for s in ins[u]) * lot_hours
-            t_op = val(st, "operatingTime")
-            if kind == "massRate":
-                load = m_unit / t_op
-                cap = n * val(r, "capacity")
-            elif kind == "tabletPress":
-                load = m_unit / val(r, "itemMass") / t_op
-                cap = (n * float(r["stations"][0]) * float(r["turretSpeed"][0]) * 60.0
-                       * float(r["compressionsPerRevolution"][0]))
+        utils, loads = {}, {}
+        for q in plist:
+            lh = q["lot_hours"]
+            if kind == "batchVolume":
+                m_lot = rates[st["holds"][0]] * lh
+                load = m_lot / pval(q, st, "bulkDensity")
+                cap = n * val(r, "nominalVolume") * float(r["maxFill"][0])
             else:
-                load = m_unit / val(r, "itemMass") / t_op / float(r["itemsPerPack"][0])
-                cap = n * float(r["packsPerMinute"][0]) * 60.0
-        need("%s %s utilisation" % (case.name, u), it["utilisation"], load / cap)
+                m_unit = sum(rates[s] for s in ins[u]) * lh
+                t_op = pval(q, st, "operatingTime")
+                if kind == "massRate":
+                    load = m_unit / t_op
+                    cap = n * val(r, "capacity")
+                elif kind == "tabletPress":
+                    load = m_unit / im(q, r) / t_op
+                    cap = (n * float(r["stations"][0]) * float(r["turretSpeed"][0]) * 60.0
+                           * float(r["compressionsPerRevolution"][0]))
+                else:
+                    load = m_unit / im(q, r) / t_op / float(r["itemsPerPack"][0])
+                    cap = n * float(r["packsPerMinute"][0]) * 60.0
+            utils[q["name"]] = load / cap
+            loads[q["name"]] = load
         per = cap / n
+        need("%s %s utilisation" % (case.name, u), it["utilisation"], max(utils.values()))
         need("%s %s machinesNeeded" % (case.name, u), it["machinesNeeded"],
-             max(1, math.ceil(load / per - 1e-9)))
+             max(max(1, math.ceil(l / per - 1e-9)) for l in loads.values()))
+        if multi:
+            for pn in utils:
+                need("%s %s utilisation_%s" % (case.name, u, pn),
+                     it["utilisation_" + pn], utils[pn])
+                need("%s %s load_%s" % (case.name, u, pn), it["load_" + pn], loads[pn])
+            need("%s %s productsChecked" % (case.name, u), it["productsChecked"], len(plist))
+            counts["productFits"] += len(plist)
         counts["machines"] += 1
 
     # (b) HVAC ----------------------------------------------------------
@@ -412,21 +451,34 @@ def arm_case(case):
     # (c) water ---------------------------------------------------------
     w = post["cleanUtilities"]["purifiedWater"]
     rhow = val(w["fluid"], "density")
-    gantt = [(g["stage"], g["start"], g["end"]) for g in js["batchPlan"]["gantt"]
+    gantt = [(g["stage"], g["start"], g["end"], g.get("product", "")) for g in js["batchPlan"]["gantt"]
              if g.get("lot", 0) != 0]
-    changeover_bars = {g["train"]: (g["start"], g["end"]) for g in js["batchPlan"]["gantt"]
-                       if g["stage"] == "changeover"}
+    # the changeover bars of a train: the single plan's one bar kind; several
+    # products add the product-changeover bars (a 0 h clean draws nothing)
+    changeover_bars = {}
+    for g in js["batchPlan"]["gantt"]:
+        if g["stage"] == "changeover" or (multi and g["stage"] == "productChangeover"):
+            if g["end"] > g["start"]:
+                changeover_bars.setdefault(g["train"], []).append((g["start"], g["end"]))
+    lh_of = {q["name"]: q["lot_hours"] for q in plist}
     draws, Vlot = [], 0.0
+    Vlot_p = {q["name"]: 0.0 for q in plist}
     for u in w["uses"]:
+        dt = val(u, "drawTime")
+        for q in plist:
+            Vq = (rates[u["stream"][0]] * lh_of[q["name"]] / rhow if "stream" in u
+                  else val(u, "volumePerLot"))
+            Vlot_p[q["name"]] += Vq
         V = (rates[u["stream"][0]] * lot_hours / rhow if "stream" in u
              else val(u, "volumePerLot"))
         Vlot += V
-        dt = val(u, "drawTime")
-        for (stg, s0, s1) in gantt:
+        for (stg, s0, s1, pg) in gantt:
             if stg != u["stage"][0]:
                 continue
+            Vg = (rates[u["stream"][0]] * lh_of[pg] / rhow if "stream" in u
+                  else val(u, "volumePerLot")) if multi else V
             st0 = s0 if u["when"][0] == "start" else s1 - dt
-            draws.append((st0, st0 + dt, V / dt))
+            draws.append((st0, st0 + dt, Vg / dt))
         counts["uses"] += 1
     # (c2) the plan's cleaning, recomputed -------------------------------
     VcleanChg = 0.0
@@ -438,6 +490,11 @@ def arm_case(case):
             stage_of[u_] = st_
     stage_train = {st_["stage"][0]: st_["train"][0] for st_ in plan["stages"]}
     lots_ = js["batchPlan"]["summary"]["lotsPerYear"]
+    # several products: each product's lots and its campaigns on each train
+    # (the plan's own counts; arm (h) of check_batch_plan recomputes them)
+    lots_of = {x["name"]: x["lotsPerYear"] for x in js["batchPlan"].get("products", [])}
+    camp_of = {(x["product"], x["train"]): x["campaigns"]
+               for x in js["batchPlan"].get("productTrains", [])}
     kc = None
     mkc = re.search(r'"cleaning": (\{[^}]*\})', out)
     if mkc:
@@ -448,6 +505,7 @@ def arm_case(case):
         fail("%s: kpis.cleaning is published with no cleaning declared" % case.name)
     totC = totW = totE = 0.0
     perTrain = {}
+    perProd = {}
     for c in cl:
         unit = c["unit"][0]
         st_ = stage_of[unit]
@@ -458,10 +516,34 @@ def arm_case(case):
         fr = float(c["effluentFraction"][0])
         camp = trains_js[tn]["campaigns"]
         nc = min(int(trains_js[tn]["lotsPerCampaign"]), lots_)
-        cleansY = lots_ * nip + camp * nip * nop
-        waterY = lots_ * nip * wl + camp * nip * nop * wc
         cleansC = nc * nip + nip * nop
         waterC = nc * nip * wl + nip * nop * wc
+        if multi:
+            # per product i: N_i N_ip lot cleans; (c_i - 1) campaign changeovers and
+            # ONE product changeover (a lone product: c_i changeovers) of N_ip N_op
+            cleansY = waterY = chgCleans = 0.0
+            several = len(plist) >= 2
+            for q in plist:
+                pn = q["name"]
+                cl_lot = lots_of[pn] * nip
+                cl_chg = (camp_of[(pn, tn)] - 1 + (0 if several else 1)) * nip * nop \
+                    + (nip * nop if several else 0)
+                cy = cl_lot + cl_chg
+                wy = cl_lot * wl + cl_chg * wc
+                if kc is not None:
+                    need("%s cleaning %s %s cleans_year" % (case.name, unit, pn),
+                         kc["%s_%s_cleans_year" % (unit, pn)], cy)
+                    need("%s cleaning %s %s water_m3_year" % (case.name, unit, pn),
+                         kc["%s_%s_water_m3_year" % (unit, pn)], wy)
+                    need("%s cleaning %s %s effluent_m3_year" % (case.name, unit, pn),
+                         kc["%s_%s_effluent_m3_year" % (unit, pn)], fr * wy)
+                    pk = perProd.setdefault(pn, [0.0, 0.0, 0.0])
+                    pk[0] += cy; pk[1] += wy; pk[2] += fr * wy
+                cleansY += cy; waterY += wy; chgCleans += cl_chg
+                counts["productCleans"] += 1
+        else:
+            cleansY = lots_ * nip + camp * nip * nop
+            waterY = lots_ * nip * wl + camp * nip * nop * wc
         if kc is not None:
             need("%s cleaning %s cleans_year" % (case.name, unit), kc[unit + "_cleans_year"], cleansY)
             need("%s cleaning %s water_m3_year" % (case.name, unit), kc[unit + "_water_m3_year"], waterY)
@@ -474,20 +556,28 @@ def arm_case(case):
         if Vl > 0:
             dt = val(st_, "cleanTime")
             Vlot += Vl
-            for (stg, s0, s1) in gantt:
+            for q in plist:
+                Vlot_p[q["name"]] += Vl
+            for (stg, s0, s1, pg) in gantt:
                 if stg == st_["stage"][0]:
-                    draws.append((s1 - dt, s1, Vl / dt))
+                    dtg = pval(next(q for q in plist if q["name"] == pg), st_, "cleanTime") \
+                        if multi else dt
+                    draws.append((s1 - dtg, s1, Vl / dtg))
         if wc > 0:
             Vc = wc * nip * nop
-            b0, b1 = changeover_bars[tn]
-            draws.append((b0, b1, Vc / (b1 - b0)))
-            VcleanChg += Vc * camp
+            for (b0, b1) in changeover_bars[tn]:
+                draws.append((b0, b1, Vc / (b1 - b0)))
+            VcleanChg += (wc * chgCleans) if multi else Vc * camp
         counts["cleaning"] += 1
     if kc is not None:
-        for tn, a in perTrain.items():
+        for tn, a in ({} if multi else perTrain).items():
             need("%s cleaning train %s cleans_campaign" % (case.name, tn), kc["train_%s_cleans_campaign" % tn], a[0])
             need("%s cleaning train %s water_campaign" % (case.name, tn), kc["train_%s_water_m3_campaign" % tn], a[1])
             need("%s cleaning train %s effluent_campaign" % (case.name, tn), kc["train_%s_effluent_m3_campaign" % tn], a[2])
+        for pn, a in perProd.items():
+            need("%s cleaning product %s cleans_year" % (case.name, pn), kc["product_%s_cleans_year" % pn], a[0])
+            need("%s cleaning product %s water_m3_year" % (case.name, pn), kc["product_%s_water_m3_year" % pn], a[1])
+            need("%s cleaning product %s effluent_m3_year" % (case.name, pn), kc["product_%s_effluent_m3_year" % pn], a[2])
         need("%s cleaning cleans_year" % case.name, kc["cleans_year"], totC)
         need("%s cleaning water_m3_year" % case.name, kc["water_m3_year"], totW)
         need("%s cleaning effluent_m3_year" % case.name, kc["effluent_m3_year"], totE)
@@ -500,8 +590,20 @@ def arm_case(case):
     if not g_it or not t_it:
         fail("%s: no purified-water items" % case.name)
     else:
-        need("%s V_lot" % case.name, g_it["V_lot"], Vlot)
-        need("%s V_year" % case.name, g_it["V_year"], Vlot * lots + VcleanChg)
+        if multi:
+            # per product: lots_i x (its streams over its own lot hours + the declared
+            # volumes + the lot cleans); the year sums them + the changeover cleans
+            need("%s V_lot (largest product)" % case.name, g_it["V_lot"], max(Vlot_p.values()))
+            need("%s lotsPerYear" % case.name, g_it["lotsPerYear"], sum(lots_of.values()))
+            for pn, V in Vlot_p.items():
+                need("%s V_lot_%s" % (case.name, pn), g_it["V_lot_" + pn], V)
+                need("%s lotsPerYear_%s" % (case.name, pn), g_it["lotsPerYear_" + pn], lots_of[pn])
+                counts["productWater"] += 1
+            need("%s V_year" % case.name, g_it["V_year"],
+                 sum(lots_of[pn] * V for pn, V in Vlot_p.items()) + VcleanChg)
+        else:
+            need("%s V_lot" % case.name, g_it["V_lot"], Vlot)
+            need("%s V_year" % case.name, g_it["V_year"], Vlot * lots + VcleanChg)
         if not cl and "V_cleaning_lot" in g_it:
             fail("%s: the generator carries cleaning keys with no cleaning declared" % case.name)
         need("%s draw_peak" % case.name, g_it["draw_peak"], peak)
@@ -615,6 +717,19 @@ def arm_refusals():
                     "is not a room of the building")
         expect_text("badStage", pd(lambda t: sub(t, "stage suspensionPreparation;  drawTime 0.5 h;", "stage nowhere;  drawTime 0.5 h;")),
                     "is not a stage of the batch plan")
+        # SEVERAL PRODUCTS (C249 d), on donepezil02: a product that does not fit is
+        # named; an itemMassByProduct entry for no product refuses by name.
+        case2 = CASES[2]
+
+        def expect_multi(name, edit, must):
+            out, err, rc = fixture(td, case2, name, {"postDict": edit})
+            counts["refusals"] += 1
+            if must not in out + err:
+                fail("multi refusal %s: expected %r; got tail:\n%s" % (name, must, (out + err)[-600:]))
+        expect_multi("multiNoFit", lambda t: sub(t, "strength5 0.14 g;", "strength5 0.001 g;"),
+                     "does NOT fit the lot of product 'strength5'")
+        expect_multi("multiNoProduct", lambda t: sub(t, "strength5 0.14 g;", "strength9 0.14 g;"),
+                     "names no product of the plan")
 
 
 def main():
@@ -650,9 +765,13 @@ def main():
           "`value` beside `valuePerSupplyAir`; a cleaning unit in no stage, with no effluent "
           "fraction, declared twice; the absent declaration announced once and publishing "
           "nothing).  NOT CHECKED: the vendor numbers and air-change rates (the case's own "
-          "assumptions), any machine physics (there is none)."
+          "assumptions), any machine physics (there is none).  SEVERAL PRODUCTS "
+          "(donepezil02_two_strengths, C249 d): %d product-fits recomputed from each "
+          "product's own lot and stage override, %d per-product cleaning rows and %d "
+          "per-product water lots recomputed."
           % (counts["machines"], counts["rooms"], counts["grades"], counts["uses"],
-             counts["hvacCosts"], counts["cleaning"], counts["refusals"]))
+             counts["hvacCosts"], counts["cleaning"], counts["refusals"],
+             counts["productFits"], counts["productCleans"], counts["productWater"]))
     return 0
 
 

@@ -1476,6 +1476,93 @@ WHAT IS A PLACEHOLDER. The high-shear granulator, the mill, the final blender, t
 \goldmore{1065}
 \end{tutgolden}
 
+\clearpage
+\tutentry{donepezil02\_two\_strengths}{tutorials/batch/plant/donepezil02\_two\_strengths}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (binderPrep) at (0.0,-0.0) {\textbf{binderPrep}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (granulator) at (2.9,-0.0) {\textbf{granulator}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (fbdAirHeater) at (0.0,-1.7) {\textbf{fbdAirHeater}\\[-1pt]{\tiny phaseChanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (fluidBedDryer) at (5.8,-0.0) {\textbf{fluidBedDryer}\\[-1pt]{\tiny solidDryer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mill) at (8.7,-0.0) {\textbf{mill}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (finalBlender) at (11.6,-0.0) {\textbf{finalBlender}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (tabletPress) at (14.5,-0.0) {\textbf{tabletPress}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (coatingSuspensionPrep) at (0.0,-3.4) {\textbf{coatingSuspensionPrep}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (coatingAirHeater) at (0.0,-5.1) {\textbf{coatingAirHeater}\\[-1pt]{\tiny phaseChanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (coatingPan) at (17.4,-0.0) {\textbf{coatingPan}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (coatingDryer) at (20.3,-0.0) {\textbf{coatingDryer}\\[-1pt]{\tiny solidDryer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (packagingLine) at (23.2,-0.0) {\textbf{packagingLine}\\[-1pt]{\tiny splitter}};
+  \draw[->] ($(binderPrep.west)+(-1.05,-0.17)$) -- ($(binderPrep.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {granWater};
+  \draw[->] ($(binderPrep.west)+(-1.05,0.17)$) -- ($(binderPrep.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {hpcFeed};
+  \draw[->] ($(granulator.west)+(-1.05,-0.51)$) -- ($(granulator.west)+(0,-0.51)$) node[at start, below, font=\tiny, anchor=north west] {apiFeed};
+  \draw[->] ($(granulator.west)+(-1.05,-0.17)$) -- ($(granulator.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {lactoseFeed};
+  \draw[->] ($(granulator.west)+(-1.05,0.17)$) -- ($(granulator.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {starchFeed};
+  \draw[->] ($(granulator.west)+(-1.05,0.51)$) -- ($(granulator.west)+(0,0.51)$) node[at start, above, font=\tiny, anchor=south west] {mccFeed};
+  \draw[->] (binderPrep) -- (granulator) node[midway, above, font=\tiny] {binderSolution};
+  \draw[->] ($(fbdAirHeater.west)+(-1.05,0.00)$) -- ($(fbdAirHeater.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {fbdAirIn};
+  \draw[->] (granulator) -- (fluidBedDryer) node[midway, above, font=\tiny] {wetMass};
+  \draw[->] (fbdAirHeater) -- (fluidBedDryer) node[midway, above, font=\tiny] {fbdAir};
+  \draw[->] (fluidBedDryer) -- (mill) node[midway, above, font=\tiny] {driedGranules};
+  \draw[->] (mill) -- (finalBlender) node[midway, above, font=\tiny] {milledGranules};
+  \draw[->] ($(finalBlender.west)+(-1.05,0.00)$) -- ($(finalBlender.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {mgstFeed};
+  \draw[->] (finalBlender) -- (tabletPress) node[midway, above, font=\tiny] {finalBlend};
+  \draw[->] ($(coatingSuspensionPrep.west)+(-1.05,-0.85)$) -- ($(coatingSuspensionPrep.west)+(0,-0.85)$) node[at start, below, font=\tiny, anchor=north west] {coatWater};
+  \draw[->] ($(coatingSuspensionPrep.west)+(-1.05,-0.51)$) -- ($(coatingSuspensionPrep.west)+(0,-0.51)$) node[at start, below, font=\tiny, anchor=north west] {hpmcFeed};
+  \draw[->] ($(coatingSuspensionPrep.west)+(-1.05,-0.17)$) -- ($(coatingSuspensionPrep.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {pegFeed};
+  \draw[->] ($(coatingSuspensionPrep.west)+(-1.05,0.17)$) -- ($(coatingSuspensionPrep.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {talcFeed};
+  \draw[->] ($(coatingSuspensionPrep.west)+(-1.05,0.51)$) -- ($(coatingSuspensionPrep.west)+(0,0.51)$) node[at start, above, font=\tiny, anchor=south west] {tio2Feed};
+  \draw[->] ($(coatingSuspensionPrep.west)+(-1.05,0.85)$) -- ($(coatingSuspensionPrep.west)+(0,0.85)$) node[at start, above, font=\tiny, anchor=south west] {feOxFeed};
+  \draw[->] ($(coatingAirHeater.west)+(-1.05,0.00)$) -- ($(coatingAirHeater.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {coatingAirIn};
+  \draw[->] (tabletPress) -- (coatingPan) node[midway, above, font=\tiny] {tabletCores};
+  \draw[->] (coatingSuspensionPrep) -- (coatingPan) node[midway, above, font=\tiny] {coatingSuspension};
+  \draw[->] (coatingPan) -- (coatingDryer) node[midway, above, font=\tiny] {wetCoatedTablets};
+  \draw[->] (coatingAirHeater) -- (coatingDryer) node[midway, above, font=\tiny] {coatingAir};
+  \draw[->] (coatingDryer) -- (packagingLine) node[midway, above, font=\tiny] {coatedTablets};
+  \draw[->] ($(fluidBedDryer.east)+(0,0.00)$) -- ($(fluidBedDryer.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {fbdExhaust};
+  \draw[->] ($(tabletPress.east)+(0,0.00)$) -- ($(tabletPress.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {tabletRejects};
+  \draw[->] ($(coatingDryer.east)+(0,0.00)$) -- ($(coatingDryer.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {coatingExhaust};
+  \draw[->] ($(packagingLine.east)+(0,0.00)$) -- ($(packagingLine.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {packagedTablets};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{DONEPEZIL HYDROCHLORIDE 10 mg AND 5 mg FILM-COATED TABLETS, TWO PRODUCTS in campaigns on one drug-product plant (the API is BOUGHT): WET GRANULATION -- the API, lactose monohydrate, maize starch and microcrystalline cellulose wetted in a high-shear granulator with an aqueous hydroxypropyl-cellulose binder solution and dried in a fluid bed (`solidDryer`, hot air, the starch's sorption isotherm) -- milling, a final blend with magnesium stearate, tableting with rejects, an aqueous hypromellose film coat dried off by hot air, and packaging. The excipients are the reference product's (ARICEPT SmPC section 6.1) and the 174.33 mg of lactose per 10 mg tablet is its section 2; every other quantity is an author-set assumption. The steady flowsheet is the material balance per unit of product (720 000 tablets/h pressed, the fluid bed's own drying rate, is a basis); a MULTIPRODUCT BATCH PLAN (system/postDict) sizes each step for a 300 kg lot of either strength, counts the lots a year for 90 million 10 mg and 60 million 5 mg tablets, runs them in single-product campaigns in a declared order with a direction-dependent clean between them (colour carry-over: white after yellow is the long one), and finds the pace of the granulation and tableting trains. Blending, granulation, milling, tableting and packaging are MASS-BALANCE PLACEHOLDERS (no equipment physics). No organic solvent, no spray drying, no hazardous area. The 5 mg tablet is the 10 mg tablet at half the weight (the same blend), so the one steady balance serves both.}
+\begin{tutnarrative}
+a drug-product plant: donepezil hydrochloride 10 mg AND 5 mg film-coated tablets, two products in campaigns on one plant (the steady balance below is both strengths': the 5 mg tablet is the 10 mg tablet at half the weight, README section 2). The API is BOUGHT; everything else is made here (DEV.md 4c C104, built on the stated defaults of C110). A BASE CASE: it runs, it is NOT optimised, and every number a group would change is a plain key, said to be an assumption where it is declared. The README is the narrative; this file is the topology.
+
+THE BASIS (README section 2): 720 000 tablets per hour PRESSED, the flowsheet basis, of a 280 mg core carrying 10 mg of donepezil hydrochloride and 174.33 mg of lactose monohydrate (the reference product's own figures), with a 3 \% film coat. THIS STEADY FLOWSHEET IS THE MATERIAL BALANCE PER UNIT OF PRODUCT (DEV.md 4c C99): the plant runs in BATCHES (lots released one by one), and the BATCH PLAN in system/postDict sizes each step for one lot from these streams' masses, counts the lots a year from the declared production, and finds the step that paces each train. The absolute rate is chosen as the fluid bed's own DRYING rate (one 300 kg lot dried in 1.5 h), so the fluid bed's air heater is sized for the duty it really has; the coater's heater is then sized at that same rate, which is about twice the coater's own -- README section 6.
+
+WET GRANULATION granWater + hpcFeed $\to$ [binderPrep] $\to$ binderSolution --+ apiFeed (BOUGHT) + lactose + starch + MCC --------------+$\to$ [granulator] $\to$ wetMass fbdAirIn $\to$ [fbdAirHeater] 333 K $\to$ fbdAir | wetMass + fbdAir $\to$ [fluidBedDryer] $\to$ driedGranules + fbdExhaust driedGranules $\to$ [mill] $\to$ milledGranules
+
+FINAL BLEND, TABLETING, COATING, PACKAGING milledGranules + mgstFeed $\to$ [finalBlender] $\to$ finalBlend $\to$ [tabletPress] $\to$ tabletCores +$\to$ tabletRejects coatWater + HPMC + macrogol + talc + TiO2 + yellow iron oxide $\to$ [coatingSuspensionPrep] tabletCores + coatingSuspension $\to$ [coatingPan] $\to$ wetCoatedTablets coatingAirIn $\to$ [coatingAirHeater] 333 K $\to$ coatingAir wetCoatedTablets + coatingAir $\to$ [coatingDryer] $\to$ coatedTablets + coatingExhaust coatedTablets $\to$ [packagingLine] $\to$ packagedTablets
+
+NO RECYCLE, NO SOLVENT. Unlike apalutamide01\_tablets there is no spray dryer, no organic solvent, no nitrogen loop, no solvent recovery and no hazardous area: an aqueous wet granulation and an aqueous coat.
+
+WHAT IS A PLACEHOLDER. The high-shear granulator, the mill, the final blender, the tablet press and the packaging line are FLOW PRIMITIVES (a `mixer`, a `splitter`): they conserve mass and energy and model NOTHING of the machine -- no granule growth, no granule size, no blend uniformity (THE critical quality question of a low-dose tablet, README section 8), no compaction force, no tablet hardness. Choupo has no such equipment model; none is invented here. The two DRYERS are physics: `solidDryer` dries to the starch's sorption isotherm at the exhaust air's humidity, with the energy balance on the package's enthalpy. The coating pan is TWO boxes, a `mixer` (the spray lands on the cores) and a `solidDryer` (the hot air takes the water off), which is the mass and energy balance of one machine.
+
+\end{tutnarrative}
+\tutreadme{A BASE CASE for a pharmaceutical-industry project group (DEV.md 4c C249). It takes the plant of donepezil01\_tablets (wet granulation, an aqueous coat, the API bought) and asks the question that case could not answer: how is a year divided between two strengths made on the same equipment, and what does it cost to change from one to the other? The answer is a multiproduct batch plan --- single-product campaigns in a declared order, a clean between products that depends on the direction of the change, and a Gantt chart of the year. It runs (in seconds), it is deliberately NOT optimised, and every number a group would change is a plain key, said to be an assumption where it is declared.}
+\tutreadme{The case is sealed: everything it reads is in its own constant/. The flowsheet, the components and the building are donepezil01\_tablets' own, unchanged (read that README for the chemistry, the dryers and the questions about content uniformity); this one is about the plan.}
+\tutreadme{One steady flowsheet serves both, because the 5 mg tablet is the same blend at half the weight: a kilogram of either carries the same kilograms of every ingredient, and the batch plan reads its balance per kg of product (BatchPlanPass.H:189-193). The one thing that would differ --- the 10 mg coat's 1 \% yellow iron oxide, 0.03 \% of the tablet --- is ignored here and said so; a group that wants it declares a massPerProduct for the coating suspension and the plan announces ownBalance.}
+\tutreadme{Two trains decoupled by the final-blend store, as in donepezil01\_tablets; lotsPerCampaign 8 and a 24 h full clean between campaigns of ONE product. Between the two products every stage has its own clean (productChangeover) and the train waits for the slowest. The Gantt of the year (campaignOrder ( strength10 strength5 )):}
+\tutreadme{The tableting train is paced by the packaging line for both products, but at 11 h a lot for one and 20 h for the other: the limiting stage is a property of the product, not only of the plant. Equipment is sized for the product that needs the most (the plan names it, sizing by): here the 10 mg for every stage, because the 5 mg lot is the same mass and only takes longer.}
+\tutreadme{The clean depends on the direction (colour carry-over). A trace of yellow iron oxide left in the coating-suspension tank, the spray lines and the perforated pan shows as specks on a white tablet; a trace of white pigment in a yellow coat does not show. So the clean $\ast$before the white 5 mg$\ast$ is the long one --- 8 h at the suspension tank and 12 h at the pan --- and the clean before the yellow 10 mg the short one, 3 h and 6 h. It is declared on the product that has just finished, changeoverTo \{ strength5 12 h; \} (BatchPlanPass.H:173-177 shows the grammar). The hours are author-set placeholders, not cleaning-validation results: in a real plant they are the time to clean and prove the equipment clean (swab or rinse sampling against a limit set for the product that follows --- EU GMP $\ast$Annex 15$\ast$, cleaning validation, cited by title). Both strengths contain the same API, so the clean is about line clearance (no strength mixed up) and the coat's colour, not about one drug contaminating another: a different API in the second campaign would need a far longer one.}
+\begin{tutgolden}
+\goldrow{stream}{apiFeed}{F}{4.80817775e-06}
+\goldrow{stream}{apiFeed}{T}{298.15}
+\goldrow{stream}{binderSolution}{F}{0.000740863846794}
+\goldrow{stream}{binderSolution}{T}{298.15}
+\goldrow{stream}{coatWater}{F}{0.000677035803497}
+\goldrow{stream}{coatWater}{T}{298.15}
+\goldrow{stream}{coatedTablets}{F}{0.000238250706177}
+\goldrow{stream}{coatedTablets}{T}{317.588908471}
+\goldrow{stream}{coatingAir}{F}{0.0702777777778}
+\goldrow{stream}{coatingAir}{T}{333.15}
+\goldrow{stream}{coatingAirIn}{F}{0.0702777777778}
+\goldrow{stream}{coatingAirIn}{T}{298.15}
+\goldrow{stream}{coatingExhaust}{F}{0.0709548135813}
+\goldrow{stream}{coatingExhaust}{T}{317.588908471}
+\goldmore{1119}
+\end{tutgolden}
+
 \subsection{reactor}
 \grouptheory{reactor}
 \clearpage

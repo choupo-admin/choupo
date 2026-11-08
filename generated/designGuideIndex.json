@@ -321,6 +321,40 @@
       ]
     },
     {
+      "title": "Organising a multi-product plant",
+      "label": "organising-a-multi-product-plant",
+      "subsections": [
+        {
+          "title": "Trains, stages and the lot",
+          "label": "mp-trains-stages-lot"
+        },
+        {
+          "title": "Cycle time, the limiting stage, units in and out of phase",
+          "label": "mp-cycle-limiting"
+        },
+        {
+          "title": "Campaigns and changeovers",
+          "label": "mp-campaigns"
+        },
+        {
+          "title": "Single-product campaigns versus mixed sequencing",
+          "label": "mp-sequencing"
+        },
+        {
+          "title": "Intermediate storage between trains",
+          "label": "mp-storage"
+        },
+        {
+          "title": "A continuous unit in a lot regime",
+          "label": "mp-continuous"
+        },
+        {
+          "title": "The year's Gantt chart and the deliverables of the plan",
+          "label": "mp-gantt"
+        }
+      ]
+    },
+    {
       "title": "Cost estimation & profitability",
       "label": "cost-estimation--profitability",
       "subsections": []

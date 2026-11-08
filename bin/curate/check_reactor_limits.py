@@ -489,6 +489,59 @@ def main() -> int:
                 oks.append(f"R7 dynamicCSTR announces sum(nu) != 0; reverse leg moves"
                            f" n_ethanol {ends[0]} -> {ends[1]}")
 
+        # -- R8 (C245 slice 3): residuals that are not functions of the state
+        #  (3b) cstr05's root scan announces its failed-point count (0) and
+        #  keeps its one steady state; (3g) the adiabatic flash reports BOTH
+        #  flags and a 3-iteration outer search reports NOT converged; (3a)
+        #  an adiabatic Gibbs bed seeded at the box edges still converges and
+        #  never prints a penalty (the 1-D solve's own window arm is in
+        #  check_newton_globalisation (h)).
+        ok = True
+        out = expect_runs("R8 cstr05", probe(T / "steady/reactors/cstr05_multiplicity",
+                                             td / "r8_cstr05"))
+        if out is not None:
+            if "extents solve failed at 0 of" not in out \
+                    or "steady state found: 1" not in out:
+                failures.append("R8 (3b): cstr05 does not announce `extents solve"
+                                " failed at 0 of N scan temperatures` beside its"
+                                " one steady state")
+                ok = False
+        af = probe(T / "steady/flash/adiabaticFlash01_benzene_toluene", td / "r8_af")
+        out = expect_runs("R8 adiabaticFlash01", af)
+        if out is not None and ("Inner flash converged:     yes  (0 trial(s) refused)"
+                                not in out or "Outer T search converged:  yes" not in out):
+            failures.append("R8 (3g): adiabaticFlash01 does not report both flags"
+                            " (outer yes, inner yes, 0 trials refused)")
+            ok = False
+        af3 = probe(T / "steady/flash/adiabaticFlash01_benzene_toluene", td / "r8_af3")
+        fd = af3 / "system/flowsheetDict"
+        txt = fd.read_text()
+        m = re.search(r"operation\s*\{", txt)
+        if not m:
+            failures.append("R8 (3g): the adiabaticFlash01 fixture has no operation block")
+            ok = False
+        else:
+            fd.write_text(txt[:m.end()] + " maxOuterIter 3;" + txt[m.end():])
+            rc, out = run(af3)
+            if rc == 0 or "Converged:     NO" not in out \
+                    or "Outer T search converged:  NO" not in out:
+                failures.append("R8 (3g): maxOuterIter 3 did not report NOT converged"
+                                f" (exit {rc})")
+                ok = False
+        for seed in ("5000.0 K", "250.0 K"):
+            g = probe(T / "steady/gibbs/gibbs05_adiabatic_flame", td / ("r8_g05_" + seed[:4]))
+            if edit(g / "system/flowsheetDict", "1500.0 K", seed, "R8"):
+                out = expect_runs("R8 (3a) gibbs05 seeded at " + seed, g)
+                if out is not None and ("PENALTY" in out or "1e30" in out):
+                    failures.append("R8 (3a): a penalty is printed for gibbs05 seeded"
+                                    " at " + seed)
+                    ok = False
+        if ok:
+            oks.append("R8 cstr05 announces 0 failed scan points and keeps its one"
+                       " steady state; adiabaticFlash01 reports both flags and"
+                       " maxOuterIter 3 reports NOT converged; gibbs05 seeded at"
+                       " 5000 / 250 K converges with no penalty")
+
     if failures:
         print("check_reactor_limits: FAIL")
         for f in failures:
