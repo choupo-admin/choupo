@@ -3231,9 +3231,9 @@ accepts today, and that is a policy call.
 > deliverables (C195) tabulated as produces / half / not; (B) cheap fixes only -- prose,
 > units, origins, refusal messages that do not say what to write, an authoring doc for a
 > tablet case under docs/ai/ -- no physics, no re-record; (C) two documents,
-> `docs/reviews/2026-11-08-pif-readiness.md` (the log, the table, the blockers ranked by
+> a readiness review under docs/reviews/ dated 2026-11-08 (the log, the table, the blockers ranked by
 > how much they hurt a student tomorrow, each with its fix size) and
-> `docs/pif-student-path.md` (the one-page path a student follows: open, run, where each
+> a student-path page under docs/ (the one-page path a student follows: open, run, where each
 > deliverable appears, how to adapt it to their drug, and the honest "do it by hand"
 > list).  What it finds that is larger than a cheap fix goes to C210's queue, ahead of
 > everything that is not a kernel debt.  Lands tonight if its gates pass; the site is
