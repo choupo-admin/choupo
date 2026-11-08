@@ -3221,6 +3221,32 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **STRANDED BRANCHES, FOUND 2026-11-08 EVENING (the worktree sweep Vitor asked for on the
+> spot rather than "next Saturday": 82 worktrees, 51 whose work was entirely in main, 31
+> inspected one by one against main with `git cherry`).**  Three hold work that is in NO
+> register entry and is NOT in main; each is now named here so it leaves only by landing
+> or by Vitor dropping it: (1) branch `worktree-agent-a28b519ffb623d4ff`, commit
+> `e149c478e` (11-07): the formation-datum liquid rung continued on h_ig - Hvap(Watson)
+> above the liquid Cp window's Tmax (`Component::liquidAboveWindow`, `liquidRungH298/S298`)
+> -- the companion feed-pressure commit landed with C235, this one did not; it is a
+> continuity item of C245's class C and goes to slice 5 as a candidate, to be VALIDATED,
+> not merged as found; (2) branch `worktree-agent-abc81697fbee7f77f`, commit `5bed50aeb`
+> (11-02): the acetic dimerisation logK 3.107 IS in main, but its `check_dimerisation`
+> arm of check_record_self_consistency (68 lines) is not -- C201's next slice takes it;
+> (3) branch `worktree-agent-a8318e2acf001dce2`, commit `de8f450ec`: C200 phase B', the
+> browser's `choupo-init0` (a `run_case_init0` WASM entry, the written 0/ files carried
+> back as `init0Files`, 13 files, 167 lines) found UNCOMMITTED since 11-01 and committed
+> tonight as WIP, as found, unvalidated -- C200's phase B' is its home.  SUPERSEDED and
+> deleted with their branches: four integ/* leftovers of earlier rounds, a `flushEach
+> false` per-case commit (C236 made it the default), a brief.md path fix main already
+> has, c221's PDF render, a developer PFD look script.  The four PIF group evidence files
+> (branches `...a61722`, `...a65e30`, `...a74c17`, `...ae95e9`) stay as branches only: the
+> decision of 11-02 keeps per-project evidence OUT of the public tree, the synthesis
+> landed.  The C201 acetic bridge (`worktree-acetic-vapour`, 4 commits) keeps its branch;
+> its worktree is recreated when the slice is dispatched.  Rule confirmed the hard way, a
+> third time: a worktree is not a register, and `git cherry main <branch>` is the
+> measurement, run on every branch before a sweep deletes anything.
+
 > **C247 (Vitor, 2026-11-08: "sabes que há um EduTool sobre projeto de chaminés? ... equações
 > gaussianas com coeficientes de dispersão e tabelas famosas em função das condições
 > meteorológicas, ser dia ou ser noite"): A STACK-DESIGN EDUTOOL.**  MEASURED the same

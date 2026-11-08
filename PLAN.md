@@ -94,6 +94,7 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 
 | status | what | ref |
 |---|---|---|
+| todo | Stranded branches (11-08 sweep): C235 Watson liquid rung above the Cp window (`e149c478e`, to C245 slice 5), C201 `check_dimerisation` arm (`5bed50aeb`), C200 phase B' browser init0 WIP (`de8f450ec`); each lands or Vitor drops it | DEV.md 4c, stranded |
 | todo | C247 (Vitor, 11-08): `stack-dispersion` EduTool -- Gaussian plume, Pasquill-Gifford classes (day/night, sun, wind), Briggs sigmas and plume rise, the least stack height under a declared limit, GEP downwash; four live figures; engine half reads a fired unit's flue gas. After C246 | C247 |
 | todo | C246 (Vitor, 11-08): the solver knobs a case may turn -- document the solverDict grammar that exists (recycle keys, per-type blocks), `recycleRelaxation` + `recycleSolver directSubstitution`, per-type Newton knobs (maxStep, line search) mapped on NDOptions and announced; a knob the engine does not read is refused; plus the `relaxation` EduTool (fixed-point, relaxation, Wegstein as adaptive relaxation, Newton line search, the step cap; engine half on `recycleRelaxation`). After C245 slice 3 | C246 |
 | running | C244: phase 1 LANDED (f468736fd, ten cases left tutorials/plant/, ladder flat under steady/reactors); phase 2 next: greenAmmonia03's content and the feasibility pair folded into PEQ | C244 |
