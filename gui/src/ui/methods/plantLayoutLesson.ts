@@ -293,7 +293,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
     n: 7,
     title: "Read the announcement, then move the item until it goes",
     body: "Run the witness as shipped (move 1 in the bench below).  The "
-      + "let-down drum stands 1.885 m from the separator, edge to edge, "
+      + "let-down drum stands 1.895 m from the separator, edge to edge, "
       + "against the 4 m the case declares between two vessels.  The engine "
       + "does not stop: it ANNOUNCES the shortfall, with both distances, on "
       + "the run's error stream, again in the caveat block at the end of the "
@@ -324,7 +324,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       + "replay: src/postProcessing/layout/PlantLayout.cpp:87-88; the block's "
       + "heading is src/core/AdvisorySummary.H:117.  The overlap refusal: "
       + "PlantLayout.cpp:4627-4628.  On the witness the condition puts the drum "
-      + "at x of about 61.61 m or more; the bench's x = 62 m clears it.",
+      + "at x of about 61.60 m or more; the bench's x = 62 m clears it.",
   },
   {
     n: 8,

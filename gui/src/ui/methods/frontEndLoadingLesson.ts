@@ -240,7 +240,7 @@ export const FEL_STEPS: readonly LessonStep[] = [
       + "from an integrated rate law, then from the licensor or catalyst "
       + "supplier.  Choupo's ammonia ladder shows the first two on one "
       + "synthesis loop: the approach-to-equilibrium stage sizes its "
-      + "converter from a declared space velocity at 18.76 m³, and the "
+      + "converter from a declared space velocity at 18.77 m³, and the "
       + "kinetic stage solves a bed of 7.58 m³ on the Dyson and Simon rate "
       + "law, the volume at which its outlet is 5 K short of equilibrium.  "
       + "The kinetic model did not FIRST size "
