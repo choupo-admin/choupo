@@ -72,6 +72,7 @@ Description
 #include "core/Origin.H"
 #include "core/Types.H"
 
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <string>
@@ -98,6 +99,9 @@ public:
     const std::string& quality() const { return quality_; }
     bool designGrade() const { return quality_ != "teachingOnly"; }
     void announceUse() const;
+    //  AdvisoryLog generation at which announceUse() last recorded its
+    //  (accepted) entry; 0 = never.  The hot-loop latch.
+    mutable std::atomic<unsigned long long> announcedGen_{0};
 
     // van't Hoff anchor temperature [K] (the "298" in b_298 / H_298).
     scalar tRef() const { return tRef_; }

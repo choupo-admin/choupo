@@ -85,13 +85,22 @@ void IsothermModel::readCommon(const DictPtr& record,
 void IsothermModel::announceUse() const
 {
     if (quality_ != "teachingOnly") return;
+    //  Hot path (called on every loading evaluation): once this pass holds
+    //  the accepted entry, a repeat add() changes nothing -- skip it.
+    AdvisoryLog& log = AdvisoryLog::instance();
+    const unsigned long long gen = log.generation();
+    if (announcedGen_.load(std::memory_order_relaxed) == gen) return;
     const std::string locus = "isotherm '" + adsorbent_ + "/" + adsorbate_ + "'";
     const std::string message = "TEACHING-ONLY adsorption parameters are in use;"
         " they preserve historical tutorial behaviour but are not design-grade."
         " Replace them with a reproducible sample-specific regression before design use."
         " Origin=" + std::string(originToWord(origin_)) + ".";
-    if (AdvisoryLog::instance().add("provenance", "warning", locus, message))
+    if (log.add("provenance", "warning", locus, message))
         std::cout << "  [provenance] " << locus << ": " << message << "\n";
+    //  Latch only when no frame was open: a trial-stamped entry can still be
+    //  promoted by a later accepted call, which the latch would skip.
+    if (!log.anyFrameOpen())
+        announcedGen_.store(gen, std::memory_order_relaxed);
 }
 
 scalar IsothermModel::pScale() const

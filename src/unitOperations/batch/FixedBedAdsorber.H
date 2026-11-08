@@ -170,6 +170,7 @@ Description
 #include "BatchUnitOperation.H"
 #include "solver/ODE/ODEIntegrator.H"
 
+#include <unordered_map>
 #include <map>
 #include <string>
 #include <vector>
@@ -413,6 +414,7 @@ private:
     scalar cellT_(const sVector& y, std::size_t j) const;  // T_ unless thermal
     scalar cpgCell_(const sVector& y, std::size_t j) const; // mixture Cp_ig [J/mol/K]
     scalar pressureCell_(const sVector& y, std::size_t j) const;
+    mutable std::unordered_map<std::string, scalar> muMemo_;  // ergunVelocity_ gas-viscosity memo
     scalar ergunVelocity_(scalar pLeft, scalar pRight, scalar distance,
                           const sVector& cLeft, const sVector& cRight) const;
 };

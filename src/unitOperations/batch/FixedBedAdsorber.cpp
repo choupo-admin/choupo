@@ -37,6 +37,7 @@ License
 #include "thermo/adsorbent/Adsorbent.H"
 #include "thermo/adsorbent/AdsorbentRegistry.H"
 
+#include <cstring>
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -1098,7 +1099,26 @@ scalar FixedBedAdsorber::ergunVelocity_(scalar pLeft, scalar pRight,
         //  (accepted) zero-gas cell cannot exist at P > 0: P_j = R T c.
         return 0.0;
     for (scalar& yi : yMix) yi /= cSum;
-    const scalar mu = muGas_ > 0.0 ? muGas_ : thermo_->viscosityGas(T_, yMix);
+    scalar mu = muGas_;
+    if (!(muGas_ > 0.0))
+    {
+        //  Memo of the gas viscosity on the EXACT (T_, y) the face saw.  A
+        //  Jacobian column perturbs a few cells, so most faces repeat the
+        //  last evaluation's composition bit for bit; the same inputs give
+        //  the same viscosityGas, so the result is byte-identical.
+        std::string key(sizeof(scalar) * (yMix.size() + 1), '\0');
+        std::memcpy(&key[0], &T_, sizeof(scalar));
+        std::memcpy(&key[sizeof(scalar)], yMix.data(),
+                    sizeof(scalar) * yMix.size());
+        auto it = muMemo_.find(key);
+        if (it == muMemo_.end())
+        {
+            if (muMemo_.size() >= 8192) muMemo_.clear();
+            it = muMemo_.emplace(std::move(key),
+                                 thermo_->viscosityGas(T_, yMix)).first;
+        }
+        mu = it->second;
+    }
     const scalar de = sphericity_ * dParticle_;
     const scalar a = 150.0 * std::pow(1.0 - eps_, 2) * mu
                    / (std::pow(eps_, 3) * de * de);
