@@ -64,12 +64,22 @@ namespace Choupo::solver
 class Rosenbrock23 : public ODEIntegrator
 {
 public:
+    //  The same machinery (colored / structured Jacobian, W factorisation,
+    //  positivity rejection, step controller) drives two schemes: the 2(3)
+    //  pair above, and Rodas4 (Hairer & Wanner, order 4 with an embedded
+    //  order 3, six stages per Jacobian) registered as "Rodas4".
+    enum class Scheme { Rosenbrock23, Rodas4 };
+    explicit Rosenbrock23(Scheme s = Scheme::Rosenbrock23)
+        : scheme_(s),
+          name_(s == Scheme::Rodas4 ? "Rodas4" : "Rosenbrock23") {}
+
     ODEStats integrate(sVector& y, scalar t0, scalar t1,
                        const DerivFn& f, const ODEControls& ctrl) const override;
     const std::string& name() const override { return name_; }
 
 private:
-    inline static const std::string name_ = "Rosenbrock23";
+    Scheme      scheme_;
+    std::string name_;
 };
 
 } // namespace Choupo::solver

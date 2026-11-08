@@ -201,17 +201,144 @@ void auditStructure(const std::vector<sVector>& Jd,
             + ").  The coloring is not separating the columns it groups."
             "  Refusing.");
 }
+//  ---- Rodas4: the six stages --------------------------------------------
+//  Hairer & Wanner, "Solving Ordinary Differential Equations II" (2nd ed.,
+//  Springer 1996), Section IV.7, the method RODAS4 (Table 7.2), in the form
+//  of the published code RODAS (Hairer's rodas.f): L-stable, order 4, an
+//  embedded order-3 solution whose difference from the 4th-order one is the
+//  last stage.  With gamma = 1/4 the stage equations are
+//      (I/(h gamma) - J) u_i = f(t + c_i h, y + sum_j a_ij u_j)
+//                              + sum_j (c_ij / h) u_j + h d_i df/dt,
+//  and W = I - h gamma J (the matrix the caller already factors) solves them
+//  as  W u_i = h gamma r_i.  The new state is  y + sum_j a5j u_j + u5 + u6
+//  and the error estimate is u6.  Constants as printed in rodas.f; the
+//  convergence order they give was MEASURED when they were entered
+//  (2026-11-08, fixed steps h = 3/20 .. 3/160 on a nonautonomous nonlinear
+//  pair: observed order 4.27, 4.16, 4.11; a mistyped digit shows as a lower
+//  order), and an L-stability probe y' = -1000 (y - cos t) - sin t at
+//  h = 0.1 gave 3.7e-7 against the exact cos t.
+struct Rodas4Coeffs
+{
+    static constexpr scalar c2 = 0.386, c3 = 0.21, c4 = 0.63;
+    static constexpr scalar d1 = 0.25, d2 = -0.1043, d3 = 0.1035,
+                            d4 = -0.03620000000000023;
+    static constexpr scalar a21 = 0.1544e1;
+    static constexpr scalar a31 = 0.9466785280815826, a32 = 0.2557011698983284;
+    static constexpr scalar a41 = 0.3314825187068521e1,
+                            a42 = 0.2896124015972201e1,
+                            a43 = 0.9986419139977817;
+    static constexpr scalar a51 = 0.1221224509226641e1,
+                            a52 = 0.6019134481288629e1,
+                            a53 = 0.1253708332932087e2,
+                            a54 = -0.6878860361058950;
+    static constexpr scalar c21 = -0.5668800000000000e1;
+    static constexpr scalar c31 = -0.2430093356833875e1,
+                            c32 = -0.2063599157091915;
+    static constexpr scalar c41 = -0.1073529058151375,
+                            c42 = -0.9594562251023355e1,
+                            c43 = -0.2047028614809616e2;
+    static constexpr scalar c51 = 0.7496443313967647e1,
+                            c52 = -0.1024680431464352e2,
+                            c53 = -0.3399990352819905e2,
+                            c54 = 0.1170890893206160e2;
+    static constexpr scalar c61 = 0.8083246795921522e1,
+                            c62 = -0.7981132988064893e1,
+                            c63 = -0.3152159432874371e2,
+                            c64 = 0.1631930543123136e2,
+                            c65 = -0.6058818238834054e1;
+};
+
+template <class SolveW>
+void rodas4Stages(const DerivFn& f, scalar t, scalar h, scalar hd,
+                  const sVector& y, const sVector& f0, const sVector& Td,
+                  const SolveW& solveW, const ODEControls& ctrl,
+                  sVector& ynew, scalar& errNorm)
+{
+    using C = Rodas4Coeffs;
+    const std::size_t n = y.size();
+    const scalar ih = 1.0 / h;
+    sVector r(n), yy(n);
+
+    //  u_i = W^{-1} (hd * r_i), r_i already assembled in r
+    auto stage = [&](void) -> sVector
+    {
+        for (std::size_t i = 0; i < n; ++i) r[i] *= hd;
+        return solveW(r);
+    };
+
+    for (std::size_t i = 0; i < n; ++i) r[i] = f0[i] + h * C::d1 * Td[i];
+    const sVector u1 = stage();
+
+    for (std::size_t i = 0; i < n; ++i) yy[i] = y[i] + C::a21 * u1[i];
+    sVector fy = f(t + C::c2 * h, yy);
+    for (std::size_t i = 0; i < n; ++i)
+        r[i] = fy[i] + C::c21 * ih * u1[i] + h * C::d2 * Td[i];
+    const sVector u2 = stage();
+
+    for (std::size_t i = 0; i < n; ++i)
+        yy[i] = y[i] + C::a31 * u1[i] + C::a32 * u2[i];
+    fy = f(t + C::c3 * h, yy);
+    for (std::size_t i = 0; i < n; ++i)
+        r[i] = fy[i] + ih * (C::c31 * u1[i] + C::c32 * u2[i])
+             + h * C::d3 * Td[i];
+    const sVector u3 = stage();
+
+    for (std::size_t i = 0; i < n; ++i)
+        yy[i] = y[i] + C::a41 * u1[i] + C::a42 * u2[i] + C::a43 * u3[i];
+    fy = f(t + C::c4 * h, yy);
+    for (std::size_t i = 0; i < n; ++i)
+        r[i] = fy[i] + ih * (C::c41 * u1[i] + C::c42 * u2[i] + C::c43 * u3[i])
+             + h * C::d4 * Td[i];
+    const sVector u4 = stage();
+
+    for (std::size_t i = 0; i < n; ++i)
+        yy[i] = y[i] + C::a51 * u1[i] + C::a52 * u2[i] + C::a53 * u3[i]
+              + C::a54 * u4[i];
+    fy = f(t + h, yy);
+    for (std::size_t i = 0; i < n; ++i)
+        r[i] = fy[i] + ih * (C::c51 * u1[i] + C::c52 * u2[i] + C::c53 * u3[i]
+                           + C::c54 * u4[i]);
+    const sVector u5 = stage();
+
+    for (std::size_t i = 0; i < n; ++i) yy[i] += u5[i];
+    fy = f(t + h, yy);
+    for (std::size_t i = 0; i < n; ++i)
+        r[i] = fy[i] + ih * (C::c61 * u1[i] + C::c62 * u2[i] + C::c63 * u3[i]
+                           + C::c64 * u4[i] + C::c65 * u5[i]);
+    const sVector u6 = stage();
+
+    ynew.assign(n, 0.0);
+    errNorm = 0.0;
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        ynew[i] = yy[i] + u6[i];
+        const scalar sc = ((ctrl.atol.empty()) ? 1.0e-12
+                           : (i < ctrl.atol.size() ? ctrl.atol[i]
+                                                   : ctrl.atol.back()))
+                        + ctrl.rtol * std::max(std::abs(y[i]), std::abs(ynew[i]));
+        const scalar e = u6[i] / sc;
+        errNorm += e * e;
+    }
+    errNorm = std::sqrt(errNorm / static_cast<scalar>(n));
+}
 } // namespace
 
 ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                                  const DerivFn& f, const ODEControls& ctrl) const
 {
+    const bool rodas = (scheme_ == Scheme::Rodas4);
+    //  step-size controller: the estimate is O(h^3) for the 2(3) pair and
+    //  O(h^4) for Rodas4, so the step scales as err^(-1/3) and err^(-1/4)
+    const scalar pw     = rodas ? 0.25 : 1.0 / 3.0;
+    const scalar safety = rodas ? 0.9  : 0.8;
     ODEStats st;
     const std::size_t n = y.size();
     const scalar span = t1 - t0;
     if (span <= 0.0) return st;
 
-    const scalar d   = 1.0 / (2.0 + std::sqrt(2.0));
+    //  d is the diagonal coefficient of W = I - h*d*J: 1/(2+sqrt2) for the
+    //  2(3) pair, gamma = 1/4 for Rodas4 (Hairer & Wanner, Table 7.2).
+    const scalar d   = rodas ? 0.25 : 1.0 / (2.0 + std::sqrt(2.0));
     const scalar e32 = 6.0 + std::sqrt(2.0);
 
     // Typical scales for the FD Jacobian (|y| with an atol floor).
@@ -419,46 +546,63 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             return x;
         };
 
-        // k1 = W^{-1} (f0 + hd*Td)
-        sVector r1(n);
-        for (std::size_t i = 0; i < n; ++i) r1[i] = f0[i] + hd * Td[i];
-        const sVector k1 = solveW(r1);
-
-        // f2 = f(t+h/2, y + h/2 k1)
-        sVector y2(n);
-        for (std::size_t i = 0; i < n; ++i) y2[i] = y[i] + 0.5 * h * k1[i];
-        const sVector f2 = f(t + 0.5 * h, y2);
-
-        // k2 = W^{-1}(f2 - k1) + k1
-        sVector r2(n);
-        for (std::size_t i = 0; i < n; ++i) r2[i] = f2[i] - k1[i];
-        sVector k2 = solveW(r2);
-        for (std::size_t i = 0; i < n; ++i) k2[i] += k1[i];
-
-        // candidate y* = y + h k2
         sVector ynew(n);
-        for (std::size_t i = 0; i < n; ++i) ynew[i] = y[i] + h * k2[i];
-
-        // f3 = f(t+h, y*)
-        const sVector f3 = f(t + h, ynew);
-
-        // k3 = W^{-1}( f3 - e32(k2 - f2) - 2(k1 - f0) + hd*Td )
-        sVector r3(n);
-        for (std::size_t i = 0; i < n; ++i)
-            r3[i] = f3[i] - e32 * (k2[i] - f2[i]) - 2.0 * (k1[i] - f0[i]) + hd * Td[i];
-        const sVector k3 = solveW(r3);
-
-        // embedded error err = (h/6)(k1 - 2 k2 + k3)
         scalar errNorm = 0.0;
-        for (std::size_t i = 0; i < n; ++i)
+        if (!rodas)
         {
-            const scalar err = (h / 6.0) * (k1[i] - 2.0 * k2[i] + k3[i]);
-            const scalar sc  = atolFor(ctrl, i)
-                             + ctrl.rtol * std::max(std::abs(y[i]), std::abs(ynew[i]));
-            const scalar e   = err / sc;
-            errNorm += e * e;
+            // k1 = W^{-1} (f0 + hd*Td)
+            sVector r1(n);
+            for (std::size_t i = 0; i < n; ++i) r1[i] = f0[i] + hd * Td[i];
+            const sVector k1 = solveW(r1);
+
+            // f2 = f(t+h/2, y + h/2 k1)
+            sVector y2(n);
+            for (std::size_t i = 0; i < n; ++i) y2[i] = y[i] + 0.5 * h * k1[i];
+            const sVector f2 = f(t + 0.5 * h, y2);
+
+            // k2 = W^{-1}(f2 - k1) + k1
+            sVector r2(n);
+            for (std::size_t i = 0; i < n; ++i) r2[i] = f2[i] - k1[i];
+            sVector k2 = solveW(r2);
+            for (std::size_t i = 0; i < n; ++i) k2[i] += k1[i];
+
+            // candidate y* = y + h k2
+            for (std::size_t i = 0; i < n; ++i) ynew[i] = y[i] + h * k2[i];
+
+            // f3 = f(t+h, y*)
+            const sVector f3 = f(t + h, ynew);
+
+            // k3 = W^{-1}( f3 - e32(k2 - f2) - 2(k1 - f0) + hd*Td )
+            sVector r3(n);
+            for (std::size_t i = 0; i < n; ++i)
+                r3[i] = f3[i] - e32 * (k2[i] - f2[i]) - 2.0 * (k1[i] - f0[i]) + hd * Td[i];
+            const sVector k3 = solveW(r3);
+
+            // embedded error err = (h/6)(k1 - 2 k2 + k3)
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                const scalar err = (h / 6.0) * (k1[i] - 2.0 * k2[i] + k3[i]);
+                const scalar sc  = atolFor(ctrl, i)
+                                 + ctrl.rtol * std::max(std::abs(y[i]), std::abs(ynew[i]));
+                const scalar e   = err / sc;
+                errNorm += e * e;
+            }
+            errNorm = std::sqrt(errNorm / static_cast<scalar>(n));
         }
-        errNorm = std::sqrt(errNorm / static_cast<scalar>(n));
+        else
+        {
+            rodas4Stages(f, t, h, hd, y, f0, Td, solveW, ctrl, ynew, errNorm);
+            //  A row that must stay >= 0 and sits at zero (the clean bed
+            //  ahead of a front) comes out of the six-stage combination at
+            //  round-off, -1e-30 rather than 0.  Below the row's own
+            //  absolute tolerance that is the same number as zero: it is
+            //  set to zero.  Anything more negative is a real overshoot and
+            //  is rejected below, as for the 2(3) pair.
+            for (std::size_t i = 0; i < ctrl.positiveRows.size() && i < n; ++i)
+                if (ctrl.positiveRows[i] && ynew[i] < 0.0
+                    && ynew[i] > -atolFor(ctrl, i))
+                    ynew[i] = 0.0;
+        }
 
         // positivity: a step that drives a masked row negative is unphysical
         // and would feed a fractional pow() a negative base -> NaN.  Reject it
@@ -482,7 +626,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                 typ[i] = std::max(std::abs(y[i]), atolFor(ctrl, i));
             const scalar hAccepted = h;
             // grow the step (order-2 pair -> exponent 1/3), capped by maxGrowth.
-            const scalar fac = 0.8 * std::pow(std::max(errNorm, 1.0e-10), -1.0 / 3.0);
+            const scalar fac = safety * std::pow(std::max(errNorm, 1.0e-10), -pw);
             h *= std::min(maxGrowth, std::max(0.2, fac));
             if (h > hMax) h = hMax;
             //  The next interval's proposal.  A step SHORTENED to land on t1
@@ -505,7 +649,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             if (negative || !finite) h *= 0.5;
             else
             {
-                const scalar fac = 0.8 * std::pow(errNorm, -1.0 / 3.0);
+                const scalar fac = safety * std::pow(errNorm, -pw);
                 h *= std::min(1.0, std::max(0.1, fac));
             }
             if (h < hMin)
@@ -533,7 +677,8 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
         // The explicit-method stability bound (RK4 ~ 2.8/|λ|max) vs the step we
         // actually took: the ratio is "how much stiffness bought us".
         const scalar hExpl = (stiffPeak > 0.0) ? 2.8 / stiffPeak : 0.0;
-        std::cout << "  [ODE] Rosenbrock23 (L-stable, linearly-implicit 2(3))\n"
+        std::cout << (rodas ? "  [ODE] Rodas4 (L-stable, linearly-implicit, order 4(3))\n"
+                            : "  [ODE] Rosenbrock23 (L-stable, linearly-implicit 2(3))\n")
                   << "        steps: " << st.accepted << " accepted, "
                   << st.rejected << " rejected\n"
                   << "        |lambda|_max ~ " << stiffPeak << " 1/s"

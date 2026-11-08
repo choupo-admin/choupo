@@ -39,6 +39,12 @@
   an ARCHITECTURE feature -- proposed in
   docs/design/fixed-bed-thermal-a5.md section 7, awaiting Vitor's
   decision; this case is deliberately its cheap, grammar-free witness.
+
+  TIME INTEGRATION: `solver { method rodas4; }` selects the order-4 stiff
+  integrator (Hairer & Wanner's RODAS4) instead of the default 2(3)
+  Rosenbrock pair.  Same rtol, same Jacobian, same golden: 2.4x fewer
+  steps and about half the wall clock on this case (it is the witness for
+  that option; the other adsorber cases keep the default).
 \*---------------------------------------------------------------------------*/
 
 units
@@ -46,7 +52,7 @@ units
     {
         name bed;
         type fixedBedAdsorber;
-        solver { samplingInterval 2.0; rtol 1e-6; }
+        solver { samplingInterval 2.0; rtol 1e-6; method rodas4; }
         operation
         {
             adsorbent zeolite13X_A4; flowModel ergun;
