@@ -223,7 +223,7 @@ export const LEDGER_META = [
     name: "model",
     line: "s^{\\mathrm{R}}(T, P, y)",
     question: "What does the real gas change?",
-    cite: "src/thermo/equationOfState/SRK.cpp · SRK::S_residual",
+    cite: "src/thermo/equationOfState/CubicEoS.cpp:425 · CubicEoS::S_residual (SRK and PR)",
     note: "The departure from ideal — SRK (Sandler eq. 6.4-31), PR or "
       + "PC-SAFT.  A pureFluids{} IF97 route has NO residual line at all: "
       + "the fundamental equation replaces this whole ledger, and "
