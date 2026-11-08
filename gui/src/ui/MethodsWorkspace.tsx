@@ -507,7 +507,7 @@ export function MethodsWorkspace() {
     // strip.
     <Box style={{ position: "absolute", inset: 0, display: "flex",
       flexDirection: "column", minWidth: 0, minHeight: 0, overflow: "hidden" }}>
-      {/* THE PATHS (DEV.md 4c C221): one compact row above the chooser, on
+      {/* THE GUIDED SEQUENCE BAR (DEV.md 4c C221, C251): one compact row, only while a sequence is walked, on
           every tab kind -- a reading order over the same tools, no panel. */}
       <PathBar />
       {!chromeLeadsWithTheTool && <ToolChooser tool={tool} />}
