@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 530,
+  "cases": 531,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -522,6 +522,23 @@
    "hasGolden": true
   },
   "tutorials/batch/plant/donepezil01_tablets": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "mixer",
+    "phaseChanger",
+    "solidDryer",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/plant/donepezil02_two_strengths": {
    "application": "choupoSolve",
    "unitTypes": [
     "mixer",
@@ -8053,6 +8070,7 @@
    "choupoSolve": [
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/plant/donepezil01_tablets",
+    "tutorials/batch/plant/donepezil02_two_strengths",
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
@@ -8845,6 +8863,7 @@
    "mixer": [
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/plant/donepezil01_tablets",
+    "tutorials/batch/plant/donepezil02_two_strengths",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/polycaprolactonePlant",
@@ -8887,6 +8906,7 @@
    "phaseChanger": [
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/plant/donepezil01_tablets",
+    "tutorials/batch/plant/donepezil02_two_strengths",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
     "tutorials/steady/heat/phasechange02_saturated_mixture",
@@ -8944,6 +8964,7 @@
    "solidDryer": [
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/plant/donepezil01_tablets",
+    "tutorials/batch/plant/donepezil02_two_strengths",
     "tutorials/steady/drying/solidDryer01_sugar",
     "tutorials/steady/drying/solidDryer02_starved_air"
    ],
@@ -8984,6 +9005,7 @@
    "splitter": [
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/plant/donepezil01_tablets",
+    "tutorials/batch/plant/donepezil02_two_strengths",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/plant/swro01_campoDalias",
@@ -9255,6 +9277,7 @@
     "tutorials/batch/membrane/diafilter03_dspmde_batch",
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/plant/donepezil01_tablets",
+    "tutorials/batch/plant/donepezil02_two_strengths",
     "tutorials/batch/reactor/batch01_first_order",
     "tutorials/batch/reactor/batch01b_first_order_eulersi",
     "tutorials/batch/reactor/batch02_adiabatic",

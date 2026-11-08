@@ -961,11 +961,6 @@ int BatchPlanPass::run(SimulationResult& result)
     //  and each its own year; `production {}` beside it would be a second
     //  home for the same demand, and is refused.
     const bool multi = d->found("products");
-    if (multi && d->found("cleaning"))
-        throw std::runtime_error(top + ": `cleaning ( ... )` is declared beside"
-            " `products ( ... )` -- the cleans of the machines are counted for"
-            " the SINGLE-product plan (the campaigns of several products clean"
-            " at product changeovers the cleaning table does not carry).");
     if (multi)
     {
         if (d->found("production"))
@@ -1441,6 +1436,260 @@ int BatchPlanPass::run(SimulationResult& result)
                 " stage that feeds no stage -- declare the time.");
     }
 
+    //  The cleaning is counted for ONE product (the plan as it stood) or for
+    //  SEVERAL (C249 d): one lambda, called by both paths.
+    auto runCleaning = [&]()
+    {
+        //  ---- the cleaning of the machines (DEV.md 4c C210, E3) -------------
+        //  `cleaning ( { unit; waterPerLotClean; waterPerChangeover;
+        //  effluentFraction; source; reason; } ... )`: the CASE declares the
+        //  purified water of one clean of one instance of a machine and the
+        //  fraction of it that leaves as effluent; the PLAN counts the cleans --
+        //  a clean after every lot of every instance the lot is split over
+        //  (N_ip), and a clean of every installed instance (N_ip N_op) at each
+        //  campaign changeover.  Absent: nothing here runs and nothing moves.
+        if (d->found("cleaning"))
+        {
+            if (!d->hasDictList("cleaning"))
+                throw std::runtime_error(top + ": `cleaning ( { unit <machine>;"
+                    " waterPerLotClean <vol>; waterPerChangeover <vol>;"
+                    " effluentFraction <0..1>; source \"...\"; reason \"...\"; }"
+                    " ... );` must be a list of entries.");
+            std::set<std::string> seenUnits;
+            scalar totalCleans = 0, totalWater = 0, totalEffluent = 0;
+            for (const auto& cd : d->lookupDictList("cleaning"))
+            {
+                BatchCleaning c;
+                if (!isWord(cd, "unit"))
+                    throw std::runtime_error(top + " { cleaning }: an entry has no"
+                        " `unit <machine>;`.");
+                c.unit = cd->lookupWord("unit");
+                const std::string w = top + " { cleaning } unit `" + c.unit + "`";
+                if (!seenUnits.insert(c.unit).second)
+                    throw std::runtime_error(w + ": declared twice -- one machine,"
+                        " one cleaning entry.");
+                const BatchStage* st = plan.stageOfUnit(c.unit);
+                if (!st)
+                    throw std::runtime_error(w + ": the unit is in no stage of the"
+                        " plan, so the plan cannot count its cleans.  Units in a"
+                        " stage: add it to a stage's `units`.");
+                c.stage = st->name;
+                c.train = st->train;
+                const BatchTrain& t = plan.trains[trainIndex[st->train]];
+                c.waterPerLotClean   = dimensioned(cd, "waterPerLotClean", Dims::volume, "0.4 m3", w);
+                c.waterPerChangeover = dimensioned(cd, "waterPerChangeover", Dims::volume, "1.2 m3", w);
+                if (!cd->found("effluentFraction"))
+                    throw std::runtime_error(w + ": `effluentFraction` is not declared"
+                        " (the share of the cleaning water that leaves as effluent,"
+                        " between 0 and 1).  Nothing is defaulted.");
+                c.effluentFraction = cd->lookupScalar("effluentFraction");
+                if (!std::isfinite(c.effluentFraction) || c.effluentFraction < 0.0
+                    || c.effluentFraction > 1.0)
+                    throw std::runtime_error(w + ": `effluentFraction "
+                        + fmt(c.effluentFraction) + ";` is a fraction between 0 and 1.");
+                c.source = requireText(cd, "source", w);
+                c.reason = requireText(cd, "reason", w);
+                if (!plan.multiProduct())
+                {
+                    if (c.waterPerLotClean > 0.0 && !(st->cleanTime > 0.0))
+                        throw std::runtime_error(w + ": it declares water for a clean after"
+                            " every lot, and its stage '" + st->name + "' has `cleanTime 0"
+                            " h` -- the clean has no time in the plan to draw it in.");
+                    if (c.waterPerChangeover > 0.0 && !(t.changeover > 0.0))
+                        throw std::runtime_error(w + ": it declares water for a clean at"
+                            " each changeover, and train '" + t.name + "' has `changeover"
+                            " 0 h`.");
+                }
+                else
+                {
+                    //  Several products: the same refusals, per product, naming it.
+                    for (const auto& pr : plan.products)
+                    {
+                        const BatchProductStage* ps = nullptr;
+                        const BatchProductTrain* pt = nullptr;
+                        for (const auto& x : plan.productStages)
+                            if (x.product == pr.name && x.stage == st->name) ps = &x;
+                        for (const auto& x : plan.productTrains)
+                            if (x.product == pr.name && x.train == t.name) pt = &x;
+                        if (c.waterPerLotClean > 0.0 && !(ps->cleanTime > 0.0))
+                            throw std::runtime_error(w + ": it declares water for a clean"
+                                " after every lot, and product '" + pr.name + "' has"
+                                " `cleanTime 0 h` at its stage '" + st->name + "' -- the"
+                                " clean has no time in the plan to draw it in.");
+                        const bool sameChg = (plan.products.size() < 2)
+                            || (pt->campaigns > 1);
+                        if (c.waterPerChangeover > 0.0 && sameChg && !(t.changeover > 0.0))
+                            throw std::runtime_error(w + ": it declares water for a clean"
+                                " at each changeover, and train '" + t.name + "' has"
+                                " `changeover 0 h` (product '" + pr.name + "' runs "
+                                + std::to_string(pt->campaigns) + " campaigns).");
+                        if (c.waterPerChangeover > 0.0 && plan.products.size() >= 2
+                            && !(pt->productChangeover > 0.0))
+                            throw std::runtime_error(w + ": it declares water for a clean"
+                                " at each product changeover, and the clean after product '"
+                                + pr.name + "' on train '" + t.name + "' is 0 h.");
+                    }
+                }
+                c.instancesPerLot = st->inPhase;
+                c.instances       = st->unitsInstalled;
+                if (plan.multiProduct())
+                {
+                    //  SEVERAL PRODUCTS.  Per product i: a clean after each of its
+                    //  N_i lots on each of the N_ip instances; a clean of every
+                    //  installed instance at each of its (c_i - 1) campaign
+                    //  changeovers, and at the ONE product changeover after its
+                    //  last campaign (a lone product: a changeover after every
+                    //  campaign, c_i of them, as the single-product plan counts).
+                    const bool several = plan.products.size() >= 2;
+                    for (const auto& pr : plan.products)
+                    {
+                        const BatchProductTrain* pt = nullptr;
+                        for (const auto& x : plan.productTrains)
+                            if (x.product == pr.name && x.train == t.name) pt = &x;
+                        BatchCleaningProduct q;
+                        q.product = pr.name;
+                        q.lotCleans = double(pr.lotsPerYear) * c.instancesPerLot;
+                        q.campaignChangeoverCleans =
+                            double(pt->campaigns - 1 + (several ? 0 : 1)) * c.instances;
+                        q.productChangeoverCleans = several ? double(c.instances) : 0.0;
+                        q.cleans = q.lotCleans + q.campaignChangeoverCleans
+                                 + q.productChangeoverCleans;
+                        q.water  = q.lotCleans * c.waterPerLotClean
+                                 + (q.campaignChangeoverCleans + q.productChangeoverCleans)
+                                   * c.waterPerChangeover;
+                        q.effluent = c.effluentFraction * q.water;
+                        c.lotCleansPerYear        += q.lotCleans;
+                        c.changeoverCleansPerYear += q.campaignChangeoverCleans
+                                                   + q.productChangeoverCleans;
+                        c.waterPerYear            += q.water;
+                        c.perProduct.push_back(q);
+                    }
+                    c.cleansPerYear   = c.lotCleansPerYear + c.changeoverCleansPerYear;
+                    c.effluentPerYear = c.effluentFraction * c.waterPerYear;
+                    totalCleans   += c.cleansPerYear;
+                    totalWater    += c.waterPerYear;
+                    totalEffluent += c.effluentPerYear;
+                    plan.cleaning.push_back(c);
+                    continue;
+                }
+                c.lotsPerCampaign = std::min(t.lotsPerCampaign, plan.lotsPerYear);
+
+                c.lotCleansPerCampaign        = double(c.lotsPerCampaign) * c.instancesPerLot;
+                c.changeoverCleansPerCampaign = double(c.instances);
+                c.cleansPerCampaign = c.lotCleansPerCampaign + c.changeoverCleansPerCampaign;
+                c.waterPerCampaign  = c.lotCleansPerCampaign * c.waterPerLotClean
+                                    + c.changeoverCleansPerCampaign * c.waterPerChangeover;
+                c.effluentPerCampaign = c.effluentFraction * c.waterPerCampaign;
+
+                c.lotCleansPerYear        = double(plan.lotsPerYear) * c.instancesPerLot;
+                c.changeoverCleansPerYear = double(t.campaigns) * c.instances;
+                c.cleansPerYear = c.lotCleansPerYear + c.changeoverCleansPerYear;
+                c.waterPerYear  = c.lotCleansPerYear * c.waterPerLotClean
+                                + c.changeoverCleansPerYear * c.waterPerChangeover;
+                c.effluentPerYear = c.effluentFraction * c.waterPerYear;
+
+                totalCleans   += c.cleansPerYear;
+                totalWater    += c.waterPerYear;
+                totalEffluent += c.effluentPerYear;
+                plan.cleaning.push_back(c);
+            }
+
+            std::cout << "\n=== BATCH PLAN: cleaning of the machines (purified water and effluent)"
+                         " ====================\n"
+                      << "  " << std::left << std::setw(22) << "machine" << std::setw(10) << "cleans/"
+                      << std::setw(10) << "cleans/" << std::setw(11) << "water/camp" << std::setw(12)
+                      << "effl/camp" << std::setw(11) << "water/yr" << std::setw(11) << "effl/yr"
+                      << "\n  " << std::setw(22) << "" << std::setw(10) << "campaign"
+                      << std::setw(10) << "year" << std::setw(11) << "m3" << std::setw(12) << "m3"
+                      << std::setw(11) << "m3" << std::setw(11) << "m3" << "\n  "
+                      << std::string(85, '-') << "\n";
+            for (const auto& c : plan.cleaning)
+                std::cout << "  " << std::left << std::setw(22) << c.unit
+                          << std::setw(10) << (plan.multiProduct() ? std::string("-") : fmt(c.cleansPerCampaign, 5))
+                          << std::setw(10) << fmt(c.cleansPerYear, 6)
+                          << std::setw(11) << (plan.multiProduct() ? std::string("-") : fmt(c.waterPerCampaign, 5))
+                          << std::setw(12) << (plan.multiProduct() ? std::string("-") : fmt(c.effluentPerCampaign, 5))
+                          << std::setw(11) << fmt(c.waterPerYear, 6)
+                          << std::setw(11) << fmt(c.effluentPerYear, 6) << "\n";
+            if (plan.multiProduct())
+            {
+                std::cout << "  per product (lot cleans + campaign changeovers + the product"
+                             " changeover):\n";
+                for (const auto& c : plan.cleaning)
+                    for (const auto& q : c.perProduct)
+                        std::cout << "    " << std::left << std::setw(22) << c.unit
+                                  << std::setw(14) << q.product << std::setw(10)
+                                  << fmt(q.cleans, 6) << " cleans " << std::setw(11)
+                                  << fmt(q.water, 6) << " m3 " << fmt(q.effluent, 6)
+                                  << " m3 effluent\n";
+            }
+            std::cout << "  TOTAL: " << fmt(totalCleans, 7) << " cleans a year, "
+                      << fmt(totalWater, 7) << " m3 of purified water, "
+                      << fmt(totalEffluent, 7) << " m3 of effluent.  A clean after every"
+                         " lot of each instance the lot is split over (N_ip) and of every"
+                         " installed instance at each campaign changeover; the water per"
+                         " clean and the effluent fraction are the CASE's.  The purified-"
+                         "water demand of `cleanUtilities` reads these (one home).\n";
+            if (plan.multiProduct())
+            {
+                const std::string msg = "cleaning counted over "
+                    + std::to_string(plan.products.size()) + " products (a clean after"
+                    " every lot of each, at each of its campaign changeovers and at"
+                    " each product changeover)";
+                if (AdvisoryLog::instance().addAnnouncedOnce("batchPlan:cleaningProducts",
+                        "batchPlan", "info", "batchPlan.cleaning", msg))
+                    std::cerr << "[batchPlan] " << msg << "\n";
+            }
+
+            //  The published KPIs: per machine, per train's full campaign, total.
+            auto& k = result.kpis["cleaning"];
+            std::map<std::string, std::array<scalar, 4>> perTrain;   // cleans, water, effluent, campaigns
+            std::map<std::string, std::array<scalar, 3>> perProd;   // cleans, water, effluent
+            for (const auto& c : plan.cleaning)
+            {
+                k[c.unit + "_cleans_year"]        = c.cleansPerYear;
+                k[c.unit + "_water_m3_year"]      = c.waterPerYear;
+                k[c.unit + "_effluent_m3_year"]   = c.effluentPerYear;
+                for (const auto& q : c.perProduct)
+                {
+                    k[c.unit + "_" + q.product + "_cleans_year"]      = q.cleans;
+                    k[c.unit + "_" + q.product + "_water_m3_year"]    = q.water;
+                    k[c.unit + "_" + q.product + "_effluent_m3_year"] = q.effluent;
+                    auto& b = perProd[q.product];
+                    b[0] += q.cleans;  b[1] += q.water;  b[2] += q.effluent;
+                }
+                if (plan.multiProduct()) continue;
+                auto& a = perTrain[c.train];
+                a[0] += c.cleansPerCampaign;
+                a[1] += c.waterPerCampaign;
+                a[2] += c.effluentPerCampaign;
+            }
+            for (const auto& [pn, b] : perProd)
+            {
+                k["product_" + pn + "_cleans_year"]      = b[0];
+                k["product_" + pn + "_water_m3_year"]    = b[1];
+                k["product_" + pn + "_effluent_m3_year"] = b[2];
+            }
+            for (const auto& [tn, a] : perTrain)
+            {
+                k["train_" + tn + "_cleans_campaign"]      = a[0];
+                k["train_" + tn + "_water_m3_campaign"]    = a[1];
+                k["train_" + tn + "_effluent_m3_campaign"] = a[2];
+            }
+            k["cleans_year"]      = totalCleans;
+            k["water_m3_year"]    = totalWater;
+            k["effluent_m3_year"] = totalEffluent;
+
+            const std::string msg = "the effluent of cleaning is published as a VOLUME"
+                " (m3 a year, the declared fraction of the cleaning water); its LOAD"
+                " (API, solvent, COD), the CIP chemicals and the rinse water are not"
+                " computed";
+            if (AdvisoryLog::instance().addAnnouncedOnce("batchPlan:cleaningEffluent",
+                    "batchPlan", "info", "batchPlan.cleaning", msg))
+                std::cerr << "[batchPlan] " << msg << "\n";
+        }
+    };
+
     //  ==== MULTIPRODUCT: its own design, findings, console and reports ====
     if (multi)
     {
@@ -1608,6 +1857,7 @@ int BatchPlanPass::run(SimulationResult& result)
                   << "========================================================"
                      "=============================\n";
 
+        runCleaning();
         writeCsvs(plan);
         plan.present = true;
         result.batchPlan = std::move(plan);
@@ -1816,143 +2066,7 @@ int BatchPlanPass::run(SimulationResult& result)
                 " the year -- larger lots on smaller equipment, a shared"
                 " (multiproduct) line, or fewer available hours.");
 
-    //  ---- the cleaning of the machines (DEV.md 4c C210, E3) -------------
-    //  `cleaning ( { unit; waterPerLotClean; waterPerChangeover;
-    //  effluentFraction; source; reason; } ... )`: the CASE declares the
-    //  purified water of one clean of one instance of a machine and the
-    //  fraction of it that leaves as effluent; the PLAN counts the cleans --
-    //  a clean after every lot of every instance the lot is split over
-    //  (N_ip), and a clean of every installed instance (N_ip N_op) at each
-    //  campaign changeover.  Absent: nothing here runs and nothing moves.
-    if (d->found("cleaning"))
-    {
-        if (!d->hasDictList("cleaning"))
-            throw std::runtime_error(top + ": `cleaning ( { unit <machine>;"
-                " waterPerLotClean <vol>; waterPerChangeover <vol>;"
-                " effluentFraction <0..1>; source \"...\"; reason \"...\"; }"
-                " ... );` must be a list of entries.");
-        std::set<std::string> seenUnits;
-        scalar totalCleans = 0, totalWater = 0, totalEffluent = 0;
-        for (const auto& cd : d->lookupDictList("cleaning"))
-        {
-            BatchCleaning c;
-            if (!isWord(cd, "unit"))
-                throw std::runtime_error(top + " { cleaning }: an entry has no"
-                    " `unit <machine>;`.");
-            c.unit = cd->lookupWord("unit");
-            const std::string w = top + " { cleaning } unit `" + c.unit + "`";
-            if (!seenUnits.insert(c.unit).second)
-                throw std::runtime_error(w + ": declared twice -- one machine,"
-                    " one cleaning entry.");
-            const BatchStage* st = plan.stageOfUnit(c.unit);
-            if (!st)
-                throw std::runtime_error(w + ": the unit is in no stage of the"
-                    " plan, so the plan cannot count its cleans.  Units in a"
-                    " stage: add it to a stage's `units`.");
-            c.stage = st->name;
-            c.train = st->train;
-            const BatchTrain& t = plan.trains[trainIndex[st->train]];
-            c.waterPerLotClean   = dimensioned(cd, "waterPerLotClean", Dims::volume, "0.4 m3", w);
-            c.waterPerChangeover = dimensioned(cd, "waterPerChangeover", Dims::volume, "1.2 m3", w);
-            if (!cd->found("effluentFraction"))
-                throw std::runtime_error(w + ": `effluentFraction` is not declared"
-                    " (the share of the cleaning water that leaves as effluent,"
-                    " between 0 and 1).  Nothing is defaulted.");
-            c.effluentFraction = cd->lookupScalar("effluentFraction");
-            if (!std::isfinite(c.effluentFraction) || c.effluentFraction < 0.0
-                || c.effluentFraction > 1.0)
-                throw std::runtime_error(w + ": `effluentFraction "
-                    + fmt(c.effluentFraction) + ";` is a fraction between 0 and 1.");
-            c.source = requireText(cd, "source", w);
-            c.reason = requireText(cd, "reason", w);
-            if (c.waterPerLotClean > 0.0 && !(st->cleanTime > 0.0))
-                throw std::runtime_error(w + ": it declares water for a clean after"
-                    " every lot, and its stage '" + st->name + "' has `cleanTime 0"
-                    " h` -- the clean has no time in the plan to draw it in.");
-            if (c.waterPerChangeover > 0.0 && !(t.changeover > 0.0))
-                throw std::runtime_error(w + ": it declares water for a clean at"
-                    " each changeover, and train '" + t.name + "' has `changeover"
-                    " 0 h`.");
-            c.instancesPerLot = st->inPhase;
-            c.instances       = st->unitsInstalled;
-            c.lotsPerCampaign = std::min(t.lotsPerCampaign, plan.lotsPerYear);
-
-            c.lotCleansPerCampaign        = double(c.lotsPerCampaign) * c.instancesPerLot;
-            c.changeoverCleansPerCampaign = double(c.instances);
-            c.cleansPerCampaign = c.lotCleansPerCampaign + c.changeoverCleansPerCampaign;
-            c.waterPerCampaign  = c.lotCleansPerCampaign * c.waterPerLotClean
-                                + c.changeoverCleansPerCampaign * c.waterPerChangeover;
-            c.effluentPerCampaign = c.effluentFraction * c.waterPerCampaign;
-
-            c.lotCleansPerYear        = double(plan.lotsPerYear) * c.instancesPerLot;
-            c.changeoverCleansPerYear = double(t.campaigns) * c.instances;
-            c.cleansPerYear = c.lotCleansPerYear + c.changeoverCleansPerYear;
-            c.waterPerYear  = c.lotCleansPerYear * c.waterPerLotClean
-                            + c.changeoverCleansPerYear * c.waterPerChangeover;
-            c.effluentPerYear = c.effluentFraction * c.waterPerYear;
-
-            totalCleans   += c.cleansPerYear;
-            totalWater    += c.waterPerYear;
-            totalEffluent += c.effluentPerYear;
-            plan.cleaning.push_back(c);
-        }
-
-        std::cout << "\n=== BATCH PLAN: cleaning of the machines (purified water and effluent)"
-                     " ====================\n"
-                  << "  " << std::left << std::setw(22) << "machine" << std::setw(10) << "cleans/"
-                  << std::setw(10) << "cleans/" << std::setw(11) << "water/camp" << std::setw(12)
-                  << "effl/camp" << std::setw(11) << "water/yr" << std::setw(11) << "effl/yr"
-                  << "\n  " << std::setw(22) << "" << std::setw(10) << "campaign"
-                  << std::setw(10) << "year" << std::setw(11) << "m3" << std::setw(12) << "m3"
-                  << std::setw(11) << "m3" << std::setw(11) << "m3" << "\n  "
-                  << std::string(85, '-') << "\n";
-        for (const auto& c : plan.cleaning)
-            std::cout << "  " << std::left << std::setw(22) << c.unit
-                      << std::setw(10) << fmt(c.cleansPerCampaign, 5)
-                      << std::setw(10) << fmt(c.cleansPerYear, 6)
-                      << std::setw(11) << fmt(c.waterPerCampaign, 5)
-                      << std::setw(12) << fmt(c.effluentPerCampaign, 5)
-                      << std::setw(11) << fmt(c.waterPerYear, 6)
-                      << std::setw(11) << fmt(c.effluentPerYear, 6) << "\n";
-        std::cout << "  TOTAL: " << fmt(totalCleans, 7) << " cleans a year, "
-                  << fmt(totalWater, 7) << " m3 of purified water, "
-                  << fmt(totalEffluent, 7) << " m3 of effluent.  A clean after every"
-                     " lot of each instance the lot is split over (N_ip) and of every"
-                     " installed instance at each campaign changeover; the water per"
-                     " clean and the effluent fraction are the CASE's.  The purified-"
-                     "water demand of `cleanUtilities` reads these (one home).\n";
-
-        //  The published KPIs: per machine, per train's full campaign, total.
-        auto& k = result.kpis["cleaning"];
-        std::map<std::string, std::array<scalar, 4>> perTrain;   // cleans, water, effluent, campaigns
-        for (const auto& c : plan.cleaning)
-        {
-            k[c.unit + "_cleans_year"]        = c.cleansPerYear;
-            k[c.unit + "_water_m3_year"]      = c.waterPerYear;
-            k[c.unit + "_effluent_m3_year"]   = c.effluentPerYear;
-            auto& a = perTrain[c.train];
-            a[0] += c.cleansPerCampaign;
-            a[1] += c.waterPerCampaign;
-            a[2] += c.effluentPerCampaign;
-        }
-        for (const auto& [tn, a] : perTrain)
-        {
-            k["train_" + tn + "_cleans_campaign"]      = a[0];
-            k["train_" + tn + "_water_m3_campaign"]    = a[1];
-            k["train_" + tn + "_effluent_m3_campaign"] = a[2];
-        }
-        k["cleans_year"]      = totalCleans;
-        k["water_m3_year"]    = totalWater;
-        k["effluent_m3_year"] = totalEffluent;
-
-        const std::string msg = "the effluent of cleaning is published as a VOLUME"
-            " (m3 a year, the declared fraction of the cleaning water); its LOAD"
-            " (API, solvent, COD), the CIP chemicals and the rinse water are not"
-            " computed";
-        if (AdvisoryLog::instance().addAnnouncedOnce("batchPlan:cleaningEffluent",
-                "batchPlan", "info", "batchPlan.cleaning", msg))
-            std::cerr << "[batchPlan] " << msg << "\n";
-    }
+    runCleaning();
 
     //  ---- the units no stage claims ------------------------------------
     for (const auto& fu : result.topology)
