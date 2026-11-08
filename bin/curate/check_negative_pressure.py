@@ -50,6 +50,17 @@ WHAT THIS GATE CHECKS.
       quiet; the counter is reset and announced once each in the recycle
       branch; the unconditional `<= 0` replacement is preceded by that guard.
 
+AMENDED 2026-11-08 (DEV.md 4c C245 slice 2, audit H16): a trial sweep that meets
+a negative pressure no longer substitutes the inlet's: runUnit throws
+InfeasibleTrial.  The Newton's line search shortens the step, Wegstein falls
+back to direct substitution from its last image (counted, announced), and a
+seed that is itself infeasible refuses by name through the accepted-pass
+message.  Arm (c) now pins the seed refusal under both solvers and a clean
+feasible-seed run; the mid-iteration "rejected extrapolation" branch has no
+fixture here (the water loop's flow map is linear, so Wegstein cannot
+overshoot into the infeasible region).  The text of (c) above describes the
+retired behaviour.
+
 WHAT THIS GATE DOES NOT COVER, so its green line cannot imply it: other
 units' own handling of a pressure they receive (the pipe's stderr warning is
 unchanged); a trial that fails to recover (that is the recycle's own
@@ -145,7 +156,8 @@ def make_recycle(tmp: Path, tag: str, solver: str, D: str) -> Path:
     return d
 
 
-def make_trial(tmp: Path, tag: str, D: str, L: str) -> Path:
+def make_trial(tmp: Path, tag: str, D: str, L: str, seed: str = "1500",
+               solver: str = "Wegstein") -> Path:
     """mixer -> pipe -> pump (6 bar) -> splitter, the recycle seeded at 1500
     kmol/h against an answer of 1000: the first sweeps carry 2500 kmol/h and
     the pipe's drop exceeds its 5 bar inlet there, not at 2000 kmol/h."""
@@ -160,10 +172,11 @@ def make_trial(tmp: Path, tag: str, D: str, L: str) -> Path:
         "    { name S1; type splitter; in downstream; outputs ( recycle "
         "product ); operation { fractions ( 0.5 0.5 ); } }\n);\n")
     (d / "system" / "solverDict").write_text(
-        "tearStreams ( recycle );\nrecycleSolver Wegstein;\n"
+        f"tearStreams ( recycle );\nrecycleSolver {solver};\n"
         "recycleTol 1e-5;\nrecycleMaxIter 60;\n")
-    for n, f in {"feed": "1000", "recycle": "1500", "mixed": "2500",
-                 "piped": "2500", "downstream": "2500",
+    tot = str(1000 + int(seed))
+    for n, f in {"feed": "1000", "recycle": seed, "mixed": tot,
+                 "piped": tot, "downstream": tot,
                  "product": "750"}.items():
         (d / "0" / n).write_text(FEED % (f, "500000"))
     return d
@@ -209,21 +222,35 @@ def arm_recycle(tmp: Path):
 
 
 def arm_trial(tmp: Path):
-    rc, out = run(make_trial(tmp, "trial", "0.1", "2800"))
-    m = re.search(r"trial pressure clamped (\d+) time\(s\)", out)
-    n = len(re.findall(r"trial pressure clamped", out))
-    if rc != 0 or "Recycle converged" not in out or not m or int(m.group(1)) < 1 \
-            or n < 2 or "NEGATIVE pressure" in out:
-        fails.append(f"(c) trial loop: exit {rc}, converged "
-                     f"{'yes' if 'Recycle converged' in out else 'NO'}, "
-                     f"announcement {'present x%d' % n if m else 'ABSENT'} "
-                     f"(stdout line + caveat block expected):\n" + out[-600:])
-    count = int(m.group(1)) if m else 0
+    """DEV.md 4c C245 slice 2 (audit H16).  A trial that publishes a negative
+    pressure is an INFEASIBLE trial -- it is never replaced by the inlet's
+    pressure, and nothing ends with P = P_in.  The loop seeded at 1500 kmol/h
+    (2500 through the pipe, a drop of 6.8 bar from 5) has an infeasible SEED:
+    both solvers refuse by name, with no earlier iterate to fall back on.  The
+    same loop seeded at 1100 (feasible) converges to the answer, 2000 kmol/h
+    through the pipe, and prints no clamp announcement."""
+    for solver in ("Newton", "Wegstein"):
+        rc, out = run(make_trial(tmp, "trial" + solver, "0.1", "2800",
+                                 "1500", solver))
+        if rc == 0 or "NEGATIVE pressure" not in out \
+                or "outlet stream 'piped'" not in out \
+                or "Recycle converged" in out:
+            fails.append(f"(c) infeasible seed under {solver}: exit {rc}, "
+                         "must refuse by name (unit P1, stream 'piped'), "
+                         "never converge on a substituted pressure:\n"
+                         + out[-500:])
+        rc, out = run(make_trial(tmp, "feas" + solver, "0.1", "2800",
+                                 "1100", solver))
+        if rc != 0 or "Recycle converged" not in out \
+                or "NEGATIVE pressure" in out \
+                or "trial pressure clamped" in out:
+            fails.append(f"(c) feasible seed under {solver}: exit {rc}, "
+                         "must converge cleanly:\n" + out[-500:])
     rc, out = run(make_trial(tmp, "noTrial", "0.2", "2800"))
     if rc != 0 or "trial pressure clamped" in out:
         fails.append(f"(c) NEGATIVE: the wider pipe must neither refuse nor "
                      f"announce (exit {rc}):\n" + out[-400:])
-    return count
+    return 2
 
 
 def arm_sentinel(tmp: Path):
@@ -256,6 +283,23 @@ def arm_source():
                      "{ ++counter } else { ... NEGATIVE pressure ... throw } }`)")
     elif body.find("s.P <= 0.0") < g.start():
         fails.append("(e) the `<= 0` replacement precedes the negative guard")
+    if not re.search(r"\+\+g_trialPressureClamps.*?throw InfeasibleTrial\(",
+                     body, re.S):
+        fails.append("(e) runUnit's quiet branch does not throw InfeasibleTrial "
+                     "for a negative trial pressure (C245 slice 2)")
+    if not (re.search(r"ndo\.globalisation\s*=\s*solver::Globalisation::armijo",
+                      fl) and re.search(r"ndo\.typX\s*=\s*scale", fl)
+            and re.search(r"ndo\.lower\.assign", fl)
+            and re.search(r"unpackFlow\(x,\s*/\*announce=\*/false,\s*"
+                          r"/\*trial=\*/true\)", fl)):
+        # comments are stripped in fl, so match the stripped form too
+        if not (re.search(r"ndo\.globalisation\s*=\s*solver::Globalisation::armijo", fl)
+                and re.search(r"ndo\.typX\s*=\s*scale", fl)
+                and re.search(r"ndo\.lower\.assign", fl)
+                and re.search(r"unpackFlow\(x,\s*false,\s*true\)", fl)):
+            fails.append("(e) the tear Newton no longer opts into the Armijo "
+                         "contract (typX = scale, lower bounds, a residual "
+                         "that throws InfeasibleTrial instead of clipping)")
     if len(re.findall(r"\n {8}g_trialPressureClamps = 0;", fl)) != 1:
         fails.append("(e) the trial counter must be reset exactly once "
                      "(start of the recycle solve)")
@@ -287,9 +331,10 @@ def main() -> int:
           "pressure is refused by unit, stream, P and inlet on an accepted "
           f"pass (feed-forward, and in a torn recycle under "
           f"{' and '.join(solvers)}; the same line with a small drop runs); "
-          f"a trial sweep that visits a negative pressure is announced "
-          f"({nTrial} clamp(s), stdout and caveat block) and the loop still "
-          "converges; P == 0 (cstr) is still the unit-did-not-set sentinel.  "
+          f"a loop whose seed is infeasible is refused by name under Newton "
+          f"and Wegstein, never reported on P = P_in, and the same loop "
+          f"from a feasible seed converges cleanly ({nTrial} solvers); "
+          "P == 0 (cstr) is still the unit-did-not-set sentinel.  "
           "NOT covered: P == 0 as an error (kept on purpose), the "
           "time-integrated binaries, other units' reactions to a received "
           "pressure.")
