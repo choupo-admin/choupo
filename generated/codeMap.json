@@ -372,6 +372,9 @@
   "ConstantRejection": [
    "src/unitOperations/membrane/transport/ConstantRejection.H"
   ],
+  "Constants": [
+   "src/thermo/equationOfState/CubicEoS.H"
+  ],
   "Constraint": [
    "src/streams/ProcessStream.H"
   ],
@@ -437,6 +440,9 @@
   ],
   "CrystalliserSize": [
    "src/postProcessing/sizing/CrystalliserSize.H"
+  ],
+  "CubicEoS": [
+   "src/thermo/equationOfState/CubicEoS.H"
   ],
   "CurationDossier": [
    "src/propertyOps/CurationDossier.H"
@@ -1592,8 +1598,7 @@
    "src/thermo/pureFluid/PureFluidModel.H"
   ],
   "PureParams": [
-   "src/thermo/equationOfState/PR.H",
-   "src/thermo/equationOfState/SRK.H"
+   "src/thermo/equationOfState/CubicEoS.H"
   ],
   "PurePhaseDiagram": [
    "src/propertyOps/PurePhaseDiagram.H"
@@ -1734,6 +1739,9 @@
   ],
   "RoomPlan": [
    "src/postProcessing/layout/BuildingLayout.H"
+  ],
+  "Root": [
+   "src/thermo/equationOfState/CubicEoS.H"
   ],
   "Rosenbrock23": [
    "src/solver/ODE/Rosenbrock23.H"
@@ -2739,6 +2747,10 @@
    },
    {
     "key": "Rosenbrock23",
+    "type": "Rosenbrock23"
+   },
+   {
+    "key": "Rodas4",
     "type": "Rosenbrock23"
    }
   ],
@@ -8248,6 +8260,19 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/electrolyte/UnmodelledSolutes.H"
   ],
+  "src/thermo/equationOfState/CubicEoS.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H",
+   "src/thermo/ThermoAnnounce.H",
+   "src/thermo/equationOfState/CubicEoS.H",
+   "src/thermo/equationOfState/EquationOfState.H"
+  ],
   "src/thermo/equationOfState/EquationOfState.cpp": [
    "src/core/Constants.H",
    "src/core/Dictionary.H",
@@ -8257,6 +8282,7 @@
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/thermo/Component.H",
+   "src/thermo/equationOfState/CubicEoS.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/equationOfState/IdealGas.H",
    "src/thermo/equationOfState/PCSAFT.H",
@@ -8292,11 +8318,11 @@
    "src/core/Types.H",
    "src/thermo/Component.H",
    "src/thermo/ThermoAnnounce.H",
+   "src/thermo/equationOfState/CubicEoS.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/equationOfState/PR.H"
   ],
   "src/thermo/equationOfState/SRK.cpp": [
-   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -8304,7 +8330,7 @@
    "src/core/Origin.H",
    "src/core/Types.H",
    "src/thermo/Component.H",
-   "src/thermo/ThermoAnnounce.H",
+   "src/thermo/equationOfState/CubicEoS.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/equationOfState/SRK.H"
   ],
@@ -11835,8 +11861,8 @@
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/PR.cpp",
-   "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
@@ -12256,6 +12282,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
@@ -12580,6 +12607,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
@@ -12952,6 +12980,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
@@ -13407,6 +13436,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
@@ -13717,6 +13747,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
@@ -14469,6 +14500,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
@@ -16729,6 +16761,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
@@ -17792,8 +17825,8 @@
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/PR.cpp",
-   "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -18662,6 +18695,12 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp"
   ],
+  "src/thermo/equationOfState/CubicEoS.H": [
+   "src/thermo/equationOfState/CubicEoS.cpp",
+   "src/thermo/equationOfState/EquationOfState.cpp",
+   "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/SRK.cpp"
+  ],
   "src/thermo/equationOfState/EquationOfState.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoProps/main.cpp",
@@ -18680,6 +18719,7 @@
    "src/thermo/SaturationCurves.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
+   "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",

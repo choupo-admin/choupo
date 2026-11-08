@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*109 of 109 registered operations carry a schema and are documented below.*
+*111 of 111 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -210,6 +210,14 @@ The COMPACTION BENCH (DEV.md 4c C195): the Heckel, Kawakita and Ryshkewitch-Duck
 | `ryshkewitch` |   | object | — | sigma_t = sigma_0 exp(-k_b eps), fitted on ln(sigma_t); sigma_t tabulated or computed as 2F/(pi d t) (Fell & Newton 1970). |
 | `reported` |   | object | — | The source's own fitted values (Py, A, a, invb, sigma0, kb), printed beside the fitted ones; never used to tune. |
 | `output` |   | object | — | `{ file <name>.csv; }` -- the published tables, one block per model. |
+
+## `componentLookup`  (componentLookup operation)
+
+ONE TOOL CALL, ONE EVIDENCE CARD for a compound: whether the installation catalogue has it (by file name, declared alias or CAS -- never by similarity), which properties its record carries and which are missing, in a fixed byte budget (2048 bytes). A compound only in the group-estimate lake is reported as identity + groups, 'not reviewed', with NO estimated values; otherwise 'I do not have this compound'. The card lists what exists and never prints the values. Every card carries ONE provenance line (and the result JSON a catalogue object): the source (the installation catalogue), its release (data/standards/CATALOGUE.dat) and the case's seal state; a sealed case whose manifest names another release is told so with differs.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `component` | ✓ | string | — | A catalogue file name, a declared alias or a CAS number. |
 
 ## `compressor`  (compressor operation)
 
@@ -854,6 +862,14 @@ Multi-stream heat exchanger: several hot and cold streams exchanging in one bloc
 |---|:-:|---|---|---|
 | `outlet` | ✓ | object | — | One sub-dict per stream NAME, each `{ T ...; vf ...; }`. The vapour fraction defaults to the inlet's, so a sensible-only stream needs onl… |
 | `tolerance` |   | number | - | Fractional imbalance allowed between the total hot and cold duties; defaults to 0.01. Exceeding it REFUSES the run rather than reporting … |
+
+## `pairLookup`  (pairLookup operation)
+
+ONE TOOL CALL, ONE EVIDENCE CARD for a binary: what the installation catalogue holds for the pair, in a fixed byte budget (2048 bytes). The honesty ladder: a curated catalogue pair record (paste-ready `source` entry, validity, provenance) -> Choupo's own regression (`fittedInCase`, verdict) -> UNIFAC, said to be an ESTIMATE with its measured warning -> 'I do not have this pair' and what the student can bring. Never a number invented; the fields the C16 chain will add are listed as announced-absent. Reads the installation catalogue, not the case's constant/. Every card carries ONE provenance line (and the result JSON a catalogue object): the source (the installation catalogue), its release (data/standards/CATALOGUE.dat) and the case's seal state; a sealed case whose manifest names another release is told so with differs.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `components` | ✓ | array[string] | — | Exactly TWO different components, by catalogue name, alias or CAS. |
 
 ## `petroleumCuts`  (petroleumCuts operation)
 
