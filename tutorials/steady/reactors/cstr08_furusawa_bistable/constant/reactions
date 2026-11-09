@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Propylene-oxide hydration, catalysed by 0.1 wt % sulphuric acid:
+
+      C3H6O + H2O  ->  C3H8O2      (12PropyleneOxide + water -> 12Propanediol)
+
+  KINETICS, MEASURED -- Furusawa, Nishimura & Miyauchi, J. Chem. Eng. Japan
+  2 (1969) 95-100, Eq. (11), first order in propylene oxide:
+
+      k = 4.71e9 exp(-18.0 kcal/mol / RT)   [1/s]
+
+  from their Arrhenius plot (Fig. 2) of CSTR and batch data.  Ea is the
+  paper's 18.0 kcal/mol in joules (x 4184).  Nothing here is retuned.
+  The heat of reaction is NOT declared: the engine prices it from the
+  formation enthalpies of the records in constant/components.
+\*---------------------------------------------------------------------------*/
+
+hydration_PO
+{
+    limitingReactant   12PropyleneOxide;
+    stoichiometry
+    (
+        { component 12PropyleneOxide;  nu -1;  order 1; }
+        { component water;             nu -1;  order 0; }
+        { component 12Propanediol;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type   Arrhenius;
+        A      4.71e9;              // 1/s   Furusawa et al. (1969) Eq. (11)
+        Ea     75312;               // J/mol = 18.0 kcal/mol x 4184
+    }
+}

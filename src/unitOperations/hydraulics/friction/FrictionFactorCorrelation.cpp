@@ -190,7 +190,7 @@ public:
         //  A point read off the Moody chart's own construction: fully rough
         //  turbulent flow, where the Colebrook equation collapses to the
         //  von Karman rough-wall law 1/sqrt(f) = -2 log10(eps/D / 3.7),
-        //  independent of Re.  At eps/D = 0.01 that gives f = 0.03803...
+        //  independent of Re.  At eps/D = 0.01 that gives f = 0.03790...
         //  Taking the anchor in the LIMIT is deliberate: it is the one place
         //  where the implicit equation has a closed form to be checked
         //  against, so the arm tests the ITERATION rather than restating it.
@@ -201,7 +201,7 @@ public:
         v.f_published = 1.0 / (inv * inv);
         v.dev = std::abs(v.f_choupo - v.f_published) / v.f_published;
         v.anchor = "eps/D = 0.01, Re -> inf: the fully-rough von Karman limit "
-                   "of the same equation, f = 0.0380.  Checks that the "
+                   "of the same equation, f = 0.0379.  Checks that the "
                    "fixed-point iteration reaches the closed form it must";
         return v;
     }

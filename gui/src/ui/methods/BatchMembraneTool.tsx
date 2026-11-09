@@ -831,7 +831,10 @@ export function BatchMembraneTool(): JSX.Element {
               volume, so the retained species barely moves. Set the mode knob
               to <Text span ff="monospace">Concentrate</Text> and the engine
               walks up the concentration axis itself; the product J_w·c is
-              then read off that trajectory and its maximum marked.
+              then read off that trajectory and its maximum marked. It is a
+              concentration run&apos;s flux, with every solute concentrated
+              together: during a wash the permeating salts drain away and the
+              flux at the same concentration is higher.
             </Text>
           ) : (
             <>

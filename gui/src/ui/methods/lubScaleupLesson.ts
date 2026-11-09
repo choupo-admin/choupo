@@ -29,14 +29,14 @@
 
     what the engine solves            src/unitOperations/batch/FixedBedAdsorber.H:41
     the declared lab column           system/flowsheetDict operation {L, area,
-                                      eps, u, T, P} -- FixedBedAdsorber.cpp:155-160
+                                      eps, u, T, P} -- FixedBedAdsorber.cpp:168-173
     rho_b from the adsorbent record   Adsorbent.cpp:42 (`rho_bulk`),
-                                      FixedBedAdsorber.cpp:208
-    the pre-run t_st claim            FixedBedAdsorber.cpp:712-713, printed at
-                                      816-822
-    the engine's own trapezoid        FixedBedAdsorber.cpp:1453
-    the engine's own 5 % crossing     FixedBedAdsorber.cpp:1454-1463
-    the KPIs the tool reads           FixedBedAdsorber.cpp:2519-2529, 2545
+                                      FixedBedAdsorber.cpp:221
+    the pre-run t_st claim            FixedBedAdsorber.cpp:725-726, printed at
+                                      841-845
+    the engine's own trapezoid        FixedBedAdsorber.cpp:1497
+    the engine's own 5 % crossing     FixedBedAdsorber.cpp:1498-1505
+    the KPIs the tool reads           FixedBedAdsorber.cpp:2562-2572, 2589
     the witness's numbers             tutorials/batch/adsorber/
                                         batch13_breakthrough_co2/{system,expected}
 \*---------------------------------------------------------------------------*/
@@ -138,7 +138,7 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
         + "outlet reaches the declared fraction f_b, found by linear "
         + "interpolation between the two samples that bracket it, which is "
         + "the engine's own rule for its 5 % crossing "
-        + "(FixedBedAdsorber.cpp:1454-1463)", unit: "s" },
+        + "(FixedBedAdsorber.cpp:1498-1505)", unit: "s" },
       { sym: "f_b", means: "the breakthrough CRITERION, c_out/c_in at which "
         + "you switch beds -- a specification you declare (the knob), never "
         + "a datum the curve carries" },
@@ -154,7 +154,7 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
       { sym: "f_k,\\ f_{k+1}", means: "c_out/c_in at those two samples -- the "
         + "trapezoid rule applied to the data, which is exactly the "
         + "quadrature the engine runs on its own outlet "
-        + "(FixedBedAdsorber.cpp:1453)" },
+        + "(FixedBedAdsorber.cpp:1497)" },
     ],
     note: "The tail is handled honestly rather than extrapolated.  The sum "
       + "runs to the LAST sample; whatever the curve would still have "
@@ -162,12 +162,14 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
       + "had reached there.  If the last sample has not reached "
       + "c_out/c_in = 0.95 the data are INCOMPLETE and t_st is a LOWER BOUND.  "
       + "That does not make every number below a lower bound: q*_curve and "
-      + "LUB inherit the underestimate, but L_es and L_full DIVIDE by t_st "
-      + "and so come out too LONG — a truncated curve makes the bed look "
-      + "worse than it is.  Do not size from it; extend the curve first.  "
+      + "LUB inherit the underestimate, but L_es DIVIDES by t_st and so "
+      + "comes out too LONG, and so does L_full whenever the service time "
+      + "sought is longer than the laboratory breakthrough time (the usual "
+      + "case: L_full = L_lab [1 + (t_req − t_b)/t_st]) — a truncated curve "
+      + "makes the bed look worse than it is.  Do not size from it; extend the curve first.  "
       + "The engine publishes its own t_st for the same "
       + "curve -- the analytic (L/u)·R_f it announced BEFORE integrating "
-      + "(t_stoichiometric_<i>, FixedBedAdsorber.cpp:712-713) -- and the "
+      + "(t_stoichiometric_<i>, FixedBedAdsorber.cpp:725-726) -- and the "
       + "tool prints it beside the trapezoid: two readings of ONE quantity, "
       + "and the gap between them is the mesh plus the dropped tail, nothing "
       + "else.  On the witness they agree to about seven digits.",
@@ -201,11 +203,11 @@ q^*_\mathrm{isotherm} &= \frac{(R_f - \varepsilon)\, c_\mathrm{in}}{\rho_b}
       { sym: "q^*_\\mathrm{isotherm}",
         means: "the same loading as the ISOTHERM gives "
         + "it, recovered from the engine's own retention factor "
-        + "(retention_factor_<i>, FixedBedAdsorber.cpp:2519-2520) by "
+        + "(retention_factor_<i>, FixedBedAdsorber.cpp:2562-2563) by "
         + "inverting the definition the engine prints", unit: "mol/kg" },
       { sym: "R_f", means: "the RETENTION FACTOR, how many empty-tube "
         + "transit times the front lags the gas -- defined at "
-        + "FixedBedAdsorber.cpp:823 exactly as written here" },
+        + "FixedBedAdsorber.cpp:836 exactly as written here" },
     ],
     note: "A DISAGREEMENT IS THE DIAGNOSTIC, and it points at the data, not "
       + "at the isotherm.  If q*_curve falls short, the curve's tail was cut "
@@ -217,7 +219,7 @@ q^*_\mathrm{isotherm} &= \frac{(R_f - \varepsilon)\, c_\mathrm{in}}{\rho_b}
       + "recorded is not the one the column saw.  Neither is something to "
       + "tune away; both are reasons to go back to the column.  The tool "
       + "also prints the bed-average loading the run actually reached at "
-      + "its end (qbar_<i>_final, FixedBedAdsorber.cpp:2545), which equals "
+      + "its end (qbar_<i>_final, FixedBedAdsorber.cpp:2589), which equals "
       + "q* only on a saturated bed.",
   },
   {
@@ -315,13 +317,15 @@ m_\mathrm{ads} &= \rho_b \frac{\pi D^2}{4} L_\mathrm{full}
   },
   {
     n: 6,
-    title: "Beds work in pairs, and the service time bounds the cycle",
+    title: "Beds work in pairs, and the service time bounds the regeneration",
     body: "A single bed is a batch device, so a continuous plant runs two: "
       + "one loads while the other is regenerated, and they swap at or "
       + "before t_req.  The service time you just sized for is therefore an "
-      + "upper bound on the cycle time, and the regeneration -- a hot purge, "
-      + "a pressure swing, a displacement -- has to finish inside it, or a "
-      + "third bed is needed.  Regeneration is its own subject, with its own "
+      + "upper bound on the time the OTHER bed has for its regeneration -- a "
+      + "hot purge, a pressure swing, a displacement -- which has to finish "
+      + "inside it, or a third bed is needed (each bed's full cycle, loading "
+      + "plus regeneration, is twice that step when the swap is "
+      + "symmetric).  Regeneration is its own subject, with its own "
       + "cases in the corpus: batch21_tsa_hot_purge runs one "
       + "temperature-swing half-cycle, batch23_tsa_cycles runs three cycles "
       + "in one campaign, and batch24_blowdown_inert is the pressure-swing "

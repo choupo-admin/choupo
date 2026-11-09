@@ -34,8 +34,8 @@
   whatever `T_guess` is (380 here, and the log says it landed from it).
 
   The original teaching point (multiplicity, ignition and extinction, a start-up
-  procedure) needs a genuinely exothermic reaction; a replacement case on such a
-  reaction is planned.  No parameter was changed to recover the three states.
+  procedure) needs a genuinely exothermic reaction: cstr08_furusawa_bistable runs
+  one, with a measured rate law, and its scan finds three steady states.  No parameter was changed to recover the three states.
   The van Heerden construction itself is unchanged: the engine still scans,
   counts and prints every root it finds.
 \*---------------------------------------------------------------------------*/

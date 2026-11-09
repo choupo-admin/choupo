@@ -24,8 +24,9 @@
       test): methanol's heat of combustion from four formation enthalpies,
       a point-source flux, Mudan and Croce at 10 m, the three thresholds'
       unit conversions;
-    * the page's Watson against the ENGINE: the 24 520.52 J/mol acetone
-      latent heat the relief02 witness pins in its golden;
+    * the page's Watson against the ENGINE: the acetone latent heat the
+      relief02 witness pins in its golden (24 076.63 J/mol at 399.46 K since
+      the golden moved; the lesson's sentence is held to the golden);
     * the closed-form view factor against a NUMERICAL INTEGRATION of its
       definition -- two routes that share nothing;
     * the curve calibrated at 30 cm against the 1 m measurement it never
@@ -166,6 +167,18 @@ describe("pool fire: the page's Watson IS the engine's", () => {
     const T = Number(/^diag\s+relieving\s+T\s+([-0-9.eE+]+)/m
       .exec(tree("tutorials/props/safety/relief02_acetone_fire_case/expected"))![1]);
     expect(rel(watsonHvap(acetone, T), Number(g[1]))).toBeLessThan(1e-9);
+  });
+  it("the lesson sentence quotes the golden's own latent heat and temperature", () => {
+    //  C259: the golden moved (394.11 K, 24 520.52 -> 399.46 K, 24 076.63) and
+    //  the prose kept the old pair.  Read both numbers from the golden, format
+    //  them as the page does (groups of three, two decimals), and demand the
+    //  sentence holds them.
+    const gold = tree("tutorials/props/safety/relief02_acetone_fire_case/expected");
+    const num = (k: string) => Number(new RegExp(`^diag\\s+relieving\\s+${k}\\s+([-0-9.eE+]+)`, "m").exec(gold)![1]);
+    const hv = num("Hvap_acetone").toFixed(2).replace(/\B(?=(\d{3})+\.)/g, " ");
+    const T = num("T").toFixed(2);
+    const note = POOL_STEPS.find((s) => s.n === 2)!.note!.replace(/\s+/g, " ");
+    expect(note).toContain(`${hv} J/mol the engine prints for acetone at ${T} K`);
   });
 });
 

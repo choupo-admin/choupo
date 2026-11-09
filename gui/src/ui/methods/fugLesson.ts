@@ -195,11 +195,14 @@ R_\mathrm{min} + 1 &= \sum_i \frac{\alpha_i\, x_{D,i}}{\alpha_i - \theta}
       { sym: "q", means: "The FEED QUALITY: how much of the feed arrives as "
         + "liquid.  q = 1 is a saturated liquid, q = 0 a saturated vapour, "
         + "and in the textbook q outside [0,1] is a subcooled liquid or a "
-        + "superheated vapour.  CHOUPO TAKES q = 1 − vf FROM THE FEED "
-        + "STREAM's vapour fraction, so those outside values are not "
-        + "expressible here: a feed declared with no `vf` is q = 1, and the "
-        + "feed's declared TEMPERATURE enters only as the bubble-point "
-        + "solver's initial guess, nowhere else in the method.",
+        + "superheated vapour.  CHOUPO TAKES q = 1 − vf, where vf is the "
+        + "feed's vapour fraction RESOLVED at its own declared T and P: an "
+        + "authored feed with no `vf` is flashed there, a pinned one keeps "
+        + "its declaration, a produced stream keeps its producer's answer.  "
+        + "A vapour fraction lies in [0, 1], so a subcooled (q > 1) or "
+        + "superheated (q < 0) feed is not expressible here; and the feed's "
+        + "declared TEMPERATURE enters the method twice — through q, and as "
+        + "the initial guess of the bubble-point solve that fixes every α.",
         unit: "dimensionless" },
       { sym: "R_\\mathrm{min}",
         means: "The MINIMUM REFLUX RATIO — the reflux below "
@@ -370,8 +373,10 @@ export const FUG_LIMITS: readonly { id: string; title: string; body: string }[] 
     title: "Constant molar overflow.",
     body: "Underwood's derivation assumes equal molar latent heats, so the "
       + "internal vapour and liquid flows do not change from stage to stage. "
-      + "It is the same assumption the Wang-Henke and simultaneous column "
-      + "models make; fullMESH is where it is dropped.",
+      + "It is the same assumption Choupo's two CMO column models make "
+      + "(`model WangHenke;`, a bubble-point iteration run here at constant "
+      + "molar overflow, and `model simultaneous;`); `fullMESH` is where it "
+      + "is dropped.",
   },
   {
     id: "gilliland-is-a-fit",

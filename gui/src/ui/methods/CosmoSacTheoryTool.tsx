@@ -201,8 +201,8 @@ export const COSMO_STEPS = [
     n: 6,
     title: "The combinatorial part: molecules are different sizes",
     body: "Even with no energetic preference at all, mixing molecules of "
-      + "different size and shape changes the entropy.  COSMO-SAC borrows "
-      + "the Staverman–Guggenheim expression the UNIQUAC family uses, with "
+      + "different size and shape changes the entropy.  COSMO-SAC uses the "
+      + "same Staverman–Guggenheim expression as the UNIQUAC family, with "
       + "the size and area parameters taken from the SAME cavity the "
       + "σ-profile came from rather than from a separate table:",
     eq: "r_i = V_i / r₀ ,   q_i = A_i / q₀ ,   l_i = (z/2)(r_i − q_i) − (r_i − 1)\n"
@@ -227,9 +227,11 @@ export const COSMO_STEPS = [
     body: "That is the whole model.  Two σ-profiles, two areas, two "
       + "volumes, eight universal constants — and not one number fitted to "
       + "the pair in front of you.  The constants are not innocent of "
-      + "mixtures: several of them (the misfit factor α', the "
-      + "hydrogen-bonding c_HB and σ_HB) were regressed once, by the model's "
-      + "authors, on mixture data for many systems.  What was decided "
+      + "mixtures: two of them, the segment area a_eff and the "
+      + "hydrogen-bonding c_HB, were regressed once, by the model's authors, "
+      + "on vapour-liquid equilibrium data for many systems; σ_HB, and the "
+      + "form of the misfit factor α' (which moves only through a_eff), were "
+      + "taken over from Klamt's COSMO-RS.  What was decided "
       + "before anyone mixed water and ethanol is everything SPECIFIC to "
       + "that pair.",
     after: "Which is the claim to test, and the reason the comparison page "
@@ -276,8 +278,9 @@ export function CosmoSacTheoryTool(): JSX.Element {
         title="Read this before you trust a number on this page">
         <Text size="sm">
           The public tree ships <strong>synthetic teaching surrogates</strong>
-          {" "}for the σ-profiles: the VT-2005 set that COSMO-SAC 2002 was
-          published with cannot be redistributed here.  The mechanism below
+          {" "}for the σ-profiles: the VT-2005 profile set, published in 2006, four years after
+          this 2002 model, and normally used with it,
+          cannot be redistributed here.  The mechanism below
           is exact and the code is the real one; the NUMBERS the witness
           produces demonstrate behaviour and are <strong>not validated
           against measurement</strong>.  Install your own copy with{" "}

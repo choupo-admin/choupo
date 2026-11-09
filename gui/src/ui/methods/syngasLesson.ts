@@ -458,9 +458,13 @@ a + c &= n_{\ce{CO}} + n_{\ce{CO2}}\\
       + "pressure-swing adsorber: beds of adsorbent take up CO2, methane, CO "
       + "and nitrogen at high pressure and let hydrogen, which hardly "
       + "adsorbs, pass through as product; each bed is then blown down to a "
-      + "low pressure, releasing what it held as the tail gas.  The heavier "
-      + "the impurity, the more strongly it is held, which is why the "
-      + "adsorber removes CO2 first and nitrogen last.",
+      + "low pressure, releasing what it held as the tail gas.  CO2, with its "
+      + "large quadrupole moment, is held most strongly and nitrogen least "
+      + "among the impurities, with methane and CO between them (the host "
+      + "case's isotherms rank them CO2 >> CH4 > CO ~ N2 >> H2), which is "
+      + "why the adsorber removes CO2 first and nitrogen last.  Molar mass "
+      + "is not the measure: methane is lighter than nitrogen and is held "
+      + "more strongly.",
     formula: String.raw`\Delta q_i = \eta\,\bigl(q_i(P_\mathrm{high}) - q_i(P_\mathrm{low})\bigr), \qquad S_i = \min(\Delta q_i\, w\, F,\; z_i F)`,
     where: [
       { sym: "\\Delta q_i", means: "the working capacity of the adsorbent for "
@@ -491,8 +495,9 @@ a + c &= n_{\ce{CO}} + n_{\ce{CO2}}\\
     body: "Raise the regeneration pressure and the purity falls: a bed blown "
       + "down to a higher pressure gives up less, so it holds less on the "
       + "next cycle, and methane and CO break into the product.  Now change "
-      + "the purge -- a fraction of the product sent back through the bed to "
-      + "sweep it clean -- and see what this model does with it: the recovery "
+      + "the purge -- a stream drawn from the product, sized as a fraction "
+      + "of the FEED (PSA.cpp:225), and sent back through the bed to sweep "
+      + "it clean -- and see what this model does with it: the recovery "
       + "moves and the purity does not.  In this equilibrium shortcut the "
       + "purge leaves at the product's own composition, so it can only cost "
       + "hydrogen; what a purge buys in a real cycle, a cleaner bed end and "

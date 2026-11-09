@@ -6562,7 +6562,7 @@ Use it when a physics model is overkill ("assume 90 \% capture"), as a placehold
 \end{tutscheme}
 \tutwhat{Claus thermal stage: adiabatic Gibbs reactor over C-H-N-O-S}
 \begin{tutnarrative}
-Claus thermal stage: an adiabatic furnace and the boiler behind it, the same twelve species over the same five elements, 900 K apart.
+Claus thermal stage: an adiabatic furnace and the boiler behind it, the same fourteen species over the same five elements, 900 K apart.
 
 Element order in every atoms( ) list is the order of `elements` below: ( C H N O S ). Nothing in this file declares a conversion, a temperature for the furnace, or which sulfur allotrope forms -- all three are results. See system/controlDict for what comes out and what the model deliberately does not do.
 
@@ -10832,7 +10832,7 @@ the textbook "heat generated equals heat removed". The generation curve G(T) is 
 
 This case was written for exactly that: a 300 K feed, a negligible rate there, and an ignited branch reached by `T\_guess`. It no longer shows it. After the acetic-acid correction (docs/design/acetic-acid-latent-heat-closure.md) the liquid esterification is nearly thermoneutral (dH\_rxn about -2.7 kJ/mol, where the engine used to print about -25.7), the complete-conversion adiabatic temperature is only 310.7 K, and G(T) is far too small to cut the removal line more than once: the scan finds ONE steady state, 300.04 K, whatever `T\_guess` is (380 here, and the log says it landed from it).
 
-The original teaching point (multiplicity, ignition and extinction, a start-up procedure) needs a genuinely exothermic reaction; a replacement case on such a reaction is planned. No parameter was changed to recover the three states. The van Heerden construction itself is unchanged: the engine still scans, counts and prints every root it finds.
+The original teaching point (multiplicity, ignition and extinction, a start-up procedure) needs a genuinely exothermic reaction: cstr08\_furusawa\_bistable runs one, with a measured rate law, and its scan finds three steady states. No parameter was changed to recover the three states. The van Heerden construction itself is unchanged: the engine still scans, counts and prints every root it finds.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -10935,6 +10935,56 @@ The plateau is not asserted anywhere in the dict. It is where k1 a'\_HOAc a'\_Me
 \goldrow{kpi}{reactor}{xi\_esterification\_meoac\_mol\_per\_s}{0.0680930737737}
 \goldrow{stream}{feed}{T}{333.15}
 \goldmore{9}
+\end{tutgolden}
+
+\clearpage
+\tutentry{cstr08\_furusawa\_bistable}{tutorials/steady/reactors/cstr08\_furusawa\_bistable}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny cstr}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {reactorOut};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Adiabatic CSTR, propylene-oxide hydration (Furusawa, Nishimura \& Miyauchi 1969): the energy-balance scan finds three steady states}
+\begin{tutnarrative}
+an ADIABATIC CSTR on a measured exothermic reaction, scanned for steady states. It finds THREE.
+
+THE SOURCE. Furusawa, Nishimura \& Miyauchi, "Experimental study of a bistable continuous stirred-tank reactor", J. Chem. Eng. Japan 2 (1969) 95-100, doi:10.1252/jcej.2.95 (open on J-STAGE). They ran propylene-oxide hydration, acid-catalysed, in an insulated Dewar CSTR, chosen "because of its high heat of reaction, its high activation energy and its significant reaction rate at room temperature", and ran three conditions (Table 1):
+
+condition tau [s] T0 [K] what they measured 1 980 274.3 one steady state, LOW conversion 2 1330 274.6 two stable states (three crossings) 3 1550 287.1 one steady state, HIGH conversion
+
+WHAT THIS CASE TAKES FROM THE PAPER, and nothing else is tuned: the kinetics, first order in propylene oxide, their Eq. (11): k = 4.71e9 exp(-18.0 kcal/mol / RT) 1/s (constant/reactions); the feed: an equal-volume propylene-oxide + methanol solution mixed with acidified water to 2.15 mol/L of propylene oxide. Per litre of feed, with the record volumes added (the paper's own assumption 2, no volume change): 2.15 mol oxide, 3.72 mol methanol, 38.58 mol water -- the molar flows in 0/feed are that composition at 0.01 kmol/h of oxide; the inlet temperature: the controlled 274.3 K PLUS the 10 K the heat of DILUTION adds on mixing, as the paper itself does ("the inlet temperature of the reactor could then be regarded as being 10.0 deg. higher than the controlled value"): 284.3 K. An ideal liquid has no heat of mixing, so the paper's correction is the honest one here; the residence time of CONDITION 1, 980 s: V\_R below is the feed's volumetric flow (1.292e-6 m3/s on the record volumes) times 980 s; adiabatic: the measured heat loss was under 1 \% of what the effluent carries away, and is left out.
+
+WHAT THE ENGINE ADDS, and where it parts from the paper. The heat of reaction is not declared: it is priced from the formation enthalpies of the four records on an IDEAL liquid. At complete conversion that gives an adiabatic rise of 56.1 K (the scan ceiling, 340.37 K, minus 284.3 K). The paper MEASURED 45.5 K in a batch Dewar and 48.6 K in the running reactor, and used 46.8 K: the engine releases about 20 \% more heat than the real mixture did. The gap is not chased here; an ideal liquid carries no heats of solution of the oxide and the glycol in water, which is where a calorimeter and a table of pure-liquid formation enthalpies part.
+
+The consequence is the lesson. The three-crossing window is narrow (the paper calls its own condition-2 phase plane "structurally unstable"), and 20 \% more heat moves it to SHORTER residence times. So the engine finds three crossings at condition 1, where the experiment saw one cold state:
+
+291.48 K extinguished, X = 0.13 stable 305.28 K middle unstable (the slope test fails) 333.79 K ignited, X = 0.88 stable -- reported (T\_guess 340)
+
+and at condition 2 (tau 1330 s, 284.6 K) it finds only the ignited state, 336.6 K, where the experiment saw two; at condition 3 (tau 1550 s, 297.1 K) one ignited state, 352.1 K, as measured. The paper's own model, with its measured 46.8 K, puts three crossings at condition 2 (295.8, 302.4 and 320.9 K, by hand from Eq. (11)). Read the case as the van Heerden construction on a real, measured rate law -- not as a reproduction of the measured states.
+
+phi(T) = H\_out(T) - H\_in - Q\_ext(T) = 0
+
+Eliminate the extent and what remains is ONE equation in the temperature, the textbook "heat generated equals heat removed". The generation curve G(T) is a sigmoid (the rate saturates once the reactant is gone); the removal line R(T) = F cp (T - T\_in) is straight (adiabatic: the only sink is the sensible heat that leaves with the product). A straight line can cut a sigmoid THREE times: the extinguished state, an unstable middle state, and the ignited state. Choupo scans, finds them all, prints them, and reports the one nearest `T\_guess`. Change T\_guess and the reactor moves to another branch -- the same equipment, the same feed, a different answer. That is not a numerical defect; it is the physics, and it is why real reactors need a start-up procedure.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{5.74253055556e-05}
+\goldrow{stream}{feed}{T}{284.3}
+\goldrow{stream}{reactorOut}{F}{5.49717432673e-05}
+\goldrow{stream}{reactorOut}{T}{333.790722963}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{0.2067311}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{0.197898275762}
+\goldrow{kpi}{reactor}{Q\_kW}{4.83169060317e-13}
+\goldrow{kpi}{reactor}{T}{333.790722963}
+\goldrow{kpi}{reactor}{T\_guess}{340}
+\goldrow{kpi}{reactor}{T\_out}{333.790722963}
+\goldrow{kpi}{reactor}{V\_R}{0.00126615}
+\goldrow{kpi}{reactor}{dT\_rise}{49.4907229634}
+\goldrow{kpi}{reactor}{k\_hydration\_PO}{0.00772213004548}
+\goldrow{kpi}{reactor}{nReactions}{1}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage

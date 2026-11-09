@@ -112,8 +112,8 @@ Description
         law `cake`          r_f = k v            (a deposited layer)
         law `intermediate`  1/A_eff = e^{k v}/A_w  (progressive pore blocking)
 
-    Two, not four.  `standard` and `complete` describe pore-INTERNAL geometry
-    changes that this unit's lumped permeance cannot represent honestly, and
+    Two, not four.  `standard` (pore walls narrowing inside the membrane) and
+    `complete` (pores sealed at their entrances) are not implemented, and
     they refuse by name rather than being approximated by a neighbour.
 
     **A BLOCKING LAW IS A CLAIM ABOUT A MECHANISM**, not a fitting exponent:

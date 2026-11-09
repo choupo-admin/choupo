@@ -251,7 +251,10 @@ export const MCCABE_LIMITS: readonly { id: string; title: string; body: string }
       + "efficiency — commonly 60-80 %, so the tray count is larger than the "
       + "step count, often by half again.  This diagram DOES carry it: the "
       + "E_MV knob pulls a pseudo-equilibrium curve down towards the "
-      + "operating line and the staircase then counts actual trays.  What it "
+      + "operating line and the TRAY steps go to it, so the staircase then "
+      + "counts actual trays; the partial reboiler (and a partial "
+      + "condenser) is an equilibrium stage, not a tray, and still steps "
+      + "to the true curve.  What it "
       + "cannot do is tell you the number — E_MV is a value you supply (or "
       + "estimate, e.g. by O'Connell), never one the thermodynamics hands "
       + "you.",

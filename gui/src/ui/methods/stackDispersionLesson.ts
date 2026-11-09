@@ -18,12 +18,15 @@
   tables as a function of the weather, day or night).
 
   WHAT WAS READ AND WHAT WAS NOT is said in STACK_SOURCES and again in
-  STACK_LIMITS, source by source.  In short: the urban sigma set and the
-  good-engineering-practice formula were READ in a printed table and in the
-  regulation; the rural sigma set, Turner's class table and Briggs' plume-rise
-  constants were written from the standard tabulation and NO source printing
-  them could be read for this page.  The page says so rather than printing
-  them as fact.
+  STACK_LIMITS, source by source.  In short (as of commit 076efe8,
+  2026-11-09, which turned the flags from unread to read): both sigma sets,
+  Turner's class table, Briggs' plume-rise constants and the good-engineering-
+  practice formula were READ in printed US government documents (Hanna et al.
+  1982, Turner's workbook, ISC3 Vol. II, 40 CFR 51.100), with the table and
+  page given in STACK_SOURCES; the originals of Briggs (1969, 1973, 1975) and
+  Pasquill (1961) were not seen.  An earlier draft of this header said the
+  opposite and was left behind when the flags changed (C259 S2); the
+  page-number readings are that commit's and were not re-read in C259.
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";

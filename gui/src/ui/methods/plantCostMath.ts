@@ -144,11 +144,11 @@ export function outsideRange(value: number, r: Range | null): "below" | "above" 
 export interface EquipItem { name: string; cp: number; fbm: number }
 
 /** Choupo's FCI = contingencyFee x sum C_BM + siteFactor x sum C_BM0
- *  (EconomicsPass.cpp:2963).  On this page the items are at base conditions,
+ *  (EconomicsPass.cpp:2964).  On this page the items are at base conditions,
  *  so C_BM0 = C_BM: a stated simplification, not the engine's per-item
  *  material and pressure factors. */
 export const ENGINE_CONTINGENCY_FEE = 1.18;   // costing::contingencyAndFee, CostingModel.H:69
-export const ENGINE_SITE_FACTOR = 0.50;       // EconomicsPass.cpp:2821
+export const ENGINE_SITE_FACTOR = 0.50;       // EconomicsPass.cpp:2822
 
 export interface BareModule {
   sumCp: number;
@@ -315,7 +315,7 @@ export interface WcResult {
 }
 
 /** (i) itemised -- a "day" of an annual figure is 1/365 of it, as in the
- *  engine (EconomicsPass.cpp:216, :365-:371); (ii) a fraction of sales;
+ *  engine (EconomicsPass.cpp:217, :366-:372); (ii) a fraction of sales;
  *  (iii) a fraction of the fixed capital. */
 export function workingCapitals(w: WcInputs): WcResult {
   const rawStock = w.rawBill * w.daysRaw / 365;

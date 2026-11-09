@@ -60,10 +60,15 @@ export const LC_STEPS = [
   {
     n: 1,
     title: "The idea: a molecule does not see the bulk composition",
-    body: "Raoult's law assumes a molecule's neighbours are drawn at random "
-      + "from the mixture, so a molecule of 1 in a 50/50 mixture is "
-      + "surrounded by half 1 and half 2.  In a real liquid that is false "
-      + "whenever the molecules have preferences.  Ethanol and water deviate "
+    body: "Raoult's law assumes two things: a molecule's neighbours are "
+      + "drawn at random from the mixture, so a molecule of 1 in a 50/50 "
+      + "mixture is surrounded by half 1 and half 2; AND a like contact "
+      + "costs the same energy as an unlike one.  Drop the second alone and "
+      + "you have the regular solution, which already deviates from Raoult "
+      + "with perfectly random neighbours (it is the α = 0 limit of NRTL "
+      + "below, ln γ_1 = x_2² (τ_12 + τ_21)).  The local-composition family "
+      + "drops the FIRST as well: in a real liquid the neighbourhood is not "
+      + "random whenever the molecules have preferences.  Ethanol and water deviate "
       + "POSITIVELY from Raoult's law, and the local-composition picture "
       + "READS that deviation as each molecule preferring its own kind, so "
       + "that an ethanol molecule sits in a neighbourhood richer in ethanol "

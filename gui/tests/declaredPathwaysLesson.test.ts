@@ -236,3 +236,20 @@ describe("the registry entry", () => {
     expect(prose(e.teaches)).toContain("constrained minimum");
   });
 });
+
+describe("the page's equil02 numbers are held by the case's golden (C259)", () => {
+  const golden = readFileSync(new URL(`../../tutorials/${PATHWAYS_WITNESS}/expected`,
+    import.meta.url), "utf8");
+  const kpi = (unit: string, key: string): number => {
+    const m = golden.match(new RegExp(`^kpi\\s+${unit}\\s+${key}\\s+(\\S+)`, "m"));
+    if (!m) throw new Error(`golden has no ${unit} ${key}`);
+    return Number(m[1]);
+  };
+  it("methanol 1.76e-10 and y_CH4 0.451 at the Gibbs outlet, 0.610 conversion declared", () => {
+    expect(kpi("gibbs", "y_methanol")).toBeCloseTo(1.76e-10, 12);
+    expect(kpi("gibbs", "y_CH4")).toBeCloseTo(0.451, 3);
+    expect(kpi("declared", "conversion_methanolSynthesis")).toBeCloseTo(0.610, 3);
+  });
+  // The 0.442 (conversion with temperatureApproach 20 K) is NOT in the golden, whose case
+  // declares 0; it was measured 2026-11-09 by running the case with 20 K (0.442082).
+});

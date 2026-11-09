@@ -55,7 +55,10 @@ describe("every engine claim is held to the line it cites", () => {
   });
   it("the lesson text cites the same lines (the numbers in the prose are not a second home)", () => {
     const text = JSON.stringify(PLANT_COST_STEPS);
-    for (const cite of ["2970-2971", "2963", "2821", "69", "722", "240", "216", "2773", "555", "1896", "1908", "1929"])
+    // C259: the previous list ("2970-2971", "2963", "2821", "240", "216", "2773", "555",
+    // "1896", "1908", "1929") pinned numbers each ONE LINE LOW against the lines that
+    // carry the quoted text (the ENGINE_SOURCES test above holds those); corrected.
+    for (const cite of ["2971-2972", "2964", "2822", "69", "722", "241", "217", "2774", "556", "1897", "1909", "1930"])
       expect(text, cite).toContain(cite);
   });
   it("the engine's constants are the ones the page defaults to", () => {
