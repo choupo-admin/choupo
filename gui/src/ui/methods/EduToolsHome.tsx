@@ -30,101 +30,142 @@ License
   EduToolsHome -- what the EduTools workspace shows when no tool is open
   (DEV.md 4c C251).
 
-  It used to open straight on one tool (McCabe-Thiele), and its guided-sequence
-  bar was unexplained.  The home answers the student's first question in order:
-  what is an EduTool, where do I start (the guided sequences, each with the
-  reason for every step), and what else is on the shelves.  It reads the
-  registry only (METHOD_PATHS, METHOD_DISCIPLINES, METHOD_TOOLS) and is not a
-  panel or a menu: it is the body of the workspace until a tool is chosen.
+  Reshaped 2026-11-09 (Vítor: the guided sequences "não fazem sentido nenhum";
+  "tudo por secções e com o Find logo muito destacado em cima").  Top to
+  bottom: title and one sentence, a WIDE search field (focused on arrival), a
+  count line, a one-line row of section links, then every live tool by
+  section (METHOD_DISCIPLINES order).  Typing filters the page live with the
+  SAME index and matcher as the Find dialog (eduToolsIndex.ts); a tool matched
+  only inside a lesson shows that chapter as its reason.  No sequence is
+  offered here (METHOD_PATHS stays as data for `&path=` links).  It reads the
+  registry only and is not a panel or a menu.
 \*---------------------------------------------------------------------------*/
 
-import { Box, Button, Card, Group, SimpleGrid, Stack, Text, UnstyledButton } from "@mantine/core";
+import { Anchor, Box, Group, SimpleGrid, Stack, Text, TextInput, UnstyledButton } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
-import { openEduToolsFind } from "./EduToolsFind.js";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCoarsePointer } from "./methodsChrome.js";
+import { groupHits, type HomeMatch } from "./homeFilter.js";
 import {
-  METHOD_DISCIPLINES, METHOD_PATHS, METHOD_TOOLS, openToolFromHome,
-  startGuidedSequence,
+  METHOD_DISCIPLINES, METHOD_TOOLS, openMethodToolAt, openToolFromHome,
 } from "./registry.js";
 
-const labelOf = (id: string): string =>
-  METHOD_TOOLS.find((m) => m.id === id)?.label ?? id;
+type IndexModule = typeof import("./eduToolsIndex.js");
 
 export function EduToolsHome(): JSX.Element {
   const coarse = useCoarsePointer();
+  const [query, setQuery] = useState("");
+  const [mod, setMod] = useState<IndexModule | null>(null);
+  const field = useRef<HTMLInputElement>(null);
+
+  // The index is the Find's own, loaded lazily (its lesson text is a chunk).
+  useEffect(() => {
+    let live = true;
+    import("./eduToolsIndex.js").then((m) => { if (live) setMod(m); }).catch(() => {});
+    return () => { live = false; };
+  }, []);
+  // Focus on arrival, unless something already holds focus (a deep link).
+  useEffect(() => {
+    const a = document.activeElement;
+    if (!a || a === document.body) field.current?.focus();
+  }, []);
+
+  const match: HomeMatch = useMemo(() => {
+    if (query.trim() === "" || !mod) return groupHits([], "");
+    return groupHits(mod.searchEduTools(mod.eduToolsIndex(), query, 100000), query);
+  }, [mod, query]);
+
+  const live = METHOD_TOOLS.filter((m) => m.status === "live");
+  const searching = query.trim() !== "";
+  // Until the index has loaded, a typed query cannot filter: show everything.
+  const filtering = searching && mod !== null;
+  const kept = (id: string) =>
+    !filtering || (match.tools !== null && match.tools.has(id as never));
+  const nKept = live.filter((m) => kept(m.id)).length;
+  const sections = METHOD_DISCIPLINES.map((d) => ({
+    d, tools: live.filter((m) => m.discipline === d && kept(m.id)),
+  })).filter((s) => s.tools.length > 0);
+
   return (
     <Box data-method-home="" style={{ flex: 1, minHeight: 0, minWidth: 0,
       overflowY: "auto", padding: "12px 16px 24px" }}>
-      <Stack gap="lg" maw={1200} mx="auto">
-        <Group justify="space-between" align="flex-start" wrap="wrap" gap="xs">
-          <Box style={{ flex: "1 1 320px", minWidth: 0 }}>
-            <Text fw={600} size="lg">EduTools</Text>
-            <Text size="sm" c="dimmed">
-              An EduTool is a method built in front of the student, step by
-              step, and run on the same engine as the cases.  Start with a
-              guided sequence, or pick any tool from the shelves below.
-            </Text>
-          </Box>
-          <Button variant="default" size={coarse ? "sm" : "xs"}
-            leftSection={<IconSearch size={14} />} onClick={openEduToolsFind}
-            aria-label="find in EduTools: every tool and chapter">
-            Find
-          </Button>
-        </Group>
-
-        <Box component="section" data-method-home-sequences="">
-          <Text fw={600} mb={6}>Guided sequences</Text>
-          <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md">
-            {METHOD_PATHS.map((p) => (
-              <Card key={p.id} withBorder padding="md" data-method-sequence={p.id}>
-                <Stack gap="xs" h="100%" justify="space-between">
-                  <Box>
-                    <Text fw={600}>{p.title}</Text>
-                    <Text size="sm" c="dimmed" mb="xs">{p.intro}</Text>
-                    <Box component="ol" m={0} pl={20} style={{ fontSize: 13 }}>
-                      {p.steps.map((s) => (
-                        <li key={s.tool} style={{ marginBottom: 4 }}>
-                          <Text span fw={600} size="sm">{labelOf(s.tool)}</Text>
-                          <Text span size="xs" c="dimmed">: {s.why}</Text>
-                        </li>
-                      ))}
-                    </Box>
-                  </Box>
-                  <Button size={coarse ? "sm" : "xs"} onClick={() => startGuidedSequence(p.id)}>
-                    Start
-                  </Button>
-                </Stack>
-              </Card>
-            ))}
-          </SimpleGrid>
+      <Stack gap="md" maw={1200} mx="auto">
+        <Box>
+          <Text fw={600} size="lg">EduTools</Text>
+          <Text size="sm" c="dimmed">
+            An EduTool is a method built in front of the student, step by
+            step, and run on the same engine as the cases.
+          </Text>
         </Box>
 
-        <Box component="section" data-method-home-shelves="">
-          <Text fw={600} mb={6}>All tools, by discipline</Text>
-          <Stack gap="md">
-            {METHOD_DISCIPLINES.map((d) => {
-              const tools = METHOD_TOOLS.filter((m) => m.discipline === d && m.status === "live");
-              if (tools.length === 0) return null;
-              return (
-                <Box key={d} data-method-shelf={d}>
-                  <Text size="sm" fw={600} c="dimmed" mb={4}>{d}</Text>
-                  <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="xs">
-                    {tools.map((m) => (
-                      <UnstyledButton key={m.id} data-method-home-tool={m.id}
-                        onClick={() => openToolFromHome(m.id)}
-                        style={{ padding: coarse ? "10px 12px" : "6px 10px",
-                          borderRadius: 4, textAlign: "left", minWidth: 0,
-                          border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
+        <TextInput ref={field} data-method-home-search="" size={coarse ? "lg" : "md"}
+          value={query} onChange={(e) => setQuery(e.currentTarget.value)}
+          onKeyDown={(e) => { if (e.key === "Escape") setQuery(""); }}
+          placeholder="Find a method, a symbol, an equation…"
+          aria-label="find in EduTools: every tool and chapter"
+          leftSection={<IconSearch size={18} />} />
+
+        <Text size="xs" c="dimmed" aria-live="polite" data-method-home-count="">
+          {filtering ? `${nKept} of ${live.length} tools`
+            : searching ? "Reading the lessons…" : `${live.length} tools`}
+        </Text>
+
+        {sections.length > 0 && (
+          <Group gap="md" wrap="nowrap" data-method-home-jump=""
+            style={{ overflowX: "auto" }}>
+            <Text size="xs" c="dimmed" style={{ flex: "none" }}>Jump to</Text>
+            {sections.map((s) => (
+              <Anchor key={s.d} size="xs" style={{ flex: "none" }}
+                href={`#method-section-${encodeURIComponent(s.d)}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById(`method-section-${s.d}`)
+                    ?.scrollIntoView?.({ block: "start" });
+                }}>
+                {s.d}
+              </Anchor>
+            ))}
+          </Group>
+        )}
+
+        {filtering && nKept === 0 && (
+          <Text size="sm">Nothing matches every word. Try fewer words, or a method, a model or a quantity.</Text>
+        )}
+
+        <Stack gap="md" data-method-home-shelves="">
+          {sections.map((s) => (
+            <Box key={s.d} component="section" id={`method-section-${s.d}`} data-method-shelf={s.d}>
+              <Text size="sm" fw={600} c="dimmed" mb={4}>
+                {s.d} <Text span size="xs">({s.tools.length})</Text>
+              </Text>
+              <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="xs">
+                {s.tools.map((m) => {
+                  const ch = match.chapter.get(m.id);
+                  return (
+                    <Box key={m.id} data-method-home-tool={m.id}
+                      style={{ borderRadius: 4, minWidth: 0,
+                        border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
+                      <UnstyledButton onClick={() => openToolFromHome(m.id)}
+                        style={{ display: "block", width: "100%", textAlign: "left",
+                          padding: coarse ? "10px 12px" : "6px 10px" }}>
                         <Text size="sm" fw={600}>{m.label}</Text>
                         <Text size="xs" c="dimmed">{m.blurb}</Text>
                       </UnstyledButton>
-                    ))}
-                  </SimpleGrid>
-                </Box>
-              );
-            })}
-          </Stack>
-        </Box>
+                      {ch && (
+                        <UnstyledButton data-method-home-chapter={m.id}
+                          onClick={() => openMethodToolAt(m.id, ch.key)}
+                          style={{ display: "block", width: "100%", textAlign: "left",
+                            padding: coarse ? "4px 12px 10px" : "0 10px 6px" }}>
+                          <Text size="xs">→ {ch.title}</Text>
+                        </UnstyledButton>
+                      )}
+                    </Box>
+                  );
+                })}
+              </SimpleGrid>
+            </Box>
+          ))}
+        </Stack>
       </Stack>
     </Box>
   );
