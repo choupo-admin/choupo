@@ -14,7 +14,7 @@ one-sentence summary, then links with a line each.
 DERIVED, NEVER HAND-KEPT.  The files served are the files that exist:
     docs/ai/start-here.md       -> /llm/start-here.md         (THE entry: routes every task)
     docs/ai/capabilities.md     -> /llm/capabilities.md       ("does Choupo do X?")
-    docs/ai/prompts.md          -> /llm/prompts.md            (the three student prompts, C252)
+    docs/ai/prompts.md          -> /llm/prompts.md            (the ONE student prompt, C257)
     docs/ai/brief.md            -> /llm/brief.md              ("design a process")
     docs/ai/packs/*.md          -> /llm/packs/<name>.md
     docs/ai/*.md (the rest)     -> /llm/reference/<name>.md   (the long references)
@@ -113,9 +113,61 @@ def with_version(text, note):
     return note + "\n\n" + text
 
 
+REPO_BLOB = "https://github.com/choupo-admin/choupo/blob/main/"
+LINK = re.compile(r"(\]\()([^)\s#]+)(#[^)\s]*)?(\))")
+
+
+def url_of_source(abs_path):
+    """The URL path /llm/** serves a docs/ai source at, or None (the ONE
+    inverse of published_urls: same mapping, looked up by file)."""
+    rel = os.path.relpath(abs_path, AI).replace(os.sep, "/")
+    if rel.startswith(".."):
+        return None
+    name = os.path.basename(rel)
+    if rel in ("start-here.md", "capabilities.md", "prompts.md", "brief.md"):
+        return "/llm/" + rel
+    if rel.startswith("packs/") and rel.count("/") == 1 and name.endswith(".md"):
+        return "/llm/" + rel
+    if "/" not in rel and name.endswith(".md"):
+        return "/llm/reference/" + name
+    return None
+
+
+def rewrite_links(text, src):
+    """C257: a document is read at /llm/<x> by an assistant and at docs/ai/<x>
+    on GitHub, and a RELATIVE link resolves in only one of them (start-here's
+    section 6 404ed on the site).  Every relative link becomes the URL the
+    target is PUBLISHED at, or, for a repository file the site does not
+    serve (a design record, AUTHORS), its GitHub page.  The source keeps the
+    relative form, which is right for a GitHub reader.  Fenced code is left
+    alone."""
+    here = os.path.dirname(os.path.abspath(src))
+
+    def one(m):
+        target = m.group(2)
+        if re.match(r"[A-Za-z][A-Za-z0-9+.-]*:|/", target):
+            return m.group(0)
+        absf = os.path.normpath(os.path.join(here, target))
+        frag = m.group(3) or ""
+        url = url_of_source(absf)
+        if url:
+            return "%s%s%s%s%s" % (m.group(1), SITE, url, frag, m.group(4))
+        if os.path.exists(absf) and os.path.relpath(absf, ROOT).split(os.sep)[0] != "..":
+            rel = os.path.relpath(absf, ROOT).replace(os.sep, "/")
+            return "%s%s%s%s%s" % (m.group(1), REPO_BLOB, rel, frag, m.group(4))
+        sys.exit(fail("%s links %s, which does not exist" % (os.path.relpath(src, ROOT), target)))
+
+    out, fence = [], False
+    for line in text.split("\n"):
+        if line.lstrip().startswith("```"):
+            fence = not fence
+        out.append(line if fence else LINK.sub(one, line))
+    return "\n".join(out)
+
+
 def copy_versioned(src, dst, note):
     with open(src, encoding="utf-8") as f:
-        text = f.read()
+        text = rewrite_links(f.read(), src)
     with open(dst, "w", encoding="utf-8") as f:
         f.write(with_version(text, note))
 
@@ -322,6 +374,25 @@ def verify(dist):
         print("llm_site: ERROR: llms.txt does not list /llm/models.md",
               file=sys.stderr)
         bad += 1
+    #  C257: no served document may carry a RELATIVE link: it would resolve
+    #  against /llm/<x> and 404 (start-here's reference links did).
+    for dirpath, _, names in os.walk(os.path.join(dist, "llm")):
+        for n in names:
+            if not n.endswith(".md"):
+                continue
+            p = os.path.join(dirpath, n)
+            fence = False
+            for i, line in enumerate(open(p, encoding="utf-8").read().split("\n"), 1):
+                if line.lstrip().startswith("```"):
+                    fence = not fence
+                if fence:
+                    continue
+                for m in LINK.finditer(line):
+                    if not re.match(r"[A-Za-z][A-Za-z0-9+.-]*:|/", m.group(2)):
+                        print("llm_site: ERROR: %s:%d carries the relative link %s, "
+                              "which does not resolve on the site"
+                              % (os.path.relpath(p, dist), i, m.group(2)), file=sys.stderr)
+                        bad += 1
     #  Every served document states its version line in its first lines.
     served = 0
     for dirpath, _, names in os.walk(os.path.join(dist, "llm")):

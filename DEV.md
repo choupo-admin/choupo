@@ -3350,6 +3350,27 @@ accepts today, and that is a policy call.
 > syntax; (c) a typed starting guess (a = 1.0) produces the engine's "[unreviewed]
 > pair" line on a flash run on the guess; (d) "validationRefused" and "notValidated"
 > look alike to a student.  These enter the front-door slice.
+> BUILT AND LANDED (2026-11-09 night, seven commits plus one by the architect; --gui
+> 45/0; diff read before integration): ONE prompt (242 words; ceiling 250, gate-held:
+> one section, URLs published, no pack list inside, the views identical); the hero
+> keeps "The process simulator that shows its work." and gains "Design a process with
+> your own AI assistant; Choupo computes it and shows every number, so you can judge
+> it." with "Copy the prompt for your AI" first; the section "A small catalogue, on
+> purpose"; the pack `properties` (1139 words: lookup, labelled estimate, the minimum
+> fit grammar in the form the curation cases use, the proposal file, the four
+> verdicts, consistency tests, the phase-split warning, the archive route);
+> llm_site.py rewrites every relative link to the URL its target is published at (a
+> file the site does not serve becomes its GitHub URL), and `--verify` refuses a
+> relative link in any served document -- it failed on 8 links of start-here before
+> the fix; AGENTS.md's last paragraph points to the brief; the pharmaceutical pack's
+> scaffold rule and the brief's one sentence agree; the welcome screen's first action
+> is "Create a case with your AI".  THE ARCHITECT'S ONE CHANGE: the general had cut
+> the brief's list of the nine shipped NRTL pairs to `ls data/standards/...` to stay
+> in budget -- a chat assistant cannot run ls, and every walked session checked the
+> pair against that list; the names are back and the budget is 3350 words.  OPEN: the
+> bridge-only "Create with Assistant" button still sits beside the new one (two
+> labels for two routes); how the browser app hands a fit's proposal file to the
+> student is not verified, so the pack has the student copy the fitted values.
 
 > **C256 (the architect, 2026-11-09, out of C245 slice 5a's Step-0 measurement): A
 > SUPERCRITICAL GAS PRICED THROUGH Psat HAS NO PHYSICAL K, AND 32 CASES CARRY ONE.**

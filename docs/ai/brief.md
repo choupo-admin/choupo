@@ -1,6 +1,6 @@
 # Choupo assistant brief — read this first, all of it
 
-budget: 3300 words (~5280 tokens)
+budget: 3350 words (~5360 tokens)
 
 You are helping a student design a chemical process and write it as a
 **Choupo case** that opens in the browser at https://choupo.org/app and runs.
@@ -18,7 +18,9 @@ layout, machine sizing, costing and economics is the same kind of case plus a
 Your reply MUST start with `DESIGN.md`, written before you look at any
 tutorial or write any case file.  A tutorial is a worked check, never a
 template: derive the case from this contract and the grammar, compare it with
-the nearest tutorial afterwards and say where they differ.  It contains, with numbers:
+the nearest tutorial afterwards and say where they differ.  A pack MAY name a shipped case as the scaffold
+for its kind of plant (DESIGN.md still first, every changed number sourced); copying a tutorial of a
+different problem is not allowed.  It contains, with numbers:
 
 1. **Goal** — product, rate, purity/specification.
 2. **Components** — each name checked against the catalogue list (§6).
@@ -208,11 +210,8 @@ Activity model: replace the `liquid` block with
     }
 ```
 
-NRTL pairs shipped in the public catalogue are few (ethanol-water,
-methanol-water, isopropanol-water, 1Propanol-water, acetonitrile-water,
-acetone-ethanol, benzene-toluene, ethanol-ethylAcetate,
-methanol-methylAcetate).  `ls data/standards/parameters/NRTL/` lists them.
-For a pair NOT in the catalogue, in this order:
+NRTL pairs shipped are few: 1Propanol-water, acetone-ethanol, acetonitrile-water, benzene-toluene, ethanol-ethylAcetate, ethanol-water, isopropanol-water, methanol-methylAcetate, methanol-water.
+For a pair NOT in the catalogue, in this order (pack `properties` has the fit grammar):
 
 1. UNIFAC (`activityModel { model UNIFAC; }`), and SAY to the student that it
    is an ESTIMATE from group contributions, not a measured pair.
@@ -375,7 +374,8 @@ Each pack: keys, degrees of freedom, refusals and one minimal example.
 | `docs/ai/packs/separations.md` | columns, absorbers, strippers, extraction |
 | `docs/ai/packs/pressure.md` | pumps, compressors, valves, pipes, hydraulics |
 | `docs/ai/packs/batch-plant.md` | a plant that runs in lots (tablets): batch plan, machine ratings and utilisation, HVAC and purified water, quotes, crew |
-| `docs/ai/packs/pharmaceutical.md` | a tablet plant for the student's own drug and dose: copy a shipped case, the keys to change, the refusals, where each deliverable prints, two strengths |
+| `docs/ai/packs/pharmaceutical.md` | a tablet plant for the student's own drug and dose: the scaffold case, the keys to change, refusals, outputs, two strengths |
+| `docs/ai/packs/properties.md` | a component or binary pair the catalogue lacks: lookup, labelled estimate, a fit from the student's measured data, the held-out verdict, the phase-split warning |
 | `docs/ai/packs/layout.md` | plot plan (rack, roads, fence, zones), the GMP building: rooms, grades, airlocks, flows |
 | `docs/ai/packs/design-cost.md` | equipment sizing, costing, economics (CAPEX, OPEX, NPV, IRR, sensitivity) |
 
@@ -386,7 +386,7 @@ The same files are served at `https://www.choupo.org/llm/packs/<name>.md`
 NOT YET WRITTEN (say so in `DESIGN.md` if the design needs one, and read
 the tutorial cases of that family instead): heat (exchangers, utilities,
 pinch), electrolytes, membranes, solids, drivers (sweeps, optimisation,
-design specs), transient simulation, props.
+design specs), transient simulation.
 
 Reference lookups (do not read end to end): `data/standards/components/`
 (names); each unit's accepted keys are in its source file (see SOURCES).

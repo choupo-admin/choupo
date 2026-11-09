@@ -129,15 +129,16 @@ def budget_findings():
     return bad
 
 
-PROMPT_MAX_WORDS = 300
+PROMPT_MAX_WORDS = 250
 
 
 def prompts_findings(home=None, landing=None, ts=None):
-    """C252: docs/ai/prompts.md, the one home of the three student prompts.
-    (1) it parses as three fenced prompts A, B, C; (2) every www.choupo.org URL
+    """C252: docs/ai/prompts.md, the one home of the student prompt (C257: ONE prompt
+    replaced the three of C252).
+    (1) it parses as ONE fenced prompt; (2) every www.choupo.org URL
     it names is a file bin/curate/llm_site.py publishes (the publisher's own
-    mapping, not a copy of it); (3) the pack list of B names exactly the files of
-    docs/ai/packs/; (4) A + B + C stay within PROMPT_MAX_WORDS words (a prompt is
+    mapping, not a copy of it); (3) the prompt routes to packs through the brief's own
+    index, so it must NOT carry a pack list of its own; (4) it stays within PROMPT_MAX_WORDS words (a prompt is
     tokens the student pays for); (5) the VIEWS carry the home's text: the
     /llm/prompts.md llm_site assembles, the landing bin/buildSite would build
     (the injection, run in memory on site/index.html) and the Help pop-out's
@@ -164,21 +165,13 @@ def prompts_findings(home=None, landing=None, ts=None):
             continue                      # expanded by the pack check below
         if url not in published and not url.startswith("/app"):
             bad.append("prompts.md names %s, which llm_site.py does not publish" % url)
-    packs_dir = ROOT / "docs" / "ai" / "packs"
-    on_disk = sorted(p.stem for p in packs_dir.glob("*.md"))
-    listed = []
-    for s in doc["sections"]:
-        for n in s["notes"]:
-            if n.startswith("Packs:"):
-                listed = re.findall(r"`([A-Za-z0-9_-]+)`", n)
-    if not listed:
-        bad.append("prompts.md: section B has no 'Packs:' line naming the packs")
-    elif sorted(listed) != on_disk:
-        bad.append("prompts.md names packs %s but docs/ai/packs/ holds %s"
-                   % (sorted(listed), on_disk))
+    if len(prompts) != 1:
+        bad.append("prompts.md holds %d prompts, not ONE" % len(prompts))
+    if re.search(r"<pack>|packs/[a-z-]+\.md", prompts[0] if prompts else ""):
+        bad.append("the prompt names a pack itself; the brief's pack index does the routing")
     words = sum(len(p.split()) for p in prompts)
     if words > PROMPT_MAX_WORDS:
-        bad.append("prompts A+B+C are %d words, over the %d-word ceiling"
+        bad.append("the prompt is %d words, over the %d-word ceiling"
                    % (words, PROMPT_MAX_WORDS))
     #  the views
     if not landing.is_file():
@@ -187,7 +180,7 @@ def prompts_findings(home=None, landing=None, ts=None):
         try:
             built = prompts_home.inject(landing.read_text(encoding="utf-8"), doc)
             if prompts_home.landing_prompts(built) != prompts:
-                bad.append("the landing section does not carry the home's three prompts")
+                bad.append("the landing section does not carry the home's prompt")
         except ValueError as e:
             bad.append("landing: %s" % e)
     import contextlib, io
@@ -206,7 +199,7 @@ def prompts_findings(home=None, landing=None, ts=None):
                 except ValueError as e:
                     got = ["/llm/prompts.md does not parse as the prompts: %s" % e]
                 if got != prompts:
-                    bad.append("/llm/prompts.md does not carry the home's three prompts")
+                    bad.append("/llm/prompts.md does not carry the home's prompt")
             if llm_site.verify(d) != 0:
                 bad.append("llm_site.py --verify refused what it assembled")
     ts_path = Path(ts) if ts else ROOT / prompts_home.OUT_TS
@@ -306,7 +299,7 @@ def main():
           "registries, %d path(s) present (%d witness case(s)), %d untyped "
           "name(s) found in the tree; every concept names a typed name and a "
           "witness (names only -- the prose about them is not checked); every "
-          "brief and pack within its declared word budget; the three student prompts name only published URLs and existing packs, stay within %d words and are carried verbatim by /llm/prompts.md, the landing and the Help module"
+          "brief and pack within its declared word budget; the ONE student prompt names only published URLs and existing packs, stay within %d words and are carried verbatim by /llm/prompts.md, the landing and the Help module"
           % (counts["typed"], counts["paths"], counts["cases"], counts["untyped"], PROMPT_MAX_WORDS))
     return 0
 
