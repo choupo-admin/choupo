@@ -14,6 +14,11 @@
   50 and 150 bar, are therefore IDEAL-GAS equilibria; a real equation of
   state moves the 150 bar figure, and that belongs to the next rung (the
   green-ammonia feasibility cases run SRK).
+
+  C256 (2026-11-09), MEASURED: the light gases, NH3, CO2 and water are priced
+  above their critical temperatures, but every inlet and outlet of the
+  screening reactors is one gas phase (vf = 1), so no printed number depends
+  on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

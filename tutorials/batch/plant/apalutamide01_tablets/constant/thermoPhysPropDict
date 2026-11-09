@@ -17,8 +17,10 @@
   an IDEAL gas: the only vapour-liquid question this plant asks is how much
   acetone the -10 C condenser leaves in the nitrogen, and Raoult on an almost
   pure acetone condensate is the right first answer.  N2 and O2 are far above
-  their critical temperatures; their extrapolated vapour pressures keep them
-  in the gas, and the condensate carries a trace of them.
+  their critical temperatures; their vapour pressures, CONTINUED past Tc,
+  keep them in the gas, and the condensate carries a trace of N2 whose K is
+  not a solubility -- no N2 (or O2) pair in acetone is in the catalogue, so
+  that trace is a numerical surface (C256; README section 8).
 
   THE SOLIDS.  The API, the polymer and every excipient are `role
   nonvolatile;` case-local records in constant/components/: they never enter

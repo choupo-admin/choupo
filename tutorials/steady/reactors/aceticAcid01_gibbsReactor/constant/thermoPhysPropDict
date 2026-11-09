@@ -10,6 +10,11 @@
   thermoPhysPropDict (v2) -- ideal gamma-phi mixture (Raoult + ideal gas).
   DECLARED, not defaulted.  A first rung: no liquid non-ideality, no acetic
   acid vapour dimerisation.
+
+  C256 (2026-11-09), MEASURED: CO and dimethylEther are priced above their
+  critical temperatures at 460 K, but the liquid this Gibbs reactor condenses
+  is acetic acid alone (CO and dimethylEther = 0 in it), so no printed number
+  depends on that K (the slice that changed it moved no row).
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

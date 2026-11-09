@@ -11,6 +11,11 @@
   Raoult DECLARED, not defaulted (gamma = 1 identically).
   Migrated mechanically from the v1 flat form (physics identical);
   v2 contract 2026-07-17.
+
+  C256 (2026-11-09), MEASURED: petCut_C7plus is priced above its critical
+  temperature (617.8 K) only at 1200 K, the edge of the cooler's temperature
+  search; every converged state lies at 406-420 K, below Tc, so no printed
+  number depends on it.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

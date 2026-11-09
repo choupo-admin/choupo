@@ -12,6 +12,10 @@
   at 7 bar).  Since C235 the pure-liquid reference carries phi_sat and
   Poynting, so declaring the vapour is the only change, exactly as in
   column19.
+
+  C256 (2026-11-09), MEASURED: propane (Tc 369.8 K) is priced above Tc only in
+  the Newton's transit; the converged profile runs 324-344 K, below it, so no
+  printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
