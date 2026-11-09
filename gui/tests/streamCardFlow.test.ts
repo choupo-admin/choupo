@@ -40,7 +40,9 @@ import { totalFlowOf } from "../src/ui/plotting/palette.js";
 import { witnessOutput } from "./witnessRead.js";
 
 const CASE = "tutorials/steady/drying/solidDryer01_sugar";
-const emptyCase: CaseFiles = { thermoPackage: {}, controlDict: {} };
+//  `shapeStreams` returns no stream without a flowsheet; an empty one is
+//  enough here (the roles it classifies are not what this test reads).
+const emptyCase: CaseFiles = { thermoPackage: {}, controlDict: {}, flowsheet: {} };
 
 describe("the stream card against the Streams table on a solid-carrying stream", () => {
   const result = () => extractStructured(witnessOutput(CASE, "log.choupoSolve"), emptyCase);
