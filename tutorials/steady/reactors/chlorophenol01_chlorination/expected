@@ -14,7 +14,7 @@ kpi     separator              F_alpha          0.000308002067098  1e-4
 kpi     separator              F_beta           0.000275331266235  1e-4
 kpi     separator              F_in             0.000583333333333  1e-4
 kpi     separator              K_Cl2            26.0852015979      1e-4
-kpi     separator              K_HCl            122.317563764      1e-4
+kpi     separator              K_HCl            122.528495529    1e-4
 kpi     separator              K_chlorophenol   0.00163310485326   1e-4
 kpi     separator              K_phenol         0.0121512005477    1e-4
 kpi     separator              P                101325             1e-4

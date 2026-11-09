@@ -33,8 +33,8 @@ kpi     transporter            T_in             313.15           1e-4
 kpi     transporter            T_out            330.806555217    1e-4
 kpi     transporter            dT               17.6565552166    1e-4
 kpi     transporter            vf_out           0.013041276551   1e-4
-closure transporter            raw_kW           -2.98508730803   1e-4
-closure transporter            step_kW          -2.98508731741   1e-4
+closure transporter            raw_kW           -2.98539520384   1e-4
+closure transporter            step_kW          -2.98539521322   1e-4
 closure transporter            remaining_kW     9.37961885938e-09 1e0
 utility transporter            heating.steamLP.duty_kW 40               1e-4
 utility transporter            heating.steamLP.T 330.806555217    1e-4
@@ -52,4 +52,4 @@ stream  warmBrine              T                330.806557015    1e-4
 boundary global                 H_feeds_kW       -7799.15475013   1e-4
 boundary global                 Q_boundary_kW    40               1e-4
 boundary global                 H_products_kW    -7762.13983367   1e-4
-boundary global                 residual_kW      2.98508353763    1e-4
+boundary global                 residual_kW      2.98539520384    1e-4
