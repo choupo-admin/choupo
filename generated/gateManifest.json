@@ -253,8 +253,8 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 814 path mention(s) and 248 case name(s) across 25 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 10 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
-      "seconds": 1.2
+      "claim": "check_doc_references: OK -- 817 path mention(s) and 248 case name(s) across 25 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 10 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
+      "seconds": 1.4
     },
     "check_doctrine": {
       "exit": 0,
@@ -308,7 +308,7 @@
     },
     "check_edutool_form": {
       "exit": 0,
-      "claim": "check_edutool_form: OK -- all 75 LIVE registry id(s) resolve through the workspace to a source (2 defined inline in MethodsWorkspace.tsx, which the file-glob this gate replaced could not see at all).  74 are scrolling lessons, each with a scroll container and at least one equation block -- and the split is reported because the routes do not prove the same thing: 59 hand their steps to the shared LaTeX step renderer, so their equations are the `formula` and `derivation[].eq` fields check_lesson_symbols holds to a glossed vocabulary; 7 display their own KaTeX equations (what-is-temperature, what-is-entropy, what-is-exergy, thermometer-trust, pcsaft-theory, reactor-ladder, route-screening), parsed by each page's own test but read by no vocabulary gate; while 8 draw their own pre-LaTeX monospace block (property-origins, property-trust, four-ways-mixture, cosmo-sac-theory, local-composition, unifac-theory, claus-gibbs, sour-water) and for those this gate proves only that the TYPEFACE is used -- it cannot tell an equation from a table cell, because the equation is bound in from a data field whose name each tool chooses.  1 are index pages whose equations live in the guide they deep-link (quoting them on the page would be a second home); 0 are instrument panels, every one NAMED in debt_registry.EDUTOOL_STILL_A_PANEL with its remedy, and no pin has outlived its violation.  On the Explorer side, viewsFor() is still gated on a component SELECTION and the pellet is not among its 14 registered view(s).  NOT CHECKED, and it is the half that matters most: whether the prose is any good, whether the equations are the right ones, or whether the steps are in a sensible order -- teaching judgements no gate can make.  This buys only that the SHAPE cannot regress and the debt cannot be forgotten.",
+      "claim": "check_edutool_form: OK -- all 76 LIVE registry id(s) resolve through the workspace to a source (2 defined inline in MethodsWorkspace.tsx, which the file-glob this gate replaced could not see at all).  75 are scrolling lessons, each with a scroll container and at least one equation block -- and the split is reported because the routes do not prove the same thing: 60 hand their steps to the shared LaTeX step renderer, so their equations are the `formula` and `derivation[].eq` fields check_lesson_symbols holds to a glossed vocabulary; 7 display their own KaTeX equations (what-is-temperature, what-is-entropy, what-is-exergy, thermometer-trust, pcsaft-theory, reactor-ladder, route-screening), parsed by each page's own test but read by no vocabulary gate; while 8 draw their own pre-LaTeX monospace block (property-origins, property-trust, four-ways-mixture, cosmo-sac-theory, local-composition, unifac-theory, claus-gibbs, sour-water) and for those this gate proves only that the TYPEFACE is used -- it cannot tell an equation from a table cell, because the equation is bound in from a data field whose name each tool chooses.  1 are index pages whose equations live in the guide they deep-link (quoting them on the page would be a second home); 0 are instrument panels, every one NAMED in debt_registry.EDUTOOL_STILL_A_PANEL with its remedy, and no pin has outlived its violation.  On the Explorer side, viewsFor() is still gated on a component SELECTION and the pellet is not among its 14 registered view(s).  NOT CHECKED, and it is the half that matters most: whether the prose is any good, whether the equations are the right ones, or whether the steps are in a sensible order -- teaching judgements no gate can make.  This buys only that the SHAPE cannot regress and the debt cannot be forgotten.",
       "seconds": 0.0
     },
     "check_edwards_model": {
@@ -508,7 +508,7 @@
     },
     "check_guide_environments": {
       "exit": 0,
-      "claim": "check_guide_environments: OK -- 4182 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
+      "claim": "check_guide_environments: OK -- 4192 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
       "seconds": 0.1
     },
     "check_guide_menu": {
@@ -1003,8 +1003,8 @@
     },
     "check_theory_citations": {
       "exit": 0,
-      "claim": "check_theory_citations: OK -- docs/theoryGuide.tex: 51 of 85 chapters that carry numbered equations carry a citation (34 pinned as owing one, ratcheting down); 135 \\cite keys all resolve, 135 \\bibitem entries all cited (0 orphans pinned); 16 of 16 engine-cited surnames the guide names reach the bibliography; 5 registered eponymous model keys the guide names are sourced. SCANNED: that one file plus src/ for surnames and factory keys; nothing else in docs/ carries a bibliography. NOT CHECKED: whether a citation is TRUE of the equation beside it, whether an equation NEEDS one, the physico-chemical HYPOTHESES Pedro also asked for, the 572 numbered equation environments individually, and the other seven guides.",
-      "seconds": 1.5
+      "claim": "check_theory_citations: OK -- docs/theoryGuide.tex: 52 of 86 chapters that carry numbered equations carry a citation (34 pinned as owing one, ratcheting down); 143 \\cite keys all resolve, 143 \\bibitem entries all cited (0 orphans pinned); 16 of 16 engine-cited surnames the guide names reach the bibliography; 5 registered eponymous model keys the guide names are sourced. SCANNED: that one file plus src/ for surnames and factory keys; nothing else in docs/ carries a bibliography. NOT CHECKED: whether a citation is TRUE of the equation beside it, whether an equation NEEDS one, the physico-chemical HYPOTHESES Pedro also asked for, the 579 numbered equation environments individually, and the other seven guides.",
+      "seconds": 1.6
     },
     "check_thermal_bed": {
       "exit": 0,
