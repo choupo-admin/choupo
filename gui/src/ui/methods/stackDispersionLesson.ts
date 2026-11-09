@@ -130,6 +130,8 @@ export const STACK_STEPS: readonly LessonStep[] = [
       { sym: "\\sigma_y", means: "crosswind spread of the plume at distance x, the standard deviation of the bell", unit: "m" },
       { sym: "\\sigma_z", means: "vertical spread of the plume at distance x", unit: "m" },
       { sym: "H", means: "effective height of the plume centre line above the ground: the stack height plus the plume rise", unit: "m" },
+      { sym: "\\pi", means: "the ratio of a circle's circumference to its diameter, 3.14159" },
+      { sym: "e", means: "the base of natural logarithms, 2.71828" },
     ],
   },
   {
@@ -254,7 +256,6 @@ export const STACK_STEPS: readonly LessonStep[] = [
     formula: String.raw`C_{\max}=\frac{2\,Q}{\pi\,e\,u\,H^{2}}\,\frac{\sigma_z}{\sigma_y}`,
     where: [
       { sym: "C_{\\max}", means: "largest ground-level concentration on the centre line", unit: "g/m3" },
-      { sym: "e", means: "the base of natural logarithms, 2.71828" },
       { sym: "\\kappa", means: "ratio of sigma-y to sigma-z, taken as constant for the hand check" },
     ],
   },

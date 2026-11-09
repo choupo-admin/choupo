@@ -94,6 +94,7 @@ import { DEMAND_QUIZ, DEMAND_STEPS } from "../src/ui/methods/demandForecastLesso
 import { DemandForecastTool } from "../src/ui/methods/DemandForecastTool.js";
 import { PlantCostTool } from "../src/ui/methods/PlantCostTool.js";
 import { PLANT_COST_QUIZ, PLANT_COST_STEPS } from "../src/ui/methods/plantCostLesson.js";
+import { STACK_QUIZ, STACK_STEPS } from "../src/ui/methods/stackDispersionLesson.js";
 import { CampaignPlanTool } from "../src/ui/methods/CampaignPlanTool.js";
 import { CAMPAIGN_PLAN_QUIZ, CAMPAIGN_PLAN_STEPS } from "../src/ui/methods/campaignPlanLesson.js";
 
@@ -179,6 +180,12 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "campaign-plan": {
     quiz: CAMPAIGN_PLAN_QUIZ, quizName: "CAMPAIGN_PLAN_QUIZ", lesson: CAMPAIGN_PLAN_STEPS, lessonName: "CAMPAIGN_PLAN_STEPS",
     file: "src/ui/methods/CampaignPlanTool.tsx", tool: CampaignPlanTool,
+  },
+  //  No `tool`: its figures need Plotly, which does not load under node; the
+  //  rendered quiz is checked in stackDispersion.test.ts, with the plot mocked.
+  "stack-dispersion": {
+    quiz: STACK_QUIZ, quizName: "STACK_QUIZ", lesson: STACK_STEPS, lessonName: "STACK_STEPS",
+    file: "src/ui/methods/StackDispersionTool.tsx",
   },
   "plant-cost": {
     quiz: PLANT_COST_QUIZ, quizName: "PLANT_COST_QUIZ", lesson: PLANT_COST_STEPS, lessonName: "PLANT_COST_STEPS",
