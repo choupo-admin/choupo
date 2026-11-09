@@ -73,10 +73,12 @@ they teach), it is the system the students' hand-made 3D page modelled (C229),
 it carries layout + economics + the most golden rows (1529), all 24 pipes
 route, and its plan already reads as a process line (N2 boost, two make-up
 compressors, recycle compressor, FEHE, water cooler, chiller, separator,
-let-down, HP storage flash).  What it lacks to look finished: the 10 H2 buffer
-vessels and the 2 ammonia tanks hang unconnected (a manifold), the substation
-sits in a zone 2 envelope and the tanks 12 m apart against 17 m (its own two
-findings), no roads/fence/gate (ammonia02 has the method), and the C229 ports.
+let-down, HP storage flash).  JUDGED AGAIN 2026-11-09 on the render after its first slice (C268): roads, fence, two gates,
+both of its own findings resolved, 0 findings.  Still thin: the 10 H2 buffer vessels and
+the 2 ammonia tanks connect to nothing (an ENGINE gap: no pipe to a stream-attached store,
+no header with branches), no utilities are drawn, the process block is under a tenth of
+the plot.  greenAmmonia02 (feasibility) and greenAmmonia03 (basic design) stay as the FEL
+stages before it, not folded.
 `ammonia02_full_plant` stays the SITE-method witness (roads, trucks, fence,
 tank farm, bunds); its loop is compacted later (C240).  `swro01_campoDalias`
 is the membrane plant from a manufacturer's case study; its 15 unrouted pipes
@@ -129,6 +131,7 @@ are indoor by rule (C100) and the viewer marks them.
 
 ## WHAT CHANGED LAST (newest first; keep ten lines)
 
+- 2026-11-09 C268 the reference plant gets its site (roads, fence, gates, 0 findings); C266 a student walk of the 14 pharmaceutical cases in the running app: the solver matches the goldens, the screens carry real errors (a number formatter that drops zeros, solids counted twice, a GUI-computed 8000 h/yr); held for the discussion with Vitor.
 - 2026-11-09 C258 debt closed: the thermal adsorber's energy balance in conservative form; batch25 claims and closes its first law (3.7e-10); cstr08's glycol on its measured liquid datum.
 - 2026-11-09 C259 (a) and (d): verified references on 62 lesson pages (202 entries, each with how it was verified; gate check_lesson_references); the CSTR and PFR no longer refuse a pureLiquid-reference record with a false message.
 - 2026-11-09 C259 + C260 LANDED (eea569a68): the scientific audit of all 60 lessons (16 S1, 34 S2) fixed and re-verified -- Kremser direction, Wegstein q>1, pressure torn, column stage 1, Hermia, TPD ln gamma(y), van Heerden on a real three-state witness (cstr08, Furusawa 1969); the ip-strategy page gains the Unified Patent Court. Open: verified references (a lesson field + gate), CSTR pureLiquid refusal defect.
@@ -138,4 +141,3 @@ are indoor by rule (C100) and the viewer marks them.
 - 2026-11-08 NIGHT BATCH: C245 slice 3 (residual purity; `newton legacy;` declared, aqueous columns on the bounded Newton), C248 PIF readiness (breakEven crash fixed, student path), C249 multi-product tutorial donepezil02 with every tool, C251 EduTools home; C246/C247/C250 recorded.
 - 2026-11-08 C245 slice 2: tear Newton, simultaneous MESH and CSTR declare bounds and throw InfeasibleTrial instead of clipping; 17 closure rows re-recorded; aqueous columns and reactive phase 1 stay legacy (debts). C246 recorded (solver knobs a case may turn).
 - 2026-11-08 C245: kernel audit (docs/audits/2026-11-08-kernel-numerical-audit.md); Newton contract, CubicEoS pseudo-root, Rodas4, adsorber 2x, column08 unseeded (6bceec76d); C239 Tc rule continuous, Ar on Henry, ammonia re-sealed 2608 (e5d7017b8); C227 (a).
-- 2026-11-08 C239: Klemola anchors on column14 (cfc70414d), column20 on SRK (021a66afa); column08 blocked by the Tc rule, fix decided (continuous factor) and running.

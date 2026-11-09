@@ -3221,6 +3221,42 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C268 (the architect, 2026-11-09): THE REFERENCE PLANT, FIRST SLICE LANDED; C244 PHASE 2
+> DECIDED; THREE ENGINE FINDINGS FOR C256.**  greenAmmoniaPEQ_baseCase (d59565f12): a ring
+> of roads, an entrance road to a main gate upwind by the control room, a tank-farm road to
+> an emergency gate, the fence with two openings and six labelled crossings; both of its own
+> findings resolved (tanks 18 m apart against 17, the substation west of the compressors
+> outside every zone); 30 items, 24 pipes routed, 0 findings.  Golden: 37 rows moved, 4
+> removed, 89 added, every one a position, a length, the plot or the land (NPV -404 731 456
+> -> -404 777 819); no process, balance, sizing or cost row.  JUDGED ON THE RENDER by the
+> architect: it reads as a site now, and it is still thin -- the process block is under a
+> tenth of the plot, no utilities are drawn (cooling tower, refrigeration package, flare),
+> and THE 10 H2 VESSELS AND THE 2 TANKS STILL CONNECT TO NOTHING.  That last is an ENGINE
+> GAP the general rightly stopped at: a store attached to a boundary stream (C44, C89) is
+> never a pipe end, and a multi-item unit gets one pipe to its front item
+> (PlantLayout.cpp, `placedOf[unit].front()`); no grammar routes a header with a branch to
+> each vessel.  NEXT, decided: (1) that engine slice -- a pipe to a stream-attached store and
+> a header with branches; (2) then the utilities block on the plot.
+> C244 PHASE 2 DECIDED: greenAmmonia03's converter is NOT folded into the reference plant.
+> Reasons the general brought and the architect accepts: 03's solved three-bed converter is
+> exactly task 2 that PEQ's README leaves to the groups; the Front-End Loading tool
+> (frontEndLoading.ts:284-319) and the tutorials guide walk feasibility -> basic design ->
+> base case as STAGES of one project, and C244's own rule (4) keeps a design-stage case a
+> guide walks; the feasibility pair differ from PEQ in topology, not in a parameter, so
+> they are not a sweep.  They stay three, presented as stages with PEQ the reference
+> (ranked so in listCases and the catalogue).  A `variants` overlay grammar is NOT built
+> for three cases.  Told to Vitor as his to overturn (his wish was fewer variations).
+> C256 FOR THE AMMONIA FAMILY, MEASURED (every continued Psat scaled x0.1 and x10, every
+> result number compared): no package change -- H2, N2, Ar are already Henry solutes with
+> measured pairs and the vapour is SRK; no K comes from a continued Psat, no stream, duty,
+> balance, size or cost moves.  THREE ENGINE DEFECTS it exposed, owed under C256: (a)
+> PhaseChanger `saturationT` inverts the DOMINANT component's Psat even when that component
+> is supercritical -- Tsat 150 K (a bisection bracket) and a latent/sensible split that
+> means nothing (total duty right); (b) the Gibbs reactor's supersaturation test is applied
+> to supercritical components (passes only because the continued value is large); (c)
+> ammonia02's FEHE outlet phase verdict depends on where the continued NH3 curve sits
+> (x10 flips an all-supercritical gas to "liquid").
+
 > **C267 (Vitor, 2026-11-09, forwarding a prompt another session wrote in a PIF tutoring
 > sitting, week 9, the groups now drawing their Gantt, stage times, process diagram and the
 > per-lot input/output table): A CONTINUOUS MACHINE IN A LOT REGIME, ON THE GANTT -- how a
@@ -3287,6 +3323,32 @@ accepts today, and that is a policy call.
 > the architect reviews.  And the durable half: what a walk finds mechanically (a view that
 > throws, a README that does not render, a phase word on a solid) becomes a gate, so it
 > is found by the suite next time and not by a visitor.
+> STAGE 1, PHARMACEUTICAL PART, DONE 2026-11-09 (Vitor moved the pharmaceutical cases to the
+> front and asked to STOP there and discuss; nothing is fixed before that).  14 cases walked
+> on the published app (engine 77754a3c): every one runs in the browser in 1.3-3.4 s and
+> 1257 stream/kpi rows equal the goldens -- THE SOLVER IS RIGHT, THE SCREENS ARE NOT.
+> Systemic, verified by the architect where marked: (S2, reproduced) the sheet's number
+> formatter `toPrecision(5).replace(/\.?0+$/,"")` strips the zeros of a whole number --
+> 98 200 shown as 982, 30 000 as 3, a 24 000 kW compressor as 24 (ReportsWorkspace.tsx:882;
+> 14 cases, the reference plant among them); (S1, seen on screen) stream cards add the solid
+> flow to an F that already holds it (StreamTerminal.tsx:339,350): donepezil01's 11 solid
+> feeds doubled; (S7) the GUI's 8000 h/yr shows 50 kEUR where the engine has 1314 EUR; (S3)
+> `m3/yr`, `um`, `rpm`, written by the engine, make the app refuse a whole sheet; (S5) a
+> sheet's molar F leaves the solids out and its mass flow keeps them; (S6) a Turton cost
+> outside its correlation is announced in the Log only; (S13) the shift check misses
+> donepezil02's 5 mg lot (10.8 h at the press against an 8 h shift); (S8) 45 of 133 READMEs
+> are refused by the app's parser, 31 still after C264's fix (real links); (S9) every dry
+> solid is "slurry" (palette.ts:194-200, an unreachable branch).  ENGINEERING, for Vitor:
+> (S4) solidDryer reads the isotherm at the INLET air (SolidDryer.cpp:170-172) while three
+> case texts say the exhaust (2.4x the water there); donepezil01 credits a loss with 556
+> kEUR of tax a year, unstated; sprayDryer06 (REA) equals sprayDryer01 to the last digit;
+> sprayDryer07 a 0.32 m chamber for a 0.1 m wheel; apalutamide's acetone tanks drawn at half
+> their sized volume; its dossier link 404; donepezil01 still says the two-strength plan
+> "is being built".  The Gantt on C267's points: T_L, the limiting stage and a legend are
+> there; the store, a common time axis, start-up/inerting and a sentence for the dryer's
+> 6 h wait are not.  Report and screenshots: session scratchpad c266/.  A finding about the
+> instrument: bin/drive-app does not start in a worktree (no gui/node_modules).
+
 
 > **C265 (Vitor, 2026-11-09, after C264: "o utilizador devia ter a opção no dicionário de
 > pós-processamento de dizer que determinados gráficos ou tabelas gostaria de ver ... a
