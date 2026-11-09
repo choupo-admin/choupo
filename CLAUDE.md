@@ -101,6 +101,21 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    available; integrations into `main` stay one at a time.  MEMORY, not the
    core count, is the binding limit -- retake the measurement when the
    machine or its load changes.
+4b. **A GREEN SUITE NEVER HIDES A BROKEN BALANCE (Vítor, 2026-11-09, after
+   opening batch15_mesh_study and finding a 4.2 % mass closure the suite had
+   called PASS: "garante que isto JAMAIS volta a acontecer sem que a suite diga
+   que o caso falhou").**  A golden pins what a run prints, so a violated
+   balance frozen into an `expected` file passes every sweep as "unchanged".
+   Therefore: every mass, element and energy closure of every shipped case --
+   steady AND batch, ctrl, unsteady, plant -- is held to the conservation
+   tolerance by a gate that runs in EVERY `bin/runTests` mode; `--record`
+   refuses to freeze a closure above tolerance; and NO shipped case shows a
+   violated mass or element balance, not even a declared one: a modelling
+   assumption that creates or removes mass becomes a NAMED STREAM carrying
+   exactly that mass (Vítor, the same night: "mesmo que haja arraste, tem de
+   se criar uma corrente extra para apanhar a massa"), so the balance closes
+   and the stream is the explanation.  Never report a suite as "all well"
+   without saying which balances it held (DEV.md 4c C258).
 5. **Do not change a permanent rule as a reflex to criticism.**  Change it
    when Vítor asks, or when there is a durable technical reason -- and
    state the reason in the change.

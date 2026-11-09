@@ -3221,6 +3221,49 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C258 (Vitor, 2026-11-09, a screenshot of batch15_mesh_study's Global balances --
+> "mass closure 4.16E-2", "worst element closure 1.13E-1 (He)" -- in a panic: "andas a
+> correr suites e a dizer que está tudo bem e no final há violação de balanços
+> mássicos!  Ainda vão gozar comigo no departamento!"): A SHIPPED CASE MUST NOT SHOW A
+> BROKEN BALANCE THAT ONLY ITS LOG EXPLAINS.**  MEASURED the same minute, every golden
+> in tutorials/ that pins a mass or element closure above 0.1 %: batch13 and batch15
+> (mass 4.2 %, He 11.3 %), batch19 (0.11 %, 0.31 %), dryer01 and dryer02 (mass
+> 21.6 % and 21.0 %, element 31 %).  WHY THE SUITE SAID PASS: the golden PINS these
+> numbers, so "unchanged" is all a sweep can say, and check_mass_closure covers STEADY
+> cases only (278), never the batch campaigns.  WHAT THEY ARE: (1) the adsorbers are a
+> DECLARED model error -- the constant-(u, P, T) closure fabricates carrier at the net
+> uptake rate; the engine announces it, pins it as carrier_fabricated_mol and
+> physical_mass_closure_rel, and "a named error must bite the equation that owns it,
+> never be discounted out" (FixedBedAdsorber.cpp:920-935); the Ergun velocity update
+> removes it and most adsorber cases use it; batch15, the mesh study, does not, and
+> the screen shows the residual with no word of why; (2) the dryers are NOT that: 2.60
+> kg in, 2.04 kg left, external_out 0 -- the evaporated water leaves into the drying
+> air and the campaign ledger records no outlet, which reads as 0.56 kg destroyed.
+> Vitor is right on the substance: a colleague who opens either sees a violated mass
+> balance, and the explanation is in a log nobody reads.  DECISIONS: (a) the dryer
+> ledger books the evaporated water as an external outlet (the air is the sink),
+> re-recorded with the reason; (b) every case whose balance is not closed by a
+> DECLARED model error moves to the conserving model (batch15 and batch19 to Ergun
+> unless the lesson IS the closure error, then the case says so in its title and
+> README); (c) the GUI's balance chips say the declared cause beside the number
+> ("carrier fabricated by the declared constant-velocity closure -- 4.2 %; Ergun
+> removes it"), never only in the log; (d) a gate over EVERY campaign (batch, ctrl,
+> unsteady): a closure above tolerance must carry a named, declared cause, or the
+> suite FAILS -- the steady gate's KNOWN_OPEN discipline, extended.  First the audit of
+> every time-integrated case, then the fixes, one general.
+> RULED BY VITOR the same night, and right on the substance: "mesmo que haja arraste,
+> tem de se criar uma corrente extra para apanhar a massa!"  Showing a declared model
+> error as a residual "that bites the equation that owns it" (the adsorber's own
+> doctrine, forum #119) was honest to a reader of the log and indefensible on the
+> screen: a balance chart that does not close reads as a broken simulator, whatever
+> the log says.  The project already has the answer in another place -- heat is a
+> stream, not a label; information follows the streams.  So decisions (b) and (d)
+> above are REPLACED: the constant-velocity closure publishes a declared carrier
+> MAKE-UP STREAM equal to the carrier it fabricates, named for the assumption, drawn
+> as its own bar; every mass and element balance of every shipped case closes; the
+> gate keeps no declared-cause exemption for them.  The size of the assumption stays
+> visible as that stream's magnitude, which is where it belongs.
+
 > **C257 (Vitor, 2026-11-09: another assistant's recommendation "tornar o Choupo AI-first",
 > pasted whole, with the instruction "eu quero apenas que tu o ouças e reflitas um pouco.
 > Não precisas de ir logo a correr fazer tudo!  A ideia é pensares e depois falares
@@ -3282,6 +3325,31 @@ accepts today, and that is a policy call.
 > with the assistant.  FIRST the walk: an ignorant assistant, one prompt against
 > three on the same task, and a second task that needs a pair the catalogue lacks,
 > from a table of measured data.  What it shows decides the wording.
+> MEASURED THE SAME HOUR (six sessions of an ignorant assistant, this time with the
+> repository and every compiler hidden from it; four counted, two discarded as
+> contaminated because they cloned the public repository and BUILT the engine).
+> ONE PROMPT IS NOT WORSE THAN THREE: given the task in plain words, both sessions
+> chose the right packs from the brief's index on their own (pharmaceutical and
+> batch-plant), delivered a .zip the app's opener accepts, halved the tablet right
+> (103.44 kg/h of packaged tablets against 206.9; 143 lots), named Complete 0/ in the
+> hand-over, and ran clean after it.  THE MISSING PAIR (ethanol + cyclohexane, the
+> student given only curate12's 25 measured points as a CSV, the words NRTL and fit
+> never said): NO session invented or recalled a parameter; every one checked the
+> catalogue, put the pair into Choupo's own `fitParameters`, and said Choupo does the
+> regression; every fit ran (b_ij ~400-411 K, b_ji ~500-516 K against the golden's
+> 354.7 / 565.4, inside the fit's own +/-90-115 K intervals, the two strongly
+> correlated).  BUT NO SESSION ENDED WITH A WORKING FLASH ON THE FITTED PAIR: the pair
+> validates on bubble temperatures and predicts a liquid split, and the flash then
+> refuses (outer loop not converged), as curate12 itself says when it declines to
+> promote the pair; the documents never warn of this, so a student is left with a
+> refusal and no reason.  ALSO FOUND: (a) start-here.md's relative links
+> (case-layout.md, patterns.md, ...) are served at /llm/start-here.md while their
+> targets live at /llm/reference/ -- every one 404s on the site (docs/ai/start-here.md
+> :130-142); (b) the fitParameters grammar is in patterns.md section 4, which the brief
+> does not route to, so three sessions opened curate12 -- the answer -- to learn the
+> syntax; (c) a typed starting guess (a = 1.0) produces the engine's "[unreviewed]
+> pair" line on a flash run on the guess; (d) "validationRefused" and "notValidated"
+> look alike to a student.  These enter the front-door slice.
 
 > **C256 (the architect, 2026-11-09, out of C245 slice 5a's Step-0 measurement): A
 > SUPERCRITICAL GAS PRICED THROUGH Psat HAS NO PHYSICAL K, AND 32 CASES CARRY ONE.**
