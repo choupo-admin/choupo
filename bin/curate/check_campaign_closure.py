@@ -3,6 +3,7 @@
 
     bin/curate/check_campaign_closure.py                 # static + live (the sweep's form)
     bin/curate/check_campaign_closure.py --static        # the golden files alone, no run
+    bin/curate/check_campaign_closure.py --cases DIR...  # live arm on these cases only
     bin/curate/check_campaign_closure.py --check-expected FILE   # record time
 
 WHY THIS EXISTS (DEV.md 4c C258, 2026-11-09).  The owner opened a shipped
@@ -203,12 +204,17 @@ RESULT = re.compile(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>",
                     re.S)
 
 
+ONLY = None     # set by --cases: the live arm judges these directories alone
+
+
 def time_cases():
     for cd in sorted(ROOT.glob("tutorials/**/system/controlDict")):
         m = APP.search(cd.read_text(errors="ignore"))
         if not m or m.group(1) not in TIME_APPS:
             continue
         case = cd.parent.parent
+        if ONLY is not None and case.resolve() not in ONLY:
+            continue
         if (case.parent / "system" / "controlDict").is_file():
             continue                   # a sector, run through its parent
         yield case, m.group(1)
@@ -281,6 +287,9 @@ def main(argv):
                   % (unit, key, v, tol))
         return 1 if bad else 0
 
+    global ONLY
+    if "--cases" in argv:
+        ONLY = {Path(a).resolve() for a in argv[argv.index("--cases") + 1:]}
     static, nfiles = static_findings()
     if "--static" in argv:
         for s in static:
