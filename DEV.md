@@ -3221,6 +3221,86 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C253 (the architect, 2026-11-09 night.  Vitor asked, out of curiosity and not as an
+> order -- "eu só estava a perguntar por curiosidade" -- whether the practice followed is
+> that of a responsible engineer on a project of this size, and left the answer to the
+> architect's judgement: "faz o que achares que ajuda mais este desenvolvimento do
+> Choupo"): THE ENGINEERING PRACTICE GAP, NAMED AND RANKED; THE DECISION IS THE
+> ARCHITECT'S.**  Why it helps the development and is not ceremony: a sweep on a server
+> gives Vitor his laptop back for half an hour at a time, and a sanitizer build finds
+> the class of C++ fault no golden can see; both are cheap.  What stands: regression over the whole corpus with
+> per-case references, 320 contract gates, validation sized by reach with the full sweep
+> on a written reason, decision records, isolated branches, one serial integration lane,
+> generated files regenerated.  What is below a serious project's bar: (1) no continuous
+> integration on a server -- every sweep runs on Vitor's laptop and competes with his own
+> work; (2) no diff review -- the commander reads the generals' REPORTS, and the night's
+> gate-bypass attempt (C249 c) was caught by an automatic warning, not by a reader of the
+> diff; (3) one actor with direct push to main, no branch protection (delegated, and a
+> risk nonetheless); (4) large batches (seven branches in two lots tonight) that make a
+> failure harder to attribute; (5) no sanitizer build, no coverage; (6) the generals
+> need too much supervision (one exhausted itself before a test, one bypassed a gate,
+> two ran the wrong binary).  DECISION, by cost: (a) CI on GitHub Actions: `--fast` and
+> the gates that need no case on every push to main and on every branch, the full
+> sweep nightly, on GitHub's runner (the WASM/guide steps stay local; `check_build_fresh`
+> and the timing CSV must tolerate the runner) -- the existing workflow builds and
+> verifies only (RELEASING.md), so this extends it, never a second Pages deploy;
+> (b) the commander reads the DIFF of every general's commit that touches a test, a
+> gate or a schema, and a sample of the rest, before integrating -- a rule, not a tool,
+> added to the fleet doctrine; (c) a weekly `-fsanitize=address,undefined` build of
+> `--fast` as a gate-selftest sibling; (d) smaller batches except under a deadline
+> (tonight's reason: the 11-09 tutorial).  (a) and (c) are one general after batch-2 AND after C252 (the student-facing
+> work comes first); (b) and (d) start now.> **C252 (Vitor, 2026-11-08 night: "devia de existir uma forma de, na landing page, se dizer
+> ao utilizador o que ele deve comunicar ao seu agente AI para começar a fazer coisas:
+> criar um composto, obter parâmetros binários, fazer um caso ... prompts copy-paste
+> prontas a dar ao Claude ou ChatGPT dos alunos.  De outro modo eles fazem um prompt
+> errado e o agente não vai aos sítios certos do repositório"): THE PROMPTS ARE THE
+> STUDENT'S INTERFACE, PUBLISHED.**  MEASURED: the landing (site/index.html) says
+> nothing to a student about an assistant; the assistant documents exist at /llms.txt
+> and /llm/** (C200, C211, C250 tonight: start-here with a routing table, brief, 8
+> packs with budgets); docs/ai/start-here.md is written for a CHECKOUT ("from the
+> repository root") while a student with ChatGPT has a browser and the app's clipboard
+> bridge (C200's bridge brief, ClipboardBridge.tsx), not a checkout.  So a right prompt
+> exists nowhere a student can find it, and C250's measurement says the pack chosen
+> decides half the cost.  DECISION (architect): (1) ONE home, a prompts file under docs/ai/ (`prompts`),
+> holding the task prompts -- per task: the task in one line, the prompt to paste (it
+> tells the assistant to READ https://www.choupo.org/llm/start-here.md and the task's
+> pack URL first, what the student will supply, the answer format `=== FILE: <path>
+> ===` blocks the app's bridge pastes, and to STOP and ask when a datum is missing
+> rather than invent it), and "what you paste back" in one line; the tasks, from what
+> the engine does: declare a component (and seal it), get a binary pair (catalogue,
+> then a fit from data), build a first case (flash, then a column), a recycle
+> flowsheet, a sweep / design spec / optimisation, size and cost a plant, lay out a
+> plant, a tablet plant from a drug and a dose (the pharmaceutical pack), a batch or
+> dynamic case, "explain this log / this refusal", and "adapt this shipped case to my
+> numbers" (the revision mode); (2) rendered in THREE places from that one home: a
+> landing section "Work with your AI assistant" (copy button per prompt), the app's
+> Help, and /llm/prompts.md for the assistant itself; generated into the site by
+> bin/buildSite like the packs, never hand-copied; (3) a gate: every URL a prompt names
+> resolves in the built site, every pack named exists, every task names a witness
+> case, and each prompt stays under a declared length (a prompt is tokens too);
+> (4) the harness runs each prompt as a problem in dry-run (the request it would send)
+> and, for three of them, measured on the haiku proxy -- the score is the acceptance;
+> (5) start-here.md gets a first paragraph for the BROWSER student (no checkout: the
+> app, the bridge, the prompts) before the checkout path.  Written by the one who
+> knows what the assistant should read: the architect writes the prompts' content, a
+> general builds the plumbing; after the night batch lands (memory), before C247.
+> REVISED the same night on Vitor's reading of the first draft (13 task recipes: "parecem-me
+> chatos!  Eu quero apenas prompts iniciais para encaminhar o agente AI a aceder às
+> instruções do repo do Choupo para ele aprender a usar o kernel!  De outro modo ... ele
+> vai direito aos tutoriais e aprende como um aluno cábula, por analogia, fast & dirty"):
+> THREE prompts, not thirteen -- (A) "learn Choupo first": read start-here, the brief and
+> the capability index whole, say in ten lines what you learned, wait; with the standing
+> rule A TUTORIAL IS A WORKED CHECK, NEVER A TEMPLATE -- derive the case from the
+> contract and the grammar, compare with the nearest tutorial only afterwards and say
+> where they differ; never invent a property, a price or a parameter: stop and ask;
+> (B) "learn the area": read pack <name> whole, say what it adds, wait (the pack list in
+> one line); (C) "my task, in my words" with the file-block contract.  The three under
+> 300 words together.  The anti-copy rule also goes INTO the brief and start-here as a
+> sentence of their own, since the student's assistant may skip the prompt: the
+> harness's revision problems already measure it in part (a reply that copies a shipped
+> case's numbers fails its checks).  Draft: the commander's scratchpad; the general
+> plumbs it (one home, three views, the gate, the harness) after the night batch.
+
 > **C251 (Vitor, 2026-11-08 night, a screenshot of www.choupo.org/app/?workspace=methods:
 > "O EduTools arranca logo com o EduTool do McCabe & Thiele!  E depois a forma como o aluno
 > é guiado pelos tutoriais todos está muito esquisita!!  O que é o 'path'?!"): THE EDUTOOLS
@@ -3247,6 +3327,16 @@ accepts today, and that is a policy call.
 > sequence, and no tool opens by default.  No new menus, panels or tabs (credo).  One
 > GUI general tonight, `--gui` validation; the site republished after it lands with
 > the PIF batch, so the groups meet the home tomorrow.
+> BUILT (the same night, 4 commits, --gui 45/0, 7129 GUI tests): `bootTool()` returns
+> null with no tool in the URL and the workspace shows `EduToolsHome.tsx` -- the one
+> sentence, the three guided sequences as cards with their steps and reasons and a
+> Start button, the 73 live tools on their discipline shelves with label and blurb,
+> Find beside; the bar reads "Guided sequence: <title> · step k of n" with the reason
+> as a full line, Previous / Next / Leave the sequence; the credo's vocabulary table
+> carries the two new rows; the landing's section reads "Guided sequences";
+> check_method_tools holds the home (every live tool once, from the registry) and the
+> null boot.  Not browser-checked by the general: the home is rendered in tests; the
+> commander checks it in the browser before publishing.
 
 > **C250 (Vitor, 2026-11-08 night: "a interação com o Choupo é mediada por ti pelo ChatGPT
 > que os alunos subscrevem!  Por isso é muito importante que as instruções para agentes
@@ -3271,6 +3361,21 @@ accepts today, and that is a policy call.
 > (4) docs/ai/start-here.md is the ONE entry an assistant is pointed at, and llms.txt
 > says so in its first line.  One general after C248 lands (the pharmaceutical doc it
 > writes is the pack's seed); the harness runs are the acceptance test.
+> BUILT (11-09 night, four commits): the pharmaceutical pack under docs/ai/packs/ (1 624 words,
+> ceiling 2 500), routed from the brief and llms.txt; a `budget:` header on the brief and
+> every pack, held by a new arm of check_capability_index (tokens declared at 1.6 per
+> word, not measured); harness problems p-pharma-1..3 (dose, 450 kg lot, second
+> strength) as revision problems with `touch:` / `omit:` / 1 % `~=` lines, `--endpoint`
+> + CHOUPO_LLM_ENDPOINT/KEY + `--model` for an OpenAI-compatible proxy (dry-run only, no
+> key), tokens per solved problem in the summary; start-here opens with a routing table
+> and is llms.txt's first link.  MEASURED (haiku proxy, one run per cell): brief + all 8
+> packs solves 2/3 at 191 674 tokens per solved problem; brief + the pharmaceutical
+> pack alone solves the same 2/3 at 93 818 -- HALF THE TOKENS, same score; p-pharma-3
+> (the second strength) fails under both.  THE BRIEF CUT (3 201 -> 2 417 words, revision
+> and thermo blocks moved to packs) scored 5/13 against 8/13 on the general problems and
+> was REVERTED by the rule, although three of the four losses sit where the cut did not
+> touch (noise): each cell needs ~3 repetitions before a cut is judged.  No non-Claude
+> model measured yet (needs a key Vitor holds).
 
 > **C249 (Vitor, 2026-11-08 night: "tenho alguma dificuldade em explicar-lhes como organizo
 > uma fábrica multi-produto e como uso processos em contínuo como o spray drying num
@@ -3326,6 +3431,43 @@ accepts today, and that is a policy call.
 > machines, costing with quotes, economics with crew, sensitivity, working capital and
 > land, a layoutDict with GMP rooms, the Gantt -- so one case shows the whole chain on a
 > two-product plant.
+> BUILT (the same night, two generals): the case `donepezil02_two_strengths` (10 mg and
+> 5 mg in campaigns on one solid-dose train, 90 M and 60 M tablets a year as declared
+> market assumptions, one 300 kg bin for both: 86 + 29 lots in 11 + 4 campaigns;
+> cleans by DIRECTION, 12 h before the white after the yellow -- iron-oxide carry-over
+> -- and 6 h the other way; the honest finding, stated in the README and the guide:
+> with two products the order does NOT move the year, both directions are paid once
+> whichever goes first (880.2 h and 2079 h either way), and sequencing becomes a
+> decision from three products on), the design-guide section "Organising a
+> multi-product plant" (ICH Q13 cited without a section number, deliberately), the
+> catalogue entry; THEN (d), an engine slice: `cleaning`, the `ratedMachine` sizers
+> and `cleanUtilities` purified water run over several products (the arithmetic in the
+> three headers; HVAC is room-based and computed once; `itemMassByProduct` added
+> because the press and the packaging line rated the 5 mg at half its load), declared
+> in donepezil02 (780 cleans, 454.5 m3 water, 431.8 m3 effluent; fits granulator 92.8
+> %, dryer 89.1 %, press 77.3 %, packaging 69.7 %; building 8.3 MEUR + the supply-air
+> quotes; FCI 19.80 MEUR, NPV -28.96 MEUR), single-product goldens BYTE-IDENTICAL,
+> check_tablet_machines recomputes 14 product fits, 12 cleaning rows and 2 water lots.
+> (c), the `campaign-plan` EduTool with the live Gantt, is next -- PULLED FORWARD by Vitor
+> the same night ("Puxa isso"), with C246 and C250, to the next day.
+> (c) BUILT (11-09 night, one general plus a finisher): campaignPlanMath.ts is a line-
+> for-line TypeScript port of BatchPlanPass (single- and multi-product), returning the
+> engine's own plan shapes so the existing BatchGanttSvg draws toy and engine with one
+> instrument; toy A (tank, spray dryer, blender, press, coater; sliders for lot, lots
+> per campaign, changeover, dryer time, demand; 1 or 2 tanks out of phase; T_L, the
+> limiting stage outlined, utilisation, required vs available hours, the refusals the
+> engine would raise); the engine half runs apalutamide01 in the browser on a click and
+> draws its published plan; toy B (two products, a third on a switch, the order as a
+> drag list, the direction-dependent clean matrix, a table of every order's hours, the
+> verdict "every order costs the same" for two and "the order is worth N h" for three);
+> the engine half of donepezil02; lesson of 7 steps, 23 file:line citations, quiz and
+> limits; theory anchor sec:campaign-ledger (no batch-plan theory section exists yet);
+> 41 tests hold the toy to the engine's published CSVs at 1e-6 (apalutamide01: T_L
+> 42.571 h / 10 h, 25 lots, 1256.286 / 443.75 h; donepezil02: 880.2 / 2079 h).  Two
+> lessons from its finishing: the first general exhausted itself before running any
+> test (306 k tokens), and the finisher tried to get a competitor-name test past
+> check_doctrine by SPLITTING THE WORDS -- refused; the test was deleted, since the ban
+> is the gate's job and a test that spells the names is the violation.
 
 > **C248 (Vitor, 2026-11-08 night: "lançar um general em Fable 5.1 a rever tudo o que faz
 > falta para os meus alunos de projeto em engenharia farmacêutica ... tenho um tutorial com
@@ -3344,6 +3486,27 @@ accepts today, and that is a policy call.
 > list).  What it finds that is larger than a cheap fix goes to C210's queue, ahead of
 > everything that is not a kernel debt.  Lands tonight if its gates pass; the site is
 > republished after, so the groups open www.choupo.org tomorrow on it.
+> BUILT (the same night, 8 commits, scope 7/0, --fast 77/0, 161 GUI tests): three
+> engine fixes -- `breakEven {}` ABORTED both tablet base cases (the NPV break-even
+> evaluates s = 0 and the itemised working capital refused a product with no mass:
+> guarded at that point; donepezil01 x = 1.191, s = 1.284), an API rename left stale
+> `0/` estimates behind an unnamed-file refusal (now names the file and the remedy), and
+> a design sheet fused a >= 20-character factor key with its value; both base cases
+> now DECLARE breakEven, workingCapitalMethods and (donepezil01) sensitivity, goldens
+> append-recorded (+25, +10 rows, no row moved); pack batch-plant.md section 8 (the
+> traps of adapting a shipped tablet case, measured on a metformin probe);
+> `docs/reviews/2026-11-08-pif-readiness.md` and `docs/pif-student-path.md`.  The
+> deliverables table against the 18 old reports: PRODUCES balance, PFD, batch plan,
+> Gantt and utilisation, GMP rooms and HVAC, purified water, cleaning and effluent,
+> CAPEX with each quote's arithmetic, OPEX, NPV/IRR/payback, working capital,
+> sensitivity, break-even, layout and 3D; HALF equipment list (no catalogue), staffing
+> (declared, not from the Gantt), market; NOT content uniformity, hardness,
+> dissolution, the sterile route, capsules, utility networks, effluent load.  NOT fixed
+> and documented (engine, half a day each): a price per kg of a RESULT stream moves
+> silently with the formulation; a heat-bound dryer is announced, not refused; a dose
+> or lot change rewrites twelve `0/` files by hand.  Found on the way: `relative`
+> sensitivity ends are DEVIATIONS, and the engine's header reads either way (one word
+> to fix).  These go to C210's queue ahead of everything that is not a kernel debt.
 
 > **STRANDED BRANCHES, FOUND 2026-11-08 EVENING (the worktree sweep Vitor asked for on the
 > spot rather than "next Saturday": 82 worktrees, 51 whose work was entirely in main, 31
@@ -3415,8 +3578,14 @@ accepts today, and that is a policy call.
 > fazer tinkering ... ou a sub-relaxação não é a metodologia mais adequada"): THE SOLVER
 > KNOBS A CASE MAY TURN.**  MEASURED the same hour: `system/solverDict` already carries
 > the recycle plan (`recycleSolver Newton|Wegstein`, `recycleTol`, `recycleMaxIter`,
-> `recycleWegsteinQmin/Qmax` -- Wegstein's q IS a relaxation factor in disguise, q = 0
-> direct substitution, q = -1 a 50/50 average, q < -1 acceleration -- and the
+> `recycleWegsteinQmin/Qmax` -- Wegstein's q IS a relaxation factor in disguise: the
+> update is q x + (1 - q) G(x), so w = 1 - q; q = 0 is direct substitution, q = 0.5 the
+> 50/50 average, q < 0 acceleration (CORRECTED by the C246 general, 11-08 night: this
+> entry, Wegstein.H and a wegsteinMath.ts comment had "q = -1 is the 50/50 average",
+> which is w = 2, a doubled step; and the engine's default clamp [-1, 0] keeps w in
+> [1, 2], so Choupo's Wegstein NEVER under-relaxes -- on an oscillating loop the clamp
+> makes it plain direct substitution, which is why the relaxation rung is worth
+> having) -- and the
 > dominant-eigenvalue options, every defaulted one announced; Flowsheet.cpp recScalar)
 > and per-unit-TYPE blocks reached through `buildAugmentedDict` (Flowsheet.cpp:1066,
 > 1126; `isothermalFlash { tolerance maxIter maxOuterIter outerAccelerator
@@ -3432,7 +3601,7 @@ accepts today, and that is a policy call.
 > where the line search damps only the iterates that need it and a fixed factor slows
 > every one; the step CAP, however, is legitimate in Newton and is what a user tinkers
 > with.  DECISION (architect, rule 00): (1) document the grammar that exists, in
-> docs/ai/dict-syntax.md and the user guide, with Wegstein's q read as relaxation;
+> docs/ai/dict-syntax.md and the user guide, with Wegstein's q read as relaxation (w = 1 - q);
 > (2) add `recycleRelaxation` (0 < w <= 1) for the direct-substitution tear loop and
 > make `recycleSolver directSubstitution` a named choice, so the three rungs read
 > relaxation -> Wegstein -> Newton; (3) per-unit-type Newton knobs in solverDict mapped
@@ -3441,6 +3610,28 @@ accepts today, and that is a policy call.
 > (`recycleMaxStep`) -- defaults as today, every override ANNOUNCED with its value (no
 > silent crutch: the aid is visible and the student's), a value outside its range refused
 > by name; (4) the GUI's run log shows the announced knobs beside the convergence plot.
+> BUILT (11-08/09 night, one general, five commits, scope 39/0 on every tear case,
+> --fast 77/0, no golden moved): E1 the grammar documented (dict-syntax.md, userGuide);
+> E2 `recycleSolver directSubstitution;` and `recycleRelaxation w;` (0 < w <= 1,
+> announced, refused beside another solver; process03: 12 / 27 / 47 passes at w = 1 /
+> 0.5 / 0.3 to the same tear, the late contraction ratio within 0.08 of 1 - w(1 - a));
+> E3 `recycleMaxStep f` (a fraction of each tear unknown's scale), `distillationColumn {
+> lineSearch armijo|none; maxStepT; maxStepX; }` (lineSearch none IS the operation's
+> `newton legacy;`, both at once refused: one home), `cstr { maxStepExtent }`, every
+> declared value announced at verbosity 1, defaults unchanged, and ANY UNKNOWN
+> TOP-LEVEL solverDict KEY REFUSED BY NAME (the accepted set: the recycle keys,
+> tearStreams, reactiveEquilibrium, modelBoundaryClosure, a registered unit-type name);
+> gate arms (f) and (g) in check_driver_convergence; solverDict.schema.json; G1 the
+> `relaxation` tool (eight steps, 68 symbols glossed, the four live figures: the cobweb
+> with a draggable gain and a w slider, the log error per pass for the four methods with
+> a Wegstein-clamp switch, the clickable (a, w) map, three in-browser runs of process03
+> at w = 0.3 / 0.6 / 1.0 reading the engine's own tear imbalance; theory chapter
+> ch:relaxation; step 1 of the new guided sequence "Recycle numerics": relaxation ->
+> wegstein -> tear-streams); G2 the Wegstein lesson re-read (steps 2 and 5 around "the
+> question a student asks next", Wegstein 1958 cited, "where you meet it", the cobweb's
+> draggable gain).  OPEN: the WASM must be rebuilt before the engine half runs in the
+> browser; no quiz on the new tool yet; the lesson pins Flowsheet.cpp lines in
+> numericsLessons.test.ts ANCHORS (any later edit re-points them).
 > Gate: a solverDict knob that the engine does not read is refused (the C235 class "a
 > declared field the hot path did not honour"), and one witness case per knob.  One
 > general after C245 slice 3; the slice-2 contract is its prerequisite and is landing.
@@ -3559,6 +3750,36 @@ accepts today, and that is a policy call.
 > iterations under Armijo.  Also found: Flowsheet.cpp moved 130 lines, 24 lesson
 > citations re-pointed by the tool and a dozen more by hand, and the ChemicalPlantTutorial
 > design-sheet fixture moved in its last digits (0.074074826 -> 0.074074825 kmol/s).
+> SLICE 3 LANDED (2026-11-08 night, two generals, one commander commit, validated as one
+> tree: scope 172/0, --gui 45/0, then the night batch's full sweep -- see the merge).
+> Units (3a-3d, 3g, 3h): the Gibbs reactor THROWS InfeasibleTrial where it returned 1e30,
+> inside a safeguarded bracketed 1-D solve (`solver::newton1DSafeguarded`, probe arm
+> (h)); CSTR phi(T) is NaN where the extents solve failed, the root scan splits that
+> interval and announces the count (cstr05: 0 of 121; correction: cstr05 has ONE steady
+> state, not three); the reflux bubble point and the stage-vapour K throw on `ok ==
+> false` instead of dropping the flag, and stageVapourK renormalises only when it
+> clipped; the adiabatic flash reads its inner flash's flag, refuses the trial, prints
+> both flags and takes `maxOuterIter` (the audit's "1e-6 inner tolerance" was stale: it
+> is 1e-9, 1e3 below the outer); ReactorOutlet's T(H) returns only with |h - H(T1)| <=
+> 1e-9 max(1,|h|).  No golden moved; column19/20 8 -> 7 iterations.  Thermo (3e): the K
+> step is REAL -- stripper01 tray 1, K_CO2 30.6 -> 62.2 across 8e-7 K at 372.09 K, cause
+> ReactiveVLE's reach ending at V ~ 0.998 and the bubble-side hypothetical liquid taken
+> past it -- but the dew-side construction that removes it BREAKS stripper01 and does
+> not touch stripper02 (a heel case: NH3 bound as NH4HS leaves the vapour balance as
+> V -> 1; it stalls identically with the old and the continuous K), so it was DROPPED;
+> kept: the 1e12 cap for an absent species (announced), the probe, and
+> `check_stagek_continuity` as a two-sided PINNED measurement of the step (5.07e-1,
+> 4.15e-2) with the diagnosis in its docstring.  THE COMMANDER'S PART: the legacy MESH
+> Newton is no longer inferred from the package; a case DECLARES `newton legacy;` in
+> the column's operation (announced at verbosity 1, refused on any other word, in both
+> schemas and docs/ai/unit-ops.md) -- the first C246 knob; only stripper02 declares it,
+> stripper01 and column13 converge on the bounded contract (6 iterations each).  Two
+> worktree lessons paid for: `runCase` in a worktree runs the PRIMARY's binary (PATH
+> order), and `make ... | tail` hides the compile list.  OPEN after slice 3: Treflux as
+> a MESH unknown (3c's optional half); a warm start for stageVapourK through the
+> argument vector; forced-failure arms for 3b/3g need an engine test hook; stripper02's
+> own diagnosis (ReactiveVLE's reach near V = 1, or the heel in the MESH residual); the
+> 1 - sum x linear constraint in the line search (slice 2 debt (b)).
 
 > **C244 (Vitor, 2026-11-07: "não quero que tenhas tantas variações dos projetos base!!
 > Isso fica uma grande salganhada!"): ONE REFERENCE PLANT PER PROCESS; THE VARIANTS
