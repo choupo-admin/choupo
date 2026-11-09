@@ -76,7 +76,7 @@ export type MethodToolId =
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
   | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
-  | "site-process-price";
+  | "site-process-price" | "campaign-plan";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -2011,6 +2011,30 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "pharmaceutical product is the example. No weight, margin or tax "
       + "rate is shipped, and nothing here is legal advice or a market study.",
     theory: "ch:economics",
+  },
+  //  COMMISSIONED 2026-11-08 (DEV.md 4c C249 c, Vitor: "esquemas visuais
+  //  com graficos manobraveis"): how a multi-product plant is organised and
+  //  where a continuous machine sits in a lot regime, with the Gantt chart
+  //  LIVE.  TWO HALVES, said on the page: a toy recomputed in TypeScript
+  //  (held by a test to what the engine published for two cases) and the
+  //  engine's own published plans drawn with the same bars.
+  {
+    id: "campaign-plan", blurb: "Move a live Gantt chart: lots, campaigns, limiting stage and hours.",
+    label: "How a batch plant is organised: lots, campaigns and the Gantt chart",
+    discipline: "Process design & economics", kind: "construction",
+    status: "live",
+    theory: "sec:campaign-ledger",
+    origins: ["engine", "page", "reference", "assumption"],
+    teaches: "How a plant makes several products in lots: the stages of a "
+      + "train, the lot as the unit QC releases, the cycle of each stage and "
+      + "the limiting one, parallel units in and out of phase, campaigns and "
+      + "changeovers against the year's available hours, a continuous spray "
+      + "dryer inside a lot regime, and the order of two or three products "
+      + "with cleans that depend on the direction. A toy plant redraws its "
+      + "Gantt chart as you move the sliders, and the plans the engine "
+      + "published for an apalutamide and a donepezil plant are drawn with "
+      + "the same bars. One train and no stores; the order is listed, never "
+      + "optimised.",
   },
   //  WHICH SOLVENT, OR WHICH SOLVENT MIXTURE (2026-10-21, DEV.md 4c C128,
   //  Vitor: the student PREDICTS the best composition before the curve is
