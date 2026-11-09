@@ -8,7 +8,7 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   Claus thermal stage: an adiabatic furnace and the boiler behind it, the
-  same twelve species over the same five elements, 900 K apart.
+  same fourteen species over the same five elements, 900 K apart.
 
   Element order in every atoms( ) list is the order of `elements` below:
   ( C  H  N  O  S ).  Nothing in this file declares a conversion, a

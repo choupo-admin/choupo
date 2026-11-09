@@ -181,11 +181,13 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       + "asked (HansenMixture.cpp:346).  The synthetic example runs on an "
       + "ideal liquid on purpose, so every blend point on this page carries "
       + "that third word honestly.",
-    formula: String.raw`\mathrm{tm}(y) = 1 + \sum_i Y_i \left(\ln Y_i - 1\right) - \sum_i Y_i\, h_i, \qquad \mathrm{tm}_{\min} < 0 \;\Rightarrow\; \text{two liquids}`,
+    formula: String.raw`\mathrm{tm}(Y) = 1 + \sum_i Y_i \left(\ln Y_i + \ln\gamma_i(y) - h_i - 1\right), \qquad \mathrm{tm}_{\min} < 0 \;\Rightarrow\; \text{two liquids}`,
     where: [
       { sym: "\\mathrm{tm}", means: "the tangent-plane distance of a trial composition from the plane drawn at the blend's composition", unit: "-" },
-      { sym: "y", means: "a trial composition the test probes", unit: "-" },
+      { sym: "y", means: "a trial composition the test probes, y = Y / sum of Y", unit: "-" },
+      { sym: "Y", means: "the trial as a vector of unnormalised mole numbers, the variable tm is minimised over", unit: "-" },
       { sym: "Y_i", means: "the unnormalised mole numbers of the trial, component i", unit: "-" },
+      { sym: "\\gamma_i(y)", means: "the activity coefficient of component i at the TRIAL composition y; this is the term that lets a non-ideal liquid fail the test (StabilityTest.cpp:69)", unit: "-" },
       { sym: "h_i", means: "the logarithm of component i's activity at the blend's own composition, the reference the plane is drawn from", unit: "-" },
       { sym: "\\mathrm{tm}_{\\min}", means: "the smallest tangent-plane distance found over the probes", unit: "-" },
     ],

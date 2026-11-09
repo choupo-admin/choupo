@@ -133,11 +133,13 @@ describe("the knob map — every target resolves against the real raw text", () 
     expect(k, "the T_guess knob is gone").toBeDefined();
     expect(k!.file).toBe("system/flowsheetDict");
     expect(k!.key).toBe("T_guess");
-    expect(k!.def).toBe(380);
-    // Its range must reach past the outer roots (300.42 K and 405.90 K on
-    // the authored case) or the branch cannot be switched from the panel.
-    expect(k!.min).toBeLessThan(300.42);
-    expect(k!.max).toBeGreaterThan(405.91);
+    expect(k!.def).toBe(340);
+    // Its range must reach past the outer roots (291.48 K and 333.79 K on
+    // the authored case, its golden) or the branch cannot be switched from
+    // the panel.  (C259: the witness is cstr08; cstr05's 300.42 / 405.90 K
+    // were roots that case no longer has.)
+    expect(k!.min).toBeLessThan(291.48);
+    expect(k!.max).toBeGreaterThan(333.80);
   });
 
   it("methodCase clones the witness with the full default knob set", () => {
@@ -185,13 +187,12 @@ describe("recorded knob absences — each pinned by its kind", () => {
   it("P: addressable, and deliberately not offered", () => {
     // The absence here is a CHOICE, not a grammar miss — so the override
     // must resolve.  It is no longer a placebo: since C77 the energy balance
-    // carries the latent heat of a product that boils, so at 1 atm the hot
-    // branch moves (~406 K -> ~361 K).  Whether the page should offer P is
-    // the curator's pedagogical call (DEV.md 4c C77).  The witness declares its pressure
-    // in bar (15 bar since 2026-10-17: a liquid esterification at 400 K is
-    // pressurised to stay liquid), so the override is written in the dict's
-    // own unit -- the override keeps the declared unit, and a value in Pa
-    // under `bar` would be a plausible number five orders too large.
+    // carries the latent heat of a product that boils.  Whether the page
+    // should offer P is the curator's pedagogical call (DEV.md 4c C77).  The
+    // witness declares its pressure in bar (1.01325 bar: the hydration stays
+    // liquid on every branch at 1 atm), so the override is written in the
+    // dict's own unit -- the override keeps the declared unit, and a value
+    // in Pa under `bar` would be a plausible number five orders too large.
     const feed = raws()["0/feed"]!;
     const out = applyScalarOverride(feed,
       { file: "0/feed", key: "P", value: 20, unit: "bar" });
@@ -208,21 +209,22 @@ describe("recorded knob absences — each pinned by its kind", () => {
       expect(out, `'${key}' no longer resolves — the absence would now be a `
         + "grammar miss, not a choice").not.toBe(rx);
     }
-    // The witness's own stated calibration, which a silent A knob would break.
-    expect(rx).toContain("retuned so k(350 K) matches cstr04");
+    // The witness's own stated source, which a silent A knob would betray
+    // (C259: cstr08 carries a MEASURED law, not cstr05's retuned one).
+    expect(rx).toContain("Furusawa et al. (1969) Eq. (11)");
     expect(ids()).not.toContain("A");
     expect(ids()).not.toContain("Ea");
   });
 
-  it("V_R IS a knob here — cstr05 declares it on its own line, not inline", () => {
+  it("V_R IS a knob here — the witness declares it on its own line, not inline", () => {
     // The Levenspiel tool records V_R as UNREACHABLE because cstr01 writes
     // `operation   { V_R 0.005; }` on ONE line, out of the line-anchored
-    // grammar's reach.  cstr05 writes a multi-line operation block, so the
+    // grammar's reach.  cstr08 writes a multi-line operation block, so the
     // same key IS addressable here.  The difference was never the key; it
     // was the line — pinned so neither tool's note is read as contradicting
     // the other.
     const fd = raws()["system/flowsheetDict"]!;
-    expect(fd).toMatch(/^[ \t]*V_R[ \t]+0\.005[ \t]*;/m);
+    expect(fd).toMatch(/^[ \t]*V_R[ \t]+0\.00126615[ \t]*;/m);
     expect(ids()).toContain("V_R");
   });
 });
@@ -314,23 +316,26 @@ describe("findVanHeerdenFeeds — the G/R column pair is the contract", () => {
 });
 
 // ---- The marker classifier --------------------------------------------------
-// The engine's own markers, as cstr05 publishes them (log.choupoSolve /
-// result JSON):
-//   [{x: 300.424863866, label: "steady state 1"},
-//    {x: 345.540787649, label: "steady state 2"},
-//    {x: 405.903598573, label: "steady state 3 (reported)"}]
+// The engine's own markers, as cstr08_furusawa_bistable publishes them
+// (log.choupoSolve / result JSON; its golden pins steadyStates 3 and
+// T_out 333.790722963).  C259: until 2026-11-09 these were cstr05's roots
+// (300.42 / 345.54 / 405.90 K), which that case has not produced since the
+// acetic-acid correction -- it has ONE steady state:
+//   [{x: 291.480997357, label: "steady state 1"},
+//    {x: 305.275602975, label: "steady state 2"},
+//    {x: 333.790722963, label: "steady state 3 (reported)"}]
 
 const WITNESS_MARKERS: ProfileMarker[] = [
-  { x: 300.424863866, label: "steady state 1" },
-  { x: 345.540787649, label: "steady state 2" },
-  { x: 405.903598573, label: "steady state 3 (reported)" },
+  { x: 291.480997357, label: "steady state 1" },
+  { x: 305.275602975, label: "steady state 2" },
+  { x: 333.790722963, label: "steady state 3 (reported)" },
 ];
 
 describe("classifySteadyStates — ordering over engine numbers", () => {
   it("three roots: the MIDDLE one is flagged unstable", () => {
     const s = classifySteadyStates(WITNESS_MARKERS);
     expect(s.map((x) => x.T)).toEqual(
-      [300.424863866, 345.540787649, 405.903598573]);
+      [291.480997357, 305.275602975, 333.790722963]);
     expect(s.map((x) => x.unstable)).toEqual([false, true, false]);
     expect(s.map((x) => x.order)).toEqual([0, 1, 2]);
   });
@@ -338,7 +343,7 @@ describe("classifySteadyStates — ordering over engine numbers", () => {
   it("the '(reported)' suffix is PARSED off the label, never guessed", () => {
     const s = classifySteadyStates(WITNESS_MARKERS);
     expect(s.map((x) => x.reported)).toEqual([false, false, true]);
-    expect(reportedState(s)!.T).toBe(405.903598573);
+    expect(reportedState(s)!.T).toBe(333.790722963);
     // The label survives verbatim — the tool never rewrites the engine's own
     // annotation.
     expect(s[2]!.label).toBe("steady state 3 (reported)");
@@ -351,12 +356,12 @@ describe("classifySteadyStates — ordering over engine numbers", () => {
     // "reported = last" would be wrong here and right on the default —
     // which is exactly how such a bug survives.
     const cold: ProfileMarker[] = [
-      { x: 300.424863866, label: "steady state 1 (reported)" },
-      { x: 345.540787649, label: "steady state 2" },
-      { x: 405.903598573, label: "steady state 3" },
+      { x: 291.480997357, label: "steady state 1 (reported)" },
+      { x: 305.275602975, label: "steady state 2" },
+      { x: 333.790722963, label: "steady state 3" },
     ];
     const s = classifySteadyStates(cold);
-    expect(reportedState(s)!.T).toBe(300.424863866);
+    expect(reportedState(s)!.T).toBe(291.480997357);
     expect(s[1]!.unstable).toBe(true);        // the middle one, regardless
   });
 
@@ -365,9 +370,9 @@ describe("classifySteadyStates — ordering over engine numbers", () => {
       WITNESS_MARKERS[1]!];
     const s = classifySteadyStates(shuffled);
     expect(s.map((x) => x.T)).toEqual(
-      [300.424863866, 345.540787649, 405.903598573]);
+      [291.480997357, 305.275602975, 333.790722963]);
     expect(s[1]!.unstable).toBe(true);
-    expect(reportedState(s)!.T).toBe(405.903598573);
+    expect(reportedState(s)!.T).toBe(333.790722963);
   });
 
   it("ONE root: no unstable claim at all", () => {
@@ -421,8 +426,8 @@ describe("classifySteadyStates — ordering over engine numbers", () => {
 describe("ignitionSpan — the practical meaning of multiplicity", () => {
   it("is ignited minus extinguished on the witness's own roots", () => {
     const s = classifySteadyStates(WITNESS_MARKERS);
-    expect(ignitionSpan(s)).toBeCloseTo(405.903598573 - 300.424863866, 9);
-    expect(ignitionSpan(s)).toBeCloseTo(105.478734707, 9);
+    expect(ignitionSpan(s)).toBeCloseTo(333.790722963 - 291.480997357, 9);
+    expect(ignitionSpan(s)).toBeCloseTo(42.309725606, 9);
   });
 
   it("is null with fewer than two roots — a span of zero would read as data", () => {
@@ -467,13 +472,13 @@ describe("interpolateAt — reads a published column, never finds a root", () =>
   it("places the witness's reported root on the G curve", () => {
     // The engine's grid straddles the root; the dot is read off the engine's
     // own two neighbouring samples, and the root T is the engine's marker.
-    const T = [405.0, 406.0];
+    const T = [333.0, 334.0];
     const G = [8.50, 8.60];
     const s = classifySteadyStates(WITNESS_MARKERS);
     const y = interpolateAt(T, G, reportedState(s)!.T)!;
     expect(y).toBeGreaterThan(8.5);
     expect(y).toBeLessThan(8.6);
-    expect(y).toBeCloseTo(8.5 + 0.1 * (405.903598573 - 405.0), 12);
+    expect(y).toBeCloseTo(8.5 + 0.1 * (333.790722963 - 333.0), 12);
   });
 
   it("is null outside the sampled range, or on a degenerate input", () => {

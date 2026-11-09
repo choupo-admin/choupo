@@ -532,7 +532,7 @@ export function EquilibriumLandscapesTool(): JSX.Element {
           formation is endothermic, so at T + |ΔT| the model reports MORE NO
           than the true equilibrium at the physical temperature.  One number
           per feed cannot resolve a product whose thermicity opposes the
-          feed&apos;s; the engine says so on every run (GibbsReactor.cpp:413–412).
+          feed&apos;s; the engine says so on every run (GibbsReactor.cpp:414–416).
         </Alert>
       )}
     </Box>

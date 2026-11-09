@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 531,
+  "cases": 532,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -7197,6 +7197,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/cstr08_furusawa_bistable": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/reactors/equil01_reforming": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -8333,6 +8347,7 @@
     "tutorials/steady/reactors/cstr05_multiplicity",
     "tutorials/steady/reactors/cstr06_jacketed",
     "tutorials/steady/reactors/cstr07_lhhw_methylAcetate",
+    "tutorials/steady/reactors/cstr08_furusawa_bistable",
     "tutorials/steady/reactors/equil01_reforming",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
@@ -8564,6 +8579,7 @@
     "tutorials/steady/reactors/cstr05_multiplicity",
     "tutorials/steady/reactors/cstr06_jacketed",
     "tutorials/steady/reactors/cstr07_lhhw_methylAcetate",
+    "tutorials/steady/reactors/cstr08_furusawa_bistable",
     "tutorials/steady/userops/userOp03_case_rate_law"
    ],
    "cyclone": [
@@ -9590,6 +9606,7 @@
     "tutorials/steady/reactors/cstr04_adiabatic",
     "tutorials/steady/reactors/cstr05_multiplicity",
     "tutorials/steady/reactors/cstr06_jacketed",
+    "tutorials/steady/reactors/cstr08_furusawa_bistable",
     "tutorials/steady/reactors/equil01_reforming",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",

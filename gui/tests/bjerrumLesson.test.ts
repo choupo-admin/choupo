@@ -86,8 +86,18 @@ describe("the steps", () => {
   it("says plainly that the background knob is not built", () => {
     const n = prose(BJERRUM_STEPS[5]?.note ?? "");
     expect(n).toMatch(/NOT built/);
-    expect(n).toMatch(/6\.177/);       // the measured shift, not a guess
-    expect(n).toMatch(/0\.289/);
+    //  C259: the note used to quote a first crossover of 6.177 beside a
+    //  carbonate gamma of 0.289.  Under Davies, at one ionic strength the
+    //  univalent gamma is the fourth root of the divalent one, so 0.289
+    //  forces gamma(HCO3-) = 0.733 and, by step 4's identity, a FREE-species
+    //  crossover at 6.352 + log10(0.733) = 6.22; 6.177 cannot follow from the
+    //  model the page declares.  Both numbers are now RECOMPUTED here.
+    const A = 0.51, I = 0.5, f = Math.sqrt(I) / (1 + Math.sqrt(I)) - 0.3 * I;
+    const g1 = 10 ** (-A * f), g2 = 10 ** (-4 * A * f);
+    expect(n).toContain(`0.903 to ${g2.toFixed(3)}`);
+    expect(n).toContain(`0.975 to ${g1.toFixed(3)}`);
+    expect(n).toContain(`about ${(6.352 + Math.log10(g1)).toFixed(2)}`);
+    expect(n).not.toMatch(/6\.177/);
   });
 });
 

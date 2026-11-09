@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  cstr08_furusawa_bistable -- meta-control.  What the case is and where its
+  numbers come from: the header of system/flowsheetDict.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Adiabatic CSTR, propylene-oxide hydration (Furusawa, Nishimura & Miyauchi 1969): the energy-balance scan finds three steady states";
+verbosity     3;
+
+citations
+(
+    "Furusawa, T.; Nishimura, H.; Miyauchi, T. (1969). Experimental study of a bistable continuous stirred-tank reactor. J. Chem. Eng. Japan 2(1), 95-100. doi:10.1252/jcej.2.95"
+);
