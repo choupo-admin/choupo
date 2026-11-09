@@ -427,7 +427,7 @@ describe("ignitionSpan — the practical meaning of multiplicity", () => {
   it("is ignited minus extinguished on the witness's own roots", () => {
     const s = classifySteadyStates(WITNESS_MARKERS);
     expect(ignitionSpan(s)).toBeCloseTo(336.484249478 - 292.22089207, 9);
-    expect(ignitionSpan(s)).toBeCloseTo(42.309725606, 9);
+    expect(ignitionSpan(s)).toBeCloseTo(44.263357408, 9);
   });
 
   it("is null with fewer than two roots — a span of zero would read as data", () => {
@@ -472,13 +472,13 @@ describe("interpolateAt — reads a published column, never finds a root", () =>
   it("places the witness's reported root on the G curve", () => {
     // The engine's grid straddles the root; the dot is read off the engine's
     // own two neighbouring samples, and the root T is the engine's marker.
-    const T = [333.0, 334.0];
+    const T = [336.0, 337.0];
     const G = [8.50, 8.60];
     const s = classifySteadyStates(WITNESS_MARKERS);
     const y = interpolateAt(T, G, reportedState(s)!.T)!;
     expect(y).toBeGreaterThan(8.5);
     expect(y).toBeLessThan(8.6);
-    expect(y).toBeCloseTo(8.5 + 0.1 * (336.484249478 - 333.0), 12);
+    expect(y).toBeCloseTo(8.5 + 0.1 * (336.484249478 - 336.0), 12);
   });
 
   it("is null outside the sampled range, or on a degenerate input", () => {
