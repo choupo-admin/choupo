@@ -75,13 +75,24 @@
   and the air separation unit -- all outside this battery limit, and named
   as such where their streams cross the fence.
 
-  WHAT STILL HANGS (an ENGINE gap, not this file's): the ten hydrogen-buffer
-  vessels and the two ammonia tanks are stores ATTACHED to a boundary stream
-  in system/postDict (DEV.md 4c C44, C89), not flowsheet units, so no pipe is
-  routed to them: H2Feed runs from the fence to the make-up mixer and
-  ProductNH3 from the storage flash to the fence, past the stores they feed.
-  A store that is a flowsheet unit gets ONE pipe, to its first vessel; no
-  grammar routes a manifold to every vessel of a store.
+  THE STORES ARE ON THEIR STREAMS (2026-11-09, DEV.md 4c C268).  The ten
+  hydrogen-buffer vessels and the two ammonia tanks are stores ATTACHED to a
+  boundary stream in system/postDict (DEV.md 4c C44, C89), not flowsheet
+  units; their sizers wrote the stream into every vessel's sheet, and the
+  engine routes that stream THROUGH the store: H2Feed from the west fence
+  down to a HEADER between the two rows of buffer vessels (a main in the
+  aisle at y = -50 m, one branch to each vessel's low nozzle), then back
+  up to the rack and on to the make-up mixer; ProductNH3 from the storage
+  flash along the rack to a main 1 m north of the two tanks (inside the
+  bund), a branch to each tank, and from the main's east end to the east
+  fence, the loading point.  Nothing in this file names the stream a store
+  sits on: the sizing entry already does, and a second home would be the
+  arity sin.  Each branch is a pipe of its own in the register
+  (`pipe:H2Feed@H2Buffer/vessel1`, ...), with the stream's state and no
+  flow: a store fills and empties by it, and no number for that is
+  computed.  The branches fill and empty each item by ONE connection; the
+  separate rundown and loading lines, pumps and loading arms of a real tank
+  farm are not modelled, and the run says so on every header.
 
   Grammar and checks: docs/design/a-plant-layout-is-declared-and-checked.md
 \*---------------------------------------------------------------------------*/
@@ -656,12 +667,12 @@ fence
     inset   0 m;
     crossings
     (
-        { stream H2Feed;     from "the electrolyser plant, outside this battery limit: hydrogen at 30 bar (the H2Buffer vessels inside the fence are a store attached to this stream, not on its pipe)";  side west; }
+        { stream H2Feed;     from "the electrolyser plant, outside this battery limit: hydrogen at 30 bar (the pipe runs through the H2Buffer header, a store attached to this stream, before the make-up mixer)";  side west; }
         { stream N2Feed;     from "the air separation unit, outside this battery limit: nitrogen at 8 bar";  side west; }
         { stream Purge;      to   "purge-gas treatment outside this battery limit (the scrubber and hydrogen recovery are not modelled)";  side north;  at 55 m; }
         { stream LetdownGas; to   "let-down gas recovery outside this battery limit (not modelled)";  side north;  at 70 m; }
         { stream FlashGas;   to   "storage flash-gas recovery outside this battery limit (not modelled)";  side north;  at 78 m; }
-        { stream ProductNH3; to   "the ammonia product: stored in the two refrigerated tanks of NH3Storage, a store attached to this stream and not on its pipe, then shipped from outside this battery limit";  side east; }
+        { stream ProductNH3; to   "the ammonia product: the pipe runs through the NH3Storage header (the two refrigerated tanks, a store attached to this stream) to this crossing, the loading point; shipped from outside this battery limit";  side east; }
     );
 }
 

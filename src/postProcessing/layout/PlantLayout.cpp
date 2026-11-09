@@ -66,6 +66,20 @@ constexpr scalar kPi  = 3.14159265358979323846;
 //  touching into overlapping.
 constexpr scalar kTol = 1.0e-6;   // [m]
 
+//  A finding, as `evaluate` records it: kind, a, b, value, limit, severity,
+//  message.  Defined here because the pipe router raises findings too (C268).
+using FindingSink = std::function<void(const std::string&, const std::string&,
+                                       const std::string&, scalar, scalar,
+                                       const std::string&, const std::string&)>;
+
+//  The subject a per-pipe finding names: the stream, or `<stream>@<item>`
+//  for a branch of a header (C268), so a finding on each branch keeps its
+//  own id and an existing pipe's finding id does not move.
+std::string pipeSubject(const LayoutPipe& p)
+{
+    return p.branch.empty() ? p.stream : p.stream + "@" + p.branch;
+}
+
 std::string num(scalar v, int prec = 6)
 {
     std::ostringstream o;
@@ -549,6 +563,78 @@ void laneAt(const LayoutPipeRack& k, int lane, scalar& y, scalar& z)
     z = k.elevation + scalar(tier) * k.tierSpacing;
 }
 
+//  ---- A HEADER WITH A BRANCH TO EACH ITEM (DEV.md 4c C268) ----------------
+//  A unit realised by N IDENTICAL PARALLEL items (`EquipmentSizing::
+//  parallelOf` > 1: a bank of store vessels, a tank farm, the trains of a
+//  trained plant), and a store ATTACHED to a boundary stream (sized on it,
+//  `EquipmentSizing::stream`, no unit of the flowsheet), are piped by a
+//  HEADER: ONE MAIN along the row the items stand in and a BRANCH from the
+//  main to each item's port.  Until this slice a unit with several placed
+//  items got one pipe, to the first item the case listed, and an attached
+//  store got none: the stream ran past it to the fence.
+//
+//  THE MAIN'S LINE is derived from the placed items alone.  It runs along
+//  the axis the items spread on (plan x or y, whichever their centres spread
+//  more along); items whose cross extents overlap stand in one ROW; the main
+//  runs in the AISLE between two rows (the pair with most items) or, for a
+//  single row, BESIDE it on the side facing the other end of the pipe,
+//  along the tips of the nozzles' one-metre stubs (`kNozzleStub` off the
+//  footprints, the ports' own drafting value); its elevation is the departure
+//  elevation of the items' ports (their one-metre stubs), so a branch is a
+//  run from the stub straight across to the main.  A main serves the rows
+//  on its two sides and no other: an item in a third row is NOT REACHED and
+//  is a finding by name (the remedy is one or two rows).  At a unit end the
+//  stream's pipe ENDS in the main (from the row's near edge to the far tee);
+//  on a stream a store is attached to, the pipe passes THROUGH the main
+//  (edge to edge), entering at the end nearer its upstream end.  No number
+//  of its own: the stub is the ports' drafting value, and no spacing table
+//  ships.
+
+struct HeaderRow { scalar lo, hi; std::vector<std::size_t> members; };
+
+//  The rows of a bank: items whose cross extents overlap stand in one row,
+//  rows in increasing cross coordinate.
+std::vector<HeaderRow> headerRows(const std::vector<const LayoutItem*>& items,
+                                  bool axisX)
+{
+    std::vector<std::size_t> order(items.size());
+    for (std::size_t k = 0; k < order.size(); ++k) order[k] = k;
+    auto cross = [&](std::size_t k) { return axisX ? items[k]->y : items[k]->x; };
+    auto half  = [&](std::size_t k)
+    { return 0.5 * (axisX ? items[k]->dy : items[k]->dx); };
+    std::stable_sort(order.begin(), order.end(),
+        [&](std::size_t a, std::size_t b) { return cross(a) < cross(b); });
+    std::vector<HeaderRow> rows;
+    for (std::size_t k : order)
+    {
+        const scalar lo = cross(k) - half(k), hi = cross(k) + half(k);
+        if (!rows.empty() && lo <= rows.back().hi + kTol)
+        {
+            rows.back().hi = std::max(rows.back().hi, hi);
+            rows.back().members.push_back(k);
+        }
+        else rows.push_back({ lo, hi, { k } });
+    }
+    return rows;
+}
+
+//  A header as laid: the main's line and extent, its branches, the items
+//  it cannot reach.  `lo`/`hi` are the tee range along the axis, `edgeLo`/
+//  `edgeHi` the row's footprint edges (where a leg joins, the main runs on
+//  to the edge).
+struct HeaderPlan
+{
+    bool   axisX = true;
+    scalar m = 0, zh = 0;
+    scalar lo = 1e300, hi = -1e300, edgeLo = 1e300, edgeHi = -1e300;
+    int    rows = 0;
+    std::string arrangement;
+    std::vector<LayoutPipe>  branches;
+    std::vector<std::string> notReached;
+    Pt at(scalar along) const
+    { return axisX ? Pt{ along, m, zh } : Pt{ m, along, zh }; }
+};
+
 //  One end of a pipe as the layout can reach it.
 struct End
 {
@@ -565,6 +651,13 @@ struct End
     //  departure point (outside the footprint) the rack route starts from.
     LayoutPort       port;
     std::vector<Pt>  lead;
+    //  C268: the end is a HEADER -- `point` the far end of a main along the
+    //  row of the unit's parallel items, `lead` the main from that far end
+    //  to its near end (where the rack route starts), and one branch per
+    //  item, published only with the pipe that owns them.
+    std::string             header;
+    std::vector<LayoutPipe> branches;
+    HeaderPlan              plan;        // what to say of it, once the pipe is routed
 };
 
 //  ---- THE PORTS (DEV.md 4c C229) -------------------------------------------
@@ -701,7 +794,7 @@ scalar stageFraction(const EquipmentSizing* sz, const LayoutItem& shell,
 }
 
 void routePipes(const Dictionary& d, const SimulationResult& r,
-                PlantLayoutRecord& rec)
+                PlantLayoutRecord& rec, const FindingSink& addFinding)
 {
     rec.pipeRack = readRack(d, rec);
     const auto& rack = rec.pipeRack;
@@ -720,6 +813,28 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         if (s.notPlacedBecause.empty()) sizedOf[s.unitName].push_back(id);
     std::map<std::string, std::string> typeOf;
     for (const auto& u : r.topology) typeOf[u.name] = u.type;
+
+    //  THE STORES ATTACHED TO A STREAM (DEV.md 4c C268).  A store sized by
+    //  the postDict on a boundary stream (`storage`, `gasStorage`, DEV.md 4c
+    //  C44 / C89) is no unit of the flowsheet, and its sizer wrote the stream
+    //  it sits on into every item (`EquipmentSizing::stream`): that is the
+    //  declaration, and the only one -- no key of the layout repeats it.  Per
+    //  stream, the stores with a placed item, in the order their items were
+    //  sized (`ordinal`); the stream's pipe is routed THROUGH each.
+    std::map<std::string, std::vector<std::string>> storesOn;
+    {
+        std::map<std::string, std::map<int, std::string>> byOrdinal;
+        for (const auto& [id, s] : r.sizings)
+            if (!s.stream.empty() && !typeOf.count(s.unitName)
+                && placedOf.count(s.unitName))
+                byOrdinal[s.stream].emplace(s.ordinal, s.unitName);
+        for (const auto& [s, m] : byOrdinal)
+        {
+            std::set<std::string> seenStore;
+            for (const auto& [ord, u] : m)
+                if (seenStore.insert(u).second) storesOn[s].push_back(u);
+        }
+    }
 
     //  The streams, in the order the flowsheet first names them (each
     //  unit's inlets, then its outlets): a feed is met before its products.
@@ -1136,11 +1251,15 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         const std::string un = sz == r.sizings.end() ? "" : sz->second.unitName;
         bool atEnd = !un.empty() && producer.count(s) && producer[s] == un;
         for (const auto& c : consumers[s]) if (c == un) atEnd = true;
+        //  C268: an item of a store ATTACHED to this stream is on its header.
+        if (sz != r.sizings.end() && sz->second.stream == s && !typeOf.count(un))
+            atEnd = true;
         if (!atEnd)
             refuse(w + ": item `" + dp.item + "` belongs to unit `" + un
                    + "`, which is not at either end of this stream -- a port"
                    " is where a pipe lands on an item of the unit that"
-                   " produces or consumes it");
+                   " produces or consumes it, or on an item of a store"
+                   " attached to it");
         static const std::vector<std::string> faces =
             { "top", "bottom", "east", "west", "north", "south" };
         if (std::find(faces.begin(), faces.end(), dp.face) == faces.end())
@@ -1204,10 +1323,16 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
     //  and the declared sides are inputs, so the end each nozzle faces is
     //  decided once, before the first pipe is routed -- no second pass.
     std::map<std::string, std::string> crossingSide;
+    std::map<std::string, scalar>      crossingAt;     // C268: where along a north / south side
     if (d.found("fence") && d.subDict("fence")->found("crossings"))
         for (const auto& cd : d.subDict("fence")->lookupDictList("crossings"))
             if (cd->found("stream") && cd->found("side"))
+            {
                 crossingSide[cd->lookupWord("stream")] = cd->lookupWord("side");
+                if (cd->found("at"))
+                    crossingAt[cd->lookupWord("stream")] =
+                        length(*cd, "at", "fence crossing `" + cd->lookupWord("stream") + "`");
+            }
     auto refY = [&](const std::string& unit, bool sourceEnd, const std::string& stream) -> scalar {
         if (unit.empty())
         {
@@ -1222,13 +1347,214 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         return jx.count(unit) ? rack.y : kNaN;
     };
 
+    //  ---- THE HEADERS (DEV.md 4c C268): see the rule above routePipes ----
+    //  The parallel siblings of an item among its unit's placed items (the
+    //  item itself included); empty when the item stands alone.
+    auto siblingsOf = [&](const std::string& unit, const LayoutItem* it) {
+        std::vector<const LayoutItem*> v;
+        const auto* z = sizingOf(it);
+        if (!z || z->parallelOf <= 1) return v;
+        auto p = placedOf.find(unit);
+        if (p == placedOf.end()) return v;
+        for (const auto* o : p->second)
+        {
+            const auto* oz = sizingOf(o);
+            if (oz && oz->parallelOf == z->parallelOf
+                && oz->equipmentType == z->equipmentType) v.push_back(o);
+        }
+        return v;
+    };
+    //  The port of ONE item of a header: a declared port first; else the
+    //  role rule's request `q0` with its item replaced (a side nozzle turned
+    //  to the face toward the main); else -- an item of a store attached to
+    //  the stream, which no role rule knows -- ONE connection low on the
+    //  shell on that face, by which the item fills and empties.
+    auto headerPort = [&](const std::string& stream, const LayoutItem* it,
+                          const PortReq* q0, const std::string& facing) {
+        PortReq q;
+        auto dp = declPorts.find(stream);
+        if (dp != declPorts.end())
+            for (const auto& decl : dp->second)
+                if (decl.item == it->id)
+                {
+                    q.item = it; q.port = "declared"; q.face = decl.face;
+                    q.zAbs = decl.elevation; q.frac = 0.5; q.origin = "declared";
+                    q.role = "declared by the case: `ports` " + stream
+                           + " -> item " + it->id + ", side " + decl.face;
+                    return q;
+                }
+        if (q0)
+        {
+            q = *q0;
+            q.item = it;
+            if (q.face == "side") q.face = facing;
+            return q;
+        }
+        q.item = it;
+        q.port = "connection";
+        q.face = facing;
+        q.frac = (it->shape == "cylinder" && it->orientation != "vertical") ? 0.5 : 0.1;
+        q.role = "a store attached to the stream (sized on it; no unit of the"
+                 " flowsheet): one connection low on the shell, on the face"
+                 " toward the header, by which the item fills and empties";
+        return q;
+    };
+    //  LAY A HEADER for `unit` on `stream` over `items`: the main's line
+    //  from the rows (the rule above routePipes), the other end of the pipe
+    //  at (otherX, otherY) deciding which side of a single row it runs on
+    //  and which way a top nozzle's stub leaves; one branch per item in the
+    //  rows it serves, running main -> item when `intoItems` and item ->
+    //  main else; the ports counted on their slots only when `commit`.
+    auto layHeader = [&](const std::string& unit, const std::string& stream,
+                         const std::vector<const LayoutItem*>& items,
+                         scalar otherX, scalar otherY, bool intoItems,
+                         const PortReq* q0, bool commit) -> HeaderPlan {
+        HeaderPlan H;
+        scalar xmin = 1e300, xmax = -1e300, ymin = 1e300, ymax = -1e300;
+        for (const auto* i : items)
+        {
+            xmin = std::min(xmin, i->x); xmax = std::max(xmax, i->x);
+            ymin = std::min(ymin, i->y); ymax = std::max(ymax, i->y);
+        }
+        H.axisX = (xmax - xmin) >= (ymax - ymin) - kTol;
+        const scalar otherCross = H.axisX ? otherY : otherX;
+        const scalar otherAlong = H.axisX ? otherX : otherY;
+        const auto rows = headerRows(items, H.axisX);
+        H.rows = int(rows.size());
+        std::vector<std::size_t> served;
+        if (rows.size() == 1)
+        {
+            const scalar c = 0.5 * (rows[0].lo + rows[0].hi);
+            const bool plus = std::isnan(otherCross) || otherCross >= c;
+            H.m = plus ? rows[0].hi + kNozzleStub : rows[0].lo - kNozzleStub;
+            H.arrangement = "beside its one row, along the tips of the "
+                          + num(kNozzleStub) + " m nozzle stubs on the "
+                          + (H.axisX ? (plus ? "north" : "south")
+                                     : (plus ? "east" : "west")) + " side";
+            served = rows[0].members;
+        }
+        else
+        {
+            std::size_t best = 0, bestN = 0;
+            for (std::size_t k = 0; k + 1 < rows.size(); ++k)
+            {
+                const std::size_t n = rows[k].members.size()
+                                    + rows[k + 1].members.size();
+                if (n > bestN) { bestN = n; best = k; }
+            }
+            H.m = 0.5 * (rows[best].hi + rows[best + 1].lo);
+            H.arrangement = "in the aisle between two of its "
+                          + std::to_string(rows.size()) + " rows";
+            for (std::size_t k = 0; k < rows.size(); ++k)
+                for (std::size_t mb : rows[k].members)
+                {
+                    if (k == best || k == best + 1) served.push_back(mb);
+                    else H.notReached.push_back(items[mb]->id);
+                }
+        }
+        std::sort(served.begin(), served.end());   // the case's own order
+        bool first = true;
+        for (std::size_t k : served)
+        {
+            const LayoutItem* it = items[k];
+            const std::string facing =
+                H.axisX ? (H.m >= it->y ? "north" : "south")
+                        : (H.m >= it->x ? "east" : "west");
+            PortReq q = headerPort(stream, it, q0, facing);
+            //  which way a top / bottom stub leaves, and the axis end a
+            //  tank's nozzle takes (`facesOther`): toward the main across
+            //  the row, toward the other end of the pipe along it
+            const int sign  = H.axisX
+                ? (std::isnan(otherAlong) || otherAlong >= it->x ? 1 : -1)
+                : (H.m >= it->x ? 1 : -1);
+            const int signY = H.axisX
+                ? (H.m >= it->y ? 1 : -1)
+                : (std::isnan(otherAlong) || otherAlong >= it->y ? 1 : -1);
+            if (q.facesOther && q.origin != "default")
+            {
+                const int sg = it->orientation == "alongY" ? signY : sign;
+                q.axial = std::fabs(q.axial) * sg;
+            }
+            int slot = 0;
+            if (commit)
+            {
+                std::ostringstream key;
+                key << it->id << '|' << q.face << '|' << q.frac << '|' << q.axial
+                    << '|' << q.zAbs;
+                slot = slotCount[key.str()]++;
+            }
+            const PortGeom g = portGeometry(*it, q, sign, slot);
+            const Pt& dep = g.lead.back();
+            if (first) { H.zh = dep[2]; first = false; }
+            const scalar along = H.axisX ? dep[0] : dep[1];
+            H.lo = std::min(H.lo, along); H.hi = std::max(H.hi, along);
+            const scalar half = 0.5 * (H.axisX ? it->dx : it->dy);
+            H.edgeLo = std::min(H.edgeLo, (H.axisX ? it->x : it->y) - half);
+            H.edgeHi = std::max(H.edgeHi, (H.axisX ? it->x : it->y) + half);
+            //  the branch: nozzle .. stub, across to the main's line at the
+            //  stub's elevation, then to the main's elevation at the tee
+            std::vector<Pt> pts(g.lead.begin(), g.lead.end());
+            pts.push_back(H.axisX ? Pt{ dep[0], H.m, dep[2] }
+                                  : Pt{ H.m, dep[1], dep[2] });
+            pts.push_back(H.at(along));
+            if (intoItems) std::reverse(pts.begin(), pts.end());
+            LayoutPipe b;
+            b.stream   = stream;
+            b.header   = unit;
+            b.branch   = it->id;
+            b.routedBy = "header";
+            b.lane     = -1;
+            const LayoutPort port{ it->id, q.port, q.role, q.origin, g.nozzle, dep };
+            if (intoItems)
+            {
+                b.fromKind = "header"; b.from = unit;   b.fromUnit = unit;
+                b.toKind   = "item";   b.to   = it->id; b.toUnit   = unit;
+                b.toPort   = port;
+            }
+            else
+            {
+                b.fromKind = "item";   b.from = it->id; b.fromUnit = unit;
+                b.fromPort = port;
+                b.toKind   = "header"; b.to   = unit;   b.toUnit   = unit;
+            }
+            b.route = tidy(pts);
+            for (std::size_t i = 1; i < b.route.size(); ++i)
+                b.length += segLength(b.route[i - 1], b.route[i]);
+            H.branches.push_back(b);
+        }
+        H.edgeLo = std::min(H.edgeLo, H.lo);
+        H.edgeHi = std::max(H.edgeHi, H.hi);
+        return H;
+    };
+    //  A header is said once, with what it carries.
+    auto announceHeader = [&](const std::string& unit, const std::string& stream,
+                              const HeaderPlan& H, scalar mainLength,
+                              const std::string& how) {
+        announce("info", "layout",
+            "header `" + unit + "` on `" + stream + "`: a main of "
+            + num(mainLength, 5) + " m " + H.arrangement + " at " + num(H.zh)
+            + " m elevation, " + how + ", with " + std::to_string(H.branches.size())
+            + " branch(es), one to each item's port (published as pipes"
+              " `pipe:" + stream + "@<item>`; a branch's flow is not the"
+              " stream's and none is published)");
+        for (const auto& id : H.notReached)
+            addFinding("headerNotReached", id, stream, scalar(H.rows), 2.0, "warning",
+                "item `" + id + "` of `" + unit + "` is NOT REACHED by the header"
+                " on `" + stream + "`: a main serves the rows on its two sides,"
+                " and the items stand in " + std::to_string(H.rows) + " rows --"
+                " arrange them in one or two rows, or move the item");
+    };
+
     //  ---- one end of a stream ------------------------------------------
     //  `inlet` is true when this end is the stream's SOURCE (a battery limit
     //  there is the plant inlet); `sign` faces a side nozzle toward the other
     //  end (+1 east); `commit` counts the pipe on its port (a stream the
-    //  layout does not route is only looked at, never counted).
+    //  layout does not route is only looked at, never counted); (otherX,
+    //  otherY) is the other end's reference point (C268, a header's side).
     auto endOf = [&](const std::string& unit, bool inlet,
-                     const std::string& stream, int sign, bool commit, int signY = 1) {
+                     const std::string& stream, int sign, bool commit,
+                     int signY = 1, scalar otherX = std::nan(""),
+                     scalar otherY = std::nan("")) {
         End e;
         if (unit.empty())
         {
@@ -1269,6 +1595,38 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
                 q.role = "no port rule for unit type `" + typeOf[unit]
                        + "`: the item's top centre (a default position)";
                 defaultedTypes.insert(typeOf[unit]);
+            }
+            //  A HEADER (C268): the item is one of N parallel items of its
+            //  unit, so the pipe ends in a main along their row with a branch
+            //  to each -- never in the first item alone.
+            if (q.origin != "default")
+            {
+                const auto sibs = siblingsOf(unit, q.item);
+                if (!sibs.empty())
+                {
+                    const HeaderPlan H = layHeader(unit, stream, sibs, otherX,
+                                                   otherY, !inlet, &q, commit);
+                    const scalar otherAlong = H.axisX ? otherX : otherY;
+                    const bool nearHi = std::isnan(otherAlong)
+                                     || otherAlong >= 0.5 * (H.lo + H.hi);
+                    const Pt far  = H.at(nearHi ? H.lo : H.hi);
+                    const Pt near = H.at(nearHi ? H.edgeHi : H.edgeLo);
+                    e.kind     = "header";
+                    e.at       = unit;
+                    e.header   = unit;
+                    e.point    = far;
+                    e.lead     = { far, near };
+                    e.branches = H.branches;
+                    e.port     = { "", "header",
+                                   "a main along the row of the unit's "
+                                   + std::to_string(sibs.size()) + " parallel items, "
+                                   + H.arrangement + ", with a branch to each",
+                                   "convention", far, near };
+                    for (const auto* it : sibs)
+                        if (!it->room.empty()) { e.indoor = true; e.room = it->room; }
+                    e.plan = H;
+                    return e;
+                }
             }
             if (q.facesOther && q.origin != "default")
             {
@@ -1422,8 +1780,8 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         const scalar ya = refY(from, true, s), yb = refY(to, false, s);
         const int signYA = (std::isnan(yb) || std::isnan(ya) || yb >= ya) ? 1 : -1;
         const int signYB = (std::isnan(yb) || std::isnan(ya) || ya >= yb) ? 1 : -1;
-        const End a = endOf(from, true, s, signA, true, signYA);
-        const End b = endOf(to, false, s, signB, true, signYB);
+        const End a = endOf(from, true, s, signA, true, signYA, xb, yb);
+        const End b = endOf(to, false, s, signB, true, signYB, xa, ya);
         if (a.kind.empty() || b.kind.empty())
         {
             const std::string why = a.kind.empty() ? a.why : b.why;
@@ -1535,12 +1893,40 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         const Pt aPt = a.indoor ? Pt{} : a.point;
         const Pt bPt = b.indoor ? Pt{} : b.point;
 
+        //  THE HEADERS THIS PIPE CARRIES (C268): one at either end that is a
+        //  unit of parallel items, and one for each store attached to the
+        //  stream, which the route passes THROUGH.  Their branches are
+        //  published after the pipe, with the pipe only.
+        std::vector<LayoutPipe> branches;
+        auto carry = [&](const std::string& unit, const HeaderPlan& H,
+                         scalar mainLength, const std::string& how) {
+            p.header += (p.header.empty() ? "" : ", ") + unit;
+            p.branches += int(H.branches.size());
+            for (const auto& bb : H.branches) branches.push_back(bb);
+            announceHeader(unit, s, H, mainLength, how);
+        };
+        auto sIt = storesOn.find(s);
+        const bool through = sIt != storesOn.end() && !a.indoor && !b.indoor;
+
         std::vector<Pt> pts;
         if (ov != overrides.end())
         {
             //  A DECLARED ROUTE: the source's anchor, the waypoints, the
             //  target's anchor -- a battery limit has no anchor of its own,
             //  so there the route begins or ends at the case's own waypoint.
+            //  A header is laid by the engine along its row, and a declared
+            //  route is the case's own geometry: the two cannot both hold.
+            if (!a.header.empty() || !b.header.empty() || through)
+            {
+                std::string who = !a.header.empty() ? a.header
+                                : !b.header.empty() ? b.header : sIt->second.front();
+                refuse("pipes `" + s + "`: an override routes this pipe, and the"
+                       " engine lays a HEADER for `" + who + "` on it (a main"
+                       " along the row of its items with a branch to each);"
+                       " a declared route cannot carry one -- remove the"
+                       " override (a port on an item of the header is moved"
+                       " with `ports { " + s + " { item <id>; side <face>; } }`)");
+            }
             p.routedBy = "waypoints";
             if (!aPt.empty()) for (const auto& q : a.lead) pts.push_back(q);
             for (const auto& q : ov->second) pts.push_back(q);
@@ -1573,30 +1959,174 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             p.lane = lane++;
             scalar ly = 0, lz = 0;
             laneAt(rack, p.lane, ly, lz);
-            if (a.kind == "batteryLimit") pts.push_back({ rack.xStart, ly, lz });
-            else
+            //  the source's part: a battery limit, or the lead (nozzle ..
+            //  departure point) first, then down or up from the departure
+            //  point to the lane (C229); the target's part, mirrored
+            auto sourcePart = [&](scalar y, scalar z) {
+                if (a.kind == "batteryLimit") pts.push_back({ rack.xStart, y, z });
+                else
+                {
+                    for (const auto& q : a.lead) pts.push_back(q);
+                    const Pt& dep = a.lead.back();
+                    pts.push_back({ dep[0], dep[1], z });
+                    pts.push_back({ dep[0], y, z });
+                }
+            };
+            auto targetPart = [&](scalar y, scalar z) {
+                if (b.kind == "batteryLimit") pts.push_back({ rack.xEnd, y, z });
+                else
+                {
+                    const Pt& dep = b.lead.back();
+                    pts.push_back({ dep[0], y, z });
+                    pts.push_back({ dep[0], dep[1], z });
+                    for (auto q = b.lead.rbegin(); q != b.lead.rend(); ++q)
+                        pts.push_back(*q);
+                }
+            };
+            if (!through)
             {
-                //  the lead (nozzle .. departure point) first, then down or
-                //  up from the departure point to the lane (C229)
-                for (const auto& q : a.lead) pts.push_back(q);
-                const Pt& dep = a.lead.back();
-                pts.push_back({ dep[0], dep[1], lz });
-                pts.push_back({ dep[0], ly, lz });
+                sourcePart(ly, lz);
+                targetPart(ly, lz);
             }
-            if (b.kind == "batteryLimit") pts.push_back({ rack.xEnd, ly, lz });
             else
             {
-                const Pt& dep = b.lead.back();
-                pts.push_back({ dep[0], ly, lz });
-                pts.push_back({ dep[0], dep[1], lz });
-                for (auto q = b.lead.rbegin(); q != b.lead.rend(); ++q)
-                    pts.push_back(*q);
+                //  THROUGH THE STORES ATTACHED TO THE STREAM (C268): from the
+                //  source along its lane to the first store's main, in at the
+                //  end nearer the source and out at the other, on to the next
+                //  store or the target.  Each leg between two mains (or an end
+                //  and a main) runs on the rack; a leg whose lane run would
+                //  lie over an earlier leg's takes the next free lane, so the
+                //  pipe never runs twice in one place.  A main that runs
+                //  along plan y is joined by both legs at one x: the far
+                //  leg's cross run then stands one lane spacing aside.
+                //  Where an end joins the lane along x: a battery limit at
+                //  the side of the fence it crosses (the declared one, or
+                //  west for an inlet and east for an outlet when a fence is
+                //  declared), or at the rack's end without one.
+                auto joinX = [&](const End& e, bool source) -> scalar {
+                    if (e.kind != "batteryLimit") return e.lead.back()[0];
+                    auto c = crossingSide.find(s);
+                    std::string side = c != crossingSide.end() ? c->second
+                                     : d.found("fence") ? (source ? "west" : "east")
+                                     : "";
+                    if (side == "west") return -1e18;
+                    if (side == "east") return  1e18;
+                    if (side == "north" || side == "south")
+                        return crossingAt.count(s) ? crossingAt[s]
+                                                   : (source ? rack.xStart : rack.xEnd);
+                    return source ? rack.xStart : rack.xEnd;
+                };
+                auto joinY = [&](const End& e, bool source, scalar laneY) -> scalar {
+                    if (e.kind != "batteryLimit") return e.lead.back()[1];
+                    auto c = crossingSide.find(s);
+                    if (c != crossingSide.end() && c->second == "south") return -1e18;
+                    if (c != crossingSide.end() && c->second == "north") return  1e18;
+                    (void)source;
+                    return laneY;
+                };
+                //  the process end decides the side of a single row: the end
+                //  that is no battery limit (the target when neither is)
+                const End& proc = b.kind != "batteryLimit" ? b : a;
+                const scalar px = proc.kind == "batteryLimit" ? kNaN : proc.lead.back()[0];
+                const scalar py = proc.kind == "batteryLimit" ? kNaN : proc.lead.back()[1];
+                struct Leg { int lane; scalar x0, x1; };
+                std::vector<Leg> legs;
+                int curLane = p.lane;
+                auto pickLane = [&](scalar x0, scalar x1) {
+                    const scalar lo = std::min(x0, x1), hi = std::max(x0, x1);
+                    for (const auto& L : legs)
+                        if (L.lane == curLane && std::max(lo, L.x0) < std::min(hi, L.x1) - kTol)
+                        { curLane = lane++; break; }
+                    legs.push_back({ curLane, lo, hi });
+                    return curLane;
+                };
+                scalar fromX = joinX(a, true);
+                scalar fromY = joinY(a, true, ly);
+                int firstLane = -1, lastLane = -1;
+                //  what begins the next leg on lane (y, z): the source's part,
+                //  then the rise from a main's exit end
+                std::function<void(scalar, scalar)> startLeg =
+                    [&](scalar y, scalar z) { sourcePart(y, z); };
+                for (const auto& store : sIt->second)
+                {
+                    const HeaderPlan H = layHeader(store, s, placedOf[store], px, py,
+                                                   true, nullptr, true);
+                    const scalar upAlong = H.axisX ? fromX : fromY;
+                    const bool enterLo = upAlong <= 0.5 * (H.edgeLo + H.edgeHi);
+                    const Pt E = H.at(enterLo ? H.edgeLo : H.edgeHi);
+                    const Pt X = H.at(enterLo ? H.edgeHi : H.edgeLo);
+                    const int L = pickLane(fromX, E[0]);
+                    if (firstLane < 0) firstLane = L;
+                    scalar y = 0, z = 0;
+                    laneAt(rack, L, y, z);
+                    startLeg(y, z);
+                    pts.push_back({ E[0], y, z });
+                    pts.push_back({ E[0], E[1], z });
+                    pts.push_back(E);
+                    pts.push_back(X);
+                    carry(store, H, segLength(E, X),
+                          "entered at its " + std::string(
+                              H.axisX ? (enterLo ? "west" : "east")
+                                      : (enterLo ? "south" : "north")) + " end");
+                    //  the far leg of a main along y stands aside, so its cross
+                    //  run never lies over the near leg's
+                    const bool aside = !H.axisX
+                        && std::max(std::min(fromY, E[1]), std::min(X[1], y))
+                           < std::min(std::max(fromY, E[1]), std::max(X[1], y)) - kTol;
+                    const scalar nextX = joinX(b, false);
+                    const scalar dx = aside ? (nextX >= X[0] ? 1.0 : -1.0) * rack.laneSpacing : 0.0;
+                    const Pt exitPt = X;
+                    startLeg = [&, exitPt, dx](scalar y2, scalar z2) {
+                        pts.push_back({ exitPt[0], exitPt[1], z2 });
+                        if (dx != 0.0) pts.push_back({ exitPt[0] + dx, exitPt[1], z2 });
+                        pts.push_back({ exitPt[0] + dx, y2, z2 });
+                    };
+                    fromX = X[0] + dx;
+                    fromY = X[1];
+                }
+                const int L = pickLane(fromX, joinX(b, false));
+                lastLane = L;
+                scalar y = 0, z = 0;
+                laneAt(rack, L, y, z);
+                startLeg(y, z);
+                targetPart(y, z);
+                //  the lane published is the one the pipe crosses the fence on
+                p.lane = (b.kind == "batteryLimit" && a.kind != "batteryLimit")
+                       ? lastLane : firstLane;
             }
         }
+        if (!a.header.empty())
+            carry(a.header, a.plan, segLength(a.point, a.lead.back()),
+                  "the branches run from the items into it");
+        if (!b.header.empty())
+            carry(b.header, b.plan, segLength(b.point, b.lead.back()),
+                  "the branches run from it into the items");
         p.route = tidy(pts);
         for (std::size_t i = 1; i < p.route.size(); ++i)
             p.length += segLength(p.route[i - 1], p.route[i]);
         rec.pipes.push_back(p);
+        for (const auto& bb : branches) rec.pipes.push_back(bb);
+    }
+
+    //  ---- A STORE THE ROUTER CANNOT REACH IS A FINDING (C268) ------------
+    //  A store attached to a stream that is NOT routed (consumed by two
+    //  units, an end the layout cannot reach, indoors) stands with no pipe
+    //  to it; the stream's own reason is already listed, and the store is
+    //  named here so the drawing never looks finished.
+    for (const auto& [s, stores] : storesOn)
+    {
+        bool routed = false;
+        for (const auto& pp : rec.pipes)
+            if (pp.stream == s && pp.branch.empty() && !pp.header.empty()) routed = true;
+        if (routed) continue;
+        std::string why = "the stream is not routed";
+        for (const auto& n : rec.notRouted) if (n.stream == s) why = n.reason;
+        for (const auto& store : stores)
+            addFinding("storeNotPiped", store, s, scalar(placedOf[store].size()), 0.0,
+                "warning",
+                "store `" + store + "` (" + std::to_string(placedOf[store].size())
+                + " placed item(s)) is attached to stream `" + s + "`, and no pipe"
+                  " reaches it: " + why);
     }
 
     //  ---- THE PORTS ARE A CONVENTION, SAID ONCE PER RUN (C229) ---------
@@ -2325,7 +2855,22 @@ void plotOf(const Dictionary& d, PlantLayoutRecord& rec, bool withFence)
     bool rackBand = false;
     for (const auto& p : rec.pipes)
     {
-        if (withFence && p.routedBy == "rack") { rackBand = true; continue; }
+        if (withFence && p.routedBy == "rack")
+        {
+            rackBand = true;
+            //  A pipe that carries a HEADER (C268) leaves the rack for the
+            //  row of items it serves: every point of its route but the
+            //  battery-limit ends (the fence's to carry) enters the envelope.
+            if (p.header.empty()) continue;
+            for (std::size_t i = 0; i < p.route.size(); ++i)
+            {
+                if ((i == 0 && p.fromKind == "batteryLimit")
+                    || (i + 1 == p.route.size() && p.toKind == "batteryLimit"))
+                    continue;
+                take(p.route[i][0], p.route[i][0], p.route[i][1], p.route[i][1]);
+            }
+            continue;
+        }
         for (const auto& q : p.route)
             take(q[0], q[0], q[1], q[1]);
     }
@@ -2476,10 +3021,6 @@ const char* const kFenceRule =
     " rack lane to the fence -- west for a plant inlet, east for an outlet,"
     " or the side the case names (north or south at a declared x) -- and"
     " crosses it there, labelled with where it comes from or goes to";
-
-using FindingSink = std::function<void(const std::string&, const std::string&,
-                                       const std::string&, scalar, scalar,
-                                       const std::string&, const std::string&)>;
 
 void fenceOf(const Dictionary& d, PlantLayoutRecord& rec,
              const FindingSink& addFinding)
@@ -2797,10 +3338,18 @@ void fenceOf(const Dictionary& d, PlantLayoutRecord& rec,
             //  item is on the other side of it.  (The tidy() of the old
             //  version hid this detour only when the stub and the crossing
             //  happened to share one x.)
-            if (alongX(c.side) && c.positionFrom == "declared")
+            //  A HEADER (C268): a pipe whose item end IS a header (the main of
+            //  a bank at that end, `port header`) takes the direct run from the
+            //  main's near end like any item; a pipe that passes THROUGH a
+            //  store attached to its stream keeps its route, which the direct
+            //  run would cut the store out of.
+            const LayoutPort& ip = in ? p.toPort : p.fromPort;
+            const bool endHeader = ip.port == "header"
+                                && p.header == (in ? p.to : p.from);
+            if (alongX(c.side) && c.positionFrom == "declared"
+                && (p.header.empty() || endHeader))
             {
-                const LayoutPort& ip = in ? p.toPort : p.fromPort;
-                if (ip.item.size() && ip.leaves.size() == 3)
+                if ((ip.item.size() || endHeader) && ip.leaves.size() == 3)
                 {
                     const scalar dy = ip.leaves[1];
                     const bool beyond = c.side == "south" ? dy < ly - kTol : dy > ly + kTol;
@@ -4197,9 +4746,9 @@ void checkBundCrossings(PlantLayoutRecord& rec, const FindingSink& addFinding)
                         through = true;
             }
             if (through)
-                addFinding("pipeThroughBund", pp.stream, b.id, 0.0, b.wallHeight,
+                addFinding("pipeThroughBund", pipeSubject(pp), b.id, 0.0, b.wallHeight,
                     "warning",
-                    "pipe `" + pp.stream + "` passes THROUGH the wall of " + w
+                    "pipe `" + pipeSubject(pp) + "` passes THROUGH the wall of " + w
                     + ", below its " + num(b.wallHeight) + " m top: a penetration"
                       " the spill can leave by unless it is sealed -- a pipe is"
                       " usually carried over the wall");
@@ -4378,9 +4927,9 @@ void checkPipeClashes(PlantLayoutRecord& rec, const FindingSink& addFinding)
                 const scalar zz = a[2] + t1 * (b[2] - a[2]);
                 const scalar zLo = std::min(za, zz), zHi = std::max(za, zz);
                 if (zHi <= zb || zLo >= zt) continue;
-                addFinding("pipeClash", p.stream, it.id, zLo, it.z + it.dz,
+                addFinding("pipeClash", pipeSubject(p), it.id, zLo, it.z + it.dz,
                     "warning",
-                    "pipe `" + p.stream + "` runs THROUGH `" + it.id + "`: its"
+                    "pipe `" + pipeSubject(p) + "` runs THROUGH `" + it.id + "`: its"
                     " segment from (" + num(a[0]) + ", " + num(a[1]) + ", "
                     + num(a[2]) + ") to (" + num(b[0]) + ", " + num(b[1])
                     + ", " + num(b[2]) + ") m crosses the item's footprint at "
@@ -4862,7 +5411,7 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
     }
 
     //  ---- the pipes (C80) ---------------------------------------------------
-    routePipes(d, r, rec);
+    routePipes(d, r, rec, addFinding);
 
     //  ---- the roads (C90): read after the pipes ---------------------------
     if (d.found("roads")) readRoads(d, rec);
@@ -4921,11 +5470,18 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
                   << (rec.pipeRack.declared ? "declared" : "stated default")
                   << ")\n";
         for (const auto& p : rec.pipes)
-            std::cout << "  " << std::left << std::setw(22) << p.stream
+            std::cout << "  " << std::left << std::setw(22)
+                      << (p.branch.empty() ? p.stream : p.stream + " @ " + p.branch
+                                                         + (p.stream.size() + 3 + p.branch.size() >= 22
+                                                            ? " " : ""))
                       << std::setw(26) << (p.from + " -> " + p.to) << " "
                       << std::right << std::setw(9) << num(p.length, 5)
                       << " m  (" << p.routedBy
                       << (p.lane >= 0 ? ", lane " + std::to_string(p.lane) : "")
+                      << (p.branches > 0 ? "; header " + p.header + ", "
+                                           + std::to_string(p.branches) + " branches"
+                                         : "")
+                      << (!p.branch.empty() ? "; branch of header " + p.header : "")
                       << ")\n";
         for (const auto& n : rec.notRouted)
             std::cout << "  " << std::left << std::setw(22) << n.stream

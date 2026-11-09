@@ -1564,7 +1564,26 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
              tierSpacing 1.2 m; xStart -14 m; xEnd 100 m; reason "..."; }
   pipes { rawLiquid { waypoints ( { x 56 m; y -6 m; z 10 m; } ... ); } }   // optional override
   ```
-  A waypoint route must be orthogonal (one axis per segment).  A stream the
+  A waypoint route must be orthogonal (one axis per segment).
+  A HEADER (C268): a unit realised by several identical parallel items
+  (a store's vessels, a tank farm, the trains of a trained plant) is piped
+  by ONE MAIN along the row of its items and a BRANCH to each item's port,
+  never by one pipe to the first item; a store sized by the postDict on a
+  boundary stream (`storage`, `gasStorage`) is no flowsheet unit, its
+  sizer already knows the stream (`stream` in the entry; the layout
+  repeats nothing), and the stream's pipe is routed THROUGH it (fence,
+  main, process for a feed store; process, main, fence for a product
+  store).  The main runs in the aisle between two rows or beside one row
+  on the side facing the other end of the pipe, along the tips of the
+  nozzles' 1 m stubs,
+  at the elevation of the stubs; three rows or more leave the far rows
+  announced as not reached.  Each branch is a pipe of its own,
+  `pipe:<stream>@<item>`, with the stream's state and no flow (a store
+  fills and empties by it); the run says how many branches each header
+  carries; a store on a stream that is not routed is a finding by name.
+  A `pipes` override on a stream that carries a header is refused; move
+  a branch's port with `ports` (an item of an attached store is accepted).
+  A stream the
   layout cannot reach (an unsized tank, an unplaced item) is listed as not
   routed, with the reason, the units at its two ends and the point of the end
   it does reach; the 3D view marks it there (a dashed stub and a warning), so

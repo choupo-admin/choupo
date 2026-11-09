@@ -137,7 +137,7 @@ export function PipeRegister({ layout }: { layout: PlantLayout }) {
           </Table.Tr></Table.Thead>
           <Table.Tbody>
             {reg.rows.map((r) => (
-              <Table.Tr key={r.stream}>
+              <Table.Tr key={r.id}>
                 <Table.Td>{r.stream}</Table.Td>
                 <Table.Td>{r.ends}</Table.Td>
                 <Table.Td>

@@ -77,7 +77,7 @@ the unit name plus an item suffix, not a tag.
 
 | fact | where |
 |---|---|
-| the layout ROUTES every material stream or lists it in `notRouted` with the reason | `src/postProcessing/layout/PlantLayout.H:92-137` (routing rules), result JSON `layout.pipes` / `layout.notRouted` at `src/result/ResultEmitter.cpp:1590-1636` |
+| the layout ROUTES every material stream or lists it in `notRouted` with the reason | `src/postProcessing/layout/PlantLayout.H:92-168` (routing rules), result JSON `layout.pipes` / `layout.notRouted` at `src/result/ResultEmitter.cpp:1590-1636` |
 | per routed pipe the JSON carries: `stream, label, fromKind/from/fromUnit, toKind/to/toUnit, routedBy, lane, length, F_mass, T, P, vf, route[x,y,z]` | `ResultEmitter.cpp:1590-1612`; typed at `gui/src/adapters/SolverAdapter.ts:1120-1135` (`LayoutPipe`) |
 | per not-routed stream: `stream, reason, fromUnit, toUnit`, flags `solids`, `indoor`, an `anchor` | `ResultEmitter.cpp:1619-1634` |
 | the `pipeHeader` sizer: declared velocity window, declared list of inside diameters, roughness, a registered friction correlation; reads mass flow, T, P, density (`phaseDensity::of`), viscosity; picks the smallest declared bore with v inside the window; publishes `requiredInsideDiameter, nominalInsideDiameter, velocity, flow, density, viscosity, reynolds, frictionFactor, pressureDropPerMetre` | `src/postProcessing/sizing/PipeHeaderSize.H:28-91`, `.cpp` 297 lines |

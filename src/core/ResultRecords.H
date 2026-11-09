@@ -1052,12 +1052,37 @@ struct LayoutPipe
     //  junction's unit, or `inlet` / `outlet`; `unit` the flowsheet unit.
     std::string fromKind, from, fromUnit;
     std::string toKind,   to,   toUnit;
-    std::string routedBy;      // rack | waypoints
-    int         lane = -1;     // -1 on a declared-waypoint route
+    std::string routedBy;      // rack | waypoints | header (a branch)
+    int         lane = -1;     // -1 on a declared-waypoint route and on a branch
     //  The route, IN THE DIRECTION OF FLOW (the producer's end first), plan
     //  x, plan y and elevation z in metres; every segment along one axis.
     std::vector<std::vector<scalar>> route;
     scalar      length = 0;    // [m] the polyline's own length
+    //  A HEADER (2026-11-09, DEV.md 4c C268).  A unit realised by N identical
+    //  parallel items (`EquipmentSizing::parallelOf` > 1: a bank of store
+    //  vessels, a tank farm, the trains of a trained plant), or a store
+    //  ATTACHED to a boundary stream (`EquipmentSizing::stream`, no unit of
+    //  the flowsheet), is piped by a MAIN along the row of its items and a
+    //  BRANCH from the main to each item's port.  The main is part of the
+    //  stream's own pipe (its route runs along the row: at a unit end the
+    //  route ends in the main; on a stream a store is attached to, it passes
+    //  THROUGH the main); each branch is a pipe of its own with the same
+    //  `stream`, its id `pipe:<stream>@<item>`.  `header` names the unit or
+    //  store the main serves (on the main and on each of its branches);
+    //  `branches` counts them on the main; `branch` is the item a branch
+    //  serves (empty on every pipe that is not one).  A branch's flow is NOT
+    //  the stream's (a store fills and empties by it), so no mass flow is
+    //  published for it.  Empty / 0 on every pipe that carries no header, so
+    //  no earlier surface moves.
+    std::string header;
+    int         branches = 0;
+    std::string branch;
+    //  THE PIPE'S IDENTITY in the published block: `pipe:<stream>`, or
+    //  `pipe:<stream>@<item>` for a branch.  One home for the shape.
+    std::string id() const
+    {
+        return "pipe:" + stream + (branch.empty() ? "" : "@" + branch);
+    }
 };
 
 struct LayoutNotRouted

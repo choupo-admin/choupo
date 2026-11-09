@@ -2104,6 +2104,31 @@ orbit, walk and drone cameras, a minimap, a click card on every item and
 pipe, and colour by phase, temperature, pressure or the mole fraction of
 a chosen component, all read from the published result.
 
+\textbf{A store, and any bank of identical items, is piped by a header.}
+A unit realised by several identical items in parallel --- the vessels
+of a gas buffer, the tanks of a product store, the trains of a trained
+plant --- is not reached by one pipe to its first item. The engine lays a
+\emph{header}: one main along the row the items stand in, and a branch
+from the main to each item's port. The main runs in the aisle between two
+rows, or beside a single row on the side facing the other end of the
+pipe, along the tips of the nozzles' 1~m stubs (the ports' own drafting
+value), at the elevation of the
+items' nozzle stubs; a store that stands in three rows or more is
+announced by name as not reached beyond the two the main serves. A store
+sized by \texttt{postDict} on a boundary stream (\texttt{storage},
+\texttt{gasStorage}) is no unit of the flowsheet, and nothing in
+\texttt{layoutDict} repeats which stream it sits on: the sizer wrote it
+into every item's sheet, and the stream's pipe is routed \emph{through}
+the store --- fence crossing, main, process for a feed; process, main,
+fence crossing for a product --- entering the main at the end nearer its
+upstream end. Each branch is published as a pipe of its own
+(\texttt{pipe:<stream>@<item>}) with the stream's state and no flow,
+because a store fills and empties by it and no number for that is
+computed; the pipe register and the 3D view carry them like any pipe,
+and the run says how many branches each header carries. A declared
+\texttt{pipes} route and a header cannot both hold (the engine refuses
+the pair); a branch's port on one item is moved with \texttt{ports}.
+
 \hypertarget{blocks-roads-fence-and-battery-limits}{%
 \subsection{Blocks, roads, fence and battery
 limits}\label{blocks-roads-fence-and-battery-limits}}

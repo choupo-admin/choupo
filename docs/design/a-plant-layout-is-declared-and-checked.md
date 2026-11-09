@@ -1109,3 +1109,72 @@ margin or rainfall is the right one.  The draft carries no containment
 (each wall was drawn round positions the draft moves) and says so.  Gate:
 `check_plant_layout` arm (p) (sabotages S49-S54) and arms (e), (i), (j);
 GUI: `tests/layoutBunds.test.ts`.
+
+## 19. Slice 11 -- a store is on its stream, and a bank is piped by a header (DEV.md 4c C268)
+
+**Asked.**  The architect, on the render of the reference plant
+(`greenAmmoniaPEQ_baseCase`, 2026-11-09): the ten hydrogen-buffer vessels
+and the two ammonia tanks were placed and drawn, and no pipe reached them;
+`H2Feed` and `ProductNH3` ran past them to the fence.  C240 had recorded the
+same on `ammonia02_full_plant`: one pipe to `T201/vessel1`, seven bullets
+connected to nothing.  Two causes, both in the router: a store the postDict
+sizes on a boundary stream (`storage`, C44; `gasStorage`, C89) is no unit of
+the flowsheet, so no pipe ever ended on it; and a unit with several placed
+items got ONE pipe, to the first item the case listed
+(`placedOf[unit].front()`).
+
+**No new key.**  The sizer already reads `stream <name>;` off the store's
+entry and writes it into every item it sizes (`EquipmentSizing::stream`,
+published on each sheet).  That is the declaration of which stream a store
+sits on, and a second one in `layoutDict` would be the arity sin; a name the
+case does not have is already refused there, by the sizer.  Which items form
+a bank is read the same way: `EquipmentSizing::parallelOf` > 1 (a store's
+vessels, a tank farm, the trains of a trained plant), which the tag rule
+already reads.
+
+**The rule.**  A bank is served by a HEADER: one MAIN along the row its items
+stand in and a BRANCH from the main to each item's port.  The main's line is
+derived from the placed items alone -- along the axis their centres spread
+on; items whose cross extents overlap form a row; the main in the aisle
+between two rows (the pair with most items), or beside a single row on the
+side facing the other end of the pipe, along the tips of the nozzles'
+one-metre stubs (the ports' own drafting value; no new number); at the
+elevation of the stubs, so a branch is the stub, a run across and a drop to
+the tee.  A third row is not reached and is a `headerNotReached` finding by
+name.  At a unit end the stream's pipe ENDS in the main (its end kind
+`header`); on a stream a store is attached to, the pipe passes THROUGH the
+main, entering at the end nearer its upstream end, each leg on the rack and
+a leg that would lie over an earlier one on the next free lane.  A store on a
+stream the layout does not route is a `storeNotPiped` finding by name.
+
+**Published as pipes, with no special case downstream.**  Each branch is a
+pipe of its own, `pipe:<stream>@<item>`, `routedBy header`, the same
+`stream`, the stream's state and NO mass flow: a store fills and empties by
+it, and no number for that flow is computed, so none is shown.  The main
+carries `header` and `branches`.  The pipe register, the pipe-length total,
+the plot, the fence crossings, the clash, road and bund checks and the 3D
+view read them as they read every pipe; the GUI keys a pipe on the engine's
+`id`.  A per-pipe finding names `<stream>@<item>` for a branch, so each
+keeps its own id and no earlier finding id moves.  The run announces each
+header with its main length, where it runs and its branch count.
+
+**Refused.**  A declared `pipes` route on a stream that carries a header
+(the engine lays the header; the two cannot both hold).  `ports` now accepts
+an item of a store attached to the stream, to move one branch's nozzle.
+
+**The witnesses.**  `greenAmmoniaPEQ_baseCase`: `H2Feed` from the west fence
+through a main in the aisle between the two rows of buffer vessels (10
+branches) to the make-up mixer; `ProductNH3` from the storage flash through
+a main north of the two tanks, inside the bund (2 branches), to the east
+fence.  `ammonia02_full_plant`: `productNH3` ends in a main north of the
+eight bullets (8 branches to the roof nozzles) and `productStored` begins in
+a main south of them (8 branches from the low outlets).  Design-sheet arms
+(q) and (v) keep their witness on PEQ's unlinked stores unchanged: they hold
+sizes, costs, sheets and placements, which this slice does not move.
+
+**Not here, named:** the separate rundown and loading lines, pumps and
+loading arms of a real tank farm (each item fills and empties by one
+connection); a header's own diameter and pressure drop; a main that steers
+round an obstacle; a manifold for a unit that is not a bank of identical
+items.  Gate: `check_plant_layout` arm (h) (the branch ends on its main,
+the main counts its branches, the ids).
