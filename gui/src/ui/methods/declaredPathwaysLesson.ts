@@ -69,7 +69,7 @@ export const PATHWAYS_STEPS: readonly LessonStep[] = [
       + "formation data the Gibbs reactor minimises over "
       + "(`pureSolidPhase::reactionEquilibrium`, which is "
       + "`Reaction::equilibrium` itself for a reaction with no pure solid, "
-      + "EquilibriumReactor.cpp:119).  Same "
+      + "EquilibriumReactor.cpp:120).  Same "
       + "thermodynamics, same data, two different questions.",
     formula: String.raw`\min_{n \ge 0}\; G(T,P,n) \quad \text{subject to} \quad A\,n = b
 \qquad\text{versus}\qquad
