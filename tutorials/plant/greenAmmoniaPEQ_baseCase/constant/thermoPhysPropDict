@@ -21,6 +21,29 @@
   dissolved in the product instead of accumulating in the loop.  The pair was
   fitted from the IUPAC-NIST Solubility Data Series Vol. 4 -- see the header
   of constant/parameters/Henry/Ar-NH3.dat and the dossier in curation/Ar-NH3/.
+
+  ABOVE Tc (DEV.md 4c C256, measured 2026-11-09).  Every run announces
+  `[psatContinued]` for H2, N2, Ar and NH3: a vapour pressure asked ABOVE the
+  critical temperature (33, 126, 151 and 405 K), where no saturation state
+  exists and the engine continues ln Psat linearly in 1/T.  The C256 ladder
+  was applied and this package is already on its first rung: every
+  supercritical gas that can dissolve (H2, N2, Ar) is a Henry solute with a
+  measured pair, so NO K-value of this plant is a continued Psat.  Measured
+  by scaling every continued Psat above Tc by 10 and by 0.1 (a scratch build,
+  not committed): no stream, no unit duty, no balance, no size, no cost and
+  no economic number moves -- the separator's dissolved gases and both
+  let-down flashes are the Henry rung's.  A cubic phi-phi package (the
+  ladder's second rung) is NOT taken: it would replace measured solubilities
+  with an SRK whose H2-NH3 and N2-NH3 interaction parameters are zero, and
+  it would not reach the one place the curve still shows (next sentence).
+  WHAT STILL READS IT, an engine rule and not this package: the five
+  phaseChanger coolers print `Tsat` by inverting the DOMINANT component's
+  Psat -- hydrogen or nitrogen, far above Tc -- so their `Tsat` is the
+  bisection's floor (150 K), and the latent / sensible split of the
+  WaterCooler and the Chiller is priced at that temperature.  Their total
+  duty is right; the split is not a physical number (x0.1 moves it by 160 %).
+  The Gibbs converter's supersaturation check also compares y_i P with a
+  continued Psat at 733 K; it passes because the continued value is large.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
