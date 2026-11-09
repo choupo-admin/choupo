@@ -7,9 +7,11 @@
 
   MEASURED, each from the primary named, read through the NIST Chemistry
   WebBook (webbook.nist.gov, CAS 57-55-6) on 2026-11-09:
-    dHf_298 (gas)     Knauth & Sabbah, Thermochim. Acta 164 (1990) 145-152,
-                      combustion calorimetry: -429.8 +/- 4.1 kJ/mol (their
-                      liquid value is -501.0 +/- 4.1).
+    dHf_298 (liquid)  Knauth & Sabbah, Thermochim. Acta 164 (1990) 145-152,
+                      combustion calorimetry: -501.0 +/- 4.1 kJ/mol (their
+                      gas value is -429.8 +/- 4.1).  The record sits on its
+                      pureLiquid reference, so the liquid enthalpy the case
+                      uses IS this measured number; the engine derives none.
     liquid Cp         Zaripov (1982), Teplomassoobmen Teplofiz.: 189.9
                       J/(mol K) at 298 K, carried constant (the same page
                       lists 177.0 at 303 K and 180.3 at 276.7 K from two
@@ -26,12 +28,12 @@
                       298.15 K (read from its ThermoML file), V = MW / rho.
 
   ESTIMATED (the catalogue's own group-estimate record, Joback / Lee-Kesler):
-    Tc, Pc, omega, s_298 and the ideal-gas Cp.  Of these only Tc reaches a
-    number this case prints: the engine carries the gas datum to the liquid
-    with Watson's latent heat, and Watson reads Tc.  With these inputs the
-    liquid's formation enthalpy at 298.15 K comes out -498.3 kJ/mol against
-    Knauth & Sabbah's calorimetric -501.0 (0.5 %).  s_298 enters nothing:
-    the reaction is irreversible and kinetic, so no Gibbs energy is priced.
+    Tc, Pc, omega, s_298 and the ideal-gas Cp.  On the liquid reference none
+    of them reaches a number this case prints: the gas datum is no longer
+    carried to the liquid with Watson's latent heat (which read Tc and, from
+    the gas -429.8, gave -498.3 kJ/mol against the calorimetric -501.0, 0.5 %
+    off; that was the record's earlier form).  s_298 enters nothing: the
+    reaction is irreversible and kinetic, so no Gibbs energy is priced.
 \*---------------------------------------------------------------------------*/
 
 name        12Propanediol;
@@ -49,9 +51,9 @@ Vliq        7.3692e-05;      // m3/mol = 76.095e-3 / 1032.61  (Zarei 2006)
 
 standardThermochemistry
 {
-    dHf_298   -429800;       // J/mol  ideal gas, Knauth & Sabbah (1990)
-    s_298     365.1;         // J/(mol K)  [ESTIMATE: Joback, enters nothing here]
-    referenceState  idealGas;
+    dHf_298   -501000;       // J/mol  LIQUID, Knauth & Sabbah (1990)
+    s_298     365.1;         // J/(mol K)  [ESTIMATE: Joback (an ideal-gas value), enters nothing here]
+    referenceState  pureLiquid;
 }
 
 vaporPressure
@@ -78,7 +80,7 @@ liquidHeatCapacity
 
 provenance
 {
-    standardThermochemistry { origin literature; method "dHf_298: Knauth & Sabbah, Thermochim. Acta 164 (1990) 145, via NIST WebBook; s_298: Joback estimate (data/groupEstimative/components/12Propanediol.dat)"; }
+    standardThermochemistry { origin literature; method "dHf_298 (liquid): Knauth & Sabbah, Thermochim. Acta 164 (1990) 145, via NIST WebBook; s_298: Joback estimate (data/groupEstimative/components/12Propanediol.dat)"; }
     liquidHeatCapacity      { origin literature; method "Zaripov (1982), via NIST WebBook, 298 K value carried constant"; }
     vaporPressure           { origin literature; method "Stull, Ind. Eng. Chem. 39 (1947) 517 data, Antoine fitted by NIST, via NIST WebBook"; }
     HvapTb                  { origin literature; method "Steele et al., J. Chem. Eng. Data 47 (2002) 689, via NIST WebBook"; }

@@ -43,26 +43,27 @@
 
   WHAT THE ENGINE ADDS, and where it parts from the paper.  The heat of
   reaction is not declared: it is priced from the formation enthalpies of
-  the four records on an IDEAL liquid.  At complete conversion that gives an
-  adiabatic rise of 56.1 K (the scan ceiling, 340.37 K, minus 284.3 K).  The
+  the four records on an IDEAL liquid, the glycol on its measured liquid
+  reference (-501.0 kJ/mol, Knauth & Sabbah).  At complete conversion that gives
+  an adiabatic rise of 57.8 K (the scan ceiling, 342.06 K, minus 284.3 K).  The
   paper MEASURED 45.5 K in a batch Dewar and 48.6 K in the running reactor,
-  and used 46.8 K: the engine releases about 20 % more heat than the real
+  and used 46.8 K: the engine releases about 24 % more heat than the real
   mixture did.  The gap is not chased here; an ideal liquid carries no heats
   of solution of the oxide and the glycol in water, which is where a
   calorimeter and a table of pure-liquid formation enthalpies part.
 
   The consequence is the lesson.  The three-crossing window is narrow (the
   paper calls its own condition-2 phase plane "structurally unstable"), and
-  20 % more heat moves it to SHORTER residence times.  So the engine finds
+  24 % more heat moves it to SHORTER residence times.  So the engine finds
   three crossings at condition 1, where the experiment saw one cold state:
 
-      291.48 K   extinguished, X = 0.13   stable
-      305.28 K   middle                   unstable (the slope test fails)
-      333.79 K   ignited,      X = 0.88   stable -- reported (T_guess 340)
+      292.22 K   extinguished, X = 0.14   stable
+      303.03 K   middle                   unstable (the slope test fails)
+      336.48 K   ignited,      X = 0.90   stable -- reported (T_guess 340)
 
   and at condition 2 (tau 1330 s, 284.6 K) it finds only the ignited state,
-  336.6 K, where the experiment saw two; at condition 3 (tau 1550 s, 297.1 K)
-  one ignited state, 352.1 K, as measured.  The paper's own model, with its
+  338.8 K, where the experiment saw two; at condition 3 (tau 1550 s, 297.1 K)
+  one ignited state, 353.9 K, as measured.  The paper's own model, with its
   measured 46.8 K, puts three crossings at condition 2 (295.8, 302.4 and
   320.9 K, by hand from Eq. (11)).  Read the case as the van Heerden
   construction on a real, measured rate law -- not as a reproduction of the
