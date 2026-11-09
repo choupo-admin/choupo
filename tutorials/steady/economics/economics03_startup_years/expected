@@ -320,3 +320,6 @@ kpi     economics              sens_financing_rate_payback_high 8.05158788521   
 kpi     economics              sens_financing_rate_payback_low 8.05158788521    1e-4
 kpi     economics              sens_financing_rate_value_high 0.08             1e-4
 kpi     economics              sens_financing_rate_value_low 0.04             1e-4
+kpi     economics              lossYears        1                1e-4
+kpi     economics              taxCreditOnLoss  1188731.20366    1e-4
+kpi     economics              taxCreditOnLoss_NPV 1080664.7306     1e-4

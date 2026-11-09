@@ -193,7 +193,7 @@ export function PlantCostTool(): JSX.Element {
             <Text size="xs" c="dimmed" mt={4} data-example-note="">{EXAMPLES[exId].note}</Text>
           ) : null}
           <Text size="xs" c="dimmed" mt={4}>
-            Choupo prints this as its Lang cross-check (default K = 3.63, <code>EconomicsPass.cpp:2971-2972</code>),
+            Choupo prints this as its Lang cross-check (default K = 3.63, <code>EconomicsPass.cpp:3024-3025</code>),
             a reconciliation line that is never fed into its fixed capital.
           </Text>
         </Box>
@@ -301,9 +301,9 @@ export function PlantCostTool(): JSX.Element {
             right one, and the gap is the size of the uncertainty at this stage.
           </Text>
           <Text size="xs" c="dimmed" mt={4}>
-            Engine: <code>FCI = contingencyFee x sum C_BM + siteFactor x sum C_BM0</code> (<code>EconomicsPass.cpp:2964</code>),
-            C_TM = 1.18 C_BM per item (<code>Turton.cpp:722</code>, <code>CostingModel.H:69</code>), siteFactor default
-            0.50 (<code>EconomicsPass.cpp:2822</code>).
+            Engine: <code>FCI = contingencyFee x sum C_BM + siteFactor x sum C_BM0</code> (<code>EconomicsPass.cpp:3017</code>),
+            C_TM = 1.18 C_BM per item (<code>Turton.cpp:755</code>, <code>CostingModel.H:69</code>), siteFactor default
+            0.50 (<code>EconomicsPass.cpp:2865</code>).
           </Text>
         </Box>
 
@@ -416,8 +416,8 @@ export function PlantCostTool(): JSX.Element {
           </Text>
           <Text size="xs" c="dimmed" mt={4}>
             Engine: <code>reports/economics/financing.csv</code> when the case declares <code>financing {"{ }"}</code>
-            (<code>EconomicsPass.cpp:556</code>); draws at the end of each construction year (<code>:1897</code>), the interest on the balance
-            drawn capitalised (<code>:1909</code>), interest paid on the opening balance in operation (<code>:1930</code>).  The page spreads the draws
+            (<code>EconomicsPass.cpp:556</code>); draws at the end of each construction year (<code>:1922</code>), the interest on the balance
+            drawn capitalised (<code>:1934</code>), interest paid on the opening balance in operation (<code>:1955</code>).  The page spreads the draws
             evenly; the engine follows the case&apos;s capital schedule.
           </Text>
         </Box>

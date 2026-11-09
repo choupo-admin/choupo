@@ -58,7 +58,9 @@ describe("every engine claim is held to the line it cites", () => {
     // C259: the previous list ("2970-2971", "2963", "2821", "240", "216", "2773", "555",
     // "1896", "1908", "1929") pinned numbers each ONE LINE LOW against the lines that
     // carry the quoted text (the ENGINE_SOURCES test above holds those); corrected.
-    for (const cite of ["2971-2972", "2964", "2822", "69", "722", "241", "217", "2774", "556", "1897", "1909", "1930"])
+    // C269 (2026-11-09) moved them again: the tax-on-loss rule and the Turton
+    // extrapolation advisory inserted lines above every one but 69/217/241/556.
+    for (const cite of ["3024-3025", "3017", "2865", "69", "755", "241", "217", "2817", "556", "1922", "1934", "1955"])
       expect(text, cite).toContain(cite);
   });
   it("the engine's constants are the ones the page defaults to", () => {

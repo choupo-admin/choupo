@@ -154,18 +154,24 @@ items
 
     //  ======================== THE TANK FARM ===========================
     //  OUTDOORS, in one bund (see the header), east of the building and
-    //  downwind of it.  A tank publishes its VOLUME, so each plan box is
-    //  DECLARED as the bounding box of an upright cylinder that holds it:
-    //    acetoneTank/tank1    13.83 m3: D 2.6 m x H 2.6 m (pi/4 x 2.6^2 x 2.6 = 13.80)
-    //    recoveredTank/tank1   6.18 m3: D 2.0 m x H 2.0 m (pi/4 x 2.0^2 x 2.0 =  6.28)
-    //  Redo the boxes when the hold times or the basis move.
+    //  downwind of it.  A storage tank publishes its VOLUME (`V_R`, the
+    //  sizing is the truth) and no diameter, so each plan box is DECLARED as
+    //  the bounding box of an upright cylinder (D = H) that holds it:
+    //    acetoneTank/tank1    V_R 35.64 m3 (30.30 m3 of liquid at 85 % fill):
+    //                         D 3.6 m x H 3.6 m (pi/4 x 3.6^2 x 3.6 = 36.64)
+    //    recoveredTank/tank1  V_R 16.39 m3: D 2.8 m x H 2.8 m (pi/4 x 2.8^2 x 2.8 = 17.24)
+    //  Until 2026-11-09 these boxes held 13.8 and 6.3 m3 -- the tanks of an
+    //  earlier basis, drawn at well under half their sized volume while the
+    //  sheets said 35.6 and 16.4 (DEV.md 4c C269 (5)).  Redo the boxes when
+    //  the hold times or the basis move: `V_R` on design/<tank>/tank1 is the
+    //  number to hold.
     {
         item        "acetoneTank/tank1";
         x           16 m;
         y           -10 m;
         z           0 m;
         orientation alongX;
-        footprint   { length 2.6 m; width 2.6 m; height 2.6 m; }   // author-set
+        footprint   { length 3.6 m; width 3.6 m; height 3.6 m; }   // author-set, holds V_R 35.64 m3
         release
         {
             source  "author-set assumption for the group to replace with its own site data; not taken from any hazardous-area standard";
@@ -175,11 +181,11 @@ items
     }
     {
         item        "recoveredTank/tank1";
-        x           24 m;
+        x           25 m;           // 5.8 m clear of the acetone tank (the 5 m rule below)
         y           -10 m;
         z           0 m;
         orientation alongX;
-        footprint   { length 2.0 m; width 2.0 m; height 2.0 m; }   // author-set
+        footprint   { length 2.8 m; width 2.8 m; height 2.8 m; }   // author-set, holds V_R 16.39 m3
         release
         {
             source  "author-set assumption for the group to replace with its own site data; not taken from any hazardous-area standard";
@@ -294,15 +300,17 @@ pipeRack
 //  rack's upper tier (7.2 m, above the roads' 5 m headroom).  Since C229 a
 //  declared route begins and ends at the PORT's one-metre stub, not at the
 //  item's top centre: the first waypoint of the acetone line stands over the
-//  tank's low outlet stub (x 13.7 m), the last of the condensate line over the
-//  receiving tank's roof nozzle stub (x 22 m, 3 m up).
+//  tank's low outlet stub (x 13.2 m: one metre west of the 3.6 m box), the
+//  last of the condensate line over the receiving tank's roof nozzle stub
+//  (x 22.6 m, 3.8 m up: the 2.8 m box).  Both moved with the boxes on
+//  2026-11-09 (C269): redo them whenever a tank box moves.
 pipes
 {
     //  The fresh acetone, from the farm into the solution-preparation room.
     acetoneToPrep
     {
-        waypoints ( { x 13.7 m; y -10 m; z 7.2 m; }
-                    { x 13.7 m; y -7 m;  z 7.2 m; }
+        waypoints ( { x 13.2 m; y -10 m; z 7.2 m; }
+                    { x 13.2 m; y -7 m;  z 7.2 m; }
                     { x -6.5 m; y -7 m;  z 7.2 m; }
                     { x -6.5 m; y -7 m;  z 4.5 m; }
                     { x -8 m;   y -7 m;  z 4.5 m; } );    // the wall penetration
@@ -315,8 +323,8 @@ pipes
                     { x -6.5 m; y 8 m;    z 7.2 m; }
                     { x 4 m;    y 8 m;    z 7.2 m; }
                     { x 4 m;    y -6.6 m; z 7.2 m; }
-                    { x 22 m;   y -6.6 m; z 7.2 m; }
-                    { x 22 m;   y -10 m;  z 7.2 m; } );
+                    { x 22.6 m; y -6.6 m; z 7.2 m; }
+                    { x 22.6 m; y -10 m;  z 7.2 m; } );
     }
 }
 

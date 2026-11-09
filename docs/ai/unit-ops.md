@@ -1997,7 +1997,17 @@ Selectable chamber `model`s (an unrecognised word REFUSES, naming these):
 
 The KPIs of `marshall` and `langrishKockel` can agree to the byte on the same
 case — the difference is the axial `profile.csv` — so read the profile, not
-only the summary, when you change this word.
+only the summary, when you change this word.  And the three kinetics agree
+to the byte wherever the residence time dwarfs the drying time (sprayDryer01:
+7.1 s against 0.07 s): the kinetics only show where the two are comparable
+(`sprayDryer06_rea`, coarse droplets in the same chamber).
+
+**Which air the isotherm reads.**  `X_equilibrium` is the GAB moisture at the
+water activity of the EXHAUST air — the air the powder leaves with in a
+co-current, well-mixed chamber — and the KPI `water_activity` is the
+exhaust's (`T_out`, the exhaust humidity).  The `solidDryer` publishes a KPI
+of the same name that is the INLET air's (below); the key is shared, the air
+state is not.
 
 ```
 inputs  (feed  dryingAir );
@@ -2044,6 +2054,16 @@ not a knob like `evaporativeDryer`'s `maxExhaustHumidity`).  The last two
 leave the powder wetter and raise a WARNING into the caveat block; the
 exhaust's a_w is the KPI `exhaust_humidity`.  Witness of the saturation
 limit: `solidDryer02_starved_air`.
+
+**Which air the isotherm reads.**  `X_equilibrium` is the GAB moisture at
+the water activity of the INLET (hot) air, and the KPI `water_activity` is
+the inlet air's — the result block says so on every run.  The reason (DEV.md
+4c C269): a solid finished by the fresh air — a batch dried to its end point
+(a fluid-bed dryer of granules: evaporation falls to nothing and the exhaust
+tends to the inlet air), or a through-circulation bed the fresh air meets
+last — ends in equilibrium with the INLET air; a well-mixed co-current dryer
+discharges with its exhaust, which is what `sprayDryer` reads.  Same KPI
+name, two air states: read the unit, not the key.
 ```
 inputs  (wetSolid  hotAir );   outputs (drySolid  humidExhaust );
 ```

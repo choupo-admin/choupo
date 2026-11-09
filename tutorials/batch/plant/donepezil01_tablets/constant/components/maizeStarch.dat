@@ -65,7 +65,11 @@ solidHeatCapacity
 
 //  The SORPTION ISOTHERM (GAB) -- the moisture the dried granules (fluid-bed
 //  dryer) and the coated tablets (coating dryer) keep is computed as water
-//  sorbed by this starch at the exhaust air's water activity.  The three
+//  sorbed by this starch at the INLET air's water activity.  A batch dried to
+//  its end point ends in equilibrium with the air it is still in contact with
+//  when evaporation has stopped, and that is the fresh (inlet) air -- the
+//  exhaust tends to it -- so the `solidDryer` reads the inlet, not the
+//  exhaust (DEV.md 4c C269 decision (1)).  The three
 //  parameters are AUTHOR-SET, of the order reported for native starches,
 //  and taken from no source read: a group replaces them with a measured
 //  isotherm of THEIR granules (dynamic vapour sorption).

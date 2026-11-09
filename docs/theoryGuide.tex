@@ -22932,7 +22932,11 @@ from the characteristic drying curve.
 
 \emph{Equilibrium} (on the component \file{.dat}, axiom 1): the GAB
 sorption isotherm gives the equilibrium moisture at the air's water
-activity $a_w$ (= the relative humidity),
+activity $a_w$ (= the relative humidity) --- for the spray dryer the
+\emph{exhaust} air's, the air the powder leaves with in a co-current,
+well-mixed chamber (the KPI \code{water\_activity} is the exhaust's;
+the solid dryer of the next subsection reads the \emph{inlet} air, and
+its KPI of the same name is the inlet's),
 \begin{equation}
    X_e = \frac{X_m\,C\,K\,a_w}{(1-K a_w)(1-K a_w + C K a_w)}.
 \end{equation}

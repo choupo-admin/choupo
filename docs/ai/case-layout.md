@@ -1294,6 +1294,39 @@ terms, checked by hand in its postDict); the gate
 `bin/curate/check_debt_financing.py` holds it and builds further probes from
 a loan-free copy of it and from `economics01_esterification_dcf`.
 
+**TAX ON A LOSS (2026-11-09, DEV.md 4c C269 decision (2)).**  One opt-in word
+in the same `economics {}` block says what a loss year's tax is:
+
+```
+taxOnLoss  credit;    // the default (absent = this): tau x the loss is a tax
+                      // CREDIT -- the loss is set against the owner's OTHER
+                      // taxable profit (a group's consolidated return)
+taxOnLoss  none;      // stand-alone: a loss year pays no tax and earns no
+                      // credit; the loss is NOT carried forward (not modelled)
+```
+
+Absent, nothing moves: every case keeps the cash flow it had.  Whenever an
+operating year's taxable income is negative the run ANNOUNCES the reading in
+force into the caveat block and the result (`[assumed] economics`, a warning
+under `credit` with the credit's total and its discounted value, i.e. its
+share of the NPV; an info line under `none`), prints it beside the tax rate,
+and publishes `kpis.economics.lossYears`, `taxCreditOnLoss` (0 under `none`)
+and `taxCreditOnLoss_NPV`, plus `taxOnLoss`, `lossYears` and
+`taxCreditOnLoss` in the result's `economics` object.  A case with no loss
+year publishes none of these.  Under `none` the rule reaches every tax the
+appraisal computes: the cash flow, the simple payback, the year-by-year table
+and the equity view (the loan's interest shield is floored the same way);
+the salvage gain is taxed as before.  Any other word refuses by name.  Measured
+on 2026-11-09, twelve of the fifteen economics cases have a loss year and
+carry the announcement (the green-ammonia plants every operating year: the
+credit is 87 MEUR of `greenAmmoniaPEQ_baseCase`'s NPV); a case's README says
+which reading its NPV is.  Worked cases: the three tablet plants
+(`tutorials/batch/plant/donepezil01_tablets`: 7 loss years, 2.71 MEUR of the
+NPV; `donepezil02_two_strengths`: all 10; `apalutamide01_tablets`: no loss
+year); the gate
+`bin/curate/check_economic_extensions.py` arm (i) shows both readings on a
+priced-down twin of `economics04`.
+
 **THE PARTICULATE STEPS IN THE LABOUR (2026-10-19, DEV.md 4c C98).**  The
 operator count is Turton's `N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5` per
 shift (x 4.5 positions), `N_np` the non-particulate processing steps and `P`
