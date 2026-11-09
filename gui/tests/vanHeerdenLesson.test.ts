@@ -144,12 +144,12 @@ describe("the ignition / extinction lesson", () => {
     expect(note).toContain(`${kpi("T_out").toFixed(1)} K`);   // the reported, ignited root
     expect(note).toContain("tutorials/steady/reactors/cstr08_furusawa_bistable");
     //  B = Ea dT_ad / (R T_in^2) and its bound 4 gamma / (gamma - 4), from
-    //  the Ea in constant/reactions, the T in 0/feed and the 56.1 K rise the
+    //  the Ea in constant/reactions, the T in 0/feed and the 57.8 K rise the
     //  case header states (the engine's scan ceiling minus T_in).
     const Ea = Number(/^\s*Ea\s+(\S+);/m.exec(read("constant/reactions"))![1]);
     const Tin = Number(/^T\s+(\S+)\s*K;/m.exec(read("0/feed"))![1]);
-    expect(read("system/flowsheetDict")).toContain("adiabatic rise of 56.1 K");
-    const R = 8.314462618, dTad = 56.1;
+    expect(read("system/flowsheetDict")).toContain("adiabatic rise of 57.8 K");
+    const R = 8.314462618, dTad = 57.8;
     const gamma = Ea / (R * Tin);
     const B = Ea * dTad / (R * Tin * Tin);
     expect(note).toContain(`B = ${B.toFixed(1)} against a bound of ${(4 * gamma / (gamma - 4)).toFixed(1)}`);

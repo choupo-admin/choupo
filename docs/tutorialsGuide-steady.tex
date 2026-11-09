@@ -10956,13 +10956,13 @@ condition tau [s] T0 [K] what they measured 1 980 274.3 one steady state, LOW co
 
 WHAT THIS CASE TAKES FROM THE PAPER, and nothing else is tuned: the kinetics, first order in propylene oxide, their Eq. (11): k = 4.71e9 exp(-18.0 kcal/mol / RT) 1/s (constant/reactions); the feed: an equal-volume propylene-oxide + methanol solution mixed with acidified water to 2.15 mol/L of propylene oxide. Per litre of feed, with the record volumes added (the paper's own assumption 2, no volume change): 2.15 mol oxide, 3.72 mol methanol, 38.58 mol water -- the molar flows in 0/feed are that composition at 0.01 kmol/h of oxide; the inlet temperature: the controlled 274.3 K PLUS the 10 K the heat of DILUTION adds on mixing, as the paper itself does ("the inlet temperature of the reactor could then be regarded as being 10.0 deg. higher than the controlled value"): 284.3 K. An ideal liquid has no heat of mixing, so the paper's correction is the honest one here; the residence time of CONDITION 1, 980 s: V\_R below is the feed's volumetric flow (1.292e-6 m3/s on the record volumes) times 980 s; adiabatic: the measured heat loss was under 1 \% of what the effluent carries away, and is left out.
 
-WHAT THE ENGINE ADDS, and where it parts from the paper. The heat of reaction is not declared: it is priced from the formation enthalpies of the four records on an IDEAL liquid. At complete conversion that gives an adiabatic rise of 56.1 K (the scan ceiling, 340.37 K, minus 284.3 K). The paper MEASURED 45.5 K in a batch Dewar and 48.6 K in the running reactor, and used 46.8 K: the engine releases about 20 \% more heat than the real mixture did. The gap is not chased here; an ideal liquid carries no heats of solution of the oxide and the glycol in water, which is where a calorimeter and a table of pure-liquid formation enthalpies part.
+WHAT THE ENGINE ADDS, and where it parts from the paper. The heat of reaction is not declared: it is priced from the formation enthalpies of the four records on an IDEAL liquid, the glycol on its measured liquid reference (-501.0 kJ/mol, Knauth \& Sabbah). At complete conversion that gives an adiabatic rise of 57.8 K (the scan ceiling, 342.06 K, minus 284.3 K). The paper MEASURED 45.5 K in a batch Dewar and 48.6 K in the running reactor, and used 46.8 K: the engine releases about 24 \% more heat than the real mixture did. The gap is not chased here; an ideal liquid carries no heats of solution of the oxide and the glycol in water, which is where a calorimeter and a table of pure-liquid formation enthalpies part.
 
-The consequence is the lesson. The three-crossing window is narrow (the paper calls its own condition-2 phase plane "structurally unstable"), and 20 \% more heat moves it to SHORTER residence times. So the engine finds three crossings at condition 1, where the experiment saw one cold state:
+The consequence is the lesson. The three-crossing window is narrow (the paper calls its own condition-2 phase plane "structurally unstable"), and 24 \% more heat moves it to SHORTER residence times. So the engine finds three crossings at condition 1, where the experiment saw one cold state:
 
-291.48 K extinguished, X = 0.13 stable 305.28 K middle unstable (the slope test fails) 333.79 K ignited, X = 0.88 stable -- reported (T\_guess 340)
+292.22 K extinguished, X = 0.14 stable 303.03 K middle unstable (the slope test fails) 336.48 K ignited, X = 0.90 stable -- reported (T\_guess 340)
 
-and at condition 2 (tau 1330 s, 284.6 K) it finds only the ignited state, 336.6 K, where the experiment saw two; at condition 3 (tau 1550 s, 297.1 K) one ignited state, 352.1 K, as measured. The paper's own model, with its measured 46.8 K, puts three crossings at condition 2 (295.8, 302.4 and 320.9 K, by hand from Eq. (11)). Read the case as the van Heerden construction on a real, measured rate law -- not as a reproduction of the measured states.
+and at condition 2 (tau 1330 s, 284.6 K) it finds only the ignited state, 338.8 K, where the experiment saw two; at condition 3 (tau 1550 s, 297.1 K) one ignited state, 353.9 K, as measured. The paper's own model, with its measured 46.8 K, puts three crossings at condition 2 (295.8, 302.4 and 320.9 K, by hand from Eq. (11)). Read the case as the van Heerden construction on a real, measured rate law -- not as a reproduction of the measured states.
 
 phi(T) = H\_out(T) - H\_in - Q\_ext(T) = 0
 
@@ -10972,17 +10972,17 @@ Eliminate the extent and what remains is ONE equation in the temperature, the te
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{5.74253055556e-05}
 \goldrow{stream}{feed}{T}{284.3}
-\goldrow{stream}{reactorOut}{F}{5.49717432673e-05}
-\goldrow{stream}{reactorOut}{T}{333.790722963}
+\goldrow{stream}{reactorOut}{F}{5.49145241864e-05}
+\goldrow{stream}{reactorOut}{T}{336.484249478}
 \goldrow{kpi}{reactor}{F\_in\_kmol\_h}{0.2067311}
-\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{0.197898275762}
-\goldrow{kpi}{reactor}{Q\_kW}{4.83169060317e-13}
-\goldrow{kpi}{reactor}{T}{333.790722963}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{0.197692287071}
+\goldrow{kpi}{reactor}{Q\_kW}{1.03561603737e-12}
+\goldrow{kpi}{reactor}{T}{336.484249478}
 \goldrow{kpi}{reactor}{T\_guess}{340}
-\goldrow{kpi}{reactor}{T\_out}{333.790722963}
+\goldrow{kpi}{reactor}{T\_out}{336.484249478}
 \goldrow{kpi}{reactor}{V\_R}{0.00126615}
-\goldrow{kpi}{reactor}{dT\_rise}{49.4907229634}
-\goldrow{kpi}{reactor}{k\_hydration\_PO}{0.00772213004548}
+\goldrow{kpi}{reactor}{dT\_rise}{52.1842494777}
+\goldrow{kpi}{reactor}{k\_hydration\_PO}{0.00959571323183}
 \goldrow{kpi}{reactor}{nReactions}{1}
 \goldmore{7}
 \end{tutgolden}

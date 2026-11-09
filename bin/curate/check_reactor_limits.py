@@ -545,21 +545,22 @@ def main() -> int:
         # -- R9 (C259 (d)): the CSTR's energy-balance pre-check asks "can this
         #  species be priced on the elements datum?", not "is it on the gas
         #  rung?".  cstr08's glycol record is on the idealGas rung; the probe
-        #  moves it to its measured LIQUID rung (Knauth & Sabbah dHf -501.0
-        #  kJ/mol, cited in cstr08's header; s_298 keeps the record's flagged
-        #  Joback estimate, which no energy path reads).  It used to be refused
-        #  with "has no standardThermochemistry block", which was false.
+        #  runs on its measured LIQUID rung (Knauth & Sabbah dHf -501.0 kJ/mol,
+        #  as the case now ships it; s_298 keeps the record's flagged Joback
+        #  estimate, which no energy path reads).  The gas rung (-429.8, the
+        #  case's earlier form) is the probe that is edited in.  It used to be
+        #  refused with "has no standardThermochemistry block", which was false.
         glyc = "constant/components/12Propanediol.dat"
+        liq_blk = ("    dHf_298   -501000;       // J/mol  LIQUID, Knauth & Sabbah (1990)\n"
+                   "    s_298     365.1;         // J/(mol K)  [ESTIMATE: Joback (an ideal-gas value), enters nothing here]\n"
+                   "    referenceState  pureLiquid;\n")
         gas_blk = ("    dHf_298   -429800;       // J/mol  ideal gas, Knauth & Sabbah (1990)\n"
                    "    s_298     365.1;         // J/(mol K)  [ESTIMATE: Joback, enters nothing here]\n"
                    "    referenceState  idealGas;\n")
-        liq_blk = ("    dHf_298   -501000;       // J/mol  LIQUID, Knauth & Sabbah (1990)\n"
-                   "    s_298     365.1;         // flagged Joback estimate, read by no energy path\n"
-                   "    referenceState  pureLiquid;\n")
         src8 = T / "steady/reactors/cstr08_furusawa_bistable"
         ok = True
         d9 = probe(src8, td / "r9_liquid")
-        if edit(d9 / glyc, gas_blk, liq_blk, "R9"):
+        if True:
             out = expect_runs("R9 (pureLiquid record)", d9)
             if out is not None:
                 dT = re.search(r"steady states found:\s*(\d+)", out)
@@ -568,7 +569,7 @@ def main() -> int:
                                     " steady-state scan report")
                     ok = False
         d9b = probe(src8, td / "r9_noCp")
-        if edit(d9b / glyc, gas_blk, liq_blk, "R9") and edit(
+        if edit(
                 d9b / glyc, "liquidHeatCapacity", "liquidHeatCapacityOFF", "R9"):
             if not expect_refusal("R9 (pureLiquid, no liquid Cp)", d9b,
                                   ["12Propanediol", "pureLiquid", "liquidHeatCapacity"]):
@@ -611,7 +612,7 @@ def main() -> int:
                 failures.append("R10: the pfr fixture could not be built -- no T_guess line")
                 return None
             fd.write_text(t2.replace("type        cstr;", "type        pfr;"))
-            if liquid and not edit(c / glyc, gas_blk, liq_blk, "R10"):
+            if not liquid and not edit(c / glyc, liq_blk, gas_blk, "R10"):
                 return None
             if drop_cp and not edit(c / glyc, "liquidHeatCapacity",
                                     "liquidHeatCapacityOFF", "R10"):
@@ -620,7 +621,7 @@ def main() -> int:
 
         c10 = as_pfr(td / "r10_gasRung", False)
         if c10 is not None:
-            if expect_runs("R10 (gas rung, as shipped)", c10) is None:
+            if expect_runs("R10 (gas rung)", c10) is None:
                 ok = False
         c10 = as_pfr(td / "r10_liquid", True)
         if c10 is not None:
