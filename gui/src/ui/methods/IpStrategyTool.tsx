@@ -152,7 +152,7 @@ function DeadlineCalculator(): JSX.Element {
   );
 }
 
-/** The case study's numbers, each as its source states it (steps 19-20).
+/** The case study's numbers, each as its source states it (steps 20-21).
  *  No ratio is drawn: the rows were measured under different conditions. */
 function MembraneRecordTable(): JSX.Element {
   return (
@@ -272,8 +272,9 @@ function Sources(): JSX.Element {
         </Table.Tbody>
       </PanTable>
       <Text size="xs" c="dimmed" mt={4}>
-        Every source was read online on 2026-10-26.  Portuguese law is cited
-        in its own terms; its quotations are the page's translations.
+        Every source was read online on 2026-10-26, and those on the Unified
+        Patent Court on 2026-11-09.  Portuguese law is cited in its own
+        terms; its quotations are the page's translations.
       </Text>
     </Box>
   );
@@ -288,7 +289,8 @@ export function IpStrategyTool(): JSX.Element {
           <Text size="sm" c="dimmed" mt={4}>
             When to patent and when to keep a secret; how firms use patents,
             publications and secrets against each other, and how they make
-            peace; where strategy becomes unlawful; and four cases worked
+            peace; what the Unified Patent Court changed, one action for
+            many countries; where strategy becomes unlawful; and four cases worked
             through -- a process patent whose recipe does not work, a turbine
             whose blades melt, Whittle's turbojet, and the Wright and Watt
             patents -- a case study of the reverse-osmosis membrane, from
@@ -320,18 +322,19 @@ export function IpStrategyTool(): JSX.Element {
         {step(12)}
         {step(13)}
         {step(14)}
+        {step(15)}
 
         <Title order={4}>Worked cases</Title>
-        {step(15)}
         {step(16)}
         {step(17)}
         {step(18)}
+        {step(19)}
 
         <Title order={4}>Case study: the reverse-osmosis membrane</Title>
-        {step(19)}
-        <MembraneRecordTable />
         {step(20)}
+        <MembraneRecordTable />
         {step(21)}
+        {step(22)}
 
         <Exercise />
 
