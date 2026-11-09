@@ -4307,10 +4307,7 @@
   "tutorials/steady/economics/sugarPlantEconomicsSweep": {
    "application": "choupoSolve",
    "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
+    "formulation": "diluteSolution"
    },
    "roles": [],
    "hasGolden": false
@@ -5431,10 +5428,7 @@
     "turbine"
    ],
    "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
+    "formulation": "diluteSolution"
    },
    "roles": [],
    "hasGolden": true
@@ -5790,10 +5784,7 @@
     "elementPotential"
    ],
    "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
+    "formulation": "diluteSolution"
    },
    "roles": [],
    "hasGolden": true
@@ -5807,10 +5798,7 @@
     "reactiveFlash"
    ],
    "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
+    "formulation": "diluteSolution"
    },
    "roles": [],
    "hasGolden": true
@@ -5824,10 +5812,7 @@
     "directMin"
    ],
    "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
+    "formulation": "diluteSolution"
    },
    "roles": [],
    "hasGolden": true
@@ -6194,10 +6179,7 @@
     "LockhartMartinelli"
    ],
    "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
+    "formulation": "diluteSolution"
    },
    "roles": [],
    "hasGolden": true
@@ -9459,7 +9441,6 @@
     "tutorials/steady/economics/economics01_esterification_dcf",
     "tutorials/steady/economics/economics02_irr_sweep",
     "tutorials/steady/economics/economics04_building_royalty_breakeven",
-    "tutorials/steady/economics/sugarPlantEconomicsSweep",
     "tutorials/steady/electrodialysis/ed01_nacl_desalination",
     "tutorials/steady/electrodialysis/ed02_over_limiting_current",
     "tutorials/steady/electrodialysis/ed03_stack_record",
@@ -9495,7 +9476,6 @@
     "tutorials/steady/flowsheets/process02_with_design",
     "tutorials/steady/flowsheets/process03_recycle",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
-    "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
     "tutorials/steady/gas-solid/bagFilter01_dust",
@@ -9517,9 +9497,6 @@
     "tutorials/steady/gibbs/gibbs05_adiabatic_flame",
     "tutorials/steady/gibbs/gibbs06_h2_flame_radicals",
     "tutorials/steady/gibbs/gibbs06_thermal_nox",
-    "tutorials/steady/gibbs/gibbs07_wgs_cooled",
-    "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash",
-    "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
     "tutorials/steady/gibbs/gibbs11_carbon_deposition",
     "tutorials/steady/gibbs/gibbs12_element_potential_newton",
@@ -9542,7 +9519,6 @@
     "tutorials/steady/heat/pinch01_four_stream_classic",
     "tutorials/steady/heat/reboiler_water_copper",
     "tutorials/steady/hydraulics/pipe01_water_line",
-    "tutorials/steady/hydraulics/pipe02_airwater_twophase",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
