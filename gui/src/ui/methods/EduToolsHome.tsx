@@ -37,7 +37,7 @@ License
   section (METHOD_DISCIPLINES order).  Typing filters the page live with the
   SAME index and matcher as the Find dialog (eduToolsIndex.ts); a tool matched
   only inside a lesson shows that chapter as its reason.  No sequence is
-  offered here (METHOD_PATHS stays as data for `&path=` links).  It reads the
+  offered here (the registry keeps its path data for `&path=` links).  It reads the
   registry only and is not a panel or a menu.
 \*---------------------------------------------------------------------------*/
 
