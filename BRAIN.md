@@ -129,6 +129,7 @@ are indoor by rule (C100) and the viewer marks them.
 
 ## WHAT CHANGED LAST (newest first; keep ten lines)
 
+- 2026-11-09 C258 debt closed: the thermal adsorber's energy balance in conservative form; batch25 claims and closes its first law (3.7e-10); cstr08's glycol on its measured liquid datum.
 - 2026-11-09 C259 (a) and (d): verified references on 62 lesson pages (202 entries, each with how it was verified; gate check_lesson_references); the CSTR and PFR no longer refuse a pureLiquid-reference record with a false message.
 - 2026-11-09 C259 + C260 LANDED (eea569a68): the scientific audit of all 60 lessons (16 S1, 34 S2) fixed and re-verified -- Kremser direction, Wegstein q>1, pressure torn, column stage 1, Hermia, TPD ln gamma(y), van Heerden on a real three-state witness (cstr08, Furusawa 1969); the ip-strategy page gains the Unified Patent Court. Open: verified references (a lesson field + gate), CSTR pureLiquid refusal defect.
 - 2026-11-09 C258 LANDED (350b60dc7): no shipped case shows a broken balance -- dryer water and adsorber carrier make-up as named streams, the isothermal bed's wall duty a named heat stream, batch25's energy claim refused by name (debt: conservative form); check_campaign_closure static in every mode, refused at --record, live on 80 time-integrated cases, no exemption. Full sweep 865/1/6. C259 audit of every lesson: 16 S1, 34 S2, fixes running.
@@ -138,4 +139,3 @@ are indoor by rule (C100) and the viewer marks them.
 - 2026-11-08 C245 slice 2: tear Newton, simultaneous MESH and CSTR declare bounds and throw InfeasibleTrial instead of clipping; 17 closure rows re-recorded; aqueous columns and reactive phase 1 stay legacy (debts). C246 recorded (solver knobs a case may turn).
 - 2026-11-08 C245: kernel audit (docs/audits/2026-11-08-kernel-numerical-audit.md); Newton contract, CubicEoS pseudo-root, Rodas4, adsorber 2x, column08 unseeded (6bceec76d); C239 Tc rule continuous, Ar on Henry, ammonia re-sealed 2608 (e5d7017b8); C227 (a).
 - 2026-11-08 C239: Klemola anchors on column14 (cfc70414d), column20 on SRK (021a66afa); column08 blocked by the Tc rule, fix decided (continuous factor) and running.
-- 2026-11-07 C241 (BRAIN generator + gate, CLAUDE.md diet) and C236 (speed) landed.

@@ -3479,6 +3479,23 @@ accepts today, and that is a policy call.
 > 6 EXPECTED-FAIL, 38.6 min.  What the suite holds after this: steady -- mass, element and
 > plant-boundary energy (check_mass/element/energy_closure; energy KNOWN_OPEN 5 cases,
 > unchanged); time-integrated -- mass, element, solute and every claimed energy closure.
+> THE OPEN DEBT CLOSED the same day (branch 5bfdc3292 + cb4f7bea7): the thermal bed's energy
+> balance is now CONSERVATIVE -- per cell U = eps sum c (hs - RT) + rho_b sum q (hs + dH) +
+> rho_b cp_s (T - T0), one shared enthalpy flux per face (the cells telescope to the
+> boundary), an H_out ledger row; T stays the working row and is projected onto U after
+> every sampling chunk.  The adsorbed phase now carries the gas's Cp (Kirchhoff with a
+> constant isosteric heat; the old "neglected" declaration withdrawn) and outlet backflow
+> enters at c_in P_out/P_feed.  batch25 CLAIMS its first law again: 7.9e-2 (refused) ->
+> 3.67e-10; batch20-24 thermal 1e-4 -> round-off; moved rows listed with reasons in the
+> branch commit (t_50 +0.8 %, T_final -0.1..-0.2 %, dT_adiabatic bound 140.4 -> 125.8 K).
+> check_pswing B asserts the closure (sabotage: h instead of h - RT -> 0.98; an unshared
+> face flux -> 0.45).  check_ode_block_structure arm (d): the energy-closure floor 1e-12 ->
+> 1e-11 for that key only, ACCEPTED by the architect -- both Jacobian modes now sit at
+> round-off (~1e-13 kJ), and the defect the arm exists for is 4e-10, forty times above.
+> Thermal cases ~1.5x slower.  Validation: integrate --scope 16/0, --gui 47/0, then the
+> WHOLE batch and ctrl trees on the integrated tree 83/0/3.  NO FULL SWEEP, reason: the
+> diff touches only choupoBatch's main, BatchUnitOperation.H (included by that main alone)
+> and the adsorber; every choupoBatch case lives under tutorials/batch and all ran.
 
 > **C257 (Vitor, 2026-11-09: another assistant's recommendation "tornar o Choupo AI-first",
 > pasted whole, with the instruction "eu quero apenas que tu o ouças e reflitas um pouco.
