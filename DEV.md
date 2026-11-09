@@ -4181,6 +4181,18 @@ accepts today, and that is a policy call.
 > four took the README's reading, half the tablet.)  LIMITS:
 > the assistant was not ChatGPT; opener and engine ran natively; Vitor runs the real
 > one with the procedure given to him the same day.
+> (a) AND (c) LANDED 2026-11-09 (branch 9f3c1db91): .github/workflows/ci.yml -- job `fast`
+> (native build with ccache, `bin/runTests --fast`, a "NOT CHECKED ON CI" list, log and
+> suiteTimings.csv as artifacts) on every push and pull request; job `full`, the whole
+> sweep, nightly at 03:17 UTC and on dispatch, with clang, poppler, TeX Live and node
+> installed; sanitize.yml, `SANITIZE=1` (a separate build/linux64GccAsan tree,
+> -fsanitize=address,undefined) and `--fast`, weekly, report-only.  publish-site's build
+> action restores the WASM from a cache keyed on src/, make/, Makefile and data/standards/
+> (the catalogue is embedded in every .wasm) and skips emsdk and `make wasm-gui` on an
+> exact hit.  No gate was changed for the runner.  Local dry run: --fast 78/0; under
+> ASan/UBSan 77/1 (a hard-coded build path in a gate, answered by a symlink in the job) and
+> NO sanitizer finding in the 77 cases.  UNMEASURED until the first runs: emcc honouring
+> ccache, and which tools the nightly still lacks; the architect reads the first nightly.
 
 > **C251 (Vitor, 2026-11-08 night, a screenshot of www.choupo.org/app/?workspace=methods:
 > "O EduTools arranca logo com o EduTool do McCabe & Thiele!  E depois a forma como o aluno
