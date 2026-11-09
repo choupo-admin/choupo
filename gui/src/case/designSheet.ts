@@ -258,6 +258,29 @@ function readCost(raw: unknown): DesignCost | null {
   };
 }
 
+/** A sizing value as the sheet's table prints it: five significant figures,
+ *  plain digits from 1e-3 up to 1e6, exponent form outside that band, and no
+ *  PADDING zeros.
+ *
+ *  The padding is dropped by a round trip through `Number`, never by a regex
+ *  on the text.  Until 2026-11-09 this was
+ *  `v.toPrecision(5).replace(/\.?0+$/, "")`, and for 1e4 <= |v| < 1e5
+ *  `toPrecision(5)` has NO decimal point, so the pattern ate the integer's own
+ *  zeros: a supply of 98200 m3/h was drawn as 982, a 30000 m3 tank as 3, a
+ *  24000 kW compressor as 24 (DEV.md 4c C266 S2 / C269; 44 pinned values in 14
+ *  cases, the reference plant among them).  The same line also printed
+ *  1e5 <= |v| < 1e6 as `1.2346e+5` -- `toPrecision` goes to exponent form on
+ *  its own once the exponent reaches the precision -- which its own `1e6`
+ *  threshold shows was never meant.  It is not a unit conversion and it
+ *  computes nothing: the value and its unit are the sheet's. */
+export function sheetNumber(v: number): string {
+  if (!Number.isFinite(v)) return String(v);
+  if (v === 0) return "0";
+  const a = Math.abs(v);
+  if (a >= 1e6 || a < 1e-3) return v.toExponential(3);
+  return String(Number(v.toPrecision(5)));
+}
+
 /** Parse one `design/.../<equipmentTag>` file.  Returns null for anything that
  *  is not a specification sheet -- the record identifies ITSELF
  *  (`recordType designSheet;`), which is the same rule the interior-state

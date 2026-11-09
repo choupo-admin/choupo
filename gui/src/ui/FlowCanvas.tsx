@@ -934,23 +934,19 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       const st = lookup(label);
       if (!st) return null;
       if (!streamSource.isRun) return { F: st.F, F_mass: st.F_mass, T: st.T, P: st.P, vf: st.vf };
-      // Solid molar flow: st.solids is per-component MASS [kg/s] (it pairs
-      // with F_solid_mass -- NOT moles), converted through its molar mass.
-      // Summing the masses as moles once made a sugar powder read ~3.5
-      // Mmol/h (the sucrose kg/h counted as kmol/h).
-      const solidMw = streamSource.mws;
-      const F_solid = st.solids
-        ? Object.entries(st.solids).reduce(
-            (a, [c, m]) => a + (solidMw?.[c] ? (m ?? 0) / solidMw[c]! : 0), 0)
-        : 0;
-      return { F: st.F, F_mass: st.F_mass, F_solid_mass: st.F_solid_mass, F_solid, T: st.T, P: st.P, vf: st.vf };
+      // The run's F and F_mass are the OVERALL stream, solids included (the
+      // result's `streamsNote`); F_solid_mass locates the solid part.  A
+      // solid MOLAR flow used to be rebuilt here from `solids` (per-component
+      // MASS, through the molar masses) and added to F on the card, which
+      // counted every solid twice (C266 S1); nothing is derived here now.
+      return { F: st.F, F_mass: st.F_mass, F_solid_mass: st.F_solid_mass, T: st.T, P: st.P, vf: st.vf };
     };
     return {
       phaseOf: (label: string): PhaseStyle | null => {
         const st = lookup(label); return st ? styleFor(st) : null; },
       utilityOf: lookupUtility,
       resultStreamOf: lookupResult as (label: string) => { F: number; F_mass?: number;
-        F_solid_mass?: number; F_solid?: number; T: number; P: number; vf?: number } | null,
+        F_solid_mass?: number; T: number; P: number; vf?: number } | null,
       maxFlow: mx,
       phasesPresent: present,
       fieldScale: scale,
@@ -1043,7 +1039,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         let phaseGlyph: string | undefined;
         let utilityCategory: string | undefined;
         let feedDrivenTag = false;
-        let resolved: { F: number; F_mass?: number; F_solid_mass?: number; F_solid?: number; T: number; P: number; vf?: number } | undefined;
+        let resolved: { F: number; F_mass?: number; F_solid_mass?: number; T: number; P: number; vf?: number } | undefined;
         if (n.type === "streamTerminal" && n.id.startsWith("stream:") && phaseOf) {
           const label = n.id.slice("stream:".length);
           const ps = phaseOf(label);

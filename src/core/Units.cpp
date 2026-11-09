@@ -77,6 +77,15 @@ const std::map<std::string, UnitSpec>& table()
         { "L/h",     UnitSpec{ 1.0e-3/3600.0, Dims::volumetricFlow } },
         { "L/min",   UnitSpec{ 1.0e-3/60.0, Dims::volumetricFlow } },
         { "m3/d",    UnitSpec{ 1.0/86400.0, Dims::volumetricFlow } },   // a membrane element's rated permeate flow (data sheets quote gpd (m3/d))
+        //  An ANNUAL volume (a plant's purified-water demand on its
+        //  specification sheet, CleanUtilitiesPass `V_year`).  The year is
+        //  365 d, the engineering convention, stated here because nothing
+        //  else in the engine defines one; the sheet keeps the number as
+        //  written and only a reader converting to SI meets the factor.
+        //  Added 2026-11-09 (DEV.md 4c C269) with `yr`, `um` and `rpm`: the
+        //  sizers wrote these words and neither this table nor the GUI's
+        //  mirror knew them, so the app refused the whole sheet.
+        { "m3/yr",   UnitSpec{ 1.0/(365.0*86400.0), Dims::volumetricFlow } },
 
         // ----- time → s -------------------------------------------------
         { "s",       UnitSpec{ s_to_s,      Dims::time } },
@@ -92,11 +101,14 @@ const std::map<std::string, UnitSpec>& table()
         { "1/s",     UnitSpec{ 1.0,          Dims::inverseTime } },
         { "1/min",   UnitSpec{ 1.0 / 60.0,   Dims::inverseTime } },
         { "1/h",     UnitSpec{ 1.0 / 3600.0, Dims::inverseTime } },
+        { "rpm",     UnitSpec{ 1.0 / 60.0,   Dims::inverseTime } },   // revolutions per minute = 1/min (an atomiser wheel's speed)
         { "day",     UnitSpec{ day_to_s,    Dims::time } },
+        { "yr",      UnitSpec{ 365.0 * day_to_s, Dims::time } },     // 365 d (see m3/yr)
 
         // ----- length → m -----------------------------------------------
         { "m",       UnitSpec{ m_to_m,      Dims::length } },
         { "mm",      UnitSpec{ mm_to_m,     Dims::length } },
+        { "um",      UnitSpec{ 1.0e-6,      Dims::length } },   // micrometre (a droplet's d32 on a spray-dryer sheet)
         { "cm",      UnitSpec{ cm_to_m,     Dims::length } },
         { "km",      UnitSpec{ km_to_m,     Dims::length } },
         { "in",      UnitSpec{ inch_to_m,   Dims::length } },

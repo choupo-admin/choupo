@@ -820,9 +820,15 @@ def declared_sizer_units():
     only 9 of 233 steady tutorials size anything and the gate runs two of them,
     so a sheet sweep alone would leave most sizers unexamined -- which is
     exactly how `um` and `rpm` survived (`SprayDryerSize` is exercised by
-    `sprayDryer07_design`, a case this gate does not run)."""
+    `sprayDryer07_design`, a case this gate does not run).
+
+    OVER ALL OF src/postProcessing, NOT `sizing/` ALONE (2026-11-09, C269):
+    `CleanUtilitiesPass.cpp` sits one level up and writes a sheet through the
+    same `set(key, value, unit)` door, and its `m3/yr` was never swept -- so
+    the purified-water generator of every tablet plant was a sheet the app
+    refused whole, found by a student walk (C266 S3) and not by this arm."""
     out = []
-    for f in sorted((ROOT / "src/postProcessing/sizing").glob("*.cpp")):
+    for f in sorted((ROOT / "src/postProcessing").rglob("*.cpp")):
         src = f.read_text(errors="replace")
         for m in re.finditer(r'\bset\(\s*"([A-Za-z_0-9]+)"\s*,.*?,\s*"([^"]*)"\s*\)',
                              src, re.S):
