@@ -110,18 +110,18 @@ THE TANKS (DEV.md 4c C87). The methanol is BOUGHT and held in a feed tank before
 \tutreadme{$\ast$ Reactor: the Gibbs reactor of rung 1 --- equilibrium at 460 K, 30 bar, 10 K approach. No catalyst, no rate. Its liquid is ideal by construction (elementPotential: gas plus one ideal condensable); the 10 K barely moves the main product (see rung 1). $\ast$ Separations: UNIFAC, which is predictive --- the catalogue has no regressed pair for most of this system. Every activity coefficient is an estimate from structure. $\ast$ Vapour: ideal gas. Acetic acid is largely dimerised in real vapour. The engine models that dimer only on its REACTIVE-equilibrium path (a vapourDimerisation block on the acid's gas-liquid chemistry record; see tutorials/steady/flash/flash12\_nh3\_acetic\_ethanol\_reactive and flash13); a gamma-phi package like this one (UNIFAC liquid, ideal-gas vapour) has no vapour-association fugacity model, so this case does not use it and the condenser and degasser splits are indicative. $\ast$ CO has no UNIFAC group, so it sits outside the activity model (approximations block, announced as a $\ast$substitution$\ast$ on every run). $\ast$ Battery limits: the methanol arrives as a liquid at 1 atm into its feed tank, and methanolPump (efficiency 0.65, assumed) lifts it to 30 bar. The CO arrives by pipeline, declared at 30 bar; no CO compressor is modelled. $\ast$ M1 is a mixer AND a heat exchanger in one box. It merges a liquid (the pumped methanol) with two gases at a DECLARED 320 K, because a gas + liquid merge has no well-posed adiabatic temperature, and it publishes the duty that temperature implies (Q\_kW, priced like every other duty; about +81 kW, allocated to LP steam). Without that duty the plant's first law was open by about 80 kW (DEV.md 4c C71, C74). The mixer does not flash: its outlet carries the dominant label (vapour), and the energy report says on every run that mixedFeed cannot hold that label at 320 K and 30 bar (the methanol's partial pressure is far above its vapour pressure there). That label decides how the methanol's latent heat is SHARED between M1 and the preheater; the plant's total heat does not depend on it, the utility bill does. An exercise: put an isothermal flash after M1 and see where the duty goes. $\ast$ The pump's own energy balance is announced as FAILED on every run (dH 1.76 kW against 5.04 kW of shaft work, 35 \% = 1 - eta). It is the engine's, not the case's: the liquid enthalpy of this package carries no pressure term (measured here -- moving 0/freshMethanol from 30 bar to 1 atm left the plant's feed enthalpy unchanged to the last digit), so the 3.28 kW of useful work v$\cdot$dP the pump puts into the liquid is invisible to the energy report, and only its 1.76 kW of dissipation shows as a temperature rise. tutorials/steady/rotating/pump01\_water shows the same 65 \% gap. $\ast$ Data: dimethyl ether is reviewStatus interim with a Joback formation enthalpy (see rung 1); it is nil in every stream here. $\ast$ Antoine ranges are exceeded at 460 K (dozens of announcements per run) and the column prints [distillate] WARNING lines (47 in the base case): the distillate's bubble point does not converge because CO and dimethyl ether have no real saturation curve at those temperatures, so the distillate temperature is reported at the top tray. Neither changes a flow.}
 \tutreadme{Decision variables (all in system/flowsheetDict unless noted):}
 \begin{tutgolden}
-\goldrow{stream}{acidProduct}{F}{0.0272216728543}
+\goldrow{stream}{acidProduct}{F}{0.0272384183327}
 \goldrow{stream}{acidProduct}{T}{404.142129302}
-\goldrow{stream}{coGas}{F}{0.0239962382533}
+\goldrow{stream}{coGas}{F}{0.0242908377497}
 \goldrow{stream}{coGas}{T}{330}
-\goldrow{stream}{coRecycle}{F}{0.0227964263406}
+\goldrow{stream}{coRecycle}{F}{0.0230762958622}
 \goldrow{stream}{coRecycle}{T}{330}
-\goldrow{stream}{columnFeed}{F}{0.027499450632}
+\goldrow{stream}{columnFeed}{F}{0.0275161961105}
 \goldrow{stream}{columnFeed}{T}{380}
-\goldrow{stream}{condensate}{F}{0.00607393614313}
+\goldrow{stream}{condensate}{F}{0.0061262776434}
 \goldrow{stream}{condensate}{T}{330}
-\goldrow{stream}{crudeAcid}{F}{0.0279886650177}
-\goldrow{stream}{crudeAcid}{T}{432.414326257}
+\goldrow{stream}{crudeAcid}{F}{0.0279741490602}
+\goldrow{stream}{crudeAcid}{T}{432.115135337}
 \goldrow{stream}{freshCO}{F}{0.0291666666667}
 \goldrow{stream}{freshCO}{T}{300}
 \goldmore{545}
@@ -194,20 +194,20 @@ DEPARTURES FROM HIS FIGURE 1, each argued rather than absorbed
 \tutreadme{1. The error has an address, and it was written down first. UNIFAC invents an acetone/water azeotrope at x 0.978 where Luyben's UNIQUAC has none (acetone04), which caps C1; UNIFAC also misplaces the real isopropanol/water azeotrope at x 0.590 against 0.673 (acetone01), which caps C2. Both ceilings were measured on isolated units before either column was built, and the golden shows them arriving: C2 x\_D\_LK is 0.499124702623, and a wetter recycle carries less isopropanol, which makes less acetone, which is the production figure in the table. A plant whose disagreement you can name unit by unit is worth more than one that agrees for reasons nobody checked. 2. Two thermodynamic worlds, and the boundary is priced. Handed the plant's global UNIFAC package the absorber REFUSES by name: it solves Kremser, Kremser reads Henry's law, and an activity model carries no answer it can use. So that unit alone carries an inline thermo \{\} block --- water the solvent on the pure-liquid rung, acetone the solute on the Henry rung --- declared where the model boundary is and announced when the run crosses it. The block is inline in system/flowsheetDict rather than in a file of its own for exactly that reason. The model-boundary ledger then prices the crossing independently and writes its verdict to reports/balances/energyBalance\_byUnit.csv: raw imbalance -11.2496 kW, declared boundary step 0.0000 kW, remaining -11.2496 kW, and in the report's own words $\ast$the step is NOT credited$\ast$. Read the report for it, not the expected file: that row is held by check\_model\_boundary\_ledger, and this case's golden carries no row kind that can read it. Changing the liquid activity model changes K-values, not the enthalpy datum, so there is nothing to credit at this boundary --- and the residual that remains belongs to the absorber's own lumped-Cp energy model, which the case's CLAUDE.md traces and does not excuse. 3. A declared approximation was not locally contained. constant/thermoPhysPropDict authorises hydrogen to run at gamma = 1, by name and with its reason: no UNIFAC group for hydrogen exists, and inventing one would be fabrication. The stated stake was small --- a liquid mole fraction of 2e-4. Three units downstream that residue diverges the rigorous MESH in C1, which is why there is a vent flash in this flowsheet that is not in his Figure 1. It is an explicit unit, not a deletion, so what leaves with the hydrogen is computed: the golden pins vent V\_over\_F at 0.00201400452928. This is the clearest thing the plant has to teach. 4. The tear seed is a guess, and the plant walks away from it. 0/ here is authored and committed, one file per stream, and 0/ipaRecycle is seeded with Luyben's own published recycle composition --- 3.822 kmol/h isopropanol, 0.004116 acetone, 2.053884 water in 5.88 kmol/h, which is x 0.650 and 0.0007 exactly as his table reports. The converged answer is x 0.4991. The seed is the author's, visible, and owned; the solver moved off it and said so. (Where a case ships no 0/, bin/choupo-init0 materialises one from the authored inlets and the tear seed.) 5. A specification that survives a recycle is not the same as a rate. C1 asks for distillateRecovery \{ component acetone; fraction 0.97; \} rather than Luyben's 32.25 kmol/h, because the acetone reaching C1 shrinks on every turn of the loop: a rate that is feasible on the first pass is infeasible on the third, and the flowsheet would then fail on arithmetic instead of physics. The golden confirms the spec was met --- C1 recovery\_acetone 0.969999992418 --- in three outer searches. C2 keeps his rate, because its feed is not starved the same way. 6. The plant still closes. Global mass closure at 100 \%, and the plant-boundary first law pinned at H\_feeds\_kW -5862.58875482, Q\_boundary\_kW 632.174396749, H\_products\_kW -5236.98782168, a residual of 6.57346360643 kW. A disagreement with a paper and a violation of conservation are different things, and this case is careful to be only the first.}
 \tutreadme{Read the case's own CLAUDE.md first: it carries the full comparison against Luyben's Figure 1, the five traced sources of error, and a $\ast$Pending$\ast$ list that names the one change which would move every row --- fitted UNIQUAC or NRTL pairs for the three binaries, which is the honest way to close the gap and is a curation job rather than a code job. The build history is docs/design/acetone-plant-closure-state.md; the programme is docs/design/acetone-ipa-reference-case.md.}
 \begin{tutgolden}
-\goldrow{stream}{B1}{F}{0.0118946232842}
-\goldrow{stream}{F1}{F}{0.0195617446099}
+\goldrow{stream}{B1}{F}{0.0118886310495}
+\goldrow{stream}{F1}{F}{0.0195922435717}
 \goldrow{stream}{Rin}{F}{0.0160666666667}
 \goldrow{stream}{Rout}{F}{0.0255036799795}
-\goldrow{stream}{absBottoms}{F}{0.00608647733675}
-\goldrow{stream}{acetoneProduct}{F}{0.00762772388347}
-\goldrow{stream}{columnFeed}{F}{0.0195223471677}
-\goldrow{stream}{flashGas}{F}{0.0120284127064}
-\goldrow{stream}{flashLiquid}{F}{0.0134752672731}
+\goldrow{stream}{absBottoms}{F}{0.00608480879555}
+\goldrow{stream}{acetoneProduct}{F}{0.00761339770397}
+\goldrow{stream}{columnFeed}{F}{0.0195020287535}
+\goldrow{stream}{flashGas}{F}{0.0119965351595}
+\goldrow{stream}{flashLiquid}{F}{0.0135074347761}
 \goldrow{stream}{freshFeed}{F}{0.0144333333333}
 \goldrow{stream}{ipaRecycle}{F}{0.00163333333333}
 \goldrow{stream}{mixedFeed}{F}{0.0160666666667}
-\goldrow{stream}{offgas}{F}{0.0114974909252}
-\goldrow{stream}{ventGas}{F}{3.9397442245e-05}
+\goldrow{stream}{offgas}{F}{0.0114672819195}
+\goldrow{stream}{ventGas}{F}{9.0214818139e-05}
 \goldmore{173}
 \end{tutgolden}
 
@@ -524,20 +524,20 @@ The stream names are the plant's, unchanged: the sector's inlet is the FEHE's pr
 \end{tutscheme}
 \tutwhat{HDA plant -- toluene + H2 $\to$ benzene + CH4. A single FLAT flowsheet with two plant-level recycles (an H2 gas loop and an unreacted-toluene liquid loop); cross-sector tears are unsupported, so it has no sectors. Furnace lumped into the isothermal reactor; light-gas K-values rest on Antoine extrapolation (see thermoPhysPropDict).}
 \begin{tutgolden}
-\goldrow{stream}{Benzene}{F}{0.0308570333668}
-\goldrow{stream}{Effluent}{F}{0.589422462034}
+\goldrow{stream}{Benzene}{F}{0.0309331950303}
+\goldrow{stream}{Effluent}{F}{0.587977095103}
 \goldrow{stream}{H2Makeup}{F}{0.0305555555556}
-\goldrow{stream}{H2Recycle}{F}{0.522049697299}
-\goldrow{stream}{Purge}{F}{0.0274762998579}
+\goldrow{stream}{H2Recycle}{F}{0.520602627758}
+\goldrow{stream}{Purge}{F}{0.027400138303}
 \goldrow{stream}{TolueneFeed}{F}{0.0277777777778}
-\goldrow{stream}{TolueneRecycle}{F}{0.00903943150968}
-\goldrow{stream}{hpLiquid}{F}{0.0398964648764}
-\goldrow{stream}{hpVapor}{F}{0.549525997157}
-\goldrow{stream}{mixed}{F}{0.589422462034}
-\goldrow{kpi}{Column}{B}{0.00903943150968}
-\goldrow{kpi}{Column}{D}{0.0308570333668}
+\goldrow{stream}{TolueneRecycle}{F}{0.00904113401236}
+\goldrow{stream}{hpLiquid}{F}{0.0399743290427}
+\goldrow{stream}{hpVapor}{F}{0.548002766061}
+\goldrow{stream}{mixed}{F}{0.587977095103}
+\goldrow{kpi}{Column}{B}{0.00904113401236}
+\goldrow{kpi}{Column}{D}{0.0309331950303}
 \goldrow{kpi}{Column}{N\_min}{8.3953506183}
-\goldrow{kpi}{Column}{N\_theoretical}{20.1717591626}
+\goldrow{kpi}{Column}{N\_theoretical}{20.1794387093}
 \goldmore{58}
 \end{tutgolden}
 

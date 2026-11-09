@@ -396,6 +396,9 @@
   "Context": [
    "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H"
   ],
+  "Continuation": [
+   "src/thermo/vaporPressure/VaporPressureModel.H"
+  ],
   "ContinuousStream": [
    "src/unitOperations/dynamic/DynamicUnitOperation.H"
   ],
