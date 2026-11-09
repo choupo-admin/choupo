@@ -310,8 +310,9 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       + "using it AS IF it were the value at the reactor temperature is.  For "
       + "ammonia the engine prices −45.9 kJ per mole of NH₃ at 298.15 K and "
       + "−53.4 at 773 K (the `reaction-enthalpy` page), and a design that "
-      + "takes the first for the second is 14 % short on the heat released — "
-      + "but do not carry that percentage to the steam raised or to an "
+      + "takes the first for the second is 14 % short on the heat released in "
+      + "an isothermal balance, feed and products both at the reactor "
+      + "temperature — but do not carry that percentage to the steam raised or to an "
       + "adiabatic temperature rise without closing those balances, which "
       + "carry other terms.",
     formula: String.raw`\frac{\mathrm{d}\,\Delta_r H^\circ}{\mathrm{d}T} = \Delta_r c_p^\circ, \qquad \Delta_r H^\circ(T) = \Delta_r H^\circ(T_0) + \int_{T_0}^{T} \Delta_r c_p^\circ\, \mathrm{d}T'`,

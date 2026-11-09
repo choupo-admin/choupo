@@ -95,8 +95,10 @@ describe("the reactor-sizing lesson", () => {
     expect(prose(s4.body)).toContain("autocatalysis");
     expect(prose(s4.body)).toContain("the rectangle sits UNDER the");
     expect(prose(s4.body)).toContain("the stirred tank is the smaller reactor");
-    //  And the consequence at X = 0 with no uncatalysed path, which is why a
-    //  tank (or a recycle) is not merely cheaper but necessary.
+    //  And the consequence at X = 0 with no uncatalysed path, which a plug-flow
+    //  reactor fed no product cannot start from (a seed or a recycle is
+    //  needed).  A tank does not create product either: see
+    //  physicsAutocatalyticCstr.test.ts.
     expect(prose(s4.body)).toContain("a plug-flow reactor cannot start");
     expect(prose(s4.formula!)).toContain(String.raw`\frac{1}{-r_A} \text{ unbounded there}`);
   });

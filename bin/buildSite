@@ -260,18 +260,6 @@ if shelved and not off:
 else:
     body = '<div class="edutool-cards">%s</div>' % "".join(map(card, tools))
 src = open(page, encoding="utf-8").read()
-paths = doc.get("paths") or []
-if paths:
-    pbody = "<h3>Guided sequences</h3><p>Each sequence walks several tools in a teaching order, with the reason for every step.</p>" + "".join(
-        '<details class="edutool-path"><summary>%s<span>%d steps</span></summary>'
-        '<p style="margin:0 0 8px;color:var(--muted);font-size:14px">%s</p><ol>%s</ol></details>'
-        % (e(p.get("title")), len(p.get("steps") or []), e(p.get("intro")),
-           "".join('<li><a href="%s" target="_blank" rel="noopener">%s</a> &mdash; %s</li>'
-                   % (e(s.get("href")), e(s.get("label")), e(s.get("why")))
-                   for s in p.get("steps") or []))
-        for p in paths)
-    ph = '<div class="edutool-paths" id="edutoolsPaths"></div>'
-    src = src.replace(ph, '<div class="edutool-paths" id="edutoolsPaths">%s</div>' % pbody, 1)
 hook = '<p class="edutool-msg" id="edutoolsLoading">Loading the EduTools…</p>'
 if hook in src:
     src = src.replace(hook, body, 1)
@@ -279,6 +267,21 @@ if hook in src:
                       '<span id="edutoolsCount">%d</span>' % len(tools), 1)
     open(page, "w", encoding="utf-8").write(src)
     print("edutools: %d tools written into the static landing" % len(tools))
+PY
+#  WORK WITH YOUR AI ASSISTANT (DEV.md 4c C252).  The landing section's text is
+#  INJECTED from docs/ai/prompts.md, the one home of the three student prompts
+#  (bin/curate/prompts_home.py reads it); a page that cannot carry them, or a
+#  marker pair that is missing, FAILS the build -- a landing with an empty
+#  prompt section is the defect this step exists to prevent.
+python3 - "$dist/index.html" "$root" <<'PY' || { echo "[buildSite] ERROR: the prompts section could not be injected into the landing" >&2; exit 1; }
+import sys
+page, root = sys.argv[1:3]
+sys.path.insert(0, root + "/bin/curate")
+import prompts_home
+src = open(page, encoding="utf-8").read()
+out = prompts_home.inject(src)   # raises BEFORE the page is opened for writing
+open(page, "w", encoding="utf-8").write(out)
+print("prompts: 3 prompts written into the landing from docs/ai/prompts.md")
 PY
 cp "$src"/*.svg "$dist/" 2>/dev/null || true
 cp "$src"/*.png "$dist/" 2>/dev/null || true    # landing logo (logo2.png) + any raster art

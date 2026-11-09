@@ -138,7 +138,7 @@ function makeDoc(
       glossary: fold(glossary),
       text: fold(text),
       toolName: fold(`${tool.label} ${tool.id}`),
-      shelf: fold(`${tool.discipline} ${tool.teaches}`),
+      shelf: fold(`${tool.discipline} ${tool.teaches} ${tool.blurb}`),
     },
   };
 }

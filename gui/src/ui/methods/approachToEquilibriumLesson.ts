@@ -465,9 +465,20 @@ export const APPROACH_LIMITS: readonly LessonLimit[] = [
       + "two runs are the same case at T and at T + ΔT, and the second run's "
       + "COMPOSITION is what a declared approach would report.  Its "
       + "temperature, its enthalpy and its duty are NOT — those belong to the "
-      + "physical T, which is exactly the separation step 3 is about.  Read "
-      + "the composition from the shifted run and everything else from the "
-      + "unshifted one, which is what the engine itself does.",
+      + "physical T, which is exactly the separation step 3 is about.  What "
+      + "the engine does with a declared approach is to solve the equilibrium "
+      + "on the shifted Kp and then price the outlet at the PHYSICAL "
+      + "temperature with that SHIFTED composition: Q = H_out(T, shifted "
+      + "composition) − H_in (EquilibriumReactor.cpp:873, 936–940, 947; for "
+      + "the isothermal gibbsReactor, GibbsReactor.cpp:748–754).  So carry "
+      + "from the shifted run the composition and whatever depends on "
+      + "composition alone (conversion, selectivity); carry from the "
+      + "unshifted run only the temperature, the pressure and the feed; and "
+      + "RECOMPUTE the enthalpy and the duty, because neither run reports "
+      + "them: the unshifted run's duty belongs to the UNSHIFTED composition "
+      + "(this page reads it only for its sign), and the shifted run's to "
+      + "its composition at T + ΔT.  A declared `temperatureApproach` "
+      + "reports the right duty directly.",
   },
   {
     id: "exact-only-for-an-ideal-gas",

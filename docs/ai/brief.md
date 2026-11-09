@@ -16,7 +16,9 @@ layout, machine sizing, costing and economics is the same kind of case plus a
 ## 1. The protocol — DESIGN first, files second
 
 Your reply MUST start with `DESIGN.md`, written before you look at any
-tutorial or write any case file.  It contains, with numbers:
+tutorial or write any case file.  A tutorial is a worked check, never a
+template: derive the case from this contract and the grammar, compare it with
+the nearest tutorial afterwards and say where they differ.  It contains, with numbers:
 
 1. **Goal** — product, rate, purity/specification.
 2. **Components** — each name checked against the catalogue list (§6).
