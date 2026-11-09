@@ -188,6 +188,7 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `boilupRatio` |   | number | — | V/B, vapour leaving the reboiler over the bottoms withdrawn. Pairs with `bottomsRate` (see there). |
 | `distillateRecovery` |   | object | — | Send this fraction of the named component's FEED overhead, instead of a fixed rate. Solved as an announced outer secant on the rate, so i… |
 | `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
+| `newton` |   | string | — | Which Newton the simultaneous MESH runs: `bounded` (default; Armijo line search, bounds on x and T, infeasible trials refused -- DEV.md 4… |
 | `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
 | `method` |   | string | — | WangHenke (sequential bubble-point, the default, fine for ideal systems) or simultaneous (rigorous MESH Newton, stable through an azeotro… |
 | `feeds` |   | array[object] | — | Maps each input stream to a stage — REQUIRED once the column has more than one input, since positional binding cannot say which stream en… |
@@ -359,6 +360,7 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `boilupRatio` |   | number | — | V/B, vapour leaving the reboiler over the bottoms withdrawn. Pairs with `bottomsRate` (see there). |
 | `distillateRecovery` |   | object | — | Send this fraction of the named component's FEED overhead, instead of a fixed rate. Solved as an announced outer secant on the rate, so i… |
 | `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
+| `newton` |   | string | — | Which Newton the simultaneous MESH runs: `bounded` (default; Armijo line search, bounds on x and T, infeasible trials refused -- DEV.md 4… |
 | `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
 | `method` |   | string | — | WangHenke (sequential bubble-point, the default, fine for ideal systems) or simultaneous (rigorous MESH Newton, stable through an azeotro… |
 | `feeds` |   | array[object] | — | Maps each input stream to a stage — REQUIRED once the column has more than one input, since positional binding cannot say which stream en… |
