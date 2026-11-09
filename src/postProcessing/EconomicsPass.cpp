@@ -1681,6 +1681,14 @@ struct AppraisalInputs
     scalar streamFactor = 0.90;      // fraction of 8760 h on stream
     scalar discountRate = 0.10;
     scalar taxRate      = 0.21;
+    //  TAX ON A LOSS (2026-11-09, DEV.md 4c C269 decision (2)).  `true` is
+    //  `taxOnLoss credit;` and the default: a loss year's tax is NEGATIVE, a
+    //  credit worth tau x the loss, which assumes the owner has OTHER
+    //  taxable profit to set the loss against (a group's consolidated
+    //  return).  `false` is `taxOnLoss none;`, the stand-alone reading: a
+    //  loss year pays no tax and earns no credit; the loss is not carried
+    //  forward either (not modelled, said).
+    bool   lossTaxCredit = true;
     scalar labourRate   = 0.0;       // EUR/h
     std::vector<PricedStream> rawMats;    // price EUR/kg, massFlow kg/s
     std::vector<PricedStream> products;
@@ -1733,6 +1741,12 @@ struct AppraisalOutcome
     int    cumSignChanges = 0;
     scalar discPayback = std::nan(""), simplePayback = std::nan("");
     std::vector<CashFlowYear> cashFlowRows;
+    //  THE LOSS YEARS (C269): how many operating years of the project view
+    //  had a negative taxable income; the credits they earned (undiscounted,
+    //  > 0) and the same credits discounted to start-up (their share of the
+    //  NPV) -- both 0 under `taxOnLoss none`, where the years still count.
+    int    lossYears = 0;
+    scalar taxCreditTotal = 0.0, taxCreditDiscounted = 0.0;
     //  THE FINANCING (G4), filled only when `in.fin.present`: the loan and
     //  the EQUITY view beside the project's (which the fields above are).
     scalar loanDrawn = 0.0, IDC = 0.0, loanAtStartup = 0.0;
@@ -1752,6 +1766,15 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
     const scalar discountRate = in.discountRate;
     const scalar taxRate      = in.taxRate;
     const DcfTimeline& timeline = in.timeline;
+    //  THE TAX OF A YEAR, from its taxable income (C269 decision (2)): tau x
+    //  the income, negative on a loss (a credit) under `taxOnLoss credit`;
+    //  floored at zero under `taxOnLoss none`.  Every cash flow below that
+    //  carries a tax reads it from here; the `credit` branches keep the
+    //  `(1 - tau)` expressions they always had, so no default moves.
+    auto taxOf = [&](scalar taxable) -> scalar
+    {
+        return (in.lossTaxCredit || taxable >= 0.0) ? taxRate * taxable : 0.0;
+    };
 
     const scalar H = in.streamFactor * 8760.0;   // operating hours per year
     o.H = H;
@@ -1866,7 +1889,9 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
     {
         const scalar d_t  = (t <= Ndepr) ? d_annual : 0.0;
         projectTaxable[at(t)] = revenueAt(t) - comAt(t) - royaltyAt(t) - startupAt(t) - d_t;
-        const scalar CF_t = projectTaxable[at(t)] * (1.0 - taxRate) + d_t;
+        const scalar CF_t = in.lossTaxCredit
+            ? projectTaxable[at(t)] * (1.0 - taxRate) + d_t
+            : projectTaxable[at(t)] - taxOf(projectTaxable[at(t)]) + d_t;
         cashFlow[at(t)] = CF_t;
     }
     cashFlow[at(Nlife)] += WC + salvage * (1.0 - taxRate);  // WC untaxed; salvage taxed
@@ -1951,10 +1976,16 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
             LoanYear&    y   = loanRows[at(t)];
             y.taxableIncome  = projectTaxable[at(t)]
                              - y.interestPaid - y.idcDepreciation;
-            y.tax            = taxRate * y.taxableIncome;
-            equityFlow[at(t)] = cashFlow[at(t)]
-                              - (y.interestPaid + y.idcDepreciation) * (1.0 - taxRate)
-                              + y.idcDepreciation - y.principal;
+            y.tax            = taxOf(y.taxableIncome);
+            //  Under `credit` the expression it always was; under `none` the
+            //  same identity written through the two taxes (the project's
+            //  put back, the equity's taken), each floored at zero.
+            equityFlow[at(t)] = in.lossTaxCredit
+                ? cashFlow[at(t)]
+                  - (y.interestPaid + y.idcDepreciation) * (1.0 - taxRate)
+                  + y.idcDepreciation - y.principal
+                : cashFlow[at(t)] + taxOf(projectTaxable[at(t)]) - y.tax
+                  - y.interestPaid - y.principal;
         }
     }
 
@@ -2122,7 +2153,9 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
     //  first add up to the FCI, interpolated within the year.  With a
     //  constant cash flow the two are the same rule, and the closed form is
     //  kept for that case so nothing it printed moves.
-    const scalar afterTaxOpCF = (R - COM_d - d_annual) * (1.0 - taxRate) + d_annual;
+    const scalar afterTaxOpCF = in.lossTaxCredit
+        ? (R - COM_d - d_annual) * (1.0 - taxRate) + d_annual
+        : (R - COM_d - d_annual) - taxOf(R - COM_d - d_annual) + d_annual;
     scalar simplePayback = (afterTaxOpCF > 0.0) ? (FCI / afterTaxOpCF)
                                                 : std::nan("");
     if (!timeline.rampUp.empty() || startupCost != 0.0 || in.royalty.present)
@@ -2132,8 +2165,9 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
         for (int t = 1; t <= Nlife; ++t)
         {
             const scalar d_t  = (t <= Ndepr) ? d_annual : 0.0;
-            const scalar CF_t = (revenueAt(t) - comAt(t) - royaltyAt(t) - startupAt(t) - d_t)
-                              * (1.0 - taxRate) + d_t;
+            const scalar tx_t = revenueAt(t) - comAt(t) - royaltyAt(t) - startupAt(t) - d_t;
+            const scalar CF_t = in.lossTaxCredit ? tx_t * (1.0 - taxRate) + d_t
+                                                 : tx_t - taxOf(tx_t) + d_t;
             if (CF_t > 0.0 && cum + CF_t >= FCI)
             {
                 simplePayback = (t - 1) + (FCI - cum) / CF_t;
@@ -2173,8 +2207,17 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
                 row.depreciation  = d_t;
                 row.taxableIncome = row.revenue - row.operatingCost
                                   - row.royalty - row.startupCost - d_t;
-                row.tax           = taxRate * row.taxableIncome;
+                row.tax           = taxOf(row.taxableIncome);
                 row.afterTaxProfit = row.taxableIncome - row.tax;
+                if (row.taxableIncome < 0.0)
+                {
+                    ++o.lossYears;
+                    if (row.tax < 0.0)
+                    {
+                        o.taxCreditTotal      += -row.tax;
+                        o.taxCreditDiscounted += -row.tax / std::pow(1.0 + discountRate, t);
+                    }
+                }
             }
             //  THE LAND (C82) on its own cell, and OUT of `investment`, whose
             //  name is the fixed and working capital: the outlay at t = -Nc,
@@ -2883,6 +2926,16 @@ int EconomicsPass::run(SimulationResult& result)
               " `depreciation` key).");
 
     const std::string deprMethod   = econDict_->lookupWordOrDefault("depreciation", "straightLine");
+    //  TAX ON A LOSS (C269 decision (2)): `credit` (absent = this, the reading
+    //  every case had) or `none` (stand-alone); any other word refuses by
+    //  name.  Read beside `method` and `depreciation`, the block's other words.
+    const std::string taxOnLoss    = econDict_->lookupWordOrDefault("taxOnLoss", "credit");
+    if (taxOnLoss != "credit" && taxOnLoss != "none")
+        throw std::runtime_error("EconomicsPass: `taxOnLoss " + taxOnLoss + ";` --"
+            " the reading of a loss year's tax is `credit` (the default: tau x the"
+            " loss is a tax CREDIT, which assumes the owner has other taxable"
+            " profit to set the loss against) or `none` (stand-alone: a loss"
+            " year pays no tax and earns no credit; no loss carry-forward).");
 
     if (deprMethod != "straightLine")
         std::cerr << "EconomicsPass: depreciation '" << deprMethod
@@ -2980,6 +3033,7 @@ int EconomicsPass::run(SimulationResult& result)
     baseIn.streamFactor           = streamFactor;
     baseIn.discountRate           = discountRate;
     baseIn.taxRate                = taxRate;
+    baseIn.lossTaxCredit          = (taxOnLoss == "credit");
     baseIn.projectLife            = projectLife;
     baseIn.depreciableLife        = depreciableLife;
     baseIn.salvageFraction        = salvageFraction;
@@ -3668,6 +3722,39 @@ int EconomicsPass::run(SimulationResult& result)
               << "         = " << std::setw(14) << d_annual << " EUR/yr\n";
     std::cout << "    tax rate tau                 = " << std::setprecision(3)
               << taxRate << "\n";
+    //  TAX ON A LOSS (C269 decision (2)): the reading is printed on every
+    //  run; when a loss year exists it is ANNOUNCED into the caveat block
+    //  and the result, with the size of what it assumes.
+    std::cout << "    tax on a loss                = " << taxOnLoss
+              << (econDict_->found("taxOnLoss") ? " (declared)" : " (the default)")
+              << (taxOnLoss == "credit"
+                    ? ": a loss year's tax is a CREDIT, tau x the loss\n"
+                    : ": a loss year pays no tax and earns no credit (stand-alone)\n");
+    if (base.lossYears > 0)
+    {
+        const std::string cur = result.costs.empty()
+            ? std::string("EUR") : result.costs.begin()->second.currency;
+        std::ostringstream m;
+        m << std::fixed << std::setprecision(0);
+        if (taxOnLoss == "credit")
+            m << base.lossYears << " operating year(s) have a NEGATIVE taxable"
+                 " income and are credited tax: " << base.taxCreditTotal << " "
+              << cur << " over the project (" << base.taxCreditDiscounted
+              << " " << cur << " discounted to start-up, i.e. of the NPV)."
+                 "  This assumes the owner has OTHER taxable profit to set the"
+                 " loss against (a group's return); a stand-alone project has"
+                 " none.  Declare `taxOnLoss none;` for the stand-alone"
+                 " reading (no credit; a loss carry-forward is not modelled).";
+        else
+            m << base.lossYears << " operating year(s) have a NEGATIVE taxable"
+                 " income and pay no tax (`taxOnLoss none;`, the stand-alone"
+                 " reading): the loss earns no credit and is not carried"
+                 " forward against later profits (not modelled), so the later"
+                 " years' tax is not reduced by it.";
+        if (AdvisoryLog::instance().add("assumed",
+                taxOnLoss == "credit" ? "warning" : "info", "economics", m.str()))
+            std::cout << "  [assumed] economics: " << m.str() << "\n";
+    }
     std::cout << "    discount rate i              = " << discountRate << "\n";
     std::cout << "    project life N               = " << std::setprecision(0)
               << projectLife << " yr\n";
@@ -4160,6 +4247,15 @@ int EconomicsPass::run(SimulationResult& result)
     //  declared steam generation earns, which was invisible inside COM_d.
     econ["C_UT"]         = C_UT;
     econ["C_UT_credit"]  = C_UT_credit;
+    //  THE LOSS YEARS (C269), published only when there are any, so every
+    //  case without one keeps its KPI list: the years, the credit they earn
+    //  (0 under `taxOnLoss none`) and that credit discounted to start-up.
+    if (base.lossYears > 0)
+    {
+        econ["lossYears"]           = static_cast<scalar>(base.lossYears);
+        econ["taxCreditOnLoss"]     = base.taxCreditTotal;
+        econ["taxCreditOnLoss_NPV"] = base.taxCreditDiscounted;
+    }
     econ["revenue"]      = R;
     //  The raw-material bill and the two gross margins (C57): published so a
     //  golden can pin the margin a feasibility study is decided on.
@@ -4270,6 +4366,9 @@ int EconomicsPass::run(SimulationResult& result)
     summary.simplePayback = simplePayback;
     summary.discountRate  = discountRate;
     summary.taxRate       = taxRate;
+    summary.taxOnLoss     = taxOnLoss;
+    summary.lossYears     = base.lossYears;
+    summary.taxCreditOnLoss = base.taxCreditTotal;
     summary.projectLife   = Nlife;
     summary.estimateClass = estimateClass;
     summary.accLo         = acc_lo;

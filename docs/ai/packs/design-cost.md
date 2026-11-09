@@ -160,6 +160,7 @@ economics
     method discountedCashFlow;  projectLife 10;  constructionPeriod 1;
     discountRate 0.10;  taxRate 0.21;  depreciation straightLine;  depreciableLife 7;
     salvageFraction 0.0;
+    taxOnLoss credit;               // default; `none` = stand-alone (a loss year pays no tax, earns no credit)
     workingCapital 0.15;            // x FCI; or a block { rawMaterialStock 60 day; receivables 60 day; payables 30 day; minimumCash 15 day; }
     streamFactor 0.90;              // operating fraction of the year; batch plant: fromBatchPlan
     siteFactor 0.50;  contingencyFee 1.18;  N_np 2;
@@ -188,6 +189,11 @@ economics
   = Turton's N_OL = sqrt(6.29 + 31.7 P^2 + 0.23 N_np) operators per shift
   (P = particulate steps, 0 absent, announced) x 4.5 positions x wage; or
   `operatingCrew` (pack `batch-plant`).
+* A LOSS YEAR: `taxOnLoss credit` (the default) makes its tax a CREDIT, tau x
+  the loss -- the owner is assumed to have other taxable profit (a group);
+  the run announces the credit's total and its share of the NPV whenever a
+  year is a loss.  `taxOnLoss none;` is the stand-alone reading: no tax, no
+  credit, no carry-forward (not modelled).  Say which reading your NPV is.
 * Honest reading: only COSTED items are in the capital, so a plant with two
   items has a tiny FCI and an absurd IRR.  Warnings are checks:
   `IRR = 757 % is EXTREME ... verify the project SCALE`; `(no sign change of

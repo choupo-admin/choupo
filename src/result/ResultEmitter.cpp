@@ -1320,6 +1320,9 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         os << "    \"simplePayback\": "     << num(e.simplePayback)      << ",\n";
         os << "    \"discountRate\": "      << num(e.discountRate)       << ",\n";
         os << "    \"taxRate\": "           << num(e.taxRate)            << ",\n";
+        os << "    \"taxOnLoss\": "         << esc(e.taxOnLoss)          << ",\n";
+        os << "    \"lossYears\": "         << e.lossYears               << ",\n";
+        os << "    \"taxCreditOnLoss\": "   << num(e.taxCreditOnLoss)    << ",\n";
         os << "    \"projectLife\": "       << e.projectLife             << ",\n";
         os << "    \"estimateClass\": "     << e.estimateClass           << ",\n";
         os << "    \"accLo\": "             << num(e.accLo)              << ",\n";

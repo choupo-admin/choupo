@@ -624,7 +624,7 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
     title: "Cost: the material factor, and what it multiplies",
     body: "A material is finally chosen against its price, and in a "
       + "bare-module estimate the material enters as one factor on part of "
-      + "the purchased cost (src/postProcessing/costing/Turton.cpp:719-721).  "
+      + "the purchased cost (src/postProcessing/costing/Turton.cpp:752-754).  "
       + "Two things in the form are easy to miss.  F_M multiplies only the "
       + "B_2 part: the installation that B_1 stands for -- foundations, "
       + "piping, instruments, labour -- costs the same whatever the shell is "
@@ -650,7 +650,7 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       { sym: "t_P", means: "the wall the pressure factor computes, without "
         + "corrosion allowance or joint efficiency", unit: "m" },
       { sym: "P_\\mathrm{g}", means: "the gauge pressure the costing uses: "
-        + "the case's pressureDesign, read as gauge (Turton.cpp:667)",
+        + "the case's pressureDesign, read as gauge (Turton.cpp:694)",
         unit: "bar" },
     ],
     note: "0.00315 m and 0.0063 m are the reference corrosion allowance and "
@@ -760,7 +760,7 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "VOLUME (the size key V_R, src/postProcessing/costing/Turton.cpp:80), "
       + "so the weight -- and the density with it -- moves no euro.  F_M "
       + "multiplies the cost "
-      + "(src/postProcessing/costing/Turton.cpp:719-721), and sigma_y "
+      + "(src/postProcessing/costing/Turton.cpp:752-754), and sigma_y "
       + "enters the cost again through F_P.  maxP is compared with the "
       + "design pressure by the vessel sizers "
       + "(src/postProcessing/sizing/MaterialLimits.cpp:41), and maxT, read "
@@ -861,7 +861,7 @@ export const MATERIALS_LIMITS: readonly LessonLimit[] = [
       + "pressureDesign as a GAUGE pressure "
       + "(src/postProcessing/sizing/VesselMechanics.H:58-60, "
       + "VesselMechanics.cpp:29 and src/postProcessing/costing/"
-      + "Turton.cpp:661-667).  The plant cases that once derived it as 1.1 "
+      + "Turton.cpp:688-694).  The plant cases that once derived it as 1.1 "
       + "times an ABSOLUTE stream pressure -- one bar of their margin the "
       + "atmosphere -- derive it on the GAUGE operating pressure by the "
       + "Design Guide's preliminary rule since the C150 review; a case you "
@@ -869,7 +869,7 @@ export const MATERIALS_LIMITS: readonly LessonLimit[] = [
       + "source states up to 140 bar g; an ammonia loop's exchangers sit "
       + "above that, and the engine evaluates it there and says so on the "
       + "costing line, F_P EXTRAPOLATED (src/postProcessing/costing/"
-      + "Turton.cpp:706-715) -- a cost outside its correlation, not refused." },
+      + "Turton.cpp:733-742) -- a cost outside its correlation, not refused." },
   { id: "four-records",
     title: "Four records, most of them unsourced",
     body: "Only carbon steel, SS304, SS316 and aluminium are in the tree; no "

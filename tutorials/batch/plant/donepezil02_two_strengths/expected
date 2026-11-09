@@ -1348,7 +1348,7 @@ equipment mill                   values.cycleTime_plan 3.25             1e-4
 equipment mill                   values.load      149.254883119    1e-4
 equipment mill                   values.load_strength10 149.254883119    1e-4
 equipment mill                   values.load_strength5 149.254883119    1e-4
-equipment mill                   values.lotTime_forShift 0.597019532477   1e-4
+equipment mill                   values.lotTime_forShift 3.25   1e-4
 equipment mill                   values.m_lot     298.509766238    1e-4
 equipment mill                   values.machinesInPlan 1                1e-4
 equipment mill                   values.machinesInstalled 1                1e-4
@@ -1369,7 +1369,7 @@ equipment packagingLine          values.itemsPerPack 28               1e-4
 equipment packagingLine          values.load      4181.85014384    1e-4
 equipment packagingLine          values.load_strength10 4181.85014384    1e-4
 equipment packagingLine          values.load_strength5 4181.85014384    1e-4
-equipment packagingLine          values.lotTime_forShift 6.27277521575    1e-4
+equipment packagingLine          values.lotTime_forShift 11    1e-4
 equipment packagingLine          values.m_lot     305.851988546    1e-4
 equipment packagingLine          values.machinesInPlan 1                1e-4
 equipment packagingLine          values.machinesInstalled 1                1e-4
@@ -1410,7 +1410,7 @@ equipment tabletPress            values.itemMass  0.00028          1e-4
 equipment tabletPress            values.load      153061.22449     1e-4
 equipment tabletPress            values.load_strength10 153061.22449     1e-4
 equipment tabletPress            values.load_strength5 153061.22449     1e-4
-equipment tabletPress            values.lotTime_forShift 5.41125541126    1e-4
+equipment tabletPress            values.lotTime_forShift 10    1e-4
 equipment tabletPress            values.m_lot     300              1e-4
 equipment tabletPress            values.machinesInPlan 1                1e-4
 equipment tabletPress            values.machinesInstalled 1                1e-4
@@ -1457,3 +1457,20 @@ batch   dosage:strength5:polyethyleneGlycol perUnit          3.14994596872e-07 1
 batch   dosage:strength5:talcPowder perUnit          2.72995317343e-07 1e-4
 batch   dosage:strength5:titaniumDioxide perUnit          1.04998198979e-06 1e-4
 batch   dosage:strength5:yellowIronOxide perUnit          4.19992795787e-08 1e-4
+kpi     economics              lossYears        10               1e-4
+kpi     economics              taxCreditOnLoss  8339062.20192    1e-4
+kpi     economics              taxCreditOnLoss_NPV 5460898.7778     1e-4
+equipment coatingPan             values.lotTime_forShift_strength10 6.5              1e-4
+equipment coatingPan             values.lotTime_forShift_strength5 6.5              1e-4
+equipment finalBlender           values.lotTime_forShift_strength10 2.25             1e-4
+equipment finalBlender           values.lotTime_forShift_strength5 2.25             1e-4
+equipment fluidBedDryer          values.lotTime_forShift_strength10 4.25             1e-4
+equipment fluidBedDryer          values.lotTime_forShift_strength5 4.25             1e-4
+equipment granulator             values.lotTime_forShift_strength10 2.75             1e-4
+equipment granulator             values.lotTime_forShift_strength5 2.75             1e-4
+equipment mill                   values.lotTime_forShift_strength10 3.25             1e-4
+equipment mill                   values.lotTime_forShift_strength5 3.25             1e-4
+equipment packagingLine          values.lotTime_forShift_strength10 11               1e-4
+equipment packagingLine          values.lotTime_forShift_strength5 20               1e-4
+equipment tabletPress            values.lotTime_forShift_strength10 10               1e-4
+equipment tabletPress            values.lotTime_forShift_strength5 17               1e-4

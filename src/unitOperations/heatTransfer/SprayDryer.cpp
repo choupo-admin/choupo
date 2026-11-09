@@ -1536,7 +1536,9 @@ int SprayDryer::solve(const DictPtr& dict,
             std::cout << "  ----  residual moisture (GAB + Lewis falling rate)  ----\n"
                       << "  X_in = " << std::fixed << std::setprecision(3) << X_in
                       << "  ->  X_crit = " << X_cr << "  ->  X_eq(a_w=" << std::setprecision(3)
-                      << a_w << ") = " << X_eq << " kg/kg\n"
+                      << a_w << ") = " << X_eq << " kg/kg   [a_w is the EXHAUST air's: the\n"
+                         "  powder leaves with the exhaust (co-current, well mixed), so the KPI\n"
+                         "  `water_activity` is the exhaust's, not the inlet air's]\n"
                       << "  Residence " << std::setprecision(2) << residence
                       << " s (constant-rate period ENDS -- X reaches X_crit, falling rate takes over -- at " << std::setprecision(3) << t_const
                       << " s)  ->  X_final = " << X_final << " kg/kg  ("

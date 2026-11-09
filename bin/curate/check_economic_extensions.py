@@ -49,6 +49,18 @@ and the published cash flow, never from the engine's source.
       of the extension KPIs, writes no royalty column and no extension line.
   (h) PUBLISHED => PINNED: the witness's expected file carries a row for every
       extension KPI the run publishes.
+  (i) TAX ON A LOSS (2026-11-09, DEV.md 4c C269 decision (2)), on a twin whose
+      product price is cut until every operating year is a loss.  Under the
+      default (`taxOnLoss credit`, or no key) each loss year's tax is
+      NEGATIVE, tau x its taxable income, the run ANNOUNCES the assumption
+      (the loss set against the owner's other profit) with the credit's total,
+      and `taxCreditOnLoss` equals minus the sum of the negative taxes.  Under
+      `taxOnLoss none;` the taxable income of every year is the same, the tax
+      of a loss year is ZERO, each year's cash flow is lower by exactly the
+      credit it no longer earns, the NPV is lower by the credit twin's
+      `taxCreditOnLoss_NPV`, and the stand-alone reading is announced.  Any
+      other word refuses by name; the witness itself (no loss year) publishes
+      no loss KPI.
 
 NOT CHECKED, said plainly: that the classification of the cost into fixed and
 variable is the right one (it is a modelling choice, printed); that a price per
@@ -114,7 +126,7 @@ def decl(d):
 
 
 # ---------------------------------------------------------------- running ----
-def prepare(work, name, edit=None, layout_edit=None):
+def prepare(work, name, edit=None, layout_edit=None, econ_edit=None):
     d = work / name
     if d.exists():
         shutil.rmtree(d)
@@ -125,6 +137,9 @@ def prepare(work, name, edit=None, layout_edit=None):
     if layout_edit:
         p = d / "system/layoutDict"
         p.write_text(layout_edit(p.read_text()))
+    if econ_edit:
+        p = d / "constant/economics"
+        p.write_text(econ_edit(p.read_text()))
     return d
 
 
@@ -367,6 +382,74 @@ def main():
         if k.startswith(("building_", "breakEven_", "royalty_", "WCm_")) and not re.search(r"\b" + k + r"\b", exp):
             fail(f"(h) `economics.{k}` is published and no row of the witness's expected file pins it")
 
+    # (i) tax on a loss: both readings on a priced-down twin ---------------------
+    for k in ("lossYears", "taxCreditOnLoss", "taxCreditOnLoss_NPV"):
+        if k in K:
+            fail(f"(i) the witness has no loss year and still publishes `economics.{k}`")
+    tau = val(eco, "taxRate")
+    i_rate = val(eco, "discountRate")
+
+    def cut_price(t):
+        # the product's `price 20.0;` -> 0.6 x: every operating year a loss
+        return re.sub(r"(price\s+)20\.0;", r"\g<1>12.0;", t, count=1)
+    cr = prepare(work, "lossCredit", econ_edit=cut_price) if not reuse else work / "lossCredit"
+    ocr, rcr = go(cr)
+    Kc = kpis(ocr)
+    cfc_, _, hc = cashflow(cr) if rcr == 0 else ([], {}, [])
+    if rcr != 0 or "tax_EUR" not in hc:
+        fail(f"(i) the priced-down twin did not run clean (rc {rcr})")
+    else:
+        op = [r for r in cfc_ if int(r["year"]) >= 1]
+        losses = [r for r in op if r["taxableIncome_EUR"] < 0.0]
+        if len(losses) != len(op):
+            fail(f"(i) the twin was meant to lose money every year; {len(losses)} of {len(op)} are losses")
+        credit = 0.0
+        credit_disc = 0.0
+        for r in losses:
+            if not close(r["tax_EUR"], tau * r["taxableIncome_EUR"], tol=2.0):
+                fail(f"(i) credit, year {int(r['year'])}: tax {r['tax_EUR']} is not tau x the loss {tau * r['taxableIncome_EUR']}")
+            credit += -r["tax_EUR"]
+            credit_disc += -r["tax_EUR"] / (1.0 + i_rate) ** int(r["year"])
+        if Kc.get("lossYears") != len(losses):
+            fail(f"(i) credit: lossYears {Kc.get('lossYears')} vs {len(losses)} loss years in the table")
+        if "taxCreditOnLoss" not in Kc or not close(Kc["taxCreditOnLoss"], credit, tol=len(losses) * 2.0):
+            fail(f"(i) credit: taxCreditOnLoss {Kc.get('taxCreditOnLoss')} vs minus the summed negative taxes {credit}")
+        if "taxCreditOnLoss_NPV" not in Kc or not close(Kc["taxCreditOnLoss_NPV"], credit_disc, tol=len(losses) * 2.0):
+            fail(f"(i) credit: taxCreditOnLoss_NPV {Kc.get('taxCreditOnLoss_NPV')} vs the credits discounted {credit_disc}")
+        if "are credited tax" not in ocr or "OTHER taxable profit" not in ocr:
+            fail("(i) credit: the loss years are not announced with the assumption (other taxable profit)")
+
+        def no_credit(p):
+            return p.replace("taxRate             0.21;", "taxRate             0.21;\n    taxOnLoss           none;", 1)
+        nc = prepare(work, "lossNone", no_credit, econ_edit=cut_price) if not reuse else work / "lossNone"
+        onc, rnc = go(nc)
+        Kn = kpis(onc)
+        cfn, _, _ = cashflow(nc) if rnc == 0 else ([], {}, [])
+        if rnc != 0 or len(cfn) != len(cfc_):
+            fail(f"(i) the `taxOnLoss none` twin did not run clean (rc {rnc})")
+        else:
+            for rc_, rn_ in zip(cfc_, cfn):
+                t = int(rc_["year"])
+                if not close(rn_["taxableIncome_EUR"], rc_["taxableIncome_EUR"], tol=1.0):
+                    fail(f"(i) none, year {t}: the taxable income moved ({rn_['taxableIncome_EUR']} vs {rc_['taxableIncome_EUR']})")
+                if t >= 1 and rc_["taxableIncome_EUR"] < 0.0:
+                    if rn_["tax_EUR"] != 0.0:
+                        fail(f"(i) none, year {t}: a loss year is taxed {rn_['tax_EUR']}")
+                    if not close(rn_["cashFlow_EUR"], rc_["cashFlow_EUR"] + rc_["tax_EUR"], tol=2.0):
+                        fail(f"(i) none, year {t}: cash flow {rn_['cashFlow_EUR']} is not the credit reading's {rc_['cashFlow_EUR']} less its credit {-rc_['tax_EUR']}")
+                elif not close(rn_["cashFlow_EUR"], rc_["cashFlow_EUR"], tol=1.0):
+                    fail(f"(i) none, year {t}: a year with no loss moved ({rn_['cashFlow_EUR']} vs {rc_['cashFlow_EUR']})")
+            if not close(Kn["NPV"], Kc["NPV"] - Kc.get("taxCreditOnLoss_NPV", float("nan")), tol=5.0):
+                fail(f"(i) none: NPV {Kn['NPV']} is not the credit reading's {Kc['NPV']} less the discounted credit {Kc.get('taxCreditOnLoss_NPV')}")
+            if Kn.get("taxCreditOnLoss") != 0.0 or Kn.get("lossYears") != Kc.get("lossYears"):
+                fail(f"(i) none: taxCreditOnLoss {Kn.get('taxCreditOnLoss')} / lossYears {Kn.get('lossYears')} (expected 0 / {Kc.get('lossYears')})")
+            if "pay no tax" not in onc:
+                fail("(i) none: the stand-alone reading is not announced")
+        bad = prepare(work, "lossBadWord", lambda p: no_credit(p).replace("taxOnLoss           none;", "taxOnLoss carryForward;"), econ_edit=cut_price) if not reuse else work / "lossBadWord"
+        ob, rb = go(bad)
+        if rb == 0 or "taxOnLoss" not in ob:
+            fail("(i) `taxOnLoss carryForward;` did not refuse by name")
+
     if a.keep is None and not a.reuse:
         shutil.rmtree(work, ignore_errors=True)
     if fails:
@@ -376,8 +459,10 @@ def main():
         return 1
     print("check_economic_extensions: OK -- the building (area x grade price, FCI +1.18 C_BM), both break-evens "
           "(operating recomputed, NPV a root of the real pipeline), the royalty window (years 1.." + str(expiry) +
-          ", both bases), the three working capitals, 8 refusals, absence silent, all pinned.  NOT CHECKED: the "
-          "fixed/variable classification, any price's realism")
+          ", both bases), the three working capitals, 8 refusals, absence silent, all pinned; tax on a loss: "
+          "the credit reading announced and summed, `taxOnLoss none` zero in every loss year and the NPV lower by "
+          "exactly the discounted credit, a bad word refused.  NOT CHECKED: the fixed/variable classification, "
+          "any price's realism")
     return 0
 
 

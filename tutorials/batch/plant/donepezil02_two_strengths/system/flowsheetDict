@@ -56,7 +56,8 @@
   (THE critical quality question of a low-dose tablet, README section 8),
   no compaction force, no tablet hardness.  Choupo has no such equipment
   model; none is invented here.  The two DRYERS are physics: `solidDryer`
-  dries to the starch's sorption isotherm at the exhaust air's humidity,
+  dries to the starch's sorption isotherm at the INLET air's humidity (a
+  batch dried to its end point ends in equilibrium with the fresh air),
   with the energy balance on the package's enthalpy.  The coating pan is TWO
   boxes, a `mixer` (the spray lands on the cores) and a `solidDryer` (the
   hot air takes the water off), which is the mass and energy balance of one
@@ -109,7 +110,8 @@ units
     {
         //  The fluid-bed dryer.  A `solidDryer`: the hot air takes the
         //  granulation water off the wet mass down to the moisture the
-        //  granules hold in equilibrium with the exhaust air -- the sorption
+        //  granules hold in equilibrium with the INLET air (a batch dried to
+        //  its end point: the exhaust tends to the fresh air) -- the sorption
         //  isotherm declared on the maize starch (constant/components,
         //  AUTHOR-SET parameters); every other solid rides through dry, said
         //  on the run.  The exhaust temperature closes the energy balance.
@@ -185,7 +187,7 @@ units
     }
     {
         //  The coating pan, part 2: the hot air takes the water off, down to
-        //  the starch's isotherm at the exhaust air's humidity.
+        //  the starch's isotherm at the INLET air's humidity (as the fluid bed).
         name        coatingDryer;
         type        solidDryer;
         inputs      ( wetCoatedTablets  coatingAir );

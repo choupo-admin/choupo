@@ -559,6 +559,12 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
                  " range [" << t.Amin << ", " << t.Amax << "] -- cost"
                  " EXTRAPOLATED, treat with caution.\n";
             std::cout << v.str();
+            std::ostringstream m;   // and into the caveat block (C269, as the size window)
+            m << std::defaultfloat << std::setprecision(4) << "tray area A = "
+              << A << " m2 is OUTSIDE the correlation's fitted range [" << t.Amin
+              << ", " << t.Amax << "] m2: the tray cost is EXTRAPOLATED";
+            AdvisoryLog::instance().add("validity", "warning",
+                "sieveTrays '" + dim.unitName + "'", m.str());
         }
 
         const scalar lA       = std::log10(A);
@@ -629,6 +635,27 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
               << " is OUTSIDE the correlation range [" << c.Smin << ", "
               << c.Smax << "] -- cost EXTRAPOLATED, treat with caution.\n";
             std::cout << v.str();
+        }
+        //  AND INTO THE CAVEAT BLOCK (2026-11-09, DEV.md 4c C269, the walk's
+        //  S6).  The line above was delivered a thousand lines above the
+        //  answer and never received: it reached neither the run's
+        //  "ASSUMPTIONS AND CAVEATS" block nor the result's advisories, so an
+        //  airHeater of 0.86 m2 priced on a correlation fitted from 10 m2
+        //  stood in the equipment table with no mark.  Named by item, with the
+        //  size, its unit and the window; category `validity` is the group
+        //  "EXTRAPOLATIONS AND VALIDITY".  `add` dedups an identical message.
+        {
+            std::ostringstream m;
+            const std::string unit = dim.unitOf(c.sizeKey);
+            m << std::defaultfloat << std::setprecision(4)
+              << "size " << c.sizeKey << " = " << S
+              << (unit.empty() ? "" : " " + unit) << " is OUTSIDE the "
+              << "correlation's fitted range [" << c.Smin << ", " << c.Smax
+              << "]" << (unit.empty() ? "" : " " + unit)
+              << ": the purchased cost is EXTRAPOLATED (the correlation"
+                 " evaluated past its data), treat it with caution";
+            AdvisoryLog::instance().add("validity", "warning",
+                dim.equipmentType + " '" + dim.itemId() + "'", m.str());
         }
     }
 
@@ -713,6 +740,12 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
                  " (<= 140 bar g, CAPCOST 2017) -- F_P = " << F_P
               << " EXTRAPOLATED, treat with caution.\n";
             std::cout << v.str();
+            std::ostringstream m;   // and into the caveat block (C269, as the size window)
+            m << std::defaultfloat << std::setprecision(4) << "pressureDesign "
+              << P_gauge << " bar g is ABOVE the pressure factor's sourced range"
+                 " [0, 140] bar g: F_P = " << F_P << " is EXTRAPOLATED";
+            AdvisoryLog::instance().add("validity", "warning",
+                dim.equipmentType + " '" + dim.itemId() + "'", m.str());
         }
     }
 

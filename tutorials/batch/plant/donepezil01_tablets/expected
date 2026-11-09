@@ -968,7 +968,7 @@ equipment hvac/total             values.nRooms    29               1e-4
 equipment mill                   values.capacity_machine 500              1e-4
 equipment mill                   values.cycleTime_plan 3.25             1e-4
 equipment mill                   values.load      149.254883119    1e-4
-equipment mill                   values.lotTime_forShift 0.597019532477   1e-4
+equipment mill                   values.lotTime_forShift 3.25   1e-4
 equipment mill                   values.m_lot     298.509766238    1e-4
 equipment mill                   values.machinesInPlan 1                1e-4
 equipment mill                   values.machinesInstalled 1                1e-4
@@ -983,7 +983,7 @@ equipment packagingLine          values.cycleTime_plan 11               1e-4
 equipment packagingLine          values.itemMass  0.00029023       1e-4
 equipment packagingLine          values.itemsPerPack 28               1e-4
 equipment packagingLine          values.load      4181.85014384    1e-4
-equipment packagingLine          values.lotTime_forShift 6.27277521575    1e-4
+equipment packagingLine          values.lotTime_forShift 11    1e-4
 equipment packagingLine          values.m_lot     305.851988546    1e-4
 equipment packagingLine          values.machinesInPlan 1                1e-4
 equipment packagingLine          values.machinesInstalled 1                1e-4
@@ -1010,7 +1010,7 @@ equipment tabletPress            values.compressionsPerRevolution 1             
 equipment tabletPress            values.cycleTime_plan 10               1e-4
 equipment tabletPress            values.itemMass  0.00028          1e-4
 equipment tabletPress            values.load      153061.22449     1e-4
-equipment tabletPress            values.lotTime_forShift 5.41125541126    1e-4
+equipment tabletPress            values.lotTime_forShift 10    1e-4
 equipment tabletPress            values.m_lot     300              1e-4
 equipment tabletPress            values.machinesInPlan 1                1e-4
 equipment tabletPress            values.machinesInstalled 1                1e-4
@@ -1105,3 +1105,6 @@ kpi     economics              sens_price_packagedTablets_NPV_low -40062118.7882
 kpi     economics              sens_price_packagedTablets_payback_high 9.17815858185    1e-4
 kpi     economics              sens_price_packagedTablets_value_high 447.915          1e-4
 kpi     economics              sens_price_packagedTablets_value_low 241.185          1e-4
+kpi     economics              lossYears        7                1e-4
+kpi     economics              taxCreditOnLoss  3892841.9848     1e-4
+kpi     economics              taxCreditOnLoss_NPV 2707426.4533     1e-4

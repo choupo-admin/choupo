@@ -1615,3 +1615,6 @@ layout  fenceCrossing:FlashGas side             north            exact
 layout  fenceCrossing:FlashGas x                78               1e-4
 layout  fenceCrossing:FlashGas y                58.5             1e-4
 layout  fenceCrossing:FlashGas z                10.6             1e-4
+kpi     economics              lossYears        15               1e-4
+kpi     economics              taxCreditOnLoss  167104085.344    1e-4
+kpi     economics              taxCreditOnLoss_NPV 87485550.2258    1e-4
