@@ -111,7 +111,9 @@ export const OVERPRESSURE_SOURCES: readonly OverpressureSource[] = [
   { id: "diers-manual",
     cite: "H. G. Fisher et al., Emergency Relief System Design Using DIERS "
       + "Technology: The Design Institute for Emergency Relief Systems "
-      + "(DIERS) Project Manual (AIChE, 1992)",
+      + "(DIERS) Project Manual (AIChE, 1992: the copyright year of the AIChE "
+      + "print, which is the year this page uses; the Wiley/AIChE online "
+      + "monograph is dated 1993 in Crossref)",
     used: "named as where two-phase venting of runaway reactions was "
       + "worked out.  NOT READ." },
   { id: "leung-1986",

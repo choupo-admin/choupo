@@ -119,7 +119,7 @@ export const POOL_SOURCES: readonly PoolFireSource[] = [
       + "printing against a numerical integration of the definition." },
   { id: "shokri-beyler-1989",
     cite: "M. Shokri, C. L. Beyler, Radiation from large pool fires, Journal "
-      + "of Fire Protection Engineering 1 (1989) 141-150",
+      + "of Fire Protection Engineering 1 (1989) 141-149",
     used: "READ (a copyrighted journal paper; equations cited, no table "
       + "reproduced): the burning flux m'' = m''_inf (1 - exp(-k beta D)) "
       + "(Eq. 4), the asymptote 0.001 dHc/dHg (Eq. 5), Heskestad's height "
@@ -270,7 +270,7 @@ export const POOL_STEPS: readonly LessonStep[] = [
       + "rules are the engine's: Watson at src/thermo/Component.cpp:1342-1350 "
       + "(Component::Hvap_latent), and the gas-to-liquid crossing at "
       + "Component.cpp:1189-1190.  The page's Watson reproduces the "
-      + "24 520.52 J/mol the engine prints for acetone at 394.11 K in the "
+      + "24 076.63 J/mol the engine prints for acetone at 399.46 K in the "
       + "relief02 witness's pinned golden, to the last digit.",
   },
   {
