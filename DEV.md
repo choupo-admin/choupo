@@ -3385,7 +3385,7 @@ accepts today, and that is a policy call.
 > "is being built".  The Gantt on C267's points: T_L, the limiting stage and a legend are
 > there; the store, a common time axis, start-up/inerting and a sentence for the dryer's
 > 6 h wait are not.  Report and screenshots: session scratchpad c266/.  A finding about the
-> instrument: bin/drive-app does not start in a worktree (no gui/node_modules).
+> instrument: bin/drive-app does not start in a worktree (no installed node modules under the gui folder).
 
 
 > **C265 (Vitor, 2026-11-09, after C264: "o utilizador devia ter a opção no dicionário de
