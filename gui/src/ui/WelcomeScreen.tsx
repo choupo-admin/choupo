@@ -31,7 +31,7 @@ License
 
   The first thing a student sees.  The bare "No flowsheet" void read as
   intimidating; this replaces it with a calm, inviting on-ramp: the mark + a
-  one-line "what is this", big clickable actions (New case / Browse tutorials /
+  one-line "what is this", big clickable actions (Create a case with your AI / Open a case .zip / Browse tutorials /
   Open case folder / Open case .zip / Reopen last), and a few "start here"
   tutorial cards that open with one click.  It does NOT add editing -- it is
   navigation, the door into the runner/visualiser.
@@ -72,6 +72,7 @@ import {
   IconBook2,
   IconChartLine,
   IconFilePlus,
+  IconRobot,
   IconFileZip,
   IconFolderOpen,
   IconHistory,
@@ -83,6 +84,7 @@ import {
 } from "../state/store.js";
 import { MODE_TABS } from "./workspaces.js";
 import { caseTabSearch, openAppTab } from "./openInTab.js";
+import { popOutPrompts } from "./promptsPopOut.js";
 
 // A few tutorials that span the experience -- the student's first clicks.
 // Exported for tests/firstPath.test.ts: every card must name a `tier tutorial;`
@@ -170,7 +172,20 @@ export function WelcomeScreen() {
             from a student whose browser could open the folder, and the
             folder from one holding a classmate's .zip). */}
         <Group gap="sm" justify="center" style={{ minWidth: 0 }}>
-          <Button leftSection={<IconBook2 size={16} />} color="accent"
+          {/* FIRST ACTION (DEV.md 4c C257): the student describes the process to
+              their own assistant.  It opens the prompt pop-out of Help -- the
+              same generated text as the landing -- so no new panel. */}
+          <Button leftSection={<IconRobot size={16} />} color="accent"
+            title="Copy the prompt that teaches your own AI assistant how to prepare a Choupo case"
+            onClick={() => popOutPrompts()}>
+            Create a case with your AI
+          </Button>
+          <Button leftSection={<IconFileZip size={16} />} variant="default"
+            title="Open a case packed as one .zip file (a folder compressed by Windows or macOS works)"
+            onClick={() => fire("choupo:welcome:open-zip")}>
+            Open a case (.zip)
+          </Button>
+          <Button leftSection={<IconBook2 size={16} />} color="accent" variant="light"
             onClick={() => fire("choupo:welcome:open-tutorial")}>
             Browse tutorials
           </Button>
@@ -196,11 +211,6 @@ export function WelcomeScreen() {
             title="Open a case folder from your computer"
             onClick={() => fire("choupo:welcome:open-folder")}>
             Open case folder
-          </Button>
-          <Button leftSection={<IconFileZip size={16} />} variant="default"
-            title="Open a case packed as one .zip file (a folder compressed by Windows or macOS works)"
-            onClick={() => fire("choupo:welcome:open-zip")}>
-            Open case .zip
           </Button>
           {reopen && (
             <Button leftSection={<IconHistory size={16} />} variant="subtle"

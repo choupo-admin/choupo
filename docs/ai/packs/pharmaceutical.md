@@ -3,9 +3,9 @@
 budget: 1700 words (~2720 tokens)
 
 Read this pack when the student wants a pharmaceutical solid-dose plant (tablets) for THEIR drug.
-It is a recipe, not a reference: copy a shipped case, change the listed keys, run, read.
+A recipe: take the scaffold this pack names, change the listed keys, run, read.
 Grammar of the plan, machines, utilities and money is in the pack `batch-plant`; the building in `layout`.
-Without a shell you cannot run anything: hand the case over, say it was not run, and tell the student to use File > Complete 0/ and then Run, pasting back every FAILED, WARNING, ERROR or INCOMPLETE line.  With a shell and an engine, run it yourself and say so.
+Without a shell: hand the case over, say it was not run, and tell the student to use File > Complete 0/ and then Run, pasting back every FAILED, WARNING, ERROR or INCOMPLETE line.  With a shell and an engine, run it yourself and say so.
 
 ## 1. Ask the student first (nothing else is needed)
 
@@ -17,16 +17,18 @@ Without a shell you cannot run anything: hand the case over, say it was not run,
 
 Never invent a molar mass, a price or a rating: ask, or write the number as "ASSUMED" with a `source`.
 
-## 2. Start from a shipped case, never from nothing
+## 2. The scaffold for this kind of plant
 
-| Student wants | Copy this case (tell the student to `cp -r` it) |
+The scaffolds below are allowed by the brief's rule: DESIGN.md first, every changed number sourced, no tutorial of a different problem.
+
+| Student wants | Scaffold case (tell the student to `cp -r` it) |
 |---|---|
 | one strength, wet granulation | `tutorials/batch/plant/donepezil01_tablets` |
 | two strengths on one line | `tutorials/batch/plant/donepezil02_two_strengths` |
 | a spray-dried drug, solvent recovery | `tutorials/batch/plant/apalutamide01_tablets` |
 
 Then `rm -rf expected log.choupoSolve` and rename the `.cho` marker file to the new case name.
-If the student pastes files, edit those; if not, ask for `system/postDict`, `0/apiFeed` and `constant/thermoPhysPropDict` of the copy.
+If the student pastes files, edit those; else ask for `system/postDict`, `0/apiFeed` and `constant/thermoPhysPropDict`.
 
 ## 3. The files and what each one carries
 
@@ -43,13 +45,13 @@ If the student pastes files, edit those; if not, ask for `system/postDict`, `0/a
 | `constant/economics` | prices, EUR per kg OF THE STREAM (`packagedTablets`, `apiFeed`, ...) |
 | `system/layoutDict` | rooms and the items standing in them; edit only when you delete or add a unit |
 
-Every number an author sets carries `source "..."; reason "...";` or the engine refuses it: write them, say "ASSUMED" when it is.
+Every number set carries `source "..."; reason "...";` or the engine refuses it; say "ASSUMED" when it is.
 
 ## 4. The order of work
 
 1. Copy, clean, rename (section 2).
 2. New drug record; component name in `thermoPhysPropDict`; delete the old record.
-3. Rewrite the feeds. Basis rate B tablets/h (keep the case's 720 000 for donepezil01). For a SOLID feed: kmol/h = mg per tablet x 1e-6 x B / MW, written twice (overall and inside `phases { solid { componentMolarFlows ... } }`). A water feed: `componentMassFlows { water X kg/h; }` with `phase liquid;`. Binder water = binder kg/h x (1-w)/w. Air feeds: leave, check the dryers (section 6).
+3. Rewrite the feeds. Basis rate B tablets/h . For a SOLID feed: kmol/h = mg per tablet x 1e-6 x B / MW, written twice (overall and inside `phases { solid { componentMolarFlows ... } }`). A water feed: `componentMassFlows { water X kg/h; }` with `phase liquid;`. Binder water = binder kg/h x (1-w)/w. Air feeds: leave, check the dryers (section 6).
 4. `postDict`: `perYear`, lot `mass`, then the machine ratings.
 5. Prices: price per kg of `packagedTablets` = EUR per tablet x tablets per hour / kg per hour of `packagedTablets` (read kg/h in the first stream table, then redo).
 6. Delete the estimate files and complete `0/`: `bin/choupo-init0 <case>`. Lint: `bin/choupo-lint <case>`.
