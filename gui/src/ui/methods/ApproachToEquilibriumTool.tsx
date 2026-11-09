@@ -371,7 +371,10 @@ export function ApproachToEquilibriumTool(): JSX.Element {
         exactly as the engine reads it off its own probe.
         Nothing here writes <code>temperatureApproach</code> into a dict;
         on this witness the shifted run&apos;s COMPOSITION is the same
-        computation, and its temperature and duty are not.  {w.conditions}.
+        computation, and its temperature and duty are not; the Q_kW shown
+        is the unshifted run&apos;s, read for its SIGN only, because the duty
+        of a declared approach prices the shifted composition at the
+        physical T.  {w.conditions}.
       </PanelNote>
     </>
   );
