@@ -3249,6 +3249,12 @@ accepts today, and that is a policy call.
 > 46.57-83.14) while its own `reason` says it "runs on through the lots of a campaign".
 > Either a second feed tank alternates (the dryer then truly runs on, T_L = 36.57 h) or the
 > text says the dryer waits; to discuss with Vitor, with the C266 pharmaceutical findings.
+> CORRECTED the same hour, after reading further: this is ALREADY TAUGHT -- the
+> `campaign-plan` lesson (campaignPlanLesson.ts:158-169) and the design guide's chapter
+> (designGuide.tex ~3226-3242) say the TANK paces the train, the dryer idles, a second tank
+> out of phase gives the dryer back the limit, and the lot is the INPUT definition of ICH
+> Q13 (one tank of solution).  So the gap is narrower: the Gantt SCREEN and the case's own
+> `reason` do not say it where the student is looking.
 > ORDER: Vitor asked to STOP after the pharmaceutical walk and discuss; so nothing here is
 > built before that conversation.  Given now, because the groups need it this week and it
 > needs no code: the answers to the five questions from what the engine does, and a
