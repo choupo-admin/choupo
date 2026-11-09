@@ -3221,6 +3221,44 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C269 (Vitor, 2026-11-09, on the C266 pharmaceutical findings: "Avança.  Eu revejo depois.
+> O que a teoria vê não precisa de ser martelado numericamente!"): THE WALK'S FINDINGS ARE
+> FIXED NOW, AND THE ENGINEERING ITEMS ARE DECIDED BY THEORY, each decision written here for
+> his review.**
+> DISPLAY AND ENGINE ERRORS (no opinion in them): the sheet's number formatter (98 200 shown
+> as 982); solids counted twice on stream cards; unit words the engine writes and the app
+> refuses (`m3/yr`, `um`, `rpm`) -- one vocabulary, and a gate that parses every shipped
+> design sheet with the app's parser; a sheet's molar F without the solids beside a mass
+> flow with them; a Turton cost outside its correlation announced in the caveats, not the
+> Log alone; the shift check per product; README links accepted by the app's parser (31
+> READMEs still refused after C264's fix).
+> DECIDED BY THEORY:
+> (1) THE DRYER'S ISOTHERM.  A solid can dry no further than equilibrium with the air it is
+> in contact with WHEN IT LEAVES.  A batch dried to its end point (a fluid-bed dryer of
+> granules: evaporation falls to nothing, so the exhaust tends to the inlet air) ends in
+> equilibrium with the INLET air; a continuous well-mixed or co-current dryer (a spray
+> dryer) discharges its powder with the EXHAUST.  So the engine is right in both units
+> (solidDryer reads the inlet, SolidDryer.cpp:170-172; sprayDryer the exhaust) and the three
+> case texts that say "exhaust" for the fluid-bed dryer are wrong.  Fix the texts; the unit
+> announces which air state its isotherm is read at, and the KPI's meaning is stated; no
+> new key until a case needs the other contacting pattern.
+> (2) TAX ON A LOSS.  A negative tax is a credit only if the owner has other taxable profit
+> to set the loss against; a stand-alone project has none.  The current numbers stay (no
+> golden moves on a default), the engine ANNOUNCES the assumption whenever a year's tax is
+> negative, with its size, and a declared `economics` choice gives the stand-alone reading
+> (no credit).  The pharmaceutical READMEs say which reading their NPV is.
+> (3) sprayDryer06 (REA) equal to sprayDryer01 to the last digit: either the declared
+> kinetics is not honoured (an engine defect, to be found first) or the case sits where the
+> kinetics cannot bite; the case is moved to where it does, on its own declared data.
+> (4) sprayDryer07, a 0.32 m chamber for a 0.1 m wheel: a rotary atomiser's chamber diameter
+> is governed by the droplets' radial throw, not by residence time alone; the engine says
+> what it did not check, and no clearance correlation is typed from memory.
+> (5) Case texts: donepezil01's "is being built", the acetone tanks drawn at half their
+> sized volume, the two buildings' classification stated and cross-referenced as the cases'
+> assumption (an oral solid dose is not a sterile product), the dossier link.
+> ORDER: two generals now (GUI display; engine and cases); the README links ride with C264;
+> then the Gantt (C267) and the declared views (C265) once C264 lands.
+
 > **C268 (the architect, 2026-11-09): THE REFERENCE PLANT, FIRST SLICE LANDED; C244 PHASE 2
 > DECIDED; THREE ENGINE FINDINGS FOR C256.**  greenAmmoniaPEQ_baseCase (d59565f12): a ring
 > of roads, an entrance road to a main gate upwind by the control room, a tank-farm road to
