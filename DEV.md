@@ -3221,6 +3221,73 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C255 (Vitor, 2026-11-09: a second opinion on the EduTools from another assistant,
+> pasted whole -- "avalia mas decide tu"): SEVEN SCIENTIFIC ERRORS IN LESSON TEXT, ALL
+> SEVEN CONFIRMED AT THEIR LINES, AND THE GAP IN OUR GATES THAT LET THEM STAND.**  The
+> review separates errors of content from pedagogy and states it does not claim the
+> engine is wrong; it is not.  VERIFIED by the architect, each at the cited line of
+> main, before deciding:
+> (A) routeScreeningLesson.ts:208 "Half the methane burns ..., the other half is left
+> over".  The case's own golden (screen01_methanol_routes: feed CH4 2/3, O2 1/3 kmol/h;
+> F_out 1.000943; y_CH4 0.499058) gives a conversion of 1 - 1.000943 x 0.499058 /
+> (2/3) = 25.07 %, as stoichiometry does (O2 limits: 1/6 of 2/3).  A QUARTER burns; the
+> half is the outlet MOLE FRACTION.  Text wrong, engine right.
+> (B) reactionEnthalpyLesson.ts:165 carries the 14 % between the 298 K and the 773 K
+> reaction enthalpy to the steam raised AND to the adiabatic rise "in the same
+> proportion"; standardStateLesson.ts:313 says not to carry that percentage to either
+> without closing those balances.  Two pages, two conclusions; the second is the true
+> one in general (the first holds only for an isothermal balance with feed and
+> products at the reactor temperature, which the page does not say).
+> (C) epsilonNtuLesson.ts:81 "across a phase change the log-mean of the terminal
+> temperatures is not the driving force at all" -- false as a general statement: an
+> isothermal condenser against a single-phase coolant is the textbook case where the
+> LMTD is exact (C_r = 0); it fails with desuperheating, subcooling or a gliding
+> temperature.  "What this unit models" was written as "what the method allows".
+> (D) approachToEquilibriumLesson.ts:469 "read the composition from the shifted run
+> and everything else from the unshifted one": the unshifted run's duty belongs to
+> the UNSHIFTED composition; the duty of a declared approach is H_out(T physical,
+> shifted composition) - H_in.  To be checked against what EquilibriumReactor.cpp
+> does before the sentence "which is what the engine itself does" is kept.
+> (E) levenspielLesson.ts:171 a stirred tank provides the seed of an autocatalytic
+> reaction "by construction": with no product in the feed or the charge, r = k C_A C_P
+> gives dC_P/dt = 0 at C_P = 0 -- back-mixing SUSTAINS a seed, it does not create
+> one; the washout state is always a solution.  Existence of a steady state against
+> the possibility of start-up: a better lesson than the sentence it replaces.
+> (F) dataReconciliationLesson.ts:290 "the multiplier is fixed by the balance's own
+> residual: a balance that closed at the readings would get zero", beside its own
+> lambda = (A C A^T)^-1 r: balances sharing a meter are coupled, so r_k = 0 does not
+> give lambda_k = 0.
+> (G) batchMembraneLesson.ts:786-793 "a crossflow module CAN correlate [the film
+> coefficient] ... and a stirred vessel cannot" -- stirred cells have mass-transfer
+> correlations; what is missing is a declared geometry in THIS unit; likewise
+> "exactly two pure batch operations" (:147) and "in real equipment the flux falls"
+> (:417) state the tool's scope and one mechanism as universals.  In Vitor's own field.
+> WHY THEY STOOD.  Every lesson claim ABOUT THE ENGINE is held to a file:line and
+> re-checked by a gate (check_lesson_symbols, the anchors tests); nothing holds a
+> sentence about PHYSICS.  The 2026-08-31 audit (43 defects) read the lessons against
+> the engine they cite, the same lens.  A sentence can be perfectly cited and
+> scientifically false -- (A) is cited to the case and misreads its own number.
+> ON THE PEDAGOGY the review agrees with what Vitor said the same night and what was
+> already decided (C251 revised: no sequence is offered until one is written with
+> him); its proposed orders (tear topology before relaxation; binary equilibrium
+> before the flash; stages -> efficiency and hydraulics -> dimensions before cost)
+> are taken as input for that writing.  Its point on MIXED LEVELS is right and is the
+> C246 finding generalised: physics, the experiment, the implementation and the
+> development history are interleaved in one paragraph (dates of corrections, "the
+> owner's doubt", C++ lines in mid-argument).
+> DECISIONS: (1) the seven are fixed NOW, each with a test that recomputes the
+> corrected statement (A from the golden; F and E by a numeric counterexample; C by
+> the C_r = 0 exchanger; B by one example closed on two paths; D against the engine;
+> G reworded, a stirred-cell correlation cited only from a source actually read);
+> (2) a SCIENTIFIC audit of every other lesson, by readers who are told to judge the
+> physics and not the citations, findings verified by the architect before any edit
+> -- seven in a sample is not seven in total; (3) the six-part page (question,
+> prediction, experiment, explanation, limits, technical details collapsed) is
+> PILOTED on two tools and shown to Vitor before it touches the rest; citations stay
+> gate-held, moved into the collapsed part; (4) for December the EduTools are
+> presented as conceptual laboratories in development, not as a reviewed course --
+> the review's own wording, and the honest one.
+
 > **C254 (the architect, 2026-11-09, found by the C252 general while wording prompt C):
 > THE HOSTED APP CANNOT TAKE WHAT THE STUDENT'S ASSISTANT WRITES.**  MEASURED:
 > `gui/src/ui/ClipboardBridge.tsx:63-68` offers the paste-and-apply bridge (parse the
