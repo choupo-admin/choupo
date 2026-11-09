@@ -101,6 +101,10 @@ PostProcessor::buildChain(const DictPtr& postDict)
     std::vector<std::unique_ptr<PostProcessor>> chain;
     for (const auto& key : postDict->keys())
     {
+        //  `references` and `views` are NOT passes (C271): the case's declared
+        //  figures and tables, read by views::Reader (choupoSolve's main), which
+        //  arranges numbers the run published and adds none.
+        if (key == "references" || key == "views") continue;
         // Each top-level entry of postDict is the *type* of a pass; the
         // associated sub-dict is the pass-specific configuration.
         auto sub = postDict->subDict(key);

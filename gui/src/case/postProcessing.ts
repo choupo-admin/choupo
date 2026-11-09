@@ -49,7 +49,11 @@ License
   rather than borrowed from a neighbour.
 \*---------------------------------------------------------------------------*/
 
-export interface PostAxis { label: string; unit: string; scale: "linear" | "log" }
+export interface PostAxis {
+  label: string; unit: string; scale: "linear" | "log";
+  /** an optional drawing range the case declared (C271), in the axis's unit */
+  min?: number; max?: number;
+}
 
 /** Where a view comes from and what it is: the op it belongs to ("" = the
  *  case), whether the op published it by default or the propsDict declared it,
@@ -141,7 +145,9 @@ const arr = (v: unknown): any[] => (Array.isArray(v) ? v : []);
 
 function axis(a: any): PostAxis {
   return { label: str(a?.label), unit: str(a?.unit),
-           scale: a?.scale === "log" ? "log" : "linear" };
+           scale: a?.scale === "log" ? "log" : "linear",
+           ...(typeof a?.min === "number" ? { min: a.min } : {}),
+           ...(typeof a?.max === "number" ? { max: a.max } : {}) };
 }
 
 /** The result JSON's `postProcessing` block, types policed, nothing added. */
@@ -321,4 +327,10 @@ export function csvHeader(item: PostItem, references: readonly PostReference[] =
   for (const r of references)
     if (cited.has(r.name)) out.push(`# reference ${r.name} (${r.role}, ${r.file}): ${one(r.citation)}`);
   return out.join("\n") + "\n";
+}
+
+/** The views the CASE declared (a flowsheet run has no defaults), in the
+ *  order it declared them (C271). */
+export function declaredViewsOf(block: PostProcessingBlock | undefined): PostItem[] {
+  return (block?.items ?? []).filter((i) => i.origin === "declared");
 }

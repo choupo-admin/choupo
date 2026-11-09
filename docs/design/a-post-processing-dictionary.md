@@ -227,24 +227,90 @@ screen itself only where the case CREATES or ESTIMATES a component
 case's props surface is unchanged.  A verdict's colour has one table,
 `CURATION_COLOUR`, held to the engine by `check_verdict_parity`.
 
-## 7. The generalisation path (not built)
+## 7. choupoSolve: the same two lists in `system/postDict` (built, C271)
 
-The reader takes a `Publication` per producer: a name, a type word,
-diagnostics with units and labels, `PublishedTable`s and its default views.
-choupoProps fills one per op.  For choupoSolve the producer is a UNIT: its
-KPIs are the diagnostics, and its `UnitProfile` is one published table; the
-views would live in the flowsheetDict beside the units, as they live beside
-the operations here.  What a unit cannot do today is publish MORE THAN ONE
-named table — the spiral-wound module's march along its elements and the
-solved pore at each station are two.  The path:
-`UnitOperation::publishedTables()` and `defaultViews()` beside `profile()`,
-`SimulationResult` carrying them per unit, `Flowsheet` filling
-`views::Publication`s, and choupoSolve's main calling the same `Reader`
-after the solve.  One collision to settle first: choupoSolve's
-`reportsLayout postProcessing;` already writes `postProcessing/<report>/<instant>/`,
-so a unit named like a report would share a folder.  An outer driver's sweep
-is a further producer (its points table is the sweep CSV).  None of it is
-migrated here: this slice moves no unit.
+*2026-11-09, DEV.md 4c C271 (first slice of C265).  Vítor asked twice for the
+post-processing of a flowsheet case to draw the run against a measured plant;
+the first witness is `column14_klemola_c4_splitter` against Table 2 of Klemola
+& Ilme 1996.*
+
+**One grammar, one reader.**  The very `references ( ... );` and
+`views ( ... );` of section 4 are read, by the same `views::Reader`, from the
+top level of `system/postDict` of a steady case.  `PostProcessor::buildChain`
+skips those two words (they are not passes); a postDict holding only them runs
+no pass and is valid; `dictAudit` knows them.  The reader is built BEFORE the
+solve (a grammar error, a reference file that is missing or without a
+citation, an unknown column of a reference all refuse before the run is
+spent), and resolved AFTER the post chain, against the run; the block it
+returns rides `SimulationResult::postProcessingBlock` to the result JSON's
+top-level `postProcessing`, as for a props run.  A case that declares neither
+list builds no publication and writes nothing: no other case's output moves
+(swro01's result JSON is byte-identical, measured).  Under an `outerDict` the
+views are refused by name (a view draws ONE solved pass).
+
+**The producers, in two namespaces.**  `views::publicationsOfRun`
+(`src/postProcessing/views/RunPublications.cpp`) publishes, per UNIT, its KPIs
+as diagnostics and its `UnitProfile` as the table `profile` (the markers, e.g.
+the feed stage, as `marker_<label>`), and per STREAM `T` [K], `P` [Pa], `F`
+[kmol/s], `F_mass` [kg/s], `vf` and, per component, `x_<c>` (mole fraction),
+`w_<c>` (mass fraction), `m_<c>` (kg/s) of the overall material.  A unit and a
+stream may share a name (MEASURED over the 499 flowsheetDicts of
+`tutorials/`: unit names against the stream files of `0/`, two collide --
+`twoSectorDemo/SECTOR_S` has a unit and a stream `C1`, `SECTOR_R` an `R1`), so
+the namespace is spoken: `unitOp <name>;` or
+`stream <name>;` wherever a props view says `op <name>;` (a series, a view, a
+rows-table row, a cell).  `unit` is NOT the word: it is already a column's and
+a row's unit.  Internally the publications are named `unit:<name>` /
+`stream:<name>`, the folder of a view about one of them is `unit_<name>/` /
+`stream_<name>/` (so a unit and a stream cannot share a folder, and a view
+folder cannot collide with a `reportsLayout postProcessing;` report folder
+named like a unit); a view across sources and references is `case/`.  The unit
+of a KPI is published only where its key says it (`Q_reboiler_kW` -> kW); a
+profile column's from its name (`T` -> K, `T_K`, `x_`/`y_` -> "-", `stage`);
+any other number publishes none, and the unit a view declares is then the
+author's statement, said on the console and recorded (`unitPublished false`).
+
+**The change of scale.**  A flowsheet's publications are SI and a paper prints
+wt %, kg/h and MW, so on a steady run a declared unit of the SAME dimensions
+and measure scales the published number (`units::lookupUnit` factors; K to a
+declared degC through `units::fromSI`, as before): a mass fraction drawn in
+`"%"`, kg/s in `"kg/h"`, kW in `"MW_power"`.  The comparison is made in the
+PAPER'S OWN unit and the engine does the arithmetic -- no converted number sits
+in a file.  A props run keeps its words (a V against a mV is still a refusal,
+held by a gate arm).
+
+**Two additions to the grammar, both additive.**  A series of `pairs` (a
+parity of a table against a run: each pair is one measured cell --
+`reference <r>; select { ... }; x <column>;`, exactly one record -- set against
+one model number -- `stream <s>; y <diagnostic>;`), and a rows-table row whose
+`cells` each name their own source (`cells { duty { unitOp splitter; key
+Q_reboiler_kW; } iC4 { reference klemola; select { item isoButane; } key
+top_wt; } }`: the key compositions, the product flows and the duty are numbers
+of different streams, units and records, and a row had ONE source).  All of a
+row's cells are measured or all are computed; the difference of two rows is
+what puts them side by side.
+
+**The witness.**  `column14_klemola_c4_splitter` declares: the parity of the
+measured composition of both products against Choupo's (wt %, log axes, the
+1:1 line; the two anchored keys, the two open minor keys and the rest as three
+series), the rows table (measured | Choupo | difference | relative, the four key
+compositions, the product flows and the boiler duty -- INCLUDING the duty,
+which does not reproduce), and the stage profile (temperature and the two key
+compositions against stage, the feed tray marked).  Every Choupo number is read
+from the run; every measured number is
+`constant/reference/klemola1996_table2.csv`, in the paper's wt %, kg/h and MW,
+read from Table 2 of the PDF.  The GUI draws them FIRST in the Plots workspace
+(a "Case views" group, the landing after a run that carries them; a "Views"
+door first in the run strip), with `ViewFigure`, each with its note.
+
+**What a run still cannot publish.**  A unit publishes ONE `UnitProfile`, so
+two named tables per unit (the spiral-wound module's march along its elements
+and the solved pore at each station) need `UnitOperation::publishedTables()`;
+no unit publishes DEFAULT views (a case declares its own); an outer driver's
+sweep is a further producer (its points table is the sweep CSV).  A unit or
+stream name is resolved after the run (the flowsheet is only flattened then),
+so a typo costs the solve before it is refused, listing the names that exist;
+the grammar and the reference files are held before.
 
 ## 8. The witnesses
 
@@ -300,8 +366,9 @@ the isotherm, with nothing declared.
 
 ## 9. What is NOT done, said plainly
 
-* choupoSolve, choupoBatch, choupoCtrl, choupoSemiContinuous publish no views
-  (section 7).
+* choupoBatch, choupoCtrl and choupoSemiContinuous publish no views;
+  choupoSolve publishes the views a case DECLARES in its postDict (section 7),
+  never defaults, and never under an `outerDict`.
 * Defaults exist for the three op families above; every other props op
   publishes none yet, and the review screen shows its verdict row and its
   own panel in the Audit.
@@ -324,6 +391,8 @@ the isotherm, with nothing declared.
 
 ## 10. Gate
 
+Since C271 the same gate holds a STEADY witness too: arm (h), below.
+
 `bin/curate/check_postprocessing.py`, on three witnesses: (a) the reference
 files are their sources' export; (b) every view — each op's defaults, then the
 declared ones — is produced, the sidecar equals the block, the index equals
@@ -344,3 +413,15 @@ and four on the first cut's engine:
 * S4  one cell of `constant/reference/nanofiltran_stiff.csv` hand-edited →
   (a), and (c) did NOT (it recomputes from the file as it stands) — which is
   why (a) exists.
+
+**(h) A steady case's declared views (C271).**  On
+`tutorials/steady/distillation/column14_klemola_c4_splitter` (run with
+choupoSolve in a copy): the declared views are written in declaration order,
+each with its CSV and sidecar, the sidecar equal to the block's entry, the index
+equal to the files; every measured number of the parity and of the table's
+`measured` row equals the reference file's cell; every Choupo number equals the
+run's (the mass fraction of the product stream, from the result's composition
+and molar masses, in %; the product flows in kg/h; the boiler duty in MW); and
+four refusals fire by name, an unknown stream and an unknown unit operation
+(each listing the names that exist), an unknown diagnostic, and an unknown
+reference column (before the solve).

@@ -1,0 +1,177 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column14_klemola_c4_splitter -- the VIEWS the run is read through (C271).
+
+  This postDict runs no pass (no sizing, no costing): it declares how the
+  run is DRAWN against the measured plant.  The same `references ( ... )` and
+  `views ( ... )` a props case declares (docs/design/a-post-processing-
+  dictionary.md), over what a steady run publishes -- every stream (T, P, flows
+  and, per component, x_, w_ and m_) and every unit (its KPIs and its profile),
+  named `stream <name>;` and `unitOp <name>;`.  The engine resolves every
+  name, scales every unit (a mass fraction drawn in wt %, kg/s in kg/h, kW in
+  MW), computes every difference and writes the numbers to postProcessing/
+  and to the result; the GUI draws them first in the results and computes
+  nothing.  Nothing below types a model number: every Choupo value is read
+  from the run, every measured one from constant/reference/klemola1996_table2.csv
+  (Table 2 of Klemola & Ilme 1996, in the paper's own wt %, kg/h and MW).
+
+  The three views, in the order the results show them:
+    parity    the measured composition of both products against Choupo's
+    table     the key compositions, the product flows and the boiler duty,
+              measured | Choupo | difference -- including the duty, which
+              this model does NOT reproduce
+    profile   the stage profile the run predicts (the paper prints none)
+\*---------------------------------------------------------------------------*/
+
+references
+(
+    {
+        name      klemola;
+        file      "constant/reference/klemola1996_table2.csv";
+        role      experiment;
+        citation  "K. T. Klemola, J. K. Ilme, Distillation Efficiencies of an Industrial-Scale i-Butane/n-Butane Fractionator, Ind. Eng. Chem. Res. 35 (1996) 4579-4586, Table 2 (measured plant data), doi:10.1021/ie960390r";
+        units     { feed_wt "%"; top_wt "%"; bottoms_wt "%"; flow_kgph "kg/h"; duty_MW "MW_power"; }
+    }
+);
+
+views
+(
+    //  1. THE PARITY -- every component the paper prints above zero, both products
+    {
+        name    parity_products;
+        type    parity;
+        title   "Product compositions: Choupo against the measured plant (Klemola and Ilme, Table 2)";
+        xAxis   { label "measured mass fraction (Table 2)"; unit "%"; scale log; min 0.05; max 150; }
+        yAxis   { label "Choupo mass fraction"; unit "%"; scale log; min 0.05; max 150; }
+        note    "One point per component Table 2 prints above zero, in the paper's own wt %, on log axes (the values span 0.1 to 98 wt %); the 1:1 line is a perfect prediction. The two ANCHORED keys (i-butane in the distillate, n-butane in the bottoms) sit on the line. The two minor keys (n-butane in the distillate, i-butane in the bottoms) miss, in OPPOSITE senses - the rectifying section too clean, the stripping section not clean enough - so the tray efficiency does not explain them; and Table 2 fails its own key-component balance by about 1 %, so a target printed to one decimal cannot be held tighter on the small components. Two points, where Choupo's value is orders of magnitude below the measured one (propane in the bottoms, trans-2-butene in the distillate), lie below the axis range and are not drawn; they are in the CSV and in the figure's data. The paper prints no measured tray profile: the parity is an endpoint comparison.";
+        series
+        (
+            {
+                name    anchoredKeys;
+                label   "anchored keys (i-butane top, n-butane bottoms)";
+                style   markers;
+                pairs
+                (
+                    { reference klemola; select { item isoButane; } x top_wt;     stream distillate; y w_isoButane; }
+                    { reference klemola; select { item nButane; }   x bottoms_wt; stream bottoms;    y w_nButane; }
+                );
+            }
+            {
+                name    minorKeys;
+                label   "minor keys, open (n-butane top, i-butane bottoms)";
+                style   markers;
+                pairs
+                (
+                    { reference klemola; select { item nButane; }   x top_wt;     stream distillate; y w_nButane; }
+                    { reference klemola; select { item isoButane; } x bottoms_wt; stream bottoms;    y w_isoButane; }
+                );
+            }
+            {
+                name    otherComponents;
+                label   "other components";
+                style   markers;
+                pairs
+                (
+                    { reference klemola; select { item propane; }      x top_wt;     stream distillate; y w_propane; }
+                    { reference klemola; select { item 1Butene; }      x top_wt;     stream distillate; y w_1Butene; }
+                    { reference klemola; select { item trans2Butene; } x top_wt;     stream distillate; y w_trans2Butene; }
+                    { reference klemola; select { item propane; }      x bottoms_wt; stream bottoms;    y w_propane; }
+                    { reference klemola; select { item 1Butene; }      x bottoms_wt; stream bottoms;    y w_1Butene; }
+                    { reference klemola; select { item trans2Butene; } x bottoms_wt; stream bottoms;    y w_trans2Butene; }
+                    { reference klemola; select { item neopentane; }   x bottoms_wt; stream bottoms;    y w_neopentane; }
+                    { reference klemola; select { item isopentane; }   x bottoms_wt; stream bottoms;    y w_isopentane; }
+                    { reference klemola; select { item nPentane; }     x bottoms_wt; stream bottoms;    y w_nPentane; }
+                );
+            }
+        );
+    }
+
+    //  2. THE TABLE -- what is measured, what Choupo gives, and what does not reproduce
+    {
+        name    table_measured_vs_choupo;
+        type    table;
+        title   "Klemola and Ilme, Table 2: measured plant against Choupo";
+        note    "The four key compositions (wt %), the two product flows (kg/h) and the boiler duty (MW), measured and computed, with the difference and the relative difference. The distillate and bottoms rates are SPECIFICATIONS of the run (the distillate rate is an input, the bottoms follow from the balance), so they agree by construction. The boiler duty does NOT reproduce: constant molar overflow solves no stage energy balance and the plant's reflux is subcooled (18.5 C), so the model's reboiler is the lighter one. The two minor keys miss by tens of per cent in opposite senses, against a table that fails its own key balance by about 1 %.";
+        columns
+        (
+            { name iC4_top;    label "i-butane in the distillate (wt)"; unit "%"; }
+            { name nC4_top;    label "n-butane in the distillate (wt)"; unit "%"; }
+            { name iC4_bot;    label "i-butane in the bottoms (wt)";    unit "%"; }
+            { name nC4_bot;    label "n-butane in the bottoms (wt)";    unit "%"; }
+            { name D_flow;     label "distillate flow";                 unit "kg/h"; }
+            { name B_flow;     label "bottoms flow";                    unit "kg/h"; }
+            { name reboilerMW; label "boiler duty";                  unit "MW_power"; }
+        );
+        rows
+        (
+            {
+                name    measured;
+                label   "Table 2 (measured)";
+                cells
+                {
+                    iC4_top    { reference klemola; select { item isoButane; }  key top_wt; }
+                    nC4_top    { reference klemola; select { item nButane; }    key top_wt; }
+                    iC4_bot    { reference klemola; select { item isoButane; }  key bottoms_wt; }
+                    nC4_bot    { reference klemola; select { item nButane; }    key bottoms_wt; }
+                    D_flow     { reference klemola; select { item distillate; } key flow_kgph; }
+                    B_flow     { reference klemola; select { item bottoms; }    key flow_kgph; }
+                    reboilerMW { reference klemola; select { item boiler; }     key duty_MW; }
+                }
+            }
+            {
+                name    choupo;
+                label   "Choupo";
+                cells
+                {
+                    iC4_top    { stream distillate; key w_isoButane; }
+                    nC4_top    { stream distillate; key w_nButane; }
+                    iC4_bot    { stream bottoms;    key w_isoButane; }
+                    nC4_bot    { stream bottoms;    key w_nButane; }
+                    D_flow     { stream distillate; key F_mass; }
+                    B_flow     { stream bottoms;    key F_mass; }
+                    reboilerMW { unitOp splitter;   key Q_reboiler_kW; }
+                }
+            }
+            { name diff; label "Choupo - Table 2";        difference ( choupo measured ); relative no; }
+            { name rel;  label "relative to Table 2";     difference ( choupo measured ); relative yes; }
+        );
+    }
+
+    //  3. THE STAGE PROFILE -- what the model predicts inside; the paper measures none
+    {
+        name    profile_temperature;
+        type    profile;
+        title   "Predicted temperature profile";
+        xAxis   { label "stage (1 = top tray, 75 = reboiler)"; unit "-"; scale linear; }
+        yAxis   { label "temperature"; unit "degC"; scale linear; }
+        note    "What the model PREDICTS inside the column; the paper prints NO measured tray temperature or composition profile (its figures are efficiency profiles back-calculated from the products), so there is nothing to set this against. One pressure, the measured top pressure, is declared for every stage, so the stripping section is modelled at a lower pressure than the plant runs at and its temperatures read low. The marker is the feed tray.";
+        series
+        (
+            { name temperature; label "Choupo"; unitOp splitter; table profile; x stage; y T; style lines; }
+            { name feedTray;    label "feed tray (stage 37, as flowsheetDict)"; unitOp splitter; table profile; select { stage 37; } x stage; y T; style markers; }
+        );
+    }
+
+    {
+        name    profile_composition;
+        type    profile;
+        title   "Predicted liquid composition profile: the two key components";
+        xAxis   { label "stage (1 = top tray, 75 = reboiler)"; unit "-"; scale linear; }
+        yAxis   { label "liquid mole fraction"; unit "-"; scale log; }
+        note    "The liquid mole fractions of the two key components stage by stage, on a log axis, as the model predicts them; the paper prints no measured tray composition profile, so nothing here is compared with a measurement (the parity and the table are). The marker is the feed tray."
+        ;
+        series
+        (
+            { name iC4;      label "i-butane";                  unitOp splitter; table profile; x stage; y x_isoButane; style lines; }
+            { name nC4;      label "n-butane";                  unitOp splitter; table profile; x stage; y x_nButane;   style lines; }
+            { name feedTray; label "feed tray (stage 37)";      unitOp splitter; table profile; select { stage 37; } x stage; y x_isoButane; style markers; }
+        );
+    }
+);

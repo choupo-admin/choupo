@@ -1,0 +1,28 @@
+# Table 2 ("Performance Data (Product Flow Rates Adjusted)") of K. T. Klemola and J. K. Ilme,
+#   "Distillation Efficiencies of an Industrial-Scale i-Butane/n-Butane Fractionator",
+#   Ind. Eng. Chem. Res. 35 (1996) 4579-4586, doi:10.1021/ie960390r, p. 4580: the MEASURED
+#   plant data, read from the paper itself.  One row per printed row of the table; the
+#   paper's own units and rounding, nothing converted or normalised.
+#   item        the paper's row: a component (named as this case's thermoPhysPropDict names it),
+#               a stream's flow rate, or the boiler
+#   feed_wt, top_wt, bottoms_wt   composition, wt % (the paper's three columns; top = the distillate)
+#   flow_kgph   flow rate, kg/h (feed, bottoms, distillate, reflux)
+#   duty_MW     boiler duty, MW (printed as 10.240)
+#   an empty cell is a number the table does not print for that row.
+# LICENCE: the paper's numbers here are FACTS, cited above (numbers, never the paper's text or
+#   tables as a figure); the paper is the publisher's copyright and is not in the tree.
+item,feed_wt,top_wt,bottoms_wt,flow_kgph,duty_MW
+propane,1.5,5.3,0.3,,
+isoButane,29.4,93.5,0.3,,
+nButane,67.7,0.2,98.1,,
+1Butene,0.2,0.4,0.1,,
+isoButene,0.2,0,0,,
+trans2Butene,0.1,0.6,0.1,,
+neopentane,0.1,0,0.2,,
+isopentane,0.8,0,1.1,,
+nPentane,0.1,0,0.1,,
+feed,,,,26234,
+distillate,,,,8115,
+bottoms,,,,18119,
+reflux,,,,92838,
+boiler,,,,,10.240

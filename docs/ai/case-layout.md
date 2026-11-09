@@ -549,7 +549,11 @@ and `optimization` on the representative pass (the replay at the answer),
 `sweep` per converged point, `gridSweep` not at all (2026-09-26; before that
 a `designSpec` case silently ran no chain under a header that said it did).
 Each TOP-LEVEL key names a pass type and its
-sub-dict is that pass's configuration; the passes run in order after
+sub-dict is that pass's configuration -- EXCEPT `references` and `views`,
+which are not passes: they declare the case's own figures and tables, the
+grammar a props case declares in its propsDict, over the run's units and
+streams (`unitOp <name>;`, `stream <name>;`; C271, dict-syntax.md, "The same
+views in a steady case").  The passes run in order after
 convergence and augment the result (they never change the solution):
 
 ```

@@ -114,7 +114,15 @@ public:
     //  Parse the propsDict's `references` and `views`.  `declaredOps` are its
     //  operation names, in order: a view's op must be one of them.  Throws a
     //  refusal naming what is wrong.
-    Reader(const DictPtr& propsDict, const std::vector<std::string>& declaredOps);
+    //
+    //  A FLOWSHEET RUN (C271, `flowsheetRun` true): the same two lists are read
+    //  from `system/postDict` (`dictName` "postDict"), the sources are the
+    //  run's UNITS (`unitOp <name>;`) and STREAMS (`stream <name>;`) -- two
+    //  namespaces -- whose names exist only once the flowsheet is flattened,
+    //  so they are held to the run at evaluate(); and a declared unit of the
+    //  same dimensions SCALES a published number (a fraction drawn in %).
+    Reader(const DictPtr& propsDict, const std::vector<std::string>& declaredOps,
+           const std::string& dictName = "propsDict", bool flowsheetRun = false);
     ~Reader();
 
     //  Add each operation's default views, resolve every view against the
