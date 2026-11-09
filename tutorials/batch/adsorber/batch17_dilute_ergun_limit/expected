@@ -7,7 +7,7 @@ kpi     campaign               element_O_closure_rel 5.32078747864e-13 1e-4
 kpi     campaign               element_worst_closure_rel 5.33338602831e-13 1e-4
 kpi     campaign               energy_balance_available 0                1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
-kpi     campaign               energy_records_valid 2                1e-4
+kpi     campaign               energy_records_valid 3                1e-4
 kpi     campaign               mass_closure_rel 2.65824582384e-13 1e-4
 kpi     campaign               mass_kg_external_out 0.161636709221   1e-4
 kpi     campaign               mass_kg_final    0.000558961907879 1e-4
@@ -85,3 +85,7 @@ kpi     campaign               moles_kmol_amend_out 0                1e-4
 ledger  (external_boundary)->legacy material.carrierMakeUp.dn.He 5.61354300056e-06 1e-4
 ledger  (external_boundary)->legacy material.carrierMakeUp.H_kJ 0                1e-4
 ledger  (external_boundary)->legacy material.carrierMakeUp.valid valid            exact
+kpi     campaign               energy_kJ_stream_isothermalDuty -8.68734919065e-07 1e-4
+kpi     ergun                  E_isothermalDuty_seg1_kJ -8.68734919065e-07 1e-4
+kpi     ergun                  E_isothermalDuty_total_kJ -8.68734919065e-07 1e-4
+ledger  ergun                  energy.isothermalDuty.valid valid            exact

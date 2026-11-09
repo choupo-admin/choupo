@@ -295,7 +295,7 @@ This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the 
 \goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{106.12034902}
 \goldrow{kpi}{bed}{gasInventory\_mol}{0.0806360746763}
 \goldrow{kpi}{bed}{n\_He\_final}{8.06360746763e-05}
-\goldmore{26}
+\goldmore{34}
 \end{tutgolden}
 
 \clearpage
@@ -314,7 +314,7 @@ This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the 
 \goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{5.33338602831e-13}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{0}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
-\goldrow{kpi}{campaign}{energy\_records\_valid}{2}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{3}
 \goldrow{kpi}{campaign}{mass\_closure\_rel}{2.65824582384e-13}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0.161636709221}
 \goldrow{kpi}{campaign}{mass\_kg\_final}{0.000558961907879}
@@ -322,7 +322,7 @@ This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the 
 \goldrow{kpi}{campaign}{mass\_residual\_kg}{4.31155965422e-14}
 \goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0.0403339312462}
 \goldrow{kpi}{campaign}{moles\_kmol\_final}{2.73636608673e-05}
-\goldmore{70}
+\goldmore{74}
 \end{tutgolden}
 
 \clearpage
@@ -348,7 +348,7 @@ This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the 
 \goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{92.4181379529}
 \goldrow{kpi}{bed}{integral\_anchor\_CO2}{3028.46636949}
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{1.84877618489e-14}
-\goldmore{44}
+\goldmore{48}
 \end{tutgolden}
 
 \clearpage
@@ -598,7 +598,7 @@ The gate (check\_pswing) recomputes both analytically and pins the `gasInventory
 \goldrow{kpi}{bed}{gasInventory\_mol}{0.0403395454642}
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{0}
 \goldrow{kpi}{bed}{n\_CO2\_final}{0}
-\goldmore{37}
+\goldmore{45}
 \end{tutgolden}
 
 \clearpage
@@ -656,7 +656,7 @@ The THERMAL half of a blowdown, isolated from adsorption so the only heat effect
 
 same inert pure-He ergun bed as witness A (batch24), but `energyBalance adiabatic;` -- the section-9 general energy row (cv accumulation + the explicit eps R T dc\_tot/dt source) is live; at t = 200 s the recipe closes the feed valve (P2) and halves the outlet boundary (P1) -- the bed drains, dc\_tot/dt < 0, and the expansion source pulls T DOWN; the solid heat capacity is a declared SYNTHETIC LOW value (9.2 J/(kg K), scope says so): the real \textasciitilde{}920 of a zeolite pellet would thermally bury the gas-phase cooling under the solid's mass (dT \textasciitilde{} -0.03 K); at the teaching value the drop is visible (\textasciitilde{} -3 K class). Same honest-teaching-value discipline as the hxFluid of the pinch witness -- the physics on display is the GAS's, and the header says which knob made it visible.
 
-THE ANCHOR: T\_min\_final\_K sits BELOW the declared 298.15 K by a visible margin -- a depressurising cell COOLS, which is exactly what the pre-widening cp-form could not show (the sabotage of the gate restores that form and this witness fails). The material anchors stay witness A's business; this case pins the sign and visibility of the thermal effect, and the campaign energy claim stays closed.
+THE ANCHOR: T\_min\_final\_K sits BELOW the declared 298.15 K by a visible margin -- a depressurising cell COOLS, which is exactly what the pre-widening cp-form could not show (the sabotage of the gate restores that form and this witness fails). The material anchors stay witness A's business; this case pins the sign and visibility of the thermal effect. Its campaign ENERGY claim is REFUSED by name (UNAVAILABLE): the bed's energy equation is carried in non-conservative form and does not close the rigid-vessel first law through a compressible blowdown (7.9 \% of the energy moved, at any step size), and a closure that is not one is never shown.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -674,7 +674,7 @@ THE ANCHOR: T\_min\_final\_K sits BELOW the declared 298.15 K by a visible margi
 \goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{-0.00030635814619}
 \goldrow{kpi}{bed}{gasInventory\_mol}{0.0407808219207}
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{0}
-\goldmore{38}
+\goldmore{33}
 \end{tutgolden}
 
 \subsection{combustion}

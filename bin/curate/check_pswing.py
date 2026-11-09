@@ -12,8 +12,10 @@ section-9 expansion-work widening; ratified battery, second-opinion review
   WITNESS B    batch25_blowdown_thermal (inert, ADIABATIC, declared LOW
                cp_s): the bed must COOL -- T_min_final well below the
                declared 298.15 K -- and the campaign energy residual must
-               stay at integration order (the rigid-vessel U-basis: the
-               old enthalpy basis mis-booked exactly V dP = 0.100 kJ).
+               be REFUSED by name (C258; it used to be claimed at integration
+               order on the rigid-vessel U-basis, but that closure is 7.9 %
+               of the energy moved -- the energy equation is not conservative
+               through a blowdown).
                Sabotage (verified at build time): restoring the cp
                accumulation / dropping the expansion source leaves the bed
                warm and THIS probe fails by value.
@@ -93,10 +95,16 @@ def main() -> int:
         if tmin is None or tmin > T0 - 2.5:
             failures.append(f"B: T_min_final {tmin} K -- the blowdown must"
                             f" COOL well below {T0} (the cp-form cannot)")
-        eres = kpi(out, "energy_residual_kJ")
-        if eres is None or abs(eres) > 1.0e-3:
-            failures.append(f"B: energy residual {eres} kJ above integration"
-                            " order (the rigid-vessel U-basis must close)")
+        #  C258: the adiabatic blowdown's energy equation (non-conservative
+        #  form) does not close the rigid-vessel first law -- 7.9 % of the
+        #  energy moved, at any step -- so the engine REFUSES the claim by
+        #  name instead of showing a closure that is not one.
+        if kpi(out, "energy_balance_available") != 0:
+            failures.append("B: the campaign energy claim must be REFUSED"
+                            " (energy_balance_available 0) through a"
+                            " compressible blowdown")
+        if "non-conservative form" not in out:
+            failures.append("B: the energy refusal does not name its cause")
 
     # ---- REFUSALS ---------------------------------------------------------
     with tempfile.TemporaryDirectory() as td:
@@ -136,7 +144,7 @@ def main() -> int:
             print("  -", f)
         return 1
     print("check_pswing: OK -- inventory ratio 0.5 analytic (A), blowdown"
-          " cooling shown with the energy residual at integration order (B),"
+          " cooling shown with its energy claim refused by name (B),"
           " throttle/negative-P/feed-P refuse by name")
     return 0
 

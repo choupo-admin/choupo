@@ -278,6 +278,10 @@ private:
     std::size_t N_ = 0;      // nCells (declared -- no silent default)
     scalar dz_   = 0.0;      // L/N [m]
     scalar cTot_ = 0.0;      // P/(R T) [mol/m3], constant by declaration
+    //  C258: a thermal bed that took a feed-valve or outlet-pressure event has
+    //  run a compressible transient its energy equation does not conserve
+    //  (energyLedgerGap refuses the claim, naming that).
+    bool   pressureTransient_ = false;
     bool   ergun_ = false;    // A4: all species integrated, P derived, u algebraic
     //  A5-T1: adiabatic one-temperature energy balance (ergun mode ONLY --
     //  the A3 closure pins c_tot by declaration and a temperature field

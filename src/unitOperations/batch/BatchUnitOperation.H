@@ -182,17 +182,6 @@ public:
     // and ADDS it -- the campaign mass balance must never miss a phase.
     virtual sVector materialInventory() const { return state().n; }
 
-    //  Declared model-error residual (forum #119): kmol per COMPONENT that
-    //  the unit's DECLARED closure fabricates (+) or destroys (-) by
-    //  construction -- e.g. the fixed bed's constant-(u, P, T) carrier
-    //  roll-up.  The campaign balance NEVER discounts this from the
-    //  reported numbers; it uses it only as an independent CROSS-CHECK so
-    //  the verdict can distinguish "unexplained leak" (FAIL) from "the
-    //  declared, quantified model error, matching its own prediction"
-    //  (reported LOUD, non-fatal).  Default: none.
-    virtual std::map<std::string, scalar> declaredMaterialResidual() const
-    { return {}; }
-
     // ENERGY ledger records (forum #98.3/#99/#101): the vessel's exchanged-
     // energy history, one EXACT-integral record per segment of constant
     // physics.  Called ONCE by choupoBatch at campaign end (tEnd closes the

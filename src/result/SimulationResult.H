@@ -338,6 +338,12 @@ struct SimulationResult
         // cooling), so the tier pick is always feasible over the whole
         // record.  -1 = unknown (the utility pass skips it, NAMED).
         scalar      T_service_K = -1.0;
+        //  true: a NAMED HEAT STREAM (C258) -- heat a modelling assumption
+        //  implies (the duty that holds a bed isothermal), booked as its own
+        //  record so the first law closes and the stream is the explanation.
+        //  The campaign publishes its total as `energy_kJ_stream_<kind>`;
+        //  `basis` is the engine's own sentence the screen draws.
+        bool        named = false;
     };
     std::vector<EnergyRecord>                                      energyLedger;
 

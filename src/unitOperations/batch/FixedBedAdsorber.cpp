@@ -1901,7 +1901,46 @@ FixedBedAdsorber::energyRecords(scalar tEnd)
                      " n_ads = rho_b*A*Sum_cells(q_i*dz) (exact state"
                      " difference); dH_ads isosteric, from the adsorbent's"
                      " own isotherm records (the van't Hoff datum)";
-    return { er };
+    std::vector<SimulationResult::EnergyRecord> recs{ er };
+
+    //  THE ISOTHERMAL DUTY (C258, 2026-11-09).  `energyBalance` absent holds
+    //  T_ at its declared value, which is a wall duty nobody paid: when the
+    //  gas holdup changes (a pressure profile building, a blowdown) the
+    //  isothermal bed must be heated or cooled by exactly R T (-dn_gas),
+    //  because its internal energy is n (h - R T) at fixed volume and the gas
+    //  that leaves carries h.  Booked as a NAMED HEAT STREAM so the first law
+    //  closes and the stream is the explanation -- heat is a stream, not a
+    //  label.  Derived from the two gas holdups alone (never from the
+    //  closure residual).  Ergun only: the constant-(u, P, T) closure refuses
+    //  the energy claim by name already (energyLedgerGap).
+    if (ergun_)
+    {
+        scalar hold0 = 0.0, holdF = 0.0;                  // mol/m3 -> kmol
+        for (std::size_t i = 0; i < compNames_.size(); ++i)
+        {
+            hold0 += c0All_[i];
+            for (std::size_t j = 0; j < N_; ++j)
+                holdF += std::max(y_[i * N_ + j], scalar(0.0)) / scalar(N_);
+        }
+        const scalar nGas0 = eps_ * A_ * L_ * hold0 / 1000.0;
+        const scalar nGasF = eps_ * A_ * L_ * holdF / 1000.0;
+        SimulationResult::EnergyRecord id;
+        id.tStart      = startTime_;
+        id.tEnd        = tEnd;
+        id.unit        = name_;
+        id.kind        = "isothermalDuty";
+        id.T_service_K = T_;
+        id.E_kJ        = -constant::R * T_ * (nGasF - nGas0);   // kJ, added
+        id.E_valid     = true;
+        id.named       = true;
+        id.basis       = "heat implied by the isothermal assumption: the bed"
+                         " is held at its declared T, so its walls must"
+                         " supply Q = -R T (n_gas,final - n_gas,initial) --"
+                         " the gas holdup's internal energy is n (h - R T)"
+                         " at fixed volume and the gas that leaves carries h";
+        recs.push_back(id);
+    }
+    return recs;
 }
 
 scalar FixedBedAdsorber::vesselEnthalpy(bool& ok, std::string& why) const
@@ -2033,6 +2072,15 @@ std::string FixedBedAdsorber::energyLedgerGap() const
     //  the same reason vesselEnthalpy refuses there: the fabricated carrier
     //  makes the physical energy balance wrong by construction, and a
     //  verdict on it would be decorative.
+    if (ergun_ && thermal_ && pressureTransient_)
+        return "adiabatic bed through a feed-valve / outlet-pressure"
+               " transient: the energy equation is carried in its"
+               " non-conservative form (cv T accumulation + eps R T dc/dt"
+               " source, upwind advection of T), which does not conserve the"
+               " rigid-vessel internal energy through a compressible"
+               " blowdown -- measured 7.9 % of the energy moved on"
+               " batch25_blowdown_thermal at any step size, so the claim is"
+               " REFUSED rather than shown as closed";
     if (ergun_) return "";
     return "constant-(u,P,T) closure: fabricated carrier (the"
            " carrierMakeUp stream books its matter, not its enthalpy) makes the physical energy balance"
@@ -2175,6 +2223,7 @@ void FixedBedAdsorber::setOperationParameter(const std::string& key,
                          " FROZEN for every integrated species.\n";
         return;
     }
+    if ((key == "u" || key == "P_out") && thermal_) pressureTransient_ = true;
     if (key == "u")
     {
         //  P2 -- the FEED-VALVE CLOSURE (design note section 8).  In ergun
