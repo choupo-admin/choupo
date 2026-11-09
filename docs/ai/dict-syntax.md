@@ -1066,3 +1066,25 @@ paper's tables and figures), `polarisation01_geraldes_afonso_table1`,
 `tutorials/props/adsorption/isotherm02_fit_jaschik` (the fit defaults);
 gate `check_postprocessing`; record
 `docs/design/a-post-processing-dictionary.md`.
+
+### The same views in a STEADY case (choupoSolve, C271)
+
+A steady case declares the SAME two lists at the top level of
+`system/postDict` (a postDict holding only them runs no pass).  The sources
+are the run's UNITS and STREAMS, two namespaces, so a view names which:
+`unitOp <name>;` (its KPIs as diagnostics; its profile as the table
+`profile`; a KPI key spelt `<name>_<unit>`, e.g. `Q_reboiler_kW`, publishes
+that unit) or `stream <name>;` (`T`, `P`, `F`, `F_mass`, `vf` and, per
+component, `x_<c>` mole fraction, `w_<c>` mass fraction, `m_<c>` mass flow),
+wherever a props view says `op <name>;`.  A declared unit of the same
+dimensions SCALES a published one (a fraction drawn in `"%"`, kg/s in
+`"kg/h"`, kW in `"MW_power"`, K in `"degC"`): the engine converts, never the
+author.  Two forms are new: a series of `pairs` (the parity of a table
+against a run -- each pair a measured cell, `reference <r>; select { ... };
+x <column>;`, set against a model number, `stream <s>; y <diagnostic>;`) and a
+rows-table row whose `cells` each name their own source (`cells { duty {
+unitOp splitter; key Q_reboiler_kW; } iC4 { reference klemola; select { item
+isoButane; } key top_wt; } }`).  Views are parsed before the solve; unit and
+stream names are held to the run after it (a refusal lists what exists).
+An axis may declare a drawing range (`yAxis { unit "%"; scale log; min 0.05; max 150; }`); the CSV keeps every point. Not under an `outerDict`.  Witness: `tutorials/steady/distillation/
+column14_klemola_c4_splitter` (the measured plant, drawn against the run).

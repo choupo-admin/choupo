@@ -443,7 +443,7 @@ students' approved files are the ground truth: **do not regenerate the case.**
   turbine keys ......... src/unitOperations/rotating/Turbine.cpp:78-86 (as read by the pressure-pack general)
   tearStreams .......... src/unitOperations/flowsheet/Flowsheet.cpp:339
   ports in/inputs/outputs src/unitOperations/flowsheet/Flowsheet.cpp:832,1075
-  -init0 ............... src/applications/choupoSolve/main.cpp:155,208,535
+  -init0 ............... src/applications/choupoSolve/main.cpp:156,209,536
   material forms ....... src/streams/StreamStateIO.cpp:1052-1086
   two-variable rule .... docs/ai/stream-state.md §2; gate check_overspecified_stream
   heater takes Q only .. src/unitOperations/heatTransfer/Heater.cpp:70-79
@@ -457,5 +457,5 @@ students' approved files are the ground truth: **do not regenerate the case.**
                          replace or add into rawFiles/extraFiles, parse-validated dicts, no delete);
                          gui/src/ui/ClipboardBridge.tsx:80-93 (changed files applied, then Complete 0/ hint)
   §10 ORPHAN / MISSING . src/unitOperations/flowsheet/Flowsheet.cpp:2403-2432,2464 (0/ completeness refusal)
-  §10 init0 no overwrite src/applications/choupoSolve/main.cpp:536-537; gui/src/case/completeZero.ts:20-28
+  §10 init0 no overwrite src/applications/choupoSolve/main.cpp:537-538; gui/src/case/completeZero.ts:20-28
 -->

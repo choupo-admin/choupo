@@ -55,6 +55,8 @@ export interface RunSummary {
   /** The plant-boundary first law the engine published, or null. */
   energy: { residualKW: number; pct: number | null } | null;
   advisories: number;
+  /** How many views the CASE declared (system/postDict, C271) the run drew. */
+  declaredViews: number;
   modelBoundaries: { total: number; refused: number };
   products: StreamResult[];
 }
@@ -99,6 +101,7 @@ export function runSummary(r: RunResult): RunSummary {
     mass,
     energy,
     advisories: r.advisories?.length ?? 0,
+    declaredViews: (r.postProcessing?.items ?? []).filter((i) => i.origin === "declared").length,
     modelBoundaries: { total: mb.length, refused: mb.filter((b) => b.refused).length },
     products: r.streams.filter((s) => s.role === "product" && !s.utilityCircuit
       && !s.category && !s.observed),

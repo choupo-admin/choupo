@@ -89,6 +89,8 @@ import { TxyPlot } from "./plotting/TxyPlot.js";
 import { CsvAutoPlot, dropPointColumn } from "./plotting/CsvAutoPlot.js";
 import { GanttPlot } from "./plotting/GanttPlot.js";
 import { hasCampaignSequence } from "../case/campaignLedger.js";
+import { DeclaredViews } from "./DeclaredViews.js";
+import { declaredViewsOf } from "../case/postProcessing.js";
 import {
   declaredMemberNames, unitPlotTree, unitSelection, UNIT_PLOT_LABEL,
   type UnitNode, type UnitPlotKey,
@@ -104,6 +106,7 @@ import {
 } from "./panelContract.js";
 
 type PlotKey =
+  | "views"
   | "trajectory"
   | "gantt"
   | "campaignBalance"
@@ -239,7 +242,19 @@ export function PlotsWorkspace() {
     //  figure to offer -- and the row stays DIMMED with the hint rather than
     //  vanishing, because "the report did not run" is a fact about this run.
     const hasEnergyLedger = result?.globalEnergyBoundary !== undefined;
+    //  THE CASE'S OWN VIEWS (C271): the figures and tables the case declares in
+    //  system/postDict, drawn from what the engine wrote.  First in the tree --
+    //  the case's own question before the generic plots -- and absent entirely
+    //  where the case declares none, so no other case's navigator moves.
+    const hasViews = declaredViewsOf(result?.postProcessing).length > 0;
     return [
+      ...(hasViews ? [{
+        label: "Case views",
+        items: [
+          { key: "views" as const, label: "Declared views", available: true,
+            hint: "The figures and tables this case declares in system/postDict (references and views), drawn from what the engine wrote: the measured data beside the run, each with the case's own note on how to read it." },
+        ],
+      }] : []),
       {
         label: "Balance",
         items: [
@@ -327,6 +342,8 @@ export function PlotsWorkspace() {
       setView("scanCsv");
       return;
     }
+    //  A case that declares views lands on them (C271): its own question first.
+    if (declaredViewsOf(result.postProcessing).length > 0) { setView("views"); return; }
     // GLOBAL balances are the landing surface for a batch / ctrl run --
     // the trajectory stays one click away (Vitor 2026-07-19: the balances
     // were real but hidden behind the trajectory).
@@ -488,6 +505,7 @@ export function PlotsWorkspace() {
 
   const activePlot = (() => {
     switch (view) {
+      case "views":       return <Box style={{ height: "100%", overflow: "auto" }}><DeclaredViews result={result} /></Box>;
       case "trajectory":  return result.trajectory  ? <TrajectoryPlot data={result.trajectory} /> : null;
       //  DRAWN FROM WHATEVER THE RUN PUBLISHED.  A case with an energy
       //  ledger and no recipe has no timeline, and its lanes come from the

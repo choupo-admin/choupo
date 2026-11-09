@@ -58,9 +58,57 @@ namespace {
 
 const scalar NaN = std::numeric_limits<scalar>::quiet_NaN();
 
+//  WHICH DICTIONARY THE VIEWS ARE READ FROM, for the refusal's first words:
+//  a props run reads them from system/propsDict, a steady run from
+//  system/postDict (C271).  Set by Reader's constructor and by evaluate().
+std::string g_dictName = "system/propsDict";
+//  A FLOWSHEET RUN'S VIEWS ARE DRAWN IN THE UNIT THE AUTHOR DECLARES (C271):
+//  a stream publishes SI (K, Pa, kg/s, a fraction) and a paper prints wt %,
+//  kg/h and MW, so a declared unit of the SAME dimensions scales the number
+//  (units::lookupUnit's factors, one change of scale, never a model).  A
+//  props run keeps its words: every op there publishes in the unit its
+//  author reads, and a V against a mV is a refusal a gate arm holds.
+bool g_scaleUnits = false;
+
 [[noreturn]] void refuse(const std::string& where, const std::string& what)
 {
-    throw std::runtime_error("system/propsDict views, " + where + ": " + what);
+    throw std::runtime_error(g_dictName + " views, " + where + ": " + what);
+}
+
+//  THE SOURCE OF A SERIES, ROW OR VIEW: `op <name>;` (a props operation),
+//  `unitOp <name>;` or `stream <name>;` (a flowsheet run's units and
+//  streams: two namespaces, a unit and a stream may share a name).  The key
+//  the reader works with carries the namespace: `unit:<name>`,
+//  `stream:<name>`, a bare op name.
+int sourceWords(const DictPtr& d)
+{
+    return (d->found("op") ? 1 : 0) + (d->found("unitOp") ? 1 : 0)
+         + (d->found("stream") ? 1 : 0);
+}
+
+std::string sourceKey(const DictPtr& d)
+{
+    if (d->found("unitOp")) return "unit:" + d->lookupWord("unitOp");
+    if (d->found("stream")) return "stream:" + d->lookupWord("stream");
+    return d->lookupWord("op");
+}
+
+//  A source key in words: "unit operation 'splitter'", "stream 'feed'".
+std::string sourceText(const std::string& key)
+{
+    if (key.rfind("unit:", 0) == 0)   return "unit operation '" + key.substr(5) + "'";
+    if (key.rfind("stream:", 0) == 0) return "stream '" + key.substr(7) + "'";
+    return "operation '" + key + "'";
+}
+
+//  The folder a source's views are written under: an op's name as ever, a
+//  unit's or stream's with its namespace spelt out (`unit_splitter`), so a
+//  unit and a stream of one name cannot share a folder.
+std::string folderOf(const std::string& key)
+{
+    std::string f = key;
+    for (auto& c : f) if (c == ':') c = '_';
+    return f;
 }
 
 std::string joined(const std::vector<std::string>& v, std::size_t cap = 40)
@@ -242,11 +290,22 @@ Reference readReference(const DictPtr& d, std::size_t k)
 }
 
 // ---------------------------------------------------------------- series
+//  ONE POINT OF A `pairs` SERIES (C271): a measured number set against the
+//  model's -- x a cell of ONE reference record, y a diagnostic of one
+//  op / unit / stream.  The parity of a paper's table against a run is the
+//  only series that needs a number from each side at once.
+struct Pair
+{
+    std::string label, ref, xCol, src, yKey;
+    std::vector<Match> select;
+};
+
 struct Series
 {
     std::string name, label, role, style, group, source;
-    //  kind: op-table | ops | reference | difference
+    //  kind: op-table | ops | reference | difference | pairs
     std::string kind;
+    std::vector<Pair> pairs;
     std::string op, table, ref;
     std::vector<std::string> ops;
     std::string xKey, yKey, eKey;
@@ -277,15 +336,48 @@ Series readSeries(const DictPtr& d, const std::string& at)
         && s.style != "linesMarkers")
         refuse(where, "`style " + s.style + ";` -- Accepted: lines, markers, linesMarkers");
     if (d->found("unit")) s.declaredUnit = d->lookupWord("unit");
-    int n = 0;
-    if (d->found("op"))         { ++n; s.kind = "op-table"; }
+    int n = sourceWords(d);
+    if (n > 0)                  { s.kind = "op-table"; }
     if (d->found("ops"))        { ++n; s.kind = "ops"; }
-    if (d->found("reference"))  { ++n; s.kind = "reference"; }
+    if (d->found("reference") && !d->found("pairs")) { ++n; s.kind = "reference"; }
     if (d->found("difference")) { ++n; s.kind = "difference"; }
+    if (d->found("pairs"))      { ++n; s.kind = "pairs"; }
     if (n != 1)
-        refuse(where, "a series names exactly ONE source -- `op <op>; table <t>;`,"
-               " `ops ( ... );`, `reference <ref>;` or `difference ( <a> <b> );` --"
+        refuse(where, "a series names exactly ONE source -- `op <op>; table <t>;` (or"
+               " `unitOp <name>;` / `stream <name>;` on a flowsheet run), `ops ( ... );`,"
+               " `reference <ref>;`, `pairs ( ... );` or `difference ( <a> <b> );` --"
                " and this one names " + std::to_string(n));
+    if (s.kind == "pairs")
+    {
+        const auto pl = d->lookupDictList("pairs");
+        if (pl.empty()) refuse(where, "`pairs ( );` is empty");
+        for (std::size_t k = 0; k < pl.size(); ++k)
+        {
+            const std::string pw = where + ", pairs[" + std::to_string(k) + "]";
+            const DictPtr& e = pl[k];
+            Pair pr;
+            if (!e->found("reference") || !e->found("x") || !e->found("y")
+                || sourceWords(e) != 1)
+                refuse(pw, "a pair names `reference <ref>; select { ... }; x <column>;` (the"
+                       " measured number: ONE record of the reference), ONE of `op <op>;` /"
+                       " `unitOp <name>;` / `stream <name>;` and `y <diagnostic>;` (the"
+                       " model's)");
+            pr.ref = e->lookupWord("reference");
+            pr.select = readSelect(e, pw);
+            if (pr.select.empty())
+                refuse(pw, "a pair declares `select { ... }`, which must keep exactly one"
+                       " record of the reference");
+            pr.xCol = e->lookupWord("x");
+            pr.src = sourceKey(e);
+            pr.yKey = e->lookupWord("y");
+            pr.label = e->found("label") ? e->lookupWord("label") : pr.yKey;
+            s.pairs.push_back(std::move(pr));
+        }
+        s.role = "computed";
+        if (s.style.empty()) s.style = "markers";
+        s.xKey = "measured"; s.yKey = "computed";
+        return s;
+    }
     if (s.kind == "difference")
     {
         const auto ab = d->lookupWordList("difference");
@@ -305,9 +397,9 @@ Series readSeries(const DictPtr& d, const std::string& at)
     if (d->found("yError")) s.eKey = d->lookupWord("yError");
     if (s.kind == "op-table")
     {
-        s.op = d->lookupWord("op");
+        s.op = sourceKey(d);
         if (!d->found("table"))
-            refuse(where, "`op " + s.op + ";` names one operation: say which of its published"
+            refuse(where, sourceText(s.op) + " is one source: say which of its published"
                    " tables (`table <name>;`), or give `ops ( ... );` to plot a diagnostic"
                    " across operations");
         s.table = d->lookupWord("table");
@@ -328,18 +420,26 @@ Series readSeries(const DictPtr& d, const std::string& at)
     return s;
 }
 
-struct Axis { std::string label, unit, scale; };
+//  `min` / `max` (C271): an optional drawing range, in the axis's unit.  A parity
+//  of a table against a run on log axes may hold a model value many decades from
+//  the measured one; the range keeps the rest legible, the CSV keeps every point.
+struct Axis { std::string label, unit, scale; scalar lo = NaN, hi = NaN; };
 
 //  An axis may be omitted, or name only its label: its unit is then the one
 //  the drawn series PUBLISH (and they must agree), its label their column.
 Axis readAxis(const DictPtr& d, const std::string& key, const std::string& where,
               bool needScale)
 {
-    Axis ax{ "", "", "linear" };
+    Axis ax{ "", "", "linear", NaN, NaN };
     if (!d->found(key)) return ax;
     const DictPtr a = d->subDict(key);
     ax.label = a->lookupWordOrDefault("label", "");
     ax.unit  = a->lookupWordOrDefault("unit", "");
+    if (a->found("min")) ax.lo = a->lookupScalar("min");
+    if (a->found("max")) ax.hi = a->lookupScalar("max");
+    if (std::isfinite(ax.lo) && std::isfinite(ax.hi) && !(ax.lo < ax.hi))
+        refuse(where, "`" + key + " { min " + jsonNumber(ax.lo) + "; max " + jsonNumber(ax.hi)
+               + "; }` -- min is below max");
     if (needScale)
     {
         ax.scale = a->lookupWordOrDefault("scale", "linear");
@@ -350,9 +450,21 @@ Axis readAxis(const DictPtr& d, const std::string& key, const std::string& where
 }
 
 // ---------------------------------------------------------------- rows tables
+//  A CELL THAT NAMES ITS OWN SOURCE (C271): `cells { duty { unitOp splitter;
+//  key Q_reboiler_kW; } iC4 { reference klemola; select { item isoButane; };
+//  key top_wt; } }` -- a row of numbers that come from different streams,
+//  units or records of a reference (a paper's key compositions, flows and
+//  duty set against the run's, beside each other).
+struct CellSrc
+{
+    std::string column, key, src, ref;
+    std::vector<Match> select;
+};
+
 struct Row
 {
-    std::string name, label, role, kind, source;   // kind: op | reference | difference
+    std::string name, label, role, kind, source;   // kind: op | reference | cells | difference
+    std::vector<CellSrc> blocks;                   // kind cells
     std::string unit;                              // a row's own unit (a parameter table)
     std::string op, ref;
     std::vector<Match> select;
@@ -399,6 +511,9 @@ struct Study
 
 struct Reader::Impl
 {
+    bool namesKnown = true;                 // false: a flowsheet run (names resolved at evaluate)
+    std::string dictName;
+    bool scaleUnits = false;
     std::vector<std::string> declaredOps;
     std::vector<Reference> refs;
     std::vector<Item> items;
@@ -414,6 +529,9 @@ struct Reader::Impl
 
     void checkOp(const std::string& op, const std::string& where) const
     {
+        //  A FLOWSHEET RUN'S units and streams exist only once the flowsheet is
+        //  flattened, so its names are held to the run at evaluate() (pubNamed).
+        if (!namesKnown) return;
         if (std::find(declaredOps.begin(), declaredOps.end(), op) == declaredOps.end())
             refuse(where, "operation '" + op + "' is not an operation of this case's"
                    " propsDict.  Operations: " + joined(declaredOps));
@@ -450,6 +568,14 @@ void Reader::Impl::checkSeries(Series& s, const std::string& where,
 {
     if (s.kind == "op-table") checkOp(s.op, where);
     else if (s.kind == "ops") for (const auto& o : s.ops) checkOp(o, where);
+    else if (s.kind == "pairs")
+    {
+        for (const auto& pr : s.pairs)
+        {
+            checkOp(pr.src, where);
+            checkRefColumns(refNamed(pr.ref, where), { pr.xCol }, pr.select, where);
+        }
+    }
     else if (s.kind == "reference")
     {
         const Reference& r = refNamed(s.ref, where);
@@ -495,14 +621,14 @@ static std::vector<Series> shorthandSeries(const DictPtr& v, const std::string& 
         s.name = y; s.label = y; s.xKey = x; s.yKey = y; s.role = "computed";
         s.style = v->lookupWordOrDefault("style", "");
         if (v->found("ops")) { s.kind = "ops"; s.ops = v->lookupWordList("ops"); }
-        else if (v->found("op") && v->found("table"))
+        else if (sourceWords(v) == 1 && v->found("table"))
         {
-            s.kind = "op-table"; s.op = v->lookupWord("op"); s.table = v->lookupWord("table");
+            s.kind = "op-table"; s.op = sourceKey(v); s.table = v->lookupWord("table");
             s.select = readSelect(v, where);
         }
         else
-            refuse(where, "`y ( ... );` reads from `op <op>; table <t>;` or `ops ( ... );`"
-                   " -- name the source");
+            refuse(where, "`y ( ... );` reads from `op <op>; table <t>;` (a flowsheet run:"
+                   " `unitOp <name>;` / `stream <name>;`) or `ops ( ... );` -- name the source");
         out.push_back(std::move(s));
     }
     return out;
@@ -528,6 +654,7 @@ static Item settledHome(Item it)
     {
         if (s.kind == "op-table") take(s.op);
         else if (s.kind == "ops" && s.ops.size() == 1) take(s.ops.front());
+        else if (s.kind == "pairs") single = false;
         else if (s.kind == "difference") continue;     // over series already counted
         else single = false;
     }
@@ -563,9 +690,11 @@ Item Reader::Impl::parseView(const DictPtr& v, const std::string& at,
     //  THE HOME of a view is the operation it is about (its folder,
     //  postProcessing/<op>/); a view drawing several operations names none and
     //  lands in postProcessing/case/.
-    it.home = v->found("op") ? v->lookupWord("op") : home;
+    if (sourceWords(v) > 1)
+        refuse(where, "a view's home is ONE of `op`, `unitOp`, `stream`");
+    it.home = sourceWords(v) == 1 ? sourceKey(v) : home;
     if (!it.home.empty()) checkOp(it.home, where);
-    where = "view '" + (it.home.empty() ? std::string("case") : it.home) + "/" + it.name + "'";
+    where = "view '" + (it.home.empty() ? std::string("case") : folderOf(it.home)) + "/" + it.name + "'";
     it.title = v->found("title") ? v->lookupWord("title") : std::string();
     if (v->found("note"))
     {
@@ -618,7 +747,7 @@ Item Reader::Impl::parseView(const DictPtr& v, const std::string& at,
         {
             std::string ys;
             for (const auto& s : it.series) ys += (ys.empty() ? "" : ", ") + s.yKey;
-            it.title = (it.home.empty() ? std::string() : it.home + ": ") + ys
+            it.title = (it.home.empty() ? std::string() : folderOf(it.home) + ": ") + ys
                      + " against " + it.series.front().xKey;
         }
         return settledHome(std::move(it));
@@ -693,12 +822,24 @@ Item Reader::Impl::parseView(const DictPtr& v, const std::string& at,
             if (o.name == row.name) refuse(rw, "a second row named '" + row.name + "'");
         row.label = r->found("label") ? r->lookupWord("label") : row.name;
         if (r->found("unit")) row.unit = r->lookupWord("unit");
-        int n = 0;
-        if (r->found("op"))         { ++n; row.kind = "op"; }
+        bool blockCells = false;
+        if (r->found("cells"))
+        {
+            const DictPtr cs0 = r->subDict("cells");
+            for (const auto& c : cs0->keys())
+                if (std::holds_alternative<DictPtr>(cs0->entryValue(c))) blockCells = true;
+        }
+        int n = sourceWords(r);
+        if (n > 0)                  { row.kind = "op"; }
+        if (blockCells && n == 0)   { n = 1; row.kind = "cells"; }
+        else if (blockCells)
+            refuse(rw, "a row whose `cells` each name their own source names no `op`, `unitOp`,"
+                   " `stream` or `reference` of its own");
         if (r->found("reference"))  { ++n; row.kind = "reference"; }
         if (r->found("difference")) { ++n; row.kind = "difference"; }
         if (n != 1)
-            refuse(rw, "a row names exactly ONE source -- `op <op>;`, `reference"
+            refuse(rw, "a row names exactly ONE source -- `op <op>;` (a flowsheet run:"
+                   " `unitOp <name>;` / `stream <name>;`), `reference"
                    " <ref>;` or `difference ( <a> <b> );` -- and this one names "
                    + std::to_string(n));
         if (row.kind == "difference")
@@ -740,11 +881,55 @@ Item Reader::Impl::parseView(const DictPtr& v, const std::string& at,
                     refuse(rw, "`cells { " + c + " ...; }` -- the table has no column '"
                            + c + "'.  Columns: " + joined(names));
                 }
+                if (row.kind == "cells")
+                {
+                    if (!std::holds_alternative<DictPtr>(cs->entryValue(c)))
+                        refuse(rw, "`cells { " + c + " ...; }` -- in a row whose cells name"
+                               " their own source every cell is a block: `{ stream <name>; key"
+                               " <diagnostic>; }`, `{ unitOp <name>; key <diagnostic>; }` or `{"
+                               " reference <ref>; select { ... }; key <column>; }`");
+                    const DictPtr b = cs->subDict(c);
+                    CellSrc cell;
+                    cell.column = c;
+                    if (!b->found("key"))
+                        refuse(rw, "cell '" + c + "' declares `key <name>;` -- the published"
+                               " number (a diagnostic, or the reference's column)");
+                    cell.key = b->lookupWord("key");
+                    if (b->found("reference"))
+                    {
+                        if (sourceWords(b) != 0)
+                            refuse(rw, "cell '" + c + "' names ONE source");
+                        cell.ref = b->lookupWord("reference");
+                        cell.select = readSelect(b, rw);
+                        if (cell.select.empty())
+                            refuse(rw, "cell '" + c + "' declares `select { ... }`, which must"
+                                   " keep exactly one record of the reference");
+                        checkRefColumns(refNamed(cell.ref, rw), { cell.key }, cell.select, rw);
+                    }
+                    else
+                    {
+                        if (sourceWords(b) != 1)
+                            refuse(rw, "cell '" + c + "' names ONE of `op`, `unitOp`, `stream`"
+                                   " or `reference`");
+                        cell.src = sourceKey(b);
+                        checkOp(cell.src, rw);
+                    }
+                    if (!row.blocks.empty() && row.blocks.front().ref.empty() != cell.ref.empty())
+                        refuse(rw, "a row's cells are all measured (a reference) or all computed:"
+                               " put the two in two rows and take their difference");
+                    row.blocks.push_back(std::move(cell));
+                    continue;
+                }
                 row.cells.push_back({ c, cs->lookupWord(c) });
             }
-            if (row.kind == "op")
+            if (row.kind == "cells")
             {
-                row.op = r->lookupWord("op");
+                row.role = row.blocks.front().ref.empty() ? "computed"
+                         : refNamed(row.blocks.front().ref, rw).role;
+            }
+            else if (row.kind == "op")
+            {
+                row.op = sourceKey(r);
                 checkOp(row.op, rw);
                 row.role = "computed";
             }
@@ -795,11 +980,17 @@ static const std::vector<std::string>& studyPurposes()
     return p;
 }
 
-Reader::Reader(const DictPtr& propsDict, const std::vector<std::string>& declaredOps)
+Reader::Reader(const DictPtr& propsDict, const std::vector<std::string>& declaredOps,
+               const std::string& dictName, bool flowsheetRun)
     : impl_(std::make_unique<Impl>())
 {
     Impl& I = *impl_;
     I.declaredOps = declaredOps;
+    I.dictName = dictName;
+    I.namesKnown = !flowsheetRun;
+    I.scaleUnits = flowsheetRun;
+    g_dictName = "system/" + dictName;
+    g_scaleUnits = flowsheetRun;
     if (propsDict->found("references"))
     {
         const auto list = propsDict->lookupDictList("references");
@@ -809,7 +1000,7 @@ Reader::Reader(const DictPtr& propsDict, const std::vector<std::string>& declare
             for (const auto& o : I.refs)
                 if (o.name == r.name) refuse("reference '" + r.name + "'", "declared twice");
             I.refs.push_back(std::move(r));
-            refuseUnread(*list[k], "propsDict references[" + std::to_string(k) + "]");
+            refuseUnread(*list[k], dictName + " references[" + std::to_string(k) + "]");
         }
     }
     if (propsDict->found("views"))
@@ -817,12 +1008,12 @@ Reader::Reader(const DictPtr& propsDict, const std::vector<std::string>& declare
         const auto list = propsDict->lookupDictList("views");
         for (std::size_t k = 0; k < list.size(); ++k)
         {
-            const std::string at = "propsDict views[" + std::to_string(k) + "]";
+            const std::string at = dictName + " views[" + std::to_string(k) + "]";
             Item it = I.parseView(list[k], at, "declared", "");
             for (const auto& o : I.items)
                 if (o.home == it.home && o.name == it.name)
                     refuse("view '" + it.name + "'", "a second view named '" + it.name
-                           + "' in postProcessing/" + (it.home.empty() ? "case" : it.home)
+                           + "' in postProcessing/" + (it.home.empty() ? "case" : folderOf(it.home))
                            + "/ -- both would write one file");
             I.items.push_back(std::move(it));
             refuseUnread(*list[k], at);
@@ -892,6 +1083,21 @@ const Publication& pubNamed(const std::vector<Publication>& pubs, const std::str
                             const std::string& where)
 {
     for (const auto& p : pubs) if (p.name == op) return p;
+    //  list what DOES exist, in the namespace the view named (a unit, a stream
+    //  or an operation), so a typo is corrected from the message
+    const std::string prefix = op.rfind("unit:", 0) == 0 ? "unit:"
+                             : op.rfind("stream:", 0) == 0 ? "stream:" : "";
+    std::vector<std::string> names;
+    for (const auto& p : pubs)
+    {
+        const bool inSpace = prefix.empty() ? p.name.find(':') == std::string::npos
+                                            : p.name.rfind(prefix, 0) == 0;
+        if (inSpace) names.push_back(p.name.substr(prefix.size()));
+    }
+    if (!prefix.empty())
+        refuse(where, sourceText(op) + " is not " + (prefix == "unit:" ? "a unit operation" : "a stream")
+               + " of this run.  " + (prefix == "unit:" ? "Unit operations: " : "Streams: ")
+               + joined(names, 80));
     refuse(where, "operation '" + op + "' published nothing in this run");
 }
 
@@ -903,8 +1109,8 @@ scalar diagOf(const Publication& p, const std::string& key, const std::string& w
     {
         std::vector<std::string> keys;
         for (const auto& kv : p.diagnostics) keys.push_back(kv.first);
-        refuse(where, "operation '" + p.name + "' (" + p.type + ") publishes no diagnostic '"
-               + key + "'.  Its diagnostics: " + joined(keys, 60));
+        refuse(where, sourceText(p.name) + " (" + p.type + ") publishes no diagnostic '"
+               + key + "'.  Its diagnostics: " + joined(keys, 80));
     }
     const auto u = p.units.find(key);
     const std::string un = u == p.units.end() ? std::string() : u->second;
@@ -948,7 +1154,7 @@ void resolveSeries(Series& s, const std::vector<Publication>& pubs,
         {
             std::vector<std::string> names;
             for (const auto& t : p.tables) names.push_back(t.name);
-            refuse(where, "operation '" + s.op + "' (" + p.type + ") publishes no table '"
+            refuse(where, sourceText(s.op) + " (" + p.type + ") publishes no table '"
                    + s.table + "'.  Its tables: " + joined(names));
         }
         std::vector<std::string> cols;
@@ -958,8 +1164,8 @@ void resolveSeries(Series& s, const std::vector<Publication>& pubs,
             if (c.empty()) return -1;
             const int i = tab->columnIndex(c);
             if (i < 0)
-                refuse(where, "table '" + s.table + "' of operation '" + s.op
-                       + "' has no column '" + c + "'.  Columns: " + joined(cols));
+                refuse(where, "table '" + s.table + "' of " + sourceText(s.op)
+                       + " has no column '" + c + "'.  Columns: " + joined(cols));
             return i;
         };
         const int xi = col(s.xKey), yi = col(s.yKey), ei = col(s.eKey);
@@ -981,11 +1187,58 @@ void resolveSeries(Series& s, const std::vector<Publication>& pubs,
             s.e.push_back(ei >= 0 ? row[ei] : NaN);
         }
         s.xUnit = tab->columns[xi].unit; s.yUnit = tab->columns[yi].unit;
-        s.source = "operation " + s.op + ", table " + s.table + ": " + s.xKey + ", " + s.yKey
+        //  a column of a unit's profile may publish no unit (its name does not say
+        //  it): the declared unit is then the author's statement
+        s.xPublished = !s.xUnit.empty(); s.yPublished = !s.yUnit.empty();
+        s.source = sourceText(s.op) + ", table " + s.table + ": " + s.xKey + ", " + s.yKey
                  + (s.select.empty() ? "" : " where " + selectText(s.select));
         if (s.x.empty())
-            refuse(where, "no row of table '" + s.table + "' of operation '" + s.op
-                   + "' has " + selectText(s.select));
+            refuse(where, "no row of table '" + s.table + "' of " + sourceText(s.op)
+                   + " has " + selectText(s.select));
+        return;
+    }
+    if (s.kind == "pairs")
+    {
+        bool yp = true;
+        std::string srcs;
+        for (std::size_t k = 0; k < s.pairs.size(); ++k)
+        {
+            const Pair& pr = s.pairs[k];
+            const Reference* r = nullptr;
+            for (const auto& rr : refs) if (rr.name == pr.ref) r = &rr;
+            const std::vector<std::string>* hit = nullptr;
+            int count = 0;
+            for (const auto& line : r->cells)
+            {
+                bool keep = true;
+                for (const auto& m : pr.select)
+                    if (!matches(m, line[static_cast<std::size_t>(r->column(m.column))])) keep = false;
+                if (keep) { ++count; hit = &line; }
+            }
+            if (count != 1)
+                refuse(where, "pairs[" + std::to_string(k) + "]: `select { " + selectText(pr.select)
+                       + " }` keeps " + std::to_string(count) + " record(s) of reference '"
+                       + pr.ref + "' -- a pair is one record");
+            const scalar xv = parseNumber((*hit)[static_cast<std::size_t>(r->column(pr.xCol))]);
+            if (!std::isfinite(xv)) { ++s.dropped; continue; }
+            const Publication& p = pubNamed(pubs, pr.src, where);
+            std::string yu; bool ypub = false;
+            const scalar yv = diagOf(p, pr.yKey, where, &yu, &ypub);
+            const std::string xu = r->units.at(pr.xCol);
+            if (s.x.empty()) { s.xUnit = xu; s.yUnit = yu; }
+            else if (xu != s.xUnit || yu != s.yUnit)
+                refuse(where, "pairs[" + std::to_string(k) + "] is in different units ('" + xu
+                       + "' against '" + yu + "') from the pairs before it ('" + s.xUnit
+                       + "' against '" + s.yUnit + "') -- a series is one unit on each axis");
+            yp = yp && ypub;
+            s.x.push_back(xv); s.y.push_back(yv); s.e.push_back(NaN);
+            if (srcs.find(sourceText(pr.src)) == std::string::npos) srcs += (srcs.empty() ? "" : ", ") + sourceText(pr.src);
+        }
+        if (s.x.empty())
+            refuse(where, "no pair carries a number in its reference column");
+        s.yPublished = yp;
+        s.source = "pairs: measured from reference " + s.pairs.front().ref + " ("
+                 + std::string("one record each") + "), computed from " + srcs;
         return;
     }
     if (s.kind == "reference")
@@ -1049,14 +1302,52 @@ void resolveSeries(Series& s, const std::vector<Publication>& pubs,
 //  through units::fromSI, the one home of showing a kelvin value in an affine
 //  unit, and the series then carries the declared unit; every other pair of
 //  units stays held to the declaration (checkUnit refuses).
+//
+//  A FLOWSHEET RUN scales more than a temperature (C271, g_scaleUnits): a
+//  published unit and a declared one of the SAME dimensions and measure, both
+//  linear, differ by the ratio of their factors -- a fraction drawn in %, kg/s
+//  in kg/h, W in MW_power.  Any other pair stays a refusal (checkUnit).
+bool linearRatio(const std::string& from, const std::string& to, scalar& ratio)
+{
+    const auto a = units::lookupUnit(from), b = units::lookupUnit(to);
+    if (!a || !b || a->affine || b->affine || !(a->dims == b->dims)
+        || std::string(a->measure) != std::string(b->measure) || b->factor == 0.0)
+        return false;
+    ratio = a->factor / b->factor;
+    return true;
+}
+
 void toAffineTemperature(std::vector<scalar>& v, std::string& unit, bool isPublished,
                          const std::string& declared)
 {
-    if (!isPublished || declared.empty() || unit == declared || unit != "K") return;
+    if (!isPublished || declared.empty() || unit == declared) return;
+    if (unit != "K")
+    {
+        scalar ratio = 1.0;
+        if (!g_scaleUnits || !linearRatio(unit, declared, ratio)) return;
+        for (auto& x : v) x *= ratio;
+        unit = declared;
+        return;
+    }
     const auto spec = units::lookupUnit(declared);
-    if (!spec || !spec->affine) return;
+    if (!spec) return;
+    if (!spec->affine)
+    {
+        //  K to a linear temperature unit (a flowsheet run only): none is registered
+        //  beyond K itself, so there is nothing to scale.
+        return;
+    }
     for (auto& x : v) x = units::fromSI(x, declared);
     unit = declared;
+}
+
+//  One number, scaled from the unit it is published in to the unit a table
+//  column declares (rows tables); the unit is unchanged where it cannot scale.
+scalar scaledTo(scalar v, std::string& unit, bool isPublished, const std::string& declared)
+{
+    std::vector<scalar> one{ v };
+    toAffineTemperature(one, unit, isPublished, declared);
+    return one.front();
 }
 
 void checkUnit(const std::string& published, bool isPublished, const std::string& declared,
@@ -1240,8 +1531,10 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                    std::make_move_iterator(defaults.end()));
     std::vector<std::string> written;
     if (I.items.empty()) return std::string();
+    g_dictName = "system/" + I.dictName;
+    g_scaleUnits = I.scaleUnits;
 
-    std::cout << "\n========  Views (the propsDict's `views` + each operation's defaults)  ========\n"
+    std::cout << "\n========  Views (" << I.dictName << "'s `views` + each operation's defaults)  ========\n"
               << "  " << I.items.size() << " view(s) -> " << outputDir() << "/<op>/<view>.csv"
               << " (+ .json: titles, units, series roles and sources)\n";
     if (verbosity >= 2)
@@ -1250,7 +1543,9 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                       << st.ops.size() << " operation(s)): " << st.title << "\n";
 
     std::ostringstream block;
-    block << "{ \"source\": \"system/propsDict views + operation defaults\", \"directory\": "
+    block << "{ \"source\": " << q("system/" + I.dictName + " views"
+                                   + std::string(I.namesKnown ? " + operation defaults" : ""))
+          << ", \"directory\": "
           << q(outputDir()) << ",\n    \"references\": [";
     for (std::size_t k = 0; k < I.refs.size(); ++k)
     {
@@ -1268,10 +1563,9 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
     for (std::size_t n = 0; n < I.items.size(); ++n)
     {
         Item& it = I.items[n];
-        const std::string dir = std::string(outputDir()) + "/"
-                              + (it.home.empty() ? std::string("case") : it.home);
-        const std::string where = "view '" + (it.home.empty() ? std::string("case") : it.home)
-                                + "/" + it.name + "'";
+        const std::string folder = it.home.empty() ? std::string("case") : folderOf(it.home);
+        const std::string dir = std::string(outputDir()) + "/" + folder;
+        const std::string where = "view '" + folder + "/" + it.name + "'";
         const std::string file = dir + "/" + it.name + ".csv";
         //  The `file` this unit READS is a reference's input; what it WRITES
         //  is this CSV and its sidecar, under the case's postProcessing/.  A
@@ -1282,6 +1576,7 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
             fs::create_directories(dir, ec);
             if (ec) refuse(where, "cannot create " + dir + ": " + ec.message());
         }
+        if (!it.home.empty()) pubNamed(pubs, it.home, where);   // the view's own source exists in this run
         std::ostringstream js;
         js << "{ \"name\": " << q(it.name) << ", \"op\": " << q(it.home)
            << ", \"origin\": " << q(it.origin) << ", \"type\": " << q(it.type)
@@ -1365,10 +1660,17 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                 for (std::size_t i = 0; i < s.x.size(); ++i)
                     csv << s.name << "," << cell(s.x[i]) << "," << cell(s.y[i]) << ","
                         << cell(s.e[i]) << "\n";
+            auto rangeJson = [](const Axis& a)
+            {
+                std::string r;
+                if (std::isfinite(a.lo)) r += ", \"min\": " + jsonNumber(a.lo);
+                if (std::isfinite(a.hi)) r += ", \"max\": " + jsonNumber(a.hi);
+                return r;
+            };
             js << ", \"xAxis\": { \"label\": " << q(it.xAxis.label) << ", \"unit\": "
-               << q(it.xAxis.unit) << ", \"scale\": " << q(it.xAxis.scale) << " }"
+               << q(it.xAxis.unit) << ", \"scale\": " << q(it.xAxis.scale) << rangeJson(it.xAxis) << " }"
                << ", \"yAxis\": { \"label\": " << q(it.yAxis.label) << ", \"unit\": "
-               << q(it.yAxis.unit) << ", \"scale\": " << q(it.yAxis.scale) << " }"
+               << q(it.yAxis.unit) << ", \"scale\": " << q(it.yAxis.scale) << rangeJson(it.yAxis) << " }"
                << ", \"series\": [";
             for (std::size_t j = 0; j < it.series.size(); ++j)
             {
@@ -1385,7 +1687,7 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
             }
             js << "] }";
             std::cout << "  " << std::left << std::setw(10) << it.type
-                      << std::setw(40) << ((it.home.empty() ? std::string("case") : it.home) + "/" + it.name)
+                      << std::setw(40) << (folder + "/" + it.name)
                       << std::right << it.series.size() << " series -- " << it.title
                       << (it.origin == "default" ? "  (default)" : "") << "\n";
             if (verbosity >= 3)
@@ -1474,14 +1776,62 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                     for (const auto& [c, key] : row.cells)
                     {
                         std::string u; bool pub = false;
-                        const scalar v = diagOf(p, key, rw, &u, &pub);
+                        scalar v = diagOf(p, key, rw, &u, &pub);
                         const std::size_t k = colIdx(c);
+                        v = scaledTo(v, u, pub, row.unit.empty() ? it.columns[k].unit : row.unit);
                         checkUnit(u, pub, row.unit.empty() ? it.columns[k].unit : row.unit,
                                   "'" + key + "'", rw);
                         if (row.unit.empty() && it.columns[k].unit.empty() && pub) row.unit = u;
                         row.values[k] = v;
                     }
-                    row.source = "operation " + row.op;
+                    row.source = sourceText(row.op);
+                }
+                else if (row.kind == "cells")
+                {
+                    std::string srcs;
+                    for (const auto& cell : row.blocks)
+                    {
+                        const std::size_t k = colIdx(cell.column);
+                        const std::string decl = row.unit.empty() ? it.columns[k].unit : row.unit;
+                        if (!cell.ref.empty())
+                        {
+                            const Reference* r = nullptr;
+                            for (const auto& rr : I.refs) if (rr.name == cell.ref) r = &rr;
+                            const std::vector<std::string>* hit = nullptr;
+                            int count = 0;
+                            for (const auto& line : r->cells)
+                            {
+                                bool keep = true;
+                                for (const auto& m : cell.select)
+                                    if (!matches(m, line[static_cast<std::size_t>(r->column(m.column))])) keep = false;
+                                if (keep) { ++count; hit = &line; }
+                            }
+                            if (count != 1)
+                                refuse(rw, "cell '" + cell.column + "': `select { " + selectText(cell.select)
+                                       + " }` keeps " + std::to_string(count) + " record(s) of"
+                                       " reference '" + cell.ref + "' -- a cell is one record");
+                            std::string ru = r->units.at(cell.key);
+                            const scalar rv = scaledTo(
+                                parseNumber((*hit)[static_cast<std::size_t>(r->column(cell.key))]),
+                                ru, true, decl);
+                            checkUnit(ru, true, decl, "'" + cell.key + "'", rw);
+                            row.values[k] = rv;
+                            if (srcs.find(cell.ref) == std::string::npos)
+                                srcs += (srcs.empty() ? "" : ", ") + std::string("reference ") + cell.ref;
+                        }
+                        else
+                        {
+                            const Publication& p = pubNamed(pubs, cell.src, rw);
+                            std::string u; bool pub = false;
+                            scalar v = diagOf(p, cell.key, rw, &u, &pub);
+                            v = scaledTo(v, u, pub, decl);
+                            checkUnit(u, pub, decl, "'" + cell.key + "'", rw);
+                            row.values[k] = v;
+                            if (srcs.find(sourceText(cell.src)) == std::string::npos)
+                                srcs += (srcs.empty() ? "" : ", ") + sourceText(cell.src);
+                        }
+                    }
+                    row.source = srcs;
                 }
                 else if (row.kind == "reference")
                 {
@@ -1503,10 +1853,12 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                     for (const auto& [c, col] : row.cells)
                     {
                         const std::size_t k = colIdx(c);
-                        checkUnit(r->units.at(col), true,
-                                  row.unit.empty() ? it.columns[k].unit : row.unit,
+                        std::string ru = r->units.at(col);
+                        const scalar rv = scaledTo(parseNumber((*hit)[r->column(col)]), ru, true,
+                                                   row.unit.empty() ? it.columns[k].unit : row.unit);
+                        checkUnit(ru, true, row.unit.empty() ? it.columns[k].unit : row.unit,
                                   "'" + col + "'", rw);
-                        row.values[k] = parseNumber((*hit)[r->column(col)]);
+                        row.values[k] = rv;
                     }
                     row.source = "reference " + row.ref + " where " + selectText(row.select);
                 }

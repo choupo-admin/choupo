@@ -506,6 +506,11 @@ struct SimulationResult
     //  empty unless the postDict declares `batchPlan {}`
     //  (`postProcessing/BatchPlanPass`).
     BatchPlanRecord                                               batchPlan;
+    //  THE DECLARED VIEWS of this run (C271): the JSON object views::Reader
+    //  returns for a steady case whose `system/postDict` carries `views`;
+    //  emitted as the result's top-level `postProcessing` block, empty (and
+    //  not emitted) for every other case.
+    std::string                                                   postProcessingBlock;
     bool                                                           converged = true;
 
     //  ---- Provenance seal, tri-state (forum 2026-08-02) -----------------
