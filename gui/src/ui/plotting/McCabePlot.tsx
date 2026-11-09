@@ -235,8 +235,9 @@ export function McCabePlot(
         Fenske/Underwood closed forms in <code>shortcutColumn</code> are the matching shortcut anchors for
         N_min / R_min.
         {eff < 0.999 && (
-          <> {" "}With Murphree efficiency E_MV = {eff.toFixed(2)} the staircase steps to the dashed
-          pseudo-curve, so N is the count of ACTUAL trays; the overall column efficiency is the
+          <> {" "}With Murphree efficiency E_MV = {eff.toFixed(2)} the tray steps go to the dashed
+          pseudo-curve, so N counts ACTUAL trays (the partial reboiler, an equilibrium stage, still
+          steps to the true curve); the overall column efficiency is the
           famous O'Connell correlation E_o ≈ 0.49·(α·μ_L)^−0.245 (~0.5 typical).</>
         )}
       </Text>

@@ -57,7 +57,7 @@ import {
   bodeOverrides, bodeSweepGrid, combine, controllerResponse, dB,
   deadTimeResponse, firstOrderLagResponse, gainResponse, integratorResponse,
   loopWindow, margins, openLoopResponse, parallelGains, processResponse,
-  readMeasuredPoint, toDeg,
+  readMeasuredPoint, startsBeyondMinus180, toDeg,
   type LoopSpec,
 } from "../src/ui/methods/bodeMath.js";
 import { applyScalarOverride, methodCase } from "../src/case/methodRun.js";
@@ -288,6 +288,28 @@ describe("the open loop and its two margins", () => {
     const r = processResponse(p, w);
     expect(r.mag).toBeCloseTo(byHand.mag, 12);
     expect(r.phaseRad).toBeCloseTo(byHand.phaseRad, 12);
+  });
+
+  //  C259 audit F5.  The page's defaults (K 2, tau 240 s, theta 30 s, PI with
+  //  Kc 1.5 and tau_I 240 s) with "+ integrator": tau_I = tau cancels the lag,
+  //  L = 3 e^(-30 s)/(240 s^2), so w_c = sqrt(3/240) and the "phase margin"
+  //  is -(30 w_c) rad = -192.2 deg.  The page used to say this loop could not
+  //  be made unstable; it now detects the start beyond -180 deg.
+  it("detects an open loop that starts beyond -180 deg, and only that one", () => {
+    const def: LoopSpec = {
+      process: { K: 2, tauS: 240, thetaS: 30, integrating: true },
+      controller: { mode: "PI", Kc: 1.5, tauIS: 240, tauDS: 0 } };
+    const { wLo, wHi } = loopWindow(def);
+    expect(startsBeyondMinus180(def, wLo)).toBe(true);
+    const m = margins(def, wLo, wHi);
+    expect(m.phaseMarginDeg).toBeCloseTo(-toDeg(30 * Math.sqrt(3 / 240)), 3);
+    expect(m.phaseMarginDeg).toBeLessThan(-180);
+    //  tau_I above tau + theta lifts the low-frequency phase above -180 deg.
+    const slow = { ...def, controller: { ...def.controller, tauIS: 600 } };
+    expect(startsBeyondMinus180(slow, loopWindow(slow).wLo)).toBe(false);
+    //  and the self-regulating default never starts there.
+    const self = { ...def, process: { ...def.process, integrating: false } };
+    expect(startsBeyondMinus180(self, loopWindow(self).wLo)).toBe(false);
   });
 });
 

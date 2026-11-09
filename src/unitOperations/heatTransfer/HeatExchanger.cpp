@@ -1002,12 +1002,12 @@ int HeatExchanger::solve(const DictPtr& dict,
     //  The inversion above prices the outlet STATE on the package's enthalpy,
     //  so an outlet that crossed saturation is a consistent state and the
     //  closure gap below reads ~0.  That makes the crossing INVISIBLE: Q came
-    //  from the eps-NTU on a sensible c_p of the INLET phase, so it is not the
-    //  duty of a condenser or an evaporator -- the latent heat never entered
-    //  the transfer model -- and the log-mean of the terminal temperatures is
-    //  no driving force across a phase change.  Announced once per exchanger
-    //  (the hxHgap posture: legitimate teaching model, approximation owned by
-    //  the student), naming the side, its two phases and the duty.
+    //  from the eps-NTU on a sensible c_p of the INLET phase, with no latent
+    //  term, so it is not the duty of a condenser or an evaporator, and U.A.LMTD
+    //  on these terminal temperatures checks nothing.  (For an isothermal phase
+    //  change the log-mean itself is exact; this unit's model just carries no
+    //  latent term.)  Announced once per exchanger (the hxHgap posture: teaching
+    //  model, approximation owned by the student), naming side, phases, duty.
     bool phaseChanged = false;
     {
         auto phaseOf = [](scalar vf) -> int
@@ -1034,13 +1034,13 @@ int HeatExchanger::solve(const DictPtr& dict,
             phaseChanged = true;
             std::ostringstream m;
             m << "a side changed phase: " << sides << ".  The duty Q = "
-              << Q / 1000.0 << " kW is the SENSIBLE eps-NTU's (each side's c_p"
-                 " of its inlet phase); the outlet states are priced on the"
-                 " enthalpy, but the DUTY is not that of a condenser or an"
-                 " evaporator -- the latent heat never entered the transfer"
-                 " model -- and U.A.LMTD is no check across a phase change."
-                 "  Keep both sides single-phase, or model the phase change"
-                 " with a unit that carries it (phaseChanger, evaporator)";
+              << Q / 1000.0 << " kW is the SENSIBLE eps-NTU's (inlet-phase c_p,"
+                 " no latent term), so it is not a condenser's or an"
+                 " evaporator's duty, and U.A.LMTD on these terminal"
+                 " temperatures checks nothing (the log-mean itself is exact"
+                 " for an isothermal phase change; this unit's model carries no"
+                 " latent term).  Keep both sides single-phase, or model the"
+                 " phase change with a unit that carries it (phaseChanger, evaporator)";
             if (AdvisoryLog::instance().addAnnouncedOnce(
                     "hxPhase:" + s0.name + "+" + s1.name,
                     "validity", "warning",
@@ -1200,12 +1200,12 @@ int HeatExchanger::solve(const DictPtr& dict,
         //  WHAT THE CHECK IS A CHECK OF (C150 R14).  Q = U.A.LMTD holds as
         //  written only for ONE tube pass with both sides single-phase.  With
         //  2N tube passes Q = U.A.F.LMTD, F < 1, so the product exceeds Q by
-        //  construction and the F the two numbers imply is printed; across a
-        //  phase change the line is no check at all (announced above).
+        //  construction and the F the two numbers imply is printed; when a side
+        //  changed phase in THIS unit the line is no check (announced above).
         if (phaseChanged)
-            std::cout << "  (U.A.LMTD is NOT a check here: a side changed"
-                         " phase, so the terminal log-mean is not the driving"
-                         " force)\n";
+            std::cout << "  (U.A.LMTD is NOT a check here: the duty is the"
+                         " sensible model's, with no latent term, and these"
+                         " terminal temperatures do not belong to it)\n";
         else if (tubePasses > 1 && U * A * LMTD > 0.0)
             std::cout << "  (" << tubePasses << " tube passes: Q = U.A.F.LMTD,"
                          " so the product above exceeds Q; implied F = Q /"

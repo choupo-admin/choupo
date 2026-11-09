@@ -316,7 +316,7 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
         unit: "kmol/m³" },
       { sym: "R", means: "the rejection, HELD CONSTANT -- the assumption "
         + "every line here spends" },
-      { sym: "N", means: "the diavolumes of step 3" },
+      { sym: "N", means: "the diavolumes of the wash, counted in vessel volumes of the retentate AS IT IS during the wash: V_0 for a wash of the initial charge (step 3's clock), V_0/VCF after a concentration -- the volume dN = Q_p dt / V divides by" },
       { sym: "\\mathrm{d}N",
         means: "an element of the wash clock, Q_p dt / V" },
       { sym: "\\mathrm{VCF}",
@@ -452,8 +452,9 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
         + "touched" },
     ],
     note: "TWO LAWS, NOT FOUR, AND THE BLOCK REQUIRES A REASON.  `standard` "
-      + "and `complete` describe changes in pore-INTERNAL geometry that one "
-      + "lumped permeance cannot represent honestly, so they are REFUSED BY "
+      + "(pore walls narrowing inside the membrane) and `complete` (pores "
+      + "sealed at their entrances, each particle closing one) are not "
+      + "implemented, so they are REFUSED BY "
       + "NAME rather than approximated by a neighbour that would fit the data "
       + "and mean something else (BatchDiafilter.cpp:161-182).  And because a "
       + "blocking law asserts a MECHANISM -- cake says a layer was deposited, "
@@ -535,7 +536,12 @@ V &\propto \frac{1}{c} \text{ at fixed inventory} &\Rightarrow\quad& t_\mathrm{D
       + "real limit is a constraint at that end (a minimum working volume, "
       + "a stability ceiling), which the curve cannot tell apart.  Nothing "
       + "here borrows "
-      + "a constant from a model that is not running.",
+      + "a constant from a model that is not running.  And the curve is a "
+      + "CONCENTRATION run's: every solute concentrates together, the "
+      + "permeating salts included, and their osmotic pressure lowers the "
+      + "flux.  During a wash those salts drain away, so the wash flux at the "
+      + "same retained concentration is higher, and the maximum can move -- "
+      + "even in this one solution, before any second buffer.",
   },
   {
     n: 8,
@@ -690,7 +696,7 @@ G_\mathrm{max} = \dfrac{\ln\!\left( 1 - \mathrm{loss}_\mathrm{goal} \right)}{R -
         + "the product loss can see" },
       { sym: "\\mathrm{VCF}",
         means: "the volume concentration factor of step 3" },
-      { sym: "N", means: "the diavolumes of step 3" },
+      { sym: "N", means: "the diavolumes of the wash, counted in vessel volumes of the retentate AS IT IS during the wash: V_0 for a wash of the initial charge (step 3's clock), V_0/VCF after a concentration -- the volume dN = Q_p dt / V divides by" },
       { sym: "R", means: "the retention of the product, HELD CONSTANT "
         + "through the whole process -- the same assumption step 4 spends, "
         + "and step 5 is about why it is not true" },

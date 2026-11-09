@@ -224,4 +224,20 @@ describe("mccabeThiele — Murphree tray efficiency", () => {
     const n50 = buildMccabe(curve, defaultSpec({ efficiency: 0.5 })).nStages;
     expect(n50).toBeGreaterThanOrEqual(n70);
   });
+  // C259 audit F3: the Murphree efficiency is a TRAY property.  The partial
+  // reboiler (the last step) and a partial condenser (the first) are
+  // equilibrium stages and step to the TRUE curve; the trays between them
+  // step to the pseudo-curve.  The walk used to send every step, the
+  // reboiler included, to the pseudo-curve.
+  it("the reboiler and a partial condenser step to the TRUE curve; the trays do not", () => {
+    const real = buildMccabe(curve, defaultSpec({ efficiency: 0.6 }));
+    const s = real.staircase;
+    const last = s[s.length - 1]!;                        // the reboiler's corner
+    expect(last.y).toBeCloseTo(yStar(curve, last.x), 6);
+    const tray = s[1]!;                                   // first tray (total condenser)
+    expect(tray.y).toBeLessThan(yStar(curve, tray.x) - 1e-3);
+    const partial = buildMccabe(curve, defaultSpec({ efficiency: 0.6, totalCondenser: false }));
+    const cond = partial.staircase[1]!;                   // the partial condenser's corner
+    expect(cond.y).toBeCloseTo(yStar(curve, cond.x), 6);
+  });
 });

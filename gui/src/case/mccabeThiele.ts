@@ -358,9 +358,10 @@ export function buildMccabe(curve: EqCurve, spec: MccabeSpec): MccabeResult {
   // active op-line at a given x: ROL right of the feed abscissa, SOL left.
   const activeLine = (x: number): Line => (x >= feedInt.x - 1e-9 ? rol : sol);
 
-  // Murphree tray efficiency: walk the staircase on a pseudo-equilibrium curve
+  // Murphree tray efficiency: walk the TRAYS on a pseudo-equilibrium curve
   // pulled toward the active operating line (E_MV < 1 → more, shorter steps, so
-  // the count is ACTUAL trays).  Limits (rMin, nMin, azeotrope) stay on the real
+  // the count is ACTUAL trays; a partial condenser and a partial reboiler stay
+  // equilibrium stages and step to the true curve in the walk below).  Limits (rMin, nMin, azeotrope) stay on the real
   // curve — they are ideal-stage references.
   const E = Math.min(1, Math.max(0.05, spec.efficiency ?? 1));
   const eqWalk = E >= 0.999 ? curve : pseudoEqCurve(curve, E, activeLine);
@@ -382,7 +383,18 @@ export function buildMccabe(curve: EqCurve, spec: MccabeSpec): MccabeResult {
     let xPrev = xD;
 
     while (x > xW + 1e-6 && nStages < STEP_CAP) {
-      const xEq = xForY(eqWalk, y);            // horizontal step to the (pseudo-)curve
+      // A partial condenser (the first step) and a partial reboiler (the step
+      // that reaches x_W) are EQUILIBRIUM stages, E = 1: the Murphree
+      // efficiency belongs to the trays.  So those steps go to the TRUE curve
+      // and only the trays walk the pseudo-curve.  A step is the reboiler's
+      // when an equilibrium step from here reaches x_W.  (C259 audit F3: the
+      // walk used to step every corner, the reboiler included, to the
+      // pseudo-curve, and over-counted by a fraction of a step.)
+      const xTrue = xForY(curve, y);
+      const equilibriumStep =
+        (nStages === 0 && !totalCondenser)
+        || (partialReboiler && xTrue <= xW + 1e-6);
+      const xEq = equilibriumStep ? xTrue : xForY(eqWalk, y);  // horizontal step to the (pseudo-)curve
       staircase.push({ x: xEq, y });
       xPrev = x;
       x = xEq;
