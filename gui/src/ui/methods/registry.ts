@@ -76,7 +76,7 @@ export type MethodToolId =
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
   | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
-  | "site-process-price" | "campaign-plan";
+  | "site-process-price" | "campaign-plan" | "stack-dispersion";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1602,6 +1602,35 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "the acetic-acid plant's layout declares -- a consequence for one "
       + "scenario, not a risk and not a certified siting distance.",
     theory: "ch:integrals",
+  },
+  //  COMMISSIONED 2026-11-08 (DEV.md 4c C247, Vitor: the design of chimneys,
+  //  Gaussian equations with dispersion coefficients and the famous tables as
+  //  a function of the weather, day or night).  A CONSTRUCTION whose
+  //  arithmetic is the PAGE's (stackDispersionMath.ts, the pool-fire
+  //  precedent): the engine has no dispersion model and no stack as a sized
+  //  item, so its half READS the flueGas stream of a Gibbs reactor and only
+  //  converts units.  On the Process-safety shelf beside the pool fire: what
+  //  a plant sends to its neighbours.  Which coefficients were read and which
+  //  were not is stated on the page itself.
+  {
+    id: "stack-dispersion", blurb: "Find the stack height that keeps ground concentration under a limit.",
+    label: "How tall must the stack be? Gaussian plume dispersion",
+    discipline: "Process safety", kind: "construction",
+    status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    theory: "ch:stack-dispersion",
+    teaches: "How tall a stack must be so the gas it emits reaches the "
+      + "ground diluted enough: the Gaussian plume with the ground's "
+      + "reflection derived as an image source, Pasquill's six weather "
+      + "classes from Turner's day-and-night key, Briggs' spread curves for "
+      + "open country and town, Briggs' buoyant plume rise, the ground "
+      + "maximum and where it falls, and the least stack height for a limit "
+      + "you declare, beside the good-engineering-practice height against "
+      + "building downwash. Four live figures: the class picker, the plume "
+      + "in side view with its image, the ground concentration of all six "
+      + "classes, and a plan view with a fence. The flue gas of a Gibbs "
+      + "reactor is read from a run. Which coefficients were read and which "
+      + "were not is stated on the page.",
   },
   //  COMMISSIONED 2026-10-21 (DEV.md 4c C136): "Regista isto para fazer no
   //  Sabado porque e muito importante" -- secondary containment, the bund a
