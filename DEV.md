@@ -3221,6 +3221,66 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C264 (Vitor, 2026-11-09: another assistant walked donepezil02_two_strengths in the browser
+> "como se fosse um aluno" and wrote six findings; Vitor forwarded them): THE STUDENT CAN GET
+> NUMBERS BUT HAS TO WORK TOO HARD TO KNOW WHICH ONES ANSWER THE ENGINEERING QUESTION.**
+> Verified by the architect before deciding:
+> (1) CONFIRMED, a GUI defect, not the text: the README does not render ("line 124: raw HTML
+> is outside the subset").  gui/src/case/lesson.ts:95 tests the WHOLE line for `<tag>` before
+> code spans are set aside, so `design/<unit>/` inside backticks reads as HTML and the whole
+> lesson is refused.  Remedy: code spans first; and a test that renders EVERY shipped README
+> through the app's own parser (none did, or this would have failed).
+> (3) CONFIRMED and worse: the "8000 h/yr" utilities figure is computed BY THE GUI
+> (gui/src/ui/ReportsWorkspace.tsx:312, `totalEurh * 8000`), on a plant whose plan has 3840 h
+> available -- a number the engine never published (the settled contract: the GUI draws,
+> the engine computes).  Remedy: the engine publishes the annual basis it used, the GUI
+> draws it; and one "bases" panel that reconciles 300 kg (the declared lot), 305.9 kg (the
+> lot's product mass), 720 000 tablets/h (the balance basis), 168 h, 880 / 2079 h occupancy
+> and 3840 h available, each with its definition.
+> (2) ACCEPTED: three different things are called or drawn as the bottleneck -- the
+> equipment with the least capacity margin (granulator 92.8 %), the stage that sets the lot
+> interval of a train (drying 4.25 h; packaging 11 / 20 h).  Names: "least capacity margin"
+> for the first, "limiting stage (sets T_L)" for the second, different symbols.
+> (4) ACCEPTED: packagedTablets shows "slurry", mol % and kg/s.  A solid product needs mg per
+> tablet of each ingredient, tablets and kg per lot, water by mass, per strength; the phase
+> word for a dry solid with residual moisture is not "slurry".
+> (5) ACCEPTED: 38 warnings with no hierarchy -- classify (needs your decision / affects
+> result X / information) and say what conservation closing does and does not prove.
+> (6) ACCEPTED: the economics gives the verdict (NPV -28.96 M EUR) before the cause -- an
+> operating-cost decomposition on screen and a sensitivity beyond the selling price
+> (utilisation, fixed costs, campaign size), if the engine's C68 sensitivity allows it
+> (to be read before promising).
+> And the README gets an explicit MISSION: explain the base result, find the constraint
+> that matters, justify one improvement with a new run.  Order: (1) and (3) first (a
+> refused lesson and a wrong number), then (2) and (4), then (5) and (6).
+
+> **C263 (Vitor, 2026-11-09: "que tipo de compressor se usa para altas pressões?  Disseram-me
+> que os de turbina necessitam de recirculação por causa do controlo ... era bom que a folha
+> de especificação fosse mais concreta no tipo de compressor e que fizesse um bom design"):
+> COMPRESSOR SELECTION AND DESIGN ON THE SPECIFICATION SHEET.**  Measured today: the unit
+> (src/unitOperations/rotating/Compressor.H) is ONE isentropic stage specified by shaft power
+> or P_out with a declared eta; CompressorSize.H sizes "a centrifugal compressor / blower" by
+> power alone, no geometry; Turton prices it as centrifugal; nothing selects a type, counts
+> stages or impellers, checks a discharge-temperature limit, or knows surge.  The reference
+> plant builds its 150 bar make-up train by hand as two compressor units and an intercooler
+> (MakeupComp1/2 discharge 420 / 425 K, N2Boost 474 K).  The engineering the sheet should
+> carry: (1) TYPE by flow and pressure from a declared, sourced selection map -- dynamic
+> (centrifugal, axial) for large flows, positive displacement (reciprocating, diaphragm for
+> small high-purity flows, screw at moderate ratios) for small flows and the highest
+> pressures; hydrogen's low molar mass makes the head per impeller small, so a centrifugal
+> machine needs many impellers and reciprocating machines dominate small and medium H2 duties;
+> (2) STAGES and INTERCOOLING from a declared discharge-temperature limit and per-stage ratio;
+> (3) for a DYNAMIC machine the SURGE line and the ANTI-SURGE RECYCLE -- below the surge flow
+> the machine cannot hold its head and the flow reverses, so a cooled spill-back from
+> discharge to suction keeps the machine above it at low throughput: the sheet sizes the
+> recycle valve and cooler for the declared surge margin and shows the turndown it buys;
+> for a RECIPROCATING machine, capacity control by unloaders / clearance pockets / speed /
+> spill-back, and no surge; (4) the data-sheet fields of the governing standards (API 617
+> centrifugal, API 618 reciprocating), each limit read from a source, never recalled.
+> Pedagogy too: an EduTool on compressor selection and surge (the head-flow curve, the surge
+> line, what the recycle does to power).  ORDER: after the reference-plant slice lands (it
+> edits the same compressors); scope to Vitor in two lines before dispatch.
+
 > **C262 (Vitor, 2026-11-09: "em Dezembro vou ter de consolidar a forma como recebo feedback
 > da comunidade.  Achas que se pode criar um depósito de casos de estudo auto-contidos que
 > colaboradores queiram deixar?"): YES -- A COMMUNITY CASE REPOSITORY, A TIER APART FROM THE
