@@ -803,6 +803,18 @@ this Credo before proposing**.
   one is open; Esc closes it back to the canvas.  (Older docs called
   these "views / bottom tabs"; the bottom-tab strip was removed in the
   Fase A/B redesign.)
+- **EduTool** — a method built in front of the student, run on the same
+  engine as the cases (one entry of `METHOD_TOOLS`).  The EduTools
+  workspace opens on its **home** when no tool is named (DEV.md 4c C251):
+  one sentence of what an EduTool is, the guided sequences, and the tools by
+  discipline.  A deep link `&tool=<id>` opens a tool directly.
+- **Guided sequence** — an ordered walk through several EduTools, each step
+  with the reason it comes there (`METHOD_PATHS`).  Started from the home
+  ("Start"); while it is walked a bar reads "Guided sequence: <title> · step
+  k of n" with Previous / Next / "Leave the sequence" (back to the home).
+  The word "Path" is NOT shown to the student (Vítor, 2026-11-08: "O que é o
+  'path'?!"); the registry ids (`path`, `METHOD_PATHS`, the `&path=` URL key)
+  are addresses and stay.
 - **Selection card** — the floating top-right overlay showing the
   selected node's hardware + KPIs (or a stream's conditions).  Appears
   on selection, vanishes on deselect.  NOT a docked right panel.

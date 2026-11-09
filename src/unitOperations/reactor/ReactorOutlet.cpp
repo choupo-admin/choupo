@@ -231,7 +231,14 @@ EnthalpyInversion temperatureOfEnthalpy(scalar               h,
         }
         const Resolution r = resolve(T1, P, z, vf_in, thermo, locus);
         const bool split = r.fs && flashState::isSplit(*r.fs);
-        if (!split && std::abs(r.vf - vfR) <= 1.0e-12)
+        //  C245 3h: the damped Newton may leave its loop after 40 steps, or on
+        //  a vanishing cp, WITHOUT having matched `h`.  Return only an
+        //  inversion whose own residual is closed; otherwise fall through to
+        //  the bracketed Illinois branch below.
+        const scalar hRes = std::abs(h - (thermo.H_stream_formation(T1, P, vfR, z)
+                                          + hSol(T1)));
+        const bool closed = hRes <= 1.0e-9 * std::max(1.0, std::abs(h));
+        if (!split && closed && std::abs(r.vf - vfR) <= 1.0e-12)
         {
             inv.T  = T1;
             inv.vf = r.vf;

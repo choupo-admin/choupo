@@ -223,6 +223,14 @@ struct BatchProductTrain
 //  -- and the fraction of that water that leaves as effluent; the PLAN counts
 //  the cleans (it knows the lots, the campaigns and the units installed).
 //  Absent (no `cleaning` declared), the list is empty and nothing moves.
+//  One product's share of a machine's cleaning (MULTIPRODUCT, C249 d).
+struct BatchCleaningProduct
+{
+    std::string product;
+    scalar lotCleans = 0, campaignChangeoverCleans = 0, productChangeoverCleans = 0;
+    scalar cleans = 0, water = 0, effluent = 0;     // [-], [m3/yr], [m3/yr]
+};
+
 struct BatchCleaning
 {
     std::string unit, stage, train;
@@ -241,6 +249,7 @@ struct BatchCleaning
     //  The YEAR (lots a year, campaigns a year).
     scalar lotCleansPerYear = 0, changeoverCleansPerYear = 0;
     scalar cleansPerYear = 0, waterPerYear = 0, effluentPerYear = 0;               // [-], [m3/yr], [m3/yr]
+    std::vector<BatchCleaningProduct> perProduct;   // MULTIPRODUCT only; sums to the year
 };
 
 struct BatchFinding

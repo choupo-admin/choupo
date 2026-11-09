@@ -27,39 +27,45 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  PathBar -- the PEDAGOGICAL PATH control (DEV.md 4c C221).
+  PathBar -- the GUIDED SEQUENCE bar (DEV.md 4c C221, renamed C251).
 
-  One compact row ABOVE the tool chooser: a Select of the paths in
-  METHOD_PATHS (the one home, registry.ts) and, once one is chosen, its steps
-  as a numbered strip with the current step marked, Previous / Next, and the
-  sentence saying what the current step adds.  It is NOT a panel and NOT a menu
-  level: the same tools, in a reading order, driven through the existing
-  `setActiveMethodTool` so the address and the chooser follow.  The path is in
-  the address as `&path=<id>` (a link carries it).
+  Drawn only while a guided sequence is being walked (it is started from the
+  EduTools home; see EduToolsHome).  One compact row ABOVE the tool: the
+  sequence's title and "step k of n", Previous / Next, "Leave the sequence"
+  (which returns to the home), and the sentence saying what the current step
+  adds as a full line beneath.  It is NOT a panel and NOT a menu level: the
+  same tools, in a reading order, driven through the existing
+  `setActiveMethodTool` so the address and the chooser follow.  The sequence
+  is in the address as `&path=<id>` (an address, kept as is: a link carries
+  it).
+
+  The word "Path" is not shown to the student (the credo's vocabulary table):
+  the registry ids (`path`, METHOD_PATHS) are addresses and stay.
 
   The control reads nothing but the registry; the pointer decides target size
-  only (methodsChrome's coarse rule) and the strip wraps instead of scrolling
+  only (methodsChrome's coarse rule) and the row wraps instead of scrolling
   sideways at phone width.
 \*---------------------------------------------------------------------------*/
 
-import { ActionIcon, Box, Button, Group, Select, Text } from "@mantine/core";
+import { Box, Button, Text } from "@mantine/core";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { useCoarsePointer } from "./methodsChrome.js";
 import {
-  METHOD_PATHS, METHOD_TOOLS, pathById, setActiveMethodTool, setActivePath,
+  METHOD_TOOLS, goToEduToolsHome, pathById, setActiveMethodTool,
   useActiveMethodTool, useActivePath,
 } from "./registry.js";
 
-export function PathBar(): JSX.Element {
+export function PathBar(): JSX.Element | null {
   const coarse = useCoarsePointer();
   const tool = useActiveMethodTool();
   const pathId = useActivePath();
   const path = pathById(pathId);
-  const idx = path ? path.steps.findIndex((s) => s.tool === tool) : -1;
+  if (!path || !tool) return null;
+  const idx = path.steps.findIndex((s) => s.tool === tool);
   const labelOf = (id: string): string =>
     METHOD_TOOLS.find((m) => m.id === id)?.label ?? id;
   const go = (i: number): void => {
-    const s = path?.steps[i];
+    const s = path.steps[i];
     if (s) setActiveMethodTool(s.tool);
   };
   const size = coarse ? "sm" : "xs";
@@ -69,50 +75,32 @@ export function PathBar(): JSX.Element {
       gap: "4px 8px", padding: "4px 12px", minWidth: 0,
       borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
     }}>
-      <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap", flexShrink: 0 }}>
-        Path
+      <Text size="xs" fw={600} data-sequence-status=""
+        style={{ minWidth: 0, flex: "1 1 auto" }}>
+        {idx >= 0
+          ? `Guided sequence: ${path.title} · step ${idx + 1} of ${path.steps.length}`
+          : `Guided sequence: ${path.title} · this page is not one of its ${path.steps.length} steps`}
       </Text>
-      <Select
-        size={size}
-        aria-label="choose a pedagogical path through the EduTools"
-        placeholder="None: pick a path to walk"
-        data={METHOD_PATHS.map((p) => ({ value: p.id, label: p.title }))}
-        value={pathId}
-        onChange={(v) => setActivePath(v)}
-        clearable
-        comboboxProps={{ withinPortal: true }}
-        style={{ flex: "0 1 220px", minWidth: 0 }}
-      />
-      {path && (
-        <>
-          <ActionIcon size={coarse ? "lg" : "md"} variant="default"
-            aria-label="previous step" disabled={idx <= 0}
-            onClick={() => go(idx - 1)}>
-            <IconChevronLeft size={14} />
-          </ActionIcon>
-          <Group gap={4} wrap="wrap" role="list" aria-label={`${path.title} steps`}>
-            {path.steps.map((s, i) => (
-              <Button key={s.tool} role="listitem" size={size}
-                variant={i === idx ? "filled" : "light"}
-                px={coarse ? 12 : 8} aria-current={i === idx ? "step" : undefined}
-                title={labelOf(s.tool)}
-                onClick={() => go(i)}>
-                {i + 1}
-              </Button>
-            ))}
-          </Group>
-          <ActionIcon size={coarse ? "lg" : "md"} variant="default"
-            aria-label="next step" disabled={idx >= path.steps.length - 1}
-            onClick={() => go(idx + 1)}>
-            <IconChevronRight size={14} />
-          </ActionIcon>
-          <Text size="xs" c="dimmed" style={{ flexBasis: "100%", minWidth: 0 }}>
-            {idx >= 0
-              ? `Step ${idx + 1} of ${path.steps.length}, ${labelOf(path.steps[idx]!.tool)}: ${path.steps[idx]!.why}`
-              : `${path.intro} This page is not one of its ${path.steps.length} steps; Next starts the path.`}
-          </Text>
-        </>
-      )}
+      <Button size={size} variant="default" disabled={idx <= 0}
+        leftSection={<IconChevronLeft size={14} />}
+        onClick={() => go(idx - 1)}>
+        Previous
+      </Button>
+      <Button size={size} variant="filled"
+        disabled={idx >= path.steps.length - 1}
+        rightSection={<IconChevronRight size={14} />}
+        onClick={() => go(idx < 0 ? 0 : idx + 1)}>
+        Next
+      </Button>
+      <Button size={size} variant="subtle" color="gray" onClick={goToEduToolsHome}>
+        Leave the sequence
+      </Button>
+      <Text size="xs" c="dimmed" data-sequence-why=""
+        style={{ flexBasis: "100%", minWidth: 0 }}>
+        {idx >= 0
+          ? `${labelOf(path.steps[idx]!.tool)}: ${path.steps[idx]!.why}`
+          : `${path.intro} Next starts the sequence.`}
+      </Text>
     </Box>
   );
 }

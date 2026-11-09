@@ -309,10 +309,16 @@ void sizeWater(const DictPtr& w, SimulationResult& result)
         throw std::runtime_error(W + ": no batch plan ran -- the demand per lot"
             " and the peak are read from the plan.  Declare `batchPlan { }`"
             " above this pass.");
-    if (plan.multiProduct())
-        throw std::runtime_error(W + ": the plan is MULTIPRODUCT; this pass reads"
-            " the single-product plan's lot and Gantt.");
-    const scalar lotHours = plan.lotSize / plan.productRate;          // h
+    //  ONE LOT HOUR PER PRODUCT (several products, C249 d): a stream's water
+    //  is its mass flow x the lot hours of the product whose lot it is.
+    const bool multi = plan.multiProduct();
+    std::map<std::string, scalar> lotHoursOf;     // product -> h ("" = the single plan's)
+    if (multi)
+        for (const auto& pr : plan.products)
+            lotHoursOf[pr.name] = pr.lotSize / plan.productRate;
+    else
+        lotHoursOf[""] = plan.lotSize / plan.productRate;
+    const scalar lotHours = lotHoursOf.begin()->second;               // h (single plan)
 
     const DictPtr fl = block(w, "fluid", W);   text(fl, W + " fluid");
     const scalar rho = number(fl, "density", Dims::density, W + " fluid");   // kg/m3
@@ -330,7 +336,7 @@ void sizeWater(const DictPtr& w, SimulationResult& result)
             " <vol>; stage <plan stage>; drawTime <h>; when start|end; source;"
             " reason; } ... );` is not declared.");
 
-    struct Use { std::string name, stage, when; scalar V, draw; };
+    struct Use { std::string name, stage, when; scalar V, draw, kgPerH; bool fromStream; };
     std::vector<Use> uses;
     std::set<std::string> names;
     for (const auto& e : w->lookupDictList("uses"))
@@ -354,10 +360,20 @@ void sizeWater(const DictPtr& w, SimulationResult& result)
             if (it == result.streams.end())
                 throw std::runtime_error(wh + ": stream '" + s + "' is not a"
                     " stream of this flowsheet.");
-            u.V = overallMassFlow(result, it->second) * 3600.0 * lotHours / rho;  // m3 per lot
+            u.kgPerH = overallMassFlow(result, it->second) * 3600.0;            // kg/h
+            u.fromStream = true;
+            u.V = u.kgPerH * lotHours / rho;                                  // m3 per lot
+            if (multi)      //  the largest product's lot: the figure the table heads
+            {
+                u.V = 0.0;
+                for (const auto& [pn, lh] : lotHoursOf) u.V = std::max(u.V, u.kgPerH * lh / rho);
+            }
         }
         else
+        {
+            u.fromStream = false;  u.kgPerH = 0.0;
             u.V = e->lookupScalar("volumePerLot", Dims::volume);
+        }
         if (!(u.V >= 0.0)) throw std::runtime_error(wh + ": negative volume.");
         if (!e->found("stage"))
             throw std::runtime_error(wh + ": `stage` (a stage of the batch plan)"
@@ -391,8 +407,12 @@ void sizeWater(const DictPtr& w, SimulationResult& result)
             if (u.draw > len + 1e-9)
                 throw std::runtime_error(W + " use `" + u.name + "`: drawTime "
                     + fmt(u.draw) + " h exceeds the stage's cycle " + fmt(len)
-                    + " h in the plan.");
-            Draw d;  d.use = u.name;  d.rate = u.V / u.draw;
+                    + " h" + (multi ? " for product '" + g.product + "'" : std::string())
+                    + " in the plan.");
+            //  The water of THIS lot: a stream's mass over the product's lot hours.
+            const scalar Vlot_g = (multi && u.fromStream)
+                ? u.kgPerH * lotHoursOf.at(g.product) / rho : u.V;
+            Draw d;  d.use = u.name;  d.rate = Vlot_g / u.draw;
             d.start = (u.when == "start") ? g.start : g.end - u.draw;
             d.end   = d.start + u.draw;
             draws.push_back(d);
@@ -417,13 +437,17 @@ void sizeWater(const DictPtr& w, SimulationResult& result)
             if (c.waterPerLotClean > 0.0)
             {
                 const scalar V = c.waterPerLotClean * c.instancesPerLot;       // m3 per lot
-                const scalar dt = st->cleanTime;                               // h
+                const scalar dt0 = st->cleanTime;                              // h
                 VcleanLot += V;
                 bool any = false;
                 for (const auto& g : plan.gantt)
                 {
                     if (g.stage != c.stage || g.lot == 0) continue;
                     any = true;
+                    scalar dt = dt0;
+                    if (multi)      //  the product's own clean at this stage
+                        for (const auto& x : plan.productStages)
+                            if (x.product == g.product && x.stage == c.stage) dt = x.cleanTime;
                     Draw d;  d.use = "clean:" + c.unit;  d.rate = V / dt;
                     d.start = g.end - dt;  d.end = g.end;
                     draws.push_back(d);
@@ -438,7 +462,10 @@ void sizeWater(const DictPtr& w, SimulationResult& result)
                 bool any = false;
                 for (const auto& g : plan.gantt)
                 {
-                    if (g.stage != "changeover" || g.train != c.train) continue;
+                    const bool bar = g.stage == "changeover"
+                        || (multi && g.stage == "productChangeover");
+                    if (!bar || g.train != c.train) continue;
+                    if (multi && !(g.end - g.start > 0.0)) continue;   // a 0 h clean
                     any = true;
                     Draw d;  d.use = "changeover:" + c.unit;
                     d.start = g.start;  d.end = g.end;  d.rate = V / (g.end - g.start);
@@ -447,8 +474,13 @@ void sizeWater(const DictPtr& w, SimulationResult& result)
                 if (!any)
                     throw std::runtime_error(W + " cleaning of `" + c.unit + "`: the"
                         " plan's Gantt has no changeover bar for train '" + c.train + "'.");
-                for (const auto& t : plan.trains)
-                    if (t.name == c.train) VcleanChangeoverYear += V * t.campaigns;
+                if (!multi)
+                {
+                    for (const auto& t : plan.trains)
+                        if (t.name == c.train) VcleanChangeoverYear += V * t.campaigns;
+                }
+                else    //  the plan counted both kinds of changeover clean, per product
+                    VcleanChangeoverYear += c.waterPerChangeover * c.changeoverCleansPerYear;
             }
         }
     }
@@ -497,21 +529,55 @@ void sizeWater(const DictPtr& w, SimulationResult& result)
                   << "  (the plan's cleaning)\n";
     }
     Vlot += VcleanLot;
-    const scalar Vyear   = Vlot * plan.lotsPerYear + VcleanChangeoverYear;   // m3
+    scalar Vyear   = Vlot * plan.lotsPerYear + VcleanChangeoverYear;   // m3
+    int lotsYear = plan.lotsPerYear;
+    std::map<std::string, std::pair<scalar, int>> perProductLot;       // V per lot, lots a year
+    if (multi)
+    {
+        //  SEVERAL PRODUCTS: per lot of product i, its streams' water (its lot
+        //  hours) + the declared volumes + the cleans after a lot; the year is
+        //  the sum over products of lots_i x that, + the changeover cleans.
+        Vyear = VcleanChangeoverYear;  lotsYear = 0;  Vlot = 0.0;
+        std::cout << "  per product (m3 per lot, lots a year):\n";
+        for (const auto& pr : plan.products)
+        {
+            scalar V = VcleanLot;
+            for (const auto& u : uses)
+                V += u.fromStream ? u.kgPerH * lotHoursOf.at(pr.name) / rho : u.V;
+            perProductLot[pr.name] = { V, pr.lotsPerYear };
+            Vyear   += V * pr.lotsPerYear;
+            lotsYear += pr.lotsPerYear;
+            Vlot = std::max(Vlot, V);
+            std::cout << "    " << std::left << std::setw(16) << pr.name << fmt(V, 6)
+                      << " m3 x " << pr.lotsPerYear << " lots\n";
+        }
+        const std::string msg = "purified water drawn over "
+            + std::to_string(plan.products.size()) + " products: per lot of each"
+            " product (its stream masses over its own lot hours), peak = the"
+            " largest overlap of the plan's multiproduct Gantt";
+        if (AdvisoryLog::instance().addAnnouncedOnce("cleanUtilities:waterProducts",
+                "sizing", "info", "cleanUtilities purifiedWater", msg))
+            std::cerr << "[cleanUtilities] " << msg << "\n";
+    }
     const scalar rating  = peak * (1.0 + margin);                        // m3/h
     const scalar Vtank   = hold * peak;                                  // m3
-    std::cout << "  per lot " << fmt(Vlot, 6) << " m3, " << plan.lotsPerYear
+    std::cout << "  per lot " << fmt(Vlot, 6) << " m3, " << lotsYear
               << " lots a year = " << fmt(Vyear, 7) << " m3/yr; peak "
               << fmt(peak, 6) << " m3/h; generator " << fmt(rating, 6)
               << " m3/h; tank " << fmt(Vtank, 6) << " m3\n";
 
     EquipmentSizing g;
     g.set("V_lot",           Vlot,    "m3");
-    g.set("lotsPerYear",     plan.lotsPerYear, "-");
+    g.set("lotsPerYear",     lotsYear, "-");
     g.set("V_year",          Vyear,   "m3/yr");
     g.set("draw_peak",       peak,    "m3/h");
     g.set("margin",          margin,  "-");
     g.set("capacity",        rating,  "m3/h");
+    for (const auto& [pn, vl] : perProductLot)
+    {
+        g.set("V_lot_" + pn,       vl.first,  "m3");
+        g.set("lotsPerYear_" + pn, vl.second, "-");
+    }
     if (!plan.cleaning.empty())
     {
         //  Published only when the plan declares cleaning, so every other case

@@ -28,7 +28,10 @@ License
 
 #include "NewtonRaphson.H"
 
+#include "core/InfeasibleTrial.H"
+
 #include <algorithm>
+#include <stdexcept>
 #include <cmath>
 #include <functional>
 
@@ -102,6 +105,87 @@ NRResult newton1D(const std::function<scalar(scalar)>& f,
 
     return NRResult{x, residual, it, residual < opts.tolerance,
                     seedClamped, stepsLimited, bisections};
+}
+
+NRResult newton1DSafeguarded(const std::function<scalar(scalar)>& f,
+    scalar x0,
+    scalar fdStep,
+    const NROptions& opts,
+    std::vector<scalar>* infeasible
+)
+{
+    auto tryF = [&](scalar x, scalar& fx) -> bool
+    {
+        try { fx = f(x); return true; }
+        catch (const InfeasibleTrial&)
+        {
+            if (infeasible) infeasible->push_back(x);
+            return false;
+        }
+    };
+    scalar x = std::clamp(x0, opts.lower, opts.upper);
+    NRResult res{x, 0.0, 0, false};
+    res.seedClamped = (x != x0);
+    scalar lo = 0.0, hi = 0.0;
+    bool haveLo = false, haveHi = false;
+    int it = 0;
+    bool haveNext = false;
+    scalar nextF = 0.0;                       // an answered trial, reused
+    for (; it < opts.maxIter; ++it)
+    {
+        scalar fx = 0.0;
+        if (haveNext) { fx = nextF; haveNext = false; }
+        else if (!tryF(x, fx))
+            throw std::runtime_error("newton1DSafeguarded: the residual is"
+                " infeasible at the seed x = " + std::to_string(x));
+        //  Slope: central difference; one-sided where a probe is infeasible;
+        //  a positive unit slope when both are.
+        scalar fp = 0.0, fm = 0.0;
+        const bool pOk = tryF(x + fdStep, fp);
+        const bool mOk = tryF(x - fdStep, fm);
+        scalar dfx;
+        if (pOk && mOk) dfx = (fp - fm) / (2.0 * fdStep);
+        else if (pOk)   dfx = (fp - fx) / fdStep;
+        else if (mOk)   dfx = (fx - fm) / fdStep;
+        else            dfx = 1.0;
+        res.residual = std::abs(fx);
+        if (res.residual < opts.tolerance)
+        {
+            if (opts.onIter) opts.onIter(NRTrace{it, x, fx, dfx, 0.0});
+            ++it;
+            res.converged = true;
+            break;
+        }
+        if (fx > 0.0) { if (!haveHi || x < hi) { hi = x; haveHi = true; } }
+        else          { if (!haveLo || x > lo) { lo = x; haveLo = true; } }
+        scalar dx = (std::abs(dfx) > 1e-30) ? -fx / dfx : 0.0;
+        if (opts.maxStep > 0.0 && std::abs(dx) > opts.maxStep)
+        {
+            dx = std::clamp(dx, -opts.maxStep, opts.maxStep);
+            ++res.stepsLimited;
+        }
+        scalar xn = x + dx;
+        if (haveLo && haveHi && (xn <= lo || xn >= hi))
+        {
+            xn = 0.5 * (lo + hi);
+            ++res.bisections;
+        }
+        int halvings = 0;
+        for (; halvings < 40; ++halvings)
+        {
+            if (tryF(xn, nextF)) { haveNext = true; break; }
+            xn = x + 0.5 * (xn - x);
+        }
+        if (halvings >= 40)
+            throw std::runtime_error("newton1DSafeguarded: every trial between"
+                " x = " + std::to_string(x) + " and the Newton step is"
+                " infeasible -- no step exists from here");
+        if (opts.onIter) opts.onIter(NRTrace{it, x, fx, dfx, xn - x});
+        x = xn;
+    }
+    res.x = x;
+    res.iterations = it;
+    return res;
 }
 
 } // namespace Choupo::solver

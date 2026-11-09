@@ -281,17 +281,12 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
             " pass -- the machine's load is read from the plan's stage, lot and"
             " times.  Declare `batchPlan { ... }` ABOVE `sizing { ... }` in"
             " system/postDict.");
-    if (plan.multiProduct())
-        throw std::runtime_error(who + ": the plan is MULTIPRODUCT and this"
-            " sizer reads the single-product plan's stage (one lot, one"
-            " cycle).  Size the machine for its largest product by hand, or"
-            " use a single-product plan.");
     const BatchStage* stage = plan.stageOfUnit(unitName);
     if (!stage)
         throw std::runtime_error(who + ": the unit is in no stage of the batch"
             " plan, so there is no lot, cycle or operating time to read.  Add"
             " it to a stage's `units ( ... )`.");
-    if (!(plan.lotSize > 0.0) || !(plan.productRate > 0.0))
+    if ((!plan.multiProduct() && !(plan.lotSize > 0.0)) || !(plan.productRate > 0.0))
         throw std::runtime_error(who + ": the plan publishes no positive lot"
             " size and product rate.");
 
@@ -334,7 +329,36 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
     }
 
     //  ---- the mass the machine handles ---------------------------------------
-    const scalar lotHours = plan.lotSize / plan.productRate;       // h
+    //  ONE VIEW of the stage per product: a single-product plan has one (the
+    //  plan's stage and lot); a MULTIPRODUCT plan has one per product (its
+    //  lot mass, its own operating time, bulk density and cycle at this
+    //  stage -- `BatchProductStage`), and the fit is checked for EACH.
+    struct View
+    {
+        std::string product;      // "" for a single-product plan
+        scalar lotSize, massPerLot, bulkDensity, fillFraction, processTime,
+               cycleTime, utilisation;
+    };
+    std::vector<View> views;
+    if (!plan.multiProduct())
+        views.push_back({ "", plan.lotSize, stage->massPerLot, stage->bulkDensity,
+            stage->fillFraction, stage->processTime, stage->cycleTime,
+            stage->utilisation });
+    else
+    {
+        for (const auto& pr : plan.products)
+        {
+            const BatchProductStage* ps = nullptr;
+            for (const auto& x : plan.productStages)
+                if (x.product == pr.name && x.stage == stage->name) ps = &x;
+            if (!ps)
+                throw std::runtime_error(who + ": the plan has no record of product '"
+                    + pr.name + "' at stage '" + stage->name + "'.");
+            views.push_back({ pr.name, pr.lotSize, ps->massPerLot, ps->bulkDensity,
+                ps->fillFraction, ps->processTime, ps->cycleTime, ps->utilisation });
+        }
+    }
+
     scalar inletKgH = 0.0;                                         // kg/h, flowsheet basis
     {
         const FlatUnit* fu = nullptr;
@@ -352,11 +376,24 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
             inletKgH += overallMassFlow(result, it->second) * 3600.0;
         }
     }
+
+    struct Eval
+    {
+        const View* v = nullptr;
+        scalar load = 0.0, capacity = 0.0, perMachine = 0.0, util = 0.0, run = 0.0;
+        int needed = 1;
+        std::string loadUnit, basis;
+        EquipmentSizing d;
+    };
+    auto evaluate = [&](const View& v) -> Eval
+    {
+    Eval E;  E.v = &v;
+    scalar& load = E.load; scalar& capacity = E.capacity; scalar& perMachine = E.perMachine;
+    std::string& loadUnit = E.loadUnit; std::string& basis = E.basis;
+    EquipmentSizing& d = E.d;
+    const scalar lotHours = v.lotSize / plan.productRate;          // h
     const scalar m_lot_unit = inletKgH * lotHours;                  // kg per lot
 
-    scalar load = 0.0, capacity = 0.0, perMachine = 0.0;
-    std::string loadUnit, basis;
-    EquipmentSizing d;
     d.unitName      = unitName;
     d.equipmentType = type_;
     d.material      = material.name;
@@ -367,7 +404,7 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
             throw std::runtime_error(who + ": kind batchVolume needs a BATCH"
                 " stage; stage '" + stage->name + "' is "
                 + stage->type + ".");
-        if (!(stage->bulkDensity > 0.0))
+        if (!(v.bulkDensity > 0.0))
             throw std::runtime_error(who + ": stage '" + stage->name
                 + "' declares no bulk density.");
         const scalar Vnom  = need(rating, "nominalVolume", Dims::volume, who,
@@ -377,13 +414,13 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
         if (!(Vnom > 0.0) || !(fill > 0.0 && fill <= 1.0))
             throw std::runtime_error(who + ": nominalVolume must be positive"
                 " and maxFill in (0, 1].");
-        load       = stage->massPerLot / stage->bulkDensity;       // m3 working
+        load       = v.massPerLot / v.bulkDensity;       // m3 working
         perMachine = Vnom * fill;
         capacity   = installed * perMachine;
         loadUnit   = "m3";
-        d.set("m_lot",              stage->massPerLot,  "kg");
-        d.set("rho_bulk",           stage->bulkDensity, "kg/m3");
-        d.set("fillPlan",           stage->fillFraction, "-");
+        d.set("m_lot",              v.massPerLot,  "kg");
+        d.set("rho_bulk",           v.bulkDensity, "kg/m3");
+        d.set("fillPlan",           v.fillFraction, "-");
         d.set("V_nominal",          Vnom,               "m3");
         d.set("maxFill",            fill,               "-");
         d.set("V_working_required", load,               "m3");
@@ -398,10 +435,10 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
             throw std::runtime_error(who + ": kind " + kind + " needs a"
                 " SEMICONTINUOUS stage; stage '" + stage->name + "' is "
                 + stage->type + ".");
-        if (!(stage->processTime > 0.0))
+        if (!(v.processTime > 0.0))
             throw std::runtime_error(who + ": stage '" + stage->name
                 + "' has no positive operating time.");
-        const scalar tOp = stage->processTime;                      // h
+        const scalar tOp = v.processTime;                      // h
         d.set("m_lot",    m_lot_unit, "kg");
         d.set("t_operating_plan", tOp, "h");
         if (kind == "massRate")
@@ -418,8 +455,16 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
         }
         else
         {
-            const scalar mItem = need(rating, "itemMass", Dims::mass, who,
-                                      "the mass of ONE counted item, e.g. `itemMass 0.7 g;`");
+            scalar mItem = need(rating, "itemMass", Dims::mass, who,
+                                "the mass of ONE counted item, e.g. `itemMass 0.7 g;`");
+            //  SEVERAL PRODUCTS: a strength with its own tablet weight declares
+            //  it beside the default (`itemMassByProduct { strength5 0.145 g; }`).
+            if (!v.product.empty() && rating->found("itemMassByProduct"))
+            {
+                const DictPtr ib = rating->subDict("itemMassByProduct");
+                if (ib->found(v.product))
+                    mItem = ib->lookupScalar(v.product, Dims::mass);
+            }
             if (!(mItem > 0.0)) throw std::runtime_error(who + ": itemMass must be positive.");
             const scalar itemsPerHour = m_lot_unit / mItem / tOp;   // items/h
             d.set("itemMass", mItem, "kg");
@@ -483,17 +528,82 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
     d.set("cycleTime_plan",    stage->cycleTime, "h");
     d.set("utilisation_plan",  stage->utilisation, "-");
 
+    E.util = load / capacity;
+    E.needed = std::max(1, static_cast<int>(std::ceil(load / perMachine - 1e-9)));
+    if (kind != "batchVolume") E.run = d.values.at("runTime_atRating");
+    return E;
+    };
+
+    if (rating->found("itemMassByProduct"))
+    {
+        if (!plan.multiProduct())
+            throw std::runtime_error(who + ": `rating { itemMassByProduct { ... } }` is"
+                " declared and the plan has ONE product -- there is nothing to"
+                " distinguish; declare `itemMass` alone.");
+        for (const auto& k : rating->subDict("itemMassByProduct")->keys())
+        {
+            bool known = false;
+            for (const auto& pr : plan.products) known = known || pr.name == k;
+            if (!known)
+                throw std::runtime_error(who + ": `itemMassByProduct { " + k + " ...; }`"
+                    " names no product of the plan.");
+        }
+    }
+    std::vector<Eval> evals;
+    for (const auto& v : views) evals.push_back(evaluate(v));
+    //  The binding product: the one that loads the machine most.
+    std::size_t bind = 0;
+    for (std::size_t i = 1; i < evals.size(); ++i)
+        if (evals[i].util > evals[bind].util + 1e-12) bind = i;
+    const std::string bindName = evals[bind].v->product;
+    for (const auto& E : evals)
+        if (E.util > 1.0 + 1e-12)
+            throw std::runtime_error(who + ": the machine does NOT fit the lot"
+                + (E.v->product.empty() ? std::string() : " of product '"
+                    + E.v->product + "'")
+                + " -- utilisation " + fmt(E.util) + " (" + fmt(E.load) + " "
+                + E.loadUnit + " against " + fmt(E.capacity) + " " + E.loadUnit
+                + " for " + std::to_string(installed) + " machine(s)).  "
+                + std::to_string(E.needed) + " machine(s) of this rating would carry it:"
+                " declare `installed { count " + std::to_string(E.needed)
+                + "; source \"...\"; reason \"...\"; }` (a second unit is a decision"
+                  " the case states), or a larger machine, or a longer stage in the"
+                  " batch plan.");
+    EquipmentSizing d = evals[bind].d;
+    const scalar load = evals[bind].load, capacity = evals[bind].capacity;
+    const std::string loadUnit = evals[bind].loadUnit;
+    std::string basis = evals[bind].basis;
+    const scalar util = evals[bind].util;
+    int needed = 1;
+    for (const auto& E : evals) needed = std::max(needed, E.needed);
+    d.set("utilisation",       util,            "-");
+    d.set("machinesNeeded",    needed,          "-");
+    d.machineKind = kind;
+    d.installed   = installed;
+    d.set("machinesInstalled", installed,       "-");
+    d.set("machinesInPlan",    stage->unitsInstalled, "-");
+    d.set("cycleTime_plan",    evals[bind].v->cycleTime, "h");
+    d.set("utilisation_plan",  evals[bind].v->utilisation, "-");
+    if (plan.multiProduct())
+    {
+        for (const auto& E : evals)
+        {
+            d.set("utilisation_" + E.v->product, E.util, "-");
+            d.set("load_" + E.v->product, E.load, "-");
+        }
+        d.set("productsChecked", static_cast<scalar>(evals.size()), "-");
+        basis += ".  MULTIPRODUCT: the fit is checked for each of the "
+            + std::to_string(evals.size()) + " products (its lot, its operating"
+            " time at this stage); the figures above are those of product '"
+            + bindName + "', the one that loads the machine most";
+        const std::string msg = "ratedMachine '" + unitName + "' checked its fit over "
+            + std::to_string(evals.size()) + " products (binding: " + bindName + ")";
+        if (AdvisoryLog::instance().addAnnouncedOnce("ratedMachine:products:" + unitName,
+                "sizing", "info", who, msg))
+            std::cerr << "[sizing] " << msg << "\n";
+    }
+
     //  ---- the limits ---------------------------------------------------------
-    if (util > 1.0 + 1e-12)
-        throw std::runtime_error(who + ": the machine does NOT fit the lot --"
-            " utilisation " + fmt(util) + " (" + fmt(load) + " " + loadUnit
-            + " against " + fmt(capacity) + " " + loadUnit + " for "
-            + std::to_string(installed) + " machine(s)).  "
-            + std::to_string(needed) + " machine(s) of this rating would carry it:"
-            " declare `installed { count " + std::to_string(needed)
-            + "; source \"...\"; reason \"...\"; }` (a second unit is a decision"
-              " the case states), or a larger machine, or a longer stage in the"
-              " batch plan.");
     if (installedDeclared && installed != stage->unitsInstalled)
     {
         const std::string msg = "the case installs " + std::to_string(installed)
@@ -525,7 +635,7 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
         const scalar Ls = sh->lookupScalar("length", Dims::time) / 3600.0;   // h
         d.set("shiftLength", Ls, "h");
         scalar run = 0.0;
-        if (kind == "batchVolume") run = stage->cycleTime;   // the whole cycle of a lot
+        if (kind == "batchVolume") run = evals[bind].v->cycleTime;   // the whole cycle of a lot
         else                       run = d.values.at("runTime_atRating");
         d.set("lotTime_forShift", run, "h");
         if (run > Ls)

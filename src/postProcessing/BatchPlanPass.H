@@ -239,8 +239,8 @@ Description
     `lowUtilisation:<stage>` is a stage that limits NO product and whose
     largest utilisation is below the threshold.
 
-    THE CLEANING OF THE MACHINES (2026-11-03, DEV.md 4c C210, E3; single-
-    product plans only).  The plan knows the lots, the campaigns and the
+    THE CLEANING OF THE MACHINES (2026-11-03, DEV.md 4c C210, E3; several
+    products since 2026-11-08, C249 d).  The plan knows the lots, the campaigns and the
     units installed, so it can COUNT the cleans; the case declares what one
     costs:
 
@@ -258,8 +258,27 @@ Description
     (ONE water ledger).  The effluent is a VOLUME -- its load is not computed.
     REFUSED: a unit in no stage, declared twice, no `effluentFraction`, water
     for a lot clean on a stage with `cleanTime 0 h`, water for a changeover
-    clean on a train with `changeover 0 h`, `cleaning` beside `products`.
+    clean on a train with `changeover 0 h`.
     Absent: nothing runs and nothing moves.
+
+    SEVERAL PRODUCTS (C249 d).  The same declaration; the count is made per
+    product i, on the train t of the machine, and summed:
+        lot cleans_i       = N_i N_ip           (each lot, each instance)
+        campaign changeover cleans_i = (c_i,t - 1) N_ip N_op
+        product changeover cleans_i  = N_ip N_op   (the ONE clean after the
+              product's last campaign, before the next product in the order)
+        a lone product in `products`: a changeover after EVERY campaign
+              (c_i of them, no product changeover), as the single plan counts
+        water_i = (lot cleans_i) w_lot + (changeover cleans_i, both kinds) w_chg
+        effluent_i = effluentFraction water_i;  totals = SUM_i
+    The two changeover kinds draw the same declared water (`waterPerChangeover`
+    is the machine's one clean).  The refusals are the same, per product and
+    naming it (`cleanTime 0 h` at the stage, a train `changeover 0 h` where a
+    product has several campaigns, a 0 h clean after a product).  The table
+    gets per-product rows, the KPIs `<unit>_<product>_{cleans,water_m3,
+    effluent_m3}_year` and `product_<product>_*_year`; the per-campaign
+    columns are not published (a campaign belongs to one product).  The pass
+    ANNOUNCES that it counted over N products.
 
     WHAT IS NOT DONE, said: the intermediate store is not sized; every lot
     of a product is identical and every campaign repeats its first; the
