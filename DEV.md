@@ -3221,6 +3221,29 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C265 (Vitor, 2026-11-09, after C264: "o utilizador devia ter a opção no dicionário de
+> pós-processamento de dizer que determinados gráficos ou tabelas gostaria de ver ... a
+> informação que se escolhe e a forma como se apresenta é muito importante para dar
+> inteligibilidade ao caso!  Aqui também deve intervir o humano ... temos de nos guiar por
+> Sherwood e John Gall, porque de outro modo terminamos com uma panela de imenso
+> spaghetti"): THE CASE DECLARES ITS VIEWS -- C243 GENERALISED AND ABSORBED.**  Decided:
+> ONE home, a `views` block in system/postDict (C243 had put `plots` in controlDict; not
+> built yet, so nothing migrates; Vitor's location is right: what is shown after a run is
+> post-processing).  THREE kinds and no more to begin with (Gall: a complex system that
+> works grows from a simple one that worked): `headline` (the few numbers that answer the
+> case's question, each with unit and a sentence), `table` (chosen streams or equipment,
+> chosen columns, basis mass|mole, units), `figure` (chosen series, a second axis, and C243
+> (4)'s cited dataset overlay).  Every view carries a CAPTION the author writes -- why this
+> view exists; the choice and its reason are the human's.  The engine validates (an unknown
+> series or column refuses by name with the list of what exists) and publishes the
+> declaration it honoured; the GUI draws exactly those, first and in order; everything
+> else stays one click away under "All results" (the glass box keeps; the hierarchy
+> changes).  No declaration = today's behaviour, plus C243 (1)'s per-loop default for
+> ctrl cases.  First user: donepezil02 (tablets per lot per strength, NPV with its
+> decomposition -- C264 items 4 and 6).  Sherwood's opinion article on data representation:
+> not in ~/Choupo-Literature and not cited from memory; asked of Vitor.  ORDER: after C264
+> lands (same screens).
+
 > **C264 (Vitor, 2026-11-09: another assistant walked donepezil02_two_strengths in the browser
 > "como se fosse um aluno" and wrote six findings; Vitor forwarded them): THE STUDENT CAN GET
 > NUMBERS BUT HAS TO WORK TOO HARD TO KNOW WHICH ONES ANSWER THE ENGINEERING QUESTION.**
