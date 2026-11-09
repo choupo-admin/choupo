@@ -56,6 +56,9 @@ public:
 
 protected:
     scalar computePsat(scalar T_K) const override;
+    //  The pole is at T = -C.  Above it by B/60 K, Psat is 1e-60 bar-scale:
+    //  finite, far from the pole's singular slope, and below any use.
+    scalar safeLowerT() const override { return -C_ + B_ / 60.0; }
 
 private:
     scalar A_, B_, C_;

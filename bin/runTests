@@ -4999,6 +4999,22 @@ PYEOF
     fi
     rm -f /tmp/newtglob.$$
 
+    # psat-continuity gate (2026-11-09, DEV.md 4c C245 slice 5a).  The pure-
+    # component vapour pressure is a continuous, monotone function of T over
+    # the whole range a solver can visit: the model's own formula inside its
+    # window, ln Psat continued linearly in 1/T outside it (Antoine's pole
+    # and the Pc / Pr plateau above Tc are gone), water joined to IF97 at both
+    # edges; probed against the real classes of the native build.
+    if gate_exec "$ROOT/bin/curate/check_psat_continuity.py" > /tmp/psatcont.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "psat-continuity-gate" "$(head -1 /tmp/psatcont.$$ | cut -c1-150)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_psat_continuity.py)\n" "psat-continuity-gate"
+        cat /tmp/psatcont.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/psatcont.$$
+
     # distillation-seed gate (2026-11-01, DEV.md 4c C184 A+B).  A CMO phase
     # that did not converge seeds the full MESH only as an ANNOUNCED seed and
     # the verdict is the full MESH's own; a Newton step that no backtracking

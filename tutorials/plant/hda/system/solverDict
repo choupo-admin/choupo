@@ -15,5 +15,8 @@
 //      strategy -- the topology stays in flowsheetDict) ----
 tearStreams    ( H2Recycle  TolueneRecycle );
 recycleSolver  Newton;        // one Jacobian over both tears -> captures the gas<->liquid coupling
-recycleTol     1e-6;
+recycleTol     1e-9;   // 1e-6 stopped the Newton with |r| ~ 5e-8, and the Mixer's first-law
+                       // residual (Q from the last sweep's inlets vs the final streams) is |r| x H:
+                       // 1.5 W of 341 kW, above check_energy_closure's 1e-4 kW band.  The
+                       // quadratic Newton reaches 1e-9 in the same iterations (C245 slice 5a).
 recycleMaxIter 120;

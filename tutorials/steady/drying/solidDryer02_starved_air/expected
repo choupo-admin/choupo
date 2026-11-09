@@ -19,7 +19,7 @@ kpi     solidDryer             drySolid_flow    1.09750874011      1e-4
 kpi     solidDryer             exhaust_humidity 1                  1e-4
 kpi     solidDryer             moisture_pct_wb  13.3643953543      1e-4
 kpi     solidDryer             water_activity   0.00430985941091   1e-4
-kpi     solidDryer             water_removed    0.0434829262581    1e-4
+kpi     solidDryer             water_removed    0.0434777958363  1e-4
 boundary global               H_feeds_kW       -9178.71029673     1e-4
 boundary global               Q_boundary_kW    0                  1e-4
 boundary global               H_products_kW    -9178.71029673     1e-4

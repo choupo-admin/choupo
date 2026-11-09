@@ -29,6 +29,7 @@ License
 #include "AmbroseWalton.H"
 
 #include <cmath>
+#include <limits>
 #include <stdexcept>
 
 namespace Choupo {
@@ -76,6 +77,36 @@ scalar AmbroseWalton::psat(scalar T, scalar Tc, scalar Pc, scalar omega)
 scalar AmbroseWalton::computePsat(scalar T) const
 {
     return psat(T, Tc_, Pc_, omega_);
+}
+
+//  d ln Psat/dT, analytic (the base class continues ln Psat from Tc with it:
+//  a finite difference at Tc is only good to ~1e-4 because of the tau^1.5
+//  term).  With g_k(tau) the numerator polynomials above and Tr = T/Tc,
+//      ln Pr = G(tau)/Tr ,  G = g0 + omega g1 + omega^2 g2 ,
+//      d ln Pr/dT = -(G'(tau) Tr + G) / (Tc Tr^2) ,  tau = 1 - Tr.
+scalar AmbroseWalton::computeDlnPsatDT(scalar T) const
+{
+    if (!(T > 0.0) || T > Tc_) return std::numeric_limits<scalar>::quiet_NaN();
+    const scalar Tr  = T / Tc_;
+    const scalar tau = 1.0 - Tr;
+    const scalar s   = std::sqrt(tau);
+    const scalar t10 = tau, t15 = tau * s, t25 = t15 * tau;
+    const scalar t50 = tau * tau * tau * tau * tau;
+    const scalar w = omega_, w2 = omega_ * omega_;
+
+    auto g  = [&](scalar c1, scalar c15, scalar c25, scalar c50)
+    { return c1 * t10 + c15 * t15 + c25 * t25 + c50 * t50; };
+    auto dg = [&](scalar c1, scalar c15, scalar c25, scalar c50)
+    { return c1 + 1.5 * c15 * s + 2.5 * c25 * t15
+           + 5.0 * c50 * tau * tau * tau * tau; };
+
+    const scalar G  = g (-5.97616, 1.29874, -0.60394, -1.06841)
+                    + w  * g (-5.03365, 1.11505, -5.41217, -7.46628)
+                    + w2 * g (-0.64771, 2.41539, -4.26979, 3.25259);
+    const scalar dG = dg(-5.97616, 1.29874, -0.60394, -1.06841)
+                    + w  * dg(-5.03365, 1.11505, -5.41217, -7.46628)
+                    + w2 * dg(-0.64771, 2.41539, -4.26979, 3.25259);
+    return -(dG * Tr + G) / (Tc_ * Tr * Tr);
 }
 
 } // namespace Choupo

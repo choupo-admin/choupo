@@ -31,6 +31,7 @@ License
 #include "core/Dimensions.H"
 
 #include <cmath>
+#include <limits>
 #include <stdexcept>
 #include <string>
 
@@ -105,6 +106,27 @@ scalar Wagner::psat(scalar T, scalar Tr, scalar Pr,
 scalar Wagner::computePsat(scalar T) const
 {
     return psat(T, Tr_, Pr_, a_, e_);
+}
+
+//  d ln Psat/dT, analytic.  With S = sum a_i tau^e_i, tau = 1 - T/Tr,
+//      ln P = ln Pr + (Tr/T) S ,
+//      d ln P/dT = -Tr S / T^2 - (1/T) sum a_i e_i tau^(e_i - 1) .
+//  At T = Tr only an exponent of exactly 1 contributes (e > 1: 0, e < 1:
+//  infinite -> NaN, and the base class differences the curve instead).
+scalar Wagner::computeDlnPsatDT(scalar T) const
+{
+    if (!(T > 0.0) || T > Tr_) return std::numeric_limits<scalar>::quiet_NaN();
+    const scalar tau = 1.0 - T / Tr_;
+    scalar S = 0.0, dS = 0.0;
+    for (std::size_t i = 0; i < a_.size(); ++i)
+    {
+        S += a_[i] * std::pow(tau, e_[i]);
+        if (e_[i] == 1.0)      dS += a_[i];
+        else if (e_[i] > 1.0)  dS += a_[i] * e_[i] * std::pow(tau, e_[i] - 1.0);
+        else if (tau > 0.0)    dS += a_[i] * e_[i] * std::pow(tau, e_[i] - 1.0);
+        else return std::numeric_limits<scalar>::quiet_NaN();
+    }
+    return -Tr_ * S / (T * T) - dS / T;
 }
 
 } // namespace Choupo

@@ -230,8 +230,8 @@ export const CITES = {
     contains: '"ASSUMPTIONS AND CAVEATS -- what this run announced along the way\\n"' },
   // -- advisories at their site ------------------------------------------------------
   psatLogged: { file: "src/thermo/vaporPressure/VaporPressureModel.cpp",
-    line: 161, contains: "const bool fresh = AdvisoryLog::instance().add(" },
-  psat: { file: "src/thermo/vaporPressure/VaporPressureModel.cpp", line: 167,
+    line: 163, contains: "const bool fresh = AdvisoryLog::instance().add(" },
+  psat: { file: "src/thermo/vaporPressure/VaporPressureModel.cpp", line: 169,
     contains: 'std::cerr << "[psat] " << who << ": " << modelName()' },
   cpLogged: { file: "src/thermo/heatCapacity/PolynomialCp.cpp", line: 244,
     contains: "AdvisoryLog::instance().add(" },

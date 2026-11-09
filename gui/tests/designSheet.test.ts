@@ -101,8 +101,8 @@ inlets
         bc          interior;
         T           314.9494 K;
         P           100000 Pa;
-        F           0.074074825 kmol/s;
-        mdot        1.9682212 kg/s;
+        F           0.07407479 kmol/s;
+        mdot        1.9682197 kg/s;
         vapourFraction 0;
     }
 }
@@ -115,9 +115,9 @@ outlets
         bc          interior;
         T           310 K;
         P           100000 Pa;
-        F           0.079011624 kmol/s;
-        mdot        1.9682245 kg/s;
-        vapourFraction 0.044133706;
+        F           0.079011586 kmol/s;
+        mdot        1.968223 kg/s;
+        vapourFraction 0.044133402;
     }
 }
 
