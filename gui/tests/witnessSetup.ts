@@ -41,7 +41,7 @@
 \*---------------------------------------------------------------------------*/
 
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { availableParallelism } from "node:os";
 import { join } from "node:path";
 
@@ -138,15 +138,18 @@ export default async function setup({ provide }: GlobalSetupContext): Promise<vo
     const caseAbs = join(REPO, w.caseDir);
     const out = join(caseAbs, w.file);
     const app = applicationOf(caseAbs);
-    rmSync(out, { force: true });
+    rmSync(out, { force: true, recursive: w.dir === true });
     const t0 = Date.now();
     const r = await runAsync(join(REPO, app), [caseAbs], env);
     const seconds = (Date.now() - t0) / 1000;
     if (w.stdout && !r.error && r.status === 0) writeFileSync(out, r.stdout ?? "");
-    if (r.error || r.status !== 0 || !existsSync(out)) {
+    //  a directory witness must come back NON-EMPTY: an empty `design/` is a
+    //  run that sized nothing, and a sweep over it would pass on nothing
+    const written = existsSync(out) && (!w.dir || readdirSync(out).length > 0);
+    if (r.error || r.status !== 0 || !written) {
       const why = r.error ? `${app} could not start (${r.error.message})`
         : r.status !== 0 ? `${app} exited ${r.status ?? r.signal}`
-        : `${app} exited 0 but wrote no ${w.file}`;
+        : `${app} exited 0 but wrote no ${w.dir ? "file under " : ""}${w.file}`;
       const tail = `${r.stdout ?? ""}${r.stderr ?? ""}`.trim().split("\n")
         .slice(-8).join("\n    ");
       logs[i] = `${TAG} ${REFUSAL_MARKER}: ${key}: ${why}\n    ${tail}`;

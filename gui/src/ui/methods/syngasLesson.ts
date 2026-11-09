@@ -229,7 +229,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
       + "this equation, but at its minimum every reaction among the declared "
       + "species satisfies it (the element-potential page shows why).  The "
       + "equilibrium reactor writes it literally, in logarithms, with the "
-      + "pressure term ln P/P0: EquilibriumReactor.cpp:198.",
+      + "pressure term ln P/P0: EquilibriumReactor.cpp:199.",
   },
   {
     n: 6,
@@ -333,11 +333,11 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
       { sym: "y_{\\ce{CO2}}", means: "the mole fraction of CO2" },
     ],
     note: "The shift reactors are equilibrium reactors told ONE reaction, "
-      + "reactions ( wgs ); (EquilibriumReactor.cpp:103), so they cannot make "
+      + "reactions ( wgs ); (EquilibriumReactor.cpp:104), so they cannot make "
       + "methane: which pathways a catalyst allows is the declared-pathways "
       + "page.  The constant is computed from the standard Gibbs energy of "
-      + "reaction at the reactor temperature, EquilibriumReactor.cpp:119; the "
-      + "pressure is read from the feed, EquilibriumReactor.cpp:61.",
+      + "reaction at the reactor temperature, EquilibriumReactor.cpp:120; the "
+      + "pressure is read from the feed, EquilibriumReactor.cpp:62.",
     leadsTo: {
       tool: "declared-pathways",
       toolLabel: "Declared pathways (equilibrium over the reactions you allow)",
@@ -365,7 +365,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
       + "heat that holding costs is the negative duty each one publishes.",
     note: "The equilibrium reactor is isothermal: its temperature defaults to "
       + "the feed's and is otherwise the declared one, "
-      + "EquilibriumReactor.cpp:62; its duty, EquilibriumReactor.cpp:1058.",
+      + "EquilibriumReactor.cpp:63; its duty, EquilibriumReactor.cpp:1059.",
   },
 
   // ---- Part 5: each destination asks its own ratio ---------------------------------
@@ -561,7 +561,7 @@ a + c &= n_{\ce{CO}} + n_{\ce{CO2}}\\
     note: "The same reactor and the same reaction (wgs) as the shift; at "
       + "1100 K its constant is near one and the extent comes out negative -- "
       + "the engine solves for extents of either sign "
-      + "(EquilibriumReactor.cpp:198).",
+      + "(EquilibriumReactor.cpp:199).",
     leadsTo: {
       tool: "route-screening",
       toolLabel: "Route screening",

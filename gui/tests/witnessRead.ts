@@ -18,8 +18,8 @@
   that generates the files is `witnessSetup.ts`.
 \*---------------------------------------------------------------------------*/
 
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { join, relative } from "node:path";
 
 import { inject } from "vitest";
 
@@ -31,6 +31,12 @@ import {
  *  a substitute, never skips -- when the setup could not produce it from
  *  this tree's engine. */
 export function witnessOutput(caseDir: string, file: string): string {
+  assertGenerated(caseDir, file);
+  return readFileSync(join(REPO, caseDir, file), "utf-8");
+}
+
+/** The refusal path, shared by the file and the directory reader. */
+function assertGenerated(caseDir: string, file: string): void {
   const key = witnessKey(caseDir, file);
   if (!WITNESS_OUTPUTS.some((w) => witnessKey(w.caseDir, w.file) === key))
     throw new Error(`'${key}' is not declared in gui/tests/witnessOutputs.ts`
@@ -46,5 +52,30 @@ export function witnessOutput(caseDir: string, file: string): string {
       + ` ${caseDir} (gitignored, never committed) and could not be`
       + ` generated from this tree's engine: ${status.why}.`
       + `  Remedy: ${status.remedy}`);
-  return readFileSync(join(REPO, caseDir, file), "utf-8");
+}
+
+/** Read a declared DIRECTORY witness (`dir: true`) whole: every regular file
+ *  under it, recursively, as [path relative to the directory, text], in a
+ *  stable order.  The same refusal rules as `witnessOutput()`; an entry that
+ *  is not declared as a directory is refused by name, so a per-file entry
+ *  cannot be read as a sweep by accident (C269). */
+export function witnessOutputFiles(caseDir: string, dir: string): [string, string][] {
+  const key = witnessKey(caseDir, dir);
+  const w = WITNESS_OUTPUTS.find((x) => witnessKey(x.caseDir, x.file) === key);
+  if (!w || !w.dir)
+    throw new Error(`'${key}' is not declared as a directory witness (dir: true)`
+      + " in gui/tests/witnessOutputs.ts -- a sweep may read a run's tree"
+      + " only through that list");
+  assertGenerated(caseDir, dir);
+  const root = join(REPO, caseDir, dir);
+  const out: [string, string][] = [];
+  const walk = (d: string): void => {
+    for (const name of readdirSync(d).sort()) {
+      const p = join(d, name);
+      if (statSync(p).isDirectory()) walk(p);
+      else out.push([relative(root, p), readFileSync(p, "utf-8")]);
+    }
+  };
+  walk(root);
+  return out;
 }

@@ -343,22 +343,22 @@ TB_ANTOINE_PINNED = {}   # emptied 2026-08-23: all 13 records fixed from
 #  number moved.  `docs/ai/dict-syntax.md` already called that "the one
 #  parseable spelling".
 #
-#  THESE TWO REMAIN, and the reason is that fixing them MOVES A NUMBER.  The
-#  spray dryer reports a droplet size in micrometres and a wheel speed in rpm;
-#  neither word is in `core/Units.cpp` at all.  Remedy: convert the value to a
-#  named unit (`m`, and rev/s as a plain `[0 0 -1 0 0]` dimensioned scalar) at
-#  the `d.set` site.  Blocker: the 2026-09-04 design-sheet slice ruled exactly
-#  this class RESERVED -- "the values are not all canonical SI ... Nothing was
-#  converted: rebasing on SI moves numbers in every golden that pins them" --
-#  so which unit each becomes, and the goldens that follow, is Vitor's call.
-#  Read by check_design_sheet arm (k), whose stale-pin half fails if either
-#  word stops appearing (fixed, or the sheet quietly stopped carrying it).
-SHEET_UNIT_WORDS_UNPARSEABLE = {
-    "um":  "SprayDryerSize `design_targetSize_um` -- micrometres; not a name "
-           "core/Units.cpp knows, so the whole sheet is refused.",
-    "rpm": "SprayDryerSize atomiser wheel speed; not a name core/Units.cpp "
-           "knows, so the whole sheet is refused.",
-}
+#  THE OTHER TWO (`um`, `rpm`) STAYED PINNED FOR TWO MONTHS because the only
+#  remedy named here converted the VALUE (to `m`, to a `[0 0 -1 0 0]` scalar),
+#  which moves the goldens that pin it -- a class the 2026-09-04 slice had
+#  reserved.  EMPTIED 2026-11-09 (DEV.md 4c C269, after the C266 student walk
+#  met the refused sheets on screen: sprayDryer07's design sheet IS that case's
+#  answer, and `m3/yr`, written by CleanUtilitiesPass -- a writer OUTSIDE
+#  `sizing/`, which arm (k)'s source sweep did not read -- took the
+#  purified-water generator of all three tablet plants with it).  The remedy
+#  taken moves NO number: both parsers learned the words, with their
+#  dimensions (`um` length 1e-6, `rpm` = 1/min, `yr` = 365 d and `m3/yr`, in
+#  core/Units.cpp and gui/src/dict/units.ts in the same commit).  Arm (k) now
+#  sweeps every `set(key, value, "unit")` under src/postProcessing, and
+#  gui/tests/designSheetCorpus.test.ts parses every sheet the witnesses write
+#  with the app's real parser.  The name stays so a future pin has its home
+#  and the stale-pin arm keeps its subject.
+SHEET_UNIT_WORDS_UNPARSEABLE = {}
 
 
 #  Records whose header contradicts the values they ship.

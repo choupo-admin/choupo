@@ -209,9 +209,13 @@ export function classifyPhase(s: PhaseInput): PhaseKind {
   return "twoPhase";
 }
 
-/** Total mass flow (fluid + solid) in kg/s -- drives the √F line thickness. */
+/** Total mass flow in kg/s -- drives the √F line thickness.  The engine's
+ *  `F_mass` is already the OVERALL stream, solids included (the result's
+ *  `streamsNote`); `F_solid_mass` only locates the solid part, so it is not
+ *  added on top (it was, and a solid-carrying edge was drawn for twice its
+ *  flow -- C266 S1). */
 export function totalFlowOf(s: PhaseInput): number {
-  return (s.F_mass ?? 0) + (s.F_solid_mass ?? 0);
+  return s.F_mass ?? 0;
 }
 
 // ---- property gradient (colour-by-T / colour-by-P) -------------------------

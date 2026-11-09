@@ -74,7 +74,7 @@ interface StreamTerminalData {
   /** Resolved conditions from the latest converged run (F kmol/s, F_mass
    *  kg/s, T K, P Pa).  Preferred over the dict spec so a utility stream
    *  whose T comes from the catalogue reads its real value, not 0. */
-  resolved?: { F: number; F_mass?: number; F_solid_mass?: number; F_solid?: number; T: number; P: number; vf?: number };
+  resolved?: { F: number; F_mass?: number; F_solid_mass?: number; T: number; P: number; vf?: number };
   /** Deterministic PFD stream number (GUI-derived) + whether the SHOW toggle
    *  wants it rendered.  A small badge before the name; the same number keys
    *  the Streams table. */
@@ -323,20 +323,27 @@ export function StreamTerminal({ data, selected }: NodeProps) {
 // Flow label honouring the molar/mass basis the student picked.  Molar
 // reads the SI molar flow (kmol/s); mass reads F_mass (kg/s), which only
 // the run result carries --- so pre-run on a mass basis we show "—".
-// The flow is the TOTAL of the fluid AND the solid phase (F_solid_mass /
-// the solid moles): a crystalliser's `crystals` product is PURE solid
-// (fluid F = 0), so a fluid-only label would read 0 and hide the product.
+// THE RUN'S F AND F_mass ARE THE OVERALL STREAM, SOLIDS INCLUDED: the
+// result's own `streamsNote` (src/result/ResultEmitter.cpp, the one-stream-
+// one-semantics contract of 2026-08-08) says F/F_mass describe the whole
+// material and `F_solid_mass` merely LOCATES the solid part of it.  This
+// label used to ADD the solid part on top, from the days when the engine's
+// F was fluid-only (a crystalliser's pure-solid `crystals` then read 0), and
+// kept adding after the engine moved: every solid-carrying stream read
+// twice its flow -- solidDryer01's drySolid 20.2 kmol/h on the card beside
+// 10.2 in the Streams table, donepezil01's eleven solid feeds all doubled
+// (DEV.md 4c C266 S1 / C269).  The card now draws the engine's total once;
+// a test holds it to the Streams table on a solid-carrying witness.
 // ZERO IS DATA, "—" IS ABSENCE: a stream a loaded RUN resolved to zero
 // flow (a subsaturated flash's empty vapour) reads "0", never "—" --
 // the dash is reserved for a value nobody has computed or authored yet.
-function formatFlowFor(
+export function formatFlowFor(
   flow: FlowUnit,
-  resolved: { F: number; F_mass?: number; F_solid_mass?: number; F_solid?: number } | undefined,
+  resolved: { F: number; F_mass?: number; F_solid_mass?: number } | undefined,
   stream: StreamSpec | null,
 ): string {
   if (flowBasis(flow) === "mass") {
-    const fluid = resolved?.F_mass;
-    const si = fluid === undefined ? undefined : fluid + (resolved?.F_solid_mass ?? 0);
+    const si = resolved?.F_mass;
     if (si !== undefined && Number.isFinite(si) && si > 0) return `${formatFlow(si, flow)} ${flow}`;
     if (si !== undefined && Number.isFinite(si)) return `0 ${flow}`;
     // Pre-run on a mass basis we cannot know kg/h (it needs the molar mass the
@@ -346,8 +353,7 @@ function formatFlowFor(
     if (molar !== undefined && Number.isFinite(molar) && molar > 0) return `${formatFlow(molar, "kmol/h")} kmol/h`;
     return "—";
   }
-  const fluid = resolved?.F ?? scalarToSI(stream?.F);
-  const si = fluid === undefined ? undefined : fluid + (resolved?.F_solid ?? 0);
+  const si = resolved?.F ?? scalarToSI(stream?.F);
   if (si === undefined || !Number.isFinite(si)) return "—";
   if (si <= 0) return resolved !== undefined ? `0 ${flow}` : "—";
   return `${formatFlow(si, flow)} ${flow}`;
