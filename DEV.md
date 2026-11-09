@@ -3881,6 +3881,20 @@ accepts today, and that is a policy call.
 > that says the K is not a solubility.  The Step-0 table is the work list.  Each move re-records its case
 > once, to a number that can be defended; the re-record of slice 5a (101 rows, three
 > cases) was the numerical surface moving, and says so.  After slices 5b and 6.
+> FIRST PASS LANDED 2026-11-09: the 28 cases of the Step-0 table outside the ammonia family,
+> each MEASURED (every stream with vf < 1 carrying the component): 24 move no printed number
+> and say why in their thermo header; hda goes to SRK phi-phi (K_H2 21.67 -> 56.08, the
+> benzene product 0.40 -> 0.16 % H2; the shortcut column keeps the ideal package by per-unit
+> override, because BubblePoint.cpp:50-57 prices a phi-phi vapour at y = x and put the
+> column feed's bubble point at 248.6 K); ChemicalPlantTutorial to Henry for CO2 and N2 in
+> water (Sander 2015, CC-BY; the seal stays verified; limit stated: the liquid is ~20 %
+> ethanol); column08 to SRK (Q_reboiler -0.95 %); apalutamide01 on rung (d) -- no N2 or O2
+> pair in acetone exists, and its README says the trace is a numerical surface.  kij = 0
+> where used, announced.  Engine findings owed under C256: bubbleK at y = x on a phi-phi
+> package; EnergyBalanceReport.cpp:560's phase-label check, the same y = x, false on every
+> hda run.  The ammonia family is C268's (measured: no K comes from a continued Psat there,
+> and three engine defects).  SECOND PASS running: acetonePlant, gibbs09 and the others
+> slice 5a's sweep moved.
 
 > **C255 (Vitor, 2026-11-09: a second opinion on the EduTools from another assistant,
 > pasted whole -- "avalia mas decide tu"): SEVEN SCIENTIFIC ERRORS IN LESSON TEXT, ALL
