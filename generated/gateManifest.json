@@ -118,7 +118,7 @@
     },
     "check_caveat_surface": {
       "exit": 0,
-      "claim": "check_caveat_surface: OK -- 1 named extrapolation(s) listed (solidDryer01_sugar); all 7 block item(s) present in the result JSON; clean run states 'none raised' explicitly; outer-driver run gibbs04_wgs_temperature_sweep prints the block and names its pass (the LAST pass only); outer-driver run compressor02_designspec_pout prints the block and names its pass (the REPRESENTATIVE pass); a swept run's last-pass block lists all 7 once-per-process records its direct twin lists (cavett01_recycle_train); the dynamic driver's last-pass block keeps the once-per-process synthetic-record fact (ctrl20_bode_cstr); no advisory behind an announceOnce latch in 901 source files (source scan, probe passed); all 5 binaries CALL the summary (source check of each main and the driver it delegates to, not an observed run).  The gate checks the SURFACE (named, silent when empty, agreeing with the JSON, present in every binary), never whether an advisory is JUSTIFIED -- that is curation, and check_cp_range_announced and check_review_status own those judgements.  DOMAIN: choupoSolve's own output on five corpus cases (cavett01 both directly and under a scratch 2-point sweep), choupoCtrl's on one, a source scan of the five binaries' main.cpp (and the driver two of them delegate to), and a source scan of src/ for an advisory behind an announceOnce latch.  LIMITS: arm (d) is a source check and cannot see an enclosing `if` -- which is how the outerDict silence survived it -- and arm (e) requires the block to RUN under an outer driver and to name its pass, never that the pass it names is the right one to report (that is a stated decision, recorded in main.cpp and in docs/design/three-silences-at-exit-zero.md); arm (h) sees `announceOnce` latches only, not a `static bool` or a once_flag; arm (g) cannot see a MISSING per-pass clear in the dynamic driver, because on ctrl20 the union and the last pass hold the same entry (docs/design/a-fact-raised-once-per-process.md).",
+      "claim": "check_caveat_surface: OK -- 1 named extrapolation(s) listed (solidDryer01_sugar); all 10 block item(s) present in the result JSON; clean run states 'none raised' explicitly; outer-driver run gibbs04_wgs_temperature_sweep prints the block and names its pass (the LAST pass only); outer-driver run compressor02_designspec_pout prints the block and names its pass (the REPRESENTATIVE pass); a swept run's last-pass block lists all 7 once-per-process records its direct twin lists (cavett01_recycle_train); the dynamic driver's last-pass block keeps the once-per-process synthetic-record fact (ctrl20_bode_cstr); no advisory behind an announceOnce latch in 901 source files (source scan, probe passed); all 5 binaries CALL the summary (source check of each main and the driver it delegates to, not an observed run).  The gate checks the SURFACE (named, silent when empty, agreeing with the JSON, present in every binary), never whether an advisory is JUSTIFIED -- that is curation, and check_cp_range_announced and check_review_status own those judgements.  DOMAIN: choupoSolve's own output on five corpus cases (cavett01 both directly and under a scratch 2-point sweep), choupoCtrl's on one, a source scan of the five binaries' main.cpp (and the driver two of them delegate to), and a source scan of src/ for an advisory behind an announceOnce latch.  LIMITS: arm (d) is a source check and cannot see an enclosing `if` -- which is how the outerDict silence survived it -- and arm (e) requires the block to RUN under an outer driver and to name its pass, never that the pass it names is the right one to report (that is a stated decision, recorded in main.cpp and in docs/design/three-silences-at-exit-zero.md); arm (h) sees `announceOnce` latches only, not a `static bool` or a once_flag; arm (g) cannot see a MISSING per-pass clear in the dynamic driver, because on ctrl20 the union and the last pass hold the same entry (docs/design/a-fact-raised-once-per-process.md).",
       "seconds": 3.1
     },
     "check_charge_balance": {
@@ -393,8 +393,8 @@
     },
     "check_evaporative_dryer": {
       "exit": 0,
-      "claim": "check_evaporative_dryer: OK -- the free-moisture dryer announces the limit its own answer satisfies (evapDryer01 complete, evapDryer02 heat-bound AT the gas's wet bulb since its solid is fed below it, a warm-solid twin saturation-bound with the payable heat named, the lithium plant complete), evaporates at the floor what the gas pays for (affine in the gas to 1e-9, the WARNING replayed), announces the zero heat capacity it defaults for NaCl; the floor of BOTH this unit and the solid dryer is the gas's wet bulb, recomputed from each case's own records to 1e-6 K and independent of the feed T; a 20 % over-gassed lithium dryer stays below its gas inlet T and water's critical point; the solid dryer announces its limit (solidDryer01 isotherm-reached, the cold fixture heat-bound, solidDryer02_starved_air saturation-bound with its exhaust recomputed at a_w in [1 - 1e-6, 1], wetter than its isotherm, the water it picked up equal to water_removed, closing against the energy report to 1e-4 kW).  NOT checked: the hand energy surface against the energy report (the report refuses these cases), whether the package resolves the solid dryer's saturated exhaust as one vapour, or any measured dryer.",
-      "seconds": 1.5
+      "claim": "check_evaporative_dryer: OK -- the free-moisture dryer announces the limit its own answer satisfies (evapDryer01 complete, evapDryer02 heat-bound AT the gas's wet bulb since its solid is fed below it, a warm-solid twin saturation-bound with the payable heat named, the lithium plant complete), evaporates at the floor what the gas pays for (affine in the gas to 1e-9, the WARNING replayed), announces the zero heat capacity it defaults for NaCl; the floor of BOTH this unit and the solid dryer is the gas's wet bulb, recomputed from each case's own records to 1e-6 K and independent of the feed T; a 20 % over-gassed lithium dryer stays below its gas inlet T and water's critical point; the solid dryer announces its limit (solidDryer01 isotherm-reached, the cold fixture heat-bound, solidDryer02_starved_air saturation-bound with its exhaust recomputed at a_w in [1 - 1e-6, 1 + 1e-10], wetter than its isotherm, the water it picked up equal to water_removed, closing against the energy report to 1e-4 kW).  NOT checked: the hand energy surface against the energy report (the report refuses these cases), whether the package resolves the solid dryer's saturated exhaust as one vapour, or any measured dryer.",
+      "seconds": 0.2
     },
     "check_evaporator_chest_phase": {
       "exit": 0,
@@ -468,8 +468,8 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 12 of 320 gates, and the other 308 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
-      "seconds": 257.0
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 12 of 321 gates, and the other 309 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
+      "seconds": 217.3
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -493,8 +493,8 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 42286 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 44078 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
-      "seconds": 9.0
+      "claim": "check_glossary_bans: OK -- 42289 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 44087 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
+      "seconds": 8.6
     },
     "check_groups": {
       "exit": 0,
@@ -578,8 +578,8 @@
     },
     "check_ion_pins": {
       "exit": 0,
-      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 2735 component record(s) scanned (data/standards/components + every tutorial constant/components) the 92 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
-      "seconds": 0.3
+      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 2728 component record(s) scanned (data/standards/components + every tutorial constant/components) the 92 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
+      "seconds": 0.2
     },
     "check_layering": {
       "exit": 0,
@@ -763,7 +763,7 @@
     },
     "check_psat_range": {
       "exit": 0,
-      "claim": "check_psat_range: OK -- above Tc gets its own sentence, quoting Tc (7 species at 2400 K); below Tc and outside the window gets the extrapolation sentence, quoting both bounds; a case inside its windows says nothing; every message names its component; Psat_Pa is non-virtual and calls noteRange, so no model can skip the check by overriding.  The gate checks that the reader is TOLD, never whether an extrapolation was JUSTIFIED -- that is a modelling judgement (I4: the professor extrapolates on purpose, but knows he did).",
+      "claim": "check_psat_range: OK -- above Tc gets its own sentence, quoting Tc (2 species at 2400 K); below Tc and outside the window gets the extrapolation sentence, quoting both bounds; a case inside its windows says nothing; every message names its component; Psat_Pa is non-virtual and calls noteRange, so no model can skip the check by overriding.  The gate checks that the reader is TOLD, never whether an extrapolation was JUSTIFIED -- that is a modelling judgement (I4: the professor extrapolates on purpose, but knows he did).",
       "seconds": 0.1
     },
     "check_pswing": {
@@ -1203,8 +1203,8 @@
     },
     "check_spray_dryer_solvents": {
       "exit": 0,
-      "claim": "check_spray_dryer_solvents: OK -- a spray dryer fed several solvents loses none; (a) acetone+water closes, T_out 402.01 K, dew sum 0.0140; (b) ethanol+water closes; (c) starved exhaust saturated at 310.88 K, residual water 68.1 % vs acetone 21.3 % of fed; (d) sorption refused; (e) langrishKockel refused; (f) no-outlet component refused; (g) one solvent keeps its route",
-      "seconds": 1.7
+      "claim": "check_spray_dryer_solvents: OK -- a spray dryer fed several solvents loses none; (a) acetone+water closes, T_out 402.01 K, dew sum 0.0139; (b) ethanol+water closes; (c) starved exhaust saturated at 310.87 K, residual water 68.1 % vs acetone 21.3 % of fed; (d) sorption refused; (e) langrishKockel refused; (f) no-outlet component refused; (g) one solvent keeps its route",
+      "seconds": 0.1
     },
     "check_phase_split_scan": {
       "exit": 0,
@@ -1610,6 +1610,11 @@
       "exit": 0,
       "claim": "check_stagek_continuity: OK -- stageK's KNOWN_STEP in T is pinned two-sided at 2 stripper01 tray liquids (worst relative step over 1e-6 K: 5.07e-01, 4.15e-02; DEV.md 4c C245 slice 3), the same (T, z) gives bit-identical K, no K is infinite or NaN; NOT checked: a heeled mixture (stripper02's H2S)",
       "seconds": 4.6
+    },
+    "check_psat_continuity": {
+      "exit": 0,
+      "claim": "check_psat_continuity: OK -- Psat(T) is finite, positive and strictly increasing on [50 K, 1.5 Tc] for 12 components over the three models (Antoine: benzene, toluene, water; Ambrose-Walton: three records; Wagner: heavyWater and two fixtures); d ln Psat/dT is continuous across Tmin and Tc to 1e-6; inside the window the entry point equals the model's own formula bit for bit; water's saturation pressure is continuous across both IF97 window edges to 1e-9; the continuation is announced once per side.  NOT covered: that a continuation is a physical vapour pressure, water H(vf), the z = 0.999 pure-fluid wall, direct p_sat calls in ThermoPackage.cpp, phi_sat near 0.99 Tc, the flash.",
+      "seconds": 0.9
     }
   }
 }
