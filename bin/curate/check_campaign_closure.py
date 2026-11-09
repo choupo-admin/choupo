@@ -41,12 +41,14 @@ modelling assumption that creates or destroys matter is a NAMED STREAM that
 carries exactly that mass (the fixed bed's `carrierMakeUp`, the dryer's
 evaporated water), so every balance CLOSES and the stream is the explanation.
 There is therefore no list here and no pin: a mass or element closure above
-the tolerance is a defect, whatever its cause.  ENERGY keeps one honest
-posture: where the engine REFUSES the claim (`energy_balance_available 0`,
-named gaps in its log) there is no number shown as closed and nothing to
-judge; where it CLAIMS the balance, the number is held.  The steady gates'
-own KNOWN_OPEN lists (check_energy_closure, check_element_closure) are about
-steady plants and are not touched.
+the tolerance is a defect, whatever its cause.  ENERGY has one honest
+posture and no list: where the engine REFUSES the claim
+(`energy_balance_available 0`, named gaps in its log) there is no number shown
+as closed and nothing to judge; where it CLAIMS the balance, the number is
+held, and an assumption that implies heat (the isothermal bed's wall duty) is
+a NAMED HEAT STREAM of the energy ledger, so the claim closes.  The steady
+gates' own KNOWN_OPEN lists (check_energy_closure, check_element_closure) are
+about steady plants and are not touched.
 
 THE TOLERANCES, one home each.
   * mass / element / solute closure (a fraction): CAMPAIGN_TOL = 1e-3 (0.1 %).
@@ -107,32 +109,10 @@ def energy_tol():
 
 ENERGY_TOL = energy_tol()
 
-#  THE ONE EXEMPTION, ENERGY ONLY, NAMED AND TWO-SIDED.  Three adsorber cases
-#  CLAIM their energy balance (`energy_balance_available 1`) and show a
-#  closure that does not close.  The ruling of 2026-11-09 allows an energy
-#  exemption only where the engine REFUSES the claim; these do not refuse, so
-#  they are a DEFECT held open here, in the open, with the cause as far as it
-#  is established -- never a pass.  Two-sided like the steady gates' KNOWN_OPEN:
-#  a case listed here whose energy closure is within tolerance (or refused)
-#  FAILS asking for its line to be removed, so the list can only shrink.
-#  Mass and element closures have NO such list: they close, or the suite fails.
-ENERGY_OPEN = {
-    "batch16_ergun_profile":
-        "isothermal Ergun bed: T is held by a wall duty nobody ledgers "
-        "(closure 1.0 on 1e-4 kJ of vessel enthalpy, Q = 0)",
-    "batch24_blowdown_inert":
-        "isothermal blowdown: the expansion's wall duty is unledgered "
-        "(0.1 kJ of vessel enthalpy against Q = 0; the case header itself "
-        "says its energy question is out of frame by declaration)",
-    "batch25_blowdown_thermal":
-        "thermal blowdown: closure 0.079 with energy_records_valid 0; cause "
-        "UNVERIFIED in the C258 slice",
-}
-
-
 def judge(unit_kpis, case=None):
     """unit_kpis: {unit: {key: value}} -> list of (unit, key, value, tol).
-    `case` (a directory name) is consulted ONLY for the energy exemption."""
+    `case` is accepted for call-site symmetry and used for nothing: there is
+    NO exemption for any case, mass, element or energy."""
     bad = []
     for unit, kv in unit_kpis.items():
         for key, v in kv.items():
@@ -145,24 +125,8 @@ def judge(unit_kpis, case=None):
                 if kv.get(ENERGY_AVAILABLE, 1) == 0:
                     continue          # the engine REFUSED the claim: no number
                 if abs(v) > ENERGY_TOL:
-                    if case in ENERGY_OPEN:
-                        continue          # named and held open, see above
                     bad.append((unit, key, v, ENERGY_TOL))
     return bad
-
-
-def energy_open_stale(case, unit_kpis):
-    """A case listed in ENERGY_OPEN whose energy closure now stands (or is
-    refused) must LEAVE the list: the exemption is two-sided."""
-    if case not in ENERGY_OPEN:
-        return None
-    for kv in unit_kpis.values():
-        if ENERGY_KEY in kv and kv.get(ENERGY_AVAILABLE, 1) != 0 \
-                and abs(kv[ENERGY_KEY]) > ENERGY_TOL:
-            return None
-    return ("%s is listed in ENERGY_OPEN (%s) but its energy closure now "
-            "stands or is refused -- remove it from ENERGY_OPEN so the "
-            "exemption can only shrink" % (case, ENERGY_OPEN[case]))
 
 
 # ---- (i) / (ii): the golden files ------------------------------------------
@@ -186,9 +150,6 @@ def static_findings():
     for f in sorted(ROOT.glob("tutorials/**/expected")):
         files += 1
         kv = read_expected(f)
-        stale = energy_open_stale(f.parent.name, kv)
-        if stale:
-            out.append("%s: %s" % (f.parent.relative_to(ROOT), stale))
         for unit, key, v, tol in judge(kv, f.parent.name):
             out.append("%s: pinned %s.%s = %.6g exceeds %.3g -- a golden must "
                        "not freeze a violated balance; fix the case (name the "
@@ -264,9 +225,6 @@ def run_arm():
             none_pub.append(case.name)
             continue
         judged += 1
-        stale = energy_open_stale(case.name, k)
-        if stale:
-            findings.append("%s: %s" % (case.relative_to(ROOT), stale))
         for unit, key, v, tol in judge(k, case.name):
             findings.append("%s: the run's own %s.%s = %.6g exceeds %.3g -- a "
                             "broken balance on screen; book the matter as a "
@@ -331,8 +289,6 @@ def main(argv):
     if optout:
         claim += ("  %d case(s) carry a declared opt-out marker and produce "
                   "no answer: %s." % (len(optout), ", ".join(optout)))
-    claim += ("  ENERGY held OPEN by name (claimed, not closing, see "
-              "ENERGY_OPEN): %s." % ", ".join(sorted(ENERGY_OPEN)))
     claim += scope_sentence(judged + len(none_pub), skipped)
     print(claim)
     return 0
