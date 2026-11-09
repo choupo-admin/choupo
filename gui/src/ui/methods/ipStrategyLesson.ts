@@ -421,7 +421,7 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
   {
     n: 12,
     title: "The Unified Patent Court: one action, many countries",
-    body: "Step 11 ended with this court, and it changes the map of every "
+    body: "Step 11 named this court in passing; it changes the map of every "
       + "move on this page, so it has a step of its own.  WHEN.  The "
       + "Agreement on a Unified Patent Court entered into force on 1 June "
       + "2023, the day the Unitary Patent system was launched (EPO).  "
@@ -472,7 +472,8 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "of its own, two or more states for a regional one (UPCA Art. 7(1), "
       + "(3), (5)).  An infringement action goes to the local or regional "
       + "division of the state where the infringement occurs or where the "
-      + "defendant is based (UPCA Art. 33(1)); a revocation action on its "
+      + "defendant is based, or to the central division if that state has "
+      + "neither (UPCA Art. 33(1)); a revocation action on its "
       + "own goes to the central division (UPCA Art. 33(4)); and when an "
       + "accused infringer counterclaims for revocation, the local or "
       + "regional division may hear both, send the counterclaim to the "
