@@ -23139,6 +23139,141 @@ published diagram alone, with $c_{p,L}$ taken off the operating line's
 slope --- the engine's internals are never consulted.
 
 % ---------------------------------------------------------------------
+\section{Stack dispersion: the Gaussian plume and the height of a chimney}\label{ch:stack-dispersion}
+
+\begin{whatyoulllearn}
+A stack removes nothing: it decides where the gas is diluted.  A
+continuous release in a steady wind becomes a plume whose concentration
+is a bell curve across the wind and in height; the ground, which returns
+the gas, is an \emph{image} source; the weather enters through six
+stability classes that set how fast the bell widens; hot gas rises on its
+buoyancy; and the design question, how tall the stack must be, is the
+bisection of a ground-level maximum against a limit the reader declares.
+The page \code{tool=stack-dispersion} draws all of it live.  The
+arithmetic is the \emph{tool's}: the engine has no dispersion model and
+no stack as a sized item, so the engine half only reads the flue-gas
+stream of a Gibbs reactor and converts units.
+\end{whatyoulllearn}
+
+\subsection{The plume, and the ground as an image}
+A continuous point source of strength $Q$ in a uniform wind $u$ along
+$x$, with diffusion along the wind negligible against advection, spreads
+into a Gaussian in $y$ and $z$ about its centre line at height $H$; the
+prefactor is fixed by requiring that the mass per second through every
+plane across the wind be $Q$ \cite{Turner1970,HannaBriggsHosker1982}:
+\begin{equation}
+   \iint u\,C\,\mathrm{d}y\,\mathrm{d}z = Q
+   \;\Rightarrow\;
+   C = \frac{Q}{2\pi\,u\,\sigma_y\sigma_z}\,
+       e^{-y^{2}/2\sigma_y^{2}}\,e^{-(z-H)^{2}/2\sigma_z^{2}} .
+   \label{eq:plume-free}
+\end{equation}
+The ground sends the gas back: the slope $\partial C/\partial z$ must
+vanish at $z=0$, which Eq.~\eqref{eq:plume-free} does not satisfy (its
+slope there is $C H/\sigma_z^{2}$).  A second source of equal strength at
+$-H$, the \emph{image}, makes the sum even in $z$, so the slope is zero at
+the ground without further work, and above the ground the pair obeys the
+same equation:
+\begin{equation}
+   C(x,y,z)=\frac{Q}{2\pi\,u\,\sigma_y\sigma_z}\,e^{-y^{2}/2\sigma_y^{2}}
+   \Bigl[e^{-(z-H)^{2}/2\sigma_z^{2}}+e^{-(z+H)^{2}/2\sigma_z^{2}}\Bigr].
+   \label{eq:plume-image}
+\end{equation}
+At $z=0$ the two exponentials are equal, so the ground centre line is
+twice the free-air value at that height:
+\begin{equation}
+   C(x,0,0)=\frac{Q}{\pi\,u\,\sigma_y\sigma_z}\,e^{-H^{2}/2\sigma_z^{2}} .
+   \label{eq:plume-ground}
+\end{equation}
+The page's test checks the slope numerically and the normalisation by a
+double integral.
+
+\subsection{The weather as a class, and the widths}
+Pasquill grouped the weather into six classes, A (very unstable) to F
+(very stable), from the surface wind, the strength of the sun by day and
+the cloud by night \cite{Pasquill1961}; the key is Turner's table
+\cite{Turner1970}, which the page shows with the chosen cell lit.  The
+widths follow Briggs' fits to the Pasquill--Gifford curves
+\cite{Briggs1973,HannaBriggsHosker1982},
+\begin{equation}
+   \sigma = i\,x\,(1+a\,x)^{b},
+   \label{eq:briggs-sigma}
+\end{equation}
+with a set of $(i,a,b)$ per class and direction for open country and for
+towns; the fits were made for roughly $100$\,m to $10$\,km, and the page
+draws and searches only inside that window, flagging a maximum at its
+edge.  \emph{Where these numbers were read.}  Both sets are checked
+against Table~4.5 of the Handbook on Atmospheric Diffusion
+\cite{HannaBriggsHosker1982} and the urban set also against Tables~1-3
+and~1-4 of the EPA's ISC3 guide \cite{ISC3}; the two disagree in one
+figure, the urban class E--F $\sigma_z$, where the handbook prints
+$0.00015$ and ISC3 and the page use $0.0015$ (the first would give
+$506$\,m at $10$\,km, twelve times the open-country class F, so it is
+probably a misprint).  The key is Turner's Table~3-1 \cite{Turner1970}
+(strong sun is a solar altitude above $60^\circ$ with clear sky, slight
+$15^\circ$ to $35^\circ$; class D for overcast day or night); the
+constants of the next paragraph are Eqs.~1-8, 1-14, 1-15, 1-17 and 1-20 of
+ISC3.
+
+\subsection{Plume rise}
+Hot gas leaves lighter than the air and keeps rising.  Briggs' buoyancy
+flux, with exit velocity $v_s$, diameter $d$ and the gas and ambient
+temperatures $T_s$ and $T_a$, is \cite{Briggs1969,Briggs1975,ISC3}
+\begin{equation}
+   F = \frac{g\,v_s\,d^{2}\,(T_s-T_a)}{4\,T_s},
+   \label{eq:buoyancy-flux}
+\end{equation}
+and the final rise in neutral and unstable air is
+$\Delta h = 21.425\,F^{3/4}/u$ for $F<55$\,m$^{4}$/s$^{3}$ and
+$38.71\,F^{3/5}/u$ above it, the two meeting to within one per cent at the
+split (the page's test checks this, as a guard on the two constants); in
+stable air $\Delta h = 2.6\,(F/u s)^{1/3}$ with $s=g\Gamma/T_a$ and the
+gradient $\Gamma$ taken as $0.02$\,K/m for class E and $0.035$\,K/m for F.
+The effective height is $H=h_s+\Delta h$; classes A--D use the neutral
+and unstable law and E and F the stable one, as ISC3 prescribes.  A cold
+jet rises by its momentum, a law the page does not build (ISC3 tests
+momentum against buoyancy and takes the larger rise; the page does not).
+
+\subsection{The ground maximum, and the stack height for a limit}
+If the ratio $\sigma_y/\sigma_z=\kappa$ is constant, writing
+Eq.~\eqref{eq:plume-ground} as a function of $\sigma_z$ and setting its
+derivative with respect to $\sigma_z^{2}$ to zero gives the maximum at
+$\sigma_z=H/\sqrt{2}$ and
+\begin{equation}
+   C_{\max}=\frac{2\,Q}{\pi\,e\,u\,H^{2}}\,\frac{\sigma_z}{\sigma_y},
+   \label{eq:cmax}
+\end{equation}
+so doubling the effective height divides the peak by four.  The real
+maximum, with the real fits, is found by a log-grid search refined by a
+golden section; unstable classes put a high maximum close to the stack,
+stable classes a lower one far away, and the curves cross, which is why
+the bad case is the sunny afternoon close in and the calm clear night far
+out.  Because every ground concentration falls with the stack height at
+every $x$, the maximum over a fixed window falls with it, and the least
+height for a declared limit $C_{\lim}$ is found by bisection over the
+classes the weather picker allows:
+\begin{equation}
+   C_{\max}\bigl(h_s+\Delta h\bigr)=C_{\lim}.
+   \label{eq:inversion}
+\end{equation}
+The limit, its source and its date are the reader's; the page compiles in
+none.  The second constraint is the stack height that keeps the plume out
+of a building's wake: the formula clause of the good-engineering-practice
+definition, $H_{\mathrm{GEP}}=H_b+1.5\,L$, $L$ the lesser of the building's
+height and projected width, read in the regulation \cite{CFR51100}, which
+also carries a $65$\,m clause the page names and does not compute.
+
+\subsection{What it assumes, and says so}
+Flat open ground; no building wake beyond that rule; no chemistry,
+deposition or washout in the plume; one wind speed, the $10$\,m wind, at
+every height; the rise taken at once at the stack; no averaging-time
+correction; and a laboratory-scale burner scaled up by a number of
+identical trains that the reader declares.  Witness
+\file{gibbs06\_thermal\_nox}: the engine's outlet stream is read, and the
+emission rate of NO is the stream's NO flow times its molar mass, held by
+the page's test to the published flow.
+
+% ---------------------------------------------------------------------
 \section{Pinch analysis: the target before the network}\label{ch:pinch}
 
 Every heat exchanger so far in this guide has been a \emph{device}: two
@@ -26320,6 +26455,51 @@ deutscher Ingenieure} \textbf{131}, 1--41, 1913.  The smooth-tube
 turbulent friction factor $f = 0.079\,Re^{-1/4}$ (Fanning); Choupo's
 \code{Blasius} friction-factor model, and the tube-side drop in the
 heat-exchanger design chapter.
+
+\bibitem{Turner1970} Turner, D. B., \emph{Workbook of Atmospheric
+Dispersion Estimates}, US EPA Office of Air Programs, Publication AP-26,
+1970 (public domain).  The key to the stability categories and the
+procedure for the plume equation.  Read: Table 3-1, p.~6, in the archive.org
+scan of the Public Health Service edition 999-AP-26 (1967), which carries
+the same table; the 1970 edition itself was not seen.
+
+\bibitem{HannaBriggsHosker1982} Hanna, S. R., Briggs, G. A., \&
+Hosker, R. P., \emph{Handbook on Atmospheric Diffusion}, US DOE report
+DOE/TIC-11223, 1982 (public domain).  The tabulation of Briggs' fits and
+the plume equation.  Read: Table~4.5, p.~30 (Briggs' open-country and
+urban sigma fits), Table~4.1, p.~28 (the class key) and Eq.~2.19, p.~14
+(stable-air rise), in the UNT Digital Library scan of the OSTI report
+5591108.
+
+\bibitem{Pasquill1961} Pasquill, F., ``The estimation of the dispersion of
+windborne material'', \emph{Meteorological Magazine} \textbf{90} (1961)
+33--49.  Origin of the six classes; reached through Turner, not read.
+
+\bibitem{Briggs1973} Briggs, G. A., \emph{Diffusion Estimation for Small
+Emissions}, ATDL Contribution File No.~79, Oak Ridge, 1973.  The
+analytical fits to the Pasquill--Gifford curves; the report itself was
+not seen, its tabulation was read in the handbook below and in ISC3.
+
+\bibitem{ISC3} US EPA, \emph{User's Guide for the Industrial Source
+Complex (ISC3) Dispersion Models, Volume II: Description of Model
+Algorithms}, EPA-454/B-95-003b, 1995 (public domain).  Read: Eq.~1-8
+(buoyancy flux, p.~1-6), Eqs.~1-14 and~1-15 (the constants $21.425$ and
+$38.71$, split at $55$, p.~1-8), Eq.~1-17 and the default gradients
+$0.020$ and $0.035$\,K/m, Eq.~1-20 (the constant $2.6$, p.~1-9), and
+Tables~1-3 and~1-4 (urban sigma, p.~1-19).
+
+\bibitem{Briggs1969} Briggs, G. A., \emph{Plume Rise}, USAEC Critical
+Review Series TID-25075, 1969.  The buoyancy flux and the final-rise laws;
+the original was not seen, the laws were read in ISC3 (below).
+
+\bibitem{Briggs1975} Briggs, G. A., ``Plume rise predictions'', in
+\emph{Lectures on Air Pollution and Environmental Impact Analyses},
+American Meteorological Society, 1975.  The stable-air rise; the original
+was not seen, the law was read in ISC3 (below).
+
+\bibitem{CFR51100} US EPA, \emph{Code of Federal Regulations}, Title 40,
+\S\,51.100(ii), ``Good engineering practice (GEP) stack height'' (eCFR
+text, read): the greater of 65\,m and $H+1.5\,L$.
 
 \bibitem{Fenske1932} Fenske, M. R., \emph{Ind. Eng. Chem.}\ \textbf{24},
 482, 1932.  The minimum stage count at total reflux,
