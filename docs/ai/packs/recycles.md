@@ -234,7 +234,7 @@ closes the material cycle  M1 -> F1 -> S1 --recycle--> M1`.
  Newton unknowns = component flows + T + P per tear: :3300-3330; relative scaling :3335-3350.
  validateSequentialPlan and every refusal text: :4381-4560; assembled and thrown :2501-2515.
  Non-converged: "WARNING: recycle did NOT converge" :3272 (Wegstein), :3450 (Newton); return planConverged ? 0 : 1 :4042.
- Exit 2 on a thrown refusal: src/applications/choupoSolve/main.cpp:1584 (measured).
+ Exit 2 on a thrown refusal: src/applications/choupoSolve/main.cpp:1627 (measured).
  0/ completeness message: measured in the run.
  Mixer operation { T }: src/unitOperations/mixer/Mixer.cpp:100-104.
  Splitter fractions and normalising warning: src/unitOperations/mixer/Splitter.cpp:90-100.

@@ -293,7 +293,7 @@ building
 <!-- SOURCES (src/postProcessing/layout unless noted)
  footprint rule, refusals, announcements, pipes, plot, roads, fence, bunds: PlantLayout.H:28-290 (read in full) and the draft banner printed by `choupoSolve --layout-draft`.
  building grammar, refusals, announcement kinds: BuildingLayout.H:28-150.
- layout runs before economics/cleanUtilities and after the chain otherwise: src/applications/choupoSolve/main.cpp:1478-1500; building evaluated :833-836.
+ layout runs before economics/cleanUtilities and after the chain otherwise: src/applications/choupoSolve/main.cpp:1498-1520; building evaluated :853-856.
  draft tool: bin/choupo-layout (header), --layout-draft main.cpp:543, :798-830.
  the messages quoted were measured in the variants above.
 -->

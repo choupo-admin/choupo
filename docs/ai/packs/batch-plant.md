@@ -620,7 +620,7 @@ lot (the full route is `docs/pif-student-path.md`).  In the order they bite:
  ratedMachine: sizing/RatedMachineSize.H:31-110 and .cpp: kind list :294-302, rating block :305-310 (source/reason :81), installed :316, batchVolume keys :368-370, massRate :404, tabletPress :416-427, packagingLine :446-448, refusal :481, announceAbove :500, shift :512.
  hvacGrade quote: costing/DeclaredQuote.cpp (identity block, `hvacGrade`/`valuePerSupplyAir`), CostingPass.cpp (airHandling refusal, HVAC KPIs).
  cleanUtilities: CleanUtilitiesPass.H:31-70 and .cpp: hvac :120-170 (grades A B C D CNC :148), unserved :170-180, purifiedWater :300-366 (uses :319-366), run :460-464.
- postDict order and layout-before-economics: src/applications/choupoSolve/main.cpp:1478-1494.
+ postDict order and layout-before-economics: src/applications/choupoSolve/main.cpp:1498-1514.
  quotes: CostingPass.cpp:133; economics keys: EconomicsPass.H:28-120, fromBatchPlan DEV.md 4c C99.
  Sizer failure printed, exit 0: measured (plotMini flashDrum). Missing price exit 0: measured.
 -->
