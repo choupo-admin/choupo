@@ -150,6 +150,15 @@ units
         //  it is sophisticated.  A group-contribution backbone would also
         //  have to price CO2 and N2, which carry no UNIFAC groups -- the
         //  refusal a student meets if they try (see the header).
+        //  C256 (2026-11-09), MEASURED: CO2 (Tc 304.1 K) and N2 (126.2 K)
+        //  are above their critical temperatures at 331 K, so the K_CO2 this
+        //  world prints (4.8) and the 1.3 % vapour it finds rest on a vapour
+        //  pressure CONTINUED past Tc -- a Henry rung (CO2-water, N2-water
+        //  are in the catalogue) is the physical route and was tried: it
+        //  moves the raw closure and the -2.9851 kW step that
+        //  check_model_boundary_ledger pins and two design records quote, so
+        //  the change is the architect's to take with those re-pinned, and
+        //  the number stays a declared non-K here.
         thermo
         {
             equilibrium

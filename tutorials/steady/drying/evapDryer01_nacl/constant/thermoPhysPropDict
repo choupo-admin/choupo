@@ -10,6 +10,11 @@
     isotherm is declared and none is consulted -- that is the difference
     between this dryer and its hygroscopic sibling, and declaring one here
     would be describing physics the material does not have.
+
+    C256 (2026-11-09), MEASURED: N2 is priced above its critical temperature
+    somewhere in this run (Psat continued past Tc), but no stream holding a
+    liquid carries it at a temperature above its Tc and no K of it is printed,
+    so no printed number depends on that K.
 */
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;

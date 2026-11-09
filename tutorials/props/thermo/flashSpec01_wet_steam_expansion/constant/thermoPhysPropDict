@@ -16,6 +16,11 @@
   curve every K-value asks for is IF97's region 4 (ThermoPackage::Psat, the
   one door).  That is why the per-mass numbers this case prints read a
   steam table directly.
+
+  C256 (2026-11-09), MEASURED: water's vapour pressure is consulted above its
+  critical temperature in the flash specification's state search; a pure
+  component has no K and no result lies above Tc, so no printed number depends
+  on it.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

@@ -24,6 +24,15 @@ equilibrium
 //  critical temperature (33.18 K) -- the run says so in the caveats.  The
 //  answer is right for the wrong reason, and the size of what is at stake is
 //  small: Luyben's own F1 carries H2 at a mole fraction of 2e-4.
+//
+//  C256 (2026-11-09), MEASURED: the H2 in flashLiquid (0.27 mol %, and the
+//  K_H2 the separator prints, 287) rests on a vapour pressure CONTINUED past
+//  H2's Tc -- it is not a solubility.  The first honest rung is Henry (the
+//  catalogue holds H2-water), but a Henry solute can only be declared inside
+//  the diluteSolution world, whose other components are ideal: putting this
+//  flash there would discard the UNIFAC surface the acetone/IPA/water split
+//  needs, and no mixed-solvent Henry route exists.  The flash therefore keeps
+//  this approximation and the number stays a declared non-K.
 approximations
 {
     componentOutsideActivityModel

@@ -12,6 +12,11 @@
   needs a gas viscosity for the Lapple d50, so the system carries a vapour
   viscosity model (Chung, from Tc/Pc/omega).  oilDroplet is non-volatile
   (K = 0) and lives in the solid phase (s[]), never in z.
+
+  C256 (2026-11-09), MEASURED: N2 is priced above its critical temperature
+  somewhere in this run (Psat continued past Tc), but no stream holding a
+  liquid carries it at a temperature above its Tc and no K of it is printed,
+  so no printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

@@ -13,6 +13,11 @@
   alone would make the columns answer two different questions.  At 1100 K
   every species is far above its critical temperature, and the ideal gas is
   the case's stated approximation.
+
+  C256 (2026-11-09), MEASURED: NH3, O2, N2, NO and water are priced above
+  their critical temperatures in this run (Psat continued past Tc), but every
+  stream is one gas phase (vf = 1) and no K of theirs is printed, so no
+  printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

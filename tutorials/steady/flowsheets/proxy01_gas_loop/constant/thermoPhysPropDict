@@ -7,10 +7,19 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture.
+  thermoPhysPropDict (v2) -- the dilute-solution (Henry) world (since C256; it
+  was the T1 ideal gamma-phi mixture).
   Raoult DECLARED, not defaulted (gamma = 1 identically).
   Migrated mechanically from the v1 flat form (physics identical);
   v2 contract 2026-07-17.
+  WHY HENRY (C256, 2026-11-09).  CO (Tc 132.9 K), H2 (33.2 K) and CO2
+  (304.1 K) are above their critical temperatures in the 357 K knock-out
+  flash F1 at 5 bar, whose product water carried 0.09 % CO, 0.22 % H2 and
+  0.13 % CO2 priced through a vapour pressure continued past Tc -- K's that
+  were not K's (K_H2 373 on the old Antoine, 159 on its continuation).
+  The catalogue carries all three pairs with water (Sander 2015), so they
+  are Henry solutes and the water the solvent; the gas-phase reactor and
+  the turbine see no change of physics (one gas phase).
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
@@ -20,12 +29,28 @@ components       ( CO  water  CO2  H2 );
 
 equilibrium
 {
-    formulation gammaPhi;
+    formulation diluteSolution;
 
     liquid
     {
-        activityModel ideal;
-        standardState pureLiquid;
+        solvent
+        {
+            component     water;
+            standardState pureLiquid;          // the Raoult rung
+        }
+        solutes
+        {
+            components    ( CO  CO2  H2 );
+            standardState infiniteDilution;    // the Henry rung
+            solutionModel henryDilute;
+            binaryParameters
+            {
+                // Sander (2015) compilation, CC-BY
+                CO-water { source "data/standards/parameters/Henry/CO-water.dat"; }
+                CO2-water { source "data/standards/parameters/Henry/CO2-water.dat"; }
+                H2-water { source "data/standards/parameters/Henry/H2-water.dat"; }
+            }
+        }
     }
 
     vapour

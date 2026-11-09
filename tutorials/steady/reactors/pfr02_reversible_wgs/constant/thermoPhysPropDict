@@ -11,6 +11,11 @@
   Raoult DECLARED, not defaulted (gamma = 1 identically).
   Migrated mechanically from the v1 flat form (physics identical);
   v2 contract 2026-07-17.
+
+  C256 (2026-11-09), MEASURED: CO, CO2 and H2 are priced above their critical
+  temperatures in this run (Psat continued past Tc), but every stream is one
+  gas phase (vf = 1) and no K of theirs is printed, so no printed number
+  depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
