@@ -221,6 +221,27 @@ jobs:
           rsync -a --delete --exclude='.git' --exclude='CNAME' --exclude='v*/' \
                 --filter='P assets/**' \
                 site/_dist/ "$SITE_DIR"/
+          #  ... and the protection has a HORIZON (2026-11-09).  Protecting every
+          #  past build's chunks forever grew assets/ to 28 874 files and the
+          #  Pages artifact to 2.2 GB, above the 1 GB limit: every deploy from
+          #  2026-11-08 on timed out ("Page build failed").  A chunk a reload
+          #  can still ask for is one from the last two days; older ones are
+          #  pruned here, EXCEPT any chunk the build being published still
+          #  ships (a stable hash reused across builds).
+          (
+            cd "$SITE_DIR"
+            now=$(date +%s)
+            git log --diff-filter=A --name-only --format='DATE %ct' -- assets \
+              | awk -v now="$now" '/^DATE/{t=$2;next} NF && !($0 in seen){seen[$0]=1; if (now-t>172800) print}' \
+              | sort > /tmp/old-chunks.txt
+            (cd "$GITHUB_WORKSPACE/site/_dist" && find assets -type f | sort) > /tmp/current-chunks.txt
+            comm -23 /tmp/old-chunks.txt /tmp/current-chunks.txt > /tmp/prune-chunks.txt
+            n=$(wc -l < /tmp/prune-chunks.txt)
+            if [ "$n" -gt 0 ]; then
+              xargs -a /tmp/prune-chunks.txt -d '\n' git rm -q --ignore-unmatch -- || true
+              echo "[site] pruned $n hashed chunk(s) older than two days and not in this build"
+            fi
+          )
 
           #  Prove all three survived before committing, not after pushing.
           grep -q 'www.choupo.org' "$SITE_DIR"/CNAME \
