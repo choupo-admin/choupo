@@ -243,7 +243,9 @@ R_\mathrm{min} + 1 &= \sum_i \frac{\alpha_i\, x_{D,i}}{\alpha_i - \theta}
     body: "Fenske and Underwood give the two ends of the N(R) curve.  "
       + "Gilliland fills in everything between them, and it is worth being "
       + "blunt about what it is: an algebraic curve FITTED THROUGH A SCATTER "
-      + "of plant and simulation points, later put into a closed form a "
+      + "of points that were themselves CALCULATED -- stepwise plate-to-plate "
+      + "(Lewis-Matheson) results, not plant measurements (Gilliland 1940, "
+      + "p. 1221) -- later put into a closed form a "
       + "computer can evaluate.  Nothing about it is deduced from a material "
       + "balance or an "
       + "equilibrium relation.  It is written in two coordinates that put "
@@ -382,8 +384,9 @@ export const FUG_LIMITS: readonly { id: string; title: string; body: string }[] 
     id: "gilliland-is-a-fit",
     title: "The middle of the curve is a correlation, not a derivation.",
     body: "Fenske and Underwood are consequences of the assumptions above. "
-      + "The closed form of Gilliland is a curve fitted through plant and "
-      + "simulation data, and it carries that scatter with it. Reading a stage "
+      + "The closed form of Gilliland is a curve fitted through stepwise "
+      + "plate-to-plate calculations (not plant data), and it carries their "
+      + "scatter with it. Reading a stage "
       + "count off it is reading a fit, which is a different kind of claim "
       + "from reading a limit.",
   },
