@@ -917,6 +917,64 @@ announced by choupoSolve the same way.  Announced, never refused — the
 unread-keys posture.  Consolidation of the homes stays open ONLY if this
 table proves unteachable (DEV.md §4b decision 3).
 
+### The `solverDict` grammar of a steady case (C246)
+
+`system/solverDict` is read by `choupoSolve` only.  Its top-level entries are
+these, and ANY OTHER key is refused by name (a key nothing reads is an
+instruction the author believes is in force):
+
+| key | meaning | default |
+|---|---|---|
+| `tearStreams ( a b );` | which streams the recycle iteration cuts | detected |
+| `recycleSolver` | `Newton`, `Wegstein`, `DominantEigenvalue` or `directSubstitution` | `Newton` |
+| `recycleTol` | convergence of the tear loop | `1e-5` |
+| `recycleMaxIter` | maximum passes of the tear loop | `100` |
+| `recycleWegsteinQmin`, `recycleWegsteinQmax` | clamp of Wegstein's q | `-1`, `0` |
+| `recycleRelaxation w;` | fixed relaxation factor, `0 < w <= 1`; ONLY with `directSubstitution` | `1` |
+| `recycleMaxStep f;` | Newton on the tears: no tear unknown moves more than `f` x its scale per step | no cap |
+| `recycleDELambdaMax`, `recycleDEMinCosine`, `recycleDELambdaTol`, `recycleDEDamping` | the `DominantEigenvalue` aid | see theory guide |
+| `reactiveEquilibrium { tolerance relTol maxIter }`, `modelBoundaryClosure { ... }` | convergence triple of those solvers | announced defaults |
+| `<unitType> { ... }` | a block per unit TYPE, merged into every unit of that type whose own dict does not declare the key | per unit |
+
+**Wegstein's q is a relaxation factor in disguise.**  The update is
+`x+ = q x + (1 - q) G(x)`, i.e. relaxation with `w = 1 - q`:
+`q = 0` is direct substitution (`w = 1`), `q = 0.5` the 50/50 average of
+the iterate and its image (`w = 0.5`, under-relaxation), `q = -1` a step
+twice as long as direct substitution (`w = 2`, over-relaxation) and `q < -1`
+stronger acceleration.  The default clamp `[-1, 0]` therefore keeps `w` in
+`[1, 2]`: Wegstein never under-relaxes unless the case raises
+`recycleWegsteinQmax` above zero.  A fixed `w < 1` (under-relaxation, the OpenFOAM
+`relaxationFactors` idea) is what `recycleSolver directSubstitution;
+recycleRelaxation 0.5;` declares.
+
+**Per-type Newton knobs** (block named by the unit's declared `type`; every
+declared value is ANNOUNCED at verbosity >= 1 and a value out of range is
+refused by name):
+
+```
+distillationColumn            // the `simultaneous` MESH model
+{
+    lineSearch  armijo;       // armijo (default) | none = the legacy Newton;
+                              // the SAME choice as operation `newton bounded|legacy`
+                              // -- declare it once, both at once is refused
+    maxStepT    10 K;         // largest stage-temperature change per Newton step
+    maxStepX    0.1;          // largest mole-fraction change per Newton step
+}
+cstr                          // the multi-reaction CSTR
+{
+    maxStepExtent 0.5;        // an extent moves at most 0.5 x the feed flow per step
+}
+isothermalFlash { tolerance 1e-9; maxIter 100; maxOuterIter 50;
+                  outerAccelerator wegstein; compositionTol 1e-8; }
+```
+
+`maxStepT` / `maxStepX` cap the bounded Newton; with `lineSearch none` they
+are refused (the legacy Newton never reads a cap).  Defaults are today's
+behaviour exactly: no knob declared, no change.  A fixed relaxation factor is
+the right tool for the tear loop (a fixed-point problem) and the wrong
+default for a unit's Newton, where the line search damps only the steps that
+need it; the step CAP is Newton's honest analogue.
+
 ## `networkScope restricted` — a deliberately smaller speciation network
 
 By default a speciation run activates every curated chemistry record

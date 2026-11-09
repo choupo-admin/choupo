@@ -3089,12 +3089,36 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  chemistry included -- stripper01 and column13 converge in 6 iterations
     //  under it (measured 2026-11-08); stripper02, a heel case (NH4HS in the
     //  liquid, V -> 1), stalls at |F| = 1.1e-2 and declares legacy.
-    const std::string newtonWord =
+    //  ONE HOME for the choice (DEV.md 4c C246 (3)): the operation's
+    //  `newton bounded|legacy` and the solverDict block's
+    //  `distillationColumn { lineSearch armijo|none; }` mean the same thing
+    //  (armijo = bounded, none = legacy); a case declares it ONCE, and both
+    //  at once is refused.  The block's keys reach `dict` through
+    //  buildAugmentedDict, so they are read here as top-level entries.
+    std::string newtonWord =
         operDict->lookupWordOrDefault("newton", "bounded");
     if (newtonWord != "bounded" && newtonWord != "legacy")
         throw std::runtime_error("DistillationColumn(simultaneous): operation"
             " `newton` must be `bounded` (default) or `legacy`, got '"
             + newtonWord + "'");
+    if (dict->found("lineSearch"))
+    {
+        if (operDict->found("newton"))
+            throw std::runtime_error("DistillationColumn(simultaneous): both"
+                " operation `newton " + newtonWord + ";` and solverDict"
+                " `lineSearch " + dict->lookupWord("lineSearch") + ";` are"
+                " declared.  They are ONE choice (armijo = newton bounded,"
+                " none = newton legacy): declare it once.");
+        const std::string ls = dict->lookupWord("lineSearch");
+        if (ls != "armijo" && ls != "none")
+            throw std::runtime_error("DistillationColumn(simultaneous): solverDict"
+                " `lineSearch` must be `armijo` (default) or `none` (the legacy"
+                " Newton), got '" + ls + "'");
+        newtonWord = (ls == "none") ? "legacy" : "bounded";
+        if (verbosity >= 1)
+            std::cout << "  [solver] column Newton: lineSearch " << ls
+                      << " (system/solverDict)\n";
+    }
     const bool meshBoxed = (newtonWord != "legacy");
     //  Switched off for phase 1 of a reactive column (see there).
     bool refuseFractions = true;
@@ -3412,7 +3436,44 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         }
         for (std::size_t k = 0; k < nExtents; ++k) opts.typX[N*nv + k] = totFeed;
         opts.globalisation = solver::Globalisation::armijo;
+        //  The per-unknown step caps a case may declare (DEV.md 4c C246 (3)):
+        //  `maxStepT` (K per stage temperature) and `maxStepX` (mole-fraction
+        //  change per iteration).  Absent = no cap, as before.  Extents are
+        //  uncapped.  Announced with the value: the aid is the student's.
+        if (dict->found("maxStepT") || dict->found("maxStepX"))
+        {
+            const scalar mT = dict->found("maxStepT")
+                ? dict->lookupScalar("maxStepT")
+                : std::numeric_limits<scalar>::infinity();
+            const scalar mX = dict->found("maxStepX")
+                ? dict->lookupScalar("maxStepX")
+                : std::numeric_limits<scalar>::infinity();
+            if (!(mT > 0.0))
+                throw std::runtime_error("DistillationColumn(simultaneous):"
+                    " solverDict `maxStepT` must be > 0 K, got "
+                    + std::to_string(mT));
+            if (!(mX > 0.0))
+                throw std::runtime_error("DistillationColumn(simultaneous):"
+                    " solverDict `maxStepX` must be > 0, got "
+                    + std::to_string(mX));
+            opts.maxStep.assign(nU, std::numeric_limits<scalar>::infinity());
+            for (std::size_t j = 0; j < N; ++j)
+            {
+                for (std::size_t i = 0; i + 1 < n; ++i) opts.maxStep[j*nv + i] = mX;
+                opts.maxStep[j*nv + (n-1)] = mT;
+            }
+            if (verbosity >= 1)
+                std::cout << "  [solver] column Newton step caps (system/solverDict):"
+                          << (dict->found("maxStepT") ? " maxStepT = " + std::to_string(mT) + " K" : "")
+                          << (dict->found("maxStepX") ? " maxStepX = " + std::to_string(mX) : "")
+                          << "\n";
+        }
     }
+    if (!meshBoxed && (dict->found("maxStepT") || dict->found("maxStepX")))
+        throw std::runtime_error("DistillationColumn(simultaneous): solverDict"
+            " maxStepT / maxStepX cap the bounded Newton's step and are not"
+            " read by the legacy Newton (`newton legacy;` / `lineSearch none;`);"
+            " a declared cap nothing reads is refused.");
 
     //  THE MESH JACOBIAN IS BLOCK-TRIDIAGONAL, AND THE SOLVER IS TOLD SO.
     //  Stage j's residual sees only stages j-1, j, j+1 (measured on the

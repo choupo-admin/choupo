@@ -682,6 +682,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     //  see above); the warm start only rescues a cold start that failed.
     sVector lastGoodXi(R, 0.0);
     bool    haveGoodXi = false;
+    bool maxStepAnnounced = false;
     auto extentsAt = [&](scalar Tk, bool& okOut)
     {
         auto res = [&](const sVector& xi) -> sVector
@@ -731,6 +732,24 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         //  feasibility the contract's line search honours.
         o.typX.assign(R, std::max(F_in, 1.0e-12));
         o.globalisation = solver::Globalisation::armijo;
+        //  `cstr { maxStepExtent f; }` in system/solverDict (DEV.md 4c C246
+        //  (3)): no extent moves more than f x the feed flow per Newton step.
+        //  Absent = no cap.  Announced with its value.
+        if (dict->found("maxStepExtent"))
+        {
+            const scalar f = dict->lookupScalar("maxStepExtent");
+            if (!(f > 0.0))
+                throw std::runtime_error("CSTR: solverDict `maxStepExtent` must be"
+                    " > 0 (a fraction of the feed flow per Newton step), got "
+                    + std::to_string(f));
+            o.maxStep.assign(R, f * std::max(F_in, 1.0e-12));
+            if (!maxStepAnnounced && verbosity >= 1)
+            {
+                std::cout << "  [solver] CSTR Newton step cap (system/solverDict):"
+                          << " maxStepExtent = " << f << " x feed flow\n";
+                maxStepAnnounced = true;
+            }
+        }
         auto sl = solver::newtonND(res, sVector(R, 0.0), o);
         nIter  += sl.iterations;
         if (!sl.converged && haveGoodXi)

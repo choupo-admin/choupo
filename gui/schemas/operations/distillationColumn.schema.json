@@ -99,7 +99,7 @@
       "type": "string",
       "enum": ["bounded", "legacy"],
       "title": "MESH Newton contract",
-      "description": "Which Newton the simultaneous MESH runs: `bounded` (default; Armijo line search, bounds on x and T, infeasible trials refused -- DEV.md 4c C245) or `legacy` (monotone search, no bounds, clamped residual), declared only where the bounded one is known to stall (stripper02, a heel case). Announced when declared.",
+      "description": "Which Newton the simultaneous MESH runs: `bounded` (default; Armijo line search, bounds on x and T, infeasible trials refused -- DEV.md 4c C245) or `legacy` (monotone search, no bounds, clamped residual), declared only where the bounded one is known to stall (stripper02, a heel case). The same choice as `distillationColumn { lineSearch armijo|none; }` in system/solverDict (armijo = bounded, none = legacy): declare it once, both at once is refused. Announced when declared.",
       "default": "bounded"
     },
     "feedQuality": {

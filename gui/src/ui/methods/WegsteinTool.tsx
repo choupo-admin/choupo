@@ -30,8 +30,8 @@
   and draws the engine's own published per-iteration residual.  Nothing on
   that panel is computed here.
 
-  WHY THE TABLE IS THE MAIN OBJECT AND THE PLOT IS BESIDE IT.  The owner's
-  question was not "does Wegstein converge" — the guide answers that and plots
+  WHY THE TABLE IS THE MAIN OBJECT AND THE PLOT IS BESIDE IT.  The question
+  a student asks next was not "does Wegstein converge" — the guide answers that and plots
   it.  It was how ONE accelerator serves a vector holding a molar flow and a
   temperature at once.  That is answered by a table with one row per variable
   per iteration, showing that the two rows never meet: separate slopes,
@@ -54,6 +54,7 @@ import {
 
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
 import { WegsteinCobweb } from "./WegsteinCobweb.js";
+import { SlopeHandle } from "./RelaxationFigures.js";
 import { useNarrowViewport } from "./methodsChrome.js";
 import { WEGSTEIN_LIMITS, WEGSTEIN_STEPS } from "./wegsteinLesson.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
@@ -79,10 +80,10 @@ const SI_UNITS: DisplayUnits = DISPLAY_UNITS[0] ?? {
 
 const GRID = "var(--mantine-color-default-border)";
 const INK = "var(--mantine-color-dimmed)";
-const DIRECT = "#ef9a9a";
-const WEGSTEIN = "#ffb74d";
-const NEWTON = "#64b5f6";
-const MEASURED = "#26c6da";
+export const DIRECT = "#ef9a9a";
+export const WEGSTEIN = "#ffb74d";
+export const NEWTON = "#64b5f6";
+export const MEASURED = "#26c6da";
 
 const VW = 720;
 const VH = 220;
@@ -97,7 +98,7 @@ const fmtExp = (v: number | null | undefined, d = 3): string =>
 /** A semilog-y error plot over an integer iteration axis.  Hand-drawn rather
  *  than reached through the plotting bundle: three short polylines and a
  *  decade grid do not justify pulling Plotly into this module. */
-function ErrorPlot({ traces }: {
+export function ErrorPlot({ traces }: {
   traces: readonly { label: string; colour: string; dash: string;
     marker: "circle" | "square" | "triangle"; values: number[] }[];
 }): JSX.Element {
@@ -577,8 +578,22 @@ export function WegsteinTool(): JSX.Element {
                       : undefined} />
                 </Box>
               </Group>
-              <WegsteinCobweb iterates={weg.iterates} varIndex={cobVar}
-                units={units} map={map} k={cobShownK} />
+              <Group gap="md" align="flex-start" wrap="wrap">
+                <Box>
+                  <Text size="xs" fw={600} mb={4}>
+                    drag the loop gain of {cobVar === 0 ? "F" : "T"}
+                  </Text>
+                  <SlopeHandle
+                    a={cobVar === 0 ? map.a : map.b} lo={0} hi={0.98}
+                    label={cobVar === 0 ? "loop gain on the flow" : "loop gain on the temperature"}
+                    onGain={(g) => setMap((m) => cobVar === 0
+                      ? { ...m, a: g } : { ...m, b: g })} />
+                </Box>
+                <Box style={{ flex: 1, minWidth: 280 }}>
+                  <WegsteinCobweb iterates={weg.iterates} varIndex={cobVar}
+                    units={units} map={map} k={cobShownK} />
+                </Box>
+              </Group>
               {cobStep && (
                 <Text size="sm" mt={6}>
                   On sweep {cobShownK}, {cobVar === 0 ? "F" : "T"} has secant
@@ -653,7 +668,7 @@ export function WegsteinTool(): JSX.Element {
             <PanelNote>
               recycleTol is written as 1e{tolExp}. The clamp keys
               recycleWegsteinQmin / Qmax are real and read by the engine
-              (src/unitOperations/flowsheet/Flowsheet.cpp:3269-3270), but this
+              (src/unitOperations/flowsheet/Flowsheet.cpp:3332-3333), but this
               case carries them commented out and a knob can only replace a
               value a case declares — so the clamp is turned on the recursion
               above instead.

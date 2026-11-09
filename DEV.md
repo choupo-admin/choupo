@@ -3221,6 +3221,33 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C251 (Vitor, 2026-11-08 night, a screenshot of www.choupo.org/app/?workspace=methods:
+> "O EduTools arranca logo com o EduTool do McCabe & Thiele!  E depois a forma como o aluno
+> é guiado pelos tutoriais todos está muito esquisita!!  O que é o 'path'?!"): THE EDUTOOLS
+> HAVE NO WAY IN.**  MEASURED: `bootTool()` (gui/src/ui/methods/registry.ts:2063-2072)
+> returns `"mccabe"` when the URL names no tool, so the workspace opens on McCabe-Thiele
+> with no page that says what EduTools are or how to choose one; the "Path" bar
+> (C221's METHOD_PATHS, `PathBar.tsx`) is a dropdown labelled "Path" with numbered
+> buttons 1-6 and the step's sentence squeezed into one line under it -- a reading
+> order shown as a widget, never introduced.  The credo's own rule (DESIGN A SCREEN FROM
+> THE USER'S TASK) was not applied to the way in: a student arrives asking "what can I
+> learn here, and where do I start?", and the screen answers with a diagram of a
+> column.  DECISION (architect): (1) a HOME in the workspace body when no tool is in
+> the URL -- one sentence (what an EduTool is: a method built in front of you, run on
+> the same engine), then the three GUIDED SEQUENCES as cards (title, intro, the steps
+> listed with their one-sentence "why", a Start button), then the shelves by discipline
+> with the 12-word blurbs and the existing Find; `bootTool()` returns null and the
+> chooser's "way in" is the home, not a tool; a deep link with `&tool=` still opens
+> the tool; (2) the word "Path" goes: the bar reads "Guided sequence: Distillation ·
+> step 1 of 6" with the step's why as a full line, Previous / Next, and "Leave the
+> sequence" back to the home; the registry keeps `METHOD_PATHS` (the id is an
+> address, gate-held) and the UI vocabulary changes in ONE home (the gui-credo
+> vocabulary table); (3) the public landing's paths section uses the same words;
+> (4) `check_method_tools` gains: the home lists every live tool exactly once and every
+> sequence, and no tool opens by default.  No new menus, panels or tabs (credo).  One
+> GUI general tonight, `--gui` validation; the site republished after it lands with
+> the PIF batch, so the groups meet the home tomorrow.
+
 > **C250 (Vitor, 2026-11-08 night: "a interação com o Choupo é mediada por ti pelo ChatGPT
 > que os alunos subscrevem!  Por isso é muito importante que as instruções para agentes
 > fiquem muito boas, simples, rápidas e fáceis de seguir e que consumam o número mínimo

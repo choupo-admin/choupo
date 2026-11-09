@@ -2146,6 +2146,36 @@ int Flowsheet::solve(const DictPtr& dict,
     globalEnergyResiduals_.clear();
     unitProfiles_.clear();  unitClosures_.clear();
 
+    //  ---- A solverDict key nobody reads is refused (DEV.md 4c C246 (3)) ----
+    //  The steady binary reads exactly these top-level entries of
+    //  system/solverDict: the tear list, the recycle numerics, two
+    //  convergence blocks, and one block per unit TYPE (merged into that
+    //  unit's dict by buildAugmentedDict).  Anything else is an instruction
+    //  the author believes is in force and nothing reads -- the C235 class
+    //  "a declared field the hot path did not honour".
+    if (solverDict_)
+    {
+        static const std::set<std::string> recycleKeys = {
+            "tearStreams", "recycleSolver", "recycleTol", "recycleMaxIter",
+            "recycleWegsteinQmin", "recycleWegsteinQmax",
+            "recycleDELambdaMax", "recycleDEMinCosine", "recycleDELambdaTol",
+            "recycleDEDamping", "recycleRelaxation", "recycleMaxStep",
+            "reactiveEquilibrium", "modelBoundaryClosure"};
+        const auto types = UnitOperation::availableTypes();
+        for (const auto& k : solverDict_->keys())
+        {
+            if (recycleKeys.count(k)) continue;
+            if (std::find(types.begin(), types.end(), k) != types.end()) continue;
+            std::string acc;
+            for (const auto& a : recycleKeys) acc += (acc.empty() ? "" : ", ") + a;
+            throw std::runtime_error("system/solverDict: '" + k + "' is not a"
+                " key choupoSolve reads.  Accepted at the top level: " + acc
+                + ", or the name of a unit type (a block of that type's"
+                  " numerics, e.g. `distillationColumn { ... }`).  A declared"
+                  " key nothing reads is refused rather than ignored.");
+        }
+    }
+
     // ---- Seed the stream registry --------------------------------------
     //  Inlet stream state comes from the case's 0/ directory (one file per
     //  stream); a node cabled by a parent inherits its inlets from the
@@ -3136,7 +3166,8 @@ int Flowsheet::solve(const DictPtr& dict,
         // An energy heat-link feedback is a scalar fixed-point -> converge it
         // by Wegstein successive substitution (the Newton-on-tears step is for
         // material recycle Jacobians).  Wegstein handles any material tears too.
-        if (!feedbackEnergy.empty() && recSolver != "Wegstein")
+        if (!feedbackEnergy.empty() && recSolver != "Wegstein"
+            && recSolver != "directSubstitution")
         {
             std::cout << "  (energy heat-link feedback present -> Wegstein successive substitution)\n";
             recSolver = "Wegstein";
@@ -3144,11 +3175,42 @@ int Flowsheet::solve(const DictPtr& dict,
 
         //  The selector was a two-way if whose ELSE took any other word as
         //  Newton; a misspelt solver ran the default in silence.  Refuse.
-        const bool recDE = (recSolver == "DominantEigenvalue");
-        if (recSolver != "Newton" && recSolver != "Wegstein" && !recDE)
+        const bool recDE     = (recSolver == "DominantEigenvalue");
+        const bool recDirect = (recSolver == "directSubstitution");
+        if (recSolver != "Newton" && recSolver != "Wegstein" && !recDE && !recDirect)
             throw std::runtime_error(
                 "recycleSolver '" + recSolver + "' is not known.  Accepted: "
-                "Newton, Wegstein, DominantEigenvalue.");
+                "Newton, Wegstein, DominantEigenvalue, directSubstitution.");
+        //  THE RELAXATION RUNG (DEV.md 4c C246 (2)): the fixed factor w of
+        //  x+ = (1 - w) x + w G(x), 0 < w <= 1, the OpenFOAM `relaxationFactors`
+        //  idea on the tear loop.  It belongs to direct substitution only:
+        //  Wegstein chooses its own factor (w = 1 - q) per variable and Newton
+        //  needs none, so declaring it beside either would be a number the
+        //  engine never reads -- refused by name.  Default 1 = plain
+        //  substitution, i.e. today's behaviour.
+        scalar recRelax = 1.0;
+        {
+            const bool declared = (solverDict_ && solverDict_->found("recycleRelaxation"))
+                               || dict->found("recycleRelaxation");
+            if (declared)
+            {
+                recRelax = recScalar("recycleRelaxation", 1.0);
+                if (!recDirect)
+                    throw std::runtime_error(
+                        "recycleRelaxation is declared but recycleSolver is '"
+                        + recSolver + "': the fixed relaxation factor belongs to"
+                        " `recycleSolver directSubstitution;` only (Wegstein"
+                        " picks its own factor, w = 1 - q; Newton uses none).");
+                if (!(recRelax > 0.0 && recRelax <= 1.0))
+                    throw std::runtime_error(
+                        "recycleRelaxation must lie in (0, 1] (x+ = (1-w) x +"
+                        " w G(x); w > 1 over-relaxes and 0 never moves); got "
+                        + std::to_string(recRelax) + ".");
+                if (verbosity >= 1)
+                    std::cout << "  [aid] recycle relaxation w = " << recRelax
+                              << " (system/solverDict recycleRelaxation): x+ = (1-w) x + w G(x)\n";
+            }
+        }
 
         // One SM sweep through every unit (quiet during iteration).
         g_trialPressureClamps = 0;
@@ -3259,9 +3321,10 @@ int Flowsheet::solve(const DictPtr& dict,
             }
         };
 
-        if (recSolver == "Wegstein" || recDE)
+        if (recSolver == "Wegstein" || recDE || recDirect)
         {
-            const std::string accName = recDE ? "DominantEigenvalue" : "Wegstein";
+            const std::string accName = recDE ? "DominantEigenvalue"
+                                      : recDirect ? "DirectSubstitution" : "Wegstein";
             std::cout << "Recycle outer loop (" << accName << " over "
                       << tears.size() << " tear stream(s)):\n"
                       << "   it    |Δtear|2     |F_tear|                      γ-info\n"
@@ -3387,11 +3450,19 @@ int Flowsheet::solve(const DictPtr& dict,
                 // for this outer iteration.  Cadence + final-always are decided
                 // by the installed callback (empty => no-op).
                 if (onInstant_)
-                    onInstant_(itBase + outerIt + 1, "wegstein", lastDelta,
+                    onInstant_(itBase + outerIt + 1, (recDirect ? "directSubstitution" : "wegstein"), lastDelta,
                                imb.mass, imb.energy,
                                false, streams_, tears, topology_);
                 if (lastDelta < tearTol && eConv) { converged = true; ++outerIt; break; }
-                sVector x_next = deAccel ? deAccel->step(x, gx) : accel.step(x, gx);
+                sVector x_next;
+                if (recDirect)
+                {
+                    x_next = x;
+                    for (std::size_t i = 0; i < x.size(); ++i)
+                        x_next[i] = (1.0 - recRelax) * x[i] + recRelax * gx[i];
+                }
+                else
+                    x_next = deAccel ? deAccel->step(x, gx) : accel.step(x, gx);
                 if (deAccel && !deAccel->note().empty())
                     std::cout << "        -> " << deAccel->note() << "\n";
                 // announce: this is an ACCEPTED extrapolated step, so a clip
@@ -3435,7 +3506,8 @@ int Flowsheet::solve(const DictPtr& dict,
             // marched iteration (both would land on the same x and the residual
             // plot shows two values at one iteration / a vertical plunge).
             finalIteration = itBase + outerIt + 1;
-            finalSolver    = recDE ? "dominantEigenvalue" : "wegstein";
+            finalSolver    = recDE ? "dominantEigenvalue"
+                           : recDirect ? "directSubstitution" : "wegstein";
         }
         else   // Newton-on-tears  (the EO-flavoured step: r(x) = G(x) − x = 0)
         {
@@ -3566,6 +3638,26 @@ int Flowsheet::solve(const DictPtr& dict,
                 constexpr scalar inf = std::numeric_limits<scalar>::infinity();
                 ndo.globalisation = solver::Globalisation::armijo;
                 ndo.typX  = scale;
+                //  `recycleMaxStep f;` (DEV.md 4c C246 (3)): no tear unknown
+                //  moves more than f x its own scale in one Newton step --
+                //  Newton's honest analogue of a relaxation factor.  Absent =
+                //  no cap, as before.
+                if ((solverDict_ && solverDict_->found("recycleMaxStep"))
+                    || dict->found("recycleMaxStep"))
+                {
+                    const scalar f = recScalar("recycleMaxStep", 0.0);
+                    if (!(f > 0.0))
+                        throw std::runtime_error("recycleMaxStep must be > 0"
+                            " (a fraction of each tear unknown's scale per"
+                            " Newton step); got " + std::to_string(f) + ".");
+                    ndo.maxStep.resize(scale.size());
+                    for (std::size_t i = 0; i < scale.size(); ++i)
+                        ndo.maxStep[i] = f * scale[i];
+                    if (verbosity >= 1)
+                        std::cout << "  [aid] tear Newton step cap = " << f
+                                  << " x scale per unknown (system/solverDict"
+                                     " recycleMaxStep)\n";
+                }
                 ndo.lower.assign(x0.size(), 0.0);
                 ndo.upper.assign(x0.size(), inf);
                 for (std::size_t t = 0; t < tears.size(); ++t)
