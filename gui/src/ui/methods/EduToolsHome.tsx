@@ -98,7 +98,7 @@ export function EduToolsHome(): JSX.Element {
           </Text>
         </Box>
 
-        <TextInput ref={field} data-method-home-search="" size={coarse ? "lg" : "md"}
+        <TextInput ref={field} data-method-home-search="" size={coarse ? "lg" : "xl"}
           value={query} onChange={(e) => setQuery(e.currentTarget.value)}
           onKeyDown={(e) => { if (e.key === "Escape") setQuery(""); }}
           placeholder="Find a method, a symbol, an equation…"
@@ -134,9 +134,10 @@ export function EduToolsHome(): JSX.Element {
 
         <Stack gap="md" data-method-home-shelves="">
           {sections.map((s) => (
-            <Box key={s.d} component="section" id={`method-section-${s.d}`} data-method-shelf={s.d}>
-              <Text size="sm" fw={600} c="dimmed" mb={4}>
-                {s.d} <Text span size="xs">({s.tools.length})</Text>
+            <Box key={s.d} component="section" id={`method-section-${s.d}`} data-method-shelf={s.d}
+              style={{ marginTop: 14 }}>
+              <Text size="lg" fw={600} mb={8}>
+                {s.d} <Text span size="sm" c="dimmed" fw={400}>({s.tools.length})</Text>
               </Text>
               <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="xs">
                 {s.tools.map((m) => {
