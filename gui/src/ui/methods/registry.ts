@@ -1996,7 +1996,8 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "How a batch plant is organised: lots, campaigns and the Gantt chart",
     discipline: "Process design & economics", kind: "construction",
     status: "live",
-    origins: ["page", "engine", "reference", "assumption"],
+    theory: "sec:campaign-ledger",
+    origins: ["engine", "page", "reference", "assumption"],
     teaches: "How a plant makes several products in lots: the stages of a "
       + "train, the lot as the unit QC releases, the cycle of each stage and "
       + "the limiting one, parallel units in and out of phase, campaigns and "
