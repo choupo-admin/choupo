@@ -83,6 +83,8 @@ public:
 
 protected:
     scalar computePsat(scalar T_K) const override;
+    scalar computeDlnPsatDT(scalar T_K) const override;
+    scalar safeUpperT() const override { return Tc_; }   // psat() caps at Pc there
 
 private:
     scalar Tc_, Pc_, omega_;

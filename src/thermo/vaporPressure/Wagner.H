@@ -98,6 +98,8 @@ public:
 
 protected:
     scalar computePsat(scalar T_K) const override;
+    scalar computeDlnPsatDT(scalar T_K) const override;
+    scalar safeUpperT() const override { return Tr_; }   // psat() caps at Pr there
 
 private:
     scalar Tr_ = 0.0, Pr_ = 0.0;

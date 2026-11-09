@@ -5,7 +5,7 @@ diag    freeze                 first_L1         273.15             1e-4
 diag    freeze                 first_ice        264.15             1e-4
 diag    freeze                 last_L1          253.15             1e-4
 diag    freeze                 last_ice         253.15             1e-4
-diag    freeze                 n_announcements  4                  1e-4
+diag    freeze                 n_announcements  6                1e-4
 diag    freeze                 n_events         1                  1e-4
 diag    freeze                 n_points         21                 1e-4
 diag    freeze                 n_refused        0                  1e-4

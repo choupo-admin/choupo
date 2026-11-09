@@ -198,7 +198,22 @@ def antoine(name):
     if not m:
         fail(f"{name}: no Antoine block the gate can read")
     A, B, C = (float(x) for x in m.groups())
-    return lambda T: 1.0e5 * 10.0 ** (A - B / (T + C))
+    mt = re.search(r"\nTc\s+([-\d.eE+]+)\s*;", src.read_text())
+    Tc = float(mt.group(1)) if mt else float("inf")
+
+    def psat(T):
+        #  The package's own surface (VaporPressureModel::Psat_Pa, C245 slice
+        #  5a): the correlation as fitted up to Tc, and above Tc ln Psat
+        #  continued LINEARLY IN 1/T with the value and slope it has at Tc
+        #  (Antoine's slope is analytic).  The flash the unit solves prices
+        #  the air's N2/O2/Ar on this surface; recomputing them from the bare
+        #  extrapolated Antoine read the exhaust 1.2e-4 off its dew point.
+        if T <= Tc:
+            return 1.0e5 * 10.0 ** (A - B / (T + C))
+        lnE = math.log(1.0e5) + math.log(10.0) * (A - B / (Tc + C))
+        dlnPdT = math.log(10.0) * B / (Tc + C) ** 2
+        return math.exp(lnE + (-Tc * Tc * dlnPdT) * (1.0 / T - 1.0 / Tc))
+    return psat
 
 
 def comp_flows(s):

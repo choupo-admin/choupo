@@ -33,6 +33,7 @@ License
 #include "thermo/pureFluid/PureFluidModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
+#include <cmath>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -74,6 +75,30 @@ void announceOutsideWindow(const Component& c, const PureFluidModel& pf,
     std::cerr << "[pure-fluid] " << c.name() << ": " << m.str() << ".\n";
 }
 
+//  The join's announcement (see saturationPressure): once per component and
+//  side, with the factor that was applied.
+void announceJoin(const Component& c, const PureFluidModel& pf, scalar T_K,
+                  scalar edge, scalar scale, bool above)
+{
+    const std::string key = "pureFluidSaturationJoin:" + c.name()
+                          + (above ? ":above" : ":below");
+    if (AdvisoryLog::instance().passHas(key)) return;
+
+    std::ostringstream m;
+    m << "asked at T = " << T_K << " K, " << (above ? "above" : "below")
+      << " the " << pf.type() << " saturation window of '" << c.name()
+      << "', the record's vapour-pressure correlation answers SCALED by the "
+      << pf.type() << "/record ratio at the window edge (" << edge
+      << " K: factor " << scale << "), so the saturation pressure is"
+         " continuous across the edge -- a numerical join for a solver in"
+         " transit, not a measured vapour pressure";
+    if (!AdvisoryLog::instance().addAnnouncedOnce(key, "validity", "warning",
+                                                   "component '" + c.name()
+                                                   + "'", m.str()))
+        return;
+    std::cerr << "[pure-fluid] " << c.name() << ": " << m.str() << ".\n";
+}
+
 } // anonymous namespace
 
 scalar saturationPressure(const Component& c, const PureFluidModel* pf,
@@ -97,6 +122,23 @@ scalar saturationPressure(const Component& c, const PureFluidModel* pf,
             throw std::runtime_error(m.str());
         }
         announceOutsideWindow(c, *pf, T_K, w.first, w.second);
+
+        //  THE JOIN (C245 slice 5a, audit Rank 8).  The record's correlation
+        //  and the method's curve disagree at the window edge (water's
+        //  Antoine against IF97: +17.6 % at 647.096 K, 0.07 % at 273.15 K),
+        //  so switching from one to the other was a STEP in Psat.  Outside
+        //  the window the record's curve is SCALED by the method/record
+        //  ratio at the edge: the value is continuous there (to round-off)
+        //  and the record's shape carries on, itself continued by the base
+        //  class beyond its own windows.  Announced once per component and
+        //  side.
+        const bool above = (T_K > w.second);
+        const scalar edge = above ? w.second : w.first;
+        const scalar rec  = c.vp().Psat_Pa(edge);
+        const scalar scale = (rec > 0.0 && std::isfinite(rec))
+                           ? pf->p_sat(edge) / rec : 1.0;
+        announceJoin(c, *pf, T_K, edge, scale, above);
+        return scale * c.vp().Psat_Pa(T_K);
     }
     return c.vp().Psat_Pa(T_K);
 }
