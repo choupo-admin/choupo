@@ -1986,6 +1986,81 @@ stores, each with its own hours), no mixed sequencing inside a campaign, no
 per-product mass balances, and a clean is hours here, not a cleaning
 validation (EU GMP Annex~15).
 
+\subsection{How tall must the stack be? Gaussian plume dispersion}\label{sec:edu-stack-dispersion}
+
+\declaredanchor{ch:stack-dispersion}
+
+\noindent\textit{\small Tool:} \code{tool=stack-dispersion}.  \textit{\small
+Case it starts from:} \code{steady/gibbs/gibbs06\_thermal\_nox}, run in the
+browser by a button on the page, whose outlet stream \code{flueGas} is read;
+the toy half runs no engine.
+
+\subsubsection*{The question}
+
+\emph{How tall must my stack be so that the gas it emits reaches the ground
+diluted enough?  Why does a taller stack lower the ground concentration, why is
+a calm clear night the bad case far from an elevated source and a sunny
+afternoon the bad case close in, and how does a limit value become a stack
+height?}
+
+The page has two halves and says which one you are in.  In the \textbf{toy}
+half an emission rate you set feeds four live figures: Turner's key to the
+stability classes with the cell for your weather lit (day or night, sun or
+cloud, wind), whose class colours the other figures; the plume in side view
+with its $\pm\sigma_z$ envelope and the image source below the ground, with
+sliders for the stack height, the wind, the exit velocity, the diameter and the
+temperatures; the ground-level concentration along the wind on log axes, the six
+classes drawn faint, the maximum marked with its distance and your limit as a
+horizontal line; and a plan view of ground isopleths with a fence of the radius
+you choose, so that the maximum is seen inside or outside it.  The page then
+inverts the question: the least stack height for which the worst of the allowed
+classes keeps the maximum under your limit, beside the good-engineering-practice
+height against building downwash.  In the \textbf{engine} half a button runs
+the methane burner, reads the \code{flueGas} stream (its flow, temperature,
+pressure and the mole fraction of NO) and converts it to an emission rate and a
+buoyancy flux for a diameter and a stack-gas temperature you set.
+
+\subsubsection*{What the engine says}
+
+Nothing about dispersion: Choupo has no dispersion model, no fired-unit type and
+no stack as a sized item (its combustors are Gibbs reactors).  The stream is
+read and never recomputed; $Q$ is the stream's NO flow times the molar mass from
+the catalogue, held by the page's test to the flow the engine published.  The
+dispersion is the page's own arithmetic, held by hand calculations written in
+its test: the image-source slope at the ground, the normalisation of the
+plume, a worked example, the closed-form maximum $2Q/(\pi e u H^{2})\,
+\sigma_z/\sigma_y$ at $\sigma_z=H/\sqrt{2}$, and the inversion (the reported
+height puts the maximum at the limit to one per cent).  \emph{Which coefficients
+were read:} the urban sigma set and the good-engineering-practice formula; the
+open-country set, Turner's table of classes and Briggs' rise constants were
+written from the standard tabulation and are marked unread on the page.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+Choose a sunny afternoon at 2.5\,m/s and read the ground-concentration figure:
+the unstable curve is high and close to the stack.  Switch to night, clear: the
+class becomes F, and far down the wind its curve rises above the unstable ones
+while its maximum slides to the edge of the window.  Raise the stack height and
+watch the maximum fall roughly as $1/H^{2}$; then type a limit, its source and
+its date, and read the least stack height, and move the fence to see whether the
+maximum falls inside it.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That the stack height the page gives is a permit.}  It is the answer of
+a lesson's plume model to a limit you typed.  The limit is yours, with its
+averaging time; an air-quality assessment follows the model its regulator names.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Flat ground, no terrain and no building wake beyond the good-engineering-practice
+rule; no chemistry, deposition or washout (the NO of a flue gas turns into
+NO$_2$ in the air); the $10$\,m wind at every height and the whole plume rise
+taken at the stack; no averaging-time correction; a cold jet's momentum rise not
+built; maxima outside $100$\,m to $10$\,km only flagged.
+
 \subsection{Demand forecast for a drug product}\label{sec:edu-demand-forecast}
 
 \declaredanchor{ch:economics}

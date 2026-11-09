@@ -383,6 +383,14 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file: "reports/batchPlan/gantt.csv",
     readBy: ["campaignPlan.test.ts"],
   },
+  //  The stack-dispersion EduTool (DEV.md 4c C247): the burner's outlet
+  //  stream, which the engine half READS (flow, T, P, NO) and the test holds
+  //  the page's emission rate to, by hand, from the published NO flow.
+  {
+    caseDir: "tutorials/steady/gibbs/gibbs06_thermal_nox",
+    file: "converged/flueGas",
+    readBy: ["stackDispersion.test.ts"],
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by
