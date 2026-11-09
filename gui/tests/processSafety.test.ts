@@ -512,6 +512,32 @@ describe("process-safety: the engine's own run outputs", () => {
     };
     expect(pass(SAFETY_WITNESS_NH3_50)).toBeLessThan(pass(SAFETY_WITNESS_NH3_150));
   });
+  it("the ammonia loops: the inventory the page quotes is the one the goldens pin (C259)", () => {
+    //  The page once said the feasibility cases size no equipment and compute
+    //  no inventory; their postDict sizes the converter and three drums and
+    //  declares what each holds, and the goldens pin the result.  Read the
+    //  rows from the goldens, round as the page does, demand the prose has
+    //  them, and the direction: LESS converter gas, MORE separator liquid at
+    //  50 bar.
+    const eq = (w: string, unit: string, key: string): number => {
+      const m = new RegExp(`^equipment\\s+${unit}\\s+${key.replace(/\./g, "\\.")}\\s+([-+0-9.eE]+)`, "m")
+        .exec(tree(`tutorials/${w}/expected`));
+      if (!m) throw new Error(`${w}: no golden equipment ${unit}.${key}`);
+      return Number(m[1]);
+    };
+    const gas150 = eq(SAFETY_WITNESS_NH3_150, "Converter", "inventory.HotEffluent.mass");
+    const gas50 = eq(SAFETY_WITNESS_NH3_50, "Converter", "inventory.HotEffluent.mass");
+    const liq150 = eq(SAFETY_WITNESS_NH3_150, "Separator", "inventory.RawLiquid.mass");
+    const liq50 = eq(SAFETY_WITNESS_NH3_50, "Separator", "inventory.RawLiquid.mass");
+    expect(gas50).toBeLessThan(gas150);
+    expect(liq50).toBeGreaterThan(liq150);
+    const body = prose(SAFETY_STEPS.find((s) => s.n === 15)!.body);
+    expect(body).toContain(`${gas150.toFixed(0)} kg at 150 bar and ${gas50.toFixed(0)} kg at 50 bar`);
+    expect(body).toContain(`${(liq150 / 1000).toFixed(1)} t at 150 bar and ${(liq50 / 1000).toFixed(1)} t at 50 bar`);
+    expect(body).not.toContain("no inventory is computed");
+    const lim = SAFETY_LIMITS.find((l) => l.id === "loop-inventory")!;
+    expect(prose(lim.body)).not.toContain("size no equipment");
+  });
   it("the converter feeds: 'about four times the volume of gas' from F, T, P and the engine's Z", () => {
     const conv = (w: string) => witnessOutput(`tutorials/${w}`, "converged/PreheatedFeed");
     const F = (w: string) => ["N2", "H2", "NH3", "Ar"]
