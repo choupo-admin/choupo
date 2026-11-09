@@ -3221,6 +3221,25 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **THE SITE STOPPED DEPLOYING, AND THE CAUSE WAS OURS (2026-11-09 night).**  Vitor
+> forwarded GitHub's "publish-site: all jobs have failed", then read `680f96bd` on the
+> live app an hour after the night batch was pushed.  TWO defects, both found by
+> reading the logs rather than by retrying: (1) the EduTools smoke REFUSED ("carries no
+> [data-method-tool] marker"): C251 opens the workspace on its home, so the probe's
+> boot marker was gone -- the refusal was correct, the probe now accepts
+> `[data-method-home]` (a699bc370); a GUI change that moves what a page shows at boot
+> reaches gui/tools/driveApp, which no local gate runs; (2) GitHub Pages itself timed
+> out ("Page build failed", three builds): the site repository PROTECTS every past
+> build's hashed chunks from rsync --delete so a tab reloading inside the ten-minute
+> index cache finds them, and with no horizon assets/ had grown to 28 874 files, the
+> working tree to 9 GB and the Pages artifact to 2.2 GB against a 1 GB limit (the
+> log's own warning).  Pruned by hand (27 285 chunks older than two days and not in
+> the current build; 9 GB -> 638 MB; built first time), and the same prune is now a
+> step of publish-site.yml (007f415ae).  The alternating errored / built pattern of
+> the previous day's builds was this limit being crossed and uncrossed, read at the
+> time as "transient".  RULE: a deploy is verified by READING the served version
+> (`/wasm/version.json`), never by the push succeeding.
+
 > **C253 (the architect, 2026-11-09 night.  Vitor asked, out of curiosity and not as an
 > order -- "eu só estava a perguntar por curiosidade" -- whether the practice followed is
 > that of a responsible engineer on a project of this size, and left the answer to the
@@ -3337,6 +3356,25 @@ accepts today, and that is a policy call.
 > check_method_tools holds the home (every live tool once, from the registry) and the
 > null boot.  Not browser-checked by the general: the home is rendered in tests; the
 > commander checks it in the browser before publishing.
+> READ LIVE BY VITOR (2026-11-09, www.choupo.org at 7db938071, a screenshot): "a
+> sequência de aula acho que não faz sentido nenhum!  O ideal é aparecer tudo por
+> secções e com o Find logo muito destacado em cima, em vez de ficar pequeno e do lado
+> direito."  JUDGED on its content, and he is right on both counts: (i) the home led
+> with three sequence cards covering 18 of 74 tools, whose order nobody who teaches the
+> subject had reviewed (C221 promised that review "before code" and it never happened;
+> a distillation sequence that opens on the standard state and ends on plant cost is an
+> index of related pages, not a lesson order); (ii) a student arrives looking for ONE
+> method, and the instrument for that, Find, was a small button in the corner.  The
+> commander could not look for itself (no browser tool in the session) and published
+> on the headless smoke alone -- the screen was first SEEN by Vitor.  DECISION, revised:
+> the home is (1) the title and the one sentence, (2) a WIDE search field at the top,
+> focused on arrival, that FILTERS the page as the student types (label, blurb, shelf,
+> teaches, lesson chapters -- the index Find already has), (3) the tools BY SECTION
+> (the disciplines), each tool a card with its label and blurb; NO sequence cards on
+> the home or on the landing.  `METHOD_PATHS` stays in the registry as data and the
+> `&path=` link keeps working (an address must not break), but nothing offers a
+> sequence until one is written WITH him, from a course he teaches; a tool's own
+> "leads to" line carries the next step meanwhile.  One GUI general, `--gui`.
 
 > **C250 (Vitor, 2026-11-08 night: "a interação com o Choupo é mediada por ti pelo ChatGPT
 > que os alunos subscrevem!  Por isso é muito importante que as instruções para agentes
@@ -3376,6 +3414,7 @@ accepts today, and that is a policy call.
 > was REVERTED by the rule, although three of the four losses sit where the cut did not
 > touch (noise): each cell needs ~3 repetitions before a cut is judged.  No non-Claude
 > model measured yet (needs a key Vitor holds).
+> LANDED 2026-11-09 in the second batch (merge 4b6f82ebc).
 
 > **C249 (Vitor, 2026-11-08 night: "tenho alguma dificuldade em explicar-lhes como organizo
 > uma fábrica multi-produto e como uso processos em contínuo como o spray drying num
@@ -3468,6 +3507,7 @@ accepts today, and that is a policy call.
 > test (306 k tokens), and the finisher tried to get a competitor-name test past
 > check_doctrine by SPLITTING THE WORDS -- refused; the test was deleted, since the ban
 > is the gate's job and a test that spells the names is the violation.
+> (c) LANDED 2026-11-09 in the second batch (merge 4b6f82ebc).
 
 > **C248 (Vitor, 2026-11-08 night: "lançar um general em Fable 5.1 a rever tudo o que faz
 > falta para os meus alunos de projeto em engenharia farmacêutica ... tenho um tutorial com
@@ -3632,6 +3672,9 @@ accepts today, and that is a policy call.
 > draggable gain).  OPEN: the WASM must be rebuilt before the engine half runs in the
 > browser; no quiz on the new tool yet; the lesson pins Flowsheet.cpp lines in
 > numericsLessons.test.ts ANCHORS (any later edit re-points them).
+> LANDED 2026-11-09 in the second batch (merge 4b6f82ebc; full sweep 863 PASS, 1 FAIL
+> = the BRAIN FACTS block, 6 EXPECTED-FAIL, 27.2 min); the theory chapter ch:relaxation
+> had cited nothing and check_theory_citations refused it at integration -- cited.
 > Gate: a solverDict knob that the engine does not read is refused (the C235 class "a
 > declared field the hot path did not honour"), and one witness case per knob.  One
 > general after C245 slice 3; the slice-2 contract is its prerequisite and is landing.
