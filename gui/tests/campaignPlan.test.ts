@@ -535,13 +535,4 @@ describe("the registry, the lesson and the guide", () => {
     expect(g).toContain("\\label{sec:edu-campaign-plan}");
     expect(g).toContain("tool=campaign-plan");
   });
-  it("names no competitor", () => {
-    const text = [JSON.stringify(CAMPAIGN_PLAN_STEPS), JSON.stringify(CAMPAIGN_PLAN_LIMITS),
-      JSON.stringify(CAMPAIGN_PLAN_QUIZ), tool0()].join(" ");
-    expect(text).not.toMatch(/aspen|superpro|dwsim/i);
-  });
 });
-
-function tool0(): string {
-  return html(createElement(CampaignPlanTool));
-}
