@@ -526,10 +526,19 @@ def main():
         A, B, C = block_coeffs(w, "vaporPressure", "Antoine", "water")
         aw = (ex["composition"]["water"] * ex["P"]
               / (1e5 * 10 ** (A - B / (ex["T"] + C))))
-        if not (1.0 - 1e-6 <= aw <= 1.0):
+        #  The unit's bisection ends on the UNSATURATED side (a_w <= 1) to
+        #  1e-13 of the water, but the stream is PUBLISHED with 12 significant
+        #  digits: T to 5e-10 K, which at d ln p_sat / dT = 0.051 1/K here
+        #  moves a recomputed a_w by 2.6e-11, and y_w to 5e-13 relative.  So
+        #  the recomputation can sit above 1 by the publication's own
+        #  resolution; the upper bound is 1 + 1e-10 (four times that), still
+        #  six orders below the 1e-6 a fog would show.
+        if not (1.0 - 1e-6 <= aw <= 1.0 + 1e-10):
             fail(f"(g) the starved witness's exhaust, recomputed from the"
                  f" published stream, has a_w = {aw!r} at {ex['T']} K: it must"
-                 " be saturated and NOT supersaturated (in [1 - 1e-6, 1])")
+                 " be saturated and NOT supersaturated (in [1 - 1e-6,"
+                 " 1 + 1e-10], the upper end being the 12-digit publication's"
+                 " own resolution)")
         if abs(ks3["exhaust_humidity"] - aw) > 1e-9:
             fail(f"(g) the published exhaust_humidity"
                  f" {ks3['exhaust_humidity']!r} is not the exhaust's own a_w"
@@ -566,7 +575,7 @@ def main():
           " gas inlet T and water's critical point; the solid dryer announces"
           " its limit (solidDryer01 isotherm-reached, the cold fixture"
           " heat-bound, solidDryer02_starved_air saturation-bound with its"
-          " exhaust recomputed at a_w in [1 - 1e-6, 1], wetter than its"
+          " exhaust recomputed at a_w in [1 - 1e-6, 1 + 1e-10], wetter than its"
           " isotherm, the water it picked up equal to water_removed, closing"
           " against the energy report to 1e-4 kW).  NOT checked: the hand"
           " energy surface against the energy report (the report refuses these"
