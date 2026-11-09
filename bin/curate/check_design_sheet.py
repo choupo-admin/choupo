@@ -4100,7 +4100,12 @@ def check_gas_store(problems, notes):
             "factors.comparison_C_TM": 1.18 * cbm,
             "factors.comparison_F_P": FP}
 
-    eq = [l for l in out.splitlines() if '"item": "%s/vessel' % name in l]
+    #  The EQUIPMENT records only: a layout with roads publishes an `access`
+    #  record per placed item, `"item": "<store>/vessel<n>"` too (2026-11-09,
+    #  when the witness gained its roads), so the line must name its unit --
+    #  the same filter arm (q) uses for the tanks.
+    eq = [l for l in out.splitlines()
+          if '{ "unit": "%s", "item": "%s/vessel' % (name, name) in l]
     if len(eq) != N:
         problems.append("%s: %s should be %d vessel(s) (V_total %.6g m3 / at "
                         "most %.6g m3), the result carries %d."

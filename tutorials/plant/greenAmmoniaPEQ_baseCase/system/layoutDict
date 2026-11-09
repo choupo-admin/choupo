@@ -14,14 +14,14 @@
   hand into four rows, west to east in flow order:
     * the COMPRESSOR ROW to the south (y = -20 m), with the nitrogen,
       intercooler and aftercooler shells on the row north of it (y = -10 m);
-    * the SYNTHESIS LOOP (y = +5 to +15 m): the FEHE under the converter,
+    * the SYNTHESIS LOOP (y = +7 to +15 m): the FEHE under the converter,
       the water cooler and the chiller, the separator, the let-down drum and
       the storage flash;
     * the TANK FARM well to the south-east, downwind;
     * the HYDROGEN BUFFER's ten vessels (added with DEV.md 4c C89) to the
       south-west of the make-up train, two rows of five;
     * the CONTROL ROOM to the north-west, upwind, and an ELECTRICAL
-      SUBSTATION by the compressors -- both NON-PROCESS items;
+      SUBSTATION west of the compressors -- both NON-PROCESS items;
     * a BUND round the tank farm and a kerbed slab under the loop's liquid
       vessels draining to a remote pit (DEV.md 4c C134, `bunds` below).
   Re-draw from scratch with `bin/choupo-layout --draft --force .`: it keeps
@@ -43,18 +43,45 @@
   from the standard its client specifies, and its wind from the site's
   measured wind rose.
 
-  TWO FINDINGS ARE LEFT ON PURPOSE -- the groups' first task is to resolve
-  them, and to say why their resolution is safe:
-    1. the two ammonia tanks stand 12 m apart, shell to shell, against the
-       17 m this file declares between two tanks (a separation shortfall);
-    2. the electrical substation stands 8 m from the axis of MakeupComp1's
-       declared zone 2, whose radius is 9 m (an ignition source inside a
-       hazardous area).
-  The run ANNOUNCES both (console, the caveat block, the result JSON, and
-  Reports -> "Plant layout (3D)") rather than refusing: a short distance is
-  a layout a student must see and defend, while an overlap is not a layout
-  at all and is refused.  The substation is also missing from the
-  separation table on purpose: which distance it needs is the groups' call.
+  THE REFERENCE PLANT RAISES NO FINDING (2026-11-09).  Until then this file
+  left two on purpose for the groups to resolve: the two ammonia tanks 12 m
+  apart against the 17 m declared between two tanks, and the electrical
+  substation 8 m from the axis of MakeupComp1's zone 2 (radius 9 m), an
+  ignition source inside a hazardous area.  This is the plant shown as the
+  course's reference, so both are resolved here, each the way a layout
+  answers it:
+    1. the tanks stand 18 m apart, shell to shell (tank2 moved east inside
+       the same bund), 1 m more than the declared 17 m;
+    2. the substation stands west of the compressor row, upwind of every
+       release source and outside every zone, and the separation table now
+       says which distance it needs (the substation rows below).
+  The checks still fire on any copy that breaks them: move tank2 back to
+  x 181 m, or the substation back to (16, -31) m, and the run ANNOUNCES the
+  shortfall and the ignition source in the zone (console, the caveat block,
+  the result JSON and Reports -> "Plant layout (3D)") rather than refusing:
+  a short distance is a layout a student must see and defend, while an
+  overlap is not a layout at all and is refused.
+
+  THE SITE (2026-11-09, the method of ammonia02_full_plant, DEV.md 4c C90,
+  C93).  A ring road round the process block (main, east, north and west
+  roads), the main road carried west past the hydrogen buffer, a tank-farm
+  road along the bund's north side, an ENTRANCE road north to the MAIN GATE
+  by the control room (upwind: the wind blows from the north-west), and an
+  EMERGENCY GATE at the east end of the tank-farm road, so the fire brigade
+  has a second way in that reaches the tanks first.  The FENCE is the plot
+  boundary; every pipe that enters or leaves the plant crosses it at a
+  labelled point.  Not drawn, said rather than invented: the cooling-water
+  circuit, the refrigeration package, the steam system, the electrolysers
+  and the air separation unit -- all outside this battery limit, and named
+  as such where their streams cross the fence.
+
+  WHAT STILL HANGS (an ENGINE gap, not this file's): the ten hydrogen-buffer
+  vessels and the two ammonia tanks are stores ATTACHED to a boundary stream
+  in system/postDict (DEV.md 4c C44, C89), not flowsheet units, so no pipe is
+  routed to them: H2Feed runs from the fence to the make-up mixer and
+  ProductNH3 from the storage flash to the fence, past the stores they feed.
+  A store that is a flowsheet unit gets ONE pipe, to its first vessel; no
+  grammar routes a manifold to every vessel of a store.
 
   Grammar and checks: docs/design/a-plant-layout-is-declared-and-checked.md
 \*---------------------------------------------------------------------------*/
@@ -140,14 +167,14 @@ items
         orientation alongX;
     }
 
-    //  ---- the synthesis loop (y = +5 to +15 m) -----------------------------
+    //  ---- the synthesis loop (y = +7 to +15 m) -----------------------------
     //  The FEHE is FOUR 1.07 m shells of 6.1 m tubes in series, and a sizer
     //  that designs several shells publishes no single shell to draw: its
     //  box is DECLARED -- two stacked pairs side by side, by hand.
     {
         item        "FEHE";
         x           40 m;
-        y           5 m;
+        y           7 m;
         z           0 m;
         orientation alongX;
         footprint   { length 7 m; width 3 m; height 2.6 m; }   // author-set
@@ -174,14 +201,14 @@ items
     {
         item        "WaterCooler";
         x           52 m;
-        y           5 m;
+        y           7 m;
         z           0 m;
         orientation alongX;
     }
     {
         item        "Chiller";
         x           62 m;
-        y           5 m;
+        y           7 m;
         z           0 m;
         orientation alongX;
     }
@@ -229,11 +256,12 @@ items
     //  A tank publishes its volume, not a shape, so each plan box is
     //  DECLARED: 17 898 m3 each (design/NH3Storage/tank<n>), drawn as a
     //  34 m by 20 m cylinder's bounding box (pi/4 x 34^2 x 19.7 m = 17 900
-    //  m3), the proportions an author-set choice.  The two stand 12 m apart
-    //  (FINDING 1 in the header).
+    //  m3), the proportions an author-set choice.  The two stand 18 m apart,
+    //  shell to shell, against the 17 m declared below (the header says why
+    //  this was a finding until 2026-11-09).
     {
         item        "NH3Storage/tank1";
-        x           135 m;
+        x           133 m;
         y           -35 m;
         z           0 m;
         orientation alongX;
@@ -247,7 +275,7 @@ items
     }
     {
         item        "NH3Storage/tank2";
-        x           181 m;              // 12 m shell to shell (see FINDING 1)
+        x           185 m;              // 18 m shell to shell, against the 17 m declared
         y           -35 m;
         z           0 m;
         orientation alongX;
@@ -265,17 +293,19 @@ items
     //  drawn from its OWN published D and H -- standing because the Turton
     //  vessel set that costs them is the vertical one.  Two rows of five at a
     //  10 m pitch: 4.6 m shell to shell against the 4 m this file declares
-    //  between two vessels; 13 m from N2Boost against 9 m; 62 m from the
-    //  control room against 30 m.  West of the rack's west end, where the
-    //  hydrogen arrives, and across the wind from the substation (bearing
-    //  70-85 deg against a downwind 135 deg).  Each declares a hydrogen
+    //  between two vessels; south of the main road (rows at y = -45 and -55
+    //  m since the roads were declared, 2026-11-09), 20 m from N2Boost
+    //  against 9 m and 24 m from the substation, which stands north of them
+    //  and so never downwind (bearing about 350 deg against a downwind 135
+    //  deg).  West of the rack's west end, where the hydrogen arrives.  Each
+    //  declares a hydrogen
     //  release: hydrogen at up to 100 bar at the nozzles, the relief valves
     //  and the instrument connections.  Positions, zones and the pitch are
     //  AUTHOR-SET, like everything else in this file.
     {
         item        "H2Buffer/vessel1";
         x           -60 m;
-        y           -35 m;
+        y           -45 m;
         z           0 m;
         orientation vertical;
         release
@@ -288,7 +318,7 @@ items
     {
         item        "H2Buffer/vessel2";
         x           -50 m;
-        y           -35 m;
+        y           -45 m;
         z           0 m;
         orientation vertical;
         release
@@ -301,7 +331,7 @@ items
     {
         item        "H2Buffer/vessel3";
         x           -40 m;
-        y           -35 m;
+        y           -45 m;
         z           0 m;
         orientation vertical;
         release
@@ -314,7 +344,7 @@ items
     {
         item        "H2Buffer/vessel4";
         x           -30 m;
-        y           -35 m;
+        y           -45 m;
         z           0 m;
         orientation vertical;
         release
@@ -327,7 +357,7 @@ items
     {
         item        "H2Buffer/vessel5";
         x           -20 m;
-        y           -35 m;
+        y           -45 m;
         z           0 m;
         orientation vertical;
         release
@@ -340,7 +370,7 @@ items
     {
         item        "H2Buffer/vessel6";
         x           -60 m;
-        y           -45 m;
+        y           -55 m;
         z           0 m;
         orientation vertical;
         release
@@ -353,7 +383,7 @@ items
     {
         item        "H2Buffer/vessel7";
         x           -50 m;
-        y           -45 m;
+        y           -55 m;
         z           0 m;
         orientation vertical;
         release
@@ -366,7 +396,7 @@ items
     {
         item        "H2Buffer/vessel8";
         x           -40 m;
-        y           -45 m;
+        y           -55 m;
         z           0 m;
         orientation vertical;
         release
@@ -379,7 +409,7 @@ items
     {
         item        "H2Buffer/vessel9";
         x           -30 m;
-        y           -45 m;
+        y           -55 m;
         z           0 m;
         orientation vertical;
         release
@@ -392,7 +422,7 @@ items
     {
         item        "H2Buffer/vessel10";
         x           -20 m;
-        y           -45 m;
+        y           -55 m;
         z           0 m;
         orientation vertical;
         release
@@ -415,14 +445,39 @@ items
         ignition    "non-hazardous-area electrical equipment and people: treated as an ignition source";
     }
     {
-        nonProcess  "substation";       // FINDING 2 in the header
+        nonProcess  "substation";       // west of the compressors: outside every zone, upwind
         kind        substation;
-        x           16 m;
-        y           -31 m;
+        x           -35 m;
+        y           -15 m;
         z           0 m;
         orientation alongX;
         footprint   { length 10 m; width 6 m; height 4 m; }   // author-set
         ignition    "switchgear and transformers feeding the compressor motors: arcing contacts, an ignition source";
+    }
+    //  The two ways in (2026-11-09).  A gate stands BESIDE the end of the
+    //  road that serves it, never on it; the engine opens the fence there and
+    //  carries the road to the opening.
+    {
+        nonProcess  "mainGate";
+        kind        gate;
+        x           -16 m;
+        y           51 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 4 m; width 3 m; height 3 m; }   // author-set
+        source      "author-set assumption for this exercise; not a building design";
+        reason      "the main entrance on the north fence: a guardhouse and its barrier beside the entrance road, upwind of the plant and next to the control room, so nobody arriving crosses the process area";
+    }
+    {
+        nonProcess  "emergencyGate";
+        kind        gate;
+        x           217 m;
+        y           8 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 2 m; width 2 m; height 2.5 m; }   // author-set
+        source      "author-set assumption for this exercise; not a building design";
+        reason      "the second way in, on the east fence at the end of the tank-farm road, normally locked: the fire brigade reaches the tanks first, and has a way in when the north gate is blocked";
     }
 );
 
@@ -448,6 +503,14 @@ separation
             { between ( building vessel );              distance 30 m; }
             { between ( building shellTubeHX );         distance 30 m; }
             { between ( building storageTank );         distance 60 m; }
+            //  The substation (2026-11-09): an ignition source that must not
+            //  stand in a zone (checked by the zones, not by this table), held
+            //  off the machines and vessels it does not serve by a round
+            //  number of the same kind as the rows above.
+            { between ( substation compressor );        distance 15 m; }
+            { between ( substation vessel );            distance 15 m; }
+            { between ( substation shellTubeHX );       distance 15 m; }
+            { between ( substation storageTank );       distance 60 m; }
         );
     }
 );
@@ -474,10 +537,10 @@ wind
 //  across to its LANE on this rack, along it, and down to the top of its
 //  target -- and its length is published (Reports -> "Plant layout (3D)",
 //  the pipe register).  The rack runs along plan x between the compressor
-//  row (y = -20 to -10) and the reaction row (y = 5 to 14); the plant's
+//  row (y = -20 to -10) and the reaction row (y = 7 to 14); the plant's
 //  inlets arrive at its west end (xStart) and its outlets leave at its east
-//  end (xEnd), the process area's battery limit -- the tank farm beyond it
-//  is fed from there.  EVERY NUMBER HERE IS AN AUTHOR-SET ASSUMPTION FOR THE
+//  end (xEnd), and each is carried from there to its crossing on the fence
+//  (the `fence` block below).  EVERY NUMBER HERE IS AN AUTHOR-SET ASSUMPTION FOR THE
 //  STUDENTS TO REPLACE: where a rack runs, how high and how wide, is a
 //  design choice they must defend (road clearance, access, the length it
 //  costs).  Delete the block and the engine routes on its stated default
@@ -494,17 +557,112 @@ pipeRack
     reason       "author-set assumption for the students to replace: a rack between the compressor and the reaction rows, clear of the roads at 7 m, its east end the process area's battery limit";
 }
 
+//  THE ROADS (2026-11-09; the method of ammonia02_full_plant, DEV.md 4c C90).
+//  Centre lines at grade, 6 m wide (the entrance 7 m, two-way).  The MAIN
+//  road runs south of the compressor row from the hydrogen buffer to the
+//  EAST road; the east, NORTH and WEST roads close a ring round the process
+//  block, so a fire tender reaches every item from two sides; the west road
+//  runs on north as the ENTRANCE road to the main gate; the TANK-FARM road
+//  leaves the east road along the north side of the bund to the emergency
+//  gate.  The west and east roads cross UNDER the pipe rack (7 m, above the
+//  5 m headroom).  The engine refuses a road through a footprint or under a
+//  rack or pipe lower than the headroom, and announces a road no gate
+//  reaches, a building no road serves and a process item with no road
+//  within the access distance.  AUTHOR-SET ASSUMPTIONS throughout; no truck
+//  route is declared (no process stream moves by road here).
+roads
+{
+    source   "author-set assumption for this exercise; not taken from a road or fire standard";
+    reason   "a ring road round the process block so a fire tender reaches every item from two sides, joined to the main gate by the entrance road, and a road along the tank farm to a second gate";
+    headroom 5 m;
+    access
+    {
+        distance 20 m;
+        source   "author-set assumption for this exercise; not taken from a fire code";
+        reason   "the reach of a fire tender's hoses and of a mobile crane parked on the road, as a round number";
+    }
+    noTraffic ( 1 );
+    network
+    (
+        {
+            road      "main";
+            width     6 m;
+            reason    "south of the compressor row, from the hydrogen buffer to the east road";
+            waypoints ( { x -65 m; y -30 m; } { x 95 m; y -30 m; } );
+        }
+        {
+            road      "east";
+            width     6 m;
+            reason    "past the storage flash, under the rack's east end, closing the ring";
+            waypoints ( { x 95 m; y -30 m; } { x 95 m; y 30 m; } );
+        }
+        {
+            road      "north";
+            width     6 m;
+            reason    "behind the loop: the converter, the separator and the let-down drums, clear of the loop kerb's pit";
+            waypoints ( { x -10 m; y 30 m; } { x 95 m; y 30 m; } );
+        }
+        {
+            road      "west";
+            width     6 m;
+            reason    "beside the nitrogen booster, under the rack's west end, closing the ring";
+            waypoints ( { x -10 m; y -30 m; } { x -10 m; y 30 m; } );
+        }
+        {
+            road      "entrance";
+            width     7 m;
+            reason    "the main gate to the ring, past the control room; two-way";
+            waypoints ( { x -10 m; y 30 m; } { x -10 m; y 50 m; } );
+        }
+        {
+            road      "tankFarm";
+            width     6 m;
+            reason    "along the north side of the tank bund to the emergency gate, so a fire tender reaches both tanks from the road";
+            waypoints ( { x 95 m; y 3 m; } { x 215 m; y 3 m; } );
+        }
+    );
+}
+
 //  THE PLOT (DEV.md 4c C82).  The engine publishes the plot area as the
-//  envelope of the placed footprints and the routed pipes, grown on every
-//  side by this margin -- the ground kept clear for the roads, the fence and
-//  access.  AUTHOR-SET ASSUMPTION, a round number for this exercise, not
-//  taken from any spacing standard; the students replace it with their own
-//  site's.  The economics prices this plot area as land (system/postDict,
-//  `economics { land { ... } }`).
+//  envelope of the placed footprints, the routed pipes and the declared
+//  roads, grown on every side by this margin -- the fence and a clear strip
+//  inside it.  The roads are declared above and inside the envelope, so the
+//  margin no longer carries them (it was 10 m "for the perimeter road"
+//  before they were declared).  AUTHOR-SET ASSUMPTION, a round number for
+//  this exercise, not taken from any spacing standard; the students replace
+//  it with their own site's.  The economics prices this plot area as land
+//  (system/postDict, `economics { land { ... } }`).
 plot
 {
-    margin  10 m;
-    reason  "author-set assumption for this exercise: a 10 m strip for the perimeter road, the fence and access around the plant; not taken from any spacing standard";
+    margin  5 m;
+    reason  "author-set assumption for this exercise: the fence and a 5 m clear strip inside it; the roads are declared in `roads` and lie inside the envelope; not taken from any spacing standard";
+}
+
+//  THE FENCE (2026-11-09; DEV.md 4c C93).  The engine draws it from the PLOT
+//  above -- the plot's boundary, moved `inset` inward -- so its line is typed
+//  nowhere.  It opens at each gate, as wide as the road that serves it.
+//  Every pipe that enters or leaves the plant crosses it at a published
+//  point, and each crossing says where the stream comes from or goes to.
+//  The two feeds arrive from plants OUTSIDE this battery limit (the project
+//  base data's electrolysers and air separation unit); the three gas outlets
+//  leave on the north side, near the units that make them, to treatments
+//  this case does not model (its README: the purge scrubber and the
+//  let-down gas recovery are the groups' work).  Every origin and
+//  destination is an AUTHOR-SET ASSUMPTION for this exercise, not a survey.
+fence
+{
+    source  "author-set assumption for this exercise; not taken from any site survey or fencing standard";
+    reason  "the site boundary: the land the plot prices, closed by a fence with two gates, and the point where every pipeline enters or leaves the plant";
+    inset   0 m;
+    crossings
+    (
+        { stream H2Feed;     from "the electrolyser plant, outside this battery limit: hydrogen at 30 bar (the H2Buffer vessels inside the fence are a store attached to this stream, not on its pipe)";  side west; }
+        { stream N2Feed;     from "the air separation unit, outside this battery limit: nitrogen at 8 bar";  side west; }
+        { stream Purge;      to   "purge-gas treatment outside this battery limit (the scrubber and hydrogen recovery are not modelled)";  side north;  at 55 m; }
+        { stream LetdownGas; to   "let-down gas recovery outside this battery limit (not modelled)";  side north;  at 70 m; }
+        { stream FlashGas;   to   "storage flash-gas recovery outside this battery limit (not modelled)";  side north;  at 78 m; }
+        { stream ProductNH3; to   "the ammonia product: stored in the two refrigerated tanks of NH3Storage, a store attached to this stream and not on its pipe, then shipped from outside this battery limit";  side east; }
+    );
 }
 
 //  SECONDARY CONTAINMENT (DEV.md 4c C134).  Every item in the open that holds

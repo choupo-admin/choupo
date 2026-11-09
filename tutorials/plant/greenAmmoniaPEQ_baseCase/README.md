@@ -399,17 +399,33 @@ the GUI under Reports → "Plant layout (3D)", and learn to read it in the
 EduTool **"Plant layout: where each item stands, and why"** (Process design
 & economics shelf).
 
-**Two findings are left for you to resolve, on purpose** — say why your
-resolution is safe:
+**The site.** The plot plan is a site, laid out by the method of
+[`ammonia02_full_plant`](../ammonia02_full_plant): a ring road round the
+process block (so a fire tender reaches every item from two sides), the
+main road carried west past the hydrogen buffer, a road along the tank
+bund, a **main gate** on the north fence beside the control room (upwind:
+the wind blows from the north-west) and an **emergency gate** on the east
+fence at the end of the tank-farm road. The **fence** is the plot's
+boundary, and every pipe that enters or leaves the plant crosses it at a
+labelled point that names where it comes from or goes to — the
+electrolysers and the air separation unit for the feeds, the gas
+treatments this case does not model for the three gas outlets.
 
-1. the two ammonia tanks stand 12 m apart, shell to shell, against the 17 m
-   the file declares between two tanks — tank spacing is the first thing a
-   tank-farm layout answers;
-2. the electrical substation stands inside the zone 2 envelope of
-   `MakeupComp1` (8 m from its axis, radius 9 m) — switchgear is an ignition
-   source and does not belong in a hazardous area. The substation is also
-   missing from the separation table on purpose: which distance it needs is
-   your call.
+**The plan raises no finding.** Until 2026-11-09 it left two on purpose
+(the two ammonia tanks 12 m apart against the 17 m the file declares
+between two tanks, and the electrical substation inside `MakeupComp1`'s
+zone 2); as the course's reference plant it resolves both — the tanks
+stand 18 m apart, the substation west of the compressors, upwind and
+outside every zone, with its own rows in the separation table. Move
+`tank2` back to x 181 m, or the substation back to (16, −31) m, and the run
+announces each again: say why your own arrangement is safe.
+
+**What still hangs, and why.** The ten buffer vessels and the two ammonia
+tanks are stores attached to a boundary stream in `system/postDict`, not
+flowsheet units, so no pipe is routed to them: `H2Feed` runs from the fence
+to the make-up mixer and `ProductNH3` from the storage flash to the fence,
+past the stores they feed. The fence labels say so. Routing a manifold to
+every vessel of a store is not something the engine does yet.
 
 ## Engine notes
 
