@@ -3040,12 +3040,258 @@ the bottleneck first, with the engine's own utilisation, its ``announced''
 mark and the batch plan's stage utilisation beside it, and the Gantt chart of
 the first campaign (SVG download); nothing in it is recomputed by the app. It
 computes no machine physics (no compaction force, no blend uniformity). \textbf{Not computed:} the intermediate store's
-size, a second product sharing the line, QC release times. Worked case:
+size, QC release times; several products sharing the line are in the
+next section (Organising a multi-product plant), with what that plan
+still does not do. Worked case:
 \texttt{tutorials/batch/plant/apalutamide01\_tablets}. The method is taught in
 the batch-process chapters of design textbooks (Biegler, Grossmann \&
 Westerberg, \emph{Systematic Methods of Chemical Process Design}; Seider
 et al., \emph{Product and Process Design Principles}) --- cited by title
 only.
+
+\hypertarget{organising-a-multi-product-plant}{%
+\section{Organising a multi-product
+plant}\label{organising-a-multi-product-plant}}
+
+A pharmaceutical or fine-chemicals site rarely makes one product. It
+makes several strengths, forms or intermediates on \emph{one} set of
+equipment, and the design question changes from ``how big is each
+machine'' to ``how is the year's time divided between the products, and
+what does it cost to change from one to the next''. This section is the
+method Choupo's batch plan uses, in the order a student should think it
+through, with the engine's lines and the standards behind each step.
+The worked cases are
+\texttt{tutorials/batch/plant/donepezil02\_two\_strengths} (two
+strengths of one tablet, one product after another) and
+\texttt{tutorials/batch/plant/apalutamide01\_tablets} (a continuous
+spray dryer inside a lot regime). The method is taught in the
+batch-process chapters of design textbooks (Biegler, Grossmann \&
+Westerberg, \emph{Systematic Methods of Chemical Process Design};
+Douglas, \emph{Conceptual Design of Chemical Processes}) --- cited by
+title only: neither was read for the engine, and the arithmetic is stated
+in full in \file{src/postProcessing/BatchPlanPass.H}.
+
+\subsection{Trains, stages and the lot}\label{mp-trains-stages-lot}
+
+A \textbf{stage} is one step of the recipe done in one kind of machine
+(binder preparation, granulation, drying, compression, coating,
+packaging). Stages that run lot by lot together form a \textbf{train};
+two trains are decoupled by an intermediate store, so each has its own
+shifts, cycle and campaigns (\file{BatchPlanPass.H}:133--136). The
+flowsheet is the material balance \emph{per kg of product}; each stage's
+mass per lot is $f_j B$, $f_j$ read from the converged run and never
+typed (\file{BatchPlanPass.H}:92--100).
+
+The \textbf{lot} is the unit quality control releases: a quantity of
+material made in one process run, with uniform character and quality
+(ICH Q7, \emph{Good Manufacturing Practice Guide for Active
+Pharmaceutical Ingredients}, definitions of ``batch'' and ``lot'').
+Its size is therefore a regulatory as well as an equipment choice. In
+Choupo the case declares it (\texttt{lot \{ rule declared; stream
+finalBlend; mass 300 kg; \}}) or takes it from the largest vessel
+(\texttt{rule largestEquipment}), and it is the $B$ of every size
+factor (\file{BatchPlanPass.H}:59--64, 98). Lots a year are $N = \lceil Q /
+B \rceil$ (\file{BatchPlanPass.cpp}:518).
+
+\subsection{Cycle time, the limiting stage, units in and out of
+phase}\label{mp-cycle-limiting}
+
+A stage's cycle $t_j$ is charge + process + discharge + clean. The
+stage with the longest cycle per operating unit \emph{limits} its
+train: $T_L = \max_j t_j / N_{op,j}$ is the interval at which a lot can
+leave the train (\file{BatchPlanPass.H}:104--113;
+\file{BatchPlanPass.cpp}:575--583 picks the limiting stage). Two ways to
+shorten it: a second unit \emph{out of phase} takes alternate lots, so
+the stage's share is $t_j/2$; a second unit \emph{in phase} shares each
+lot, so each vessel is half the size and the cycle is unchanged. The
+limiting stage is a property of the \emph{product} as well as the plant:
+in \texttt{donepezil02\_two\_strengths} the 5\,mg tablet is the 10\,mg
+tablet at half the weight, so the same 300\,kg bin holds twice the
+tablets and the press and the packaging line run twice as long (the
+case's per-product \texttt{stages}), and the packaging line limits the
+tableting train for \emph{both} products but at 11\,h for one and 20\,h
+for the other. A stage busy a small fraction of its cycle and never
+limiting is oversized or could be shared; the plan announces it
+(\texttt{lowUtilisation}).
+
+\subsection{Campaigns and changeovers}\label{mp-campaigns}
+
+Between lots of one product a stage is cleaned (\texttt{cleanTime}).
+Between \emph{campaigns} the whole train is cleaned and cleared
+(\texttt{changeover}); between campaigns of \emph{different} products
+every stage declares its own clean (\texttt{productChangeover}) and the
+train waits until the \emph{slowest} stage is clean
+(\file{BatchPlanPass.H}:195--217; \file{BatchPlanPass.cpp}:602). Why a
+changeover costs hours, not minutes: the next product may only start on
+equipment shown to be clean, and that is \textbf{cleaning validation}
+--- documented evidence, by swab or rinse sampling against
+limits fixed for the product that follows, that residues of the
+previous product are removed (EU GMP \emph{Annex 15: Qualification and
+Validation}, the cleaning-validation section; the line clearance
+before the next lot is part of Chapter 5 of the EU GMP \emph{Guide},
+Production). The case declares the hours with a source and reason;
+Choupo does not compute them.
+
+The clean can depend on the \emph{direction}. In the donepezil case the
+10\,mg coat is yellow (iron oxide), the 5\,mg is white: a trace of
+yellow in a white coat shows, a trace of white in a yellow one does not.
+So the clean \emph{before the white product} is the long one (12\,h at
+the pan) and the clean before the yellow one short (6\,h): the case
+declares it as \texttt{changeoverTo \{ strength5 12 h; \}} on the
+product that has just finished (grammar \file{BatchPlanPass.H}:173--177; \file{BatchPlanPass.cpp}:476--482).
+
+\subsection{Single-product campaigns versus mixed
+sequencing}\label{mp-sequencing}
+
+Two ways to share a plant between products. Choupo ships one.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Single-product campaigns}: all of product A's lots in
+  campaigns of $n_c$ lots, then all of B's; the train is cleaned
+  between campaigns of one product (\texttt{changeover}) and between
+  products (\texttt{productChangeover}). The classical
+  flow-shop form for a plant with few products and long runs
+  (\file{BatchPlanPass.H}:195--217).
+\item
+  \textbf{Mixed (interleaved) sequencing}: A, B, A, B\ldots{} lot by lot.
+  It shortens the inventory of each product but pays a changeover
+  \emph{per lot}, and needs a scheduling optimiser. Not built
+  (\file{BatchPlanPass.H}:264--275).
+\end{itemize}
+Choupo ships the first because it is the one whose arithmetic can be
+written on a page and checked by hand, and because for a drug product
+the cleaning validation makes every changeover expensive. Its honest
+consequence, stated in the engine: \emph{the order of the campaigns
+moves the year only through the direction-dependent cleans}
+(\file{BatchPlanPass.H}:219--224). With cleans that depend on the stage
+alone, any order costs the same and the order sets only the Gantt chart.
+With \emph{two} products the plan also wraps the clean after the last
+campaign round to the first product (\file{BatchPlanPass.H}:208--210),
+so both directions are paid once whichever goes first, and the order is
+still free; from three products on it becomes a real decision, and it
+is the student's: the engine never takes it
+(\file{BatchPlanPass.H}:159--162). One rotation a year is built (each
+product's campaigns back to back); several rotations, trading
+changeovers for finished-goods inventory, are not
+(\file{BatchPlanPass.H}:264--275).
+
+The equipment is sized for the product that needs the most: each vessel
+for $\max_i S_{ij} B_i$, and the case names which product that is
+(\texttt{sizingProduct}, \file{BatchPlanPass.cpp}:700).
+
+\subsection{Intermediate storage between
+trains}\label{mp-storage}
+
+The textbook policies (Biegler et al.; cited by title) are
+\textbf{ZW} (zero wait: the product leaves the stage straight into the
+next, or is lost), \textbf{NIS} (no intermediate storage: the product
+waits in the unit that made it, blocking it) and \textbf{UIS}
+(unlimited intermediate storage: a tank between every pair of
+stages). What Choupo assumes: \emph{within} a train, a stage hands to
+the next as one event seen from both ends, and a vessel that empties
+through the stage it feeds is held for that stage's processing time
+(\texttt{dischargeTime throughFedStage}) --- the NIS behaviour;
+\emph{between} trains, an intermediate store of unlimited size
+decouples them, each with its own campaigns (UIS), \textbf{but the
+store is not sized} (\file{BatchPlanPass.H}:264). A solid-dose
+plant's final-blend store is the IBCs in which the blend waits for QC
+release, which is the physical reason the two trains are decoupled.
+
+\subsection{A continuous unit in a lot regime}\label{mp-continuous}
+
+A spray dryer, a roller compactor or a packaging line runs
+\emph{continuously}, yet the plant must release \emph{lots}. The
+industrial arrangement, and the one the batch plan models, has three
+parts. Worked example: the spray-drying train of
+\texttt{apalutamide01\_tablets}.
+
+\begin{enumerate}
+\tightlist
+\item
+  The continuous machine is a \textbf{semicontinuous stage} whose
+  operating time is its own rate over the lot:
+  \texttt{type semicontinuous; operatingTime fromFlowsheet;}, valid for a
+  stage whose unit's throughput its declared hardware fixes
+  (\file{BatchPlanPass.cpp}:423--428;
+  \texttt{apalutamide01\_tablets/system/postDict}:175--179). The
+  machine is \emph{not} cleaned between lots (\texttt{cleanTime 0 h}),
+  but at the campaign's changeover
+  (\texttt{lotsPerCampaign 7; changeover 48 h;}, same file, 110--113).
+\item
+  It is \textbf{fed from a batch tank}: the solution is made lot by lot
+  in a vessel, and the vessel is held while it feeds the dryer, so its
+  discharge is \texttt{dischargeTime throughFedStage}
+  (\file{BatchPlanPass.cpp}:453--458; same file, 165--171). The tank,
+  not the dryer, is where the lot's identity lives.
+\item
+  The train has \textbf{its own available time}: the dryer runs round
+  the clock (7\,920\,h) while the solid-dose suite runs two day shifts
+  (3\,840\,h), decoupled by the store of dried powder.
+\end{enumerate}
+\textbf{What is a lot of a continuous stage?} Not the machine's
+hours. ICH Q13, \emph{Continuous Manufacturing of Drug Substances and
+Drug Products} (2023), allows the batch (lot) to be defined by a
+quantity of material, by a run time, or by the quantity of input
+material --- the batch-definition discussion of the guideline's
+continuous-manufacturing section (the section number is not given here:
+the text was not verified clause by clause). The plan's practice is the
+\emph{input} definition: the lot is the dryer's feed from \emph{one
+tank of solution} (one lot of dispersion), and the dryer's output over
+the time that takes carries that lot's identity; a time-window lot is
+the alternative, and in the plan it is the declared operating time and
+the lots per campaign. Whichever is chosen is a regulatory decision the
+case must state.
+
+\subsection{The year's Gantt chart and the deliverables of the
+plan}\label{mp-gantt}
+
+The plan publishes, per train, the stage cycles, $T_L$ and the limiting
+stage; per product, the lots, campaigns and spans; per stage, the busy
+hours and occupancy; the year as a Gantt chart of campaigns and
+changeovers, with each clean named by the direction it goes. The GUI's
+Batch plan section draws it from the engine's own numbers, and nothing
+is recomputed there. A plan whose busiest stage needs more hours than its
+train has is refused with the remedy named (an out-of-phase unit, a
+larger lot, more hours), and the year's flows for the economics are
+$Q/r_P$ (\texttt{streamFactor fromBatchPlan}).
+
+\textbf{Not computed}: the intermediate store's size, mixed-product
+campaigns, several rotations a year, an optimiser of the order,
+stochastic QC release times, and any labour or utility schedule following
+the plan.
+
+\textbf{The tools of a single-product plan, over several products}
+(\texttt{donepezil02\_two\_strengths}). The per-machine cleaning water,
+the machines' fit to their ratings and the clean-utilities pass all run
+on a multiproduct plan, each announcing that it ran over $N$ products.
+\emph{Cleaning} counts, for each product $i$ on a machine of $N_{ip}$
+instances in phase and $N_{op}$ out of phase: $N_i N_{ip}$ cleans after
+its lots, $(c_i-1)N_{ip}N_{op}$ at its campaign changeovers and
+$N_{ip}N_{op}$ at the one product changeover after its last campaign
+(a lone product: a changeover after every campaign); water and effluent
+are those counts times the declared volumes, summed over the products,
+and the log and \texttt{kpis.cleaning} carry one row per product beside
+the totals. The \emph{rated machine} is checked against the lot and the
+operating time of \emph{each} product; the refusal names the product
+that does not fit, the published utilisation is the binding product's,
+and a strength with its own tablet weight declares it
+(\texttt{itemMassByProduct}). The \emph{HVAC} is room-based, so it does
+not depend on the product mix and is computed once; the \emph{purified
+water} is drawn per lot of each product and summed over the year, the
+peak being the largest overlap of the multiproduct Gantt. What the case
+declares is still the case's: the volumes, the ratings and the air
+changes are assumptions to replace.
+
+\textbf{References} (by title; none transcribed). Biegler, Grossmann \&
+Westerberg, \emph{Systematic Methods of Chemical Process Design}
+(batch-process chapters); Douglas, \emph{Conceptual Design of Chemical
+Processes}; ICH Q7, \emph{Good Manufacturing Practice Guide for Active
+Pharmaceutical Ingredients}; ICH Q13, \emph{Continuous Manufacturing of
+Drug Substances and Drug Products} (2023); EU GMP, \emph{Annex 15:
+Qualification and Validation} (cleaning validation) and \emph{Chapter 5:
+Production}.
 
 \hypertarget{cost-estimation--profitability}{%
 \section{Cost estimation \&

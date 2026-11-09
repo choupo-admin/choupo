@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  Talc: 0.546 mg per tablet COATED (6.5 % of the coat) -- AUTHOR-SET coat, see README section 2.  Basis: the 712 800 tablets/h the press accepts.  (0.389189 kg/h.)
+
+componentMolarFlows
+{
+    talcPowder                   0.001026182108 kmol/h;
+}
+
+T               298.15 K;
+P               1.01325 bar;
+
+phases
+{
+    solid
+    {
+        componentMolarFlows
+        {
+            talcPowder 0.001026182108 kmol/h;
+        }
+    }
+}

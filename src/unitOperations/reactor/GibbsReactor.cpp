@@ -27,7 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "GibbsReactor.H"
-
+#include "core/InfeasibleTrial.H"   // the adiabatic T search refuses a trial (C245 3a)
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "gibbsMethod/GibbsMethod.H"
@@ -481,15 +481,15 @@ int GibbsReactor::solve(const DictPtr& dict,
             ? feedEnthalpy_W(feedDict, T_in, P_in, prob) : 0.0;
         const scalar Q_J_s = Q_kJ_per_kmol * F_mol_s;
 
-        //  A PENALTY INSIDE A NEWTON RESIDUAL IS A SOLVER AID, AND IT IS
-        //  ANNOUNCED (2026-09-27, DEV.md §5 A3).  Where the inner equilibrium
-        //  does not converge there is no enthalpy to balance, so the residual
-        //  returns 1e30 -- which is not an energy balance, and which the
-        //  central-difference derivative below then differences into a slope
-        //  of order 1e30.  The value is unchanged (changing it would move
-        //  every adiabatic Gibbs answer that ever touched it); what changed is
-        //  that each temperature at which it was returned is counted and the
-        //  run says so below, instead of stepping on a penalty in silence.
+        //  AN UNCONVERGED INNER EQUILIBRIUM IS AN INFEASIBLE TRIAL, NOT A
+        //  NUMBER (C245 slice 3a).  It was a 1e30 penalty that the central
+        //  difference below differenced into a slope of order 1e30 (announced
+        //  since 2026-09-27, DEV.md §5 A3; removed by C245).  Where the inner
+        //  equilibrium does not converge there is no enthalpy to balance, so
+        //  the residual THROWS `InfeasibleTrial`; the 1-D solve below catches
+        //  it and backtracks toward the last accepted temperature, never
+        //  treating the point as a value.  Each temperature at which it
+        //  happened is still counted (`penalisedT`) and the run says so.
         std::vector<scalar> penalisedT;
         auto fT = [&](scalar Tt) -> scalar {
             //  `nro.bracket` is false, so `nro.lower` binds only the seed and a
@@ -504,21 +504,43 @@ int GibbsReactor::solve(const DictPtr& dict,
                     " and size of `Q` (kJ per kmol of feed; positive = heat"
                     " INTO the reactor) or the seed `operation.T`.");
             auto e = method->solve(prob, Tt, {});
-            if (!e.converged) { penalisedT.push_back(Tt); return 1.0e30; }
+            if (!e.converged)
+            {
+                penalisedT.push_back(Tt);
+                throw InfeasibleTrial("GibbsReactor: the inner equilibrium"
+                    " did not converge at T = " + std::to_string(Tt) + " K");
+            }
             return enthalpy(e, Tt) - H_in - Q_J_s;
         };
-        auto dfT = [&](scalar Tt){ const scalar h=0.5; return (fT(Tt+h)-fT(Tt-h))/(2.0*h); };
 
         solver::NROptions nro;
         nro.tolerance = 1.0e-2; nro.maxIter = 30;
         nro.lower = 250.0; nro.upper = 5000.0;
         nro.bracket = false; nro.monotoneIncreasing = true; nro.maxStep = 200.0;
         nro.onIter = [this](const solver::NRTrace& tr){ recordResidual(std::abs(tr.f)); };
+
+        //  SAFEGUARDED 1-D SOLVE (solver::newton1DSafeguarded): newton1D's
+        //  iteration while every trial answers, so no feasible case moves;
+        //  an infeasible trial is backtracked toward the last accepted T and
+        //  never differenced as a value.
+        auto safeguardedNewtonT = [&](scalar Tstart) -> solver::NRResult
+        {
+            try { return solver::newton1DSafeguarded(fT, Tstart, 0.5, nro); }
+            catch (const std::runtime_error& e)
+            {
+                if (std::string(e.what()).rfind("newton1DSafeguarded", 0) != 0)
+                    throw;
+                throw std::runtime_error(std::string("GibbsReactor (adiabatic):"
+                    " the inner equilibrium does not converge on the energy"
+                    " balance's trial temperatures (") + e.what()
+                    + "); move `operation.T`.");
+            }
+        };
         auto outerNewton = [&](scalar Tstart) {
             if (verbosity >= 2)
                 std::cout << "GibbsReactor (adiabatic): outer Newton on T from "
                           << Tstart << " K\n";
-            return solver::newton1D(fT, dfT, Tstart, nro);
+            return safeguardedNewtonT(Tstart);
         };
         //  The augmented dict carries the unit's name as the DICTIONARY'S OWN
         //  name and strips the `name` entry (DistillationColumn.cpp records
@@ -578,9 +600,9 @@ int GibbsReactor::solve(const DictPtr& dict,
             m << "adiabatic outer Newton on T: the inner equilibrium did NOT"
                  " converge at " << penalisedT.size() << " trial temperature"
               << (penalisedT.size() == 1 ? "" : "s") << " (T in [" << tLo
-              << ", " << tHi << "] K); the energy residual there was replaced"
-                 " by a 1e30 PENALTY, so those Newton steps followed the"
-                 " penalty, not the energy balance";
+              << ", " << tHi << "] K); each was REFUSED as an infeasible"
+                 " trial (no penalty value is differenced) and the step was"
+                 " backtracked toward the last accepted temperature";
             AdvisoryLog::instance().add("solver", "warning", unitLocus,
                 m.str() + ".");
             std::cout << "  [solver] " << unitLocus << ": " << m.str()

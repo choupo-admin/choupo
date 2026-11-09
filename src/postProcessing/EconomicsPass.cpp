@@ -41,6 +41,7 @@ License
 #include <algorithm>
 #include <cctype>
 #include <cmath>
+#include <limits>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -3961,7 +3962,25 @@ int EconomicsPass::run(SimulationResult& result)
         scalar sNpv = std::nan("");
         std::string npvNote;
         {
-            const scalar f0 = npvAt(0.0);
+            //  THE SEARCH STARTS AT NO PRODUCTION, AND A COPY THAT MAKES
+            //  NOTHING MAY BE REFUSED (2026-11-08, PIF readiness review).
+            //  The itemised `workingCapital { ... }` values what the plant
+            //  holds at its cost per kg of product, and a copy with zero
+            //  product mass has no such cost: `appraise` REFUSES it, which is
+            //  right for a plant and was wrong for this search point -- every
+            //  tablet base case declares the itemised block, so adding
+            //  `breakEven {}` to one stopped the whole run with a message
+            //  about the working capital.  A plant that makes nothing and
+            //  bought anything has a negative NPV; the refusal is read as
+            //  that sign, and the search goes on.  Only the s = 0 point is
+            //  read this way: at any positive scale the copy carries mass,
+            //  and a refusal there is a real one and still stops the run.
+            scalar f0;
+            try { f0 = npvAt(0.0); }
+            catch (const std::exception&)
+            {
+                f0 = -std::numeric_limits<scalar>::infinity();
+            }
             if (f0 >= 0.0) { sNpv = 0.0; npvNote = "NPV >= 0 even with no production"; }
             else
             {

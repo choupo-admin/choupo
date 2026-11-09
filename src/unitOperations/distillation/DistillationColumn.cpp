@@ -518,7 +518,18 @@ sVector stageVapourK(const ThermoPackage& thermo, scalar T, scalar P,
     //  sends up is read off the physical liquid (negatives as absent).  At a
     //  converged state every fraction is non-negative and this is x itself.
     sVector xp(x.size(), 0.0);
-    for (std::size_t i = 0; i < x.size(); ++i) xp[i] = std::max(x[i], 0.0);
+    bool clipped = false;
+    scalar sp = 0.0;
+    for (std::size_t i = 0; i < x.size(); ++i)
+    {
+        if (x[i] < 0.0) clipped = true;
+        xp[i] = std::max(x[i], 0.0);
+        sp += xp[i];
+    }
+    //  C245 3d: a clipped composition no longer sums to what it did; the
+    //  activity model reads a mole-fraction vector, so it is renormalised
+    //  (only when something was clipped: a converged stage is untouched).
+    if (clipped && sp > 0.0) for (auto& v : xp) v /= sp;
     const sVector K0 = thermo.Kvec(T, P, xp, ySeed ? *ySeed : xp);
     const auto r = incipientPhase::vapour(thermo, T, P, xp, K0);
     if (converged) *converged = r.converged;
@@ -3071,10 +3082,20 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  NOT converged; at 0.05 they converge in 20 / 16 / 16.  What 0.05
     //  refuses is a composition no stage model could price.
     constexpr scalar kFractionRoom = 0.05;
-    //  The refusals below belong to the bounded contract; the packages that
-    //  keep the legacy Newton (aqueous chemistry per stage, see opts below)
-    //  keep their legacy residual too.
-    const bool meshBoxed = !thermo.hasReactiveEquilibrium();
+    //  The refusals below belong to the bounded contract.  A case may DECLARE
+    //  `newton legacy;` in the column's operation to keep the legacy Newton
+    //  and its legacy residual (DEV.md 4c C245 slice 3, C246 knob 1): the
+    //  default is the bounded Armijo contract for every package, aqueous
+    //  chemistry included -- stripper01 and column13 converge in 6 iterations
+    //  under it (measured 2026-11-08); stripper02, a heel case (NH4HS in the
+    //  liquid, V -> 1), stalls at |F| = 1.1e-2 and declares legacy.
+    const std::string newtonWord =
+        operDict->lookupWordOrDefault("newton", "bounded");
+    if (newtonWord != "bounded" && newtonWord != "legacy")
+        throw std::runtime_error("DistillationColumn(simultaneous): operation"
+            " `newton` must be `bounded` (default) or `legacy`, got '"
+            + newtonWord + "'");
+    const bool meshBoxed = (newtonWord != "legacy");
     //  Switched off for phase 1 of a reactive column (see there).
     bool refuseFractions = true;
     auto requireFractions = [&](const sVector& xj)
@@ -3120,7 +3141,20 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     std::mutex        trialRefusalLock;
     auto stageKOnTrial = [&](scalar Tj, const sVector& xj) -> sVector
     {
-        try { return stageVapourK(thermo, Tj, P, xj); }   // at its own vapour (C169)
+        try
+        {
+            //  C245 3d: the incipient-vapour iteration's verdict is read; a
+            //  trial whose vapour did not converge is REFUSED, not priced on
+            //  the last iterate.  (No warm start from a shared "last accepted
+            //  vapour": the MESH residual runs its FD columns in parallel and
+            //  must stay a pure function of its argument.)
+            bool vapOk = true;
+            const sVector Kj = stageVapourK(thermo, Tj, P, xj, nullptr, &vapOk);
+            if (!vapOk)
+                throw InfeasibleTrial("DistillationColumn: the incipient-"
+                    "vapour iteration did not converge on this MESH trial");
+            return Kj;                                    // at its own vapour (C169)
+        }
         catch (const InfeasibleTrial&) { throw; }
         catch (const std::exception& e)
         {
@@ -3328,22 +3362,20 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  at a bound.  (V and L are not unknowns of this MESH; they are the CMO
     //  flows.)  The residual refuses -- InfeasibleTrial -- a trial with a
     //  negative mole fraction or gamma x <= 0 in the reactive row.
-    //  EXCEPT where the package resolves aqueous chemistry per stage
-    //  (stripper01/02, column13): there the stage K is an incipient
-    //  construction whose surface is not continuous across the two-phase band
-    //  (kernel audit Rank 3e, slice 3), the merit function 0.5|F|^2 has a
-    //  local minimum, and the monotone Armijo search stopped NOT converged on
-    //  stripper02 (80 iterations, |F| = 1.1e-2; it converges in 43 under the
-    //  legacy search) -- with or without the box.  Those columns keep the
-    //  legacy Newton, announced, until Rank 3e lands.
+    //  EXCEPT where the case declares `newton legacy;` (stripper02: a heel
+    //  case -- NH3 bound as NH4HS leaves the vapour balance as V -> 1 -- on
+    //  which the monotone Armijo search stops NOT converged at |F| = 1.1e-2
+    //  after 80 iterations, with the old K surface and with a continuous one
+    //  alike, while the legacy search converges in 43; kernel audit Rank 3e,
+    //  slice 3, check_stagek_continuity's docstring has the diagnosis).  The
+    //  declaration is announced: a solver aid is visible and the student's.
     if (!meshBoxed)
     {
-        if (verbosity >= 2)
-            std::cout << "  [solver] simultaneous MESH: the package resolves"
-                         " reactive (aqueous) equilibrium per stage, whose K"
-                         " surface is not continuous across the two-phase band"
-                         " (kernel audit Rank 3e): the legacy Newton is kept,"
-                         " not the bounded Armijo contract\n";
+        if (verbosity >= 1)
+            std::cout << "  [solver] simultaneous MESH: `newton legacy;` is"
+                         " DECLARED by the case, so the legacy Newton (monotone"
+                         " line search, no bounds, clamped residual) is used"
+                         " instead of the bounded Armijo contract\n";
     }
     else
     {
@@ -3750,8 +3782,18 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                     sVector yD = ys[0];
                     { scalar sy0 = 0.0; for (auto v : yD) sy0 += v;
                       if (sy0 > 0.0) for (auto& v : yD) v /= sy0; }
+                    //  C245 3c: the reflux temperature is an INNER bubble
+                    //  point.  Its verdict was dropped, so a trial whose
+                    //  bubble point did not converge fed an arbitrary T into
+                    //  the energy row; now such a trial is refused.
+                    bool refluxOk = true;
                     const scalar Treflux =
-                        bubbleTWithItsVapour(thermo, yD, P, Ts[0], 1.0e-12);
+                        bubbleTWithItsVapour(thermo, yD, P, Ts[0], 1.0e-12,
+                                             &refluxOk);
+                    if (!refluxOk)
+                        throw InfeasibleTrial("DistillationColumn: the reflux"
+                            " bubble point (total condenser) did not converge"
+                            " on this MESH trial");
                     g[j*mv + n+1] = energyScale * (
                           R*D*hL(yD, Treflux) + Vs[1]*hV(ys[1], Ts[1])
                         - Ls[0]*hL(xs[0], Ts[0]) - Vs[0]*hV(ys[0], Ts[0]));
