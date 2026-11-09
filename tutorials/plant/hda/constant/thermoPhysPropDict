@@ -7,10 +7,24 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture.
-  Raoult DECLARED, not defaulted (gamma = 1 identically).
-  Migrated mechanically from the v1 flat form (physics identical);
-  v2 contract 2026-07-17.
+  thermoPhysPropDict (v2) -- phi-phi SRK: one cubic for both phases
+  (K_i = phi_L,i / phi_V,i at the two roots).
+  WHY NOT RAOULT (C256, 2026-11-09).  H2 (Tc 33.2 K) and CH4 (Tc 190.6 K)
+  are above their critical temperatures everywhere in this plant, and the
+  HP flash at 320 K and 35 bar decides how much of them the benzene product
+  carries.  On the ideal gamma-phi package that K was Psat/P with a vapour
+  pressure that does not exist above Tc: the Antoine curve extrapolated
+  (K_H2 49.6) and then its continuation from Tc (K_H2 21.7) gave a factor of
+  two between two numbers neither of which is a K.  SRK puts it at 56.1.  A
+  light gas over aromatics at pressure is the textbook phi-phi system, and
+  the H2 loop (reactor, flash, split, mixer) runs on this one surface, so
+  the 35-bar gas is never re-priced as an ideal gas between two units.
+  kij = 0 for every pair, ANNOUNCED: the catalogue carries no SRK pair for
+  H2 or CH4 with benzene or toluene (its one SRK record is N2-CH4), and a
+  number typed from memory would be fabrication.  The dissolved H2 and CH4
+  are therefore the undressed cubic's answer, not a measured solubility.
+  ONE UNIT KEEPS THE IDEAL PACKAGE: the shortcut column (the reason is
+  written beside it in system/flowsheetDict).
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
@@ -20,16 +34,21 @@ components       ( toluene  H2  benzene  CH4 );
 
 equilibrium
 {
-    formulation gammaPhi;
+    formulation phiPhi;
 
-    liquid
+    equationOfState
     {
-        activityModel ideal;
-        standardState pureLiquid;
+        model      SRK;
+        mixingRule vanDerWaalsOneFluid;
     }
 
-    vapour
-    {
-        fugacityModel idealGas;
-    }
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
 }
