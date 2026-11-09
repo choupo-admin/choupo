@@ -17,7 +17,7 @@ kpi     bed                    integral_anchor_CO2 3028.46636949    1e-4
 kpi     bed                    mass_closure_CO2 1.84877618489e-14 1e-4
 kpi     bed                    n_CO2_final      1.2107548722e-05 1e-4
 kpi     bed                    n_He_final       6.86095898882e-05 1e-4
-kpi     bed                    physical_mass_closure_rel -8.05213672966e-15 1e-4
+kpi     bed                    carrier_makeup_rel -8.05213672966e-15 1e-4
 kpi     bed                    qbar_CO2_final   2.87291415213    1e-4
 kpi     bed                    retention_factor_CO2 304.204095537    1e-4
 kpi     bed                    t_50_CO2         3030.2762827     1e-4
@@ -33,11 +33,11 @@ kpi     campaign               element_worst_closure_rel 5.39042143226e-15 1e-4
 kpi     campaign               energy_H_external_kJ -1377.91972897   1e-4
 kpi     campaign               energy_Q_ledger_kJ -413.699637907   1e-4
 kpi     campaign               energy_balance_available 1                1e-4
-kpi     campaign               energy_closure_rel 6.84496851776e-08 1e-4
+kpi     campaign               energy_closure_rel 1.3819778408e-14 1e-4
 kpi     campaign               energy_dH_vessels_kJ 964.219996744    1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
-kpi     campaign               energy_records_valid 1                1e-4
-kpi     campaign               energy_residual_kJ 9.4318171648e-05 1e-4
+kpi     campaign               energy_records_valid 2                1e-4
+kpi     campaign               energy_residual_kJ 1.90425453184e-11 1e-4
 kpi     campaign               mass_closure_rel 2.35725130808e-15 1e-4
 kpi     campaign               mass_kg_external_out 0.442361952156   1e-4
 kpi     campaign               mass_kg_final    0.405405715836   1e-4
@@ -59,3 +59,7 @@ ledger  bed->(external_boundary) material.external.dn.He 0.0720181583005  1e-4
 ledger  bed->(external_boundary) material.external.H_kJ -1377.91972897   1e-4
 ledger  bed->(external_boundary) material.external.valid valid            exact
 ledger  bed                    energy.adsorption.valid valid            exact
+kpi     bed                    E_isothermalDuty_seg1_kJ -9.43181635027e-05 1e-4
+kpi     bed                    E_isothermalDuty_total_kJ -9.43181635027e-05 1e-4
+kpi     campaign               energy_kJ_stream_isothermalDuty -9.43181635027e-05 1e-4
+ledger  bed                    energy.isothermalDuty.valid valid            exact

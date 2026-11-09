@@ -12,7 +12,6 @@ kpi     bed                    integral_anchor_CO2 3.99999999999    1e-4
 kpi     bed                    mass_closure_CO2 4.09039795713e-14 1e-4
 kpi     bed                    n_CO2_final      1.21079552058e-05 1e-4
 kpi     bed                    n_He_final       6.86117461666e-05 1e-4
-kpi     bed                    physical_mass_closure_rel 0                1e-4
 kpi     bed                    qbar_CO2_final   0                1e-4
 kpi     bed                    t_50_CO2         3.97561121931    1e-4
 kpi     bed                    t_breakthrough_5pct_CO2 3.29598772214    1e-4
@@ -23,7 +22,6 @@ kpi     campaign               element_C_closure_rel 5.87636527883e-15 1e-4
 kpi     campaign               element_He_closure_rel 7.46205114772e-16 1e-4
 kpi     campaign               element_O_closure_rel 5.87636527883e-15 1e-4
 kpi     campaign               element_worst_closure_rel 5.87636527883e-15 1e-4
-kpi     campaign               element_worst_closure_vs_declared_rel 5.87636527883e-15 1e-4
 kpi     campaign               energy_balance_available 0                1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
 kpi     campaign               energy_records_valid 1                1e-4
@@ -43,3 +41,4 @@ ledger  bed->(external_boundary) material.external.dn.He 0.000149331447539 1e-4
 ledger  bed->(external_boundary) material.external.H_kJ -4.76525572614   1e-4
 ledger  bed->(external_boundary) material.external.valid valid            exact
 ledger  bed                    energy.adsorption.valid valid            exact
+kpi     bed                    carrier_makeup_rel 0                1e-4

@@ -937,6 +937,7 @@ if (flowsheetDict->found("cycle"))
             tr.to   = "(external boundary)";   // no receiver declared: the
                                                //   distillate leaves the plant
             tr.kind = "external";
+            tr.why  = units[i]->continuousDischargeWhy();
             ventSlot[i] = transfers.size();
             transfers.push_back(std::move(tr));
             it = ventSlot.find(i);
@@ -956,12 +957,25 @@ if (flowsheetDict->found("cycle"))
     //  per step -- while a discrete declaration gets its own record and
     //  its own timeline entry, exactly as before the unification.
     std::map<std::string, std::size_t> amendSlot;
+    //  NAMED STREAMS (C258): total mass per kind, per direction, of the
+    //  amendments a unit flags `named` -- published as campaign KPIs so the
+    //  screen can draw each as its own bar (matter an ASSUMPTION creates or
+    //  destroys, booked as a stream so the balance closes).
+    std::map<std::string, scalar> namedInKg, namedOutKg;
     auto drainAmendments = [&](std::size_t i, scalar tNow,
                                const std::string& trigger)
     {
         for (auto& am : units[i]->takeDatumAmendments())
         {
             if (am.pkg.totalMoles() <= 0.0) continue;
+            if (am.named)
+            {
+                scalar kg = 0.0;
+                for (std::size_t c = 0;
+                     c < thermo.n() && c < am.pkg.n.size(); ++c)
+                    kg += am.pkg.n[c] * thermo.comp(c).MW();
+                (am.into ? namedInKg : namedOutKg)[am.kind] += kg;
+            }
             sVector& tgt = am.into ? amendIn : amendOut;
             if (tgt.size() != thermo.n()) tgt.assign(thermo.n(), 0.0);
             for (std::size_t c = 0;
@@ -983,6 +997,7 @@ if (flowsheetDict->found("cycle"))
                     tr.tStart = tNow; tr.tEnd = tNow;
                     tr.from = from; tr.to = to;
                     tr.kind = am.kind;
+                    tr.why  = am.why;
                     amendSlot[key] = transfers.size();
                     transfers.push_back(std::move(tr));
                     it = amendSlot.find(key);
@@ -1632,6 +1647,10 @@ if (flowsheetDict->found("cycle"))
             ck["mass_kg_initial"]      = m0;
             ck["mass_kg_final"]        = mF;
             ck["mass_kg_external_out"] = mOut;
+            for (const auto& [kd, kg] : namedInKg)
+                ck["mass_kg_stream_in_" + kd] = kg;
+            for (const auto& [kd, kg] : namedOutKg)
+                ck["mass_kg_stream_out_" + kd] = kg;
             if (!amendIn.empty() || !amendOut.empty())
             {
                 ck["mass_kg_amend_in"]  = mAmendIn;
@@ -1722,26 +1741,10 @@ if (flowsheetDict->found("cycle"))
             };
             std::vector<std::string> unparsed;
             std::map<std::string, scalar> elem0, elemF;
-            //  Declared model-error residuals (forum #119): each unit may
-            //  PREDICT, by construction, the matter its declared closure
-            //  fabricates (e.g. the fixed bed's constant-(u, P, T) carrier
-            //  roll-up).  The reported numbers below stay RAW -- nothing is
-            //  discounted; the prediction is only an independent
-            //  cross-check for the VERDICT.
-            std::map<std::string, scalar> elemDeclared;   // kmol-atoms
-            scalar declared_kg = 0.0;
-            bool anyDeclared = false;
-            for (const auto& u : units)
-                for (const auto& [nm, kmol] : u->declaredMaterialResidual())
-                    for (std::size_t i = 0; i < thermo.n(); ++i)
-                        if (thermo.comp(i).name() == nm)
-                        {
-                            anyDeclared = true;
-                            declared_kg += kmol * thermo.comp(i).MW();
-                            if (kmol != 0.0) markPartial(i);
-                            for (const auto& [sym, na] : atomsOf(i))
-                                elemDeclared[sym] += na * kmol;
-                        }
+            //  NO declared-residual discount exists (C258, 2026-11-09): a
+            //  modelling assumption that creates or destroys matter is booked
+            //  as a NAMED STREAM (DatumAmendment::named, an unrouted outlet),
+            //  so the balances below close on their own and are judged raw.
             for (std::size_t i = 0; i < thermo.n(); ++i)
             {
                 const scalar aIn  = (i < amendIn.size())  ? amendIn[i]  : 0.0;
@@ -1770,7 +1773,7 @@ if (flowsheetDict->found("cycle"))
                         + (i < externalOut.size() ? externalOut[i] : 0.0));
                 }
             }
-            scalar elemWorst = 0.0, elemWorstAdj = 0.0;
+            scalar elemWorst = 0.0;
             if (unparsed.empty())
             {
                 for (const auto& [sym, a0] : elem0)
@@ -1780,19 +1783,8 @@ if (flowsheetDict->found("cycle"))
                                     / std::max({ a0, aF, 1.0e-15 });
                     ck["element_" + sym + "_closure_rel"] = r;   // RAW, shown
                     elemWorst = std::max(elemWorst, r);
-                    //  adjusted ONLY for the verdict: residual minus the
-                    //  units' own prediction -- if the leak IS the declared
-                    //  fabrication, this collapses to numerics.
-                    const scalar exp2 = anyDeclared
-                        ? (elemDeclared.count(sym) ? elemDeclared.at(sym) : 0.0)
-                        : 0.0;
-                    const scalar rAdj = std::abs(aF - a0 - exp2)
-                                      / std::max({ a0, aF, 1.0e-15 });
-                    elemWorstAdj = std::max(elemWorstAdj, rAdj);
                 }
                 ck["element_worst_closure_rel"] = elemWorst;
-                if (anyDeclared)
-                    ck["element_worst_closure_vs_declared_rel"] = elemWorstAdj;
                 for (const auto ci : partialRelevant)
                     partialSpecies.emplace_back(thermo.comp(ci).name(),
                         elemRes[ci].unaccountedMassFraction);
@@ -1830,16 +1822,6 @@ if (flowsheetDict->found("cycle"))
             //  1e-15, mass 1.8e-5 -- a curation note, not a leak).  Verdict:
             //  elements when available; mass only when they are not.
             constexpr scalar tolClosure = 1.0e-6;
-            //  The verdict (forum #119): a residual that MATCHES the units'
-            //  own declared-fabrication prediction is the announced model
-            //  error doing exactly what was announced -- reported LOUD (the
-            //  raw closure numbers above keep showing it), but it is not an
-            //  unexplained leak.  A residual the prediction does NOT explain
-            //  still fails, declared or not.
-            const scalar relAdjMass = anyDeclared
-                ? std::abs(mF + mOut + mAmendOut - m0 - mAmendIn
-                           - declared_kg) / scale_kg
-                : rel;
             //  PARTIAL keeps the ELEMENTAL verdict on the declared atoms:
             //  they are real conservation constraints, and falling back to
             //  raw mass at 1e-6 would flag the documented catalogue MW
@@ -1848,19 +1830,8 @@ if (flowsheetDict->found("cycle"))
             //  DECLARED unverifiable -- that is exactly what the PARTIAL
             //  stamp communicates.
             const bool leak = unparsed.empty()
-                ? ((anyDeclared ? elemWorstAdj : elemWorst) > tolClosure)
-                : (relAdjMass > tolClosure);
-            if (anyDeclared && !leak && verbosity >= 1
-                && (elemWorst > tolClosure || rel > tolClosure))
-                std::cout << "[campaign] DECLARED MODEL RESIDUAL: the balance"
-                             " shows " << std::scientific << residual_kg
-                          << std::fixed << " kg of fabricated matter and that"
-                             " MATCHES the units' own declared prediction"
-                             " (carrier_fabricated_mol) to "
-                          << std::scientific << elemWorstAdj << std::fixed
-                          << " -- the named error of the declared closure,"
-                             " shown, never discounted (forum #119); A4"
-                             " removes it physically.\n";
+                ? (elemWorst > tolClosure)
+                : (rel > tolClosure);
             if (unparsed.empty() && elemWorst <= tolClosure
                 && rel > tolClosure && verbosity >= 1)
                 std::cout << "[campaign] NOTE: total mass drifts "
@@ -1898,12 +1869,7 @@ if (flowsheetDict->found("cycle"))
                                 ? ", worst element " : ", elements n/a ")
                           << (unparsed.empty() ? elemWorst : 0.0) << std::fixed
                           << (leak ? "  <-- LEAK: reported NON-CONVERGED"
-                                   : (anyDeclared
-                                      && (elemWorst > tolClosure
-                                          || rel > tolClosure)
-                                        ? "  (DECLARED residual -- explained"
-                                          " above, not discounted)"
-                                        : "  (closed)"))
+                                   : "  (closed)")
                           << "\n";
         }
         //  Temporal demand samples, drained per unit alongside the record
@@ -1944,6 +1910,11 @@ if (flowsheetDict->found("cycle"))
                 }
                 for (const auto& [kind, tot] : kindTotal)
                     result.kpis[unitNames[i]]["E_" + kind + "_total_kJ"] = tot;
+                //  NAMED HEAT STREAMS (C258): the campaign publishes each
+                //  one's total so the screen draws it as its own bar.
+                for (const auto& er : recs)
+                    if (er.named && er.E_valid)
+                        ek["energy_kJ_stream_" + er.kind] += er.E_kJ;
                 result.energyLedger.insert(result.energyLedger.end(),
                                            recs.begin(), recs.end());
                 //  Temporal demand samples (ratified 2026-08-03): drained

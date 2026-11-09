@@ -182,17 +182,6 @@ public:
     // and ADDS it -- the campaign mass balance must never miss a phase.
     virtual sVector materialInventory() const { return state().n; }
 
-    //  Declared model-error residual (forum #119): kmol per COMPONENT that
-    //  the unit's DECLARED closure fabricates (+) or destroys (-) by
-    //  construction -- e.g. the fixed bed's constant-(u, P, T) carrier
-    //  roll-up.  The campaign balance NEVER discounts this from the
-    //  reported numbers; it uses it only as an independent CROSS-CHECK so
-    //  the verdict can distinguish "unexplained leak" (FAIL) from "the
-    //  declared, quantified model error, matching its own prediction"
-    //  (reported LOUD, non-fatal).  Default: none.
-    virtual std::map<std::string, scalar> declaredMaterialResidual() const
-    { return {}; }
-
     // ENERGY ledger records (forum #98.3/#99/#101): the vessel's exchanged-
     // energy history, one EXACT-integral record per segment of constant
     // physics.  Called ONCE by choupoBatch at campaign end (tEnd closes the
@@ -312,6 +301,12 @@ public:
     // fixed bed's algebraic carrier outlet was one boundary behind).
     virtual BatchState takeContinuousDischarge(scalar tNow);
 
+    //  Why a continuous discharge that has NO `dischargeTo` receiver leaves
+    //  the campaign -- the engine's own sentence, stamped on the external
+    //  outlet's ledger record so the screen can say it (C258).  Default:
+    //  none (a still's unrouted product needs no explanation).
+    virtual std::string continuousDischargeWhy() const { return ""; }
+
     // Notify the unit that its state is ABOUT to be modified externally
     // (fired by the base chargeFrom/discharge primitives BEFORE the first
     // mole is moved).  This is where an energy-ledger unit CLOSES its
@@ -389,6 +384,12 @@ public:
         //  shape a continuous flow needs, one record per vessel and not one
         //  per step.
         bool        accumulate = false;
+        //  true: a NAMED STREAM (C258) -- matter a modelling assumption
+        //  creates or destroys, booked as its own stream so every balance
+        //  closes and the stream is the explanation.  The campaign
+        //  publishes its total mass (`mass_kg_stream_in_<kind>` /
+        //  `mass_kg_stream_out_<kind>`) and the screen draws it as a bar.
+        bool        named = false;
     };
     virtual std::vector<DatumAmendment> takeDatumAmendments() { return {}; }
 

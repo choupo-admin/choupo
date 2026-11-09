@@ -213,9 +213,9 @@ describe("the honest half — every limit, and its arithmetic", () => {
   it("carries the constant-velocity price the engine itself announces", () => {
     const l = BREAKTHROUGH_LIMITS.find((x) => x.id === "constant-velocity")!;
     expect(kpi("carrier_fabricated_mol")).toBeCloseTo(9.19, 2);
-    expect(kpi("physical_mass_closure_rel")).toBeCloseTo(0.108, 3);
+    expect(kpi("carrier_makeup_rel")).toBeCloseTo(0.108, 3);
     expect(prose(l.body)).toContain("9.19 mol");
-    expect(prose(l.body)).toContain("physical_mass_closure_rel ≈ 0.108");
+    expect(prose(l.body)).toContain("carrier_makeup_rel ≈ 0.108");
     //  And that the CO2 balance the curve is drawn from is NOT the damaged one.
     expect(Math.abs(kpi("mass_closure_CO2"))).toBeLessThan(1e-12);
     expect(prose(l.body)).toContain("closes at machine level");

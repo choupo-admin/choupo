@@ -1332,6 +1332,44 @@ if [ "${1:-}" = "--record" ]; then RECORD=1; shift; fi
 #  is SKIPPED: creating one is a recording decision, not a sweep side-effect.
 if [ "${1:-}" = "--record-append" ]; then RECORD=1; RECORD_APPEND=1; shift; fi
 
+#  THE STATIC CLOSURE GATE RUNS IN EVERY MODE (2026-11-09, DEV.md 4c C258).
+#  A golden file that PINS a violated mass, element or energy balance is a
+#  defect no run can reveal ("unchanged" is all a sweep says of it), and
+#  reading the `expected` files costs a fraction of a second -- so this arm
+#  of check_campaign_closure.py runs HERE, before any mode branches: the full
+#  sweep, --fast, --scope, --gui and --witnesses all pass through this line,
+#  and a failure ABORTS with the finding named.  It is not a gate a mode can
+#  skip.  (--record is the other direction: record_guard_post below refuses to
+#  WRITE such a golden.)  The live arm is a normal gate of the sweep and of
+#  the --fast / --scope conservation list.
+if [ -z "$RECORD" ]; then
+    if "$ROOT/bin/curate/check_campaign_closure.py" --static > /tmp/clostatic.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "golden-closure-static" "$(tail -1 /tmp/clostatic.$$ | cut -c1-200)"
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_campaign_closure.py --static)\n" "golden-closure-static"
+        cat /tmp/clostatic.$$
+        rm -f /tmp/clostatic.$$
+        echo "ABORTED: a shipped golden pins a violated balance (DEV.md 4c C258).  No mode may skip this."
+        exit 1
+    fi
+    rm -f /tmp/clostatic.$$
+fi
+#  RECORD GUARD (C258): `--record` / `--record-append` must never freeze a
+#  violated balance.  _pre snapshots the golden about to be rewritten; _post
+#  runs the closure check on what was written and, on a refusal, restores the
+#  previous golden (or removes the new one) and aborts naming the key and value.
+record_guard_pre() {
+    if [ -f "$1" ]; then cp -p "$1" "$1.recordguard"; else rm -f "$1.recordguard"; fi
+}
+record_guard_post() {
+    if "$ROOT/bin/curate/check_campaign_closure.py" --check-expected "$1"; then
+        rm -f "$1.recordguard"; return 0
+    fi
+    if [ -f "$1.recordguard" ]; then mv -f "$1.recordguard" "$1"; else rm -f "$1"; fi
+    echo "ERROR: $1 NOT written -- recording it would freeze a violated balance (DEV.md 4c C258)."
+    exit 1
+}
+
 #  --witnesses: the ARCHITECTURAL WITNESS TIER (tutorials/WITNESSES) -- one
 #  representative case per execution class, run through the SAME per-case
 #  checks as the full sweep.  Implemented by expanding the declared list into
@@ -2362,6 +2400,7 @@ if [ -n "$RECORD" ]; then
         for rrun in "${RRUNS[@]}"; do
         IFS='|' read -r app exp <<< "$rrun"
         out=$(run_case_raw "$case_dir" "$app")
+        record_guard_pre "$exp"
         if [ -n "$RECORD_APPEND" ] && [ ! -f "$exp" ]; then
             echo "  (no golden; --record-append creates none)"
             continue
@@ -2431,8 +2470,10 @@ if [ -n "$RECORD" ]; then
                     && echo "  + $added new row(s) appended (keys the golden did not carry)"
             fi
             rm -f "$gen"
+            record_guard_post "$exp"
             echo "refreshed: $exp"
         elif auto_generate "$case_dir" "$out" "1e-4" "$exp"; then
+            record_guard_post "$exp"
             echo "generated: $exp  ($(grep -cE '^(kpi|stream|diag)' "$exp") refs)"
         else
             echo "skip (no kpis/streams block): $case_dir"
@@ -8189,6 +8230,20 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/massclos.$$
 
+    #  THE CAMPAIGN CLOSURE GATE (2026-11-09, DEV.md 4c C258): the same
+    #  question about every TIME-INTEGRATED case (batch, ctrl, semicontinuous)
+    #  that check_mass_closure asks of the steady ones, on the engine's own
+    #  published closure of the live run, with the static golden arm.
+    if gate_exec "$ROOT/bin/curate/check_campaign_closure.py" > /tmp/campclos.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "campaign-closure-gate" "$(tail -1 /tmp/campclos.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_campaign_closure.py)\n" "campaign-closure-gate"
+        cat /tmp/campclos.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/campclos.$$
+
     #  THE FIRST LAW, corpus-wide (2026-09-08).  `energy-T1/T2:plant` above
     #  already held the right rule -- the global boundary residual under 1 % --
     #  and held it on ONE case out of the whole steady corpus, which is how a
@@ -8439,7 +8494,7 @@ if [ -n "${FAST:-}" ] || [ -n "${SCOPE:-}" ]; then
     else export CHOUPO_SUITE_SCOPE_KIND=fast; fi
     nosubject=0
     echo
-    for fg in check_mass_closure check_energy_closure check_element_balance \
+    for fg in check_mass_closure check_campaign_closure check_energy_closure check_element_balance \
               check_closure_ledger_pinned check_energy_boundary_pinned; do
         gate_exec "$ROOT/bin/curate/$fg.py" > /tmp/fastgate.$$ 2>&1
         fgrc=$?

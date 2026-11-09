@@ -316,6 +316,7 @@ POST | SERIAL | bin/curate/check_converter_shell.py                | not reached
 POST | SERIAL | bin/curate/check_energy_boundary_pinned.py         | not reached by the traced sweep
 POST | SERIAL | bin/curate/check_impossible_phase_pins.py          | not reached by the traced sweep
 POST | SERIAL | bin/curate/check_mass_closure.py                   | not reached by the traced sweep
+POST | SERIAL | bin/curate/check_campaign_closure.py               | reads the walk output cache; runs live cases when standalone
 POST | SERIAL | bin/curate/check_energy_closure.py                 | not reached by the traced sweep
 POST | SERIAL | bin/curate/check_element_closure.py                | not reached by the traced sweep
 POST | SERIAL | bin/curate/check_utility_tag_symmetry.py           | not reached by the traced sweep

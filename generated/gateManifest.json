@@ -83,8 +83,8 @@
     },
     "check_batch_dryer": {
       "exit": 0,
-      "claim": "check_batch_dryer: OK -- the GAB equilibrium moisture is reproduced from the case's OWN records (the air's water activity formed here from the Antoine fit, the two molar masses and the declared air, never from the engine), the constant-rate flux closes as k_Y (Y_sat(T_wb) - Y) and the unit's announcement multiplies out, the wet bulb is re-solved here from the same records (adiabatic saturation, Lewis = 1, the two Cp fits and the Watson latent heat) and the latent duty with it, the published rate column is flat at R_constant above X_c and strictly decreasing below it along the exponential tail the declared linear law integrates to, a 40000 s copy lands ON X_eq with the rate at round-off and never a negative value, a 500 s copy publishes NO t_critical key (absence, not a sentinel), the energy balance reports UNAVAILABLE quoting the dryer's declared gap, the declared material residual is reproduced here and announced as explained, and seven refusals (X_c below X_eq, a tray charged below X_eq, the GAB pole, P = 0, no sorption record, an undeclared carrier, no air block) fire by name.  NOT COVERED: the Lewis = 1 and humid-heat hypotheses (the same equation is re-solved, never judged), the curated sorption and Antoine parameters, whether the LINEAR falling-rate law describes any real tray, and the golden values (runTests' own rows).",
-      "seconds": 3.8
+      "claim": "check_batch_dryer: OK -- the GAB equilibrium moisture is reproduced from the case's OWN records (the air's water activity formed here from the Antoine fit, the two molar masses and the declared air, never from the engine), the constant-rate flux closes as k_Y (Y_sat(T_wb) - Y) and the unit's announcement multiplies out, the wet bulb is re-solved here from the same records (adiabatic saturation, Lewis = 1, the two Cp fits and the Watson latent heat) and the latent duty with it, the published rate column is flat at R_constant above X_c and strictly decreasing below it along the exponential tail the declared linear law integrates to, a 40000 s copy lands ON X_eq with the rate at round-off and never a negative value, a 500 s copy publishes NO t_critical key (absence, not a sentinel), the energy balance reports UNAVAILABLE quoting the dryer's declared gap, the evaporated water is reproduced here as the campaign's outlet stream with the mass closure at round-off, and seven refusals (X_c below X_eq, a tray charged below X_eq, the GAB pole, P = 0, no sorption record, an undeclared carrier, no air block) fire by name.  NOT COVERED: the Lewis = 1 and humid-heat hypotheses (the same equation is re-solved, never judged), the curated sorption and Antoine parameters, whether the LINEAR falling-rate law describes any real tray, and the golden values (runTests' own rows).",
+      "seconds": 0.2
     },
     "check_bjerrum_prose": {
       "exit": 0,
@@ -108,8 +108,8 @@
     },
     "check_campaign_ledger_pinned": {
       "exit": 0,
-      "claim": "check_campaign_ledger_pinned: OK -- 278 campaign-ledger quantit(ies) pinned across 95 (subject, kind) group(s) in 53 candidate choupoBatch case(s), in both directions (published implies pinned, pinned implies published); 13 candidate(s) publish no ledger at all and pass silently.  The MATERIAL ledger's per-component `dn`, its transported `H_kJ` and both ledgers' validity WORD are pinned by `ledger` rows; the ENERGY ledger's per-(unit, kind) total is pinned by the `kpi E_<kind>_total_kJ` row that is its one home, and the block is required to REPRODUCE it (and the campaign's `moles_kmol_external_out`) within 1e-9.  NOT CHECKED: whether any ledger number is RIGHT; the TIME DISTRIBUTION (a row is the campaign aggregate, so moving an amount between instants moves no row); `basis`, `T_service_K`, `tStart`/`tEnd` and the `H_missing`/`E_missing` reason lists, which no row kind reads; and any ledger outside choupoBatch, of which there is none.  NOT JUDGED: 3 batch case(s) carrying a declared opt-out marker (batch12_adsorber_refused_P, ignition01_h2o2_eulersi, ignition01_h2o2_rk4) -- they produce no answer to pin.",
-      "seconds": 247.7
+      "claim": "check_campaign_ledger_pinned: OK -- 316 campaign-ledger quantit(ies) pinned across 109 (subject, kind) group(s) in 53 candidate choupoBatch case(s), in both directions (published implies pinned, pinned implies published); 11 candidate(s) publish no ledger at all and pass silently.  The MATERIAL ledger's per-component `dn`, its transported `H_kJ` and both ledgers' validity WORD are pinned by `ledger` rows; the ENERGY ledger's per-(unit, kind) total is pinned by the `kpi E_<kind>_total_kJ` row that is its one home, and the block is required to REPRODUCE it (and the campaign's `moles_kmol_external_out`) within 1e-9.  NOT CHECKED: whether any ledger number is RIGHT; the TIME DISTRIBUTION (a row is the campaign aggregate, so moving an amount between instants moves no row); `basis`, `T_service_K`, `tStart`/`tEnd` and the `H_missing`/`E_missing` reason lists, which no row kind reads; and any ledger outside choupoBatch, of which there is none.  NOT JUDGED: 3 batch case(s) carrying a declared opt-out marker (batch12_adsorber_refused_P, ignition01_h2o2_eulersi, ignition01_h2o2_rk4) -- they produce no answer to pin.",
+      "seconds": 53.2
     },
     "check_case_tiers": {
       "exit": 0,
@@ -468,8 +468,8 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 12 of 321 gates, and the other 309 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
-      "seconds": 217.3
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 12 of 322 gates, and the other 310 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
+      "seconds": 242.2
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -578,8 +578,8 @@
     },
     "check_ion_pins": {
       "exit": 0,
-      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 2728 component record(s) scanned (data/standards/components + every tutorial constant/components) the 92 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
-      "seconds": 0.2
+      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 2727 component record(s) scanned (data/standards/components + every tutorial constant/components) the 92 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
+      "seconds": 0.3
     },
     "check_layering": {
       "exit": 0,
@@ -768,8 +768,8 @@
     },
     "check_pswing": {
       "exit": 0,
-      "claim": "check_pswing: OK -- inventory ratio 0.5 analytic (A), blowdown cooling shown with the energy residual at integration order (B), throttle/negative-P/feed-P refuse by name",
-      "seconds": 2.3
+      "claim": "check_pswing: OK -- inventory ratio 0.5 analytic (A), blowdown cooling shown with its energy claim refused by name (B), throttle/negative-P/feed-P refuse by name",
+      "seconds": 0.2
     },
     "check_quasi_steady": {
       "exit": 0,
@@ -1615,6 +1615,11 @@
       "exit": 0,
       "claim": "check_psat_continuity: OK -- Psat(T) is finite, positive and strictly increasing on [50 K, 1.5 Tc] for 12 components over the three models (Antoine: benzene, toluene, water; Ambrose-Walton: three records; Wagner: heavyWater and two fixtures); d ln Psat/dT is continuous across Tmin and Tc to 1e-6; inside the window the entry point equals the model's own formula bit for bit; water's saturation pressure is continuous across both IF97 window edges to 1e-9; the continuation is announced once per side.  NOT covered: that a continuation is a physical vapour pressure, water H(vf), the z = 0.999 pure-fluid wall, direct p_sat calls in ThermoPackage.cpp, phi_sat near 0.99 Tc, the flash.",
       "seconds": 0.9
+    },
+    "check_campaign_closure": {
+      "exit": 0,
+      "claim": "check_campaign_closure: OK -- 514 expected file(s) hold no closure above tolerance; 80 time-integrated case(s) run, every one's own mass/element/solute closure within 0.001 and every claimed energy closure within 0.01 (no declared-cause exemption exists).  3 case(s) carry a declared opt-out marker and produce no answer: batch12_adsorber_refused_P, ignition01_h2o2_eulersi, ignition01_h2o2_rk4.",
+      "seconds": 69.5
     }
   }
 }
