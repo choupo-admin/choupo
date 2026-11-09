@@ -1553,7 +1553,7 @@ WHY THIS CASE EXISTS. The corpus's other distillation tutorials are pinned on se
 
 1. WHAT IS TRANSCRIBED, PER NUMBER (record Sections 2 and 3, Tables 1 / 2)
 
-number of trays 74 Table 1 $\to$ nStages 75 (see 2) feed tray 37 Table 2 $\to$ feedStage 37 (see 2) column top pressure 658.6 kPa Table 2 $\to$ P (see A2) feed pressure 892.67 kPa Table 2 $\to$ used in A1 only feed flow rate 26234 kg/h Table 2 $\to$ 0/feed (see 3) distillate flow rate 8115 kg/h Table 2 $\to$ distillateRate (see 4) reflux flow rate 92838 kg/h Table 2 $\to$ refluxRatio (see 5) bottoms flow rate 18119 kg/h Table 2 $\to$ NOT an input (see 6) Murphree tray efficiency 119.1 \% text p.4580 $\to$ murphreeEfficiency reflux temperature 18.5 C Table 2 $\to$ NOT USED (see 7) boiler duty 10.240 MW Table 2 $\to$ NOT an input (see 8)
+number of trays 74 Table 1 $\to$ nStages 75 (see 2) feed tray 37 Table 2 $\to$ feedStage 37 (see 2) column top pressure 658.6 kPa Table 2 $\to$ P (see A2) feed pressure 892.67 kPa Table 2 $\to$ used in A1 only feed flow rate 26234 kg/h Table 2 $\to$ 0/feed (see 3) distillate flow rate 8115 kg/h Table 2 $\to$ distillateRate (see 4) reflux flow rate 92838 kg/h Table 2 $\to$ refluxRatio (see 5) bottoms flow rate 18119 kg/h Table 2 $\to$ NOT an input (see 6) Murphree tray efficiency 119.1 \% text p.4580 $\to$ murphreeEfficiency reflux temperature 18.5 C Table 2 $\to$ refluxTemperature (7) boiler duty 10.240 MW Table 2 $\to$ NOT an input (see 8)
 
 Table 1's tray geometry (2.900 m diameter, 0.600 m spacing, 4.9 m2 active area, 772 valves, 18.82 \% free hole area, ...) is transcribed in the record for the reader and is used by NOTHING here: no hydraulics block is declared, because the anchor is the separation, not the rating. Ballast V-1 valve trays are not the sieve tray Choupo's hydraulics pass models, and rating them with a sieve correlation would be a number with no source behind it.
 
@@ -1621,19 +1621,23 @@ A NOTE ON A NUMBER IN CIRCULATION: 11.4441 has been quoted for this ratio. It is
 
 B = F - D is the engine's mole balance: 452.710957 - 142.023556 = 310.687401 kmol/h. Priced at the PREDICTED bottoms composition that comes out at 18108.0 kg/h, 0.06 \% under the Table-2 18119 kg/h. It cannot land on it exactly: F's molar total is fixed by the feed mass and the feed's measured composition, D's by the distillate mass and the distillate's measured composition, and the paper's three compositions do not close per component (record Section 5.4 -- the wt \% columns sum to 100.1, 100.0 and 100.3). The mass residue is the printing, not the column. 18119 kg/h is therefore transcribed above and used by nothing.
 
-7. REFLUX TEMPERATURE 18.5 C -- transcribed, NOT USED, and why
+7. REFLUX TEMPERATURE 18.5 C -- DECLARED (`refluxTemperature`)
 
-18.5 C is far below the bubble point of the overhead at 658.6 kPa (about 41 C, and the run prints its own top-stage temperature). The plant's condenser therefore SUBCOOLS its reflux. Choupo's Wang-Henke path returns saturated reflux and has no subcooling keyword; declaring one would be inventing a model. The number is transcribed so nobody has to wonder whether it was overlooked, and the consequence is stated: the real column's internal liquid traffic in the top few trays is higher than the constant-molar- overflow value used here, by the amount the subcooled reflux condenses on contact. That is a KNOWN, UNMODELLED difference between this case and the plant, not a tuning knob.
+18.5 C is about 26 K below the bubble point of the overhead at 658.6 kPa (the run prints the figure). The plant's condenser therefore SUBCOOLS its reflux, and the case declares it: `refluxTemperature 18.5 degC;`.
 
-8. BOILER DUTY 10.240 MW -- transcribed, and NOT claimed as an anchor
+What the engine does with it, in one line: the cold reflux is heated to saturation on the top tray by condensing vapour there, so the liquid that runs down the rectifying section is the pumped reflux times (1 + phi), phi = sensible heat of the reflux / latent heat of the overhead. Here phi = 0.219: the internal reflux ratio is 13.94 against the 11.44 the flow meters give. `refluxRatio` stays the EXTERNAL ratio of Table 2. The distillate leaves the same drum, so it is published at 18.5 C too.
 
-The run reports a reboiler duty of about 8.09 MW against the Table-2 10.240 MW. The case does NOT anchor on that, and the reason is in its own output rather than in an argument.
+Until 2026-11-09 this number was transcribed and NOT USED (the column had no such keyword), and the case ran a column with 18 \% less internal traffic than the plant's. That was the larger part of the boiler-duty gap in (8).
 
-The Wang-Henke path solves M and E under CONSTANT MOLAR OVERFLOW: the internal traffic is fixed by R, D and q, and NO per-stage energy balance is solved. The duties are then reported by closing the column's overall enthalpy change, and the flowsheet's independent energy audit raises the first-law advisory on this run -- 98.42 \% closure, a residual of 2.96 kW, 0.017 \% of the boundary enthalpy. That is small, and it is NOT evidence that the duty is right: the ledger and the duty are computed from the same three stream states, so agreement between them says the arithmetic is consistent, not that a column with no energy equation found the right vapour traffic. The companion arm column15 makes the point unmissable -- the same three streams to within 0.8 kW of enthalpy, and its audit closes at -256.84 \% with a 670.7 kW residual. Two runs of one column, one ledger claim each, three orders of magnitude apart. The corpus's other Wang-Henke columns sit further out still (column01/09/11's own energyBalance\_byUnit.csv), so this is a property of the solver path and of the reporting around it, and it predates this case by a long way.
+8. BOILER DUTY 10.240 MW -- compared, and NOT claimed as an anchor
 
-Also unmodelled and worth naming beside the duty: the plant's subcooled reflux (7) and the condenser's own subcooling duty are not in this figure.
+The run reports two reboiler duties against the Table-2 10.240 MW:
 
-A duty comparison resting on any of that would be a number pretending to be evidence. 10.240 MW is transcribed; 8.09 MW is reported; neither is an anchor row.
+Q\_reboiler\_kW 9.77 MW (-4.6 \%) closes the column's overall enthalpy change Q\_reboiler\_ownEnvelope\_kW 10.46 MW (+2.1 \%) the reboiler's own envelope on the CMO traffic
+
+(With saturated reflux, before (7), the first was 8.09 MW, -21 \%.)
+
+The two differ because the Wang-Henke path solves M and E under CONSTANT MOLAR OVERFLOW: the internal traffic is fixed by R, phi, D and q, and NO per-stage energy balance is solved. The first duty is the remainder of the column's overall balance, so the ledger closes on it BY CONSTRUCTION and the run says so; the second prices the boil-up that traffic implies. The measured value lies between them. Neither is an anchor row: a column with no stage energy equation brackets the plant's duty, it does not predict it. Nothing was adjusted to bring either number closer.
 
 9. THERMO -- mirroring the paper, not substituting for it
 
@@ -1687,19 +1691,19 @@ THE COMPARISON IS DRAWN BY THE RUN, NOT TYPED HERE (C271). `system/postDict` dec
 
 What the views show, in words (the numbers are theirs): the two anchored keys (i-butane overhead, n-butane in the bottoms) agree with Table 2 at the 1 \% level the source itself supports; the two minor keys do not.
 
-TWO OF THE FOUR KEY ROWS AGREE, AT THE 1 \% LEVEL THE SOURCE ITSELF SUPPORTS; TWO DO NOT, AND THEY MISS IN OPPOSITE SENSES: the rectifying section is too clean (n-butane overhead 44 \% low) while the stripping section is not clean enough (i-butane in the bottoms 54 \% high). Neither is a rounding effect at the printing-resolution band. They are recorded, not tuned. What can be said without guessing: The efficiency does not explain the pair. Column15 (E\_MV = 1) gives 0.728 wt \% n-butane overhead and 0.734 wt \% i-butane in the bottoms -- the plant's 0.2 and 0.3 lie BETWEEN the two arms for the first and BELOW both for the second. The paper's own balance cannot resolve either number. Feed i-butane (7712.8 kg/h) less the printed distillate i-butane (7587.5) leaves 125 kg/h for the bottoms, 0.69 wt \% of 18119 kg/h, against the printed 0.3: the printed bottoms value contradicts the printed feed and distillate, and the model (0.46) lies between them. For n-butane the feed minus the printed bottoms is -15 kg/h for the distillate, so the printed 16 kg/h is inside the table's own 30 kg/h closure error. Two of the four measured numbers are therefore not usable as a target below \textasciitilde{}1 \%. Candidate model gaps acting on exactly these minors: the single column pressure (A2: the stripping section runs colder than the plant), the tray-numbering direction (A0), the unmodelled subcooled reflux (7), the absent per-stage energy balance (8), seven interim component records.
+TWO OF THE FOUR KEY ROWS AGREE, AT THE 1 \% LEVEL THE SOURCE ITSELF SUPPORTS; TWO DO NOT, AND THEY MISS IN OPPOSITE SENSES: the rectifying section is too clean (n-butane overhead 0.008 wt \% against 0.2) while the stripping section is not clean enough (i-butane in the bottoms 37 \% high). The first WIDENED when the subcooled reflux was declared (7): the internal reflux rose by 22 \% and the overhead got cleaner still (it was 0.11 wt \% on saturated reflux). The traffic is now the plant's and the overhead is cleaner than the plant's, so the open question sits in the separating power itself -- the relative volatility near the top, or the 119 \% efficiency, which the paper back-calculated with its own model. Neither is a rounding effect at the printing-resolution band. They are recorded, not tuned. What can be said without guessing: The efficiency does not explain the pair. Column15 (E\_MV = 1) gives 0.076 wt \% n-butane overhead and 0.444 wt \% i-butane in the bottoms -- the plant's 0.2 lies ABOVE both arms and its 0.3 BELOW both. The paper's own balance cannot resolve either number. Feed i-butane (7712.8 kg/h) less the printed distillate i-butane (7587.5) leaves 125 kg/h for the bottoms, 0.69 wt \% of 18119 kg/h, against the printed 0.3: the printed bottoms value contradicts the printed feed and distillate, and the model (0.41) lies between them. For n-butane the feed minus the printed bottoms is -15 kg/h for the distillate, so the printed 16 kg/h is inside the table's own 30 kg/h closure error. Two of the four measured numbers are therefore not usable as a target below \textasciitilde{}1 \%. Candidate model gaps acting on exactly these minors: the single column pressure (A2: the stripping section runs colder than the plant), the tray-numbering direction (A0), the constant-molar-overflow traffic (8), the absent per-stage energy balance (8), seven interim component records.
 
 THE OTHER FIVE COMPONENTS ARE NOT ANCHOR ROWS and are listed only so nobody reads their absence as concealment: propane 4.84 vs 5.3 wt \% overhead and 0.00 vs 0.3 in the bottoms; trans-2-butene 0.001 vs 0.6 overhead; 1-butene / i-butene 0.63 / 0.63 against the printed 0.4 / 0.0. Record section 5.4 already showed these do not close in the SOURCE -- propane +23 \%, i-butene -100 \%, trans-2-butene +155 \% between the feed and the two products as printed -- so a number computed here has nothing to be compared against. Anchoring on them would be measuring the printing.
 
 15. THE TWO ARMS, side by side
 
-column14 (E\_MV = 1.191) against column15 (E\_MV = 1.0), everything else identical (both re-run 2026-11-08):
+column14 (E\_MV = 1.191) against column15 (E\_MV = 1.0), everything else identical (both re-run 2026-11-09, subcooled reflux declared in both):
 
 quantity E\_MV 1.191 E\_MV 1.0 measured
 
-distillate i-butane, wt \% 93.792 93.185 93.5 distillate n-butane, wt \% 0.1115 0.728 0.2 bottoms i-butane, wt \% 0.461 0.734 0.3 bottoms n-butane, wt \% 97.932 97.656 98.1 top temperature, K 319.783 319.755 -- reboiler temperature, K 335.078 335.036 -- outer iterations 762 289 --
+distillate i-butane, wt \% 93.904 93.831 93.5 distillate n-butane, wt \% 0.0082 0.0755 0.2 bottoms i-butane, wt \% 0.411 0.444 0.3 bottoms n-butane, wt \% 97.979 97.949 98.1 reboiler temperature, K 335.085 335.081 -- reboiler duty (overall), MW 9.767 9.761 10.24 outer iterations (last pass) 597 711 --
 
-WHAT THE EFFICIENCY BUYS, read off that table: the major components move by 0.3-0.6 wt \% and the MINOR key in each product by a factor of 6.5 (n-butane overhead) and 1.6 (i-butane in the bottoms). For n-butane overhead the ideal-tray arm sits above the measurement (0.73 vs 0.2) and the efficient arm below it (0.11 vs 0.2): the plant's 0.2 wt \% is bracketed by the two arms, which says that an efficiency of the measured order is the right order.
+WHAT THE EFFICIENCY BUYS, read off that table: the major components move by less than 0.1 wt \% and the MINOR key overhead by a factor of 9 (n-butane, 0.076 $\to$ 0.008 wt \%); i-butane in the bottoms moves by 8 \%. With the plant's internal reflux BOTH arms are cleaner overhead than the plant (0.2 wt \%). On saturated reflux the two arms bracketed that number, and the case read the bracket as support for the measured efficiency; that reading rested on a column with 18 \% too little traffic and is withdrawn. What stands: the efficiency acts on the impurity, not on the major split.
 
 That shape is worth more than a single number. At 74 trays and R = 11.4 this column is far past the point where separating power limits the major components; extra power goes almost entirely into the impurity that is left, which is exactly where a plant's money is. A student who expects a 19 \% efficiency bonus to show up as a 19 \% anything will not find it, and finding out why is the lesson.
 
@@ -1710,16 +1714,16 @@ That shape is worth more than a single number. At 74 trays and R = 11.4 this col
 \goldrow{stream}{feed}{F}{0.125753043611}
 \goldrow{kpi}{splitter}{B}{0.0863020558333}
 \goldrow{kpi}{splitter}{D}{0.0394509877778}
-\goldrow{kpi}{splitter}{L\_rect}{0.45133097767}
-\goldrow{kpi}{splitter}{L\_strip}{0.562751441141}
-\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-8334.84552985}
-\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8090.35298049}
+\goldrow{kpi}{splitter}{L\_rect}{0.550120646375}
+\goldrow{kpi}{splitter}{L\_strip}{0.661541109845}
+\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-10158.0120479}
+\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{9766.9135714}
 \goldrow{kpi}{splitter}{R}{11.440296}
-\goldrow{kpi}{splitter}{T\_bottom}{335.078265625}
-\goldrow{kpi}{splitter}{T\_top}{319.783095841}
-\goldrow{kpi}{splitter}{V\_rect}{0.490781965448}
-\goldrow{kpi}{splitter}{V\_strip}{0.476449385308}
-\goldmore{27}
+\goldrow{kpi}{splitter}{T\_bottom}{335.085474978}
+\goldrow{kpi}{splitter}{T\_top}{319.766595355}
+\goldrow{kpi}{splitter}{V\_rect}{0.589571634152}
+\goldrow{kpi}{splitter}{V\_strip}{0.575239054012}
+\goldmore{29}
 \end{tutgolden}
 
 \clearpage
@@ -1777,16 +1781,16 @@ ONE MORE OBSERVATION, and it is about the ENGINE rather than the column. These t
 \goldrow{stream}{feed}{F}{0.125753043611}
 \goldrow{kpi}{splitter}{B}{0.0863020558333}
 \goldrow{kpi}{splitter}{D}{0.0394509877778}
-\goldrow{kpi}{splitter}{L\_rect}{0.45133097767}
-\goldrow{kpi}{splitter}{L\_strip}{0.562751441141}
-\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-8333.69062551}
-\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8089.03144808}
+\goldrow{kpi}{splitter}{L\_rect}{0.550225998622}
+\goldrow{kpi}{splitter}{L\_strip}{0.661646462093}
+\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-10152.1930634}
+\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{9761.03288976}
 \goldrow{kpi}{splitter}{R}{11.440296}
-\goldrow{kpi}{splitter}{T\_bottom}{335.035644334}
-\goldrow{kpi}{splitter}{T\_top}{319.75463307}
-\goldrow{kpi}{splitter}{V\_rect}{0.490781965448}
-\goldrow{kpi}{splitter}{V\_strip}{0.476449385308}
-\goldmore{20}
+\goldrow{kpi}{splitter}{T\_bottom}{335.080783713}
+\goldrow{kpi}{splitter}{T\_top}{319.646372125}
+\goldrow{kpi}{splitter}{V\_rect}{0.5896769864}
+\goldrow{kpi}{splitter}{V\_strip}{0.575344406259}
+\goldmore{22}
 \end{tutgolden}
 
 \clearpage
