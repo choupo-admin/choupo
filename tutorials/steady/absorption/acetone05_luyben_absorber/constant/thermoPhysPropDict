@@ -20,6 +20,11 @@ schemaVersion 2;
 
   So the absorber gets its own world: water the solvent on the Raoult rung,
   acetone the solute on the Henry rung, hydrogen and isopropanol inert.
+  AND SINCE C256 (2026-11-09) HYDROGEN IS A HENRY SOLUTE TOO: above its
+  critical temperature (33.2 K) its Raoult K was a vapour pressure continued
+  past Tc -- the Kremser absorber printed K_H2 497 and A_H2 0.0010 from it,
+  and slice 5a had moved both by a factor of two between two non-K's.  The
+  catalogue carries H2-water (Sander 2015).  Isopropanol stays inert.
 \*---------------------------------------------------------------------------*/
 
 components       ( isopropanol  acetone  H2  water );
@@ -37,12 +42,13 @@ equilibrium
         }
         solutes
         {
-            components    ( acetone );
+            components    ( acetone  H2 );
             standardState infiniteDilution;
             solutionModel henryDilute;
             binaryParameters
             {
                 acetone-water { source "data/standards/parameters/Henry/acetone-water.dat"; }
+                H2-water      { source "data/standards/parameters/Henry/H2-water.dat"; }   // C256
             }
         }
     }

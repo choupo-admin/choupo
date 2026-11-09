@@ -124,5 +124,14 @@ propertyManifest
             originSha256  "9314f68770cf1bd224de717fe8f127a1dc5777d1f4dd15c742cfefbc5b0c7708";
             release       Choupo-2607;
         }
+        "parameters/Henry/N2-water.dat"
+        {
+            type          imported;
+            sha256        "9f90092b8f70e75d5d5c5a72b868e067a2580edc8774014ead3fee4261274030";
+            computationalSha256 "6e597edbafb3f88076dac89a14cfa53d85b9bc2df19cc088d9b8171fdc5fd765";
+            origin        "data/standards/parameters/Henry/N2-water.dat";
+            originSha256  "f8da2fb1525af1fe32f1b45a2b4ef0ffbc40c7af7e5109c7a01dc7837b1eae76";
+            release       Choupo-2608;
+        }
     }
 }

@@ -62,5 +62,14 @@ propertyManifest
             originSha256  "24b13d60a822b46921a02cd40b57e52cdf756c985884cc1d0e56e874515b4760";
             release       Choupo-2607;
         }
+        "parameters/Henry/H2-water.dat"
+        {
+            type          imported;
+            sha256        "bd5225458c73db61471adca39517391aedd2b565125bf790a2e48a1eafe571f0";
+            computationalSha256 "4a3629c5a88f40b2e55f52bf4da05cff92e0c966331cc39b95712c2744fa8c7b";
+            origin        "data/standards/parameters/Henry/H2-water.dat";
+            originSha256  "c3c7d84fa6e6e11830d341af023cd7aa14b300483ecaddcc4141a60c5db00794";
+            release       Choupo-2608;
+        }
     }
 }

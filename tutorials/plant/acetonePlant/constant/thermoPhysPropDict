@@ -24,6 +24,18 @@ equilibrium
 //  critical temperature (33.18 K) -- the run says so in the caveats.  The
 //  answer is right for the wrong reason, and the size of what is at stake is
 //  small: Luyben's own F1 carries H2 at a mole fraction of 2e-4.
+//
+//  C256 (2026-11-09), MEASURED: the H2 the flash leaves in flashLiquid
+//  (0.27 mol %), carried into C1 and out in acetoneProduct (0.11 %), rests on
+//  a vapour pressure CONTINUED past H2's Tc -- it is not a solubility, and
+//  slice 5a had moved the vent gas by +129 % between two such numbers.  The
+//  first honest rung is Henry (the catalogue holds H2-water) and the ABSORBER
+//  now takes it (its per-unit diluteSolution world, system/flowsheetDict),
+//  but a Henry solute can only be declared inside that world, whose other
+//  components are ideal: putting the flash there would discard the UNIFAC
+//  surface the acetone/IPA/water split needs, and no mixed-solvent Henry
+//  route exists.  The flash keeps this approximation; the number stays a
+//  declared non-K.
 approximations
 {
     componentOutsideActivityModel
