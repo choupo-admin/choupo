@@ -244,6 +244,12 @@
   .commands { margin: 0; border: 1px solid var(--line); padding: 24px; overflow: auto; color: #d8eee8; background: var(--night); font: 13px/1.8 "JetBrains Mono", Consolas, monospace; }
   .commands .comment { color: #85968f; }
 
+  .prompt-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 22px; }
+  .prompt-card { border: 1px solid var(--line); padding: 18px 20px; background: var(--white); }
+  .prompt-card h3 { margin: 0 0 10px; font-size: 18px; }
+  .prompt-text { margin: 0 0 12px; padding: 14px 16px; white-space: pre-wrap; overflow-wrap: anywhere; color: #d8eee8; background: var(--night); font: 13px/1.6 "JetBrains Mono", Consolas, monospace; }
+  .prompt-note { margin: 10px 0 0; color: var(--muted); font-size: 14px; max-width: 900px; }
+
   .resource-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
   .resource { border-top: 4px solid var(--teal); padding: 22px 0 0; }
   .resource:nth-child(2) { border-color: var(--yellow); }
@@ -281,17 +287,6 @@
     letter-spacing: .06em; text-transform: uppercase; color: var(--teal-ink); }
   .edutool-shelf:hover, .edutool-shelf:focus-visible { background: #eef8f5; }
   .edutool-n { margin-left: 8px; color: var(--muted); font-weight: 600; letter-spacing: 0; }
-  .edutool-paths:empty { display: none; }
-  .edutool-paths { margin: 0 0 22px; border: 1px solid var(--line); background: var(--white); padding: 16px 20px; }
-  .edutool-paths h3 { margin: 0 0 4px; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--teal-ink); }
-  .edutool-paths > p { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
-  .edutool-path { border-top: 1px solid var(--line); }
-  .edutool-path > summary { cursor: pointer; padding: 10px 0; font-size: 16px; font-weight: 700; color: var(--ink); }
-  .edutool-path > summary span { margin-left: 8px; color: var(--muted); font-size: 14px; font-weight: 400; }
-  .edutool-path ol { margin: 0 0 12px; padding-left: 22px; }
-  .edutool-path li { margin: 0 0 8px; color: var(--muted); font-size: 14px; }
-  .edutool-path li a { color: var(--teal-ink); font-weight: 700; text-decoration: none; }
-  .edutool-path li a:hover { text-decoration: underline; }
   .edutool-filter { margin: 0 0 14px; }
   .edutool-filter input { width: 100%; max-width: 440px; box-sizing: border-box;
     padding: 10px 14px; font: inherit; font-size: 15px; color: var(--ink);
@@ -484,10 +479,6 @@
       </div>
       <!-- The text filter is revealed by the script below; without JavaScript
            the shelves are simply the full list, every one open. -->
-      <!-- THE GUIDED SEQUENCES (DEV.md 4c C221, C251), from the artefact's `paths`: ordered
-           walks through the tools below.  Empty here; buildSite writes the
-           static version and the script below redraws it. -->
-      <div class="edutool-paths" id="edutoolsPaths"></div>
       <div class="edutool-filter" id="edutoolsFilterBox" hidden>
         <input type="search" id="edutoolsFilter" placeholder="Filter the tools: McCabe, psychro, Gibbs&hellip;" aria-label="Filter the EduTools by name or topic" autocomplete="off">
         <p class="edutool-filter-note" id="edutoolsFilterNote" role="status" aria-live="polite"></p>
@@ -659,6 +650,26 @@ energy balance      <span class="hot">reported</span></pre>
       <div><p class="eyebrow">No installation required</p><h2>Open a real case and watch the solver work.</h2><p>The browser application executes the C++ engine locally through WebAssembly. Choose a tutorial, inspect its files, run it and read the results.</p></div>
       <a class="button" href="/app/" target="choupo-app" rel="noopener">Launch Choupo</a>
     </div>
+  </section>
+
+  <!-- WORK WITH YOUR AI ASSISTANT (DEV.md 4c C252).  The text between the
+       markers is INJECTED at build time by bin/buildSite from docs/ai/prompts.md
+       (bin/curate/prompts_home.py): never edit it here, and a build that cannot
+       find the markers or read the file FAILS. -->
+  <section class="section" id="assistant" style="background:var(--white)">
+<!--PROMPTS:BEGIN--><!--PROMPTS:END-->
+    <script>
+      (function () {
+        document.querySelectorAll(".prompt-copy").forEach(function (b) {
+          b.addEventListener("click", function () {
+            var el = document.getElementById(b.getAttribute("data-copy"));
+            if (!el) return;
+            var done = function () { var o = b.textContent; b.textContent = "Copied"; setTimeout(function () { b.textContent = o; }, 2000); };
+            if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(el.textContent).then(done, function () {});
+          });
+        });
+      })();
+    </script>
   </section>
 
   <section class="section" id="run">
@@ -906,20 +917,6 @@ https://www.choupo.org/app/
         ? (shown ? shown + " of " + cards.length + " tools match."
                  : "No tool matches. Try a method, a model or a quantity.") : "";
     }
-    var pathHost = document.getElementById("edutoolsPaths");
-    function drawPaths(paths) {
-      if (!pathHost || !Array.isArray(paths) || !paths.length) return;
-      pathHost.innerHTML = '<h3>Guided sequences</h3><p>Each sequence walks several tools in a teaching order, with the reason for every step.</p>'
-        + paths.map(function (p) {
-          return '<details class="edutool-path"><summary>' + esc(p.title)
-            + '<span>' + p.steps.length + ' steps</span></summary>'
-            + '<p style="margin:0 0 8px;color:var(--muted);font-size:14px">' + esc(p.intro) + '</p><ol>'
-            + p.steps.map(function (s) {
-              return '<li><a href="' + esc(s.href) + '" target="_blank" rel="noopener">'
-                + esc(s.label) + '</a> &mdash; ' + esc(s.why) + '</li>';
-            }).join("") + '</ol></details>';
-        }).join("");
-    }
     if (box && input) {
       box.hidden = false;
       input.addEventListener("input", applyFilter);
@@ -982,7 +979,6 @@ https://www.choupo.org/app/
           host.innerHTML = '<div class="edutool-cards">' + tools.map(card).join("") + '</div>';
         }
         applyFilter();
-        drawPaths(doc.paths);
         var count = document.getElementById("edutoolsCount");
         if (count) count.textContent = tools.length;
         var blurb = document.getElementById("edutoolsBlurb");

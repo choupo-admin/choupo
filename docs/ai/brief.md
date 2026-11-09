@@ -16,7 +16,9 @@ layout, machine sizing, costing and economics is the same kind of case plus a
 ## 1. The protocol — DESIGN first, files second
 
 Your reply MUST start with `DESIGN.md`, written before you look at any
-tutorial or write any case file.  It contains, with numbers:
+tutorial or write any case file.  A tutorial is a worked check, never a
+template: derive the case from this contract and the grammar, compare it with
+the nearest tutorial afterwards and say where they differ.  It contains, with numbers:
 
 1. **Goal** — product, rate, purity/specification.
 2. **Components** — each name checked against the catalogue list (§6).
@@ -52,6 +54,8 @@ app (clipboard bridge) or saves the files as a `.zip` and uses
 *Open case .zip*.  **Close every block with `=== END FILE ===`**: the
 clipboard bridge parses only closed blocks; the zip route ignores the line.
 No prose between files; explanations go in `DESIGN.md` or in `//` comments.
+Asked for a `.zip`: `DESIGN.md` goes inside it; your message carries the
+decisions and the student's next step.
 
 ## 3. The case
 
@@ -416,7 +420,7 @@ students' approved files are the ground truth: **do not regenerate the case.**
 5. **Append to `DESIGN.md`** (send the whole file, with earlier text unchanged) a
    section `## Revisions`, one entry per round: `### Round N — <date>`, the
    student's feedback quoted VERBATIM, the change list, and `Key numbers:
-   before -> after`.  You cannot run the case: write the before values you know
+   before -> after`.  If you cannot run the case, write the before values you know
    and `after: not yet known — please paste the new Streams table` and ask for it.
    Next round, fill that in before anything else.
 6. **After a change to streams or topology** tell the student to run

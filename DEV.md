@@ -3221,6 +3221,299 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C258 (Vitor, 2026-11-09, a screenshot of batch15_mesh_study's Global balances --
+> "mass closure 4.16E-2", "worst element closure 1.13E-1 (He)" -- in a panic: "andas a
+> correr suites e a dizer que está tudo bem e no final há violação de balanços
+> mássicos!  Ainda vão gozar comigo no departamento!"): A SHIPPED CASE MUST NOT SHOW A
+> BROKEN BALANCE THAT ONLY ITS LOG EXPLAINS.**  MEASURED the same minute, every golden
+> in tutorials/ that pins a mass or element closure above 0.1 %: batch13 and batch15
+> (mass 4.2 %, He 11.3 %), batch19 (0.11 %, 0.31 %), dryer01 and dryer02 (mass
+> 21.6 % and 21.0 %, element 31 %).  WHY THE SUITE SAID PASS: the golden PINS these
+> numbers, so "unchanged" is all a sweep can say, and check_mass_closure covers STEADY
+> cases only (278), never the batch campaigns.  WHAT THEY ARE: (1) the adsorbers are a
+> DECLARED model error -- the constant-(u, P, T) closure fabricates carrier at the net
+> uptake rate; the engine announces it, pins it as carrier_fabricated_mol and
+> physical_mass_closure_rel, and "a named error must bite the equation that owns it,
+> never be discounted out" (FixedBedAdsorber.cpp:920-935); the Ergun velocity update
+> removes it and most adsorber cases use it; batch15, the mesh study, does not, and
+> the screen shows the residual with no word of why; (2) the dryers are NOT that: 2.60
+> kg in, 2.04 kg left, external_out 0 -- the evaporated water leaves into the drying
+> air and the campaign ledger records no outlet, which reads as 0.56 kg destroyed.
+> Vitor is right on the substance: a colleague who opens either sees a violated mass
+> balance, and the explanation is in a log nobody reads.  DECISIONS: (a) the dryer
+> ledger books the evaporated water as an external outlet (the air is the sink),
+> re-recorded with the reason; (b) every case whose balance is not closed by a
+> DECLARED model error moves to the conserving model (batch15 and batch19 to Ergun
+> unless the lesson IS the closure error, then the case says so in its title and
+> README); (c) the GUI's balance chips say the declared cause beside the number
+> ("carrier fabricated by the declared constant-velocity closure -- 4.2 %; Ergun
+> removes it"), never only in the log; (d) a gate over EVERY campaign (batch, ctrl,
+> unsteady): a closure above tolerance must carry a named, declared cause, or the
+> suite FAILS -- the steady gate's KNOWN_OPEN discipline, extended.  First the audit of
+> every time-integrated case, then the fixes, one general.
+> RULED BY VITOR the same night, and right on the substance: "mesmo que haja arraste,
+> tem de se criar uma corrente extra para apanhar a massa!"  Showing a declared model
+> error as a residual "that bites the equation that owns it" (the adsorber's own
+> doctrine, forum #119) was honest to a reader of the log and indefensible on the
+> screen: a balance chart that does not close reads as a broken simulator, whatever
+> the log says.  The project already has the answer in another place -- heat is a
+> stream, not a label; information follows the streams.  So decisions (b) and (d)
+> above are REPLACED: the constant-velocity closure publishes a declared carrier
+> MAKE-UP STREAM equal to the carrier it fabricates, named for the assumption, drawn
+> as its own bar; every mass and element balance of every shipped case closes; the
+> gate keeps no declared-cause exemption for them.  The size of the assumption stays
+> visible as that stream's magnitude, which is where it belongs.
+
+> **C257 (Vitor, 2026-11-09: another assistant's recommendation "tornar o Choupo AI-first",
+> pasted whole, with the instruction "eu quero apenas que tu o ouças e reflitas um pouco.
+> Não precisas de ir logo a correr fazer tudo!  A ideia é pensares e depois falares
+> comigo antes de avançarmos"): UNDER DISCUSSION -- NOTHING IS BUILT FROM IT YET.**  The
+> recommendation: say on the landing that a student designs with their own assistant
+> and verifies with Choupo; one universal prompt behind a "Copy prompt for my AI"
+> button; the welcome screen leading with that instead of a tutorial; the agent
+> instructions harmonised; one full cycle shown; real students tested.  MEASURED before
+> answering: the hero reads "The process simulator that shows its work" and says
+> nothing of an assistant (site/index.html:414-416); the welcome screen's actions are
+> New case, Browse tutorials, Open folder, Open .zip and tutorial cards
+> (gui/src/ui/WelcomeScreen.tsx:32-36, 87-98); AGENTS.md opens with "read brief.md
+> first and all of it" and ENDS with "walk them through dict-syntax.md +
+> case-layout.md first"; the brief says "Never start from [a tutorial] and change
+> numbers" and the pharmaceutical pack's section 2 is titled "Start from a shipped
+> case, never from nothing" -- two real contradictions, the second one also met by the
+> naive-assistant walk of the same day.  THE ARCHITECT'S POSITION, put to Vitor and
+> not yet agreed: the diagnosis is right; the proposed prompt's URLs are not (GitHub
+> blob pages and AGENTS.md, a file for agents inside the repository, where the site
+> already serves plain /llm/ documents an ignorant assistant was measured to fetch);
+> ONE prompt is better than the three of C252 if the brief's own pack index does the
+> routing; the landing keeps its identity line and adds the assistant line under it;
+> "start from a shipped plant" is allowed only where a pack NAMES the case as a
+> scaffold and DESIGN.md still comes first.  Decisions wait for the conversation.
+> AGREED the same hour ("Avança como achares melhor"), WITH VITOR'S ADDITION, which is
+> the half the recommendation missed: "uma grande limitação do Choupo -- e ao mesmo
+> tempo a sua grande vantagem pedagógica -- é que tem poucos componentes e poucas
+> propriedades binárias.  De alguma forma é preciso que o utilizador fique a saber que
+> tudo isso pode ser criado desde que ele forneça artigos científicos ou dados
+> experimentais, ou que peça para consultar a base de dados de 4 GB do NIST ... é
+> preciso tornar claro que a obtenção desses componentes ou binários é feita pelo
+> próprio kernel do Choupo, com ajuda de agentes de AI para preparar os casos de
+> ajuste de propriedades."  MEASURED: the kernel has the whole chain as props
+> operations that run in the browser -- `estimateComponent` (a record from groups,
+> flagged an estimate), `vaporPressureFit`, `heatCapacityFit`, `fitParameters` (a
+> binary pair from VLE or LLE data, validated on held-out points), `vleConsistency`,
+> `hConsistency`, and `componentLookup` / `pairLookup` (what Choupo has, as an
+> evidence card).  The brief already tells the ASSISTANT the order for a missing pair
+> (UNIFAC as an estimate, then ask for measured data and write a fit case, never a
+> number from memory; brief.md:207-220).  Nothing tells the STUDENT: the landing does
+> not say the catalogue is small on purpose, nor that it grows by evidence.  His
+> question about the NIST archive has a measured answer: `bin/choupo-thermoml` (sync,
+> index, search, extract) downloads the ThermoML archive to the USER'S OWN machine
+> (thirdParty/thermoml, 4.2 GB here; `$CHOUPO_THERMOML_HOME` lets a class share one
+> copy), by design -- the engine compiles to WebAssembly and never opens a
+> connection, and Choupo redistributes nothing from the archive.  So: archive search
+> is for a computer with the repository; a browser-only student brings the paper or
+> the table, the assistant prepares the fit case, the engine regresses in the browser.
+> DECISIONS (architect): one front door, built as ONE slice after it is measured --
+> (1) the hero keeps "shows its work" and gains the assistant line and a primary "Copy
+> prompt for my AI"; (2) ONE prompt replaces the three if the walk says so; (3) a
+> landing block "A small catalogue, on purpose -- and how you grow it" (what ships,
+> what an estimate is, what a fit needs, that the regression is Choupo's own and its
+> evidence is shown); (4) a `properties` pack for the assistant (lookup first,
+> estimate labelled as such, fit from supplied data, consistency test, where the
+> result is written, the archive route on a computer with the repository); (5)
+> AGENTS.md's last paragraph brought into line with its first; (6) "start from a
+> shipped plant" only where a pack names the scaffold; (7) the welcome screen leads
+> with the assistant.  FIRST the walk: an ignorant assistant, one prompt against
+> three on the same task, and a second task that needs a pair the catalogue lacks,
+> from a table of measured data.  What it shows decides the wording.
+> MEASURED THE SAME HOUR (six sessions of an ignorant assistant, this time with the
+> repository and every compiler hidden from it; four counted, two discarded as
+> contaminated because they cloned the public repository and BUILT the engine).
+> ONE PROMPT IS NOT WORSE THAN THREE: given the task in plain words, both sessions
+> chose the right packs from the brief's index on their own (pharmaceutical and
+> batch-plant), delivered a .zip the app's opener accepts, halved the tablet right
+> (103.44 kg/h of packaged tablets against 206.9; 143 lots), named Complete 0/ in the
+> hand-over, and ran clean after it.  THE MISSING PAIR (ethanol + cyclohexane, the
+> student given only curate12's 25 measured points as a CSV, the words NRTL and fit
+> never said): NO session invented or recalled a parameter; every one checked the
+> catalogue, put the pair into Choupo's own `fitParameters`, and said Choupo does the
+> regression; every fit ran (b_ij ~400-411 K, b_ji ~500-516 K against the golden's
+> 354.7 / 565.4, inside the fit's own +/-90-115 K intervals, the two strongly
+> correlated).  BUT NO SESSION ENDED WITH A WORKING FLASH ON THE FITTED PAIR: the pair
+> validates on bubble temperatures and predicts a liquid split, and the flash then
+> refuses (outer loop not converged), as curate12 itself says when it declines to
+> promote the pair; the documents never warn of this, so a student is left with a
+> refusal and no reason.  ALSO FOUND: (a) start-here.md's relative links
+> (case-layout.md, patterns.md, ...) are served at /llm/start-here.md while their
+> targets live at /llm/reference/ -- every one 404s on the site (docs/ai/start-here.md
+> :130-142); (b) the fitParameters grammar is in patterns.md section 4, which the brief
+> does not route to, so three sessions opened curate12 -- the answer -- to learn the
+> syntax; (c) a typed starting guess (a = 1.0) produces the engine's "[unreviewed]
+> pair" line on a flash run on the guess; (d) "validationRefused" and "notValidated"
+> look alike to a student.  These enter the front-door slice.
+
+> **C256 (the architect, 2026-11-09, out of C245 slice 5a's Step-0 measurement): A
+> SUPERCRITICAL GAS PRICED THROUGH Psat HAS NO PHYSICAL K, AND 32 CASES CARRY ONE.**
+> Before making the vapour pressure continuous, the slice counted every Psat evaluation
+> outside [Tmin, Tc] over 143 cases (FASTSET, all of steady/distillation and
+> steady/flash, the plants): 110 component rows in 42 cases leave [Tmin, Tc], and 84 of
+> them, in 32 cases, price a component ABOVE ITS CRITICAL TEMPERATURE on the Raoult rung
+> (the table: docs/audits/2026-11-09-psat-window-step0.txt) -- H2, N2, Ar, CH4, O2, CO2 and, in the
+> converters, NH3 itself (ammoniaReactor04: 3.0e7 calls) -- every one through Antoine,
+> formerly extrapolated hundreds of kelvin past its fit, now continued from Tc.  hda's
+> HP flash publishes K_H2 = 49.6 before and 21.7 after: a factor of two between two
+> numbers neither of which is a K, and the student reads one.  The continuation makes
+> the SOLVER's surface smooth; it does not make the physics right, and its
+> announcement (`[psatContinued] ... ABOVE Tc`) now says so on every such run -- which
+> is the first time these cases admit it.  The catalogue's Henry pairs for the light
+> gases are with WATER (CH4, CO2, H2, N2, O2) and with ammonia (C239); none with
+> benzene, toluene or acetone.  DECISION, per case, in the order of what a student is
+> shown: (1) a solute with a catalogue Henry pair in the case's solvent moves to the
+> Henry rung (ChemicalPlantTutorial's CO2 in the fermentation flash; the water-side
+> cases); (2) a light-gas / hydrocarbon system at pressure runs phi-phi on a cubic --
+> hda's HP flash and recycle, the standard treatment, through the per-unit `thermo {}`
+> override if the rest of the plant stays gamma-phi; (3) where neither exists (N2 and
+> O2 over acetone in apalutamide01's condensate pot) the pair is curated from a
+> measured source or the case keeps the rung with the announcement and a README line
+> that says the K is not a solubility.  The Step-0 table is the work list.  Each move re-records its case
+> once, to a number that can be defended; the re-record of slice 5a (101 rows, three
+> cases) was the numerical surface moving, and says so.  After slices 5b and 6.
+
+> **C255 (Vitor, 2026-11-09: a second opinion on the EduTools from another assistant,
+> pasted whole -- "avalia mas decide tu"): SEVEN SCIENTIFIC ERRORS IN LESSON TEXT, ALL
+> SEVEN CONFIRMED AT THEIR LINES, AND THE GAP IN OUR GATES THAT LET THEM STAND.**  The
+> review separates errors of content from pedagogy and states it does not claim the
+> engine is wrong; it is not.  VERIFIED by the architect, each at the cited line of
+> main, before deciding:
+> (A) routeScreeningLesson.ts:208 "Half the methane burns ..., the other half is left
+> over".  The case's own golden (screen01_methanol_routes: feed CH4 2/3, O2 1/3 kmol/h;
+> F_out 1.000943; y_CH4 0.499058) gives a conversion of 1 - 1.000943 x 0.499058 /
+> (2/3) = 25.07 %, as stoichiometry does (O2 limits: 1/6 of 2/3).  A QUARTER burns; the
+> half is the outlet MOLE FRACTION.  Text wrong, engine right.
+> (B) reactionEnthalpyLesson.ts:165 carries the 14 % between the 298 K and the 773 K
+> reaction enthalpy to the steam raised AND to the adiabatic rise "in the same
+> proportion"; standardStateLesson.ts:313 says not to carry that percentage to either
+> without closing those balances.  Two pages, two conclusions; the second is the true
+> one in general (the first holds only for an isothermal balance with feed and
+> products at the reactor temperature, which the page does not say).
+> (C) epsilonNtuLesson.ts:81 "across a phase change the log-mean of the terminal
+> temperatures is not the driving force at all" -- false as a general statement: an
+> isothermal condenser against a single-phase coolant is the textbook case where the
+> LMTD is exact (C_r = 0); it fails with desuperheating, subcooling or a gliding
+> temperature.  "What this unit models" was written as "what the method allows".
+> (D) approachToEquilibriumLesson.ts:469 "read the composition from the shifted run
+> and everything else from the unshifted one": the unshifted run's duty belongs to
+> the UNSHIFTED composition; the duty of a declared approach is H_out(T physical,
+> shifted composition) - H_in.  To be checked against what EquilibriumReactor.cpp
+> does before the sentence "which is what the engine itself does" is kept.
+> (E) levenspielLesson.ts:171 a stirred tank provides the seed of an autocatalytic
+> reaction "by construction": with no product in the feed or the charge, r = k C_A C_P
+> gives dC_P/dt = 0 at C_P = 0 -- back-mixing SUSTAINS a seed, it does not create
+> one; the washout state is always a solution.  Existence of a steady state against
+> the possibility of start-up: a better lesson than the sentence it replaces.
+> (F) dataReconciliationLesson.ts:290 "the multiplier is fixed by the balance's own
+> residual: a balance that closed at the readings would get zero", beside its own
+> lambda = (A C A^T)^-1 r: balances sharing a meter are coupled, so r_k = 0 does not
+> give lambda_k = 0.
+> (G) batchMembraneLesson.ts:786-793 "a crossflow module CAN correlate [the film
+> coefficient] ... and a stirred vessel cannot" -- stirred cells have mass-transfer
+> correlations; what is missing is a declared geometry in THIS unit; likewise
+> "exactly two pure batch operations" (:147) and "in real equipment the flux falls"
+> (:417) state the tool's scope and one mechanism as universals.  In Vitor's own field.
+> WHY THEY STOOD.  Every lesson claim ABOUT THE ENGINE is held to a file:line and
+> re-checked by a gate (check_lesson_symbols, the anchors tests); nothing holds a
+> sentence about PHYSICS.  The 2026-08-31 audit (43 defects) read the lessons against
+> the engine they cite, the same lens.  A sentence can be perfectly cited and
+> scientifically false -- (A) is cited to the case and misreads its own number.
+> ON THE PEDAGOGY the review agrees with what Vitor said the same night and what was
+> already decided (C251 revised: no sequence is offered until one is written with
+> him); its proposed orders (tear topology before relaxation; binary equilibrium
+> before the flash; stages -> efficiency and hydraulics -> dimensions before cost)
+> are taken as input for that writing.  Its point on MIXED LEVELS is right and is the
+> C246 finding generalised: physics, the experiment, the implementation and the
+> development history are interleaved in one paragraph (dates of corrections, "the
+> owner's doubt", C++ lines in mid-argument).
+> DECISIONS: (1) the seven are fixed NOW, each with a test that recomputes the
+> corrected statement (A from the golden; F and E by a numeric counterexample; C by
+> the C_r = 0 exchanger; B by one example closed on two paths; D against the engine;
+> G reworded, a stirred-cell correlation cited only from a source actually read);
+> (2) a SCIENTIFIC audit of every other lesson, by readers who are told to judge the
+> physics and not the citations, findings verified by the architect before any edit
+> -- seven in a sample is not seven in total; (3) the six-part page (question,
+> prediction, experiment, explanation, limits, technical details collapsed) is
+> PILOTED on two tools and shown to Vitor before it touches the rest; citations stay
+> gate-held, moved into the collapsed part; (4) for December the EduTools are
+> presented as conceptual laboratories in development, not as a reviewed course --
+> the review's own wording, and the honest one.
+> (1) BUILT the same day (one general, seven commits A..G, 13 test files / 195 tests on
+> its own files, the four lesson gates exit 0; the whole suite at integration): each
+> sentence rewritten and held by a RECOMPUTING test -- A the conversion from the
+> golden's own rows (25.07 %) and the O2-limiting arithmetic; B ONE example closed on
+> two paths from the witness's own cp polynomials (-27.98 - 45.94 + 20.48 = -53.44 kJ
+> per mol NH3 against the reaction enthalpy at 773.15 K, -53.44), the 14 % said to
+> belong to the isothermal balance only, the adiabatic rise taken at the INLET
+> temperature (4 % at 400 K, not 14 %), and the standard-state page made to say the
+> same; C "what the method allows" separated from "what this unit models"
+> (HeatExchanger.cpp:1011-1036, 1205-1208: a sensible duty only), with C_r = 0 checked
+> for NTU 0.1-5 to 1e-10; D the engine's own order read (EquilibriumReactor.cpp:873,
+> 936-940, 947: the outlet priced at the PHYSICAL T with the SHIFTED composition) and
+> the instruction rewritten to say what is carried and what is recomputed, the
+> panel's caption corrected; E an RK4 integration: C_P stays 0 from C_P(0) = 0 even at
+> k C_A0 tau = 20, reaches C_A0 - 1/(k tau) from a seed of 1e-6, washes out at 0.8;
+> F a two-balance, three-meter counterexample (r = (0, 1), lambda = (1/3, 2/3));
+> G reworded with no stirred-cell paper cited (none was read), the osmotic flux trend
+> recomputed.  FOUND ON THE WAY, verified by the architect: THE ENGINE PRINTS THE SAME
+> ERROR AS (C) -- HeatExchanger.cpp:1206-1208 tells the student "(U.A.LMTD is NOT a
+> check here: a side changed phase, so the terminal log-mean is not the driving
+> force)", and its comment at :1007-1008 says the same.  True of THIS unit (its duty
+> carries no latent term), false as the reason given.  A two-string wording fix in
+> `src/`, line count held (the lesson cites those lines), through its own
+> integration.  NOT read by anyone yet, named by the general: `limitingReactantLesson`
+> and `ipStrategyLesson` ("same proportion"), steps 3-7 of the approach lesson, and the
+> C_r gloss of the eps-NTU lesson ("0 when one side changes phase", true only for an
+> isothermal side) -- they go to the audit of decision (2).
+
+> **C254 (the architect, 2026-11-09, found by the C252 general while wording prompt C):
+> THE HOSTED APP CANNOT TAKE WHAT THE STUDENT'S ASSISTANT WRITES.**  MEASURED:
+> `gui/src/ui/ClipboardBridge.tsx:63-68` offers the paste-and-apply bridge (parse the
+> `=== FILE: <path> ===` blocks, apply them to the open case) ONLY on localhost; on
+> www.choupo.org the same modal reads "This site RUNS cases.  To AUTHOR with AI, work on
+> your PC" and offers a .zip download.  The comment gives the reason: authoring was
+> meant to happen locally "with the student's own agent on the downloaded case".  That
+> assumed a student with a LOCAL agent and a checkout.  Vitor's premise of 2026-11-08
+> is another student: one with a browser and a chat assistant they subscribe to, no
+> checkout.  For that student the path today is: the assistant prints file blocks, the
+> student creates a folder and saves each block into it by hand (a dozen files, nested
+> paths), then File > Open Case folder -- the step where a first-year gives up, and the
+> one nobody had walked.  DECISION: the hosted app OPENS a case from pasted text.  A
+> File-menu entry beside "Open Case from .zip…": paste the assistant's whole reply, the
+> SAME block parser the bridge has (moved to one module, not copied) builds an
+> in-memory case exactly as `openedCaseFromZip` does (gui/src/cases/loadCase.ts:100),
+> with the same refusals (a path outside the case, a missing controlDict, no blocks
+> found -- each named), and the case then runs like any other.  This is LOADING a case
+> to run it, which the credo allows, not editing one; nothing is written to a server.
+> Prompt C, the start-here paragraph and the pharmaceutical pack then say "paste my
+> whole reply into File > Open Case from text" instead of "save the blocks into a
+> folder".  A harness problem measures the round trip mechanically (a reply's blocks ->
+> the parser -> a case that lints).  After the C251 home and C252 land (same files).
+> CORRECTED the same day, on Vitor's "não entendo": the workflow itself was never in
+> doubt -- the student tells the assistant what they want, the assistant prepares the
+> case and advises, the student RUNS and LOOKS in the GUI, and repeats until they
+> agree with the case (settled long before).  The gap is only the hand-off of the
+> files, and the entry above overstated it: an assistant that works on the student's
+> computer writes a folder (File > Open Case folder: works today), and a chat that can
+> produce a file gives a .zip (File > Open Case from .zip: works today).  Only a chat
+> that can merely PRINT text leaves the student copying a dozen files by hand; C254
+> covers that case, and prompt C asks first for a .zip, then for blocks.  Whether the
+> assistants the students use produce a correct .zip was NOT tested.
+> WITHDRAWN by the architect the same hour, on Vitor's answer: a chat that can only
+> print text "já é uma coisa do passado" -- the assistants his students use create
+> files.  The premise of C254 was the third case; without it the hosted app needs no
+> new entry point, and one less surface is one less thing to keep true.  What stays:
+> prompt C asks for the case as a .zip to open with File > Open Case from .zip, with
+> blocks only as the fallback of an assistant that cannot create a file.  If a
+> student's assistant turns out not to produce a usable .zip, that is a measured fact
+> to bring back, and C254 reopens on it.
+
 > **THE SITE STOPPED DEPLOYING, AND THE CAUSE WAS OURS (2026-11-09 night).**  Vitor
 > forwarded GitHub's "publish-site: all jobs have failed", then read `680f96bd` on the
 > live app an hour after the night batch was pushed.  TWO defects, both found by
@@ -3330,6 +3623,46 @@ accepts today, and that is a policy call.
 > harness's revision problems already measure it in part (a reply that copies a shipped
 > case's numbers fails its checks).  Draft: the commander's scratchpad; the general
 > plumbs it (one home, three views, the gate, the harness) after the night batch.
+> BUILT (2026-11-09, five commits; its GUI validation ran at integration, not in the
+> general's worktree): `docs/ai/prompts.md` holds the three prompts, 204 words
+> together (109 + 20 + 75; ceiling 300); the anti-copy sentence is in brief.md (3201 ->
+> 3231 words, budget 3300) and start-here.md, which opens with a paragraph for the
+> browser student; three GENERATED views -- /llm/prompts.md (third link of llms.txt),
+> a landing section "Work with your AI assistant" with a copy button per prompt
+> (injected by `bin/curate/prompts_home.py` between markers; the build fails without
+> them), and Help > "Prompts for your AI assistant…"; the gate (in
+> check_capability_index) holds every URL to what llm_site.py publishes, the pack
+> list to docs/ai/packs/, the word ceiling, and the three views to the home (six
+> sabotages, each failing); the harness gained brief variant `prompts`.  TWO
+> CORRECTIONS the general made to the draft, both right: start-here is served at
+> /llm/start-here.md, not under /llm/reference/; and prompt C could not say "paste
+> into the app", because the hosted app does not take pasted files (C254) -- it says
+> to save the blocks into a folder, until C254 lands.
+> THE CHAIN WALKED BY A GENUINELY IGNORANT ASSISTANT (2026-11-09; Vitor: "tu podes
+> lançar um general para isto ... tens de dizer ao general para agir como se não
+> conhecesse o Choupo").  A general cannot be ignorant (it carries the project's
+> instructions), so it ORCHESTRATED four headless sessions of another model started
+> from an empty folder outside the repository, pasted A, B (`pharmaceutical`) and C
+> ("start from donepezil01, 10 mg -> 5 mg, same tablets a year, give me a .zip")
+> verbatim, helped none, and measured.  ALL FOUR fetched the three documents and the
+> pack whole before answering; their ten and five lines were true; each .zip is
+> ACCEPTED by the app's own opener (`caseFromZipBytes`); the change is right in all
+> (the whole tablet halved as the shipped README prescribes, twelve feeds, price per
+> kg converted, the lot 300 -> 150 kg so the press stays under utilisation 1; no trap
+> of the pack sprung); three decisions written, two of them derived.  THE FAILURE:
+> three sessions found the engine on this laptop and ran the case (contamination: the
+> student has no engine); the one clean session delivered a .zip that opens and does
+> NOT run until File > Complete 0/ -- and said so of its own accord, because no
+> document tells it to.  The brief and the pack say "you cannot run the case", prompt
+> C says "give me a .zip", and nothing says what the hand-over must state.  FIXES
+> (wording, after batch-3): prompt C names the next step when the case was not run;
+> the brief and the pack separate the assistant with a shell from the one without;
+> the pack says what "5 mg" means (half the tablet) and when to ask once; DESIGN.md
+> goes inside the .zip.  (The harness's p-pharma-1 is NOT ambiguous -- its feedback
+> says "the pressed core must stay at 280 mg"; the walked task did not say, and all
+> four took the README's reading, half the tablet.)  LIMITS:
+> the assistant was not ChatGPT; opener and engine ran natively; Vitor runs the real
+> one with the procedure given to him the same day.
 
 > **C251 (Vitor, 2026-11-08 night, a screenshot of www.choupo.org/app/?workspace=methods:
 > "O EduTools arranca logo com o EduTool do McCabe & Thiele!  E depois a forma como o aluno
@@ -3386,6 +3719,18 @@ accepts today, and that is a policy call.
 > `&path=` link keeps working (an address must not break), but nothing offers a
 > sequence until one is written WITH him, from a course he teaches; a tool's own
 > "leads to" line carries the next step meanwhile.  One GUI general, `--gui`.
+> BUILT (2026-11-09, three commits, --gui 45/0, 7206 GUI tests; diff read by the
+> architect before integration): `EduToolsHome.tsx` is the title and one sentence, a
+> search field at content width (size xl; the heaviest element on the page), a count
+> line ("n of 75 tools"), a one-line row of section links, then one section per
+> `METHOD_DISCIPLINES` entry with its tools as cards; typing filters live through the
+> Find's OWN index and matcher (`searchEduTools`; the blurb joined the index), a tool
+> matched only inside a lesson shows that chapter under its card and opens at it,
+> Escape clears; no sequence on the home, and the landing's section, CSS, script and
+> `bin/buildSite` block are gone; `METHOD_PATHS`, `&path=` and the bar still work.
+> check_method_tools holds the field, the single matcher, the registry-drawn sections
+> and the absence of sequences (five sabotages, each failing).  STILL NOT SEEN IN A
+> BROWSER BY ANYONE BUT VITOR: the first reading of the result is his again.
 
 > **C250 (Vitor, 2026-11-08 night: "a interação com o Choupo é mediada por ti pelo ChatGPT
 > que os alunos subscrevem!  Por isso é muito importante que as instruções para agentes
@@ -3623,6 +3968,34 @@ accepts today, and that is a policy call.
 > domain); the limit values are the CASE's declared input, dated and cited, never
 > compiled into the tool (price-data doctrine, applied to a regulation).  One general,
 > Sonnet, after the C246 pair; every claim measured before the brief.
+> MEASURED BEFORE THE BRIEF (2026-11-09), and one claim above was wrong: the engine has
+> NO fired-unit type (`UnitOperation.cpp` registers `gibbsReactor`; `boiler` is an
+> alias of the phase changer), so "a real fired unit's flue gas" has no such witness.
+> The combustors of the corpus are Gibbs reactors: `gibbs06_thermal_nox` (NO in the
+> burnt gas), `gibbs03_methane_combustion` and `gibbs05_adiabatic_flame` (CO2, flame
+> temperature).  The engine half therefore reads the OUTLET STREAM of a Gibbs
+> combustor -- flow, T, composition -> the emission rate of NO or CO2 and the buoyancy
+> flux -- and says so; a stack as a sized item of a fired unit waits for a fired unit.
+> The page's own arithmetic follows the pool-fire tool's declaration (registry:
+> discipline "Process safety", kind construction, origins page / reference /
+> assumption).  Dispatched the same night.
+> BUILT, THEN HELD UNTIL ITS NUMBERS WERE READ (2026-11-09).  The general delivered the
+> page (eight steps, the four live figures, the engine half on `gibbs06_thermal_nox`'s
+> flue gas; --gui 45/0, 7231 GUI tests) and said plainly that the rural sigma set,
+> Turner's table, the rise constants and the stable gradients were WRITTEN FROM MEMORY.
+> They agreed with the architect's own memory, which is two memories agreeing and not
+> a source; the page was held.  A second general READ them in print: Hanna, Briggs &
+> Hosker 1982 (DOE/TIC-11223, Tables 4.1 and 4.5, Eq. 2.19), the ISC3 User's Guide
+> Vol. II (EPA-454/B-95-003b, Eqs. 1-8, 1-14, 1-15, 1-17, 1-20, Tables 1-3 and 1-4)
+> and Turner's Workbook in its 1967 Public Health Service edition (Table 3-1; the 1970
+> EPA edition was not obtained).  EVERY COEFFICIENT MATCHES; nothing was changed.  ONE
+> PRINTED DISAGREEMENT, kept visible on the page: urban class E-F sigma_z is
+> 0.08 x (1 + 0.00015 x)^-1/2 in Hanna's Table 4.5 and (1 + 0.0015 x)^-1/2 in ISC3;
+> the code keeps ISC3's, judged the handbook a misprint (0.00015 gives 506 m at 10 km,
+> twelve times the rural class F), and says that this is a judgement.  Stated as not
+> built: the momentum rise ISC3 switches to for a cold jet.  Not seen: the originals of
+> Briggs 1969/1973/1975 and Pasquill 1961.  Flags turned from unread to read with page
+> citations; in batch-4.
 
 > **C246 (Vitor, 2026-11-08: "ao contrário do OpenFOAM, não deixa o utilizador especificar
 > os coeficientes de sub-relaxação ... podia haver valores default e depois o user podia
