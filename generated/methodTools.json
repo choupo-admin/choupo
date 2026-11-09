@@ -189,8 +189,8 @@
       ]
     }
   ],
-  "liveTools": 75,
-  "registryTools": 75,
+  "liveTools": 76,
+  "registryTools": 76,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -935,6 +935,20 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=pool-fire"
+    },
+    {
+      "id": "stack-dispersion",
+      "label": "How tall must the stack be? Gaussian plume dispersion",
+      "blurb": "Find the stack height that keeps ground concentration under a limit.",
+      "discipline": "Process safety",
+      "teaches": "How tall a stack must be so the gas it emits reaches the ground diluted enough: the Gaussian plume with the ground's reflection derived as an image source, Pasquill's six weather classes from Turner's day-and-night key, Briggs' spread curves for open country and town, Briggs' buoyant plume rise, the ground maximum and where it falls, and the least stack height for a limit you declare, beside the good-engineering-practice height against building downwash. Four live figures: the class picker, the plume in side view with its image, the ground concentration of all six classes, and a plan view with a fence. The flue gas of a Gibbs reactor is read from a run. Which coefficients were read and which were not is stated on the page.",
+      "origins": [
+        "engine",
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=stack-dispersion"
     },
     {
       "id": "bund",

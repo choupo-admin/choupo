@@ -54,6 +54,8 @@ app (clipboard bridge) or saves the files as a `.zip` and uses
 *Open case .zip*.  **Close every block with `=== END FILE ===`**: the
 clipboard bridge parses only closed blocks; the zip route ignores the line.
 No prose between files; explanations go in `DESIGN.md` or in `//` comments.
+Asked for a `.zip`: `DESIGN.md` goes inside it; your message carries the
+decisions and the student's next step.
 
 ## 3. The case
 
@@ -418,7 +420,7 @@ students' approved files are the ground truth: **do not regenerate the case.**
 5. **Append to `DESIGN.md`** (send the whole file, with earlier text unchanged) a
    section `## Revisions`, one entry per round: `### Round N — <date>`, the
    student's feedback quoted VERBATIM, the change list, and `Key numbers:
-   before -> after`.  You cannot run the case: write the before values you know
+   before -> after`.  If you cannot run the case, write the before values you know
    and `after: not yet known — please paste the new Streams table` and ask for it.
    Next round, fill that in before anything else.
 6. **After a change to streams or topology** tell the student to run
