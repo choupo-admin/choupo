@@ -607,14 +607,47 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
             for (std::size_t i = 0; i < n; ++i)
                 if (nu[j][i] != 0.0)
                 {
-                    try { (void) thermo.comp(i).h_pure_ig(T); }
-                    catch (const std::exception&)
-                    {
+                    //  What the energy balance needs is a SPECIES ENTHALPY ON THE
+                    //  ELEMENTS DATUM, not specifically the ideal-gas leg.  A record
+                    //  on a `pureLiquid` reference is refused by h_pure_ig (its
+                    //  rung guard, Component.cpp requireIdealGasRung) although
+                    //  the stream pricer prices it through the liquid leg
+                    //  (speciesPhaseEnthalpy -> h_formation(T, "liquid"), the route
+                    //  H_stream_formation takes for a datum off the gas rung).
+                    //  So: accept the ideal-gas leg, else the liquid leg; refuse
+                    //  only when neither prices, and say which reference the
+                    //  record is on and what each leg lacked (DEV.md 4c C259 (d)).
+                    const Component& ci = thermo.comp(i);
+                    std::string igWhy;
+                    try { (void) ci.h_pure_ig(T); continue; }
+                    catch (const std::exception& e) { igWhy = e.what(); }
+                    if (!ci.hasGibbsData())
                         throw std::runtime_error("CSTR: thermalMode `" + tmode + "` needs the "
-                            "elements datum on every reacting species -- '"
-                            + thermo.comp(i).name() + "' has no `standardThermochemistry` block "
+                            "elements datum on every reacting species -- '" + ci.name()
+                            + "' has no `standardThermochemistry` block "
                             "(a fictitious species carries none; use thermalMode isothermal)");
+                    std::string liqWhy;
+                    try
+                    {
+                        //  Off the gas rung the liquid datum is read directly
+                        //  (its own refusal names the missing Cp); the Watson
+                        //  fallback of speciesPhaseEnthalpy would re-enter
+                        //  h_pure_ig and report the rung guard, a true sentence
+                        //  about the wrong leg.
+                        if (!ci.datumOnIdealGasRung())
+                            (void) ci.h_formation(T, ci.naturalPhase());
+                        else
+                            (void) thermo.speciesPhaseEnthalpy(i, T, P, "liquid",
+                                ThermoPackage::ReferenceContext::StandardPhase);
+                        continue;
                     }
+                    catch (const std::exception& e) { liqWhy = e.what(); }
+                    throw std::runtime_error("CSTR: thermalMode `" + tmode + "` needs the "
+                        "elements datum on every reacting species -- '" + ci.name()
+                        + "' carries a `standardThermochemistry` block on the "
+                        + ci.referenceStateWord() + " reference, but it cannot be priced: "
+                        + (ci.datumOnIdealGasRung() ? "ideal-gas leg: " + igWhy + "  |  " : std::string())
+                        + "datum leg: " + liqWhy);
                 }
 
     // Inlet (mol/s) + the liquid-basis volumetric flow (as the single path).

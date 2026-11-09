@@ -635,15 +635,41 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
             for (std::size_t i = 0; i < n; ++i)
                 if (nu[j][i] != 0.0)
                 {
-                    try { (void) thermo.comp(i).h_pure_ig(T); }
-                    catch (const std::exception&)
-                    {
+                    //  Same question as the CSTR's pre-check: can this species be
+                    //  priced on the elements datum?  h_pure_ig answers only for the
+                    //  ideal-gas rung (its rung guard refuses a pureLiquid record),
+                    //  so a record off that rung is priced on its own datum leg, the
+                    //  route the stream pricer takes.  Refuse only when neither
+                    //  prices (DEV.md 4c C259 (d)).
+                    const Component& ci = thermo.comp(i);
+                    std::string igWhy;
+                    try { (void) ci.h_pure_ig(T); continue; }
+                    catch (const std::exception& e) { igWhy = e.what(); }
+                    if (!ci.hasGibbsData())
                         throw std::runtime_error("PFR: thermalMode `" + tmode + "` needs the "
                             "heat of reaction, so every reacting species needs a "
-                            "`standardThermochemistry` block -- '" + thermo.comp(i).name()
+                            "`standardThermochemistry` block -- '" + ci.name()
                             + "' has none (a fictitious species carries no elements datum; "
                               "use thermalMode isothermal, or a real species)");
+                    std::string datumWhy;
+                    try
+                    {
+                        if (!ci.datumOnIdealGasRung())
+                            (void) ci.h_formation(T, ci.naturalPhase());
+                        else
+                            (void) thermo.speciesPhaseEnthalpy(i, T,
+                                dict->subDict("feed")->lookupScalarOrDefault("P", 101325.0), "liquid",
+                                ThermoPackage::ReferenceContext::StandardPhase);
+                        continue;
                     }
+                    catch (const std::exception& e) { datumWhy = e.what(); }
+                    throw std::runtime_error("PFR: thermalMode `" + tmode + "` needs the "
+                        "heat of reaction, so every reacting species must be priceable on the "
+                        "elements datum -- '" + ci.name() + "' carries a "
+                        "`standardThermochemistry` block on the " + ci.referenceStateWord()
+                        + " reference, but it cannot be priced: "
+                        + (ci.datumOnIdealGasRung() ? "ideal-gas leg: " + igWhy + "  |  " : std::string())
+                        + "datum leg: " + datumWhy);
                 }
 
     // Inlet (mol/s) + liquid-basis volumetric flow (as the single path).

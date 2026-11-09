@@ -50,7 +50,7 @@ export const VAN_HEERDEN_STEPS: readonly LessonStep[] = [
       + "feed and lands on the monotone law's one root; for a one-reaction "
       + "set the engine also scans the extent equation at the reported "
       + "temperature and announces every root it holds, with its stability "
-      + "(CSTR.cpp:665–676), and the single-reaction path checks "
+      + "(CSTR.cpp:703–714), and the single-reaction path checks "
       + "the declared orders and refuses a law that breaks it "
       + "(CSTR.cpp:316–327).  Eliminate it, and what is left is ONE equation in "
       + "the temperature alone.  Choupo scans that equation and bisects every root it finds.  "
