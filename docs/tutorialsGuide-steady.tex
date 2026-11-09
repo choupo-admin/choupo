@@ -1681,21 +1681,11 @@ What a PASS would mean: that the MESH solve plus a declared efficiency reproduce
 
 14. THE ANCHOR TABLE -- observed, and it does NOT all agree
 
-RE-MEASURED 2026-11-08 (C239) on the current engine. The table this section carried before (i-butane 94.033 / n-butane 0.0015 wt \% overhead) was taken BEFORE the C235 real-vapour liquid reference and had gone stale; the numbers below are the run's own converged/ streams. `expected` carries the rows (header block "THE KLEMOLA ANCHORS"); this section is the reading.
+RE-MEASURED 2026-11-08 (C239) on the current engine. The table this section carried before (i-butane 94.033 / n-butane 0.0015 wt \% overhead) was taken BEFORE the C235 real-vapour liquid reference and had gone stale, which is why the table is no longer copied here. `expected` carries the anchor rows (header block "THE KLEMOLA ANCHORS"); this section is the reading.
 
-Predicted product compositions, converted back to wt \% from this case's own converged/ streams, beside the Table-2 measurements. The printed band is the table's rounding (0.1 wt \%, so +/-0.05); the ANCHOR band is wider and is justified in `expected` (the table's own key closure, about 1 \%).
+THE COMPARISON IS DRAWN BY THE RUN, NOT TYPED HERE (C271). `system/postDict` declares the views of this case -- a parity of the measured composition of both products against Choupo's (wt \%, log axes), a table (Table 2 | Choupo | difference | relative: the four key compositions, the product flows and the boiler duty) and the stage profile -- over `constant/reference/ klemola1996\_table2.csv` (Table 2 as the paper prints it). Every Choupo number in them is read from the run and converted by the engine (a mass fraction in wt \%, kg/s in kg/h, kW in MW); they are the first thing the app shows after a run (Plots > Case views) and are written to postProcessing/. The anchor rows in `expected` are the same comparison in mole fractions, with a band.
 
-DISTILLATE (predicted 8126.0 kg/h vs the 8115 kg/h spec -- see 4)
-
-component predicted measured rounding anchor row
-
-i-butane 93.792 93.5 +/-0.05 ANCHOR, mole fraction 0.92330 vs 0.91917 (+0.45 \%, band 1 \%): IN n-butane 0.1115 0.2 +/-0.05 OPEN (-44 \%): no row, pinned self-recorded
-
-BOTTOMS (predicted 18108.0 kg/h vs the Table-2 18119 kg/h -- see 6)
-
-component predicted measured rounding anchor row
-
-i-butane 0.461 0.3 +/-0.05 OPEN (+54 \%): no row, pinned self-recorded n-butane 97.932 98.1 +/-0.05 ANCHOR, mole fraction 0.98203 vs 0.97972 (+0.24 \%, band 1 \%): IN
+What the views show, in words (the numbers are theirs): the two anchored keys (i-butane overhead, n-butane in the bottoms) agree with Table 2 at the 1 \% level the source itself supports; the two minor keys do not.
 
 TWO OF THE FOUR KEY ROWS AGREE, AT THE 1 \% LEVEL THE SOURCE ITSELF SUPPORTS; TWO DO NOT, AND THEY MISS IN OPPOSITE SENSES: the rectifying section is too clean (n-butane overhead 44 \% low) while the stripping section is not clean enough (i-butane in the bottoms 54 \% high). Neither is a rounding effect at the printing-resolution band. They are recorded, not tuned. What can be said without guessing: The efficiency does not explain the pair. Column15 (E\_MV = 1) gives 0.728 wt \% n-butane overhead and 0.734 wt \% i-butane in the bottoms -- the plant's 0.2 and 0.3 lie BETWEEN the two arms for the first and BELOW both for the second. The paper's own balance cannot resolve either number. Feed i-butane (7712.8 kg/h) less the printed distillate i-butane (7587.5) leaves 125 kg/h for the bottoms, 0.69 wt \% of 18119 kg/h, against the printed 0.3: the printed bottoms value contradicts the printed feed and distillate, and the model (0.46) lies between them. For n-butane the feed minus the printed bottoms is -15 kg/h for the distillate, so the printed 16 kg/h is inside the table's own 30 kg/h closure error. Two of the four measured numbers are therefore not usable as a target below \textasciitilde{}1 \%. Candidate model gaps acting on exactly these minors: the single column pressure (A2: the stripping section runs colder than the plant), the tray-numbering direction (A0), the unmodelled subcooled reflux (7), the absent per-stage energy balance (8), seven interim component records.
 

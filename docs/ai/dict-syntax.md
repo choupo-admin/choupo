@@ -1084,5 +1084,5 @@ rows-table row whose `cells` each name their own source (`cells { duty {
 unitOp splitter; key Q_reboiler_kW; } iC4 { reference klemola; select { item
 isoButane; } key top_wt; } }`).  Views are parsed before the solve; unit and
 stream names are held to the run after it (a refusal lists what exists).
-Not under an `outerDict`.  Witness: `tutorials/steady/distillation/
+An axis may declare a drawing range (`yAxis { unit "%"; scale log; min 0.05; max 150; }`); the CSV keeps every point. Not under an `outerDict`.  Witness: `tutorials/steady/distillation/
 column14_klemola_c4_splitter` (the measured plant, drawn against the run).

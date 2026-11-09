@@ -126,6 +126,12 @@ views
 );
 ```
 
+An axis may also declare `min` and `max` (a drawing range in its unit, C271;
+both or neither, `min` below `max`): a parity of a paper's table against a run on
+log axes can hold a model value many decades from the measured one, and the range
+keeps the rest legible -- the CSV keeps every point, and the view's `note` says
+which are off the axis.
+
 `style lines|markers|linesMarkers` and `group <word>` (series of one group
 share a colour: one ion across sources) are optional; otherwise the role
 decides (an experiment is markers with its error bars, a reference dashed, a
