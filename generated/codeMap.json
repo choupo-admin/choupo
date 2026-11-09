@@ -9429,6 +9429,7 @@
    "src/thermo/adsorbent/Adsorbent.H",
    "src/thermo/adsorbent/AdsorbentRegistry.H",
    "src/thermo/adsorbent/IsothermModel.H",
+   "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
    "src/unitOperations/batch/FixedBedAdsorber.H"
@@ -18797,6 +18798,7 @@
    "src/thermo/transport/Eucken.cpp",
    "src/unitOperations/batch/BatchDryer.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
+   "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/crystallisation/CrystallisationHeat.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
