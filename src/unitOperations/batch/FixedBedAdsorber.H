@@ -121,18 +121,26 @@ Description
     A5-T1 -- the ADIABATIC bed (`energyBalance adiabatic;`, ergun mode
     ONLY: the A3 closure pins c_tot = P/(RT) by declaration and a
     temperature field would contradict it -- refused).  One temperature
-    per cell (declared local gas-solid equilibrium), appended as state
-    rows after the ledgers; the van't Hoff isotherm is fed the CELL's own
-    T -- the same dH_ads datum drives b(T), the energy source term and
-    the ledger, one datum, three readers.  cp_s is DECLARED case data
-    (operation.solidHeatCapacity{value;scope;source;}, the kLDF pattern);
-    adsorbed-phase heat capacity neglected, declared.  Announced pre-run:
+    per cell (declared local gas-solid equilibrium).  The energy rows are
+    CONSERVATIVE (C258): beside its T_j row each cell carries its internal
+    energy U_j (gas n(h - RT), adsorbed n(h_gas + dH_ads), solid
+    cp_s(T - T0)) as a state row in finite-volume form, the faces carry
+    the enthalpy of the species fluxes, and T_j (the working row, the same
+    balance by the chain rule) is projected back onto U_j after every
+    chunk -- so the cells' energy telescopes to the boundary fluxes
+    exactly, as the species rows' matter does.  The van't Hoff isotherm is fed the CELL's own
+    T -- the same dH_ads datum drives b(T), the energy state and the
+    ledger, one datum, three readers; a constant dH_ads makes the adsorbed
+    phase's Cp the gas's own (Kirchhoff), and the state carries it.  cp_s
+    is DECLARED case data (operation.solidHeatCapacity{value;scope;
+    source;}, the kLDF pattern).  Announced pre-run:
     u_th, L/u_th, and the all-heat-retained BOUND DT_ad (with the
     u_th-vs-u_sh verdict on which wave leads).  Adiabatic = NO energy
     record (nothing exchanged); the campaign energy balance is CLAIMED on
-    per-cell vessel enthalpy (gas + adsorbed at T_j, solid sensible
-    cp_s(T_j - T0)) against boundary streams whose per-step packages
-    carry the outlet cell's own T.  T1.5: `feed.T` is the HOT-PURGE
+    per-cell vessel internal energy against boundary streams whose
+    per-step packages leave at their MIXING-CUP T (the enthalpy the H_out
+    ledger row integrated through the outlet face), and it closes to
+    round-off, through a blowdown too.  T1.5: `feed.T` is the HOT-PURGE
     control (thermal mode only -- isothermal still refuses, pointing at
     the declaration that unlocks it): a feed at a new T re-declares the
     WHOLE remaining commitment, retire OUT at T_old + declare IN at
@@ -278,18 +286,19 @@ private:
     std::size_t N_ = 0;      // nCells (declared -- no silent default)
     scalar dz_   = 0.0;      // L/N [m]
     scalar cTot_ = 0.0;      // P/(R T) [mol/m3], constant by declaration
-    //  C258: a thermal bed that took a feed-valve or outlet-pressure event has
-    //  run a compressible transient its energy equation does not conserve
-    //  (energyLedgerGap refuses the claim, naming that).
-    bool   pressureTransient_ = false;
     bool   ergun_ = false;    // A4: all species integrated, P derived, u algebraic
     //  A5-T1: adiabatic one-temperature energy balance (ergun mode ONLY --
     //  the A3 closure pins c_tot by declaration and a temperature field
-    //  would contradict it).  T_j becomes a state row per cell; cp_s is
+    //  would contradict it).  The cell's internal energy U_j becomes a state
+    //  row per cell (C258, conservative; T_j = cellT_ recovers it); cp_s is
     //  DECLARED case data (operation.solidHeatCapacity{}, kLDF pattern).
     bool   thermal_ = false;
     scalar cpS_ = 0.0;        // solid heat capacity [J/(kg K)], declared
     scalar cpgFeed_ = 0.0;    // feed-gas mixture Cp_ig at Tfeed_ [J/(mol K)]
+    std::vector<bool>   hasCpG_;   // component carries an ideal-gas Cp
+    std::vector<scalar> hS0_;      // INT_{298.15}^{T_} Cp_ig,i [J/mol]
+    scalar hOutShed_ = 0.0;        // H_out ledger already packaged [J]
+    scalar uScale_ = 1.0;          // U rows stored as U/uScale_ [J/(m3 K)]
     //  T2: wall heat exchange (`energyBalance wallCooled;`) -- the T1 energy
     //  row gains -h a_w (T_j - T_wall); the REMOVED heat integrates as one
     //  more STATE ROW of the same ODE (never a posterior quadrature).
@@ -414,7 +423,17 @@ private:
     std::size_t tOffset_() const;                // A5-T1: T rows (thermal only)
     std::size_t qwOffset_() const;               // T2: the Q_wall state row
     scalar cellT_(const sVector& y, std::size_t j) const;  // T_ unless thermal
-    scalar cpgCell_(const sVector& y, std::size_t j) const; // mixture Cp_ig [J/mol/K]
+    std::size_t hoOffset_() const;               // C258: the H_out ledger row
+    std::size_t uOffset_() const;                // C258: the U_j rows (thermal)
+    void   projectT_(sVector& y) const;          // C258: T_j onto U_j (Newton)
+    //  C258 conservative energy: sensible ideal-gas enthalpy from the
+    //  declared T_ [J/mol], its Cp [J/(mol K)], the cell's internal energy
+    //  U_j(T) [J/m3 bed] with C = dU/dT, and the outlet package's
+    //  mixing-cup temperature [K].
+    scalar hSens_(std::size_t i, scalar T) const;
+    scalar cpG_(std::size_t i, scalar T) const;
+    scalar cellU_(const sVector& y, std::size_t j, scalar T, scalar& C) const;
+    scalar mixingCupT_(const sVector& nKmol, scalar dHs, scalar Tguess) const;
     scalar pressureCell_(const sVector& y, std::size_t j) const;
     mutable std::unordered_map<std::string, scalar> muMemo_;  // ergunVelocity_ gas-viscosity memo
     scalar ergunVelocity_(scalar pLeft, scalar pRight, scalar distance,

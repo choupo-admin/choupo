@@ -318,7 +318,16 @@ def arm_dense_vs_structured(tmp: Path):
         #  sit at round-off (1e-15) and must STAY there -- a border row
         #  differentiated off the colored perturbations once moved the
         #  helium closure to 4e-10 and this floor is what caught it.
-        excess = abs(a - b) / max(1e-7 * max(abs(a), abs(b)), 1e-12)
+        #  THE ENERGY CLOSURE'S round-off is not 1e-15 (C258, 2026-11-09):
+        #  since the bed's energy rows became conservative it closes to
+        #  round-off too, but its residual is the round-off of the priced
+        #  feed commitment (formation enthalpies, ~1e4 kJ x 1e-16 = 1e-12
+        #  kJ) divided by the energy this 60-s probe moves (0.07 kJ) -- the
+        #  two Jacobian modes then read 2.9e-13 and 1.6e-12, both residuals
+        #  ~1e-13 kJ.  Its floor is 1e-11, still forty times under the 4e-10
+        #  the floor exists to catch; every other key keeps 1e-12.
+        floor = 1e-11 if key == "campaign.energy_closure_rel" else 1e-12
+        excess = abs(a - b) / max(1e-7 * max(abs(a), abs(b)), floor)
         if excess > worst:
             worst, where = excess, f"{key} ({a!r} dense vs {b!r})"
     if worst > 1.0:

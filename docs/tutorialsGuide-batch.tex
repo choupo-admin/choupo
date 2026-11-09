@@ -412,13 +412,13 @@ batch18's ergun-mode bed (15\% CO2/He, N = 25) with the energy balance DECLARED:
 
 What the engine announces BEFORE integrating (equilibrium theory):
 
-pure thermal-wave velocity u\_th = u c\_tot cpg / (eps c\_tot cpg + rho\_b cp\_s) and the time L/u\_th the heat needs to LEAVE the bed; the adiabatic LIMIT DT\_ad = q$\ast$(-dH\_ads)/(cp\_s + eps c\_tot cpg/rho\_b) -- the all-heat-retained BOUND. Here u\_th < u\_sh: the heat LAGS the front, so the observed outlet-T rise sits well BELOW the bound (\textasciitilde{} +38 K vs the 140 K limit) while the WARM bed breaks through far earlier than batch18's isothermal front (t\_50 \textasciitilde{} 806 s vs 3042 s -- q$\ast$(T) falls via the van't Hoff b(T), the SAME datum the energy source term uses; one dH\_ads, three readers).
+pure thermal-wave velocity u\_th = u c\_tot cpg / (eps c\_tot cpg + rho\_b cp\_s) and the time L/u\_th the heat needs to LEAVE the bed; the adiabatic LIMIT DT\_ad = q$\ast$(-dH\_ads)/(cp\_s + q$\ast$ cpg\_CO2 + eps c\_tot cpg/rho\_b) -- the all-heat-retained BOUND (the loaded solid carries the adsorbate's own Cp). Here u\_th < u\_sh: the heat LAGS the front, so the observed outlet-T rise sits well BELOW the bound (\textasciitilde{} +36 K vs the 126 K limit) while the WARM bed breaks through far earlier than batch18's isothermal front (t\_50 \textasciitilde{} 812 s vs 3042 s -- q$\ast$(T) falls via the van't Hoff b(T), the SAME datum the energy state carries; one dH\_ads, three readers).
 
-The golden pins T\_out/T\_max, both anchors, the early crossings, and the campaign ENERGY closure -- claimed, adiabatically, on vessel enthalpy against the boundary streams alone (per-step raffinate packages carry the outlet cell's own T).
+The golden pins T\_out/T\_max, both anchors, the early crossings, and the campaign ENERGY closure -- claimed, adiabatically, on the vessel's internal energy against the boundary streams alone, and closed to round-off: the bed's energy rows are conservative finite volumes (each cell's internal energy U\_j, the faces carrying the enthalpy of the species fluxes; DEV.md 4c C258).
 
-cp\_s enters as DECLARED case data (the kLDF pattern -- scope + source say where the number came from; curating a primary-cited cp onto the adsorbent asset record is a separate curation act). The adsorbed-phase heat capacity is neglected, declared. Feed enters at the declared T; the raffinate package leaves at the OUTLET CELL's own T so the material ledger carries the thermal wave's enthalpy.
+cp\_s enters as DECLARED case data (the kLDF pattern -- scope + source say where the number came from; curating a primary-cited cp onto the adsorbent asset record is a separate curation act). The adsorbed phase carries its gas's own Cp: a constant isosteric heat implies it (h\_ads = h\_gas(T) + dH\_ads). Feed enters at the declared T; each raffinate package carries the enthalpy the outlet face integrated over its window and leaves at its mixing-cup T, so the material ledger carries the thermal wave's enthalpy exactly.
 
-Adiabatic means NO energy record: nothing is exchanged with the environment; the campaign energy balance closes on vessel enthalpy (per-cell pricing: gas + adsorbed at T\_j, solid sensible cp\_s(T\_j-T0)) against the boundary streams alone.
+Adiabatic means NO energy record: nothing is exchanged with the environment; the campaign energy balance closes on the vessel's internal energy (per cell: gas n(h - RT) and adsorbed n(h + dH\_ads) at T\_j, solid sensible cp\_s(T\_j-T0)) against the boundary streams alone.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -428,14 +428,14 @@ Adiabatic means NO energy record: nothing is exchanged with the environment; the
 \goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100050.98468}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
 \goldrow{kpi}{bed}{Pe}{250}
-\goldrow{kpi}{bed}{T\_final}{315.614986735}
+\goldrow{kpi}{bed}{T\_final}{315.824387829}
 \goldrow{kpi}{bed}{T\_max\_final\_K}{334.272787919}
 \goldrow{kpi}{bed}{T\_out\_final\_K}{334.272787919}
-\goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{0.822859498342}
+\goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{0.823973072034}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{2.54374299402e-11}
-\goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{140.405462904}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{96.8395014859}
-\goldrow{kpi}{bed}{integral\_anchor\_CO2}{2850.55000879}
+\goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{125.813871501}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{96.9094456434}
+\goldrow{kpi}{bed}{integral\_anchor\_CO2}{2836.92720575}
 \goldmore{41}
 \end{tutgolden}
 
@@ -468,13 +468,13 @@ Breakthrough crossings/integral freeze at the switch (they describe the load ste
 \goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100028.717422}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
 \goldrow{kpi}{bed}{Pe}{250}
-\goldrow{kpi}{bed}{T\_final}{350.354335031}
+\goldrow{kpi}{bed}{T\_final}{349.865629068}
 \goldrow{kpi}{bed}{T\_max\_final\_K}{399.999997842}
-\goldrow{kpi}{bed}{T\_out\_final\_K}{306.850590216}
+\goldrow{kpi}{bed}{T\_out\_final\_K}{306.756247307}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{-2.52953213931e-12}
-\goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{140.405462904}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{63.521236595}
-\goldrow{kpi}{bed}{integral\_anchor\_CO2}{1312.9982971}
+\goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{125.813871501}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{63.428058323}
+\goldrow{kpi}{bed}{integral\_anchor\_CO2}{1313.67111248}
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{3.75114008529e-15}
 \goldmore{50}
 \end{tutgolden}
@@ -504,18 +504,18 @@ The LEDGER is the design point (docs/design/fixed-bed-thermal-a5.md section 6): 
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{kpi}{bed}{E\_wallHeat\_seg0\_kJ}{-184.059495315}
-\goldrow{kpi}{bed}{E\_wallHeat\_total\_kJ}{-184.059495315}
+\goldrow{kpi}{bed}{E\_wallHeat\_seg0\_kJ}{-184.873220163}
+\goldrow{kpi}{bed}{E\_wallHeat\_total\_kJ}{-184.873220163}
 \goldrow{kpi}{bed}{P\_final}{100048.41634}
 \goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100094.212734}
 \goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.948175}
 \goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100048.658554}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
 \goldrow{kpi}{bed}{Pe}{250}
-\goldrow{kpi}{bed}{Q\_wall\_removed\_kJ}{184.059495315}
-\goldrow{kpi}{bed}{T\_final}{306.055276997}
-\goldrow{kpi}{bed}{T\_max\_final\_K}{312.299755078}
-\goldrow{kpi}{bed}{T\_out\_final\_K}{312.299755078}
+\goldrow{kpi}{bed}{Q\_wall\_removed\_kJ}{184.873220163}
+\goldrow{kpi}{bed}{T\_final}{306.218723043}
+\goldrow{kpi}{bed}{T\_max\_final\_K}{312.419674758}
+\goldrow{kpi}{bed}{T\_out\_final\_K}{312.419674758}
 \goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{0.890450653484}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{2.41868747253e-11}
 \goldmore{49}
@@ -550,13 +550,13 @@ TIME INTEGRATION: `solver \{ method rodas4; \}` selects the order-4 stiff integr
 \goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100030.206567}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
 \goldrow{kpi}{bed}{Pe}{250}
-\goldrow{kpi}{bed}{T\_final}{329.119724972}
+\goldrow{kpi}{bed}{T\_final}{328.44311544}
 \goldrow{kpi}{bed}{T\_max\_final\_K}{399.878003769}
-\goldrow{kpi}{bed}{T\_out\_final\_K}{315.723301673}
+\goldrow{kpi}{bed}{T\_out\_final\_K}{314.76443079}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{9.60653778748e-12}
-\goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{140.405462904}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{60.3911997653}
-\goldrow{kpi}{bed}{integral\_anchor\_CO2}{1312.99822496}
+\goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{125.813871501}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{60.2477495124}
+\goldrow{kpi}{bed}{integral\_anchor\_CO2}{1313.67166121}
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{6.54546762708e-14}
 \goldmore{55}
 \end{tutgolden}
@@ -594,7 +594,7 @@ The gate (check\_pswing) recomputes both analytically and pins the `gasInventory
 \goldrow{kpi}{bed}{Pe}{0}
 \goldrow{kpi}{bed}{T\_final}{298.15}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{-8.881784197e-16}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{-0.000100418335933}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{1.45519152284e-11}
 \goldrow{kpi}{bed}{gasInventory\_mol}{0.0403395454642}
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{0}
 \goldrow{kpi}{bed}{n\_CO2\_final}{0}
@@ -630,14 +630,14 @@ WHAT BUILDING IT FOUND, and it outlives the feature: the CSS norm and the loadin
 \goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100029.506183}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
 \goldrow{kpi}{bed}{Pe}{250}
-\goldrow{kpi}{bed}{T\_final}{324.614533765}
+\goldrow{kpi}{bed}{T\_final}{324.055339766}
 \goldrow{kpi}{bed}{T\_max\_final\_K}{399.878004394}
-\goldrow{kpi}{bed}{T\_min\_final\_K}{297.926151955}
+\goldrow{kpi}{bed}{T\_min\_final\_K}{297.887392824}
 \goldrow{kpi}{bed}{T\_out\_final\_K}{310.618231369}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{1.35003119794e-11}
-\goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{140.405462904}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{59.6867210897}
-\goldrow{kpi}{bed}{gasInventory\_mol}{0.0747102437107}
+\goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{125.813871501}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{59.5592829221}
+\goldrow{kpi}{bed}{gasInventory\_mol}{0.0748354923659}
 \goldmore{57}
 \end{tutgolden}
 
@@ -654,9 +654,9 @@ P-SWING WITNESS B: the cooling.
 
 The THERMAL half of a blowdown, isolated from adsorption so the only heat effect in frame is the expansion work itself (design note fixed-bed-thermal-a5.md, section 8/9 amended battery):
 
-same inert pure-He ergun bed as witness A (batch24), but `energyBalance adiabatic;` -- the section-9 general energy row (cv accumulation + the explicit eps R T dc\_tot/dt source) is live; at t = 200 s the recipe closes the feed valve (P2) and halves the outlet boundary (P1) -- the bed drains, dc\_tot/dt < 0, and the expansion source pulls T DOWN; the solid heat capacity is a declared SYNTHETIC LOW value (9.2 J/(kg K), scope says so): the real \textasciitilde{}920 of a zeolite pellet would thermally bury the gas-phase cooling under the solid's mass (dT \textasciitilde{} -0.03 K); at the teaching value the drop is visible (\textasciitilde{} -3 K class). Same honest-teaching-value discipline as the hxFluid of the pinch witness -- the physics on display is the GAS's, and the header says which knob made it visible.
+same inert pure-He ergun bed as witness A (batch24), but `energyBalance adiabatic;` -- each cell's internal energy U\_j = eps c (h - RT) + rho\_b cp\_s (T - T0) is balanced in conservative finite-volume form (design note section 10); at t = 200 s the recipe closes the feed valve (P2) and halves the outlet boundary (P1) -- the bed drains, and the gas that stays behind did the work of pushing the vented gas out: read through the chain rule, the eps R T dc\_tot/dt term pulls T DOWN; the solid heat capacity is a declared SYNTHETIC LOW value (9.2 J/(kg K), scope says so): the real \textasciitilde{}920 of a zeolite pellet would thermally bury the gas-phase cooling under the solid's mass (dT \textasciitilde{} -0.03 K); at the teaching value the drop is visible (\textasciitilde{} -3 K class). Same honest-teaching-value discipline as the hxFluid of the pinch witness -- the physics on display is the GAS's, and the header says which knob made it visible.
 
-THE ANCHOR: T\_min\_final\_K sits BELOW the declared 298.15 K by a visible margin -- a depressurising cell COOLS, which is exactly what the pre-widening cp-form could not show (the sabotage of the gate restores that form and this witness fails). The material anchors stay witness A's business; this case pins the sign and visibility of the thermal effect. Its campaign ENERGY claim is REFUSED by name (UNAVAILABLE): the bed's energy equation is carried in non-conservative form and does not close the rigid-vessel first law through a compressible blowdown (7.9 \% of the energy moved, at any step size), and a closure that is not one is never shown.
+THE ANCHOR: T\_min\_final\_K sits BELOW the declared 298.15 K by a visible margin -- a depressurising cell COOLS, which is exactly what the pre-widening cp-form could not show (the sabotage of the gate restores that form and this witness fails). The material anchors stay witness A's business; this case pins the sign and visibility of the thermal effect. AND ITS FIRST LAW: the campaign energy balance is claimed and closes to round-off (energy\_closure\_rel \textasciitilde{} 4e-10 of the 2.3 J the blowdown moves, against \textasciitilde{}200 J of gross hold-up energy), because the face enthalpy fluxes are shared by the two cells of each face and the vented gas leaves carrying exactly what crossed the outlet face. Until 2026-11-09 the bed carried a temperature form that missed this first law by 7.9 \% of the energy moved, at every step size, and the engine refused the claim by name (DEV.md 4c C258).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -671,10 +671,10 @@ THE ANCHOR: T\_min\_final\_K sits BELOW the declared 298.15 K by a visible margi
 \goldrow{kpi}{bed}{T\_min\_final\_K}{294.887442943}
 \goldrow{kpi}{bed}{T\_out\_final\_K}{295.066878523}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{1.15463194561e-14}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{-0.00030635814619}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{-0.000200492606382}
 \goldrow{kpi}{bed}{gasInventory\_mol}{0.0407808219207}
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{0}
-\goldmore{33}
+\goldmore{38}
 \end{tutgolden}
 
 \subsection{combustion}

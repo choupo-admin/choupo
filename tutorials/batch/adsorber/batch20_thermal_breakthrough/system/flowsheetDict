@@ -20,30 +20,36 @@
     * pure thermal-wave velocity
           u_th = u c_tot cpg / (eps c_tot cpg + rho_b cp_s)
       and the time L/u_th the heat needs to LEAVE the bed;
-    * the adiabatic LIMIT DT_ad = q*(-dH_ads)/(cp_s + eps c_tot cpg/rho_b)
-      -- the all-heat-retained BOUND.  Here u_th < u_sh: the heat LAGS
-      the front, so the observed outlet-T rise sits well BELOW the bound
-      (~ +38 K vs the 140 K limit) while the WARM bed breaks through far
-      earlier than batch18's isothermal front (t_50 ~ 806 s vs 3042 s --
-      q*(T) falls via the van't Hoff b(T), the SAME datum the energy
-      source term uses; one dH_ads, three readers).
+    * the adiabatic LIMIT
+          DT_ad = q*(-dH_ads)/(cp_s + q* cpg_CO2 + eps c_tot cpg/rho_b)
+      -- the all-heat-retained BOUND (the loaded solid carries the
+      adsorbate's own Cp).  Here u_th < u_sh: the heat LAGS the front, so
+      the observed outlet-T rise sits well BELOW the bound (~ +36 K vs the
+      126 K limit) while the WARM bed breaks through far earlier than
+      batch18's isothermal front (t_50 ~ 812 s vs 3042 s -- q*(T) falls
+      via the van't Hoff b(T), the SAME datum the energy state carries;
+      one dH_ads, three readers).
 
   The golden pins T_out/T_max, both anchors, the early crossings, and the
-  campaign ENERGY closure -- claimed, adiabatically, on vessel enthalpy
-  against the boundary streams alone (per-step raffinate packages carry
-  the outlet cell's own T).
+  campaign ENERGY closure -- claimed, adiabatically, on the vessel's
+  internal energy against the boundary streams alone, and closed to
+  round-off: the bed's energy rows are conservative finite volumes (each
+  cell's internal energy U_j, the faces carrying the enthalpy of the
+  species fluxes; DEV.md 4c C258).
 
   cp_s enters as DECLARED case data (the kLDF pattern -- scope + source
   say where the number came from; curating a primary-cited cp onto the
-  adsorbent asset record is a separate curation act).  The adsorbed-phase
-  heat capacity is neglected, declared.  Feed enters at the declared T;
-  the raffinate package leaves at the OUTLET CELL's own T so the material
-  ledger carries the thermal wave's enthalpy.
+  adsorbent asset record is a separate curation act).  The adsorbed phase
+  carries its gas's own Cp: a constant isosteric heat implies it
+  (h_ads = h_gas(T) + dH_ads).  Feed enters at the declared T; each
+  raffinate package carries the enthalpy the outlet face integrated over
+  its window and leaves at its mixing-cup T, so the material ledger
+  carries the thermal wave's enthalpy exactly.
 
   Adiabatic means NO energy record: nothing is exchanged with the
-  environment; the campaign energy balance closes on vessel enthalpy
-  (per-cell pricing: gas + adsorbed at T_j, solid sensible cp_s(T_j-T0))
-  against the boundary streams alone.
+  environment; the campaign energy balance closes on the vessel's
+  internal energy (per cell: gas n(h - RT) and adsorbed n(h + dH_ads) at
+  T_j, solid sensible cp_s(T_j-T0)) against the boundary streams alone.
 \*---------------------------------------------------------------------------*/
 
 units
