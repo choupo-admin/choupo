@@ -100,6 +100,5 @@ user-facing.  Don't confuse them.
 - **Run a case in the GUI:** `cd gui && npm run dev`, open in browser,
   File → Open Tutorial.
 
-When a user asks you to compose a case from scratch, walk them through
-`dict-syntax.md` + `case-layout.md` first, then `unit-ops.md` /
-`thermo.md` for the specific pieces.  Always cite the file you used.
+When a user asks you to compose a case from scratch, read `docs/ai/brief.md` first and all of it, then
+only the packs it names (`docs/ai/packs/`); the files in the table above are lookups.  Always cite the file you used.

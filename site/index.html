@@ -164,6 +164,7 @@
   .hero .eyebrow { color: var(--teal-bright); }
   .hero h1 { margin: 0; font-size: 76px; line-height: 0.98; font-weight: 880; }
   .hero-tagline { margin: 18px 0 0; font-size: 29px; font-weight: 720; }
+  .hero-assistant { margin: 10px 0 0; font-size: 19px; line-height: 1.45; max-width: 46em; }
   .hero-copy { max-width: 760px; margin: 18px 0 0; color: #d2ddd8; font-size: 20px; }
   .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
   .hero-meta { margin: 22px 0 0; color: #aebcb6; font-size: 14px; }
@@ -408,8 +409,14 @@
     <p class="eyebrow">Free, glass-box, GPL-3.0 — steady, batch, dynamic, control and properties</p>
     <h1>CHOUPO <span class="h1-sub">Open Source Chemical Process Simulator</span></h1>
     <p class="hero-tagline">The process simulator that shows its work.</p>
+    <p class="hero-assistant">Design a process with your own AI assistant; Choupo computes it and shows every number, so you can judge it.</p>
     <p class="hero-copy">Choupo is a free and open-source chemical process simulator: chemical engineering flowsheet simulation software for steady-state and dynamic processes, written in C++17 and run in your browser through WebAssembly, with nothing to install. Build steady, batch and controlled processes; inspect thermodynamics; fit property models; and follow the balances and nonlinear solves all the way to the answer &mdash; flash and phase equilibrium, MESH distillation, CSTR, PFR and Gibbs reactors, heat exchangers, compressors, reverse-osmosis and nanofiltration membranes, electrodialysis, crystallisation and drying.</p>
     <div class="hero-actions">
+      <!--  PRIMARY ACTION (DEV.md 4c C257): the same text the assistant section
+           shows, one source -- the existing script wires every .prompt-copy
+           button to the <pre id="prompt"> that bin/buildSite injects from
+           docs/ai/prompts.md. -->
+      <button type="button" class="button prompt-copy" data-copy="prompt">Copy the prompt for your AI</button>
       <!--  TWO RUN BUTTONS, and both of them run what they say.  A visitor
            may want the development line or the release, and until today
            only one of those was true: the button that said 2608 opened a
@@ -670,6 +677,18 @@ energy balance      <span class="hot">reported</span></pre>
         });
       })();
     </script>
+  </section>
+
+  <!-- A SMALL CATALOGUE, ON PURPOSE (DEV.md 4c C257, Vitor's addition). -->
+  <section class="section" id="catalogue">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Data</p>
+        <h2>A small catalogue, on purpose.</h2>
+        <p class="lede">Choupo ships few components and few binary pairs, on purpose: each one is a number somebody measured and checked, with its source. Most pairs you need will be missing, and that is normal.</p>
+      </div>
+      <p>Bring measured data &mdash; a T-x-y table from a paper is enough. Your assistant prepares the fitting case; Choupo runs the regression itself, checks it on points it did not fit, and shows you how good it is. With no data, you get a labelled estimate (UNIFAC), never a number from memory. On a computer with the Choupo repository, the NIST ThermoML archive can be downloaded and searched locally (<code>bin/choupo-thermoml</code>).</p>
+    </div>
   </section>
 
   <section class="section" id="run">
