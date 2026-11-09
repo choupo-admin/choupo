@@ -1192,6 +1192,13 @@ function shapeEconomics(e: NonNullable<ResultPayload["economics"]>): Economics {
     //  The sensitivity (C68): the engine writes the key only when the case
     //  declared the block, so its ABSENCE stays absence -- no empty tornado.
     ...(e.sensitivity ? { sensitivity: shapeSensitivity(e.sensitivity) } : {}),
+    //  The annual basis (C264): kept only when the engine wrote it.
+    ...(typeof e.operatingHours === "number" && Number.isFinite(e.operatingHours)
+      ? { operatingHours: e.operatingHours,
+          operatingHoursFrom: typeof e.operatingHoursFrom === "string" ? e.operatingHoursFrom : "",
+          ...(typeof e.utilityBill === "number" && Number.isFinite(e.utilityBill)
+            ? { utilityBill: e.utilityBill } : {}) }
+      : {}),
   };
 }
 
@@ -1420,6 +1427,7 @@ interface ResultPayload {
     discountedPayback?: number | null; simplePayback?: number | null;
     discountRate?: number; taxRate?: number;
     projectLife?: number; estimateClass?: number; accLo?: number; accHi?: number;
+    operatingHours?: number; operatingHoursFrom?: string; utilityBill?: number;
     land?: { price?: number; area?: number; areaFrom?: string; cost?: number;
       investedAtYear?: number; recoveredAtYear?: number; source?: string; reason?: string };
     cashFlow?: { year: number; investment: number; revenue: number; opex: number;

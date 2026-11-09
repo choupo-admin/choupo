@@ -277,7 +277,7 @@ export function singlePlan(spec: SingleSpec): SingleProductPlan {
       equivalentHours: NaN, streamFactor: NaN, unplannedUnits: [],
     },
     trains: [train], stages: stageRows, gantt,
-    findings: toyFindings(stageRows, [train]), missing: [],
+    findings: toyFindings(stageRows, [train]), missing: [], bases: [], dosage: [],
   };
 }
 
@@ -447,13 +447,13 @@ export function multiPlan(spec: MultiSpec): MultiProductPlan {
   return {
     multiProduct: true,
     summary: {
-      productPerYear: order.reduce((a, p) => a + p.perYear, 0), campaignOrder: [...spec.order],
+      product: "", productPerYear: order.reduce((a, p) => a + p.perYear, 0), campaignOrder: [...spec.order],
       lotsPerYear: N.reduce((a, b) => a + b, 0),
       production: order.reduce((a, p, i) => a + N[i]! * p.lotSize, 0),
       equivalentHours: NaN, streamFactor: NaN, unplannedUnits: [],
     },
     products, trains: [train], productTrains, stages: stageRows, productStages, gantt,
-    findings: [], missing: [],
+    findings: [], missing: [], bases: [], dosage: [],
   };
 }
 

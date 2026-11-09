@@ -923,6 +923,216 @@ void writeCsvs(const BatchPlanRecord& p)
     }
 }
 
+//  A declared DOSAGE UNIT (C264): what one unit of the product weighs, so
+//  the plan can count the product in the units it is sold in.
+struct DosageDecl
+{
+    bool        present = false;
+    std::string name, source, reason;
+    scalar      mass = 0;   // [kg]
+};
+
+DosageDecl parseDosage(const DictPtr& parent, const std::string& w)
+{
+    DosageDecl D;
+    if (!parent->found("dosageUnit")) return D;
+    if (!std::holds_alternative<DictPtr>(parent->entryValue("dosageUnit")))
+        throw std::runtime_error(w + ": `dosageUnit` must be a block -- `dosageUnit"
+            " { name tablet; mass 0.29 g; source \"...\"; reason \"...\"; }`.");
+    const DictPtr dd = parent->subDict("dosageUnit");
+    const std::string dw = w + " { dosageUnit }";
+    if (!isWord(dd, "name"))
+        throw std::runtime_error(dw + ": `name <word>;` is not declared -- what"
+            " one unit is called (tablet, capsule, vial).");
+    D.name   = dd->lookupWord("name");
+    D.mass   = dimensioned(dd, "mass", Dims::mass, "0.29 g", dw);
+    if (!(D.mass > 0.0))
+        throw std::runtime_error(dw + ": `mass` must be positive.");
+    D.source = requireText(dd, "source", dw);
+    D.reason = requireText(dd, "reason", dw);
+    D.present = true;
+    return D;
+}
+
+//  THE DOSAGE FORM (C264): the product stream's OVERALL composition by mass
+//  (every phase, from the converged balance) times one unit's declared mass.
+//  The counts are the plan's own lot and year divided by that mass.
+BatchDosage dosageOf(const SimulationResult& result, const BatchPlanRecord& plan,
+                     const std::string& product, const DosageDecl& D,
+                     scalar lotSize, int lotsPerYear, scalar production,
+                     scalar perYear)
+{
+    BatchDosage x;
+    x.product  = product;
+    x.unitName = D.name;
+    x.unitMass = D.mass;
+    x.source   = D.source;
+    x.reason   = D.reason;
+    x.lotSize  = lotSize;
+    x.lotsPerYear  = lotsPerYear;
+    x.unitsPerLot  = lotSize / D.mass;
+    x.unitsPerYear = production / D.mass;
+    x.demandUnitsPerYear    = perYear / D.mass;
+    x.unitsPerHourOfBalance = plan.productRate / D.mass;
+
+    const ProcessStream& s = result.streams.at(plan.product);
+    const auto& names = result.componentNames;
+    scalar total = 0.0, fluid = 0.0;
+    std::vector<std::array<scalar, 2>> m(names.size(), { 0.0, 0.0 });  // fluid, solid [kg/s]
+    for (std::size_t i = 0; i < names.size(); ++i)
+    {
+        auto it = result.componentMolarMass.find(names[i]);
+        if (it == result.componentMolarMass.end()) continue;
+        const scalar zi = (i < s.z.size()) ? s.z[i] : 0.0;
+        const scalar si = (i < s.s.size()) ? s.s[i] : 0.0;
+        m[i] = { s.F * zi * it->second, si * it->second };
+        total += m[i][0] + m[i][1];
+        fluid += m[i][0];
+    }
+    if (!(total > 0.0)) return x;
+    x.fluidMassFraction = fluid / total;
+    for (std::size_t i = 0; i < names.size(); ++i)
+    {
+        const scalar mi = m[i][0] + m[i][1];
+        if (!(mi > 0.0)) continue;
+        BatchDosageIngredient g;
+        g.component     = names[i];
+        g.massFraction  = mi / total;
+        g.perUnit       = g.massFraction * D.mass;
+        g.perLot        = g.massFraction * lotSize;
+        g.solidFraction = m[i][1] / mi;
+        x.ingredients.push_back(g);
+    }
+    return x;
+}
+
+//  The console echo of the bases and the dosage form (C264): what the JSON
+//  carries, in the log a student reads first.
+void printBasesAndDosage(const BatchPlanRecord& plan)
+{
+    std::cout << "\n  BASES -- one number per line, its definition and the field it"
+                 " echoes (result JSON batchPlan.bases):\n";
+    for (const auto& b : plan.bases)
+        std::cout << "    " << std::left << std::setw(38) << b.label << " "
+                  << std::right << std::setw(14) << fmt(b.amount, 7) << " "
+                  << b.unit << "\n      " << b.definition << "\n";
+    for (const auto& x : plan.dosage)
+    {
+        std::cout << "\n  DOSAGE FORM " << x.product << ": one " << x.unitName
+                  << " = " << fmt(x.unitMass * 1e6, 7) << " mg (declared; source: "
+                  << x.source << ");  " << fmt(x.unitsPerLot, 7) << " " << x.unitName
+                  << "s per lot of " << fmt(x.lotSize, 7) << " kg;  "
+                  << fmt(x.unitsPerYear, 8) << " a year in " << x.lotsPerYear
+                  << " lots;  fluid phases " << fmt(100.0 * x.fluidMassFraction, 4)
+                  << " % of the mass\n"
+                  << "    " << std::left << std::setw(28) << "ingredient"
+                  << std::setw(14) << "mass %" << std::setw(16) << ("mg per " + x.unitName)
+                  << std::setw(14) << "kg per lot" << "solid %\n";
+        for (const auto& g : x.ingredients)
+            std::cout << "    " << std::left << std::setw(28) << g.component
+                      << std::setw(14) << fmt(100.0 * g.massFraction, 6)
+                      << std::setw(16) << fmt(g.perUnit * 1e6, 6)
+                      << std::setw(14) << fmt(g.perLot, 6)
+                      << fmt(100.0 * g.solidFraction, 4) << "\n";
+    }
+}
+
+//  THE BASES (C264): every quantity a student must reconcile, each with its
+//  definition and the published field it echoes.  Built from the finished
+//  plan; nothing here is computed that the plan did not already publish.
+void buildBases(BatchPlanRecord& plan)
+{
+    auto add = [&](const std::string& key, const std::string& label, scalar amount,
+                   const std::string& unit, const std::string& def,
+                   const std::string& home)
+    {
+        plan.bases.push_back({ key, label, amount, unit, def, home });
+    };
+    const std::string P = plan.product;
+
+    //  The lot: declared on one stream, counted in the product.
+    auto lotLines = [&](const std::string& who, const std::string& rule,
+                        const std::string& lotStream, scalar lotStreamMass,
+                        scalar lotSize, const std::string& limitingStage,
+                        const std::string& homeOf)
+    {
+        const std::string sfx = who.empty() ? "" : ":" + who;
+        const std::string of  = who.empty() ? "" : " (" + who + ")";
+        if (rule == "declared")
+        {
+            add("lot" + sfx, "declared lot" + of, lotStreamMass, "kg of " + lotStream,
+                "the mass of " + lotStream + " one lot is declared on (`lot { rule"
+                " declared; stream " + lotStream + "; mass ...; }`): the size QC"
+                " releases, a declaration of the case",
+                homeOf + ".lotStreamMass");
+            add("lotProduct" + sfx, "the lot's product mass" + of, lotSize, "kg of " + P,
+                "B = M_lot x r_P / r_" + lotStream + ": the same lot counted in the"
+                " product " + P + ".  It differs from the declared lot by what the"
+                " steps between " + lotStream + " and " + P + " add or remove"
+                " (r_P / r_" + lotStream + " = " + fmt(lotSize / lotStreamMass, 6)
+                + " on the flowsheet's balance)",
+                homeOf + ".lotSize");
+        }
+        else
+            add("lotProduct" + sfx, "the lot's product mass" + of, lotSize, "kg of " + P,
+                "B = min_j N_ip Vmax_j / S_j: the largest lot the declared equipment"
+                " holds, set by stage '" + limitingStage + "'",
+                homeOf + ".lotSize");
+    };
+    if (plan.multiProduct())
+        for (const auto& pr : plan.products)
+            lotLines(pr.name, pr.lotRule, pr.lotStream, pr.lotStreamMass, pr.lotSize,
+                     pr.lotLimitingStage, "product:" + pr.name);
+    else
+        lotLines("", plan.lotRule, plan.lotStream, plan.lotStreamMass, plan.lotSize,
+                 plan.lotLimitingStage, "batchPlan");
+
+    add("balanceRate", "the balance basis", plan.productRate, "kg/h of " + P,
+        "r_P, the flowsheet's rate of " + P + ": the steady balance is the material"
+        " balance PER UNIT OF PRODUCT, and its absolute size is a basis the case"
+        " chose, not the plant's capacity (except at a rated unit, whose hardware"
+        " the flowsheet models)",
+        "batchPlan.productRate");
+    for (const auto& x : plan.dosage)
+        add("balanceUnits:" + x.product, "the balance basis in " + x.unitName + "s ("
+            + x.product + ")", x.unitsPerHourOfBalance, x.unitName + "s/h",
+            "r_P / m_unit: the flowsheet's rate counted in " + x.unitName + "s of "
+            + x.product + " (one " + x.unitName + " = " + fmt(x.unitMass * 1e6, 6)
+            + " mg, declared)",
+            "dosage:" + x.product + ".unitsPerHourOfBalance");
+    if (plan.multiProduct())
+        for (const auto& pr : plan.products)
+            add("perYear:" + pr.name, "demand (" + pr.name + ")", pr.perYear, "kg/yr",
+                "Q_i, the product's declared demand; the plan makes N_i B_i = "
+                + fmt(pr.production, 8) + " kg in " + std::to_string(pr.lotsPerYear)
+                + " whole lots", "product:" + pr.name + ".perYear");
+    else
+        add("perYear", "demand", plan.productPerYear, "kg/yr",
+            "Q, the declared production; the plan makes N B = "
+            + fmt(plan.production, 8) + " kg in " + std::to_string(plan.lotsPerYear)
+            + " whole lots", "batchPlan.productPerYear");
+    add("equivalentHours", "equivalent flowsheet hours", plan.equivalentHours, "h/yr",
+        "H_eq = Q / r_P (summed over products): the hours the balance's hourly"
+        " flows must be multiplied by to make the year's demand -- NOT the hours"
+        " any machine runs (those are each train's year, below)",
+        "batchPlan.equivalentHours");
+    for (const auto& t : plan.trains)
+    {
+        add("requiredTime:" + t.name, "train " + t.name + ": its year",
+            t.requiredTime, "h/yr",
+            "every campaign's span plus every changeover of the year on train '"
+            + t.name + "' (" + std::to_string(t.campaigns) + " campaigns): the hours"
+            " the train is occupied, " + fmt(100.0 * t.occupancy, 3) + " % of its"
+            " available time",
+            "train:" + t.name + ".requiredTime");
+        add("availableTime:" + t.name, "train " + t.name + ": hours available",
+            t.availableTime, "h/yr",
+            "declared (`availableTime`): the hours a year the train may run --"
+            " shifts and weeks, a declaration of the case, not a result",
+            "train:" + t.name + ".availableTime");
+    }
+}
+
 } // anonymous namespace
 
 BatchPlanPass::BatchPlanPass(const DictPtr& planDict)
@@ -1066,6 +1276,16 @@ int BatchPlanPass::run(SimulationResult& result)
     }
     const std::string lw = top + " { lot }";
 
+    //  ---- the dosage unit of ONE product (C264); a multiproduct plan
+    //  declares it per product, because two strengths weigh differently.
+    DosageDecl planDosage;
+    std::map<std::string, DosageDecl> productDosage;   // multiproduct, by product
+    if (multi && d->found("dosageUnit"))
+        throw std::runtime_error(top + ": `dosageUnit {}` is declared at the plan"
+            " level of a multiproduct plan -- each product's unit weighs its own;"
+            " declare it inside each product's block.");
+    if (!multi) planDosage = parseDosage(d, top);
+
     //  ---- the products (multiproduct only) -------------------------------
     std::vector<ProductDecl> prods;
     if (multi)
@@ -1091,6 +1311,7 @@ int BatchPlanPass::run(SimulationResult& result)
                 throw std::runtime_error(w + ": `perYear` must be positive.");
             P.rec.source = requireText(pd, "source", w);
             P.rec.reason = requireText(pd, "reason", w);
+            productDosage[P.rec.name] = parseDosage(pd, w);
             if (pd->found("lot"))
             {
                 if (!std::holds_alternative<DictPtr>(pd->entryValue("lot")))
@@ -1788,7 +2009,7 @@ int BatchPlanPass::run(SimulationResult& result)
             {
                 const BatchProductTrain& pt = plan.productTrains[ti * NP + i];
                 std::cout << "    " << pt.product << ": T_L = " << fmt(pt.cycleTime)
-                          << " h (limiting " << pt.limitingStage << ", *), "
+                          << " h (limiting stage, sets T_L: " << pt.limitingStage << ", *), "
                           << pt.campaigns << " campaign(s), the first spans "
                           << fmt(pt.campaignSpan) << " h; starts at "
                           << fmt(pt.start) << " h; then "
@@ -1858,6 +2079,15 @@ int BatchPlanPass::run(SimulationResult& result)
                      "=============================\n";
 
         runCleaning();
+        for (const auto& pr : plan.products)
+        {
+            auto dz = productDosage.find(pr.name);
+            if (dz != productDosage.end() && dz->second.present)
+                plan.dosage.push_back(dosageOf(result, plan, pr.name, dz->second,
+                    pr.lotSize, pr.lotsPerYear, pr.production, pr.perYear));
+        }
+        buildBases(plan);
+        printBasesAndDosage(plan);
         writeCsvs(plan);
         plan.present = true;
         result.batchPlan = std::move(plan);
@@ -2127,7 +2357,7 @@ int BatchPlanPass::run(SimulationResult& result)
                       << std::setw(8) << fmt(100.0 * s.utilisation, 3)
                       << std::setw(9) << fmt(100.0 * s.occupancy, 3) << "\n";
         }
-        std::cout << "    T_L = " << fmt(t.cycleTime) << " h (limiting: "
+        std::cout << "    T_L = " << fmt(t.cycleTime) << " h (limiting stage, sets T_L: "
                   << t.limitingStage << ", marked *);  " << t.campaigns
                   << " campaigns, a full one spans " << fmt(t.campaignSpan)
                   << " h + " << fmt(t.changeover) << " h changeover;  required "
@@ -2147,6 +2377,11 @@ int BatchPlanPass::run(SimulationResult& result)
               << "========================================================"
                  "=============================\n";
 
+    if (planDosage.present)
+        plan.dosage.push_back(dosageOf(result, plan, plan.product, planDosage,
+            plan.lotSize, plan.lotsPerYear, plan.production, plan.productPerYear));
+    buildBases(plan);
+    printBasesAndDosage(plan);
     writeCsvs(plan);
     plan.present = true;
     result.batchPlan = std::move(plan);

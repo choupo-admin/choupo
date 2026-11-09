@@ -66,6 +66,7 @@ import {
 
 import { useStore } from "../state/store.js";
 import { massBalance } from "../case/balances.js";
+import { annualUtilitiesLine } from "../case/annualBasis.js";
 import { heatExchangerDatasheetHtml } from "./HeatExchangerDatasheet.js";
 import { findKernDesign, kernView } from "../case/hxDatasheet.js";
 import { columnDatasheetHtml } from "./ColumnDatasheet.js";
@@ -198,7 +199,8 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     equipment:  () => <EquipmentDesign items={runResult.equipment ?? []}
                          list={runResult.equipmentList?.rows} caseName={caseName} />,
     sheets:     () => <EquipmentSheets designFiles={runResult.designFiles} tree={tree} />,
-    utilities:  () => <UtilitiesBody rows={runResult.utilityAllocation ?? []} />,
+    utilities:  () => <UtilitiesBody rows={runResult.utilityAllocation ?? []}
+                                     economics={runResult.economics} />,
     mass:       () => <MassBody runResult={runResult} />,
     energy:     () => <EnergyBody gb={runResult.globalEnergyBoundary} />,
     pfd:        () => <PfdBody runResult={runResult} />,
@@ -271,7 +273,12 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
 }
 
 /*  ---- Utilities ------------------------------------------------------- */
-function UtilitiesBody({ rows }: { rows: NonNullable<RunResult["utilityAllocation"]> }) {
+//  The sentence under the table is the engine's annual basis, worded by
+//  case/annualBasis.ts (C264: it was `x 8000 h` of the GUI's own).
+function UtilitiesBody({ rows, economics }: {
+  rows: NonNullable<RunResult["utilityAllocation"]>;
+  economics: RunResult["economics"];
+}) {
   // Aggregate the per-duty rows by utility name.
   const byUtil = new Map<string, { tier: string; kW: number; kgh: number; MW: number; eurh: number }>();
   for (const r of rows) {
@@ -308,9 +315,8 @@ function UtilitiesBody({ rows }: { rows: NonNullable<RunResult["utilityAllocatio
           </Table.Tr>
         </Table.Tbody>
       </Table>
-      <Text size="xs" c="dimmed" mt={4}>
-        ≈ {(totalEurh * 8000 / 1e3).toFixed(0)} k€/yr at 8000 h/yr.  Per-duty breakdown is on
-        the canvas duty stubs.
+      <Text size="xs" c="dimmed" mt={4} data-annual-utilities>
+        {annualUtilitiesLine(economics)}  Per-duty breakdown is on the canvas duty stubs.
       </Text>
     </>
   );

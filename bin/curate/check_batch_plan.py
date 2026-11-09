@@ -115,6 +115,26 @@ share).  Every number in it is the probe's, chosen to exercise one rule each.
   (a) also requires the one-product witness to publish NO multiproduct
       record (`products`, `productStages`, `productTrains`, Gantt kinds).
 
+THE BASES AND THE DOSAGE FORM (2026-11-09, DEV.md 4c C264).
+
+  (m) EVERY BASIS IS AN ECHO OF ITS HOME: on the witness and on the
+      multiproduct probe, each `batchPlan.bases` line's `amount` equals the
+      field its `home` names (`batchPlan.<k>`, `product:<p>.<k>`,
+      `train:<t>.<k>`, `dosage:<p>.<k>`, `economics.<k>`) to 1e-9, the keys
+      are unique, the economics' annual basis line is present wherever an
+      economics ran beside the plan, and it equals `economics.operatingHours`.
+      This is why the `batch` golden kind pins no basis row: the number
+      already has a home, and this arm holds the echo to it.
+  (n) THE DOSAGE FORM RECOMPUTES: the witness with a plan-level
+      `dosageUnit` (0.7 g, the probe's) publishes units per lot = B / m,
+      units a year = N B / m, the demand in units = Q / m, the balance in
+      units an hour = r_P / m; each ingredient's mass fraction from the
+      product stream's PUBLISHED overall composition and molar masses, its
+      mass per unit and per lot, its solid share from the stream's `solids`;
+      the fluid share of the mass from F_mass and F_solid_mass.  A
+      plan-level `dosageUnit` in a multiproduct plan, and one without a unit
+      on its mass, are refused by name.
+
 By-hand sabotages (2026-10-19), each run against this gate:
   S1  BatchPlanPass.cpp: `t.cycleTime = s.effectiveCycle` -> `s.cycleTime`
       (out-of-phase units ignored for T_L).  SURVIVED its first run: the
@@ -1080,6 +1100,128 @@ def compare_multi(tag, case_dir, j):
     return R
 
 
+# ------------------------------------------------- the bases (C264) ------------
+def home_value(j, home):
+    """The published number a basis line names as its home, or None."""
+    b = j.get("batchPlan", {})
+    rec, _, key = home.rpartition(".")
+    if rec == "batchPlan":
+        return b.get("summary", {}).get(key)
+    if rec == "economics":
+        return j.get("economics", {}).get(key)
+    pools = {"product": b.get("products", []), "train": b.get("trains", []),
+             "dosage": b.get("dosage", [])}
+    kind = rec.split(":", 1)[0]
+    for r in pools.get(kind, []):
+        if r.get("id") == rec:
+            return r.get(key)
+    return None
+
+
+def check_bases(tag, j):
+    b = j["batchPlan"]
+    bases = b.get("bases")
+    if not bases:
+        fail(f"(m) {tag}: the plan publishes no `bases`")
+        return 0
+    keys = [x["id"] for x in bases]
+    if len(keys) != len(set(keys)):
+        fail(f"(m) {tag}: duplicate basis ids {sorted(k for k in keys if keys.count(k) > 1)}")
+    for x in bases:
+        v = home_value(j, x.get("home", ""))
+        if not isinstance(v, (int, float)):
+            fail(f"(m) {tag}: {x['id']} names home `{x.get('home')}`, which the result does not publish")
+        elif not close(x["amount"], v, 1e-9):
+            fail(f"(m) {tag}: {x['id']} = {x['amount']} but its home {x['home']} = {v}")
+        if not x.get("definition") or not x.get("label") or not x.get("unit"):
+            fail(f"(m) {tag}: {x['id']} has no label, unit or definition")
+    if "economics" in j:
+        ann = [x for x in bases if x["id"] == "basis:annualFlowHours"]
+        if not ann:
+            fail(f"(m) {tag}: an economics ran beside the plan and the bases carry no annual basis")
+        elif not close(ann[0]["amount"], j["economics"].get("operatingHours", float("nan")), 1e-9):
+            fail(f"(m) {tag}: the annual basis {ann[0]['amount']} is not economics.operatingHours")
+    return len(bases)
+
+
+DOSAGE = """    dosageUnit
+    {
+        name    tablet;
+        mass    0.7 g;
+        source  "probe (check_batch_plan arm n)";
+        reason  "probe";
+    }
+"""
+
+
+def arm_dosage(work):
+    def add(t):
+        return sub(t, "    lot\n    {", DOSAGE + "    lot\n    {")
+    d = copy_witness(work, "dosage", add)
+    out, err, rc, j = solve(d)
+    if rc != 0 or not j:
+        fail(f"(n) the dosage witness did not run (exit {rc}): {err[-400:]}")
+        return
+    b = j["batchPlan"]
+    s = b["summary"]
+    ds = b.get("dosage", [])
+    head = [x for x in ds if x.get("id") == "dosage:" + s["product"]]
+    if not head:
+        fail("(n) the witness with a dosageUnit publishes no dosage record")
+        return
+    x = head[0]
+    m = 0.7e-3
+    want = {"unitMass": m, "unitsPerLot": s["lotSize"] / m,
+            "unitsPerYear": s["production"] / m,
+            "demandUnitsPerYear": s["productPerYear"] / m,
+            "unitsPerHourOfBalance": s["productRate"] / m}
+    for k, v in want.items():
+        if not close(x.get(k, float("nan")), v):
+            fail(f"(n) dosage {k} = {x.get(k)}, recomputed {v}")
+    st = j["streams"][s["product"]]
+    mw = j["componentMolarMass"]
+    F = st["F"]
+    mass = {c: F * z * mw[c] for c, z in st["composition"].items() if z > 0 and c in mw}
+    tot = sum(mass.values())
+    if not close(tot, st["F_mass"]):
+        fail(f"(n) the product stream's composition gives {tot} kg/s, F_mass {st['F_mass']}")
+    if not close(x["fluidMassFraction"], 1.0 - st["F_solid_mass"] / st["F_mass"], 1e-6):
+        fail(f"(n) fluidMassFraction {x['fluidMassFraction']} vs 1 - F_solid/F_mass")
+    solids = st.get("solids", {})
+    rows = {r["component"]: r for r in ds if r.get("id", "").startswith(x["id"] + ":")}
+    if set(rows) != set(mass):
+        fail(f"(n) ingredients {sorted(rows)} are not the stream's components {sorted(mass)}")
+    for c, mi in mass.items():
+        r = rows.get(c)
+        if not r:
+            continue
+        w = mi / tot
+        for k, v in (("massFraction", w), ("perUnit", w * m), ("perLot", w * s["lotSize"]),
+                     ("solidFraction", solids.get(c, 0.0) / mi)):
+            if not close(r[k], v, 1e-6):
+                fail(f"(n) {c}.{k} = {r[k]}, recomputed {v}")
+    nb = check_bases("(n) dosage witness", j)
+    if not any(z["id"] == "basis:balanceUnits:" + s["product"] for z in b["bases"]):
+        fail("(n) the bases carry no balance-in-units line beside a dosageUnit")
+    # refusals
+    multi_plan = multi_edit()
+    for tag, edit, needle in (
+        ("plan-level dosageUnit in a multiproduct plan",
+         lambda t: sub(multi_plan(t), "    trains\n", DOSAGE + "    trains\n"),
+         "declare it inside each product's block"),
+        ("a dosageUnit mass without a unit",
+         lambda t: sub(add(t), "mass    0.7 g;", "mass    0.0007;"),
+         "carries no unit"),
+    ):
+        dd = copy_witness(work, "dosage_ref", edit)
+        o2, e2, rc2, _ = solve(dd)
+        if rc2 == 0 or needle not in (o2 + e2):
+            fail(f"(n) {tag} was not refused by name (exit {rc2}): {(o2 + e2)[-300:]}")
+    claims.append(f"(n) the dosage form of the witness recomputes ({len(rows)} ingredients,"
+                  f" {x['unitsPerLot']:.6g} units a lot) and its two refusals are named;"
+                  f" its {nb} bases echo their homes")
+
+
 # ------------------------------------------------- the arms ----------------------
 def arm_witness(work):
     d = copy_witness(work, "witness")
@@ -1115,6 +1257,8 @@ def arm_witness(work):
                   + f", {len(b['gantt'])} Gantt bars, findings {sorted(R['findings'])})")
     claims.append(f"(b) {nv} vessel(s) sized from the plan, {nq} scaled quote(s) and"
                   " the economics' stream factor recompute")
+    nb = check_bases("witness", j)
+    claims.append(f"(m) the witness's {nb} bases each equal the field they name")
 
 
 def arm_announcements(work):
@@ -1308,6 +1452,8 @@ def arm_multiproduct(work):
         return
     nv, nq = check_consequences("(h) multiproduct", j, R)
     b = j["batchPlan"]
+    nbm = check_bases("multiproduct", j)
+    claims.append(f"(m) the multiproduct probe's {nbm} bases each equal the field they name")
     for f in b["findings"]:
         if f"[batchPlan] {f['message']}" not in err:
             fail(f"(h) finding {f['id']} is not on stderr")
@@ -1613,6 +1759,7 @@ def main():
         arm_one_product(work)
         arm_multi_refusals(work)
         arm_multi_golden(work)
+        arm_dosage(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)

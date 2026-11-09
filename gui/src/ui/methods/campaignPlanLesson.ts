@@ -108,7 +108,7 @@ export const CAMPAIGN_PLAN_STEPS: readonly LessonStep[] = [
       + "alternate lots: the vessels are the same size but a lot enters "
       + "the stage every half cycle, so the stage's contribution to the "
       + "limit is t_j divided by 2 (BatchPlanPass.H:111). That is the cheapest "
-      + "way to unload a bottleneck, and the engine's own remedy when a plan "
+      + "way to unload a limiting stage, and the engine's own remedy when a plan "
       + "is refused (BatchPlanPass.H:138-140). In the Gantt chart an "
       + "out-of-phase stage has one lane per unit and its lots alternate "
       + "between them. Try the second tank on the page: the tank that was "

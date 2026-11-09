@@ -25,7 +25,7 @@
   complete, so no result can carry such a row) and ANNOUNCES one above its
   threshold (0.85 unless the case declares `announceAbove`) as an advisory
   with the locus `ratedMachine '<unit>'`.  This module reads those, sorts
-  the bottleneck first, and divides nothing: a utilisation is never
+  the least capacity margin (highest utilisation) first, and divides nothing: a utilisation is never
   recomputed here.
 
   WHAT THE SHEET DOES NOT PUBLISH, and is therefore inferred from WHICH keys
@@ -105,8 +105,9 @@ function ratingText(kind: MachineKind, v: { [k: string]: number }): string {
   }
 }
 
-/** The machines of a batch plant, the bottleneck (highest published
- *  utilisation) first.  Empty when the result carries no plan machine --
+/** The machines of a batch plant, the least capacity margin (highest
+ *  published utilisation) first -- not the plan's limiting stage, which is
+ *  the stage that sets a train's T_L (C264).  Empty when the result carries no plan machine --
  *  and then nothing is drawn. */
 export function machineUtilisation(
   equipment: readonly EquipmentItem[] | undefined,

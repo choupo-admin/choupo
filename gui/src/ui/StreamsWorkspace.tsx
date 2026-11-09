@@ -92,9 +92,11 @@ import {
 import {
   type PhaseKind,
   PHASE_GLYPH,
+  PHASE_LABEL,
   phaseColor as phaseColorFor,
   classifyPhase as classify,
 } from "./plotting/palette.js";
+import { DosageFormTable } from "./BatchBasesTable.js";
 
 /** What the balances band leaves BELOW it when the workspace is short: the
  *  Table/Detail toggle row (~40 px) plus room for a header and five or six
@@ -477,6 +479,10 @@ function Detail({
   //  kg/s into the kmol/s the other phases are in.
   const molarMass = useStore((s) => s.runResult?.componentMolarMass);
   const caseThermoPackage = useStore((s) => s.caseFiles.thermoPackage);
+  //  A DOSAGE FORM (DEV.md 4c C264): when this stream is a batch plan's
+  //  product and the plan declares what one unit weighs, the engine
+  //  publishes the product per tablet and per lot, on a MASS basis.
+  const batchPlan = useStore((s) => s.runResult?.batchPlan);
 
   if (!name) {
     return (
@@ -506,6 +512,9 @@ function Detail({
   }
 
   const phase = classify(stream);
+  const dosage = batchPlan && batchPlan.dosage.length > 0 && batchPlan.summary.product !== ""
+    && (leafName(name) === batchPlan.summary.product || name === batchPlan.summary.product)
+    ? batchPlan.dosage : [];
   const isMass = flowBasis(prefs.flow) === "mass";
   const flowValue = isMass ? stream.F_mass ?? 0 : stream.F;
   const totalSolid = stream.F_solid_mass ?? 0;
@@ -538,7 +547,7 @@ function Detail({
               letterSpacing: 0.8,
             }}
           >
-            {phase}
+            {PHASE_LABEL[phase]}
           </Text>
         </Group>
         <Text size="xs" c="dimmed" ff="monospace">{name}</Text>
@@ -558,6 +567,10 @@ function Detail({
         <StatTable
           title="Flow"
           rows={[
+            //  A dosage-form product is read by MASS first (C264).
+            ...(dosage.length > 0 && stream.F_mass !== undefined && prefs.flow !== "kg/h"
+              ? ([["Total (kg/h)", formatFlow(stream.F_mass, "kg/h")]] as [string, string][])
+              : []),
             [`Total (${prefs.flow})`, formatFlow(flowValue, prefs.flow)],
             ...(!isMass && stream.F_mass !== undefined
               ? ([["F_mass", `${stream.F_mass.toExponential(3)} kg/s`]] as [string, string][])
@@ -594,8 +607,23 @@ function Detail({
         />
       </SimpleGrid>
 
-      {/* Composition + solids side by side when both present, so a slurry
-          reads as one wide band instead of two stacked half-pages. */}
+      {/* A DOSAGE FORM first (C264): mg of each ingredient per unit, units
+          and kg per lot, the moisture by mass, per strength -- every number
+          the engine's (batchPlan.dosage). */}
+      {dosage.length > 0 && batchPlan && (
+        <Stack gap={4}>
+          <Text size="xs" c="dimmed" tt="uppercase" fw={600} style={{ letterSpacing: 0.5 }}>
+            The product, per unit and per lot (mass basis)
+          </Text>
+          <DosageFormTable dosage={dosage}
+            lotSizeOf={(p) => batchPlan.multiProduct
+              ? batchPlan.products.find((x) => x.name === p)?.lotSize
+              : batchPlan.summary.lotSize} />
+        </Stack>
+      )}
+
+      {/* Composition + solids side by side when both present, so a stream
+          with a solid and a fluid reads as one wide band. */}
       <SimpleGrid
         cols={{ base: 1, md: stream.solids && Object.keys(stream.solids).length > 0 ? 2 : 1 }}
         spacing="xl"

@@ -1,5 +1,21 @@
 # `donepezil02_two_strengths` — donepezil hydrochloride 5 mg and 10 mg tablets: ONE plant, TWO products, in campaigns
 
+## Mission
+
+1. **Explain the base result.**  The plant makes 150 million tablets
+   (34 828 kg) in 115 lots and loses money: NPV −28.96 M EUR.  Find the term
+   of COM_d that makes the loss (compare 2.73 C_OL with 1.23 (C_RM + C_UT) in
+   the Economic Appraisal), and use the **Bases** table of the batch plan so
+   that 300 kg, 305.9 kg, 168 h, 880 h, 2079 h and 3840 h each mean one thing.
+2. **Find the constraint that matters.**  Two different words: the
+   **limiting stage (sets T_L)** of each train — drying (4.25 h a lot) on
+   granulation, packaging (11 h a 10 mg lot, 20 h a 5 mg lot) on tableting —
+   and the machine with the **least capacity margin**, the granulator at
+   92.8 % of its bowl.  Say which one limits the lot and which one the year.
+3. **Propose one improvement and justify it with a new run.**  Change ONE
+   declaration (the crew, the lot, `outOfPhase 2` on packaging, the campaign
+   length), run again, and show the number that moved and the one that did not.
+
 A BASE CASE for a pharmaceutical-industry project group (DEV.md 4c C249).
 It takes the plant of `donepezil01_tablets` (wet granulation, an aqueous
 coat, the API bought) and asks the question that case could not answer:
@@ -121,6 +137,8 @@ intermediate store is not sized.
 |---|---|
 | The multiproduct plan: lots, campaigns, `T_L`, limiting stage, clean per direction, occupancy | the `=== BATCH PLAN` block of the log; `reports/batchPlan/{products,productTrains,productStages,stages,trains}.csv`; the GUI's **Batch plan** section |
 | **The Gantt chart of the year**, every campaign, lot and clean | `reports/batchPlan/gantt.csv` (222 bars); the GUI's Batch plan section draws it |
+| **The bases**: the declared lot, the lot's product mass, the balance's rate, the equivalent hours, each train's year and its available hours, the hours every annual flow cost uses — each with its definition | the `BASES` lines under the BATCH PLAN block; `batchPlan.bases` in the result; the GUI's Batch plan section |
+| **Each strength per tablet** (`dosageUnit` in each product): mg of every ingredient, tablets per lot and per year, the moisture by mass | the `DOSAGE FORM` tables in the log; `batchPlan.dosage`; the GUI's Batch plan section and the `packagedTablets` stream view |
 | The two preparation vessels sized on the plan, the two air heaters, **the seven machines checked against a rating for each strength**, **the cleaning water and effluent per product**, **the air of each grade and the purified water** | `Equipment Sizing` block; the `cleaning of the machines` table; `Clean utilities` blocks; `design/<unit>/` sheets; `reports/equipment/equipmentList.csv` |
 | Costing from declared, labelled quotes that scale with the plan | `Costing` block (`costing { quotes }` in `system/postDict`) |
 | Economics: capital, the declared **operating crew** (10 operators a shift), NPV, **working capital** (`reports/economics/workingCapital.csv`), **land** (priced on the layout's plot), cash flow | the `Economics` block; `reports/economics/cashFlow.csv` |

@@ -347,7 +347,7 @@ function singleFigure(plan: SingleProductPlan, ctx: { plotX: number; bars: Gantt
       key: `single:${name}`, role: "single", train: name, product: "",
       title: `Train ${name}`,
       detail: tr
-        ? `T_L = ${fmt(tr.cycleTime)} h (limiting: ${tr.limitingStage || "—"}) · `
+        ? `T_L = ${fmt(tr.cycleTime)} h (limiting stage: ${tr.limitingStage || "—"}) · `
           + `${tr.lotsPerCampaign} lots a campaign · span ${fmt(tr.campaignSpan)} h `
           + `+ changeover ${fmt(tr.changeover)} h = ${fmt(tr.campaignDuration)} h · `
           + `${tr.campaigns} campaigns a year · train occupancy ${pct(tr.occupancy)}`
@@ -461,7 +461,7 @@ function multiFigure(plan: MultiProductPlan, ctx: { plotX: number; bars: GanttBa
         key: `first:${name}:${prod}`, role: "first", train: name, product: prod,
         title: `${prod} on ${name} — campaign 1 of ${pt ? pt.campaigns : "—"}`,
         detail: pt
-          ? `T_L = ${fmt(pt.cycleTime)} h (limiting: ${pt.limitingStage || "—"}) · `
+          ? `T_L = ${fmt(pt.cycleTime)} h (limiting stage: ${pt.limitingStage || "—"}) · `
             + `${c1.g.lots} lots · span ${fmt(pt.campaignSpan)} h · `
             + (after?.kind === "productChangeover"
               ? `then the clean before ${pt.next || "—"}: ${fmt(pt.productChangeover)} h`
