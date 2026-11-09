@@ -242,7 +242,7 @@ def main():
     #  HOME, which must list every live tool exactly once (each on the shelf of
     #  its discipline, so the discipline must be a declared shelf and the home
     #  must draw the shelves from the registry, never from a list of its own)
-    #  and every guided sequence; and `bootTool()` must answer null when the
+    #  and carry the search field, never a guided sequence; and `bootTool()` must answer null when the
     #  address names no tool (a hand-picked default tool is the defect this arm
     #  holds shut).  The behaviour of the null boot is tested in
     #  gui/tests/eduToolsHome.test.ts; the arms here read the sources, so a
@@ -266,11 +266,18 @@ def main():
                 ("METHOD_DISCIPLINES.map(", "draw its shelves from METHOD_DISCIPLINES"),
                 ('m.discipline === d', "put each tool on the shelf of its discipline"),
                 ('m.status === "live"', "list live tools only"),
-                ("METHOD_PATHS.map(", "draw every guided sequence from METHOD_PATHS"),
-                ("startGuidedSequence(", "offer a Start button for each sequence"),
+                ("data-method-home-search", "carry the search field (the Find, first on the page)"),
+                ("searchEduTools(", "filter through the Find's own matcher (one index, not two)"),
                 ("openToolFromHome(", "open a tool when its entry is clicked")):
             if needle not in h:
                 fails.append(f"EduToolsHome.tsx does not {why} (`{needle}`)")
+        #  Since 2026-11-09 the home OFFERS NO sequence (Vítor: "não faz sentido
+        #  nenhum"); METHOD_PATHS stays as data for `&path=` links only.
+        for banned in ("data-method-home-sequences", "METHOD_PATHS",
+                       "startGuidedSequence", "data-method-sequence"):
+            if banned in h:
+                fails.append(f"EduToolsHome.tsx mentions `{banned}` -- the home "
+                             "must not offer a guided sequence")
         for tid in sorted(live_tools):
             if re.search(r'["\']%s["\']' % re.escape(tid), h):
                 fails.append(f"EduToolsHome.tsx writes the tool id '{tid}' -- "
@@ -317,6 +324,9 @@ def main():
             if tool.get("teaches") and tool["teaches"] in html:
                 fails.append(f"site/index.html writes '{tid}'s blurb into the "
                              "page -- same defect")
+        if "edutoolsPaths" in html or "Guided sequences" in html:
+            fails.append("site/index.html offers guided sequences -- the "
+                         "landing lists tools only (2026-11-09)")
         for p in live_paths:
             if p.get("intro") and p["intro"] in html:
                 fails.append(f"site/index.html writes the intro of path "
@@ -329,6 +339,9 @@ def main():
                          "page -- it belongs to the registry and must arrive "
                          "with the artefact")
 
+    if BUILDSITE.exists() and "edutoolsPaths" in BUILDSITE.read_text():
+        fails.append("bin/buildSite still writes the guided-sequences section "
+                     "into the landing")
     if BUILDSITE.exists() and "generated/methodTools.json" not in BUILDSITE.read_text():
         fails.append("bin/buildSite does not copy generated/methodTools.json into "
                      "the dist -- the published landing would fetch a 404 and "

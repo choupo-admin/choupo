@@ -806,11 +806,14 @@ this Credo before proposing**.
 - **EduTool** — a method built in front of the student, run on the same
   engine as the cases (one entry of `METHOD_TOOLS`).  The EduTools
   workspace opens on its **home** when no tool is named (DEV.md 4c C251):
-  one sentence of what an EduTool is, the guided sequences, and the tools by
-  discipline.  A deep link `&tool=<id>` opens a tool directly.
+  one sentence of what an EduTool is, a WIDE search field first (the Find's
+  own index; typing filters the sections and cards live, a chapter-only match
+  shows the chapter), and every live tool by section.  The home offers no
+  guided sequence (Vítor, 2026-11-09).  A deep link `&tool=<id>` opens a tool directly.
 - **Guided sequence** — an ordered walk through several EduTools, each step
-  with the reason it comes there (`METHOD_PATHS`).  Started from the home
-  ("Start"); while it is walked a bar reads "Guided sequence: <title> · step
+  with the reason it comes there (`METHOD_PATHS`).  No longer offered on the
+  home or the landing (2026-11-09); it opens only from a `&path=` link, and
+  while it is walked a bar reads "Guided sequence: <title> · step
   k of n" with Previous / Next / "Leave the sequence" (back to the home).
   The word "Path" is NOT shown to the student (Vítor, 2026-11-08: "O que é o
   'path'?!"); the registry ids (`path`, `METHOD_PATHS`, the `&path=` URL key)
