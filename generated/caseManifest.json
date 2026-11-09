@@ -7239,7 +7239,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways": {
    "application": "choupoSolve",
