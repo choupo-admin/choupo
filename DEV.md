@@ -3388,6 +3388,28 @@ accepts today, and that is a policy call.
 > `pureLiquid` reference is refused with the false message "has no standardThermochemistry
 > block"; (e) registry.ts:615 comment still says "twelve species"; (f)
 > docs/design/a-plant-that-closed-on-its-cooling-water.md:126 repeats "before any state work".
+> (a) LANDED the same day: a `References` block at the end of every lesson page, data in
+> gui/src/ui/methods/lessonReferences.json keyed by tool id (62 of 76 pages, 202 entries, 100
+> with a DOI; verified by crossref 90, pdf 24, catalogue 71, official 17; the `verified`
+> record stays in the data, never on screen); pages that already carry their own sources
+> list link to it and add only further reading.  Gate check_lesson_references
+> (network-free): refuses an entry without a verification record or with an unknown method,
+> a malformed DOI, a duplicate, one DOI with two texts, a page that does not draw its block;
+> two standing arms in check_gate_selftest.  Spot-checks: 10 DOIs by the general, 2 by the
+> architect on Crossref (van Heerden 1953, Upadhye & Grens 1975), all match.  Left out on
+> purpose: everything UNVERIFIED, unread chapter numbers, six ambiguous items (listed in the
+> branch report).  Towler & Sinnott 2nd ed. reads 2012 (catalogue) on three pages and 2013
+> (Crossref chapter record, with DOI) on one -- kept as each record gives it.
+> (d) LANDED the same day, CSTR AND PFR: the pre-check called h_pure_ig, whose
+> requireIdealGasRung throws for any record whose natural phase is not gas, and reported
+> it as "no standardThermochemistry block".  Now: the ideal-gas rung first, the old message
+> only when the block is truly absent, otherwise the record's own datum leg
+> (h_formation(T, naturalPhase()) / speciesPhaseEnthalpy), and a refusal that names the
+> reference and what is missing.  check_reactor_limits arms R9 (CSTR) and R10 (PFR, cstr08
+> retyped) show both the pureLiquid record running and the true refusal.  No golden moved
+> (--scope 29 cases 33/0, --fast 78/0, --gui 47/0).  FOLLOW-UP noted: cstr08's glycol could
+> now sit on its liquid reference with the calorimetric -501.0 kJ/mol instead of the
+> derived -498.3 (moves cstr08's golden; its own small slice).
 
 > **C258 (Vitor, 2026-11-09, a screenshot of batch15_mesh_study's Global balances --
 > "mass closure 4.16E-2", "worst element closure 1.13E-1 (He)" -- in a panic: "andas a
