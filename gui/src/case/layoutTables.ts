@@ -41,7 +41,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { LayoutPipeRack, PlantLayout } from "../adapters/SolverAdapter.js";
-import { endName, PHASE_WORDS, phaseOf, SPEED_RULE, type Phase } from "./plantLayout.js";
+import { endName, PHASE_WORDS, phaseOf, pipeId, SPEED_RULE, type Phase } from "./plantLayout.js";
 
 /** The particle each phase carries, as a word for the legend. */
 export const PARTICLE_WORD: Record<Phase, string> = {
@@ -84,6 +84,8 @@ export function rackSentence(k: LayoutPipeRack): string {
 }
 
 export interface PipeRow {
+  /** The engine's identity (`pipe:<stream>`, `pipe:<stream>@<item>`): the row's key. */
+  id: string;
   stream: string;
   ends: string;
   phase: Phase;
@@ -122,15 +124,22 @@ export function pipeRegister(layout: PlantLayout): PipeRegisterView | null {
     v === undefined || !Number.isFinite(v) ? "" : v.toFixed(d);
   const rows = pipes.map((p): PipeRow => {
     const ph = phaseOf(p.vf);
+    //  C268: a header's main says what it serves; a branch, the item it goes to.
+    const stream = p.branch ? `${p.stream} → ${p.branch} (branch)`
+      : p.label ? `${p.stream} (${p.label})` : p.stream;
+    const length = `${p.length.toFixed(1)}${p.routedBy === "waypoints" ? " (declared route)"
+      : p.routedBy === "header" ? " (branch)"
+      : p.header && (p.branches ?? 0) > 0 ? ` (header ${p.header}, ${p.branches} branches)` : ""}`;
     return {
-      stream: p.label ? `${p.stream} (${p.label})` : p.stream,
+      id: pipeId(p),
+      stream,
       ends: `${endName(p.fromKind, p.from)} → ${endName(p.toKind, p.to)}`,
       phase: ph,
       phaseWord: PHASE_WORDS[ph],
       T: fx(p.T, 1),
       P: p.P === undefined ? "" : fx(p.P / 1e5, 2),
       flow: p.F_mass === undefined ? "" : p.F_mass.toPrecision(4),
-      length: `${p.length.toFixed(1)}${p.routedBy === "waypoints" ? " (declared route)" : ""}`,
+      length,
     };
   });
   const total = pipes.reduce((a, p) => a + p.length, 0);

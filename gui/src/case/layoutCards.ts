@@ -98,26 +98,32 @@ export function itemCard(solid: SceneSolid, facts?: LayoutFacts | null): Card {
 export function pipeCard(pipe: ScenePipe, facts?: LayoutFacts | null): Card {
   const st = facts?.streams[pipe.stream];
   const end = (kind: string, at: string) =>
-    kind === "batteryLimit" ? `battery limit (${at})` : kind === "junction" ? `junction ${at}` : at;
+    kind === "batteryLimit" ? `battery limit (${at})` : kind === "junction" ? `junction ${at}`
+      : kind === "header" ? `header ${at}` : at;
   const rows: CardRow[] = [
     { label: "From", value: end(pipe.ends.fromKind, pipe.ends.from) },
     { label: "To", value: end(pipe.ends.toKind, pipe.ends.to) },
   ];
   const T = pipe.T ?? st?.T, P = pipe.P ?? st?.P, vf = pipe.vf ?? st?.vf;
-  const m = pipe.massFlow ?? st?.F_mass ?? null;
+  //  A branch of a header (C268) carries the stream's state, not its flow:
+  //  the engine publishes none for it, and the stream's is not read in its place.
+  const m = pipe.branch ? null : pipe.massFlow ?? st?.F_mass ?? null;
   if (T !== undefined) rows.push({ label: "Temperature", value: `${sig(T, 5)} K (${sig(T - 273.15, 4)} °C)` });
   if (P !== undefined) rows.push({ label: "Pressure", value: `${sig(P / 1e5, 5)} bar` });
   if (m !== null) rows.push({ label: "Mass flow", value: `${sig(m, 4)} kg/s` });
   if (st?.F !== undefined) rows.push({ label: "Molar flow", value: `${sig(st.F, 4)} kmol/s` });
   if (vf !== undefined) rows.push({ label: "Phase", value: `${PHASE_WORDS[phaseOf(vf)]}` });
   rows.push({ label: "Pipe length", value: `${sig(pipe.length, 4)} m (${pipe.routedBy === "waypoints"
-    ? "declared waypoints" : "routed on the rack"})` });
+    ? "declared waypoints" : pipe.routedBy === "header" ? "a branch of the header" : "routed on the rack"})` });
+  if (pipe.branch)
+    rows.push({ label: "Branch", value: `to ${pipe.branch}; its flow is not the stream's (the item fills and empties by it) and is not published` });
   if (st?.composition) {
     const top = Object.entries(st.composition).filter(([, v]) => Number.isFinite(v) && v > 0)
       .sort((a, b) => b[1] - a[1]).slice(0, CARD_COMPONENTS);
     if (top.length > 0)
       rows.push({ label: "Mole fractions", value: top.map(([c, v]) => `${c} ${sig(v, 3)}`).join(", ") });
   }
-  return { key: `pipe:${pipe.stream}`, title: pipe.stream, subtitle: "stream", rows,
+  return { key: pipe.id, title: pipe.branch ? `${pipe.stream} → ${pipe.branch}` : pipe.stream,
+           subtitle: pipe.branch ? "branch of a header" : "stream", rows,
            notes: ["The line's flow speed is not published by the engine: the moving particles are stylised."] };
 }

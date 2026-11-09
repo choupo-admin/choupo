@@ -1037,12 +1037,33 @@ def on_a_wall(lay, pt):
     return False
 
 
+def on_route(pt, route):
+    """True when the point lies on a segment of the orthogonal polyline."""
+    for a, b in zip(route, route[1:]):
+        if all(min(a[k], b[k]) - TOL <= pt[k] <= max(a[k], b[k]) + TOL for k in range(3)):
+            return True
+    return False
+
+
 def check_routes(tag, lay, require_rack_route=True):
     """Every published route: each segment along ONE axis, its length the
     polyline's own, its two ends where the published items / junctions /
-    rack say.  Returns the number of pipes checked."""
+    rack say.  A HEADER end (DEV.md 4c C268) is where a branch tees off its
+    stream's main: the branch's end must lie ON the main's own route, and
+    the main (one per stream, no `branch`) must carry `header` and count its
+    branches.  Returns the number of pipes checked."""
     n = 0
+    mains = {p["stream"]: p for p in lay.get("pipes", []) if not p.get("branch")}
     for p in lay.get("pipes", []):
+        pid = p.get("id", "pipe:" + p["stream"])
+        if p.get("branch"):
+            main = mains.get(p["stream"])
+            if main is None or not main.get("header") or p.get("header") not in main["header"]:
+                fail(f"(h) {tag} {pid}: a branch with no main of its stream carrying its header")
+            if p["routedBy"] != "header" or p["lane"] != -1 or "F_mass" in p:
+                fail(f"(h) {tag} {pid}: a branch is routed by its header, has no lane and"
+                     f" publishes no mass flow; got {p['routedBy']}, {p['lane']},"
+                     f" F_mass {'present' if 'F_mass' in p else 'absent'}")
         r = p["route"]
         if len(r) < 2:
             fail(f"(h) {tag} pipe {p['stream']}: a route of {len(r)} point(s)")
@@ -1067,6 +1088,15 @@ def check_routes(tag, lay, require_rack_route=True):
                     fail(f"(h) {tag} pipe {p['stream']}: its end at {pt} enters the"
                          f" building for `{at}` and lies on no building's wall")
                 continue
+            if kind == "header":
+                #  DEV.md 4c C268: a branch tees off its stream's main, so its
+                #  header end lies ON the main's route; the main's own header
+                #  end is the end of its route (nothing else to recompute).
+                main = mains.get(p["stream"])
+                if p.get("branch") and (main is None or not on_route(pt, main["route"])):
+                    fail(f"(h) {tag} {pid}: its header end {pt} lies on no segment of"
+                         f" the main `pipe:{p['stream']}`")
+                continue
             want = end_point(lay, kind, at, first, p["stream"], p)
             if want is None:
                 fail(f"(h) {tag} pipe {p['stream']}: its end `{at}` ({kind}) is nowhere"
@@ -1082,11 +1112,22 @@ def check_routes(tag, lay, require_rack_route=True):
             elif any(abs(pt[k] - want[k]) > TOL for k in range(3)):
                 fail(f"(h) {tag} pipe {p['stream']}: its {'source' if first else 'target'}"
                      f" end {pt} is not `{at}`'s point {want}")
-        if require_rack_route and p["routedBy"] != "rack":
+        if require_rack_route and p["routedBy"] not in ("rack", "header"):
             fail(f"(h) {tag} pipe {p['stream']}: routed by {p['routedBy']}, and the case"
                  " declares no override")
         n += 1
+    #  a main that carries a header counts the branches published for it
+    for s, main in mains.items():
+        nb = sum(1 for p in lay.get("pipes", []) if p.get("branch") and p["stream"] == s)
+        if main.get("branches", 0) != nb:
+            fail(f"(h) {tag} pipe:{s}: publishes {main.get('branches', 0)} branches,"
+                 f" {nb} branch pipe(s) carry its stream")
+        if nb:
+            HEADERS_SEEN.append((tag, s, nb))
     return n
+
+
+HEADERS_SEEN = []   # (plant, stream, branches) of every header check_routes held
 
 
 SOLIDS_SEEN = []
@@ -1157,9 +1198,11 @@ def arm_pipes(work):
         if rc != 0 or not lay or "pipes" not in lay:
             fail(f"(h) {tag}: exit {rc}, no layout or no pipes block")
             continue
-        # every stream routed, or listed with a reason -- never dropped
+        # every stream routed, or listed with a reason -- never dropped; a
+        # branch of a header (DEV.md 4c C268) is a pipe of its stream's main,
+        # not a second routing of the stream
         ids = stream_identities(j)
-        routed = [p["stream"] for p in lay["pipes"]]
+        routed = [p["stream"] for p in lay["pipes"] if not p.get("branch")]
         listed = [n["stream"] for n in lay.get("notRouted", [])]
         if len(set(routed)) != len(routed) or set(routed) & set(listed):
             fail(f"(h) {tag}: a stream is routed twice, or both routed and listed")
@@ -1193,7 +1236,9 @@ def arm_pipes(work):
         # the pipes reproduce the golden rows, and every pipe is pinned
         gold = golden_rows(case)
         for p in lay["pipes"]:
-            pid = "pipe:" + p["stream"]
+            pid = p.get("id", "pipe:" + p["stream"])
+            if pid != "pipe:" + p["stream"] + ("@" + p["branch"] if p.get("branch") else ""):
+                fail(f"(h) {tag}: pipe id `{pid}` is not pipe:<stream>[@<branch>]")
             for key, val in (("from", p["from"]), ("to", p["to"]), ("length", p["length"])):
                 g = gold.get((pid, key))
                 if g is None:
@@ -1204,11 +1249,11 @@ def arm_pipes(work):
                 elif g[0] != val:
                     fail(f"(h) {tag}: {pid} {key} `{val}` against the golden `{g[0]}`")
         pinned = {k[0] for k in gold if k[0].startswith("pipe:")}
-        stale = pinned - {"pipe:" + s for s in routed}
+        stale = pinned - {p.get("id", "pipe:" + p["stream"]) for p in lay["pipes"]}
         if stale:
             fail(f"(h) {tag}: golden rows pin pipes the run no longer publishes: {sorted(stale)}")
         summ = lay.get("summary", {})
-        for key, val in (("pipes", len(routed)), ("notRouted", len(listed))):
+        for key, val in (("pipes", len(lay["pipes"])), ("notRouted", len(listed))):
             g = gold.get(("summary", key))
             if g is None or int(float(g[0])) != val or summ.get(key) != val:
                 fail(f"(h) {tag}: summary {key} = {summ.get(key)} / golden"
@@ -1232,13 +1277,25 @@ def arm_pipes(work):
         total += check_routes("default-rack probe", lay)
     if not SOLIDS_SEEN:
         fail("(h) no plant carries a solids-only stream: the solids rule went unexercised")
+    #  DEV.md 4c C268: the stores of the reference plant and the witness are
+    #  piped by headers; a plant that lost them would pass the rest silently.
+    held = {(t, s): nb for t, s, nb in HEADERS_SEEN}
+    for want in (("greenAmmoniaPEQ", "H2Feed", 10), ("greenAmmoniaPEQ", "ProductNH3", 2),
+                 ("ammonia02", "productNH3", 8), ("ammonia02", "productStored", 8)):
+        if held.get(want[:2]) != want[2]:
+            fail(f"(h) {want[0]}: `{want[1]}` must carry a header with {want[2]} branches;"
+                 f" held {held.get(want[:2])}")
     claims.append(f"{total} pipes on four plants, every stream routed or listed with"
                   " its reason, each route orthogonal with its length its own and its"
                   " ends at the published nozzles, junctions and battery limits, each"
                   " reproducing its golden rows; solids-only streams (from the stream"
                   f" table: {', '.join(SOLIDS_SEEN)}) listed as not piped, never routed, no"
                   " junction of solids alone on the rack; the default rack announced on"
-                  " three surfaces where none is declared")
+                  " three surfaces where none is declared; "
+                  f"{len({(t, s) for t, s, _ in HEADERS_SEEN if t != 'default-rack probe'})}"
+                  f" header(s) with"
+                  f" {sum(nb for t, _, nb in HEADERS_SEEN if t != 'default-rack probe')} branches"
+                  " (C268), each branch ending on its main and each main counting them")
 
 
 MARGIN_RE = re.compile(r"^plot\s*\{[^}]*?margin\s+([-0-9.eE+]+)\s*m\s*;", re.M)
@@ -1586,6 +1643,11 @@ def arm_pipe_override(work):
             lambda t: drop_bunds(drop_items(t, "T201/vessel"))
             + "\npipes { productNH3 { waypoints ( { x 70 m; y 0 m; z 9 m; } ); } }\n",
             [r"pipes `productNH3`: an override routes a pipe", r"T201"]),
+        #  DEV.md 4c C268: with the bullets placed, `productNH3` ends in the
+        #  T201 HEADER the engine lays; a declared route cannot carry one.
+        "override on a stream that carries a header": (
+            lambda t: t + "\npipes { productNH3 { waypoints ( { x 70 m; y 0 m; z 9 m; } ); } }\n",
+            [r"pipes `productNH3`: an override routes this pipe", r"HEADER for `T201`"]),
         "partial pipeRack": (
             lambda t: drop_block(t, "pipeRack") + "\npipeRack { y 0 m; elevation 6 m; laneSpacing 0.6 m;"
                           " lanesPerTier 6; tierSpacing 1.5 m; xStart -5 m;"
@@ -3290,18 +3352,23 @@ def arm_bunds(work):
     if rc != 0 or not finding(lay, "roadCrossesBund", "tankFarm"):
         fail(f"(p) a road through the catch area's kerb must be announced"
              f" `roadCrossesBund`: exit {rc}; {[x['kind'] for x in lay.get('findings', [])]}")
-    #  The let-down liquid to the first bullet, declared to run at 0.1 m into
-    #  the farm: it crosses the catch area's west kerb (x = 73 m) BELOW its
-    #  0.3 m top.  Every point inside the published plot, so nothing else moves.
-    (pa, pb) = LV["productNH3"]
-    d = prepare(work, "bund_pipe", WITNESS, lambda t: t + (
-        "\npipes { productNH3 { " + wps(
-            (pa[0], pa[1], 9), (70, pa[1], 9), (70, pb[1], 9), (70, pb[1], 0.1),
-            (pb[0], pb[1], 0.1)) + " } }\n"))
+    #  A pipe through the kerb BELOW its 0.3 m top.  Until C268 the witness
+    #  was a declared route of the let-down liquid to the first bullet at
+    #  0.1 m; since then `productNH3` ends in the T201 header, which a declared
+    #  route cannot carry (refused, arm (i)).  The witness MOVED, not dropped:
+    #  the catch area's south kerb is brought to y = -70 m, 0.4 m past the
+    #  bullets' south ends, so the `productStored` main at grade (1 m off the
+    #  row, y = -70.6 m) lies outside it and each outlet BRANCH crosses the
+    #  kerb at grade -- announced once per branch, under its own subject.
+    d = prepare(work, "bund_pipe", WITNESS, sub("yMin -71 m; yMax -36 m;",
+                                                "yMin -70 m; yMax -36 m;"))
     out, err, rc, j, lay = layout_of(d)
-    if rc != 0 or not finding(lay, "pipeThroughBund", "productNH3"):
+    through = {f["a"] for f in finding(lay, "pipeThroughBund")}
+    want = {"productStored@T201/vessel%d" % k for k in range(1, 9)}
+    if rc != 0 or through != want:
         fail(f"(p) a pipe below the kerb's top through it must be announced"
-             f" `pipeThroughBund`: exit {rc}; {err.strip()[-300:]}")
+             f" `pipeThroughBund`, once per branch under `<stream>@<item>`: exit {rc};"
+             f" announced for {sorted(through)}; {err.strip()[-300:]}")
     # ---- refusals ----------------------------------------------------------
     n_ref = 0
     text = (GREEN / "system" / "layoutDict").read_text()

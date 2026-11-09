@@ -265,17 +265,25 @@ def arm_tank_ends(lay):
     the let-down at y = -6 m: the outlet must sit on the SOUTH end (-0.3 of the
     axis), the fill on the NORTH end (+0.3), and the product pipe must not visit
     the rack lane (it stands beyond it, on the fence's side) -- it is a direct
-    run, here under 60 m."""
+    run, here under 60 m.
+    SINCE C268 (2026-11-09) the eight bullets are piped by HEADERS: the outlet
+    and the fill of vessel1 are the ports of its two BRANCHES
+    (`pipe:productStored@T201/vessel1`, `pipe:productNH3@T201/vessel1`), and
+    `productStored` begins in a main along the row (its first segment); the
+    direct run is what follows the main, and is held under 60 m."""
     if not lay:
         return
+    by_id = {p.get("id", "pipe:" + p["stream"]): p for p in lay["pipes"]}
     it = next((i for i in lay["items"] if i["id"] == "T201/vessel1"), None)
-    out = (pipe_of(lay, "productStored") or {})
-    fil = (pipe_of(lay, "productNH3") or {})
-    if not it or it["orientation"] != "alongY" or not out or not fil:
-        fail("(g) the witness's T201/vessel1 (a bullet along y), its outlet or its fill is missing")
+    out = by_id.get("pipe:productStored") or {}
+    bout = by_id.get("pipe:productStored@T201/vessel1") or {}
+    bfil = by_id.get("pipe:productNH3@T201/vessel1") or {}
+    if not it or it["orientation"] != "alongY" or not out or not bout or not bfil:
+        fail("(g) the witness's T201/vessel1 (a bullet along y), its outlet branch, its fill"
+             " branch or the productStored main is missing")
         return
-    po = (out.get("fromPort") or {}).get("point")
-    pf = (fil.get("toPort") or {}).get("point")
+    po = (bout.get("fromPort") or {}).get("point")
+    pf = (bfil.get("toPort") or {}).get("point")
     if not po or abs(po[1] - (it["y"] - 0.3 * it["dy"])) > 1e-5:
         fail(f"(g) the bullet's outlet must stand on its SOUTH end (the fence is south), at"
              f" y = {it['y'] - 0.3 * it['dy']:.4f}; published {po}")
@@ -283,13 +291,18 @@ def arm_tank_ends(lay):
         fail(f"(g) the bullet's fill must stand on its NORTH end (the let-down is north), at"
              f" y = {it['y'] + 0.3 * it['dy']:.4f}; published {pf}")
     lane = lay["pipeRack"]["y"]
-    if max(q[1] for q in out["route"]) >= lane or out["length"] > 60.0:
-        fail(f"(g) productStored must run straight to the south fence, not by way of the rack"
-             f" lane (y = {lane}): length {out['length']:.2f} m (the fixed-end rule gave"
-             f" 143.58 m), highest y of its route {max(q[1] for q in out['route']):.2f}")
+    r = out["route"]
+    main = sum(abs(r[0][k] - r[1][k]) for k in range(3))   # the main along the row
+    beyond = out["length"] - main
+    if max(q[1] for q in r) >= lane or abs(r[0][1] - r[1][1]) > 1e-9 or beyond > 60.0:
+        fail(f"(g) productStored must begin in its main along the row and run straight to the"
+             f" south fence, not by way of the rack lane (y = {lane}): {beyond:.2f} m beyond"
+             f" the main (the fixed-end rule gave 143.58 m), highest y of its route"
+             f" {max(q[1] for q in r):.2f}")
     claims.append(f"a horizontal tank's outlet and fill each take the axis end nearer their pipe's"
-                  f" other end (the bullet's outlet south, fill north) and the product pipe runs"
-                  f" {out['length']:.1f} m straight to the fence, not 143.6 m by way of the rack")
+                  f" other end (the bullet's outlet south, fill north, on its header branches) and"
+                  f" the product pipe runs {beyond:.1f} m straight from its {main:.0f} m main to"
+                  f" the fence, not 143.6 m by way of the rack")
 
 
 # --------------------------------------------------------------- (c) -----
