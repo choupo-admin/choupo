@@ -34,35 +34,49 @@ export interface StackSource {
 }
 
 export const STACK_SOURCES: readonly StackSource[] = [
-  { id: "turner-1970", read: "not read",
+  { id: "turner-1970", read: "read",
     cite: "D. B. Turner, Workbook of Atmospheric Dispersion Estimates, US EPA "
       + "Office of Air Programs Publication AP-26 (1970); the PHS 999-AP-26 "
       + "edition of 1967 is its predecessor",
-    used: "the key to the stability categories (wind speed, insolation, night "
-      + "cloud).  US government work, public domain.  A scanned copy exists "
-      + "but could not be read here: the table on this page is written from "
-      + "the standard tabulation and is flagged unread." },
+    used: "READ: the key to the stability categories (wind speed, insolation, "
+      + "night cloud), Table 3-1, p. 6, in the archive.org scan of the 1967 "
+      + "PHS 999-AP-26 edition, whose table is the one on this page; the same "
+      + "key is Table 4.1, p. 28, of Hanna, Briggs & Hosker (1982).  Its "
+      + "footnotes: D for overcast day or night; strong sun is a solar "
+      + "altitude above 60 degrees with clear sky, slight 15 to 35 degrees; "
+      + "night is from 1 h before sunset to 1 h after sunrise.  The 1970 "
+      + "edition itself was not seen.  US government work, public domain." },
   { id: "pasquill-1961", read: "not read",
     cite: "F. Pasquill, The estimation of the dispersion of windborne material, "
       + "Meteorological Magazine 90 (1961) 33-49",
     used: "the origin of the six classes A to F.  Not read; reached through "
       + "Turner." },
-  { id: "briggs-1973", read: "partly",
+  { id: "briggs-1973", read: "read",
     cite: "G. A. Briggs, Diffusion Estimation for Small Emissions, ATDL "
       + "Contribution File 79 (1973); tabulated in S. R. Hanna, G. A. Briggs, "
       + "R. P. Hosker, Handbook on Atmospheric Diffusion, DOE/TIC-11223 (1982)",
-    used: "the sigma-y and sigma-z fits.  The URBAN set was read in a "
-      + "published table of Briggs' curves (a conference presentation of an "
-      + "urban application: a secondary copy).  The RURAL (open-country) set "
-      + "was written from the standard tabulation and is flagged unread.  "
-      + "Neither original was read." },
-  { id: "briggs-rise", read: "not read",
+    used: "READ: the sigma-y and sigma-z fits, both the open-country and the "
+      + "urban set, in Table 4.5, p. 30, of the handbook (a printed copy of "
+      + "Briggs' table; the 1973 report itself was not seen), and the urban "
+      + "set again in US EPA, ISC3 User's Guide Vol. II (EPA-454/B-95-003b), "
+      + "Tables 1-3 and 1-4, p. 1-19.  One disagreement: the handbook prints "
+      + "0.00015 in the urban E-F sigma-z, ISC3 prints 0.0015; the page uses "
+      + "0.0015 (0.00015 would give 506 m at 10 km, more than twelve times "
+      + "the open-country class F, so the handbook figure is probably a "
+      + "misprint, which is a judgement, not a reading)." },
+  { id: "briggs-rise", read: "read",
     cite: "G. A. Briggs, Plume Rise, USAEC Critical Review Series TID-25075 "
       + "(1969); Plume rise predictions, in Lectures on Air Pollution and "
       + "Environmental Impact Analyses, AMS (1975)",
-    used: "the buoyancy flux, the two final-rise laws (21.425 and 38.71 "
-      + "constants, the split at 55 m4/s3) and the stable-air law with the "
-      + "constant 2.6.  Not read; the constants are flagged unread." },
+    used: "READ, in their ISC3 form (US EPA, ISC3 User's Guide Vol. II, "
+      + "EPA-454/B-95-003b): the buoyancy flux, Eq. 1-8, p. 1-6; the two "
+      + "final-rise laws, 21.425 and 38.71 with the split at 55 m4/s3, Eqs. "
+      + "1-14 and 1-15, p. 1-8; the stable-air law with the constant 2.6, "
+      + "Eq. 1-20, p. 1-9, with the default gradients 0.020 K/m (E) and "
+      + "0.035 K/m (F), p. 1-9; the stable law also in Hanna et al. Eq. 2.19, "
+      + "p. 14.  The originals of 1969 and 1975 were not seen.  ISC3 also "
+      + "tests momentum against buoyancy and uses the momentum rise when it "
+      + "wins; this page does not." },
   { id: "cfr-51-100", read: "read",
     cite: "40 CFR 51.100(ii), good engineering practice stack height (US EPA; "
       + "eCFR text)",
@@ -150,8 +164,8 @@ export const STACK_STEPS: readonly LessonStep[] = [
       + "the two, and the page then lets every figure use both. The cell is "
       + "empty at night with the wind below 2 m/s, because the table gives "
       + "no class there; choose a class by hand if you need one. The table "
-      + "on this page was written from the standard tabulation and could "
-      + "not be checked against a printed copy: see the limits.",
+      + "on this page was checked against Turner's Table 3-1: see the "
+      + "sources.",
   },
   {
     n: 4,
@@ -189,8 +203,8 @@ export const STACK_STEPS: readonly LessonStep[] = [
       + "this law: a cold jet rises by its momentum, which the page does not "
       + "build. All the rise is taken at once, at the stack, which flatters "
       + "the near field a little: see the limits. The constants in the "
-      + "three laws were written from the standard tabulation and are "
-      + "flagged unread.",
+      + "three laws were read in the EPA's ISC3 user's guide (see the "
+      + "sources).",
     formula: String.raw`F=\frac{g\,v_s\,d^{2}\,(T_s-T_a)}{4\,T_s}`,
     derivation: [
       { step: "Neutral and unstable air, A to D, flux below 55 m4/s3:",
@@ -421,15 +435,17 @@ export const STACK_LIMITS: readonly LessonLimit[] = [
   },
   {
     id: "unread",
-    title: "Which coefficients were read, and which were not.",
-    body: "Read: the urban sigma set, in a published table of Briggs' curves "
-      + "(a secondary copy, not the handbook), and the good-engineering-"
-      + "practice formula, in the regulation. NOT read, written from the "
-      + "standard tabulation and flagged unread on the page: the rural sigma "
-      + "set, Turner's table of classes, Briggs' plume-rise constants "
-      + "(21.425, 38.71, 2.6, and the split at 55 m4/s3) and the stable-air "
-      + "gradients. Check each against the handbook before you rely on a "
-      + "number.",
+    title: "Which coefficients were read, and where.",
+    body: "Every coefficient was checked against a printed US government "
+      + "document: both sigma sets in the Handbook on Atmospheric Diffusion "
+      + "(Table 4.5), the urban set and the plume-rise constants and "
+      + "stable-air gradients in the EPA's ISC3 user's guide, Turner's table "
+      + "of classes in his workbook (Table 3-1) and the good-engineering-"
+      + "practice formula in the regulation. The originals of Briggs (1969, "
+      + "1973, 1975) and Pasquill (1961) were not seen. One printed "
+      + "disagreement is on the page: the handbook's urban E-F sigma-z, "
+      + "0.00015, against ISC3's 0.0015 which the page uses. The sources "
+      + "list gives the page of each.",
   },
   {
     id: "window",

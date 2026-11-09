@@ -262,7 +262,7 @@ function Picker({ s, set, d }: {
       <TurnerTable s={s} />
       <Text size="xs" c="dimmed" mt={4}>
         A cell with two letters is the class between: the design searches both. The table is
-        {TURNER_VERIFIED === "unread" ? " written from the standard tabulation and was NOT checked against a printed copy of Turner's workbook (see the limits)." : "."}
+        {TURNER_VERIFIED === "unread" ? " NOT checked against a printed copy of Turner's workbook (see the sources)." : " Turner's Table 3-1 (1967 edition, p. 6). Strong sun is a solar altitude above 60 degrees with clear sky, slight 15 to 35 degrees; D applies to overcast day or night; night runs from 1 h before sunset to 1 h after sunrise."}
       </Text>
     </Box>
   );
@@ -550,7 +550,7 @@ export function Toy({ s, set }: { s: Setup; set: (s: Setup) => void }): JSX.Elem
       {step(5)}
       <PanelNote>
         Sigma set: {SIGMA_SETS[k.terrain].source}.
-        {SIGMA_SETS[k.terrain].verified === "unread" ? " UNREAD for this page." : " Read in a secondary copy."}
+        {SIGMA_SETS[k.terrain].verified === "unread" ? " UNREAD for this page." : " Read in the printed tables (see the sources)."}
       </PanelNote>
 
       {step(6)}

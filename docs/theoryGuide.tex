@@ -23202,16 +23202,23 @@ widths follow Briggs' fits to the Pasquill--Gifford curves
 with a set of $(i,a,b)$ per class and direction for open country and for
 towns; the fits were made for roughly $100$\,m to $10$\,km, and the page
 draws and searches only inside that window, flagging a maximum at its
-edge.  \emph{Which of these numbers were read.}  The urban set was read in
-a published table of Briggs' curves (a secondary copy); the open-country
-set, Turner's table of classes and the constants of the next paragraph
-were written from the standard tabulation and no source printing them
-could be read for the page, which says so beside each.
+edge.  \emph{Where these numbers were read.}  Both sets are checked
+against Table~4.5 of the Handbook on Atmospheric Diffusion
+\cite{HannaBriggsHosker1982} and the urban set also against Tables~1-3
+and~1-4 of the EPA's ISC3 guide \cite{ISC3}; the two disagree in one
+figure, the urban class E--F $\sigma_z$, where the handbook prints
+$0.00015$ and ISC3 and the page use $0.0015$ (the first would give
+$506$\,m at $10$\,km, twelve times the open-country class F, so it is
+probably a misprint).  The key is Turner's Table~3-1 \cite{Turner1970}
+(strong sun is a solar altitude above $60^\circ$ with clear sky, slight
+$15^\circ$ to $35^\circ$; class D for overcast day or night); the
+constants of the next paragraph are Eqs.~1-8, 1-14, 1-15, 1-17 and 1-20 of
+ISC3.
 
 \subsection{Plume rise}
 Hot gas leaves lighter than the air and keeps rising.  Briggs' buoyancy
 flux, with exit velocity $v_s$, diameter $d$ and the gas and ambient
-temperatures $T_s$ and $T_a$, is \cite{Briggs1969,Briggs1975}
+temperatures $T_s$ and $T_a$, is \cite{Briggs1969,Briggs1975,ISC3}
 \begin{equation}
    F = \frac{g\,v_s\,d^{2}\,(T_s-T_a)}{4\,T_s},
    \label{eq:buoyancy-flux}
@@ -23222,8 +23229,10 @@ $38.71\,F^{3/5}/u$ above it, the two meeting to within one per cent at the
 split (the page's test checks this, as a guard on the two constants); in
 stable air $\Delta h = 2.6\,(F/u s)^{1/3}$ with $s=g\Gamma/T_a$ and the
 gradient $\Gamma$ taken as $0.02$\,K/m for class E and $0.035$\,K/m for F.
-The effective height is $H=h_s+\Delta h$.  A cold jet rises by its
-momentum, a law the page does not build.
+The effective height is $H=h_s+\Delta h$; classes A--D use the neutral
+and unstable law and E and F the stable one, as ISC3 prescribes.  A cold
+jet rises by its momentum, a law the page does not build (ISC3 tests
+momentum against buoyancy and takes the larger rise; the page does not).
 
 \subsection{The ground maximum, and the stack height for a limit}
 If the ratio $\sigma_y/\sigma_z=\kappa$ is constant, writing
@@ -26545,9 +26554,9 @@ and the polydispersity; Choupo's \code{PolymerKPIs}.
 \bibitem{Turner1970} Turner, D. B., \emph{Workbook of Atmospheric
 Dispersion Estimates}, US EPA Office of Air Programs, Publication AP-26,
 1970 (public domain).  The key to the stability categories and the
-procedure for the plume equation.  A scanned copy exists but the table
-as the page prints it was written from the standard tabulation and not
-checked against it.
+procedure for the plume equation.  Read: Table 3-1, p.~6, in the archive.org
+scan of the Public Health Service edition 999-AP-26 (1967), which carries
+the same table; the 1970 edition itself was not seen.
 
 \bibitem{Pasquill1961} Pasquill, F., ``The estimation of the dispersion of
 windborne material'', \emph{Meteorological Magazine} \textbf{90} (1961)
@@ -26555,21 +26564,33 @@ windborne material'', \emph{Meteorological Magazine} \textbf{90} (1961)
 
 \bibitem{Briggs1973} Briggs, G. A., \emph{Diffusion Estimation for Small
 Emissions}, ATDL Contribution File No.~79, Oak Ridge, 1973.  The
-analytical fits to the Pasquill--Gifford curves; not read, the urban set
-was read in a published table of the fits.
+analytical fits to the Pasquill--Gifford curves; the report itself was
+not seen, its tabulation was read in the handbook below and in ISC3.
 
 \bibitem{HannaBriggsHosker1982} Hanna, S. R., Briggs, G. A., \&
 Hosker, R. P., \emph{Handbook on Atmospheric Diffusion}, US DOE report
 DOE/TIC-11223, 1982 (public domain).  The tabulation of Briggs' fits and
-the plume equation; not read.
+the plume equation.  Read: Table~4.5, p.~30 (Briggs' open-country and
+urban sigma fits), Table~4.1, p.~28 (the class key) and Eq.~2.19, p.~14
+(stable-air rise), in the UNT Digital Library scan of the OSTI report
+5591108.
 
 \bibitem{Briggs1969} Briggs, G. A., \emph{Plume Rise}, USAEC Critical
 Review Series TID-25075, 1969.  The buoyancy flux and the final-rise laws;
-not read.
+the original was not seen, the laws were read in ISC3 (below).
 
 \bibitem{Briggs1975} Briggs, G. A., ``Plume rise predictions'', in
 \emph{Lectures on Air Pollution and Environmental Impact Analyses},
-American Meteorological Society, 1975.  The stable-air rise; not read.
+American Meteorological Society, 1975.  The stable-air rise; the original
+was not seen, the law was read in ISC3 (below).
+
+\bibitem{ISC3} US EPA, \emph{User's Guide for the Industrial Source
+Complex (ISC3) Dispersion Models, Volume II: Description of Model
+Algorithms}, EPA-454/B-95-003b, 1995 (public domain).  Read: Eq.~1-8
+(buoyancy flux, p.~1-6), Eqs.~1-14 and~1-15 (the constants $21.425$ and
+$38.71$, split at $55$, p.~1-8), Eq.~1-17 and the default gradients
+$0.020$ and $0.035$\,K/m, Eq.~1-20 (the constant $2.6$, p.~1-9), and
+Tables~1-3 and~1-4 (urban sigma, p.~1-19).
 
 \bibitem{CFR51100} US EPA, \emph{Code of Federal Regulations}, Title 40,
 \S\,51.100(ii), ``Good engineering practice (GEP) stack height'' (eCFR

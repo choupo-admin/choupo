@@ -11,10 +11,10 @@
       sigma_z = 0.06 x (1 + 1.5e-3 x)^(-1/2) = 60 / sqrt(2.5) = 37.947 m
       C(x,0,0) = Q / (pi u sigma_y sigma_z) exp(-H^2 / 2 sigma_z^2)
                = 9.2324e-4 g/m3 = 923.24 ug/m3
-  The coefficients are Briggs' open-country class D values as the page prints
-  them (flagged UNREAD on the page); the arithmetic around them is what is
-  tested.  The urban set was read in a printed table, and the second example
-  uses it.
+  The coefficients are Briggs' open-country class D values, checked against
+  Hanna, Briggs & Hosker (1982) Table 4.5, p. 30 (2026-11-09); the urban set
+  was checked there and in ISC3 Vol. II Tables 1-3, 1-4, and the second
+  example uses it.
 \*---------------------------------------------------------------------------*/
 
 import { readFileSync } from "node:fs";
@@ -110,8 +110,20 @@ describe("the worked example, by hand", () => {
     near(sigmaZ(500, "C", "urban"), 0.2 * 500, 1e-12);
     near(sigmaZ(500, "A", "urban"), 0.24 * 500 * Math.sqrt(1.5), 1e-12);
     expect(SIGMA_SETS.urban.verified).toBe("read");
-    expect(SIGMA_SETS.rural.verified).toBe("unread");
+    expect(SIGMA_SETS.rural.verified).toBe("read");
+    // urban E-F sigma_z: ISC3 Table 1-4 prints 0.0015 (the handbook's 0.00015 is a probable misprint)
+    near(sigmaZ(10000, "E", "urban"), (0.08 * 10000) / Math.sqrt(1 + 0.0015 * 10000), 1e-12);
+    near(sigmaZ(10000, "E", "urban"), 200, 1e-12);
   });
+
+  it("rural set, as printed in Hanna et al. Table 4.5: D at 1000 m, F at 5000 m, A at 2000 m", () => {
+    near(sigmaY(1000, "D", "rural"), (0.08 * 1000) / Math.sqrt(1.1), 1e-12);
+    near(sigmaZ(1000, "D", "rural"), (0.06 * 1000) / Math.sqrt(1 + 0.0015 * 1000), 1e-12);
+    near(sigmaZ(1000, "D", "rural"), 37.947, 1e-3);
+    near(sigmaZ(5000, "F", "rural"), (0.016 * 5000) / (1 + 0.0003 * 5000), 1e-12);
+    near(sigmaZ(5000, "F", "rural"), 32, 1e-12);
+    near(sigmaZ(2000, "A", "rural"), 400, 1e-12);
+    near(sigmaY(2000, "A", "rural"), (0.22 * 2000) / Math.sqrt(1.2), 1e-12);  });
 
   it("the buoyancy flux and the rise: F = 20.804 m4/s3, 52.18 m at 4 m/s", () => {
     const F = (9.80665 * 12 * 1.5 * 1.5 * (420 - 288)) / (4 * 420);
@@ -286,11 +298,13 @@ describe("the lesson, the registry and the page", () => {
     expect(STACK_LIMITS.length).toBeGreaterThanOrEqual(6);
   });
 
-  it("every source says whether it was read, and the rural set and Turner's key are not claimed", () => {
+  it("every source says whether it was read; the originals not seen are stated", () => {
     for (const s of STACK_SOURCES) expect(["read", "partly", "not read"]).toContain(s.read);
     const turner = STACK_SOURCES.find((s) => s.id === "turner-1970")!;
-    expect(turner.read).toBe("not read");
-    expect(STACK_STEPS.map((s) => s.body).join(" ")).toContain("not be checked against a printed copy");
+    expect(turner.read).toBe("read");
+    expect(turner.used).toContain("Table 3-1");
+    expect(turner.used).toContain("edition itself was not seen");
+    expect(STACK_STEPS.map((s) => s.body).join(" ")).toContain("checked against Turner's Table 3-1");
   });
 
   it("compiles in no limit value: the limit starts as an invitation to type one", () => {
@@ -316,7 +330,7 @@ describe("the lesson, the registry and the page", () => {
     expect((html.match(/data-lit="yes"/g) ?? []).length).toBe(1);
     expect(html).toContain("data-design");
     expect(html).toContain("Least stack height");
-    expect(html).toContain("NOT READ");
+    expect(html).toContain("READ");
     expect(html).toContain("data-lesson-quiz");
     for (const q of STACK_QUIZ) expect(html, q.id).toContain(`data-quiz-question="${q.id}"`);
   });

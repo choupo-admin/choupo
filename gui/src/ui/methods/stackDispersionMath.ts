@@ -20,16 +20,26 @@
   thing the engine supplies -- the flue gas of a Gibbs reactor -- enters
   through `emissionFromStream`, which only converts units.
 
-  WHAT WAS READ AND WHAT WAS NOT (said again on the page, in STACK_SOURCES and
-  STACK_LIMITS).  Per coefficient set, `verified` says whether the writer of
-  this file could read a source that prints it:
-    * URBAN sigma set (Briggs 1973, McElroy-Pooler): read in a published
-      table of Briggs' curves (a conference presentation on an urban
-      application) -- a SECONDARY copy, not Hanna, Briggs & Hosker.
-    * RURAL sigma set, the Turner class table, Briggs' plume-rise constants
-      (21.425, 38.71, 2.6) and the stable-air default gradients: written
-      from the standard tabulation; NO source that prints them could be read
-      for this page.  They are flagged `unread` and the page says so.
+  WHAT WAS READ, AND WHERE (2026-11-09; said again on the page, in
+  STACK_SOURCES and STACK_LIMITS).  Every number below was checked against a
+  printed copy in a US government document:
+    * RURAL (open-country) and URBAN sigma sets: Hanna, Briggs & Hosker (1982),
+      Handbook on Atmospheric Diffusion, DOE/TIC-11223, Table 4.5, p. 30
+      (UNT Digital Library scan of the OSTI report 5591108).  The urban set is
+      also printed in US EPA, ISC3 User's Guide Vol. II (EPA-454/B-95-003b),
+      Tables 1-3 and 1-4, p. 1-19.  ONE DISAGREEMENT: the handbook prints the
+      urban E-F sigma_z as 0.08x(1+0.00015x)^-1/2; ISC3 prints 0.0015, as the
+      code has it.  The handbook figure looks like a misprint (it would give
+      sigma_z = 506 m at 10 km against 200 m, and exceed the open-country
+      class F by a factor of 12); ISC3 and the code agree.
+    * Turner's key to the stability categories: Turner (1970), Workbook of
+      Atmospheric Dispersion Estimates, Table 3-1, p. 6 (archive.org scan of
+      the Public Health Service edition 999-AP-26, which carries the same
+      table); also Hanna et al. Table 4.1, p. 28 (rows at 2, 4, 6 m/s).
+    * Plume rise: ISC3 Vol. II Eq. 1-8 (F, p. 1-6), Eqs. 1-14 and 1-15
+      (21.425 and 38.71, split at F = 55, p. 1-8), Eq. 1-17 and the default
+      gradients 0.020 and 0.035 K/m for classes E and F (p. 1-9), Eq. 1-20
+      (2.6, p. 1-9); the stable law is Hanna et al. Eq. 2.19, p. 14.
     * Good engineering practice height H + 1.5 L and its 65 m clause: read in
       40 CFR 51.100(ii) (eCFR).
 \*---------------------------------------------------------------------------*/
@@ -80,10 +90,9 @@ const fit = (i: number, a: number, b: number): SigmaFit => ({ i, a, b });
 
 export const SIGMA_SETS: Record<Terrain, SigmaSet> = {
   rural: {
-    terrain: "rural", verified: "unread",
-    source: "Briggs 1973 open-country fits, as tabulated by Hanna, Briggs & "
-      + "Hosker 1982 (DOE/TIC-11223) -- written from the standard tabulation, "
-      + "not read for this page",
+    terrain: "rural", verified: "read",
+    source: "Briggs 1973 open-country fits, read in Hanna, Briggs & Hosker "
+      + "1982 (DOE/TIC-11223), Table 4.5, p. 30",
     y: {
       A: fit(0.22, 0.0001, -0.5), B: fit(0.16, 0.0001, -0.5),
       C: fit(0.11, 0.0001, -0.5), D: fit(0.08, 0.0001, -0.5),
@@ -97,9 +106,10 @@ export const SIGMA_SETS: Record<Terrain, SigmaSet> = {
   },
   urban: {
     terrain: "urban", verified: "read",
-    source: "Briggs 1973 urban fits (McElroy-Pooler), read in a published "
-      + "table of Briggs' curves (HARMO-10 presentation, an urban application) "
-      + "-- a secondary copy; Hanna, Briggs & Hosker was not read",
+    source: "Briggs 1973 urban fits (McElroy-Pooler), read in US EPA ISC3 "
+      + "User's Guide Vol. II, Tables 1-3 and 1-4, p. 1-19, and in Hanna, "
+      + "Briggs & Hosker 1982, Table 4.5, p. 30 (which prints 0.00015 in the "
+      + "E-F sigma_z, a probable misprint: ISC3 and this page use 0.0015)",
     y: {
       A: fit(0.32, 0.0004, -0.5), B: fit(0.32, 0.0004, -0.5),
       C: fit(0.22, 0.0004, -0.5), D: fit(0.16, 0.0004, -0.5),
@@ -154,7 +164,7 @@ export const TURNER_TABLE: Record<WindBand, {
   "5-6": { strong: cell("C"), moderate: cell("C", "D"), slight: cell("D"), overcast: cell("D"), clear: cell("D") },
   ">6":  { strong: cell("C"), moderate: cell("D"), slight: cell("D"), overcast: cell("D"), clear: cell("D") },
 };
-export const TURNER_VERIFIED: Verified = "unread";
+export const TURNER_VERIFIED: Verified = "read"; // Turner 1970, Table 3-1, p. 6
 
 export interface Weather {
   day: boolean;
@@ -181,7 +191,7 @@ export function buoyancyFlux(vs: number, d: number, Ts: number, Ta: number): num
 }
 
 /** potential-temperature gradients assumed for stable air, K/m (usual
- *  practice; UNREAD for this page). */
+ *  practice; READ in ISC3 Vol. II, Eq. 1-17 and the text after it, p. 1-9). */
 export const STABLE_DTHETA_DZ: Partial<Record<StabilityClass, number>> = { E: 0.02, F: 0.035 };
 export const F_SPLIT = 55; // m4/s3
 
