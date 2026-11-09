@@ -522,23 +522,23 @@ The stream names are the plant's, unchanged: the sector's inlet is the FEHE's pr
   \draw[->] ($(Column.east)+(0,0.00)$) -- ($(Column.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {Benzene};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{HDA plant -- toluene + H2 $\to$ benzene + CH4. A single FLAT flowsheet with two plant-level recycles (an H2 gas loop and an unreacted-toluene liquid loop); cross-sector tears are unsupported, so it has no sectors. Furnace lumped into the isothermal reactor; light-gas K-values rest on Antoine extrapolation (see thermoPhysPropDict).}
+\tutwhat{HDA plant -- toluene + H2 $\to$ benzene + CH4. A single FLAT flowsheet with two plant-level recycles (an H2 gas loop and an unreacted-toluene liquid loop); cross-sector tears are unsupported, so it has no sectors. Furnace lumped into the isothermal reactor; the plant runs on SRK (phi-phi, kij = 0) because H2 and CH4 are above their critical temperatures, where a Raoult K has no vapour pressure to read; the shortcut column alone keeps the ideal package (see the flowsheetDict).}
 \begin{tutgolden}
-\goldrow{stream}{Benzene}{F}{0.0309331950303}
-\goldrow{stream}{Effluent}{F}{0.587977095103}
+\goldrow{stream}{Benzene}{F}{0.030793350886}
+\goldrow{stream}{Effluent}{F}{0.590273919104}
 \goldrow{stream}{H2Makeup}{F}{0.0305555555556}
-\goldrow{stream}{H2Recycle}{F}{0.520602627758}
-\goldrow{stream}{Purge}{F}{0.027400138303}
+\goldrow{stream}{H2Recycle}{F}{0.523259666499}
+\goldrow{stream}{Purge}{F}{0.0275399824473}
 \goldrow{stream}{TolueneFeed}{F}{0.0277777777778}
-\goldrow{stream}{TolueneRecycle}{F}{0.00904113401236}
-\goldrow{stream}{hpLiquid}{F}{0.0399743290427}
-\goldrow{stream}{hpVapor}{F}{0.548002766061}
-\goldrow{stream}{mixed}{F}{0.587977095103}
-\goldrow{kpi}{Column}{B}{0.00904113401236}
-\goldrow{kpi}{Column}{D}{0.0309331950303}
-\goldrow{kpi}{Column}{N\_min}{8.3953506183}
-\goldrow{kpi}{Column}{N\_theoretical}{20.1794387093}
-\goldmore{58}
+\goldrow{stream}{TolueneRecycle}{F}{0.00868091927214}
+\goldrow{stream}{hpLiquid}{F}{0.0394742701582}
+\goldrow{stream}{hpVapor}{F}{0.550799648946}
+\goldrow{stream}{mixed}{F}{0.590273919104}
+\goldrow{kpi}{Column}{B}{0.00868091927214}
+\goldrow{kpi}{Column}{D}{0.030793350886}
+\goldrow{kpi}{Column}{N\_min}{8.39334243715}
+\goldrow{kpi}{Column}{N\_theoretical}{20.2028013954}
+\goldmore{61}
 \end{tutgolden}
 
 \clearpage

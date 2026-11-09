@@ -11,6 +11,10 @@
   Raoult DECLARED, not defaulted (gamma = 1 identically).
   Migrated mechanically from the v1 flat form (physics identical);
   v2 contract 2026-07-17.
+
+  C256 (2026-11-09), MEASURED: water's vapour pressure is consulted above its
+  critical temperature only in the molten-salt streams (773 K), where its flow
+  is zero, so no printed number depends on it.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

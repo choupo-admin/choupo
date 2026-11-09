@@ -11,6 +11,10 @@
   Raoult DECLARED, not defaulted (gamma = 1 identically).
   Migrated mechanically from the v1 flat form (physics identical);
   v2 contract 2026-07-17.
+
+  C256 (2026-11-09), MEASURED: H2, N2 and NH3 are priced above their critical
+  temperatures at 700 K and 200 bar, but the reactor's feed and products are
+  one gas phase (vf = 1), so no printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

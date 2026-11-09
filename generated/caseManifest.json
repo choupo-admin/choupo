@@ -1252,10 +1252,7 @@
   "tutorials/plant/ChemicalPlantTutorial": {
    "application": "choupoSolve",
    "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
+    "formulation": "diluteSolution"
    },
    "roles": [],
    "hasGolden": true
@@ -1350,7 +1347,7 @@
   "tutorials/plant/hda": {
    "application": "choupoSolve",
    "thermo": {
-    "formulation": "gammaPhi",
+    "formulation": "phiPhi",
     "activityModels": [
      "ideal"
     ]
@@ -3823,10 +3820,7 @@
     "fullMESH"
    ],
    "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
+    "formulation": "phiPhi"
    },
    "roles": [],
    "hasGolden": true
@@ -9335,7 +9329,6 @@
     "tutorials/ctrl/ctrl20_bode_cstr",
     "tutorials/ctrl/ctrl21_tank_level_control",
     "tutorials/ctrl/ctrl22_reactor_level_and_temperature",
-    "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/hda",
     "tutorials/plant/lithiumBrinePlant",
     "tutorials/plant/polycaprolactonePlant",
@@ -9443,7 +9436,6 @@
     "tutorials/steady/distillation/column04_multifeed_sidedraw",
     "tutorials/steady/distillation/column06_fullMESH",
     "tutorials/steady/distillation/column07_naphtaliSandholm",
-    "tutorials/steady/distillation/column08_radfrac_multidraw",
     "tutorials/steady/distillation/column09_tray_hydraulics",
     "tutorials/steady/distillation/column10_flooding",
     "tutorials/steady/distillation/column11_murphree",

@@ -50,6 +50,12 @@
   invent one.  Choosing NH3/CO2 for the ionic roles keeps the boundary
   crossable while still putting a genuine cation and a genuine anion in the
   block: the chemistry is the ions', the components stay molecular.
+
+  C256 (2026-11-09), MEASURED: CO2 and NH3 are above their critical
+  temperatures on these stages, but this package moves them between phases
+  through the declared dissolution chemistry; their vapour pressure is
+  consulted above Tc in a handful of calls outside that K (4 and 1 of 67), and
+  the slice that changed it moved no row.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

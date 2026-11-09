@@ -7,10 +7,22 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture.
-  Raoult DECLARED, not defaulted (gamma = 1 identically).
-  Migrated mechanically from the v1 flat form (physics identical);
-  v2 contract 2026-07-17.
+  thermoPhysPropDict (v2) -- the dilute-solution (Henry) world: water on the
+  pure-liquid (Raoult) rung, CO2 and N2 on the infinite-dilution (Henry)
+  rung, every other component on Raoult with gamma = 1 (as before).
+  WHY HENRY (C256, 2026-11-09).  CO2 (Tc 304.1 K) and N2 (Tc 126.2 K) are
+  above their critical temperatures everywhere in this plant.  On the
+  ideal gamma-phi package their K was Psat/P with a vapour pressure that
+  does not exist above Tc (continued from Tc since C245 slice 5a): the
+  fermentation flash at 320 K and 1 bar published K_CO2 = 500.9, and the
+  beer it sends back to the fermentor carried that much CO2.  A sparingly
+  soluble gas over an aqueous liquid is what the Henry rung is for, and the
+  catalogue carries both pairs with water (Sander 2015, CC-BY).
+  WHAT IT DOES NOT FIX.  The constants are for PURE water; the flash liquid
+  is about 20 mol % ethanol, which raises CO2's solubility, and no mixed-
+  solvent Henry route exists yet (the deferred D3 transfer term).  Ethanol,
+  water and sucrose stay on Raoult with gamma = 1 -- the case's existing
+  approximation, untouched here.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
@@ -20,12 +32,27 @@ components       ( water  sucrose  N2  ethanol  CO2 );
 
 equilibrium
 {
-    formulation gammaPhi;
+    formulation diluteSolution;
 
     liquid
     {
-        activityModel ideal;
-        standardState pureLiquid;
+        solvent
+        {
+            component     water;
+            standardState pureLiquid;          // the Raoult rung
+        }
+        solutes
+        {
+            components    ( CO2  N2 );
+            standardState infiniteDilution;    // the Henry rung
+            solutionModel henryDilute;
+            binaryParameters
+            {
+                // Sander (2015) compilation, CC-BY
+                CO2-water { source "data/standards/parameters/Henry/CO2-water.dat"; }
+                N2-water  { source "data/standards/parameters/Henry/N2-water.dat"; }
+            }
+        }
     }
 
     vapour

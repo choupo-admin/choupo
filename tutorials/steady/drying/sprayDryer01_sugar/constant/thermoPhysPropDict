@@ -32,6 +32,11 @@
   slightly because sigma enters the Friedman correlation to the 0.1 power
   (60.4 vs 58.1 um).  For an accurate water sigma(T), flag water IF97 in a
   pureFluids block and the accessor routes to IAPWS R1-76 instead.
+
+  C256 (2026-11-09), MEASURED: N2, O2 and Ar are priced above their critical
+  temperatures (Psat continued past Tc), but the dryer carries no gas into the
+  liquid or the powder (all three = 0 in feed and powder) and the air streams
+  are one phase (vf = 1), so no printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
