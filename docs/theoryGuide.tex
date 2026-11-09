@@ -10397,11 +10397,17 @@ term of $G$: $G(x^{*}+u) \approx x^{*} + a\,u$, where $a = G'(x^{*})$ is the
 \emph{loop gain}.  Handing $G(x)$ back as the next guess (direct
 substitution) multiplies the mistake by $a$ every pass,
 $u_{k+1} = a\,u_k$, so it converges if and only if $|a| < 1$.  A negative
-gain overshoots and alternates in sign; a gain above $1$ runs away.
+gain overshoots and alternates in sign; a gain above $1$ runs away.  This
+is the convergence condition of successive substitution on a torn recycle
+as the sequential-modular literature states it \cite{Westerberg1979,
+BieglerGrossmannWesterberg1997}; the contraction argument itself is the
+fixed-point iteration of any numerical-methods text \cite{NumericalRecipes}.
 
 \subsection{Relaxation}
 
-Go only a fraction $w$ of the way from the old guess to the returned one:
+Go only a fraction $w$ of the way from the old guess to the returned one
+(the under-relaxation of \cite{Westerberg1979}, the same device the
+segregated pressure--velocity solvers of CFD apply to each equation):
 \begin{equation}
   x_{k+1} = (1-w)\,x_k + w\,G(x_k)
   \qquad\Longrightarrow\qquad
@@ -10427,7 +10433,7 @@ It is at most $1$ only for $a \le 0$; for $0 < a < 1$ the best factor is an
 
 \subsection{Wegstein and Newton as the same idea}
 
-Wegstein's update $x_{k+1} = q\,x_k + (1-q)\,G(x_k)$
+Wegstein's update $x_{k+1} = q\,x_k + (1-q)\,G(x_k)$ \cite{Wegstein}
 (Chapter~\ref{ch:wegstein}) is Eq.~\eqref{eq:relaxation} with $w = 1 - q$.
 It estimates the gain from the last two passes by the secant slope $s$ and
 chooses $q = s/(s-1)$, i.e.\ $w = 1/(1-s)$: the optimal factor, found without
