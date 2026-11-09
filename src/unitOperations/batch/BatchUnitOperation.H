@@ -82,6 +82,17 @@ struct BatchState
     //  keeps every existing producer byte-identical.
     scalar  vf = 0.0;   // 0 = liquid (historic default), 1 = gas
 
+    //- The enthalpy this package carried across its producer's boundary,
+    //  when the producer INTEGRATED it there [kJ, elements datum].  The
+    //  thermal fixed bed is the one producer today (C258): its outlet face
+    //  carries enthalpy in an ODE ledger row, and a window in which the
+    //  outlet flow reversed (gas out at the bed's T, gas back in from the
+    //  downstream reservoir at another) holds an enthalpy no single (n, T)
+    //  represents.  hasH = false (every other producer) keeps the campaign
+    //  pricing the package at its own (n, T), byte-identical to before.
+    bool    hasH = false;
+    scalar  H_kJ = 0.0;
+
     scalar totalMoles() const
     {
         scalar s = 0;

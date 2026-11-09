@@ -21670,6 +21670,83 @@ and watch both statements hold
 \file{batch14\_transport\_only} pins the $k=0$ bed against the
 analytic advection--dispersion solution).
 
+\subsection{The non-isothermal bed: energy in conservative form}
+
+Declare \code{energyBalance adiabatic;} (or \code{wallCooled;}, with
+\code{flowModel ergun}) and every cell gets a temperature.  The balance
+that decides it is written the way the species balance
+\eqref{eq:bed-fv} is: on the conserved quantity, cell by cell, so that
+what one cell loses through a face the next one gains.  The conserved
+quantity of a cell of \emph{fixed volume} is its internal energy, per
+m\textsuperscript{3} of bed,
+\begin{equation}
+U_j \;=\; \varepsilon\sum_i c_{ij}\,\bigl(h_i(T_j) - RT_j\bigr)
+\;+\; \rho_b\sum_a q_{aj}\,\bigl(h_a(T_j) + \Delta H_a\bigr)
+\;+\; \rho_b\,c_{p,s}\,(T_j - T_0),
+\label{eq:bed-U}
+\end{equation}
+where $h_i(T)$ is the ideal-gas enthalpy of species $i$ (only its
+sensible part $\int_{T_0}^{T} C_{p,i}^{\mathrm{ig}}\,\mathrm{d}T$ enters
+the state: the formation datum is a per-species constant that the
+species balances conserve on their own), $u = h - RT$ is the gas's
+internal energy, $\Delta H_a < 0$ is the isosteric heat of the isotherm
+record, $c_{p,s}$ the declared solid heat capacity and $T_0$ the declared
+initial temperature.  The adsorbed term deserves a sentence: a
+\emph{constant} isosteric heat means $h_{\mathrm{ads}} - h_{\mathrm{gas}}$
+does not change with $T$, so by Kirchhoff the adsorbed phase has the
+gas's own heat capacity --- the same van't Hoff datum that shapes
+$q^{*}(T)$ fixes it, and the bed carries it.  The balance is
+\begin{equation}
+\frac{\mathrm{d}U_j}{\mathrm{d}t}
+\;=\; \frac{E_{j-\frac12} - E_{j+\frac12}}{\Delta z}
+\;-\; h_w a_w\,(T_j - T_w),
+\qquad
+E_f \;=\; \sum_i F_{i,f}\,h_i(T_f),
+\label{eq:bed-energy}
+\end{equation}
+with $F_{i,f}$ the \emph{same} molar fluxes as \eqref{eq:bed-fv}: the
+advected moles carry the enthalpy of the side they come from (the
+upwind cell, the feed at $T_{\mathrm{feed}}$, the downstream reservoir
+on backflow), the dispersed moles the mean of the two cells'.  One $E_f$
+serves both cells of a face, so summing \eqref{eq:bed-energy} over the
+bed telescopes to $E_{\mathrm{in}} - E_{\mathrm{out}}$ minus the wall
+heat: the first law of the whole bed is an identity of the discrete
+equations.  There is no heat-of-adsorption term and no expansion term
+in \eqref{eq:bed-energy} --- both live inside $U_j$ and appear on
+their own.
+
+Expanding $\mathrm{d}U_j/\mathrm{d}t$ by the chain rule and substituting
+\eqref{eq:bed-fv} gives the familiar temperature form,
+\begin{equation}
+C_j\,\frac{\mathrm{d}T_j}{\mathrm{d}t}
+= -\sum_i F_i\frac{\partial h_i}{\partial z}
++ \rho_b\sum_a(-\Delta H_a)\frac{\mathrm{d}q_a}{\mathrm{d}t}
++ \varepsilon RT\frac{\mathrm{d}c_{\mathrm{tot}}}{\mathrm{d}t}
+- h_w a_w (T - T_w),
+\label{eq:bed-T}
+\end{equation}
+$C_j = \partial U_j/\partial T_j = \varepsilon c_{\mathrm{tot}}c_v
++ \rho_b\sum_a q_a C_{p,a} + \rho_b c_{p,s}$: advected heat, released
+adsorption heat, the expansion work that cools a draining bed, and the
+wall.  It is the same physics, but integrated as it stands it conserves
+nothing exactly: no discrete $U$ has it as its derivative.  Until
+2026-11-09 the engine integrated it (with $C_{p}\,\Delta T$ for the
+enthalpy differences, no dispersive enthalpy, and no adsorbed-phase heat
+capacity), and through the blowdown of
+\file{batch25\_blowdown\_thermal} the first law missed by 7.9\,\% of the
+energy moved, at every step size --- so the engine refused that claim by
+name.  Now the cells' $U_j$ are integrated in the form
+\eqref{eq:bed-energy}, together with a ledger row for the outlet's
+enthalpy; \eqref{eq:bed-T} is kept as the working row that feeds $T$ to
+the isotherm and the Ergun law, and after every sampling chunk $T_j$ is
+projected back onto $U_j$ by Newton (unique, since $C_j>0$).  The
+raffinate leaves in packages that carry the enthalpy the ledger row
+integrated, at their mixing-cup temperature.  The campaign energy
+balance then closes to round-off: $10^{-15}$ of the energy moved on the
+thermal breakthrough and TSA witnesses, and $4\times10^{-10}$ on the
+blowdown, which moves 2.3\,J against some 200\,J of gross hold-up
+energy.
+
 \subsection{Reading a ``steady'' swing unit: the twin-bed time
 average}
 
@@ -21706,7 +21783,11 @@ competition (\file{batch10}), the analytic Henry gate
 (\file{batch11}), the pressure refusal (\file{batch12}), breakthrough
 with the announced $t_{\mathrm{st}}$ and the declared model residual
 (\file{batch13}), pure transport vs the analytic solution
-(\file{batch14}), the mesh study (\file{batch15}). \\
+(\file{batch14}), the mesh study (\file{batch15}); the non-isothermal
+bed of \eqref{eq:bed-energy}: adiabatic breakthrough (\file{batch20}),
+hot purge (\file{batch21}), wall cooling (\file{batch22}), TSA cycles
+(\file{batch23}, \file{batch24\_tsa\_until\_css}) and the cooling
+blowdown with its first law closed (\file{batch25}). \\
 \file{tutorials/steady/separation/psa01\_h2\_psa} --- the twin-bed
 equilibrium shortcut in a steady flowsheet.
 \end{tutoriallink}

@@ -836,6 +836,12 @@ if (flowsheetDict->found("cycle"))
             }
         }
         if (!ok) return 0.0;
+        //  A producer that integrated the enthalpy its package carried
+        //  across its boundary face hands that integral over (BatchState::
+        //  hasH, C258) -- never re-priced at one (n, T), which cannot hold
+        //  a window whose outlet flow reversed.  The datum check above
+        //  still runs: a species with no formation route poisons it alike.
+        if (pkg.hasH) return pkg.H_kJ;
         try
         {
             //  Priced in the package's OWN phase.  pkg.vf is 0 for every

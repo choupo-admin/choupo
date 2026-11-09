@@ -11,14 +11,20 @@ section-9 expansion-work widening; ratified battery, second-opinion review
                closed through the ledger).
   WITNESS B    batch25_blowdown_thermal (inert, ADIABATIC, declared LOW
                cp_s): the bed must COOL -- T_min_final well below the
-               declared 298.15 K -- and the campaign energy residual must
-               be REFUSED by name (C258; it used to be claimed at integration
-               order on the rigid-vessel U-basis, but that closure is 7.9 %
-               of the energy moved -- the energy equation is not conservative
-               through a blowdown).
-               Sabotage (verified at build time): restoring the cp
-               accumulation / dropping the expansion source leaves the bed
-               warm and THIS probe fails by value.
+               declared 298.15 K -- and the campaign energy balance must be
+               CLAIMED and CLOSED far inside the campaign gate's 1e-2: below
+               ENERGY_TOL here (C258).  The bed's energy rows are the
+               conservative finite-volume form (cell internal energy U_j,
+               face enthalpy fluxes, T_j projected onto U_j), so the
+               rigid-vessel first law closes through the blowdown to
+               round-off; until 2026-11-09 the non-conservative temperature
+               form missed it by 7.9 % of the energy moved and the engine
+               refused the claim by name.
+               Sabotage (verified at build time): pricing the cell's gas at
+               h instead of u = h - RT (no expansion work in U) leaves the
+               bed warm and THIS probe fails by value; and a face enthalpy
+               flux that is not shared by the two cells of its face breaks
+               the closure, which THIS probe fails by value too.
   REFUSALS     P_out <= 0; a THROTTLED feed (u != 0); the FEED-pressure
                key P (the boundary this unit carries is downstream).
 
@@ -43,6 +49,10 @@ failures = []
 EPS, AREA, LBED, T0 = 0.4, 0.01, 0.5, 298.15
 RGAS = 8.31446261815324
 P0, PEND = 1.0e5, 5.0e4
+#  Witness B's first law: round-off on the gross holdup energy (~0.2 kJ)
+#  against the 2.3 J the blowdown moves is ~1e-9; 1e-6 leaves margin for a
+#  different machine and still sits four decades inside the campaign gate.
+ENERGY_TOL = 1.0e-6
 
 
 def run(case: Path):
@@ -95,16 +105,17 @@ def main() -> int:
         if tmin is None or tmin > T0 - 2.5:
             failures.append(f"B: T_min_final {tmin} K -- the blowdown must"
                             f" COOL well below {T0} (the cp-form cannot)")
-        #  C258: the adiabatic blowdown's energy equation (non-conservative
-        #  form) does not close the rigid-vessel first law -- 7.9 % of the
-        #  energy moved, at any step -- so the engine REFUSES the claim by
-        #  name instead of showing a closure that is not one.
-        if kpi(out, "energy_balance_available") != 0:
-            failures.append("B: the campaign energy claim must be REFUSED"
-                            " (energy_balance_available 0) through a"
-                            " compressible blowdown")
-        if "non-conservative form" not in out:
-            failures.append("B: the energy refusal does not name its cause")
+        #  C258: the conservative energy rows close the rigid-vessel first
+        #  law through the compressible blowdown -- the claim must stand and
+        #  close far tighter than the campaign gate's 1e-2.
+        if kpi(out, "energy_balance_available") != 1:
+            failures.append("B: the campaign energy balance must be CLAIMED"
+                            " (energy_balance_available 1) through the"
+                            " blowdown")
+        rel = kpi(out, "energy_closure_rel")
+        if rel is None or rel > ENERGY_TOL:
+            failures.append(f"B: energy_closure_rel {rel} -- the conservative"
+                            f" form must close below {ENERGY_TOL:g}")
 
     # ---- REFUSALS ---------------------------------------------------------
     with tempfile.TemporaryDirectory() as td:
@@ -144,7 +155,7 @@ def main() -> int:
             print("  -", f)
         return 1
     print("check_pswing: OK -- inventory ratio 0.5 analytic (A), blowdown"
-          " cooling shown with its energy claim refused by name (B),"
+          " cooling shown with its first law closed (B),"
           " throttle/negative-P/feed-P refuse by name")
     return 0
 

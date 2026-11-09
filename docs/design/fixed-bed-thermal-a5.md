@@ -33,6 +33,8 @@ stencil audited, anchors named before the run).
   `wallHeatTransfer{}` in T1 refuses, named.
 * **Adsorbed-phase heat capacity neglected, DECLARED** (the standard
   teaching simplification; stated in the header beside the solid cp).
+  WITHDRAWN 2026-11-09 (section 10): the constant isosteric heat implies
+  the adsorbed phase carries the gas's own Cp, and the bed now does.
 * **k_LDF stays the declared constant** (its own T-dependence is sample
   data the case may some day declare; not fabricated here).
 
@@ -329,3 +331,63 @@ must fail it; (C) the constant-P limit reproducing the old cases when
 dc_tot/dt ≈ 0 (the suite's four re-recorded thermal cases are this
 witness in effect).  P1/P2 land on top as their own slices;
 countercurrent (P3) stays refused — that boundary changes KIND.
+
+## 10. The conservative form (C258, 2026-11-09)
+
+Witness (B) of section 9 never held: through batch25's blowdown the
+temperature form closed the rigid-vessel first law to 7.9 % of the energy
+moved, at every step size, and from C258 the engine refused that claim by
+name.  The cause was the FORM, not the step: the section-9 row is the
+chain-rule expansion of an internal-energy balance, but integrated as it
+stands no discrete energy has it as its derivative, so the cells do not
+telescope.  Built the same day, in `FixedBedAdsorber.cpp` (the derivation
+is written at the energy rows and at `cellU_`):
+
+* **The state is the cell's internal energy**, per m3 of bed,
+  `U_j = eps Sum c_i (hs_i(T) - R T) + rho_b Sum q_a (hs_a(T) + dH_a)
+  + rho_b cp_s (T - T0)`, hs the sensible ideal-gas enthalpy from T0 (the
+  formation datum is conserved species by species and stays with the
+  material ledger).  Its balance is a finite volume,
+  `dU_j/dt = (E_{j-1/2} - E_{j+1/2})/dz - h a_w (T_j - T_w)`, with
+  `E_f = Sum_i F_i,f hs_i(T_f)` built from THE SAME species fluxes:
+  advected moles at the upwind side's T, dispersed moles at the mean of
+  the two cells', the feed and the backflow reservoir at T_feed.  One
+  E_f per face: the sum telescopes, and with the outlet's enthalpy
+  integrated in its own ledger row (H_out, the M_out pattern) the
+  energy is a linear invariant of the ODE.
+* **Section 1's "adsorbed-phase heat capacity neglected" is withdrawn.**
+  The vessel pricing already carried the adsorbed moles at
+  `h_gas(T) + dH_ads`, and a constant isosteric heat implies exactly that
+  (Kirchhoff: `h_ads - h_gas` constant in T means equal heat capacities).
+  The old row's denominator omitted `rho_b Sum q_a Cp_a` while the
+  inventory priced it -- one of the reasons the thermal witnesses closed
+  only to 1e-4.  DT_ad divides by `cp_s + q* Cp_ig,a + eps c cpg/rho_b`.
+* **T_j stays a working row** with the chain-rule form of the same
+  balance and is projected onto U_j by Newton after every sampling chunk.
+  Integrating U alone, with T recovered inside every evaluation, closed
+  too, but after the blowdown it needed ~40 times the steps: the
+  recovered T coupled every species row, an absent one included, to the
+  energy state, and the W solve's pivoting fed round-off negatives into a
+  species the case never feeds, which the positivity guard rejected.  The
+  U rows are stored as `U / uScale_` (K) for the same pivoting reason.
+* **The raffinate package carries its integrated enthalpy**
+  (`BatchState::hasH`), leaving at its mixing-cup T: the old end-of-window
+  outlet-cell T was a first-order quadrature, and once a drained bed
+  rests the outlet velocity flickers in sign so that a window's enthalpy
+  has no single (n, T).
+* **The outlet reservoir's backflow density is `c_in P_out / P_feed`.**
+  It was `c_in` -- after batch25 halves P_out the reservoir supplied gas at
+  twice the bed's density, and the flicker pumped matter and heat through
+  the outlet: the energy vented then depended on the integrator's path
+  (-2.28 to -2.70 J across Jacobian modes, every one of them "closed").
+  The factor is exactly 1 until a P1 switch.
+
+Result: batch25 claims and closes its first law (`energy_closure_rel`
+7.9e-2 -> 3.7e-10), batch20-24 close to 1e-15 (from 6e-5..3e-4).  The
+thermal witnesses' physics moves by the adsorbed-phase heat capacity
+(t_50 +0.8 %, T_final -0.1..-0.2 %, DT_ad 140.4 -> 125.8 K); the
+isothermal cases do not move, except batch24_blowdown_inert's residual
+`deltaP_first_to_out_Pa` (-1.0e-4 Pa -> 1.5e-11 Pa, the reservoir fix).
+Gate: check_pswing witness B asserts the closure below 1e-6; both
+sabotages (gas priced at h instead of h - RT in U; a face flux the two
+cells do not share) fail it by value.

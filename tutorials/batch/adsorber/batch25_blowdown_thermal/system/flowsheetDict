@@ -14,11 +14,13 @@
   fixed-bed-thermal-a5.md, section 8/9 amended battery):
 
     * same inert pure-He ergun bed as witness A (batch24), but
-      `energyBalance adiabatic;` -- the section-9 general energy row
-      (cv accumulation + the explicit eps R T dc_tot/dt source) is live;
+      `energyBalance adiabatic;` -- each cell's internal energy
+      U_j = eps c (h - RT) + rho_b cp_s (T - T0) is balanced in
+      conservative finite-volume form (design note section 10);
     * at t = 200 s the recipe closes the feed valve (P2) and halves the
-      outlet boundary (P1) -- the bed drains, dc_tot/dt < 0, and the
-      expansion source pulls T DOWN;
+      outlet boundary (P1) -- the bed drains, and the gas that stays
+      behind did the work of pushing the vented gas out: read through
+      the chain rule, the eps R T dc_tot/dt term pulls T DOWN;
     * the solid heat capacity is a declared SYNTHETIC LOW value
       (9.2 J/(kg K), scope says so): the real ~920 of a zeolite pellet
       would thermally bury the gas-phase cooling under the solid's mass
@@ -32,11 +34,14 @@
   the pre-widening cp-form could not show (the sabotage of the gate
   restores that form and this witness fails).  The material anchors
   stay witness A's business; this case pins the sign and visibility of
-  the thermal effect.  Its campaign ENERGY claim is REFUSED by name
-  (UNAVAILABLE): the bed's energy equation is carried in non-conservative
-  form and does not close the rigid-vessel first law through a compressible
-  blowdown (7.9 % of the energy moved, at any step size), and a closure that
-  is not one is never shown.
+  the thermal effect.  AND ITS FIRST LAW: the campaign energy balance
+  is claimed and closes to round-off (energy_closure_rel ~ 4e-10 of the
+  2.3 J the blowdown moves, against ~200 J of gross hold-up energy),
+  because the face enthalpy fluxes are shared by the two cells of each
+  face and the vented gas leaves carrying exactly what crossed the outlet
+  face.  Until 2026-11-09 the bed carried a temperature form that missed
+  this first law by 7.9 % of the energy moved, at every step size, and the
+  engine refused the claim by name (DEV.md 4c C258).
 \*---------------------------------------------------------------------------*/
 
 units

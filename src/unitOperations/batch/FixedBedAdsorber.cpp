@@ -36,6 +36,7 @@ License
 #include "thermo/ThermoPackage.H"
 #include "thermo/adsorbent/Adsorbent.H"
 #include "thermo/adsorbent/AdsorbentRegistry.H"
+#include "thermo/heatCapacity/HeatCapacityModel.H"
 
 #include <cstring>
 #include <algorithm>
@@ -602,15 +603,15 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     // -----------------------------------------------------------------
     //  Packed state Y (spec section 2.1): c | q | M_in | M_out
     //  (+ T_j per cell in thermal mode, appended after the ledger rows;
-    //  + the Q_wall LEDGER STATE in wallCooled mode -- integrated in the
+    //  + the Q_wall LEDGER STATE in wallCooled mode; + in thermal mode the
+    //  H_out LEDGER STATE and the cell INTERNAL ENERGIES U_j (C258: the
+    //  conserved quantity, integrated in its finite-volume form; T_j is
+    //  re-projected onto it after every chunk) -- each integrated in the
     //  same ODE, never a posterior quadrature).
     // -----------------------------------------------------------------
     const std::size_t nFlow = ergun_ ? n : nAds;
     y_.assign(nFlow * N_ + nAds * N_ + 2 * nFlow
-              + (thermal_ ? N_ : 0) + (wallCooled_ ? 1 : 0), 0.0);
-    if (thermal_)
-        for (std::size_t j = 0; j < N_; ++j)
-            y_[tOffset_() + j] = T_;
+              + (thermal_ ? 2 * N_ + 1 : 0) + (wallCooled_ ? 1 : 0), 0.0);
     hold0_.assign(nAds, 0.0);
     if (ergun_)
         for (std::size_t i = 0; i < n; ++i)
@@ -639,6 +640,43 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     {
         dHAds_[a] = ads_->isotherm(compNames_[adsIdx_[a]])->dHAds();
         nAds0_[a] = adsorbedKmol_(a);
+    }
+
+    //  C258: the T rows start at the declared T and the U rows at the
+    //  cell's internal energy there (cellU_).  The sensible enthalpy of
+    //  every gas is read from its OWN idealGasHeatCapacity record (the
+    //  datum Cp_ig already consumed); a species present in the feed or the
+    //  initial gas with no such record cannot carry energy and refuses by
+    //  name.  A U row is STORED as U_j / uScale_ [K], uScale_ the cell heat
+    //  capacity at the feed state: the integrator's W solve pivots by
+    //  magnitude, and an energy row in J/m3 beside concentration rows in
+    //  mol/m3 out-pivots them, mixing round-off into the rows of a species
+    //  that sits at exactly zero (the case never feeds it) -- which the
+    //  positivity guard then rejects.  The scale is a constant, so the
+    //  stored rows conserve exactly what U conserves.
+    if (thermal_)
+    {
+        hasCpG_.assign(n, false);
+        hS0_.assign(n, 0.0);
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            hasCpG_[i] = thermo.comp(i).hasCpIdealGas();
+            if (!hasCpG_[i] && (cInAll_[i] > 0.0 || c0All_[i] > 0.0))
+                throw std::runtime_error("fixedBedAdsorber '" + name_
+                    + "': the thermal bed carries the enthalpy of every gas"
+                    " it holds, and component '" + compNames_[i] + "' has"
+                    " no idealGasHeatCapacity block in its record");
+            if (hasCpG_[i])
+                hS0_[i] = thermo.comp(i).cpIdealGas().H(T_, 298.15);
+        }
+        hOutShed_ = 0.0;
+        uScale_ = eps_ * cTot_ * (cpgFeed_ - constant::R) + rhoB_ * cpS_;
+        for (std::size_t j = 0; j < N_; ++j)
+        {
+            scalar C = 0.0;
+            y_[tOffset_() + j] = T_;
+            y_[uOffset_() + j] = cellU_(y_, j, T_, C) / uScale_;
+        }
     }
 
     // Reusable partial-pressure map (values rewritten per cell through
@@ -686,8 +724,19 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             atol_[outOffset_() + i] = ledScale;
         }
     if (thermal_)
+    {
+        //  T rows [K] and the scaled U rows [K]: the spec-2.5 posture.
         for (std::size_t j = 0; j < N_; ++j)
-            atol_[tOffset_() + j] = 1.0e-7 * T_;   // K rows, spec-2.5 posture
+        {
+            atol_[tOffset_() + j] = 1.0e-7 * T_;
+            atol_[uOffset_() + j] = 1.0e-7 * T_;
+        }
+        //  H_out ledger row [J]: the outlet enthalpy over the span at a
+        //  nominal 10 K -- the same 1e-6 posture as the M_out rows.
+        atol_[hoOffset_()] = std::max(
+            1.0e-6 * A_ * u_ * cTot_ * cpgFeed_ * 10.0
+                * std::max(tSpan, 1.0), 1.0e-9);
+    }
     if (wallCooled_)
         //  Q_wall ledger row [J]: scale on the full-bed wall duty over the
         //  span at a nominal 10 K approach -- same 1e-6 posture as M_in.
@@ -737,8 +786,14 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
         for (std::size_t a = 0; a < nAds; ++a)
         {
             if (cIn_[a] <= 0.0 || k_[a] <= 0.0) continue;
-            dTadAnn_[a] = qStarFeed_(a) * (-dHAds_[a])
-                / (cpS_ + eps_ * cTot_ * cpgFeed_ / rhoB_);
+            //  C258: the loaded solid carries the adsorbate's own Cp_ig
+            //  (the energy row's adsorbed-phase term), so the all-heat-
+            //  retained bound divides by it too.
+            const std::size_t ia = adsIdx_[a];
+            const scalar qs = qStarFeed_(a);
+            dTadAnn_[a] = qs * (-dHAds_[a])
+                / (cpS_ + qs * cpG_(ia, T_)
+                   + eps_ * cTot_ * cpgFeed_ / rhoB_);
         }
     }
 
@@ -790,8 +845,15 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                       << " energy balance: one T per cell,"
                          " cp_s = " << cpS_ << " J/(kg K) (DECLARED case"
                          " data), feed-gas Cp_ig(T_feed) = " << cpgFeed_
-                      << " J/(mol K); adsorbed-phase heat capacity"
-                         " neglected (declared).  Pure thermal-wave"
+                      << " J/(mol K); the adsorbed phase carries its gas's"
+                         " own Cp_ig (a constant isosteric heat implies"
+                         " it: h_ads = h_gas(T) + dH_ads).  CONSERVATIVE"
+                         " form: each cell's state is its internal energy"
+                         " U_j (gas n(h - RT) + adsorbed n(h + dH_ads) +"
+                         " solid cp_s), the faces carry the enthalpy of"
+                         " the species fluxes (the cells telescope to the"
+                         " boundary), and T_j is projected back onto U_j"
+                         " after every chunk.  Pure thermal-wave"
                          " velocity u_th = " << uThAnn_ << " m/s; the bed"
                          " needs L/u_th = " << L_ / uThAnn_ << " s for the"
                          " heat to LEAVE.\n";
@@ -816,7 +878,7 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                     / (eps_ + rhoB_ * qStarFeed_(a) / cIn_[a]);
                 std::cout << "  [fixedBedAdsorber '" << name_ << "'] "
                           << compNames_[adsIdx_[a]] << ": adiabatic LIMIT"
-                             " DT_ad = q*(-dH_ads)/(cp_s +"
+                             " DT_ad = q*(-dH_ads)/(cp_s + q* cpg_i +"
                              " eps c_tot cpg/rho_b) = " << dTadAnn_[a]
                           << " K -- the all-heat-retained BOUND; "
                           << (uThAnn_ < uSh
@@ -974,17 +1036,19 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
 // -----------------------------------------------------------------------
 //  The declared Jacobian structure (ODEBlockStructure).  Block j holds the
 //  rows of CELL j: every integrated gas concentration, every loading, and
-//  in thermal mode the cell temperature -- exactly what rhs_ reads from
-//  cells j-1, j and j+1 to compute cell j.  Everything else (M_in, M_out,
-//  Q_wall) is a LEDGER row: it reads the cells and nothing reads it, which
-//  is the border the integrator closes directly.  The integrator audits
-//  this claim against a dense Jacobian and refuses it if false.
+//  in thermal mode the cell temperature and internal energy -- exactly what
+//  rhs_ reads from cells j-1, j and j+1 to compute cell j (U_j reads its
+//  neighbours' T and c through the face fluxes; nothing reads U_j).
+//  Everything else (M_in, M_out, Q_wall, H_out) is a LEDGER row: it reads
+//  the cells and nothing reads it, which is the border the integrator closes
+//  directly.  The integrator audits this claim against a dense Jacobian and
+//  refuses it if false.
 // -----------------------------------------------------------------------
 void FixedBedAdsorber::buildOdeStructure_()
 {
     const std::size_t nFlow = ergun_ ? compNames_.size() : adsIdx_.size();
     const std::size_t nAds  = adsIdx_.size();
-    const std::size_t nv    = nFlow + nAds + (thermal_ ? 1 : 0);
+    const std::size_t nv    = nFlow + nAds + (thermal_ ? 2 : 0);
     odeStructure_ = solver::ODEBlockStructure{};
     odeStructure_.nBlocks   = N_;
     odeStructure_.blockSize = nv;
@@ -997,17 +1061,24 @@ void FixedBedAdsorber::buildOdeStructure_()
         for (std::size_t a = 0; a < nAds; ++a)
             odeStructure_.blockRows[j * nv + k++] = qOffset_() + a * N_ + j;
         if (thermal_)
+        {
             odeStructure_.blockRows[j * nv + k++] = tOffset_() + j;
+            odeStructure_.blockRows[j * nv + k++] = uOffset_() + j;
+        }
     }
     //  The ledger rows say what they read: M_in integrates the IMPOSED
     //  inlet flux (no cell), M_out the outlet face flux (the last cell).
-    //  Q_wall sums every cell and is left undeclared (wide).
+    //  Q_wall sums every cell and is left undeclared (wide).  H_out (thermal)
+    //  integrates the outlet face's enthalpy flux, which reads the last cell
+    //  alone, exactly as M_out does.
     const long last = long(N_) - 1;
     for (std::size_t i = 0; i < nFlow; ++i)
     {
         odeStructure_.borderReads.push_back({inOffset_() + i, 0, -1});
         odeStructure_.borderReads.push_back({outOffset_() + i, last, last});
     }
+    if (thermal_)
+        odeStructure_.borderReads.push_back({hoOffset_(), last, last});
     structureAnnounced_ = false;
 }
 
@@ -1039,6 +1110,76 @@ std::size_t FixedBedAdsorber::qwOffset_() const
     return tOffset_() + N_;   // after the T rows (wallCooled only)
 }
 
+std::size_t FixedBedAdsorber::hoOffset_() const
+{
+    return tOffset_() + N_ + (wallCooled_ ? 1 : 0);   // thermal only
+}
+
+std::size_t FixedBedAdsorber::uOffset_() const
+{
+    return hoOffset_() + 1;   // the N cell internal energies (thermal only)
+}
+
+// -----------------------------------------------------------------------
+//  C258: the thermal bed's ENERGY STATE.  Symbols (per m3 of BED):
+//    eps        bed void fraction [-]
+//    c_ij       gas concentration of species i in cell j [mol/m3 of gas]
+//    q_aj       loading of adsorbing species a in cell j [mol/kg solid]
+//    rho_b      bulk density [kg solid / m3 bed]
+//    cp_s       declared solid heat capacity [J/(kg K)]
+//    hs_i(T)    sensible ideal-gas enthalpy INT_{T_ref}^{T} Cp_ig,i dT
+//               [J/mol], T_ref = the declared initial T_ (hSens_);
+//               the formation datum is a per-species constant that the
+//               species balances conserve on their own, so it is carried
+//               by the material ledger and kept out of the state (which
+//               keeps U well scaled for the error control)
+//    dH_a       isosteric heat of adsorption [J/mol, < 0], constant -- the
+//               van't Hoff datum of the isotherm record
+//  The cell's internal energy, the conserved quantity:
+//    U_j(T) = eps Sum_i c_ij (hs_i(T) - R T)          gas: u = h - RT
+//           + rho_b Sum_a q_aj (hs_a(T) + dH_a)       adsorbed: h_gas + dH
+//           + rho_b cp_s (T - T_ref)                  solid
+//  and its heat capacity C_j = dU_j/dT
+//           = eps Sum_i c_ij (Cp_ig,i - R) + rho_b Sum_a q_aj Cp_ig,a
+//             + rho_b cp_s  > 0.
+//  A constant dH_a in T means h_ads,a - h_gas,a is constant, i.e. the
+//  adsorbed phase's Cp IS the gas's (Kirchhoff) -- the term the old
+//  temperature form neglected while the vessel pricing carried it.
+// -----------------------------------------------------------------------
+scalar FixedBedAdsorber::hSens_(std::size_t i, scalar T) const
+{
+    if (!hasCpG_[i]) return 0.0;   // never present (refused at initialise)
+    return thermo_->comp(i).cpIdealGas().H(T, 298.15) - hS0_[i];
+}
+
+scalar FixedBedAdsorber::cpG_(std::size_t i, scalar T) const
+{
+    if (i < hasCpG_.size() && !hasCpG_[i]) return 0.0;
+    return thermo_->comp(i).cpIdealGas().Cp(T);
+}
+
+scalar FixedBedAdsorber::cellU_(const sVector& y, std::size_t j, scalar T,
+                                scalar& C) const
+{
+    scalar U = rhoB_ * cpS_ * (T - T_);
+    C = rhoB_ * cpS_;
+    for (std::size_t i = 0; i < compNames_.size(); ++i)
+    {
+        const scalar c = y[i * N_ + j];
+        if (c == 0.0) continue;
+        U += eps_ * c * (hSens_(i, T) - constant::R * T);
+        C += eps_ * c * (cpG_(i, T) - constant::R);
+    }
+    for (std::size_t a = 0; a < adsIdx_.size(); ++a)
+    {
+        const scalar q = y[qOffset_() + a * N_ + j];
+        if (q == 0.0) continue;
+        U += rhoB_ * q * (hSens_(adsIdx_[a], T) + dHAds_[a]);
+        C += rhoB_ * q * cpG_(adsIdx_[a], T);
+    }
+    return U;
+}
+
 scalar FixedBedAdsorber::cellT_(const sVector& y, std::size_t j) const
 {
     //  Isothermal: the declared constant.  Thermal (A5-T1): the cell's own
@@ -1047,21 +1188,66 @@ scalar FixedBedAdsorber::cellT_(const sVector& y, std::size_t j) const
     return thermal_ ? std::max(y[tOffset_() + j], scalar(1.0)) : T_;
 }
 
-scalar FixedBedAdsorber::cpgCell_(const sVector& y, std::size_t j) const
+void FixedBedAdsorber::projectT_(sVector& y) const
 {
-    //  Mixture ideal-gas Cp [J/(mol K)] of the cell's gas, from the
-    //  components' OWN declared idealGasHeatCapacity models -- no new
-    //  datum enters with the energy balance.
-    sVector yMix(compNames_.size(), 0.0);
-    scalar cSum = 0.0;
-    for (std::size_t i = 0; i < compNames_.size(); ++i)
+    //  C258: the conserved quantity is U_j; T_j is the integrator's working
+    //  variable for the cell.  Both rows carry the SAME conservative
+    //  balance (T's is U's by the chain rule), so they agree to within the
+    //  integrator's local error; after each accepted chunk T_j is put back
+    //  ON the energy it must have -- the root of U_j(T) = U_j state, by
+    //  Newton from the integrated T_j (C_j = dU/dT > 0: rho_b cp_s alone
+    //  guarantees it, so the root is unique).  Converged to 1e-9 T and
+    //  polished by one more step, which lands at round-off.  The step is a
+    //  projection onto the energy the finite-volume rows conserved: it
+    //  never moves U, so the first law stays the identity the rows make it.
+    for (std::size_t j = 0; j < N_; ++j)
     {
-        yMix[i] = std::max(y[i * N_ + j], scalar(0.0));
-        cSum += yMix[i];
+        const scalar Uj = y[uOffset_() + j] * uScale_;
+        scalar T = std::max(y[tOffset_() + j], scalar(1.0));
+        bool polish = false;
+        for (int it = 0; it < 60; ++it)
+        {
+            scalar C = 0.0;
+            const scalar r = cellU_(y, j, T, C) - Uj;
+            if (!(C > 0.0)) break;
+            const scalar dT = r / C;
+            T = std::max(T - dT, scalar(1.0));
+            if (polish) break;
+            if (std::abs(dT) <= 1.0e-9 * T) polish = true;
+        }
+        y[tOffset_() + j] = T;
     }
-    if (cSum <= 0.0) return cpgFeed_;
-    for (scalar& v : yMix) v /= cSum;
-    return thermo_->Cp_ig(cellT_(y, j), yMix);
+}
+
+scalar FixedBedAdsorber::mixingCupT_(const sVector& nKmol, scalar dHs,
+                                     scalar Tguess) const
+{
+    //  The temperature at which the collected package (nKmol) holds the
+    //  sensible enthalpy dHs [J] the H_out ledger integrated over the
+    //  window: Sum_i n_i hs_i(T) = dHs.  This is the package's own mixing-
+    //  cup temperature, so pricing it at (n, T) returns exactly the
+    //  enthalpy that crossed the outlet face -- never an end-of-window
+    //  cell T stamped on matter that left at other temperatures.
+    scalar T = Tguess;
+    bool polish = false;
+    for (int it = 0; it < 60; ++it)
+    {
+        scalar g = -dHs, dg = 0.0;
+        for (std::size_t i = 0; i < nKmol.size(); ++i)
+        {
+            if (nKmol[i] == 0.0) continue;
+            g  += 1000.0 * nKmol[i] * hSens_(i, T);
+            dg += 1000.0 * nKmol[i] * cpG_(i, T);
+        }
+        if (!(dg > 0.0)) return Tguess;   // net backflow: no cup to mix
+        const scalar dT = g / dg;
+        T = std::max(T - dT, scalar(1.0));
+        if (polish) break;
+        if (std::abs(dT) <= 1.0e-9 * T) polish = true;
+    }
+    //  A window whose flow reversed can ask for a temperature no gas has
+    //  (the floor): it has no cup, and the outlet cell's T is the label.
+    return (T > 1.0) ? T : Tguess;
 }
 
 scalar FixedBedAdsorber::pressureCell_(const sVector& y, std::size_t j) const
@@ -1215,10 +1401,21 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
         // a difference closure because it owns its own continuity equation.
         // A5-T1: p_i and the isotherm are evaluated at the CELL's own T --
         // the van't Hoff machinery the records already carry, now fed the
-        // local temperature instead of the declared constant.
+        // local temperature instead of the declared constant.  The cell
+        // temperatures and pressures are evaluated ONCE per call and read
+        // by every term.
+        sVector Tc(N_), Pc(N_);
         for (std::size_t j = 0; j < N_; ++j)
         {
-            const scalar Tj = cellT_(y, j);
+            Tc[j] = cellT_(y, j);
+            scalar c = 0.0;
+            for (std::size_t i = 0; i < n; ++i)
+                c += std::max(y[i * N_ + j], scalar(0.0));
+            Pc[j] = constant::R * Tc[j] * c;     // == pressureCell_(y, j)
+        }
+        for (std::size_t j = 0; j < N_; ++j)
+        {
+            const scalar Tj = Tc[j];
             for (std::size_t i = 0; i < n; ++i)
                 pMap_[compNames_[i]] = std::max(y[i * N_ + j], scalar(0.0))
                                      * constant::R * Tj;
@@ -1246,8 +1443,7 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
                 cL[i] = y[i * N_ + f - 1];
                 cR[i] = y[i * N_ + f];
             }
-            const scalar uf = ergunVelocity_(pressureCell_(y, f - 1),
-                                              pressureCell_(y, f), dz_, cL, cR);
+            const scalar uf = ergunVelocity_(Pc[f - 1], Pc[f], dz_, cL, cR);
             uface[f] = uf;
             for (std::size_t i = 0; i < n; ++i)
             {
@@ -1257,11 +1453,21 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
         }
         for (std::size_t i = 0; i < n; ++i)
             cL[i] = cR[i] = y[i * N_ + N_ - 1];
-        const scalar uOut = ergunVelocity_(pressureCell_(y, N_ - 1), Pout_,
+        const scalar uOut = ergunVelocity_(Pc[N_ - 1], Pout_,
                                            0.5 * dz_, cL, cR);
         uface[N_] = uOut;
+        //  Backflow through the outlet face comes from the DOWNSTREAM
+        //  reservoir: the feed composition at the feed T (the convention),
+        //  at the reservoir's OWN pressure P_out -- c_in P_out/P_feed.  The
+        //  factor is exactly 1 until a P1 outlet switch moves P_out; before
+        //  C258 it was missing, so a drained bed at rest drew its backflow
+        //  at the FEED density (twice the bed's after batch25's halving),
+        //  and the round-off flicker of u about zero pumped matter and heat
+        //  in and out of the outlet cell.
+        const scalar resFactor = Pout_ / P_;
         for (std::size_t i = 0; i < n; ++i)
-            flux[i][N_] = uOut * (uOut >= 0.0 ? cL[i] : cInAll_[i]);
+            flux[i][N_] = uOut * (uOut >= 0.0 ? cL[i]
+                                              : cInAll_[i] * resFactor);
 
         for (std::size_t i = 0; i < n; ++i)
         {
@@ -1281,102 +1487,142 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
         }
 
         // -------------------------------------------------------------
-        //  A5-T1 energy rows: adiabatic one-temperature balance per cell,
+        //  THE ENERGY ROWS, CONSERVATIVE (C258).  Cell j of volume
+        //  A dz holds the internal energy U_j defined at cellU_ (gas
+        //  eps c_i (hs_i - R T), adsorbed rho_b q_a (hs_a + dH_a), solid
+        //  rho_b cp_s (T - T_ref)).  Its balance is a finite volume,
+        //  exactly like the species rows:
         //
-        //    [eps c_tot cpg + rho_b cp_s] dT/dt =
-        //        upwind advected enthalpy  +  rho_b Sum(-dH_i) dq_i/dt
+        //    dU_j/dt = (E_{j-1/2} - E_{j+1/2}) / dz  -  h a_w (T_j - T_w)
         //
-        //  Temperature (non-conservative) form with upwind faces -- the
-        //  advecting velocities are THE SAME Ergun face velocities the
-        //  species fluxes just used, so heat and matter travel together.
-        //  Feed enters at the declared T_ with the feed's own Cp.
+        //    E_f = Sum_i F_i,f hs_i(T_f)    [J/(m2 s)]
+        //
+        //  F_i,f is THE SAME species flux the material rows just used
+        //  (mol/(m2 s)), each mole carrying an enthalpy read at ONE face
+        //  temperature T_f: the advected moles the upwind side's (the
+        //  upwind cell by the sign of the face velocity, the feed at
+        //  T_feed through the inlet face, the downstream reservoir at
+        //  T_feed on outlet backflow -- the species flux's own
+        //  convention), the dispersed moles the mean of the two cells'
+        //  (they move down their own gradient whatever the sign of u, and
+        //  an upwind price would make E_f jump each time u crosses zero).
+        //  ONE E_f is shared by the two cells of each face, so
+        //
+        //    Sum_j A dz dU_j/dt = A E_in - A E_out - Q_wall rate
+        //
+        //  is an identity of the discrete equations.  The U_j rows are
+        //  integrated in exactly that form, with the outlet flux into the
+        //  H_out ledger row (A E_out, the M_out pattern) and the wall heat
+        //  into Q_wall: their sum is a LINEAR invariant of the ODE, which
+        //  the Rosenbrock stages preserve at any step size up to the
+        //  round-off of their finite-difference Jacobian -- energy is
+        //  conserved by construction (the thermal witnesses close to 1e-15
+        //  of the energy moved; batch25's blowdown, which moves 2.3 J
+        //  against ~200 J of gross holdup energy, to 4e-10).  The U rows
+        //  are stored divided by uScale_ (see initialise).  There is no explicit
+        //  heat-of-adsorption or expansion source: both live inside U.
+        //
+        //  THE TEMPERATURE ROW is the same balance read through the chain
+        //  rule, dU_j/dt = Sum_i eps (hs_i - R T) dc_ij/dt
+        //                + Sum_a rho_b (hs_a + dH_a) dq_aj/dt + C_j dT_j/dt:
+        //
+        //    C_j dT_j/dt = dU_j/dt - Sum_i eps (hs_i - R T) dc_ij/dt
+        //                          - Sum_a rho_b (hs_a + dH_a) dq_aj/dt
+        //
+        //  It drives the physics (p, the isotherm, Ergun) and is projected
+        //  back onto U after every chunk (projectT_), so the two never
+        //  part by more than one chunk's local error -- and the campaign
+        //  balance prices U, not the drift.  (Integrating U ALONE, with T
+        //  recovered by Newton inside every evaluation, was built first: it
+        //  closes to round-off too, but a bed at rest after a blowdown then
+        //  needs ~40 times the steps, the recovered T coupling every
+        //  species row -- an absent one included -- to the energy state.)
+        //
+        //  WHAT THE OLD TEMPERATURE FORM WAS.  Substituting the species
+        //  rows (eps dc_i/dt = -dF_i/dz - rho_b dq_i/dt) into the chain
+        //  rule above gives, in the continuum,
+        //
+        //    C_j dT_j/dt = -Sum_i F_i dhs_i/dz          (1) advected heat
+        //                + rho_b Sum_a (-dH_a) dq_a/dt  (2) adsorption heat
+        //                + eps R T dc_tot/dt            (3) expansion work
+        //                - h a_w (T - T_w)              (4) wall
+        //
+        //  with C_j = eps c_tot cv_g + rho_b Sum q_a Cp_a + rho_b cp_s.
+        //  That is the old row term by term: its `adv` was (1) with the
+        //  advective part of F only and Cp_up (T_up - T_j) for the
+        //  enthalpy difference, its `src` was (2), its `expand` was (3)
+        //  and its `wall` (4); its denominator lacked rho_b Sum q_a Cp_a.
+        //  Each departure is small in the continuum, but no discrete
+        //  energy was balanced by it: the cells did not telescope, and
+        //  through batch25's blowdown the first law missed by 7.9 % of the
+        //  energy moved, at every step size.
         // -------------------------------------------------------------
         if (thermal_)
         {
             const std::size_t tOff = tOffset_();
+            const std::size_t uOff = uOffset_();
+            sVector E(N_ + 1, 0.0);                     // J/(m2 s)
+            //  Boundary faces carry advection only (the imposed feed flux
+            //  at T_feed; the outlet upwind, the reservoir's gas at T_feed
+            //  on backflow).
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                if (flux[i][0] != 0.0)
+                    E[0] += flux[i][0] * hSens_(i, Tfeed_);
+                if (flux[i][N_] != 0.0)
+                    E[N_] += flux[i][N_] * hSens_(i,
+                        (uface[N_] >= 0.0) ? Tc[N_ - 1] : Tfeed_);
+            }
+            //  Interior faces: advected moles at the upwind T, dispersed
+            //  moles at the mean of the two cells' enthalpies.
+            for (std::size_t f = 1; f < N_; ++f)
+            {
+                const scalar uf = uface[f];
+                const scalar TL = Tc[f - 1], TR = Tc[f];
+                const scalar Tup = (uf >= 0.0) ? TL : TR;
+                scalar e = 0.0;
+                for (std::size_t i = 0; i < n; ++i)
+                {
+                    const scalar cl = y[i * N_ + f - 1];
+                    const scalar cr = y[i * N_ + f];
+                    const scalar adv = uf * ((uf >= 0.0) ? cl : cr);
+                    const scalar disp = -Dax_ * (cr - cl) / dz_;
+                    if (adv != 0.0) e += adv * hSens_(i, Tup);
+                    if (disp != 0.0)
+                        e += disp * 0.5 * (hSens_(i, TL) + hSens_(i, TR));
+                }
+                E[f] = e;
+            }
             for (std::size_t j = 0; j < N_; ++j)
             {
-                const scalar Tj  = cellT_(y, j);
-                scalar ctotJ = 0.0;
-                for (std::size_t i = 0; i < n; ++i)
-                    ctotJ += std::max(y[i * N_ + j], scalar(0.0));
-                const scalar cpgJ  = cpgCell_(y, j);
-                //  GENERAL (P-swing-ready) form, derived in the design note
-                //  §9: a FIXED-VOLUME cell whose pressure moves must account
-                //  on internal energy, u_g = h_g - RT.  Collecting the
-                //  implicit dP/dt (P_j = R T_j c_tot,j) gives cv = cp - R in
-                //  the gas accumulation PLUS an explicit expansion source
-                //  eps R T dc_tot/dt -- fully explicit, dc_tot/dt being the
-                //  sum of the species rows this evaluation just computed.
-                //  At pinned P the source is ~0 and cv-vs-cp moves the gas
-                //  accumulation by ~R/cp, three orders under rho_b cp_s --
-                //  the widening that lets a depressurising cell COOL.
-                const scalar cvgJ  = cpgJ - constant::R;
-                const scalar denom = eps_ * ctotJ * cvgJ + rhoB_ * cpS_;
-
-                scalar adv = 0.0;                       // J/(m3 s)
-                const scalar uIn = uface[j];
-                if (uIn > 0.0)
-                {
-                    //  T1.5: the feed face advects at the CURRENT feed
-                    //  temperature and concentration (the hot purge).
-                    const bool feedFace = (j == 0);
-                    const scalar Tup  = feedFace ? Tfeed_
-                                                 : cellT_(y, j - 1);
-                    scalar cup = cFeedTot_;
-                    if (!feedFace)
-                    {
-                        cup = 0.0;
-                        for (std::size_t i = 0; i < n; ++i)
-                            cup += std::max(y[i * N_ + (j - 1)], scalar(0.0));
-                    }
-                    const scalar cpup = feedFace ? cpgFeed_
-                                                 : cpgCell_(y, j - 1);
-                    adv += uIn * cup * cpup * (Tup - Tj) / dz_;
-                }
-                const scalar uEx = uface[j + 1];
-                if (uEx < 0.0)   // backflow through the downstream face
-                {
-                    //  Same boundary convention as the species flux: the
-                    //  downstream reservoir re-enters at feed conditions.
-                    const scalar Tdn  = (j + 1 < N_) ? cellT_(y, j + 1)
-                                                     : Tfeed_;
-                    scalar cdn = cFeedTot_;
-                    scalar cpdn = cpgFeed_;
-                    if (j + 1 < N_)
-                    {
-                        cdn = 0.0;
-                        for (std::size_t i = 0; i < n; ++i)
-                            cdn += std::max(y[i * N_ + (j + 1)], scalar(0.0));
-                        cpdn = cpgCell_(y, j + 1);
-                    }
-                    adv += (-uEx) * cdn * cpdn * (Tdn - Tj) / dz_;
-                }
-
-                scalar src = 0.0;                        // J/(m3 s)
-                for (std::size_t a = 0; a < nAds; ++a)
-                    src += (-dHAds_[a]) * dy[qOff + a * N_ + j];
-                src *= rhoB_;
-
+                const scalar Tj = Tc[j];
                 //  T2: the wall term -h a_w (T_j - T_wall), and the SAME
                 //  heat accumulating in the Q_wall ledger state (one ODE,
                 //  telescopic -- the M_in/M_out pattern).
-                scalar wall = 0.0;                       // J/(m3 s)
+                scalar wall = 0.0;                      // J/(m3 s)
                 if (wallCooled_)
                 {
                     wall = wallH_ * wallAv_ * (Tj - wallTw_);
-                    dy[qwOffset_()] += wall * A_ * dz_;  // W
+                    dy[qwOffset_()] += wall * A_ * dz_; // W
                 }
+                const scalar dU = (E[j] - E[j + 1]) / dz_ - wall;
+                dy[uOff + j] = dU / uScale_;
 
-                //  The expansion-work source of the same derivation (see the
-                //  cv comment above): eps R T dc_tot/dt, J/(m3 s).
-                scalar dctot = 0.0;
+                //  The chain rule: what of dU went into moving matter
+                //  (gas and adsorbed, each at its own molar energy), the
+                //  rest into the cell's temperature through C_j.
+                scalar C = 0.0;
+                cellU_(y, j, Tj, C);
+                scalar moved = 0.0;
                 for (std::size_t i = 0; i < n; ++i)
-                    dctot += dy[i * N_ + j];
-                const scalar expand = eps_ * constant::R * Tj * dctot;
-
-                dy[tOff + j] = (adv + src - wall + expand) / denom;
+                    moved += eps_ * (hSens_(i, Tj) - constant::R * Tj)
+                           * dy[i * N_ + j];
+                for (std::size_t a = 0; a < nAds; ++a)
+                    moved += rhoB_ * (hSens_(adsIdx_[a], Tj) + dHAds_[a])
+                           * dy[qOff + a * N_ + j];
+                dy[tOff + j] = (dU - moved) / C;
             }
+            dy[hoOffset_()] = A_ * E[N_];               // W, sensible basis
         }
         return dy;
     }
@@ -1628,6 +1874,7 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
             if (verbosity_ >= 1) std::cout << os.str();
         }
         tl  += sub;
+        if (thermal_) projectT_(y_);   // C258: T back onto the conserved U
         commit_(y_);
         sample_(tl);
     }
@@ -1805,16 +2052,43 @@ BatchState FixedBedAdsorber::takeContinuousDischarge(scalar tNow)
     if (ergun_)
     {
         out.P = Pout_;
-        //  A5-T1: the raffinate leaves at the OUTLET CELL's current T --
-        //  the per-step package then carries the thermal wave's enthalpy
-        //  into the material ledger exactly as the ctrl campaign does
-        //  (a single end-T stamped on all packages was the #99-P0 sin).
-        if (thermal_) out.T = cellT_(y_, N_ - 1);
         for (std::size_t i = 0; i < compNames_.size(); ++i)
         {
             const scalar mOut = y_[outOffset_() + i];
             out.n[i] = (mOut - shedMark_[i]) / 1000.0;
             shedMark_[i] = mOut;
+        }
+        //  Thermal (C258): the package carries the enthalpy the H_out ledger
+        //  row integrated through the outlet face over this window -- the
+        //  sensible part dHs plus each species' datum at T_ref -- and leaves
+        //  at its MIXING-CUP T, the temperature at which the collected
+        //  matter holds that enthalpy.  The old end-of-window outlet-cell T
+        //  was a first-order quadrature of a varying stream (the #99-P0 sin
+        //  in its last form).  The integral, not the cup T, is what the
+        //  campaign books (BatchState::hasH): once the bed has equalised
+        //  with P_out the outlet flow flickers in sign at round-off rates,
+        //  gas leaving at the bed's T and the reservoir's coming back at
+        //  T_feed, and such a window's enthalpy has no (n, T) at all.
+        if (thermal_)
+        {
+            const scalar dHs = y_[hoOffset_()] - hOutShed_;   // J
+            hOutShed_ = y_[hoOffset_()];
+            out.T = mixingCupT_(out.n, dHs, cellT_(y_, N_ - 1));
+            bool priced = true;
+            scalar H = dHs;                                   // J
+            for (std::size_t i = 0; i < compNames_.size(); ++i)
+            {
+                if (out.n[i] == 0.0) continue;
+                if (!thermo_->hasEnthalpyDatum(i)) { priced = false; break; }
+                H += 1000.0 * out.n[i] * thermo_->speciesPhaseEnthalpy(
+                         i, T_, P_, "gas",
+                         ThermoPackage::ReferenceContext::StandardPhase);
+            }
+            if (priced)
+            {
+                out.hasH = true;
+                out.H_kJ = H / 1000.0;
+            }
         }
         return out;
     }
@@ -2007,14 +2281,18 @@ scalar FixedBedAdsorber::vesselEnthalpy(bool& ok, std::string& why) const
         //  Per-cell hold-up at the cell's own T: the gas, the ADSORBED
         //  moles' gas-reference base term (their dH_ads shift is the
         //  global sum below, unchanged), and the solid's sensible term.
+        //  C258: this is the cell's internal energy U_j (cellU_) re-priced
+        //  on the elements datum at the T_j projectT_ holds on it -- the SAME
+        //  state function the conservative energy rows integrate, on the
+        //  same unclipped concentrations the species rows conserve, so the
+        //  campaign closure tests the scheme and the T recovery together.
         for (std::size_t j = 0; j < N_; ++j)
         {
             const scalar Tj = cellT_(y_, j);
             for (std::size_t i = 0; i < compNames_.size(); ++i)
             {
                 const scalar kmol =
-                    eps_ * A_ * dz_
-                    * std::max(y_[i * N_ + j], scalar(0.0)) / 1000.0;
+                    eps_ * A_ * dz_ * y_[i * N_ + j] / 1000.0;
                 if (kmol == 0.0) continue;
                 H += kmol * thermo_->speciesPhaseEnthalpy(
                          i, Tj, P_, "gas",
@@ -2040,7 +2318,7 @@ scalar FixedBedAdsorber::vesselEnthalpy(bool& ok, std::string& why) const
             {
                 scalar ct = 0.0;
                 for (std::size_t i = 0; i < compNames_.size(); ++i)
-                    ct += std::max(y_[i * N_ + j], scalar(0.0));
+                    ct += y_[i * N_ + j];
                 H -= (eps_ * A_ * dz_ * ct / 1000.0) * constant::R * Tj;
             }
         }
@@ -2072,15 +2350,6 @@ std::string FixedBedAdsorber::energyLedgerGap() const
     //  the same reason vesselEnthalpy refuses there: the fabricated carrier
     //  makes the physical energy balance wrong by construction, and a
     //  verdict on it would be decorative.
-    if (ergun_ && thermal_ && pressureTransient_)
-        return "adiabatic bed through a feed-valve / outlet-pressure"
-               " transient: the energy equation is carried in its"
-               " non-conservative form (cv T accumulation + eps R T dc/dt"
-               " source, upwind advection of T), which does not conserve the"
-               " rigid-vessel internal energy through a compressible"
-               " blowdown -- measured 7.9 % of the energy moved on"
-               " batch25_blowdown_thermal at any step size, so the claim is"
-               " REFUSED rather than shown as closed";
     if (ergun_) return "";
     return "constant-(u,P,T) closure: fabricated carrier (the"
            " carrierMakeUp stream books its matter, not its enthalpy) makes the physical energy balance"
@@ -2223,7 +2492,6 @@ void FixedBedAdsorber::setOperationParameter(const std::string& key,
                          " FROZEN for every integrated species.\n";
         return;
     }
-    if ((key == "u" || key == "P_out") && thermal_) pressureTransient_ = true;
     if (key == "u")
     {
         //  P2 -- the FEED-VALVE CLOSURE (design note section 8).  In ergun
