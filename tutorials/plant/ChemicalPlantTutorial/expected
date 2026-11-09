@@ -273,7 +273,7 @@ kpi     FERMENTATION.Fermentor xi_mol_per_s     0.822799656604   1e-4
 kpi     FERMENTATION.Flash     F_alpha          0.0752341752458  1e-4
 kpi     FERMENTATION.Flash     F_beta           0.00377744855647 1e-4
 kpi     FERMENTATION.Flash     F_in             0.0790116238022  1e-4
-kpi     FERMENTATION.Flash     K_CO2            500.758243183    1e-4
+kpi     FERMENTATION.Flash     K_CO2            500.902545401    1e-4
 kpi     FERMENTATION.Flash     K_ethanol        0.252622077428   1e-4
 kpi     FERMENTATION.Flash     K_sucrose        0                1e-4
 kpi     FERMENTATION.Flash     K_water          0.105620102079   1e-4
