@@ -17,7 +17,7 @@ kpi     bed                    integral_anchor_CO2 1312.9982971     1e-4
 kpi     bed                    mass_closure_CO2 3.75114008529e-15 1e-4
 kpi     bed                    n_CO2_final      2.50646748722e-07 1e-4
 kpi     bed                    n_He_final       6.95611249088e-05 1e-4
-kpi     bed                    physical_mass_closure_rel -1.04510024637e-14 1e-4
+kpi     bed                    carrier_makeup_rel -1.04510024637e-14 1e-4
 kpi     bed                    qbar_CO2_final   0.0982801642961  1e-4
 kpi     bed                    t_50_CO2         805.871244353    1e-4
 kpi     bed                    t_breakthrough_5pct_CO2 754.853957059    1e-4

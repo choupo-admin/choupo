@@ -14,11 +14,12 @@
   298 K.  Helium carries NO isotherm record on 13X -> announced inert
   CARRIER, transported but never adsorbed, closed by difference from the
   constant c_tot = P/(RT).  At 15% CO2 this is NOT a dilute approximation:
-  the constant-(u, P, T) closure fabricates He at the net uptake rate and
-  the campaign material balance SHOWS that residual (KPIs
-  carrier_fabricated_mol, physical_mass_closure_rel) -- the named error
-  bites, by design (forum #119); the genuinely clean transport anchor is
-  batch14.  The engine announces, BEFORE integrating, where the front must
+  the constant-(u, P, T) closure implies He at the net uptake rate, and
+  the campaign books it as a NAMED INLET STREAM of the bed, `carrierMakeUp`
+  ("carrier implied by the constant-(u, P, T) assumption"), so mass and
+  element balances close and the stream is the explanation; its size is
+  the assumption's size (KPIs carrier_fabricated_mol, carrier_makeup_rel);
+  the genuinely clean transport anchor is batch14.  The engine announces, BEFORE integrating, where the front must
   arrive:
 
       q*(c_in) = 5*9*0.15/(1 + 9*0.15) = 2.872340426 mol/kg
@@ -39,8 +40,9 @@
   is said OUT LOUD: the real velocity drops ~15% across the uptake zone,
   so the constant-u closure FABRICATES carrier (He) at exactly the net
   uptake rate (9.19 mol here) -- announced in the run header, pinned as
-  the KPI carrier_fabricated_mol, discounted in the campaign inventory;
-  Ergun and the energy balance land in A4 (the energy gap is NAMED).
+  the KPI carrier_fabricated_mol and booked as the `carrierMakeUp` inlet
+  stream of the campaign ledger; Ergun (`flowModel ergun`) needs no such
+  stream, and the energy balance of this closure stays UNAVAILABLE (named).
 
   Log: run header prints the hypotheses, the derived rho_p, Pe = 250, the
   Gershgorin step bound term by term and the stiffness verdict; profiles

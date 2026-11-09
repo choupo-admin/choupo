@@ -228,10 +228,10 @@ A declared zero is not a silent default: the unit announces "k = 0 DECLARED: tra
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{4.09039795713e-14}
 \goldrow{kpi}{bed}{n\_CO2\_final}{1.21079552058e-05}
 \goldrow{kpi}{bed}{n\_He\_final}{6.86117461666e-05}
-\goldrow{kpi}{bed}{physical\_mass\_closure\_rel}{0}
 \goldrow{kpi}{bed}{qbar\_CO2\_final}{0}
 \goldrow{kpi}{bed}{t\_50\_CO2}{3.97561121931}
-\goldmore{28}
+\goldrow{kpi}{bed}{t\_breakthrough\_5pct\_CO2}{3.29598772214}
+\goldmore{27}
 \end{tutgolden}
 
 \clearpage
@@ -322,7 +322,7 @@ This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the 
 \goldrow{kpi}{campaign}{mass\_residual\_kg}{4.31155965422e-14}
 \goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0.0403339312462}
 \goldrow{kpi}{campaign}{moles\_kmol\_final}{2.73636608673e-05}
-\goldmore{72}
+\goldmore{70}
 \end{tutgolden}
 
 \clearpage
@@ -376,7 +376,7 @@ The adsorption duty stays an EXACT state difference on the adsorbed inventory: E
 
 u, P, T stay DECLARED CONSTANTS: asking the bed for a thermal swing (feed.T), a flow transient (u) or a blowdown (P) is REFUSED by name (fired by bin/curate/check\_feed\_switch.py, batch12-style honesty).
 
-The carrier-fabrication caveat of the constant-(u, P, T) closure applies unchanged (forum \#119): the declared residual explains the He element closure, shown and never discounted.
+The carrier-fabrication caveat of the constant-(u, P, T) closure applies unchanged: the carrier it implies is booked as the named stream `carrierMakeUp` (an inlet while the bed loads, an outlet on the purge's net desorption), so the He element closure holds and the stream is the explanation.
 
 \end{tutnarrative}
 \begin{tutgolden}
