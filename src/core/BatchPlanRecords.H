@@ -262,6 +262,59 @@ struct BatchFinding
     std::string message;
 };
 
+//  ---- THE BASES (2026-11-09, DEV.md 4c C264) ------------------------------
+//  One line of the plan's RECONCILIATION: a number a student meets on several
+//  screens (the declared lot, the lot's product mass, the balance's rate, the
+//  equivalent hours, each train's year and its available hours, the hours
+//  every annual flow cost is multiplied by), with its definition and the
+//  field it reproduces.  `home` names that field (`batchPlan.lotSize`,
+//  `train:granulation.requiredTime`, ...) and `check_batch_plan` holds the
+//  amount to it: a basis line is an ECHO, so it adds no golden row of its own
+//  (the rule's second half: the number already has a home).  Always
+//  published with a plan; the economics appends the annual basis it used.
+struct BatchBasis
+{
+    std::string key;          // unique within the plan: lot, lotProduct:<p>, ...
+    std::string label;        // the words a student reads
+    scalar      amount = 0;
+    std::string unit;         // of `amount`
+    std::string definition;   // what it is, and why it differs from its neighbours
+    std::string home;         // the published field it reproduces
+};
+
+//  ---- A DOSAGE FORM (2026-11-09, DEV.md 4c C264) ---------------------------
+//  The product counted in the units it is sold in (a tablet, a capsule, a
+//  vial), when the plan DECLARES one unit's mass (`dosageUnit { name tablet;
+//  mass 0.29023 g; source; reason; }` in a product, or in the plan for one
+//  product).  The ingredients are the PRODUCT STREAM's own overall
+//  composition by mass -- the flowsheet's one balance -- times the unit's
+//  mass: nothing is declared per ingredient, so a strength whose tablet is
+//  the same blend at another weight is counted by its own unit mass.
+struct BatchDosageIngredient
+{
+    std::string component;
+    scalar massFraction = 0;   // [-]  of the product stream, overall (all phases)
+    scalar perUnit      = 0;   // [kg] in one unit (the GUI shows mg)
+    scalar perLot       = 0;   // [kg] in one lot of the product
+    scalar solidFraction = 0;  // [-]  of this ingredient's mass that is in the solid phase
+};
+
+struct BatchDosage
+{
+    std::string product;        // the product's name (one product: the product stream)
+    std::string unitName;       // tablet | capsule | ...
+    scalar      unitMass     = 0;  // [kg] declared
+    std::string source, reason;
+    scalar      lotSize      = 0;  // [kg of product] B (echo of the product's lot)
+    scalar      unitsPerLot  = 0;  // [-] B / unitMass
+    int         lotsPerYear  = 0;  // echo
+    scalar      unitsPerYear = 0;  // [-/yr] N B / unitMass (what the plan makes)
+    scalar      demandUnitsPerYear = 0; // [-/yr] Q / unitMass (what was asked)
+    scalar      unitsPerHourOfBalance = 0; // [-/h] r_P / unitMass
+    scalar      fluidMassFraction = 0;  // [-] of the product stream's mass in fluid phases
+    std::vector<BatchDosageIngredient> ingredients;
+};
+
 struct BatchPlanRecord
 {
     bool        present = false;
@@ -291,6 +344,8 @@ struct BatchPlanRecord
     std::vector<BatchFinding>  findings;
     std::vector<std::string>   unplannedUnits;   // flowsheet units in no stage
     std::vector<BatchCleaning> cleaning;         // declared `cleaning`, empty when absent
+    std::vector<BatchBasis>    bases;            // the reconciliation (C264), always
+    std::vector<BatchDosage>   dosage;           // declared `dosageUnit`, empty when absent
 
     //  MULTIPRODUCT (empty for one product; then `production` holds Q).
     std::vector<std::string>       campaignOrder;

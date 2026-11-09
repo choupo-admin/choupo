@@ -41,8 +41,6 @@ membranes) the switch "Process | Properties & data" beside the menus is the
 same choice.  In Properties & data the view's own **Run properties** button
 runs the fit; in Process the top **Run** runs the stage.
 
----
-
 ## Use it with your own data -- step by step
 
 **0. Get your own copy.**  In the browser: *File -> Download case (.zip)*,

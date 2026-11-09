@@ -47,6 +47,57 @@ std::string words(const std::vector<std::string>& v)
     return s + "]";
 }
 
+//  THE BASES AND THE DOSAGE FORM (2026-11-09, DEV.md 4c C264), written by
+//  both shapes before the block closes.  A basis line is an ECHO of the field
+//  its `home` names (`check_batch_plan` holds it there), so its number is
+//  `amount`, a key the `batch` golden kind does not pin -- the number already
+//  has its home.  A dosage record is pinned (`unitsPerLot`, `unitsPerYear`,
+//  `fluidMassFraction`, each ingredient's `perUnit`); its other numbers are a
+//  pinned number over the declared unit mass.  Absent `dosageUnit`, no
+//  `dosage` key is written.
+void emitBasesAndDosage(std::ostream& os, const BatchPlanRecord& p)
+{
+    os << ",\n    \"bases\": [";
+    for (std::size_t i = 0; i < p.bases.size(); ++i)
+    {
+        const auto& b = p.bases[i];
+        os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("basis:" + b.key)
+           << ", \"amount\": " << num(b.amount)
+           << ", \"unit\": " << esc(b.unit)
+           << ", \"label\": " << esc(b.label)
+           << ", \"home\": " << esc(b.home)
+           << ", \"definition\": " << esc(b.definition) << " }";
+    }
+    os << (p.bases.empty() ? "]" : "\n    ]");
+    if (p.dosage.empty()) return;
+    os << ",\n    \"dosage\": [";
+    bool first = true;
+    for (const auto& x : p.dosage)
+    {
+        os << (first ? "\n" : ",\n") << "      { \"id\": " << esc("dosage:" + x.product)
+           << ", \"product\": " << esc(x.product)
+           << ", \"unitName\": " << esc(x.unitName)
+           << ", \"unitMass\": " << num(x.unitMass)
+           << ", \"unitsPerLot\": " << num(x.unitsPerLot)
+           << ", \"unitsPerYear\": " << num(x.unitsPerYear)
+           << ", \"demandUnitsPerYear\": " << num(x.demandUnitsPerYear)
+           << ", \"unitsPerHourOfBalance\": " << num(x.unitsPerHourOfBalance)
+           << ", \"fluidMassFraction\": " << num(x.fluidMassFraction)
+           << ", \"source\": " << esc(x.source)
+           << ", \"reason\": " << esc(x.reason) << " }";
+        first = false;
+        for (const auto& g : x.ingredients)
+            os << ",\n      { \"id\": " << esc("dosage:" + x.product + ":" + g.component)
+               << ", \"product\": " << esc(x.product)
+               << ", \"component\": " << esc(g.component)
+               << ", \"massFraction\": " << num(g.massFraction)
+               << ", \"perUnit\": " << num(g.perUnit)
+               << ", \"perLot\": " << num(g.perLot)
+               << ", \"solidFraction\": " << num(g.solidFraction) << " }";
+    }
+    os << "\n    ]";
+}
+
 //  THE MULTIPRODUCT BLOCK (2026-10-20, DEV.md 4c C110 G2): the same
 //  one-record-per-line shape, every record with an "id" -- the summary,
 //  `product:<p>`, `train:<t>` and `stage:<s>` (the aggregates the consumers
@@ -237,7 +288,9 @@ void emitMultiProduct(std::ostream& os, const BatchPlanRecord& p)
            << ", \"value\": " << num(f.value) << ", \"limit\": " << num(f.limit)
            << ", \"message\": " << esc(f.message) << " }";
     }
-    os << (p.findings.empty() ? "]" : "\n    ]") << "\n  }";
+    os << (p.findings.empty() ? "]" : "\n    ]");
+    emitBasesAndDosage(os, p);
+    os << "\n  }";
 }
 
 } // namespace
@@ -368,7 +421,9 @@ void emitBatchPlanJson(std::ostream& os, const BatchPlanRecord& p)
            << ", \"value\": " << num(f.value) << ", \"limit\": " << num(f.limit)
            << ", \"message\": " << esc(f.message) << " }";
     }
-    os << (p.findings.empty() ? "]" : "\n    ]") << "\n  }";
+    os << (p.findings.empty() ? "]" : "\n    ]");
+    emitBasesAndDosage(os, p);
+    os << "\n  }";
 }
 
 } // namespace Choupo

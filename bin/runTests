@@ -2056,6 +2056,15 @@ auto_generate() {
         #  changes and the changeover hours -- keys a one-product plan never
         #  publishes, so its rows are unchanged.  The year's Gantt is not
         #  pinned, for the reason above: every bar is a sum of pinned terms.
+        #  THE BASES AND THE DOSAGE FORM (2026-11-09, DEV.md 4c C264): a
+        #  `basis:` line is an ECHO whose number is `amount`, a key this list
+        #  does not read -- the number already has its home, named by the
+        #  line's `home` and held to it by check_batch_plan.  A `dosage:<p>`
+        #  record (a declared `dosageUnit`) pins its unit name (a WORD), the
+        #  units per lot and per year and the fluid share of the mass; each
+        #  `dosage:<p>:<component>` its mass per unit (`perUnit`).  The mass
+        #  fraction, the mass per lot and the solid share beside them are a
+        #  pinned number over a declared mass, recomputed by the gate.
         printf '%s\n' "$out" | awk -v tol="$reltol" '
             /^  "batchPlan": \{/ { inblk = 1; next }
             inblk && /^  \}/  { inblk = 0 }
@@ -2074,8 +2083,8 @@ auto_generate() {
                     nw = split("next lotFrom lotRule lotLimitingStage limitingStage balanceFrom operatingFrom dischargeFrom limiting", W, " ")
                     nn = split("perYear lotSize lotsPerYear production equivalentHours cycleTime campaigns lotsLastCampaign campaignSpan start productChangeover requiredTime massPerProduct massPerLot sizeFactor volumePerUnit ratePerUnit chargeTime processTime dischargeTime cleanTime effectiveCycle utilisation offset changeoverAfter", N, " ")
                 } else {
-                    nw = split("lotRule lotLimitingStage limitingStage type sizeKind limiting operatingFrom dischargeFrom kind sizingProduct", W, " ")
-                    nn = split("productRate productPerYear lotSize lotsPerYear production equivalentHours streamFactor stages trains findings cycleTime campaigns campaignSpan campaignDuration requiredTime occupancy massPerLot sizeFactor volumePerUnit ratePerUnit unitsInstalled chargeTime processTime dischargeTime cleanTime effectiveCycle utilisation offset busyHours value limit products productChangeover maxUtilisation productChangeovers changeoverHours", N, " ")
+                    nw = split("lotRule lotLimitingStage limitingStage type sizeKind limiting operatingFrom dischargeFrom kind sizingProduct unitName", W, " ")
+                    nn = split("productRate productPerYear lotSize lotsPerYear production equivalentHours streamFactor stages trains findings cycleTime campaigns campaignSpan campaignDuration requiredTime occupancy massPerLot sizeFactor volumePerUnit ratePerUnit unitsInstalled chargeTime processTime dischargeTime cleanTime effectiveCycle utilisation offset busyHours value limit products productChangeover maxUtilisation productChangeovers changeoverHours unitsPerLot unitsPerYear fluidMassFraction perUnit", N, " ")
                 }
                 for (i = 1; i <= nw; i++)
                     if (match(line, "\"" W[i] "\": \"[^\"]*\"")) {

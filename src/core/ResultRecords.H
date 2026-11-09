@@ -832,6 +832,18 @@ struct EconomicsSummary
     scalar                    startupCostFraction = 0.0;     // x FCI
     scalar                    startupCost         = 0.0;     // money, year 1
     scalar                    NPV_projectStart    = 0.0;     // NPV/(1+i)^Nc
+    //  THE ANNUAL BASIS (2026-11-09, DEV.md 4c C264): the hours every annual
+    //  FLOW (raw materials, utilities, revenue) is multiplied by -- H =
+    //  streamFactor x 8760 -- and where they came from (`batchPlan`: the
+    //  plan's H_eq, `streamFactor fromBatchPlan;`; `declared`: a number in
+    //  constant/economics; `default`: the stated 0.90).  Beside them the
+    //  utility bill C_UT (also `kpis.economics.C_UT`), so a view that shows a
+    //  year's utilities draws the engine's figure instead of multiplying an
+    //  hourly one by an hour count of its own.  An ECHO: H is
+    //  batchPlan.equivalentHours or the declared factor x 8760, C_UT is pinned.
+    scalar                    operatingHours      = 0.0;     // h/yr
+    std::string               operatingHoursFrom;            // batchPlan | declared | default
+    scalar                    utilityBill         = 0.0;     // C_UT, EUR/yr
     WorkingCapitalBuildUp     workingCapital;        // present only when declared
     //  THE LAND (C82), present only when the case declares a land price.  A
     //  non-depreciable capital outlay of price x area, made at the START of

@@ -90,6 +90,17 @@ batchPlan
         {
             product  strength10;
             perYear  26121 kg;     // 90 million 10 mg tablets x 0.29023 g
+            //  ONE TABLET'S MASS: the plan counts the product in tablets and
+            //  publishes each ingredient in mg per tablet (C264) -- the
+            //  composition is the packaged-tablet stream's own, so this is
+            //  the only number the count needs.
+            dosageUnit
+            {
+                name    tablet;
+                mass    0.29023 g;
+                source  "donepezil01_tablets README section 2: the 280 mg core of the UK SmPC (ARICEPT 10 mg) with a 3 % film coat, packed";
+                reason  "the 10 mg film-coated tablet this strength is sold as";
+            }
             //  THE CLEAN AFTER THE YELLOW 10 mg, BEFORE THE WHITE 5 mg: the
             //  longer one.  A trace of yellow iron oxide (E172) left in the
             //  coating suspension tank, the spray lines and the perforated pan
@@ -112,6 +123,13 @@ batchPlan
         {
             product  strength5;
             perYear  8707 kg;      // 60 million 5 mg tablets x 0.145115 g
+            dosageUnit
+            {
+                name    tablet;
+                mass    0.145115 g;
+                source  "README section 2: half the 10 mg tablet (one blend pressed at two weights, an inference from the two SmPCs' lactose ratio)";
+                reason  "the 5 mg film-coated tablet this strength is sold as";
+            }
             //  The 5 mg tablet is the 10 mg tablet at half the weight, so the
             //  same 300 kg bin makes twice the tablets: the press and the
             //  packaging line run twice as long (7 h -> 14 h, 9 h -> 18 h) at

@@ -1323,7 +1323,7 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         os << "    \"projectLife\": "       << e.projectLife             << ",\n";
         os << "    \"estimateClass\": "     << e.estimateClass           << ",\n";
         os << "    \"accLo\": "             << num(e.accLo)              << ",\n";
-        os << "    \"accHi\": "             << num(e.accHi)              << ",\n";
+        os << "    \"accHi\": "             << num(e.accHi)              << ",\n" << "    \"operatingHours\": " << num(e.operatingHours) << ",\n    \"operatingHoursFrom\": " << esc(e.operatingHoursFrom) << ",\n    \"utilityBill\": " << num(e.utilityBill) << ",\n";   // C264: echoes (ResultRecords.H)
         //  THE LAND (2026-10-17, DEV.md 4c C82), ONLY when the case declared
         //  a land price -- every other economics case's JSON is byte-for-byte
         //  what it was.  `cost` and `area` are also `kpis.economics.land` /

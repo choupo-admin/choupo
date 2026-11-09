@@ -46,7 +46,7 @@ const PACK = item("pack", { capacity_machine: 720, load: 631, packsPerMinute: 12
   machinesInstalled: 2, utilisation: 0.44, utilisation_plan: 1 });
 const PUMP = item("pump", { utilisation: 0.7, maxFlowPerUnit: 100 });   // volumeRate: no plan
 
-describe("machineUtilisation: the engine's sheets, bottleneck first", () => {
+describe("machineUtilisation: the engine's sheets, least capacity margin first", () => {
   it("sorts by the published utilisation, descending, and reads the kind from the keys", () => {
     const rows = machineUtilisation([MILL, MIXER, PRESS, PACK, PUMP], []);
     expect(rows.map((r) => r.unit)).toEqual(["press", "blender", "pack", "mill"]);
@@ -84,7 +84,7 @@ describe.each(TABLETS)("%s, as this tree's engine wrote it", (name) => {
   const dir = `tutorials/batch/plant/${name}`;
   const parsed = () => extractStructured(witnessOutput(dir, "log.choupoSolve"), emptyCase);
 
-  it("every plan machine is a row, each utilisation is the sheet's own, bottleneck first", () => {
+  it("every plan machine is a row, each utilisation is the sheet's own, least capacity margin first", () => {
     const r = parsed();
     const rows = machineUtilisation(r.equipment, r.advisories);
     const sheets = (r.equipment ?? []).filter(isPlanMachine);

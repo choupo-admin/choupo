@@ -14,8 +14,6 @@ alone, on the elements datum — hydrogen is an element, so it is zero at
 298.15 K); `H_R`, the SRK residual at the real temperature and pressure; and
 their sum `H_real`.
 
----
-
 ## The question
 
 A table gives a standard enthalpy with a degree sign.  Does the sign mean

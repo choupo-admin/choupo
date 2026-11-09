@@ -60,6 +60,7 @@ import {
 import { downloadTextFile } from "../case/saveCase.js";
 import type { MachineRow } from "../case/machineUtilisation.js";
 import { MachineUtilisationTable } from "./MachineUtilisationTable.js";
+import { BatchBasesTable, DosageFormTable } from "./BatchBasesTable.js";
 import { useNarrowViewport } from "./methods/methodsChrome.js";
 
 //  Paper and ink: a drawing is read on white, in the app and on paper.
@@ -201,7 +202,7 @@ export function BatchGanttSvg({ plan, fig, caseName, svgRef }: {
                   )}
                   <text x={G.marginL + 8} y={two ? mid - 2 : mid + 3.5} fontSize={11}
                     fontWeight={r.limiting ? 700 : 400} fill={INK}>
-                    {r.label}{r.limiting ? (blk.role === "first" ? " ◆" : "  ◆ limiting") : ""}
+                    {r.label}{r.limiting ? (blk.role === "first" ? " ◆" : "  ◆ limiting stage") : ""}
                   </text>
                   {two && (
                     <text x={G.marginL + 8} y={mid + 10} fontSize={9} fill={MUTED}>{r.sub}</text>
@@ -288,8 +289,8 @@ export function BatchGanttSvg({ plan, fig, caseName, svgRef }: {
           line("limiting",
             <g><rect width={26} height={11} fill="none" stroke={LIMIT} strokeWidth={1.6} />
                <rect width={3} height={11} fill={LIMIT} /></g>,
-            "the limiting stage (sets T_L, the cycle time); T_L dimensioned between its lot-1 and "
-              + "lot-2 starts");
+            "limiting stage (sets T_L, the lot interval of its train); T_L dimensioned between its "
+              + "lot-1 and lot-2 starts");
           line("occ",
             <rect width={26} height={11} fill={MUTED} fillOpacity={0.55} />,
             fig.multiProduct
@@ -383,8 +384,10 @@ function SingleTables({ plan }: { plan: SingleProductPlan }) {
         </Table>
       </ScrollArea>
       <Text size="xs" c="dimmed" mt={2}>
-        ◆ the limiting stage of its train.  Utilisation is the stage's effective cycle over its
-        train's T_L; occupancy its busy hours over its train's available hours a year.
+        ◆ limiting stage (sets T_L): the stage whose cycle sets its train's lot interval.
+        Utilisation is the stage's effective cycle over its train's T_L; occupancy its busy hours
+        over its train's available hours a year.  (A machine's capacity margin is a different
+        question: see the machine table's ▲.)
       </Text>
     </>
   );
@@ -524,7 +527,8 @@ function MultiTables({ plan }: { plan: MultiProductPlan }) {
         </Table>
       </ScrollArea>
       <Text size="xs" c="dimmed" mt={2}>
-        ◆ the stage that limits the product on its train.  "Clean after" is the clean the
+        ◆ limiting stage (sets T_L): the stage whose cycle sets the product's lot interval on
+        its train.  "Clean after" is the clean the
         product's last campaign took at the stage before the next product.
       </Text>
     </>
@@ -576,6 +580,11 @@ export function BatchPlanSection({ plan, caseName = "", machines = [] }:
           {plan.missing.length > 12 ? `, and ${plan.missing.length - 12} more` : ""}.
         </Text>
       )}
+      <BatchBasesTable bases={plan.bases} />
+      <DosageFormTable dosage={plan.dosage}
+        lotSizeOf={(p) => plan.multiProduct
+          ? plan.products.find((x) => x.name === p)?.lotSize
+          : plan.summary.lotSize} />
       <MachineUtilisationTable rows={machines} />
       {fig && (
         <>

@@ -62,17 +62,21 @@ Levenberg-Marquardt against experimental VLE data, with the inner
 simulator pass providing T_bubble per data row.  A proposal is written
 to
 
-    constant/parameters/<model>/<c1>-<c2>.fit-<date>.dat
+```
+constant/parameters/<model>/<c1>-<c2>.fit-<date>.dat
+```
 
 The proposal is dormant until you do
 
-    mv constant/parameters/NRTL/ethanol-water.fit-<date>.dat \
-       constant/parameters/NRTL/ethanol-water.dat
+```bash
+mv constant/parameters/NRTL/ethanol-water.fit-<date>.dat \
+   constant/parameters/NRTL/ethanol-water.dat
+```
 
 That's the "promote" step. Human decides, never the simulator silently.
 
-> Note: the canonical estimation engine is `fitParameters` under `choupoProps`
-> (a property-level fit with the same propose-then-promote discipline, honest
-> identifiability diagnostics, and a golden).  The old `fitBinaryPair` outer
-> driver WAS retired (2026-07-10); `fitNRTL01_ethanol_water` now runs on
-> `fitParameters` and is the worked example of this workflow's fit step.
+Note: the canonical estimation engine is `fitParameters` under `choupoProps`
+(a property-level fit with the same propose-then-promote discipline, honest
+identifiability diagnostics, and a golden).  The old `fitBinaryPair` outer
+driver WAS retired (2026-07-10); `fitNRTL01_ethanol_water` now runs on
+`fitParameters` and is the worked example of this workflow's fit step.

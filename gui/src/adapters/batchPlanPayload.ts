@@ -148,7 +148,56 @@ export interface BatchTrain {
   stages: string[];
 }
 
-export interface SingleProductPlan {
+/** One line of the plan's RECONCILIATION (DEV.md 4c C264): a number a
+ *  student meets on several screens, its definition and the published field
+ *  it echoes (`home`).  The engine writes them; nothing here derives one. */
+export interface BatchBasis {
+  key: string;
+  label: string;
+  amount: number;
+  unit: string;
+  definition: string;
+  home: string;
+}
+
+/** One ingredient of a dosage form, as the engine published it. */
+export interface BatchDosageIngredient {
+  component: string;
+  /** [-] of the product stream's mass, every phase. */
+  massFraction: number;
+  /** [kg] in one unit (drawn as mg). */
+  perUnit: number;
+  /** [kg] in one lot. */
+  perLot: number;
+  /** [-] of this ingredient's mass in the solid phase. */
+  solidFraction: number;
+}
+
+/** The product counted in the units it is sold in (a declared `dosageUnit`). */
+export interface BatchDosage {
+  product: string;
+  unitName: string;
+  /** [kg] declared. */
+  unitMass: number;
+  unitsPerLot: number;
+  unitsPerYear: number;
+  demandUnitsPerYear: number;
+  unitsPerHourOfBalance: number;
+  /** [-] of the product stream's mass in fluid phases. */
+  fluidMassFraction: number;
+  source: string;
+  reason: string;
+  ingredients: BatchDosageIngredient[];
+}
+
+/** What both shapes carry since C264. */
+export interface BatchPlanBases {
+  bases: BatchBasis[];
+  /** Empty when the case declares no `dosageUnit`. */
+  dosage: BatchDosage[];
+}
+
+export interface SingleProductPlan extends BatchPlanBases {
   multiProduct: false;
   summary: {
     product: string;
@@ -235,9 +284,11 @@ export interface BatchProductStage extends BatchStageTimes {
   changeoverAfter: number;
 }
 
-export interface MultiProductPlan {
+export interface MultiProductPlan extends BatchPlanBases {
   multiProduct: true;
   summary: {
+    /** The flowsheet stream that IS the product ("" in an older payload). */
+    product: string;
     productPerYear: number;
     campaignOrder: string[];
     lotsPerYear: number;
@@ -352,6 +403,39 @@ function stageTimes(x: Record<string, unknown>, R: Reader, w: string): BatchStag
   };
 }
 
+//  The bases and the dosage form (C264): kept as published; a line whose
+//  amount is not a finite number is dropped rather than drawn at zero.
+function shapeBases(b: Record<string, unknown>): BatchPlanBases {
+  const bases = arr(b.bases).filter((x) => fin(x.amount)).map((x) => ({
+    key: str(x.id).replace(/^basis:/, ""), label: str(x.label),
+    amount: x.amount as number, unit: str(x.unit),
+    definition: str(x.definition), home: str(x.home),
+  }));
+  const dosage: BatchDosage[] = [];
+  for (const x of arr(b.dosage)) {
+    const id = str(x.id);
+    if (typeof x.unitName === "string" && fin(x.unitMass)) {
+      dosage.push({
+        product: str(x.product), unitName: x.unitName, unitMass: x.unitMass as number,
+        unitsPerLot: fin(x.unitsPerLot) ? x.unitsPerLot : NaN,
+        unitsPerYear: fin(x.unitsPerYear) ? x.unitsPerYear : NaN,
+        demandUnitsPerYear: fin(x.demandUnitsPerYear) ? x.demandUnitsPerYear : NaN,
+        unitsPerHourOfBalance: fin(x.unitsPerHourOfBalance) ? x.unitsPerHourOfBalance : NaN,
+        fluidMassFraction: fin(x.fluidMassFraction) ? x.fluidMassFraction : NaN,
+        source: str(x.source), reason: str(x.reason), ingredients: [],
+      });
+    } else if (typeof x.component === "string" && fin(x.perUnit)) {
+      const owner = dosage.find((d) => `dosage:${d.product}:${x.component}` === id);
+      owner?.ingredients.push({
+        component: x.component, massFraction: fin(x.massFraction) ? x.massFraction : NaN,
+        perUnit: x.perUnit as number, perLot: fin(x.perLot) ? x.perLot : NaN,
+        solidFraction: fin(x.solidFraction) ? x.solidFraction : NaN,
+      });
+    }
+  }
+  return { bases, dosage };
+}
+
 function shapeSingle(b: Record<string, unknown>, R: Reader,
                      stagesRaw: Record<string, unknown>[]): SingleProductPlan {
   const s = rec(b.summary);
@@ -387,6 +471,7 @@ function shapeSingle(b: Record<string, unknown>, R: Reader,
     })),
     gantt: shapeGantt(b, R, false),
     findings: shapeFindings(b),
+    ...shapeBases(b),
     missing: R.missing,
   };
 }
@@ -398,7 +483,7 @@ function shapeMulti(b: Record<string, unknown>, R: Reader,
   return {
     multiProduct: true,
     summary: {
-      productPerYear: R.num(s, "productPerYear", sw),
+      product: str(s.product), productPerYear: R.num(s, "productPerYear", sw),
       campaignOrder: R.list(s, "campaignOrder", sw),
       lotsPerYear: R.int(s, "lotsPerYear", sw), production: R.num(s, "production", sw),
       equivalentHours: R.num(s, "equivalentHours", sw),
@@ -456,6 +541,7 @@ function shapeMulti(b: Record<string, unknown>, R: Reader,
     }),
     gantt: shapeGantt(b, R, true),
     findings: shapeFindings(b),
+    ...shapeBases(b),
     missing: R.missing,
   };
 }

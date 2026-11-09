@@ -4289,6 +4289,23 @@ int EconomicsPass::run(SimulationResult& result)
     summary.startupCostFraction = timeline.startupCostFraction;
     summary.startupCost        = startupCost;
     summary.NPV_projectStart   = NPV_projectStart;
+    summary.operatingHours     = H;
+    summary.operatingHoursFrom = sfFromPlan ? "batchPlan"
+        : (econDict_->found("streamFactor") ? "declared" : "default");
+    summary.utilityBill        = C_UT;
+    //  THE BATCH PLAN'S BASES (C264) gain the annual basis the economics used:
+    //  the line a student needs between "168 h" and "3840 h".
+    if (result.batchPlan.present)
+        result.batchPlan.bases.push_back({ "annualFlowHours",
+            "the hours every annual flow cost uses", H, "h/yr",
+            std::string("H = streamFactor x 8760: raw materials C_RM, utilities"
+            " C_UT and revenue are the balance's hourly figure x H")
+            + (sfFromPlan ? " (`streamFactor fromBatchPlan;`, so H = H_eq above)"
+                          : " (a streamFactor NOT taken from the plan)")
+            + ".  The labour C_OL is the declared crew's own year and the fixed"
+              " charges are fractions of FCI: neither is multiplied by H",
+            sfFromPlan ? std::string("batchPlan.equivalentHours")
+                       : std::string("economics.operatingHours") });
     if (landDecl.present)
     {
         summary.landPresent         = true;

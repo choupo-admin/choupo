@@ -33,9 +33,9 @@ grows.  (This table was regenerated 2026-11-03 from the run; the one it
 replaced showed a profitable plant that the golden had stopped describing
 before then.)
 
-> The range floors at 4 m³ on purpose: below ~3 m³ the lower conversion
-> drops the mixture bubble point and the fixed-duty heater would cross the
-> saturation dome (a heater is sensible-only) — the deliberate validity edge.
+The range floors at 4 m³ on purpose: below ~3 m³ the lower conversion
+drops the mixture bubble point and the fixed-duty heater would cross the
+saturation dome (a heater is sensible-only) — the deliberate validity edge.
 
 ## Run
 

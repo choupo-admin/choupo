@@ -32,9 +32,9 @@ License
   bin/curate/check_case_tiers (C++-side gate) requires a README.md on every
   `tier tutorial;` case.  This test owns the OTHER half of the claim: that the
   app can SHOW it.  case/lesson.ts renders a deliberate SUBSET of markdown
-  and refuses outside it -- so a README written with a link, an image, raw
-  HTML or a four-level heading fails HERE, in a test, and never renders as a
-  refusal notice in front of a student.
+  and refuses outside it -- so a README written with an image, raw HTML or
+  a four-level heading fails HERE, in a test, and never renders as a
+  refusal notice in front of a student (a link renders since C264).
 
   Also pinned: the welcome cards (the hand-picked entrance) all name
   first-path cases, and every first-path case is runnable in the browser --
@@ -85,7 +85,6 @@ describe("the lesson subset refuses what it cannot show", () => {
     expect(err).toBeInstanceOf(LessonSyntaxError);
     expect((err as Error).message).toMatch(what);
   };
-  it("a link", () => refuses("# T\n\nsee [here](http://x)\n", /a link/));
   it("an image", () => refuses("# T\n\n![alt](x.png)\n", /an image/));
   it("raw HTML", () => refuses("# T\n\n<b>bold</b>\n", /raw HTML/));
   it("a blockquote", () => refuses("# T\n\n> quoted\n", /a blockquote/));

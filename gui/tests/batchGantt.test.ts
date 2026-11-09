@@ -362,7 +362,7 @@ describe("ganttFigure, several products: the year, then each first campaign", ()
     const a = blockOf(fig, "first:T:A");
     expect(a.rows.filter((r) => r.limiting).map((r) => r.key)).toEqual(["stage:S1"]);
     expect(a.cycleDim).toBeNull();          // one lot a campaign: no lot 2 to dimension
-    expect(a.detail).toContain("T_L = 4.00 h (limiting: S1)");
+    expect(a.detail).toContain("T_L = 4.00 h (limiting stage: S1)");
     expect(blockOf(fig, "first:T:B").detail).toContain("the clean before A: 6.00 h");
     expect(a.rows.find((r) => r.key === "stage:S2")!.right).toBe("util. 100.0 %");
   });

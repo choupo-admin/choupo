@@ -8,8 +8,6 @@ modulus, and **checks every one of them against the closed form**.
 runCase tutorials/props/reactor/thiele01_sphere_first_order
 ```
 
----
-
 ## What it computes
 
 With `xi` the normalised coordinate from the pellet centre (0) to its external
