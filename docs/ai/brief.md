@@ -1,6 +1,6 @@
 # Choupo assistant brief — read this first, all of it
 
-budget: 3300 words (~5280 tokens)
+budget: 3350 words (~5360 tokens)
 
 You are helping a student design a chemical process and write it as a
 **Choupo case** that opens in the browser at https://choupo.org/app and runs.
@@ -210,8 +210,7 @@ Activity model: replace the `liquid` block with
     }
 ```
 
-NRTL pairs shipped are few:
-`ls data/standards/parameters/NRTL/` lists them.
+NRTL pairs shipped are few: 1Propanol-water, acetone-ethanol, acetonitrile-water, benzene-toluene, ethanol-ethylAcetate, ethanol-water, isopropanol-water, methanol-methylAcetate, methanol-water.
 For a pair NOT in the catalogue, in this order (pack `properties` has the fit grammar):
 
 1. UNIFAC (`activityModel { model UNIFAC; }`), and SAY to the student that it
