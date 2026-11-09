@@ -1638,9 +1638,14 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         {
             const auto& p = L.pipes[i];
             pipeLength += p.length;
-            os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("pipe:" + p.stream)
+            os << (i ? ",\n" : "\n") << "      { \"id\": " << esc(p.id())
                << ", \"stream\": " << esc(p.stream);
             if (!p.label.empty()) os << ", \"label\": " << esc(p.label);
+            //  C268: a header's main names the unit it serves and counts its
+            //  branches; a branch names its header and the item it serves.
+            if (!p.header.empty()) os << ", \"header\": " << esc(p.header);
+            if (p.branches > 0)    os << ", \"branches\": " << p.branches;
+            if (!p.branch.empty()) os << ", \"branch\": " << esc(p.branch);
             os << ", \"fromKind\": " << esc(p.fromKind)
                << ", \"from\": " << esc(p.from)
                << ", \"fromUnit\": " << esc(p.fromUnit)
@@ -1670,7 +1675,11 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             if (st != r.streams.end())
             {
                 const auto& sv = st->second;
-                if (haveMW) os << ", \"F_mass\": " << num(overallMassFlow(r, sv));
+                //  A branch of a header (C268) carries the stream's STATE but
+                //  not its flow: a store fills and empties by it, and no
+                //  number for that is computed -- so none is published.
+                if (haveMW && p.branch.empty())
+                    os << ", \"F_mass\": " << num(overallMassFlow(r, sv));
                 os << ", \"T\": " << num(sv.T) << ", \"P\": " << num(sv.P)
                    << ", \"vf\": " << num(sv.vf);
             }

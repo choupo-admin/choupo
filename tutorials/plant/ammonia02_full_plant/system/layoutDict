@@ -202,8 +202,17 @@ items
     //  zones say: a hazardous-area zone is about IGNITION, and the layout
     //  grammar carries no toxic-gas exposure distance -- the distance a
     //  toxic release travels is a consequence study this case does not do.
-    //  vessel1, the bullet the let-down drum's pipe reaches, is nearest the
-    //  process.
+    //  THE BULLETS ARE PIPED BY HEADERS (2026-11-09, DEV.md 4c C268): the
+    //  eight are one unit's parallel items, so `productNH3` from the
+    //  let-down drum ends in a MAIN along the row north of the bullets with
+    //  a branch to each bullet's roof nozzle, and `productStored` begins in
+    //  a main south of the row fed by a branch from each bullet's low
+    //  outlet, then runs to the south fence.  Until that slice one pipe
+    //  reached vessel1 and the other seven connected to nothing (DEV.md 4c
+    //  C240).  Each branch is a pipe of its own in the register
+    //  (`pipe:productNH3@T201/vessel1`, ...), with the stream's state and no
+    //  flow: a bullet fills and empties by it, and no number for that is
+    //  computed.  vessel1 is nearest the process.
     {
         item        "T201/vessel1";    // D and L from its own sizing
         x           78 m;

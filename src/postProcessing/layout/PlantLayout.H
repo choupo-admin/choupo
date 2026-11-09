@@ -117,7 +117,38 @@ Description
         placed or not of a unit at an end of the stream, an unknown side and
         an elevation outside the item or on a top/bottom port are REFUSED.
         Each port has a one-metre stub (a drafting value), so the rack route
-        leaves from a point outside the footprint;
+        leaves from a point outside the footprint.
+        A HEADER (2026-11-09, DEV.md 4c C268): a unit realised by N identical
+        parallel items (`EquipmentSizing::parallelOf` > 1 -- a store's
+        vessels, a tank farm, the trains of a trained plant) is piped by ONE
+        MAIN along the row its items stand in and a BRANCH from the main to
+        each item's port, never by one pipe to the first item.  The main's
+        line comes from the placed items alone: along the axis they spread
+        on, in the aisle between two rows or beside a single row on the side
+        facing the other end of the pipe (along the tips of the nozzles'
+        one-metre stubs, the ports' own drafting value), at the elevation of
+        the items' stubs; a main serves the rows
+        on its two sides, and an item in a third row is a `headerNotReached`
+        finding by name.  At a unit end the stream's pipe ENDS in the main
+        (`toKind` / `fromKind` `header`); each branch is a pipe of its own,
+        `pipe:<stream>@<item>`, `routedBy header`, the same `stream`, the
+        state published and NO mass flow (a store fills and empties by it).
+        The main carries `header` (the unit) and `branches` (the count); the
+        run announces each header with its branch count.
+        A STORE ATTACHED TO A STREAM (the same slice): a store sized by the
+        postDict on a boundary stream (`storage`, `gasStorage`, DEV.md 4c
+        C44 / C89) is no unit of the flowsheet; its sizer wrote the stream
+        into every item (`EquipmentSizing::stream`), and that is the only
+        declaration -- no key of the layout repeats it.  The stream's pipe
+        is routed THROUGH the store: fence crossing, main, process for a
+        feed store; process, main, fence crossing for a product store;
+        entering the main (edge to edge of the row) at the end nearer its
+        upstream end, each leg on the rack, a leg whose lane run would lie
+        over an earlier one on the next free lane.  A store on a stream the
+        layout does not route is a `storeNotPiped` finding by name.  A
+        declared `pipes` route on a stream that carries a header is REFUSED
+        (the engine lays the header; a branch's port is moved with `ports`,
+        which accepts an item of a store attached to the stream);
       * a JUNCTION -- an UNSIZED mixer, splitter or valve, drawn as a node
         on the rack's centre line at its lowest tier, at the MEAN plan x of
         the placed items it is piped to (a junction piped only to other

@@ -1187,7 +1187,19 @@ export interface LayoutPortInfo {
 }
 
 export interface LayoutPipe {
+  /** The engine's identity for the pipe: `pipe:<stream>`, or
+   *  `pipe:<stream>@<item>` for a branch of a header (DEV.md 4c C268).
+   *  Absent in a result written before C268, where it is `pipe:<stream>`. */
+  id?: string;
   stream: string;
+  /** A HEADER (DEV.md 4c C268): a main along the row of a unit's parallel
+   *  items (a store's vessels, a tank farm) with a branch to each.  On the
+   *  main, `header` names the unit it serves and `branches` counts them; on a
+   *  branch, `header` names it and `branch` the item it serves (`routedBy`
+   *  "header", no lane, no mass flow: a store fills and empties by it). */
+  header?: string;
+  branches?: number;
+  branch?: string;
   fromPort?: LayoutPortInfo;
   toPort?: LayoutPortInfo;
   label?: string;

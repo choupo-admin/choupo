@@ -91,6 +91,13 @@ building { ... }                                           // §4
   override now begins at the port's stub, not at the top centre: its first
   waypoint must share two coordinates with the `leaves` point of `fromPort` (and its last
   with `toPort.leaves`), because every segment is orthogonal.
+* A HEADER (C268): several identical parallel items (store vessels, a tank
+  farm, trains) are piped by one MAIN along their row with a BRANCH to each
+  port; a postDict store on a boundary stream (`storage`, `gasStorage`; its
+  own `stream`, not repeated in layoutDict) has that pipe routed THROUGH it.
+  The main runs between two rows, or beside one at the 1 m stub tips; a
+  third row is announced.  Branches: pipes `pipe:<stream>@<item>`, no flow.
+  A `pipes` override on such a stream is refused.
 * The pipe router is deterministic: up from the port's stub to its
   lane, along the rack (plan x), down to the target's port.  Plant INLETS arrive at
   the rack's west end `xStart`, OUTLETS leave at the east end `xEnd`.  Every
@@ -291,7 +298,7 @@ building
 <!-- RUN: scratch case plotLay (the design-cost flowsheet with the sizing-only postDict above and this layoutDict, verbatim); CHOUPO_HOME=/home/vitor/Choupo bin/choupo-init0 . ; choupoSolve .  -> exit 0.
      `bin/choupo-layout --draft` run on a copy without layoutDict: exit 0, wrote a draft with flashDrum placed and heater listed as unplaced (no box). Building grammar: run in the batch-plant pack's example. -->
 <!-- SOURCES (src/postProcessing/layout unless noted)
- footprint rule, refusals, announcements, pipes, plot, roads, fence, bunds: PlantLayout.H:28-290 (read in full) and the draft banner printed by `choupoSolve --layout-draft`.
+ footprint rule, refusals, announcements, pipes, plot, roads, fence, bunds: PlantLayout.H:28-321 (read in full) and the draft banner printed by `choupoSolve --layout-draft`.
  building grammar, refusals, announcement kinds: BuildingLayout.H:28-150.
  layout runs before economics/cleanUtilities and after the chain otherwise: src/applications/choupoSolve/main.cpp:1478-1500; building evaluated :833-836.
  draft tool: bin/choupo-layout (header), --layout-draft main.cpp:543, :798-830.

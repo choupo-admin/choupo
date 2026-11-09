@@ -167,8 +167,16 @@ export function tourOf(scene: LayoutScene, layout?: PlantLayout, facts?: LayoutF
     }
     //  The streams crossing the group's boundary.
     const pipes = scene.pipes.filter((p) => p.ends.toKind === "item" || p.ends.fromKind === "item");
-    const into = pipes.filter((p) => ids.has(p.ends.to) && !(p.ends.fromKind === "item" && ids.has(p.ends.from)));
-    const outof = pipes.filter((p) => ids.has(p.ends.from) && !(p.ends.toKind === "item" && ids.has(p.ends.to)));
+    //  DEV.md 4c C268: the branches of a header carry ONE stream into (or out
+    //  of) several items -- listed once, with the state of its main, which
+    //  carries the flow a branch does not.
+    const once = (ps: typeof pipes) => {
+      const seen = new Set<string>();
+      return ps.filter((p) => !seen.has(p.stream) && seen.add(p.stream) !== undefined)
+        .map((p) => (p.branch ? scene.pipes.find((q) => q.stream === p.stream && !q.branch) ?? p : p));
+    };
+    const into = once(pipes.filter((p) => ids.has(p.ends.to) && !(p.ends.fromKind === "item" && ids.has(p.ends.from))));
+    const outof = once(pipes.filter((p) => ids.has(p.ends.from) && !(p.ends.toKind === "item" && ids.has(p.ends.to))));
     const state = (p: (typeof pipes)[number]) => {
       const bits: string[] = [];
       if (p.T !== undefined) bits.push(`${sig(p.T - 273.15, 4)} °C`);

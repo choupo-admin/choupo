@@ -78,6 +78,13 @@ items
         orientation alongX;
         footprint   { length 20 m; width 20 m; height 8 m; }   // author-set: 2.4e3 m3 at 8 m
     }
+    //  The three product tanks are one unit's parallel items, so the engine
+    //  pipes them by HEADERS (2026-11-09, DEV.md 4c C268): `disinfected`
+    //  ends in a main along the south side of the row, at roof height, with
+    //  a branch to each tank's fill nozzle; `product` begins in a main along
+    //  the north side, at grade, fed by a branch from each tank's low
+    //  outlet.  Until then one pipe reached tank1 and the other two
+    //  connected to nothing.
     {
         item        "ProductTank/tank1";
         x           10 m;  y 105 m;  z 0 m;

@@ -1092,7 +1092,13 @@ function shapePipes(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayou
       && p.route.length >= 2
       && p.route.every((q) => Array.isArray(q) && q.length === 3 && q.every(fin)))
     .map((p) => ({
+      //  DEV.md 4c C268: the engine's identity (a branch is
+      //  `pipe:<stream>@<item>`) and the header words, passed through.
+      ...(typeof p.id === "string" && p.id ? { id: p.id } : {}),
       stream: str(p.stream),
+      ...(typeof p.header === "string" && p.header ? { header: p.header } : {}),
+      ...(fin(p.branches) ? { branches: p.branches } : {}),
+      ...(typeof p.branch === "string" && p.branch ? { branch: p.branch } : {}),
       ...(typeof p.label === "string" && p.label ? { label: p.label } : {}),
       fromKind: str(p.fromKind), from: str(p.from), fromUnit: str(p.fromUnit),
       toKind: str(p.toKind), to: str(p.to), toUnit: str(p.toUnit),
@@ -1348,7 +1354,8 @@ interface ResultPayload {
       lanesPerTier?: number; tierSpacing?: number; xStart?: number; xEnd?: number;
       reason?: string };
     junctions?: { unit?: string; type?: string; x?: number; y?: number; z?: number }[];
-    pipes?: { stream?: string; label?: string; fromKind?: string; from?: string;
+    pipes?: { id?: string; stream?: string; header?: string; branches?: number; branch?: string;
+      label?: string; fromKind?: string; from?: string;
       fromUnit?: string; toKind?: string; to?: string; toUnit?: string;
       routedBy?: string; fromPort?: LayoutPortInfo; toPort?: LayoutPortInfo; lane?: number; length?: number;
       F_mass?: number; T?: number; P?: number; vf?: number;

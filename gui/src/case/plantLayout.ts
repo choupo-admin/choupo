@@ -209,9 +209,12 @@ export interface ScenePipe {
   T?: number;
   P?: number;
   vf?: number;
-  /** Both ends as the engine names them (`kind` item / junction / boundary). */
+  /** Both ends as the engine names them (`kind` item / junction / boundary / header). */
   ends: { fromKind: string; from: string; toKind: string; to: string };
   routedBy: string;
+  /** A branch of a header (DEV.md 4c C268): the item it serves.  Its flow is
+   *  not the stream's and the engine publishes none for it. */
+  branch?: string;
   /** Drawing radius (m) and particle speed (m/s): stylised, monotone in flow. */
   radius: number;
   speed: number;
@@ -506,7 +509,15 @@ export function endName(kind: string, at: string): string {
   if (kind === "junction") return `${at} (junction)`;
   //  DEV.md 4c C100: the pipe ends where it enters the building.
   if (kind === "wallPenetration") return `building wall (to ${at}, indoors)`;
+  //  DEV.md 4c C268: the pipe ends in (or a branch leaves) the header's main.
+  if (kind === "header") return `${at} (header)`;
   return at;
+}
+
+/** The engine's identity for a pipe; a result written before C268 carries
+ *  none and had one pipe per stream. */
+export function pipeId(p: LayoutPipe): string {
+  return p.id ?? `pipe:${p.stream}`;
 }
 
 /** Portal spacing of the drawn rack (m): a drawing convention, not data. */
@@ -516,10 +527,13 @@ function pipeOf(p: LayoutPipe): ScenePipe {
   const phase = phaseOf(p.vf);
   const massFlow = p.F_mass !== undefined && Number.isFinite(p.F_mass) ? p.F_mass : null;
   const lines = [
-    p.label ? `${p.stream} (${p.label})` : p.stream,
+    p.branch ? `${p.stream} — branch to ${p.branch}`
+      : p.label ? `${p.stream} (${p.label})` : p.stream,
     `${endName(p.fromKind, p.from)} → ${endName(p.toKind, p.to)}`,
     PHASE_WORDS[phase],
   ];
+  if (p.header && (p.branches ?? 0) > 0)
+    lines.push(`header ${p.header}: ${p.branches} branches`);
   const tp: string[] = [];
   if (p.T !== undefined) tp.push(`T ${p.T.toFixed(1)} K`);
   if (p.P !== undefined) tp.push(`P ${(p.P / 1e5).toFixed(2)} bar`);
@@ -531,7 +545,7 @@ function pipeOf(p: LayoutPipe): ScenePipe {
   lines.push(`length ${p.length.toFixed(1)} m (${p.routedBy === "waypoints"
     ? "declared waypoints" : "routed on the rack"})`);
   return {
-    id: `pipe:${p.stream}`, stream: p.stream, phase,
+    id: pipeId(p), stream: p.stream, phase,
     points: p.route.map(([x, y, z]) => toThree(x, y, z)),
     length: p.length, massFlow,
     ...(p.T !== undefined && Number.isFinite(p.T) ? { T: p.T } : {}),
@@ -539,6 +553,7 @@ function pipeOf(p: LayoutPipe): ScenePipe {
     ...(p.vf !== undefined && Number.isFinite(p.vf) ? { vf: p.vf } : {}),
     ends: { fromKind: p.fromKind, from: p.from, toKind: p.toKind, to: p.to },
     routedBy: p.routedBy,
+    ...(p.branch ? { branch: p.branch } : {}),
     radius: tubeRadius(massFlow), speed: particleSpeed(massFlow),
     tooltip: lines,
   };
