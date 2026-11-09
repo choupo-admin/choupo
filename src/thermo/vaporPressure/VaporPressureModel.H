@@ -41,6 +41,48 @@ Description
             coefficients    (A B C);
             Trange          (Tmin Tmax);
         }
+
+    CONTINUITY OF Psat(T) (2026-11-09, DEV.md 4c C245 slice 5a)
+
+    WHAT.  `Psat_Pa` is a function of T over the WHOLE axis a solver can
+    visit, not only over the temperatures where a correlation was fitted.
+    On [T_lo, T_hi] it is the model's own `computePsat`, bit for bit.  Outside
+    it, ln Psat is continued LINEARLY IN 1/T,
+
+        ln Psat(T) = ln Psat(T_e) + s_e (1/T - 1/T_e),
+        s_e = d ln Psat / d(1/T) at T_e = -T_e^2 (d ln Psat/dT)|T_e,
+
+    with e = lo below T_lo and e = hi above T_hi: the Clausius-Clapeyron form
+    (a straight line on the Cox chart) carrying the value AND the slope the
+    model has at the edge.  Psat and d ln Psat/dT are continuous at both
+    edges, Psat stays finite, positive and strictly increasing, and Psat -> 0
+    as T -> 0 and Psat -> a finite limit as T -> infinity.
+
+    WHY.  Every gamma-phi K-value is Psat times something.  Before this, the
+    Antoine equation had a pole at T = -C (Psat -> infinity and the slope
+    changed sign below it), Ambrose-Walton and Wagner returned Pc / Pr from
+    Tc up (continuous in value, not in slope, and a different number from
+    what Antoine returns above Tc), and a Newton or a temperature search that
+    crossed one of them saw a wrong derivative or a discontinuous residual
+    and stalled (the Tc step of the liquid reference factor, C239, was found
+    that way).  The rule is in the BASE class, once, so no model and no
+    caller has to remember it.
+
+    WINDOW.  T_lo = max(record Tmin, the model's safe lower bound, 1 K): the
+    record's Tmin when it declares one (`Trange`, {0,0} = none), and for
+    Antoine at least `-C + B/60` (the temperature at which Psat is 1e-60 of
+    its coefficient scale: finite margin above the pole).  T_hi = the
+    model's safe upper bound (Ambrose-Walton: Tc; Wagner: its reducing T)
+    intersected with the component's declared Tc; with neither, no upper
+    continuation.  The record's Tmax is NOT T_hi: between Tmax and Tc the
+    correlation is still a smooth curve and is evaluated as before, with the
+    `noteRange` announcement (I4).
+
+    WHAT IT DOES NOT CLAIM.  The continuation is a numerical surface for a
+    solver in transit, not a physical vapour pressure: a component above Tc
+    has no saturation state, and below Tmin a fit is not a measurement.  Each
+    continuation is announced ONCE per component, model and side
+    (`[psatContinued]`, AdvisoryLog category "validity") -- no silent crutch.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -48,7 +90,10 @@ Description
 #include "core/Dictionary.H"
 #include "core/Types.H"
 
+#include <algorithm>
+#include <cmath>
 #include <functional>
+#include <limits>
 #include <map>
 #include <memory>
 #include <string>
@@ -82,7 +127,18 @@ public:
     scalar Psat_Pa(scalar T_K) const
     {
         noteRange(T_K);
-        return computePsat(T_K);
+        if (!cont_.ready) buildContinuation();
+        if (T_K >= cont_.lo && T_K <= cont_.hi)
+            return computePsat(T_K);                 // the model's own formula
+        return continuedPsat(T_K);                   // ln P linear in 1/T
+    }
+
+    //  [T_lo, T_hi]: where `Psat_Pa` is the model's own formula (see the
+    //  class description).  hi = +infinity when no upper bound exists.
+    std::pair<scalar, scalar> continuationWindow() const
+    {
+        if (!cont_.ready) buildContinuation();
+        return {cont_.lo, cont_.hi};
     }
 
     // Temperature range (Tmin, Tmax) of validity.  `{0, 0}` means the model
@@ -118,6 +174,21 @@ protected:
     //  so no model can be reached without its validity note having run.
     virtual scalar computePsat(scalar T_K) const = 0;
 
+    //  The model's own safe domain for `computePsat` (the continuation
+    //  window is the record's Trange intersected with it).  A model whose
+    //  formula is smooth on all of (0, inf) keeps the defaults.
+    //  d ln Psat / dT of `computePsat` at T [1/K], ANALYTIC, for a model whose
+    //  curve has a square-root-type singularity in a higher derivative at the
+    //  edge (Ambrose-Walton and Wagner carry tau^1.5 terms at Tc, so a
+    //  finite-difference slope there is only good to ~1e-4).  NaN (the
+    //  default) = none: the base class differences `computePsat` instead.
+    virtual scalar computeDlnPsatDT(scalar /*T_K*/) const
+    { return std::numeric_limits<scalar>::quiet_NaN(); }
+
+    virtual scalar safeLowerT() const { return 0.0; }
+    virtual scalar safeUpperT() const
+    { return std::numeric_limits<scalar>::infinity(); }
+
     //  Announces ONCE per model instance when T falls outside the declared
     //  window, then returns the value anyway.  I4: extrapolation is a
     //  legitimate choice -- the professor extrapolates on purpose, but knows
@@ -131,6 +202,21 @@ protected:
     std::string  owner_;
     scalar       Tc_declared_ = 0.0;
     mutable bool announcedOutside_ = false;
+
+    //  The continuation, built lazily on the first call (the owner and Tc are
+    //  stamped AFTER construction, so the constructor cannot build it).
+    struct Continuation
+    {
+        bool   ready = false;
+        scalar lo = 0.0, hi = 0.0;       // [T_lo, T_hi]
+        scalar lnLo = 0.0, sLo = 0.0;    // ln Psat and d ln Psat/d(1/T) at lo
+        scalar lnHi = 0.0, sHi = 0.0;    // ... at hi
+        bool   hasLo = false, hasHi = false;
+        bool   announcedLo = false, announcedHi = false;
+    };
+    mutable Continuation cont_;
+    void   buildContinuation() const;
+    scalar continuedPsat(scalar T_K) const;
 
 private:
     static std::map<std::string, Factory>& registry();
