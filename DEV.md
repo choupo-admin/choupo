@@ -3315,7 +3315,13 @@ accepts today, and that is a policy call.
 > studies) and that remaining errors are the project's; curator only if he reviews the
 > revised page and wants it.  Nothing is written with his name until Vitor brings his
 > written consent to the exact text and the spelling of his name (rule 00: consent of a
-> named person stays Vitor's).  AMENDED the same day (Vitor): Karol is left aside until he
+> named person stays Vitor's).  LANDED 2026-11-09 (eea569a68) with C259: the costs
+> sentence, section 12 on the Unified Patent Court (UPCA read article by article in the OJ C 175
+> PDF; Regulation 1257/2012; the EPO pages; Lisbon's local division from the court's own
+> Presidium decision), the case studies' IN BRIEF summaries; not written because not
+> verified: the central division's seats, the end of the transitional period.  The general
+> corrected the brief: the prior-use RIGHT is national (UPCA Art. 28) but the UPC HEARS actions
+> on it (Art. 32(1)(g)).  No name, no acknowledgement.  AMENDED the same day (Vitor): Karol is left aside until he
 > approves; nothing carries his name, and Vitor is not asked to handle consent (C261).
 > LANDING (Vitor, the same message thread: "na landing page devia de haver um link para
 > afirmar isso?"): yes, but as ONE page "Who reviewed what" (every curator and
@@ -3363,6 +3369,25 @@ accepts today, and that is a policy call.
 > slices dispatched per territory (each re-verifies before editing and reports
 > disagreements instead of editing); a van Heerden witness with three sourced steady
 > states is being built; references wait for a lesson `references` field + gate.
+> FIXES LANDED 2026-11-09 (eea569a68, six branches merged as one, --scope 27/0, --gui 45/0,
+> --fast 78/0; no full sweep: src/ changed only in comments and log/refusal strings).  Every
+> fix was re-verified at its line before editing; no auditor finding was disputed; the
+> fixers found more of the same (a second Wegstein pathology in theoryGuide.tex, the
+> Hermia error in the engine's refusal and the Theory Guide, "twelve species" in claus01's
+> own dicts, an anchor string at FrictionFactorCorrelation.cpp:204).  van Heerden now rests
+> on cstr08_furusawa_bistable (Furusawa, Nishimura & Miyauchi, J. Chem. Eng. Japan 2 (1969)
+> 95, doi:10.1252/jcej.2.95, read; nothing tuned): steadyStates 3 at 291.5 / 305.3 / 333.8 K,
+> and the case says where it parts from the paper (an ideal-liquid adiabatic rise of 56 K
+> against 46-49 K measured moves the three-state window).  Engine citations in the numerics
+> pages are now held by a test (they were bare ":NNNN", which no test could read).
+> STILL OPEN: (a) the verified references -- a `references` field per lesson and a gate, then
+> the data the auditors verified (reports in the session scratchpad c259/); (b) the S3s each
+> fixer left as out of brief, listed in its report; (c) Gilliland 1940's data basis
+> (PLAUSIBLE: the paper is not in the literature folder); (d) ENGINE DEFECT found by the
+> thermo fixer: CSTR.cpp:609-617 checks reacting species with h_pure_ig(), so a record on a
+> `pureLiquid` reference is refused with the false message "has no standardThermochemistry
+> block"; (e) registry.ts:615 comment still says "twelve species"; (f)
+> docs/design/a-plant-that-closed-on-its-cooling-water.md:126 repeats "before any state work".
 
 > **C258 (Vitor, 2026-11-09, a screenshot of batch15_mesh_study's Global balances --
 > "mass closure 4.16E-2", "worst element closure 1.13E-1 (He)" -- in a panic: "andas a
