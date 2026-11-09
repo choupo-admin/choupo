@@ -19,6 +19,11 @@
   5a moved the dissolved H2 of gibbs09 by +136 % between two of them).  The
   catalogue carries all three pairs with water (Sander 2015), so they are
   Henry solutes and the water the solvent.
+  WHAT THE DECLARATION REACHES, MEASURED: the two-phase FEED's resolution,
+  which prices the dissolved gas on these pairs.  The Gibbs reactor's OWN
+  condensate does not: it condenses by y_i P against Psat_i (an engine gap
+  reported under C256), so the gas it leaves in the condensate still rests
+  on the continued vapour pressure.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
