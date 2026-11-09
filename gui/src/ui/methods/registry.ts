@@ -66,7 +66,7 @@ export type MethodToolId =
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
   | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
   | "sour-water" | "rules-of-thumb" | "bode"
-  | "tear-streams" | "wegstein" | "active-set-qp" | "lub-scaleup"
+  | "tear-streams" | "relaxation" | "wegstein" | "active-set-qp" | "lub-scaleup"
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
   | "declared-pathways" | "reactor-ladder" | "route-screening"
   | "least-squares" | "element-potential" | "limiting-reactant"
@@ -76,7 +76,7 @@ export type MethodToolId =
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
   | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
-  | "site-process-price";
+  | "site-process-price" | "campaign-plan";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -233,6 +233,16 @@ export const METHOD_PATHS: MethodPath[] = [
       { tool: "approach-to-equilibrium", why: "How close a reactor can get to equilibrium, and what a Gibbs reactor assumes." },
       { tool: "declared-pathways", why: "Equilibrium over the reactions you allow, against every pathway the species permit." },
       { tool: "vanheerden", why: "The hazard: heat generated against heat removed gives three steady states and an ignition." },
+    ],
+  },
+  {
+    id: "recycle-numerics",
+    title: "Recycle numerics",
+    intro: "From why a recycle is iterated to how the cut is chosen: relaxation, Wegstein, and the tear.",
+    steps: [
+      { tool: "relaxation", why: "Why a recycle must be iterated, and how a step factor tames an oscillating loop but never a runaway one." },
+      { tool: "wegstein", why: "The same factor, chosen for you per variable from the last two passes, on a tear that holds a flow and a temperature." },
+      { tool: "tear-streams", why: "Which stream to cut in the first place: the engine detects every cycle and leaves the cut to the author." },
     ],
   },
 ];
@@ -1328,6 +1338,23 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:newton-tears",
   },
   {
+    id: "relaxation", blurb: "Why a recycle is iterated, and how a step factor tames it.",
+    label: "Relaxation (the first rung of recycle numerics)",
+    discipline: "Flowsheeting & numerics", kind: "construction",
+    status: "live",
+    origins: ["engine", "page", "assumption"],
+    teaches: "A recycle is a fixed-point problem, and direct substitution "
+      + "converges only when the loop gain is below 1 in magnitude.  Take "
+      + "only a fraction w of each step and the slope becomes 1 - w + w a: "
+      + "a small w tames an oscillating loop, and NO w rescues a runaway one.  "
+      + "Drag the gain and the factor on four live figures -- the cobweb, "
+      + "the error per pass for direct, relaxed, Wegstein and Newton, the "
+      + "(a, w) map -- then watch the real process03_recycle solved under "
+      + "recycleRelaxation.  Wegstein is the same formula with the factor "
+      + "chosen for you; Newton uses the whole slope and a line search.",
+    theory: "ch:relaxation",
+  },
+  {
     id: "wegstein", blurb: "Watch Wegstein accelerate a mixed tear vector, variable by variable.", label: "Wegstein acceleration (closing a recycle)",
     discipline: "Flowsheeting & numerics", kind: "construction",
     status: "live",
@@ -1984,6 +2011,30 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "pharmaceutical product is the example. No weight, margin or tax "
       + "rate is shipped, and nothing here is legal advice or a market study.",
     theory: "ch:economics",
+  },
+  //  COMMISSIONED 2026-11-08 (DEV.md 4c C249 c, Vitor: "esquemas visuais
+  //  com graficos manobraveis"): how a multi-product plant is organised and
+  //  where a continuous machine sits in a lot regime, with the Gantt chart
+  //  LIVE.  TWO HALVES, said on the page: a toy recomputed in TypeScript
+  //  (held by a test to what the engine published for two cases) and the
+  //  engine's own published plans drawn with the same bars.
+  {
+    id: "campaign-plan", blurb: "Move a live Gantt chart: lots, campaigns, limiting stage and hours.",
+    label: "How a batch plant is organised: lots, campaigns and the Gantt chart",
+    discipline: "Process design & economics", kind: "construction",
+    status: "live",
+    theory: "sec:campaign-ledger",
+    origins: ["engine", "page", "reference", "assumption"],
+    teaches: "How a plant makes several products in lots: the stages of a "
+      + "train, the lot as the unit QC releases, the cycle of each stage and "
+      + "the limiting one, parallel units in and out of phase, campaigns and "
+      + "changeovers against the year's available hours, a continuous spray "
+      + "dryer inside a lot regime, and the order of two or three products "
+      + "with cleans that depend on the direction. A toy plant redraws its "
+      + "Gantt chart as you move the sliders, and the plans the engine "
+      + "published for an apalutamide and a donepezil plant are drawn with "
+      + "the same bars. One train and no stores; the order is listed, never "
+      + "optimised.",
   },
   //  WHICH SOLVENT, OR WHICH SOLVENT MIXTURE (2026-10-21, DEV.md 4c C128,
   //  Vitor: the student PREDICTS the best composition before the curve is

@@ -292,3 +292,49 @@ validation (reading the Streams table) is not simulated.
 * No second grammar for LLMs: the kernel teaches the engine's one grammar.
 * The developer documents (`CLAUDE.md`, `DEV.md`, `docs/design/`) are not
   part of what a student's assistant reads, and are not rewritten for it.
+
+## C250 (2026-11-08): the agent-facing documents as the student's interface
+
+The students reach Choupo through their own assistant (not Claude), so the brief and
+the packs are a product: tokens in, a correct case out.  What was built, what was
+measured with the proxy `claude -p --model haiku`, one run per cell (a single run is
+noisy; read the numbers as indications, not as a test).  The tool stays a TOOL.
+
+**Built.**  `docs/ai/packs/pharmaceutical.md` (about 1 620 words: files, keys, order of
+work, the metformin change, refusals, where each deliverable prints, the two-strength
+declaration, the do-by-hand list); a `budget: N words (~T tokens)` header on the brief
+and every pack, held by `check_capability_index` (pharmaceutical <= 2 500 words);
+`docs/ai/start-here.md` as the ONE entry (a routing table first; `llm_site.py` puts it
+first in `llms.txt`, whose first line says so); harness revision problems
+`p-pharma-1..3` (start `donepezil01_tablets`: a dose change, a batch-size change, a
+second strength) with mechanical checks (`touch:`, `~=`, product selectors) and an
+OpenAI-compatible proxy (`--endpoint` / `CHOUPO_LLM_ENDPOINT`, `CHOUPO_LLM_KEY`,
+`--model`; `--dry-run` prints the request and calls nothing; no key was available, the
+endpoint path was exercised by `--dry-run` only).  The summary now prints tokens per
+solved problem.  The engine used was the integrated batch-night build.
+
+**Pharmaceutical problems (haiku, net input + output tokens).**
+
+| brief | solved | checks | tokens in | tokens out | tokens per solved |
+|---|---|---|---|---|---|
+| `llm` (brief + all 8 packs, 5.4k words more) | 2/3 | 13/13 | 294 175 | 89 173 | 191 674 |
+| brief + pharmaceutical pack only | 2/3 | 13/13 | 114 622 | 73 015 | 93 818 |
+
+Same score, half the tokens per solved problem.  p-pharma-3 (second product) failed in
+both: one reply lacked `productChangeover` on every stage, the other dropped `product`.
+p-pharma-1 first scored "not solved" for the pharma brief only because another session
+was rebuilding the engine library during the run; rescoring the saved reply (no model
+call) gave solved.  Extra file touched in two replies: `system/controlDict`.
+
+**The brief cut, REVERTED.**  Tried: section 10 (revision) moved to a pack `revision`
+and the NRTL/EoS/kij blocks of section 5 to a pack `thermo` (3 201 -> 2 417 words), the
+assistant told to read them when needed (problems that need them were given the two
+packs, `brief + thermo + revision`).  Before (brief alone, p01-p17): plain 8/13 solved,
+revision 3/4.  After: plain 5/13, revision 3/4.  Lost: p08 and p10 (reply without a
+`flowsheetDict`), p09 (EoS block missing `equationOfState`, the content moved), p12
+(component `C3H8` not found); gained: p11.  Three of the four losses are in areas the cut
+did not touch, so the drop is probably mostly run-to-run noise, but the rule is that a
+cut that lowers the score is reverted, and it was: `brief.md` is at its pre-cut text
+(3 201 words, budget 3 300) and the two packs were deleted.  Not shown: that the cut
+helps.  Open: repeat each cell three times before judging any cut; move only content the
+problem set provably never needs (the SOURCES comment block, the PFD paragraph).

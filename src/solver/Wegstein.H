@@ -44,8 +44,8 @@ Description
         x_i^{k+1}  = q_i x_i^k + (1 - q_i) g_i(x_i^k)
 
     With q in (-∞, 0], the update *over-relaxes* toward g(x_k):
-        q = 0   → direct substitution        (no acceleration)
-        q = -1  → 50/50 average of x and g
+        q = 0 → direct substitution (w = 1 - q = 1); q = 0.5 → 50/50 average (w = 0.5)
+        q = -1  → a step twice the direct one (w = 2)
         q < -1  → strong acceleration
 
     Wegstein is equivalent to one Newton step on F(x) = x - g(x), using

@@ -519,6 +519,26 @@ fixed-point accelerator --- run both on
 \file{tutorials/steady/flowsheets/process03\_recycle} and compare the
 iteration counts.
 
+\paragraph{Recycle numerics as relaxation.}  The three recycle solvers
+are three rungs of one idea.  A recycle is a fixed-point problem
+$x = G(x)$; \code{recycleSolver directSubstitution} iterates it
+directly, and \code{recycleRelaxation w} (with $0 < w \le 1$, default
+$1$) damps it, $x^{+} = (1-w)\,x + w\,G(x)$, exactly OpenFOAM's
+\code{relaxationFactors}.  Wegstein is the same formula with
+$w = 1 - q$ chosen per variable from the last two iterates, so
+\code{recycleWegsteinQmin}/\code{Qmax} clamp a relaxation factor:
+$q = 0$ is direct substitution ($w = 1$), $q = 0.5$ the 50/50 average
+($w = 0.5$), $q = -1$ a doubled step ($w = 2$), $q < -1$ stronger
+acceleration; the default clamp $[-1, 0]$ keeps $w \in [1, 2]$.  Newton on the tears
+(\code{recycleSolver Newton}, the default) uses the whole slope; its
+honest knob is a step cap, \code{recycleMaxStep f} (a fraction of each
+unknown's scale per step), not a fixed factor.  Every declared value is
+announced in the run log.  \code{solverDict} also carries one block per
+unit type for the Newton of that unit
+(\code{distillationColumn \{ lineSearch armijo|none; maxStepT 10 K;
+maxStepX 0.1; \}}, \code{cstr \{ maxStepExtent 0.5; \}}); a key the
+engine does not read is refused by name.
+
 \paragraph{The sequential-plan contract.}  The solver executes the
 units \emph{in the order you declare them} --- it never reorders.
 Before anything runs, the plan is validated: every material input must

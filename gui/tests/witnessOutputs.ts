@@ -335,6 +335,54 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["roHallDrawings.test.ts", "membraneBankModel.test.ts"],
     stdout: true,
   },
+  //  The campaign-plan EduTool (DEV.md 4c C249 c): the batch plans the
+  //  engine PUBLISHED for the two cases its engine halves draw, which the
+  //  toy's TypeScript method is held to (1e-6) in campaignPlan.test.ts.
+  {
+    caseDir: "tutorials/batch/plant/apalutamide01_tablets",
+    file: "reports/batchPlan/stages.csv",
+    readBy: ["campaignPlan.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/plant/apalutamide01_tablets",
+    file: "reports/batchPlan/trains.csv",
+    readBy: ["campaignPlan.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/plant/apalutamide01_tablets",
+    file: "reports/batchPlan/gantt.csv",
+    readBy: ["campaignPlan.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/plant/donepezil02_two_strengths",
+    file: "reports/batchPlan/products.csv",
+    readBy: ["campaignPlan.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/plant/donepezil02_two_strengths",
+    file: "reports/batchPlan/productStages.csv",
+    readBy: ["campaignPlan.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/plant/donepezil02_two_strengths",
+    file: "reports/batchPlan/productTrains.csv",
+    readBy: ["campaignPlan.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/plant/donepezil02_two_strengths",
+    file: "reports/batchPlan/stages.csv",
+    readBy: ["campaignPlan.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/plant/donepezil02_two_strengths",
+    file: "reports/batchPlan/trains.csv",
+    readBy: ["campaignPlan.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/plant/donepezil02_two_strengths",
+    file: "reports/batchPlan/gantt.csv",
+    readBy: ["campaignPlan.test.ts"],
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

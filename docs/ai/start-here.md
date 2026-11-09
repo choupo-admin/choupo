@@ -1,5 +1,22 @@
 # Start here — run and understand one Choupo case
 
+## For an AI assistant: route the task, then stop reading this file
+
+Read ONLY the one document your task needs.  `docs/ai/<path>` is served at
+`https://www.choupo.org/llm/<path>` (packs keep their `packs/` folder).
+
+| The student asks | Read |
+|---|---|
+| "does Choupo do X?" | `capabilities.md` |
+| design a process, write a case | `brief.md` (all of it), then only the packs it names |
+| a tablet plant for their own drug and dose | `brief.md`, then `docs/ai/packs/pharmaceutical.md` |
+| change an existing case (feedback, a new number) | `brief.md`, its section 10 |
+| how to run a case, what the files are | the rest of this file |
+
+Never invent a key, a unit type, a component name or a parameter value: if the
+documents do not give it, say "Choupo does not provide it" and ask.  The rest
+of this file is for the student.
+
 This is the shortest reliable path from a fresh checkout to an understood
 simulation.  It teaches the current case contract; the other files in this
 directory are references to consult as needed.

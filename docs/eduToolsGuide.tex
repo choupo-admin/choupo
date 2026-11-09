@@ -1920,6 +1920,72 @@ the page is legal advice, a market study or a freedom-to-operate opinion, and
 every starting value is an illustration.
 \end{pitfall}
 
+\subsection{How a batch plant is organised: lots, campaigns and the Gantt chart}\label{sec:edu-campaign-plan}
+
+\noindent\textit{\small Tool:} \code{tool=campaign-plan}.  \textit{\small
+Cases it starts from:} \code{batch/plant/apalutamide01\_tablets} and
+\code{batch/plant/donepezil02\_two\_strengths}, run in the browser by a button
+on the page; the two toy plants are invented and run no engine.
+
+\subsubsection*{The question}
+
+\emph{My plant makes several products in lots.  Which stage paces it, how many
+hours of the year does it need, where does a continuous machine such as a spray
+dryer fit, and does the order of the campaigns matter?}
+
+The page has two halves and says which one you are in.  In the \textbf{toy}
+half a plant of five stages (a solution tank, a spray dryer, a blender, a
+press and a coater) is redrawn as a Gantt chart while you move the lot, the
+lots per campaign, the changeover, the dryer's operating time, the demand and
+the number of tanks; the limiting stage is outlined as it moves, with
+$T_{\mathrm{L}}=\max_j t_j/N_{\mathrm{op},j}$, each stage's utilisation and the
+year's required hours against the available ones recomputed live.  A second toy
+makes two or three products in single-product campaigns, with a clean at the
+coating pan that depends on the direction of the change; the order is a drag,
+and the page lists every order with its hours.  In the \textbf{engine} half a
+button runs the case and the page draws the plan Choupo published, with the
+same bars, and recomputes nothing.
+
+\subsubsection*{What the engine says}
+
+The toy is a second implementation of \code{BatchPlanPass.H} (lines 97--123
+for one product, 205--224 for several), held by the page's test to what the
+engine published for the two cases to $10^{-6}$: every cycle, $T_{\mathrm{L}}$,
+offset, campaign, busy hour and Gantt bar.  With two products the year
+pays each direction once whichever product goes first (\code{BatchPlanPass.H}:208--210),
+so donepezil02's two trains need 880.2~h and 2079~h in either order; from three
+products the order matters, and only through the directional cleans
+(\code{BatchPlanPass.H}:219--220).  A semicontinuous stage that the case rates
+(apalutamide01's spray dryer, \code{operatingTime fromFlowsheet}, postDict
+line 178) runs through the lot, the tank that feeds it is held for its whole
+run (\code{dischargeTime throughFedStage}, postDict line 170), and the dryer is
+cleaned at the campaign changeover, not between lots.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+With one solution tank the tank is outlined as the limiting stage: it is held
+through the dryer's run.  Choose two tanks and the outline jumps to the dryer.
+Then lengthen the dryer's operating time: the tank's cycle grows with it, and
+the page warns that the plan asks the dryer for a rate it was not rated at.  In
+the second toy, make the third product and reorder the campaigns: the hours
+differ between the two cycles, by exactly the difference of the directional
+cleans.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That the cheapest order is the right one.}  It is the order with the
+fewest hours; the demand, the shelf life and the safety stock decide the rest.
+The engine takes the order as given and never optimises it.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+One train and no intermediate stores (a real plant decouples trains with
+stores, each with its own hours), no mixed sequencing inside a campaign, no
+per-product mass balances, and a clean is hours here, not a cleaning
+validation (EU GMP Annex~15).
+
 \subsection{Demand forecast for a drug product}\label{sec:edu-demand-forecast}
 
 \declaredanchor{ch:economics}
