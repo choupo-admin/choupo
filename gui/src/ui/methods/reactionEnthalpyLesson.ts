@@ -159,31 +159,58 @@ K(T)`,
   },
   {
     n: 4,
-    title: "What the 25 °C value gets wrong in a design",
-    body: "A group that sizes the converter's heat removal with the tabulated "
-      + "value under-states it, and so under-states the steam the reaction "
-      + "can raise, by the same 14 % (the 25 °C value is 46.1 against the "
-      + "53.4 the reaction actually releases at 500 °C).  The adiabatic "
-      + "temperature rise of a bed is under-stated in the same proportion, "
-      + "and the rise is what decides whether a bed stays below the "
-      + "catalyst's 520 °C limit.  Neither error is visible in the arithmetic: "
-      + "the number came from a respectable table, at the wrong temperature.",
+    title: "What the 25 °C value gets wrong in a design — and when it does not",
+    body: "One example, closed two ways.  Take the ammonia converter at "
+      + "773.15 K with the feed and the product both at 773.15 K (an "
+      + "isothermal balance), per mole of ammonia made.  PATH 1, on the "
+      + "298.15 K datum: cool the reactants (one half of N₂, one and a half "
+      + "of H₂) from 773.15 K to 298.15 K, which gives back 27.98 kJ; react "
+      + "at 298.15 K, −45.94 kJ; heat the ammonia to 773.15 K, which takes "
+      + "20.48 kJ.  The sum is −27.98 − 45.94 + 20.48 = −53.44 kJ.  PATH 2: "
+      + "react at the reactor temperature, ΔᵣH°(773.15 K) = −53.44 kJ.  The "
+      + "two paths give the same duty, because Kirchhoff's law is exactly "
+      + "the statement that the sensible terms of path 1 add up to "
+      + "ΔᵣH°(773.15 K) − ΔᵣH°(298.15 K) = −7.50 kJ.  So using the 298.15 K "
+      + "value is NOT an error when its sensible terms travel with it.  It "
+      + "is an error when the 298.15 K value is used ALONE as the heat "
+      + "released at 773.15 K: in this isothermal balance, and only in a "
+      + "balance whose feed and products are both at the reactor "
+      + "temperature, that omits the −7.50 kJ and under-states the heat "
+      + "removal by 14 % (45.94 against 53.44).  That 14 % belongs to this "
+      + "balance; it is not a rule for the steam or the temperature rise.  "
+      + "For a bed with no heat exchange the balance is H_in(T_in) = "
+      + "H_out(T_out), which fixes the outlet temperature.  Written as a "
+      + "rise it takes the reaction enthalpy at the INLET temperature "
+      + "(react first at T_in, then heat the outlet mixture to T_out) and "
+      + "the mean heat capacity of the OUTLET mixture.  Putting the 298.15 K "
+      + "value there instead is wrong by the relative difference between "
+      + "ΔᵣH° at 298.15 K and at T_in, which depends on T_in (4 % at "
+      + "T_in = 400 K: 45.94 against 48.07 kJ per mole of ammonia) and is "
+      + "zero at 298.15 K.  The rise decides whether a bed stays below the "
+      + "catalyst's 520 °C limit.  Neither error is visible in the "
+      + "arithmetic: the number came from a respectable table, at the "
+      + "wrong temperature.",
     formula: String.raw`\Delta T_\mathrm{ad} \approx
-\frac{\left(-\Delta_r H^\circ(T)\right)\,\dot{\xi}}{\dot{F}\,\bar{c}_p}`,
+\frac{\left(-\Delta_r H^\circ(T_\mathrm{in})\right)\,\dot{\xi}}{\dot{F}\,\bar{c}_p}`,
     where: [
       { sym: "\\Delta T_\\mathrm{ad}", means: "the adiabatic temperature rise "
-        + "of a catalyst bed", unit: "K" },
+        + "of a catalyst bed, T_out − T_in", unit: "K" },
+      { sym: "T_\\mathrm{in}", means: "the temperature of the feed entering "
+        + "the bed, where the reaction enthalpy is evaluated", unit: "K" },
       { sym: "\\dot{\\xi}", means: "the extent of reaction per second in the "
         + "bed", unit: "mol of reaction/s" },
-      { sym: "\\dot{F}", means: "the total molar flow through the bed", unit:
+      { sym: "\\dot{F}", means: "the total molar flow leaving the bed", unit:
         "mol/s" },
-      { sym: "\\bar{c}_p", means: "the mean molar heat capacity of the gas "
-        + "over the bed's temperature range", unit: "J/(mol·K)" },
+      { sym: "\\bar{c}_p", means: "the mean molar heat capacity of the "
+        + "OUTLET mixture between T_in and T_out", unit: "J/(mol·K)" },
     ],
     note: "THE ESTIMATE IS AN ESTIMATE.  The heat capacity of the gas also "
       + "changes along the bed, and the composition changes as it reacts; "
       + "the formula is the order of magnitude a student checks a simulator "
-      + "against, not a design equation.",
+      + "against, not a design equation.  The 27.98, 20.48 and −7.50 kJ are "
+      + "the integrals of the heat-capacity polynomials of the witness's own "
+      + "constant/components (N₂, H₂, NH₃), per mole of ammonia, between "
+      + "298.15 K and 773.15 K.",
   },
   {
     n: 5,
