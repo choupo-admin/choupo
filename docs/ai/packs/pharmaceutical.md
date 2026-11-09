@@ -5,7 +5,7 @@ budget: 1700 words (~2720 tokens)
 Read this pack when the student wants a pharmaceutical solid-dose plant (tablets) for THEIR drug.
 It is a recipe, not a reference: copy a shipped case, change the listed keys, run, read.
 Grammar of the plan, machines, utilities and money is in the pack `batch-plant`; the building in `layout`.
-You cannot run anything: the student runs the commands and pastes back what the engine prints.
+Without a shell you cannot run anything: hand the case over, say it was not run, and tell the student to use File > Complete 0/ and then Run, pasting back every FAILED, WARNING, ERROR or INCOMPLETE line.  With a shell and an engine, run it yourself and say so.
 
 ## 1. Ask the student first (nothing else is needed)
 
@@ -13,6 +13,7 @@ You cannot run anything: the student runs the commands and pastes back what the 
 2. Strength per tablet (mg), core mass (mg), coat percent.
 3. Tablets a year, lot size (kg of final blend), route: wet granulation (the shipped case) or direct compression.
 4. One or two strengths.
+5. A new strength of a shipped product: the same blend at another weight (the 5 mg is the 10 mg tablet halved), or the same core with API replacing lactose?  If the student did not say, ask once.
 
 Never invent a molar mass, a price or a rating: ask, or write the number as "ASSUMED" with a `source`.
 
