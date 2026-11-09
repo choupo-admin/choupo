@@ -1108,6 +1108,21 @@ operation
 }
 ```
 
+**Subcooled reflux** (`refluxTemperature 18.5 degC;`, optional, `model
+WangHenke;` with a total condenser only; `simultaneous` and a partial condenser
+refuse it by name).  Without the key the reflux returns at its bubble point.
+With it, the cold reflux is heated to saturation on the top tray by condensing
+vapour there, so the liquid running down the rectifying section is
+`refluxRatio x D x (1 + phi)`, `phi = [hL(xD, T_bubble) - hL(xD, T_reflux)] /
+[hV(y1, T_1) - hL(xD, T_bubble)]`, solved by re-running the column until `phi`
+settles (each pass is printed).  `refluxRatio` stays the EXTERNAL ratio (what
+the flow meters give); the KPIs add `R_internal` and `refluxSubcooling_K`; the
+distillate leaves the same drum and is published at `refluxTemperature`; both
+duties carry the subcooling.  A temperature above the reflux's bubble point is
+refused.  Witness: `column14_klemola_c4_splitter` (a measured plant: reboiler
+8.09 MW on saturated reflux, 9.77 MW with the plant's 18.5 C, 10.24 MW
+measured).
+
 **The condenser type** (`operation { condenser { type total|partial; } }`,
 the same block that names its utility; default `total`, announced).  Both
 types solve the same material equations; they differ in what stage 1 IS.

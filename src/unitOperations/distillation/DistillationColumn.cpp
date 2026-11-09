@@ -1420,8 +1420,36 @@ int DistillationColumn::solve(const DictPtr& dict,
     if (B <= 0.0)
         throw InfeasibleTrial("DistillationColumn: bottoms B = F - D <= 0 (infeasible trial)");
 
-    const scalar Ll  = R * D;            // L above feed
-    const scalar Vl  = (R + 1.0) * D;    // V above feed
+    //  SUBCOOLED REFLUX (`refluxTemperature`, total condenser).  A plant's
+    //  condenser usually returns its reflux BELOW the bubble point.  The cold
+    //  reflux is heated to saturation on the top tray by condensing vapour
+    //  there, so the liquid that runs down the rectifying section is larger
+    //  than the reflux that was pumped in:
+    //
+    //      L_internal = L_external (1 + phi)
+    //      phi = [hL(x_D, T_bubble) - hL(x_D, T_reflux)]
+    //            / [hV(x_D, T_1)     - hL(x_D, T_bubble)]
+    //
+    //  `refluxRatio` stays the EXTERNAL ratio (what a flow meter reads); the
+    //  overhead vapour into the condenser stays (R + 1) D by the condenser's
+    //  own balance.  With a total condenser y_1 = x_D, so the top tray's
+    //  component balance is exact with the internal ratio.  phi needs the
+    //  converged x_D and T_1, so the column is solved, phi is evaluated, and
+    //  the column is solved again until phi stops moving (announced).
+    const bool   hasRefluxT = operDict->found("refluxTemperature");
+    const scalar T_reflux   = hasRefluxT
+        ? operDict->lookupScalar("refluxTemperature", Dims::temperature) : 0.0;
+    if (hasRefluxT && partialCond)
+        throw std::runtime_error("DistillationColumn '" + dict->name()
+            + "': `refluxTemperature` declares a subcooled reflux, which only a"
+              " TOTAL condenser returns; a partial condenser is an equilibrium"
+              " stage and its reflux leaves saturated.  Remove the key or"
+              " declare `condenser total;`.");
+    if (!hasRefluxT) { subcoolPhi_ = 0.0; subcoolPass_ = 0; }
+    const scalar R_int = R * (1.0 + subcoolPhi_);
+
+    const scalar Ll  = R_int * D;            // L above feed
+    const scalar Vl  = (R_int + 1.0) * D;    // V above feed
     const scalar Lp  = Ll + q * F;       // L below feed (L')
     const scalar Vp  = Vl - (1.0 - q) * F;
     if (Vp <= 0.0)
@@ -1857,6 +1885,45 @@ int DistillationColumn::solve(const DictPtr& dict,
     // ---- Produced streams (order: distillate, bottoms) ----------------
     produced_.clear();
     ProcessStream dStream = makeDistillate(thermo, xD, D, P, T[0], condenser);
+    scalar subcooling_K = 0.0;
+    if (hasRefluxT)
+    {
+        const scalar T_bub = dStream.T;
+        if (!dStream.phasePinned)
+            throw std::runtime_error("DistillationColumn '" + dict->name()
+                + "': `refluxTemperature` needs the distillate's bubble point,"
+                  " and it was not solved for this package (see the"
+                  " [distillate] announcement).  Remove the key.");
+        if (T_reflux > T_bub)
+            throw std::runtime_error("DistillationColumn '" + dict->name()
+                + "': refluxTemperature " + std::to_string(T_reflux)
+                + " K is ABOVE the distillate's bubble point "
+                + std::to_string(T_bub) + " K at the column pressure; a total"
+                  " condenser cannot return a liquid hotter than that.");
+        const scalar sensible = hs.hL(xD, T_bub) - hs.hL(xD, T_reflux);
+        const scalar latent   = hs.hV(xD, T[0])  - hs.hL(xD, T_bub);
+        const scalar phiNew   = sensible / latent;
+        if (std::abs(phiNew - subcoolPhi_) > 1.0e-7 && subcoolPass_ < 12)
+        {
+            std::cout << "  [subcooled reflux] pass " << (subcoolPass_ + 1)
+                      << ": reflux " << (T_bub - T_reflux) << " K below its"
+                         " bubble point; internal/external reflux = 1 + phi, phi "
+                      << subcoolPhi_ << " -> " << phiNew
+                      << "; solving the column again on that traffic.\n";
+            subcoolPhi_ = phiNew;
+            ++subcoolPass_;
+            return solve(dict, thermo, verbosity);
+        }
+        if (std::abs(phiNew - subcoolPhi_) > 1.0e-7)
+            throw std::runtime_error("DistillationColumn '" + dict->name()
+                + "': the subcooled-reflux traffic did not settle in 12 passes.");
+        subcoolPass_ = 0;
+        subcooling_K = T_bub - T_reflux;
+        //  The reflux and the distillate leave the same drum: the distillate
+        //  is that subcooled liquid too, and the condenser removes its
+        //  sensible heat as well.
+        dStream.T = T_reflux;
+    }
     produced_.push_back(dStream);
 
     ProcessStream bStream;
@@ -1878,6 +1945,11 @@ int DistillationColumn::solve(const DictPtr& dict,
     kpis_["feedStage"]  = static_cast<scalar>(NF);
     kpis_["R"]          = R;
     kpis_["D"]          = D;
+    if (hasRefluxT)
+    {
+        kpis_["R_internal"]          = R_int;
+        kpis_["refluxSubcooling_K"]  = subcooling_K;
+    }
     kpis_["B"]          = B;
     kpis_["T_top"]      = T[0];
     kpis_["T_bottom"]   = T[N-1];
@@ -2327,6 +2399,11 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     const bool hasBu = operDict->found("boilupRatio");
     const bool specBoil = hasBr || hasBu;
     const CondenserType condenser = readCondenserType(operDict, dict->name(), verbosity);
+    if (operDict->found("refluxTemperature"))
+        throw std::runtime_error("DistillationColumn '" + dict->name()
+            + "': `refluxTemperature` (subcooled reflux) is read by `model"
+              " WangHenke;` only.  The simultaneous MESH paths return saturated"
+              " reflux; remove the key or select WangHenke.");
     const bool partialCond = (condenser == CondenserType::partial);
     scalar R = 0.0, D = 0.0, Bspec = 0.0, boilup = 0.0;
     if (specBoil)

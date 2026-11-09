@@ -17493,6 +17493,30 @@ thermodynamics; only the \emph{shape} of the iteration differs.}
 \label{fig:distillation-methods}
 \end{figure}
 
+\subsection{Subcooled reflux}\label{sec:subcooled-reflux}
+
+A plant's condenser usually returns its reflux below the bubble point.
+The cold liquid is heated to saturation on the top tray, and the heat
+comes from vapour condensing there, so the liquid that runs down the
+rectifying section is larger than the reflux the pump delivers:
+\begin{equation}
+  L_{\text{int}} \;=\; R\,D\,(1+\varphi), \qquad
+  \varphi \;=\; \frac{h_L(\xv_D, T_{\text{bub}}) - h_L(\xv_D, T_{\text{reflux}})}
+                     {h_V(\yv_1, T_1) - h_L(\xv_D, T_{\text{bub}})} ,
+  \label{eq:subcooled-reflux}
+\end{equation}
+sensible heat of the reflux over latent heat of the overhead.  $R$ stays
+the \emph{external} ratio, the one read from the flow meters; the vapour
+that reaches the condenser stays $(R+1)\,D$.  Declared with
+\code{refluxTemperature}, read by the Wang--Henke path under a total
+condenser.  $\varphi$ depends on the converged top of the column, so the
+column is solved again until $\varphi$ settles, and each pass is printed.
+Both duties carry the subcooling: the condenser removes it, the reboiler
+supplies it.  On the industrial C$_4$ splitter of
+\code{column14\_klemola\_c4\_splitter} the reflux returns 26~K cold,
+$\varphi = 0.22$, and the reboiler duty moves from 8.09 to 9.77~MW against
+a measured 10.24~MW.
+
 \subsection{When this method struggles}
 
 \begin{itemize}[leftmargin=*,nosep,topsep=2pt]

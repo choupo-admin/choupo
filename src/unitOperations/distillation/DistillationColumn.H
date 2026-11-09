@@ -229,6 +229,10 @@ private:
     //  silently does nothing.
     std::vector<ProcessStream>     produced_;
     std::map<std::string, scalar>  kpis_;
+    //  Subcooled reflux (`refluxTemperature`): internal/external reflux - 1,
+    //  carried between the passes of `solve` that settle it.
+    scalar                         subcoolPhi_  = 0.0;
+    int                            subcoolPass_ = 0;
     UnitProfile                    profile_;
     //  THE REBOILER IS THE REMAINDER OF THE FIRST LAW (DEV.md 4c C174):
     //  `Q_reboiler_kW = dH - Q_condenser`, so the column's closure verifies

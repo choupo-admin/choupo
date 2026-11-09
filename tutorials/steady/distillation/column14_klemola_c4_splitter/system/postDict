@@ -98,7 +98,7 @@ views
         name    table_measured_vs_choupo;
         type    table;
         title   "Klemola and Ilme, Table 2: measured plant against Choupo";
-        note    "The four key compositions (wt %), the two product flows (kg/h) and the boiler duty (MW), measured and computed, with the difference and the relative difference. The distillate and bottoms rates are SPECIFICATIONS of the run (the distillate rate is an input, the bottoms follow from the balance), so they agree by construction. The boiler duty does NOT reproduce: constant molar overflow solves no stage energy balance and the plant's reflux is subcooled (18.5 C), so the model's reboiler is the lighter one. The two minor keys miss by tens of per cent in opposite senses, against a table that fails its own key balance by about 1 %.";
+        note    "The four key compositions (wt %), the two product flows (kg/h) and the boiler duty (MW), measured and computed, with the difference and the relative difference. The distillate and bottoms rates are SPECIFICATIONS of the run (the distillate rate is an input, the bottoms follow from the balance), so they agree by construction. The boiler duty is compared, not anchored: the reflux is declared subcooled at the plant's 18.5 C (internal reflux 1.22 times the pumped one), and the duty shown is the one that closes the column's overall balance; the reboiler's own envelope on the same traffic gives 10.46 MW, so the two bracket the measured 10.24 MW. Constant molar overflow solves no stage energy balance. The two minor keys miss by tens of per cent in opposite senses, against a table that fails its own key balance by about 1 %.";
         columns
         (
             { name iC4_top;    label "i-butane in the distillate (wt)"; unit "%"; }
