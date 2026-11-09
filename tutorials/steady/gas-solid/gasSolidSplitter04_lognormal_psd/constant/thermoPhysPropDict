@@ -12,6 +12,10 @@
   viscosity (the cyclone's Lapple d50), so the system carries a vapour
   viscosity model (Chung, from Tc/Pc/omega).  silica is non-volatile
   (K = 0) and lives in the solid phase (s[]), never in z.
+
+  C256 (2026-11-09), MEASURED: N2 is priced above its critical temperature
+  (Psat continued past Tc), but the only other component is a solid and the
+  fluid is one gas phase (vf = 1), so no printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

@@ -4,6 +4,6 @@
 
 application   choupoSolve;
 tier         showcase;
-description   "HDA plant -- toluene + H2 -> benzene + CH4.  A single FLAT flowsheet with two plant-level recycles (an H2 gas loop and an unreacted-toluene liquid loop); cross-sector tears are unsupported, so it has no sectors.  Furnace lumped into the isothermal reactor; light-gas K-values rest on Antoine extrapolation (see thermoPhysPropDict).";
+description   "HDA plant -- toluene + H2 -> benzene + CH4.  A single FLAT flowsheet with two plant-level recycles (an H2 gas loop and an unreacted-toluene liquid loop); cross-sector tears are unsupported, so it has no sectors.  Furnace lumped into the isothermal reactor; the plant runs on SRK (phi-phi, kij = 0) because H2 and CH4 are above their critical temperatures, where a Raoult K has no vapour pressure to read; the shortcut column alone keeps the ideal package (see the flowsheetDict).";
 
 verbosity     3;

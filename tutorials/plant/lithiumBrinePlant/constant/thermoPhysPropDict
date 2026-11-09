@@ -13,6 +13,12 @@
   override only what differs -- each declares its OWN complete equilibrium
   (a physical block is atomic: a formulation is stated whole, never merged
   half-and-half).  No `inherits`: this is the top of the explicit chain.
+
+  C256 (2026-11-09), MEASURED: CH4, CO, CO2, H2, N2 and O2 are priced above
+  their critical temperatures, but they are present only in the combustion and
+  drying-air line (one gas phase) and at zero flow in the settler's liquids;
+  water, kerosene and the extractant cross Tc only in gas states (the 1100 K
+  burner and its hot air), so no printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;

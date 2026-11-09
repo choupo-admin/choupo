@@ -7,18 +7,23 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  thermoPhysPropDict (v2) -- gamma-phi, ideal liquid (gamma = 1, DECLARED),
-  SRK vapour.
+  thermoPhysPropDict (v2) -- phi-phi SRK: one cubic for both phases
+  (K_i = phi_L,i / phi_V,i at the two roots), the standard treatment of a
+  light-hydrocarbon column at pressure.
 
-  The column runs at 16 bar.  There the vapour is not ideal: the 2026-11-07
-  audit (C239) measured phi of the light key about 21 % below 1, so an
-  ideal-gas vapour misprices both K and the latent heats.  The vapour is
-  therefore SRK (kij = 0, announced -- hydrocarbon pairs, no interaction
-  data declared).  The pure-liquid reference carries phi_sat and Poynting.
-  The MESH iterates visit temperatures above the critical temperature of
-  propane (369.8 K) and butane (425.1 K), where a saturated vapour does not
-  exist: the reference factor is HELD at its value at 0.99 Tc (continuous
-  in T, announced once per component) instead of jumping to 1.
+  WHY phi-phi (C256, 2026-11-09).  The column runs at 16 bar and its lower
+  half sits above the critical temperature of propane (369.8 K): the C4
+  side draw leaves stage 13 at about 377 K carrying about 6 % propane, and
+  the C5 draw at 423 K is at butane's (425.1 K).  On the gamma-phi package
+  (ideal liquid, SRK vapour; C239) that liquid's propane was priced
+  through a vapour pressure continued above Tc, where no saturated state
+  exists -- a K a student read off the draw that was not a K.  On one
+  cubic the liquid fugacity is the EoS's own, defined above any component's
+  Tc.  kij = 0 for every pair, announced: the catalogue carries no SRK pair
+  for these alkanes, so the answer is the undressed cubic's, not one fitted
+  to measured equilibria.  The vapour departure that C239
+  measured (phi of the light key about 21 % below 1) is kept: it is the
+  same SRK.
 
   No interior seed is declared (since 2026-11-08, DEV.md 4c C245 slice 4).
   Until then the column started from a stage profile declared in 0/,
@@ -39,16 +44,21 @@ components       ( propane  nButane  nPentane  nHexane );
 
 equilibrium
 {
-    formulation gammaPhi;
+    formulation phiPhi;
 
-    liquid
+    equationOfState
     {
-        activityModel ideal;
-        standardState pureLiquid;
+        model      SRK;
+        mixingRule vanDerWaalsOneFluid;
     }
 
-    vapour
-    {
-        fugacityModel SRK;
-    }
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
 }

@@ -11,6 +11,11 @@
   state serves BOTH phases (one Gibbs surface, two roots) -- K = phi_L/phi_V.
   The kij lives INSIDE the EoS block that consumes it, and its record
   declares the EoS it was fitted for (a kij is not portable between cubics).
+
+  C256 (2026-11-09), MEASURED: N2's vapour pressure is consulted above its
+  critical temperature at 298.15 K, outside the equilibrium: the K this flash
+  prints is phi_L/phi_V of the one cubic, so no printed number depends on it
+  (the slice that changed that vapour pressure moved no row).
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

@@ -569,6 +569,13 @@ room.
   class-average curve, which reads the pressure only (not the viscosity,
   which is a declared guess); the surface tension is a corresponding-states
   estimate.
+- **The nitrogen dissolved in the recovered acetone is not a solubility.**
+  N2 is above its critical temperature (126 K) at -10 C, and on this case's
+  Raoult package its K is a vapour pressure CONTINUED past Tc, so the 0.2
+  mol % of N2 the condensate pot leaves in `recoveredSolvent` (and the
+  nitrogen that stream carries out of the loop) is a numerical surface, not
+  a measured gas solubility; no Henry pair for N2 in acetone is in the
+  catalogue (DEV.md 4c C256).
 - **The oxygen in the loop.** The nitrogen loop exists to keep the acetone
   below its flammable limit; nothing here computes the oxygen it tolerates.
 - **Solvent recycle.** The recovered acetone goes to a tank, not back to the

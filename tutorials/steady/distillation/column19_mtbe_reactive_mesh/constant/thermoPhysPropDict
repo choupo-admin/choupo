@@ -13,6 +13,11 @@
   Choupo's cubic of that family.  The pure-liquid reference carries phi_sat
   and Poynting (a real vapour counted on both sides of K), so the
   temperatures hold as well as the duties.
+
+  C256 (2026-11-09), MEASURED: propane (Tc 369.8 K) is priced through a vapour
+  pressure continued past Tc on the hottest stages (the reboiler at 400.7 K),
+  where it is a trace (1e-6 of the bottoms), so no printed number moves with
+  that K at golden tolerance.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
