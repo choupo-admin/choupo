@@ -508,7 +508,7 @@
     },
     "check_guide_environments": {
       "exit": 0,
-      "claim": "check_guide_environments: OK -- 4197 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
+      "claim": "check_guide_environments: OK -- 4200 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
       "seconds": 0.1
     },
     "check_guide_menu": {
@@ -768,7 +768,7 @@
     },
     "check_pswing": {
       "exit": 0,
-      "claim": "check_pswing: OK -- inventory ratio 0.5 analytic (A), blowdown cooling shown with its energy claim refused by name (B), throttle/negative-P/feed-P refuse by name",
+      "claim": "check_pswing: OK -- inventory ratio 0.5 analytic (A), blowdown cooling shown with its first law closed (B), throttle/negative-P/feed-P refuse by name",
       "seconds": 0.2
     },
     "check_quasi_steady": {
@@ -1003,8 +1003,8 @@
     },
     "check_theory_citations": {
       "exit": 0,
-      "claim": "check_theory_citations: OK -- docs/theoryGuide.tex: 52 of 86 chapters that carry numbered equations carry a citation (34 pinned as owing one, ratcheting down); 143 \\cite keys all resolve, 143 \\bibitem entries all cited (0 orphans pinned); 16 of 16 engine-cited surnames the guide names reach the bibliography; 5 registered eponymous model keys the guide names are sourced. SCANNED: that one file plus src/ for surnames and factory keys; nothing else in docs/ carries a bibliography. NOT CHECKED: whether a citation is TRUE of the equation beside it, whether an equation NEEDS one, the physico-chemical HYPOTHESES Pedro also asked for, the 579 numbered equation environments individually, and the other seven guides.",
-      "seconds": 1.6
+      "claim": "check_theory_citations: OK -- docs/theoryGuide.tex: 52 of 86 chapters that carry numbered equations carry a citation (34 pinned as owing one, ratcheting down); 143 \\cite keys all resolve, 143 \\bibitem entries all cited (0 orphans pinned); 16 of 16 engine-cited surnames the guide names reach the bibliography; 5 registered eponymous model keys the guide names are sourced. SCANNED: that one file plus src/ for surnames and factory keys; nothing else in docs/ carries a bibliography. NOT CHECKED: whether a citation is TRUE of the equation beside it, whether an equation NEEDS one, the physico-chemical HYPOTHESES Pedro also asked for, the 582 numbered equation environments individually, and the other seven guides.",
+      "seconds": 1.4
     },
     "check_thermal_bed": {
       "exit": 0,
@@ -1218,8 +1218,8 @@
     },
     "check_ode_block_structure": {
       "exit": 0,
-      "claim": "check_ode_block_structure: OK -- the probe (30 cells of 3, ledgers between the cell rows) integrates dense and structured to 3.6e-11 apart, its audit measured exactly 0 outside the structure and between colored and dense bands, 11394 colored evaluations for 1266 Jacobians = the CPR formula, and four false declarations refused by name; batch13 declares 100 blocks of 2, VERIFIED at 0, 89424 evaluations for 14904 Jacobians = the formula, 0 rejected against 14904 accepted steps (warm start from hNext); `jacobian banana;` refused; batch22 (60 s) dense vs structured agree on all 56 KPIs within max(1e-7 rel, 1e-12 abs) (worst at 0.10 of that band).  NOT covered: wall-clock speed, the adsorber goldens (the suite's per-case check), Rosenbrock23 users that declare no structure (dense, untouched).",
-      "seconds": 20.7
+      "claim": "check_ode_block_structure: OK -- the probe (30 cells of 3, ledgers between the cell rows) integrates dense and structured to 3.6e-11 apart, its audit measured exactly 0 outside the structure and between colored and dense bands, 11394 colored evaluations for 1266 Jacobians = the CPR formula, and four false declarations refused by name; batch13 declares 100 blocks of 2, VERIFIED at 0, 89424 evaluations for 14904 Jacobians = the formula, 0 rejected against 14904 accepted steps (warm start from hNext); `jacobian banana;` refused; batch22 (60 s) dense vs structured agree on all 56 KPIs within max(1e-7 rel, 1e-12 abs) (worst at 0.13 of that band).  NOT covered: wall-clock speed, the adsorber goldens (the suite's per-case check), Rosenbrock23 users that declare no structure (dense, untouched).",
+      "seconds": 7.0
     },
     "check_data_reconciliation": {
       "exit": 0,
