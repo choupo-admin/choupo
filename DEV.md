@@ -3221,6 +3221,30 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C254 (the architect, 2026-11-09, found by the C252 general while wording prompt C):
+> THE HOSTED APP CANNOT TAKE WHAT THE STUDENT'S ASSISTANT WRITES.**  MEASURED:
+> `gui/src/ui/ClipboardBridge.tsx:63-68` offers the paste-and-apply bridge (parse the
+> `=== FILE: <path> ===` blocks, apply them to the open case) ONLY on localhost; on
+> www.choupo.org the same modal reads "This site RUNS cases.  To AUTHOR with AI, work on
+> your PC" and offers a .zip download.  The comment gives the reason: authoring was
+> meant to happen locally "with the student's own agent on the downloaded case".  That
+> assumed a student with a LOCAL agent and a checkout.  Vitor's premise of 2026-11-08
+> is another student: one with a browser and a chat assistant they subscribe to, no
+> checkout.  For that student the path today is: the assistant prints file blocks, the
+> student creates a folder and saves each block into it by hand (a dozen files, nested
+> paths), then File > Open Case folder -- the step where a first-year gives up, and the
+> one nobody had walked.  DECISION: the hosted app OPENS a case from pasted text.  A
+> File-menu entry beside "Open Case from .zip…": paste the assistant's whole reply, the
+> SAME block parser the bridge has (moved to one module, not copied) builds an
+> in-memory case exactly as `openedCaseFromZip` does (gui/src/cases/loadCase.ts:100),
+> with the same refusals (a path outside the case, a missing controlDict, no blocks
+> found -- each named), and the case then runs like any other.  This is LOADING a case
+> to run it, which the credo allows, not editing one; nothing is written to a server.
+> Prompt C, the start-here paragraph and the pharmaceutical pack then say "paste my
+> whole reply into File > Open Case from text" instead of "save the blocks into a
+> folder".  A harness problem measures the round trip mechanically (a reply's blocks ->
+> the parser -> a case that lints).  After the C251 home and C252 land (same files).
+
 > **THE SITE STOPPED DEPLOYING, AND THE CAUSE WAS OURS (2026-11-09 night).**  Vitor
 > forwarded GitHub's "publish-site: all jobs have failed", then read `680f96bd` on the
 > live app an hour after the night batch was pushed.  TWO defects, both found by
