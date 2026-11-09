@@ -17,9 +17,16 @@
   claims about itself:
 
     * every article the prose cites as "EPC Art. N", "EPC Rule N", "CPI Art.
-      N", "TRIPS Art. N" or "35 USC N" is among the articles its source row
-      says were READ -- a citation added to the prose without being read
+      N", "TRIPS Art. N", "35 USC N", "UPCA Art. N" (or "UPCA Arts. N and
+      M") or "Regulation 1257/2012 Art. N" is among the articles its source
+      row says were READ -- a citation added to the prose without being read
       fails here;
+    * the Unified Patent Court step (C260): where it sits, what it pins
+      (the date, the patents it hears and never hears, the opt-out and the
+      transitional period, one decision for many states, prior use left
+      national, Lisbon), each against its source row; step 2's three costs
+      announced as one list; step 8 pointing to the court; and a
+      plain-language summary at the head of each part of the case study;
     * every source has a public https link and says what was read in it;
     * the calendar arithmetic of the deadline calculator, including the
       month-end clamp, and the periods it uses against the formula;
@@ -106,6 +113,19 @@ describe("ip-strategy: every cited article was read", () => {
     for (const m of prose.matchAll(/35 USC (\d+)/g))
       expect(usc, `35 USC ${m[1]} is cited but not read`).toContain(m[1]!);
   });
+  it("UPC Agreement and Regulation 1257/2012 (C260)", () => {
+    const upca = numbersAfter(sourceRead("UPCA"), /Arts\./g);
+    const upcaCites = [...prose.matchAll(/UPCA Arts?\. (\d+)(?:\([^)]*\))*(?: and (\d+))?/g)];
+    expect(upcaCites.length).toBeGreaterThanOrEqual(25);
+    for (const m of upcaCites)
+      for (const n of [m[1], m[2]].filter(Boolean) as string[])
+        expect(upca.has(n), `UPCA Art. ${n} is cited but not in the UPCA row`).toBe(true);
+    const reg = numbersAfter(sourceRead("Regulation 1257/2012"), /Arts\./g);
+    const regCites = [...prose.matchAll(/Regulation 1257\/2012 Art\. (\d+)/g)];
+    expect(regCites.length).toBeGreaterThanOrEqual(2);
+    for (const m of regCites)
+      expect(reg.has(m[1]!), `Regulation 1257/2012 Art. ${m[1]} is cited but not read`).toBe(true);
+  });
   it("every source has a public link and says what was read", () => {
     expect(IP_SOURCES.length).toBeGreaterThanOrEqual(20);
     expect(new Set(IP_SOURCES.map((s) => s.short)).size).toBe(IP_SOURCES.length);
@@ -115,6 +135,129 @@ describe("ip-strategy: every cited article was read", () => {
       expect(s.cite.trim().length, s.short).toBeGreaterThan(10);
     }
   });
+});
+
+/*  THE UNIFIED PATENT COURT (C260).  Added after a patent professional read
+ *  the page.  Every statement was read on 2026-11-09 in the Agreement (OJ C
+ *  175), the Regulation, the EPO's pages or the court's own decision; the
+ *  rows below say which, and this block holds the step to them.  What it
+ *  cannot prove, as above: that an article SAYS what the sentence citing it
+ *  says. */
+describe("ip-strategy: the Unified Patent Court (C260)", () => {
+  const step = (n: number): string => IP_STEPS.find((s) => s.n === n)!.body;
+  const upc = IP_STEPS.find((s) => s.n === 12)!;
+
+  it("is step 12, between the counter-moves and the armed peace", () => {
+    expect(upc.title).toMatch(/^The Unified Patent Court/);
+    expect(IP_STEPS.find((s) => s.n === 11)!.title).toMatch(/^Counter-moves/);
+    expect(IP_STEPS.find((s) => s.n === 13)!.title).toMatch(/^Armed peace/);
+    expect(IP_STEPS.map((s) => s.n)).toEqual(Array.from({ length: 22 }, (_, i) => i + 1));
+  });
+
+  it("covers when, which patents, the opt-out, the structure, the trade and what stays national", () => {
+    const b = upc.body;
+    //  When: the EPO's pages.
+    expect(b).toContain("entered into force on 1 June 2023");
+    expect(sourceRead("EPO UPC")).toContain("entered into force on 1 June 2023");
+    expect(sourceRead("EPO UP start")).toContain("launched on 1 June 2023");
+    //  Which patents: Unitary (Reg. Art. 3(2), 18(2)), European (UPCA Art.
+    //  3), national never (UPCA Art. 32(2)).
+    expect(b).toContain("(Regulation 1257/2012 Art. 3(2))");
+    expect(b).toContain("Regulation 1257/2012 Art. 18(2)");
+    expect(b).toContain("(UPCA Art. 3(c))");
+    expect(b).toMatch(/NATIONAL patent[^.]*never does/);
+    expect(b).toContain("(UPCA Art. 32(2))");
+    //  Exclusive competence, including prior use.
+    expect(b).toContain("(UPCA Art. 32(1)(a)-(e), (g))");
+    //  The transitional period and the opt-out: seven years, prolongable by
+    //  seven; one month before its end; withdrawal; no opt-out for a
+    //  Unitary Patent.  No end DATE is computed.
+    expect(b).toMatch(/For seven years[^.]*\(UPCA Art\. 83\(1\)\)/);
+    expect(b).toMatch(/up to seven\s+years \(UPCA Art\. 83\(5\)\)/);
+    expect(b).toMatch(/at the latest one month before the period ends[^.]*\(UPCA Art\. 83\(3\)\)/);
+    expect(b).toContain("(UPCA Art. 83(4))");
+    expect(b).toMatch(/Unitary Patent cannot be opted out[^.]*\(UPCA Arts\. 2\(e\) and 83\(3\)\)/);
+    expect(b).not.toMatch(/\b20(29|30|31|36|37)\b/);
+    //  Structure, as far as a student needs it; no seat of the central
+    //  division (the 2013 text is overtaken on that point).
+    expect(b).toContain("(UPCA Art. 6(1))");
+    expect(b).toContain("sitting in Luxembourg (UPCA Art. 9(5))");
+    expect(b).toContain("(UPCA Art. 7(1), (3), (5))");
+    expect(b).toContain("(UPCA Art. 33(3))");
+    expect(b).toContain("(UPCA Art. 33(4))");
+    expect(b).not.toMatch(/Paris|London|Munich|Milan/);
+    //  One decision, many states, and the strategic trade.
+    expect(b).toContain("(UPCA Art. 34)");
+    expect(b).toContain("(UPCA Art. 82(1))");
+    expect(b).toContain("(UPCA Art. 33(8); EPO)");
+    expect(b).toContain("single-action enforcement against central revocation risk");
+    expect(sourceRead("EPO UPC")).toContain("central revocation action");
+    //  What stays national: prior use (Art. 28), enforcement procedure,
+    //  states outside the court (EPC Art. 64(3)).
+    expect(b).toContain("(UPCA Arts. 28 and 32(1)(g); step 8)");
+    expect(b).toContain("(UPCA Art. 82(3))");
+    expect(b).toContain("(EPC Art. 64(3))");
+  });
+
+  it("names Portugal's place only as the court's own documents state it", () => {
+    const b = upc.body;
+    expect(b).toContain("Portugal hosts a local division, in Lisbon (UPC Presidium, 17 April 2023)");
+    expect(sourceRead("UPC Presidium PR/17042023")).toMatch(/local division in Lisbon/);
+    expect(b).toMatch(/seats of the court's patent mediation and arbitration\s+centre in Lisbon[^.]*\(UPCA Art\. 35\(1\)\)/);
+    expect(sourceRead("UPCA")).toContain("35(1) (mediation and arbitration centre, Ljubljana and Lisbon)");
+    expect(sourceRead("EPO UP/UPC")).toMatch(/Portugal among them/);
+  });
+
+  it("is read from primary texts and official pages, each row dated", () => {
+    const rows = ["UPCA", "Regulation 1257/2012", "EPO UP start", "EPO UPC",
+      "UPC Presidium PR/17042023"].map((k) => IP_SOURCES.find((x) => x.short === k)!);
+    for (const r of rows) {
+      expect(r.url, r.short).toMatch(/^https:\/\/www\.(unifiedpatentcourt\.org|epo\.org)\//);
+      expect(`${r.read} ${r.note ?? ""}`, r.short).toContain("2026-11-09");
+    }
+    expect(IP_SOURCES.find((x) => x.short === "UPCA")!.cite).toContain("OJ C 175, 20.6.2013");
+    expect(IP_LIMITS.find((l) => l.id === "dated")!.body).toContain("2026-11-09");
+  });
+
+  it("step 2 announces its three costs as one list", () => {
+    expect(step(2)).toContain("What it costs comes in three parts: the disclosure, the "
+      + "money and the enforcement.  The disclosure is permanent");
+    expect(step(2)).toContain("The money is the filing");
+    expect(step(2)).toContain("The enforcement is yours to carry");
+    expect(step(2)).not.toContain("The costs are three.");
+  });
+
+  it("step 8 says what the court changed, and that prior use stayed national", () => {
+    expect(step(8)).toContain("leaves infringement to national law (Art. 64(3)).  In "
+      + "the states that take part in the Unified Patent Court, that changed on 1 June 2023");
+    expect(step(8)).toContain("(UPCA Art. 32(1)(a))");
+    expect(step(8)).toContain("(UPCA Art. 83(1); step 12)");
+    expect(step(8)).toMatch(/Rights based on prior use did not move with it/);
+    expect(step(8)).toContain("(UPCA Art. 32(1)(g))");
+    expect(step(8)).toContain("(UPCA Art. 28)");
+  });
+
+  it("opens each part of the case study with a plain-language summary", () => {
+    const heads: Record<number, string> = { 20: "THE FIRST.  On 29 November 1960",
+      21: "THE CONTRACT AND THE SPIN-OFF.  In 1976",
+      22: "WHY HISTORY REMEMBERS THE FIRST -- this page's reading" };
+    for (const n of [20, 21, 22]) {
+      const b = step(n);
+      expect(b.startsWith("IN BRIEF.  "), `step ${n}`).toBe(true);
+      //  Short: two sentences or three, and no citation -- the detail
+      //  follows under the part's first heading, which is still there.
+      const at = b.indexOf(heads[n]!);
+      expect(at, `step ${n}: its original opening is gone`).toBeGreaterThan(0);
+      const brief = b.slice("IN BRIEF.  ".length, at);
+      expect(brief.length, `step ${n}`).toBeLessThan(450);
+      expect(brief.split(/\.\s+/).filter(Boolean).length, `step ${n}`).toBeLessThanOrEqual(3);
+      expect(brief, `step ${n}`).not.toMatch(/F\.[23]d|US \d|col\./);
+    }
+    expect(step(20)).toContain("THE FIRST.  On 29 November 1960");
+    expect(step(21)).toContain("THE CONTRACT AND THE SPIN-OFF.  In 1976");
+    expect(step(22)).toContain("WHY HISTORY REMEMBERS THE FIRST -- this page's reading");
+  });
+
 });
 
 describe("ip-strategy: the deadline calculator", () => {
@@ -177,16 +320,16 @@ describe("ip-strategy: the rendered page", () => {
  *  of an opinion SAYS what the sentence citing it says.  That was read by a
  *  person on 2026-10-26 and is the author's responsibility. */
 describe("ip-strategy: the reverse-osmosis case study", () => {
-  const caseSteps = IP_STEPS.filter((s) => s.n >= 19 && s.n <= 21);
+  const caseSteps = IP_STEPS.filter((s) => s.n >= 20 && s.n <= 22);
   const caseProse = [
     ...caseSteps.map((s) => s.body),
-    ...IP_QUIZ.filter((q) => q.steps.some((n) => n >= 19)).flatMap((q) => [q.q, q.feedback]),
+    ...IP_QUIZ.filter((q) => q.steps.some((n) => n >= 20)).flatMap((q) => [q.q, q.feedback]),
   ].join("\n");
   const step = (n: number): string => IP_STEPS.find((s) => s.n === n)!.body;
 
-  it("is three steps, 19 to 21, and the quiz asks about it", () => {
-    expect(caseSteps.map((s) => s.n)).toEqual([19, 20, 21]);
-    expect(IP_QUIZ.find((q) => q.id === "cadotte-title")!.steps).toEqual([20, 21]);
+  it("is three steps, 20 to 22, and the quiz asks about it", () => {
+    expect(caseSteps.map((s) => s.n)).toEqual([20, 21, 22]);
+    expect(IP_QUIZ.find((q) => q.id === "cadotte-title")!.steps).toEqual([21, 22]);
   });
 
   it("cites every reported opinion at a page inside the span its source row read", () => {
@@ -263,29 +406,29 @@ describe("ip-strategy: the reverse-osmosis case study", () => {
     expect(rec["us344-ex1"]!.flux).toBe("35.4 gfd (1,444 l/m²·d)");
     expect(rec["us344-ex1"]!.pressure).toBe("1,000 psi (68.0 atm)");
     //  The prose says the same numbers, not a second set.
-    expect(step(19)).toContain("5.25 % sodium chloride solution to about 500 parts per");
-    expect(step(19)).toContain("at least 99.3");
-    expect(step(19)).toContain("99.5 % at 35.4 gfd at 1,000 psi");
-    expect(step(20)).toContain("gave 12.7 and 9.5 gfd at 95.0 and 88.5 % rejection");
-    expect(step(20)).toContain("obtained 13.1 and 11.0 gfd at 98.0 %");
+    expect(step(20)).toContain("5.25 % sodium chloride solution to about 500 parts per");
+    expect(step(20)).toContain("at least 99.3");
+    expect(step(20)).toContain("99.5 % at 35.4 gfd at 1,000 psi");
+    expect(step(21)).toContain("gave 12.7 and 9.5 gfd at 95.0 and 88.5 % rejection");
+    expect(step(21)).toContain("obtained 13.1 and 11.0 gfd at 98.0 %");
   });
 
   it("pins the dates and what each court decided", () => {
-    expect(step(19)).toContain("On 29 November 1960");
-    expect(step(19)).toContain("12 May 1964");
-    expect(step(19)).toContain("filed on 20 March 1962");
-    expect(step(20)).toContain("On 17 November 1977");
-    expect(step(20)).toContain("left MRI on 31 December 1977");
-    expect(step(20)).toContain("on 23 February 1978");
-    expect(step(20)).toContain("applied for the patent on 22 February 1979");
-    expect(step(20)).toMatch(/Federal Circuit vacated the injunction/);
-    expect(step(20)).toMatch(/reversed on title alone and vacated the holdings of validity and infringement/);
-    expect(step(20)).toMatch(/not a sham/);
-    expect(step(20)).toMatch(/restitution was refused/);
+    expect(step(20)).toContain("On 29 November 1960");
+    expect(step(20)).toContain("12 May 1964");
+    expect(step(20)).toContain("filed on 20 March 1962");
+    expect(step(21)).toContain("On 17 November 1977");
+    expect(step(21)).toContain("left MRI on 31 December 1977");
+    expect(step(21)).toContain("on 23 February 1978");
+    expect(step(21)).toContain("applied for the patent on 22 February 1979");
+    expect(step(21)).toMatch(/Federal Circuit vacated the injunction/);
+    expect(step(21)).toMatch(/reversed on title alone and vacated the holdings of validity and infringement/);
+    expect(step(21)).toMatch(/not a sham/);
+    expect(step(21)).toMatch(/restitution was refused/);
     //  The European filing claimed the US date one day inside the priority
     //  year -- the calculator of step 6 says where that year ends.
     expect(addMonths("1979-02-22", 12)).toBe("1980-02-22");
-    expect(step(20)).toContain("21 February 1980");
+    expect(step(21)).toContain("21 February 1980");
     expect(sourceRead("EP 0 015 149")).toContain("priority 22.02.1979 US 14164");
   });
 

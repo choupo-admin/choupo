@@ -40,6 +40,15 @@
   other company on the page is fictitious and says so.
 
   NOT LEGAL ADVICE, and the page says so at its top and in its limits.
+
+  REVISED 2026-11-09 (DEV.md 4c C260) after a reading by a patent
+  professional: step 2 announces its three costs as one list; step 8 says
+  what the Unified Patent Court changed and that prior-use rights stayed
+  national; step 12 is new, on the Unified Patent Court, every statement
+  read that day in the UPC Agreement (OJ C 175, 20.6.2013), Regulation (EU)
+  No 1257/2012, the EPO's Unitary Patent and UPC pages, or a decision the
+  court published; and each part of the case study opens with a
+  plain-language summary.  Steps 12-21 became 13-22.
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
@@ -90,13 +99,16 @@ export const IP_STEPS: readonly LessonStep[] = [
       + "art (Art. 56).  The rights start when the grant is published "
       + "(Art. 64(1)); for a process patent they extend to the products "
       + "directly obtained by the process (Art. 64(2)); and infringement is "
-      + "decided under each country's national law (Art. 64(3)).  The costs "
-      + "are three.  The disclosure is permanent: when the patent ends, or "
-      + "if it is refused after publication, the teaching stays public.  "
-      + "The money: filing, translation and yearly renewal fees in every "
-      + "country you want covered, which this page does not quantify "
-      + "because fees change and differ.  And enforcement: a patent is a "
-      + "right to sue, worth what you can detect and afford to enforce.",
+      + "decided under each country's national law (Art. 64(3); step 12 says "
+      + "what the Unified Patent Court changed).  That is what the patent "
+      + "buys.  What it costs comes in three parts: the disclosure, the "
+      + "money and the enforcement.  The disclosure is permanent: when the "
+      + "patent ends, or if it is refused after publication, the teaching "
+      + "stays public.  The money is the filing, translation and yearly "
+      + "renewal fees in every country you want covered, which this page "
+      + "does not quantify because fees change and differ.  The enforcement "
+      + "is yours to carry: a patent is a right to sue, worth what you can "
+      + "detect and afford to enforce.",
   },
   {
     n: 3,
@@ -279,7 +291,19 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "commercial-use defence that requires commercial use at least one "
       + "year before the patent's effective filing date (35 USC 273(a)).  "
       + "Prior-user rights vary by jurisdiction, and the European Patent "
-      + "Convention leaves infringement to national law (Art. 64(3)).  "
+      + "Convention leaves infringement to national law (Art. 64(3)).  In "
+      + "the states that take part in the Unified Patent Court, that changed "
+      + "on 1 June 2023: actions for infringement of a Unitary Patent, and of "
+      + "a European patent that was not opted out, belong to that court "
+      + "(UPCA Art. 32(1)(a)), which applies the rights the Agreement itself "
+      + "defines (UPCA Arts. 25 and 26); during a transitional period an "
+      + "action on a European patent may still go to a national court (UPCA "
+      + "Art. 83(1); step 12).  Rights based on prior use did not move with "
+      + "it.  The court hears actions on them (UPCA Art. 32(1)(g)), but a "
+      + "prior user has, in each participating state, the same right that "
+      + "state's own law would give against a national patent (UPCA Art. "
+      + "28) -- in Portugal the right of CPI Art. 105, and in Portugal "
+      + "only.  "
       + "Because the burden is yours, the EVIDENCE is the asset: dated "
       + "records made at the time.  France's INPI offers the e-Soleau, a "
       + "deposit that proves a document existed on a date, kept for five "
@@ -309,7 +333,7 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "web of overlapping rights that anyone must license from several "
       + "owners before making a product (Shapiro, 2001).  The catch: a "
       + "thicket also traps its owners, who then need each other's licences "
-      + "(step 12).  DECOYS: an application is published at 18 months "
+      + "(step 13).  DECOYS: an application is published at 18 months "
       + "whether or not its owner pursues it (EPC Art. 93), so a filing on "
       + "a route the filer has already abandoned can send a careful reader "
       + "the wrong way.  How often this is done is not recorded in any "
@@ -376,12 +400,116 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "process (G 3/97 and G 4/97).  After the nine months the attack is "
       + "national, one country at a time (Art. 138), or before the Unified "
       + "Patent Court in the states that take part, Portugal among them "
-      + "(EPO).  The catch of every counter-move: it tells the patentee you "
+      + "(EPO; step 12).  The catch of every counter-move: it tells the patentee you "
       + "care, and an opposition lets the patentee amend into a narrower "
       + "patent that has now survived a challenge (Art. 101(3)).",
   },
+  //  THE UNIFIED PATENT COURT (DEV.md 4c C260, 2026-11-09).  Added after a
+  //  reader who examines patents found the page silent on it -- "an essential
+  //  aspect of any piece on patent litigation under the EPC".  Every
+  //  statement was read on 2026-11-09 in the Agreement as published in OJ C
+  //  175 (the court's own copy), in Regulation (EU) No 1257/2012 (the EPO's
+  //  copy), on the EPO's Unitary Patent and UPC pages, or in the court's
+  //  Presidium decision of 17 April 2023; the rows are in IP_SOURCES.  LEFT
+  //  OUT ON PURPOSE: the seats of the central division and its sections
+  //  (Art. 7(2) as published in 2013 names Paris, London and Munich; the
+  //  EPO's UPC page of August 2024 names Paris and Munich only; the act that
+  //  changed it was not read, so no seat is named), the end date of the
+  //  transitional period (it is "seven years after" the entry into force and
+  //  may be prolonged; no date is computed), and any figure on the court's
+  //  caseload.
   {
     n: 12,
+    title: "The Unified Patent Court: one action, many countries",
+    body: "Step 11 named this court in passing; it changes the map of every "
+      + "move on this page, so it has a step of its own.  WHEN.  The "
+      + "Agreement on a Unified Patent Court entered into force on 1 June "
+      + "2023, the day the Unitary Patent system was launched (EPO).  "
+      + "Eighteen EU states are bound by it, Portugal among them (EPO).  "
+      + "WHICH PATENTS.  The court is common to "
+      + "the states party to the Agreement (UPCA Art. 1) and hears two kinds "
+      + "of patent granted by the European Patent Office.  A UNITARY PATENT "
+      + "-- a European patent with unitary effect -- gives uniform protection "
+      + "with equal effect in all the participating states, and may only be "
+      + "limited, transferred or revoked, or lapse, in respect of all of "
+      + "them (Regulation 1257/2012 Art. 3(2)); it covers the states in "
+      + "which the court had exclusive jurisdiction on the day its unitary "
+      + "effect was registered, and does not grow when more join later "
+      + "(Regulation 1257/2012 Art. 18(2); EPO).  A EUROPEAN PATENT in the "
+      + "classic sense, the bundle validated country by country, falls under "
+      + "the court too if it had not lapsed when the Agreement entered into "
+      + "force or was granted after (UPCA Art. 3(c)), and so do pending "
+      + "applications and supplementary protection certificates (UPCA Art. "
+      + "3(b), (d)).  A NATIONAL patent, granted by a national office such as "
+      + "Portugal's, never does: the Agreement does not list it, and national "
+      + "courts keep every action the court does not hold exclusively (UPCA "
+      + "Art. 32(2)).  WHAT IT DECIDES.  Its competence is exclusive for "
+      + "actions for actual or threatened infringement, declarations of "
+      + "non-infringement, provisional measures and injunctions, revocation "
+      + "and counterclaims for revocation, and actions on prior use (UPCA "
+      + "Art. 32(1)(a)-(e), (g)).  It applies one text for what a patent "
+      + "forbids -- direct and indirect use (UPCA Arts. 25 and 26) -- and "
+      + "for its limits, such as acts done for experimental purposes (UPCA "
+      + "Art. 27(b)), beside Union law, the EPC and national law (UPCA Art. "
+      + "24(1)).  THE OPT-OUT AND THE TRANSITIONAL PERIOD.  For seven years "
+      + "after the entry into force, an infringement or revocation action on "
+      + "a European patent may still be brought before a national court "
+      + "(UPCA Art. 83(1)); after a consultation, the Agreement's "
+      + "Administrative Committee may prolong that period by up to seven "
+      + "years (UPCA Art. 83(5)).  The owner or applicant of a European "
+      + "patent may OPT OUT of the court's exclusive competence by notifying "
+      + "its Registry, at the latest one month before the period ends, unless "
+      + "an action on the patent has already been brought before the court "
+      + "(UPCA Art. 83(3)), and may withdraw the opt-out unless an action has "
+      + "already been brought before a national court (UPCA Art. 83(4)).  A "
+      + "Unitary Patent cannot be opted out: the Agreement gives the opt-out "
+      + "to European patents, which it defines as those without unitary "
+      + "effect (UPCA Arts. 2(e) and 83(3)).  HOW THE COURT IS BUILT, as far "
+      + "as a reader of patents needs it.  A Court of First Instance and a "
+      + "Court of Appeal (UPCA Art. 6(1)), the second sitting in Luxembourg "
+      + "(UPCA Art. 9(5)).  The first instance has a central division and "
+      + "local and regional divisions: a state may ask for a local division "
+      + "of its own, two or more states for a regional one (UPCA Art. 7(1), "
+      + "(3), (5)).  An infringement action goes to the local or regional "
+      + "division of the state where the infringement occurs or where the "
+      + "defendant is based, or to the central division if that state has "
+      + "neither (UPCA Art. 33(1)); a revocation action on its "
+      + "own goes to the central division (UPCA Art. 33(4)); and when an "
+      + "accused infringer counterclaims for revocation, the local or "
+      + "regional division may hear both, send the counterclaim to the "
+      + "central division, or, with the parties' agreement, send it the "
+      + "whole case (UPCA Art. 33(3)).  Portugal hosts a local division, in "
+      + "Lisbon (UPC Presidium, 17 April 2023), and the Agreement places one "
+      + "of the two seats of the court's patent mediation and arbitration "
+      + "centre in Lisbon, the other in Ljubljana (UPCA Art. 35(1)).  ONE "
+      + "DECISION, MANY STATES.  A decision covers, for a European patent, "
+      + "every participating state in which that patent has effect (UPCA "
+      + "Art. 34), and is enforceable in any of them (UPCA Art. 82(1)).  "
+      + "That is the strategic trade.  For the owner, one action can win an "
+      + "injunction (UPCA Art. 63(1)) for the whole territory, where before "
+      + "it took a case in each country (EPO).  For a rival, one revocation "
+      + "action, or one counterclaim, can revoke the patent in all those "
+      + "states at once, at any time in its life and without having opposed "
+      + "it at the EPO (UPCA Art. 33(8); EPO), on the grounds the EPC allows "
+      + "and no others (UPCA Art. 65(2)).  It is a central attack beside the "
+      + "nine-month opposition of step 11, not instead of it: the court may "
+      + "stay its proceedings when a rapid decision of the EPO may be "
+      + "expected (UPCA Art. 33(10)).  So the owner weighs single-action "
+      + "enforcement against central revocation risk.  While the "
+      + "transitional period lasts, the owner of a European patent who fears "
+      + "the second more than it values the first can opt out and stay with "
+      + "national courts, one country at a time; the owner of a Unitary "
+      + "Patent has no such choice.  WHAT STAYS NATIONAL.  National patents "
+      + "and the actions the court does not hold (UPCA Art. 32(2)); the "
+      + "prior-user right, which each participating state's own law defines "
+      + "even when the court hears the action (UPCA Arts. 28 and 32(1)(g); "
+      + "step 8); the procedure for enforcing a decision, governed by the "
+      + "law of the state where it is enforced (UPCA Art. 82(3)); and, for a "
+      + "European patent, every EPC state that is not in the court, where "
+      + "infringement stays with national law (EPC Art. 64(3)).",
+  },
+  {
+    n: 13,
     title: "Armed peace: cross-licences, pools, standards and the assertion business",
     body: "Firms that block each other usually settle.  A CROSS-LICENCE "
       + "lets each use the other's patents; a PATENT POOL gathers many "
@@ -406,7 +534,7 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "cross-licence offers it nothing it needs.",
   },
   {
-    n: 13,
+    n: 14,
     title: "Who owns what an employee invents",
     body: "Before you choose between patent and secret, know whose choice "
       + "it is.  The EPC leaves the right to a patent for an employee's "
@@ -426,7 +554,7 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "own contract and your country's law.",
   },
   {
-    n: 14,
+    n: 15,
     title: "The limits: where strategy becomes unlawful",
     body: "Everything above is lawful when done honestly.  These are the "
       + "lines, stated so that you can recognise them, not as a manual.  "
@@ -442,7 +570,7 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "extended protection it was not entitled to (AstraZeneca v "
       + "Commission, T-321/05, 2010); and seeking an injunction on a "
       + "standard-essential patent without the FRAND procedure can be an "
-      + "abuse (Huawei v ZTE, step 12).  INEQUITABLE CONDUCT.  In the United "
+      + "abuse (Huawei v ZTE, step 13).  INEQUITABLE CONDUCT.  In the United "
       + "States, a patent can be held unenforceable if the applicant, with "
       + "specific intent to deceive the patent office, withheld information "
       + "that was 'but-for' material to the grant (Therasense v. Becton, "
@@ -456,7 +584,7 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "vary by jurisdiction.",
   },
   {
-    n: 15,
+    n: 16,
     title: "Worked case: the process patent whose recipe does not work",
     body: "The question: a patent protects a PROCESS; you follow its recipe "
       + "and it does not work.  Can you have the patent invalidated?  "
@@ -516,7 +644,7 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "challenge joins an infringement case varies by jurisdiction.",
   },
   {
-    n: 16,
+    n: 17,
     title: "Worked case: the turbine whose blades melt",
     body: "Imagine a patent on an aircraft gas turbine.  Built as described, "
       + "its blades melt.  Another firm adds cooled blades and the turbine "
@@ -525,7 +653,7 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "-- novelty, inventive step, industrial application, disclosure -- "
       + "so a patent that does not work in practice can be granted, and "
       + "once granted it is presumed valid until challenged (T 1076/21).  "
-      + "(2) It is open to revocation for insufficiency (step 15), but the "
+      + "(2) It is open to revocation for insufficiency (step 16), but the "
       + "test is whether the SKILLED PERSON could carry it out, and that "
       + "person brings the common general knowledge; the description need "
       + "not give 'well-known ancillary features' (Guidelines F-III 1).  If "
@@ -562,7 +690,7 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "conditions and the reciprocal licence set out in Art. 110.",
   },
   {
-    n: 17,
+    n: 18,
     title: "Worked case: Whittle's turbojet patent",
     body: "The turbine is not only a thought experiment.  Frank Whittle "
       + "applied for his first turbojet patent, British application "
@@ -602,7 +730,7 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "grounds of its day to Whittle's patent, this page has not verified.",
   },
   {
-    n: 18,
+    n: 19,
     title: "History: the Wright brothers, Curtiss and the 1917 pool; Watt and high-pressure steam",
     body: "THE WRIGHT BROTHERS.  Their US patent 821,393, filed 23 March "
       + "1903 and granted 22 May 1906 (Wright Co. v. Herring-Curtiss Co., "
@@ -642,9 +770,14 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
   //  factor Vitor recalled ("at least 5x") was put to him with the measured
   //  ones before any is written here (DEV.md 4c C140).
   {
-    n: 19,
+    n: 20,
     title: "Case study, part 1: the first membrane and the composite that followed",
-    body: "THE FIRST.  On 29 November 1960 Sidney Loeb and Srinivasa "
+    body: "IN BRIEF.  Reverse osmosis makes fresh water by pushing salt water "
+      + "under high pressure through a film that lets water pass and holds "
+      + "most of the salt back.  This part tells how the first such film was "
+      + "invented in 1960, and how a second inventor made a different, "
+      + "ultrathin one in 1978; the details follow, for those who want them.  "
+      + "THE FIRST.  On 29 November 1960 Sidney Loeb and Srinivasa "
       + "Sourirajan, of Los Angeles, applied for the patent that became US "
       + "3,133,132, assigned to the Regents of the University of California "
       + "and granted on 12 May 1964 (US 3,133,132, face).  The film is cast "
@@ -704,9 +837,16 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "conditions it was measured at.",
   },
   {
-    n: 20,
+    n: 21,
     title: "Case study, part 2: FilmTec, Allied-Signal and Hydranautics in the Federal Circuit",
-    body: "THE CONTRACT AND THE SPIN-OFF.  In 1976 the Office of Water "
+    body: "IN BRIEF.  The 1978 film was first made in a laboratory working "
+      + "under a US government research contract; its inventor then moved to "
+      + "FilmTec, a new company started by staff of that laboratory, which "
+      + "patented it and sued competitors.  The appeals court held that an "
+      + "invention made under that contract belonged to the US government "
+      + "from the start, so FilmTec could not use the patent to stop "
+      + "Hydranautics, one of the firms it had sued.  "
+      + "THE CONTRACT AND THE SPIN-OFF.  In 1976 the Office of Water "
       + "Research and Technology of the US Department of the Interior "
       + "contracted the North Star Division of Midwest Research Institute "
       + "(MRI) for 'research and development on in-situ formed condensation "
@@ -789,7 +929,7 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "935; that court's decision this page has not read).  The "
       + "suit was not 'objectively baseless' -- 'precisely what Cadotte "
       + "invented, and when' were genuine issues -- so it was not a sham "
-      + "under the test of step 14 (67 F.3d at 936-38); and restitution was "
+      + "under the test of step 15 (67 F.3d at 936-38); and restitution was "
       + "refused, although the court said that FilmTec 'never possessed any "
       + "rights in the ’344 patent that were enforceable against "
       + "Hydranautics' (67 F.3d at 939-40).  Allied and FilmTec had "
@@ -797,9 +937,13 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "too; the opinion does not give the terms (67 F.3d at 935).",
   },
   {
-    n: 21,
+    n: 22,
     title: "Case study, part 3: why history remembers the first, and what a strategist learns",
-    body: "WHY HISTORY REMEMBERS THE FIRST -- this page's reading, offered "
+    body: "IN BRIEF.  This part asks why history remembers the first film "
+      + "rather than the one that followed it, and draws six lessons for "
+      + "anyone who owns, buys or values a patent.  The main one: before "
+      + "asking whether a patent is valid, ask who owns it.  "
+      + "WHY HISTORY REMEMBERS THE FIRST -- this page's reading, offered "
       + "for discussion, not the finding of any source.  The first membrane "
       + "opened the field, gave it a name, and was published in two patents "
       + "anyone could read from 1964 (US 3,133,132; US 3,133,137); the "
@@ -822,7 +966,7 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
       + "1553-54).  Before you value a patent -- yours, a target's, a "
       + "licensor's -- read its chain of title: who paid, under which "
       + "contract and statute, and what the inventor's employment agreement "
-      + "said (step 13).  (2) YOUR OWN RECORDS ARE EVIDENCE, BOTH WAYS.  The "
+      + "said (step 14).  (2) YOUR OWN RECORDS ARE EVIDENCE, BOTH WAYS.  The "
       + "dated notebook that step 8 recommends is what placed the conception "
       + "inside the contract, and the company's own proposal called it a "
       + "spin-off (982 F.2d at 1549).  (3) CLAIM DRAFTING DOES NOT MOVE A "
@@ -849,7 +993,7 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
   },
 ];
 
-/** The case study's numbers (steps 19-20), each AS ITS SOURCE STATES IT,
+/** The case study's numbers (steps 20-21), each AS ITS SOURCE STATES IT,
  *  with the conditions it was measured at.  No ratio is computed from them:
  *  the rows differ in feed, pressure, cell and date (IP_LIMITS
  *  "membrane-numbers"). */
@@ -1112,9 +1256,10 @@ export const IP_LIMITS: readonly LessonLimit[] = [
   {
     id: "jurisdictions",
     title: "A few jurisdictions are read, not all of them.",
-    body: "The page reads the European Patent Convention, the EU trade-secrets "
-      + "directive, Portuguese law and, for contrast, a few US provisions and "
-      + "the historical UK Acts.  "
+    body: "The page reads the European Patent Convention, the Agreement on a "
+      + "Unified Patent Court and the Unitary Patent Regulation, the EU "
+      + "trade-secrets directive, Portuguese law and, for contrast, a few US "
+      + "provisions and the historical UK Acts.  "
       + "Other countries differ, sometimes completely -- grace periods, "
       + "prior-user rights, utility models and employee-invention rules most "
       + "of all.",
@@ -1122,7 +1267,8 @@ export const IP_LIMITS: readonly LessonLimit[] = [
   {
     id: "dated",
     title: "The law was read on one date.",
-    body: "Every article, rule and decision was read online on 2026-10-26.  "
+    body: "Every article, rule and decision was read online on 2026-10-26, "
+      + "and those on the Unified Patent Court (step 12) on 2026-11-09.  "
       + "Laws are amended and case law moves (G 1/23 changed how G 1/92 is "
       + "read in 2025).  Check the current text before relying on any of it.",
   },
@@ -1196,7 +1342,7 @@ export const IP_QUIZ: readonly QuizQuestion[] = [
       + "to rivals you cannot police.",
   },
   {
-    id: "process-not-working", steps: [15],
+    id: "process-not-working", steps: [16],
     q: "A granted European patent claims a process with a stated minimum "
       + "yield.  You follow its recipe faithfully and never reach that "
       + "yield.  What is your strongest route?",
@@ -1219,7 +1365,7 @@ export const IP_QUIZ: readonly QuizQuestion[] = [
       + "Reasons 74).",
   },
   {
-    id: "blocking-patents", steps: [16],
+    id: "blocking-patents", steps: [17],
     q: "Firm B adds cooled blades to Firm A's patented turbine and patents "
       + "the improvement.  What is the position?",
     options: [
@@ -1254,7 +1400,7 @@ export const IP_QUIZ: readonly QuizQuestion[] = [
       + "intellectual property right and does not by itself prove use.",
   },
   {
-    id: "where-the-line-is", steps: [14],
+    id: "where-the-line-is", steps: [15],
     q: "Which of these crosses the line from strategy into conduct a court "
       + "or competition authority can sanction?",
     options: [
@@ -1273,7 +1419,7 @@ export const IP_QUIZ: readonly QuizQuestion[] = [
       + "with intent to deceive makes a patent unenforceable (Therasense).",
   },
   {
-    id: "cadotte-title", steps: [20, 21],
+    id: "cadotte-title", steps: [21, 22],
     q: "A district court held FilmTec's reverse-osmosis membrane patent "
       + "valid and infringed by Hydranautics.  Why could FilmTec still not "
       + "enforce it?",
@@ -1346,8 +1492,63 @@ export const IP_SOURCES: readonly IpSource[] = [
   { short: "EPO UP/UPC", cite: "European Patent Office, Unitary Patent and "
       + "Unified Patent Court pages",
     read: "The 18 participating states, Portugal among them; the UPC's "
-      + "jurisdiction over unitary and European patents",
+      + "jurisdiction over unitary and European patents.  Read again on "
+      + "2026-11-09 (page last updated June 2026): the Unitary Patent takes "
+      + "effect in the 18 states that had ratified the UPC Agreement, "
+      + "Portugal among them",
     url: "https://www.epo.org/en/applying/european/unitary/unitary-patent" },
+  { short: "EPO UP start", cite: "European Patent Office, When was the "
+      + "Unitary Patent system launched?",
+    read: "Read 2026-11-09: launched on 1 June 2023; a Unitary Patent covers "
+      + "the participating states in which the UPC Agreement had taken effect "
+      + "on the date unitary effect was registered, with no later extension",
+    url: "https://www.epo.org/en/applying/european/unitary/unitary-patent/start" },
+  { short: "EPO UPC", cite: "European Patent Office, Unified Patent Court "
+      + "page (last updated August 2024)",
+    read: "Read 2026-11-09: the UPC Agreement entered into force on 1 June "
+      + "2023; eighteen states bound; it ends the need for litigation before "
+      + "national courts in different countries; a central revocation "
+      + "action, separate from the EPO's opposition, at any time during the "
+      + "life of the patent",
+    url: "https://www.epo.org/en/applying/european/unitary/upc" },
+  { short: "UPCA", cite: "Agreement on a Unified Patent Court, OJ C 175, "
+      + "20.6.2013, p. 1",
+    read: "Arts. 1, 2, 3, 6, 7, 9, 24, 25, 26, 27, 28, 32, 33, 34, 35, 63, "
+      + "65, 82, 83; in particular 2(e) (a European patent is one without "
+      + "unitary effect), 3 (which patents), 28 (prior use: the right each "
+      + "state's law gives), 32 (exclusive competence; national courts keep "
+      + "the rest), 33 (divisions, counterclaims, revocation without "
+      + "opposition, stay), 34 (territorial scope), 35(1) (mediation and "
+      + "arbitration centre, Ljubljana and Lisbon), 83 (transitional period, "
+      + "opt-out and its withdrawal)",
+    url: "https://www.unifiedpatentcourt.org/sites/default/files/upc-agreement.pdf",
+    note: "Read 2026-11-09 in the Official Journal text as the court "
+      + "publishes it; EUR-Lex refused automated access.  The text is the "
+      + "Agreement as published in 2013.  Its Art. 7(2) names Paris, London "
+      + "and Munich for the central division, where the EPO's UPC page "
+      + "(August 2024) names Paris and Munich; the act that changed it was "
+      + "not read, so the page names no seat of the central division" },
+  { short: "Regulation 1257/2012", cite: "Regulation (EU) No 1257/2012 "
+      + "implementing enhanced cooperation in the area of the creation of "
+      + "unitary patent protection",
+    read: "Arts. 3, 5, 18; 3(2) (unitary character: limited, transferred, "
+      + "revoked or lapsing only for all participating states), 18(2) "
+      + "(unitary effect only in the states where the UPC has exclusive "
+      + "jurisdiction at the date of registration)",
+    url: "https://www.epo.org/en/legal/up-upc/2022/eu20121257.html",
+    note: "Read 2026-11-09 in the EPO's text of the Regulation; EUR-Lex "
+      + "refused automated access" },
+  { short: "UPC Presidium PR/17042023", cite: "Presidium of the Unified "
+      + "Patent Court, decision of 17 April 2023 designating the presiding "
+      + "judges of the central, local and regional divisions",
+    read: "Read 2026-11-09: Art. 1 lists a local division in Lisbon among "
+      + "the divisions",
+    url: "https://www.unifiedpatentcourt.org/sites/default/files/upc_documents/"
+      + "decision-of-presidium_designation-of-presiding-lqj_en_0.pdf",
+    note: "The court's web pages refused automated access; this decision "
+      + "and an order of the Lisbon local division of 8 May 2025 "
+      + "(UPC_CFI_41/2025), both published on the court's site, were read "
+      + "instead" },
   { short: "TRIPS", cite: "Agreement on Trade-Related Aspects of "
       + "Intellectual Property Rights (WTO)",
     read: "Arts. 31(l), 33, 34, 39",
@@ -1500,7 +1701,7 @@ export const IP_SOURCES: readonly IpSource[] = [
     read: "Preface and contents: a course text whose chapters include "
       + "turbine cooling",
     url: "https://ntrs.nasa.gov/citations/19750016669" },
-  //  The reverse-osmosis case study (steps 19-21).  Patents, court opinions
+  //  The reverse-osmosis case study (steps 20-22).  Patents, court opinions
   //  and the inventor's retrospective: primary.  The 2022 volume is cited
   //  for its TITLE only.
   { short: "US 3,133,132", cite: "S. Loeb, S. Sourirajan, High flow porous "
