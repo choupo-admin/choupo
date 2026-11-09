@@ -43,7 +43,7 @@ import { Alert, Badge, Box, Group, Loader, Stack, Text, Title } from "@mantine/c
 
 import { useMethodRun } from "../../case/methodRun.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { ENTHALPY_LIMITS, ENTHALPY_STEPS } from "./reactionEnthalpyLesson.js";
 import { OriginMark } from "./origin.js";
 
@@ -221,6 +221,8 @@ export function ReactionEnthalpyTool(): JSX.Element {
         {step(6)}
 
         <LessonLimits limits={ENTHALPY_LIMITS} />
+
+        <LessonReferences tool="reaction-enthalpy" />
       </Stack>
     </Box>
   );

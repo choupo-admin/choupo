@@ -49,7 +49,7 @@ import { useMethodRun, type MethodRunState } from "../../case/methodRun.js";
 import { tutorialByName } from "../../cases/tutorials.js";
 import { guideUrl, openGuide } from "../../help/guideLinks.js";
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
-import { LessonLimits, LessonStepView } from "./lessonStep.js";
+import { LessonLimits, LessonStepView, LessonReferences } from "./lessonStep.js";
 import {
   OVERPRESSURE_LIMITS, OVERPRESSURE_SOURCES, OVERPRESSURE_STEPS,
 } from "./overpressureLesson.js";
@@ -722,6 +722,8 @@ export function OverpressureTool(): JSX.Element {
             </Box>
           ))}
         </Box>
+
+        <LessonReferences tool="overpressure" />
       </Stack>
     </Box>
   );

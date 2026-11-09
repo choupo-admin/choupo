@@ -51,7 +51,7 @@ import {
   h2PerCarbon, replacement, rootRoutes, routeInputs, routesForcing, routesTo,
   routesUsing, routesWithForcedCoproducts, type DepthNode,
 } from "../../case/chemistryGraphMath.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 import {
@@ -783,6 +783,8 @@ export function TreeOfChemistryTool(): JSX.Element {
           lesson={TREE_STEPS} />
 
         <LessonLimits limits={TREE_LIMITS} />
+
+        <LessonReferences tool="tree-of-chemistry" />
       </Stack>
     </Box>
   );

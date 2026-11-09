@@ -74,7 +74,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Suspense, lazy, useMemo, useState, type ComponentProps } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, LoadingOverlay, SegmentedControl, Stack,
   Text, Title, Tooltip,
@@ -613,6 +613,8 @@ export function KremserTool(): JSX.Element {
             ))}
           </Box>
         </Box>
+
+        <LessonReferences tool="kremser" />
       </Stack>
     </Box>
   );

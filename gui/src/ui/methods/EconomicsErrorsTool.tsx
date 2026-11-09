@@ -33,7 +33,7 @@ import {
   TextInput, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import {
   ECON_ERRORS_LIMITS, ECON_ERRORS_QUIZ, ECON_ERRORS_STEPS,
@@ -532,6 +532,8 @@ export function EconomicsErrorsTool(): JSX.Element {
         <LessonQuiz title="Check your understanding" questions={ECON_ERRORS_QUIZ} lesson={ECON_ERRORS_STEPS} />
 
         <LessonLimits limits={ECON_ERRORS_LIMITS} />
+
+        <LessonReferences tool="economics-errors" />
       </Stack>
     </Box>
   );

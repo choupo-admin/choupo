@@ -1,0 +1,2201 @@
+{
+  "about": "Verified bibliographic references of the EduTool lessons, keyed by tool id (DEV.md 4c C259 (a)). Every entry carries its verification; bin/curate/check_lesson_references.py holds the file. Drawn by LessonReferences in gui/src/ui/methods/lessonStep.tsx; typed in lessonReferences.ts.",
+  "lessons": {
+    "standard-state": {
+      "references": [
+        {
+          "text": "Leachman, J. W.; Jacobsen, R. T.; Penoncello, S. G.; Lemmon, E. W. (2009). Fundamental Equations of State for Parahydrogen, Normal Hydrogen, and Orthohydrogen. J. Phys. Chem. Ref. Data 38(3), 721–748.",
+          "doi": "10.1063/1.3160306",
+          "note": "The reference equation of state behind the hydrogen enthalpy data the page compares against.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1063/1.3160306: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Bell, I. H.; Wronski, J.; Quoilin, S.; Lemort, V. (2014). Pure and Pseudo-pure Fluid Thermophysical Property Evaluation and the Open-Source Thermophysical Property Library CoolProp. Ind. Eng. Chem. Res. 53(6), 2498–2508.",
+          "doi": "10.1021/ie4033999",
+          "note": "The open-source property library those reference values were evaluated with.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie4033999: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Kirchhoff, G. (1858). Ueber einen Satz der mechanischen Wärmetheorie, und einige Anwendungen desselben. Annalen der Physik 179(2), 177–206.",
+          "doi": "10.1002/andp.18581790202",
+          "note": "The original of Kirchhoff's law.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/andp.18581790202: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Smith, J. M.; Van Ness, H. C.; Abbott, M. M. (2005). Introduction to Chemical Engineering Thermodynamics, 7th ed. McGraw-Hill. ISBN 0-07-310445-0.",
+          "note": "Textbook treatment of residual properties and the ideal-gas / residual split.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0073104450: title, '7th ed. / J.M. Smith, H.C. Van Ness, M.M. Abbott', McGraw-Hill, 2005 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "equilibrium-landscapes": {
+      "references": [
+        {
+          "text": "Larson, A. T.; Dodge, R. L. (1923). The Ammonia Equilibrium. J. Am. Chem. Soc. 45(12), 2918–2930.",
+          "doi": "10.1021/ja01665a017",
+          "note": "Measured ammonia equilibrium to 100 atm.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ja01665a017: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Dyson, D. C.; Simon, J. M. (1968). A Kinetic Expression with Diffusion Correction for Ammonia Synthesis on Industrial Catalyst. Ind. Eng. Chem. Fundam. 7(4), 605–610.",
+          "doi": "10.1021/i160028a013",
+          "note": "The industrial ammonia rate expression with its effectiveness-factor correction.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/i160028a013: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "White, W. B.; Johnson, S. M.; Dantzig, G. B. (1958). Chemical Equilibrium in Complex Mixtures. J. Chem. Phys. 28(5), 751–755.",
+          "doi": "10.1063/1.1744264",
+          "note": "The origin of Gibbs-energy minimisation with element multipliers.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/white1958-chemical-equilibrium-complex-mixtures.pdf read; Crossref 10.1063/1.1744264 matched (C259 thermodynamics-and-reaction audit); re-checked on Crossref 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Simpson, F. B.; Burris, R. H. (1984). A Nitrogen Pressure of 50 Atmospheres Does Not Prevent Evolution of Hydrogen by Nitrogenase. Science 224(4653), 1095–1097.",
+          "doi": "10.1126/science.6585956",
+          "note": "Nitrogenase evolves hydrogen even at high nitrogen pressure.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1126/science.6585956: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "element-potential": {
+      "references": [
+        {
+          "text": "Gordon, S.; McBride, B. J. (1994). Computer Program for Calculation of Complex Chemical Equilibrium Compositions and Applications. Part 1: Analysis. NASA Reference Publication 1311.",
+          "url": "https://ntrs.nasa.gov/citations/19950013764",
+          "note": "The reduced equations on ln n_j and the element potentials.",
+          "verified": {
+            "method": "official",
+            "evidence": "NASA NTRS record 19950013764 (ntrs.nasa.gov/api/citations/19950013764): title, authors Gordon and McBride, October 1994 (C259 thermodynamics-and-reaction audit); re-fetched 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "McBride, B. J.; Gordon, S. (1996). Computer Program for Calculation of Complex Chemical Equilibrium Compositions and Applications. II. Users Manual and Program Description. NASA Reference Publication 1311.",
+          "url": "https://ntrs.nasa.gov/citations/19960044559",
+          "note": "The companion users manual; open access.",
+          "verified": {
+            "method": "official",
+            "evidence": "NASA NTRS record 19960044559 (ntrs.nasa.gov/api/citations/19960044559): title, authors McBride and Gordon, June 1996 (C259 thermodynamics-and-reaction audit); re-fetched 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "White, W. B.; Johnson, S. M.; Dantzig, G. B. (1958). Chemical Equilibrium in Complex Mixtures. J. Chem. Phys. 28(5), 751–755.",
+          "doi": "10.1063/1.1744264",
+          "note": "The original element-potential formulation.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/white1958-chemical-equilibrium-complex-mixtures.pdf read; Crossref 10.1063/1.1744264 matched (C259 thermodynamics-and-reaction audit); re-checked on Crossref 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Smith, W. R.; Missen, R. W. (1982). Chemical Reaction Equilibrium Analysis: Theory and Algorithms. Wiley. ISBN 0-471-09347-5.",
+          "note": "The monograph on equilibrium computation.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0471093475: authors, title, Wiley, 1982 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "bjerrum": {
+      "references": [
+        {
+          "text": "Parkhurst, D. L.; Appelo, C. A. J. (2013). Description of Input and Examples for PHREEQC Version 3. U.S. Geological Survey Techniques and Methods 6-A43.",
+          "doi": "10.3133/tm6A43",
+          "note": "The PHREEQC database the carbonate equilibrium constants come from; open access.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.3133/tm6A43: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Davies, C. W. (1938). The extent of dissociation of salts in water. Part VIII. An equation for the mean ionic activity coefficient of an electrolyte in water, and a revision of the dissociation constants of some sulphates. J. Chem. Soc., 2093–2098.",
+          "doi": "10.1039/JR9380002093",
+          "note": "The Davies activity-coefficient equation named in the limits.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1039/JR9380002093: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Stumm, W.; Morgan, J. J. (1996). Aquatic Chemistry: Chemical Equilibria and Rates in Natural Waters, 3rd ed. Wiley. ISBN 0-471-51185-4.",
+          "note": "Textbook treatment of the carbonate system and distribution diagrams.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0471511854: authors, title, 3rd ed., Wiley, 1996 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Butler, J. N. (1982). Carbon Dioxide Equilibria and Their Applications. Addison-Wesley. ISBN 0-201-10100-9.",
+          "note": "The carbon dioxide equilibria in detail.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0201101009: author, title, Addison-Wesley, 1982 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "solvent-mixture": {
+      "references": [
+        {
+          "text": "Hansen, C. M. (1967). The Three Dimensional Solubility Parameter and Solvent Diffusion Coefficient. Danish Technical Press, Copenhagen.",
+          "note": "The three-dimensional solubility parameter, original.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library record: author, title, Danish Technical Press, 1967 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Hansen, C. M. (2007). Hansen Solubility Parameters: A User's Handbook, 2nd ed. CRC Press. ISBN 978-0-8493-7248-3.",
+          "doi": "10.1201/9781420006834",
+          "note": "The handbook of Hansen solubility parameters.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1201/9781420006834: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit); Open Library ISBN 9780849372483",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Michelsen, M. L. (1982). The isothermal flash problem. Part I. Stability. Fluid Phase Equilib. 9(1), 1–19.",
+          "doi": "10.1016/0378-3812(82)85001-2",
+          "note": "The tangent-plane stability test.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0378-3812(82)85001-2: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Prausnitz, J. M.; Lichtenthaler, R. N.; Gomes de Azevedo, E. (1999). Molecular Thermodynamics of Fluid-Phase Equilibria, 3rd ed. Prentice Hall PTR. ISBN 0-13-977745-8.",
+          "note": "Regular solutions and the solubility parameter.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0139777458: authors, title, 3rd ed., Prentice Hall PTR, 1999 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "approach-to-equilibrium": {
+      "references": [
+        {
+          "text": "Twigg, M. V. (ed.) (1989). Catalyst Handbook, 2nd ed. Wolfe / CRC. ISBN 0-7234-0857-2.",
+          "note": "Industrial use of approach to equilibrium in reforming, shift and ammonia.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0723408572: editor, title, 2nd ed., 1989 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Appl, M. (2000). Ammonia. In: Ullmann's Encyclopedia of Industrial Chemistry. Wiley-VCH.",
+          "doi": "10.1002/14356007.a02_143",
+          "note": "The ammonia process.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/14356007.a02_143: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Fogler, H. S. (2006). Elements of Chemical Reaction Engineering, 4th ed. Prentice Hall PTR. ISBN 0-13-047394-4.",
+          "note": "Equilibrium conversion against temperature, and adiabatic lines.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0130473944: author, title, 4th ed., Prentice Hall PTR, 2006 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Nadiri, S.; Attari Moghaddam, A.; Folke, J.; Ruland, H.; et al. (2024). Ammonia Synthesis Rate Over a Wide Operating Range: From Experiments to Validated Kinetic Models. ChemCatChem 16(23), e202400890.",
+          "doi": "10.1002/cctc.202400890",
+          "note": "Ammonia synthesis rate measured over a wide operating range.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/cctc.202400890: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "limiting-reactant": {
+      "references": [
+        {
+          "text": "Douglas, J. M. (1988). Conceptual Design of Chemical Processes. McGraw-Hill. ISBN 0-07-017762-7.",
+          "note": "Reactor-inlet excess as a design variable at the recycle-structure level.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0070177627: author, title, McGraw-Hill, 1988, 601 pp. (C259 thermodynamics-and-reaction audit; C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Appl, M. (2000). Ammonia. In: Ullmann's Encyclopedia of Industrial Chemistry. Wiley-VCH.",
+          "doi": "10.1002/14356007.a02_143",
+          "note": "Make-up ratio, purge and inerts in the ammonia loop.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/14356007.a02_143: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Larson, A. T.; Dodge, R. L. (1923). The Ammonia Equilibrium. J. Am. Chem. Soc. 45(12), 2918–2930.",
+          "doi": "10.1021/ja01665a017",
+          "note": "The equilibrium side of the argument.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ja01665a017: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "reaction-enthalpy": {
+      "references": [
+        {
+          "text": "Kirchhoff, G. (1858). Ueber einen Satz der mechanischen Wärmetheorie, und einige Anwendungen desselben. Annalen der Physik 179(2), 177–206.",
+          "doi": "10.1002/andp.18581790202",
+          "note": "The original of Kirchhoff's law.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/andp.18581790202: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Cox, J. D. (1982). Notation for states and processes, significance of the word standard in chemical thermodynamics, and remarks on commonly tabulated forms of thermodynamic functions. Pure and Applied Chemistry 54(6), 1239–1250.",
+          "doi": "10.1351/pac198254061239",
+          "note": "The IUPAC document on the meaning of 'standard'; open access.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1351/pac198254061239: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Smith, J. M.; Van Ness, H. C.; Abbott, M. M. (2005). Introduction to Chemical Engineering Thermodynamics, 7th ed. McGraw-Hill. ISBN 0-07-310445-0.",
+          "note": "Textbook treatment of heats of reaction and their temperature dependence.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0073104450: title, '7th ed. / J.M. Smith, H.C. Van Ness, M.M. Abbott', McGraw-Hill, 2005 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "syngas": {
+      "references": [
+        {
+          "text": "Rostrup-Nielsen, J. R.; Sehested, J.; Nørskov, J. K. (2002). Hydrogen and synthesis gas by steam- and CO2 reforming. Advances in Catalysis, 65–139.",
+          "doi": "10.1016/S0360-0564(02)47006-X",
+          "note": "Steam and CO2 reforming and the carbon-formation limits.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/S0360-0564(02)47006-X: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit); the volume number is not in the Crossref record and is not stated",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Xu, J.; Froment, G. F. (1989). Methane steam reforming, methanation and water-gas shift: I. Intrinsic kinetics. AIChE Journal 35(1), 88–96.",
+          "doi": "10.1002/aic.690350109",
+          "note": "The reforming and shift kinetics this page does not compute.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/xu1989-methane-steam-reforming-kinetics.pdf (listed in INDEX.md); Crossref 10.1002/aic.690350109 matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Newsome, D. S. (1980). The Water-Gas Shift Reaction. Catalysis Reviews 21(2), 275–318.",
+          "doi": "10.1080/03602458008067535",
+          "note": "The water-gas shift and its two-stage practice.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1080/03602458008067535: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Ruthven, D. M.; Farooq, S.; Knaebel, K. S. (1994). Pressure Swing Adsorption. VCH. ISBN 1560815175.",
+          "note": "Pressure swing adsorption.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 1560815175: authors (by-statement), title, publisher, 1994 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "levenspiel": {
+      "references": [
+        {
+          "text": "Levenspiel, O. (1999). Chemical Reaction Engineering, 3rd ed. Wiley. ISBN 047125424X.",
+          "note": "Chapter 5 'Ideal Reactors for a Single Reaction' and chapter 6 'Design for Single Reactions' (6.2 multiple-reactor systems, 6.4 autocatalytic reactions).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Open Library ISBN 047125424X (3rd edition, Wiley); chapter and section titles read in ~/Choupo-Literature/levenspiel-chemical-reaction-engineering-3ed.epub (Wiley India reprint) (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Fogler, H. S. (2016). Elements of Chemical Reaction Engineering. Pearson. ISBN 9780133887518.",
+          "note": "Conversion and reactor sizing with Levenspiel plots.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780133887518: title, Pearson, 2016; the edition statement is not in the record and is not stated (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "reactor-ladder": {
+      "references": [
+        {
+          "text": "Douglas, J. M. (1988). Conceptual Design of Chemical Processes. McGraw-Hill. ISBN 0-07-017762-7.",
+          "note": "The hierarchy of design decisions the ladder follows.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0070177627: author, title, McGraw-Hill, 1988, 601 pp. (C259 thermodynamics-and-reaction audit; C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Newsome, D. S. (1980). The Water-Gas Shift Reaction. Catalysis Reviews 21(2), 275–318.",
+          "doi": "10.1080/03602458008067535",
+          "note": "Shift equilibrium, the two catalysts and the two-bed arrangement.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1080/03602458008067535: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Levenspiel, O. (1999). Chemical Reaction Engineering, 3rd ed. Wiley. ISBN 047125424X.",
+          "note": "Chapter 8 'Design for Nonisothermal Reactors', 8.1 temperature and pressure effects in single reactions.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Open Library ISBN 047125424X (3rd edition, Wiley); chapter and section titles read in ~/Choupo-Literature/levenspiel-chemical-reaction-engineering-3ed.epub (Wiley India reprint) (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "vanheerden": {
+      "references": [
+        {
+          "text": "van Heerden, C. (1953). Autothermic Processes. Industrial & Engineering Chemistry 45(6), 1242–1247.",
+          "doi": "10.1021/ie50522a030",
+          "note": "The original heat-generated / heat-removed diagram.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50522a030: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit); re-checked on Crossref 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Bilous, O.; Amundson, N. R. (1955). Chemical reactor stability and sensitivity. AIChE Journal 1(4), 513–521.",
+          "doi": "10.1002/aic.690010422",
+          "note": "The first dynamic stability analysis of the CSTR: the slope test is necessary, not sufficient.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690010422: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Aris, R.; Amundson, N. R. (1958). An analysis of chemical reactor stability and control — I. Chemical Engineering Science 7(3), 121–131.",
+          "doi": "10.1016/0009-2509(58)80019-6",
+          "note": "Stability and control of the middle steady state.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0009-2509(58)80019-6: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Levenspiel, O. (1999). Chemical Reaction Engineering, 3rd ed. Wiley. ISBN 047125424X.",
+          "note": "Section 8.5 'Exothermic Reactions in Mixed Flow Reactors — A Special Problem'.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Open Library ISBN 047125424X (3rd edition, Wiley); chapter and section titles read in ~/Choupo-Literature/levenspiel-chemical-reaction-engineering-3ed.epub (Wiley India reprint) (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "tree-of-chemistry": {
+      "pageSources": "Sources, with their licence and how well each is known",
+      "references": [
+        {
+          "text": "Wittcoff, H. A.; Reuben, B. G.; Plotkin, J. S. (2012). Industrial Organic Chemicals, 3rd ed. Wiley. ISBN 9780470537435.",
+          "note": "The building-block picture of industrial organic chemistry.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780470537435: authors (by-statement), title, 3rd ed., Wiley, 2012 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "correlation-simplicity": {
+      "pageSources": "Sources of step 15, and how each was read",
+      "references": [
+        {
+          "text": "Buckingham, E. (1914). On Physically Similar Systems; Illustrations of the Use of Dimensional Equations. Physical Review 4(4), 345–376.",
+          "doi": "10.1103/PhysRev.4.345",
+          "note": "The Pi theorem of step 1.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1103/PhysRev.4.345: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Barenblatt, G. I. (1996). Scaling, Self-similarity, and Intermediate Asymptotics. Cambridge University Press. ISBN 9780521435222.",
+          "doi": "10.1017/CBO9781107050242",
+          "note": "The source of the complete / incomplete similarity vocabulary.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1017/CBO9781107050242: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit); Open Library ISBN 9780521435222",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Churchill, S. W.; Usagi, R. (1972). A general expression for the correlation of rates of transfer and other phenomena. AIChE Journal 18(6), 1121–1128.",
+          "doi": "10.1002/aic.690180606",
+          "note": "The blending form of step 13.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690180606: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Bird, R. B.; Stewart, W. E.; Lightfoot, E. N. (2002). Transport Phenomena, 2nd ed. Wiley. ISBN 0471410772.",
+          "note": "Textbook treatment of friction factors and heat-transfer coefficients as dimensionless correlations.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0471410772: authors, title, 2nd ed., Wiley, 2002 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "lub-scaleup": {
+      "references": [
+        {
+          "text": "Michaels, A. S. (1952). Simplified Method of Interpreting Kinetic Data in Fixed-Bed Ion Exchange. Industrial & Engineering Chemistry 44(8), 1922–1930.",
+          "doi": "10.1021/ie50512a049",
+          "note": "The constant-pattern, mass-transfer-zone method LUB scale-up descends from.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50512a049: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit; C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Ruthven, D. M. (1984). Principles of Adsorption and Adsorption Processes. Wiley. ISBN 978-0-471-86606-0.",
+          "note": "Dynamics of adsorption columns: constant and proportionate pattern.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0471866067: author Douglas M. Ruthven, title, Wiley, 1984 (C259 thermodynamics-and-reaction audit; C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "McCabe, W. L.; Smith, J. C.; Harriott, P. (2005). Unit Operations of Chemical Engineering, 7th ed. McGraw-Hill. ISBN 978-0-07-284823-6.",
+          "note": "Textbook LUB scale-up, in the adsorption chapter.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0072848235: title, '7th ed. / Warren L. McCabe, Julian C. Smith, Peter Harriott', McGraw-Hill, 2005 (C259 thermodynamics-and-reaction audit; C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2011). Separation Process Principles: Chemical and Biochemical Operations, 3rd ed. Wiley. ISBN 978-0-470-48183-7.",
+          "note": "The chapter on adsorption, ion exchange and chromatography.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780470481837 (openlibrary.org/isbn/9780470481837.json): title, '3rd ed.', Wiley, 2011, by-statement 'J. D. Seader, Ernest J. Henley, D. Keith Roper', table of contents with the section numbers cited (C259 separations/heat/control audit; by-statement and sections re-read 2026-11-09)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "claus-gibbs": {
+      "references": [
+        {
+          "text": "White, W. B.; Johnson, S. M.; Dantzig, G. B. (1958). Chemical Equilibrium in Complex Mixtures. J. Chem. Phys. 28(5), 751–755.",
+          "doi": "10.1063/1.1744264",
+          "note": "The element-potential formulation of Gibbs minimisation.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/white1958-chemical-equilibrium-complex-mixtures.pdf read; Crossref 10.1063/1.1744264 matched (C259 thermodynamics-and-reaction audit); re-checked on Crossref 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Smith, W. R.; Missen, R. W. (1982). Chemical Reaction Equilibrium Analysis: Theory and Algorithms. Wiley. ISBN 0-471-09347-5.",
+          "note": "The monograph on nonstoichiometric Gibbs minimisation.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0471093475: authors, title, Wiley, 1982 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Gordon, S.; McBride, B. J. (1994). Computer Program for Calculation of Complex Chemical Equilibrium Compositions and Applications. Part 1: Analysis. NASA Reference Publication 1311.",
+          "url": "https://ntrs.nasa.gov/citations/19950013764",
+          "note": "The same formulation with the assigned-enthalpy (adiabatic) case; open access.",
+          "verified": {
+            "method": "official",
+            "evidence": "NASA NTRS record 19950013764 (ntrs.nasa.gov/api/citations/19950013764): title, authors Gordon and McBride, October 1994 (C259 thermodynamics-and-reaction audit); re-fetched 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Kohl, A. L.; Nielsen, R. B. (1997). Gas Purification, 5th ed. Gulf Publishing. ISBN 0884152200.",
+          "note": "Sulfur recovery: the Claus plant.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0884152200: authors, title, 5th ed., Gulf Publishing, 1997 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "cosmo-sac-theory": {
+      "references": [
+        {
+          "text": "Lin, S.-T.; Sandler, S. I. (2002). A Priori Phase Equilibrium Prediction from a Segment Contribution Solvation Model. Ind. Eng. Chem. Res. 41(5), 899–913.",
+          "doi": "10.1021/ie001047w",
+          "note": "The paper this page derives; the constants and what was fitted are on pp. 902–903.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/lin2002-cosmo-sac.pdf, pp. 902-903 read (constants and what was fitted); Crossref 10.1021/ie001047w matched (C259 thermodynamics-and-reaction audit); re-checked on Crossref 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Klamt, A. (1995). Conductor-like Screening Model for Real Solvents: A New Approach to the Quantitative Calculation of Solvation Phenomena. J. Phys. Chem. 99(7), 2224–2235.",
+          "doi": "10.1021/j100007a062",
+          "note": "COSMO-RS: conductor screening and the sigma profile.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/j100007a062: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Mullins, E.; Oldland, R.; Liu, Y. A.; Wang, S.; Sandler, S. I.; Chen, C.-C.; Zwolak, M.; Seavey, K. C. (2006). Sigma-Profile Database for Using COSMO-Based Thermodynamic Methods. Ind. Eng. Chem. Res. 45(12), 4389–4415.",
+          "doi": "10.1021/ie060370h",
+          "note": "The VT-2005 sigma-profile database.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie060370h: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Klamt, A. (2005). COSMO-RS: From Quantum Chemistry to Fluid Phase Thermodynamics and Drug Design. Elsevier. ISBN 0444519947.",
+          "note": "The COSMO-RS monograph.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0444519947: author, title, Elsevier, 2005 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "four-ways-mixture": {
+      "references": [
+        {
+          "text": "Renon, H.; Prausnitz, J. M. (1968). Local compositions in thermodynamic excess functions for liquid mixtures. AIChE Journal 14(1), 135–144.",
+          "doi": "10.1002/aic.690140124",
+          "note": "NRTL, the fitted rung.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/renon1968-nrtl.pdf, p. 139 read (recommended alpha_12 and tabulated alphas); Crossref 10.1002/aic.690140124 matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Fredenslund, Aa.; Jones, R. L.; Prausnitz, J. M. (1975). Group-contribution estimation of activity coefficients in nonideal liquid mixtures. AIChE Journal 21(6), 1086–1099.",
+          "doi": "10.1002/aic.690210607",
+          "note": "UNIFAC, the group-contribution rung.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690210607: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit); PDF fredenslund1975-unifac.pdf present in ~/Choupo-Literature",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Lin, S.-T.; Sandler, S. I. (2002). A Priori Phase Equilibrium Prediction from a Segment Contribution Solvation Model. Ind. Eng. Chem. Res. 41(5), 899–913.",
+          "doi": "10.1021/ie001047w",
+          "note": "COSMO-SAC, the rung that needs only the molecules.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/lin2002-cosmo-sac.pdf, pp. 902-903 read (constants and what was fitted); Crossref 10.1021/ie001047w matched (C259 thermodynamics-and-reaction audit); re-checked on Crossref 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Gross, J.; Sadowski, G. (2001). Perturbed-Chain SAFT: An Equation of State Based on a Perturbation Theory for Chain Molecules. Ind. Eng. Chem. Res. 40(4), 1244–1260.",
+          "doi": "10.1021/ie0003887",
+          "note": "PC-SAFT, the equation-of-state rung.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie0003887: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "local-composition": {
+      "references": [
+        {
+          "text": "Wilson, G. M. (1964). Vapor-Liquid Equilibrium. XI. A New Expression for the Excess Free Energy of Mixing. J. Am. Chem. Soc. 86(2), 127–130.",
+          "doi": "10.1021/ja01056a002",
+          "note": "Wilson's equation.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ja01056a002: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Renon, H.; Prausnitz, J. M. (1968). Local compositions in thermodynamic excess functions for liquid mixtures. AIChE Journal 14(1), 135–144.",
+          "doi": "10.1002/aic.690140124",
+          "note": "NRTL and its non-randomness parameter.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/renon1968-nrtl.pdf, p. 139 read (recommended alpha_12 and tabulated alphas); Crossref 10.1002/aic.690140124 matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Abrams, D. S.; Prausnitz, J. M. (1975). Statistical thermodynamics of liquid mixtures: A new expression for the excess Gibbs energy of partly or completely miscible systems. AIChE Journal 21(1), 116–128.",
+          "doi": "10.1002/aic.690210115",
+          "note": "UNIQUAC, with z = 10 and the l_i term.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/abrams1975-uniquac.pdf, pp. 120 and 128 read (z = 10; eq. B3); Crossref 10.1002/aic.690210115 matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Prausnitz, J. M.; Lichtenthaler, R. N.; Gomes de Azevedo, E. (1999). Molecular Thermodynamics of Fluid-Phase Equilibria, 3rd ed. Prentice Hall PTR. ISBN 0-13-977745-8.",
+          "note": "The local-composition models derived side by side.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0139777458: authors, title, 3rd ed., Prentice Hall PTR, 1999 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "mccabe": {
+      "references": [
+        {
+          "text": "McCabe, W. L.; Thiele, E. W. (1925). Graphical Design of Fractionating Columns. Ind. Eng. Chem. 17(6), 605–611.",
+          "doi": "10.1021/ie50186a023",
+          "note": "The original graphical construction.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50186a023: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit); re-checked on Crossref 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Murphree, E. V. (1925). Rectifying Column Calculations. Ind. Eng. Chem. 17(7), 747–750.",
+          "doi": "10.1021/ie50187a044",
+          "note": "The Murphree stage efficiency of the efficiency knob.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50187a044: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Fenske, M. R. (1932). Fractionation of Straight-Run Pennsylvania Gasoline. Ind. Eng. Chem. 24(5), 482–485.",
+          "doi": "10.1021/ie50269a003",
+          "note": "The minimum stages at total reflux.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50269a003: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2011). Separation Process Principles: Chemical and Biochemical Operations, 3rd ed. Wiley. ISBN 978-0-470-48183-7.",
+          "note": "Sections 7.2 'McCabe-Thiele Graphical Method for Trayed Towers' and 7.3 'Extensions of the McCabe-Thiele Method'.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780470481837 (openlibrary.org/isbn/9780470481837.json): title, '3rd ed.', Wiley, 2011, by-statement 'J. D. Seader, Ernest J. Henley, D. Keith Roper', table of contents with the section numbers cited (C259 separations/heat/control audit; by-statement and sections re-read 2026-11-09)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "ponchon-savarit": {
+      "references": [
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2011). Separation Process Principles: Chemical and Biochemical Operations, 3rd ed. Wiley. ISBN 978-0-470-48183-7.",
+          "note": "Section 7.7, introduction to the Ponchon-Savarit method.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780470481837 (openlibrary.org/isbn/9780470481837.json): title, '3rd ed.', Wiley, 2011, by-statement 'J. D. Seader, Ernest J. Henley, D. Keith Roper', table of contents with the section numbers cited (C259 separations/heat/control audit; by-statement and sections re-read 2026-11-09)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Henley, E. J.; Seader, J. D. (1981). Equilibrium-Stage Separation Operations in Chemical Engineering. Wiley. ISBN 978-0-471-37108-3.",
+          "note": "The fuller enthalpy-concentration treatment.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780471371083: title, Wiley, 1981, by-statement 'Ernest J. Henley and J. D. Seader' (C259 separations/heat/control audit; co-author re-read 2026-11-09)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "King, C. J. (1980). Separation Processes, 2nd ed. McGraw-Hill. ISBN 978-0-07-034612-3.",
+          "note": "Separation processes, a second textbook treatment.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780070346123: title, '2d ed.', 1980, author C. Judson King (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "hunter-nash": {
+      "references": [
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2011). Separation Process Principles: Chemical and Biochemical Operations, 3rd ed. Wiley. ISBN 978-0-470-48183-7.",
+          "note": "Section 8.3 'Hunter-Nash Graphical Equilibrium-Stage Method'.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780470481837 (openlibrary.org/isbn/9780470481837.json): title, '3rd ed.', Wiley, 2011, by-statement 'J. D. Seader, Ernest J. Henley, D. Keith Roper', table of contents with the section numbers cited (C259 separations/heat/control audit; by-statement and sections re-read 2026-11-09)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Treybal, R. E. (1980). Mass-Transfer Operations, 3rd ed. McGraw-Hill. ISBN 0-07-065176-0.",
+          "note": "Liquid extraction on triangular diagrams.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780070651760: title, '3d ed.', McGraw-Hill, 1980, author Robert Ewald Treybal (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Wankat, P. C. (2012). Separation Process Engineering: Includes Mass Transfer Analysis, 3rd ed. Prentice Hall. ISBN 978-0-13-138227-5.",
+          "note": "A second textbook treatment of extraction.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780131382275: title, '3rd ed.', 2012, author Phillip C. Wankat (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "kremser": {
+      "references": [
+        {
+          "text": "Souders, M.; Brown, G. G. (1932). Fundamental Design of Absorbing and Stripping Columns for Complex Vapors. Ind. Eng. Chem. 24(5), 519–522.",
+          "doi": "10.1021/ie50269a013",
+          "note": "The absorption-factor form of the group method.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50269a013: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit); Crossref spells the first author 'Sauders'",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2011). Separation Process Principles: Chemical and Biochemical Operations, 3rd ed. Wiley. ISBN 978-0-470-48183-7.",
+          "note": "Sections 6.4 'Algebraic Method for Determining N' and 9.2 'Kremser Group Method'.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780470481837 (openlibrary.org/isbn/9780470481837.json): title, '3rd ed.', Wiley, 2011, by-statement 'J. D. Seader, Ernest J. Henley, D. Keith Roper', table of contents with the section numbers cited (C259 separations/heat/control audit; by-statement and sections re-read 2026-11-09)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Treybal, R. E. (1980). Mass-Transfer Operations, 3rd ed. McGraw-Hill. ISBN 0-07-065176-0.",
+          "note": "Gas absorption in a classic mass-transfer text.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780070651760: title, '3d ed.', McGraw-Hill, 1980, author Robert Ewald Treybal (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "fug": {
+      "references": [
+        {
+          "text": "Fenske, M. R. (1932). Fractionation of Straight-Run Pennsylvania Gasoline. Ind. Eng. Chem. 24(5), 482–485.",
+          "doi": "10.1021/ie50269a003",
+          "note": "Minimum stages at total reflux.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50269a003: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Underwood, A. J. V. (1949). Fractional Distillation of Multicomponent Mixtures. Ind. Eng. Chem. 41(12), 2844–2847.",
+          "doi": "10.1021/ie50480a044",
+          "note": "The theta equations for minimum reflux.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50480a044: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Gilliland, E. R. (1940). Multicomponent Rectification: Estimation of the Number of Theoretical Plates as a Function of the Reflux Ratio. Ind. Eng. Chem. 32(9), 1220–1223.",
+          "doi": "10.1021/ie50369a035",
+          "note": "The stages-against-reflux correlation.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50369a035: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Molokanov, Yu. K.; Korablina, T. P.; Mazurina, N. I.; Nikiforov, G. A. (1971). An approximate method of calculating the basic parameters of a multicomponent fractionation. Chemistry and Technology of Fuels and Oils 7(2), 129–133.",
+          "doi": "10.1007/bf00718702",
+          "note": "The closed form of Gilliland's correlation.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1007/bf00718702: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2011). Separation Process Principles: Chemical and Biochemical Operations, 3rd ed. Wiley. ISBN 978-0-470-48183-7.",
+          "note": "Section 9.1 'Fenske-Underwood-Gilliland (FUG) Method'.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780470481837 (openlibrary.org/isbn/9780470481837.json): title, '3rd ed.', Wiley, 2011, by-statement 'J. D. Seader, Ernest J. Henley, D. Keith Roper', table of contents with the section numbers cited (C259 separations/heat/control audit; by-statement and sections re-read 2026-11-09)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "rayleigh": {
+      "references": [
+        {
+          "text": "Rayleigh, Lord (1902). LIX. On the distillation of binary mixtures. The London, Edinburgh, and Dublin Philosophical Magazine and Journal of Science, Series 6, 4(23), 521–537.",
+          "doi": "10.1080/14786440209462876",
+          "note": "The original differential distillation.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1080/14786440209462876: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2011). Separation Process Principles: Chemical and Biochemical Operations, 3rd ed. Wiley. ISBN 978-0-470-48183-7.",
+          "note": "Sections 13.2 'Binary Batch Rectification', 13.5 and 13.6 on batch rectification.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780470481837 (openlibrary.org/isbn/9780470481837.json): title, '3rd ed.', Wiley, 2011, by-statement 'J. D. Seader, Ernest J. Henley, D. Keith Roper', table of contents with the section numbers cited (C259 separations/heat/control audit; by-statement and sections re-read 2026-11-09)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "McCabe, W. L.; Smith, J. C.; Harriott, P. (2005). Unit Operations of Chemical Engineering, 7th ed. McGraw-Hill. ISBN 978-0-07-284823-6.",
+          "note": "A second textbook treatment.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0072848235: title, '7th ed. / Warren L. McCabe, Julian C. Smith, Peter Harriott', McGraw-Hill, 2005 (C259 thermodynamics-and-reaction audit; C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "breakthrough": {
+      "references": [
+        {
+          "text": "Glueckauf, E. (1955). Theory of chromatography. Part 10. Formulae for diffusion into spheres and their application to chromatography. Trans. Faraday Soc. 51, 1540–1551.",
+          "doi": "10.1039/tf9555101540",
+          "note": "The linear-driving-force approximation of step 1.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1039/tf9555101540: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Michaels, A. S. (1952). Simplified Method of Interpreting Kinetic Data in Fixed-Bed Ion Exchange. Industrial & Engineering Chemistry 44(8), 1922–1930.",
+          "doi": "10.1021/ie50512a049",
+          "note": "The origin of the mass-transfer-zone (LUB) bookkeeping.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50512a049: authors, title, container, volume, pages and year matched (C259 thermodynamics-and-reaction audit; C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Cavenati, S.; Grande, C. A.; Rodrigues, A. E. (2004). Adsorption Equilibrium of Methane, Carbon Dioxide, and Nitrogen on Zeolite 13X at High Pressure. J. Chem. Eng. Data 49(4), 1095–1101.",
+          "doi": "10.1021/je0498917",
+          "note": "Measured adsorption of CH4, CO2 and N2 on zeolite 13X, the system of the case record.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je0498917: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Ruthven, D. M. (1984). Principles of Adsorption and Adsorption Processes. Wiley. ISBN 978-0-471-86606-0.",
+          "note": "The adsorption monograph.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0471866067: author Douglas M. Ruthven, title, Wiley, 1984 (C259 thermodynamics-and-reaction audit; C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "psychro": {
+      "references": [
+        {
+          "text": "Treybal, R. E. (1980). Mass-Transfer Operations, 3rd ed. McGraw-Hill. ISBN 0-07-065176-0.",
+          "note": "Chapter 7 'Humidification Operations', printed pp. 220–241: humidity, adiabatic saturation, wet bulb and the Lewis relation.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/treybal-mass-transfer-operations-3ed.pdf, PDF pp. 235-256 read (printed page = PDF page - 15) (C259 separations/heat/control audit, heat references)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Green, D. W.; Southard, M. Z. (eds.) (2019). Perry's Chemical Engineers' Handbook, 9th ed. McGraw-Hill. ISBN 978-0-07-183408-7.",
+          "note": "Section 12, psychrometry, pp. 12-5 to 12-14.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/perry-chemical-engineers-handbook-9ed.pdf, the pages named in the note read; Open Library ISBN 9780071834087 (C259 separations/heat/control audit, heat references)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Lewis, W. K. (1922). The evaporation of a liquid into a gas. Trans. ASME 44, 325–332.",
+          "doi": "10.1115/1.4058175",
+          "note": "The origin of the Lewis relation.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1115/1.4058175: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Fuller, E. N.; Schettler, P. D.; Giddings, J. C. (1966). New method for prediction of binary gas-phase diffusion coefficients. Ind. Eng. Chem. 58(5), 18–27.",
+          "doi": "10.1021/ie50677a007",
+          "note": "The diffusivity estimate the wet bulb needs.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50677a007: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "drying": {
+      "references": [
+        {
+          "text": "van Meel, D. A. (1958). Adiabatic convection batch drying with recirculation of air. Chem. Eng. Sci. 9(1), 36–44.",
+          "doi": "10.1016/0009-2509(58)87005-0",
+          "note": "The characteristic drying curve.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0009-2509(58)87005-0: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit); also Perry 9th ed. p. 12-24 read",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Treybal, R. E. (1980). Mass-Transfer Operations, 3rd ed. McGraw-Hill. ISBN 0-07-065176-0.",
+          "note": "Chapter 12 'Drying': equilibrium moisture, the rate curve and the critical moisture content (printed pp. 655–670).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/treybal-mass-transfer-operations-3ed.pdf, PDF pp. 670-697 read (printed page = PDF page - 15) (C259 separations/heat/control audit, heat references)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Green, D. W.; Southard, M. Z. (eds.) (2019). Perry's Chemical Engineers' Handbook, 9th ed. McGraw-Hill. ISBN 978-0-07-183408-7.",
+          "note": "Section 12, solids drying, pp. 12-23 and 12-24.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/perry-chemical-engineers-handbook-9ed.pdf, the pages named in the note read; Open Library ISBN 9780071834087 (C259 separations/heat/control audit, heat references)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Anderson, R. B. (1946). Modifications of the Brunauer, Emmett and Teller equation. J. Am. Chem. Soc. 68(4), 686–691.",
+          "doi": "10.1021/ja01208a049",
+          "note": "One of the three originals of the GAB isotherm.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ja01208a049: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "merkel": {
+      "references": [
+        {
+          "text": "Treybal, R. E. (1980). Mass-Transfer Operations, 3rd ed. McGraw-Hill. ISBN 0-07-065176-0.",
+          "note": "Chapter 7, water cooling with air, printed pp. 245–249: the enthalpy driving force.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/treybal-mass-transfer-operations-3ed.pdf, PDF pp. 260-264 read (printed page = PDF page - 15) (C259 separations/heat/control audit, heat references)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Green, D. W.; Southard, M. Z. (eds.) (2019). Perry's Chemical Engineers' Handbook, 9th ed. McGraw-Hill. ISBN 978-0-07-183408-7.",
+          "note": "Section 12, cooling tower theory and the Merkel equation, p. 12-15.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/perry-chemical-engineers-handbook-9ed.pdf, the pages named in the note read; Open Library ISBN 9780071834087 (C259 separations/heat/control audit, heat references)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Erens, P. J. (2010). N4 Cooling Towers. In: VDI Heat Atlas, 2nd ed. Springer, pp. 1485–1502.",
+          "doi": "10.1007/978-3-540-77877-6_107",
+          "note": "A handbook chapter on cooling towers.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1007/978-3-540-77877-6_107: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit); chapter text not read",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "entu": {
+      "references": [
+        {
+          "text": "Serth, R. W.; Lestina, T. G. (2014). Process Heat Transfer: Principles, Applications and Rules of Thumb, 2nd ed. Academic Press/Elsevier. ISBN 978-0-12-397195-1.",
+          "note": "Section 3.10 'Heat-Exchanger Effectiveness', printed pp. 92–94.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/serth-process-heat-transfer-2ed.pdf, sec. 3.10, printed pp. 92-94 read (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "London, A. L.; Seban, R. A. (1980). A generalization of the methods of heat exchanger analysis. Int. J. Heat Mass Transfer 23(1), 5–16.",
+          "doi": "10.1016/0017-9310(80)90133-7",
+          "note": "The generalisation of exchanger analysis by effectiveness.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0017-9310(80)90133-7: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit); re-checked on Crossref 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Kays, W. M.; London, A. L. (1998). Compact Heat Exchangers, reprint ed. with corrections. Krieger Publishing. ISBN 1575240602.",
+          "note": "The effectiveness-NTU charts and relations.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 1575240602: 'Compact heat exchangers', W.M. Kays, A.L. London, Krieger, repr. ed. 1998 (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Kern, D. Q. (1950). Process Heat Transfer. McGraw-Hill.",
+          "note": "The shell- and tube-side pressure drops of the limits.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/kern-process-heat-transfer.pdf, ch. 7 printed pp. 147-148 read; Open Library lists the 1950 first publication (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "pinch-composite": {
+      "references": [
+        {
+          "text": "Linnhoff, B.; Flower, J. R. (1978). Synthesis of heat exchanger networks: I. Systematic generation of energy optimal networks. AIChE Journal 24(4), 633–642.",
+          "doi": "10.1002/aic.690240411",
+          "note": "Energy-optimal networks: the problem-table cascade.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690240411: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Linnhoff, B.; Hindmarsh, E. (1983). The pinch design method for heat exchanger networks. Chem. Eng. Sci. 38(5), 745–763.",
+          "doi": "10.1016/0009-2509(83)80185-7",
+          "note": "The pinch design method: the step after the target.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0009-2509(83)80185-7: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Kemp, I. C. (2007). Pinch Analysis and Process Integration: A User Guide on Process Integration for the Efficient Use of Energy, 2nd ed. Butterworth-Heinemann. ISBN 9780750682602.",
+          "note": "The user guide to pinch analysis.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780750682602: title, 2nd ed., Ian C. Kemp, 2007 (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Smith, R. (2016). Chemical Process Design and Integration, 2nd ed. Wiley. ISBN 9781119990130.",
+          "note": "Process integration in a design textbook.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9781119990130 (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "pump-system": {
+      "references": [
+        {
+          "text": "Hydraulic Institute (2017). ANSI/HI 9.6.1-2017, Rotodynamic Pumps – Guideline for NPSH Margin. Hydraulic Institute.",
+          "url": "https://law.resource.org/pub/us/cfr/ibr/inc/ansi/ansi.hi.9.6.1.2017.pdf",
+          "note": "NPSH3 and the NPSH margin. The current edition is 2024.",
+          "verified": {
+            "method": "official",
+            "evidence": "the 2017 text downloaded from law.resource.org and read (NPSH3 definition and margin definitions, PDF pp. 11-12); pumps.org notes the 2024 edition supersedes it (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Green, D. W.; Southard, M. Z. (eds.) (2019). Perry's Chemical Engineers' Handbook, 9th ed. McGraw-Hill. ISBN 978-0-07-183408-7.",
+          "note": "Section 10: NPSH available and required (p. 10-24) and the affinity laws (Table 10-13, p. 10-31).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/perry-chemical-engineers-handbook-9ed.pdf, the pages named in the note read; Open Library ISBN 9780071834087 (C259 separations/heat/control audit, heat references)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Rackett, H. G. (1970). Equation of state for saturated liquids. J. Chem. Eng. Data 15(4), 514–517.",
+          "doi": "10.1021/je60047a012",
+          "note": "The saturated-liquid density in the pipe.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je60047a012: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "bode": {
+      "references": [
+        {
+          "text": "Nyquist, H. (1932). Regeneration theory. Bell System Technical Journal 11(1), 126–147.",
+          "doi": "10.1002/j.1538-7305.1932.tb02344.x",
+          "note": "The original stability criterion.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/j.1538-7305.1932.tb02344.x: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit); re-checked on Crossref 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Bode, H. W. (1940). Relations between attenuation and phase in feedback amplifier design. Bell System Technical Journal 19(3), 421–454.",
+          "doi": "10.1002/j.1538-7305.1940.tb00839.x",
+          "note": "The gain and phase relation the diagram rests on.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/j.1538-7305.1940.tb00839.x: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Ziegler, J. G.; Nichols, N. B. (1942). Optimum settings for automatic controllers. Trans. ASME 64(8), 759–765.",
+          "doi": "10.1115/1.4019264",
+          "note": "The reaction-curve tuning rule the engine also publishes.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1115/1.4019264: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit); pp. 766-768 are discussion and closure under other DOIs",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Seborg, D. E.; Edgar, T. F.; Mellichamp, D. A.; Doyle, F. J. III (2017). Process Dynamics and Control. Wiley. ISBN 9781119285915.",
+          "note": "The process-control textbook treatment of frequency response.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library OL28004234M (ISBN 9781119285915): title, Wiley, 2017; author record 'Seborg, Edgar, Mellichamp, Doyle' (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "column-control": {
+      "references": [
+        {
+          "text": "Skogestad, S.; Lundström, P.; Jacobsen, E. W. (1990). Selecting the best distillation control configuration. AIChE Journal 36(5), 753–764.",
+          "doi": "10.1002/aic.690360512",
+          "note": "Steady-state RGA can mislead; the (L/D)(V/B) configuration for two-point control.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690360512: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit); content confirmed against the Crossref abstract",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Skogestad, S.; Morari, M. (1987). Control configuration selection for distillation columns. AIChE Journal 33(10), 1620–1635.",
+          "doi": "10.1002/aic.690331006",
+          "note": "Control configuration selection by RGA analysis.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690331006: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Skogestad, S. (2007). The dos and don'ts of distillation column control. Chem. Eng. Res. Des. 85(A1), 13–23.",
+          "doi": "10.1205/cherd06133",
+          "note": "The dos and don'ts of column control.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1205/cherd06133: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Luyben, W. L. (2006). Evaluation of criteria for selecting temperature control trays in distillation columns. J. Process Control 16(2), 115–134.",
+          "doi": "10.1016/j.jprocont.2005.05.004",
+          "note": "Criteria for selecting the temperature control tray.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.jprocont.2005.05.004: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "batch-membrane": {
+      "references": [
+        {
+          "text": "Ng, P.; Lundblad, J.; Mitra, G. (1976). Optimization of Solute Separation by Diafiltration. Separation Science 11(5), 499–502.",
+          "doi": "10.1080/01496397608085339",
+          "note": "The diafiltration optimum.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1080/01496397608085339: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Wijmans, J. G.; Baker, R. W. (1995). The solution-diffusion model: a review. Journal of Membrane Science 107(1-2), 1–21.",
+          "doi": "10.1016/0376-7388(95)00102-I",
+          "note": "The solution-diffusion model behind the flux laws.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0376-7388(95)00102-I: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Hermia, J. (1982). Constant pressure blocking filtration laws – Application to power-law non-Newtonian fluids. Trans. IChemE 60, 183.",
+          "note": "The blocking filtration laws.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "no Crossref record of its own; this exact entry is in the Crossref-deposited reference lists of 10.1016/0376-7388(94)00295-A and 10.1016/j.memsci.2007.02.045; last page not confirmed, so not given (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Blatt, W. F.; Dravid, A.; Michaels, A. S.; Nelsen, L. (1970). Solute Polarization and Cake Formation in Membrane Ultrafiltration: Causes, Consequences, and Control Techniques. In: Membrane Science and Technology, pp. 47–97.",
+          "doi": "10.1007/978-1-4684-1851-4_4",
+          "note": "The gel-polarisation flux law.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1007/978-1-4684-1851-4_4: authors, title, container, volume, pages and year matched (C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "process-safety": {
+      "references": [
+        {
+          "text": "Stoessel, F. (2020). Thermal Safety of Chemical Processes, 2nd ed. Wiley-VCH.",
+          "doi": "10.1002/9783527696918",
+          "note": "MTSR, MTT, TD24 and the criticality classes.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/9783527696918: authors, title, container, volume, pages and year matched (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Gygax, R. (1988). Chemical reaction engineering for safety. Chem. Eng. Sci. 43(8), 1759–1771.",
+          "doi": "10.1016/0009-2509(88)87040-4",
+          "note": "The original cooling-failure / MTSR methodology.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0009-2509(88)87040-4: authors, title, container, volume, pages and year matched (C259 safety-and-layout audit); re-checked on Crossref 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Crowl, D. A.; Louvar, J. F. (2019). Chemical Process Safety: Fundamentals with Applications, 4th ed. Pearson. ISBN 978-0-13-485777-0.",
+          "note": "The undergraduate process-safety text.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Pearson catalogue: title, 4th ed., 2019, ISBN (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Kletz, T.; Amyotte, P. (2019). What Went Wrong? Case Histories of Process Plant Disasters and How They Could Have Been Avoided, 6th ed. Butterworth-Heinemann. ISBN 978-0-12-810539-9.",
+          "note": "Flixborough and Bhopal as case histories.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Elsevier publisher page: title, 6th ed., 2019, ISBN (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "overpressure": {
+      "pageSources": "Sources, and how each was reached",
+      "references": [
+        {
+          "text": "Center for Chemical Process Safety (2017). Guidelines for Pressure Relief and Effluent Handling Systems, 2nd ed. Wiley-AIChE. ISBN 978-0-470-76773-3.",
+          "url": "https://ccps.aiche.org/publications/books/guidelines-pressure-relief-and-effluent-handling-systems-2nd-edition",
+          "note": "Relief scenarios, two-phase sizing and disposal in one book.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "CCPS publication page: title, 2nd ed., April 2017, ISBN (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Crowl, D. A.; Louvar, J. F. (2019). Chemical Process Safety: Fundamentals with Applications, 4th ed. Pearson. ISBN 978-0-13-485777-0.",
+          "note": "Relief sizing in the undergraduate text.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Pearson catalogue: title, 4th ed., 2019, ISBN (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "TNO, Committee for the Prevention of Disasters (2005). Methods for the Calculation of Physical Effects (\"Yellow Book\"), CPR 14E / PGS 2, 3rd ed., second revised print.",
+          "note": "Physical effects of releases; free from TNO.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "TNO 2017 note and bibliotheek.nl catalogue record; free PDF from TNO's coloured-books page (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "pool-fire": {
+      "pageSources": "Sources, how each was reached, and its licence",
+      "references": [
+        {
+          "text": "Beyler, C. L. (2016). Fire Hazard Calculations for Large, Open Hydrocarbon Fires. In: SFPE Handbook of Fire Protection Engineering, 5th ed. Springer, pp. 2591–2663.",
+          "doi": "10.1007/978-1-4939-2565-0_66",
+          "note": "The current handbook chapter: burning rate, flame height, view factors, emissive power.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1007/978-1-4939-2565-0_66: authors, title, container, volume, pages and year matched (C259 safety-and-layout audit); re-checked on Crossref 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Mudan, K. S. (1984). Thermal radiation hazards from hydrocarbon pool fires. Prog. Energy Combust. Sci. 10(1), 59–80.",
+          "doi": "10.1016/0360-1285(84)90119-9",
+          "note": "The review the pool-fire correlations descend from.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0360-1285(84)90119-9: authors, title, container, volume, pages and year matched (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "TNO, Committee for the Prevention of Disasters (2005). Methods for the Calculation of Physical Effects (\"Yellow Book\"), CPR 14E / PGS 2, 3rd ed., second revised print.",
+          "note": "The European reference for heat flux from fires; free from TNO.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "TNO 2017 note and bibliotheek.nl catalogue record; free PDF from TNO's coloured-books page (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "letdown": {
+      "pageSources": "Sources, and how each was reached",
+      "references": [
+        {
+          "text": "Fisher Controls International (Emerson) (2017). Control Valve Handbook, 5th ed.",
+          "note": "Cavitation, flashing, choked flow and valve noise; free from Emerson.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Emerson site and trade-press release note: title, 5th ed., 2017, free PDF (document 3661206) (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "bund": {
+      "pageSources": "Sources, what kind of authority each is, and how each was reached",
+      "references": [
+        {
+          "text": "Mannan, M. S. (ed.) (2012). Lees' Loss Prevention in the Process Industries, 4th ed. Butterworth-Heinemann. ISBN 978-0-12-397189-0.",
+          "note": "The reference work on loss prevention, including storage.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Elsevier publisher page; Crossref front-matter DOI 10.1016/b978-0-12-397189-0.00122-1 resolved (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "stack-dispersion": {
+      "pageSources": "Sources, and which were read",
+      "references": [
+        {
+          "text": "Hanna, S. R.; Briggs, G. A.; Hosker, R. P., Jr. (1982). Handbook on Atmospheric Diffusion. DOE/TIC-11223.",
+          "url": "https://www.osti.gov/biblio/5591108",
+          "note": "Briggs' dispersion table and the plume-rise laws; public domain.",
+          "verified": {
+            "method": "official",
+            "evidence": "OSTI record 5591108 (UNT scan) (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Gifford, F. A., Jr. (1961). Use of routine meteorological observations for estimating atmospheric dispersion. Nuclear Safety 2(4), 47–51.",
+          "note": "The other half of 'Pasquill-Gifford'.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "NIST FireDoc record: author, title, Nuclear Safety 2(4), June 1961, pp. 47-51 (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Pasquill, F. (1962). Atmospheric Diffusion: The Dispersion of Windborne Material from Industrial and Other Sources. Van Nostrand, London/Princeton.",
+          "note": "The book form of Pasquill's 1961 paper.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "library catalogue record: author, title, Van Nostrand, 1962 (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Seinfeld, J. H.; Pandis, S. N. (2016). Atmospheric Chemistry and Physics: From Air Pollution to Climate Change, 3rd ed. Wiley. ISBN 978-1-118-94740-1.",
+          "note": "Atmospheric diffusion in the graduate text.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "library records: title, 3rd ed., Wiley, 2016, ISBN (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "plant-layout": {
+      "pageSources": "Sources, and how each was reached",
+      "references": [
+        {
+          "text": "Center for Chemical Process Safety (2018). Guidelines for Siting and Layout of Facilities, 2nd ed. Wiley-AIChE. ISBN 978-1-119-47463-0.",
+          "note": "The current edition of the CCPS siting and layout guideline.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "retailer and British Library records: title, 2nd ed., 2018, ISBN (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Moran, S. (2017). Process Plant Layout, 2nd ed. Butterworth-Heinemann. ISBN 978-0-12-803355-5.",
+          "note": "The modern successor to Mecklenburgh's book.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "publisher/catalogue record: title, 2nd ed., 2017, ISBN (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "materials": {
+      "pageSources": "Sources, and how each was reached",
+      "references": [
+        {
+          "text": "Fontana, M. G. (1986). Corrosion Engineering, 3rd ed. McGraw-Hill. ISBN 0-07-021463-8.",
+          "note": "The forms of corrosion, passivity, stress-corrosion cracking and materials selection.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "library records: author, title, 3rd ed., McGraw-Hill, 1986, ISBN (C259 safety-and-layout audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "ip-strategy": {
+      "pageSources": "Sources: what was read in each, and where",
+      "references": [
+        {
+          "text": "Regulation (EC) No 469/2009 of the European Parliament and of the Council of 6 May 2009 concerning the supplementary protection certificate for medicinal products (codified version), Art. 13.",
+          "url": "https://www.legislation.gov.uk/eur/2009/469/article/13",
+          "note": "The supplementary protection certificate: its duration and the paediatric extension.",
+          "verified": {
+            "method": "official",
+            "evidence": "Art. 13(1)-(3) read at legislation.gov.uk/eur/2009/469/article/13 (UK retained copy) (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "patent-expiry": {
+      "pageSources": "Sources: what was read, and where",
+      "references": [
+        {
+          "text": "Directive 2001/83/EC of the European Parliament and of the Council of 6 November 2001 on the Community code relating to medicinal products for human use, Art. 10(1).",
+          "url": "https://www.legislation.gov.uk/eudr/2001/83/article/10",
+          "note": "Data and market protection for medicinal products: the 8 + 2 + 1 rule.",
+          "verified": {
+            "method": "official",
+            "evidence": "Art. 10(1) read at legislation.gov.uk/eudr/2001/83/article/10 (the 8+2+1 rule) (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Regulation (EC) No 469/2009 of the European Parliament and of the Council of 6 May 2009 concerning the supplementary protection certificate for medicinal products (codified version), Art. 13.",
+          "url": "https://www.legislation.gov.uk/eur/2009/469/article/13",
+          "note": "The supplementary protection certificate.",
+          "verified": {
+            "method": "official",
+            "evidence": "Art. 13(1)-(3) read at legislation.gov.uk/eur/2009/469/article/13 (UK retained copy) (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Drug Price Competition and Patent Term Restoration Act of 1984 (\"Hatch-Waxman\"), Public Law 98-417, 98 Stat. 1585; operative provisions in 35 U.S.C. 156 and 271(e)(1) and 21 U.S.C. 355(j).",
+          "url": "https://www.govinfo.gov/content/pkg/STATUTE-98/pdf/STATUTE-98-Pg1585.pdf",
+          "note": "The US patent-term restoration and generic-entry rules.",
+          "verified": {
+            "method": "official",
+            "evidence": "govinfo PDF of 98 Stat. 1585, p. 1 read; 35 U.S.C. 156, 271 and 21 U.S.C. 355 read at law.cornell.edu (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "plant-cost": {
+      "references": [
+        {
+          "text": "Turton, R.; Shaeiwitz, J. A.; Bhattacharyya, D.; Whiting, W. B. (2018). Analysis, Synthesis, and Design of Chemical Processes, 5th ed. Prentice Hall / Pearson. ISBN 978-0-13-417740-3.",
+          "note": "Bare-module costing and the total-module and grass-roots factors.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library: ISBN 9780134177403, Prentice Hall PTR, 2018, author Richard A. Turton (C259 design-and-economics audit; C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Peters, M. S.; Timmerhaus, K. D.; West, R. E. (2003). Plant Design and Economics for Chemical Engineers, 5th ed. McGraw-Hill. ISBN 0-07-239266-5.",
+          "note": "Factored estimates as fractions of delivered equipment cost.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780072392661: McGraw-Hill, 2003, 5th ed., 988 pp. (C259 design-and-economics audit; C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Towler, G.; Sinnott, R. (2012). Chemical Engineering Design: Principles, Practice and Economics of Plant and Process Design, 2nd ed. Butterworth-Heinemann. ISBN 978-0-08-096659-5.",
+          "note": "Lang factors and factored estimates in a third textbook.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780080966595: title, subtitle, 2nd ed., Butterworth-Heinemann, 2012, 1320 pp., by-statement 'Gavin Towler, Ray Sinnott' (C259 design-and-economics audit; record re-read 2026-11-09)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Asgharian, H.; et al. (2024). Exceeding equilibrium limitations: Enhanced temperature control for sustainable decentralized green ammonia production – a techno-economic analysis. Energy Conversion and Management 315, 118764. Open access (CC BY 4.0).",
+          "doi": "10.1016/j.enconman.2024.118764",
+          "note": "The green-ammonia techno-economic analysis the page recomputes.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.enconman.2024.118764: authors, title, container, volume, pages and year matched (C259 design-and-economics audit); licence URL CC BY 4.0",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "economics-errors": {
+      "references": [
+        {
+          "text": "Turton, R.; Shaeiwitz, J. A.; Bhattacharyya, D.; Whiting, W. B. (2018). Analysis, Synthesis, and Design of Chemical Processes, 5th ed. Prentice Hall / Pearson. ISBN 978-0-13-417740-3.",
+          "note": "Discounted cash flow, depreciation and taxation.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library: ISBN 9780134177403, Prentice Hall PTR, 2018, author Richard A. Turton (C259 design-and-economics audit; C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Peters, M. S.; Timmerhaus, K. D.; West, R. E. (2003). Plant Design and Economics for Chemical Engineers, 5th ed. McGraw-Hill. ISBN 0-07-239266-5.",
+          "note": "Working capital and the methods the page compares.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780072392661: McGraw-Hill, 2003, 5th ed., 988 pp. (C259 design-and-economics audit; C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Towler, G.; Sinnott, R. (2012). Chemical Engineering Design: Principles, Practice and Economics of Plant and Process Design, 2nd ed. Butterworth-Heinemann. ISBN 978-0-08-096659-5.",
+          "note": "Economic evaluation in a design textbook.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780080966595: title, subtitle, 2nd ed., Butterworth-Heinemann, 2012, 1320 pp., by-statement 'Gavin Towler, Ray Sinnott' (C259 design-and-economics audit; record re-read 2026-11-09)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "site-process-price": {
+      "references": [
+        {
+          "text": "Sheldon, R. A. (2007). The E Factor: fifteen years on. Green Chemistry 9(12), 1273.",
+          "doi": "10.1039/b713736m",
+          "note": "The E factor: kg of waste per kg of product.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1039/b713736m: authors, title, container, volume, pages and year matched (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Jimenez-Gonzalez, C.; Ponder, C. S.; Broxterman, Q. B.; Manley, J. B. (2011). Using the Right Green Yardstick: Why Process Mass Intensity Is Used in the Pharmaceutical Industry To Drive More Sustainable Processes. Org. Process Res. Dev. 15(4), 912–917.",
+          "doi": "10.1021/op200097d",
+          "note": "Process mass intensity, the pharmaceutical roundtable metric.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/op200097d: authors, title, container, volume, pages and year matched (C259 design-and-economics audit); re-checked on Crossref 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Trost, B. M. (1991). The Atom Economy: A Search for Synthetic Efficiency. Science 254(5037), 1471–1477.",
+          "doi": "10.1126/science.1962206",
+          "note": "Atom economy.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1126/science.1962206: authors, title, container, volume, pages and year matched (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "demand-forecast": {
+      "references": [
+        {
+          "text": "WHO Collaborating Centre for Drug Statistics Methodology. Defined Daily Dose (DDD).",
+          "url": "https://www.who.int/tools/atc-ddd-toolkit/about-ddd",
+          "note": "The defined daily dose.",
+          "verified": {
+            "method": "official",
+            "evidence": "WHO page read: 'The assumed average maintenance dose per day for a drug used for its main indication in adults' (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Conrad, R.; Lutter, R. (2019). Generic Competition and Drug Prices: New Evidence Linking Greater Generic Competition and Lower Generic Drug Prices. U.S. Food and Drug Administration, December 2019.",
+          "url": "https://www.fda.gov/media/133509/download",
+          "note": "Generic prices against the number of competitors; open access.",
+          "verified": {
+            "method": "official",
+            "evidence": "FDA PDF, pp. 1-3 read (AMP and invoice-price reductions by number of competitors) (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "front-end-loading": {
+      "references": [
+        {
+          "text": "AACE International (2020). Recommended Practice No. 18R-97, Cost Estimate Classification System – As Applied in Engineering, Procurement, and Construction for the Process Industries. TCM Framework 7.3, revised August 7, 2020.",
+          "url": "https://web.aacei.org/docs/default-source/toc/toc_18r-97.pdf",
+          "note": "The cost-estimate classes; the table of contents is open, the full text is sold by AACE.",
+          "verified": {
+            "method": "official",
+            "evidence": "AACE sample PDF: cover, title page and table of contents read (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "King, S. (2025). Demystifying Engineering Projects Part 3: FEED and Detailed Design. The Chemical Engineer (IChemE), 27 March 2025.",
+          "url": "https://www.thechemicalengineer.com/features/demystifying-engineering-projects-part-3-feed-and-detailed-design/",
+          "note": "FEED as FEL-3, from a series on the project phases; open access.",
+          "verified": {
+            "method": "official",
+            "evidence": "IChemE's The Chemical Engineer article read (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Turton, R.; Shaeiwitz, J. A.; Bhattacharyya, D.; Whiting, W. B. (2018). Analysis, Synthesis, and Design of Chemical Processes, 5th ed. Prentice Hall / Pearson. ISBN 978-0-13-417740-3.",
+          "note": "Estimate classes in a design textbook.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library: ISBN 9780134177403, Prentice Hall PTR, 2018, author Richard A. Turton (C259 design-and-economics audit; C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "route-screening": {
+      "references": [
+        {
+          "text": "Douglas, J. M. (1985). A hierarchical decision procedure for process synthesis. AIChE Journal 31(3), 353–362.",
+          "doi": "10.1002/aic.690310302",
+          "note": "The original hierarchical decision procedure.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690310302: authors, title, container, volume, pages and year matched (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Douglas, J. M. (1988). Conceptual Design of Chemical Processes. McGraw-Hill. ISBN 0-07-017762-7.",
+          "note": "The hierarchy and its first economic test, in book form.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0070177627: author, title, McGraw-Hill, 1988, 601 pp. (C259 thermodynamics-and-reaction audit; C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Trost, B. M. (1991). The Atom Economy: A Search for Synthetic Efficiency. Science 254(5037), 1471–1477.",
+          "doi": "10.1126/science.1962206",
+          "note": "Atom economy.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1126/science.1962206: authors, title, container, volume, pages and year matched (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Butters, M.; et al. (2006). Critical Assessment of Pharmaceutical Processes: A Rationale for Changing the Synthetic Route. Chem. Rev. 106(7), 3002–3027.",
+          "doi": "10.1021/cr050982w",
+          "note": "The SELECT criteria for a synthetic route.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/cr050982w: authors, title, container, volume, pages and year matched (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "campaign-plan": {
+      "references": [
+        {
+          "text": "ICH (2022). Q13: Continuous Manufacturing of Drug Substances and Drug Products. Step 4, adopted 16 November 2022.",
+          "url": "https://database.ich.org/sites/default/files/ICH_Q13_Step4_Guideline_2022_1116.pdf",
+          "note": "What a batch is in continuous manufacturing; open access.",
+          "verified": {
+            "method": "official",
+            "evidence": "ICH PDF, pp. 1-8 read (section 2.2, batch definition) (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "European Commission (2015). EudraLex Volume 4, Annex 15: Qualification and Validation. Brussels, 30 March 2015; in operation from 1 October 2015.",
+          "url": "https://health.ec.europa.eu/system/files/2016-11/2015-10_annex15_0.pdf",
+          "note": "Cleaning validation and the maximum length of a campaign; open access.",
+          "verified": {
+            "method": "official",
+            "evidence": "European Commission PDF, pp. 1-2 and 9-12 read (section 10, cleaning validation; 10.9 campaigns) (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Biegler, L. T.; Grossmann, I. E.; Westerberg, A. W. (1997). Systematic Methods of Chemical Process Design. Prentice Hall PTR. ISBN 0-13-492422-3.",
+          "note": "Batch process design.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0134924223: Prentice Hall PTR, 1997, 796 pp. (C259 design-and-economics audit; C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Seider, W. D.; et al. (2017). Product and Process Design Principles: Synthesis, Analysis and Evaluation, 4th ed. Wiley. ISBN 978-1-119-28263-1.",
+          "note": "Product and process design.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9781119282631: 4th ed., Wiley, 2016 (copyright 2017), xxxiv + 738 pp. (C259 design-and-economics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "sines-pta": {
+      "pageSources": "Sources: what each document is, and where to read it",
+      "references": [
+        {
+          "text": "Turton, R.; Shaeiwitz, J. A.; Bhattacharyya, D.; Whiting, W. B. (2018). Analysis, Synthesis, and Design of Chemical Processes, 5th ed. Prentice Hall / Pearson. ISBN 978-0-13-417740-3.",
+          "note": "The appraisal method: cash flow and profitability.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library: ISBN 9780134177403, Prentice Hall PTR, 2018, author Richard A. Turton (C259 design-and-economics audit; C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Towler, G.; Sinnott, R. (2012). Chemical Engineering Design: Principles, Practice and Economics of Plant and Process Design, 2nd ed. Butterworth-Heinemann. ISBN 978-0-08-096659-5.",
+          "note": "The appraisal method in a second textbook.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780080966595: title, subtitle, 2nd ed., Butterworth-Heinemann, 2012, 1320 pp., by-statement 'Gavin Towler, Ray Sinnott' (C259 design-and-economics audit; record re-read 2026-11-09)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "wegstein": {
+      "references": [
+        {
+          "text": "Wegstein, J. H. (1958). Accelerating convergence of iterative processes. Communications of the ACM 1(6), 9–13.",
+          "doi": "10.1145/368861.368871",
+          "note": "The original paper.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1145/368861.368871: authors, title, container, volume, pages and year matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Orbach, O.; Crowe, C. M. (1971). Convergence promotion in the simulation of chemical processes with recycle — the dominant eigenvalue method. The Canadian Journal of Chemical Engineering 49(4), 509–513.",
+          "doi": "10.1002/cjce.5450490414",
+          "note": "Recycle convergence acceleration; places Wegstein among the accelerators.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/orbach1971-dominant-eigenvalue-recycle.pdf, first page (p. 509) read; Crossref 10.1002/cjce.5450490414 matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Westerberg, A. W.; Hutchison, H. P.; Motard, R. L.; Winter, P. (1979). Process Flowsheeting. Cambridge University Press. ISBN 0-521-22043-2.",
+          "note": "The sequential-modular text: tearing, Wegstein, convergence.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library search (title Process Flowsheeting, author Westerberg): CUP, 1979, ISBN 0521220432; review in Chemie Ingenieur Technik 52(12) 965 (1980), doi 10.1002/cite.330521207 (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Biegler, L. T.; Grossmann, I. E.; Westerberg, A. W. (1997). Systematic Methods of Chemical Process Design. Prentice Hall PTR. ISBN 0-13-492422-3.",
+          "note": "Recycle convergence in a process-design text.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0134924223: Prentice Hall PTR, 1997, 796 pp. (C259 design-and-economics audit; C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "relaxation": {
+      "references": [
+        {
+          "text": "Wegstein, J. H. (1958). Accelerating convergence of iterative processes. Communications of the ACM 1(6), 9–13.",
+          "doi": "10.1145/368861.368871",
+          "note": "Wegstein's accelerated step, the relaxation factor chosen from the iterates.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1145/368861.368871: authors, title, container, volume, pages and year matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Patankar, S. V. (1980). Numerical Heat Transfer and Fluid Flow. Hemisphere / McGraw-Hill. ISBN 0-07-048740-5.",
+          "note": "SIMPLE and the under-relaxation of segregated equations.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0070487405: Hemisphere Pub. Corp., 1980 (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "OpenFOAM Foundation. OpenFOAM v12 User Guide (CFD Direct).",
+          "url": "https://doc.cfd.direct/openfoam/user-guide-v12/",
+          "note": "Section 4.6.6 'Solution under-relaxation'; open access.",
+          "verified": {
+            "method": "official",
+            "evidence": "doc.cfd.direct/openfoam/user-guide-v12: section 4.6.6 'Solution under-relaxation' read (p 0.3, U 0.7 in the steady incompressible example) and the case directory structure 0/, constant/, system/ (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "tear-streams": {
+      "references": [
+        {
+          "text": "Upadhye, R. S.; Grens, E. A. (1975). Selection of decompositions for chemical process simulation. AIChE Journal 21(1), 136–143.",
+          "doi": "10.1002/aic.690210117",
+          "note": "The minimum-count tear set is not the best one; the non-redundant family.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690210117: authors, title, container, volume, pages and year matched (C259 numerics audit); re-checked on Crossref 2026-11-09",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Upadhye, R. S.; Grens, E. A. (1972). An efficient algorithm for optimum decomposition of recycle systems. AIChE Journal 18(3), 533–539.",
+          "doi": "10.1002/aic.690180312",
+          "note": "An algorithm for optimum decomposition of recycle systems.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690180312: authors, title, container, volume, pages and year matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Pho, T. K.; Lapidus, L. (1973). Topics in computer-aided design: Part I. An optimum tearing algorithm for recycle systems. AIChE Journal 19(6), 1170–1181.",
+          "doi": "10.1002/aic.690190614",
+          "note": "An optimum tearing algorithm.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690190614: authors, title, container, volume, pages and year matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Barkley, R. W.; Motard, R. L. (1972). Decomposition of nets. The Chemical Engineering Journal 3, 265–275.",
+          "doi": "10.1016/0300-9467(72)85030-5",
+          "note": "Decomposition of nets.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0300-9467(72)85030-5: authors, title, container, volume, pages and year matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Westerberg, A. W.; Hutchison, H. P.; Motard, R. L.; Winter, P. (1979). Process Flowsheeting. Cambridge University Press. ISBN 0-521-22043-2.",
+          "note": "Tearing in the sequential-modular text.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library search (title Process Flowsheeting, author Westerberg): CUP, 1979, ISBN 0521220432; review in Chemie Ingenieur Technik 52(12) 965 (1980), doi 10.1002/cite.330521207 (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "active-set-qp": {
+      "references": [
+        {
+          "text": "Nocedal, J.; Wright, S. J. (2006). Numerical Optimization, 2nd ed. Springer Series in Operations Research and Financial Engineering. Springer. ISBN 978-0-387-30303-1.",
+          "doi": "10.1007/978-0-387-40065-5",
+          "note": "Chapter 16 'Quadratic Programming', pp. 448–496.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1007/978-0-387-40065-5: authors, title, container, volume, pages and year matched (C259 numerics audit); chapter 16 'Quadratic Programming', pp. 448-496, doi 10.1007/978-0-387-40065-5_16",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Gill, P. E.; Murray, W.; Wright, M. H. (1981). Practical Optimization. Academic Press; reissued in SIAM Classics in Applied Mathematics (2019).",
+          "doi": "10.1137/1.9781611975604",
+          "note": "Practical optimization: active-set methods.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1137/1.9781611975604: authors, title, container, volume, pages and year matched (C259 numerics audit) for the SIAM reissue; the 1981 original confirmed by the review in The Mathematical Gazette 66(437) 252-253, doi 10.2307/3616583",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "least-squares": {
+      "references": [
+        {
+          "text": "Levenberg, K. (1944). A method for the solution of certain non-linear problems in least squares. Quarterly of Applied Mathematics 2(2), 164–168.",
+          "doi": "10.1090/qam/10666",
+          "note": "The damped Gauss-Newton step.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1090/qam/10666: authors, title, container, volume, pages and year matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Marquardt, D. W. (1963). An algorithm for least-squares estimation of nonlinear parameters. Journal of the Society for Industrial and Applied Mathematics 11(2), 431–441.",
+          "doi": "10.1137/0111030",
+          "note": "Marquardt's refinement of the damping.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1137/0111030: authors, title, container, volume, pages and year matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Seber, G. A. F.; Wild, C. J. (1989). Nonlinear Regression. Wiley Series in Probability and Statistics. Wiley. ISBN 978-0-471-61760-0.",
+          "doi": "10.1002/0471725315",
+          "note": "Parameter covariance, t intervals and identifiability.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/0471725315: authors, title, container, volume, pages and year matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "data-reconciliation": {
+      "references": [
+        {
+          "text": "Narasimhan, S.; Jordache, C. (2000). Data Reconciliation and Gross Error Detection: An Intelligent Use of Process Data. Gulf Professional Publishing. ISBN 978-0-88415-255-2.",
+          "note": "Linear reconciliation and gross-error detection.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "Crossref chapter records under this ISBN (Elsevier): 'Linear Steady-State Data Reconciliation' pp. 59-84, doi 10.1016/b978-088415255-2/50004-5; 'Introduction to Gross Error Detection' pp. 174-225, doi 10.1016/b978-088415255-2/50008-2 (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Mah, R. S. H.; Stanley, G. M.; Downing, D. M. (1976). Reconciliation and rectification of process flow and inventory data. Ind. Eng. Chem. Process Des. Dev. 15(1), 175–183.",
+          "doi": "10.1021/i260057a030",
+          "note": "The global and nodal tests.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/i260057a030: authors, title, container, volume, pages and year matched (C259 numerics audit); Crossref's title carries the typo 'Reconcillation'",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Crowe, C. M.; García Campos, Y. A.; Hrymak, A. (1983). Reconciliation of process flow rates by matrix projection. Part I: Linear case. AIChE Journal 29(6), 881–888.",
+          "doi": "10.1002/aic.690290602",
+          "note": "Reconciliation by matrix projection.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690290602: authors, title, container, volume, pages and year matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Šidák, Z. (1967). Rectangular confidence regions for the means of multivariate normal distributions. Journal of the American Statistical Association 62(318), 626–633.",
+          "doi": "10.1080/01621459.1967.10482935",
+          "note": "The Šidák level of the per-measurement test.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1080/01621459.1967.10482935: authors, title, container, volume, pages and year matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "plant-running-cost": {
+      "references": [
+        {
+          "text": "Towler, G.; Sinnott, R. (2013). Estimating Revenues and Production Costs. Chapter 8 in Chemical Engineering Design: Principles, Practice and Economics of Plant and Process Design, 2nd ed. Butterworth-Heinemann, pp. 355–387.",
+          "doi": "10.1016/B978-0-08-096659-5.00008-0",
+          "note": "Estimating revenues and production costs.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/B978-0-08-096659-5.00008-0: authors, title, container, volume, pages and year matched (C259 numerics audit); re-checked on Crossref 2026-11-09 (the chapter record is dated 2013; the book's catalogue record 2012)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Peters, M. S.; Timmerhaus, K. D.; West, R. E. (2003). Plant Design and Economics for Chemical Engineers, 5th ed. McGraw-Hill. ISBN 0-07-239266-5.",
+          "note": "Production costs as a design textbook tabulates them.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780072392661: McGraw-Hill, 2003, 5th ed., 988 pp. (C259 design-and-economics audit; C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Turton, R.; Shaeiwitz, J. A.; Bhattacharyya, D.; Whiting, W. B. (2018). Analysis, Synthesis, and Design of Chemical Processes, 5th ed. Prentice Hall / Pearson. ISBN 978-0-13-417740-3.",
+          "note": "The cost of manufacturing.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library: ISBN 9780134177403, Prentice Hall PTR, 2018, author Richard A. Turton (C259 design-and-economics audit; C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "run-log": {
+      "references": [
+        {
+          "text": "Rachford, H. H., Jr.; Rice, J. D. (1952). Procedure for use of electronic digital computers in calculating flash vaporization hydrocarbon equilibrium. Journal of Petroleum Technology 4(10), 327 (Technical Note 136).",
+          "doi": "10.2118/952327-G",
+          "note": "The g(V) equation of the flash.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/rachford1952-flash-calculation-digital-computers.pdf, first page (p. 327) read; Crossref 10.2118/952327-G matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Orbach, O.; Crowe, C. M. (1971). Convergence promotion in the simulation of chemical processes with recycle — the dominant eigenvalue method. The Canadian Journal of Chemical Engineering 49(4), 509–513.",
+          "doi": "10.1002/cjce.5450490414",
+          "note": "The recycle convergence the log reports.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/orbach1971-dominant-eigenvalue-recycle.pdf, first page (p. 509) read; Crossref 10.1002/cjce.5450490414 matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    },
+    "case-assembly": {
+      "references": [
+        {
+          "text": "OpenFOAM Foundation. OpenFOAM v12 User Guide (CFD Direct).",
+          "url": "https://doc.cfd.direct/openfoam/user-guide-v12/",
+          "note": "The case layout Choupo follows: 0/, constant/, system/.",
+          "verified": {
+            "method": "official",
+            "evidence": "doc.cfd.direct/openfoam/user-guide-v12: section 4.6.6 'Solution under-relaxation' read (p 0.3, U 0.7 in the steady incompressible example) and the case directory structure 0/, constant/, system/ (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -50,6 +50,7 @@ License
 
 import { Alert, Box, Code, Stack, Text, Title } from "@mantine/core";
 import { OriginMark } from "./origin.js";
+import { LessonReferences } from "./lessonStep.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -282,6 +283,8 @@ export function LocalCompositionTool(): JSX.Element {
           each of which buys reach at a price shown on the comparison page.
         </Text>
       </Box>
+
+      <LessonReferences tool="local-composition" />
     </Stack>
     </Box>
   );

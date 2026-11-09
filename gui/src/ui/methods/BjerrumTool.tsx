@@ -31,7 +31,7 @@
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import { Alert, Box, Group, Slider, Stack, Text, Title } from "@mantine/core";
 
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
@@ -362,6 +362,8 @@ export function BjerrumTool(): JSX.Element {
           <code>choupoProps</code> with the two knobs written into its{" "}
           <code>variables</code> block.
         </Text>
+
+        <LessonReferences tool="bjerrum" />
       </Stack>
     </Box>
   );

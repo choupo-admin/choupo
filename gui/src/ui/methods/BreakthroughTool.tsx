@@ -77,7 +77,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   Alert, Box, Group, Loader, SegmentedControl, Stack, Switch, Table, Text,
   Title,
@@ -698,6 +698,8 @@ export function BreakthroughTool(): JSX.Element {
         {lessonStep(5)}
 
         {lessonLimits}
+
+        <LessonReferences tool="breakthrough" />
       </Stack>
     </Box>
   );

@@ -92,7 +92,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useCallback, useMemo, useState } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, ScrollArea, SegmentedControl, Stack, Text,
   Title, Tooltip,
@@ -1473,6 +1473,8 @@ export function ColumnControlTool(): JSX.Element {
         {lessonStep(5)}
 
         {lessonLimits}
+
+        <LessonReferences tool="column-control" />
       </Stack>
     </Box>
   );

@@ -93,7 +93,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useCallback, useMemo, useState } from "react";
-import { lessonStepper, TexText } from "./lessonStep.js";
+import { lessonStepper, TexText, LessonReferences } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
   Tooltip,
@@ -1239,6 +1239,8 @@ export function DryingCurveTool(): JSX.Element {
         {lessonStep(5)}
 
         {lessonLimits}
+
+        <LessonReferences tool="drying" />
       </Stack>
     </Box>
   );

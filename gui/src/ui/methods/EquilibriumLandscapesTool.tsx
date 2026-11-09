@@ -110,7 +110,7 @@ import { useMethodRun, type DictOverride } from "../../case/methodRun.js";
 import type { RunResult } from "../../adapters/SolverAdapter.js";
 import { parseGibbsMapCsv, type GibbsMapData } from "../plotting/gibbsMapCsv.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { LANDSCAPE_LIMITS, LANDSCAPE_STEPS } from "./equilibriumLandscapesLesson.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
@@ -730,6 +730,8 @@ export function EquilibriumLandscapesTool(): JSX.Element {
             Declared pathways
           </Anchor>.
         </Text>
+
+        <LessonReferences tool="equilibrium-landscapes" />
       </Stack>
     </Box>
   );

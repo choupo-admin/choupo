@@ -39,7 +39,7 @@ import {
 import { useCaseFilesRun } from "../../case/methodRun.js";
 import { caseTabSearch, openAppTab } from "../openInTab.js";
 import { KnobNumber, PanelNote } from "./knobPanel.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { setActiveMethodTool } from "./registry.js";
 import {
   BENCHES, BENCH_STAGES, COLUMNS, KNOBS, MOVES, READOUTS, START,
@@ -385,6 +385,8 @@ export function SyngasTool(): JSX.Element {
           pressures named are those the corpus cases declare, and the targets are the
           stoichiometry of the equations.
         </PanelNote>
+
+        <LessonReferences tool="syngas" />
       </Stack>
     </Box>
   );

@@ -37,7 +37,7 @@ import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { RELAXATION_LIMITS, RELAXATION_STEPS } from "./relaxationLesson.js";
 import { GainMap, RELAXED, SlopeCobweb } from "./RelaxationFigures.js";
 import { DIRECT, ErrorPlot, MEASURED, NEWTON, WEGSTEIN } from "./WegsteinTool.js";
@@ -301,6 +301,8 @@ export function RelaxationTool(): JSX.Element {
         </Stack>
 
         <LessonLimits limits={RELAXATION_LIMITS} />
+
+        <LessonReferences tool="relaxation" />
       </Stack>
     </Box>
   );

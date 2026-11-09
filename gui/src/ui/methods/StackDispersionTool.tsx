@@ -50,7 +50,7 @@ import { rawRecordFor } from "../../case/catalogue.js";
 import { useMethodRun } from "../../case/methodRun.js";
 import { Plot, darkLayout } from "../plotting/plotly.js";
 import { KnobField, KnobNumber, KnobSlider, PanelNote } from "./knobPanel.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 import { setActiveMethodTool } from "./registry.js";
@@ -718,6 +718,8 @@ export function StackDispersionTool(): JSX.Element {
             the radiation of a pool fire
           </Anchor>.
         </Text>
+
+        <LessonReferences tool="stack-dispersion" />
       </Stack>
     </Box>
   );

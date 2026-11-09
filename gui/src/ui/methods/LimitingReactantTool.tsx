@@ -42,7 +42,7 @@ import { useState } from "react";
 import { Alert, Badge, Box, Group, Stack, Text, Title } from "@mantine/core";
 
 import { KnobSlider, PanelNote } from "./knobPanel.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { LIMITING_LIMITS, LIMITING_STEPS } from "./limitingReactantLesson.js";
 import { OriginMark } from "./origin.js";
 
@@ -205,6 +205,8 @@ export function LimitingReactantTool(): JSX.Element {
         {step(6)}
 
         <LessonLimits limits={LIMITING_LIMITS} />
+
+        <LessonReferences tool="limiting-reactant" />
       </Stack>
     </Box>
   );

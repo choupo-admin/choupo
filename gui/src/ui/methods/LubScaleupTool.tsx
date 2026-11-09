@@ -78,7 +78,7 @@ import type { CaseFiles } from "../../case/types.js";
 import { methodCase, useMethodRun } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import { KnobNumber, PanelNote } from "./knobPanel.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { Plot, PLOT_COLORS, darkLayout } from "../plotting/plotly.js";
 import {
   BREAKTHROUGH_KNOBS, BREAKTHROUGH_WITNESS, type BreakthroughKnobValues,
@@ -610,6 +610,8 @@ export function LubScaleupTool(): JSX.Element {
 
         {lessonStep(6)}
         {limits}
+
+        <LessonReferences tool="lub-scaleup" />
       </Stack>
     </Box>
   );

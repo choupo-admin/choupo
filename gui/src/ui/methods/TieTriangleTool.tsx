@@ -81,7 +81,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { lessonStepper } from "./lessonStep.js";
+import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text,
   Title, Tooltip,
@@ -670,6 +670,8 @@ export function TieTriangleTool(): JSX.Element {
 
       {lessonStep(5)}
       {lessonLimits}
+
+        <LessonReferences tool="hunter-nash" />
       </Stack>
     </Box>
   );

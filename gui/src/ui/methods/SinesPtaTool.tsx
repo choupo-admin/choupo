@@ -50,7 +50,7 @@ import {
 import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "../plotting/plotly.js";
 import { TornadoPlot } from "../plotting/TornadoPlot.js";
 import { KnobNumber, PanelNote } from "./knobPanel.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   SINES_CHECKLIST, SINES_INSTITUTIONAL_NOTE, SINES_LIMITS, SINES_MARKET_QUOTES,
   SINES_PURPOSE, SINES_RISKS, SINES_SCOPE, SINES_STEPS, SINES_TITLE,
@@ -608,6 +608,8 @@ export function SinesPtaTool(): JSX.Element {
               Screening routes to a product
             </Anchor>{" "}(the gross margin as the first filter).
         </Text>
+
+        <LessonReferences tool="sines-pta" />
       </Stack>
     </Box>
   );

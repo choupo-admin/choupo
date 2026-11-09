@@ -61,7 +61,7 @@ import {
 
 import { useMethodRun, type MethodRunState } from "../../case/methodRun.js";
 import type { OperationResult } from "../../adapters/SolverAdapter.js";
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import {
   CENTRAL_IDEA, DR_LIMITS, DR_QUIZ, DR_STEPS, THREE_INGREDIENTS,
@@ -1014,6 +1014,8 @@ export function DataReconciliationTool(): JSX.Element {
         <LessonQuiz title="Check your understanding (all five pages)"
           questions={DR_QUIZ} lesson={DR_STEPS} />
         <LessonLimits limits={DR_LIMITS} />
+
+        <LessonReferences tool="data-reconciliation" />
       </Stack>
     </Box>
   );

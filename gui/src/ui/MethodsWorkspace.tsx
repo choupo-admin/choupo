@@ -120,7 +120,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
-import { lessonStepper } from "./methods/lessonStep.js";
+import { lessonStepper, LessonReferences } from "./methods/lessonStep.js";
 import {
   ActionIcon, Alert, Badge, Box, Button, Code, Collapse, CopyButton,
   Group, Loader, NumberInput, Select, Stack, Text, Title, Tooltip,
@@ -1109,6 +1109,8 @@ function McCabeTool({ catalogue, localUnifac, componentFiles }: {
         </Box>
 
         <HandOffFooter spec={spec} alerts={[]} />
+
+        <LessonReferences tool="mccabe" />
       </Stack>
     </Box>
   );
@@ -1315,6 +1317,8 @@ function PsychroTool({ catalogue, componentFiles }: {
         </Box>
 
         <HandOffFooter spec={spec} alerts={[]} />
+
+        <LessonReferences tool="psychro" />
       </Stack>
     </Box>
   );

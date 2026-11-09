@@ -55,7 +55,7 @@ import {
   LAYOUT_WITNESS, PRESETS, SHIPPED, layoutLines, layoutOverrides,
   type LayoutKnobs,
 } from "./layoutExercise.js";
-import { LessonLimits, LessonStepView } from "./lessonStep.js";
+import { LessonLimits, LessonStepView, LessonReferences } from "./lessonStep.js";
 import {
   LAYOUT_SOURCES, PLANT_LAYOUT_LIMITS, PLANT_LAYOUT_STEPS,
 } from "./plantLayoutLesson.js";
@@ -330,6 +330,8 @@ export function PlantLayoutTool(): JSX.Element {
             </Box>
           ))}
         </Box>
+
+        <LessonReferences tool="plant-layout" />
       </Stack>
     </Box>
   );

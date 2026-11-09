@@ -44,7 +44,7 @@ import { rawRecordFor } from "../../case/catalogue.js";
 import { tutorialByName } from "../../cases/tutorials.js";
 import { Plot, PLOT_COLORS, darkLayout } from "../plotting/plotly.js";
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
-import { LessonLimits, LessonStepView } from "./lessonStep.js";
+import { LessonLimits, LessonStepView, LessonReferences } from "./lessonStep.js";
 import {
   AMBIENT_T_K, FUEL_PLANT, LAYOUT_CASE, MEASURED, POOL_FUELS, THRESHOLDS,
   USBM_TABLE21, HESKESTAD_RANGE, burgessMinf, burningFlux, distanceTo, formationEnthalpy,
@@ -620,6 +620,8 @@ export function PoolFireTool(): JSX.Element {
             </Box>
           ))}
         </Box>
+
+        <LessonReferences tool="pool-fire" />
       </Stack>
     </Box>
   );

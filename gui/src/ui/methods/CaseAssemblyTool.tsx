@@ -40,7 +40,7 @@ import {
   Alert, Badge, Box, Button, Group, Loader, Stack, Text, Title, UnstyledButton,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { useNarrowViewport } from "./methodsChrome.js";
 import { PanelNote } from "./knobPanel.js";
 import {
@@ -438,6 +438,8 @@ export function CaseAssemblyTool(): JSX.Element {
           err={broken.err} />}
 
         <LessonLimits limits={CASE_ASSEMBLY_LIMITS} />
+
+        <LessonReferences tool="case-assembly" />
       </Stack>
     </Box>
   );

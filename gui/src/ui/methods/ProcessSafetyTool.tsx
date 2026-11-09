@@ -56,7 +56,7 @@ import {
 import { tutorialByName } from "../../cases/tutorials.js";
 import { Plot, PLOT_COLORS, darkLayout } from "../plotting/plotly.js";
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
-import { LessonLimits, LessonStepView, Tex } from "./lessonStep.js";
+import { LessonLimits, LessonStepView, Tex, LessonReferences } from "./lessonStep.js";
 import {
   SAFETY_LIMITS, SAFETY_STEPS, SAFETY_TECH_NOTES,
 } from "./processSafetyLesson.js";
@@ -1013,6 +1013,8 @@ export function ProcessSafetyTool(): JSX.Element {
         </Accordion>
 
         <LessonLimits limits={SAFETY_LIMITS} />
+
+        <LessonReferences tool="process-safety" />
       </Stack>
     </Box>
   );

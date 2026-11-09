@@ -67,7 +67,7 @@ import {
 } from "@mantine/core";
 
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
-import { LessonLimits, LessonStepView, Tex } from "./lessonStep.js";
+import { LessonLimits, LessonStepView, Tex, LessonReferences } from "./lessonStep.js";
 import { FEL_LIMITS, FEL_QUIZ, FEL_STEPS } from "./frontEndLoadingLesson.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import {
@@ -604,6 +604,8 @@ export function FrontEndLoadingTool(): JSX.Element {
             The reactor ladder
           </Anchor>{" "}(the fidelity a reactor climbs as the stages pass).
         </Text>
+
+        <LessonReferences tool="front-end-loading" />
       </Stack>
     </Box>
   );

@@ -55,7 +55,7 @@ import {
 } from "./letdownDrawings.js";
 import { LETDOWN_LIMITS, LETDOWN_SOURCES, LETDOWN_STEPS } from "./letdownLesson.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
-import { LessonLimits, LessonStepView } from "./lessonStep.js";
+import { LessonLimits, LessonStepView, LessonReferences } from "./lessonStep.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
 
@@ -646,6 +646,8 @@ export function LetdownTool(): JSX.Element {
             </Box>
           ))}
         </Box>
+
+        <LessonReferences tool="letdown" />
       </Stack>
     </Box>
   );

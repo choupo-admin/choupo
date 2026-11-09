@@ -33,7 +33,7 @@ import {
   Text, TextInput, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import {
   CONTRAST, DEADLINES, DECISION_QUESTIONS, EXERCISE, EXERCISE_COMPANY,
@@ -356,6 +356,8 @@ export function IpStrategyTool(): JSX.Element {
             Screening routes to a product
           </Anchor>{" "}(the paper filters a route must pass, legal among them).
         </Text>
+
+        <LessonReferences tool="ip-strategy" />
       </Stack>
     </Box>
   );
