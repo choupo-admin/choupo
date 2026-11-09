@@ -14,6 +14,12 @@
   Migrated mechanically from the v1 flat solvent/solutes form (physics
   identical -- the solutes list states the engine's own Henry selection);
   v2 contract 2026-07-17.
+
+  C256 (2026-11-09), MEASURED: N2, H2, Ar and NH3 are priced above their
+  critical temperatures only in gas states (the 700 K reactor, a gas feed);
+  the separator liquid prices the dissolved gases on the Henry rung declared
+  here (N2-NH3, H2-NH3, Ar-NH3), so no printed number depends on a
+  supercritical vapour pressure.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

@@ -11,6 +11,11 @@
   reads, per component and by name if absent: water's vapour pressure
   (saturation curve), liquid Cp (water-side sensible heat), ideal-gas Cp
   (vapour humid heat) and latent heat; N2's ideal-gas Cp (dry humid heat).
+
+  C256 (2026-11-09), MEASURED: N2 is priced above its critical temperature
+  somewhere in this run (Psat continued past Tc), but no stream holding a
+  liquid carries it at a temperature above its Tc and no K of it is printed,
+  so no printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

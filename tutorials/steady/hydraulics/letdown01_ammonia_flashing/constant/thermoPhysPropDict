@@ -24,6 +24,12 @@
   COPIED, with that pair file byte for byte, from
   tutorials/plant/greenAmmonia03_basicDesign for letdown01 (DEV.md 4c C64): the
   curation/ dossier both name lives in that plant, not here.
+
+  C256 (2026-11-09), MEASURED: N2's vapour pressure is consulted above its
+  critical temperature (126.2 K) once, at 298 K in the HP valve's state
+  search; every K of the dissolved N2, H2 and Ar comes from the Henry rung
+  declared here (N2-NH3, H2-NH3, Ar-NH3), so no printed number depends on a
+  supercritical vapour pressure.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

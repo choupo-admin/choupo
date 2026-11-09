@@ -17,6 +17,11 @@
   (The N2-CH4 pair in the catalogue could dress one of the 120 pairs; adding
   one measured pair to an otherwise bare matrix would be noise wearing a
   citation, so none is declared.)
+
+  C256 (2026-11-09), MEASURED: N2 (Tc 126.2 K) and CH4 (190.6 K) have their
+  vapour pressures consulted above Tc at 298 K, outside the equilibrium: every
+  K this train prints is phi_L/phi_V of the one SRK, so no printed number
+  depends on that vapour pressure.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

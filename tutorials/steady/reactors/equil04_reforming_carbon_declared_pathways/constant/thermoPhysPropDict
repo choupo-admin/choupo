@@ -14,6 +14,11 @@
   would make the columns answer two different questions.  Graphite's record
   says `referenceState pureSolid;`: it never enters the vapour or the liquid
   mixture, and both reactors give it a phase of its own.
+
+  C256 (2026-11-09), MEASURED: CH4, water, CO, CO2 and H2 are priced above
+  their critical temperatures in this run (Psat continued past Tc), but every
+  stream is one gas phase (vf = 1) and no K of theirs is printed, so no
+  printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

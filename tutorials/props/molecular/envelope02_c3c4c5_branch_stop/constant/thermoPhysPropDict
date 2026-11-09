@@ -1,6 +1,10 @@
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
 
+// C256 (2026-11-09), MEASURED: the branches marched past propane's Tc
+// (369.8 K) rest on its vapour pressure CONTINUED past Tc -- that surface is
+// this case's SUBJECT (the reference factor held continuous, the pseudo-root),
+// not a measured envelope, and it stays.
 components    ( propane nButane nPentane );
 
 equilibrium

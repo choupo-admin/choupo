@@ -1,24 +1,24 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-stream  cleanGas               F                0.0173528267232  1e-4
-stream  feed                   F                1.41666666667      1e-4
-stream  richLiquid             F                1.39931383994    1e-4
-kpi     scrubber               F_alpha          1.39931383994    1e-4
-kpi     scrubber               F_beta           0.0173528267232  1e-4
-kpi     scrubber               F_in             1.41666666667      1e-4
-kpi     scrubber               K_CO2            327.999999984      1e-4
-kpi     scrubber               K_N2             121.243619722    1e-4
-kpi     scrubber               K_water          0.00633349747981   1e-4
-kpi     scrubber               P                500000             1e-4
-kpi     scrubber               Q                0                  1e-4
-kpi     scrubber               Q_kW             0                  1e-4
-kpi     scrubber               T                298.15             1e-4
-kpi     scrubber               V_over_F         0.0122490541575  1e-4
-kpi     scrubber               phaseSet         0                  1e-4
+stream  cleanGas               F                0.0275085829325  1e-4
+stream  feed                   F                1.41666666667    1e-4
+stream  richLiquid             F                1.38915808373    1e-4
+kpi     scrubber               F_alpha          1.38915808373    1e-4
+kpi     scrubber               F_beta           0.0275085829325  1e-4
+kpi     scrubber               F_in             1.41666666667    1e-4
+kpi     scrubber               K_CO2            327.999999991    1e-4
+kpi     scrubber               K_N2             17301.7999995    1e-4
+kpi     scrubber               K_water          0.00633349747995 1e-4
+kpi     scrubber               P                500000           1e-4
+kpi     scrubber               Q                0                1e-4
+kpi     scrubber               Q_kW             0                1e-4
+kpi     scrubber               T                298.15           1e-4
+kpi     scrubber               V_over_F         0.0194178232465  1e-4
+kpi     scrubber               phaseSet         0                1e-4
 stream  cleanGas               T                298.15           1e-4
 stream  feed                   T                298.15           1e-4
 stream  richLiquid             T                298.15           1e-4
-boundary global                 H_feeds_kW       -398873.292138   1e-4
+boundary global                 H_feeds_kW       -398868.433565   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
-boundary global                 H_products_kW    -398873.292138   1e-4
+boundary global                 H_products_kW    -398868.433565   1e-4

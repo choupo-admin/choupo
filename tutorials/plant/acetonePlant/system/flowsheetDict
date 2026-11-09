@@ -194,12 +194,18 @@ units
                     }
                     solutes
                     {
-                        components    ( acetone );
+                        components    ( acetone  H2 );
                         standardState infiniteDilution;
                         solutionModel henryDilute;
                         binaryParameters
                         {
                             acetone-water { source "data/standards/parameters/Henry/acetone-water.dat"; }
+                            //  C256 (2026-11-09): H2 is above its critical
+                            //  temperature (33.2 K) here; on the Raoult rung
+                            //  its K was a vapour pressure continued past Tc
+                            //  (A_H2 0.0016 printed from it), so it dissolves
+                            //  by Henry like the acetone -- as in acetone05.
+                            H2-water      { source "data/standards/parameters/Henry/H2-water.dat"; }
                         }
                     }
                 }

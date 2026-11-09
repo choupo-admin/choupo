@@ -61,5 +61,32 @@ propertyManifest
             originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
             release       Choupo-2607;
         }
+        "parameters/Henry/CO-water.dat"
+        {
+            type          imported;
+            sha256        "63554745ca2704f51749b1eb631db1622902c475a6b87a6c185e815afd3db369";
+            computationalSha256 "7e5772418f164af708f397b91073253f5a13cf0f806777414e5d4cfa63506e97";
+            origin        "data/standards/parameters/Henry/CO-water.dat";
+            originSha256  "f6897f4f3e9190048cb6bc420e00ba84c9e07b925cd10585b56d8602c909c311";
+            release       Choupo-2608;
+        }
+        "parameters/Henry/CO2-water.dat"
+        {
+            type          imported;
+            sha256        "634ace38aac5e18b9f7d5fc571279150f7ff9be85ef4196852515fd07dfa7728";
+            computationalSha256 "84d20cd1fc73ff097ce640d0f6b4b9ad5cc51c9aa11d0ab05af8c64743b6c9ff";
+            origin        "data/standards/parameters/Henry/CO2-water.dat";
+            originSha256  "363762cbf10092dce98b6eb0821e4277eae487340187c5f3b8b49bc92484a715";
+            release       Choupo-2608;
+        }
+        "parameters/Henry/H2-water.dat"
+        {
+            type          imported;
+            sha256        "bd5225458c73db61471adca39517391aedd2b565125bf790a2e48a1eafe571f0";
+            computationalSha256 "4a3629c5a88f40b2e55f52bf4da05cff92e0c966331cc39b95712c2744fa8c7b";
+            origin        "data/standards/parameters/Henry/H2-water.dat";
+            originSha256  "c3c7d84fa6e6e11830d341af023cd7aa14b300483ecaddcc4141a60c5db00794";
+            release       Choupo-2608;
+        }
     }
 }

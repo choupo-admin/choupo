@@ -14,6 +14,12 @@
   Migrated mechanically from the v1 flat solvent/solutes form (physics
   identical -- the solutes list states the engine's own Henry selection);
   v2 contract 2026-07-17.
+  N2 JOINED THE SOLUTES (C256, 2026-11-09).  The carrier gas is above its
+  critical temperature (126.2 K) at 298 K; left on the Raoult rung its K in
+  the 5 bar scrubber was a vapour pressure continued past Tc (K_N2 121, and
+  0.71 mol % N2 in the rich liquid), a number that is not a K.  The
+  catalogue carries N2-water (Sander 2015), so N2 now dissolves by Henry
+  like the CO2 does.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
@@ -34,12 +40,13 @@ equilibrium
         }
         solutes
         {
-            components    ( CO2 );
+            components    ( CO2  N2 );
             standardState infiniteDilution;    // the Henry rung
             solutionModel henryDilute;
             binaryParameters
             {
                 CO2-water { source "data/standards/parameters/Henry/CO2-water.dat"; }
+                N2-water  { source "data/standards/parameters/Henry/N2-water.dat"; }   // C256
             }
         }
     }

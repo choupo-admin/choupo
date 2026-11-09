@@ -5,13 +5,13 @@ stream  bottoms                F                0.00574366573439 1e-4
 stream  gasIn                  F                0.0110555555556  1e-4
 stream  offgas                 F                0.0108674453767  1e-4
 stream  washWater              F                0.00555555555556 1e-4
-kpi     absorber               A_H2             0.00101015389598 1e-4
+kpi     absorber               A_H2             9.55089138396e-06 1e-4
 kpi     absorber               A_acetone        0.0857422914441  1e-4
 kpi     absorber               A_isopropanol    4.51803004485    1e-4
 kpi     absorber               A_water          8.0125706439     1e-4
 kpi     absorber               F_cleanGas       0.0108674453767  1e-4
 kpi     absorber               F_richLiquid     0.00574366573439 1e-4
-kpi     absorber               K_H2             497.461391588    1e-4
+kpi     absorber               K_H2             52614.2055869    1e-4
 kpi     absorber               K_acetone        5.86073166871    1e-4
 kpi     absorber               K_isopropanol    0.11122382052    1e-4
 kpi     absorber               K_water          0.0627155235376  1e-4

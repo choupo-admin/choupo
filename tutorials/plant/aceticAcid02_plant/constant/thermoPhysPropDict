@@ -46,6 +46,14 @@ equilibrium
     }
 }
 
+//  C256 (2026-11-09), MEASURED: the CO dissolved in the 30 bar condensate
+//  (3.3 mol %, K_CO 29.9 in the condenser flash) and carried into the column
+//  feed (0.065 %) rests on a vapour pressure CONTINUED past CO's Tc
+//  (132.9 K) -- it is not a solubility, and it sets the CO the column vents
+//  and the crude acid carries.  No Henry pair for CO in acetic acid is in
+//  the catalogue, a Henry solute cannot be declared inside a UNIFAC liquid,
+//  and SRK on an associating acid at 30 bar would be a worse surface than
+//  the one this plant has: the number stays a declared non-K.
 approximations
 {
     componentOutsideActivityModel
