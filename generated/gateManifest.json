@@ -233,8 +233,8 @@
     },
     "check_degenerate_limits": {
       "exit": 0,
-      "claim": "check_degenerate_limits: OK -- a ONE-STAGE absorber (semi-lean solvent, NH3 in both feeds: 12 kmol/h, K 0.977054) and a ONE-STAGE stripper (5 kmol/h, K 0.977054) each reproduce the flash of their combined feeds to 1e-09 of the solute, both probes provably on the one-stage isothermal branch; a kinetic reactive column whose product adsorbs with K 0 reproduces the same column with no reverse rate EXACTLY at 1 g, every KPI and stream (Reaction: \u03a3\u03be = 2.491e-03 kmol/h,  conversion of aceticAcid = 8.1 %  (adsorption (LHHW) kinetics, 9 reactive stages)); a kinetic reactant with no `order` and an adsorbing product with no K both refuse by name; the kinetic column converges at 1 g and 10 g (conversion 0.08088 -> 0.4989), announces its balance scaling and closes every component balance to 1e-09 of the feed; all 19 MESH columns in 18 corpus cases (simultaneous and full-MESH, derived from the flowsheets) close every component balance to 1e-09 of their own feed, worst 1.21e-11 (column13_sour_water_stage_identity/tower, CO2); all 18 WANG-HENKE columns in 18 corpus cases publish the residuals their stop was taken on and close every component balance over their ports to 1e-09 of their own feed (worst 9.92e-10, column14_klemola_c4_splitter/splitter (nButane)) and every stage balance of their published profile likewise (worst 3.52e-10, column11_murphree/column11, benzene on stage 7); and column06_fullMESH (fullMESH), column05_reactive_methylacetate (simultaneous), column02_simultaneous (simultaneous, seeded with a converged interior at reflux x1.2), re-run with every flow x1e-08 (and the full-MESH x10000), reproduce their full-size compositions, temperatures and conversion to 1e-06.  NOT checked: N >= 2 (the goldens pin those), that a kinetic profile is RIGHT (nothing measured is reproduced), that a Wang-Henke stop is REACHED within maxOuterIter on a case the corpus does not ship, or a Newton trial crossing a zero activity.",
-      "seconds": 18.2
+      "claim": "check_degenerate_limits: OK -- a ONE-STAGE absorber (semi-lean solvent, NH3 in both feeds: 12 kmol/h, K 0.977054) and a ONE-STAGE stripper (5 kmol/h, K 0.977054) each reproduce the flash of their combined feeds to 1e-09 of the solute, both probes provably on the one-stage isothermal branch; a kinetic reactive column whose product adsorbs with K 0 reproduces the same column with no reverse rate EXACTLY at 1 g, every KPI and stream (Reaction: \u03a3\u03be = 2.491e-03 kmol/h,  conversion of aceticAcid = 8.1 %  (adsorption (LHHW) kinetics, 9 reactive stages)); a kinetic reactant with no `order` and an adsorbing product with no K both refuse by name; the kinetic column converges at 1 g and 10 g (conversion 0.08088 -> 0.4989), announces its balance scaling and closes every component balance to 1e-09 of the feed; all 19 MESH columns in 18 corpus cases (simultaneous and full-MESH, derived from the flowsheets) close every component balance to 1e-09 of their own feed, worst 1.21e-11 (column13_sour_water_stage_identity/tower, CO2); all 18 WANG-HENKE columns in 18 corpus cases publish the residuals their stop was taken on and close every component balance over their ports to 1e-09 of their own feed (worst 1e-09, column15_klemola_ideal_trays/splitter (nButane)) and every stage balance of their published profile likewise (worst 3.52e-10, column11_murphree/column11, benzene on stage 7); and column06_fullMESH (fullMESH), column05_reactive_methylacetate (simultaneous), column02_simultaneous (simultaneous, seeded with a converged interior at reflux x1.2), re-run with every flow x1e-08 (and the full-MESH x10000), reproduce their full-size compositions, temperatures and conversion to 1e-06.  NOT checked: N >= 2 (the goldens pin those), that a kinetic profile is RIGHT (nothing measured is reproduced), that a Wang-Henke stop is REACHED within maxOuterIter on a case the corpus does not ship, or a Newton trial crossing a zero activity.",
+      "seconds": 33.0
     },
     "check_derived_density": {
       "exit": 0,
@@ -253,8 +253,8 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 833 path mention(s) and 251 case name(s) across 25 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 8 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
-      "seconds": 1.3
+      "claim": "check_doc_references: OK -- 833 path mention(s) and 252 case name(s) across 25 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 10 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
+      "seconds": 1.1
     },
     "check_doctrine": {
       "exit": 0,
@@ -508,7 +508,7 @@
     },
     "check_guide_environments": {
       "exit": 0,
-      "claim": "check_guide_environments: OK -- 4200 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
+      "claim": "check_guide_environments: OK -- 4201 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
       "seconds": 0.1
     },
     "check_guide_menu": {
@@ -1003,8 +1003,8 @@
     },
     "check_theory_citations": {
       "exit": 0,
-      "claim": "check_theory_citations: OK -- docs/theoryGuide.tex: 52 of 86 chapters that carry numbered equations carry a citation (34 pinned as owing one, ratcheting down); 143 \\cite keys all resolve, 143 \\bibitem entries all cited (0 orphans pinned); 16 of 16 engine-cited surnames the guide names reach the bibliography; 5 registered eponymous model keys the guide names are sourced. SCANNED: that one file plus src/ for surnames and factory keys; nothing else in docs/ carries a bibliography. NOT CHECKED: whether a citation is TRUE of the equation beside it, whether an equation NEEDS one, the physico-chemical HYPOTHESES Pedro also asked for, the 582 numbered equation environments individually, and the other seven guides.",
-      "seconds": 1.4
+      "claim": "check_theory_citations: OK -- docs/theoryGuide.tex: 52 of 86 chapters that carry numbered equations carry a citation (34 pinned as owing one, ratcheting down); 143 \\cite keys all resolve, 143 \\bibitem entries all cited (0 orphans pinned); 16 of 16 engine-cited surnames the guide names reach the bibliography; 5 registered eponymous model keys the guide names are sourced. SCANNED: that one file plus src/ for surnames and factory keys; nothing else in docs/ carries a bibliography. NOT CHECKED: whether a citation is TRUE of the equation beside it, whether an equation NEEDS one, the physico-chemical HYPOTHESES Pedro also asked for, the 583 numbered equation environments individually, and the other seven guides.",
+      "seconds": 1.5
     },
     "check_thermal_bed": {
       "exit": 0,
@@ -1353,8 +1353,8 @@
     },
     "check_txy_bubble_verdict": {
       "exit": 0,
-      "claim": "check_txy_bubble_verdict: OK -- at 2 bar 2 of 29 unconverged compositions are dropped and counted, 27 drawn, none at the 200 K floor; at 1 bar 17 of 29 fail and the diagram is refused by name; flash01's 29-point diagram is drawn with no count; flash20 (PC-SAFT) draws all 29 points, 18 of them accepted at |f| <= 1e-5 short of the Newton's 1e-8 and announced (worst |f| = 3.66e-06); the column's bubbleTWithItsVapour reads the verdict of all 3 bubbleT calls and folds it into its flag; the guard reads xUnconverged and no 200 K constant; the count reaches the caveat block on both witnesses.  NOT checked: whether a point is RIGHT beyond its residual, and the Wang-Henke stage loop's bubbleT calls (judged by the column's stage test)",
-      "seconds": 14.5
+      "claim": "check_txy_bubble_verdict: OK -- at 2 bar 2 of 29 unconverged compositions are dropped and counted, 27 drawn, none at the 200 K floor; at 1 bar 18 of 29 fail and the diagram is refused by name; flash01's 29-point diagram is drawn with no count; flash20 (PC-SAFT) draws all 29 points, 18 of them accepted at |f| <= 1e-5 short of the Newton's 1e-8 and announced (worst |f| = 3.66e-06); the column's bubbleTWithItsVapour reads the verdict of all 3 bubbleT calls and folds it into its flag; the guard reads xUnconverged and no 200 K constant; the count reaches the caveat block on both witnesses.  NOT checked: whether a point is RIGHT beyond its residual, and the Wang-Henke stage loop's bubbleT calls (judged by the column's stage test)",
+      "seconds": 16.2
     },
     "check_membrane_feed_scope": {
       "exit": 0,
@@ -1458,7 +1458,7 @@
     },
     "check_distillation_seed": {
       "exit": 0,
-      "claim": "check_distillation_seed: OK -- a Newton step no trial improves is counted and limited and the BEST iterate is returned (probe: x = 3, |F| = 2, not the uphill 2.99976 / 50; strict mode stops at the first); a CMO phase that did not converge (15 stages, 33 iterations, |F| = 7.297e+31) seeds the full MESH only as an ANNOUNCED seed and the verdict is the full MESH's own; acetone06 still converges through 0 floor-damped step(s) (all announced; 0 under the Armijo contract).  NOT covered: a seed the full MESH converts (none found in the corpus), the singular-Jacobian stage/equation diagnostic (C184 P0), the allowance's default of 25.",
+      "claim": "check_distillation_seed: OK -- a Newton step no trial improves is counted and limited and the BEST iterate is returned (probe: x = 3, |F| = 2, not the uphill 2.99976 / 50; strict mode stops at the first); a CMO phase that did not converge (15 stages, 0 iterations, |F| = 3.991e+00) seeds the full MESH only as an ANNOUNCED seed and the verdict is the full MESH's own; acetone06 still converges through 0 floor-damped step(s) (all announced; 0 under the Armijo contract).  NOT covered: a seed the full MESH converts (none found in the corpus), the singular-Jacobian stage/equation diagnostic (C184 P0), the allowance's default of 25.",
       "seconds": 2.3
     },
     "check_driver_convergence": {
