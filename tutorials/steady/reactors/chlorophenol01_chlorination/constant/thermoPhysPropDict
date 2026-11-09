@@ -11,6 +11,12 @@
   Raoult DECLARED, not defaulted (gamma = 1 identically).
   Migrated mechanically from the v1 flat form (physics identical);
   v2 contract 2026-07-17.
+  C256 (2026-11-09), MEASURED: HCl (Tc 324.6 K) is above its critical
+  temperature in the 353 K flash, and the 0.73 mol % HCl the product liquid
+  carries (K_HCl 122.5) rests on a vapour pressure CONTINUED past Tc -- it is
+  not a solubility.  The catalogue holds HCl only in water; no pair in
+  phenol or chlorophenol exists and none was read, so the number stays a
+  declared non-K and sets only that trace.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

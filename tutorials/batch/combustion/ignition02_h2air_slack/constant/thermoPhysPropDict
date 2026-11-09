@@ -11,6 +11,10 @@
   Raoult DECLARED, not defaulted (gamma = 1 identically).
   Migrated mechanically from the v1 flat form (physics identical);
   v2 contract 2026-07-17.
+
+  C256 (2026-11-09), MEASURED: N2 is priced above its critical temperature
+  (126.2 K) in this run, but the vessel holds one gas phase throughout and no
+  K of it is printed, so no printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

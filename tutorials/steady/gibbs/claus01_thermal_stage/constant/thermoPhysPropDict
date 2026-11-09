@@ -10,6 +10,11 @@
   A furnace at 1.5 bar and well over 1000 K is an ideal gas and nothing else:
   there is no liquid in this unit, so the liquid slot is declared for the
   grammar's sake and never evaluated.
+
+  C256 (2026-11-09), MEASURED: CO, N2, O2, H2, CO2, H2S, SO2, water and
+  carbonylSulfide are priced above their critical temperatures in this run
+  (Psat continued past Tc), but every stream is one gas phase (vf = 1) and no
+  K of theirs is printed, so no printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

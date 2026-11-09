@@ -17,6 +17,11 @@
   `equilibrium-landscapes` that reads this case says so on its own page: a
   landscape drawn at 100 bar is the equilibrium SHAPE, never a real-gas
   prediction (the 200 bar SRK answer lives in gibbs10_ammonia_fugacity).
+
+  C256 (2026-11-09), MEASURED: CO, CO2, H2 and water are priced above their
+  critical temperatures in this run (Psat continued past Tc), but the Gibbs
+  map is a one-gas-phase equilibrium over (T, P): no liquid is priced and no K
+  is printed, so no printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

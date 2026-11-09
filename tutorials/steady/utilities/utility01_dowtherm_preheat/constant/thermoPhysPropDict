@@ -11,6 +11,11 @@
   Raoult DECLARED, not defaulted (gamma = 1 identically).
   Migrated mechanically from the v1 flat form (physics identical);
   v2 contract 2026-07-17.
+
+  C256 (2026-11-09), MEASURED: nHexane and C8H18 are priced above their
+  critical temperatures somewhere in this run (Psat continued past Tc), but no
+  stream holding a liquid carries any of them at a temperature above its own
+  Tc and no K of theirs is printed, so no printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

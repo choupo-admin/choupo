@@ -3,6 +3,14 @@ schemaVersion 2;
 
 components    ( CH4 ethane propane nButane );
 
+//  C256 (2026-11-09), MEASURED: every dew point this envelope draws lies
+//  above CH4's Tc (190.6 K), so CH4's K on the gamma-phi surface rests on a
+//  vapour pressure CONTINUED past Tc with the reference factor held (C245):
+//  the dew branch and its cricondentherm are that surface's answer, not a
+//  measured envelope.  The case is the witness of exactly that behaviour
+//  (check_phase_envelope) and keeps it; a natural-gas envelope on one cubic
+//  is the physical route and is not this case.
+
 equilibrium
 {
     formulation gammaPhi;

@@ -12,6 +12,11 @@
   every equilibriumReactor Kp is on the ideal-gas rung, so a real equation of
   state here would make the Gibbs reactor and the declared list answer two
   different questions.
+
+  C256 (2026-11-09), MEASURED: CO, H2, methanol, CO2, CH4 and O2 are priced
+  above their critical temperatures in this run (Psat continued past Tc), but
+  every stream is one gas phase (vf = 1) and no K of theirs is printed, so no
+  printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

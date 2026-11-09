@@ -13,6 +13,11 @@
   Graphite's record says `referenceState pureSolid;`: it never enters the
   vapour or the liquid mixture, and the Gibbs reactor gives it a phase of
   its own.
+
+  C256 (2026-11-09), MEASURED: CO, water, CO2, H2, CH4, NH3, O2, N2 and NO are
+  priced above their critical temperatures in this run (Psat continued past
+  Tc), but every stream is one gas phase (vf = 1) and no K of theirs is
+  printed, so no printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
