@@ -1,5 +1,7 @@
 # Pack: plant layout (plot plan) and the GMP building interior
 
+budget: 3000 words (~4800 tokens)
+
 Read this pack when the design must say WHERE things stand: a plot plan with
 the sized equipment, a pipe rack, roads, a fence, hazardous-area zones; or,
 for a pharmaceutical plant, the rooms of the building (grades, pressures,

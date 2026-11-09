@@ -1,5 +1,7 @@
 # Pack: pressure changers (pump, compressor, turbine, valve, pipe)
 
+budget: 1950 words (~3120 tokens)
+
 Read this pack when the design raises, lowers or loses pressure.  Binary:
 `choupoSolve`.  Pressure is NOT a free knob on a machine: you choose the
 hardware (efficiency, and either the power or the discharge pressure), the

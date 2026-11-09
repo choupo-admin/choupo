@@ -38,6 +38,19 @@ or ADDS it; there is NO delete), then the usual init0 / lint / solve / balances.
 files changed vs the start (counted BEFORE init0 writes anything), which are outside `allowed`,
 DESIGN.md has a Revisions entry quoting the feedback verbatim, each `check:`.
 
+MORE REVISION LINES (C250).
+    touch: <file>     the change list MUST include this file (it counts as a check)
+    omit: <regex>     files whose path matches are left out of the prompt dump (listed as "not shown, unchanged"),
+                      for a start case whose full text is far larger than the change needs
+    check: <file> <path> ~= <value> [unit]    as ==, within 1 % (a model rounds a molar flow)
+    A list element is also selected by the value of its `product`, `unitName`, `stage` or `train` key.
+
+THE PROXY (C250).  Default: `claude -p --model haiku`.  A non-Claude model is measured through an
+OpenAI-compatible chat endpoint:  --endpoint <url> (or $CHOUPO_LLM_ENDPOINT, e.g. https://host/v1/chat/completions),
+key in $CHOUPO_LLM_KEY, model in --model (or $CHOUPO_LLM_MODEL).  --dry-run builds every request, prints it (key
+masked, prompt shortened) and calls NOTHING, for either proxy.  Tokens are those the service reports.  The summary
+prints tokens per SOLVED problem (net input + output, over the runs that solved).
+
 SCORING (per run)
     design    DESIGN.md present, and how many of the seven items of record 4.2
               are detected.  HEURISTIC and lenient: an item counts when any of
@@ -169,6 +182,44 @@ def run_claude(prompt, model, timeout=900):
             err = repr(e)
         print(f"  proxy attempt {attempt} failed: {err}", file=sys.stderr)
     return None, err
+
+# ---- an OpenAI-compatible chat endpoint (C250): a proxy that is not Claude -------------------
+PROXY = {"endpoint": None, "key": None, "dry": False}   # set in main()
+
+def endpoint_request(prompt, model):
+    """-> (url, headers, body-dict) of one chat-completions call; NO network here."""
+    body = {"model": model, "temperature": 0,
+            "messages": [{"role": "system", "content": SYSTEM_PROMPT},
+                         {"role": "user", "content": prompt}]}
+    headers = {"Content-Type": "application/json", "Authorization": "Bearer " + (PROXY["key"] or "")}
+    return PROXY["endpoint"], headers, body
+
+def show_request(label, url, headers, body, prompt):
+    shown = dict(body, messages=[dict(m, content=(m["content"] if m["role"] == "system" else
+                f"<{len(prompt)} chars: {prompt[:200]!r} ... {prompt[-200:]!r}>")) for m in body["messages"]])
+    h = {k: ("Bearer ***" if k == "Authorization" else v) for k, v in headers.items()}
+    print(f"[dry-run] {label}\n  POST {url}\n  headers {json.dumps(h)}\n  body {json.dumps(shown, indent=2)}")
+
+def run_endpoint(prompt, model, timeout=900):
+    import urllib.request
+    url, headers, body = endpoint_request(prompt, model)
+    err = None
+    for attempt in (1, 2):
+        try:
+            rq = urllib.request.Request(url, data=json.dumps(body).encode(), headers=headers, method="POST")
+            with urllib.request.urlopen(rq, timeout=timeout) as r:
+                j = json.loads(r.read().decode())
+            txt = j["choices"][0]["message"]["content"]
+            u = j.get("usage", {})
+            return {"result": txt, "is_error": False,
+                    "usage": {"input_tokens": u.get("prompt_tokens", 0), "output_tokens": u.get("completion_tokens", 0)}}, None
+        except Exception as e:
+            err = repr(e)
+            print(f"  endpoint attempt {attempt} failed: {err}", file=sys.stderr)
+    return None, err
+
+def run_proxy(prompt, model):
+    return run_endpoint(prompt, model) if PROXY["endpoint"] else run_claude(prompt, model)
 
 NEUTRAL_CWD = Path("/tmp")   # replaced in main() by a dir with no CLAUDE.md above it
 
@@ -357,7 +408,7 @@ def similarity(root):
 
 # ----------------------------------------------------------------- revision mode
 import shutil
-HEAD_RE = re.compile(r"^(start|feedback|allowed|check|expect):\s*(.*)$")
+HEAD_RE = re.compile(r"^(start|feedback|allowed|check|expect|touch|omit):\s*(.*)$")
 UNSUPPORTED_RE = re.compile(r"cannot|can ?not|not (supported|available|implemented|modell?ed)|no (packing|packed)|"
                             r"does not (have|support|model|exist)|n[aã]o (suporta|existe|consegue|[ée] poss)|"
                             r"unsupported|not in choupo|no such", re.I)
@@ -365,7 +416,7 @@ OUTPUT_SKIP = ("converged", "reports", "expected", "README.md", "log.choupo")
 
 def parse_problem(text):
     """(meta, body). meta has start/feedback/allowed/checks/expect when the file declares a revision."""
-    meta = {"checks": []}
+    meta = {"checks": [], "touch": []}
     lines = text.split("\n")
     i = 0
     while i < len(lines):
@@ -373,6 +424,7 @@ def parse_problem(text):
         if not m: break
         k, v = m.groups()
         if k == "check": meta["checks"].append(v.strip())
+        elif k == "touch": meta["touch"].append(v.strip())
         else: meta[k] = v.strip()
         i += 1
     return (meta if "start" in meta else None), "\n".join(lines[i:]).strip()
@@ -393,13 +445,13 @@ def copy_start(start_rel, dst):
 
 PROMPT_FILES = re.compile(r"^(system/|0/|DESIGN\.md$|constant/thermoPhysPropDict$|constant/reactions$)")
 
-def case_dump(case):
+def case_dump(case, omit=None):
     out, other = "", []
     for f in sorted(case.rglob("*")):
         if not f.is_file(): continue
         rel = str(f.relative_to(case))
         if rel.endswith(".cho"): continue
-        if PROMPT_FILES.match(rel):
+        if PROMPT_FILES.match(rel) and not (omit and re.search(omit, rel)):
             out += f"\n=== FILE: {rel} ===\n{f.read_text()}\n=== END FILE ===\n"
         else:
             other.append(rel)
@@ -467,7 +519,7 @@ def lookup(d, path):
         cur = cur[m.group(1)]
         if m.group(2) is not None:
             sel = m.group(2)
-            hit = [e for e in cur if isinstance(e, dict) and e.get("name") == [sel]] if isinstance(cur, list) else []
+            hit = [e for e in cur if isinstance(e, dict) and any(e.get(k) == [sel] for k in ("name", "product", "unitName", "stage", "train"))] if isinstance(cur, list) else []
             if not hit and sel.isdigit() and isinstance(cur, list) and int(sel) < len(cur): hit = [cur[int(sel)]]
             if not hit: return None
             cur = hit[0]
@@ -482,16 +534,17 @@ def run_check(root, line):
         body = " ".join(toks(f.read_text()))
         hit = re.search(m.group(2), body, re.I)
         return (not hit), f"{line}  -> " + (f"FOUND {hit.group(0)!r}" if hit else "absent")
-    m = re.match(r"(\S+)\s+(\S+)\s*==\s*(.+?)\s*$", line)
+    m = re.match(r"(\S+)\s+(\S+)\s*(==|~=)\s*(.+?)\s*$", line)
     if not m: return False, f"unparsable check: {line}"
-    f, path, want = root / m.group(1), m.group(2), m.group(3).split()
+    f, path, want = root / m.group(1), m.group(2), m.group(4).split()
+    tol = 1e-2 if m.group(3) == "~=" else 1e-6
     if not f.exists(): return False, f"{line}  -> {m.group(1)} missing"
     d, _ = parse_dict(toks(f.read_text()))
     got = lookup(d, path)
     if got is None: return False, f"{line}  -> key not found"
     w, g = to_si(want), (to_si(got) if isinstance(got, list) else None)
     if w is not None and g is not None:
-        ok = abs(g - w) <= 1e-6 * max(abs(w), 1e-30)
+        ok = abs(g - w) <= tol * max(abs(w), 1e-30)
     else:
         ok = isinstance(got, list) and got == want
     return ok, f"{line}  -> found {' '.join(got) if isinstance(got, list) else '{...}'}"
@@ -541,10 +594,31 @@ def score_revision(meta, start_snap, case_dir, run_dir, files):
     for c in meta["checks"]:
         ok, txt = run_check(root, c) if root else (False, f"{c} (no case root)")
         res.append({"ok": ok, "check": txt})
+    for tf in meta.get("touch", []):
+        res.append({"ok": tf in changed, "check": f"touch {tf}  -> " + ("changed" if tf in changed else "NOT changed")})
     sc["revision"]["checks"] = res
     if meta.get("expect") == "unsupported":
         sc["revision"]["says_unsupported"] = bool(UNSUPPORTED_RE.search(dtxt))
     return sc
+
+def per_solved(rs):
+    """Tokens (net input + output) per solved problem, over the runs of rs: '-' when none solved."""
+    solved = [r for r in rs if r["score"].get("solves")]
+    tot = sum(r["tokens"]["in_net"] + r["tokens"]["out"] for r in rs)
+    return (f"{tot // len(solved)}" if solved else "-"), len(solved), tot
+
+def rev_summary(rows, briefs):
+    L = ["", "Per brief, REVISION problems:", "",
+         "| brief | runs | solved | checks passed | tokens in (net) | tokens out | tokens per solved problem (all runs' tokens / solved) |",
+         "|---|---|---|---|---|---|---|"]
+    for bn in briefs:
+        rs = [r for r in rows if r["brief"] == bn and "revision" in r["score"]]
+        if not rs: continue
+        cks = [c for r in rs for c in r["score"]["revision"]["checks"]]
+        ps, ns, _ = per_solved(rs)
+        L.append("| {} | {} | {} | {}/{} | {} | {} | {} |".format(bn, len(rs), ns, sum(c["ok"] for c in cks), len(cks),
+                 sum(r["tokens"]["in_net"] for r in rs), sum(r["tokens"]["out"] for r in rs), ps))
+    return "\n".join(L)
 
 def rev_table(rows):
     L = ["| brief | problem | solves | balances ok | files changed | outside allowed | student deleted | REVISIONS | quotes feedback | checks | says unsupported |",
@@ -590,18 +664,18 @@ def table(rows, briefs):
             fmt(st.get("max"), "{:.2f}"),
             r["tokens"]["in_net"], r["tokens"]["out"]))
     L += ["", "Per brief (sum over problems):", "",
-          "| brief | runs | DESIGN.md present | mean items | lint ok | solves | balances ok | tok in (net) total | tok out total |",
-          "|---|---|---|---|---|---|---|---|---|"]
+          "| brief | runs | DESIGN.md present | mean items | lint ok | solves | balances ok | tok in (net) total | tok out total | tok per solved |",
+          "|---|---|---|---|---|---|---|---|---|---|"]
     for bn in briefs:
         rs = [r for r in rows if r["brief"] == bn]
         if not rs: continue
         n = len(rs); sc = [r["score"] for r in rs]
-        L.append("| {} | {} | {}/{} | {:.1f} | {}/{} | {}/{} | {}/{} | {} | {} |".format(
+        L.append("| {} | {} | {}/{} | {:.1f} | {}/{} | {}/{} | {}/{} | {} | {} | {} |".format(
             bn, n, sum(x["design"]["present"] for x in sc), n,
             sum(x["design"]["items"] for x in sc) / n,
             sum(x.get("lint") == 0 for x in sc), n, sum(bool(x.get("solves")) for x in sc), n,
             sum(bool(x.get("balances_ok")) for x in sc), n,
-            sum(r["tokens"]["in_net"] for r in rs), sum(r["tokens"]["out"] for r in rs)))
+            sum(r["tokens"]["in_net"] for r in rs), sum(r["tokens"]["out"] for r in rs), per_solved(rs)[0]))
     return "\n".join(L)
 
 def main():
@@ -612,7 +686,16 @@ def main():
     ap.add_argument("--problems", help="comma list of problem prefixes, e.g. p01,p05")
     ap.add_argument("--model", default="haiku")
     ap.add_argument("--rescore", action="store_true", help="re-score existing reply.txt, call no model")
+    ap.add_argument("--endpoint", default=os.environ.get("CHOUPO_LLM_ENDPOINT"),
+                    help="OpenAI-compatible chat-completions URL (key in $CHOUPO_LLM_KEY); default: claude -p")
+    ap.add_argument("--dry-run", action="store_true", help="print each request, call no model, score nothing")
     a = ap.parse_args()
+    PROXY.update(endpoint=a.endpoint, key=os.environ.get("CHOUPO_LLM_KEY"), dry=a.dry_run)
+    if a.endpoint:
+        if a.model == "haiku":
+            a.model = os.environ.get("CHOUPO_LLM_MODEL") or sys.exit("--endpoint needs --model (or $CHOUPO_LLM_MODEL)")
+        if not PROXY["key"] and not a.dry_run and not a.rescore:
+            sys.exit("--endpoint needs $CHOUPO_LLM_KEY")
     out = Path(a.out).resolve()
     for bad in ("tutorials", "data"):
         if (ROOT / bad).resolve() in [out, *out.parents]:
@@ -629,7 +712,7 @@ def main():
     ov_file = out / "overhead.json"
     if ov_file.exists():
         overhead = json.loads(ov_file.read_text())["in"]
-    elif not a.rescore:
+    elif not a.rescore and not a.dry_run and not a.endpoint:
         j, _ = run_claude("Reply with the single word OK.", a.model)
         if j:
             overhead = usage_of(j)[0]; ov_file.write_text(json.dumps({"in": overhead}))
@@ -651,9 +734,16 @@ def main():
                     if st.exists(): shutil.rmtree(st)
                     st.mkdir(); copy_start(rmeta["start"], st)
                     prompt = (f"{btxt}\n\n---\n\n{REV_INSTRUCTIONS}\n---\n\n# The student's current case\n\n"
-                              f"{case_dump(st)}\n\n# The student's feedback\n\n{rmeta['feedback']}\n")
-                print(f"[{bname}/{pid}] proxy call, prompt {len(prompt)} chars", file=sys.stderr)
-                j, err = run_claude(prompt, a.model)
+                              f"{case_dump(st, rmeta.get('omit'))}\n\n# The student's feedback\n\n{rmeta['feedback']}\n")
+                if a.dry_run:
+                    if a.endpoint:
+                        show_request(f"{bname}/{pid}", *endpoint_request(prompt, a.model), prompt)
+                    else:
+                        print(f"[dry-run] {bname}/{pid}: {CLAUDE} -p --model {a.model} --tools '' "
+                              f"--no-session-persistence --output-format json  (stdin: {len(prompt)} chars)")
+                    continue
+                print(f"[{bname}/{pid}] proxy call ({'endpoint' if a.endpoint else 'claude -p'}), prompt {len(prompt)} chars", file=sys.stderr)
+                j, err = run_proxy(prompt, a.model)
                 if j:
                     raw_f.write_text(json.dumps(j)); reply_f.write_text(j["result"])
             if j:
@@ -682,13 +772,15 @@ def main():
             rows.append({"brief": bname, "problem": pid, "tokens": tokens, "score": sc})
             print(f"[{bname}/{pid}] items={sc['design']['items']} lint={sc.get('lint')} solves={sc.get('solves')}",
                   file=sys.stderr)
-    meta = {"date": time.strftime("%Y-%m-%d"), "model": a.model, "engine_commit": engine_commit(),
+    if a.dry_run:
+        return
+    meta = {"date": time.strftime("%Y-%m-%d"), "model": a.model, "endpoint": bool(a.endpoint), "engine_commit": engine_commit(),
             "overhead_in_tokens": overhead, "brief_chars": {n: len(t) for n, t in briefs}}
     (out / "summary.json").write_text(json.dumps({"meta": meta, "rows": rows}, indent=1))
     plain = [r for r in rows if "revision" not in r["score"]]
     md = table(plain, [n for n, _ in briefs]) if plain else ""
     rt = rev_table(rows)
-    if rt.count("\n") > 1: md += ("\n\n" if md else "") + "REVISION problems:\n\n" + rt
+    if rt.count("\n") > 1: md += ("\n\n" if md else "") + "REVISION problems:\n\n" + rt + "\n" + rev_summary(rows, [n for n, _ in briefs])
     (out / "summary.md").write_text(md + "\n")
     print(md)
 

@@ -1,5 +1,7 @@
 # Pack: reactors and kinetics
 
+budget: 2800 words (~4480 tokens)
+
 Read this when the design has a reaction.  Read the brief (`docs/ai/brief.md`) first.
 
 ## 1. Which reactor

@@ -1,5 +1,7 @@
 # Pack: equipment sizing, costing and economics (CAPEX, OPEX, NPV)
 
+budget: 3250 words (~5200 tokens)
+
 Read this pack when the design must say how BIG the equipment is, what it
 COSTS and whether the plant pays: vessels, exchangers, columns, machines;
 capital (FCI, TCI), operating cost, revenue, NPV, IRR, payback, sensitivity.
