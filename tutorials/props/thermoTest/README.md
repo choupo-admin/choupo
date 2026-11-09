@@ -3,7 +3,7 @@
 This is the `choupoProps` member of the **thermoTest** tutorial. The full guide
 and the other four subcases (evaporator/lumped, evaporator/Pitzer, antisolvent
 crystalliser/eNRTL, VLE flash/NRTL) live in
-`tutorials/steady/thermoTest/`.
+[`tutorials/steady/thermoTest/`](../../steady/thermoTest/README.md).
 
 `model4_speciation_scaling` — the same {NaCl, CaSO₄, water} system in its **third
 role**: a multi-ion broth. The aqueous speciation engine (Pitzer-HMW / Davies)

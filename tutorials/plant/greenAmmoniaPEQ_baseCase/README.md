@@ -20,17 +20,17 @@ illustrates is uniform:
 
 | rung | case | illustrated design stage | what changes against this case |
 |---|---|---|---|
-| 1 | `ammoniaRoutes01_screening` | FEL-1, screening | not a copy: the production routes on paper, the common entry |
-| 2 | `greenAmmonia02_feasibility150bar` | FEL-2, feasibility | no feed/effluent exchanger, every duty bought from a utility, pinch targets and the gross margin with the energy priced |
-| 2 | `greenAmmonia02_feasibility50bar` | FEL-2, an exploratory alternative | the same at 50 bar, resting on a catalyst hypothesis |
-| 3 | `greenAmmonia03_basicDesign` | FEL-3, basic design (process side) | the converter as three adiabatic catalyst beds on a rate law, volumes solved, every exchanger designed |
+| 1 | [`ammoniaRoutes01_screening`](../ammoniaRoutes01_screening) | FEL-1, screening | not a copy: the production routes on paper, the common entry |
+| 2 | [`greenAmmonia02_feasibility150bar`](../greenAmmonia02_feasibility150bar) | FEL-2, feasibility | no feed/effluent exchanger, every duty bought from a utility, pinch targets and the gross margin with the energy priced |
+| 2 | [`greenAmmonia02_feasibility50bar`](../greenAmmonia02_feasibility50bar) | FEL-2, an exploratory alternative | the same at 50 bar, resting on a catalyst hypothesis |
+| 3 | [`greenAmmonia03_basicDesign`](../greenAmmonia03_basicDesign) | FEL-3, basic design (process side) | the converter as three adiabatic catalyst beds on a rate law, volumes solved, every exchanger designed |
 
 Its `estimateClass 4` is, like theirs, the author's statement of how far the
 project is defined — not a consequence of the model.
 
 Seventeen units, no sectors, each in its **own folder** (`Converter/`,
 `Separator/`, …) with its `system/flowsheetDict` and its `.cho` marker. The
-plant's `system/flowsheetDict` holds the topology only —
+plant's [`system/flowsheetDict`](system/flowsheetDict) holds the topology only —
 which folders exist and the pipes between them — and its header says where
 every declared number comes from. Because each unit is a folder, a
 double-click on it in the GUI opens it as a case of its own, in its own tab,
@@ -49,7 +49,7 @@ it alone.
 | purge | `PurgeSplit` | ~11 kmol/h of the loop vapour leaves |
 | finishing | `LetdownHP` · `StorageFlash` | 20 bar, then 1 atm to storage |
 
-Two recycle cuts, declared in `system/solverDict`:
+Two recycle cuts, declared in [`system/solverDict`](system/solverDict):
 `Recycle` (material) and `HotEffluent` (the converter outlet preheats the
 converter's own feed).
 
@@ -61,10 +61,10 @@ path, so three Gibbs beds in series with coolers between them give the same
 outlet as one Gibbs reactor at the last bed's temperature. The first-pass
 practice is therefore one reactor at the converter outlet temperature with
 an approach to equilibrium (the definition and its source are in
-`ammoniaReactor03_equilibriumApproach`). The number of
+[`ammoniaReactor03_equilibriumApproach`](../ammoniaReactor03_equilibriumApproach)). The number of
 beds, their inlet temperatures against the catalyst's 520 °C limit and their
 catalyst volumes need a rate law: a plug-flow reactor
-(`ammoniaReactor04_kineticSizing`), task 2.
+([`ammoniaReactor04_kineticSizing`](../ammoniaReactor04_kineticSizing)), task 2.
 
 ## What the run shows
 
@@ -105,7 +105,7 @@ catalyst volumes need a rate law: a plug-flow reactor
 
 ## Sizing and costing
 
-`system/postDict` sizes and costs (Turton, 2026 EUR)
+[`system/postDict`](system/postDict) sizes and costs (Turton, 2026 EUR)
 the fourteen units that are pieces of equipment; the two mixers and the
 purge splitter are pipe junctions and are not. Every design number in it
 is an author-set assumption declared on its own line with its reason, and
@@ -282,7 +282,7 @@ the authority on these numbers; this table is a reading of one run.
 
 `system/postDict` ends with an `economics {}` block (Turton's cost of
 manufacture and a discounted cash flow) priced from
-`constant/economics`. **Every price there is an
+[`constant/economics`](constant/economics). **Every price there is an
 author-set assumption** — H₂ at 4.50 EUR/kg, N₂ at 0.05 EUR/kg, ammonia at
 1.00 EUR/kg — chosen so the appraisal runs, not market data; replace each
 with a dated, cited figure before quoting a result. At those prices the
@@ -303,11 +303,11 @@ The **converter** releases ~30.6 MW at 460 °C. Left to the automatic pick it
 would be dumped into cooling water and *charged for*. A real ammonia loop
 raises HP steam from that heat in a waste-heat boiler, so the case
 **declares** the service on the unit (`utility steamGenerationHP;` in
-`Converter/system/flowsheetDict`):
+[`Converter/system/flowsheetDict`](Converter/system/flowsheetDict)):
 
 | | |
 |---|---|
-| the record | `constant/utilities/steamGenerationHP.dat` — saturated steam at the `steamHP` header's own 41 bar / 252 °C, feedwater taken at saturation |
+| the record | [`constant/utilities/steamGenerationHP.dat`](constant/utilities/steamGenerationHP.dat) — saturated steam at the `steamHP` header's own 41 bar / 252 °C, feedwater taken at saturation |
 | steam raised | ~17.9 kg/s (~64 t/h) |
 | its value | **−18 EUR/GJ — a credit**, the price the plant would pay for the same steam from `steamHP.dat`; an **author-set assumption** and an *upper* bound (the steam is worth that only if something in the plant uses it) |
 | the credit | ~15.6 × 10⁶ EUR/yr, printed on its own line under C_UT |
@@ -369,7 +369,7 @@ three times the 15 % figure. The hydrogen the buffer holds adds little to the wo
 
 ## Plant layout
 
-`system/layoutDict` is the plant's **plot plan**: where
+[`system/layoutDict`](system/layoutDict) is the plant's **plot plan**: where
 each sized item stands (plan centre `x`, `y`, base `z`, and which way it
 lies), the separation distances the case requires between kinds of
 equipment, the prevailing wind, and the hazardous-area (ATEX) zones around
@@ -377,7 +377,7 @@ the items that can release hydrogen or ammonia. Every run checks it after
 the sizing pass: two items that overlap are **refused**; a pair closer than
 its declared distance, an ignition source inside a zone, or one downwind of
 a release is **announced**. Grammar and checks:
-`docs/design/a-plant-layout-is-declared-and-checked.md`.
+[`docs/design/a-plant-layout-is-declared-and-checked.md`](../../../docs/design/a-plant-layout-is-declared-and-checked.md).
 
 **Every distance, zone extent, wind value and position in the file is a
 placeholder — an author-set assumption for you to replace with your own

@@ -4,7 +4,7 @@
 five unit operations, each selecting a *different* property model. The point is
 the architecture lesson: **a substance has no fixed "kind" — the `propertyPackage`
 a case selects chooses how much of its physics to resolve** (see
-`docs/architecture/electrolyte-data-architecture.md`).
+[`docs/architecture/electrolyte-data-architecture.md`](../../../docs/architecture/electrolyte-data-architecture.md)).
 
 Nothing here ships a case-local data copy: like OpenFOAM, a case *selects* from the
 versioned standard catalogue (`package aqueousNaCl_pitzer;`) — the Choupo version
@@ -50,7 +50,7 @@ separated by distillation. The antisolvent has to be recovered somehow.
 **model 6 (advanced, existing): the cross-method recycle.** The one seam these
 five isolated cases do *not* exercise is a stream crossing a model boundary inside
 a recycle. That is exactly what
-`tutorials/steady/crystallisation/crystalliser09_dignified`
+[`tutorials/steady/crystallisation/crystalliser09_dignified`](../../crystallisation/crystalliser09_dignified/)
 does: an antisolvent crystalliser on the **eNRTL** global package feeds a solvent-
 recovery distillation carrying its **own NRTL** model (a per-unit `thermo{}`
 override), and the recovered ethanol **recycles** back (Newton tear). It prints

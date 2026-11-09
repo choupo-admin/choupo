@@ -1,7 +1,7 @@
 # Green ammonia, 1200 t/day — feasibility study, 50 bar loop: an exploratory alternative
 
 **Illustrated design stage: FEL-2** — the SAME stage as
-`greenAmmonia02_feasibility150bar`
+[`greenAmmonia02_feasibility150bar`](../greenAmmonia02_feasibility150bar)
 (read that README first), not a further one. It is an **exploratory
 alternative** of that study: the synthesis loop moved from **150 to 50 bar**,
 the speculation the feasibility stage allows —
@@ -26,14 +26,14 @@ approached equilibrium at the temperature declared. It does not say that
 such a catalyst exists.** The converter here is a Gibbs reactor at 400 °C,
 5 K short of equilibrium: the case assumes an activity no rate law in this
 tree supports. The only ammonia kinetics Choupo carries — Dyson & Simon
-(1968), used by `greenAmmonia03_basicDesign` and
-`ammoniaReactor04_kineticSizing` — are for an
+(1968), used by [`greenAmmonia03_basicDesign`](../greenAmmonia03_basicDesign) and
+[`ammoniaReactor04_kineticSizing`](../ammoniaReactor04_kineticSizing) — are for an
 **iron** catalyst and were fitted over 150-300 atm; nothing here extends
 them to 50 bar. Ruthenium-based catalysts are reported to be far more
 active than iron and to run at lower pressures (down to 90 bar in the
 source that record retrieved), but no rate expression for one has been
 read into this project
-(`how-a-process-design-is-staged.md`
+([`how-a-process-design-is-staged.md`](../../../docs/design/how-a-process-design-is-staged.md)
 §3.5 records what could and could not be established). Which catalyst, if
 any, delivers this converter is the question this case cannot answer.
 

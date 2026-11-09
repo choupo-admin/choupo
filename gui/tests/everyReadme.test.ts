@@ -42,7 +42,9 @@ import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { join, relative } from "node:path";
 
-import { LessonSyntaxError, parseInline, parseLesson } from "../src/case/lesson.js";
+import {
+  LessonSyntaxError, linkTarget, linkTextNamesTarget, parseInline, parseLesson,
+} from "../src/case/lesson.js";
 import { REPO } from "./witnessOutputs.js";
 
 function readmes(dir: string, out: string[] = []): string[] {
@@ -78,14 +80,57 @@ describe("every shipped tutorial README renders in the app", () => {
   });
 });
 
+describe("a link renders (C264 addition: 31 of 133 case READMEs carry one)", () => {
+  it("a web link is a link to the web, its text parsed", () => {
+    const r = parseInline("see [the `paper`](https://doi.org/10.1/x) now", 1);
+    expect(r.map((x) => x.t)).toEqual(["text", "link", "text"]);
+    const l = r[1]!;
+    if (l.t !== "link") throw new Error("not a link");
+    expect(l.href).toBe("https://doi.org/10.1/x");
+    expect(l.target).toBe("web");
+    expect(l.s).toBe("the paper");
+    expect(l.runs.map((x) => x.t)).toEqual(["text", "code"]);
+  });
+  it("a repository path and an in-page anchor are not web targets", () => {
+    expect(linkTarget("../ammonia02_full_plant")).toBe("repo");
+    expect(linkTarget("system/postDict")).toBe("repo");
+    expect(linkTarget("#from-feasibility")).toBe("anchor");
+    expect(linkTarget("HTTP://x.y")).toBe("web");
+  });
+  it("no other scheme is ever clickable", () => {
+    expect(linkTarget("javascript:alert(1)")).toBe("repo");
+    expect(linkTarget("mailto:a@b.c")).toBe("repo");
+  });
+  it("the path is repeated after the text only when the text does not name it", () => {
+    expect(linkTextNamesTarget("`ammonia02_full_plant`", "../ammonia02_full_plant")).toBe(true);
+    expect(linkTextNamesTarget("`ignition01_h2o2`", "../ignition01_h2o2/README.md")).toBe(true);
+    expect(linkTextNamesTarget("`system/postDict`", "system/postDict")).toBe(true);
+    expect(linkTextNamesTarget("`docs/design/x.md`", "../../../docs/design/x.md")).toBe(true);
+    expect(linkTextNamesTarget("the dossier", "../../docs/design/dossier.md")).toBe(false);
+    expect(linkTextNamesTarget("From feasibility to basic design",
+      "../greenAmmonia03_basicDesign/README.md#from-feasibility")).toBe(false);
+  });
+  it("a link inside a table cell and inside bold parses", () => {
+    const b = parseLesson("# T\n\n| a | b |\n|---|---|\n| [x](../y) | **[z](https://q)** |\n");
+    expect(b[1]?.kind).toBe("table");
+  });
+  it("an image is still refused, and the error says a link would render", () => {
+    expect(() => parseInline("![alt](x.png)", 4)).toThrow(/an image \(a link renders/);
+  });
+  it("a bracket that is not a link is text", () => {
+    expect(parseInline("a [note] and [ref][1] here", 1).every((x) => x.t === "text")).toBe(true);
+  });
+});
+
 describe("a code span is literal", () => {
   it("angle brackets inside backticks are not raw HTML", () => {
     const r = parseInline("sheets under `design/<unit>/` per item", 1);
     expect(r.map((x) => x.t)).toEqual(["text", "code", "text"]);
     expect(r[1]?.s).toBe("design/<unit>/");
   });
-  it("a link or image shape inside backticks is code", () => {
-    expect(() => parseInline("index `a[i](x)` and `![b](c)`", 1)).not.toThrow();
+  it("an image shape inside backticks is code, not an image", () => {
+    const r = parseInline("index `a[i](x)` and `![b](c)`", 1);
+    expect(r.filter((x) => x.t === "code")).toHaveLength(2);
   });
   it("inside bold, a code span is still literal", () => {
     expect(() => parseInline("**the `<unit>` folder**", 1)).not.toThrow();

@@ -40,13 +40,17 @@ License
   attempt is made at the whole language: the subset is what the first-path
   READMEs actually use, measured on 2026-09-02 -- `#`/`##`/`###` headings,
   paragraphs, `*` (or `-`) bullets with one nested level, `N.` numbered
-  items, fenced code, pipe tables, and inline **bold**, *italic*, `code`.
-  A construct outside it (a link, an image, raw HTML, a blockquote, a rule,
-  a deeper heading) THROWS `LessonSyntaxError` naming the line -- and
-  tests/firstPath.test.ts parses every first-path README, so a README
-  written with a construct the app cannot show fails a test rather than
-  rendering as garbage in front of a student.  Widen the subset here and the
-  test widens with it; never the other way round.
+  items, fenced code, pipe tables, and inline **bold**, *italic*, `code`,
+  and -- since C264 (2026-11-09), when 31 of 133 case READMEs were found to
+  carry one -- a `[text](href)` link: a web link opens in a new tab, an
+  in-page anchor and a repository path are shown as text (the path in code
+  style after it), never as a broken link.  A construct outside it (an
+  image, raw HTML, a blockquote, a rule, a deeper heading) THROWS
+  `LessonSyntaxError` naming the line -- and tests/everyReadme.test.ts
+  parses EVERY shipped README, so a README written with a construct the app
+  cannot show fails a test rather than rendering as garbage in front of a
+  student.  Widen the subset here and the test widens with it; never the
+  other way round.
 
   Pure: no React, no DOM -- the component in ui/Lesson.tsx draws what this
   returns, and the Case view's outline reads the headings off it.
@@ -59,7 +63,15 @@ export type Inline =
    *  a bold run may hold (`**\`type\` -> \`model\`**` is how the READMEs
    *  write a grammar rule). */
   | { t: "bold"; s: string; runs: Inline[] }
-  | { t: "em"; s: string };
+  | { t: "em"; s: string }
+  /** `[text](href)` (C264 addition): `s` is the plain text, `runs` its
+   *  inline content (a code span, bold).  `target` says what the href is:
+   *  `web` (http/https: the renderer makes it clickable, in a new tab),
+   *  `anchor` (`#section`, in-page: shown as its text), `repo` (a relative
+   *  path into the repository, which the site does not publish as a page:
+   *  shown as its text, followed by the path in code style unless the text
+   *  already names it -- never a broken link). */
+  | { t: "link"; s: string; runs: Inline[]; href: string; target: "web" | "anchor" | "repo" };
 
 export interface ListItem {
   inlines: Inline[];
@@ -94,18 +106,28 @@ export function parseInline(s: string, line: number): Inline[] {
   // code spans set aside (C264: the whole line used to be tested, and one
   // backticked path refused a whole lesson in front of a student).
   const bare = s.replace(/`[^`]*`/g, "``");
-  // The image test goes first: `![alt](x)` also matches the link shape.
-  if (/!\[/.test(bare)) throw new LessonSyntaxError(line, "an image");
-  if (/\[[^\]]*\]\(/.test(bare)) throw new LessonSyntaxError(line, "a link");
+  // An image is refused (the app shows no picture a README embeds; a link
+  // is accepted since C264, so the error says which of the two it saw).
+  if (/!\[[^\]]*\]\(/.test(bare))
+    throw new LessonSyntaxError(line, "an image (a link renders; an image does not)");
   if (/<[A-Za-z][^>]*>/.test(bare)) throw new LessonSyntaxError(line, "raw HTML");
   const out: Inline[] = [];
-  const re = /(`[^`]*`|\*\*[^*]+\*\*|\*[^*\s][^*]*\*)/g;
+  // A link is tried before a code span, because its text may hold one
+  // (`[\`case\`](../case)`) and the whole bracket is then one token.
+  const re = /(\[[^\]]*\]\([^)\s]*\)|`[^`]*`|\*\*[^*]+\*\*|\*[^*\s][^*]*\*)/g;
   let last = 0;
   let m: RegExpExecArray | null;
   while ((m = re.exec(s)) !== null) {
     if (m.index > last) out.push({ t: "text", s: s.slice(last, m.index) });
     const tok = m[0];
-    if (tok.startsWith("`")) out.push({ t: "code", s: tok.slice(1, -1) });
+    if (tok.startsWith("[")) {
+      const close = tok.indexOf("](");
+      const text = tok.slice(1, close);
+      const href = tok.slice(close + 2, -1);
+      const runs = parseInline(text, line);
+      out.push({ t: "link", s: inlineText(runs), runs, href, target: linkTarget(href) });
+    }
+    else if (tok.startsWith("`")) out.push({ t: "code", s: tok.slice(1, -1) });
     else if (tok.startsWith("**")) {
       const inner = tok.slice(2, -2);
       out.push({ t: "bold", s: inner.replace(/`/g, ""), runs: parseInline(inner, line) });
@@ -115,6 +137,28 @@ export function parseInline(s: string, line: number): Inline[] {
   }
   if (last < s.length) out.push({ t: "text", s: s.slice(last) });
   return out;
+}
+
+/** What a link's href is.  Only http(s) is a destination the app can open;
+ *  any other scheme (mailto:, javascript:, ...) is treated as a repository
+ *  path and is never made clickable. */
+export function linkTarget(href: string): "web" | "anchor" | "repo" {
+  if (/^https?:\/\//i.test(href)) return "web";
+  if (href.startsWith("#")) return "anchor";
+  return "repo";
+}
+
+/** For a `repo` link: does the text already name the target?  Then the path
+ *  is not repeated after it.  `[\`ammonia02_full_plant\`](../ammonia02_full_plant)`
+ *  and `[\`system/postDict\`](system/postDict)` do; `[the dossier](../../docs/x.md)`
+ *  does not. */
+export function linkTextNamesTarget(text: string, href: string): boolean {
+  const t = text.replace(/`/g, "").trim();
+  if (t === "") return false;
+  const path = href.replace(/#.*$/, "").replace(/\/README\.md$/, "").replace(/\/+$/, "");
+  if (path === "" || path === "." || path === "..") return t === "../" || t === "..";
+  const last = path.slice(path.lastIndexOf("/") + 1);
+  return t === path || t === href || t.endsWith("/" + last) || t === last;
 }
 
 /** The plain text of an inline run (the outline shows headings as text). */

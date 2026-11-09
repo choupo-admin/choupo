@@ -11,7 +11,7 @@ Yang 2020, density via Van Krevelen). That closes the pedagogical loop:
 **process → molar mass → properties.**
 
 Reuses the step-growth machinery of
-`tutorials/steady/reactors/pfr_polyesterification`
+[`tutorials/steady/reactors/pfr_polyesterification`](../../steady/reactors/pfr_polyesterification)
 (the `polymer { mode stepGrowth; M0; }` block, the same reaction, the same three
 illustrative components), here wired into a plant.
 
@@ -99,7 +99,7 @@ x ≈ Xn) as an axial profile the GUI can plot.
 The plant gave you the **chain statistics from the kinetics**. The next question a
 materials engineer asks is: *what is this polymer like* — its glass transition,
 its density? Those come from the **repeat-unit groups**, not the chain length.
-The sub-case `properties/` does exactly this on the **same**
+The sub-case [`properties/`](properties/) does exactly this on the **same**
 repeat unit `pclRepeat` (`M0 = 114.14`, the very number the reactor used for
 `Mn = M0/(1-p)`):
 
@@ -121,7 +121,7 @@ The PCL repeat unit `-[O-(CH2)5-CO]-` decomposes into Yang main-chain groups:
   Tg(inf) = 9.782·1e3 / 114         = 85.8 K
 ```
 
-The exact `choupoProps` invocation (in `properties/system/propsDict`):
+The exact `choupoProps` invocation (in [`properties/system/propsDict`](properties/system/propsDict)):
 
 ```
 operations
@@ -158,7 +158,7 @@ Source: Yang et al., *ACS Omega* **5** (2020) 19655, doi:10.1021/acsomega.0c0449
 ### (B) Density — Van Krevelen (the honest limitation)
 
 The natural sibling estimate (density via Bondi van der Waals volumes) is the
-`VanKrevelen` model (`../../props/estimate/vanKrevelen01_polystyrene_density`):
+[`VanKrevelen` model](../../props/estimate/vanKrevelen01_polystyrene_density):
 
 ```
   M0  = Σ nᵢ·MWᵢ        repeat-unit molar mass
@@ -175,7 +175,7 @@ the repeat unit `-[O-(CH2)5-CO]-` cannot be decomposed. Asking for it would
 a value (no silent zero, no laundering). The honest path: density needs the ester
 groups *curated* into `data/standards/parameters/vanKrevelen.dat` first. The worked,
 runnable Van Krevelen **density** example is the pure-hydrocarbon repeat unit in
-`tutorials/props/estimate/vanKrevelen01_polystyrene_density`.
+[`tutorials/props/estimate/vanKrevelen01_polystyrene_density`](../../props/estimate/vanKrevelen01_polystyrene_density).
 
 ## Provenance
 

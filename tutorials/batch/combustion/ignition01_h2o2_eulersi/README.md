@@ -1,9 +1,9 @@
 # ignition01_h2o2_eulersi — the A-stable solver that fails honestly
 
 The third integrator of the stiffness lesson.  The same adiabatic
-constant-volume H₂/O₂ ignition as `ignition01_h2o2`
+constant-volume H₂/O₂ ignition as [`ignition01_h2o2`](../ignition01_h2o2/README.md)
 (Rosenbrock23, converges) and
-`ignition01_h2o2_rk4` (explicit RK4, blows
+[`ignition01_h2o2_rk4`](../ignition01_h2o2_rk4/README.md) (explicit RK4, blows
 up), here with **semi-implicit Euler** (`integrator EulerSI;`) at the same
 `deltaT = 1e-6 s`.
 

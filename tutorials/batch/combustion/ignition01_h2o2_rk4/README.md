@@ -2,7 +2,7 @@
 
 This is the **failure half** of the stiffness lesson. It runs the exact same
 adiabatic constant-volume H₂/O₂ ignition as the sibling case
-`ignition01_h2o2`, but with the **explicit RK4**
+[`ignition01_h2o2`](../ignition01_h2o2/README.md), but with the **explicit RK4**
 integrator instead of the stiff Rosenbrock23 — at the same fixed step
 (`deltaT = 1e-6 s`).
 

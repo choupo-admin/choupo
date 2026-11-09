@@ -53,7 +53,7 @@ Export.  An export path EXISTS and nobody has to build it from nothing:
   datasheets: `gui/src/ui/HeatExchangerDatasheet.tsx:313,343`,
   `gui/src/ui/ColumnDatasheet.tsx:341,394`, `gui/src/case/hxDatasheet.ts:752`.
 * "Download SVG" on the batch Gantt and the GMP plan
-  (`BatchPlanSection.tsx:583`, `GmpPlanSheet.tsx:672`), and "Export as page"
+  (`BatchPlanSection.tsx:592`, `GmpPlanSheet.tsx:672`), and "Export as page"
   (a self-contained HTML of the 3D layout, `ExportLayoutButton.tsx`).
 
 What the export does NOT cover: no title block, no stream table in the figure,

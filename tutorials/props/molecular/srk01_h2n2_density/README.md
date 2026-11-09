@@ -37,7 +37,7 @@ R. Hernández-Gómez, D. Tuma, A. Gómez-Hernández, C. R. Chamorro,
 *Accurate Experimental (p, ρ, T) Data for the Introduction of Hydrogen into
 the Natural Gas Grid: Thermodynamic Characterization of the Nitrogen–Hydrogen
 Binary System from 240 to 350 K and Pressures up to 20 MPa*,
-J. Chem. Eng. Data (2017). doi:10.1021/acs.jced.7b00694
+J. Chem. Eng. Data (2017). [doi:10.1021/acs.jced.7b00694](https://doi.org/10.1021/acs.jced.7b00694)
 
 ## The exercise
 

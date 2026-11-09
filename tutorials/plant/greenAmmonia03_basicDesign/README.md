@@ -3,7 +3,7 @@
 **Illustrated design stage: FEL-3**, process side (FEL-3 in both
 numberings: FEED, basic engineering). The PEQ 2026-27 green-ammonia plant as
 it is described at the **basic design** stage. The stage's fidelity, from
-`docs/design/how-a-process-design-is-staged.md`
+[`docs/design/how-a-process-design-is-staged.md`](../../../docs/design/how-a-process-design-is-staged.md)
 §2.3: *the reactor on real kinetics where they exist; the exchangers rated
 against geometry.* Both are here.
 
@@ -22,18 +22,18 @@ consequence of the model or of the design stage illustrated: the process
 fidelity moved to FEL-3, the cost estimate did not.
 
 It is rung 3 of the green-ammonia sequence, which the common entry
-`ammoniaRoutes01_screening` maps in full:
+[`ammoniaRoutes01_screening`](../ammoniaRoutes01_screening) maps in full:
 
 | rung | case | illustrated design stage | converter | exchangers |
 |---|---|---|---|---|
-| 2 | `greenAmmonia02_feasibility150bar` | FEL-2, feasibility | one Gibbs reactor 5 K short of equilibrium | duties only; areas on an assumed U |
-| 2 | `greenAmmonia02_feasibility50bar` | FEL-2, an exploratory alternative at 50 bar | the same, at 400 °C — a catalyst hypothesis | the same |
+| 2 | [`greenAmmonia02_feasibility150bar`](../greenAmmonia02_feasibility150bar) | FEL-2, feasibility | one Gibbs reactor 5 K short of equilibrium | duties only; areas on an assumed U |
+| 2 | [`greenAmmonia02_feasibility50bar`](../greenAmmonia02_feasibility50bar) | FEL-2, an exploratory alternative at 50 bar | the same, at 400 °C — a catalyst hypothesis | the same |
 | 3 | **this case** | FEL-3, basic design (process side) | **three adiabatic beds on a rate law, volumes solved** | **every one designed (Kern)** |
 
 ## What it is derived from, and what differs
 
 It is a copy of the base case
-`greenAmmoniaPEQ_baseCase`: the same feeds,
+[`greenAmmoniaPEQ_baseCase`](../greenAmmoniaPEQ_baseCase): the same feeds,
 package, compressors, feed/effluent exchanger (FEHE), coolers, separation,
 let-down, utilities and appraisal, and the same six Kern exchanger designs.
 Read the base case's README for all of that.
@@ -67,7 +67,7 @@ The rate law is WRITTEN in this case's `constant/reactions` — `kinetics {
 type expression; }`, every constant of Dyson & Simon's Eqs 2, 6–8, 18 and 19
 with its unit and its equation number (DEV.md 4c C67: the kinetics live in
 the case) — the same law
-`ammoniaReactor04_kineticSizing` writes, whose README is the
+[`ammoniaReactor04_kineticSizing`](../ammoniaReactor04_kineticSizing) writes, whose README is the
 reference for it; `bin/curate/check_ammonia_rate.py` holds the copies equal. The FEHE now preheats bed 1 against bed 3's effluent, an
 energy recycle through three kinetic beds (the second tear in
 `system/solverDict`, cut at `PreheatedFeed`). The recycle compressor's power was re-tuned to 908 kW
@@ -106,7 +106,7 @@ authority on all of them.
 What changed against the feasibility case — production, every consumption, the loop, the
 converter, the investment and the NPV, each difference traced to what changed between the two
 stages — is in the generated section
-*From feasibility to basic design* below.
+[From feasibility to basic design](#from-feasibility-to-basic-design-what-changed-and-why) below.
 
 An adiabatic bed publishes no duty (`Q_kW` 0), so the steam is raised and
 credited where the heat is removed — the two interbed coolers, each of
@@ -330,7 +330,7 @@ reached here).
 
 ## From feasibility to basic design: what changed, and why
 
-The same plant at two stages: `greenAmmonia02_feasibility150bar` (illustrated design stage FEL-2) and this case (FEL-3, process side). Both declare `estimateClass 4` with the same -30 / +50 % band: the class is the author's statement of how far the project is defined, so it did not move with the stage. Every number below comes from the engine's runs of the two cases (the one exception is labelled where it appears); the *why* column traces each difference to what changed between them, and says so where a difference could not be traced. The 50 bar alternative is a different design, not a stage, and is not a column here.
+The same plant at two stages: [`greenAmmonia02_feasibility150bar`](../greenAmmonia02_feasibility150bar) (illustrated design stage FEL-2) and this case (FEL-3, process side). Both declare `estimateClass 4` with the same -30 / +50 % band: the class is the author's statement of how far the project is defined, so it did not move with the stage. Every number below comes from the engine's runs of the two cases (the one exception is labelled where it appears); the *why* column traces each difference to what changed between them, and says so where a difference could not be traced. The 50 bar alternative is a different design, not a stage, and is not a column here.
 
 **Read this first: most of the NPV difference is NOT the better models.** The feasibility flowsheet has no feed/effluent exchanger *by construction* — its converter feed is heated by molten salt bought as a utility, which its own pinch pass says the next stage can recover — and this case builds that exchanger. That one flowsheet decision is worth more than the whole NPV difference; the model refinements (kinetic beds, Ergun, Kern, one converter shell, a costed catalyst) together move the NPV the OTHER way. The appraisal's start-up years are a changed assumption, measured separately below.
 
@@ -475,7 +475,7 @@ From -492.00 to -337.28 M EUR. The first step re-runs the feasibility case with 
   check is reachable.
 * A low-pressure loop: the Dyson & Simon kinetics are for an iron catalyst,
   and the 50 bar speculation stays at the feasibility stage
-  (`greenAmmonia02_feasibility50bar`).
+  ([`greenAmmonia02_feasibility50bar`](../greenAmmonia02_feasibility50bar)).
 * Everything the base case lists as not in it (the purge scrubber, the
   let-down gas recovery, the cooling-water, refrigeration and steam
   systems as equipment).

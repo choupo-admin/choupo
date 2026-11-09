@@ -9,7 +9,7 @@ IST — Técnico Lisboa).
 M. Farelo, C. Fernandes & A. Avelino, *"Solubilities for Six Ternary Systems:
 NaCl + NH₄Cl + H₂O, KCl + NH₄Cl + H₂O, NaCl + LiCl + H₂O, KCl + LiCl + H₂O,
 NaCl + AlCl₃ + H₂O, and KCl + AlCl₃ + H₂O at T = (298 to 333) K"*,
-**J. Chem. Eng. Data 50 (2005) 1470–1477.** DOI 10.1021/je050111j.
+**J. Chem. Eng. Data 50 (2005) 1470–1477.** DOI [10.1021/je050111j](https://doi.org/10.1021/je050111j).
 
 Saturation molalities measured to ±0.0007 mol/kg (visual polythermal /
 isothermal methods). The pure-salt anchors at 298.15 K: **NaCl 6.15**, **NH₄Cl
