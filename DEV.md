@@ -3410,6 +3410,12 @@ accepts today, and that is a policy call.
 > (--scope 29 cases 33/0, --fast 78/0, --gui 47/0).  FOLLOW-UP noted: cstr08's glycol could
 > now sit on its liquid reference with the calorimetric -501.0 kJ/mol instead of the
 > derived -498.3 (moves cstr08's golden; its own small slice).
+> FOLLOW-UP LANDED the same day: the glycol record on `referenceState pureLiquid` with the
+> calorimetric -501.0 kJ/mol; three steady states kept (292.2 / 303.0 / 336.5 K, X 0.14 /
+> 0.33 / 0.90; were 291.5 / 305.3 / 333.8); the adiabatic rise 56.1 -> 57.8 K against the
+> paper's 46.8 K measured -- the larger heat of reaction is the measured datum's, the gap is
+> the ideal-liquid model's, and the header says so.  cstr08's golden re-recorded (rows and
+> reason in the commit); --scope 5/0, --gui 47/0.
 
 > **C258 (Vitor, 2026-11-09, a screenshot of batch15_mesh_study's Global balances --
 > "mass closure 4.16E-2", "worst element closure 1.13E-1 (He)" -- in a panic: "andas a
