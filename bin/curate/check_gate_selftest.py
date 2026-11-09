@@ -149,6 +149,28 @@ SABOTAGES = [
                "claims to, so the phrase is injected into a .dat under data/, "
                "one of the declared SCAN_ROOTS, and must be caught.",
     },
+    {
+        "gate": "check_lesson_references.py",
+        "kind": "detection",
+        "file": "gui/src/ui/methods/lessonReferences.json",
+        "find": "\"method\": \"pdf\"",
+        "replace": "\"method\": \"memory\"",
+        "why": "a reference is admitted only with how it was verified "
+               "(DEV.md 4c C259 (a)).  A verification method that is not one "
+               "of crossref, pdf, catalogue, official -- 'memory' is the one "
+               "the C259 audit caught resolving to a different paper -- must "
+               "fail the gate, on every entry it touches.",
+    },
+    {
+        "gate": "check_lesson_references.py",
+        "kind": "vacuity",
+        "file": "gui/src/ui/methods/lessonReferences.json",
+        "find": "\"lessons\": {",
+        "replace": "\"lessons_DISABLED_BY_SELFTEST\": {",
+        "why": "with the lessons object gone there is nothing to audit; the "
+               "gate must refuse rather than report '0 of 76 pages carry "
+               "references' as a pass.",
+    },
 ]
 
 
