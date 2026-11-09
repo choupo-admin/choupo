@@ -162,6 +162,9 @@
   "BatchAdsorber": [
    "src/unitOperations/batch/BatchAdsorber.H"
   ],
+  "BatchBasis": [
+   "src/core/BatchPlanRecords.H"
+  ],
   "BatchCleaning": [
    "src/core/BatchPlanRecords.H"
   ],
@@ -173,6 +176,12 @@
   ],
   "BatchDiafilter": [
    "src/unitOperations/batch/BatchDiafilter.H"
+  ],
+  "BatchDosage": [
+   "src/core/BatchPlanRecords.H"
+  ],
+  "BatchDosageIngredient": [
+   "src/core/BatchPlanRecords.H"
   ],
   "BatchDryer": [
    "src/unitOperations/batch/BatchDryer.H"
