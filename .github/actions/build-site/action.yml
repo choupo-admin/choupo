@@ -10,6 +10,26 @@
 #
 #  The comments on each step are the ones publish-site carried, moved verbatim.
 #  The caller checks the repository out first (a local action is read from it).
+#
+#  THE WASM IS CACHED TWO WAYS (DEV.md 4c C253 (a); measured 2026-11-09: the
+#  emsdk install plus five binaries compiled from nothing took 1306 s of a
+#  27-minute publish, on every push, register commits included):
+#    1. THE WHOLE OUTPUT, keyed on the content hash of everything the WASM is
+#       made from -- src/, make/, Makefile and data/standards/ (the curated
+#       tree is EMBEDDED into every .wasm at link time, make/wasm.mk, so a
+#       catalogue edit changes the engine and must not be skipped).  An exact
+#       hit means the inputs are byte-identical to a build already made, so
+#       emsdk is not even installed and `make wasm-gui` does not run: a
+#       register-only, docs-only or gui-only commit costs a cache restore.
+#    2. THE OBJECTS, through ccache (EM_COMPILER_WRAPPER), keyed on the same
+#       hash with a prefix fallback: a change to src/ recompiles the changed
+#       translation units and their dependents, not the five binaries from
+#       scratch.  ccache is content-addressed, so a hit is correct by
+#       construction -- unlike restoring build/wasm/, whose archived mtimes
+#       are older than a fresh checkout's and would either rebuild everything
+#       or, if `touch`ed to look fresh, hide a real source change.
+#  An absent or evicted cache only costs the time it saved; it never changes
+#  what is built.
 name: build-site
 description: Install the toolchain, build the WASM engines and the app, and assemble site/_dist with bin/buildSite.
 
@@ -19,11 +39,21 @@ runs:
     #  ---- the toolchain: a C++ compiler for the native binaries the
     #       curation scripts run, Emscripten for the WASM, node for the app,
     #       and LaTeX for the guides the app links to.
+
+    #  The key of the WASM: its inputs, by content.  See the header.
+    - name: Restore the WASM if its inputs are unchanged
+      id: wasm
+      uses: actions/cache/restore@v4
+      with:
+        path: gui/public/wasm
+        key: wasm-${{ hashFiles('src/**', 'make/**', 'Makefile', 'data/standards/**') }}
+
     - name: Emscripten
+      if: steps.wasm.outputs.cache-hit != 'true'
       uses: mymindstorm/setup-emsdk@v14
       with:
         version: 3.1.6          # pinned: docs/gui-internals.md documents this
-        actions-cache-folder: emsdk-cache
+        actions-cache-folder: emsdk-cache   # the emsdk install itself, cached
 
     - uses: actions/setup-node@v4
       with:
@@ -61,9 +91,60 @@ runs:
           texlive-fonts-recommended lmodern
 
     #  ---- the SAME chain proven locally, in the same order ---------------
-    - name: Build the WASM the app runs
+
+    #  A restored WASM carries the mtimes it was archived with, older than the
+    #  freshly checked-out sources, and bin/buildSite REFUSES a WASM older than
+    #  src/ ("PRESENT IS NOT FRESH").  That guard is right for a hand build and
+    #  is left exactly as it is; here the cache KEY has already proved the
+    #  inputs identical, so the files are stamped as what they are -- current.
+    - name: Use the restored WASM
+      if: steps.wasm.outputs.cache-hit == 'true'
       shell: bash
-      run: make wasm-gui
+      run: |
+        ls -l gui/public/wasm | sed 's/^/[wasm cache] /'
+        touch gui/public/wasm/*
+        echo "::notice::WASM reused from cache: src/, make/, Makefile and data/standards/ are unchanged since it was built."
+
+    - name: Restore the compiler cache for the WASM objects
+      if: steps.wasm.outputs.cache-hit != 'true'
+      id: wasmobj
+      uses: actions/cache/restore@v4
+      with:
+        path: ~/.cache/ccache
+        key: ccache-wasm-${{ hashFiles('src/**', 'make/**', 'Makefile') }}
+        restore-keys: |
+          ccache-wasm-
+
+    - name: Build the WASM the app runs
+      if: steps.wasm.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        #  Emscripten's own hook: it puts ccache in front of the clang it runs
+        #  for every compile (the link steps are not wrapped).
+        EM_COMPILER_WRAPPER: ccache
+        CCACHE_MAXSIZE: 1G
+      run: |
+        sudo apt-get install -y -qq ccache
+        export CCACHE_DIR="$HOME/.cache/ccache"
+        ccache -z
+        make wasm-gui
+        ccache -s | sed 's/^/[ccache] /'
+
+    #  Saved HERE, before the smoke and the publish: a later step that fails
+    #  or a run cancelled by the next push must not throw away the 20 minutes.
+    - name: Save the WASM
+      if: steps.wasm.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: gui/public/wasm
+        key: wasm-${{ hashFiles('src/**', 'make/**', 'Makefile', 'data/standards/**') }}
+
+    - name: Save the compiler cache for the WASM objects
+      if: steps.wasm.outputs.cache-hit != 'true' && steps.wasmobj.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ~/.cache/ccache
+        key: ccache-wasm-${{ hashFiles('src/**', 'make/**', 'Makefile') }}
 
     - name: Install the app's dependencies
       shell: bash

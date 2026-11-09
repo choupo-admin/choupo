@@ -1,0 +1,89 @@
+#  native-build  --  the runner's g++ build of Choupo, in ONE home.
+#
+#  ci.yml (fast tier, nightly full sweep) and sanitize.yml (weekly
+#  ASan/UBSan) all start from a native build on a FRESH runner.  A second
+#  copy of these steps in a second workflow would be a second home for the
+#  build recipe (the rule .github/actions/build-site states for the site).
+#  The caller checks the repository out first (a local action is read from
+#  it).
+#
+#  WHY ccache AND NOT A CACHED build/ DIRECTORY.  The build is incremental by
+#  mtime, and actions/cache restores files with their ARCHIVED mtimes while
+#  actions/checkout stamps every source with "now": a restored build/ would
+#  look older than every source and rebuild everything anyway (or, worse, a
+#  hand-rolled `touch` to make it look fresh would hide a real source change).
+#  ccache keys on the CONTENT of the preprocessed translation unit and the
+#  compiler flags, so a hit is correct by construction and a changed header
+#  recompiles exactly its dependents.  The objects the build then writes are
+#  new files, so `check_build_fresh` (mtime of artefacts vs sources) holds.
+#
+#  HOW ccache IS PUT IN FRONT, AND WHY NOT `make CXX="ccache g++"`.  The
+#  compile signature (make/compiler.mk COMPILE_SIG) includes $(CXX), and
+#  bin/buildCode (run by the fast set's userOp01 case) calls a bare `make
+#  lib`: with a CXX override on the first make and none on the second the
+#  signatures differ, and the second would recompile the whole library --
+#  uncached, at -j1.  So ccache goes in through the masquerade directory
+#  Ubuntu's package provides (/usr/lib/ccache/g++ -> ccache) on PATH: CXX is
+#  `g++` for every make in the job, one signature, and ccache is invisible.
+name: native-build
+description: Install the build tools, restore ccache, and run `make all` with the runner's g++ (optionally sanitized).
+
+inputs:
+  make-args:
+    description: Extra arguments for make (for example SANITIZE=1).
+    required: false
+    default: ''
+  cache-name:
+    description: Distinguishes the ccache entries of differently flagged builds.
+    required: false
+    default: native
+
+runs:
+  using: composite
+  steps:
+    - name: Build tools (ccache) and the python the gates import
+      shell: bash
+      run: |
+        sudo apt-get update -qq
+        #  numpy/scipy: a few gates and the property tooling import them;
+        #  python3 itself is on the image, and these are not.
+        sudo apt-get install -y -qq ccache python3-numpy python3-scipy
+        ls -l /usr/lib/ccache/g++
+        echo /usr/lib/ccache >> "$GITHUB_PATH"
+        #  one cache directory for every later g++ of the job (a gate's probe)
+        echo "CCACHE_DIR=$HOME/.cache/ccache" >> "$GITHUB_ENV"
+        g++ --version | head -1
+        nproc; free -g | sed -n 2p
+
+    - name: Restore the compiler cache
+      id: ccache
+      uses: actions/cache/restore@v4
+      with:
+        path: ~/.cache/ccache
+        key: ccache-${{ inputs.cache-name }}-${{ hashFiles('src/**', 'make/**', 'Makefile') }}
+        restore-keys: |
+          ccache-${{ inputs.cache-name }}-
+
+    - name: make all
+      shell: bash
+      run: |
+        set -eo pipefail
+        export CCACHE_DIR="$HOME/.cache/ccache" CCACHE_MAXSIZE=1G
+        ccache -z
+        #  -j = the runner's cores.  (A developer's laptop builds with -j1 for
+        #  memory; a runner has 16 GB for 4 cores.)
+        #  (the next step's PATH has ccache first; this step's does not yet)
+        export PATH="/usr/lib/ccache:$PATH"
+        command -v g++
+        make -j"$(nproc)" ${{ inputs.make-args }} all
+        ccache -s | sed 's/^/[ccache] /'
+
+    #  Saved even when a later step of the CALLER fails (that is the point of
+    #  a cache: the next run should not pay for this one's failure), but only
+    #  when this exact key was not already there -- an entry is immutable.
+    - name: Save the compiler cache
+      if: steps.ccache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ~/.cache/ccache
+        key: ccache-${{ inputs.cache-name }}-${{ hashFiles('src/**', 'make/**', 'Makefile') }}
