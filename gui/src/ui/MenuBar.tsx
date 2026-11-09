@@ -111,6 +111,7 @@ import {
   WORKSPACES, captionOf, visibleWorkspacesFor, type WorkspaceEntry,
 } from "./workspaces.js";
 import { popOutHelpTopics } from "./helpTopicsPopOut.js";
+import { popOutPrompts } from "./promptsPopOut.js";
 import {
   selectedUnitIn, selectedUnitTypeIn, TAB_CHROME, tabHelp, tabKindFor,
 } from "./tabChrome.js";
@@ -751,6 +752,12 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
             onClick={() => popOutHelpTopics()}
           >
             Browse help topics…
+          </Menu.Item>
+          {/* THE THREE PROMPTS for the student's own AI assistant (DEV.md 4c
+              C252): a viewer in a pop-out tab, text generated from
+              docs/ai/prompts.md -- no new panel. */}
+          <Menu.Item onClick={() => popOutPrompts()} data-menu-prompts="">
+            Prompts for your AI assistant…
           </Menu.Item>
           <Menu.Divider />
           {/* EVERY manual docs/Makefile publishes, in ITS order.
