@@ -1,7 +1,7 @@
 # Prompts for your AI assistant
 
 Paste prompt A once per conversation and wait for its ten lines; then paste B, replacing `<pack>` with one name from the pack list; then C, replacing the angle brackets with your task.
-The hosted app does not take pasted files: save each `=== FILE: <path> ===` block into the case folder (or ask your assistant for a .zip of it) and open it with File, Open Case folder or Open Case from .zip.
+Your assistant gives you the case as a .zip: open it in the app with File, Open Case from .zip, run it, look, and go back to the assistant with what you saw.
 
 ## A. First, make it learn Choupo
 
@@ -27,5 +27,5 @@ For a property, a component or a pair, read https://www.choupo.org/llm/reference
 
 ```text
 My task: <what I want, in plain words: the product, the route, the numbers I have>.
-Work from the contract you learned. First write the three decisions you had to take and why. Then give every file of the case as its own block headed `=== FILE: <path> ===` (path inside the case folder), every value with its unit and its source, and one short note. If a datum is missing, stop and ask me.
+Work from the contract you learned. First write the three decisions you had to take and why. Then give me the whole case folder as a .zip to download, every value with its unit and its source, and one short note. Only if you cannot create a file, give each file as its own block headed `=== FILE: <path> ===` (path inside the case folder). If a datum is missing, stop and ask me.
 ```

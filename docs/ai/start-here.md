@@ -6,10 +6,9 @@ You need no checkout.  Run cases in the app at https://www.choupo.org/app.  To
 have your assistant (ChatGPT, Claude, ...) write a case, copy the three short
 prompts from https://www.choupo.org/llm/prompts.md (also on the home page,
 under "Work with your AI assistant", and in the app's Help menu): the first
-makes it read Choupo's own instructions before anything else.  The hosted app
-does not take pasted files: save each `=== FILE: <path> ===` block of its
-answer into a case folder, or ask for a .zip, and open it with File, Open Case
-folder or Open Case from .zip.  The rest of this file assumes a checkout.
+makes it read Choupo's own instructions before anything else.  The assistant gives
+the case as a .zip; open it with File, Open Case from .zip, run it, look, and
+go back to the assistant with what you saw.  The rest of this file assumes a checkout.
 
 ## For an AI assistant: route the task, then stop reading this file
 
