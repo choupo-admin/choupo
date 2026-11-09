@@ -20,7 +20,7 @@
   That is the `check_estimate_visible` precedent, for the same reason.
 \*---------------------------------------------------------------------------*/
 import { describe, expect, it } from "vitest";
-import { findDesignSheet, lookupDesignSheet, parseDesignSheet }
+import { findDesignSheet, lookupDesignSheet, parseDesignSheet, sheetNumber }
   from "../src/case/designSheet.js";
 import { datasheetOdsRows, heatExchangerDatasheetHtml }
   from "../src/ui/HeatExchangerDatasheet.js";
@@ -364,5 +364,32 @@ describe("the .ods carries the same partition the page draws", () => {
   it("exports only the rating rows when the sizing pass did not run", () => {
     const rows = datasheetOdsRows(RATING, null);
     expect(rows.every((r) => r[3] === "rating result (run KPI)")).toBe(true);
+  });
+});
+
+/* ---- the sheet's number formatter (C266 S2 / C269) ------------------------ */
+
+describe("sheetNumber: a sizing value as the sheet's table prints it", () => {
+  it("keeps the zeros of a WHOLE number -- the regex it replaces ate them", () => {
+    //  `toPrecision(5).replace(/\.?0+$/, "")` drew gradeD's 98200 m3/h as
+    //  "982", apalutamide01's 30000 m3 tank as "3" and ammonia02's 24000 kW
+    //  compressor as "24" on the running app (the C266 walk, 14 cases).
+    expect(sheetNumber(98200)).toBe("98200");
+    expect(sheetNumber(30000)).toBe("30000");
+    expect(sheetNumber(24000)).toBe("24000");
+    expect(sheetNumber(1500)).toBe("1500");
+  });
+  it("drops only PADDING zeros, after a decimal point", () => {
+    expect(sheetNumber(12.50)).toBe("12.5");
+    expect(sheetNumber(0.5)).toBe("0.5");
+    expect(sheetNumber(100.25)).toBe("100.25");
+  });
+  it("five significant figures, plain digits up to 1e6, exponent form outside", () => {
+    expect(sheetNumber(0.00012300)).toBe("1.230e-4");   // below 1e-3
+    expect(sheetNumber(1e6)).toBe("1.000e+6");          // 1e6 and above
+    expect(sheetNumber(123456)).toBe("123460");         // 1e5..1e6: digits, not "1.2346e+5"
+    expect(sheetNumber(0.0012345678)).toBe("0.0012346");
+    expect(sheetNumber(-98200)).toBe("-98200");
+    expect(sheetNumber(0)).toBe("0");
   });
 });

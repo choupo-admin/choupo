@@ -80,6 +80,14 @@ const TABLE: Record<string, UnitSpec> = {
   "L/s": { factor: 1.0e-3, affine: false },
   "L/h": { factor: 1.0e-3 / 3600.0, affine: false },
   "L/min": { factor: 1.0e-3 / 60.0, affine: false },
+  //  `m3/d` has been in src/core/Units.cpp (a membrane element's rated
+  //  permeate flow) and not here; `m3/yr` (a plant's annual purified-water
+  //  demand, CleanUtilitiesPass `V_year`) is new to both tables on 2026-11-09
+  //  (DEV.md 4c C269) with `yr`, `um` and `rpm` below: the sizers wrote these
+  //  words and this parser refused the whole sheet.  The year is 365 d, the
+  //  engineering convention the engine's table states.
+  "m3/d": { factor: 1.0 / 86400.0, affine: false },
+  "m3/yr": { factor: 1.0 / (365.0 * 86400.0), affine: false },
 
   // time → s
   s: { factor: 1.0, affine: false },
@@ -88,15 +96,18 @@ const TABLE: Record<string, UnitSpec> = {
   h: { factor: 3600.0, affine: false },
   hr: { factor: 3600.0, affine: false },
   day: { factor: 86400.0, affine: false },
+  yr: { factor: 365.0 * 86400.0, affine: false },
 
   // inverse time → 1/s (a rate of events; DEV.md 4c C195)
   "1/s": { factor: 1.0, affine: false },
   "1/min": { factor: 1.0 / 60.0, affine: false },
   "1/h": { factor: 1.0 / 3600.0, affine: false },
+  rpm: { factor: 1.0 / 60.0, affine: false },   // revolutions per minute = 1/min
 
   // length → m
   m: { factor: 1.0, affine: false },
   mm: { factor: 1.0e-3, affine: false },
+  um: { factor: 1.0e-6, affine: false },   // micrometre (a droplet's d32)
   cm: { factor: 1.0e-2, affine: false },
   km: { factor: 1.0e3, affine: false },
   in: { factor: 0.0254, affine: false },

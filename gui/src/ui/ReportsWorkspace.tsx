@@ -95,7 +95,7 @@ import { ExportLayoutButton } from "./ExportLayoutButton.js";
 import { equipmentListHtml } from "../case/equipmentListSheet.js";
 import { fetchEngineVersion, engineVersionLabel } from "../case/engineVersion.js";
 import {
-  parseDesignSheet, unitDesignSheets, type DesignPort, type DesignSheet,
+  parseDesignSheet, sheetNumber, unitDesignSheets, type DesignPort, type DesignSheet,
 } from "../case/designSheet.js";
 import {
   designSheetTree, reportSections, sectionDomId,
@@ -876,11 +876,9 @@ function EquipmentSheets({ designFiles, tree }: {
 //  dimensions), so `power` prints in kW and `pressureDesign` in bar because
 //  that is what the file says.  A dimensionless value is `-` from the parser
 //  and drawn as such.  Nothing here converts.
-const num = (v: number): string => {
-  if (v === 0) return "0";
-  const a = Math.abs(v);
-  return a >= 1e6 || a < 1e-3 ? v.toExponential(3) : v.toPrecision(5).replace(/\.?0+$/, "");
-};
+//  The formatter is `sheetNumber` (case/designSheet.ts), held by a test: the
+//  regex that stood here dropped the zeros of a whole number (98200 -> 982).
+const num = sheetNumber;
 
 function SheetView({ sheet, path, designFiles }: { sheet: DesignSheet; path: string; designFiles: RunResult["designFiles"] }) {
   const ident: [string, string][] = [

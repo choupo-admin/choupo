@@ -88,6 +88,13 @@ export interface WitnessOutput {
    *  the root `.gitignore`'s `log.choupo*` rule under tutorials/ and kept out
    *  of the GUI bundle by the glob's `log.*` exclusion, like every run log. */
   readonly stdout?: true;
+  /** `file` is a DIRECTORY the run writes (`design/`, one sheet per sized
+   *  item), read whole by `witnessOutputFiles()`: a sweep over "every sheet
+   *  this run wrote" cannot name the files in advance, which a per-file
+   *  entry would have to.  The setup deletes the old tree first and
+   *  requires a non-empty one afterwards, so a run that wrote nothing is a
+   *  refusal and not a silently empty sweep (C269). */
+  readonly dir?: true;
 }
 
 /** THE list.  Add an entry here, not a `readFileSync` in a test. */
@@ -390,6 +397,53 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     caseDir: "tutorials/steady/gibbs/gibbs06_thermal_nox",
     file: "converged/flueGas",
     readBy: ["stackDispersion.test.ts"],
+  },
+  //  EVERY SPECIFICATION SHEET A RUN WRITES PARSES WITH THE APP'S OWN PARSER
+  //  (DEV.md 4c C269, after the C266 walk met sheets the app refused whole:
+  //  `m3/yr` on the purified-water generator of every tablet plant, `um` and
+  //  `rpm` on the spray dryer's design sheet).  The `design/` trees of the
+  //  writers that failed and of the gate's own flat and multi-item witnesses,
+  //  swept whole by designSheetCorpus.test.ts; swro01's 60 sheets are the
+  //  per-file entries above and are swept by the same test.
+  {
+    caseDir: "tutorials/batch/plant/donepezil01_tablets",
+    file: "design",
+    readBy: ["designSheetCorpus.test.ts"],
+    dir: true,
+  },
+  {
+    caseDir: "tutorials/steady/drying/sprayDryer07_design",
+    file: "design",
+    readBy: ["designSheetCorpus.test.ts"],
+    dir: true,
+  },
+  {
+    caseDir: "tutorials/steady/flowsheets/process02_with_design",
+    file: "design",
+    readBy: ["designSheetCorpus.test.ts"],
+    dir: true,
+  },
+  {
+    caseDir: "tutorials/steady/distillation/column09_tray_hydraulics",
+    file: "design",
+    readBy: ["designSheetCorpus.test.ts"],
+    dir: true,
+  },
+  {
+    caseDir: "tutorials/plant/swro01_campoDalias",
+    file: "design",
+    readBy: ["designSheetCorpus.test.ts"],
+    dir: true,
+  },
+  //  THE STREAM CARD AGAINST THE STREAMS TABLE on a solid-carrying case
+  //  (C266 S1 / C269): the canvas card added the solid part to an F that
+  //  already held it.  solidDryer01's result block (`drySolid` is sugar and
+  //  water, F_solid_mass > 0) is what streamCardFlow.test.ts holds the card to.
+  {
+    caseDir: "tutorials/steady/drying/solidDryer01_sugar",
+    file: "log.choupoSolve",
+    readBy: ["streamCardFlow.test.ts"],
+    stdout: true,
   },
 ];
 
