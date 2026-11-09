@@ -52,13 +52,19 @@ import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
 
 interface CampaignBalancePlotProps {
   campaign: { [k: string]: number };
+  /** The run's material ledger, read only for the engine's own `why`
+   *  sentences on named streams and unrouted outlets. */
+  transfers?: { kind: string; why?: string }[];
+  /** The run's energy ledger, read only for the `basis` sentence of named
+   *  heat streams. */
+  energyLedger?: { kind: string; basis?: string }[];
 }
 
 const fmtSci = (v: number) => v.toExponential(2);
 const fmtKg = (v: number) => (Math.abs(v) >= 100 ? v.toFixed(1) : v.toPrecision(4));
 
-export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
-  const view = campaignBalanceView(campaign);
+export function CampaignBalancePlot({ campaign, transfers, energyLedger }: CampaignBalancePlotProps) {
+  const view = campaignBalanceView(campaign, transfers, energyLedger);
   const m0 = view.mass?.initialKg;
   const mF = view.mass?.finalKg;
   const mOut = view.mass?.externalOutKg;
@@ -98,7 +104,39 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
   }
 
   // ---- mass bars: INITIAL vs FINAL + EXTERNAL OUT -------------------------
+  //  NAMED STREAMS (C258) are drawn as their own bars: an INLET joins the
+  //  INITIAL stack, an OUTLET the FINAL one, so the two stacks are equal and
+  //  the stream is the explanation of the matter an assumption implies.
+  const namedIn = view.streams.filter((s) => s.direction === "in");
+  const namedOut = view.streams.filter((s) => s.direction === "out");
+  const namedInSum = namedIn.reduce((a, s) => a + s.kg, 0);
+  const namedOutSum = namedOut.reduce((a, s) => a + s.kg, 0);
+  const otherIn = (view.mass?.amendInKg ?? 0) - namedInSum;
+  const otherOut = (view.mass?.amendOutKg ?? 0) - namedOutSum;
+  const streamBar = (name: string, side: 0 | 1, kg: number, color: string) => ({
+    type: "bar" as const,
+    name,
+    x: ["INITIAL", "FINAL + OUT"],
+    y: (side === 0 ? [kg, null] : [null, kg]) as (number | null)[],
+    text: side === 0 ? [`${name}<br>${fmtKg(kg)} kg`, ""]
+                     : ["", `${name}<br>${fmtKg(kg)} kg`],
+    textposition: "inside" as const,
+    textfont: { size: 11, color: "#10242b" },
+    marker: { color },
+    hovertemplate: `${name} = %{y:.6g} kg<extra></extra>`,
+  });
+  const streamBars = [
+    ...namedIn.map((s, i) => streamBar(s.kind, 0, s.kg,
+      PLOT_COLORS.series[(3 + i) % PLOT_COLORS.series.length]!)),
+    ...(otherIn > 1e-12
+      ? [streamBar("drawn in", 0, otherIn, PLOT_COLORS.series[4]!)] : []),
+    ...namedOut.map((s, i) => streamBar(s.kind, 1, s.kg,
+      PLOT_COLORS.series[(5 + i) % PLOT_COLORS.series.length]!)),
+    ...(otherOut > 1e-12
+      ? [streamBar("returned", 1, otherOut, PLOT_COLORS.series[1]!)] : []),
+  ];
   const massData = [
+    ...streamBars,
     {
       type: "bar" as const,
       name: "final inventory",
@@ -146,6 +184,8 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
       }]
     : [];
 
+  const heatNamed = view.heatStreams.reduce((a, h) => a + h.kJ, 0);
+
   // ---- energy bars: dH(vessels) vs Q - H_out ------------------------------
   const energyData = energyAvailable
     ? [
@@ -157,11 +197,24 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
           marker: { color: PLOT_COLORS.series[4] },
           hovertemplate: "ΔH vessels = %{y:.6g} kJ<extra></extra>",
         },
+        //  a NAMED HEAT STREAM is its own bar on the Q side, so the two
+        //  stacks are equal and the stream is the explanation (C258)
+        ...view.heatStreams.map((h, i) => ({
+          type: "bar" as const,
+          name: h.kind,
+          x: ["ΔH vessels", "Q − H_out"],
+          y: [null, h.kJ] as (number | null)[],
+          text: ["", `${h.kind}<br>${h.kJ.toPrecision(3)} kJ`],
+          textposition: "inside" as const,
+          textfont: { size: 11, color: "#10242b" },
+          marker: { color: PLOT_COLORS.series[(2 + i) % PLOT_COLORS.series.length] },
+          hovertemplate: `${h.kind} = %{y:.6g} kJ<extra></extra>`,
+        })),
         {
           type: "bar" as const,
           name: "Q − H_out",
           x: ["ΔH vessels", "Q − H_out"],
-          y: [null, qLedger! - hExternal!] as (number | null)[],
+          y: [null, qLedger! - hExternal! - heatNamed] as (number | null)[],
           marker: { color: PLOT_COLORS.series[5] },
           hovertemplate: "Q − H_out = %{y:.6g} kJ<extra></extra>",
         },
@@ -226,6 +279,25 @@ export function CampaignBalancePlot({ campaign }: CampaignBalancePlotProps) {
           </Badge>
         )}
       </Group>
+      {view.streams.map((s) => (
+        <Text key={s.kind + s.direction} size="xs" data-testid="named-stream">
+          {s.direction === "in" ? "Inlet stream" : "Outlet stream"}{" "}
+          <b>{s.kind}</b>: {fmtKg(s.kg)} kg
+          {s.why ? ` -- ${s.why}.` : ""} The balance closes with it.
+        </Text>
+      ))}
+      {energyAvailable && view.heatStreams.map((h) => (
+        <Text key={h.kind} size="xs" data-testid="named-heat-stream">
+          Heat stream <b>{h.kind}</b>: {h.kJ.toPrecision(4)} kJ
+          {h.why ? ` -- ${h.why}.` : ""} The energy balance closes with it.
+        </Text>
+      ))}
+      {view.externalOutWhy && view.mass && (
+        <Text size="xs" data-testid="external-out-why">
+          External outlet: {fmtKg(view.mass.externalOutKg)} kg --{" "}
+          {view.externalOutWhy}. The balance closes with it.
+        </Text>
+      )}
       {view.moles && (
         <Text c="dimmed" size="xs">
           molar totals (informative — moles are not conserved through

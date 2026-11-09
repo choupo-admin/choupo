@@ -32,7 +32,11 @@
   the pre-widening cp-form could not show (the sabotage of the gate
   restores that form and this witness fails).  The material anchors
   stay witness A's business; this case pins the sign and visibility of
-  the thermal effect, and the campaign energy claim stays closed.
+  the thermal effect.  Its campaign ENERGY claim is REFUSED by name
+  (UNAVAILABLE): the bed's energy equation is carried in non-conservative
+  form and does not close the rigid-vessel first law through a compressible
+  blowdown (7.9 % of the energy moved, at any step size), and a closure that
+  is not one is never shown.
 \*---------------------------------------------------------------------------*/
 
 units

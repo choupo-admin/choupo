@@ -50,8 +50,10 @@
     (fired by bin/curate/check_feed_switch.py, batch12-style honesty).
 
   The carrier-fabrication caveat of the constant-(u, P, T) closure applies
-  unchanged (forum #119): the declared residual explains the He element
-  closure, shown and never discounted.
+  unchanged: the carrier it implies is booked as the named stream
+  `carrierMakeUp` (an inlet while the bed loads, an outlet on the purge's
+  net desorption), so the He element closure holds and the stream is the
+  explanation.
 \*---------------------------------------------------------------------------*/
 
 units

@@ -369,6 +369,10 @@ export interface TransferRecord {
   from: string;
   to: string;
   kind: string;
+  /** The engine's own one-line reason this stream exists (named streams and
+   *  unrouted outlets, C258).  Absent for a plain transfer.  Drawn verbatim,
+   *  never composed on this side. */
+  why?: string;
   /** kmol moved, per component. */
   dn: { [component: string]: number };
   /** Transported enthalpy (kJ), integrated at each package's own instant and

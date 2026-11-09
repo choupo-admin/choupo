@@ -2,24 +2,23 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 kpi     campaign               element_C_closure_rel 5.32078747864e-13 1e-4
-kpi     campaign               element_He_closure_rel 0.000139137956493 1e-4
+kpi     campaign               element_He_closure_rel 2.64689939494e-13 1e-4
 kpi     campaign               element_O_closure_rel 5.32078747864e-13 1e-4
-kpi     campaign               element_worst_closure_rel 0.000139137956493 1e-4
-kpi     campaign               element_worst_closure_vs_declared_rel 5.32078747864e-13 1e-4
+kpi     campaign               element_worst_closure_rel 5.33338602831e-13 1e-4
 kpi     campaign               energy_balance_available 0                1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
-kpi     campaign               energy_records_valid 2                1e-4
-kpi     campaign               mass_closure_rel 0.000138528772162 1e-4
+kpi     campaign               energy_records_valid 3                1e-4
+kpi     campaign               mass_closure_rel 2.65824582384e-13 1e-4
 kpi     campaign               mass_kg_external_out 0.161636709221   1e-4
 kpi     campaign               mass_kg_final    0.000558961907879 1e-4
 kpi     campaign               mass_kg_initial  0.162173202362   1e-4
-kpi     campaign               mass_residual_kg 2.24687671715e-05 1e-4
+kpi     campaign               mass_residual_kg 4.31155965422e-14 1e-4
 kpi     campaign               moles_kmol_external_out 0.0403339312462  1e-4
 kpi     campaign               moles_kmol_final 2.73636608673e-05 1e-4
 kpi     campaign               moles_kmol_initial 0.0403556813641  1e-4
 kpi     campaign               transfers_H_invalid 0                1e-4
-kpi     campaign               transfers_H_valid 2                1e-4
-kpi     campaign               transfers_logged 2                1e-4
+kpi     campaign               transfers_H_valid 3                1e-4
+kpi     campaign               transfers_logged 3                1e-4
 kpi     campaign               utility_chilledWater_eur 2.02094859694e-06 1e-4
 kpi     campaign               utility_chilledWater_kJ 0.505237149236   1e-4
 kpi     campaign               utility_chilledWater_kg 0.0240589118684  1e-4
@@ -40,7 +39,6 @@ kpi     ergun                  integral_anchor_CO2 696.183705224    1e-4
 kpi     ergun                  mass_closure_CO2 4.43522702308e-13 1e-4
 kpi     ergun                  n_CO2_final      3.16636591032e-09 1e-4
 kpi     ergun                  n_He_final       8.06509318698e-06 1e-4
-kpi     ergun                  physical_mass_closure_rel -3.07541297218e-13 1e-4
 kpi     ergun                  qbar_CO2_final   0.0175435912646  1e-4
 kpi     ergun                  retention_factor_CO2 711.778661332    1e-4
 kpi     ergun                  t_50_CO2         691.598159617    1e-4
@@ -59,7 +57,6 @@ kpi     legacy                 integral_anchor_CO2 696.179030717    1e-4
 kpi     legacy                 mass_closure_CO2 4.40942519335e-13 1e-4
 kpi     legacy                 n_CO2_final      3.16614356372e-09 1e-4
 kpi     legacy                 n_He_final       8.06474296561e-06 1e-4
-kpi     legacy                 physical_mass_closure_rel 0.000278314637639 1e-4
 kpi     legacy                 qbar_CO2_final   0.0175423218767  1e-4
 kpi     legacy                 retention_factor_CO2 711.778661332    1e-4
 kpi     legacy                 t_50_CO2         691.59768233     1e-4
@@ -78,3 +75,17 @@ ledger  ergun->(external_boundary) material.external.H_kJ -0.964436273299  1e-4
 ledger  ergun->(external_boundary) material.external.valid valid            exact
 ledger  legacy                 energy.adsorption.valid valid            exact
 ledger  ergun                  energy.adsorption.valid valid            exact
+kpi     ergun                  carrier_makeup_rel -3.00319537089e-13 1e-4
+kpi     legacy                 carrier_makeup_rel 0.000278314637639 1e-4
+kpi     campaign               mass_kg_amend_in 2.2468767214e-05 1e-4
+kpi     campaign               mass_kg_amend_out 0                1e-4
+kpi     campaign               mass_kg_stream_in_carrierMakeUp 2.2468767214e-05 1e-4
+kpi     campaign               moles_kmol_amend_in 5.61354300056e-06 1e-4
+kpi     campaign               moles_kmol_amend_out 0                1e-4
+ledger  (external_boundary)->legacy material.carrierMakeUp.dn.He 5.61354300056e-06 1e-4
+ledger  (external_boundary)->legacy material.carrierMakeUp.H_kJ 0                1e-4
+ledger  (external_boundary)->legacy material.carrierMakeUp.valid valid            exact
+kpi     campaign               energy_kJ_stream_isothermalDuty -8.68734919065e-07 1e-4
+kpi     ergun                  E_isothermalDuty_seg1_kJ -8.68734919065e-07 1e-4
+kpi     ergun                  E_isothermalDuty_total_kJ -8.68734919065e-07 1e-4
+ledger  ergun                  energy.isothermalDuty.valid valid            exact

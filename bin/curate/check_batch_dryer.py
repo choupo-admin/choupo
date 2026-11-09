@@ -61,13 +61,12 @@ CLAIM.  On the witness (tutorials/batch/drying/dryer01_sucrose_tray):
       balance is UNAVAILABLE, energy_balance_available == 0, and the dryer's
       declared gap is quoted verbatim ("the drying duty is supplied by the
       DECLARED air environment ... outside the campaign boundary").
-  A7  The declared-material residual is EXPLAINED, not discounted: the
-      campaign announces that the residual MATCHES the unit's own declared
-      prediction, element_worst_closure_vs_declared_rel is at round-off
-      (7.1e-17 observed), nothing is reported as leaving through a ledgered
-      boundary (mass_kg_external_out == 0), and the gate reproduces
-      mass_residual_kg itself as (X_initial - X_final) m_s with m_s taken from
-      n_sucrose_final and the record's molar mass.
+  A7  The evaporated water is an OUTLET STREAM of the campaign (C258,
+      2026-11-09; it used to be a "declared residual" and the balance read a
+      21.6 % shortfall): mass_closure_rel is at round-off, the campaign's
+      mass_kg_external_out IS the water (X_initial - X_final) m_s with m_s
+      taken from n_sucrose_final and the record's molar mass, and the
+      ledger carries the `dryer -> (external boundary)` record.
 
 REFUSALS (probe copies of the witness, each matched on its own text):
   R1  criticalMoisture below X_eq      -> "is not above the equilibrium moisture"
@@ -486,21 +485,16 @@ def main() -> int:
                 failures.append("A6: the dryer's declared energy gap is not"
                                 " quoted in the UNAVAILABLE verdict")
 
-            # ---- A7: the declared material residual -------------------------
-            if "MATCHES the units' own declared prediction" not in out:
-                failures.append("A7: the campaign does not report the residual"
-                                " as MATCHING the unit's declared prediction")
-            if camp.get("element_worst_closure_vs_declared_rel", 1.0) > 1e-12:
+            # ---- A7: the evaporated water is an outlet stream -------------
+            if camp.get("mass_closure_rel", 1.0) > 1e-9:
                 failures.append(
-                    "A7: the element closure against the DECLARED prediction is"
-                    f" {camp.get('element_worst_closure_vs_declared_rel')}, not"
-                    " round-off")
-            if camp.get("mass_kg_external_out", 1.0) != 0.0:
-                failures.append("A7: the evaporated water is reported as"
-                                " leaving through a ledgered boundary")
-            if abs(evap - camp["mass_residual_kg"]) > 1e-8 * evap:
+                    "A7: the campaign mass closure is"
+                    f" {camp.get('mass_closure_rel')}, not round-off -- the"
+                    " evaporated water must be booked as an outlet stream")
+            if abs(evap - camp.get("mass_kg_external_out", 0.0)) > 1e-8 * evap:
                 failures.append(
-                    f"A7: campaign mass_residual_kg {camp['mass_residual_kg']:.9e}"
+                    f"A7: campaign mass_kg_external_out"
+                    f" {camp.get('mass_kg_external_out', 0.0):.9e}"
                     f" vs (X_initial - X_final) m_s recomputed here"
                     f" {evap:.9e} kg")
 
@@ -645,8 +639,8 @@ def main() -> int:
           " with the rate at round-off and never a negative value, a 500 s"
           " copy publishes NO t_critical key (absence, not a sentinel), the"
           " energy balance reports UNAVAILABLE quoting the dryer's declared"
-          " gap, the declared material residual is reproduced here and"
-          " announced as explained, and seven refusals (X_c below X_eq, a"
+          " gap, the evaporated water is reproduced here as the campaign's"
+          " outlet stream with the mass closure at round-off, and seven refusals (X_c below X_eq, a"
           " tray charged below X_eq, the GAB pole, P = 0, no sorption record,"
           " an undeclared carrier, no air block) fire by name.  NOT COVERED:"
           " the Lewis = 1 and humid-heat hypotheses (the same equation is"

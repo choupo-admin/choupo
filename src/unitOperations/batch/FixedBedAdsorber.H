@@ -97,9 +97,9 @@ Description
     takeContinuousDischarge() as a real external-outlet ledger record.
     KNOWN declared error, priced aloud: holding u AND c_tot constant while
     the bed removes adsorbate FABRICATES carrier moles at exactly the net
-    uptake rate (the roll-up the constant-u declaration hides) and A3
-    reports it as a declared residual.  In A4 every species ledger closes
-    directly, `declaredMaterialResidual()` is empty, and
+    uptake rate (the roll-up the constant-u declaration hides) and the
+    campaign books it as the named `carrierMakeUp` inlet (C258).  In A4
+    every species ledger closes directly, no make-up is booked, and
     `carrier_fabricated_mol` is the numerical continuity residual.  Recipe
     chargeFrom / discharge are REFUSED, named (a bed is not a batch
     vessel).
@@ -249,10 +249,6 @@ public:
     std::vector<std::pair<std::string, scalar>> trajectoryExtras() const override;
     std::map<std::string, scalar> kpis() const override;
 
-    //  The constant-(u, P, T) closure fabricates carrier at exactly the net
-    //  uptake rate -- predicted by construction, declared to the campaign
-    //  balance as the forum-#119 cross-check (never a discount).
-    std::map<std::string, scalar> declaredMaterialResidual() const override;
     std::vector<SimulationResult::TimelineEvent> statusEvents() const override;
 
 protected:
@@ -282,6 +278,10 @@ private:
     std::size_t N_ = 0;      // nCells (declared -- no silent default)
     scalar dz_   = 0.0;      // L/N [m]
     scalar cTot_ = 0.0;      // P/(R T) [mol/m3], constant by declaration
+    //  C258: a thermal bed that took a feed-valve or outlet-pressure event has
+    //  run a compressible transient its energy equation does not conserve
+    //  (energyLedgerGap refuses the claim, naming that).
+    bool   pressureTransient_ = false;
     bool   ergun_ = false;    // A4: all species integrated, P derived, u algebraic
     //  A5-T1: adiabatic one-temperature energy balance (ergun mode ONLY --
     //  the A3 closure pins c_tot by declaration and a temperature field
@@ -383,6 +383,8 @@ private:
 
     // ---- A5 feed-switch amendments awaiting the driver ------------------
     std::vector<DatumAmendment> pendingAmendments_;
+    //  carrier make-up already booked to the campaign ledger [kmol] (C258)
+    scalar carrierBooked_kmol_ = 0.0;
 
     // ---- continuous-discharge marks (shed accounting) -------------------
     std::vector<scalar> shedMark_;           // M_out already handed over [mol]

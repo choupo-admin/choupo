@@ -44,11 +44,10 @@ Description
     declared the same way: `operation { air { T; Y; carrier; } }`.  The
     water that leaves the solid crosses that boundary and leaves the
     campaign -- so the vessel's inventory genuinely shrinks, and the
-    campaign mass balance would read that as a leak.  It is reported
-    instead through declaredMaterialResidual() as matter the declared
-    closure DESTROYS by construction (negative kmol of the moisture
-    component, exactly the evaporated amount): the raw numbers stay raw,
-    the prediction is an independent cross-check for the verdict.
+    campaign mass balance would read that as a leak -- so the evaporated
+    water is booked as an OUTLET STREAM of the campaign
+    (takeContinuousDischarge, an unrouted external outlet): it is the
+    physics, not an assumption, and the balance closes with it (C258).
 
     Governing equations (canonical SI; the flux is per unit exposed area):
 
@@ -135,9 +134,11 @@ public:
 
     const BatchState& state() const override { return state_; }
 
-    // The evaporated moisture crossed the DECLARED air boundary: report it
-    // as matter this closure destroys (negative kmol), never silently.
-    std::map<std::string, scalar> declaredMaterialResidual() const override;
+    // The evaporated moisture crosses the DECLARED air boundary: the driver
+    // books it as an external OUTLET stream of the campaign (C258).
+    BatchState takeContinuousDischarge(scalar tNow) override;
+    std::string continuousDischargeWhy() const override
+    { return "evaporated water leaving the solid into the drying air"; }
 
     // A wet solid is not one liquid at T -- and the evaporation's latent
     // heat is the air's, which this campaign does not own.
@@ -180,6 +181,7 @@ private:
     scalar R_c_     = 0.0;        // constant-rate flux    [kg/(m^2 s)]
     scalar lambda_wb_ = 0.0;      // latent heat at T_wb          [J/kg]
     scalar nWater0_ = 0.0;        // charged moisture             [kmol]
+    scalar nBooked_ = 0.0;        // evaporated water already booked as outlet [kmol]
     scalar X_0_     = 0.0;        // initial moisture             [kg/kg]
 
     // OBSERVED break time: the crossing of X_c, linearly interpolated

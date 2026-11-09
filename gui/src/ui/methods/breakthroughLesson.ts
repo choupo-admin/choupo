@@ -297,11 +297,13 @@ export const BREAKTHROUGH_LIMITS:
       + "run. The case says out loud what that costs — the real gas slows by "
       + "roughly 15 % across the uptake zone, and pinning u while the bed "
       + "removes adsorbate fabricates carrier moles at exactly the net uptake "
-      + "rate (9.19 mol here, published as carrier_fabricated_mol, and "
-      + "showing as physical_mass_closure_rel ≈ 0.108). The plotted CO2 "
-      + "balance itself closes at machine level; what the assumption distorts "
-      + "is the speed at which the front is carried. `flowModel ergun` closes "
-      + "it, and other cases in the corpus run it.",
+      + "rate (9.19 mol here, published as carrier_fabricated_mol, a fraction "
+      + "carrier_makeup_rel ≈ 0.108 of the matter fed). The campaign books that "
+      + "carrier as a named inlet stream, carrierMakeUp, so the balances close "
+      + "and the stream is the explanation; the plotted CO2 "
+      + "balance itself closes at machine level. What the assumption distorts "
+      + "is the speed at which the front is carried. `flowModel ergun` needs "
+      + "no such stream, and other cases in the corpus run it.",
   },
   {
     id: "single-adsorbate",
