@@ -1,5 +1,7 @@
 # Pack: a batch plant (tablets): batch plan, machines, clean utilities, quotes, crew
 
+budget: 5400 words (~8640 tokens)
+
 Read this pack when the plant runs in LOTS (tablets, capsules, fine
 chemicals): how many lots a year, which step paces the plant, whether a
 machine of a given rating takes the lot, the air and purified water of the

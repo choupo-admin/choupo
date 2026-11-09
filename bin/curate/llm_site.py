@@ -12,6 +12,7 @@ browsing assistant looks for first is /llms.txt (llmstxt.org): a title, a
 one-sentence summary, then links with a line each.
 
 DERIVED, NEVER HAND-KEPT.  The files served are the files that exist:
+    docs/ai/start-here.md       -> /llm/start-here.md         (THE entry: routes every task)
     docs/ai/capabilities.md     -> /llm/capabilities.md       ("does Choupo do X?")
     docs/ai/brief.md            -> /llm/brief.md              ("design a process")
     docs/ai/packs/*.md          -> /llm/packs/<name>.md
@@ -54,7 +55,8 @@ SITE = "https://www.choupo.org"
 VERSION_MARK = "> **Version.**"
 
 TITLE = "Choupo"
-SUMMARY = ("Choupo is an open-source, glass-box chemical process simulator "
+SUMMARY = ("Point the assistant at https://www.choupo.org/llm/start-here.md: it is the ONE entry and routes every task.  "
+           "Choupo is an open-source, glass-box chemical process simulator "
            "(C++17, GPL-3.0-or-later) that runs in the browser at "
            "https://www.choupo.org/app; the documents below teach an AI "
            "assistant to design a process and write it as a Choupo case.")
@@ -176,7 +178,7 @@ def sources():
     packs = sorted(os.path.join(packs_dir, n) for n in os.listdir(packs_dir)
                    if n.endswith(".md")) if os.path.isdir(packs_dir) else []
     refs = sorted(os.path.join(AI, n) for n in os.listdir(AI)
-                  if n.endswith(".md") and n not in ("brief.md", "capabilities.md"))
+                  if n.endswith(".md") and n not in ("brief.md", "capabilities.md", "start-here.md"))
     return brief, packs, refs
 
 
@@ -205,6 +207,11 @@ def build(dist):
     shutil.rmtree(out, ignore_errors=True)
     os.makedirs(os.path.join(out, "packs"))
     os.makedirs(os.path.join(out, "reference"))
+    start = os.path.join(AI, "start-here.md")
+    if not os.path.isfile(start) or os.path.getsize(start) == 0:
+        return fail("docs/ai/start-here.md is missing or empty -- the one entry "
+                    "an assistant is pointed at; refusing to assemble /llm")
+    copy_versioned(start, os.path.join(out, "start-here.md"), note)
     copy_versioned(caps, os.path.join(out, "capabilities.md"), note)
     copy_versioned(brief, os.path.join(out, "brief.md"), note)
     for p in packs:
@@ -218,6 +225,9 @@ def build(dist):
                     "(static; describes the stable release it names, not the "
                     "development line)" % SITE)
     lines = ["# " + TITLE, "", "> " + SUMMARY, "", note, "", INTRO, "",
+             "## Start here (the one entry; it routes every task)", "",
+             "- [start-here.md](%s/llm/start-here.md): read its first section "
+             "and follow the route it gives" % SITE, "",
              "## Does Choupo do X?", "",
              entry("/llm/capabilities.md", caps), "",
              "## Design a process: start here", "",
@@ -270,11 +280,16 @@ def verify(dist):
             print("llm_site: ERROR: pack %s is served but llms.txt does not "
                   "list it" % n, file=sys.stderr)
             bad += 1
-    #  One path per question: the capability index is the FIRST link.
-    if links[0] != "/llm/capabilities.md":
+    #  ONE entry: start-here is the FIRST link and routes every question
+    #  (a capability question to the index, a design to the brief and packs).
+    if links[0] != "/llm/start-here.md":
         print("llm_site: ERROR: llms.txt's first link is %s, not "
-              "/llm/capabilities.md (a capability question must find the index "
-              "first)" % links[0], file=sys.stderr)
+              "/llm/start-here.md (the one entry an assistant is pointed at)"
+              % links[0], file=sys.stderr)
+        bad += 1
+    if "/llm/capabilities.md" not in links:
+        print("llm_site: ERROR: llms.txt does not list /llm/capabilities.md",
+              file=sys.stderr)
         bad += 1
     if "/llm/models.md" not in links:
         print("llm_site: ERROR: llms.txt does not list /llm/models.md",
@@ -300,7 +315,7 @@ def verify(dist):
     if bad:
         return 1
     print("llm_site: OK: llms.txt lists %d link(s), all served, the capability "
-          "index first; brief and %d pack(s) present and non-empty; %d served "
+          "index listed, start-here first; brief and %d pack(s) present and non-empty; %d served "
           "document(s) and llms.txt state their version line"
           % (len(links), len(packs), served))
     return 0

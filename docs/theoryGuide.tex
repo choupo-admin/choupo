@@ -10377,6 +10377,87 @@ behave the same regardless of how you re-express the parameters.
 \end{intuition}
 
 % ---------------------------------------------------------------------
+\section{Relaxation: the first rung of recycle numerics}\label{ch:relaxation}
+
+\begin{whatyoulllearn}
+A recycle is a fixed-point problem, and a fixed point is iterated.  This
+chapter derives when plain substitution converges, what \emph{relaxation}
+(taking only a fraction of each step) does to the answer, why no fraction
+rescues a runaway loop, the optimal fraction for a linear loop, and how
+Wegstein's method and Newton's method are the same idea with the fraction
+chosen for you.  It is the entry to Chapter~\ref{ch:wegstein}.
+\end{whatyoulllearn}
+
+\subsection{Direct substitution and the loop gain}
+
+Cut the recycle, guess the cut stream $x$, run the plant once, and call what
+comes back $G(x)$.  The answer $x^{*}$ is the guess that returns itself,
+$x^{*} = G(x^{*})$.  Write the guess as $x^{*} + u$ and keep the first-order
+term of $G$: $G(x^{*}+u) \approx x^{*} + a\,u$, where $a = G'(x^{*})$ is the
+\emph{loop gain}.  Handing $G(x)$ back as the next guess (direct
+substitution) multiplies the mistake by $a$ every pass,
+$u_{k+1} = a\,u_k$, so it converges if and only if $|a| < 1$.  A negative
+gain overshoots and alternates in sign; a gain above $1$ runs away.  This
+is the convergence condition of successive substitution on a torn recycle
+as the sequential-modular literature states it \cite{Westerberg1979,
+BieglerGrossmannWesterberg1997}; the contraction argument itself is the
+fixed-point iteration of any numerical-methods text \cite{NumericalRecipes}.
+
+\subsection{Relaxation}
+
+Go only a fraction $w$ of the way from the old guess to the returned one
+(the under-relaxation of \cite{Westerberg1979}, the same device the
+segregated pressure--velocity solvers of CFD apply to each equation):
+\begin{equation}
+  x_{k+1} = (1-w)\,x_k + w\,G(x_k)
+  \qquad\Longrightarrow\qquad
+  u_{k+1} = \underbrace{(1 - w + w\,a)}_{a_{\mathrm{eff}}}\,u_k .
+  \label{eq:relaxation}
+\end{equation}
+This is OpenFOAM's \code{relaxationFactors}: the same iteration on the map
+$H(x) = (1-w)\,x + w\,G(x)$, whose slope is the \emph{effective slope}
+$a_{\mathrm{eff}} = 1 - w + w\,a$.  It converges if and only if
+$|a_{\mathrm{eff}}| < 1$.
+
+\paragraph{What a factor can and cannot do.}  For $a < 1$ write
+$a_{\mathrm{eff}} = 1 - w(1-a)$: it stays above $-1$ exactly when
+$w < 2/(1-a)$, so a small enough $w$ rescues a loop with $a < -1$.  For
+$a \ge 1$, $a_{\mathrm{eff}} = 1 + w(a-1) \ge 1$ for every $w > 0$: no
+fraction rescues a runaway loop, which is a statement about the plant as
+specified and not about the damping.
+
+\paragraph{The optimal factor.}  Setting $a_{\mathrm{eff}} = 0$ gives
+$w_{\mathrm{opt}} = 1/(1-a)$, at which a linear loop is solved in one pass.
+It is at most $1$ only for $a \le 0$; for $0 < a < 1$ the best factor is an
+\emph{over}-relaxation ($w_{\mathrm{opt}} > 1$).
+
+\subsection{Wegstein and Newton as the same idea}
+
+Wegstein's update $x_{k+1} = q\,x_k + (1-q)\,G(x_k)$ \cite{Wegstein}
+(Chapter~\ref{ch:wegstein}) is Eq.~\eqref{eq:relaxation} with $w = 1 - q$.
+It estimates the gain from the last two passes by the secant slope $s$ and
+chooses $q = s/(s-1)$, i.e.\ $w = 1/(1-s)$: the optimal factor, found without
+being told $a$, per variable.  Choupo's recycle clamps $q$ to
+$[q_{\min}, q_{\max}]$ (default $[-1, 0]$), so its Wegstein keeps $w$ in
+$[1, 2]$.  Newton on $r(x) = G(x) - x$ uses the whole slope and lands in one
+pass on a linear loop; its globalisation is a line search, which shortens the
+full step only for the iterates that need it, whereas a fixed factor would
+slow every iterate.  A fixed factor is therefore the right tool for a
+segregated fixed-point scheme (SIMPLE-type pressure--velocity coupling, the
+tear loop of a sequential-modular simulator) and the wrong default for a
+unit's Newton, where the honest knob is a \emph{step cap}.
+
+\subsection{In Choupo}
+
+In \file{system/solverDict}: \code{recycleSolver directSubstitution;} with
+\code{recycleRelaxation w;} ($0 < w \le 1$, default $1$);
+\code{recycleSolver Wegstein;} with \code{recycleWegsteinQmin}/\code{Qmax};
+and, for the default Newton on the tears, an optional
+\code{recycleMaxStep}.  Every declared value is announced, and a value out of
+range is refused by name.  The \emph{relaxation} EduTool draws all of the
+above with draggable figures and runs \code{process03\_recycle} under three
+factors.
+
 \section{Wegstein acceleration}\label{ch:wegstein}
 
 \begin{whatyoulllearn}

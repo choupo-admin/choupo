@@ -317,6 +317,9 @@ const EconomicsErrorsTool = lazy(() =>
 const DemandForecastTool = lazy(() =>
   import("./methods/DemandForecastTool.js")
     .then((m) => ({ default: m.DemandForecastTool })));
+const CampaignPlanTool = lazy(() =>
+  import("./methods/CampaignPlanTool.js")
+    .then((m) => ({ default: m.CampaignPlanTool })));
 const PlantCostTool = lazy(() =>
   import("./methods/PlantCostTool.js")
     .then((m) => ({ default: m.PlantCostTool })));
@@ -356,6 +359,9 @@ const SolventMixtureTool = lazy(() =>
 const MaterialsTool = lazy(() =>
   import("./methods/MaterialsTool.js")
     .then((m) => ({ default: m.MaterialsTool })));
+const RelaxationTool = lazy(() =>
+  import("./methods/RelaxationTool.js")
+    .then((m) => ({ default: m.RelaxationTool })));
 const WegsteinTool = lazy(() =>
   import("./methods/WegsteinTool.js")
     .then((m) => ({ default: m.WegsteinTool })));
@@ -622,6 +628,7 @@ export function MethodsWorkspace() {
             : tool === "site-process-price" ? <SiteProcessPriceTool />
             : tool === "demand-forecast" ? <DemandForecastTool />
             : tool === "plant-cost" ? <PlantCostTool />
+            : tool === "campaign-plan" ? <CampaignPlanTool />
             : tool === "process-safety" ? <ProcessSafetyTool />
             : tool === "overpressure" ? <OverpressureTool />
             : tool === "pool-fire" ? <PoolFireTool />
@@ -634,6 +641,7 @@ export function MethodsWorkspace() {
             : tool === "correlation-simplicity" ? <CorrelationSimplicityTool />
             : tool === "data-reconciliation" ? <DataReconciliationTool />
             : tool === "solvent-mixture" ? <SolventMixtureTool />
+            : tool === "relaxation" ? <RelaxationTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />

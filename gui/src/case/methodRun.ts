@@ -108,10 +108,22 @@ export interface KeyRename {
   occurrence?: number;
 }
 
-export type DictOverride = ScalarOverride | WordOverride | KeyRename;
+/** Append ONE declaration line to a dict, for a key the shipped case does not
+ *  declare (C246: `recycleRelaxation w;` is a new key, and a scalar override
+ *  can only replace a declared value).  It refuses if that key is ALREADY
+ *  declared live in the file -- an append that duplicated a key would leave
+ *  the engine to pick one, and the page would not know which. */
+export interface AppendOverride {
+  file: string;
+  append: string;
+}
+
+export type DictOverride =
+  ScalarOverride | WordOverride | KeyRename | AppendOverride;
 
 const isScalar = (o: DictOverride): o is ScalarOverride => "value" in o;
 const isWord = (o: DictOverride): o is WordOverride => "word" in o;
+const isAppend = (o: DictOverride): o is AppendOverride => "append" in o;
 
 /** ONE home for "find the declared occurrences of this pattern, or refuse".
  *  Every override kind goes through it, so they cannot disagree about what
@@ -176,12 +188,23 @@ export function applyKeyRename(text: string, o: KeyRename): string {
        + text.slice(m.index! + m[0].length);
 }
 
+/** Append a declaration line, refusing a key the file already declares live. */
+export function applyAppend(text: string, o: AppendOverride): string {
+  const key = o.append.trim().split(/\s+/)[0] ?? "";
+  const re = new RegExp("^[ \\t]*" + escapeKey(key) + "[ \\t]", "m");
+  if (re.test(text))
+    throw new Error(`override: key '${key}' is already declared in ${o.file}`
+      + " -- replace it with a scalar or word override instead");
+  return text.replace(/\s*$/, "\n") + o.append.trim() + "\n";
+}
+
 /** The ONE entry every caller uses: dispatch on which kind of override this
  *  is.  A kind is identified by the field only it carries, so an object that
  *  is none of the three refuses rather than being silently treated as one. */
 export function applyDictOverride(text: string, o: DictOverride): string {
   if (isScalar(o)) return applyScalarOverride(text, o);
   if (isWord(o)) return applyWordOverride(text, o);
+  if (isAppend(o)) return applyAppend(text, o);
   return applyKeyRename(text, o);
 }
 

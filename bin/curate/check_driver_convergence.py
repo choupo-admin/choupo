@@ -50,6 +50,23 @@ WHAT THIS GATE CHECKS.
       the only reader of `.converged` there; Flowsheet.cpp's packTears and
       the Newton packFlow/unpackFlow both carry `.P`.
 
+  (f) RELAXATION (DEV.md 4c C246 (2)).  process03_recycle under
+      `recycleSolver directSubstitution;` with `recycleRelaxation` 1.0, 0.5
+      and 0.3: all three converge to the SAME tear (F and T within 1e-3
+      relative), and the loop is linear enough near its answer that the
+      theory holds -- the late-pass contraction ratio of |dtear| under w is
+      1 - w (1 - a), with a read off the w = 1 run (within 0.08), so the
+      pass counts rise 1.0 < 0.5 < 0.3.  The refusals: a factor beside
+      `recycleSolver Newton` (a number nothing reads), w = 1.5 and w = 0
+      (outside (0, 1]), each by name; the declared factor is ANNOUNCED.
+  (g) THE PER-TYPE KNOBS AND THE UNREAD KEY (C246 (3)).  An unknown
+      top-level solverDict key is refused by name; `recycleMaxStep` is
+      announced and a non-positive one refused; `cstr { maxStepExtent }`
+      and `distillationColumn { maxStepT maxStepX }` run and are announced,
+      a non-positive value is refused; `lineSearch none` is the SAME choice
+      as the operation's `newton legacy` (announced), declaring both is
+      refused, as are a cap beside the legacy Newton and a bad word.
+
 WHAT THIS GATE DOES NOT COVER, so its green line cannot imply it: whether a
 corpus loop with a pressure-changing unit SHOULD be pressure-consistent
 (the corpus cases run through bin/runTests --scope; this gate sees the
@@ -292,6 +309,153 @@ def arm_clean(tmp: Path):
     return rc == 0
 
 
+def copy_case(tmp: Path, rel: str, tag: str) -> Path:
+    d = tmp / tag
+    shutil.copytree(ROOT / rel, d, ignore=shutil.ignore_patterns(
+        "expected", "*.csv", "resultJson*", "converged", "reports"))
+    return d
+
+
+def set_solver_dict(case: Path, text: str, replace_solver: str = None):
+    """Write system/solverDict; `replace_solver` swaps the shipped
+    `recycleSolver <word>;` line first."""
+    sd = case / "system" / "solverDict"
+    base = sd.read_text() if sd.exists() else ""
+    if replace_solver is not None:
+        base = re.sub(r"^recycleSolver\s+\w+;.*$",
+                      f"recycleSolver {replace_solver};", base, flags=re.M)
+    sd.write_text(base + "\n" + text + "\n")
+
+
+PROC3 = "tutorials/steady/flowsheets/process03_recycle"
+TAIL_TOL = 0.08
+
+
+def tear_table(out: str):
+    """|dtear| per pass from the recycle outer-loop table."""
+    i = out.find("Recycle outer loop")
+    j = out.find("Recycle converged", i)
+    if i < 0 or j < 0:
+        return []
+    return [float(m.group(2)) for m in re.finditer(
+        r"^\s+(\d+)\s+([0-9.]+e[+-]\d+)\s", out[i:j], re.M)]
+
+
+def final_tear(out: str):
+    last = None
+    for m in re.finditer(r"^\s+recycle\s+F = ([0-9.eE+-]+)\s+kmol/h\s+T = "
+                         r"([0-9.eE+-]+)\s+K", out, re.M):
+        last = (float(m.group(1)), float(m.group(2)))
+    return last
+
+
+def arm_relaxation(tmp: Path):
+    res = {}
+    for w in (1.0, 0.5, 0.3):
+        c = copy_case(tmp, PROC3, f"rlx{w}")
+        set_solver_dict(c, f"recycleRelaxation {w};", "directSubstitution")
+        rc, out = run(c)
+        m = re.search(r"Recycle converged in (\d+) DirectSubstitution", out)
+        if rc != 0 or not m:
+            fails.append(f"(f) w={w}: exit {rc}, no DirectSubstitution "
+                         f"convergence line:\n{out[-500:]}")
+            return None
+        if f"recycle relaxation w = {w:.4f}" not in out and w != 1.0:
+            fails.append(f"(f) w={w}: the declared factor is not announced")
+        res[w] = (int(m.group(1)), tear_table(out), final_tear(out))
+    n1, n5, n3 = res[1.0][0], res[0.5][0], res[0.3][0]
+    if not (n1 < n5 < n3):
+        fails.append(f"(f) pass counts not monotone in 1/w: w=1 {n1}, "
+                     f"w=0.5 {n5}, w=0.3 {n3}")
+    t1 = res[1.0][2]
+    for w in (0.5, 0.3):
+        t = res[w][2]
+        if not t1 or not t or abs(t[0] - t1[0]) > 1e-3 * abs(t1[0]) \
+                or abs(t[1] - t1[1]) > 1e-3 * abs(t1[1]):
+            fails.append(f"(f) w={w} reached a different tear {t} than "
+                         f"w=1 {t1}")
+    d1 = res[1.0][1]
+    if len(d1) >= 4 and d1[-3] > 0 and d1[-2] > 0:
+        a = d1[-2] / d1[-3]
+        for w in (0.5, 0.3):
+            d = res[w][1]
+            r = d[-2] / d[-3] if len(d) >= 3 and d[-3] > 0 else float("nan")
+            pred = 1.0 - w * (1.0 - a)
+            if not abs(r - pred) <= TAIL_TOL:
+                fails.append(f"(f) w={w}: late contraction ratio {r:.3f} vs "
+                             f"linear theory 1 - w(1 - a) = {pred:.3f} "
+                             f"(a = {a:.3f} from the w = 1 run)")
+    else:
+        fails.append("(f) the w = 1 table is too short to read a late ratio")
+    for tag, solver, line, what in (
+            ("rlxNewton", "Newton", "recycleRelaxation 0.5;",
+             "recycleRelaxation is declared but recycleSolver is"),
+            ("rlxBig", "directSubstitution", "recycleRelaxation 1.5;",
+             "must lie in (0, 1]"),
+            ("rlxZero", "directSubstitution", "recycleRelaxation 0;",
+             "must lie in (0, 1]")):
+        c = copy_case(tmp, PROC3, tag)
+        set_solver_dict(c, line, solver)
+        rc, out = run(c)
+        if rc == 0 or what not in out:
+            fails.append(f"(f) {tag}: expected a refusal containing "
+                         f"'{what}', got exit {rc}:\n{out[-300:]}")
+    return n1, n5, n3
+
+
+def expect_refused(tmp, tag, rel, text, what, solver=None, edit=None):
+    c = copy_case(tmp, rel, tag)
+    if edit:
+        edit(c)
+    set_solver_dict(c, text, solver)
+    rc, out = run(c)
+    if rc == 0 or what not in out:
+        fails.append(f"(g) {tag}: expected a refusal containing '{what}', "
+                     f"got exit {rc}:\n{out[-300:]}")
+
+
+def expect_runs(tmp, tag, rel, text, announce):
+    c = copy_case(tmp, rel, tag)
+    set_solver_dict(c, text)
+    rc, out = run(c)
+    if rc != 0 or announce not in out:
+        fails.append(f"(g) {tag}: expected exit 0 announcing '{announce}', "
+                     f"got exit {rc}:\n{out[-400:]}")
+
+
+COL = "tutorials/steady/distillation/column02_simultaneous"
+STRIP = "tutorials/steady/distillation/stripper02_sour_water_h2s"
+CSTR = "tutorials/steady/reactors/cstr03_series_selectivity"
+
+
+def arm_knobs(tmp: Path):
+    expect_refused(tmp, "unk", PROC3, "bogusKnob 1;", "'bogusKnob' is not a")
+    expect_runs(tmp, "tearcap", PROC3, "recycleMaxStep 0.5;",
+                "tear Newton step cap = 0.5")
+    expect_refused(tmp, "tearcap0", PROC3, "recycleMaxStep 0;",
+                   "recycleMaxStep must be > 0")
+    expect_runs(tmp, "cstrcap", CSTR, "cstr { maxStepExtent 0.5; }",
+                "maxStepExtent = 0.5")
+    expect_refused(tmp, "cstrneg", CSTR, "cstr { maxStepExtent -1; }",
+                   "maxStepExtent")
+    expect_runs(tmp, "colcap", COL,
+                "distillationColumn { maxStepT 20 K; maxStepX 0.2; }",
+                "maxStepT = 20")
+    expect_refused(tmp, "colneg", COL,
+                   "distillationColumn { maxStepX -0.1; }", "maxStepX")
+    expect_runs(tmp, "colnone", COL, "distillationColumn { lineSearch none; }",
+                "lineSearch none")
+    expect_refused(tmp, "colboth", STRIP,
+                   "distillationColumn { lineSearch armijo; }",
+                   "ONE choice")
+    expect_refused(tmp, "colcapnone", COL,
+                   "distillationColumn { lineSearch none; maxStepT 10 K; }",
+                   "not read by the legacy Newton")
+    expect_refused(tmp, "colword", COL,
+                   "distillationColumn { lineSearch maybe; }",
+                   "`lineSearch` must be")
+
+
 def strip_comments(src: str) -> str:
     src = re.sub(r"/\*.*?\*/", "", src, flags=re.S)
     return re.sub(r"//[^\n]*", "", src)
@@ -360,6 +524,8 @@ def main() -> int:
         allfail = arm_allfail(tmp)
         nPart, nTot = arm_partial(tmp)
         clean = arm_clean(tmp)
+        relax = arm_relaxation(tmp)
+        arm_knobs(tmp)
         nSites = arm_source()
     if fails:
         print("check_driver_convergence: FAILED")
@@ -374,7 +540,12 @@ def main() -> int:
           f"{', '.join(allfail)} (all-fail refuses by name, failed points "
           f"named with coordinates and published as nan: {nPart} of {nTot} "
           f"points failed at recycleMaxIter {PARTIAL_CAP}); the converging "
-          f"copy is unchanged ({'held' if clean else 'NOT held'}); {nSites} "
+          f"copy is unchanged ({'held' if clean else 'NOT held'}); "
+          f"directSubstitution with recycleRelaxation 1.0 / 0.5 / 0.3 takes "
+          f"{relax[0] if relax else '?'} / {relax[1] if relax else '?'} / "
+          f"{relax[2] if relax else '?'} passes to one tear, its late ratio "
+          "following 1 - w (1 - a), misdeclared factors and unread solverDict "
+          f"keys refused by name; {nSites} "
           "`simulator_(` site(s) read the verdict through simulationFailure() "
           "first.  NOT covered: whether a corpus loop should be "
           "pressure-consistent (bin/runTests --scope), pumps/compressors as "

@@ -2,11 +2,76 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/solverDict.schema.json",
   "title": "solverDict",
-  "description": "Per-unit-op-type solver defaults (system/solverDict, optional). Each top-level key matches a unit-op type from flowsheetDict.",
+  "description": "Numerics of a steady case (system/solverDict, optional; read by choupoSolve only). Top level: the tear list, the recycle numerics (a recycle is a fixed-point problem; the rungs are directSubstitution with a relaxation factor, Wegstein, Newton on the tears) and one block per unit-op type. Any other key is REFUSED by name (DEV.md 4c C246).",
   "type": "object",
+  "properties": {
+    "tearStreams": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "The streams the recycle iteration cuts."
+    },
+    "recycleSolver": {
+      "type": "string",
+      "enum": ["Newton", "Wegstein", "DominantEigenvalue", "directSubstitution"],
+      "default": "Newton",
+      "description": "Newton on the tears (default), Wegstein (per-variable adaptive relaxation, w = 1 - q), the dominant-eigenvalue aid, or plain direct substitution (optionally relaxed by recycleRelaxation)."
+    },
+    "recycleTol": { "type": "number", "exclusiveMinimum": 0, "default": 1e-5, "description": "Convergence of the tear loop." },
+    "recycleMaxIter": { "type": "integer", "minimum": 1, "default": 100, "description": "Maximum passes of the tear loop." },
+    "recycleWegsteinQmin": { "type": "number", "default": -1, "description": "Lower clamp of Wegstein's q (q = 1 - w; q = -1 is a doubled step)." },
+    "recycleWegsteinQmax": { "type": "number", "default": 0, "description": "Upper clamp of Wegstein's q (0 = never under-relax)." },
+    "recycleRelaxation": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "default": 1,
+      "description": "Fixed relaxation factor w of x+ = (1-w) x + w G(x). Only with recycleSolver directSubstitution; refused with any other solver and outside (0, 1]. Announced when declared."
+    },
+    "recycleMaxStep": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Newton on the tears: no tear unknown moves more than this fraction of its own scale in one step. Absent = no cap. Announced when declared."
+    },
+    "recycleDELambdaMax": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 },
+    "recycleDEMinCosine": { "type": "number" },
+    "recycleDELambdaTol": { "type": "number", "exclusiveMinimum": 0 },
+    "recycleDEDamping": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+    "reactiveEquilibrium": { "$ref": "#/$defs/ConvergenceTriple" },
+    "modelBoundaryClosure": { "$ref": "#/$defs/ConvergenceTriple" },
+    "distillationColumn": { "$ref": "#/$defs/ColumnNewton" },
+    "column": { "$ref": "#/$defs/ColumnNewton" },
+    "cstr": { "$ref": "#/$defs/CstrNewton" }
+  },
   "additionalProperties": { "$ref": "#/$defs/SolverOptions" },
 
   "$defs": {
+    "ConvergenceTriple": {
+      "type": "object",
+      "properties": {
+        "tolerance": { "type": "number", "exclusiveMinimum": 0 },
+        "relTol":    { "type": "number", "minimum": 0 },
+        "maxIter":   { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "ColumnNewton": {
+      "type": "object",
+      "description": "Newton knobs of the simultaneous MESH. lineSearch none = the legacy Newton, the same choice as the operation's `newton legacy;` (declare it once; both at once is refused). maxStepT / maxStepX cap the bounded Newton and are refused with lineSearch none.",
+      "properties": {
+        "lineSearch": { "type": "string", "enum": ["armijo", "none"], "default": "armijo" },
+        "maxStepT":   { "type": "number", "exclusiveMinimum": 0, "unit": "K", "description": "Largest stage-temperature change per Newton step." },
+        "maxStepX":   { "type": "number", "exclusiveMinimum": 0, "description": "Largest mole-fraction change per Newton step." }
+      },
+      "additionalProperties": true
+    },
+    "CstrNewton": {
+      "type": "object",
+      "description": "Newton knobs of the multi-reaction CSTR.",
+      "properties": {
+        "maxStepExtent": { "type": "number", "exclusiveMinimum": 0, "description": "An extent moves at most this fraction of the feed flow per Newton step." }
+      },
+      "additionalProperties": true
+    },
     "SolverOptions": {
       "type": "object",
       "description": "Tolerances and accelerator settings.",

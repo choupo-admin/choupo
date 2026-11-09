@@ -71,6 +71,9 @@ const MODULES = [
   "gui/src/ui/methods/wegsteinMath.ts",
   "gui/src/ui/methods/wegsteinLesson.ts",
   "gui/src/ui/methods/WegsteinTool.tsx",
+  "gui/src/ui/methods/relaxationMath.ts",
+  "gui/src/ui/methods/relaxationLesson.ts",
+  "gui/src/ui/methods/RelaxationTool.tsx",
   "gui/src/ui/methods/activeSetQpMath.ts",
   "gui/src/ui/methods/activeSetQpLesson.ts",
   "gui/src/ui/methods/ActiveSetQpTool.tsx",
@@ -321,7 +324,7 @@ describe("the three tools are registered and shelved", () => {
       .map((t) => t.id).sort();
     //  `element-potential` (C15, 2026-09-27) sits on the same shelf; its
     //  lesson and its tests are its own (elementPotentialLesson.test.ts).
-    expect(shelf).toEqual([...ids, "element-potential"].sort());
+    expect(shelf).toEqual([...ids, "element-potential", "relaxation"].sort());
   });
 
   it("each names a REAL label in the Theory Guide", () => {
@@ -418,15 +421,21 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/solver/Wegstein.H", 73, "qMin = -5.0"],
     ["src/solver/Wegstein.H", 86, "per-component q values"],
     // --- Wegstein: how the flowsheet drives it
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3262, "Wegstein"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3269, "recycleWegsteinQmin"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3270, "recycleWegsteinQmax"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3358, "normL2(gx, x)"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3324, "Wegstein"],
+    //  the relaxation lesson (C246): the knob, the update, the Newton contract
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3193, "recycleRelaxation"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3462, "recRelax"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3639, "Globalisation::armijo"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3641, "recycleMaxStep"],
+    ["src/solver/NewtonND.cpp", 618, "armijo"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3332, "recycleWegsteinQmin"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3333, "recycleWegsteinQmax"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3421, "normL2(gx, x)"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 1794, "v.push_back(s.F)"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 1841, "z /= zsum"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3455, "s.F * (i < s.z.size()"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3517, "latent under-convergence"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3555, "/ scale[i]"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3527, "s.F * (i < s.z.size()"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3589, "latent under-convergence"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3627, "/ scale[i]"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 1873, "mixes flows and"],
     //  291, not 290: the engine gained a comment line above it and the
     //  anchor was left behind.  The lesson's own citation is the RANGE
@@ -436,15 +445,15 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/applications/choupoSolve/main.cpp", 311, "Mass balance (global)"],
     ["src/streams/ProcessStream.H", 80, "kmol/s"],
     // --- tear streams: the plan contract
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4673, "Flowsheet::validateSequentialPlan"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4764, "MISSING TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4772, "INVALID ORDER"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4800, "INLET TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4807, "UNCONSUMED TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4818, "FORWARD TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4874, "OFF-CYCLE TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4931, "[plan] material recycle"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4815, "c <= p->second"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4765, "Flowsheet::validateSequentialPlan"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4856, "MISSING TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4864, "INVALID ORDER"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4892, "INLET TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4899, "UNCONSUMED TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4910, "FORWARD TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4966, "OFF-CYCLE TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5023, "[plan] material recycle"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4907, "c <= p->second"],
     // --- the QP
     ["src/solver/ActiveSetQP.cpp", 152, "N&W Algorithm 16.3"],
     ["src/solver/ActiveSetQP.cpp", 409, "N&W eq. 16.41"],
