@@ -87,7 +87,9 @@ export const OPEN_QMAX = 0.99;
 export const effectiveSlope = (a: number, w: number): number => 1 - w + w * a;
 
 /** w* = 1/(1 - a): the factor that makes the effective slope zero.  Null at
- *  a >= 1, where no finite positive factor does. */
+ *  a >= 1, where no finite POSITIVE factor does: at a > 1 the zero-slope
+ *  factor 1/(1 - a) exists but is negative (a reversed step, Wegstein's
+ *  q = 1 - w > 1), off this page's w > 0 plane; at a = 1 none exists. */
 export const optimalW = (a: number): number | null =>
   a < 1 ? 1 / (1 - a) : null;
 

@@ -85,7 +85,8 @@ export const TEAR_STEPS: readonly LessonStep[] = [
     formula: String.raw`x = G(x)`,
     where: [
       { sym: "x", means: "the TEAR VECTOR — the assumed state of the cut "
-        + "stream: its total flow, its composition and its temperature" },
+        + "stream: its total flow, its composition, its temperature and its "
+        + "pressure" },
       { sym: "G", means: "one complete pass through the flowsheet in declared "
         + "order, starting from that assumption" },
       { sym: "x_\\mathrm{assumed}",
@@ -167,8 +168,9 @@ export const TEAR_STEPS: readonly LessonStep[] = [
     title: "What a cut costs, in the only currency the solver spends",
     body: "Every tear adds variables to the outer problem, and the count "
       + "depends on which solver runs. Wegstein packs the total flow, every "
-      + "mole fraction and the temperature; Newton packs component flows and "
-      + "the temperature, which is one fewer because it avoids the "
+      + "mole fraction, the temperature and the pressure; Newton packs "
+      + "component flows, the temperature and the pressure, which is one "
+      + "fewer because it avoids the "
       + "redundancy of fractions that must sum to one. That difference is "
       + "small. The difference that is not small is what a STEP costs: "
       + "Newton builds its Jacobian by central finite differences, which is "
@@ -176,17 +178,22 @@ export const TEAR_STEPS: readonly LessonStep[] = [
       + "step costs one sweep however long the vector is.",
     derivation: [
       { step: "Per torn stream, the Wegstein branch packs the total flow, "
-          + "every mole fraction and the temperature.",
-        eq: String.raw`n_W = N_t (N_c + 2)`},
-      { step: "Per torn stream, the Newton branch packs component flows and "
-          + "the temperature.",
-        eq: String.raw`n_N = N_t (N_c + 1)`},
+          + "every mole fraction, the temperature and the pressure "
+          + "(src/unitOperations/flowsheet/Flowsheet.cpp:1787-1805).",
+        eq: String.raw`n_W = N_t (N_c + 3)`},
+      { step: "Per torn stream, the Newton branch packs component flows, "
+          + "the temperature and the pressure "
+          + "(src/unitOperations/flowsheet/Flowsheet.cpp:3522-3531). The "
+          + "pressure has been a tear variable since DEV.md 4c C186 (5).",
+        eq: String.raw`n_N = N_t (N_c + 2)`},
       { step: "And one Newton step perturbs each of those variables up and "
-          + "down, running a full sweep at each.",
+          + "down, running a full sweep at each. That is the usual case: a "
+          + "variable pressed against a bound is differenced on one side "
+          + "only (src/solver/NewtonND.cpp:189-258).",
         eq: String.raw`\text{sweeps per Newton step} = 2 n_N`},
     ],
     formula: String.raw`\begin{aligned}
-n_W &= N_t (N_c + 2) &\qquad n_N &= N_t (N_c + 1)\\[4pt]
+n_W &= N_t (N_c + 3) &\qquad n_N &= N_t (N_c + 2)\\[4pt]
 \text{sweeps per Newton step} &= 2 n_N &\qquad \text{per Wegstein step} &= 1
 \end{aligned}`,
     where: [
@@ -195,8 +202,8 @@ n_W &= N_t (N_c + 2) &\qquad n_N &= N_t (N_c + 1)\\[4pt]
       { sym: "n_W", means: "tear variables under the Wegstein branch" },
       { sym: "n_N", means: "tear variables under the Newton branch" },
     ],
-    note: "So a second tear on a five-component plant costs Newton twelve "
-      + "extra sweeps per step. That is the arithmetic behind the standing "
+    note: "So a second tear on a five-component plant costs Newton fourteen "
+      + "extra sweeps per step, 2 x (5 + 2). That is the arithmetic behind the standing "
       + "advice to cut as few streams as you can — and the next step is "
       + "about the fact that HOW FEW is not decided by the loops.",
   },
@@ -231,9 +238,12 @@ n_W &= N_t (N_c + 2) &\qquad n_N &= N_t (N_c + 1)\\[4pt]
   {
     n: 7,
     title: "What the engine does when you get it wrong",
-    body: "The plan is validated the moment the tear list is final and "
-      + "before any state work, so an invalid plan refuses before it can "
-      + "seed anything. The findings are COLLECTED and reported as one list, "
+    body: "The plan is validated once the tear list is final and the state "
+      + "has been read and seeded from 0/, and before any unit is solved "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:2201 reads 0/, "
+      + "Flowsheet.cpp:2586 validates the plan) — so an invalid plan refuses "
+      + "with every stream still at its 0/ value, and writes no converged/. "
+      + "The findings are COLLECTED and reported as one list, "
       + "each carrying its own remedy — a lint tool describes the whole "
       + "state of a case, not the first defect it meets — and each refusal "
       + "names what it found rather than saying that something is wrong. "

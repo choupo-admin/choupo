@@ -207,9 +207,12 @@ const QMIN: PanelKnob = {
 };
 const QMAX: PanelKnob = {
   id: "qmax", label: "clamp ceiling q_max", min: 0, max: 0.9, step: 0.05,
-  why: "Zero in every shipped case, and it is what forbids a step in the "
-    + "wrong direction. Raise it to let a positive coefficient through and "
-    + "watch what a secant slope above 1 does when nothing stops it.",
+  why: "Zero in every shipped case: it refuses every positive coefficient — "
+    + "the damping a slope between -1 and 0 asks for, and the reversed step "
+    + "a slope above 1 asks for. Raise it to let positive coefficients "
+    + "through and watch the coefficient column; a slope above 1 asks for a "
+    + "q above 1, so this ceiling still cuts that step short of the one the "
+    + "secant asked for.",
 };
 const TOL: PanelKnob = {
   id: "tol", label: "recycleTol", min: -9, max: -3, step: 1,

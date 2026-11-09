@@ -10731,22 +10731,36 @@ The miracle case ($f$ linear) is rare; the typical case is $f$
 non-linear and the secant slope $s_k$ a noisy approximation to
 $f'(x^{\!*})$.  Two pathologies show up.
 
-\paragraph{Pathology 1: the wrong contraction direction ($s_k > 1$).}
-If the secant slope is greater than 1, the linear model is not a
-contraction.  Geometrically, the secant line is steeper than the
-diagonal $y = x$ and intersects it on the \emph{far side} of both
-data points --- the extrapolation lands somewhere unrelated to the
-actual fixed point.  Plug $s_k > 1$ into \eqref{eq:wegstein-q}:
-$q_k = s_k / (s_k - 1)$ is positive and possibly large, and the
-formula sends the iterate in the wrong direction.
+\paragraph{Pathology 1: a secant steeper than the diagonal ($s_k > 1$).}
+If the secant slope is greater than 1, the linear model says the
+fixed point \emph{repels} direct substitution: each pass would carry
+the iterate further away.  Geometrically, the secant line is steeper
+than the diagonal $y = x$ and meets it on the \emph{far side} of both
+data points.  Plug $s_k > 1$ into \eqref{eq:wegstein-q}:
+$q_k = s_k / (s_k - 1)$ is positive and larger than 1, and the step
+\emph{reverses} the direction direct substitution would take.  On a
+truly linear $f$ that reversed step is exact, not wrong: for
+$f(x) = 2x - 2$, $x^{\!*} = 2$, from $x_k = 5$ direct substitution
+goes to $f(5) = 8$, while $s_k = 2$, $q_k = 2$ and
+$x_{k+1} = 2 \cdot 5 - 1 \cdot 8 = 2 = x^{\!*}$.  That is Wegstein's
+own point: the step converges the linear problem whether or not the
+plain iteration does.  The pathology is in the \emph{reading}, not in
+the arithmetic: on a non-linear $f$, a slope above 1 measured along
+the path the iteration happened to take is more often a local
+mis-reading than a genuinely repelling loop, and a reversed step
+built on a mis-reading is destructive.  (A slope between $-1$ and 0
+--- an oscillating but contracting loop --- gives $0 < q_k < 1/2$, a
+mild damping; the clip below refuses that too.)
 
 \paragraph{Pathology 2: over-extrapolation.}  Even with $s_k < 1$
 (genuine contraction), if $s_k$ is very close to 1 the denominator
 $s_k - 1$ is tiny and $q_k$ becomes a huge negative number.  The
-Wegstein step then throws the iterate \emph{far} past the secant
-intercept --- correct in direction but wildly overshooting.  This is
-fine when $f$ really is approximately linear over a wide range; it
-is destabilising when it is not.
+secant then meets the diagonal \emph{far} beyond the latest
+iterate, and the Wegstein step goes all the way there --- correct in
+direction but wildly overshooting whenever the chord is a poor
+picture of $f$ that far out.  This is fine when $f$ really is
+approximately linear over a wide range; it is destabilising when it
+is not.
 
 \paragraph{The fix: clip $q_k$ to a safe interval.}  The simulator
 forces
@@ -10760,9 +10774,14 @@ forces
 These bounds carry concrete meaning:
 
 \begin{itemize}[leftmargin=*,nosep,topsep=2pt]
-  \item $q_{\max} = 0$ disables wrong-direction steps.  With $q = 0$
-        Wegstein degrades to direct substitution
-        ($x_{k+1} = f(x_k)$) --- slow but never wrong.
+  \item $q_{\max} = 0$ refuses every positive coefficient: the
+        reversed step a slope above 1 asks for, and the damping a
+        slope between $-1$ and 0 asks for.  It is a judgement that a
+        positive $q_k$ read off a non-linear $f$ is not to be trusted,
+        not a theorem about the step.  With $q = 0$ Wegstein degrades
+        to direct substitution ($x_{k+1} = f(x_k)$) --- slow, and
+        convergent only where the loop itself contracts,
+        $|f'(x^{\!*})| < 1$.
   \item $q_{\min} = -5$ caps the maximum acceleration to a factor
         of 6: the step travels at most six times further than
         direct substitution would.  When the secant flattens
@@ -10773,8 +10792,8 @@ These bounds carry concrete meaning:
 \begin{intuition}
 The clip turns Wegstein into a kind of adaptive method that uses the
 secant when it is informative (modest $s_k$, $-5 \le q_k < 0$) and
-falls back to safe direct substitution when it is not ($s_k > 1$
-$\Rightarrow$ $q_k \to 0$).  The student should picture
+falls back to plain direct substitution when it does not trust it
+($s_k > 1$ $\Rightarrow$ $q_k \to 0$).  The student should picture
 $q_k$ as a knob between two regimes, with $q_{\min}$ and $q_{\max}$
 as safety limits chosen empirically across decades of process
 simulation.
@@ -10990,18 +11009,24 @@ and the iterate's $z_i$ must be re-normalised onto the simplex every
 step or they drift and $F$ loses its meaning.
 
 Choupo sidesteps this by tearing on \emph{component molar flows} plus
-temperature,
+temperature and pressure,
 \begin{equation}
-   \mathbf{x} \;=\; (F_1,\, F_2,\, \dots,\, F_{N_c},\, T),
+   \mathbf{x} \;=\; (F_1,\, F_2,\, \dots,\, F_{N_c},\, T,\, P),
    \qquad F_i \equiv F z_i,
    \label{eq:tear-vars}
 \end{equation}
 which are mutually independent --- there is no normalisation tying them
 together (the total $F = \sum_i F_i$ and the fractions $z_i = F_i/F$
-are recovered afterwards).  Pressure and phase split are not torn:
-pressure is set by the units, and the phase fractions follow from a
-flash on the converged $(F_i, T)$.  For $N_c$ components the tear
-vector has $N_c + 1$ entries.
+are recovered afterwards).  The pressure is torn because a loop whose
+units lower it (a mixer takes the lowest inlet pressure, a pipe drops
+it) has a steady state only if the pressure that comes back is the
+one handed in; a recycle that returns 3~bar after being handed 5~bar
+is not converged, whatever its flows do.  The phase split is not torn:
+the phase fractions follow from a flash on the converged
+$(F_i, T, P)$.  For $N_c$ components the tear vector has $N_c + 2$
+entries.  (The Wegstein branch tears the redundant
+$(F, z_1, \dots, z_{N_c}, T, P)$, $N_c + 3$ entries, with the
+pressure carried in bar.)
 
 \subsection{Newton on the tear residual}
 
@@ -11015,7 +11040,9 @@ is built by \emph{central} finite differences: perturb tear variable
 $j$ by $\pm\delta$, run a full sweep $G$ at each, and the symmetric
 difference $[\,G(\mathbf{x}+\delta\mathbf{e}_j) -
 G(\mathbf{x}-\delta\mathbf{e}_j)\,]/2\delta$ gives column $j$.  That is
-\emph{two} sweeps per variable, $2(N_c + 1)$ sweeps per Jacobian ---
+\emph{two} sweeps per variable, $2(N_c + 2)$ sweeps per Jacobian and
+torn stream (fewer when a variable at a bound is differenced on one
+side only) ---
 the price Newton pays that Wegstein (one sweep per step) does not.
 Central differences cost twice what forward ones would, but are
 $O(\delta^2)$ accurate rather than $O(\delta)$, which keeps the
@@ -11062,7 +11089,8 @@ of its own variable:
    \qquad
    s_i = \begin{cases}
             F_{\text{tot}} & \text{for a component-flow entry},\\[2pt]
-            T              & \text{for the temperature entry},
+            T              & \text{for the temperature entry},\\[2pt]
+            P              & \text{for the pressure entry},
          \end{cases}
    \;}
    \label{eq:tear-relative}
@@ -11146,7 +11174,7 @@ off cleanly:
 \toprule
  & \textbf{Wegstein} & \textbf{Newton-on-tears} \\
 \midrule
-cost per outer step & one sweep & $2(N_c + 1)$ sweeps (central-difference Jacobian) \\
+cost per outer step & one sweep & $2(N_c + 2)$ sweeps per tear (central-difference Jacobian) \\
 convergence & super-linear & quadratic \\
 coupling between tear variables & ignored (component-wise scalars) & captured (full Jacobian) \\
 robustness on counter-current / strongly-coupled tears & needs damping ($q$-clip) & strong \\

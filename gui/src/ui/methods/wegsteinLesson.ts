@@ -102,23 +102,25 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "The WEGSTEIN branch packs the total flow, every mole "
           + "fraction, the temperature and the pressure — per torn stream "
-          + "(src/unitOperations/flowsheet/Flowsheet.cpp:1787-1798).",
+          + "(src/unitOperations/flowsheet/Flowsheet.cpp:1787-1805; the "
+          + "pressure, in bar, at Flowsheet.cpp:1802).",
         eq: String.raw`x = ( F,\ z_1,\ z_2,\ \ldots,\ z_{N_c},\ T,\ P )`},
       { step: "That is one number more than the stream has independent "
           + "content, because the fractions must sum to one. The redundant "
           + "direction is harmless but real, and the unpack step "
           + "renormalises the fractions back onto the simplex every "
-          + "iteration (:2027).",
+          + "iteration (Flowsheet.cpp:1841).",
         eq: String.raw`z_1 + z_2 + \ldots + z_{N_c} = 1`},
       { step: "The NEWTON branch avoids the redundancy by tearing on "
-          + "component molar flows instead, which are mutually independent "
-          + "(:3404-3413). The total and the fractions are recovered "
-          + "afterwards.",
-        eq: String.raw`x = ( F_1,\ \ldots,\ F_{N_c},\ T ), \qquad F_i = F z_i`},
+          + "component molar flows instead, which are mutually independent, "
+          + "followed by the temperature and the pressure "
+          + "(Flowsheet.cpp:3522-3531, the pressure at Flowsheet.cpp:3529). "
+          + "The total and the fractions are recovered afterwards.",
+        eq: String.raw`x = ( F_1,\ \ldots,\ F_{N_c},\ T,\ P ), \qquad F_i = F z_i`},
     ],
     formula: String.raw`\begin{array}{lll}
-\text{Wegstein} & x = ( F,\ z_1,\ \ldots,\ z_{N_c},\ T ) & N_c + 2 \text{ numbers}\\
-\text{Newton} & x = ( F_1,\ \ldots,\ F_{N_c},\ T ) & N_c + 1 \text{ numbers}
+\text{Wegstein} & x = ( F,\ z_1,\ \ldots,\ z_{N_c},\ T,\ P ) & N_c + 3 \text{ numbers}\\
+\text{Newton} & x = ( F_1,\ \ldots,\ F_{N_c},\ T,\ P ) & N_c + 2 \text{ numbers}
 \end{array}`,
     where: [
       { sym: "F", means: "total molar flow of the torn stream",
@@ -220,9 +222,12 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       + "Comm. ACM 1(6), 9-13. Step 1 of the previous page, Relaxation, "
       + "shows that this update is a relaxation x+ = (1 - w) x + w G(x) with "
       + "w = 1 - q. Note where q lives: between 0 and minus infinity for a "
-      + "contracting direction. A slope s of 0.9 gives q = -9, a step ten "
+      + "MONOTONICALLY contracting direction (0 < s < 1). An oscillating but "
+      + "contracting one (-1 < s < 0) asks for a small positive q, between "
+      + "0 and 1/2, which is a damping; a slope above 1 asks for q above 1. "
+      + "A slope s of 0.9 gives q = -9, a step ten "
       + "times longer than direct substitution would take. Step 6 is about "
-      + "why the engine does not let it.",
+      + "why the engine does not let it, nor either of the positive cases.",
   },
   {
     n: 5,
@@ -232,7 +237,8 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       + "NOT form a step direction in the tear vector and scale it. It runs "
       + "the scalar recursion of step 4 SEPARATELY on every entry of the "
       + "vector: the total flow gets its own secant and its own coefficient, "
-      + "each mole fraction gets its own, the temperature gets its own. The "
+      + "each mole fraction gets its own, the temperature and the pressure "
+      + "get their own. The "
       + "loop in the engine reads entry i and nothing else "
       + "(src/solver/Wegstein.cpp:67-86). There is no shared step length, so "
       + "there is no scale to get wrong, and no question of whether "
@@ -269,7 +275,7 @@ x_{i,\mathrm{next}} &= q_i x_i + (1 - q_i) g_i(x) \qquad \text{one } i \text{ at
       { sym: "g_i", means: "entry i of the sweep's answer G(x) — what the "
         + "plant sent back for that one variable" },
       { sym: "x_i", means: "entry i of the tear vector: one flow, or one "
-        + "mole fraction, or the temperature. Written x_i,k on the current "
+        + "mole fraction, or the temperature, or the pressure. Written x_i,k on the current "
         + "pass and x_i,prev on the previous one" },
       { sym: "A", means: "the multiplier of an affine change of unit (3600 "
         + "for kmol/s to kmol/h)" },
@@ -278,17 +284,27 @@ x_{i,\mathrm{next}} &= q_i x_i + (1 - q_i) g_i(x) \qquad \text{one } i \text{ at
     ],
     note: "The panel below lets you re-express the two variables and check "
       + "that claim rather than take it: every coefficient in the table "
-      + "stays put to the last digit. Choupo itself packs the tear in "
-      + "canonical SI always (kmol/s, K); the re-expression is a question "
-      + "about the method, not a switch the engine has.",
+      + "stays put to the last digit. Choupo itself packs the Wegstein tear "
+      + "in fixed units always — kmol/s and K, and the pressure in bar "
+      + "rather than pascals (Flowsheet.cpp:1797-1802), which matters to the "
+      + "stopping test of step 8 and not to the step; the re-expression is a "
+      + "question about the method, not a switch the engine has.",
   },
   {
     n: 6,
     title: "The clamp, and the two degenerate cases the code handles by name",
     body: "The secant is an estimate, and a bad estimate makes a dangerous "
-      + "step. If the slope comes out above 1 the linear model is not a "
-      + "contraction at all and the coefficient turns POSITIVE, which sends "
-      + "the iterate away from the answer. If the slope comes out just below "
+      + "step. If the slope comes out above 1 the linear model says the "
+      + "fixed point REPELS direct substitution, and the coefficient turns "
+      + "positive, above 1: the Wegstein step then reverses the direction "
+      + "direct substitution would take, and on a loop that really is linear "
+      + "it lands exactly on the answer (G(x) = 2x - 2 from x = 5: direct "
+      + "substitution goes to 8, Wegstein to 2, which is the fixed point). "
+      + "The danger is in the reading, not in the arithmetic: on a real, "
+      + "non-linear sweep a slope above 1 measured along the path the "
+      + "iteration happened to take is more often a local accident than a "
+      + "genuinely repelling loop, and a reversed step built on an accident "
+      + "is destructive. If the slope comes out just below "
       + "1 the denominator is tiny and the coefficient becomes a huge "
       + "negative number, which throws the iterate far past anywhere the "
       + "straight line was ever a good description of the plant. So the "
@@ -298,11 +314,15 @@ x_{i,\mathrm{next}} &= q_i x_i + (1 - q_i) g_i(x) \qquad \text{one } i \text{ at
       { step: "The clamp, read from the case's own solverDict "
           + "(recycleWegsteinQmin / recycleWegsteinQmax).",
         eq: String.raw`q = \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{max} \right)`},
-      { step: "q_max = 0 forbids the wrong direction: whenever the secant "
-          + "gives a q above it, the step falls back to plain direct "
-          + "substitution.  That removes the overshoot, and nothing more: "
-          + "direct substitution itself converges only where the loop "
-          + "contracts, |G′| < 1." },
+      { step: "q_max = 0 refuses every positive coefficient: whenever the "
+          + "secant gives a q above it, the step falls back to plain direct "
+          + "substitution. That refuses the reversed step a slope above 1 "
+          + "asks for, and also the mild damping (0 < q < 1/2) an "
+          + "oscillating slope between -1 and 0 asks for. It is a judgement "
+          + "that a positive coefficient read off a non-linear sweep is not "
+          + "to be trusted, not a theorem about the step, and it does "
+          + "nothing more: direct substitution itself converges only where "
+          + "the loop contracts, |G′| < 1." },
       { step: "q_min bounds the reach. With x_new = q·x + (1 − q)·G(x), q_min = "
           + "-1 lets the step travel at most twice as far as direct "
           + "substitution would, and q_min = -5 at most six times as far." },
@@ -323,7 +343,8 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
         + "limit on how far the extrapolation may reach" },
       { sym: "q_\\mathrm{max}",
         means: "the largest coefficient allowed. Zero, which "
-        + "forbids stepping away from the image" },
+        + "refuses every positive coefficient: no damping short of the "
+        + "image, and no reversed step away from it" },
     ],
     note: "The defaults are worth reading carefully, because there are two "
       + "of them and they are not the same number. The Wegstein CLASS "
@@ -352,9 +373,13 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
         eq: String.raw`J = \frac{\mathrm{d}G}{\mathrm{d}x} - I, \qquad J\, \mathrm{d}x = -r`},
       { step: "And what it costs. Choupo builds that matrix by CENTRAL "
           + "finite differences: perturb one tear variable up and down and "
-          + "run a complete flowsheet sweep at each. Wegstein takes one "
+          + "run a complete flowsheet sweep at each, over the N_c + 2 "
+          + "numbers of step 2 for each torn stream (a variable pressed "
+          + "against a bound is differenced on one side only, "
+          + "src/solver/NewtonND.cpp:189-258, so the count below is the "
+          + "usual case and not a law). Wegstein takes one "
           + "sweep per step, whatever the size of the vector.",
-        eq: String.raw`\text{Newton: } 2 (N_c + 1) \text{ sweeps per step;} \qquad \text{Wegstein: } 1`},
+        eq: String.raw`\text{Newton: } 2 (N_c + 2) \text{ sweeps per step and tear;} \qquad \text{Wegstein: } 1`},
     ],
     formula: String.raw`J = \frac{\mathrm{d}G}{\mathrm{d}x} - I \qquad J\, \mathrm{d}x = -r`,
     where: [
@@ -382,10 +407,13 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
     body: "The step is scale-free. The TEST is not, and the two are not the "
       + "same decision. The Wegstein branch stops when the plain Euclidean "
       + "norm of the change in the packed tear vector falls below the "
-      + "declared tolerance — a flow in kmol/s, a handful of mole fractions "
-      + "and a temperature in kelvin, added in quadrature with no scaling "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3421, the norm at "
-      + ":1858-1866). A temperature near 360 dominates a flow near 1e-4 by "
+      + "declared tolerance — a flow in kmol/s, a handful of mole fractions, "
+      + "a temperature in kelvin and a pressure in bar, added in quadrature "
+      + "with no scaling (src/unitOperations/flowsheet/Flowsheet.cpp:3421, "
+      + "the norm at Flowsheet.cpp:1858-1867; the pressure is carried in bar "
+      + "for exactly this reason, Flowsheet.cpp:1797-1802, since in pascals "
+      + "it would swamp everything else). A temperature near 360 dominates a "
+      + "flow near 1e-4 by "
       + "six orders of magnitude, so a run can satisfy that test with the "
       + "temperature pinned to six digits and the recycle flow still several "
       + "percent out.",
@@ -396,17 +424,19 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       { step: "The Newton branch of the same function does NOT do this. It "
           + "divides each residual by a characteristic scale — the tear's "
           + "own total flow for a flow entry, the temperature itself for the "
-          + "temperature entry (:3454-3467, applied at :3477).",
+          + "temperature entry, the pressure itself for the pressure entry "
+          + "(Flowsheet.cpp:3586-3605, applied at Flowsheet.cpp:3627).",
         eq: String.raw`r_i = \frac{g_i(x) - x_i}{\mathrm{scale}_i}`},
       { step: "The engine's own comment on that scaling names what its "
           + "absence costs, in those words: the latent under-convergence the "
-          + "old Wegstein default also had (:3452-3453)." },
+          + "old Wegstein default also had (Flowsheet.cpp:3589-3590)." },
       { step: "And for the CONVERGENCE PLOT the engine publishes neither "
           + "norm. It computes two physical residuals instead — the recycle "
           + "mass imbalance and the recycle energy imbalance, each divided "
           + "by what enters the plant — because the solver's own figure "
           + "mixes flows and temperatures into one dimensionless number "
-          + "(:2057-2062). Those two are the curves you see below." },
+          + "(Flowsheet.cpp:1872-1877). Those two are the curves you see "
+          + "below." },
     ],
     formula: String.raw`\begin{aligned}
 \text{Wegstein test}\quad & \lvert G(x) - x \rvert < \mathrm{recycleTol} \qquad \text{(no scaling)}\\
@@ -425,7 +455,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
         means: "the characteristic size of variable i, used "
         + "to make each residual entry dimensionless before they are "
         + "compared: the tear's total flow for a flow, the temperature for "
-        + "the temperature" },
+        + "the temperature, the pressure for the pressure" },
     ],
     note: "This is why the two panels below can disagree about how converged "
       + "a run is while agreeing about the answer. If you change the unit "
@@ -479,18 +509,21 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
   },
   {
     id: "state-not-torn",
-    title: "The tear carries a flow, a composition and a temperature — and "
-      + "not the rest of the stream's state",
-    body: "The pack and unpack move exactly those three things "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:1787-1798 and "
-      + "src/unitOperations/flowsheet/Flowsheet.cpp:1814-1855). The pressure "
-      + "and the phase split are NOT torn: pressure is set by the units, and "
-      + "the vapour fraction sitting on the torn stream is whatever the "
-      + "previous sweep left there — the engine says so in its own words on "
-      + "the Newton side, calling it the phase proxy "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3618-3621). So the state "
-      + "handed to the first consumer of a tear is an assumption about three "
-      + "quantities carrying a fourth along for the ride, and only at "
+    title: "The tear carries a flow, a composition, a temperature and a "
+      + "pressure — and not the phase split",
+    body: "The pack and unpack move exactly those four things "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:1787-1805 and "
+      + "src/unitOperations/flowsheet/Flowsheet.cpp:1814-1856). The pressure "
+      + "has been a tear variable since DEV.md 4c C186 (5) — the engine's "
+      + "comment at Flowsheet.cpp:1797 says so in capitals — because a loop "
+      + "whose units lower the pressure has no steady state unless the "
+      + "pressure that comes back is the one handed in. The phase split is "
+      + "NOT torn: the vapour fraction sitting on the torn stream is whatever "
+      + "the previous sweep left there — the engine says so in its own words "
+      + "on the Newton side, calling it the phase proxy "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3710-3711). So the state "
+      + "handed to the first consumer of a tear is an assumption about four "
+      + "quantities carrying a fifth along for the ride, and only at "
       + "convergence, when the assumption and its image agree, is it a state "
       + "the whole plant agrees on. It is worth knowing which of a stream's "
       + "numbers the iteration is actually chasing.",
@@ -509,7 +542,8 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
     title: "One tear, two variables — a plant has more of both",
     body: "The toy has a single cut with two coordinates. A real flowsheet "
       + "may declare several tears at once, and each contributes its own "
-      + "flow, its own mole fractions and its own temperature to one vector: "
+      + "flow, its own mole fractions, its own temperature and its own "
+      + "pressure to one vector: "
       + "the evaporator case in the corpus tears two streams. Nothing about "
       + "the method changes — the recursion is still one scalar problem per "
       + "entry — but the vector is longer and the unscaled norm of step 8 "

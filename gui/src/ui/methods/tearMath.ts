@@ -21,7 +21,8 @@
   and never topologically sorts them, and
   `Flowsheet::validateSequentialPlan`
   (src/unitOperations/flowsheet/Flowsheet.cpp:4765) validates that order
-  against the declared tears before any state work.  It DETECTS every material
+  against the declared tears after 0/ is seeded and before any unit is solved
+  (called at src/unitOperations/flowsheet/Flowsheet.cpp:2586).  It DETECTS every material
   cycle, names the chain it found, and refuses SEVEN ways by name — MISSING
   TEAR, INVALID ORDER, FORWARD TEAR, OFF-CYCLE TEAR, INLET TEAR, UNKNOWN TEAR,
   UNCONSUMED TEAR (src/unitOperations/flowsheet/Flowsheet.cpp:4856-4973) — and
@@ -273,7 +274,10 @@ export interface PlanVerdict {
    *  recycle, so the tears above are a complete and admissible plan. */
   valid: boolean;
   /** Tear VARIABLES this plan costs, per solver.  Wegstein packs
-   *  (F, z_1..z_Nc, T) per torn stream and Newton packs (F_1..F_Nc, T). */
+   *  (F, z_1..z_Nc, T, P) per torn stream
+   *  (src/unitOperations/flowsheet/Flowsheet.cpp:1787-1805) and Newton packs
+   *  (F_1..F_Nc, T, P) (src/unitOperations/flowsheet/Flowsheet.cpp:3522-3531):
+   *  the pressure has been a tear variable since DEV.md 4c C186 (5). */
   variablesWegstein: number;
   variablesNewton: number;
   /** Sweeps ONE Newton step costs to build its central-difference Jacobian:
@@ -314,11 +318,13 @@ export function judgePlan(
   }
   const tears = backward.filter((b) => b.onCycle).map((b) => b.name);
   const orderMistakes = backward.filter((b) => !b.onCycle);
-  const varsNewton = tears.length * (g.nComponents + 1);
+  //  Per tear: Newton N_c component flows + T + P; Wegstein F + N_c
+  //  fractions + T + P (the pressure joined both with C186 (5)).
+  const varsNewton = tears.length * (g.nComponents + 2);
   return {
     backward, tears, orderMistakes,
     valid: orderMistakes.length === 0,
-    variablesWegstein: tears.length * (g.nComponents + 2),
+    variablesWegstein: tears.length * (g.nComponents + 3),
     variablesNewton: varsNewton,
     sweepsPerNewtonStep: 2 * varsNewton,
   };
