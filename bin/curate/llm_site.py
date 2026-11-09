@@ -14,7 +14,7 @@ one-sentence summary, then links with a line each.
 DERIVED, NEVER HAND-KEPT.  The files served are the files that exist:
     docs/ai/start-here.md       -> /llm/start-here.md         (THE entry: routes every task)
     docs/ai/capabilities.md     -> /llm/capabilities.md       ("does Choupo do X?")
-    docs/ai/prompts.md          -> /llm/prompts.md            (the three student prompts, C252)
+    docs/ai/prompts.md          -> /llm/prompts.md            (the ONE student prompt, C257)
     docs/ai/brief.md            -> /llm/brief.md              ("design a process")
     docs/ai/packs/*.md          -> /llm/packs/<name>.md
     docs/ai/*.md (the rest)     -> /llm/reference/<name>.md   (the long references)
