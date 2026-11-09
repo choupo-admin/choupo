@@ -412,9 +412,9 @@ t_\mathrm{exp} &= t_\mathrm{f} + 20\ \text{years} &&\text{(end of the term)}\\
   //  copy), on the EPO's Unitary Patent and UPC pages, or in the court's
   //  Presidium decision of 17 April 2023; the rows are in IP_SOURCES.  LEFT
   //  OUT ON PURPOSE: the seats of the central division and its sections
-  //  (Art. 7(2) as published names Paris, London and Munich; the London
-  //  section never opened and the distribution was later amended, which
-  //  this page did not read in an official text), the end date of the
+  //  (Art. 7(2) as published in 2013 names Paris, London and Munich; the
+  //  EPO's UPC page of August 2024 names Paris and Munich only; the act that
+  //  changed it was not read, so no seat is named), the end date of the
   //  transitional period (it is "seven years after" the entry into force and
   //  may be prolonged; no date is computed), and any figure on the court's
   //  caseload.
@@ -1524,9 +1524,10 @@ export const IP_SOURCES: readonly IpSource[] = [
     url: "https://www.unifiedpatentcourt.org/sites/default/files/upc-agreement.pdf",
     note: "Read 2026-11-09 in the Official Journal text as the court "
       + "publishes it; EUR-Lex refused automated access.  The text is the "
-      + "Agreement as published in 2013: Art. 7(2) on the central division's "
-      + "seat and sections, and its Annex II, were later overtaken, so the "
-      + "page names no seat of the central division" },
+      + "Agreement as published in 2013.  Its Art. 7(2) names Paris, London "
+      + "and Munich for the central division, where the EPO's UPC page "
+      + "(August 2024) names Paris and Munich; the act that changed it was "
+      + "not read, so the page names no seat of the central division" },
   { short: "Regulation 1257/2012", cite: "Regulation (EU) No 1257/2012 "
       + "implementing enhanced cooperation in the area of the creation of "
       + "unitary patent protection",
