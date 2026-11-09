@@ -27,5 +27,5 @@ For a property, a component or a pair, read https://www.choupo.org/llm/reference
 
 ```text
 My task: <what I want, in plain words: the product, the route, the numbers I have>.
-Work from the contract you learned. First write the three decisions you had to take and why. Then give me the whole case folder as a .zip to download, every value with its unit and its source, and one short note. Only if you cannot create a file, give each file as its own block headed `=== FILE: <path> ===` (path inside the case folder). If a datum is missing, stop and ask me.
+Work from the contract you learned. First write the three decisions you had to take and why. Then give me the whole case folder as a .zip to download, every value with its unit and its source, and one short note. Only if you cannot create a file, give each file as its own block headed `=== FILE: <path> ===` (path inside the case folder). If a datum is missing, stop and ask me. If you could not run the case, say so and name the step I take after opening it (File, Complete 0/, then Run).
 ```
