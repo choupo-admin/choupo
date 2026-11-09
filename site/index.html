@@ -244,6 +244,12 @@
   .commands { margin: 0; border: 1px solid var(--line); padding: 24px; overflow: auto; color: #d8eee8; background: var(--night); font: 13px/1.8 "JetBrains Mono", Consolas, monospace; }
   .commands .comment { color: #85968f; }
 
+  .prompt-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 22px; }
+  .prompt-card { border: 1px solid var(--line); padding: 18px 20px; background: var(--white); }
+  .prompt-card h3 { margin: 0 0 10px; font-size: 18px; }
+  .prompt-text { margin: 0 0 12px; padding: 14px 16px; white-space: pre-wrap; overflow-wrap: anywhere; color: #d8eee8; background: var(--night); font: 13px/1.6 "JetBrains Mono", Consolas, monospace; }
+  .prompt-note { margin: 10px 0 0; color: var(--muted); font-size: 14px; max-width: 900px; }
+
   .resource-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
   .resource { border-top: 4px solid var(--teal); padding: 22px 0 0; }
   .resource:nth-child(2) { border-color: var(--yellow); }
@@ -644,6 +650,26 @@ energy balance      <span class="hot">reported</span></pre>
       <div><p class="eyebrow">No installation required</p><h2>Open a real case and watch the solver work.</h2><p>The browser application executes the C++ engine locally through WebAssembly. Choose a tutorial, inspect its files, run it and read the results.</p></div>
       <a class="button" href="/app/" target="choupo-app" rel="noopener">Launch Choupo</a>
     </div>
+  </section>
+
+  <!-- WORK WITH YOUR AI ASSISTANT (DEV.md 4c C252).  The text between the
+       markers is INJECTED at build time by bin/buildSite from docs/ai/prompts.md
+       (bin/curate/prompts_home.py): never edit it here, and a build that cannot
+       find the markers or read the file FAILS. -->
+  <section class="section" id="assistant" style="background:var(--white)">
+<!--PROMPTS:BEGIN--><!--PROMPTS:END-->
+    <script>
+      (function () {
+        document.querySelectorAll(".prompt-copy").forEach(function (b) {
+          b.addEventListener("click", function () {
+            var el = document.getElementById(b.getAttribute("data-copy"));
+            if (!el) return;
+            var done = function () { var o = b.textContent; b.textContent = "Copied"; setTimeout(function () { b.textContent = o; }, 2000); };
+            if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(el.textContent).then(done, function () {});
+          });
+        });
+      })();
+    </script>
   </section>
 
   <section class="section" id="run">

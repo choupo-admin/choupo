@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+"""The ONE reader of docs/ai/prompts.md, and the renderer of its views.
+
+    bin/curate/prompts_home.py                 write gui/src/help/prompts.generated.ts
+    bin/curate/prompts_home.py --check         exit 1 when that file is stale
+    bin/curate/prompts_home.py --landing       print the landing section's HTML
+
+Design record: DEV.md 4c C252.  The three student prompts live in ONE file,
+docs/ai/prompts.md.  Three views are DERIVED from it and never hand-copied:
+/llm/prompts.md (bin/curate/llm_site.py copies the file), the landing section
+"Work with your AI assistant" (bin/buildSite injects `landing_html()`), and the
+app's Help pop-out (gui/src/help/prompts.generated.ts, written here).  Every
+reader of the file goes through `parse()`, so the format has one definition:
+
+    # title
+    <intro lines>
+    ## A. <heading>      then ONE ```text fence (the prompt), then optional notes
+    ## B. ...
+    ## C. ...
+
+Pure standard library.  Exit 0 = ok; 1 = stale / malformed."""
+import html
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+SOURCE = ROOT / "docs" / "ai" / "prompts.md"
+OUT_TS = Path("gui/src/help/prompts.generated.ts")
+
+
+def parse(text):
+    """-> {"title", "intro": [str], "sections": [{"id","heading","prompt","notes":[str]}]}.
+    Raises ValueError, by name, on a file that is not three fenced prompts A, B, C."""
+    parts = re.split(r"(?m)^## ", text)
+    head = parts[0]
+    m = re.match(r"#\s+(.+)", head)
+    if not m:
+        raise ValueError("prompts.md has no '# title' first line")
+    intro = [l.strip() for l in head.split("\n")[1:] if l.strip()]
+    sections = []
+    for sec in parts[1:]:
+        lines = sec.split("\n")
+        heading = lines[0].strip()
+        body = "\n".join(lines[1:])
+        fences = re.findall(r"```text\n(.*?)```", body, re.S)
+        if len(fences) != 1:
+            raise ValueError("section '%s' holds %d ```text fences, not exactly one"
+                             % (heading, len(fences)))
+        notes = [l.strip() for l in re.sub(r"```text\n.*?```", "", body, flags=re.S).split("\n")
+                 if l.strip()]
+        sections.append({"id": heading[:1], "heading": heading,
+                         "prompt": fences[0].rstrip("\n"), "notes": notes})
+    if [s["id"] for s in sections] != ["A", "B", "C"]:
+        raise ValueError("prompts.md must hold exactly the sections A, B, C in order; found %s"
+                         % [s["id"] for s in sections])
+    return {"title": m.group(1).strip(), "intro": intro, "sections": sections}
+
+
+def load(path=SOURCE):
+    return parse(Path(path).read_text(encoding="utf-8"))
+
+
+def inline(s):
+    """HTML-escape, then render `code` spans."""
+    return re.sub(r"`([^`]+)`", r"<code>\1</code>", html.escape(s, quote=True))
+
+
+def landing_html(doc=None):
+    """The inner HTML of the landing section: head, instructions, one block per prompt."""
+    doc = doc or load()
+    out = ['<div class="wrap">',
+           '<div class="section-head"><p class="eyebrow">AI assistant</p>',
+           '<h2>Work with your AI assistant.</h2>',
+           '<p class="lede">%s</p></div>' % inline(doc["intro"][0]),
+           ]
+    for extra in doc["intro"][1:]:
+        out.append('<p class="prompt-note">%s</p>' % inline(extra))
+    out.append('<div class="prompt-list">')
+    for s in doc["sections"]:
+        out.append('<div class="prompt-card"><h3>%s</h3>' % inline(s["heading"]))
+        out.append('<pre class="prompt-text" id="prompt%s">%s</pre>'
+                   % (s["id"], html.escape(s["prompt"], quote=False)))
+        out.append('<button type="button" class="button light prompt-copy" '
+                   'data-copy="prompt%s">Copy prompt %s</button>' % (s["id"], s["id"]))
+        for n in s["notes"]:
+            out.append('<p class="prompt-note">%s</p>' % inline(n))
+        out.append('</div>')
+    out.append('</div></div>')
+    return "\n".join(out)
+
+
+BEGIN, END = "<!--PROMPTS:BEGIN-->", "<!--PROMPTS:END-->"
+
+
+def inject(page_text, doc=None):
+    """The landing's HTML with the section between the markers (re)written from
+    the home.  Refuses, by name, a page without exactly one marker pair -- the
+    caller (bin/buildSite) must fail the build, never publish an empty section."""
+    if page_text.count(BEGIN) != 1 or page_text.count(END) != 1:
+        raise ValueError("prompts markers missing or duplicated in the landing")
+    i, j = page_text.index(BEGIN) + len(BEGIN), page_text.index(END)
+    return page_text[:i] + "\n" + landing_html(doc) + "\n" + page_text[j:]
+
+
+def landing_prompts(page_text):
+    """The three prompt texts a built landing carries (read back, unescaped)."""
+    return [html.unescape(m) for m in re.findall(
+        r'<pre class="prompt-text" id="prompt[ABC]">(.*?)</pre>', page_text, re.S)]
+
+
+def render_ts(doc):
+    return ("//  GENERATED by bin/curate/prompts_home.py from docs/ai/prompts.md.  DO NOT\n"
+            "//  EDIT: edit docs/ai/prompts.md (the one home of the student prompts, DEV.md\n"
+            "//  4c C252), then regenerate.  Read by the Help menu's prompts pop-out.\n\n"
+            "export const PROMPTS = %s as const;\n" % json.dumps(doc, indent=2, ensure_ascii=False))
+
+
+def main(argv):
+    try:
+        txt = render_ts(load())
+    except (ValueError, OSError) as e:
+        print("prompts_home: ERROR: %s" % e)
+        return 1
+    if "--landing" in argv:
+        print(landing_html())
+        return 0
+    dest = ROOT / OUT_TS
+    if "--check" in argv:
+        if not dest.is_file() or dest.read_text(encoding="utf-8") != txt:
+            print("prompts_home: STALE: %s differs from docs/ai/prompts.md -- run "
+                  "bin/curate/prompts_home.py" % OUT_TS)
+            return 1
+        print("prompts_home: OK: %s is fresh" % OUT_TS)
+        return 0
+    dest.write_text(txt, encoding="utf-8")
+    print("prompts_home: wrote %s" % OUT_TS)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
