@@ -87,11 +87,21 @@ RULES = [
     (r"\bstd::(runtime_error|logic_error|invalid_argument)\b", "stdexcept"),
     (r"\bstd::numeric_limits\b",                             "limits"),
     (r"\bstd::(setprecision|setw|setfill)\b",                "iomanip"),
-    (r"\bstd::(sort|find_if|min_element|max_element|accumulate)\b", None),
+    (r"\bstd::(sort|stable_sort|partial_sort|nth_element|find|find_if|find_if_not|count_if|remove|remove_if|unique|reverse|rotate|fill|fill_n|transform|replace|replace_if|any_of|all_of|none_of|lower_bound|upper_bound|binary_search|equal_range|clamp|minmax|min_element|max_element|minmax_element|accumulate)\s*\(", None),
 ]
 #  <algorithm> vs <numeric>: accumulate lives in <numeric>, the rest in
 #  <algorithm>, so that last rule needs both spellings accepted.
-ALGO = {"sort", "find_if", "min_element", "max_element"}
+#  Widened 2026-11-09: the first CI run on GitHub's runner (g++ 15) refused
+#  src/core/Dictionary.cpp for `std::remove` without <algorithm> (the local
+#  g++ 13 pulled it in transitively); the old four-name list had let it and
+#  two siblings (std::clamp, std::fill) through.  `std::remove(` with the
+#  parenthesis is the <algorithm> function, never <cstdio>'s ::remove.
+ALGO = {"sort", "stable_sort", "partial_sort", "nth_element", "find", "find_if",
+        "find_if_not", "count_if", "remove", "remove_if", "unique", "reverse",
+        "rotate", "fill", "fill_n", "transform", "replace", "replace_if",
+        "any_of", "all_of", "none_of", "lower_bound", "upper_bound",
+        "binary_search", "equal_range", "clamp", "minmax", "min_element",
+        "max_element", "minmax_element"}
 
 fails = []
 

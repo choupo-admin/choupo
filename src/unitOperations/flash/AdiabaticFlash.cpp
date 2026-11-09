@@ -31,6 +31,7 @@ License
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include "solver/NewtonRaphson.H"
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>

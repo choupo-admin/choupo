@@ -32,6 +32,7 @@ License
 
 #include "Units.H"
 
+#include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <fstream>

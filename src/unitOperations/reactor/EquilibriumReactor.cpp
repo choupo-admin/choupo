@@ -36,6 +36,7 @@ License
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
