@@ -56,7 +56,7 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description   "Spray dryer REA (model chen): Reaction Engineering Approach kinetics -- smooth rate, no critical-moisture break";
+description   "Spray dryer REA (model chen): Reaction Engineering Approach kinetics -- smooth rate, no critical-moisture break -- in a SHORT chamber with a coarse spray, where the powder leaves before equilibrium and the kinetics decide its moisture (sprayDryer01's chamber dries any kinetics to the isotherm; README)";
 
 verbosity     3;
 

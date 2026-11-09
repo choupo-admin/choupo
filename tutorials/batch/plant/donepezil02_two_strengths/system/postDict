@@ -622,6 +622,11 @@ economics
     constructionPeriod  1;
     discountRate        0.10;        // ASSUMED
     taxRate             0.21;        // ASSUMED (a corporate rate, no country chosen)
+    //  taxOnLoss credit;  -- the default, left absent: every operating year
+    //  is a loss and its tax is a CREDIT (the loss set against the owner's
+    //  other taxable profit, a group's reading); the run announces the
+    //  total.  `taxOnLoss none;` is the stand-alone reading (no credit,
+    //  no carry-forward).  DEV.md 4c C269 decision (2).
     depreciation        straightLine;
     depreciableLife     7;           // yr -- ASSUMED
     salvageFraction     0.0;

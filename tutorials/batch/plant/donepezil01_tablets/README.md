@@ -79,14 +79,15 @@ flowsheet basis rate (each `0/` file says which).  **If you change the rate
 or the formula, every `0/<feed>` file changes with it — they do not follow
 each other.**
 
-**The 5 mg tablet is NOT run.**  This case plans ONE product.  The two
-strengths would share both trains in campaigns, with a changeover clean
-between products; that plan needs a **multiproduct batch plan** (product
-campaigns and changeover cleaning in `batchPlan`), which is being built
-separately (DEV.md 4c C110, A2).  Until it lands, a group can run the 5 mg
-tablet as its own copy of this case (halve every core feed at the same
-tablet count, white coat: drop `feOxFeed`) and add the two plans' hours by
-hand — and say that it did.
+**The 5 mg tablet is NOT run here.**  This case plans ONE product.  The two
+strengths share both trains in campaigns, with a changeover clean between
+products: that **multiproduct batch plan** (product campaigns and changeover
+cleaning in `batchPlan`, DEV.md 4c C110 A2 and C249) ships beside this case
+as `donepezil02_two_strengths` — open it for the year divided between the
+10 mg and the 5 mg and for what a changeover costs.  A group may still run
+the 5 mg tablet as its own copy of this case (halve every core feed at the
+same tablet count, white coat: drop `feOxFeed`) and add the two plans' hours
+by hand — and say that it did.
 
 ## 2a. The batch plan — how the plant actually runs (DEV.md 4c C99)
 
@@ -138,7 +139,7 @@ FINAL BLEND, TABLETING, COATING, PACKAGING
 
 | Unit(s) | Choupo type | What Choupo COMPUTES |
 |---|---|---|
-| `fluidBedDryer`, `coatingDryer` | `solidDryer` | **physics**: the water the hot air takes off, the outlet temperature (adiabatic, on the package's enthalpy), and the moisture the solid keeps — the maize starch's sorption isotherm at the exhaust air's water activity; which of isotherm / heat / saturation binds is announced |
+| `fluidBedDryer`, `coatingDryer` | `solidDryer` | **physics**: the water the hot air takes off, the outlet temperature (adiabatic, on the package's enthalpy), and the moisture the solid keeps — the maize starch's sorption isotherm at the INLET air's water activity (a batch dried to its end point ends in equilibrium with the air it still contacts when evaporation has stopped: the fresh air, which the exhaust tends to); which of isotherm / heat / saturation binds is announced |
 | `fbdAirHeater`, `coatingAirHeater` | `phaseChanger` | **physics**: the duties, on the package's enthalpy |
 | `binderPrep`, `coatingSuspensionPrep`, `finalBlender` | `mixer` at a declared 25 °C | mixing, and the small duty that temperature implies |
 | `granulator`, `coatingPan` | `mixer` | **mass and energy balance only** |
@@ -182,7 +183,7 @@ Mass balance 100.000 %; first law closes (residual below 0.0001 kW).
 
 | | |
 |---|---|
-| Fluid-bed dryer | air in 333.15 K, exhaust **316.7 K** at a_w 0.25; 46.6 kg/h of the granulation liquid's 48.0 kg/h evaporated; the granules keep 1.32 kg/h, **0.65 %** of their mass (0.037 kg per kg of starch, the isotherm's basis) — `isotherm-reached` |
+| Fluid-bed dryer | air in 333.15 K, exhaust **316.7 K** at a_w 0.25; 46.6 kg/h of the granulation liquid's 48.0 kg/h evaporated; the granules keep 1.32 kg/h, **0.65 %** of their mass (0.037 kg per kg of starch, the isotherm's basis, read at the INLET air's a_w 0.06 — a batch dried to its end point ends in equilibrium with the fresh air, not with the exhaust it has stopped loading; at the exhaust's a_w 0.25 the starch would hold 0.088) — `isotherm-reached` |
 | Coating dryer | exhaust **317.6 K**; all 43.9 kg/h of the coat's water evaporated; the tablets keep 1.31 kg/h (0.63 %) |
 | Air heaters | 72.1 kW each (LP steam), 21.6 m2 each |
 | Coated tablets | 206.88 kg/h = 712 800 tablets/h at the flowsheet basis (**0.2902 g** each) |
@@ -316,6 +317,16 @@ section 2a), find the real price and the market share, and decide whether
 those continuous-plant factors describe a drug-product plant.  None of it is
 decision-grade until the quotes, the staffing and the prices are yours.
 
+**Which tax reading this NPV is.**  Every operating year of this plant is a
+loss, and the cash flow CREDITS tax in each of them (`taxOnLoss credit`,
+the default of the `economics` block): tau x the loss, 556 kEUR a year for
+seven years, 2.74 MEUR undiscounted (2.08 MEUR of the NPV) — which assumes
+the owner has OTHER taxable profit to set the loss against, as a group with
+a consolidated return has.  The run announces it (`[assumed] economics`
+in the caveat block).  A stand-alone project has no such profit: declare
+`taxOnLoss none;` in `system/postDict` and the loss years pay no tax and
+earn no credit (no loss carry-forward is modelled), NPV −20.8 MEUR.
+
 ## 7. Plant layout
 
 `system/layoutDict` places the sized items on a plot plan and declares the
@@ -345,8 +356,14 @@ grammar in `docs/ai/case-layout.md`), 33 rooms on two floors in a
 | Technical floor | AHU plant (both air heaters), utilities (purified water, compressed air, dust collection), electrical | CNC | +5 |
 
 Grades: an oral-solid-dose suite is not sterile; the product-exposed rooms
-are grade D **by analogy** with EU GMP Annex 1 and the rest CNC — the
-case's statement, to replace with the company's risk assessment.
+are grade D **by analogy** with EU GMP Annex 1 and the rest CNC — **this
+case's own assumption**, not a value read from a standard, to replace with
+the company's risk assessment.  The sibling plant `apalutamide01_tablets`
+takes the other defensible position for the same kind of product, every room
+CNC (controlled, not classified), and argues it from the non-sterile GMP
+chapters (its README section 7); the two cases differ on purpose, so that a
+group sees that the classification of an OSD suite is a decision the
+company makes and defends, not a number it looks up.
 **Containment** is declared on every room where the API is an open powder,
 **as a precaution**: the exposure band of donepezil hydrochloride is not
 known to this case — confirm it from the supplier's safety data sheet

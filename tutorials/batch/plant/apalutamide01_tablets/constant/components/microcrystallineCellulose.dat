@@ -57,7 +57,11 @@ solidHeatCapacity
 
 //  The SORPTION ISOTHERM (GAB) -- the moisture the coated tablet keeps after
 //  the coating dryer (system/flowsheetDict, coatingDryer) is computed as water
-//  sorbed by this cellulose at the exhaust air's water activity.  Cellulose is
+//  sorbed by this cellulose at the INLET air's water activity: a batch of
+//  tablets dried to its end point ends in equilibrium with the air it still
+//  contacts when evaporation has stopped, the fresh air (the exhaust tends to
+//  it), so the `solidDryer` reads the inlet (DEV.md 4c C269 decision (1)).
+//  Cellulose is
 //  the hygroscopic bulk of the core; the other solids ride through dry.  The
 //  three parameters are AUTHOR-SET, of the order reported for cellulose
 //  powders, and taken from no source read: a group replaces them with a

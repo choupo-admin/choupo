@@ -634,17 +634,39 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
             throw std::runtime_error(who + ": `shift { length ...; }` has no `length`.");
         const scalar Ls = sh->lookupScalar("length", Dims::time) / 3600.0;   // h
         d.set("shiftLength", Ls, "h");
-        scalar run = 0.0;
-        if (kind == "batchVolume") run = evals[bind].v->cycleTime;   // the whole cycle of a lot
-        else                       run = d.values.at("runTime_atRating");
-        d.set("lotTime_forShift", run, "h");
-        if (run > Ls)
+        //  ONE QUANTITY FOR EVERY KIND, AND EVERY PRODUCT (2026-11-09, DEV.md
+        //  4c C269, the walk's S13).  The question the `shift` block asks --
+        //  "a lot that cannot be finished inside the shift it starts in spans
+        //  shifts" -- is about the time the lot HOLDS the machine, and the
+        //  plan's cycle of this stage (charge + process + discharge + clean)
+        //  is that time, for a vessel and for a rated machine alike.  Until
+        //  now a vessel was compared on its cycle and a rated machine on its
+        //  run at the nameplate rating, so donepezil's packaging line showed
+        //  6.3 h against an 8 h shift while the plan held it 11 h per lot;
+        //  and only the binding product was compared, so donepezil02's 5 mg
+        //  lot (14 h on the press in the plan) was never announced.  The run
+        //  at the rating stays published (`runTime_atRating`) as the
+        //  machine's own need inside that cycle.
+        auto lotTimeOf = [&](const Eval& E) { return E.v->cycleTime; };
+        d.set("lotTime_forShift", lotTimeOf(evals[bind]), "h");
+        for (const auto& E : evals)
         {
-            const std::string msg = "a lot needs " + fmt(run) + " h ("
-                + (kind == "batchVolume" ? "the plan's cycle" : "at the rating")
-                + ") against a shift of " + fmt(Ls) + " h: the lot spans shifts";
-            std::cerr << "[sizing] " << who << ": " << msg << "\n";
-            AdvisoryLog::instance().add("sizing", "warning", who, msg);
+            const scalar lot = lotTimeOf(E);
+            const bool   multi = !E.v->product.empty();
+            if (multi) d.set("lotTime_forShift_" + E.v->product, lot, "h");
+            if (lot > Ls)
+            {
+                std::string msg = "a lot" + (multi ? " of product '" + E.v->product + "'"
+                                                   : std::string())
+                    + " holds the machine " + fmt(lot) + " h (the plan's cycle of"
+                      " stage '" + stage->name + "': charge + process + discharge"
+                      " + clean";
+                if (kind != "batchVolume")
+                    msg += "; it runs " + fmt(E.run) + " h at the rating";
+                msg += ") against a shift of " + fmt(Ls) + " h: the lot spans shifts";
+                std::cerr << "[sizing] " << who << ": " << msg << "\n";
+                AdvisoryLog::instance().add("sizing", "warning", who, msg);
+            }
         }
     }
 

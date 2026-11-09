@@ -28,8 +28,11 @@ License
 
 #include "SprayDryerSize.H"
 #include "MaterialLimits.H"
+#include "core/Advisory.H"
 
 #include <cmath>
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
 
 namespace Choupo {
@@ -110,6 +113,40 @@ std::vector<EquipmentSizing> SprayDryerSize::size(const std::string& unitName,
             d.set("design_residence_s",       res_req,        "s");
             d.set("design_chamberDiameter_m", Dch * dimScale, "m");
             d.set("design_chamberHeight_m",   Lch * dimScale, "m");
+            //  WHAT THIS INVERSION DOES NOT CHECK, SAID IN THE RESULT
+            //  (2026-11-09, DEV.md 4c C269 decision (4)).  The chamber is
+            //  scaled on the residence time alone, aspect ratio kept.  A
+            //  rotary wheel throws its droplets RADIALLY, and the chamber's
+            //  diameter is governed by that throw against the wall (a wet
+            //  wall is the classic spray-dryer failure), which this sizer
+            //  has no rule for: sprayDryer07 returned a 0.32 m chamber for a
+            //  0.1 m wheel at 39 750 rpm.  No clearance correlation is typed
+            //  from memory; the caveat names what was not checked.
+            {
+                std::ostringstream m;
+                m << std::fixed << std::setprecision(3)
+                  << "the design chamber (D = " << (Dch * dimScale) << " m, H = "
+                  << (Lch * dimScale) << " m) is scaled on the residence time"
+                     " alone (" << sf << " x the constant-rate drying time, aspect"
+                     " ratio kept).  NOT checked: the droplets' radial throw"
+                     " against the chamber wall";
+                if (N_rated > 0.0)
+                {
+                    m << " -- for this ROTARY atomiser (wheel "
+                      << std::setprecision(0) << N_rated << " rpm rated";
+                    if (d.values.count("design_wheelSpeed_rpm"))
+                        m << ", " << d.values.at("design_wheelSpeed_rpm")
+                          << " rpm designed";
+                    m << ") the diameter is governed by that throw, not by the"
+                         " residence time, and a chamber scaled on residence"
+                         " alone may be too narrow for it (a wet wall)";
+                }
+                m << ".  Check the wall clearance against the atomiser"
+                     " vendor's spray data or a sourced correlation before"
+                     " taking this geometry.";
+                AdvisoryLog::instance().add("sizing", "warning",
+                    "sprayDryer '" + d.itemId() + "'", m.str());
+            }
         }
     }
     //  ONE ITEM: this unit realises a single piece of equipment, so the

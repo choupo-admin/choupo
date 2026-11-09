@@ -815,6 +815,12 @@ struct EconomicsSummary
     scalar                    simplePayback = 0.0;   // yr (NaN if never)
     scalar                    discountRate  = 0.0;
     scalar                    taxRate       = 0.0;
+    //  TAX ON A LOSS (C269): the declared word (`credit` | `none`), the
+    //  operating years with a negative taxable income and the credit those
+    //  years earned under `credit` (0 under `none`), undiscounted.
+    std::string               taxOnLoss     = "credit";
+    int                       lossYears     = 0;
+    scalar                    taxCreditOnLoss = 0.0;
     int                       projectLife   = 0;
     int                       estimateClass = 4;
     scalar                    accLo         = -30.0; // AACE band low  (%)

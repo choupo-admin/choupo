@@ -17,7 +17,24 @@
   dryingAir:   50 kmol/h of hot air (real air (N2/O2/Ar)) at 200 °C, 1 bar.
                Dry air (no inlet humidity) for a clean wet-bulb demo.
 
-  The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
+  The dryer atomises the feed with a 0.1 m disc spinning at 5 000 rpm into a
+  SHORT chamber (1.0 m across, 0.5 m tall).
+
+  WHY THIS HARDWARE, AND NOT sprayDryer01's (DEV.md 4c C269 decision (3)).
+  Until 2026-11-09 this case ran sprayDryer01's dryer (20 000 rpm, a 5 m
+  chamber) and every headline number equalled sprayDryer01's to the last
+  digit.  Not because the REA was ignored -- `model chen` integrates its own
+  rate -- but because a 60 um droplet finishes its constant-rate drying in
+  0.08 s and the chamber holds it 7.1 s: ANY kinetic model reaches the
+  isotherm's X_eq long before the outlet, and the outlet only reports X_eq.
+  A drying kinetics decides the product only where the residence time is
+  comparable to the drying time.  So here the wheel is slower (a coarser
+  spray, ~139 um, 0.34 s of constant-rate drying) and the chamber shorter
+  (0.46 s of residence): the powder leaves BEFORE it reaches equilibrium,
+  and the kinetics decide how wet it is.  Both changes are HARDWARE, author-
+  set to make the point; the drying data (Xc, activationDecay in
+  constant/dryingKinetics, the GAB isotherm on sucrose) are unchanged.
+  Compare: README.md.
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
@@ -34,9 +51,9 @@ units
         operation
         {
             wheelDiameter    0.1 m;             // 10 cm spinning disc (HARDWARE)
-            wheelSpeed       20000;             // rpm
+            wheelSpeed       5000;              // rpm -- a coarse spray (sprayDryer01: 20 000)
             chamberDiameter  1.0 m;             // drying chamber (HARDWARE)
-            chamberHeight    5.0 m;             // -> residence time is a RESULT (L / v_particle)
+            chamberHeight    0.5 m;             // SHORT on purpose: residence ~ drying time (sprayDryer01: 5 m)
             // flow co;  (default: co-current gas + droplets)
             // liquidViscosity / surfaceTension default to water.
         }

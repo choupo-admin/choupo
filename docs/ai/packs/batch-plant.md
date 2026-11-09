@@ -469,6 +469,8 @@ economics
     constructionPeriod  1;
     discountRate        0.10;
     taxRate             0.21;
+    // taxOnLoss credit;   -- the default: a loss year's tax is a CREDIT (a group's
+    //                        reading, announced when it bites); `none` = stand-alone
     depreciation        straightLine;
     depreciableLife     7;
     salvageFraction     0.0;

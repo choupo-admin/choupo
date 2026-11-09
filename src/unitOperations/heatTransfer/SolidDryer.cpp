@@ -460,6 +460,11 @@ int SolidDryer::solve(const DictPtr& dict,
                   << "  Hot air IN: T = " << std::fixed << std::setprecision(1) << T_air
                   << " K, " << std::setprecision(1) << (F_air*3600.0) << " kmol/h, a_w = "
                   << std::setprecision(3) << aw << "  (RH " << std::setprecision(1) << (100.0*aw) << "%)\n"
+                  << "  The isotherm is read at the INLET air's a_w (the KPI `water_activity` is the\n"
+                     "  inlet air's): a solid finished by the fresh air -- a batch dried to its end\n"
+                     "  point, where the exhaust tends to the inlet air, or a through-circulation bed\n"
+                     "  the fresh air meets last -- ends in equilibrium with the INLET air.  (A\n"
+                     "  well-mixed co-current dryer discharges with its exhaust: sprayDryer reads that.)\n"
                   << "  X_in = " << std::setprecision(3) << X_in << "  ->  X_eq = " << X_eq
                   << "  ->  X_final = " << X_final << " kg/kg  ("
                   << std::setprecision(2) << (100.0*X_final/(1.0+X_final)) << " wt% wet)\n"

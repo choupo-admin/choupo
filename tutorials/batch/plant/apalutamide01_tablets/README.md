@@ -17,7 +17,7 @@ runCase tutorials/batch/plant/apalutamide01_tablets
 The case is sealed: everything it reads is in its own `constant/`.
 
 **Its design basis is a dossier**, not a guess:
-[`docs/design/apalutamide-design-basis-dossier.md`](../../../../docs/design/apalutamide-design-basis-dossier.md)
+[`docs/design/apalutamide-design-basis-dossier.md`](https://github.com/choupo-admin/choupo/blob/main/docs/design/apalutamide-design-basis-dossier.md)
 ("the dossier" below) — the EMA and FDA assessment reports, the label, the
 originator's patent, the originator's published sales, generic-price
 evidence and a red-team review, every number with its source, page and a
@@ -232,7 +232,7 @@ DRY GRANULATION, TABLETING, COATING, PACKAGING
 | `blower`, `gasHeater`, `exhaustCooler`, `solventCondenser`, `airHeater` | `compressor`, `phaseChanger` | **physics**: duties and the blower's work, on the package's enthalpy |
 | `condensatePot` | `isothermalFlash` | **physics**: how much acetone stays in the nitrogen at -10 C (Raoult) — the recovery |
 | `coatingDryer` | `solidDryer` | **physics**: the water the hot air takes off the coated tablets, the outlet temperature, and the moisture the tablets keep (a sorption isotherm) |
-| `acetoneTank`, `recoveredTank` | `storageTank` | the holdup (inventory) a hold time implies |
+| `acetoneTank`, `recoveredTank` | `storageTank` | the holdup (inventory) a hold time implies: 14 d of acetone is 30.3 m3 of liquid, held at 85 % fill in a 35.6 m3 tank (`V_stored` and `V_R` on its sheet); the plot plan draws the box of an upright cylinder of that volume (3.6 m x 3.6 m), the recovered-acetone tank 16.4 m3 (2.8 m x 2.8 m) |
 | `solutionPrep`, `coatingSuspensionPrep`, `blender` | `mixer` at a declared 25 C | mixing, and the small duty that temperature implies |
 | `rollerCompactor`, `finalBlender`, `coatingPan` | `mixer` | **mass and energy balance only** |
 | `mill`, `screen`, `tabletPress`, `packagingLine` | `splitter` | **mass balance only** (the screen's 15 % fines and the press's 1 % rejects are declared splits) |
@@ -305,6 +305,12 @@ price-erosion curve measured in the US, a market share that is an estimate,
 a capital that is two-thirds placeholders and a crew nobody has staffed: the
 group's job is to replace each of those, and to say which one the NPV is
 most sensitive to (the run prints the price's own sensitivity bar).
+**Which tax reading this NPV is**: `taxOnLoss credit`, the default of the
+`economics` block — a loss year's tax would be a credit, set against the
+owner's other profit.  At 4.0 EUR a tablet no operating year is a loss, so
+the reading does not bite and the run announces nothing; at the 1.0 EUR
+floor it would, and the stand-alone reading (`taxOnLoss none;`, no credit)
+would then give the lower NPV.
 
 ## 6. Sizing, cost and economics — what is in the capital and the labour, and what is not
 
@@ -521,11 +527,16 @@ on it.
 | Waste | return corridor → sink airlock → waste room → outside (west) | CNC | +15, +5, +15 |
 | Technical floor | AHU plant (the coater's air heater), utilities, electrical (an ignition source, at the west end) | CNC | +5 |
 
-Grades: **every room is CNC** (controlled, not classified).  An oral-solid-
-dose suite is not sterile, and EU GMP Annex 1 — the sterile annex, whose
-A–D vocabulary the engine speaks — does not apply to it; calling OSD rooms
-"grade D" invites a reviewer's objection (dossier section 2, red-team item
-10).  What applies, and what the building is argued from: EU GMP Part I
+Grades: **every room is CNC** (controlled, not classified) — **this case's
+own assumption**, argued below, not a value read from a standard.  An
+oral-solid-dose suite is not sterile, and EU GMP Annex 1 — the sterile
+annex, whose A–D vocabulary the engine speaks — does not apply to it;
+calling OSD rooms "grade D" invites a reviewer's objection (dossier
+section 2, red-team item 10).  The sibling plant `donepezil01_tablets`
+takes the other position, grade D by analogy for its product-exposed rooms
+(its README section 7), and says so is its own assumption too: the two
+cases differ on purpose, so that a group sees the classification of an OSD
+suite as a decision the company makes and defends.  What applies, and what the building is argued from: EU GMP Part I
 Chapter 3 (3.6 cross-contamination by design, 3.12 ventilation, 3.13 a
 separate weighing room, 3.14 dust), Chapter 5 (5.18-5.21, the health-based
 exposure limit) and WHO TRS 1010 Annex 8, the HVAC guideline for

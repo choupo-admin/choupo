@@ -134,7 +134,19 @@ std::string portBlock(std::size_t                              i,
     const ProcessStream& s = it->second;
     o << "        T           " << num(s.T)  << " K;\n";
     o << "        P           " << num(s.P)  << " Pa;\n";
-    o << "        F           " << num(s.F)  << " kmol/s;\n";
+    //  THE WHOLE MOLAR FLOW -- fluid PLUS solids -- the convention of the
+    //  result's `streams` block and of the Streams table (ResultEmitter:
+    //  "F = the OVERALL stream material incl. solids").  Until 2026-11-09
+    //  (DEV.md 4c C269, the walk's S5) this wrote the engine's internal
+    //  fluid-only `s.F` beside a `mdot` that carried the solids, so a sheet
+    //  showed driedGranules at 0.073 kmol/h while the Streams table showed
+    //  0.83: two molar flows for one stream on one page.
+    scalar F_overall = s.F;
+    for (std::size_t i = 0; i < s.s.size() && i < thermo.n(); ++i)
+        if (s.s[i] > 0.0) F_overall += s.s[i];
+    o << "        F           " << num(F_overall) << " kmol/s;"
+      << (F_overall != s.F ? "   // fluid + solids, as the Streams table" : "")
+      << "\n";
 
     //  THE WHOLE MASS -- fluid PLUS crystals.  `F_massTotal` (StreamMass.H) is
     //  the one home for this question, and its header says why: `F` and `z`

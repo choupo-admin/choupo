@@ -189,8 +189,8 @@ function golden(unit: string, field: string): number {
 /** The engine's arithmetic, recomputed: the wall and weight
  *  (VesselMechanics.cpp:29-35, E = 1 and 3 mm, the defaults this witness
  *  takes), the vessel pressure factor (Turton.cpp:323-328, on P read as
- *  gauge since DEV.md 4c C86, Turton.cpp:667) and the bare-module cost
- *  (Turton.cpp:721). */
+ *  gauge since DEV.md 4c C86, Turton.cpp:694) and the bare-module cost
+ *  (Turton.cpp:754). */
 function priced(unit: string, m: MaterialRecord, P: number) {
   const D = golden(unit, "values.D"), H = golden(unit, "values.H");
   const t = (P * 1e5 * D) / (2 * m.sigma_y! * 1e6 * 1.0 - 1.2 * P * 1e5) + 0.003;
@@ -339,19 +339,19 @@ describe("materials: the lesson text", () => {
       "VesselMechanics.H:58-60": [`${SRC}sizing/VesselMechanics.H`, 58, 60, /GAUGE/],
       "DesignDefaults.cpp:46": [`${SRC}sizing/DesignDefaults.cpp`, 46, undefined,
         '"corrosionAllow", 0.003, "m",'],
-      "Turton.cpp:719-721": [`${SRC}costing/Turton.cpp`, 719, 721,
+      "Turton.cpp:752-754": [`${SRC}costing/Turton.cpp`, 752, 754,
         /const scalar F_M\s+= \(mat\.F_M > 0\.0\) \? mat\.F_M : 1\.0;[\s\S]*C_BM\s+= Cp_target \* \(c\.B1 \+ c\.B2 \* F_M \* F_P\);/],
       "Turton.cpp:323-328": [`${SRC}costing/Turton.cpp`, 323, 328,
         /denom = 2\.0 \* \(sigma_bar - 0\.6 \* P_gauge_bar\);[\s\S]*std::max\(\(t_w \+ 0\.00315\) \/ 0\.0063, 1\.0\)/],
       "Turton.cpp:328": [`${SRC}costing/Turton.cpp`, 328, undefined,
         "return std::max((t_w + 0.00315) / 0.0063, 1.0);"],
-      "Turton.cpp:667": [`${SRC}costing/Turton.cpp`, 667, undefined,
+      "Turton.cpp:694": [`${SRC}costing/Turton.cpp`, 694, undefined,
         "const scalar P_gauge    = std::max(P_des_bar, 0.0);"],
-      "Turton.cpp:661-667": [`${SRC}costing/Turton.cpp`, 661, 667,
+      "Turton.cpp:688-694": [`${SRC}costing/Turton.cpp`, 688, 694,
         /pressureDesign, which IS gauge[\s\S]*P_gauge\s+= std::max\(P_des_bar, 0\.0\);/],
       "Turton.cpp:80": [`${SRC}costing/Turton.cpp`, 80, undefined, '"V_R"'],
       //  C150 R06: the exchanger F_P above its sourced 140 bar g, announced.
-      "Turton.cpp:706-715": [`${SRC}costing/Turton.cpp`, 706, 715,
+      "Turton.cpp:733-742": [`${SRC}costing/Turton.cpp`, 733, 742,
         /if \(&c == &hxCoeffs && P_gauge > 140\.0\)[\s\S]*EXTRAPOLATED[\s\S]*std::cout << v\.str\(\);/],
       "MaterialLimits.cpp:41": [`${SRC}sizing/MaterialLimits.cpp`, 41, undefined,
         "if (!(pressureDesign_bar > material.maxP)) return;"],
