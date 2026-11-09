@@ -2577,8 +2577,8 @@ int Flowsheet::solve(const DictPtr& dict,
     tears_ = tears;
 
     // ---- Sequential-plan validation (tear/order contract, 2026-07-25) ----
-    //  Runs the moment the tear list is FINAL and before any state work, so
-    //  an invalid plan refuses before seeding noise.  -init0 keeps its own
+    //  Runs once the tear list is FINAL: AFTER 0/ is seeded, BEFORE any unit
+    //  solves, so a refusal writes no converged/.  -init0 keeps its own
     //  honest accounting (UNREACHED names the same problem in its phase);
     //  --lint reports the findings merged with its own list at the bail.
     std::vector<std::string> planFindings;
@@ -2603,7 +2603,7 @@ int Flowsheet::solve(const DictPtr& dict,
     //  removes a stream from any physical check.
     //
     //  The STRUCTURAL half runs here, where the flattened topology is final
-    //  and before any state work, so a false declaration refuses before a
+    //  and before any unit solves, so a false declaration refuses before a
     //  solve rather than after it.  The CONSERVATION half needs an answer and
     //  runs below, once the plan has converged.
     std::vector<UtilityCircuit> utilityCircuitDecls;
@@ -3690,7 +3690,7 @@ int Flowsheet::solve(const DictPtr& dict,
                 // reuses the same imbalance.
                 residual(tr.x);   // place streams_ exactly at G(tr.x)
                 // Decode the ASSUMED tear streams from tr.x (same layout as
-                // packFlow: per tear, nc component flows then T) to measure
+                // packFlow: per tear, nc component flows, T, P) to measure
                 // the physical computed-vs-assumed mass/energy imbalance.
                 std::map<std::string, ProcessStream> assumedTears;
                 {
