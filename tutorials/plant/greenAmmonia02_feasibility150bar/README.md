@@ -5,7 +5,7 @@ numbering, FEL 2 *Preliminary Design* in the five-phase one). The PEQ
 2026-27 green-ammonia plant as it is studied at the **feasibility stage**.
 The stage, what it decides and the simulation fidelity it uses are set out
 in
-[`docs/design/how-a-process-design-is-staged.md`](../../../docs/design/how-a-process-design-is-staged.md)
+`docs/design/how-a-process-design-is-staged.md`
 §2.3, and the EduTool *Front-End Loading* draws them.
 
 **The estimate class is the author's statement, not the stage's.**
@@ -21,19 +21,19 @@ runCase -f .
 ```
 
 It is rung 2 of the green-ammonia sequence, which the common entry
-[`ammoniaRoutes01_screening`](../ammoniaRoutes01_screening) maps in full:
+`ammoniaRoutes01_screening` maps in full:
 
 | rung | case | illustrated design stage | converter | exchangers | what it decides |
 |---|---|---|---|---|---|
-| 1 | [`ammoniaRoutes01_screening`](../ammoniaRoutes01_screening) | FEL-1, screening | none — overall equations at full conversion | none | which production routes deserve a study |
+| 1 | `ammoniaRoutes01_screening` | FEL-1, screening | none — overall equations at full conversion | none | which production routes deserve a study |
 | 2 | **this case** | FEL-2, feasibility, 150 bar | one Gibbs reactor 5 K short of equilibrium | **duties only**, each bought from a utility; areas on an assumed U | is it feasible; the gross margin with the energy priced |
-| 2 | [`greenAmmonia02_feasibility50bar`](../greenAmmonia02_feasibility50bar) | FEL-2, an exploratory alternative | the same, at 400 °C and 50 bar — a catalyst hypothesis | the same | what a low-pressure loop would change, *if* a catalyst allowed it |
-| 3 | [`greenAmmonia03_basicDesign`](../greenAmmonia03_basicDesign) | FEL-3, basic design (process side) | three adiabatic catalyst beds on a rate law, volumes solved | every exchanger designed (Kern) | what exactly is built |
+| 2 | `greenAmmonia02_feasibility50bar` | FEL-2, an exploratory alternative | the same, at 400 °C and 50 bar — a catalyst hypothesis | the same | what a low-pressure loop would change, *if* a catalyst allowed it |
+| 3 | `greenAmmonia03_basicDesign` | FEL-3, basic design (process side) | three adiabatic catalyst beds on a rate law, volumes solved | every exchanger designed (Kern) | what exactly is built |
 
 ## What it is derived from, and the one thing that differs
 
 It is a copy of the base case
-[`greenAmmoniaPEQ_baseCase`](../greenAmmoniaPEQ_baseCase): the same feeds
+`greenAmmoniaPEQ_baseCase`: the same feeds
 (project base data v2), the same property package and records, the same
 utility records — the case-local HP-steam credit included — the same
 compressors, loop pressure, separation, purge and let-down, and the same

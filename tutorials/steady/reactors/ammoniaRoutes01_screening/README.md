@@ -36,37 +36,37 @@ base data):
 | rung | case | illustrated design stage | reactor model | exchangers | economics | what is decided |
 |---|---|---|---|---|---|---|
 | 1 | **this case** | FEL-1, screening | none: each route's overall equation at full conversion, plus the synthesis equilibrium | none | margins on raw materials and on assumed specific energy consumptions, worked in this README from the run's flows | which production routes deserve a feasibility study |
-| 2 | [`greenAmmonia02_feasibility150bar`](../greenAmmonia02_feasibility150bar) | FEL-2, feasibility | one Gibbs reactor 5 K short of equilibrium, 150 bar | duties only, each bought from a utility; pinch targets; areas on an assumed U | Turton capital, the gross margin before and after the energy, a DCF | is the plant feasible, and what does the energy cost |
-| 2 | [`greenAmmonia02_feasibility50bar`](../greenAmmonia02_feasibility50bar) | FEL-2, an exploratory alternative | the same at 400 °C and 50 bar — resting on a catalyst hypothesis | the same | the same | what a low-pressure loop would change, *if* a catalyst allowed it |
-| 3 | [`greenAmmonia03_basicDesign`](../greenAmmonia03_basicDesign) | FEL-3, basic design (process side) | three adiabatic beds on the Dyson-Simon rate law, volumes solved by a DesignSpec, Ergun pressure drop | every exchanger designed (Kern) | Turton capital and a DCF, still an equipment-factored estimate | what exactly is built |
-| — | [`greenAmmoniaPEQ_baseCase`](../greenAmmoniaPEQ_baseCase) | the brief's reference case, outside the numbering | one Gibbs reactor 5 K short of equilibrium | six exchangers designed (Kern) | Turton capital and a DCF | the starting point: rungs 2 and 3 are copies of it with one thing changed |
+| 2 | `greenAmmonia02_feasibility150bar` | FEL-2, feasibility | one Gibbs reactor 5 K short of equilibrium, 150 bar | duties only, each bought from a utility; pinch targets; areas on an assumed U | Turton capital, the gross margin before and after the energy, a DCF | is the plant feasible, and what does the energy cost |
+| 2 | `greenAmmonia02_feasibility50bar` | FEL-2, an exploratory alternative | the same at 400 °C and 50 bar — resting on a catalyst hypothesis | the same | the same | what a low-pressure loop would change, *if* a catalyst allowed it |
+| 3 | `greenAmmonia03_basicDesign` | FEL-3, basic design (process side) | three adiabatic beds on the Dyson-Simon rate law, volumes solved by a DesignSpec, Ergun pressure drop | every exchanger designed (Kern) | Turton capital and a DCF, still an equipment-factored estimate | what exactly is built |
+| — | `greenAmmoniaPEQ_baseCase` | the brief's reference case, outside the numbering | one Gibbs reactor 5 K short of equilibrium | six exchangers designed (Kern) | Turton capital and a DCF | the starting point: rungs 2 and 3 are copies of it with one thing changed |
 
 What changes between rungs 2 and 3 — consumptions, investment and the NPV,
 each difference traced to what changed between the two stages — is a
 section of the basic-design case's README, generated from the engine's runs
-of both: [From feasibility to basic design](../greenAmmonia03_basicDesign/README.md#from-feasibility-to-basic-design-what-changed-and-why).
+of both: the section *From feasibility to basic design* of the `greenAmmonia03_basicDesign` README.
 
 **The reactor-model ladder** (one 200 bar synthesis loop, nothing but the
 converter moves):
 
 | rung | case | converter | what it may claim |
 |---|---|---|---|
-| 1 | [`ammoniaReactor01_fixedConversion`](../ammoniaReactor01_fixedConversion) | `conversionReactor`, a declared 25 % | a material balance |
-| 2 | [`ammoniaReactor02_equilibrium`](../ammoniaReactor02_equilibrium) | `gibbsReactor` at true equilibrium | the thermodynamic ceiling |
-| 3 | [`ammoniaReactor03_equilibriumApproach`](../ammoniaReactor03_equilibriumApproach) | `gibbsReactor` 5 K short of equilibrium | a realistic outlet; a converter costed from a declared space velocity |
-| 4 | [`ammoniaReactor04_kineticSizing`](../ammoniaReactor04_kineticSizing) | adiabatic `pfr` on the Dyson-Simon rate law | a bed volume the engine SOLVES |
+| 1 | `ammoniaReactor01_fixedConversion` | `conversionReactor`, a declared 25 % | a material balance |
+| 2 | `ammoniaReactor02_equilibrium` | `gibbsReactor` at true equilibrium | the thermodynamic ceiling |
+| 3 | `ammoniaReactor03_equilibriumApproach` | `gibbsReactor` 5 K short of equilibrium | a realistic outlet; a converter costed from a declared space velocity |
+| 4 | `ammoniaReactor04_kineticSizing` | adiabatic `pfr` on the Dyson-Simon rate law | a bed volume the engine SOLVES |
 
 **Synthesis-loop fundamentals**, outside both ladders: the Haber-Bosch loop
 with its recycle and purge at 200 bar, the syngas a declared makeup whose
 production is not modelled — `ammonia01_synthesis_loop` (steady/flowsheets,
-1 kmol/h of makeup), [`ammonia02_full_plant`](../ammonia02_full_plant)
+1 kmol/h of makeup), `ammonia02_full_plant`
 (~1400 t/day, compressors, feed/effluent exchanger, adiabatic converter) and
-[`ammonia03_quench_converter`](../ammonia03_quench_converter) (the same loop
+`ammonia03_quench_converter` (the same loop
 with a three-bed quench converter).
 
 Former names (`greenAmmoniaFeasibility`, `greenAmmoniaBasicDesign`,
 `greenAmmoniaIndustrialN2`, `ammoniaStaged01_yield`, …) still open the
-renamed cases through [`tutorials/ALIASES`](../../ALIASES).
+renamed cases through `tutorials/ALIASES`.
 
 ## The three routes
 
@@ -81,7 +81,7 @@ all an overall equation keeps.
 | **blue** | grey, with the process CO₂ captured and stored | the same as grey |
 
 Every equation balances; the element count of each side is written in
-[`constant/reactions`](constant/reactions). The grey coefficients are not
+`constant/reactions`. The grey coefficients are not
 data. The air that brings the nitrogen brings oxygen with it, in air's own
 ratio O₂/N₂ = 0.2095/0.7808 (taken as 0.268314), and that oxygen is burnt
 inside the process. The methane and the water then follow from the oxygen

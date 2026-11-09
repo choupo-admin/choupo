@@ -1,21 +1,19 @@
 # temperature01_gas_thermometer — what the last digits of a temperature assert
 
-> *"Thermodynamics is a funny subject.  The first time you go through it, you
-> don't understand it at all.  The second time you go through it, you think you
-> understand it, except for one or two small points.  The third time you go
-> through it, you know you don't understand it, but by that time you are so
-> used to it, it doesn't bother you any more."*
->
-> — attributed to **Arnold Sommerfeld**.  **PROVENANCE UNVERIFIED**: Sommerfeld
-> published no such sentence; it reaches us by report, and this repository does
-> not quote a source it has not read.  It is here as an epigraph, marked, and
-> must be either sourced or dropped before it appears in any published guide.
+*"Thermodynamics is a funny subject.  The first time you go through it, you
+don't understand it at all.  The second time you go through it, you think you
+understand it, except for one or two small points.  The third time you go
+through it, you know you don't understand it, but by that time you are so
+used to it, it doesn't bother you any more."*
+
+— attributed to **Arnold Sommerfeld**.  **PROVENANCE UNVERIFIED**: Sommerfeld
+published no such sentence; it reaches us by report, and this repository does
+not quote a source it has not read.  It is here as an epigraph, marked, and
+must be either sourced or dropped before it appears in any published guide.
 
 ```
 runCase tutorials/props/thermo/temperature01_gas_thermometer
 ```
-
----
 
 ## The question
 
@@ -87,10 +85,10 @@ falls below a part in a hundred thousand.
 
 **Hence the third dogma, and the one worth carrying away:**
 
-> The ideal gas is not a substance.  It is a **limit**.  A gas thermometer
-> reads thermodynamic temperature only as `P → 0` — that is, only where you
-> cannot actually take a measurement.  Every real reading is an extrapolation
-> towards a place no experiment reaches.
+The ideal gas is not a substance.  It is a **limit**.  A gas thermometer
+reads thermodynamic temperature only as `P → 0` — that is, only where you
+cannot actually take a measurement.  Every real reading is an extrapolation
+towards a place no experiment reaches.
 
 ## What this case is NOT
 

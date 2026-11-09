@@ -3,7 +3,7 @@
 **PRIMARY:** A. Marcilla, F. Ruíz, M. M. Olaya, *Fluid Phase Equilibria*
 **105** (1995) 71–91, DOI 10.1016/0378-3812(94)02595-R.
 Water–ethanol–1-butanol–NaCl at 25.0 ± 0.1 °C.  Anchor values staged in
-[`docs/design/solid-migration-witness-data.md`](../../../../docs/design/solid-migration-witness-data.md) §2
+`docs/design/solid-migration-witness-data.md` §2
 (reviewStatus interim; this case cites the primary).
 
 ## The experiment this case charges

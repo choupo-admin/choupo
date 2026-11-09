@@ -2,7 +2,7 @@
 
 Reproduces the ideal-hydrocarbon distillation of **Naphtali & Sandholm,
 "Multicomponent Separation Calculations by Linearization", AIChE Journal 17(1),
-148–153 (1971)** — DOI [10.1002/aic.690170130](https://doi.org/10.1002/aic.690170130)
+148–153 (1971)** — DOI 10.1002/aic.690170130
 — the paper that introduced the very full-MESH method Choupo's `model fullMESH`
 implements.
 

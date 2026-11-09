@@ -7,8 +7,6 @@ rather than quoted at you**.
 runCase tutorials/props/thermo/temperature02_engineers_ladder
 ```
 
----
-
 ## What it asks
 
 At the temperature each substance's record calls its normal boiling point,

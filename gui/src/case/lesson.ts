@@ -89,10 +89,15 @@ export class LessonSyntaxError extends Error {
  *  between characters (`0.9995*n`) stays a star: italic needs a non-space
  *  right after the opener and a closer on the same line. */
 export function parseInline(s: string, line: number): Inline[] {
+  // A code span is LITERAL: `design/<unit>/` or `a[i](x)` between backticks
+  // is code, not HTML or a link.  So the refusals read the line with its
+  // code spans set aside (C264: the whole line used to be tested, and one
+  // backticked path refused a whole lesson in front of a student).
+  const bare = s.replace(/`[^`]*`/g, "``");
   // The image test goes first: `![alt](x)` also matches the link shape.
-  if (/!\[/.test(s)) throw new LessonSyntaxError(line, "an image");
-  if (/\[[^\]]*\]\(/.test(s)) throw new LessonSyntaxError(line, "a link");
-  if (/<[A-Za-z][^>]*>/.test(s)) throw new LessonSyntaxError(line, "raw HTML");
+  if (/!\[/.test(bare)) throw new LessonSyntaxError(line, "an image");
+  if (/\[[^\]]*\]\(/.test(bare)) throw new LessonSyntaxError(line, "a link");
+  if (/<[A-Za-z][^>]*>/.test(bare)) throw new LessonSyntaxError(line, "raw HTML");
   const out: Inline[] = [];
   const re = /(`[^`]*`|\*\*[^*]+\*\*|\*[^*\s][^*]*\*)/g;
   let last = 0;
@@ -217,17 +222,21 @@ export function parseLesson(md: string): Block[] {
             if (childIndent < 0) childIndent = nbIndent;
             else if (nbIndent > childIndent)
               throw new LessonSyntaxError(i + 1, "a nested list deeper than one bullet level");
-            children.push({ inlines: parseInline(nb[2] ?? "", i + 1) });
-            i++;
             // Wrapped nested bullet: deeper-indented continuation lines.
+            // The RAW text is joined and parsed once -- re-parsing the
+            // rendered text would drop the backticks and turn a code span
+            // back into prose (and `<unit>` back into "raw HTML").
+            const childLine = i + 1;
+            let raw = nb[2] ?? "";
+            i++;
             while (i < n) {
               const cc = lines[i] ?? "";
               const ind = (/^(\s*)/.exec(cc)?.[1] ?? "").length;
               if (cc.trim() === "" || ind <= nbIndent || BULLET.test(cc)) break;
-              const lastChild = children[children.length - 1]!;
-              lastChild.inlines = parseInline(inlineText(lastChild.inlines) + " " + cc.trim(), i + 1);
+              raw += " " + cc.trim();
               i++;
             }
+            children.push({ inlines: parseInline(raw, childLine) });
             continue;
           }
           if (BULLET.test(c) || NUMBERED.test(c)) {

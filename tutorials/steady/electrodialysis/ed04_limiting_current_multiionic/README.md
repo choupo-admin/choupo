@@ -3,9 +3,9 @@
 An **external-reference case**: every number in it comes from one primary
 source, end to end, and the case says which.
 
-> V. Geraldes, M.D. Afonso, *"Limiting current density in the electrodialysis
-> of multi-ionic solutions"*, **J. Membr. Sci. 360 (2010) 499–508**,
-> doi:10.1016/j.memsci.2010.05.054.
+V. Geraldes, M.D. Afonso, *"Limiting current density in the electrodialysis
+of multi-ionic solutions"*, **J. Membr. Sci. 360 (2010) 499–508**,
+doi:10.1016/j.memsci.2010.05.054.
 
 ## What changed, and why it matters
 

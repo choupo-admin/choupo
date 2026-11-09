@@ -21,5 +21,5 @@ convention. A converter running at 700–800 K releases about 16 % more heat
 per mole of ammonia than the 25 °C value says.
 
 `constant/` is copied whole from
-[`landscape06_nitrogen_fixation_routes`](../landscape06_nitrogen_fixation_routes),
+`landscape06_nitrogen_fixation_routes`,
 so the formation surface is the same one; this case reads only N₂, H₂ and NH₃.

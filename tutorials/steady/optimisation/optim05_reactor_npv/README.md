@@ -97,8 +97,8 @@ gradients are signal, not noise.
 runCase tutorials/steady/optimisation/optim05_reactor_npv
 ```
 
-> AACE Class-4 economics — accuracy −30 % / +50 %. The prices in
-> `constant/economics` are representative teaching figures (each dated and
-> primary-cited in a `provenance{}` block); refresh them before any live
-> appraisal. The numbers above are what *this* model gives at the certified
-> optimum, not an independent ground truth.
+AACE Class-4 economics — accuracy −30 % / +50 %. The prices in
+`constant/economics` are representative teaching figures (each dated and
+primary-cited in a `provenance{}` block); refresh them before any live
+appraisal. The numbers above are what *this* model gives at the certified
+optimum, not an independent ground truth.

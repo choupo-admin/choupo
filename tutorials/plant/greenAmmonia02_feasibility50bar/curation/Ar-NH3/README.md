@@ -13,7 +13,7 @@ every step.
 2. **IUPAC-NIST Solubility Data Series Vol. 4 (Argon)**, H. L. Clever (ed.),
    1980, pp. 314–318 — the same family of compilations the `H2-NH3.dat` and
    `N2-NH3.dat` records already cite (Vol. 5/6).
-   <https://srdata.nist.gov/solubility/IUPAC/SDS-4/SDS-4.pdf>
+   https://srdata.nist.gov/solubility/IUPAC/SDS-4/SDS-4.pdf
    Critical evaluation by C. L. Young (July 1978): four sets classified
    *tentative*, two rejected (Cseko; Zeininger) — the rejected ones were not
    used.

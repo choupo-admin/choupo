@@ -17,7 +17,7 @@ runCase tutorials/batch/plant/apalutamide01_tablets
 The case is sealed: everything it reads is in its own `constant/`.
 
 **Its design basis is a dossier**, not a guess:
-[`docs/design/apalutamide-design-basis-dossier.md`](../../../../docs/design/apalutamide-design-basis-dossier.md)
+`docs/design/apalutamide-design-basis-dossier.md`
 ("the dossier" below) — the EMA and FDA assessment reports, the label, the
 originator's patent, the originator's published sales, generic-price
 evidence and a red-team review, every number with its source, page and a

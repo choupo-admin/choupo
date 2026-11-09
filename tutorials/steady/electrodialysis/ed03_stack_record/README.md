@@ -61,8 +61,8 @@ number and the limiting current all follow.  That is the exercise.
 
 ## 2. Vítor's rule on the active area, printed as arithmetic
 
-> *the active area is the CELL-PAIR area; a stack of 50 m² has 50 m² of
-> anionic membrane AND 50 m² of cationic membrane.*
+*the active area is the CELL-PAIR area; a stack of 50 m² has 50 m² of
+anionic membrane AND 50 m² of cationic membrane.*
 
 ```
       declared activeArea      0.140000 m2  (the whole stack, per cell pair summed)
