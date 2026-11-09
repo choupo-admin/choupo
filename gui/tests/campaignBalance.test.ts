@@ -91,4 +91,32 @@ describe("campaignBalanceView", () => {
     expect(v.mass).toBeUndefined();
     expect(v.malformed).toContain("mass_kg_external_out");
   });
+
+  it("C258: a named stream is a bar with the engine's own sentence, and the balance closes with it", () => {
+    // batch13's shape: 0.0368 kg of carrier booked as the inlet carrierMakeUp
+    const v = campaignBalanceView({
+      mass_kg_initial: 0.0605, mass_kg_final: 0.0138, mass_kg_external_out: 0.0835,
+      mass_kg_amend_in: 0.0368, mass_kg_amend_out: 0,
+      mass_kg_stream_in_carrierMakeUp: 0.0368,
+      mass_closure_rel: 5e-14,
+    }, [{ kind: "carrierMakeUp",
+          why: "carrier implied by the constant-(u, P, T) assumption" }]);
+    expect(v.streams).toEqual([{
+      kind: "carrierMakeUp", direction: "in", kg: 0.0368,
+      why: "carrier implied by the constant-(u, P, T) assumption" }]);
+    const m = v.mass!;
+    expect(m.initialKg + (m.amendInKg ?? 0))
+      .toBeCloseTo(m.finalKg + m.externalOutKg + (m.amendOutKg ?? 0), 3);
+  });
+
+  it("C258: the engine's sentence for an unrouted outlet reaches the view (the dried water)", () => {
+    const v = campaignBalanceView({
+      mass_kg_initial: 2.6, mass_kg_final: 2.039168,
+      mass_kg_external_out: 0.560832, mass_closure_rel: 0,
+    }, [{ kind: "external",
+          why: "evaporated water leaving the solid into the drying air" }]);
+    expect(v.externalOutWhy)
+      .toBe("evaporated water leaving the solid into the drying air");
+    expect(v.streams).toEqual([]);
+  });
 });

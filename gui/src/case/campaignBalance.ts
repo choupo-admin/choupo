@@ -35,6 +35,17 @@ License
 
 export type EnergyState = "available" | "refused" | "malformed";
 
+/** A NAMED STREAM (C258): matter a modelling assumption creates or destroys,
+ *  booked by the engine as its own stream so the balance closes and the
+ *  stream is the explanation.  Numbers and the `why` sentence are the
+ *  engine's, verbatim. */
+export interface NamedStream {
+  kind: string;
+  direction: "in" | "out";
+  kg: number;
+  why?: string;
+}
+
 export interface CampaignBalanceView {
   /** kpis.campaign present at all (a batch/campaign run). */
   present: boolean;
@@ -49,7 +60,16 @@ export interface CampaignBalanceView {
     externalOutKg: number;
     residualKg?: number;
     closureRel?: number;
+    /** Matter drawn from / returned to the boundary by ledgered amendments
+     *  (a make-up solvent, a re-declared feed, a named stream). */
+    amendInKg?: number;
+    amendOutKg?: number;
   };
+  /** The engine's named streams, one per kind and direction. */
+  streams: NamedStream[];
+  /** The engine's own sentence for the unrouted external outlet, when it
+   *  published one (the dryer: "evaporated water leaving ..."). */
+  externalOutWhy?: string;
   /** INFORMATIVE molar totals (engine-emitted): total moles are NOT a
    *  conserved quantity in a reacting campaign -- no closure is claimed. */
   moles?: { initialKmol: number; finalKmol: number; externalOutKmol: number };
@@ -74,14 +94,16 @@ export interface CampaignBalanceView {
 
 export function campaignBalanceView(
   campaign: { [k: string]: number } | undefined,
+  transfers?: { kind: string; why?: string }[],
 ): CampaignBalanceView {
   const fin = (k: string): boolean =>
     campaign !== undefined && Number.isFinite(campaign[k]);
   if (!campaign || (!fin("mass_kg_initial") && !fin("mass_kg_final")))
-    return { present: false, elementsPartial: false, energyState: "refused" };
+    return { present: false, elementsPartial: false, energyState: "refused",
+             streams: [] };
 
   const view: CampaignBalanceView = { present: true, elementsPartial: false,
-                                      energyState: "refused" };
+                                      energyState: "refused", streams: [] };
   const malformed: string[] = [];
 
   // The C++ contract emits ALL THREE mass terms; a missing one is a
@@ -97,6 +119,10 @@ export function campaignBalanceView(
         ? { residualKg: campaign["mass_residual_kg"] } : {}),
       ...(fin("mass_closure_rel")
         ? { closureRel: campaign["mass_closure_rel"] } : {}),
+      ...(fin("mass_kg_amend_in")
+        ? { amendInKg: campaign["mass_kg_amend_in"] } : {}),
+      ...(fin("mass_kg_amend_out")
+        ? { amendOutKg: campaign["mass_kg_amend_out"] } : {}),
     };
   }
   else
@@ -105,6 +131,17 @@ export function campaignBalanceView(
                      "mass_kg_external_out"])
       if (!fin(k)) malformed.push(k);
   }
+
+  for (const k of Object.keys(campaign)) {
+    const m = /^mass_kg_stream_(in|out)_(.+)$/.exec(k);
+    if (m === null || !Number.isFinite(campaign[k])) continue;
+    const why = (transfers ?? []).find((t) => t.kind === m[2])?.why;
+    view.streams.push({ kind: m[2]!, direction: m[1] as "in" | "out",
+                        kg: campaign[k]!, ...(why ? { why } : {}) });
+  }
+  const outWhy = (transfers ?? []).find((t) => t.kind === "external"
+                                                && t.why)?.why;
+  if (outWhy) view.externalOutWhy = outWhy;
 
   if (fin("moles_kmol_initial") && fin("moles_kmol_final")
       && fin("moles_kmol_external_out")) {
