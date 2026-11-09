@@ -119,4 +119,21 @@ describe("campaignBalanceView", () => {
       .toBe("evaporated water leaving the solid into the drying air");
     expect(v.streams).toEqual([]);
   });
+
+  it("C258: a named HEAT stream is read from the engine's energy_kJ_stream_<kind> and its basis sentence", () => {
+    // batch24_blowdown_inert's shape: the isothermal bed's wall duty, 0.1 kJ
+    const v = campaignBalanceView({
+      mass_kg_initial: 0.0972, mass_kg_final: 0.00016, mass_kg_external_out: 0.0163,
+      mass_closure_rel: 5e-16, energy_balance_available: 1,
+      energy_dH_vessels_kJ: 0.1, energy_Q_ledger_kJ: 0.1,
+      energy_H_external_kJ: 0, energy_closure_rel: 1e-15,
+      energy_kJ_stream_isothermalDuty: 0.1,
+    }, undefined, [{ kind: "isothermalDuty",
+                     basis: "heat implied by the isothermal assumption" }]);
+    expect(v.heatStreams).toEqual([{
+      kind: "isothermalDuty", kJ: 0.1,
+      why: "heat implied by the isothermal assumption" }]);
+    expect(v.energy!.dHVesselsKJ)
+      .toBeCloseTo(v.energy!.qLedgerKJ - v.energy!.hExternalKJ, 9);
+  });
 });

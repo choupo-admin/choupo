@@ -55,13 +55,16 @@ interface CampaignBalancePlotProps {
   /** The run's material ledger, read only for the engine's own `why`
    *  sentences on named streams and unrouted outlets. */
   transfers?: { kind: string; why?: string }[];
+  /** The run's energy ledger, read only for the `basis` sentence of named
+   *  heat streams. */
+  energyLedger?: { kind: string; basis?: string }[];
 }
 
 const fmtSci = (v: number) => v.toExponential(2);
 const fmtKg = (v: number) => (Math.abs(v) >= 100 ? v.toFixed(1) : v.toPrecision(4));
 
-export function CampaignBalancePlot({ campaign, transfers }: CampaignBalancePlotProps) {
-  const view = campaignBalanceView(campaign, transfers);
+export function CampaignBalancePlot({ campaign, transfers, energyLedger }: CampaignBalancePlotProps) {
+  const view = campaignBalanceView(campaign, transfers, energyLedger);
   const m0 = view.mass?.initialKg;
   const mF = view.mass?.finalKg;
   const mOut = view.mass?.externalOutKg;
@@ -181,6 +184,8 @@ export function CampaignBalancePlot({ campaign, transfers }: CampaignBalancePlot
       }]
     : [];
 
+  const heatNamed = view.heatStreams.reduce((a, h) => a + h.kJ, 0);
+
   // ---- energy bars: dH(vessels) vs Q - H_out ------------------------------
   const energyData = energyAvailable
     ? [
@@ -192,11 +197,24 @@ export function CampaignBalancePlot({ campaign, transfers }: CampaignBalancePlot
           marker: { color: PLOT_COLORS.series[4] },
           hovertemplate: "ΔH vessels = %{y:.6g} kJ<extra></extra>",
         },
+        //  a NAMED HEAT STREAM is its own bar on the Q side, so the two
+        //  stacks are equal and the stream is the explanation (C258)
+        ...view.heatStreams.map((h, i) => ({
+          type: "bar" as const,
+          name: h.kind,
+          x: ["ΔH vessels", "Q − H_out"],
+          y: [null, h.kJ] as (number | null)[],
+          text: ["", `${h.kind}<br>${h.kJ.toPrecision(3)} kJ`],
+          textposition: "inside" as const,
+          textfont: { size: 11, color: "#10242b" },
+          marker: { color: PLOT_COLORS.series[(2 + i) % PLOT_COLORS.series.length] },
+          hovertemplate: `${h.kind} = %{y:.6g} kJ<extra></extra>`,
+        })),
         {
           type: "bar" as const,
           name: "Q − H_out",
           x: ["ΔH vessels", "Q − H_out"],
-          y: [null, qLedger! - hExternal!] as (number | null)[],
+          y: [null, qLedger! - hExternal! - heatNamed] as (number | null)[],
           marker: { color: PLOT_COLORS.series[5] },
           hovertemplate: "Q − H_out = %{y:.6g} kJ<extra></extra>",
         },
@@ -265,10 +283,13 @@ export function CampaignBalancePlot({ campaign, transfers }: CampaignBalancePlot
         <Text key={s.kind + s.direction} size="xs" data-testid="named-stream">
           {s.direction === "in" ? "Inlet stream" : "Outlet stream"}{" "}
           <b>{s.kind}</b>: {fmtKg(s.kg)} kg
-          {view.mass && view.mass.initialKg > 0
-            ? ` (${(100 * s.kg / view.mass.initialKg).toPrecision(3)} % of the initial charge)`
-            : ""}
           {s.why ? ` -- ${s.why}.` : ""} The balance closes with it.
+        </Text>
+      ))}
+      {energyAvailable && view.heatStreams.map((h) => (
+        <Text key={h.kind} size="xs" data-testid="named-heat-stream">
+          Heat stream <b>{h.kind}</b>: {h.kJ.toPrecision(4)} kJ
+          {h.why ? ` -- ${h.why}.` : ""} The energy balance closes with it.
         </Text>
       ))}
       {view.externalOutWhy && view.mass && (

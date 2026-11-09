@@ -46,6 +46,16 @@ export interface NamedStream {
   why?: string;
 }
 
+/** A NAMED HEAT STREAM (C258): heat a modelling assumption implies (the duty
+ *  that holds a bed isothermal), booked by the engine as its own ledger
+ *  record.  The total is the engine's `energy_kJ_stream_<kind>`, the sentence
+ *  the record's own `basis`. */
+export interface NamedHeatStream {
+  kind: string;
+  kJ: number;
+  why?: string;
+}
+
 export interface CampaignBalanceView {
   /** kpis.campaign present at all (a batch/campaign run). */
   present: boolean;
@@ -67,6 +77,8 @@ export interface CampaignBalanceView {
   };
   /** The engine's named streams, one per kind and direction. */
   streams: NamedStream[];
+  /** The engine's named heat streams, one per kind. */
+  heatStreams: NamedHeatStream[];
   /** The engine's own sentence for the unrouted external outlet, when it
    *  published one (the dryer: "evaporated water leaving ..."). */
   externalOutWhy?: string;
@@ -95,15 +107,17 @@ export interface CampaignBalanceView {
 export function campaignBalanceView(
   campaign: { [k: string]: number } | undefined,
   transfers?: { kind: string; why?: string }[],
+  energyLedger?: { kind: string; basis?: string }[],
 ): CampaignBalanceView {
   const fin = (k: string): boolean =>
     campaign !== undefined && Number.isFinite(campaign[k]);
   if (!campaign || (!fin("mass_kg_initial") && !fin("mass_kg_final")))
     return { present: false, elementsPartial: false, energyState: "refused",
-             streams: [] };
+             streams: [], heatStreams: [] };
 
   const view: CampaignBalanceView = { present: true, elementsPartial: false,
-                                      energyState: "refused", streams: [] };
+                                      energyState: "refused", streams: [],
+                                      heatStreams: [] };
   const malformed: string[] = [];
 
   // The C++ contract emits ALL THREE mass terms; a missing one is a
@@ -138,6 +152,13 @@ export function campaignBalanceView(
     const why = (transfers ?? []).find((t) => t.kind === m[2])?.why;
     view.streams.push({ kind: m[2]!, direction: m[1] as "in" | "out",
                         kg: campaign[k]!, ...(why ? { why } : {}) });
+  }
+  for (const k of Object.keys(campaign)) {
+    const m = /^energy_kJ_stream_(.+)$/.exec(k);
+    if (m === null || !Number.isFinite(campaign[k])) continue;
+    const why = (energyLedger ?? []).find((r) => r.kind === m[1])?.basis;
+    view.heatStreams.push({ kind: m[1]!, kJ: campaign[k]!,
+                            ...(why ? { why } : {}) });
   }
   const outWhy = (transfers ?? []).find((t) => t.kind === "external"
                                                 && t.why)?.why;

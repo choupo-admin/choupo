@@ -503,7 +503,8 @@ export function PlotsWorkspace() {
       case "campaignBalance": {
         const c = result.kpis?.["campaign"];
         return c ? <CampaignBalancePlot campaign={c}
-          {...(result.transfers ? { transfers: result.transfers } : {})} /> : null;
+          {...(result.transfers ? { transfers: result.transfers } : {})}
+          {...(result.energyLedger ? { energyLedger: result.energyLedger } : {})} /> : null;
       }
       case "dynamicBalance": {
         const traj = result.csvFiles?.["balanceTrajectory.csv"];
