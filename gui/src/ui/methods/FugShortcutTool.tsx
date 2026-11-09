@@ -78,7 +78,7 @@ License
   volatility (frozen at the feed bubble point, so no azeotrope is
   representable), constant molar overflow, a STAGE COUNT rather than a design,
   an empirical Kirkbride feed split, and a Gilliland correlation that is a FIT
-  to plant and simulation data rather than a derivation.
+  to stepwise plate-to-plate calculations (Gilliland 1940), not a derivation.
 
   Theory: \label{ch:fug} in docs/theoryGuide.tex.
 \*---------------------------------------------------------------------------*/
@@ -771,7 +771,8 @@ export function FugShortcutTool(): JSX.Element {
           And the Gilliland step is a <strong>correlation fitted to data</strong>,
           not a derivation: it interpolates between two limits that ARE derived
           (Fenske at total reflux, Underwood at minimum reflux) and carries the
-          scatter of the plants and simulations it was fitted to.
+          scatter of the plate-to-plate calculations it was fitted to
+          (Gilliland 1940: calculated results, not plant measurements).
           {compare && crossing.nStages != null && operating
             ? ` Here the shortcut says ${operating.N.toFixed(2)} stages and the`
               + ` rigorous MESH column reaches the same products at`

@@ -14,6 +14,23 @@
   Migrated mechanically from the v1 flat solvent/solutes form (physics
   identical -- the solutes list states the engine's own Henry selection);
   v2 contract 2026-07-17.
+
+  ABOVE Tc (DEV.md 4c C256, measured 2026-11-09).  The `[psatContinued]`
+  lines for H2, N2, Ar, NH3 and water are a vapour pressure asked above the
+  critical temperature, where the engine continues ln Psat linearly in 1/T.
+  The dissolving gases are already on the C256 ladder's first rung (H2, N2
+  and Ar are Henry solutes with measured pairs), so the separator's
+  dissolved gases and the let-down flash read no continued curve.  Measured
+  by scaling the continued Psat (a scratch build): x0.1 moves nothing; x10
+  on NH3 ALONE flips the FEHE's cold outlet `preheatedFeed` from a gas at
+  669.8 K to a "liquid" at 619.0 K (the converter downstream barely moves:
+  the NPV by 5e-5).  The shipped answer, a gas, is the physical one, but it
+  holds because the continued NH3 curve is where it is, although every
+  component of that stream is above its Tc there (an engine finding,
+  reported with C256, not something this file can fix).  A cubic phi-phi
+  package for the loop (the ladder's second rung) would decide that phase
+  without a vapour pressure, at the price of the measured solubilities in
+  the separator; it is left as the case's open question, said here.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

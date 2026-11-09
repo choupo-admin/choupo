@@ -3221,6 +3221,218 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C268 (the architect, 2026-11-09): THE REFERENCE PLANT, FIRST SLICE LANDED; C244 PHASE 2
+> DECIDED; THREE ENGINE FINDINGS FOR C256.**  greenAmmoniaPEQ_baseCase (d59565f12): a ring
+> of roads, an entrance road to a main gate upwind by the control room, a tank-farm road to
+> an emergency gate, the fence with two openings and six labelled crossings; both of its own
+> findings resolved (tanks 18 m apart against 17, the substation west of the compressors
+> outside every zone); 30 items, 24 pipes routed, 0 findings.  Golden: 37 rows moved, 4
+> removed, 89 added, every one a position, a length, the plot or the land (NPV -404 731 456
+> -> -404 777 819); no process, balance, sizing or cost row.  JUDGED ON THE RENDER by the
+> architect: it reads as a site now, and it is still thin -- the process block is under a
+> tenth of the plot, no utilities are drawn (cooling tower, refrigeration package, flare),
+> and THE 10 H2 VESSELS AND THE 2 TANKS STILL CONNECT TO NOTHING.  That last is an ENGINE
+> GAP the general rightly stopped at: a store attached to a boundary stream (C44, C89) is
+> never a pipe end, and a multi-item unit gets one pipe to its front item
+> (PlantLayout.cpp, `placedOf[unit].front()`); no grammar routes a header with a branch to
+> each vessel.  NEXT, decided: (1) that engine slice -- a pipe to a stream-attached store and
+> a header with branches; (2) then the utilities block on the plot.
+> C244 PHASE 2 DECIDED: greenAmmonia03's converter is NOT folded into the reference plant.
+> Reasons the general brought and the architect accepts: 03's solved three-bed converter is
+> exactly task 2 that PEQ's README leaves to the groups; the Front-End Loading tool
+> (frontEndLoading.ts:284-319) and the tutorials guide walk feasibility -> basic design ->
+> base case as STAGES of one project, and C244's own rule (4) keeps a design-stage case a
+> guide walks; the feasibility pair differ from PEQ in topology, not in a parameter, so
+> they are not a sweep.  They stay three, presented as stages with PEQ the reference
+> (ranked so in listCases and the catalogue).  A `variants` overlay grammar is NOT built
+> for three cases.  Told to Vitor as his to overturn (his wish was fewer variations).
+> C256 FOR THE AMMONIA FAMILY, MEASURED (every continued Psat scaled x0.1 and x10, every
+> result number compared): no package change -- H2, N2, Ar are already Henry solutes with
+> measured pairs and the vapour is SRK; no K comes from a continued Psat, no stream, duty,
+> balance, size or cost moves.  THREE ENGINE DEFECTS it exposed, owed under C256: (a)
+> PhaseChanger `saturationT` inverts the DOMINANT component's Psat even when that component
+> is supercritical -- Tsat 150 K (a bisection bracket) and a latent/sensible split that
+> means nothing (total duty right); (b) the Gibbs reactor's supersaturation test is applied
+> to supercritical components (passes only because the continued value is large); (c)
+> ammonia02's FEHE outlet phase verdict depends on where the continued NH3 curve sits
+> (x10 flips an all-supercritical gas to "liquid").
+
+> **C267 (Vitor, 2026-11-09, forwarding a prompt another session wrote in a PIF tutoring
+> sitting, week 9, the groups now drawing their Gantt, stage times, process diagram and the
+> per-lot input/output table): A CONTINUOUS MACHINE IN A LOT REGIME, ON THE GANTT -- how a
+> spray dryer sized by rate sits in a sequence of lots, the store between the continuous and
+> the batch sections, the lot of a continuous step (ICH Q13), and from the Gantt to
+> utilisation, shifts and crew.**  AUDITED by the architect on apalutamide01_tablets before
+> anything is built (the forwarded text's own step A):
+> EXISTS: two trains decoupled by the ASD store; the dryer a `semicontinuous` stage with
+> `operatingTime fromFlowsheet` (rate 3.75 kg/h of dispersion, 137.14 kg a lot, so
+> t_op = m_lot / rate = 36.57 h; BatchPlanPass.cpp:538-539); campaigns (7 lots, changeover
+> 48 h for shutdown, wash and re-inerting; no clean between lots); reports/batchPlan/
+> gantt.csv with ONE FULL CAMPAIGN PER TRAIN (58 bars: 7 dryer lots and its changeover,
+> 6 solid-dose lots and its changeover) -- the forwarded claim "today it shows only the
+> first" is not what the engine writes; trains.csv with T_L, the limiting stage, campaigns a
+> year and occupancy (dryer 15.9 % of 7920 h, solid dose 11.6 % of 3840 h).
+> MISSING, measured: (a) the intermediate store is NOT sized (BatchPlanPass.H:283 says so):
+> no inventory profile, no volume; (b) a bar is one start-end per stage and lot: charge /
+> process / discharge / clean are in stages.csv but not drawn as blocks, and start-up and
+> inerting are inside the changeover's 48 h, not bars of their own; (c) no per-lot
+> input/output table of raw materials, solvent, product and effluent (stages.csv carries one
+> mass per stage); (d) the single-product Gantt is one campaign, not the year (the
+> multi-product one writes the year); (e) crew is declared, never derived from the Gantt.
+> AND A FINDING THE AUDIT MADE: the dryer train's limiting stage is NOT the dryer but the
+> SOLUTION PREPARATION (cycle 42.57 h = 2 charge + 2 make-up + 36.57 feeding the dryer + 2
+> clean, ONE tank), so the Gantt shows the dryer idle 6 h between lots (bars 4-40.57,
+> 46.57-83.14) while its own `reason` says it "runs on through the lots of a campaign".
+> Either a second feed tank alternates (the dryer then truly runs on, T_L = 36.57 h) or the
+> text says the dryer waits; to discuss with Vitor, with the C266 pharmaceutical findings.
+> CORRECTED the same hour, after reading further: this is ALREADY TAUGHT -- the
+> `campaign-plan` lesson (campaignPlanLesson.ts:158-169) and the design guide's chapter
+> (designGuide.tex ~3226-3242) say the TANK paces the train, the dryer idles, a second tank
+> out of phase gives the dryer back the limit, and the lot is the INPUT definition of ICH
+> Q13 (one tank of solution).  So the gap is narrower: the Gantt SCREEN and the case's own
+> `reason` do not say it where the student is looking.
+> ORDER: Vitor asked to STOP after the pharmaceutical walk and discuss; so nothing here is
+> built before that conversation.  Given now, because the groups need it this week and it
+> needs no code: the answers to the five questions from what the engine does, and a
+> paragraph for the groups.  The C266 auditor is asked to judge the Gantt on the four points
+> of the forwarded step B.  Build order proposed for the discussion: the store's inventory
+> profile and size; the per-lot input/output table; the Gantt's blocks and legend; the
+> year; the crew estimate last.
+
+> **C266 (Vitor, 2026-11-09, after another assistant's student walk of donepezil02 found what
+> five Fable auditors had not: "O Fable é pior que o ChatGPT a passar a pente fino os casos?!
+> ... devias mandatar um general para passar a pente fino e com tempo todos os casos para ver
+> se eles ficam inteligíveis para os alunos e não têm erros"): A STUDENT WALK OF THE CASES,
+> IN THE RUNNING APP.**  The answer to his question, recorded because it is the lesson: the
+> difference was the METHOD, not the model, and the method was the architect's choice --
+> C259 audited lesson TEXT from the source (equations, numbers, citations) and no one was
+> ever sent to USE a case as a student; a README the app refuses and a tablet labelled
+> slurry are visible only on the screen.  The instrument exists and was not used for this:
+> `bin/drive-app` (gui/tools/driveApp/driveApp.mjs) drives the delivered app in headless
+> Chromium, runs a case, walks every view and can save a PNG per view.  DECIDED: a Fable
+> auditor walks cases AS A STUDENT on the published site -- for each case, what question
+> does it pose and is that stated where a student looks first; does the README open; does
+> the screen answer the question first; every number the README or header quotes against
+> the screen and the golden; labels, bases and units that mislead; one word with two
+> meanings; warnings a student cannot rank.  Findings B (blocks) / E (error) / C (confusing),
+> each with the screenshot; SYSTEMIC defects (one cause, many cases) listed apart, because
+> they are worth most and must be fixed before the rest of the corpus is walked (or the
+> same defect is reported 500 times).  STAGE 1: the start-here path and the three PIF
+> tablet plants; then, after its systemic findings are fixed, one case per family
+> (tutorials/FASTSET), then the remainder by family.  Read-only; fixes are separate slices
+> the architect reviews.  And the durable half: what a walk finds mechanically (a view that
+> throws, a README that does not render, a phase word on a solid) becomes a gate, so it
+> is found by the suite next time and not by a visitor.
+> STAGE 1, PHARMACEUTICAL PART, DONE 2026-11-09 (Vitor moved the pharmaceutical cases to the
+> front and asked to STOP there and discuss; nothing is fixed before that).  14 cases walked
+> on the published app (engine 77754a3c): every one runs in the browser in 1.3-3.4 s and
+> 1257 stream/kpi rows equal the goldens -- THE SOLVER IS RIGHT, THE SCREENS ARE NOT.
+> Systemic, verified by the architect where marked: (S2, reproduced) the sheet's number
+> formatter `toPrecision(5).replace(/\.?0+$/,"")` strips the zeros of a whole number --
+> 98 200 shown as 982, 30 000 as 3, a 24 000 kW compressor as 24 (ReportsWorkspace.tsx:882;
+> 14 cases, the reference plant among them); (S1, seen on screen) stream cards add the solid
+> flow to an F that already holds it (StreamTerminal.tsx:339,350): donepezil01's 11 solid
+> feeds doubled; (S7) the GUI's 8000 h/yr shows 50 kEUR where the engine has 1314 EUR; (S3)
+> `m3/yr`, `um`, `rpm`, written by the engine, make the app refuse a whole sheet; (S5) a
+> sheet's molar F leaves the solids out and its mass flow keeps them; (S6) a Turton cost
+> outside its correlation is announced in the Log only; (S13) the shift check misses
+> donepezil02's 5 mg lot (10.8 h at the press against an 8 h shift); (S8) 45 of 133 READMEs
+> are refused by the app's parser, 31 still after C264's fix (real links); (S9) every dry
+> solid is "slurry" (palette.ts:194-200, an unreachable branch).  ENGINEERING, for Vitor:
+> (S4) solidDryer reads the isotherm at the INLET air (SolidDryer.cpp:170-172) while three
+> case texts say the exhaust (2.4x the water there); donepezil01 credits a loss with 556
+> kEUR of tax a year, unstated; sprayDryer06 (REA) equals sprayDryer01 to the last digit;
+> sprayDryer07 a 0.32 m chamber for a 0.1 m wheel; apalutamide's acetone tanks drawn at half
+> their sized volume; its dossier link 404; donepezil01 still says the two-strength plan
+> "is being built".  The Gantt on C267's points: T_L, the limiting stage and a legend are
+> there; the store, a common time axis, start-up/inerting and a sentence for the dryer's
+> 6 h wait are not.  Report and screenshots: session scratchpad c266/.  A finding about the
+> instrument: bin/drive-app does not start in a worktree (no gui/node_modules).
+
+
+> **C265 (Vitor, 2026-11-09, after C264: "o utilizador devia ter a opção no dicionário de
+> pós-processamento de dizer que determinados gráficos ou tabelas gostaria de ver ... a
+> informação que se escolhe e a forma como se apresenta é muito importante para dar
+> inteligibilidade ao caso!  Aqui também deve intervir o humano ... temos de nos guiar por
+> Sherwood e John Gall, porque de outro modo terminamos com uma panela de imenso
+> spaghetti"): THE CASE DECLARES ITS VIEWS -- C243 GENERALISED AND ABSORBED.**  Decided:
+> ONE home, a `views` block in system/postDict (C243 had put `plots` in controlDict; not
+> built yet, so nothing migrates; Vitor's location is right: what is shown after a run is
+> post-processing).  THREE kinds and no more to begin with (Gall: a complex system that
+> works grows from a simple one that worked): `headline` (the few numbers that answer the
+> case's question, each with unit and a sentence), `table` (chosen streams or equipment,
+> chosen columns, basis mass|mole, units), `figure` (chosen series, a second axis, and C243
+> (4)'s cited dataset overlay).  Every view carries a CAPTION the author writes -- why this
+> view exists; the choice and its reason are the human's.  The engine validates (an unknown
+> series or column refuses by name with the list of what exists) and publishes the
+> declaration it honoured; the GUI draws exactly those, first and in order; everything
+> else stays one click away under "All results" (the glass box keeps; the hierarchy
+> changes).  No declaration = today's behaviour, plus C243 (1)'s per-loop default for
+> ctrl cases.  First user: donepezil02 (tablets per lot per strength, NPV with its
+> decomposition -- C264 items 4 and 6).  Sherwood's opinion article on data representation:
+> not in ~/Choupo-Literature and not cited from memory; asked of Vitor.  ORDER: after C264
+> lands (same screens).
+
+> **C264 (Vitor, 2026-11-09: another assistant walked donepezil02_two_strengths in the browser
+> "como se fosse um aluno" and wrote six findings; Vitor forwarded them): THE STUDENT CAN GET
+> NUMBERS BUT HAS TO WORK TOO HARD TO KNOW WHICH ONES ANSWER THE ENGINEERING QUESTION.**
+> Verified by the architect before deciding:
+> (1) CONFIRMED, a GUI defect, not the text: the README does not render ("line 124: raw HTML
+> is outside the subset").  gui/src/case/lesson.ts:95 tests the WHOLE line for `<tag>` before
+> code spans are set aside, so `design/<unit>/` inside backticks reads as HTML and the whole
+> lesson is refused.  Remedy: code spans first; and a test that renders EVERY shipped README
+> through the app's own parser (none did, or this would have failed).
+> (3) CONFIRMED and worse: the "8000 h/yr" utilities figure is computed BY THE GUI
+> (gui/src/ui/ReportsWorkspace.tsx:312, `totalEurh * 8000`), on a plant whose plan has 3840 h
+> available -- a number the engine never published (the settled contract: the GUI draws,
+> the engine computes).  Remedy: the engine publishes the annual basis it used, the GUI
+> draws it; and one "bases" panel that reconciles 300 kg (the declared lot), 305.9 kg (the
+> lot's product mass), 720 000 tablets/h (the balance basis), 168 h, 880 / 2079 h occupancy
+> and 3840 h available, each with its definition.
+> (2) ACCEPTED: three different things are called or drawn as the bottleneck -- the
+> equipment with the least capacity margin (granulator 92.8 %), the stage that sets the lot
+> interval of a train (drying 4.25 h; packaging 11 / 20 h).  Names: "least capacity margin"
+> for the first, "limiting stage (sets T_L)" for the second, different symbols.
+> (4) ACCEPTED: packagedTablets shows "slurry", mol % and kg/s.  A solid product needs mg per
+> tablet of each ingredient, tablets and kg per lot, water by mass, per strength; the phase
+> word for a dry solid with residual moisture is not "slurry".
+> (5) ACCEPTED: 38 warnings with no hierarchy -- classify (needs your decision / affects
+> result X / information) and say what conservation closing does and does not prove.
+> (6) ACCEPTED: the economics gives the verdict (NPV -28.96 M EUR) before the cause -- an
+> operating-cost decomposition on screen and a sensitivity beyond the selling price
+> (utilisation, fixed costs, campaign size), if the engine's C68 sensitivity allows it
+> (to be read before promising).
+> And the README gets an explicit MISSION: explain the base result, find the constraint
+> that matters, justify one improvement with a new run.  Order: (1) and (3) first (a
+> refused lesson and a wrong number), then (2) and (4), then (5) and (6).
+
+> **C263 (Vitor, 2026-11-09: "que tipo de compressor se usa para altas pressões?  Disseram-me
+> que os de turbina necessitam de recirculação por causa do controlo ... era bom que a folha
+> de especificação fosse mais concreta no tipo de compressor e que fizesse um bom design"):
+> COMPRESSOR SELECTION AND DESIGN ON THE SPECIFICATION SHEET.**  Measured today: the unit
+> (src/unitOperations/rotating/Compressor.H) is ONE isentropic stage specified by shaft power
+> or P_out with a declared eta; CompressorSize.H sizes "a centrifugal compressor / blower" by
+> power alone, no geometry; Turton prices it as centrifugal; nothing selects a type, counts
+> stages or impellers, checks a discharge-temperature limit, or knows surge.  The reference
+> plant builds its 150 bar make-up train by hand as two compressor units and an intercooler
+> (MakeupComp1/2 discharge 420 / 425 K, N2Boost 474 K).  The engineering the sheet should
+> carry: (1) TYPE by flow and pressure from a declared, sourced selection map -- dynamic
+> (centrifugal, axial) for large flows, positive displacement (reciprocating, diaphragm for
+> small high-purity flows, screw at moderate ratios) for small flows and the highest
+> pressures; hydrogen's low molar mass makes the head per impeller small, so a centrifugal
+> machine needs many impellers and reciprocating machines dominate small and medium H2 duties;
+> (2) STAGES and INTERCOOLING from a declared discharge-temperature limit and per-stage ratio;
+> (3) for a DYNAMIC machine the SURGE line and the ANTI-SURGE RECYCLE -- below the surge flow
+> the machine cannot hold its head and the flow reverses, so a cooled spill-back from
+> discharge to suction keeps the machine above it at low throughput: the sheet sizes the
+> recycle valve and cooler for the declared surge margin and shows the turndown it buys;
+> for a RECIPROCATING machine, capacity control by unloaders / clearance pockets / speed /
+> spill-back, and no surge; (4) the data-sheet fields of the governing standards (API 617
+> centrifugal, API 618 reciprocating), each limit read from a source, never recalled.
+> Pedagogy too: an EduTool on compressor selection and surge (the head-flow curve, the surge
+> line, what the recycle does to power).  ORDER: after the reference-plant slice lands (it
+> edits the same compressors); scope to Vitor in two lines before dispatch.
+
 > **C262 (Vitor, 2026-11-09: "em Dezembro vou ter de consolidar a forma como recebo feedback
 > da comunidade.  Achas que se pode criar um depósito de casos de estudo auto-contidos que
 > colaboradores queiram deixar?"): YES -- A COMMUNITY CASE REPOSITORY, A TIER APART FROM THE

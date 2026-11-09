@@ -151,12 +151,16 @@ describe("Gilliland: the honesty point this page exists to make", () => {
     //  body, not only in a limits box further down.
     const b = prose(step(4).body);
     expect(b).toContain("FITTED THROUGH A SCATTER");
-    //  The attribution the first draft carried (a date and a name) came from
-    //  this repository's own theory guide and was never checked against a
-    //  primary source, so it is not stated as fact.  What the page CLAIMS is
-    //  the kind of thing Gilliland is, and that is what this pins.
+    //  The attribution used to be forbidden here because it had never been
+    //  checked against a primary source.  It now has been (2026-11-09, C259:
+    //  Gilliland, Ind. Eng. Chem. 32 (1940) 1220-1223, read; p. 1221 says the
+    //  points are stepwise CALCULATED results), so the page may cite it, and
+    //  what this pins is the kind of data the fit rests on: calculations, not
+    //  plant measurements (the audit's PLAUSIBLE item, settled).
     expect(b).toContain("fitted through a scatter".toUpperCase());
-    expect(prose(step(4).body)).not.toContain("1940");
+    expect(b).toContain("CALCULATED");
+    expect(b).toContain("not plant measurements");
+    expect(b).not.toContain("plant and simulation");
     expect(b).toContain(
       "Nothing about it is deduced from a material balance or an equilibrium"
       + " relation");

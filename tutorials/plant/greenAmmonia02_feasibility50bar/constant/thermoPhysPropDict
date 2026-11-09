@@ -21,6 +21,17 @@
   dissolved in the product instead of accumulating in the loop.  The pair was
   fitted from the IUPAC-NIST Solubility Data Series Vol. 4 -- see the header
   of constant/parameters/Henry/Ar-NH3.dat and the dossier in curation/Ar-NH3/.
+
+  ABOVE Tc (DEV.md 4c C256, measured 2026-11-09).  The `[psatContinued]`
+  lines for H2, N2, Ar and NH3 are a vapour pressure asked above the
+  critical temperature.  No K-value of this plant reads it: H2, N2 and Ar
+  are Henry solutes with measured pairs (the C256 ladder's first rung).
+  Scaling every continued Psat by 10 and by 0.1 (a scratch build) moves no
+  stream, duty, balance or cost; it moves only what the phaseChanger
+  coolers print as `Tsat` (the inverted Psat of the DOMINANT component,
+  hydrogen or nitrogen, i.e. the bisection's 150 K floor) and the
+  latent / sensible split priced there -- an engine rule, not this package;
+  the total duty is right, the split is not a physical number.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
