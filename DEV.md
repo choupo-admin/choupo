@@ -3268,7 +3268,18 @@ accepts today, and that is a policy call.
 > added to the fleet doctrine; (c) a weekly `-fsanitize=address,undefined` build of
 > `--fast` as a gate-selftest sibling; (d) smaller batches except under a deadline
 > (tonight's reason: the 11-09 tutorial).  (a) and (c) are one general after batch-2 AND after C252 (the student-facing
-> work comes first); (b) and (d) start now.> **C252 (Vitor, 2026-11-08 night: "devia de existir uma forma de, na landing page, se dizer
+> work comes first); (b) and (d) start now.
+> MEASURED 2026-11-09 on Vitor's "20 min para fazer o push?!": the push takes seconds;
+> the publish-site run that follows it takes 27 min on GitHub's runner (run
+> 42549781096: "Build the site" 1306 s -- the emsdk installed and five binaries
+> compiled to WASM from nothing, every time -- the EduTools smoke 297 s, the publish
+> itself 27 s).  Nothing is cached.  So (a) starts with the cheap half: cache the emsdk
+> and the WASM objects keyed on the source hash (an unchanged `src/` then costs the
+> link, not the compile), and skip the WASM rebuild entirely when a push touches no
+> `src/` file (a register commit rebuilt everything tonight, twice).  And because the
+> workflow CANCELS a running publish when a new push arrives, a burst of small pushes
+> restarts the 27 minutes each time: the register commit travels WITH the merge it
+> records, not after it.> **C252 (Vitor, 2026-11-08 night: "devia de existir uma forma de, na landing page, se dizer
 > ao utilizador o que ele deve comunicar ao seu agente AI para começar a fazer coisas:
 > criar um composto, obter parâmetros binários, fazer um caso ... prompts copy-paste
 > prontas a dar ao Claude ou ChatGPT dos alunos.  De outro modo eles fazem um prompt
