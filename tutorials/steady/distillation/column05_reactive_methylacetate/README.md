@@ -18,11 +18,11 @@ activity-based equilibrium residual `Σ_i ν_i ln(γ_i x_i) = ln K_a(T)`, with
 
 ## The validation reference
 
-> **T. Pöpken, S. Steinigeweg & J. Gmehling**, *"Synthesis and Hydrolysis of
-> Methyl Acetate by Reactive Distillation\ldots"*, **Ind. Eng. Chem. Res. 40
-> (2001) 1566.** Run **S-1**: N = 25, reactive stages 11–19, HOAc fed above /
-> MeOH below the zone, reflux 2.1, P ≈ 1.017 bar. Measured endpoints, cited, in
-> `constant/experimental/methyl_acetate_RD_profile.csv`.
+**T. Pöpken, S. Steinigeweg & J. Gmehling**, *"Synthesis and Hydrolysis of
+Methyl Acetate by Reactive Distillation\ldots"*, **Ind. Eng. Chem. Res. 40
+(2001) 1566.** Run **S-1**: N = 25, reactive stages 11–19, HOAc fed above /
+MeOH below the zone, reflux 2.1, P ≈ 1.017 bar. Measured endpoints, cited, in
+`constant/experimental/methyl_acetate_RD_profile.csv`.
 
 The equilibrium constant and thermodynamics are from the companion paper
 **Pöpken, Götze & Gmehling, Ind. Eng. Chem. Res. 39 (2000) 2601**:

@@ -7,8 +7,6 @@ difference between the two runs **is** the temperature.
 runCase tutorials/props/reactor/thiele02_prater_temperature
 ```
 
----
-
 ## The one difference
 
 ```
@@ -59,11 +57,11 @@ algebra over the concentration field the operation already solved.
 the concentration profile was solved isothermally"* — does not apply, and the
 reason is worth having:
 
-> What couples the two balances is the RATE's dependence on temperature.  This
-> case declares `rateConstant 40.0;` — a **number**, not an Arrhenius law.  The
-> reaction term therefore does not know the temperature, the species equation
-> is independent of the energy equation, and its profile is exact.  Prater then
-> hands back the exact temperature.
+What couples the two balances is the RATE's dependence on temperature.  This
+case declares `rateConstant 40.0;` — a **number**, not an Arrhenius law.  The
+reaction term therefore does not know the temperature, the species equation
+is independent of the energy equation, and its profile is exact.  Prater then
+hands back the exact temperature.
 
 Nothing is linearised.  Nothing is iterated.
 
@@ -72,9 +70,9 @@ Nothing is linearised.  Nothing is iterated.
 The coupling comes back, and with it the thing this operation refuses to
 solve.  Its own run says so:
 
-> the NON-ISOTHERMAL pellet is not modelled: coupled to Arrhenius it has up to
-> three steady states for one phi and eta may exceed 1, so its answer is a SET
-> and a Newton would return whichever root the guess was nearest.
+the NON-ISOTHERMAL pellet is not modelled: coupled to Arrhenius it has up to
+three steady states for one phi and eta may exceed 1, so its answer is a SET
+and a Newton would return whichever root the guess was nearest.
 
 β is then the size of the temperature excursion that Arrhenius factor would be
 exposed to — 163.5 K here — which is why it is also the measure of how badly a
@@ -84,8 +82,8 @@ fixed-`k` reading would mislead.  **That case is deliberately not this one.**
 
 The catalyst record this case carries already refuses to be quoted of itself:
 
-> Round values in the range commonly quoted for a porous gamma-alumina support
-> pellet.  NOT taken from, and NOT traceable to, any primary measurement.
+Round values in the range commonly quoted for a porous gamma-alumina support
+pellet.  NOT taken from, and NOT traceable to, any primary measurement.
 
 The three numbers in `thermal {}` are of the same kind.  The conductivity is in
 the range usually quoted for such a pellet; the heat of reaction and the

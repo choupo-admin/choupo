@@ -39,7 +39,9 @@ License
 import { Text } from "@mantine/core";
 import { useMemo } from "react";
 
-import { parseLesson, type Block, type Inline, type ListItem } from "../case/lesson.js";
+import {
+  linkTextNamesTarget, parseLesson, type Block, type Inline, type ListItem,
+} from "../case/lesson.js";
 
 const CODE_BG = "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-7))";
 const BORDER = "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))";
@@ -59,6 +61,27 @@ function Inlines({ runs }: { runs: Inline[] }) {
             );
           case "bold": return <b key={i}><Inlines runs={r.runs} /></b>;
           case "em":   return <i key={i}>{r.s}</i>;
+          //  A link (C264): clickable only to the web, in a new tab; an
+          //  in-page anchor is its text; a repository path is its text and,
+          //  unless the text names it, the path in code style -- the site
+          //  publishes no such page, so no href is written for it.
+          case "link":
+            if (r.target === "web")
+              return (
+                <a key={i} href={r.href} target="_blank" rel="noopener noreferrer"
+                  data-lesson-link="web"><Inlines runs={r.runs} /></a>
+              );
+            if (r.target === "anchor" || linkTextNamesTarget(r.s, r.href))
+              return <span key={i} data-lesson-link={r.target}><Inlines runs={r.runs} /></span>;
+            return (
+              <span key={i} data-lesson-link="repo">
+                <Inlines runs={r.runs} />{" "}
+                <code style={{
+                  fontFamily: "JetBrains Mono, monospace", fontSize: "0.92em",
+                  background: CODE_BG, padding: "0 4px", borderRadius: 3,
+                }}>{r.href}</code>
+              </span>
+            );
           default:     return <span key={i}>{r.s}</span>;
         }
       })}

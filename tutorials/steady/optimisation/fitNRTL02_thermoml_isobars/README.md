@@ -18,7 +18,7 @@ the measurements.  Everything on the fit's own report says it went well.
 
 Then the fitted pair meets the 21 points it never saw:
 
-|                       | vacuum data<br>(Voutsas, 13–33 kPa) | atmospheric data<br>(Kamihama, 101.3 kPa) |
+|                       | vacuum data (Voutsas, 13–33 kPa) | atmospheric data (Kamihama, 101.3 kPa) |
 |---|---|---|
 | catalogue pair (unchanged)  | rms 0.1619 K              | aad 0.0821 K |
 | pair fitted here            | rms 0.1438 K *(in-sample)*| aad 0.3857 K |

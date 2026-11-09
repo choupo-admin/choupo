@@ -85,6 +85,15 @@ batchPlan
   limiting cycle).  Several products: `products ( ... )` + `campaignOrder (
   ... )` + a `productChangeover` per stage (`cleaning`, `ratedMachine` and
   `cleanUtilities` then run per product and say so; see their sections).
+* A sold unit: `dosageUnit { name tablet; mass 0.29023 g; source "..."; reason
+  "..."; }` inside each product (or in the plan for one product) makes the
+  result's `batchPlan.dosage` give mg of every ingredient per unit (the product
+  stream's own composition x that mass), units per lot and per year, and the
+  fluid (moisture) share by mass.  Every plan also publishes `batchPlan.bases`:
+  the declared lot, the lot's product mass, r_P, H_eq, each train's year and
+  available hours, and the hours every annual flow cost uses -- each with its
+  definition (log: `BASES`).  The stage that sets T_L is the **limiting stage**;
+  the machine nearest its rating is the **least capacity margin** -- two things.
 * Cycle t_j = charge + process + discharge + clean.  T_L = max t_j/N_op.
   Occupancy = (N t_j/N_op + campaigns x changeover) / availableTime.
 * REFUSED (exit 2, with the numbers and remedies): a stage busy more hours

@@ -99,7 +99,7 @@ Grep the log for `FAILED`, `INCOMPLETE`, `WARNING`, `ERROR` before quoting any n
 | Deliverable | Where |
 |---|---|
 | Material balance, stream table | log `Flowsheet summary`; `reports/streams/streamTable.csv` |
-| Lot, lots a year, limiting step, campaigns, occupancy | log `BATCH PLAN`; `reports/batchPlan/{stages,trains}.csv` |
+| Lot, lots, limiting stage, campaigns, occupancy, bases, mg/tablet (`dosageUnit`) | log `BATCH PLAN`, `BASES`, `DOSAGE FORM`; `reports/batchPlan/{stages,trains}.csv` |
 | Gantt | `reports/batchPlan/gantt.csv`; GUI section Batch plan |
 | Equipment list and fit to the lot | log `Equipment Sizing`; `reports/equipment/equipmentList.csv`; `design/<unit>/` |
 | GMP rooms, HVAC air, purified water | log `[building]`, `Clean utilities`; `design/hvac/`, `design/purifiedWater/` |

@@ -1263,6 +1263,16 @@ export interface Economics {
    *  publishes the inputs IN TORNADO ORDER (largest NPV swing first, a tie in
    *  declared order) -- the GUI draws that order and sorts nothing. */
   sensitivity?: EconomicSensitivity;
+  /** THE ANNUAL BASIS the engine used (DEV.md 4c C264): every annual FLOW
+   *  (raw materials, utilities, revenue) is its hourly figure x
+   *  `operatingHours`; `operatingHoursFrom` says where those hours came from
+   *  (`batchPlan`: the plan's equivalent hours; `declared`: a stream factor
+   *  in constant/economics; `default`: the stated 0.90).  `utilityBill` is
+   *  C_UT, the year's utilities as the engine priced them.  Absent from an
+   *  older payload -- then no annual figure is drawn, never a guessed one. */
+  operatingHours?: number;
+  operatingHoursFrom?: string;
+  utilityBill?: number;
 }
 
 /** The land as the engine priced it.  `areaFrom` is "layoutPlot" (the plot

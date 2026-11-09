@@ -14,7 +14,7 @@
 
 /*---------------------------------------------------------------------------*\
   MachineUtilisationTable -- the per-machine utilisation of a batch plant
-  (DEV.md 4c C195/C210), the bottleneck first.  Every number is a field of
+  (DEV.md 4c C195/C210), the least capacity margin first.  Every number is a field of
   the engine's `ratedMachine` sheet (case/machineUtilisation.ts reads them);
   nothing here divides or compares a load with a rating.  The marks are the
   engine's: a machine is "announced" when the engine raised its utilisation
@@ -47,7 +47,7 @@ export function MachineUtilisationTable({ rows }: { rows: MachineRow[] }) {
   if (rows.length === 0) return null;
   return (
     <Box data-machine-utilisation mt="md">
-      <Text size="sm" fw={600} mb={4}>Machine utilisation — bottleneck first</Text>
+      <Text size="sm" fw={600} mb={4}>Machine utilisation — least capacity margin first</Text>
       <ScrollArea type="auto">
         <Table striped withTableBorder fz="xs" ff="monospace" miw={900}>
           <Table.Thead><Table.Tr>
@@ -61,7 +61,7 @@ export function MachineUtilisationTable({ rows }: { rows: MachineRow[] }) {
           <Table.Tbody>
             {rows.map((r, i) => (
               <Table.Tr key={`${r.sector}/${r.unit}`} data-machine={r.unit}>
-                <Table.Td fw={i === 0 ? 700 : undefined}>{r.unit}{i === 0 ? " ◆" : ""}</Table.Td>
+                <Table.Td fw={i === 0 ? 700 : undefined}>{r.unit}{i === 0 ? " ▲" : ""}</Table.Td>
                 <Table.Td>{r.kind}</Table.Td>
                 <Table.Td ta="right">{r.installed}</Table.Td>
                 <Table.Td>{r.rating}</Table.Td>
@@ -84,7 +84,10 @@ export function MachineUtilisationTable({ rows }: { rows: MachineRow[] }) {
         </Table>
       </ScrollArea>
       <Text size="xs" c="dimmed" mt={2}>
-        ◆ the bottleneck.  Utilisation is the engine's: the lot's load over what the installed
+        ▲ least capacity margin: the machine whose load is closest to what its installed
+        machines can carry.  It is NOT the plan's limiting stage (◆ in the Gantt and the stage
+        table), which is the stage whose cycle sets a train's lot interval T_L; the two can be
+        different machines.  Utilisation is the engine's: the lot's load over what the installed
         machines of the declared rating can carry.  <em>announced</em> = the engine raised its
         advisory for that machine (hover for its message; the threshold is the engine's 0.85
         unless the case declares its own).  Above 100 % the engine refuses the run, so no

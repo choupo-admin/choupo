@@ -56,6 +56,6 @@ The economics pass also publishes its headline scalars into
 `COM_d`), which is what lets a sweep or optimisation read economics as an
 ordinary response — see `economics02_irr_sweep`.
 
-> AACE Class-4 estimate — accuracy −30% / +50%. The prices are
-> representative teaching figures; refresh them (and their `costYear`) from
-> the cited primary index before any live appraisal.
+AACE Class-4 estimate — accuracy −30% / +50%. The prices are
+representative teaching figures; refresh them (and their `costYear`) from
+the cited primary index before any live appraisal.

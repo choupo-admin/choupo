@@ -145,7 +145,11 @@ export const PHASE_LABEL: Record<PhaseKind, string> = {
   liquid: "liquid",
   vapour: "vapour",
   twoPhase: "two-phase",
-  slurry: "slurry",
+  //  "solid + liquid" (C264): the engine publishes a stream's phases as
+  //  `liquid` and `solid` (converged/<stream> `phases {}`), not a regime --
+  //  a dry tablet carrying 0.6 % moisture is not a slurry, and nothing in
+  //  the engine says which one a stream is.  The kind keeps its key.
+  slurry: "solid + liquid",
   solid: "solid",
 };
 

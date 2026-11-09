@@ -4,12 +4,12 @@ A TWO-SECTOR plant that carries **everything it needs inside the folder** —
 nothing from outside except the Choupo engine. Zip it, send it to a
 collaborator, they unzip + build + run.
 
-> **Run the SECTORS, not the umbrella.** The top-level
-> `tutorials/steady/flowsheets/twoSectorDemo` has no `connections` (the sectors are not
-> wired into one plant), so running it prints *"nothing to simulate — curation
-> phase"* and exits cleanly. The runnable cases are the two sub-sectors,
-> **`SECTOR_R`** and **`SECTOR_S`**, each of which builds its own custom unit op
-> and converges on its own (see *Build + run* below).
+**Run the SECTORS, not the umbrella.** The top-level
+`tutorials/steady/flowsheets/twoSectorDemo` has no `connections` (the sectors are not
+wired into one plant), so running it prints *"nothing to simulate — curation
+phase"* and exits cleanly. The runnable cases are the two sub-sectors,
+**`SECTOR_R`** and **`SECTOR_S`**, each of which builds its own custom unit op
+and converges on its own (see *Build + run* below).
 
 ## What's inside (all case-local)
 - **10 components** — `constant/components/compA..compJ.dat` (synthetic).
