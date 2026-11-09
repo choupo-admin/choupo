@@ -3221,6 +3221,42 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C267 (Vitor, 2026-11-09, forwarding a prompt another session wrote in a PIF tutoring
+> sitting, week 9, the groups now drawing their Gantt, stage times, process diagram and the
+> per-lot input/output table): A CONTINUOUS MACHINE IN A LOT REGIME, ON THE GANTT -- how a
+> spray dryer sized by rate sits in a sequence of lots, the store between the continuous and
+> the batch sections, the lot of a continuous step (ICH Q13), and from the Gantt to
+> utilisation, shifts and crew.**  AUDITED by the architect on apalutamide01_tablets before
+> anything is built (the forwarded text's own step A):
+> EXISTS: two trains decoupled by the ASD store; the dryer a `semicontinuous` stage with
+> `operatingTime fromFlowsheet` (rate 3.75 kg/h of dispersion, 137.14 kg a lot, so
+> t_op = m_lot / rate = 36.57 h; BatchPlanPass.cpp:538-539); campaigns (7 lots, changeover
+> 48 h for shutdown, wash and re-inerting; no clean between lots); reports/batchPlan/
+> gantt.csv with ONE FULL CAMPAIGN PER TRAIN (58 bars: 7 dryer lots and its changeover,
+> 6 solid-dose lots and its changeover) -- the forwarded claim "today it shows only the
+> first" is not what the engine writes; trains.csv with T_L, the limiting stage, campaigns a
+> year and occupancy (dryer 15.9 % of 7920 h, solid dose 11.6 % of 3840 h).
+> MISSING, measured: (a) the intermediate store is NOT sized (BatchPlanPass.H:283 says so):
+> no inventory profile, no volume; (b) a bar is one start-end per stage and lot: charge /
+> process / discharge / clean are in stages.csv but not drawn as blocks, and start-up and
+> inerting are inside the changeover's 48 h, not bars of their own; (c) no per-lot
+> input/output table of raw materials, solvent, product and effluent (stages.csv carries one
+> mass per stage); (d) the single-product Gantt is one campaign, not the year (the
+> multi-product one writes the year); (e) crew is declared, never derived from the Gantt.
+> AND A FINDING THE AUDIT MADE: the dryer train's limiting stage is NOT the dryer but the
+> SOLUTION PREPARATION (cycle 42.57 h = 2 charge + 2 make-up + 36.57 feeding the dryer + 2
+> clean, ONE tank), so the Gantt shows the dryer idle 6 h between lots (bars 4-40.57,
+> 46.57-83.14) while its own `reason` says it "runs on through the lots of a campaign".
+> Either a second feed tank alternates (the dryer then truly runs on, T_L = 36.57 h) or the
+> text says the dryer waits; to discuss with Vitor, with the C266 pharmaceutical findings.
+> ORDER: Vitor asked to STOP after the pharmaceutical walk and discuss; so nothing here is
+> built before that conversation.  Given now, because the groups need it this week and it
+> needs no code: the answers to the five questions from what the engine does, and a
+> paragraph for the groups.  The C266 auditor is asked to judge the Gantt on the four points
+> of the forwarded step B.  Build order proposed for the discussion: the store's inventory
+> profile and size; the per-lot input/output table; the Gantt's blocks and legend; the
+> year; the crew estimate last.
+
 > **C266 (Vitor, 2026-11-09, after another assistant's student walk of donepezil02 found what
 > five Fable auditors had not: "O Fable é pior que o ChatGPT a passar a pente fino os casos?!
 > ... devias mandatar um general para passar a pente fino e com tempo todos os casos para ver
