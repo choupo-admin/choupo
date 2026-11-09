@@ -14,6 +14,7 @@ one-sentence summary, then links with a line each.
 DERIVED, NEVER HAND-KEPT.  The files served are the files that exist:
     docs/ai/start-here.md       -> /llm/start-here.md         (THE entry: routes every task)
     docs/ai/capabilities.md     -> /llm/capabilities.md       ("does Choupo do X?")
+    docs/ai/prompts.md          -> /llm/prompts.md            (the three student prompts, C252)
     docs/ai/brief.md            -> /llm/brief.md              ("design a process")
     docs/ai/packs/*.md          -> /llm/packs/<name>.md
     docs/ai/*.md (the rest)     -> /llm/reference/<name>.md   (the long references)
@@ -178,8 +179,23 @@ def sources():
     packs = sorted(os.path.join(packs_dir, n) for n in os.listdir(packs_dir)
                    if n.endswith(".md")) if os.path.isdir(packs_dir) else []
     refs = sorted(os.path.join(AI, n) for n in os.listdir(AI)
-                  if n.endswith(".md") and n not in ("brief.md", "capabilities.md", "start-here.md"))
+                  if n.endswith(".md") and n not in SPECIAL)
     return brief, packs, refs
+
+
+SPECIAL = ("brief.md", "capabilities.md", "start-here.md", "prompts.md")
+
+
+def published_urls():
+    """-> the set of URL paths /llm/** will serve, from the files that exist
+    (the ONE mapping; check_capability_index asks it whether a URL a prompt
+    names is real).  Paths only, no host: '/llm/brief.md'."""
+    brief, packs, refs = sources()
+    urls = {"/llm/start-here.md", "/llm/capabilities.md", "/llm/prompts.md",
+            "/llm/brief.md", "/llm/models.md"}
+    urls |= {"/llm/packs/" + os.path.basename(p) for p in packs}
+    urls |= {"/llm/reference/" + os.path.basename(r) for r in refs}
+    return urls
 
 
 def entry(url_path, src):
@@ -214,6 +230,11 @@ def build(dist):
     copy_versioned(start, os.path.join(out, "start-here.md"), note)
     copy_versioned(caps, os.path.join(out, "capabilities.md"), note)
     copy_versioned(brief, os.path.join(out, "brief.md"), note)
+    prompts = os.path.join(AI, "prompts.md")
+    if not os.path.isfile(prompts) or os.path.getsize(prompts) == 0:
+        return fail("docs/ai/prompts.md is missing or empty -- the landing and "
+                    "/llm/prompts.md would carry no prompt; refusing to assemble /llm")
+    copy_versioned(prompts, os.path.join(out, "prompts.md"), note)
     for p in packs:
         copy_versioned(p, os.path.join(out, "packs", os.path.basename(p)), note)
     for r in refs:
@@ -228,6 +249,8 @@ def build(dist):
              "## Start here (the one entry; it routes every task)", "",
              "- [start-here.md](%s/llm/start-here.md): read its first section "
              "and follow the route it gives" % SITE, "",
+             "## Prompts to give the assistant (three short ones: learn Choupo, learn the area, the task)", "",
+             entry("/llm/prompts.md", prompts), "",
              "## Does Choupo do X?", "",
              entry("/llm/capabilities.md", caps), "",
              "## Design a process: start here", "",
@@ -286,6 +309,10 @@ def verify(dist):
         print("llm_site: ERROR: llms.txt's first link is %s, not "
               "/llm/start-here.md (the one entry an assistant is pointed at)"
               % links[0], file=sys.stderr)
+        bad += 1
+    if "/llm/prompts.md" not in links[:3]:
+        print("llm_site: ERROR: llms.txt does not list /llm/prompts.md near the top",
+              file=sys.stderr)
         bad += 1
     if "/llm/capabilities.md" not in links:
         print("llm_site: ERROR: llms.txt does not list /llm/capabilities.md",

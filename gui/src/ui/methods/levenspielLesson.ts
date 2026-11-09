@@ -167,8 +167,20 @@ V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{e
       + "tubular reactor has to crawl through the slow inlet region first.  "
       + "If the law has no uncatalysed path at all, the rate at X = 0 is "
       + "exactly zero, the ordinate is unbounded, and a plug-flow reactor "
-      + "cannot start — it needs a recycle or a seed of product, which a "
-      + "stirred tank provides by construction.",
+      + "cannot start when it is fed no product — it needs a seed of product in the "
+      + "feed, or a recycle.  A stirred tank does not CREATE product "
+      + "either.  With no product in the feed or in the initial charge, "
+      + "the product balance dC_P/dt = −C_P/τ + k·C_A·C_P is zero at C_P = "
+      + "0, so the washout state (no product, reactant leaving as it "
+      + "arrived) is always a steady state of the tank.  A reacting steady "
+      + "state exists beside it only when k·C_A0·τ > 1 (C_A0 the inlet "
+      + "concentration of A, τ the residence time), and the tank reaches it "
+      + "only if product is present at some moment: an initial charge, an "
+      + "inoculum, an initiation step.  What the tank does is SUSTAIN a "
+      + "seed, by back-mixing: product already inside is carried straight "
+      + "into the fresh feed, which a plug-flow reactor does not do without "
+      + "a recycle.  Whether a steady state exists and whether a start-up "
+      + "can reach it are two different questions.",
     formula: String.raw`\begin{aligned}
 \text{autocatalytic:}\quad -r_A &= k\, C_A\, C_P\\
 C_P = 0 \text{ at } X = 0 \;&\Rightarrow\; -r_A = 0 \;\Rightarrow\; \frac{1}{-r_A} \text{ unbounded there}

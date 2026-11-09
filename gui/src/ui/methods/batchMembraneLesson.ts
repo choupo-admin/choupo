@@ -144,8 +144,11 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
   {
     n: 2,
     title: "Two modes, and the one line that differs",
-    body: "There are exactly two pure batch operations, and the engine "
-      + "implements both with the same balances.  In CONCENTRATION mode you "
+    body: "This tool treats two batch modes, and the engine implements both "
+      + "with the same balances.  (Practice has more: diafiltration at "
+      + "variable volume, with clean solvent added at a rate other than the "
+      + "permeate's, is common, and the diafiltrate rate here is only ever "
+      + "zero or the permeate rate.)  In CONCENTRATION mode you "
       + "add nothing: permeate leaves, the vessel shrinks, and everything the "
       + "membrane keeps gets more concentrated.  In CONSTANT-VOLUME "
       + "diafiltration you add clean solvent exactly as fast as permeate "
@@ -413,10 +416,13 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
     title: "Fouling: a claim about a mechanism, not a fitted exponent",
     body: "Everything so far makes the flux RISE during a wash: the salt "
       + "leaves, the osmotic pressure falls, the driving force grows.  That "
-      + "is what the model has, and it is not what a rig does.  On real "
-      + "equipment the flux falls, because material accumulates on or in the "
-      + "membrane, and every schedule anyone writes is sized on that decline. "
-      + " The engine offers it as a resistance in series on the permeance it "
+      + "is what the model has, and a rig can do the opposite.  On real "
+      + "equipment the flux can fall during a run, for three reasons: the "
+      + "osmotic pressure rises as the retentate concentrates (the model has "
+      + "that, in concentration mode), the viscosity rises with concentration "
+      + "(it does not), and material accumulates on or in the membrane, "
+      + "which is fouling.  Fouling is the one this step adds, and schedules "
+      + "are commonly sized on the decline.  The engine offers it as a resistance in series on the permeance it "
       + "hands the transport law -- applied where the transport CONTEXT is "
       + "assembled, so solution-diffusion and DSPM-DE are served alike and "
       + "neither law is modified (BatchDiafilter.cpp:341-358).  The "
@@ -787,10 +793,14 @@ export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
     body: "The unit is told a transmembrane pressure and an area, not a "
       + "stirrer speed or a channel, so it REFUSES to run without `k_film` "
       + "rather than inventing a correlation for a geometry nobody described "
-      + "(BatchDiafilter.cpp:129-137).  A crossflow module CAN correlate it "
-      + "-- that is what Schock & Miquel's spacer fit is for (Desalination 64 "
-      + "(1987) 339, massTransfer/SchockMiquel.H:37) -- and a stirred vessel "
-      + "cannot.  Turn the knob down and watch the polarisation bite.",
+      + "(BatchDiafilter.cpp:129-137).  A spacer-filled crossflow channel is "
+      + "one geometry for which Choupo carries a correlation (Schock & "
+      + "Miquel's spacer fit, Desalination 64 (1987) 339, "
+      + "massTransfer/SchockMiquel.H:37).  Correlations for stirred cells "
+      + "exist in the membrane literature too; what is true is that THIS "
+      + "unit is declared a pressure and an area, with no geometry or "
+      + "stirrer speed to feed any correlation, so the coefficient has to be "
+      + "declared.  Turn the knob down and watch the polarisation bite.",
   },
   {
     id: "no-energy",
