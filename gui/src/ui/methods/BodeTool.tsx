@@ -64,7 +64,7 @@ import {
   bodeOverrides, bodeSweepGrid, combine, controllerResponse, dB,
   deadTimeResponse, firstOrderLagResponse, gainResponse, integratorResponse,
   loopWindow, margins, openLoopResponse, parallelGains,
-  readMeasuredPoint, toDeg,
+  readMeasuredPoint, startsBeyondMinus180, toDeg,
   type ControllerMode, type LoopSpec, type MeasuredPoint, type Response,
 } from "./bodeMath.js";
 import { OriginMark } from "./origin.js";
@@ -437,6 +437,9 @@ export function BodeTool(): JSX.Element {
   const window_ = useMemo(() => loopWindow(spec), [spec]);
   const m = useMemo(
     () => margins(spec, window_.wLo, window_.wHi), [spec, window_]);
+  //  C259 audit F5: the defaults with "+ integrator" start beyond −180°.
+  const beyond = useMemo(
+    () => startsBeyondMinus180(spec, window_.wLo), [spec, window_]);
   const gains = useMemo(() => parallelGains(spec.controller), [spec]);
 
   return (
@@ -671,7 +674,10 @@ export function BodeTool(): JSX.Element {
                 ? (m.phaseMarginDeg > 0 ? "grape" : "red") : "gray"}>
               phase margin ={" "}
               {Number.isFinite(m.phaseMarginDeg)
-                ? `${fmt(m.phaseMarginDeg, 1)}°` : "—"}
+                ? (beyond
+                  ? `${fmt(m.phaseMarginDeg, 1)}° (not a reading: see below)`
+                  : `${fmt(m.phaseMarginDeg, 1)}°`)
+                : "—"}
             </Badge>
             <Badge variant="light" color={m.phase.found ? "cyan" : "gray"}>
               phase crossover ω_u ={" "}
@@ -688,7 +694,21 @@ export function BodeTool(): JSX.Element {
             </Badge>
           </Group>
           <Text size="sm" mt={8}>
-            {!m.gain.found && !m.phase.found
+            {beyond
+              ? "The open loop is ALREADY beyond −180° at the lowest "
+                + "frequency drawn, so the simple margin reading does not "
+                + "apply and the margins above read nothing.  With the "
+                + "integrator and integral action the low-frequency phase is "
+                + "−180° + ω(τ_I − τ − θ), below −180° whenever τ_I is at or "
+                + "below τ + θ"
+                + (mode === "PI"
+                  ? "; under PI it then never climbs back, and the loop is "
+                    + "unstable at EVERY gain.  "
+                  : ".  ")
+                + "Raise τ_I above τ + θ before reading a margin — and note "
+                + "that the integrator's pole at the origin already breaks "
+                + "step 8's open-loop-stable assumption."
+              : !m.gain.found && !m.phase.found
               ? "Neither curve crosses its line inside the window drawn, so "
                 + "neither margin exists to be read.  That is the honest "
                 + "answer and not a failure: a loop whose magnitude never "

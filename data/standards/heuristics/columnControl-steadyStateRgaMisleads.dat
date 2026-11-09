@@ -18,9 +18,13 @@ name       steadyStateRgaMisleads;
 
 claim      "Selecting a configuration on the steady-state relative gain can mislead: the DB configuration has an infinite steady-state relative gain and can still be controlled well, because its high-frequency relative gain is close to one -- so the judgement belongs to the initial response, not to the steady state.";
 
+//  `conditional`, not `favours` (C259 audit F9): the claim is that the
+//  steady-state relative gain is not a reason to REJECT DB, and its own
+//  notCovered says it does not call DB a good choice; a `favours` badge
+//  on the DB card said the opposite.
 stances
 (
-    { structure DB; stance favours; }
+    { structure DB; stance conditional; }
 );
 topics     ( interaction );
 

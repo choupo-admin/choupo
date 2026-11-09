@@ -54,7 +54,7 @@ import {
   baseOverrides, defaultKnobValues, findColumnFeeds, isaTag, perturbedOverrides,
   drumStreams, pickStage, placeValve, qualityLoopFor, sensitivityMetric,
   signChanges, slopeMetric,
-  stageY, trayRange,
+  condenserTypeOf, stageY, trayRange,
 } from "../src/ui/methods/ColumnControlTool.js";
 import {
   conflictPairs, heuristicsForStructure, heuristicsForTopic,
@@ -62,6 +62,7 @@ import {
 } from "../src/ui/methods/columnControlRecords.js";
 import { applyScalarOverride, methodCase } from "../src/case/methodRun.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
+import type { JsonDict } from "../src/dict/json.js";
 import { METHOD_TOOLS, METHOD_TOOL_KINDS } from "../src/ui/methods/registry.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -352,15 +353,34 @@ describe("column-control — an unusable record is NAMED, never dropped", () => 
 // ---------------------------------------------------------------------------
 
 describe("column-control — the tray criteria", () => {
-  it("neither the condenser nor the reboiler is a candidate tray", () => {
-    //  Choupo numbers stage 1 the condenser and stage N the reboiler, so
-    //  neither can carry a tray thermocouple.  A criterion that could return
-    //  stage 1 would be recommending a thermometer in the reflux drum.
-    expect(trayRange(15)).toEqual({ lo: 2, hi: 14 });
+  it("the candidates are the trays: stage 1 under a total condenser, never the reboiler", () => {
+    //  C259 audit F1.  This arm used to pin { lo: 2 } on the premise that
+    //  stage 1 is always the condenser.  It is not: with the engine's DEFAULT
+    //  total condenser stage 1 is the TOP TRAY and the condenser is not a
+    //  stage (DistillationColumn.H:40-43; the witness declares no condenser
+    //  block, and its own run log says "stage 1 is the top tray").  Only a
+    //  `condenser { type partial; }` makes stage 1 the condenser.  Stage N is
+    //  the partial reboiler either way.
+    expect(trayRange(15)).toEqual({ lo: 1, hi: 14 });
+    expect(trayRange(15, "partial")).toEqual({ lo: 2, hi: 14 });
     for (const m of slopeMetric(WITNESS_T)) {
-      expect(m.stage).toBeGreaterThanOrEqual(2);
+      expect(m.stage).toBeGreaterThanOrEqual(1);
       expect(m.stage).toBeLessThanOrEqual(13);
     }
+    for (const m of slopeMetric(WITNESS_T, "partial"))
+      expect(m.stage).toBeGreaterThanOrEqual(2);
+  });
+
+  it("reads the condenser type from the case, defaulting to the engine's total", () => {
+    const fs: JsonDict = { units: [
+      { name: "c1", type: "distillationColumn",
+        operation: { condenser: { type: "partial" } } },
+      { name: "c2", type: "distillationColumn", operation: {} },
+    ] };
+    expect(condenserTypeOf(fs, "c1")).toBe("partial");
+    expect(condenserTypeOf(fs, "c2")).toBe("total");
+    expect(condenserTypeOf(fs, "nobody")).toBe("total");
+    expect(condenserTypeOf(undefined, "c1")).toBe("total");
   });
 
   it("the SLOPE criterion is the adjacent-tray difference, not a smoothed one", () => {
@@ -384,7 +404,11 @@ describe("column-control — the tray criteria", () => {
     const base = [300, 310, 320, 330, 340];
     const pert = base.map((t) => t + 2);
     const m = sensitivityMetric(base, pert, 0.01);
-    expect(m.map((x) => x.stage)).toEqual([2, 3, 4]);
+    //  Stages 1..4 of 5: stage 1 is the top tray under the default total
+    //  condenser (C259 F1; this arm used to expect [2, 3, 4]).
+    expect(m.map((x) => x.stage)).toEqual([1, 2, 3, 4]);
+    expect(sensitivityMetric(base, pert, 0.01, "partial").map((x) => x.stage))
+      .toEqual([2, 3, 4]);
     for (const x of m) expect(x.value).toBeCloseTo(2, 12);
     //  and the sign survives: a falling temperature is a NEGATIVE gain.
     const down = sensitivityMetric(base, base.map((t) => t - 2), 0.01);
@@ -491,6 +515,12 @@ describe("column-control — the classroom witness", () => {
     expect(get("refluxRatio") * get("distillateRate")).toBeCloseTo(
       WITNESS_REFLUX_RATIO * WITNESS_DISTILLATE_RATE, 9);
     expect(HANDLE_TEXT.distillate.means).toMatch(/L = R/);
+    //  C259 audit F2: V = L + D under a total condenser and B = F - D, so
+    //  neither handle moves one stream alone; the text used to say each did.
+    for (const h of [HANDLE_TEXT.reflux, HANDLE_TEXT.distillate]) {
+      expect(h.means).not.toMatch(/only stream/);
+      expect(h.means).toMatch(/V = L \+ D/);
+    }
   });
 
   it("a perturbation writes the dict it claims to write", () => {
@@ -524,13 +554,17 @@ describe("column-control — the cross-section", () => {
   });
 
   it("a tray's y stays inside the shell, and rises with the stage number", () => {
-    const ys = [2, 5, 10, 14].map((s) => stageY(s, 15));
+    const ys = [1, 5, 10, 14].map((s) => stageY(s, 15));
     for (let i = 1; i < ys.length; ++i)
       expect(ys[i]!).toBeGreaterThan(ys[i - 1]!);
     expect(Math.min(...ys)).toBeGreaterThan(96);
     expect(Math.max(...ys)).toBeLessThan(392);
     //  Out-of-range stages are CLAMPED to the shell rather than drawn off it.
-    expect(stageY(1, 15)).toBe(stageY(2, 15));
+    //  Stage 1 is the top tray under the default total condenser (C259 F1),
+    //  so it has its own place; under a partial condenser it is clamped.
+    expect(stageY(0, 15)).toBe(stageY(1, 15));
+    expect(stageY(1, 15)).toBeLessThan(stageY(2, 15));
+    expect(stageY(1, 15, "partial")).toBe(stageY(2, 15, "partial"));
     expect(stageY(99, 15)).toBe(stageY(14, 15));
   });
 

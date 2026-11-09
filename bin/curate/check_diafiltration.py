@@ -568,8 +568,11 @@ def main():
         ("reason", _re.compile(r'\n\s*reason\s+"[^"]*";'), "",
          "reason", "a mechanism claimed with no stated reason"),
         ("law", _re.compile(r'law\s+cake;'), "law      standard;",
-         "pore-INTERNAL geometry",
-         "Hermia's `standard`, which this lumped permeance cannot represent"),
+         #  C259: the refusal used to call `standard` AND `complete`
+         #  pore-INTERNAL; only standard blocking is (complete blocking seals
+         #  the pore entrances).  It now names each law's own mechanism.
+         "pore walls narrowing inside the membrane",
+         "Hermia's `standard`, which this unit does not implement"),
         ("unknown", _re.compile(r'law\s+cake;'), "law      wishful;",
          "unknown fouling law", "a law nobody implemented"),
     ]

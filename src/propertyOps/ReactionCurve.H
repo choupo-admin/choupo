@@ -147,7 +147,7 @@ Description
     the lesson.  A rule this file cannot cite to a primary is not shipped.
 
       zieglerNichols   Ziegler, J.G. & Nichols, N.B., "Optimum Settings for
-                       Automatic Controllers", Trans. ASME 64 (1942) 759-768.
+                       Automatic Controllers", Trans. ASME 64 (1942) 759-765.
                        The open-loop (process reaction curve) settings, in
                        which the curve's reaction rate R and lag L become
                        R = K/tau and L = theta for an FOPDT model.

@@ -41,7 +41,7 @@
   margin / phase margin / amplitude ratio across src/**, and EVERY hit is a
   COMMENT about the measurement above: src/control/signal/Signal.H:42 ("one
   point of a Bode plot") and :94, src/dynamicDriver/DynamicDriver.cpp:945,
-  and src/outerDriver/SweepDriver.H:85 (the linked-target mirror the Bode
+  and src/outerDriver/SweepDriver.H:92 (the linked-target mirror the Bode
   sweep case needs).  Not one of them computes anything.
 
   WHY PLANE B IS ALLOWED TO LIVE IN TYPESCRIPT AT ALL, since the standing
@@ -114,7 +114,7 @@ export function gainResponse(K: number): Response {
  *  `dn_i/dt = F_in z_in_i - F_out (n_i/Sum n)` with `F_out = F_in`
  *  (src/unitOperations/dynamic/DynamicCSTR.cpp:786-789), whose single time
  *  constant is the residence time `nTot / F_in` the same unit computes at
- *  :377.  Put a sinusoid in and the closed forms below come out; the
+ *  :626.  Put a sinusoid in and the closed forms below come out; the
  *  measured plane checks them. */
 export function firstOrderLagResponse(tauS: number, omegaRadS: number): Response {
   const wt = omegaRadS * tauS;
@@ -158,7 +158,8 @@ export type ControllerMode = "off" | "P" | "PI" | "PID";
  *  derivative term, and the running controller differentiates the MEASURED
  *  PV over one time step (src/control/PIDController.cpp:115-120, derivative
  *  on PV), which is a different
- *  object at high frequency and has no set-point response at all.  The page
+ *  object at high frequency; its derivative term has no set-point response
+ *  (no derivative kick), while P and I still act on the error (:123-127).  The page
  *  says so; this function does not pretend otherwise. */
 export interface ControllerSpec {
   mode: ControllerMode;
@@ -315,6 +316,21 @@ export function margins(spec: LoopSpec, wLo: number, wHi: number): Margins {
     gainMarginDb: p.found ? dB(gm) : NaN,
     stable: g.found && p.found && phaseMarginDeg > 0 && gm > 1,
   };
+}
+
+/** True when the open loop is ALREADY beyond −180° at the lowest frequency
+ *  drawn.  Then there is no first −180° crossing to find, the "phase margin"
+ *  read at the gain crossover can fall below −180° (a number that reads
+ *  nothing), and the simple margin reading does not apply.  The case that
+ *  produces it on the page: an integrating process under PI, whose
+ *  low-frequency phase is −180° + ω(τ_I − τ − θ) (radians in the bracket), so
+ *  τ_I ≤ τ + θ starts below −180° and never climbs back — its phase is
+ *  −180° + atan(ωτ_I) − atan(ωτ) − ωθ, and atan(ωτ_I) − atan(ωτ) ≤
+ *  ω·max(0, τ_I − τ) — so that loop is unstable at every gain.  (C259 audit F5: at the page defaults,
+ *  τ_I = τ = 240 s and θ = 30 s, "+ integrator" gave a phase margin of
+ *  −192° beside a message saying the loop could not be made unstable.) */
+export function startsBeyondMinus180(spec: LoopSpec, wLo: number): boolean {
+  return openLoopResponse(spec, wLo).phaseRad < -Math.PI;
 }
 
 /** The frequency window to DRAW a loop over.

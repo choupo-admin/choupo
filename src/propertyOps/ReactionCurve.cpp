@@ -256,7 +256,7 @@ struct Setting
 };
 
 const char* ZN_SOURCE =
-    "Ziegler & Nichols, Trans. ASME 64 (1942) 759-768 -- open-loop"
+    "Ziegler & Nichols, Trans. ASME 64 (1942) 759-765 -- open-loop"
     " (process reaction curve) settings, R = K/tau and L = theta";
 const char* CC_SOURCE =
     "Cohen & Coon, Trans. ASME 75 (1953) 827-834";

@@ -99,6 +99,7 @@ import {
 } from "@mantine/core";
 
 import type { UnitProfile } from "../../adapters/SolverAdapter.js";
+import type { JsonDict } from "../../dict/json.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
@@ -133,8 +134,8 @@ export interface ColumnFeed {
 }
 
 /** Profiles carrying a stage axis and a temperature column, at least four
- *  stages long (a condenser, a reboiler and two trays is the smallest thing
- *  the tray question can be asked of).  Sorted by unit name. */
+ *  stages long (a reboiler and a few trays above it is the smallest thing the
+ *  tray question can be asked of).  Sorted by unit name. */
 export function findColumnFeeds(
   profiles: UnitProfile[] | undefined, kpis: KpiMap | undefined,
 ): ColumnFeed[] {
@@ -160,11 +161,40 @@ export function findColumnFeeds(
 // engine's, twice.
 //
 // THE CANDIDATE SET, and it is a modelling statement rather than a convenience.
-// Choupo's column numbers stage 1 as the CONDENSER and stage N as the REBOILER
-// (T_top and T_bottom are the first and last entries of the profile), so
-// neither is a tray and neither can carry a tray thermocouple.  The candidates
-// are therefore stages 2 .. N-1, and the slope, which reads a PAIR, is offered
-// only where both members are candidates.
+// Choupo's column numbers its EQUILIBRIUM stages from the top, and the
+// condenser TYPE decides what stage 1 is (DistillationColumn.H:36-47): with
+// the default TOTAL condenser stage 1 is the TOP TRAY (the condenser is not a
+// stage); with `condenser { type partial; }` stage 1 IS the condenser.  Stage
+// N is the partial reboiler either way (T_top and T_bottom are the first and
+// last entries of the profile).  The candidates are therefore stages 1 .. N-1
+// under a total condenser and 2 .. N-1 under a partial one, and the slope,
+// which reads a PAIR, is offered only where both members are candidates.
+// (Until the C259 audit this said stage 1 was always the condenser, which
+// dropped the top tray from the candidates on the classroom witness.)
+
+/** What stage 1 is: the engine's default is a TOTAL condenser. */
+export type CondenserType = "total" | "partial";
+
+/** The condenser type a case declares for one column unit, read from its
+ *  flowsheetDict (`operation { condenser { type total|partial; } }`).  A
+ *  column that declares none gets the engine's default, `total` — the same
+ *  default the engine applies and announces.  A unit this reader cannot find
+ *  (a sectored case keeps its units elsewhere) is also read as the default. */
+export function condenserTypeOf(
+  flowsheet: JsonDict | undefined, unit: string,
+): CondenserType {
+  const units = flowsheet?.["units"];
+  if (!Array.isArray(units)) return "total";
+  const u = units.find((x) => x !== null && typeof x === "object"
+    && !Array.isArray(x) && String((x as JsonDict)["name"]) === unit) as
+    JsonDict | undefined;
+  const op = u?.["operation"];
+  const cond = op && typeof op === "object" && !Array.isArray(op)
+    ? (op as JsonDict)["condenser"] : undefined;
+  const type = cond && typeof cond === "object" && !Array.isArray(cond)
+    ? (cond as JsonDict)["type"] : undefined;
+  return type === "partial" ? "partial" : "total";
+}
 
 export interface StageMetric {
   /** 1-based stage number, as the engine numbers it. */
@@ -173,9 +203,13 @@ export interface StageMetric {
   value: number;
 }
 
-/** The lowest and highest stage a tray thermocouple could sit on. */
-export function trayRange(nStages: number): { lo: number; hi: number } {
-  return { lo: 2, hi: Math.max(2, nStages - 1) };
+/** The lowest and highest stage a tray thermocouple could sit on: every
+ *  stage but the reboiler, less stage 1 when it is a partial condenser. */
+export function trayRange(
+  nStages: number, condenser: CondenserType = "total",
+): { lo: number; hi: number } {
+  const lo = condenser === "partial" ? 2 : 1;
+  return { lo, hi: Math.max(lo, nStages - 1) };
 }
 
 /** THE SLOPE CRITERION, in the source's own form: the temperature difference
@@ -184,10 +218,15 @@ export function trayRange(nStages: number): { lo: number; hi: number } {
  *  would be a second definition of somebody else's criterion, and the tool
  *  would then be reporting its own rule under his name.
  *
- *  Returned only for pairs whose BOTH members are trays. */
-export function slopeMetric(T: readonly number[]): StageMetric[] {
+ *  Returned only for pairs whose BOTH members are trays, and only on a
+ *  profile long enough to ask the question of (four stages, as
+ *  `findColumnFeeds` requires). */
+export function slopeMetric(
+  T: readonly number[], condenser: CondenserType = "total",
+): StageMetric[] {
   const n = T.length;
-  const { lo, hi } = trayRange(n);
+  if (n < 4) return [];
+  const { lo, hi } = trayRange(n, condenser);
   const out: StageMetric[] = [];
   for (let s = lo; s <= hi - 1; ++s) {
     const a = T[s - 1], b = T[s];
@@ -203,15 +242,18 @@ export function slopeMetric(T: readonly number[]): StageMetric[] {
  *  size of that move and expressed per 1 %.
  *
  *  Signed on purpose.  The magnitude is what the criterion ranks, but the SIGN
- *  is where the trap lives: a column's temperature response changes sign
- *  somewhere between the two ends, and a sensor placed at the crossing has
- *  almost no gain however steep the profile looks there. */
+ *  is where the trap lives: when the handle moves the internal flows (L and V
+ *  together) the response changes sign between the two ends, and a sensor
+ *  placed at the crossing has almost no gain however steep the profile looks
+ *  there.  A handle that shifts the whole profile need not change sign at all
+ *  (`signChanges` reports what the run shows). */
 export function sensitivityMetric(
   base: readonly number[], perturbed: readonly number[], relStep: number,
+  condenser: CondenserType = "total",
 ): StageMetric[] {
   const n = Math.min(base.length, perturbed.length);
   if (n < 4 || !Number.isFinite(relStep) || relStep === 0) return [];
-  const { lo, hi } = trayRange(n);
+  const { lo, hi } = trayRange(n, condenser);
   const out: StageMetric[] = [];
   for (let s = lo; s <= hi; ++s) {
     const a = base[s - 1], b = perturbed[s - 1];
@@ -307,10 +349,16 @@ export interface ColumnKnob {
 export const COLUMN_CONTROL_KNOBS: readonly ColumnKnob[] = [
   { id: "refluxRatio", label: "reflux ratio R = L/D",
     file: "system/flowsheetDict", key: "refluxRatio",
-    def: WITNESS_REFLUX_RATIO, min: 1.1, max: 6, step: 0.1, unit: "",
+    //  min 0.5, not 1.1 (C259 audit F11): R = L/D >= 1.1 made the reflux the
+    //  larger drum stream at every setting, so the chip below could never
+    //  show the other case of the rule it serves.  The witness converges at
+    //  R = 0.5 with D anywhere on its slider (checked 2026-11-09; the purity
+    //  falls, which is the physics, not a failure).
+    def: WITNESS_REFLUX_RATIO, min: 0.5, max: 6, step: 0.1, unit: "",
     why: "the reflux ratio decides which stream leaving the reflux drum is the "
-      + "larger one, which is the heuristic that decides LV against DV — and it "
-      + "moves the temperature profile the tray criteria are read from" },
+      + "larger one (the reflux above R = 1, the distillate below it), which is "
+      + "the heuristic that decides LV against DV — and it moves the "
+      + "temperature profile the tray criteria are read from" },
   { id: "distillateRate", label: "distillate rate D",
     file: "system/flowsheetDict", key: "distillateRate",
     def: WITNESS_DISTILLATE_RATE, min: 20, max: 80, step: 1, unit: "kmol/h",
@@ -344,13 +392,19 @@ export function baseOverrides(values: ColumnKnobValues): ScalarOverride[] {
 
 /** The two handles the witness's declared specification actually exposes.
  *
- *  A Choupo column is specified by (R, D), so those two moves span the plane —
- *  but only ONE of them is a textbook manipulated variable on its own, and the
- *  tool says which.  `reflux` raises R with D held, which moves the REFLUX L
- *  alone.  `distillate` raises D and lowers R together so that L = R·D is
- *  unchanged, which moves the DISTILLATE alone; without that compensation,
- *  "changing D" at a fixed RATIO would move both streams and the sensitivity
- *  would belong to no handle at all. */
+ *  A Choupo column is specified by (R, D), so those two moves span the plane.
+ *  NEITHER moves one stream alone — under a total condenser V = L + D, and
+ *  B = F − D — and the text says what each moves (C259 audit F2: it used to
+ *  say "the only stream that moves").  `reflux` raises R with D held: L and V
+ *  rise together, D and B stay put — the internal-flow move that sharpens the
+ *  separation.  `distillate` raises D and lowers R so that L = R·D is
+ *  unchanged: V rises with D and B falls — the material-balance move that
+ *  shifts the whole profile.  Neither is the textbook open-loop move of an LV
+ *  or DV loop (L or D stepped at constant V); on the witness that move gives
+ *  a tray pick that wanders with the step size (6, 10, 11 for L at 0.25, 1
+ *  and 5 %, recomputed 2026-11-09), while these two hold their pick (11 and
+ *  5) at every step size; so the tool keeps them and names them for what
+ *  they are. */
 export type Handle = "reflux" | "distillate";
 
 /** The perturbed run's overrides: the base knobs with ONE handle moved by
@@ -384,14 +438,17 @@ export function perturbedOverrides(
 export const HANDLE_TEXT: { [k in Handle]: { label: string; means: string } } = {
   reflux: {
     label: "reflux L",
-    means: "R is raised with D held, so the reflux is the only stream that "
-      + "moves — the first manipulated variable of the LV configuration.",
+    means: "R is raised with D held: L rises and V rises with it (V = L + D), "
+      + "while D and B stay put — the internal-flow move that sharpens the "
+      + "separation.  It is not LV's open-loop move, L at constant V, which "
+      + "would lower D by as much as L rose.",
   },
   distillate: {
     label: "distillate D",
-    means: "D is raised and R lowered together so that L = R·D is unchanged, "
-      + "so the distillate is the only stream that moves — the manipulated "
-      + "variable the DV configuration frees.",
+    means: "D is raised and R lowered together so that L = R·D is unchanged: "
+      + "V rises with D (V = L + D) and B falls (B = F − D) — the "
+      + "material-balance move that shifts the whole profile.  It is not "
+      + "DV's open-loop move, D at constant V, which would lower L instead.",
   },
 };
 
@@ -451,24 +508,31 @@ const POINT_AT: { [name: string]: Pt } = {
   // criteria select), so they are filled in by `trayPoint` below.
 };
 
-/** The y of a stage on the shell.  Stage 1 is the condenser and stage N the
- *  reboiler — neither is on the shell — so the N-2 trays are spread over it. */
-export function stageY(stage: number, nStages: number): number {
-  const trays = Math.max(1, nStages - 2);
-  const i = Math.min(Math.max(stage - 2, 0), trays - 1);
+/** The y of a stage on the shell.  The trays are the stages of `trayRange`:
+ *  1 .. N-1 under the default total condenser (stage 1 is the top tray), 2 ..
+ *  N-1 under a partial one (stage 1 is the condenser).  The reboiler, stage
+ *  N, is not on the shell, and neither is a partial condenser. */
+export function stageY(
+  stage: number, nStages: number, condenser: CondenserType = "total",
+): number {
+  const { lo, hi } = trayRange(nStages, condenser);
+  const trays = Math.max(1, hi - lo + 1);
+  const i = Math.min(Math.max(stage - lo, 0), trays - 1);
   return SHELL_TOP + ((i + 0.5) * (SHELL_BOT - SHELL_TOP)) / trays;
 }
 
-const trayPoint = (stage: number, nStages: number): Pt =>
-  ({ x: SHELL_X1 + 10, y: stageY(stage, nStages) });
+const trayPoint = (
+  stage: number, nStages: number, condenser: CondenserType,
+): Pt => ({ x: SHELL_X1 + 10, y: stageY(stage, nStages, condenser) });
 
 /** Where a valve sits.  Everything but the feed is fixed furniture; the feed
  *  valve follows the feed stage, because the feed pipe does. */
 export function placeValve(
   name: string, feedStage: number, nStages: number,
+  condenser: CondenserType = "total",
 ): Pt | null {
   if (name === "feed")
-    return { x: 86, y: stageY(feedStage, nStages) };
+    return { x: 86, y: stageY(feedStage, nStages, condenser) };
   return VALVE_AT[name] ?? null;
 }
 
@@ -516,18 +580,31 @@ interface SectionInput {
   /** Which quality loop the sensor tray belongs to (null when the chosen
    *  handle is not free for composition in this structure). */
   sensorLoop: ControlLoop | null;
+  /** What stage 1 is (see `trayRange`). */
+  condenser: CondenserType;
   busyOverlay: boolean;
+}
+
+/** The section a stage belongs to, by the feed stage: the rectifying trays
+ *  sit above the feed, the stripping section runs from the feed stage down.
+ *  Used only to SAY when a criterion put a loop's sensor in the other
+ *  section, never to move the pick. */
+export function sectionOf(
+  stage: number, feedStage: number,
+): "rectifyingTray" | "strippingTray" {
+  return stage < feedStage ? "rectifyingTray" : "strippingTray";
 }
 
 function ColumnSection(
   { structure, nStages, feedStage, sensorStage, sensorCriterion, sensorLoop,
-    busyOverlay }: SectionInput,
+    condenser, busyOverlay }: SectionInput,
 ): JSX.Element {
+  const { lo, hi } = trayRange(nStages, condenser);
   const trays: number[] = [];
-  for (let s = 2; s <= nStages - 1; ++s) trays.push(s);
+  for (let s = lo; s <= hi; ++s) trays.push(s);
 
   const unplaced = structure.loops
-    .filter((l) => placeValve(l.manipulates, feedStage, nStages) === null
+    .filter((l) => placeValve(l.manipulates, feedStage, nStages, condenser) === null
       || (l.measuredAt !== "rectifyingTray" && l.measuredAt !== "strippingTray"
         && !POINT_AT[l.measuredAt]))
     .map((l) => l.controlled);
@@ -537,18 +614,24 @@ function ColumnSection(
       || loop.measuredAt === "strippingTray") {
       if (sensorLoop && loop.controlled === sensorLoop.controlled
         && sensorStage !== null)
-        return trayPoint(sensorStage, nStages);
+        return trayPoint(sensorStage, nStages, condenser);
       //  The OTHER quality loop: this tool computes one tray at a time, so its
       //  sensor is drawn at the middle of its own section and labelled as not
       //  selected.  Drawing it at a computed-looking position would claim a
       //  result nobody asked for.
       const mid = loop.measuredAt === "rectifyingTray"
-        ? Math.max(2, Math.round(nStages * 0.3))
-        : Math.min(nStages - 1, Math.round(nStages * 0.72));
-      return trayPoint(mid, nStages);
+        ? Math.max(lo, Math.round(nStages * 0.3))
+        : Math.min(hi, Math.round(nStages * 0.72));
+      return trayPoint(mid, nStages, condenser);
     }
     return POINT_AT[loop.measuredAt] ?? null;
   };
+  //  C259 audit F4: the criteria rank EVERY tray, so the pick for a top loop
+  //  can land below the feed.  Said on the drawing rather than hidden.
+  const crossedSection = sensorStage !== null && sensorLoop !== null
+    && (sensorLoop.measuredAt === "rectifyingTray"
+      || sensorLoop.measuredAt === "strippingTray")
+    && sectionOf(sensorStage, feedStage) !== sensorLoop.measuredAt;
 
   return (
     <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
@@ -571,13 +654,14 @@ function ColumnSection(
           height={SHELL_BOT - SHELL_TOP} fill="none" stroke={STEEL}
           strokeWidth={2} rx={6} />
         {trays.map((s) => (
-          <line key={`t${s}`} x1={SHELL_X0 + 6} y1={stageY(s, nStages)}
-            x2={SHELL_X1 - 6} y2={stageY(s, nStages)} stroke={GRID}
+          <line key={`t${s}`} x1={SHELL_X0 + 6} y1={stageY(s, nStages, condenser)}
+            x2={SHELL_X1 - 6} y2={stageY(s, nStages, condenser)} stroke={GRID}
             strokeWidth={1} />
         ))}
         <text x={(SHELL_X0 + SHELL_X1) / 2} y={SHELL_TOP - 10}
           textAnchor="middle" fontSize={11} fill={INK}>
-          {nStages} stages
+          {nStages} stages: {trays.length} trays + reboiler
+          {condenser === "partial" ? " + partial condenser" : ""}
         </text>
 
         {/* condenser, drum, reboiler */}
@@ -637,16 +721,16 @@ function ColumnSection(
         <line x1={SHELL_X0} y1={424} x2={SHELL_X1} y2={424} stroke={STEEL}
           strokeWidth={2} />
         {/* feed */}
-        <polyline points={`40,${stageY(feedStage, nStages)} `
-          + `${SHELL_X0},${stageY(feedStage, nStages)}`} fill="none"
+        <polyline points={`40,${stageY(feedStage, nStages, condenser)} `
+          + `${SHELL_X0},${stageY(feedStage, nStages, condenser)}`} fill="none"
           stroke={STEEL} strokeWidth={2} />
-        <text x={40} y={stageY(feedStage, nStages) - 8} fontSize={10} fill={INK}>
+        <text x={40} y={stageY(feedStage, nStages, condenser) - 8} fontSize={10} fill={INK}>
           feed (stage {feedStage})
         </text>
 
         {/* ---- the valves ---- */}
         {structure.loops.map((l) => {
-          const v = placeValve(l.manipulates, feedStage, nStages);
+          const v = placeValve(l.manipulates, feedStage, nStages, condenser);
           if (!v) return null;
           return (
             <g key={`v${l.controlled}`}>
@@ -660,7 +744,7 @@ function ColumnSection(
         {/* ---- the loops: a bubble, a signal line, a valve ---- */}
         {structure.loops.map((l) => {
           const p = pointOf(l);
-          const v = placeValve(l.manipulates, feedStage, nStages);
+          const v = placeValve(l.manipulates, feedStage, nStages, condenser);
           if (!p || !v) return null;
           const isSensor = sensorLoop !== null
             && l.controlled === sensorLoop.controlled;
@@ -692,12 +776,21 @@ function ColumnSection(
 
         {/* the computed tray, named on the drawing */}
         {sensorStage !== null && sensorLoop !== null && (
-          <text x={trayPoint(sensorStage, nStages).x + 16}
-            y={trayPoint(sensorStage, nStages).y + 3.5} fontSize={10}
+          <text x={trayPoint(sensorStage, nStages, condenser).x + 16}
+            y={trayPoint(sensorStage, nStages, condenser).y + 3.5} fontSize={10}
             fill={PICKED}>
             stage {sensorStage} — picked by the{" "}
             {sensorCriterion === "sensitivity"
               ? "sensitivity criterion" : "slope criterion"}
+          </text>
+        )}
+        {sensorStage !== null && crossedSection && (
+          <text x={trayPoint(sensorStage, nStages, condenser).x + 16}
+            y={trayPoint(sensorStage, nStages, condenser).y + 17} fontSize={9}
+            fill={WARN}>
+            a {sectionOf(sensorStage, feedStage) === "strippingTray"
+              ? "STRIPPING tray, below the feed" : "RECTIFYING tray, above the feed"}
+            {" "}— see the note below
           </text>
         )}
         {sensorLoop === null && (
@@ -729,6 +822,7 @@ interface TrayChartInput {
   slopePick: StageMetric | null;
   sensPick: StageMetric | null;
   handle: Handle;
+  condenser: CondenserType;
   busyOverlay: boolean;
 }
 
@@ -736,7 +830,8 @@ const CX0 = 62, CX1 = 292, CY0 = 20, CY1 = 396;   // the profile panel
 const DX0 = 356, DX1 = 596;                        // the criteria panel
 
 function TrayChart(
-  { T, slope, sens, slopePick, sensPick, handle, busyOverlay }: TrayChartInput,
+  { T, slope, sens, slopePick, sensPick, handle, condenser, busyOverlay }:
+    TrayChartInput,
 ): JSX.Element {
   const n = T.length;
   const finite = T.filter((v) => Number.isFinite(v));
@@ -788,7 +883,8 @@ function TrayChart(
         </text>
         <text x={16} y={(CY0 + CY1) / 2} fontSize={10} fill={INK}
           transform={`rotate(-90 16 ${(CY0 + CY1) / 2})`}>
-          stage (1 = condenser, {n} = reboiler)
+          stage (1 = {condenser === "partial" ? "partial condenser" : "top tray"},
+          {" "}{n} = reboiler)
         </text>
 
         {/* ---- the two criteria, back to back ---- */}
@@ -903,6 +999,7 @@ function HeuristicCard(
 export function ColumnControlTool(): JSX.Element {
   const catalogue = useMemo(() => readHeuristicsCatalogue(), []);
   const appResult = useStore((s) => s.runResult);
+  const appFiles = useStore((s) => s.caseFiles);
 
   const [structureName, setStructureName] = useState<string>("LV");
   const structure = catalogue.structures.find((s) => s.name === structureName)
@@ -949,20 +1046,26 @@ export function ColumnControlTool(): JSX.Element {
         ?? null),
     [src, pertRun.result]);
 
+  //  What stage 1 is.  The classroom witness declares no condenser block, so
+  //  it runs the engine's default TOTAL condenser (stage 1 = the top tray);
+  //  the current run is read from the case's own flowsheetDict.
+  const condenser: CondenserType = src === "current" && feed
+    ? condenserTypeOf(appFiles?.flowsheet, feed.unit) : "total";
+
   const view0 = useMemo(() => {
     if (!feed) return null;
     const T = feed.profile.columns[T_COLUMN];
     if (!T) return null;
-    const slope = slopeMetric(T);
+    const slope = slopeMetric(T, condenser);
     const Tp = pertFeed?.profile.columns[T_COLUMN];
-    const sens = Tp ? sensitivityMetric(T, Tp, relStep) : [];
+    const sens = Tp ? sensitivityMetric(T, Tp, relStep, condenser) : [];
     return {
       unit: feed.unit, T, nStages: T.length, slope, sens,
       slopePick: pickStage(slope), sensPick: pickStage(sens),
       crossings: signChanges(sens),
       drum: drumStreams(feed.kpis),
     };
-  }, [feed, pertFeed, relStep]);
+  }, [feed, pertFeed, relStep, condenser]);
 
   const sensorLoop = qualityLoopFor(structure, handle);
   const sensorCriterion: "sensitivity" | "slope" | null =
@@ -1141,8 +1244,13 @@ export function ColumnControlTool(): JSX.Element {
       </Tooltip>
       <Tooltip withArrow multiline w={440}
         label={"The largest |T(n+1) − T(n)| over the stages that are trays "
-          + "(stage 1 is the condenser and the last stage the reboiler, so "
-          + "neither can carry a tray thermocouple).  Read off ONE solved "
+          + (condenser === "partial"
+            ? "(stage 1 is the partial condenser and the last stage the "
+              + "reboiler, so neither can carry a tray thermocouple).  "
+            : "(with the default total condenser stage 1 is the TOP TRAY — "
+              + "the condenser is not a stage — and the last stage is the "
+              + "reboiler, which carries no tray thermocouple).  ")
+          + "Read off ONE solved "
           + "profile — the criterion a student can apply with a ruler."}>
         <Badge variant="light" color="cyan" tt="none"
           styles={{ root: { cursor: "help" } }}>
@@ -1237,13 +1345,14 @@ export function ColumnControlTool(): JSX.Element {
               <ColumnSection structure={structure}
                 nStages={view0?.nStages ?? 15} feedStage={feedStage}
                 sensorStage={sensorStage} sensorCriterion={sensorCriterion}
-                sensorLoop={sensorLoop}
+                sensorLoop={sensorLoop} condenser={condenser}
                 busyOverlay={src === "classroom" && busy} />
             ) : view === "tray" ? (
               view0 ? (
                 <TrayChart T={view0.T} slope={view0.slope} sens={view0.sens}
                   slopePick={view0.slopePick} sensPick={view0.sensPick}
-                  handle={handle} busyOverlay={src === "classroom" && busy} />
+                  handle={handle} condenser={condenser}
+                  busyOverlay={src === "classroom" && busy} />
               ) : (
                 <Box style={{ flex: 1, display: "flex", alignItems: "center",
                   justifyContent: "center", padding: 12 }}>
@@ -1330,6 +1439,23 @@ export function ColumnControlTool(): JSX.Element {
               {view0.crossings[0]!.above}: a sensor there has almost no gain,
               whatever the profile looks like. The slope criterion cannot see
               this, because it never asks the handle a question.
+            </Text>
+          )}
+          {view0 && sensorLoop !== null && sensorStage !== null
+            && (sensorLoop.measuredAt === "rectifyingTray"
+              || sensorLoop.measuredAt === "strippingTray")
+            && sectionOf(sensorStage, feedStage) !== sensorLoop.measuredAt && (
+            <Text size="xs" c="dimmed">
+              Stage {sensorStage} is a{" "}
+              {sectionOf(sensorStage, feedStage) === "strippingTray"
+                ? "STRIPPING tray, at or below the feed"
+                : "RECTIFYING tray, above the feed"}{" "}
+              (stage {feedStage}), yet it carries the sensor of the{" "}
+              {sensorLoop.measuredAt === "rectifyingTray" ? "top" : "bottom"}
+              {" "}loop. The criterion ranks every tray in either section, and
+              this handle&apos;s largest response sits there; whether a loop
+              should measure in the other section is the question the cited
+              same-end heuristic answers (Cited heuristics view).
             </Text>
           )}
           <Text size="xs" c="dimmed">
