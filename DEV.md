@@ -3221,6 +3221,31 @@ accepts today, and that is a policy call.
 > against the paper's profile, read from its figure with the digitisation stated).
 > Order: (4)-(5) ride on the C243 grammar; one slice after (1)-(3).
 
+> **C266 (Vitor, 2026-11-09, after another assistant's student walk of donepezil02 found what
+> five Fable auditors had not: "O Fable é pior que o ChatGPT a passar a pente fino os casos?!
+> ... devias mandatar um general para passar a pente fino e com tempo todos os casos para ver
+> se eles ficam inteligíveis para os alunos e não têm erros"): A STUDENT WALK OF THE CASES,
+> IN THE RUNNING APP.**  The answer to his question, recorded because it is the lesson: the
+> difference was the METHOD, not the model, and the method was the architect's choice --
+> C259 audited lesson TEXT from the source (equations, numbers, citations) and no one was
+> ever sent to USE a case as a student; a README the app refuses and a tablet labelled
+> slurry are visible only on the screen.  The instrument exists and was not used for this:
+> `bin/drive-app` (gui/tools/driveApp/driveApp.mjs) drives the delivered app in headless
+> Chromium, runs a case, walks every view and can save a PNG per view.  DECIDED: a Fable
+> auditor walks cases AS A STUDENT on the published site -- for each case, what question
+> does it pose and is that stated where a student looks first; does the README open; does
+> the screen answer the question first; every number the README or header quotes against
+> the screen and the golden; labels, bases and units that mislead; one word with two
+> meanings; warnings a student cannot rank.  Findings B (blocks) / E (error) / C (confusing),
+> each with the screenshot; SYSTEMIC defects (one cause, many cases) listed apart, because
+> they are worth most and must be fixed before the rest of the corpus is walked (or the
+> same defect is reported 500 times).  STAGE 1: the start-here path and the three PIF
+> tablet plants; then, after its systemic findings are fixed, one case per family
+> (tutorials/FASTSET), then the remainder by family.  Read-only; fixes are separate slices
+> the architect reviews.  And the durable half: what a walk finds mechanically (a view that
+> throws, a README that does not render, a phase word on a solid) becomes a gate, so it
+> is found by the suite next time and not by a visitor.
+
 > **C265 (Vitor, 2026-11-09, after C264: "o utilizador devia ter a opção no dicionário de
 > pós-processamento de dizer que determinados gráficos ou tabelas gostaria de ver ... a
 > informação que se escolhe e a forma como se apresenta é muito importante para dar
