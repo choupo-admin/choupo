@@ -55,8 +55,8 @@ export const APPROACH_STEPS: readonly LessonStep[] = [
       + "conserving every atom that came in.  Whatever reactions would have "
       + "been written are implied by the species list and never appear "
       + "anywhere.  In Choupo the atom inventory b is built from the feed "
-      + "itself (GibbsReactor.cpp:229–228) and an element the feed does not "
-      + "contain is refused by name (GibbsReactor.cpp:320–274).",
+      + "itself (GibbsReactor.cpp:319–321) and an element the feed does not "
+      + "contain is refused by name (GibbsReactor.cpp:322–325).",
     formula: String.raw`\min_{n \ge 0}\; G(T,P,n) = \sum_i n_i\,\mu_i(T,P,n)
 \qquad \text{subject to} \qquad A\,n = b`,
     where: [
@@ -175,7 +175,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
       + "fourteen lines below (ElementPotential.cpp:61) — and the run says so "
       + "out loud: \"REACTION equilibrium evaluated at T + ΔT; enthalpy, Psat "
       + "and the energy balance stay at the physical T\" "
-      + "(GibbsReactor.cpp:406–406).  The outlet is therefore a legitimate "
+      + "(GibbsReactor.cpp:407–410).  The outlet is therefore a legitimate "
       + "NON-EQUILIBRIUM state: its composition belongs to one temperature and "
       + "its enthalpy to another, its affinity at T is not zero, and that "
       + "nonzero affinity IS the distance from equilibrium rather than a bug.",
@@ -190,11 +190,11 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
       + "more, reads the isothermal enthalpy change between the feed and that "
       + "equilibrium on the package's own surface, and evaluates the reaction "
       + "at T + ΔT when that transformation is exothermic and at T − ΔT when "
-      + "it is endothermic (GibbsReactor.cpp:67–106, `approachDirection`; "
+      + "it is endothermic (GibbsReactor.cpp:68–161, `approachDirection`; "
       + "the isothermal reactor calls it at 375 and the gibbsMap at every "
       + "cell).  An ADIABATIC bed has no physical T to read at until it is "
       + "solved, so the engine solves it once with NO approach and reads the "
-      + "thermicity at that dT = 0 outlet (GibbsReactor.cpp:549–549) — never "
+      + "thermicity at that dT = 0 outlet (GibbsReactor.cpp:572–583) — never "
       + "at the seed `operation.T`, which can sit on the wrong side of a "
       + "product-carrying feed's own equilibrium and would flip the sign "
       + "(witness gibbs13_adiabatic_approach_direction).  It "
@@ -241,7 +241,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
         + "releases heat.  A Gibbs reactor never sees this as an input, "
         + "because it is told no reactions; the engine READS it, isothermally "
         + "and on the package's surface, to assign the direction "
-        + "(`approachDirection`, GibbsReactor.cpp:67–106).  An ISOTHERMAL run "
+        + "(`approachDirection`, GibbsReactor.cpp:68–161).  An ISOTHERMAL run "
         + "with feed and reactor at one temperature also publishes its sign as "
         + "the duty the surroundings must supply to hold T (`Q_kW`, "
         + "GibbsReactor.cpp:754)",
@@ -282,7 +282,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the STATE is priced here}
     n: 5,
     title: "The three caveats the engine prints on its own",
     body: "A run that declares an approach prints them every time "
-      + "(GibbsReactor.cpp:413–412), and each of the three is a lesson rather "
+      + "(GibbsReactor.cpp:412–417), and each of the three is a lesson rather "
       + "than a disclaimer.  FIRST, it is EMPIRICAL — calibrated, never "
       + "predicted.  It lumps catalyst activity, bed geometry, transport and "
       + "age into one number you fit against a plant measurement, which also "

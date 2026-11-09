@@ -290,14 +290,23 @@ R(T) &= (F c_p + \mathrm{UA})\, T - (F c_p T_\mathrm{in} + \mathrm{UA}\, T_\math
 \end{aligned}`,
     note: "This page's witness is ADIABATIC: UA is zero and there is no "
       + "coolant to move, so the handles here are the feed temperature, the "
-      + "feed flows and the reactor volume.  The corpus carries a jacketed "
-      + "SIBLING of the same esterification — "
-      + "tutorials/steady/reactors/cstr06_jacketed, which declares thermalMode "
-      + "heatExchange with UA and T_coolant — so run that case and switch the "
-      + "source to \"Current run\" to see a removal line with a jacket in it.  "
-      + "Expect ONE steady state there, not three: it runs the un-steepened "
-      + "kinetics (Ea 70 kJ/mol against this witness's didactic 100), so it "
-      + "shows you the jacket and not the multiplicity.  "
+      + "feed flows and the reactor volume.  It is propylene-oxide hydration "
+      + "with the rate law Furusawa, Nishimura and Miyauchi measured in 1969 "
+      + "(tutorials/steady/reactors/cstr08_furusawa_bistable), and at their "
+      + "first condition the engine finds three crossings: 291.5 K, 305.3 K "
+      + "and 333.8 K.  Whether a reaction CAN show three is decided before "
+      + "any curve is drawn, by the adiabatic rise measured in units of the "
+      + "Arrhenius steepness, B = Ea ΔT_ad / (R T_in²): for one first-order "
+      + "reaction three crossings need B above 4γ/(γ − 4), with γ = Ea / "
+      + "(R T_in), which is 4 for a very steep law.  Here Ea is 75.3 kJ/mol, "
+      + "the engine's ΔT_ad is 56.1 K and T_in is 284.3 K, so B = 6.3 against "
+      + "a bound of 4.6.  The esterification the corpus's other CSTRs run is "
+      + "nearly thermoneutral (an adiabatic rise of about 11 K), B is about "
+      + "1.5, and no setting of any knob gives it a second crossing: "
+      + "tutorials/steady/reactors/cstr06_jacketed, which declares "
+      + "thermalMode heatExchange with UA and T_coolant, shows you a removal "
+      + "line with a jacket in it (run it and switch the source to "
+      + "\"Current run\"), and ONE steady state, for that reason.  "
       + "And watch the feed-flow knobs: raising a feed steepens the removal "
       + "line AND lifts the generation curve's plateau, so what happens to the "
       + "number of crossings cannot be read off either curve alone.",
@@ -347,15 +356,21 @@ export const VAN_HEERDEN_LIMITS: readonly { id: string; title: string; body: str
   },
   {
     id: "one-reaction-here",
-    title: "The witness carries a SINGLE reaction, with declared teaching kinetics.",
+    title: "The witness carries a SINGLE reaction, and its heat is not the measured one.",
     body: "The construction generalises — G sums over the extents when there "
       + "are several, and the engine scans the same way — but this page's "
-      + "witness has one esterification, and its own reactions file says the "
-      + "rate law is a teaching variant chosen to place the ignition window "
-      + "inside a temperature range the liquid thermo can be trusted over, not "
-      + "a measured one. A second reaction that only starts at high "
-      + "temperature, a decomposition, would add generation that is simply not "
-      + "in the curve you are looking at.",
+      + "witness has one reaction, propylene-oxide hydration, with the rate "
+      + "law measured by Furusawa, Nishimura and Miyauchi (1969).  Its heat "
+      + "is the engine's, priced from pure-liquid formation enthalpies on an "
+      + "ideal liquid: an adiabatic rise of 56.1 K where the paper measured "
+      + "45.5 to 48.6 K.  That 20 % moves the three-crossing window to "
+      + "shorter residence times, so the engine finds three crossings at "
+      + "the paper's first condition, where the experiment saw one cold "
+      + "state, and one ignited state at its second, where the experiment "
+      + "saw two.  The page shows the construction on a measured rate law; "
+      + "it does not reproduce the measured states.  A second reaction that "
+      + "only starts at high temperature, a decomposition, would add "
+      + "generation that is simply not in the curve you are looking at.",
   },
   {
     id: "not-a-safety-analysis",

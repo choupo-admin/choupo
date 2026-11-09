@@ -1,0 +1,90 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 12Propanediol  (propylene glycol, C3H8O2, CAS 57-55-6)
+  CASE-LOCAL record, written for cstr08_furusawa_bistable, where it is the
+  PRODUCT of propylene-oxide hydration.  The catalogue has no measured record
+  for it (data/groupEstimative/components/12Propanediol.dat is a Joback
+  estimate), so the case carries its own, and says which number is which.
+
+  MEASURED, each from the primary named, read through the NIST Chemistry
+  WebBook (webbook.nist.gov, CAS 57-55-6) on 2026-11-09:
+    dHf_298 (gas)     Knauth & Sabbah, Thermochim. Acta 164 (1990) 145-152,
+                      combustion calorimetry: -429.8 +/- 4.1 kJ/mol (their
+                      liquid value is -501.0 +/- 4.1).
+    liquid Cp         Zaripov (1982), Teplomassoobmen Teplofiz.: 189.9
+                      J/(mol K) at 298 K, carried constant (the same page
+                      lists 177.0 at 303 K and 180.3 at 276.7 K from two
+                      other authors -- a 7 % scatter, stated, not resolved).
+    HvapTb            Steele, Chirico, Knipmeyer & Nguyen, J. Chem. Eng. Data
+                      47 (2002) 689-699, doi:10.1021/je010085z: 52.0 kJ/mol
+                      at 460 K.
+    vapour pressure   Antoine coefficients fitted by NIST to the data of
+                      Stull, Ind. Eng. Chem. 39 (1947) 517-540,
+                      doi:10.1021/ie50448a022, valid 318.7-461.4 K.  Tb below
+                      is that equation solved at 1 atm.
+    Vliq              Zarei, J. Chem. Eng. Data 51 (2006),
+                      doi:10.1021/je060086x: density 1032.61 kg/m3 at
+                      298.15 K (read from its ThermoML file), V = MW / rho.
+
+  ESTIMATED (the catalogue's own group-estimate record, Joback / Lee-Kesler):
+    Tc, Pc, omega, s_298 and the ideal-gas Cp.  Of these only Tc reaches a
+    number this case prints: the engine carries the gas datum to the liquid
+    with Watson's latent heat, and Watson reads Tc.  With these inputs the
+    liquid's formation enthalpy at 298.15 K comes out -498.3 kJ/mol against
+    Knauth & Sabbah's calorimetric -501.0 (0.5 %).  s_298 enters nothing:
+    the reaction is irreversible and kinetic, so no Gibbs energy is priced.
+\*---------------------------------------------------------------------------*/
+
+name        12Propanediol;
+formula     C3H8O2;
+CAS         57-55-6;
+reviewStatus interim;
+MW          76.095;          // kg/kmol, formula sum
+
+Tc          614.65;          // K   [ESTIMATE: Joback]
+Pc          57.917;          // bar [ESTIMATE: Joback]
+omega       1.1286;          // -   [ESTIMATE: Lee-Kesler]
+Tb          461.20;          // K   Stull (1947) Antoine solved at 1 atm
+HvapTb      52000;           // J/mol  Steele et al. (2002), at 460 K
+Vliq        7.3692e-05;      // m3/mol = 76.095e-3 / 1032.61  (Zarei 2006)
+
+standardThermochemistry
+{
+    dHf_298   -429800;       // J/mol  ideal gas, Knauth & Sabbah (1990)
+    s_298     365.1;         // J/(mol K)  [ESTIMATE: Joback, enters nothing here]
+    referenceState  idealGas;
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C), Stull (1947) data, NIST fit
+    coefficients  (6.07936  2692.187  -17.94);
+    Trange        (318.7  461.4);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;    // J/(mol K)  [ESTIMATE: Joback]
+    coefficients  (9.061  0.36272  -0.0002034  4.36e-08);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (189.9);       // J/(mol K), Zaripov (1982) at 298 K, constant
+    Trange        (276  363);
+}
+
+provenance
+{
+    standardThermochemistry { origin literature; method "dHf_298: Knauth & Sabbah, Thermochim. Acta 164 (1990) 145, via NIST WebBook; s_298: Joback estimate (data/groupEstimative/components/12Propanediol.dat)"; }
+    liquidHeatCapacity      { origin literature; method "Zaripov (1982), via NIST WebBook, 298 K value carried constant"; }
+    vaporPressure           { origin literature; method "Stull, Ind. Eng. Chem. 39 (1947) 517 data, Antoine fitted by NIST, via NIST WebBook"; }
+    HvapTb                  { origin literature; method "Steele et al., J. Chem. Eng. Data 47 (2002) 689, via NIST WebBook"; }
+    Vliq                    { origin literature; method "Zarei, J. Chem. Eng. Data 51 (2006), doi:10.1021/je060086x, density at 298.15 K"; }
+    idealGasHeatCapacity    { origin predictive; method "Joback (data/groupEstimative/components/12Propanediol.dat)"; }
+    Tc                      { origin predictive; method "Joback (data/groupEstimative/components/12Propanediol.dat)"; }
+    Pc                      { origin predictive; method "Joback (data/groupEstimative/components/12Propanediol.dat)"; }
+    omega                   { origin predictive; method "Lee-Kesler (data/groupEstimative/components/12Propanediol.dat)"; }
+}

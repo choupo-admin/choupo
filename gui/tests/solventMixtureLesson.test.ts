@@ -210,8 +210,11 @@ describe("solvent-mixture: thirteen pure solvents beside Hansen's ratings", () =
 // ---- the lesson text --------------------------------------------------------------------------
 
 describe("solvent-mixture: the lesson text", () => {
+  //  C259: the symbol glosses are part of the page too, and the step-5
+  //  gloss of gamma_i(y) cites the engine line, so they are read here.
   const all = SOLVENT_STEPS.map((s) => [s.title, s.body, s.note ?? "",
-    ...(s.derivation ?? []).map((d) => d.step)].join(" ")).join(" ");
+    ...(s.derivation ?? []).map((d) => d.step),
+    ...(s.where ?? []).map((g) => g.means)].join(" ")).join(" ");
   it("has nine steps on five pages, and the page draws every one of them", () => {
     expect(SOLVENT_STEPS.map((s) => s.n)).toEqual([...Array(9)].map((_, i) => i + 1));
     const src = tree(TOOL);
@@ -250,6 +253,9 @@ describe("solvent-mixture: the lesson text", () => {
       "HansenMixture.cpp:501": "if (p.hasRa && (!best || p.Ra < best->Ra)) best = &p;",
       "HansenMixture.cpp:546": "Ra IS AN AFFINITY, NOT A SOLUBILITY",
       "StabilityTest.cpp:221": "best.unstable = (best.tmMin < tmTol);",
+      //  C259: the step-5 formula now carries ln gamma_i(y) at the TRIAL
+      //  composition, and its gloss cites the engine line that adds it.
+      "StabilityTest.cpp:69": "tm += Yi * (std::log(Yi) + lnGamma[i] - h[i] - 1.0);",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, want] of Object.entries(CLAIMS)) {

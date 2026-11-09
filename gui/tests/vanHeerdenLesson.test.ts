@@ -114,9 +114,9 @@ describe("the ignition / extinction lesson", () => {
   });
 
   it("says the witness is ADIABATIC rather than implying a coolant knob", () => {
-    //  cstr05_multiplicity declares `thermalMode adiabatic;` and no UA or
-    //  T_coolant key, so no knob on this page can move a coolant.  The
-    //  jacketed twin is named instead of the gap being left silent.
+    //  cstr08_furusawa_bistable declares `thermalMode adiabatic;` and no UA
+    //  or T_coolant key, so no knob on this page can move a coolant.  The
+    //  jacketed case is named instead of the gap being left silent.
     const s5 = step(5);
     expect(prose(s5.note!)).toContain("witness is ADIABATIC");
     expect(prose(s5.note!))
@@ -125,6 +125,36 @@ describe("the ignition / extinction lesson", () => {
     //  lifts G's plateau, so neither curve alone predicts the root count.
     expect(prose(s5.note!))
       .toContain("cannot be read off either curve alone");
+  });
+
+  //  C259.  The page used to send the reader to cstr06 "to see the jacket and
+  //  not the multiplicity", implying its own witness (cstr05) showed three
+  //  crossings; cstr05's golden pins steadyStates 1.  The note now quotes the
+  //  new witness's crossings and the multiplicity criterion with numbers, and
+  //  this test RECOMPUTES them from the case's own files and golden, so a
+  //  re-recorded case or an edited rate law cannot leave the prose behind.
+  it("quotes the witness's three crossings and recomputes its criterion", () => {
+    const CASE = "../../tutorials/steady/reactors/cstr08_furusawa_bistable/";
+    const read = (f: string) => readFileSync(new URL(CASE + f, import.meta.url), "utf-8");
+    const golden = read("expected");
+    const kpi = (key: string) => Number(
+      new RegExp(`^kpi\\s+reactor\\s+${key}\\s+(\\S+)`, "m").exec(golden)![1]);
+    expect(kpi("steadyStates")).toBe(3);
+    const note = prose(step(5).note!);
+    expect(note).toContain(`${kpi("T_out").toFixed(1)} K`);   // the reported, ignited root
+    expect(note).toContain("tutorials/steady/reactors/cstr08_furusawa_bistable");
+    //  B = Ea dT_ad / (R T_in^2) and its bound 4 gamma / (gamma - 4), from
+    //  the Ea in constant/reactions, the T in 0/feed and the 56.1 K rise the
+    //  case header states (the engine's scan ceiling minus T_in).
+    const Ea = Number(/^\s*Ea\s+(\S+);/m.exec(read("constant/reactions"))![1]);
+    const Tin = Number(/^T\s+(\S+)\s*K;/m.exec(read("0/feed"))![1]);
+    expect(read("system/flowsheetDict")).toContain("adiabatic rise of 56.1 K");
+    const R = 8.314462618, dTad = 56.1;
+    const gamma = Ea / (R * Tin);
+    const B = Ea * dTad / (R * Tin * Tin);
+    expect(note).toContain(`B = ${B.toFixed(1)} against a bound of ${(4 * gamma / (gamma - 4)).toFixed(1)}`);
+    expect(B).toBeGreaterThan(4 * gamma / (gamma - 4));
+    expect(note).toContain(`T_in is ${Tin} K`);
   });
 });
 

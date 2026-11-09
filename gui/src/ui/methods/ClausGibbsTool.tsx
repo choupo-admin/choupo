@@ -30,7 +30,7 @@ License
   THE ALLOTROPE NOBODY DECLARED -- the first PROCESS page on this shelf, and
   the reason it is a process and not a method is that its lesson only exists
   between two units.  Every other EduTool here explains one construction; this
-  one shows the same twelve species minimised twice, 900 K apart, and lets the
+  one shows the same fourteen species minimised twice, 900 K apart, and lets the
   student read the difference off two stream tables.
 
   It walks tutorials/steady/gibbs/claus01_thermal_stage, and every number on
@@ -198,7 +198,7 @@ export const CLAUS_STEPS = [
   {
     n: 6,
     title: "And now read the sulfur",
-    body: "The case runs the SAME twelve species over the SAME five "
+    body: "The case runs the SAME fourteen species over the SAME five "
       + "elements a second time, in the waste-heat boiler behind the "
       + "furnace, isothermal at 600 K.  Nothing else changes — not the "
       + "species list, not the atom matrix, not the method.  Only the "
@@ -332,7 +332,7 @@ export function ClausGibbsTool(): JSX.Element {
         <Title order={5}>The two answers, side by side</Title>
         <OriginMark of="engine" note="the recorded run (golden) of claus01_thermal_stage, not re-run on this page" />
         <Text size="sm" mt={4} mb={8}>
-          Same twelve species, same five elements, same method.  900 K apart.
+          Same fourteen species, same five elements, same method.  900 K apart.
         </Text>
         <Table withTableBorder withColumnBorders striped>
           <Table.Thead>
